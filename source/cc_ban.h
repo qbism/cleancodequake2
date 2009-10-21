@@ -67,7 +67,7 @@ struct BanIndex
 
 class CBanList
 {
-	std::vector<BanIndex*>	BanList;
+	std::vector<BanIndex*, std::level_allocator<CPathNode*> >	BanList;
 
 public:
 

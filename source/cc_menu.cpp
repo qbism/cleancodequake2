@@ -80,7 +80,7 @@ void CMenu::AddItem (CMenuItem *Item)
 
 void CMenu::DrawItems (CStatusBar *Bar)
 {
-	for (std::vector<CMenuItem*>::iterator it = Items.begin(); it < Items.end(); it++)
+	for (std::vector<CMenuItem*, std::level_allocator<CMenuItem*> >::iterator it = Items.begin(); it < Items.end(); it++)
 		(*it)->Draw (ent, Bar);
 }
 

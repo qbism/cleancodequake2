@@ -56,7 +56,7 @@ class CMenu abstract
 public:
 	int							Cursor; // Where to position the cursor on start
 	CPlayerEntity				*ent; // A pointer to the entity that is running the show (needed?)
-	std::vector<CMenuItem*>		Items;
+	std::vector<CMenuItem*, std::level_allocator<CMenuItem*> >		Items;
 
 	CMenu						(CPlayerEntity *ent);
 	~CMenu						();

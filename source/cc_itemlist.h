@@ -63,8 +63,8 @@ public:
 
 void InitItemlist ();
 bool ItemExists (edict_t *ent);
-CBaseItem *FindItemByClassname (char *name);
-CBaseItem *FindItem (char *name);
+CBaseItem *FindItemByClassname (const char *name);
+CBaseItem *FindItem (const char *name);
 CBaseItem *GetItemByIndex (int Index);
 extern int GetNumItems ();
 

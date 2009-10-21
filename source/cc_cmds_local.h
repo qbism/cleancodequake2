@@ -42,12 +42,12 @@ class CCmd
 public:
 	uint32			hashValue;
 	CCmd			*hashNext;
-	char			*cmdName;
+	std::cc_string	cmdName;
 
 	ECmdTypeFlags	CmdFlags;
 	void			(*RunFunction) (CPlayerEntity *ent);
 
-	CCmd (char *name, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags);
+	CCmd (std::cc_string name, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags);
 	~CCmd();
 	void Run (CPlayerEntity *ent);
 };
@@ -57,13 +57,13 @@ class CServerCmd
 {
 public:
 	uint32			hashValue;
-	CServerCmd			*hashNext;
-	char			*cmdName;
+	CServerCmd		*hashNext;
+	std::cc_string	cmdName;
 
 	ECmdTypeFlags	CmdFlags;
 	void			(*RunFunction) ();
 
-	CServerCmd (char *name, void (*Func) ());
+	CServerCmd (std::cc_string name, void (*Func) ());
 	~CServerCmd();
 
 	void Run ();

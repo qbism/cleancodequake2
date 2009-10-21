@@ -255,10 +255,16 @@ typedef uint64_t			uint64;
 
 #ifdef HAVE__STRICMP
 # ifndef Q_stricmp
-#  define Q_stricmp(s1, s2) _stricmp((s1), (s2))
+inline int Q_stricmp (const char *s1, const char *s2)
+{
+	return _stricmp (s1, s2);
+}
 # endif
 # ifndef Q_strnicmp
-#  define Q_strnicmp(s1, s2, n) _strnicmp((s1), (s2), (n))
+inline int Q_strnicmp (const char *s1, const char *s2, size_t n)
+{
+	return _strnicmp (s1, s2, n);
+}
 # endif
 #endif
 

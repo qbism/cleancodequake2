@@ -41,7 +41,7 @@ public:
 
 	// OpenList = Junk that is ready to use
 	// ClosedList = Junk that is already in use
-	std::list<int>	OpenList, ClosedList;
+	std::list<int, std::level_allocator<int> >	OpenList, ClosedList;
 
 	CJunkList () :
 	NumAllocatedJunk (0),

@@ -53,7 +53,7 @@ public:
 	vec3f						Origin; // Node's location
 	CBaseEntity					*Ent; // Node entity
 
-	std::vector<CPathNode*>		Children;	// Children (connected nodes, basically)
+	std::vector<CPathNode*, std::level_allocator<CPathNode*> >		Children;	// Children (connected nodes, basically)
 	CBaseEntity					*LinkedEntity;
 	// Testing 2
 	uint32						G, F, H;
@@ -82,7 +82,7 @@ class CPath
 public:
 	// Basically, keep popping back until we reach the end node (backwards)
 	CPathNode					*Start, *End;
-	std::vector<CPathNode*>		Path;
+	std::vector<CPathNode*, std::level_allocator<CPathNode*> >		Path;
 	uint32						Weight;
 	uint32						NumNodes;
 	bool						Incomplete;

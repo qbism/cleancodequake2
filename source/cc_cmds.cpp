@@ -48,10 +48,9 @@ void CCmd::Run (CPlayerEntity *ent)
 	RunFunction (ent);
 };
 
-CCmd::CCmd (char *name, void (*Func)(CPlayerEntity *ent), ECmdTypeFlags Flags)
+CCmd::CCmd (std::cc_string name, void (*Func)(CPlayerEntity *ent), ECmdTypeFlags Flags)
 {
-	cmdName = QNew (com_gamePool, 0) char[strlen(name)+1];
-	Q_snprintfz (cmdName, strlen(name)+1, "%s", name);
+	cmdName = name;
 	hashValue = Com_HashGeneric(name, MAX_CMD_HASH);
 	CmdFlags = Flags;
 	RunFunction = Func;
@@ -59,27 +58,26 @@ CCmd::CCmd (char *name, void (*Func)(CPlayerEntity *ent), ECmdTypeFlags Flags)
 
 CCmd::~CCmd ()
 {
-	QDelete cmdName;//gi.TagFree(cmdName);
 };
 
 CCmd *CommandList[MAX_COMMANDS];
 CCmd *CommandHashList[MAX_CMD_HASH];
 int numCommands = 0;
 
-CCmd *Cmd_FindCommand (char *commandName)
+CCmd *Cmd_FindCommand (std::cc_string commandName)
 {
 	CCmd *Command;
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
 
 	for (Command = CommandHashList[hash]; Command; Command=Command->hashNext)
 	{
-		if (Q_stricmp(Command->cmdName, commandName) == 0)
+		if (Q_stricmp (Command->cmdName.c_str(), commandName.c_str()) == 0)
 			return Command;
 	}
 	return NULL;
 }
 
-void Cmd_AddCommand (char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
+void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
 	if (Cmd_FindCommand(commandName))
@@ -107,12 +105,12 @@ void Cmd_RemoveCommands ()
 	}
 }
 
-void Cmd_RunCommand (char *commandName, CPlayerEntity *ent)
+void Cmd_RunCommand (std::cc_string commandName, CPlayerEntity *ent)
 {
 	CCmd *Command = Cmd_FindCommand(commandName);
 
 	if (Command)
 		Command->Run(ent);
 	else
-		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName);
+		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName.c_str());
 }

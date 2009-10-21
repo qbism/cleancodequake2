@@ -371,7 +371,7 @@ void CTFAdmin(CPlayerEntity *ent)
 	char text[1024];
 
 	if (ArgCount() > 1 && admin_password->String() && *admin_password->String() &&
-		!ent->Client.Respawn.admin && strcmp(admin_password->String(), ArgGets(1)) == 0)
+		!ent->Client.Respawn.admin && strcmp(admin_password->String(), ArgGets(1).c_str()) == 0)
 	{
 		ent->Client.Respawn.admin = true;
 		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", ent->Client.Persistent.netname);

@@ -131,7 +131,7 @@ void CItemList::SendItemNames ()
 		ConfigString (Items[i]->GetConfigStringNumber(), Items[i]->Name);
 }
 
-CBaseItem *FindItem (char *name)
+CBaseItem *FindItem (const char *name)
 {
 	// Check through the itemlist
 	uint32 hash = Com_HashGeneric(name, MAX_ITEMS_HASH);
@@ -161,7 +161,7 @@ void CBaseItem::Add (CPlayerEntity *ent, int quantity)
 	ent->Client.Persistent.Inventory.Add(this, quantity);
 }
 
-CBaseItem *FindItemByClassname (char *name)
+CBaseItem *FindItemByClassname (const char *name)
 {
 	// Check through the itemlist
 	uint32 hash = Com_HashGeneric(name, MAX_ITEMS_HASH);

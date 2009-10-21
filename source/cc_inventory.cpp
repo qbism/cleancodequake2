@@ -182,11 +182,12 @@ Use an inventory item
 */
 void Cmd_Use_f (CPlayerEntity *ent)
 {
-	char *s = ArgGetConcatenatedString();
-	CBaseItem *Item = FindItem(s);
+	std::cc_string s = ArgGetConcatenatedString();
+	CBaseItem *Item = FindItem(s.c_str());
+
 	if (!Item)
 	{
-		Item = FindItemByClassname(s);
+		Item = FindItemByClassname(s.c_str());
 
 		if (!Item)
 		{
@@ -222,12 +223,12 @@ void Cmd_UseList_f (CPlayerEntity *ent)
 {
 	for (int i = 1; i < ArgCount(); i++)
 	{
-		char *s = ArgGets(i);
+		std::cc_string s = ArgGets(i);
+		CBaseItem *Item = FindItem(s.c_str());
 
-		CBaseItem *Item = FindItem(s);
 		if (!Item)
 		{
-			Item = FindItemByClassname(s);
+			Item = FindItemByClassname(s.c_str());
 
 			if (!Item)
 			{
@@ -240,12 +241,13 @@ void Cmd_UseList_f (CPlayerEntity *ent)
 			ent->PrintToClient (PRINT_HIGH, "Item is not usable.\n");
 			continue;
 		}
+
 		// Only warn us if it's unknown or not usable; not if we don't have it
 		if (!ent->Client.Persistent.Inventory.Has(Item))
 			continue;
 
 		// If it's a weapon and we don't have ammo, don't bother
-		if (Item->Flags & ITEMFLAG_WEAPON && !(Item->Flags & ITEMFLAG_AMMO))
+		if ((Item->Flags & ITEMFLAG_WEAPON) && !(Item->Flags & ITEMFLAG_AMMO))
 		{
 			CWeaponItem *Weapon = dynamic_cast<CWeaponItem*>(Item);
 			if (!ent->Client.Persistent.Inventory.Has(Weapon->Ammo))
@@ -268,9 +270,9 @@ Drop an inventory item
 */
 void Cmd_Drop_f (CPlayerEntity *ent)
 {
-	char *s = ArgGetConcatenatedString();
+	std::cc_string s = ArgGetConcatenatedString();
 
-	if (Q_stricmp(s, "tech") == 0)
+	if (Q_stricmp (s.c_str(), "tech") == 0)
 	{
 		if (ent->Client.Persistent.Tech)
 		{
@@ -280,10 +282,10 @@ void Cmd_Drop_f (CPlayerEntity *ent)
 		return;
 	}
 
-	CBaseItem *Item = FindItem(s);
+	CBaseItem *Item = FindItem(s.c_str());
 	if (!Item)
 	{
-		Item = FindItemByClassname(s);
+		Item = FindItemByClassname(s.c_str());
 
 		if (!Item)
 		{
@@ -551,19 +553,12 @@ Old-style "give"
 */
 void Cmd_Give_f (CPlayerEntity *ent)
 {
-	char		*name;
-	int			i;
-	bool	give_all;
 	CBaseItem *it;
 
-	name = ArgGets(1);
+	std::cc_string name = ArgGets(1);
+	bool give_all = (Q_stricmp (name.c_str(), "all") == 0);
 
-	if (Q_stricmp(name, "all") == 0)
-		give_all = true;
-	else
-		give_all = false;
-
-	if (give_all || Q_stricmp(name, "health") == 0)
+	if (give_all || Q_stricmp (name.c_str(), "health") == 0)
 	{
 		if (ArgCount() == 3)
 			ent->Health = ArgGeti(2);
@@ -573,9 +568,9 @@ void Cmd_Give_f (CPlayerEntity *ent)
 			return;
 	}
 
-	if (give_all || Q_stricmp(name, "weapons") == 0)
+	if (give_all || Q_stricmp (name.c_str(), "weapons") == 0)
 	{
-		for (i=0 ; i<GetNumItems() ; i++)
+		for (int i = 0; i < GetNumItems(); i++)
 		{
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_WEAPON))
@@ -586,9 +581,9 @@ void Cmd_Give_f (CPlayerEntity *ent)
 			return;
 	}
 
-	if (give_all || Q_stricmp(name, "ammo") == 0)
+	if (give_all || Q_stricmp (name.c_str(), "ammo") == 0)
 	{
-		for (i=0 ; i<GetNumItems() ; i++)
+		for (int i = 0; i < GetNumItems(); i++)
 		{
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_GRABBABLE))
@@ -603,7 +598,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 			return;
 	}
 
-	if (give_all || Q_stricmp(name, "armor") == 0)
+	if (give_all || Q_stricmp (name.c_str(), "armor") == 0)
 	{
 		ent->Client.Persistent.Inventory.Set(NItems::JacketArmor->GetIndex(), 0);
 		ent->Client.Persistent.Inventory.Set(NItems::CombatArmor->GetIndex(), 0);
@@ -619,7 +614,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 			return;
 	}
 
-	if (give_all || Q_stricmp(name, "Power Shield") == 0)
+	if (give_all || Q_stricmp (name.c_str(), "power shield") == 0)
 	{
 		/*it = NItems::PowerShield;
 		CItemEntity *it_ent = QNew (com_levelPool, 0) CItemEntity();
@@ -637,7 +632,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 
 	if (give_all)
 	{
-		for (i=0 ; i<GetNumItems() ; i++)
+		for (int i = 0; i < GetNumItems(); i++)
 		{
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_GRABBABLE))
@@ -649,15 +644,15 @@ void Cmd_Give_f (CPlayerEntity *ent)
 		return;
 	}
 
-	it = FindItem (name);
+	it = FindItem (name.c_str());
 	if (!it)
 	{
 		name = ArgGetConcatenatedString();
-		it = FindItem(name);
+		it = FindItem(name.c_str());
 
 		if (!it)
 		{
-			it = FindItemByClassname (name);
+			it = FindItemByClassname (name.c_str());
 			if (!it)
 			{
 				ent->PrintToClient (PRINT_HIGH, "Unknown Item\n");
@@ -699,7 +694,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 void Cmd_Give (CPlayerEntity *ent)
 {
 	// Handle give all from old give.
-	if (Q_stricmp(ArgGets(1), "all") == 0)
+	if (Q_stricmp (ArgGets(1).c_str(), "all") == 0)
 	{
 		Cmd_Give_f (ent);
 		return;
@@ -717,7 +712,7 @@ void Cmd_Give (CPlayerEntity *ent)
 	if (PointContents(Origin) & CONTENTS_SOLID)
 		return;
 
-	CBaseEntity *Spawned = CreateEntityFromClassname(ArgGetConcatenatedString());
+	CBaseEntity *Spawned = CreateEntityFromClassname(ArgGetConcatenatedString().c_str());
 	if (Spawned && Spawned->GetInUse())
 	{
 		Spawned->State.GetOrigin() = Origin;

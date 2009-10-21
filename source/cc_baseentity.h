@@ -198,7 +198,7 @@ inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
 
 inline char *CopyStr (char *In, struct memPool_t *Pool)
 {
-	std::string newString (In);
+	std::cc_string newString (In);
 	
 	size_t i = 0;
 	while (true)
@@ -328,7 +328,7 @@ public:
 			break;
 		case FT_SOUND_INDEX:
 			{
-				std::string temp = Value;
+				std::cc_string temp = Value;
 				if (!temp.find (".wav"))
 					temp.append (".wav");
 

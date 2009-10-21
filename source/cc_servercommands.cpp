@@ -43,37 +43,35 @@ void CServerCmd::Run ()
 	RunFunction ();
 };
 
-CServerCmd::CServerCmd (char *name, void (*Func)())
+CServerCmd::CServerCmd (std::cc_string name, void (*Func)())
 {
-	cmdName = QNew (com_gamePool, 0) char[strlen(name)+1];//(char*)gi.TagMalloc(strlen(name)+1, TAG_GAME);
-	Q_snprintfz (cmdName, strlen(name)+1, "%s", name);
+	cmdName = name;
 	hashValue = Com_HashGeneric(name, MAX_CMD_HASH);
 	RunFunction = Func;
 };
 
 CServerCmd::~CServerCmd ()
 {
-	QDelete cmdName;//gi.TagFree(cmdName);
 };
 
 CServerCmd *ServerCommandList[MAX_COMMANDS];
 CServerCmd *ServerCommandHashList[MAX_CMD_HASH];
 int numServerCommands = 0;
 
-CServerCmd *SvCmd_FindCommand (char *commandName)
+CServerCmd *SvCmd_FindCommand (std::cc_string commandName)
 {
 	CServerCmd *Command;
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
 
 	for (Command = ServerCommandHashList[hash]; Command; Command=Command->hashNext)
 	{
-		if (Q_stricmp(Command->cmdName, commandName) == 0)
+		if (Q_stricmp (Command->cmdName.c_str(), commandName.c_str()) == 0)
 			return Command;
 	}
 	return NULL;
 }
 
-void SvCmd_AddCommand (char *commandName, void (*Func) ())
+void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
 {
 	// Make sure the function doesn't already exist
 	if (SvCmd_FindCommand(commandName))
@@ -100,14 +98,14 @@ void SvCmd_RemoveCommands ()
 	}
 }
 
-void SvCmd_RunCommand (char *commandName)
+void SvCmd_RunCommand (std::cc_string commandName)
 {
 	CServerCmd *Command = SvCmd_FindCommand(commandName);
 
 	if (Command)
 		Command->Run();
 	else
-		Com_Printf (0, "Unknown server command \"%s\"\n", commandName);
+		Com_Printf (0, "Unknown server command \"%s\"\n", commandName.c_str());
 }
 
 struct SServerEntityListIndex
@@ -226,9 +224,9 @@ void SvCmd_EntList_f ()
 	DebugPrintf ("Clean Entities: %i (%i%%)\nOld Entities: %i (%i%%)\nTotal Entities: %i\n", numNew, newPerc, numOld, oldPerc, numOld+numNew);
 	*/
 
-	const char *WildCard = ArgGets(2) ? ArgGets(2) : "*";
+	std::cc_string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
 	CServerEntityList tmp;
-	tmp.Search (WildCard);
+	tmp.Search (WildCard.c_str());
 
 	DebugPrintf ("Entity Stats\n"
 			"      old        amount       origin             classname\n"
@@ -255,7 +253,7 @@ void SvCmd_EntList_f ()
 extern char *gEntString;
 void SvCmd_Dump_f ()
 {
-	std::string FileName = "/maps/ents/" + std::string(level.mapname) + ".ccent";
+	std::cc_string FileName = "/maps/ents/" + std::cc_string(level.mapname) + ".ccent";
 	fileHandle_t f;
 
 	FS_OpenFile (FileName.c_str(), &f, FS_MODE_WRITE_BINARY);

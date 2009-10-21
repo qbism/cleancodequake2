@@ -119,8 +119,8 @@ void CBody::TossHead (int damage)
 class CBodyQueue
 {
 public:
-	std::list<CBody*> OpenList; // A list of entity numbers that are currently waiting a body
-	std::list<CBody*> ClosedList; // A list of entity numbers that are currently being used, in order of accessed.
+	std::list<CBody*, std::level_allocator<CBody*> > OpenList; // A list of entity numbers that are currently waiting a body
+	std::list<CBody*, std::level_allocator<CBody*> > ClosedList; // A list of entity numbers that are currently being used, in order of accessed.
 	// If OpenList is empty, pop the first one off of ClosedList.
 
 	// Creates the body queue

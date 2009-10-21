@@ -146,7 +146,7 @@ void CItemEntity::Use (CBaseEntity *other, CBaseEntity *activator)
 // Returns a random team member of ent
 CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 {
-	static std::vector<CBaseEntity*>	Team;
+	static std::vector<CBaseEntity*, std::level_allocator<CBaseEntity*> >	Team;
 	Team.clear ();
 
 	for (CBaseEntity *Member = Master; Member; Member = Member->TeamChain)

@@ -504,28 +504,31 @@ bool				CMapEntity::CheckValidity ()
 	// Remove things (except the world) from different skill levels or deathmatch
 	if (this != World)
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (!map_debug->Boolean())
 		{
-			if ( SpawnFlags & SPAWNFLAG_NOT_DEATHMATCH )
+			if (game.mode & GAME_DEATHMATCH)
 			{
-				Free ();
-				return false;
-			}
-		}
-		else
-		{
-			if ( /* ((game.mode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
-				((skill->Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
-				((skill->Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
-				(((skill->Integer() == 2) || (skill->Integer() == 3)) && (SpawnFlags & SPAWNFLAG_NOT_HARD))
-				)
+				if ( SpawnFlags & SPAWNFLAG_NOT_DEATHMATCH )
 				{
 					Free ();
 					return false;
 				}
-		}
+			}
+			else
+			{
+				if ( /* ((game.mode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
+					((skill->Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
+					((skill->Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
+					((skill->Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))
+					)
+					{
+						Free ();
+						return false;
+					}
+			}
 
-		SpawnFlags &= ~(SPAWNFLAG_NOT_EASY|SPAWNFLAG_NOT_MEDIUM|SPAWNFLAG_NOT_HARD|SPAWNFLAG_NOT_COOP|SPAWNFLAG_NOT_DEATHMATCH);
+			SpawnFlags &= ~(SPAWNFLAG_NOT_EASY|SPAWNFLAG_NOT_MEDIUM|SPAWNFLAG_NOT_HARD|SPAWNFLAG_NOT_COOP|SPAWNFLAG_NOT_DEATHMATCH);
+		}
 	}
 	return true;
 };
@@ -537,7 +540,7 @@ void CMapEntity::ParseFields ()
 
 	// Go through all the dictionary pairs
 	{
-		std::list<CKeyValuePair*>::iterator it = gameEntity->ParseData->begin();
+		std::list<CKeyValuePair*, std::level_allocator<CKeyValuePair*> >::iterator it = gameEntity->ParseData->begin();
 		while (it != gameEntity->ParseData->end())
 		{
 			CKeyValuePair *PairPtr = (*it);
@@ -552,7 +555,7 @@ void CMapEntity::ParseFields ()
 	// and report ones that are still there.
 	if (gameEntity->ParseData->size())
 	{
-		for (std::list<CKeyValuePair*>::iterator it = gameEntity->ParseData->begin(); it != gameEntity->ParseData->end(); ++it)
+		for (std::list<CKeyValuePair*, std::level_allocator<CKeyValuePair*> >::iterator it = gameEntity->ParseData->begin(); it != gameEntity->ParseData->end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);

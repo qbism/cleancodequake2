@@ -90,7 +90,7 @@ CC_ENUM (uint8, EClientState)
 class CPersistentData
 {
 public:
-	std::string	UserInfo;
+	std::cc_string	UserInfo;
 	IPAddress	IP;
 	char		netname[16];
 	int			hand;
@@ -391,7 +391,7 @@ public:
 	void			CTFDeadDropFlag ();
 	CBaseEntity		*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();
-	void			CTFAssignSkin (std::string s);
+	void			CTFAssignSkin (std::cc_string s);
 	bool			CTFStart ();
 #endif
 

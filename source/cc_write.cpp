@@ -126,7 +126,7 @@ public:
 	};
 };
 
-std::vector <CWriteIndex*> WriteQueue;
+std::vector <CWriteIndex*, std::level_allocator<CWriteIndex*> > WriteQueue;
 
 void SendQueue (edict_t *To, bool Reliable)
 {
@@ -143,7 +143,7 @@ void Clear ()
 
 void PushUp (byte *Ptr, EWriteType Type)
 {
-	WriteQueue.push_back (new CWriteIndex(Ptr, Type));
+	WriteQueue.push_back (QNew (com_levelPool, 0) CWriteIndex(Ptr, Type));
 }
 
 // vec3f overloads

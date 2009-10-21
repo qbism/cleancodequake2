@@ -275,7 +275,7 @@ void CPlayerEntity::SpectatorRespawn ()
 
 	if (Client.Persistent.spectator)
 	{
-		std::string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
+		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
 		if (*spectator_password->String() && 
 			strcmp(spectator_password->String(), "none") && 
 			value != spectator_password->String())
@@ -308,7 +308,7 @@ void CPlayerEntity::SpectatorRespawn ()
 	{
 		// he was a spectator and wants to join the game
 		// he must have the right password
-		std::string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
+		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
 		if (*password->String() && strcmp(password->String(), "none") && 
 			value != password->String())
 		{
@@ -574,14 +574,14 @@ The game can override any of the settings in place
 */
 void CPlayerEntity::UserinfoChanged (char *userinfo)
 {
-	std::string UserInfo = userinfo;
+	std::cc_string UserInfo = userinfo;
 
 	// check for malformed or illegal info strings
 	if (!Info_Validate(UserInfo))
 		UserInfo = "\\name\\badinfo\\skin\\male/grunt";
 
 	// set name
-	std::string s = Info_ValueForKey (UserInfo, "name");
+	std::cc_string s = Info_ValueForKey (UserInfo, "name");
 	Q_strncpyz (Client.Persistent.netname, s.c_str(), sizeof(Client.Persistent.netname)-1);
 
 	// set spectator
@@ -658,10 +658,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 }
 
 #ifdef CLEANCTF_ENABLED
-void CPlayerEntity::CTFAssignSkin(std::string s)
+void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 {
 	int playernum = State.GetNumber()-1;
-	std::string t = s;
+	std::cc_string t = s;
 
 	if (t.find('/'))
 		t.erase (t.find('/') + 1);
@@ -3731,11 +3731,11 @@ _CC_ENABLE_DEPRECATION
 IPAddress CopyIP (const char *val)
 {
 	// Do we have a :?
-	std::string str (val);
+	std::cc_string str (val);
 
 	size_t loc = str.find_first_of (':');
 
-	if (loc != std::string::npos)
+	if (loc != std::cc_string::npos)
 		str = str.substr(0, loc);
 
 	IPAddress Adr;
@@ -3749,10 +3749,10 @@ IPAddress CopyIP (const char *val)
 
 bool CPlayerEntity::Connect (char *userinfo)
 {
-	std::string	UserInfo = userinfo;
+	std::cc_string	UserInfo = userinfo;
 
 	// check to see if they are on the banned IP list
-	std::string value = Info_ValueForKey (UserInfo, "ip");
+	std::cc_string value = Info_ValueForKey (UserInfo, "ip");
 	IPAddress Adr = CopyIP (value.c_str());
 
 	if (Bans.IsBanned(Adr) || Bans.IsBanned(Info_ValueForKey(UserInfo, "name").c_str()))

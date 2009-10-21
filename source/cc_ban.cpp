@@ -59,8 +59,8 @@ void CBanList::LoadFromFile ()
 
 	if (!data)
 		return;
-	std::string mainString = data;
-	std::string line, token;
+	std::cc_string mainString = data;
+	std::cc_string line, token;
 
 	// Get the entire line
 	size_t z = 0, c = 0, oc = 0;
@@ -79,7 +79,7 @@ void CBanList::LoadFromFile ()
 			if (token[0] == '/' && token[1] == '/')
 				break;
 
-			if (token == "name")
+			if (Q_stricmp (token.c_str(), "name") == 0)
 			{
 				// Get the distance to the next token.
 				// find_first_of operates on length so we need to calc the length
@@ -105,7 +105,7 @@ void CBanList::LoadFromFile ()
 
 				BanList.push_back (NewIndex);
 			}
-			else if (token== "ip")
+			else if (Q_stricmp (token.c_str(), "ip") == 0)
 			{
 				oc = line.find_first_of(" \n\0", ++c);
 				token = line.substr (c, oc-c);
@@ -126,7 +126,7 @@ void CBanList::LoadFromFile ()
 				BanList.push_back (NewIndex);
 			}
 
-			if (c == -1 || c == std::string::npos)
+			if (c == -1 || c == std::cc_string::npos)
 				break;
 
 			oc = line.find_first_of(" \n\0", ++c);
@@ -202,7 +202,7 @@ void CBanList::AddToList (char *Name, EBanTypeFlags Flags)
 
 void CBanList::RemoveFromList (IPAddress Adr)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -221,7 +221,7 @@ void CBanList::RemoveFromList (IPAddress Adr)
 
 void CBanList::RemoveFromList (char *Name)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -240,7 +240,7 @@ void CBanList::RemoveFromList (char *Name)
 
 void CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -259,7 +259,7 @@ void CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 
 void CBanList::ChangeBan (char *Name, EBanTypeFlags Flags)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -278,7 +278,7 @@ void CBanList::ChangeBan (char *Name, EBanTypeFlags Flags)
 
 bool CBanList::IsSquelched (IPAddress Adr)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -295,7 +295,7 @@ bool CBanList::IsSquelched (IPAddress Adr)
 
 bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -312,7 +312,7 @@ bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 
 bool CBanList::IsBanned (IPAddress Adr)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -329,7 +329,7 @@ bool CBanList::IsBanned (IPAddress Adr)
 
 bool CBanList::IsSquelched (const char *Name)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for (it = BanList.begin(); it < BanList.end(); it++)
 	{
@@ -346,7 +346,7 @@ bool CBanList::IsSquelched (const char *Name)
 
 bool CBanList::IsBannedFromSpectator (const char *Name)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for (it = BanList.begin(); it < BanList.end(); it++)
 	{
@@ -363,7 +363,7 @@ bool CBanList::IsBannedFromSpectator (const char *Name)
 
 bool CBanList::IsBanned (const char *Name)
 {
-	std::vector<BanIndex*>::iterator it;
+	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
 
 	for (it = BanList.begin(); it < BanList.end(); it++)
 	{

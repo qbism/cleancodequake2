@@ -135,6 +135,36 @@ void ED_CallSpawn (edict_t *ent)
 _CC_DISABLE_DEPRECATION
 		G_FreeEdict (ent);
 _CC_ENABLE_DEPRECATION
+		return;
+	}
+
+	if (map_debug->Boolean())
+	{
+		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_EASY)
+		{
+			MapEntity->State.GetEffects() |= EF_COLOR_SHELL;
+			MapEntity->State.GetRenderEffects() |= RF_SHELL_RED;
+		}
+		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_MEDIUM)
+		{
+			MapEntity->State.GetEffects() |= EF_COLOR_SHELL;
+			MapEntity->State.GetRenderEffects() |= RF_SHELL_BLUE;
+		}
+		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_HARD)
+		{
+			MapEntity->State.GetEffects() |= EF_COLOR_SHELL;
+			MapEntity->State.GetRenderEffects() |= RF_SHELL_GREEN;
+		}
+		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_DEATHMATCH)
+		{
+			MapEntity->State.GetEffects() |= EF_COLOR_SHELL;
+			MapEntity->State.GetRenderEffects() |= RF_SHELL_DOUBLE;
+		}
+		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_COOP)
+		{
+			MapEntity->State.GetEffects() |= EF_COLOR_SHELL;
+			MapEntity->State.GetRenderEffects() |= RF_SHELL_HALF_DAM;
+		}
 	}
 }
 
@@ -184,7 +214,7 @@ static char *ED_ParseEdict (char *data, edict_t *ent)
 		{
 			// push it in the list for the entity
 			if (!ent->ParseData)
-				ent->ParseData = QNew (com_gamePool, 0) std::list<CKeyValuePair *> ();
+				ent->ParseData = QNew (com_gamePool, 0) std::list<CKeyValuePair *, std::level_allocator<CKeyValuePair *> > ();
 
 			ent->ParseData->push_back (QNew (com_gamePool, 0) CKeyValuePair (keyName, token));
 		}

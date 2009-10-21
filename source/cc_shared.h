@@ -41,8 +41,6 @@ class CPlayerEntity;
 // Stand-alone classes
 typedef int64	FrameNumber_t;
 
-
-#include "cc_memory.h"
 #include "cc_indexing.h"
 #include "cc_media.h"
 #include "cc_dmflags.h"

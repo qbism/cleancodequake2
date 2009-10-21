@@ -43,9 +43,9 @@ CC_ENUM (uint32, ECmdTypeFlags)
 	CMD_CHEAT		= 2
 };
 
-void Cmd_RunCommand (char *commandName, CPlayerEntity *ent);
+void Cmd_RunCommand (std::cc_string commandName, CPlayerEntity *ent);
 void Cmd_RemoveCommands ();
-void Cmd_AddCommand (char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags = CMD_NORMAL);
+void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags = CMD_NORMAL);
 
 #else
 FILE_WARNING

@@ -408,7 +408,7 @@ struct edict_t
 	// EXPECTS THE FIELDS IN THAT ORDER!
 
 	//================================
-	std::list<CKeyValuePair*>	*ParseData;
+	std::list<CKeyValuePair*, std::level_allocator<CKeyValuePair*> >	*ParseData;
 
 	char				*model;
 	FrameNumber_t		freetime;			// sv.time when the object was freed
@@ -479,19 +479,18 @@ void	G_FreeEdict (edict_t *e);
 
 void	ED_CallSpawn (edict_t *ent);
 
-inline CBaseEntity *CreateEntityFromClassname (char *classname)
+inline CBaseEntity *CreateEntityFromClassname (const char *classname)
 {
 _CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
-	ent->classname = classname;
+	ent->classname = Mem_PoolStrDup(classname, com_levelPool, 0);
 
 	ED_CallSpawn (ent);
 
 	if (ent->inUse && !ent->Entity->Freed)
-	{
-		ent->classname = Mem_PoolStrDup (classname, com_levelPool, 0);
 		return ent->Entity;
-	}
+	else
+		QDelete ent->classname;
 	return NULL;
 _CC_ENABLE_DEPRECATION
 }

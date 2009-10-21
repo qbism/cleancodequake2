@@ -54,6 +54,19 @@ uint32 Com_HashGeneric (const char *name, const int hashSize)
 	return (hashValue + (hashValue >> 5)) & (hashSize-1);
 }
 
+uint32 Com_HashGeneric (const std::cc_string &name, const int hashSize)
+{
+	uint32 hashValue = 0;
+	uint32 i = 0;
+	for ( ; name[i] ; i++)
+	{
+		int ch = Q_tolower(name[i]);
+		hashValue = hashValue * 33 + ch;
+	}
+
+	return (hashValue + (hashValue >> 5)) & (hashSize-1);
+}
+
 //-----------------------------------------------------------------------------
 // MurmurHash2, by Austin Appleby
 

@@ -38,19 +38,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 char	*nullArg = "";
 
-int		numArgv;
-char	*argvConcatString;
-char	*argvStringArray[MAX_ARG];
-int		argvIntegerArray[MAX_ARG];
-float	argvFloatArray[MAX_ARG];
+uint8				numArgv;
+std::cc_string		argvConcatString;
+std::cc_string		argvStringArray[MAX_ARG];
+int					argvIntegerArray[MAX_ARG];
+float				argvFloatArray[MAX_ARG];
 
 void SetupArg ()
 {
 	numArgv = 0;
-	memset (argvStringArray, 0, sizeof(argvStringArray));
+
+	for (uint8 i = 0; i < MAX_ARG; i++)
+		argvStringArray[i].clear();
+
 	memset (argvIntegerArray, 0, sizeof(argvIntegerArray));
 	memset (argvFloatArray, 0, sizeof(argvFloatArray));
-	argvConcatString = NULL;
+	argvConcatString.clear();
 }
 
 // Called at the beginning of an arg session
@@ -70,13 +73,10 @@ _CC_DISABLE_DEPRECATION
 
 	argvConcatString = gi.args();
 
-	for (int i = 0; i < numArgv; i++)
+	for (uint8 i = 0; i < numArgv; i++)
 	{
-		size_t size = strlen(gi.argv(i))+1;
-		argvStringArray[i] = QNew (com_genericPool, 0) char[size];
-		Q_snprintfz (argvStringArray[i], size, "%s", gi.argv(i));
-
-		argvFloatArray[i] = atof (argvStringArray[i]);
+		argvStringArray[i] = gi.argv(i);
+		argvFloatArray[i] = atof (argvStringArray[i].c_str());
 		argvIntegerArray[i] = (int)argvFloatArray[i];
 	}
 _CC_ENABLE_DEPRECATION
@@ -86,23 +86,23 @@ _CC_ENABLE_DEPRECATION
 void EndArg ()
 {
 	for (int i = 0; i < numArgv; i++)
-		delete[] argvStringArray[i];
+		argvStringArray[i].clear();
 
 	SetupArg();
 }
 
 // Actual functions
-int ArgCount ()
+uint8 ArgCount ()
 {
 	return numArgv;
 }
 
-char *ArgGetConcatenatedString ()
+std::cc_string ArgGetConcatenatedString ()
 {
 	return argvConcatString;
 }
 
-char *ArgGets (int Index)
+std::cc_string ArgGets (int Index)
 {
 	if (Index >= MAX_ARG)
 	{

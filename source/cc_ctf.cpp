@@ -461,11 +461,10 @@ void CTFID_f (CPlayerEntity *ent)
 
 void CTFTeam_f (CPlayerEntity *ent)
 {
-	char *t;
 	int desired_team;
 
-	t = ArgGetConcatenatedString();
-	if (!*t)
+	std::cc_string t = ArgGetConcatenatedString();
+	if (!t[0])
 	{
 		ent->PrintToClient (PRINT_HIGH, "You are on the %s team.\n",
 			CTFTeamName(ent->Client.Respawn.ctf_team));
@@ -478,9 +477,9 @@ void CTFTeam_f (CPlayerEntity *ent)
 		return;
 	}
 
-	if (Q_stricmp(t, "red") == 0)
+	if (Q_stricmp (t.c_str(), "red") == 0)
 		desired_team = CTF_TEAM1;
-	else if (Q_stricmp(t, "blue") == 0)
+	else if (Q_stricmp (t.c_str(), "blue") == 0)
 		desired_team = CTF_TEAM2;
 	else
 	{
@@ -781,11 +780,10 @@ static inline void CTFSay_Team_Sight(CPlayerEntity *who, char *buf, size_t bufSi
 }
 
 bool CheckFlood(CPlayerEntity *ent);
-void CTFSay_Team(CPlayerEntity *who, char *msg)
+void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 {
 	static char outmsg[1024];
 	static char buf[1024];
-	int i;
 	char *p;
 
 	if (CheckFlood(who))
@@ -793,14 +791,17 @@ void CTFSay_Team(CPlayerEntity *who, char *msg)
 
 	outmsg[0] = 0;
 
-	if (*msg == '\"') {
-		msg[strlen(msg) - 1] = 0;
-		msg++;
+	if (msg[0] == '\"')
+	{
+		msg.erase (0, 1);
+		msg.erase (msg.end() - 1);
 	}
 
-	for (p = outmsg; *msg && (p - outmsg) < sizeof(outmsg) - 1; msg++) {
-		if (*msg == '%') {
-			switch (*++msg) {
+	uint32 pm = 0;
+	for (p = outmsg; msg[pm] && (p - outmsg) < sizeof(outmsg) - 1; pm++)
+	{
+		if (msg[pm] == '%') {
+			switch (msg[++pm]) {
 				case 'l' :
 				case 'L' :
 					CTFSay_Team_Location(who, buf, sizeof(buf));
@@ -840,14 +841,16 @@ void CTFSay_Team(CPlayerEntity *who, char *msg)
 					break;
 
 				default :
-					*p++ = *msg;
+					*p++ = msg[pm];
 			}
-		} else
-			*p++ = *msg;
+		}
+		else
+			*p++ = msg[pm];
 	}
 	*p = 0;
 
-	for (i = 0; i < game.maxclients; i++) {
+	for (uint8 i = 0; i < game.maxclients; i++)
+	{
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse())
 			continue;
@@ -1622,7 +1625,7 @@ void CTFWarp(CPlayerEntity *ent)
 	token = strtok_s(mlist, seps, &nextToken);
 	while (token != NULL)
 	{
-		if (Q_stricmp(token, ArgGets(1)) == 0)
+		if (ArgGets(1) == token)
 			break;
 		token = strtok_s(NULL, seps, &nextToken);
 	}
@@ -1642,7 +1645,7 @@ void CTFWarp(CPlayerEntity *ent)
 	{
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
 			ent->Client.Persistent.netname, ArgGets(1));
-		Q_strncpyz(level.forcemap, ArgGets(1), sizeof(level.forcemap) - 1);
+		Q_strncpyz(level.forcemap, ArgGets(1).c_str(), sizeof(level.forcemap) - 1);
 		EndDMLevel();
 		return;
 	}
@@ -1650,7 +1653,7 @@ void CTFWarp(CPlayerEntity *ent)
 	Q_snprintfz(text, sizeof(text), "%s has requested warping to level %s.", 
 			ent->Client.Persistent.netname, ArgGets(1));
 	if (CTFBeginElection(ent, ELECT_MAP, text))
-		Q_strncpyz(ctfgame.elevel, ArgGets(1), sizeof(ctfgame.elevel) - 1);
+		Q_strncpyz(ctfgame.elevel, ArgGets(1).c_str(), sizeof(ctfgame.elevel) - 1);
 }
 
 void CTFBoot(CPlayerEntity *ent)
@@ -1668,7 +1671,7 @@ void CTFBoot(CPlayerEntity *ent)
 		return;
 	}
 
-	if (*ArgGets(1) < '0' && *ArgGets(1) > '9') {
+	if (ArgGets(1)[0] < '0' && ArgGets(1)[0] > '9') {
 		ent->PrintToClient (PRINT_HIGH, "Specify the player number to kick.\n");
 		return;
 	}

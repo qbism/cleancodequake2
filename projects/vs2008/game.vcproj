@@ -130,7 +130,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copies the output to your Quake 2 baseq2 dir"
-				CommandLine="echo Copying to Quake 2 Path...&#x0D;&#x0A;copy $(TargetPath) &quot;c:\quake2\baseq2\gamex86.dll&quot;&#x0D;&#x0A;&#x0D;&#x0A;echo Done!&#x0D;&#x0A;"
+				CommandLine="echo Copying to Quake 2 Path...&#x0D;&#x0A;copy $(TargetPath) &quot;e:\quake2\baseq2\gamex86.dll&quot;&#x0D;&#x0A;&#x0D;&#x0A;echo Done!&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration

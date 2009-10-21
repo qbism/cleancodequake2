@@ -52,7 +52,7 @@ void SpawnNodeEntity (CPathNode *Node);
 void CheckNodeFlags (CPathNode *Node);
 size_t GetNodeIndex (CPathNode *Node);
 
-std::vector<CPathNode*>		Closed, Open;
+std::vector<CPathNode*, std::level_allocator<CPathNode*> >		Closed, Open;
 
 #define MAX_SAVED_PATHS	512
 struct SSavedPath_t
@@ -80,7 +80,7 @@ End(End)
 
 bool CPath::NodeIsClosed (CPathNode *Node)
 {
-	for (std::vector<CPathNode*>::iterator it = Closed.begin(); it < Closed.end(); ++it )
+	for (std::vector<CPathNode*, std::level_allocator<CPathNode*> >::iterator it = Closed.begin(); it < Closed.end(); ++it )
 	{
 		CPathNode *Check = *it;
 
@@ -109,7 +109,7 @@ void CPath::RemoveFromClosed (CPathNode *Node)
 
 bool CPath::NodeIsOpen (CPathNode *Node)
 {
-	for (std::vector<CPathNode*>::iterator it = Open.begin(); it < Open.end(); it++ )
+	for (std::vector<CPathNode*, std::level_allocator<CPathNode*> >::iterator it = Open.begin(); it < Open.end(); it++ )
 	{
 		CPathNode *Check = *it;
 
@@ -231,7 +231,7 @@ void CPath::Save (fileHandle_t f)
 
 #define MAX_NODES 512
 
-std::vector<CPathNode*> NodeList;
+std::vector<CPathNode*, std::level_allocator<CPathNode*> > NodeList;
 
 void CPath::Load (fileHandle_t f)
 {
@@ -328,7 +328,7 @@ void RunNodes()
 	{
 		if (PlayerNearby(NodeList[i]->Origin, 250))
 		{
-			for (std::vector<CPathNode*>::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); it++ )
+			for (std::vector<CPathNode*, std::level_allocator<CPathNode*> >::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); it++ )
 			{
 				CPathNode *Child = *it;
 				CTempEnt_Trails::BFGLaser (NodeList[i]->Origin, Child->Origin);
@@ -383,7 +383,7 @@ void AddNode (CPlayerEntity *ent, vec3f origin)
 	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
 	ent->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
 
-	if (Q_stricmp(ArgGets(2), "connect") == 0)
+	if (Q_stricmp (ArgGets(2).c_str(), "connect") == 0)
 	{
 		if (ent->Client.Respawn.LastNode)
 			ConnectNode (ent->Client.Respawn.LastNode, NodeList.at(NodeList.size() - 1));
@@ -398,7 +398,7 @@ void ConnectNode (CPathNode *Node1, CPathNode *Node2)
 
 	Node1->Children.push_back (Node2);
 
-	if (Q_stricmp(ArgGets(4), "one"))
+	if (Q_stricmp (ArgGets(4).c_str(), "one") == 0)
 		Node2->Children.push_back (Node1);
 }
 
@@ -418,7 +418,7 @@ void SaveNodes ()
 {
 	size_t numNodes = 0, numSpecialNodes = 0;
 	// Try to open the file
-	std::string FileName;
+	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += level.mapname;
@@ -500,7 +500,7 @@ void LoadNodes ()
 {
 	uint32 numNodes = 0, numSpecialNodes = 0;
 	// Try to open the file
-	std::string FileName;
+	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += level.mapname;
@@ -629,17 +629,17 @@ CPathNode *GetClosestNodeTo (vec3f origin)
 void Cmd_Node_f (CPlayerEntity *ent)
 {
 	vec3f origin = ent->State.GetOrigin();
-	char *cmd = ArgGets(1);
+	std::cc_string cmd = ArgGets(1);
 
-	if (Q_stricmp(cmd, "save") == 0)
+	if (Q_stricmp (cmd.c_str(), "save") == 0)
 		SaveNodes ();
-	else if (Q_stricmp(cmd, "load") == 0)
+	else if (Q_stricmp (cmd.c_str(), "load") == 0)
 		LoadNodes ();
-	else if (Q_stricmp(cmd, "drop") == 0)
+	else if (Q_stricmp (cmd.c_str(), "drop") == 0)
 		AddNode (ent, origin);
-	else if (Q_stricmp(cmd, "clearlastnode") == 0)
+	else if (Q_stricmp (cmd.c_str(), "clearlastnode") == 0)
 		ent->Client.Respawn.LastNode = NULL;
-	else if (Q_stricmp(cmd, "connect") == 0)
+	else if (Q_stricmp (cmd.c_str(), "connect") == 0)
 	{
 		uint32 firstId = ArgGeti(2);
 		uint32 secondId = ArgGeti(3);
@@ -658,28 +658,28 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		ent->PrintToClient (PRINT_HIGH, "Connecting nodes %i and %i...\n", firstId, secondId);
 		ConnectNode (NodeList[firstId], NodeList[secondId]);
 	}
-	else if (Q_stricmp(cmd, "clearstate") == 0)
+	else if (Q_stricmp (cmd.c_str(), "clearstate") == 0)
 	{
 		for (uint32 i = 0; i < NodeList.size(); i++)
 			NodeList[i]->Ent->State.GetModelIndex() = ModelIndex("models/objects/grenade2/tris.md2");
 	}
-	else if (Q_stricmp(cmd, "settype") == 0)
+	else if (Q_stricmp (cmd.c_str(), "settype") == 0)
 	{
 		if (ArgCount() < 3 || (uint32)ArgGeti(2) >= NodeList.size())
 			return;
 
 		CPathNode *Node = NodeList[ArgGeti(2)];
 
-		if (Q_stricmp(ArgGets(3), "door") == 0)
+		if (Q_stricmp (ArgGets(3).c_str(), "door") == 0)
 			Node->Type = NODE_DOOR;
-		else if (Q_stricmp(ArgGets(3), "plat") == 0)
+		else if (Q_stricmp (ArgGets(3).c_str(), "plat") == 0)
 			Node->Type = NODE_PLATFORM;
-		else if (Q_stricmp(ArgGets(3), "jump") == 0)
+		else if (Q_stricmp (ArgGets(3).c_str(), "jump") == 0)
 			Node->Type = NODE_JUMP;
 
 		CheckNodeFlags (Node);
 	}
-	else if (Q_stricmp(cmd, "linkwith") == 0)
+	else if (Q_stricmp (cmd.c_str(), "linkwith") == 0)
 	{
 		if (ArgCount() < 3 || (uint32)ArgGeti(2) >= NodeList.size())
 			return;
@@ -698,7 +698,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 			DebugPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.ent->classname);
 		}
 	}
-	else if (Q_stricmp(cmd, "monstergoal") == 0)
+	else if (Q_stricmp (cmd.c_str(), "monstergoal") == 0)
 	{
 		vec3f forward;
 		ent->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
@@ -709,7 +709,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		if (trace.Ent && (trace.Ent->EntityFlags & ENT_MONSTER))
 		{
 			CMonster *Monster = (entity_cast<CMonsterEntity>(trace.Ent))->Monster;
-			if (Q_stricmp(ArgGets(2), "closest") == 0)
+			if (Q_stricmp (ArgGets(2).c_str(), "closest") == 0)
 				Monster->P_CurrentNode = GetClosestNodeTo(Monster->Entity->State.GetOrigin());
 			else
 				Monster->P_CurrentNode = NodeList[ArgGeti(2)];
@@ -717,7 +717,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 			Monster->FoundPath ();
 		}
 	}
-	else if (Q_stricmp(cmd, "kill") == 0)
+	else if (Q_stricmp (cmd.c_str(), "kill") == 0)
 	{
 		if (ArgCount() < 3 || (uint32)ArgGeti(2) >= NodeList.size())
 			return;
@@ -745,7 +745,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		QDelete Node;
 		NodeList.erase(NodeList.begin() + node);
 	}
-	else if (Q_stricmp (cmd, "move") == 0)
+	else if (Q_stricmp (cmd.c_str(), "move") == 0)
 	{
 		if (ArgCount() < 3 || (uint32)ArgGeti(2) >= NodeList.size())
 			return;
@@ -777,7 +777,7 @@ CPath *CreatePath (CPathNode *Start, CPathNode *End)
 void SavePathTable ()
 {
 	// Try to open the file
-	std::string FileName;
+	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += level.mapname;
@@ -819,7 +819,7 @@ void SavePathTable ()
 void LoadPathTable ()
 {
 	// Try to open the file
-	std::string FileName;
+	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += level.mapname;

@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 Info_Print
 ================
 */
-void Info_Print (std::string &s)
+void Info_Print (std::cc_string &s)
 {
 	size_t curIndex = 0;
 
@@ -46,7 +46,7 @@ void Info_Print (std::string &s)
 
 	while (s[curIndex])
 	{
-		std::string	key, value;
+		std::cc_string	key, value;
 
 		while (s[curIndex] && s[curIndex] != '\\')
 			key += s[curIndex++];
@@ -86,7 +86,7 @@ Info_ValueForKey
 Searches the string for the given key and returns the associated value, or an empty string.
 ===============
 */
-std::string Info_ValueForKey (std::string &s, std::string key)
+std::cc_string Info_ValueForKey (std::cc_string &s, std::cc_string key)
 {
 	size_t	curIndex = 0;
 
@@ -95,8 +95,8 @@ std::string Info_ValueForKey (std::string &s, std::string key)
 
 	while (true)
 	{
-		std::string pkey;
-		std::string value;
+		std::cc_string pkey;
+		std::cc_string value;
 
 		while (s[curIndex] != '\\')
 		{
@@ -128,13 +128,13 @@ std::string Info_ValueForKey (std::string &s, std::string key)
 Info_RemoveKey
 ==================
 */
-void Info_RemoveKey (std::string &s, std::string key)
+void Info_RemoveKey (std::cc_string &s, std::cc_string key)
 {
 	if (key.find ('\\'))
 		return;
 
 	size_t	curIndex = 0;
-	std::string	pkey, value;
+	std::cc_string	pkey, value;
 	while (true)
 	{
 		size_t start = curIndex;
@@ -181,7 +181,7 @@ Some characters are illegal in info strings because they
 can mess up the server's parsing
 ==================
 */
-bool Info_Validate (std::string &s)
+bool Info_Validate (std::cc_string &s)
 {
 	return (s.find ('\"') || s.find (';'));
 }
@@ -192,7 +192,7 @@ bool Info_Validate (std::string &s)
 Info_SetValueForKey
 ==================
 */
-void Info_SetValueForKey (std::string &s, std::string key, std::string value)
+void Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string value)
 {
 	// Sanity check
 	if (key.find ('\\'))
@@ -232,7 +232,7 @@ void Info_SetValueForKey (std::string &s, std::string key, std::string value)
 		return;
 
 	// Generate the key and make sure it will fit
-	std::string newPair = "\\" + key + '\\' + value;
+	std::cc_string newPair = "\\" + key + '\\' + value;
 	if (newPair.length() + s.length() > MAX_INFO_STRING-1)
 	{
 		Com_Printf (PRNT_WARNING, "Info string length exceeded\n");

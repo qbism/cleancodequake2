@@ -129,7 +129,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f origin, char *fm
 int fileVersion;
 
 int curIf = 0;
-std::vector<bool> ifLists;
+std::vector<bool, std::level_allocator<bool> > ifLists;
 
 inline void PushIf (bool expr)
 {
@@ -179,7 +179,7 @@ struct PoundVariable_t
 	} vars;
 };
 
-std::vector<PoundVariable_t *> VariableList;
+std::vector<PoundVariable_t *, std::level_allocator<PoundVariable_t*> > VariableList;
 
 PoundVariable_t *Pound_FindVar (char *name)
 {
@@ -375,7 +375,7 @@ char *ParsePound (char *tok, char *realEntities)
 
 char *CC_LoadEntFile (char *mapname, char *entities)
 {
-	std::string fileName;
+	std::cc_string fileName;
 
 	fileName = "maps/ents/";
 	fileName += mapname;
@@ -403,7 +403,7 @@ bool TokenEnd (char *token)
 // this goes by entire lines.
 char *CC_ParseSpawnEntities (char *mapname, char *entities)
 {
-	std::string finalString;
+	std::cc_string finalString;
 	char *realEntities;
 	char *token;
 	char *tempEntities;

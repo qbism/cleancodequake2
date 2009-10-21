@@ -287,7 +287,6 @@ public:
 
 void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 {
-	char	*p;
 	char	text[MAX_TALK_STRING];
 
 	if (ArgCount () < 2 && !arg0)
@@ -306,20 +305,21 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 
 	if (arg0)
 	{
-		Q_strcatz (text, ArgGets(0), sizeof(text));
+		Q_strcatz (text, ArgGets(0).c_str(), sizeof(text));
 		Q_strcatz (text, " ", sizeof(text));
-		Q_strcatz (text, ArgGetConcatenatedString(), sizeof(text));
+		Q_strcatz (text, ArgGetConcatenatedString().c_str(), sizeof(text));
 	}
 	else
 	{
-		p = ArgGetConcatenatedString();
+		std::cc_string p = ArgGetConcatenatedString();
 
-		if (*p == '"')
+		if (p[0] == '"')
 		{
-			p++;
-			p[strlen(p)-1] = 0;
+			p.erase (0, 1);
+			p.erase (p.end()-1);
 		}
-		Q_strcatz(text, p, sizeof(text));
+
+		Q_strcatz(text, p.c_str(), sizeof(text));
 	}
 
 	// don't let text be too long for malicious reasons

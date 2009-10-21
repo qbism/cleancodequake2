@@ -61,7 +61,7 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 				ConfigString (CS_POINTING_SURFACE-1, tr.Ent->gameEntity->classname, Player);
 			else
 			{
-				std::string temp = std::string(tr.Ent->gameEntity->classname) + std::string(" (") + std::string(tr.surface->name) + std::string(")");
+				std::cc_string temp = std::cc_string(tr.Ent->gameEntity->classname) + std::cc_string(" (") + std::cc_string(tr.surface->name) + std::cc_string(")");
 				ConfigString (CS_POINTING_SURFACE-1, temp.c_str(), Player);
 			}
 		}

@@ -223,7 +223,7 @@ public:
 };
 #endif
 
-std::vector<CTech*>		TechList;
+std::vector<CTech*, std::game_allocator<CTech*> >		TechList;
 
 void SpawnTech(CBaseItem *item, CBaseEntity *spot);
 class CTechEntity : public CItemEntity

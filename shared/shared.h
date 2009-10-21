@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <time.h>
 #include <ctype.h>
 
+#include "../source/cc_memory.h"
 #include "../source/cc_stl.h"
 #include "Platform.h"
 #include "Templates/Templates.h"
@@ -190,11 +191,11 @@ void		Com_StripPadding (char *in, char *dest);
 #define MAX_INFO_VALUE		64
 #define MAX_INFO_STRING		512
 
-void		Info_Print (std::string &s);
-std::string	Info_ValueForKey (std::string &s, std::string key);
-void		Info_RemoveKey (std::string &s, std::string key);
-void		Info_SetValueForKey (std::string &s, std::string key, std::string value);
-bool		Info_Validate (std::string &s);
+void		Info_Print (std::cc_string &s);
+std::cc_string	Info_ValueForKey (std::cc_string &s, std::cc_string key);
+void		Info_RemoveKey (std::cc_string &s, std::cc_string key);
+void		Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string value);
+bool		Info_Validate (std::cc_string &s);
 
 /*
 ==============================================================================
