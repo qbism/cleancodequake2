@@ -36,9 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 void AssertExpression (const bool expr, const char *msg);
 
+#include "Platform.h"
 #include "../source/cc_memory.h"
 #include "../source/cc_stl.h"
-#include "Platform.h"
 #include "Templates/Templates.h"
 #include "../source/cc_property.h"
 #include "MathLib/MathLib.h"
