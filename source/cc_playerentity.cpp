@@ -3198,7 +3198,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-		if (game.mode & GAME_CTF)
+		if ((game.mode & GAME_CTF) || Client.ctf_grapple || Client.Persistent.Flag)
 		{
 			CGrapple::PlayerResetGrapple(this);
 			CTFDeadDropFlag();
