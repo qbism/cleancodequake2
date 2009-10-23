@@ -106,7 +106,7 @@ std::cc_string ArgGets (int Index)
 {
 	if (Index >= MAX_ARG)
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "ArgGets(n) index out of bounds");
 		return NULL;
 	}
 
@@ -117,7 +117,7 @@ int ArgGeti (int Index)
 {
 	if (Index >= MAX_ARG)
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "ArgGeti(n) index out of bounds");
 		return NULL;
 	}
 
@@ -128,7 +128,7 @@ float ArgGetf (int Index)
 {
 	if (Index >= MAX_ARG)
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "ArgGetf(n) index out of bounds");
 		return NULL;
 	}
 

@@ -42,7 +42,7 @@ void Info_Print (std::cc_string &s)
 	size_t curIndex = 0;
 
 	if (s[curIndex] == '\\')
-		s[curIndex++];
+		curIndex++;
 
 	while (s[curIndex])
 	{

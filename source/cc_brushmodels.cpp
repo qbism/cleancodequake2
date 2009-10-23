@@ -41,7 +41,7 @@ void CBrushModel::Think ()
 	{
 	case BRUSHTHINK_NONE:
 		break;
-
+		
 	case BRUSHTHINK_MOVEBEGIN:
 		MoveBegin ();
 		break;
@@ -107,7 +107,7 @@ ENTITYFIELDS_BEGIN(CBrushModel)
 };
 ENTITYFIELDS_END(CBrushModel)
 
-bool			CBrushModel::ParseField (char *Key, char *Value)
+bool			CBrushModel::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CBrushModel> (this, Key, Value))
 		return true;
@@ -133,7 +133,7 @@ void CBrushModel::MoveFinal ()
 	Velocity = Dir * RemainingDistance;
 
 	ThinkType = BRUSHTHINK_MOVEDONE;
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 }
 
 void CBrushModel::MoveBegin ()
@@ -147,7 +147,7 @@ void CBrushModel::MoveBegin ()
 
 	float frames = floor((RemainingDistance / Speed) / 0.1f);
 	RemainingDistance -= (frames * Speed / 10);
-	NextThink = level.framenum + frames;
+	NextThink = level.Frame + frames;
 	ThinkType = BRUSHTHINK_MOVEFINAL;
 }
 
@@ -164,7 +164,7 @@ void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 			MoveBegin ();
 		else
 		{
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 			ThinkType = BRUSHTHINK_MOVEBEGIN;
 		}
 	}
@@ -173,7 +173,7 @@ void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 		// accelerative
 		CurrentSpeed = 0;
 		ThinkType = BRUSHTHINK_MOVEACCEL;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	}
 }
 
@@ -201,7 +201,7 @@ void CBrushModel::AngleMoveFinal ()
 	AngularVelocity = move;
 
 	ThinkType = BRUSHTHINK_AMOVEDONE;
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 }
 
 void CBrushModel::AngleMoveBegin ()
@@ -228,7 +228,7 @@ void CBrushModel::AngleMoveBegin ()
 	AngularVelocity = destdelta * 1.0 / (traveltime * 10);
 
 	// set nextthink to trigger a think when dest is reached
-	NextThink = level.framenum + frames;
+	NextThink = level.Frame + frames;
 	ThinkType = BRUSHTHINK_AMOVEFINAL;
 }
 
@@ -240,7 +240,7 @@ void CBrushModel::AngleMoveCalc (uint32 EndFunc)
 		AngleMoveBegin ();
 	else
 	{
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		ThinkType = BRUSHTHINK_AMOVEBEGIN;
 	}
 }
@@ -370,7 +370,7 @@ void CBrushModel::ThinkAccelMove ()
 	}
 
 	Velocity = Dir * CurrentSpeed;
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 	ThinkType = BRUSHTHINK_MOVEACCEL;
 }
 #pragma endregion Brush_Model
@@ -446,7 +446,7 @@ void CPlatForm::HitTop ()
 	MoveState = STATE_TOP;
 
 	ThinkType = PLATTHINK_GO_DOWN;
-	NextThink = level.framenum + 30;
+	NextThink = level.Frame + 30;
 }
 
 void CPlatForm::HitBottom ()
@@ -531,7 +531,7 @@ void CPlatForm::CPlatFormInsideTrigger::Touch (CBaseEntity *other, plane_t *plan
 	if (Owner->MoveState == STATE_BOTTOM)
 		Owner->GoUp ();
 	else if (Owner->MoveState == STATE_TOP)
-		Owner->NextThink = level.framenum + 10;	// the player is still on the plat, so delay going down
+		Owner->NextThink = level.Frame + 10;	// the player is still on the plat, so delay going down
 };
 
 void CPlatForm::SpawnInsideTrigger ()
@@ -643,7 +643,7 @@ ENTITYFIELDS_BEGIN(CPlatForm)
 };
 ENTITYFIELDS_END(CPlatForm)
 
-bool			CPlatForm::ParseField (char *Key, char *Value)
+bool			CPlatForm::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CPlatForm> (this, Key, Value))
 		return true;
@@ -724,7 +724,7 @@ void CDoor::HitTop ()
 	if (Wait >= 0)
 	{
 		ThinkType = DOORTHINK_GODOWN;
-		NextThink = level.framenum + Wait;
+		NextThink = level.Frame + Wait;
 	}
 }
 
@@ -769,7 +769,7 @@ void CDoor::GoUp (CBaseEntity *activator)
 	if (MoveState == STATE_TOP)
 	{	// reset top wait time
 		if (Wait >= 0)
-			NextThink = level.framenum + Wait;
+			NextThink = level.Frame + Wait;
 		return;
 	}
 	
@@ -845,9 +845,9 @@ void CDoor::CDoorTrigger::Touch (CBaseEntity *other, plane_t *plane, cmBspSurfac
 	if ((GetOwner()->SpawnFlags & DOOR_NOMONSTER) && (other->EntityFlags & ENT_MONSTER))
 		return;
 
-	if (level.framenum < TouchDebounce)
+	if (level.Frame < TouchDebounce)
 		return;
-	TouchDebounce = level.framenum + 10;
+	TouchDebounce = level.Frame + 10;
 
 	(entity_cast<CDoor>(GetOwner()))->Use (other, other);
 }
@@ -980,10 +980,10 @@ void CDoor::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	if (!(other->EntityFlags & ENT_PLAYER))
 		return;
 
-	if (level.framenum < TouchDebounce)
+	if (level.Frame < TouchDebounce)
 		return;
 
-	TouchDebounce = level.framenum + 50;
+	TouchDebounce = level.Frame + 50;
 
 	(entity_cast<CPlayerEntity>(other))->PrintToClient (PRINT_CENTER, "%s", Message);
 	other->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
@@ -1096,7 +1096,7 @@ void CDoor::Spawn ()
 
 	Link ();
 
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 
 	if (map_debug->Boolean())
 	{
@@ -1154,7 +1154,7 @@ void CRotatingDoor::GoUp (CBaseEntity *activator)
 	if (MoveState == STATE_TOP)
 	{	// reset top wait time
 		if (Wait >= 0)
-			NextThink = level.framenum + Wait;
+			NextThink = level.Frame + Wait;
 		return;
 	}
 	
@@ -1262,7 +1262,7 @@ void CRotatingDoor::Spawn ()
 
 	Link ();
 
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 	if (Health || TargetName)
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
@@ -1391,7 +1391,7 @@ void CDoorSecret::DoEndFunc ()
 			UseAreaPortals (false);
 			break;
 		case DOORSECRETENDFUNC_5:
-			NextThink = level.framenum + 10;
+			NextThink = level.Frame + 10;
 			ThinkType = DOORSECRETTHINK_6;
 			break;
 		case DOORSECRETENDFUNC_3:
@@ -1399,11 +1399,11 @@ void CDoorSecret::DoEndFunc ()
 				return;
 
 			// Backcompat
-			NextThink = level.framenum + Wait;
+			NextThink = level.Frame + Wait;
 			ThinkType = DOORSECRETTHINK_4;
 			break;
 		case DOORSECRETENDFUNC_1:
-			NextThink = level.framenum + 10;
+			NextThink = level.Frame + 10;
 			ThinkType = DOORSECRETTHINK_2;
 			break;
 	};
@@ -1451,9 +1451,9 @@ void CDoorSecret::Blocked (CBaseEntity *other)
 		return;
 	}
 
-	if (level.framenum < TouchDebounce)
+	if (level.Frame < TouchDebounce)
 		return;
-	TouchDebounce = level.framenum + 5;
+	TouchDebounce = level.Frame + 5;
 
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
@@ -1601,7 +1601,7 @@ void CButton::DoEndFunc ()
 		State.GetFrame() = 1;
 		if (Wait >= 0)
 		{
-			NextThink = level.framenum + Wait;
+			NextThink = level.Frame + Wait;
 			ThinkType = BUTTONTHINK_RETURN;
 		}
 		break;
@@ -1768,13 +1768,13 @@ void CTrainBase::Blocked (CBaseEntity *other)
 		return;
 	}
 
-	if (level.framenum < TouchDebounce)
+	if (level.Frame < TouchDebounce)
 		return;
 
 	if (!Damage)
 		return;
 
-	TouchDebounce = level.framenum + 5;
+	TouchDebounce = level.Frame + 5;
 
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
@@ -1799,7 +1799,7 @@ void CTrainBase::TrainWait ()
 	{
 		if (Wait > 0)
 		{
-			NextThink = level.framenum + Wait;
+			NextThink = level.Frame + Wait;
 			ThinkType = TRAINTHINK_NEXT;
 		}
 		else if (SpawnFlags & TRAIN_TOGGLE)  // && wait < 0
@@ -1917,7 +1917,7 @@ void CTrainBase::Find ()
 
 	if (SpawnFlags & TRAIN_START_ON)
 	{
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		ThinkType = TRAINTHINK_NEXT;
 		Activator = this;
 	}
@@ -2014,7 +2014,7 @@ void CTrain::Spawn ()
 	{
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		ThinkType = TRAINTHINK_FIND;
 	}
 	else
@@ -2099,7 +2099,7 @@ void CTriggerElevator::Think ()
 
 void CTriggerElevator::Spawn ()
 {
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_elevator", CTriggerElevator);
@@ -2134,7 +2134,7 @@ ENTITYFIELDS_BEGIN(CWorldEntity)
 };
 ENTITYFIELDS_END(CWorldEntity)
 
-bool			CWorldEntity::ParseField (char *Key, char *Value)
+bool			CWorldEntity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CWorldEntity> (this, Key, Value))
 		return true;
@@ -2189,6 +2189,8 @@ void SetupLights ()
 }
 
 CBaseEntity *World;
+void InitPrivateEntities ();
+
 void CWorldEntity::Spawn ()
 {
 	World = this;
@@ -2205,16 +2207,16 @@ void CWorldEntity::Spawn ()
 	Init_Junk();
 
 	if (NextMap)
-		Q_strncpyz (level.nextmap, NextMap, sizeof(level.nextmap));
+		level.NextMap = NextMap;
 
 	// make some data visible to the server
 	if (Message && Message[0])
 	{
 		ConfigString (CS_NAME, Message);
-		Q_strncpyz (level.level_name, Message, sizeof(level.level_name));
+		level.FullLevelName = Message;
 	}
 	else
-		Q_strncpyz (level.level_name, level.mapname, sizeof(level.level_name));
+		level.FullLevelName = level.ServerLevelName;
 
 	ConfigString (CS_SKY, (Sky && Sky[0]) ? Sky : "unit1_");
 	ConfigString (CS_SKYROTATE, Q_VarArgs ("%f", SkyRotate));
@@ -2292,6 +2294,8 @@ void CWorldEntity::Spawn ()
 	SetupLights ();
 
 	dmFlags.UpdateFlags(dmflags->Integer());
+
+	InitPrivateEntities ();
 };
 
 void SpawnWorld ()
@@ -2716,7 +2720,7 @@ void CFuncObject::Spawn ()
 	{
 		GetSolid() = SOLID_BSP;
 		PhysicsType = PHYSICS_PUSH;
-		NextThink = level.framenum + 2;
+		NextThink = level.Frame + 2;
 	}
 	else
 	{
@@ -2781,7 +2785,7 @@ ENTITYFIELDS_BEGIN(CFuncExplosive)
 };
 ENTITYFIELDS_END(CFuncExplosive)
 
-bool			CFuncExplosive::ParseField (char *Key, char *Value)
+bool			CFuncExplosive::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CFuncExplosive> (this, Key, Value))
 		return true;
@@ -2964,7 +2968,7 @@ public:
 	  {
 	  };
 
-	bool ParseField (char *Key, char *Value)
+	bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}

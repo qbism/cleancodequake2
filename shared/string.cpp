@@ -43,7 +43,7 @@ void Q_snprintfz (char *dest, size_t size, const char *fmt, ...)
 		va_list		argptr;
 
 		va_start (argptr, fmt);
-		vsnprintf_s (dest, size, size, fmt, argptr);
+		vsnprintf (dest, size, fmt, argptr);
 		va_end (argptr);
 
 		dest[size-1] = '\0';
@@ -187,7 +187,7 @@ char *Q_VarArgs (char *format, ...)
 	strIndex ^= 1;
 
 	va_start (argptr, format);
-	vsnprintf_s (string[strIndex], 1024, 1024, format, argptr);
+	vsnprintf (string[strIndex], 1024, format, argptr);
 	va_end (argptr);
 
 	return string[strIndex];

@@ -194,7 +194,7 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, int damag
 	Grenade->State.GetEffects() = EF_GRENADE;
 	Grenade->State.GetModelIndex() = (!handNade) ? ModelIndex ("models/objects/grenade/tris.md2") : ModelIndex ("models/objects/grenade2/tris.md2");
 	Grenade->SetOwner(Spawner);
-	Grenade->NextThink = level.framenum + (timer * 10);
+	Grenade->NextThink = level.Frame + (timer * 10);
 	Grenade->Damage = damage;
 	Grenade->RadiusDamage = damage_radius;
 	Grenade->gameEntity->classname = (!handNade) ? "grenade" : "hgrenade";
@@ -288,7 +288,7 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
 	Bolt->SetOwner (Spawner);
-	Bolt->NextThink = level.framenum + 20;
+	Bolt->NextThink = level.Frame + 20;
 	Bolt->Damage = damage;
 	Bolt->gameEntity->classname = "bolt";
 	if (isHyper)
@@ -380,7 +380,7 @@ void CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->State.GetEffects() = EF_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
 	Rocket->SetOwner (Spawner);
-	Rocket->NextThink = level.framenum + 80000/speed;
+	Rocket->NextThink = level.Frame + 80000/speed;
 	Rocket->Damage = damage;
 	Rocket->RadiusDamage = radius_damage;
 	Rocket->DamageRadius = damage_radius;
@@ -446,7 +446,7 @@ void CBFGBolt::Think ()
 			}
 		}
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		State.GetFrame()++;
 		if (State.GetFrame() == 5)
 			Free ();
@@ -455,7 +455,7 @@ void CBFGBolt::Think ()
 	}
 	else // bfg_think
 	{
-		if (FreeTime < level.framenum)
+		if (FreeTime < level.Frame)
 		{
 			Free();
 			return;
@@ -529,7 +529,7 @@ void CBFGBolt::Think ()
 			CTempEnt_Trails::BFGLaser(origin, tr.EndPos);
 		}
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	}
 }
 
@@ -566,7 +566,7 @@ void CBFGBolt::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	State.GetFrame() = 0;
 	State.GetSound() = 0;
 	State.GetEffects() = EF_BFG;
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 	Enemy = other;
 
 	CTempEnt_Explosions::BFGExplosion (boltOrigin, true);
@@ -583,12 +583,12 @@ void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->State.GetEffects() = EF_BFG | EF_ANIM_ALLFAST;
 	BFG->State.GetModelIndex() = ModelIndex ("sprites/s_bfg1.sp2");
 	BFG->SetOwner (Spawner);
-	BFG->NextThink = level.framenum + FRAMETIME;
+	BFG->NextThink = level.Frame + FRAMETIME;
 	BFG->Damage = damage;
 	BFG->DamageRadius = damage_radius;
 	BFG->State.GetSound() = SoundIndex ("weapons/bfg__l1a.wav");
 	BFG->gameEntity->classname = "bfg blast";
-	BFG->FreeTime = level.framenum + 80000/speed;
+	BFG->FreeTime = level.Frame + 80000/speed;
 
 	BFG->Link ();
 }
@@ -1482,7 +1482,7 @@ void CGrappleEntity::GrapplePull()
 void CGrappleEntity::ResetGrapple ()
 {
 	Player->Client.ctf_grapple = NULL;
-	Player->Client.ctf_grapplereleasetime = level.framenum;
+	Player->Client.ctf_grapplereleasetime = level.Frame;
 	Player->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_HANG+1; // we're firing, not on hook
 	Player->Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 	Free ();
@@ -1616,8 +1616,8 @@ public:
 		Velocity.Clear ();
 		Offset = State.GetOrigin() - Attached->State.GetOrigin();
 
-		NextThink = level.framenum + FRAMETIME;
-		NextZapTime = level.framenum + FRAMETIME + (int)(frand() * 4);
+		NextThink = level.Frame + FRAMETIME;
+		NextZapTime = level.Frame + FRAMETIME + (int)(frand() * 4);
 		NumZaps = 0;
 
 		GetSolid() = SOLID_NOT;
@@ -1706,13 +1706,13 @@ public:
 			Projectiles[i]->State.GetModelIndex() = ModelIndex ("models/monsters/parasite/tip/tris.md2");
 			Projectiles[i]->SetOwner (this);
 			Projectiles[i]->Base = this;
-			Projectiles[i]->NextThink = level.framenum + FRAMETIME;
+			Projectiles[i]->NextThink = level.Frame + FRAMETIME;
 			Projectiles[i]->OwnedPlayer = GetOwner();
 
 			Projectiles[i]->Link ();
 		}
 
-		NextThink = level.framenum + 100;
+		NextThink = level.Frame + 100;
 	};
 
 	static void Spawn (CBaseEntity *Spawner, vec3f origin, vec3f dir, int damage, int speed)
@@ -1730,7 +1730,7 @@ public:
 		Base->GetMins().Clear ();
 		Base->GetMaxs().Clear ();
 		Base->State.GetModelIndex() = ModelIndex ("models/objects/grenade/tris.md2");
-		Base->NextThink = level.framenum + 1;
+		Base->NextThink = level.Frame + 1;
 		Base->SetOwner (Spawner);
 		Base->Link ();
 	};
@@ -1747,7 +1747,7 @@ void CTazerProjectile::Think ()
 	vec3f or1 = State.GetOrigin(), or2 = Base->State.GetOrigin();
 	::CTempEnt_Trails::FleshCable (or1, or2, State.GetNumber());
 
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 
 	if (!Attached)
 		return;
@@ -1777,9 +1777,9 @@ void CTazerProjectile::Think ()
 		return;
 	}
 
-	if (NextZapTime < level.framenum)
+	if (NextZapTime < level.Frame)
 	{
-		NextZapTime = level.framenum + FRAMETIME + (int)(frand() * 8) + (int)(frand() * 8);
+		NextZapTime = level.Frame + FRAMETIME + (int)(frand() * 8) + (int)(frand() * 8);
 		NumZaps++;
 
 		Attached->PlaySound (CHAN_AUTO, SoundIndex("world/spark3.wav"));

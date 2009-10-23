@@ -252,7 +252,7 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, int damage, int
 	ClipGibVelocity (Junk);
 
 	Junk->AngularVelocity.Set (crand()*600, crand()*600, crand()*600);
-	Junk->NextThink = level.framenum + 100 + frand()*100;
+	Junk->NextThink = level.Frame + 100 + frand()*100;
 
 	Junk->Link ();
 }

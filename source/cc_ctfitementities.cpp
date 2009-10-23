@@ -73,14 +73,14 @@ void CFlagEntity::Think ()
 
 			Link ();
 
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 			ThinkState = FTS_FLAGTHINK;
 		}
 		break;
 	case FTS_FLAGTHINK:
 		if (GetSolid() != SOLID_NOT)
 			State.GetFrame() = (173 + (((State.GetFrame() - 173) + 1) % 16));
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		break;
 	default:
 		CItemEntity::Think ();
@@ -104,7 +104,7 @@ void CFlagEntity::Spawn (CBaseItem *Item)
 
 	gameEntity->item = Item;
 
-	NextThink = level.framenum + 2;    // items start after other solids
+	NextThink = level.Frame + 2;    // items start after other solids
 	ThinkState = FTS_FLAGSETUP;
 	PhysicsType = PHYSICS_NONE;
 
@@ -179,7 +179,7 @@ public:
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (((other->gameEntity == gameEntity->owner) && (NextThink - level.framenum > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
+		if (((other->gameEntity == gameEntity->owner) && (NextThink - level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
 			return;
 
 		CItemEntity::Touch (other, plane, surf);
@@ -247,7 +247,7 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.framenum + CTF_AUTO_FLAG_RETURN_TIMEOUT;
+	dropped->NextThink = level.Frame + CTF_AUTO_FLAG_RETURN_TIMEOUT;
 	dropped->Link ();
 
 	return dropped;

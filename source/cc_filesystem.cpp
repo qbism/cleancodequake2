@@ -181,12 +181,10 @@ void FS_CopyFile(char *src, char *dst)
 	if (fs_developer && fs_developer->Integer())
 		Com_Printf(0, "FS_CopyFile (%s, %s)\n", src, dst);
 
-	FILE *f1;
-	fopen_s(&f1, src, "rb");
+	FILE *f1 = fopen (src, "rb");
 	if (!f1)
 		return;
-	FILE *f2;
-	fopen_s(&f2, dst, "wb");
+	FILE *f2 = fopen(dst, "wb");
 	if (!f2)
 	{
 		fclose(f1);
@@ -275,7 +273,7 @@ int FS_FileLength(fileHandle_t fileNum)
 		return __FileLen(handle->regFile);
 
 	// Shouldn't happen...
-	assert (0);
+	_CC_ASSERT_EXPR (0, "FileLength on a fileNum with no file");
 	return -1;
 }
 
@@ -294,7 +292,7 @@ int FS_Tell(fileHandle_t fileNum)
 		return ftell(handle->regFile);
 
 	// Shouldn't happen...
-	assert (0);
+	_CC_ASSERT_EXPR (0, "Tell on a fileNum with no file");
 	return 0;
 }
 
@@ -351,7 +349,7 @@ size_t FS_Read(void *buffer, const size_t len, fileHandle_t fileNum)
 	}
 
 	// Shouldn't happen...
-	assert(0);
+	_CC_ASSERT_EXPR(0, "Read on a fileNum with no file");
 	return 0;
 }
 
@@ -409,7 +407,7 @@ size_t FS_Write(void *buffer, const size_t size, fileHandle_t fileNum)
 	}
 
 	// Shouldn't happen...
-	assert (0);
+	_CC_ASSERT_EXPR (0, "Write on a fileNum with no file");
 	return 0;
 }
 
@@ -444,7 +442,7 @@ void FS_Seek(fileHandle_t fileNum, const long offset, const EFSSeekOrigin seekOr
 			break;
 		}
 	}
-	assert (0);
+	_CC_ASSERT_EXPR (0, "Seek on a fileNum with no file");
 }
 
 
@@ -466,7 +464,7 @@ static int FS_OpenFileAppend(fsHandleIndex_t *handle, bool binary, bool addGameD
 	FS_CreatePath(path);
 
 	// Open
-	fopen_s(&handle->regFile, path, (binary) ? "ab" : "at");
+	handle->regFile = fopen(path, (binary) ? "ab" : "at");
 
 	// Return length
 	if (handle->regFile)
@@ -566,7 +564,7 @@ static int FS_OpenFileRead(fsHandleIndex_t *handle)
 			Q_snprintfz(netPath, sizeof(netPath), "%s%s", link->to, handle->name+link->fromLength);
 
 			// Open
-			fopen_s(&handle->regFile, netPath, "rb");
+			handle->regFile = fopen(netPath, "rb");
 
 			// Return length
 			if (fs_developer && fs_developer->Integer())
@@ -586,7 +584,7 @@ static int FS_OpenFileRead(fsHandleIndex_t *handle)
 		char netPath[MAX_OSPATH];
 		Q_snprintfz(netPath, sizeof(netPath), "%s/%s", searchPath->pathName, handle->name);
 
-		fopen_s(&handle->regFile, netPath, "rb");
+		handle->regFile = fopen(netPath, "rb");
 		if (handle->regFile)
 		{
 			// Found it!
@@ -674,7 +672,7 @@ void FS_CloseFile(fileHandle_t fileNum)
 		handle->regFile = NULL;
 	}
 	else
-		assert(0);
+		_CC_ASSERT_EXPR(0, "Close on a fileNum with no file");
 
 	// Clear handle
 	handle->inUse = false;

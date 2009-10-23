@@ -93,7 +93,7 @@ void Cmd_Kill_f (CPlayerEntity *ent)
 		return;
 //ZOID
 
-	if((level.framenum - ent->Client.respawn_time) < 50)
+	if((level.Frame - ent->Client.respawn_time) < 50)
 		return;
 
 	ent->Flags &= ~FL_GODMODE;
@@ -245,26 +245,26 @@ bool CheckFlood(CPlayerEntity *ent)
 {
 	if (flood_msgs->Integer())
 	{
-		if (level.framenum < ent->Client.flood_locktill)
+		if (level.Frame < ent->Client.flood_locktill)
 		{
 			ent->PrintToClient (PRINT_HIGH, "You can't talk for %d more seconds\n",
-				(int)((ent->Client.flood_locktill - level.framenum)/10));
+				(int)((ent->Client.flood_locktill - level.Frame)/10));
 			return true;
 		}
 		int i = ent->Client.flood_whenhead - flood_msgs->Integer() + 1;
 		if (i < 0)
 			i = (sizeof(ent->Client.flood_when)/sizeof(ent->Client.flood_when[0])) + i;
 		if (ent->Client.flood_when[i] && 
-			((level.framenum - ent->Client.flood_when[i])/10) < flood_persecond->Integer())
+			((level.Frame - ent->Client.flood_when[i])/10) < flood_persecond->Integer())
 		{
-			ent->Client.flood_locktill = level.framenum + (flood_waitdelay->Float() * 10);
+			ent->Client.flood_locktill = level.Frame + (flood_waitdelay->Float() * 10);
 			ent->PrintToClient (PRINT_CHAT, "Flood protection:  You can't talk for %d seconds.\n",
 				flood_waitdelay->Integer());
 			return true;
 		}
 		ent->Client.flood_whenhead = (ent->Client.flood_whenhead + 1) %
 			(sizeof(ent->Client.flood_when)/sizeof(ent->Client.flood_when[0]));
-		ent->Client.flood_when[ent->Client.flood_whenhead] = level.framenum;
+		ent->Client.flood_when[ent->Client.flood_whenhead] = level.Frame;
 	}
 	return false;
 }
@@ -362,8 +362,8 @@ public:
 
 		if (!Spectator)
 			Q_snprintfz(tempString, sizeof(tempString), " - %02I64d:%02I64d %4d %3d %s\n",
-				(level.framenum - Player->Client.Respawn.enterframe) / 600,
-				((level.framenum - Player->Client.Respawn.enterframe) % 600)/10,
+				(level.Frame - Player->Client.Respawn.enterframe) / 600,
+				((level.Frame - Player->Client.Respawn.enterframe) % 600)/10,
 				Player->Client.GetPing(),
 				Player->Client.Respawn.score,
 				Player->Client.Persistent.netname);
@@ -438,6 +438,13 @@ void GCmd_SayTeam_f (CPlayerEntity *ent)
 
 void Cmd_Test_f (CPlayerEntity *ent)
 {
+	/*
+	DebugPrintf ("%i\n", [] ()
+	{
+		return 6;
+	} ()
+	);
+	*/
 }
 
 #include "cc_menu.h"

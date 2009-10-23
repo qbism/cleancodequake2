@@ -427,11 +427,8 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	}
 
 	// Open the report dump file
-#ifndef CRT_USE_UNDEPRECATED_FUNCTIONS
 	fhReport = fopen (reportPath, "wb");
-#else
-	fopen_s (&fhReport, reportPath, "wb");
-#endif
+
 	if (!fhReport)
 	{
 		FreeLibrary (hDbgHelp);
@@ -557,7 +554,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 		if (fnSymFromAddr (hProcess, frame.AddrPC.Offset, &fnOffset, symInfo) && !(symInfo->Flags & SYMFLAG_EXPORT))
 			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!%s+0x%I64X %lu\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], p, symInfo->Name, fnOffset, symInfo->Tag);
 		else
-			fprintf (fhReport, "%X %I64X %X %X %X %X %s!0x%I64X\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], p, frame.AddrPC.Offset);
+			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!0x%I64X\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], p, frame.AddrPC.Offset);
 	}
 
 	fprintf (fhReport, "\r\n");
@@ -585,11 +582,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 				CHAR	zPath[MAX_PATH];
 #endif
 
-#ifdef CRT_USE_UNDEPRECATED_FUNCTIONS
-				fopen_s (&fh, dumpPath, "rb");
-#else
 				fh = fopen (dumpPath, "rb");
-#endif
 				if (fh)
 #ifdef USE_GZ
 				{

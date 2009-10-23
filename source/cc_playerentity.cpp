@@ -113,7 +113,7 @@ int16			&CPlayerState::GetStat (uint8 index)
 {
 	if (index < 0 || index > 32)
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "GetStat() index out of bounds");
 		return playerState->stats[0];
 	}
 
@@ -185,7 +185,7 @@ This will be called for all players
 */
 void CPlayerEntity::BeginServerFrame ()
 {
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 		return;
 
 	if ((game.mode & GAME_DEATHMATCH) && 
@@ -193,7 +193,7 @@ void CPlayerEntity::BeginServerFrame ()
 		!(game.mode & GAME_CTF) &&
 #endif
 		Client.Persistent.spectator != Client.Respawn.spectator &&
-		(level.framenum - Client.respawn_time) >= 50)
+		(level.Frame - Client.respawn_time) >= 50)
 	{
 		SpectatorRespawn();
 		return;
@@ -211,7 +211,7 @@ void CPlayerEntity::BeginServerFrame ()
 	if (DeadFlag)
 	{
 		// wait for any button just going down
-		if ( level.framenum > Client.respawn_time)
+		if ( level.Frame > Client.respawn_time)
 		{
 			int buttonMask;
 			// in deathmatch, only wait for attack button
@@ -254,7 +254,7 @@ void CPlayerEntity::Respawn ()
 		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
 		Client.PlayerState.GetPMove()->pmTime = 14;
 
-		Client.respawn_time = level.framenum;
+		Client.respawn_time = level.Frame;
 		return;
 	}
 
@@ -336,7 +336,7 @@ void CPlayerEntity::SpectatorRespawn ()
 		Client.PlayerState.GetPMove()->pmTime = 14;
 	}
 
-	Client.respawn_time = level.framenum;
+	Client.respawn_time = level.Frame;
 
 	if (Client.Persistent.spectator) 
 		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.netname);
@@ -420,7 +420,7 @@ void CPlayerEntity::PutInServer ()
 	Mass = 200;
 	GetSolid() = SOLID_BBOX;
 	DeadFlag = false;
-	AirFinished = level.framenum + 120;
+	AirFinished = level.Frame + 120;
 	GetClipmask() = CONTENTS_MASK_PLAYERSOLID;
 	gameEntity->waterlevel = WATER_NONE;
 	gameEntity->watertype = 0;
@@ -521,6 +521,7 @@ but is called after each death and level change in deathmatch
 void CPlayerEntity::InitPersistent ()
 {
 	memset (&Client.Persistent, 0, sizeof(Client.Persistent));
+	Client.Persistent.UserInfo = std::cc_string();
 
 	if (!map_debug->Boolean())
 	{
@@ -756,7 +757,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	Client.PlayerState.GetStat (STAT_FLASHES) = 0;
 	if (Client.DamageValues[DT_BLOOD])
 		Client.PlayerState.GetStat (STAT_FLASHES) = Client.PlayerState.GetStat(STAT_FLASHES) | 1;
-	if (Client.DamageValues[DT_ARMOR] && !(Flags & FL_GODMODE) && (Client.invincible_framenum <= level.framenum))
+	if (Client.DamageValues[DT_ARMOR] && !(Flags & FL_GODMODE) && (Client.invincible_framenum <= level.Frame))
 		Client.PlayerState.GetStat (STAT_FLASHES) = Client.PlayerState.GetStat(STAT_FLASHES) | 2;
 
 	// total points of damage shot at the player this frame
@@ -798,9 +799,9 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 		count = 10;	// always make a visible effect
 
 	// play an apropriate pain sound
-	if ((level.framenum > PainDebounceTime) && !(Flags & FL_GODMODE) && (Client.invincible_framenum <= level.framenum))
+	if ((level.Frame > PainDebounceTime) && !(Flags & FL_GODMODE) && (Client.invincible_framenum <= level.Frame))
 	{
-		PainDebounceTime = level.framenum + 7;
+		PainDebounceTime = level.Frame + 7;
 
 		int l = Clamp<int>(((floorf((Max<>(0, Health-1)) / 25))), 0, 3);
 		PlaySound (CHAN_VOICE, GameMedia.Player.Pain[l][(irandom(2))]);
@@ -863,7 +864,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 		
 		Client.ViewDamage.Y = kick*v.Dot (right)*0.3;
 		Client.ViewDamage.X = kick*-v.Dot (forward)*0.3;
-		Client.ViewDamageTime = level.framenum + DAMAGE_TIME;
+		Client.ViewDamageTime = level.Frame + DAMAGE_TIME;
 	}
 
 	//
@@ -895,7 +896,7 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 		vec3f angles = Client.KickAngles;
 
 		// add angles based on damage kick
-		ratio = (float)(Client.ViewDamageTime - level.framenum) / DAMAGE_TIME;
+		ratio = (float)(Client.ViewDamageTime - level.Frame) / DAMAGE_TIME;
 		if (ratio < 0)
 		{
 			ratio = 0;
@@ -905,7 +906,7 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 		angles.Z += ratio * Client.ViewDamage.Y;
 
 		// add pitch based on fall kick
-		ratio = (float)(Client.FallTime - level.framenum) / FALL_TIME;
+		ratio = (float)(Client.FallTime - level.Frame) / FALL_TIME;
 		if (ratio < 0)
 			ratio = 0;
 		angles.X += ratio * Client.FallValue;
@@ -939,7 +940,7 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 	v.Z += ViewHeight;
 
 	// add fall height
-	ratio = (float)(Client.FallTime - level.framenum) / FALL_TIME;
+	ratio = (float)(Client.FallTime - level.Frame) / FALL_TIME;
 	if (ratio < 0)
 		ratio = 0;
 	v.Z -= ratio * Client.FallValue * 0.4;
@@ -1078,9 +1079,9 @@ inline void CPlayerEntity::CalcBlend ()
 		Client.PlayerState.GetRdFlags () &= ~RDF_UNDERWATER;
 
 	// add for powerups
-	if (Client.quad_framenum > level.framenum)
+	if (Client.quad_framenum > level.Frame)
 	{
-		int remaining = Client.quad_framenum - level.framenum;
+		int remaining = Client.quad_framenum - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/damage2.wav"));
@@ -1088,9 +1089,9 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (QuadColor, Client.Persistent.viewBlend);
 	}
-	else if (Client.invincible_framenum > level.framenum)
+	else if (Client.invincible_framenum > level.Frame)
 	{
-		int remaining = Client.invincible_framenum - level.framenum;
+		int remaining = Client.invincible_framenum - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect2.wav"));
@@ -1098,9 +1099,9 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (InvulColor, Client.Persistent.viewBlend);
 	}
-	else if (Client.enviro_framenum > level.framenum)
+	else if (Client.enviro_framenum > level.Frame)
 	{
-		int remaining = Client.enviro_framenum - level.framenum;
+		int remaining = Client.enviro_framenum - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
@@ -1108,9 +1109,9 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (EnviroColor, Client.Persistent.viewBlend);
 	}
-	else if (Client.breather_framenum > level.framenum)
+	else if (Client.breather_framenum > level.Frame)
 	{
-		int remaining = Client.breather_framenum - level.framenum;
+		int remaining = Client.breather_framenum - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
@@ -1173,7 +1174,7 @@ inline void CPlayerEntity::FallingDamage ()
 #ifdef CLEANCTF_ENABLED
 //ZOID
 	// never take damage if just release grapple or on grapple
-	if (level.framenum - Client.ctf_grapplereleasetime <= 2 ||
+	if (level.Frame - Client.ctf_grapplereleasetime <= 2 ||
 		(Client.ctf_grapple && 
 		Client.ctf_grapplestate > CTF_GRAPPLE_STATE_FLY))
 		return;
@@ -1211,14 +1212,14 @@ inline void CPlayerEntity::FallingDamage ()
 	Client.FallValue = delta*0.5;
 	if (Client.FallValue > 40)
 		Client.FallValue = 40;
-	Client.FallTime = level.framenum + FALL_TIME;
+	Client.FallTime = level.Frame + FALL_TIME;
 
 	if (delta > 30)
 	{
 		if (Health > 0)
 			State.GetEvent() = (delta >= 55) ? EV_FALLFAR : EV_FALL;
 
-		PainDebounceTime = level.framenum;	// no normal pain sound
+		PainDebounceTime = level.Frame;	// no normal pain sound
 		int damage = (delta-30)/2;
 		if (damage < 1)
 			damage = 1;
@@ -1249,7 +1250,7 @@ inline void CPlayerEntity::WorldEffects ()
 
 	if (NoClip)
 	{
-		AirFinished = level.framenum + 120;	// don't need air
+		AirFinished = level.Frame + 120;	// don't need air
 		return;
 	}
 
@@ -1257,8 +1258,8 @@ inline void CPlayerEntity::WorldEffects ()
 	OldWaterLevel = Client.OldWaterLevel;
 	Client.OldWaterLevel = waterlevel;
 
-	breather = (bool)(Client.breather_framenum > level.framenum);
-	envirosuit = (bool)(Client.enviro_framenum > level.framenum);
+	breather = (bool)(Client.breather_framenum > level.Frame);
+	envirosuit = (bool)(Client.enviro_framenum > level.Frame);
 
 	//
 	// if just entered a water volume, play a sound
@@ -1275,7 +1276,7 @@ inline void CPlayerEntity::WorldEffects ()
 		Flags |= FL_INWATER;
 
 		// clear damage_debounce, so the pain sound will play immediately
-		PainDebounceTime = level.framenum - 1;
+		PainDebounceTime = level.Frame - 1;
 	}
 
 	//
@@ -1299,12 +1300,12 @@ inline void CPlayerEntity::WorldEffects ()
 	//
 	if (OldWaterLevel == WATER_UNDER && waterlevel != WATER_UNDER)
 	{
-		if (AirFinished < level.framenum)
+		if (AirFinished < level.Frame)
 		{	// gasp for air
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp1.wav"));
 			PlayerNoiseAt (origin, PNOISE_SELF);
 		}
-		else  if (AirFinished < level.framenum + 110) // just break surface
+		else  if (AirFinished < level.Frame + 110) // just break surface
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp2.wav"));
 	}
 
@@ -1316,9 +1317,9 @@ inline void CPlayerEntity::WorldEffects ()
 		// breather or envirosuit give air
 		if (breather || envirosuit)
 		{
-			AirFinished = level.framenum + 100;
+			AirFinished = level.Frame + 100;
 
-			if (((int)(Client.breather_framenum - level.framenum) % 25) == 0)
+			if (((int)(Client.breather_framenum - level.Frame) % 25) == 0)
 			{
 				PlaySound (CHAN_AUTO, SoundIndex((!Client.breather_sound) ? "player/u_breath1.wav" : "player/u_breath2.wav"));
 				Client.breather_sound = !Client.breather_sound;
@@ -1327,12 +1328,12 @@ inline void CPlayerEntity::WorldEffects ()
 		}
 
 		// if out of air, start drowning
-		if (AirFinished < level.framenum)
+		if (AirFinished < level.Frame)
 		{	// drown!
-			if (NextDrownTime < level.framenum 
+			if (NextDrownTime < level.Frame 
 				&& Health > 0)
 			{
-				NextDrownTime = level.framenum + 10;
+				NextDrownTime = level.Frame + 10;
 
 				// take more damage the longer underwater
 				NextDrownDamage += 2;
@@ -1345,7 +1346,7 @@ inline void CPlayerEntity::WorldEffects ()
 				else
 					PlaySound (CHAN_VOICE, GameMedia.Player.Gurp[(irandom(2))]);
 
-				PainDebounceTime = level.framenum;
+				PainDebounceTime = level.Frame;
 
 				TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, NextDrownDamage, 0, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
@@ -1353,7 +1354,7 @@ inline void CPlayerEntity::WorldEffects ()
 	}
 	else
 	{
-		AirFinished = level.framenum + 120;
+		AirFinished = level.Frame + 120;
 		NextDrownDamage = 2;
 	}
 
@@ -1365,11 +1366,11 @@ inline void CPlayerEntity::WorldEffects ()
 		if (gameEntity->watertype & CONTENTS_LAVA)
 		{
 			if (Health > 0
-				&& PainDebounceTime <= level.framenum
-				&& Client.invincible_framenum < level.framenum)
+				&& PainDebounceTime <= level.Frame
+				&& Client.invincible_framenum < level.Frame)
 			{
 				PlaySound (CHAN_VOICE, SoundIndex((irandom(2)) ? "player/burn1.wav" : "player/burn2.wav"));
-				PainDebounceTime = level.framenum + 10;
+				PainDebounceTime = level.Frame + 10;
 			}
 
 			// take 1/3 damage with envirosuit
@@ -1405,10 +1406,10 @@ inline void CPlayerEntity::SetClientEffects ()
 {
 	State.GetEffects() = State.GetRenderEffects() = 0;
 
-	if (Health <= 0 || level.intermissiontime)
+	if (Health <= 0 || level.IntermissionTime)
 		return;
 
-	if (gameEntity->powerarmor_time > level.framenum)
+	if (gameEntity->powerarmor_time > level.Frame)
 	{
 		int pa_type = PowerArmorType ();
 		if (pa_type == POWER_ARMOR_SCREEN)
@@ -1435,16 +1436,16 @@ inline void CPlayerEntity::SetClientEffects ()
 	}
 #endif
 
-	if (Client.quad_framenum > level.framenum)
+	if (Client.quad_framenum > level.Frame)
 	{
-		int remaining = Client.quad_framenum - level.framenum;
+		int remaining = Client.quad_framenum - level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_QUAD;
 	}
 
-	if (Client.invincible_framenum > level.framenum)
+	if (Client.invincible_framenum > level.Frame)
 	{
-		int remaining = Client.invincible_framenum - level.framenum;
+		int remaining = Client.invincible_framenum - level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_PENT;
 	}
@@ -1489,7 +1490,7 @@ inline void CPlayerEntity::SetClientSound ()
 	}
 
 	// help beep (no more than three times)
-	if (Client.Persistent.helpchanged && Client.Persistent.helpchanged <= 3 && !(level.framenum&63) )
+	if (Client.Persistent.helpchanged && Client.Persistent.helpchanged <= 3 && !(level.Frame&63) )
 	{
 		Client.Persistent.helpchanged++;
 		PlaySound (CHAN_VOICE, SoundIndex ("misc/pc_up.wav"), 255, ATTN_STATIC);
@@ -1646,7 +1647,7 @@ void CPlayerEntity::EndServerFrame ()
 	// If the end of unit layout is displayed, don't give
 	// the player any normal movement attributes
 	//
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 	{
 		// FIXME: add view drifting here?
 		Client.PlayerState.GetViewBlend ().A = 0;
@@ -1766,9 +1767,9 @@ void CPlayerEntity::EndServerFrame ()
 		Client.Persistent.Tech->DoPassiveTech (this);
 
 	// if the scoreboard is up, update it
-	if ((Client.LayoutFlags & LF_SHOWSCORES) && !(level.framenum & 31) )
+	if ((Client.LayoutFlags & LF_SHOWSCORES) && !(level.Frame & 31) )
 		DeathmatchScoreboardMessage (false);
-	else if (Client.Respawn.MenuState.InMenu && !(level.framenum & 4))
+	else if (Client.Respawn.MenuState.InMenu && !(level.Frame & 4))
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
 }
 
@@ -2052,7 +2053,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 		}
 
 		// send the layout
-		Scoreboard.AddClientBlock (x, y, sorted[i], cl_ent->Client.Respawn.score, cl_ent->Client.GetPing(), (level.framenum - cl_ent->Client.Respawn.enterframe)/600);
+		Scoreboard.AddClientBlock (x, y, sorted[i], cl_ent->Client.Respawn.score, cl_ent->Client.GetPing(), (level.Frame - cl_ent->Client.Respawn.enterframe)/600);
 	}
 
 	Scoreboard.SendMsg (this, reliable);
@@ -2117,7 +2118,7 @@ void CPlayerEntity::SetStats ()
 		}
 
 		CArmor *Armor = Client.Persistent.Armor;
-		if (power_armor_type && (!Armor || (level.framenum & 8) ) )
+		if (power_armor_type && (!Armor || (level.Frame & 8) ) )
 		{	// flash between power armor and other armor icon
 			Client.PlayerState.GetStat (STAT_ARMOR_ICON) = NItems::PowerShield->GetIconIndex();
 			Client.PlayerState.GetStat (STAT_ARMOR) = cells;
@@ -2136,7 +2137,7 @@ void CPlayerEntity::SetStats ()
 		//
 		// pickup message
 		//
-		if (level.framenum > Client.pickup_msg_time)
+		if (level.Frame > Client.pickup_msg_time)
 		{
 			Client.PlayerState.GetStat (STAT_PICKUP_ICON) = 0;
 			Client.PlayerState.GetStat (STAT_PICKUP_STRING) = 0;
@@ -2145,25 +2146,25 @@ void CPlayerEntity::SetStats ()
 		//
 		// timers
 		//
-		if (Client.quad_framenum > level.framenum)
+		if (Client.quad_framenum > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Quad->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.quad_framenum - level.framenum)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.quad_framenum - level.Frame)/10;
 		}
-		else if (Client.invincible_framenum > level.framenum)
+		else if (Client.invincible_framenum > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Invul->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.invincible_framenum - level.framenum)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.invincible_framenum - level.Frame)/10;
 		}
-		else if (Client.enviro_framenum > level.framenum)
+		else if (Client.enviro_framenum > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::EnvironmentSuit->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.enviro_framenum - level.framenum)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.enviro_framenum - level.Frame)/10;
 		}
-		else if (Client.breather_framenum > level.framenum)
+		else if (Client.breather_framenum > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Rebreather->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.breather_framenum - level.framenum)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.breather_framenum - level.Frame)/10;
 		}
 		// Paril, show silencer
 		else if (Client.silencer_shots)
@@ -2190,7 +2191,7 @@ void CPlayerEntity::SetStats ()
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
 		if (Client.Persistent.health <= 0 || Client.Respawn.MenuState.InMenu ||
-			(level.intermissiontime || (Client.LayoutFlags & LF_SHOWSCORES)) || 
+			(level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES)) || 
 			(!(game.mode & GAME_DEATHMATCH)) && (Client.LayoutFlags & LF_SHOWHELP))
 			Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 1;
 		if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.health > 0)
@@ -2204,7 +2205,7 @@ void CPlayerEntity::SetStats ()
 		//
 		// help icon / current weapon if not shown
 		//
-		if (Client.Persistent.helpchanged && (level.framenum&8) )
+		if (Client.Persistent.helpchanged && (level.Frame&8) )
 			Client.PlayerState.GetStat (STAT_HELPICON) = GameMedia.Hud.HelpPic;
 
 		Client.PlayerState.GetStat (STAT_HELPICON) = ((Client.Persistent.hand == CENTER_HANDED || Client.PlayerState.GetFov() > 91)
@@ -2239,7 +2240,7 @@ void CPlayerEntity::SetSpectatorStats ()
 	// layouts are independant in spectator
 	Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
-	if (Client.Persistent.health <= 0 || level.intermissiontime || (Client.LayoutFlags & LF_SHOWSCORES))
+	if (Client.Persistent.health <= 0 || level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES))
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 1;
 	if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.health > 0)
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 2;
@@ -2269,7 +2270,7 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_TEAM2_HEADER) = ImageIndex ("ctfsb2");
 
 	// if during intermission, we must blink the team header of the winning team
-	if (level.intermissiontime && (level.framenum & 8))
+	if (level.IntermissionTime && (level.Frame & 8))
 	{
 		// blink 1/8th second
 		// note that ctfgame.total[12] is set when we go to intermission
@@ -2349,18 +2350,18 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = p1;
 	Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = p2;
 
-	if (ctfgame.last_flag_capture && level.framenum - ctfgame.last_flag_capture < 50)
+	if (ctfgame.last_flag_capture && level.Frame - ctfgame.last_flag_capture < 50)
 	{
 		if (ctfgame.last_capture_team == CTF_TEAM1)
 		{
-			if (level.framenum & 8)
+			if (level.Frame & 8)
 				Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = p1;
 			else
 				Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = 0;
 		}
 		else
 		{
-			if (level.framenum & 8)
+			if (level.Frame & 8)
 				Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = p2;
 			else
 				Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = 0;
@@ -2373,12 +2374,12 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = 0;
 	if (Client.Respawn.ctf_team == CTF_TEAM1 &&
 		(Client.Persistent.Flag == NItems::BlueFlag) &&
-		(level.framenum & 8))
+		(level.Frame & 8))
 		Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = ImageIndex ("i_ctf2");
 
 	else if (Client.Respawn.ctf_team == CTF_TEAM2 &&
 		(Client.Persistent.Flag == NItems::RedFlag) &&
-		(level.framenum & 8))
+		(level.Frame & 8))
 		Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = ImageIndex ("i_ctf1");
 
 	Client.PlayerState.GetStat (STAT_CTF_JOINED_TEAM1_PIC) = 0;
@@ -2506,10 +2507,10 @@ bool CPlayerEntity::ApplyStrengthSound()
 {
 	if (Client.Persistent.Tech && (Client.Persistent.Tech->GetTechNumber() == CTFTECH_STRENGTH_NUMBER))
 	{
-		if (Client.techsndtime < level.framenum)
+		if (Client.techsndtime < level.Frame)
 		{
-			Client.techsndtime = level.framenum + 10;
-			PlaySound (CHAN_AUTO, SoundIndex((Client.quad_framenum > level.framenum) ? "ctf/tech2x.wav" : "ctf/tech2.wav"), (Client.silencer_shots) ? 51 : 255);
+			Client.techsndtime = level.Frame + 10;
+			PlaySound (CHAN_AUTO, SoundIndex((Client.quad_framenum > level.Frame) ? "ctf/tech2x.wav" : "ctf/tech2.wav"), (Client.silencer_shots) ? 51 : 255);
 		}
 		return true;
 	}
@@ -2523,9 +2524,9 @@ bool CPlayerEntity::ApplyHaste()
 
 void CPlayerEntity::ApplyHasteSound()
 {
-	if (Client.Persistent.Tech && (Client.Persistent.Tech->GetTechNumber() == CTFTECH_HASTE_NUMBER) && Client.techsndtime < level.framenum)
+	if (Client.Persistent.Tech && (Client.Persistent.Tech->GetTechNumber() == CTFTECH_HASTE_NUMBER) && Client.techsndtime < level.Frame)
 	{
-		Client.techsndtime = level.framenum + 10;
+		Client.techsndtime = level.Frame + 10;
 		PlaySound (CHAN_AUTO, SoundIndex("ctf/tech3.wav"), (Client.silencer_shots) ? 51 : 255);
 	}
 }
@@ -2568,7 +2569,7 @@ void CPlayerEntity::DeadDropTech ()
 	// hack the velocity to make it bounce random
 	dropped->Velocity.X = (frand() * 600) - 300;
 	dropped->Velocity.Y = (frand() * 600) - 300;
-	dropped->NextThink = level.framenum + CTF_TECH_TIMEOUT;
+	dropped->NextThink = level.Frame + CTF_TECH_TIMEOUT;
 	dropped->SetOwner (NULL);
 	Client.Persistent.Inventory.Set(Client.Persistent.Tech, 0);
 
@@ -2587,7 +2588,7 @@ void CPlayerEntity::TossClientWeapon ()
 	if (Item && !Item->WorldModel)
 		Item = NULL;
 
-	bool quad = (!dmFlags.dfQuadDrop) ? false : (bool)(Client.quad_framenum > (level.framenum + 10));
+	bool quad = (!dmFlags.dfQuadDrop) ? false : (bool)(Client.quad_framenum > (level.Frame + 10));
 	float spread = (Item && quad) ? 22.5f : 0.0f;
 
 	if (Item)
@@ -2609,7 +2610,7 @@ void CPlayerEntity::TossClientWeapon ()
 		Client.ViewAngle.Y -= spread;
 		drop->SpawnFlags |= DROPPED_PLAYER_ITEM;
 
-		drop->NextThink = level.framenum + (Client.quad_framenum - level.framenum);
+		drop->NextThink = level.Frame + (Client.quad_framenum - level.Frame);
 		drop->ThinkState = ITS_FREE;
 	}
 }
@@ -2639,13 +2640,13 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	level.CurrentEntity = this;
 
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 	{
 		Client.PlayerState.GetPMove()->pmType = PMT_FREEZE;
 		// can exit intermission after five seconds
-		if (level.framenum > level.intermissiontime + 50 
+		if (level.Frame > level.IntermissionTime + 50 
 			&& (ucmd->buttons & BUTTON_ANY) )
-			level.exitintermission = true;
+			level.ExitIntermission = true;
 		return;
 	}
 
@@ -2915,7 +2916,7 @@ void CPlayerEntity::InitResp ()
 //ZOID
 #endif
 
-	Client.Respawn.enterframe = level.framenum;
+	Client.Respawn.enterframe = level.Frame;
 	Client.Respawn.coop_respawn = Client.Persistent;
 
 #ifdef CLEANCTF_ENABLED
@@ -2943,7 +2944,6 @@ void CPlayerEntity::SaveClientData ()
 	SavedClients = QNew (com_gamePool, 0) CPersistentData[game.maxclients];
 	for (int i=0 ; i<game.maxclients ; i++)
 	{
-		memset (&SavedClients[i], 0, sizeof(CPersistentData));
 		if (!g_edicts[1+i].Entity)
 			return; // Not set up
 
@@ -3170,7 +3170,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 	if (!DeadFlag)
 	{
-		Client.respawn_time = level.framenum + 10;
+		Client.respawn_time = level.Frame + 10;
 		LookAtKiller (inflictor, attacker);
 		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 		Obituary (attacker);
@@ -3463,7 +3463,7 @@ void CPlayerEntity::UpdateChaseCam()
 
 	if ((!(Client.LayoutFlags & LF_SHOWSCORES) && !Client.Respawn.MenuState.InMenu &&
 		!(Client.LayoutFlags & LF_SHOWINVENTORY) && !(Client.LayoutFlags & LF_SHOWHELP) &&
-		!(level.framenum & 31)) || (Client.LayoutFlags & LF_UPDATECHASE))
+		!(level.Frame & 31)) || (Client.LayoutFlags & LF_UPDATECHASE))
 	{
 		CStatusBar Chasing;
 		char temp[128];
@@ -3571,6 +3571,7 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }
 
+#ifndef MONSTERS_USE_PATHFINDING
 class CPlayerNoise : public virtual CBaseEntity
 {
 public:
@@ -3584,6 +3585,7 @@ public:
 	{
 	};
 };
+#endif
 
 #ifdef MONSTERS_USE_PATHFINDING
 class CPathNode *GetClosestNodeTo (vec3f origin);
@@ -3603,8 +3605,8 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, int type)
 	if (game.mode & GAME_DEATHMATCH)
 		return;
 
-	//if (who->flags & FL_NOTARGET)
-	//	return;
+	if (Flags & FL_NOTARGET)
+		return;
 
 #ifndef MONSTERS_USE_PATHFINDING
 	if (!Client.mynoise)
@@ -3630,24 +3632,24 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, int type)
 	if (type == PNOISE_SELF || type == PNOISE_WEAPON)
 	{
 		noise = entity_cast<CPlayerNoise>(Client.mynoise);
-		level.sound_entity = noise;
-		level.sound_entity_framenum = level.framenum;
+		level.SoundEntity = noise;
+		level.SoundEntityFrame = level.Frame;
 	}
 	else // type == PNOISE_IMPACT
 	{
 		noise = entity_cast<CPlayerNoise>(Client.mynoise2);
-		level.sound2_entity = noise;
-		level.sound2_entity_framenum = level.framenum;
+		level.SoundEntity2 = noise;
+		level.SoundEntity2Frame = level.Frame;
 	}
 
 	noise->State.GetOrigin() = Where;
 	noise->GetAbsMin() = (Where - noise->GetMins());
 	noise->GetAbsMax() = (Where + noise->GetMaxs());
-	noise->gameEntity->teleport_time = level.framenum;
+	noise->gameEntity->teleport_time = level.Frame;
 	noise->Link ();
 #else
 	level.NoiseNode = GetClosestNodeTo(Where);
-	level.SoundEntityFramenum = level.framenum;
+	level.SoundEntityFramenum = level.Frame;
 	level.SoundEntity = this;
 #endif
 }
@@ -3663,7 +3665,7 @@ _CC_ENABLE_DEPRECATION
 	// locate ent at a spawn point
 	PutInServer();
 
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 		MoveToIntermission();
 	else
 		// send effect
@@ -3712,7 +3714,7 @@ _CC_ENABLE_DEPRECATION
 		PutInServer ();
 	}
 
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 		MoveToIntermission ();
 	else
 	{
@@ -3740,7 +3742,7 @@ IPAddress CopyIP (const char *val)
 
 	IPAddress Adr;
 	if (str.length() > sizeof(Adr.str))
-		assert (0);
+		_CC_ASSERT_EXPR (0, "IP copied is longer than sizeof(Adr.str)");
 
 	Q_snprintfz (Adr.str, sizeof(Adr.str), "%s", str.c_str());
 

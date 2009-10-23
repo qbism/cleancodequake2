@@ -75,12 +75,10 @@ typedef uint32_t uint32;
 #define loBits(u)		((u) & 0x7FFFFFFFU)   // mask     the highest   bit of u
 #define mixBits(u, v)	(hiBit(u)|loBits(v))  // move hi bit of u to hi bit of v
 
-#if (MSVS_VERSION >= VS_9)
+#if (MSVS_VERSION >= VS_9) && !defined(_CC_NO_TR1)
 
 #include <random>
-std::tr1::mersenne_twister <uint32, W, N,
-    M, R, K, U, S, B,
-    T, C, L> twister;
+std::tr1::mt19937 twister;
 
 void seedMT (uint32 seed)
 {

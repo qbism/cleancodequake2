@@ -40,7 +40,7 @@ enum
 	FTS_FLAGTHINK,
 };
 
-class CFlagEntity abstract : public CItemEntity
+class CFlagEntity : public CItemEntity
 {
 public:
 	CFlagEntity ();

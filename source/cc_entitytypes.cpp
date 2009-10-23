@@ -53,7 +53,7 @@ ENTITYFIELDS_BEGIN(CHurtableEntity)
 };
 ENTITYFIELDS_END(CHurtableEntity)
 
-bool			CHurtableEntity::ParseField (char *Key, char *Value)
+bool			CHurtableEntity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CHurtableEntity> (this, Key, Value))
 		return true;
@@ -221,7 +221,7 @@ int CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, int damage, i
 		save = damage;
 
 	CTempEnt_Splashes::ShieldSparks (point, normal, (pa_te_type == TE_SCREEN_SPARKS) ? true : false);
-	gameEntity->powerarmor_time = level.framenum + 2;
+	gameEntity->powerarmor_time = level.Frame + 2;
 
 	power_used = save / damagePerCell;
 	if (!power_used)
@@ -275,7 +275,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, int
 	{
 		if (!((entity_cast<CMonsterEntity>(this))->Monster->AIFlags & AI_GOOD_GUY))
 		{
-			level.killed_monsters++;
+			level.Monsters.Killed++;
 			if ((game.mode == GAME_COOPERATIVE) && (attacker->EntityFlags & ENT_PLAYER))
 				(entity_cast<CPlayerEntity>(attacker))->Client.Respawn.score++;
 			// medics won't heal monsters that they kill themselves
@@ -362,10 +362,10 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
 		if ((Health > 0) &&
-			(!Enemy && (Monster->BonusDamageTime <= level.framenum)) ||
-			(Enemy && (Monster->BonusDamageTime == level.framenum)))
+			(!Enemy && (Monster->BonusDamageTime <= level.Frame)) ||
+			(Enemy && (Monster->BonusDamageTime == level.Frame)))
 		{
-			Monster->BonusDamageTime = level.framenum;
+			Monster->BonusDamageTime = level.Frame;
 			damage *= 2;
 		}
 	}
@@ -416,12 +416,12 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	}
 
 	// check for invincibility
-	if ((isClient && (Client->invincible_framenum > level.framenum) ) && !(dflags & DAMAGE_NO_PROTECTION))
+	if ((isClient && (Client->invincible_framenum > level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
 	{
-		if (Player->PainDebounceTime < level.framenum)
+		if (Player->PainDebounceTime < level.Frame)
 		{
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect4.wav"));
-			Player->PainDebounceTime = level.framenum + 20;
+			Player->PainDebounceTime = level.Frame + 20;
 		}
 		take = 0;
 		save = damage;
@@ -512,7 +512,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		{
 			Pain (attacker, knockback, take);
 			if (skill->Integer() == 3)
-				Monster->PainDebounceTime = level.framenum + 50;
+				Monster->PainDebounceTime = level.Frame + 50;
 		}
 	}
 	else if (((EntityFlags & ENT_PLAYER) && take && !CTFMatchSetup()) || take)
@@ -554,7 +554,7 @@ CBaseEntity(Index)
 
 void CThinkableEntity::RunThink ()
 {
-	if (NextThink <= 0 || NextThink > level.framenum)
+	if (NextThink <= 0 || NextThink > level.Frame)
 		return;
 	
 	NextThink = 0;
@@ -1539,7 +1539,7 @@ ENTITYFIELDS_BEGIN(CUsableEntity)
 };
 ENTITYFIELDS_END(CUsableEntity)
 
-bool			CUsableEntity::ParseField (char *Key, char *Value)
+bool			CUsableEntity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CUsableEntity> (this, Key, Value))
 		return true;
@@ -1586,7 +1586,7 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
 		t->gameEntity->classname = "DelayedUse";
 
 		// Paril: for compatibility
-		t->NextThink = level.framenum + Delay;
+		t->NextThink = level.Frame + Delay;
 		t->Activator = activator;
 		if (!activator)
 			DebugPrintf ("DelayedUse with no activator\n");

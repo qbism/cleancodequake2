@@ -422,7 +422,7 @@ extern uint32 LastID;
 		if (newClass->CheckValidity()) \
 		{	\
 			Monster->Spawn (); \
-			newClass->NextThink = level.framenum + 1; \
+			newClass->NextThink = level.Frame + 1; \
 		}	\
 		return newClass; \
 	} \

@@ -44,7 +44,7 @@ void CMonster::FoundPath ()
 {
 	if (!P_CurrentGoalNode || !P_CurrentNode)
 	{
-		P_NodePathTimeout = level.framenum + 100; // in 10 seconds we will try again.
+		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
 		return;
 	}
 	// Just in case...
@@ -57,7 +57,7 @@ void CMonster::FoundPath ()
 	{
 		P_CurrentNode = P_CurrentGoalNode = NULL;
 		P_CurrentNodeIndex = -1;
-		P_NodePathTimeout = level.framenum + 100; // in 10 seconds we will try again.
+		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
 		return;
 	}
 
@@ -72,7 +72,7 @@ void CMonster::FoundPath ()
 
 	P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
 
-	float timeOut = level.framenum + 20; // Always at least 2 seconds
+	float timeOut = level.Frame + 20; // Always at least 2 seconds
 	// Calculate approximate distance and check how long we want this to time out for
 	switch (Range(origin, P_CurrentNode->Origin))
 	{
@@ -161,7 +161,7 @@ void CMonster::MoveToPath (float Dist)
 						if (Plat->MoveState == STATE_BOTTOM)
 							Plat->GoUp ();
 						else if (Plat->MoveState == STATE_TOP)
-							Plat->NextThink = level.framenum + 10;	// the player is still on the plat, so delay going down
+							Plat->NextThink = level.Frame + 10;	// the player is still on the plat, so delay going down
 						//ForcePlatToGoUp (P_CurrentNode->LinkedEntity->Entity);
 					}
 				}
@@ -217,7 +217,7 @@ void CMonster::MoveToPath (float Dist)
 		}
 	}
 
-	if (P_NodeFollowTimeout < level.framenum && P_CurrentPath && P_CurrentNode)
+	if (P_NodeFollowTimeout < level.Frame && P_CurrentPath && P_CurrentNode)
 	{
 		// Re-evaluate start and end nodes
 		CPathNode *End = P_CurrentPath->Path[0];
@@ -226,7 +226,7 @@ void CMonster::MoveToPath (float Dist)
 		P_CurrentPath = NULL;
 		FoundPath ();
 
-		FrameNumber_t timeOut = level.framenum + 20; // Always at least 2 seconds
+		FrameNumber_t timeOut = level.Frame + 20; // Always at least 2 seconds
 		// Calculate approximate distance and check how long we want this to time out for
 		switch (Range(Entity->State.GetOrigin(), P_CurrentNode->Origin))
 		{
@@ -331,23 +331,23 @@ void CMonster::MoveToPath (float Dist)
 =================
 AI_SetSightClient
 
-Called once each frame to set level.sight_client to the
+Called once each frame to set level.SightClient to the
 player to be checked for in findtarget.
 
-If all clients are either dead or in notarget, sight_client
+If all clients are either dead or in notarget, SightClient
 will be null.
 
-In coop games, sight_client will cycle between the clients.
+In coop games, SightClient will cycle between the clients.
 =================
 */
 void AI_SetSightClient ()
 {
 	int		start, check;
 
-	if (level.sight_client == NULL)
+	if (level.SightClient == NULL)
 		start = 1;
 	else
-		start = level.sight_client->State.GetNumber();
+		start = level.SightClient->State.GetNumber();
 
 	check = start;
 	while (1)
@@ -360,12 +360,12 @@ void AI_SetSightClient ()
 			&& ent->Health > 0
 			&& !(ent->Flags & FL_NOTARGET) )
 		{
-			level.sight_client = ent;
+			level.SightClient = ent;
 			return;		// got one
 		}
 		if (check == start)
 		{
-			level.sight_client = NULL;
+			level.SightClient = NULL;
 			return;		// nobody to see
 		}
 	}
@@ -425,7 +425,7 @@ ENTITYFIELDS_BEGIN(CMonsterEntity)
 };
 ENTITYFIELDS_END(CMonsterEntity)
 
-bool			CMonsterEntity::ParseField (char *Key, char *Value)
+bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CMonsterEntity> (this, Key, Value))
 		return true;
@@ -497,7 +497,7 @@ void CMonsterEntity::ThrowHead (MediaIndex gibIndex, int damage, int type)
 	ClipGibVelocity (this);
 	AngularVelocity.Y = crand()*600;
 
-	NextThink = level.framenum + 100 + frand()*100;
+	NextThink = level.Frame + 100 + frand()*100;
 
 	Link();
 }
@@ -945,7 +945,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 void CMonster::WalkMonsterStartGo ()
 {
-	if (!(Entity->SpawnFlags & 2) && level.framenum < 10)
+	if (!(Entity->SpawnFlags & 2) && level.Frame < 10)
 	{
 		DropToFloor ();
 
@@ -969,7 +969,7 @@ void CMonster::WalkMonsterStartGo ()
 void CMonster::WalkMonsterStart ()
 {
 	Think = &CMonster::WalkMonsterStartGo;
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 	MonsterStart ();
 }
 
@@ -1100,7 +1100,7 @@ void CMonster::MonsterStartGo ()
 	else
 	{
 		Think = &CMonster::MonsterThink;
-		Entity->NextThink = level.framenum + FRAMETIME;
+		Entity->NextThink = level.Frame + FRAMETIME;
 	}
 }
 
@@ -1120,13 +1120,13 @@ void CMonster::MonsterStart ()
 	}
 
 	if (!(AIFlags & AI_GOOD_GUY))
-		level.total_monsters++;
+		level.Monsters.Total++;
 
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 	Entity->GetSvFlags() |= SVF_MONSTER;
 	Entity->State.GetRenderEffects() |= RF_FRAMELERP;
 	Entity->CanTakeDamage = true;
-	Entity->AirFinished = level.framenum + 120;
+	Entity->AirFinished = level.Frame + 120;
 	Entity->UseState = MONSTERENTITY_THINK_USE;
 	Entity->MaxHealth = Entity->Health;
 	Entity->GetClipmask() = CONTENTS_MASK_MONSTERSOLID;
@@ -1144,7 +1144,7 @@ void CMonster::MonsterStart ()
 	BaseHeight = Entity->GetMaxs().Z;
 #endif
 
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 }
 
 void CMonster::MonsterTriggeredStart ()
@@ -1184,7 +1184,7 @@ void CMonsterEntity::Use (CBaseEntity *other, CBaseEntity *activator)
 	case MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE:
 		// we have a one frame delay here so we don't telefrag the guy who activated us
 		Monster->Think = &CMonster::MonsterTriggeredSpawn;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		if (activator->EntityFlags & ENT_PLAYER)
 			Enemy = activator;
 		UseState = MONSTERENTITY_THINK_USE;
@@ -1200,7 +1200,7 @@ void CMonster::MonsterTriggeredSpawn ()
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->PhysicsDisabled = false;
 	Entity->GetSvFlags() &= ~SVF_NOCLIENT;
-	Entity->AirFinished = level.framenum + 120;
+	Entity->AirFinished = level.Frame + 120;
 	Entity->Link ();
 
 	MonsterStartGo ();
@@ -1430,7 +1430,7 @@ bool CMonster::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -1465,7 +1465,7 @@ bool CMonster::CheckAttack ()
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + ((2*frand())*10);
+		AttackFinished = level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -1503,9 +1503,9 @@ bool CMonster::CheckAttack ()
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.framenum < AttackFinished)
+						if (level.Frame < AttackFinished)
 							return false;
-						if (level.framenum < (TrailTime + BlindFireDelay))
+						if (level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
@@ -1551,7 +1551,7 @@ bool CMonster::CheckAttack ()
 		return false;
 	}
 	
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -1577,7 +1577,7 @@ bool CMonster::CheckAttack ()
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + ((2*frand())*10);
+		AttackFinished = level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -1706,7 +1706,7 @@ bool CMonster::AI_CheckAttack()
 		{
 			if (Entity->Enemy)
 			{
-				if ((level.framenum - Entity->Enemy->teleport_time) > 50)
+				if ((level.Frame - Entity->Enemy->teleport_time) > 50)
 				{
 					if (Entity->GoalEntity == Entity->Enemy)
 					{
@@ -1722,7 +1722,7 @@ bool CMonster::AI_CheckAttack()
 				}
 				else
 				{
-					Entity->gameEntity->show_hostile = level.framenum + 10;
+					Entity->gameEntity->show_hostile = level.Frame + 10;
 					return false;
 				}
 			}
@@ -1777,20 +1777,20 @@ bool CMonster::AI_CheckAttack()
 				// will just revert to walking with no target and
 				// the monsters will wonder around aimlessly trying
 				// to hunt the world entity
-				PauseTime = level.framenum + 100000000;
+				PauseTime = level.Frame + 100000000;
 				Stand ();
 			}
 			return true;
 		}
 	}
 
-	Entity->gameEntity->show_hostile = level.framenum + 10;		// wake up other monsters
+	Entity->gameEntity->show_hostile = level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
 	EnemyVis = IsVisible(Entity, Entity->Enemy);
 	if (EnemyVis)
 	{
-		SearchTime = level.framenum + 50;
+		SearchTime = level.Frame + 50;
 		LastSighting = Entity->Enemy->State.GetOrigin();
 	}
 
@@ -1830,7 +1830,7 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-			if ((level.framenum - Entity->Enemy->gameEntity->teleport_time) > 50)
+			if ((level.Frame - Entity->Enemy->gameEntity->teleport_time) > 50)
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
@@ -1846,7 +1846,7 @@ bool CMonster::AI_CheckAttack()
 			}
 			else
 			{
-				Entity->gameEntity->show_hostile = level.framenum + 10;
+				Entity->gameEntity->show_hostile = level.Frame + 10;
 				return false;
 			}
 		}
@@ -1917,24 +1917,24 @@ bool CMonster::AI_CheckAttack()
 				// will just revert to walking with no target and
 				// the monsters will wonder around aimlessly trying
 				// to hunt the world entity
-				PauseTime = level.framenum + 100000000;
+				PauseTime = level.Frame + 100000000;
 				Stand ();
 			}
 			return true;
 		}
 	}
 
-	Entity->gameEntity->show_hostile = level.framenum + 10;		// wake up other monsters
+	Entity->gameEntity->show_hostile = level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
 	EnemyVis = IsVisible(Entity, Entity->Enemy);
 	if (EnemyVis)
 	{
-		SearchTime = level.framenum + 50;
+		SearchTime = level.Frame + 50;
 		LastSighting = Entity->Enemy->State.GetOrigin();
 		// PMM
 		AIFlags &= ~AI_LOST_SIGHT;
-		TrailTime = level.framenum;
+		TrailTime = level.Frame;
 		BlindFireTarget = Entity->Enemy->State.GetOrigin();
 		BlindFireDelay = 0;
 		// pmm
@@ -2061,7 +2061,7 @@ void CMonster::AI_Run(float Dist)
 		MoveToGoal (Dist);
 		AIFlags &= ~AI_LOST_SIGHT;
 		LastSighting = Entity->Enemy->State.GetOrigin();
-		TrailTime = level.framenum;
+		TrailTime = level.Frame;
 		return;
 	}
 
@@ -2072,7 +2072,7 @@ void CMonster::AI_Run(float Dist)
 			return;
 	}
 
-	//if (SearchTime && (level.framenum > (SearchTime + 200)))
+	//if (SearchTime && (level.Frame > (SearchTime + 200)))
 	//{
 	//	MoveToGoal (Dist);
 	//	SearchTime = 0;
@@ -2089,7 +2089,7 @@ void CMonster::AI_Run(float Dist)
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
 #ifdef MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = level.framenum + 100; // Do "blind fire" first->
+		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first->
 #endif
 
 		// just lost sight of the player, decide where to go first
@@ -2098,7 +2098,7 @@ void CMonster::AI_Run(float Dist)
 		isNew = true;
 	}
 #ifdef MONSTERS_USE_PATHFINDING
-	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.framenum)
+	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.Frame)
 	{
 		// Set us up for pathing
 		P_CurrentNode = GetClosestNodeTo(origin);
@@ -2113,7 +2113,7 @@ void CMonster::AI_Run(float Dist)
 //		dprint("reached current goal: "); dprint(vtos(self.origin)); dprint(" "); dprint(vtos(self.last_sighting)); dprint(" "); dprint(ftos(vlen(self.origin - self.last_sighting))); dprint("\n");
 
 		// give ourself more time since we got this far
-		SearchTime = level.framenum + 50;
+		SearchTime = level.Frame + 50;
 
 		if (AIFlags & AI_PURSUE_TEMP)
 		{
@@ -2319,7 +2319,7 @@ void CMonster::AI_Run(float Dist)
 		{
 			AIFlags &= ~AI_LOST_SIGHT;
 			LastSighting = Entity->Enemy->State.GetOrigin();
-			TrailTime = level.framenum;
+			TrailTime = level.Frame;
 			//PMM
 			BlindFireTarget = Entity->Enemy->State.GetOrigin();
 			BlindFireDelay = 0;
@@ -2340,7 +2340,7 @@ void CMonster::AI_Run(float Dist)
 
 		AIFlags &= ~AI_LOST_SIGHT;
 		LastSighting = Entity->Enemy->State.GetOrigin();
-		TrailTime = level.framenum;
+		TrailTime = level.Frame;
 		// PMM
 		BlindFireTarget = Entity->Enemy->State.GetOrigin();
 		BlindFireDelay = 0;
@@ -2357,7 +2357,7 @@ void CMonster::AI_Run(float Dist)
 	}
 // pmm
 
-	if ((SearchTime) && (level.framenum > (SearchTime + 200)))
+	if ((SearchTime) && (level.Frame > (SearchTime + 200)))
 	{
 		// PMM - double move protection
 		if (!alreadyMoved)
@@ -2375,7 +2375,7 @@ void CMonster::AI_Run(float Dist)
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
 #ifdef MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = level.framenum + 100; // Do "blind fire" first->
+		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first->
 #endif
 
 		// just lost sight of the player, decide where to go first
@@ -2384,7 +2384,7 @@ void CMonster::AI_Run(float Dist)
 		isNew = true;
 	}
 #ifdef MONSTERS_USE_PATHFINDING
-	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.framenum)
+	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.Frame)
 	{
 		// Set us up for pathing
 		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
@@ -2398,7 +2398,7 @@ void CMonster::AI_Run(float Dist)
 		AIFlags &= ~AI_PURSUE_NEXT;
 
 		// give ourself more time since we got this far
-		SearchTime = level.framenum + 50;
+		SearchTime = level.Frame + 50;
 
 		if (AIFlags & AI_PURSUE_TEMP)
 		{
@@ -2648,21 +2648,21 @@ void CMonster::AI_Stand (float Dist)
 	if (FindTarget ())
 		return;
 	
-	if (level.framenum > PauseTime)
+	if (level.Frame > PauseTime)
 	{
 		Walk ();
 		return;
 	}
 
-	if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.framenum > IdleTime))
+	if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
 			Idle ();
-			IdleTime = level.framenum + 150 + (frand() * 150);
+			IdleTime = level.Frame + 150 + (frand() * 150);
 		}
 		else
-			IdleTime = level.framenum + (frand() * 150);
+			IdleTime = level.Frame + (frand() * 150);
 	}
 #else
 	if (Dist)
@@ -2718,7 +2718,7 @@ void CMonster::AI_Stand (float Dist)
 				AIFlags &= ~AI_LOST_SIGHT;
 				LastSighting = Entity->Enemy->State.GetOrigin();
 				BlindFireTarget = Entity->Enemy->State.GetOrigin();
-				TrailTime = level.framenum;
+				TrailTime = level.Frame;
 				BlindFireDelay = 0;
 			}
 			// check retval to make sure we're not blindfiring
@@ -2738,22 +2738,22 @@ void CMonster::AI_Stand (float Dist)
 	if (FindTarget ())
 		return;
 	
-	if (level.framenum > PauseTime)
+	if (level.Frame > PauseTime)
 	{
 		Walk ();
 		return;
 	}
 
-	if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.framenum > IdleTime))
+	if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
 			Idle ();
-			IdleTime = level.framenum + 150 + frand() * 150;
+			IdleTime = level.Frame + 150 + frand() * 150;
 		}
 		else
 		{
-			IdleTime = level.framenum + frand() * 150;
+			IdleTime = level.Frame + frand() * 150;
 		}
 	}
 #endif
@@ -2855,15 +2855,15 @@ void CMonster::AI_Walk(float Dist)
 	if (FindTarget ())
 		return;
 
-	if ((MonsterFlags & MF_HAS_SEARCH) && (level.framenum > IdleTime))
+	if ((MonsterFlags & MF_HAS_SEARCH) && (level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
 			Search ();
-			IdleTime = level.framenum + 150 + (frand() * 150);
+			IdleTime = level.Frame + 150 + (frand() * 150);
 		}
 		else
-			IdleTime = level.framenum + (frand() * 150);
+			IdleTime = level.Frame + (frand() * 150);
 	}
 }
 
@@ -2938,7 +2938,7 @@ void CMonster::MonsterDeathUse ()
 
 void CMonster::MonsterThink ()
 {
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 	MoveFrame ();
 	if (Entity->GetLinkCount() != LinkCount)
 	{
@@ -3060,10 +3060,19 @@ void CMonster::MoveFrame ()
 
 void CMonster::FoundTarget ()
 {
-	Entity->gameEntity->show_hostile = level.framenum + 10;		// wake up other monsters
+#ifndef MONSTERS_USE_PATHFINDING
+	// let other monsters see this monster for a while
+	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
+	{
+		level.SightEntity = this;
+		level.SightEntityFrame = level.framenum;
+	}
+#endif
+
+	Entity->gameEntity->show_hostile = level.Frame + 10;		// wake up other monsters
 
 	LastSighting = Entity->Enemy->State.GetOrigin();
-	TrailTime = level.framenum;
+	TrailTime = level.Frame;
 
 	if (!Entity->CombatTarget)
 	{
@@ -3113,7 +3122,7 @@ void CMonster::SetEffects()
 	if (Entity->Health <= 0)
 		return;
 
-	if (Entity->gameEntity->powerarmor_time > level.framenum)
+	if (Entity->gameEntity->powerarmor_time > level.Frame)
 	{
 		if (PowerArmorType == POWER_ARMOR_SCREEN)
 			Entity->State.GetEffects() |= EF_POWERSCREEN;
@@ -3137,32 +3146,32 @@ void CMonster::WorldEffects()
 		if (!(Entity->Flags & FL_SWIM))
 		{
 			if (Entity->gameEntity->waterlevel < WATER_UNDER)
-				Entity->AirFinished = level.framenum + 120;
-			else if (Entity->AirFinished < level.framenum)
+				Entity->AirFinished = level.Frame + 120;
+			else if (Entity->AirFinished < level.Frame)
 			{
-				if (PainDebounceTime < level.framenum)
+				if (PainDebounceTime < level.Frame)
 				{
-					int dmg = 2 + 2 * (level.framenum - Entity->AirFinished);
+					int dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
 					if (dmg > 15)
 						dmg = 15;
 					Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, dmg, 0, DAMAGE_NO_ARMOR, MOD_WATER);
-					PainDebounceTime = level.framenum + 10;
+					PainDebounceTime = level.Frame + 10;
 				}
 			}
 		}
 		else
 		{
 			if (Entity->gameEntity->waterlevel > WATER_NONE)
-				Entity->AirFinished = level.framenum + 90;
-			else if (Entity->AirFinished < level.framenum)
+				Entity->AirFinished = level.Frame + 90;
+			else if (Entity->AirFinished < level.Frame)
 			{	// suffocate!
-				if (PainDebounceTime < level.framenum)
+				if (PainDebounceTime < level.Frame)
 				{
-					int dmg = 2 + 2 * (level.framenum - Entity->AirFinished);
+					int dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
 					if (dmg > 15)
 						dmg = 15;
 					Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, dmg, 0, DAMAGE_NO_ARMOR, MOD_WATER);
-					PainDebounceTime = level.framenum + 10;
+					PainDebounceTime = level.Frame + 10;
 				}
 			}
 		}
@@ -3180,17 +3189,17 @@ void CMonster::WorldEffects()
 
 	if ((Entity->gameEntity->watertype & CONTENTS_LAVA) && !(Entity->Flags & FL_IMMUNE_LAVA))
 	{
-		if (Entity->DamageDebounceTime < level.framenum)
+		if (Entity->DamageDebounceTime < level.Frame)
 		{
-			Entity->DamageDebounceTime = level.framenum + 2;
+			Entity->DamageDebounceTime = level.Frame + 2;
 			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 10*Entity->gameEntity->waterlevel, 0, 0, MOD_LAVA);
 		}
 	}
 	if ((Entity->gameEntity->watertype & CONTENTS_SLIME) && !(Entity->Flags & FL_IMMUNE_SLIME))
 	{
-		if (Entity->DamageDebounceTime < level.framenum)
+		if (Entity->DamageDebounceTime < level.Frame)
 		{
-			Entity->DamageDebounceTime = level.framenum + 10;
+			Entity->DamageDebounceTime = level.Frame + 10;
 			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 4*Entity->gameEntity->waterlevel, 0, 0, MOD_SLIME);
 		}
 	}
@@ -3286,7 +3295,7 @@ void CMonster::HuntTarget()
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 	// wait a while before first attack
 	if (!(AIFlags & AI_STAND_GROUND))
-		AttackFinished = level.framenum + 1;
+		AttackFinished = level.Frame + 1;
 }
 
 bool CMonster::FindTarget()
@@ -3311,7 +3320,7 @@ bool CMonster::FindTarget()
 		return false;
 
 #ifdef MONSTERS_USE_PATHFINDING
-	if ((level.SoundEntityFramenum >= (level.framenum - 1)) && level.NoiseNode)
+	if ((level.SoundEntityFramenum >= (level.Frame - 1)) && level.NoiseNode)
 	{
 		if (Entity->SpawnFlags & 1)
 		{
@@ -3341,7 +3350,7 @@ bool CMonster::FindTarget()
 		FoundPath ();
 
 		// Check if we can see the entity too
-		if (IsVisible(Entity, level.SoundEntity) && !Entity->Enemy && (level.SoundEntityFramenum >= (level.framenum - 1)) && !(Entity->SpawnFlags & 1) )
+		if (IsVisible(Entity, level.SoundEntity) && !Entity->Enemy && (level.SoundEntityFramenum >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
 		{
 			client = level.SoundEntity;
 
@@ -3396,27 +3405,27 @@ bool CMonster::FindTarget()
 
 	heardit = false;
 #ifndef MONSTERS_USE_PATHFINDING
-	if ((level.sight_entity_framenum >= (level.framenum - 1)) && !(Entity->SpawnFlags & 1) )
+	if ((level.SightEntityFrame >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
 	{
-		client = level.sight_entity;
+		client = level.SightEntity;
 		if (client->Enemy == Entity->Enemy)
 			return false;
 	}
 #endif
 
 #ifndef MONSTERS_USE_PATHFINDING
-	else if (level.sound_entity_framenum >= (level.framenum - 1))
+	else if (level.SoundEntityFrame >= (level.Frame - 1))
 	{
-		client = level.sound_entity;
+		client = level.SoundEntity;
 		heardit = true;
 	}
-	else if (!(Entity->Enemy) && (level.sound2_entity_framenum >= (level.framenum - 1)) && !(Entity->SpawnFlags & 1) )
+	else if (!(Entity->Enemy) && (level.SoundEntity2Frame >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
 	{
-		client = level.sound2_entity;
+		client = level.SoundEntity2;
 		heardit = true;
 	}
 #else
-	if (level.SoundEntityFramenum >= (level.framenum - 1))
+	if (level.SoundEntityFramenum >= (level.Frame - 1))
 	{
 		client = level.SoundEntity;
 		heardit = true;
@@ -3424,13 +3433,13 @@ bool CMonster::FindTarget()
 #endif
 	else
 	{
-		client = level.sight_client;
+		client = level.SightClient;
 		if (!client)
 			return false;	// no clients to get mad at
 	}
 
 	if (!client)
-		client = level.sight_client;
+		client = level.SightClient;
 	if (!client)
 		return false;
 
@@ -3468,7 +3477,7 @@ bool CMonster::FindTarget()
 
 		if (r == RANGE_NEAR)
 		{
-			if (client->gameEntity->show_hostile < level.framenum && !IsInFront (Entity, client))
+			if (client->gameEntity->show_hostile < level.Frame && !IsInFront (Entity, client))
 				return false;
 		}
 		else if (r == RANGE_MID)
@@ -3556,7 +3565,7 @@ void CMonster::FliesOn ()
 	Entity->State.GetEffects() |= EF_FLIES;
 	Entity->State.GetSound() = SoundIndex ("infantry/inflies1.wav");
 	Think = &CMonster::FliesOff;
-	Entity->NextThink = level.framenum + 600;
+	Entity->NextThink = level.Frame + 600;
 }
 
 void CMonster::CheckFlies ()
@@ -3568,7 +3577,7 @@ void CMonster::CheckFlies ()
 		return;
 
 	Think = &CMonster::FliesOn;
-	Entity->NextThink = level.framenum + ((5 + 10 * frand()) * 10);
+	Entity->NextThink = level.Frame + ((5 + 10 * frand()) * 10);
 }
 
 uint32 LastID = 0;
@@ -3682,7 +3691,7 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 
 	if (ducker)
 	{
-		if (NextDuckTime > level.framenum)
+		if (NextDuckTime > level.Frame)
 		{
 //			if ((g_showlogic) && (g_showlogic->value))
 //				gi.dprintf ("ducked too often, not ducking\n");
@@ -3706,14 +3715,14 @@ void CMonster::DuckDown ()
 
 	Entity->GetMaxs().Z = BaseHeight - 32;
 	Entity->CanTakeDamage = true;
-	if (DuckWaitTime < level.framenum)
-		DuckWaitTime = level.framenum + 10;
+	if (DuckWaitTime < level.Frame)
+		DuckWaitTime = level.Frame + 10;
 	Entity->Link ();
 }
 
 void CMonster::DuckHold ()
 {
-	if (level.framenum >= DuckWaitTime)
+	if (level.Frame >= DuckWaitTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -3729,7 +3738,7 @@ void CMonster::UnDuck ()
 
 	Entity->GetMaxs().Z = BaseHeight;
 	Entity->CanTakeDamage = true;
-	NextDuckTime = level.framenum + 5;
+	NextDuckTime = level.Frame + 5;
 	Entity->Link ();
 }
 #endif

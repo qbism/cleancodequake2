@@ -33,6 +33,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#include <cctype>
+#include <algorithm>
+
+CEntityField::CEntityField (const char *Name, size_t Offset, EFieldType FieldType) :
+Name(Name),
+Offset(Offset),
+FieldType(FieldType),
+StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN))
+{
+	std::transform(this->Name.begin(), this->Name.end(), this->Name.begin(),
+		(int(*)(int)) std::tolower);
+};
+
 CEntityState::CEntityState () :
 state(NULL)
 {
@@ -141,7 +154,7 @@ edict_t *G_Spawn (void)
 	{
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (!e->inUse && (e->freetime < 20 || level.framenum - e->freetime > 5))
+		if (!e->inUse && (e->freetime < 20 || level.Frame - e->freetime > 5))
 		{
 			if (e->Entity && e->Entity->Freed)
 			{
@@ -185,10 +198,46 @@ void G_FreeEdict (edict_t *ed)
 	memset (ed, 0, sizeof(*ed));
 	ed->Entity = Entity;
 	ed->classname = "freed";
-	ed->freetime = level.framenum;
+	ed->freetime = level.Frame;
 	ed->inUse = false;
 }
 
+std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> > PrivateEntities;
+
+void InitPrivateEntities ()
+{
+	PrivateEntities.clear ();
+}
+
+void			RunPrivateEntities ()
+{
+	std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> >::iterator it = PrivateEntities.begin();
+	while (it != PrivateEntities.end())
+	{
+		CBaseEntity *Entity = (*it);
+		
+		level.CurrentEntity = Entity;
+
+		if (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) 
+			entity_cast<CThinkableEntity>(Entity)->PreThink ();
+
+		Entity->Run ();
+
+		if (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE))
+			entity_cast<CThinkableEntity>(Entity)->RunThink ();
+
+		// Were we freed?
+		// This has to be processed after thinking and running, because
+		// the entity still has to be intact after that
+		if (Entity->Freed)
+		{
+			it = PrivateEntities.erase (it);
+			QDelete Entity;
+		}
+		else
+			++it;
+	}
+};
 
 // Creating a new entity via constructor.
 CBaseEntity::CBaseEntity ()
@@ -209,28 +258,46 @@ CBaseEntity::CBaseEntity (int Index)
 	if (Index < 0)
 	{
 		Freed = false;
-		EntityFlags |= ENT_BASE;
+		EntityFlags |= (ENT_PRIVATE|ENT_BASE);
+
 		gameEntity = NULL;
-		return;
+		PrivateEntities.push_back (this);
 	}
+	else
+	{
+		gameEntity = &g_edicts[Index];
+		gameEntity->Entity = this;
+		gameEntity->state.number = Index;
 
-	gameEntity = &g_edicts[Index];
-	gameEntity->Entity = this;
-	gameEntity->state.number = Index;
-
-	Freed = false;
-	EntityFlags |= ENT_BASE;
-	State = CEntityState(&gameEntity->state);
-	LastMinsSet = LastMaxSet = -1;
+		Freed = false;
+		EntityFlags |= ENT_BASE;
+		State = CEntityState(&gameEntity->state);
+		LastMinsSet = LastMaxSet = -1;
+	}
 }
 
 CBaseEntity::~CBaseEntity ()
 {
-	gameEntity->Entity = NULL;
+	if (gameEntity)
+	{
+		gameEntity->Entity = NULL;
 
 _CC_DISABLE_DEPRECATION
-	G_FreeEdict (gameEntity); // "delete" the entity
+		G_FreeEdict (gameEntity); // "delete" the entity
 _CC_ENABLE_DEPRECATION
+	}
+	else
+	{
+		for (std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> >::iterator it = PrivateEntities.begin();
+			it < PrivateEntities.end(); it++)
+		{
+			if ((*it) == this)
+			{
+				PrivateEntities.erase (it);
+				break;
+			}
+		}
+	}
 };
 
 // Funtions below are to link the private gameEntity together
@@ -324,13 +391,16 @@ void			CBaseEntity::Unlink ()
 
 void			CBaseEntity::Free ()
 {
-	Unlink ();
+	if (gameEntity)
+	{
+		Unlink ();
 
-	memset (gameEntity, 0, sizeof(*gameEntity));
-	gameEntity->Entity = this;
-	gameEntity->classname = "freed";
-	gameEntity->freetime = level.framenum;
-	GetInUse() = false;
+		memset (gameEntity, 0, sizeof(*gameEntity));
+		gameEntity->Entity = this;
+		gameEntity->classname = "freed";
+		gameEntity->freetime = level.Frame;
+		GetInUse() = false;
+	}
 
 	Freed = true;
 }
@@ -392,25 +462,6 @@ CBaseEntity(Index)
 {
 	EntityFlags |= ENT_MAP;
 };
-
-CPrivateEntity::CPrivateEntity (int Index)
-{
-};
-
-CPrivateEntity::CPrivateEntity ()
-{
-	InUse = true;
-};
-
-bool			&CPrivateEntity::GetInUse ()
-{
-	return InUse;
-}
-
-void CPrivateEntity::Free ()
-{
-	Freed = true;
-}
 
 #include "cc_tent.h"
 
@@ -475,7 +526,7 @@ const CEntityField CMapEntity::FieldsForParsing_Map[] =
 };
 const size_t CMapEntity::FieldsForParsingSize_Map = sizeof(CMapEntity::FieldsForParsing_Map) / sizeof(CMapEntity::FieldsForParsing_Map[0]);
 
-bool			CMapEntity::ParseField (char *Key, char *Value)
+bool			CMapEntity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CMapEntity, CBaseEntity> (this, Key, Value))
 		return true;
@@ -483,7 +534,7 @@ bool			CMapEntity::ParseField (char *Key, char *Value)
 	{
 		for (size_t i = 0; i < CMapEntity::FieldsForParsingSize_Map; i++)
 		{
-			if (!(CMapEntity::FieldsForParsing_Map[i].FieldType & FT_NOSPAWN) && (strcmp (Key, CMapEntity::FieldsForParsing_Map[i].Name) == 0))
+			if (!(CMapEntity::FieldsForParsing_Map[i].FieldType & FT_NOSPAWN) && (strcmp (Key, CMapEntity::FieldsForParsing_Map[i].Name.c_str()) == 0))
 			{
 				CMapEntity::FieldsForParsing_Map[i].Create<CMapEntity> (this, Value);
 				return true;
@@ -498,7 +549,7 @@ bool			CMapEntity::ParseField (char *Key, char *Value)
 bool				CMapEntity::CheckValidity ()
 {
 	// Yet another map hack
-	if (!Q_stricmp(level.mapname, "command") && !Q_stricmp(gameEntity->classname, "trigger_once") && !Q_stricmp(gameEntity->model, "*27"))
+	if (!Q_stricmp(level.ServerLevelName.c_str(), "command") && !Q_stricmp(gameEntity->classname, "trigger_once") && !Q_stricmp(gameEntity->model, "*27"))
 		SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
 
 	// Remove things (except the world) from different skill levels or deathmatch

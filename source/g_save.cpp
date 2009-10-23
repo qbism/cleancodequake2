@@ -464,7 +464,7 @@ All pointer variables (except function pointers) must be handled specially.
 void WriteLevelLocals (fileHandle_t f)
 {
 	field_t		*field;
-	level_locals_t		temp;
+	CLevelLocals		temp;
 
 	// all of the ints, floats, and vectors stay as they are
 	temp = level;
@@ -700,7 +700,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 			if (strcmp(ent->classname, "target_crosslevel_target") == 0)
 				// backwards compatoh you get the picture
 			{
-				entity_cast<CThinkableEntity>(ent->Entity)->NextThink = level.framenum + (ent->delay * 10);
+				entity_cast<CThinkableEntity>(ent->Entity)->NextThink = level.Frame + (ent->delay * 10);
 			}
 	}
 

@@ -180,7 +180,7 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	if (!Player->Client.Persistent.Weapon)
 	{	// dead
 		Player->Client.PlayerState.GetGunIndex() = 0;
-		if (!Player->Client.grenade_thrown && !Player->Client.grenade_blew_up && Player->Client.grenade_time >= level.framenum) // We had a grenade cocked
+		if (!Player->Client.grenade_thrown && !Player->Client.grenade_blew_up && Player->Client.grenade_time >= level.Frame) // We had a grenade cocked
 		{
 			WeaponGrenades.FireGrenade(Player, false);
 			Player->Client.grenade_time = 0;
@@ -251,10 +251,10 @@ bool CWeapon::AttemptToFire (CPlayerEntity *Player)
 void CWeapon::OutOfAmmo (CPlayerEntity *Player)
 {
 	// Doesn't affect pain anymore!
-	if (level.framenum >= Player->DamageDebounceTime)
+	if (level.Frame >= Player->DamageDebounceTime)
 	{
 		Player->PlaySound (CHAN_AUTO, SoundIndex("weapons/noammo.wav"));
-		Player->DamageDebounceTime = level.framenum + 10;
+		Player->DamageDebounceTime = level.Frame + 10;
 	}
 }
 
@@ -291,7 +291,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 	}
 
 	// call active weapon think routine
-	isQuad = (Player->Client.quad_framenum > level.framenum);
+	isQuad = (Player->Client.quad_framenum > level.Frame);
 	isSilenced = (Player->Client.silencer_shots) ? true : false;
 	WeaponGeneric (Player);
 	if (dmFlags.dfDmTechs

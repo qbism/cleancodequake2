@@ -263,7 +263,7 @@ public:
 		LevelName->Enabled = false;
 		LevelName->Align = LA_CENTER;
 		LevelName->Flags = LF_GREEN;
-		Q_snprintfz (LevelName->LabelString, sizeof(LevelName->LabelString), "%s", level.level_name);
+		Q_snprintfz (LevelName->LabelString, sizeof(LevelName->LabelString), "%s", level.FullLevelName.c_str());
 		AddItem(LevelName);
 
 		y += 8;

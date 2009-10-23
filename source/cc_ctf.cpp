@@ -215,7 +215,7 @@ void CTFSpawn(void)
 
 	if (competition->Integer() > 1) {
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = level.framenum + matchsetuptime->Integer() * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
 	}
 }
 
@@ -269,7 +269,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 	// did the attacker frag the flag carrier?
 	if (targ->Client.Persistent.Inventory.Has(enemy_flag_item))
 	{
-		attacker->Client.Respawn.ctf_lastfraggedcarrier = level.framenum;
+		attacker->Client.Respawn.ctf_lastfraggedcarrier = level.Frame;
 		attacker->Client.Respawn.score += CTF_FRAG_CARRIER_BONUS;
 		attacker->PrintToClient (PRINT_MEDIUM, "BONUS: %d points for fragging enemy flag carrier.\n",
 			CTF_FRAG_CARRIER_BONUS);
@@ -286,7 +286,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 	}
 
 	if (targ->Client.Respawn.ctf_lasthurtcarrier &&
-		(level.framenum - targ->Client.Respawn.ctf_lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT) &&
+		(level.Frame - targ->Client.Respawn.ctf_lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT) &&
 		!attacker->Client.Persistent.Inventory.Has(flag_item)) {
 		// attacker is on the same team as the flag carrier and
 		// fragged a guy who hurt our flag carrier
@@ -392,7 +392,7 @@ void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *attacker)
 
 	if (targ->Client.Persistent.Inventory.Has(flag_item) &&
 		targ->Client.Respawn.ctf_team != attacker->Client.Respawn.ctf_team)
-		attacker->Client.Respawn.ctf_lasthurtcarrier = level.framenum;
+		attacker->Client.Respawn.ctf_lasthurtcarrier = level.Frame;
 }
 
 
@@ -897,7 +897,7 @@ public:
 	void Think ()
 	{
 		State.GetFrame() = (State.GetFrame() + 1) % 16;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	virtual void Spawn ()
@@ -910,7 +910,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 };
 
@@ -945,7 +945,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 };
 
@@ -989,14 +989,14 @@ bool CTFBeginElection(CPlayerEntity *ent, EElectState type, char *msg)
 	ctfgame.election = type;
 	ctfgame.evotes = 0;
 	ctfgame.needvotes = (count * electpercentage->Integer()) / 100;
-	ctfgame.electtime = level.framenum + 200; // twenty seconds for election
+	ctfgame.electtime = level.Frame + 200; // twenty seconds for election
 	Q_strncpyz(ctfgame.emsg, msg, sizeof(ctfgame.emsg) - 1);
 
 	// tell everyone
 	BroadcastPrintf(PRINT_CHAT, "%s\n", ctfgame.emsg);
 	BroadcastPrintf(PRINT_HIGH, "Type YES or NO to vote on this request->\n");
 	BroadcastPrintf(PRINT_HIGH, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.evotes, ctfgame.needvotes,
-		(int)((ctfgame.electtime - level.framenum) / 10));
+		(int)((ctfgame.electtime - level.Frame) / 10));
 
 	return true;
 }
@@ -1038,7 +1038,7 @@ void CTFResetAllPlayers(void)
 		{
 			CItemEntity *Item = entity_cast<CItemEntity>(ent);
 			if (Item->GetSolid() == SOLID_NOT && Item->ThinkState == ITS_RESPAWN &&
-				Item->NextThink >= level.framenum)
+				Item->NextThink >= level.Frame)
 			{
 				Item->NextThink = 0;
 				Item->Think ();
@@ -1046,14 +1046,14 @@ void CTFResetAllPlayers(void)
 		}
 	}
 	if (ctfgame.match == MATCH_SETUP)
-		ctfgame.matchtime = level.framenum + matchsetuptime->Integer() * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
 }
 
 // start a match
 void CTFStartMatch(void)
 {
 	ctfgame.match = MATCH_GAME;
-	ctfgame.matchtime = level.framenum + matchtime->Integer() * 600;
+	ctfgame.matchtime = level.Frame + matchtime->Integer() * 600;
 
 	ctfgame.team1 = ctfgame.team2 = 0;
 
@@ -1079,7 +1079,7 @@ void CTFStartMatch(void)
 			ent->GetSvFlags() = SVF_NOCLIENT;
 			ent->Flags &= ~FL_GODMODE;
 
-			ent->Client.respawn_time = level.framenum + 10 + ((irandom(300))/100);
+			ent->Client.respawn_time = level.Frame + 10 + ((irandom(300))/100);
 			ent->Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 			ent->Client.anim_priority = ANIM_DEATH;
 			ent->State.GetFrame() = FRAME_death308 - 1;
@@ -1152,7 +1152,7 @@ void CTFWinElection(void)
 	case ELECT_MAP :
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
 			ctfgame.etarget->Client.Persistent.netname, ctfgame.elevel);
-		Q_strncpyz(level.forcemap, ctfgame.elevel, sizeof(level.forcemap) - 1);
+		level.ForceMap = ctfgame.elevel;
 		EndDMLevel();
 		break;
 	}
@@ -1188,7 +1188,7 @@ void CTFVoteYes(CPlayerEntity *ent)
 	}
 	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.emsg);
 	BroadcastPrintf(PRINT_CHAT, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.evotes, ctfgame.needvotes,
-		(int)((ctfgame.electtime - level.framenum)/10));
+		(int)((ctfgame.electtime - level.Frame)/10));
 }
 
 void CTFVoteNo(CPlayerEntity *ent)
@@ -1210,7 +1210,7 @@ void CTFVoteNo(CPlayerEntity *ent)
 
 	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.emsg);
 	BroadcastPrintf(PRINT_CHAT, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.evotes, ctfgame.needvotes,
-		(int)((ctfgame.electtime - level.framenum)/10));
+		(int)((ctfgame.electtime - level.Frame)/10));
 }
 
 void CTFReady(CPlayerEntity *ent)
@@ -1257,7 +1257,7 @@ void CTFReady(CPlayerEntity *ent)
 		// everyone has commited
 		BroadcastPrintf(PRINT_CHAT, "All players have commited.  Match starting\n");
 		ctfgame.match = MATCH_PREGAME;
-		ctfgame.matchtime = level.framenum + (matchstarttime->Float() * 10);
+		ctfgame.matchtime = level.Frame + (matchstarttime->Float() * 10);
 	}
 }
 
@@ -1285,7 +1285,7 @@ void CTFNotReady(CPlayerEntity *ent)
 	{
 		BroadcastPrintf(PRINT_CHAT, "Match halted.\n");
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = level.framenum + matchsetuptime->Integer() * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
 	}
 }
 
@@ -1386,14 +1386,14 @@ bool CTFCheckRules(void)
 {
 	char text[64];
 
-	if (ctfgame.election != ELECT_NONE && ctfgame.electtime <= level.framenum) {
+	if (ctfgame.election != ELECT_NONE && ctfgame.electtime <= level.Frame) {
 		BroadcastPrintf(PRINT_CHAT, "Election timed out and has been cancelled.\n");
 		ctfgame.election = ELECT_NONE;
 	}
 
 	if (ctfgame.match != MATCH_NONE)
 	{
-		int t = ctfgame.matchtime - level.framenum;
+		int t = ctfgame.matchtime - level.Frame;
 
 		if (t <= 0) { // time ended on something
 			switch (ctfgame.match) {
@@ -1405,7 +1405,7 @@ bool CTFCheckRules(void)
 					CTFResetAllPlayers();
 				} else {
 					// reset the time
-					ctfgame.matchtime = level.framenum + matchsetuptime->Integer() * 600;
+					ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
 				}
 				return false;
 
@@ -1587,8 +1587,8 @@ void CTFPlayerList(CPlayerEntity *ent)
 		Q_snprintfz(tempStr, sizeof(tempStr), "%3d %-16.16s %02d:%02d %4d %3d%s%s\n",
 			i + 1,
 			e2->Client.Persistent.netname,
-			(level.framenum - e2->Client.Respawn.enterframe) / 600,
-			((level.framenum - e2->Client.Respawn.enterframe) % 600)/10,
+			(level.Frame - e2->Client.Respawn.enterframe) / 600,
+			((level.Frame - e2->Client.Respawn.enterframe) % 600)/10,
 			e2->Client.GetPing(),
 			e2->Client.Respawn.score,
 			(ctfgame.match == MATCH_SETUP || ctfgame.match == MATCH_PREGAME) ?
@@ -1645,7 +1645,7 @@ void CTFWarp(CPlayerEntity *ent)
 	{
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
 			ent->Client.Persistent.netname, ArgGets(1));
-		Q_strncpyz(level.forcemap, ArgGets(1).c_str(), sizeof(level.forcemap) - 1);
+		level.ForceMap = ArgGets(1);
 		EndDMLevel();
 		return;
 	}

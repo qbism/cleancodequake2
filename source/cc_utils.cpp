@@ -464,3 +464,23 @@ void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage
 			ent->TakeDamage (inflictor, attacker, ent->State.GetOrigin() - inflictor->State.GetOrigin(), inflictor->State.GetOrigin(), vec3fOrigin, (int)points, (int)points, DAMAGE_RADIUS, mod);
 	}
 }
+
+#include <crtdbg.h>
+
+inline void AssertExpression (const bool expr, const char *msg)
+{
+	if (expr)
+	{
+		// On Win32, open up the Crt debug report thingy
+#if defined(WIN32)
+		if (1 != _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg))
+			_CrtDbgBreak(); // Call break if we told it to break
+#else
+		// If you hit this, you're on non-Windows.
+		// Check msg for more information.
+		assert (0);
+#endif
+		// Print it to the console
+		DebugPrintf ("Assertion failed: %s\n", msg);
+	}
+}

@@ -202,7 +202,7 @@ void CBanList::AddToList (char *Name, EBanTypeFlags Flags)
 
 void CBanList::RemoveFromList (IPAddress Adr)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -221,7 +221,7 @@ void CBanList::RemoveFromList (IPAddress Adr)
 
 void CBanList::RemoveFromList (char *Name)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -240,7 +240,7 @@ void CBanList::RemoveFromList (char *Name)
 
 void CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -259,7 +259,7 @@ void CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 
 void CBanList::ChangeBan (char *Name, EBanTypeFlags Flags)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -278,7 +278,7 @@ void CBanList::ChangeBan (char *Name, EBanTypeFlags Flags)
 
 bool CBanList::IsSquelched (IPAddress Adr)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -295,7 +295,7 @@ bool CBanList::IsSquelched (IPAddress Adr)
 
 bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -312,7 +312,7 @@ bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 
 bool CBanList::IsBanned (IPAddress Adr)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for ( it=BanList.begin() ; it < BanList.end(); it++ )
 	{
@@ -329,7 +329,7 @@ bool CBanList::IsBanned (IPAddress Adr)
 
 bool CBanList::IsSquelched (const char *Name)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for (it = BanList.begin(); it < BanList.end(); it++)
 	{
@@ -346,7 +346,7 @@ bool CBanList::IsSquelched (const char *Name)
 
 bool CBanList::IsBannedFromSpectator (const char *Name)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for (it = BanList.begin(); it < BanList.end(); it++)
 	{
@@ -363,7 +363,7 @@ bool CBanList::IsBannedFromSpectator (const char *Name)
 
 bool CBanList::IsBanned (const char *Name)
 {
-	std::vector<BanIndex*, std::level_allocator<BanIndex*> >::iterator it;
+	std::vector<BanIndex*, std::game_allocator<BanIndex*> >::iterator it;
 
 	for (it = BanList.begin(); it < BanList.end(); it++)
 	{

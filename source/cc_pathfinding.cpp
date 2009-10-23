@@ -52,7 +52,7 @@ void SpawnNodeEntity (CPathNode *Node);
 void CheckNodeFlags (CPathNode *Node);
 size_t GetNodeIndex (CPathNode *Node);
 
-std::vector<CPathNode*, std::level_allocator<CPathNode*> >		Closed, Open;
+std::vector<CPathNode*, std::game_allocator<CPathNode*> >		Closed, Open;
 
 #define MAX_SAVED_PATHS	512
 struct SSavedPath_t
@@ -80,7 +80,7 @@ End(End)
 
 bool CPath::NodeIsClosed (CPathNode *Node)
 {
-	for (std::vector<CPathNode*, std::level_allocator<CPathNode*> >::iterator it = Closed.begin(); it < Closed.end(); ++it )
+	for (std::vector<CPathNode*, std::game_allocator<CPathNode*> >::iterator it = Closed.begin(); it < Closed.end(); ++it )
 	{
 		CPathNode *Check = *it;
 
@@ -109,7 +109,7 @@ void CPath::RemoveFromClosed (CPathNode *Node)
 
 bool CPath::NodeIsOpen (CPathNode *Node)
 {
-	for (std::vector<CPathNode*, std::level_allocator<CPathNode*> >::iterator it = Open.begin(); it < Open.end(); it++ )
+	for (std::vector<CPathNode*, std::game_allocator<CPathNode*> >::iterator it = Open.begin(); it < Open.end(); it++ )
 	{
 		CPathNode *Check = *it;
 
@@ -231,7 +231,7 @@ void CPath::Save (fileHandle_t f)
 
 #define MAX_NODES 512
 
-std::vector<CPathNode*, std::level_allocator<CPathNode*> > NodeList;
+std::vector<CPathNode*, std::game_allocator<CPathNode*> > NodeList;
 
 void CPath::Load (fileHandle_t f)
 {
@@ -421,7 +421,7 @@ void SaveNodes ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.mapname;
+	FileName += level.ServerLevelName;
 	FileName += ".ccn";
 
 	fileHandle_t f;
@@ -503,7 +503,7 @@ void LoadNodes ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.mapname;
+	FileName += level.ServerLevelName;
 	FileName += ".ccn";
 
 	fileHandle_t f;
@@ -780,7 +780,7 @@ void SavePathTable ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.mapname;
+	FileName += level.ServerLevelName;
 	FileName += ".cnt";
 
 	fileHandle_t f;
@@ -822,7 +822,7 @@ void LoadPathTable ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.mapname;
+	FileName += level.ServerLevelName;
 	FileName += ".cnt";
 
 	fileHandle_t f;

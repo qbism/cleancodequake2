@@ -152,7 +152,7 @@ static memBlock_t *Mem_PuddleAlloc(const size_t Size)
 
 	memPuddle_t *Result = pInfo->freePuddles;
 
-	assert(Result->block->realSize >= Size);
+	_CC_ASSERT_EXPR (Result->block->realSize >= Size, "realSize >= Size");
 
 	// Remove from free list
 	pInfo->freePuddles = pInfo->freePuddles->next;
@@ -391,7 +391,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 {
 	if (mem->topSentinel != MEM_SENTINEL_TOP(mem))
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "Bad memory block top sentinel");
 		Com_Error (ERR_FATAL,
 			"Mem_Free: bad memory block top sentinel\n"
 			"check: %s:#%i",
@@ -399,7 +399,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 	}
 	else if (*((byte*)mem->memPointer+mem->memSize) != MEM_SENTINEL_FOOT(mem))
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "Bad memory footer sentinel (buffer overflow)");
 		Com_Error (ERR_FATAL,
 			"Mem_Free: bad memory footer sentinel [buffer overflow]\n"
 			"pool: %s\n"
@@ -420,7 +420,7 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const int fileLine)
 	memBlock_t	*mem;
 	size_t		size;
 
-	assert (ptr);
+	_CC_ASSERT_EXPR (ptr, "Attempted to free NULL");
 	if (!ptr)
 		return 0;
 
@@ -499,8 +499,8 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const int fi
 		size += _Mem_Free (mem->memPointer, fileName, fileLine);
 	}
 
-	assert (pool->blockCount == 0);
-	assert (pool->byteCount == 0);
+	_CC_ASSERT_EXPR (pool->blockCount == 0, "Pool block count is empty or overflowed");
+	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool byte count is empty or overflowed");
 	return size;
 }
 
@@ -596,7 +596,7 @@ void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const int fi
 		_Mem_CheckBlockIntegrity(Block, fileName, fileLine);
 
 		// Locate the memory block
-		assert(Block->memPointer == ptr);
+		_CC_ASSERT_EXPR (Block->memPointer == ptr, "Block's memory pointer doesn't point to wanted memory");
 
 		// Allocate
 		Result = _Mem_Alloc(newSize, Block->pool, Block->tagNum, fileName, fileLine);
@@ -724,7 +724,7 @@ void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, cons
 	uint32		blocks;
 	size_t		size;
 
-	assert (pool);
+	_CC_ASSERT_EXPR (pool, "Tried to check integrity of a NULL pool");
 	if (!pool)
 		return;
 
@@ -775,7 +775,7 @@ void _Mem_TouchPool(struct memPool_t *pool, const char *fileName, const int file
 	uint32		i;
 	int			sum;
 
-	assert (pool);
+	_CC_ASSERT_EXPR (pool, "Attempted to touch a NULL pool");
 	if (!pool)
 		return;
 
@@ -931,4 +931,55 @@ void Mem_Init (void)
 	com_levelPool = Mem_CreatePool ("Level memory pool");
 	com_gamePool = Mem_CreatePool ("Game memory pool");
 	com_fileSysPool = com_gamePool;
+}
+
+#ifdef WIN32
+#define _DECL_DLLMAIN   /* enable prototypes for DllMain and _CRT_INIT */
+#include <Windows.h>
+#include <process.h>
+
+BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason,
+	LPVOID lpReserved)
+{
+	if (fdwReason == DLL_PROCESS_ATTACH || fdwReason == DLL_THREAD_ATTACH)
+	{
+
+#else
+
+void __attribute__ ((constructor)) my_load(void);
+void __attribute__ ((destructor)) my_unload(void);
+
+// Called when the library is loaded and before dlopen() returns
+void my_load()
+{
+		Mem_Init ();
+#endif
+
+#ifdef WIN32
+		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
+			return FALSE;
+	}
+
+	if (fdwReason == DLL_PROCESS_DETACH || fdwReason == DLL_THREAD_DETACH)
+	{
+#else
+// Add initialization code…
+}
+
+// Called when the library is unloaded and before dlclose()
+// returns
+void my_unload(void)
+{
+#endif
+		Mem_FreePool (com_gamePool);
+		Mem_FreePool (com_levelPool);
+		Mem_FreePool (com_genericPool);
+
+#ifdef WIN32
+		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
+			return FALSE;
+	}
+
+	return TRUE;
+#endif
 }

@@ -142,51 +142,96 @@ struct game_locals_t
 // this structure is cleared as each map is entered
 // it is read/written to the level.sav file for savegames
 //
-struct level_locals_t
+struct GoalList_t
 {
-	FrameNumber_t	framenum;
+	uint8		Total;
+	uint8		Found;
+};
 
-	char		level_name[MAX_QPATH];	// the descriptive name (Outer Base, etc)
-	char		mapname[MAX_QPATH];		// the server name (base1, etc)
-	char		nextmap[MAX_QPATH];		// go here when fraglimit is hit
-	char		forcemap[MAX_QPATH];	// go here
+class CLevelLocals
+{
+public:
+	CLevelLocals() :
+	  Frame(0),
+	  FullLevelName(),
+	  ServerLevelName(),
+	  NextMap(),
+	  ForceMap(),
+	  IntermissionTime(),
+	  ChangeMap(NULL),
+	  ExitIntermission(false),
+	  IntermissionOrigin(0,0,0),
+	  IntermissionAngles(0,0,0),
+	  SightClient(NULL),
+#ifndef MONSTERS_USE_PATHFINDING
+	  SightEntity(NULL),
+	  SightEntityFrame(0),
+	  SoundEntity(NULL),
+	  SoundEntityFrame(0),
+	  SoundEntity2(NULL),
+	  SoundEntity2Frame(0),
+#else
+	  NoiseNode(NULL),
+	  SoundEntityFramenum(0),
+	  SoundEntity(NULL),
+#endif
+	  CurrentEntity(NULL),
+	  PowerCubeCount(0),
+	  Inhibit(0),
+	  EntityNumber(0)
+	{
+		Secrets.Found = Secrets.Total = 0;
+		Goals.Found = Goals.Total = 0;
+		Monsters.Killed = Monsters.Total = 0;
+	};
+
+	void Clear ()
+	{
+		*this = CLevelLocals();
+	};
+
+	FrameNumber_t	Frame;
+
+	std::cc_string	FullLevelName;		// the descriptive name (Outer Base, etc)
+	std::cc_string	ServerLevelName;		// the server name (base1, etc)
+	std::cc_string	NextMap;		// go here when fraglimit is hit
+	std::cc_string	ForceMap;		// go here
 
 	// intermission state
-	FrameNumber_t		intermissiontime;		// time the intermission was started
-	char		*changemap;
-	int			exitintermission;
+	FrameNumber_t		IntermissionTime;		// time the intermission was started
+	char		*ChangeMap;
+	bool		ExitIntermission;
 	vec3f		IntermissionOrigin;
 	vec3f		IntermissionAngles;
 
-	CPlayerEntity		*sight_client;	// changed once each frame for coop games
+	CPlayerEntity		*SightClient;	// changed once each frame for coop games
 
 #ifndef MONSTERS_USE_PATHFINDING
-	CBaseEntity	*sight_entity;
-	int			sight_entity_framenum;
-	CBaseEntity	*sound_entity;
-	int			sound_entity_framenum;
-	CBaseEntity	*sound2_entity;
-	int			sound2_entity_framenum;
+	CBaseEntity	*SightEntity;
+	FrameNumber_t	SightEntityFrame;
+	CBaseEntity	*SoundEntity;
+	FrameNumber_t	SoundEntityFrame;
+	CBaseEntity	*SoundEntity2;
+	FrameNumber_t	SoundEntity2Frame;
 #else
 	class		CPathNode	*NoiseNode;
 	float		SoundEntityFramenum;
 	CPlayerEntity		*SoundEntity;
 #endif
 
-	int			total_secrets;
-	int			found_secrets;
+	GoalList_t	Secrets;
+	GoalList_t	Goals;
 
-	int			total_goals;
-	int			found_goals;
-
-	int			total_monsters;
-	int			killed_monsters;
+	struct MonsterCount_t
+	{
+		uint16		Total;
+		uint16		Killed;
+	} Monsters;
 
 	CBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
-	int			body_que;			// dead bodies
 
-	int			power_cubes;		// ugly necessity for coop
-	uint32		inhibit;
+	uint8		PowerCubeCount;		// ugly necessity for coop
+	uint32		Inhibit;
 	uint32		EntityNumber;
 };
 
@@ -199,7 +244,7 @@ CC_ENUM (uint8, EFuncState)
 };
 
 extern	game_locals_t	game;
-extern	level_locals_t	level;
+extern	CLevelLocals	level;
 extern	gameExport_t	globals;
 
 // means of death
@@ -252,7 +297,7 @@ extern	edict_t			*g_edicts;
 
 #define FOFS(x) (int)&(((edict_t *)0)->x)
 #define STOFS(x) (int)&(((spawn_temp_t *)0)->x)
-#define LLOFS(x) (int)&(((level_locals_t *)0)->x)
+#define LLOFS(x) (int)&(((CLevelLocals *)0)->x)
 #define CLOFS(x) (int)&(((CClient *)0)->x)
 
 #define world	(&g_edicts[0])
@@ -362,7 +407,7 @@ public:
 	char	*Value;
 
 	CKeyValuePair (char *Key, char *Value) :
-	Key((Key) ? Mem_PoolStrDup(Key, com_gamePool, 0) : NULL),
+	Key((Key) ? Q_strlwr(Mem_PoolStrDup(Key, com_gamePool, 0)) : NULL),
 	Value((Key) ? Mem_PoolStrDup(Value, com_gamePool, 0) : NULL)
 	{
 	};

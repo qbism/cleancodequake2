@@ -70,7 +70,7 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 				other->Client.Persistent.Inventory.Set(other->Client.Persistent.Flag, 0);
 				other->Client.Persistent.Flag = NULL;
 
-				ctfgame.last_flag_capture = level.framenum;
+				ctfgame.last_flag_capture = level.Frame;
 				ctfgame.last_capture_team = team;
 
 				if (team == CTF_TEAM1)
@@ -99,12 +99,12 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 						if (player != other)
 							player->Client.Respawn.score += CTF_TEAM_BONUS;
 						// award extra points for capture assists
-						if (player->Client.Respawn.ctf_lastreturnedflag + CTF_RETURN_FLAG_ASSIST_TIMEOUT > level.framenum)
+						if (player->Client.Respawn.ctf_lastreturnedflag + CTF_RETURN_FLAG_ASSIST_TIMEOUT > level.Frame)
 						{
 							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for returning the flag!\n", player->Client.Persistent.netname);
 							player->Client.Respawn.score += CTF_RETURN_FLAG_ASSIST_BONUS;
 						}
-						if (player->Client.Respawn.ctf_lastfraggedcarrier + CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.framenum)
+						if (player->Client.Respawn.ctf_lastfraggedcarrier + CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.Frame)
 						{
 							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for fragging the flag carrier!\n", player->Client.Persistent.netname);
 							player->Client.Respawn.score += CTF_FRAG_CARRIER_ASSIST_BONUS;
@@ -121,7 +121,7 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 		BroadcastPrintf(PRINT_HIGH, "%s returned the %s flag!\n", 
 			other->Client.Persistent.netname, CTFTeamName(team));
 		other->Client.Respawn.score += CTF_RECOVERY_BONUS;
-		other->Client.Respawn.ctf_lastreturnedflag = level.framenum;
+		other->Client.Respawn.ctf_lastreturnedflag = level.Frame;
 		ent->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
 		//CTFResetFlag will remove this entity!  We must return false
 		CTFResetFlag(team);
@@ -135,7 +135,7 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 
 	other->Client.Persistent.Inventory.Set(this, 1);
 	other->Client.Persistent.Flag = this;
-	other->Client.Respawn.ctf_flagsince = level.framenum;
+	other->Client.Respawn.ctf_flagsince = level.Frame;
 
 	// pick up the flag
 	// if it's not a dropped flag, we just make is disappear

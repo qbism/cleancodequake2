@@ -125,7 +125,7 @@ ENTITYFIELDS_BEGIN(CTargetSpeaker)
 };
 ENTITYFIELDS_END(CTargetSpeaker)
 
-bool			CTargetSpeaker::ParseField (char *Key, char *Value)
+bool			CTargetSpeaker::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetSpeaker> (this, Key, Value))
 		return true;
@@ -189,7 +189,7 @@ public:
 			return;
 		}
 
-		NextThink = level.framenum + Delay;
+		NextThink = level.Frame + Delay;
 	};
 
 	void Spawn ()
@@ -204,7 +204,7 @@ ENTITYFIELDS_BEGIN(CTargetExplosion)
 };
 ENTITYFIELDS_END(CTargetExplosion)
 
-bool			CTargetExplosion::ParseField (char *Key, char *Value)
+bool			CTargetExplosion::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetExplosion> (this, Key, Value))
 		return true;
@@ -291,7 +291,7 @@ ENTITYFIELDS_BEGIN(CTargetSpawner)
 };
 ENTITYFIELDS_END(CTargetSpawner)
 
-bool			CTargetSpawner::ParseField (char *Key, char *Value)
+bool			CTargetSpawner::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetSpawner> (this, Key, Value))
 		return true;
@@ -371,7 +371,7 @@ ENTITYFIELDS_BEGIN(CTargetSplash)
 };
 ENTITYFIELDS_END(CTargetSplash)
 
-bool			CTargetSplash::ParseField (char *Key, char *Value)
+bool			CTargetSplash::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetSplash> (this, Key, Value))
 		return true;
@@ -403,7 +403,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -435,7 +435,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 {
 	CBaseEntity	*ent;
 
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 		return;		// already activated
 
 #ifdef CLEANCTF_ENABLED
@@ -457,10 +457,10 @@ void BeginIntermission (CTargetChangeLevel *targ)
 			client->Respawn();
 	}
 
-	level.intermissiontime = level.framenum;
-	level.changemap = targ->Map;
+	level.IntermissionTime = level.Frame;
+	level.ChangeMap = targ->Map;
 
-	if (strstr(level.changemap, "*"))
+	if (strstr(level.ChangeMap, "*"))
 	{
 		if (game.mode == GAME_COOPERATIVE)
 		{
@@ -484,12 +484,12 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	{
 		if (!(game.mode & GAME_DEATHMATCH))
 		{
-			level.exitintermission = 1;		// go immediately to the next level
+			level.ExitIntermission = true;		// go immediately to the next level
 			return;
 		}
 	}
 
-	level.exitintermission = 0;
+	level.ExitIntermission = false;
 
 	// find an intermission spot
 	ent = CC_Find (NULL, FOFS(classname), "info_player_intermission");
@@ -546,7 +546,7 @@ bool CTargetChangeLevel::Run ()
 
 void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 		return;		// already activated
 
 	if (game.mode == GAME_SINGLEPLAYER)
@@ -596,8 +596,8 @@ void CTargetChangeLevel::Spawn ()
 	}
 
 	// ugly hack because *SOMEBODY* screwed up their map
-   if((Q_stricmp(level.mapname, "fact1") == 0) && (Q_stricmp(Map, "fact3") == 0))
-	   Map = "fact3$secret1";
+	if ((Q_stricmp(level.ServerLevelName.c_str(), "fact1") == 0) && (Q_stricmp(Map, "fact3") == 0))
+		Map = "fact3$secret1";
 
 	GetSvFlags() = SVF_NOCLIENT;
 };
@@ -608,7 +608,7 @@ ENTITYFIELDS_BEGIN(CTargetChangeLevel)
 };
 ENTITYFIELDS_END(CTargetChangeLevel)
 
-bool			CTargetChangeLevel::ParseField (char *Key, char *Value)
+bool			CTargetChangeLevel::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetChangeLevel> (this, Key, Value))
 		return true;
@@ -619,13 +619,13 @@ bool			CTargetChangeLevel::ParseField (char *Key, char *Value)
 
 LINK_CLASSNAME_TO_CLASS ("target_changelevel", CTargetChangeLevel);
 
-CTargetChangeLevel *CreateTargetChangeLevel(char *map)
+CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 {
 	CTargetChangeLevel *Temp = QNew (com_levelPool, 0) CTargetChangeLevel;
 	Temp->gameEntity->classname = "target_changelevel";
 
-	Q_snprintfz (level.nextmap, sizeof(level.nextmap), "%s", map);
-	Temp->Map = level.nextmap;
+	level.NextMap = map;
+	Temp->Map = (char*)level.NextMap.c_str();
 
 	return Temp;
 }
@@ -650,7 +650,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -697,7 +697,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -727,7 +727,7 @@ public:
 		GetSvFlags() = SVF_NOCLIENT;
 		
 		// Paril: backwards compatibility
-		NextThink = level.framenum + Delay;
+		NextThink = level.Frame + Delay;
 	};
 };
 
@@ -754,7 +754,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value);
+	virtual bool ParseField (const char *Key, const char *Value);
 
 	bool Run ()
 	{
@@ -765,7 +765,7 @@ public:
 	{
 		PlaySound (CHAN_VOICE, NoiseIndex);
 
-		level.found_secrets++;
+		level.Secrets.Found++;
 
 		UseTargets (activator, Message);
 		Free ();
@@ -783,16 +783,16 @@ public:
 			NoiseIndex = SoundIndex("misc/secret.wav");
 
 		GetSvFlags() = SVF_NOCLIENT;
-		level.total_secrets++;
+		level.Secrets.Total++;
 		// map bug hack
 
-		if (!Q_stricmp(level.mapname, "mine3") && (State.GetOrigin() == vec3f(280, -2048, -624)))
+		if (!Q_stricmp(level.ServerLevelName.c_str(), "mine3") && (State.GetOrigin() == vec3f(280, -2048, -624)))
 			//(State.GetOrigin().X == 280 && State.GetOrigin().Y == -2048 && State.GetOrigin().Z == -624))
 			Message = "You have found a secret area.";
 	};
 };
 
-bool			CTargetSecret::ParseField (char *Key, char *Value)
+bool			CTargetSecret::ParseField (const char *Key, const char *Value)
 {
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 }
@@ -820,7 +820,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value);
+	virtual bool ParseField (const char *Key, const char *Value);
 
 	bool Run ()
 	{
@@ -831,9 +831,9 @@ public:
 	{
 		PlaySound (CHAN_VOICE, NoiseIndex);
 
-		level.found_goals++;
+		level.Goals.Found++;
 
-		if (level.found_goals == level.total_goals)
+		if (level.Goals.Found == level.Goals.Total)
 			ConfigString (CS_CDTRACK, "0");
 
 		UseTargets (activator, Message);
@@ -852,11 +852,11 @@ public:
 			NoiseIndex = SoundIndex ("misc/secret.wav");
 
 		GetSvFlags() = SVF_NOCLIENT;
-		level.total_goals++;
+		level.Goals.Total++;
 	};
 };
 
-bool			CTargetGoal::ParseField (char *Key, char *Value)
+bool			CTargetGoal::ParseField (const char *Key, const char *Value)
 {
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 }
@@ -928,7 +928,7 @@ ENTITYFIELDS_BEGIN(CTargetBlaster)
 };
 ENTITYFIELDS_END(CTargetBlaster)
 
-bool			CTargetBlaster::ParseField (char *Key, char *Value)
+bool			CTargetBlaster::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetBlaster> (this, Key, Value))
 		return true;
@@ -1046,7 +1046,7 @@ public:
 		}
 
 		State.GetOldOrigin() = tr.EndPos;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
@@ -1133,7 +1133,7 @@ public:
 		Usable = false;
 
 		// let everything else get spawned before we start firing
-		NextThink = level.framenum + 10;
+		NextThink = level.Frame + 10;
 	};
 };
 
@@ -1143,7 +1143,7 @@ ENTITYFIELDS_BEGIN(CTargetLaser)
 };
 ENTITYFIELDS_END(CTargetLaser)
 
-bool			CTargetLaser::ParseField (char *Key, char *Value)
+bool			CTargetLaser::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetLaser> (this, Key, Value))
 		return true;
@@ -1174,7 +1174,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -1256,10 +1256,10 @@ public:
 		int		i;
 		edict_t	*e;
 
-		if (LastShakeTime < level.framenum)
+		if (LastShakeTime < level.Frame)
 		{
 			PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, NoiseIndex, 1.0, ATTN_NONE);
-			LastShakeTime = level.framenum + 5;
+			LastShakeTime = level.Frame + 5;
 		}
 
 		for (i=1, e=g_edicts+i; i < globals.numEdicts; i++,e++)
@@ -1285,15 +1285,15 @@ public:
 			Player->Velocity.Z = Speed * (100.0 / Player->Mass);
 		}
 
-		if (level.framenum < TimeStamp)
-			NextThink = level.framenum + FRAMETIME;
+		if (level.Frame < TimeStamp)
+			NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
 		// Paril, Backwards compatibility
-		TimeStamp = level.framenum + (gameEntity->count * 10);
-		NextThink = level.framenum + FRAMETIME;
+		TimeStamp = level.Frame + (gameEntity->count * 10);
+		NextThink = level.Frame + FRAMETIME;
 		LastShakeTime = 0;
 	};
 
@@ -1321,7 +1321,7 @@ ENTITYFIELDS_BEGIN(CTargetEarthquake)
 };
 ENTITYFIELDS_END(CTargetEarthquake)
 
-bool			CTargetEarthquake::ParseField (char *Key, char *Value)
+bool			CTargetEarthquake::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetEarthquake> (this, Key, Value))
 		return true;

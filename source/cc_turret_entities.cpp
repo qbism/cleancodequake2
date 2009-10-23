@@ -228,7 +228,7 @@ void CTurretBreach::Think ()
 			delta.Y = -1 * Speed * 0.1f;
 
 		AngularVelocity = delta;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 
 		CAvelocityForEachTeamChainCallback (AngularVelocity.Y).Query (this);
 
@@ -285,7 +285,7 @@ ENTITYFIELDS_BEGIN(CTurretBreach)
 };
 ENTITYFIELDS_END(CTurretBreach)
 
-bool			CTurretBreach::ParseField (char *Key, char *Value)
+bool			CTurretBreach::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTurretBreach> (this, Key, Value))
 		return true;
@@ -320,7 +320,7 @@ void CTurretBreach::Spawn ()
 	MoveAngles.Y = State.GetAngles().Y;
 	State.GetAngles().Clear ();
 
-	NextThink = level.framenum + FRAMETIME;
+	NextThink = level.Frame + FRAMETIME;
 	Link ();
 }
 
@@ -407,7 +407,7 @@ void CTurretDriver::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 	CInfantry::Die (inflictor, attacker, damage, point);
 	Think = &CMonster::MonsterThink;
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 }
 
 void CTurretDriver::Pain (CBaseEntity *other, float kick, int damage)
@@ -415,16 +415,16 @@ void CTurretDriver::Pain (CBaseEntity *other, float kick, int damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, (!irandom(2) == 0) ? SoundPain1 : SoundPain2);
 }
 
 void CTurretDriver::TurretThink ()
 {
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 
 	if (Entity->Enemy && (!Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0))
 		Entity->Enemy = NULL;
@@ -433,7 +433,7 @@ void CTurretDriver::TurretThink ()
 	{
 		if (!FindTarget ())
 			return;
-		TrailTime = level.framenum;
+		TrailTime = level.Frame;
 		AIFlags &= ~AI_LOST_SIGHT;
 	}
 	else
@@ -442,7 +442,7 @@ void CTurretDriver::TurretThink ()
 		{
 			if (AIFlags & AI_LOST_SIGHT)
 			{
-				TrailTime = level.framenum;
+				TrailTime = level.Frame;
 				AIFlags &= ~AI_LOST_SIGHT;
 			}
 		}
@@ -464,14 +464,14 @@ void CTurretDriver::TurretThink ()
 		TargetedBreach->MoveAngles = ang;
 
 		// decide if we should shoot
-		if (level.framenum < AttackFinished)
+		if (level.Frame < AttackFinished)
 			return;
 
 		float reaction_time = (3 - skill->Integer()) * 1.0;
-		if ((level.framenum - TrailTime) < (reaction_time * 10))
+		if ((level.Frame - TrailTime) < (reaction_time * 10))
 			return;
 
-		AttackFinished = level.framenum + ((reaction_time + 1.0) * 10);
+		AttackFinished = level.Frame + ((reaction_time + 1.0) * 10);
 
 		TargetedBreach->ShouldFire = true;
 	}
@@ -480,7 +480,7 @@ void CTurretDriver::TurretThink ()
 void CTurretDriver::TurretLink ()
 {
 	Think = static_cast<void (__thiscall CMonster::* )(void)>(&CTurretDriver::TurretThink);
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 
 	TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Entity->Target));
 	TargetedBreach->SetOwner (Entity);
@@ -533,7 +533,7 @@ void CTurretDriver::Spawn ()
 
 	Entity->Flags |= FL_NO_KNOCKBACK;
 
-	level.total_monsters++;
+	level.Monsters.Total++;
 
 	Entity->GetSvFlags() |= SVF_MONSTER;
 	Entity->State.GetRenderEffects() |= RF_FRAMELERP;
@@ -543,7 +543,7 @@ void CTurretDriver::Spawn ()
 	AIFlags |= (AI_STAND_GROUND);
 
 	Think = static_cast<void (__thiscall CMonster::* )(void)>(&CTurretDriver::TurretLink);
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 
 	Entity->Link ();
 }

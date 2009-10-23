@@ -274,7 +274,7 @@ void CJorg::Pain (CBaseEntity *other, float kick, int damage)
 	
 	Entity->State.GetSound() = 0;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames if he takes little damage
@@ -296,7 +296,7 @@ void CJorg::Pain (CBaseEntity *other, float kick, int damage)
 	if (((frame >= FRAME_attak201) && (frame <= FRAME_attak208)) && (frand() <= 0.005))
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
@@ -431,7 +431,7 @@ void CJorg::Explode ()
 	}
 
 	CTempEnt_Explosions::RocketExplosion (org, Entity);
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 }
 
 void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
@@ -614,7 +614,7 @@ bool CJorg::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -649,7 +649,7 @@ bool CJorg::CheckAttack ()
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + ((2*frand())*10);
+		AttackFinished = level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -686,9 +686,9 @@ bool CJorg::CheckAttack ()
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.framenum < AttackFinished)
+						if (level.Frame < AttackFinished)
 							return false;
-						if (level.framenum < (TrailTime + BlindFireDelay))
+						if (level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
@@ -734,7 +734,7 @@ bool CJorg::CheckAttack ()
 		return false;
 	}
 	
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -760,7 +760,7 @@ bool CJorg::CheckAttack ()
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + ((2*frand())*10);
+		AttackFinished = level.Frame + ((2*frand())*10);
 		return true;
 	}
 

@@ -89,7 +89,7 @@ void CBaseItem::SetRespawn (CItemEntity *ent, FrameNumber_t delay)
 	ent->Flags |= FL_RESPAWN;
 	ent->GetSvFlags() |= SVF_NOCLIENT;
 	ent->GetSolid() = SOLID_NOT;
-	ent->NextThink = level.framenum + delay;
+	ent->NextThink = level.Frame + delay;
 	ent->ThinkState = ITS_RESPAWN;
 	ent->Link();
 }
@@ -123,7 +123,7 @@ public:
 		if (AvoidOwner)
 		{
 			AvoidOwner = false;
-			NextThink = level.framenum + 290;
+			NextThink = level.Frame + 290;
 		}
 		else
 			Free ();
@@ -185,7 +185,7 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.framenum + 10;
+	dropped->NextThink = level.Frame + 10;
 	dropped->Link ();
 
 	return dropped;

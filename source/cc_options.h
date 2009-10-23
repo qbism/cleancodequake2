@@ -52,17 +52,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // THIS IS AT YOUR OWN RISK! CLEANCODE HAS PERFECTLY FUNCTIONAL ALTERNATIVES.
 //#define _NO_DEPRECATING_OLD_FUNCTIONS
 
-#ifndef _CC_INSECURE_DEPRECATE
-	#ifdef _NO_DEPRECATING_OLD_FUNCTIONS
-		#define _CC_INSECURE_DEPRECATE(_Replacement)
-	#else
-		#define _CC_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT("CleanCode has a better replacement for this function. Consider using " #_Replacement " instead.\nTo disable deprecation, use _NO_DEPRECATING_OLD_FUNCTIONS in cc_options.h.")
-	#endif
+#if !defined(WIN32) || defined(_NO_DEPRECATING_OLD_FUNCTIONS)
+	#define _CC_INSECURE_DEPRECATE(_Replacement)
+#else
+	#define _CC_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT("CleanCode has a better replacement for this function. Consider using " #_Replacement " instead.\nTo disable deprecation, use _NO_DEPRECATING_OLD_FUNCTIONS in cc_options.h.")
 #endif
 
 // This is a simple macro to disable deprecation for everything inside the macro.
 // This is only used internally; using this in your code could cause big problems.
-#ifndef _NO_DEPRECATING_OLD_FUNCTIONS
+#if WIN32 && !defined(_NO_DEPRECATING_OLD_FUNCTIONS)
 	#define _CC_DISABLE_DEPRECATION		__pragma(warning(push)) \
 										__pragma(warning(disable:4996))
 
@@ -72,8 +70,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 	#define _CC_ENABLE_DEPRECATION
 #endif
 
-// Define this if you want to use Microsoft Visual Studio 7.0+ safe functions
-#define CRT_USE_UNDEPRECATED_FUNCTIONS
+// Don't touch this
+#define _CRT_SECURE_NO_WARNINGS
 
 // Define this to use the CleanCode exception handler
 #define CC_USE_EXCEPTION_HANDLER
@@ -99,14 +97,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Define this to enable some custom asserts that we place in some places
 #define ALLOW_ASSERTS
 
-#ifdef ALLOW_ASSERTS
+// Notes regarding CC_ASSERT_EXPR:
+// Msg must only be one string; the expr is shown and
+// therefore not required to be repeated in msg. Arguments
+// will cause this function to fail (obviously)
+#if defined(ALLOW_ASSERTS)
 	#ifndef _DEBUG
 		#define _CC_ASSERT_EXPR(expr, msg)
 	#else
-		#define _CC_ASSERT_EXPR(expr, msg) \
-				(void) ((!!(expr)) || \
-						(1 != _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg)) || \
-						(_CrtDbgBreak(), 0))
+		// see cc_utils.h
+		#define _CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
 	#endif
 #endif
 
@@ -123,6 +123,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 	#define FILE_WARNING __pragma(message(__LOC__"file included more than once!"))
 #endif
+
+// Define this to get rid of TR1-specific headers
+//#define _CC_NO_TR1
 
 #else
 FILE_WARNING

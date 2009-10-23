@@ -259,14 +259,14 @@ void CMakron::Pain (CBaseEntity *other, float kick, int damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames
 	if ((damage <= 25) && (frand() < 0.2f))
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
@@ -611,11 +611,11 @@ public:
 	void Think ()
 	{
 		if (++State.GetFrame() < 365)
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 		else
 		{		
 			State.GetFrame() = 346;
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 		}
 	};
 
@@ -631,7 +631,7 @@ public:
 		NewClass->GetMins().Set (-8, -8, 0);
 		NewClass->GetMaxs().Set (8);
 		NewClass->State.GetModelIndex() = Owner->State.GetModelIndex();
-		NewClass->NextThink = level.framenum + 2;
+		NewClass->NextThink = level.Frame + 2;
 		NewClass->State.GetSound() = SoundIndex("makron/spine.wav");
 		NewClass->State.GetFrame() = 346;
 		NewClass->GetSolid() = SOLID_NOT;
@@ -722,7 +722,7 @@ bool CMakron::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -757,7 +757,7 @@ bool CMakron::CheckAttack ()
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + ((2*frand())*10);
+		AttackFinished = level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -792,9 +792,9 @@ bool CMakron::CheckAttack ()
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.framenum < AttackFinished)
+						if (level.Frame < AttackFinished)
 							return false;
-						if (level.framenum < (TrailTime + BlindFireDelay))
+						if (level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
@@ -840,7 +840,7 @@ bool CMakron::CheckAttack ()
 		return false;
 	}
 	
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -866,7 +866,7 @@ bool CMakron::CheckAttack ()
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + ((2*frand())*10);
+		AttackFinished = level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -992,11 +992,11 @@ void CMakronJumpTimer::Think ()
 	Monster->Entity = newClass;
 	newClass->State.GetOrigin() = State.GetOrigin();
 	Monster->Spawn ();
-	newClass->NextThink = level.framenum + 1;
+	newClass->NextThink = level.Frame + 1;
 	newClass->Target = Target;
 
 	// jump at player
-	CPlayerEntity *Player = level.sight_client;
+	CPlayerEntity *Player = level.SightClient;
 	if (!Player)
 		return;
 
@@ -1016,7 +1016,7 @@ void CMakronJumpTimer::Spawn (CJorg *Jorg)
 {
 	CMakronJumpTimer *Timer = QNew (com_levelPool, 0) CMakronJumpTimer;
 	
-	Timer->NextThink = level.framenum + 8;
+	Timer->NextThink = level.Frame + 8;
 	Timer->Target = Jorg->Entity->Target;
 	Timer->State.GetOrigin() = Jorg->Entity->State.GetOrigin();
 	Timer->Link();

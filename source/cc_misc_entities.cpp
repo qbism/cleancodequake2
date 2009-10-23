@@ -158,7 +158,7 @@ public:
 	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
 	{
 		CanTakeDamage = false;
-		NextThink = level.framenum + 2;
+		NextThink = level.Frame + 2;
 		Shooter = attacker;
 	};
 
@@ -195,7 +195,7 @@ public:
 			Damage = 150;
 
 		CanTakeDamage = true;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 
 		Link ();
 	};
@@ -208,7 +208,7 @@ ENTITYFIELDS_BEGIN(CMiscExploBox)
 };
 ENTITYFIELDS_END(CMiscExploBox)
 
-bool			CMiscExploBox::ParseField (char *Key, char *Value)
+bool			CMiscExploBox::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CMiscExploBox> (this, Key, Value))
 		return true;
@@ -279,7 +279,7 @@ public:
 		GetMins().Set (-16, -16, 0);
 		GetMaxs().Set (16, 16, 32);
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		GetSvFlags() |= SVF_NOCLIENT;
 		Accel = Decel = Speed;
 
@@ -347,7 +347,7 @@ public:
 	void Think ()
 	{
 		State.GetFrame() = (State.GetFrame() + 1) % 16;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -357,7 +357,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 };
 
@@ -384,7 +384,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -398,7 +398,7 @@ public:
 	{
 		if (++State.GetFrame() >= 19)
 			State.GetFrame() = 0;
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
@@ -413,7 +413,7 @@ public:
 		GetMaxs().Set (64, 64, 8);
 		State.GetModelIndex() = ModelIndex ("models/objects/black/tris.md2");
 		State.GetRenderEffects() = RF_TRANSLUCENT;
-		NextThink = level.framenum + 2;
+		NextThink = level.Frame + 2;
 		Link ();
 	};
 };
@@ -449,7 +449,7 @@ public:
 		if (++State.GetFrame() >= 293)
 			State.GetFrame() = 254;
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -459,7 +459,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/tank/tris.md2");
 		State.GetFrame() = 254;
-		NextThink = level.framenum + 2;
+		NextThink = level.Frame + 2;
 		Link ();
 	};
 };
@@ -495,7 +495,7 @@ public:
 		if (++State.GetFrame() >= 247)
 			State.GetFrame() = 208;
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -505,7 +505,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/bitch/tris.md2");
 		State.GetFrame() = 208;
-		NextThink = level.framenum + 2;
+		NextThink = level.Frame + 2;
 		Link ();
 	};
 };
@@ -541,7 +541,7 @@ public:
 		if (++State.GetFrame() >= 287)
 			State.GetFrame() = 248;
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -551,7 +551,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/bitch/tris.md2");
 		State.GetFrame() = 248;
-		NextThink = level.framenum + 2;
+		NextThink = level.Frame + 2;
 		Link ();
 	};
 };
@@ -587,7 +587,7 @@ public:
 	{
 	};
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -601,7 +601,7 @@ public:
 	{
 		if (!Drop)
 		{
-			NextThink = (++State.GetFrame() < 24) ? level.framenum + FRAMETIME : 0;
+			NextThink = (++State.GetFrame() < 24) ? level.Frame + FRAMETIME : 0;
 			if (State.GetFrame() == 22)
 				PlaySound (CHAN_BODY, SoundIndex ("tank/thud.wav"));
 		}
@@ -615,7 +615,7 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		PlaySound (CHAN_BODY, SoundIndex ("tank/pain.wav"));
 	};
 
@@ -634,7 +634,7 @@ public:
 		SoundIndex ("tank/thud.wav");
 		SoundIndex ("tank/pain.wav");
 
-		NextThink = level.framenum + 5;
+		NextThink = level.Frame + 5;
 	};
 };
 
@@ -666,7 +666,7 @@ public:
 	{
 	};
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -744,7 +744,7 @@ public:
 
 		AngularVelocity.Y = crand()*600;
 
-		NextThink = level.framenum + 100 + frand()*100;
+		NextThink = level.Frame + 100 + frand()*100;
 
 		Link();
 	};
@@ -880,7 +880,7 @@ public:
 	{
 		GroundEntity = NULL;
 
-		float diff = TimeStamp - level.framenum;
+		float diff = TimeStamp - level.Frame;
 		if (diff < -1.0)
 			diff = -1.0;
 
@@ -921,7 +921,7 @@ public:
 
 		Velocity = viper->Dir * viper->Speed;
 
-		TimeStamp = level.framenum;
+		TimeStamp = level.Frame;
 		MoveDir = viper->Dir;
 	};
 
@@ -950,7 +950,7 @@ ENTITYFIELDS_BEGIN(CMiscViperBomb)
 };
 ENTITYFIELDS_END(CMiscViperBomb)
 
-bool			CMiscViperBomb::ParseField (char *Key, char *Value)
+bool			CMiscViperBomb::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CMiscViperBomb> (this, Key, Value))
 		return true;
@@ -982,7 +982,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -995,12 +995,12 @@ public:
 	void Think ()
 	{
 		if (++State.GetFrame() < 38)
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -1101,7 +1101,7 @@ public:
 	{
 	};
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -1125,7 +1125,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.framenum + 300;
+		NextThink = level.Frame + 300;
 		Link ();
 	};
 };
@@ -1154,7 +1154,7 @@ public:
 	{
 	};
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -1178,7 +1178,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.framenum + 300;
+		NextThink = level.Frame + 300;
 		Link ();
 	};
 };
@@ -1207,7 +1207,7 @@ public:
 	{
 	};
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -1231,7 +1231,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.framenum + 300;
+		NextThink = level.Frame + 300;
 		Link ();
 	};
 };

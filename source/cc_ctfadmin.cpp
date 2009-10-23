@@ -282,11 +282,11 @@ void CTFAdmin_MatchSet(edict_t *ent, pmenuhnd_t *p)
 	if (ctfgame.match == MATCH_SETUP) {
 		gi.bprintf(PRINT_CHAT, "Match has been forced to start.\n");
 		ctfgame.match = MATCH_PREGAME;
-		ctfgame.matchtime = level.framenum + matchstarttime->value;
+		ctfgame.matchtime = level.Frame + matchstarttime->value;
 	} else if (ctfgame.match == MATCH_GAME) {
 		gi.bprintf(PRINT_CHAT, "Match has been forced to terminate.\n");
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = level.framenum + matchsetuptime->value * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->value * 600;
 		CTFResetAllPlayers();
 	}
 }

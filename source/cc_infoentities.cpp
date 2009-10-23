@@ -170,7 +170,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		NextThink = level.framenum + 1;
+		NextThink = level.Frame + 1;
 	};
 };
 
@@ -221,7 +221,7 @@ public:
 		trig->State.GetOrigin() = State.GetOrigin();
 		trig->GetMins().Set (-8, -8, 8);
 		trig->GetMaxs().Set (8, 8, 24);
-		trig->NextThink = level.framenum + 1;
+		trig->NextThink = level.Frame + 1;
 		trig->Link ();
 	};
 };
@@ -232,7 +232,7 @@ ENTITYFIELDS_BEGIN(CTeleporter)
 };
 ENTITYFIELDS_END(CTeleporter)
 
-bool			CTeleporter::ParseField (char *Key, char *Value)
+bool			CTeleporter::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTeleporter> (this, Key, Value))
 		return true;
@@ -440,8 +440,8 @@ public:
 		while (CheckNames[i] != NULL)
 		{
 			// invoke one of our gross, ugly, disgusting hacks
-			if (strcmp(level.mapname, CheckNames[i]) == 0)
-				NextThink = level.framenum + FRAMETIME;
+			if (strcmp(level.ServerLevelName.c_str(), CheckNames[i]) == 0)
+				NextThink = level.Frame + FRAMETIME;
 		
 			i++;
 		}
@@ -500,7 +500,7 @@ public:
 	// where they should have been
 	virtual void Think ()
 	{
-		if(Q_stricmp(level.mapname, "security") == 0)
+		if(Q_stricmp(level.ServerLevelName.c_str(), "security") == 0)
 		{
 			vec3f origins[] =
 			{
@@ -524,9 +524,9 @@ public:
 	{
 		if (game.mode != GAME_COOPERATIVE)
 			return;
-		if(Q_stricmp(level.mapname, "security") == 0)
+		if(Q_stricmp(level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 	};
 };
 
@@ -660,7 +660,7 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 	{
 		if (Monster)
 		{
-			Monster->Monster->PauseTime = level.framenum + Wait;
+			Monster->Monster->PauseTime = level.Frame + Wait;
 			Monster->Monster->Stand();
 		}
 		return;
@@ -670,7 +670,7 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 	{
 		if (!Monster->MoveTarget)
 		{
-			Monster->Monster->PauseTime = level.framenum + 100000000;
+			Monster->Monster->PauseTime = level.Frame + 100000000;
 			Monster->Monster->Stand ();
 		}
 		else
@@ -702,7 +702,7 @@ ENTITYFIELDS_BEGIN(CPathCorner)
 };
 ENTITYFIELDS_END(CPathCorner)
 
-bool			CPathCorner::ParseField (char *Key, char *Value)
+bool			CPathCorner::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CPathCorner> (this, Key, Value))
 		return true;
@@ -763,7 +763,7 @@ public:
 		{
 			if (Monster)
 			{
-				Monster->Monster->PauseTime = level.framenum + 100000000;
+				Monster->Monster->PauseTime = level.Frame + 100000000;
 				Monster->Monster->AIFlags |= AI_STAND_GROUND;
 				Monster->Monster->Stand ();
 			}
@@ -893,7 +893,7 @@ public:
 	  {
 	  };
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -977,11 +977,11 @@ public:
 
 	void Think ()
 	{
-		char	style[2] = {'a' + RampMessage[0] + (level.framenum - TimeStamp) / 0.1f * RampMessage[2], 0};
+		char	style[2] = {'a' + RampMessage[0] + (level.Frame - TimeStamp) / 0.1f * RampMessage[2], 0};
 		ConfigString (CS_LIGHTS+Light->gameEntity->style, style);
 
-		if ((level.framenum - TimeStamp) < Speed)
-			NextThink = level.framenum + FRAMETIME;
+		if ((level.Frame - TimeStamp) < Speed)
+			NextThink = level.Frame + FRAMETIME;
 		else if (SpawnFlags & 1)
 		{
 			int32 temp = RampMessage[0];
@@ -1017,7 +1017,7 @@ public:
 			}
 		}
 
-		TimeStamp = level.framenum;
+		TimeStamp = level.Frame;
 		Think ();
 	};
 
@@ -1059,7 +1059,7 @@ ENTITYFIELDS_BEGIN(CTargetLightRamp)
 };
 ENTITYFIELDS_END(CTargetLightRamp)
 
-bool			CTargetLightRamp::ParseField (char *Key, char *Value)
+bool			CTargetLightRamp::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTargetLightRamp> (this, Key, Value))
 		return true;

@@ -214,9 +214,9 @@ static char *ED_ParseEdict (char *data, edict_t *ent)
 		{
 			// push it in the list for the entity
 			if (!ent->ParseData)
-				ent->ParseData = QNew (com_gamePool, 0) std::list<CKeyValuePair *, std::level_allocator<CKeyValuePair *> > ();
+				ent->ParseData = QNew (com_levelPool, 0) std::list<CKeyValuePair *, std::level_allocator<CKeyValuePair *> > ();
 
-			ent->ParseData->push_back (QNew (com_gamePool, 0) CKeyValuePair (keyName, token));
+			ent->ParseData->push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
 		}
 	}
 
@@ -324,7 +324,7 @@ parsing textual entity definitions out of an ent file.
 ==============
 */
 
-void CC_SpawnEntities (char *mapname, char *entities, char *spawnpoint)
+void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
 	uint32 startTime = Sys_Milliseconds();
 
@@ -340,16 +340,16 @@ void CC_SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	Mem_FreePool (com_levelPool);
 	gEntString = Mem_PoolStrDup(entities, com_levelPool, 0);
 
-	entities = CC_ParseSpawnEntities (mapname, entities);
+	entities = CC_ParseSpawnEntities (ServerLevelName, entities);
 
 #ifdef MONSTERS_USE_PATHFINDING
 	InitNodes ();
 #endif
 
-	memset (&level, 0, sizeof(level));
+	level.Clear ();
 	memset (g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
 
-	Q_strncpyz (level.mapname, mapname, sizeof(level.mapname)-1);
+	level.ServerLevelName = ServerLevelName;
 	Q_strncpyz (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);
 
 	InitEntities ();
@@ -367,7 +367,7 @@ void CC_SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 	QDelete[] SavedClients;
 	SavedClients = NULL;
 
-	level.inhibit = 0;
+	level.Inhibit = 0;
 
 	// Parse ents
 	while (true)
@@ -390,13 +390,13 @@ _CC_ENABLE_DEPRECATION
 
 		if (!ent->inUse)
 		{
-			level.inhibit++;
+			level.Inhibit++;
 			if (ent->Entity && !ent->Entity->Freed)
-				assert (0);
+				_CC_ASSERT_EXPR (0, "Entity not inuse but freed!");
 		}
 	}
 
-	DebugPrintf ("%i entities removed (out of %i total)\n", level.inhibit, level.EntityNumber);
+	DebugPrintf ("%i entities removed (out of %i total)\n", level.Inhibit, level.EntityNumber);
 
 	G_FindTeams ();
 

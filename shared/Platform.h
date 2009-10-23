@@ -93,7 +93,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // Off by default, force on for level 3 warning level
 # pragma warning(3 : 4056)	// overflow in floating point constant arithmetic
-# pragma warning(3 : 4202)	// nonstandard extension used : '...': prototype parameter in name list illegal
 # pragma warning(3 : 4254)	// 'operator' : conversion from 'type1' to 'type2', possible loss of data
 // Paril, for CleanCode
 # pragma warning (disable : 4100) // unreferenced formal parameter
@@ -139,6 +138,7 @@ typedef unsigned __int32	uint32;
 typedef unsigned __int64	uint64;
 
 # define strdup _strdup
+# define itoa _itoa
 
 # define __declspec_naked __declspec(naked)
 

@@ -42,7 +42,7 @@ public:
 	CBody ();
 	CBody (int Index);
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return true;
 	};
@@ -109,7 +109,7 @@ void CBody::TossHead (int damage)
 	backOff = 1.5f;	
 	Velocity += VelocityForDamage (damage);
 
-	NextThink = level.framenum + 100 + frand()*100;
+	NextThink = level.Frame + 100 + frand()*100;
 
 	Link ();
 }

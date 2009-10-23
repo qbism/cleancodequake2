@@ -64,7 +64,7 @@ public:
 	CTargetString ();
 	CTargetString (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -83,7 +83,7 @@ public:
 	CFuncClock ();
 	CFuncClock (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}

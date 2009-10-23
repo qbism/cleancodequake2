@@ -345,14 +345,14 @@ void CSoldierBase::Pain (CBaseEntity *other, float kick, int damage)
 		UnDuck();
 #endif
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 	{
 		if ((Entity->Velocity.Z > 100) && ( (CurrentMove == &SoldierMovePain1) || (CurrentMove == &SoldierMovePain2) || (CurrentMove == &SoldierMovePain3)))
 			CurrentMove = &SoldierMovePain4;
 		return;
 	}
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, SoundPain);
 
 	if (Entity->Velocity.Z > 100)
@@ -525,9 +525,9 @@ void CSoldierBase::Attack3_Refire ()
 		return;
 
 #ifdef MONSTER_USE_ROGUE_AI
-	if ((level.framenum + 4) < DuckWaitTime)
+	if ((level.Frame + 4) < DuckWaitTime)
 #else
-	if ((level.framenum + 4) < PauseTime)
+	if ((level.Frame + 4) < PauseTime)
 #endif
 		NextFrame = FRAME_attak303;
 }
@@ -723,7 +723,7 @@ void CSoldierBase::Dodge (CBaseEntity *attacker, float eta)
 	if (!Entity->Enemy)
 		Entity->Enemy = attacker->gameEntity;
 
-	PauseTime = level.framenum + ((eta + 0.3) * 10);
+	PauseTime = level.Frame + ((eta + 0.3) * 10);
 
 	switch (skill->Integer())
 	{
@@ -747,7 +747,7 @@ void CSoldierBase::Dodge (CBaseEntity *attacker, float eta)
 
 void CSoldierBase::Duck_Hold ()
 {
-	if (level.framenum >= PauseTime)
+	if (level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -1097,7 +1097,7 @@ void CSoldierBase::Duck (float eta)
 		// PMM - stupid dodge
 		NextFrame = FRAME_duck01;
 		CurrentMove = &SoldierMoveDuck;
-		DuckWaitTime = level.framenum + ((eta + 1) * 10);
+		DuckWaitTime = level.Frame + ((eta + 1) * 10);
 		return;
 	}
 
@@ -1107,13 +1107,13 @@ void CSoldierBase::Duck (float eta)
 	{
 		NextFrame = FRAME_duck01;
 		CurrentMove = &SoldierMoveDuck;
-		DuckWaitTime = level.framenum + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
 	}
 	else
 	{
 		NextFrame = FRAME_attak301;
 		CurrentMove = &SoldierMoveAttack3;
-		DuckWaitTime = level.framenum + ((eta + 1) * 10);
+		DuckWaitTime = level.Frame + ((eta + 1) * 10);
 	}
 	return;
 }
@@ -1139,7 +1139,7 @@ void CSoldierBase::Duck_Down ()
 	AIFlags |= AI_DUCKED;
 	Entity->GetMaxs().Z -= 32;
 	Entity->CanTakeDamage = true;
-	PauseTime = level.framenum + 10;
+	PauseTime = level.Frame + 10;
 	Entity->Link ();
 }
 

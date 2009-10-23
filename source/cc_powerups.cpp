@@ -188,7 +188,7 @@ public:
 			!dmFlags.dfDmTechs) || !Player->HasRegeneration())
 				)
 			{
-				NextThink = level.framenum + 10;
+				NextThink = level.Frame + 10;
 				Player->Health -= 1;
 				return;
 			}
@@ -212,7 +212,7 @@ public:
 		}
 
 		gameEntity->item = item;
-		NextThink = level.framenum + 2;    // items start after other solids
+		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 
@@ -238,7 +238,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 		dmFlags.dfDmTechs) && !other->HasRegeneration()))
 	{
 		MegaHealth->MegaHealthThinking = true;
-		MegaHealth->NextThink = level.framenum + 50;
+		MegaHealth->NextThink = level.Frame + 50;
 		MegaHealth->Player = other;
 		MegaHealth->Flags |= FL_RESPAWN;
 		MegaHealth->GetSvFlags() |= SVF_NOCLIENT;
@@ -282,7 +282,7 @@ void CQuadDamage::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
 		if (ent->SpawnFlags & DROPPED_PLAYER_ITEM)
-			quad_drop_timeout_hack = (ent->NextThink - level.framenum);
+			quad_drop_timeout_hack = (ent->NextThink - level.Frame);
 
 		if (dmFlags.dfInstantItems)
 			Use (other);
@@ -299,10 +299,10 @@ void CQuadDamage::Use (CPlayerEntity *ent)
 		quad_drop_timeout_hack = 0;
 	}
 
-	if (ent->Client.quad_framenum > level.framenum)
+	if (ent->Client.quad_framenum > level.Frame)
 		ent->Client.quad_framenum += timeOut;
 	else
-		ent->Client.quad_framenum = level.framenum + timeOut;
+		ent->Client.quad_framenum = level.Frame + timeOut;
 
 	ent->Client.Persistent.Inventory -= this;
 
@@ -324,10 +324,10 @@ void CInvulnerability::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.invincible_framenum > level.framenum)
+	if (ent->Client.invincible_framenum > level.Frame)
 		ent->Client.invincible_framenum += 300;
 	else
-		ent->Client.invincible_framenum = level.framenum + 300;
+		ent->Client.invincible_framenum = level.Frame + 300;
 
 	ent->PlaySound (CHAN_ITEM, SoundIndex("items/protect.wav"));
 }
@@ -364,10 +364,10 @@ void CRebreather::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.breather_framenum > level.framenum)
+	if (ent->Client.breather_framenum > level.Frame)
 		ent->Client.breather_framenum += 300;
 	else
-		ent->Client.breather_framenum = level.framenum + 300;
+		ent->Client.breather_framenum = level.Frame + 300;
 }
 
 void CEnvironmentSuit::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
@@ -385,10 +385,10 @@ void CEnvironmentSuit::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.enviro_framenum > level.framenum)
+	if (ent->Client.enviro_framenum > level.Frame)
 		ent->Client.enviro_framenum += 300;
 	else
-		ent->Client.enviro_framenum = level.framenum + 300;
+		ent->Client.enviro_framenum = level.Frame + 300;
 }
 
 void CBandolier::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
@@ -491,7 +491,7 @@ public:
 		}
 
 		gameEntity->item = item;
-		NextThink = level.framenum + 2;    // items start after other solids
+		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 

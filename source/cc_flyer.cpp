@@ -465,10 +465,10 @@ void CFlyer::Pain (CBaseEntity *other, float kick, int damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
@@ -602,7 +602,7 @@ void CFlyer::SideStep ()
 void CFlyer::Spawn ()
 {
 	// fix a map bug in jail5.bsp
-	if (!Q_stricmp(level.mapname, "jail5") && (Entity->State.GetOrigin().Z == -104))
+	if (!Q_stricmp(level.ServerLevelName.c_str(), "jail5") && (Entity->State.GetOrigin().Z == -104))
 	{
 		Entity->TargetName = Entity->Target;
 		Entity->Target = NULL;

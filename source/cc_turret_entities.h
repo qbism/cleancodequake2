@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Turret entities
 //
 
-class CTurretEntityBase abstract : public CMapEntity, public CBrushModel, public CBlockableEntity
+class CTurretEntityBase : public CMapEntity, public CBrushModel, public CBlockableEntity
 {
 public:
 	CTurretEntityBase ();

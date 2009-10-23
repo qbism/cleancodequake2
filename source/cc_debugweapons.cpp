@@ -42,7 +42,7 @@ CWeapon (NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL)
 void CDebugWeapon::Think (CPlayerEntity *Player)
 {
 	// Update pointing surface
-	//if (!(level.framenum & 2))
+	//if (!(level.Frame & 2))
 	{
 		vec3f forward;
 		Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);

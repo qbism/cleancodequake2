@@ -221,7 +221,7 @@ public:
 	void UseAreaPortals (bool isOpen);
 	bool Run ();
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -327,7 +327,7 @@ public:
 
 	bool Run ();
 
-	virtual bool			ParseField (char *Key, char *Value)
+	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
@@ -364,7 +364,7 @@ public:
 
 	virtual bool Run ();
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -405,7 +405,7 @@ public:
 	CTriggerElevator ();
 	CTriggerElevator (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -445,7 +445,7 @@ public:
 	void Blocked (CBaseEntity *other);
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -460,7 +460,7 @@ public:
 	CConveyor ();
 	CConveyor (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -477,7 +477,7 @@ public:
 	CAreaPortal ();
 	CAreaPortal (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -494,7 +494,7 @@ public:
 	CFuncWall ();
 	CFuncWall (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -515,7 +515,7 @@ public:
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -558,7 +558,7 @@ public:
 	CKillbox ();
 	CKillbox (int Index);
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}

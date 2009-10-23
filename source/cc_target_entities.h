@@ -48,4 +48,4 @@ public:
 	void Spawn ();
 };
 
-CTargetChangeLevel *CreateTargetChangeLevel(char *map);
+CTargetChangeLevel *CreateTargetChangeLevel(const char *map);

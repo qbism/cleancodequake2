@@ -82,7 +82,7 @@ CC_ENUM (uint32, EEdictFlags)
 
 // CBaseEntity is abstract.
 // A base entity can't do anything
-class CBaseEntity abstract
+class CBaseEntity
 {
 //private:
 public: // Kept public for now because there are lots of functions that require edict_t
@@ -174,6 +174,7 @@ enum
 	ENT_ITEM		=	BIT(9), // Can be casted to CItemEntity
 	ENT_MAP			=	BIT(10), // Can be casted to CMapEntity
 	ENT_BRUSHMODEL	=	BIT(11), // Can be casted to CBrushModel
+	ENT_PRIVATE		=	BIT(12), // Can be casted to CPrivateEntity
 };
 
 template <class TType>
@@ -185,7 +186,7 @@ inline TType *entity_cast (CBaseEntity *Entity)
 	TType *Casted = dynamic_cast<TType*> (Entity);
 
 	if (Casted == NULL)
-		assert (0);
+		_CC_ASSERT_EXPR (0, "Attempted cast of an entity uncastable to this type");
 
 	return Casted;
 }
@@ -196,7 +197,7 @@ inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
 	return Entity; // Implicit cast already done
 }
 
-inline char *CopyStr (char *In, struct memPool_t *Pool)
+inline char *CopyStr (const char *In, struct memPool_t *Pool)
 {
 	std::cc_string newString (In);
 	
@@ -235,12 +236,12 @@ inline uint32 atou (const char *Str)
 #define ENTITYFIELD_DEFS \
 	static const CEntityField FieldsForParsing[]; \
 	static const size_t FieldsForParsingSize; \
-	bool				ParseField (char *Key, char *Value);
+	bool				ParseField (const char *Key, const char *Value);
 
 #define ENTITYFIELD_VIRTUAL_DEFS \
 	static const CEntityField FieldsForParsing[]; \
 	static const size_t FieldsForParsingSize; \
-	virtual bool			ParseField (char *Key, char *Value);
+	virtual bool			ParseField (const char *Key, const char *Value);
 
 #define ENTITYFIELD_SETSIZE(x) const size_t x::FieldsForParsingSize = FieldSize<x>();
 
@@ -276,20 +277,14 @@ CC_ENUM (uint32, EFieldType)
 class CEntityField
 {
 public:
-	char			*Name;
+	std::cc_string	Name;
 	size_t			Offset;
 	EFieldType		FieldType, StrippedFields;
 
-	CEntityField (char *Name, size_t Offset, EFieldType FieldType) :
-	Name(Name),
-	Offset(Offset),
-	FieldType(FieldType),
-	StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN))
-	{
-	};
+	CEntityField (const char *Name, size_t Offset, EFieldType FieldType);
 
 	template <class TClass>
-	void Create (TClass *Entity, char *Value) const
+	void Create (TClass *Entity, const char *Value) const
 	{
 		byte *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (byte*)Entity->gameEntity : (byte*)Entity) + Offset;
 
@@ -367,12 +362,18 @@ public:
 };
 
 template <class TClass, class TPassClass>
-bool CheckFields (TClass *Me, char *Key, char *Value)
+bool CheckFields (TClass *Me, const char *Key, const char *Value)
 {
 	for (size_t i = 0; i < TClass::FieldsForParsingSize; i++)
 	{
-		if (!(TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN) && (strcmp (Key, TClass::FieldsForParsing[i].Name) == 0))
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+		if (!(TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN) && (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0))
 		{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
 			TClass::FieldsForParsing[i].Create<TPassClass> (Me, Value);
 			return true;
 		}
@@ -381,14 +382,14 @@ bool CheckFields (TClass *Me, char *Key, char *Value)
 };
 
 template <class TClass>
-bool CheckFields (TClass *Me, char *Key, char *Value)
+bool CheckFields (TClass *Me, const char *Key, const char *Value)
 {
-	for (uint32 i = 0; i < TClass::FieldsForParsingSize; i++)
+	for (size_t i = 0; i < TClass::FieldsForParsingSize; i++)
 	{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-		if (!(TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN) && (strcmp (Key, TClass::FieldsForParsing[i].Name) == 0))
+		if (!(TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN) && (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0))
 		{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
@@ -432,24 +433,9 @@ public:
 	static const class CEntityField FieldsForParsing_Map[];
 	static const size_t FieldsForParsingSize_Map;
 
-	virtual bool			ParseField (char *Key, char *Value);
+	virtual bool			ParseField (const char *Key, const char *Value);
 	void					ParseFields ();
 	virtual bool			CheckValidity ();
-};
-
-// An entity completely privatized.
-// Does not take up a g_edicts space.
-class CPrivateEntity : public virtual CBaseEntity
-{
-	CPrivateEntity (int Index); // Can't do this.
-
-public:
-	bool		InUse; // Replaces gameEntity->inUse
-
-	CPrivateEntity ();
-	void Free ();
-
-	bool &GetInUse ();
 };
 
 #include "cc_itementity.h"

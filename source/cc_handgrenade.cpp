@@ -64,12 +64,12 @@ void CHandGrenade::Hold (CPlayerEntity *ent)
 {
 	if (!ent->Client.grenade_time)
 	{
-		ent->Client.grenade_time = level.framenum + GRENADE_TIMER + 2;
+		ent->Client.grenade_time = level.Frame + GRENADE_TIMER + 2;
 		ent->Client.weapon_sound = SoundIndex("weapons/hgrenc1b.wav");
 	}
 
 	// they waited too long, detonate it in their hand
-	if (!ent->Client.grenade_blew_up && (level.framenum >= ent->Client.grenade_time))
+	if (!ent->Client.grenade_blew_up && (level.Frame >= ent->Client.grenade_time))
 	{
 		ent->Client.weapon_sound = 0;
 		FireGrenade (ent, true);
@@ -96,13 +96,13 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 	ent->P_ProjectSource (offset, forward, right, start);
 
-	float timer = (float)(ent->Client.grenade_time - level.framenum) / 10;
+	float timer = (float)(ent->Client.grenade_time - level.Frame) / 10;
 	const int speed = (ent->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
 	CGrenade::Spawn (ent, start, forward, damage, speed, timer, radius, true, inHand);
 
-	ent->Client.grenade_time = level.framenum + ((((game.mode & GAME_CTF) || dmFlags.dfDmTechs) && ent->ApplyHaste()) ? 5 : 10);
+	ent->Client.grenade_time = level.Frame + ((((game.mode & GAME_CTF) || dmFlags.dfDmTechs) && ent->ApplyHaste()) ? 5 : 10);
 
 	if (!dmFlags.dfInfiniteAmmo)
 		DepleteAmmo(ent, 1);
@@ -130,7 +130,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 void CHandGrenade::Wait (CPlayerEntity *ent)
 {
 	ent->Client.grenade_blew_up = false;
-	if (level.framenum < ent->Client.grenade_time)
+	if (level.Frame < ent->Client.grenade_time)
 		return;
 
 	if (!ent->DeadFlag)

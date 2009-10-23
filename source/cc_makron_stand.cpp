@@ -60,7 +60,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -77,7 +77,7 @@ public:
 		else
 			State.GetFrame()++;
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
@@ -104,7 +104,7 @@ public:
 		GetMins().Set (32, -32, 0);
 		GetMaxs().Set (32, 32, 90);
 
-		NextThink = level.framenum + FRAMETIME;
+		NextThink = level.Frame + FRAMETIME;
 		Link ();
 	};
 };

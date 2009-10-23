@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define __CC_ENTITYTYPES_H__
 
 // "Hurtable" entity
-class CHurtableEntity abstract : public virtual CBaseEntity
+class CHurtableEntity : public virtual CBaseEntity
 {
 public:
 	int			Health;
@@ -79,7 +79,7 @@ public:
 							int dflags, EMeansOfDeath mod);
 };
 
-class CBlockableEntity abstract : public virtual CBaseEntity
+class CBlockableEntity : public virtual CBaseEntity
 {
 public:
 	CBlockableEntity ();
@@ -88,7 +88,7 @@ public:
 	virtual void Blocked (CBaseEntity *other) = 0;
 };
 
-class CUsableEntity abstract : public virtual CBaseEntity
+class CUsableEntity : public virtual CBaseEntity
 {
 public:
 	char				*Message;
@@ -110,7 +110,7 @@ public:
 
 // Thinkable entity
 // Simple think function
-class CThinkableEntity abstract : public virtual CBaseEntity
+class CThinkableEntity : public virtual CBaseEntity
 {
 public:
 	FrameNumber_t		NextThink;
@@ -124,7 +124,7 @@ public:
 };
 
 // Touchable entity
-class CTouchableEntity abstract : public virtual CBaseEntity
+class CTouchableEntity : public virtual CBaseEntity
 {
 public:
 	bool Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
@@ -150,7 +150,7 @@ CC_ENUM (uint8, EPhysicsType)
 	PHYSICS_BOUNCE
 };
 // Contains common code that projectiles will use
-class CPhysicsEntity abstract : public virtual CBaseEntity
+class CPhysicsEntity : public virtual CBaseEntity
 {
 public:
 	EPhysicsType		PhysicsType;
@@ -168,7 +168,7 @@ public:
 };
 
 // "Bouncy" projectile
-class CBounceProjectile abstract : public virtual CPhysicsEntity
+class CBounceProjectile : public virtual CPhysicsEntity
 {
 public:
 	float			backOff;
@@ -180,7 +180,7 @@ public:
 };
 
 // Same as bouncy, except doesn't bounce
-class CTossProjectile abstract : public virtual CBounceProjectile
+class CTossProjectile : public virtual CBounceProjectile
 {
 public:
 	CTossProjectile();
@@ -188,7 +188,7 @@ public:
 };
 
 // Doesn't add gravity
-class CFlyMissileProjectile abstract : public virtual CPhysicsEntity
+class CFlyMissileProjectile : public virtual CPhysicsEntity
 {
 public:
 	CFlyMissileProjectile ();
@@ -198,7 +198,7 @@ public:
 };
 
 // Gravity, special edge handling
-class CStepPhysics abstract : public virtual CPhysicsEntity
+class CStepPhysics : public virtual CPhysicsEntity
 {
 public:
 	CStepPhysics ();
@@ -211,7 +211,7 @@ public:
 	bool			Run ();
 };
 
-class CPushPhysics abstract : public virtual CPhysicsEntity
+class CPushPhysics : public virtual CPhysicsEntity
 {
 public:
 	CPushPhysics ();
@@ -220,7 +220,7 @@ public:
 	bool			Run ();
 };
 
-class CStopPhysics abstract : public virtual CPushPhysics
+class CStopPhysics : public virtual CPushPhysics
 {
 public:
 	CStopPhysics ();

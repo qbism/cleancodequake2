@@ -508,7 +508,7 @@ Assumes "src" is normalized
 */
 void PerpendicularVector(const vec3_t src, vec3_t dst)
 {
-	int		pos = 5;
+	uint8	pos = 5;
 	float	minElem = 1.0f;
 	vec3_t	tempVec;
 
@@ -529,7 +529,7 @@ void PerpendicularVector(const vec3_t src, vec3_t dst)
 		minElem = Q_fabs(src[2]);
 	}
 
-	assert(pos != 5);
+	_CC_ASSERT_EXPR(pos != 5, "Couldn't find smallest magnitude");
 
 	Vec3Clear(tempVec);
 	if (pos < 3)

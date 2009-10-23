@@ -51,7 +51,7 @@ public:
 	void AddVirtualPoint_X (int x);
 	void AddPoint_X (int x, bool inverted);
 	void AddPoint_Y (int y, bool inverted);
-	void AddString (char *string, bool highBi, bool center);
+	void AddString (const char *string, bool highBi, bool center);
 	void AddStatString (int stat);
 	void AddPic (char *pic);
 	void AddPicStat (int stat);

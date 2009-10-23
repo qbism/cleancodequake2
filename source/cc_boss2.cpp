@@ -448,7 +448,7 @@ void CBoss2::Explode ()
 
 	CTempEnt_Explosions::RocketExplosion (org, Entity);
 
-	Entity->NextThink = level.framenum + FRAMETIME;
+	Entity->NextThink = level.Frame + FRAMETIME;
 }
 
 
@@ -492,10 +492,10 @@ void CBoss2::Pain (CBaseEntity *other, float kick, int damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 
 // American wanted these at no attenuation
 	Entity->PlaySound (CHAN_VOICE, (damage < 10) ? SoundPain3 : ((damage < 30) ? SoundPain1 : SoundPain2), 255, ATTN_NONE);
@@ -559,7 +559,7 @@ bool CBoss2::CheckAttack ()
 	}
 	
 // missile attack
-	if (level.framenum < AttackFinished)
+	if (level.Frame < AttackFinished)
 		return false;
 		
 	if (enemy_range == RANGE_FAR)
@@ -579,7 +579,7 @@ bool CBoss2::CheckAttack ()
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.framenum + (2*frand())*10;
+		AttackFinished = level.Frame + (2*frand())*10;
 		return true;
 	}
 

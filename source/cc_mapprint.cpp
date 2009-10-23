@@ -129,7 +129,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f origin, char *fm
 int fileVersion;
 
 int curIf = 0;
-std::vector<bool, std::level_allocator<bool> > ifLists;
+std::vector<bool, std::game_allocator<bool> > ifLists;
 
 inline void PushIf (bool expr)
 {
@@ -179,7 +179,7 @@ struct PoundVariable_t
 	} vars;
 };
 
-std::vector<PoundVariable_t *, std::level_allocator<PoundVariable_t*> > VariableList;
+std::vector<PoundVariable_t *, std::game_allocator<PoundVariable_t*> > VariableList;
 
 PoundVariable_t *Pound_FindVar (char *name)
 {
@@ -373,12 +373,12 @@ char *ParsePound (char *tok, char *realEntities)
 	return realEntities;
 }
 
-char *CC_LoadEntFile (char *mapname, char *entities)
+char *CC_LoadEntFile (char *ServerLevelName, char *entities)
 {
 	std::cc_string fileName;
 
 	fileName = "maps/ents/";
-	fileName += mapname;
+	fileName += ServerLevelName;
 	fileName += ".ccent";
 
 	char *newEntities = NULL;
@@ -401,14 +401,14 @@ bool TokenEnd (char *token)
 
 // To speed the process up a bit, and to reduce problematic newlines,
 // this goes by entire lines.
-char *CC_ParseSpawnEntities (char *mapname, char *entities)
+char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 {
 	std::cc_string finalString;
 	char *realEntities;
 	char *token;
 	char *tempEntities;
 
-	tempEntities = CC_LoadEntFile (mapname, entities);
+	tempEntities = CC_LoadEntFile (ServerLevelName, entities);
 	if (tempEntities == entities)
 		return entities;
 	else

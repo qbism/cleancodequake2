@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void CC_RunFrame ();
 void CC_InitGame ();
 void CC_ShutdownGame ();
-void CC_SpawnEntities (char *mapname, char *entities, char *spawnpoint);
+void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint);
 
 #else
 FILE_WARNING

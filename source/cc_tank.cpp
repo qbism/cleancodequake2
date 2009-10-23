@@ -272,7 +272,7 @@ void CTank::Pain (CBaseEntity *other, float kick, int damage)
 	if (damage <= 10)
 		return;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 			return;
 
 	if (damage <= 30 && frand() > 0.2)
@@ -287,7 +287,7 @@ void CTank::Pain (CBaseEntity *other, float kick, int damage)
 			return;
 	}
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, SoundPain);
 
 	if (skill->Integer() == 3)
@@ -763,8 +763,8 @@ void CTank::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &TankMoveAttackFireRocket;
-		AttackFinished = level.framenum + 30 + ((2*frand())*10);
-		PainDebounceTime = level.framenum + 50;	// no pain for a while
+		AttackFinished = level.Frame + 30 + ((2*frand())*10);
+		PainDebounceTime = level.Frame + 50;	// no pain for a while
 		return;
 	}
 	// pmm
@@ -794,7 +794,7 @@ void CTank::Attack ()
 		else if (r < 0.66)
 		{
 			CurrentMove = &TankMoveAttackPreRocket;
-			PainDebounceTime = level.framenum + 50;	// no pain for a while
+			PainDebounceTime = level.Frame + 50;	// no pain for a while
 		}
 		else
 			CurrentMove = &TankMoveAttackBlast;

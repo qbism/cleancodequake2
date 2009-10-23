@@ -297,10 +297,10 @@ void CBrain::Pain(CBaseEntity *other, float kick, int damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
@@ -357,7 +357,7 @@ void CBrain::Duck_Down ()
 
 void CBrain::Duck_Hold ()
 {
-	if (level.framenum >= PauseTime)
+	if (level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -378,7 +378,7 @@ void CBrain::Dodge (CBaseEntity *attacker, float eta)
 	if (!Entity->Enemy)
 		Entity->Enemy = attacker->gameEntity;
 
-	PauseTime = level.framenum + ((eta + 0.5) * 10);
+	PauseTime = level.Frame + ((eta + 0.5) * 10);
 	CurrentMove = &BrainMoveDuck;
 }
 #else
@@ -389,9 +389,9 @@ void CBrain::Duck (float eta)
 
 	if (!skill->Boolean())
 		// PMM - stupid dodge
-		DuckWaitTime = level.framenum + ((eta + 1) * 10);
+		DuckWaitTime = level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = level.framenum + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
 
 	CurrentMove = &BrainMoveDuck;
 	NextFrame = FRAME_duck01;

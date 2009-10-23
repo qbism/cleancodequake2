@@ -60,10 +60,10 @@ bool CTech::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
 	if (other->Client.Persistent.Tech)
 	{
-		if (level.framenum - other->Client.lasttechmsg > 20)
+		if (level.Frame - other->Client.lasttechmsg > 20)
 		{
 			other->PrintToClient(PRINT_CENTER, "You already have a TECH powerup.");
-			other->Client.lasttechmsg = level.framenum;
+			other->Client.lasttechmsg = level.Frame;
 		}
 		return false; // has this one
 	}
@@ -71,7 +71,7 @@ bool CTech::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 	// client only gets one tech
 	other->Client.Persistent.Inventory.Set(this, 1);
 	other->Client.Persistent.Tech = this;
-	other->Client.regentime = level.framenum;
+	other->Client.regentime = level.Frame;
 	return true;
 }
 
@@ -134,9 +134,9 @@ public:
 	{
 		CBaseItem *index;
 		bool noise = false;
-		if (Player->Client.regentime < level.framenum)
+		if (Player->Client.regentime < level.Frame)
 		{
-			Player->Client.regentime = level.framenum;
+			Player->Client.regentime = level.Frame;
 			if (Player->Health < 150)
 			{
 				Player->Health += 5;
@@ -155,9 +155,9 @@ public:
 				noise = true;
 			}
 		}
-		if (noise && Player->Client.techsndtime < level.framenum)
+		if (noise && Player->Client.techsndtime < level.Frame)
 		{
-			Player->Client.techsndtime = level.framenum + 10;
+			Player->Client.techsndtime = level.Frame + 10;
 			Player->PlaySound (CHAN_AUTO, SoundIndex("ctf/tech4.wav"), (Player->Client.silencer_shots) ? 51 : 255);
 		}
 	};
@@ -187,7 +187,7 @@ public:
 		//CAmmo *Ptrs[] = {NItems::Shells, NItems::Bullets, NItems::Grenades, NItems::Rockets, NItems::Cells, NItems::Slugs};
 
 		bool noise = false;
-		if (Player->Client.regentime < level.framenum)
+		if (Player->Client.regentime < level.Frame)
 		{
 			if (Player->Client.Persistent.Weapon)
 			{
@@ -212,11 +212,11 @@ public:
 				}
 			}
 
-			Player->Client.regentime = level.framenum + AMMO_REGEN_TIME;
+			Player->Client.regentime = level.Frame + AMMO_REGEN_TIME;
 		}
-		if (noise && Player->Client.techsndtime < level.framenum)
+		if (noise && Player->Client.techsndtime < level.Frame)
 		{
-			Player->Client.techsndtime = level.framenum + AMMO_REGEN_TIME;
+			Player->Client.techsndtime = level.Frame + AMMO_REGEN_TIME;
 			Player->PlaySound (CHAN_AUTO, SoundIndex("ctf/tech5.wav"), (Player->Client.silencer_shots) ? 51 : 255);
 		}
 	};
@@ -261,7 +261,7 @@ public:
 			Free ();
 		}
 		else
-			NextThink = level.framenum + CTF_TECH_TIMEOUT;
+			NextThink = level.Frame + CTF_TECH_TIMEOUT;
 	};
 
 	void Respawn ()
@@ -322,7 +322,7 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.framenum + 10;
+	dropped->NextThink = level.Frame + 10;
 	dropped->Link ();
 
 	return dropped;
@@ -331,7 +331,7 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 void CTech::Drop (CPlayerEntity *ent)
 {
 	CItemEntity *tech = DropItem(ent);
-	tech->NextThink = level.framenum + CTF_TECH_TIMEOUT;
+	tech->NextThink = level.Frame + CTF_TECH_TIMEOUT;
 	ent->Client.Persistent.Inventory.Set(this, 0);
 	ent->Client.Persistent.Tech = NULL;
 }
@@ -359,7 +359,7 @@ void SpawnTech(CBaseItem *item, CBaseEntity *spot)
 	ent->Velocity = forward;
 	ent->Velocity.Z = 300;
 
-	ent->NextThink = level.framenum + CTF_TECH_TIMEOUT;
+	ent->NextThink = level.Frame + CTF_TECH_TIMEOUT;
 
 	ent->Link ();
 }
@@ -403,7 +403,7 @@ public:
 
 	void Spawn ()
 	{
-		NextThink = level.framenum + 20;
+		NextThink = level.Frame + 20;
 	};
 };
 

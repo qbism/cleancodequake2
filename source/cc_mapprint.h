@@ -47,7 +47,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f origin, char *fm
 void EndMapCounter ();
 void InitMapCounter ();
 
-char *CC_ParseSpawnEntities (char *mapname, char *entities);
+char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities);
 
 uint32 Sys_Milliseconds ();
 

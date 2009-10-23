@@ -316,7 +316,7 @@ public:
 		}
 
 		gameEntity->item = item;
-		NextThink = level.framenum + 2;    // items start after other solids
+		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 

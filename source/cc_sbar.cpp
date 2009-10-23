@@ -70,7 +70,7 @@ void CStatusBar::AddToBarBuffer (char *fmt, ...)
 	va_end (argptr);
 
 	if (Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1)
-		assert (0);
+		_CC_ASSERT_EXPR (0, "Bar overflowed");
 
 	Bar += text;
 }
@@ -95,7 +95,7 @@ void CStatusBar::AddPoint_Y (int y, bool inverted = false)
 	AddToBarBuffer ("y%c %i ", inverted ? 'b' : 't', y);
 }
 
-void CStatusBar::AddString (char *string, bool highBit = false, bool center = false)
+void CStatusBar::AddString (const char *string, bool highBit = false, bool center = false)
 {
 	AddToBarBuffer ("%sstring%s \"%s\" ", center ? "c" : "", highBit ? "2" : "", string);
 }
@@ -147,13 +147,13 @@ void CStatusBar::AddArmorNum ()
 
 void CStatusBar::AddClientBlock (int x, int y, int cNum, int score, int ping, int time)
 {
-	assert (!(cNum >= game.maxclients || cNum < 0));
+	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, score, ping, time);
 }
 
 void CStatusBar::AddClientBlock (int x, int y, int cNum, int score, int ping)
 {
-	assert (!(cNum >= game.maxclients || cNum < 0));
+	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, score, ping);
 }
 
@@ -349,7 +349,7 @@ void HelpComputer (CPlayerEntity *ent)
 	Scoreboard.AddVirtualPoint_X (0);
 
 	Scoreboard.AddVirtualPoint_Y (24);
-	Scoreboard.AddString (level.level_name, true, true);
+	Scoreboard.AddString (level.FullLevelName.c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (54);
 	Scoreboard.AddString (game.helpmessage1, true, true);
@@ -364,9 +364,9 @@ void HelpComputer (CPlayerEntity *ent)
 	Scoreboard.AddVirtualPoint_Y (172);
 
 	char tempBuffer[MAX_INFO_KEY];
-	Q_snprintfz (tempBuffer, sizeof(tempBuffer), "%3i/%3i     %i/%i       %i/%i", level.killed_monsters, level.total_monsters, 
-		level.found_goals, level.total_goals,
-		level.found_secrets, level.total_secrets);
+	Q_snprintfz (tempBuffer, sizeof(tempBuffer), "%3i/%3i     %i/%i       %i/%i", level.Monsters.Killed, level.Monsters.Total, 
+		level.Goals.Found, level.Goals.Total,
+		level.Secrets.Found, level.Secrets.Total);
 
 	Scoreboard.AddString (tempBuffer, true);
 

@@ -522,10 +522,10 @@ void CIcarus::Pain (CBaseEntity *other, float kick, int damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.framenum < PainDebounceTime)
+	if (level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.framenum + 30;
+	PainDebounceTime = level.Frame + 30;
 
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
@@ -566,9 +566,9 @@ void CIcarus::Pain (CBaseEntity *other, float kick, int damage)
 
 void CIcarus::DeadThink ()
 {
-	if (!Entity->GroundEntity && level.framenum < TimeStamp)
+	if (!Entity->GroundEntity && level.Frame < TimeStamp)
 	{
-		Entity->NextThink = level.framenum + FRAMETIME;
+		Entity->NextThink = level.Frame + FRAMETIME;
 		return;
 	}
 	Entity->BecomeExplosion(false);
@@ -579,8 +579,8 @@ void CIcarus::Dead ()
 	Entity->GetMins().Set (-16, -16, -24);
 	Entity->GetMaxs().Set (16, 16, -8);
 	Think = ConvertDerivedFunction(&CIcarus::DeadThink);
-	Entity->NextThink = level.framenum + FRAMETIME;
-	TimeStamp = level.framenum + 150;
+	Entity->NextThink = level.Frame + FRAMETIME;
+	TimeStamp = level.Frame + 150;
 	Entity->Link ();
 }
 

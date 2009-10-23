@@ -75,10 +75,10 @@ bool CPowerCube::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
 	if (game.mode == GAME_COOPERATIVE)
 	{
-		if (other->Client.Persistent.power_cubes & ((ent->SpawnFlags & 0x0000ff00)>> 8))
+		if (other->Client.Persistent.PowerCubeCount & ((ent->SpawnFlags & 0x0000ff00)>> 8))
 			return false;
 		other->Client.Persistent.Inventory += this;
-		other->Client.Persistent.power_cubes |= ((ent->SpawnFlags & 0x0000ff00) >> 8);
+		other->Client.Persistent.PowerCubeCount |= ((ent->SpawnFlags & 0x0000ff00) >> 8);
 		return true;
 	}
 	other->Client.Persistent.Inventory += this;
@@ -102,20 +102,14 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if (SpawnFlags)
-		{
-			SpawnFlags = 0;
-			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Invalid spawnflags (%i, should be 0)\n", SpawnFlags);
-		}
-
 		if (game.mode == GAME_COOPERATIVE)
 		{
-			SpawnFlags |= (1 << (8 + level.power_cubes));
-			level.power_cubes++;
+			SpawnFlags |= (1 << (8 + level.PowerCubeCount));
+			level.PowerCubeCount++;
 		}
 
 		gameEntity->item = item;
-		NextThink = level.framenum + 2;    // items start after other solids
+		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 

@@ -116,7 +116,7 @@ public:
 	CTech		*Tech; // Set if holding a tech
 	// Stored here for convenience. (dynamic_cast ew)
 
-	int			power_cubes;	// used for tracking the cubes in coop games
+	int			PowerCubeCount;	// used for tracking the cubes in coop games
 	int			score;			// for calculating total unit score in coop games
 
 	int			game_helpchanged;
@@ -162,7 +162,7 @@ class CRespawnData
 {
 public:
 	CPersistentData	coop_respawn;	// what to set client->Persistent to on a respawn
-	int			enterframe;			// level.framenum the client entered the game
+	int			enterframe;			// level.Frame the client entered the game
 	int			score;				// frags, etc
 	vec3_t		cmd_angles;			// angles sent over in the last command
 

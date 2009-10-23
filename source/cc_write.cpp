@@ -120,13 +120,13 @@ public:
 			_WriteString ((char*)Ptr);
 			break;
 		default:
-			assert (0);
+			_CC_ASSERT_EXPR (0, "WriteIndex has invalid write ID");
 			break;
 		};
 	};
 };
 
-std::vector <CWriteIndex*, std::level_allocator<CWriteIndex*> > WriteQueue;
+std::vector <CWriteIndex*, std::game_allocator<CWriteIndex*> > WriteQueue;
 
 void SendQueue (edict_t *To, bool Reliable)
 {

@@ -253,7 +253,7 @@ void SvCmd_EntList_f ()
 extern char *gEntString;
 void SvCmd_Dump_f ()
 {
-	std::cc_string FileName = "/maps/ents/" + std::cc_string(level.mapname) + ".ccent";
+	std::cc_string FileName = "/maps/ents/" + level.ServerLevelName + ".ccent";
 	fileHandle_t f;
 
 	FS_OpenFile (FileName.c_str(), &f, FS_MODE_WRITE_BINARY);

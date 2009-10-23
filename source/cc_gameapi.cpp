@@ -72,6 +72,7 @@ _CC_ENABLE_DEPRECATION
 
 #if defined(WIN32) && defined(_DEBUG)
 #include <windows.h>
+#include <crtdbg.h>
 #endif
 
 void GameError (char *fmt, ...)
@@ -83,12 +84,15 @@ void GameError (char *fmt, ...)
 	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
 	va_end (argptr);
 
-#if defined(WIN32) && defined(_DEBUG)
+#if defined(WIN32)
+#if defined(_DEBUG)
 	// Pipe to visual studio
 	OutputDebugString(text);
 #endif
-
+	_CrtDbgBreak ();
+#else
 	assert (0); // Break, if debugging
+#endif
 
 _CC_DISABLE_DEPRECATION
 	gi.error (text);
@@ -315,13 +319,13 @@ Creates a server's entity / program execution context by
 parsing textual entity definitions out of an ent file.
 ==============
 */
-void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
+void SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	CC_SpawnEntities (mapname, entities, spawnpoint);
+	CC_SpawnEntities (ServerLevelName, entities, spawnpoint);
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END

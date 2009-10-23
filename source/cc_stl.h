@@ -40,7 +40,23 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 namespace std
 {
-		// TEMPLATE CLASS allocator
+
+		// TEMPLATE FUNCTION _Allocate
+template<class _Ty> inline
+	_Ty _FARQ *_Allocate(_SIZT _Count, _Ty _FARQ *, struct memPool_t *Pool)
+	{	// allocate storage for _Count elements of type _Ty
+	void *_Ptr = 0;
+
+	if (_Count <= 0)
+		_Count = 0;
+	else if (((_SIZT)(-1) / sizeof (_Ty) < _Count)
+		|| (_Ptr = _Mem_Alloc (_Count * sizeof (_Ty), Pool, 0, __FILE__, __LINE__)) == 0)
+		_THROW_NCEE(bad_alloc, 0);
+
+	return ((_Ty _FARQ *)_Ptr);
+	}
+
+		// TEMPLATE CLASS _ALLOCATOR
 template<class _Ty>
 	class level_allocator
 		: public _Allocator_base<_Ty>
@@ -48,6 +64,7 @@ template<class _Ty>
 public:
 	typedef _Allocator_base<_Ty> _Mybase;
 	typedef typename _Mybase::value_type value_type;
+
 	typedef value_type _FARQ *pointer;
 	typedef value_type _FARQ& reference;
 	typedef const value_type _FARQ *const_pointer;
@@ -58,18 +75,18 @@ public:
 
 	template<class _Other>
 		struct rebind
-		{	// convert an allocator<_Ty> to an allocator <_Other>
+		{	// convert this type to _ALLOCATOR<_Other>
 		typedef level_allocator<_Other> other;
 		};
 
 	pointer address(reference _Val) const
 		{	// return address of mutable _Val
-		return (&_Val);
+		return ((pointer) &(char&)_Val);
 		}
 
 	const_pointer address(const_reference _Val) const
 		{	// return address of nonmutable _Val
-		return (&_Val);
+		return ((const_pointer) &(char&)_Val);
 		}
 
 	level_allocator() _THROW0()
@@ -93,20 +110,12 @@ public:
 
 	void deallocate(pointer _Ptr, size_type)
 		{	// deallocate object at _Ptr, ignore size
-		delete(_Ptr);
+		QDelete(_Ptr);
 		}
 
 	pointer allocate(size_type _Count)
 		{	// allocate array of _Count elements
-		// check for integer overflow
-		if (_Count <= 0)
-			_Count = 0;
-		else if (((_SIZT)(-1) / _Count) < sizeof (_Ty))
-			_THROW_NCEE(bad_alloc, NULL);
-
-			// allocate storage for _Count elements of type _Ty
-		return ((_Ty _FARQ *) _Mem_Alloc (_Count * sizeof (_Ty), com_levelPool, 0, "STL Container", 0));
-			//return (_Allocate(_Count, (pointer)0));
+		return (_Allocate(_Count, (pointer)0, com_levelPool));
 		}
 
 	pointer allocate(size_type _Count, const void _FARQ *)
@@ -117,6 +126,17 @@ public:
 	void construct(pointer _Ptr, const _Ty& _Val)
 		{	// construct object at _Ptr with value _Val
 		_Construct(_Ptr, _Val);
+		}
+
+	void construct(pointer _Ptr, _Ty&& _Val)
+		{	// construct object at _Ptr with value _Val
+		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
+		}
+
+	template<class _Other>
+		void construct(pointer _Ptr, _Other&& _Val)
+		{	// construct object at _Ptr with value _Val
+		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
 		}
 
 	void destroy(pointer _Ptr)
@@ -131,7 +151,23 @@ public:
 		}
 	};
 
-		// TEMPLATE CLASS allocator
+template<class _Ty,
+	class _Other> inline
+	bool operator!=(const level_allocator<_Ty>& _Left,
+		const level_allocator<_Other>& _Right) _THROW0()
+	{	// test for allocator inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Ty,
+	class _Other> inline
+	bool operator==(const level_allocator<_Ty>&,
+		const level_allocator<_Other>&) _THROW0()
+	{	// test for allocator equality
+	return (true);
+	}
+
+		// TEMPLATE CLASS _ALLOCATOR
 template<class _Ty>
 	class game_allocator
 		: public _Allocator_base<_Ty>
@@ -139,6 +175,7 @@ template<class _Ty>
 public:
 	typedef _Allocator_base<_Ty> _Mybase;
 	typedef typename _Mybase::value_type value_type;
+
 	typedef value_type _FARQ *pointer;
 	typedef value_type _FARQ& reference;
 	typedef const value_type _FARQ *const_pointer;
@@ -149,18 +186,18 @@ public:
 
 	template<class _Other>
 		struct rebind
-		{	// convert an allocator<_Ty> to an allocator <_Other>
+		{	// convert this type to _ALLOCATOR<_Other>
 		typedef game_allocator<_Other> other;
 		};
 
 	pointer address(reference _Val) const
 		{	// return address of mutable _Val
-		return (&_Val);
+		return ((pointer) &(char&)_Val);
 		}
 
 	const_pointer address(const_reference _Val) const
 		{	// return address of nonmutable _Val
-		return (&_Val);
+		return ((const_pointer) &(char&)_Val);
 		}
 
 	game_allocator() _THROW0()
@@ -184,20 +221,12 @@ public:
 
 	void deallocate(pointer _Ptr, size_type)
 		{	// deallocate object at _Ptr, ignore size
-		delete(_Ptr);
+		QDelete(_Ptr);
 		}
 
 	pointer allocate(size_type _Count)
 		{	// allocate array of _Count elements
-		// check for integer overflow
-		if (_Count <= 0)
-			_Count = 0;
-		else if (((_SIZT)(-1) / _Count) < sizeof (_Ty))
-			_THROW_NCEE(bad_alloc, NULL);
-
-			// allocate storage for _Count elements of type _Ty
-		return ((_Ty _FARQ *) _Mem_Alloc (_Count * sizeof (_Ty), com_gamePool, 0, "STL Container", 0));
-			//return (_Allocate(_Count, (pointer)0));
+		return (_Allocate(_Count, (pointer)0, com_gamePool));
 		}
 
 	pointer allocate(size_type _Count, const void _FARQ *)
@@ -208,6 +237,17 @@ public:
 	void construct(pointer _Ptr, const _Ty& _Val)
 		{	// construct object at _Ptr with value _Val
 		_Construct(_Ptr, _Val);
+		}
+
+	void construct(pointer _Ptr, _Ty&& _Val)
+		{	// construct object at _Ptr with value _Val
+		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
+		}
+
+	template<class _Other>
+		void construct(pointer _Ptr, _Other&& _Val)
+		{	// construct object at _Ptr with value _Val
+		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
 		}
 
 	void destroy(pointer _Ptr)
@@ -222,7 +262,23 @@ public:
 		}
 	};
 
-		// TEMPLATE CLASS allocator
+template<class _Ty,
+	class _Other> inline
+	bool operator!=(const game_allocator<_Ty>& _Left,
+		const game_allocator<_Other>& _Right) _THROW0()
+	{	// test for allocator inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Ty,
+	class _Other> inline
+	bool operator==(const game_allocator<_Ty>&,
+		const game_allocator<_Other>&) _THROW0()
+	{	// test for allocator equality
+	return (true);
+	}
+
+		// TEMPLATE CLASS _ALLOCATOR
 template<class _Ty>
 	class generic_allocator
 		: public _Allocator_base<_Ty>
@@ -230,6 +286,7 @@ template<class _Ty>
 public:
 	typedef _Allocator_base<_Ty> _Mybase;
 	typedef typename _Mybase::value_type value_type;
+
 	typedef value_type _FARQ *pointer;
 	typedef value_type _FARQ& reference;
 	typedef const value_type _FARQ *const_pointer;
@@ -240,18 +297,18 @@ public:
 
 	template<class _Other>
 		struct rebind
-		{	// convert an allocator<_Ty> to an allocator <_Other>
-		typedef generic_allocator<_Other> other;
+		{	// convert this type to _ALLOCATOR<_Other>
+		typedef game_allocator<_Other> other;
 		};
 
 	pointer address(reference _Val) const
 		{	// return address of mutable _Val
-		return (&_Val);
+		return ((pointer) &(char&)_Val);
 		}
 
 	const_pointer address(const_reference _Val) const
 		{	// return address of nonmutable _Val
-		return (&_Val);
+		return ((const_pointer) &(char&)_Val);
 		}
 
 	generic_allocator() _THROW0()
@@ -275,20 +332,12 @@ public:
 
 	void deallocate(pointer _Ptr, size_type)
 		{	// deallocate object at _Ptr, ignore size
-		delete(_Ptr);
+		QDelete(_Ptr);
 		}
 
 	pointer allocate(size_type _Count)
 		{	// allocate array of _Count elements
-		// check for integer overflow
-		if (_Count <= 0)
-			_Count = 0;
-		else if (((_SIZT)(-1) / _Count) < sizeof (_Ty))
-			_THROW_NCEE(bad_alloc, NULL);
-
-			// allocate storage for _Count elements of type _Ty
-		return ((_Ty _FARQ *) _Mem_Alloc (_Count * sizeof (_Ty), com_genericPool, 0, "STL Container", 0));
-			//return (_Allocate(_Count, (pointer)0));
+		return (_Allocate(_Count, (pointer)0, com_genericPool));
 		}
 
 	pointer allocate(size_type _Count, const void _FARQ *)
@@ -299,6 +348,17 @@ public:
 	void construct(pointer _Ptr, const _Ty& _Val)
 		{	// construct object at _Ptr with value _Val
 		_Construct(_Ptr, _Val);
+		}
+
+	void construct(pointer _Ptr, _Ty&& _Val)
+		{	// construct object at _Ptr with value _Val
+		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
+		}
+
+	template<class _Other>
+		void construct(pointer _Ptr, _Other&& _Val)
+		{	// construct object at _Ptr with value _Val
+		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
 		}
 
 	void destroy(pointer _Ptr)
@@ -312,6 +372,22 @@ public:
 		return (0 < _Count ? _Count : 1);
 		}
 	};
+
+template<class _Ty,
+	class _Other> inline
+	bool operator!=(const generic_allocator<_Ty>& _Left,
+		const generic_allocator<_Other>& _Right) _THROW0()
+	{	// test for allocator inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Ty,
+	class _Other> inline
+	bool operator==(const generic_allocator<_Ty>&,
+		const generic_allocator<_Other>&) _THROW0()
+	{	// test for allocator equality
+	return (true);
+	}
 
 typedef basic_string<char, char_traits<char>, generic_allocator<char> >
 	cc_string;

@@ -88,11 +88,11 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	Player->Client.BonusAlpha = 0.25;	
 
 	// show icon and name on status bar
-	if (Player->Client.pickup_msg_time != (level.framenum + 30))
+	if (Player->Client.pickup_msg_time != (level.Frame + 30))
 	{
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_ICON) = gameEntity->item->GetIconIndex();
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_STRING) = gameEntity->item->GetConfigStringNumber();
-		Player->Client.pickup_msg_time = level.framenum + 30;
+		Player->Client.pickup_msg_time = level.Frame + 30;
 	}
 
 	// change selected item
@@ -146,7 +146,7 @@ void CItemEntity::Use (CBaseEntity *other, CBaseEntity *activator)
 // Returns a random team member of ent
 CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 {
-	static std::vector<CBaseEntity*, std::level_allocator<CBaseEntity*> >	Team;
+	static std::vector<CBaseEntity*, std::game_allocator<CBaseEntity*> >	Team;
 	Team.clear ();
 
 	for (CBaseEntity *Member = Master; Member; Member = Member->TeamChain)
@@ -190,7 +190,7 @@ void CItemEntity::Think ()
 				GetSolid() = SOLID_NOT;
 				if (TeamMaster == this)
 				{
-					NextThink = level.framenum + FRAMETIME;
+					NextThink = level.Frame + FRAMETIME;
 					ThinkState = ITS_RESPAWN;
 				}
 			}
@@ -265,12 +265,12 @@ void CItemEntity::Spawn (CBaseItem *item)
 
 	if (!item)
 	{
-		assert (0);
+		_CC_ASSERT_EXPR (0, "Item without an item!");
 		Free ();
 		return;
 	}
 
-	NextThink = level.framenum + 2;    // items start after other solids
+	NextThink = level.Frame + 2;    // items start after other solids
 	ThinkState = ITS_DROPTOFLOOR;
 	PhysicsType = PHYSICS_NONE;
 

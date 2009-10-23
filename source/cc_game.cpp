@@ -40,7 +40,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_servercommands.h"
 
 game_locals_t	game;
-level_locals_t	level;
+CLevelLocals	level;
 edict_t		*g_edicts;
 
 /*
@@ -54,19 +54,17 @@ void EndDMLevel (void)
 {
 	char *s, *t, *f;
 	static const char *seps = " ,\n\r";
-#ifdef CRT_USE_UNDEPRECATED_FUNCTIONS
-	char *nextToken = NULL;
-#endif
 
 	// stay on same level flag
 	if (dmFlags.dfSameLevel)
 	{
-		BeginIntermission (CreateTargetChangeLevel (level.mapname) );
+		BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()));
 		return;
 	}
 
-	if (*level.forcemap) {
-		BeginIntermission (CreateTargetChangeLevel (level.forcemap) );
+	if (!level.ForceMap.empty())
+	{
+		BeginIntermission (CreateTargetChangeLevel (level.ForceMap.c_str()));
 		return;
 	}
 
@@ -75,22 +73,17 @@ void EndDMLevel (void)
 	{
 		s = Mem_StrDup(sv_maplist->String());
 		f = NULL;
-#ifndef CRT_USE_UNDEPRECATED_FUNCTIONS
 		t = strtok(s, seps);
-#else
-		t = strtok_s (s, seps, &nextToken);
-#endif
-		while (t != NULL) {
-			if (Q_stricmp(t, level.mapname) == 0) {
+
+		while (t != NULL)
+		{
+			if (Q_stricmp(t, level.ServerLevelName.c_str()) == 0) {
 				// it's in the list, go to the next one
-#ifndef CRT_USE_UNDEPRECATED_FUNCTIONS
 				t = strtok(NULL, seps);
-#else
-				t = strtok_s (NULL, seps, &nextToken);
-#endif
+
 				if (t == NULL) { // end of list, go to first one
 					if (f == NULL) // there isn't a first one, same level
-						BeginIntermission (CreateTargetChangeLevel (level.mapname) );
+						BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()) );
 					else
 						BeginIntermission (CreateTargetChangeLevel (f) );
 				} else
@@ -100,24 +93,20 @@ void EndDMLevel (void)
 			}
 			if (!f)
 				f = t;
-#ifndef CRT_USE_UNDEPRECATED_FUNCTIONS
 			t = strtok(NULL, seps);
-#else
-			t = strtok_s (NULL, seps, &nextToken);
-#endif
 		}
 		free(s);
 	}
 
-	if (level.nextmap[0]) // go to a specific map
-		BeginIntermission (CreateTargetChangeLevel (level.nextmap) );
+	if (!level.NextMap.empty()) // go to a specific map
+		BeginIntermission (CreateTargetChangeLevel (level.NextMap.c_str()) );
 	else
 	{	// search for a changelevel
 		CTargetChangeLevel *ent = entity_cast<CTargetChangeLevel>(CC_Find (NULL, FOFS(classname), "target_changelevel"));
 		if (!ent)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
-			BeginIntermission (CreateTargetChangeLevel (level.mapname) );
+			BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()) );
 			return;
 		}
 		BeginIntermission (ent);
@@ -131,7 +120,7 @@ CheckDMRules
 */
 void CheckDMRules (void)
 {
-	if (level.intermissiontime)
+	if (level.IntermissionTime)
 		return;
 
 	if (!(game.mode & GAME_DEATHMATCH))
@@ -151,7 +140,7 @@ void CheckDMRules (void)
 
 	if (timelimit->Float())
 	{
-		if (level.framenum >= ((timelimit->Float()*60)*10))
+		if (level.Frame >= ((timelimit->Float()*60)*10))
 		{
 			BroadcastPrintf (PRINT_HIGH, "Timelimit hit.\n");
 			EndDMLevel ();
@@ -189,11 +178,11 @@ void ExitLevel (void)
 
 	char	command [256];
 
-	Q_snprintfz (command, sizeof(command), "gamemap \"%s\"\n", level.changemap);
+	Q_snprintfz (command, sizeof(command), "gamemap \"%s\"\n", level.ChangeMap);
 	gi.AddCommandString (command);
-	level.changemap = NULL;
-	level.exitintermission = 0;
-	level.intermissiontime = 0;
+	level.ChangeMap = NULL;
+	level.ExitIntermission = false;
+	level.IntermissionTime = 0;
 	ClientEndServerFrames ();
 
 	// clear some things before going to next level
@@ -255,22 +244,17 @@ void ClientEndServerFrames ()
 
 /*
 ================
-G_RunFrame
+CC_RunFrame
 
 Advances the world by 0.1 seconds
 ================
 */
 
-#if defined (_M_IX86)
-#define _DbgBreak() __asm { int 3 }
-#elif defined (_M_IA64)
-void __break(int);
-#pragma intrinsic (__break)
-#define _DbgBreak() __break(0x80016)
-#else  /* defined (_M_IA64) */
-#include <windows.h>
-#define _DbgBreak() DebugBreak()
-#endif  /* defined (_M_IA64) */
+void			RunPrivateEntities ();
+
+#if defined(WIN32)
+#include <crtdbg.h>
+#endif
 
 extern bool requestedBreak;
 void CC_RunFrame ()
@@ -278,12 +262,16 @@ void CC_RunFrame ()
 	if (requestedBreak)
 	{
 		requestedBreak = false;
-		_DbgBreak();
+#if defined(WIN32)
+		_CrtDbgBreak();
+#else
+		assert(0);
+#endif
 	}
 
-	if (level.framenum >= 3 && map_debug->Boolean())
+	if (level.Frame >= 3 && map_debug->Boolean())
 	{
-		level.framenum ++;
+		level.Frame ++;
 		// Run the players only
 		// build the playerstate_t structures for all players
 		ClientEndServerFrames ();
@@ -297,19 +285,19 @@ void CC_RunFrame ()
 	int		i;
 	edict_t	*ent;
 
-	level.framenum++;
+	level.Frame++;
 
-	if (level.framenum == 2)
+	if (level.Frame == 2)
 		EndMapCounter();
 
 	// choose a client for monsters to target this frame
 	// Only do it when we have spawned everything
-	if (!(game.mode & GAME_DEATHMATCH) && level.framenum > 20) // Paril, lol
+	if (!(game.mode & GAME_DEATHMATCH) && level.Frame > 20) // Paril, lol
 		AI_SetSightClient ();
 
 	// exit intermissions
 
-	if (level.exitintermission)
+	if (level.ExitIntermission)
 	{
 		ExitLevel ();
 		return;
@@ -328,6 +316,7 @@ void CC_RunFrame ()
 		if (ent->Entity)
 		{
 			CBaseEntity *Entity = ent->Entity;
+			
 			memset (&Entity->PlayedSounds, 0, sizeof(Entity->PlayedSounds));
 			
 			level.CurrentEntity = Entity;
@@ -360,6 +349,8 @@ void CC_RunFrame ()
 			continue;
 		}
 	}
+
+	RunPrivateEntities ();
 
 	// see if it is time to end a deathmatch
 	CheckDMRules ();
@@ -580,7 +571,7 @@ void G_Register ()
 
 void CC_InitGame ()
 {
-	Mem_Init ();
+	//Mem_Init ();
 	DebugPrintf ("==== InitGame ====\n");
 	DebugPrintf ("Running CleanCode Quake2, built on %s (%s %s)\nInitializing game...", __TIMESTAMP__, BUILDSTRING, CPUSTRING);
 	uint32 start = Sys_Milliseconds();
@@ -633,10 +624,4 @@ void CC_ShutdownGame ()
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
-
-	size_t freedGame = Mem_FreePool (com_gamePool);
-	size_t freedLevel = Mem_FreePool (com_levelPool);
-	size_t freedGeneric = Mem_FreePool (com_genericPool);
-
-	DebugPrintf ("Freed %u bytes of game memory, %u bytes of level memory and %u bytes of generic memory.\n", freedGame, freedLevel, freedGeneric);
 }

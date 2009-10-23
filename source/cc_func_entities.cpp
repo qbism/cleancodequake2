@@ -80,7 +80,7 @@ ENTITYFIELDS_BEGIN(CFuncTimer)
 };
 ENTITYFIELDS_END(CFuncTimer)
 
-bool			CFuncTimer::ParseField (char *Key, char *Value)
+bool			CFuncTimer::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CFuncTimer> (this, Key, Value))
 		return true;
@@ -92,7 +92,7 @@ bool			CFuncTimer::ParseField (char *Key, char *Value)
 void CFuncTimer::Think ()
 {
 	UseTargets (Activator, Message);
-	NextThink = level.framenum + (Wait + (irandom(Random)));
+	NextThink = level.Frame + (Wait + (irandom(Random)));
 }
 
 bool CFuncTimer::Run ()
@@ -113,7 +113,7 @@ void CFuncTimer::Use (CBaseEntity *other, CBaseEntity *activator)
 
 	// turn it on
 	if (Delay)
-		NextThink = level.framenum + Delay;
+		NextThink = level.Frame + Delay;
 	else
 		Think ();
 }
@@ -135,7 +135,7 @@ void CFuncTimer::Spawn ()
 	if (SpawnFlags & 1)
 	{
 		// lots of backwards compatibility
-		NextThink = level.framenum + 10 + (PauseTime + Delay + Wait + irandom(Random));
+		NextThink = level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
 		Activator = this;
 	}
 
@@ -401,7 +401,7 @@ void CFuncClock::Think ()
 			return;
 	}
 
-	NextThink = level.framenum + 10;
+	NextThink = level.Frame + 10;
 }
 
 void CFuncClock::Use (CBaseEntity *other, CBaseEntity *activator)
@@ -446,5 +446,5 @@ void CFuncClock::Spawn ()
 	if (SpawnFlags & 4)
 		Usable = true;
 	else
-		NextThink = level.framenum + 10;
+		NextThink = level.Frame + 10;
 }

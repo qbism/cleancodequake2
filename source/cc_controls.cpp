@@ -263,7 +263,7 @@ void CMenu_Slider::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	}
 
 	DrawState->AddVirtualPoint_X (drawX);
-	_itoa_s (Value, Buffer, sizeof(Buffer), 10);
+	itoa (Value, Buffer, 10);
 
 	DrawState->AddString (Buffer, Selected, false);
 };

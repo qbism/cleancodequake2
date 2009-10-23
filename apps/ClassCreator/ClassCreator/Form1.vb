@@ -99,7 +99,7 @@
                 ' No fields; just write ParseField
                 WrittenClass = WrittenClass + "\t"
                 If VirtualFields Then WrittenClass = WrittenClass + "virtual "
-                WrittenClass = WrittenClass + "bool ParseField (char *Key, char *Value)\n\t{\n"
+                WrittenClass = WrittenClass + "bool ParseField (const char *Key, const char *Value)\n\t{\n"
 
                 ' Inside
                 If CallOthers Then

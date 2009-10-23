@@ -79,7 +79,7 @@ void CSoldierLight::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SoldierMoveAttack1;
-		AttackFinished = level.framenum + ((1.5 + frand()) * 10);
+		AttackFinished = level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}
 	// pmm

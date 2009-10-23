@@ -299,7 +299,7 @@ void InitNewton ()
 	string temp;
 
 	temp = "baseq2/maps/";
-	temp += level.mapname;
+	temp += level.ServerLevelName;
 	temp += ".bspmesh";
 
 	fp = fopen (temp.c_str(), "rb");

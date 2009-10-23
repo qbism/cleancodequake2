@@ -1,0 +1,916 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="FrontEnd Debug|Win32">
+      <Configuration>FrontEnd Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="FrontEnd Debug|x64">
+      <Configuration>FrontEnd Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="FrontEnd Release|Win32">
+      <Configuration>FrontEnd Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="FrontEnd Release|x64">
+      <Configuration>FrontEnd Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E6207081-A6DE-492E-A7CB-BCF42816FBD5}</ProjectGuid>
+    <RootNamespace>GAME</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../Intermediate/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../Intermediate/$(Configuration)/$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../Intermediate/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">gamex86</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\debug/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/analyze:stacksize1500 /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\debug/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ShowIncludes>false</ShowIncludes>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Winmm.lib;../../lib/zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <ForceSymbolReferences>__DllMainCRTStartup@12;%(ForceSymbolReferences)</ForceSymbolReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>DllInit</EntryPointSymbol>
+      <NoEntryPoint>false</NoEntryPoint>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <Profile>false</Profile>
+    </Link>
+    <PostBuildEvent>
+      <Message>Copies the output to your Quake 2 baseq2 dir</Message>
+      <Command>echo Copying to Quake 2 Path...
+copy $(TargetPath) "e:\quake2\baseq2\gamex86.dll"
+copy $(TargetPath) "$(OutputPath)..\..\..\baseq2\gamex86.dll"
+
+echo Done!
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <TypeLibraryName>.\..\debug/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\debug/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Winmm.lib;../../lib/zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\baseq2\gamex64.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+      <Profile>true</Profile>
+    </Link>
+    <PostBuildEvent>
+      <Message>Copies the output to your Quake 2 baseq2 dir</Message>
+      <Command>echo Copying to Quake 2 Path...
+copy $(TargetPath) "c:\quake2\baseq2\gamex86.dll"
+
+echo Done!
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\release/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>
+      </BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\release/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Winmm.lib;../../lib/zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\baseq2\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <TypeLibraryName>.\..\release/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\release/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>..\release\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\debug/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\debug/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>C:\lib\NewtonSDK\sdk\dll\newton.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\release\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Copies the output to your Quake 2 baseq2 dir</Message>
+      <Command>echo Copying to Quake 2 Path...
+copy $(TargetPath) "e:\C Drive backup\quake2\debug\$(TargetFileName)"
+
+echo Done!
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <TypeLibraryName>.\..\debug/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\debug/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>C:\lib\NewtonSDK\sdk\dll\newton.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\release\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Copies the output to your Quake 2 baseq2 dir</Message>
+      <Command>echo Copying to Quake 2 Path...
+copy $(TargetPath) "e:\C Drive backup\quake2\debug\$(TargetFileName)"
+
+echo Done!
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\release/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalOptions> /J</AdditionalOptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\release/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>c:\quake2\baseq2\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <TypeLibraryName>.\..\release/game.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalOptions> /J</AdditionalOptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\release/game.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>c:\quake2\baseq2\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x20000000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\byteswap.cpp" />
+    <ClCompile Include="..\..\shared\ColorVec.cpp" />
+    <ClCompile Include="..\..\shared\infostrings.cpp" />
+    <ClCompile Include="..\..\shared\m_angles.cpp" />
+    <ClCompile Include="..\..\shared\m_bounds.cpp" />
+    <ClCompile Include="..\..\shared\m_mat3.cpp" />
+    <ClCompile Include="..\..\shared\m_mat4.cpp" />
+    <ClCompile Include="..\..\shared\m_plane.cpp" />
+    <ClCompile Include="..\..\shared\m_quat.cpp" />
+    <ClCompile Include="..\..\shared\mathlib.cpp" />
+    <ClCompile Include="..\..\shared\mersennetwister.cpp" />
+    <ClCompile Include="..\..\shared\shared.cpp" />
+    <ClCompile Include="..\..\shared\string.cpp" />
+    <ClCompile Include="..\..\shared\Templates\Templates.cpp" />
+    <ClCompile Include="..\..\source\cc_game.cpp" />
+    <ClCompile Include="..\..\source\cc_dmflags.cpp" />
+    <ClCompile Include="..\..\source\cc_gameapi.cpp" />
+    <ClCompile Include="..\..\source\cc_cvar.cpp" />
+    <ClCompile Include="..\..\source\cc_trace.cpp" />
+    <ClCompile Include="..\..\source\cc_tent.cpp" />
+    <ClCompile Include="..\..\source\cc_write.cpp" />
+    <ClCompile Include="..\..\source\cc_sbar.cpp" />
+    <ClCompile Include="..\..\source\cc_frontend.cpp" />
+    <ClCompile Include="..\..\source\cc_indexing.cpp" />
+    <ClCompile Include="..\..\source\cc_arg.cpp" />
+    <ClCompile Include="..\..\source\cc_print.cpp" />
+    <ClCompile Include="..\..\source\cc_sound.cpp" />
+    <ClCompile Include="..\..\source\cc_pmove.cpp" />
+    <ClCompile Include="..\..\source\cc_cmds.cpp" />
+    <ClCompile Include="..\..\source\cc_gamecommands.cpp" />
+    <ClCompile Include="..\..\source\cc_servercommands.cpp" />
+    <ClCompile Include="..\..\source\cc_baseentity.cpp" />
+    <ClCompile Include="..\..\source\cc_brushmodels.cpp" />
+    <ClCompile Include="..\..\source\cc_entitylist.cpp" />
+    <ClCompile Include="..\..\source\cc_entitytypes.cpp" />
+    <ClCompile Include="..\..\source\cc_func_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_infoentities.cpp" />
+    <ClCompile Include="..\..\source\cc_itementity.cpp" />
+    <ClCompile Include="..\..\source\cc_junk_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_misc_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_playerentity.cpp" />
+    <ClCompile Include="..\..\source\cc_target_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_techs.cpp" />
+    <ClCompile Include="..\..\source\cc_trigger_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_turret_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_weaponentities.cpp" />
+    <ClCompile Include="..\..\source\cc_armor.cpp" />
+    <ClCompile Include="..\..\source\cc_health.cpp" />
+    <ClCompile Include="..\..\source\cc_itemlist.cpp" />
+    <ClCompile Include="..\..\source\cc_items.cpp" />
+    <ClCompile Include="..\..\source\cc_keys.cpp" />
+    <ClCompile Include="..\..\source\cc_powerups.cpp" />
+    <ClCompile Include="..\..\source\cc_weapons.cpp" />
+    <ClCompile Include="..\..\source\cc_bfg.cpp" />
+    <ClCompile Include="..\..\source\cc_blaster.cpp" />
+    <ClCompile Include="..\..\source\cc_chaingun.cpp" />
+    <ClCompile Include="..\..\source\cc_debugweapons.cpp" />
+    <ClCompile Include="..\..\source\cc_grenadelauncher.cpp" />
+    <ClCompile Include="..\..\source\cc_handgrenade.cpp" />
+    <ClCompile Include="..\..\source\cc_hyperblaster.cpp" />
+    <ClCompile Include="..\..\source\cc_machinegun.cpp" />
+    <ClCompile Include="..\..\source\cc_railgun.cpp" />
+    <ClCompile Include="..\..\source\cc_rocketlauncher.cpp" />
+    <ClCompile Include="..\..\source\cc_shotgun.cpp" />
+    <ClCompile Include="..\..\source\cc_supershotgun.cpp" />
+    <ClCompile Include="..\..\source\cc_weaponmain.cpp" />
+    <ClCompile Include="..\..\source\cc_inventory.cpp" />
+    <ClCompile Include="..\..\source\cc_hash.cpp" />
+    <ClCompile Include="..\..\source\cc_newton.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_ban.cpp" />
+    <ClCompile Include="..\..\source\cc_monsters.cpp" />
+    <ClCompile Include="..\..\source\cc_barracuda.cpp" />
+    <ClCompile Include="..\..\source\cc_berserk.cpp" />
+    <ClCompile Include="..\..\source\cc_bitch.cpp" />
+    <ClCompile Include="..\..\source\cc_brain.cpp" />
+    <ClCompile Include="..\..\source\cc_floater.cpp" />
+    <ClCompile Include="..\..\source\cc_flyer.cpp" />
+    <ClCompile Include="..\..\source\cc_gladiator.cpp" />
+    <ClCompile Include="..\..\source\cc_gunner.cpp" />
+    <ClCompile Include="..\..\source\cc_icarus.cpp" />
+    <ClCompile Include="..\..\source\cc_infantry.cpp" />
+    <ClCompile Include="..\..\source\cc_insane.cpp" />
+    <ClCompile Include="..\..\source\cc_medic.cpp" />
+    <ClCompile Include="..\..\source\cc_mutant.cpp" />
+    <ClCompile Include="..\..\source\cc_parasite.cpp" />
+    <ClCompile Include="..\..\source\cc_tank.cpp" />
+    <ClCompile Include="..\..\source\cc_boss2.cpp" />
+    <ClCompile Include="..\..\source\cc_jorg.cpp" />
+    <ClCompile Include="..\..\source\cc_makron.cpp" />
+    <ClCompile Include="..\..\source\cc_makron_stand.cpp" />
+    <ClCompile Include="..\..\source\cc_supertank.cpp" />
+    <ClCompile Include="..\..\source\cc_soldier_base.cpp" />
+    <ClCompile Include="..\..\source\cc_soldier_light.cpp" />
+    <ClCompile Include="..\..\source\cc_soldier_machinegun.cpp" />
+    <ClCompile Include="..\..\source\cc_soldier_shotgun.cpp" />
+    <ClCompile Include="..\..\source\cc_colors.cpp" />
+    <ClCompile Include="..\..\source\cc_pathfinding.cpp" />
+    <ClCompile Include="..\..\source\cc_media.cpp" />
+    <ClCompile Include="..\..\source\cc_controls.cpp" />
+    <ClCompile Include="..\..\source\cc_menu.cpp" />
+    <ClCompile Include="..\..\source\cc_exceptionhandler.cpp" />
+    <ClCompile Include="..\..\source\cc_mapprint.cpp" />
+    <ClCompile Include="..\..\source\cc_memory.cpp" />
+    <ClCompile Include="..\..\source\cc_filesystem.cpp" />
+    <ClCompile Include="..\..\source\cc_bodyqueue.cpp" />
+    <ClCompile Include="..\..\source\cc_ctf.cpp" />
+    <ClCompile Include="..\..\source\cc_ctfadmin.cpp" />
+    <ClCompile Include="..\..\source\cc_ctfitementities.cpp" />
+    <ClCompile Include="..\..\source\cc_ctfitems.cpp" />
+    <ClCompile Include="..\..\source\cc_ctfmenu.cpp" />
+    <ClCompile Include="..\..\source\cc_grapple.cpp" />
+    <ClCompile Include="..\..\source\cc_utils.cpp" />
+    <ClCompile Include="..\..\source\g_save.cpp" />
+    <ClCompile Include="..\..\source\m_flash.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\ColorVec.h" />
+    <ClInclude Include="..\..\shared\Platform.h" />
+    <ClInclude Include="..\..\shared\shared.h" />
+    <ClInclude Include="..\..\shared\MathLib\MathLib.h" />
+    <ClInclude Include="..\..\shared\MathLib\Vector.h" />
+    <ClInclude Include="..\..\shared\Templates\TArray.h" />
+    <ClInclude Include="..\..\shared\Templates\TAutoPtr.h" />
+    <ClInclude Include="..\..\shared\Templates\Templates.h" />
+    <ClInclude Include="..\..\shared\Templates\TMap.h" />
+    <ClInclude Include="..\..\shared\Templates\TString.h" />
+    <ClInclude Include="..\..\shared\Templates\TTypes.h" />
+    <ClInclude Include="..\..\source\cc_game.h" />
+    <ClInclude Include="..\..\source\cc_local.h" />
+    <ClInclude Include="..\..\source\cc_options.h" />
+    <ClInclude Include="..\..\source\cc_shared.h" />
+    <ClInclude Include="..\..\source\cc_dmflags.h" />
+    <ClInclude Include="..\..\source\cc_gameapi.h" />
+    <ClInclude Include="..\..\source\cc_cvar.h" />
+    <ClInclude Include="..\..\source\cc_trace.h" />
+    <ClInclude Include="..\..\source\cc_tent.h" />
+    <ClInclude Include="..\..\source\cc_write.h" />
+    <ClInclude Include="..\..\source\cc_sbar.h" />
+    <ClInclude Include="..\..\source\cc_indexing.h" />
+    <ClInclude Include="..\..\source\cc_arg.h" />
+    <ClInclude Include="..\..\source\cc_print.h" />
+    <ClInclude Include="..\..\source\cc_sound.h" />
+    <ClInclude Include="..\..\source\cc_pmove.h" />
+    <ClInclude Include="..\..\source\cc_cmds.h" />
+    <ClInclude Include="..\..\source\cc_cmds_local.h" />
+    <ClInclude Include="..\..\source\cc_gamecommands.h" />
+    <ClInclude Include="..\..\source\cc_servercommands.h" />
+    <ClInclude Include="..\..\source\cc_baseentity.h" />
+    <ClInclude Include="..\..\source\cc_brushmodels.h" />
+    <ClInclude Include="..\..\source\cc_entitylist.h" />
+    <ClInclude Include="..\..\source\cc_entitytypes.h" />
+    <ClInclude Include="..\..\source\cc_func_entities.h" />
+    <ClInclude Include="..\..\source\cc_infoentities.h" />
+    <ClInclude Include="..\..\source\cc_itementity.h" />
+    <ClInclude Include="..\..\source\cc_junk_entities.h" />
+    <ClInclude Include="..\..\source\cc_misc_entities.h" />
+    <ClInclude Include="..\..\source\cc_playerentity.h" />
+    <ClInclude Include="..\..\source\cc_target_entities.h" />
+    <ClInclude Include="..\..\source\cc_techs.h" />
+    <ClInclude Include="..\..\source\cc_trigger_entities.h" />
+    <ClInclude Include="..\..\source\cc_turret_entities.h" />
+    <ClInclude Include="..\..\source\cc_weaponentities.h" />
+    <ClInclude Include="..\..\source\cc_armor.h" />
+    <ClInclude Include="..\..\source\cc_health.h" />
+    <ClInclude Include="..\..\source\cc_itemlist.h" />
+    <ClInclude Include="..\..\source\cc_items.h" />
+    <ClInclude Include="..\..\source\cc_keys.h" />
+    <ClInclude Include="..\..\source\cc_powerups.h" />
+    <ClInclude Include="..\..\source\cc_weapons.h" />
+    <ClInclude Include="..\..\source\cc_bfg.h" />
+    <ClInclude Include="..\..\source\cc_blaster.h" />
+    <ClInclude Include="..\..\source\cc_chaingun.h" />
+    <ClInclude Include="..\..\source\cc_debugweapons.h" />
+    <ClInclude Include="..\..\source\cc_grenadelauncher.h" />
+    <ClInclude Include="..\..\source\cc_handgrenade.h" />
+    <ClInclude Include="..\..\source\cc_hyperblaster.h" />
+    <ClInclude Include="..\..\source\cc_machinegun.h" />
+    <ClInclude Include="..\..\source\cc_railgun.h" />
+    <ClInclude Include="..\..\source\cc_rocketlauncher.h" />
+    <ClInclude Include="..\..\source\cc_shotgun.h" />
+    <ClInclude Include="..\..\source\cc_supershotgun.h" />
+    <ClInclude Include="..\..\source\cc_weaponmain.h" />
+    <ClInclude Include="..\..\source\cc_inventory.h" />
+    <ClInclude Include="..\..\source\cc_hash.h" />
+    <ClInclude Include="..\..\source\cc_ban.h" />
+    <ClInclude Include="..\..\source\cc_monsters.h" />
+    <ClInclude Include="..\..\source\cc_barracuda.h" />
+    <ClInclude Include="..\..\source\cc_berserk.h" />
+    <ClInclude Include="..\..\source\cc_bitch.h" />
+    <ClInclude Include="..\..\source\cc_brain.h" />
+    <ClInclude Include="..\..\source\cc_floater.h" />
+    <ClInclude Include="..\..\source\cc_flyer.h" />
+    <ClInclude Include="..\..\source\cc_gladiator.h" />
+    <ClInclude Include="..\..\source\cc_gunner.h" />
+    <ClInclude Include="..\..\source\cc_icarus.h" />
+    <ClInclude Include="..\..\source\cc_infantry.h" />
+    <ClInclude Include="..\..\source\cc_insane.h" />
+    <ClInclude Include="..\..\source\cc_medic.h" />
+    <ClInclude Include="..\..\source\cc_mutant.h" />
+    <ClInclude Include="..\..\source\cc_parasite.h" />
+    <ClInclude Include="..\..\source\cc_tank.h" />
+    <CustomBuild Include="..\..\source\cc_boss2.h" />
+    <ClInclude Include="..\..\source\cc_jorg.h" />
+    <ClInclude Include="..\..\source\cc_makron.h" />
+    <ClInclude Include="..\..\source\cc_supertank.h" />
+    <ClInclude Include="..\..\source\cc_soldier_base.h" />
+    <ClInclude Include="..\..\source\cc_soldier_light.h" />
+    <ClInclude Include="..\..\source\cc_soldier_machinegun.h" />
+    <ClInclude Include="..\..\source\cc_soldier_shotgun.h" />
+    <ClInclude Include="..\..\source\cc_colors.h" />
+    <ClInclude Include="..\..\source\cc_pathfinding.h" />
+    <ClInclude Include="..\..\source\cc_media.h" />
+    <ClInclude Include="..\..\source\cc_conchars.h" />
+    <ClInclude Include="..\..\source\cc_controls.h" />
+    <ClInclude Include="..\..\source\cc_menu.h" />
+    <ClInclude Include="..\..\source\cc_exceptionhandler.h" />
+    <ClInclude Include="..\..\source\cc_mapprint.h" />
+    <ClInclude Include="..\..\source\cc_memory.h" />
+    <ClInclude Include="..\..\source\cc_filesystem.h" />
+    <ClInclude Include="..\..\source\cc_bodyqueue.h" />
+    <ClInclude Include="..\..\source\cc_ctf.h" />
+    <ClInclude Include="..\..\source\cc_ctfadmin.h" />
+    <ClInclude Include="..\..\source\cc_ctfitementities.h" />
+    <ClInclude Include="..\..\source\cc_ctfitems.h" />
+    <ClInclude Include="..\..\source\cc_ctfmenu.h" />
+    <ClInclude Include="..\..\source\cc_grapple.h" />
+    <ClInclude Include="..\..\source\cc_property.h" />
+    <ClInclude Include="..\..\source\cc_stl.h" />
+    <ClInclude Include="..\..\source\cc_utils.h" />
+    <ClInclude Include="..\..\source\g_local.h" />
+    <ClInclude Include="..\..\source\game.h" />
+    <ClInclude Include="..\..\source\m_actor.h" />
+    <ClInclude Include="..\..\source\m_berserk.h" />
+    <ClInclude Include="..\..\source\m_boss2.h" />
+    <ClInclude Include="..\..\source\m_boss31.h" />
+    <ClInclude Include="..\..\source\m_boss32.h" />
+    <ClInclude Include="..\..\source\m_brain.h" />
+    <ClInclude Include="..\..\source\m_chick.h" />
+    <ClInclude Include="..\..\source\m_flipper.h" />
+    <ClInclude Include="..\..\source\m_float.h" />
+    <ClInclude Include="..\..\source\m_flyer.h" />
+    <ClInclude Include="..\..\source\m_gladiator.h" />
+    <ClInclude Include="..\..\source\m_gunner.h" />
+    <ClInclude Include="..\..\source\m_hover.h" />
+    <ClInclude Include="..\..\source\m_infantry.h" />
+    <ClInclude Include="..\..\source\m_insane.h" />
+    <ClInclude Include="..\..\source\m_medic.h" />
+    <ClInclude Include="..\..\source\m_mutant.h" />
+    <ClInclude Include="..\..\source\m_parasite.h" />
+    <ClInclude Include="..\..\source\m_player.h" />
+    <ClInclude Include="..\..\source\m_rider.h" />
+    <ClInclude Include="..\..\source\m_soldier.h" />
+    <ClInclude Include="..\..\source\m_supertank.h" />
+    <ClInclude Include="..\..\source\m_tank.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="game.def" />
+    <None Include="..\..\todo.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

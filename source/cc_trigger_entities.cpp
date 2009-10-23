@@ -52,7 +52,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -78,7 +78,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 
-class CTriggerBase abstract : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
+class CTriggerBase : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
 {
 public:
 	enum
@@ -197,13 +197,13 @@ public:
 			ThinkType = TRIGGER_THINK_WAIT;
 
 			// Paril: backwards compatibility
-			NextThink = level.framenum + Wait;
+			NextThink = level.Frame + Wait;
 		}
 		else
 		{	// we can't just remove (self) here, because this is a touch function
 			// called while looping through area links...
 			Touchable = false;
-			NextThink = level.framenum + FRAMETIME;
+			NextThink = level.Frame + FRAMETIME;
 			ThinkType = TRIGGER_THINK_FREE;
 		}
 	};
@@ -217,7 +217,7 @@ ENTITYFIELDS_BEGIN(CTriggerBase)
 }
 ENTITYFIELDS_END(CTriggerBase)
 
-bool			CTriggerBase::ParseField (char *Key, char *Value)
+bool			CTriggerBase::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTriggerBase> (this, Key, Value))
 		return true;
@@ -491,9 +491,9 @@ public:
 
 					// don't take falling damage immediately from this
 					Player->Client.OldVelocity = Player->Velocity;
-					if (Player->FlySoundDebounceTime < level.framenum)
+					if (Player->FlySoundDebounceTime < level.Frame)
 					{
-						Player->FlySoundDebounceTime = level.framenum + 15;
+						Player->FlySoundDebounceTime = level.Frame + 15;
 						other->PlaySound (CHAN_AUTO, GameMedia.FlySound());
 					}
 				}
@@ -538,7 +538,7 @@ ENTITYFIELDS_BEGIN(CTriggerPush)
 };
 ENTITYFIELDS_END(CTriggerPush)
 
-bool			CTriggerPush::ParseField (char *Key, char *Value)
+bool			CTriggerPush::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTriggerPush> (this, Key, Value))
 		return true;
@@ -590,13 +590,13 @@ public:
 		if (!((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage))
 			return;
 
-		if (NextHurt > level.framenum)
+		if (NextHurt > level.Frame)
 			return;
 
-		NextHurt = level.framenum + ((SpawnFlags & 16) ? 10 : FRAMETIME);
+		NextHurt = level.Frame + ((SpawnFlags & 16) ? 10 : FRAMETIME);
 		if (!(SpawnFlags & 4))
 		{
-			if ((level.framenum % 10) == 0)
+			if ((level.Frame % 10) == 0)
 				other->PlaySound (CHAN_AUTO, NoiseIndex);
 		}
 
@@ -638,7 +638,7 @@ ENTITYFIELDS_BEGIN(CTriggerHurt)
 };
 ENTITYFIELDS_END(CTriggerHurt)
 
-bool			CTriggerHurt::ParseField (char *Key, char *Value)
+bool			CTriggerHurt::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTriggerHurt> (this, Key, Value))
 		return true;
@@ -722,7 +722,7 @@ ENTITYFIELDS_BEGIN(CTriggerMonsterJump)
 };
 ENTITYFIELDS_END(CTriggerMonsterJump)
 
-bool			CTriggerMonsterJump::ParseField (char *Key, char *Value)
+bool			CTriggerMonsterJump::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTriggerMonsterJump> (this, Key, Value))
 		return true;
@@ -787,7 +787,7 @@ ENTITYFIELDS_BEGIN(CTriggerGravity)
 };
 ENTITYFIELDS_END(CTriggerGravity)
 
-bool			CTriggerGravity::ParseField (char *Key, char *Value)
+bool			CTriggerGravity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CTriggerGravity> (this, Key, Value))
 		return true;
@@ -834,7 +834,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (char *Key, char *Value)
+	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
@@ -858,9 +858,9 @@ public:
 		int index = Item->GetIndex();
 		if (!Player->Client.Persistent.Inventory.Has(index))
 		{
-			if (level.framenum < TouchDebounce)
+			if (level.Frame < TouchDebounce)
 				return;
-			TouchDebounce = level.framenum + 50;
+			TouchDebounce = level.Frame + 50;
 
 			if (!Message)
 				Player->PrintToClient (PRINT_CENTER, "You need the %s", Item->Name);
@@ -878,7 +878,7 @@ public:
 				int	cube;
 				for (cube = 0; cube < 8; cube++)
 				{
-					if (Player->Client.Persistent.power_cubes & (1 << cube))
+					if (Player->Client.Persistent.PowerCubeCount & (1 << cube))
 						break;
 				}
 
@@ -887,10 +887,10 @@ public:
 					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
 					if (!ent->GetInUse())
 						continue;
-					if (ent->Client.Persistent.power_cubes & (1 << cube))
+					if (ent->Client.Persistent.PowerCubeCount & (1 << cube))
 					{
 						ent->Client.Persistent.Inventory -= index;
-						ent->Client.Persistent.power_cubes &= ~(1 << cube);
+						ent->Client.Persistent.PowerCubeCount &= ~(1 << cube);
 					}
 				}
 			}
