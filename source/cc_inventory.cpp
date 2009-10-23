@@ -191,7 +191,7 @@ void Cmd_Use_f (CPlayerEntity *ent)
 
 		if (!Item)
 		{
-			ent->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s);
+			ent->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.c_str());
 			return;
 		}
 	}
@@ -202,7 +202,7 @@ void Cmd_Use_f (CPlayerEntity *ent)
 	}
 	if (!ent->Client.Persistent.Inventory.Has(Item))
 	{
-		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s);
+		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.c_str());
 		return;
 	}
 
@@ -232,7 +232,7 @@ void Cmd_UseList_f (CPlayerEntity *ent)
 
 			if (!Item)
 			{
-				ent->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s);
+				ent->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.c_str());
 				continue;
 			}
 		}
@@ -289,7 +289,7 @@ void Cmd_Drop_f (CPlayerEntity *ent)
 
 		if (!Item)
 		{
-			ent->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s);
+			ent->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.c_str());
 			return;
 		}
 	}
@@ -300,7 +300,7 @@ void Cmd_Drop_f (CPlayerEntity *ent)
 	}
 	if (!ent->Client.Persistent.Inventory.Has(Item))
 	{
-		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s);
+		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.c_str());
 		return;
 	}
 

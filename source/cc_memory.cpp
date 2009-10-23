@@ -941,7 +941,7 @@ void Mem_Init (void)
 BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason,
 	LPVOID lpReserved)
 {
-	if (fdwReason == DLL_PROCESS_ATTACH || fdwReason == DLL_THREAD_ATTACH)
+	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
 
 #else
@@ -960,7 +960,7 @@ void my_load()
 			return FALSE;
 	}
 
-	if (fdwReason == DLL_PROCESS_DETACH || fdwReason == DLL_THREAD_DETACH)
+	if (fdwReason == DLL_PROCESS_DETACH)
 	{
 #else
 // Add initialization code…
@@ -978,6 +978,8 @@ void my_unload(void)
 #ifdef WIN32
 		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
 			return FALSE;
+
+		DisableThreadLibraryCalls (hinstDLL);
 	}
 
 	return TRUE;
