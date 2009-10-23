@@ -952,8 +952,8 @@ void __attribute__ ((destructor)) my_unload(void);
 // Called when the library is loaded and before dlopen() returns
 void my_load()
 {
-		Mem_Init ();
 #endif
+		Mem_Init ();
 
 #ifdef WIN32
 		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))

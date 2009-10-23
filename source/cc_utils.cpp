@@ -469,7 +469,7 @@ void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage
 
 inline void AssertExpression (const bool expr, const char *msg)
 {
-	if (expr)
+	if (!expr)
 	{
 		// On Win32, open up the Crt debug report thingy
 #if defined(WIN32)
