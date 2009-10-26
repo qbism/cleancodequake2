@@ -35,8 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-CGrenadeLauncher WeaponGrenadeLauncher;
-
 CGrenadeLauncher::CGrenadeLauncher() :
 CWeapon("models/weapons/v_launch/tris.md2", 0, 5, 6, 16,
 		17, 59, 60, 64)
@@ -91,3 +89,15 @@ void CGrenadeLauncher::Fire (CPlayerEntity *ent)
 
 	ent->Client.PlayerState.GetGunFrame()++;
 }
+
+WEAPON_DEFS (CGrenadeLauncher);
+
+void CGrenadeLauncher::CreateItem (CItemList *List)
+{
+	NItems::GrenadeLauncher = QNew (com_gamePool, 0) CWeaponItem
+		("weapon_grenadelauncher", "models/weapons/g_launch/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_glauncher", "Grenade Launcher",
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
+		NItems::Grenades, 1, "#w_glauncher.md2");
+
+	List->AddItemToList (NItems::GrenadeLauncher);
+};

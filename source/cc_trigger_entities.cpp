@@ -92,6 +92,7 @@ public:
 	uint32			ThinkType;
 	vec3f			MoveDir;
 	FrameNumber_t	Wait;
+	uint8			Sounds;
 
 	CTriggerBase () :
 	  CBaseEntity (),
@@ -214,6 +215,7 @@ public:
 ENTITYFIELDS_BEGIN(CTriggerBase)
 {
 	CEntityField ("wait", EntityMemberOffset(CTriggerBase,Wait), FT_FRAMENUMBER),
+	CEntityField ("sounds", EntityMemberOffset(CTriggerBase,Sounds), FT_BYTE),
 }
 ENTITYFIELDS_END(CTriggerBase)
 
@@ -271,13 +273,19 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (gameEntity->sounds == 1)
+		switch (Sounds)
+		{
+		case 1:
 			NoiseIndex = SoundIndex ("misc/secret.wav");
-		else if (gameEntity->sounds == 2)
+			break;
+		case 2:
 			NoiseIndex = SoundIndex ("misc/talk.wav");
-		else if (gameEntity->sounds == 3)
+			break;
+		case 3:
 			NoiseIndex = SoundIndex ("misc/trigger1.wav");
-		
+			break;
+		}
+
 		if (!Wait)
 			Wait = 2;
 
@@ -368,6 +376,8 @@ After the counter has been triggered "count" times (default 2), it will fire all
 class CTriggerCounter : public CTriggerMultiple
 {
 public:
+	uint8			Count;
+
 	CTriggerCounter () :
 	  CBaseEntity (),
 	  CTriggerMultiple ()
@@ -380,6 +390,8 @@ public:
 	  {
 	  };
 
+	ENTITYFIELD_DEFS
+
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
 	};
@@ -387,20 +399,19 @@ public:
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
 		bool IsClient = true;
-		if (gameEntity->count == 0)
+		if (Count == 0)
 			return;
 		if (!(activator->EntityFlags & ENT_PLAYER))
 			IsClient = false;
 		
 		CPlayerEntity *Player = (IsClient) ? entity_cast<CPlayerEntity>(activator) : NULL;
-		gameEntity->count--;
 
-		if (gameEntity->count)
+		if (--Count)
 		{
 			if (! (SpawnFlags & 1))
 			{
 				if (IsClient)
-					Player->PrintToClient (PRINT_CENTER, "%i more to go...", gameEntity->count);
+					Player->PrintToClient (PRINT_CENTER, "%i more to go...", Count);
 				activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 			}
 			return;
@@ -419,10 +430,24 @@ public:
 	void Spawn ()
 	{
 		Wait = -1;
-		if (!gameEntity->count)
-			gameEntity->count = 2;
+		if (!Count)
+			Count = 2;
 	};
 };
+
+ENTITYFIELDS_BEGIN(CTriggerCounter)
+{
+	CEntityField ("count", EntityMemberOffset(CTriggerCounter,Count), FT_BYTE),
+};
+ENTITYFIELDS_END(CTriggerCounter);
+
+bool CTriggerCounter::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTriggerCounter> (this, Key, Value))
+		return true;
+
+	return CTriggerBase::ParseField (Key, Value);
+}
 
 LINK_CLASSNAME_TO_CLASS ("trigger_counter", CTriggerCounter);
 

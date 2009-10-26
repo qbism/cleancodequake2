@@ -144,7 +144,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-edict_t *G_Spawn (void)
+edict_t *G_Spawn ()
 {
 	int			i;
 	edict_t		*e;
@@ -272,7 +272,6 @@ CBaseEntity::CBaseEntity (int Index)
 		Freed = false;
 		EntityFlags |= ENT_BASE;
 		State = CEntityState(&gameEntity->state);
-		LastMinsSet = LastMaxSet = -1;
 	}
 }
 
@@ -512,9 +511,6 @@ ENTITYFIELDS_BEGIN(CMapEntity)
 	CEntityField ("item",			GameEntityMemberOffset(item),					FT_ITEM | FT_GAME_ENTITY),
 	CEntityField ("pathtarget",		GameEntityMemberOffset(pathtarget),				FT_LEVEL_STRING | FT_GAME_ENTITY),
 	CEntityField ("team",			GameEntityMemberOffset(team),					FT_LEVEL_STRING | FT_GAME_ENTITY),
-	CEntityField ("style",			GameEntityMemberOffset(style),					FT_INT | FT_GAME_ENTITY),
-	CEntityField ("count",			GameEntityMemberOffset(count),					FT_INT | FT_GAME_ENTITY),
-	CEntityField ("sounds",			GameEntityMemberOffset(sounds),					FT_INT | FT_GAME_ENTITY),
 
 	CEntityField ("owner",			GameEntityMemberOffset(owner),					FT_ENTITY | FT_GAME_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
@@ -586,17 +582,17 @@ bool				CMapEntity::CheckValidity ()
 
 void CMapEntity::ParseFields ()
 {
-	if (!gameEntity->ParseData || !gameEntity->ParseData->size())
+	if (!level.ParseData.size())
 		return;
 
 	// Go through all the dictionary pairs
 	{
-		std::list<CKeyValuePair*, std::level_allocator<CKeyValuePair*> >::iterator it = gameEntity->ParseData->begin();
-		while (it != gameEntity->ParseData->end())
+		std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> >::iterator it = level.ParseData.begin();
+		while (it != level.ParseData.end())
 		{
 			CKeyValuePair *PairPtr = (*it);
 			if (ParseField (PairPtr->Key, PairPtr->Value))
-				gameEntity->ParseData->erase (it++);
+				level.ParseData.erase (it++);
 			else
 				++it;
 		}
@@ -604,13 +600,13 @@ void CMapEntity::ParseFields ()
 
 	// Since this is the last part, go through the rest of the list now
 	// and report ones that are still there.
-	if (gameEntity->ParseData->size())
+	if (level.ParseData.size())
 	{
-		for (std::list<CKeyValuePair*, std::level_allocator<CKeyValuePair*> >::iterator it = gameEntity->ParseData->begin(); it != gameEntity->ParseData->end(); ++it)
+		for (std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> >::iterator it = level.ParseData.begin(); it != level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);
 		}
 	}
-	QDelete gameEntity->ParseData;
+	level.ParseData.clear();
 };

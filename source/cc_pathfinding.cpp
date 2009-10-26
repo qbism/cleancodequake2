@@ -690,7 +690,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		ent->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
 		vec3f end = origin.MultiplyAngles (8192, forward);
 
-		CTrace trace (origin, end, ent->gameEntity, CONTENTS_MASK_ALL);
+		CTrace trace (origin, end, ent, CONTENTS_MASK_ALL);
 
 		if (trace.ent && trace.ent->model && trace.ent->model[0] == '*')
 		{
@@ -704,7 +704,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		ent->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
 		vec3f end = origin.MultiplyAngles (8192, forward);
 
-		CTrace trace (origin, end, ent->gameEntity, CONTENTS_MASK_ALL);
+		CTrace trace (origin, end, ent, CONTENTS_MASK_ALL);
 
 		if (trace.Ent && (trace.Ent->EntityFlags & ENT_MONSTER))
 		{

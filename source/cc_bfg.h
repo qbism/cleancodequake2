@@ -46,9 +46,9 @@ public:
 	void	MuzzleEffect (CPlayerEntity *Player);
 	void	FireBFG	(CPlayerEntity *Player);
 	void	Fire (CPlayerEntity *Player);
-};
 
-extern CBFG WeaponBFG;
+	WEAPON_CLASS_DEFS (CBFG);
+};
 
 #else
 FILE_WARNING

@@ -149,7 +149,7 @@ CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 	static std::vector<CBaseEntity*, std::game_allocator<CBaseEntity*> >	Team;
 	Team.clear ();
 
-	for (CBaseEntity *Member = Master; Member; Member = Member->TeamChain)
+	for (CBaseEntity *Member = Master; Member; Member = Member->Team.Chain)
 		Team.push_back (Member);
 
 	return entity_cast<CItemEntity>(Team[irandom(Team.size())]);
@@ -172,7 +172,7 @@ void CItemEntity::Think ()
 			PhysicsType = PHYSICS_TOSS;
 
 			vec3f end = (State.GetOrigin() + vec3f(0,0,-128));
-			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), end, gameEntity, CONTENTS_MASK_SOLID);
+			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), end, this, CONTENTS_MASK_SOLID);
 			if (tr.startSolid)
 			{
 				//gi.dprintf ("droptofloor: %s startsolid at (%f %f %f)\n", ent->classname, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2]);
@@ -188,7 +188,7 @@ void CItemEntity::Think ()
 				Flags &= ~FL_TEAMSLAVE;
 				GetSvFlags() |= SVF_NOCLIENT;
 				GetSolid() = SOLID_NOT;
-				if (TeamMaster == this)
+				if (Team.Master == this)
 				{
 					NextThink = level.Frame + FRAMETIME;
 					ThinkState = ITS_RESPAWN;
@@ -227,7 +227,7 @@ void CItemEntity::Think ()
 			CBaseEntity *RespawnedEntity = this;
 			if (gameEntity->team)
 			{
-				CBaseEntity *Master = TeamMaster;
+				CBaseEntity *Master = Team.Master;
 
 		#ifdef CLEANCTF_ENABLED
 		//ZOID

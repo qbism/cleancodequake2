@@ -666,6 +666,8 @@ echo Done!
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_gameapi.cpp" />
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
+    <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
+    <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
     <ClCompile Include="..\..\source\cc_tent.cpp" />
     <ClCompile Include="..\..\source\cc_write.cpp" />
@@ -763,8 +765,6 @@ echo Done!
     <ClCompile Include="..\..\source\cc_ctfmenu.cpp" />
     <ClCompile Include="..\..\source\cc_grapple.cpp" />
     <ClCompile Include="..\..\source\cc_utils.cpp" />
-    <ClCompile Include="..\..\source\g_save.cpp" />
-    <ClCompile Include="..\..\source\m_flash.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h" />
@@ -781,6 +781,8 @@ echo Done!
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_options.h" />
+    <ClInclude Include="..\..\source\cc_platform.h" />
+    <ClInclude Include="..\..\source\cc_save.h" />
     <ClInclude Include="..\..\source\cc_shared.h" />
     <ClInclude Include="..\..\source\cc_dmflags.h" />
     <ClInclude Include="..\..\source\cc_gameapi.h" />

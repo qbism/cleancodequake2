@@ -779,7 +779,7 @@ bool CMakron::CheckAttack ()
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight);
 		vec3f	spot2 = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 
-		CTrace tr (spot1, spot2, Entity->gameEntity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)
@@ -800,7 +800,7 @@ bool CMakron::CheckAttack ()
 						else
 						{
 							// make sure we're not going to shoot a monster
-							tr (spot1, BlindFireTarget, Entity->gameEntity, CONTENTS_MONSTER);
+							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
 							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
 								return false;
 

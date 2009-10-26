@@ -51,8 +51,12 @@ public:
 class CTargetCharacter : public CMapEntity, public CBrushModel
 {
 public:
+	uint8		Character;
+
 	CTargetCharacter ();
 	CTargetCharacter (int Index);
+
+	ENTITYFIELD_DEFS
 
 	bool Run ();
 	void Spawn ();
@@ -77,16 +81,15 @@ class CFuncClock : public CMapEntity, public CUsableEntity, public CThinkableEnt
 {
 public:
 	FrameNumber_t	Wait;
+	uint8			Style;
 	int				Seconds;
+	int				Count;
 	CTargetString	*String;
-
+	
 	CFuncClock ();
 	CFuncClock (int Index);
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	void Think ();
 	void Use (CBaseEntity *other, CBaseEntity *activator);

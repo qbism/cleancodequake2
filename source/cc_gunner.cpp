@@ -474,7 +474,7 @@ bool CGunner::GrenadeCheck()
 	if (dir.Length() < 100)
 		return false;
 
-	CTrace tr (start, target, Entity->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace tr (start, target, Entity, CONTENTS_MASK_SHOT);
 	if(tr.Ent == Entity->Enemy || tr.fraction == 1)
 		return true;
 

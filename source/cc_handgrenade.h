@@ -52,9 +52,9 @@ public:
 	void	Hold (CPlayerEntity *Player);
 	void	FireGrenade (CPlayerEntity *Player, bool inHand);
 	void	Wait (CPlayerEntity *Player);
-};
 
-extern CHandGrenade WeaponGrenades;
+	WEAPON_CLASS_DEFS (CHandGrenade);
+};
 
 #else
 FILE_WARNING

@@ -448,7 +448,7 @@ bool CMutant::CheckJump ()
 
 		// So we lost sight of the player.
 		// Can we jump to the last spot we saw him?
-		CTrace trace (origin, LastSighting, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+		CTrace trace (origin, LastSighting, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 		//CTempEnt_Trails::DebugTrail (origin, LastSighting);
 
@@ -458,7 +458,7 @@ bool CMutant::CheckJump ()
 			// Now we need to check if the last sighting is on ground.
 			vec3f below = LastSighting - vec3f(0, 0, 64);
 
-			trace (LastSighting, below, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+			trace (LastSighting, below, Entity, CONTENTS_MASK_MONSTERSOLID);
 			//CTempEnt_Trails::DebugTrail (LastSighting, below);
 			if (trace.fraction < 1.0)
 			{
@@ -485,7 +485,7 @@ bool CMutant::CheckJump ()
 				escape++;
 				
 				temp = temp.MultiplyAngles (-15, forward);
-				trace (origin, temp, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+				trace (origin, temp, Entity, CONTENTS_MASK_MONSTERSOLID);
 				//CTempEnt_Trails::DebugTrail (origin, temp);
 			}
 

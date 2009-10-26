@@ -49,8 +49,6 @@ void InitMapCounter ();
 
 char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities);
 
-uint32 Sys_Milliseconds ();
-
 #else
 FILE_WARNING
 #endif

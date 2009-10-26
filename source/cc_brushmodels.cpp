@@ -104,6 +104,7 @@ ENTITYFIELDS_BEGIN(CBrushModel)
 	CEntityField ("distance", EntityMemberOffset(CBrushModel,Distance), FT_INT),
 	CEntityField ("dmg", EntityMemberOffset(CBrushModel,Damage), FT_INT),
 	CEntityField ("lip", EntityMemberOffset(CBrushModel,Lip), FT_INT),
+	CEntityField ("sounds", EntityMemberOffset(CBrushModel,Sounds), FT_BYTE),
 };
 ENTITYFIELDS_END(CBrushModel)
 
@@ -160,7 +161,7 @@ void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 
 	if (Speed == Accel && Speed == Decel)
 	{
-		if (level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? TeamMaster : this))
+		if (level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 			MoveBegin ();
 		else
 		{
@@ -236,7 +237,7 @@ void CBrushModel::AngleMoveCalc (uint32 EndFunc)
 {
 	AngularVelocity.Clear ();
 	this->EndFunc = EndFunc;
-	if (level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? TeamMaster : this))
+	if (level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 		AngleMoveBegin ();
 	else
 	{
@@ -525,7 +526,7 @@ void CPlatForm::CPlatFormInsideTrigger::Touch (CBaseEntity *other, plane_t *plan
 {
 	if (!(other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(other)->Health <= 0)
 		return;
-	if (!other->gameEntity->client)
+	if (!(other->EntityFlags & ENT_PLAYER))
 		return;
 
 	if (Owner->MoveState == STATE_BOTTOM)
@@ -706,7 +707,10 @@ void CDoor::UseAreaPortals (bool isOpen)
 	while ((t = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (t, Target)) != NULL)
 	{
 		if (Q_stricmp(t->gameEntity->classname, "func_areaportal") == 0)
-			gi.SetAreaPortalState (t->gameEntity->style, isOpen);
+		{
+			CAreaPortal *Portal = entity_cast<CAreaPortal>(t);
+			gi.SetAreaPortalState (Portal->Style, isOpen);
+		}
 	}
 }
 
@@ -799,7 +803,7 @@ void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
 		if (MoveState == STATE_UP || MoveState == STATE_TOP)
 		{
 			// trigger all paired doors
-			for (CDoor *Door = this ; Door ; Door = entity_cast<CDoor>(Door->TeamChain))	
+			for (CDoor *Door = this ; Door ; Door = entity_cast<CDoor>(Door->Team.Chain))	
 			{
 				if (Door->Message)
 					QDelete Door->Message;
@@ -812,7 +816,7 @@ void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
 	}
 	
 	// trigger all paired doors
-	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->TeamChain))
+	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
 		if (Door->Message)
 			QDelete Door->Message;
@@ -859,7 +863,7 @@ void CDoor::CalcMoveSpeed ()
 
 	// find the smallest distance any member of the team will be moving
 	float min = Q_fabs(Distance);
-	for (CDoor *Door = entity_cast<CDoor>(TeamChain); Door; Door = entity_cast<CDoor>(Door->TeamChain))
+	for (CDoor *Door = entity_cast<CDoor>(Team.Chain); Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
 		float dist = Q_fabs(Door->Distance);
 		if (dist < min)
@@ -869,7 +873,7 @@ void CDoor::CalcMoveSpeed ()
 	float time = min / Speed;
 
 	// adjust speeds so they will all complete at the same time
-	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->TeamChain))
+	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
 		float newspeed = Q_fabs(Door->Distance) / time;
 		float ratio = newspeed / Door->Speed;
@@ -895,7 +899,7 @@ void CDoor::SpawnDoorTrigger ()
 	mins = GetAbsMin ();
 	maxs = GetAbsMax ();
 
-	for (CBaseEntity *other = TeamChain; other; other = other->TeamChain)
+	for (CBaseEntity *other = Team.Chain; other; other = other->Team.Chain)
 	{
 		AddPointToBounds (other->GetAbsMin(), mins, maxs);
 		AddPointToBounds (other->GetAbsMax(), mins, maxs);
@@ -948,12 +952,12 @@ void CDoor::Blocked (CBaseEntity *other)
 	{
 		if (MoveState == STATE_DOWN)
 		{
-			for (CBaseEntity *ent = TeamMaster ; ent ; ent = ent->TeamChain)
+			for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
 				(entity_cast<CDoor>(ent))->GoUp ((Activator) ? Activator : NULL);
 		}
 		else
 		{
-			for (CBaseEntity *ent = TeamMaster ; ent ; ent = ent->TeamChain)
+			for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
 				(entity_cast<CDoor>(ent))->GoDown ();
 		}
 	}
@@ -961,14 +965,14 @@ void CDoor::Blocked (CBaseEntity *other)
 
 void CDoor::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
 {
-	for (CBaseEntity *ent = TeamMaster ; ent ; ent = ent->TeamChain)
+	for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
 	{
 		CDoor *Door = entity_cast<CDoor>(ent);
 		Door->Health = Door->MaxHealth;
 		Door->CanTakeDamage = false;
 	}
 
-	(entity_cast<CDoor>(TeamMaster))->Use (attacker, attacker);
+	(entity_cast<CDoor>(Team.Master))->Use (attacker, attacker);
 }
 
 void CDoor::Pain (CBaseEntity *other, float kick, int damage)
@@ -1022,7 +1026,7 @@ void CDoor::Think ()
 
 void CDoor::Spawn ()
 {
-	if (gameEntity->sounds != 1)
+	if (Sounds != 1)
 	{
 		SoundStart = SoundIndex  ("doors/dr1_strt.wav");
 		SoundMiddle = SoundIndex  ("doors/dr1_mid.wav");
@@ -1092,7 +1096,7 @@ void CDoor::Spawn ()
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
 	if (!gameEntity->team)
-		TeamMaster = this;
+		Team.Master = this;
 
 	Link ();
 
@@ -1214,7 +1218,7 @@ void CRotatingDoor::Spawn ()
 	if (!Damage)
 		Damage = 2;
 
-	if (gameEntity->sounds != 1)
+	if (Sounds != 1)
 	{
 		SoundStart = SoundIndex  ("doors/dr1_strt.wav");
 		SoundMiddle = SoundIndex  ("doors/dr1_mid.wav");
@@ -1258,7 +1262,7 @@ void CRotatingDoor::Spawn ()
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
 	if (!gameEntity->team)
-		TeamMaster = this;
+		Team.Master = this;
 
 	Link ();
 
@@ -1293,7 +1297,7 @@ void CMovableWater::Spawn ()
 	GetSolid() = SOLID_BSP;
 	SetBrushModel ();
 
-	switch (gameEntity->sounds)
+	switch (Sounds)
 	{
 		default:
 			break;
@@ -1670,7 +1674,7 @@ void CButton::Spawn ()
 	GetSolid() = SOLID_BSP;
 	SetBrushModel ();
 
-	if (gameEntity->sounds != 1)
+	if (Sounds != 1)
 		SoundStart = SoundIndex ("switches/butn2.wav");
 	
 	if (!Speed)
@@ -2140,7 +2144,7 @@ bool			CWorldEntity::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return CMapEntity::ParseField (Key, Value);
+	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
 
 bool CWorldEntity::Run ()
@@ -2224,7 +2228,7 @@ void CWorldEntity::Spawn ()
 	ConfigString (CS_SKYAXIS, Q_VarArgs ("%f %f %f",
 		SkyAxis.X, SkyAxis.Y, SkyAxis.Z));
 
-	ConfigString (CS_CDTRACK, Q_VarArgs ("%i", gameEntity->sounds));
+	ConfigString (CS_CDTRACK, Q_VarArgs ("%i", Sounds));
 
 	ConfigString (CS_MAXCLIENTS, maxclients->String());
 
@@ -2450,6 +2454,20 @@ CConveyor::CConveyor (int Index) :
 		BrushType |= BRUSH_CONVEYOR;
 	};
 
+ENTITYFIELDS_BEGIN(CConveyor)
+{
+	CEntityField ("count", EntityMemberOffset(CConveyor,SavedSpeed), FT_INT),
+};
+ENTITYFIELDS_END(CConveyor);
+
+bool CConveyor::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CConveyor> (this, Key, Value))
+		return true;
+
+	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
 void CConveyor::Use (CBaseEntity *other, CBaseEntity *activator)
 {
 	if (SpawnFlags & 1)
@@ -2459,12 +2477,12 @@ void CConveyor::Use (CBaseEntity *other, CBaseEntity *activator)
 	}
 	else
 	{
-		Speed = gameEntity->count;
+		Speed = SavedSpeed;
 		SpawnFlags |= 1;
 	}
 
 	if (!(SpawnFlags & 2))
-		gameEntity->count = 0;
+		SavedSpeed = 0;
 }
 
 bool CConveyor::Run ()
@@ -2479,7 +2497,7 @@ void CConveyor::Spawn ()
 
 	if (!(SpawnFlags & 1))
 	{
-		gameEntity->count = Speed;
+		SavedSpeed = Speed;
 		Speed = 0;
 	}
 
@@ -2512,11 +2530,25 @@ CAreaPortal::CAreaPortal (int Index) :
 	{
 	};
 
+ENTITYFIELDS_BEGIN(CAreaPortal)
+{
+	CEntityField ("style", EntityMemberOffset(CAreaPortal,Style), FT_BYTE),
+	CEntityField ("count", EntityMemberOffset(CAreaPortal,PortalState), FT_BOOL),
+};
+ENTITYFIELDS_END(CAreaPortal)
+
+bool			CAreaPortal::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CAreaPortal> (this, Key, Value))
+		return true;
+
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+};
 
 void CAreaPortal::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-	gameEntity->count ^= 1;		// toggle state
-	gi.SetAreaPortalState (gameEntity->style, (gameEntity->count != 0));
+	// toggle state
+	gi.SetAreaPortalState (Style, (PortalState = !PortalState));
 }
 
 bool CAreaPortal::Run ()
@@ -2526,7 +2558,7 @@ bool CAreaPortal::Run ()
 
 void CAreaPortal::Spawn ()
 {
-	gameEntity->count = 0;		// always start closed;
+	PortalState = 0;		// always start closed;
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_areaportal", CAreaPortal);
@@ -2753,7 +2785,7 @@ health defaults to 100.
 
 mass defaults to 75.  This determines how much debris is emitted when
 it explodes.  You get one large chunk per 100 of mass (up to 8) and
-one small chunk per 25 of mass (up to 16).  So 800 gives the most->
+one small chunk per 25 of mass (up to 16).  So 800 gives the most
 */
 CFuncExplosive::CFuncExplosive () :
 	CBaseEntity (),

@@ -89,11 +89,6 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 		Com_Printf (0, "%s", msg);
 }
 
-#if defined(WIN32) && defined(_DEBUG)
-#include <windows.h>
-#endif
-
-
 void DeveloperPrintf (char *fmt, ...)
 {
 	if (!developer->Integer())
@@ -110,10 +105,7 @@ _CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
 _CC_ENABLE_DEPRECATION
 
-#if defined(WIN32) && defined(_DEBUG)
-	// Pipe to visual studio
-	OutputDebugString(text);
-#endif
+	CC_OutputDebugString (text);
 }
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
@@ -131,10 +123,7 @@ _CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
 _CC_ENABLE_DEPRECATION
 
-#if defined(WIN32)
-	// Pipe to visual studio
-	OutputDebugString(text);
-#endif
+	CC_OutputDebugString (text);
 }
 #endif
 

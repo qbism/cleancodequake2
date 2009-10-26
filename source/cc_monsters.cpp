@@ -107,6 +107,7 @@ void CMonster::MoveToPath (float Dist)
 
 		P_CurrentPath = NULL;
 		P_CurrentNode = P_CurrentGoalNode = NULL;
+		Entity->Flags &= ~AI_SOUND_TARGET;
 		return;
 	}
 
@@ -131,7 +132,7 @@ void CMonster::MoveToPath (float Dist)
 			P_CurrentNodeIndex--; // Head to the next node.
 			// Set our new path to the next node
 			P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
-			DebugPrintf ("Hit node %u\n", P_CurrentNodeIndex);
+		//	DebugPrintf ("Hit node %u\n", P_CurrentNodeIndex);
 			doit = true;
 			switch (P_CurrentNode->Type)
 			{
@@ -590,7 +591,7 @@ bool CMonster::CheckBottom ()
 	start.X = stop.X = (mins.X + maxs.X)*0.5;
 	start.Y = stop.Y = (mins.Y + maxs.Y)*0.5;
 	stop.Z = start.Z - 2*STEPSIZE;
-	trace (start, stop, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+	trace (start, stop, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.fraction == 1.0)
 		return false;
@@ -603,7 +604,7 @@ bool CMonster::CheckBottom ()
 			start.X = stop.X = x ? maxs.X : mins.X;
 			start.Y = stop.Y = y ? maxs.Y : mins.Y;
 			
-			trace (start, stop, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+			trace (start, stop, Entity, CONTENTS_MASK_MONSTERSOLID);
 			
 			if (trace.fraction != 1.0 && trace.EndPos[2] > bottom)
 				bottom = trace.EndPos[2];
@@ -684,7 +685,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 						neworg.Z += dz;
 				}
 			}
-			trace (oldorg, Entity->GetMins(), Entity->GetMaxs(), neworg, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+			trace (oldorg, Entity->GetMins(), Entity->GetMaxs(), neworg, Entity, CONTENTS_MASK_MONSTERSOLID);
 	
 			// fly monsters don't enter water voluntarily
 			if (Entity->Flags & FL_FLY)
@@ -737,7 +738,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	end = neworg;
 	end.Z -= stepsize * 2;
 
-	trace (neworg, Entity->GetMins(), Entity->GetMaxs(), end, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+	trace (neworg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.allSolid)
 		return false;
@@ -745,7 +746,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (trace.startSolid)
 	{
 		neworg.Z -= stepsize;
-		trace (neworg, Entity->GetMins(), Entity->GetMaxs(), end, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+		trace (neworg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 		if (trace.allSolid || trace.startSolid)
 			return false;
 	}
@@ -806,7 +807,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 		end2 = org.MultiplyAngles (-STEPSIZE, up);
 
 		// Trace
-		trace (org, end2, Entity->gameEntity, CONTENTS_MASK_SOLID);
+		trace (org, end2, Entity, CONTENTS_MASK_SOLID);
 
 		// Couldn't make the move
 		if (trace.fraction == 1.0)
@@ -1218,7 +1219,7 @@ bool CMonster::FriendlyInLine (vec3f &Origin, vec3f &Direction)
 	Direction.ToAngles ().ToVectors (&forward, NULL, NULL);
 
 	vec3f end = Origin.MultiplyAngles (8192, forward);
-	CTrace trace (Origin, end, Entity->gameEntity, CONTENTS_MONSTER);
+	CTrace trace (Origin, end, Entity, CONTENTS_MONSTER);
 
 	if (trace.fraction <= 0.5 && trace.ent && (trace.ent->Entity && (trace.ent->Entity->EntityFlags & ENT_MONSTER)) &&
 		(entity_cast<CMonsterEntity>(trace.Ent)->Enemy != Entity))
@@ -1490,7 +1491,7 @@ bool CMonster::CheckAttack ()
 		spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		CTrace tr (spot1, spot2, Entity->gameEntity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)
@@ -1511,7 +1512,7 @@ bool CMonster::CheckAttack ()
 						else
 						{
 							// make sure we're not going to shoot a monster
-							tr (spot1, BlindFireTarget, Entity->gameEntity, CONTENTS_MONSTER);
+							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
 							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
 								return false;
 
@@ -1621,7 +1622,7 @@ void CMonster::DropToFloor ()
 	Entity->State.GetOrigin().Z += 1;
 
 	vec3f end = Entity->State.GetOrigin() - vec3f(0, 0, 256);	
-	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.fraction == 1 || trace.allSolid)
 		return;
@@ -1706,7 +1707,7 @@ bool CMonster::AI_CheckAttack()
 		{
 			if (Entity->Enemy)
 			{
-				if ((level.Frame - Entity->Enemy->teleport_time) > 50)
+				if ((level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
 				{
 					if (Entity->GoalEntity == Entity->Enemy)
 					{
@@ -1830,7 +1831,11 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-			if ((level.Frame - Entity->Enemy->gameEntity->teleport_time) > 50)
+#ifdef MONSTERS_USE_PATHFINDING
+			if ((level.Frame - level.SoundEntityFramenum) > 50)
+#else
+			if ((level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
+#endif
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
@@ -1847,7 +1852,9 @@ bool CMonster::AI_CheckAttack()
 			else
 			{
 				Entity->gameEntity->show_hostile = level.Frame + 10;
-				return false;
+
+				if (!Entity->Enemy || (Entity->Enemy && !IsVisible(Entity, Entity->Enemy)))
+					return false;
 			}
 		}
 	}
@@ -2089,7 +2096,7 @@ void CMonster::AI_Run(float Dist)
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
 #ifdef MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first->
+		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first
 #endif
 
 		// just lost sight of the player, decide where to go first
@@ -2258,7 +2265,7 @@ void CMonster::AI_Run(float Dist)
 			v = Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin();
 
 		if ((!Entity->Enemy) || (v.Length() < 64))
-		// pmm
+			// pmm
 		{
 			AIFlags |= (AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
 			Stand ();
@@ -2375,7 +2382,7 @@ void CMonster::AI_Run(float Dist)
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
 #ifdef MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first->
+		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first
 #endif
 
 		// just lost sight of the player, decide where to go first
@@ -2420,7 +2427,7 @@ void CMonster::AI_Run(float Dist)
 
 	if (isNew)
 	{
-		CTrace tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity->gameEntity, CONTENTS_MASK_PLAYERSOLID);
+		CTrace tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 		if (tr.fraction < 1)
 		{
 			float center = tr.fraction;
@@ -2438,13 +2445,13 @@ void CMonster::AI_Run(float Dist)
 			vec3f left_target;
 			vec3f offset (d2, -16, 0);
 			G_ProjectSource (origin, offset, v_forward, v_right, left_target);
-			tr (origin, Entity->GetMins(), Entity->GetMaxs(), left_target, Entity->gameEntity, CONTENTS_MASK_PLAYERSOLID);
+			tr (origin, Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
 			float left = tr.fraction;
 
 			vec3f right_target;
 			offset.Set (d2, 16, 0);
 			G_ProjectSource (origin, offset, v_forward, v_right, right_target);
-			tr (origin, Entity->GetMins(), Entity->GetMaxs(), right_target, Entity->gameEntity, CONTENTS_MASK_PLAYERSOLID);
+			tr (origin, Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
 			float right = tr.fraction;
 
 			center = (d1*center)/d2;
@@ -3266,7 +3273,7 @@ void CMonster::CheckGround()
 
 // if the hull point one-quarter unit down is solid the entity is on ground
 	vec3f point = Entity->State.GetOrigin() - vec3f(0, 0, 0.25f);
-	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), point, Entity->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), point, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	// check steepness
 	if (trace.plane.normal[2] < 0.7 && !trace.startSolid)
@@ -3324,7 +3331,7 @@ bool CMonster::FindTarget()
 	{
 		if (Entity->SpawnFlags & 1)
 		{
-			CTrace trace (Entity->State.GetOrigin(), level.NoiseNode->Origin, Entity->gameEntity, CONTENTS_MASK_SOLID);
+			CTrace trace (Entity->State.GetOrigin(), level.NoiseNode->Origin, Entity, CONTENTS_MASK_SOLID);
 
 			if (trace.fraction < 1.0)
 				return false;
@@ -3343,7 +3350,7 @@ bool CMonster::FindTarget()
 		ChangeYaw ();
 
 		// hunt the sound for a bit; hopefully find the real player
-		//AIFlags |= AI_SOUND_TARGET;
+		AIFlags |= AI_SOUND_TARGET;
 
 		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
 		P_CurrentGoalNode = level.NoiseNode;
@@ -3458,7 +3465,7 @@ bool CMonster::FindTarget()
 	else
 		return false;
 
-	CBaseEntity *old = Entity->Enemy;
+//	CBaseEntity *old = Entity->Enemy;
 	if (!heardit)
 	{
 		ERangeType r = Range (Entity, client);
@@ -3528,7 +3535,7 @@ bool CMonster::FindTarget()
 		ChangeYaw ();
 
 		// hunt the sound for a bit; hopefully find the real player
-		//AIFlags |= AI_SOUND_TARGET;
+		AIFlags |= AI_SOUND_TARGET;
 		Entity->Enemy = client;
 	}
 
@@ -3538,7 +3545,7 @@ bool CMonster::FindTarget()
 	FoundTarget ();
 	AlertNearbyStroggs ();
 
-	if (!(AIFlags & AI_SOUND_TARGET) && (Entity->Enemy != old) && (MonsterFlags & MF_HAS_SIGHT))
+	if (!(AIFlags & AI_SOUND_TARGET) && (MonsterFlags & MF_HAS_SIGHT))
 		Sight ();
 
 	return true;
@@ -3742,3 +3749,58 @@ void CMonster::UnDuck ()
 	Entity->Link ();
 }
 #endif
+
+void CMonster::BossExplode ()
+{
+	vec3f	org = Entity->State.GetOrigin() + vec3f(0, 0, 24 + (randomMT()&15));
+	Think = &CMonster::BossExplode;
+
+	switch (ExplodeCount++)
+	{
+	case 0:
+		org.X -= 24;
+		org.Y -= 24;
+		break;
+	case 1:
+		org.X += 24;
+		org.Y += 24;
+		break;
+	case 2:
+		org.X += 24;
+		org.Y -= 24;
+		break;
+	case 3:
+		org.X -= 24;
+		org.Y += 24;
+		break;
+	case 4:
+		org.X -= 48;
+		org.Y -= 48;
+		break;
+	case 5:
+		org.X += 48;
+		org.Y += 48;
+		break;
+	case 6:
+		org.X -= 48;
+		org.Y += 48;
+		break;
+	case 7:
+		org.X += 48;
+		org.Y -= 48;
+		break;
+	case 8:
+		Entity->State.GetSound() = 0;
+		for (int n= 0; n < 4; n++)
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, 500, GIB_ORGANIC);
+		for (int n= 0; n < 8; n++)
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), 500, GIB_METALLIC);
+		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, 500, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Gear(), 500, GIB_METALLIC);
+		Entity->DeadFlag = true;
+		return;
+	}
+
+	CTempEnt_Explosions::RocketExplosion (org, Entity);
+	Entity->NextThink = level.Frame + FRAMETIME;
+}

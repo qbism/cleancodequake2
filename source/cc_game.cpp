@@ -50,7 +50,7 @@ EndDMLevel
 The timelimit or fraglimit has been exceeded
 =================
 */
-void EndDMLevel (void)
+void EndDMLevel ()
 {
 	char *s, *t, *f;
 	static const char *seps = " ,\n\r";
@@ -118,7 +118,7 @@ void EndDMLevel (void)
 CheckDMRules
 =================
 */
-void CheckDMRules (void)
+void CheckDMRules ()
 {
 	if (level.IntermissionTime)
 		return;
@@ -171,7 +171,7 @@ void CheckDMRules (void)
 ExitLevel
 =============
 */
-void ExitLevel (void)
+void ExitLevel ()
 {
 	if (CTFNextMap())
 		return;
@@ -571,10 +571,11 @@ void G_Register ()
 
 void CC_InitGame ()
 {
+	CTimer LoadTimer;
+
 	//Mem_Init ();
 	DebugPrintf ("==== InitGame ====\n");
 	DebugPrintf ("Running CleanCode Quake2, built on %s (%s %s)\nInitializing game...", __TIMESTAMP__, BUILDSTRING, CPUSTRING);
-	uint32 start = Sys_Milliseconds();
 
 	seedMT (time(NULL));
 
@@ -612,7 +613,7 @@ void CC_InitGame ()
 
 	Mem_Register ();
 
-	DebugPrintf ("\nGame initialized in %ums.\n", Sys_Milliseconds()-start);
+	DebugPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
 }
 
 void CC_ShutdownGame ()

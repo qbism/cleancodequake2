@@ -75,7 +75,7 @@ bool CTech::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 	return true;
 }
 
-static CBaseEntity *FindTechSpawn(void)
+static CBaseEntity *FindTechSpawn()
 {
 	return SelectRandomDeathmatchSpawnPoint();
 }
@@ -309,7 +309,7 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
 
 		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent->gameEntity, CONTENTS_SOLID);
+			result, ent, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
 	}
 	else

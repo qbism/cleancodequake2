@@ -106,7 +106,7 @@ bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
 	if ((EntityFlags & ENT_PHYSICS) && ((entity_cast<CPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
 	{
 		vec3f dest = (GetAbsMin() + GetAbsMax()) * 0.5f;
-		CTrace trace (inflictor->State.GetOrigin(), dest, inflictor->gameEntity, CONTENTS_MASK_SOLID);
+		CTrace trace (inflictor->State.GetOrigin(), dest, inflictor, CONTENTS_MASK_SOLID);
 		if (trace.fraction == 1.0 || trace.Ent == this)
 			return true;
 		return false;
@@ -124,7 +124,7 @@ bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
 	for (int i = 0; i < 5; i++)
 	{
 		vec3f end = State.GetOrigin() + additions[i];
-		CTrace trace (inflictor->State.GetOrigin(), end, inflictor->gameEntity, CONTENTS_MASK_SOLID);
+		CTrace trace (inflictor->State.GetOrigin(), end, inflictor, CONTENTS_MASK_SOLID);
 		if (trace.fraction == 1.0)
 			return true;
 	};
@@ -606,7 +606,7 @@ CTrace CPhysicsEntity::PushEntity (vec3f &push)
 	CTrace Trace;
 	while (true)
 	{
-		Trace (Start, GetMins(), GetMaxs(), End, gameEntity, (GetClipmask()) ? GetClipmask() : CONTENTS_MASK_SOLID);
+		Trace (Start, GetMins(), GetMaxs(), End, this, (GetClipmask()) ? GetClipmask() : CONTENTS_MASK_SOLID);
 		
 		State.GetOrigin() = Trace.EndPos;
 		Link();
@@ -750,7 +750,7 @@ bool CBounceProjectile::Run ()
 		World->PlayPositionedSound (or, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 
 // move teamslaves
-	for (CBaseEntity *slave = TeamChain; slave; slave = slave->TeamChain)
+	for (CBaseEntity *slave = Team.Chain; slave; slave = slave->Team.Chain)
 	{
 		slave->State.GetOrigin() = State.GetOrigin();
 		slave->Link ();
@@ -860,7 +860,7 @@ bool CFlyMissileProjectile::Run ()
 		World->PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 
 // move teamslaves
-	for (CBaseEntity *slave = TeamChain; slave; slave = slave->TeamChain)
+	for (CBaseEntity *slave = Team.Chain; slave; slave = slave->Team.Chain)
 	{
 		slave->State.GetOrigin() = State.GetOrigin();
 		slave->Link ();
@@ -905,7 +905,7 @@ void CStepPhysics::CheckGround ()
 	vec3f point = State.GetOrigin();
 	point.Z -= 0.25f;
 
-	CTrace trace (State.GetOrigin(), GetMins(), GetMaxs(), point, gameEntity, CONTENTS_MASK_MONSTERSOLID);
+	CTrace trace (State.GetOrigin(), GetMins(), GetMaxs(), point, this, CONTENTS_MASK_MONSTERSOLID);
 
 	// check steepness
 	if ( trace.plane.normal[2] < 0.7 && !trace.startSolid)
@@ -965,7 +965,7 @@ int CStepPhysics::FlyMove (float time, int mask)
 		vec3f origin = State.GetOrigin ();
 		end = origin + time_left * Velocity;
 
-		CTrace trace (origin, GetMins(), GetMaxs(), end, gameEntity, mask);
+		CTrace trace (origin, GetMins(), GetMaxs(), end, this, mask);
 
 		if (trace.allSolid)
 		{
@@ -1218,7 +1218,7 @@ SV_TestEntityPosition
 */
 CBaseEntity *SV_TestEntityPosition (CBaseEntity *ent)
 {
-	return (CTrace(ent->State.GetOrigin(), ent->GetMins(), ent->GetMaxs(), ent->State.GetOrigin(), ent->gameEntity, (ent->GetClipmask()) ? ent->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
+	return (CTrace(ent->State.GetOrigin(), ent->GetMins(), ent->GetMaxs(), ent->State.GetOrigin(), ent, (ent->GetClipmask()) ? ent->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
 }
 
 /*
@@ -1419,7 +1419,7 @@ bool CPushPhysics::Run ()
 	// make sure all team slaves can move before commiting
 	// any moves or calling any think functions
 	// if the move is blocked, all moved objects will be backed out
-	for (part = this; part; part = part->TeamChain)
+	for (part = this; part; part = part->Team.Chain)
 	{
 		if (!(part->EntityFlags & ENT_PHYSICS))
 			continue;
@@ -1448,7 +1448,7 @@ bool CPushPhysics::Run ()
 	if (part)
 	{
 		// the move failed, bump all nextthink times and back out moves
-		for (CBaseEntity *mv = this; mv; mv = mv->TeamChain)
+		for (CBaseEntity *mv = this; mv; mv = mv->Team.Chain)
 		{
 			if (mv->EntityFlags & ENT_THINKABLE)
 			{
@@ -1467,7 +1467,7 @@ bool CPushPhysics::Run ()
 	else
 	{
 		// the move succeeded, so call all think functions
-		for (part = this; part; part = part->TeamChain)
+		for (part = this; part; part = part->Team.Chain)
 		{
 			if (part->EntityFlags & ENT_THINKABLE)
 			{

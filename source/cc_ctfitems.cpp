@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #ifdef CLEANCTF_ENABLED
 
-void CTFResetFlags(void);
+void CTFResetFlags();
 
 CFlag::CFlag (char *Classname, char *WorldModel, int EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,

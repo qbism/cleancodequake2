@@ -98,7 +98,7 @@ public:
 
 		end.Z -= BARREL_STEPSIZE*2;
 
-		CTrace trace (newOrigin, GetMins(), GetMaxs(), end, gameEntity, CONTENTS_MASK_MONSTERSOLID);
+		CTrace trace (newOrigin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 
 		if (trace.allSolid)
 			return;
@@ -106,7 +106,7 @@ public:
 		if (trace.startSolid)
 		{
 			newOrigin[2] -= BARREL_STEPSIZE;
-			trace (newOrigin, GetMins(), GetMaxs(), end, gameEntity, CONTENTS_MASK_MONSTERSOLID);
+			trace (newOrigin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 			if (trace.allSolid || trace.startSolid)
 				return;
 		}
@@ -138,7 +138,7 @@ public:
 			vec3f end = vec3f(origin);
 			end.Z -= 256;
 			
-			trace (origin, GetMins(), GetMaxs(), end, gameEntity, CONTENTS_MASK_MONSTERSOLID);
+			trace (origin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 
 			if (trace.fraction == 1 || trace.allSolid)
 				return;

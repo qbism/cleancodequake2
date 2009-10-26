@@ -44,9 +44,9 @@ public:
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
-};
 
-extern CRocketLauncher WeaponRocketLauncher;
+	WEAPON_CLASS_DEFS (CRocketLauncher);
+};
 
 #else
 FILE_WARNING

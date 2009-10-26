@@ -172,7 +172,7 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
 
 		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent->gameEntity, CONTENTS_SOLID);
+			result, ent, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
 	}
 	else

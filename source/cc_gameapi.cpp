@@ -37,6 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_cmds.h"
 #include "cc_gamecommands.h"
 #include "cc_servercommands.h"
+#include "cc_save.h"
 
 gameImport_t	gi;
 
@@ -70,11 +71,6 @@ _CC_ENABLE_DEPRECATION
 	}
 }
 
-#if defined(WIN32) && defined(_DEBUG)
-#include <windows.h>
-#include <crtdbg.h>
-#endif
-
 void GameError (char *fmt, ...)
 {
 	va_list		argptr;
@@ -84,42 +80,11 @@ void GameError (char *fmt, ...)
 	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
 	va_end (argptr);
 
-#if defined(WIN32)
-#if defined(_DEBUG)
-	// Pipe to visual studio
-	OutputDebugString(text);
-#endif
-	_CrtDbgBreak ();
-#else
-	assert (0); // Break, if debugging
-#endif
+	CC_ReportGameError (text);
 
 _CC_DISABLE_DEPRECATION
 	gi.error (text);
 _CC_ENABLE_DEPRECATION
-}
-
-/*
-================
-Sys_Milliseconds
-================
-*/
-#include <windows.h>
-
-uint32 curtime;
-uint32 Sys_Milliseconds ()
-{
-	static uint32		base;
-	static bool	initialized = false;
-
-	if (!initialized)
-	{	// let base retain 16 bits of effectively random data
-		base = timeGetTime() & 0xffff0000;
-		initialized = true;
-	}
-	curtime = timeGetTime() - base;
-
-	return curtime;
 }
 
 //
@@ -276,7 +241,7 @@ RunFrame
 Advances the world by 0.1 seconds
 ================
 */
-void RunFrame (void)
+void RunFrame ()
 {
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -384,12 +349,6 @@ Returns a pointer to the structure with all entry points
 and global variables
 =================
 */
-
-void ReadLevel (char *);
-void WriteLevel (char *);
-
-void ReadGame (char *);
-void WriteGame (char *, BOOL);
 
 gameExport_t	globals =
 {

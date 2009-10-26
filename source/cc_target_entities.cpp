@@ -47,7 +47,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 Normal sounds play each time the target is used.  The reliable flag can be set for crucial voiceovers.
 
 Looped sounds are always atten 3 / vol 1, and the use function toggles it on/off.
-Multiple identical looping sounds will just increase volume without any speed cost->
+Multiple identical looping sounds will just increase volume without any speed cost
 */
 
 class CTargetSpeaker : public CMapEntity, public CUsableEntity
@@ -322,12 +322,15 @@ class CTargetSplash : public CMapEntity, public CUsableEntity
 public:
 	vec3f	MoveDir;
 	int		Damage;
+	uint8	Color;
+	uint8	Count;
 
 	CTargetSplash () :
 	  CBaseEntity (),
 	  CMapEntity (),
 	  CUsableEntity (),
-	  Damage (0)
+	  Damage (0),
+	  Count (0)
 	{
 	};
 
@@ -335,7 +338,8 @@ public:
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index),
-	  Damage (0)
+	  Damage (0),
+	  Count (0)
 	{
 	};
 
@@ -348,7 +352,7 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		CTempEnt_Splashes::Splash (State.GetOrigin(), MoveDir, gameEntity->sounds, gameEntity->count);
+		CTempEnt_Splashes::Splash (State.GetOrigin(), MoveDir, Color, Count);
 
 		if (Damage)
 			T_RadiusDamage (this, activator, Damage, NULL, Damage+40, MOD_SPLASH);
@@ -358,8 +362,8 @@ public:
 	{
 		G_SetMovedir (State.GetAngles(), MoveDir);
 
-		if (!gameEntity->count)
-			gameEntity->count = 32;
+		if (!Count)
+			Count = 32;
 
 		GetSvFlags() = SVF_NOCLIENT;
 	};
@@ -368,6 +372,8 @@ public:
 ENTITYFIELDS_BEGIN(CTargetSplash)
 {
 	CEntityField ("dmg", EntityMemberOffset(CTargetSplash,Damage), FT_INT),
+	CEntityField ("sounds", EntityMemberOffset(CTargetSplash,Color), FT_BYTE),
+	CEntityField ("count", EntityMemberOffset(CTargetSplash,Count), FT_BYTE),
 };
 ENTITYFIELDS_END(CTargetSplash)
 
@@ -389,6 +395,8 @@ Fire an origin based temp entity event to the clients.
 class CTargetTempEntity : public CMapEntity, public CUsableEntity
 {
 public:
+	uint8		Style;
+
 	CTargetTempEntity () :
 	  CBaseEntity (),
 	  CMapEntity (),
@@ -403,10 +411,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	bool Run ()
 	{
@@ -416,7 +421,7 @@ public:
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
 		WriteByte (SVC_TEMP_ENTITY);
-		WriteByte (gameEntity->style);
+		WriteByte (Style);
 		WritePosition (State.GetOrigin());
 		Cast (CASTFLAG_PVS, State.GetOrigin());
 	};
@@ -425,6 +430,20 @@ public:
 	{
 	};
 };
+
+ENTITYFIELDS_BEGIN(CTargetTempEntity)
+{
+	CEntityField ("style", EntityMemberOffset(CTargetTempEntity,Style), FT_BYTE),
+};
+ENTITYFIELDS_END(CTargetTempEntity)
+
+bool CTargetTempEntity::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTargetTempEntity> (this, Key, Value))
+		return true;
+
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_temp_entity", CTargetTempEntity);
 
@@ -993,7 +1012,7 @@ public:
 			return;
 		}
 
-		edict_t	*ignore;
+		CBaseEntity	*ignore;
 		vec3f	start;
 		vec3f	end;
 
@@ -1008,7 +1027,7 @@ public:
 				SpawnFlags |= 0x80000000;
 		}
 
-		ignore = gameEntity;
+		ignore = this;
 		start = State.GetOrigin();
 		end = start.MultiplyAngles (2048, MoveDir);
 		CTrace tr;
@@ -1041,7 +1060,7 @@ public:
 				break;
 			}
 
-			ignore = tr.ent;
+			ignore = tr.Ent;
 			start = tr.EndPos;
 		}
 
@@ -1223,6 +1242,7 @@ public:
 	FrameNumber_t		LastShakeTime;
 	FrameNumber_t		TimeStamp;
 	float				Speed;
+	FrameNumber_t		Duration;
 
 	CTargetEarthquake () :
 	  CBaseEntity (),
@@ -1292,7 +1312,7 @@ public:
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
 		// Paril, Backwards compatibility
-		TimeStamp = level.Frame + (gameEntity->count * 10);
+		TimeStamp = level.Frame + Duration;
 		NextThink = level.Frame + FRAMETIME;
 		LastShakeTime = 0;
 	};
@@ -1303,8 +1323,8 @@ public:
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 			//gi.dprintf("untargeted %s at (%f %f %f)\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 
-		if (!gameEntity->count)
-			gameEntity->count = 5;
+		if (!Duration)
+			Duration = 5;
 
 		if (!Speed)
 			Speed = 200;
@@ -1318,6 +1338,7 @@ public:
 ENTITYFIELDS_BEGIN(CTargetEarthquake)
 {
 	CEntityField ("speed", EntityMemberOffset(CTargetEarthquake,Speed), FT_FLOAT),
+	CEntityField ("count", EntityMemberOffset(CTargetEarthquake,Duration), FT_FRAMENUMBER),
 };
 ENTITYFIELDS_END(CTargetEarthquake)
 

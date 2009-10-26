@@ -645,11 +645,11 @@ void CMedic::CableAttack ()
 		return;
 
 #ifndef MONSTER_USE_ROGUE_AI
-	tr (start, Entity->Enemy->State.GetOrigin(), Entity->gameEntity, CONTENTS_MASK_SHOT);
+	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
 	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
 		return;
 #else
-	tr (start, Entity->Enemy->State.GetOrigin(), Entity->gameEntity, CONTENTS_MASK_SHOT);
+	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
 	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
 	{
 		if (tr.ent == world)
@@ -712,7 +712,7 @@ void CMedic::CableAttack ()
 #else
 		{
 			vec3f maxs = Entity->Enemy->GetMaxs() + vec3f(0, 0, 48);
-			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), Entity->Enemy->gameEntity, CONTENTS_MASK_MONSTERSOLID);
+			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), Entity->Enemy, CONTENTS_MASK_MONSTERSOLID);
 		}
 
 		if (tr.startSolid || tr.allSolid)

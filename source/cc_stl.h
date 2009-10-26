@@ -299,7 +299,7 @@ public:
 	template<class _Other>
 		struct rebind
 		{	// convert this type to _ALLOCATOR<_Other>
-		typedef game_allocator<_Other> other;
+		typedef generic_allocator<_Other> other;
 		};
 
 	pointer address(reference _Val) const
@@ -338,7 +338,7 @@ public:
 
 	pointer allocate(size_type _Count)
 		{	// allocate array of _Count elements
-		return (_Allocate(_Count, (pointer)0, com_genericPool));
+		return (_Allocate(_Count, (pointer)0, com_gamePool));
 		}
 
 	pointer allocate(size_type _Count, const void _FARQ *)
@@ -389,6 +389,7 @@ template<class _Ty,
 	{	// test for allocator equality
 	return (true);
 	}
+
 #else
                 // TEMPLATE CLASS allocator
 template<class _Ty>

@@ -167,11 +167,11 @@ public:
 
 			if (ctfgame.match == MATCH_SETUP)
 			{
-				ClientPrintf(ent->gameEntity,	PRINT_CENTER, 
-												"***********************\n"
-												"Type \"ready\" in console\n"
-												"to ready up.\n"
-												"***********************");
+				ent->PrintToClient	(PRINT_CENTER, 
+									"***********************\n"
+									"Type \"ready\" in console\n"
+									"to ready up.\n"
+									"***********************");
 			}
 			return true;
 		};

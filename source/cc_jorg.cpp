@@ -368,7 +368,7 @@ CFrame JorgFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0,  ConvertDerivedFunction(&CJorg::DeathHit)),			
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::TossMakron)),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::Explode))		// 50
+	CFrame (&CMonster::AI_Move,	0,	&CMonster::BossExplode)		// 50
 };
 CAnim JorgMoveDeath (FRAME_death01, FRAME_death50, JorgFramesDeath1, NULL);
 
@@ -377,70 +377,13 @@ void CJorg::TossMakron ()
 	CMakronJumpTimer::Spawn (this);
 };
 
-#include "cc_tent.h"
-
-void CJorg::Explode ()
-{
-	vec3f	org = Entity->State.GetOrigin() + vec3f(0, 0, 24 + (randomMT()&15));
-	Think = ConvertDerivedFunction(&CJorg::Explode);
-
-	switch (Entity->gameEntity->count++)
-	{
-	case 0:
-		org.X -= 24;
-		org.Y -= 24;
-		break;
-	case 1:
-		org.X += 24;
-		org.Y += 24;
-		break;
-	case 2:
-		org.X += 24;
-		org.Y -= 24;
-		break;
-	case 3:
-		org.X -= 24;
-		org.Y += 24;
-		break;
-	case 4:
-		org.X -= 48;
-		org.Y -= 48;
-		break;
-	case 5:
-		org.X += 48;
-		org.Y += 48;
-		break;
-	case 6:
-		org.X -= 48;
-		org.Y += 48;
-		break;
-	case 7:
-		org.X += 48;
-		org.Y -= 48;
-		break;
-	case 8:
-		Entity->State.GetSound() = 0;
-		for (int n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, 500, GIB_ORGANIC);
-		for (int n= 0; n < 8; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), 500, GIB_METALLIC);
-		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, 500, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), 500, GIB_METALLIC);
-		Entity->DeadFlag = true;
-		return;
-	}
-
-	CTempEnt_Explosions::RocketExplosion (org, Entity);
-	Entity->NextThink = level.Frame + FRAMETIME;
-}
-
 void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDeath);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;
 	Entity->State.GetSound() = 0;
-	Entity->gameEntity->count = 0;
+	ExplodeCount = 0;
 	CurrentMove = &JorgMoveDeath;
 }
 
@@ -673,7 +616,7 @@ bool CJorg::CheckAttack ()
 		vec3f spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		CTrace tr (spot1, spot2, Entity->gameEntity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)
@@ -694,7 +637,7 @@ bool CJorg::CheckAttack ()
 						else
 						{
 							// make sure we're not going to shoot a monster
-							tr (spot1, BlindFireTarget, Entity->gameEntity, CONTENTS_MONSTER);
+							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
 							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
 								return false;
 

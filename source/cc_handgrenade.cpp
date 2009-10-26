@@ -35,8 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-CHandGrenade WeaponGrenades;
-
 CHandGrenade::CHandGrenade() :
 CWeapon("models/weapons/v_handgr/tris.md2", 0, 0, 0, 16,
 		17, 48, 0, 0)
@@ -272,3 +270,9 @@ void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
 	if (newFrame == -1 && newState == -1)
 		ent->Client.PlayerState.GetGunFrame()++;
 }
+
+WEAPON_DEFS (CHandGrenade);
+
+void CHandGrenade::CreateItem (CItemList *List)
+{
+};

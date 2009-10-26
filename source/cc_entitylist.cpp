@@ -27,7 +27,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_entitylist->cpp
+// cc_entitylist.cpp
 // Resolves an entity from a classname
 //
 
@@ -211,13 +211,8 @@ static char *ED_ParseEdict (char *data, edict_t *ent)
 		else if (Q_stricmp (keyName, "classname") == 0)
 			ent->classname = Mem_PoolStrDup (token, com_levelPool, 0);
 		else
-		{
 			// push it in the list for the entity
-			if (!ent->ParseData)
-				ent->ParseData = QNew (com_levelPool, 0) std::list<CKeyValuePair *, std::level_allocator<CKeyValuePair *> > ();
-
-			ent->ParseData->push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
-		}
+			level.ParseData.push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
 	}
 
 	if (!init)
@@ -237,7 +232,7 @@ All but the first will have the FL_TEAMSLAVE flag set.
 All but the last will have the teamchain field set to the next one
 ================
 */
-void G_FindTeams (void)
+void G_FindTeams ()
 {
 	int		c = 0, c2 = 0;
 
@@ -255,7 +250,7 @@ void G_FindTeams (void)
 			continue;
 
 		CBaseEntity *chain = e;
-		e->TeamMaster = e;
+		e->Team.Master = e;
 
 		c++;
 		c2++;
@@ -273,8 +268,8 @@ void G_FindTeams (void)
 			if (!strcmp(e->gameEntity->team, e2->gameEntity->team))
 			{
 				c2++;
-				chain->TeamChain = e2;
-				e2->TeamMaster = e;
+				chain->Team.Chain = e2;
+				e2->Team.Master = e;
 
 				chain = e2;
 				e2->Flags |= FL_TEAMSLAVE;
@@ -326,7 +321,7 @@ parsing textual entity definitions out of an ent file.
 
 void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
-	uint32 startTime = Sys_Milliseconds();
+	CTimer Timer;
 
 	level.EntityNumber = 0;
 	InitMapCounter();
@@ -413,5 +408,5 @@ _CC_ENABLE_DEPRECATION
 //ZOID
 #endif
 
-	DebugPrintf ("Finished server initialization in %d ms\n", Sys_Milliseconds() - startTime);
+	DebugPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
 }

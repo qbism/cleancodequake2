@@ -111,7 +111,7 @@ Returns a new origin, velocity, and contact entity
 Does not modify any world state?
 ==================
 */
-static void SV_PM_StepSlideMove_ (void)
+static void SV_PM_StepSlideMove_ ()
 {
 	int			numbumps = 4;
 	vec3f		dir;
@@ -127,7 +127,7 @@ static void SV_PM_StepSlideMove_ (void)
 	for (int bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
 		end = pml.origin + time_left * pml.velocity;
-		trace (pml.origin, pm->mins, pm->maxs, end, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 
 		if (trace.allSolid)
 		{
@@ -223,7 +223,7 @@ static void SV_PM_StepSlideMove_ (void)
 		pml.velocity = primal_velocity;
 }
 
-static void SV_PM_StepSlideMove (void)
+static void SV_PM_StepSlideMove ()
 {
 	vec3f start_o = pml.origin;
 	vec3f start_v = pml.velocity;
@@ -234,7 +234,7 @@ static void SV_PM_StepSlideMove (void)
 	vec3f down_v = pml.velocity;
 
 	vec3f up = start_o + vec3f(0, 0, STEPSIZE);
-	CTrace trace (up, pm->mins, pm->maxs, up, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
 	if (trace.allSolid)
 		return;		// can't step up
@@ -247,7 +247,7 @@ static void SV_PM_StepSlideMove (void)
 
 	// push down the final amount
 	vec3f down = pml.origin - vec3f(0, 0, STEPSIZE);
-	trace (pml.origin, pm->mins, pm->maxs, down, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
 	if (!trace.allSolid)
 		pml.origin = trace.EndPos;
@@ -279,7 +279,7 @@ SV_PM_Friction
 Handles both ground friction and water friction
 ==================
 */
-static void SV_PM_Friction (void)
+static void SV_PM_Friction ()
 {	
 	vec3f &vel = pml.velocity;
 	float speed = vel.Length();
@@ -414,7 +414,7 @@ static void SV_PM_AddCurrents (vec3f &wishvel)
 SV_PM_WaterMove
 ===================
 */
-static void SV_PM_WaterMove (void)
+static void SV_PM_WaterMove ()
 {
 	// user intentions
 	vec3f wishvel ( pml.forward.X*pm->cmd.forwardMove + pml.right.X*pm->cmd.sideMove,
@@ -441,7 +441,7 @@ static void SV_PM_WaterMove (void)
 SV_PM_AirMove
 ===================
 */
-static void SV_PM_AirMove (void)
+static void SV_PM_AirMove ()
 {
 	float fmove = pm->cmd.forwardMove;
 	float smove = pm->cmd.sideMove;
@@ -520,7 +520,7 @@ static void SV_PM_AirMove (void)
 SV_PM_CatagorizePosition
 =============
 */
-static void SV_PM_CatagorizePosition (void)
+static void SV_PM_CatagorizePosition ()
 {
 	// if the player hull point one unit down is solid, the player is on ground
 	// see if standing on something solid
@@ -534,7 +534,7 @@ static void SV_PM_CatagorizePosition (void)
 	}
 	else
 	{
-		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 		pml.groundSurface = trace.surface;
 		pml.groundContents = trace.contents;
 
@@ -609,7 +609,7 @@ static void SV_PM_CatagorizePosition (void)
 SV_PM_CheckJump
 =============
 */
-static void SV_PM_CheckJump (void)
+static void SV_PM_CheckJump ()
 {
 	if (pm->state.pmFlags & PMF_TIME_LAND)
 		// hasn't been long enough since landing to jump again
@@ -674,7 +674,7 @@ static void SV_PM_CheckJump (void)
 SV_PM_CheckSpecialMovement
 =============
 */
-static void SV_PM_CheckSpecialMovement (void)
+static void SV_PM_CheckSpecialMovement ()
 {
 	if (pm->state.pmTime)
 		return;
@@ -687,7 +687,7 @@ static void SV_PM_CheckSpecialMovement (void)
 	flatforward.Normalize();
 
 	vec3f spot = pml.origin.MultiplyAngles (1, flatforward);
-	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
 	if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
 		pml.ladder = true;
@@ -771,7 +771,7 @@ static void SV_PM_FlyMove (bool doClip)
 	if (doClip)
 	{
 		vec3f end = pml.origin.MultiplyAngles (pml.frameTime, pml.velocity);
-		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
+		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
 	}
 	else
 		// move
@@ -785,7 +785,7 @@ SV_PM_CheckDuck
 Sets mins, maxs, and pm->viewHeight
 ==============
 */
-static void SV_PM_CheckDuck (void)
+static void SV_PM_CheckDuck ()
 {
 	pm->mins.X = -16;
 	pm->mins.Y = -16;
@@ -819,7 +819,7 @@ static void SV_PM_CheckDuck (void)
 		{
 			// try to stand up
 			pm->maxs.Z = 32;
-			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 			if (!trace.allSolid)
 				pm->state.pmFlags &= ~PMF_DUCKED;
 		}
@@ -842,7 +842,7 @@ static void SV_PM_CheckDuck (void)
 SV_PM_DeadMove
 ==============
 */
-static void SV_PM_DeadMove (void)
+static void SV_PM_DeadMove ()
 {
 	if (!pm->groundEntity)
 		return;
@@ -863,7 +863,7 @@ static void SV_PM_DeadMove (void)
 SV_PM_GoodPosition
 ================
 */
-static bool SV_PM_GoodPosition (void)
+static bool SV_PM_GoodPosition ()
 {
 	if (pm->state.pmType == PMT_SPECTATOR)
 		return true;
@@ -872,7 +872,7 @@ static bool SV_PM_GoodPosition (void)
 					pm->state.origin[1]*(1.0f/8.0f),
 					pm->state.origin[2]*(1.0f/8.0f));
  
-	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent->gameEntity, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
+	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
 }
 
 /*
@@ -883,7 +883,7 @@ On exit, the origin will have a value that is pre-quantized to the (1.0f/8.0f)
 precision of the network channel and in a valid position.
 ================
 */
-static void SV_PM_SnapPosition (void)
+static void SV_PM_SnapPosition ()
 {
 	int		sign[3];
 	int16	base[3];
@@ -934,7 +934,7 @@ static void SV_PM_SnapPosition (void)
 SV_PM_InitialSnapPosition
 ================
 */
-static void SV_PM_InitialSnapPosition (void)
+static void SV_PM_InitialSnapPosition ()
 {
 	int16		base[3];
 	static sint8	offset[3] = { 0, -1, 1 };
@@ -970,7 +970,7 @@ static void SV_PM_InitialSnapPosition (void)
 SV_PM_ClampAngles
 ================
 */
-static void SV_PM_ClampAngles (void)
+static void SV_PM_ClampAngles ()
 {
 	if (pm->state.pmFlags & PMF_TIME_TELEPORT)
 	{

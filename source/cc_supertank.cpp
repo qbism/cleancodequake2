@@ -289,7 +289,7 @@ CFrame SuperTankFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0, ConvertDerivedFunction(&CSuperTank::Explode))
+	CFrame (&CMonster::AI_Move,	0, &CMonster::BossExplode)
 };
 CAnim SuperTankMoveDeath (FRAME_death_1, FRAME_death_24, SuperTankFramesDeath1, ConvertDerivedFunction(&CSuperTank::Dead));
 
@@ -579,7 +579,7 @@ void CSuperTank::Rocket ()
 
 	// pmm blindfire doesn't check target (done in checkattack)
 	// paranoia, make sure we're not shooting a target right next to us
-	CTrace trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 	#ifdef MONSTER_USE_ROGUE_AI
 	if (blindfire)
 	{
@@ -593,7 +593,7 @@ void CSuperTank::Rocket ()
 			dir = vec - start;
 			dir.Normalize ();
 
-			trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
 				MonsterFireRocket (start, dir, 50, 500, FlashNumber);
 			else 
@@ -603,7 +603,7 @@ void CSuperTank::Rocket ()
 				dir = vec - start;
 				dir.Normalize ();
 
-				trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
 					MonsterFireRocket (start, dir, 50, 500, FlashNumber);
 			}
@@ -612,7 +612,7 @@ void CSuperTank::Rocket ()
 	else
 #endif
 	{
-		trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 		if(trace.Ent == Entity->Enemy || trace.ent == world)
 		{
 			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
@@ -712,71 +712,12 @@ void CSuperTank::Dead ()
 	Entity->Link ();
 }
 
-#include "cc_tent.h"
-
-void CSuperTank::Explode ()
-{
-	vec3f	org = Entity->State.GetOrigin() + vec3f(0, 0, 24 + (randomMT()&15));
-	Think = ConvertDerivedFunction(&CSuperTank::Explode);
-
-	switch (Entity->gameEntity->count++)
-	{
-	case 0:
-		org.X -= 24;
-		org.Y -= 24;
-		break;
-	case 1:
-		org.X += 24;
-		org.Y += 24;
-		break;
-	case 2:
-		org.X += 24;
-		org.Y -= 24;
-		break;
-	case 3:
-		org.X -= 24;
-		org.Y += 24;
-		break;
-	case 4:
-		org.X -= 48;
-		org.Y -= 48;
-		break;
-	case 5:
-		org.X += 48;
-		org.Y += 48;
-		break;
-	case 6:
-		org.X -= 48;
-		org.Y += 48;
-		break;
-	case 7:
-		org.X += 48;
-		org.Y -= 48;
-		break;
-	case 8:
-		Entity->State.GetSound() = 0;
-		for (int n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, 500, GIB_ORGANIC);
-		for (int n= 0; n < 8; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), 500, GIB_METALLIC);
-		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, 500, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), 500, GIB_METALLIC);
-		Entity->DeadFlag = true;
-		return;
-	}
-
-	CTempEnt_Explosions::RocketExplosion (org, Entity);
-
-	Entity->NextThink = level.Frame + FRAMETIME;
-}
-
-
 void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDeath);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;
-	Entity->gameEntity->count = 0;
+	ExplodeCount = 0;
 	CurrentMove = &SuperTankMoveDeath;
 }
 

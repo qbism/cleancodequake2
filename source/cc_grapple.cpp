@@ -36,8 +36,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #ifdef CLEANCTF_ENABLED
 #include "m_player.h"
 
-CGrapple WeaponGrapple;
-
 CGrapple::CGrapple() :
 CWeapon("models/weapons/grapple/tris.md2", 0, 5, 6, 9,
 		10, 31, 32, 36)
@@ -232,4 +230,13 @@ void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 	if (newFrame == -1 && newState == -1)
 		Player->Client.PlayerState.GetGunFrame()++;
 }
+
+WEAPON_DEFS (CGrapple);
+
+void CGrapple::CreateItem (CItemList *List)
+{
+	NItems::Grapple = QNew (com_gamePool, 0) CWeaponItem (NULL, NULL, 0, NULL, "w_grapple", "Grapple", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, "", &Weapon, NULL, 0, "#w_grapple.md2");
+	List->AddItemToList (NItems::Grapple);
+};
+
 #endif

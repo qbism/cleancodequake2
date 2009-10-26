@@ -35,8 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-CMachinegun WeaponMachinegun;
-
 CMachinegun::CMachinegun() :
 CWeapon("models/weapons/v_machn/tris.md2", 0, 3, 4, 5,
 		6, 45, 46, 49)
@@ -139,3 +137,15 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 
 	FireAnimation (ent);
 }
+
+WEAPON_DEFS (CMachinegun);
+
+void CMachinegun::CreateItem (CItemList *List)
+{
+	NItems::Machinegun = QNew (com_gamePool, 0) CWeaponItem
+		("weapon_machinegun", "models/weapons/g_machn/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_machinegun",
+		"Machinegun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
+		"", &Weapon, NItems::Bullets, 1, "#w_machinegun.md2");
+
+	List->AddItemToList (NItems::Machinegun);
+};

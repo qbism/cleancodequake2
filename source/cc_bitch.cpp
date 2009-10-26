@@ -587,7 +587,7 @@ void CMaiden::Rocket ()
 
 	// pmm blindfire doesn't check target (done in checkattack)
 	// paranoia, make sure we're not shooting a target right next to us
-	CTrace trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 	if (blindfire)
 	{
 		// blindfire has different fail criteria for the trace
@@ -602,7 +602,7 @@ void CMaiden::Rocket ()
 			vec = vec.MultiplyAngles (-10, right);
 			dir = vec - start;
 			dir.NormalizeFast();
-			trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			else 
@@ -612,7 +612,7 @@ void CMaiden::Rocket ()
 				vec = vec.MultiplyAngles (10, right);
 				dir = vec - start;
 				dir.NormalizeFast();
-				trace (start, vec, Entity->gameEntity, CONTENTS_MASK_SHOT);
+				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
 					MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			}

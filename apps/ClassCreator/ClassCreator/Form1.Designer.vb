@@ -22,43 +22,42 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.ListBox1 = New System.Windows.Forms.ListBox
-        Me.TextBox1 = New System.Windows.Forms.TextBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox
-        Me.CheckBox2 = New System.Windows.Forms.CheckBox
-        Me.MenuStrip1 = New System.Windows.Forms.MenuStrip
-        Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.SaveAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.SaveAsToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
-        Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.CopyToClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripComboBox1 = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
-        Me.AlwaysOnTopToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.TabControl1 = New System.Windows.Forms.TabControl
-        Me.TabPage1 = New System.Windows.Forms.TabPage
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.TabPage3 = New System.Windows.Forms.TabPage
-        Me.CheckBox5 = New System.Windows.Forms.CheckBox
-        Me.CheckBox4 = New System.Windows.Forms.CheckBox
-        Me.CheckBox3 = New System.Windows.Forms.CheckBox
-        Me.TabPage2 = New System.Windows.Forms.TabPage
-        Me.DataGridView1 = New System.Windows.Forms.DataGridView
-        Me.CheckBox6 = New System.Windows.Forms.CheckBox
-        Me.Column1 = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.Column2 = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.Column3 = New System.Windows.Forms.DataGridViewComboBoxColumn
-        Me.Column4 = New System.Windows.Forms.DataGridViewCheckBoxColumn
-        Me.Column5 = New System.Windows.Forms.DataGridViewCheckBoxColumn
+        Me.ListBox1 = New System.Windows.Forms.ListBox()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox2 = New System.Windows.Forms.CheckBox()
+        Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
+        Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SaveAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SaveAsToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CopyToClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripComboBox1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.AlwaysOnTopToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.CheckBox6 = New System.Windows.Forms.CheckBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.CheckBox5 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox4 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox3 = New System.Windows.Forms.CheckBox()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.DataGridView1 = New System.Windows.Forms.DataGridView()
+        Me.Column1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Column2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Column3 = New System.Windows.Forms.DataGridViewComboBoxColumn()
+        Me.Column4 = New System.Windows.Forms.DataGridViewCheckBoxColumn()
+        Me.Column5 = New System.Windows.Forms.DataGridViewCheckBoxColumn()
         Me.MenuStrip1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         Me.TabPage2.SuspendLayout()
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'ListBox1
@@ -74,7 +73,7 @@ Partial Class Form1
         '
         Me.TextBox1.Location = New System.Drawing.Point(332, 36)
         Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(175, 21)
+        Me.TextBox1.Size = New System.Drawing.Size(175, 20)
         Me.TextBox1.TabIndex = 1
         '
         'Label1
@@ -82,7 +81,7 @@ Partial Class Form1
         Me.Label1.AutoSize = True
         Me.Label1.Location = New System.Drawing.Point(261, 39)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(65, 13)
+        Me.Label1.Size = New System.Drawing.Size(64, 13)
         Me.Label1.TabIndex = 2
         Me.Label1.Text = "Class name:"
         '
@@ -91,7 +90,7 @@ Partial Class Form1
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Location = New System.Drawing.Point(264, 63)
         Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(107, 17)
+        Me.CheckBox1.Size = New System.Drawing.Size(108, 17)
         Me.CheckBox1.TabIndex = 3
         Me.CheckBox1.Text = "Code inside class"
         Me.CheckBox1.UseVisualStyleBackColor = True
@@ -125,24 +124,24 @@ Partial Class Form1
         'SaveAsToolStripMenuItem
         '
         Me.SaveAsToolStripMenuItem.Name = "SaveAsToolStripMenuItem"
-        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(131, 22)
+        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SaveAsToolStripMenuItem.Text = "Save"
         '
         'SaveAsToolStripMenuItem1
         '
         Me.SaveAsToolStripMenuItem1.Name = "SaveAsToolStripMenuItem1"
-        Me.SaveAsToolStripMenuItem1.Size = New System.Drawing.Size(131, 22)
+        Me.SaveAsToolStripMenuItem1.Size = New System.Drawing.Size(152, 22)
         Me.SaveAsToolStripMenuItem1.Text = "Save As..."
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(128, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
         '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(131, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'EditToolStripMenuItem
@@ -155,26 +154,26 @@ Partial Class Form1
         'CopyToClipboardToolStripMenuItem
         '
         Me.CopyToClipboardToolStripMenuItem.Name = "CopyToClipboardToolStripMenuItem"
-        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(179, 22)
+        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(171, 22)
         Me.CopyToClipboardToolStripMenuItem.Text = "Copy to Clipboard"
         '
         'ToolStripComboBox1
         '
         Me.ToolStripComboBox1.Name = "ToolStripComboBox1"
-        Me.ToolStripComboBox1.Size = New System.Drawing.Size(179, 22)
+        Me.ToolStripComboBox1.Size = New System.Drawing.Size(171, 22)
         Me.ToolStripComboBox1.Text = "Clear Class"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(176, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(168, 6)
         '
         'AlwaysOnTopToolStripMenuItem
         '
         Me.AlwaysOnTopToolStripMenuItem.Checked = True
         Me.AlwaysOnTopToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked
         Me.AlwaysOnTopToolStripMenuItem.Name = "AlwaysOnTopToolStripMenuItem"
-        Me.AlwaysOnTopToolStripMenuItem.Size = New System.Drawing.Size(179, 22)
+        Me.AlwaysOnTopToolStripMenuItem.Size = New System.Drawing.Size(171, 22)
         Me.AlwaysOnTopToolStripMenuItem.Text = "Always on Top"
         '
         'TabControl1
@@ -206,12 +205,24 @@ Partial Class Form1
         Me.TabPage1.Text = "Main"
         Me.TabPage1.UseVisualStyleBackColor = True
         '
+        'CheckBox6
+        '
+        Me.CheckBox6.AutoSize = True
+        Me.CheckBox6.Checked = True
+        Me.CheckBox6.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox6.Location = New System.Drawing.Point(382, 63)
+        Me.CheckBox6.Name = "CheckBox6"
+        Me.CheckBox6.Size = New System.Drawing.Size(112, 17)
+        Me.CheckBox6.TabIndex = 6
+        Me.CheckBox6.Text = "Include comments"
+        Me.CheckBox6.UseVisualStyleBackColor = True
+        '
         'Label2
         '
         Me.Label2.AutoSize = True
         Me.Label2.Location = New System.Drawing.Point(83, 20)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(88, 13)
+        Me.Label2.Size = New System.Drawing.Size(86, 13)
         Me.Label2.TabIndex = 5
         Me.Label2.Text = "Inherited classes"
         '
@@ -232,7 +243,7 @@ Partial Class Form1
         Me.CheckBox5.AutoSize = True
         Me.CheckBox5.Location = New System.Drawing.Point(8, 59)
         Me.CheckBox5.Name = "CheckBox5"
-        Me.CheckBox5.Size = New System.Drawing.Size(375, 17)
+        Me.CheckBox5.Size = New System.Drawing.Size(368, 17)
         Me.CheckBox5.TabIndex = 2
         Me.CheckBox5.Text = "Virtual field parsing? (other classes can inherit and use this classes fields)"
         Me.CheckBox5.UseVisualStyleBackColor = True
@@ -279,18 +290,6 @@ Partial Class Form1
         Me.DataGridView1.RowTemplate.Height = 23
         Me.DataGridView1.Size = New System.Drawing.Size(509, 340)
         Me.DataGridView1.TabIndex = 0
-        '
-        'CheckBox6
-        '
-        Me.CheckBox6.AutoSize = True
-        Me.CheckBox6.Checked = True
-        Me.CheckBox6.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox6.Location = New System.Drawing.Point(382, 63)
-        Me.CheckBox6.Name = "CheckBox6"
-        Me.CheckBox6.Size = New System.Drawing.Size(112, 17)
-        Me.CheckBox6.TabIndex = 6
-        Me.CheckBox6.Text = "Include comments"
-        Me.CheckBox6.UseVisualStyleBackColor = True
         '
         'Column1
         '
@@ -349,7 +348,6 @@ Partial Class Form1
         Me.TabPage3.ResumeLayout(False)
         Me.TabPage3.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

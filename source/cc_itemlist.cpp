@@ -27,7 +27,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_itemlist->cpp
+// cc_itemlist.cpp
 // Itemlist
 // Basically the link between items and the real world
 //

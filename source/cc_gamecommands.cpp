@@ -89,7 +89,7 @@ Cmd_Kill_f
 void Cmd_Kill_f (CPlayerEntity *ent)
 {
 //ZOID
-	if (ent->gameEntity->solid == SOLID_NOT)
+	if (ent->GetSolid() == SOLID_NOT)
 		return;
 //ZOID
 
@@ -556,7 +556,7 @@ void Cmd_Register ()
 	Cmd_AddCommand ("invprevp",				Cmd_SelectPrevPowerup_f);
 	Cmd_AddCommand ("test",					Cmd_Test_f);
 
-	// And last but certainly not least->..
+	// And last but certainly not least..
 	Cmd_AddCommand ("god",					Cmd_God_f,				CMD_CHEAT);
 	Cmd_AddCommand ("notarget",				Cmd_Notarget_f,			CMD_CHEAT);
 	Cmd_AddCommand ("noclip",				Cmd_Noclip_f,			CMD_CHEAT);

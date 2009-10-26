@@ -60,7 +60,7 @@ void CFlagEntity::Think ()
 			PhysicsType = PHYSICS_NONE;
 
 			vec3f dest = State.GetOrigin() + vec3f(0, 0, -128);
-			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), dest, gameEntity, CONTENTS_MASK_SOLID);
+			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), dest, this, CONTENTS_MASK_SOLID);
 			if (tr.startSolid)
 			{
 				vec3f origin = State.GetOrigin();
@@ -179,7 +179,7 @@ public:
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (((other->gameEntity == gameEntity->owner) && (NextThink - level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
+		if (((other == GetOwner()) && (NextThink - level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
 			return;
 
 		CItemEntity::Touch (other, plane, surf);
@@ -234,7 +234,7 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
 
 		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent->gameEntity, CONTENTS_SOLID);
+			result, ent, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
 	}
 	else

@@ -886,6 +886,8 @@ Default _cone value is 10 (used to set size of light for spotlights)
 class CLight : public CMapEntity, public CUsableEntity
 {
 public:
+	uint8		Style;
+
 	CLight (int Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
@@ -893,10 +895,7 @@ public:
 	  {
 	  };
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
@@ -905,12 +904,12 @@ public:
 
 		if (SpawnFlags & START_OFF)
 		{
-			ConfigString (CS_LIGHTS+gameEntity->style, "m");
+			ConfigString (CS_LIGHTS+Style, "m");
 			SpawnFlags &= ~START_OFF;
 		}
 		else
 		{
-			ConfigString (CS_LIGHTS+gameEntity->style, "a");
+			ConfigString (CS_LIGHTS+Style, "a");
 			SpawnFlags |= START_OFF;
 		}
 	};
@@ -924,13 +923,27 @@ public:
 			return;
 		}
 
-		if (gameEntity->style >= 32)
+		if (Style >= 32)
 		{
 			Usable = true;
-			ConfigString (CS_LIGHTS+gameEntity->style, (SpawnFlags & START_OFF) ? "a" : "m");
+			ConfigString (CS_LIGHTS+Style, (SpawnFlags & START_OFF) ? "a" : "m");
 		}
 	};
 };
+
+ENTITYFIELDS_BEGIN(CLight)
+{
+	CEntityField ("style", EntityMemberOffset(CLight,Style), FT_BYTE),
+};
+ENTITYFIELDS_END(CLight)
+
+bool CLight::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CLight> (this, Key, Value))
+		return true;
+
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
 
 LINK_CLASSNAME_TO_CLASS ("light", CLight);
 
@@ -945,6 +958,7 @@ public:
 	FrameNumber_t	TimeStamp;
 	CLight			*Light;
 	float			Speed;
+	uint8			Style;
 
 	CTargetLightRamp () :
 	  CBaseEntity (),
@@ -978,7 +992,7 @@ public:
 	void Think ()
 	{
 		char	style[2] = {'a' + RampMessage[0] + (level.Frame - TimeStamp) / 0.1f * RampMessage[2], 0};
-		ConfigString (CS_LIGHTS+Light->gameEntity->style, style);
+		ConfigString (CS_LIGHTS+Light->Style, style);
 
 		if ((level.Frame - TimeStamp) < Speed)
 			NextThink = level.Frame + FRAMETIME;
@@ -1056,6 +1070,7 @@ public:
 ENTITYFIELDS_BEGIN(CTargetLightRamp)
 {
 	CEntityField ("speed", EntityMemberOffset(CTargetLightRamp,Speed), FT_FLOAT),
+	CEntityField ("style", EntityMemberOffset(CTargetLightRamp,Style), FT_BYTE),
 };
 ENTITYFIELDS_END(CTargetLightRamp)
 

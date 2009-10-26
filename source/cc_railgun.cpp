@@ -35,8 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-CRailgun WeaponRailgun;
-
 CRailgun::CRailgun() :
 CWeapon("models/weapons/v_rail/tris.md2", 0, 3, 4, 18,
 		19, 56, 57, 61, "weapons/rg_hum.wav")
@@ -94,3 +92,15 @@ void CRailgun::Fire (CPlayerEntity *ent)
 	if (!dmFlags.dfInfiniteAmmo)
 		DepleteAmmo(ent, 1);
 }
+
+WEAPON_DEFS (CRailgun);
+
+void CRailgun::CreateItem (CItemList *List)
+{
+	NItems::Railgun = QNew (com_gamePool, 0) CWeaponItem
+		("weapon_railgun", "models/weapons/g_rail/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_railgun", "Railgun",
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
+		&Weapon, NItems::Slugs, 1, "#w_railgun.md2");
+
+	List->AddItemToList (NItems::Railgun);
+};

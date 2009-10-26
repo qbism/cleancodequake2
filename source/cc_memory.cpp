@@ -750,16 +750,16 @@ _Mem_CheckGlobalIntegrity
 */
 void _Mem_CheckGlobalIntegrity(const char *fileName, const int fileLine)
 {
-	uint32 startTime = Sys_Milliseconds();
+	CTimer Timer;
 
-	for (uint32 i=0 ; i<m_numPools ; i++)
+	for (uint32 i = 0; i < m_numPools; i++)
 	{
 		memPool_t *pool = &m_poolList[i];
 		if (pool->inUse)
 			_Mem_CheckPoolIntegrity(pool, fileName, fileLine);
 	}
 
-	Com_DevPrintf (0, "Mem_CheckGlobalIntegrity: %6.2fms\n", (Sys_Milliseconds()-startTime));
+	Com_DevPrintf (0, "Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
 }
 
 
@@ -798,11 +798,11 @@ _Mem_TouchGlobal
 */
 void _Mem_TouchGlobal(const char *fileName, const int fileLine)
 {
-	uint32 startTime = Sys_Milliseconds();
+	CTimer Timer;
 
 	// Touch every pool
 	uint32 numTouched = 0;
-	for (uint32 i=0 ; i<m_numPools ; i++)
+	for (uint32 i = 0; i < m_numPools; i++)
 	{
 		memPool_t *pool = &m_poolList[i];
 		if (!pool->inUse)
@@ -812,7 +812,7 @@ void _Mem_TouchGlobal(const char *fileName, const int fileLine)
 		numTouched++;
 	}
 
-	Com_DevPrintf(0, "Mem_TouchGlobal: %u pools touched in %6.2fms\n", numTouched, (Sys_Milliseconds()-startTime));
+	Com_DevPrintf(0, "Mem_TouchGlobal: %u pools touched in "TIMER_STRING"\n", numTouched, Timer.Get());
 }
 
 /*
@@ -905,7 +905,7 @@ static void Mem_Touch_f(CPlayerEntity *ent)
 Mem_Register
 ========================
 */
-void Mem_Register (void)
+void Mem_Register ()
 {
 	Cmd_AddCommand ("g_memcheck",		Mem_Check_f);
 	Cmd_AddCommand ("g_memstats",		Mem_Stats_f);
@@ -918,7 +918,7 @@ void Mem_Register (void)
 Mem_Init
 ========================
 */
-void Mem_Init (void)
+void Mem_Init ()
 {
 	// Clear
 	memset(&m_poolList, 0, sizeof(m_poolList));
@@ -931,57 +931,4 @@ void Mem_Init (void)
 	com_levelPool = Mem_CreatePool ("Level memory pool");
 	com_gamePool = Mem_CreatePool ("Game memory pool");
 	com_fileSysPool = com_gamePool;
-}
-
-#ifdef WIN32
-#define _DECL_DLLMAIN   /* enable prototypes for DllMain and _CRT_INIT */
-#include <Windows.h>
-#include <process.h>
-
-BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason,
-	LPVOID lpReserved)
-{
-	if (fdwReason == DLL_PROCESS_ATTACH)
-	{
-
-#else
-
-void __attribute__ ((constructor)) my_load(void);
-void __attribute__ ((destructor)) my_unload(void);
-
-// Called when the library is loaded and before dlopen() returns
-void my_load()
-{
-#endif
-		Mem_Init ();
-
-#ifdef WIN32
-		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
-			return FALSE;
-	}
-
-	if (fdwReason == DLL_PROCESS_DETACH)
-	{
-#else
-// Add initialization code…
-}
-
-// Called when the library is unloaded and before dlclose()
-// returns
-void my_unload(void)
-{
-#endif
-		Mem_FreePool (com_gamePool);
-		Mem_FreePool (com_levelPool);
-		Mem_FreePool (com_genericPool);
-
-#ifdef WIN32
-		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
-			return FALSE;
-
-		DisableThreadLibraryCalls (hinstDLL);
-	}
-
-	return TRUE;
-#endif
 }

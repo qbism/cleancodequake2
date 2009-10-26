@@ -223,6 +223,24 @@ CC_ENUM (uint8, EWeaponState)
 	WS_DEACTIVATING
 };
 
+#ifndef MONSTERS_USE_PATHFINDING
+class CPlayerNoise : public virtual CBaseEntity
+{
+public:
+	FrameNumber_t	Time;
+
+	CPlayerNoise () :
+	  CBaseEntity ()
+	{
+	};
+
+	CPlayerNoise (int Index) :
+	  CBaseEntity (Index)
+	{
+	};
+};
+#endif
+
 class CClient
 {
 protected:

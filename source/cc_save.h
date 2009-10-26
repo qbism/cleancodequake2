@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,28 +27,18 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_machinegun.h
-// Machinegun
+// cc_save.h
+// 
 //
 
-#if !defined(__CC_MACHINEGUN_H__) || !defined(INCLUDE_GUARDS)
-#define __CC_MACHINEGUN_H__
+#if !defined(__CC_SAVE_H__) || !defined(INCLUDE_GUARDS)
+#define __CC_SAVE_H__
 
-class CMachinegun : public CWeapon
-{
-public:
-	CMachinegun();
+void ReadLevel (char *);
+void WriteLevel (char *);
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
-
-	inline void FireAnimation (CPlayerEntity *Player);
-
-	// The function called to "fire"
-	void	Fire (CPlayerEntity *Player);
-
-	WEAPON_CLASS_DEFS (CMachinegun);
-};
+void ReadGame (char *);
+void WriteGame (char *, BOOL);
 
 #else
 FILE_WARNING

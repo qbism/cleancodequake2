@@ -35,8 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-CBFG WeaponBFG;
-
 CBFG::CBFG() :
 CWeapon("models/weapons/v_bfg/tris.md2", 0, 8, 9, 31,
 		32, 54, 55, 58, "weapons/bfg_hum.wav")
@@ -124,3 +122,15 @@ void CBFG::FireBFG (CPlayerEntity *ent)
 	if (!dmFlags.dfInfiniteAmmo)
 		DepleteAmmo (ent, 50);
 }
+
+WEAPON_DEFS (CBFG);
+
+void CBFG::CreateItem (CItemList *List)
+{
+	NItems::BFG = QNew (com_gamePool, 0) CWeaponItem
+		("weapon_bfg", "models/weapons/g_bfg/tris.md2", EF_ROTATE,
+		"misc/w_pkup.wav", "w_bfg", "BFG10k",
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
+		"", &Weapon, NItems::Cells, 50, "#w_bfg.md2");
+	List->AddItemToList (NItems::BFG);
+};

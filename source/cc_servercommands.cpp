@@ -108,12 +108,17 @@ void SvCmd_RunCommand (std::cc_string commandName)
 		Com_Printf (0, "Unknown server command \"%s\"\n", commandName.c_str());
 }
 
+struct SServerEntityListEntity
+{
+	vec3f		Origin;
+};
+
 struct SServerEntityListIndex
 {
 	const char	*className;
 	uint32		Num;
 	bool		Old;
-	vec3f		Origin;
+	std::vector<SServerEntityListEntity, std::generic_allocator<SServerEntityListEntity> > List;
 
 	SServerEntityListIndex			*hashNext;
 	uint32							hashValue;
@@ -123,7 +128,7 @@ struct SServerEntityListIndex
 		hashValue (Com_HashGeneric(className, MAX_CS_EDICTS)),
 		Num (0),
 		Old (true),
-		Origin()
+		List()
 	{
 	};
 };
@@ -187,18 +192,21 @@ public:
 				continue;
 
 			SServerEntityListIndex *Index = Exists(e->classname);
+
 			if (!Index)
-			{
 				Index = AddToList (e->classname);
-				if (e->Entity)
-				{
-					Index->Old = false;
-					if (e->Entity->State.GetOrigin() == vec3fOrigin)
-						Index->Origin = e->Entity->GetAbsMin();
-					else
-						Index->Origin = e->Entity->State.GetOrigin();
-				}
+
+			if (e->Entity)
+			{
+				Index->Old = false;
+
+				vec3f Origin = (e->Entity->State.GetOrigin() == vec3fOrigin && (e->Entity->GetSolid() == SOLID_BSP)) ? e->Entity->GetAbsMin() : e->Entity->State.GetOrigin();
+
+				SServerEntityListEntity index = {Origin};
+				Index->List.push_back (index);
 			}
+			else
+				Index->Old = true;
 
 			Index->Num++;
 		}
@@ -206,24 +214,6 @@ public:
 };
 void SvCmd_EntList_f ()
 {
-	/*
-	int numOld = 0, numNew = 0;
-	for (int i = 0; i < globals.numEdicts; i++)
-	{
-		edict_t *e = (&g_edicts[i]);
-		if (!e->inUse)
-			continue;
-
-		if (!e->Entity)
-			numOld++;
-		else
-			numNew++;
-	}
-	int newPerc = (int)((float)(numNew) / ((float)numOld + (float)numNew) * 100);
-	int oldPerc = 100 - newPerc;
-	DebugPrintf ("Clean Entities: %i (%i%%)\nOld Entities: %i (%i%%)\nTotal Entities: %i\n", numNew, newPerc, numOld, oldPerc, numOld+numNew);
-	*/
-
 	std::cc_string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
 	CServerEntityList tmp;
 	tmp.Search (WildCard.c_str());
@@ -236,8 +226,17 @@ void SvCmd_EntList_f ()
 	for (uint32 i = 0; i < tmp.NumInList; i++)
 	{
 		DebugPrintf (
-			"#%3u  %s         %5u       %4.0f %4.0f %4.0f   %s\n",
-			i, (tmp.List[i]->Old) ? "Yes" : "No ", tmp.List[i]->Num, tmp.List[i]->Origin.X, tmp.List[i]->Origin.Y, tmp.List[i]->Origin.Z, tmp.List[i]->className);
+			"#%3u  %s         %5u                          %s\n",
+			i, (tmp.List[i]->Old) ? "Yes" : "No ", tmp.List[i]->Num, tmp.List[i]->className);
+
+		for (size_t z = 0; z < tmp.List[i]->List.size(); z++)
+		{
+			SServerEntityListEntity &ent = tmp.List[i]->List[z];
+
+			DebugPrintf (
+			"[%2u]                         %4.0f %4.0f %4.0f\n",
+			z+1, ent.Origin.X, ent.Origin.Y, ent.Origin.Z);
+		}
 
 		if (tmp.List[i]->Old)
 			oldCount += tmp.List[i]->Num;
@@ -291,7 +290,7 @@ The game can issue gi.argc() / gi.argv() commands to get the rest
 of the parameters
 =================
 */
-void CC_ServerCommand (void)
+void CC_ServerCommand ()
 {
 	InitArg ();
 	SvCmd_RunCommand (ArgGets(1));

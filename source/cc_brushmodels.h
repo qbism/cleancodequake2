@@ -80,6 +80,7 @@ public:
 	float		Decel;
 	int			Distance;
 	int			Damage;
+	uint8		Sounds;
 
 	FrameNumber_t		Wait;
 
@@ -215,6 +216,7 @@ public:
 
 		DOORTHINK_GODOWN,
 	};
+
 	CDoor();
 	CDoor(int Index);
 
@@ -457,13 +459,12 @@ public:
 class CConveyor : public CMapEntity, public CBrushModel, public CUsableEntity
 {
 public:
+	int			SavedSpeed;
+
 	CConveyor ();
 	CConveyor (int Index);
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 
@@ -474,13 +475,13 @@ public:
 class CAreaPortal : public CMapEntity, public CUsableEntity
 {
 public:
+	bool		PortalState;
+	uint8		Style;
+
 	CAreaPortal ();
 	CAreaPortal (int Index);
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 

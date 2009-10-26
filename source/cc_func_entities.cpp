@@ -179,6 +179,20 @@ void CTargetCharacter::Spawn ()
 	Link ();
 };
 
+ENTITYFIELDS_BEGIN(CTargetCharacter)
+{
+	CEntityField ("count", EntityMemberOffset(CTargetCharacter,Character), FT_BYTE),
+};
+ENTITYFIELDS_END(CTargetCharacter)
+
+bool CTargetCharacter::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTargetCharacter> (this, Key, Value))
+		return true;
+
+	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
 LINK_CLASSNAME_TO_CLASS ("target_character", CTargetCharacter);
 
 /*QUAKED target_string (0 0 1) (-8 -8 -8) (8 8 8)
@@ -210,9 +224,11 @@ public:
 
 	void Callback (CBaseEntity *e)
 	{
-		if (!e->gameEntity->count)
+		CTargetCharacter *Entity = entity_cast<CTargetCharacter>(e);
+
+		if (!Entity->Character)
 			return;
-		size_t n = e->gameEntity->count - 1;
+		size_t n = Entity->Character - 1;
 		if (n > StrLen)
 		{
 			e->State.GetFrame() = 12;
@@ -294,6 +310,21 @@ CFuncClock::CFuncClock (int Index) :
 	{
 	};
 
+ENTITYFIELDS_BEGIN(CFuncClock)
+{
+	CEntityField ("style", EntityMemberOffset(CFuncClock,Style), FT_BYTE),
+	CEntityField ("count", EntityMemberOffset(CFuncClock,Count), FT_INT),
+};
+ENTITYFIELDS_END (CFuncClock);
+
+bool CFuncClock::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CFuncClock> (this, Key, Value))
+		return true;
+
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
 bool CFuncClock::Run ()
 {
 	return CBaseEntity::Run ();
@@ -308,18 +339,18 @@ void CFuncClock::Reset ()
 	if (SpawnFlags & 1)
 	{
 		Seconds = 0;
-		Wait = gameEntity->count;
+		Wait = Count;
 	}
 	else if (SpawnFlags & 2)
 	{
-		Seconds = gameEntity->count;
+		Seconds = Count;
 		Wait = 0;
 	}
 }
 
 void CFuncClock::FormatCountdown ()
 {
-	switch (gameEntity->style)
+	switch (Style)
 	{
 	case 0:
 	default:
@@ -429,7 +460,7 @@ void CFuncClock::Spawn ()
 		return;
 	}
 
-	if ((SpawnFlags & 2) && (!gameEntity->count))
+	if ((SpawnFlags & 2) && (!Count))
 	{
 		//gi.dprintf("%s with no count at (%f %f %f)\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No count\n");
@@ -437,8 +468,8 @@ void CFuncClock::Spawn ()
 		return;
 	}
 
-	if ((SpawnFlags & 1) && (!gameEntity->count))
-		gameEntity->count = 60*60;
+	if ((SpawnFlags & 1) && (!Count))
+		Count = 3600;
 
 	Reset ();
 	Message = QNew (com_levelPool, 0) char[CLOCK_MESSAGE_SIZE];

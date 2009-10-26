@@ -139,7 +139,7 @@ static int16 _ShortNoSwap (int16 s)
 Swap_Init
 ===============
 */
-void Swap_Init (void)
+void Swap_Init ()
 {
 	byte	swapTest[2] = { 1, 0 };
 

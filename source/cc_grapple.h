@@ -51,9 +51,9 @@ public:
 	void	Fire (CPlayerEntity *Player);
 
 	static void		PlayerResetGrapple (CPlayerEntity *Player);
-};
 
-extern CGrapple WeaponGrapple;
+	WEAPON_CLASS_DEFS (CGrapple);
+};
 
 #else
 FILE_WARNING

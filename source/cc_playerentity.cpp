@@ -526,14 +526,14 @@ void CPlayerEntity::InitPersistent ()
 	if (!map_debug->Boolean())
 	{
 		NItems::Blaster->Add(this, 1);
-		Client.Persistent.Weapon = &WeaponBlaster;
+		Client.Persistent.Weapon = &CBlaster::Weapon;
 		Client.Persistent.LastWeapon = Client.Persistent.Weapon;
 		Client.Persistent.Inventory.SelectedItem = Client.Persistent.Weapon->Item->GetIndex();
 	}
 	else
 	{
 		FindItem("Surface Picker")->Add(this, 1);
-		Client.Persistent.Weapon = &Debug_SurfacePicker;
+		Client.Persistent.Weapon = &CSurfacePicker::Weapon;
 		Client.Persistent.LastWeapon = Client.Persistent.Weapon;
 		Client.Persistent.Inventory.SelectedItem = Client.Persistent.Weapon->Item->GetIndex();
 	}
@@ -2205,11 +2205,10 @@ void CPlayerEntity::SetStats ()
 		//
 		// help icon / current weapon if not shown
 		//
-		if (Client.Persistent.helpchanged && (level.Frame&8) )
-			Client.PlayerState.GetStat (STAT_HELPICON) = GameMedia.Hud.HelpPic;
+		Client.PlayerState.GetStat (STAT_HELPICON) = (Client.Persistent.helpchanged && (level.Frame&8) ) ? GameMedia.Hud.HelpPic :
+			(((Client.Persistent.hand == CENTER_HANDED || Client.PlayerState.GetFov() > 91)
+			&& Client.Persistent.Weapon && Client.Persistent.Weapon->Item) ? Client.Persistent.Weapon->Item->GetIconIndex() : 0);
 
-		Client.PlayerState.GetStat (STAT_HELPICON) = ((Client.Persistent.hand == CENTER_HANDED || Client.PlayerState.GetFov() > 91)
-			&& Client.Persistent.Weapon && Client.Persistent.Weapon->Item) ? Client.Persistent.Weapon->Item->GetIconIndex() : 0;
 		Client.PlayerState.GetStat (STAT_SPECTATOR) = 0;
 		Client.PlayerState.GetStat (STAT_TECH) = 0;
 
@@ -2405,7 +2404,7 @@ void CPlayerEntity::CTFSetIDView()
 	oldForward = forward;
 	forward = (forward * 1024) + State.GetOrigin();
 
-	CTrace tr (State.GetOrigin(), forward, gameEntity, CONTENTS_MASK_SOLID);
+	CTrace tr (State.GetOrigin(), forward, this, CONTENTS_MASK_SOLID);
 	if (tr.fraction < 1 && tr.ent && ((tr.ent - g_edicts) >= 1 && (tr.ent - g_edicts) <= game.maxclients))
 	{
 		Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = CS_PLAYERSKINS + (State.GetNumber() - 1);
@@ -2597,10 +2596,7 @@ void CPlayerEntity::TossClientWeapon ()
 		CItemEntity *drop = Item->DropItem (this);
 		Client.ViewAngle.Y += spread;
 		drop->SpawnFlags |= DROPPED_PLAYER_ITEM;
-		if (Client.Persistent.Weapon->WeaponItem)
-			drop->gameEntity->count = Client.Persistent.Weapon->WeaponItem->Ammo->Quantity;
-		else
-			drop->gameEntity->count = (static_cast<CAmmo*>(Client.Persistent.Weapon->Item))->Quantity;
+		drop->AmmoCount = (Client.Persistent.Weapon->WeaponItem) ? Client.Persistent.Weapon->WeaponItem->Ammo->Quantity : (static_cast<CAmmo*>(Client.Persistent.Weapon->Item))->Quantity;
 	}
 
 	if (quad)
@@ -3339,17 +3335,17 @@ void CPlayerEntity::UpdateChaseCam()
 			if (!targ->GroundEntity)
 				o.Z += 16;
 
-			CTrace trace (ownerv, o, targ->gameEntity, CONTENTS_MASK_SOLID);
+			CTrace trace (ownerv, o, targ, CONTENTS_MASK_SOLID);
 
 			vec3f goal = trace.EndPos.MultiplyAngles (2, forward);
 			o = goal + vec3f(0, 0, 6);
-			trace (goal, o, targ->gameEntity, CONTENTS_MASK_SOLID);
+			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
 			if (trace.fraction < 1)
 				goal = trace.EndPos - vec3f(0, 0, 6);
 
 			o = goal - vec3f(0, 0, 6);
-			trace (goal, o, targ->gameEntity, CONTENTS_MASK_SOLID);
+			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
 			if(trace.fraction < 1)
 				goal = trace.EndPos + vec3f(0, 0, 6);
@@ -3394,19 +3390,19 @@ void CPlayerEntity::UpdateChaseCam()
 			if (!targ->GroundEntity)
 				o.Z += 16;
 
-			CTrace trace(ownerv, o, targ->gameEntity, CONTENTS_MASK_SOLID);
+			CTrace trace(ownerv, o, targ, CONTENTS_MASK_SOLID);
 
 			vec3f goal = trace.EndPos.MultiplyAngles (2, forward);
 			o = goal + vec3f(0, 0, 6);
 
-			trace (goal, o, targ->gameEntity, CONTENTS_MASK_SOLID);
+			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
 			if(trace.fraction < 1)
 				goal = trace.EndPos - vec3f(0, 0, 6);
 
 			o = goal - vec3f(0, 0, 6);
 
-			trace (goal, o, targ->gameEntity, CONTENTS_MASK_SOLID);
+			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
 			if(trace.fraction < 1)
 				goal = trace.EndPos + vec3f(0, 0, 6);
@@ -3571,22 +3567,6 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }
 
-#ifndef MONSTERS_USE_PATHFINDING
-class CPlayerNoise : public virtual CBaseEntity
-{
-public:
-	CPlayerNoise () :
-	  CBaseEntity ()
-	{
-	};
-
-	CPlayerNoise (int Index) :
-	  CBaseEntity (Index)
-	{
-	};
-};
-#endif
-
 #ifdef MONSTERS_USE_PATHFINDING
 class CPathNode *GetClosestNodeTo (vec3f origin);
 #endif
@@ -3645,7 +3625,7 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, int type)
 	noise->State.GetOrigin() = Where;
 	noise->GetAbsMin() = (Where - noise->GetMins());
 	noise->GetAbsMax() = (Where + noise->GetMaxs());
-	noise->gameEntity->teleport_time = level.Frame;
+	noise->Time = level.Frame;
 	noise->Link ();
 #else
 	level.NoiseNode = GetClosestNodeTo(Where);

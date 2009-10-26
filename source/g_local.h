@@ -148,6 +148,27 @@ struct GoalList_t
 	uint8		Found;
 };
 
+class CKeyValuePair
+{
+public:
+	char	*Key;
+	char	*Value;
+
+	CKeyValuePair (char *Key, char *Value) :
+	Key((Key) ? Q_strlwr(Mem_PoolStrDup(Key, com_gamePool, 0)) : NULL),
+	Value((Key) ? Mem_PoolStrDup(Value, com_gamePool, 0) : NULL)
+	{
+	};
+
+	~CKeyValuePair ()
+	{
+		if (Key)
+			QDelete Key;
+		if (Value)
+			QDelete Value;
+	};
+};
+
 class CLevelLocals
 {
 public:
@@ -178,7 +199,8 @@ public:
 	  CurrentEntity(NULL),
 	  PowerCubeCount(0),
 	  Inhibit(0),
-	  EntityNumber(0)
+	  EntityNumber(0),
+	  ParseData()
 	{
 		Secrets.Found = Secrets.Total = 0;
 		Goals.Found = Goals.Total = 0;
@@ -187,7 +209,7 @@ public:
 
 	void Clear ()
 	{
-		*this = CLevelLocals();
+		CLevelLocals();
 	};
 
 	FrameNumber_t	Frame;
@@ -233,6 +255,8 @@ public:
 	uint8		PowerCubeCount;		// ugly necessity for coop
 	uint32		Inhibit;
 	uint32		EntityNumber;
+
+	std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> >	ParseData;
 };
 
 CC_ENUM (uint8, EFuncState)
@@ -362,7 +386,7 @@ void BecomeExplosion1(edict_t *self);
 //
 // g_ai.c
 //
-void AI_SetSightClient (void);
+void AI_SetSightClient ();
 
 //
 // g_client.c
@@ -400,27 +424,6 @@ struct gclient_t
 	int				ping;
 };
 
-class CKeyValuePair
-{
-public:
-	char	*Key;
-	char	*Value;
-
-	CKeyValuePair (char *Key, char *Value) :
-	Key((Key) ? Q_strlwr(Mem_PoolStrDup(Key, com_gamePool, 0)) : NULL),
-	Value((Key) ? Mem_PoolStrDup(Value, com_gamePool, 0) : NULL)
-	{
-	};
-
-	~CKeyValuePair ()
-	{
-		if (Key)
-			QDelete Key;
-		if (Value)
-			QDelete Value;
-	};
-};
-
 struct edict_t
 {
 	entityStateOld_t	state;
@@ -453,7 +456,6 @@ struct edict_t
 	// EXPECTS THE FIELDS IN THAT ORDER!
 
 	//================================
-	std::list<CKeyValuePair*, std::level_allocator<CKeyValuePair*> >	*ParseData;
 
 	char				*model;
 	FrameNumber_t		freetime;			// sv.time when the object was freed
@@ -475,15 +477,9 @@ struct edict_t
 	int			show_hostile;
 	FrameNumber_t		powerarmor_time;
 
-	int			sounds;			//make this a spawntemp var?
-	int			count;
-
-	FrameNumber_t		teleport_time;
-
 	EBrushContents			watertype;
 	EWaterLevel			waterlevel;
 	int			light_level;
-	int			style;			// also used as areaportal number
 
 	// Paril
 	CBaseItem		*item;
@@ -514,7 +510,7 @@ inline CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, int Radius, bool 
 }
 
 _CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
-edict_t	*G_Spawn (void);
+edict_t	*G_Spawn ();
 
 _CC_INSECURE_DEPRECATE (Function not needed)
 void	G_InitEdict (edict_t *e);
@@ -528,14 +524,15 @@ inline CBaseEntity *CreateEntityFromClassname (const char *classname)
 {
 _CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
-	ent->classname = Mem_PoolStrDup(classname, com_levelPool, 0);
+	ent->classname = (char*)classname;
 
 	ED_CallSpawn (ent);
 
 	if (ent->inUse && !ent->Entity->Freed)
+	{
+		ent->classname = Mem_PoolStrDup (classname, com_levelPool, 0);
 		return ent->Entity;
-	else
-		QDelete ent->classname;
+	}
 	return NULL;
 _CC_ENABLE_DEPRECATION
 }

@@ -106,14 +106,17 @@
     <Filter Include="CleanCode Files\Pathfinding">
       <UniqueIdentifier>{7a3f918c-909f-4035-98de-6f853f801a59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Platform">
+      <UniqueIdentifier>{bd304aaa-42f3-453a-aebd-7b37e2ec2d11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CleanCode Files\Saving/Loading">
+      <UniqueIdentifier>{13f69ce3-5b98-43d2-979b-dafa8a655abc}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CleanCode Files\Utils">
       <UniqueIdentifier>{54a35970-4bb9-4a66-a282-5ff9a6687e9b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Old Files">
       <UniqueIdentifier>{6151557a-1675-4cf9-841e-d70008cffad5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Old Files\CPP">
-      <UniqueIdentifier>{36d395fd-bc8d-4e8e-a6f1-93ee99c6254b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Old Files\Header">
       <UniqueIdentifier>{8124ace8-8e20-4197-9263-90be10c4a08d}</UniqueIdentifier>
@@ -384,6 +387,9 @@
     <ClCompile Include="..\..\source\cc_pathfinding.cpp">
       <Filter>CleanCode Files\Pathfinding</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_platform_win32.cpp">
+      <Filter>CleanCode Files\Platform</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\source\cc_playerentity.cpp">
       <Filter>CleanCode Files\Entities</Filter>
     </ClCompile>
@@ -401,6 +407,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_rocketlauncher.cpp">
       <Filter>CleanCode Files\Items\Weapon System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_save.cpp">
+      <Filter>CleanCode Files\Saving/Loading</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_sbar.cpp">
       <Filter>CleanCode Files\Game API\Statusbar</Filter>
@@ -467,12 +476,6 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_write.cpp">
       <Filter>CleanCode Files\Game API\Messages</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\g_save.cpp">
-      <Filter>Old Files\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\m_flash.cpp">
-      <Filter>Old Files\CPP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -719,6 +722,9 @@
     <ClInclude Include="..\..\source\cc_pathfinding.h">
       <Filter>CleanCode Files\Pathfinding</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\cc_platform.h">
+      <Filter>CleanCode Files\Platform</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\source\cc_playerentity.h">
       <Filter>CleanCode Files\Entities</Filter>
     </ClInclude>
@@ -739,6 +745,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_rocketlauncher.h">
       <Filter>CleanCode Files\Items\Weapon System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_save.h">
+      <Filter>CleanCode Files\Saving/Loading</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_sbar.h">
       <Filter>CleanCode Files\Game API\Statusbar</Filter>

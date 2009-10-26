@@ -389,68 +389,9 @@ CFrame Boss2FramesDeath [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0,	ConvertDerivedFunction(&CBoss2::Explode))
+	CFrame (&CMonster::AI_Move, 0,	&CMonster::BossExplode)
 };
 CAnim Boss2MoveDeath (FRAME_death2, FRAME_death50, Boss2FramesDeath, ConvertDerivedFunction(&CBoss2::Dead));
-
-#include "cc_tent.h"
-
-void CBoss2::Explode ()
-{
-	vec3f	org = Entity->State.GetOrigin() + vec3f(0, 0, 24 + (randomMT()&15));
-	Think = ConvertDerivedFunction(&CBoss2::Explode);
-
-	switch (Entity->gameEntity->count++)
-	{
-	case 0:
-		org.X -= 24;
-		org.Y -= 24;
-		break;
-	case 1:
-		org.X += 24;
-		org.Y += 24;
-		break;
-	case 2:
-		org.X += 24;
-		org.Y -= 24;
-		break;
-	case 3:
-		org.X -= 24;
-		org.Y += 24;
-		break;
-	case 4:
-		org.X -= 48;
-		org.Y -= 48;
-		break;
-	case 5:
-		org.X += 48;
-		org.Y += 48;
-		break;
-	case 6:
-		org.X -= 48;
-		org.Y += 48;
-		break;
-	case 7:
-		org.X += 48;
-		org.Y -= 48;
-		break;
-	case 8:
-		Entity->State.GetSound() = 0;
-		for (int n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, 500, GIB_ORGANIC);
-		for (int n= 0; n < 8; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), 500, GIB_METALLIC);
-		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, 500, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), 500, GIB_METALLIC);
-		Entity->DeadFlag = true;
-		return;
-	}
-
-	CTempEnt_Explosions::RocketExplosion (org, Entity);
-
-	Entity->NextThink = level.Frame + FRAMETIME;
-}
-
 
 void CBoss2::Stand ()
 {
@@ -517,7 +458,7 @@ void CBoss2::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec
 	Entity->PlaySound (CHAN_VOICE, SoundDeath, 255, ATTN_NONE);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;
-	Entity->gameEntity->count = 0;
+	ExplodeCount = 0;
 	CurrentMove = &Boss2MoveDeath;
 }
 
@@ -537,7 +478,7 @@ bool CBoss2::CheckAttack ()
 		vec3f spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		CTrace tr (spot1, spot2, Entity->gameEntity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)

@@ -53,12 +53,12 @@ public:
 
 	CTrace ();
 
-	CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, edict_t *ignore, int contentMask);
-	CTrace (vec3f &start, vec3f &end, edict_t *ignore, int contentMask);
+	CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, int contentMask);
+	CTrace (vec3f &start, vec3f &end, CBaseEntity *ignore, int contentMask);
 	CTrace (vec3f &start, vec3f &end, int contentMask);
 
-	void operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, edict_t *ignore, int contentMask); 
-	void operator () (vec3f &start, vec3f &end, edict_t *ignore, int contentMask); 
+	void operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, int contentMask); 
+	void operator () (vec3f &start, vec3f &end, CBaseEntity *ignore, int contentMask); 
 	void operator () (vec3f &start, vec3f &end, int contentMask); 
 };
 

@@ -35,6 +35,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
+std::vector<CWeapon*, std::generic_allocator<CWeapon*> > *WeaponList;
+
+void AddWeapons (CItemList *List)
+{
+	for (size_t i = 0; i < WeaponList->size(); i++)
+		WeaponList->at(i)->AddWeaponToItemList (List);
+}
+
+void DoWeaponVweps ()
+{
+	int TakeAway = ModelIndex(NItems::Blaster->VWepModel) - 1;
+
+	for (size_t i = 0; i < WeaponList->size(); i++)
+		WeaponList->at(i)->InitWeaponVwepModel (TakeAway);
+}
+
 CWeapon::CWeapon(char *model, int ActivationStart, int ActivationEnd, int FireStart, int FireEnd,
 				 int IdleStart, int IdleEnd, int DeactStart, int DeactEnd, char *WeaponSound) :
 ActivationStart(ActivationStart),
@@ -53,6 +69,10 @@ WeaponSound(WeaponSound)
 	FireNumFrames = (FireEnd - FireStart);
 	IdleNumFrames = (IdleEnd - IdleStart);
 	DeactNumFrames = (DeactEnd - DeactStart);
+
+	if (!WeaponList)
+		WeaponList = QNew (com_genericPool, 0) std::vector<CWeapon*, std::generic_allocator<CWeapon*> >;
+	WeaponList->push_back (this);
 };
 
 void CWeapon::InitWeapon (CPlayerEntity *Player)
@@ -182,7 +202,7 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 		Player->Client.PlayerState.GetGunIndex() = 0;
 		if (!Player->Client.grenade_thrown && !Player->Client.grenade_blew_up && Player->Client.grenade_time >= level.Frame) // We had a grenade cocked
 		{
-			WeaponGrenades.FireGrenade(Player, false);
+			CHandGrenade::Weapon.FireGrenade(Player, false);
 			Player->Client.grenade_time = 0;
 		}
 		return;
@@ -300,7 +320,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 #endif
 	)
 	{
-		if (this != &WeaponGrapple && Player->ApplyHaste())
+		if (this != &CGrapple::Weapon && Player->ApplyHaste())
 			WeaponGeneric(Player);
 	}
 }

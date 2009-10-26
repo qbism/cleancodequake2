@@ -35,8 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-CHyperBlaster WeaponHyperBlaster;
-
 CHyperBlaster::CHyperBlaster() :
 CWeapon("models/weapons/v_hyperb/tris.md2", 0, 5, 6, 20,
 		21, 49, 50, 53)
@@ -120,3 +118,15 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 		ent->Client.weapon_sound = 0;
 	}
 }
+
+WEAPON_DEFS (CHyperBlaster);
+
+void CHyperBlaster::CreateItem (CItemList *List)
+{
+	NItems::HyperBlaster = QNew (com_gamePool, 0) CWeaponItem
+		("weapon_hyperblaster", "models/weapons/g_hyperb/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
+		"w_hyperblaster", "HyperBlaster", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
+		"", &Weapon, NItems::Cells, 1, "#w_hyperblaster.md2");
+
+	List->AddItemToList (NItems::HyperBlaster);
+};

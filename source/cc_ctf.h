@@ -129,8 +129,8 @@ extern CCvar *ctf;
 #define CTF_GRAPPLE_SPEED					650 // speed of grapple in flight
 #define CTF_GRAPPLE_PULL_SPEED				650	// speed player is pulled at
 
-void CTFInit(void);
-void CTFSpawn(void);
+void CTFInit();
+void CTFSpawn();
 
 inline char *CTFTeamName(ETeamIndex team)
 {
@@ -173,12 +173,12 @@ inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 
 
 edict_t *SelectCTFSpawnPoint (edict_t *ent);
-void CTFCalcScores(void);
+void CTFCalcScores();
 void SetCTFStats(edict_t *ent);
 void CTFTeam_f (CPlayerEntity *ent);
 void CTFID_f (CPlayerEntity *ent);
 void CTFSay_Team(CPlayerEntity *who, char *msg);
-void CTFResetFlag(int ctf_team);
+void CTFResetFlag(ETeamIndex ctf_team);
 void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker);
 void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *attacker);
 
@@ -188,18 +188,18 @@ void CTFVoteYes(CPlayerEntity *ent);
 void CTFVoteNo(CPlayerEntity *ent);
 void CTFReady(CPlayerEntity *ent);
 void CTFNotReady(CPlayerEntity *ent);
-bool CTFNextMap(void);
-bool CTFMatchSetup(void);
-bool CTFMatchOn(void);
+bool CTFNextMap();
+bool CTFMatchSetup();
+bool CTFMatchOn();
 void CTFGhost(CPlayerEntity *ent);
 void CTFAdmin(CPlayerEntity *ent);
-bool CTFInMatch(void);
+bool CTFInMatch();
 void CTFStats(CPlayerEntity *ent);
 void CTFWarp(CPlayerEntity *ent);
 void CTFBoot(CPlayerEntity *ent);
 void CTFPlayerList(CPlayerEntity *ent);
 
-bool CTFCheckRules(void);
+bool CTFCheckRules();
 void CreateCTFStatusbar ();
 
 void CTFObserver(CPlayerEntity *ent);

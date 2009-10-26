@@ -48,7 +48,7 @@ void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, int speed)
 	}
 
 	end = start.MultiplyAngles(8192, dir);
-	tr (start, end, self->gameEntity, CONTENTS_MASK_SHOT);
+	tr (start, end, self, CONTENTS_MASK_SHOT);
 
 #ifdef MONSTER_USE_ROGUE_AI
 	if ((tr.ent) && (tr.ent->Entity) && (tr.ent->Entity->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(tr.ent->Entity)->Health > 0) && IsInFront(tr.Ent, self))
@@ -295,7 +295,7 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 		Bolt->SpawnFlags = 1;
 	Bolt->Link ();
 
-	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
 	if (tr.fraction < 1.0)
 	{
 		start = start.MultiplyAngles (-10, dir);
@@ -462,7 +462,6 @@ void CBFGBolt::Think ()
 		}
 
 		CHurtableEntity	*ent = NULL;
-		edict_t	*ignore;
 
 		vec3f origin = State.GetOrigin ();
 		const int dmg = (game.mode & GAME_DEATHMATCH) ? 5 : 10;
@@ -498,7 +497,7 @@ void CBFGBolt::Think ()
 			vec3f dir = point - origin;
 			dir.Normalize ();
 
-			ignore = gameEntity;
+			CBaseEntity *ignore = this;
 			vec3f start = origin;
 			vec3f end = start.MultiplyAngles (2048, dir);
 			CTrace tr;
@@ -522,7 +521,7 @@ void CBFGBolt::Think ()
 					break;
 				}
 
-				ignore = tr.ent;
+				ignore = tr.Ent;
 				start = tr.EndPos;
 			}
 
@@ -600,7 +599,7 @@ bool CBFGBolt::Run ()
 
 CTrace CHitScan::DoTrace(vec3f &start, vec3f &end, CBaseEntity *ignore, int mask)
 {
-	return CTrace (start, end, (ignore) ? ignore->gameEntity : NULL, mask);
+	return CTrace (start, end, (ignore) ? ignore : NULL, mask);
 }
 
 bool CHitScan::DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
@@ -1328,7 +1327,7 @@ bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, int damage, int kick)
 
 	point = Entity->State.GetOrigin().MultiplyAngles (range, dir);
 
-	CTrace tr (Entity->State.GetOrigin(), point, Entity->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace tr (Entity->State.GetOrigin(), point, Entity, CONTENTS_MASK_SHOT);
 	if (tr.fraction == 1.0)
 		return false;
 
@@ -1510,7 +1509,7 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, int 
 	Spawner->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_FLY; // we're firing, not on hook
 	Grapple->Link ();
 
-	CTrace tr (Spawner->State.GetOrigin(), Grapple->State.GetOrigin(), Grapple->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace tr (Spawner->State.GetOrigin(), Grapple->State.GetOrigin(), Grapple, CONTENTS_MASK_SHOT);
 	if (tr.fraction < 1.0)
 	{
 		Grapple->State.GetOrigin() = Grapple->State.GetOrigin().MultiplyAngles (-10, dir);

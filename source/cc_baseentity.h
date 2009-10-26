@@ -93,15 +93,18 @@ public:
 	uint32			EntityFlags;
 	CEntityState	State;
 	EEdictFlags		Flags;
-	CBaseEntity		*TeamChain;
-	CBaseEntity		*TeamMaster;
+
+	struct Team_t
+	{
+		CBaseEntity		*Chain;
+		CBaseEntity		*Master;
+	} Team;
+
 	CBaseEntity		*GroundEntity;
 	int				GroundEntityLinkCount;
 	uint32			SpawnFlags;
 	CBaseEntity		*Enemy;
 	int				ViewHeight;
-
-	FrameNumber_t	LastMinsSet, LastMaxSet;
 
 	CBaseEntity ();
 	CBaseEntity (int Index);
@@ -252,8 +255,13 @@ inline uint32 atou (const char *Str)
 
 CC_ENUM (uint32, EFieldType)
 {
-	FT_INT,				// Stores value as integer
-	FT_UINT,			// Stores value as unsigned integer
+	FT_BOOL,			// Stores value as bool, but takes any number (non 0 = true)
+	FT_CHAR,			// Stores value as sint8
+	FT_BYTE,			// Stores value as uint8
+	FT_SHORT,			// Stores value as int16
+	FT_USHORT,			// Stores value as uint16
+	FT_INT,				// Stores value as int
+	FT_UINT,			// Stores value as uint32
 	FT_FLOAT,			// Stores value as float
 	FT_VECTOR,			// Stores value as vec3f (or float[3])
 	FT_YAWANGLE,		// Only stores yaw, vec3f or float[3]
@@ -290,6 +298,21 @@ public:
 
 		switch (StrippedFields)
 		{
+		case FT_BOOL:
+			*((bool*)(ClassOffset)) = (atoi(Value) != 0);
+			break;
+		case FT_CHAR:
+			*((sint8*)(ClassOffset)) = Clamp<int>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
+			break;
+		case FT_BYTE:
+			*((uint8*)(ClassOffset)) = Clamp<uint32>(atou(Value), 0, UCHAR_MAX);
+			break;
+		case FT_SHORT:
+			*((int16*)(ClassOffset)) = Clamp<int32>(atoi(Value), SHRT_MIN, SHRT_MAX);
+			break;
+		case FT_USHORT:
+			*((uint16*)(ClassOffset)) = Clamp<uint32>(atoi(Value), 0, USHRT_MAX);
+			break;
 		case FT_INT:
 			*((int*)(ClassOffset)) = atoi(Value);
 			break;

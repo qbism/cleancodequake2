@@ -64,7 +64,7 @@ class CBaseItem
 {
 	friend void InvalidateItemMedia ();
 private:
-	/// The index of this item in the item list-> 
+	/// The index of this item in the item list
 	int			Index;
 
 	/// Must be friends with itemlist so it can set the item.

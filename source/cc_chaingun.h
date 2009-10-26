@@ -46,9 +46,9 @@ public:
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
-};
 
-extern CChaingun WeaponChaingun;
+	WEAPON_CLASS_DEFS (CChaingun);
+};
 
 #else
 FILE_WARNING

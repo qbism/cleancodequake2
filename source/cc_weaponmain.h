@@ -112,11 +112,34 @@ public:
 	virtual void	Fire (CPlayerEntity *ent) = 0;
 
 	void ChangeWeapon (CPlayerEntity *ent);
-
 	virtual void	Think (CPlayerEntity *ent);
 
 	void	NoAmmoWeaponChange (CPlayerEntity *ent);
+
+	virtual void AddWeaponToItemList (CItemList *List) = 0;
+	virtual void InitWeaponVwepModel (int TakeAway) = 0;
+
+	virtual void CreateItem (CItemList *List)
+	{
+	};
 };
+
+#define WEAPON_CLASS_DEFS(x) \
+	void AddWeaponToItemList (CItemList *List); \
+	void InitWeaponVwepModel (int TakeAway); \
+	void CreateItem (CItemList *List); \
+	static x Weapon;
+
+#define WEAPON_DEFS(x) \
+	x x::Weapon; \
+	void x::AddWeaponToItemList (CItemList *List) \
+	{ \
+		CreateItem (List); \
+	}; \
+	void x::InitWeaponVwepModel (int TakeAway) \
+	{ \
+		vwepIndex = ModelIndex((WeaponItem) ? (WeaponItem->VWepModel) : (dynamic_cast<CAmmo*>(Item)->VWepModel)) - TakeAway; \
+	};
 
 #include "cc_blaster.h"
 #include "cc_shotgun.h"

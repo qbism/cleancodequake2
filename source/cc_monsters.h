@@ -227,6 +227,8 @@ public:
 	const uint32		MonsterID;
 	CMonsterEntity		*Entity; // Entity linked to the monster
 
+
+	uint8				ExplodeCount;
 	float				IdealYaw;
 	float				YawSpeed;
 	uint32				AIFlags;
@@ -340,6 +342,7 @@ public:
 	void FoundTarget ();
 	void HuntTarget ();
 
+	void BossExplode ();
 	void MoveFrame ();
 
 	bool AI_CheckAttack ();
@@ -404,7 +407,7 @@ public:
 
 void Monster_Think (edict_t *ent);
 
-#define ConvertDerivedFunction(x) static_cast<void (__thiscall CMonster::* )(void)>(x)
+#define ConvertDerivedFunction(x) static_cast<void (__thiscall CMonster::* )()>(x)
 #define ConvertDerivedAIMove(x) static_cast<void (__thiscall CMonster::* )(float)>(x)
 
 extern uint32 LastID;

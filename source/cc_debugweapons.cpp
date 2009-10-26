@@ -48,12 +48,12 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 		Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
 
 		vec3f end = Player->State.GetOrigin().MultiplyAngles(8192, forward);
-		CTrace tr (Player->State.GetOrigin(), end, Player->gameEntity, CONTENTS_MASK_SOLID|CONTENTS_MASK_WATER);
+		CTrace tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SOLID|CONTENTS_MASK_WATER);
 
 		if (tr.fraction < 1 && tr.surface)
 			ConfigString (CS_POINTING_SURFACE, tr.surface->name, Player);
 
-		tr (Player->State.GetOrigin(), end, Player->gameEntity, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
+		tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
 
 		if (tr.fraction < 1 && tr.Ent && tr.Ent->gameEntity->classname)
 		{
@@ -86,16 +86,24 @@ CDebugWeapon ()
 {
 };
 
-CSurfacePicker Debug_SurfacePicker;
+CSurfacePicker CSurfacePicker::Weapon;
 
 void CSurfacePicker::Fire (CPlayerEntity *Player)
 {
-	vec3f forward;
-	Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
+};
 
-	vec3f end = Player->State.GetOrigin().MultiplyAngles(8192, forward);
-	CTrace tr (Player->State.GetOrigin(), end, Player->gameEntity, CONTENTS_MASK_SOLID|CONTENTS_MASK_WATER);
+void CSurfacePicker::AddWeaponToItemList (CItemList *List)
+{
+	if (map_debug->Boolean())
+		CreateItem (List);
+};
 
-	if (tr.fraction < 1 && tr.surface)
-		Player->PrintToClient (PRINT_CENTER, "%s\n", tr.surface->name);
+void CSurfacePicker::InitWeaponVwepModel (int TakeAway)
+{
+};
+
+void CSurfacePicker::CreateItem (CItemList *List)
+{
+	if (map_debug->Boolean())
+		ItemList->AddItemToList (QNew (com_gamePool, 0) CWeaponItem (NULL, NULL, 0, NULL, NULL, "Surface Picker", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, NULL, &Weapon, NULL, 0, NULL));
 };

@@ -66,9 +66,9 @@ public:
 	CSurfacePicker ();
 
 	void Fire (CPlayerEntity *Player);
-};
 
-extern CSurfacePicker Debug_SurfacePicker;
+	WEAPON_CLASS_DEFS (CSurfacePicker);
+};
 
 #else
 FILE_WARNING

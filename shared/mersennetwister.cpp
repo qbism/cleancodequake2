@@ -153,7 +153,7 @@ void seedMT(uint32 seed)
  }
 
 
-static uint32 reloadMT(void)
+static uint32 reloadMT()
  {
     register uint32 *p0=state, *p2=state+2, *pM=state+M, s0, s1;
     register int    j;
@@ -177,7 +177,7 @@ static uint32 reloadMT(void)
  }
 
 
-uint32 randomMT(void)
+uint32 randomMT()
 {
 	uint32 y;
 

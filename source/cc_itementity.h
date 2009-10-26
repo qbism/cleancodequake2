@@ -50,6 +50,7 @@ CC_ENUM (uint8, EItemThinkState)
 class CItemEntity : public CMapEntity, public CTossProjectile, public CTouchableEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
+	uint32 AmmoCount;
 	EItemThinkState ThinkState;
 
 	CItemEntity ();

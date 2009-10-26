@@ -314,7 +314,7 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgCount)
 #endif
-	int		(*argc) (void);
+	int		(*argc) ();
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgGets/ArgGeti/ArgGetf)
@@ -324,7 +324,7 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgGetConcatenatedString)
 #endif
-	char	*(*args) (void);	// concatenation of all argv >= 1
+	char	*(*args) ();	// concatenation of all argv >= 1
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
@@ -346,8 +346,8 @@ typedef struct gameExport_s {
 	// the init function will only be called when a game starts,
 	// not each time a level is loaded.  Persistant data for clients
 	// and the server can be allocated in init
-	void		(*Init) (void);
-	void		(*Shutdown) (void);
+	void		(*Init) ();
+	void		(*Shutdown) ();
 
 	// each new level entered will cause a call to SpawnEntities
 	void		(*SpawnEntities) (char *mapName, char *entString, char *spawnPoint);
@@ -371,13 +371,13 @@ typedef struct gameExport_s {
 	void		(*ClientCommand) (edict_t *ent);
 	void		(*ClientThink) (edict_t *ent, userCmd_t *cmd);
 
-	void		(*RunFrame) (void);
+	void		(*RunFrame) ();
 
 	// ServerCommand will be called when an "sv <command>" command is issued on the
 	// server console.
 	// The game can issue gi.argc() / gi.argv() commands to get the rest
 	// of the parameters
-	void		(*ServerCommand) (void);
+	void		(*ServerCommand) ();
 
 	//
 	// global variables shared between game and server

@@ -313,7 +313,7 @@ void CParasite::DrainAttack ()
 	}
 	end = Entity->Enemy->State.GetOrigin();
 
-	CTrace tr (start, end, Entity->gameEntity, CONTENTS_MASK_SHOT);
+	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
 	if (tr.Ent != Entity->Enemy)
 		return;
 

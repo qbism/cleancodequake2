@@ -181,7 +181,7 @@ of ent.  Ent should be unlinked before calling this!
 // Calls the callback for each member of the team in "ent"
 void CForEachTeamChainCallback::Query (CBaseEntity *Master)
 {
-	for (CBaseEntity *e = Master->TeamMaster; e; e = e->TeamChain)
+	for (CBaseEntity *e = Master->Team.Master; e; e = e->Team.Chain)
 		Callback (e);
 }
 
@@ -385,7 +385,7 @@ bool IsVisible (CBaseEntity *self, CBaseEntity *other)
 	vec3f start = self->State.GetOrigin() + vec3f(0, 0, self->ViewHeight),
 		  end = other->State.GetOrigin() + vec3f(0, 0, other->ViewHeight);
 	return (CTrace (start, end,
-		self->gameEntity, CONTENTS_MASK_OPAQUE).fraction == 1.0);
+		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
 }
 
 /*
