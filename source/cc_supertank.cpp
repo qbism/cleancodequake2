@@ -613,7 +613,7 @@ void CSuperTank::Rocket ()
 #endif
 	{
 		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-		if(trace.Ent == Entity->Enemy || trace.ent == world)
+		if(trace.Ent == Entity->Enemy || trace.Ent == World)
 		{
 			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
 				MonsterFireRocket (start, dir, 50, 500, FlashNumber);

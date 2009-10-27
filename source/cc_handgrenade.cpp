@@ -60,18 +60,18 @@ bool CHandGrenade::CanStopFidgetting (CPlayerEntity *ent)
 
 void CHandGrenade::Hold (CPlayerEntity *ent)
 {
-	if (!ent->Client.grenade_time)
+	if (!ent->Client.Grenade.Time)
 	{
-		ent->Client.grenade_time = level.Frame + GRENADE_TIMER + 2;
-		ent->Client.weapon_sound = SoundIndex("weapons/hgrenc1b.wav");
+		ent->Client.Grenade.Time = level.Frame + GRENADE_TIMER + 2;
+		ent->Client.WeaponSound = SoundIndex("weapons/hgrenc1b.wav");
 	}
 
 	// they waited too long, detonate it in their hand
-	if (!ent->Client.grenade_blew_up && (level.Frame >= ent->Client.grenade_time))
+	if (!ent->Client.Grenade.BlewUp && (level.Frame >= ent->Client.Grenade.Time))
 	{
-		ent->Client.weapon_sound = 0;
+		ent->Client.WeaponSound = 0;
 		FireGrenade (ent, true);
-		ent->Client.grenade_blew_up = true;
+		ent->Client.Grenade.BlewUp = true;
 
 		ent->Client.PlayerState.GetGunFrame() = 15;
 		return;
@@ -89,18 +89,18 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 	const int		damage = (isQuad) ? 500 : 125;
 	const float		radius = 165;
 
-	ent->Client.grenade_thrown = true;
+	ent->Client.Grenade.Thrown = true;
 
 	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 	ent->P_ProjectSource (offset, forward, right, start);
 
-	float timer = (float)(ent->Client.grenade_time - level.Frame) / 10;
+	float timer = (float)(ent->Client.Grenade.Time - level.Frame) / 10;
 	const int speed = (ent->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
 	CGrenade::Spawn (ent, start, forward, damage, speed, timer, radius, true, inHand);
 
-	ent->Client.grenade_time = level.Frame + ((((game.mode & GAME_CTF) || dmFlags.dfDmTechs) && ent->ApplyHaste()) ? 5 : 10);
+	ent->Client.Grenade.Time = level.Frame + ((((game.mode & GAME_CTF) || dmFlags.dfDmTechs) && ent->ApplyHaste()) ? 5 : 10);
 
 	if (!dmFlags.dfInfiniteAmmo)
 		DepleteAmmo(ent, 1);
@@ -112,27 +112,27 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 
 	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
-		ent->Client.anim_priority = ANIM_ATTACK;
+		ent->Client.Anim.Priority = ANIM_ATTACK;
 		ent->State.GetFrame() = FRAME_crattak1 - 1;
-		ent->Client.anim_end = FRAME_crattak3;
+		ent->Client.Anim.EndFrame = FRAME_crattak3;
 	}
 	else
 	{
-		ent->Client.anim_priority = ANIM_REVERSE;
+		ent->Client.Anim.Priority = ANIM_REVERSE;
 		ent->State.GetFrame() = FRAME_wave08;
-		ent->Client.anim_end = FRAME_wave01;
+		ent->Client.Anim.EndFrame = FRAME_wave01;
 	}
 	ent->Client.PlayerState.GetGunFrame()++;
 }
 
 void CHandGrenade::Wait (CPlayerEntity *ent)
 {
-	ent->Client.grenade_blew_up = false;
-	if (level.Frame < ent->Client.grenade_time)
+	ent->Client.Grenade.BlewUp = false;
+	if (level.Frame < ent->Client.Grenade.Time)
 		return;
 
 	if (!ent->DeadFlag)
-		ent->Client.grenade_thrown = false;
+		ent->Client.Grenade.Thrown = false;
 	ent->Client.PlayerState.GetGunFrame()++;
 }
 
@@ -144,7 +144,7 @@ void CHandGrenade::Fire (CPlayerEntity *ent)
 		Hold (ent);
 		break;
 	case 12:
-		ent->Client.weapon_sound = 0;
+		ent->Client.WeaponSound = 0;
 		FireGrenade(ent, false);
 		break;
 	case 15:
@@ -197,7 +197,7 @@ void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
 				// Got here, we can fire!
 				ent->Client.PlayerState.GetGunFrame() = FireStart;
 				ent->Client.WeaponState = WS_FIRING;
-				ent->Client.grenade_time = 0;
+				ent->Client.Grenade.Time = 0;
 
 				// We need to check against us right away for first-frame firing
 				WeaponGeneric(ent);
@@ -243,13 +243,13 @@ void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
 				NoAmmoWeaponChange (ent);
 				newState = WS_DEACTIVATING;
 				newFrame = DeactStart;
-				ent->Client.grenade_time = 0;
-				ent->Client.grenade_thrown = false;
+				ent->Client.Grenade.Time = 0;
+				ent->Client.Grenade.Thrown = false;
 			}
 			else
 			{
-				ent->Client.grenade_time = 0;
-				ent->Client.grenade_thrown = false;
+				ent->Client.Grenade.Time = 0;
+				ent->Client.Grenade.Thrown = false;
 				newFrame = IdleStart;
 				newState = WS_IDLE;
 			}

@@ -46,46 +46,6 @@ void EndMapCounter ()
 	DebugPrintf ("...entities spawned with %i error(s), %i warning(s).\n======================\n", mapErrors, mapWarnings);
 }
 
-void Map_Print (EMapPrintType printType, edict_t *ent, vec3_t origin)
-{
-	if (printType == MAPPRINT_WARNING)
-	{
-		mapWarnings++;
-		DebugPrintf ("Warning %i>", mapWarnings);
-	}
-	else if (printType == MAPPRINT_ERROR)
-	{	
-		mapErrors++;
-		DebugPrintf ("Error %i>", mapErrors);
-	}
-
-	DebugPrintf ("Entity #%i ", level.EntityNumber);
-	if (ent->classname)
-		DebugPrintf ("(%s) ", ent->classname);
-	if (origin)
-		DebugPrintf ("(%.0f %.0f %.0f)", origin[0], origin[1], origin[2]);
-	DebugPrintf ("\n");
-}
-
-void MapPrint (EMapPrintType printType, edict_t *ent, vec3_t origin, char *fmt, ...)
-{
-	Map_Print (printType, ent, origin);
-
-	va_list		argptr;
-	static char	text[MAX_COMPRINT];
-
-	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
-	va_end (argptr);
-
-	if (printType == MAPPRINT_WARNING)
-		DebugPrintf ("Warning %i>", mapWarnings);
-	else if (printType == MAPPRINT_ERROR)
-		DebugPrintf ("Error %i>", mapErrors);
-	DebugPrintf ("%s", text);
-}
-
-// NEW AGE FDSJAHDSKJAFD
 void Map_Print (EMapPrintType printType, CBaseEntity *ent, vec3f &origin)
 {
 	if (printType == MAPPRINT_WARNING)
@@ -107,7 +67,7 @@ void Map_Print (EMapPrintType printType, CBaseEntity *ent, vec3f &origin)
 	DebugPrintf ("\n");
 }
 
-void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f origin, char *fmt, ...)
+void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *fmt, ...)
 {
 	Map_Print (printType, ent, origin);
 

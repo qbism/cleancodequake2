@@ -655,7 +655,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, char *buf, size_t bu
 	}
 
 	// in water?
-	if (who->gameEntity->waterlevel)
+	if (who->WaterInfo.Level)
 		Q_strncpyz(buf, "in the water ", bufSize);
 	else
 		*buf = 0;
@@ -1079,11 +1079,11 @@ void CTFStartMatch()
 			ent->GetSvFlags() = SVF_NOCLIENT;
 			ent->Flags &= ~FL_GODMODE;
 
-			ent->Client.respawn_time = level.Frame + 10 + ((irandom(300))/100);
+			ent->Client.RespawnTime = level.Frame + 10 + irandom(3);
 			ent->Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
-			ent->Client.anim_priority = ANIM_DEATH;
+			ent->Client.Anim.Priority = ANIM_DEATH;
 			ent->State.GetFrame() = FRAME_death308 - 1;
-			ent->Client.anim_end = FRAME_death308;
+			ent->Client.Anim.EndFrame = FRAME_death308;
 			ent->DeadFlag = true;
 			ent->NoClip = true;
 			ent->Client.PlayerState.GetGunIndex () = 0;

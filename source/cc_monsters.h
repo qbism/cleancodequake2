@@ -184,6 +184,7 @@ public:
 	FrameNumber_t	AirFinished;
 	FrameNumber_t	DamageDebounceTime;
 	FrameNumber_t	BonusDamageTime;
+	FrameNumber_t	ShowHostile;
 	CBaseEntity		*OldEnemy;
 	CBaseEntity		*GoalEntity;
 	CBaseEntity		*MoveTarget;
@@ -267,8 +268,9 @@ public:
 	float				IdleTime;
 	int					LinkCount;
 
-	int					PowerArmorType;
+	EPowerArmorType		PowerArmorType;
 	int					PowerArmorPower;
+	uint8				PowerArmorTime;
 
 	bool				EnemyInfront, EnemyVis;
 	ERangeType			EnemyRange;

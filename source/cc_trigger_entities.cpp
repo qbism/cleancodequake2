@@ -356,7 +356,9 @@ public:
 		{
 			SpawnFlags &= ~1;
 			SpawnFlags |= 4;
-			MapPrint (MAPPRINT_WARNING, this, GetMins().MultiplyAngles (0.5f, GetSize()), "Fixed TRIGGERED flag\n");
+
+			vec3f origin = GetMins().MultiplyAngles (0.5f, GetSize());
+			MapPrint (MAPPRINT_WARNING, this, origin, "Fixed TRIGGERED flag\n");
 		}
 
 		Wait = -1;
@@ -784,7 +786,8 @@ public:
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		other->gameEntity->gravity = gameEntity->gravity;
+		if (other->EntityFlags & ENT_PHYSICS)
+			entity_cast<CPhysicsEntity>(other)->GravityMultiplier = Gravity;
 	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
@@ -802,7 +805,6 @@ public:
 		}
 
 		Init ();
-		gameEntity->gravity = Gravity;
 	};
 };
 

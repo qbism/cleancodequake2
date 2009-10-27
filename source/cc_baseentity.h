@@ -96,6 +96,9 @@ public:
 
 	struct Team_t
 	{
+		char			*String;
+
+		bool			HasTeam;
 		CBaseEntity		*Chain;
 		CBaseEntity		*Master;
 	} Team;

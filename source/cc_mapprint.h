@@ -41,9 +41,7 @@ CC_ENUM (uint8, EMapPrintType)
 	MAPPRINT_NORMAL
 };
 
-void Map_Print (EMapPrintType printType, edict_t *ent, vec3_t origin);
-void MapPrint (EMapPrintType printType, edict_t *ent, vec3_t origin, char *fmt, ...);
-void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f origin, char *fmt, ...);
+void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *fmt, ...);
 void EndMapCounter ();
 void InitMapCounter ();
 

@@ -191,7 +191,7 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	Player->Client.Persistent.LastWeapon = Player->Client.Persistent.Weapon;
 	Player->Client.Persistent.Weapon = Player->Client.NewWeapon;
 	Player->Client.NewWeapon = NULL;
-	Player->Client.machinegun_shots = 0;
+	Player->Client.Timers.MachinegunShots = 0;
 
 	// set visible model
 	if (Player->Client.Persistent.Weapon && Player->State.GetModelIndex() == 255)
@@ -200,26 +200,26 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	if (!Player->Client.Persistent.Weapon)
 	{	// dead
 		Player->Client.PlayerState.GetGunIndex() = 0;
-		if (!Player->Client.grenade_thrown && !Player->Client.grenade_blew_up && Player->Client.grenade_time >= level.Frame) // We had a grenade cocked
+		if (!Player->Client.Grenade.Thrown && !Player->Client.Grenade.BlewUp && Player->Client.Grenade.Time >= level.Frame) // We had a grenade cocked
 		{
 			CHandGrenade::Weapon.FireGrenade(Player, false);
-			Player->Client.grenade_time = 0;
+			Player->Client.Grenade.Time = 0;
 		}
 		return;
 	}
 
 	Player->Client.Persistent.Weapon->InitWeapon(Player);
 
-	Player->Client.anim_priority = ANIM_PAIN;
+	Player->Client.Anim.Priority = ANIM_PAIN;
 	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
 		Player->State.GetFrame() = FRAME_crpain1;
-		Player->Client.anim_end = FRAME_crpain4;
+		Player->Client.Anim.EndFrame = FRAME_crpain4;
 	}
 	else
 	{
 		Player->State.GetFrame() = FRAME_pain301;
-		Player->Client.anim_end = FRAME_pain304;
+		Player->Client.Anim.EndFrame = FRAME_pain304;
 	}
 }
 
@@ -311,8 +311,8 @@ void CWeapon::Think (CPlayerEntity *Player)
 	}
 
 	// call active weapon think routine
-	isQuad = (Player->Client.quad_framenum > level.Frame);
-	isSilenced = (Player->Client.silencer_shots) ? true : false;
+	isQuad = (Player->Client.Timers.QuadDamage > level.Frame);
+	isSilenced = (Player->Client.Timers.SilencerShots) ? true : false;
 	WeaponGeneric (Player);
 	if (dmFlags.dfDmTechs
 #ifdef CLEANCTF_ENABLED
@@ -443,15 +443,15 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 void CWeapon::FireAnimation (CPlayerEntity *Player)
 {
 	// start the animation
-	Player->Client.anim_priority = ANIM_ATTACK;
+	Player->Client.Anim.Priority = ANIM_ATTACK;
 	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
 		Player->State.GetFrame() = FRAME_crattak1 - 1;
-		Player->Client.anim_end = FRAME_crattak9;
+		Player->Client.Anim.EndFrame = FRAME_crattak9;
 	}
 	else
 	{
 		Player->State.GetFrame() = FRAME_attack1 - 1;
-		Player->Client.anim_end = FRAME_attack8;
+		Player->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }

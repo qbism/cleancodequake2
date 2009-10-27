@@ -65,7 +65,7 @@ vec3f hyperblasterOffsetTable[] =
 
 void CHyperBlaster::Fire (CPlayerEntity *ent)
 {
-	ent->Client.weapon_sound = SoundIndex("weapons/hyprbl1a.wav");
+	ent->Client.WeaponSound = SoundIndex("weapons/hyprbl1a.wav");
 
 	if (!(ent->Client.Buttons & BUTTON_ATTACK))
 		ent->Client.PlayerState.GetGunFrame()++;
@@ -115,7 +115,7 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 	if (ent->Client.PlayerState.GetGunFrame() == 12)
 	{
 		ent->PlaySound (CHAN_AUTO, SoundIndex("weapons/hyprbd1a.wav"));
-		ent->Client.weapon_sound = 0;
+		ent->Client.WeaponSound = 0;
 	}
 }
 

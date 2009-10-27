@@ -65,16 +65,16 @@ bool CMachinegun::CanStopFidgetting (CPlayerEntity *ent)
 
 void CMachinegun::FireAnimation (CPlayerEntity *ent)
 {
-	ent->Client.anim_priority = ANIM_ATTACK;
+	ent->Client.Anim.Priority = ANIM_ATTACK;
 	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
 		ent->State.GetFrame() = (FRAME_crattak1 - (int) (frand()+0.25));
-		ent->Client.anim_end = FRAME_crattak9;
+		ent->Client.Anim.EndFrame = FRAME_crattak9;
 	}
 	else
 	{
 		ent->State.GetFrame() = (FRAME_attack1 - (int) (frand()+0.25));
-		ent->Client.anim_end = FRAME_attack8;
+		ent->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }
 
@@ -82,7 +82,7 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 {
 	if (!(ent->Client.Buttons & BUTTON_ATTACK))
 	{
-		ent->Client.machinegun_shots = 0;
+		ent->Client.Timers.MachinegunShots = 0;
 		ent->Client.PlayerState.GetGunFrame()++;
 		return;
 	}
@@ -109,14 +109,14 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 		ent->Client.KickAngles[i] = crand() * 0.7;
 	}
 	ent->Client.KickOrigin.X = crand() * 0.35;
-	ent->Client.KickAngles.X = ent->Client.machinegun_shots * -1.5;
+	ent->Client.KickAngles.X = ent->Client.Timers.MachinegunShots * -1.5;
 
 	// raise the gun as it is firing
 	if (!(game.mode & GAME_DEATHMATCH))
 	{
-		ent->Client.machinegun_shots++;
-		if (ent->Client.machinegun_shots > 9)
-			ent->Client.machinegun_shots = 9;
+		ent->Client.Timers.MachinegunShots++;
+		if (ent->Client.Timers.MachinegunShots > 9)
+			ent->Client.Timers.MachinegunShots = 9;
 	}
 
 	// get start / end positions

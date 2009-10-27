@@ -37,6 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CMedic : public CMonster
 {
 public:
+	FrameNumber_t	MedicTryTime;
 	MediaIndex	SoundIdle1;
 	MediaIndex	SoundPain1;
 	MediaIndex	SoundPain2;

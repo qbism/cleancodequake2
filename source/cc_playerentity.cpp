@@ -193,7 +193,7 @@ void CPlayerEntity::BeginServerFrame ()
 		!(game.mode & GAME_CTF) &&
 #endif
 		Client.Persistent.spectator != Client.Respawn.spectator &&
-		(level.Frame - Client.respawn_time) >= 50)
+		(level.Frame - Client.RespawnTime) >= 50)
 	{
 		SpectatorRespawn();
 		return;
@@ -211,7 +211,7 @@ void CPlayerEntity::BeginServerFrame ()
 	if (DeadFlag)
 	{
 		// wait for any button just going down
-		if ( level.Frame > Client.respawn_time)
+		if ( level.Frame > Client.RespawnTime)
 		{
 			int buttonMask;
 			// in deathmatch, only wait for attack button
@@ -254,7 +254,7 @@ void CPlayerEntity::Respawn ()
 		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
 		Client.PlayerState.GetPMove()->pmTime = 14;
 
-		Client.respawn_time = level.Frame;
+		Client.RespawnTime = level.Frame;
 		return;
 	}
 
@@ -336,7 +336,7 @@ void CPlayerEntity::SpectatorRespawn ()
 		Client.PlayerState.GetPMove()->pmTime = 14;
 	}
 
-	Client.respawn_time = level.Frame;
+	Client.RespawnTime = level.Frame;
 
 	if (Client.Persistent.spectator) 
 		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.netname);
@@ -422,8 +422,8 @@ void CPlayerEntity::PutInServer ()
 	DeadFlag = false;
 	AirFinished = level.Frame + 120;
 	GetClipmask() = CONTENTS_MASK_PLAYERSOLID;
-	gameEntity->waterlevel = WATER_NONE;
-	gameEntity->watertype = 0;
+	WaterInfo.Level = WATER_NONE;
+	WaterInfo.Type = 0;
 	Flags &= ~FL_NO_KNOCKBACK;
 	GetSvFlags() &= ~SVF_DEADMONSTER;
 	if (!Client.Respawn.MenuState.ent)
@@ -488,7 +488,7 @@ void CPlayerEntity::PutInServer ()
 	// spawn a spectator
 	if (Client.Persistent.spectator)
 	{
-		Client.chase_target = NULL;
+		Client.Chase.Target = NULL;
 
 		Client.Respawn.spectator = true;
 
@@ -757,7 +757,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	Client.PlayerState.GetStat (STAT_FLASHES) = 0;
 	if (Client.DamageValues[DT_BLOOD])
 		Client.PlayerState.GetStat (STAT_FLASHES) = Client.PlayerState.GetStat(STAT_FLASHES) | 1;
-	if (Client.DamageValues[DT_ARMOR] && !(Flags & FL_GODMODE) && (Client.invincible_framenum <= level.Frame))
+	if (Client.DamageValues[DT_ARMOR] && !(Flags & FL_GODMODE) && (Client.Timers.Invincibility <= level.Frame))
 		Client.PlayerState.GetStat (STAT_FLASHES) = Client.PlayerState.GetStat(STAT_FLASHES) | 2;
 
 	// total points of damage shot at the player this frame
@@ -766,13 +766,13 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 		return;		// didn't take any damage
 
 	// start a pain animation if still in the player model
-	if (Client.anim_priority < ANIM_PAIN && State.GetModelIndex() == 255)
+	if (Client.Anim.Priority < ANIM_PAIN && State.GetModelIndex() == 255)
 	{
-		Client.anim_priority = ANIM_PAIN;
+		Client.Anim.Priority = ANIM_PAIN;
 		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 		{
 			State.GetFrame() = FRAME_crpain1 - 1;
-			Client.anim_end = FRAME_crpain4;
+			Client.Anim.EndFrame = FRAME_crpain4;
 		}
 		else
 		{
@@ -780,15 +780,15 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 			{
 			case 0:
 				State.GetFrame() = FRAME_pain101 - 1;
-				Client.anim_end = FRAME_pain104;
+				Client.Anim.EndFrame = FRAME_pain104;
 				break;
 			case 1:
 				State.GetFrame() = FRAME_pain201 - 1;
-				Client.anim_end = FRAME_pain204;
+				Client.Anim.EndFrame = FRAME_pain204;
 				break;
 			case 2:
 				State.GetFrame() = FRAME_pain301 - 1;
-				Client.anim_end = FRAME_pain304;
+				Client.Anim.EndFrame = FRAME_pain304;
 				break;
 			}
 		}
@@ -799,7 +799,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 		count = 10;	// always make a visible effect
 
 	// play an apropriate pain sound
-	if ((level.Frame > PainDebounceTime) && !(Flags & FL_GODMODE) && (Client.invincible_framenum <= level.Frame))
+	if ((level.Frame > PainDebounceTime) && !(Flags & FL_GODMODE) && (Client.Timers.Invincibility <= level.Frame))
 	{
 		PainDebounceTime = level.Frame + 7;
 
@@ -1079,9 +1079,9 @@ inline void CPlayerEntity::CalcBlend ()
 		Client.PlayerState.GetRdFlags () &= ~RDF_UNDERWATER;
 
 	// add for powerups
-	if (Client.quad_framenum > level.Frame)
+	if (Client.Timers.QuadDamage > level.Frame)
 	{
-		int remaining = Client.quad_framenum - level.Frame;
+		int remaining = Client.Timers.QuadDamage - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/damage2.wav"));
@@ -1089,9 +1089,9 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (QuadColor, Client.Persistent.viewBlend);
 	}
-	else if (Client.invincible_framenum > level.Frame)
+	else if (Client.Timers.Invincibility > level.Frame)
 	{
-		int remaining = Client.invincible_framenum - level.Frame;
+		int remaining = Client.Timers.Invincibility - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect2.wav"));
@@ -1099,9 +1099,9 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (InvulColor, Client.Persistent.viewBlend);
 	}
-	else if (Client.enviro_framenum > level.Frame)
+	else if (Client.Timers.EnvironmentSuit > level.Frame)
 	{
-		int remaining = Client.enviro_framenum - level.Frame;
+		int remaining = Client.Timers.EnvironmentSuit - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
@@ -1109,9 +1109,9 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (EnviroColor, Client.Persistent.viewBlend);
 	}
-	else if (Client.breather_framenum > level.Frame)
+	else if (Client.Timers.Rebreather > level.Frame)
 	{
-		int remaining = Client.breather_framenum - level.Frame;
+		int remaining = Client.Timers.Rebreather - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
@@ -1193,11 +1193,11 @@ inline void CPlayerEntity::FallingDamage ()
 	delta = delta*delta * 0.0001;
 
 	// never take falling damage if completely underwater
-	if (gameEntity->waterlevel == WATER_UNDER)
+	if (WaterInfo.Level == WATER_UNDER)
 		return;
-	if (gameEntity->waterlevel == WATER_WAIST)
+	if (WaterInfo.Level == WATER_WAIST)
 		delta *= 0.25;
-	if (gameEntity->waterlevel == WATER_FEET)
+	if (WaterInfo.Level == WATER_FEET)
 		delta *= 0.5;
 
 	if (delta < 1)
@@ -1254,12 +1254,12 @@ inline void CPlayerEntity::WorldEffects ()
 		return;
 	}
 
-	waterlevel = gameEntity->waterlevel;
+	waterlevel = WaterInfo.Level;
 	OldWaterLevel = Client.OldWaterLevel;
 	Client.OldWaterLevel = waterlevel;
 
-	breather = (bool)(Client.breather_framenum > level.Frame);
-	envirosuit = (bool)(Client.enviro_framenum > level.Frame);
+	breather = (bool)(Client.Timers.Rebreather > level.Frame);
+	envirosuit = (bool)(Client.Timers.EnvironmentSuit > level.Frame);
 
 	//
 	// if just entered a water volume, play a sound
@@ -1267,11 +1267,11 @@ inline void CPlayerEntity::WorldEffects ()
 	if (!OldWaterLevel && waterlevel)
 	{
 		PlayerNoiseAt (origin, PNOISE_SELF);
-		if (gameEntity->watertype & CONTENTS_LAVA)
+		if (WaterInfo.Type & CONTENTS_LAVA)
 			PlaySound (CHAN_BODY, SoundIndex("player/lava_in.wav"));
-		else if (gameEntity->watertype & CONTENTS_SLIME)
+		else if (WaterInfo.Type & CONTENTS_SLIME)
 			PlaySound (CHAN_BODY, SoundIndex("player/watr_in.wav"));
-		else if (gameEntity->watertype & CONTENTS_WATER)
+		else if (WaterInfo.Type & CONTENTS_WATER)
 			PlaySound (CHAN_BODY, SoundIndex("player/watr_in.wav"));
 		Flags |= FL_INWATER;
 
@@ -1319,10 +1319,10 @@ inline void CPlayerEntity::WorldEffects ()
 		{
 			AirFinished = level.Frame + 100;
 
-			if (((int)(Client.breather_framenum - level.Frame) % 25) == 0)
+			if (((int)(Client.Timers.Rebreather - level.Frame) % 25) == 0)
 			{
-				PlaySound (CHAN_AUTO, SoundIndex((!Client.breather_sound) ? "player/u_breath1.wav" : "player/u_breath2.wav"));
-				Client.breather_sound = !Client.breather_sound;
+				PlaySound (CHAN_AUTO, SoundIndex((!Client.Timers.BreatherSound) ? "player/u_breath1.wav" : "player/u_breath2.wav"));
+				Client.Timers.BreatherSound = !Client.Timers.BreatherSound;
 				PlayerNoiseAt (origin, PNOISE_SELF);
 			}
 		}
@@ -1361,13 +1361,13 @@ inline void CPlayerEntity::WorldEffects ()
 	//
 	// check for sizzle damage
 	//
-	if (waterlevel && (gameEntity->watertype & (CONTENTS_LAVA|CONTENTS_SLIME)))
+	if (waterlevel && (WaterInfo.Type & (CONTENTS_LAVA|CONTENTS_SLIME)))
 	{
-		if (gameEntity->watertype & CONTENTS_LAVA)
+		if (WaterInfo.Type & CONTENTS_LAVA)
 		{
 			if (Health > 0
 				&& PainDebounceTime <= level.Frame
-				&& Client.invincible_framenum < level.Frame)
+				&& Client.Timers.Invincibility < level.Frame)
 			{
 				PlaySound (CHAN_VOICE, SoundIndex((irandom(2)) ? "player/burn1.wav" : "player/burn2.wav"));
 				PainDebounceTime = level.Frame + 10;
@@ -1377,7 +1377,7 @@ inline void CPlayerEntity::WorldEffects ()
 			TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, (envirosuit) ? 1*waterlevel : 3*waterlevel, 0, 0, MOD_LAVA);
 		}
 
-		if (gameEntity->watertype & CONTENTS_SLIME)
+		if (WaterInfo.Type & CONTENTS_SLIME)
 		{
 			if (!envirosuit) // no damage from slime with envirosuit
 				TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 1*waterlevel, 0, 0, MOD_SLIME);
@@ -1409,7 +1409,7 @@ inline void CPlayerEntity::SetClientEffects ()
 	if (Health <= 0 || level.IntermissionTime)
 		return;
 
-	if (gameEntity->powerarmor_time > level.Frame)
+	if (Client.PowerArmorTime--)
 	{
 		int pa_type = PowerArmorType ();
 		if (pa_type == POWER_ARMOR_SCREEN)
@@ -1436,16 +1436,16 @@ inline void CPlayerEntity::SetClientEffects ()
 	}
 #endif
 
-	if (Client.quad_framenum > level.Frame)
+	if (Client.Timers.QuadDamage > level.Frame)
 	{
-		int remaining = Client.quad_framenum - level.Frame;
+		int remaining = Client.Timers.QuadDamage - level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_QUAD;
 	}
 
-	if (Client.invincible_framenum > level.Frame)
+	if (Client.Timers.Invincibility > level.Frame)
 	{
-		int remaining = Client.invincible_framenum - level.Frame;
+		int remaining = Client.Timers.Invincibility - level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_PENT;
 	}
@@ -1496,12 +1496,12 @@ inline void CPlayerEntity::SetClientSound ()
 		PlaySound (CHAN_VOICE, SoundIndex ("misc/pc_up.wav"), 255, ATTN_STATIC);
 	}
 
-	if (gameEntity->waterlevel && (gameEntity->watertype & (CONTENTS_LAVA|CONTENTS_SLIME)))
+	if (WaterInfo.Level && (WaterInfo.Type & (CONTENTS_LAVA|CONTENTS_SLIME)))
 		State.GetSound() = GameMedia.FrySound();
 	else if (Client.Persistent.Weapon && Client.Persistent.Weapon->GetWeaponSound ())
 		State.GetSound() = Client.Persistent.Weapon->GetWeaponSound ();
-	else if (Client.weapon_sound)
-		State.GetSound() = Client.weapon_sound;
+	else if (Client.WeaponSound)
+		State.GetSound() = Client.WeaponSound;
 	else
 		State.GetSound() = 0;
 }
@@ -1521,46 +1521,46 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 		return;		// not in the player model
 
 	// check for stand/duck and stop/go transitions
-	if ((duck != Client.anim_duck && Client.anim_priority < ANIM_DEATH) ||
-		(run != Client.anim_run && Client.anim_priority == ANIM_BASIC) ||
-		(!GroundEntity && Client.anim_priority <= ANIM_WAVE))
+	if ((duck != Client.Anim.Duck && Client.Anim.Priority < ANIM_DEATH) ||
+		(run != Client.Anim.Run && Client.Anim.Priority == ANIM_BASIC) ||
+		(!GroundEntity && Client.Anim.Priority <= ANIM_WAVE))
 		isNewAnim = true;
 
 	if (!isNewAnim)
 	{
-		if(Client.anim_priority == ANIM_REVERSE)
+		if(Client.Anim.Priority == ANIM_REVERSE)
 		{
-			if(State.GetFrame() > Client.anim_end)
+			if(State.GetFrame() > Client.Anim.EndFrame)
 			{
 				State.GetFrame()--;
 				return;
 			}
 		}
-		else if (State.GetFrame() < Client.anim_end)
+		else if (State.GetFrame() < Client.Anim.EndFrame)
 		{
 			// continue an animation
 			State.GetFrame()++;
 			return;
 		}
 
-		if (Client.anim_priority == ANIM_DEATH)
+		if (Client.Anim.Priority == ANIM_DEATH)
 			return;		// stay there
-		if (Client.anim_priority == ANIM_JUMP)
+		if (Client.Anim.Priority == ANIM_JUMP)
 		{
 			if (!GroundEntity)
 				return;		// stay there
-			Client.anim_priority = ANIM_WAVE;
+			Client.Anim.Priority = ANIM_WAVE;
 
 			State.GetFrame() = FRAME_jump3;
-			Client.anim_end = FRAME_jump6;
+			Client.Anim.EndFrame = FRAME_jump6;
 			return;
 		}
 	}
 
 	// return to either a running or standing frame
-	Client.anim_priority = ANIM_BASIC;
-	Client.anim_duck = duck;
-	Client.anim_run = run;
+	Client.Anim.Priority = ANIM_BASIC;
+	Client.Anim.Duck = duck;
+	Client.Anim.Run = run;
 
 	if (!GroundEntity)
 	{
@@ -1570,16 +1570,16 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 		if (Client.ctf_grapple)
 		{
 			State.GetFrame() = FRAME_stand01;
-			Client.anim_end = FRAME_stand40;
+			Client.Anim.EndFrame = FRAME_stand40;
 		}
 		else
 		{
 //ZOID
 #endif
-		Client.anim_priority = ANIM_JUMP;
+		Client.Anim.Priority = ANIM_JUMP;
 		if (State.GetFrame() != FRAME_jump2)
 			State.GetFrame() = FRAME_jump1;
-		Client.anim_end = FRAME_jump2;
+		Client.Anim.EndFrame = FRAME_jump2;
 #ifdef CLEANCTF_ENABLED
 	}
 #endif
@@ -1589,12 +1589,12 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 		if (duck)
 		{
 			State.GetFrame() = FRAME_crwalk1;
-			Client.anim_end = FRAME_crwalk6;
+			Client.Anim.EndFrame = FRAME_crwalk6;
 		}
 		else
 		{
 			State.GetFrame() = FRAME_run1;
-			Client.anim_end = FRAME_run6;
+			Client.Anim.EndFrame = FRAME_run6;
 		}
 	}
 	else
@@ -1602,12 +1602,12 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 		if (duck)
 		{
 			State.GetFrame() = FRAME_crstnd01;
-			Client.anim_end = FRAME_crstnd19;
+			Client.Anim.EndFrame = FRAME_crstnd19;
 		}
 		else
 		{
 			State.GetFrame() = FRAME_stand01;
-			Client.anim_end = FRAME_stand40;
+			Client.Anim.EndFrame = FRAME_stand40;
 		}
 	}
 }
@@ -1725,7 +1725,7 @@ void CPlayerEntity::EndServerFrame ()
 	else
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	if (!Client.chase_target)
+	if (!Client.Chase.Target)
 //ZOID
 #endif
 		SetStats ();
@@ -1736,7 +1736,7 @@ void CPlayerEntity::EndServerFrame ()
 	for (i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *e = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
-		if (!e->GetInUse() || e->Client.chase_target != this)
+		if (!e->GetInUse() || e->Client.Chase.Target != this)
 			continue;
 
 		e->Client.PlayerState.CopyStats (Client.PlayerState.GetStats());
@@ -2137,7 +2137,7 @@ void CPlayerEntity::SetStats ()
 		//
 		// pickup message
 		//
-		if (level.Frame > Client.pickup_msg_time)
+		if (level.Frame > Client.PickupMessageTime)
 		{
 			Client.PlayerState.GetStat (STAT_PICKUP_ICON) = 0;
 			Client.PlayerState.GetStat (STAT_PICKUP_STRING) = 0;
@@ -2146,31 +2146,31 @@ void CPlayerEntity::SetStats ()
 		//
 		// timers
 		//
-		if (Client.quad_framenum > level.Frame)
+		if (Client.Timers.QuadDamage > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Quad->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.quad_framenum - level.Frame)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.QuadDamage - level.Frame)/10;
 		}
-		else if (Client.invincible_framenum > level.Frame)
+		else if (Client.Timers.Invincibility > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Invul->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.invincible_framenum - level.Frame)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.Invincibility - level.Frame)/10;
 		}
-		else if (Client.enviro_framenum > level.Frame)
+		else if (Client.Timers.EnvironmentSuit > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::EnvironmentSuit->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.enviro_framenum - level.Frame)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.EnvironmentSuit - level.Frame)/10;
 		}
-		else if (Client.breather_framenum > level.Frame)
+		else if (Client.Timers.Rebreather > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Rebreather->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = (Client.breather_framenum - level.Frame)/10;
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.Rebreather - level.Frame)/10;
 		}
 		// Paril, show silencer
-		else if (Client.silencer_shots)
+		else if (Client.Timers.SilencerShots)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Silencer->GetIconIndex();
-			Client.PlayerState.GetStat (STAT_TIMER) = Client.silencer_shots;
+			Client.PlayerState.GetStat (STAT_TIMER) = Client.Timers.SilencerShots;
 		}
 		// Paril
 		else
@@ -2231,7 +2231,7 @@ G_SetSpectatorStats
 */
 void CPlayerEntity::SetSpectatorStats ()
 {
-	if (!Client.chase_target)
+	if (!Client.Chase.Target)
 		SetStats ();
 
 	Client.PlayerState.GetStat (STAT_SPECTATOR) = 1;
@@ -2245,7 +2245,7 @@ void CPlayerEntity::SetSpectatorStats ()
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 2;
 
 	Client.PlayerState.GetStat (STAT_CHASE) = 
-		(Client.chase_target && Client.chase_target->GetInUse()) ? (CS_PLAYERSKINS + (Client.chase_target->State.GetNumber() - 1)) : 0;
+		(Client.Chase.Target && Client.Chase.Target->GetInUse()) ? (CS_PLAYERSKINS + (Client.Chase.Target->State.GetNumber() - 1)) : 0;
 }
 
 #ifdef CLEANCTF_ENABLED
@@ -2483,12 +2483,12 @@ void CPlayerEntity::MoveToIntermission ()
 	Client.PlayerState.GetRdFlags () &= ~RDF_UNDERWATER;
 
 	// clean up powerup info
-	Client.quad_framenum = 0;
-	Client.invincible_framenum = 0;
-	Client.breather_framenum = 0;
-	Client.enviro_framenum = 0;
-	Client.grenade_blew_up = Client.grenade_thrown = false;
-	Client.grenade_time = 0;
+	Client.Timers.QuadDamage = 0;
+	Client.Timers.Invincibility = 0;
+	Client.Timers.Rebreather = 0;
+	Client.Timers.EnvironmentSuit = 0;
+	Client.Grenade.BlewUp = Client.Grenade.Thrown = false;
+	Client.Grenade.Time = 0;
 
 	ViewHeight = 0;
 	State.GetModelIndex() = State.GetModelIndex(2) = State.GetModelIndex(3) = 0;
@@ -2506,10 +2506,10 @@ bool CPlayerEntity::ApplyStrengthSound()
 {
 	if (Client.Persistent.Tech && (Client.Persistent.Tech->GetTechNumber() == CTFTECH_STRENGTH_NUMBER))
 	{
-		if (Client.techsndtime < level.Frame)
+		if (Client.Tech.SoundTime < level.Frame)
 		{
-			Client.techsndtime = level.Frame + 10;
-			PlaySound (CHAN_AUTO, SoundIndex((Client.quad_framenum > level.Frame) ? "ctf/tech2x.wav" : "ctf/tech2.wav"), (Client.silencer_shots) ? 51 : 255);
+			Client.Tech.SoundTime = level.Frame + 10;
+			PlaySound (CHAN_AUTO, SoundIndex((Client.Timers.QuadDamage > level.Frame) ? "ctf/tech2x.wav" : "ctf/tech2.wav"), (Client.Timers.SilencerShots) ? 51 : 255);
 		}
 		return true;
 	}
@@ -2523,10 +2523,10 @@ bool CPlayerEntity::ApplyHaste()
 
 void CPlayerEntity::ApplyHasteSound()
 {
-	if (Client.Persistent.Tech && (Client.Persistent.Tech->GetTechNumber() == CTFTECH_HASTE_NUMBER) && Client.techsndtime < level.Frame)
+	if (Client.Persistent.Tech && (Client.Persistent.Tech->GetTechNumber() == CTFTECH_HASTE_NUMBER) && Client.Tech.SoundTime < level.Frame)
 	{
-		Client.techsndtime = level.Frame + 10;
-		PlaySound (CHAN_AUTO, SoundIndex("ctf/tech3.wav"), (Client.silencer_shots) ? 51 : 255);
+		Client.Tech.SoundTime = level.Frame + 10;
+		PlaySound (CHAN_AUTO, SoundIndex("ctf/tech3.wav"), (Client.Timers.SilencerShots) ? 51 : 255);
 	}
 }
 
@@ -2587,7 +2587,7 @@ void CPlayerEntity::TossClientWeapon ()
 	if (Item && !Item->WorldModel)
 		Item = NULL;
 
-	bool quad = (!dmFlags.dfQuadDrop) ? false : (bool)(Client.quad_framenum > (level.Frame + 10));
+	bool quad = (!dmFlags.dfQuadDrop) ? false : (bool)(Client.Timers.QuadDamage > (level.Frame + 10));
 	float spread = (Item && quad) ? 22.5f : 0.0f;
 
 	if (Item)
@@ -2606,7 +2606,7 @@ void CPlayerEntity::TossClientWeapon ()
 		Client.ViewAngle.Y -= spread;
 		drop->SpawnFlags |= DROPPED_PLAYER_ITEM;
 
-		drop->NextThink = level.Frame + (Client.quad_framenum - level.Frame);
+		drop->NextThink = level.Frame + (Client.Timers.QuadDamage - level.Frame);
 		drop->ThinkState = ITS_FREE;
 	}
 }
@@ -2656,7 +2656,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	Client.Buttons = ucmd->buttons;
 	Client.LatchedButtons |= Client.Buttons & ~oldbuttons;
 
-	if (Client.chase_target)
+	if (Client.Chase.Target)
 	{
 		Client.Respawn.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
 		Client.Respawn.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);
@@ -2664,7 +2664,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 		if (Client.LatchedButtons & BUTTON_ATTACK)
 		{
-			if (Client.chase_target)
+			if (Client.Chase.Target)
 				ChaseNext();
 			else
 				GetChaseTarget();
@@ -2679,9 +2679,9 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 				Client.LatchedButtons = 0;
 
-				if (Client.chase_target)
+				if (Client.Chase.Target)
 				{
-					Client.chase_target = NULL;
+					Client.Chase.Target = NULL;
 					Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 					Client.PlayerState.GetGunIndex () = 0;
 					Client.PlayerState.GetGunFrame() = 0;
@@ -2759,8 +2759,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	}
 
 	ViewHeight = pm.viewHeight;
-	gameEntity->waterlevel = pm.waterLevel;
-	gameEntity->watertype = pm.waterType;
+	WaterInfo.Level = pm.waterLevel;
+	WaterInfo.Type = pm.waterType;
 	GroundEntity = (pm.groundEntity) ? pm.groundEntity->Entity : NULL;
 	if (GroundEntity)
 		GroundEntityLinkCount = GroundEntity->GetLinkCount();
@@ -2807,7 +2807,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	// save light level the player is standing on for
 	// monster sighting AI
-	gameEntity->light_level = ucmd->lightLevel;
+	// Paril: Removed. See definition of userCmd_t::lightlevel for more info.
 
 	if (Client.Respawn.spectator
 #ifdef CLEANCTF_ENABLED
@@ -2817,7 +2817,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	{
 		if (Client.LatchedButtons & BUTTON_ATTACK)
 		{
-			if (Client.chase_target)
+			if (Client.Chase.Target)
 				ChaseNext();
 			else
 				GetChaseTarget();
@@ -2831,9 +2831,9 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 				Client.LatchedButtons = 0;
 
-				if (Client.chase_target)
+				if (Client.Chase.Target)
 				{
-					Client.chase_target = NULL;
+					Client.Chase.Target = NULL;
 					Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 				}
 				else
@@ -2848,7 +2848,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	for (int i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *other = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
-		if (other->GetInUse() && other->Client.chase_target == this)
+		if (other->GetInUse() && other->Client.Chase.Target == this)
 			other->UpdateChaseCam();
 	}
 }
@@ -3158,7 +3158,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 	State.GetAngles().Set (0, State.GetAngles().Y, 0);
 
 	State.GetSound() = 0;
-	Client.weapon_sound = 0;
+	Client.WeaponSound = 0;
 
 	GetMaxs().Z = -8;
 
@@ -3166,7 +3166,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 	if (!DeadFlag)
 	{
-		Client.respawn_time = level.Frame + 10;
+		Client.RespawnTime = level.Frame + 10;
 		LookAtKiller (inflictor, attacker);
 		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 		Obituary (attacker);
@@ -3218,10 +3218,10 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 	}
 
 	// remove powerups
-	Client.quad_framenum = 0;
-	Client.invincible_framenum = 0;
-	Client.breather_framenum = 0;
-	Client.enviro_framenum = 0;
+	Client.Timers.QuadDamage = 0;
+	Client.Timers.Invincibility = 0;
+	Client.Timers.Rebreather = 0;
+	Client.Timers.EnvironmentSuit = 0;
 	Flags &= ~FL_POWER_ARMOR;
 
 	if (Health < -40)
@@ -3233,8 +3233,8 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 		CanTakeDamage = false;
 //ZOID
-		Client.anim_priority = ANIM_DEATH;
-		Client.anim_end = 0;
+		Client.Anim.Priority = ANIM_DEATH;
+		Client.Anim.EndFrame = 0;
 //ZOID
 	}
 	else
@@ -3245,11 +3245,11 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 			i = (i+1)%3;
 			// start a death animation
-			Client.anim_priority = ANIM_DEATH;
+			Client.Anim.Priority = ANIM_DEATH;
 			if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 			{
 				State.GetFrame() = FRAME_crdeath1 - 1;
-				Client.anim_end = FRAME_crdeath5;
+				Client.Anim.EndFrame = FRAME_crdeath5;
 			}
 			else
 			{
@@ -3257,15 +3257,15 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 				{
 				case 0:
 					State.GetFrame() = FRAME_death101 - 1;
-					Client.anim_end = FRAME_death106;
+					Client.Anim.EndFrame = FRAME_death106;
 					break;
 				case 1:
 					State.GetFrame() = FRAME_death201 - 1;
-					Client.anim_end = FRAME_death206;
+					Client.Anim.EndFrame = FRAME_death206;
 					break;
 				case 2:
 					State.GetFrame() = FRAME_death301 - 1;
-					Client.anim_end = FRAME_death308;
+					Client.Anim.EndFrame = FRAME_death308;
 					break;
 				}
 			}
@@ -3296,23 +3296,23 @@ void CPlayerEntity::UpdateChaseCam()
 	CPlayerEntity *targ;
 
 	// is our chase target gone?
-	if (!Client.chase_target->GetInUse()
-		|| Client.chase_target->Client.Respawn.spectator || Client.chase_target->Client.chase_target)
+	if (!Client.Chase.Target->GetInUse()
+		|| Client.Chase.Target->Client.Respawn.spectator || Client.Chase.Target->Client.Chase.Target)
 	{
-		CPlayerEntity *old = Client.chase_target;
+		CPlayerEntity *old = Client.Chase.Target;
 		ChaseNext();
-		if (Client.chase_target == old)
+		if (Client.Chase.Target == old)
 		{
-			Client.chase_target = NULL;
+			Client.Chase.Target = NULL;
 			Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 			return;
 		}
 	}
 
-	targ = Client.chase_target;
+	targ = Client.Chase.Target;
 	Client.PlayerState.GetGunIndex() = 0;
 
-	switch (Client.chase_mode)
+	switch (Client.Chase.Mode)
 	{
 	case 0:
 		{
@@ -3463,7 +3463,7 @@ void CPlayerEntity::UpdateChaseCam()
 	{
 		CStatusBar Chasing;
 		char temp[128];
-		Q_snprintfz (temp, sizeof(temp), "Chasing %s\n%s", targ->Client.Persistent.netname, (Client.chase_mode == 0) ? "Tight Chase" : ((Client.chase_mode == 1) ? "Freeform Chase" : "FPS Chase"));
+		Q_snprintfz (temp, sizeof(temp), "Chasing %s\n%s", targ->Client.Persistent.netname, (Client.Chase.Mode == 0) ? "Tight Chase" : ((Client.Chase.Mode == 1) ? "Freeform Chase" : "FPS Chase"));
 
 		Chasing.AddVirtualPoint_X (0);
 		Chasing.AddVirtualPoint_Y (-68);
@@ -3476,19 +3476,19 @@ void CPlayerEntity::UpdateChaseCam()
 
 void CPlayerEntity::ChaseNext()
 {
-	if (!Client.chase_target)
+	if (!Client.Chase.Target)
 		return;
 
-	switch (Client.chase_mode)
+	switch (Client.Chase.Mode)
 	{
 	case 0:
 	case 1:
-		Client.chase_mode++;
+		Client.Chase.Mode++;
 		Client.LayoutFlags |= LF_UPDATECHASE;
 		return;
 	};
 
-	int i = Client.chase_target->State.GetNumber();
+	int i = Client.Chase.Target->State.GetNumber();
 	CPlayerEntity *e;
 	do {
 		i++;
@@ -3501,19 +3501,19 @@ void CPlayerEntity::ChaseNext()
 			continue;
 		if (!e->Client.Respawn.spectator)
 			break;
-	} while (e != Client.chase_target);
+	} while (e != Client.Chase.Target);
 
-	Client.chase_target = e;
-	Client.chase_mode = 0;
+	Client.Chase.Target = e;
+	Client.Chase.Mode = 0;
 	Client.LayoutFlags |= LF_UPDATECHASE;
 }
 
 void CPlayerEntity::ChasePrev()
 {
-	if (!Client.chase_target)
+	if (!Client.Chase.Target)
 		return;
 
-	int i = Client.chase_target->State.GetNumber();
+	int i = Client.Chase.Target->State.GetNumber();
 	CPlayerEntity *e;
 	do {
 		i--;
@@ -3526,10 +3526,10 @@ void CPlayerEntity::ChasePrev()
 			continue;
 		if (!e->Client.Respawn.spectator)
 			break;
-	} while (e != Client.chase_target);
+	} while (e != Client.Chase.Target);
 
-	Client.chase_target = e;
-	Client.chase_mode = 0;
+	Client.Chase.Target = e;
+	Client.Chase.Mode = 0;
 	Client.LayoutFlags |= LF_UPDATECHASE;
 }
 
@@ -3540,9 +3540,9 @@ void CPlayerEntity::GetChaseTarget()
 		CPlayerEntity *other = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (other->GetInUse() && !other->Client.Respawn.spectator && !other->NoClip)
 		{
-			Client.chase_target = other;
+			Client.Chase.Target = other;
 			Client.LayoutFlags |= LF_UPDATECHASE;
-			Client.chase_mode = 0;
+			Client.Chase.Mode = 0;
 			UpdateChaseCam();
 			return;
 		}
@@ -3575,9 +3575,9 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, int type)
 {
 	if (type == PNOISE_WEAPON)
 	{
-		if (Client.silencer_shots)
+		if (Client.Timers.SilencerShots)
 		{
-			Client.silencer_shots--;
+			Client.Timers.SilencerShots--;
 			return;
 		}
 	}

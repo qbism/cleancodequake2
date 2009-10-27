@@ -575,7 +575,7 @@ void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 	}
 
 	// if noexit, do a ton of damage to other
-	if ((game.mode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit && (other != world->Entity))
+	if ((game.mode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit && (other != World))
 	{
 		if ((other->EntityFlags & ENT_HURTABLE))
 		{

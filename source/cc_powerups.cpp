@@ -299,10 +299,10 @@ void CQuadDamage::Use (CPlayerEntity *ent)
 		quad_drop_timeout_hack = 0;
 	}
 
-	if (ent->Client.quad_framenum > level.Frame)
-		ent->Client.quad_framenum += timeOut;
+	if (ent->Client.Timers.QuadDamage > level.Frame)
+		ent->Client.Timers.QuadDamage += timeOut;
 	else
-		ent->Client.quad_framenum = level.Frame + timeOut;
+		ent->Client.Timers.QuadDamage = level.Frame + timeOut;
 
 	ent->Client.Persistent.Inventory -= this;
 
@@ -324,10 +324,10 @@ void CInvulnerability::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.invincible_framenum > level.Frame)
-		ent->Client.invincible_framenum += 300;
+	if (ent->Client.Timers.Invincibility > level.Frame)
+		ent->Client.Timers.Invincibility += 300;
 	else
-		ent->Client.invincible_framenum = level.Frame + 300;
+		ent->Client.Timers.Invincibility = level.Frame + 300;
 
 	ent->PlaySound (CHAN_ITEM, SoundIndex("items/protect.wav"));
 }
@@ -346,7 +346,7 @@ void CSilencer::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 void CSilencer::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
-	ent->Client.silencer_shots += 30;
+	ent->Client.Timers.SilencerShots += 30;
 }
 
 void CRebreather::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
@@ -364,10 +364,10 @@ void CRebreather::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.breather_framenum > level.Frame)
-		ent->Client.breather_framenum += 300;
+	if (ent->Client.Timers.Rebreather > level.Frame)
+		ent->Client.Timers.Rebreather += 300;
 	else
-		ent->Client.breather_framenum = level.Frame + 300;
+		ent->Client.Timers.Rebreather = level.Frame + 300;
 }
 
 void CEnvironmentSuit::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
@@ -385,10 +385,10 @@ void CEnvironmentSuit::Use (CPlayerEntity *ent)
 {
 	ent->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.enviro_framenum > level.Frame)
-		ent->Client.enviro_framenum += 300;
+	if (ent->Client.Timers.EnvironmentSuit > level.Frame)
+		ent->Client.Timers.EnvironmentSuit += 300;
 	else
-		ent->Client.enviro_framenum = level.Frame + 300;
+		ent->Client.Timers.EnvironmentSuit = level.Frame + 300;
 }
 
 void CBandolier::DoPickup (class CItemEntity *ent, CPlayerEntity *other)

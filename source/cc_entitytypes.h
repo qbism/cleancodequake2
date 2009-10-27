@@ -153,10 +153,17 @@ CC_ENUM (uint8, EPhysicsType)
 class CPhysicsEntity : public virtual CBaseEntity
 {
 public:
+	float				GravityMultiplier;	// per entity gravity multiplier (1.0 is normal)
+											// use for lowgrav artifact, flares
 	EPhysicsType		PhysicsType;
 	vec3f				AngularVelocity;
 	vec3f				Velocity;
 	float				Mass;
+	struct WaterInfo_t
+	{
+		EBrushContents		Type;
+		EWaterLevel			Level;
+	} WaterInfo;
 
 	bool				PhysicsDisabled;
 	CPhysicsEntity ();

@@ -129,7 +129,6 @@ void G_InitEdict (edict_t *e)
 {
 	e->inUse = true;
 	e->classname = "noclass";
-	e->gravity = 1.0;
 	e->state.number = e - g_edicts;
 }
 
@@ -507,10 +506,10 @@ ENTITYFIELDS_BEGIN(CMapEntity)
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("model",			GameEntityMemberOffset(model),					FT_LEVEL_STRING | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
+	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_LEVEL_STRING),
 
 	CEntityField ("item",			GameEntityMemberOffset(item),					FT_ITEM | FT_GAME_ENTITY),
 	CEntityField ("pathtarget",		GameEntityMemberOffset(pathtarget),				FT_LEVEL_STRING | FT_GAME_ENTITY),
-	CEntityField ("team",			GameEntityMemberOffset(team),					FT_LEVEL_STRING | FT_GAME_ENTITY),
 
 	CEntityField ("owner",			GameEntityMemberOffset(owner),					FT_ENTITY | FT_GAME_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };

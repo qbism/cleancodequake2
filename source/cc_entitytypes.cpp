@@ -221,16 +221,21 @@ int CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, int damage, i
 		save = damage;
 
 	CTempEnt_Splashes::ShieldSparks (point, normal, (pa_te_type == TE_SCREEN_SPARKS) ? true : false);
-	gameEntity->powerarmor_time = level.Frame + 2;
 
 	power_used = save / damagePerCell;
 	if (!power_used)
 		power_used = 1;
 
 	if (IsClient)
+	{
 		Player->Client.Persistent.Inventory.Remove(index, power_used);
+		Player->Client.PowerArmorTime = 2;
+	}
 	else if (IsMonster)
+	{
 		Monster->Monster->PowerArmorPower -= power_used;
+		Monster->Monster->PowerArmorTime = 2;
+	}
 	return save;
 }
 
@@ -416,7 +421,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	}
 
 	// check for invincibility
-	if ((isClient && (Client->invincible_framenum > level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
+	if ((isClient && (Client->Timers.Invincibility > level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
 	{
 		if (Player->PainDebounceTime < level.Frame)
 		{
@@ -580,14 +585,16 @@ void CTouchableEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t 
 }
 
 CPhysicsEntity::CPhysicsEntity () :
-CBaseEntity()
+CBaseEntity(),
+GravityMultiplier(1.0f)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
 };
 
 CPhysicsEntity::CPhysicsEntity (int Index) :
-CBaseEntity(Index)
+CBaseEntity(Index),
+GravityMultiplier(1.0f)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
@@ -595,7 +602,7 @@ CBaseEntity(Index)
 
 void CPhysicsEntity::AddGravity()
 {
-	Velocity.Z -= gameEntity->gravity * sv_gravity->Float() * 0.1f;
+	Velocity.Z -= GravityMultiplier * sv_gravity->Float() * 0.1f;
 }
 
 CTrace CPhysicsEntity::PushEntity (vec3f &push)
@@ -739,11 +746,11 @@ bool CBounceProjectile::Run ()
 // check for water transition
 	vec3f or = State.GetOrigin ();
 
-	wasinwater = (gameEntity->watertype & CONTENTS_MASK_WATER) ? true : false;
-	gameEntity->watertype = PointContents (or);
-	isinwater = (gameEntity->watertype & CONTENTS_MASK_WATER) ? true : false;
+	wasinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
+	WaterInfo.Type = PointContents (or);
+	isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
 
-	gameEntity->waterlevel = (isinwater) ? WATER_FEET : WATER_NONE;
+	WaterInfo.Level = (isinwater) ? WATER_FEET : WATER_NONE;
 	if (!wasinwater && isinwater)
 		World->PlayPositionedSound (old_origin, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 	else if (wasinwater && !isinwater)
@@ -848,11 +855,11 @@ bool CFlyMissileProjectile::Run ()
 	}
 	
 // check for water transition
-	wasinwater = (gameEntity->watertype & CONTENTS_MASK_WATER) ? true : false;
-	gameEntity->watertype = PointContents (State.GetOrigin());
-	isinwater = (gameEntity->watertype & CONTENTS_MASK_WATER) ? true : false;
+	wasinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
+	WaterInfo.Type = PointContents (State.GetOrigin());
+	isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
 
-	gameEntity->waterlevel = (isinwater) ? WATER_FEET : WATER_NONE;
+	WaterInfo.Level = (isinwater) ? WATER_FEET : WATER_NONE;
 
 	if (!wasinwater && isinwater)
 		World->PlayPositionedSound (old_origin, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
@@ -1099,11 +1106,11 @@ bool CStepPhysics::Run ()
 	{
 		if (!(Flags & FL_FLY))
 		{
-			if (!((Flags & FL_SWIM) && (gameEntity->waterlevel > WATER_WAIST)))
+			if (!((Flags & FL_SWIM) && (WaterInfo.Level > WATER_WAIST)))
 			{
 				if (Velocity.Z < sv_gravity->Float() * -0.1)
 					hitsound = true;
-				if (gameEntity->waterlevel == WATER_NONE)
+				if (WaterInfo.Level == WATER_NONE)
 					AddGravity ();
 			}
 		}
@@ -1127,7 +1134,7 @@ bool CStepPhysics::Run ()
 	{
 		speed = Q_fabs(Velocity.Z);
 		control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
-		newspeed = speed - (0.1f * control * SV_WATERFRICTION * gameEntity->waterlevel);
+		newspeed = speed - (0.1f * control * SV_WATERFRICTION * WaterInfo.Level);
 		if (newspeed < 0)
 			newspeed = 0;
 		newspeed /= speed;

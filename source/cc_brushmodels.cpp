@@ -1095,7 +1095,7 @@ void CDoor::Spawn ()
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
-	if (!gameEntity->team)
+	if (!Team.HasTeam)
 		Team.Master = this;
 
 	Link ();
@@ -1261,7 +1261,7 @@ void CRotatingDoor::Spawn ()
 		State.GetEffects() |= EF_ANIM_ALL;
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
-	if (!gameEntity->team)
+	if (!Team.HasTeam)
 		Team.Master = this;
 
 	Link ();

@@ -121,7 +121,7 @@ void ED_CallSpawn (edict_t *ent)
 	if (!ent->classname)
 	{
 		//gi.dprintf ("ED_CallSpawn: NULL classname\n");
-		MapPrint (MAPPRINT_ERROR, ent, ent->state.origin, "NULL classname!\n");
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "NULL classname!\n");
 		return;
 	}
 
@@ -130,7 +130,7 @@ void ED_CallSpawn (edict_t *ent)
 
 	if (!MapEntity)
 	{
-		MapPrint (MAPPRINT_ERROR, ent, ent->state.origin, "Invalid entity (no spawn function)\n");
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity (no spawn function)\n");
 
 _CC_DISABLE_DEPRECATION
 		G_FreeEdict (ent);
@@ -244,13 +244,14 @@ void G_FindTeams ()
 			continue;
 		if (!e->GetInUse())
 			continue;
-		if (!e->gameEntity->team)
+		if (!e->Team.String)
 			continue;
 		if (e->Flags & FL_TEAMSLAVE)
 			continue;
 
 		CBaseEntity *chain = e;
 		e->Team.Master = e;
+		e->Team.HasTeam = true;
 
 		c++;
 		c2++;
@@ -260,21 +261,26 @@ void G_FindTeams ()
 				continue;
 			if (!e2->GetInUse())
 				continue;
-			if (!e2->gameEntity->team)
+			if (!e2->Team.String)
 				continue;
 			if (e2->Flags & FL_TEAMSLAVE)
 				continue;
 
-			if (!strcmp(e->gameEntity->team, e2->gameEntity->team))
+			if (!strcmp(e->Team.String, e2->Team.String))
 			{
 				c2++;
 				chain->Team.Chain = e2;
 				e2->Team.Master = e;
+				e2->Team.HasTeam = true;
+
+				QDelete e2->Team.String; // Free team string
 
 				chain = e2;
 				e2->Flags |= FL_TEAMSLAVE;
 			}
 		}
+
+		QDelete e->Team.String; // Free team string
 	}
 
 	DebugPrintf ("%i teams with %i entities\n", c, c2);

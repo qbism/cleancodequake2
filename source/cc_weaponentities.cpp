@@ -132,9 +132,9 @@ void CGrenade::Explode ()
 
 	origin = origin.MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
-		CTempEnt_Explosions::GrenadeExplosion(origin, this, !!gameEntity->waterlevel);
+		CTempEnt_Explosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
 	else
-		CTempEnt_Explosions::RocketExplosion(origin, this, !!gameEntity->waterlevel);
+		CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free (); // "delete" the entity
 }
@@ -364,7 +364,7 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	// calculate position for the explosion entity
 	origin = origin.MultiplyAngles (-0.02f, Velocity);
 	T_RadiusDamage(this, GetOwner(), RadiusDamage, other, DamageRadius, MOD_R_SPLASH);
-	CTempEnt_Explosions::RocketExplosion(origin, this, !!gameEntity->waterlevel);
+	CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free ();
 }
@@ -1402,7 +1402,7 @@ void CGrappleEntity::GrappleDrawCable()
 
 void CGrappleEntity::GrapplePull()
 {
-	byte volume = (Player->Client.silencer_shots) ? 51 : 255;
+	byte volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
 
 	if ((Player->Client.Persistent.Weapon->Item == NItems::Grapple) &&
 		!Player->Client.NewWeapon &&
@@ -1546,7 +1546,7 @@ void CGrappleEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 
 	GetSolid() = SOLID_NOT;
 
-	byte volume = (Player->Client.silencer_shots) ? 51 : 255;
+	byte volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
 	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grpull.wav"), volume);
 	PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhit.wav"), volume);
 

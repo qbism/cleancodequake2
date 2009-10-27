@@ -358,8 +358,9 @@ void AI_SetSightClient ()
 			check = 1;
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[check].Entity);
 		if (ent->GetInUse()
-			&& ent->Health > 0
-			&& !(ent->Flags & FL_NOTARGET) )
+			&& (ent->Health > 0)
+			&& !(ent->Flags & FL_NOTARGET) 
+			&& (ent->Client.Persistent.state >= SVCS_SPAWNED))
 		{
 			level.SightClient = ent;
 			return;		// got one
@@ -670,7 +671,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 					if (dz > 40)
 						neworg.Z -= 8;
 
-					if (!((Entity->Flags & FL_SWIM) && (Entity->gameEntity->waterlevel < WATER_WAIST)) && (dz < 30))
+					if (!((Entity->Flags & FL_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < 30))
 						neworg.Z += 8;
 				}
 				else
@@ -690,7 +691,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			// fly monsters don't enter water voluntarily
 			if (Entity->Flags & FL_FLY)
 			{
-				if (!Entity->gameEntity->waterlevel)
+				if (!Entity->WaterInfo.Level)
 				{
 					vec3f test (trace.EndPos);
 					test.Z += Entity->GetMins().Z + 1;
@@ -702,7 +703,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			// swim monsters don't exit water voluntarily
 			if (Entity->Flags & FL_SWIM)
 			{
-				if (Entity->gameEntity->waterlevel < WATER_WAIST)
+				if (Entity->WaterInfo.Level < WATER_WAIST)
 				{
 					vec3f test (trace.EndPos);
 					test.Z += Entity->GetMins().Z + 1;
@@ -753,7 +754,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 
 	// don't go in to water
-	/*if (Entity->gameEntity->waterlevel == WATER_NONE)
+	/*if (Entity->WaterInfo.Level == WATER_NONE)
 	{
 		test[0] = trace.endPos[0];
 		test[1] = trace.endPos[1];
@@ -1723,7 +1724,7 @@ bool CMonster::AI_CheckAttack()
 				}
 				else
 				{
-					Entity->gameEntity->show_hostile = level.Frame + 10;
+					Entity->ShowHostile = level.Frame + 10;
 					return false;
 				}
 			}
@@ -1785,7 +1786,7 @@ bool CMonster::AI_CheckAttack()
 		}
 	}
 
-	Entity->gameEntity->show_hostile = level.Frame + 10;		// wake up other monsters
+	Entity->ShowHostile = level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
 	EnemyVis = IsVisible(Entity, Entity->Enemy);
@@ -1851,7 +1852,7 @@ bool CMonster::AI_CheckAttack()
 			}
 			else
 			{
-				Entity->gameEntity->show_hostile = level.Frame + 10;
+				Entity->ShowHostile = level.Frame + 10;
 
 				if (!Entity->Enemy || (Entity->Enemy && !IsVisible(Entity, Entity->Enemy)))
 					return false;
@@ -1931,7 +1932,7 @@ bool CMonster::AI_CheckAttack()
 		}
 	}
 
-	Entity->gameEntity->show_hostile = level.Frame + 10;		// wake up other monsters
+	Entity->ShowHostile = level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
 	EnemyVis = IsVisible(Entity, Entity->Enemy);
@@ -3076,7 +3077,7 @@ void CMonster::FoundTarget ()
 	}
 #endif
 
-	Entity->gameEntity->show_hostile = level.Frame + 10;		// wake up other monsters
+	Entity->ShowHostile = level.Frame + 10;		// wake up other monsters
 
 	LastSighting = Entity->Enemy->State.GetOrigin();
 	TrailTime = level.Frame;
@@ -3129,7 +3130,7 @@ void CMonster::SetEffects()
 	if (Entity->Health <= 0)
 		return;
 
-	if (Entity->gameEntity->powerarmor_time > level.Frame)
+	if (PowerArmorTime--)
 	{
 		if (PowerArmorType == POWER_ARMOR_SCREEN)
 			Entity->State.GetEffects() |= EF_POWERSCREEN;
@@ -3152,7 +3153,7 @@ void CMonster::WorldEffects()
 	{
 		if (!(Entity->Flags & FL_SWIM))
 		{
-			if (Entity->gameEntity->waterlevel < WATER_UNDER)
+			if (Entity->WaterInfo.Level < WATER_UNDER)
 				Entity->AirFinished = level.Frame + 120;
 			else if (Entity->AirFinished < level.Frame)
 			{
@@ -3168,7 +3169,7 @@ void CMonster::WorldEffects()
 		}
 		else
 		{
-			if (Entity->gameEntity->waterlevel > WATER_NONE)
+			if (Entity->WaterInfo.Level > WATER_NONE)
 				Entity->AirFinished = level.Frame + 90;
 			else if (Entity->AirFinished < level.Frame)
 			{	// suffocate!
@@ -3184,7 +3185,7 @@ void CMonster::WorldEffects()
 		}
 	}
 	
-	if (Entity->gameEntity->waterlevel == WATER_NONE)
+	if (Entity->WaterInfo.Level == WATER_NONE)
 	{
 		if (Entity->Flags & FL_INWATER)
 		{	
@@ -3194,20 +3195,20 @@ void CMonster::WorldEffects()
 		return;
 	}
 
-	if ((Entity->gameEntity->watertype & CONTENTS_LAVA) && !(Entity->Flags & FL_IMMUNE_LAVA))
+	if ((Entity->WaterInfo.Type & CONTENTS_LAVA) && !(Entity->Flags & FL_IMMUNE_LAVA))
 	{
 		if (Entity->DamageDebounceTime < level.Frame)
 		{
 			Entity->DamageDebounceTime = level.Frame + 2;
-			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 10*Entity->gameEntity->waterlevel, 0, 0, MOD_LAVA);
+			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 10*Entity->WaterInfo.Level, 0, 0, MOD_LAVA);
 		}
 	}
-	if ((Entity->gameEntity->watertype & CONTENTS_SLIME) && !(Entity->Flags & FL_IMMUNE_SLIME))
+	if ((Entity->WaterInfo.Type & CONTENTS_SLIME) && !(Entity->Flags & FL_IMMUNE_SLIME))
 	{
 		if (Entity->DamageDebounceTime < level.Frame)
 		{
 			Entity->DamageDebounceTime = level.Frame + 10;
-			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 4*Entity->gameEntity->waterlevel, 0, 0, MOD_SLIME);
+			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 4*Entity->WaterInfo.Level, 0, 0, MOD_SLIME);
 		}
 	}
 	
@@ -3215,7 +3216,7 @@ void CMonster::WorldEffects()
 	{	
 		if (!(Entity->GetSvFlags() & SVF_DEADMONSTER))
 		{
-			if (Entity->gameEntity->watertype & CONTENTS_LAVA)
+			if (Entity->WaterInfo.Type & CONTENTS_LAVA)
 			{
 				if (frand() <= 0.5)
 					Entity->PlaySound (CHAN_BODY, SoundIndex("player/lava1.wav"));
@@ -3241,23 +3242,23 @@ void CMonster::CatagorizePosition()
 
 	if (!(cont & CONTENTS_MASK_WATER))
 	{
-		Entity->gameEntity->waterlevel = WATER_NONE;
-		Entity->gameEntity->watertype = 0;
+		Entity->WaterInfo.Level = WATER_NONE;
+		Entity->WaterInfo.Type = 0;
 		return;
 	}
 
-	Entity->gameEntity->watertype = cont;
-	Entity->gameEntity->waterlevel = WATER_FEET;
+	Entity->WaterInfo.Type = cont;
+	Entity->WaterInfo.Level = WATER_FEET;
 	point.Z += 26;
 	cont = PointContents (point);
 	if (!(cont & CONTENTS_MASK_WATER))
 		return;
 
-	Entity->gameEntity->waterlevel = WATER_WAIST;
+	Entity->WaterInfo.Level = WATER_WAIST;
 	point.Z += 22;
 	cont = PointContents (point);
 	if (cont & CONTENTS_MASK_WATER)
-		Entity->gameEntity->waterlevel = WATER_UNDER;
+		Entity->WaterInfo.Level = WATER_UNDER;
 }
 
 void CMonster::CheckGround()
@@ -3475,16 +3476,12 @@ bool CMonster::FindTarget()
 
 // this is where we would check invisibility
 
-		// is client in an spot too dark to be seen?
-		if (client->gameEntity->light_level <= 5)
-			return false;
-
 		if (!IsVisible (Entity, client))
 			return false;
 
 		if (r == RANGE_NEAR)
 		{
-			if (client->gameEntity->show_hostile < level.Frame && !IsInFront (Entity, client))
+			if ((client->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile < level.Frame) && !IsInFront (Entity, client))
 				return false;
 		}
 		else if (r == RANGE_MID)
@@ -3567,7 +3564,7 @@ void CMonster::FliesOff()
 
 void CMonster::FliesOn ()
 {
-	if (Entity->gameEntity->waterlevel)
+	if (Entity->WaterInfo.Level)
 		return;
 	Entity->State.GetEffects() |= EF_FLIES;
 	Entity->State.GetSound() = SoundIndex ("infantry/inflies1.wav");
@@ -3577,7 +3574,7 @@ void CMonster::FliesOn ()
 
 void CMonster::CheckFlies ()
 {
-	if (Entity->gameEntity->waterlevel)
+	if (Entity->WaterInfo.Level)
 		return;
 
 	if (frand() > 0.5)

@@ -63,16 +63,16 @@ bool CChaingun::CanStopFidgetting (CPlayerEntity *ent)
 
 void CChaingun::FireAnimation (CPlayerEntity *ent)
 {
-	ent->Client.anim_priority = ANIM_ATTACK;
+	ent->Client.Anim.Priority = ANIM_ATTACK;
 	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
 		ent->State.GetFrame() = (FRAME_crattak1 - (ent->Client.PlayerState.GetGunFrame() & 1));
-		ent->Client.anim_end = FRAME_crattak9;
+		ent->Client.Anim.EndFrame = FRAME_crattak9;
 	}
 	else
 	{
 		ent->State.GetFrame() = (FRAME_attack1 - (ent->Client.PlayerState.GetGunFrame() & 1));
-		ent->Client.anim_end = FRAME_attack8;
+		ent->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }
 
@@ -92,7 +92,7 @@ void CChaingun::Fire (CPlayerEntity *ent)
 	if ((ent->Client.PlayerState.GetGunFrame() == 14) && !(ent->Client.Buttons & BUTTON_ATTACK))
 	{
 		ent->Client.PlayerState.GetGunFrame() = 31;
-		ent->Client.weapon_sound = 0;
+		ent->Client.WeaponSound = 0;
 		return;
 	}
 	else if ((ent->Client.PlayerState.GetGunFrame() == 21) && (ent->Client.Buttons & BUTTON_ATTACK)
@@ -105,11 +105,11 @@ void CChaingun::Fire (CPlayerEntity *ent)
 
 	if (ent->Client.PlayerState.GetGunFrame() == 22)
 	{
-		ent->Client.weapon_sound = 0;
+		ent->Client.WeaponSound = 0;
 		ent->PlaySound (CHAN_AUTO, SoundIndex("weapons/chngnd1a.wav"));
 	}
 	else
-		ent->Client.weapon_sound = SoundIndex("weapons/chngnl1a.wav");
+		ent->Client.WeaponSound = SoundIndex("weapons/chngnl1a.wav");
 
 	FireAnimation (ent);
 

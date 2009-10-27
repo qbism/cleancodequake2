@@ -223,6 +223,14 @@ CC_ENUM (uint8, EWeaponState)
 	WS_DEACTIVATING
 };
 
+// power armor types
+CC_ENUM (uint8, EPowerArmorType)
+{
+	POWER_ARMOR_NONE,
+	POWER_ARMOR_SCREEN,
+	POWER_ARMOR_SHIELD
+};
+
 #ifndef MONSTERS_USE_PATHFINDING
 class CPlayerNoise : public virtual CBaseEntity
 {
@@ -240,6 +248,18 @@ public:
 	};
 };
 #endif
+
+// client_t->Anim.Priority
+CC_ENUM (uint8, EAnimPriority)
+{
+	ANIM_BASIC,
+	ANIM_WAVE,
+	ANIM_JUMP,
+	ANIM_PAIN,
+	ANIM_ATTACK,
+	ANIM_DEATH,
+	ANIM_REVERSE
+};
 
 class CClient
 {
@@ -278,45 +298,60 @@ public:
 	float			FallValue;		// for view drop on fall
 	float			BonusAlpha;
 	float			BobTime;			// so off-ground doesn't change it
+	uint8			PowerArmorTime;
+	EWaterLevel		OldWaterLevel;
+	MediaIndex		WeaponSound;
 
 	CClient (gclient_t *client);
 
 	int				&GetPing ();
 	void			Clear ();
 
-	EWaterLevel		OldWaterLevel;
-	int			breather_sound;
-
-	int			machinegun_shots;	// for weapon raising
-
 	// animation vars
-	int			anim_end;
-	int			anim_priority;
-	bool		anim_duck;
-	bool		anim_run;
+	struct client_Animation_t
+	{
+		uint16			EndFrame;
+		EAnimPriority	Priority;
+		bool			Duck, Run;
+	} Anim;
 
 	// powerup timers
-	FrameNumber_t		quad_framenum;
-	FrameNumber_t		invincible_framenum;
-	FrameNumber_t		breather_framenum;
-	FrameNumber_t		enviro_framenum;
+	struct client_Timers_t
+	{
+		FrameNumber_t		QuadDamage,
+							Invincibility,
+							Rebreather,
+							EnvironmentSuit;
 
-	bool		grenade_blew_up;
-	bool		grenade_thrown;
-	FrameNumber_t		grenade_time;
-	int			silencer_shots;
-	MediaIndex	weapon_sound;
+		int16				SilencerShots;
 
-	FrameNumber_t		pickup_msg_time;
+		uint8				MachinegunShots;	// for weapon raising
+		bool				BreatherSound;
+	} Timers;
 
-	FrameNumber_t		flood_locktill;		// locked from talking
-	FrameNumber_t		flood_when[10];		// when messages were said
-	int			flood_whenhead;		// head pointer for when said
+	struct client_Grenade_Data_t
+	{
+		bool			BlewUp;
+		bool			Thrown;
+		FrameNumber_t	Time;
+	} Grenade;
 
-	FrameNumber_t		respawn_time;		// can respawn when time > this
+	FrameNumber_t		PickupMessageTime;
 
-	CPlayerEntity		*chase_target;		// player we are chasing
-	int					chase_mode;
+	struct client_Flood_t
+	{
+		FrameNumber_t	LockTill; // locked from talking
+		FrameNumber_t	When[10]; // when messages were said
+		uint8			WhenHead; // head pointer for when said
+	} Flood;
+
+	FrameNumber_t		RespawnTime;		// can respawn when time > this
+
+	struct client_Chase_t
+	{
+		CPlayerEntity	*Target;
+		uint8			Mode;
+	} Chase;
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
@@ -325,9 +360,16 @@ public:
 	FrameNumber_t		ctf_grapplereleasetime;	// time of grapple release
 //ZOID
 #endif
-	FrameNumber_t		regentime;		// regen tech
-	FrameNumber_t		techsndtime;
-	FrameNumber_t		lasttechmsg;
+
+	struct client_Tech_t
+	{
+		// Tech-specific fields
+		FrameNumber_t	RegenTime;
+
+		// Global fields
+		FrameNumber_t	SoundTime;
+		FrameNumber_t	LastTechMessage;
+	} Tech;
 };
 
 // Players don't think or have (game) controlled physics.

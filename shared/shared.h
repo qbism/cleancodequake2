@@ -676,6 +676,12 @@ struct userCmd_t
 	int16		upMove;
 
 	byte		impulse;		// remove?
+
+	// Paril notes:
+	// lightLevel cannot be used to accurately check light under player.
+	// lightLevel is stored as a byte, yet is modulate-dependant; for example,
+	// a light of value 127 will only show as 127 on gl_modulate 1. Above that,
+	// it will multiply by the modulate value, making this unreliable.
 	byte		lightLevel;		// light level the player is standing on
 };
 

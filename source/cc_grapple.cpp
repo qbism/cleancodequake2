@@ -89,7 +89,7 @@ void CGrapple::Fire (CPlayerEntity *Player)
 	Player->Client.KickOrigin = forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grfire.wav"), (Player->Client.silencer_shots) ? 51 : 255);
+	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grfire.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 	CGrappleEntity::Spawn (Player, start, forward, 10, CTF_GRAPPLE_SPEED);
 		
 	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
@@ -123,7 +123,7 @@ void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 		if (Player->Client.ctf_grapplestate == CTF_GRAPPLE_STATE_HANG+1)
 		{
 			Player->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_FLY;
-			Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grreset.wav"), (Player->Client.silencer_shots) ? 51 : 255);
+			Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grreset.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 		}
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
 		{

@@ -60,14 +60,6 @@ CC_ENUM (uint8, EGibType)
 	GIB_METALLIC
 };
 
-// power armor types
-CC_ENUM (uint8, EPowerArmorType)
-{
-	POWER_ARMOR_NONE,
-	POWER_ARMOR_SCREEN,
-	POWER_ARMOR_SHIELD
-};
-
 // handedness values
 CC_ENUM (uint8, EHandedness)
 {
@@ -76,7 +68,7 @@ CC_ENUM (uint8, EHandedness)
 	CENTER_HANDED
 };
 
-CC_ENUM (uint32, ECrossLevelTriggerFlags)
+CC_ENUM (uint8, ECrossLevelTriggerFlags)
 {
 	SFL_CROSS_TRIGGER_1		= BIT(0),
 	SFL_CROSS_TRIGGER_2		= BIT(1),
@@ -324,8 +316,6 @@ extern	edict_t			*g_edicts;
 #define LLOFS(x) (int)&(((CLevelLocals *)0)->x)
 #define CLOFS(x) (int)&(((CClient *)0)->x)
 
-#define world	(&g_edicts[0])
-
 // Spawnflags
 // 6 bits reserved for editor flags
 // 8 bits used as power cube id bits for coop games
@@ -378,12 +368,6 @@ enum
 #define DEFAULT_SSHOTGUN_COUNT	20
 
 //
-// g_misc.c
-//
-void ThrowHead (edict_t *self, MediaIndex gibIndex, int damage, int type);
-void BecomeExplosion1(edict_t *self);
-
-//
 // g_ai.c
 //
 void AI_SetSightClient ();
@@ -393,27 +377,7 @@ void AI_SetSightClient ();
 //
 void BeginIntermission (class CTargetChangeLevel *targ);
 
-//
-// g_chase.c
-//
-void UpdateChaseCam(CPlayerEntity *ent);
-void ChaseNext(CPlayerEntity *ent);
-void ChasePrev(CPlayerEntity *ent);
-void GetChaseTarget(CPlayerEntity *ent);
-
 //============================================================================
-
-// client_t->anim_priority
-enum
-{
-	ANIM_BASIC,
-	ANIM_WAVE,
-	ANIM_JUMP,
-	ANIM_PAIN,
-	ANIM_ATTACK,
-	ANIM_DEATH,
-	ANIM_REVERSE
-};
 
 // this structure is cleared on each PutClientInServer(),
 // except for 'client->Persistent'
@@ -465,21 +429,7 @@ struct edict_t
 	//
 	char		*classname;
 
-	FrameNumber_t		timestamp;
-
-	float		angle;			// set in qe3, -1 = up, -2 = down
-	char		*team;
 	char		*pathtarget;
-
-	float		gravity;		// per entity gravity multiplier (1.0 is normal)
-								// use for lowgrav artifact, flares
-
-	int			show_hostile;
-	FrameNumber_t		powerarmor_time;
-
-	EBrushContents			watertype;
-	EWaterLevel			waterlevel;
-	int			light_level;
 
 	// Paril
 	CBaseItem		*item;

@@ -187,9 +187,9 @@ public:
 
 		bool Select (CPlayerEntity *ent)
 		{
-			if (ent->Client.chase_target)
+			if (ent->Client.Chase.Target)
 			{
-				ent->Client.chase_target = NULL;
+				ent->Client.Chase.Target = NULL;
 				return true;
 			}
 
@@ -198,7 +198,7 @@ public:
 				CPlayerEntity *e = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 				if (e->GetInUse() && e->GetSolid() != SOLID_NOT)
 				{
-					ent->Client.chase_target = e;
+					ent->Client.Chase.Target = e;
 					ent->Client.LayoutFlags |= LF_UPDATECHASE;
 					return true;
 				}
@@ -366,7 +366,7 @@ public:
 		CObserverLabel *ChaseCam = QNew (com_levelPool, 0) CObserverLabel(this, x, y);
 		ChaseCam->Enabled = true;
 		ChaseCam->Align = LA_LEFT;
-		if (ent->Client.chase_target)
+		if (ent->Client.Chase.Target)
 			Q_snprintfz (ChaseCam->LabelString, sizeof(ChaseCam->LabelString), "Leave Chase Camera");
 		else
 			Q_snprintfz (ChaseCam->LabelString, sizeof(ChaseCam->LabelString), "Chase Camera");

@@ -88,11 +88,11 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	Player->Client.BonusAlpha = 0.25;	
 
 	// show icon and name on status bar
-	if (Player->Client.pickup_msg_time != (level.Frame + 30))
+	if (Player->Client.PickupMessageTime != (level.Frame + 30))
 	{
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_ICON) = gameEntity->item->GetIconIndex();
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_STRING) = gameEntity->item->GetConfigStringNumber();
-		Player->Client.pickup_msg_time = level.Frame + 30;
+		Player->Client.PickupMessageTime = level.Frame + 30;
 	}
 
 	// change selected item
@@ -183,7 +183,7 @@ void CItemEntity::Think ()
 
 			State.GetOrigin() = tr.EndPos;
 
-			if (gameEntity->team)
+			if (Team.HasTeam)
 			{
 				Flags &= ~FL_TEAMSLAVE;
 				GetSvFlags() |= SVF_NOCLIENT;
@@ -225,7 +225,7 @@ void CItemEntity::Think ()
 
 		{
 			CBaseEntity *RespawnedEntity = this;
-			if (gameEntity->team)
+			if (Team.HasTeam)
 			{
 				CBaseEntity *Master = Team.Master;
 
@@ -236,7 +236,7 @@ void CItemEntity::Think ()
 				if ((game.mode & GAME_CTF) &&
 					dmFlags.dfWeaponsStay &&
 					Master->gameEntity->item && (Master->gameEntity->item->Flags & ITEMFLAG_WEAPON))
-					RespawnedEntity = Master; // This the way to do it?
+					RespawnedEntity = Master;
 				else
 		//ZOID
 		#endif

@@ -93,7 +93,7 @@ void Cmd_Kill_f (CPlayerEntity *ent)
 		return;
 //ZOID
 
-	if((level.Frame - ent->Client.respawn_time) < 50)
+	if((level.Frame - ent->Client.RespawnTime) < 50)
 		return;
 
 	ent->Flags &= ~FL_GODMODE;
@@ -198,38 +198,38 @@ void Cmd_Wave_f (CPlayerEntity *ent)
 	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 		return;
 
-	if (ent->Client.anim_priority > ANIM_WAVE)
+	if (ent->Client.Anim.Priority > ANIM_WAVE)
 		return;
 
-	ent->Client.anim_priority = ANIM_WAVE;
+	ent->Client.Anim.Priority = ANIM_WAVE;
 
 	switch (ArgGeti(1))
 	{
 	case 0:
 		ent->PrintToClient (PRINT_HIGH, "flipoff\n");
 		ent->State.GetFrame() = FRAME_flip01 - 1;
-		ent->Client.anim_end = FRAME_flip12;
+		ent->Client.Anim.EndFrame = FRAME_flip12;
 		break;
 	case 1:
 		ent->PrintToClient (PRINT_HIGH, "salute\n");
 		ent->State.GetFrame() = FRAME_salute01 - 1;
-		ent->Client.anim_end = FRAME_salute11;
+		ent->Client.Anim.EndFrame = FRAME_salute11;
 		break;
 	case 2:
 		ent->PrintToClient (PRINT_HIGH, "taunt\n");
 		ent->State.GetFrame() = FRAME_taunt01 - 1;
-		ent->Client.anim_end = FRAME_taunt17;
+		ent->Client.Anim.EndFrame = FRAME_taunt17;
 		break;
 	case 3:
 		ent->PrintToClient (PRINT_HIGH, "wave\n");
 		ent->State.GetFrame() = FRAME_wave01 - 1;
-		ent->Client.anim_end = FRAME_wave11;
+		ent->Client.Anim.EndFrame = FRAME_wave11;
 		break;
 	case 4:
 	default:
 		ent->PrintToClient (PRINT_HIGH, "point\n");
 		ent->State.GetFrame() = FRAME_point01 - 1;
-		ent->Client.anim_end = FRAME_point12;
+		ent->Client.Anim.EndFrame = FRAME_point12;
 		break;
 	}
 }
@@ -245,26 +245,26 @@ bool CheckFlood(CPlayerEntity *ent)
 {
 	if (flood_msgs->Integer())
 	{
-		if (level.Frame < ent->Client.flood_locktill)
+		if (level.Frame < ent->Client.Flood.LockTill)
 		{
 			ent->PrintToClient (PRINT_HIGH, "You can't talk for %d more seconds\n",
-				(int)((ent->Client.flood_locktill - level.Frame)/10));
+				(int)((ent->Client.Flood.LockTill - level.Frame)/10));
 			return true;
 		}
-		int i = ent->Client.flood_whenhead - flood_msgs->Integer() + 1;
+		int i = ent->Client.Flood.WhenHead - flood_msgs->Integer() + 1;
 		if (i < 0)
-			i = (sizeof(ent->Client.flood_when)/sizeof(ent->Client.flood_when[0])) + i;
-		if (ent->Client.flood_when[i] && 
-			((level.Frame - ent->Client.flood_when[i])/10) < flood_persecond->Integer())
+			i = (sizeof(ent->Client.Flood.When)/sizeof(ent->Client.Flood.When[0])) + i;
+		if (ent->Client.Flood.When[i] && 
+			((level.Frame - ent->Client.Flood.When[i])/10) < flood_persecond->Integer())
 		{
-			ent->Client.flood_locktill = level.Frame + (flood_waitdelay->Float() * 10);
+			ent->Client.Flood.LockTill = level.Frame + (flood_waitdelay->Float() * 10);
 			ent->PrintToClient (PRINT_CHAT, "Flood protection:  You can't talk for %d seconds.\n",
 				flood_waitdelay->Integer());
 			return true;
 		}
-		ent->Client.flood_whenhead = (ent->Client.flood_whenhead + 1) %
-			(sizeof(ent->Client.flood_when)/sizeof(ent->Client.flood_when[0]));
-		ent->Client.flood_when[ent->Client.flood_whenhead] = level.Frame;
+		ent->Client.Flood.WhenHead = (ent->Client.Flood.WhenHead + 1) %
+			(sizeof(ent->Client.Flood.When)/sizeof(ent->Client.Flood.When[0]));
+		ent->Client.Flood.When[ent->Client.Flood.WhenHead] = level.Frame;
 	}
 	return false;
 }
@@ -438,13 +438,8 @@ void GCmd_SayTeam_f (CPlayerEntity *ent)
 
 void Cmd_Test_f (CPlayerEntity *ent)
 {
-	/*
-	DebugPrintf ("%i\n", [] ()
-	{
-		return 6;
-	} ()
-	);
-	*/
+	for (int i = 0; i < 12; i++)
+		DebugPrintf ("%i\n", irandom(300)/100);
 }
 
 #include "cc_menu.h"

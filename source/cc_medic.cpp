@@ -148,7 +148,7 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 
 #ifdef MONSTER_USE_ROGUE_AI
 	if (best)
-		Entity->gameEntity->timestamp = level.Frame + MEDIC_TRY_TIME;
+		MedicTryTime = level.Frame + MEDIC_TRY_TIME;
 #endif
 
 	return best;
@@ -652,7 +652,7 @@ void CMedic::CableAttack ()
 	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
 	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
 	{
-		if (tr.ent == world)
+		if (tr.Ent == World)
 		{
 			// give up on second try
 			if (MedicTries > 1)
@@ -720,7 +720,7 @@ void CMedic::CableAttack ()
 			AbortHeal (true, false);
 			return;
 		} 
-		else if (tr.ent != world)
+		else if (tr.Ent != World)
 		{
 			AbortHeal (true, false);
 			return;
@@ -872,10 +872,10 @@ bool CMedic::CheckAttack ()
 		}
 
 		// if we ran out of time, give up
-		if (Entity->gameEntity->timestamp < level.Frame)
+		if (MedicTryTime < level.Frame)
 		{
 			AbortHeal (false, true);
-			Entity->gameEntity->timestamp = 0;
+			MedicTryTime = 0;
 			return false;
 		}
 	
