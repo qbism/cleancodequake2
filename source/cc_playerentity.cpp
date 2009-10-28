@@ -193,7 +193,7 @@ void CPlayerEntity::BeginServerFrame ()
 		!(game.mode & GAME_CTF) &&
 #endif
 		Client.Persistent.spectator != Client.Respawn.spectator &&
-		(level.Frame - Client.RespawnTime) >= 50)
+		(level.Frame - Client.Timers.RespawnTime) >= 50)
 	{
 		SpectatorRespawn();
 		return;
@@ -211,7 +211,7 @@ void CPlayerEntity::BeginServerFrame ()
 	if (DeadFlag)
 	{
 		// wait for any button just going down
-		if ( level.Frame > Client.RespawnTime)
+		if ( level.Frame > Client.Timers.RespawnTime)
 		{
 			int buttonMask;
 			// in deathmatch, only wait for attack button
@@ -254,7 +254,7 @@ void CPlayerEntity::Respawn ()
 		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
 		Client.PlayerState.GetPMove()->pmTime = 14;
 
-		Client.RespawnTime = level.Frame;
+		Client.Timers.RespawnTime = level.Frame;
 		return;
 	}
 
@@ -336,7 +336,7 @@ void CPlayerEntity::SpectatorRespawn ()
 		Client.PlayerState.GetPMove()->pmTime = 14;
 	}
 
-	Client.RespawnTime = level.Frame;
+	Client.Timers.RespawnTime = level.Frame;
 
 	if (Client.Persistent.spectator) 
 		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.netname);
@@ -393,7 +393,8 @@ void CPlayerEntity::PutInServer ()
 				Client.Persistent.score = Respawn.score;
 		break;
 	case GAME_SINGLEPLAYER:
-			memset (&Respawn, 0, sizeof(Respawn));
+			//memset (&Respawn, 0, sizeof(Respawn));
+			Respawn.Clear ();
 		break;
 	}
 
@@ -520,8 +521,8 @@ but is called after each death and level change in deathmatch
 */
 void CPlayerEntity::InitPersistent ()
 {
-	memset (&Client.Persistent, 0, sizeof(Client.Persistent));
-	Client.Persistent.UserInfo = std::cc_string();
+	//memset (&Client.Persistent, 0, sizeof(Client.Persistent));
+	Client.Persistent.Clear ();
 
 	if (!map_debug->Boolean())
 	{
@@ -1174,9 +1175,9 @@ inline void CPlayerEntity::FallingDamage ()
 #ifdef CLEANCTF_ENABLED
 //ZOID
 	// never take damage if just release grapple or on grapple
-	if (level.Frame - Client.ctf_grapplereleasetime <= 2 ||
-		(Client.ctf_grapple && 
-		Client.ctf_grapplestate > CTF_GRAPPLE_STATE_FLY))
+	if (level.Frame - Client.Grapple.ReleaseTime <= 2 ||
+		(Client.Grapple.Entity && 
+		Client.Grapple.State > CTF_GRAPPLE_STATE_FLY))
 		return;
 //ZOID
 #endif
@@ -1567,7 +1568,7 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 #ifdef CLEANCTF_ENABLED
 //ZOID: if on grapple, don't go into jump frame, go into standing
 //frame
-		if (Client.ctf_grapple)
+		if (Client.Grapple.Entity)
 		{
 			State.GetFrame() = FRAME_stand01;
 			Client.Anim.EndFrame = FRAME_stand40;
@@ -2137,7 +2138,7 @@ void CPlayerEntity::SetStats ()
 		//
 		// pickup message
 		//
-		if (level.Frame > Client.PickupMessageTime)
+		if (level.Frame > Client.Timers.PickupMessageTime)
 		{
 			Client.PlayerState.GetStat (STAT_PICKUP_ICON) = 0;
 			Client.PlayerState.GetStat (STAT_PICKUP_STRING) = 0;
@@ -2775,8 +2776,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	if (Client.ctf_grapple)
-		Client.ctf_grapple->GrapplePull ();
+	if (Client.Grapple.Entity)
+		Client.Grapple.Entity->GrapplePull ();
 //ZOID
 #endif
 
@@ -2903,7 +2904,7 @@ void CPlayerEntity::InitResp ()
 //ZOID
 #endif
 
-	memset (&Client.Respawn, 0, sizeof(Client.Respawn));
+	Client.Respawn.Clear ();
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
@@ -2947,7 +2948,8 @@ void CPlayerEntity::SaveClientData ()
 		if (!ent->GetInUse())
 			continue;
 
-		memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
+		//memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
+		ent->Client.Persistent = CPersistentData(SavedClients[i]);
 		SavedClients[i].health = ent->Health;
 		SavedClients[i].max_health = ent->MaxHealth;
 		SavedClients[i].savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
@@ -3166,7 +3168,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 	if (!DeadFlag)
 	{
-		Client.RespawnTime = level.Frame + 10;
+		Client.Timers.RespawnTime = level.Frame + 10;
 		LookAtKiller (inflictor, attacker);
 		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 		Obituary (attacker);
@@ -3194,7 +3196,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-		if ((game.mode & GAME_CTF) || Client.ctf_grapple || Client.Persistent.Flag)
+		if ((game.mode & GAME_CTF) || Client.Grapple.Entity || Client.Persistent.Flag)
 		{
 			CGrapple::PlayerResetGrapple(this);
 			CTFDeadDropFlag();
@@ -3855,7 +3857,7 @@ void CPlayerEntity::Disconnect ()
 	ConfigString (CS_PLAYERSKINS+(State.GetNumber()-1), "");
 }
 
-const char *MonsterAOrAn (const char *Name)
+inline const char *MonsterAOrAn (const char *Name)
 {
 	static const char *_a = "a";
 	static const char *_an = "an";

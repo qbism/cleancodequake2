@@ -125,6 +125,11 @@ public:
 	bool		spectator;			// client is a spectator
 
 	colorf		viewBlend; // View blending
+
+	void Clear ()
+	{
+		CPersistentData ();
+	}
 };
 
 // All players have a copy of this class.
@@ -191,6 +196,11 @@ public:
 	ghost_t		*ghost; // for ghost codes
 //ZOID
 #endif
+
+	void Clear ()
+	{
+		CRespawnData ();
+	}
 };
 
 CC_ENUM (uint8, ELayoutFlags)
@@ -302,11 +312,6 @@ public:
 	EWaterLevel		OldWaterLevel;
 	MediaIndex		WeaponSound;
 
-	CClient (gclient_t *client);
-
-	int				&GetPing ();
-	void			Clear ();
-
 	// animation vars
 	struct client_Animation_t
 	{
@@ -327,6 +332,9 @@ public:
 
 		uint8				MachinegunShots;	// for weapon raising
 		bool				BreatherSound;
+
+		FrameNumber_t		PickupMessageTime;
+		FrameNumber_t		RespawnTime;		// can respawn when time > this
 	} Timers;
 
 	struct client_Grenade_Data_t
@@ -336,16 +344,12 @@ public:
 		FrameNumber_t	Time;
 	} Grenade;
 
-	FrameNumber_t		PickupMessageTime;
-
 	struct client_Flood_t
 	{
 		FrameNumber_t	LockTill; // locked from talking
 		FrameNumber_t	When[10]; // when messages were said
 		uint8			WhenHead; // head pointer for when said
 	} Flood;
-
-	FrameNumber_t		RespawnTime;		// can respawn when time > this
 
 	struct client_Chase_t
 	{
@@ -355,9 +359,12 @@ public:
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	class CGrappleEntity*ctf_grapple;		// entity of grapple
-	EGrappleState		ctf_grapplestate;		// true if pulling
-	FrameNumber_t		ctf_grapplereleasetime;	// time of grapple release
+	struct client_CTF_Grapple_t
+	{
+		class CGrappleEntity		*Entity;
+		EGrappleState				State;
+		FrameNumber_t				ReleaseTime;
+	} Grapple;
 //ZOID
 #endif
 
@@ -370,6 +377,11 @@ public:
 		FrameNumber_t	SoundTime;
 		FrameNumber_t	LastTechMessage;
 	} Tech;
+
+	CClient (gclient_t *client);
+
+	int				&GetPing ();
+	void			Clear ();
 };
 
 // Players don't think or have (game) controlled physics.

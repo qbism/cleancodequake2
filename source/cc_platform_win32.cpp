@@ -322,6 +322,8 @@ BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
+		DisableThreadLibraryCalls (hinstDLL);
+
 		// Make sure the timer is high precision, otherwise NT gets 18ms resolution
 		timeBeginPeriod(1);
 		sys_timeBase = timeGetTime() & 0xffff0000;
@@ -343,7 +345,10 @@ BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
 			return FALSE;
 
-		DisableThreadLibraryCalls (hinstDLL);
+		Mem_FreePool (com_levelPool);
+		Mem_FreePool (com_gamePool);
+		Mem_FreePool (com_genericPool);
+
 		break;
 
 	default:

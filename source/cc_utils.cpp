@@ -473,7 +473,7 @@ inline void AssertExpression (const bool expr, const char *msg)
 	{
 		// On Win32, open up the Crt debug report thingy
 #if defined(WIN32)
-		if (1 != _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg))
+		if (_CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg) == 1)
 			_CrtDbgBreak(); // Call break if we told it to break
 #else
 		// If you hit this, you're on non-Windows.

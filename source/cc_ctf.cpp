@@ -1079,7 +1079,7 @@ void CTFStartMatch()
 			ent->GetSvFlags() = SVF_NOCLIENT;
 			ent->Flags &= ~FL_GODMODE;
 
-			ent->Client.RespawnTime = level.Frame + 10 + irandom(3);
+			ent->Client.Timers.RespawnTime = level.Frame + 10 + irandom(3);
 			ent->Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 			ent->Client.Anim.Priority = ANIM_DEATH;
 			ent->State.GetFrame() = FRAME_death308 - 1;

@@ -1447,7 +1447,7 @@ void CGrappleEntity::GrapplePull()
 
 	GrappleDrawCable();
 
-	if (Player->Client.ctf_grapplestate > CTF_GRAPPLE_STATE_FLY)
+	if (Player->Client.Grapple.State > CTF_GRAPPLE_STATE_FLY)
 	{
 		// pull player toward grapple
 		// this causes icky stuff with prediction, we need to extend
@@ -1463,12 +1463,12 @@ void CGrappleEntity::GrapplePull()
 
 		float vlen = hookdir.LengthFast();
 
-		if ((Player->Client.ctf_grapplestate == CTF_GRAPPLE_STATE_PULL) &&
+		if ((Player->Client.Grapple.State == CTF_GRAPPLE_STATE_PULL) &&
 			vlen < 64)
 		{
 			Player->Client.PlayerState.GetPMove()->pmFlags |= PMF_NO_PREDICTION;
 			Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhang.wav"), volume);
-			Player->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_HANG;
+			Player->Client.Grapple.State = CTF_GRAPPLE_STATE_HANG;
 		}
 
 		hookdir.NormalizeFast ();
@@ -1480,9 +1480,9 @@ void CGrappleEntity::GrapplePull()
 
 void CGrappleEntity::ResetGrapple ()
 {
-	Player->Client.ctf_grapple = NULL;
-	Player->Client.ctf_grapplereleasetime = level.Frame;
-	Player->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_HANG+1; // we're firing, not on hook
+	Player->Client.Grapple.Entity = NULL;
+	Player->Client.Grapple.ReleaseTime = level.Frame;
+	Player->Client.Grapple.State = CTF_GRAPPLE_STATE_HANG+1; // we're firing, not on hook
 	Player->Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 	Free ();
 };
@@ -1505,8 +1505,8 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, int 
 	Grapple->GetMaxs().Clear ();
 	Grapple->State.GetModelIndex() = ModelIndex ("models/weapons/grapple/hook/tris.md2");
 	Grapple->SetOwner (Spawner);
-	Spawner->Client.ctf_grapple = Grapple;
-	Spawner->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_FLY; // we're firing, not on hook
+	Spawner->Client.Grapple.Entity = Grapple;
+	Spawner->Client.Grapple.State = CTF_GRAPPLE_STATE_FLY; // we're firing, not on hook
 	Grapple->Link ();
 
 	CTrace tr (Spawner->State.GetOrigin(), Grapple->State.GetOrigin(), Grapple, CONTENTS_MASK_SHOT);
@@ -1522,7 +1522,7 @@ void CGrappleEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 	if (other == Player)
 		return;
 
-	if (Player->Client.ctf_grapplestate != CTF_GRAPPLE_STATE_FLY)
+	if (Player->Client.Grapple.State != CTF_GRAPPLE_STATE_FLY)
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -1541,7 +1541,7 @@ void CGrappleEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 		return;
 	}
 
-	Player->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_PULL; // we're on hook
+	Player->Client.Grapple.State = CTF_GRAPPLE_STATE_PULL; // we're on hook
 	Enemy = other;
 
 	GetSolid() = SOLID_NOT;

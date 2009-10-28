@@ -88,11 +88,11 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	Player->Client.BonusAlpha = 0.25;	
 
 	// show icon and name on status bar
-	if (Player->Client.PickupMessageTime != (level.Frame + 30))
+	if (Player->Client.Timers.PickupMessageTime != (level.Frame + 30))
 	{
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_ICON) = gameEntity->item->GetIconIndex();
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_STRING) = gameEntity->item->GetConfigStringNumber();
-		Player->Client.PickupMessageTime = level.Frame + 30;
+		Player->Client.Timers.PickupMessageTime = level.Frame + 30;
 	}
 
 	// change selected item

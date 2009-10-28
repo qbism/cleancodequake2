@@ -93,7 +93,7 @@ void Cmd_Kill_f (CPlayerEntity *ent)
 		return;
 //ZOID
 
-	if((level.Frame - ent->Client.RespawnTime) < 50)
+	if((level.Frame - ent->Client.Timers.RespawnTime) < 50)
 		return;
 
 	ent->Flags &= ~FL_GODMODE;

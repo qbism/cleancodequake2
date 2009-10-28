@@ -361,7 +361,8 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 		// Reset the entity states
 		//g_edicts[i+1].Entity = SavedClients[i];
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-		memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
+		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
+		SavedClients[i] = CPersistentData(Player->Client.Persistent);
 		g_edicts[i+1].client = game.clients + i;
 	}
 

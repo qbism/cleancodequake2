@@ -72,15 +72,15 @@ bool CGrapple::AttemptToFire (CPlayerEntity *ent)
 // ent is player
 void CGrapple::PlayerResetGrapple(CPlayerEntity *ent)
 {
-	if (ent->Client.ctf_grapple)
-		ent->Client.ctf_grapple->ResetGrapple ();
+	if (ent->Client.Grapple.Entity)
+		ent->Client.Grapple.Entity->ResetGrapple ();
 }
 
 void CGrapple::Fire (CPlayerEntity *Player)
 {
 	vec3f	forward, right, start, offset (24, 8, Player->ViewHeight-6);
 
-	if (Player->Client.ctf_grapplestate > CTF_GRAPPLE_STATE_FLY)
+	if (Player->Client.Grapple.State > CTF_GRAPPLE_STATE_FLY)
 		return; // it's already out
 
 	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
@@ -112,7 +112,7 @@ void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 			newState = WS_IDLE;
 		
 			// if we just switched back to grapple, immediately go to fire frame
-			if (Player->Client.ctf_grapplestate > CTF_GRAPPLE_STATE_FLY)
+			if (Player->Client.Grapple.State > CTF_GRAPPLE_STATE_FLY)
 			{
 				newFrame = 9;
 				newState = WS_FIRING;
@@ -120,9 +120,9 @@ void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 		}
 		break;
 	case WS_IDLE:
-		if (Player->Client.ctf_grapplestate == CTF_GRAPPLE_STATE_HANG+1)
+		if (Player->Client.Grapple.State == CTF_GRAPPLE_STATE_HANG+1)
 		{
-			Player->Client.ctf_grapplestate = CTF_GRAPPLE_STATE_FLY;
+			Player->Client.Grapple.State = CTF_GRAPPLE_STATE_FLY;
 			Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grreset.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 		}
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
@@ -187,13 +187,13 @@ void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 		// Go right away if we aren't holding attack
 		else if (!(Player->Client.Buttons & BUTTON_ATTACK))
 		{
-			if (Player->Client.ctf_grapple)
-				Player->Client.ctf_grapple->ResetGrapple ();
+			if (Player->Client.Grapple.Entity)
+				Player->Client.Grapple.Entity->ResetGrapple ();
 			newFrame = IdleStart+1;
 			newState = WS_IDLE;
 		}
 		else if (Player->Client.NewWeapon && 
-			Player->Client.ctf_grapplestate > CTF_GRAPPLE_STATE_FLY)
+			Player->Client.Grapple.State > CTF_GRAPPLE_STATE_FLY)
 		{
 			// he wants to change weapons while grappled
 			newState = WS_DEACTIVATING;
@@ -203,7 +203,7 @@ void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 		{
 			// Grapple shouldn't change unless we want it to
 			if ((Player->Client.Buttons & BUTTON_ATTACK) && 
-				Player->Client.ctf_grapple)
+				Player->Client.Grapple.Entity)
 				newFrame = Player->Client.PlayerState.GetGunFrame();
 			else
 			{
