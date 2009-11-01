@@ -204,29 +204,28 @@ void CPath::CreatePath ()
 	Incomplete = true;
 };
 
-void CPath::Save (fileHandle_t f)
+void CPath::Save (CFile &f)
 {
-	size_t index;
 	// Save all local data
-	index = GetNodeIndex(Start);
-	FS_Write (&index, sizeof(uint32), f);
+	size_t index = GetNodeIndex(Start);
+	f.Write (&index, sizeof(uint32));
 
 	index = GetNodeIndex(End);
-	FS_Write (&index, sizeof(uint32), f);
+	f.Write (&index, sizeof(uint32));
 
-	FS_Write (&Weight, sizeof(uint32), f);
-	FS_Write (&NumNodes, sizeof(uint32), f);
+	f.Write (&Weight, sizeof(uint32));
+	f.Write (&NumNodes, sizeof(uint32));
 
 	// Save the path data
 	size_t pathLen = Path.size();
-	FS_Write (&pathLen, sizeof(uint32), f);
+	f.Write (&pathLen, sizeof(uint32));
 
 	for (size_t i = 0; i < pathLen; i++)
 	{
 		CPathNode *Node = Path[i];
 		index = GetNodeIndex(Node);
 
-		FS_Write (&index, sizeof(uint32), f);
+		f.Write (&index, sizeof(uint32));
 	}
 }
 
@@ -234,25 +233,25 @@ void CPath::Save (fileHandle_t f)
 
 TPathNodeContainer NodeList;
 
-void CPath::Load (fileHandle_t f)
+void CPath::Load (CFile &f)
 {
 	uint32 index;
-	FS_Read (&index, sizeof(uint32), f);
+	f.Read (&index, sizeof(uint32));
 	Start = NodeList[index];
 
-	FS_Read (&index, sizeof(uint32), f);
+	f.Read (&index, sizeof(uint32));
 	End = NodeList[index];
 
-	FS_Read (&Weight, sizeof(uint32), f);
-	FS_Read (&NumNodes, sizeof(uint32), f);
+	f.Read (&Weight, sizeof(uint32));
+	f.Read (&NumNodes, sizeof(uint32));
 
 	// Save the path data
 	size_t pathLen;
-	FS_Read (&pathLen, sizeof(uint32), f);
+	f.Read (&pathLen, sizeof(uint32));
 
 	for (size_t i = 0; i < pathLen; i++)
 	{
-		FS_Read (&index, sizeof(uint32), f);
+		f.Read (&index, sizeof(uint32));
 		Path.push_back (NodeList[index]);
 	}
 }
@@ -425,24 +424,23 @@ void SaveNodes ()
 	FileName += level.ServerLevelName;
 	FileName += ".ccn";
 
-	fileHandle_t f;
-	f = FS_OpenFile (FileName.c_str(), FS_MODE_WRITE_BINARY);
+	CFile File (FileName.c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
 
-	if (!f)
+	if (!File.Valid())
 		return;
 
 	// Write the header
 	int version = NODE_VERSION;
-	FS_Write (&version, sizeof(int), f);
+	File.Write (&version, sizeof(int));
 	size_t siz = NodeList.size();
-	FS_Write (&siz, sizeof(uint32), f);
+	File.Write (&siz, sizeof(uint32));
 
 	numNodes = siz;
 	// Write each node
 	for (uint32 i = 0; i < NodeList.size(); i++)
 	{
-		FS_Write (NodeList[i]->Origin, sizeof(NodeList[i]->Origin), f);
-		FS_Write (&NodeList[i]->Type, sizeof(NodeList[i]->Type), f);
+		File.Write (NodeList[i]->Origin, sizeof(NodeList[i]->Origin));
+		File.Write (&NodeList[i]->Type, sizeof(NodeList[i]->Type));
 
 		if (NodeList[i]->Type)
 			numSpecialNodes++;
@@ -452,19 +450,18 @@ void SaveNodes ()
 			if (NodeList[i]->LinkedEntity)
 			{
 				int modelNum = atoi(NodeList[i]->LinkedEntity->gameEntity->model+1);
-				FS_Write (&modelNum, sizeof(int), f);
+				File.Write (&modelNum, sizeof(int));
 			}
 		}
 
 		size_t num = NodeList[i]->Children.size();
-		FS_Write (&num, sizeof(uint32), f);
+		File.Write (&num, sizeof(uint32));
 		for (size_t s = 0; s < NodeList[i]->Children.size(); s++)
 		{
 			size_t ind = GetNodeIndex(NodeList[i]->Children[s]);
-			FS_Write (&ind, sizeof(uint32), f);
+			File.Write (&ind, sizeof(uint32));
 		}
 	}
-	FS_Close (f);
 
 	DebugPrintf ("Saved %u (%u special) nodes\n", numNodes, numSpecialNodes);
 }
@@ -507,18 +504,17 @@ void LoadNodes ()
 	FileName += level.ServerLevelName;
 	FileName += ".ccn";
 
-	fileHandle_t f;
-	f = FS_OpenFile (FileName.c_str(), FS_MODE_READ_BINARY);
+	CFile File (FileName.c_str(), FILEMODE_READ);
 
-	if (!f)
+	if (!File.Valid())
 		return;
 
 	// Write the header
 	int version;
 	uint32 lastId;
 
-	FS_Read (&version, sizeof(int), f);
-	FS_Read (&lastId, sizeof(uint32), f);
+	File.Read (&version, sizeof(int));
+	File.Read (&lastId, sizeof(uint32));
 
 	numNodes = lastId;
 
@@ -536,10 +532,10 @@ void LoadNodes ()
 		if (version == 1)
 		{
 			uint32 nothing;
-			FS_Read (&nothing, sizeof(uint32), f);
+			File.Read (&nothing, sizeof(uint32));
 		}
-		FS_Read (&Origin, sizeof(NodeList[i]->Origin), f);
-		FS_Read (&Type, sizeof(NodeList[i]->Type), f);
+		File.Read (&Origin, sizeof(NodeList[i]->Origin));
+		File.Read (&Type, sizeof(NodeList[i]->Type));
 
 		NodeList.push_back(QNew (com_levelPool, 0) CPathNode(Origin, Type));
 
@@ -550,13 +546,13 @@ void LoadNodes ()
 		if (Type == NODE_DOOR || Type == NODE_PLATFORM)
 		{
 			int modelNum;
-			FS_Read (&modelNum, sizeof(int), f);
+			File.Read (&modelNum, sizeof(int));
 
 			LinkModelNumberToNode (NodeList[i], modelNum);
 		}
 
 		uint32 num;
-		FS_Read (&num, sizeof(uint32), f);
+		File.Read (&num, sizeof(uint32));
 
 		tempChildren[i] = QNew (com_genericPool, 0) int[num+1];
 		tempChildren[i][0] = num;
@@ -568,9 +564,8 @@ void LoadNodes ()
 			NodeList[i]->Children.push_back (NodeList[tempId]);
 		}*/
 		for (size_t s = 0; s < num; s++)
-			FS_Read (&tempChildren[i][s+1], sizeof(uint32), f);
+			File.Read (&tempChildren[i][s+1], sizeof(uint32));
 	}
-	FS_Close (f);
 
 	for (size_t i = 0; i < lastId; i++)
 	{
@@ -784,9 +779,8 @@ void SavePathTable ()
 	FileName += level.ServerLevelName;
 	FileName += ".cnt";
 
-	fileHandle_t f;
-	f = FS_OpenFile (FileName.c_str(), FS_MODE_WRITE_BINARY);
-	if (!f)
+	CFile File (FileName.c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
+	if (!File.Valid())
 		return;
 
 	DebugPrintf ("Saving node helper table...\n");
@@ -800,7 +794,7 @@ void SavePathTable ()
 				count++;
 		}
 	}
-	FS_Write (&count, sizeof(int), f);
+	File.Write (&count, sizeof(int));
 
 	for (int i = 0; i < MAX_SAVED_PATHS; i++)
 	{
@@ -808,13 +802,12 @@ void SavePathTable ()
 		{
 			if (SavedPaths[i].ToEnd[z])
 			{
-				FS_Write (&i, sizeof(int), f);
-				FS_Write (&z, sizeof(int), f);
-				SavedPaths[i].ToEnd[z]->Save(f);
+				File.Write (&i, sizeof(int));
+				File.Write (&z, sizeof(int));
+				SavedPaths[i].ToEnd[z]->Save(File);
 			}
 		}
 	}
-	FS_Close (f);
 }
 
 void LoadPathTable ()
@@ -826,28 +819,26 @@ void LoadPathTable ()
 	FileName += level.ServerLevelName;
 	FileName += ".cnt";
 
-	fileHandle_t f = FS_OpenFile (FileName.c_str(), FS_MODE_READ_BINARY);
+	CFile File (FileName.c_str(), FILEMODE_READ);
 
-	if (!f)
+	if (!File.Valid())
 		return;
 
 	DebugPrintf ("Loading node helper table...\n");
 
 	int count;
-	FS_Read (&count, sizeof(int), f);
+	File.Read (&count, sizeof(int));
 
 	for (int i = 0; i < count; i++)
 	{
 		int indexI, indexZ;
 
-		FS_Read (&indexI, sizeof(int), f);
-		FS_Read (&indexZ, sizeof(int), f);
+		File.Read (&indexI, sizeof(int));
+		File.Read (&indexZ, sizeof(int));
 
 		SavedPaths[indexI].ToEnd[indexZ] = QNew (com_levelPool, 0) CPath();
-		SavedPaths[indexI].ToEnd[indexZ]->Load (f);
+		SavedPaths[indexI].ToEnd[indexZ]->Load (File);
 	}
-
-	FS_Close (f);
 }
 
 CPath *GetPath (CPathNode *Start, CPathNode *End)

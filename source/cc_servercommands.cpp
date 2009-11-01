@@ -252,17 +252,12 @@ void SvCmd_EntList_f ()
 extern char *gEntString;
 void SvCmd_Dump_f ()
 {
-	std::cc_string FileName = "/maps/ents/" + level.ServerLevelName + ".ccent";
-	fileHandle_t f;
+	CFile File ((std::cc_string("/maps/ents/") + level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
 
-	f = FS_OpenFile (FileName.c_str(), FS_MODE_WRITE_BINARY);
-
-	if (!f)
+	if (!File.Valid())
 		return;
 
-	FS_Write (gEntString, strlen(gEntString), f);
-
-	FS_Close (f);
+	File.Write (gEntString, strlen(gEntString));
 }
 
 bool requestedBreak = false;

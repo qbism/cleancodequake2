@@ -333,19 +333,14 @@ char *ParsePound (char *tok, char *realEntities)
 	return realEntities;
 }
 
+CFileBuffer *FileBuffer;
+
 char *CC_LoadEntFile (char *ServerLevelName, char *entities)
 {
-	std::cc_string fileName;
+	FileBuffer = QNew (com_genericPool, 0) CFileBuffer ((std::cc_string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
 
-	fileName = "maps/ents/";
-	fileName += ServerLevelName;
-	fileName += ".ccent";
-
-	char *newEntities = NULL;
-	FS_LoadFile (fileName.c_str(), (void**)&newEntities, true);
-
-	if (newEntities)
-		return newEntities;
+	if (FileBuffer->Valid())
+		return FileBuffer->GetBuffer<char>();
 	return entities;
 }
 
@@ -390,11 +385,8 @@ char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 			break;
 	}
 
-	//char *finalEntString = QNew (com_levelPool, 0) char[finalString.length()];
-	//Q_snprintfz (finalEntString, finalString.length(), "%s", finalString.c_str());
 	char *finalEntString = Mem_PoolStrDup (finalString.c_str(), com_levelPool, 0);
-
-	FS_FreeFile (tempEntities);
+	QDelete FileBuffer;
 
 	return finalEntString;
 }

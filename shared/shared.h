@@ -238,25 +238,6 @@ CC_ENUM (uint16, ESearchFileFlags)
 	SFF_SYSTEM		= BIT(4)
 };
 
-// these are used for FS_OpenFile
-CC_ENUM (uint8, EFSOpenMode)
-{
-	FS_MODE_READ_BINARY,
-	FS_MODE_WRITE_BINARY,
-	FS_MODE_APPEND_BINARY,
-
-	FS_MODE_WRITE_TEXT,
-	FS_MODE_APPEND_TEXT
-};
-
-// these are used for FS_Seek
-CC_ENUM (uint8, EFSSeekOrigin)
-{
-	FS_SEEK_SET,
-	FS_SEEK_CUR,
-	FS_SEEK_END
-};
-
 //
 // this is only here so the functions in shared/ can link
 //

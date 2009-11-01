@@ -352,7 +352,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	if (!autosave)
 		CPlayerEntity::SaveClientData ();
 
-	FS_OpenFile (filename, &f, FS_MODE_WRITE_BINARY, false);
+	FS_OpenFile (filename, &f, FILEMODE_WRITE, false);
 
 	if (!f)
 	{
@@ -391,7 +391,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	char	str[16];
 
 	//Mem_FreePool (com_gamePool);
-	FS_OpenFile (filename, &f, FS_MODE_READ_BINARY, false);
+	FS_OpenFile (filename, &f, FILEMODE_READ, false);
 
 	if (!f)
 		GameError ("Couldn't open %s", filename);
@@ -562,7 +562,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	fileHandle_t	f;
 	void	*base;
 
-	FS_OpenFile (filename, &f, FS_MODE_WRITE_BINARY, false);
+	FS_OpenFile (filename, &f, FILEMODE_WRITE, false);
 
 	if (!f)
 		GameError ("Couldn't open %s", filename);
@@ -628,7 +628,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	void	*base;
 	edict_t	*ent;
 
-	FS_OpenFile (filename, &f, FS_MODE_READ_BINARY, false);
+	FS_OpenFile (filename, &f, FILEMODE_READ, false);
 
 	if (!f)
 		GameError ("Couldn't open %s", filename);

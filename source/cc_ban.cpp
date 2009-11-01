@@ -54,18 +54,18 @@ ip 252.6.10.6 5
 
 void CBanList::LoadFromFile ()
 {
-	char *data;
-	FS_LoadFile ("bans.lst", (void**)&data, true);
+	CFileBuffer File ("bans.lst", true);
 
-	if (!data)
+	if (!File.Valid())
 		return;
-	std::cc_string mainString = data;
+
+	std::cc_string mainString = File.GetBuffer<char>();
 	std::cc_string line, token;
 
 	// Get the entire line
 	size_t z = 0, c = 0, oc = 0;
 	z = mainString.find_first_of("\n\0");
-	line = mainString.substr(0, (z == -1) ? strlen(data) : z);
+	line = mainString.substr(0, (z == -1) ? File.GetLength() : z);
 
 	while (line[0])
 	{
@@ -144,37 +144,24 @@ void CBanList::LoadFromFile ()
 		z = oc;
 		oc = 0;
 	}
-
-	// Free everything
-	FS_FreeFile (data);
 }
 
 void CBanList::SaveList ()
 {
-	fileHandle_t f;
-	f = FS_OpenFile ("bans.lst", FS_MODE_WRITE_TEXT);
+	CFile File ("bans.lst", FILEMODE_WRITE | FILEMODE_CREATE | FILEMODE_ASCII);
 
-	if (!f)
+	if (!File.Valid())
 		return;
 
 	for (size_t i = 0; i < BanList.size(); i++)
 	{
 		BanIndex *Index = BanList[i];
-		char tempData[128];
 
-		Q_snprintfz (tempData, sizeof(tempData), "%s ", (Index->IP) ? "ip" : "name");
-		FS_Write (&tempData, strlen(tempData), f);
-		if (Index->IP)
-			Q_snprintfz (tempData, sizeof(tempData), "%s ", Index->IPAddress->str);
-		else
-			Q_snprintfz (tempData, sizeof(tempData), "%s ", Index->Name);
-		FS_Write (&tempData, strlen(tempData), f);
-
-		Q_snprintfz (tempData, sizeof(tempData), "%i\n", Index->Flags);
-		FS_Write (&tempData, strlen(tempData), f);
+		File.Print ("%s %s %i\n",
+			(Index->IP) ? "ip" : "name",
+			(Index->IP) ? Index->IPAddress->str :Index->Name,
+			"%i\n", Index->Flags);
 	}
-
-	FS_Close (f);
 }
 
 void CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)

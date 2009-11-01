@@ -92,8 +92,8 @@ public:
 	CPath ();
 	CPath (CPathNode *Start, CPathNode *End);
 
-	void Save (fileHandle_t f);
-	void Load (fileHandle_t f);
+	void Save (CFile &f);
+	void Load (CFile &f);
 
 	bool NodeIsClosed (CPathNode *Node);
 	void RemoveFromClosed (CPathNode *Node);
