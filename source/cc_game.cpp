@@ -156,7 +156,7 @@ void CheckDMRules ()
 			if (!cl->GetInUse())
 				continue;
 
-			if (cl->Client.Respawn.score >= fraglimit->Integer())
+			if (cl->Client.Respawn.Score >= fraglimit->Integer())
 			{
 				BroadcastPrintf (PRINT_HIGH, "Fraglimit hit.\n");
 				EndDMLevel ();
@@ -176,10 +176,8 @@ void ExitLevel ()
 	if (CTFNextMap())
 		return;
 
-	char	command [256];
-
-	Q_snprintfz (command, sizeof(command), "gamemap \"%s\"\n", level.ChangeMap);
-	gi.AddCommandString (command);
+	//level.ChangeMap
+	gi.AddCommandString ((char*)(std::cc_string("gamemap \"") + level.ChangeMap + "\"\n").c_str());
 	level.ChangeMap = NULL;
 	level.ExitIntermission = false;
 	level.IntermissionTime = 0;

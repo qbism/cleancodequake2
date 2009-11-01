@@ -331,7 +331,7 @@ void ClientCommand (edict_t *ent)
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
-	if (!ent->client || !ent->Entity)
+	if (!ent->client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.state != SVCS_SPAWNED))
 		return;		// not fully in game yet
 
 	CC_ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));

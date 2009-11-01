@@ -51,6 +51,8 @@ public:
 	virtual bool	Select (CPlayerEntity *ent); // What happens when you hit enter (return true to close the menu)
 };
 
+typedef std::vector<CMenuItem*, std::level_allocator<CMenuItem*> > TMenuItemsContainer;
+
 class CMenu 
 {
 public:

@@ -56,7 +56,7 @@ struct ghost_t
 
 	int code; // ghost code
 	int team; // team
-	int score; // frags at time of disconnect
+	int Score; // frags at time of disconnect
 	CPlayerEntity *ent;
 };
 
@@ -89,7 +89,7 @@ struct ctfgame_t
 	int lasttime;		// last time update
 
 	EElectState election;	// election type
-	CPlayerEntity *etarget;	// for admin election, who's being elected
+	CPlayerEntity *etarget;	// for CTF.Admin election, who's being elected
 	char elevel[32];	// for map election, target level
 	int evotes;			// votes so far
 	int needvotes;		// votes needed
@@ -178,7 +178,7 @@ void SetCTFStats(edict_t *ent);
 void CTFTeam_f (CPlayerEntity *ent);
 void CTFID_f (CPlayerEntity *ent);
 void CTFSay_Team(CPlayerEntity *who, char *msg);
-void CTFResetFlag(ETeamIndex ctf_team);
+void CTFResetFlag(ETeamIndex Team);
 void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker);
 void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *attacker);
 

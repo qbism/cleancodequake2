@@ -33,7 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "cc_menu.h"
-#include "cc_conchars.h"
 
 CMenu_Label::CMenu_Label (CMenu *Menu, int x, int y) :
 CMenuItem(Menu, x, y)
@@ -56,10 +55,10 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 			arrowX += (160 - 12);
 			break;
 		case LA_CENTER:
-			arrowX -= 8 + (((int)strlen(LabelString)*8)/2);
+			arrowX -= 8 + (((int)(LabelString.size())*8)/2);
 			break;
 		case LA_RIGHT:
-			arrowX += (160 - ((int)strlen(LabelString)*8)) - 12;
+			arrowX += (160 - ((int)(LabelString.size())*8)) - 12;
 			break;
 		}
 		DrawState->AddVirtualPoint_X (arrowX);
@@ -77,12 +76,12 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	case LA_CENTER:
 		break;
 	case LA_RIGHT:
-		drawX += 160 - ((int)strlen(LabelString)*8);
+		drawX += 160 - ((int)(LabelString.size())*8);
 		break;
 	}
 
 	DrawState->AddVirtualPoint_X (drawX);
-	DrawState->AddString (LabelString, high, (Align == LA_CENTER));
+	DrawState->AddString (LabelString.c_str(), high, (Align == LA_CENTER));
 };
 
 CMenu_Image::CMenu_Image (CMenu *Menu, int x, int y) :
@@ -94,7 +93,7 @@ void CMenu_Image::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 {
 	DrawState->AddVirtualPoint_X ((x + 160) - Width/2);
 	DrawState->AddVirtualPoint_Y ((y + 120) - Height/2);
-	DrawState->AddPic (ImageString);
+	DrawState->AddPic (ImageString.c_str());
 
 	if (Selected)
 	{
@@ -109,7 +108,6 @@ CMenuItem(Menu, x, y),
 Indices(Indices)
 {
 	Index = 0;
-	//NumIndices = (sizeof(Indices) / sizeof(SSpinControlIndex
 
 	while (Indices->Text && *(Indices)->Text)
 	{
@@ -198,95 +196,6 @@ void CMenu_Spin::Update (CPlayerEntity *ent)
 			return;
 
 		Index--;
-		break;
-	}
-};
-
-CMenu_Slider::CMenu_Slider (CMenu *Menu, int x, int y) :
-CMenuItem(Menu, x, y)
-{
-};
-
-void CMenu_Slider::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
-{
-	if (Width > (MAX_INFO_KEY*2)-3)
-		Width = (MAX_INFO_KEY*2)-3;
-
-	int drawX = x;
-
-	switch (Align)
-	{
-	case LA_LEFT:
-		drawX += 160;
-		break;
-	case LA_RIGHT:
-		drawX += 160 - (Width * 8);
-		break;
-	case LA_CENTER:
-		break;
-	}
-	DrawState->AddVirtualPoint_X (drawX);
-	DrawState->AddVirtualPoint_Y (y + 120);
-
-	char Buffer[MAX_INFO_KEY*2];
-	Buffer[0] = CCHAR_DOWNLOADBAR_LEFT;
-
-	// Which number is closest to the value?
-	float Percent = (((Value == 0) ? 0.1 : ((float)Value / (float)Max)));
-	int BestValue = ((Width-1) * Percent);
-
-	if (BestValue > Width)
-		BestValue = Width;
-
-	for (int i = Min; i <= Width; i++)
-	{
-		Buffer[((i-Min)+1)] = (i == BestValue) ? CCHAR_DOWNLOADBAR_THUMB : CCHAR_DOWNLOADBAR_CENTER;
-	}
-
-	Buffer[Width+1] = CCHAR_DOWNLOADBAR_RIGHT;
-	Buffer[Width+2] = '\0';
-
-	DrawState->AddString (Buffer, false, (Align == LA_CENTER));
-
-	// Draw the value if desired
-	switch (Align)
-	{
-	case LA_LEFT:
-		drawX = x + 190 + (Width * 8);
-		break;
-	case LA_RIGHT:
-		drawX = x + 190;
-		break;
-	case LA_CENTER:
-		drawX = x + 145 + (Width * 8);
-		break;
-	}
-
-	DrawState->AddVirtualPoint_X (drawX);
-	itoa (Value, Buffer, 10);
-
-	DrawState->AddString (Buffer, Selected, false);
-};
-
-void CMenu_Slider::Update (CPlayerEntity *ent)
-{
-	switch (ent->Client.Respawn.MenuState.Key)
-	{
-	case CMenuState::KEY_RIGHT:
-		if (Value == Max)
-			return; // Can't do that, Dave
-
-		Value += Step;
-		if (Value > Max)
-			Value = Max;
-		break;
-	case CMenuState::KEY_LEFT:
-		if (Value == Min)
-			return;
-
-		Value -= Step;
-		if (Value < Min)
-			Value = Min;
 		break;
 	}
 };

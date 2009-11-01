@@ -117,12 +117,12 @@ public:
 	// Stored here for convenience. (dynamic_cast ew)
 
 	int			PowerCubeCount;	// used for tracking the cubes in coop games
-	int			score;			// for calculating total unit score in coop games
+	int			Score;			// for calculating total unit Score in coop games
 
 	int			game_helpchanged;
 	int			helpchanged;
 
-	bool		spectator;			// client is a spectator
+	bool		Spectator;			// client is a Spectator
 
 	colorf		viewBlend; // View blending
 
@@ -166,34 +166,39 @@ public:
 class CRespawnData
 {
 public:
-	CPersistentData	coop_respawn;	// what to set client->Persistent to on a respawn
-	int			enterframe;			// level.Frame the client entered the game
-	int			score;				// frags, etc
-	vec3_t		cmd_angles;			// angles sent over in the last command
+	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
+	FrameNumber_t		EnterFrame;		// level.Frame the client entered the game
+	int					Score;			// frags, etc
+	vec3f				CmdAngles;		// angles sent over in the last command
 
-	bool		spectator;			// client is a spectator
-	EGender		Gender;
-	int			messageLevel;
+	bool				Spectator;		// client is a Spectator
+	EGender				Gender;
+	EGamePrintLevel		MessageLevel;
 
 #ifdef MONSTERS_USE_PATHFINDING
-	class CPathNode	*LastNode;
+	class CPathNode		*LastNode;
 #endif
 
-	CMenuState	MenuState;
+	CMenuState			MenuState;
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	ETeamIndex			ctf_team;			// CTF team
-	int			ctf_state;
-	FrameNumber_t		ctf_lasthurtcarrier;
-	FrameNumber_t		ctf_lastreturnedflag;
-	FrameNumber_t		ctf_flagsince;
-	FrameNumber_t		ctf_lastfraggedcarrier;
-	bool		id_state;
-	bool		voted; // for elections
-	bool		ready;
-	bool		admin;
-	ghost_t		*ghost; // for ghost codes
+	struct respawn_CTF_t
+	{
+		ETeamIndex		Team;					// CTF team
+		int16			State;
+		FrameNumber_t	LastHurtCarrier,
+						LastReturnedFlag,
+						FlagSince,
+						LastFraggedCarrier;
+
+		bool			IDState;
+		bool			Voted;					// for elections
+		bool			Ready;
+		bool			Admin;
+		ghost_t			*Ghost;					// for ghost codes
+	} CTF;
+
 //ZOID
 #endif
 

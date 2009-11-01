@@ -161,6 +161,8 @@ public:
 	};
 };
 
+typedef std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> > TKeyValuePairContainer;
+
 class CLevelLocals
 {
 public:
@@ -248,7 +250,7 @@ public:
 	uint32		Inhibit;
 	uint32		EntityNumber;
 
-	std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> >	ParseData;
+	TKeyValuePairContainer	ParseData;
 };
 
 CC_ENUM (uint8, EFuncState)

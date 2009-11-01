@@ -201,7 +201,8 @@ void G_FreeEdict (edict_t *ed)
 	ed->inUse = false;
 }
 
-std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> > PrivateEntities;
+typedef std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
+TPrivateEntitiesContainer PrivateEntities;
 
 void InitPrivateEntities ()
 {
@@ -210,7 +211,7 @@ void InitPrivateEntities ()
 
 void			RunPrivateEntities ()
 {
-	std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> >::iterator it = PrivateEntities.begin();
+	TPrivateEntitiesContainer::iterator it = PrivateEntities.begin();
 	while (it != PrivateEntities.end())
 	{
 		CBaseEntity *Entity = (*it);
@@ -220,7 +221,7 @@ void			RunPrivateEntities ()
 		if (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) 
 			entity_cast<CThinkableEntity>(Entity)->PreThink ();
 
-		Entity->Run ();
+		Entity->Run ();	
 
 		if (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE))
 			entity_cast<CThinkableEntity>(Entity)->RunThink ();
@@ -286,8 +287,7 @@ _CC_ENABLE_DEPRECATION
 	}
 	else
 	{
-		for (std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> >::iterator it = PrivateEntities.begin();
-			it < PrivateEntities.end(); it++)
+		for (TPrivateEntitiesContainer::iterator it = PrivateEntities.begin(); it < PrivateEntities.end(); it++)
 		{
 			if ((*it) == this)
 			{
@@ -586,7 +586,7 @@ void CMapEntity::ParseFields ()
 
 	// Go through all the dictionary pairs
 	{
-		std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> >::iterator it = level.ParseData.begin();
+		TKeyValuePairContainer::iterator it = level.ParseData.begin();
 		while (it != level.ParseData.end())
 		{
 			CKeyValuePair *PairPtr = (*it);

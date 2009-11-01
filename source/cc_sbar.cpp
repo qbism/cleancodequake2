@@ -105,7 +105,7 @@ void CStatusBar::AddStatString (int stat)
 	AddToBarBuffer ("stat_string %i ", stat);
 }
 
-void CStatusBar::AddPic (char *pic)
+void CStatusBar::AddPic (const char *pic)
 {
 	AddToBarBuffer ("picn %s ", pic);
 }
@@ -145,16 +145,16 @@ void CStatusBar::AddArmorNum ()
 	AddToBarBuffer ("rnum ");
 }
 
-void CStatusBar::AddClientBlock (int x, int y, int cNum, int score, int ping, int time)
+void CStatusBar::AddClientBlock (int x, int y, int cNum, int Score, int ping, int time)
 {
 	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
-	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, score, ping, time);
+	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, Score, ping, time);
 }
 
-void CStatusBar::AddClientBlock (int x, int y, int cNum, int score, int ping)
+void CStatusBar::AddClientBlock (int x, int y, int cNum, int Score, int ping)
 {
 	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
-	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, score, ping);
+	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, Score, ping);
 }
 
 void CreateDMStatusbar ()

@@ -53,7 +53,7 @@ public:
 	void AddPoint_Y (int y, bool inverted);
 	void AddString (const char *string, bool highBi, bool center);
 	void AddStatString (int stat);
-	void AddPic (char *pic);
+	void AddPic (const char *pic);
 	void AddPicStat (int stat);
 	void AddNumStat (int stat, int width);
 	void AddIf (int stat);
@@ -61,8 +61,8 @@ public:
 	void AddAmmoNum ();
 	void AddHealthNum ();
 	void AddArmorNum ();
-	void AddClientBlock (int x, int y, int cNum, int score, int ping, int time);
-	void AddClientBlock (int x, int y, int cNum, int score, int ping);
+	void AddClientBlock (int x, int y, int cNum, int Score, int ping, int time);
+	void AddClientBlock (int x, int y, int cNum, int Score, int ping);
 
 	size_t	Length ();
 };

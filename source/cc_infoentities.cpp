@@ -144,7 +144,7 @@ public:
 		if (Player)
 		{
 			for (int i = 0; i < 3; i++)
-				Player->Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Dest->State.GetAngles()[i] - Player->Client.Respawn.cmd_angles[i]);
+				Player->Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Dest->State.GetAngles()[i] - Player->Client.Respawn.CmdAngles[i]);
 		}
 
 		other->State.GetAngles().Clear ();

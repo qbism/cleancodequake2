@@ -52,7 +52,8 @@ void SpawnNodeEntity (CPathNode *Node);
 void CheckNodeFlags (CPathNode *Node);
 size_t GetNodeIndex (CPathNode *Node);
 
-std::vector<CPathNode*, std::game_allocator<CPathNode*> >		Closed, Open;
+typedef std::vector<CPathNode*, std::game_allocator<CPathNode*> > TPathNodeContainer;
+TPathNodeContainer		Closed, Open;
 
 #define MAX_SAVED_PATHS	512
 struct SSavedPath_t
@@ -80,7 +81,7 @@ End(End)
 
 bool CPath::NodeIsClosed (CPathNode *Node)
 {
-	for (std::vector<CPathNode*, std::game_allocator<CPathNode*> >::iterator it = Closed.begin(); it < Closed.end(); ++it )
+	for (TPathNodeContainer::iterator it = Closed.begin(); it < Closed.end(); ++it )
 	{
 		CPathNode *Check = *it;
 
@@ -109,7 +110,7 @@ void CPath::RemoveFromClosed (CPathNode *Node)
 
 bool CPath::NodeIsOpen (CPathNode *Node)
 {
-	for (std::vector<CPathNode*, std::game_allocator<CPathNode*> >::iterator it = Open.begin(); it < Open.end(); it++ )
+	for (TPathNodeContainer::iterator it = Open.begin(); it < Open.end(); it++ )
 	{
 		CPathNode *Check = *it;
 
@@ -231,7 +232,7 @@ void CPath::Save (fileHandle_t f)
 
 #define MAX_NODES 512
 
-std::vector<CPathNode*, std::game_allocator<CPathNode*> > NodeList;
+TPathNodeContainer NodeList;
 
 void CPath::Load (fileHandle_t f)
 {
@@ -328,7 +329,7 @@ void RunNodes()
 	{
 		if (PlayerNearby(NodeList[i]->Origin, 250))
 		{
-			for (std::vector<CPathNode*, std::level_allocator<CPathNode*> >::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); it++ )
+			for (TPathNodeChildrenContainer::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); it++ )
 			{
 				CPathNode *Child = *it;
 				CTempEnt_Trails::BFGLaser (NodeList[i]->Origin, Child->Origin);

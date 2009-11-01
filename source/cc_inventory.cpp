@@ -324,7 +324,7 @@ void Cmd_Inven_f (CPlayerEntity *ent)
 	}
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	if ((game.mode & GAME_CTF) && ent->Client.Respawn.ctf_team == CTF_NOTEAM)
+	if ((game.mode & GAME_CTF) && ent->Client.Respawn.CTF.Team == CTF_NOTEAM)
 	{
 		CTFOpenJoinMenu(ent);
 		return;

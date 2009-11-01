@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Self-explanatory
 //
 
-#include "g_local.h"
+#include "cc_local.h"
 #include "cc_menu.h"
 
 #ifdef CLEANCTF_ENABLED
@@ -74,24 +74,21 @@ public:
 		TopGreen->Enabled = false;
 		TopGreen->Align = LA_CENTER;
 		TopGreen->Flags = LF_GREEN;
-		Q_snprintfz (TopGreen->LabelString, sizeof(TopGreen->LabelString), "Quake II\nCleanCode Capture the Flag\n\nProgramming\n\nOriginal Idea\n\nArt\n\n\n\nSounds\n\nTesting");
-		AddItem(TopGreen);
+		TopGreen->LabelString = "Quake II\nCleanCode Capture the Flag\n\nProgramming\n\nOriginal Idea\n\nArt\n\n\n\nSounds\n\nTesting";
 
 		y += 32;
 
 		CMenu_Label *BottomWhite = QNew (com_levelPool, 0) CMenu_Label(this, x, y);
 		BottomWhite->Enabled = false;
 		BottomWhite->Align = LA_CENTER;
-		Q_snprintfz (BottomWhite->LabelString, sizeof(BottomWhite->LabelString), "Paril\n\nDavid 'Zoid' Kirsch\n\nAdrian Carmack\nPaul Steed\nBrian Cozzens\n\nTom Klok\n\nxRDVx");
-		AddItem(BottomWhite);
+		BottomWhite->LabelString = "Paril\n\nDavid 'Zoid' Kirsch\n\nAdrian Carmack\nPaul Steed\nBrian Cozzens\n\nTom Klok\n\nxRDVx";
 
 		x = -93;
 		y += (8 * 12);
 
 		CCloseLabel *Back = QNew (com_levelPool, 0) CCloseLabel (this, x, y);
 		Back->Enabled = true;
-		Q_snprintfz (Back->LabelString, sizeof(Back->LabelString), "Back");
-		AddItem(Back);
+		Back->LabelString = "Back";
 
 		return true;
 	};
@@ -143,16 +140,16 @@ public:
 		bool Select (CPlayerEntity *ent)
 		{
 			ent->GetSvFlags() &= ~SVF_NOCLIENT;
-			ent->Client.Respawn.ctf_team = team;
-			ent->Client.Respawn.ctf_state = 0;
+			ent->Client.Respawn.CTF.Team = team;
+			ent->Client.Respawn.CTF.State = 0;
 			ent->CTFAssignSkin(Info_ValueForKey (ent->Client.Persistent.UserInfo, "skin"));
 
 			// assign a ghost if we are in match mode
 			if (ctfgame.match == MATCH_GAME)
 			{
-				if (ent->Client.Respawn.ghost)
-					ent->Client.Respawn.ghost->code = 0;
-				ent->Client.Respawn.ghost = NULL;
+				if (ent->Client.Respawn.CTF.Ghost)
+					ent->Client.Respawn.CTF.Ghost->code = 0;
+				ent->Client.Respawn.CTF.Ghost = NULL;
 				ent->CTFAssignGhost();
 			}
 
@@ -208,6 +205,7 @@ public:
 			return true;
 		};
 	};
+
 	class CCreditsLabel : public CMenu_Label
 	{
 	public:
@@ -226,7 +224,6 @@ public:
 		};
 	};
 
-
 	bool				Open ()
 	{
 		int num1 = 0, num2 = 0;
@@ -235,36 +232,33 @@ public:
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			if (!Player->GetInUse())
 				continue;
-			if (Player->Client.Respawn.ctf_team == CTF_TEAM1)
+			if (Player->Client.Respawn.CTF.Team == CTF_TEAM1)
 				num1++;
-			else if (Player->Client.Respawn.ctf_team == CTF_TEAM2)
+			else if (Player->Client.Respawn.CTF.Team == CTF_TEAM2)
 				num2++;
 		}
 
 		int x = 0, y = 0;
 
 		CMenu_Image *Background = QNew (com_levelPool, 0) CMenu_Image (this, x, y);
-		Q_snprintfz (Background->ImageString, sizeof(Background->ImageString), "inventory");
+		Background->ImageString = "inventory";
 		Background->Width = 256;
 		Background->Height = 192;
 		Background->Enabled = false;
-		AddItem (Background);
 
 		y = -76; // Top
 		CMenu_Label *TopName = QNew (com_levelPool, 0) CMenu_Label(this, x, y);
 		TopName->Enabled = false;
 		TopName->Align = LA_CENTER;
 		TopName->Flags = LF_GREEN;
-		Q_snprintfz (TopName->LabelString, sizeof(TopName->LabelString), "Quake II\nCleanCode Capture the Flag");
-		AddItem(TopName);
+		TopName->LabelString = "Quake II\nCleanCode Capture the Flag";
 
 		y += (8 * 2);
 		CMenu_Label *LevelName = QNew (com_levelPool, 0) CMenu_Label(this, x, y);
 		LevelName->Enabled = false;
 		LevelName->Align = LA_CENTER;
 		LevelName->Flags = LF_GREEN;
-		Q_snprintfz (LevelName->LabelString, sizeof(LevelName->LabelString), "%s", level.FullLevelName.c_str());
-		AddItem(LevelName);
+		LevelName->LabelString = level.FullLevelName;
 
 		y += 8;
 		CMenu_Label *MatchProgress;
@@ -278,8 +272,7 @@ public:
 			MatchProgress->Enabled = false;
 			MatchProgress->Align = LA_CENTER;
 			MatchProgress->Flags = LF_GREEN;
-			Q_snprintfz (MatchProgress->LabelString, sizeof(MatchProgress->LabelString), "MATCH SETUP IN PROGRESS");
-			AddItem(MatchProgress);
+			MatchProgress->LabelString = "MATCH SETUP IN PROGRESS";
 			break;
 
 		case MATCH_PREGAME :
@@ -287,8 +280,7 @@ public:
 			MatchProgress->Enabled = false;
 			MatchProgress->Align = LA_CENTER;
 			MatchProgress->Flags = LF_GREEN;
-			Q_snprintfz (MatchProgress->LabelString, sizeof(MatchProgress->LabelString), "MATCH STARTING");
-			AddItem(MatchProgress);
+			MatchProgress->LabelString = "MATCH STARTING";
 			break;
 
 		case MATCH_GAME :
@@ -296,8 +288,7 @@ public:
 			MatchProgress->Enabled = false;
 			MatchProgress->Align = LA_CENTER;
 			MatchProgress->Flags = LF_GREEN;
-			Q_snprintfz (MatchProgress->LabelString, sizeof(MatchProgress->LabelString), "MATCH IN PROGRESS");
-			AddItem(MatchProgress);
+			MatchProgress->LabelString = "MATCH IN PROGRESS";
 			break;
 		}
 
@@ -309,8 +300,7 @@ public:
 			CMenu_Label *LockedMsg = QNew (com_levelPool, 0) CMenu_Label(this, x, y);
 			LockedMsg->Enabled = false;
 			LockedMsg->Align = LA_LEFT;
-			Q_snprintfz (LockedMsg->LabelString, sizeof(LockedMsg->LabelString), "MATCH IS LOCKED\n(entry is not permitted)");
-			AddItem(LockedMsg);
+			LockedMsg->LabelString = "MATCH IS LOCKED\n(entry is not permitted)";
 		}
 		else if (ctf_forcejoin->String() && *ctf_forcejoin->String())
 		{
@@ -320,8 +310,7 @@ public:
 				CJoinGameLabel *JoinRed = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				Q_snprintfz (JoinRed->LabelString, sizeof(JoinRed->LabelString), "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
-				AddItem(JoinRed);
+				FormatString (JoinRed->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 			}
 			else if (Q_stricmp(ctf_forcejoin->String(), "blue") == 0)
 			{
@@ -329,22 +318,19 @@ public:
 				CJoinGameLabel *JoinBlue = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				Q_snprintfz (JoinBlue->LabelString, sizeof(JoinBlue->LabelString), "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
-				AddItem(JoinBlue);
+				FormatString (JoinBlue->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
 			}
 			else
 			{
 				CJoinGameLabel *JoinRed = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				Q_snprintfz (JoinRed->LabelString, sizeof(JoinRed->LabelString), "Join %s Team     (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
-				AddItem(JoinRed);
+				FormatString (JoinRed->LabelString, "Join %s Team     (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 
 				CJoinGameLabel *JoinBlue = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				Q_snprintfz (JoinBlue->LabelString, sizeof(JoinBlue->LabelString), "Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
-				AddItem(JoinBlue);
+				FormatString (JoinBlue->LabelString, "Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
 			}
 		}
 		else
@@ -352,32 +338,25 @@ public:
 			CJoinGameLabel *JoinRed = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y, CTF_TEAM1);
 			JoinRed->Enabled = true;
 			JoinRed->Align = LA_LEFT;
-			Q_snprintfz (JoinRed->LabelString, sizeof(JoinRed->LabelString), "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
-			AddItem(JoinRed);
+			FormatString (JoinRed->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 
 			CJoinGameLabel *JoinBlue = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 			JoinBlue->Enabled = true;
 			JoinBlue->Align = LA_LEFT;
-			Q_snprintfz (JoinBlue->LabelString, sizeof(JoinBlue->LabelString), "Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
-			AddItem(JoinBlue);
+			FormatString (JoinBlue->LabelString, "Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
 		}
 
 		y += 24;
 		CObserverLabel *ChaseCam = QNew (com_levelPool, 0) CObserverLabel(this, x, y);
 		ChaseCam->Enabled = true;
 		ChaseCam->Align = LA_LEFT;
-		if (ent->Client.Chase.Target)
-			Q_snprintfz (ChaseCam->LabelString, sizeof(ChaseCam->LabelString), "Leave Chase Camera");
-		else
-			Q_snprintfz (ChaseCam->LabelString, sizeof(ChaseCam->LabelString), "Chase Camera");
-		AddItem(ChaseCam);
+		ChaseCam->LabelString = ((ent->Client.Chase.Target) ? "Leave Chase Camera" : "Chase Camera");
 
 		y += 8;
 		CCreditsLabel *Credits = QNew (com_levelPool, 0) CCreditsLabel(this, x, y);
 		Credits->Enabled = true;
 		Credits->Align = LA_LEFT;
-		Q_snprintfz (Credits->LabelString, sizeof(Credits->LabelString), "Credits");
-		AddItem(Credits);
+		Credits->LabelString = "Credits";
 
 		return true;
 	};

@@ -486,7 +486,7 @@ void CBFGBolt::Think ()
 			if ((game.mode & GAME_CTF) && (ent->EntityFlags & ENT_PLAYER) &&
 				(GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER)))
 			{
-				if ((entity_cast<CPlayerEntity>(ent))->Client.Respawn.ctf_team == (entity_cast<CPlayerEntity>(GetOwner()))->Client.Respawn.ctf_team)
+				if ((entity_cast<CPlayerEntity>(ent))->Client.Respawn.CTF.Team == (entity_cast<CPlayerEntity>(GetOwner()))->Client.Respawn.CTF.Team)
 					continue;
 			}
 	//ZOID

@@ -48,7 +48,7 @@ static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt
 	static char	string[MAX_COMPRINT];
 	CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
 
-	if (printLevel < Player->Client.Respawn.messageLevel)
+	if (printLevel < Player->Client.Respawn.MessageLevel)
 		return;
 
 	va_start (argptr, fmt);
@@ -149,12 +149,10 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		Com_Printf (0, "%s", copy);
 	}
 
-	edict_t *cl;
-	int i;
-	for (i=1, cl=&g_edicts[1]; i<=game.maxclients ; i++, cl++)
+	for (int i = 1; i <= game.maxclients; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(cl->Entity);
-		if (printLevel < Player->Client.Respawn.messageLevel)
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+		if (printLevel < Player->Client.Respawn.MessageLevel)
 			continue;
 		if (Player->Client.Persistent.state != SVCS_SPAWNED)
 			continue;

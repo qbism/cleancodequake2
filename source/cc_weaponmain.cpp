@@ -90,7 +90,7 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 	switch (Player->Client.WeaponState)
 	{
 	case WS_ACTIVATING:
-		if (Player->Client.PlayerState.GetGunFrame() == ActivationEnd)
+		if (Player->Client.PlayerState.GetGunFrame() == ActivationEnd || instantweap->Boolean())
 		{
 			newFrame = IdleStart;
 			newState = WS_IDLE;
@@ -99,6 +99,12 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 	case WS_IDLE:
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
 		{
+			if (instantweap->Boolean())
+			{
+				ChangeWeapon (Player);
+				return;
+			}
+
 			// We want to go away!
 			newState = WS_DEACTIVATING;
 			newFrame = DeactStart;
@@ -298,7 +304,7 @@ Called by ClientBeginServerFrame
 void CWeapon::Think (CPlayerEntity *Player)
 {
 #ifdef CLEANCTF_ENABLED
-	if ((game.mode & GAME_CTF) && !Player->Client.Respawn.ctf_team)
+	if ((game.mode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
 		return;
 #endif
 

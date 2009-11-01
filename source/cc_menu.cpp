@@ -41,6 +41,7 @@ y(y),
 Selected(Selected),
 Enabled(true)
 {
+	Menu->AddItem (this);
 };
 
 bool CMenuItem::CanSelect (CPlayerEntity *ent)
@@ -58,7 +59,7 @@ bool CMenuItem::Select (CPlayerEntity *ent)
 }
 
 CMenu::CMenu (CPlayerEntity *ent) :
-Cursor(0),
+Cursor(-1),
 ent(ent)
 {
 };
@@ -80,7 +81,7 @@ void CMenu::AddItem (CMenuItem *Item)
 
 void CMenu::DrawItems (CStatusBar *Bar)
 {
-	for (std::vector<CMenuItem*, std::level_allocator<CMenuItem*> >::iterator it = Items.begin(); it < Items.end(); it++)
+	for (TMenuItemsContainer::iterator it = Items.begin(); it < Items.end(); it++)
 		(*it)->Draw (ent, Bar);
 }
 
@@ -112,10 +113,25 @@ void CMenuState::OpenMenu ()
 	}
 
 	// Menu successfully opened!
-	Cursor = CurrentMenu->Cursor;
 	InMenu = true;
 
-	CurrentMenu->Items.at(Cursor)->Selected = true;
+	if (CurrentMenu->Cursor != -1)
+	{
+		Cursor = CurrentMenu->Cursor;
+		CurrentMenu->Items.at(Cursor)->Selected = true;
+	}
+	else
+	{
+		for (size_t i = 0; i < CurrentMenu->Items.size(); i++)
+		{
+			if (CurrentMenu->Items[i]->CanSelect(ent))
+			{
+				Cursor = i;
+				CurrentMenu->Items[i]->Selected = true;
+				break;
+			}
+		}
+	}
 };
 
 void CMenuState::CloseMenu ()

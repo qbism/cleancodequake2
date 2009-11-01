@@ -34,6 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_CONTROLS_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_CONTROLS_H__
 
+#include <sstream>
+#include "cc_conchars.h"
+
 CC_ENUM (uint8, ELabelFlags)
 {
 	LF_GREEN			=	1,
@@ -49,7 +52,7 @@ CC_ENUM (uint8, ELabelAlign)
 class CMenu_Label : public CMenuItem
 {
 public:
-	char					LabelString[MAX_COMPRINT/4];
+	std::cc_string			LabelString;
 	ELabelFlags				Flags;
 	ELabelAlign				Align;
 
@@ -72,7 +75,7 @@ public:
 class CMenu_Image : public CMenuItem
 {
 public:
-	char					ImageString[MAX_INFO_KEY*2];
+	std::cc_string			ImageString;
 	int						Width, Height;
 
 	CMenu_Image				(CMenu *Menu, int x, int y);
@@ -130,21 +133,87 @@ CC_ENUM (uint8, ESliderTextPosition)
 	STP_CUSTOM // Allows programmer to shove the text where ever he wants
 };
 
+template <typename TType>
 class CMenu_Slider : public CMenuItem
 {
 public:
 	ELabelAlign				Align;
 	ESliderTextPosition		TextAlign;
 	int						TextX, TextY;
+	uint8					Width;
 
-	int						Min;
-	int						Max;
-	int						Step;
-	int						Value;
-	int						Width;
+	TType					Min;
+	TType					Max;
+	TType					Step;
+	TType					Value;
+	std::cc_string			AppendText;
 
-	CMenu_Slider			(CMenu *Menu, int x, int y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	CMenu_Slider			(CMenu *Menu, int x, int y) :
+	  CMenuItem(Menu, x, y)
+	{
+	};
+
+	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState)
+	{
+		if (Width > (MAX_INFO_KEY*2)-3)
+			Width = (MAX_INFO_KEY*2)-3;
+
+		int drawX = x;
+
+		switch (Align)
+		{
+		case LA_LEFT:
+			drawX += 160;
+			break;
+		case LA_RIGHT:
+			drawX += 160 - (Width * 8);
+			break;
+		case LA_CENTER:
+			break;
+		}
+		DrawState->AddVirtualPoint_X (drawX);
+		DrawState->AddVirtualPoint_Y (y + 120);
+
+		char Buffer[MAX_INFO_KEY*2];
+		Buffer[0] = CCHAR_DOWNLOADBAR_LEFT;
+
+		// Which number is closest to the value?
+		float Percent = (((!Value) ? 0.1 : ((float)Value / (float)Max)));
+		int BestValue = ((Width-1) * Percent);
+
+		if (BestValue > Width)
+			BestValue = Width;
+
+		for (int i = (int)Min; i <= (int)Width; i++)
+		{
+			Buffer[((i-(int)Min)+1)] = (i == BestValue) ? CCHAR_DOWNLOADBAR_THUMB : CCHAR_DOWNLOADBAR_CENTER;
+		}
+
+		Buffer[Width+1] = CCHAR_DOWNLOADBAR_RIGHT;
+		Buffer[Width+2] = '\0';
+
+		DrawState->AddString (Buffer, false, (Align == LA_CENTER));
+
+		// Draw the value if desired
+		switch (Align)
+		{
+		case LA_LEFT:
+			drawX = x + 190 + (Width * 8);
+			break;
+		case LA_RIGHT:
+			drawX = x + 190;
+			break;
+		case LA_CENTER:
+			drawX = x + 145 + (Width * 8);
+			break;
+		}
+
+		DrawState->AddVirtualPoint_X (drawX);
+
+		std::stringstream str;
+		str << Value << AppendText;
+		DrawState->AddString (str.str().c_str(), Selected, false);
+	};
 
 	virtual bool	CanSelect (CPlayerEntity *ent)
 	{
@@ -154,7 +223,28 @@ public:
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent);
+	virtual void	Update (CPlayerEntity *ent)
+	{
+		switch (ent->Client.Respawn.MenuState.Key)
+		{
+		case CMenuState::KEY_RIGHT:
+			if (Value == Max)
+				return; // Can't do that, Dave
+
+			Value += Step;
+			if (Value > Max)
+				Value = Max;
+			break;
+		case CMenuState::KEY_LEFT:
+			if (Value == Min)
+				return;
+
+			Value -= Step;
+			if (Value < Min)
+				Value = Min;
+			break;
+		}
+	};
 };
 
 class CMenu_Box : public CMenuItem

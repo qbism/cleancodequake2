@@ -49,7 +49,7 @@ struct IPAddress
 CC_ENUM (int, EBanTypeFlags)
 {
 	BAN_SQUELCH		=	BIT(0), // Banned from talking
-	BAN_SPECTATOR	=	BIT(1), // Banned from moving to spectator mode
+	BAN_SPECTATOR	=	BIT(1), // Banned from moving to Spectator mode
 	BAN_ENTER		=	BIT(2), // Banned from entering the game
 };
 
@@ -65,9 +65,11 @@ struct BanIndex
 	EBanTypeFlags	Flags;
 };
 
+typedef std::vector<BanIndex*, std::game_allocator<BanIndex*> > TBanIndexContainer;
+
 class CBanList
 {
-	std::vector<BanIndex*, std::game_allocator<BanIndex*> >	BanList;
+	TBanIndexContainer	BanList;
 
 public:
 

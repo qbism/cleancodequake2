@@ -192,7 +192,7 @@ void CPlayerEntity::BeginServerFrame ()
 #ifdef CLEANCTF_ENABLED
 		!(game.mode & GAME_CTF) &&
 #endif
-		Client.Persistent.spectator != Client.Respawn.spectator &&
+		Client.Persistent.Spectator != Client.Respawn.Spectator &&
 		(level.Frame - Client.Timers.RespawnTime) >= 50)
 	{
 		SpectatorRespawn();
@@ -200,7 +200,7 @@ void CPlayerEntity::BeginServerFrame ()
 	}
 
 	// run weapon animations
-	if (!Client.Respawn.spectator && Client.Persistent.Weapon)
+	if (!Client.Respawn.Spectator && Client.Persistent.Weapon)
 	{
 #ifdef CLEANCTF_ENABLED
 		if (!(game.mode & GAME_CTF) || ((game.mode & GAME_CTF) && !NoClip))
@@ -241,7 +241,7 @@ void CPlayerEntity::Respawn ()
 {
 	if (game.mode != GAME_SINGLEPLAYER)
 	{
-		// spectator's don't leave bodies
+		// Spectator's don't leave bodies
 		if (!NoClip)
 			CopyToBodyQueue (this);
 		GetSvFlags() &= ~SVF_NOCLIENT;
@@ -265,24 +265,24 @@ void CPlayerEntity::Respawn ()
 #include "cc_tent.h"
 
 /* 
- * only called when Persistent.spectator changes
- * note that Respawn.spectator should be the opposite of Persistent.spectator here
+ * only called when Persistent.Spectator changes
+ * note that Respawn.Spectator should be the opposite of Persistent.Spectator here
  */
 void CPlayerEntity::SpectatorRespawn ()
 {
-	// if the user wants to become a spectator, make sure he doesn't
+	// if the user wants to become a Spectator, make sure he doesn't
 	// exceed max_spectators
 
-	if (Client.Persistent.spectator)
+	if (Client.Persistent.Spectator)
 	{
-		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
+		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "Spectator");
 		if (*spectator_password->String() && 
 			strcmp(spectator_password->String(), "none") && 
 			value != spectator_password->String())
 		{
 			PrintToClient (PRINT_HIGH, "Spectator password incorrect.\n");
-			Client.Persistent.spectator = false;
-			StuffText ("spectator 0\n");
+			Client.Persistent.Spectator = false;
+			StuffText ("Spectator 0\n");
 			return;
 		}
 
@@ -291,42 +291,42 @@ void CPlayerEntity::SpectatorRespawn ()
 		for (int i = 1; i <= game.maxclients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
-			if (Player->GetInUse() && Player->Client.Persistent.spectator)
+			if (Player->GetInUse() && Player->Client.Persistent.Spectator)
 				numspec++;
 		}
 
 		if (numspec >= game.maxspectators)
 		{
-			PrintToClient (PRINT_HIGH, "Server spectator limit is full.");
-			Client.Persistent.spectator = false;
-			// reset his spectator var
-			StuffText ("spectator 0\n");
+			PrintToClient (PRINT_HIGH, "Server Spectator limit is full.");
+			Client.Persistent.Spectator = false;
+			// reset his Spectator var
+			StuffText ("Spectator 0\n");
 			return;
 		}
 	}
 	else
 	{
-		// he was a spectator and wants to join the game
+		// he was a Spectator and wants to join the game
 		// he must have the right password
 		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
 		if (*password->String() && strcmp(password->String(), "none") && 
 			value != password->String())
 		{
 			PrintToClient (PRINT_HIGH, "Password incorrect.\n");
-			Client.Persistent.spectator = true;
-			StuffText ("spectator 1\n");
+			Client.Persistent.Spectator = true;
+			StuffText ("Spectator 1\n");
 			return;
 		}
 	}
 
 	// clear client on respawn
-	Client.Respawn.score = Client.Persistent.score = 0;
+	Client.Respawn.Score = Client.Persistent.Score = 0;
 
 	GetSvFlags() &= ~SVF_NOCLIENT;
 	PutInServer ();
 
 	// add a teleportation effect
-	if (!Client.Persistent.spectator)
+	if (!Client.Persistent.Spectator)
 	{
 		// send effect
 		CTempEnt::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
@@ -338,7 +338,7 @@ void CPlayerEntity::SpectatorRespawn ()
 
 	Client.Timers.RespawnTime = level.Frame;
 
-	if (Client.Persistent.spectator) 
+	if (Client.Persistent.Spectator) 
 		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.netname);
 	else
 		BroadcastPrintf (PRINT_HIGH, "%s joined the game\n", Client.Persistent.netname);
@@ -385,12 +385,12 @@ void CPlayerEntity::PutInServer ()
 			//memcpy (userinfo, Client.Persistent.UserInfo.c_str(), sizeof(userinfo));
 			Q_snprintfz (userinfo, sizeof(userinfo), "%s", Client.Persistent.UserInfo.c_str());
 
-			Respawn.coop_respawn.game_helpchanged = Client.Persistent.game_helpchanged;
-			Respawn.coop_respawn.helpchanged = Client.Persistent.helpchanged;
-			Client.Persistent = Respawn.coop_respawn;
+			Respawn.CoopRespawn.game_helpchanged = Client.Persistent.game_helpchanged;
+			Respawn.CoopRespawn.helpchanged = Client.Persistent.helpchanged;
+			Client.Persistent = Respawn.CoopRespawn;
 			UserinfoChanged (userinfo);
-			if (Respawn.score > Client.Persistent.score)
-				Client.Persistent.score = Respawn.score;
+			if (Respawn.Score > Client.Persistent.Score)
+				Client.Persistent.Score = Respawn.Score;
 		break;
 	case GAME_SINGLEPLAYER:
 			//memset (&Respawn, 0, sizeof(Respawn));
@@ -473,7 +473,7 @@ void CPlayerEntity::PutInServer ()
 
 	// set the delta angle
 	for (i=0 ; i<3 ; i++)
-		Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(spawn_angles[i] - Client.Respawn.cmd_angles[i]);
+		Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(spawn_angles[i] - Client.Respawn.CmdAngles[i]);
 
 	State.GetAngles().Set (0, spawn_angles[YAW], 0);
 	Client.PlayerState.GetViewAngles() = State.GetAngles();
@@ -486,12 +486,12 @@ void CPlayerEntity::PutInServer ()
 //ZOID
 #endif
 
-	// spawn a spectator
-	if (Client.Persistent.spectator)
+	// spawn a Spectator
+	if (Client.Persistent.Spectator)
 	{
 		Client.Chase.Target = NULL;
 
-		Client.Respawn.spectator = true;
+		Client.Respawn.Spectator = true;
 
 		NoClip = true;
 		GetSolid() = SOLID_NOT;
@@ -501,7 +501,7 @@ void CPlayerEntity::PutInServer ()
 		return;
 	}
 	else
-		Client.Respawn.spectator = false;
+		Client.Respawn.Spectator = false;
 
 	KillBox ();
 	Link ();
@@ -586,10 +586,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	std::cc_string s = Info_ValueForKey (UserInfo, "name");
 	Q_strncpyz (Client.Persistent.netname, s.c_str(), sizeof(Client.Persistent.netname)-1);
 
-	// set spectator
-	s = Info_ValueForKey (UserInfo, "spectator");
+	// set Spectator
+	s = Info_ValueForKey (UserInfo, "Spectator");
 	// spectators are only supported in deathmatch
-	Client.Persistent.spectator = ((game.mode & GAME_DEATHMATCH) && s.length() && s != "0");
+	Client.Persistent.Spectator = ((game.mode & GAME_DEATHMATCH) && s.length() && s != "0");
 
 	// set skin
 	s = Info_ValueForKey (UserInfo, "skin");
@@ -653,7 +653,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	// MSG command
 	s = Info_ValueForKey (UserInfo, "msg");
 	if (s.length())
-		Client.Respawn.messageLevel = atoi (s.c_str());
+		Client.Respawn.MessageLevel = atoi (s.c_str());
 
 	// save off the userinfo in case we want to check something later
 	Client.Persistent.UserInfo = userinfo;
@@ -670,7 +670,7 @@ void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 	else
 		t = "male/";
 
-	switch (Client.Respawn.ctf_team)
+	switch (Client.Respawn.CTF.Team)
 	{
 	case CTF_TEAM1:
 		ConfigString (CS_PLAYERSKINS+playernum, Q_VarArgs("%s\\%s"CTF_TEAM1_SKIN, 
@@ -689,13 +689,13 @@ void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 
 bool CPlayerEntity::CTFStart ()
 {
-	if (Client.Respawn.ctf_team != CTF_NOTEAM)
+	if (Client.Respawn.CTF.Team != CTF_NOTEAM)
 		return false;
 
 	if ((!dmFlags.dfCtfForceJoin || ctfgame.match >= MATCH_SETUP))
 	{
 		// start as 'observer'
-		Client.Respawn.ctf_team = CTF_NOTEAM;
+		Client.Respawn.CTF.Team = CTF_NOTEAM;
 		NoClip = true;
 		GetSolid() = SOLID_NOT;
 		GetSvFlags() |= SVF_NOCLIENT;
@@ -715,7 +715,7 @@ void CPlayerEntity::FetchEntData ()
 	MaxHealth = Client.Persistent.max_health;
 	Flags |= Client.Persistent.savedFlags;
 	if (game.mode == GAME_COOPERATIVE)
-		Client.Respawn.score = Client.Persistent.score;
+		Client.Respawn.Score = Client.Persistent.Score;
 }
 
 // ==============================================
@@ -1721,7 +1721,7 @@ void CPlayerEntity::EndServerFrame ()
 	CalcBlend ();
 
 	// chase cam stuff
-	if (Client.Respawn.spectator)
+	if (Client.Respawn.Spectator)
 		SetSpectatorStats();
 	else
 #ifdef CLEANCTF_ENABLED
@@ -1798,13 +1798,13 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	size_t				len;
 	static int			sorted[2][MAX_CS_CLIENTS];
 	static int			sortedscores[2][MAX_CS_CLIENTS];
-	static int			score, total[2], totalscore[2];
+	static int			Score, total[2], totalscore[2];
 	int					last[2];
 	int					n, j, k;
 	static char			str[MAX_COMPRINT/4];
 	int					team;
 
-	// sort the clients by team and score
+	// sort the clients by team and Score
 	total[0] = total[1] = 0;
 	last[0] = last[1] = 0;
 	totalscore[0] = totalscore[1] = 0;
@@ -1813,17 +1813,17 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse())
 			continue;
-		if (cl_ent->Client.Respawn.ctf_team == CTF_TEAM1)
+		if (cl_ent->Client.Respawn.CTF.Team == CTF_TEAM1)
 			team = 0;
-		else if (cl_ent->Client.Respawn.ctf_team == CTF_TEAM2)
+		else if (cl_ent->Client.Respawn.CTF.Team == CTF_TEAM2)
 			team = 1;
 		else
 			continue; // unknown team?
 
-		score = cl_ent->Client.Respawn.score;
+		Score = cl_ent->Client.Respawn.Score;
 		for (j=0 ; j<total[team] ; j++)
 		{
-			if (score > sortedscores[team][j])
+			if (Score > sortedscores[team][j])
 				break;
 		}
 		for (k=total[team] ; k>j ; k--)
@@ -1832,8 +1832,8 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 			sortedscores[team][k] = sortedscores[team][k-1];
 		}
 		sorted[team][j] = i;
-		sortedscores[team][j] = score;
-		totalscore[team] += score;
+		sortedscores[team][j] = Score;
+		totalscore[team] += Score;
 		total[team]++;
 	}
 
@@ -1884,7 +1884,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 		{
 			CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + sorted[0][i])->Entity);
 
-			Bar.AddClientBlock (0, 42 + i * 8, sorted[0][i], cl_ent->Client.Respawn.score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
+			Bar.AddClientBlock (0, 42 + i * 8, sorted[0][i], cl_ent->Client.Respawn.Score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
 
 			if (cl_ent->Client.Persistent.Flag == NItems::BlueFlag)
 			{
@@ -1902,7 +1902,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 		{
 			CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + sorted[1][i])->Entity);
 
-			Bar.AddClientBlock (160, 42 + i * 8, sorted[1][i], cl_ent->Client.Respawn.score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
+			Bar.AddClientBlock (160, 42 + i * 8, sorted[1][i], cl_ent->Client.Respawn.Score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
 
 			if (cl_ent->Client.Persistent.Flag == NItems::RedFlag)
 			{
@@ -1931,7 +1931,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 			CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 			if (!cl_ent->GetInUse() ||
 				cl_ent->GetSolid() != SOLID_NOT ||
-				cl_ent->Client.Respawn.ctf_team != CTF_NOTEAM)
+				cl_ent->Client.Respawn.CTF.Team != CTF_NOTEAM)
 				continue;
 
 			if (!k)
@@ -1944,7 +1944,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 				j += 8;
 			}
 
-			Bar.AddClientBlock ((n & 1) ? 160 : 0, j, i, cl_ent->Client.Respawn.score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
+			Bar.AddClientBlock ((n & 1) ? 160 : 0, j, i, cl_ent->Client.Respawn.Score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
 			len = Bar.Length();
 			
 			if (n & 1)
@@ -1994,21 +1994,21 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 	CStatusBar			Scoreboard;
 	static int			sorted[MAX_CS_CLIENTS];
 	static int			sortedscores[MAX_CS_CLIENTS];
-	int					score, total;
+	int					Score, total;
 	CPlayerEntity		*Killer = (Enemy && (Enemy->EntityFlags & ENT_PLAYER)) ? entity_cast<CPlayerEntity>(Enemy) : NULL;
 
-	// sort the clients by score
+	// sort the clients by Score
 	total = 0;
 	for (int i = 0; i < game.maxclients ; i++)
 	{
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
-		if (!cl_ent->GetInUse() || cl_ent->Client.Respawn.spectator)
+		if (!cl_ent->GetInUse() || cl_ent->Client.Respawn.Spectator)
 			continue;
-		score = cl_ent->Client.Respawn.score;
+		Score = cl_ent->Client.Respawn.Score;
 		int j = 0;
 		for ( ; j < total ; j++)
 		{
-			if (score > sortedscores[j])
+			if (Score > sortedscores[j])
 				break;
 		}
 		int k = total;
@@ -2018,7 +2018,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 			sortedscores[k] = sortedscores[k-1];
 		}
 		sorted[j] = i;
-		sortedscores[j] = score;
+		sortedscores[j] = Score;
 		total++;
 	}
 
@@ -2054,7 +2054,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 		}
 
 		// send the layout
-		Scoreboard.AddClientBlock (x, y, sorted[i], cl_ent->Client.Respawn.score, cl_ent->Client.GetPing(), (level.Frame - cl_ent->Client.Respawn.enterframe)/600);
+		Scoreboard.AddClientBlock (x, y, sorted[i], cl_ent->Client.Respawn.Score, cl_ent->Client.GetPing(), (level.Frame - cl_ent->Client.Respawn.EnterFrame)/600);
 	}
 
 	Scoreboard.SendMsg (this, reliable);
@@ -2201,7 +2201,7 @@ void CPlayerEntity::SetStats ()
 		//
 		// frags
 		//
-		Client.PlayerState.GetStat (STAT_FRAGS) = Client.Respawn.score;
+		Client.PlayerState.GetStat (STAT_FRAGS) = Client.Respawn.Score;
 
 		//
 		// help icon / current weapon if not shown
@@ -2237,7 +2237,7 @@ void CPlayerEntity::SetSpectatorStats ()
 
 	Client.PlayerState.GetStat (STAT_SPECTATOR) = 1;
 
-	// layouts are independant in spectator
+	// layouts are independant in Spectator
 	Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
 	if (Client.Persistent.health <= 0 || level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES))
@@ -2258,11 +2258,11 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_MATCH) = (ctfgame.match > MATCH_NONE) ? CONFIG_CTF_MATCH : 0;
 
 	//ghosting
-	if (Client.Respawn.ghost)
+	if (Client.Respawn.CTF.Ghost)
 	{
-		Client.Respawn.ghost->score = Client.Respawn.score;
-		Q_strncpyz(Client.Respawn.ghost->netname, Client.Persistent.netname, sizeof(Client.Respawn.ghost->netname));
-		Client.Respawn.ghost->number = State.GetNumber();
+		Client.Respawn.CTF.Ghost->Score = Client.Respawn.Score;
+		Q_strncpyz(Client.Respawn.CTF.Ghost->netname, Client.Persistent.netname, sizeof(Client.Respawn.CTF.Ghost->netname));
+		Client.Respawn.CTF.Ghost->number = State.GetNumber();
 	}
 
 	// logo headers for the frag display
@@ -2372,12 +2372,12 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_TEAM2_CAPS) = ctfgame.team2;
 
 	Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = 0;
-	if (Client.Respawn.ctf_team == CTF_TEAM1 &&
+	if (Client.Respawn.CTF.Team == CTF_TEAM1 &&
 		(Client.Persistent.Flag == NItems::BlueFlag) &&
 		(level.Frame & 8))
 		Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = ImageIndex ("i_ctf2");
 
-	else if (Client.Respawn.ctf_team == CTF_TEAM2 &&
+	else if (Client.Respawn.CTF.Team == CTF_TEAM2 &&
 		(Client.Persistent.Flag == NItems::RedFlag) &&
 		(level.Frame & 8))
 		Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = ImageIndex ("i_ctf1");
@@ -2385,13 +2385,13 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_JOINED_TEAM1_PIC) = 0;
 	Client.PlayerState.GetStat (STAT_CTF_JOINED_TEAM2_PIC) = 0;
 
-	if (Client.Respawn.ctf_team == CTF_TEAM1)
+	if (Client.Respawn.CTF.Team == CTF_TEAM1)
 		Client.PlayerState.GetStat (STAT_CTF_JOINED_TEAM1_PIC) = ImageIndex ("i_ctfj");
-	else if (Client.Respawn.ctf_team == CTF_TEAM2)
+	else if (Client.Respawn.CTF.Team == CTF_TEAM2)
 		Client.PlayerState.GetStat (STAT_CTF_JOINED_TEAM2_PIC) = ImageIndex ("i_ctfj");
 
 	Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = 0;
-	if (Client.Respawn.id_state)
+	if (Client.Respawn.CTF.IDState)
 		CTFSetIDView();
 }
 
@@ -2444,8 +2444,8 @@ void CPlayerEntity::CTFAssignGhost()
 	}
 	if (ghost == MAX_CS_CLIENTS)
 		return;
-	ctfgame.ghosts[ghost].team = Client.Respawn.ctf_team;
-	ctfgame.ghosts[ghost].score = 0;
+	ctfgame.ghosts[ghost].team = Client.Respawn.CTF.Team;
+	ctfgame.ghosts[ghost].Score = 0;
 	for (;;)
 	{
 		ctfgame.ghosts[ghost].code = 10000 + (irandom(90000));
@@ -2459,9 +2459,9 @@ void CPlayerEntity::CTFAssignGhost()
 	}
 	ctfgame.ghosts[ghost].ent = this;
 	Q_strncpyz(ctfgame.ghosts[ghost].netname, Client.Persistent.netname, sizeof(ctfgame.ghosts[ghost].netname));
-	Client.Respawn.ghost = ctfgame.ghosts + ghost;
+	Client.Respawn.CTF.Ghost = ctfgame.ghosts + ghost;
 	PrintToClient (PRINT_CHAT, "Your ghost code is **** %d ****\n", ctfgame.ghosts[ghost].code);
-	PrintToClient (PRINT_HIGH, "If you lose connection, you can rejoin with your score "
+	PrintToClient (PRINT_HIGH, "If you lose connection, you can rejoin with your Score "
 		"intact by typing \"ghost %d\".\n", ctfgame.ghosts[ghost].code);
 }
 #endif
@@ -2659,9 +2659,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	if (Client.Chase.Target)
 	{
-		Client.Respawn.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
-		Client.Respawn.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);
-		Client.Respawn.cmd_angles[2] = SHORT2ANGLE(ucmd->angles[2]);
+		for (int i = 0; i < 3; i++)
+			Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
 		if (Client.LatchedButtons & BUTTON_ATTACK)
 		{
@@ -2749,9 +2748,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	GetMins() = pm.mins;
 	GetMaxs() = pm.maxs;
 
-	Client.Respawn.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
-	Client.Respawn.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);
-	Client.Respawn.cmd_angles[2] = SHORT2ANGLE(ucmd->angles[2]);
+	for (int i = 0; i < 3; i++)
+	Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
 	if (GroundEntity && !pm.groundEntity && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE))
 	{
@@ -2810,7 +2808,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	// monster sighting AI
 	// Paril: Removed. See definition of userCmd_t::lightlevel for more info.
 
-	if (Client.Respawn.spectator
+	if (Client.Respawn.Spectator
 #ifdef CLEANCTF_ENABLED
 		|| ((game.mode & GAME_CTF) && NoClip)
 #endif)
@@ -2860,11 +2858,11 @@ void CPlayerEntity::CTFAssignTeam()
 	int i;
 	int team1count = 0, team2count = 0;
 
-	Client.Respawn.ctf_state = 0;
+	Client.Respawn.CTF.State = 0;
 
 	if (!dmFlags.dfCtfForceJoin)
 	{
-		Client.Respawn.ctf_team = CTF_NOTEAM;
+		Client.Respawn.CTF.Team = CTF_NOTEAM;
 		return;
 	}
 
@@ -2875,7 +2873,7 @@ void CPlayerEntity::CTFAssignTeam()
 		if (!player->GetInUse() || player == this)
 			continue;
 
-		switch (player->Client.Respawn.ctf_team)
+		switch (player->Client.Respawn.CTF.Team)
 		{
 		case CTF_TEAM1:
 			team1count++;
@@ -2885,13 +2883,13 @@ void CPlayerEntity::CTFAssignTeam()
 		}
 	}
 	if (team1count < team2count)
-		Client.Respawn.ctf_team = CTF_TEAM1;
+		Client.Respawn.CTF.Team = CTF_TEAM1;
 	else if (team2count < team1count)
-		Client.Respawn.ctf_team = CTF_TEAM2;
+		Client.Respawn.CTF.Team = CTF_TEAM2;
 	else if (irandom(2))
-		Client.Respawn.ctf_team = CTF_TEAM1;
+		Client.Respawn.CTF.Team = CTF_TEAM1;
 	else
-		Client.Respawn.ctf_team = CTF_TEAM2;
+		Client.Respawn.CTF.Team = CTF_TEAM2;
 }
 #endif
 
@@ -2899,8 +2897,8 @@ void CPlayerEntity::InitResp ()
 {
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	int ctf_team = Client.Respawn.ctf_team;
-	bool id_state = Client.Respawn.id_state;
+	int Team = Client.Respawn.CTF.Team;
+	bool IDState = Client.Respawn.CTF.IDState;
 //ZOID
 #endif
 
@@ -2908,17 +2906,17 @@ void CPlayerEntity::InitResp ()
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	Client.Respawn.ctf_team = ctf_team;
-	Client.Respawn.id_state = id_state;
+	Client.Respawn.CTF.Team = Team;
+	Client.Respawn.CTF.IDState = IDState;
 //ZOID
 #endif
 
-	Client.Respawn.enterframe = level.Frame;
-	Client.Respawn.coop_respawn = Client.Persistent;
+	Client.Respawn.EnterFrame = level.Frame;
+	Client.Respawn.CoopRespawn = Client.Persistent;
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	if ((game.mode & GAME_CTF) && Client.Respawn.ctf_team < CTF_TEAM1)
+	if ((game.mode & GAME_CTF) && Client.Respawn.CTF.Team < CTF_TEAM1)
 		CTFAssignTeam();
 //ZOID
 #endif
@@ -2954,7 +2952,7 @@ void CPlayerEntity::SaveClientData ()
 		SavedClients[i].max_health = ent->MaxHealth;
 		SavedClients[i].savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
 		if (game.mode & GAME_COOPERATIVE)
-			SavedClients[i].score = ent->Client.Respawn.score;
+			SavedClients[i].Score = ent->Client.Respawn.Score;
 	}
 }
 
@@ -3036,7 +3034,14 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 			// FIXME: Remove.
 			if (!spot)
 			{
-				GameError ("Couldn't find spawn point %s", game.spawnpoint);
+				//GameError ("Couldn't find spawn point %s", game.spawnpoint);
+				//return;
+
+				MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Couldn't find a suitable spawn point!\n");
+
+				origin.Set (0, 0, 0);
+				angles.Set (0, 0, 0);
+				
 				return;
 			}
 		}
@@ -3063,12 +3068,12 @@ CBaseEntity *CPlayerEntity::SelectCTFSpawnPoint ()
 	float	range, range1 = 99999, range2 = 99999;
 	char	*cname;
 
-	if (Client.Respawn.ctf_state)
+	if (Client.Respawn.CTF.State)
 		return (dmFlags.dfSpawnFarthest) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
 
-	Client.Respawn.ctf_state++;
+	Client.Respawn.CTF.State++;
 
-	switch (Client.Respawn.ctf_team)
+	switch (Client.Respawn.CTF.Team)
 	{
 	case CTF_TEAM1:
 		cname = "info_player_team1";
@@ -3180,11 +3185,11 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 //ZOID
 			// if at start and same team, clear
 			if ((game.mode & GAME_CTF) && (meansOfDeath == MOD_TELEFRAG) &&
-				(Client.Respawn.ctf_state < 2) &&
-				(Client.Respawn.ctf_team == Attacker->Client.Respawn.ctf_team))
+				(Client.Respawn.CTF.State < 2) &&
+				(Client.Respawn.CTF.Team == Attacker->Client.Respawn.CTF.Team))
 			{
-				Attacker->Client.Respawn.score--;
-				Client.Respawn.ctf_state = 0;
+				Attacker->Client.Respawn.Score--;
+				Client.Respawn.CTF.State = 0;
 			}
 
 			CTFFragBonuses(this, Attacker);
@@ -3214,7 +3219,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 		for (int n = 0; n < GetNumItems(); n++)
 		{
 			if ((game.mode == GAME_COOPERATIVE) && (GetItemByIndex(n)->Flags & ITEMFLAG_KEY))
-				Client.Respawn.coop_respawn.Inventory.Set(n, Client.Persistent.Inventory.Has(n));
+				Client.Respawn.CoopRespawn.Inventory.Set(n, Client.Persistent.Inventory.Has(n));
 			Client.Persistent.Inventory.Set(n, 0);
 		}
 	}
@@ -3299,7 +3304,7 @@ void CPlayerEntity::UpdateChaseCam()
 
 	// is our chase target gone?
 	if (!Client.Chase.Target->GetInUse()
-		|| Client.Chase.Target->Client.Respawn.spectator || Client.Chase.Target->Client.Chase.Target)
+		|| Client.Chase.Target->Client.Respawn.Spectator || Client.Chase.Target->Client.Chase.Target)
 	{
 		CPlayerEntity *old = Client.Chase.Target;
 		ChaseNext();
@@ -3360,7 +3365,7 @@ void CPlayerEntity::UpdateChaseCam()
 			State.GetOrigin() = goal;
 
 			for (int i = 0; i < 3; i++)
-				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.cmd_angles[i]);
+				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			if (targ->DeadFlag)
 				Client.PlayerState.GetViewAngles().Set (-15, targ->Client.KillerYaw, 40);
@@ -3376,11 +3381,11 @@ void CPlayerEntity::UpdateChaseCam()
 		{
 			Client.PlayerState.GetFov () = 90;
 
-			if(Client.Respawn.cmd_angles[PITCH] > 89)
-				Client.Respawn.cmd_angles[PITCH] = 89;
+			if(Client.Respawn.CmdAngles.X > 89)
+				Client.Respawn.CmdAngles.X = 89;
 
-			if(Client.Respawn.cmd_angles[PITCH] < -89)
-				Client.Respawn.cmd_angles[PITCH] = -89;
+			if(Client.Respawn.CmdAngles.X < -89)
+				Client.Respawn.CmdAngles.X = -89;
 
 			vec3f ownerv = targ->State.GetOrigin() + vec3f(0, 0, targ->ViewHeight);
 
@@ -3417,9 +3422,9 @@ void CPlayerEntity::UpdateChaseCam()
 			State.GetOrigin() = goal;
 
 			for (int i = 0; i < 3; i++)
-				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.cmd_angles[i]);
+				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
-			Client.PlayerState.GetViewAngles() = Client.Respawn.cmd_angles;
+			Client.PlayerState.GetViewAngles() = Client.Respawn.CmdAngles;
 		}
 		break;
 	default:
@@ -3441,7 +3446,7 @@ void CPlayerEntity::UpdateChaseCam()
 			Client.PlayerState.GetGunOffset() = targ->Client.PlayerState.GetGunOffset();
 
 			for (int i = 0; i < 3; i++)
-				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.cmd_angles[i]);
+				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			if (targ->DeadFlag)
 				Client.PlayerState.GetViewAngles().Set (-15, targ->Client.KillerYaw, 40);
@@ -3501,7 +3506,7 @@ void CPlayerEntity::ChaseNext()
 			continue;
 		if (e->NoClip)
 			continue;
-		if (!e->Client.Respawn.spectator)
+		if (!e->Client.Respawn.Spectator)
 			break;
 	} while (e != Client.Chase.Target);
 
@@ -3526,7 +3531,7 @@ void CPlayerEntity::ChasePrev()
 			continue;
 		if (e->NoClip)
 			continue;
-		if (!e->Client.Respawn.spectator)
+		if (!e->Client.Respawn.Spectator)
 			break;
 	} while (e != Client.Chase.Target);
 
@@ -3540,7 +3545,7 @@ void CPlayerEntity::GetChaseTarget()
 	for (int i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *other = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
-		if (other->GetInUse() && !other->Client.Respawn.spectator && !other->NoClip)
+		if (other->GetInUse() && !other->Client.Respawn.Spectator && !other->NoClip)
 		{
 			Client.Chase.Target = other;
 			Client.LayoutFlags |= LF_UPDATECHASE;
@@ -3745,15 +3750,15 @@ bool CPlayerEntity::Connect (char *userinfo)
 		return false;
 	}
 
-	// check for a spectator
-	value = Info_ValueForKey (UserInfo, "spectator");
+	// check for a Spectator
+	value = Info_ValueForKey (UserInfo, "Spectator");
 	if ((game.mode & GAME_DEATHMATCH) && value.length() && value != "0")
 	{
 		int i, numspec;
 
 		if (Bans.IsBannedFromSpectator(Adr) || Bans.IsBannedFromSpectator(Info_ValueForKey(UserInfo, "name").c_str()))
 		{
-			Info_SetValueForKey(UserInfo, "rejmsg", "Not permitted to enter spectator mode");
+			Info_SetValueForKey(UserInfo, "rejmsg", "Not permitted to enter Spectator mode");
 			return false;
 		}
 		if (*spectator_password->String() && 
@@ -3768,13 +3773,13 @@ bool CPlayerEntity::Connect (char *userinfo)
 		for (i = numspec = 0; i < game.maxclients; i++)
 		{
 			CPlayerEntity *Ent = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-			if (Ent->GetInUse() && Ent->Client.Persistent.spectator)
+			if (Ent->GetInUse() && Ent->Client.Persistent.Spectator)
 				numspec++;
 		}
 
 		if (numspec >= game.maxspectators)
 		{
-			Info_SetValueForKey(UserInfo, "rejmsg", "Server spectator limit is full.");
+			Info_SetValueForKey(UserInfo, "rejmsg", "Server Spectator limit is full.");
 			return false;
 		}
 	}
@@ -3801,8 +3806,8 @@ bool CPlayerEntity::Connect (char *userinfo)
 		// clear the respawning variables
 #ifdef CLEANCTF_ENABLED
 //ZOID -- force team join
-		Client.Respawn.ctf_team = -1;
-		Client.Respawn.id_state = false; 
+		Client.Respawn.CTF.Team = -1;
+		Client.Respawn.CTF.IDState = false; 
 //ZOID
 #endif
 		InitResp ();
@@ -3933,7 +3938,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 			break;
 		}
 		if (game.mode & GAME_DEATHMATCH)
-			Client.Respawn.score--;
+			Client.Respawn.Score--;
 		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.netname, message);
 	}
 	else if (attacker && (attacker->EntityFlags & ENT_PLAYER))
@@ -4025,7 +4030,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		}
 		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.netname, message, Attacker->Client.Persistent.netname, message2);
 		if (game.mode & GAME_DEATHMATCH)
-			Attacker->Client.Respawn.score++;
+			Attacker->Client.Respawn.Score++;
 	}
 	else if (attacker && (attacker->EntityFlags & ENT_MONSTER))
 	{
@@ -4096,7 +4101,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		char *Name = Monster->Monster->MonsterName;
 
 		if (game.mode & GAME_DEATHMATCH)
-			Client.Respawn.score--;
+			Client.Respawn.Score--;
 		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.netname, message, MonsterAOrAn(Name), Name, message2);
 	}
 	else
@@ -4145,7 +4150,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		}
 
 		if (game.mode & GAME_DEATHMATCH)
-			Client.Respawn.score--;
+			Client.Respawn.Score--;
 		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.netname, message);
 	}
 }

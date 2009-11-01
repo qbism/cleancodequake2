@@ -362,15 +362,15 @@ public:
 
 		if (!Spectator)
 			Q_snprintfz(tempString, sizeof(tempString), " - %02I64d:%02I64d %4d %3d %s\n",
-				(level.Frame - Player->Client.Respawn.enterframe) / 600,
-				((level.Frame - Player->Client.Respawn.enterframe) % 600)/10,
+				(level.Frame - Player->Client.Respawn.EnterFrame) / 600,
+				((level.Frame - Player->Client.Respawn.EnterFrame) % 600)/10,
 				Player->Client.GetPing(),
-				Player->Client.Respawn.score,
+				Player->Client.Respawn.Score,
 				Player->Client.Persistent.netname);
 		else
 			Q_snprintfz(tempString, sizeof(tempString), " - %s%s\n",
 				Player->Client.Persistent.netname,
-				Player->Client.Respawn.spectator ? " (spectator)" : "");
+				Player->Client.Respawn.Spectator ? " (Spectator)" : "");
 
 		if (strlen(Text) + strlen(tempString) > SizeOf - 50)
 		{
@@ -415,7 +415,7 @@ void Cmd_PlayerList_f(CPlayerEntity *ent)
 {
 	char text[MAX_COMPRINT/4];
 
-	// connect time, ping, score, name
+	// connect time, ping, Score, name
 	*text = 0;
 
 	Q_snprintfz (text, sizeof(text), "Spawned:\n");
@@ -518,7 +518,7 @@ void Cmd_Register ()
 	// during play, even during intermission and by spectators.
 	Cmd_AddCommand ("players",				Cmd_Players_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("say",					GCmd_Say_f,				CMD_SPECTATOR);
-	Cmd_AddCommand ("score",				Cmd_Score_f,			CMD_SPECTATOR);
+	Cmd_AddCommand ("Score",				Cmd_Score_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("help",					Cmd_Help_f,				CMD_SPECTATOR);
 	Cmd_AddCommand ("putaway",				Cmd_PutAway_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("playerlist",			

@@ -140,7 +140,7 @@ bool CHurtableEntity::CheckTeamDamage (CBaseEntity *attacker)
 	{
 		CPlayerEntity *Targ = entity_cast<CPlayerEntity>(this);
 		CPlayerEntity *Attacker = entity_cast<CPlayerEntity>(attacker);
-		if (Targ->Client.Respawn.ctf_team == Attacker->Client.Respawn.ctf_team &&
+		if (Targ->Client.Respawn.CTF.Team == Attacker->Client.Respawn.CTF.Team &&
 			(this != attacker))
 			return true;
 	}
@@ -282,7 +282,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, int
 		{
 			level.Monsters.Killed++;
 			if ((game.mode == GAME_COOPERATIVE) && (attacker->EntityFlags & ENT_PLAYER))
-				(entity_cast<CPlayerEntity>(attacker))->Client.Respawn.score++;
+				(entity_cast<CPlayerEntity>(attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
 #ifndef MONSTER_USE_ROGUE_AI
@@ -436,7 +436,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 //ZOID
 //team armor protect
 	if ((game.mode & GAME_CTF) && isClient && (attacker->EntityFlags & ENT_PLAYER) &&
-		(Client->Respawn.ctf_team == (entity_cast<CPlayerEntity>(attacker))->Client.Respawn.ctf_team) &&
+		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(attacker))->Client.Respawn.CTF.Team) &&
 		(this != attacker) && dmFlags.dfCtfArmorProtect)
 		psave = asave = 0;
 	else
