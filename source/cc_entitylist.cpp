@@ -334,7 +334,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 
 	int skill_level = Clamp (skill->Integer(), 0, 3);
 	if (skill->Integer() != skill_level)
-		skill->Set(Q_VarArgs("%i", skill_level), true);
+		skill->Set(skill_level, true);
 
 	CPlayerEntity::SaveClientData ();
 

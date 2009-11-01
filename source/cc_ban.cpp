@@ -152,7 +152,7 @@ void CBanList::LoadFromFile ()
 void CBanList::SaveList ()
 {
 	fileHandle_t f;
-	FS_OpenFile ("bans.lst", &f, FS_MODE_WRITE_TEXT);
+	f = FS_OpenFile ("bans.lst", FS_MODE_WRITE_TEXT);
 
 	if (!f)
 		return;
@@ -174,7 +174,7 @@ void CBanList::SaveList ()
 		FS_Write (&tempData, strlen(tempData), f);
 	}
 
-	FS_CloseFile (f);
+	FS_Close (f);
 }
 
 void CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)

@@ -91,8 +91,8 @@ class CPersistentData
 {
 public:
 	std::cc_string	UserInfo;
+	std::cc_string	Name;
 	IPAddress	IP;
-	char		netname[16];
 	int			hand;
 
 	EClientState state;			// a loadgame will leave valid entities that

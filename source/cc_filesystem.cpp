@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -28,882 +28,428 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_filesystem.cpp
-// File system, for managing server files.
-// From EGL
+// 
 //
 
 #include "cc_local.h"
 
-#define BASE_MODDIRNAME "baseq2"
-
-#define FS_MAX_PAKS			1024
-#define FS_MAX_HASHSIZE		1024
-#define FS_MAX_FILEINDICES	1024
-
-CCvar	*fs_basedir;
-CCvar	*fs_cddir;
-CCvar	*fs_game;
-CCvar	*fs_gamedircvar;
-CCvar	*fs_developer;
-
-/*
-=============================================================================
-
-	FILESYSTEM FUNCTIONALITY
-
-=============================================================================
-*/
-
-struct fsLink_t
+// Error management
+void FS_Error (const char *errorMsg)
 {
-	fsLink_t				*next;
-	char					*from;
-	int						fromLength;
-	char					*to;
-};
-
-struct fsPath_t
-{
-	char					pathName[MAX_OSPATH];
-	char					gamePath[MAX_OSPATH];
-
-	fsPath_t				*next;
-};
-
-static char		fs_gameDir[MAX_OSPATH];
-
-static fsLink_t	*fs_fileLinks;
-
-static fsPath_t	*fs_searchPaths;
-static fsPath_t	**fs_invSearchPaths;
-static int		fs_numInvSearchPaths;
-static fsPath_t	*fs_baseSearchPath;		// Without gamedirs
-
-/*
-=============================================================================
-
-	FILE INDEXING
-
-=============================================================================
-*/
-
-struct fsHandleIndex_t
-{
-	char					name[MAX_QPATH];
-
-	bool					inUse;
-	EFSOpenMode				openMode;
-
-	// One of these is always NULL
-	FILE					*regFile;
-};
-
-static fsHandleIndex_t	fs_fileIndices[FS_MAX_FILEINDICES];
-
-/*
-=============================================================================
-
-	HELPER FUNCTIONS
-
-=============================================================================
-*/
-
-/*
-================
-__FileLen
-================
-*/
-static int __FileLen(FILE *f)
-{
-	int pos = ftell(f);
-	fseek(f, 0, SEEK_END);
-	int end = ftell(f);
-	fseek(f, pos, SEEK_SET);
-
-	return end;
+#ifdef _DEBUG
+#ifdef WIN32
+	OutputDebugString (errorMsg);
+#endif
+	assert (0);
+#endif
 }
 
-#include <direct.h>
-#include <io.h>
-
-/*
-================
-Sys_Mkdir
-================
-*/
-#include <errno.h>
-void Sys_Mkdir (char *path)
+// Path management.
+// This may seem empty. It will be filled more once
+// zip loading is in.
+class fs_pathIndex
 {
-	switch (_mkdir (path))
-	{
-	default:
-	case 0:
-		break;
-	case EEXIST:
-		DebugPrintf ("Sys_Mkdir: Directory was not created because %s is the name of an existing file, directory, or device.\n", path);
-		break;
-	case ENOENT:
-		DebugPrintf ("Sys_Mkdir: Path was not found.\n");
-		break;
-	};
+public:
+	char		pathName[MAX_PATHNAME];
+};
 
+typedef std::vector<fs_pathIndex*> fs_pathListType;
+fs_pathListType fs_pathList;
+
+// Adds a path to the path list
+void FS_AddPath (const char *pathName)
+{
+	fs_pathIndex *path = new fs_pathIndex;
+	strncpy (path->pathName, pathName, sizeof(path->pathName));
+	fs_pathList.push_back (path);
 }
-/*
-============
-FS_CreatePath
 
-Creates any directories needed to store the given filename
-============
-*/
-void FS_CreatePath(char *path)
+// Removes a path from the list
+void FS_RemovePath (const char *pathName)
 {
-	for (char *ofs=path+1 ; *ofs ; ofs++)
+	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
 	{
-		if (*ofs == '/')
+		if (strcmp(pathName, (*i)->pathName) == 0)
 		{
-			// Create the directory
-			*ofs = 0;
-			Sys_Mkdir (path);
-			*ofs = '/';
+			delete (*i);
+			fs_pathList.erase (i);
+			return;
 		}
 	}
 }
 
-
-/*
-================
-FS_CopyFile
-================
-*/
-void FS_CopyFile(char *src, char *dst)
+// Re-orders this path to be at the first position.
+// If it doesn't exist, it adds it.
+void FS_ReorderPath (const char *pathName)
 {
-	if (fs_developer && fs_developer->Integer())
-		Com_Printf(0, "FS_CopyFile (%s, %s)\n", src, dst);
-
-	FILE *f1 = fopen (src, "rb");
-	if (!f1)
-		return;
-	FILE *f2 = fopen(dst, "wb");
-	if (!f2)
+	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
 	{
-		fclose(f1);
-		return;
+		if (strcmp(pathName, (*i)->pathName) == 0)
+		{
+			fs_pathIndex *Path = (*i);
+
+			fs_pathList.erase (i);
+			fs_pathList.insert (fs_pathList.begin(), Path);
+			return;
+		}
 	}
 
-	byte *buffer = QNew (com_gamePool, 0) byte[65536];
-	for ( ; ; )
-	{
-		size_t l = fread(buffer, 1, sizeof(buffer), f1);
-		if (!l)
-			break;
-		fwrite(buffer, 1, l, f2);
-	}
+	fs_pathIndex *Path = new fs_pathIndex;
+	strncpy (Path->pathName, pathName, sizeof(Path->pathName));
 
-	QDelete[] buffer;
-
-	fclose(f1);
-	fclose(f2);
+	fs_pathList.insert (fs_pathList.begin(), Path);
 }
 
-/*
-=============================================================================
+// Handle management
+// Handle index is used internally
+static int FS_MAX_FILEINDICES = 256;
 
-	FILE HANDLING
+class fsHandleIndex
+{
+public:
+	fsHandleIndex() :
+	  inUse(false),
+	  openMode(FILEMODE_NONE),
+	  regFile(NULL)
+	  {
+	  };
 
-=============================================================================
-*/
+	char					name[MAX_PATHNAME];
 
-/*
-=================
-FS_GetFreeHandle
-=================
-*/
-static fileHandle_t FS_GetFreeHandle (fsHandleIndex_t **handle)
+	bool					inUse;
+	EFileOpMode				openMode;
+
+	FILE					*regFile;
+};
+
+static fsHandleIndex *fs_fileIndices;
+
+static void FS_InitHandles ()
+{
+	fs_fileIndices = new fsHandleIndex[FS_MAX_FILEINDICES];
+}
+
+static fileHandle_t FS_GetFreeHandle (fsHandleIndex **handle)
 {
 	fileHandle_t		i;
-	fsHandleIndex_t		*hIndex;
+	fsHandleIndex		*hIndex;
 
-	for (i=0, hIndex=fs_fileIndices ; i<FS_MAX_FILEINDICES ; hIndex++, i++) {
+	for (i=0, hIndex=fs_fileIndices ; i<FS_MAX_FILEINDICES ; hIndex++, i++)
+	{
 		if (hIndex->inUse)
 			continue;
 
 		hIndex->inUse = true;
-		*handle = hIndex;
+		if (handle)
+			*handle = hIndex;
 		return i+1;
 	}
 
-	Com_Error (ERR_FATAL, "FS_GetFreeHandle: no free handles!");
+	FS_Error ("no free handles!\n");
 	return 0;
 }
 
-
-/*
-=================
-FS_GetHandle
-=================
-*/
-static fsHandleIndex_t *FS_GetHandle (fileHandle_t fileNum)
+static fsHandleIndex *FS_GetHandle (fileHandle_t &fileNum)
 {
-	fsHandleIndex_t *hIndex;
+	fsHandleIndex *hIndex;
 
 	if (fileNum < 0 || fileNum > FS_MAX_FILEINDICES)
-		Com_Error (ERR_FATAL, "FS_GetHandle: invalid file number");
+		FS_Error ("FS_GetHandle: invalid file number");
 
 	hIndex = &fs_fileIndices[fileNum-1];
 	if (!hIndex->inUse)
-		Com_Error (ERR_FATAL, "FS_GetHandle: invalid handle index");
+		FS_Error ("FS_GetHandle: invalid handle index");
 
 	return hIndex;
 }
 
-
-/*
-============
-FS_FileLength
-
-Returns the TOTAL file size, not the position.
-Make sure to move the position back after moving to the beginning of the file for the size lookup.
-============
-*/
-int FS_FileLength(fileHandle_t fileNum)
+// Always returns in same order:
+// [r/a][w][b][+]
+static const char *FS_OpenModeFromEnum (EFileOpMode Mode)
 {
-	fsHandleIndex_t *handle = FS_GetHandle(fileNum);
-	if (handle->regFile)
-		return __FileLen(handle->regFile);
+	static char mode[4];
+	int currentPos = 0;
 
-	// Shouldn't happen...
-	_CC_ASSERT_EXPR (0, "FileLength on a fileNum with no file");
-	return -1;
-}
+	// Reset old mode
+	mode[0] = mode[1] = mode[2] = mode[3] = 0;
 
-
-/*
-============
-FS_Tell
-
-Returns the current file position.
-============
-*/
-int FS_Tell(fileHandle_t fileNum)
-{
-	fsHandleIndex_t *handle = FS_GetHandle(fileNum);
-	if (handle->regFile)
-		return ftell(handle->regFile);
-
-	// Shouldn't happen...
-	_CC_ASSERT_EXPR (0, "Tell on a fileNum with no file");
-	return 0;
-}
-
-
-/*
-=================
-FS_Read
-
-Properly handles partial reads
-=================
-*/
-size_t FS_Read(void *buffer, const size_t len, fileHandle_t fileNum)
-{
-	fsHandleIndex_t *handle = FS_GetHandle(fileNum);
-	if (handle->openMode != FS_MODE_READ_BINARY)
-		Com_Error (ERR_FATAL, "FS_Read: %s: was not opened in read mode", handle->name);
-
-	// Read in chunks for progress bar
-	byte *buf = (byte *)buffer;
-
-	if (handle->regFile)
+	if (Mode & FILEMODE_APPEND)
 	{
-		size_t remaining = len;
-		bool tried = false;
-		// File
-		while (remaining)
+		if (!(Mode & FILEMODE_CREATE))
 		{
-			size_t read = fread(buf, 1, remaining, handle->regFile);
-			switch(read)
-			{
-			case 0:
-				// We might have been trying to read from a CD
-				if (!tried)
-					tried = true;
-				else
-				{
-					if (fs_developer && fs_developer->Integer())
-						Com_Printf(0, "FS_Read: 0 bytes read from \"%s\"", handle->name);
-					return len - remaining;
-				}
-				break;
-
-			case -1:
-				Com_Error(ERR_FATAL, "FS_Read: -1 bytes read from \"%s\"", handle->name);
-				break;
-			}
-
-			// Do some progress bar thing here
-			remaining -= read;
-			buf += read;
+			FS_Error ("Can't append and have the file exist (yet)\n");
+			return "ERR";
 		}
 
-		return len;
+		// Shove the a
+		mode[currentPos++] = 'a';
+
+		// Shove the + if we want to write
+		if (Mode & FILEMODE_WRITE)
+			mode[currentPos++] = '+';
+
+		// Are we binary?
+		if (!(Mode & FILEMODE_ASCII))
+			mode[currentPos++] = 'b';
 	}
-
-	// Shouldn't happen...
-	_CC_ASSERT_EXPR(0, "Read on a fileNum with no file");
-	return 0;
-}
-
-
-/*
-=================
-FS_Write
-=================
-*/
-size_t FS_Write(void *buffer, const size_t size, fileHandle_t fileNum)
-{
-	fsHandleIndex_t *handle = FS_GetHandle(fileNum);
-	switch(handle->openMode)
+	else if (Mode & FILEMODE_READ)
 	{
-	case FS_MODE_WRITE_BINARY:
-	case FS_MODE_APPEND_BINARY:
-	case FS_MODE_WRITE_TEXT:
-	case FS_MODE_APPEND_TEXT:
-		break;
-	default:
-		Com_Error(ERR_FATAL, "FS_Write: %s: was no opened in append/write mode", handle->name);
-		break;
+		// Calculate the characters
+		// We wanted reading, so push that in there.
+		if (Mode & FILEMODE_CREATE)
+			mode[currentPos++] = 'w';
+		else
+			mode[currentPos++] = 'r';
+
+		// Did we want writing?
+		// If we must exist, we need the +
+		// to get r+ (reading + writing and must exist)
+		if (Mode & FILEMODE_WRITE)
+			mode[currentPos++] = '+';
+
+		// Are we binary?
+		if (!(Mode & FILEMODE_ASCII))
+			mode[currentPos++] = 'b';
 	}
-	if (size < 0)
-		Com_Error(ERR_FATAL, "FS_Write: size < 0");
-
-	// Write
-	byte *buf = (byte *)buffer;
-
-	if (handle->regFile)
+	// If we got here, we only wanted
+	// to open a file for writing.
+	else if (Mode & FILEMODE_WRITE)
 	{
-		size_t remaining = size;
-		// File
-		while (remaining)
+		// Error checking
+		if (Mode & FILEMODE_APPEND)
 		{
-			size_t write = fwrite(buf, 1, remaining, handle->regFile);
-
-			switch(write)
-			{
-			case 0:
-				if (fs_developer && fs_developer->Integer())
-					Com_Printf(PRNT_ERROR, "FS_Write: 0 bytes written to %s\n", handle->name);
-				return size - remaining;
-
-			case -1:
-				Com_Error(ERR_FATAL, "FS_Write: -1 bytes written to %s", handle->name);
-				break;
-			}
-
-			remaining -= write;
-			buf += write;
+			FS_Error ("Write and Append mixed\n");
+			return "ERR";
 		}
 
-		return size;
-	}
-
-	// Shouldn't happen...
-	_CC_ASSERT_EXPR (0, "Write on a fileNum with no file");
-	return 0;
-}
-
-
-/*
-=================
-FS_Seek
-=================
-*/
-void FS_Seek(fileHandle_t fileNum, const long offset, const EFSSeekOrigin seekOrigin)
-{
-	fsHandleIndex_t *handle = FS_GetHandle(fileNum);
-	if (handle->regFile)
-	{
-		// Seek through a regular file
-		switch(seekOrigin)
+		if (Mode & FILEMODE_CREATE)
+			mode[currentPos++] = 'w';
+		else
 		{
-		case FS_SEEK_SET:
-			fseek(handle->regFile, offset, SEEK_SET);
-			break;
-
-		case FS_SEEK_CUR:
-			fseek(handle->regFile, offset, SEEK_CUR);
-			break;
-
-		case FS_SEEK_END:
-			fseek(handle->regFile, offset, SEEK_END);
-			break;
-
-		default:
-			Com_Error(ERR_FATAL, "FS_Seek: bad origin (%i)", seekOrigin);
-			break;
+			mode[currentPos++] = 'r';
+			mode[currentPos++] = '+';
 		}
+
+		// Are we binary?
+		if (!(Mode & FILEMODE_ASCII))
+			mode[currentPos++] = 'b';
 	}
-	_CC_ASSERT_EXPR (0, "Seek on a fileNum with no file");
+	return mode;
 }
 
-
-/*
-==============
-FS_OpenFileAppend
-==============
-*/
-static int FS_OpenFileAppend(fsHandleIndex_t *handle, bool binary, bool addGameDir)
+// Opens a file and returns the allocated handle
+// 0 if file was not opened.
+// Optionally, you can pass a size as third argument
+// to store the length of the file automatically.
+fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 {
-	char path[MAX_OSPATH];
+	const char *openMode = FS_OpenModeFromEnum(Mode);
 
-	if (addGameDir)
-		Q_snprintfz(path, sizeof(path), "%s/%s", fs_gameDir, handle->name);
-	else
-		Q_snprintfz(path, sizeof(path), "%s", handle->name);
-
-	// Create the path if it doesn't exist
-	FS_CreatePath(path);
-
-	// Open
-	handle->regFile = fopen(path, (binary) ? "ab" : "at");
-
-	// Return length
-	if (handle->regFile)
-	{
-		if (fs_developer && fs_developer->Integer())
-			Com_Printf(0, "FS_OpenFileAppend: \"%s\"", path);
-		return __FileLen(handle->regFile);
-	}
-
-	// Failed to open
-	if (fs_developer && fs_developer->Integer())
-		Com_Printf(0, "FS_OpenFileAppend: couldn't open \"%s\"", path);
-	return -1;
-}
-
-
-/*
-==============
-FS_OpenFileWrite
-==============
-*/
-static int FS_OpenFileWrite(fsHandleIndex_t *handle, bool binary, bool addGameDir)
-{
-	char path[MAX_OSPATH];
-
-	if (addGameDir)
-		Q_snprintfz(path, sizeof(path), "%s/%s", fs_gameDir, handle->name);
-	else
-		Q_snprintfz(path, sizeof(path), "%s", handle->name);
-
-	// Create the path if it doesn't exist
-	FS_CreatePath(path);
-
-	// Open
-	fopen_s(&handle->regFile, path, (binary) ? "wb" : "wt");
-
-	// Return length
-	if (handle->regFile)
-	{
-		if (fs_developer && fs_developer->Integer())
-			Com_Printf(0, "FS_OpenFileWrite: \"%s\"", path);
+	if (!strcmp(openMode,"ERR"))
 		return 0;
+
+	// Open up the file.
+	FILE *fp;
+
+	// Search each of the search paths
+	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
+	{
+		char newFileName[MAX_PATHNAME];
+		fs_pathIndex *Index = (*i);
+
+		char slashCheck = Index->pathName[strlen(Index->pathName)-1];
+		if (slashCheck != '\\' && slashCheck != '/')
+			snprintf (newFileName, sizeof(newFileName), "%s/%s", Index->pathName, fileName);
+		else
+			snprintf (newFileName, sizeof(newFileName), "%s%s", Index->pathName, fileName);
+
+		// Try opening it
+		fp = fopen(newFileName, openMode);
+
+		if (fp != NULL)
+			break; // We got it
 	}
 
-	// Failed to open
-	if (fs_developer && fs_developer->Integer())
-		Com_Printf(0, "FS_OpenFileWrite: couldn't open \"%s\"", path);
-	return -1;
-}
+	// Did we open?
+	if (!fp)
+		return 0; // Nope
 
-/*
-================
-Com_HashFileName
+	// Yep
+	// Allocate a free handle and
+	// return it.
+	fsHandleIndex *handleIndex = NULL;
+	fileHandle_t handle = FS_GetFreeHandle(&handleIndex);
 
-Normalizes path slashes, and stops before the extension.
-hashSize MUST be a power of two!
-================
-*/
-uint32 Com_HashFileName(const char *fileName, const int hashSize)
-{
-	uint32	hashValue = 0;
-	for ( ; *fileName ; )
+	if (handleIndex)
 	{
-		int ch = *(fileName++);
-		if (ch == '\\')
-			ch = '/';
-		else if (ch == '.')
-			break;
-
-		hashValue = hashValue * 33 + Q_tolower(ch);
-	}
-
-	return (hashValue + (hashValue >> 5)) & (hashSize-1);
-}
-
-
-/*
-===========
-FS_OpenFileRead
-
-Finds the file in the search path.
-returns filesize and an open FILE *
-Used for streaming data out of either a pak file or
-a seperate file.
-===========
-*/
-bool fs_fileFromPak = false;
-static int FS_OpenFileRead(fsHandleIndex_t *handle)
-{
-	fs_fileFromPak = false;
-	// Check for links first
-	for (fsLink_t *link=fs_fileLinks ; link ; link=link->next)
-	{
-		if (!strncmp (handle->name, link->from, link->fromLength))
-		{
-			char netPath[MAX_OSPATH];
-			Q_snprintfz(netPath, sizeof(netPath), "%s%s", link->to, handle->name+link->fromLength);
-
-			// Open
-			handle->regFile = fopen(netPath, "rb");
-
-			// Return length
-			if (fs_developer && fs_developer->Integer())
-				Com_Printf(0, "FS_OpenFileRead: link file: %s\n", netPath);
-			if (handle->regFile)
-				return __FileLen(handle->regFile);
-
-			// Failed to load
-			return -1;
-		}
-	}
-
-	// Search through the path, one element at a time
-	for (fsPath_t *searchPath=fs_searchPaths ; searchPath ; searchPath=searchPath->next)
-	{
-		// Check a file in the directory tree
-		char netPath[MAX_OSPATH];
-		Q_snprintfz(netPath, sizeof(netPath), "%s/%s", searchPath->pathName, handle->name);
-
-		handle->regFile = fopen(netPath, "rb");
-		if (handle->regFile)
-		{
-			// Found it!
-			if (fs_developer && fs_developer->Integer())
-				Com_Printf(0, "FS_OpenFileRead: %s\n", netPath);
-			return __FileLen(handle->regFile);
-		}
-	}
-
-	if (fs_developer && fs_developer->Integer())
-		Com_Printf(0, "FS_OpenFileRead: can't find %s\n", handle->name);
-
-	return -1;
-}
-
-
-/*
-===========
-FS_OpenFile
-===========
-*/
-int FS_OpenFile(const char *fileName, fileHandle_t *fileNum, const EFSOpenMode openMode, bool addGameDir)
-{
-	fsHandleIndex_t	*handle;
-	int				fileSize = -1;
-
-	*fileNum = FS_GetFreeHandle(&handle);
-
-	Com_NormalizePath(handle->name, sizeof(handle->name), fileName);
-	handle->openMode = openMode;
-
-	// Open under the desired mode
-	switch(openMode)
-	{
-	case FS_MODE_APPEND_BINARY:
-		fileSize = FS_OpenFileAppend(handle, true, addGameDir);
-		break;
-	case FS_MODE_APPEND_TEXT:
-		fileSize = FS_OpenFileAppend(handle, false, addGameDir);
-		break;
-
-	case FS_MODE_READ_BINARY:
-		fileSize = FS_OpenFileRead(handle);
-		break;
-
-	case FS_MODE_WRITE_BINARY:
-		fileSize = FS_OpenFileWrite(handle, true, addGameDir);
-		break;
-	case FS_MODE_WRITE_TEXT:
-		fileSize = FS_OpenFileWrite(handle, false, addGameDir);
-		break;
-
-	default:
-		Com_Error(ERR_FATAL, "FS_OpenFile: %s: invalid mode '%i'", handle->name, openMode);
-		break;
-	}
-
-	// Failed
-	if (fileSize == -1)
-	{
-		memset(handle, 0, sizeof(fsHandleIndex_t));
-		*fileNum = 0;
-	}
-
-	return fileSize;
-}
-
-
-/*
-==============
-FS_CloseFile
-==============
-*/
-void FS_CloseFile(fileHandle_t fileNum)
-{
-	// Get local handle
-	fsHandleIndex_t *handle = FS_GetHandle(fileNum);
-	if (!handle->inUse)
-		return;
-
-	// Close file/zip
-	if (handle->regFile)
-	{
-		fclose(handle->regFile);
-		handle->regFile = NULL;
-	}
-	else
-		_CC_ASSERT_EXPR(0, "Close on a fileNum with no file");
-
-	// Clear handle
-	handle->inUse = false;
-	handle->name[0] = '\0';
-}
-
-// ==========================================================================
-
-/*
-============
-FS_LoadFile
-
-Filename are reletive to the egl search path.
-A NULL buffer will just return the file length without loading.
--1 is returned if it wasn't found, 0 is returned if it's a blank file. In both cases a buffer is set to NULL.
-============
-*/
-int FS_LoadFile(const char *path, void **buffer, const bool terminate)
-{
-	// Look for it in the filesystem or pack files
-	fileHandle_t fileNum;
-	int fileLen = FS_OpenFile(path, &fileNum, FS_MODE_READ_BINARY);
-	if (!fileNum || fileLen <= 0)
-	{
-		if (buffer)
-			*buffer = NULL;
-		if (fileNum)
-			FS_CloseFile (fileNum);
-		if (fileLen >= 0)
-			return 0;
-		return -1;
-	}
-
-	// Just needed to get the length
-	if (!buffer)
-	{
-		FS_CloseFile(fileNum);
-		return fileLen;
-	}
-
-	// Allocate a local buffer
-	uint32 termLen;
-	if (terminate)
-	{
-		termLen = 2;
+		handleIndex->inUse = true;
+		strncpy (handleIndex->name, fileName, sizeof(handleIndex->name));
+		handleIndex->openMode = Mode;
+		handleIndex->regFile = fp;
+		return handle;
 	}
 	else
 	{
-		termLen = 0;
+		fclose (fp);
+		return 0; // Couldn't allocate a handle
 	}
-	byte *buf = (byte*)Mem_PoolAlloc(fileLen+termLen, com_fileSysPool, 0);
+}
+
+// Reads "size" bytes from handle into "buffer"
+void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
+{
+	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+
+	if (handleIndex)
+		fread (buffer, size, 1, handleIndex->regFile);
+}
+
+// Writes "size" bytes from handle from "buffer"
+void FS_Write (void *buffer, size_t size, fileHandle_t &handle)
+{
+	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+
+	if (handleIndex)
+		fwrite (buffer, size, 1, handleIndex->regFile);
+}
+
+// Prints the format and arguments into the current position
+void FS_Print (fileHandle_t &handle, char *fmt, ...)
+{
+	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+	va_list		argptr;
+	char		text[2048];
+
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+
+	if (handleIndex)
+		fwrite (text, strlen(text), 1, handleIndex->regFile);
+}
+
+// Opens a file, reads the entire contents,
+// fills a buffer pointed by buf (if not NULL) and
+// returns the length.
+// Use "terminate" if you want to terminate it with an \0
+size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate)
+{
+	fileHandle_t handle = FS_OpenFile(fileName, FILEMODE_READ);
+
+	if (!handle)
+		return 0;
+
+	size_t len = FS_Len (handle);
+
+	size_t termLen = (terminate) ? 2 : 0;
+	byte *buf = new byte[len + termLen];
 	*buffer = buf;
 
-	// Copy the file data to a local buffer
-	FS_Read(buf, fileLen, fileNum);
-	FS_CloseFile(fileNum);
+	FS_Read(buf, len, handle);
 
-	// Terminate if desired
-	if (termLen)
-		Q_strncpyz((char *)buf+fileLen, "\n\0", termLen);
-	return fileLen+termLen;
+	if (terminate)
+		strncpy((char *)buf+len, "\n\0", termLen);
+
+	FS_Close (handle);
+	return len + termLen;
 }
 
-
-/*
-=============
-_FS_FreeFile
-=============
-*/
-void _FS_FreeFile(void *buffer, const char *fileName, const int fileLine)
+// Returns true if the file exists
+bool FS_FileExists (const char *fileName)
 {
-	if (buffer)
-		_Mem_Free(buffer, fileName, fileLine);
+	fileHandle_t handle = FS_OpenFile(fileName, FILEMODE_READ);
+
+	if (!handle)
+		return false;
+	FS_Close (handle);
+	return true;
 }
 
-// ==========================================================================
-
-/*
-============
-FS_FileExists
-
-Filename are reletive to the egl search path.
-Just like calling FS_LoadFile with a NULL buffer.
-============
-*/
-int FS_FileExists(const char *path)
+void FS_FreeFile (void *buffer)
 {
-	// Look for it in the filesystem or pack files
-	fileHandle_t fileNum;
-	int fileLen = FS_OpenFile(path, &fileNum, FS_MODE_READ_BINARY);
-	if (!fileNum || fileLen <= 0)
-		return -1;
-
-	// Just needed to get the length
-	FS_CloseFile(fileNum);
-	return fileLen;
+	delete buffer;
 }
 
-/*
-================
-FS_AddGameDirectory
-
-Sets fs_gameDir, adds the directory to the head of the path, and loads *.pak/*.pkz
-================
-*/
-static void FS_AddGameDirectory (char *dir, char *gamePath)
+void FS_Close (fileHandle_t &handle)
 {
-	fsPath_t	*search;
+	fsHandleIndex *handleIndex = FS_GetHandle(handle);
 
-	if (fs_developer && fs_developer->Integer())
-		Com_Printf (0, "FS_AddGameDirectory: adding \"%s\"\n", dir);
-
-	// Set as game directory
-	Q_strncpyz(fs_gameDir, dir, sizeof(fs_gameDir));
-
-	// Add the directory to the search path
-	search = (fsPath_t*)Mem_PoolAlloc (sizeof(fsPath_t), com_fileSysPool, 0);
-	Q_strncpyz(search->pathName, dir, sizeof(search->pathName));
-	Q_strncpyz(search->gamePath, gamePath, sizeof(search->gamePath));
-	search->next = fs_searchPaths;
-	fs_searchPaths = search;
-}
-
-/*
-=============================================================================
-
-	GAME PATH
-
-=============================================================================
-*/
-
-/*
-============
-FS_Gamedir
-============
-*/
-const char *FS_Gamedir()
-{
-	if (*fs_gameDir)
-		return fs_gameDir;
-	else
-		return BASE_MODDIRNAME;
-}
-
-
-/*
-================
-FS_SetGamedir
-
-Sets the gamedir and path to a different directory.
-================
-*/
-void FS_SetGamedir(char *dir, bool firstTime)
-{
-	fsPath_t	*next;
-	int			i;
-
-	// Make sure it's not a path
-	if (strstr (dir, "..") || strchr (dir, '/') || strchr (dir, '\\') || strchr (dir, ':'))
+	if (handleIndex)
 	{
-		Com_Printf(PRNT_WARNING, "FS_SetGamedir: Gamedir should be a single directory name, not a path\n");
-		return;
+		fclose(handleIndex->regFile);
+		handleIndex->regFile = NULL;
+		handleIndex->inUse = false;
+		// Invalidate the handle
+		handle = -1;
 	}
+}
 
-	// Free old inverted paths
-	if (fs_invSearchPaths)
-	{
-		Mem_Free(fs_invSearchPaths);
-		fs_invSearchPaths = NULL;
-	}
+filePos_t FS_Tell (fileHandle_t &handle)
+{
+	fsHandleIndex *handleIndex = FS_GetHandle (handle);
 
-	// Free up any current game dir info
-	for ( ; fs_searchPaths != fs_baseSearchPath ; fs_searchPaths=next)
-	{
-		next = fs_searchPaths->next;
+	if (handleIndex)
+		return ftell(handleIndex->regFile);
+	return -1;
+}
 
-		Mem_Free(fs_searchPaths);
-	}
+// Returns the length of the file in bytes.
+// -1 if error occurs.
+size_t FS_Len (fileHandle_t &handle)
+{
+	filePos_t currentPos = FS_Tell(handle);
 
-	// Load packages
-	Q_snprintfz(fs_gameDir, sizeof(fs_gameDir), "%s/%s", fs_basedir->String(), dir);
+	FS_Seek (handle, SEEKORIGIN_END, 0);
+	size_t len = FS_Tell(handle);
+	FS_Seek (handle, SEEKORIGIN_SET, currentPos);
 
-	// Store a copy of the search paths inverted for FS_FindFiles
-	for (fs_numInvSearchPaths=0, next=fs_searchPaths ; next ; next=next->next, fs_numInvSearchPaths++);
-	fs_invSearchPaths = (fsPath_t**)Mem_PoolAlloc(sizeof(fsPath_t) * fs_numInvSearchPaths, com_fileSysPool, 0);
-	for (i=fs_numInvSearchPaths-1, next=fs_searchPaths ; i>=0 ; next=next->next, i--)
-		fs_invSearchPaths[i] = next;
+	return len;
+}
+
+void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_t seekOffset)
+{
+	fsHandleIndex *handleIndex = FS_GetHandle (handle);
+
+	if (handleIndex)
+		fseek (handleIndex->regFile, seekOffset, seekOrigin);
 }
 
 
-/*
-=============================================================================
-
-	FILE SEARCHING
-
-=============================================================================
-*/
-
-/*
-================
-FS_FindFiles
-================
-*/
-int FS_FindFiles(const char *path, const char *filter, const char *extension, char **fileList, int maxFiles, const bool addGameDir, const bool recurse)
+// Finds "maxFiles" files in "path" (optionally "recurse"ing) that match the filter "filter" and are of type "extention".
+// If "addDir" is true, it returns the stripped names, and not the full name for opening.
+// Filter can contain * for a wildcard.
+// fileList is filled with the found files.
+int FS_FindFiles(const char *path, const char *filter, const char *extension, char **fileList, int maxFiles, const bool addDir, const bool recurse)
 {
 	// Sanity check
 	if (maxFiles > FS_MAX_FINDFILES)
 	{
-		Com_Printf(PRNT_ERROR, "FS_FindFiles: maxFiles(%i) > %i, forcing %i...\n", maxFiles, FS_MAX_FINDFILES, FS_MAX_FINDFILES);
+		FS_Error("maxFiles > FS_MAX_FINDFILES");
 		maxFiles = FS_MAX_FINDFILES;
 	}
 
 	// Search through the path, one element at a time
 	int fileCount = 0;
-	for (int pathNum=0 ; pathNum<fs_numInvSearchPaths ; pathNum++)
+	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
 	{
-		fsPath_t *search = fs_invSearchPaths[pathNum];
+		fs_pathIndex *search = (*i);
 
 		// Directory tree
-		char dir[MAX_OSPATH];
-		Q_snprintfz(dir, sizeof(dir), "%s/%s", search->pathName, path);
+		char dir[MAX_PATHNAME];
+		snprintf(dir, sizeof(dir), "%s/%s", search->pathName, path);
 
-		char **dirFiles = QNew (com_gamePool, 0) char*[FS_MAX_FINDFILES];
+		char *dirFiles[FS_MAX_FINDFILES];
 		int dirCount;
 		if (extension)
 		{
-			char ext[MAX_QEXT];
-			Q_snprintfz(ext, sizeof(ext), "*.%s", extension);
+			char ext[MAX_PATHNAME/4];
+			snprintf(ext, sizeof(ext), "*.%s", extension);
 			dirCount = Sys_FindFiles(dir, ext, dirFiles, FS_MAX_FINDFILES, 0, recurse, true, false);
 		}
 		else
+		{
 			dirCount = Sys_FindFiles(dir, "*", dirFiles, FS_MAX_FINDFILES, 0, recurse, true, true);
+		}
 
 		for (int fileNum=0 ; fileNum<dirCount ; fileNum++)
 		{
@@ -912,7 +458,7 @@ int FS_FindFiles(const char *path, const char *filter, const char *extension, ch
 			{
 				if (!Q_WildcardMatch(filter, dirFiles[fileNum]+strlen(search->pathName)+1, 1))
 				{
-					QDelete dirFiles[fileNum];
+					delete dirFiles[fileNum];
 					continue;
 				}
 			}
@@ -925,117 +471,52 @@ int FS_FindFiles(const char *path, const char *filter, const char *extension, ch
 				bool bFound = false;
 				for (int i=0 ; i<fileCount ; i++)
 				{
-					if (!Q_stricmp(fileList[i], name))
+					if (!stricmp(fileList[i], name))
 						break;
 				}
 
 				if (!bFound)
 				{
-					if (addGameDir)
-						fileList[fileCount++] = Mem_PoolStrDup(Q_VarArgs("%s/%s", search->gamePath, name), com_fileSysPool, 0);
+					if (addDir)
+					{
+						char tempFile[MAX_PATHNAME];
+						snprintf (tempFile, sizeof(tempFile), "%s/%s", search->pathName, name);
+						fileList[fileCount] = new char[strlen(tempFile)+1];
+						snprintf (fileList[fileCount], strlen(tempFile)+1, "%s", tempFile);
+						fileCount++;
+					}
 					else
-						fileList[fileCount++] = Mem_PoolStrDup(name, com_fileSysPool, 0);
+					{
+						fileList[fileCount] = new char[strlen(name)+1];
+						snprintf (fileList[fileCount], strlen(name)+1, "%s", name);
+						fileCount++;
+					}
 				}
 			}
 
-			QDelete dirFiles[fileNum];
+			delete dirFiles[fileNum];
 		}
-		QDelete[] dirFiles;
 	}
 
 	return fileCount;
 }
 
-
-/*
-=============
-_FS_FreeFileList
-=============
-*/
-void _FS_FreeFileList (char **list, int num, const char *fileName, const int fileLine)
+// Frees the file list made by the above function
+void FS_FreeFileList (char **fileList, int numFiles)
 {
-	int		i;
-
-	for (i=0 ; i<num ; i++) {
-		if (!list[i])
+	for (int i=0 ; i<numFiles ; i++)
+	{
+		if (!fileList[i])
 			continue;
 
-		_Mem_Free (list[i], fileName, fileLine);
-		list[i] = NULL;
+		delete fileList[i];
+		fileList[i] = NULL;
 	}
 }
 
-
-/*
-================
-FS_NextPath
-
-Allows enumerating all of the directories in the search path
-================
-*/
-char *FS_NextPath (char *prevPath)
+void FS_Init (int maxHandles)
 {
-	fsPath_t	*s;
-	char		*prev;
-
-	if (!prevPath)
-		return fs_gameDir;
-
-	prev = fs_gameDir;
-	for (s=fs_searchPaths ; s ; s=s->next)
-	{
-		if (prevPath == prev)
-			return s->pathName;
-		prev = s->pathName;
-	}
-
-	return NULL;
-}
-
-/*
-=============================================================================
-
-	INIT / SHUTDOWN
-
-=============================================================================
-*/
-
-/*
-================
-FS_Init
-================
-*/
-void FS_Init()
-{
-	fsPath_t	*next;
-
-	fs_basedir		= QNew (com_gamePool, 0) CCvar ("basedir",			".", 0);
-	fs_cddir		= QNew (com_gamePool, 0) CCvar ("cddir",			"",		0);
-	fs_game			= QNew (com_gamePool, 0) CCvar ("game",			"",		0);
-	fs_gamedircvar	= QNew (com_gamePool, 0) CCvar ("gamedir",			"",		0);
-	fs_developer	= QNew (com_gamePool, 0) CCvar ("fs_developer",	"",		0);
-
-	if (fs_cddir->String()[0])
-		FS_AddGameDirectory(Q_VarArgs("%s/"BASE_MODDIRNAME, fs_cddir->String()), BASE_MODDIRNAME);
-
-	FS_AddGameDirectory(Q_VarArgs("%s/"BASE_MODDIRNAME, fs_basedir->String()), BASE_MODDIRNAME);
-
-	// Any set gamedirs will be freed up to here
-	fs_baseSearchPath = fs_searchPaths;
-
-	// Load the game directory
-	if (fs_game->String()[0])
-		FS_SetGamedir(fs_game->String(), true);
-	else
-	{
-		// Store a copy of the search paths inverted for FS_FindFiles
-		for (fs_numInvSearchPaths=0, next=fs_searchPaths ; next ; next=next->next, fs_numInvSearchPaths++);
-		fs_invSearchPaths = (fsPath_t**)Mem_PoolAlloc (sizeof(fsPath_t) * fs_numInvSearchPaths, com_fileSysPool, 0);
-		int i;
-		for (i=fs_numInvSearchPaths-1, next=fs_searchPaths ; i>=0 ; next=next->next, i--)
-			fs_invSearchPaths[i] = next;
-	}
-
-	// Check memory integrity
-	Mem_CheckPoolIntegrity (com_fileSysPool);
+	FS_MAX_FILEINDICES = maxHandles;
+	FS_InitHandles ();
+	FS_AddPath (".");
 }

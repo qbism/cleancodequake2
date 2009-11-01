@@ -14,8 +14,8 @@ F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\bin\Debug\ClassCreator.xml
 F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\ResolveAssemblyReference.cache
 F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\ClassCreator.Form1.resources
 F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\ClassCreator.Resources.resources
-F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\GenerateResource-ResGen.read.1.tlog
-F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\GenerateResource-ResGen.write.1.tlog
 F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\ClassCreator.exe
 F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\ClassCreator.xml
 F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\ClassCreator.pdb
+F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\GenerateResource-ResGen.read.1.tlog
+F:\cleancodeq2\trunk\apps\ClassCreator\ClassCreator\obj\Debug\GenerateResource-ResGen.write.1.tlog

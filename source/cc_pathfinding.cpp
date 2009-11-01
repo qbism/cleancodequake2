@@ -426,7 +426,7 @@ void SaveNodes ()
 	FileName += ".ccn";
 
 	fileHandle_t f;
-	FS_OpenFile (FileName.c_str(), &f, FS_MODE_WRITE_BINARY);
+	f = FS_OpenFile (FileName.c_str(), FS_MODE_WRITE_BINARY);
 
 	if (!f)
 		return;
@@ -464,7 +464,7 @@ void SaveNodes ()
 			FS_Write (&ind, sizeof(uint32), f);
 		}
 	}
-	FS_CloseFile (f);
+	FS_Close (f);
 
 	DebugPrintf ("Saved %u (%u special) nodes\n", numNodes, numSpecialNodes);
 }
@@ -508,7 +508,7 @@ void LoadNodes ()
 	FileName += ".ccn";
 
 	fileHandle_t f;
-	FS_OpenFile (FileName.c_str(), &f, FS_MODE_READ_BINARY);
+	f = FS_OpenFile (FileName.c_str(), FS_MODE_READ_BINARY);
 
 	if (!f)
 		return;
@@ -570,7 +570,7 @@ void LoadNodes ()
 		for (size_t s = 0; s < num; s++)
 			FS_Read (&tempChildren[i][s+1], sizeof(uint32), f);
 	}
-	FS_CloseFile (f);
+	FS_Close (f);
 
 	for (size_t i = 0; i < lastId; i++)
 	{
@@ -785,7 +785,7 @@ void SavePathTable ()
 	FileName += ".cnt";
 
 	fileHandle_t f;
-	FS_OpenFile (FileName.c_str(), &f, FS_MODE_WRITE_BINARY);
+	f = FS_OpenFile (FileName.c_str(), FS_MODE_WRITE_BINARY);
 	if (!f)
 		return;
 
@@ -814,7 +814,7 @@ void SavePathTable ()
 			}
 		}
 	}
-	FS_CloseFile (f);
+	FS_Close (f);
 }
 
 void LoadPathTable ()
@@ -826,8 +826,7 @@ void LoadPathTable ()
 	FileName += level.ServerLevelName;
 	FileName += ".cnt";
 
-	fileHandle_t f;
-	FS_OpenFile (FileName.c_str(), &f, FS_MODE_READ_BINARY);
+	fileHandle_t f = FS_OpenFile (FileName.c_str(), FS_MODE_READ_BINARY);
 
 	if (!f)
 		return;
@@ -848,7 +847,7 @@ void LoadPathTable ()
 		SavedPaths[indexI].ToEnd[indexZ]->Load (f);
 	}
 
-	FS_CloseFile (f);
+	FS_Close (f);
 }
 
 CPath *GetPath (CPathNode *Start, CPathNode *End)

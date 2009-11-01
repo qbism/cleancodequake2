@@ -103,6 +103,9 @@
     <Filter Include="CleanCode Files\Monsters\Monster Files\Soldiers">
       <UniqueIdentifier>{98b99644-6637-4964-86dd-fbf9ab38a577}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Parse System">
+      <UniqueIdentifier>{8feb8d9f-1280-449f-82e8-ed8f38227494}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CleanCode Files\Pathfinding">
       <UniqueIdentifier>{7a3f918c-909f-4035-98de-6f853f801a59}</UniqueIdentifier>
     </Filter>
@@ -383,6 +386,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_parasite.cpp">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_parse.cpp">
+      <Filter>CleanCode Files\Parse System</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_pathfinding.cpp">
       <Filter>CleanCode Files\Pathfinding</Filter>
@@ -718,6 +724,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_parasite.h">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_parse.h">
+      <Filter>CleanCode Files\Parse System</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_pathfinding.h">
       <Filter>CleanCode Files\Pathfinding</Filter>

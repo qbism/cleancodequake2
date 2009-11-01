@@ -266,6 +266,7 @@ inline int Q_strnicmp (const char *s1, const char *s2, size_t n)
 	return _strnicmp (s1, s2, n);
 }
 # endif
+#define stricmp _stricmp
 #endif
 
 #ifdef HAVE__VSNPRINTF

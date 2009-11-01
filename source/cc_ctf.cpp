@@ -281,7 +281,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 		// fragged a guy who hurt our flag carrier
 		attacker->Client.Respawn.Score += CTF_CARRIER_DANGER_PROTECT_BONUS;
 		BroadcastPrintf(PRINT_MEDIUM, "%s defends %s's flag carrier against an agressive enemy\n",
-			attacker->Client.Persistent.netname, 
+			attacker->Client.Persistent.Name.c_str(), 
 			CTFTeamName(attacker->Client.Respawn.CTF.Team));
 		if (attacker->Client.Respawn.CTF.Ghost)
 			attacker->Client.Respawn.CTF.Ghost->carrierdef++;
@@ -338,11 +338,11 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 		attacker->Client.Respawn.Score += CTF_FLAG_DEFENSE_BONUS;
 		if (flag->GetSolid() == SOLID_NOT)
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s base.\n",
-				attacker->Client.Persistent.netname, 
+				attacker->Client.Persistent.Name.c_str(), 
 				CTFTeamName(attacker->Client.Respawn.CTF.Team));
 		else
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s flag.\n",
-				attacker->Client.Persistent.netname, 
+				attacker->Client.Persistent.Name.c_str(), 
 				CTFTeamName(attacker->Client.Respawn.CTF.Team));
 		if (attacker->Client.Respawn.CTF.Ghost)
 			attacker->Client.Respawn.CTF.Ghost->basedef++;
@@ -357,7 +357,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 		{
 			attacker->Client.Respawn.Score += CTF_CARRIER_PROTECT_BONUS;
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s's flag carrier.\n",
-				attacker->Client.Persistent.netname, 
+				attacker->Client.Persistent.Name.c_str(), 
 				CTFTeamName(attacker->Client.Respawn.CTF.Team));
 			if (attacker->Client.Respawn.CTF.Ghost)
 				attacker->Client.Respawn.CTF.Ghost->carrierdef++;
@@ -511,7 +511,7 @@ void CTFTeam_f (CPlayerEntity *ent)
 		ent->Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
 		ent->Client.PlayerState.GetPMove()->pmTime = 14;
 		BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
-			ent->Client.Persistent.netname, CTFTeamName(desired_team));
+			ent->Client.Persistent.Name.c_str(), CTFTeamName(desired_team));
 		return;
 	}
 
@@ -524,7 +524,7 @@ void CTFTeam_f (CPlayerEntity *ent)
 	ent->Client.Respawn.Score = 0;
 
 	BroadcastPrintf(PRINT_HIGH, "%s changed to the %s team.\n",
-		ent->Client.Persistent.netname, CTFTeamName(desired_team));
+		ent->Client.Persistent.Name.c_str(), CTFTeamName(desired_team));
 }
 
 /*
@@ -764,7 +764,7 @@ static inline void CTFSay_Team_Sight(CPlayerEntity *who, char *buf, size_t bufSi
 			}
 			n++;
 		}
-		Q_strncpyz(s2, targ->Client.Persistent.netname, sizeof(s2));
+		Q_strncpyz(s2, targ->Client.Persistent.Name.c_str(), sizeof(s2));
 	}
 	if (*s2)
 	{
@@ -859,7 +859,7 @@ void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 			continue;
 		if (cl_ent->Client.Respawn.CTF.Team == who->Client.Respawn.CTF.Team)
 			cl_ent->PrintToClient (PRINT_CHAT, "(%s): %s\n", 
-				who->Client.Persistent.netname, outmsg);
+				who->Client.Persistent.Name.c_str(), outmsg);
 	}
 }
 
@@ -1147,13 +1147,13 @@ void CTFWinElection()
 
 	case ELECT_ADMIN :
 		ctfgame.etarget->Client.Respawn.CTF.Admin = true;
-		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", ctfgame.etarget->Client.Persistent.netname);
+		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", ctfgame.etarget->Client.Persistent.Name.c_str());
 		ctfgame.etarget->PrintToClient (PRINT_HIGH, "Type 'admin' to access the adminstration menu.\n");
 		break;
 
 	case ELECT_MAP :
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
-			ctfgame.etarget->Client.Persistent.netname, ctfgame.elevel);
+			ctfgame.etarget->Client.Persistent.Name.c_str(), ctfgame.elevel);
 		level.ForceMap = ctfgame.elevel;
 		EndDMLevel();
 		break;
@@ -1239,7 +1239,7 @@ void CTFReady(CPlayerEntity *ent)
 	}
 
 	ent->Client.Respawn.CTF.Ready = true;
-	BroadcastPrintf(PRINT_HIGH, "%s is ready.\n", ent->Client.Persistent.netname);
+	BroadcastPrintf(PRINT_HIGH, "%s is ready.\n", ent->Client.Persistent.Name.c_str());
 
 	uint8 t1 = 0, t2 = 0, j = 0;
 	for (uint8 i = 1; i <= game.maxclients; i++)
@@ -1285,7 +1285,7 @@ void CTFNotReady(CPlayerEntity *ent)
 	}
 
 	ent->Client.Respawn.CTF.Ready = false;
-	BroadcastPrintf(PRINT_HIGH, "%s is no longer ready.\n", ent->Client.Persistent.netname);
+	BroadcastPrintf(PRINT_HIGH, "%s is no longer ready.\n", ent->Client.Persistent.Name.c_str());
 
 	if (ctfgame.match == MATCH_PREGAME)
 	{
@@ -1331,7 +1331,7 @@ void CTFGhost(CPlayerEntity *ent)
 			ent->Flags &= ~FL_GODMODE;
 			ent->PutInServer();
 			BroadcastPrintf(PRINT_HIGH, "%s has been reinstated to %s team.\n",
-				ent->Client.Persistent.netname, CTFTeamName(ent->Client.Respawn.CTF.Team));
+				ent->Client.Persistent.Name.c_str(), CTFTeamName(ent->Client.Respawn.CTF.Team));
 			return;
 		}
 	}
@@ -1498,7 +1498,7 @@ void CTFStats(CPlayerEntity *ent)
 				continue;
 			if (!e2->Client.Respawn.CTF.Ready && e2->Client.Respawn.CTF.Team != CTF_NOTEAM)
 			{
-				Q_snprintfz(tempStr, sizeof(tempStr), "%s is not ready.\n", e2->Client.Persistent.netname);
+				Q_snprintfz(tempStr, sizeof(tempStr), "%s is not ready.\n", e2->Client.Persistent.Name.c_str());
 				if (strlen(text) + strlen(tempStr) < sizeof(text) - 50)
 					Q_strcatz(text, tempStr, sizeof(text));
 			}
@@ -1527,7 +1527,7 @@ void CTFStats(CPlayerEntity *ent)
 	int e = 0;
 	for (i = 0, g = ctfgame.ghosts; i < MAX_CS_CLIENTS; i++, g++)
 	{
-		if (!*g->netname)
+		if (!g->name[0])
 			continue;
 
 		if (g->deaths + g->kills == 0)
@@ -1536,7 +1536,7 @@ void CTFStats(CPlayerEntity *ent)
 			e = g->kills * 100 / (g->kills + g->deaths);
 		Q_snprintfz(tempStr, sizeof(tempStr), "%3d|%-16.16s|%5d|%5d|%5d|%5d|%5d|%4d%%|\n",
 			g->number, 
-			g->netname, 
+			g->name.c_str(), 
 			g->Score, 
 			g->kills, 
 			g->deaths, 
@@ -1578,7 +1578,7 @@ void CTFPlayerList(CPlayerEntity *ent)
 				continue;
 			if (!e2->Client.Respawn.CTF.Ready && e2->Client.Respawn.CTF.Team != CTF_NOTEAM)
 			{
-				Q_snprintfz(tempStr, sizeof(tempStr), "%s is not ready.\n", e2->Client.Persistent.netname);
+				Q_snprintfz(tempStr, sizeof(tempStr), "%s is not ready.\n", e2->Client.Persistent.Name.c_str());
 				if (strlen(text) + strlen(tempStr) < sizeof(text) - 50)
 					Q_strcatz(text, tempStr, sizeof(text));
 			}
@@ -1596,7 +1596,7 @@ void CTFPlayerList(CPlayerEntity *ent)
 
 		Q_snprintfz(tempStr, sizeof(tempStr), "%3d %-16.16s %02d:%02d %4d %3d%s%s\n",
 			i + 1,
-			e2->Client.Persistent.netname,
+			e2->Client.Persistent.Name.c_str(),
 			(level.Frame - e2->Client.Respawn.EnterFrame) / 600,
 			((level.Frame - e2->Client.Respawn.EnterFrame) % 600)/10,
 			e2->Client.GetPing(),
@@ -1653,14 +1653,14 @@ void CTFWarp(CPlayerEntity *ent)
 	if (ent->Client.Respawn.CTF.Admin)
 	{
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
-			ent->Client.Persistent.netname, ArgGets(1).c_str());
+			ent->Client.Persistent.Name.c_str(), ArgGets(1).c_str());
 		level.ForceMap = ArgGets(1);
 		EndDMLevel();
 		return;
 	}
 
 	Q_snprintfz(text, sizeof(text), "%s has requested warping to level %s.", 
-			ent->Client.Persistent.netname, ArgGets(1).c_str());
+			ent->Client.Persistent.Name.c_str(), ArgGets(1).c_str());
 	if (CTFBeginElection(ent, ELECT_MAP, text))
 		Q_strncpyz(ctfgame.elevel, ArgGets(1).c_str(), sizeof(ctfgame.elevel) - 1);
 }

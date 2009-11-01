@@ -216,7 +216,7 @@ inline void CheckNeedPass ()
 		if (*spectator_password->String() && Q_stricmp(spectator_password->String(), "none"))
 			need |= 2;
 
-		needpass->Set(Q_VarArgs ("%d", need));
+		needpass->Set(need);
 	}
 }
 
@@ -509,7 +509,7 @@ void G_Register ()
 
 	// latched vars
 	sv_cheats = QNew (com_gamePool, 0) CCvar ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	CCvar ("gamename", GAMEVERSION , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
+	CCvar ("gamename", GAMENAME , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 	CCvar ("gamedate", __DATE__ , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 
 	maxclients = QNew (com_gamePool, 0) CCvar ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH_SERVER);
@@ -581,7 +581,8 @@ void CC_InitGame ()
 	G_Register();
 
 	// File-system
-	FS_Init ();
+	FS_Init (256);
+	FS_AddPath (GAMENAME);
 
 	// Setup the gamemode
 	SetupGamemode ();

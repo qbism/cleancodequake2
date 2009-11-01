@@ -156,8 +156,8 @@ Cmd_Players_f
 void Cmd_Players_f (CPlayerEntity *ent)
 {
 	int		count = 0;
-	char	small[MAX_INFO_KEY];
-	char	large[MAX_INFO_STRING];
+	char	Small[MAX_INFO_KEY];
+	char	Large[MAX_INFO_STRING];
 	int		*index = QNew (com_genericPool, 0) int[game.maxclients];
 
 	CPlayerListCountCallback (index, &count).Query ();
@@ -166,23 +166,23 @@ void Cmd_Players_f (CPlayerEntity *ent)
 	qsort (index, count, sizeof(index[0]), PlayerSort);
 
 	// print information
-	large[0] = 0;
+	Large[0] = 0;
 
 	for (int i = 0 ; i < count ; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-		Q_snprintfz (small, sizeof(small), "%3i %s\n",
+		Q_snprintfz (Small, sizeof(small), "%3i %s\n",
 			Player->Client.PlayerState.GetStat(STAT_FRAGS),
-			Player->Client.Persistent.netname);
-		if (strlen (small) + strlen(large) > sizeof(large) - 100 )
+			Player->Client.Persistent.Name.c_str());
+		if (strlen (Small) + strlen(Large) > sizeof(Large) - 100 )
 		{	// can't print all of them in one packet
-			Q_strcatz (large, "...\n", MAX_INFO_STRING);
+			Q_strcatz (Large, "...\n", MAX_INFO_STRING);
 			break;
 		}
-		Q_strcatz (large, small, MAX_INFO_STRING);
+		Q_strcatz (Large, Small, MAX_INFO_STRING);
 	}
 
-	ent->PrintToClient (PRINT_HIGH, "%s\n%i players\n", large, count);
+	ent->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large, count);
 
 	delete[] index;
 }
@@ -292,7 +292,7 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 	if (ArgCount () < 2 && !arg0)
 		return;
 
-	if (Bans.IsSquelched(ent->Client.Persistent.IP) || Bans.IsSquelched(ent->Client.Persistent.netname))
+	if (Bans.IsSquelched(ent->Client.Persistent.IP) || Bans.IsSquelched(ent->Client.Persistent.Name.c_str()))
 	{
 		ent->PrintToClient (PRINT_HIGH, "You are squelched and may not talk.\n");
 		return;
@@ -301,7 +301,7 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 	if (!(dmFlags.dfSkinTeams || dmFlags.dfModelTeams))
 		team = false;
 
-	Q_snprintfz (text, sizeof(text), (team) ? "(%s): " : "%s: ", ent->Client.Persistent.netname);
+	Q_snprintfz (text, sizeof(text), (team) ? "(%s): " : "%s: ", ent->Client.Persistent.Name.c_str());
 
 	if (arg0)
 	{
@@ -366,10 +366,10 @@ public:
 				((level.Frame - Player->Client.Respawn.EnterFrame) % 600)/10,
 				Player->Client.GetPing(),
 				Player->Client.Respawn.Score,
-				Player->Client.Persistent.netname);
+				Player->Client.Persistent.Name.c_str());
 		else
 			Q_snprintfz(tempString, sizeof(tempString), " - %s%s\n",
-				Player->Client.Persistent.netname,
+				Player->Client.Persistent.Name.c_str(),
 				Player->Client.Respawn.Spectator ? " (Spectator)" : "");
 
 		if (strlen(Text) + strlen(tempString) > SizeOf - 50)

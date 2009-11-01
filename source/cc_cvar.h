@@ -50,14 +50,14 @@ class CCvar
 public:
 	// Constructors, to make it a bit easier (using 'new')
 	CCvar ();
-	CCvar (char *cvarName, char *defaultValue, int flags = 0);
-	CCvar (char *cvarName, int defaultValue, int flags = 0);
-	CCvar (char *cvarName, float defaultValue, int flags = 0);
+	CCvar (const char *cvarName, const char *defaultValue, int flags = 0);
+	CCvar (const char *cvarName, int defaultValue, int flags = 0);
+	CCvar (const char *cvarName, float defaultValue, int flags = 0);
 	// I didn't list any deconstructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
 
-	void Register (char *cvarName, char *defaultValue, int flags = 0);
-	void Register (char *cvarName, int defaultValue, int flags = 0);
-	void Register (char *cvarName, float defaultValue, int flags = 0);
+	void Register (const char *cvarName, const char *defaultValue, int flags = 0);
+	void Register (const char *cvarName, int defaultValue, int flags = 0);
+	void Register (const char *cvarName, float defaultValue, int flags = 0);
 
 	// Let me know if these defs cause any problems with types.
 	float		Float ();
@@ -65,7 +65,7 @@ public:
 	char		*String();
 	bool		Boolean (bool MustBeOne = false);
 
-	void Set (char *value, bool Force = false);
+	void Set (const char *value, bool Force = false);
 	void Set (int value, bool Force = false);
 	void Set (float value, bool Force = false);
 

@@ -486,7 +486,7 @@ void CInsane::Pain (CBaseEntity *other, float kick, int damage)
 		l = 75;
 	else
 		l = 100;
-	Entity->PlaySound (CHAN_VOICE, SoundIndex (Q_VarArgs("player/male/pain%i_%i.wav", l, r)), 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, SoundIndex (Q_VarArgs("player/male/pain%i_%i.wav", l, r).c_str()), 255, ATTN_IDLE);
 	// END SHIT
 
 	// Don't go into pain frames if crucified.
@@ -571,7 +571,7 @@ void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, ve
 	if (Entity->DeadFlag == true)
 		return;
 
-	Entity->PlaySound (CHAN_VOICE, SoundIndex(Q_VarArgs("player/male/death%i.wav", (irandom(4))+1)), 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, SoundIndex(Q_VarArgs("player/male/death%i.wav", (irandom(4))+1).c_str()), 255, ATTN_IDLE);
 
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;

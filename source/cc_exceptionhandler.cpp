@@ -632,7 +632,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fnSymCleanup (hProcess);
 
 	// Let the client know
-	MessageBox (NULL, Q_VarArgs ("Report written to: %s\nMini-dump written to %s\nPlease include both files if you submit manually!\n", reportPath, dumpPath), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
+	MessageBox (NULL, Q_VarArgs ("Report written to: %s\nMini-dump written to %s\nPlease include both files if you submit manually!\n", reportPath, dumpPath).c_str(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
 
 #ifdef USE_CURL
 	if (upload)

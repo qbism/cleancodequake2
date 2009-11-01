@@ -178,17 +178,14 @@ Does a varargs printf into a temp buffer, so I don't need to have
 varargs versions of all text functions.
 ============
 */
-char *Q_VarArgs (char *format, ...)
+std::cc_string Q_VarArgs (char *format, ...)
 {
 	va_list		argptr;
-	static char	string[2][1024];
-	static int	strIndex;
-
-	strIndex ^= 1;
+	static char	string[1024];
 
 	va_start (argptr, format);
-	vsnprintf (string[strIndex], 1024, format, argptr);
+	vsnprintf (string, 1024, format, argptr);
 	va_end (argptr);
 
-	return string[strIndex];
+	return string;
 }

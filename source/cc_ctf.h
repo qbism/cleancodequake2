@@ -44,7 +44,7 @@ CC_ENUM (uint8, EGrappleState)
 
 struct ghost_t
 {
-	char netname[16];
+	std::cc_string name;
 	int number;
 
 	// stats

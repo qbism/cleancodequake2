@@ -339,9 +339,9 @@ void CPlayerEntity::SpectatorRespawn ()
 	Client.Timers.RespawnTime = level.Frame;
 
 	if (Client.Persistent.Spectator) 
-		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.netname);
+		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.Name.c_str());
 	else
-		BroadcastPrintf (PRINT_HIGH, "%s joined the game\n", Client.Persistent.netname);
+		BroadcastPrintf (PRINT_HIGH, "%s joined the game\n", Client.Persistent.Name.c_str());
 }
 
 /*
@@ -583,11 +583,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 		UserInfo = "\\name\\badinfo\\skin\\male/grunt";
 
 	// set name
-	std::cc_string s = Info_ValueForKey (UserInfo, "name");
-	Q_strncpyz (Client.Persistent.netname, s.c_str(), sizeof(Client.Persistent.netname)-1);
+	Client.Persistent.Name = Info_ValueForKey (UserInfo, "name");
 
 	// set Spectator
-	s = Info_ValueForKey (UserInfo, "Spectator");
+	std::cc_string s = Info_ValueForKey (UserInfo, "Spectator");
 	// spectators are only supported in deathmatch
 	Client.Persistent.Spectator = ((game.mode & GAME_DEATHMATCH) && s.length() && s != "0");
 
@@ -603,7 +602,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	else
 //ZOID
 #endif
-		ConfigString (CS_PLAYERSKINS+playernum, Q_VarArgs ("%s\\%s", Client.Persistent.netname, s.c_str()) );
+	{
+		std::cc_string temp = Client.Persistent.Name + "\\" + s;
+		ConfigString (CS_PLAYERSKINS+playernum, temp.c_str());
+	}
 
 	// fov
 	if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfFixedFov)
@@ -674,15 +676,15 @@ void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 	{
 	case CTF_TEAM1:
 		ConfigString (CS_PLAYERSKINS+playernum, Q_VarArgs("%s\\%s"CTF_TEAM1_SKIN, 
-			Client.Persistent.netname, t.c_str()));
+			Client.Persistent.Name.c_str(), t.c_str()).c_str());
 		break;
 	case CTF_TEAM2:
 		ConfigString (CS_PLAYERSKINS+playernum,
-			Q_VarArgs("%s\\%s"CTF_TEAM2_SKIN, Client.Persistent.netname, t.c_str()));
+			Q_VarArgs("%s\\%s"CTF_TEAM2_SKIN, Client.Persistent.Name.c_str(), t.c_str()).c_str());
 		break;
 	default:
 		ConfigString (CS_PLAYERSKINS+playernum, 
-			Q_VarArgs("%s\\%s", Client.Persistent.netname, s.c_str()));
+			Q_VarArgs("%s\\%s", Client.Persistent.Name.c_str(), s.c_str()).c_str());
 		break;
 	}
 }
@@ -1781,7 +1783,7 @@ void CPlayerEntity::CTFDeadDropFlag ()
 	{
 		Client.Persistent.Flag->DropItem (this);
 		Client.Persistent.Inventory.Set (Client.Persistent.Flag, 0);
-		BroadcastPrintf (PRINT_HIGH, "%s lost the %s flag!\n", Client.Persistent.netname, CTFTeamName(Client.Persistent.Flag->team));
+		BroadcastPrintf (PRINT_HIGH, "%s lost the %s flag!\n", Client.Persistent.Name.c_str(), CTFTeamName(Client.Persistent.Flag->team));
 		Client.Persistent.Flag = NULL;
 	}
 }
@@ -2261,7 +2263,7 @@ void CPlayerEntity::SetCTFStats()
 	if (Client.Respawn.CTF.Ghost)
 	{
 		Client.Respawn.CTF.Ghost->Score = Client.Respawn.Score;
-		Q_strncpyz(Client.Respawn.CTF.Ghost->netname, Client.Persistent.netname, sizeof(Client.Respawn.CTF.Ghost->netname));
+		Client.Respawn.CTF.Ghost->name = Client.Persistent.Name;
 		Client.Respawn.CTF.Ghost->number = State.GetNumber();
 	}
 
@@ -2458,7 +2460,7 @@ void CPlayerEntity::CTFAssignGhost()
 			break;
 	}
 	ctfgame.ghosts[ghost].ent = this;
-	Q_strncpyz(ctfgame.ghosts[ghost].netname, Client.Persistent.netname, sizeof(ctfgame.ghosts[ghost].netname));
+	ctfgame.ghosts[ghost].name = Client.Persistent.Name;
 	Client.Respawn.CTF.Ghost = ctfgame.ghosts + ghost;
 	PrintToClient (PRINT_CHAT, "Your ghost code is **** %d ****\n", ctfgame.ghosts[ghost].code);
 	PrintToClient (PRINT_HIGH, "If you lose connection, you can rejoin with your Score "
@@ -3031,12 +3033,9 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 				if (!spot)
 					spot = CC_Find (spot, FOFS(classname), "info_player_deathmatch");
 			}
-			// FIXME: Remove.
+
 			if (!spot)
 			{
-				//GameError ("Couldn't find spawn point %s", game.spawnpoint);
-				//return;
-
 				MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Couldn't find a suitable spawn point!\n");
 
 				origin.Set (0, 0, 0);
@@ -3470,7 +3469,7 @@ void CPlayerEntity::UpdateChaseCam()
 	{
 		CStatusBar Chasing;
 		char temp[128];
-		Q_snprintfz (temp, sizeof(temp), "Chasing %s\n%s", targ->Client.Persistent.netname, (Client.Chase.Mode == 0) ? "Tight Chase" : ((Client.Chase.Mode == 1) ? "Freeform Chase" : "FPS Chase"));
+		Q_snprintfz (temp, sizeof(temp), "Chasing %s\n%s", targ->Client.Persistent.Name.c_str(), (Client.Chase.Mode == 0) ? "Tight Chase" : ((Client.Chase.Mode == 1) ? "Freeform Chase" : "FPS Chase"));
 
 		Chasing.AddVirtualPoint_X (0);
 		Chasing.AddVirtualPoint_Y (-68);
@@ -3658,7 +3657,7 @@ _CC_ENABLE_DEPRECATION
 		// send effect
 		CTempEnt::MuzzleFlash (State.GetOrigin (), State.GetNumber(), MZ_LOGIN);
 
-	BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.netname);
+	BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.c_str());
 
 	// make sure all view stuff is valid
 	EndServerFrame();
@@ -3709,7 +3708,7 @@ _CC_ENABLE_DEPRECATION
 		if (game.maxclients > 1)
 		{
 			CTempEnt::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
-			BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.netname);
+			BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.c_str());
 		}
 	}
 
@@ -3821,10 +3820,10 @@ bool CPlayerEntity::Connect (char *userinfo)
 	if (game.maxclients > 1)
 	{
 		// Tell the entire game that someone connected
-		BroadcastPrintf (PRINT_MEDIUM, "%s connected\n", Client.Persistent.netname);
+		BroadcastPrintf (PRINT_MEDIUM, "%s connected\n", Client.Persistent.Name.c_str());
 		
 		// But only tell the server the IP
-		DebugPrintf ("%s@%s connected\n", Client.Persistent.netname, Info_ValueForKey (UserInfo, "ip").c_str());
+		DebugPrintf ("%s@%s connected\n", Client.Persistent.Name.c_str(), Info_ValueForKey (UserInfo, "ip").c_str());
 	}
 
 	GetSvFlags() = 0; // make sure we start with known default
@@ -3838,7 +3837,7 @@ void CPlayerEntity::Disconnect ()
 		return;
 
 	Client.Persistent.state = SVCS_FREE;
-	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.netname);
+	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.Name.c_str());
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
@@ -3939,12 +3938,12 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		}
 		if (game.mode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.netname, message);
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message);
 	}
 	else if (attacker && (attacker->EntityFlags & ENT_PLAYER))
 	{
 		CPlayerEntity *Attacker = entity_cast<CPlayerEntity>(attacker);
-		bool endsInS = (Attacker->Client.Persistent.netname[strlen(Attacker->Client.Persistent.netname)] == 's');
+		bool endsInS = (Attacker->Client.Persistent.Name.c_str()[strlen(Attacker->Client.Persistent.Name.c_str())] == 's');
 		switch (meansOfDeath)
 		{
 		case MOD_BLASTER:
@@ -4028,7 +4027,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 //ZOID
 #endif
 		}
-		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.netname, message, Attacker->Client.Persistent.netname, message2);
+		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.Name.c_str(), message, Attacker->Client.Persistent.Name.c_str(), message2);
 		if (game.mode & GAME_DEATHMATCH)
 			Attacker->Client.Respawn.Score++;
 	}
@@ -4102,7 +4101,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 
 		if (game.mode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.netname, message, MonsterAOrAn(Name), Name, message2);
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.c_str(), message, MonsterAOrAn(Name), Name, message2);
 	}
 	else
 	{
@@ -4151,6 +4150,6 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 
 		if (game.mode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.netname, message);
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message);
 	}
 }

@@ -255,14 +255,14 @@ void SvCmd_Dump_f ()
 	std::cc_string FileName = "/maps/ents/" + level.ServerLevelName + ".ccent";
 	fileHandle_t f;
 
-	FS_OpenFile (FileName.c_str(), &f, FS_MODE_WRITE_BINARY);
+	f = FS_OpenFile (FileName.c_str(), FS_MODE_WRITE_BINARY);
 
 	if (!f)
 		return;
 
 	FS_Write (gEntString, strlen(gEntString), f);
 
-	FS_CloseFile (f);
+	FS_Close (f);
 }
 
 bool requestedBreak = false;

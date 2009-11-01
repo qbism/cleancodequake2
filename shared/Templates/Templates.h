@@ -149,7 +149,7 @@ inline int Q_toupper(int chr)
 // ===========================================================================
 
 int		Q_WildcardMatch (const char *filter, const char *string, int ignoreCase);
-char	*Q_VarArgs (char *format, ...);
+std::cc_string	Q_VarArgs (char *format, ...);
 
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 #include "TArray.h"

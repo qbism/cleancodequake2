@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cc_shared.h"
 
 // the "gameversion" client command will print this plus compile date
-#define GAMEVERSION	"baseq2"
+#define GAMENAME	"baseq2"
 
 //==================================================================
 
@@ -166,41 +166,6 @@ typedef std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> > TKeyValu
 class CLevelLocals
 {
 public:
-	CLevelLocals() :
-	  Frame(0),
-	  FullLevelName(),
-	  ServerLevelName(),
-	  NextMap(),
-	  ForceMap(),
-	  IntermissionTime(),
-	  ChangeMap(NULL),
-	  ExitIntermission(false),
-	  IntermissionOrigin(0,0,0),
-	  IntermissionAngles(0,0,0),
-	  SightClient(NULL),
-#ifndef MONSTERS_USE_PATHFINDING
-	  SightEntity(NULL),
-	  SightEntityFrame(0),
-	  SoundEntity(NULL),
-	  SoundEntityFrame(0),
-	  SoundEntity2(NULL),
-	  SoundEntity2Frame(0),
-#else
-	  NoiseNode(NULL),
-	  SoundEntityFramenum(0),
-	  SoundEntity(NULL),
-#endif
-	  CurrentEntity(NULL),
-	  PowerCubeCount(0),
-	  Inhibit(0),
-	  EntityNumber(0),
-	  ParseData()
-	{
-		Secrets.Found = Secrets.Total = 0;
-		Goals.Found = Goals.Total = 0;
-		Monsters.Killed = Monsters.Total = 0;
-	};
-
 	void Clear ()
 	{
 		CLevelLocals();

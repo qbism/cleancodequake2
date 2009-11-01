@@ -593,7 +593,7 @@ void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 		if (activator && (activator->EntityFlags & ENT_PLAYER))
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
-			BroadcastPrintf (PRINT_HIGH, "%s exited the level.\n", Player->Client.Persistent.netname);
+			BroadcastPrintf (PRINT_HIGH, "%s exited the level.\n", Player->Client.Persistent.Name.c_str());
 		}
 	}
 

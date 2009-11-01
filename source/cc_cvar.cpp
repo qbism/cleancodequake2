@@ -41,17 +41,17 @@ CCvar::CCvar ()
 	mainValue = NULL;
 	floatVal = intVal = 0;
 }
-CCvar::CCvar (char *cvarName, char *defaultValue, int flags)
+CCvar::CCvar (const char *cvarName, const char *defaultValue, int flags)
 {
 	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
-CCvar::CCvar (char *cvarName, int defaultValue, int flags)
+CCvar::CCvar (const char *cvarName, int defaultValue, int flags)
 {
 	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
-CCvar::CCvar (char *cvarName, float defaultValue, int flags)
+CCvar::CCvar (const char *cvarName, float defaultValue, int flags)
 {
 	CCvar();
 	Register(cvarName, defaultValue, flags);
@@ -64,68 +64,69 @@ void CCvar::Update()
 	intVal = floatVal;
 }
 
-void CCvar::Register(char *cvarName, char *defaultValue, int flags)
+void CCvar::Register(const char *cvarName, const char *defaultValue, int flags)
 {
-	cVar = gi.cvar (cvarName, defaultValue, flags);
+	cVar = gi.cvar ((char*)cvarName, (char*)defaultValue, flags);
 
 	mainValue = cVar->string;
 	floatVal = cVar->floatVal;
 	intVal = floatVal;
 }
 
-void CCvar::Register(char *cvarName, float defaultValue, int flags)
+#include <sstream>
+static std::stringstream str;
+void CCvar::Register(const char *cvarName, float defaultValue, int flags)
 {
-	// I know these temporary alloc buffers seem a bit wonky. Let me know if anyone has a cleaner solution.
-	char tempAlloc[100];
-	Q_snprintfz(tempAlloc, defaultValue, "%f", defaultValue);
+	str.clear ();
+	str << defaultValue;
 
-	cVar = gi.cvar (cvarName, tempAlloc, flags);
+	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
 
 	mainValue = cVar->string;
 	floatVal = cVar->floatVal;
 	intVal = floatVal;
 }
 
-void CCvar::Register(char *cvarName, int defaultValue, int flags)
+void CCvar::Register(const char *cvarName, int defaultValue, int flags)
 {
-	char tempAlloc[15];
-	Q_snprintfz(tempAlloc, sizeof(tempAlloc), "%i", defaultValue);
+	str.clear ();
+	str << defaultValue;
 
-	cVar = gi.cvar (cvarName, tempAlloc, flags);
+	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
 
 	mainValue = cVar->string;
 	floatVal = cVar->floatVal;
 	intVal = floatVal;
 }
 
-void CCvar::Set (char *value, bool Force)
+void CCvar::Set (const char *value, bool Force)
 {
 	if (!Force)
-		cVar = gi.cvar_set (cVar->name, value);
+		cVar = gi.cvar_set (cVar->name, (char*)value);
 	else
-		cVar = gi.cvar_forceset (cVar->name, value);
+		cVar = gi.cvar_forceset (cVar->name, (char*)value);
 }
 
 void CCvar::Set (float value, bool Force)
 {
-	char tempAlloc[100];
-	Q_snprintfz(tempAlloc, value, "%f", value);
+	str.clear ();
+	str << value;
 
 	if (!Force)
-		cVar = gi.cvar_set (cVar->name, tempAlloc);
+		cVar = gi.cvar_set (cVar->name, (char*)str.str().c_str());
 	else
-		cVar = gi.cvar_forceset (cVar->name, tempAlloc);
+		cVar = gi.cvar_forceset (cVar->name, (char*)str.str().c_str());
 }
 
 void CCvar::Set (int value, bool Force)
 {
-	char tempAlloc[15];
-	Q_snprintfz(tempAlloc, value, "%i", value);
+	str.clear ();
+	str << value;
 
 	if (!Force)
-		cVar = gi.cvar_set (cVar->name, tempAlloc);
+		cVar = gi.cvar_set (cVar->name, (char*)str.str().c_str());
 	else
-		cVar = gi.cvar_forceset (cVar->name, tempAlloc);
+		cVar = gi.cvar_forceset (cVar->name, (char*)str.str().c_str());
 }
 
 float CCvar::Float ()

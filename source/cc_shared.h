@@ -49,6 +49,7 @@ typedef int32	FrameNumber_t;
 #include "cc_write.h"
 #include "cc_cvar.h"
 #include "cc_filesystem.h"
+#include "cc_parse.h"
 #include "cc_hash.h"
 #define BAN_BASIC_INFO
 #include "cc_ban.h"

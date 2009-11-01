@@ -1965,6 +1965,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Platform"
+				>
+				<File
+					RelativePath="..\..\source\cc_platform.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\cc_platform_win32.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Save"
+				>
+				<File
+					RelativePath="..\..\source\cc_save.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\cc_save.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Old Files"
@@ -1972,14 +1996,6 @@
 			<Filter
 				Name="CPP"
 				>
-				<File
-					RelativePath=".\..\..\source\g_save.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\..\..\source\m_flash.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Header"

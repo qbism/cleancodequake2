@@ -160,7 +160,7 @@ public:
 			ent->Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
 			ent->Client.PlayerState.GetPMove()->pmTime = 14;
 			BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
-				ent->Client.Persistent.netname, CTFTeamName(team));
+				ent->Client.Persistent.Name.c_str(), CTFTeamName(team));
 
 			if (ctfgame.match == MATCH_SETUP)
 			{
