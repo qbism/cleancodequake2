@@ -37,634 +37,462 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <string>
 #include <vector>
 #include <list>
+#include <map>
 
 namespace std
 {
 
-#if (MSVS_VERSION >= VS_10)
-		// TEMPLATE FUNCTION _Allocate
-template<class _Ty> inline
-	_Ty _FARQ *_Allocate(_SIZT _Count, _Ty _FARQ *, struct memPool_t *Pool)
-	{	// allocate storage for _Count elements of type _Ty
-	void *_Ptr = 0;
+// The following headers are required for all allocators.
+#include <stddef.h>  // Required for size_t and ptrdiff_t and NULL
+#include <new>       // Required for placement new and std::bad_alloc
+#include <stdexcept> // Required for std::length_error
 
-	if (_Count <= 0)
-		_Count = 0;
-	else if (((_SIZT)(-1) / sizeof (_Ty) < _Count)
-		|| (_Ptr = _Mem_Alloc (_Count * sizeof (_Ty), Pool, 0, __FILE__, __LINE__)) == 0)
-		_THROW_NCEE(bad_alloc, 0);
+template <typename T> class generic_allocator
+{
+public:
+	// The following will be the same for virtually all allocators.
+	typedef T * pointer;
+	typedef const T * const_pointer;
+	typedef T& reference;
+	typedef const T& const_reference;
+	typedef T value_type;
+	typedef size_t size_type;
+	typedef ptrdiff_t difference_type;
 
-	return ((_Ty _FARQ *)_Ptr);
+	T * address(T& r) const
+	{
+		return &r;
 	}
 
-		// TEMPLATE CLASS _ALLOCATOR
-template<class _Ty>
-	class level_allocator
-		: public _Allocator_base<_Ty>
-	{	// generic allocator for objects of class _Ty
-public:
-	typedef _Allocator_base<_Ty> _Mybase;
-	typedef typename _Mybase::value_type value_type;
+	const T * address(const T& s) const
+	{
+		return &s;
+	}
 
-	typedef value_type _FARQ *pointer;
-	typedef value_type _FARQ& reference;
-	typedef const value_type _FARQ *const_pointer;
-	typedef const value_type _FARQ& const_reference;
+	size_t max_size() const
+	{
+		// The following has been carefully written to be independent of
+		// the definition of size_t and to avoid signed/unsigned warnings.
+		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
+	}
 
-	typedef _SIZT size_type;
-	typedef _PDFT difference_type;
-
-	template<class _Other>
-		struct rebind
-		{	// convert this type to _ALLOCATOR<_Other>
-		typedef level_allocator<_Other> other;
-		};
-
-	pointer address(reference _Val) const
-		{	// return address of mutable _Val
-		return ((pointer) &(char&)_Val);
-		}
-
-	const_pointer address(const_reference _Val) const
-		{	// return address of nonmutable _Val
-		return ((const_pointer) &(char&)_Val);
-		}
-
-	level_allocator() _THROW0()
-		{	// construct default allocator (do nothing)
-		}
-
-	level_allocator(const level_allocator<_Ty>&) _THROW0()
-		{	// construct by copying (do nothing)
-		}
-
-	template<class _Other>
-		level_allocator(const level_allocator<_Other>&) _THROW0()
-		{	// construct from a related allocator (do nothing)
-		}
-
-	template<class _Other>
-		level_allocator<_Ty>& operator=(const level_allocator<_Other>&)
-		{	// assign from a related allocator (do nothing)
-		return (*this);
-		}
-
-	void deallocate(pointer _Ptr, size_type)
-		{	// deallocate object at _Ptr, ignore size
-		QDelete(_Ptr);
-		}
-
-	pointer allocate(size_type _Count)
-		{	// allocate array of _Count elements
-		return (_Allocate(_Count, (pointer)0, com_levelPool));
-		}
-
-	pointer allocate(size_type _Count, const void _FARQ *)
-		{	// allocate array of _Count elements, ignore hint
-		return (allocate(_Count));
-		}
-
-	void construct(pointer _Ptr, const _Ty& _Val)
-		{	// construct object at _Ptr with value _Val
-		_Construct(_Ptr, _Val);
-		}
-
-	void construct(pointer _Ptr, _Ty&& _Val)
-		{	// construct object at _Ptr with value _Val
-		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
-		}
-
-	template<class _Other>
-		void construct(pointer _Ptr, _Other&& _Val)
-		{	// construct object at _Ptr with value _Val
-		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
-		}
-
-	void destroy(pointer _Ptr)
-		{	// destroy object at _Ptr
-		_Destroy(_Ptr);
-		}
-
-	_SIZT max_size() const _THROW0()
-		{	// estimate maximum array size
-		_SIZT _Count = (_SIZT)(-1) / sizeof (_Ty);
-		return (0 < _Count ? _Count : 1);
-		}
+	// The following must be the same for all allocators.
+	template <typename U> struct rebind
+	{
+		typedef generic_allocator<U> other;
 	};
 
-template<class _Ty,
-	class _Other> inline
-	bool operator!=(const level_allocator<_Ty>& _Left,
-		const level_allocator<_Other>& _Right) _THROW0()
-	{	// test for allocator inequality
-	return (!(_Left == _Right));
+	bool operator!=(const generic_allocator& other) const
+	{
+		return !(*this == other);
 	}
 
-template<class _Ty,
-	class _Other> inline
-	bool operator==(const level_allocator<_Ty>&,
-		const level_allocator<_Other>&) _THROW0()
-	{	// test for allocator equality
-	return (true);
+	void construct(T * const p, const T& t) const
+	{
+		void * const pv = static_cast<void *>(p);
+		new (pv) T(t);
 	}
 
-		// TEMPLATE CLASS _ALLOCATOR
-template<class _Ty>
-	class game_allocator
-		: public _Allocator_base<_Ty>
-	{	// generic allocator for objects of class _Ty
+	void destroy(T * const p) const; // Defined below.
+
+	// Returns true if and only if storage allocated from *this
+	// can be deallocated from other, and vice versa.
+	// Always returns true for stateless allocators.
+	bool operator==(const generic_allocator& other) const
+	{
+		return true;
+	}
+
+	// Default constructor, copy constructor, rebinding constructor, and destructor.
+	// Empty for stateless allocators.
+	generic_allocator()
+	{
+	}
+
+	generic_allocator(const generic_allocator&)
+	{
+	}
+
+	template <typename U> generic_allocator(const generic_allocator<U>&)
+	{
+	}
+
+	~generic_allocator()
+	{
+	}
+
+	// The following will be different for each allocator.
+	T * allocate(const size_t n) const
+	{
+		// generic_allocator prints a diagnostic message to demonstrate
+		// what it's doing. Real allocators won't do this.
+		// std::cout << "Allocating " << n << (n == 1 ? " object" : "objects")
+		//     << " of size " << sizeof(T) << "." << std::endl;
+
+		// The return value of allocate(0) is unspecified.
+		// generic_allocator returns NULL in order to avoid depending
+		// on malloc(0)'s implementation-defined behavior
+		// (the implementation can define malloc(0) to return NULL,
+		// in which case the bad_alloc check below would fire).
+		// All allocators can return NULL in this case.
+		if (n == 0)
+		{
+			return NULL;
+		}
+
+		// All allocators should contain an integer overflow check.
+		// The Standardization Committee recommends that std::length_error
+		// be thrown in the case of integer overflow.
+		if (n > max_size())
+		{
+			throw std::length_error("generic_allocator<T>::allocate() - Integer overflow.");
+		}
+
+		// generic_allocator wraps malloc().
+		void * const pv = _Mem_Alloc (n * sizeof(T), com_genericPool, 0, "null", 0);
+
+		// Allocators should throw std::bad_alloc in the case of memory allocation failure.
+		if (pv == NULL)
+		{
+			throw std::bad_alloc();
+		}
+
+		return static_cast<T *>(pv);
+	}
+
+	void deallocate(T * const p, const size_t n) const
+	{
+		// generic_allocator prints a diagnostic message to demonstrate
+		// what it's doing. Real allocators won't do this.
+//		std::cout << "Deallocating " << n << (n == 1 ? " object" : "objects")
+//			<< " of size " << sizeof(T) << "." << std::endl;
+
+		// generic_allocator wraps free().
+		QDelete p;
+	}
+
+	// The following will be the same for all allocators that ignore hints.
+	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
+	{
+		return allocate(n);
+	}
+
+
+	// Allocators are not required to be assignable, so
+	// all allocators should have a private unimplemented
+	// assignment operator. Note that this will trigger the
+	// off-by-default (enabled under /Wall) warning C4626
+	// "assignment operator could not be generated because a
+	// base class assignment operator is inaccessible" within
+	// the STL headers, but that warning is useless.
+private:
+	generic_allocator& operator=(const generic_allocator&);
+};
+
+// A compiler bug causes it to believe that p->~T() doesn't reference p.
+// The definition of destroy() must be the same for all allocators.
+template <typename T> void generic_allocator<T>::destroy(T * const p) const
+{
+	p->~T();
+}
+
+template <typename T> class level_allocator
+{
 public:
-	typedef _Allocator_base<_Ty> _Mybase;
-	typedef typename _Mybase::value_type value_type;
+	// The following will be the same for virtually all allocators.
+	typedef T * pointer;
+	typedef const T * const_pointer;
+	typedef T& reference;
+	typedef const T& const_reference;
+	typedef T value_type;
+	typedef size_t size_type;
+	typedef ptrdiff_t difference_type;
 
-	typedef value_type _FARQ *pointer;
-	typedef value_type _FARQ& reference;
-	typedef const value_type _FARQ *const_pointer;
-	typedef const value_type _FARQ& const_reference;
+	T * address(T& r) const
+	{
+		return &r;
+	}
 
-	typedef _SIZT size_type;
-	typedef _PDFT difference_type;
+	const T * address(const T& s) const
+	{
+		return &s;
+	}
 
-	template<class _Other>
-		struct rebind
-		{	// convert this type to _ALLOCATOR<_Other>
-		typedef game_allocator<_Other> other;
-		};
+	size_t max_size() const
+	{
+		// The following has been carefully written to be independent of
+		// the definition of size_t and to avoid signed/unsigned warnings.
+		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
+	}
 
-	pointer address(reference _Val) const
-		{	// return address of mutable _Val
-		return ((pointer) &(char&)_Val);
-		}
-
-	const_pointer address(const_reference _Val) const
-		{	// return address of nonmutable _Val
-		return ((const_pointer) &(char&)_Val);
-		}
-
-	game_allocator() _THROW0()
-		{	// construct default allocator (do nothing)
-		}
-
-	game_allocator(const game_allocator<_Ty>&) _THROW0()
-		{	// construct by copying (do nothing)
-		}
-
-	template<class _Other>
-		game_allocator(const game_allocator<_Other>&) _THROW0()
-		{	// construct from a related allocator (do nothing)
-		}
-
-	template<class _Other>
-		game_allocator<_Ty>& operator=(const game_allocator<_Other>&)
-		{	// assign from a related allocator (do nothing)
-		return (*this);
-		}
-
-	void deallocate(pointer _Ptr, size_type)
-		{	// deallocate object at _Ptr, ignore size
-		QDelete(_Ptr);
-		}
-
-	pointer allocate(size_type _Count)
-		{	// allocate array of _Count elements
-		return (_Allocate(_Count, (pointer)0, com_gamePool));
-		}
-
-	pointer allocate(size_type _Count, const void _FARQ *)
-		{	// allocate array of _Count elements, ignore hint
-		return (allocate(_Count));
-		}
-
-	void construct(pointer _Ptr, const _Ty& _Val)
-		{	// construct object at _Ptr with value _Val
-		_Construct(_Ptr, _Val);
-		}
-
-	void construct(pointer _Ptr, _Ty&& _Val)
-		{	// construct object at _Ptr with value _Val
-		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
-		}
-
-	template<class _Other>
-		void construct(pointer _Ptr, _Other&& _Val)
-		{	// construct object at _Ptr with value _Val
-		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
-		}
-
-	void destroy(pointer _Ptr)
-		{	// destroy object at _Ptr
-		_Destroy(_Ptr);
-		}
-
-	_SIZT max_size() const _THROW0()
-		{	// estimate maximum array size
-		_SIZT _Count = (_SIZT)(-1) / sizeof (_Ty);
-		return (0 < _Count ? _Count : 1);
-		}
+	// The following must be the same for all allocators.
+	template <typename U> struct rebind
+	{
+		typedef level_allocator<U> other;
 	};
 
-template<class _Ty,
-	class _Other> inline
-	bool operator!=(const game_allocator<_Ty>& _Left,
-		const game_allocator<_Other>& _Right) _THROW0()
-	{	// test for allocator inequality
-	return (!(_Left == _Right));
+	bool operator!=(const level_allocator& other) const
+	{
+		return !(*this == other);
 	}
 
-template<class _Ty,
-	class _Other> inline
-	bool operator==(const game_allocator<_Ty>&,
-		const game_allocator<_Other>&) _THROW0()
-	{	// test for allocator equality
-	return (true);
+	void construct(T * const p, const T& t) const
+	{
+		void * const pv = static_cast<void *>(p);
+		new (pv) T(t);
 	}
 
-		// TEMPLATE CLASS _ALLOCATOR
-template<class _Ty>
-	class generic_allocator
-		: public _Allocator_base<_Ty>
-	{	// generic allocator for objects of class _Ty
+	void destroy(T * const p) const; // Defined below.
+
+	// Returns true if and only if storage allocated from *this
+	// can be deallocated from other, and vice versa.
+	// Always returns true for stateless allocators.
+	bool operator==(const level_allocator& other) const
+	{
+		return true;
+	}
+
+	// Default constructor, copy constructor, rebinding constructor, and destructor.
+	// Empty for stateless allocators.
+	level_allocator()
+	{
+	}
+
+	level_allocator(const level_allocator&)
+	{
+	}
+
+	template <typename U> level_allocator(const level_allocator<U>&)
+	{
+	}
+
+	~level_allocator()
+	{
+	}
+
+	// The following will be different for each allocator.
+	T * allocate(const size_t n) const
+	{
+		// level_allocator prints a diagnostic message to demonstrate
+		// what it's doing. Real allocators won't do this.
+		// std::cout << "Allocating " << n << (n == 1 ? " object" : "objects")
+		//     << " of size " << sizeof(T) << "." << std::endl;
+
+		// The return value of allocate(0) is unspecified.
+		// level_allocator returns NULL in order to avoid depending
+		// on malloc(0)'s implementation-defined behavior
+		// (the implementation can define malloc(0) to return NULL,
+		// in which case the bad_alloc check below would fire).
+		// All allocators can return NULL in this case.
+		if (n == 0)
+		{
+			return NULL;
+		}
+
+		// All allocators should contain an integer overflow check.
+		// The Standardization Committee recommends that std::length_error
+		// be thrown in the case of integer overflow.
+		if (n > max_size())
+		{
+			throw std::length_error("level_allocator<T>::allocate() - Integer overflow.");
+		}
+
+		// level_allocator wraps malloc().
+		void * const pv = _Mem_Alloc (n * sizeof(T), com_levelPool, 0, "null", 0);
+
+		// Allocators should throw std::bad_alloc in the case of memory allocation failure.
+		if (pv == NULL)
+		{
+			throw std::bad_alloc();
+		}
+
+		return static_cast<T *>(pv);
+	}
+
+	void deallocate(T * const p, const size_t n) const
+	{
+		// level_allocator prints a diagnostic message to demonstrate
+		// what it's doing. Real allocators won't do this.
+//		std::cout << "Deallocating " << n << (n == 1 ? " object" : "objects")
+//			<< " of size " << sizeof(T) << "." << std::endl;
+
+		// level_allocator wraps free().
+		QDelete p;
+	}
+
+	// The following will be the same for all allocators that ignore hints.
+	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
+	{
+		return allocate(n);
+	}
+
+
+	// Allocators are not required to be assignable, so
+	// all allocators should have a private unimplemented
+	// assignment operator. Note that this will trigger the
+	// off-by-default (enabled under /Wall) warning C4626
+	// "assignment operator could not be generated because a
+	// base class assignment operator is inaccessible" within
+	// the STL headers, but that warning is useless.
+private:
+	level_allocator& operator=(const level_allocator&);
+};
+
+// A compiler bug causes it to believe that p->~T() doesn't reference p.
+// The definition of destroy() must be the same for all allocators.
+template <typename T> void level_allocator<T>::destroy(T * const p) const
+{
+	p->~T();
+}
+
+template <typename T> class game_allocator
+{
 public:
-	typedef _Allocator_base<_Ty> _Mybase;
-	typedef typename _Mybase::value_type value_type;
+	// The following will be the same for virtually all allocators.
+	typedef T * pointer;
+	typedef const T * const_pointer;
+	typedef T& reference;
+	typedef const T& const_reference;
+	typedef T value_type;
+	typedef size_t size_type;
+	typedef ptrdiff_t difference_type;
 
-	typedef value_type _FARQ *pointer;
-	typedef value_type _FARQ& reference;
-	typedef const value_type _FARQ *const_pointer;
-	typedef const value_type _FARQ& const_reference;
+	T * address(T& r) const
+	{
+		return &r;
+	}
 
-	typedef _SIZT size_type;
-	typedef _PDFT difference_type;
+	const T * address(const T& s) const
+	{
+		return &s;
+	}
 
-	template<class _Other>
-		struct rebind
-		{	// convert this type to _ALLOCATOR<_Other>
-		typedef generic_allocator<_Other> other;
-		};
+	size_t max_size() const
+	{
+		// The following has been carefully written to be independent of
+		// the definition of size_t and to avoid signed/unsigned warnings.
+		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
+	}
 
-	pointer address(reference _Val) const
-		{	// return address of mutable _Val
-		return ((pointer) &(char&)_Val);
-		}
-
-	const_pointer address(const_reference _Val) const
-		{	// return address of nonmutable _Val
-		return ((const_pointer) &(char&)_Val);
-		}
-
-	generic_allocator() _THROW0()
-		{	// construct default allocator (do nothing)
-		}
-
-	generic_allocator(const generic_allocator<_Ty>&) _THROW0()
-		{	// construct by copying (do nothing)
-		}
-
-	template<class _Other>
-		generic_allocator(const generic_allocator<_Other>&) _THROW0()
-		{	// construct from a related allocator (do nothing)
-		}
-
-	template<class _Other>
-		generic_allocator<_Ty>& operator=(const generic_allocator<_Other>&)
-		{	// assign from a related allocator (do nothing)
-		return (*this);
-		}
-
-	void deallocate(pointer _Ptr, size_type)
-		{	// deallocate object at _Ptr, ignore size
-		QDelete(_Ptr);
-		}
-
-	pointer allocate(size_type _Count)
-		{	// allocate array of _Count elements
-		return (_Allocate(_Count, (pointer)0, com_gamePool));
-		}
-
-	pointer allocate(size_type _Count, const void _FARQ *)
-		{	// allocate array of _Count elements, ignore hint
-		return (allocate(_Count));
-		}
-
-	void construct(pointer _Ptr, const _Ty& _Val)
-		{	// construct object at _Ptr with value _Val
-		_Construct(_Ptr, _Val);
-		}
-
-	void construct(pointer _Ptr, _Ty&& _Val)
-		{	// construct object at _Ptr with value _Val
-		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
-		}
-
-	template<class _Other>
-		void construct(pointer _Ptr, _Other&& _Val)
-		{	// construct object at _Ptr with value _Val
-		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
-		}
-
-	void destroy(pointer _Ptr)
-		{	// destroy object at _Ptr
-		_Destroy(_Ptr);
-		}
-
-	_SIZT max_size() const _THROW0()
-		{	// estimate maximum array size
-		_SIZT _Count = (_SIZT)(-1) / sizeof (_Ty);
-		return (0 < _Count ? _Count : 1);
-		}
+	// The following must be the same for all allocators.
+	template <typename U> struct rebind
+	{
+		typedef game_allocator<U> other;
 	};
 
-template<class _Ty,
-	class _Other> inline
-	bool operator!=(const generic_allocator<_Ty>& _Left,
-		const generic_allocator<_Other>& _Right) _THROW0()
-	{	// test for allocator inequality
-	return (!(_Left == _Right));
+	bool operator!=(const game_allocator& other) const
+	{
+		return !(*this == other);
 	}
 
-template<class _Ty,
-	class _Other> inline
-	bool operator==(const generic_allocator<_Ty>&,
-		const generic_allocator<_Other>&) _THROW0()
-	{	// test for allocator equality
-	return (true);
+	void construct(T * const p, const T& t) const
+	{
+		void * const pv = static_cast<void *>(p);
+		new (pv) T(t);
 	}
 
-#else
-                // TEMPLATE CLASS allocator
-template<class _Ty>
-        class level_allocator
-                : public _Allocator_base<_Ty>
-        {       // generic allocator for objects of class _Ty
-public:
-        typedef _Allocator_base<_Ty> _Mybase;
-        typedef typename _Mybase::value_type value_type;
-        typedef value_type _FARQ *pointer;
-        typedef value_type _FARQ& reference;
-        typedef const value_type _FARQ *const_pointer;
-        typedef const value_type _FARQ& const_reference;
+	void destroy(T * const p) const; // Defined below.
 
-        typedef _SIZT size_type;
-        typedef _PDFT difference_type;
+	// Returns true if and only if storage allocated from *this
+	// can be deallocated from other, and vice versa.
+	// Always returns true for stateless allocators.
+	bool operator==(const game_allocator& other) const
+	{
+		return true;
+	}
 
-        template<class _Other>
-                struct rebind
-                {       // convert an allocator<_Ty> to an allocator <_Other>
-                typedef level_allocator<_Other> other;
-                };
+	// Default constructor, copy constructor, rebinding constructor, and destructor.
+	// Empty for stateless allocators.
+	game_allocator()
+	{
+	}
 
-        pointer address(reference _Val) const
-                {       // return address of mutable _Val
-                return (&_Val);
-                }
+	game_allocator(const game_allocator&)
+	{
+	}
 
-        const_pointer address(const_reference _Val) const
-                {       // return address of nonmutable _Val
-                return (&_Val);
-                }
+	template <typename U> game_allocator(const game_allocator<U>&)
+	{
+	}
 
-        level_allocator() _THROW0()
-                {       // construct default allocator (do nothing)
-                }
+	~game_allocator()
+	{
+	}
 
-        level_allocator(const level_allocator<_Ty>&) _THROW0()
-                {       // construct by copying (do nothing)
-                }
+	// The following will be different for each allocator.
+	T * allocate(const size_t n) const
+	{
+		// game_allocator prints a diagnostic message to demonstrate
+		// what it's doing. Real allocators won't do this.
+		// std::cout << "Allocating " << n << (n == 1 ? " object" : "objects")
+		//     << " of size " << sizeof(T) << "." << std::endl;
 
-        template<class _Other>
-                level_allocator(const level_allocator<_Other>&) _THROW0()
-                {       // construct from a related allocator (do nothing)
-                }
+		// The return value of allocate(0) is unspecified.
+		// game_allocator returns NULL in order to avoid depending
+		// on malloc(0)'s implementation-defined behavior
+		// (the implementation can define malloc(0) to return NULL,
+		// in which case the bad_alloc check below would fire).
+		// All allocators can return NULL in this case.
+		if (n == 0)
+		{
+			return NULL;
+		}
 
-        template<class _Other>
-                level_allocator<_Ty>& operator=(const level_allocator<_Other>&)
-                {       // assign from a related allocator (do nothing)
-                return (*this);
-                }
+		// All allocators should contain an integer overflow check.
+		// The Standardization Committee recommends that std::length_error
+		// be thrown in the case of integer overflow.
+		if (n > max_size())
+		{
+			throw std::length_error("game_allocator<T>::allocate() - Integer overflow.");
+		}
 
-        void deallocate(pointer _Ptr, size_type)
-                {       // deallocate object at _Ptr, ignore size
-                delete(_Ptr);
-                }
+		// game_allocator wraps malloc().
+		void * const pv = _Mem_Alloc (n * sizeof(T), com_gamePool, 0, "null", 0);
 
-        pointer allocate(size_type _Count)
-                {       // allocate array of _Count elements
-                // check for integer overflow
-                if (_Count <= 0)
-                        _Count = 0;
-                else if (((_SIZT)(-1) / _Count) < sizeof (_Ty))
-                        _THROW_NCEE(bad_alloc, NULL);
+		// Allocators should throw std::bad_alloc in the case of memory allocation failure.
+		if (pv == NULL)
+		{
+			throw std::bad_alloc();
+		}
 
-                        // allocate storage for _Count elements of type _Ty
-                return ((_Ty _FARQ *) _Mem_Alloc (_Count * sizeof (_Ty), com_levelPool, 0, "STL Container", 0));
-                        //return (_Allocate(_Count, (pointer)0));
-                }
+		return static_cast<T *>(pv);
+	}
 
-        pointer allocate(size_type _Count, const void _FARQ *)
-                {       // allocate array of _Count elements, ignore hint
-                return (allocate(_Count));
-                }
+	void deallocate(T * const p, const size_t n) const
+	{
+		// game_allocator prints a diagnostic message to demonstrate
+		// what it's doing. Real allocators won't do this.
+//		std::cout << "Deallocating " << n << (n == 1 ? " object" : "objects")
+//			<< " of size " << sizeof(T) << "." << std::endl;
 
-        void construct(pointer _Ptr, const _Ty& _Val)
-                {       // construct object at _Ptr with value _Val
-                _Construct(_Ptr, _Val);
-                }
+		// game_allocator wraps free().
+		QDelete p;
+	}
 
-        void destroy(pointer _Ptr)
-                {       // destroy object at _Ptr
-                _Destroy(_Ptr);
-                }
-
-        _SIZT max_size() const _THROW0()
-                {       // estimate maximum array size
-                _SIZT _Count = (_SIZT)(-1) / sizeof (_Ty);
-                return (0 < _Count ? _Count : 1);
-                }
-        };
-
-                // TEMPLATE CLASS allocator
-template<class _Ty>
-        class game_allocator
-                : public _Allocator_base<_Ty>
-        {       // generic allocator for objects of class _Ty
-public:
-        typedef _Allocator_base<_Ty> _Mybase;
-        typedef typename _Mybase::value_type value_type;
-        typedef value_type _FARQ *pointer;
-        typedef value_type _FARQ& reference;
-        typedef const value_type _FARQ *const_pointer;
-        typedef const value_type _FARQ& const_reference;
-
-        typedef _SIZT size_type;
-        typedef _PDFT difference_type;
-
-        template<class _Other>
-                struct rebind
-                {       // convert an allocator<_Ty> to an allocator <_Other>
-                typedef game_allocator<_Other> other;
-                };
-
-        pointer address(reference _Val) const
-                {       // return address of mutable _Val
-                return (&_Val);
-                }
-
-        const_pointer address(const_reference _Val) const
-                {       // return address of nonmutable _Val
-                return (&_Val);
-                }
-
-        game_allocator() _THROW0()
-                {       // construct default allocator (do nothing)
-                }
-
-        game_allocator(const game_allocator<_Ty>&) _THROW0()
-                {       // construct by copying (do nothing)
-                }
-
-        template<class _Other>
-                game_allocator(const game_allocator<_Other>&) _THROW0()
-                {       // construct from a related allocator (do nothing)
-                }
-
-        template<class _Other>
-                game_allocator<_Ty>& operator=(const game_allocator<_Other>&)
-                {       // assign from a related allocator (do nothing)
-                return (*this);
-                }
-
-        void deallocate(pointer _Ptr, size_type)
-                {       // deallocate object at _Ptr, ignore size
-                delete(_Ptr);
-                }
-
-        pointer allocate(size_type _Count)
-                {       // allocate array of _Count elements
-                // check for integer overflow
-                if (_Count <= 0)
-                        _Count = 0;
-                else if (((_SIZT)(-1) / _Count) < sizeof (_Ty))
-                        _THROW_NCEE(bad_alloc, NULL);
-
-                        // allocate storage for _Count elements of type _Ty
-                return ((_Ty _FARQ *) _Mem_Alloc (_Count * sizeof (_Ty), com_gamePool, 0, "STL Container", 0));
-                        //return (_Allocate(_Count, (pointer)0));
-                }
+	// The following will be the same for all allocators that ignore hints.
+	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
+	{
+		return allocate(n);
+	}
 
 
-        pointer allocate(size_type _Count, const void _FARQ *)
-                {       // allocate array of _Count elements, ignore hint
-                return (allocate(_Count));
-                }
+	// Allocators are not required to be assignable, so
+	// all allocators should have a private unimplemented
+	// assignment operator. Note that this will trigger the
+	// off-by-default (enabled under /Wall) warning C4626
+	// "assignment operator could not be generated because a
+	// base class assignment operator is inaccessible" within
+	// the STL headers, but that warning is useless.
+private:
+	game_allocator& operator=(const game_allocator&);
+};
 
-        void construct(pointer _Ptr, const _Ty& _Val)
-                {       // construct object at _Ptr with value _Val
-                _Construct(_Ptr, _Val);
-                }
-
-        void destroy(pointer _Ptr)
-                {       // destroy object at _Ptr
-                _Destroy(_Ptr);
-                }
-
-        _SIZT max_size() const _THROW0()
-                {       // estimate maximum array size
-                _SIZT _Count = (_SIZT)(-1) / sizeof (_Ty);
-                return (0 < _Count ? _Count : 1);
-                }
-        };
-
-                // TEMPLATE CLASS allocator
-template<class _Ty>
-        class generic_allocator
-                : public _Allocator_base<_Ty>
-        {       // generic allocator for objects of class _Ty
-public:
-        typedef _Allocator_base<_Ty> _Mybase;
-        typedef typename _Mybase::value_type value_type;
-        typedef value_type _FARQ *pointer;
-        typedef value_type _FARQ& reference;
-        typedef const value_type _FARQ *const_pointer;
-        typedef const value_type _FARQ& const_reference;
-
-        typedef _SIZT size_type;
-        typedef _PDFT difference_type;
-
-        template<class _Other>
-                struct rebind
-                {       // convert an allocator<_Ty> to an allocator <_Other>
-                typedef generic_allocator<_Other> other;
-                };
-
-        pointer address(reference _Val) const
-                {       // return address of mutable _Val
-                return (&_Val);
-                }
-
-        const_pointer address(const_reference _Val) const
-                {       // return address of nonmutable _Val
-                return (&_Val);
-                }
-
-        generic_allocator() _THROW0()
-                {       // construct default allocator (do nothing)
-                }
-
-        generic_allocator(const generic_allocator<_Ty>&) _THROW0()
-                {       // construct by copying (do nothing)
-                }
-
-        template<class _Other>
-                generic_allocator(const generic_allocator<_Other>&) _THROW0()
-                {       // construct from a related allocator (do nothing)
-                }
-
-        template<class _Other>
-                generic_allocator<_Ty>& operator=(const generic_allocator<_Other>&)
-                {       // assign from a related allocator (do nothing)
-                return (*this);
-                }
-
-        void deallocate(pointer _Ptr, size_type)
-                {       // deallocate object at _Ptr, ignore size
-                delete(_Ptr);
-                }
-
-        pointer allocate(size_type _Count)
-                {       // allocate array of _Count elements
-                // check for integer overflow
-                if (_Count <= 0)
-                        _Count = 0;
-                else if (((_SIZT)(-1) / _Count) < sizeof (_Ty))
-                        _THROW_NCEE(bad_alloc, NULL);
-
-                        // allocate storage for _Count elements of type _Ty
-                return ((_Ty _FARQ *) _Mem_Alloc (_Count * sizeof (_Ty), com_genericPool, 0, "STL Container", 0));
-                        //return (_Allocate(_Count, (pointer)0));
-                }
-
-        pointer allocate(size_type _Count, const void _FARQ *)
-                {       // allocate array of _Count elements, ignore hint
-                return (allocate(_Count));
-                }
-
-        void construct(pointer _Ptr, const _Ty& _Val)
-                {       // construct object at _Ptr with value _Val
-                _Construct(_Ptr, _Val);
-                }
-
-        void destroy(pointer _Ptr)
-                {       // destroy object at _Ptr
-                _Destroy(_Ptr);
-                }
-
-        _SIZT max_size() const _THROW0()
-                {       // estimate maximum array size
-                _SIZT _Count = (_SIZT)(-1) / sizeof (_Ty);
-                return (0 < _Count ? _Count : 1);
-                }
-        };
-#endif
+// A compiler bug causes it to believe that p->~T() doesn't reference p.
+// The definition of destroy() must be the same for all allocators.
+template <typename T> void game_allocator<T>::destroy(T * const p) const
+{
+	p->~T();
+}
 
 typedef basic_string<char, char_traits<char>, generic_allocator<char> >
 	cc_string;

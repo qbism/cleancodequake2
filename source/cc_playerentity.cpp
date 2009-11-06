@@ -2437,34 +2437,30 @@ void CPlayerEntity::CTFSetIDView()
 
 void CPlayerEntity::CTFAssignGhost()
 {
-	int ghost, i;
+	CCTFGhost *Ghost = QNew (com_levelPool, 0) CCTFGhost;
 
-	for (ghost = 0; ghost < MAX_CS_CLIENTS; ghost++)
+	Ghost->team = Client.Respawn.CTF.Team;
+	Ghost->Score = 0;
+
+	// Find a key for the ghost
+	int code;
+	while (true)
 	{
-		if (!ctfgame.ghosts[ghost].code)
+		code = 10000 + (irandom(90000));
+
+		if (ctfgame.Ghosts.find(code) == ctfgame.Ghosts.end())
 			break;
 	}
-	if (ghost == MAX_CS_CLIENTS)
-		return;
-	ctfgame.ghosts[ghost].team = Client.Respawn.CTF.Team;
-	ctfgame.ghosts[ghost].Score = 0;
-	for (;;)
-	{
-		ctfgame.ghosts[ghost].code = 10000 + (irandom(90000));
-		for (i = 0; i < MAX_CS_CLIENTS; i++)
-		{
-			if (i != ghost && ctfgame.ghosts[i].code == ctfgame.ghosts[ghost].code)
-				break;
-		}
-		if (i == MAX_CS_CLIENTS)
-			break;
-	}
-	ctfgame.ghosts[ghost].ent = this;
-	ctfgame.ghosts[ghost].name = Client.Persistent.Name;
-	Client.Respawn.CTF.Ghost = ctfgame.ghosts + ghost;
-	PrintToClient (PRINT_CHAT, "Your ghost code is **** %d ****\n", ctfgame.ghosts[ghost].code);
+
+	ctfgame.Ghosts[code] = Ghost;
+
+	Ghost->ent = this;
+	Ghost->Code = code;
+	Ghost->name = Client.Persistent.Name;
+	Client.Respawn.CTF.Ghost = Ghost;
+	PrintToClient (PRINT_CHAT, "Your ghost code is **** %d ****\n", code);
 	PrintToClient (PRINT_HIGH, "If you lose connection, you can rejoin with your Score "
-		"intact by typing \"ghost %d\".\n", ctfgame.ghosts[ghost].code);
+		"intact by typing \"ghost %d\".\n", code);
 }
 #endif
 

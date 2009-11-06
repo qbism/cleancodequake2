@@ -420,7 +420,7 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const int fileLine)
 	memBlock_t	*mem;
 	size_t		size;
 
-	_CC_ASSERT_EXPR (ptr, "Attempted to free NULL");
+	//_CC_ASSERT_EXPR (ptr, "Attempted to free NULL");
 	if (!ptr)
 		return 0;
 

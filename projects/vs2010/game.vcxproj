@@ -667,7 +667,6 @@ echo Done!
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_gameapi.cpp" />
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
-    <ClCompile Include="..\..\source\cc_parse.cpp" />
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />

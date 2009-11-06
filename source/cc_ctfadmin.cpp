@@ -97,7 +97,7 @@ public:
 
 				if (ctfgame.match == MATCH_SETUP)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - matchsetuptime->Float()*600) + MyMenu->MatchSetupLength->Value*600;
+					ctfgame.matchtime = (ctfgame.matchtime - matchsetuptime->Float()*60) + MyMenu->MatchSetupLength->Value*60;
 
 
 				matchsetuptime->Set (MyMenu->MatchSetupLength->Value);
@@ -385,7 +385,7 @@ public:
 			case MATCH_GAME:
 				BroadcastPrintf(PRINT_CHAT, "Match has been forced to terminate.\n");
 				ctfgame.match = MATCH_SETUP;
-				ctfgame.matchtime = level.Frame + (matchsetuptime->Float() * 600);
+				ctfgame.matchtime = level.Frame + (matchsetuptime->Float() * 60);
 				CTFResetAllPlayers();
 				break;
 			}

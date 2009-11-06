@@ -42,8 +42,11 @@ CC_ENUM (uint8, EGrappleState)
 	CTF_GRAPPLE_STATE_HANG
 };
 
-struct ghost_t
+class CCTFGhost
 {
+public:
+	uint32	Code;
+
 	std::cc_string name;
 	int number;
 
@@ -54,7 +57,6 @@ struct ghost_t
 	int basedef;
 	int carrierdef;
 
-	int code; // ghost code
 	int team; // team
 	int Score; // frags at time of disconnect
 	CPlayerEntity *ent;
@@ -77,8 +79,10 @@ CC_ENUM (uint8, EElectState)
 	ELECT_MAP
 };
 
-struct ctfgame_t
+typedef std::map<uint32, CCTFGhost*, std::less<uint16>, std::generic_allocator<std::pair <const uint32, CCTFGhost*> > > TGhostMapType;
+class CCTFGameLocals
 {
+public:
 	int team1, team2;
 	int total1, total2; // these are only set when going into intermission!
 	FrameNumber_t last_flag_capture;
@@ -96,7 +100,12 @@ struct ctfgame_t
 	FrameNumber_t electtime;	// remaining time until election times out
 	char emsg[256];		// election name
 
-	ghost_t ghosts[MAX_CS_CLIENTS]; // ghost codes
+	TGhostMapType Ghosts; // ghost codes
+
+	void Clear ()
+	{
+		CCTFGameLocals ();
+	}
 };
 
 extern CCvar *ctf;
@@ -204,7 +213,7 @@ void CreateCTFStatusbar ();
 
 void CTFObserver(CPlayerEntity *ent);
 
-extern ctfgame_t ctfgame;
+extern CCTFGameLocals ctfgame;
 
 extern	CCvar *ctf;
 extern	CCvar *ctf_forcejoin;

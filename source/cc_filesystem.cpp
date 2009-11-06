@@ -419,86 +419,61 @@ void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_
 // If "addDir" is true, it returns the stripped names, and not the full name for opening.
 // Filter can contain * for a wildcard.
 // fileList is filled with the found files.
-int FS_FindFiles(const char *path, const char *filter, const char *extension, char **fileList, int maxFiles, const bool addDir, const bool recurse)
+TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse)
 {
-	// Sanity check
-	if (maxFiles > FS_MAX_FINDFILES)
-	{
-		FS_Error("maxFiles > FS_MAX_FINDFILES");
-		maxFiles = FS_MAX_FINDFILES;
-	}
+	TFindFilesType files;
 
 	// Search through the path, one element at a time
-	int fileCount = 0;
-	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
+	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); it++)
 	{
-		fs_pathIndex *search = (*i);
+		fs_pathIndex *search = (*it);
 
 		// Directory tree
 		char dir[MAX_PATHNAME];
 		snprintf(dir, sizeof(dir), "%s/%s", search->pathName, path);
 
-		char *dirFiles[FS_MAX_FINDFILES];
-		int dirCount;
+		TFindFilesType dirFiles;
+
 		if (extension)
 		{
 			char ext[MAX_PATHNAME/4];
 			snprintf(ext, sizeof(ext), "*.%s", extension);
-			dirCount = Sys_FindFiles(dir, ext, dirFiles, FS_MAX_FINDFILES, 0, recurse, true, false);
+			Sys_FindFiles(dirFiles, dir, ext, 0, recurse, true, false);
 		}
 		else
 		{
-			dirCount = Sys_FindFiles(dir, "*", dirFiles, FS_MAX_FINDFILES, 0, recurse, true, true);
+			Sys_FindFiles(dirFiles, dir, "*", 0, recurse, true, true);
 		}
 
-		for (int fileNum=0 ; fileNum<dirCount ; fileNum++)
+		for (size_t i = 0; i < dirFiles.size(); i++)
 		{
 			// Match filter
 			if (filter)
 			{
-				if (!Q_WildcardMatch(filter, dirFiles[fileNum]+strlen(search->pathName)+1, 1))
-				{
-					delete dirFiles[fileNum];
+				if (!Q_WildcardMatch(filter, dirFiles[i].c_str()+strlen(search->pathName)+1, 1))
 					continue;
-				}
 			}
 
 			// Found something
-			char *name = dirFiles[fileNum] + strlen(search->pathName) + 1;
-			if (fileCount < maxFiles)
-			{
-				// Ignore duplicates
-				bool bFound = false;
-				for (int i=0 ; i<fileCount ; i++)
-				{
-					if (!stricmp(fileList[i], name))
-						break;
-				}
+			const char *name = dirFiles[i].c_str() + strlen(search->pathName) + 1;
 
-				if (!bFound)
-				{
-					if (addDir)
-					{
-						char tempFile[MAX_PATHNAME];
-						snprintf (tempFile, sizeof(tempFile), "%s/%s", search->pathName, name);
-						fileList[fileCount] = new char[strlen(tempFile)+1];
-						snprintf (fileList[fileCount], strlen(tempFile)+1, "%s", tempFile);
-						fileCount++;
-					}
-					else
-					{
-						fileList[fileCount] = new char[strlen(name)+1];
-						snprintf (fileList[fileCount], strlen(name)+1, "%s", name);
-						fileCount++;
-					}
-				}
+			// Ignore duplicates
+			bool bFound = false;
+			for (size_t z = 0; z < files.size(); z++)
+			{
+				if (!stricmp(files[z].c_str(), name))
+					break;
 			}
 
-			delete dirFiles[fileNum];
+			if (!bFound)
+			{
+				std::cc_string temp = (addDir) ? std::cc_string(search->pathName) + "/" + name : std::cc_string(name);
+				files.push_back (temp);
+			}
 		}
 	}
 
-	return fileCount;
+	return files;
 }
 
 // Frees the file list made by the above function

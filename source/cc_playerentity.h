@@ -196,7 +196,7 @@ public:
 		bool			Voted;					// for elections
 		bool			Ready;
 		bool			Admin;
-		ghost_t			*Ghost;					// for ghost codes
+		CCTFGhost		*Ghost;					// for ghost codes
 	} CTF;
 
 //ZOID

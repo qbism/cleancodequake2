@@ -94,7 +94,7 @@ public:
 	CEntityState	State;
 	EEdictFlags		Flags;
 
-	struct Team_t
+	struct entityTeam_t
 	{
 		char			*String;
 

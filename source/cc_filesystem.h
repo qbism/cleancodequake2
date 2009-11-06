@@ -76,7 +76,8 @@ void FS_Close (fileHandle_t &handle);
 size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate);
 void FS_FreeFile (void *buffer);
 
-int FS_FindFiles(const char *path, const char *filter, const char *extension, char **fileList, int maxFiles, const bool addDir, const bool recurse);
+typedef std::vector<std::cc_string, std::level_allocator<std::cc_string> > TFindFilesType;
+TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
 void FS_FreeFileList (char **fileList, int numFiles);
 
 void FS_Write (void *buffer, size_t size, fileHandle_t &handle);
@@ -221,15 +222,13 @@ public:
 class CFindFilesCallback
 {
 public:
-	virtual void Query (const char *fileName) {};
+	virtual void Query (std::cc_string &fileName) {};
 };
 
 //(const char *path, const char *filter, const char *extension, char **fileList, int maxFiles, const bool addDir, const bool recurse);
 #define MAX_FINDFILES_PATH	256
 class CFindFiles
 {
-	int		MaxFiles;
-
 public:
 	char	*Path;
 	char	*Filter;
@@ -237,111 +236,70 @@ public:
 	bool	AddDir;
 	bool	Recurse;
 
-	char	**FileList;
-	int		NumFiles;
+	TFindFilesType	Files;
 
 	CFindFiles () :
 		Path(NULL),
 		Filter(NULL),
 		Extension(NULL),
-		MaxFiles(0),
 		AddDir(false),
 		Recurse(false),
-		FileList(NULL),
-		NumFiles(0)
+		Files()
 		{
 		};
 
-	CFindFiles (char *Path, char *Filter, char *Extension, int MaxFiles, bool AddDir = true, bool Recurse = false) :
+	CFindFiles (char *Path, char *Filter, char *Extension, bool AddDir = true, bool Recurse = false) :
 		Path(Path),
 		Filter(Filter),
 		Extension(Extension),
-		MaxFiles(MaxFiles),
 		AddDir(AddDir),
 		Recurse(Recurse),
-		FileList(NULL),
-		NumFiles(0)
+		Files()
 		{
-			SetMaxFiles (MaxFiles);
 			FindFiles (NULL);
 		};
 
-	CFindFiles (CFindFilesCallback *CallBack, char *Path, char *Filter, char *Extension, int MaxFiles, bool AddDir = true, bool Recurse = false) :
+	CFindFiles (CFindFilesCallback *CallBack, char *Path, char *Filter, char *Extension, bool AddDir = true, bool Recurse = false) :
 		Path(Path),
 		Filter(Filter),
 		Extension(Extension),
-		MaxFiles(MaxFiles),
 		AddDir(AddDir),
 		Recurse(Recurse),
-		FileList(NULL),
-		NumFiles(0)
+		Files()
 		{
-			SetMaxFiles (MaxFiles);
 			FindFiles (CallBack);
 		};
 
-	CFindFiles (CFindFilesCallback &CallBack, char *Path, char *Filter, char *Extension, int MaxFiles, bool AddDir = true, bool Recurse = false) :
+	CFindFiles (CFindFilesCallback &CallBack, char *Path, char *Filter, char *Extension, bool AddDir = true, bool Recurse = false) :
 		Path(Path),
 		Filter(Filter),
 		Extension(Extension),
-		MaxFiles(MaxFiles),
 		AddDir(AddDir),
 		Recurse(Recurse),
-		FileList(NULL),
-		NumFiles(0)
+		Files()
 		{
-			SetMaxFiles (MaxFiles);
 			FindFiles (&CallBack);
 		};
 
 	~CFindFiles ()
 	{
-		if (FileList)
-		{
-			if (NumFiles)
-				FS_FreeFileList (FileList, NumFiles);
-			delete FileList;
-		}
 	};
 
 	void FindFiles (CFindFilesCallback *Callback)
 	{
-		if (!FileList || !MaxFiles)
-			return;
-
 		if (!Path)
 			Path = "";
 		if (!Filter)
 			Filter = "*";
 		if (!Extension)
 			Extension = "*";
-		if (!MaxFiles)
-			MaxFiles = 256;
 
-		NumFiles = FS_FindFiles (Path, Filter, Extension, FileList, MaxFiles, AddDir, Recurse);
+		Files = FS_FindFiles (Path, Filter, Extension, AddDir, Recurse);
 
 		if (Callback)
 		{
-			for (int i = 0; i < NumFiles; i++)
-				Callback->Query (FileList[i]);
+			for (size_t i = 0; i < Files.size(); i++)
+				Callback->Query (Files[i]);
 		}
-	};
-
-	void SetMaxFiles (int MaxFilesValue)
-	{
-		if (FileList)
-		{
-			if (NumFiles)
-				FS_FreeFileList (FileList, NumFiles);
-			delete FileList;
-		}
-		FileList = new char*[MaxFilesValue];
-
-		MaxFiles = MaxFilesValue;
-	};
-
-	int GetMaxFiles ()
-	{
-		return MaxFiles;
 	};
 };

@@ -156,7 +156,8 @@ char *Sys_FindNext (uint32 mustHave, uint32 cantHave)
 Sys_FindFiles
 ================
 */
-int Sys_FindFiles (char *path, char *pattern, char **fileList, int maxFiles, int fileCount, bool recurse, bool addFiles, bool addDirs)
+
+void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fileList, bool recurse, bool addFiles, bool addDirs)
 {
 	WIN32_FIND_DATA	findInfo;
 	HANDLE			findHandle;
@@ -167,36 +168,47 @@ int Sys_FindFiles (char *path, char *pattern, char **fileList, int maxFiles, int
 
 	findHandle = FindFirstFile (searchPath, &findInfo);
 	if (findHandle == INVALID_HANDLE_VALUE)
-		return fileCount;
+		return;
 
-	while (findRes == TRUE) {
+	while (findRes == TRUE)
+	{
 		// Check for invalid file name
-		if (findInfo.cFileName[strlen(findInfo.cFileName)-1] == '.') {
+		if (findInfo.cFileName[strlen(findInfo.cFileName)-1] == '.')
+		{
 			findRes = FindNextFile (findHandle, &findInfo);
 			continue;
 		}
 
 		Q_snprintfz (findPath, sizeof(findPath), "%s/%s", path, findInfo.cFileName);
 
-		if (findInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+		if (findInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
 			// Add a directory
-			if (addDirs && fileCount < maxFiles)
-				fileList[fileCount++] = Mem_StrDup (findPath);
+			if (addDirs)
+			{
+				std::cc_string temp = findPath;
+				files.push_back (temp);
+			}
 
 			// Recurse down the next directory
 			if (recurse)
-				fileCount = Sys_FindFiles (findPath, pattern, fileList, maxFiles, fileCount, recurse, addFiles, addDirs);
+				Sys_FindFiles (files, findPath, pattern, fileList, recurse, addFiles, addDirs);
 		}
-		else {
+		else
+		{
 			// Match pattern
-			if (!Q_WildcardMatch (pattern, findPath, 1)) {
+			if (!Q_WildcardMatch (pattern, findPath, 1))
+			{
 				findRes = FindNextFile (findHandle, &findInfo);
 				continue;
 			}
 
 			// Add a file
-			if (addFiles && fileCount < maxFiles)
-				fileList[fileCount++] = Mem_StrDup (findPath);
+			if (addFiles)
+			{
+				std::cc_string temp = findPath;
+				files.push_back (temp);
+			}
 		}
 
 		findRes = FindNextFile (findHandle, &findInfo);
@@ -204,7 +216,7 @@ int Sys_FindFiles (char *path, char *pattern, char **fileList, int maxFiles, int
 
 	FindClose (findHandle);
 
-	return fileCount;
+	return;
 }
 
 /*

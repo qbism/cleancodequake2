@@ -387,9 +387,6 @@
     <ClCompile Include="..\..\source\cc_parasite.cpp">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\cc_parse.cpp">
-      <Filter>CleanCode Files\Parse System</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\cc_pathfinding.cpp">
       <Filter>CleanCode Files\Pathfinding</Filter>
     </ClCompile>

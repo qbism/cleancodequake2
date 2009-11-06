@@ -436,10 +436,17 @@ void GCmd_SayTeam_f (CPlayerEntity *ent)
 	Cmd_Say_f (ent, true, false);
 }
 
+class CPrintFileCallback : public CFindFilesCallback
+{
+public:
+	void Query (std::cc_string &fileName)
+	{
+		DebugPrintf ("%s\n", fileName.c_str());
+	};
+};
+
 void Cmd_Test_f (CPlayerEntity *ent)
 {
-	for (int i = 0; i < 12; i++)
-		DebugPrintf ("%i\n", irandom(300)/100);
 }
 
 #include "cc_menu.h"

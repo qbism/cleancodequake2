@@ -148,7 +148,7 @@ public:
 			if (ctfgame.match == MATCH_GAME)
 			{
 				if (ent->Client.Respawn.CTF.Ghost)
-					ent->Client.Respawn.CTF.Ghost->code = 0;
+					ctfgame.Ghosts.erase (ent->Client.Respawn.CTF.Ghost->Code);
 				ent->Client.Respawn.CTF.Ghost = NULL;
 				ent->CTFAssignGhost();
 			}

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void EndDMLevel ();
 
-ctfgame_t ctfgame;
+CCTFGameLocals ctfgame;
 
 CCvar *ctf;
 CCvar *ctf_forcejoin;
@@ -204,12 +204,12 @@ bool loc_CanSee (CBaseEntity *targ, CBaseEntity *inflictor)
 
 void CTFSpawn()
 {
-	memset(&ctfgame, 0, sizeof(ctfgame));
+	ctfgame.Clear ();
 
 	if (competition->Integer() > 1)
 	{
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 60;
 	}
 }
 
@@ -1046,18 +1046,18 @@ void CTFResetAllPlayers()
 		}
 	}
 	if (ctfgame.match == MATCH_SETUP)
-		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 60;
 }
 
 // start a match
 void CTFStartMatch()
 {
 	ctfgame.match = MATCH_GAME;
-	ctfgame.matchtime = level.Frame + matchtime->Integer() * 600;
+	ctfgame.matchtime = level.Frame + matchtime->Integer() * 60;
 
 	ctfgame.team1 = ctfgame.team2 = 0;
 
-	memset(ctfgame.ghosts, 0, sizeof(ctfgame.ghosts));
+	ctfgame.Ghosts.clear();
 
 	for (uint8 i = 1; i <= game.maxclients; i++)
 	{
@@ -1291,7 +1291,7 @@ void CTFNotReady(CPlayerEntity *ent)
 	{
 		BroadcastPrintf(PRINT_CHAT, "Match halted.\n");
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
+		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 60;
 	}
 }
 
@@ -1316,7 +1316,7 @@ void CTFGhost(CPlayerEntity *ent)
 
 	int n = ArgGeti(1);
 
-	for (uint8 i = 0; i < MAX_CS_CLIENTS; i++)
+	/*for (uint8 i = 0; i < MAX_CS_CLIENTS; i++)
 	{
 		if (ctfgame.ghosts[i].code && ctfgame.ghosts[i].code == n)
 		{
@@ -1334,8 +1334,28 @@ void CTFGhost(CPlayerEntity *ent)
 				ent->Client.Persistent.Name.c_str(), CTFTeamName(ent->Client.Respawn.CTF.Team));
 			return;
 		}
+	}*/
+	TGhostMapType::iterator it;
+	if ((it = ctfgame.Ghosts.find(n)) == ctfgame.Ghosts.end())
+	{
+		ent->PrintToClient (PRINT_HIGH, "Invalid ghost code.\n");
+		return;
 	}
-	ent->PrintToClient (PRINT_HIGH, "Invalid ghost code.\n");
+
+	CCTFGhost *Ghost = (*it).second;
+	ent->PrintToClient (PRINT_HIGH, "Ghost code accepted, your position has been reinstated.\n");
+	Ghost->ent->Client.Respawn.CTF.Ghost = NULL;
+	ent->Client.Respawn.CTF.Team = Ghost->team;
+	ent->Client.Respawn.CTF.Ghost = Ghost;
+	ent->Client.Respawn.Score = Ghost->Score;
+	ent->Client.Respawn.CTF.State = 0;
+	Ghost->ent = ent;
+	ent->GetSvFlags() = 0;
+	ent->Flags &= ~FL_GODMODE;
+	ent->PutInServer();
+	BroadcastPrintf(PRINT_HIGH, "%s has been reinstated to %s team.\n",
+		ent->Client.Persistent.Name.c_str(), CTFTeamName(ent->Client.Respawn.CTF.Team));
+	return;
 }
 
 bool CTFMatchSetup()
@@ -1413,7 +1433,7 @@ bool CTFCheckRules()
 				}
 				else
 					// reset the time
-					ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 600;
+					ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 60;
 				return false;
 
 			case MATCH_PREGAME :
@@ -1505,16 +1525,7 @@ void CTFStats(CPlayerEntity *ent)
 		}
 	}
 
-	ghost_t *g = ctfgame.ghosts;
-	uint8 i = 0;
-
-	for (; i < MAX_CS_CLIENTS; i++, g++)
-	{
-		if (g->ent)
-			break;
-	}
-
-	if (i == MAX_CS_CLIENTS)
+	if (!ctfgame.Ghosts.size())
 	{
 		if (*text)
 			ent->PrintToClient (PRINT_HIGH, "%s", text);
@@ -1524,24 +1535,26 @@ void CTFStats(CPlayerEntity *ent)
 
 	Q_strcatz(text, "  #|Name            |Score|Kills|Death|BasDf|CarDf|Effcy|\n", sizeof(text));
 
-	int e = 0;
-	for (i = 0, g = ctfgame.ghosts; i < MAX_CS_CLIENTS; i++, g++)
+	for (TGhostMapType::iterator it = ctfgame.Ghosts.begin(); it != ctfgame.Ghosts.end(); it++)
 	{
-		if (!g->name[0])
+		CCTFGhost *Ghost = (*it).second;
+
+		if (!Ghost->name[0])
 			continue;
 
-		if (g->deaths + g->kills == 0)
+		int e;
+		if (Ghost->deaths + Ghost->kills == 0)
 			e = 50;
 		else
-			e = g->kills * 100 / (g->kills + g->deaths);
+			e = Ghost->kills * 100 / (Ghost->kills + Ghost->deaths);
 		Q_snprintfz(tempStr, sizeof(tempStr), "%3d|%-16.16s|%5d|%5d|%5d|%5d|%5d|%4d%%|\n",
-			g->number, 
-			g->name.c_str(), 
-			g->Score, 
-			g->kills, 
-			g->deaths, 
-			g->basedef,
-			g->carrierdef, 
+			Ghost->number, 
+			Ghost->name.c_str(), 
+			Ghost->Score, 
+			Ghost->kills, 
+			Ghost->deaths, 
+			Ghost->basedef,
+			Ghost->carrierdef, 
 			e);
 
 		if (strlen(text) + strlen(tempStr) > sizeof(text) - 50)
