@@ -40,12 +40,12 @@ class CWeapon
 
 protected:
 	// Frames
-	int				ActivationStart, ActivationNumFrames,
+	sint32				ActivationStart, ActivationNumFrames,
 					FireStart,		FireNumFrames,
 					IdleStart,		IdleNumFrames,
 					DeactStart,		DeactNumFrames;
 
-	int				ActivationEnd, FireEnd, IdleEnd, DeactEnd; // To save calls.
+	sint32				ActivationEnd, FireEnd, IdleEnd, DeactEnd; // To save calls.
 
 	CWeapon ();
 
@@ -80,14 +80,14 @@ public:
 
 	MediaIndex		vwepIndex;
 
-	CWeapon(char *model, int ActivationStart, int ActivationEnd, int FireStart, int FireEnd,
-				 int IdleStart, int IdleEnd, int DeactStart, int DeactEnd, char *WeaponSound = NULL);
+	CWeapon(char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound = NULL);
 
 	// InitWeapon "clears" the previous weapon by introducing the current weapon.
 	virtual void	InitWeapon (CPlayerEntity *ent);
 
 	// Muzzle flash
-	virtual void	Muzzle (CPlayerEntity *ent, int muzzleNum);
+	virtual void	Muzzle (CPlayerEntity *ent, sint32 muzzleNum);
 	virtual inline void	FireAnimation (CPlayerEntity *ent);
 	void		AttackSound (CPlayerEntity *ent); // Sound for quad and CTF techs
 
@@ -101,7 +101,7 @@ public:
 	virtual inline bool	CanStopFidgetting (CPlayerEntity *ent) = 0;
 
 	// Ammo usage
-	virtual void	DepleteAmmo(CPlayerEntity *ent, int Amount);
+	virtual void	DepleteAmmo(CPlayerEntity *ent, sint32 Amount);
 	
 	// This function is called when the player hits the attack button.
 	// Returns "true" if the animation can go ahead (check for ammo, etc here)
@@ -117,7 +117,7 @@ public:
 	void	NoAmmoWeaponChange (CPlayerEntity *ent);
 
 	virtual void AddWeaponToItemList (CItemList *List) = 0;
-	virtual void InitWeaponVwepModel (int TakeAway) = 0;
+	virtual void InitWeaponVwepModel (sint32 TakeAway) = 0;
 
 	virtual void CreateItem (CItemList *List)
 	{
@@ -126,7 +126,7 @@ public:
 
 #define WEAPON_CLASS_DEFS(x) \
 	void AddWeaponToItemList (CItemList *List); \
-	void InitWeaponVwepModel (int TakeAway); \
+	void InitWeaponVwepModel (sint32 TakeAway); \
 	void CreateItem (CItemList *List); \
 	static x Weapon;
 
@@ -136,7 +136,7 @@ public:
 	{ \
 		CreateItem (List); \
 	}; \
-	void x::InitWeaponVwepModel (int TakeAway) \
+	void x::InitWeaponVwepModel (sint32 TakeAway) \
 	{ \
 		vwepIndex = ModelIndex((WeaponItem) ? (WeaponItem->VWepModel) : (dynamic_cast<CAmmo*>(Item)->VWepModel)) - TakeAway; \
 	};

@@ -460,9 +460,9 @@ void CInsane::Run ()
 }
 
 
-void CInsane::Pain (CBaseEntity *other, float kick, int damage)
+void CInsane::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
-	int	l,r;
+	sint32	l,r;
 
 //	if (self->health < (self->max_health / 2))
 //		self->state.skinnum = 1;
@@ -554,14 +554,14 @@ void CInsane::Dead ()
 }
 
 
-void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"), 255, ATTN_IDLE);
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;

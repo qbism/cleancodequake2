@@ -127,7 +127,7 @@ void CItemList::AddItemToList (CBaseItem *Item)
 
 void CItemList::SendItemNames ()
 {
-	for (int i = 0 ; i < numItems ; i++)
+	for (sint32 i = 0 ; i < numItems ; i++)
 		ConfigString (Items[i]->GetConfigStringNumber(), Items[i]->Name);
 }
 
@@ -146,7 +146,7 @@ CBaseItem *FindItem (const char *name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::Add (edict_t *ent, int quantity)
+/// \fn	void CBaseItem::Add (edict_t *ent, sint32 quantity)
 ///
 /// \brief	Adds 'quantity' amount of this to 'ent' (ignores any max)
 ///
@@ -156,7 +156,7 @@ CBaseItem *FindItem (const char *name)
 /// \param	ent		 - If non-null, the entity to add the amount to. 
 /// \param	quantity - The amount to add. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CBaseItem::Add (CPlayerEntity *ent, int quantity)
+void CBaseItem::Add (CPlayerEntity *ent, sint32 quantity)
 {
 	ent->Client.Persistent.Inventory.Add(this, quantity);
 }
@@ -175,14 +175,14 @@ CBaseItem *FindItemByClassname (const char *name)
 	return NULL;
 }
 
-CBaseItem *GetItemByIndex (int Index)
+CBaseItem *GetItemByIndex (sint32 Index)
 {
 	if (Index >= MAX_ITEMS || Index >= ItemList->numItems || Index < 0)
 		return NULL;
 	return ItemList->Items[Index];
 }
 
-inline int GetNumItems ()
+inline sint32 GetNumItems ()
 {
 	return ItemList->numItems;
 }
@@ -220,7 +220,7 @@ void InitItemMedia ()
 // go through each item and invalidate any variables that we used.
 void InvalidateItemMedia ()
 {
-	for (int i = 0; i < ItemList->numItems; i++)
+	for (sint32 i = 0; i < ItemList->numItems; i++)
 	{
 		CBaseItem *Item = ItemList->Items[i];
 

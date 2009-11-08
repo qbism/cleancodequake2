@@ -133,7 +133,7 @@ by R1CH
 ===============
 */
 #ifdef id386
-__declspec(naked) int __cdecl Q_tolower (int c)
+__declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
 {
 	__asm {
 			mov eax, [esp+4]		;get character
@@ -159,7 +159,7 @@ Q_WildcardMatch
 from Q2ICE
 ============
 */
-int Q_WildcardMatch (const char *filter, const char *string, int ignoreCase)
+sint32 Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase)
 {
 	switch (*filter) {
 	case '\0':	return !*string;

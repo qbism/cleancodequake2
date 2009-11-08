@@ -57,7 +57,7 @@ public:
 		}
 	}
 
-	dynString(const int Length, const char *String)
+	dynString(const sint32 Length, const char *String)
 	: dynArray<char,STRING_GRANULARITY>(Length ? Length+1 : 0)
 	{
 		if (m_numElems)
@@ -108,7 +108,7 @@ public:
 		{
 			if (m_numElems != 0)
 			{
-				const int Index = m_numElems-1;
+				const sint32 Index = m_numElems-1;
 				Add(1);
 
 				assert(m_data[Index] == '\0');
@@ -137,7 +137,7 @@ public:
 		{
 			if (m_numElems != 0)
 			{
-				const int Index = m_numElems-1;
+				const sint32 Index = m_numElems-1;
 				Add(strlen(String));
 				Q_strncpyz(&(*this)[Index], String, GetNum()-Index);
 			}
@@ -216,7 +216,7 @@ public:
 	inline bool operator==(const char Character) { return (m_data && m_data[0] == Character && m_data[1] == '\0'); }
 	inline const bool operator==(const char Character) const { return (m_data && m_data[0] == Character && m_data[1] == '\0'); }
 
-	inline const char &operator [](const int Index) const
+	inline const char &operator [](const sint32 Index) const
 	{
 		assert(Index >= 0);
 		assert(Index < m_numElems || (Index == 0 && m_numElems == 0));
@@ -224,7 +224,7 @@ public:
 
 		return ((char*)m_data)[Index];
 	}
-	inline char &operator [](const int Index)
+	inline char &operator [](const sint32 Index)
 	{
 		assert(Index >= 0);
 		assert(Index < m_numElems || (Index == 0 && m_numElems == 0));
@@ -238,7 +238,7 @@ public:
 	/**
 	 * Functions
 	 */
-	void Append(const char *String, const int Length)
+	void Append(const char *String, const sint32 Length)
 	{
 		assert(String && *String);
 		assert(Length > 0);
@@ -249,11 +249,11 @@ public:
 	}
 
 	// Remove from end
-	void Backspace(int Num=1)
+	void Backspace(sint32 Num=1)
 	{
 		if (m_numElems > 0)
 		{
-			Num = Max<int>(m_numElems-Num-1, 0);
+			Num = Max<sint32>(m_numElems-Num-1, 0);
 			if (Num > 0)
 			{
 				m_data[Num] = '\0';
@@ -278,19 +278,19 @@ public:
 	}
 
 	// Remove from beginning
-	void Delete(const int Num=1)
+	void Delete(const sint32 Num=1)
 	{
 		if (m_numElems > 0)
 		{
 			const size_t Space = Q_strncpyz(m_data, m_data+Num, m_numElems);
-			m_numElems = Max<int>((m_numElems-Space)+1, 0);
+			m_numElems = Max<sint32>((m_numElems-Space)+1, 0);
 			m_data[m_numElems] = '\0';
 
 			ReAllocate(m_numElems);
 		}
 	}
 
-	inline void Empty(const int Slack=0)
+	inline void Empty(const sint32 Slack=0)
 	{
 		dynArray<char,STRING_GRANULARITY>::Empty(Slack > 0 ? Slack+1 : Slack);
 		if (m_data)
@@ -301,7 +301,7 @@ public:
 
 	const bool EndsWith(const char *String) const
 	{
-		const int Len = strlen(String);
+		const sint32 Len = strlen(String);
 		if (Len != 0)
 		{
 			return (Q_strnicmp(GetTypedData()+(Length()-Len), String, Len) == 0);
@@ -336,7 +336,7 @@ public:
 			return 0.0f;
 		return atof(GetTypedData());
 	}
-	inline int GetInt() const
+	inline sint32 GetInt() const
 	{
 		if (!Length())
 			return 0;
@@ -348,7 +348,7 @@ public:
 		dynString Result;
 
 		Result.Reserve(GetNum());
-		for (int i=Length()-1 ; i>-1 ; i--)
+		for (sint32 i=Length()-1 ; i>-1 ; i--)
 		{
 			Result += SubStr(i, 1);
 		}
@@ -373,31 +373,31 @@ public:
 		return Result;
 	}
 
-	dynString Left(const int Count) const
+	dynString Left(const sint32 Count) const
 	{
-		return dynString(Clamp<int>(Count,0,Length()), GetTypedData());
+		return dynString(Clamp<sint32>(Count,0,Length()), GetTypedData());
 	}
-	dynString LeftChop(const int Count) const
+	dynString LeftChop(const sint32 Count) const
 	{
-		return dynString(Clamp<int>(Length()-Count,0,Length()), GetTypedData());
+		return dynString(Clamp<sint32>(Length()-Count,0,Length()), GetTypedData());
 	}
 
 	inline const size_t Length() const { return GetNum() ? GetNum()-1 : 0; }
 	inline const size_t LengthSize() const { return Length() ? Length()*sizeof(char) : 0; }
 
-	dynString Right(const int Count) const
+	dynString Right(const sint32 Count) const
 	{
-		return dynString(GetTypedData()+(Length()-Clamp<int>(Count,0,Length())));
+		return dynString(GetTypedData()+(Length()-Clamp<sint32>(Count,0,Length())));
 	}
 
-	void Remove(const int Start, const int Count=1)
+	void Remove(const sint32 Start, const sint32 Count=1)
 	{
 		assert(Count >= 1 || (Count == 0 && m_numElems == 0));
 		assert(Start <= m_numElems && (Start+Count+1) <= m_numElems);
 
 		if (Count > 0)
 		{
-			memmove((byte*)m_data + Start*GetElemSize(), (byte*)m_data + (Start+Count)*GetElemSize(), (m_numElems-Start-Count) * GetElemSize());
+			memmove((uint8*)m_data + Start*GetElemSize(), (uint8*)m_data + (Start+Count)*GetElemSize(), (m_numElems-Start-Count) * GetElemSize());
 			m_numElems -= Count;
 
 			if (m_numElems > 0)
@@ -417,14 +417,14 @@ public:
 		}
 	}
 
-	template<int BufferSize>
-	int SPrintf(const char *Format, ...)
+	template<sint32 BufferSize>
+	sint32 SPrintf(const char *Format, ...)
 	{
 		char *Buffer = (char*)dAlloca(BufferSize*sizeof(char));
 		va_list ArgPtr;
 
 		va_start(ArgPtr, Format);
-		int Result = dVsnprintf(Buffer, BufferSize, Format, ArgPtr);
+		sint32 Result = dVsnprintf(Buffer, BufferSize, Format, ArgPtr);
 		va_end(ArgPtr);
 
 		Buffer[BufferSize-1] = '\0';
@@ -446,20 +446,20 @@ public:
 		return Result;
 	}
 
-	dynString SubStr(int Start, int Count = INT_MAX) const
+	dynString SubStr(sint32 Start, sint32 Count = INT_MAX) const
 	{
-		int End = Start+Count;
+		sint32 End = Start+Count;
 
 		const size_t Len = Length();
-		Start = Clamp<int>(Start, 0, Len);
-		End = Clamp<int>(End, Start, Len);
+		Start = Clamp<sint32>(Start, 0, Len);
+		End = Clamp<sint32>(End, Start, Len);
 
 		return dynString(End-Start, GetTypedData()+Start);
 	}
 
 	const bool StartsWith(const char *String) const
 	{
-		const int Len = strlen(String);
+		const sint32 Len = strlen(String);
 		if (Len != 0)
 		{
 			return (Q_strnicmp(**this, String, Len) == 0);
@@ -487,7 +487,7 @@ public:
 		{
 			const char *Ptr = m_data;
 
-			int NumRemove = 0;
+			sint32 NumRemove = 0;
 			while (*Ptr<=' ' || ExtraRemove.Contains(*Ptr))
 			{
 				NumRemove++;
@@ -508,7 +508,7 @@ public:
 			assert(*Ptr == '\0');
 			Ptr--;
 
-			int NumRemove = 0;
+			sint32 NumRemove = 0;
 			while (*Ptr<=' ' || ExtraRemove.Contains(*Ptr))
 			{
 				NumRemove++;

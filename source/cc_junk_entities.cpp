@@ -37,11 +37,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CJunkList
 {
 public:
-	int				NumAllocatedJunk;
+	sint32				NumAllocatedJunk;
 
 	// OpenList = Junk that is ready to use
 	// ClosedList = Junk that is already in use
-	std::list<int, std::level_allocator<int> >	OpenList, ClosedList;
+	std::list<sint32, std::level_allocator<sint32> >	OpenList, ClosedList;
 
 	CJunkList () :
 	NumAllocatedJunk (0),
@@ -53,7 +53,7 @@ public:
 	template <class JunkClassType>
 	// Re-sets the entity structure if the
 	// entity is not already freed
-	JunkClassType *ReallocateEntity (int number)
+	JunkClassType *ReallocateEntity (sint32 number)
 	{
 		JunkClassType *Junk;
 		if (g_edicts[number].Entity)
@@ -94,7 +94,7 @@ _CC_ENABLE_DEPRECATION
 		if (OpenList.size())
 		{
 			// Pop it off the front
-			int number = OpenList.front();
+			sint32 number = OpenList.front();
 			OpenList.pop_front();
 
 			// Throw it in the closed list
@@ -119,7 +119,7 @@ _CC_ENABLE_DEPRECATION
 				// Has to be something in closed list
 				// Pop the first one off and return that.
 				// This should, effectively, remove the last body.
-				int number = ClosedList.front();
+				sint32 number = ClosedList.front();
 				ClosedList.pop_front();
 
 				// Revision
@@ -154,7 +154,7 @@ CJunkEntity::CJunkEntity () :
 CBaseEntity()
 {
 };
-CJunkEntity::CJunkEntity (int Index) :
+CJunkEntity::CJunkEntity (sint32 Index) :
 CBaseEntity(Index)
 {
 };
@@ -179,7 +179,7 @@ CTossProjectile(),
 CJunkEntity()
 {
 };
-CGibEntity::CGibEntity (int Index) :
+CGibEntity::CGibEntity (sint32 Index) :
 CBaseEntity(Index),
 CTossProjectile(Index),
 CJunkEntity(Index)
@@ -191,7 +191,7 @@ CJunkEntity(Index)
 Misc functions
 =================
 */
-vec3f VelocityForDamage (int damage)
+vec3f VelocityForDamage (sint32 damage)
 {
 	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (damage < 50) ? 0.7f : 1.2f;
 }
@@ -222,7 +222,7 @@ void CGibEntity::Think ()
 	Die ();
 }
 
-void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, int damage, int type)
+void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type)
 {
 	CGibEntity *Junk = JunkList->GetFreeJunk<CGibEntity>();
 

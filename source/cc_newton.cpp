@@ -228,13 +228,13 @@ NewtonCollision *glob;
 
 typedef struct bspPoly_s
 {
-	unsigned int	numVerts;
+	uint32	numVerts;
 	vec3_t			*Verts;
 } bspPoly_t;
 
 typedef struct bspMesh_s
 {
-	unsigned int	numMeshes;
+	uint32	numMeshes;
 	bspPoly_t		*BSPPolys;
 } bspMesh_t;
 
@@ -251,7 +251,7 @@ void InitNewton ()
 	NewtonSetWorldSize(nWorld, &mins[0], &maxs[0]);
 
 	// Set up default material properties for newton
-	//int i = NewtonMaterialGetDefaultGroupID(nWorld);
+	//sint32 i = NewtonMaterialGetDefaultGroupID(nWorld);
 	//NewtonMaterialSetDefaultFriction   (nWorld, i, i, 0.8f, 0.4f);
 	//NewtonMaterialSetDefaultElasticity (nWorld, i, i, 0.3f);
 	//NewtonMaterialSetDefaultSoftness   (nWorld, i, i, 0.05f);
@@ -276,7 +276,7 @@ void InitNewton ()
 	NewtonBody *Parent = b, *NewChild;
 	float offset = -16;
 	vec3_t pivot = {0,0,0};
-	for (int i = 0; i < 16 ; i++)
+	for (sint32 i = 0; i < 16 ; i++)
 	{
 		NewChild = MakeARope (ropeColl, 0, offset, 0);
 		NewtonJoint *joint = NewtonConstraintCreateBall (nWorld, &pivot[0], NewChild, Parent);
@@ -326,21 +326,21 @@ void InitNewton ()
 	}
 	else
 	{
-		//int numSurfaces;
+		//sint32 numSurfaces;
 
 		NewtonCollision *map = NewtonCreateTreeCollision(nWorld, NULL);
 		NewtonTreeCollisionBeginBuild(map);
 
-		/*fread (&numSurfaces, sizeof(int), 1, fp);
+		/*fread (&numSurfaces, sizeof(sint32), 1, fp);
 
-		for (int i = 0; i < numSurfaces; i++)
+		for (sint32 i = 0; i < numSurfaces; i++)
 		{
-			int numIndexes;
+			sint32 numIndexes;
 
-			fread (&numIndexes, sizeof(int), 1, fp);
+			fread (&numIndexes, sizeof(sint32), 1, fp);
 
 			vec3_t *indexArray = new vec3_t[numIndexes];
-			for (int z = 0; z < numIndexes; z++)
+			for (sint32 z = 0; z < numIndexes; z++)
 			{
 				fread (&indexArray[z][0], sizeof(float), 1, fp);
 				fread (&indexArray[z][1], sizeof(float), 1, fp);
@@ -359,31 +359,31 @@ void InitNewton ()
 		}*/
 		//NewtonTreeCollisionAddFace (map, numVerts, readVectors[0], sizeof(float) * 3, 1);
 
-		int numSurfaces;
-		fread (&numSurfaces, sizeof(int), 1, fp);
-		for (int i = 0; i < numSurfaces; i++)
+		sint32 numSurfaces;
+		fread (&numSurfaces, sizeof(sint32), 1, fp);
+		for (sint32 i = 0; i < numSurfaces; i++)
 		{
-			int numVerts;
+			sint32 numVerts;
 			vec3_t *vertexArray;
-			int numIndexes;
+			sint32 numIndexes;
 			index_t *indexArray;
 
-			fread (&numVerts, sizeof(int), 1, fp);
+			fread (&numVerts, sizeof(sint32), 1, fp);
 			vertexArray = new vec3_t[numVerts];
 			fread (vertexArray, sizeof(vec3_t), numVerts, fp);
 
-			for (int x = 0; x < numVerts; x++)
+			for (sint32 x = 0; x < numVerts; x++)
 			{
 				vec3_t newVec;
 				Vec3Set (newVec, vertexArray[x][0], vertexArray[x][2], vertexArray[x][1]);
 				Vec3Copy (newVec, vertexArray[x]);
 			}
 
-			fread (&numIndexes, sizeof(int), 1, fp);
+			fread (&numIndexes, sizeof(sint32), 1, fp);
 			indexArray = new index_t[numIndexes];
 			fread (indexArray, sizeof(index_t), numIndexes, fp);
 
-			for (int z = 0; z < (numIndexes / 3); z++)
+			for (sint32 z = 0; z < (numIndexes / 3); z++)
 			{
 				vec3_t triangle[3];
 
@@ -420,7 +420,7 @@ bool InitedRagdollCollisions = false;
 // NOTE: WIDTH HEIGHT LENGTH!
 NewtonCollision *BodyCollisions[10];
 
-NewtonRagDollBone *QuickRagdoll (edict_t *player, NewtonRagDoll *Ragdoll, NewtonRagDollBone *Parent, float x, float y, float z, int frame)
+NewtonRagDollBone *QuickRagdoll (edict_t *player, NewtonRagDoll *Ragdoll, NewtonRagDollBone *Parent, float x, float y, float z, sint32 frame)
 {
 	float size = 4, mass = 24;
 	switch (frame)
@@ -742,7 +742,7 @@ void DrawNewton ()
 
 	float step = ((float)Sep / 100);
 
-	for (int i = 0; i < 9; i++)
+	for (sint32 i = 0; i < 9; i++)
 		NewtonUpdate(nWorld, step);
 
 	NewtonWorldForEachBodyDo(nWorld,ItFunc);
@@ -756,27 +756,27 @@ void DrawNewton ()
 /* MD2 header */
 struct md2_header_t
 {
-  int ident;
-  int version;
+  sint32 ident;
+  sint32 version;
 
-  int skinwidth;
-  int skinheight;
+  sint32 skinwidth;
+  sint32 skinheight;
 
-  int framesize;
+  sint32 framesize;
 
-  int num_skins;
-  int num_vertices;
-  int num_st;
-  int num_tris;
-  int num_glcmds;
-  int num_frames;
+  sint32 num_skins;
+  sint32 num_vertices;
+  sint32 num_st;
+  sint32 num_tris;
+  sint32 num_glcmds;
+  sint32 num_frames;
 
-  int offset_skins;
-  int offset_st;
-  int offset_tris;
-  int offset_frames;
-  int offset_glcmds;
-  int offset_end;
+  sint32 offset_skins;
+  sint32 offset_st;
+  sint32 offset_tris;
+  sint32 offset_frames;
+  sint32 offset_glcmds;
+  sint32 offset_end;
 };
 
 /* Texture name */
@@ -788,22 +788,22 @@ struct md2_skin_t
 /* Texture coords */
 struct md2_texCoord_t
 {
-  short s;
-  short t;
+  sint16 s;
+  sint16 t;
 };
 
 /* Triangle info */
 struct md2_triangle_t
 {
-  unsigned short vertex[3];
-  unsigned short st[3];
+  uint16 vertex[3];
+  uint16 st[3];
 };
 
 /* Compressed vertex */
 struct md2_vertex_t
 {
-  unsigned char v[3];
-  unsigned char normalIndex;
+  uint8 v[3];
+  uint8 normalIndex;
 };
 
 /* Model frame */
@@ -820,7 +820,7 @@ struct md2_glcmd_t
 {
   float s;
   float t;
-  int index;
+  sint32 index;
 };
 
 /* MD2 model structure */
@@ -832,9 +832,9 @@ struct md2_model_t
   struct md2_texCoord_t *texcoords;
   struct md2_triangle_t *triangles;
   struct md2_frame_t *frames;
-  int *glcmds;
+  sint32 *glcmds;
 
-  int tex_id;
+  sint32 tex_id;
 };
 
 /*** An MD2 model ***/
@@ -847,11 +847,11 @@ struct md2_model_t md2file;
  * Note: MD2 format stores model's data in little-endian ordering.  On
  * big-endian machines, you'll have to perform proper conversions.
  */
-int
+sint32
 ReadMD2Model (const char *filename, struct md2_model_t *mdl)
 {
   FILE *fp;
-  int i;
+  sint32 i;
 
   fp = fopen (filename, "rb");
   if (!fp)
@@ -881,7 +881,7 @@ ReadMD2Model (const char *filename, struct md2_model_t *mdl)
     malloc (sizeof (struct md2_triangle_t) * mdl->header.num_tris);
   mdl->frames = (struct md2_frame_t *)
     malloc (sizeof (struct md2_frame_t) * mdl->header.num_frames);
-  mdl->glcmds = (int *)malloc (sizeof (int) * mdl->header.num_glcmds);
+  mdl->glcmds = (sint32 *)malloc (sizeof (sint32) * mdl->header.num_glcmds);
 
   /* Read model data */
   fseek (fp, mdl->header.offset_skins, SEEK_SET);
@@ -897,7 +897,7 @@ ReadMD2Model (const char *filename, struct md2_model_t *mdl)
 	 mdl->header.num_tris, fp);
 
   fseek (fp, mdl->header.offset_glcmds, SEEK_SET);
-  fread (mdl->glcmds, sizeof (int), mdl->header.num_glcmds, fp);
+  fread (mdl->glcmds, sizeof (sint32), mdl->header.num_glcmds, fp);
 
   /* Read frames */
   fseek (fp, mdl->header.offset_frames, SEEK_SET);
@@ -925,7 +925,7 @@ ReadMD2Model (const char *filename, struct md2_model_t *mdl)
 void
 FreeModel (struct md2_model_t *mdl)
 {
-  int i;
+  sint32 i;
 
   if (mdl->skins)
     {
@@ -978,18 +978,18 @@ void Convert (const char *file)
 
 	FILE *fp = fopen (temp.c_str(), "wb+");
 
-	fwrite (&poop.header.num_tris, sizeof(int), 1, fp);
-	for (int i = 0; i < poop.header.num_tris; i++)
+	fwrite (&poop.header.num_tris, sizeof(sint32), 1, fp);
+	for (sint32 i = 0; i < poop.header.num_tris; i++)
 	{
 		md2_vertex_t *verts = poop.frames[0].verts;
 		md2_triangle_t *faces = poop.triangles;
 
-		//fwrite (&faces[i].vertex, sizeof(short), 3, fp);
+		//fwrite (&faces[i].vertex, sizeof(sint16), 3, fp);
 
 	    /* Calculate vertex real position */
 		vec3_t v[3];
 
-		for (int j = 0; j < 3; ++j)
+		for (sint32 j = 0; j < 3; ++j)
 		{
 			md2_frame_t *pframe = &poop.frames[0];
 			md2_vertex_t *pvert = &pframe->verts[poop.triangles[i].vertex[j]];
@@ -1029,13 +1029,13 @@ NewtonCollision *LoadInCollision (char *modelName)
 			return NULL;
 	}
 
-	int numVerts;
-	fread (&numVerts, sizeof(int), 1, fp);
+	sint32 numVerts;
+	fread (&numVerts, sizeof(sint32), 1, fp);
 
 	mat3x3_t *vertices = new mat3x3_t[numVerts];
 
 	bool pope = false;
-	for (int i = 0; i < numVerts; i++)
+	for (sint32 i = 0; i < numVerts; i++)
 	{
 		fread (&vertices[i][0][0], sizeof(float) * 3, 3, fp);
 

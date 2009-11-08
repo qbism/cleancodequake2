@@ -51,7 +51,7 @@ public:
 	{
 	};
 
-	CMonsterBoss3Stand (int Index) :
+	CMonsterBoss3Stand (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),

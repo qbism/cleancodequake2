@@ -61,7 +61,7 @@ void CMonster::FoundPath ()
 		return;
 	}
 
-	P_CurrentNodeIndex = (int32)P_CurrentPath->Path.size()-1;
+	P_CurrentNodeIndex = (sint32)P_CurrentPath->Path.size()-1;
 
 	// If our first node is behind us and it's not too far away, we can
 	// just skip this node and go to the next one.	
@@ -256,7 +256,7 @@ void CMonster::MoveToPath (float Dist)
 			float	deltax,deltay;
 			float	tdir, olddir, turnaround;
 
-			olddir = AngleModf ((int)(IdealYaw/45)*45);
+			olddir = AngleModf ((sint32)(IdealYaw/45)*45);
 			turnaround = AngleModf (olddir - 180);
 
 			deltax = P_CurrentNode->Origin.X - Entity->State.GetOrigin().X;
@@ -343,7 +343,7 @@ In coop games, SightClient will cycle between the clients.
 */
 void AI_SetSightClient ()
 {
-	int		start, check;
+	sint32		start, check;
 
 	if (level.SightClient == NULL)
 		start = 1;
@@ -389,7 +389,7 @@ UseState(MONSTERENTITY_THINK_NONE)
 	PhysicsType = PHYSICS_STEP;
 };
 
-CMonsterEntity::CMonsterEntity (int Index) :
+CMonsterEntity::CMonsterEntity (sint32 Index) :
 CBaseEntity(Index),
 CMapEntity(Index),
 CTossProjectile(Index),
@@ -446,12 +446,12 @@ void CMonsterEntity::Think ()
 	}
 }
 
-void CMonsterEntity::Die(CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CMonsterEntity::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Monster->Die (inflictor, attacker, damage, point);
 }
 
-void CMonsterEntity::Pain (CBaseEntity *other, float kick, int damage)
+void CMonsterEntity::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	Monster->Pain (other, kick, damage);
 }
@@ -461,9 +461,9 @@ void CMonsterEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 	Monster->Touch (other, plane, surf);
 }
 
-vec3f VelocityForDamage (int damage);
+vec3f VelocityForDamage (sint32 damage);
 void ClipGibVelocity (CPhysicsEntity *);
-void CMonsterEntity::ThrowHead (MediaIndex gibIndex, int damage, int type)
+void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type)
 {
 	float	vscale;
 
@@ -556,7 +556,7 @@ bool CMonster::CheckBottom ()
 {
 	vec3f	mins, maxs, start, stop;
 	CTrace	trace;
-	int		x, y;
+	sint32		x, y;
 	float	mid, bottom;
 	
 	mins = Entity->State.GetOrigin() + Entity->GetMins();
@@ -657,7 +657,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (Entity->Flags & (FL_SWIM | FL_FLY))
 	{
 	// try one move with vertical motion, then one without
-		for (int i = 0; i < 2; i++)
+		for (sint32 i = 0; i < 2; i++)
 		{
 			vec3f neworg = oldorg + move;
 			if (i == 0 && Entity->Enemy)
@@ -835,7 +835,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 bool CMonster::CloseEnough (CBaseEntity *Goal, float Dist)
 {
-	for (int i=0 ; i<3 ; i++)
+	for (sint32 i=0 ; i<3 ; i++)
 	{
 		if (Goal->GetAbsMin()[i] > Entity->GetAbsMax()[i] + Dist)
 			return false;
@@ -854,7 +854,7 @@ void CMonster::NewChaseDir (CBaseEntity *Enemy, float Dist)
 		return;
 	}
 
-	float olddir = AngleModf ((int)(IdealYaw/45)*45);
+	float olddir = AngleModf ((sint32)(IdealYaw/45)*45);
 	float turnaround = AngleModf (olddir - 180);
 
 	float deltax = Enemy->State.GetOrigin().X - Entity->State.GetOrigin().X;
@@ -1301,7 +1301,7 @@ void CMonster::AlertNearbyStroggs ()
 	}
 }
 
-void CMonster::MonsterFireBullet (vec3f start, vec3f dir, int damage, int kick, int hspread, int vspread, int flashtype)
+void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
@@ -1314,7 +1314,7 @@ void CMonster::MonsterFireBullet (vec3f start, vec3f dir, int damage, int kick, 
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, int damage, int kick, int hspread, int vspread, int count, int flashtype)
+void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
@@ -1327,7 +1327,7 @@ void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, int damage, int ki
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, int damage, int speed, int flashtype, int effect)
+void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
@@ -1340,7 +1340,7 @@ void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, int damage, int speed
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }	
 
-void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, int damage, int speed, int flashtype)
+void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
@@ -1353,7 +1353,7 @@ void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, int damage, int sp
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireRocket (vec3f start, vec3f dir, int damage, int speed, int flashtype)
+void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
@@ -1366,7 +1366,7 @@ void CMonster::MonsterFireRocket (vec3f start, vec3f dir, int damage, int speed,
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }	
 
-void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, int damage, int kick, int flashtype)
+void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
@@ -1380,7 +1380,7 @@ void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, int damage, int ki
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, int damage, int speed, int kick, float damage_radius, int flashtype)
+void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
 {
 #ifdef MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
@@ -2002,7 +2002,7 @@ public:
 	{
 	};
 
-	CTempGoal (int Index) :
+	CTempGoal (sint32 Index) :
 	  CBaseEntity (Index)
 	{
 	};
@@ -2960,7 +2960,7 @@ void CMonster::MonsterThink ()
 
 void CMonster::MoveFrame ()
 {
-	int		index;
+	sint32		index;
 	CAnim	*Move = CurrentMove;
 
 	// Backwards animation support
@@ -3130,7 +3130,7 @@ void CMonster::SetEffects()
 	if (Entity->Health <= 0)
 		return;
 
-	if (PowerArmorTime--)
+	if (PowerArmorTime)
 	{
 		if (PowerArmorType == POWER_ARMOR_SCREEN)
 			Entity->State.GetEffects() |= EF_POWERSCREEN;
@@ -3139,6 +3139,7 @@ void CMonster::SetEffects()
 			Entity->State.GetEffects() |= EF_COLOR_SHELL;
 			Entity->State.GetRenderEffects() |= RF_SHELL_GREEN;
 		}
+		PowerArmorTime--;
 	}
 }
 
@@ -3159,7 +3160,7 @@ void CMonster::WorldEffects()
 			{
 				if (PainDebounceTime < level.Frame)
 				{
-					int dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
+					sint32 dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
 					if (dmg > 15)
 						dmg = 15;
 					Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, dmg, 0, DAMAGE_NO_ARMOR, MOD_WATER);
@@ -3175,7 +3176,7 @@ void CMonster::WorldEffects()
 			{	// suffocate!
 				if (PainDebounceTime < level.Frame)
 				{
-					int dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
+					sint32 dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
 					if (dmg > 15)
 						dmg = 15;
 					Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, dmg, 0, DAMAGE_NO_ARMOR, MOD_WATER);
@@ -3788,9 +3789,9 @@ void CMonster::BossExplode ()
 		break;
 	case 8:
 		Entity->State.GetSound() = 0;
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, 500, GIB_ORGANIC);
-		for (int n= 0; n < 8; n++)
+		for (sint32 n= 0; n < 8; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), 500, GIB_METALLIC);
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, 500, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Gear(), 500, GIB_METALLIC);

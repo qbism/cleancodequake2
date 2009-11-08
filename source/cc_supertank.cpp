@@ -455,7 +455,7 @@ void CSuperTank::ReAttack1 ()
 		CurrentMove = &SuperTankMoveEndAttack1;
 }
 
-void CSuperTank::Pain (CBaseEntity *other, float kick, int damage)
+void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
@@ -503,7 +503,7 @@ void CSuperTank::Pain (CBaseEntity *other, float kick, int damage)
 void CSuperTank::Rocket ()
 {
 	vec3f	forward, right, start, dir, vec, target;
-	int		FlashNumber;
+	sint32		FlashNumber;
 #ifdef MONSTER_USE_ROGUE_AI
 	bool blindfire = false;
 #endif
@@ -627,7 +627,7 @@ void CSuperTank::MachineGun ()
 {
 	vec3f start, forward, right,
 			dir (0, Entity->State.GetAngles().Y, 0);
-	int		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak1_1);
+	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak1_1);
 
 	dir.ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
@@ -712,7 +712,7 @@ void CSuperTank::Dead ()
 	Entity->Link ();
 }
 
-void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDeath);
 	Entity->DeadFlag = true;

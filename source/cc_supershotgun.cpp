@@ -66,7 +66,7 @@ bool CSuperShotgun::CanStopFidgetting (CPlayerEntity *ent)
 void CSuperShotgun::Fire (CPlayerEntity *ent)
 {
 	vec3f		start, forward, right, offset (0, 8, ent->ViewHeight-8);
-	const int	damage = (isQuad) ? 24 : 6,
+	const sint32	damage = (isQuad) ? 24 : 6,
 				kick = (isQuad) ? 48 : 12;
 
 	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);

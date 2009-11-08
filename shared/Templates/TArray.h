@@ -30,15 +30,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // Try to maintain a minimum alignment of 16B
 #define ARRAY_GRANULARITY ((sizeof(TType)==1) ? 16 : 8)
 
-template<typename TType, const int TGranularity = ARRAY_GRANULARITY>
+template<typename TType, const sint32 TGranularity = ARRAY_GRANULARITY>
 class dynArray
 {
 protected:
 	/**
 	 * Data
 	 */
-	int m_maxElems;
-	int m_numElems;
+	sint32 m_maxElems;
+	sint32 m_numElems;
 	TType *m_data;
 
 public:
@@ -53,7 +53,7 @@ public:
 	}
 
 protected:
-	dynArray(const int Num)
+	dynArray(const sint32 Num)
 	: m_data(NULL)
 	, m_maxElems(0)
 	, m_numElems(Num)
@@ -96,7 +96,7 @@ public:
 	{
 		if (m_numElems == Array.m_numElems)
 		{
-			for (int i=0 ; i<m_numElems ; i++)
+			for (sint32 i=0 ; i<m_numElems ; i++)
 			{
 				if (!((*this)[i] == Array[i]))
 					return true;
@@ -124,7 +124,7 @@ public:
 	{
 		if (m_numElems == Array.m_numElems)
 		{
-			for (int i=0 ; i<m_numElems ; i++)
+			for (sint32 i=0 ; i<m_numElems ; i++)
 			{
 				if (!((*this)[i] == Array[i]))
 					return false;
@@ -136,7 +136,7 @@ public:
 		return false;
 	}
 
-	inline const TType &operator [](const int Index) const
+	inline const TType &operator [](const sint32 Index) const
 	{
 		assert(Index >= 0);
 		assert(Index < m_numElems || (Index == 0 && m_numElems == 0));
@@ -144,7 +144,7 @@ public:
 
 		return m_data[Index];
 	}
-	inline TType &operator [](const int Index)
+	inline TType &operator [](const sint32 Index)
 	{
 		assert(Index >= 0);
 		assert(Index < m_numElems || (Index == 0 && m_numElems == 0));
@@ -156,15 +156,15 @@ public:
 	/**
 	 * Item functions
 	 */
-	int AddItem(const TType &Item)
+	sint32 AddItem(const TType &Item)
 	{
 		new(*this) TType(Item);
 		return m_numElems-1;
 	}
 
-	int AddUniqueItem(const TType &Item)
+	sint32 AddUniqueItem(const TType &Item)
 	{
-		for (int i=0 ; i<m_numElems ; i++)
+		for (sint32 i=0 ; i<m_numElems ; i++)
 		{
 			if ((*this)[i] == Item)
 				return i;
@@ -178,7 +178,7 @@ public:
 		return (FindItemIndex(Item) != -1);
 	}
 
-	const bool FindItem(const TType &Item, int &OutIndex) const
+	const bool FindItem(const TType &Item, sint32 &OutIndex) const
 	{
 		for (OutIndex=0 ; OutIndex<m_numElems ; OutIndex++)
 		{
@@ -190,9 +190,9 @@ public:
 		return false;
 	}
 
-	const int FindItemIndex(const TType &Item) const
+	const sint32 FindItemIndex(const TType &Item) const
 	{
-		for (int Result=0 ; Result<m_numElems ; Result++)
+		for (sint32 Result=0 ; Result<m_numElems ; Result++)
 		{
 			if ((*this)[Result] == Item)
 				return Result;
@@ -201,7 +201,7 @@ public:
 		return -1;
 	}
 
-	int InsertItem(const TType &Item, const int Index)
+	sint32 InsertItem(const TType &Item, const sint32 Index)
 	{
 		new(*this, Index) TType(Item);
 		return Index;
@@ -209,14 +209,14 @@ public:
 
 	void RemoveItem(const TType &Item)
 	{
-		for (int i=0 ; i<m_numElems ; i++)
+		for (sint32 i=0 ; i<m_numElems ; i++)
 		{
 			if ((*this)[i] == Item)
 				Remove(i--);
 		}
 	}
 
-	inline void SwapItems(const int Index1, const int Index2)
+	inline void SwapItems(const sint32 Index1, const sint32 Index2)
 	{
 		Swap(Index1, Index2);
 	}
@@ -224,9 +224,9 @@ public:
 	/**
 	 * Array functions
 	 */
-	int Add(const int Num, const bool bZeroFill = false)
+	sint32 Add(const sint32 Num, const bool bZeroFill = false)
 	{
-		const int Result = m_numElems;
+		const sint32 Result = m_numElems;
 
 		m_numElems += Num;
 		if (m_numElems > m_maxElems)
@@ -236,7 +236,7 @@ public:
 
 		if (bZeroFill)
 		{
-			memset((byte*)m_data + Result*GetElemSize(), 0, Num*GetElemSize());
+			memset((uint8*)m_data + Result*GetElemSize(), 0, Num*GetElemSize());
 		}
 
 		return Result;
@@ -251,7 +251,7 @@ public:
 			// Construct if needed
 			if (dataType<TType>::NeedsCtor)
 			{
-				for (int i=0 ; i<Array.m_numElems ; i++)
+				for (sint32 i=0 ; i<Array.m_numElems ; i++)
 				{
 					::new(*this) TType(Array[i]);
 				}
@@ -259,7 +259,7 @@ public:
 			else
 			{
 				// Otherwise just copy
-				memcpy((byte*)m_data+GetUsedSize(), Array.GetData(), Array.GetUsedSize());
+				memcpy((uint8*)m_data+GetUsedSize(), Array.GetData(), Array.GetUsedSize());
 				m_numElems += Array.m_numElems;
 			}
 		}
@@ -277,7 +277,7 @@ public:
 				// Construct if necessary
 				if (dataType<TType>::NeedsCtor)
 				{
-					for (int i=0 ; i<Source.m_numElems ; i++)
+					for (sint32 i=0 ; i<Source.m_numElems ; i++)
 					{
 						new(*this) TType(Source[i]);
 					}
@@ -296,11 +296,11 @@ public:
 		}
 	}
 
-	void Empty(const int Slack=0)
+	void Empty(const sint32 Slack=0)
 	{
 		if (dataType<TType>::NeedsCtor)
 		{
-			for (int i=0 ; i<m_numElems ; i++)
+			for (sint32 i=0 ; i<m_numElems ; i++)
 				(&(*this)[i])->~TType();
 		}
 
@@ -311,7 +311,7 @@ public:
 		}
 	}
 
-	void Insert(const int Index, const int Num=1, const bool bZeroFill = false)
+	void Insert(const sint32 Index, const sint32 Num=1, const bool bZeroFill = false)
 	{
 		assert(Num >= 1);
 		assert(m_numElems >= 0);
@@ -319,7 +319,7 @@ public:
 		assert(Index >= 0);
 		assert(Index <= m_numElems);
 
-		const int OldNumElems = m_numElems;
+		const sint32 OldNumElems = m_numElems;
 
 		m_numElems += Num;
 		if (m_numElems > m_maxElems)
@@ -327,15 +327,15 @@ public:
 			ReAllocate(m_numElems);
 		}
 
-		memmove((byte*)m_data + (Index+Num)*GetElemSize(), (byte*)m_data + Index*GetElemSize(), (OldNumElems-Index)*GetElemSize());
+		memmove((uint8*)m_data + (Index+Num)*GetElemSize(), (uint8*)m_data + Index*GetElemSize(), (OldNumElems-Index)*GetElemSize());
 
 		if (bZeroFill)
 		{
-			memset((byte*)m_data + Index*GetElemSize(), 0, Num*GetElemSize());
+			memset((uint8*)m_data + Index*GetElemSize(), 0, Num*GetElemSize());
 		}
 	}
 
-	inline const bool IsValidIndex(const int Index) const
+	inline const bool IsValidIndex(const sint32 Index) const
 	{
 		return (Index >= 0 && Index < m_numElems);
 	}
@@ -343,8 +343,8 @@ public:
 	inline TType &Top() { return Last(); }
 	inline const TType &Top() const { return Last(); }
 
-	inline TType &Last(const int Offset=0) { return ((TType*)m_data)[m_numElems-Offset-1]; }
-	inline const TType &Last(const int Offset=0) const { return ((TType*)m_data)[m_numElems-Offset-1]; }
+	inline TType &Last(const sint32 Offset=0) { return ((TType*)m_data)[m_numElems-Offset-1]; }
+	inline const TType &Last(const sint32 Offset=0) const { return ((TType*)m_data)[m_numElems-Offset-1]; }
 
 	TType Pop()
 	{
@@ -353,12 +353,12 @@ public:
 		return Result;
 	}
 
-	inline int Push(const TType &Item)
+	inline sint32 Push(const TType &Item)
 	{
 		return AddItem(Item);
 	}
 
-	void Remove(const int Start, const int Count=1)
+	void Remove(const sint32 Start, const sint32 Count=1)
 	{
 		assert(Count >= 1 || (Count == 0 && m_numElems == 0));
 		assert(Start <= m_numElems && (Start+Count) <= m_numElems);
@@ -367,11 +367,11 @@ public:
 		{
 			if (dataType<TType>::NeedsCtor)
 			{
-				for (int i=Start ; i<Start+Count ; i++)
+				for (sint32 i=Start ; i<Start+Count ; i++)
 					(&(*this)[i])->~TType();
 			}
 
-			memmove((byte*)m_data + Start*GetElemSize(), (byte*)m_data + (Start+Count)*GetElemSize(), (m_numElems-Start-Count) * GetElemSize());
+			memmove((uint8*)m_data + Start*GetElemSize(), (uint8*)m_data + (Start+Count)*GetElemSize(), (m_numElems-Start-Count) * GetElemSize());
 			m_numElems -= Count;
 
 			if (m_numElems > 0)
@@ -391,7 +391,7 @@ public:
 		}
 	}
 
-	void Reserve(const int Num)
+	void Reserve(const sint32 Num)
 	{
 		if (Num > m_maxElems)
 		{
@@ -407,7 +407,7 @@ public:
 		}
 	}
 
-	void Swap(const int Index1, const int Index2)
+	void Swap(const sint32 Index1, const sint32 Index2)
 	{
 		assert(Index1 >= 0 && Index1 < m_numElems);
 		assert(Index2 >= 0 && Index2 < m_numElems);
@@ -416,9 +416,9 @@ public:
 		{
 			const size_t Size = GetElemSize();
 			void *Temp = dAlloca(Size);
-			memcpy(Temp, (byte*)m_data+Index1*GetElemSize(), Size);
-			memcpy((byte*)m_data+Index1*GetElemSize(), (byte*)m_data+Index2*GetElemSize(), Size);
-			memcpy((byte*)m_data+Index2*GetElemSize(), Temp, Size);
+			memcpy(Temp, (uint8*)m_data+Index1*GetElemSize(), Size);
+			memcpy((uint8*)m_data+Index1*GetElemSize(), (uint8*)m_data+Index2*GetElemSize(), Size);
+			memcpy((uint8*)m_data+Index2*GetElemSize(), Temp, Size);
 		}
 	}
 
@@ -432,27 +432,27 @@ public:
 	inline TType *GetTypedData() { return m_data; }
 	inline const TType *GetTypedData() const { return m_data; }
 
-	inline const int GetNum() const { return m_numElems; }
-	inline const int GetLastNum() const { return GetNum()>0 ? GetNum()-1 : 0; }
+	inline const sint32 GetNum() const { return m_numElems; }
+	inline const sint32 GetLastNum() const { return GetNum()>0 ? GetNum()-1 : 0; }
 
 	class iterator
 	{
 	protected:
 		dynArray<TType,TGranularity> &m_array;
-		int m_position;
+		sint32 m_position;
 
 		iterator() {}
 		inline iterator operator =(const iterator &) {}
 
 	public:
-		iterator(dynArray<TType,TGranularity> &inArray, const int StartingPosition=0)
+		iterator(dynArray<TType,TGranularity> &inArray, const sint32 StartingPosition=0)
 		: m_array(inArray)
 		, m_position(StartingPosition) {}
 
 		~iterator() {}
 
 		inline void operator++() { ++m_position; } // ++Prefix
-		inline void operator++(int) { m_position++; } // Postfix++;
+		inline void operator++(sint32) { m_position++; } // Postfix++;
 		inline TType &operator *() { return m_array[m_position]; }
 		inline TType &operator->() { return m_array[m_position]; }
 		inline operator bool() const { return m_array.IsValidIndex(m_position); }
@@ -468,27 +468,27 @@ public:
 		~reverseIterator() {}
 
 		inline void operator++() { --m_position; } // ++Prefix
-		inline void operator++(int) { m_position--; } // Postfix++;
+		inline void operator++(sint32) { m_position--; } // Postfix++;
 	};
 
 	class constIterator
 	{
 	protected:
 		dynArray<TType,TGranularity> &m_array;
-		int m_position;
+		sint32 m_position;
 
 		constIterator() {}
 		inline constIterator operator =(const constIterator &) {}
 
 	public:
-		constIterator(const dynArray<TType,TGranularity> &inArray, const int StartingPosition=0)
+		constIterator(const dynArray<TType,TGranularity> &inArray, const sint32 StartingPosition=0)
 		: m_array(inArray)
 		, m_position(StartingPosition) {}
 
 		~constIterator() {}
 
 		inline void operator++() { ++m_position; } // ++Prefix
-		inline void operator++(int) { m_position++; } // Postfix++;
+		inline void operator++(sint32) { m_position++; } // Postfix++;
 		inline const TType &operator *() const { return m_array[m_position]; }
 		inline const TType &operator->() const { return m_array[m_position]; }
 		inline operator bool() const { return m_array.IsValidIndex(m_position); }
@@ -504,25 +504,25 @@ public:
 		~constReverseIterator() {}
 
 		inline void operator++() { --m_position; } // ++Prefix
-		inline void operator++(int) { m_position--; } // Postfix++;
+		inline void operator++(sint32) { m_position--; } // Postfix++;
 	};
 
 protected:
-	void ReAllocate(const int NewMaxElems, const bool bAlign=true)
+	void ReAllocate(const sint32 NewMaxElems, const bool bAlign=true)
 	{
-		int NewValue = NewMaxElems;
+		sint32 NewValue = NewMaxElems;
 		if (bAlign && NewMaxElems > 0)
 		{
 			// FIXME: Test these other algos once there's a LOT more usage of this class
 			//
-			//const int NewValue = Align<int>(NewMaxElems+TGranularity, TGranularity);
+			//const sint32 NewValue = Align<sint32>(NewMaxElems+TGranularity, TGranularity);
 			//
-			//const int NewValue = Align<int>(NewMaxElems+(TGranularity-1), TGranularity);
+			//const sint32 NewValue = Align<sint32>(NewMaxElems+(TGranularity-1), TGranularity);
 			//
-			//const int NewValue = Align<int>(NewMaxElems+((TGranularity*2)-1), TGranularity);
+			//const sint32 NewValue = Align<sint32>(NewMaxElems+((TGranularity*2)-1), TGranularity);
 			//
-			//const int NewValue = Align<int>(NewMaxElems+(TGranularity*2), TGranularity);
-			NewValue = Align<int>(NewMaxElems, TGranularity);
+			//const sint32 NewValue = Align<sint32>(NewMaxElems+(TGranularity*2), TGranularity);
+			NewValue = Align<sint32>(NewMaxElems, TGranularity);
 		}
 
 		if (m_maxElems == NewValue && m_data)
@@ -530,7 +530,7 @@ protected:
 
 		if (m_data || NewValue)
 		{
-			extern void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const int fileLine);
+			extern void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32 fileLine);
 			m_data = (char*)_Mem_ReAlloc(m_data, NewValue * sizeof(TType), __FILE__, __LINE__);
 			m_maxElems = NewValue;
 		}
@@ -538,15 +538,15 @@ protected:
 };
 
 // dynArray operator new/delete
-template<class TType, const int TGranularity>
+template<class TType, const sint32 TGranularity>
 static inline void *operator new(size_t Size, dynArray<TType,TGranularity> &Array)
 {
 	assert(Size == sizeof(TType));
 	return &Array[Array.Add(1)];
 }
 
-template<class TType, const int TGranularity>
-static inline void *operator new(size_t Size, dynArray<TType,TGranularity> &Array, const int Index)
+template<class TType, const sint32 TGranularity>
+static inline void *operator new(size_t Size, dynArray<TType,TGranularity> &Array, const sint32 Index)
 {
 	assert(Size == sizeof(TType));
 
@@ -554,8 +554,8 @@ static inline void *operator new(size_t Size, dynArray<TType,TGranularity> &Arra
 	return &Array[Index];
 }
 
-template<class TType, const int TGranularity>
-static inline void operator delete(void *MemPointer, dynArray<TType,TGranularity> &Array, const int Index)
+template<class TType, const sint32 TGranularity>
+static inline void operator delete(void *MemPointer, dynArray<TType,TGranularity> &Array, const sint32 Index)
 {
 	assert(Size == sizeof(TType));
 	Array.Remove(Index);

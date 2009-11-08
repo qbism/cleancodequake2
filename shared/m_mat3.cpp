@@ -236,7 +236,7 @@ void Matrix3_Quat (mat3x3_t m, quat_t q)
 		q[2] = (m[1][0] - m[0][1]) * s;
 	}
 	else {
-		int		i, j, k;
+		sint32		i, j, k;
 
 		i = 0;
 		if (m[1][1] > m[0][0]) i = 1;

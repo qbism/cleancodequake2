@@ -65,17 +65,17 @@ or the midpoint of the entity box for bmodels.
 // a sound without an ent or pos will be a local only sound
 enum
 {
-	SND_VOLUME			= BIT(0),	// a byte
-	SND_ATTENUATION		= BIT(1),	// a byte
+	SND_VOLUME			= BIT(0),	// a uint8
+	SND_ATTENUATION		= BIT(1),	// a uint8
 	SND_POS				= BIT(2),	// three coordinates
-	SND_ENT				= BIT(3),	// a short 0-2: channel, 3-12: entity
-	SND_OFFSET			= BIT(4)	// a byte, msec offset from frame start
+	SND_ENT				= BIT(3),	// a sint16 0-2: channel, 3-12: entity
+	SND_OFFSET			= BIT(4)	// a uint8, msec offset from frame start
 };
 
 #define DEFAULT_SOUND_PACKET_VOLUME			255
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0
 
-static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel channel, MediaIndex soundIndex, byte vol, EAttenuation attenuation, byte timeOffset, bool Positioned)
+static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 vol, EAttenuation attenuation, uint8 timeOffset, bool Positioned)
 {
 	if (!Positioned && !entity)
 	{
@@ -111,9 +111,9 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 		channel &= 7;
 	}
 
-	int sendChan = (entity->State.GetNumber() << 3) | (channel & 7);
+	sint32 sendChan = (entity->State.GetNumber() << 3) | (channel & 7);
 
-	int flags = 0;
+	sint32 flags = 0;
 	if (vol != DEFAULT_SOUND_PACKET_VOLUME)
 		flags |= SND_VOLUME;
 	if (attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
@@ -137,7 +137,7 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 		origin = (entity->GetSolid() == SOLID_BSP) ? entity->State.GetOrigin() + 0.5f * (entity->GetMins() + entity->GetMaxs()) : entity->State.GetOrigin();
 
 	// Cycle through the different targets and do attenuation calculations
-	for (int i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (Player->Client.Persistent.state == SVCS_FREE)
@@ -204,12 +204,12 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 	}
 }
 
-void PlaySoundFrom (CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex, byte volume, EAttenuation attenuation, byte timeOfs)
+void PlaySoundFrom (CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	SV_StartSound (vec3fOrigin, ent, channel, soundIndex, volume, attenuation, timeOfs, false);
 }
 
-void PlaySoundAt (vec3f origin, CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex, byte volume, EAttenuation attenuation, byte timeOfs)
+void PlaySoundAt (vec3f origin, CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	SV_StartSound (origin, ent, channel, soundIndex, volume, attenuation, timeOfs, true);
 }

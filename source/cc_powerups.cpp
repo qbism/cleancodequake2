@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CBasePowerUp::CBasePowerUp(char *Classname, char *WorldModel, int EffectFlags,
+CBasePowerUp::CBasePowerUp(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
@@ -76,77 +76,77 @@ void CBasePowerUp::Drop (CPlayerEntity *ent)
 	}
 }
 
-CMegaHealth::CMegaHealth(char *Classname, char *WorldModel, int EffectFlags,
+CMegaHealth::CMegaHealth(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CBackPack::CBackPack(char *Classname, char *WorldModel, int EffectFlags,
+CBackPack::CBackPack(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CQuadDamage::CQuadDamage(char *Classname, char *WorldModel, int EffectFlags,
+CQuadDamage::CQuadDamage(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CInvulnerability::CInvulnerability(char *Classname, char *WorldModel, int EffectFlags,
+CInvulnerability::CInvulnerability(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CSilencer::CSilencer(char *Classname, char *WorldModel, int EffectFlags,
+CSilencer::CSilencer(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CRebreather::CRebreather(char *Classname, char *WorldModel, int EffectFlags,
+CRebreather::CRebreather(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CEnvironmentSuit::CEnvironmentSuit(char *Classname, char *WorldModel, int EffectFlags,
+CEnvironmentSuit::CEnvironmentSuit(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CBandolier::CBandolier(char *Classname, char *WorldModel, int EffectFlags,
+CBandolier::CBandolier(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CAdrenaline::CAdrenaline(char *Classname, char *WorldModel, int EffectFlags,
+CAdrenaline::CAdrenaline(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CAncientHead::CAncientHead(char *Classname, char *WorldModel, int EffectFlags,
+CAncientHead::CAncientHead(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CPowerShield::CPowerShield(char *Classname, char *WorldModel, int EffectFlags,
+CPowerShield::CPowerShield(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
@@ -167,7 +167,7 @@ public:
 		  MegaHealthThinking = false;
 	  };
 
-	CMegaHealthEntity (int Index) :
+	CMegaHealthEntity (sint32 Index) :
 	  CBaseEntity (Index),
 	  CItemEntity(Index),
 	  Player(NULL)
@@ -255,7 +255,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 void CBackPack::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
 	// Increase their max ammo, if applicable
-	for (int i = 0; i < CAmmo::AMMOTAG_MAX; i++)
+	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
 	{
 		if (other->Client.Persistent.maxAmmoValues[i] < maxBackpackAmmoValues[i])
 			other->Client.Persistent.maxAmmoValues[i] = maxBackpackAmmoValues[i];
@@ -273,7 +273,7 @@ void CBackPack::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 		SetRespawn (ent, 1800);
 }
 
-static int	quad_drop_timeout_hack;
+static sint32	quad_drop_timeout_hack;
 
 void CQuadDamage::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
@@ -291,7 +291,7 @@ void CQuadDamage::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 
 void CQuadDamage::Use (CPlayerEntity *ent)
 {
-	int timeOut = 300;
+	sint32 timeOut = 300;
 
 	if (quad_drop_timeout_hack)
 	{
@@ -394,7 +394,7 @@ void CEnvironmentSuit::Use (CPlayerEntity *ent)
 void CBandolier::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
 	// Increase their max ammo, if applicable
-	for (int i = 0; i < CAmmo::AMMOTAG_MAX; i++)
+	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
 	{
 		if (other->Client.Persistent.maxAmmoValues[i] < maxBandolierAmmoValues[i])
 			other->Client.Persistent.maxAmmoValues[i] = maxBandolierAmmoValues[i];
@@ -476,7 +476,7 @@ public:
 	  {
 	  };
 
-	CPowerupEntity (int Index) :
+	CPowerupEntity (sint32 Index) :
 	  CBaseEntity(Index),
 	  CItemEntity (Index)
 	  {

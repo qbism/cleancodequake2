@@ -43,7 +43,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CItemList
 {
 public:
-	int			numItems;
+	sint32			numItems;
 
 	CItemList();
 	void SendItemNames ();
@@ -65,8 +65,8 @@ void InitItemlist ();
 bool ItemExists (edict_t *ent);
 CBaseItem *FindItemByClassname (const char *name);
 CBaseItem *FindItem (const char *name);
-CBaseItem *GetItemByIndex (int Index);
-extern int GetNumItems ();
+CBaseItem *GetItemByIndex (sint32 Index);
+extern sint32 GetNumItems ();
 
 void InitItemMedia ();
 

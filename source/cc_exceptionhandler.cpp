@@ -111,18 +111,18 @@ static CHAR						szModuleName[MAX_PATH];
 EGLExceptionHandler
 ==================
 */
-static int Sys_FileLength (const char *path)
+static sint32 Sys_FileLength (const char *path)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	fileData;
 
-	if (GetFileAttributesEx (path, GetFileExInfoStandard, &fileData))
+	if (GetFileAttributesExA (path, GetFileExInfoStandard, &fileData))
 		return fileData.nFileSizeLow;
 
 	return -1;
 }
 
 #ifdef USE_CURL
-static int EGLUploadProgress (void *clientp, double downTotal, double downNow, double upTotal, double upNow)
+static sint32 EGLUploadProgress (void *clientp, double downTotal, double downNow, double upTotal, double upNow)
 {
 	char	progressBuff[512];
 	DWORD	len;
@@ -242,6 +242,16 @@ static const PCHAR SymTypeToString (SYM_TYPE SymType)
 	}
 }
 
+inline void NumSpaces (FILE *fhReport, char *name, const PCHAR Type)
+{
+	fprintf (fhReport, "%s", name);
+
+	for (size_t i = 0; i < ((strlen(name) >= 60) ? 1 : 60-strlen(name)); i++)
+		fprintf (fhReport, " ");
+
+	fprintf (fhReport, "%s\r\n", Type);
+}
+
 static BOOL CALLBACK EnumerateLoadedModulesProcSymInfo (PSTR ModuleName, DWORD64 ModuleBase, ULONG ModuleSize, PVOID UserContext)
 {
 	memset (&symInfo, 0, sizeof(symInfo));
@@ -250,15 +260,15 @@ static BOOL CALLBACK EnumerateLoadedModulesProcSymInfo (PSTR ModuleName, DWORD64
 	symInfo.SizeOfStruct = sizeof(symInfo);
 
 	if (fnSymGetModuleInfo64 (GetCurrentProcess(), ModuleBase, &symInfo))
-		fprintf (fhReport, "%s, %s symbols loaded.\r\n", symInfo.LoadedImageName, SymTypeToString(symInfo.SymType));
+		NumSpaces (fhReport, symInfo.LoadedImageName, SymTypeToString(symInfo.SymType));
 	else
-		fprintf (fhReport, "%s, couldn't check symbols (error %d, DBGHELP.DLL too old?)\r\n", ModuleName, GetLastError ());
+		NumSpaces (fhReport, ModuleName, "couldn't check symbols");
 	
 	return TRUE;
 }
 }
 
-static BOOL CALLBACK EnumerateLoadedModulesProcDump (PSTR ModuleName, DWORD64 ModuleBase, ULONG ModuleSize, PVOID UserContext)
+static BOOL CALLBACK EnumerateLoadedModulesProcDump (PCSTR ModuleName, DWORD64 ModuleBase, ULONG ModuleSize, PVOID UserContext)
 {
 	VS_FIXEDFILEINFO *fileVersion;
 	BYTE	*verInfo;
@@ -275,10 +285,10 @@ static BOOL CALLBACK EnumerateLoadedModulesProcDump (PSTR ModuleName, DWORD64 Mo
 		DWORD len;
 		if ((len = (fnGetFileVersionInfoSize ((LPTSTR)ModuleName, (LPDWORD)&dummy))) != 0)
 		{
-			verInfo = (byte*)LocalAlloc (LPTR, len);
-			if (fnGetFileVersionInfo (ModuleName, dummy, len, verInfo))
+			verInfo = (uint8*)LocalAlloc (LPTR, len);
+			if (fnGetFileVersionInfo ((LPTSTR)ModuleName, dummy, len, verInfo))
 			{
-				if (fnVerQueryValue ((void*)verInfo, "\\", (PUINT)&fileVersion, &dummy))
+				if (fnVerQueryValue ((void*)verInfo, L"\\", (PUINT)&fileVersion, &dummy))
 					Q_snprintfz (verString, sizeof(verString), "%d.%d.%d.%d", HIWORD(fileVersion->dwFileVersionMS), LOWORD(fileVersion->dwFileVersionMS), HIWORD(fileVersion->dwFileVersionLS), LOWORD(fileVersion->dwFileVersionLS));
 				else
 					Q_strncpyz (verString, "unknown", sizeof(verString));
@@ -333,7 +343,7 @@ DWORD						ret;
 STACKFRAME64				frame = {0};
 CONTEXT						context;
 SYMBOL_INFO					*symInfo;
-OSVERSIONINFOEX				osInfo;
+OSVERSIONINFOEXA			osInfo;
 #ifdef USE_CURL
 bool						upload;
 #endif
@@ -341,6 +351,229 @@ bool						upload;
 #ifdef USE_GZ
 BYTE	gzBuff[0xFFFF];
 #endif
+
+#include <tchar.h>
+#include <strsafe.h>
+
+#pragma comment(lib, "User32.lib")
+
+#define BUFSIZE 256
+
+typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
+typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+
+std::cc_string GetOSDisplayString ()
+{
+	std::cc_string Str;
+	OSVERSIONINFOEX osvi;
+	SYSTEM_INFO si;
+	PGNSI pGNSI;
+	PGPI pGPI;
+	BOOL bOsVersionInfoEx;
+	DWORD dwType;
+
+	ZeroMemory(&si, sizeof(SYSTEM_INFO));
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	if( ((bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi))) == false)
+		return "Unknown";
+
+	// Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
+
+	pGNSI = (PGNSI) GetProcAddress(
+		GetModuleHandle(TEXT("kernel32.dll")), 
+		"GetNativeSystemInfo");
+	if(NULL != pGNSI)
+		pGNSI(&si);
+	else GetSystemInfo(&si);
+
+	if ( VER_PLATFORM_WIN32_NT==osvi.dwPlatformId && 
+		osvi.dwMajorVersion > 4 )
+	{
+		Str += "Microsoft ";
+
+		// Test for the specific product.
+
+		if ( osvi.dwMajorVersion == 6 )
+		{
+			if( osvi.dwMinorVersion == 0 )
+			{
+				if( osvi.wProductType == VER_NT_WORKSTATION )
+					Str += "Windows Vista ";
+				else
+					Str += "Windows Server 2008 ";
+			}
+
+			if ( osvi.dwMinorVersion == 1 )
+			{
+				if( osvi.wProductType == VER_NT_WORKSTATION )
+					Str += "Windows 7 ";
+				else
+					Str += "Windows Server 2008 R2 ";
+			}
+
+			pGPI = (PGPI) GetProcAddress(
+				GetModuleHandle(TEXT("kernel32.dll")), 
+				"GetProductInfo");
+
+			pGPI( osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+
+			switch( dwType )
+			{
+			case PRODUCT_ULTIMATE:
+				Str += "Ultimate Edition";
+				break;
+			case PRODUCT_HOME_PREMIUM:
+				Str += "Home Premium Edition";
+				break;
+			case PRODUCT_HOME_BASIC:
+				Str += "Home Basic Edition";
+				break;
+			case PRODUCT_ENTERPRISE:
+				Str += "Enterprise Edition";
+				break;
+			case PRODUCT_BUSINESS:
+				Str += "Business Edition";
+				break;
+			case PRODUCT_STARTER:
+				Str += "Starter Edition";
+				break;
+			case PRODUCT_CLUSTER_SERVER:
+				Str += "Cluster Server Edition";
+				break;
+			case PRODUCT_DATACENTER_SERVER:
+				Str += "Datacenter Edition";
+				break;
+			case PRODUCT_DATACENTER_SERVER_CORE:
+				Str += "Datacenter Edition (core installation)";
+				break;
+			case PRODUCT_ENTERPRISE_SERVER:
+				Str += "Enterprise Edition";
+				break;
+			case PRODUCT_ENTERPRISE_SERVER_CORE:
+				Str += "Enterprise Edition (core installation)";
+				break;
+			case PRODUCT_ENTERPRISE_SERVER_IA64:
+				Str += "Enterprise Edition for Itanium-based Systems";
+				break;
+			case PRODUCT_SMALLBUSINESS_SERVER:
+				Str += "Small Business Server";
+				break;
+			case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
+				Str += "Small Business Server Premium Edition";
+				break;
+			case PRODUCT_STANDARD_SERVER:
+				Str += "Standard Edition";
+				break;
+			case PRODUCT_STANDARD_SERVER_CORE:
+				Str += "Standard Edition (core installation)";
+				break;
+			case PRODUCT_WEB_SERVER:
+				Str += "Web Server Edition";
+				break;
+			}
+		}
+
+		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2 )
+		{
+			if( GetSystemMetrics(SM_SERVERR2) )
+				Str += "Windows Server 2003 R2, ";
+			else if ( osvi.wSuiteMask==VER_SUITE_STORAGE_SERVER )
+				Str += "Windows Storage Server 2003";
+			else if ( osvi.wSuiteMask==VER_SUITE_WH_SERVER )
+				Str += "Windows Home Server";
+			else if( osvi.wProductType == VER_NT_WORKSTATION &&
+				si.wProcessorArchitecture==PROCESSOR_ARCHITECTURE_AMD64)
+				Str += "Windows XP Professional x64 Edition";
+			else
+				Str += "Windows Server 2003, ";
+
+			// Test for the server type.
+			if ( osvi.wProductType != VER_NT_WORKSTATION )
+			{
+				if ( si.wProcessorArchitecture==PROCESSOR_ARCHITECTURE_IA64 )
+				{
+					if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
+						Str += "Datacenter Edition for Itanium-based Systems";
+					else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
+						Str += "Enterprise Edition for Itanium-based Systems";
+				}
+
+				else if ( si.wProcessorArchitecture==PROCESSOR_ARCHITECTURE_AMD64 )
+				{
+					if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
+						Str += "Datacenter x64 Edition";
+					else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
+						Str += "Enterprise x64 Edition";
+					else
+						Str += "Standard x64 Edition";
+				}
+
+				else
+				{
+					if ( osvi.wSuiteMask & VER_SUITE_COMPUTE_SERVER )
+						Str += "Compute Cluster Edition";
+					else if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
+						Str += "Datacenter Edition";
+					else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
+						Str += "Enterprise Edition";
+					else if ( osvi.wSuiteMask & VER_SUITE_BLADE )
+						Str += "Web Edition";
+					else
+						Str += "Standard Edition";
+				}
+			}
+		}
+
+		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 )
+		{
+			Str += "Windows XP ";
+			if( osvi.wSuiteMask & VER_SUITE_PERSONAL )
+				Str += "Home Edition";
+			else
+				Str += "Professional";
+		}
+
+		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0 )
+		{
+			Str += "Windows 2000 ";
+
+			if ( osvi.wProductType == VER_NT_WORKSTATION )
+				Str += "Professional";
+			else 
+			{
+				if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
+					Str += "Datacenter Server";
+				else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
+					Str += "Advanced Server";
+				else
+					Str += "Server";
+			}
+		}
+
+		// Include service pack (if any) and build number.
+
+		if( _tcslen(osvi.szCSDVersion) > 0 )
+			Str += Q_VarArgs (" %s", osvi.szCSDVersion);
+
+		Str += Q_VarArgs(" (build %d)", osvi.dwBuildNumber);
+
+		if ( osvi.dwMajorVersion >= 6 )
+		{
+			if ( si.wProcessorArchitecture==PROCESSOR_ARCHITECTURE_AMD64 )
+				Str += ", 64-bit";
+			else if (si.wProcessorArchitecture==PROCESSOR_ARCHITECTURE_INTEL )
+				Str += ", 32-bit";
+		}
+
+		return Str; 
+	}
+
+	else
+		return "Unsupported?";
+}
 
 DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionInfo)
 {
@@ -351,19 +584,19 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 
 	// Continue searching?
 #ifdef _DEBUG
-	if (MessageBox (NULL, "An unhandled exception occured in CleanCode!\n\nThis version was built with debug information. Do you have a debugger you can attach? If so, do this now, then click Yes, otherwise click No.", "Unhandled Exception", MB_ICONERROR|MB_YESNO) == IDYES)
+	if (MessageBoxA (NULL, "An unhandled exception occured in CleanCode!\n\nThis version was built with debug information. Do you have a debugger you can attach? If so, do this now, then click Yes, otherwise click No.", "Unhandled Exception", MB_ICONERROR|MB_YESNO) == IDYES)
 		return EXCEPTION_CONTINUE_SEARCH;
 #endif
 
 	// Load needed libraries and get the location of the needed functions
-	hDbgHelp = LoadLibrary ("DBGHELP");
+	hDbgHelp = LoadLibraryA ("DBGHELP");
 	if (!hDbgHelp)
 	{
-		MessageBox (NULL, APP_FULLNAME " has encountered an unhandled exception and must be terminated. No crash report could be generated since " APP_FULLNAME " failed to load DBGHELP.DLL. Please obtain DBGHELP.DLL and place it in your Quake II directory to enable crash dump generation.", "Unhandled Exception", MB_OK | MB_ICONEXCLAMATION);
+		MessageBoxA (NULL, APP_FULLNAME " has encountered an unhandled exception and must be terminated. No crash report could be generated since " APP_FULLNAME " failed to load DBGHELP.DLL. Please obtain DBGHELP.DLL and place it in your Quake II directory to enable crash dump generation.", "Unhandled Exception", MB_OK | MB_ICONEXCLAMATION);
 		return EXCEPTION_CONTINUE_SEARCH;
 	}
 
-	hVersion = LoadLibrary ("VERSION");
+	hVersion = LoadLibraryA ("VERSION");
 	if (hVersion)
 	{
 		fnVerQueryValue = (VERQUERYVALUE)GetProcAddress (hVersion, "VerQueryValueA");
@@ -390,12 +623,12 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 		FreeLibrary (hDbgHelp);
 		if (hVersion)
 			FreeLibrary (hVersion);
-		MessageBox (NULL, APP_FULLNAME " has encountered an unhandled exception and must be terminated. No crash report could be generated since " APP_FULLNAME " failed to load DBGHELP.DLL. Please obtain DBGHELP.DLL and place it in your Quake II directory to enable crash dump generation.", "Unhandled Exception", MB_OK | MB_ICONEXCLAMATION);
+		MessageBoxA (NULL, APP_FULLNAME " has encountered an unhandled exception and must be terminated. No crash report could be generated since " APP_FULLNAME " failed to load DBGHELP.DLL. Please obtain DBGHELP.DLL and place it in your Quake II directory to enable crash dump generation.", "Unhandled Exception", MB_OK | MB_ICONEXCLAMATION);
 		return EXCEPTION_CONTINUE_SEARCH;
 	}
 
 	// Let the user know
-	if (MessageBox (NULL, APP_FULLNAME " has encountered an unhandled exception and must be terminated. Would you like to generate a crash report?", "Unhandled Exception", MB_ICONEXCLAMATION | MB_YESNO) == IDNO)
+	if (MessageBoxA (NULL, APP_FULLNAME " has encountered an unhandled exception and must be terminated. Would you like to generate a crash report?", "Unhandled Exception", MB_ICONEXCLAMATION | MB_YESNO) == IDNO)
 	{
 		FreeLibrary (hDbgHelp);
 		if (hVersion)
@@ -409,7 +642,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fnSymSetOptions (SYMOPT_UNDNAME | SYMOPT_FAIL_CRITICAL_ERRORS | SYMOPT_LOAD_ANYTHING);
 
 	// Used to determine the directory for dump placement
-	GetModuleFileName (NULL, searchPath, sizeof(searchPath));
+	GetModuleFileNameA (NULL, searchPath, sizeof(searchPath));
 	p = strrchr (searchPath, '\\');
 	if (p)
 		*p = '\0';
@@ -418,7 +651,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	GetSystemTime (&timeInfo);
 
 	// Find the next filename to use for this dump
-	int dumpNum = 1;
+	sint32 dumpNum = 1;
 	for (; ; dumpNum++)
 	{
 		Q_snprintfz (reportPath, sizeof(reportPath), "%s\\CCCrashLog%.4d-%.2d-%.2d_%d.txt", searchPath, timeInfo.wYear, timeInfo.wMonth, timeInfo.wDay, dumpNum);
@@ -507,9 +740,10 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	// Windows information
 	fprintf (fhReport, "Windows information:\r\n");
 	fprintf (fhReport, "--------------------------------------------------\r\n");
+	fprintf (fhReport, "String:       %s\r\n", GetOSDisplayString().c_str());
 	fprintf (fhReport, "Version:      %d.%d\r\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion);
 	fprintf (fhReport, "Build:        %d\r\n", osInfo.dwBuildNumber);
-	fprintf (fhReport, "Service Pack: %s\r\n", osInfo.szCSDVersion ? osInfo.szCSDVersion : "none");
+	fprintf (fhReport, "Service Pack: %s\r\n", osInfo.szCSDVersion[0] ? osInfo.szCSDVersion : "none");
 
 	fprintf (fhReport, "\r\n");
 
@@ -524,7 +758,8 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 
 	// Symbol information
 	fprintf (fhReport, "Symbol information:\r\n");
-	fprintf (fhReport, "--------------------------------------------------\r\n");
+	fprintf (fhReport, "Name                                                        Symbol Type\r\n");
+	fprintf (fhReport, "-----------------------------------------------------------------------\r\n");
 	fnEnumerateLoadedModules64 (hProcess, (PENUMLOADED_MODULES_CALLBACK64)EEnumberateLoadedModulesProcSymInfoHeap::EnumerateLoadedModulesProcSymInfo, (VOID *)fhReport);
 
 	fprintf (fhReport, "\r\n");
@@ -567,7 +802,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 		//GetTempPath (sizeof(dumpPath)-16, dumpPath);
 		Q_snprintfz (dumpPath, sizeof(dumpPath), "%s\\CCCrashLog%.4d-%.2d-%.2d_%d.dmp", searchPath, timeInfo.wYear, timeInfo.wMonth, timeInfo.wDay, dumpNum);
 
-		hFile = CreateFile (dumpPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		hFile = CreateFileA (dumpPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (hFile != INVALID_HANDLE_VALUE)
 		{
 			miniInfo.ClientPointers = TRUE;
@@ -594,7 +829,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 					{
 						size_t len;
 						while ((len = fread (gzBuff, 1, sizeof(gzBuff), fh)) > 0)
-							gzwrite (gz, gzBuff, (unsigned int)len);
+							gzwrite (gz, gzBuff, (uint32)len);
 						gzclose (gz);
 #endif
 						fclose (fh);
@@ -604,7 +839,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 #endif
 		
 #ifdef USE_GZ
-				DeleteFile (dumpPath);
+				DeleteFileA (dumpPath);
 				Q_strncpyz (dumpPath, zPath, sizeof(dumpPath));
 #endif
 
@@ -619,7 +854,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 			else
 			{
 				CloseHandle (hFile);
-				DeleteFile (dumpPath);
+				DeleteFileA (dumpPath);
 			}
 		}
 	}
@@ -632,7 +867,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fnSymCleanup (hProcess);
 
 	// Let the client know
-	MessageBox (NULL, Q_VarArgs ("Report written to: %s\nMini-dump written to %s\nPlease include both files if you submit manually!\n", reportPath, dumpPath).c_str(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
+	MessageBoxA (NULL, Q_VarArgs ("Report written to: %s\nMini-dump written to %s\nPlease include both files if you submit manually!\n", reportPath, dumpPath).c_str(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
 
 #ifdef USE_CURL
 	if (upload)
@@ -644,8 +879,8 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 			MessageBox (NULL, "You have chosen to manually upload the crash report.\nPlease include BOTH the crash log and mini-dump when you post it on the EGL forums!\n", "Submit manually", MB_ICONEXCLAMATION|MB_OK);
 	}
 	else
-		MessageBox (NULL, upMessage, "Unhandled Exception", MB_OK|MB_ICONEXCLAMATION);
 #endif
+	MessageBoxA (NULL, upMessage, "Unhandled Exception", MB_OK|MB_ICONEXCLAMATION);
 
 	// Done
 	FreeLibrary (hDbgHelp);

@@ -292,7 +292,7 @@ CFrame BrainFramesPain1 [] =
 };
 CAnim BrainMovePain1 (FRAME_pain101, FRAME_pain121, BrainFramesPain1, &CMonster::Run);
 
-void CBrain::Pain(CBaseEntity *other, float kick, int damage)
+void CBrain::Pain(CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -442,7 +442,7 @@ void CBrain::Dead ()
 	Entity->Link ();
 }
 
-void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->State.GetEffects() = 0;
 	PowerArmorType = POWER_ARMOR_NONE;
@@ -451,9 +451,9 @@ void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n = 0; n < 2; n++)
+		for (sint32 n = 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n = 0; n < 4; n++)
+		for (sint32 n = 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		return;

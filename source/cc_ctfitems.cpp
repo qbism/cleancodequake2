@@ -38,9 +38,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CTFResetFlags();
 
-CFlag::CFlag (char *Classname, char *WorldModel, int EffectFlags,
+CFlag::CFlag (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int team) :
+			   char *Precache, sint32 team) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 team(team)
@@ -86,7 +86,7 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 					other->Client.Respawn.CTF.Ghost->caps++;
 
 				// Ok, let's do the player loop, hand out the bonuses
-				for (int i = 1; i <= game.maxclients; i++)
+				for (sint32 i = 1; i <= game.maxclients; i++)
 				{
 					CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 					if (!player->GetInUse())

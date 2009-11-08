@@ -325,10 +325,10 @@ mframe_t flyer_frames_bankleft [] =
 };
 mmove_t flyer_move_bankleft = {FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, NULL};*/	
 
-void CFlyer::Fire (int FlashNumber)
+void CFlyer::Fire (sint32 FlashNumber)
 {
 	vec3f	start, forward, right, end, dir;
-	int effect;
+	sint32 effect;
 
 	if (!Entity->Enemy)
 		return;
@@ -460,7 +460,7 @@ void CFlyer::CheckMelee ()
 		CurrentMove = &FlyerMoveEndMelee;
 }
 
-void CFlyer::Pain (CBaseEntity *other, float kick, int damage)
+void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -489,7 +489,7 @@ void CFlyer::Pain (CBaseEntity *other, float kick, int damage)
 	}
 }
 
-void CFlyer::Die(CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CFlyer::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDie);
 	Entity->BecomeExplosion(false);

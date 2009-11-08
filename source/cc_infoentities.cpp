@@ -47,7 +47,7 @@ public:
 		{
 		};
 
-	CSpotBase(int Index) :
+	CSpotBase(sint32 Index) :
 		CBaseEntity(Index),
 		CMapEntity(Index)
 		{
@@ -73,7 +73,7 @@ public:
 		{
 		};
 
-	CTeleporterDest (int Index) :
+	CTeleporterDest (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -101,7 +101,7 @@ public:
 	  {
 	  };
 
-	CTeleporterTrigger(int Index) :
+	CTeleporterTrigger(sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity(),
 	  CTouchableEntity (Index),
@@ -143,7 +143,7 @@ public:
 		// set angles
 		if (Player)
 		{
-			for (int i = 0; i < 3; i++)
+			for (sint32 i = 0; i < 3; i++)
 				Player->Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Dest->State.GetAngles()[i] - Player->Client.Respawn.CmdAngles[i]);
 		}
 
@@ -187,7 +187,7 @@ public:
 		{
 		};
 
-	CTeleporter (int Index) :
+	CTeleporter (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -255,7 +255,7 @@ public:
 	  {
 	  };
 
-	CTriggerTeleportDest (int Index) :
+	CTriggerTeleportDest (sint32 Index) :
 	  CBaseEntity(Index),
 	  CTeleporterTrigger (Index)
 	  {
@@ -306,7 +306,7 @@ public:
 		{
 		};
 
-	CInfoTeleportDest (int Index) :
+	CInfoTeleportDest (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -335,7 +335,7 @@ public:
 		{
 		};
 
-	CPlayerDeathmatch (int Index) :
+	CPlayerDeathmatch (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -375,7 +375,7 @@ public:
 		{
 		};
 
-	CPlayerCoop (int Index) :
+	CPlayerCoop (sint32 Index) :
 		CBaseEntity (Index),
 		CThinkableEntity(),
 		CSpotBase (Index)
@@ -436,7 +436,7 @@ public:
 			return;
 		}
 
-		int i = 0;
+		sint32 i = 0;
 		while (CheckNames[i] != NULL)
 		{
 			// invoke one of our gross, ugly, disgusting hacks
@@ -463,7 +463,7 @@ public:
 		{
 		};
 
-	CPlayerIntermission (int Index) :
+	CPlayerIntermission (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -489,7 +489,7 @@ public:
 		{
 		};
 
-	CPlayerStart (int Index) :
+	CPlayerStart (sint32 Index) :
 		CBaseEntity (Index),
 		CThinkableEntity(),
 		CSpotBase (Index)
@@ -509,7 +509,7 @@ public:
 				vec3f(316, -164, 80)
 			};
 
-			for (int i = 0; i < 3; i++)
+			for (sint32 i = 0; i < 3; i++)
 			{
 				CPlayerCoop *spot = QNew (com_levelPool, 0) CPlayerCoop;
 				spot->gameEntity->classname = "info_player_coop";
@@ -545,7 +545,7 @@ public:
 		{
 		};
 
-	CPlayerTeam1 (int Index) :
+	CPlayerTeam1 (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -570,7 +570,7 @@ public:
 		{
 		};
 
-	CPlayerTeam2 (int Index) :
+	CPlayerTeam2 (sint32 Index) :
 		CBaseEntity (Index),
 		CSpotBase (Index)
 		{
@@ -600,7 +600,7 @@ CPathCorner::CPathCorner () :
   {
   };
 
-CPathCorner::CPathCorner (int Index) :
+CPathCorner::CPathCorner (sint32 Index) :
   CBaseEntity(Index),
   CMapEntity (Index),
   CTouchableEntity (Index)
@@ -727,7 +727,7 @@ public:
 	  {
 	  };
 
-	CPathCombat (int Index) :
+	CPathCombat (sint32 Index) :
 	  CBaseEntity (Index),
 	  CPathCorner (Index)
 	  {
@@ -823,7 +823,7 @@ Used as a positional target for spotlights, etc.
 class CInfoNull : public CMapEntity
 {
 public:
-	CInfoNull (int Index) :
+	CInfoNull (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	  {
@@ -843,7 +843,7 @@ Used to group brushes together just for editor convenience.
 class CFuncGroup : public CInfoNull
 {
 public:
-	CFuncGroup (int Index) :
+	CFuncGroup (sint32 Index) :
 	  CBaseEntity (Index),
 	  CInfoNull (Index)
 	  {
@@ -858,7 +858,7 @@ Used as a positional target for lightning.
 class CInfoNotNull : public CMapEntity
 {
 public:
-	CInfoNotNull (int Index) :
+	CInfoNotNull (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	  {
@@ -888,7 +888,7 @@ class CLight : public CMapEntity, public CUsableEntity
 public:
 	uint8		Style;
 
-	CLight (int Index) :
+	CLight (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
@@ -954,7 +954,7 @@ message		two letters; starting lightlevel and ending lightlevel
 class CTargetLightRamp : public CMapEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
-	int32			RampMessage[3];
+	sint32			RampMessage[3];
 	FrameNumber_t	TimeStamp;
 	CLight			*Light;
 	float			Speed;
@@ -971,7 +971,7 @@ public:
 		RampMessage[0] = RampMessage[1] = RampMessage[2] = 0;
 	};
 
-	CTargetLightRamp (int Index) :
+	CTargetLightRamp (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -998,7 +998,7 @@ public:
 			NextThink = level.Frame + FRAMETIME;
 		else if (SpawnFlags & 1)
 		{
-			int32 temp = RampMessage[0];
+			sint32 temp = RampMessage[0];
 			RampMessage[0] = RampMessage[1];
 			RampMessage[1] = temp;
 			RampMessage[2] *= -1;

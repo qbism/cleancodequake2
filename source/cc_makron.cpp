@@ -254,7 +254,7 @@ CFrame MakronFramesPain4 [] =
 };
 CAnim MakronMovePain4 (FRAME_pain401, FRAME_pain404, MakronFramesPain4, &CMonster::Run);
 
-void CMakron::Pain (CBaseEntity *other, float kick, int damage)
+void CMakron::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
@@ -502,7 +502,7 @@ void CMakron::FireHyperblaster ()
 	vec3f	dir;
 	vec3f	start;
 	vec3f	forward, right;
-	int		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - FRAME_attak405);
+	sint32		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - FRAME_attak405);
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
@@ -602,7 +602,7 @@ public:
 	  {
 	  };
 
-	CMakronTorso (int Index) :
+	CMakronTorso (sint32 Index) :
 	  CBaseEntity(Index),
 	  CThinkableEntity (Index)
 	  {
@@ -653,16 +653,16 @@ void CMakron::Dead ()
 	Entity->Link ();
 }
 
-void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->State.GetSound() = 0;
 	// check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 1 /*4*/; n++)
+		for (sint32 n= 0; n < 1 /*4*/; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), damage, GIB_METALLIC);
 		Entity->ThrowHead (GameMedia.Gib_Gear(), damage, GIB_METALLIC);
 		Entity->DeadFlag = true;
@@ -978,7 +978,7 @@ CBaseEntity(),
 CThinkableEntity ()
 {
 };
-CMakronJumpTimer::CMakronJumpTimer (int Index) :
+CMakronJumpTimer::CMakronJumpTimer (sint32 Index) :
 CBaseEntity(Index),
 CThinkableEntity (Index)
 {

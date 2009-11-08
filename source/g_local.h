@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 // define GAME_INCLUDE so that game.h does not define the
-// short, server-visible gclient_t and edict_t structures,
+// sint16, server-visible gclient_t and edict_t structures,
 // because we define the full size ones in this file
 #define GAME_INCLUDE
 #include "game.h"
@@ -109,7 +109,7 @@ struct game_locals_t
 {
 	char		helpmessage1[128];
 	char		helpmessage2[128];
-	byte		helpchanged;	// flash F1 icon if non 0, play sound
+	uint8		helpchanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
 	gclient_t	*clients;		// [maxclients]
@@ -119,9 +119,9 @@ struct game_locals_t
 	char		spawnpoint[32];	// needed for coop respawns
 
 	// store latched cvars here that we want to get at often
-	byte		maxclients;
-	byte		maxspectators;
-	int			maxentities;
+	uint8		maxclients;
+	uint8		maxspectators;
+	sint32			maxentities;
 	bool		cheats;
 	EGameMode	mode; // Game mode
 
@@ -146,7 +146,7 @@ public:
 	char	*Key;
 	char	*Value;
 
-	CKeyValuePair (char *Key, char *Value) :
+	CKeyValuePair (const char *Key, const char *Value) :
 	Key((Key) ? Q_strlwr(Mem_PoolStrDup(Key, com_gamePool, 0)) : NULL),
 	Value((Key) ? Mem_PoolStrDup(Value, com_gamePool, 0) : NULL)
 	{
@@ -278,10 +278,10 @@ extern	EMeansOfDeath	meansOfDeath;
 
 extern	edict_t			*g_edicts;
 
-#define FOFS(x) (int)&(((edict_t *)0)->x)
-#define STOFS(x) (int)&(((spawn_temp_t *)0)->x)
-#define LLOFS(x) (int)&(((CLevelLocals *)0)->x)
-#define CLOFS(x) (int)&(((CClient *)0)->x)
+#define FOFS(x) (sint32)&(((edict_t *)0)->x)
+#define STOFS(x) (sint32)&(((spawn_temp_t *)0)->x)
+#define LLOFS(x) (sint32)&(((CLevelLocals *)0)->x)
+#define CLOFS(x) (sint32)&(((CClient *)0)->x)
 
 // Spawnflags
 // 6 bits reserved for editor flags
@@ -352,7 +352,7 @@ struct gclient_t
 {
 	// known to server
 	playerState_t	playerState;				// communicated by server to clients
-	int				ping;
+	sint32				ping;
 };
 
 struct edict_t
@@ -363,15 +363,15 @@ struct edict_t
 									// of gclient_s to be a player_state_t
 									// but the rest of it is opaque
 	bool				inUse;
-	int					linkCount;
+	sint32					linkCount;
 
 	// FIXME: move these fields to a server private sv_entity_t
 	link_t				area;				// linked to a division node or leaf
 	
-	int					numClusters;		// if -1, use headnode instead
-	int					clusterNums[MAX_ENT_CLUSTERS];
-	int					headNode;			// unused if numClusters != -1
-	int					areaNum, areaNum2;
+	sint32					numClusters;		// if -1, use headnode instead
+	sint32					clusterNums[MAX_ENT_CLUSTERS];
+	sint32					headNode;			// unused if numClusters != -1
+	sint32					areaNum, areaNum2;
 
 	//================================
 
@@ -411,17 +411,17 @@ struct edict_t
 //
 void	G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result);
 
-// Changed to int, rarely used as a float..
-CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, int Radius, uint32 EntityFlags, bool CheckNonSolid);
+// Changed to sint32, rarely used as a float..
+CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid);
 
 template <class ReturnType, uint32 EntityFlags>
-ReturnType *FindRadius (CBaseEntity *From, vec3f &org, int Radius, bool CheckNonSolid = true)
+ReturnType *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
 {
 	return entity_cast<ReturnType>(FindRadius (From, org, Radius, EntityFlags, CheckNonSolid));
 }
 
 template <uint32 EntityFlags>
-inline CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, int Radius, bool CheckNonSolid = true)
+inline CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
 {
 	return FindRadius (From, org, Radius, EntityFlags, CheckNonSolid);
 }

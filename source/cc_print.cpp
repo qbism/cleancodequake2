@@ -69,7 +69,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 
 	if (ent)
 	{
-		int n = ent - g_edicts;
+		sint32 n = ent - g_edicts;
 		if (n < 1 || n > game.maxclients)
 		{
 			Com_Printf (0, "CleanCode Warning: ClientPrintf to a non-client\n");
@@ -140,7 +140,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 	if (dedicated->Integer())
 	{
 		static char	copy[1024];
-		int		i;
+		sint32		i;
 		
 		// Mask off high bits
 		for (i=0 ; i<((MAX_COMPRINT/2) - 1) && string[i] ; i++)
@@ -149,7 +149,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		Com_Printf (0, "%s", copy);
 	}
 
-	for (int i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (printLevel < Player->Client.Respawn.MessageLevel)

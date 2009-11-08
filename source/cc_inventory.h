@@ -37,25 +37,25 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CInventory
 {
 private:
-	int		Array[MAX_CS_ITEMS];
+	sint32		Array[MAX_CS_ITEMS];
 
 public:
-	int		SelectedItem;
+	sint32		SelectedItem;
 
 	void	operator += (CBaseItem *Item);
-	void	operator += (int Index);
+	void	operator += (sint32 Index);
 	void	operator -= (CBaseItem *Item);
-	void	operator -= (int Index);
+	void	operator -= (sint32 Index);
 
 	CInventory ();
 	// Note: All of these functions are for directly
 	// adding items. This will NOT call the pickup
 	// function! You need to add your own checks in for
 	// ammo and such if you use these functions.
-	void	Add (CBaseItem *Item, int Num);
-	void	Remove (CBaseItem *Item, int Num);
-	void	Add (int Index, int Num);
-	void	Remove (int Index, int Num);
+	void	Add (CBaseItem *Item, sint32 Num);
+	void	Remove (CBaseItem *Item, sint32 Num);
+	void	Add (sint32 Index, sint32 Num);
+	void	Remove (sint32 Index, sint32 Num);
 
 	// Draw the inventory
 	void	Draw (CPlayerEntity *ent);
@@ -66,11 +66,11 @@ public:
 	void	SelectNextItem (EItemFlags Flags);
 	void	SelectPrevItem (EItemFlags Flags);
 
-	int		Has	(int Index);
-	int		Has	(CBaseItem *Item);
+	sint32		Has	(sint32 Index);
+	sint32		Has	(CBaseItem *Item);
 
-	void	Set	(CBaseItem *Item, int Num);
-	void	Set	(int Index, int Num);
+	void	Set	(CBaseItem *Item, sint32 Num);
+	void	Set	(sint32 Index, sint32 Num);
 };
 
 void Cmd_Use_f (CPlayerEntity *ent);

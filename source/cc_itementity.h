@@ -54,7 +54,7 @@ public:
 	EItemThinkState ThinkState;
 
 	CItemEntity ();
-	CItemEntity (int Index);
+	CItemEntity (sint32 Index);
 
 	virtual void Spawn (CBaseItem *item);
 
@@ -77,7 +77,7 @@ public:
 };
 
 #define LINK_ITEM_TO_CLASS(mapClassName,DLLClassName) \
-	CMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (int Index) \
+	CMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (sint32 Index) \
 	{ \
 		DLLClassName *newClass = QNew (com_levelPool, 0) DLLClassName(Index); \
 		CBaseItem *Item = FindItemByClassname(#mapClassName); \

@@ -218,7 +218,7 @@ void CBarracudaShark::Melee()
 	CurrentMove = &FlipperMoveAttack;
 }
 
-void CBarracudaShark::Pain (CBaseEntity *other, float kick, int damage)
+void CBarracudaShark::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -325,15 +325,15 @@ void CBarracudaShark::Sight ()
 	Entity->PlaySound (CHAN_VOICE, SoundSight);
 }
 
-void CBarracudaShark::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CBarracudaShark::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;

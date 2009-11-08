@@ -84,7 +84,7 @@ MediaIndex		&CPlayerState::GetGunIndex ()
 	return (MediaIndex&)playerState->gunIndex;
 }
 
-int		&CPlayerState::GetGunFrame ()
+sint32		&CPlayerState::GetGunFrame ()
 {
 	return playerState->gunFrame;
 }
@@ -95,7 +95,7 @@ colorf			&CPlayerState::GetViewBlend ()
 }
 colorb			CPlayerState::GetViewBlendB ()
 {
-	// Convert it to a color byte
+	// Convert it to a color uint8
 	return playerState->viewBlend;
 } // Name had to be different
 
@@ -109,7 +109,7 @@ ERenderDefFlags	&CPlayerState::GetRdFlags ()
 	return playerState->rdFlags;
 }
 
-int16			&CPlayerState::GetStat (uint8 index)
+sint16			&CPlayerState::GetStat (uint8 index)
 {
 	if (index < 0 || index > 32)
 	{
@@ -141,7 +141,7 @@ PlayerState(&client->playerState)
 {
 };
 
-int &CClient::GetPing ()
+sint32 &CClient::GetPing ()
 {
 	return client->ping;
 }
@@ -158,7 +158,7 @@ void CClient::Clear ()
 
 // Players have a special way of allocating the entity.
 // We won't automatically allocate it since it already exists
-CPlayerEntity::CPlayerEntity (int Index) :
+CPlayerEntity::CPlayerEntity (sint32 Index) :
 CBaseEntity(Index),
 CHurtableEntity(Index),
 CPhysicsEntity(Index),
@@ -213,7 +213,7 @@ void CPlayerEntity::BeginServerFrame ()
 		// wait for any button just going down
 		if ( level.Frame > Client.Timers.RespawnTime)
 		{
-			int buttonMask;
+			sint32 buttonMask;
 			// in deathmatch, only wait for attack button
 			if (game.mode & GAME_DEATHMATCH)
 				buttonMask = BUTTON_ATTACK;
@@ -287,8 +287,8 @@ void CPlayerEntity::SpectatorRespawn ()
 		}
 
 		// count spectators
-		int numspec = 0;
-		for (int i = 1; i <= game.maxclients; i++)
+		sint32 numspec = 0;
+		for (sint32 i = 1; i <= game.maxclients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 			if (Player->GetInUse() && Player->Client.Persistent.Spectator)
@@ -356,9 +356,9 @@ void CPlayerEntity::PutInServer ()
 {
 	static const vec3f		mins (-16, -16, -2);
 	static const vec3f		maxs (16, 16, 32);
-	int						index;
+	sint32						index;
 	vec3f					spawn_origin, spawn_angles;
-	int						i;
+	sint32						i;
 	static CPersistentData		saved;
 	static CRespawnData			Respawn;
 
@@ -592,7 +592,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 
 	// set skin
 	s = Info_ValueForKey (UserInfo, "skin");
-	int playernum = State.GetNumber() - 1;
+	sint32 playernum = State.GetNumber() - 1;
 
 	// combine name and skin into a configstring
 #ifdef CLEANCTF_ENABLED
@@ -664,7 +664,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 #ifdef CLEANCTF_ENABLED
 void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 {
-	int playernum = State.GetNumber()-1;
+	sint32 playernum = State.GetNumber()-1;
 	std::cc_string t = s;
 
 	if (t.find('/'))
@@ -724,7 +724,7 @@ void CPlayerEntity::FetchEntData ()
 // Follows is the entire p_view.cpp file!
 
 float	bobmove;
-int		bobcycle;		// odd cycles are right foot going forward
+sint32		bobcycle;		// odd cycles are right foot going forward
 float	bobfracsin;		// sin(bobfrac*M_PI)
 
 /*
@@ -764,7 +764,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 		Client.PlayerState.GetStat (STAT_FLASHES) = Client.PlayerState.GetStat(STAT_FLASHES) | 2;
 
 	// total points of damage shot at the player this frame
-	int count = (Client.DamageValues[DT_BLOOD] + Client.DamageValues[DT_ARMOR] + Client.DamageValues[DT_POWERARMOR]);
+	sint32 count = (Client.DamageValues[DT_BLOOD] + Client.DamageValues[DT_ARMOR] + Client.DamageValues[DT_POWERARMOR]);
 	if (count == 0)
 		return;		// didn't take any damage
 
@@ -797,7 +797,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 		}
 	}
 
-	int realcount = count;
+	sint32 realcount = count;
 	if (count < 10)
 		count = 10;	// always make a visible effect
 
@@ -806,12 +806,12 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	{
 		PainDebounceTime = level.Frame + 7;
 
-		int l = Clamp<int>(((floorf((Max<>(0, Health-1)) / 25))), 0, 3);
+		sint32 l = Clamp<sint32>(((floorf((Max<>(0, Health-1)) / 25))), 0, 3);
 		PlaySound (CHAN_VOICE, GameMedia.Player.Pain[l][(irandom(2))]);
 	}
 
 	// the total alpha of the blend is always proportional to count
-/*	int Alpha = Client.DamageBlend.A + count*3;
+/*	sint32 Alpha = Client.DamageBlend.A + count*3;
 	if (Alpha < 51)
 		Alpha = 51;
 	if (Alpha > 153)
@@ -990,7 +990,7 @@ inline void CPlayerEntity::CalcGunOffset (vec3f &forward, vec3f &right, vec3f &u
 					);
 
 	// gun angles from delta movement
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		float delta = Client.OldViewAngles[i] - angles[i];
 		if (delta > 180)
@@ -1014,7 +1014,7 @@ inline void CPlayerEntity::CalcGunOffset (vec3f &forward, vec3f &right, vec3f &u
 
 	angles.Clear ();
 	// gun_x / gun_y / gun_z are development tools
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		angles[i] += forward[i] * gun_y->Float();
 		angles[i] += right[i] * gun_x->Float();
@@ -1036,7 +1036,7 @@ static inline void SV_AddBlend (colorf color, colorf &v_blend)
 /*	if (color.A <= 0)
 		return;
 
-	byte a2 = v_blend.A  + color.A;	// new total alpha
+	uint8 a2 = v_blend.A  + color.A;	// new total alpha
 	float a3 = (float)(v_blend.A) / (float)(a2);		// fraction of color from old
 
 	v_blend.R = (float)(v_blend.R)*a3 + color.R*(1-a3);
@@ -1084,7 +1084,7 @@ inline void CPlayerEntity::CalcBlend ()
 	// add for powerups
 	if (Client.Timers.QuadDamage > level.Frame)
 	{
-		int remaining = Client.Timers.QuadDamage - level.Frame;
+		sint32 remaining = Client.Timers.QuadDamage - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/damage2.wav"));
@@ -1094,7 +1094,7 @@ inline void CPlayerEntity::CalcBlend ()
 	}
 	else if (Client.Timers.Invincibility > level.Frame)
 	{
-		int remaining = Client.Timers.Invincibility - level.Frame;
+		sint32 remaining = Client.Timers.Invincibility - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect2.wav"));
@@ -1104,7 +1104,7 @@ inline void CPlayerEntity::CalcBlend ()
 	}
 	else if (Client.Timers.EnvironmentSuit > level.Frame)
 	{
-		int remaining = Client.Timers.EnvironmentSuit - level.Frame;
+		sint32 remaining = Client.Timers.EnvironmentSuit - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
@@ -1114,7 +1114,7 @@ inline void CPlayerEntity::CalcBlend ()
 	}
 	else if (Client.Timers.Rebreather > level.Frame)
 	{
-		int remaining = Client.Timers.Rebreather - level.Frame;
+		sint32 remaining = Client.Timers.Rebreather - level.Frame;
 
 		if (remaining == 30)	// beginning to fade
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
@@ -1223,7 +1223,7 @@ inline void CPlayerEntity::FallingDamage ()
 			State.GetEvent() = (delta >= 55) ? EV_FALLFAR : EV_FALL;
 
 		PainDebounceTime = level.Frame;	// no normal pain sound
-		int damage = (delta-30)/2;
+		sint32 damage = (delta-30)/2;
 		if (damage < 1)
 			damage = 1;
 
@@ -1322,7 +1322,7 @@ inline void CPlayerEntity::WorldEffects ()
 		{
 			AirFinished = level.Frame + 100;
 
-			if (((int)(Client.Timers.Rebreather - level.Frame) % 25) == 0)
+			if (((sint32)(Client.Timers.Rebreather - level.Frame) % 25) == 0)
 			{
 				PlaySound (CHAN_AUTO, SoundIndex((!Client.Timers.BreatherSound) ? "player/u_breath1.wav" : "player/u_breath2.wav"));
 				Client.Timers.BreatherSound = !Client.Timers.BreatherSound;
@@ -1393,7 +1393,7 @@ inline void CPlayerEntity::WorldEffects ()
 G_SetClientEffects
 ===============
 */
-int CPlayerEntity::PowerArmorType ()
+EPowerArmorType CPlayerEntity::PowerArmorType ()
 {
 	if (!(Flags & FL_POWER_ARMOR))
 		return POWER_ARMOR_NONE;
@@ -1412,9 +1412,9 @@ inline void CPlayerEntity::SetClientEffects ()
 	if (Health <= 0 || level.IntermissionTime)
 		return;
 
-	if (Client.PowerArmorTime--)
+	if (Client.PowerArmorTime)
 	{
-		int pa_type = PowerArmorType ();
+		sint32 pa_type = PowerArmorType ();
 		if (pa_type == POWER_ARMOR_SCREEN)
 			State.GetEffects() |= EF_POWERSCREEN;
 		else if (pa_type == POWER_ARMOR_SHIELD)
@@ -1422,6 +1422,8 @@ inline void CPlayerEntity::SetClientEffects ()
 			State.GetEffects() |= EF_COLOR_SHELL;
 			State.GetRenderEffects() |= RF_SHELL_GREEN;
 		}
+
+		Client.PowerArmorTime--;
 	}
 
 #ifdef CLEANCTF_ENABLED
@@ -1441,14 +1443,14 @@ inline void CPlayerEntity::SetClientEffects ()
 
 	if (Client.Timers.QuadDamage > level.Frame)
 	{
-		int remaining = Client.Timers.QuadDamage - level.Frame;
+		sint32 remaining = Client.Timers.QuadDamage - level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_QUAD;
 	}
 
 	if (Client.Timers.Invincibility > level.Frame)
 	{
-		int remaining = Client.Timers.Invincibility - level.Frame;
+		sint32 remaining = Client.Timers.Invincibility - level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_PENT;
 	}
@@ -1474,7 +1476,7 @@ inline void CPlayerEntity::SetClientEvent (float xyspeed)
 
 	if ( GroundEntity && xyspeed > 225)
 	{
-		if ( (int)(Client.BobTime+bobmove) != bobcycle )
+		if ( (sint32)(Client.BobTime+bobmove) != bobcycle )
 			State.GetEvent() = EV_FOOTSTEP;
 	}
 }
@@ -1629,7 +1631,7 @@ void CPlayerEntity::EndServerFrame ()
 		return;
 
 	float	BobTime;
-	int		i;
+	sint32		i;
 
 	//
 	// If the origin or velocity have changed since ClientThink(),
@@ -1702,7 +1704,7 @@ void CPlayerEntity::EndServerFrame ()
 	if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 		BobTime *= 4;
 
-	bobcycle = (int)BobTime;
+	bobcycle = (sint32)BobTime;
 	bobfracsin = Q_fabs(sinf(BobTime*M_PI));
 
 	// detect hitting the floor
@@ -1798,19 +1800,19 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	CStatusBar			Bar;
 	static char			entry[1024];
 	size_t				len;
-	static int			sorted[2][MAX_CS_CLIENTS];
-	static int			sortedscores[2][MAX_CS_CLIENTS];
-	static int			Score, total[2], totalscore[2];
-	int					last[2];
-	int					n, j, k;
+	static sint32			sorted[2][MAX_CS_CLIENTS];
+	static sint32			sortedscores[2][MAX_CS_CLIENTS];
+	static sint32			Score, total[2], totalscore[2];
+	sint32					last[2];
+	sint32					n, j, k;
 	static char			str[MAX_COMPRINT/4];
-	int					team;
+	sint32					team;
 
 	// sort the clients by team and Score
 	total[0] = total[1] = 0;
 	last[0] = last[1] = 0;
 	totalscore[0] = totalscore[1] = 0;
-	for (int i=0 ; i<game.maxclients ; i++)
+	for (sint32 i=0 ; i<game.maxclients ; i++)
 	{
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse())
@@ -1874,7 +1876,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 
 	len = Bar.Length ();
 
-	for (int i=0 ; i<16 ; i++)
+	for (sint32 i=0 ; i<16 ; i++)
 	{
 		if (i >= total[0] && i >= total[1])
 			break; // we're done
@@ -1886,7 +1888,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 		{
 			CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + sorted[0][i])->Entity);
 
-			Bar.AddClientBlock (0, 42 + i * 8, sorted[0][i], cl_ent->Client.Respawn.Score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
+			Bar.AddClientBlock (0, 42 + i * 8, sorted[0][i], cl_ent->Client.Respawn.Score, Clamp<sint32>(cl_ent->Client.GetPing(), 0, 999));
 
 			if (cl_ent->Client.Persistent.Flag == NItems::BlueFlag)
 			{
@@ -1904,7 +1906,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 		{
 			CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + sorted[1][i])->Entity);
 
-			Bar.AddClientBlock (160, 42 + i * 8, sorted[1][i], cl_ent->Client.Respawn.Score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
+			Bar.AddClientBlock (160, 42 + i * 8, sorted[1][i], cl_ent->Client.Respawn.Score, Clamp<sint32>(cl_ent->Client.GetPing(), 0, 999));
 
 			if (cl_ent->Client.Persistent.Flag == NItems::RedFlag)
 			{
@@ -1928,7 +1930,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	k = n = 0;
 	if ((MAX_COMPRINT / 4) - len > 50)
 	{
-		for (int i = 0; i < game.maxclients; i++)
+		for (sint32 i = 0; i < game.maxclients; i++)
 		{
 			CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 			if (!cl_ent->GetInUse() ||
@@ -1946,7 +1948,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 				j += 8;
 			}
 
-			Bar.AddClientBlock ((n & 1) ? 160 : 0, j, i, cl_ent->Client.Respawn.Score, Clamp<int>(cl_ent->Client.GetPing(), 0, 999));
+			Bar.AddClientBlock ((n & 1) ? 160 : 0, j, i, cl_ent->Client.Respawn.Score, Clamp<sint32>(cl_ent->Client.GetPing(), 0, 999));
 			len = Bar.Length();
 			
 			if (n & 1)
@@ -1994,26 +1996,26 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 #endif
 
 	CStatusBar			Scoreboard;
-	static int			sorted[MAX_CS_CLIENTS];
-	static int			sortedscores[MAX_CS_CLIENTS];
-	int					Score, total;
+	static sint32			sorted[MAX_CS_CLIENTS];
+	static sint32			sortedscores[MAX_CS_CLIENTS];
+	sint32					Score, total;
 	CPlayerEntity		*Killer = (Enemy && (Enemy->EntityFlags & ENT_PLAYER)) ? entity_cast<CPlayerEntity>(Enemy) : NULL;
 
 	// sort the clients by Score
 	total = 0;
-	for (int i = 0; i < game.maxclients ; i++)
+	for (sint32 i = 0; i < game.maxclients ; i++)
 	{
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse() || cl_ent->Client.Respawn.Spectator)
 			continue;
 		Score = cl_ent->Client.Respawn.Score;
-		int j = 0;
+		sint32 j = 0;
 		for ( ; j < total ; j++)
 		{
 			if (Score > sortedscores[j])
 				break;
 		}
-		int k = total;
+		sint32 k = total;
 		for ( ; k > j ; k--)
 		{
 			sorted[k] = sorted[k-1];
@@ -2028,9 +2030,9 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 	if (total > 12)
 		total = 12;
 
-	for (int i = 0 ; i < total ; i++)
+	for (sint32 i = 0 ; i < total ; i++)
 	{
-		int		x, y;
+		sint32		x, y;
 		char	*tag;
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + sorted[i])->Entity);
 
@@ -2107,8 +2109,8 @@ void CPlayerEntity::SetStats ()
 		//
 		// armor
 		//
-		int			cells = 0;
-		int			power_armor_type = PowerArmorType ();
+		sint32			cells = 0;
+		sint32			power_armor_type = PowerArmorType ();
 		if (power_armor_type)
 		{
 			cells = Client.Persistent.Inventory.Has(NItems::Cells);
@@ -2254,7 +2256,7 @@ void CPlayerEntity::SetSpectatorStats ()
 #ifdef CLEANCTF_ENABLED
 void CPlayerEntity::SetCTFStats()
 {
-	int p1, p2;
+	sint32 p1, p2;
 	CFlagEntity *e;
 
 	Client.PlayerState.GetStat (STAT_CTF_MATCH) = (ctfgame.match > MATCH_NONE) ? CONFIG_CTF_MATCH : 0;
@@ -2306,7 +2308,7 @@ void CPlayerEntity::SetCTFStats()
 			// not at base
 			// check if on player
 			p1 = ImageIndex ("i_ctf1d"); // default to dropped
-			for (int i = 1; i <= game.maxclients; i++)
+			for (sint32 i = 1; i <= game.maxclients; i++)
 			{
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -2331,7 +2333,7 @@ void CPlayerEntity::SetCTFStats()
 			// not at base
 			// check if on player
 			p2 = ImageIndex ("i_ctf2d"); // default to dropped
-			for (int i = 1; i <= game.maxclients; i++)
+			for (sint32 i = 1; i <= game.maxclients; i++)
 			{
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -2417,7 +2419,7 @@ void CPlayerEntity::CTFSetIDView()
 	forward = oldForward;
 	CPlayerEntity *best = NULL;
 	float bd = 0;
-	for (int i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *who = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 		if (!who->GetInUse() || who->GetSolid() == SOLID_NOT)
@@ -2443,7 +2445,7 @@ void CPlayerEntity::CTFAssignGhost()
 	Ghost->Score = 0;
 
 	// Find a key for the ghost
-	int code;
+	sint32 code;
 	while (true)
 	{
 		code = 10000 + (irandom(90000));
@@ -2650,14 +2652,14 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #endif
 
 //ZOID
-	static int oldbuttons;
+	static sint32 oldbuttons;
 	oldbuttons = Client.Buttons;
 	Client.Buttons = ucmd->buttons;
 	Client.LatchedButtons |= Client.Buttons & ~oldbuttons;
 
 	if (Client.Chase.Target)
 	{
-		for (int i = 0; i < 3; i++)
+		for (sint32 i = 0; i < 3; i++)
 			Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
 		if (Client.LatchedButtons & BUTTON_ATTACK)
@@ -2709,7 +2711,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	Client.PlayerState.GetPMove()->gravity = sv_gravity->Float();
 	pm.state = *Client.PlayerState.GetPMove();
 
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		pm.state.origin[i] = State.GetOrigin()[i]*8;
 		pm.state.velocity[i] = Velocity[i]*8;
@@ -2740,13 +2742,13 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	Client.OldPMove = pm.state;
 
 	State.GetOrigin().Set (pm.state.origin[0]*0.125, pm.state.origin[1]*0.125, pm.state.origin[2]*0.125);
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 		Velocity[i] = pm.state.velocity[i]*0.125;
 
 	GetMins() = pm.mins;
 	GetMaxs() = pm.maxs;
 
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
 	if (GroundEntity && !pm.groundEntity && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE))
@@ -2785,7 +2787,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	// touch other objects
 	if (!map_debug->Boolean())
 	{
-		for (int i = 0; i < pm.numTouch; i++)
+		for (sint32 i = 0; i < pm.numTouch; i++)
 		{
 			edict_t *other = pm.touchEnts[i];
 			if (other->Entity)
@@ -2842,7 +2844,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	}
 
 	// update chase cam if being followed
-	for (int i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *other = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 		if (other->GetInUse() && other->Client.Chase.Target == this)
@@ -2853,8 +2855,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #ifdef CLEANCTF_ENABLED
 void CPlayerEntity::CTFAssignTeam()
 {
-	int i;
-	int team1count = 0, team2count = 0;
+	sint32 i;
+	sint32 team1count = 0, team2count = 0;
 
 	Client.Respawn.CTF.State = 0;
 
@@ -2895,7 +2897,7 @@ void CPlayerEntity::InitResp ()
 {
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	int Team = Client.Respawn.CTF.Team;
+	sint32 Team = Client.Respawn.CTF.Team;
 	bool IDState = Client.Respawn.CTF.IDState;
 //ZOID
 #endif
@@ -2935,7 +2937,7 @@ CPersistentData *SavedClients;
 void CPlayerEntity::SaveClientData ()
 {
 	SavedClients = QNew (com_gamePool, 0) CPersistentData[game.maxclients];
-	for (int i=0 ; i<game.maxclients ; i++)
+	for (sint32 i=0 ; i<game.maxclients ; i++)
 	{
 		if (!g_edicts[1+i].Entity)
 			return; // Not set up
@@ -2956,7 +2958,7 @@ void CPlayerEntity::SaveClientData ()
 
 CBaseEntity *CPlayerEntity::SelectCoopSpawnPoint ()
 {
-	int index = State.GetNumber()-1;
+	sint32 index = State.GetNumber()-1;
 
 	// player 0 starts in normal player spawn point
 	if (!index)
@@ -3058,8 +3060,8 @@ to other players
 CBaseEntity *CPlayerEntity::SelectCTFSpawnPoint ()
 {
 	CBaseEntity	*spot = NULL, *spot1 = NULL, *spot2 = NULL;
-	int		count = 0;
-	int		selection;
+	sint32		count = 0;
+	sint32		selection;
 	float	range, range1 = 99999, range2 = 99999;
 	char	*cname;
 
@@ -3118,8 +3120,8 @@ CBaseEntity *CPlayerEntity::SelectCTFSpawnPoint ()
 }
 #endif
 
-vec3f VelocityForDamage (int damage);
-void CPlayerEntity::TossHead (int damage)
+vec3f VelocityForDamage (sint32 damage);
+void CPlayerEntity::TossHead (sint32 damage)
 {
 	if (irandom(2))
 	{
@@ -3150,7 +3152,7 @@ void CPlayerEntity::TossHead (int damage)
 EMeansOfDeath meansOfDeath;
 void Cmd_Help_f (CPlayerEntity *ent);
 
-void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	CanTakeDamage = true;
 	TossPhysics = true;
@@ -3211,7 +3213,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 
 		// clear inventory
 		// this is kind of ugly, but it's how we want to handle keys in coop
-		for (int n = 0; n < GetNumItems(); n++)
+		for (sint32 n = 0; n < GetNumItems(); n++)
 		{
 			if ((game.mode == GAME_COOPERATIVE) && (GetItemByIndex(n)->Flags & ITEMFLAG_KEY))
 				Client.Respawn.CoopRespawn.Inventory.Set(n, Client.Persistent.Inventory.Has(n));
@@ -3229,7 +3231,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 	if (Health < -40)
 	{	// gib
 		PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
-		for (int n = 0; n < 4; n++)
+		for (sint32 n = 0; n < 4; n++)
 			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		TossHead (damage);
 
@@ -3243,7 +3245,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 	{	// normal death
 		if (!DeadFlag)
 		{
-			static int i;
+			static sint32 i;
 
 			i = (i+1)%3;
 			// start a death animation
@@ -3359,7 +3361,7 @@ void CPlayerEntity::UpdateChaseCam()
 
 			State.GetOrigin() = goal;
 
-			for (int i = 0; i < 3; i++)
+			for (sint32 i = 0; i < 3; i++)
 				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			if (targ->DeadFlag)
@@ -3416,7 +3418,7 @@ void CPlayerEntity::UpdateChaseCam()
 
 			State.GetOrigin() = goal;
 
-			for (int i = 0; i < 3; i++)
+			for (sint32 i = 0; i < 3; i++)
 				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			Client.PlayerState.GetViewAngles() = Client.Respawn.CmdAngles;
@@ -3440,7 +3442,7 @@ void CPlayerEntity::UpdateChaseCam()
 			Client.PlayerState.GetGunFrame() = targ->Client.PlayerState.GetGunFrame();
 			Client.PlayerState.GetGunOffset() = targ->Client.PlayerState.GetGunOffset();
 
-			for (int i = 0; i < 3; i++)
+			for (sint32 i = 0; i < 3; i++)
 				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			if (targ->DeadFlag)
@@ -3490,7 +3492,7 @@ void CPlayerEntity::ChaseNext()
 		return;
 	};
 
-	int i = Client.Chase.Target->State.GetNumber();
+	sint32 i = Client.Chase.Target->State.GetNumber();
 	CPlayerEntity *e;
 	do {
 		i++;
@@ -3515,7 +3517,7 @@ void CPlayerEntity::ChasePrev()
 	if (!Client.Chase.Target)
 		return;
 
-	int i = Client.Chase.Target->State.GetNumber();
+	sint32 i = Client.Chase.Target->State.GetNumber();
 	CPlayerEntity *e;
 	do {
 		i--;
@@ -3537,7 +3539,7 @@ void CPlayerEntity::ChasePrev()
 
 void CPlayerEntity::GetChaseTarget()
 {
-	for (int i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *other = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (other->GetInUse() && !other->Client.Respawn.Spectator && !other->NoClip)
@@ -3573,7 +3575,7 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 class CPathNode *GetClosestNodeTo (vec3f origin);
 #endif
 
-void CPlayerEntity::PlayerNoiseAt (vec3f Where, int type)
+void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 {
 	if (type == PNOISE_WEAPON)
 	{
@@ -3678,7 +3680,7 @@ void CPlayerEntity::Begin ()
 		// state when the game is saved, so we need to compensate
 		// with deltaangles
 		vec3f viewAngles = Client.PlayerState.GetViewAngles();
-		for (int i=0 ; i<3 ; i++)
+		for (sint32 i=0 ; i<3 ; i++)
 			Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(viewAngles[i]);
 	}
 	else
@@ -3749,7 +3751,7 @@ bool CPlayerEntity::Connect (char *userinfo)
 	value = Info_ValueForKey (UserInfo, "Spectator");
 	if ((game.mode & GAME_DEATHMATCH) && value.length() && value != "0")
 	{
-		int i, numspec;
+		sint32 i, numspec;
 
 		if (Bans.IsBannedFromSpectator(Adr) || Bans.IsBannedFromSpectator(Info_ValueForKey(UserInfo, "name").c_str()))
 		{

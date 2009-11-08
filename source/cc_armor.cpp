@@ -33,9 +33,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CArmor::CArmor (char *Classname, char *WorldModel, int EffectFlags,
+CArmor::CArmor (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int baseCount, int maxCount, float normalProtection,
+			   char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
 			   float energyProtection) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		Precache),
@@ -70,7 +70,7 @@ bool CArmor::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 		if (normalProtection > other->Client.Persistent.Armor->normalProtection)
 		{
 			// calc new armor values
-			int newCount = baseCount + (((float)other->Client.Persistent.Armor->normalProtection / (float)normalProtection) * other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor));
+			sint32 newCount = baseCount + (((float)other->Client.Persistent.Armor->normalProtection / (float)normalProtection) * other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor));
 			if (newCount > maxCount)
 				newCount = maxCount;
 
@@ -84,7 +84,7 @@ bool CArmor::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 		else
 		{
 			// calc new armor values
-			int newCount = other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor) + (((float)normalProtection / (float)other->Client.Persistent.Armor->normalProtection) * baseCount);
+			sint32 newCount = other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor) + (((float)normalProtection / (float)other->Client.Persistent.Armor->normalProtection) * baseCount);
 			if (newCount > other->Client.Persistent.Armor->maxCount)
 				newCount = other->Client.Persistent.Armor->maxCount;
 
@@ -120,14 +120,14 @@ void CArmor::Drop (CPlayerEntity *ent)
 
 #include "cc_tent.h"
 
-int CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, int damage, int dflags)
+sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 damage, sint32 dflags)
 {
 	if (!damage)
 		return 0;
 	if (dflags & DAMAGE_NO_ARMOR)
 		return 0;
 
-	int save = ceil (((dflags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * damage);
+	sint32 save = ceil (((dflags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * damage);
 	if (save >= Player->Client.Persistent.Inventory.Has(this))
 		save = Player->Client.Persistent.Inventory.Has(this);
 
@@ -153,7 +153,7 @@ public:
 	  {
 	  };
 
-	CArmorEntity (int Index) :
+	CArmorEntity (sint32 Index) :
 	  CBaseEntity(Index),
 	  CItemEntity (Index)
 	  {

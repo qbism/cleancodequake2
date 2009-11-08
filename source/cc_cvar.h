@@ -42,7 +42,7 @@ class CCvar
 
 	char			*mainValue;
 	float			floatVal;
-	int				intVal;
+	sint32				intVal;
 
 	// Updates the cvar values above. Private because it won't be called from anywhere else but here.
 	void Update ();
@@ -50,23 +50,23 @@ class CCvar
 public:
 	// Constructors, to make it a bit easier (using 'new')
 	CCvar ();
-	CCvar (const char *cvarName, const char *defaultValue, int flags = 0);
-	CCvar (const char *cvarName, int defaultValue, int flags = 0);
-	CCvar (const char *cvarName, float defaultValue, int flags = 0);
+	CCvar (const char *cvarName, const char *defaultValue, sint32 flags = 0);
+	CCvar (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
+	CCvar (const char *cvarName, float defaultValue, sint32 flags = 0);
 	// I didn't list any deconstructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
 
-	void Register (const char *cvarName, const char *defaultValue, int flags = 0);
-	void Register (const char *cvarName, int defaultValue, int flags = 0);
-	void Register (const char *cvarName, float defaultValue, int flags = 0);
+	void Register (const char *cvarName, const char *defaultValue, sint32 flags = 0);
+	void Register (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
+	void Register (const char *cvarName, float defaultValue, sint32 flags = 0);
 
 	// Let me know if these defs cause any problems with types.
 	float		Float ();
-	int			Integer();
+	sint32			Integer();
 	char		*String();
 	bool		Boolean (bool MustBeOne = false);
 
 	void Set (const char *value, bool Force = false);
-	void Set (int value, bool Force = false);
+	void Set (sint32 value, bool Force = false);
 	void Set (float value, bool Force = false);
 
 	bool Modified ();

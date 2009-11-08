@@ -37,11 +37,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CFlag : public CBaseItem
 {
 public:
-	int		team;
+	sint32		team;
 
-	CFlag (char *Classname, char *WorldModel, int EffectFlags,
+	CFlag (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int team);
+			   char *Precache, sint32 team);
 
 	CItemEntity *DropItem (CBaseEntity *ent);
 

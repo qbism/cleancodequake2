@@ -89,11 +89,11 @@ public:
 		m_mapData = inMap.m_mapData;
 	}
 
-	inline const TMapTo &operator [](const int Index) const
+	inline const TMapTo &operator [](const sint32 Index) const
 	{
 		return m_mapData[Index].m_value;
 	}
-	inline TMapTo &operator [](const int Index)
+	inline TMapTo &operator [](const sint32 Index)
 	{
 		return m_mapData[Index].m_value;
 	}
@@ -104,7 +104,7 @@ public:
 	TMapTo &Add(typename dataType<TKey>::InitType inKey, typename dataType<TMapTo>::InitType inValue)
 	{
 		// Make sure it wasn't already added
-		for (int i=0 ; i<GetNum() ; i++)
+		for (sint32 i=0 ; i<GetNum() ; i++)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -134,7 +134,7 @@ public:
 	}
 	TMapTo *Find(const TKey &inKey)
 	{
-		for (int i=0 ; i<GetNum() ; i++)
+		for (sint32 i=0 ; i<GetNum() ; i++)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -146,7 +146,7 @@ public:
 	}
 	const TMapTo *Find(const TKey &inKey) const
 	{
-		for (int i=0 ; i<GetNum() ; i++)
+		for (sint32 i=0 ; i<GetNum() ; i++)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -156,13 +156,13 @@ public:
 
 		return NULL;
 	}
-	void Empty(const int Slack=0)
+	void Empty(const sint32 Slack=0)
 	{
 		m_mapData.Empty(Slack);
 	}
 	void Remove(typename dataType<TKey>::InitType inKey)
 	{
-		for (int i=0 ; i<GetNum() ; i++)
+		for (sint32 i=0 ; i<GetNum() ; i++)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -172,33 +172,33 @@ public:
 		}
 	}
 
-	inline const int GetNum() const { return m_mapData.GetNum(); }
-	inline const int GetLastNum() const { return GetNum()>0 ? GetNum()-1 : 0; }
+	inline const sint32 GetNum() const { return m_mapData.GetNum(); }
+	inline const sint32 GetLastNum() const { return GetNum()>0 ? GetNum()-1 : 0; }
 
 	inline TMapTo &Top() { return Last(); }
 	inline const TMapTo &Top() const { return Last(); }
 
-	inline TMapTo &Last(const int Offset=0) { return &m_mapData[NumElems-Offset-1].m_value; }
-	inline const TMapTo &Last(const int Offset=0) const { return &m_mapData[NumElems-Offset-1].m_value; }
+	inline TMapTo &Last(const sint32 Offset=0) { return &m_mapData[NumElems-Offset-1].m_value; }
+	inline const TMapTo &Last(const sint32 Offset=0) const { return &m_mapData[NumElems-Offset-1].m_value; }
 
 	class iterator
 	{
 	protected:
 		dynArray<mapPair> &m_mapData;
-		int m_position;
+		sint32 m_position;
 
 		iterator() {}
 		inline iterator operator =(const iterator &) {}
 
 	public:
-		iterator(mapList &inMap, const int StartingPosition=0)
+		iterator(mapList &inMap, const sint32 StartingPosition=0)
 		: m_mapData(inMap.m_mapData)
 		, m_position(StartingPosition) {}
 
 		~iterator() {}
 
 		inline void operator++() { ++m_position; } // ++Prefix
-		inline void operator++(int) { m_position++; } // Postfix++;
+		inline void operator++(sint32) { m_position++; } // Postfix++;
 		inline TMapTo &operator *() { return m_mapData[m_position].m_value; }
 		inline TMapTo *operator->() { return &m_mapData[m_position].m_value; }
 		inline operator bool() const { return m_mapData.IsValidIndex(m_position); }
@@ -215,27 +215,27 @@ public:
 		~reverseIterator() {}
 
 		inline void operator++() { --m_position; } // ++Prefix
-		inline void operator++(int) { m_position--; } // Postfix++;
+		inline void operator++(sint32) { m_position--; } // Postfix++;
 	};
 
 	class constIterator
 	{
 	protected:
 		const dynArray<mapPair> &m_mapData;
-		int m_position;
+		sint32 m_position;
 
 		constIterator() {}
 		inline constIterator operator =(const constIterator &) {}
 
 	public:
-		constIterator(const mapList &inMap, const int StartingPosition=0)
+		constIterator(const mapList &inMap, const sint32 StartingPosition=0)
 		: m_mapData(inMap.m_mapData)
 		, m_position(StartingPosition) {}
 
 		~constIterator() {}
 
 		inline void operator++() { ++m_position; } // ++Prefix
-		inline void operator++(int) { m_position++; } // Postfix++;
+		inline void operator++(sint32) { m_position++; } // Postfix++;
 		inline const TMapTo &operator *() const { return m_mapData[m_position].m_value; }
 		inline const TMapTo *operator->() const { return &m_mapData[m_position].m_value; }
 		inline operator bool() const { return m_mapData.IsValidIndex(m_position); }
@@ -252,7 +252,7 @@ public:
 		~constReverseIterator() {}
 
 		inline void operator++() { --m_position; } // ++Prefix
-		inline void operator++(int) { m_position--; } // Postfix++;
+		inline void operator++(sint32) { m_position--; } // Postfix++;
 	};
 };
 
@@ -279,7 +279,7 @@ private:
 		dHashPair() {}
 
 	public:
-		int m_hashNext;
+		sint32 m_hashNext;
 
 		dHashPair(typename dataType<TKey>::InitType inKey, typename dataType<TMapTo>::InitType inValue)
 		: mapPairBase(inKey, inValue)
@@ -287,8 +287,8 @@ private:
 	};
 
 	dynArray<dHashPair> m_mapData;
-	int m_hashSize;
-	int *m_hashData;
+	sint32 m_hashSize;
+	sint32 *m_hashData;
 
 	/**
 	 * Functions
@@ -329,11 +329,11 @@ public:
 		return *this;
 	}
 
-	inline const TMapTo &operator [](const int Index) const
+	inline const TMapTo &operator [](const sint32 Index) const
 	{
 		return m_mapData[Index].m_value;
 	}
-	inline TMapTo &operator [](const int Index)
+	inline TMapTo &operator [](const sint32 Index)
 	{
 		return m_mapData[Index].m_value;
 	}
@@ -346,8 +346,8 @@ private:
 	{
 		if (m_hashSize > 0)
 		{
-			memset(m_hashData, BAD_HASH_INDEX, sizeof(int) * m_hashSize);
-			for (int i=0 ; i<m_mapData.GetNum() ; i++)
+			memset(m_hashData, BAD_HASH_INDEX, sizeof(sint32) * m_hashSize);
+			for (sint32 i=0 ; i<m_mapData.GetNum() ; i++)
 			{
 				uint HashValue = (dataType<TKey>::TypeHash<uint>(m_mapData[i].m_key)&m_hashSize-1);
 				m_mapData[i].m_hashNext = m_hashData[HashValue];
@@ -356,15 +356,15 @@ private:
 		}
 	}
 
-	void CheckHash(const int NewNumItems, const bool bForceRehash = false)
+	void CheckHash(const sint32 NewNumItems, const bool bForceRehash = false)
 	{
 		// Make the hash table 1/4th the size of the item table
-		const int NewHashSize = max( Align<int>(NewNumItems>>2, HASH_TABLE_STEP), HASH_TABLE_STEP);
+		const sint32 NewHashSize = max( Align<sint32>(NewNumItems>>2, HASH_TABLE_STEP), HASH_TABLE_STEP);
 
 		if (NewHashSize != m_hashSize)
 		{
 			m_hashSize = NewHashSize;
-			m_hashData = Mem_ReAlloc(m_hashData, sizeof(int) * m_hashSize);
+			m_hashData = Mem_ReAlloc(m_hashData, sizeof(sint32) * m_hashSize);
 
 			Rehash();
 		}
@@ -382,7 +382,7 @@ public:
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 
 		// Make sure it wasn't already added
-		for (int i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -419,7 +419,7 @@ public:
 	{
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 
-		for (int i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -433,7 +433,7 @@ public:
 	{
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 
-		for (int i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -443,7 +443,7 @@ public:
 
 		return NULL;
 	}
-	void Empty(const int Slack=0)
+	void Empty(const sint32 Slack=0)
 	{
 		m_mapData.Empty(Slack);
 		CheckHash(Slack, true);
@@ -455,7 +455,7 @@ public:
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 		bool bResult = false;
 
-		for (int i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -474,33 +474,33 @@ public:
 		return bResult;
 	}
 
-	inline const int GetNum() const { return m_mapData.GetNum(); }
-	inline const int GetLastNum() const { return GetNum()>0 ? GetNum()-1 : 0; }
+	inline const sint32 GetNum() const { return m_mapData.GetNum(); }
+	inline const sint32 GetLastNum() const { return GetNum()>0 ? GetNum()-1 : 0; }
 
 	inline TMapTo &Top() { return Last(); }
 	inline const TMapTo &Top() const { return Last(); }
 
-	inline TMapTo &Last(const int Offset=0) { return &m_mapData[NumElems-Offset-1].m_value; }
-	inline const TMapTo &Last(const int Offset=0) const { return &m_mapData[NumElems-Offset-1].m_value; }
+	inline TMapTo &Last(const sint32 Offset=0) { return &m_mapData[NumElems-Offset-1].m_value; }
+	inline const TMapTo &Last(const sint32 Offset=0) const { return &m_mapData[NumElems-Offset-1].m_value; }
 
 	class iterator
 	{
 	protected:
 		dynArray<dHashPair> &m_mapData;
-		int m_position;
+		sint32 m_position;
 
 		iterator() {}
 		inline iterator operator =(const iterator &) {}
 
 	public:
-		iterator(hashMapList &inMap, const int StartingPosition=0)
+		iterator(hashMapList &inMap, const sint32 StartingPosition=0)
 		: m_mapData(inMap.m_mapData)
 		, m_position(StartingPosition) {}
 
 		~iterator() {}
 
 		inline void operator++() { ++m_position; } // ++Prefix
-		inline void operator++(int) { m_position++; } // Postfix++;
+		inline void operator++(sint32) { m_position++; } // Postfix++;
 		inline TMapTo &operator *() { return m_mapData[m_position].m_value; }
 		inline TMapTo *operator->() { return &m_mapData[m_position].m_value; }
 		inline operator bool() const { return m_mapData.IsValidIndex(m_position); }
@@ -517,27 +517,27 @@ public:
 		~reverseIterator() {}
 
 		inline void operator++() { --m_position; } // ++Prefix
-		inline void operator++(int) { m_position--; } // Postfix++;
+		inline void operator++(sint32) { m_position--; } // Postfix++;
 	};
 
 	class constIterator
 	{
 	protected:
 		const dynArray<dHashPair> &m_mapData;
-		int m_position;
+		sint32 m_position;
 
 		constIterator() {}
 		inline constIterator operator =(const constIterator &) {}
 
 	public:
-		constIterator(const hashMapList &inMap, const int StartingPosition=0)
+		constIterator(const hashMapList &inMap, const sint32 StartingPosition=0)
 		: m_mapData(inMap.m_mapData)
 		, m_position(StartingPosition) {}
 
 		~constIterator() {}
 
 		inline void operator++() { ++m_position; } // ++Prefix
-		inline void operator++(int) { m_position++; } // Postfix++;
+		inline void operator++(sint32) { m_position++; } // Postfix++;
 		inline const TMapTo &operator *() const { return m_mapData[m_position].m_value; }
 		inline const TMapTo *operator->() const { return &m_mapData[m_position].m_value; }
 		inline operator bool() const { return m_mapData.IsValidIndex(m_position); }
@@ -554,6 +554,6 @@ public:
 		~constReverseIterator() {}
 
 		inline void operator++() { --m_position; } // ++Prefix
-		inline void operator++(int) { m_position--; } // Postfix++;
+		inline void operator++(sint32) { m_position--; } // Postfix++;
 	};
 };

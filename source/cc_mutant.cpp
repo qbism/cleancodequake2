@@ -326,7 +326,7 @@ void CMutant::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 			vec3f origin = Entity->State.GetOrigin();
 			vec3f point = origin.MultiplyAngles (Entity->GetMaxs().X, normal);
 
-			int damage = 40 + 10 * frand();
+			sint32 damage = 40 + 10 * frand();
 			entity_cast<CHurtableEntity>(other)->TakeDamage (Entity, Entity, Entity->Velocity, point, normal, damage, damage, 0, MOD_UNKNOWN);
 		}
 	}
@@ -471,7 +471,7 @@ bool CMutant::CheckJump ()
 		{
 			// We weren't able to get to this spot right away.
 			// We need to calculate a good spot for this.
-			int escape = 0;
+			sint32 escape = 0;
 			vec3f angles, forward;
 
 			// Keep going back about 15 units until we're clear
@@ -589,7 +589,7 @@ CFrame MutantFramesPain3 [] =
 };
 CAnim MutantMovePain3 (FRAME_pain301, FRAME_pain311, MutantFramesPain3, &CMonster::Run);
 
-void CMutant::Pain (CBaseEntity *other, float kick, int damage)
+void CMutant::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -664,14 +664,14 @@ CFrame MutantFramesDeath2 [] =
 };
 CAnim MutantMoveDeath2 (FRAME_death201, FRAME_death210, MutantFramesDeath2, ConvertDerivedFunction(&CMutant::Dead));
 
-void CMutant::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CMutant::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;

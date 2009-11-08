@@ -68,12 +68,12 @@ void CMachinegun::FireAnimation (CPlayerEntity *ent)
 	ent->Client.Anim.Priority = ANIM_ATTACK;
 	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
-		ent->State.GetFrame() = (FRAME_crattak1 - (int) (frand()+0.25));
+		ent->State.GetFrame() = (FRAME_crattak1 - (sint32) (frand()+0.25));
 		ent->Client.Anim.EndFrame = FRAME_crattak9;
 	}
 	else
 	{
-		ent->State.GetFrame() = (FRAME_attack1 - (int) (frand()+0.25));
+		ent->State.GetFrame() = (FRAME_attack1 - (sint32) (frand()+0.25));
 		ent->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }
@@ -100,10 +100,10 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 		return;
 	}
 
-	const int		damage = (isQuad) ? 32 : 8,
+	const sint32		damage = (isQuad) ? 32 : 8,
 					kick = (isQuad) ? 8 : 2;
 
-	for (int i=1 ; i<3 ; i++)
+	for (sint32 i=1 ; i<3 ; i++)
 	{
 		ent->Client.KickOrigin[i] = crand() * 0.35;
 		ent->Client.KickAngles[i] = crand() * 0.7;

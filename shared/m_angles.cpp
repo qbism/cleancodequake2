@@ -31,7 +31,7 @@ AngleModf
 */
 float AngleModf (float a)
 {
-	return (360.0f/65536.0f) * ((int)(a*(65536.0f/360.0f)) & 65535);
+	return (360.0f/65536.0f) * ((sint32)(a*(65536.0f/360.0f)) & 65535);
 }
 
 

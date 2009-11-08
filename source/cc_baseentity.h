@@ -43,17 +43,17 @@ public:
 	CEntityState			(entityStateOld_t *state);
 	CEntityState			();
 
-	int		&GetNumber		();
+	sint32		&GetNumber		();
 
 	vec3f	&GetOrigin		();
 	vec3f	&GetAngles		();
 	vec3f	&GetOldOrigin	();
 
 	// Can be 1, 2, 3, or 4
-	int		&GetModelIndex	(uint8 index = 1);
+	sint32		&GetModelIndex	(uint8 index = 1);
 
-	int		&GetFrame		();
-	int		&GetSkinNum		();
+	sint32		&GetFrame		();
+	sint32		&GetSkinNum		();
 
 	EEntityStateEffects			&GetEffects		();
 	EEntityStateRenderEffects	&GetRenderEffects	();
@@ -104,13 +104,13 @@ public:
 	} Team;
 
 	CBaseEntity		*GroundEntity;
-	int				GroundEntityLinkCount;
+	sint32				GroundEntityLinkCount;
 	uint32			SpawnFlags;
 	CBaseEntity		*Enemy;
-	int				ViewHeight;
+	sint32				ViewHeight;
 
 	CBaseEntity ();
-	CBaseEntity (int Index);
+	CBaseEntity (sint32 Index);
 	virtual ~CBaseEntity ();
 
 	virtual		bool		Run () {return true;}; // Runs the entity
@@ -132,17 +132,17 @@ public:
 
 	EServerFlags	&GetSvFlags ();
 
-	int				GetNumClusters ();
-	int				*GetClusterNums ();
-	int				GetHeadNode ();
+	sint32				GetNumClusters ();
+	sint32				*GetClusterNums ();
+	sint32				GetHeadNode ();
 
 	// Not a reference; don't let people change it.
-	int				GetAreaNum (bool second = false);
+	sint32				GetAreaNum (bool second = false);
 
 	link_t			*GetArea ();
 	void			ClearArea ();
 
-	int				GetLinkCount ();
+	sint32				GetLinkCount ();
 
 	virtual bool	&GetInUse ();
 
@@ -153,8 +153,8 @@ public:
 
 	// Sound functions
 	bool			PlayedSounds[CHAN_MAX-1];
-	void			PlaySound (EEntSndChannel channel, MediaIndex soundIndex, byte volume = 255, EAttenuation attenuation = ATTN_NORM, byte timeOfs = 0);
-	void			PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, byte volume = 255, EAttenuation attenuation = ATTN_NORM, byte timeOfs = 0);
+	void			PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
+	void			PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
 
 	virtual void	BecomeExplosion (bool grenade);
 
@@ -261,9 +261,9 @@ CC_ENUM (uint32, EFieldType)
 	FT_BOOL,			// Stores value as bool, but takes any number (non 0 = true)
 	FT_CHAR,			// Stores value as sint8
 	FT_BYTE,			// Stores value as uint8
-	FT_SHORT,			// Stores value as int16
+	FT_SHORT,			// Stores value as sint16
 	FT_USHORT,			// Stores value as uint16
-	FT_INT,				// Stores value as int
+	FT_INT,				// Stores value as sint32
 	FT_UINT,			// Stores value as uint32
 	FT_FLOAT,			// Stores value as float
 	FT_VECTOR,			// Stores value as vec3f (or float[3])
@@ -277,7 +277,7 @@ CC_ENUM (uint32, EFieldType)
 	FT_FRAMENUMBER,		// Stores value as FrameNumber (val * 10)
 	FT_ITEM,			// Stores value as CBaseItem (finds the item and stores it in the ptr)
 	FT_ENTITY,			// Saved as an index to an entity
-	FT_FLOAT_TO_BYTE,	// Accepted float input, stores as byte (0-255)
+	FT_FLOAT_TO_BYTE,	// Accepted float input, stores as uint8 (0-255)
 
 	// Flags
 	FT_GAME_ENTITY	=	BIT(10),		// Stored in gameEntity instead of TClass
@@ -297,7 +297,7 @@ public:
 	template <class TClass>
 	void Create (TClass *Entity, const char *Value) const
 	{
-		byte *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (byte*)Entity->gameEntity : (byte*)Entity) + Offset;
+		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->gameEntity : (uint8*)Entity) + Offset;
 
 		switch (StrippedFields)
 		{
@@ -305,19 +305,19 @@ public:
 			*((bool*)(ClassOffset)) = (atoi(Value) != 0);
 			break;
 		case FT_CHAR:
-			*((sint8*)(ClassOffset)) = Clamp<int>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
+			*((sint8*)(ClassOffset)) = Clamp<sint32>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
 			break;
 		case FT_BYTE:
 			*((uint8*)(ClassOffset)) = Clamp<uint32>(atou(Value), 0, UCHAR_MAX);
 			break;
 		case FT_SHORT:
-			*((int16*)(ClassOffset)) = Clamp<int32>(atoi(Value), SHRT_MIN, SHRT_MAX);
+			*((sint16*)(ClassOffset)) = Clamp<sint32>(atoi(Value), SHRT_MIN, SHRT_MAX);
 			break;
 		case FT_USHORT:
 			*((uint16*)(ClassOffset)) = Clamp<uint32>(atoi(Value), 0, USHRT_MAX);
 			break;
 		case FT_INT:
-			*((int*)(ClassOffset)) = atoi(Value);
+			*((sint32*)(ClassOffset)) = atoi(Value);
 			break;
 		case FT_UINT:
 			*((uint32*)(ClassOffset)) = atou(Value);
@@ -326,7 +326,7 @@ public:
 			*((float*)(ClassOffset)) = atof(Value);
 			break;
 		case FT_FLOAT_TO_BYTE:
-			*((byte*)(ClassOffset)) = (byte)Clamp<int> ((int)(atof(Value) * 255), 0, 255);
+			*((uint8*)(ClassOffset)) = (uint8)Clamp<sint32> ((sint32)(atof(Value) * 255), 0, 255);
 			break;
 		case FT_VECTOR:
 			{
@@ -449,7 +449,7 @@ public:
 	char		*TargetName;
 
 	CMapEntity ();
-	CMapEntity (int Index);
+	CMapEntity (sint32 Index);
 
 	virtual void Spawn() = 0;
 

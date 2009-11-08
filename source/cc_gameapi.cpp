@@ -47,14 +47,14 @@ _CC_DISABLE_DEPRECATION
 	return gi.pointcontents(start);
 _CC_ENABLE_DEPRECATION};
 
-int BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, int maxCount, bool triggers)
+sint32 BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, sint32 maxCount, bool triggers)
 {
 _CC_DISABLE_DEPRECATION
 	return gi.BoxEdicts (mins, maxs, list, maxCount, (triggers) ? AREA_TRIGGERS : AREA_SOLID);
 _CC_ENABLE_DEPRECATION
 }
 
-void ConfigString (int configStringIndex, const char *configStringValue, CPlayerEntity *Audience)
+void ConfigString (sint32 configStringIndex, const char *configStringValue, CPlayerEntity *Audience)
 {
 	if (Audience)
 	{

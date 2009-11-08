@@ -35,7 +35,7 @@ class CTurretEntityBase : public CMapEntity, public CBrushModel, public CBlockab
 {
 public:
 	CTurretEntityBase ();
-	CTurretEntityBase (int Index);
+	CTurretEntityBase (sint32 Index);
 
 	void Blocked (CBaseEntity *other);
 
@@ -53,7 +53,7 @@ public:
 	ENTITYFIELD_DEFS
 
 	CTurretBreach ();
-	CTurretBreach (int Index);
+	CTurretBreach (sint32 Index);
 
 	void Fire ();
 	void Think ();
@@ -65,7 +65,7 @@ class CTurretBase : public CTurretEntityBase
 {
 public:
 	CTurretBase ();
-	CTurretBase (int Index);
+	CTurretBase (sint32 Index);
 
 	void Spawn ();
 };
@@ -85,8 +85,8 @@ public:
 	void Walk () {};
 	void Melee () {};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, int damage);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void Pain (CBaseEntity *other, float kick, sint32 damage);
 
 	void TurretThink ();
 	void TurretLink ();

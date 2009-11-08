@@ -53,37 +53,37 @@ CTrace::CTrace ()
 
 _CC_DISABLE_DEPRECATION
 
-CTrace::CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, int contentMask)
+CTrace::CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, sint32 contentMask)
 {
 	cmTrace_t temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
-CTrace::CTrace (vec3f &start, vec3f &end, CBaseEntity *ignore, int contentMask)
+CTrace::CTrace (vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 contentMask)
 {
 	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
-CTrace::CTrace (vec3f &start, vec3f &end, int contentMask)
+CTrace::CTrace (vec3f &start, vec3f &end, sint32 contentMask)
 {
 	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
 	Copy(temp);
 }
 
-void CTrace::operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, int contentMask)
+void CTrace::operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, sint32 contentMask)
 {
 	cmTrace_t temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
-void CTrace::operator () (vec3f &start, vec3f &end, CBaseEntity *ignore, int contentMask)
+void CTrace::operator () (vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 contentMask)
 {
 	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
-void CTrace::operator () (vec3f &start, vec3f &end, int contentMask)
+void CTrace::operator () (vec3f &start, vec3f &end, sint32 contentMask)
 {
 	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
 	Copy(temp);

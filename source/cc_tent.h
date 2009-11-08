@@ -109,12 +109,12 @@ public:
 				vec3f &Normal,
 				ESparkType SparkType = ST_SPARKS,
 				ESplashType color = SPT_UNKNOWN,
-				byte amount = 8);
+				uint8 amount = 8);
 
 	static void Splash	(vec3f &Origin,
 				vec3f &Normal,
 				ESplashType color = SPT_UNKNOWN,
-				byte amount = 8);
+				uint8 amount = 8);
 
 	static void ShieldSparks	(vec3f &Origin,
 						vec3f &Normal,
@@ -122,10 +122,10 @@ public:
 
 	static void Steam	(vec3f &Origin,
 				vec3f &Normal,
-				byte count = 8,
+				uint8 count = 8,
 				ESplashType color = SPT_UNKNOWN,
-				short magnitude = 12,
-				short id = -1,
+				sint16 magnitude = 12,
+				sint16 id = -1,
 				long endTime = 0);
 
 	static void HeatSteam	(vec3f &Origin,
@@ -150,24 +150,24 @@ public:
 
 	static void HeatBeam	(vec3f & Start,
 					vec3f &End,
-					short Ent,
+					sint16 Ent,
 					bool Monster = false);
 
 	static void ForceWall	(vec3f &Start,
 					vec3f &End,
-					byte color = NSColor::Lime);
+					uint8 color = NSColor::Lime);
 
 	static void DebugTrail	(vec3f &Start,
 					vec3f &End);
 
 	static void Lightning	(vec3f &Start,
 					vec3f &End,
-					short SrcEnt,
-					short DestEnt);
+					sint16 SrcEnt,
+					sint16 DestEnt);
 
 	static void GrappleCable	(vec3f &Start,
 						vec3f &End,
-						short Ent,
+						sint16 Ent,
 						vec3f &Offset = vec3fOrigin);
 
 	static void BFGLaser	(vec3f &Start,
@@ -175,7 +175,7 @@ public:
 
 	static void FleshCable		(vec3f &Start,
 						vec3f &End,
-						short Ent);
+						sint16 Ent);
 	static void BubbleTrail	(vec3f &Start,
 						vec3f &End);
 
@@ -222,24 +222,24 @@ class CTempEnt
 {
 public:
 	static void Flashlight		(vec3f &Origin,
-						short Ent);
+						sint16 Ent);
 
 	static void BossTeleport	(vec3f &Origin);
 
 	static void TeleportEffect	(vec3f &Origin);
 
 	static void WidowBeamOut	(vec3f &Origin,
-						short id = -1);
+						sint16 id = -1);
 
 	static void WidowSplash	(vec3f &Origin);
 
 	static void MuzzleFlash	(vec3f &Origin,
-						short Ent,
-						short id);
+						sint16 Ent,
+						sint16 id);
 
 	static void MonsterFlash	(vec3f &Origin,
-						short Ent,
-						short id);
+						sint16 Ent,
+						sint16 id);
 };
 
 #else

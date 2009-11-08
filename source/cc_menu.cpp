@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_menu.h"
 
-CMenuItem::CMenuItem (CMenu *Menu, int x, int y) :
+CMenuItem::CMenuItem (CMenu *Menu, sint32 x, sint32 y) :
 Menu(Menu),
 x(x),
 y(y),
@@ -151,7 +151,7 @@ void CMenuState::CloseMenu ()
 
 void CMenuState::SelectNext ()
 {
-	int i = 0;
+	sint32 i = 0;
 
 	if (!CurrentMenu)
 	{
@@ -204,7 +204,7 @@ void CMenuState::SelectNext ()
 
 void CMenuState::SelectPrev ()
 {
-	int i = 0;
+	sint32 i = 0;
 
 	if (!CurrentMenu)
 	{

@@ -78,7 +78,7 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 		}
 		else
 		{
-			const int	effect = ((ent->Client.PlayerState.GetGunFrame() == 6) || (ent->Client.PlayerState.GetGunFrame() == 9)) ? EF_HYPERBLASTER : 0,
+			const sint32	effect = ((ent->Client.PlayerState.GetGunFrame() == 6) || (ent->Client.PlayerState.GetGunFrame() == 9)) ? EF_HYPERBLASTER : 0,
 						damage = (game.mode & GAME_DEATHMATCH) ?
 				(isQuad) ? 60 : 15
 				:

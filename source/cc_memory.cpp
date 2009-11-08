@@ -26,24 +26,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "cc_cmds.h"
 
 #define MEM_MAX_ALLOC			(128 * 1024 * 1024) // 128MB
-#define MEM_SENTINEL_TOP(b)		(byte)((/*0x32 +*/ (b)->realSize) & 0xff)
-#define MEM_SENTINEL_FOOT(b)	(byte)((/*0x64 +*/ (b)->realSize) & 0xff)
+#define MEM_SENTINEL_TOP(b)		(uint8)((/*0x32 +*/ (b)->realSize) & 0xff)
+#define MEM_SENTINEL_FOOT(b)	(uint8)((/*0x64 +*/ (b)->realSize) & 0xff)
 #define MEM_TOUCH_STEP			256
 
 struct memBlock_t
 {
-	byte				topSentinel;				// For memory integrity checking
+	uint8				topSentinel;				// For memory integrity checking
 
 	memBlock_t			*next, *prev;				// Next/Previous block in this pool
 	struct memPool_t	*pool;						// Owner pool
 	struct memPuddle_t	*puddle;					// Puddle allocated from
-	int					tagNum;						// For group free
+	sint32					tagNum;						// For group free
 
 	const char			*allocFile;					// File the memory was allocated in
-	int					allocLine;					// Line the memory was allocated at
+	sint32					allocLine;					// Line the memory was allocated at
 
 	void				*memPointer;				// pointer to allocated memory
-	size_t				memSize;					// Size minus the header, sentinel, and any rounding up to the byte barrier
+	size_t				memSize;					// Size minus the header, sentinel, and any rounding up to the uint8 barrier
 	size_t				realSize;					// Actual size of block
 };
 
@@ -61,7 +61,7 @@ struct memPool_t
 	size_t				byteCount;					// Total allocated bytes
 
 	const char			*createFile;				// File this pool was created on
-	int					createLine;					// Line this pool was created on
+	sint32					createLine;					// Line this pool was created on
 };
 
 static memPool_t		m_poolList[MEM_MAX_POOL_COUNT];
@@ -109,7 +109,7 @@ Mem_AddPuddles
 */
 static void Mem_AddPuddles(memPuddleInfo_t *pInfo)
 {
-	size_t PuddleSize = (sizeof(memPuddle_t) + sizeof(memBlock_t) + pInfo->blockSize + sizeof(byte));
+	size_t PuddleSize = (sizeof(memPuddle_t) + sizeof(memBlock_t) + pInfo->blockSize + sizeof(uint8));
 	size_t TotalSize = PuddleSize * pInfo->granularity;
 
 	void *Buffer = calloc(TotalSize, 1);
@@ -118,12 +118,12 @@ static void Mem_AddPuddles(memPuddleInfo_t *pInfo)
 
 	for (size_t i=0 ; i<pInfo->granularity ; i++)
 	{
-		memPuddle_t *Puddle = (memPuddle_t*)((byte *)Buffer + (PuddleSize * i));
-		memBlock_t *MemBlock = (memBlock_t*)((byte*)Puddle + sizeof(memPuddle_t));
+		memPuddle_t *Puddle = (memPuddle_t*)((uint8 *)Buffer + (PuddleSize * i));
+		memBlock_t *MemBlock = (memBlock_t*)((uint8*)Puddle + sizeof(memPuddle_t));
 
 		MemBlock->realSize = PuddleSize;
 		MemBlock->memSize = pInfo->blockSize;
-		MemBlock->memPointer = (void*)((byte*)MemBlock + sizeof(memBlock_t));
+		MemBlock->memPointer = (void*)((uint8*)MemBlock + sizeof(memBlock_t));
 		MemBlock->puddle = Puddle;
 
 		Puddle->block = MemBlock;
@@ -306,7 +306,7 @@ static memPool_t *Mem_FindPool (const char *name)
 _Mem_CreatePool
 ========================
 */
-memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const int fileLine)
+memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileLine)
 {
 	memPool_t	*pool;
 	uint32		i;
@@ -356,7 +356,7 @@ memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const int fil
 _Mem_DeletePool
 ========================
 */
-size_t _Mem_DeletePool(struct memPool_t *pool, const char *fileName, const int fileLine)
+size_t _Mem_DeletePool(struct memPool_t *pool, const char *fileName, const sint32 fileLine)
 {
 	size_t size;
 
@@ -387,7 +387,7 @@ size_t _Mem_DeletePool(struct memPool_t *pool, const char *fileName, const int f
 _Mem_CheckBlockIntegrity
 ========================
 */
-static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, const int fileLine)
+static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, const sint32 fileLine)
 {
 	if (mem->topSentinel != MEM_SENTINEL_TOP(mem))
 	{
@@ -397,7 +397,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 			"check: %s:#%i",
 			fileName, fileLine);
 	}
-	else if (*((byte*)mem->memPointer+mem->memSize) != MEM_SENTINEL_FOOT(mem))
+	else if (*((uint8*)mem->memPointer+mem->memSize) != MEM_SENTINEL_FOOT(mem))
 	{
 		_CC_ASSERT_EXPR (0, "Bad memory footer sentinel (buffer overflow)");
 		Com_Error (ERR_FATAL,
@@ -415,7 +415,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 _Mem_Free
 ========================
 */
-size_t _Mem_Free (const void *ptr, const char *fileName, const int fileLine)
+size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine)
 {
 	memBlock_t	*mem;
 	size_t		size;
@@ -425,7 +425,7 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const int fileLine)
 		return 0;
 
 	// Check sentinels
-	mem = (memBlock_t *)((byte *)ptr - sizeof(memBlock_t));
+	mem = (memBlock_t *)((uint8 *)ptr - sizeof(memBlock_t));
 	_Mem_CheckBlockIntegrity(mem, fileName, fileLine);
 
 	// Decrement counters
@@ -454,7 +454,7 @@ _Mem_FreeTag
 Free memory blocks assigned to a specified tag within a pool
 ========================
 */
-size_t _Mem_FreeTag (struct memPool_t *pool, const int tagNum, const char *fileName, const int fileLine)
+size_t _Mem_FreeTag (struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	memBlock_t	*mem, *next;
 	memBlock_t	*headNode = &pool->blockHeadNode;
@@ -483,7 +483,7 @@ _Mem_FreePool
 Free all items within a pool
 ========================
 */
-size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const int fileLine)
+size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const sint32 fileLine)
 {
 	memBlock_t	*mem, *next;
 	memBlock_t	*headNode = &pool->blockHeadNode;
@@ -500,7 +500,7 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const int fi
 	}
 
 	_CC_ASSERT_EXPR (pool->blockCount == 0, "Pool block count is empty or overflowed");
-	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool byte count is empty or overflowed");
+	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool uint8 count is empty or overflowed");
 	return size;
 }
 
@@ -512,7 +512,7 @@ _Mem_Alloc
 Returns 0 filled memory allocated in a pool with a tag
 ========================
 */
-void *_Mem_Alloc(size_t size, struct memPool_t *pool, const int tagNum, const char *fileName, const int fileLine)
+void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	memBlock_t *mem;
 
@@ -538,7 +538,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const int tagNum, const ch
 	if (!mem)
 	{
 		// Add header and round to cacheline
-		const size_t newSize = (size + sizeof(memBlock_t) + sizeof(byte) + 31) & ~31;
+		const size_t newSize = (size + sizeof(memBlock_t) + sizeof(uint8) + 31) & ~31;
 		mem = (memBlock_t*)calloc (1, newSize);
 		if (!mem)
 		{
@@ -546,7 +546,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const int tagNum, const ch
 			return NULL;
 		}
 
-		mem->memPointer = (void*)((byte*)mem + sizeof(memBlock_t));
+		mem->memPointer = (void*)((uint8*)mem + sizeof(memBlock_t));
 		mem->memSize = size;
 		mem->puddle = NULL;
 		mem->realSize = newSize;
@@ -560,7 +560,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const int tagNum, const ch
 
 	// Fill in the integrity sentinels
 	mem->topSentinel = MEM_SENTINEL_TOP(mem);
-	*((byte*)mem->memPointer+mem->memSize) = MEM_SENTINEL_FOOT(mem);
+	*((uint8*)mem->memPointer+mem->memSize) = MEM_SENTINEL_FOOT(mem);
 
 	// For integrity checking and stats
 	pool->blockCount++;
@@ -581,12 +581,12 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const int tagNum, const ch
 _Mem_ReAlloc
 ========================
 */
-void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const int fileLine)
+void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32 fileLine)
 {
 	void *Result;
 	if (ptr && newSize)
 	{
-		memBlock_t *Block = (memBlock_t*)((byte*)ptr - sizeof(memBlock_t));
+		memBlock_t *Block = (memBlock_t*)((uint8*)ptr - sizeof(memBlock_t));
 
 		// Just in case...
 		if (Block->memSize == newSize)
@@ -634,7 +634,7 @@ _Mem_PoolStrDup
 No need to null terminate the extra spot because Mem_Alloc returns zero-filled memory
 ================
 */
-char *_Mem_PoolStrDup (const char *in, struct memPool_t *pool, const int tagNum, const char *fileName, const int fileLine)
+char *_Mem_PoolStrDup (const char *in, struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	char	*out;
 
@@ -664,7 +664,7 @@ size_t _Mem_PoolSize (struct memPool_t *pool)
 _Mem_TagSize
 ================
 */
-size_t _Mem_TagSize (struct memPool_t *pool, const int tagNum)
+size_t _Mem_TagSize (struct memPool_t *pool, const sint32 tagNum)
 {
 	memBlock_t	*mem;
 	memBlock_t	*headNode = &pool->blockHeadNode;
@@ -689,7 +689,7 @@ size_t _Mem_TagSize (struct memPool_t *pool, const int tagNum)
 _Mem_ChangeTag
 ========================
 */
-size_t _Mem_ChangeTag (struct memPool_t *pool, const int tagFrom, const int tagTo)
+size_t _Mem_ChangeTag (struct memPool_t *pool, const sint32 tagFrom, const sint32 tagTo)
 {
 	memBlock_t	*mem;
 	memBlock_t	*headNode = &pool->blockHeadNode;
@@ -717,7 +717,7 @@ size_t _Mem_ChangeTag (struct memPool_t *pool, const int tagFrom, const int tagT
 _Mem_CheckPoolIntegrity
 ========================
 */
-void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, const int fileLine)
+void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, const sint32 fileLine)
 {
 	memBlock_t	*mem;
 	memBlock_t	*headNode = &pool->blockHeadNode;
@@ -735,7 +735,7 @@ void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, cons
 		_Mem_CheckBlockIntegrity (mem, fileName, fileLine);
 	}
 
-	// Check block/byte counts
+	// Check block/uint8 counts
 	if (pool->blockCount != blocks)
 		Com_Error (ERR_FATAL, "Mem_CheckPoolIntegrity: bad block count\n" "check: %s:#%i", fileName, fileLine);
 	if (pool->byteCount != size)
@@ -748,7 +748,7 @@ void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, cons
 _Mem_CheckGlobalIntegrity
 ========================
 */
-void _Mem_CheckGlobalIntegrity(const char *fileName, const int fileLine)
+void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 {
 	CTimer Timer;
 
@@ -768,12 +768,12 @@ void _Mem_CheckGlobalIntegrity(const char *fileName, const int fileLine)
 _Mem_TouchPool
 ========================
 */
-void _Mem_TouchPool(struct memPool_t *pool, const char *fileName, const int fileLine)
+void _Mem_TouchPool(struct memPool_t *pool, const char *fileName, const sint32 fileLine)
 {
 	memBlock_t	*mem;
 	memBlock_t	*headNode = &pool->blockHeadNode;
 	uint32		i;
-	int			sum;
+	sint32			sum;
 
 	_CC_ASSERT_EXPR (pool, "Attempted to touch a NULL pool");
 	if (!pool)
@@ -786,7 +786,7 @@ void _Mem_TouchPool(struct memPool_t *pool, const char *fileName, const int file
 	{
 		// Touch each page
 		for (i=0 ; i<mem->memSize ; i+=MEM_TOUCH_STEP)
-			sum += ((byte *)mem->memPointer)[i];
+			sum += ((uint8 *)mem->memPointer)[i];
 	}
 }
 
@@ -796,7 +796,7 @@ void _Mem_TouchPool(struct memPool_t *pool, const char *fileName, const int file
 _Mem_TouchGlobal
 ========================
 */
-void _Mem_TouchGlobal(const char *fileName, const int fileLine)
+void _Mem_TouchGlobal(const char *fileName, const sint32 fileLine)
 {
 	CTimer Timer;
 

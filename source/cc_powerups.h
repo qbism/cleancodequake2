@@ -48,7 +48,7 @@ class CBasePowerUp : public CBaseItem
 public:
 	EPowerupFlags PowerupFlags;
 
-	CBasePowerUp (char *Classname, char *WorldModel, int EffectFlags,
+	CBasePowerUp (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -63,7 +63,7 @@ public:
 class CMegaHealth : public CBasePowerUp
 {
 public:
-	CMegaHealth (char *Classname, char *WorldModel, int EffectFlags,
+	CMegaHealth (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -75,7 +75,7 @@ public:
 class CBackPack : public CBasePowerUp
 {
 public:
-	CBackPack (char *Classname, char *WorldModel, int EffectFlags,
+	CBackPack (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -86,7 +86,7 @@ public:
 class CQuadDamage : public CBasePowerUp
 {
 public:
-	CQuadDamage (char *Classname, char *WorldModel, int EffectFlags,
+	CQuadDamage (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -98,7 +98,7 @@ public:
 class CInvulnerability : public CBasePowerUp
 {
 public:
-	CInvulnerability (char *Classname, char *WorldModel, int EffectFlags,
+	CInvulnerability (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -110,7 +110,7 @@ public:
 class CSilencer : public CBasePowerUp
 {
 public:
-	CSilencer (char *Classname, char *WorldModel, int EffectFlags,
+	CSilencer (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -122,7 +122,7 @@ public:
 class CRebreather : public CBasePowerUp
 {
 public:
-	CRebreather (char *Classname, char *WorldModel, int EffectFlags,
+	CRebreather (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -134,7 +134,7 @@ public:
 class CEnvironmentSuit : public CBasePowerUp
 {
 public:
-	CEnvironmentSuit (char *Classname, char *WorldModel, int EffectFlags,
+	CEnvironmentSuit (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -146,7 +146,7 @@ public:
 class CBandolier : public CBasePowerUp
 {
 public:
-	CBandolier (char *Classname, char *WorldModel, int EffectFlags,
+	CBandolier (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -157,7 +157,7 @@ public:
 class CAdrenaline : public CBasePowerUp
 {
 public:
-	CAdrenaline (char *Classname, char *WorldModel, int EffectFlags,
+	CAdrenaline (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -168,7 +168,7 @@ public:
 class CAncientHead : public CBasePowerUp
 {
 public:
-	CAncientHead (char *Classname, char *WorldModel, int EffectFlags,
+	CAncientHead (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
@@ -179,7 +179,7 @@ public:
 class CPowerShield : public CBasePowerUp
 {
 public:
-	CPowerShield (char *Classname, char *WorldModel, int EffectFlags,
+	CPowerShield (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 

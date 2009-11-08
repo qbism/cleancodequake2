@@ -69,7 +69,7 @@ void AssertExpression (const bool expr, const char *msg);
 // server to client
 // note: ONLY add things to the bottom, to keep Quake2 compatibility
 //
-CC_ENUM (byte, ESVCType)
+CC_ENUM (uint8, ESVCType)
 {
 	SVC_BAD,
 
@@ -89,13 +89,13 @@ CC_ENUM (byte, ESVCType)
 	SVC_DISCONNECT,
 	SVC_RECONNECT,
 	SVC_SOUND,					// <see code>
-	SVC_PRINT,					// [byte] id [string] null terminated string
+	SVC_PRINT,					// [uint8] id [string] null terminated string
 	SVC_STUFFTEXT,				// [string] stuffed into client's console buffer, should be \n terminated
 	SVC_SERVERDATA,				// [long] protocol ...
-	SVC_CONFIGSTRING,			// [short] [string]
+	SVC_CONFIGSTRING,			// [sint16] [string]
 	SVC_SPAWNBASELINE,
 	SVC_CENTERPRINT,			// [string] to put in center of the screen
-	SVC_DOWNLOAD,				// [short] size [size bytes]
+	SVC_DOWNLOAD,				// [sint16] size [size bytes]
 	SVC_PLAYERINFO,				// variable
 	SVC_PACKETENTITIES,			// [...]
 	SVC_DELTAPACKETENTITIES,	// [...]
@@ -144,17 +144,17 @@ inline float frand ()
 
 inline float crand ()
 {
-	return ((int)randomMT() - 0x7FFFFFFF) * 0.000000000465661287307739257812f;
+	return ((sint32)randomMT() - 0x7FFFFFFF) * 0.000000000465661287307739257812f;
 }
 
-inline int irandom (const int h)
+inline sint32 irandom (const sint32 h)
 {
-	return (int)(frand() * h);
+	return (sint32)(frand() * h);
 }
 
-inline int icrandom (const int h)
+inline sint32 icrandom (const sint32 h)
 {
-	return (int)(crand() * h);
+	return (sint32)(crand() * h);
 }
 
 /*
@@ -208,11 +208,11 @@ bool		Info_Validate (std::cc_string &s);
 */
 
 extern float (*LittleFloat) (float f);
-extern int (*LittleLong) (int l);
-extern int16 (*LittleShort) (int16 s);
+extern sint32 (*LittleLong) (sint32 l);
+extern sint16 (*LittleShort) (sint16 s);
 extern float (*BigFloat) (float f);
-extern int (*BigLong) (int l);
-extern int16 (*BigShort) (int16 s);
+extern sint32 (*BigLong) (sint32 l);
+extern sint16 (*BigShort) (sint16 s);
 
 void		Swap_Init ();
 
@@ -307,12 +307,12 @@ struct cVar_t
 	char			*name;
 	char			*string;
 	char			*latchedString;	// for CVAR_LATCH vars
-	int				flags;
+	sint32				flags;
 	BOOL			modified;		// set each time the cvar is changed
 	float			floatVal;
 
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-	int				intVal;
+	sint32				intVal;
 #endif
 };
 
@@ -342,7 +342,7 @@ enum
 //
 // lower bits are stronger, and will eat weaker brushes completely
 //
-CC_ENUM (int, EBrushContents)
+CC_ENUM (sint32, EBrushContents)
 {
 	CONTENTS_SOLID			= BIT(0),		// an eye is never valid in a solid
 	CONTENTS_WINDOW			= BIT(1),		// translucent, but not watery
@@ -426,7 +426,7 @@ CC_ENUM (uint8, EWaterLevel)
 	WATER_UNDER
 };
 
-CC_ENUM (int, ESurfaceFlags)
+CC_ENUM (sint32, ESurfaceFlags)
 {
 	SURF_TEXINFO_LIGHT		= BIT(0),		// value will hold the light strength
 	SURF_TEXINFO_SLICK		= BIT(1),		// affects game physics
@@ -442,7 +442,7 @@ CC_ENUM (int, ESurfaceFlags)
 };
 
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-typedef int EQ3SurfaceFlags;
+typedef sint32 EQ3SurfaceFlags;
 enum
 {
 	// Q3BSP
@@ -504,28 +504,28 @@ struct plane_t
 {
 	vec3f			normal;
 	float			dist;
-	byte			type;			// for fast side tests
-	byte			signBits;		// signx + (signy<<1) + (signz<<1)
+	uint8			type;			// for fast side tests
+	uint8			signBits;		// signx + (signy<<1) + (signz<<1)
 };
 
 //
 // m_plane.c
 //
-int BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane);
+sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane);
 EPlaneInfo PlaneTypeForNormal(const vec3_t normal);
 void CategorizePlane(plane_t *plane);
 void PlaneFromPoints(const vec3_t verts[3], plane_t *plane);
 bool ComparePlanes(const vec3_t p1normal, const float p1dist, const vec3_t p2normal, const float p2dist);
 void SnapVector(vec3_t normal);
 void ProjectPointOnPlane(vec3_t dst, const vec3_t point, const vec3_t normal);
-int SignbitsForPlane(const plane_t *out);
+sint32 SignbitsForPlane(const plane_t *out);
 
 inline float PlaneDiff (vec3_t point, plane_t *plane)
 {
 	return ((plane->type < 3 ? point[plane->type] : Dot3Product(point, plane->normal)) - plane->dist);
 }
 
-inline int Box_On_Plane_Side (const vec3_t mins, const vec3_t maxs, const plane_t *p)
+inline sint32 Box_On_Plane_Side (const vec3_t mins, const vec3_t maxs, const plane_t *p)
 {
 	return ((p->type < 3) ?
 		(p->dist <= mins[p->type]) ?
@@ -547,11 +547,11 @@ struct cmBspSurface_t
 {
 	char			name[16];
 	ESurfaceFlags	flags;
-	int				value;
+	sint32				value;
 
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 	// Q3BSP
-	int				contents;
+	sint32				contents;
 #endif
 };
 
@@ -564,7 +564,7 @@ struct cmTrace_t
 	vec3_t			endPos;		// final position
 	plane_t			plane;		// surface normal at impact
 	cmBspSurface_t	*surface;	// surface hit
-	int				contents;	// contents on other side of surface hit
+	sint32				contents;	// contents on other side of surface hit
 	struct edict_t	*ent;		// not set by CM_*() functions
 };
 
@@ -607,13 +607,13 @@ enum
 // will result in a prediction error of some degree.
 struct pMoveState_t
 {
-	int				pmType;
+	sint32				pmType;
 
 	svec3_t			origin;			// 12.3
 	svec3_t			velocity;		// 12.3
-	byte			pmFlags;		// ducked, jump_held, etc
-	byte			pmTime;			// each unit = 8 ms
-	int16			gravity;
+	uint8			pmFlags;		// ducked, jump_held, etc
+	uint8			pmTime;			// each unit = 8 ms
+	sint16			gravity;
 	svec3_t			deltaAngles;	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
 };
@@ -642,23 +642,23 @@ CC_ENUM (uint8, EButtons)
 // userCmd_t is sent to the server each client frame
 struct userCmd_t
 {
-	byte		msec;
+	uint8		msec;
 	EButtons	buttons;
 
-	int16		angles[3];
+	sint16		angles[3];
 
-	int16		forwardMove;
-	int16		sideMove;
-	int16		upMove;
+	sint16		forwardMove;
+	sint16		sideMove;
+	sint16		upMove;
 
-	byte		impulse;		// remove?
+	uint8		impulse;		// remove?
 
 	// Paril notes:
 	// lightLevel cannot be used to accurately check light under player.
-	// lightLevel is stored as a byte, yet is modulate-dependant; for example,
+	// lightLevel is stored as a uint8, yet is modulate-dependant; for example,
 	// a light of value 127 will only show as 127 on gl_modulate 1. Above that,
 	// it will multiply by the modulate value, making this unreliable.
-	byte		lightLevel;		// light level the player is standing on
+	uint8		lightLevel;		// light level the player is standing on
 };
 
 #define MAXTOUCH	32
@@ -673,7 +673,7 @@ struct pMove_t
 	BOOL			snapInitial;	// if s has been changed outside pmove
 
 	// results (out)
-	int				numTouch;
+	sint32				numTouch;
 	struct edict_t	*touchEnts[MAXTOUCH];
 
 	vec3_t			viewAngles;			// clamped
@@ -682,12 +682,12 @@ struct pMove_t
 	vec3_t			mins, maxs;			// bounding box size
 
 	struct edict_t	*groundEntity;
-	int				waterType;
-	int				waterLevel;
+	sint32				waterType;
+	sint32				waterLevel;
 
 	// callbacks to test the world
 	cmTrace_t		(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
-	int				(*pointContents) (vec3_t point);
+	sint32				(*pointContents) (vec3_t point);
 };
 #endif
 
@@ -701,7 +701,7 @@ struct pMoveNew_t
 	BOOL			snapInitial;	// if s has been changed outside pmove
 
 	// results (out)
-	int				numTouch;
+	sint32				numTouch;
 	struct edict_t	*touchEnts[MAXTOUCH];
 
 	vec3f			viewAngles;			// clamped
@@ -781,7 +781,7 @@ CC_ENUM (uint32, EEntityStateEffects)
 */
 
 // entityState_t->renderfx flags
-CC_ENUM (int, EEntityStateRenderEffects)
+CC_ENUM (sint32, EEntityStateRenderEffects)
 {
 	RF_MINLIGHT			= BIT(0),		// allways have some light (viewmodel)
 	RF_VIEWERMODEL		= BIT(1),		// don't draw through eyes, only mirrors
@@ -1503,7 +1503,7 @@ CC_ENUM (uint8, EAttenuation)
 */
 
 // dmflags->floatVal flags
-CC_ENUM (int, EDeathmatchFlags)
+CC_ENUM (sint32, EDeathmatchFlags)
 {
 	DF_NO_HEALTH		= BIT(0),
 	DF_NO_ITEMS			= BIT(1),
@@ -1565,7 +1565,7 @@ CC_ENUM (int, EDeathmatchFlags)
 
 // config strings are a general means of communication from the server to all
 // connected clients. Each config string can be at most MAX_CFGSTRLEN characters.
-CC_ENUM (int, EConfigStringIndexes)
+CC_ENUM (sint32, EConfigStringIndexes)
 {
 	CS_NAME,
 	CS_CDTRACK,
@@ -1605,7 +1605,7 @@ CC_ENUM (int, EConfigStringIndexes)
 // ertity events are for effects that take place reletive to an existing
 // entities origin.  Very network efficient. All muzzle flashes really should
 // be converted to events...
-CC_ENUM (int, EEventEffect)
+CC_ENUM (sint32, EEventEffect)
 {
 	EV_NONE,
 	EV_ITEM_RESPAWN,
@@ -1622,27 +1622,27 @@ CC_ENUM (int, EEventEffect)
 // message about entities that the client will need to render in some way
 struct entityState_t
 {
-	int				number;		// edict index
+	sint32				number;		// edict index
 
 	vec3_t			origin;		// entity origin or RF_BEAM start origin
 	vec3_t			angles;
 	vec3_t			oldOrigin;	// for interpolation or RF_BEAM end origin
 
 	// weapons, CTF flags, etc
-	int				modelIndex;
-	int				modelIndex2;
-	int				modelIndex3;
-	int				modelIndex4;
+	sint32				modelIndex;
+	sint32				modelIndex2;
+	sint32				modelIndex3;
+	sint32				modelIndex4;
 
-	int				frame;		// also RF_BEAM's size
-	int				skinNum;	// also RF_BEAM color index
+	sint32				frame;		// also RF_BEAM's size
+	sint32				skinNum;	// also RF_BEAM color index
 
 	EEntityStateEffects			effects;	// PGM - we're filling it, so it needs to be uint32
 	EEntityStateRenderEffects	renderFx;
-	int				solid;		// for client side prediction, 8*(bits 0-4) is x/y radius
+	sint32				solid;		// for client side prediction, 8*(bits 0-4) is x/y radius
 								// 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
 								// gi.linkentity sets this properly
-	int				sound;		// for looping sounds, to guarantee shutoff
+	sint32				sound;		// for looping sounds, to guarantee shutoff
 	EEventEffect	event;		// impulse events -- muzzle flashes, footsteps, etc
 								// events only go out for a single frame, they
 								// are automatically cleared each frame
@@ -1652,27 +1652,27 @@ struct entityState_t
 
 struct entityStateOld_t
 {
-	int				number;		// edict index
+	sint32				number;		// edict index
 
 	vec3f			origin;		// entity origin or RF_BEAM start origin
 	vec3f			angles;
 	vec3f			oldOrigin;	// for interpolation or RF_BEAM end origin
 
 	// weapons, CTF flags, etc
-	int				modelIndex;
-	int				modelIndex2;
-	int				modelIndex3;
-	int				modelIndex4;
+	sint32				modelIndex;
+	sint32				modelIndex2;
+	sint32				modelIndex3;
+	sint32				modelIndex4;
 
-	int				frame;		// also RF_BEAM's size
-	int				skinNum;	// also RF_BEAM color index
+	sint32				frame;		// also RF_BEAM's size
+	sint32				skinNum;	// also RF_BEAM color index
 
 	EEntityStateEffects			effects;	// PGM - we're filling it, so it needs to be uint32
 	EEntityStateRenderEffects	renderFx;
-	int				solid;		// for client side prediction, 8*(bits 0-4) is x/y radius
+	sint32				solid;		// for client side prediction, 8*(bits 0-4) is x/y radius
 								// 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
 								// gi.linkentity sets this properly
-	int				sound;		// for looping sounds, to guarantee shutoff
+	sint32				sound;		// for looping sounds, to guarantee shutoff
 	EEventEffect	event;		// impulse events -- muzzle flashes, footsteps, etc
 								// events only go out for a single frame, they
 								// are automatically cleared each frame
@@ -1687,7 +1687,7 @@ struct entityStateOld_t
 */
 
 // playerState->stats[] indexes
-CC_ENUM (int16, EStatIndex)
+CC_ENUM (sint16, EStatIndex)
 {
 	STAT_HEALTH_ICON,
 	STAT_HEALTH,
@@ -1728,7 +1728,7 @@ CC_ENUM (int16, EStatIndex)
 };
 
 // playerState_t->rdFlags
-CC_ENUM (int, ERenderDefFlags)
+CC_ENUM (sint32, ERenderDefFlags)
 {
 	RDF_UNDERWATER		= BIT(0),		// warp the screen as apropriate
 	RDF_NOWORLDMODEL	= BIT(1),		// used for player configuration screen
@@ -1753,8 +1753,8 @@ struct playerStateNew_t
 										// set by weapon kicks, pain effects, etc
 	vec3_t			gunAngles;
 	vec3_t			gunOffset;
-	int				gunIndex;
-	int				gunFrame;
+	sint32				gunIndex;
+	sint32				gunFrame;
 
 	vec4_t			viewBlend;		// rgba full screen effect
 	
@@ -1762,7 +1762,7 @@ struct playerStateNew_t
 
 	ERenderDefFlags	rdFlags;			// refdef flags
 
-	int16			stats[MAX_STATS];	// fast status bar updates
+	sint16			stats[MAX_STATS];	// fast status bar updates
 
 	vec3_t			mins;
 	vec3_t			maxs;
@@ -1780,8 +1780,8 @@ struct playerState_t
 										// set by weapon kicks, pain effects, etc
 	vec3f			gunAngles;
 	vec3f			gunOffset;
-	int				gunIndex;
-	int				gunFrame;
+	sint32				gunIndex;
+	sint32				gunFrame;
 
 	colorf			viewBlend;		// rgba full screen effect
 	

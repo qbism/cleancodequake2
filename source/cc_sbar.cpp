@@ -75,22 +75,22 @@ void CStatusBar::AddToBarBuffer (char *fmt, ...)
 	Bar += text;
 }
 
-void CStatusBar::AddVirtualPoint_Y (int y)
+void CStatusBar::AddVirtualPoint_Y (sint32 y)
 {
 	AddToBarBuffer ("yv %i ", y);
 }
 
-void CStatusBar::AddVirtualPoint_X (int x)
+void CStatusBar::AddVirtualPoint_X (sint32 x)
 {
 	AddToBarBuffer ("xv %i ", x);
 }
 
-void CStatusBar::AddPoint_X (int x, bool inverted = false)
+void CStatusBar::AddPoint_X (sint32 x, bool inverted = false)
 {
 	AddToBarBuffer ("x%c %i ", inverted ? 'r' : 'l', x);
 }
 
-void CStatusBar::AddPoint_Y (int y, bool inverted = false)
+void CStatusBar::AddPoint_Y (sint32 y, bool inverted = false)
 {
 	AddToBarBuffer ("y%c %i ", inverted ? 'b' : 't', y);
 }
@@ -100,7 +100,7 @@ void CStatusBar::AddString (const char *string, bool highBit = false, bool cente
 	AddToBarBuffer ("%sstring%s \"%s\" ", center ? "c" : "", highBit ? "2" : "", string);
 }
 
-void CStatusBar::AddStatString (int stat)
+void CStatusBar::AddStatString (sint32 stat)
 {
 	AddToBarBuffer ("stat_string %i ", stat);
 }
@@ -110,17 +110,17 @@ void CStatusBar::AddPic (const char *pic)
 	AddToBarBuffer ("picn %s ", pic);
 }
 
-void CStatusBar::AddPicStat (int stat)
+void CStatusBar::AddPicStat (sint32 stat)
 {
 	AddToBarBuffer ("pic %i ", stat);
 }
 
-void CStatusBar::AddNumStat (int stat, int width = 3)
+void CStatusBar::AddNumStat (sint32 stat, sint32 width = 3)
 {
 	AddToBarBuffer ("num %i %i ", width, stat);
 }
 
-void CStatusBar::AddIf (int stat)
+void CStatusBar::AddIf (sint32 stat)
 {
 	AddToBarBuffer ("if %i ", stat);
 }
@@ -145,13 +145,13 @@ void CStatusBar::AddArmorNum ()
 	AddToBarBuffer ("rnum ");
 }
 
-void CStatusBar::AddClientBlock (int x, int y, int cNum, int Score, int ping, int time)
+void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping, sint32 time)
 {
 	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, Score, ping, time);
 }
 
-void CStatusBar::AddClientBlock (int x, int y, int cNum, int Score, int ping)
+void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping)
 {
 	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, Score, ping);

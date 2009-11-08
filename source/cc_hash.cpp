@@ -42,25 +42,25 @@ From EGL, used to make table lookups
 a bit faster.
 ================
 */
-uint32 Com_HashGeneric (const char *name, const int hashSize)
+uint32 Com_HashGeneric (const char *name, const sint32 hashSize)
 {
 	uint32 hashValue = 0;
 	for ( ; *name ; )
 	{
-		int ch = Q_tolower(*(name++));
+		sint32 ch = Q_tolower(*(name++));
 		hashValue = hashValue * 33 + ch;
 	}
 
 	return (hashValue + (hashValue >> 5)) & (hashSize-1);
 }
 
-uint32 Com_HashGeneric (const std::cc_string &name, const int hashSize)
+uint32 Com_HashGeneric (const std::cc_string &name, const sint32 hashSize)
 {
 	uint32 hashValue = 0;
 	uint32 i = 0;
 	for ( ; name[i] ; i++)
 	{
-		int ch = Q_tolower(name[i]);
+		sint32 ch = Q_tolower(name[i]);
 		hashValue = hashValue * 33 + ch;
 	}
 
@@ -72,8 +72,8 @@ uint32 Com_HashGeneric (const std::cc_string &name, const int hashSize)
 
 // Note - This code makes a few assumptions about how your machine behaves -
 
-// 1. We can read a 4-byte value from any address without crashing
-// 2. sizeof(int) == 4
+// 1. We can read a 4-uint8 value from any address without crashing
+// 2. sizeof(sint32) == 4
 
 // And it has a few limitations -
 
@@ -81,12 +81,12 @@ uint32 Com_HashGeneric (const std::cc_string &name, const int hashSize)
 // 2. It will not produce the same results on little-endian and big-endian
 //    machines.
 
-uint32 MurmurHash2 (const char *text, int len, uint32 seed)
+uint32 MurmurHash2 (const char *text, sint32 len, uint32 seed)
 {
 	// 'm' and 'r' are mixing constants generated offline.
 	// They're not really 'magic', they just happen to work well.
-	static const unsigned int m = 0x5bd1e995;
-	static const int r = 24;
+	static const uint32 m = 0x5bd1e995;
+	static const sint32 r = 24;
 
 	// Initialize the hash to a 'random' value
 	uint32 h = seed ^ len;

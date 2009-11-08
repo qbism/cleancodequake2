@@ -45,14 +45,14 @@ void AddWeapons (CItemList *List)
 
 void DoWeaponVweps ()
 {
-	int TakeAway = ModelIndex(NItems::Blaster->VWepModel) - 1;
+	sint32 TakeAway = ModelIndex(NItems::Blaster->VWepModel) - 1;
 
 	for (size_t i = 0; i < WeaponList->size(); i++)
 		WeaponList->at(i)->InitWeaponVwepModel (TakeAway);
 }
 
-CWeapon::CWeapon(char *model, int ActivationStart, int ActivationEnd, int FireStart, int FireEnd,
-				 int IdleStart, int IdleEnd, int DeactStart, int DeactEnd, char *WeaponSound) :
+CWeapon::CWeapon(char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound) :
 ActivationStart(ActivationStart),
 ActivationEnd(ActivationEnd),
 FireStart(FireStart),
@@ -85,7 +85,7 @@ void CWeapon::InitWeapon (CPlayerEntity *Player)
 void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 {
 	// Idea from Brazen source
-	int newFrame = -1, newState = -1;
+	sint32 newFrame = -1, newState = -1;
 
 	switch (Player->Client.WeaponState)
 	{
@@ -187,7 +187,7 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 		Player->Client.PlayerState.GetGunFrame()++;
 }
 
-inline int GetWeaponVWepIndex (CPlayerEntity *Player)
+inline sint32 GetWeaponVWepIndex (CPlayerEntity *Player)
 {
 	return (Player->State.GetNumber() - 1) | ((Player->Client.Persistent.Weapon->vwepIndex & 0xff) << 8);
 }
@@ -229,7 +229,7 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	}
 }
 
-void CWeapon::DepleteAmmo (CPlayerEntity *Player, int Amount = 1)
+void CWeapon::DepleteAmmo (CPlayerEntity *Player, sint32 Amount = 1)
 {
 	if (WeaponItem)
 	{
@@ -244,9 +244,9 @@ void CWeapon::DepleteAmmo (CPlayerEntity *Player, int Amount = 1)
 
 bool CWeapon::AttemptToFire (CPlayerEntity *Player)
 {
-	int numAmmo = 0;
+	sint32 numAmmo = 0;
 	CAmmo *Ammo;
-	int quantity = 0;
+	sint32 quantity = 0;
 
 	if (Item && (Item->Flags & ITEMFLAG_AMMO))
 	{
@@ -286,7 +286,7 @@ void CWeapon::OutOfAmmo (CPlayerEntity *Player)
 
 #include "cc_tent.h"
 
-void CWeapon::Muzzle (CPlayerEntity *Player, int muzzleNum)
+void CWeapon::Muzzle (CPlayerEntity *Player, sint32 muzzleNum)
 {
 	if (isSilenced)
 		muzzleNum |= MZ_SILENCED;

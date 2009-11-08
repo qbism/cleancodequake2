@@ -62,7 +62,7 @@ CCmd::~CCmd ()
 
 CCmd *CommandList[MAX_COMMANDS];
 CCmd *CommandHashList[MAX_CMD_HASH];
-int numCommands = 0;
+sint32 numCommands = 0;
 
 CCmd *Cmd_FindCommand (std::cc_string commandName)
 {
@@ -98,7 +98,7 @@ void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *en
 void Cmd_RemoveCommands ()
 {
 	// Remove all commands
-	for (int i = 0; i < numCommands; i++)
+	for (sint32 i = 0; i < numCommands; i++)
 	{
 		QDelete CommandList[numCommands];
 		numCommands--;

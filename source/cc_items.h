@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_ITEMS_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_ITEMS_H__
 
-CC_ENUM (int32, EItemFlags)
+CC_ENUM (sint32, EItemFlags)
 {
 	ITEMFLAG_NONE				= 0,
 	ITEMFLAG_WEAPON				= BIT(0),
@@ -65,7 +65,7 @@ class CBaseItem
 	friend void InvalidateItemMedia ();
 private:
 	/// The index of this item in the item list
-	int			Index;
+	sint32			Index;
 
 	/// Must be friends with itemlist so it can set the item.
 	friend class CItemList;
@@ -79,7 +79,7 @@ public:
 	/// Hashed name value
 	uint32 hashedNameValue;
 
-	CBaseItem (char *Classname, char *WorldModel, int EffectFlags,
+	CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);
 
@@ -88,7 +88,7 @@ public:
 	/// World model
 	char		*WorldModel;
 	/// Effect flags (EF_ROTATE, etc)
-	int			EffectFlags;
+	sint32			EffectFlags;
 
 	/// The sound on pickup
 	char		*PickupSound;
@@ -165,16 +165,16 @@ public:
 
 	virtual void	SetRespawn (class CItemEntity *ent, FrameNumber_t delay);
 
-	inline int		GetIndex ()
+	inline sint32		GetIndex ()
 	{
 		return Index;
 	};
-	inline int		GetConfigStringNumber ()
+	inline sint32		GetConfigStringNumber ()
 	{
 		return CS_ITEMS+Index;
 	};
 
-	virtual void	Add (CPlayerEntity *ent, int quantity);
+	virtual void	Add (CPlayerEntity *ent, sint32 quantity);
 };
 
 #include "cc_weapons.h"

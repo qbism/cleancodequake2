@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef CLEANCTF_ENABLED
 #include "cc_weaponmain.h"
 #include "m_player.h"
+#include <sstream>
 
 void EndDMLevel ();
 
@@ -462,7 +463,7 @@ void CTFID_f (CPlayerEntity *ent)
 
 void CTFTeam_f (CPlayerEntity *ent)
 {
-	int desired_team;
+	sint32 desired_team;
 
 	std::cc_string t = ArgGetConcatenatedString();
 	if (!t[0])
@@ -539,7 +540,7 @@ SAY_TEAM
 // more important when reporting their names.
 struct {
 	char *classname;
-	int priority;
+	sint32 priority;
 } loc_names[] = 
 {
 	{	"item_flag_team1",			1 },
@@ -569,14 +570,14 @@ struct {
 	{ NULL, 0 }
 };
 
-static inline void CTFSay_Team_Location(CPlayerEntity *who, char *buf, size_t bufSize)
+static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream &OutMessage)
 {
 	CBaseEntity *hot = NULL;
 	float hotdist = 999999, newdist;
-	int hotindex = 999;
-	int i;
+	sint32 hotindex = 999;
+	sint32 i;
 	CBaseItem *item;
-	int nearteam = -1;
+	sint32 nearteam = -1;
 	CFlagEntity *flag1, *flag2;
 	bool hotsee = false;
 	bool cansee;
@@ -621,7 +622,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, char *buf, size_t bu
 
 	if (!hot)
 	{
-		Q_strncpyz(buf, "nowhere", bufSize);
+		OutMessage << "nowhere";
 		return;
 	}
 
@@ -650,147 +651,132 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, char *buf, size_t bu
 
 	if ((item = FindItemByClassname(hot->gameEntity->classname)) == NULL)
 	{
-		Q_strncpyz(buf, "nowhere", bufSize);
+		OutMessage << "nowhere";
 		return;
 	}
 
 	// in water?
 	if (who->WaterInfo.Level)
-		Q_strncpyz(buf, "in the water ", bufSize);
-	else
-		*buf = 0;
+		OutMessage << "in the water ";
 
 	// near or above
 	vec3f v = origin - hot->State.GetOrigin();
 	if (Q_fabs(v.Z) > Q_fabs(v.X) && Q_fabs(v.Z) > Q_fabs(v.Y))
-		Q_strcatz(buf, (v.Z > 0) ? "above " : "below ", bufSize);
+		OutMessage << (v.Z > 0) ? "above " : "below ";
 	else
-		Q_strcatz(buf, "near ", bufSize);
+		OutMessage << "near ";
 
 	switch (nearteam)
 	{
 	case CTF_TEAM1:
-		Q_strcatz(buf, "the red ", bufSize);
+		OutMessage << "the red ";
 		break;
 	case CTF_TEAM2:
-		Q_strcatz(buf, "the blue ", bufSize);
+		OutMessage << "the blue ";
 		break;
 	default:
-		Q_strcatz(buf, "the ", bufSize);
+		OutMessage << "the ";
 		break;
 	}
 
-	Q_strcatz(buf, item->Name, bufSize);
+	OutMessage << item->Name;
 }
 
-static inline void CTFSay_Team_Armor(CPlayerEntity *who, char *buf, size_t bufSize)
+static inline void CTFSay_Team_Armor(CPlayerEntity *who, std::cc_stringstream &OutMessage)
 {
-	CBaseItem		*item;
-	int			power_armor_type;
+	CBaseItem		*item = who->Client.Persistent.Armor;
+	EPowerArmorType power_armor_type = who->PowerArmorType ();
 
-	*buf = 0;
-
-	power_armor_type = who->PowerArmorType ();
 	if (power_armor_type)
 	{
-		int cells = who->Client.Persistent.Inventory.Has(NItems::Cells);
+		sint32 cells = who->Client.Persistent.Inventory.Has(NItems::Cells);
 		if (cells)
-			Q_snprintfz(buf+strlen(buf), bufSize, "%s with %i cells ",
-				(power_armor_type == POWER_ARMOR_SCREEN) ?
-				"Power Screen" : "Power Shield", cells);
+		{
+			OutMessage << ((power_armor_type == POWER_ARMOR_SCREEN) ? "Power Screen" : "Power Shield") << " with " << cells << " cells ";
+			if (item)
+				OutMessage << "and ";
+		}
 	}
 
-	item = who->Client.Persistent.Armor;
 	if (item)
-	{
-		if (*buf)
-			Q_strcatz(buf, "and ", bufSize);
-			Q_snprintfz(buf+strlen(buf), bufSize, "%i units of %s",
-				who->Client.Persistent.Inventory.Has(item), item->Name, bufSize);
-	}
-
-	if (!*buf)
-		Q_strncpyz(buf, "no armor", bufSize);
+		OutMessage << who->Client.Persistent.Inventory.Has(item) << " units of " << item->Name;
+	else if (!power_armor_type)
+		OutMessage << "no armor";
 }
 
-static inline void CTFSay_Team_Health(CPlayerEntity *who, char *buf, size_t bufSize)
+static inline void CTFSay_Team_Health(CPlayerEntity *who, std::cc_stringstream &OutMessage)
 {
 	if (who->Health <= 0)
-		Q_strncpyz(buf, "dead", bufSize);
+		OutMessage << "dead";
 	else
-		Q_snprintfz(buf, bufSize, "%i health", who->Health);
+		OutMessage << who->Health << " health";
 }
 
-static inline void CTFSay_Team_Tech(CPlayerEntity *who, char *buf, size_t bufSize)
+static inline void CTFSay_Team_Tech(CPlayerEntity *who, std::cc_stringstream &OutMessage)
 {
 	// see if the player has a tech powerup
 	if (who->Client.Persistent.Tech)
-		Q_snprintfz(buf, bufSize, "the %s", who->Client.Persistent.Tech->Name);
+		OutMessage << "the " << who->Client.Persistent.Tech->Name;
 	else
-		Q_strncpyz(buf, "no powerup", bufSize);
+		OutMessage << "no powerup";
 }
 
-static inline void CTFSay_Team_Weapon(CPlayerEntity *who, char *buf, size_t bufSize)
+static inline void CTFSay_Team_Weapon(CPlayerEntity *who, std::cc_stringstream &OutMessage)
 {
 	if (who->Client.Persistent.Weapon)
-		Q_strncpyz(buf, who->Client.Persistent.Weapon->Item->Name, bufSize);
+		OutMessage << who->Client.Persistent.Weapon->Item->Name;
 	else
-		Q_strncpyz(buf, "none", bufSize);
+		OutMessage << "none";
 }
 
-static inline void CTFSay_Team_Sight(CPlayerEntity *who, char *buf, size_t bufSize)
+static inline void CTFSay_Team_Sight(CPlayerEntity *who, std::cc_stringstream &OutMessage)
 {
-	int i;
-	int n = 0;
-	static char s[1024];
-	static char s2[1024];
+	sint32 n = 0;
+	static std::cc_string nameStore;
 
-	*s = *s2 = 0;
-	for (i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *targ = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!targ->GetInUse() || 
 			targ == who ||
 			!loc_CanSee(targ, who))
 			continue;
-		if (*s2)
-		{
-			if (strlen(s) + strlen(s2) + 3 < sizeof(s))
-			{
-				if (n)
-					Q_strcatz(s, ", ", sizeof(s));
-				Q_strcatz(s, s2, sizeof(s));
-				*s2 = 0;
-			}
-			n++;
-		}
-		Q_strncpyz(s2, targ->Client.Persistent.Name.c_str(), sizeof(s2));
-	}
-	if (*s2)
-	{
-		if (strlen(s) + strlen(s2) + 6 < sizeof(s))
+
+		if (nameStore.empty())
+			nameStore = targ->Client.Persistent.Name;
+		else
 		{
 			if (n)
-				Q_strcatz(s, " and ", sizeof(s));
-			Q_strcatz(s, s2, sizeof(s));
+				OutMessage << ", ";
+
+			OutMessage << nameStore;
+			nameStore = targ->Client.Persistent.Name;
+
+			n++;
 		}
-		Q_strncpyz(buf, s, bufSize);
+	}
+
+	if (n)
+	{
+		if (!nameStore.empty())
+		{
+			OutMessage << " and ";
+			OutMessage << nameStore;
+		}
 	}
 	else
-		Q_strncpyz(buf, "no one", bufSize);
+		OutMessage << "no one";
 }
 
 bool CheckFlood(CPlayerEntity *ent);
 void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 {
-	static char outmsg[1024];
-	static char buf[1024];
-	char *p;
-
+	static std::cc_stringstream OutMessage;
+	
 	if (CheckFlood(who))
 		return;
 
-	outmsg[0] = 0;
+	OutMessage.str("");
 
 	if (msg[0] == '\"')
 	{
@@ -798,57 +784,38 @@ void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 		msg.erase (msg.end() - 1);
 	}
 
-	uint32 pm = 0;
-	for (p = outmsg; msg[pm] && (p - outmsg) < sizeof(outmsg) - 1; pm++)
+	//for (p = outmsg; msg[pm] && (p - outmsg) < sizeof(outmsg) - 1; pm++)
+	for (size_t pm = 0; pm < msg.size(); pm++)
 	{
-		if (msg[pm] == '%') {
-			switch (msg[++pm]) {
-				case 'l' :
-				case 'L' :
-					CTFSay_Team_Location(who, buf, sizeof(buf));
-					Q_strncpyz(p, buf, sizeof(buf));
-					p += strlen(buf);
-					break;
-				case 'a' :
-				case 'A' :
-					CTFSay_Team_Armor(who, buf, sizeof(buf));
-					Q_strncpyz(p, buf, sizeof(buf));
-					p += strlen(buf);
-					break;
-				case 'h' :
-				case 'H' :
-					CTFSay_Team_Health(who, buf, sizeof(buf));
-					Q_strncpyz(p, buf, sizeof(buf));
-					p += strlen(buf);
-					break;
-				case 't' :
-				case 'T' :
-					CTFSay_Team_Tech(who, buf, sizeof(buf));
-					Q_strncpyz(p, buf, sizeof(buf));
-					p += strlen(buf);
-					break;
-				case 'w' :
-				case 'W' :
-					CTFSay_Team_Weapon(who, buf, sizeof(buf));
-					Q_strncpyz(p, buf, sizeof(buf));
-					p += strlen(buf);
-					break;
-
-				case 'n' :
-				case 'N' :
-					CTFSay_Team_Sight(who, buf, sizeof(buf));
-					Q_strncpyz(p, buf, sizeof(buf));
-					p += strlen(buf);
-					break;
-
-				default :
-					*p++ = msg[pm];
+		if (msg[pm] == '%')
+		{
+			switch (Q_tolower(msg[++pm]))
+			{
+			case 'l' :
+				CTFSay_Team_Location(who, OutMessage);
+				break;
+			case 'a' :
+				CTFSay_Team_Armor(who, OutMessage);
+				break;
+			case 'h' :
+				CTFSay_Team_Health(who, OutMessage);
+				break;
+			case 't' :
+				CTFSay_Team_Tech(who, OutMessage);
+				break;
+			case 'w' :
+				CTFSay_Team_Weapon(who, OutMessage);
+				break;
+			case 'n' :
+				CTFSay_Team_Sight(who, OutMessage);
+				break;
+			default :
+				OutMessage << msg[pm];
 			}
 		}
 		else
-			*p++ = msg[pm];
+			OutMessage << msg[pm];
 	}
-	*p = 0;
 
 	for (uint8 i = 0; i < game.maxclients; i++)
 	{
@@ -859,7 +826,7 @@ void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 			continue;
 		if (cl_ent->Client.Respawn.CTF.Team == who->Client.Respawn.CTF.Team)
 			cl_ent->PrintToClient (PRINT_CHAT, "(%s): %s\n", 
-				who->Client.Persistent.Name.c_str(), outmsg);
+				who->Client.Persistent.Name.c_str(), OutMessage.str().c_str());
 	}
 }
 
@@ -883,7 +850,7 @@ public:
 	{
 	};
 
-	CMiscCTFBanner (int Index) :
+	CMiscCTFBanner (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
@@ -930,7 +897,7 @@ public:
 	{
 	};
 
-	CMiscCTFBannerSmall (int Index) :
+	CMiscCTFBannerSmall (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMiscCTFBanner (Index)
 	{
@@ -994,9 +961,10 @@ bool CTFBeginElection(CPlayerEntity *ent, EElectState type, char *msg)
 
 	// tell everyone
 	BroadcastPrintf(PRINT_CHAT, "%s\n", ctfgame.emsg);
-	BroadcastPrintf(PRINT_HIGH, "Type YES or NO to vote on this request\n");
-	BroadcastPrintf(PRINT_HIGH, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.evotes, ctfgame.needvotes,
-		(int)((ctfgame.electtime - level.Frame) / 10));
+	BroadcastPrintf(PRINT_HIGH, "Type YES or NO to vote on this request\n"
+								"Votes: %d  Needed: %d  Time left: %ds\n",
+								ctfgame.evotes, ctfgame.needvotes,
+								(sint32)((ctfgame.electtime - level.Frame) / 10));
 
 	return true;
 }
@@ -1094,31 +1062,28 @@ void CTFStartMatch()
 
 void CTFEndMatch()
 {
+	static std::cc_stringstream BroadcastString;
+	BroadcastString.str("");
+
 	ctfgame.match = MATCH_POST;
-	BroadcastPrintf(PRINT_CHAT, "MATCH COMPLETED!\n");
+	BroadcastString <<	"MATCH COMPLETED!\n"
+		"RED TEAM:  " << ctfgame.team1 << " captures, " << ctfgame.total1 << " points\n"
+		"BLUE TEAM:  " << ctfgame.team2 << " captures, " << ctfgame.total2 << " points\n";
 
 	CTFCalcScores();
 
-	BroadcastPrintf(PRINT_HIGH, "RED TEAM:  %d captures, %d points\n",
-		ctfgame.team1, ctfgame.total1);
-	BroadcastPrintf(PRINT_HIGH, "BLUE TEAM:  %d captures, %d points\n",
-		ctfgame.team2, ctfgame.total2);
-
 	if (ctfgame.team1 > ctfgame.team2)
-		BroadcastPrintf(PRINT_CHAT, "RED team won over the BLUE team by %d CAPTURES!\n",
-			ctfgame.team1 - ctfgame.team2);
+		BroadcastString << "RED team won over the BLUE team by " << ctfgame.team1 - ctfgame.team2 << " CAPTURES!\n";
 	else if (ctfgame.team2 > ctfgame.team1)
-		BroadcastPrintf(PRINT_CHAT, "BLUE team won over the RED team by %d CAPTURES!\n",
-			ctfgame.team2 - ctfgame.team1);
+		BroadcastString << "BLUE team won over the RED team by " << ctfgame.team2 - ctfgame.team1 << " CAPTURES!\n";
 	else if (ctfgame.total1 > ctfgame.total2) // frag tie breaker
-		BroadcastPrintf(PRINT_CHAT, "RED team won over the BLUE team by %d POINTS!\n",
-			ctfgame.total1 - ctfgame.total2);
+		BroadcastString << "RED team won over the BLUE team by " << ctfgame.total1 - ctfgame.total2 << " POINTS!\n";
 	else if (ctfgame.total2 > ctfgame.total1) 
-		BroadcastPrintf(PRINT_CHAT, "BLUE team won over the RED team by %d POINTS!\n",
-			ctfgame.total2 - ctfgame.total1);
+		BroadcastString << "BLUE team won over the RED team by " << ctfgame.total2 - ctfgame.total1 << " POINTS!\n";
 	else
-		BroadcastPrintf(PRINT_CHAT, "TIE GAME!\n");
+		BroadcastString << "TIE GAME!\n";
 
+	BroadcastPrintf (PRINT_CHAT, "%s", BroadcastString.str().c_str());
 	EndDMLevel();
 }
 
@@ -1190,7 +1155,7 @@ void CTFVoteYes(CPlayerEntity *ent)
 	}
 	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.emsg);
 	BroadcastPrintf(PRINT_CHAT, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.evotes, ctfgame.needvotes,
-		(int)((ctfgame.electtime - level.Frame)/10));
+		(sint32)((ctfgame.electtime - level.Frame)/10));
 }
 
 void CTFVoteNo(CPlayerEntity *ent)
@@ -1215,7 +1180,7 @@ void CTFVoteNo(CPlayerEntity *ent)
 
 	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.emsg);
 	BroadcastPrintf(PRINT_CHAT, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.evotes, ctfgame.needvotes,
-		(int)((ctfgame.electtime - level.Frame)/10));
+		(sint32)((ctfgame.electtime - level.Frame)/10));
 }
 
 void CTFReady(CPlayerEntity *ent)
@@ -1314,27 +1279,7 @@ void CTFGhost(CPlayerEntity *ent)
 		return;
 	}
 
-	int n = ArgGeti(1);
-
-	/*for (uint8 i = 0; i < MAX_CS_CLIENTS; i++)
-	{
-		if (ctfgame.ghosts[i].code && ctfgame.ghosts[i].code == n)
-		{
-			ent->PrintToClient (PRINT_HIGH, "Ghost code accepted, your position has been reinstated.\n");
-			ctfgame.ghosts[i].ent->Client.Respawn.CTF.Ghost = NULL;
-			ent->Client.Respawn.CTF.Team = ctfgame.ghosts[i].team;
-			ent->Client.Respawn.CTF.Ghost = ctfgame.ghosts + i;
-			ent->Client.Respawn.Score = ctfgame.ghosts[i].Score;
-			ent->Client.Respawn.CTF.State = 0;
-			ctfgame.ghosts[i].ent = ent;
-			ent->GetSvFlags() = 0;
-			ent->Flags &= ~FL_GODMODE;
-			ent->PutInServer();
-			BroadcastPrintf(PRINT_HIGH, "%s has been reinstated to %s team.\n",
-				ent->Client.Persistent.Name.c_str(), CTFTeamName(ent->Client.Respawn.CTF.Team));
-			return;
-		}
-	}*/
+	sint32 n = ArgGeti(1);
 	TGhostMapType::iterator it;
 	if ((it = ctfgame.Ghosts.find(n)) == ctfgame.Ghosts.end())
 	{
@@ -1417,7 +1362,7 @@ bool CTFCheckRules()
 
 	if (ctfgame.match != MATCH_NONE)
 	{
-		int t = ctfgame.matchtime - level.Frame;
+		sint32 t = ctfgame.matchtime - level.Frame;
 
 		if (t <= 0)
 		{ // time ended on something
@@ -1542,7 +1487,7 @@ void CTFStats(CPlayerEntity *ent)
 		if (!Ghost->name[0])
 			continue;
 
-		int e;
+		sint32 e;
 		if (Ghost->deaths + Ghost->kills == 0)
 			e = 50;
 		else
@@ -1680,7 +1625,7 @@ void CTFWarp(CPlayerEntity *ent)
 
 void CTFBoot(CPlayerEntity *ent)
 {
-	int i;
+	sint32 i;
 	static char text[80];
 
 	if (!ent->Client.Respawn.CTF.Admin)

@@ -58,12 +58,12 @@ class CAnim
 {
 public:
 
-	int			FirstFrame, LastFrame;
+	sint32			FirstFrame, LastFrame;
 	void		(CMonster::*EndFunc) ();
 
 	CFrame	*Frames;
 
-	CAnim (int FirstFrame, int LastFrame, CFrame *Frames, void (CMonster::*EndFunc) () = NULL) :
+	CAnim (sint32 FirstFrame, sint32 LastFrame, CFrame *Frames, void (CMonster::*EndFunc) () = NULL) :
 	FirstFrame(FirstFrame),
 	LastFrame(LastFrame),
 	EndFunc(EndFunc),
@@ -193,7 +193,7 @@ public:
 	char			*CombatTarget;
 
 	CMonsterEntity	();
-	CMonsterEntity	(int Index);
+	CMonsterEntity	(sint32 Index);
 
 	ENTITYFIELD_DEFS
 
@@ -201,14 +201,14 @@ public:
 
 	void			Think ();
 
-	void Pain (CBaseEntity *other, float kick, int damage);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
+	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf); // Empty
 	void	Use (CBaseEntity *other, CBaseEntity *activator);
 
 	bool			Run ();
-	void			ThrowHead (MediaIndex gibIndex, int damage, int type);
+	void			ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type);
 
 	void Spawn ();
 };
@@ -237,7 +237,7 @@ public:
 #ifdef MONSTER_USE_ROGUE_AI
 //ROGUE
 	bool		BlindFire;		// will the monster blindfire?
-	int			MedicTries;
+	sint32			MedicTries;
 
 	//  while abort_duck would be nice, only monsters which duck but don't sidestep would use it .. only the brain
 	//  not really worth it.  sidestep is an implied abort_duck
@@ -254,7 +254,7 @@ public:
 #endif
 	CMonsterEntity		*Healer;	// this is who is healing this monster
 
-	int					NextFrame;
+	sint32					NextFrame;
 	float				Scale;
 	FrameNumber_t				PauseTime;
 	FrameNumber_t				AttackFinished;
@@ -263,13 +263,13 @@ public:
 	FrameNumber_t		TrailTime;
 	vec3f				LastSighting;
 	vec3f				SavedGoal;
-	int					AttackState;
+	sint32					AttackState;
 	bool				Lefty;
 	float				IdleTime;
-	int					LinkCount;
+	sint32					LinkCount;
 
 	EPowerArmorType		PowerArmorType;
-	int					PowerArmorPower;
+	sint32					PowerArmorPower;
 	uint8				PowerArmorTime;
 
 	bool				EnemyInfront, EnemyVis;
@@ -288,7 +288,7 @@ public:
 	class CPath				*P_CurrentPath;
 	class CPathNode			*P_CurrentGoalNode;
 	class CPathNode			*P_CurrentNode; // Always the current path node
-	int32				P_CurrentNodeIndex;
+	sint32				P_CurrentNodeIndex;
 	FrameNumber_t				P_NodePathTimeout;
 	FrameNumber_t				P_NodeFollowTimeout;
 	bool				FollowingPath;
@@ -363,13 +363,13 @@ public:
 
 	void MonsterDeathUse ();
 
-	void MonsterFireBfg (vec3f start, vec3f aimdir, int damage, int speed, int kick, float damage_radius, int flashtype);
-	void MonsterFireBlaster (vec3f start, vec3f dir, int damage, int speed, int flashtype, int effect);
-	void MonsterFireGrenade (vec3f start, vec3f aimdir, int damage, int speed, int flashtype);
-	void MonsterFireRailgun (vec3f start, vec3f aimdir, int damage, int kick, int flashtype);
-	void MonsterFireShotgun (vec3f start, vec3f aimdir, int damage, int kick, int hspread, int vspread, int count, int flashtype);
-	void MonsterFireBullet (vec3f start, vec3f dir, int damage, int kick, int hspread, int vspread, int flashtype);
-	void MonsterFireRocket (vec3f start, vec3f dir, int damage, int speed, int flashtype);
+	void MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
+	void MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect);
+	void MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype);
+	void MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype);
+	void MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
+	void MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
+	void MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 
 	void AlertNearbyStroggs ();
 #ifdef MONSTERS_ARENT_STUPID
@@ -401,8 +401,8 @@ public:
 	bool MoveStep (vec3f move, bool ReLink);
 
 	virtual void	Spawn () = 0;
-	virtual void	Die(CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point) = 0;
-	virtual void	Pain(CBaseEntity *other, float kick, int damage) = 0;
+	virtual void	Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) = 0;
+	virtual void	Pain(CBaseEntity *other, float kick, sint32 damage) = 0;
 };
 
 #define DI_NODIR	-1
@@ -415,7 +415,7 @@ void Monster_Think (edict_t *ent);
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
 	uint32 LINK_RESOLVE_CLASSNAME(DLLClassName, _ID) = LastID++; \
-	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (int Index) \
+	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
 		CMonsterEntity *newClass = QNew (com_levelPool, 0) CMonsterEntity(Index); \
 		DLLClassName *Monster = QNew (com_levelPool, 0) DLLClassName (LINK_RESOLVE_CLASSNAME(DLLClassName, _ID)); \

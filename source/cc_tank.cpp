@@ -264,7 +264,7 @@ CFrame TankFramesPain3 [] =
 };
 CAnim TankMovePain3 (FRAME_pain301, FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
 
-void CTank::Pain (CBaseEntity *other, float kick, int damage)
+void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() |= 1;
@@ -310,7 +310,7 @@ void CTank::Pain (CBaseEntity *other, float kick, int damage)
 void CTank::Blaster ()
 {
 	vec3f	forward, right, start, end, dir;
-	int		flash_number;
+	sint32		flash_number;
 
 	switch (Entity->State.GetFrame())
 	{
@@ -344,7 +344,7 @@ void CTank::Rocket ()
 {
 #ifdef MONSTER_USE_ROGUE_AI
 	vec3f	forward, right, start, dir, vec, target;
-	int		flash_number, rocketSpeed;
+	sint32		flash_number, rocketSpeed;
 	CTrace	trace;
 	bool blindfire = false;
 
@@ -437,7 +437,7 @@ void CTank::Rocket ()
 	}
 #else
 	vec3f	forward, right, start, dir, vec;
-	int		flash_number;
+	sint32		flash_number;
 
 	switch (Entity->State.GetFrame())
 	{
@@ -467,7 +467,7 @@ void CTank::Rocket ()
 void CTank::MachineGun ()
 {
 	vec3f	dir, start, forward, right;
-	int		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak406);
+	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak406);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
@@ -853,15 +853,15 @@ CFrame TankFramesDeath1 [] =
 };
 CAnim TankMoveDeath (FRAME_death101, FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
 
-void CTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 1 /*4*/; n++)
+		for (sint32 n= 0; n < 1 /*4*/; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), damage, GIB_METALLIC);
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Gear(), damage, GIB_METALLIC);

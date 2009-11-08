@@ -40,7 +40,7 @@ public:
 	CSoldierLight(uint32 ID);
 
 	void Attack ();
-	void FireGun (int FlashNumber);
+	void FireGun (sint32 FlashNumber);
 	void SpawnSoldier ();
 };
 

@@ -87,7 +87,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 //			gi.dprintf ("%s - gibbing bad heal target", self->classname);
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
 
-		int hurt = (Enemy->GibHealth) ? -Enemy->GibHealth : 500;
+		sint32 hurt = (Enemy->GibHealth) ? -Enemy->GibHealth : 500;
 
 		Enemy->TakeDamage (Entity, Entity, vec3fOrigin, Enemy->State.GetOrigin(),
 				PainNormal, hurt, 0, 0, MOD_UNKNOWN);
@@ -380,7 +380,7 @@ CFrame MedicFramesPain2 [] =
 };
 CAnim MedicMovePain2 (FRAME_painb1, FRAME_painb15, MedicFramesPain2, &CMonster::Run);
 
-void CMedic::Pain(CBaseEntity *other, float kick, int damage)
+void CMedic::Pain(CBaseEntity *other, float kick, sint32 damage)
 {
 #ifdef MONSTER_USE_ROGUE_AI
 	DoneDodge ();
@@ -418,7 +418,7 @@ void CMedic::FireBlaster ()
 	vec3f	forward, right;
 	vec3f	end;
 	vec3f	dir;
-	int		effect = 0;
+	sint32		effect = 0;
 
 	switch (Entity->State.GetFrame())
 	{
@@ -491,7 +491,7 @@ CFrame MedicFramesDeath [] =
 };
 CAnim MedicMoveDeath (FRAME_death1, FRAME_death30, MedicFramesDeath, ConvertDerivedFunction(&CMedic::Dead));
 
-void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	// if we had a pending patient, free him up for another medic
 #ifndef MONSTER_USE_ROGUE_AI
@@ -505,9 +505,9 @@ void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead(GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;

@@ -271,7 +271,7 @@ CFrame GunnerFramesPain1 [] =
 };
 CAnim GunnerMovePain1 (FRAME_pain101, FRAME_pain118, GunnerFramesPain1, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Pain (CBaseEntity *other, float kick, int damage)
+void CGunner::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -326,15 +326,15 @@ CFrame GunnerFramesDeath [] =
 };
 CAnim GunnerMoveDeath (FRAME_death01, FRAME_death11, GunnerFramesDeath, ConvertDerivedFunction(&CGunner::Dead));
 
-void CGunner::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CGunner::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
@@ -485,7 +485,7 @@ bool CGunner::GrenadeCheck()
 void CGunner::Fire ()
 {
 	vec3f	start, forward, right, target, aim;
-	int		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak216);
+	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak216);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
@@ -505,7 +505,7 @@ void CGunner::Grenade ()
 {
 #ifndef MONSTER_USE_ROGUE_AI
 	vec3f	start, forward, right;
-	int		flash_number;
+	sint32		flash_number;
 
 	switch (Entity->State.GetFrame())
 	{
@@ -529,7 +529,7 @@ void CGunner::Grenade ()
 	MonsterFireGrenade (start, forward, 50, 600, flash_number);
 #else
 	vec3f	start, forward, right, up, aim;
-	int		flash_number;
+	sint32		flash_number;
 	float	spread;
 	float	pitch = 0;
 	// PMM

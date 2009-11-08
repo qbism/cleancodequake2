@@ -44,7 +44,7 @@ class CFlagEntity : public CItemEntity
 {
 public:
 	CFlagEntity ();
-	CFlagEntity (int Index);
+	CFlagEntity (sint32 Index);
 
 	void Think ();
 
@@ -58,7 +58,7 @@ class CRedFlagEntity : public CFlagEntity
 {
 public:
 	CRedFlagEntity ();
-	CRedFlagEntity (int Index);
+	CRedFlagEntity (sint32 Index);
 
 	bool Run ();
 	void BecomeExplosion (bool grenade);
@@ -68,7 +68,7 @@ class CBlueFlagEntity : public CFlagEntity
 {
 public:
 	CBlueFlagEntity ();
-	CBlueFlagEntity (int Index);
+	CBlueFlagEntity (sint32 Index);
 
 	bool Run ();
 	void BecomeExplosion (bool grenade);

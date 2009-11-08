@@ -42,12 +42,12 @@ void _WriteChar (sint8 val)
 	gi.WriteChar (val);
 }
 
-void _WriteByte (byte val)
+void _WriteByte (uint8 val)
 {
 	gi.WriteByte (val);
 }
 
-void _WriteShort (short val)
+void _WriteShort (sint16 val)
 {
 	gi.WriteShort (val);
 }
@@ -80,10 +80,10 @@ CC_ENUM (uint8, EWriteType)
 class CWriteIndex
 {
 public:
-	byte		*Ptr;
+	uint8		*Ptr;
 	EWriteType	Type;
 
-	CWriteIndex (byte *Ptr, EWriteType Type) :
+	CWriteIndex (uint8 *Ptr, EWriteType Type) :
 	Ptr(Ptr),
 	Type(Type)
 	{
@@ -105,10 +105,10 @@ public:
 			_WriteChar ((sint8)*Ptr);
 			break;
 		case WT_BYTE:
-			_WriteByte ((byte)*Ptr);
+			_WriteByte ((uint8)*Ptr);
 			break;
 		case WT_SHORT:
-			_WriteShort (*((short*)(Ptr)));
+			_WriteShort (*((sint16*)(Ptr)));
 			break;
 		case WT_LONG:
 			_WriteLong (*((long*)(Ptr)));
@@ -141,7 +141,7 @@ void Clear ()
 	WriteQueue.clear();
 }
 
-void PushUp (byte *Ptr, EWriteType Type)
+void PushUp (uint8 *Ptr, EWriteType Type)
 {
 	WriteQueue.push_back (QNew (com_levelPool, 0) CWriteIndex(Ptr, Type));
 }
@@ -175,7 +175,7 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 	switch (castType)
 	{
 	case CAST_MULTI:
-		for (int i = 1; i <= game.maxclients; i++)
+		for (sint32 i = 1; i <= game.maxclients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -227,31 +227,31 @@ void WriteChar (sint8 val)
 	}
 
 	//gi.WriteChar (val);
-	PushUp ((byte*)QNew (com_levelPool, 0) sint8 (val), WT_CHAR);
+	PushUp ((uint8*)QNew (com_levelPool, 0) sint8 (val), WT_CHAR);
 }
 
-void WriteByte (byte val)
+void WriteByte (uint8 val)
 {
 	if (val < 0 || val > UCHAR_MAX)
 	{
-		Com_Printf (0, "Malformed byte written!\n");
-		val = Clamp<byte> (val, 0, UCHAR_MAX);
+		Com_Printf (0, "Malformed uint8 written!\n");
+		val = Clamp<uint8> (val, 0, UCHAR_MAX);
 	}
 
 	//gi.WriteByte (val);
-	PushUp ((byte*)QNew (com_levelPool, 0) byte (val), WT_BYTE);
+	PushUp ((uint8*)QNew (com_levelPool, 0) uint8 (val), WT_BYTE);
 }
 
-void WriteShort (short val)
+void WriteShort (sint16 val)
 {
 	if (val < SHRT_MIN || val > SHRT_MAX)
 	{
-		Com_Printf (0, "Malformed short written!\n");
-		val = Clamp<short> (val, SHRT_MIN, SHRT_MAX);
+		Com_Printf (0, "Malformed sint16 written!\n");
+		val = Clamp<sint16> (val, SHRT_MIN, SHRT_MAX);
 	}
 
 	//gi.WriteShort (val);
-	PushUp ((byte*)QNew (com_levelPool, 0) short (val), WT_SHORT);
+	PushUp ((uint8*)QNew (com_levelPool, 0) sint16 (val), WT_SHORT);
 }
 
 void WriteLong (long val)
@@ -263,7 +263,7 @@ void WriteLong (long val)
 	}
 
 	//gi.WriteLong (val);
-	PushUp ((byte*)QNew (com_levelPool, 0) long (val), WT_LONG);
+	PushUp ((uint8*)QNew (com_levelPool, 0) long (val), WT_LONG);
 }
 
 void WriteFloat (float val)
@@ -275,7 +275,7 @@ void WriteFloat (float val)
 	}
 
 	//gi.WriteFloat (val);
-	PushUp ((byte*)QNew (com_levelPool, 0) float (val), WT_FLOAT);
+	PushUp ((uint8*)QNew (com_levelPool, 0) float (val), WT_FLOAT);
 }
 
 void WriteAngle (float val)
@@ -303,26 +303,26 @@ void WriteString (const char *val)
 	}
 
 	//gi.WriteString (val);
-	PushUp ((byte*)Mem_PoolStrDup (val, com_levelPool, 0), WT_STRING);
+	PushUp ((uint8*)Mem_PoolStrDup (val, com_levelPool, 0), WT_STRING);
 }
 
 void WriteCoord (float f)
 {
-	//WriteShort ((int)(f * 8));
-	PushUp ((byte*)QNew (com_levelPool, 0) short ((short)(f * 8)), WT_SHORT);
+	//WriteShort ((sint32)(f * 8));
+	PushUp ((uint8*)QNew (com_levelPool, 0) sint16 ((sint16)(f * 8)), WT_SHORT);
 }
 
 void WritePosition (vec3_t val)
 {
 	if (!val)
 	{
-		for (int i = 0; i < 3; i++)
+		for (sint32 i = 0; i < 3; i++)
 			WriteCoord(vec3fOrigin[i]);
 	}
 	else
 	{
 		bool Printed = false;
-		for (int i = 0; i < 3; i++)
+		for (sint32 i = 0; i < 3; i++)
 		{
 			if (!Printed && (val[i] > 4096 || val[i] < -4096))
 			{			
@@ -339,13 +339,13 @@ void WritePosition (vec3f &val)
 {
 	if (!val)
 	{
-		for (int i = 0; i < 3; i++)
+		for (sint32 i = 0; i < 3; i++)
 			WriteCoord(vec3fOrigin[i]);
 	}
 	else
 	{
 		bool Printed = false;
-		for (int i = 0; i < 3; i++)
+		for (sint32 i = 0; i < 3; i++)
 		{
 			if (!Printed && (val[i] > 4096 || val[i] < -4096))
 			{			

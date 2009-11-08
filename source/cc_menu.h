@@ -37,12 +37,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CMenuItem
 {
 public:
-	int				x, y;
+	sint32				x, y;
 	bool			Selected;
 	bool			Enabled;
 	class CMenu		*Menu; // Menu that owns this object
 
-	CMenuItem		(class CMenu *Menu, int x, int y);
+	CMenuItem		(class CMenu *Menu, sint32 x, sint32 y);
 
 	virtual void	Draw (CPlayerEntity *ent, CStatusBar *DrawState) = 0;
 
@@ -56,7 +56,7 @@ typedef std::vector<CMenuItem*, std::level_allocator<CMenuItem*> > TMenuItemsCon
 class CMenu 
 {
 public:
-	int							Cursor; // Where to position the cursor on start
+	sint32							Cursor; // Where to position the cursor on start
 	CPlayerEntity				*ent; // A pointer to the entity that is running the show (needed?)
 	std::vector<CMenuItem*, std::level_allocator<CMenuItem*> >		Items;
 

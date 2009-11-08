@@ -54,9 +54,9 @@ void Cast (ECastFlags castFlags, vec3f &Origin);
 
 EBrushContents PointContents (vec3f &start);
 
-int BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, int maxCount, bool triggers);
+sint32 BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, sint32 maxCount, bool triggers);
 
-void ConfigString (int configStringIndex, const char *configStringValue, CPlayerEntity *Audience = NULL);
+void ConfigString (sint32 configStringIndex, const char *configStringValue, CPlayerEntity *Audience = NULL);
 void GameError (char *fmt, ...);
 
 _CC_DISABLE_DEPRECATION

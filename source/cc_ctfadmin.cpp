@@ -41,7 +41,7 @@ void CTFResetAllPlayers();
 class CCTFSettingsMenu : public CMenu
 {
 public:
-	CMenu_Slider<int>	*MatchStartLength;
+	CMenu_Slider<sint32>	*MatchStartLength;
 	CMenu_Slider<float>	*MatchLength,
 						*MatchSetupLength;
 
@@ -54,7 +54,7 @@ public:
 	class CCloseLabel : public CMenu_Label
 	{
 	public:
-		CCloseLabel(CCTFSettingsMenu *Menu, int x, int y) :
+		CCloseLabel(CCTFSettingsMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -70,7 +70,7 @@ public:
 	public:
 		CCTFSettingsMenu *MyMenu;
 
-		CApplyLabel(CCTFSettingsMenu *Menu, int x, int y) :
+		CApplyLabel(CCTFSettingsMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y),
 		MyMenu(Menu)
 		{
@@ -115,7 +115,7 @@ public:
 				matchstarttime->Set (MyMenu->MatchStartLength->Value);
 			}
 
-			int i = dmflags->Integer();
+			sint32 i = dmflags->Integer();
 			if (!!MyMenu->WeaponsStaySpin->Index != dmFlags.dfWeaponsStay)
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s weapons stay.\n",
@@ -178,7 +178,7 @@ public:
 
 	bool Open ()
 	{
-		int x = 0, y = 0;
+		sint32 x = 0, y = 0;
 		static SSpinControlIndex YesNoValues[] =
 		{
 			{ "Off", "0" },
@@ -227,7 +227,7 @@ public:
 		MatchSetupLength->x += 8 * 2;
 
 		y += 8;
-		MatchStartLength = QNew (com_levelPool, 0) CMenu_Slider<int> (this, x, y);
+		MatchStartLength = QNew (com_levelPool, 0) CMenu_Slider<sint32> (this, x, y);
 		MatchStartLength->Align = LA_LEFT;
 		MatchStartLength->AppendText = " sec";
 		MatchStartLength->Min = 0;
@@ -368,7 +368,7 @@ public:
 	class CMatchSetLabel : public CMenu_Label
 	{
 	public:
-		CMatchSetLabel(CCTFAdminMenu *Menu, int x, int y) :
+		CMatchSetLabel(CCTFAdminMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -396,7 +396,7 @@ public:
 	class CMatchModeLabel : public CMenu_Label
 	{
 	public:
-		CMatchModeLabel(CCTFAdminMenu *Menu, int x, int y) :
+		CMatchModeLabel(CCTFAdminMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -418,7 +418,7 @@ public:
 	class CCloseLabel : public CMenu_Label
 	{
 	public:
-		CCloseLabel(CCTFAdminMenu *Menu, int x, int y) :
+		CCloseLabel(CCTFAdminMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -432,7 +432,7 @@ public:
 	class COpenSettingsLabel : public CMenu_Label
 	{
 	public:
-		COpenSettingsLabel(CCTFAdminMenu *Menu, int x, int y) :
+		COpenSettingsLabel(CCTFAdminMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -448,7 +448,7 @@ public:
 
 	bool Open ()
 	{
-		int x = 0, y = 0;
+		sint32 x = 0, y = 0;
 
 		CMenu_Image *Background = QNew (com_levelPool, 0) CMenu_Image (this, x, y);
 		Background->ImageString = "inventory";

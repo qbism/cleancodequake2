@@ -70,7 +70,7 @@ public:
 
 	dmFlagsConfig();
 
-	void UpdateFlags (int wantedFlags);
+	void UpdateFlags (sint32 wantedFlags);
 	void Reset ();
 };
 

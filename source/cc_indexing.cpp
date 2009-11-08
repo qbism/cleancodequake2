@@ -47,7 +47,7 @@ numIndexes(0)
 	memset (HashList, 0, sizeof(CIndex*) * MAX_INDEXES);
 }
 
-int CIndexList::GetIndex (const char *String)
+sint32 CIndexList::GetIndex (const char *String)
 {
 	// Check through the itemlist
 	uint32 hash = Com_HashGeneric(String, MAX_INDEXES);
@@ -61,7 +61,7 @@ int CIndexList::GetIndex (const char *String)
 	return -1;
 }
 
-int CIndexList::AddToList (const char *String, MediaIndex Index)
+sint32 CIndexList::AddToList (const char *String, MediaIndex Index)
 {
 	CIndex *NewIndex = QNew (com_gamePool, 0) CIndex;
 	NewIndex->Index = Index;
@@ -88,7 +88,7 @@ _CC_DISABLE_DEPRECATION
 MediaIndex ModelIndex (const char *String)
 {
 	// Do we exist?
-	int Index = ModelList.GetIndex(String);
+	sint32 Index = ModelList.GetIndex(String);
 	if (Index == -1)
 	{
 		//DebugPrintf ("ModelIndex: Adding new index for %s\n", String);
@@ -107,7 +107,7 @@ MediaIndex ModelIndex (const char *String)
 MediaIndex SoundIndex (const char *String)
 {
 	// Do we exist?
-	int Index = SoundList.GetIndex(String);
+	sint32 Index = SoundList.GetIndex(String);
 	if (Index == -1)
 	{
 		//DebugPrintf ("SoundIndex: Adding new index for %s\n", String);
@@ -126,7 +126,7 @@ MediaIndex SoundIndex (const char *String)
 MediaIndex ImageIndex (const char *String)
 {
 	// Do we exist?
-	int Index = ImageList.GetIndex(String);
+	sint32 Index = ImageList.GetIndex(String);
 	if (Index == -1)
 	{
 		//DebugPrintf ("ImageIndex: Adding new index for %s\n", String);
@@ -146,7 +146,7 @@ _CC_ENABLE_DEPRECATION
 
 void CIndexList::Clear ()
 {
-	for (byte i = 0; i < numIndexes; i++)
+	for (uint8 i = 0; i < numIndexes; i++)
 	{
 		delete List[i];
 	}
@@ -166,15 +166,15 @@ void ClearList ()
 void SvCmd_IndexList_f ()
 {
 	DebugPrintf ("Models: (%u)\n", ModelList.numIndexes);
-	for (byte i = 0; i < ModelList.numIndexes; i++)
+	for (uint8 i = 0; i < ModelList.numIndexes; i++)
 		DebugPrintf ("%s\n", ModelList.List[i]->Name);
 
 	DebugPrintf ("\nSounds: (%u)\n", SoundList.numIndexes);
-	for (byte i = 0; i < SoundList.numIndexes; i++)
+	for (uint8 i = 0; i < SoundList.numIndexes; i++)
 		DebugPrintf ("%s\n", SoundList.List[i]->Name);
 
 	DebugPrintf ("\nImages: (%u)\n", ImageList.numIndexes);
-	for (byte i = 0; i < ImageList.numIndexes; i++)
+	for (uint8 i = 0; i < ImageList.numIndexes; i++)
 		DebugPrintf ("%s\n", ImageList.List[i]->Name);
 
 	DebugPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);

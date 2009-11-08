@@ -329,7 +329,7 @@ CFrame SoldierFramesPain4 [] =
 CAnim SoldierMovePain4 (FRAME_pain401, FRAME_pain417, SoldierFramesPain4, ConvertDerivedFunction(&CSoldierBase::Run));
 
 
-void CSoldierBase::Pain (CBaseEntity *other, float kick, int damage)
+void CSoldierBase::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() |= 1;
@@ -1029,13 +1029,13 @@ CFrame SoldierFramesDeath6 [] =
 };
 CAnim SoldierMoveDeath6 (FRAME_death601, FRAME_death610, SoldierFramesDeath6, ConvertDerivedFunction(&CSoldierBase::Dead));
 
-void CSoldierBase::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CSoldierBase::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 3; n++)
+		for (sint32 n= 0; n < 3; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);

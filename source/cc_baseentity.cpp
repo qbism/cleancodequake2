@@ -43,7 +43,7 @@ FieldType(FieldType),
 StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN))
 {
 	std::transform(this->Name.begin(), this->Name.end(), this->Name.begin(),
-		(int(*)(int)) std::tolower);
+		(sint32(*)(sint32)) std::tolower);
 };
 
 CEntityState::CEntityState () :
@@ -56,7 +56,7 @@ state(state)
 {
 };
 
-int		&CEntityState::GetNumber		()
+sint32		&CEntityState::GetNumber		()
 {
 	return state->number;
 }
@@ -77,7 +77,7 @@ vec3f	&CEntityState::GetOldOrigin	()
 }
 
 // Can be 1, 2, 3, or 4
-int		&CEntityState::GetModelIndex	(uint8 index)
+sint32		&CEntityState::GetModelIndex	(uint8 index)
 {
 	switch (index)
 	{
@@ -95,12 +95,12 @@ int		&CEntityState::GetModelIndex	(uint8 index)
 	}
 }
 
-int		&CEntityState::GetFrame		()
+sint32		&CEntityState::GetFrame		()
 {
 	return state->frame;
 }
 
-int	&CEntityState::GetSkinNum		()
+sint32	&CEntityState::GetSkinNum		()
 {
 	return state->skinNum;
 }
@@ -145,7 +145,7 @@ angles and bad trails.
 */
 edict_t *G_Spawn ()
 {
-	int			i;
+	sint32			i;
 	edict_t		*e;
 
 	e = &g_edicts[game.maxclients+1];
@@ -253,7 +253,7 @@ _CC_ENABLE_DEPRECATION
 	State = CEntityState(&gameEntity->state);
 };
 
-CBaseEntity::CBaseEntity (int Index)
+CBaseEntity::CBaseEntity (sint32 Index)
 {
 	if (Index < 0)
 	{
@@ -353,7 +353,7 @@ EServerFlags	&CBaseEntity::GetSvFlags ()
 	return gameEntity->svFlags;
 }
 
-int				CBaseEntity::GetAreaNum (bool second)
+sint32				CBaseEntity::GetAreaNum (bool second)
 {
 	return ((second) ? gameEntity->areaNum2 : gameEntity->areaNum);
 }
@@ -367,7 +367,7 @@ void			CBaseEntity::ClearArea ()
 	memset (&gameEntity->area, 0, sizeof(gameEntity->area));
 }
 
-int				CBaseEntity::GetLinkCount ()
+sint32				CBaseEntity::GetLinkCount ()
 {
 	return gameEntity->linkCount;
 }
@@ -403,7 +403,7 @@ void			CBaseEntity::Free ()
 	Freed = true;
 }
 
-void	CBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, byte volume, EAttenuation attenuation, byte timeOfs)
+void	CBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
 	{
@@ -416,7 +416,7 @@ void	CBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, byte
 	PlaySoundFrom (this, channel, soundIndex, volume, attenuation, timeOfs);
 };
 
-void	CBaseEntity::PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, byte volume, EAttenuation attenuation, byte timeOfs)
+void	CBaseEntity::PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
 	{
@@ -455,7 +455,7 @@ CBaseEntity()
 	EntityFlags |= ENT_MAP;
 };
 
-CMapEntity::CMapEntity (int Index) : 
+CMapEntity::CMapEntity (sint32 Index) : 
 CBaseEntity(Index)
 {
 	EntityFlags |= ENT_MAP;

@@ -46,7 +46,7 @@ public:
 	{
 	};
 
-	CTriggerAlways (int Index) :
+	CTriggerAlways (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	{
@@ -104,7 +104,7 @@ public:
 	{
 	};
 
-	CTriggerBase (int Index) :
+	CTriggerBase (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -252,7 +252,7 @@ public:
 	  {
 	  };
 
-	CTriggerMultiple (int Index) :
+	CTriggerMultiple (sint32 Index) :
 	  CBaseEntity(Index),
 	  CTriggerBase (Index),
 	  ActivateUse(false)
@@ -342,7 +342,7 @@ public:
 	  {
 	  };
 
-	CTriggerOnce (int Index) :
+	CTriggerOnce (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
@@ -386,7 +386,7 @@ public:
 	  {
 	  };
 
-	CTriggerCounter (int Index) :
+	CTriggerCounter (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
@@ -473,7 +473,7 @@ public:
 	  {
 	  };
 
-	CTriggerPush (int Index) :
+	CTriggerPush (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  Q3Touch(false),
@@ -592,7 +592,7 @@ class CTriggerHurt : public CTriggerMultiple
 {
 public:
 	FrameNumber_t		NextHurt;
-	int					Damage;
+	sint32					Damage;
 
 	CTriggerHurt () :
 	  CBaseEntity (),
@@ -602,7 +602,7 @@ public:
 	  {
 	  };
 
-	CTriggerHurt (int Index) :
+	CTriggerHurt (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  NextHurt(0),
@@ -693,7 +693,7 @@ public:
 	  {
 	  };
 
-	CTriggerMonsterJump (int Index) :
+	CTriggerMonsterJump (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  Speed (0)
@@ -776,7 +776,7 @@ public:
 	  {
 	  };
 
-	CTriggerGravity (int Index) :
+	CTriggerGravity (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
@@ -852,7 +852,7 @@ public:
 	{
 	};
 
-	CTriggerKey (int Index) :
+	CTriggerKey (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index),
@@ -882,7 +882,7 @@ public:
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
 
-		int index = Item->GetIndex();
+		sint32 index = Item->GetIndex();
 		if (!Player->Client.Persistent.Inventory.Has(index))
 		{
 			if (level.Frame < TouchDebounce)
@@ -902,14 +902,14 @@ public:
 		{
 			if (Item == NItems::PowerCube)
 			{
-				int	cube;
+				sint32	cube;
 				for (cube = 0; cube < 8; cube++)
 				{
 					if (Player->Client.Persistent.PowerCubeCount & (1 << cube))
 						break;
 				}
 
-				for (int player = 1; player <= game.maxclients; player++)
+				for (sint32 player = 1; player <= game.maxclients; player++)
 				{
 					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
 					if (!ent->GetInUse())
@@ -923,7 +923,7 @@ public:
 			}
 			else
 			{
-				for (int player = 1; player <= game.maxclients; player++)
+				for (sint32 player = 1; player <= game.maxclients; player++)
 				{
 					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
 					if (!ent->GetInUse())

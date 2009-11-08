@@ -41,17 +41,17 @@ CCvar::CCvar ()
 	mainValue = NULL;
 	floatVal = intVal = 0;
 }
-CCvar::CCvar (const char *cvarName, const char *defaultValue, int flags)
+CCvar::CCvar (const char *cvarName, const char *defaultValue, sint32 flags)
 {
 	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
-CCvar::CCvar (const char *cvarName, int defaultValue, int flags)
+CCvar::CCvar (const char *cvarName, sint32 defaultValue, sint32 flags)
 {
 	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
-CCvar::CCvar (const char *cvarName, float defaultValue, int flags)
+CCvar::CCvar (const char *cvarName, float defaultValue, sint32 flags)
 {
 	CCvar();
 	Register(cvarName, defaultValue, flags);
@@ -64,7 +64,7 @@ void CCvar::Update()
 	intVal = floatVal;
 }
 
-void CCvar::Register(const char *cvarName, const char *defaultValue, int flags)
+void CCvar::Register(const char *cvarName, const char *defaultValue, sint32 flags)
 {
 	cVar = gi.cvar ((char*)cvarName, (char*)defaultValue, flags);
 
@@ -75,7 +75,7 @@ void CCvar::Register(const char *cvarName, const char *defaultValue, int flags)
 
 #include <sstream>
 static std::stringstream str;
-void CCvar::Register(const char *cvarName, float defaultValue, int flags)
+void CCvar::Register(const char *cvarName, float defaultValue, sint32 flags)
 {
 	str.clear ();
 	str << defaultValue;
@@ -87,7 +87,7 @@ void CCvar::Register(const char *cvarName, float defaultValue, int flags)
 	intVal = floatVal;
 }
 
-void CCvar::Register(const char *cvarName, int defaultValue, int flags)
+void CCvar::Register(const char *cvarName, sint32 defaultValue, sint32 flags)
 {
 	str.clear ();
 	str << defaultValue;
@@ -118,7 +118,7 @@ void CCvar::Set (float value, bool Force)
 		cVar = gi.cvar_forceset (cVar->name, (char*)str.str().c_str());
 }
 
-void CCvar::Set (int value, bool Force)
+void CCvar::Set (sint32 value, bool Force)
 {
 	str.clear ();
 	str << value;
@@ -135,7 +135,7 @@ float CCvar::Float ()
 	return floatVal;
 }
 
-int CCvar::Integer ()
+sint32 CCvar::Integer ()
 {
 	Update ();
 	return intVal;

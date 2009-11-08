@@ -61,7 +61,7 @@ CFuncTimer::CFuncTimer () :
 	{
 	};
 
-CFuncTimer::CFuncTimer (int Index) :
+CFuncTimer::CFuncTimer (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CThinkableEntity (Index),
@@ -158,7 +158,7 @@ CTargetCharacter::CTargetCharacter () :
 	{
 	};
 
-CTargetCharacter::CTargetCharacter (int Index) :
+CTargetCharacter::CTargetCharacter (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CBrushModel (Index)
@@ -204,7 +204,7 @@ CTargetString::CTargetString () :
 	{
 	};
 
-CTargetString::CTargetString (int Index) :
+CTargetString::CTargetString (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index)
 	{
@@ -300,7 +300,7 @@ CFuncClock::CFuncClock () :
 	{
 	};
 
-CFuncClock::CFuncClock (int Index) :
+CFuncClock::CFuncClock (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CThinkableEntity (Index),

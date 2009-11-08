@@ -36,26 +36,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CInventory::CInventory ()
 {
-	memset (Array, 0, sizeof(int)*MAX_CS_ITEMS);
+	memset (Array, 0, sizeof(sint32)*MAX_CS_ITEMS);
 	SelectedItem = -1;
 }
 
-void CInventory::Add (CBaseItem *Item, int Num)
+void CInventory::Add (CBaseItem *Item, sint32 Num)
 {
 	Array[Item->GetIndex()] += Num;
 }
 
-void CInventory::Remove (CBaseItem *Item, int Num)
+void CInventory::Remove (CBaseItem *Item, sint32 Num)
 {
 	Array[Item->GetIndex()] -= Num;
 }
 
-void CInventory::Add (int Index, int Num)
+void CInventory::Add (sint32 Index, sint32 Num)
 {
 	Array[Index] += Num;
 }
 
-void CInventory::Remove (int Index, int Num)
+void CInventory::Remove (sint32 Index, sint32 Num)
 {
 	Array[Index] -= Num;
 }
@@ -72,17 +72,17 @@ void CInventory::Draw (CPlayerEntity *ent)
 	ent->Client.LayoutFlags |= LF_SHOWINVENTORY;
 
 	WriteByte (SVC_INVENTORY);
-	for (int i=0 ; i<MAX_CS_ITEMS ; i++)
+	for (sint32 i=0 ; i<MAX_CS_ITEMS ; i++)
 		WriteShort (Array[i]);
 	ent->CastTo (CASTFLAG_RELIABLE);
 }
 
 void CInventory::SelectNextItem(EItemFlags Flags)
 {
-	int			index;
+	sint32			index;
 
 	// scan  for the next valid one
-	for (int i=1 ; i<=MAX_CS_ITEMS ; i++)
+	for (sint32 i=1 ; i<=MAX_CS_ITEMS ; i++)
 	{
 		index = (SelectedItem + i)%MAX_CS_ITEMS;
 		if (!Array[index])
@@ -103,10 +103,10 @@ void CInventory::SelectNextItem(EItemFlags Flags)
 
 void CInventory::SelectPrevItem(EItemFlags Flags)
 {
-	int			index;
+	sint32			index;
 
 	// scan  for the next valid one
-	for (int i=1 ; i<=MAX_CS_ITEMS ; i++)
+	for (sint32 i=1 ; i<=MAX_CS_ITEMS ; i++)
 	{
 		index = (SelectedItem + MAX_CS_ITEMS - i)%MAX_CS_ITEMS;
 		if (!Array[index])
@@ -125,22 +125,22 @@ void CInventory::SelectPrevItem(EItemFlags Flags)
 	ValidateSelectedItem ();
 }
 
-int CInventory::Has (int Index)
+sint32 CInventory::Has (sint32 Index)
 {
 	return Array[Index];
 }
 
-int CInventory::Has (CBaseItem *Item)
+sint32 CInventory::Has (CBaseItem *Item)
 {
 	return Array[Item->GetIndex()];
 }
 
-void CInventory::Set (CBaseItem *Item, int Num)
+void CInventory::Set (CBaseItem *Item, sint32 Num)
 {
 	Array[Item->GetIndex()] = Num;
 }
 
-void CInventory::Set (int Index, int Num)
+void CInventory::Set (sint32 Index, sint32 Num)
 {
 	Array[Index] = Num;
 }
@@ -158,7 +158,7 @@ void CInventory::operator += (CBaseItem *Item)
 	Add(Item, 1);
 }
 
-void CInventory::operator += (int Index)
+void CInventory::operator += (sint32 Index)
 {
 	Add(GetItemByIndex(Index), 1);
 }
@@ -168,7 +168,7 @@ void CInventory::operator -= (CBaseItem *Item)
 	Remove(Item, 1);
 }
 
-void CInventory::operator -= (int Index)
+void CInventory::operator -= (sint32 Index)
 {
 	Remove (GetItemByIndex(Index), 1);
 }
@@ -221,7 +221,7 @@ when one gets used
 */
 void Cmd_UseList_f (CPlayerEntity *ent)
 {
-	for (int i = 1; i < ArgCount(); i++)
+	for (sint32 i = 1; i < ArgCount(); i++)
 	{
 		std::cc_string s = ArgGets(i);
 		CBaseItem *Item = FindItem(s.c_str());
@@ -379,12 +379,12 @@ void Cmd_WeapPrev_f (CPlayerEntity *ent)
 	if (ent->Health <= 0 || ent->DeadFlag)
 		return;
 
-	int selectedWeaponIndex = ent->Client.Persistent.Weapon->Item->GetIndex();
+	sint32 selectedWeaponIndex = ent->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (int i=0 ; i<=GetNumItems() ; i++)
+	for (sint32 i=0 ; i<=GetNumItems() ; i++)
 	{
-		int index = (selectedWeaponIndex + MAX_ITEMS - i)%MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + MAX_ITEMS - i)%MAX_CS_ITEMS;
 		if (!ent->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
@@ -410,12 +410,12 @@ void Cmd_WeapNext_f (CPlayerEntity *ent)
 	if (ent->Health <= 0 || ent->DeadFlag)
 		return;
 
-	int selectedWeaponIndex = ent->Client.Persistent.Weapon->Item->GetIndex();
+	sint32 selectedWeaponIndex = ent->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (int i=0 ; i<=GetNumItems() ; i++)
+	for (sint32 i=0 ; i<=GetNumItems() ; i++)
 	{
-		int index = (selectedWeaponIndex + i)%MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + i)%MAX_CS_ITEMS;
 		if (!ent->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
@@ -570,7 +570,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 
 	if (give_all || Q_stricmp (name.c_str(), "weapons") == 0)
 	{
-		for (int i = 0; i < GetNumItems(); i++)
+		for (sint32 i = 0; i < GetNumItems(); i++)
 		{
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_WEAPON))
@@ -583,7 +583,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 
 	if (give_all || Q_stricmp (name.c_str(), "ammo") == 0)
 	{
-		for (int i = 0; i < GetNumItems(); i++)
+		for (sint32 i = 0; i < GetNumItems(); i++)
 		{
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_GRABBABLE))
@@ -632,7 +632,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 
 	if (give_all)
 	{
-		for (int i = 0; i < GetNumItems(); i++)
+		for (sint32 i = 0; i < GetNumItems(); i++)
 		{
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_GRABBABLE))

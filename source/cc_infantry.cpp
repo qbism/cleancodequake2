@@ -208,7 +208,7 @@ CFrame InfantryFramesPain2 [] =
 };
 CAnim InfantryMovePain2 (FRAME_pain201, FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
 
-void CInfantry::Pain (CBaseEntity *other, float kick, int damage)
+void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -254,7 +254,7 @@ static const vec3f	DeathAimAngles[] =
 void CInfantry::MachineGun ()
 {
 	vec3f	start, forward, right;
-	int		flash_number;
+	sint32		flash_number;
 
 	if (Entity->State.GetFrame() == FRAME_attak111)
 	{
@@ -375,15 +375,15 @@ CFrame InfantryFramesDeath3 [] =
 CAnim InfantryMoveDeath3 (FRAME_death301, FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
 
 
-void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
@@ -398,7 +398,7 @@ void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, 
 	Entity->CanTakeDamage = true;
 
 	CAnim *Animation;
-	int pSound;
+	sint32 pSound;
 	switch (irandom(3))
 	{
 	case 0:

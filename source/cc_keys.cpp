@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CKey::CKey(char *Classname, char *WorldModel, int EffectFlags,
+CKey::CKey(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
@@ -49,7 +49,7 @@ void CKey::Drop (CPlayerEntity *ent)
 {
 }
 
-CPowerCube::CPowerCube(char *Classname, char *WorldModel, int EffectFlags,
+CPowerCube::CPowerCube(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache) :
 CKey(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
@@ -94,7 +94,7 @@ public:
 	  {
 	  };
 
-	CPowerCubeEntity (int Index) :
+	CPowerCubeEntity (sint32 Index) :
 	  CBaseEntity(Index),
 	  CItemEntity (Index)
 	  {

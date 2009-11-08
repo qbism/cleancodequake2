@@ -267,7 +267,7 @@ CFrame JorgFramesPain1 [] =
 };
 CAnim JorgMovePain1 (FRAME_pain101, FRAME_pain103, JorgFramesPain1, &CMonster::Run);
 
-void CJorg::Pain (CBaseEntity *other, float kick, int damage)
+void CJorg::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
@@ -286,7 +286,7 @@ void CJorg::Pain (CBaseEntity *other, float kick, int damage)
 	going into pain
 	*/
 	
-	int frame = Entity->State.GetFrame();
+	sint32 frame = Entity->State.GetFrame();
 	if (((frame >= FRAME_attak101) && (frame <= FRAME_attak108)) && (frand() <= 0.005))
 		return;
 
@@ -377,7 +377,7 @@ void CJorg::TossMakron ()
 	CMakronJumpTimer::Spawn (this);
 };
 
-void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDeath);
 	Entity->DeadFlag = true;

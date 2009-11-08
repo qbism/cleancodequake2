@@ -53,8 +53,8 @@ Multiple identical looping sounds will just increase volume without any speed co
 class CTargetSpeaker : public CMapEntity, public CUsableEntity
 {
 public:
-	byte		Volume;
-	int			Attenuation;
+	uint8		Volume;
+	sint32			Attenuation;
 
 	CTargetSpeaker () :
 	  CBaseEntity (),
@@ -65,7 +65,7 @@ public:
 	  {
 	  };
 
-	CTargetSpeaker (int Index) :
+	CTargetSpeaker (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index),
@@ -138,7 +138,7 @@ LINK_CLASSNAME_TO_CLASS ("target_speaker", CTargetSpeaker);
 class CTargetExplosion : public CMapEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
-	int			Damage;
+	sint32			Damage;
 
 	CTargetExplosion () :
 	  CBaseEntity (),
@@ -149,7 +149,7 @@ public:
 	{
 	};
 
-	CTargetExplosion (int Index) :
+	CTargetExplosion (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -241,7 +241,7 @@ public:
 	{
 	};
 
-	CTargetSpawner (int Index) :
+	CTargetSpawner (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index),
@@ -321,7 +321,7 @@ class CTargetSplash : public CMapEntity, public CUsableEntity
 {
 public:
 	vec3f	MoveDir;
-	int		Damage;
+	sint32		Damage;
 	uint8	Color;
 	uint8	Count;
 
@@ -334,7 +334,7 @@ public:
 	{
 	};
 
-	CTargetSplash (int Index) :
+	CTargetSplash (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index),
@@ -390,7 +390,7 @@ LINK_CLASSNAME_TO_CLASS ("target_splash", CTargetSplash);
 
 /*QUAKED target_temp_entity (1 0 0) (-8 -8 -8) (8 8 8)
 Fire an origin based temp entity event to the clients.
-"style"		type byte
+"style"		type uint8
 */
 class CTargetTempEntity : public CMapEntity, public CUsableEntity
 {
@@ -404,7 +404,7 @@ public:
 	{
 	};
 
-	CTargetTempEntity (int Index) :
+	CTargetTempEntity (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
@@ -467,7 +467,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	game.autosaved = false;
 
 	// respawn any dead clients
-	for (int i=0 ; i<game.maxclients ; i++)
+	for (sint32 i=0 ; i<game.maxclients ; i++)
 	{
 		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!client->GetInUse())
@@ -483,13 +483,13 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	{
 		if (game.mode == GAME_COOPERATIVE)
 		{
-			for (int i=0 ; i<game.maxclients ; i++)
+			for (sint32 i=0 ; i<game.maxclients ; i++)
 			{
 				CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 				if (!client->GetInUse())
 					continue;
 				// strip players of all keys between units
-				for (int n = 0; n < MAX_CS_ITEMS; n++)
+				for (sint32 n = 0; n < MAX_CS_ITEMS; n++)
 				{
 					if (n >= GetNumItems())
 						break;
@@ -520,7 +520,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	}
 	else
 	{	// chose one of four spots
-		int i = irandom(4);
+		sint32 i = irandom(4);
 		while (i--)
 		{
 			ent = CC_Find (ent, FOFS(classname), "info_player_intermission");
@@ -533,7 +533,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	level.IntermissionAngles = ent->State.GetAngles ();
 
 	// move all clients to the intermission point
-	for (int i=0 ; i<game.maxclients ; i++)
+	for (sint32 i=0 ; i<game.maxclients ; i++)
 	{
 		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!client->GetInUse())
@@ -550,7 +550,7 @@ CTargetChangeLevel::CTargetChangeLevel () :
 {
 };
 
-CTargetChangeLevel::CTargetChangeLevel (int Index) :
+CTargetChangeLevel::CTargetChangeLevel (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CUsableEntity (Index),
@@ -662,7 +662,7 @@ public:
 	{
 	};
 
-	CCTargetCrossLevelTrigger (int Index) :
+	CCTargetCrossLevelTrigger (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
@@ -709,7 +709,7 @@ public:
 	{
 	};
 
-	CTargetCrossLevelTarget (int Index) :
+	CTargetCrossLevelTarget (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
@@ -766,7 +766,7 @@ public:
 	{
 	};
 
-	CTargetSecret (int Index) :
+	CTargetSecret (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
@@ -832,7 +832,7 @@ public:
 	{
 	};
 
-	CTargetGoal (int Index) :
+	CTargetGoal (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
@@ -893,7 +893,7 @@ class CTargetBlaster : public CMapEntity, public CUsableEntity
 public:
 	vec3f		MoveDir;
 	float		Speed;
-	int			Damage;
+	sint32			Damage;
 
 	CTargetBlaster () :
 	  CBaseEntity (),
@@ -904,7 +904,7 @@ public:
 	{
 	};
 
-	CTargetBlaster (int Index) :
+	CTargetBlaster (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index),
@@ -975,7 +975,7 @@ class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableE
 public:
 	bool		StartLaser;
 	vec3f		MoveDir;
-	int			Damage;
+	sint32			Damage;
 
 	CTargetLaser () :
 	  CBaseEntity (),
@@ -987,7 +987,7 @@ public:
 	{
 	};
 
-	CTargetLaser (int Index) :
+	CTargetLaser (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -1186,7 +1186,7 @@ public:
 	{
 	};
 
-	CTargetHelp (int Index) :
+	CTargetHelp (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
@@ -1254,7 +1254,7 @@ public:
 	{
 	};
 
-	CTargetEarthquake (int Index) :
+	CTargetEarthquake (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -1273,7 +1273,7 @@ public:
 
 	void Think ()
 	{
-		int		i;
+		sint32		i;
 		edict_t	*e;
 
 		if (LastShakeTime < level.Frame)

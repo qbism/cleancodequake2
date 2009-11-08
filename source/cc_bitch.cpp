@@ -249,7 +249,7 @@ CFrame ChickFramesPain3 [] =
 };
 CAnim ChickMovePain3 (FRAME_pain301, FRAME_pain321, ChickFramesPain3, ConvertDerivedFunction(&CMaiden::Run));
 
-void CMaiden::Pain (CBaseEntity *other, float kick, int damage)
+void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -259,7 +259,7 @@ void CMaiden::Pain (CBaseEntity *other, float kick, int damage)
 
 	PainDebounceTime = level.Frame + 30;
 
-	int r = irandom(3);
+	sint32 r = irandom(3);
 	switch (r)
 	{
 	case 0:
@@ -349,9 +349,9 @@ CFrame ChickFramesDeath1 [] =
 };
 CAnim ChickMoveDeath1 (FRAME_death101, FRAME_death112, ChickFramesDeath1, ConvertDerivedFunction(&CMaiden::Dead));
 
-void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	int		n;
+	sint32		n;
 
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
@@ -552,7 +552,7 @@ void CMaiden::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	int rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
+	sint32 rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 	if (blindfire)

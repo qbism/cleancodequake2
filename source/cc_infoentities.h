@@ -37,7 +37,7 @@ public:
 	FrameNumber_t	Wait;
 
 	CPathCorner ();
-	CPathCorner (int Index);
+	CPathCorner (sint32 Index);
 
 	ENTITYFIELD_DEFS
 

@@ -31,7 +31,7 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 ==================
 */
-int BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane)
+sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane)
 {
 	// Fast axial cases
 	if (plane->type < 3)
@@ -93,7 +93,7 @@ int BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane)
 		break;
 	}
 
-	int sides = 0;
+	sint32 sides = 0;
 	if (dist1 >= plane->dist)
 		sides = 1;
 	if (dist2 < plane->dist)
@@ -141,7 +141,7 @@ void CategorizePlane(plane_t *plane)
 {
 	plane->signBits = 0;
 	plane->type = PLANE_NON_AXIAL;
-	for (int i=0 ; i<3 ; i++)
+	for (sint32 i=0 ; i<3 ; i++)
 	{
 		if (plane->normal[i] < 0)
 			plane->signBits |= BIT(i);
@@ -194,7 +194,7 @@ SnapVector
 */
 void SnapVector(vec3_t normal)
 {
-	for (int i=0 ; i<3 ; i++)
+	for (sint32 i=0 ; i<3 ; i++)
 	{
 		if (Q_fabs (normal[i] - 1) < PLANE_NORMAL_EPSILON)
 		{
@@ -238,10 +238,10 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t point, const vec3_t normal)
 SignbitsForPlane
 ===============
 */
-int SignbitsForPlane(const plane_t *plane)
+sint32 SignbitsForPlane(const plane_t *plane)
 {
 	// For fast box on planeside test
-	int bits = 0;
+	sint32 bits = 0;
 	if (plane->normal[0] < 0)
 		bits |= 1 << 0;
 	if (plane->normal[1] < 0)

@@ -56,7 +56,7 @@ CServerCmd::~CServerCmd ()
 
 CServerCmd *ServerCommandList[MAX_COMMANDS];
 CServerCmd *ServerCommandHashList[MAX_CMD_HASH];
-int numServerCommands = 0;
+sint32 numServerCommands = 0;
 
 CServerCmd *SvCmd_FindCommand (std::cc_string commandName)
 {
@@ -91,7 +91,7 @@ void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
 void SvCmd_RemoveCommands ()
 {
 	// Remove all commands
-	for (int i = 0; i < numServerCommands; i++)
+	for (sint32 i = 0; i < numServerCommands; i++)
 	{
 		QDelete ServerCommandList[numServerCommands];
 		numServerCommands--;
@@ -182,7 +182,7 @@ public:
 
 	void Search (const char *WildCard)
 	{
-		for (int i = 0; i < globals.numEdicts; i++)
+		for (sint32 i = 0; i < globals.numEdicts; i++)
 		{
 			edict_t *e = (&g_edicts[i]);
 			if (!e->inUse)

@@ -41,7 +41,7 @@ void G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &fo
 }
 
 
-CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, int Radius, uint32 EntityFlags, bool CheckNonSolid)
+CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
 {
 	for (edict_t *from = (!From) ? g_edicts : (From->gameEntity + 1); from < &g_edicts[globals.numEdicts]; from++)
 	{
@@ -55,7 +55,7 @@ CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, int Radius, uint32 Entit
 		if (!(Entity->EntityFlags & EntityFlags))
 			continue;
 
-		if ((int)(org - (Entity->State.GetOrigin() + (Entity->GetMins()+ Entity->GetMaxs()) * 0.5)).LengthFast() > Radius)
+		if ((sint32)(org - (Entity->State.GetOrigin() + (Entity->GetMins()+ Entity->GetMaxs()) * 0.5)).LengthFast() > Radius)
 			continue;
 		return from->Entity;
 	}
@@ -79,7 +79,7 @@ NULL will be returned if the end of the list is reached.
 
 CBaseEntity *CC_PickTarget (char *targetname)
 {
-	int		num_choices = 0;
+	sint32		num_choices = 0;
 	CBaseEntity	*choice[MAXCHOICES];
 
 	if (!targetname)
@@ -137,11 +137,11 @@ void	G_TouchTriggers (CBaseEntity *ent)
 			return;
 	}
 
-	int num = BoxEdicts (ent->GetAbsMin(), ent->GetAbsMax(), touch, MAX_CS_EDICTS, true);
+	sint32 num = BoxEdicts (ent->GetAbsMin(), ent->GetAbsMax(), touch, MAX_CS_EDICTS, true);
 
 	// be careful, it is possible to have an entity in this
 	// list removed before we get to it (killtriggered)
-	for (int i=0 ; i<num ; i++)
+	for (sint32 i=0 ; i<num ; i++)
 	{
 		edict_t *hit = touch[i];
 		CBaseEntity *Entity = hit->Entity;
@@ -187,7 +187,7 @@ void CForEachTeamChainCallback::Query (CBaseEntity *Master)
 
 void CForEachPlayerCallback::Query (bool MustBeInUse)
 {
-	for (byte i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -211,7 +211,7 @@ NULL will be returned if the end of the list is reached.
 
 =============
 */
-CBaseEntity *CC_Find (CBaseEntity *from, int fieldofs, char *match)
+CBaseEntity *CC_Find (CBaseEntity *from, sint32 fieldofs, char *match)
 {
 	edict_t *gameEnt;
 	if (!from)
@@ -229,7 +229,7 @@ CBaseEntity *CC_Find (CBaseEntity *from, int fieldofs, char *match)
 		if (!gameEnt->Entity)
 			continue;
 
-		char *s = *(char **) ((byte *)gameEnt + fieldofs);
+		char *s = *(char **) ((uint8 *)gameEnt + fieldofs);
 		if (!s)
 			continue;
 		if (!Q_stricmp (s, match))
@@ -258,7 +258,7 @@ float	PlayersRangeFromSpot (CBaseEntity *spot)
 {
 	float	bestplayerdistance = 9999999;
 
-	for (int n = 1; n <= game.maxclients; n++)
+	for (sint32 n = 1; n <= game.maxclients; n++)
 	{
 		CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[n].Entity);
 
@@ -289,7 +289,7 @@ CBaseEntity *SelectRandomDeathmatchSpawnPoint ()
 	CBaseEntity *spot = NULL, *spot1 = NULL, *spot2 = NULL;
 	float range1 = 99999, range2 = 99999;
 
-	int count = 0;
+	sint32 count = 0;
 	while ((spot = CC_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
 	{
 		count++;
@@ -314,7 +314,7 @@ CBaseEntity *SelectRandomDeathmatchSpawnPoint ()
 	else
 		count -= 2;
 
-	int selection = irandom(count);
+	sint32 selection = irandom(count);
 	spot = NULL;
 
 	do
@@ -427,14 +427,14 @@ void DrawRadiusDebug (vec3f &origin, float radius)
 	vec3f origins[k_segments];
 
 	vec2f center (origin.X, origin.Y);
-	for (int32 i = 0; i < k_segments; ++i)
+	for (sint32 i = 0; i < k_segments; ++i)
 	{
 		vec2f v = center + vec2f(cosf(theta), sinf(theta)) * radius;
 		origins[i].Set (v.X, v.Y, origin.Z + 8);
 		theta += k_increment;
 	}
 
-	for (int i = 0; i < k_segments; i++)
+	for (sint32 i = 0; i < k_segments; i++)
 	{
 		DebugTrailAll (origins[i], origins[((i+1) >= k_segments) ? 0 : i+1]);
 	}
@@ -461,7 +461,7 @@ void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage
 		if (ent == attacker)
 			points *= 0.5;
 		if ((points > 0) && ent->CanDamage (inflictor))
-			ent->TakeDamage (inflictor, attacker, ent->State.GetOrigin() - inflictor->State.GetOrigin(), inflictor->State.GetOrigin(), vec3fOrigin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+			ent->TakeDamage (inflictor, attacker, ent->State.GetOrigin() - inflictor->State.GetOrigin(), inflictor->State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
 	}
 }
 

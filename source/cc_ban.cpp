@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CBanList	Bans;
 
-int ipcmp (IPAddress &filter, IPAddress &string)
+sint32 ipcmp (IPAddress &filter, IPAddress &string)
 {
 	return !Q_WildcardMatch (filter.str, string.str, true);
 }

@@ -37,22 +37,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CArmor : public CBaseItem
 {
 public:
-	int		baseCount;			// (on normalProtection == -1) Amount to add
-	int		maxCount;			// (on normalProtection == -1) Amount to stop at (-1 = none)
+	sint32		baseCount;			// (on normalProtection == -1) Amount to add
+	sint32		maxCount;			// (on normalProtection == -1) Amount to stop at (-1 = none)
 
 	signed char	normalProtection;	// -1 = Always add to current armor
 	signed char	energyProtection;	// -1 = Nothing
 
-	CArmor (char *Classname, char *WorldModel, int EffectFlags,
+	CArmor (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int baseCount, int maxCount, float normalProtection,
+			   char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
 			   float energyProtection);
 
 	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
 	void	Use (CPlayerEntity *ent);
 	void	Drop (CPlayerEntity *ent);
 
-	virtual int		CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, int damage, int dflags);
+	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 damage, sint32 dflags);
 };
 
 void AddArmorToList ();

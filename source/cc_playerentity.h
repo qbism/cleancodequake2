@@ -55,7 +55,7 @@ public:
 
 	MediaIndex		&GetGunIndex ();
 
-	int				&GetGunFrame ();
+	sint32				&GetGunFrame ();
 
 	colorf			&GetViewBlend ();
 	colorb			GetViewBlendB (); // Name had to be different
@@ -64,9 +64,9 @@ public:
 
 	ERenderDefFlags	&GetRdFlags ();
 
-	int16			&GetStat (uint8 index);
-	void			CopyStats (int16 *Stats);
-	int16			*GetStats ();
+	sint16			&GetStat (uint8 index);
+	void			CopyStats (sint16 *Stats);
+	sint16			*GetStats ();
 
 	void			Clear ();
 };
@@ -93,20 +93,20 @@ public:
 	std::cc_string	UserInfo;
 	std::cc_string	Name;
 	IPAddress	IP;
-	int			hand;
+	sint32			hand;
 
 	EClientState state;			// a loadgame will leave valid entities that
 									// just don't have a connection yet
 
 	// values saved and restored from edicts when changing levels
-	int			health;
-	int			max_health;
-	int			savedFlags;
+	sint32			health;
+	sint32			max_health;
+	sint32			savedFlags;
 
 	CInventory	Inventory;
 
 	// ammo capacities
-	int			maxAmmoValues[CAmmo::AMMOTAG_MAX];
+	sint32			maxAmmoValues[CAmmo::AMMOTAG_MAX];
 
 	CWeapon		*Weapon, *LastWeapon;
 	CArmor		*Armor; // Current armor.
@@ -116,11 +116,11 @@ public:
 	CTech		*Tech; // Set if holding a tech
 	// Stored here for convenience. (dynamic_cast ew)
 
-	int			PowerCubeCount;	// used for tracking the cubes in coop games
-	int			Score;			// for calculating total unit Score in coop games
+	sint32			PowerCubeCount;	// used for tracking the cubes in coop games
+	sint32			Score;			// for calculating total unit Score in coop games
 
-	int			game_helpchanged;
-	int			helpchanged;
+	sint32			game_helpchanged;
+	sint32			helpchanged;
 
 	bool		Spectator;			// client is a Spectator
 
@@ -144,7 +144,7 @@ public:
 	};
 
 	CPlayerEntity		*ent; // A pointer to the entity that is running the show (needed?)
-	int					Cursor; // Cursor position (relative to order)
+	sint8				Cursor; // Cursor position (relative to order)
 	EMenuKeys			Key; // Key hit this frame
 	// CurrentMenu is set to a copy of whatever menu class
 	// you need
@@ -168,7 +168,7 @@ class CRespawnData
 public:
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
 	FrameNumber_t		EnterFrame;		// level.Frame the client entered the game
-	int					Score;			// frags, etc
+	sint32					Score;			// frags, etc
 	vec3f				CmdAngles;		// angles sent over in the last command
 
 	bool				Spectator;		// client is a Spectator
@@ -186,7 +186,7 @@ public:
 	struct respawn_CTF_t
 	{
 		ETeamIndex		Team;					// CTF team
-		int16			State;
+		sint16			State;
 		FrameNumber_t	LastHurtCarrier,
 						LastReturnedFlag,
 						FlagSince,
@@ -218,9 +218,9 @@ CC_ENUM (uint8, ELayoutFlags)
 	LF_SCREEN_MASK		= (LF_SHOWSCORES | LF_SHOWINVENTORY | LF_SHOWHELP),
 };
 
-// short should suffice here.
+// sint16 should suffice here.
 // Not unsigned because healing shots can affect screen too.
-CC_ENUM (int16, EDamageType)
+CC_ENUM (sint16, EDamageType)
 {
 	DT_ARMOR,			// damage absorbed by armor
 	DT_POWERARMOR,		// damage absorbed by power armor
@@ -257,7 +257,7 @@ public:
 	{
 	};
 
-	CPlayerNoise (int Index) :
+	CPlayerNoise (sint32 Index) :
 	  CBaseEntity (Index)
 	{
 	};
@@ -333,7 +333,7 @@ public:
 							Rebreather,
 							EnvironmentSuit;
 
-		int16				SilencerShots;
+		sint16				SilencerShots;
 
 		uint8				MachinegunShots;	// for weapon raising
 		bool				BreatherSound;
@@ -385,7 +385,7 @@ public:
 
 	CClient (gclient_t *client);
 
-	int				&GetPing ();
+	sint32				&GetPing ();
 	void			Clear ();
 };
 
@@ -401,10 +401,10 @@ public:
 	FrameNumber_t		DamageDebounceTime;
 	FrameNumber_t		AirFinished;
 	FrameNumber_t		NextDrownTime;
-	int					NextDrownDamage;
+	sint32					NextDrownDamage;
 	FrameNumber_t		PainDebounceTime;
 
-	CPlayerEntity (int Index);
+	CPlayerEntity (sint32 Index);
 
 	bool			Run ();
 	void			BeginServerFrame ();
@@ -431,7 +431,7 @@ public:
 	inline void		CalcBlend ();
 	inline void		FallingDamage ();
 	inline void		WorldEffects ();
-	int				PowerArmorType ();
+	EPowerArmorType	PowerArmorType ();
 	void			SetClientEffects ();
 	inline void		SetClientEvent (float xyspeed);
 	inline void		SetClientSound ();
@@ -472,7 +472,7 @@ public:
 	bool			CTFStart ();
 #endif
 
-	void			Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
+	void			Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	// Printing routines
 	inline void		PrintToClient (EGamePrintLevel printLevel, char *fmt, ...);
@@ -482,10 +482,10 @@ public:
 	void			ChasePrev();
 	void			GetChaseTarget ();
 
-	void			TossHead (int damage);
+	void			TossHead (sint32 damage);
 
 	void			P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result);
-	void			PlayerNoiseAt (vec3f Where, int type);
+	void			PlayerNoiseAt (vec3f Where, sint32 type);
 };
 
 void ClientEndServerFrames ();

@@ -48,7 +48,7 @@ public:
 
 	ETechType	TechType;
 
-	CTech (char *Classname, char *WorldModel, int EffectFlags,
+	CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, uint32 TechNumber, ETechType TechType);
 
@@ -75,7 +75,7 @@ public:
 	// true means it's modifying "take".
 	// Defending is if the Left is defending the Right's shot.
 	// Rest are self explanatory.
-	virtual void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, int &Damage, int &Knockback, int &DamageFlags,
+	virtual void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	) {};
 };
 

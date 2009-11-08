@@ -98,7 +98,7 @@ void CSurfacePicker::AddWeaponToItemList (CItemList *List)
 		CreateItem (List);
 };
 
-void CSurfacePicker::InitWeaponVwepModel (int TakeAway)
+void CSurfacePicker::InitWeaponVwepModel (sint32 TakeAway)
 {
 };
 

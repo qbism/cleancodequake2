@@ -87,7 +87,7 @@ Matrix4_Compare
 */
 bool Matrix4_Compare(const mat4x4_t a, const mat4x4_t b)
 {
-	for (int i=0 ; i<16 ; i++)
+	for (sint32 i=0 ; i<16 ; i++)
 	{
 		if (a[i] != b[i])
 			return false;

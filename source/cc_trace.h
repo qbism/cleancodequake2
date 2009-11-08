@@ -46,20 +46,20 @@ public:
 	bool				startSolid;
 	vec3f				EndPos;
 	cmBspSurface_t		*surface;
-	int					contents;
+	sint32					contents;
 
 	// For vec3f
 	CBaseEntity			*Ent;
 
 	CTrace ();
 
-	CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, int contentMask);
-	CTrace (vec3f &start, vec3f &end, CBaseEntity *ignore, int contentMask);
-	CTrace (vec3f &start, vec3f &end, int contentMask);
+	CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, sint32 contentMask);
+	CTrace (vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 contentMask);
+	CTrace (vec3f &start, vec3f &end, sint32 contentMask);
 
-	void operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, int contentMask); 
-	void operator () (vec3f &start, vec3f &end, CBaseEntity *ignore, int contentMask); 
-	void operator () (vec3f &start, vec3f &end, int contentMask); 
+	void operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, sint32 contentMask); 
+	void operator () (vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 contentMask); 
+	void operator () (vec3f &start, vec3f &end, sint32 contentMask); 
 };
 
 #else

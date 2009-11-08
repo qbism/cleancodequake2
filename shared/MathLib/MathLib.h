@@ -65,23 +65,23 @@ inline float RAD2DEG (const float v)
 }
 
 
-inline int16 ANGLE2SHORT (float x)
+inline sint16 ANGLE2SHORT (float x)
 {
-	return ((int)(x*65536/360) & 65535);
+	return ((sint32)(x*65536/360) & 65535);
 }
 
-inline float SHORT2ANGLE (int16 x)
+inline float SHORT2ANGLE (sint16 x)
 {
 	return (x*(360.0f/65536));
 }
 
 
-inline byte ANGLE2BYTE (float x)
+inline uint8 ANGLE2BYTE (float x)
 {
-	return ((int)(x*256/360) & 255);
+	return ((sint32)(x*256/360) & 255);
 }
 
-inline float BYTE2ANGLE (byte x)
+inline float BYTE2ANGLE (uint8 x)
 {
 	return (x*(360.0f/256));
 }
@@ -97,10 +97,10 @@ inline float BYTE2ANGLE (byte x)
 
 // ===========================================================================
 
-byte		FloatToByte(float x);
+uint8		FloatToByte(float x);
 
 float		ColorNormalizef(const float *in, float *out);
-float		ColorNormalizeb(const float *in, byte *out);
+float		ColorNormalizeb(const float *in, uint8 *out);
 
 // ===========================================================================
 
@@ -114,31 +114,31 @@ inline float Q_FastSqrt (float value) { return sqrt(value); }
 inline float Q_fabs (float val) { return ((val < 0.f) ? -val : val); }
 
 // Template functions
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxAdd (const CType a, const CType b, CType c)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		c[i] = a[i] + b[i];
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxAverage (const CType a, const CType b, CType c)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		c[i] = (a[i] + b[i])*0.5f;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxClear (CType a)
 {
-	for (int i = 0; i < numElements; i++)
-		*(int*)&a[i] = 0;
+	for (sint32 i = 0; i < numElements; i++)
+		*(sint32*)&a[i] = 0;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline bool VecxCompare (const CType a, const CType b)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 	{
 		if (a[i] != b[i])
 			return false;
@@ -146,81 +146,81 @@ inline bool VecxCompare (const CType a, const CType b)
 	return true;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxCopy (const CType a, CType b)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		b[i] = a[i];
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxIdentity (CType a)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		a[i] = 0;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxInverse (CType a)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		a[i] = -a[i];
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxMA (const CType v, const float scale, const CType b, CType o)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		o[i] = v[i]+b[i]*scale;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxNegate (const CType a, CType b)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		b[i] = -a[i];
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxScale (const CType in, const float scale, CType out)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		out[i] = in[i]*scale;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline void VecxSubtract (const CType a, const CType b, CType c)
 {
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		c[i] = a[i]-b[i];
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline float VecxDistSquared (const CType v1, const CType v2)
 {
 	float returnValue = 0;
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		returnValue += (v1[i] - v2[i]) * (v1[i] - v2[i]);
 	return returnValue;
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline float VecxDist (const CType v1, const CType v2)
 {
 	return sqrtf(VecxDistSquared<CType, numElements>(v1, v2));
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline float VecxDistFast (const CType v1, const CType v2)
 {
 	return Q_FastSqrt(VecxDistSquared<CType, numElements>(v1, v2));
 }
 
-template <class CType, int numElements>
+template <class CType, sint32 numElements>
 inline float DotxProduct (const CType x, const CType y)
 {
 	float returnValue = 0;
-	for (int i = 0; i < numElements; i++)
+	for (sint32 i = 0; i < numElements; i++)
 		returnValue += (x[i] * y[i]);
 	return returnValue;
 }
@@ -481,9 +481,9 @@ inline void Vec4Subtract (const vec4_t a, const vec4_t b, vec4_t c)
 
 // ===========================================================================
 
-inline int Q_rint (float x)
+inline sint32 Q_rint (float x)
 {
-	return ((x) < 0 ? ((int)((x)-0.5f)) : ((int)((x)+0.5f)));
+	return ((x) < 0 ? ((sint32)((x)-0.5f)) : ((sint32)((x)+0.5f)));
 }
 
 inline void Q_SinCosf(const float X, float *Sin, float *Cos)
@@ -505,7 +505,7 @@ inline void Q_SinCosf(const float X, float *Sin, float *Cos)
 
 float	Q_RSqrtf (float number);
 double	Q_RSqrtd (double number);
-int		Q_log2 (int val);
+sint32		Q_log2 (sint32 val);
 
 template<typename TType>
 inline TType Q_NearestPow(const TType &Value, const bool bRoundDown)
@@ -524,8 +524,8 @@ float	Q_CalcFovY (float fovX, float width, float height);
 
 // ===========================================================================
 
-void		NormToLatLong(const vec3_t normal, byte out[2]);
-void		LatLongToNorm(const byte latlong[2], vec3_t out);
+void		NormToLatLong(const vec3_t normal, uint8 out[2]);
+void		LatLongToNorm(const uint8 latlong[2], vec3_t out);
 #endif
 void		MakeNormalVectorsf (const vec3_t forward, vec3_t right, vec3_t up);
 void		PerpendicularVector (const vec3_t src, vec3_t dst);
@@ -635,6 +635,6 @@ extern vec3f vec3fOrigin;
 #define NUMVERTEXNORMALS	162
 extern vec3_t	m_byteDirs[NUMVERTEXNORMALS];
 
-byte		DirToByte(const vec3_t dirVec);
-byte		DirToByte(const vec3f &dirVec);
-void		ByteToDir(const byte dirByte, vec3_t dirVec);
+uint8		DirToByte(const vec3_t dirVec);
+uint8		DirToByte(const vec3f &dirVec);
+void		ByteToDir(const uint8 dirByte, vec3_t dirVec);

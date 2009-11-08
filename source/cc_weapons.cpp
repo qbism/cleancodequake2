@@ -34,9 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_weaponmain.h"
 
-CWeaponItem::CWeaponItem (char *Classname, char *WorldModel, int EffectFlags,
+CWeaponItem::CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, int Quantity, char *VWepModel) :
+			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Quantity, char *VWepModel) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
 Weapon(Weapon),
 Ammo(Ammo),
@@ -54,9 +54,9 @@ VWepModel(VWepModel)
 		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
 }
 
-CAmmo::CAmmo (char *Classname, char *WorldModel, int EffectFlags,
+CAmmo::CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int Quantity, CAmmo::EAmmoTag Tag, CWeapon *Weapon, int Amount, char *VWepModel) :
+			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag, CWeapon *Weapon, sint32 Amount, char *VWepModel) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 Quantity(Quantity),
@@ -72,7 +72,7 @@ VWepModel(VWepModel)
 #ifndef NO_AUTOSWITCH
 bool CheckAutoSwitch (CPlayerEntity *other)
 {
-	int val = atoi(Info_ValueForKey (other->Client.Persistent.UserInfo, "cc_autoswitch").c_str());
+	sint32 val = atoi(Info_ValueForKey (other->Client.Persistent.UserInfo, "cc_autoswitch").c_str());
 	return (val == 1);
 }
 #endif
@@ -171,7 +171,7 @@ void CWeaponItem::Drop (CPlayerEntity *ent)
 		ent->Client.Persistent.Weapon->NoAmmoWeaponChange(ent);
 }
 
-int maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX] =
+sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX] =
 {
 	200,
 	300,
@@ -180,7 +180,7 @@ int maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX] =
 	300,
 	100
 };
-int maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
+sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 {
 	150,
 	250,
@@ -190,7 +190,7 @@ int maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 	75
 };
 
-int CAmmo::GetMax (CPlayerEntity *ent)
+sint32 CAmmo::GetMax (CPlayerEntity *ent)
 {
 	return ent->Client.Persistent.maxAmmoValues[Tag];
 }
@@ -225,7 +225,7 @@ void CAmmo::Use (CPlayerEntity *ent)
 
 void CAmmo::Drop (CPlayerEntity *ent)
 {
-	int count = Quantity;
+	sint32 count = Quantity;
 	CItemEntity *dropped = DropItem(ent);
 
 	if (count > ent->Client.Persistent.Inventory.Has(this))
@@ -240,10 +240,10 @@ void CAmmo::Drop (CPlayerEntity *ent)
 		ent->Client.Persistent.Weapon->NoAmmoWeaponChange(ent);
 }
 
-bool CAmmo::AddAmmo (CPlayerEntity *ent, int count)
+bool CAmmo::AddAmmo (CPlayerEntity *ent, sint32 count)
 {
 	// YUCK
-	int max = GetMax(ent);
+	sint32 max = GetMax(ent);
 
 	if (!max)
 		return false;
@@ -262,8 +262,8 @@ bool CAmmo::AddAmmo (CPlayerEntity *ent, int count)
 
 bool CAmmo::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	int			oldcount = other->Client.Persistent.Inventory.Has(this);
-	int			count = Quantity;
+	sint32			oldcount = other->Client.Persistent.Inventory.Has(this);
+	sint32			count = Quantity;
 	bool		weapon = (Flags & ITEMFLAG_WEAPON);
 
 	if (weapon && dmFlags.dfInfiniteAmmo)
@@ -295,7 +295,7 @@ public:
 	  {
 	  };
 
-	CAmmoEntity (int Index) :
+	CAmmoEntity (sint32 Index) :
 	  CBaseEntity(Index),
 	  CItemEntity (Index)
 	  {

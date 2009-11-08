@@ -41,7 +41,7 @@ char	*nullArg = "";
 uint8				numArgv;
 std::cc_string		argvConcatString;
 std::cc_string		argvStringArray[MAX_ARG];
-int					argvIntegerArray[MAX_ARG];
+sint32					argvIntegerArray[MAX_ARG];
 float				argvFloatArray[MAX_ARG];
 
 void SetupArg ()
@@ -77,7 +77,7 @@ _CC_DISABLE_DEPRECATION
 	{
 		argvStringArray[i] = gi.argv(i);
 		argvFloatArray[i] = atof (argvStringArray[i].c_str());
-		argvIntegerArray[i] = (int)argvFloatArray[i];
+		argvIntegerArray[i] = (sint32)argvFloatArray[i];
 	}
 _CC_ENABLE_DEPRECATION
 }
@@ -85,7 +85,7 @@ _CC_ENABLE_DEPRECATION
 // Called at the end of an arg session
 void EndArg ()
 {
-	for (int i = 0; i < numArgv; i++)
+	for (sint32 i = 0; i < numArgv; i++)
 		argvStringArray[i].clear();
 
 	SetupArg();
@@ -102,7 +102,7 @@ std::cc_string ArgGetConcatenatedString ()
 	return argvConcatString;
 }
 
-std::cc_string ArgGets (int Index)
+std::cc_string ArgGets (sint32 Index)
 {
 	if (Index >= MAX_ARG)
 	{
@@ -113,7 +113,7 @@ std::cc_string ArgGets (int Index)
 	return (Index >= numArgv) ? nullArg : argvStringArray[Index];
 }
 
-int ArgGeti (int Index)
+sint32 ArgGeti (sint32 Index)
 {
 	if (Index >= MAX_ARG)
 	{
@@ -124,7 +124,7 @@ int ArgGeti (int Index)
 	return (Index >= numArgv) ? 0 : argvIntegerArray[Index];
 }
 
-float ArgGetf (int Index)
+float ArgGetf (sint32 Index)
 {
 	if (Index >= MAX_ARG)
 	{

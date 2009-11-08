@@ -38,36 +38,36 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CHurtableEntity : public virtual CBaseEntity
 {
 public:
-	int			Health;
-	int			MaxHealth;
-	int			GibHealth;
+	sint32			Health;
+	sint32			MaxHealth;
+	sint32			GibHealth;
 	bool		DeadFlag;
 	bool		CanTakeDamage;
 
 	ENTITYFIELD_VIRTUAL_DEFS
 
 	CHurtableEntity ();
-	CHurtableEntity (int index);
+	CHurtableEntity (sint32 index);
 
-	virtual void Pain (CBaseEntity *other, float kick, int damage) {};
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point) {};
+	virtual void Pain (CBaseEntity *other, float kick, sint32 damage) {};
+	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) {};
 
 	virtual bool CanDamage (CBaseEntity *inflictor);
 	virtual bool CheckTeamDamage (CBaseEntity *attacker);
-	virtual int CheckPowerArmor (vec3f &point, vec3f &normal, int damage, int dflags);
-	virtual void Killed (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
+	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 damage, sint32 dflags);
+	virtual void Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	// An "extension" of sorts to TakeDamage
 	// which handles the effects when we are hurt
-	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, int &damage, int &dflags);
+	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
 	// Takes damage.
 	// For this, "this" is target. Use this if the
 	// entity can be casted to CHurtableEntity or is CHurtableEntity
 	// without question.
 	virtual void TakeDamage (	CBaseEntity *inflictor, CBaseEntity *attacker,
-							vec3f dir, vec3f point, vec3f normal, int damage,
-							int knockback, int dflags, EMeansOfDeath mod);
+							vec3f dir, vec3f point, vec3f normal, sint32 damage,
+							sint32 knockback, sint32 dflags, EMeansOfDeath mod);
 	
 	// This is a convenient static version.
 	// This will cast targ to CHurtableEntity
@@ -75,15 +75,15 @@ public:
 	// If "targ" can't take damage, nothing will happen.
 	static void TakeDamage (	CBaseEntity *targ, CBaseEntity *inflictor,
 							CBaseEntity *attacker, vec3f dir, vec3f point,
-							vec3f normal, int damage, int knockback,
-							int dflags, EMeansOfDeath mod);
+							vec3f normal, sint32 damage, sint32 knockback,
+							sint32 dflags, EMeansOfDeath mod);
 };
 
 class CBlockableEntity : public virtual CBaseEntity
 {
 public:
 	CBlockableEntity ();
-	CBlockableEntity (int Index);
+	CBlockableEntity (sint32 Index);
 
 	virtual void Blocked (CBaseEntity *other) = 0;
 };
@@ -102,7 +102,7 @@ public:
 	ENTITYFIELD_VIRTUAL_DEFS
 
 	CUsableEntity ();
-	CUsableEntity (int Index);
+	CUsableEntity (sint32 Index);
 
 	virtual void Use (CBaseEntity *other, CBaseEntity *activator) {};
 	virtual void UseTargets (CBaseEntity *activator, char *Message);
@@ -116,7 +116,7 @@ public:
 	FrameNumber_t		NextThink;
 
 	CThinkableEntity ();
-	CThinkableEntity (int index);
+	CThinkableEntity (sint32 index);
 
 	void			RunThink ();
 	virtual void	Think () = 0;
@@ -130,7 +130,7 @@ public:
 	bool Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
 
 	CTouchableEntity ();
-	CTouchableEntity (int index);
+	CTouchableEntity (sint32 index);
 
 	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 };
@@ -167,7 +167,7 @@ public:
 
 	bool				PhysicsDisabled;
 	CPhysicsEntity ();
-	CPhysicsEntity (int index);
+	CPhysicsEntity (sint32 index);
 
 	class CTrace	PushEntity (vec3f &push);
 	inline void		AddGravity ();
@@ -181,7 +181,7 @@ public:
 	float			backOff;
 
 	CBounceProjectile ();
-	CBounceProjectile (int index);
+	CBounceProjectile (sint32 index);
 
 	bool			Run ();
 };
@@ -191,7 +191,7 @@ class CTossProjectile : public virtual CBounceProjectile
 {
 public:
 	CTossProjectile();
-	CTossProjectile (int index);
+	CTossProjectile (sint32 index);
 };
 
 // Doesn't add gravity
@@ -199,7 +199,7 @@ class CFlyMissileProjectile : public virtual CPhysicsEntity
 {
 public:
 	CFlyMissileProjectile ();
-	CFlyMissileProjectile (int index);
+	CFlyMissileProjectile (sint32 index);
 
 	bool			Run ();
 };
@@ -209,11 +209,11 @@ class CStepPhysics : public virtual CPhysicsEntity
 {
 public:
 	CStepPhysics ();
-	CStepPhysics (int index);
+	CStepPhysics (sint32 index);
 
 	virtual void	CheckGround ();
 
-	int				FlyMove (float time, int mask);
+	sint32				FlyMove (float time, sint32 mask);
 	void			AddRotationalFriction ();
 	bool			Run ();
 };
@@ -222,7 +222,7 @@ class CPushPhysics : public virtual CPhysicsEntity
 {
 public:
 	CPushPhysics ();
-	CPushPhysics (int Index);
+	CPushPhysics (sint32 Index);
 
 	bool			Run ();
 };
@@ -231,7 +231,7 @@ class CStopPhysics : public virtual CPushPhysics
 {
 public:
 	CStopPhysics ();
-	CStopPhysics (int Index);
+	CStopPhysics (sint32 Index);
 
 	bool			Run ();
 };

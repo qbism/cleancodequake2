@@ -54,7 +54,7 @@ void dmFlagsConfig::Reset ()
 	false;
 };
 
-void dmFlagsConfig::UpdateFlags (int wantedFlags)
+void dmFlagsConfig::UpdateFlags (sint32 wantedFlags)
 {
 	dmFlagsConfig();
 	if (wantedFlags & DF_NO_HEALTH)

@@ -84,7 +84,7 @@ BrushType(0)
 	BrushType |= BRUSH_BASE;
 };
 
-CBrushModel::CBrushModel (int Index) :
+CBrushModel::CBrushModel (sint32 Index) :
 CBaseEntity (Index),
 CThinkableEntity (Index),
 CPushPhysics (Index),
@@ -390,7 +390,7 @@ Height (0)
 	BrushType |= BRUSH_PLATFORM;
 };
 
-CPlatForm::CPlatForm(int Index) :
+CPlatForm::CPlatForm(sint32 Index) :
 CBaseEntity(Index),
 CMapEntity(Index),
 CBlockableEntity(Index),
@@ -516,7 +516,7 @@ CTouchableEntity()
 {
 };
 
-CPlatForm::CPlatFormInsideTrigger::CPlatFormInsideTrigger (int Index) :
+CPlatForm::CPlatFormInsideTrigger::CPlatFormInsideTrigger (sint32 Index) :
 CBaseEntity(Index),
 CTouchableEntity(Index)
 {
@@ -680,7 +680,7 @@ CTouchableEntity()
 	BrushType |= BRUSH_DOOR;
 };
 
-CDoor::CDoor(int Index) :
+CDoor::CDoor(sint32 Index) :
 CBaseEntity(Index),
 CMapEntity(Index),
 CBrushModel(Index),
@@ -832,7 +832,7 @@ CTouchableEntity()
 {
 };
 
-CDoor::CDoorTrigger::CDoorTrigger (int Index) :
+CDoor::CDoorTrigger::CDoorTrigger (sint32 Index) :
 CBaseEntity(Index),
 CTouchableEntity(Index)
 {
@@ -963,7 +963,7 @@ void CDoor::Blocked (CBaseEntity *other)
 	}
 }
 
-void CDoor::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CDoor::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
 	{
@@ -975,7 +975,7 @@ void CDoor::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3
 	(entity_cast<CDoor>(Team.Master))->Use (attacker, attacker);
 }
 
-void CDoor::Pain (CBaseEntity *other, float kick, int damage)
+void CDoor::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 }
 
@@ -1125,7 +1125,7 @@ CDoor ()
 	BrushType |= BRUSH_ROTATINGDOOR;
 };
 
-CRotatingDoor::CRotatingDoor (int Index) :
+CRotatingDoor::CRotatingDoor (sint32 Index) :
 CBaseEntity(Index),
 CDoor(Index)
 {
@@ -1283,7 +1283,7 @@ CDoor ()
 {
 };
 
-CMovableWater::CMovableWater (int Index) :
+CMovableWater::CMovableWater (sint32 Index) :
 CBaseEntity(Index),
 CDoor(Index)
 {
@@ -1375,7 +1375,7 @@ CDoor ()
 	BrushType |= BRUSH_SECRETDOOR;
 };
 
-CDoorSecret::CDoorSecret (int Index) :
+CDoorSecret::CDoorSecret (sint32 Index) :
 CBaseEntity(Index),
 CDoor(Index)
 {
@@ -1463,7 +1463,7 @@ void CDoorSecret::Blocked (CBaseEntity *other)
 		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CDoorSecret::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CDoorSecret::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	CanTakeDamage = false;
 	Use (attacker, attacker);
@@ -1567,7 +1567,7 @@ CTouchableEntity()
 	BrushType |= BRUSH_BUTTON;
 };
 
-CButton::CButton(int Index) :
+CButton::CButton(sint32 Index) :
 CBaseEntity(Index),
 CMapEntity(Index),
 CBrushModel(Index),
@@ -1583,7 +1583,7 @@ bool CButton::Run ()
 	return CBrushModel::Run ();
 };
 
-void CButton::Pain (CBaseEntity *other, float kick, int damage)
+void CButton::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 };
 
@@ -1658,7 +1658,7 @@ void CButton::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	Fire ();
 }
 
-void CButton::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CButton::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Activator = attacker;
 	Health = MaxHealth;
@@ -1743,7 +1743,7 @@ CUsableEntity()
 	BrushType |= BRUSH_TRAIN;
 };
 
-CTrainBase::CTrainBase(int Index) :
+CTrainBase::CTrainBase(sint32 Index) :
 CBaseEntity(Index),
 CMapEntity(Index),
 CBrushModel(Index),
@@ -1983,7 +1983,7 @@ CTrainBase ()
 {
 };
 
-CTrain::CTrain (int Index) :
+CTrain::CTrain (sint32 Index) :
 CBaseEntity (Index),
 CTrainBase (Index)
 {
@@ -2041,7 +2041,7 @@ CUsableEntity ()
 {
 };
 
-CTriggerElevator::CTriggerElevator (int Index) :
+CTriggerElevator::CTriggerElevator (sint32 Index) :
 CBaseEntity (Index),
 CMapEntity (Index),
 CThinkableEntity (Index),
@@ -2120,7 +2120,7 @@ CBrushModel()
 {
 };
 
-CWorldEntity::CWorldEntity (int Index) : 
+CWorldEntity::CWorldEntity (sint32 Index) : 
 CBaseEntity(Index),
 CMapEntity(Index),
 CBrushModel(Index)
@@ -2176,7 +2176,7 @@ void SetupLights ()
 		NULL														// END OF TABLE
 	};
 
-	for (int i = 0; ; i++)
+	for (sint32 i = 0; ; i++)
 	{
 		if (!LightTable[i])
 			break;
@@ -2333,7 +2333,7 @@ CRotatingBrush::CRotatingBrush () :
 	BrushType |= BRUSH_ROTATING;
 };
 
-CRotatingBrush::CRotatingBrush (int Index) :
+CRotatingBrush::CRotatingBrush (sint32 Index) :
 	CBaseEntity(Index),
 	CMapEntity(Index),
 	CBrushModel(Index),
@@ -2445,7 +2445,7 @@ CConveyor::CConveyor () :
 		BrushType |= BRUSH_CONVEYOR;
 	};
 
-CConveyor::CConveyor (int Index) :
+CConveyor::CConveyor (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CBrushModel (Index),
@@ -2523,7 +2523,7 @@ CAreaPortal::CAreaPortal () :
 	{
 	};
 
-CAreaPortal::CAreaPortal (int Index) :
+CAreaPortal::CAreaPortal (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CUsableEntity (Index)
@@ -2589,7 +2589,7 @@ CFuncWall::CFuncWall () :
 		BrushType |= BRUSH_WALL;
 	};
 
-CFuncWall::CFuncWall (int Index) :
+CFuncWall::CFuncWall (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CBrushModel (Index),
@@ -2685,7 +2685,7 @@ CFuncObject::CFuncObject () :
 		BrushType |= BRUSH_OBJECT;
 	};
 
-CFuncObject::CFuncObject (int Index) :
+CFuncObject::CFuncObject (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CBrushModel (Index),
@@ -2799,7 +2799,7 @@ CFuncExplosive::CFuncExplosive () :
 		BrushType |= BRUSH_EXPLOSIVE;
 	};
 
-CFuncExplosive::CFuncExplosive (int Index) :
+CFuncExplosive::CFuncExplosive (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CBrushModel (Index),
@@ -2825,11 +2825,11 @@ bool			CFuncExplosive::ParseField (const char *Key, const char *Value)
 	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
 
-void CFuncExplosive::Pain (CBaseEntity *other, float kick, int damage)
+void CFuncExplosive::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 };
 
-void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	// bmodel origins are (0 0 0), we need to adjust that here
 	State.GetOrigin() = (GetAbsMin() + (GetSize() * 0.5f));
@@ -2852,7 +2852,7 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dam
 	// big chunks
 	/*if (Explosivity >= 100)
 	{
-		int count = Explosivity / 100;
+		sint32 count = Explosivity / 100;
 		if (count > 8)
 			count = 8;
 		while(count--)
@@ -2860,7 +2860,7 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dam
 	}
 
 	// small chunks
-	int count = Explosivity / 25;
+	sint32 count = Explosivity / 25;
 	if (count > 16)
 		count = 16;
 	while(count--)
@@ -2961,7 +2961,7 @@ CKillbox::CKillbox () :
 	{
 	};
 
-CKillbox::CKillbox (int Index) :
+CKillbox::CKillbox (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CUsableEntity (Index)
@@ -2993,7 +2993,7 @@ public:
 	  {
 	  };
 
-	CTriggerRelay (int Index) :
+	CTriggerRelay (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)

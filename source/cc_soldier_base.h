@@ -71,7 +71,7 @@ public:
 	void SideStep ();
 	void Duck (float eta);
 #endif
-	virtual void FireGun (int FlashNumber) = 0;
+	virtual void FireGun (sint32 FlashNumber) = 0;
 
 	void Walk1_Random ();
 
@@ -93,8 +93,8 @@ public:
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, int damage);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void Pain (CBaseEntity *other, float kick, sint32 damage);
 
 	void Spawn (); // Initialize "commonalities"
 	virtual void SpawnSoldier () = 0; // Initialize health, etc.

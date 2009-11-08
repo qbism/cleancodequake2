@@ -45,12 +45,12 @@ CC_ENUM (uint8, EHealthFlags)
 class CHealth : public CBaseItem
 {
 public:
-	int				Amount; // You spin me right round baby right round
+	sint32				Amount; // You spin me right round baby right round
 	EHealthFlags	HealthFlags;
 
-	CHealth (char *Classname, char *WorldModel, int EffectFlags,
+	CHealth (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int Amount, EHealthFlags HealthFlags);
+			   char *Precache, sint32 Amount, EHealthFlags HealthFlags);
 
 	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
 	void	Use (CPlayerEntity *ent) {};

@@ -36,11 +36,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_exceptionhandler.h"
 
 #if 0
-void WriteField1 (fileHandle_t f, field_t *field, byte *base)
+void WriteField1 (fileHandle_t f, field_t *field, uint8 *base)
 {
 	void		*p;
 	size_t		len;
-	int			index;
+	sint32			index;
 
 	if (field->flags & FFL_SPAWNTEMP)
 		return;
@@ -68,21 +68,21 @@ void WriteField1 (fileHandle_t f, field_t *field, byte *base)
 			index = -1;
 		else
 			index = *(edict_t **)p - g_edicts;
-		*(int *)p = index;
+		*(sint32 *)p = index;
 		break;
 	case F_CLIENT:
 		if ( *(gclient_t **)p == NULL)
 			index = -1;
 		else
 			index = *(gclient_t **)p - game.clients;
-		*(int *)p = index;
+		*(sint32 *)p = index;
 		break;
 	case F_ITEM:
 /*		if ( *(edict_t **)p == NULL)
 			index = -1;
 		else
 			index = *(gitem_t **)p - itemlist;
-		*(int *)p = index;*/
+		*(sint32 *)p = index;*/
 		break;
 	case F_NEWITEM:
 		if ( *(edict_t **)p == NULL)
@@ -93,16 +93,16 @@ void WriteField1 (fileHandle_t f, field_t *field, byte *base)
 			CBaseItem *Item = Weap->Item;
 			index = Item->GetIndex();
 		}
-		*(int *)p = -1;
+		*(sint32 *)p = -1;
 		break;
 
 	//relative to code segment
 	case F_FUNCTION:
-		if (*(byte **)p == NULL)
+		if (*(uint8 **)p == NULL)
 			index = 0;
 		else
-			index = *(byte **)p - ((byte *)InitGame);
-		*(int *)p = index;
+			index = *(uint8 **)p - ((uint8 *)InitGame);
+		*(sint32 *)p = index;
 		break;
 
 	default:
@@ -111,7 +111,7 @@ void WriteField1 (fileHandle_t f, field_t *field, byte *base)
 }
 
 
-void WriteField2 (fileHandle_t f, field_t *field, byte *base)
+void WriteField2 (fileHandle_t f, field_t *field, uint8 *base)
 {
 	size_t		len;
 	void		*p;
@@ -132,11 +132,11 @@ void WriteField2 (fileHandle_t f, field_t *field, byte *base)
 	}
 }
 
-void ReadField (fileHandle_t f, field_t *field, byte *base)
+void ReadField (fileHandle_t f, field_t *field, uint8 *base)
 {
 	void		*p;
-	int			len;
-	int			index;
+	sint32			len;
+	sint32			index;
 
 	if (field->flags & FFL_SPAWNTEMP)
 		return;
@@ -152,7 +152,7 @@ void ReadField (fileHandle_t f, field_t *field, byte *base)
 		break;
 
 	case F_LSTRING:
-		len = *(int *)p;
+		len = *(sint32 *)p;
 		if (!len)
 			*(char **)p = NULL;
 		else
@@ -162,28 +162,28 @@ void ReadField (fileHandle_t f, field_t *field, byte *base)
 		}
 		break;
 	case F_EDICT:
-		index = *(int *)p;
+		index = *(sint32 *)p;
 		if ( index == -1 )
 			*(edict_t **)p = NULL;
 		else
 			*(edict_t **)p = &g_edicts[index];
 		break;
 	case F_CLIENT:
-		index = *(int *)p;
+		index = *(sint32 *)p;
 		if ( index == -1 )
 			*(gclient_t **)p = NULL;
 		else
 			*(gclient_t **)p = &game.clients[index];
 		break;
 	case F_ITEM:
-/*		index = *(int *)p;
+/*		index = *(sint32 *)p;
 		if ( index == -1 )
 			*(gitem_t **)p = NULL;
 		else
 			*(gitem_t **)p = &itemlist[index];*/
 		break;
 	case F_NEWITEM:
-		index = *(int *)p;
+		index = *(sint32 *)p;
 		if ( index == -1 )
 			*(CWeapon **)p = NULL;
 		else
@@ -192,11 +192,11 @@ void ReadField (fileHandle_t f, field_t *field, byte *base)
 		break;
 	//relative to code segment
 	case F_FUNCTION:
-		index = *(int *)p;
+		index = *(sint32 *)p;
 		if ( index == 0 )
-			*(byte **)p = NULL;
+			*(uint8 **)p = NULL;
 		else
-			*(byte **)p = ((byte *)InitGame) + index;
+			*(uint8 **)p = ((uint8 *)InitGame) + index;
 		break;
 	default:
 		GameError ("ReadEdict: unknown field type");
@@ -215,7 +215,7 @@ All pointer variables (except function pointers) must be handled specially.
 void WriteClient (fileHandle_t f, CPlayerEntity *Player)
 {
 	// Write Persistent.weapon and Persistent.newweapon
-	int pwIndex = -1, nwIndex = -1, lwIndex = -1;
+	sint32 pwIndex = -1, nwIndex = -1, lwIndex = -1;
 
 	if (Player->Client.Persistent.Weapon)
 	{
@@ -239,11 +239,11 @@ void WriteClient (fileHandle_t f, CPlayerEntity *Player)
 	// now write any allocated data following the edict
 	/*for (field=clientfields ; field->name ; field++)
 	{
-		WriteField2 (f, field, (byte *)client);
+		WriteField2 (f, field, (uint8 *)client);
 	}*/
-	FS_Write (&pwIndex, sizeof(int), f);
-	FS_Write (&lwIndex, sizeof(int), f);
-	FS_Write (&nwIndex, sizeof(int), f);
+	FS_Write (&pwIndex, sizeof(sint32), f);
+	FS_Write (&lwIndex, sizeof(sint32), f);
+	FS_Write (&nwIndex, sizeof(sint32), f);
 }
 
 /*
@@ -257,10 +257,10 @@ void ReadClient (fileHandle_t f, CPlayerEntity *Player)
 {
 	FS_Read (&Player->Client, sizeof(CClient), f);
 
-	int pwIndex, nwIndex, lwIndex;
-	FS_Read (&pwIndex, sizeof(int), f);
-	FS_Read (&lwIndex, sizeof(int), f);
-	FS_Read (&nwIndex, sizeof(int), f);
+	sint32 pwIndex, nwIndex, lwIndex;
+	FS_Read (&pwIndex, sizeof(sint32), f);
+	FS_Read (&lwIndex, sizeof(sint32), f);
+	FS_Read (&nwIndex, sizeof(sint32), f);
 
 	if (pwIndex != -1)
 	{
@@ -346,7 +346,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	fileHandle_t f;
-	int		i;
+	sint32		i;
 	char	str[16];
 
 	if (!autosave)
@@ -410,7 +410,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	FS_Read (&game, sizeof(game), f);
 	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
 	InitPlayers();
-	for (int i=0 ; i<game.maxclients ; i++)
+	for (sint32 i=0 ; i<game.maxclients ; i++)
 		ReadClient (f, entity_cast<CPlayerEntity>(g_edicts[i+1].Entity));
 
 	FS_CloseFile (f);
@@ -442,14 +442,14 @@ void WriteEdict (fileHandle_t f, edict_t *ent)
 
 	// change the pointers to lengths or indexes
 	for (field=fields ; field->name ; field++)
-		WriteField1 (f, field, (byte *)&temp);
+		WriteField1 (f, field, (uint8 *)&temp);
 
 	// write the block
 	FS_Write (&temp, sizeof(temp), f);
 
 	// now write any allocated data following the edict
 	for (field=fields ; field->name ; field++)
-		WriteField2 (f, field, (byte *)ent);
+		WriteField2 (f, field, (uint8 *)ent);
 
 	// Write the entity, if one
 	bool hasEntity = false;
@@ -483,14 +483,14 @@ void WriteLevelLocals (fileHandle_t f)
 
 	// change the pointers to lengths or indexes
 	for (field=levelfields ; field->name ; field++)
-		WriteField1 (f, field, (byte *)&temp);
+		WriteField1 (f, field, (uint8 *)&temp);
 
 	// write the block
 	FS_Write (&temp, sizeof(temp), f);
 
 	// now write any allocated data following the edict
 	for (field=levelfields ; field->name ; field++)
-		WriteField2 (f, field, (byte *)&level);
+		WriteField2 (f, field, (uint8 *)&level);
 }
 
 
@@ -508,7 +508,7 @@ void ReadEdict (fileHandle_t f, edict_t *ent)
 	FS_Read (ent, sizeof(*ent), f);
 
 	for (field=fields ; field->name ; field++)
-		ReadField (f, field, (byte *)ent);
+		ReadField (f, field, (uint8 *)ent);
 
 	bool hasEntity = false;
 
@@ -540,7 +540,7 @@ void ReadLevelLocals (fileHandle_t f)
 	FS_Read (&level, sizeof(level), f);
 
 	for (field=levelfields ; field->name ; field++)
-		ReadField (f, field, (byte *)&level);
+		ReadField (f, field, (uint8 *)&level);
 }
 #endif
 
@@ -557,7 +557,7 @@ void WriteLevel (char *filename)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	int		i;
+	sint32		i;
 	edict_t	*ent;
 	fileHandle_t	f;
 	void	*base;
@@ -622,9 +622,9 @@ void ReadLevel (char *filename)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	int		entNum;
+	sint32		entNum;
 	fileHandle_t	f;
-	int		i;
+	sint32		i;
 	void	*base;
 	edict_t	*ent;
 
@@ -659,7 +659,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 		//GameError ("ReadLevel: function pointers have moved");
 	}
 #else
-	gi.dprintf("Function offsets %d\n", ((byte *)base) - ((byte *)InitGame));
+	gi.dprintf("Function offsets %d\n", ((uint8 *)base) - ((uint8 *)InitGame));
 #endif
 
 	// load the level locals

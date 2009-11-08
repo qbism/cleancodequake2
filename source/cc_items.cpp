@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	CBaseItem::CBaseItem (char *Classname, char *WorldModel, int EffectFlags, char *PickupSound,
+/// \fn	CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags, char *PickupSound,
 /// 	char *Icon, char *Name, EItemFlags Flags, char *Precache) : Index(-1), Classname(Classname),
 /// 	WorldModel(WorldModel), EffectFlags(EffectFlags), PickupSound(PickupSound), Icon(Icon),
 /// 	Name(Name), Flags(Flags), Precache(Precache)
@@ -54,7 +54,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 /// \param	Flags		 - Item flags. 
 /// \param	Precache	 - If non-null, the precache. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CBaseItem::CBaseItem (char *Classname, char *WorldModel, int EffectFlags,
+CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache) :
 Index(-1),
@@ -104,7 +104,7 @@ public:
 	{
 		AvoidOwner = true;
 	};
-	CDroppedItemEntity(int Index) :
+	CDroppedItemEntity(sint32 Index) :
 	CItemEntity(Index)
 	{
 		AvoidOwner = true;

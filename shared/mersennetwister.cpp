@@ -19,7 +19,7 @@
 // die-hard test of G. Marsaglia and the load test of P. Hellekalek and
 // S. Wegenkittl.''  It is efficient in memory usage (typically using 2506
 // to 5012 bytes of static data, depending on data type sizes, and the code
-// is quite short as well).  It generates random numbers in batches of 624
+// is quite sint16 as well).  It generates random numbers in batches of 624
 // at a time, so the caching and pipelining of modern systems is exploited.
 // It is also divide- and mod-free.
 //
@@ -94,7 +94,7 @@ uint32 randomMT ()
 
 static uint32   state[N+1];     // state vector + 1 extra to not violate ANSI C
 static uint32   *next;          // next random value is computed from here
-static int      left = -1;      // can *next++ this many times before reloading
+static sint32      left = -1;      // can *next++ this many times before reloading
 
 
 void seedMT(uint32 seed)
@@ -146,7 +146,7 @@ void seedMT(uint32 seed)
     //
 
     register uint32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
-    register int    j;
+    register sint32    j;
 
     for(left=0, *s++=x, j=N; --j;
         *s++ = (x*=69069U) & 0xFFFFFFFFU);
@@ -156,7 +156,7 @@ void seedMT(uint32 seed)
 static uint32 reloadMT()
  {
     register uint32 *p0=state, *p2=state+2, *pM=state+M, s0, s1;
-    register int    j;
+    register sint32    j;
 
     if(left < -1)
         seedMT(4357U);

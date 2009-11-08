@@ -52,7 +52,7 @@ struct pMoveLocal_t
 	float			frameTime;
 
 	cmBspSurface_t	*groundSurface;
-	int				groundContents;
+	sint32				groundContents;
 
 	svec3_t			previousOrigin;
 	bool			ladder;
@@ -91,7 +91,7 @@ static void SV_PM_ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float over
 {	
 	float backoff = in.Dot (normal) * overbounce;
 
-	for (int i=0 ; i<3 ; i++)
+	for (sint32 i=0 ; i<3 ; i++)
 	{
 		out[i] = in[i] - normal[i]*backoff;
 		if ((out[i] > -LARGE_EPSILON) && (out[i] < LARGE_EPSILON))
@@ -113,18 +113,18 @@ Does not modify any world state?
 */
 static void SV_PM_StepSlideMove_ ()
 {
-	int			numbumps = 4;
+	sint32			numbumps = 4;
 	vec3f		dir;
 	float		d;
-	int			numPlanes = 0;
+	sint32			numPlanes = 0;
 	vec3f		planes[MAX_CLIP_PLANES];
 	vec3f		primal_velocity = pml.velocity;
-	int			i, j;
+	sint32			i, j;
 	CTrace		trace;
 	vec3f		end;
 	float		time_left = pml.frameTime;
 
-	for (int bumpcount = 0; bumpcount < numbumps; bumpcount++)
+	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
 		end = pml.origin + time_left * pml.velocity;
 		trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
@@ -150,7 +150,7 @@ static void SV_PM_StepSlideMove_ ()
 		if ((pm->numTouch < MAXTOUCH) && trace.ent)
 		{
 			bool dup = false;
-			for (int z = 0; z < pm->numTouch; z++)
+			for (sint32 z = 0; z < pm->numTouch; z++)
 			{
 				if (pm->touchEnts[z] == trace.ent)
 				{
@@ -885,23 +885,23 @@ precision of the network channel and in a valid position.
 */
 static void SV_PM_SnapPosition ()
 {
-	int		sign[3];
-	int16	base[3];
+	sint32		sign[3];
+	sint16	base[3];
 	// try all single bits first
 	static const uint8 jitterBits[8] = {0,4,1,2,3,5,6,7};
 
 	// snap velocity to eigths
-	pm->state.velocity[0] = (int)(pml.velocity.X*8);
-	pm->state.velocity[1] = (int)(pml.velocity.Y*8);
-	pm->state.velocity[2] = (int)(pml.velocity.Z*8);
+	pm->state.velocity[0] = (sint32)(pml.velocity.X*8);
+	pm->state.velocity[1] = (sint32)(pml.velocity.Y*8);
+	pm->state.velocity[2] = (sint32)(pml.velocity.Z*8);
 
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		if (pml.origin[i] >= 0)
 			sign[i] = 1;
 		else 
 			sign[i] = -1;
-		pm->state.origin[i] = (int)(pml.origin[i]*8);
+		pm->state.origin[i] = (sint32)(pml.origin[i]*8);
 
 		if (pm->state.origin[i]*(1.0f/8.0f) == pml.origin[i])
 			sign[i] = 0;
@@ -909,9 +909,9 @@ static void SV_PM_SnapPosition ()
 	VecxCopy<svec3_t, 3> (pm->state.origin, base);
 
 	// try all combinations
-	for (int i = 0; i < 8; i++)
+	for (sint32 i = 0; i < 8; i++)
 	{
-		int bits = jitterBits[i];
+		sint32 bits = jitterBits[i];
 		VecxCopy<svec3_t, 3> (base, pm->state.origin);
 
 		if (bits & BIT(0))
@@ -936,7 +936,7 @@ SV_PM_InitialSnapPosition
 */
 static void SV_PM_InitialSnapPosition ()
 {
-	int16		base[3];
+	sint16		base[3];
 	static sint8	offset[3] = { 0, -1, 1 };
 
 	VecxCopy<svec3_t, 3> (pm->state.origin, base);
@@ -981,7 +981,7 @@ static void SV_PM_ClampAngles ()
 	else
 	{
 		// circularly clamp the angles with deltas
-		int16 temp = pm->cmd.angles[0] + pm->state.deltaAngles[0];
+		sint16 temp = pm->cmd.angles[0] + pm->state.deltaAngles[0];
 		pm->viewAngles.X = SHORT2ANGLE(temp);
 
 		temp = pm->cmd.angles[1] + pm->state.deltaAngles[1];
@@ -1075,7 +1075,7 @@ void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
 	// drop timing counter
 	if (pm->state.pmTime)
 	{
-		int		msec = pm->cmd.msec >> 3;
+		sint32		msec = pm->cmd.msec >> 3;
 
 		if (!msec)
 			msec = 1;

@@ -46,7 +46,7 @@ struct IPAddress
 #if !defined(__CC_BAN_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_BAN_H__
 
-CC_ENUM (int, EBanTypeFlags)
+CC_ENUM (sint32, EBanTypeFlags)
 {
 	BAN_SQUELCH		=	BIT(0), // Banned from talking
 	BAN_SPECTATOR	=	BIT(1), // Banned from moving to Spectator mode

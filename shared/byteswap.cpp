@@ -25,11 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "shared.h"
 
 float (*LittleFloat) (float f);
-int (*LittleLong) (int l);
-int16 (*LittleShort) (int16 s);
+sint32 (*LittleLong) (sint32 l);
+sint16 (*LittleShort) (sint16 s);
 float (*BigFloat) (float f);
-int (*BigLong) (int l);
-int16 (*BigShort) (int16 s);
+sint32 (*BigLong) (sint32 l);
+sint16 (*BigShort) (sint16 s);
 
 /*
 ===============
@@ -40,7 +40,7 @@ static float _FloatSwap (float f)
 {
 	union
 	{
-		byte	b[4];
+		uint8	b[4];
 		float	f;
 	} in, out;
 	
@@ -71,12 +71,12 @@ static float _FloatNoSwap (float f)
 _LongSwap
 ===============
 */
-static int _LongSwap (int l)
+static sint32 _LongSwap (sint32 l)
 {
 	union
 	{
-		byte	b[4];
-		int		l;
+		uint8	b[4];
+		sint32		l;
 	} in, out;
 
 	in.l = l;
@@ -95,7 +95,7 @@ static int _LongSwap (int l)
 _LongNoSwap
 ===============
 */
-static int _LongNoSwap (int l)
+static sint32 _LongNoSwap (sint32 l)
 {
 	return l;
 }
@@ -106,12 +106,12 @@ static int _LongNoSwap (int l)
 _ShortSwap
 ===============
 */
-static int16 _ShortSwap (int16 s)
+static sint16 _ShortSwap (sint16 s)
 {
 	union
 	{
-		byte	b[2];
-		int16	s;
+		uint8	b[2];
+		sint16	s;
 	} in, out;
 
 	in.s = s;
@@ -128,7 +128,7 @@ static int16 _ShortSwap (int16 s)
 _ShortNoSwap
 ===============
 */
-static int16 _ShortNoSwap (int16 s)
+static sint16 _ShortNoSwap (sint16 s)
 {
 	return s;
 }
@@ -141,9 +141,9 @@ Swap_Init
 */
 void Swap_Init ()
 {
-	byte	swapTest[2] = { 1, 0 };
+	uint8	swapTest[2] = { 1, 0 };
 
-	if (*(int16 *)swapTest == 1)
+	if (*(sint16 *)swapTest == 1)
 	{
 		// Little endian
 		LittleFloat = _FloatNoSwap;

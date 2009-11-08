@@ -47,22 +47,22 @@ public:
 	void SendMsg (CPlayerEntity *ent, bool reliable = true);
 
 	void AddToBarBuffer (char *fmt, ...);
-	void AddVirtualPoint_Y (int y);
-	void AddVirtualPoint_X (int x);
-	void AddPoint_X (int x, bool inverted);
-	void AddPoint_Y (int y, bool inverted);
+	void AddVirtualPoint_Y (sint32 y);
+	void AddVirtualPoint_X (sint32 x);
+	void AddPoint_X (sint32 x, bool inverted);
+	void AddPoint_Y (sint32 y, bool inverted);
 	void AddString (const char *string, bool highBi, bool center);
-	void AddStatString (int stat);
+	void AddStatString (sint32 stat);
 	void AddPic (const char *pic);
-	void AddPicStat (int stat);
-	void AddNumStat (int stat, int width);
-	void AddIf (int stat);
+	void AddPicStat (sint32 stat);
+	void AddNumStat (sint32 stat, sint32 width);
+	void AddIf (sint32 stat);
 	void AddEndIf ();
 	void AddAmmoNum ();
 	void AddHealthNum ();
 	void AddArmorNum ();
-	void AddClientBlock (int x, int y, int cNum, int Score, int ping, int time);
-	void AddClientBlock (int x, int y, int cNum, int Score, int ping);
+	void AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping, sint32 time);
+	void AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping);
 
 	size_t	Length ();
 };

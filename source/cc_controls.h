@@ -56,7 +56,7 @@ public:
 	ELabelFlags				Flags;
 	ELabelAlign				Align;
 
-	CMenu_Label				(CMenu *Menu, int x, int y);
+	CMenu_Label				(CMenu *Menu, sint32 x, sint32 y);
 	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
 
 	virtual bool	CanSelect (CPlayerEntity *ent)
@@ -76,9 +76,9 @@ class CMenu_Image : public CMenuItem
 {
 public:
 	std::cc_string			ImageString;
-	int						Width, Height;
+	sint32						Width, Height;
 
-	CMenu_Image				(CMenu *Menu, int x, int y);
+	CMenu_Image				(CMenu *Menu, sint32 x, sint32 y);
 	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
 
 	virtual bool	CanSelect (CPlayerEntity *ent)
@@ -105,11 +105,11 @@ class CMenu_Spin : public CMenuItem
 public:
 	ELabelFlags				Flags;
 	ELabelAlign				Align;
-	int						Index; // Where we are in the spin control
-	int						NumIndices;
+	sint32						Index; // Where we are in the spin control
+	sint32						NumIndices;
 	SSpinControlIndex		*Indices;
 
-	CMenu_Spin				(CMenu *Menu, int x, int y, SSpinControlIndex *Indices);
+	CMenu_Spin				(CMenu *Menu, sint32 x, sint32 y, SSpinControlIndex *Indices);
 	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
 
 	virtual bool	CanSelect (CPlayerEntity *ent)
@@ -139,7 +139,7 @@ class CMenu_Slider : public CMenuItem
 public:
 	ELabelAlign				Align;
 	ESliderTextPosition		TextAlign;
-	int						TextX, TextY;
+	sint32						TextX, TextY;
 	uint8					Width;
 
 	TType					Min;
@@ -148,7 +148,7 @@ public:
 	TType					Value;
 	std::cc_string			AppendText;
 
-	CMenu_Slider			(CMenu *Menu, int x, int y) :
+	CMenu_Slider			(CMenu *Menu, sint32 x, sint32 y) :
 	  CMenuItem(Menu, x, y)
 	{
 	};
@@ -158,7 +158,7 @@ public:
 		if (Width > (MAX_INFO_KEY*2)-3)
 			Width = (MAX_INFO_KEY*2)-3;
 
-		int drawX = x;
+		sint32 drawX = x;
 
 		switch (Align)
 		{
@@ -179,14 +179,14 @@ public:
 
 		// Which number is closest to the value?
 		float Percent = (((!Value) ? 0.1 : ((float)Value / (float)Max)));
-		int BestValue = ((Width-1) * Percent);
+		sint32 BestValue = ((Width-1) * Percent);
 
 		if (BestValue > Width)
 			BestValue = Width;
 
-		for (int i = (int)Min; i <= (int)Width; i++)
+		for (sint32 i = (sint32)Min; i <= (sint32)Width; i++)
 		{
-			Buffer[((i-(int)Min)+1)] = (i == BestValue) ? CCHAR_DOWNLOADBAR_THUMB : CCHAR_DOWNLOADBAR_CENTER;
+			Buffer[((i-(sint32)Min)+1)] = (i == BestValue) ? CCHAR_DOWNLOADBAR_THUMB : CCHAR_DOWNLOADBAR_CENTER;
 		}
 
 		Buffer[Width+1] = CCHAR_DOWNLOADBAR_RIGHT;
@@ -255,11 +255,11 @@ private:
 public:
 	ELabelAlign				Align;
 
-	int						Width;
-	int						Height;
-	int						Type;
+	sint32						Width;
+	sint32						Height;
+	sint32						Type;
 
-	CMenu_Box			(CMenu *Menu, int x, int y);
+	CMenu_Box			(CMenu *Menu, sint32 x, sint32 y);
 	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
 
 	// Can't select

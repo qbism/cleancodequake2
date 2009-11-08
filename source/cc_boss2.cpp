@@ -428,7 +428,7 @@ void CBoss2::ReAttackMg ()
 		((frand() <= 0.7) ? &Boss2MoveAttackMg : &Boss2MoveAttackPostMg) : &Boss2MoveAttackPostMg;
 }
 
-void CBoss2::Pain (CBaseEntity *other, float kick, int damage)
+void CBoss2::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -453,7 +453,7 @@ void CBoss2::Dead ()
 	Entity->Link ();
 }
 
-void CBoss2::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CBoss2::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDeath, 255, ATTN_NONE);
 	Entity->DeadFlag = true;

@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-static int mapWarnings, mapErrors;
+static sint32 mapWarnings, mapErrors;
 
 void InitMapCounter ()
 {
@@ -86,9 +86,9 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *f
 }
 
 #define POUNDENTITIES_VERSION "1"
-int fileVersion;
+sint32 fileVersion;
 
-int curIf = 0;
+sint32 curIf = 0;
 std::vector<bool, std::game_allocator<bool> > ifLists;
 
 inline void PushIf (bool expr)
@@ -133,7 +133,7 @@ struct PoundVariable_t
 	EPoundVariableType	variableType;
 	union
 	{
-		int			*integer;
+		sint32			*integer;
 		float		*floating;
 		char		*string;
 	} vars;
@@ -143,7 +143,7 @@ std::vector<PoundVariable_t *, std::game_allocator<PoundVariable_t*> > VariableL
 
 PoundVariable_t *Pound_FindVar (char *name)
 {
-	for (unsigned int i = 0; i < VariableList.size(); i++)
+	for (uint32 i = 0; i < VariableList.size(); i++)
 	{
 		if (strcmp((VariableList[i])->variableName, name) == 0)
 			return VariableList[i];
@@ -170,9 +170,9 @@ char *ParsePound (char *tok, char *realEntities)
 		newVar->variableName = Mem_PoolStrDup (token, com_levelPool, 0);
 
 		token = Com_Parse (&tok);
-		int completed = 0;
+		sint32 completed = 0;
 
-		for (unsigned int i = 0; i < strlen(token); i++)
+		for (uint32 i = 0; i < strlen(token); i++)
 		{
 			if (token[i] == 0 || isdigit(token[i]))
 			{
@@ -185,15 +185,15 @@ char *ParsePound (char *tok, char *realEntities)
 
 		if (completed == strlen(token))
 		{
-			int value = atoi(token);
-			newVar->vars.integer = QNew (com_levelPool, 0) int(value);
+			sint32 value = atoi(token);
+			newVar->vars.integer = QNew (com_levelPool, 0) sint32(value);
 			newVar->variableType = POUNDVARIABLE_INTEGER;
 		}
 		else
 		{
 			completed = 0;
 			// Not an integer, check if it could be a floating point
-			for (unsigned int i = 0; i < strlen(token); i++)
+			for (uint32 i = 0; i < strlen(token); i++)
 			{
 				if (token[i] == 0 || isdigit(token[i]) || token[i] == '.')
 				{
@@ -346,7 +346,7 @@ char *CC_LoadEntFile (char *ServerLevelName, char *entities)
 
 bool TokenEnd (char *token)
 {
-	int i = 0;
+	sint32 i = 0;
 	while (token[i])
 		i++;
 	if (token[i] == '\0' && token[i+1] == '\0')

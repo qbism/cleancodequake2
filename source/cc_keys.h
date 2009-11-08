@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CKey : public CBaseItem
 {
 public:
-	CKey(char *Classname, char *WorldModel, int EffectFlags,
+	CKey(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);
 
@@ -50,7 +50,7 @@ public:
 class CPowerCube : public CKey
 {
 public:
-	CPowerCube(char *Classname, char *WorldModel, int EffectFlags,
+	CPowerCube(char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);
 

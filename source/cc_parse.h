@@ -29,135 +29,126 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ==============================================================================
 */
 
-#define MAX_PARSE_SESSIONS	256
-#define MAX_PS_TOKCHARS		512
-
 // PS_Parse* flags
-enum {
+CC_ENUM (uint8, EParseFlags)
+{
 	PSF_ALLOW_NEWLINES		= 1,	// Allow token parsing to go onto the next line
 	PSF_CONVERT_NEWLINE		= 2,	// Convert newline characters in quoted tokens to their escape character
 	PSF_TO_LOWER			= 4,	// Lower-case the token before returning
 	PSF_WARNINGS_AS_ERRORS	= 8,	// Treat all warnings as errors
 };
 
-// Session properties
-enum {
+// Session Properties
+CC_ENUM (uint8, ESessionProperties)
+{
 	PSP_COMMENT_BLOCK	= 1,		// Treat "/*" "*/" as block-comment marker
 	PSP_COMMENT_LINE	= 2,		// Treat "//" as a line-comment marker
 	PSP_COMMENT_POUND	= 4,		// Treat "#" as a line-comment marker
-};
 
-#define PSP_COMMENT_MASK	(PSP_COMMENT_BLOCK|PSP_COMMENT_LINE|PSP_COMMENT_POUND)
+	PSP_COMMENT_MASK	= (PSP_COMMENT_BLOCK|PSP_COMMENT_LINE|PSP_COMMENT_POUND),
+};
 
 #include <climits>
 
 class CParser
 {
-	std::cc_string		ps_scratchToken;	// Used for temporary storage during data-type/post parsing
+	std::cc_string		ScratchToken;	// Used for temporary storage during data-type/post parsing
+
+	uint32				CurrentColumn;
+	uint32				CurrentLine;
+	std::cc_string		CurrentToken;
+
+	const char			*DataPointer;
+	const char			*DataPointerLast;
+
+	uint32				NumErrors;
+	uint32				NumWarnings;
+
+	ESessionProperties	Properties;
 
 public:
-	class CParseSession
-	{
-	public:
-		CParseSession () :
-		  currentCol(1),
-		  currentLine(1),
-		  dataPtr(NULL),
-		  dataPtrLast(NULL),
-		  numErrors(0),
-		  numWarnings(0),
-		  properties(0)
-		{
-			currentToken[0] = '\0';
-		};
-
-		CParseSession (const char *dataPtr, uint32 properties) :
-		  currentCol(1),
-		  currentLine(1),
-		  dataPtr(dataPtr),
-		  dataPtrLast(dataPtr),
-		  numErrors(0),
-		  numWarnings(0),
-		  properties(properties)
-		{
-			// Make sure incoming data is valid
-			if (!dataPtr)
-				return;
-
-			currentToken[0] = '\0';
-		};
-
-		inline uint32 GetErrorCount ()
-		{
-			return numErrors;
-		}
-
-		inline uint32 GetWarningCount ()
-		{
-			return numWarnings;
-		}
-
-		inline uint32 GetLine ()
-		{
-			return currentLine;
-		}
-		
-		inline uint32 GetColumn ()
-		{
-			return currentCol;
-		}
-
-		friend class CParser;
-
-	private:
-		uint32		currentCol;
-		uint32		currentLine;
-		char		currentToken[MAX_PS_TOKCHARS];
-
-		const char		*dataPtr;
-		const char		*dataPtrLast;
-
-		uint32		numErrors;
-		uint32		numWarnings;
-
-		uint32		properties;
-	} Session;
 
 	CParser () :
-	  ps_scratchToken(),
-	  Session()
+	  ScratchToken(),
+	  CurrentColumn(1),
+	  CurrentLine(1),
+	  DataPointer(NULL),
+	  DataPointerLast(NULL),
+	  NumErrors(0),
+	  NumWarnings(0),
+	  Properties(0),
+	  CurrentToken()
 	  {
 	  };
 
-	CParser (const char *dataPtr, uint32 properties) :
-	  ps_scratchToken(),
-	  Session(dataPtr, properties)
+	CParser (const char *DataPointer, ESessionProperties Properties) :
+	  ScratchToken(),
+	  CurrentColumn(1),
+	  CurrentLine(1),
+	  DataPointer(DataPointer),
+	  DataPointerLast(DataPointer),
+	  NumErrors(0),
+	  NumWarnings(0),
+	  Properties(Properties),
+	  CurrentToken()
 	{
+		// Make sure incoming data is valid
+		if (!DataPointer)
+			return;
 	};
 
 	~CParser ()
 	{
 	};
 
-	void Start (const char *dataPtr, uint32 properties)
+	inline uint32 GetErrorCount ()
 	{
-		Session = CParseSession (dataPtr, properties);
+		return NumErrors;
+	}
+
+	inline uint32 GetWarningCount ()
+	{
+		return NumWarnings;
+	}
+
+	inline uint32 GetLine ()
+	{
+		return CurrentLine;
+	}
+	
+	inline uint32 GetColumn ()
+	{
+		return CurrentColumn;
+	}
+
+	void Start (const char *DataPointer, ESessionProperties Properties)
+	{
+		CParser (DataPointer, Properties);
 	};
 
-	bool ParseToken (uint32 flags, char **target)
+	std::cc_string GetCurrentToken ()
+	{
+		return CurrentToken;
+	};
+
+	// A quick note:
+	// ParseToken will give you a pointer to a CONST char.
+	// DON'T CHANGE RETURNED TOKENS!
+	// To get a copy, use GetCurrentToken ()
+	bool ParseToken (uint32 flags, const char **target)
 	{
 		// Check if the incoming data offset is valid (see if we hit EOF last the last run)
-		const char *data = Session.dataPtr;
+		const char *data = DataPointer;
 		if (!data)
 		{
 			AddError ("PARSE ERROR: called PS_ParseToken and already hit EOF\n");
 			return false;
 		}
-		Session.dataPtrLast = Session.dataPtr;
+		DataPointerLast = DataPointer;
 
 		// Clear the current token
-		Session.currentToken[0] = '\0';
-		int len = 0, c = 0;
+		CurrentToken.clear ();
+		sint32 c = 0;
 
 		while (true)
 		{
@@ -167,26 +158,26 @@ public:
 				switch (c)
 				{
 				case '\0':
-					Session.dataPtr = NULL;
+					DataPointer = NULL;
 					return false;
 
 				case '\n':
 					if (!(flags & PSF_ALLOW_NEWLINES))
 					{
-						Session.dataPtr = data;
-						if (!Session.currentToken[0])
+						DataPointer = data;
+						if (CurrentToken.empty())
 							return false;
 
-						*target = Session.currentToken;
+						*target = CurrentToken.c_str();
 						return true;
 					}
 
-					Session.currentCol = 0;
-					Session.currentLine++;
+					CurrentColumn = 0;
+					CurrentLine++;
 					break;
 
 				default:
-					Session.currentCol++;
+					CurrentColumn++;
 					break;
 				}
 
@@ -198,7 +189,7 @@ public:
 			{
 				if (!data)
 				{
-					Session.dataPtr = NULL;
+					DataPointer = NULL;
 					return false;
 				}
 			}
@@ -211,7 +202,7 @@ public:
 		// FIXME: PSP_QUOTES_TOKENED
 		if (c == '\"')
 		{
-			Session.currentCol++;
+			CurrentColumn++;
 			data++;
 
 			while (true)
@@ -220,23 +211,23 @@ public:
 				switch (c)
 				{
 				case '\0':
-					Session.currentCol++;
-					Session.dataPtr = data;
+					CurrentColumn++;
+					DataPointer = data;
 					AddError ("PARSE ERROR: hit EOF while inside quotation\n");
 					return false;
 
 				case '\"':
-					Session.currentCol++;
-					Session.dataPtr = data;
-					Session.currentToken[len] = '\0';
+					CurrentColumn++;
+					DataPointer = data;
 
 					// Empty token
-					if (!Session.currentToken[0])
+					if (!CurrentToken[0])
 						return false;
 
 					// Lower-case if desired
-					if (flags & PSF_TO_LOWER)
-						Q_strlwr (Session.currentToken);
+					//if (flags & PSF_TO_LOWER)
+					//{
+					//}
 
 					if (flags & PSF_CONVERT_NEWLINE)
 					{
@@ -244,31 +235,33 @@ public:
 							return false;
 					}
 
-					*target = Session.currentToken;
+					*target = CurrentToken.c_str();
 					return true;
 
 				case '\n':
 					if (!(flags & PSF_ALLOW_NEWLINES))
 					{
-						Session.dataPtr = data;
-						if (!Session.currentToken[0])
+						DataPointer = data;
+						if (!CurrentToken[0])
 							return false;
 
-						*target = Session.currentToken;
+						*target = CurrentToken.c_str();
 						return true;
 					}
 
-					Session.currentCol = 0;
-					Session.currentLine++;
+					CurrentColumn = 0;
+					CurrentLine++;
 					break;
 
 				default:
-					Session.currentCol++;
+					CurrentColumn++;
 					break;
 				}
 
-				if (len < MAX_PS_TOKCHARS)
-					Session.currentToken[len++] = c;
+				if (flags & PSF_TO_LOWER)
+					c = Q_tolower (c);
+
+				CurrentToken.push_back (c);
 			}
 		}
 
@@ -279,73 +272,62 @@ public:
 				break;	// Stop at spaces and quotation marks
 
 			// Stop at opening comments
-			if (Session.properties & PSP_COMMENT_MASK)
+			if (Properties & PSP_COMMENT_MASK)
 			{
-				if (c == '#' && Session.properties & PSP_COMMENT_POUND)
+				if (c == '#' && Properties & PSP_COMMENT_POUND)
 					break;
 				if (c == '/')
 				{
-					if (data[1] == '/' && Session.properties & PSP_COMMENT_LINE)
+					if (data[1] == '/' && Properties & PSP_COMMENT_LINE)
 						break;
-					if (data[1] == '*' && Session.properties & PSP_COMMENT_BLOCK)
+					if (data[1] == '*' && Properties & PSP_COMMENT_BLOCK)
 						break;
 				}
 
-				if (c == '*' && data[1] == '/' && Session.properties & PSP_COMMENT_BLOCK)
+				if (c == '*' && data[1] == '/' && Properties & PSP_COMMENT_BLOCK)
 				{
-					Session.dataPtr = data;
+					DataPointer = data;
 					AddError ("PARSE ERROR: end-comment '*/' with no opening\n");
 					return false;
 				}
 			}
 
-			// Store character
-			if (len < MAX_PS_TOKCHARS)
-				Session.currentToken[len++] = c;
+			if (flags & PSF_TO_LOWER)
+				c = Q_tolower(c);
 
-			Session.currentCol++;
+			// Store character
+			CurrentToken.push_back (c);
+
+			CurrentColumn++;
 			c = *++data;
 		}
 
-		// Check length
-		if (len >= MAX_PS_TOKCHARS-1)
-		{
-			AddError ("PARSE ERROR: token too long!\n");
-			Session.dataPtr = data;
-
-			return false;
-		}
-
 		// Done
-		Session.currentToken[len] = '\0';
-		Session.dataPtr = data;
+		DataPointer = data;
 
 		// Empty token
-		if (!Session.currentToken[0])
+		if (!CurrentToken[0])
 			return false;
 
-		// Lower-case if desired
-		if (flags & PSF_TO_LOWER)
-			Q_strlwr (Session.currentToken);
 		if (flags & PSF_CONVERT_NEWLINE)
 		{
 			if (!ConvertEscape (flags))
 				return false;
 		}
 
-		*target = Session.currentToken;
+		*target = CurrentToken.c_str();
 		return true;
 	};
 	
 	void UndoParse ()
 	{
-		Session.dataPtr = Session.dataPtrLast;
+		DataPointer = DataPointerLast;
 	};
 
 	void SkipLine ()
 	{
 		// Check if the incoming data offset is valid (see if we hit EOF last the last run)
-		const char	*data = Session.dataPtr;
+		const char	*data = DataPointer;
 
 		if (!data)
 		{
@@ -353,22 +335,22 @@ public:
 			return;
 		}
 
-		Session.dataPtrLast = Session.dataPtr;
+		DataPointerLast = DataPointer;
 
 		// Skip to the end of the line
 		while (*data && *data != '\n')
 		{
 			data++;
-			Session.currentCol++;
+			CurrentColumn++;
 		}
 
-		Session.dataPtr = data;
+		DataPointer = data;
 	};
 
 	template <typename TType>
-	bool ParseDataType (uint32 flags, void *target, uint32 numVecs)
+	bool ParseDataType (EParseFlags flags, void *target, uint32 numVecs)
 	{
-		char *token;
+		const char *token;
 		// Parse the next token
 		if (!ParseToken (flags, &token))
 			return false;
@@ -405,13 +387,13 @@ public:
 
 		// Single token with all vectors
 		// FIXME: support () [] {} brackets
-		char *data = token;
+		const char *data = token;
 
 		for (uint32 i = 0; i < numVecs; i++)
 		{
 			char c;
 
-			ps_scratchToken.clear ();
+			ScratchToken.clear ();
 			size_t len = 0;
 
 			// Skip white-space
@@ -428,7 +410,7 @@ public:
 				break;
 			}
 
-			// Parse this token into a sub-token stored in ps_scratchToken
+			// Parse this token into a sub-token stored in ScratchToken
 			while (true)
 			{
 				if (c <= ' ' || c == ',')
@@ -437,7 +419,7 @@ public:
 					break;	// Stop at white space and commas
 				}
 
-				ps_scratchToken.push_back (c);
+				ScratchToken.push_back (c);
 				len++;
 				c = *data++;
 			}
@@ -445,16 +427,16 @@ public:
 			len++;
 
 			// Too few vecs
-			if (ps_scratchToken.empty())
+			if (ScratchToken.empty())
 			{
 				AddError ("PARSE ERROR: missing vector parameters!\n");
 				return false;
 			}
 
 			// Check the data type and set the target
-			if (!PS_VerifyVec<TType> (ps_scratchToken.c_str(), target))
+			if (!PS_VerifyVec<TType> (ScratchToken.c_str(), target))
 			{
-				AddError ("PARSE ERROR: '%s' does not evaluate to desired data type %s!\n", ps_scratchToken.c_str(), PS_DataName<TType> ());
+				AddError ("PARSE ERROR: '%s' does not evaluate to desired data type %s!\n", ScratchToken.c_str(), PS_DataName<TType> ());
 				return false;
 			}
 
@@ -485,7 +467,7 @@ public:
 	{
 	#ifdef _DEBUG
 	#ifdef WIN32
-		OutputDebugString (errorMsg);
+		OutputDebugStringA (errorMsg);
 	#endif
 		assert (0);
 	#endif
@@ -495,7 +477,7 @@ public:
 	{
 	#ifdef _DEBUG
 	#ifdef WIN32
-		OutputDebugString (errorMsg);
+		OutputDebugStringA (errorMsg);
 	#endif
 		assert (0);
 	#endif
@@ -689,10 +671,10 @@ private:
 	template <> static const char *PS_DataName <double> () { return "<double>"; }
 	template <> static const char *PS_DataName <bool> () { return "<bool>"; }
 
-	bool SkipComments (const char **data, uint32 flags)
+	bool SkipComments (const char **data, EParseFlags flags)
 	{
 		// See if any comment types are allowed
-		if (!(Session.properties & PSP_COMMENT_MASK))
+		if (!(Properties & PSP_COMMENT_MASK))
 			return false;
 
 		const char *p = *data;
@@ -701,7 +683,7 @@ private:
 		{
 		case '#':
 			// Skip "# comments"
-			if (Session.properties & PSP_COMMENT_POUND)
+			if (Properties & PSP_COMMENT_POUND)
 			{
 				while (*p != '\n')
 				{
@@ -712,7 +694,7 @@ private:
 					}
 
 					p++;
-					Session.currentCol++;
+					CurrentColumn++;
 				}
 
 				*data = p;
@@ -722,7 +704,7 @@ private:
 
 		case '*':
 			// This shouldn't happen with proper commenting
-			if (p[1] == '/' && (Session.properties & PSP_COMMENT_BLOCK))
+			if (p[1] == '/' && (Properties & PSP_COMMENT_BLOCK))
 			{
 				p += 2;
 				AddError ("PARSE ERROR: end-comment '*/' with no opening\n");
@@ -733,7 +715,7 @@ private:
 
 		case '/':
 			// Skip "// comments"
-			if (p[1] == '/' && (Session.properties & PSP_COMMENT_LINE))
+			if (p[1] == '/' && (Properties & PSP_COMMENT_LINE))
 			{
 				while (*p != '\n')
 				{
@@ -744,7 +726,7 @@ private:
 					}
 
 					p++;
-					Session.currentCol++;
+					CurrentColumn++;
 				}
 
 				*data = p;
@@ -752,22 +734,22 @@ private:
 			}
 
 			// Skip "/* comments */"
-			if (p[1] == '*' && (Session.properties & PSP_COMMENT_BLOCK))
+			if (p[1] == '*' && (Properties & PSP_COMMENT_BLOCK))
 			{
 				// Skip initial "/*"
 				p += 2;
-				Session.currentCol += 2;
+				CurrentColumn += 2;
 
 				// Skip everything until "*/"
 				while (*p && (*p != '*' || p[1] != '/'))
 				{
 					if (*p == '\n')
 					{
-						Session.currentCol = 0;
-						Session.currentLine++;
+						CurrentColumn = 0;
+						CurrentLine++;
 					}
 					else
-						Session.currentCol++;
+						CurrentColumn++;
 
 					p++;
 				}
@@ -776,7 +758,7 @@ private:
 				if (*p == '*' && p[1] == '/')
 				{
 					p += 2;
-					Session.currentCol += 2;
+					CurrentColumn += 2;
 					*data = p;
 					return true;
 				}
@@ -793,46 +775,43 @@ private:
 		return false;
 	}
 
-	bool ConvertEscape (uint32 flags)
+	bool ConvertEscape (EParseFlags flags)
 	{
 		// If it's blank then why even try?
-		uint32 len = strlen (Session.currentToken);
-		if (!len)
+		if (CurrentToken.empty())
 			return true;
 
 		// Convert escape characters
-		char *source = &Session.currentToken[0];
-
-		for (uint32 i = 0; i < len; i++)
+		for (size_t i = 0; i < CurrentToken.length(); i++)
 		{
-			if (source[0] != '\\')
+			if (CurrentToken[i] != '\\')
 			{
-				ps_scratchToken.push_back (*source++);
+				ScratchToken.push_back (CurrentToken[i]);
 				continue;
 			}
 
 			// Hit a '\'
-			switch (source[1])
+			switch (CurrentToken[i + 1])
 			{
 			case 'n':
 				if (flags & PSF_CONVERT_NEWLINE)
 				{
-					ps_scratchToken.push_back ('\n');
-					source += 2;
+					ScratchToken.push_back ('\n');
+					i++;
 					continue;
 				}
 				break;
 
 			default:
-				AddWarning ("PARSE WARNING: unknown escape character '%c%c', ignoring\n", source[0], source[1]);
-				ps_scratchToken.push_back (*source++);
-				ps_scratchToken.push_back (*source++);
+				AddWarning ("PARSE WARNING: unknown escape character '%c%c', ignoring\n", CurrentToken[i], CurrentToken[i+1]);
+				ScratchToken.push_back (CurrentToken[i++]);
+				ScratchToken.push_back (CurrentToken[i]);
 				break;
 			}
 		}
 
 		// Copy scratch back to the current token
-		strncpy (Session.currentToken, ps_scratchToken.c_str(), sizeof(Session.currentToken));
+		CurrentToken = ScratchToken;
 		return true;
 	}
 };

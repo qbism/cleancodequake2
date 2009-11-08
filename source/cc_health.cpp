@@ -33,9 +33,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CHealth::CHealth (char *Classname, char *WorldModel, int EffectFlags,
+CHealth::CHealth (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int Amount, EHealthFlags HealthFlags) :
+			   char *Precache, sint32 Amount, EHealthFlags HealthFlags) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 Amount(Amount),
@@ -85,7 +85,7 @@ public:
 	  {
 	  };
 
-	CHealthEntity (int Index) :
+	CHealthEntity (sint32 Index) :
 	  CBaseEntity(Index),
 	  CItemEntity (Index)
 	  {

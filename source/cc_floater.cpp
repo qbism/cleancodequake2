@@ -55,7 +55,7 @@ void CFloater::Idle ()
 void CFloater::FireBlaster ()
 {
 	vec3f	start, forward, right, end, dir;
-	int		effect = 0;
+	sint32		effect = 0;
 
 	switch (Entity->State.GetFrame())
 	{
@@ -527,7 +527,7 @@ void CFloater::Melee ()
 	CurrentMove = (frand() < 0.5) ? &FloaterMoveAttack3 : &FloaterMoveAttack2;
 }
 
-void CFloater::Pain (CBaseEntity *other, float kick, int damage)
+void CFloater::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -544,7 +544,7 @@ void CFloater::Pain (CBaseEntity *other, float kick, int damage)
 	CurrentMove = n ? &FloaterMovePain1 : &FloaterMovePain2;
 }
 
-void CFloater::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CFloater::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, SoundDeath1);
 	Entity->BecomeExplosion (false);

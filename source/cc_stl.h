@@ -497,6 +497,12 @@ template <typename T> void game_allocator<T>::destroy(T * const p) const
 typedef basic_string<char, char_traits<char>, generic_allocator<char> >
 	cc_string;
 
+typedef basic_stringbuf<char, char_traits<char>, generic_allocator<char> >
+	cc_stringbuf;
+
+typedef basic_stringstream <char, char_traits<char>, generic_allocator<char> >
+	cc_stringstream;
+
 inline void FormatString (std::cc_string &str, const char *fmt, ...)
 {
 	va_list		argptr;

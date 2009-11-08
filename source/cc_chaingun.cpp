@@ -78,9 +78,9 @@ void CChaingun::FireAnimation (CPlayerEntity *ent)
 
 void CChaingun::Fire (CPlayerEntity *ent)
 {
-	int			shots;
+	sint32			shots;
 	vec3f		start, forward, right, up, offset;
-	const int	damage = (game.mode & GAME_DEATHMATCH) ?
+	const sint32	damage = (game.mode & GAME_DEATHMATCH) ?
 				(isQuad) ? 24 : 6
 				:
 				(isQuad) ? 32 : 8,
@@ -135,13 +135,13 @@ void CChaingun::Fire (CPlayerEntity *ent)
 		return;
 	}
 
-	for (int i=0 ; i<3 ; i++)
+	for (sint32 i=0 ; i<3 ; i++)
 	{
 		ent->Client.KickOrigin[i] = crand() * 0.35;
 		ent->Client.KickAngles[i] = crand() * 0.7;
 	}
 
-	for (int i=0 ; i<shots ; i++)
+	for (sint32 i=0 ; i<shots ; i++)
 	{
 		// get start / end positions
 		ent->Client.ViewAngle.ToVectors (&forward, &right, &up);

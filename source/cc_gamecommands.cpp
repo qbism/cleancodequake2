@@ -118,10 +118,10 @@ void Cmd_PutAway_f (CPlayerEntity *ent)
 }
 
 
-int PlayerSort (void const *a, void const *b)
+sint32 PlayerSort (void const *a, void const *b)
 {
-	int anum = game.clients[*(int *)a].playerState.stats[STAT_FRAGS];
-	int bnum = game.clients[*(int *)b].playerState.stats[STAT_FRAGS];
+	sint32 anum = game.clients[*(sint32 *)a].playerState.stats[STAT_FRAGS];
+	sint32 bnum = game.clients[*(sint32 *)b].playerState.stats[STAT_FRAGS];
 
 	if (anum < bnum)
 		return -1;
@@ -133,10 +133,10 @@ int PlayerSort (void const *a, void const *b)
 class CPlayerListCountCallback : public CForEachPlayerCallback
 {
 public:
-	int		*index;
-	int		*count;
+	sint32		*index;
+	sint32		*count;
 
-	CPlayerListCountCallback (int *index, int *count) :
+	CPlayerListCountCallback (sint32 *index, sint32 *count) :
 	index(index),
 	count(count)
 	{
@@ -155,10 +155,10 @@ Cmd_Players_f
 */
 void Cmd_Players_f (CPlayerEntity *ent)
 {
-	int		count = 0;
+	sint32		count = 0;
 	char	Small[MAX_INFO_KEY];
 	char	Large[MAX_INFO_STRING];
-	int		*index = QNew (com_genericPool, 0) int[game.maxclients];
+	sint32		*index = QNew (com_genericPool, 0) sint32[game.maxclients];
 
 	CPlayerListCountCallback (index, &count).Query ();
 
@@ -168,7 +168,7 @@ void Cmd_Players_f (CPlayerEntity *ent)
 	// print information
 	Large[0] = 0;
 
-	for (int i = 0 ; i < count ; i++)
+	for (sint32 i = 0 ; i < count ; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 		Q_snprintfz (Small, sizeof(small), "%3i %s\n",
@@ -248,10 +248,10 @@ bool CheckFlood(CPlayerEntity *ent)
 		if (level.Frame < ent->Client.Flood.LockTill)
 		{
 			ent->PrintToClient (PRINT_HIGH, "You can't talk for %d more seconds\n",
-				(int)((ent->Client.Flood.LockTill - level.Frame)/10));
+				(sint32)((ent->Client.Flood.LockTill - level.Frame)/10));
 			return true;
 		}
-		int i = ent->Client.Flood.WhenHead - flood_msgs->Integer() + 1;
+		sint32 i = ent->Client.Flood.WhenHead - flood_msgs->Integer() + 1;
 		if (i < 0)
 			i = (sizeof(ent->Client.Flood.When)/sizeof(ent->Client.Flood.When[0])) + i;
 		if (ent->Client.Flood.When[i] && 
@@ -386,7 +386,7 @@ public:
 	bool DoQuery (bool Spectator)
 	{
 		this->Spectator = Spectator;
-		for (byte i = 1; i <= game.maxclients; i++)
+		for (uint8 i = 1; i <= game.maxclients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -435,15 +435,6 @@ void GCmd_SayTeam_f (CPlayerEntity *ent)
 {
 	Cmd_Say_f (ent, true, false);
 }
-
-class CPrintFileCallback : public CFindFilesCallback
-{
-public:
-	void Query (std::cc_string &fileName)
-	{
-		DebugPrintf ("%s\n", fileName.c_str());
-	};
-};
 
 void Cmd_Test_f (CPlayerEntity *ent)
 {

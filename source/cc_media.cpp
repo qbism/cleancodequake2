@@ -39,7 +39,7 @@ void InitGameMedia ()
 {
 	char buffer[MAX_INFO_KEY];
 
-	for (int i = 0; i < 4; i++)
+	for (sint32 i = 0; i < 4; i++)
 	{
 		Q_snprintfz (buffer, sizeof(buffer), "*death%i.wav", i+1);
 		GameMedia.Player.Death[i] = SoundIndex(buffer);
@@ -53,13 +53,13 @@ void InitGameMedia ()
 
 	GameMedia.Player.Jump = SoundIndex("*jump1.wav");
 
-	for (int i = 25; i <= 100; i += 25)
+	for (sint32 i = 25; i <= 100; i += 25)
 	{
 		Q_snprintfz (buffer, sizeof(buffer), "*pain%i_1.wav", i);
-		GameMedia.Player.Pain[(int)(i / 25) - 1][0] = SoundIndex(buffer);
+		GameMedia.Player.Pain[(sint32)(i / 25) - 1][0] = SoundIndex(buffer);
 
 		Q_snprintfz (buffer, sizeof(buffer), "*pain%i_2.wav", i);
-		GameMedia.Player.Pain[(int)(i / 25) - 1][1] = SoundIndex(buffer);
+		GameMedia.Player.Pain[(sint32)(i / 25) - 1][1] = SoundIndex(buffer);
 	}
 
 	GameMedia.Gib_SmallMeat	=	ModelIndex ("models/objects/gibs/sm_meat/tris.md2");

@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define __CC_WRITE_H__
 
 void WriteChar (sint8 val);
-void WriteByte (byte val);
-void WriteShort (short val);
+void WriteByte (uint8 val);
+void WriteShort (sint16 val);
 void WriteLong (long val);
 void WriteFloat (float val);
 void WriteAngle (float val);

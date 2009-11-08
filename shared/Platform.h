@@ -124,10 +124,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  endif
 # endif // _DEBUG
 
-typedef	char				int8;
-typedef __int16				int16;
-typedef __int32				int32;
-typedef __int64				int64;
 typedef	signed char			sint8;
 typedef signed __int16		sint16;
 typedef signed __int32		sint32;
@@ -209,8 +205,8 @@ typedef unsigned __int64	uint64;
 
 # endif
 
-typedef int16_t				int16;
-typedef int32_t				int32;
+typedef int16_t				sint16;
+typedef int32_t				sint32;
 typedef int64_t				int64;
 typedef uint16_t			uint16;
 typedef uint32_t			uint32;
@@ -255,13 +251,13 @@ typedef uint64_t			uint64;
 
 #ifdef HAVE__STRICMP
 # ifndef Q_stricmp
-inline int Q_stricmp (const char *s1, const char *s2)
+inline sint32 Q_stricmp (const char *s1, const char *s2)
 {
 	return _stricmp (s1, s2);
 }
 # endif
 # ifndef Q_strnicmp
-inline int Q_strnicmp (const char *s1, const char *s2, size_t n)
+inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 {
 	return _strnicmp (s1, s2, n);
 }

@@ -43,7 +43,7 @@ char		sys_findBase[MAX_OSPATH];
 char		sys_findPath[MAX_OSPATH];
 HANDLE		sys_findHandle = INVALID_HANDLE_VALUE;
 
-static bool Sys_CompareFileAttributes (int found, uint32 mustHave, uint32 cantHave)
+static bool Sys_CompareFileAttributes (sint32 found, uint32 mustHave, uint32 cantHave)
 {
 	// read only
 	if (found & FILE_ATTRIBUTE_READONLY) {
@@ -109,13 +109,13 @@ Sys_FindFirst
 */
 char *Sys_FindFirst (char *path, uint32 mustHave, uint32 cantHave)
 {
-	WIN32_FIND_DATA	findinfo;
+	WIN32_FIND_DATAA	findinfo;
 
 	if (sys_findHandle != INVALID_HANDLE_VALUE)
 		Com_Printf (0, "Sys_BeginFind without close");
 
 	Com_FilePath (path, sys_findBase, sizeof(sys_findBase));
-	sys_findHandle = FindFirstFile (path, &findinfo);
+	sys_findHandle = FindFirstFileA (path, &findinfo);
 
 	if (sys_findHandle == INVALID_HANDLE_VALUE)
 		return NULL;
@@ -159,14 +159,14 @@ Sys_FindFiles
 
 void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fileList, bool recurse, bool addFiles, bool addDirs)
 {
-	WIN32_FIND_DATA	findInfo;
+	WIN32_FIND_DATAA	findInfo;
 	HANDLE			findHandle;
 	BOOL			findRes = TRUE;
 	char			findPath[MAX_OSPATH], searchPath[MAX_OSPATH];
 
 	Q_snprintfz (searchPath, sizeof(searchPath), "%s/*", path);
 
-	findHandle = FindFirstFile (searchPath, &findInfo);
+	findHandle = FindFirstFileA (searchPath, &findInfo);
 	if (findHandle == INVALID_HANDLE_VALUE)
 		return;
 
@@ -175,7 +175,7 @@ void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fil
 		// Check for invalid file name
 		if (findInfo.cFileName[strlen(findInfo.cFileName)-1] == '.')
 		{
-			findRes = FindNextFile (findHandle, &findInfo);
+			findRes = FindNextFileA (findHandle, &findInfo);
 			continue;
 		}
 
@@ -185,10 +185,7 @@ void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fil
 		{
 			// Add a directory
 			if (addDirs)
-			{
-				std::cc_string temp = findPath;
-				files.push_back (temp);
-			}
+				files.push_back (findPath);
 
 			// Recurse down the next directory
 			if (recurse)
@@ -199,23 +196,19 @@ void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fil
 			// Match pattern
 			if (!Q_WildcardMatch (pattern, findPath, 1))
 			{
-				findRes = FindNextFile (findHandle, &findInfo);
+				findRes = FindNextFileA (findHandle, &findInfo);
 				continue;
 			}
 
 			// Add a file
 			if (addFiles)
-			{
-				std::cc_string temp = findPath;
-				files.push_back (temp);
-			}
+				files.push_back (findPath);
 		}
 
-		findRes = FindNextFile (findHandle, &findInfo);
+		findRes = FindNextFileA (findHandle, &findInfo);
 	}
 
 	FindClose (findHandle);
-
 	return;
 }
 
@@ -230,7 +223,7 @@ void CC_OutputDebugString (const char *text)
 {
 #if defined(_DEBUG)
 	// Pipe to visual studio in debug mode
-	OutputDebugString(text);
+	OutputDebugStringA(text);
 #endif
 }
 
@@ -246,7 +239,7 @@ void CC_ReportGameError (const char *text)
 {
 #if defined(_DEBUG)
 	// Pipe to visual studio
-	OutputDebugString(text);
+	OutputDebugStringA(text);
 #endif
 	_CrtDbgBreak ();
 	
@@ -255,7 +248,7 @@ void CC_ReportGameError (const char *text)
 	// assert (0); // Break, if debugging
 }
 
-static int sys_timeBase;
+static sint32 sys_timeBase;
 static double sys_msPerCycle;
 
 /*
@@ -289,7 +282,7 @@ double Sys_MSPerCycle()
 Sys_Milliseconds
 ================
 */
-int Sys_Milliseconds()
+sint32 Sys_Milliseconds()
 {
 	return timeGetTime() - sys_timeBase;
 }

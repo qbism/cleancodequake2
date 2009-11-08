@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_weaponmain.h"
 
-CTech::CTech (char *Classname, char *WorldModel, int EffectFlags,
+CTech::CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, uint32 TechNumber, ETechType TechType) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
@@ -88,7 +88,7 @@ public:
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, int &Damage, int &Knockback, int &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (!Calculated)
@@ -111,7 +111,7 @@ public:
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, int &Damage, int &Knockback, int &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (Calculated || (Left == Right))
@@ -183,7 +183,7 @@ public:
 
 	void DoPassiveTech	(	CPlayerEntity *Player	)
 	{
-		const int RegenAmts[] = {SHELL_REGEN_COUNT, BULLET_REGEN_COUNT, GRENADE_REGEN_COUNT, ROCKET_REGEN_COUNT, CELL_REGEN_COUNT, SLUG_REGEN_COUNT};
+		const sint32 RegenAmts[] = {SHELL_REGEN_COUNT, BULLET_REGEN_COUNT, GRENADE_REGEN_COUNT, ROCKET_REGEN_COUNT, CELL_REGEN_COUNT, SLUG_REGEN_COUNT};
 		//CAmmo *Ptrs[] = {NItems::Shells, NItems::Bullets, NItems::Grenades, NItems::Rockets, NItems::Cells, NItems::Slugs};
 
 		bool noise = false;
@@ -237,7 +237,7 @@ public:
 	  {
 	  };
 
-	  CTechEntity (int Index) :
+	  CTechEntity (sint32 Index) :
 	  CItemEntity(Index),
 	  AvoidOwner(true)
 	  {
@@ -368,7 +368,7 @@ static void SpawnTechs()
 {
 	for (size_t i = 0; i < TechList.size(); i++)
 	{
-		if (!cc_techflags->Integer() || (cc_techflags->Integer() & (int)powf(2, TechList[i]->GetTechNumber())))
+		if (!cc_techflags->Integer() || (cc_techflags->Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
 			SpawnTech (TechList[i], FindTechSpawn ());
 	}
 }
@@ -383,7 +383,7 @@ public:
 		Spawn ();
 	};
 
-	CTechSpawner (int Index) :
+	CTechSpawner (sint32 Index) :
 	  CBaseEntity (Index),
 	  CThinkableEntity (Index)
 	{
@@ -418,7 +418,7 @@ void SetupTechSpawn()
 void ResetTechs()
 {
 	edict_t *ent;
-	int i;
+	sint32 i;
 
 	for (ent = g_edicts + 1, i = 1; i < globals.numEdicts; i++, ent++)
 	{

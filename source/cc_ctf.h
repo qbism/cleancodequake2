@@ -48,17 +48,17 @@ public:
 	uint32	Code;
 
 	std::cc_string name;
-	int number;
+	sint32 number;
 
 	// stats
-	int deaths;
-	int kills;
-	int caps;
-	int basedef;
-	int carrierdef;
+	sint32 deaths;
+	sint32 kills;
+	sint32 caps;
+	sint32 basedef;
+	sint32 carrierdef;
 
-	int team; // team
-	int Score; // frags at time of disconnect
+	sint32 team; // team
+	sint32 Score; // frags at time of disconnect
 	CPlayerEntity *ent;
 };
 
@@ -83,20 +83,20 @@ typedef std::map<uint32, CCTFGhost*, std::less<uint16>, std::generic_allocator<s
 class CCTFGameLocals
 {
 public:
-	int team1, team2;
-	int total1, total2; // these are only set when going into intermission!
+	sint32 team1, team2;
+	sint32 total1, total2; // these are only set when going into intermission!
 	FrameNumber_t last_flag_capture;
-	int last_capture_team;
+	sint32 last_capture_team;
 
 	EMatchState match;		// match state
 	float matchtime;	// time for match start/end (depends on state)
-	int lasttime;		// last time update
+	sint32 lasttime;		// last time update
 
 	EElectState election;	// election type
 	CPlayerEntity *etarget;	// for CTF.Admin election, who's being elected
 	char elevel[32];	// for map election, target level
-	int evotes;			// votes so far
-	int needvotes;		// votes needed
+	sint32 evotes;			// votes so far
+	sint32 needvotes;		// votes needed
 	FrameNumber_t electtime;	// remaining time until election times out
 	char emsg[256];		// election name
 

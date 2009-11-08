@@ -63,8 +63,8 @@ public:
 	inline bool operator ==(const colorf &Other) { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
 	inline const bool operator ==(const colorf &Other) const { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
 
-	inline const float &operator [](const int Index) const { return (&R)[Index]; }
-	inline float &operator [](const int Index) { return (&R)[Index]; }
+	inline const float &operator [](const sint32 Index) const { return (&R)[Index]; }
+	inline float &operator [](const sint32 Index) { return (&R)[Index]; }
 
 	inline operator float *() { return (&R); }
 	inline operator const float *() const { return (&R); }
@@ -100,7 +100,7 @@ public:
 	/**
 	 * Data
 	 */
-	byte R, G, B, A;
+	uint8 R, G, B, A;
 
 	/**
 	 * Constructors
@@ -111,7 +111,7 @@ public:
 	inline colorb(const colorb &Other)
 		: R(Other.R), G(Other.G), B(Other.B), A(Other.A) {}
 
-	inline colorb(const byte InR, const byte InG, const byte InB, const byte InA)
+	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA)
 		: R(InR), G(InG), B(InB), A(InA) {}
 
 	inline colorb(const colorf &Other)
@@ -142,15 +142,15 @@ public:
 	inline bool operator ==(const colorb &Other) { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
 	inline const bool operator ==(const colorb &Other) const { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
 
-	inline const byte &operator [](const int Index) const { return (&R)[Index]; }
-	inline byte &operator [](const int Index) { return (&R)[Index]; }
+	inline const uint8 &operator [](const sint32 Index) const { return (&R)[Index]; }
+	inline uint8 &operator [](const sint32 Index) { return (&R)[Index]; }
 
-	inline operator byte *() { return (&R); }
-	inline operator const byte *() const { return (&R); }
+	inline operator uint8 *() { return (&R); }
+	inline operator const uint8 *() const { return (&R); }
 
 	inline colorb &operator =(const colorb &Other)
 	{
-		*(int *)&R = *(int *)&Other.R;
+		*(sint32 *)&R = *(sint32 *)&Other.R;
 		return *this;
 	}
 
@@ -162,7 +162,7 @@ public:
 	 * Functions
 	 */
 	inline void Set(const colorb &Other) { R = Other.R; G = Other.G; B = Other.B; A = Other.A; }
-	inline void Set(const byte InR, const byte InG, const byte InB, const byte InA) { R = InR; G = InG; B = InB; A = InA; }
+	inline void Set(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA) { R = InR; G = InG; B = InB; A = InA; }
 
 	inline void Set(const colorf &Other) { R = FloatToByte(Other.R); G = FloatToByte(Other.G); B = FloatToByte(Other.B); A = FloatToByte(Other.A); }
 };
@@ -242,43 +242,43 @@ extern const colorb	Q_BStrColorTable[NUM_COLOR_TABLE_COLORS];
 #define S_STYLE_RETURN	"^R"
 #define S_STYLE_SHADOW	"^S"
 
-inline int Q_StrColorIndex (char c)
+inline sint32 Q_StrColorIndex (char c)
 {
 	return (((c & 127) - '0') % NUM_COLOR_TABLE_COLORS);
 }
 
 bool		Q_IsColorString (const char *p);
-int			Q_ColorCharCount (const char *s, int endPos);
-int			Q_ColorCharOffset (const char *s, int charCount);
-int			Q_ColorStrLastColor (char *s, int byteOfs);
-int			Q_ColorStrLastStyle (char *s, int byteOfs);
+sint32			Q_ColorCharCount (const char *s, sint32 endPos);
+sint32			Q_ColorCharOffset (const char *s, sint32 charCount);
+sint32			Q_ColorStrLastColor (char *s, sint32 byteOfs);
+sint32			Q_ColorStrLastStyle (char *s, sint32 byteOfs);
 
-inline byte HexColor_GetR (int rgba)
+inline uint8 HexColor_GetR (sint32 rgba)
 {
 	return (rgba & 0xFF);
 }
 
-inline byte HexColor_GetG (int rgba)
+inline uint8 HexColor_GetG (sint32 rgba)
 {
 	return ((rgba >> 8) & 0xFF);
 }
 
-inline byte HexColor_GetB (int rgba)
+inline uint8 HexColor_GetB (sint32 rgba)
 {
 	return ((rgba >> 16) & 0xFF);
 }
 
-inline byte HexColor_GetA (int rgba)
+inline uint8 HexColor_GetA (sint32 rgba)
 {
 	return ((rgba >> 24) & 0xFF);
 }
 
-inline int Color_RGBToHex (byte r, byte g, byte b)
+inline sint32 Color_RGBToHex (uint8 r, uint8 g, uint8 b)
 {
 	return ((r << 0) | (g << 8) | (b << 16));
 }
 
-inline int Color_RGBAToHex (byte r, byte g, byte b, byte a)
+inline sint32 Color_RGBAToHex (uint8 r, uint8 g, uint8 b, uint8 a)
 {
 	return (r | (g << 8) | (b << 16) | (a << 24));
 }

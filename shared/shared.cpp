@@ -42,8 +42,8 @@ Parse a token out of a string
 static char com_token[MAX_TOKEN_CHARS];
 char *Com_Parse(char **dataPtr)
 {
-	int		c;
-	int		len;
+	sint32		c;
+	sint32		len;
 	char	*data;
 
 	data = *dataPtr;
@@ -212,7 +212,7 @@ void Com_FilePath(char *path, char *out, size_t size)
 			s--;
 
 		Q_strncpyz(out, path, size);
-		if (s-path < (int)size) // FIXME
+		if (s-path < (sint32)size) // FIXME
 			out[s-path] = '\0';
 	}
 }
@@ -258,7 +258,7 @@ void Com_NormalizePath(char *Dest, size_t DestSize, const char *Source)
 		else if (*Cur == '.' && *(Cur+1) == '.' && *(Cur+2) == '/')
 		{
 			// Find where we're skipping to, past all isntances of "../"
-			int NumBackSteps = 0;
+			sint32 NumBackSteps = 0;
 			for (Fwd=Cur ; (*Fwd == '.' && *(Fwd+1) == '.' && *(Fwd+2) == '/') ; Fwd+=3, OutLength-=3)
 				NumBackSteps++;
 
@@ -309,7 +309,7 @@ Com_SkipRestOfLine
 */
 void Com_SkipRestOfLine(char **dataPtr)
 {
-	int c;
+	sint32 c;
 	char *data = *dataPtr;
 	while ((c = *data++) != 0)
 	{
@@ -328,7 +328,7 @@ Com_SkipWhiteSpace
 */
 char *Com_SkipWhiteSpace(char *dataPtr, bool *hasNewLines)
 {
-	int		c;
+	sint32		c;
 
 	while ((c = *dataPtr) <= ' ')
 	{

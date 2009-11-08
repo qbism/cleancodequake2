@@ -40,17 +40,17 @@ public:
 	class CBodyQueue *BodyQueueList; // Queue the body belongs to
 
 	CBody ();
-	CBody (int Index);
+	CBody (sint32 Index);
 
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return true;
 	};
 
-	void TossHead (int damage);
+	void TossHead (sint32 damage);
 
-	void Pain (CBaseEntity *other, float kick, int damage);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
+	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	void Think	(); // Only done if we're a head
 
@@ -65,7 +65,7 @@ BodyQueueList(NULL)
 {
 };
 
-CBody::CBody (int Index) :
+CBody::CBody (sint32 Index) :
 CBaseEntity(Index),
 CHurtableEntity(Index),
 CTouchableEntity(Index),
@@ -78,12 +78,12 @@ bool CBody::Run ()
 	return (GetSvFlags() & SVF_NOCLIENT) ? false : CTossProjectile::Run();
 }
 
-void CBody::Pain (CBaseEntity *other, float kick, int damage)
+void CBody::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 }
 
-vec3f VelocityForDamage (int damage);
-void CBody::TossHead (int damage)
+vec3f VelocityForDamage (sint32 damage);
+void CBody::TossHead (sint32 damage)
 {
 	if (irandom(2))
 	{
@@ -124,7 +124,7 @@ public:
 	// If OpenList is empty, pop the first one off of ClosedList.
 
 	// Creates the body queue
-	CBodyQueue (int MaxSize);
+	CBodyQueue (sint32 MaxSize);
 
 	CBody *GrabFreeBody ();
 
@@ -147,12 +147,12 @@ void CBody::Think ()
 	GetSvFlags() = SVF_NOCLIENT;
 }
 
-void CBody::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CBody::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	if (Health < -40)
 	{
 		PlaySound(CHAN_BODY, SoundIndex ("misc/udeath.wav"));
-		for (int n = 0; n < 4; n++)
+		for (sint32 n = 0; n < 4; n++)
 			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 			
 		State.GetOrigin().Z -= 16;
@@ -185,10 +185,10 @@ CBody *CBodyQueue::GrabFreeBody ()
 	return Body;
 }
 
-CBodyQueue::CBodyQueue (int MaxSize)
+CBodyQueue::CBodyQueue (sint32 MaxSize)
 {
 	// Add MaxSize entities to the body queue (reserved entities)
-	for (int i = 0; i < MaxSize; i++)
+	for (sint32 i = 0; i < MaxSize; i++)
 	{
 		CBody *Body = QNew (com_levelPool, 0) CBody ();
 		Body->gameEntity->classname = "bodyqueue";

@@ -101,7 +101,7 @@ void CGrapple::Fire (CPlayerEntity *Player)
 void CGrapple::WeaponGeneric (CPlayerEntity *Player)
 {
 	// Idea from Brazen source
-	int newFrame = -1, newState = -1;
+	sint32 newFrame = -1, newState = -1;
 
 	switch (Player->Client.WeaponState)
 	{

@@ -38,9 +38,9 @@ void				SetupArg ();
 void				InitArg ();
 void				EndArg ();
 uint8				ArgCount ();
-std::cc_string		ArgGets (int Index);
-int					ArgGeti (int Index);
-float				ArgGetf (int Index);
+std::cc_string		ArgGets (sint32 Index);
+sint32					ArgGeti (sint32 Index);
+float				ArgGetf (sint32 Index);
 std::cc_string		ArgGetConcatenatedString ();
 
 #else

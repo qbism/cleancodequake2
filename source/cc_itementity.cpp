@@ -45,7 +45,7 @@ CUsableEntity()
 	EntityFlags |= ENT_ITEM;
 };
 
-CItemEntity::CItemEntity (int Index) :
+CItemEntity::CItemEntity (sint32 Index) :
 CBaseEntity(Index),
 CMapEntity(Index),
 CTossProjectile(Index),

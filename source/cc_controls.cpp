@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_menu.h"
 
-CMenu_Label::CMenu_Label (CMenu *Menu, int x, int y) :
+CMenu_Label::CMenu_Label (CMenu *Menu, sint32 x, sint32 y) :
 CMenuItem(Menu, x, y)
 {
 };
@@ -47,7 +47,7 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	if (Selected)
 	{
 		char arrowThing[2] = {CCHAR_ARROW,'\0'};
-		int arrowX = x;
+		sint32 arrowX = x;
 
 		switch (Align)
 		{
@@ -55,10 +55,10 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 			arrowX += (160 - 12);
 			break;
 		case LA_CENTER:
-			arrowX -= 8 + (((int)(LabelString.size())*8)/2);
+			arrowX -= 8 + (((sint32)(LabelString.size())*8)/2);
 			break;
 		case LA_RIGHT:
-			arrowX += (160 - ((int)(LabelString.size())*8)) - 12;
+			arrowX += (160 - ((sint32)(LabelString.size())*8)) - 12;
 			break;
 		}
 		DrawState->AddVirtualPoint_X (arrowX);
@@ -66,7 +66,7 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 		DrawState->AddString (arrowThing, true, (Align == LA_CENTER));
 		high = true;
 	}
-	int drawX = x;
+	sint32 drawX = x;
 
 	switch (Align)
 	{
@@ -76,7 +76,7 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	case LA_CENTER:
 		break;
 	case LA_RIGHT:
-		drawX += 160 - ((int)(LabelString.size())*8);
+		drawX += 160 - ((sint32)(LabelString.size())*8);
 		break;
 	}
 
@@ -84,7 +84,7 @@ void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	DrawState->AddString (LabelString.c_str(), high, (Align == LA_CENTER));
 };
 
-CMenu_Image::CMenu_Image (CMenu *Menu, int x, int y) :
+CMenu_Image::CMenu_Image (CMenu *Menu, sint32 x, sint32 y) :
 CMenuItem(Menu, x, y)
 {
 };
@@ -103,7 +103,7 @@ void CMenu_Image::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	}
 };
 
-CMenu_Spin::CMenu_Spin (CMenu *Menu, int x, int y, SSpinControlIndex *Indices) :
+CMenu_Spin::CMenu_Spin (CMenu *Menu, sint32 x, sint32 y, SSpinControlIndex *Indices) :
 CMenuItem(Menu, x, y),
 Indices(Indices)
 {
@@ -119,7 +119,7 @@ Indices(Indices)
 
 void CMenu_Spin::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 {
-	int drawX = x;
+	sint32 drawX = x;
 
 	switch (Align)
 	{
@@ -129,7 +129,7 @@ void CMenu_Spin::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	case LA_CENTER:
 		break;
 	case LA_RIGHT:
-		drawX += 160 - ((int)strlen(Indices[Index].Text)*8);
+		drawX += 160 - ((sint32)strlen(Indices[Index].Text)*8);
 		break;
 	}
 
@@ -140,7 +140,7 @@ void CMenu_Spin::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 
 	if (Selected)
 	{
-		int numCharsOfSpace = (int)strlen(Indices[Index].Text)*8;
+		sint32 numCharsOfSpace = (sint32)strlen(Indices[Index].Text)*8;
 		// Is there any more indices to the left?
 		if (Index > 0)
 		{
@@ -200,7 +200,7 @@ void CMenu_Spin::Update (CPlayerEntity *ent)
 	}
 };
 
-CMenu_Box::CMenu_Box (CMenu *Menu, int x, int y) :
+CMenu_Box::CMenu_Box (CMenu *Menu, sint32 x, sint32 y) :
 CMenuItem(Menu, x, y)
 {
 };
@@ -208,8 +208,8 @@ CMenuItem(Menu, x, y)
 void CMenu_Box::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 {
 	static char	*Buf = QNew (com_genericPool, 0) char[MAX_COMPRINT/2];
-	int			DrawX = (Align == LA_CENTER) ? x : x + 160, DrawY = y + 120, Index = 0;
-	int			W = Width+2, H = Height+2;
+	sint32			DrawX = (Align == LA_CENTER) ? x : x + 160, DrawY = y + 120, Index = 0;
+	sint32			W = Width+2, H = Height+2;
 
 	DrawState->AddVirtualPoint_X (DrawX);
 	DrawState->AddVirtualPoint_Y (DrawY);
@@ -218,9 +218,9 @@ void CMenu_Box::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	switch (Type)
 	{
 	case 0:
-		for (int tY = 0; tY < H; tY++)
+		for (sint32 tY = 0; tY < H; tY++)
 		{
-			for (int tX = 0; tX < W; tX++)
+			for (sint32 tX = 0; tX < W; tX++)
 			{
 				if (tY == 0)
 				{
@@ -254,9 +254,9 @@ void CMenu_Box::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 		}
 		break;
 	case 1:
-		for (int tY = 0; tY < H; tY++)
+		for (sint32 tY = 0; tY < H; tY++)
 		{
-			for (int tX = 0; tX < W; tX++)
+			for (sint32 tX = 0; tX < W; tX++)
 			{
 				if (tY == 0)
 				{
@@ -290,7 +290,7 @@ void CMenu_Box::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 		}
 		break;
 	case 2:
-		for (int tX = 0; tX < W; tX++)
+		for (sint32 tX = 0; tX < W; tX++)
 		{
 			if (tX == 0)
 				Buf[Index++] = CCHAR_BAR1_LEFT;

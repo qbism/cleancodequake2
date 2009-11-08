@@ -332,29 +332,29 @@ namespace NSColor
 	// This is a color palette class
 	class CColorPalette
 	{
-		int			numColors;
+		sint32			numColors;
 		colorb		*palette;
 
 		// These are lists of colors sorted by their closest values
-		byte		*redSortedValues, *greenSortedValues, *blueSortedValues;
+		uint8		*redSortedValues, *greenSortedValues, *blueSortedValues;
 
 	public:
-		CColorPalette (colorb *palette, int numColors);
+		CColorPalette (colorb *palette, sint32 numColors);
 
 		// Values is a pointer to an allocated list of values (numColors num)
 		// index is the index of the palette array to sort by (0 = red, etc)
-		void SortPaletteColorIndexes (byte *values, byte index);
+		void SortPaletteColorIndexes (uint8 *values, uint8 index);
 
 		// mainColor = color you're looking for (ie, r 253)
 		// newColor = color you're checking
-		inline byte GetColorWeight (byte mainColor, byte newColor);
+		inline uint8 GetColorWeight (uint8 mainColor, uint8 newColor);
 
-		inline colorb GetColorFromIndex (byte index);
+		inline colorb GetColorFromIndex (uint8 index);
 
 		// These should never be called "continuously".
 		// The value should be saved and that one used then-on.
-		inline byte GetClosestColorFromRGB (colorb color);
-		inline byte GetClosestColorFromRGB (byte r, byte g, byte b);
+		inline uint8 GetClosestColorFromRGB (colorb color);
+		inline uint8 GetClosestColorFromRGB (uint8 r, uint8 g, uint8 b);
 	};
 };
 

@@ -45,7 +45,7 @@ static inline float Min(const float &A, const float &B)
 	return (A<=B) ? A : B;
 }
 template<>
-static inline int Min(const int &A, const int &B)
+static inline sint32 Min(const sint32 &A, const sint32 &B)
 {
 	return (A<=B) ? A : B;
 }
@@ -61,7 +61,7 @@ static inline float Max(const float &A, const float &B)
 	return (A>=B) ? A : B;
 }
 template<>
-static inline int Max(const int &A, const int &B)
+static inline sint32 Max(const sint32 &A, const sint32 &B)
 {
 	return (A>=B) ? A : B;
 }
@@ -77,7 +77,7 @@ static inline float Clamp(const float &V, const float &L, const float &H)
 	return (V<L) ? L : (V>H) ? H : V;
 }
 template<>
-static inline int Clamp(const int &V, const int &L, const int &H)
+static inline sint32 Clamp(const sint32 &V, const sint32 &L, const sint32 &H)
 {
 	return (V<L) ? L : (V>H) ? H : V;
 }
@@ -93,7 +93,7 @@ static inline float Bound(const float &V, const float &L, const float &H)
 	return (V>=H) ? V : (L<V) ? V : (L>H) ? H : L;
 }
 template<>
-static inline int Bound(const int &V, const int &L, const int &H)
+static inline sint32 Bound(const sint32 &V, const sint32 &L, const sint32 &H)
 {
 	return (V>=H) ? V : (L<V) ? V : (L>H) ? H : L;
 }
@@ -104,7 +104,7 @@ static inline bool IsPowOfTwo(const TType &Value)
 	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
 }
 template<>
-static inline bool IsPowOfTwo(const int &Value)
+static inline bool IsPowOfTwo(const sint32 &Value)
 {
 	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
 }
@@ -134,21 +134,21 @@ char	*Q_strlwr(char *s);
 char	*Q_strupr(char *s);
 
 #ifdef id386
-int __cdecl Q_tolower (int c);
+sint32 __cdecl Q_tolower (sint32 c);
 #else // id386
-inline int Q_tolower(int chr)
+inline sint32 Q_tolower(sint32 chr)
 {
 	return tolower(chr);
 }
 #endif // id386
-inline int Q_toupper(int chr)
+inline sint32 Q_toupper(sint32 chr)
 {
 	return toupper(chr);
 }
 
 // ===========================================================================
 
-int		Q_WildcardMatch (const char *filter, const char *string, int ignoreCase);
+sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);
 std::cc_string	Q_VarArgs (char *format, ...);
 
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY

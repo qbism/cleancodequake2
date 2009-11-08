@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "cc_tent.h"
 
-void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, int speed)
+void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 {
 	vec3f	end;
 	CTrace	tr;
@@ -92,7 +92,7 @@ CThinkableEntity()
 {
 };
 
-CGrenade::CGrenade (int Index) :
+CGrenade::CGrenade (sint32 Index) :
 CBounceProjectile(Index),
 CTouchableEntity(Index),
 CThinkableEntity(Index)
@@ -118,7 +118,7 @@ void CGrenade::Explode ()
 		float points = Damage - 0.5 * v.Length();
 		vec3f dir = HurtEnemy->State.GetOrigin() - origin;
 
-		HurtEnemy->TakeDamage	(this, GetOwner(), dir, origin, vec3fOrigin, (int)points, (int)points,
+		HurtEnemy->TakeDamage	(this, GetOwner(), dir, origin, vec3fOrigin, (sint32)points, (sint32)points,
 							DAMAGE_RADIUS, (SpawnFlags & GRENADE_HAND) ? MOD_HANDGRENADE : MOD_GRENADE);
 	}
 
@@ -173,7 +173,7 @@ void CGrenade::Think ()
 	Explode();
 }
 
-void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, int speed, float timer, float damage_radius, bool handNade, bool held)
+void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 damage, sint32 speed, float timer, float damage_radius, bool handNade, bool held)
 {
 	CGrenade	*Grenade = QNew (com_levelPool, 0) CGrenade();
 	vec3f		forward, right, up;
@@ -232,7 +232,7 @@ CThinkableEntity()
 {
 };
 
-CBlasterProjectile::CBlasterProjectile (int Index) :
+CBlasterProjectile::CBlasterProjectile (sint32 Index) :
 CFlyMissileProjectile(Index),
 CTouchableEntity(Index),
 CThinkableEntity(Index)
@@ -268,7 +268,7 @@ void CBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface
 }
 
 void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
-						int damage, int speed, int effect, bool isHyper)
+						sint32 damage, sint32 speed, sint32 effect, bool isHyper)
 {
 	CBlasterProjectile		*Bolt = QNew (com_levelPool, 0) CBlasterProjectile;
 
@@ -319,7 +319,7 @@ CThinkableEntity()
 {
 };
 
-CRocket::CRocket (int Index) :
+CRocket::CRocket (sint32 Index) :
 CFlyMissileProjectile(Index),
 CTouchableEntity(Index),
 CThinkableEntity(Index)
@@ -355,7 +355,7 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 		{
 			if ((surf) && !(surf->flags & (SURF_TEXINFO_WARP|SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66|SURF_TEXINFO_FLOWING)))
 			{
-				for (int n = 0; n < randomMT()%5; n++)
+				for (sint32 n = 0; n < randomMT()%5; n++)
 					ThrowDebris (gameEntity, "models/objects/debris2/tris.md2", 2, origin);
 			}
 		}
@@ -370,7 +370,7 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 }
 
 void CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						int damage, int speed, float damage_radius, int radius_damage)
+						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CRocket	*Rocket = QNew (com_levelPool, 0) CRocket;
 
@@ -406,7 +406,7 @@ CThinkableEntity()
 	Exploded = false;
 };
 
-CBFGBolt::CBFGBolt (int Index) :
+CBFGBolt::CBFGBolt (sint32 Index) :
 CFlyMissileProjectile(Index),
 CTouchableEntity(Index),
 CThinkableEntity(Index)
@@ -442,7 +442,7 @@ void CBFGBolt::Think ()
 					points = points * 0.5;
 
 				CTempEnt_Explosions::BFGExplosion (ent->State.GetOrigin());
-				ent->TakeDamage (this, GetOwner(), Velocity, ent->State.GetOrigin(), vec3fOrigin, (int)points, 0, DAMAGE_ENERGY, MOD_BFG_EFFECT);
+				ent->TakeDamage (this, GetOwner(), Velocity, ent->State.GetOrigin(), vec3fOrigin, (sint32)points, 0, DAMAGE_ENERGY, MOD_BFG_EFFECT);
 			}
 		}
 
@@ -464,7 +464,7 @@ void CBFGBolt::Think ()
 		CHurtableEntity	*ent = NULL;
 
 		vec3f origin = State.GetOrigin ();
-		const int dmg = (game.mode & GAME_DEATHMATCH) ? 5 : 10;
+		const sint32 dmg = (game.mode & GAME_DEATHMATCH) ? 5 : 10;
 
 		while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, origin, 256)) != NULL)
 		{
@@ -572,7 +572,7 @@ void CBFGBolt::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 }
 
 void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						int damage, int speed, float damage_radius)
+						sint32 damage, sint32 speed, float damage_radius)
 {
 	CBFGBolt	*BFG = QNew (com_levelPool, 0) CBFGBolt;
 
@@ -597,7 +597,7 @@ bool CBFGBolt::Run ()
 	return CFlyMissileProjectile::Run();
 }
 
-CTrace CHitScan::DoTrace(vec3f &start, vec3f &end, CBaseEntity *ignore, int mask)
+CTrace CHitScan::DoTrace(vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 mask)
 {
 	return CTrace (start, end, (ignore) ? ignore : NULL, mask);
 }
@@ -640,7 +640,7 @@ void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 	from = start;
 	lastDrawFrom = from;
 
-	int Mask = CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER;
+	sint32 Mask = CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER;
 	bool Water = false;
 	CBaseEntity *Ignore = Entity;
 
@@ -658,7 +658,7 @@ void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 		Mask = CONTENTS_MASK_SHOT;
 
 		// Find the exit point
-		int tries = 20; // Cover about 2000 units
+		sint32 tries = 20; // Cover about 2000 units
 		vec3f	stWater;
 
 		stWater = from;
@@ -845,7 +845,7 @@ void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 			Mask = CONTENTS_MASK_SHOT;
 
 			// Find the exit point
-			int tries = 20; // Cover about 2000 units
+			sint32 tries = 20; // Cover about 2000 units
 			vec3f	stWater = from;
 			lastWaterStart.Clear();
 			
@@ -927,7 +927,7 @@ void CRailGunShot::DoEffect	(vec3f &start, vec3f &end, bool water)
 	CTempEnt_Trails::RailTrail (start, end);
 }
 
-void CRailGunShot::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, int damage, int kick)
+void CRailGunShot::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick)
 {
 	CRailGunShot(damage, kick).DoFire (Entity, start, aimdir);
 }
@@ -984,7 +984,7 @@ void CBullet::DoWaterHit	(CTrace *Trace)
 	CTempEnt_Splashes::Splash (Trace->EndPos, Trace->plane.normal, color);
 }
 
-void CBullet::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, int damage, int kick, int hSpread, int vSpread, int mod)
+void CBullet::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod)
 {
 	CBullet(damage, kick, hSpread, vSpread, mod).DoFire (Entity, start, aimdir);
 }
@@ -1001,7 +1001,7 @@ void CBullet::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 
 	from = start;
 
-	int Mask = CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER;
+	sint32 Mask = CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER;
 	bool Water = false;
 	CBaseEntity *Ignore = Entity;
 
@@ -1019,7 +1019,7 @@ void CBullet::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 		Mask = CONTENTS_MASK_SHOT;
 
 		// Find the exit point
-		int tries = 20; // Cover about 2000 units
+		sint32 tries = 20; // Cover about 2000 units
 		vec3f	stWater = from;
 		lastWaterStart.Clear ();
 		
@@ -1172,7 +1172,7 @@ void CBullet::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 			Mask = CONTENTS_MASK_SHOT;
 
 			// Find the exit point
-			int tries = 20; // Cover about 2000 units
+			sint32 tries = 20; // Cover about 2000 units
 			vec3f	stWater = from;
 			lastWaterStart.Clear();
 			
@@ -1235,7 +1235,7 @@ void CBullet::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 			Mask = CONTENTS_MASK_SHOT;
 
 			// Find the exit point
-			int tries = 20; // Cover about 2000 units
+			sint32 tries = 20; // Cover about 2000 units
 			vec3f	stWater = from;
 			lastWaterStart.Clear();
 			
@@ -1294,13 +1294,13 @@ void CShotgunPellets::DoSolidHit	(CTrace *Trace)
 		CTempEnt_Splashes::Shotgun (Trace->EndPos, Trace->plane.normal);
 }
 
-void CShotgunPellets::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, int damage, int kick, int hSpread, int vSpread, int Count, int mod)
+void CShotgunPellets::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 Count, sint32 mod)
 {
-	for (int i = 0; i < Count; i++)
+	for (sint32 i = 0; i < Count; i++)
 		CShotgunPellets(damage, kick, hSpread, vSpread, mod).DoFire (Entity, start, aimdir);
 }
 
-bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, int damage, int kick)
+bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, sint32 damage, sint32 kick)
 {
 	vec3f		forward, right, up, point, dir;
 	float		range;
@@ -1374,7 +1374,7 @@ CTouchableEntity()
 {
 };
 
-CGrappleEntity::CGrappleEntity (int Index) :
+CGrappleEntity::CGrappleEntity (sint32 Index) :
 CBaseEntity(Index),
 CFlyMissileProjectile(Index),
 CTouchableEntity(Index)
@@ -1402,7 +1402,7 @@ void CGrappleEntity::GrappleDrawCable()
 
 void CGrappleEntity::GrapplePull()
 {
-	byte volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
+	uint8 volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
 
 	if ((Player->Client.Persistent.Weapon->Item == NItems::Grapple) &&
 		!Player->Client.NewWeapon &&
@@ -1487,7 +1487,7 @@ void CGrappleEntity::ResetGrapple ()
 	Free ();
 };
 
-void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, int damage, int speed)
+void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint32 damage, sint32 speed)
 {
 	CGrappleEntity *Grapple = QNew (com_levelPool, 0) CGrappleEntity;
 	Grapple->Player = Spawner;
@@ -1546,7 +1546,7 @@ void CGrappleEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 
 	GetSolid() = SOLID_NOT;
 
-	byte volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
+	uint8 volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
 	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grpull.wav"), volume);
 	PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhit.wav"), volume);
 
@@ -1569,8 +1569,8 @@ public:
 	CHurtableEntity		*Attached;
 	vec3f				Offset;
 	FrameNumber_t		NextZapTime;
-	byte				NumZaps;
-	int					Damage;
+	uint8				NumZaps;
+	sint32					Damage;
 
 	CTazerProjectile () :
 	  CBaseEntity (),
@@ -1582,7 +1582,7 @@ public:
 	{
 	};
 
-	CTazerProjectile (int Index) :
+	CTazerProjectile (sint32 Index) :
 	  CBaseEntity (Index),
 	  CThinkableEntity (Index),
 	  CTouchableEntity (Index),
@@ -1616,7 +1616,7 @@ public:
 		Offset = State.GetOrigin() - Attached->State.GetOrigin();
 
 		NextThink = level.Frame + FRAMETIME;
-		NextZapTime = level.Frame + FRAMETIME + (int)(frand() * 4);
+		NextZapTime = level.Frame + FRAMETIME + (sint32)(frand() * 4);
 		NumZaps = 0;
 
 		GetSolid() = SOLID_NOT;
@@ -1638,7 +1638,7 @@ public:
 		Projectiles[0] = Projectiles[1] = NULL;
 	};
 
-	CTazerBase (int Index) :
+	CTazerBase (sint32 Index) :
 	  CBaseEntity (Index),
 	  CHurtableEntity (Index),
 	  CThinkableEntity (Index),
@@ -1652,10 +1652,10 @@ public:
 		return CTossProjectile::Run();
 	};
 
-	void Pain (CBaseEntity *other, float kick, int damage)
+	void Pain (CBaseEntity *other, float kick, sint32 damage)
 	{
 	};
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 	{
 		if (Projectiles[0])
 			Projectiles[0]->Free ();
@@ -1690,7 +1690,7 @@ public:
 
 		forward.NormalizeFast ();
 
-		for (byte i = 0; i < 2; i++)
+		for (uint8 i = 0; i < 2; i++)
 		{
 			Projectiles[i] = QNew (com_levelPool, 0) CTazerProjectile;
 
@@ -1714,7 +1714,7 @@ public:
 		NextThink = level.Frame + 100;
 	};
 
-	static void Spawn (CBaseEntity *Spawner, vec3f origin, vec3f dir, int damage, int speed)
+	static void Spawn (CBaseEntity *Spawner, vec3f origin, vec3f dir, sint32 damage, sint32 speed)
 	{
 		CTazerBase *Base = QNew (com_levelPool, 0) CTazerBase;
 
@@ -1735,7 +1735,7 @@ public:
 	};
 };
 
-void SpawnTazerProjectile (CBaseEntity *Spawner, vec3f origin, vec3f dir, int damage, int speed)
+void SpawnTazerProjectile (CBaseEntity *Spawner, vec3f origin, vec3f dir, sint32 damage, sint32 speed)
 {
 	CTazerBase::Spawn (Spawner, origin, dir, damage, speed);
 }
@@ -1778,7 +1778,7 @@ void CTazerProjectile::Think ()
 
 	if (NextZapTime < level.Frame)
 	{
-		NextZapTime = level.Frame + FRAMETIME + (int)(frand() * 8) + (int)(frand() * 8);
+		NextZapTime = level.Frame + FRAMETIME + (sint32)(frand() * 8) + (sint32)(frand() * 8);
 		NumZaps++;
 
 		Attached->PlaySound (CHAN_AUTO, SoundIndex("world/spark3.wav"));

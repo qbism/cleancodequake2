@@ -68,8 +68,8 @@ public:
 	inline bool operator ==(const vec2Base &Vec) { return (X == Vec[0] && Y == Vec[1]); }
 	inline const bool operator ==(const vec2Base &Vec) const { return (X == Vec[0] && Y == Vec[1]); }
 
-	inline const TType &operator [](const int Index) const { return (&X)[Index]; }
-	inline TType &operator [](const int Index) { return (&X)[Index]; }
+	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
+	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
 
 	inline operator TType *() { return (&X); }
 	inline operator const TType *() const { return (&X); }
@@ -191,7 +191,7 @@ public:
 	/**
 	 * Functions
 	 */
-	inline void Clear() { *(int*)&X = 0; *(int*)&Y = 0; }
+	inline void Clear() { *(sint32*)&X = 0; *(sint32*)&Y = 0; }
 
 	const bool Compare(const vec2f &Vec, const float Epsilon) const
 	{
@@ -257,8 +257,8 @@ public:
 	inline bool operator ==(const vec3Base &Vec) { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
 	inline const bool operator ==(const vec3Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
 
-	inline const TType &operator [](const int Index) const { return (&X)[Index]; }
-	inline TType &operator [](const int Index) { return (&X)[Index]; }
+	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
+	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
 
 	inline operator TType *() { return (&X); }
 	inline operator const TType *() const { return (&X); }
@@ -396,7 +396,7 @@ public:
 	/**
 	 * Functions
 	 */
-	inline void Clear() { *(int *)&X = 0; *(int *)&Y = 0; *(int *)&Z = 0; }
+	inline void Clear() { *(sint32 *)&X = 0; *(sint32 *)&Y = 0; *(sint32 *)&Z = 0; }
 
 	const bool Compare(const vec3f &Vec, const float Epsilon) const
 	{
@@ -613,8 +613,8 @@ public:
 	inline bool operator ==(const vec4Base &Vec) { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2] && W == Vec[3]); }
 	inline const bool operator ==(const vec4Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2] && W == Vec[3]); }
 
-	inline const TType &operator [](const int Index) const { return (&X)[Index]; }
-	inline TType &operator [](const int Index) { return (&X)[Index]; }
+	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
+	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
 
 	inline operator TType *() { return (&X); }
 	inline operator const TType *() const { return (&X); }
@@ -644,7 +644,7 @@ public:
 ==============================================================================
 */
 
-class vec4b : public vec4Base<byte>
+class vec4b : public vec4Base<uint8>
 {
 public:
 	/**
@@ -652,9 +652,9 @@ public:
 	 */
 	vec4b() {}
 	inline vec4b(const vec4b &Vec) : vec4Base(Vec) {}
-	inline vec4b(const byte Value) : vec4Base(Value) {}
-	inline vec4b(const byte Values[3]) : vec4Base(Values) {}
-	inline vec4b(const byte InX, const byte InY, const byte InZ, const byte InW) : vec4Base(InX, InY, InZ, InW) {}
+	inline vec4b(const uint8 Value) : vec4Base(Value) {}
+	inline vec4b(const uint8 Values[3]) : vec4Base(Values) {}
+	inline vec4b(const uint8 InX, const uint8 InY, const uint8 InZ, const uint8 InW) : vec4Base(InX, InY, InZ, InW) {}
 
  	/**
 	 * Operators
@@ -662,10 +662,10 @@ public:
 	inline vec4b operator +(const vec4b &Vec) const { return vec4b(X+Vec[0], Y+Vec[1], Z+Vec[2], W+Vec[3]); }
 	inline vec4b operator +=(const vec4b &Vec)
 	{
-		X = Min<byte>(X+Vec[0], 255);
-		Y = Min<byte>(Y+Vec[1], 255);
-		Z = Min<byte>(Z+Vec[2], 255);
-		W = Min<byte>(W+Vec[3], 255);
+		X = Min<uint8>(X+Vec[0], 255);
+		Y = Min<uint8>(Y+Vec[1], 255);
+		Z = Min<uint8>(Z+Vec[2], 255);
+		W = Min<uint8>(W+Vec[3], 255);
 
 		return *this;
 	}
@@ -673,10 +673,10 @@ public:
 	inline vec4b operator -(const vec4b &Vec) const { return vec4b(X-Vec[0], Y-Vec[1], Z-Vec[2], W-Vec[3]); }
 	inline vec4b operator -=(const vec4b &Vec)
 	{
-		X = Max<byte>(X-Vec[0], 0);
-		Y = Max<byte>(Y-Vec[1], 0);
-		Z = Max<byte>(Z-Vec[2], 0);
-		W = Max<byte>(W-Vec[3], 0);
+		X = Max<uint8>(X-Vec[0], 0);
+		Y = Max<uint8>(Y-Vec[1], 0);
+		Z = Max<uint8>(Z-Vec[2], 0);
+		W = Max<uint8>(W-Vec[3], 0);
 
 		return *this;
 	}
@@ -691,8 +691,8 @@ public:
 		return *this;
 	}
 
-	inline operator int *() { return (int *)(&X); }
-	inline operator unsigned int *() { return (unsigned int *)(&X); }
+	inline operator sint32 *() { return (sint32 *)(&X); }
+	inline operator uint32 *() { return (uint32 *)(&X); }
 	inline operator void *() { return (void *)(&X); }
 
 	/**
@@ -818,7 +818,7 @@ public:
 	/**
 	 * Functions
 	 */
-	inline void Clear() { *(int *)&X = 0; *(int *)&Y = 0; *(int *)&Z = 0; *(int *)&W = 0; }
+	inline void Clear() { *(sint32 *)&X = 0; *(sint32 *)&Y = 0; *(sint32 *)&Z = 0; *(sint32 *)&W = 0; }
 
 	const bool Compare(const vec4f &Vec, const float Epsilon) const
 	{

@@ -69,7 +69,7 @@ bool CBlaster::AttemptToFire (CPlayerEntity *ent)
 
 void CBlaster::Fire (CPlayerEntity *ent)
 {
-	const int Damage = deathmatch->Integer() ? 
+	const sint32 Damage = deathmatch->Integer() ? 
 			(isQuad) ? 60 : 15
 			:
 			(isQuad) ? 40 : 10;

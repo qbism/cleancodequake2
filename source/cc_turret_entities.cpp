@@ -55,7 +55,7 @@ float SnapToEights(float x)
 		x += 0.5;
 	else
 		x -= 0.5;
-	return 0.125 * (int)x;
+	return 0.125 * (sint32)x;
 }
 
 CTurretEntityBase::CTurretEntityBase () :
@@ -66,7 +66,7 @@ CBlockableEntity ()
 {
 };
 
-CTurretEntityBase::CTurretEntityBase (int Index) :
+CTurretEntityBase::CTurretEntityBase (sint32 Index) :
 CBaseEntity (Index),
 CMapEntity (Index),
 CBrushModel (Index),
@@ -111,7 +111,7 @@ ShouldFire(false)
 	PitchOptions[0] = PitchOptions[1] = PitchOptions[2] = PitchOptions[3] = 0;
 };
 
-CTurretBreach::CTurretBreach (int Index) :
+CTurretBreach::CTurretBreach (sint32 Index) :
 CBaseEntity (Index),
 CTurretEntityBase (Index),
 FinishInit(true),
@@ -128,7 +128,7 @@ void CTurretBreach::Fire ()
 	start = start.MultiplyAngles (MoveOrigin.Y, r);
 	start = start.MultiplyAngles (MoveOrigin.Z, u);
 
-	int damage = 100 + frand() * 50;
+	sint32 damage = 100 + frand() * 50;
 	CRocket::Spawn (Team.Master->GetOwner(), start, f, damage, 550 + 50 * skill->Integer(), 150, damage);
 	PlayPositionedSound (start, CHAN_WEAPON, SoundIndex("weapons/rocklf1a.wav"));
 }
@@ -337,7 +337,7 @@ CTurretEntityBase ()
 {
 };
 
-CTurretBase::CTurretBase (int Index) :
+CTurretBase::CTurretBase (sint32 Index) :
 CBaseEntity (Index),
 CTurretEntityBase (Index)
 {
@@ -371,15 +371,15 @@ TargetedBreach(NULL)
 {
 };
 
-void CTurretDriver::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CTurretDriver::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
@@ -410,7 +410,7 @@ void CTurretDriver::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int dama
 	Entity->NextThink = level.Frame + FRAMETIME;
 }
 
-void CTurretDriver::Pain (CBaseEntity *other, float kick, int damage)
+void CTurretDriver::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;

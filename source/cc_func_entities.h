@@ -37,7 +37,7 @@ public:
 	FrameNumber_t	Wait, Random, PauseTime;
 
 	CFuncTimer ();
-	CFuncTimer (int Index);
+	CFuncTimer (sint32 Index);
 
 	ENTITYFIELD_DEFS
 
@@ -54,7 +54,7 @@ public:
 	uint8		Character;
 
 	CTargetCharacter ();
-	CTargetCharacter (int Index);
+	CTargetCharacter (sint32 Index);
 
 	ENTITYFIELD_DEFS
 
@@ -66,7 +66,7 @@ class CTargetString : public CMapEntity, public CUsableEntity
 {
 public:
 	CTargetString ();
-	CTargetString (int Index);
+	CTargetString (sint32 Index);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -82,12 +82,12 @@ class CFuncClock : public CMapEntity, public CUsableEntity, public CThinkableEnt
 public:
 	FrameNumber_t	Wait;
 	uint8			Style;
-	int				Seconds;
-	int				Count;
+	sint32				Seconds;
+	sint32				Count;
 	CTargetString	*String;
 	
 	CFuncClock ();
-	CFuncClock (int Index);
+	CFuncClock (sint32 Index);
 
 	ENTITYFIELD_DEFS
 

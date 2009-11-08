@@ -110,14 +110,14 @@ DirToByte
 This isn't a real cheap function to call!
 =================
 */
-byte DirToByte(const vec3_t dirVec)
+uint8 DirToByte(const vec3_t dirVec)
 {
 	if (!dirVec)
 		return 0;
 
-	byte best = 0;
+	uint8 best = 0;
 	float bestDot = 0;
-	for (byte i=0 ; i<NUMVERTEXNORMALS ; i++)
+	for (uint8 i=0 ; i<NUMVERTEXNORMALS ; i++)
 	{
 		float dot = Dot3Product(dirVec, m_byteDirs[i]);
 		if (dot > bestDot)
@@ -138,14 +138,14 @@ DirToByte
 This isn't a real cheap function to call!
 =================
 */
-byte DirToByte(const vec3f &dirVec)
+uint8 DirToByte(const vec3f &dirVec)
 {
 	if (!dirVec)
 		return 0;
 
-	byte best = 0;
+	uint8 best = 0;
 	float bestDot = 0;
-	for (byte i=0 ; i<NUMVERTEXNORMALS ; i++)
+	for (uint8 i=0 ; i<NUMVERTEXNORMALS ; i++)
 	{
 		float dot = dirVec.Dot(m_byteDirs[i]);
 		if (dot > bestDot)
@@ -163,7 +163,7 @@ byte DirToByte(const vec3f &dirVec)
 ByteToDir
 =================
 */
-void ByteToDir(const byte dirByte, vec3_t dirVec)
+void ByteToDir(const uint8 dirByte, vec3_t dirVec)
 {
 	if (dirByte >= NUMVERTEXNORMALS)
 	{
@@ -181,7 +181,7 @@ void ByteToDir(const byte dirByte, vec3_t dirVec)
 FloatToByte
 ==============
 */
-byte FloatToByte(float x)
+uint8 FloatToByte(float x)
 {
 	union
 	{
@@ -194,7 +194,7 @@ byte FloatToByte(float x)
 	f2i.i &= 0x7FFFFF;
 
 	// Then read as integer and kill float bits...
-	return (byte)Min<int>(f2i.i, 255);
+	return (uint8)Min<sint32>(f2i.i, 255);
 }
 
 
@@ -230,7 +230,7 @@ float ColorNormalizef(const float *in, float *out)
 ColorNormalizeb
 ===============
 */
-float ColorNormalizeb(const float *in, byte *out)
+float ColorNormalizeb(const float *in, uint8 *out)
 {
 	float f = Max<>(Max<>(in[0], in[1]), in[2]);
 
@@ -261,7 +261,7 @@ Q_ftol
 #ifdef id386
 __declspec_naked long Q_ftol(float f)
 {
-	static int	tmp;
+	static sint32	tmp;
 	__asm {
 		fld dword ptr [esp+4]
 		fistp tmp
@@ -308,7 +308,7 @@ float Q_RSqrtf(float number)
 
 	if (number == 0.0f)
 		return 0.0f;
-	*((int *)&y) = 0x5f3759df - ((* (int *) &number) >> 1);
+	*((sint32 *)&y) = 0x5f3759df - ((* (sint32 *) &number) >> 1);
 	return y * (1.5f - (number * 0.5f * y * y));
 }
 
@@ -326,7 +326,7 @@ double Q_RSqrtd(double number)
 
 	if (number == 0.0)
 		return 0.0;
-	*((int *)&y) = 0x5f3759df - ((* (int *) &number) >> 1);
+	*((sint32 *)&y) = 0x5f3759df - ((* (sint32 *) &number) >> 1);
 	return y * (1.5f - (number * 0.5 * y * y));
 }
 
@@ -336,9 +336,9 @@ double Q_RSqrtd(double number)
 Q_log2
 ===============
 */
-int Q_log2(int val)
+sint32 Q_log2(sint32 val)
 {
-	int answer = 0;
+	sint32 answer = 0;
 	while(val >>= 1)
 		answer++;
 	return answer;
@@ -370,7 +370,7 @@ float Q_CalcFovY (float fovX, float width, float height)
 NormToLatLong
 ===============
 */
-void NormToLatLong(const vec3_t normal, byte out[2])
+void NormToLatLong(const vec3_t normal, uint8 out[2])
 {
 	if (normal[0] == 0 && normal[1] == 0)
 	{
@@ -387,16 +387,16 @@ void NormToLatLong(const vec3_t normal, byte out[2])
 	}
 	else
 	{
-		int		angle;
+		sint32		angle;
 
-		angle = (int)(acosf(normal[2]) * 255.0 / (M_PI * 2.0f)) & 0xff;
+		angle = (sint32)(acosf(normal[2]) * 255.0 / (M_PI * 2.0f)) & 0xff;
 		out[0] = angle;
-		angle = (int)(atan2f(normal[1], normal[0]) * 255.0 / (M_PI * 2.0f)) & 0xff;
+		angle = (sint32)(atan2f(normal[1], normal[0]) * 255.0 / (M_PI * 2.0f)) & 0xff;
 		out[1] = angle;
 	}
 }
 
-// for(int i=0; i<256 ; i++) { r_sintableByte[i] = sin((float)i / 255.0f * (M_PI * 2.0f)); }
+// for(sint32 i=0; i<256 ; i++) { r_sintableByte[i] = sin((float)i / 255.0f * (M_PI * 2.0f)); }
 static const float r_sintableByte[] =
 {
 	0.000000f,	0.024637f,	0.049260f,	0.073853f,
@@ -470,7 +470,7 @@ static const float r_sintableByte[] =
 LatLongToNorm
 ===============
 */
-void LatLongToNorm(const byte latLong[2], vec3_t out)
+void LatLongToNorm(const uint8 latLong[2], vec3_t out)
 {
 	float cos_a = r_sintableByte[(latLong[0] + 64) & 255];
 	float sin_a = r_sintableByte[latLong[0]];

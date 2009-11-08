@@ -50,7 +50,7 @@ public:
 	class CCloseLabel : public CMenu_Label
 	{
 	public:
-		CCloseLabel(CCTFCreditsMenu *Menu, int x, int y) :
+		CCloseLabel(CCTFCreditsMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -68,7 +68,7 @@ public:
 
 	bool				Open ()
 	{
-		int x = 0, y = -76; // Top
+		sint32 x = 0, y = -76; // Top
 
 		CMenu_Label *TopGreen = QNew (com_levelPool, 0) CMenu_Label(this, x, y);
 		TopGreen->Enabled = false;
@@ -129,9 +129,9 @@ public:
 	class CJoinGameLabel : public CMenu_Label
 	{
 	public:
-		int team;
+		sint32 team;
 
-		CJoinGameLabel(CCTFMainMenu *Menu, int x, int y, int team) :
+		CJoinGameLabel(CCTFMainMenu *Menu, sint32 x, sint32 y, sint32 team) :
 		CMenu_Label(Menu, x, y),
 		team(team)
 		{
@@ -177,7 +177,7 @@ public:
 	class CObserverLabel : public CMenu_Label
 	{
 	public:
-		CObserverLabel(CCTFMainMenu *Menu, int x, int y) :
+		CObserverLabel(CCTFMainMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -190,7 +190,7 @@ public:
 				return true;
 			}
 
-			for (int i = 1; i <= game.maxclients; i++)
+			for (sint32 i = 1; i <= game.maxclients; i++)
 			{
 				CPlayerEntity *e = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 				if (e->GetInUse() && e->GetSolid() != SOLID_NOT)
@@ -209,7 +209,7 @@ public:
 	class CCreditsLabel : public CMenu_Label
 	{
 	public:
-		CCreditsLabel(CCTFMainMenu *Menu, int x, int y) :
+		CCreditsLabel(CCTFMainMenu *Menu, sint32 x, sint32 y) :
 		CMenu_Label(Menu, x, y)
 		{
 		};
@@ -226,8 +226,8 @@ public:
 
 	bool				Open ()
 	{
-		int num1 = 0, num2 = 0;
-		for (int i = 0; i < game.maxclients; i++)
+		sint32 num1 = 0, num2 = 0;
+		for (sint32 i = 0; i < game.maxclients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			if (!Player->GetInUse())
@@ -238,7 +238,7 @@ public:
 				num2++;
 		}
 
-		int x = 0, y = 0;
+		sint32 x = 0, y = 0;
 
 		CMenu_Image *Background = QNew (com_levelPool, 0) CMenu_Image (this, x, y);
 		Background->ImageString = "inventory";

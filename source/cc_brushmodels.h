@@ -78,8 +78,8 @@ public:
 	float		Accel;
 	float		Speed;
 	float		Decel;
-	int			Distance;
-	int			Damage;
+	sint32			Distance;
+	sint32			Damage;
 	uint8		Sounds;
 
 	FrameNumber_t		Wait;
@@ -99,10 +99,10 @@ public:
 	vec3f		Positions[2];
 	vec3f		MoveOrigin, MoveAngles;
 
-	int			Lip;
+	sint32			Lip;
 
 	// state data
-	int			MoveState;
+	sint32			MoveState;
 	vec3f		Dir;
 	float		CurrentSpeed;
 	float		MoveSpeed;
@@ -116,7 +116,7 @@ public:
 	ENTITYFIELD_VIRTUAL_DEFS
 
 	CBrushModel ();
-	CBrushModel (int Index);
+	CBrushModel (sint32 Index);
 
 	inline void SetMoveDir ()
 	{
@@ -162,7 +162,7 @@ public:
 class CPlatForm : public CMapEntity, public CBrushModel, public CBlockableEntity, public CUsableEntity
 {
 public:
-	int	Height;
+	sint32	Height;
 
 	enum
 	{
@@ -170,7 +170,7 @@ public:
 	};
 
 	CPlatForm();
-	CPlatForm(int Index);
+	CPlatForm(sint32 Index);
 
 	bool Run ();
 	void Blocked (CBaseEntity *other);
@@ -197,7 +197,7 @@ public:
 		CPlatForm	*Owner;
 
 		CPlatFormInsideTrigger::CPlatFormInsideTrigger ();
-		CPlatFormInsideTrigger::CPlatFormInsideTrigger (int Index);
+		CPlatFormInsideTrigger::CPlatFormInsideTrigger (sint32 Index);
 		void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 	};
 
@@ -218,7 +218,7 @@ public:
 	};
 
 	CDoor();
-	CDoor(int Index);
+	CDoor(sint32 Index);
 
 	void UseAreaPortals (bool isOpen);
 	bool Run ();
@@ -247,15 +247,15 @@ public:
 		FrameNumber_t		TouchDebounce;
 
 		CDoorTrigger::CDoorTrigger ();
-		CDoorTrigger::CDoorTrigger (int Index);
+		CDoorTrigger::CDoorTrigger (sint32 Index);
 
 		void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 	};
 
 	virtual void Blocked (CBaseEntity *other);
 	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
-	virtual void Pain (CBaseEntity *other, float kick, int damage);
+	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	virtual void Pain (CBaseEntity *other, float kick, sint32 damage);
 	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
 	// Thinks
@@ -269,7 +269,7 @@ class CRotatingDoor : public CDoor
 {
 public:
 	CRotatingDoor ();
-	CRotatingDoor (int Index);
+	CRotatingDoor (sint32 Index);
 
 	void GoDown();
 	void GoUp (CBaseEntity *activator);
@@ -281,7 +281,7 @@ class CMovableWater : public CDoor
 {
 public:
 	CMovableWater ();
-	CMovableWater (int Index);
+	CMovableWater (sint32 Index);
 
 	void Spawn ();
 };
@@ -305,11 +305,11 @@ public:
 	};
 
 	CDoorSecret ();
-	CDoorSecret (int Index);
+	CDoorSecret (sint32 Index);
 
 	void Blocked (CBaseEntity *other);
 	void Use (CBaseEntity *other, CBaseEntity *activator);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	void DoEndFunc ();
 	void Think ();
@@ -325,7 +325,7 @@ public:
 		BUTTONTHINK_RETURN = BRUSHTHINK_CUSTOM_START,
 	};
 	CButton();
-	CButton(int Index);
+	CButton(sint32 Index);
 
 	bool Run ();
 
@@ -345,8 +345,8 @@ public:
 	virtual void Fire ();
 
 	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
-	virtual void Pain (CBaseEntity *other, float kick, int damage);
+	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	virtual void Pain (CBaseEntity *other, float kick, sint32 damage);
 	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
 	virtual void Spawn ();
@@ -362,7 +362,7 @@ public:
 		TRAINTHINK_NEXT,
 	};
 	CTrainBase();
-	CTrainBase(int Index);
+	CTrainBase(sint32 Index);
 
 	virtual bool Run ();
 
@@ -394,7 +394,7 @@ class CTrain : public CTrainBase
 {
 public:
 	CTrain ();
-	CTrain (int Index);
+	CTrain (sint32 Index);
 
 	void Spawn ();
 };
@@ -405,7 +405,7 @@ public:
 	CTrain			*MoveTarget;
 
 	CTriggerElevator ();
-	CTriggerElevator (int Index);
+	CTriggerElevator (sint32 Index);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -427,7 +427,7 @@ public:
 	float	SkyRotate;
 
 	CWorldEntity ();
-	CWorldEntity (int Index);
+	CWorldEntity (sint32 Index);
 
 	ENTITYFIELD_DEFS
 
@@ -441,7 +441,7 @@ public:
 	bool Blockable;
 
 	CRotatingBrush ();
-	CRotatingBrush (int Index);
+	CRotatingBrush (sint32 Index);
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 	void Blocked (CBaseEntity *other);
@@ -459,10 +459,10 @@ public:
 class CConveyor : public CMapEntity, public CBrushModel, public CUsableEntity
 {
 public:
-	int			SavedSpeed;
+	sint32			SavedSpeed;
 
 	CConveyor ();
-	CConveyor (int Index);
+	CConveyor (sint32 Index);
 
 	ENTITYFIELD_DEFS
 
@@ -479,7 +479,7 @@ public:
 	uint8		Style;
 
 	CAreaPortal ();
-	CAreaPortal (int Index);
+	CAreaPortal (sint32 Index);
 
 	ENTITYFIELD_DEFS
 
@@ -493,7 +493,7 @@ class CFuncWall : public CMapEntity, public CBrushModel, public CUsableEntity
 {
 public:
 	CFuncWall ();
-	CFuncWall (int Index);
+	CFuncWall (sint32 Index);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -510,7 +510,7 @@ class CFuncObject : public CMapEntity, public CBrushModel, public CTossProjectil
 {
 public:
 	CFuncObject ();
-	CFuncObject (int Index);
+	CFuncObject (sint32 Index);
 
 	void Think ();
 	void Use (CBaseEntity *other, CBaseEntity *activator);
@@ -536,18 +536,18 @@ public:
 	};
 
 	EFuncExplosiveUseType	UseType;
-	int						Explosivity;
+	sint32						Explosivity;
 
 	ENTITYFIELD_DEFS
 
 	CFuncExplosive ();
-	CFuncExplosive (int Index);
+	CFuncExplosive (sint32 Index);
 
 	void DoSpawn ();
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
-	void Pain (CBaseEntity *other, float kick, int damage);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
+	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	bool Run ();
 	void Spawn ();
@@ -557,7 +557,7 @@ class CKillbox : public CMapEntity, public CUsableEntity
 {
 public:
 	CKillbox ();
-	CKillbox (int Index);
+	CKillbox (sint32 Index);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{

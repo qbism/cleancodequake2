@@ -66,11 +66,11 @@ void CSoldierShotgun::Attack ()
 	}
 }
 
-static int ShotgunFlash [] = {MZ2_SOLDIER_SHOTGUN_1, MZ2_SOLDIER_SHOTGUN_2, MZ2_SOLDIER_SHOTGUN_3, MZ2_SOLDIER_SHOTGUN_4, MZ2_SOLDIER_SHOTGUN_5, MZ2_SOLDIER_SHOTGUN_6, MZ2_SOLDIER_SHOTGUN_7, MZ2_SOLDIER_SHOTGUN_8};
-void CSoldierShotgun::FireGun (int FlashNumber)
+static sint32 ShotgunFlash [] = {MZ2_SOLDIER_SHOTGUN_1, MZ2_SOLDIER_SHOTGUN_2, MZ2_SOLDIER_SHOTGUN_3, MZ2_SOLDIER_SHOTGUN_4, MZ2_SOLDIER_SHOTGUN_5, MZ2_SOLDIER_SHOTGUN_6, MZ2_SOLDIER_SHOTGUN_7, MZ2_SOLDIER_SHOTGUN_8};
+void CSoldierShotgun::FireGun (sint32 FlashNumber)
 {
 	vec3f	start, forward, right, aim;
-	int		flashIndex = ShotgunFlash[FlashNumber];
+	sint32		flashIndex = ShotgunFlash[FlashNumber];
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashIndex], forward, right, start);

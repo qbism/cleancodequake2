@@ -40,7 +40,7 @@ CanTakeDamage(false)
 	EntityFlags |= ENT_HURTABLE;
 };
 
-CHurtableEntity::CHurtableEntity (int Index) :
+CHurtableEntity::CHurtableEntity (sint32 Index) :
 CBaseEntity(Index),
 CanTakeDamage(false)
 {
@@ -80,7 +80,7 @@ char *ClientTeam (CPlayerEntity *ent)
 		return value;
 	}
 
-	// if ((int)(dmflags->value) & DF_SKINTEAMS)
+	// if ((sint32)(dmflags->value) & DF_SKINTEAMS)
 	return ++p;
 }
 
@@ -121,7 +121,7 @@ bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
 		vec3f(-15, -15, 0)
 	};
 
-	for (int i = 0; i < 5; i++)
+	for (sint32 i = 0; i < 5; i++)
 	{
 		vec3f end = State.GetOrigin() + additions[i];
 		CTrace trace (inflictor->State.GetOrigin(), end, inflictor, CONTENTS_MASK_SOLID);
@@ -152,7 +152,7 @@ bool CHurtableEntity::CheckTeamDamage (CBaseEntity *attacker)
 
 #include "cc_tent.h"
 
-int CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, int damage, int dflags)
+sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 damage, sint32 dflags)
 {
 	if (!damage)
 		return 0;
@@ -160,9 +160,9 @@ int CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, int damage, i
 	if (dflags & DAMAGE_NO_ARMOR)
 		return 0;
 
-	static const int	index = NItems::Cells->GetIndex();
+	static const sint32	index = NItems::Cells->GetIndex();
 
-	int			power_armor_type, damagePerCell, pa_te_type, power = 0, power_used;
+	sint32			power_armor_type, damagePerCell, pa_te_type, power = 0, power_used;
 
 	bool		IsClient = !!(EntityFlags & ENT_PLAYER),
 				IsMonster = !!(EntityFlags & ENT_MONSTER);
@@ -214,7 +214,7 @@ int CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, int damage, i
 		break;
 	};
 
-	int save = power * damagePerCell;
+	sint32 save = power * damagePerCell;
 	if (!save)
 		return 0;
 	if (save > damage)
@@ -253,7 +253,7 @@ void CleanupHealTarget (CMonsterEntity *ent)
 }
 #endif
 
-void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	if (Health < -999)
 		Health = -999;
@@ -304,7 +304,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, int
 		(entity_cast<CHurtableEntity>(this))->Die (inflictor, attacker, damage, point);
 }
 
-void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, int &damage, int &dflags)
+void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
 		CTempEnt_Splashes::Blood (point, normal);
@@ -313,16 +313,16 @@ void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, int
 }
 
 void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
-								vec3f dir, vec3f point, vec3f normal, int damage,
-								int knockback, int dflags, EMeansOfDeath mod)
+								vec3f dir, vec3f point, vec3f normal, sint32 damage,
+								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
 {
 	if (map_debug->Boolean())
 		return;
 
-	int			take;
-	int			save;
-	int			asave = 0;
-	int			psave = 0;
+	sint32			take;
+	sint32			save;
+	sint32			asave = 0;
+	sint32			psave = 0;
 
 	// Needed?
 	if (!CanTakeDamage)
@@ -538,8 +538,8 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	
 void CHurtableEntity::TakeDamage (CBaseEntity *targ, CBaseEntity *inflictor,
 								CBaseEntity *attacker, vec3f dir, vec3f point,
-								vec3f normal, int damage, int knockback,
-								int dflags, EMeansOfDeath mod)
+								vec3f normal, sint32 damage, sint32 knockback,
+								sint32 dflags, EMeansOfDeath mod)
 {
 	if ((targ->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(targ)->CanTakeDamage)
 		(entity_cast<CHurtableEntity>(targ))->TakeDamage (inflictor, attacker, dir, point, normal, damage, knockback, dflags, mod);
@@ -551,7 +551,7 @@ CBaseEntity()
 	EntityFlags |= ENT_THINKABLE;
 };
 
-CThinkableEntity::CThinkableEntity (int Index) :
+CThinkableEntity::CThinkableEntity (sint32 Index) :
 CBaseEntity(Index)
 {
 	EntityFlags |= ENT_THINKABLE;
@@ -573,7 +573,7 @@ CBaseEntity()
 	EntityFlags |= ENT_TOUCHABLE;
 };
 
-CTouchableEntity::CTouchableEntity (int Index) :
+CTouchableEntity::CTouchableEntity (sint32 Index) :
 CBaseEntity(Index)
 {
 	Touchable = true;
@@ -592,7 +592,7 @@ GravityMultiplier(1.0f)
 	PhysicsType = PHYSICS_NONE;
 };
 
-CPhysicsEntity::CPhysicsEntity (int Index) :
+CPhysicsEntity::CPhysicsEntity (sint32 Index) :
 CBaseEntity(Index),
 GravityMultiplier(1.0f)
 {
@@ -675,7 +675,7 @@ CPhysicsEntity ()
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
-CBounceProjectile::CBounceProjectile (int Index) :
+CBounceProjectile::CBounceProjectile (sint32 Index) :
 backOff(1.5f),
 CPhysicsEntity (Index)
 {
@@ -688,7 +688,7 @@ CPhysicsEntity (Index)
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
-int ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce);
+sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce);
 bool CBounceProjectile::Run ()
 {
 	CTrace	trace;
@@ -774,7 +774,7 @@ CBounceProjectile ()
 	PhysicsType = PHYSICS_TOSS;
 }
 
-CTossProjectile::CTossProjectile (int Index) :
+CTossProjectile::CTossProjectile (sint32 Index) :
 CBounceProjectile (Index)
 {
 	backOff = 1.0f;
@@ -794,7 +794,7 @@ CPhysicsEntity ()
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
-CFlyMissileProjectile::CFlyMissileProjectile (int Index) :
+CFlyMissileProjectile::CFlyMissileProjectile (sint32 Index) :
 CPhysicsEntity (Index)
 {
 	Velocity.Clear ();
@@ -888,7 +888,7 @@ CPhysicsEntity ()
 	PhysicsType = PHYSICS_STEP;
 }
 
-CStepPhysics::CStepPhysics (int Index) :
+CStepPhysics::CStepPhysics (sint32 Index) :
 CPhysicsEntity (Index)
 {
 	Velocity.Clear (); 
@@ -939,7 +939,7 @@ void CStepPhysics::AddRotationalFriction ()
 	State.GetAngles() = State.GetAngles().MultiplyAngles (0.1f, AngularVelocity);
 
 	float adjustment = 0.1f * SV_STOPSPEED * SV_FRICTION;
-	for (int n = 0; n < 3; n++)
+	for (sint32 n = 0; n < 3; n++)
 	{
 		if (AngularVelocity[n] > 0)
 		{
@@ -957,17 +957,17 @@ void CStepPhysics::AddRotationalFriction ()
 }
 
 #define MAX_CLIP_PLANES	5
-int CStepPhysics::FlyMove (float time, int mask)
+sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 {
 	edict_t		*hit;
-	int			i, j, blocked = 0, numplanes = 0, numbumps = 4;
+	sint32			i, j, blocked = 0, numplanes = 0, numbumps = 4;
 	vec3f		planes[MAX_CLIP_PLANES], dir, primal_velocity, original_velocity, new_velocity, end;
 	float		d, time_left = time;
 	
 	original_velocity = primal_velocity = Velocity;
 	GroundEntity = NULL;
 
-	for (int bumpcount = 0; bumpcount < numbumps; bumpcount++)
+	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
 		vec3f origin = State.GetOrigin ();
 		end = origin + time_left * Velocity;
@@ -1184,7 +1184,7 @@ CPhysicsEntity()
 	PhysicsType = PHYSICS_PUSH;
 };
 
-CPushPhysics::CPushPhysics(int Index) :
+CPushPhysics::CPushPhysics(sint32 Index) :
 CPhysicsEntity(Index)
 {
 	PhysicsType = PHYSICS_PUSH;
@@ -1238,9 +1238,9 @@ returns the blocked flags (1 = floor, 2 = step / wall)
 */
 #define STOP_EPSILON    0.1
 
-int ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
+sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 {
-	int blocked = 0;
+	sint32 blocked = 0;
 	if (normal[2] > 0)
 		blocked |= 1;           // floor
 	if (!normal[2])
@@ -1248,7 +1248,7 @@ int ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 
 	float backoff = in.Dot (normal) * overbounce;
 
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		float change = normal[i]*backoff;
 		out[i] = in[i] - change;
@@ -1263,10 +1263,10 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 {
 	// clamp the move to 1/8 units, so the position will
 	// be accurate for client side prediction
-	for (int i = 0; i < 3; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		float temp = (move[i]*8.0);
-		move[i] = 0.125 * (int)((temp > 0.0f) ? (temp + 0.5f) : (temp -0.5f));
+		move[i] = 0.125 * (sint32)((temp > 0.0f) ? (temp + 0.5f) : (temp -0.5f));
 	}
 
 	// find the bounding box
@@ -1288,7 +1288,7 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 	Entity->Link ();
 
 	// see if any solid entities are inside the final position
-	for (int e = 1; e < globals.numEdicts; e++)
+	for (sint32 e = 1; e < globals.numEdicts; e++)
 	{
 		edict_t *check = &g_edicts[e];
 		CBaseEntity *Check = check->Entity;
@@ -1495,7 +1495,7 @@ CPushPhysics()
 	PhysicsType = PHYSICS_STOP;
 };
 
-CStopPhysics::CStopPhysics (int Index) :
+CStopPhysics::CStopPhysics (sint32 Index) :
 CPushPhysics(Index)
 {
 	PhysicsType = PHYSICS_STOP;
@@ -1512,7 +1512,7 @@ CBaseEntity ()
 	EntityFlags |= ENT_BLOCKABLE;
 }
 
-CBlockableEntity::CBlockableEntity (int Index) :
+CBlockableEntity::CBlockableEntity (sint32 Index) :
 CBaseEntity (Index)
 {
 	EntityFlags |= ENT_BLOCKABLE;
@@ -1527,7 +1527,7 @@ Usable (true)
 	EntityFlags |= ENT_USABLE;
 }
 
-CUsableEntity::CUsableEntity (int Index) :
+CUsableEntity::CUsableEntity (sint32 Index) :
 CBaseEntity (Index),
 NoiseIndex (0),
 Delay (0),
@@ -1564,7 +1564,7 @@ public:
 	  {
 	  };
 
-	CDelayedUse (int Index) :
+	CDelayedUse (sint32 Index) :
 	  CBaseEntity (Index),
 	  CThinkableEntity (Index)
 	  {

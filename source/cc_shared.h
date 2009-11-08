@@ -39,7 +39,7 @@ class CBaseEntity;
 class CPlayerEntity;
 
 // Stand-alone classes
-typedef int32	FrameNumber_t;
+typedef sint32	FrameNumber_t;
 
 #include "cc_filesystem.h"
 #include "cc_platform.h"

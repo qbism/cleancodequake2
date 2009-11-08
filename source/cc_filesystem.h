@@ -13,7 +13,7 @@
 #endif
 
 // Note to self: when naming variables, name them correctly.
-typedef int fileHandle_t;
+typedef sint32 fileHandle_t;
 
 CC_ENUM (uint8, EFileOpMode)
 {
@@ -67,7 +67,7 @@ void FS_Error (const char *errorMsg);
 #endif
 
 // Exported
-void FS_Init (int maxHandles);
+void FS_Init (sint32 maxHandles);
 
 bool FS_FileExists (const char *fileName);
 fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode);
@@ -78,7 +78,7 @@ void FS_FreeFile (void *buffer);
 
 typedef std::vector<std::cc_string, std::level_allocator<std::cc_string> > TFindFilesType;
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
-void FS_FreeFileList (char **fileList, int numFiles);
+void FS_FreeFileList (char **fileList, sint32 numFiles);
 
 void FS_Write (void *buffer, size_t size, fileHandle_t &handle);
 void FS_Read (void *buffer, size_t size, fileHandle_t &handle);
@@ -225,7 +225,7 @@ public:
 	virtual void Query (std::cc_string &fileName) {};
 };
 
-//(const char *path, const char *filter, const char *extension, char **fileList, int maxFiles, const bool addDir, const bool recurse);
+//(const char *path, const char *filter, const char *extension, char **fileList, sint32 maxFiles, const bool addDir, const bool recurse);
 #define MAX_FINDFILES_PATH	256
 class CFindFiles
 {

@@ -72,8 +72,8 @@ public:
 	void DrainAttack ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, int damage);
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void Pain (CBaseEntity *other, float kick, sint32 damage);
 
 	void Spawn ();
 };

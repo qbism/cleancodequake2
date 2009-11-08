@@ -39,7 +39,7 @@ CItemEntity()
 {
 };
 
-CFlagEntity::CFlagEntity (int Index) :
+CFlagEntity::CFlagEntity (sint32 Index) :
 CBaseEntity(Index),
 CItemEntity(Index)
 {
@@ -118,7 +118,7 @@ CFlagEntity()
 {
 };
 
-CRedFlagEntity::CRedFlagEntity (int Index) :
+CRedFlagEntity::CRedFlagEntity (sint32 Index) :
 CBaseEntity(Index),
 CFlagEntity(Index)
 {
@@ -143,7 +143,7 @@ CFlagEntity()
 {
 };
 
-CBlueFlagEntity::CBlueFlagEntity (int Index) :
+CBlueFlagEntity::CBlueFlagEntity (sint32 Index) :
 CBaseEntity(Index),
 CFlagEntity(Index)
 {
@@ -171,7 +171,7 @@ public:
 	Red(false)
 	{
 	};
-	CDroppedFlagEntity(int Index) :
+	CDroppedFlagEntity(sint32 Index) :
 	CFlagEntity(Index),
 	Red(false)
 	{

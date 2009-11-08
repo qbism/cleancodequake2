@@ -38,7 +38,7 @@ void FS_Error (const char *errorMsg)
 {
 #ifdef _DEBUG
 #ifdef WIN32
-	OutputDebugString (errorMsg);
+	OutputDebugStringA (errorMsg);
 #endif
 	assert (0);
 #endif
@@ -102,7 +102,7 @@ void FS_ReorderPath (const char *pathName)
 
 // Handle management
 // Handle index is used internally
-static int FS_MAX_FILEINDICES = 256;
+static sint32 FS_MAX_FILEINDICES = 256;
 
 class fsHandleIndex
 {
@@ -168,7 +168,7 @@ static fsHandleIndex *FS_GetHandle (fileHandle_t &fileNum)
 static const char *FS_OpenModeFromEnum (EFileOpMode Mode)
 {
 	static char mode[4];
-	int currentPos = 0;
+	sint32 currentPos = 0;
 
 	// Reset old mode
 	mode[0] = mode[1] = mode[2] = mode[3] = 0;
@@ -342,7 +342,7 @@ size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate)
 	size_t len = FS_Len (handle);
 
 	size_t termLen = (terminate) ? 2 : 0;
-	byte *buf = new byte[len + termLen];
+	uint8 *buf = new uint8[len + termLen];
 	*buffer = buf;
 
 	FS_Read(buf, len, handle);
@@ -441,9 +441,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 			Sys_FindFiles(dirFiles, dir, ext, 0, recurse, true, false);
 		}
 		else
-		{
 			Sys_FindFiles(dirFiles, dir, "*", 0, recurse, true, true);
-		}
 
 		for (size_t i = 0; i < dirFiles.size(); i++)
 		{
@@ -461,15 +459,12 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 			bool bFound = false;
 			for (size_t z = 0; z < files.size(); z++)
 			{
-				if (!stricmp(files[z].c_str(), name))
+				if (!Q_stricmp(files[z].c_str(), name))
 					break;
 			}
 
 			if (!bFound)
-			{
-				std::cc_string temp = (addDir) ? std::cc_string(search->pathName) + "/" + name : std::cc_string(name);
-				files.push_back (temp);
-			}
+				files.push_back ((addDir) ? std::cc_string(search->pathName) + "/" + name : std::cc_string(name));
 		}
 	}
 
@@ -477,9 +472,9 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 }
 
 // Frees the file list made by the above function
-void FS_FreeFileList (char **fileList, int numFiles)
+void FS_FreeFileList (char **fileList, sint32 numFiles)
 {
-	for (int i=0 ; i<numFiles ; i++)
+	for (sint32 i=0 ; i<numFiles ; i++)
 	{
 		if (!fileList[i])
 			continue;
@@ -489,7 +484,7 @@ void FS_FreeFileList (char **fileList, int numFiles)
 	}
 }
 
-void FS_Init (int maxHandles)
+void FS_Init (sint32 maxHandles)
 {
 	FS_MAX_FILEINDICES = maxHandles;
 	FS_InitHandles ();

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // edict->svFlags
 
-CC_ENUM (int, EServerFlags)
+CC_ENUM (sint32, EServerFlags)
 {
 	SVF_NOCLIENT			= BIT(0), // don't send entity to clients, even if it has effects
 	SVF_DEADMONSTER			= BIT(1), // treat as CONTENTS_DEADMONSTER for collision
@@ -41,7 +41,7 @@ CC_ENUM (int, EServerFlags)
 };
 
 // edict->solid values
-CC_ENUM (int, ESolidType)
+CC_ENUM (sint32, ESolidType)
 {
 	SOLID_NOT,			// no interaction with other objects
 	SOLID_TRIGGER,		// only touch when inside, after moving
@@ -64,7 +64,7 @@ struct link_t
 struct gclient_t
 {
 	playerState_t		playerState;		// communicated by server to clients
-	int					ping;
+	sint32					ping;
 	// the game dll can add anything it wants after
 	// this point in the structure
 };
@@ -77,15 +77,15 @@ struct edict_t
 									// of gclient_s to be a player_state_t
 									// but the rest of it is opaque
 	BOOL				inUse;
-	int					linkCount;
+	sint32					linkCount;
 
 	// FIXME: move these fields to a server private sv_entity_t
 	link_t				area;				// linked to a division node or leaf
 	
-	int					numClusters;		// if -1, use headnode instead
-	int					clusterNums[MAX_ENT_CLUSTERS];
-	int					headNode;			// unused if numClusters != -1
-	int					areaNum, areaNum2;
+	sint32					numClusters;		// if -1, use headnode instead
+	sint32					clusterNums[MAX_ENT_CLUSTERS];
+	sint32					headNode;			// unused if numClusters != -1
+	sint32					areaNum, areaNum2;
 
 	//================================
 
@@ -135,11 +135,11 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (PlaySoundFrom or CBaseEntity->PlaySound)
 #endif
-	void	(*sound) (edict_t *ent, int channel, int soundIndex, float volume, float attenuation, float timeOffset);
+	void	(*sound) (edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (PlaySoundAt or CBaseEntity->PlayPositionedSound)
 #endif
-	void	(*positioned_sound) (vec3_t origin, edict_t *ent, int channel, int soundIndex, float volume, float attenuation, float timeOffset);
+	void	(*positioned_sound) (vec3_t origin, edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 
 	// config strings hold all the index strings, the lightstyles,
 	// and misc data like the sky definition and cdtrack.
@@ -148,7 +148,7 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ConfigString)
 #endif
-	void	(*configstring) (int num, char *string);
+	void	(*configstring) (sint32 num, char *string);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (GameError)
@@ -159,15 +159,15 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ModelIndex)
 #endif
-	int		(*modelindex) (char *name);
+	sint32		(*modelindex) (char *name);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (SoundIndex)
 #endif
-	int		(*soundindex) (char *name);
+	sint32		(*soundindex) (char *name);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ImageIndex)
 #endif
-	int		(*imageindex) (char *name);
+	sint32		(*imageindex) (char *name);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (SetModel)
@@ -178,11 +178,11 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CTrace)
 #endif
-	cmTrace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, int contentMask);
+	cmTrace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, sint32 contentMask);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (PointContents)
 #endif
-	int			(*pointcontents) (vec3_t point);
+	sint32			(*pointcontents) (vec3_t point);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (InArea)
 #endif
@@ -191,8 +191,8 @@ struct gameImport_t
 	_CC_INSECURE_DEPRECATE (InArea)
 #endif
 	BOOL		(*inPHS) (vec3_t p1, vec3_t p2);
-	void		(*SetAreaPortalState) (int portalNum, BOOL open);
-	BOOL		(*AreasConnected) (int area1, int area2);
+	void		(*SetAreaPortalState) (sint32 portalNum, BOOL open);
+	BOOL		(*AreasConnected) (sint32 area1, sint32 area2);
 
 	// an entity will never be sent to a client or used for collision
 	// if it is not passed to linkentity.  If the size, position, or
@@ -212,7 +212,7 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (BoxEdicts)
 #endif
-	int		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	int maxCount, int areaType);
+	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	sint32 maxCount, sint32 areaType);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (SV_Pmove)
 #endif
@@ -238,22 +238,22 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteChar)
 #endif
-	void	(*WriteChar) (int c);
+	void	(*WriteChar) (sint32 c);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteByte)
 #endif
-	void	(*WriteByte) (int c);
+	void	(*WriteByte) (sint32 c);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteShort)
 #endif
-	void	(*WriteShort) (int c);
+	void	(*WriteShort) (sint32 c);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteLong)
 #endif
-	void	(*WriteLong) (int c);
+	void	(*WriteLong) (sint32 c);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteFloat)
@@ -273,7 +273,7 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteDir)
 #endif
-	void	(*WriteDir) (vec3_t pos);		// single byte encoded, very coarse
+	void	(*WriteDir) (vec3_t pos);		// single uint8 encoded, very coarse
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteAngle)
@@ -284,7 +284,7 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (QNew)
 #endif
-	void	*(*TagMalloc) (int size, int tag);
+	void	*(*TagMalloc) (sint32 size, sint32 tag);
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (QDelete)
 #endif
@@ -292,13 +292,13 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (Mem_FreePool)
 #endif
-	void	(*FreeTags) (int tag);
+	void	(*FreeTags) (sint32 tag);
 
 	// console variable interaction
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	cVar_t	*(*cvar) (char *varName, char *value, int flags);
+	cVar_t	*(*cvar) (char *varName, char *value, sint32 flags);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CCvar)
@@ -314,12 +314,12 @@ struct gameImport_t
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgCount)
 #endif
-	int		(*argc) ();
+	sint32		(*argc) ();
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgGets/ArgGeti/ArgGetf)
 #endif
-	char	*(*argv) (int n);
+	char	*(*argv) (sint32 n);
 
 #ifndef USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgGetConcatenatedString)
@@ -330,7 +330,7 @@ struct gameImport_t
 	// for map changing, etc
 	void	(*AddCommandString) (char *text);
 
-	void	(*DebugGraph) (float value, int color);
+	void	(*DebugGraph) (float value, sint32 color);
 };
 
 #ifdef GAME_INCLUDE
@@ -341,7 +341,7 @@ extern	gameImport_t	gi;
 // functions exported by the game subsystem
 //
 typedef struct gameExport_s {
-	int			apiVersion;
+	sint32			apiVersion;
 
 	// the init function will only be called when a game starts,
 	// not each time a level is loaded.  Persistant data for clients
@@ -388,9 +388,9 @@ typedef struct gameExport_s {
 	// 
 	// The size will be fixed when ge->Init() is called
 	edict_t			*edicts;
-	int				edictSize;
-	int				numEdicts;		// current number, <= MAX_CS_EDICTS
-	int				maxEdicts;
+	sint32				edictSize;
+	sint32				numEdicts;		// current number, <= MAX_CS_EDICTS
+	sint32				maxEdicts;
 } gameExport_t;
 
 gameExport_t *GetGameApi (gameImport_t *import);

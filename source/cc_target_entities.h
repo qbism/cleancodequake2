@@ -37,7 +37,7 @@ public:
 	char		*Map;
 
 	CTargetChangeLevel ();
-	CTargetChangeLevel (int Index);
+	CTargetChangeLevel (sint32 Index);
 
 	bool Run ();
 

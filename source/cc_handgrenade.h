@@ -38,8 +38,8 @@ class CHandGrenade : public CWeapon
 {
 public:
 	CHandGrenade();
-	CHandGrenade(char *model, int FireStart, int FireNumFrames,
-						 int IdleStart, int IdleNumFrames);
+	CHandGrenade(char *model, sint32 FireStart, sint32 FireNumFrames,
+						 sint32 IdleStart, sint32 IdleNumFrames);
 
 	inline bool	CanFire	(CPlayerEntity *Player);
 	inline bool	CanStopFidgetting (CPlayerEntity *Player);

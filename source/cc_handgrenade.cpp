@@ -86,7 +86,7 @@ void CHandGrenade::Hold (CPlayerEntity *ent)
 void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 {
 	vec3f	offset (8, 8, ent->ViewHeight-8), forward, right, start;
-	const int		damage = (isQuad) ? 500 : 125;
+	const sint32		damage = (isQuad) ? 500 : 125;
 	const float		radius = 165;
 
 	ent->Client.Grenade.Thrown = true;
@@ -95,7 +95,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 	ent->P_ProjectSource (offset, forward, right, start);
 
 	float timer = (float)(ent->Client.Grenade.Time - level.Frame) / 10;
-	const int speed = (ent->Client.Persistent.Weapon) ? 
+	const sint32 speed = (ent->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
 	CGrenade::Spawn (ent, start, forward, damage, speed, timer, radius, true, inHand);
@@ -171,7 +171,7 @@ bool CHandGrenade::CanFire (CPlayerEntity *ent)
 void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
 {
 	// Idea from Brazen source
-	int newFrame = -1, newState = -1;
+	sint32 newFrame = -1, newState = -1;
 
 	switch (ent->Client.WeaponState)
 	{

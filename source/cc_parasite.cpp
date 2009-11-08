@@ -239,7 +239,7 @@ CFrame ParasiteFramesPain1 [] =
 };
 CAnim ParasiteMovePain1 (FRAME_pain101, FRAME_pain111, ParasiteFramesPain1, &CMonster::Run);
 
-void CParasite::Pain (CBaseEntity *other, float kick, int damage)
+void CParasite::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -317,7 +317,7 @@ void CParasite::DrainAttack ()
 	if (tr.Ent != Entity->Enemy)
 		return;
 
-	int damage = (Entity->State.GetFrame() == FRAME_drain03) ? 5 : 2;
+	sint32 damage = (Entity->State.GetFrame() == FRAME_drain03) ? 5 : 2;
 	if (Entity->State.GetFrame() == FRAME_drain03)
 		Entity->Enemy->PlaySound (CHAN_AUTO, SoundImpact);
 	else if (Entity->State.GetFrame() == FRAME_drain04)
@@ -444,15 +444,15 @@ CFrame ParasiteFramesDeath [] =
 };
 CAnim ParasiteMoveDeath (FRAME_death101, FRAME_death107, ParasiteFramesDeath, ConvertDerivedFunction(&CParasite::Dead));
 
-void CParasite::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CParasite::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
-		for (int n= 0; n < 2; n++)
+		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
-		for (int n= 0; n < 4; n++)
+		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;

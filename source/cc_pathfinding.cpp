@@ -271,7 +271,7 @@ void InitNodes ()
 	memset (SavedPaths, 0, sizeof(SavedPaths));
 }
 
-edict_t *PlayerNearby (vec3f origin, int distance)
+edict_t *PlayerNearby (vec3f origin, sint32 distance)
 {
 	CPlayerEntity *ent = NULL;
 
@@ -430,8 +430,8 @@ void SaveNodes ()
 		return;
 
 	// Write the header
-	int version = NODE_VERSION;
-	File.Write (&version, sizeof(int));
+	sint32 version = NODE_VERSION;
+	File.Write (&version, sizeof(sint32));
 	size_t siz = NodeList.size();
 	File.Write (&siz, sizeof(uint32));
 
@@ -449,8 +449,8 @@ void SaveNodes ()
 		{
 			if (NodeList[i]->LinkedEntity)
 			{
-				int modelNum = atoi(NodeList[i]->LinkedEntity->gameEntity->model+1);
-				File.Write (&modelNum, sizeof(int));
+				sint32 modelNum = atoi(NodeList[i]->LinkedEntity->gameEntity->model+1);
+				File.Write (&modelNum, sizeof(sint32));
 			}
 		}
 
@@ -466,12 +466,12 @@ void SaveNodes ()
 	DebugPrintf ("Saved %u (%u special) nodes\n", numNodes, numSpecialNodes);
 }
 
-void LinkModelNumberToNode (CPathNode *Node, int modelNum)
+void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
 {
 	char tempString[7];
 	Q_snprintfz (tempString, sizeof(tempString), "*%i", modelNum);
 
-	int i;
+	sint32 i;
 	edict_t *e;
 
 	for (i=1, e=g_edicts+i; i < globals.numEdicts; i++,e++)
@@ -510,10 +510,10 @@ void LoadNodes ()
 		return;
 
 	// Write the header
-	int version;
+	sint32 version;
 	uint32 lastId;
 
-	File.Read (&version, sizeof(int));
+	File.Read (&version, sizeof(sint32));
 	File.Read (&lastId, sizeof(uint32));
 
 	numNodes = lastId;
@@ -521,8 +521,8 @@ void LoadNodes ()
 	if (version != NODE_VERSION)
 		DebugPrintf ("Old version of nodes!\n");
 
-	int **tempChildren;
-	tempChildren = QNew (com_genericPool, 0) int*[lastId];
+	sint32 **tempChildren;
+	tempChildren = QNew (com_genericPool, 0) sint32*[lastId];
 
 	// Read each node
 	for (uint32 i = 0; i < lastId; i++)
@@ -545,8 +545,8 @@ void LoadNodes ()
 			numSpecialNodes++;
 		if (Type == NODE_DOOR || Type == NODE_PLATFORM)
 		{
-			int modelNum;
-			File.Read (&modelNum, sizeof(int));
+			sint32 modelNum;
+			File.Read (&modelNum, sizeof(sint32));
 
 			LinkModelNumberToNode (NodeList[i], modelNum);
 		}
@@ -554,12 +554,12 @@ void LoadNodes ()
 		uint32 num;
 		File.Read (&num, sizeof(uint32));
 
-		tempChildren[i] = QNew (com_genericPool, 0) int[num+1];
+		tempChildren[i] = QNew (com_genericPool, 0) sint32[num+1];
 		tempChildren[i][0] = num;
 		/*for (size_t s = 0; s < num; s++)
 		{
-			int tempId;
-			fread (&tempId, sizeof(int), 1, fp);
+			sint32 tempId;
+			fread (&tempId, sizeof(sint32), 1, fp);
 
 			NodeList[i]->Children.push_back (NodeList[tempId]);
 		}*/
@@ -569,7 +569,7 @@ void LoadNodes ()
 
 	for (size_t i = 0; i < lastId; i++)
 	{
-		for (int z = 0; z < tempChildren[i][0]; z++)
+		for (sint32 z = 0; z < tempChildren[i][0]; z++)
 			NodeList[i]->Children.push_back (NodeList[tempChildren[i][z+1]]);
 		QDelete tempChildren[i];
 	}
@@ -785,25 +785,25 @@ void SavePathTable ()
 
 	DebugPrintf ("Saving node helper table...\n");
 
-	int count = 0;
-	for (int i = 0; i < MAX_SAVED_PATHS; i++)
+	sint32 count = 0;
+	for (sint32 i = 0; i < MAX_SAVED_PATHS; i++)
 	{
-		for (int z = 0; z < MAX_SAVED_PATHS; z++)
+		for (sint32 z = 0; z < MAX_SAVED_PATHS; z++)
 		{
 			if (SavedPaths[i].ToEnd[z])
 				count++;
 		}
 	}
-	File.Write (&count, sizeof(int));
+	File.Write (&count, sizeof(sint32));
 
-	for (int i = 0; i < MAX_SAVED_PATHS; i++)
+	for (sint32 i = 0; i < MAX_SAVED_PATHS; i++)
 	{
-		for (int z = 0; z < MAX_SAVED_PATHS; z++)
+		for (sint32 z = 0; z < MAX_SAVED_PATHS; z++)
 		{
 			if (SavedPaths[i].ToEnd[z])
 			{
-				File.Write (&i, sizeof(int));
-				File.Write (&z, sizeof(int));
+				File.Write (&i, sizeof(sint32));
+				File.Write (&z, sizeof(sint32));
 				SavedPaths[i].ToEnd[z]->Save(File);
 			}
 		}
@@ -826,15 +826,15 @@ void LoadPathTable ()
 
 	DebugPrintf ("Loading node helper table...\n");
 
-	int count;
-	File.Read (&count, sizeof(int));
+	sint32 count;
+	File.Read (&count, sizeof(sint32));
 
-	for (int i = 0; i < count; i++)
+	for (sint32 i = 0; i < count; i++)
 	{
-		int indexI, indexZ;
+		sint32 indexI, indexZ;
 
-		File.Read (&indexI, sizeof(int));
-		File.Read (&indexZ, sizeof(int));
+		File.Read (&indexI, sizeof(sint32));
+		File.Read (&indexZ, sizeof(sint32));
 
 		SavedPaths[indexI].ToEnd[indexZ] = QNew (com_levelPool, 0) CPath();
 		SavedPaths[indexI].ToEnd[indexZ]->Load (File);

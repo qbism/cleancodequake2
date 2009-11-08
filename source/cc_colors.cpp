@@ -298,29 +298,29 @@ ColorPalette PalToRGB =
 };
 
 
-CColorPalette::CColorPalette (colorb *palette, int numColors) :
+CColorPalette::CColorPalette (colorb *palette, sint32 numColors) :
 palette(palette),
 numColors(numColors)
 {
-	redSortedValues = QNew (com_gamePool, 0) byte[numColors];
-	greenSortedValues = QNew (com_gamePool, 0) byte[numColors];
-	blueSortedValues = QNew (com_gamePool, 0) byte[numColors];
+	redSortedValues = QNew (com_gamePool, 0) uint8[numColors];
+	greenSortedValues = QNew (com_gamePool, 0) uint8[numColors];
+	blueSortedValues = QNew (com_gamePool, 0) uint8[numColors];
 
 	SortPaletteColorIndexes (redSortedValues, 0);
 	SortPaletteColorIndexes (greenSortedValues, 1);
 	SortPaletteColorIndexes (blueSortedValues, 2);
 };
 
-void CColorPalette::SortPaletteColorIndexes (byte *values, byte index)
+void CColorPalette::SortPaletteColorIndexes (uint8 *values, uint8 index)
 {
 };
 
-byte CColorPalette::GetColorWeight (byte mainColor, byte newColor)
+uint8 CColorPalette::GetColorWeight (uint8 mainColor, uint8 newColor)
 {
 	return abs(mainColor - newColor);
 };
 
-colorb CColorPalette::GetColorFromIndex (byte index)
+colorb CColorPalette::GetColorFromIndex (uint8 index)
 {
 	if (index < 0 || index > 255)
 		return palette[0];
@@ -328,7 +328,7 @@ colorb CColorPalette::GetColorFromIndex (byte index)
 	return palette[index];
 };
 
-byte CColorPalette::GetClosestColorFromRGB (colorb color)
+uint8 CColorPalette::GetClosestColorFromRGB (colorb color)
 {
 	// Calculate the closest 
 };

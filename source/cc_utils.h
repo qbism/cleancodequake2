@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void	G_TouchTriggers (CBaseEntity *ent);
 void G_SetMovedir (vec3f &angles, vec3f &movedir);
 CBaseEntity *CC_PickTarget (char *targetname);
-CBaseEntity *CC_Find (CBaseEntity *from, int fieldofs, char *match);
+CBaseEntity *CC_Find (CBaseEntity *from, sint32 fieldofs, char *match);
 
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
 TEntityType *CC_Find (TEntityType *From, char *Match)
@@ -61,7 +61,7 @@ TEntityType *CC_Find (TEntityType *From, char *Match)
 			continue;
 
 		TEntityType *Check = entity_cast<TEntityType>(gameEnt->Entity);
-		char *s = *(char **) ((byte *)Check + FieldOfs);
+		char *s = *(char **) ((uint8 *)Check + FieldOfs);
 		if (!s)
 			continue;
 		if (!Q_stricmp (s, Match))
@@ -90,7 +90,7 @@ public:
 class CForEachPlayerCallback
 {
 public:
-	int		Index;
+	sint32		Index;
 
 	virtual void Callback (CPlayerEntity *Player) = 0;
 	virtual void Query (bool MustBeInUse = true);

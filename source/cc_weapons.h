@@ -43,13 +43,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CWeaponItem : public CBaseItem
 {
 public:
-	CWeaponItem (char *Classname, char *WorldModel, int EffectFlags,
+	CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, int Quantity, char *VWepModel);
+			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Quantity, char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;
-	int					Quantity;
+	sint32					Quantity;
 	char	*VWepModel;
 
 	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
@@ -73,13 +73,13 @@ public:
 		AMMOTAG_MAX
 	};
 
-	CAmmo (char *Classname, char *WorldModel, int EffectFlags,
+	CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, int Quantity, CAmmo::EAmmoTag Tag, CWeapon *Weapon, int Amount, char *VWepModel);
+			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag, CWeapon *Weapon, sint32 Amount, char *VWepModel);
 
 	class		CWeapon	*Weapon; // For weapon ammo
-	int			Amount; // Taken out for weapon ammo
-	int			Quantity; // Number gotten when we pick this mother upper
+	sint32			Amount; // Taken out for weapon ammo
+	sint32			Quantity; // Number gotten when we pick this mother upper
 	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo
 	char	*VWepModel;
 
@@ -89,12 +89,12 @@ public:
 	void	Drop (CPlayerEntity *ent);
 
 	// Member functions
-	bool	AddAmmo (CPlayerEntity *ent, int count);
-	int		GetMax(CPlayerEntity *ent);
+	bool	AddAmmo (CPlayerEntity *ent, sint32 count);
+	sint32		GetMax(CPlayerEntity *ent);
 };
 
-extern int maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX];
-extern int maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX];
+extern sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX];
+extern sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX];
 void InitItemMaxValues (edict_t *ent);
 
 void AddAmmoToList();

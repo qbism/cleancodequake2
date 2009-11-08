@@ -38,7 +38,7 @@ class CJunkEntity : public virtual CBaseEntity
 {
 public:
 	CJunkEntity ();
-	CJunkEntity (int Index);
+	CJunkEntity (sint32 Index);
 
 	void Die (); // CALL THIS WHEN A JUNK IS FREED INSTEAD OF FREE()!
 };
@@ -47,12 +47,12 @@ class CGibEntity : public CJunkEntity, public CTossProjectile, public CThinkable
 {
 public:
 	CGibEntity ();
-	CGibEntity (int Index);
+	CGibEntity (sint32 Index);
 
 	void Think ();
 
 	bool Run ();
-	static void Spawn (CBaseEntity *Owner, MediaIndex gibIndex, int damage, int type);
+	static void Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type);
 };
 
 void Init_Junk();

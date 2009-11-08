@@ -37,7 +37,7 @@ class CEntityList
 {
 	CClassnameToClassIndex			*EntityList[MAX_CLASSNAME_CLASSES];
 	CClassnameToClassIndex			*HashedEntityList[MAX_CLASSNAME_CLASSES_HASH];
-	int								numEntities;
+	sint32								numEntities;
 public:
 	CEntityList ();
 
@@ -54,7 +54,7 @@ void AddToList_Test (CClassnameToClassIndex *const Index)
 	EntityList.AddToList (Index);
 }
 
-CClassnameToClassIndex::CClassnameToClassIndex (CMapEntity				*(*Spawn) (int Index), char *Classname) :
+CClassnameToClassIndex::CClassnameToClassIndex (CMapEntity				*(*Spawn) (sint32 Index), char *Classname) :
 Spawn(Spawn),
 Classname(Classname)
 {
@@ -176,29 +176,29 @@ Parses an edict out of the given string, returning the new position
 ed should be a properly initialized empty edict.
 ====================
 */
-static char *ED_ParseEdict (char *data, edict_t *ent)
+static void ED_ParseEdict (CParser &data, edict_t *ent)
 {
-	bool	init;
-	char	keyName[256];
-	char	*token;
-
-	init = false;
+	bool	init = false;
 
 	// Go through all the dictionary pairs
-	for ( ; ; ) {
+	while (true)
+	{
+		const char *token;
+
 		// Parse key
-		token = Com_Parse (&data);
-		if (token[0] == '}')
-			break;
-		if (!data)
+		if (!data.ParseToken (PSF_ALLOW_NEWLINES, &token))
 			GameError ("ED_ParseEntity: EOF without closing brace");
 
+		if (token[0] == '}')
+			break;
+
+		char keyName[256];
 		Q_strncpyz (keyName, token, sizeof(keyName));
 		
 		// Parse value	
-		token = Com_Parse (&data);
-		if (!data)
+		if (!data.ParseToken (PSF_ALLOW_NEWLINES, &token))
 			GameError ("ED_ParseEntity: EOF without closing brace");
+
 		if (token[0] == '}')
 			GameError ("ED_ParseEntity: closing brace without data");
 
@@ -217,8 +217,6 @@ static char *ED_ParseEdict (char *data, edict_t *ent)
 
 	if (!init)
 		memset (ent, 0, sizeof(*ent));
-
-	return data;
 }
 
 
@@ -234,10 +232,10 @@ All but the last will have the teamchain field set to the next one
 */
 void G_FindTeams ()
 {
-	int		c = 0, c2 = 0;
+	sint32		c = 0, c2 = 0;
 
 	CBaseEntity *e, *e2;
-	int i, j;
+	sint32 i, j;
 	for (i = 1, e = g_edicts[i].Entity; i < globals.numEdicts; i++, e = g_edicts[i].Entity)
 	{
 		if (!e)
@@ -294,7 +292,7 @@ void G_FindTeams ()
 void InitPlayers ()
 {
 	// Set up the client entities
-	for (int i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		edict_t *ent = &g_edicts[i];
 
@@ -332,7 +330,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	level.EntityNumber = 0;
 	InitMapCounter();
 
-	int skill_level = Clamp (skill->Integer(), 0, 3);
+	sint32 skill_level = Clamp (skill->Integer(), 0, 3);
 	if (skill->Integer() != skill_level)
 		skill->Set(skill_level, true);
 
@@ -356,7 +354,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	InitEntities ();
 
 	// set client fields on player ents
-	for (int i = 0; i < game.maxclients; i++)
+	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		// Reset the entity states
 		//g_edicts[i+1].Entity = SavedClients[i];
@@ -372,11 +370,14 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	level.Inhibit = 0;
 
 	// Parse ents
+	CParser EntityParser (entities, PSP_COMMENT_MASK);
+
 	while (true)
 	{
 		// Parse the opening brace
-		char *token = Com_Parse (&entities);
-		if (!entities)
+		const char *token;
+
+		if (!EntityParser.ParseToken (PSF_ALLOW_NEWLINES, &token))
 			break;
 		if (token[0] != '{')
 			GameError ("ED_LoadFromFile: found %s when expecting {", token);
@@ -385,7 +386,7 @@ _CC_DISABLE_DEPRECATION
 		edict_t *ent = (!World) ? g_edicts : G_Spawn();
 _CC_ENABLE_DEPRECATION
 
-		entities = ED_ParseEdict (entities, ent);
+		ED_ParseEdict (EntityParser, ent);
 
 		ED_CallSpawn (ent);
 		level.EntityNumber++;

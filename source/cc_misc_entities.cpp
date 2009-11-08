@@ -44,8 +44,8 @@ class CMiscExploBox : public CMapEntity, public CStepPhysics, public CHurtableEn
 	CBaseEntity	*Shooter;
 
 public:
-	int			Explosivity;
-	int			Damage;
+	sint32			Explosivity;
+	sint32			Damage;
 
 	CMiscExploBox () :
 	Dropped(false),
@@ -60,7 +60,7 @@ public:
 	{
 	};
 
-	CMiscExploBox (int Index) : 
+	CMiscExploBox (sint32 Index) : 
 	Dropped(false),
 	CBaseEntity(Index),
 	CMapEntity(Index),
@@ -155,14 +155,14 @@ public:
 		Free ();
 	};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 	{
 		CanTakeDamage = false;
 		NextThink = level.Frame + 2;
 		Shooter = attacker;
 	};
 
-	void Pain (CBaseEntity *other, float kick, int damage) {};
+	void Pain (CBaseEntity *other, float kick, sint32 damage) {};
 
 	bool Run ()
 	{
@@ -237,7 +237,7 @@ public:
 	{
 	};
 
-	CMiscViper(int Index) :
+	CMiscViper(sint32 Index) :
 		CBaseEntity (Index),
 		CTrainBase(Index),
 		MyUse(true)
@@ -298,7 +298,7 @@ public:
 	  {
 	  };
 
-	CMiscStroggShip (int Index) :
+	CMiscStroggShip (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMiscViper (Index)
 	  {
@@ -332,7 +332,7 @@ public:
 	{
 	};
 
-	CMiscBanner (int Index) :
+	CMiscBanner (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
@@ -376,7 +376,7 @@ public:
 	{
 	};
 
-	CMiscBlackhole (int Index) :
+	CMiscBlackhole (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -432,7 +432,7 @@ public:
 	{
 	};
 
-	CMiscEasterTank (int Index) :
+	CMiscEasterTank (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
@@ -478,7 +478,7 @@ public:
 	{
 	};
 
-	CMiscEasterChick (int Index) :
+	CMiscEasterChick (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
@@ -524,7 +524,7 @@ public:
 	{
 	};
 
-	CMiscEasterChick2 (int Index) :
+	CMiscEasterChick2 (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
@@ -577,7 +577,7 @@ public:
 	{
 	};
 
-	CCommanderBody (int Index) :
+	CCommanderBody (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -643,7 +643,7 @@ LINK_CLASSNAME_TO_CLASS ("monster_commander_body", CCommanderBody);
 /*QUAKED misc_deadsoldier (1 .5 0) (-16 -16 0) (16 16 16) ON_BACK ON_STOMACH BACK_DECAP FETAL_POS SIT_DECAP IMPALED
 This is the dead player model. Comes in 6 exciting different poses!
 */
-vec3f VelocityForDamage (int damage);
+vec3f VelocityForDamage (sint32 damage);
 void ClipGibVelocity (CPhysicsEntity *ent);
 class CMiscDeadSoldier : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CTossProjectile
 {
@@ -657,7 +657,7 @@ public:
 	{
 	};
 
-	CMiscDeadSoldier (int Index) :
+	CMiscDeadSoldier (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CHurtableEntity (Index),
@@ -685,23 +685,23 @@ public:
 		};
 	};
 
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, int &damage, int &dflags)
+	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 	{
 		CTempEnt_Splashes::Blood (point, normal);
 	}
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 	{
 		if (Health > -80)
 			return;
 
 		PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
-		for (int n = 0; n < 4; n++)
+		for (sint32 n = 0; n < 4; n++)
 			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
 		TossHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
 	};
 
-	void TossHead (MediaIndex gibIndex, int damage, int type)
+	void TossHead (MediaIndex gibIndex, sint32 damage, sint32 type)
 	{
 		float	vscale;
 
@@ -804,7 +804,7 @@ public:
 	{
 	};
 
-	CMiscBigViper (int Index) :
+	CMiscBigViper (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	{
@@ -836,7 +836,7 @@ public:
 	bool			PreThinkable;
 	FrameNumber_t	TimeStamp;
 	vec3f			MoveDir;
-	int				Damage;
+	sint32				Damage;
 
 	CMiscViperBomb () :
 	  CBaseEntity (),
@@ -852,7 +852,7 @@ public:
 	{
 	};
 
-	CMiscViperBomb (int Index) :
+	CMiscViperBomb (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -974,7 +974,7 @@ public:
 	{
 	};
 
-	CMiscSattelite (int Index) :
+	CMiscSattelite (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -1026,7 +1026,7 @@ public:
 	{
 	};
 
-	CLightMine1 (int Index) :
+	CLightMine1 (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	{
@@ -1058,7 +1058,7 @@ public:
 	{
 	};
 
-	CLightMine2 (int Index) :
+	CLightMine2 (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	{
@@ -1093,7 +1093,7 @@ public:
 	{
 	};
 
-	CMiscGibArm (int Index) :
+	CMiscGibArm (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -1146,7 +1146,7 @@ public:
 	{
 	};
 
-	CMiscGibLeg (int Index) :
+	CMiscGibLeg (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -1199,7 +1199,7 @@ public:
 	{
 	};
 
-	CMiscGibHead (int Index) :
+	CMiscGibHead (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),
@@ -1249,7 +1249,7 @@ public:
 	  {
 	  };
 
-	CMiscModel (int Index) :
+	CMiscModel (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index)
 	  {

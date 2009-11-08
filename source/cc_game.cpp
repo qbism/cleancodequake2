@@ -150,7 +150,7 @@ void CheckDMRules ()
 
 	if (fraglimit->Integer())
 	{
-		for (int i=0 ; i<game.maxclients ; i++)
+		for (sint32 i=0 ; i<game.maxclients ; i++)
 		{
 			CPlayerEntity *cl = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			if (!cl->GetInUse())
@@ -184,7 +184,7 @@ void ExitLevel ()
 	ClientEndServerFrames ();
 
 	// clear some things before going to next level
-	for (int i = 0; i < game.maxclients; i++)
+	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1 + i].Entity);
 		if (!ent->GetInUse())
@@ -209,7 +209,7 @@ inline void CheckNeedPass ()
 	// as needed
 	if (password->Modified() || spectator_password->Modified()) 
 	{
-		int need = 0;
+		sint32 need = 0;
 
 		if (*password->String() && Q_stricmp(password->String(), "none"))
 			need |= 1;
@@ -224,7 +224,7 @@ void ClientEndServerFrames ()
 {
 	// calc the player views now that all pushing
 	// and damage has been added
-	for (int i = 1; i <= game.maxclients ; i++)
+	for (sint32 i = 1; i <= game.maxclients ; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!Player->GetInUse())
@@ -280,7 +280,7 @@ void CC_RunFrame ()
 		return;
 	}
 
-	int		i;
+	sint32		i;
 	edict_t	*ent;
 
 	level.Frame++;
@@ -373,10 +373,10 @@ void CC_RunFrame ()
 
 void SetupGamemode ()
 {
-	int dmInt = deathmatch->Integer(),
+	sint32 dmInt = deathmatch->Integer(),
 		coopInt = coop->Integer();
 #ifdef CLEANCTF_ENABLED
-	int ctfInt = ctf->Integer();
+	sint32 ctfInt = ctf->Integer();
 #endif
 
 	// Did we request deathmatch?

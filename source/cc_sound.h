@@ -35,9 +35,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define __CC_SOUND_H__
 
 void PlaySoundFrom	(CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex,
-					byte volume = 255, EAttenuation attenuation = ATTN_NORM, byte timeOfs = 0);
+					uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
 void PlaySoundAt	(vec3f origin, CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex,
-					byte volume = 255, EAttenuation attenuation = ATTN_NORM, byte timeOfs = 0);
+					uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
 
 #else
 FILE_WARNING
