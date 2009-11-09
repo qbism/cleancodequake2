@@ -63,8 +63,8 @@ void VerifyVersionFile ()
 	uint8 minor;
 	uint16 major;
 	uint32 build;
-	Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
 	Parser.ParseDataType<uint16> (PSF_ALLOW_NEWLINES, &major, 1);
+	Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
 	Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
 	if (CompareVersion (prefix.c_str(), minor, major, build))
@@ -136,7 +136,7 @@ void CheckNewVersion ()
 	curl_handle = curl_easy_init();
 
 	/* specify URL to get */
-	curl_easy_setopt(curl_handle, CURLOPT_URL, "http://cool.haxx.se/");
+	curl_easy_setopt(curl_handle, CURLOPT_URL, "http://cleancodequake2.googlecode.com/svn/trunk/version.ver");
 
 	/* send all data to this function  */
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -166,7 +166,30 @@ void CheckNewVersion ()
 	*/
 
 	if(chunk.memory)
+	{
+		CParser Parser (chunk.memory, PSP_COMMENT_LINE);
+
+		const char *token;
+
+		std::cc_string prefix;
+		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
+		prefix = token;
+
+		uint8 minor;
+		uint16 major;
+		uint32 build;
+		Parser.ParseDataType<uint16> (PSF_ALLOW_NEWLINES, &major, 1);
+		Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
+		Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
+
+		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
+			DebugPrintf ("==================================\n*****************************\nThere is an update available for CleanCode!\nPlease go to http://code.google.com/p/cleancodequake2 and update accordingly.\nYour version:   %s\nUpdate version: \"%s.%u.%04u.%05u\"\n*****************************\n==================================\n", CLEANCODE_VERSION,
+			prefix.c_str(), major, minor, build);
+		else
+			DebugPrintf ("Your version of CleanCode is up to date.\n");
+
 		Mem_Free (chunk.memory);
+	}
 
 	/* we're done with libcurl, so clean it up */
 	curl_global_cleanup();

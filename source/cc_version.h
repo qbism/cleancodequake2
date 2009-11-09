@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CLEANCODE_VERSION_PREFIX	"pr"
 #define CLEANCODE_VERSION_MAJOR		"0"
 #define CLEANCODE_VERSION_MINOR		"0000"
-#define CLEANCODE_VERSION_BUILD		"00200"
+#define CLEANCODE_VERSION_BUILD		"00202"
 
 static const uint8 verMajor = atoi(CLEANCODE_VERSION_MAJOR);
 static const uint16 verMinor = atoi(CLEANCODE_VERSION_MINOR);
