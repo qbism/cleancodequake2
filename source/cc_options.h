@@ -127,6 +127,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Define this to get rid of TR1-specific headers
 //#define _CC_NO_TR1
 
+// Define this if you don't want to use CURL to get version info.
+//#define CC_NO_CURL
+
 #else
 FILE_WARNING
 #endif

@@ -559,6 +559,7 @@ void Cmd_Register ()
 	// CleanMenu commands
 	Cmd_AddCommand ("menu_left",			Cmd_MenuLeft_t,			CMD_SPECTATOR);
 	Cmd_AddCommand ("menu_right",			Cmd_MenuRight_t,		CMD_SPECTATOR);
+	Cmd_AddCommand ("cc_version",			Cmd_CCVersion_t,		CMD_SPECTATOR);
 
 #ifdef CLEANCTF_ENABLED
 	Cmd_AddCommand ("say_team",				GCTFSay_Team,			CMD_SPECTATOR);

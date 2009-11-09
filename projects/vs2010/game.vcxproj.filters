@@ -118,6 +118,9 @@
     <Filter Include="CleanCode Files\Utils">
       <UniqueIdentifier>{54a35970-4bb9-4a66-a282-5ff9a6687e9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Version">
+      <UniqueIdentifier>{2a487172-5d6c-416d-b536-84bd3470081b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Old Files">
       <UniqueIdentifier>{6151557a-1675-4cf9-841e-d70008cffad5}</UniqueIdentifier>
     </Filter>
@@ -468,6 +471,9 @@
     <ClCompile Include="..\..\source\cc_utils.cpp">
       <Filter>CleanCode Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_version.cpp">
+      <Filter>CleanCode Files\Version</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\source\cc_weaponentities.cpp">
       <Filter>CleanCode Files\Entities</Filter>
     </ClCompile>
@@ -814,6 +820,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_utils.h">
       <Filter>CleanCode Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_version.h">
+      <Filter>CleanCode Files\Version</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_weaponentities.h">
       <Filter>CleanCode Files\Entities</Filter>

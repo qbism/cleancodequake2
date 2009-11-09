@@ -199,13 +199,14 @@
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Winmm.lib;../../lib/zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;zlibr.lib;libeay32.lib;openldap.lib;ssleay32.lib;curllib_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -226,6 +227,7 @@
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>false</Profile>
+      <AdditionalLibraryDirectories>..\..\lib\</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Message>Copies the output to your Quake 2 baseq2 dir</Message>
@@ -672,6 +674,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
     <ClCompile Include="..\..\source\cc_tent.cpp" />
+    <ClCompile Include="..\..\source\cc_version.cpp" />
     <ClCompile Include="..\..\source\cc_write.cpp" />
     <ClCompile Include="..\..\source\cc_sbar.cpp" />
     <ClCompile Include="..\..\source\cc_frontend.cpp" />
@@ -792,6 +795,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_cvar.h" />
     <ClInclude Include="..\..\source\cc_trace.h" />
     <ClInclude Include="..\..\source\cc_tent.h" />
+    <ClInclude Include="..\..\source\cc_version.h" />
     <ClInclude Include="..\..\source\cc_write.h" />
     <ClInclude Include="..\..\source\cc_sbar.h" />
     <ClInclude Include="..\..\source\cc_indexing.h" />

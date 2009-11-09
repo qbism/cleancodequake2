@@ -41,6 +41,7 @@ class CPlayerEntity;
 // Stand-alone classes
 typedef sint32	FrameNumber_t;
 
+#include "cc_version.h"
 #include "cc_filesystem.h"
 #include "cc_platform.h"
 #include "cc_indexing.h"

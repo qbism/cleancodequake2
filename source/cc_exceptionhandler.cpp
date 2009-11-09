@@ -45,7 +45,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #ifdef id386
 #define USE_GZ
-#include "../minizip/zlib.h"
+#include "minizip/zlib.h"
 #endif
 
 #define APP_FULLNAME "CleanCode Quake II"

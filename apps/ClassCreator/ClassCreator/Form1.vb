@@ -41,12 +41,12 @@
     End Structure
 
     Public DataTypeArray() As DataType = { _
+    New DataType("Ignore", Nothing, Nothing, "FT_IGNORE"), _
     New DataType("Integer", "int", "0", "FT_INT"), _
     New DataType("UInteger", "uint32", "0", "FT_UINT"), _
     New DataType("Float", "float", "0.0f", "FT_FLOAT"), _
     New DataType("Vector", "vec3f", "", "FT_VECTOR"), _
     New DataType("Angle (yaw only)", "vec3f", "", "FT_YAWANGLE"), _
-    New DataType("Ignore", Nothing, Nothing, "FT_IGNORE"), _
     New DataType("Level String", "char", "NULL", "FT_LEVEL_STRING", True), _
     New DataType("Game String", "char", "NULL", "FT_GAME_STRING", True), _
     New DataType("Sound index", "MediaIndex", "0", "FT_SOUND_INDEX"), _
@@ -54,7 +54,8 @@
     New DataType("Model index", "MediaIndex", "0", "FT_MODEL_INDEX"), _
     New DataType("Frame/Time", "FrameNumber_t", "0", "FT_FRAMENUMBER"), _
     New DataType("Item", "CBaseItem", "NULL", "FT_ITEM", True), _
-    New DataType("Entity", "CBaseEntity", "NULL", "FT_ENTITY", True) _
+    New DataType("Entity", "CBaseEntity", "NULL", "FT_ENTITY", True), _
+    New DataType("Float to Byte", "byte", "0", "FT_FLOAT_TO_BYTE") _
     }
 
     Public Function DataTypeFromString(ByRef name As String) As DataType
@@ -65,8 +66,15 @@
     End Function
 
     Public Sub WriteVariables(ByRef WrittenClass As String)
+        Dim Count As Integer = 0
         For Each Row As DataGridViewRow In DataGridView1.Rows
             If (Row.Cells(0).EditedFormattedValue() Is "" Or Row.Cells(1).EditedFormattedValue() Is "" Or Row.Cells(2).EditedFormattedValue() Is "") Then Exit For
+
+            If (DataTypeFromString(Row.Cells(2).EditedFormattedValue()).Name = DataTypeArray(0).Name) Then
+                Continue For
+            End If
+
+            Count = Count + 1
             WrittenClass = WrittenClass + "\t" + DataTypeFromString(Row.Cells(2).EditedFormattedValue()).Type + " "
             If DataTypeFromString(Row.Cells(2).EditedFormattedValue()).Pointer = True Then
                 WrittenClass = WrittenClass + "*"
@@ -74,7 +82,7 @@
             WrittenClass = WrittenClass + Row.Cells(1).EditedFormattedValue().ToString() + ";\n"
         Next
 
-        If (DataGridView1.RowCount > 0) Then
+        If (Count > 0) Then
             WrittenClass = WrittenClass + "\n"
         End If
     End Sub
@@ -137,6 +145,25 @@
         End If
     End Sub
 
+    Public Sub InsertComment(ByRef WrittenClass As String, ByVal BasicComment As String, ByVal AdvancedComment As String)
+        If RadioButton1.Checked Then
+            Return
+        ElseIf RadioButton2.Checked Then
+            If BasicComment = Nothing Then Return
+
+            WrittenClass = WrittenClass + BasicComment
+        ElseIf RadioButton3.Checked Then
+            If AdvancedComment = Nothing Then
+                If BasicComment = Nothing Then Return
+
+                WrittenClass = WrittenClass + BasicComment
+                Return
+            End If
+
+            WrittenClass = WrittenClass + AdvancedComment
+        End If
+    End Sub
+
     Public Function CreateClass() As String
         ' Create the class
         Dim List As ListBox = ListBox1
@@ -145,9 +172,9 @@
         Dim WrittenClass As String
 
         WrittenClass = "class " + TextBox1.Text
-        If (CheckBox2.Checked) Then
-            WrittenClass = WrittenClass + " virtual"
-        End If
+        'If (CheckBox2.Checked) Then
+        'WrittenClass = WrittenClass + " virtual"
+        'End If
 
         WrittenClass = WrittenClass + " : "
 
@@ -172,8 +199,10 @@
         ' Constructor area
         WrittenClass = WrittenClass + "\n{\npublic:\n"
 
+        InsertComment(WrittenClass, Nothing, "\t// Variables\n")
         WriteVariables(WrittenClass)
 
+        InsertComment(WrittenClass, "\t// Constructors\n", "\t// Constructor for creating a new entity\n")
         WrittenClass = WrittenClass + "\t" + TextBox1.Text + " ()"
 
         If (ClassCode <> True) Then
@@ -186,10 +215,11 @@
                     WrittenClass = WrittenClass + ",\n\t  " + EntityTypeArray(Blah).ClassName + " ()"
                 Next
             End If
-            WrittenClass = WrittenClass + "\n\t{\n\t};\n\n\t"
+            WrittenClass = WrittenClass + "\n\t{\n\t};\n\n"
         End If
 
-        WrittenClass = WrittenClass + TextBox1.Text + " (int Index)"
+        InsertComment(WrittenClass, Nothing, "\t//Constructor for re-using an existing entity\n")
+        WrittenClass = WrittenClass + "\t" + TextBox1.Text + " (int Index)"
 
         If (ClassCode <> True) Then
             WrittenClass = WrittenClass + ";\n\n"
@@ -204,14 +234,15 @@
             WrittenClass = WrittenClass + "\n\t{\n\t};\n\n"
         End If
 
-        WriteFields(False, WrittenClass, List, Selected)
+        WriteFields(True, WrittenClass, List, Selected)
 
         ' Functions that must get overrode
         ' Only show Run if we'd have a dominance war
+        InsertComment(WrittenClass, "\t// Called to run the entity\n", "\t// Called to run the entity\n\t// Note that if you inherited certain classes you will\n\t// need to modify this accordingly.\n")
         If Selected.Count > 0 Then
             WrittenClass = WrittenClass + "\tbool Run ()"
             If (ClassCode <> True) Then
-                WrittenClass = WrittenClass + ";\n"
+                WrittenClass = WrittenClass + ";"
             Else
                 WrittenClass = WrittenClass + "\n\t{\n\t\treturn CBaseEntity::Run();\n\t};"
             End If
@@ -229,43 +260,69 @@
             If Num = 1 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
-                    WrittenClass = WrittenClass + "\tvoid Pain (CBaseEntity *other, float kick, int damage);\n\n\tvoid Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);\n"
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is damaged\n", Nothing)
+                    WrittenClass = WrittenClass + "\tvoid Pain (CBaseEntity *other, float kick, int damage);\n\n"
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is damaged and it's health\n\t// is below or equal to 0\n", Nothing)
+                    WrittenClass = WrittenClass + "\tvoid Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);\n"
                 Else
                     WroteSomething = True
-                    WrittenClass = WrittenClass + "\tvoid Pain (CBaseEntity *other, float kick, int damage)\n\t{\n\t};\n\n\tvoid Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)\n\t{\n\t};\n"
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is damaged\n", Nothing)
+                    WrittenClass = WrittenClass + "\tvoid Pain (CBaseEntity *other, float kick, int damage)\n\t{\n\t};\n\n"
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is damaged and it's health\n\t// is below or equal to 0\n", Nothing)
+                    WrittenClass = WrittenClass + "\tvoid Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 2 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is blocked by a push physics object\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid Blocked (CBaseEntity *other);\n"
                 Else
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is blocked by a push physics object\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid Blocked (CBaseEntity *other)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 3 Then
                 If Selected.Contains(14) <> True Then
                     If (ClassCode <> True) Then
                         WroteSomething = True
+
+                        InsertComment(WrittenClass, "\t// Called when the entity's NextThink has reached current frame\n", Nothing)
                         WrittenClass = WrittenClass + "\tvoid Think ();\n"
                     Else
                         WroteSomething = True
+
+                        InsertComment(WrittenClass, "\t// Called when the entity's NextThink has reached current frame\n", Nothing)
                         WrittenClass = WrittenClass + "\tvoid Think ()\n\t{\n\t};\n"
                     End If
                 End If
             ElseIf Num = 4 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity collides\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);\n"
                 Else
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity collides\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 5 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is used by another entity\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid Use (CBaseEntity *other, CBaseEntity *activator);\n"
                 Else
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is used by another entity\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid Use (CBaseEntity *other, CBaseEntity *activator)\n\t{\n\t};\n"
                 End If
                 ' Physics don't have any
@@ -273,9 +330,13 @@
             ElseIf Num = 14 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is done it's movement\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid DoEndFunc ();\n\n\tvoid Think ();\n"
                 Else
                     WroteSomething = True
+
+                    InsertComment(WrittenClass, "\t// Called when the entity is done it's movement\n", Nothing)
                     WrittenClass = WrittenClass + "\tvoid DoEndFunc ()\n\t{\n\t};\n\n\tvoid Think ()\n\t{\n\t};\n"
                 End If
             End If
@@ -287,11 +348,12 @@
             End If
         Next
 
-        If co <> 0 Then
+        If co <> 0 And WrittenClass.EndsWith("\n\n") = False Then
             WrittenClass = WrittenClass + "\n"
         End If
 
         If Selected.Contains(0) Then
+            InsertComment(WrittenClass, "\t// Called when the entity gets spawned\n", Nothing)
             If (ClassCode <> True) Then
                 WrittenClass = WrittenClass + "\tvoid Spawn ();\n"
             Else
@@ -359,8 +421,46 @@
             Next
 
             If Selected.Contains(0) Then
-                WrittenClass = WrittenClass + "\nvoid " + TextBox1.Text + "::" + "Spawn ()\n{\n};\n"
+                If WrittenClass.EndsWith("\n\n") = False Then WrittenClass = WrittenClass + "\n"
+                WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Spawn ()\n{\n};\n"
             End If
+        End If
+
+        ' Do we have fields to write?
+        If DataGridView1.RowCount Then
+            ' Were we proceeded by two newlines?
+            If WrittenClass.EndsWith("\n") = True Then
+                If WrittenClass.EndsWith("\n\n") = False Then
+                    WrittenClass = WrittenClass + "\n"
+                End If
+            Else
+                WrittenClass = WrittenClass + "\n\n"
+            End If
+
+            ' Write the header portion
+            WrittenClass = WrittenClass + "ENTITYFIELDS_BEGIN(" + TextBox1.Text + ")\n{"
+
+            ' Write fields
+            For Each Row As DataGridViewRow In DataGridView1.Rows
+                If (Row.Cells(0).EditedFormattedValue() Is "" Or Row.Cells(1).EditedFormattedValue() Is "" Or Row.Cells(2).EditedFormattedValue() Is "") Then Exit For
+                Dim Type As DataType = DataTypeFromString(Row.Cells(2).EditedFormattedValue())
+
+                Dim ExtraFlags As String = ""
+                If CType(Row.Cells(3), DataGridViewCheckBoxCell).EditingCellFormattedValue = True Then
+                    ExtraFlags = ExtraFlags + " | FT_SAVABLE"
+                End If
+                If CType(Row.Cells(4), DataGridViewCheckBoxCell).EditingCellFormattedValue = True Then
+                    ExtraFlags = ExtraFlags + " | FT_NOSPAWN"
+                End If
+
+                WrittenClass = WrittenClass + "\n\tCEntityField (""" + Row.Cells(0).EditedFormattedValue().ToString() + """, EntityMemberOffset(" + TextBox1.Text + "," + Row.Cells(1).EditedFormattedValue().ToString() + "), " + Type.EnumName + ExtraFlags + "),"
+            Next
+
+            WrittenClass = WrittenClass + "\n};\nENTITYFIELDS_END(" + TextBox1.Text + ")\n\n"
+        End If
+
+        If Selected.Contains(0) Then
+            WrittenClass = WrittenClass + "LINK_CLASSNAME_TO_CLASS (""" + TextBox2.Text + """, " + TextBox1.Text + ");"
         End If
 
         WrittenClass = WrittenClass.Replace("\n", vbNewLine)

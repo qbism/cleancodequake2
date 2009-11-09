@@ -212,6 +212,7 @@ public:
 		}
 	};
 };
+
 void SvCmd_EntList_f ()
 {
 	std::cc_string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
@@ -270,10 +271,11 @@ void SvCmd_IndexList_f ();
 
 void SvCmd_Register ()
 {
-	SvCmd_AddCommand ("entlist", SvCmd_EntList_f);
-	SvCmd_AddCommand ("indexlist", SvCmd_IndexList_f);
-	SvCmd_AddCommand ("dump", SvCmd_Dump_f);
-	SvCmd_AddCommand ("break", SvCmd_Break_f);
+	SvCmd_AddCommand ("entlist",				SvCmd_EntList_f);
+	SvCmd_AddCommand ("indexlist",				SvCmd_IndexList_f);
+	SvCmd_AddCommand ("dump",					SvCmd_Dump_f);
+	SvCmd_AddCommand ("break",					SvCmd_Break_f);
+	SvCmd_AddCommand ("cc_version",				SvCmd_CCVersion_t);
 }
 
 /*

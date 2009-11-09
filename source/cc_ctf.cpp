@@ -536,38 +536,53 @@ SAY_TEAM
 ======================================================================
 */
 
+#define HASHSIZE_CLASSNAMES 256
+
 // This array is in 'importance order', it indicates what items are
 // more important when reporting their names.
-struct {
-	char *classname;
-	sint32 priority;
-} loc_names[] = 
+class CLocName
 {
-	{	"item_flag_team1",			1 },
-	{	"item_flag_team2",			1 },
-	{	"item_quad",				2 }, 
-	{	"item_invulnerability",		2 },
-	{	"weapon_bfg",				3 },
-	{	"weapon_railgun",			4 },
-	{	"weapon_rocketlauncher",	4 },
-	{	"weapon_hyperblaster",		4 },
-	{	"weapon_chaingun",			4 },
-	{	"weapon_grenadelauncher",	4 },
-	{	"weapon_machinegun",		4 },
-	{	"weapon_supershotgun",		4 },
-	{	"weapon_shotgun",			4 },
-	{	"item_power_screen",		5 },
-	{	"item_power_shield",		5 },
-	{	"item_armor_body",			6 },
-	{	"item_armor_combat",		6 },
-	{	"item_armor_jacket",		6 },
-	{	"item_silencer",			7 },
-	{	"item_breather",			7 },
-	{	"item_enviro",				7 },
-	{	"item_adrenaline",			7 },
-	{	"item_bandolier",			8 },
-	{	"item_pack",				8 },
-	{ NULL, 0 }
+public:
+	std::cc_string		classname;
+	uint32				hash;
+
+	uint8				priority;
+
+	CLocName (const char *name, uint8 priority) :
+		classname(name),
+		priority(priority),
+		hash(Com_HashGeneric (name, HASHSIZE_CLASSNAMES))
+	{
+	};
+};
+
+CLocName LocNames[] = 
+{
+	CLocName(	"item_flag_team1",			1 ),
+	CLocName(	"item_flag_team2",			1 ),
+	CLocName(	"item_quad",				2 ), 
+	CLocName(	"item_invulnerability",		2 ),
+	CLocName(	"weapon_bfg",				3 ),
+	CLocName(	"weapon_railgun",			4 ),
+	CLocName(	"weapon_rocketlauncher",	4 ),
+	CLocName(	"weapon_hyperblaster",		4 ),
+	CLocName(	"weapon_chaingun",			4 ),
+	CLocName(	"weapon_grenadelauncher",	4 ),
+	CLocName(	"weapon_machinegun",		4 ),
+	CLocName(	"weapon_supershotgun",		4 ),
+	CLocName(	"weapon_shotgun",			4 ),
+	CLocName(	"item_power_screen",		5 ),
+	CLocName(	"item_power_shield",		5 ),
+	CLocName(	"item_armor_body",			6 ),
+	CLocName(	"item_armor_combat",		6 ),
+	CLocName(	"item_armor_jacket",		6 ),
+	CLocName(	"item_silencer",			7 ),
+	CLocName(	"item_breather",			7 ),
+	CLocName(	"item_enviro",				7 ),
+	CLocName(	"item_adrenaline",			7 ),
+	CLocName(	"item_bandolier",			8 ),
+	CLocName(	"item_pack",				8 ),
+	CLocName(	"",							0 )
 };
 
 static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream &OutMessage)
@@ -575,7 +590,6 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	CBaseEntity *hot = NULL;
 	float hotdist = 999999, newdist;
 	sint32 hotindex = 999;
-	sint32 i;
 	CBaseItem *item;
 	sint32 nearteam = -1;
 	CFlagEntity *flag1, *flag2;
@@ -587,17 +601,24 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	while ((what = FindRadius<ENT_BASE>(what, origin, 1024, false)) != NULL)
 	{
 		// find what in loc_classnames
-		for (i = 0; loc_names[i].classname; i++)
-			if (strcmp(what->gameEntity->classname, loc_names[i].classname) == 0)
+		uint32 hash = Com_HashGeneric (what->gameEntity->classname, HASHSIZE_CLASSNAMES);
+
+		uint8 i;
+		for (i = 0; !LocNames[i].classname.empty(); i++)
+		{
+			if (hash == LocNames[i].hash && strcmp(what->gameEntity->classname, LocNames[i].classname.c_str()) == 0)
 				break;
-		if (!loc_names[i].classname)
+		}
+
+		if (LocNames[i].classname.empty())
 			continue;
+
 		// something we can see get priority over something we can't
 		cansee = loc_CanSee(what, who);
 		if (cansee && !hotsee)
 		{
 			hotsee = true;
-			hotindex = loc_names[i].priority;
+			hotindex = LocNames[i].priority;
 			hot = what;
 
 			hotdist = (what->State.GetOrigin() - origin).Length();
@@ -606,12 +627,12 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 		// if we can't see this, but we have something we can see, skip it
 		if (hotsee && !cansee)
 			continue;
-		if (hotsee && hotindex < loc_names[i].priority)
+		if (hotsee && hotindex < LocNames[i].priority)
 			continue;
 
 		newdist = (what->State.GetOrigin() - origin).Length();
 		if (newdist < hotdist || 
-			(cansee && loc_names[i].priority < hotindex))
+			(cansee && LocNames[i].priority < hotindex))
 		{
 			hot = what;
 			hotdist = newdist;
@@ -1583,8 +1604,7 @@ void CTFWarp(CPlayerEntity *ent)
 
 	if (ArgCount() < 2)
 	{
-		ent->PrintToClient (PRINT_HIGH, "Where do you want to warp to?\n");
-		ent->PrintToClient (PRINT_HIGH, "Available levels are: %s\n", warp_list->String());
+		ent->PrintToClient (PRINT_HIGH, "Where do you want to warp to?\nAvailable levels are: %s\n", warp_list->String());
 		return;
 	}
 

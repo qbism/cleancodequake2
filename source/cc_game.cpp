@@ -573,7 +573,7 @@ void CC_InitGame ()
 
 	//Mem_Init ();
 	DebugPrintf ("==== InitGame ====\n");
-	DebugPrintf ("Running CleanCode Quake2, built on %s (%s %s)\nInitializing game...", __TIMESTAMP__, BUILDSTRING, CPUSTRING);
+	DebugPrintf ("Running CleanCode Quake2 version %s, built on %s (%s %s)\nInitializing game...", CLEANCODE_VERSION, __TIMESTAMP__, BUILDSTRING, CPUSTRING);
 
 	seedMT (time(NULL));
 
@@ -613,6 +613,7 @@ void CC_InitGame ()
 	Mem_Register ();
 
 	DebugPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
+	InitVersion ();
 }
 
 void CC_ShutdownGame ()
