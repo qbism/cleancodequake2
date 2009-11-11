@@ -530,7 +530,7 @@ void CMaiden::Dodge (CBaseEntity *attacker, float eta)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker->gameEntity;
+		Entity->Enemy = attacker;
 
 	CurrentMove = &ChickMoveDuck;
 }

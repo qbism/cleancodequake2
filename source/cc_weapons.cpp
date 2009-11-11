@@ -309,7 +309,7 @@ public:
 			return;
 		}
 
-		gameEntity->item = item;
+		LinkedItem = item;
 		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;

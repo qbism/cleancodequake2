@@ -917,7 +917,7 @@ public:
 		Touchable = true;
 		Activator = activator;
 
-		CMiscViper *viper = entity_cast<CMiscViper>(CC_Find (NULL, FOFS(classname), "misc_viper"));
+		CMiscViper *viper = CC_Find<CMiscViper, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "misc_viper");
 
 		Velocity = viper->Dir * viper->Speed;
 

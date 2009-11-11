@@ -618,7 +618,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 	{
 		/*it = NItems::PowerShield;
 		CItemEntity *it_ent = QNew (com_levelPool, 0) CItemEntity();
-		it_ent->gameEntity->classname = it->Classname;
+		it_ent->ClassName = it->Classname;
 		it_ent->Spawn (it);
 
 		it_ent->Touch (ent, NULL, NULL);
@@ -678,7 +678,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 	else
 	{
 		CItemEntity *it_ent = QNew (com_levelPool, 0) CItemEntity();
-		it_ent->gameEntity->classname = it->Classname;
+		it_ent->ClassName = it->Classname;
 		it_ent->Spawn(it);
 		it_ent->Touch (ent, NULL, NULL);
 		if (it_ent->GetInUse())

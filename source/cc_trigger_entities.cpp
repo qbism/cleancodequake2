@@ -78,7 +78,9 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 
-class CTriggerBase : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
+#include "cc_brushmodels.h"
+
+class CTriggerBase : public CMapEntity, public CBrushModel, public CTouchableEntity, public CUsableEntity
 {
 public:
 	enum
@@ -97,9 +99,9 @@ public:
 	CTriggerBase () :
 	  CBaseEntity (),
 	  CMapEntity (),
-	  CThinkableEntity (),
 	  CTouchableEntity (),
 	  CUsableEntity (),
+	  CBrushModel (),
 	  ThinkType (TRIGGER_THINK_NONE)
 	{
 	};
@@ -107,9 +109,9 @@ public:
 	CTriggerBase (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
-	  CThinkableEntity (Index),
 	  CTouchableEntity (Index),
 	  CUsableEntity (Index),
+	  CBrushModel (Index),
 	  ThinkType (TRIGGER_THINK_NONE)
 	{
 	};
@@ -183,6 +185,11 @@ public:
 		GetSvFlags() = SVF_NOCLIENT;
 	};
 
+	virtual bool CheckValidity ()
+	{
+		return CMapEntity::CheckValidity();
+	};
+
 	// the trigger was just activated
 	// ent->activator should be set to the activator so it can be held through a delay
 	// so wait for the delay time before firing
@@ -225,7 +232,7 @@ bool			CTriggerBase::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
 };
 
 
@@ -315,6 +322,11 @@ public:
 
 		Link ();
 	};
+
+	virtual bool CheckValidity ()
+	{
+		return CMapEntity::CheckValidity();
+	};
 };
 
 LINK_CLASSNAME_TO_CLASS ("trigger_multiple", CTriggerMultiple);
@@ -363,6 +375,14 @@ public:
 
 		Wait = -1;
 		CTriggerMultiple::Spawn ();
+	};
+
+	bool CheckValidity ()
+	{
+		// Yet another map hack
+		if (!Q_stricmp(level.ServerLevelName.c_str(), "command") && !Q_stricmp(Model, "*27"))
+			SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
+		return CMapEntity::CheckValidity ();
 	};
 };
 
@@ -502,7 +522,7 @@ public:
 		else
 		{
 			// FIXME: replace this shit
-			if (strcmp(other->gameEntity->classname, "grenade") == 0)
+			if (strcmp(other->ClassName, "grenade") == 0)
 			{
 				if (other->EntityFlags & ENT_PHYSICS)
 					entity_cast<CPhysicsEntity>(other)->Velocity = vel;
@@ -840,7 +860,7 @@ Use "item" to specify the required key, for example "key_data_cd"
 class CTriggerKey : public CMapEntity, public CUsableEntity
 {
 public:
-	CBaseItem	*Item;
+	CBaseItem			*Item;
 	FrameNumber_t		TouchDebounce;
 
 	CTriggerKey () :
@@ -861,10 +881,7 @@ public:
 	{
 	};
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	bool Run ()
 	{
@@ -942,12 +959,9 @@ public:
 
 	void Spawn ()
 	{
-		Item = gameEntity->item;
-
 		if (!Target)
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
-			//gi.dprintf("%s at (%f %f %f) has no target\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 			return;
 		}
 
@@ -955,5 +969,19 @@ public:
 		SoundIndex ("misc/keyuse.wav");
 	};
 };
+
+ENTITYFIELDS_BEGIN(CTriggerKey)
+{
+	CEntityField ("item", EntityMemberOffset(CTriggerKey,Item), FT_ITEM),
+};
+ENTITYFIELDS_END(CTriggerKey)
+
+bool CTriggerKey::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTriggerKey> (this, Key, Value))
+		return true;
+
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
 
 LINK_CLASSNAME_TO_CLASS ("trigger_key", CTriggerKey);

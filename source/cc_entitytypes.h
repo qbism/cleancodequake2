@@ -94,6 +94,7 @@ public:
 	char				*Message;
 	char				*Target;
 	char				*KillTarget;
+	char				*PathTarget;
 	CBaseEntity			*Activator;
 	FrameNumber_t		Delay;
 	MediaIndex			NoiseIndex;

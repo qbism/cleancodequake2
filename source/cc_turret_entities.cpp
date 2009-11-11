@@ -158,10 +158,7 @@ void CTurretBreach::Think ()
 
 		// get and save info for muzzle location
 		if (!Target)
-		{
-			//gi.dprintf("%s at (%f %f %f) needs a target\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Needs a target\n");
-		}
 		else
 		{
 			CBaseEntity *targ = CC_PickTarget (Target);
@@ -291,7 +288,7 @@ bool			CTurretBreach::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (CTurretEntityBase::ParseField (Key, Value));
 };
 
 void CTurretBreach::Spawn ()

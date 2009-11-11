@@ -60,8 +60,8 @@ void Map_Print (EMapPrintType printType, CBaseEntity *ent, vec3f &origin)
 	}
 
 	DebugPrintf ("Entity #%i ", level.EntityNumber);
-	if (ent && ent->gameEntity->classname)
-		DebugPrintf ("(%s) ", ent->gameEntity->classname);
+	if (ent && ent->ClassName)
+		DebugPrintf ("(%s) ", ent->ClassName);
 	if (origin)
 		DebugPrintf ("(%.0f %.0f %.0f)", origin.X, origin.Y, origin.Z);
 	DebugPrintf ("\n");

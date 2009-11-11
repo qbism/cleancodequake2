@@ -43,6 +43,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <process.h>
 #include <dbghelp.h>
 
+#ifndef VER_SUITE_WH_SERVER
+#define VER_SUITE_WH_SERVER 0x00008000 // sigh
+#endif
+
 #ifdef id386
 #define USE_GZ
 #include "minizip/zlib.h"
@@ -331,7 +335,7 @@ SYMGETMODULEBASE64			fnSymGetModuleBase64;
 SYMFROMADDR					fnSymFromAddr;
 SYMCLEANUP					fnSymCleanup;
 MINIDUMPWRITEDUMP			fnMiniDumpWriteDump;
-CHAR						searchPath[MAX_PATH], *p, *upMessage;
+CHAR						searchPath[MAX_PATH], *tempPointer, *upMessage;
 CHAR						reportPath[MAX_PATH];
 CHAR						dumpPath[MAX_PATH];
 MINIDUMP_EXCEPTION_INFORMATION miniInfo;
@@ -382,8 +386,13 @@ std::cc_string GetOSDisplayString ()
 
 	// Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
 
+	HMODULE Kernel32 = GetModuleHandle(TEXT("kernel32.dll"));
+
+	if (!Kernel32)
+		return "Unknown";
+
 	pGNSI = (PGNSI) GetProcAddress(
-		GetModuleHandle(TEXT("kernel32.dll")), 
+		Kernel32, 
 		"GetNativeSystemInfo");
 	if(NULL != pGNSI)
 		pGNSI(&si);
@@ -415,7 +424,7 @@ std::cc_string GetOSDisplayString ()
 			}
 
 			pGPI = (PGPI) GetProcAddress(
-				GetModuleHandle(TEXT("kernel32.dll")), 
+				Kernel32, 
 				"GetProductInfo");
 
 			pGPI( osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
@@ -643,9 +652,9 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 
 	// Used to determine the directory for dump placement
 	GetModuleFileNameA (NULL, searchPath, sizeof(searchPath));
-	p = strrchr (searchPath, '\\');
-	if (p)
-		*p = '\0';
+	tempPointer = strrchr (searchPath, '\\');
+	if (tempPointer)
+		*tempPointer = '\0';
 
 	// Get the system time
 	GetSystemTime (&timeInfo);
@@ -780,16 +789,16 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 		Q_strncpyz (szModuleName, "<unknown>", sizeof(szModuleName));
 		fnEnumerateLoadedModules64 (hProcess, (PENUMLOADED_MODULES_CALLBACK64)EnumerateLoadedModulesProcInfo, (VOID *)(DWORD)frame.AddrPC.Offset);
 
-		p = strrchr (szModuleName, '\\');
-		if (p)
-			p++;
+		tempPointer = strrchr (szModuleName, '\\');
+		if (tempPointer)
+			tempPointer++;
 		else
-			p = szModuleName;
+			tempPointer = szModuleName;
 
 		if (fnSymFromAddr (hProcess, frame.AddrPC.Offset, &fnOffset, symInfo) && !(symInfo->Flags & SYMFLAG_EXPORT))
-			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!%s+0x%I64X %lu\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], p, symInfo->Name, fnOffset, symInfo->Tag);
+			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!%s+0x%I64X %lu\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], tempPointer, symInfo->Name, fnOffset, symInfo->Tag);
 		else
-			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!0x%I64X\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], p, frame.AddrPC.Offset);
+			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!0x%I64X\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], tempPointer, frame.AddrPC.Offset);
 	}
 
 	fprintf (fhReport, "\r\n");

@@ -708,12 +708,8 @@ CC_EXCEPTION_HANDLER_BEGIN
 			continue;
 
 		// fire any cross-level triggers
-		if (ent->classname)
-			if (strcmp(ent->classname, "target_crosslevel_target") == 0)
-				// backwards compatoh you get the picture
-			{
-				entity_cast<CThinkableEntity>(ent->Entity)->NextThink = level.Frame + (ent->delay * 10);
-			}
+		if ((ent->Entity->ClassName) && strcmp(ent->Entity->ClassName, "target_crosslevel_target") == 0)
+			entity_cast<CThinkableEntity>(ent->Entity)->NextThink = level.Frame + (ent->delay * 10);
 	}
 
 #ifdef CC_USE_EXCEPTION_HANDLER

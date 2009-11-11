@@ -150,12 +150,13 @@ public:
 			return;
 
 		va_list		argptr;
-		char		text[2048];
+		static char		text[MAX_COMPRINT/2];
 
 		va_start (argptr, fmt);
-		vsnprintf (text, sizeof(text), fmt, argptr);
+		vsnprintf (text, (MAX_COMPRINT/2)-1, fmt, argptr);
 		va_end (argptr);
-		
+
+		text[MAX_COMPRINT/2-1] = 0;
 		Write (text, strlen(text));
 	};
 

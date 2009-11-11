@@ -533,7 +533,7 @@ bool CJorg::CheckAttack ()
 		spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		tr (spot1, spot2, Entity->gameEntity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.ent != Entity->Enemy)
@@ -713,13 +713,13 @@ bool CJorg::CheckAttack ()
 	{
 		// originally, just 0.3
 		float strafe_chance;
-		if (!(strcmp(Entity->gameEntity->classname, "monster_daedalus")))
+		if (!(strcmp(Entity->ClassName, "monster_daedalus")))
 			strafe_chance = 0.8f;
 		else
 			strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (Entity->Enemy->gameEntity->classname) && (!strcmp(Entity->Enemy->gameEntity->classname, "tesla")))
+		if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)

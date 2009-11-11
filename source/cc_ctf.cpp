@@ -307,7 +307,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 	}
 
 	CFlagEntity *flag = NULL;
-	while ((flag = entity_cast<CFlagEntity>(CC_Find (flag, FOFS(classname), c))) != NULL)
+	while ((flag = CC_Find<CFlagEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (flag, c)) != NULL)
 	{
 		if (!(flag->SpawnFlags & DROPPED_ITEM))
 			break;
@@ -409,7 +409,7 @@ void CTFResetFlag(ETeamIndex Team)
 	}
 
 	CFlagEntity *ent = NULL;
-	while ((ent = entity_cast<CFlagEntity>(CC_Find (ent, FOFS(classname), c))) != NULL)
+	while ((ent = CC_Find<CFlagEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (ent, c)) != NULL)
 	{
 		if (ent->SpawnFlags & DROPPED_ITEM)
 			ent->Free ();
@@ -601,12 +601,12 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	while ((what = FindRadius<ENT_BASE>(what, origin, 1024, false)) != NULL)
 	{
 		// find what in loc_classnames
-		uint32 hash = Com_HashGeneric (what->gameEntity->classname, HASHSIZE_CLASSNAMES);
+		uint32 hash = Com_HashGeneric (what->ClassName, HASHSIZE_CLASSNAMES);
 
 		uint8 i;
 		for (i = 0; !LocNames[i].classname.empty(); i++)
 		{
-			if (hash == LocNames[i].hash && strcmp(what->gameEntity->classname, LocNames[i].classname.c_str()) == 0)
+			if (hash == LocNames[i].hash && strcmp(what->ClassName, LocNames[i].classname.c_str()) == 0)
 				break;
 		}
 
@@ -651,14 +651,14 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	// see if there's more than one in the map, if so
 	// we need to determine what team is closest
 	what = NULL;
-	while ((what = CC_Find(what, FOFS(classname), hot->gameEntity->classname)) != NULL)
+	while ((what = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (what, hot->ClassName)) != NULL)
 	{
 		if (what == hot)
 			continue;
 		// if we are here, there is more than one, find out if hot
 		// is closer to red flag or blue flag
-		if ((flag1 = entity_cast<CFlagEntity>(CC_Find(NULL, FOFS(classname), "item_flag_team1"))) != NULL &&
-			(flag2 = entity_cast<CFlagEntity>(CC_Find(NULL, FOFS(classname), "item_flag_team2"))) != NULL)
+		if ((flag1 = CC_Find<CFlagEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team1")) != NULL &&
+			(flag2 = CC_Find<CFlagEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team2")) != NULL)
 		{
 			hotdist = (hot->State.GetOrigin() - flag1->State.GetOrigin()).Length();
 			newdist = (hot->State.GetOrigin() - flag2->State.GetOrigin()).Length();
@@ -670,7 +670,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 		break;
 	}
 
-	if ((item = FindItemByClassname(hot->gameEntity->classname)) == NULL)
+	if ((item = FindItemByClassname(hot->ClassName)) == NULL)
 	{
 		OutMessage << "nowhere";
 		return;

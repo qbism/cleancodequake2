@@ -115,17 +115,14 @@
     <Filter Include="CleanCode Files\Saving/Loading">
       <UniqueIdentifier>{13f69ce3-5b98-43d2-979b-dafa8a655abc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Timer">
+      <UniqueIdentifier>{e73e1350-3da1-400b-bde8-6e90e4234ae4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CleanCode Files\Utils">
       <UniqueIdentifier>{54a35970-4bb9-4a66-a282-5ff9a6687e9b}</UniqueIdentifier>
     </Filter>
     <Filter Include="CleanCode Files\Version">
       <UniqueIdentifier>{2a487172-5d6c-416d-b536-84bd3470081b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Old Files">
-      <UniqueIdentifier>{6151557a-1675-4cf9-841e-d70008cffad5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Old Files\Header">
-      <UniqueIdentifier>{8124ace8-8e20-4197-9263-90be10c4a08d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{0fc9038f-410e-4b84-b499-981e6de3eb20}</UniqueIdentifier>
@@ -458,6 +455,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_tent.cpp">
       <Filter>CleanCode Files\Game API\Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_timer.cpp">
+      <Filter>CleanCode Files\Timer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_trace.cpp">
       <Filter>CleanCode Files\Game API\Trace</Filter>
@@ -809,6 +809,9 @@
     <ClInclude Include="..\..\source\cc_tent.h">
       <Filter>CleanCode Files\Game API\Messages</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\cc_timer.h">
+      <Filter>CleanCode Files\Timer</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\source\cc_trace.h">
       <Filter>CleanCode Files\Game API\Trace</Filter>
     </ClInclude>
@@ -836,80 +839,74 @@
     <ClInclude Include="..\..\source\cc_write.h">
       <Filter>CleanCode Files\Game API\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\game.h">
-      <Filter>Old Files\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\g_local.h">
-      <Filter>Old Files\Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\m_actor.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_berserk.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_boss2.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_boss31.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_boss32.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_brain.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_chick.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_flipper.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_float.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_flyer.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_gladiator.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_gunner.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_hover.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_infantry.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_insane.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_medic.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_mutant.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_parasite.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_player.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_rider.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_soldier.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_supertank.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_tank.h">
-      <Filter>Old Files\Header</Filter>
+      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

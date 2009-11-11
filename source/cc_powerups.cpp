@@ -194,7 +194,7 @@ public:
 			}
 
 			if (!(SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
-				gameEntity->item->SetRespawn (this, 200);
+				LinkedItem->SetRespawn (this, 200);
 			else
 				Free ();
 			MegaHealthThinking = false;
@@ -211,7 +211,7 @@ public:
 			return;
 		}
 
-		gameEntity->item = item;
+		LinkedItem = item;
 		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
@@ -248,7 +248,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 #ifdef CLEANCTF_ENABLED
 	}
 	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
-		MegaHealth->gameEntity->item->SetRespawn (ent, 300);
+		MegaHealth->LinkedItem->SetRespawn (ent, 300);
 #endif
 }
 
@@ -490,7 +490,7 @@ public:
 			return;
 		}
 
-		gameEntity->item = item;
+		LinkedItem = item;
 		NextThink = level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;

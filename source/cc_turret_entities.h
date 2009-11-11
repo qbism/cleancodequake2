@@ -39,6 +39,11 @@ public:
 
 	void Blocked (CBaseEntity *other);
 
+	virtual bool ParseField (const char *Key, const char *Value)
+	{
+		return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	};
+
 	bool Run ();
 	virtual void Spawn () = 0;
 };

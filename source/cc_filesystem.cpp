@@ -249,7 +249,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 		return 0;
 
 	// Open up the file.
-	FILE *fp;
+	FILE *fp = NULL;
 
 	// Search each of the search paths
 	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
@@ -259,9 +259,10 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 
 		char slashCheck = Index->pathName[strlen(Index->pathName)-1];
 		if (slashCheck != '\\' && slashCheck != '/')
-			snprintf (newFileName, sizeof(newFileName), "%s/%s", Index->pathName, fileName);
+			snprintf (newFileName, sizeof(newFileName)-1, "%s/%s", Index->pathName, fileName);
 		else
-			snprintf (newFileName, sizeof(newFileName), "%s%s", Index->pathName, fileName);
+			snprintf (newFileName, sizeof(newFileName)-1, "%s%s", Index->pathName, fileName);
+		newFileName[sizeof(newFileName)-1] = 0;
 
 		// Try opening it
 		fp = fopen(newFileName, openMode);
@@ -318,11 +319,13 @@ void FS_Print (fileHandle_t &handle, char *fmt, ...)
 {
 	fsHandleIndex *handleIndex = FS_GetHandle(handle);
 	va_list		argptr;
-	char		text[2048];
+	static char		text[MAX_COMPRINT/2];
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text, sizeof(text)-1, fmt, argptr);
 	va_end (argptr);
+
+	text[MAX_COMPRINT/2-1] = 0;
 
 	if (handleIndex)
 		fwrite (text, strlen(text), 1, handleIndex->regFile);

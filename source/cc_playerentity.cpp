@@ -417,7 +417,7 @@ void CPlayerEntity::PutInServer ()
 	TossPhysics = false;
 	ViewHeight = 22;
 	GetInUse() = true;
-	gameEntity->classname = "player";
+	ClassName = "player";
 	Mass = 200;
 	GetSolid() = SOLID_BBOX;
 	DeadFlag = false;
@@ -2300,7 +2300,7 @@ void CPlayerEntity::SetCTFStats()
 	//   flag taken
 	//   flag dropped
 	p1 = ImageIndex ("i_ctf1");
-	e = entity_cast<CFlagEntity>(CC_Find(NULL, FOFS(classname), "item_flag_team1"));
+	e = CC_Find<CFlagEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team1");
 	if (e != NULL)
 	{
 		if (e->GetSolid() == SOLID_NOT)
@@ -2325,7 +2325,7 @@ void CPlayerEntity::SetCTFStats()
 			p1 = ImageIndex ("i_ctf1d"); // must be dropped
 	}
 	p2 = ImageIndex ("i_ctf2");
-	e = entity_cast<CFlagEntity>(CC_Find(NULL, FOFS(classname), "item_flag_team2"));
+	e = CC_Find<CFlagEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team2");
 	if (e != NULL)
 	{
 		if (e->GetSolid() == SOLID_NOT)
@@ -2969,7 +2969,7 @@ CBaseEntity *CPlayerEntity::SelectCoopSpawnPoint ()
 	// assume there are four coop spots at each spawnpoint
 	while (1)
 	{
-		spot = CC_Find (spot, FOFS(classname), "info_player_coop");
+		spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_coop");
 		if (!spot)
 			return NULL;	// we didn't have enough...
 
@@ -3008,7 +3008,7 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 	// find a single player start spot
 	if (!spot)
 	{
-		while ((spot = CC_Find (spot, FOFS(classname), "info_player_start")) != NULL)
+		while ((spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_start")) != NULL)
 		{
 			CMapEntity *Spot = entity_cast<CMapEntity>(spot);
 			if (!game.spawnpoint[0] && !Spot->TargetName)
@@ -3026,10 +3026,10 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 			// There wasn't a spawnpoint without a target, so use any
 			if (!game.spawnpoint[0])
 			{
-				spot = CC_Find (spot, FOFS(classname), "info_player_start");
+				spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_start");
 
 				if (!spot)
-					spot = CC_Find (spot, FOFS(classname), "info_player_deathmatch");
+					spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_deathmatch");
 			}
 
 			if (!spot)
@@ -3082,7 +3082,7 @@ CBaseEntity *CPlayerEntity::SelectCTFSpawnPoint ()
 		return SelectRandomDeathmatchSpawnPoint();
 	}
 
-	while ((spot = CC_Find (spot, FOFS(classname), cname)) != NULL)
+	while ((spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, cname)) != NULL)
 	{
 		count++;
 		range = PlayersRangeFromSpot(spot);
@@ -3111,7 +3111,7 @@ CBaseEntity *CPlayerEntity::SelectCTFSpawnPoint ()
 	spot = NULL;
 	do
 	{
-		spot = CC_Find (spot, FOFS(classname), cname);
+		spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, cname);
 		if (spot == spot1 || spot == spot2)
 			selection++;
 	} while(selection--);
@@ -3596,7 +3596,7 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 	if (!Client.mynoise)
 	{
 		CPlayerNoise *noise = QNew (com_levelPool, 0) CPlayerNoise;
-		noise->gameEntity->classname = "player_noise";
+		noise->ClassName = "player_noise";
 		noise->GetMins().Set (-8);
 		noise->GetMaxs().Set (8);
 		noise->SetOwner (this);
@@ -3604,7 +3604,7 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 		Client.mynoise = noise;
 
 		noise = QNew (com_levelPool, 0) CPlayerNoise;
-		noise->gameEntity->classname = "player_noise";
+		noise->ClassName = "player_noise";
 		noise->GetMins().Set (-8);
 		noise->GetMaxs().Set (8);
 		noise->SetOwner (this);
@@ -3693,7 +3693,7 @@ _CC_DISABLE_DEPRECATION
 		G_InitEdict (gameEntity);
 _CC_ENABLE_DEPRECATION
 
-		gameEntity->classname = "player";
+		ClassName = "player";
 		InitResp ();
 		PutInServer ();
 	}
@@ -3854,7 +3854,7 @@ void CPlayerEntity::Disconnect ()
 	State.GetModelIndex() = 0;
 	GetSolid() = SOLID_NOT;
 	GetInUse() = false;
-	gameEntity->classname = "disconnected";
+	ClassName = "disconnected";
 
 	ConfigString (CS_PLAYERSKINS+(State.GetNumber()-1), "");
 }

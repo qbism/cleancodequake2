@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_infoentities.h"
 #include "cc_weaponmain.h"
+#include "cc_brushmodels.h"
 
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 Point teleporters at these.
@@ -87,7 +88,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("misc_teleporter_dest", CTeleporterDest);
 
-class CTeleporterTrigger : public CMapEntity, public CTouchableEntity, public CThinkableEntity
+class CTeleporterTrigger : public CMapEntity, public CTouchableEntity, public CBrushModel
 {
 public:
 	CBaseEntity		*Dest;
@@ -96,7 +97,7 @@ public:
 	CTeleporterTrigger() :
 	  CBaseEntity (),
 	  CMapEntity(),
-	  CTouchableEntity (),
+	  CBrushModel (),
 	  Dest (NULL)
 	  {
 	  };
@@ -104,7 +105,7 @@ public:
 	CTeleporterTrigger(sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity(),
-	  CTouchableEntity (Index),
+	  CBrushModel (Index),
 	  Dest (NULL)
 	  {
 	  };
@@ -166,6 +167,16 @@ public:
 	
 		if (!Dest)
 			DebugPrintf ("Couldn't find teleporter\n");
+	};
+
+	bool ParseField (const char *Key, const char *Value)
+	{
+		return (CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
+	};
+
+	bool Run ()
+	{
+		return CMapEntity::Run ();
 	};
 
 	virtual void Spawn ()
@@ -512,7 +523,7 @@ public:
 			for (sint32 i = 0; i < 3; i++)
 			{
 				CPlayerCoop *spot = QNew (com_levelPool, 0) CPlayerCoop;
-				spot->gameEntity->classname = "info_player_coop";
+				spot->ClassName = "info_player_coop";
 				spot->State.GetOrigin() = origins[i];
 				spot->TargetName = "jail3";
 				spot->State.GetAngles().Set (0, 90, 0);
@@ -591,8 +602,6 @@ Pathtarget: gets used when an entity that has
 	this path_corner targeted touches it
 */
 
-#include "cc_brushmodels.h"
-
 CPathCorner::CPathCorner () :
   CBaseEntity(),
   CMapEntity (),
@@ -631,12 +640,10 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 	if (other->Enemy)
 		return;
 
-	if (gameEntity->pathtarget)
+	if (PathTarget)
 	{
-		char *savetarget;
-
-		savetarget = Target;
-		Target = gameEntity->pathtarget;
+		char *savetarget = Target;
+		Target = PathTarget;
 		UseTargets (other, Message);
 		Target = savetarget;
 	}
@@ -754,7 +761,7 @@ public:
 			}
 			if (Monster && !Monster->GoalEntity)
 			{
-				DebugPrintf("%s at (%f %f %f) target %s does not exist\n", gameEntity->classname, State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z, Target);
+				DebugPrintf("%s at (%f %f %f) target %s does not exist\n", ClassName, State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z, Target);
 				Monster->MoveTarget = this;
 			}
 			Target = NULL;
@@ -778,13 +785,12 @@ public:
 			Monster->Monster->AIFlags &= ~AI_COMBAT_POINT;
 		}
 
-		if (gameEntity->pathtarget)
+		if (PathTarget)
 		{
-			char *savetarget;
 			CBaseEntity *activator;
 
-			savetarget = Target;
-			Target = gameEntity->pathtarget;
+			char *savetarget = Target;
+			Target = PathTarget;
 			if (other->Enemy && (other->Enemy->EntityFlags & ENT_PLAYER))
 				activator = other->Enemy;
 			else if ((Monster) &&
@@ -1016,7 +1022,7 @@ public:
 				e = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (e, Target);
 				if (!e)
 					break;
-				if (strcmp(e->gameEntity->classname, "light") != 0)
+				if (strcmp(e->ClassName, "light") != 0)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" is not a light\n", Target);
 				else
 					Light = entity_cast<CLight>(e);
@@ -1024,7 +1030,6 @@ public:
 
 			if (!Light)
 			{
-				//gi.dprintf("%s target %s not found at (%f %f %f)\n", self->classname, self->target, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Target \"%s\" not found\n", Target);
 				Free ();
 				return;
@@ -1039,7 +1044,6 @@ public:
 	{
 		if (!Message || strlen(Message) != 2 || Message[0] < 'a' || Message[0] > 'z' || Message[1] < 'a' || Message[1] > 'z' || Message[0] == Message[1])
 		{
-			//gi.dprintf("target_lightramp has bad ramp (%s) at (%f %f %f)\n", self->message, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Bad ramp (%s)\n", Message);
 			Free ();
 			return;

@@ -200,46 +200,6 @@ void CForEachPlayerCallback::Query (bool MustBeInUse)
 }
 
 /*
-=============
-CC_Find
-
-Searches all active entities for the next one that holds
-the matching string at fieldofs (use the FOFS() macro) in the structure.
-
-Searches beginning at the edict after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
-
-=============
-*/
-CBaseEntity *CC_Find (CBaseEntity *from, sint32 fieldofs, char *match)
-{
-	edict_t *gameEnt;
-	if (!from)
-		gameEnt = g_edicts;
-	else
-	{
-		gameEnt = from->gameEntity;
-		gameEnt++;
-	}
-
-	for ( ; gameEnt < &g_edicts[globals.numEdicts] ; gameEnt++)
-	{
-		if (!gameEnt->inUse)
-			continue;
-		if (!gameEnt->Entity)
-			continue;
-
-		char *s = *(char **) ((uint8 *)gameEnt + fieldofs);
-		if (!s)
-			continue;
-		if (!Q_stricmp (s, match))
-			return gameEnt->Entity;
-	}
-
-	return NULL;
-}
-
-/*
 =======================================================================
 
   SelectSpawnPoint
@@ -290,7 +250,7 @@ CBaseEntity *SelectRandomDeathmatchSpawnPoint ()
 	float range1 = 99999, range2 = 99999;
 
 	sint32 count = 0;
-	while ((spot = CC_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
+	while ((spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_deathmatch")) != NULL)
 	{
 		count++;
 		float range = PlayersRangeFromSpot(spot);
@@ -319,7 +279,7 @@ CBaseEntity *SelectRandomDeathmatchSpawnPoint ()
 
 	do
 	{
-		spot = CC_Find (spot, FOFS(classname), "info_player_deathmatch");
+		spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_deathmatch");
 		if (spot == spot1 || spot == spot2)
 			selection++;
 	} while(selection--);
@@ -338,7 +298,7 @@ CBaseEntity *SelectFarthestDeathmatchSpawnPoint ()
 	CBaseEntity	*bestspot = NULL, *spot = NULL;
 	float		bestdistance = 0;
 
-	while ((spot = CC_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
+	while ((spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_deathmatch")) != NULL)
 	{
 		float bestplayerdistance = PlayersRangeFromSpot (spot);
 
@@ -354,7 +314,7 @@ CBaseEntity *SelectFarthestDeathmatchSpawnPoint ()
 
 	// if there is a player just spawned on each and every start spot
 	// we have no choice to turn one into a telefrag meltdown
-	return CC_Find (NULL, FOFS(classname), "info_player_deathmatch");
+	return CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_deathmatch");
 }
 
 /*

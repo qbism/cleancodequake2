@@ -27,12 +27,67 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_parse.cpp
-// 
+// cc_timer.cpp
+// Classes and functions to make global timers
 //
 
 #include "cc_local.h"
 
-#ifdef _WIN32
-#pragma warning(disable : 4505)
-#endif
+void CGameTimer::Run ()
+{
+	if (EndTime <= level.Frame)
+		OnTimeUp ();
+}
+
+typedef std::multimap <sint32, CGameTimer *, std::less <sint32>, std::game_allocator <std::pair <const sint32, CGameTimer*> > > TTimerListType;
+TTimerListType TimerList;
+
+void ClearTimers ()
+{
+	TimerList.clear ();
+}
+
+void RunTimers ()
+{
+	for (TTimerListType::iterator it = TimerList.begin(); it != TimerList.end(); )
+	{
+		CGameTimer *Timer = (*it).second;
+
+		Timer->Run ();
+
+		// Done
+		if (Timer->EndTime <= level.Frame)
+		{
+			it = TimerList.erase (it);
+
+			Timer->Destroy ();
+			QDelete Timer;
+
+			continue;
+		}
+		++it;
+	}
+}
+
+void AddTimer (CGameTimer *Timer, sint32 Key)
+{
+	TimerList.insert (std::pair <const sint32, CGameTimer*> (Key, Timer));
+	Timer->Create ();
+}
+
+void KillTimer (sint32 Key)
+{
+	if (Key < 0)
+		return;
+
+	std::pair<TTimerListType::iterator,TTimerListType::iterator> ret = TimerList.equal_range(Key);
+	for (TTimerListType::iterator it = ret.first; it != ret.second; )
+	{
+		// Kill the timers
+		CGameTimer *Timer = (*it).second;
+		it = TimerList.erase (it);
+
+		Timer->Destroy ();
+		QDelete Timer;
+	}
+}

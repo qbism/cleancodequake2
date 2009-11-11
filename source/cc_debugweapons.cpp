@@ -55,13 +55,13 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 
 		tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
 
-		if (tr.fraction < 1 && tr.Ent && tr.Ent->gameEntity->classname)
+		if (tr.fraction < 1 && tr.Ent && tr.Ent->ClassName)
 		{
 			if (!tr.surface)
-				ConfigString (CS_POINTING_SURFACE-1, tr.Ent->gameEntity->classname, Player);
+				ConfigString (CS_POINTING_SURFACE-1, tr.Ent->ClassName, Player);
 			else
 			{
-				std::cc_string temp = std::cc_string(tr.Ent->gameEntity->classname) + std::cc_string(" (") + std::cc_string(tr.surface->name) + std::cc_string(")");
+				std::cc_string temp = std::cc_string(tr.Ent->ClassName) + std::cc_string(" (") + std::cc_string(tr.surface->name) + std::cc_string(")");
 				ConfigString (CS_POINTING_SURFACE-1, temp.c_str(), Player);
 			}
 		}

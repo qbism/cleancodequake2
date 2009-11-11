@@ -128,8 +128,72 @@ EEventEffect	&CEntityState::GetEvent			()
 void G_InitEdict (edict_t *e)
 {
 	e->inUse = true;
-	e->classname = "noclass";
 	e->state.number = e - g_edicts;
+}
+
+template <typename TCont, typename TType>
+void listfill (TCont &List, TType Data, size_t numElements)
+{
+	List.clear ();
+
+	for (size_t i = 0; i < numElements; i++)
+		List.push_back (&Data[i]);
+}
+
+void InitEntityLists ()
+{
+	listfill <TEntitiesContainer, edict_t*> (level.Entities.Open, g_edicts, game.maxentities);
+	level.Entities.Closed.clear();
+
+	// Keep the first few entities in the closed list
+	for (uint8 i = 0; i < (1 + game.maxclients); i++)
+	{
+		level.Entities.Closed.push_back (level.Entities.Open.front());
+		level.Entities.Open.pop_front();
+	}
+}
+
+// Removes a free entity from Open, pushes into Closed.
+edict_t *GetEntityFromList ()
+{
+	if (level.Entities.Open.empty())
+		return NULL;
+
+	// Take entity off of list, obeying freetime
+	edict_t *ent = NULL;
+	TEntitiesContainer::iterator it;
+
+	for (it = level.Entities.Open.begin(); it != level.Entities.Open.end(); it++)
+	{
+		edict_t *check = (*it);
+
+		// the first couple seconds of server time can involve a lot of
+		// freeing and allocating, so relax the replacement policy
+		if (!check->inUse && (check->freetime < 20 || level.Frame - check->freetime > 5))
+		{
+			ent = check;
+			break;
+		}
+	}
+
+	if (ent == NULL)
+		return NULL;
+
+	level.Entities.Open.erase (it);
+	
+	// Put into closed
+	level.Entities.Closed.push_back (ent);
+	return ent; // Give it to us
+}
+
+// Removes entity from Closed, pushes into front of into Open
+void RemoveEntityFromList (edict_t *ent)
+{
+	// Take entity out of list
+	level.Entities.Closed.remove (ent);
+
+	// Push into Open
+	level.Entities.Open.push_front (ent);
 }
 
 /*
@@ -145,34 +209,19 @@ angles and bad trails.
 */
 edict_t *G_Spawn ()
 {
-	sint32			i;
-	edict_t		*e;
-
-	e = &g_edicts[game.maxclients+1];
-	for (i = game.maxclients+1; i < globals.numEdicts; i++, e++)
-	{
-		// the first couple seconds of server time can involve a lot of
-		// freeing and allocating, so relax the replacement policy
-		if (!e->inUse && (e->freetime < 20 || level.Frame - e->freetime > 5))
-		{
-			if (e->Entity && e->Entity->Freed)
-			{
-				QDelete e->Entity;
-				e->Entity = NULL;
-			}
-
-_CC_DISABLE_DEPRECATION
-			G_InitEdict (e);
-_CC_ENABLE_DEPRECATION
-
-			return e;
-		}
-	}
+	edict_t *e = GetEntityFromList ();
 	
-	if (i == game.maxentities)
+	if (e == NULL)
+	{
 		GameError ("ED_Alloc: no free edicts");
-		
-	globals.numEdicts++;
+		return NULL;
+	}
+
+	if (!e->usedBefore)
+	{
+		globals.numEdicts++;
+		e->usedBefore = true;
+	}
 
 _CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
@@ -195,10 +244,15 @@ void G_FreeEdict (edict_t *ed)
 	// Paril, hack
 	CBaseEntity *Entity = ed->Entity;
 	memset (ed, 0, sizeof(*ed));
-	ed->Entity = Entity;
-	ed->classname = "freed";
+	if (Entity)
+	{
+		ed->Entity = Entity;
+		Entity->ClassName = "freed";
+	}
 	ed->freetime = level.Frame;
 	ed->inUse = false;
+
+	RemoveEntityFromList (ed);
 }
 
 typedef std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
@@ -246,6 +300,7 @@ _CC_DISABLE_DEPRECATION
 	gameEntity = G_Spawn ();
 _CC_ENABLE_DEPRECATION
 	gameEntity->Entity = this;
+	ClassName = "noclass";
 
 	Freed = false;
 	EntityFlags |= ENT_BASE;
@@ -374,7 +429,7 @@ sint32				CBaseEntity::GetLinkCount ()
 
 bool			&CBaseEntity::GetInUse ()
 {
-	return gameEntity->inUse;
+	return (bool&)gameEntity->inUse;
 }
 
 void			CBaseEntity::Link ()
@@ -395,7 +450,7 @@ void			CBaseEntity::Free ()
 
 		memset (gameEntity, 0, sizeof(*gameEntity));
 		gameEntity->Entity = this;
-		gameEntity->classname = "freed";
+		ClassName = "freed";
 		gameEntity->freetime = level.Frame;
 		GetInUse() = false;
 	}
@@ -472,20 +527,6 @@ void CBaseEntity::BecomeExplosion (bool grenade)
 	Free ();
 }
 
-void CBaseEntity::SetBrushModel ()
-{
-	if (!gameEntity->model || gameEntity->model[0] != '*')
-	{
-		DebugPrintf ("CleanCode warning: SetBrushModel on a non-brush model!\n");
-		State.GetModelIndex() = ModelIndex(gameEntity->model);
-		return;
-	}
-
-_CC_DISABLE_DEPRECATION
-	gi.setmodel (gameEntity, gameEntity->model);
-_CC_ENABLE_DEPRECATION
-}
-
 void CBaseEntity::CastTo (ECastFlags CastFlags)
 {
 	Cast (CastFlags, this);
@@ -504,12 +545,8 @@ ENTITYFIELDS_BEGIN(CMapEntity)
 	CEntityField ("origin",			GameEntityMemberOffset(state.origin),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angles",			GameEntityMemberOffset(state.angles),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
-	CEntityField ("model",			GameEntityMemberOffset(model),					FT_LEVEL_STRING | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
 	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_LEVEL_STRING),
-
-	CEntityField ("item",			GameEntityMemberOffset(item),					FT_ITEM | FT_GAME_ENTITY),
-	CEntityField ("pathtarget",		GameEntityMemberOffset(pathtarget),				FT_LEVEL_STRING | FT_GAME_ENTITY),
 
 	CEntityField ("owner",			GameEntityMemberOffset(owner),					FT_ENTITY | FT_GAME_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
@@ -543,10 +580,6 @@ bool			CMapEntity::ParseField (const char *Key, const char *Value)
 
 bool				CMapEntity::CheckValidity ()
 {
-	// Yet another map hack
-	if (!Q_stricmp(level.ServerLevelName.c_str(), "command") && !Q_stricmp(gameEntity->classname, "trigger_once") && !Q_stricmp(gameEntity->model, "*27"))
-		SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
-
 	// Remove things (except the world) from different skill levels or deathmatch
 	if (this != World)
 	{

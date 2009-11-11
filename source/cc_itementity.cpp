@@ -40,7 +40,8 @@ CMapEntity(),
 CTossProjectile(),
 CTouchableEntity(),
 CThinkableEntity(),
-CUsableEntity()
+CUsableEntity(),
+Model(NULL)
 {
 	EntityFlags |= ENT_ITEM;
 };
@@ -51,7 +52,8 @@ CMapEntity(Index),
 CTossProjectile(Index),
 CTouchableEntity(Index),
 CThinkableEntity(Index),
-CUsableEntity(Index)
+CUsableEntity(Index),
+Model(NULL)
 {
 	EntityFlags |= ENT_ITEM;
 };
@@ -67,7 +69,7 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	if (!(other->EntityFlags & ENT_PLAYER))
 		return;
 
-	if (!(gameEntity->item->Flags & ITEMFLAG_GRABBABLE))
+	if (!(LinkedItem->Flags & ITEMFLAG_GRABBABLE))
 		return;		// not a grabbable item?
 
 	CPlayerEntity *Player = entity_cast<CPlayerEntity>(other);
@@ -81,7 +83,7 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 		SpawnFlags |= ITEM_TARGETS_USED;
 	}
 
-	if (!gameEntity->item->Pickup(this,Player))
+	if (!LinkedItem->Pickup(this,Player))
 		return;
 
 	// flash the screen
@@ -90,27 +92,27 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	// show icon and name on status bar
 	if (Player->Client.Timers.PickupMessageTime != (level.Frame + 30))
 	{
-		Player->Client.PlayerState.GetStat (STAT_PICKUP_ICON) = gameEntity->item->GetIconIndex();
-		Player->Client.PlayerState.GetStat (STAT_PICKUP_STRING) = gameEntity->item->GetConfigStringNumber();
+		Player->Client.PlayerState.GetStat (STAT_PICKUP_ICON) = LinkedItem->GetIconIndex();
+		Player->Client.PlayerState.GetStat (STAT_PICKUP_STRING) = LinkedItem->GetConfigStringNumber();
 		Player->Client.Timers.PickupMessageTime = level.Frame + 30;
 	}
 
 	// change selected item
-	if (gameEntity->item->Flags & ITEMFLAG_USABLE)
+	if (LinkedItem->Flags & ITEMFLAG_USABLE)
 	{
-		Player->Client.Persistent.Inventory.SelectedItem = gameEntity->item->GetIndex();
+		Player->Client.Persistent.Inventory.SelectedItem = LinkedItem->GetIndex();
 		Player->Client.PlayerState.GetStat (STAT_SELECTED_ITEM) = Player->Client.Persistent.Inventory.SelectedItem;
 	}
 
-	if (gameEntity->item->PickupSound)
-		Player->PlaySound (CHAN_ITEM, gameEntity->item->GetPickupSound()
+	if (LinkedItem->PickupSound)
+		Player->PlaySound (CHAN_ITEM, LinkedItem->GetPickupSound()
 #ifdef CLEANCTF_ENABLED
-		, 255, (gameEntity->item == NItems::RedFlag || gameEntity->item == NItems::BlueFlag) ? ATTN_NONE : ATTN_NORM
+		, 255, (LinkedItem == NItems::RedFlag || LinkedItem == NItems::BlueFlag) ? ATTN_NONE : ATTN_NORM
 #endif
 		);
 
 	//if ((game.mode != GAME_COOPERATIVE && (ent->item->Flags & ITEMFLAG_STAY_COOP)) || (ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
-	if (!((game.mode & GAME_COOPERATIVE) &&  (gameEntity->item->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
+	if (!((game.mode & GAME_COOPERATIVE) &&  (LinkedItem->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
 	{
 		if (Flags & FL_RESPAWN)
 			Flags &= ~FL_RESPAWN;
@@ -166,7 +168,7 @@ void CItemEntity::Think ()
 			GetMins().Set (-15);
 			GetMaxs().Set (15);
 
-			State.GetModelIndex() = ModelIndex((gameEntity->model) ? gameEntity->model : gameEntity->item->WorldModel);
+			State.GetModelIndex() = ModelIndex((Model) ? Model : LinkedItem->WorldModel);
 			GetSolid() = SOLID_TRIGGER; 
 			Touchable = true;
 			PhysicsType = PHYSICS_TOSS;
@@ -175,7 +177,6 @@ void CItemEntity::Think ()
 			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), end, this, CONTENTS_MASK_SOLID);
 			if (tr.startSolid)
 			{
-				//gi.dprintf ("droptofloor: %s startsolid at (%f %f %f)\n", ent->classname, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2]);
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity origin is in solid\n");
 				Free ();
 				return;
@@ -235,7 +236,7 @@ void CItemEntity::Think ()
 		//is spawned
 				if ((game.mode & GAME_CTF) &&
 					dmFlags.dfWeaponsStay &&
-					Master->gameEntity->item && (Master->gameEntity->item->Flags & ITEMFLAG_WEAPON))
+					entity_cast<CItemEntity>(Master)->LinkedItem && (entity_cast<CItemEntity>(Master)->LinkedItem->Flags & ITEMFLAG_WEAPON))
 					RespawnedEntity = Master;
 				else
 		//ZOID
@@ -261,7 +262,7 @@ void CItemEntity::Think ()
 // Generic item spawn function
 void CItemEntity::Spawn (CBaseItem *item)
 {
-	gameEntity->item = item;
+	LinkedItem = item;
 
 	if (!item)
 	{
@@ -276,4 +277,19 @@ void CItemEntity::Spawn (CBaseItem *item)
 
 	State.GetEffects() = item->EffectFlags;
 	State.GetRenderEffects() = RF_GLOW;
+}
+
+ENTITYFIELDS_BEGIN(CItemEntity)
+{
+	CEntityField ("model", EntityMemberOffset(CItemEntity,Model), FT_LEVEL_STRING),
+	CEntityField ("item", EntityMemberOffset(CItemEntity,LinkedItem), FT_ITEM),
+};
+ENTITYFIELDS_END(CItemEntity)
+
+bool CItemEntity::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CItemEntity> (this, Key, Value))
+		return true;
+
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 }

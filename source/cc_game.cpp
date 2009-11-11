@@ -102,7 +102,7 @@ void EndDMLevel ()
 		BeginIntermission (CreateTargetChangeLevel (level.NextMap.c_str()) );
 	else
 	{	// search for a changelevel
-		CTargetChangeLevel *ent = entity_cast<CTargetChangeLevel>(CC_Find (NULL, FOFS(classname), "target_changelevel"));
+		CTargetChangeLevel *ent = CC_Find<CTargetChangeLevel, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "target_changelevel");
 		if (!ent)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
@@ -349,6 +349,7 @@ void CC_RunFrame ()
 	}
 
 	RunPrivateEntities ();
+	RunTimers ();
 
 	// see if it is time to end a deathmatch
 	CheckDMRules ();

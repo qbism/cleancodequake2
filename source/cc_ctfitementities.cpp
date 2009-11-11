@@ -54,7 +54,7 @@ void CFlagEntity::Think ()
 			GetMins().Set (-15);
 			GetMaxs().Set (15);
 
-			State.GetModelIndex() = ModelIndex((gameEntity->model) ? gameEntity->model : gameEntity->item->WorldModel);
+			State.GetModelIndex() = ModelIndex((Model) ? Model : LinkedItem->WorldModel);
 			GetSolid() = SOLID_TRIGGER;
 			Touchable = false;
 			PhysicsType = PHYSICS_NONE;
@@ -64,7 +64,7 @@ void CFlagEntity::Think ()
 			if (tr.startSolid)
 			{
 				vec3f origin = State.GetOrigin();
-				DebugPrintf ("CTFFlagSetup: %s startSolid at (%f %f %f)\n", gameEntity->classname, origin.X, origin.Y, origin.Z);
+				DebugPrintf ("CTFFlagSetup: %s startSolid at (%f %f %f)\n", ClassName, origin.X, origin.Y, origin.Z);
 				Free ();
 				return;
 			}
@@ -102,7 +102,7 @@ void CFlagEntity::Spawn (CBaseItem *Item)
 		return;
 	}
 
-	gameEntity->item = Item;
+	LinkedItem = Item;
 
 	NextThink = level.Frame + 2;    // items start after other solids
 	ThinkState = FTS_FLAGSETUP;
@@ -211,8 +211,8 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 	CDroppedFlagEntity	*dropped = QNew (com_levelPool, 0) CDroppedFlagEntity();
 	vec3f	forward, right;
 
-	dropped->gameEntity->classname = Classname;
-	dropped->gameEntity->item = this;
+	dropped->ClassName = Classname;
+	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
 	dropped->State.GetRenderEffects() = RF_GLOW;
@@ -220,7 +220,7 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->gameEntity->owner = ent->gameEntity;
+	dropped->SetOwner (ent);
 
 	if (ent->EntityFlags & ENT_PLAYER)
 	{

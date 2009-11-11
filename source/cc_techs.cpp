@@ -245,7 +245,7 @@ public:
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (AvoidOwner && (other->gameEntity == gameEntity->owner))
+		if (AvoidOwner && (other == GetOwner()))
 			return;
 
 		CItemEntity::Touch (other, plane, surf);
@@ -257,7 +257,7 @@ public:
 
 		if ((spot = FindTechSpawn()) != NULL)
 		{
-			SpawnTech(gameEntity->item, spot);
+			SpawnTech(LinkedItem, spot);
 			Free ();
 		}
 		else
@@ -266,7 +266,7 @@ public:
 
 	void Respawn ()
 	{
-		SpawnTech(gameEntity->item, FindTechSpawn());
+		SpawnTech(LinkedItem, FindTechSpawn());
 		Free ();
 	};
 
@@ -286,8 +286,8 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 	CTechEntity	*dropped = QNew (com_levelPool, 0) CTechEntity();
 	vec3f	forward, right;
 
-	dropped->gameEntity->classname = Classname;
-	dropped->gameEntity->item = this;
+	dropped->ClassName = Classname;
+	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
 	dropped->State.GetRenderEffects() = RF_GLOW;
@@ -295,7 +295,7 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->gameEntity->owner = ent->gameEntity;
+	dropped->SetOwner (ent);
 
 	if (ent->EntityFlags & ENT_PLAYER)
 	{
@@ -340,8 +340,8 @@ void SpawnTech(CBaseItem *item, CBaseEntity *spot)
 {
 	CTechEntity *ent = QNew (com_levelPool, 0) CTechEntity ();
 
-	ent->gameEntity->classname = item->Classname;
-	ent->gameEntity->item = item;
+	ent->ClassName = item->Classname;
+	ent->LinkedItem = item;
 	ent->SpawnFlags = DROPPED_ITEM;
 	ent->State.GetEffects() = item->EffectFlags;
 	ent->State.GetRenderEffects() = RF_GLOW;
@@ -349,7 +349,7 @@ void SpawnTech(CBaseItem *item, CBaseEntity *spot)
 	ent->GetMaxs().Set (15);
 	ent->State.GetModelIndex() = ModelIndex(item->WorldModel);
 	ent->GetSolid() = SOLID_TRIGGER;
-	ent->gameEntity->owner = ent->gameEntity;
+	ent->SetOwner (ent);
 
 	vec3f forward;
 	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);

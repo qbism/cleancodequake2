@@ -188,13 +188,13 @@ public:
 			if (!e->inUse)
 				continue;
 
-			if (!Q_WildcardMatch (WildCard, e->classname, true))
+			if (!Q_WildcardMatch (WildCard, e->Entity->ClassName, true))
 				continue;
 
-			SServerEntityListIndex *Index = Exists(e->classname);
+			SServerEntityListIndex *Index = Exists(e->Entity->ClassName);
 
 			if (!Index)
-				Index = AddToList (e->classname);
+				Index = AddToList (e->Entity->ClassName);
 
 			if (e->Entity)
 			{

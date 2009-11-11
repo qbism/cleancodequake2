@@ -191,6 +191,7 @@ public:
 	class CMonster	*Monster;
 	char			*DeathTarget;
 	char			*CombatTarget;
+	CBaseItem		*Item;
 
 	CMonsterEntity	();
 	CMonsterEntity	(sint32 Index);

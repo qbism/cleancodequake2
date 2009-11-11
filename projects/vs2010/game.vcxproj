@@ -116,7 +116,7 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../Intermediate/$(Configuration)/$(ProjectName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../Intermediate/$(Configuration)/$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
@@ -159,6 +159,7 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">gamex86</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">gamex86</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -206,7 +207,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;zlibr.lib;libeay32.lib;openldap.lib;ssleay32.lib;curllib_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;zlibd.lib;libeay32.lib;openldap.lib;ssleay32.lib;curllib_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -338,14 +339,15 @@ echo Done!
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>..\..\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Winmm.lib;../../lib/zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\baseq2\gamex86.dll</OutputFile>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;zlibr.lib;libeay32.lib;openldap.lib;ssleay32.lib;curllib_static_r.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -360,7 +362,16 @@ echo Done!
       <ImportLibrary>
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\..\lib\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying to Quake 2 Path...
+copy $(TargetPath) "e:\quake2\baseq2\gamex86.dll"
+copy $(TargetPath) "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
+
+echo Done!
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -672,6 +683,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />
+    <ClCompile Include="..\..\source\cc_timer.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
     <ClCompile Include="..\..\source\cc_tent.cpp" />
     <ClCompile Include="..\..\source\cc_version.cpp" />
@@ -793,6 +805,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_dmflags.h" />
     <ClInclude Include="..\..\source\cc_gameapi.h" />
     <ClInclude Include="..\..\source\cc_cvar.h" />
+    <ClInclude Include="..\..\source\cc_timer.h" />
     <ClInclude Include="..\..\source\cc_trace.h" />
     <ClInclude Include="..\..\source\cc_tent.h" />
     <ClInclude Include="..\..\source\cc_version.h" />
@@ -889,8 +902,6 @@ echo Done!
     <ClInclude Include="..\..\source\cc_property.h" />
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />
-    <ClInclude Include="..\..\source\g_local.h" />
-    <ClInclude Include="..\..\source\game.h" />
     <ClInclude Include="..\..\source\m_actor.h" />
     <ClInclude Include="..\..\source\m_berserk.h" />
     <ClInclude Include="..\..\source\m_boss2.h" />

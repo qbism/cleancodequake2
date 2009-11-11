@@ -191,7 +191,7 @@ CBodyQueue::CBodyQueue (sint32 MaxSize)
 	for (sint32 i = 0; i < MaxSize; i++)
 	{
 		CBody *Body = QNew (com_levelPool, 0) CBody ();
-		Body->gameEntity->classname = "bodyqueue";
+		Body->ClassName = "bodyqueue";
 		Body->BodyQueueList = this;
 		Body->GetSvFlags() = SVF_NOCLIENT;
 		Body->Link ();

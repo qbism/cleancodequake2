@@ -112,7 +112,7 @@ public:
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (AvoidOwner && (other->gameEntity == gameEntity->owner))
+		if (AvoidOwner && (other == GetOwner()))
 			return;
 
 		CItemEntity::Touch (other, plane, surf);
@@ -149,8 +149,8 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 	CDroppedItemEntity	*dropped = QNew (com_levelPool, 0) CDroppedItemEntity();
 	vec3f	forward, right;
 
-	dropped->gameEntity->classname = Classname;
-	dropped->gameEntity->item = this;
+	dropped->ClassName = Classname;
+	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
 	dropped->State.GetRenderEffects() = RF_GLOW;
@@ -158,7 +158,7 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->gameEntity->owner = ent->gameEntity;
+	dropped->SetOwner (ent);
 
 	if (ent->EntityFlags & ENT_PLAYER)
 	{

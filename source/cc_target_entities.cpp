@@ -511,21 +511,21 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	level.ExitIntermission = false;
 
 	// find an intermission spot
-	ent = CC_Find (NULL, FOFS(classname), "info_player_intermission");
+	ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_intermission");
 	if (!ent)
 	{	// the map creator forgot to put in an intermission point...
-		ent = CC_Find (NULL, FOFS(classname), "info_player_start");
+		ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_start");
 		if (!ent)
-			ent = CC_Find (NULL, FOFS(classname), "info_player_deathmatch");
+			ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_deathmatch");
 	}
 	else
 	{	// chose one of four spots
 		sint32 i = irandom(4);
 		while (i--)
 		{
-			ent = CC_Find (ent, FOFS(classname), "info_player_intermission");
+			ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (ent, "info_player_intermission");
 			if (!ent)	// wrap around the list
-				ent = CC_Find (ent, FOFS(classname), "info_player_intermission");
+				ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (ent, "info_player_intermission");
 		}
 	}
 
@@ -641,7 +641,7 @@ LINK_CLASSNAME_TO_CLASS ("target_changelevel", CTargetChangeLevel);
 CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 {
 	CTargetChangeLevel *Temp = QNew (com_levelPool, 0) CTargetChangeLevel;
-	Temp->gameEntity->classname = "target_changelevel";
+	Temp->ClassName = "target_changelevel";
 
 	level.NextMap = map;
 	Temp->Map = (char*)level.NextMap.c_str();
@@ -1121,7 +1121,6 @@ public:
 			{
 				CBaseEntity *ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
 				if (!ent)
-					//gi.dprintf ("%s at (%f %f %f): %s is a bad target\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2], self->target);
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
 				Enemy = ent;
 			}
@@ -1321,7 +1320,6 @@ public:
 	{
 		if (!TargetName)
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
-			//gi.dprintf("untargeted %s at (%f %f %f)\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 
 		if (!Duration)
 			Duration = 5;

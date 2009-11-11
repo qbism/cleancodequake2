@@ -376,7 +376,7 @@ void CBrain::Dodge (CBaseEntity *attacker, float eta)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker->gameEntity;
+		Entity->Enemy = attacker;
 
 	PauseTime = level.Frame + ((eta + 0.5) * 10);
 	CurrentMove = &BrainMoveDuck;

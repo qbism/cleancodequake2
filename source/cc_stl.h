@@ -50,7 +50,6 @@ namespace std
 template <typename T> class generic_allocator
 {
 public:
-	// The following will be the same for virtually all allocators.
 	typedef T * pointer;
 	typedef const T * const_pointer;
 	typedef T& reference;
@@ -71,12 +70,9 @@ public:
 
 	size_t max_size() const
 	{
-		// The following has been carefully written to be independent of
-		// the definition of size_t and to avoid signed/unsigned warnings.
 		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
 	}
 
-	// The following must be the same for all allocators.
 	template <typename U> struct rebind
 	{
 		typedef generic_allocator<U> other;
@@ -93,18 +89,16 @@ public:
 		new (pv) T(t);
 	}
 
-	void destroy(T * const p) const; // Defined below.
+	void destroy(T * const p) const
+	{
+		p->~T();
+	}
 
-	// Returns true if and only if storage allocated from *this
-	// can be deallocated from other, and vice versa.
-	// Always returns true for stateless allocators.
 	bool operator==(const generic_allocator& other) const
 	{
 		return true;
 	}
 
-	// Default constructor, copy constructor, rebinding constructor, and destructor.
-	// Empty for stateless allocators.
 	generic_allocator()
 	{
 	}
@@ -121,85 +115,40 @@ public:
 	{
 	}
 
-	// The following will be different for each allocator.
 	T * allocate(const size_t n) const
 	{
-		// generic_allocator prints a diagnostic message to demonstrate
-		// what it's doing. Real allocators won't do this.
-		// std::cout << "Allocating " << n << (n == 1 ? " object" : "objects")
-		//     << " of size " << sizeof(T) << "." << std::endl;
-
-		// The return value of allocate(0) is unspecified.
-		// generic_allocator returns NULL in order to avoid depending
-		// on malloc(0)'s implementation-defined behavior
-		// (the implementation can define malloc(0) to return NULL,
-		// in which case the bad_alloc check below would fire).
-		// All allocators can return NULL in this case.
 		if (n == 0)
 		{
 			return NULL;
 		}
 
-		// All allocators should contain an integer overflow check.
-		// The Standardization Committee recommends that std::length_error
-		// be thrown in the case of integer overflow.
 		if (n > max_size())
-		{
 			throw std::length_error("generic_allocator<T>::allocate() - Integer overflow.");
-		}
 
-		// generic_allocator wraps malloc().
 		void * const pv = _Mem_Alloc (n * sizeof(T), com_genericPool, 0, "null", 0);
-
-		// Allocators should throw std::bad_alloc in the case of memory allocation failure.
 		if (pv == NULL)
-		{
 			throw std::bad_alloc();
-		}
 
 		return static_cast<T *>(pv);
 	}
 
 	void deallocate(T * const p, const size_t n) const
 	{
-		// generic_allocator prints a diagnostic message to demonstrate
-		// what it's doing. Real allocators won't do this.
-//		std::cout << "Deallocating " << n << (n == 1 ? " object" : "objects")
-//			<< " of size " << sizeof(T) << "." << std::endl;
-
-		// generic_allocator wraps free().
 		QDelete p;
 	}
 
-	// The following will be the same for all allocators that ignore hints.
 	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
 	{
 		return allocate(n);
 	}
 
-
-	// Allocators are not required to be assignable, so
-	// all allocators should have a private unimplemented
-	// assignment operator. Note that this will trigger the
-	// off-by-default (enabled under /Wall) warning C4626
-	// "assignment operator could not be generated because a
-	// base class assignment operator is inaccessible" within
-	// the STL headers, but that warning is useless.
 private:
 	generic_allocator& operator=(const generic_allocator&);
 };
 
-// A compiler bug causes it to believe that p->~T() doesn't reference p.
-// The definition of destroy() must be the same for all allocators.
-template <typename T> void generic_allocator<T>::destroy(T * const p) const
-{
-	p->~T();
-}
-
 template <typename T> class level_allocator
 {
 public:
-	// The following will be the same for virtually all allocators.
 	typedef T * pointer;
 	typedef const T * const_pointer;
 	typedef T& reference;
@@ -220,12 +169,9 @@ public:
 
 	size_t max_size() const
 	{
-		// The following has been carefully written to be independent of
-		// the definition of size_t and to avoid signed/unsigned warnings.
 		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
 	}
 
-	// The following must be the same for all allocators.
 	template <typename U> struct rebind
 	{
 		typedef level_allocator<U> other;
@@ -242,18 +188,16 @@ public:
 		new (pv) T(t);
 	}
 
-	void destroy(T * const p) const; // Defined below.
+	void destroy(T * const p) const
+	{
+		p->~T();
+	}
 
-	// Returns true if and only if storage allocated from *this
-	// can be deallocated from other, and vice versa.
-	// Always returns true for stateless allocators.
 	bool operator==(const level_allocator& other) const
 	{
 		return true;
 	}
 
-	// Default constructor, copy constructor, rebinding constructor, and destructor.
-	// Empty for stateless allocators.
 	level_allocator()
 	{
 	}
@@ -270,85 +214,38 @@ public:
 	{
 	}
 
-	// The following will be different for each allocator.
 	T * allocate(const size_t n) const
 	{
-		// level_allocator prints a diagnostic message to demonstrate
-		// what it's doing. Real allocators won't do this.
-		// std::cout << "Allocating " << n << (n == 1 ? " object" : "objects")
-		//     << " of size " << sizeof(T) << "." << std::endl;
-
-		// The return value of allocate(0) is unspecified.
-		// level_allocator returns NULL in order to avoid depending
-		// on malloc(0)'s implementation-defined behavior
-		// (the implementation can define malloc(0) to return NULL,
-		// in which case the bad_alloc check below would fire).
-		// All allocators can return NULL in this case.
 		if (n == 0)
-		{
 			return NULL;
-		}
 
-		// All allocators should contain an integer overflow check.
-		// The Standardization Committee recommends that std::length_error
-		// be thrown in the case of integer overflow.
 		if (n > max_size())
-		{
 			throw std::length_error("level_allocator<T>::allocate() - Integer overflow.");
-		}
 
-		// level_allocator wraps malloc().
 		void * const pv = _Mem_Alloc (n * sizeof(T), com_levelPool, 0, "null", 0);
-
-		// Allocators should throw std::bad_alloc in the case of memory allocation failure.
 		if (pv == NULL)
-		{
 			throw std::bad_alloc();
-		}
 
 		return static_cast<T *>(pv);
 	}
 
 	void deallocate(T * const p, const size_t n) const
 	{
-		// level_allocator prints a diagnostic message to demonstrate
-		// what it's doing. Real allocators won't do this.
-//		std::cout << "Deallocating " << n << (n == 1 ? " object" : "objects")
-//			<< " of size " << sizeof(T) << "." << std::endl;
-
-		// level_allocator wraps free().
 		QDelete p;
 	}
 
-	// The following will be the same for all allocators that ignore hints.
 	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
 	{
 		return allocate(n);
 	}
 
-
-	// Allocators are not required to be assignable, so
-	// all allocators should have a private unimplemented
-	// assignment operator. Note that this will trigger the
-	// off-by-default (enabled under /Wall) warning C4626
-	// "assignment operator could not be generated because a
-	// base class assignment operator is inaccessible" within
-	// the STL headers, but that warning is useless.
 private:
 	level_allocator& operator=(const level_allocator&);
 };
 
-// A compiler bug causes it to believe that p->~T() doesn't reference p.
-// The definition of destroy() must be the same for all allocators.
-template <typename T> void level_allocator<T>::destroy(T * const p) const
-{
-	p->~T();
-}
-
 template <typename T> class game_allocator
 {
 public:
-	// The following will be the same for virtually all allocators.
 	typedef T * pointer;
 	typedef const T * const_pointer;
 	typedef T& reference;
@@ -369,12 +266,9 @@ public:
 
 	size_t max_size() const
 	{
-		// The following has been carefully written to be independent of
-		// the definition of size_t and to avoid signed/unsigned warnings.
 		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
 	}
 
-	// The following must be the same for all allocators.
 	template <typename U> struct rebind
 	{
 		typedef game_allocator<U> other;
@@ -391,18 +285,16 @@ public:
 		new (pv) T(t);
 	}
 
-	void destroy(T * const p) const; // Defined below.
+	void destroy(T * const p) const
+	{
+		p->~T();
+	}
 
-	// Returns true if and only if storage allocated from *this
-	// can be deallocated from other, and vice versa.
-	// Always returns true for stateless allocators.
 	bool operator==(const game_allocator& other) const
 	{
 		return true;
 	}
 
-	// Default constructor, copy constructor, rebinding constructor, and destructor.
-	// Empty for stateless allocators.
 	game_allocator()
 	{
 	}
@@ -419,80 +311,34 @@ public:
 	{
 	}
 
-	// The following will be different for each allocator.
 	T * allocate(const size_t n) const
 	{
-		// game_allocator prints a diagnostic message to demonstrate
-		// what it's doing. Real allocators won't do this.
-		// std::cout << "Allocating " << n << (n == 1 ? " object" : "objects")
-		//     << " of size " << sizeof(T) << "." << std::endl;
-
-		// The return value of allocate(0) is unspecified.
-		// game_allocator returns NULL in order to avoid depending
-		// on malloc(0)'s implementation-defined behavior
-		// (the implementation can define malloc(0) to return NULL,
-		// in which case the bad_alloc check below would fire).
-		// All allocators can return NULL in this case.
 		if (n == 0)
-		{
 			return NULL;
-		}
 
-		// All allocators should contain an integer overflow check.
-		// The Standardization Committee recommends that std::length_error
-		// be thrown in the case of integer overflow.
 		if (n > max_size())
-		{
 			throw std::length_error("game_allocator<T>::allocate() - Integer overflow.");
-		}
 
-		// game_allocator wraps malloc().
 		void * const pv = _Mem_Alloc (n * sizeof(T), com_gamePool, 0, "null", 0);
-
-		// Allocators should throw std::bad_alloc in the case of memory allocation failure.
 		if (pv == NULL)
-		{
 			throw std::bad_alloc();
-		}
 
 		return static_cast<T *>(pv);
 	}
 
 	void deallocate(T * const p, const size_t n) const
 	{
-		// game_allocator prints a diagnostic message to demonstrate
-		// what it's doing. Real allocators won't do this.
-//		std::cout << "Deallocating " << n << (n == 1 ? " object" : "objects")
-//			<< " of size " << sizeof(T) << "." << std::endl;
-
-		// game_allocator wraps free().
 		QDelete p;
 	}
 
-	// The following will be the same for all allocators that ignore hints.
 	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
 	{
 		return allocate(n);
 	}
 
-
-	// Allocators are not required to be assignable, so
-	// all allocators should have a private unimplemented
-	// assignment operator. Note that this will trigger the
-	// off-by-default (enabled under /Wall) warning C4626
-	// "assignment operator could not be generated because a
-	// base class assignment operator is inaccessible" within
-	// the STL headers, but that warning is useless.
 private:
 	game_allocator& operator=(const game_allocator&);
 };
-
-// A compiler bug causes it to believe that p->~T() doesn't reference p.
-// The definition of destroy() must be the same for all allocators.
-template <typename T> void game_allocator<T>::destroy(T * const p) const
-{
-	p->~T();
-}
 
 typedef basic_string<char, char_traits<char>, generic_allocator<char> >
 	cc_string;

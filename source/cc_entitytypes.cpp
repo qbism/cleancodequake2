@@ -286,7 +286,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 			// medics won't heal monsters that they kill themselves
 
 #ifndef MONSTER_USE_ROGUE_AI
-			if (strcmp(attacker->gameEntity->classname, "monster_medic") == 0)
+			if (strcmp(attacker->ClassName, "monster_medic") == 0)
 				SetOwner (attacker);
 #endif
 		}
@@ -1543,6 +1543,7 @@ ENTITYFIELDS_BEGIN(CUsableEntity)
 	CEntityField ("delay",		EntityMemberOffset(CUsableEntity,Delay),			FT_FRAMENUMBER),
 	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING),
 	CEntityField ("killtarget",	EntityMemberOffset(CUsableEntity,KillTarget),		FT_LEVEL_STRING),
+	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING),
 };
 ENTITYFIELDS_END(CUsableEntity)
 
@@ -1590,7 +1591,7 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
 	{
 	// create a temp object to fire at a later time
 		CDelayedUse *t = QNew (com_levelPool, 0) CDelayedUse;
-		t->gameEntity->classname = "DelayedUse";
+		t->ClassName = "DelayedUse";
 
 		// Paril: for compatibility
 		t->NextThink = level.Frame + Delay;
@@ -1643,8 +1644,8 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
 				continue;
 
 			// doors fire area portals in a specific way
-			if (!Q_stricmp(Ent->gameEntity->classname, "func_areaportal") &&
-				(!Q_stricmp(Ent->gameEntity->classname, "func_door") || !Q_stricmp(Ent->gameEntity->classname, "func_door_rotating")))
+			if (!Q_stricmp(Ent->ClassName, "func_areaportal") &&
+				(!Q_stricmp(Ent->ClassName, "func_door") || !Q_stricmp(Ent->ClassName, "func_door_rotating")))
 				continue;
 
 			if (Ent->EntityFlags & ENT_USABLE)

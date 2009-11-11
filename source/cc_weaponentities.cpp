@@ -104,8 +104,8 @@ void CGrenade::Explode ()
 	EMeansOfDeath			mod;
 
 	vec3f origin = State.GetOrigin ();
-	if (gameEntity->owner && gameEntity->owner->client)
-		entity_cast<CPlayerEntity>(gameEntity->owner->Entity)->PlayerNoiseAt (origin, PNOISE_IMPACT);
+	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (origin, PNOISE_IMPACT);
 
 	//FIXME: if we are onground then raise our Z just a bit since we are a point?
 	if (Enemy)
@@ -141,7 +141,7 @@ void CGrenade::Explode ()
 
 void CGrenade::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other->gameEntity == gameEntity->owner)
+	if (other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -197,7 +197,7 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 da
 	Grenade->NextThink = level.Frame + (timer * 10);
 	Grenade->Damage = damage;
 	Grenade->RadiusDamage = damage_radius;
-	Grenade->gameEntity->classname = (!handNade) ? "grenade" : "hgrenade";
+	Grenade->ClassName = (!handNade) ? "grenade" : "hgrenade";
 	if (handNade)
 	{
 		Grenade->SpawnFlags = (held) ? (GRENADE_HAND|GRENADE_HELD) : GRENADE_HAND;
@@ -246,7 +246,7 @@ void CBlasterProjectile::Think ()
 
 void CBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other->gameEntity == gameEntity->owner)
+	if (other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -256,8 +256,8 @@ void CBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface
 	}
 
 	vec3f origin = State.GetOrigin ();
-	if (gameEntity->owner->client)
-		entity_cast<CPlayerEntity>(gameEntity->owner->Entity)->PlayerNoiseAt (origin, PNOISE_IMPACT);
+	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (origin, PNOISE_IMPACT);
 
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, origin, plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & 1) ? MOD_HYPERBLASTER : MOD_BLASTER);
@@ -290,7 +290,7 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->SetOwner (Spawner);
 	Bolt->NextThink = level.Frame + 20;
 	Bolt->Damage = damage;
-	Bolt->gameEntity->classname = "bolt";
+	Bolt->ClassName = "bolt";
 	if (isHyper)
 		Bolt->SpawnFlags = 1;
 	Bolt->Link ();
@@ -333,7 +333,7 @@ void CRocket::Think ()
 
 void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other->gameEntity == gameEntity->owner)
+	if (other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -343,8 +343,8 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	}
 
 	vec3f origin = State.GetOrigin ();
-	if (gameEntity->owner->client)
-		entity_cast<CPlayerEntity>(gameEntity->owner->Entity)->PlayerNoiseAt (origin, PNOISE_IMPACT);
+	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (origin, PNOISE_IMPACT);
 
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, origin, (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
@@ -369,7 +369,7 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	Free ();
 }
 
-void CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+CRocket *CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CRocket	*Rocket = QNew (com_levelPool, 0) CRocket;
@@ -385,12 +385,13 @@ void CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->RadiusDamage = radius_damage;
 	Rocket->DamageRadius = damage_radius;
 	Rocket->State.GetSound() = SoundIndex ("weapons/rockfly.wav");
-	Rocket->gameEntity->classname = "rocket";
+	Rocket->ClassName = "rocket";
 
 	if (Spawner->EntityFlags & ENT_PLAYER)
 		CheckDodge (Spawner, start, dir, speed);
 
 	Rocket->Link ();
+	return Rocket;
 }
 
 bool CRocket::Run ()
@@ -468,9 +469,6 @@ void CBFGBolt::Think ()
 
 		while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, origin, 256)) != NULL)
 		{
-			if (ent == gameEntity->Entity) // Stupid...
-				continue;
-
 			if (ent == GetOwner())
 				continue;
 
@@ -509,7 +507,6 @@ void CBFGBolt::Think ()
 					break;
 
 				// hurt it if we can
-				//if ((tr.ent->takedamage) && !(tr.ent->flags & FL_IMMUNE_LASER) && (tr.ent != gameEntity->owner))
 				if (((tr.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(tr.Ent)->CanTakeDamage) && !(tr.Ent->Flags & FL_IMMUNE_LASER) && (tr.Ent != GetOwner()))
 					entity_cast<CHurtableEntity>(tr.Ent)->TakeDamage (this, GetOwner(), dir, tr.EndPos, vec3fOrigin, dmg, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
 
@@ -537,7 +534,7 @@ void CBFGBolt::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	if (Exploded)
 		return;
 
-	if (other->gameEntity == gameEntity->owner)
+	if (other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -547,8 +544,8 @@ void CBFGBolt::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	}
 
 	vec3f boltOrigin = State.GetOrigin();
-	if (gameEntity->owner->client)
-		entity_cast<CPlayerEntity>(gameEntity->owner->Entity)->PlayerNoiseAt (boltOrigin, PNOISE_IMPACT);
+	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (boltOrigin, PNOISE_IMPACT);
 
 	// core explosion - prevents firing it into the wall/floor
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
@@ -586,7 +583,7 @@ void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->Damage = damage;
 	BFG->DamageRadius = damage_radius;
 	BFG->State.GetSound() = SoundIndex ("weapons/bfg__l1a.wav");
-	BFG->gameEntity->classname = "bfg blast";
+	BFG->ClassName = "bfg blast";
 	BFG->FreeTime = level.Frame + 80000/speed;
 
 	BFG->Link ();

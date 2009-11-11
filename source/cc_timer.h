@@ -27,50 +27,75 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_version.h
-// 
+// cc_timer.h
+// Classes and functions to make global timers
 //
 
-#if !defined(__CC_VERSION_H__) || !defined(INCLUDE_GUARDS)
-#define __CC_VERSION_H__
+#if !defined(__CC_TIMER_H__) || !defined(INCLUDE_GUARDS)
+#define __CC_TIMER_H__
 
-#define CLEANCODE_VERSION_PREFIX	"pr"
-#define CLEANCODE_VERSION_MAJOR		"0"
-#define CLEANCODE_VERSION_MINOR		"0000"
-#define CLEANCODE_VERSION_BUILD		"00204"
-
-static const uint8 verMajor = atoi(CLEANCODE_VERSION_MAJOR);
-static const uint16 verMinor = atoi(CLEANCODE_VERSION_MINOR);
-static const uint32 verBuild = atoi(CLEANCODE_VERSION_BUILD);
-
-#define CLEANCODE_VERSION			"\""CLEANCODE_VERSION_PREFIX"."CLEANCODE_VERSION_MAJOR"."CLEANCODE_VERSION_MINOR"."CLEANCODE_VERSION_BUILD"\""
-
-CC_ENUM (uint8, EVersionComparison)
+class CGameTimer
 {
-	VERSION_SAME,
-	VERSION_OLDER,
-	VERSION_NEWER,
+public:
+	FrameNumber_t		EndTime;
+	sint32				Key;
+
+	CGameTimer (FrameNumber_t EndTime, sint32 Key) :
+	EndTime (EndTime),
+	Key (Key)
+	{
+	};
+
+	virtual ~CGameTimer ()
+	{
+	};
+	
+	// Events
+	virtual void OnCreate ()
+	{
+	};
+
+	virtual void OnTimeUp ()
+	{
+	};
+
+	virtual void OnDestroy ()
+	{
+	};
+
+	void Create ()
+	{
+		OnCreate ();
+	};
+
+	void Destroy ()
+	{
+		OnDestroy ();
+	};
+
+	void Run ();
 };
 
-inline EVersionComparison CompareVersion (const char *Prefix, uint8 Major, uint16 Minor, uint32 Build)
+void AddTimer (CGameTimer *Timer, sint32 Key);
+
+CC_ENUM (sint32, ETimerKeys)
 {
-	if (!strcmp (Prefix, CLEANCODE_VERSION_PREFIX) &&
-		Major == verMajor &&
-		Minor == verMinor &&
-		Build == verBuild)
-		return VERSION_SAME;
-	else if (Major > verMajor ||
-			Minor > verMinor ||
-			Build > verBuild ||
-			strcmp (Prefix, CLEANCODE_VERSION_PREFIX))
-		return VERSION_NEWER;
-	else
-		return VERSION_OLDER;
+	TIMER_NONE = -1,
+	
+	// Add your own timer keys starting here.
+};
+
+template <typename TType>
+void CreateTimer (FrameNumber_t	EndTime, sint32 Key = TIMER_NONE)
+{
+	AddTimer (QNew (com_levelPool, 0) TType (EndTime, Key), Key);
 }
 
-void Cmd_CCVersion_t (CPlayerEntity *Player);
-void SvCmd_CCVersion_t ();
-void InitVersion ();
+void KillTimer (sint32 Key);
+
+void RunTimers ();
+void ClearTimers ();
+void SaveTimers ();
 
 #else
 FILE_WARNING

@@ -87,15 +87,15 @@ void SpawnWorld ();
 CBaseEntity *CEntityList::Resolve (edict_t *ent)
 {
 	CClassnameToClassIndex *Entity;
-	uint32 hash = Com_HashGeneric(ent->classname, MAX_CLASSNAME_CLASSES_HASH);
+	uint32 hash = Com_HashGeneric(level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
 
 	for (Entity = HashedEntityList[hash]; Entity; Entity=Entity->hashNext)
 	{
-		if (Q_stricmp(Entity->Classname, ent->classname) == 0)
+		if (Q_stricmp(Entity->Classname, level.ClassName.c_str()) == 0)
 			return Entity->Spawn(ent->state.number);
 	}
 
-	if (Q_stricmp(ent->classname, "worldspawn") == 0)
+	if (Q_stricmp(level.ClassName.c_str(), "worldspawn") == 0)
 	{
 		SpawnWorld ();
 		return g_edicts[0].Entity;
@@ -118,9 +118,8 @@ Finds the spawn function for the entity and calls it
 */
 void ED_CallSpawn (edict_t *ent)
 {
-	if (!ent->classname)
+	if (level.ClassName.empty())
 	{
-		//gi.dprintf ("ED_CallSpawn: NULL classname\n");
 		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "NULL classname!\n");
 		return;
 	}
@@ -130,13 +129,16 @@ void ED_CallSpawn (edict_t *ent)
 
 	if (!MapEntity)
 	{
-		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity (no spawn function)\n");
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", level.ClassName.c_str());
 
 _CC_DISABLE_DEPRECATION
 		G_FreeEdict (ent);
 _CC_ENABLE_DEPRECATION
 		return;
 	}
+
+	// Link in the classname
+	MapEntity->ClassName = Mem_PoolStrDup (level.ClassName.c_str(), com_levelPool, 0);
 
 	if (map_debug->Boolean())
 	{
@@ -209,7 +211,7 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 		if (keyName[0] == '_')
 			continue;
 		else if (Q_stricmp (keyName, "classname") == 0)
-			ent->classname = Mem_PoolStrDup (token, com_levelPool, 0);
+			level.ClassName = token;
 		else
 			// push it in the list for the entity
 			level.ParseData.push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
@@ -323,6 +325,7 @@ parsing textual entity definitions out of an ent file.
 ==============
 */
 
+void InitEntityLists ();
 void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
 	CTimer Timer;
@@ -347,6 +350,8 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 
 	level.Clear ();
 	memset (g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
+	InitEntityLists ();
+	ClearTimers ();
 
 	level.ServerLevelName = ServerLevelName;
 	Q_strncpyz (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);
@@ -374,11 +379,15 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 
 	while (true)
 	{
+		// Clear classname
+		level.ClassName.clear ();
+
 		// Parse the opening brace
 		const char *token;
 
 		if (!EntityParser.ParseToken (PSF_ALLOW_NEWLINES, &token))
 			break;
+
 		if (token[0] != '{')
 			GameError ("ED_LoadFromFile: found %s when expecting {", token);
 

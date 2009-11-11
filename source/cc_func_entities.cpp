@@ -310,13 +310,6 @@ CFuncClock::CFuncClock (sint32 Index) :
 	{
 	};
 
-ENTITYFIELDS_BEGIN(CFuncClock)
-{
-	CEntityField ("style", EntityMemberOffset(CFuncClock,Style), FT_BYTE),
-	CEntityField ("count", EntityMemberOffset(CFuncClock,Count), FT_INT),
-};
-ENTITYFIELDS_END (CFuncClock);
-
 bool CFuncClock::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CFuncClock> (this, Key, Value))
@@ -412,11 +405,11 @@ void CFuncClock::Think ()
 	if (((SpawnFlags & 1) && (Seconds > Wait)) ||
 		((SpawnFlags & 2) && (Seconds < Wait)))
 	{
-		if (gameEntity->pathtarget)
+		if (CountTarget)
 		{
 			char *savetarget = Target;
 			char *savemessage = Message;
-			Target = gameEntity->pathtarget;
+			Target = CountTarget;
 			Message = NULL;
 			UseTargets (Activator, Message);
 			Target = savetarget;
@@ -454,7 +447,6 @@ void CFuncClock::Spawn ()
 {
 	if (!Target)
 	{
-		//gi.dprintf("%s with no target at (%f %f %f)\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		Free ();
 		return;
@@ -462,7 +454,6 @@ void CFuncClock::Spawn ()
 
 	if ((SpawnFlags & 2) && (!Count))
 	{
-		//gi.dprintf("%s with no count at (%f %f %f)\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No count\n");
 		Free ();
 		return;
@@ -479,3 +470,13 @@ void CFuncClock::Spawn ()
 	else
 		NextThink = level.Frame + 10;
 }
+
+ENTITYFIELDS_BEGIN(CFuncClock)
+{
+	CEntityField ("style", EntityMemberOffset(CFuncClock,Style), FT_BYTE),
+	CEntityField ("count", EntityMemberOffset(CFuncClock,Count), FT_INT),
+	CEntityField ("pathtarget", EntityMemberOffset(CFuncClock,CountTarget), FT_LEVEL_STRING),
+};
+ENTITYFIELDS_END (CFuncClock);
+
+LINK_CLASSNAME_TO_CLASS ("func_clock", CFuncClock);

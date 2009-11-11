@@ -50,18 +50,17 @@ CC_ENUM (uint8, EItemThinkState)
 class CItemEntity : public CMapEntity, public CTossProjectile, public CTouchableEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
-	uint32 AmmoCount;
-	EItemThinkState ThinkState;
+	char				*Model;
+	uint32				AmmoCount;
+	EItemThinkState		ThinkState;
+	CBaseItem			*LinkedItem;
 
 	CItemEntity ();
 	CItemEntity (sint32 Index);
 
 	virtual void Spawn (CBaseItem *item);
 
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	ENTITYFIELD_DEFS
 
 	// Returns a random team member of ent
 	CItemEntity *GetRandomTeamMember (CItemEntity *Master);

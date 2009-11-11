@@ -75,11 +75,12 @@ class CBrushModel : public virtual CBaseEntity, public CThinkableEntity, public 
 public:
 	EBrushType	BrushType;
 
+	char		*Model;
 	float		Accel;
 	float		Speed;
 	float		Decel;
-	sint32			Distance;
-	sint32			Damage;
+	sint32		Distance;
+	sint32		Damage;
 	uint8		Sounds;
 
 	FrameNumber_t		Wait;
@@ -117,6 +118,8 @@ public:
 
 	CBrushModel ();
 	CBrushModel (sint32 Index);
+
+	void SetBrushModel ();
 
 	inline void SetMoveDir ()
 	{
@@ -356,6 +359,7 @@ class CTrainBase : public CMapEntity, public CBrushModel, public CBlockableEntit
 {
 public:
 	CUsableEntity	*TargetEntity;
+
 	enum
 	{
 		TRAINTHINK_FIND = BRUSHTHINK_CUSTOM_START,
@@ -365,11 +369,7 @@ public:
 	CTrainBase(sint32 Index);
 
 	virtual bool Run ();
-
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
-	}
+	virtual bool ParseField (const char *Key, const char *Value);
 
 	enum
 	{
@@ -553,7 +553,7 @@ public:
 	void Spawn ();
 };
 
-class CKillbox : public CMapEntity, public CUsableEntity
+class CKillbox : public CMapEntity, public CUsableEntity, public CBrushModel
 {
 public:
 	CKillbox ();
@@ -561,10 +561,16 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
 	}
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
+
+	bool Run ()
+	{
+		return CBaseEntity::Run ();
+	};
+
 	void Spawn ();
 };
 

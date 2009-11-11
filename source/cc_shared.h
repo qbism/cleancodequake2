@@ -28,7 +28,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_shared.h
-// Shared header, included by g_local.
+// Shared header
 //
 
 #if !defined(__CC_SHARED_H__) || !defined(INCLUDE_GUARDS)
@@ -55,6 +55,7 @@ typedef sint32	FrameNumber_t;
 #define BAN_BASIC_INFO
 #include "cc_ban.h"
 #undef BAN_BASIC_INFO
+#include "cc_timer.h"
 
 // Main class files
 #include "cc_items.h"

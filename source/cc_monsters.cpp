@@ -424,6 +424,7 @@ ENTITYFIELDS_BEGIN(CMonsterEntity)
 {
 	CEntityField ("deathtarget",	EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_LEVEL_STRING),
 	CEntityField ("combattarget",	EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_LEVEL_STRING),
+	CEntityField ("item",			EntityMemberOffset(CMonsterEntity,Item),				FT_ITEM),
 };
 ENTITYFIELDS_END(CMonsterEntity)
 
@@ -1029,7 +1030,7 @@ void CMonster::MonsterStartGo ()
 
 		while ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (target, Entity->Target)) != NULL)
 		{
-			if (strcmp(target->gameEntity->classname, "point_combat") == 0)
+			if (strcmp(target->ClassName, "point_combat") == 0)
 			{
 				Entity->CombatTarget = Entity->Target;
 				fixup = true;
@@ -1039,7 +1040,6 @@ void CMonster::MonsterStartGo ()
 		}
 		if (notcombat && Entity->CombatTarget)
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Target with mixed types\n");
-			//gi.dprintf("%s at (%f %f %f) has target with mixed types\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 		if (fixup)
 			Entity->Target = NULL;
 	}
@@ -1050,7 +1050,7 @@ void CMonster::MonsterStartGo ()
 		CMapEntity		*target = NULL;
 		while ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (target, Entity->CombatTarget)) != NULL)
 		{
-			if (strcmp(target->gameEntity->classname, "point_combat") != 0)
+			if (strcmp(target->ClassName, "point_combat") != 0)
 				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget);
 		}
 	}
@@ -1063,13 +1063,12 @@ void CMonster::MonsterStartGo ()
 			Entity->GoalEntity = Entity->MoveTarget = Target;
 		if (!Entity->MoveTarget)
 		{
-			//gi.dprintf ("%s can't find target %s at (%f %f %f)\n", self->classname, self->target, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Can't find target\n");
 			Entity->Target = NULL;
 			PauseTime = 100000000;
 			Stand ();
 		}
-		else if (strcmp (Entity->MoveTarget->gameEntity->classname, "path_corner") == 0)
+		else if (strcmp (Entity->MoveTarget->ClassName, "path_corner") == 0)
 		{
 			IdealYaw = Entity->State.GetAngles().Y = (Entity->GoalEntity->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 			Walk ();
@@ -1408,7 +1407,7 @@ bool CMonster::CheckAttack ()
 		spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		tr (spot1, spot2, Entity->gameEntity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.ent != Entity->Enemy)
@@ -1589,13 +1588,13 @@ bool CMonster::CheckAttack ()
 	{
 		// originally, just 0.3
 		float strafe_chance;
-		if (!(strcmp(Entity->gameEntity->classname, "monster_daedalus")))
+		if (!(strcmp(Entity->ClassName, "monster_daedalus")))
 			strafe_chance = 0.8f;
 		else
 			strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (Entity->Enemy->gameEntity->classname) && (!strcmp(Entity->Enemy->gameEntity->classname, "tesla")))
+		if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)
@@ -1673,7 +1672,7 @@ void CMonster::AI_Charge(float Dist)
 		{
 			float ofs;
 			// if we're fighting a tesla, NEVER circle strafe
-			if ((Entity->Enemy) && (Entity->Enemy->gameEntity->classname) && (!strcmp(Entity->Enemy->gameEntity->classname, "tesla")))
+			if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
 				ofs = 0;
 			else if (Lefty)
 				ofs = 90;
@@ -2147,7 +2146,7 @@ void CMonster::AI_Run(float Dist)
 	{
 //		gi.dprintf("checking for course correction\n");
 
-		tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity->gameEntity, CONTENTS_MASK_PLAYERSOLID);
+		tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 		if (tr.fraction < 1)
 		{
 			v = Entity->GoalEntity->State.GetOrigin() - origin;
@@ -2160,12 +2159,12 @@ void CMonster::AI_Run(float Dist)
 
 			v.Set (d2, -16, 0);
 			G_ProjectSource (origin, v, v_forward, v_right, left_target);
-			tr (origin, Entity->GetMins(), Entity->GetMaxs(), left_target, Entity->gameEntity, CONTENTS_MASK_PLAYERSOLID);
+			tr (origin, Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
 			left = tr.fraction;
 
 			v.Set (d2, 16, 0);
 			G_ProjectSource (origin, v, v_forward, v_right, right_target);
-			tr (origin, Entity->GetMins(), Entity->GetMaxs(), right_target, Entity->gameEntity, CONTENTS_MASK_PLAYERSOLID);
+			tr (origin, Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
 			right = tr.fraction;
 
 			center = (d1*center)/d2;
@@ -2822,29 +2821,29 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
 	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (attacker->Flags & (FL_FLY|FL_SWIM))) &&
-		 (strcmp (Entity->gameEntity->classname, attacker->gameEntity->classname) != 0) &&
-		 (strcmp(attacker->gameEntity->classname, "monster_tank") != 0) &&
-		 (strcmp(attacker->gameEntity->classname, "monster_supertank") != 0) &&
-		 (strcmp(attacker->gameEntity->classname, "monster_makron") != 0) &&
-		 (strcmp(attacker->gameEntity->classname, "monster_jorg") != 0))
+		 (strcmp (Entity->ClassName, attacker->ClassName) != 0) &&
+		 (strcmp(attacker->ClassName, "monster_tank") != 0) &&
+		 (strcmp(attacker->ClassName, "monster_supertank") != 0) &&
+		 (strcmp(attacker->ClassName, "monster_makron") != 0) &&
+		 (strcmp(attacker->ClassName, "monster_jorg") != 0))
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker->gameEntity;
+		Entity->Enemy = attacker;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
 	// if they *meant* to shoot us, then shoot back
-	else if (attacker->Enemy == Entity->gameEntity)
+	else if (attacker->Enemy == Entity)
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker->gameEntity;
+		Entity->Enemy = attacker;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
 	// Help our buddy!
-	else if ((attacker->EntityFlags & ENT_MONSTER) && attacker->Enemy && attacker->Enemy != Entity->gameEntity)
+	else if ((attacker->EntityFlags & ENT_MONSTER) && attacker->Enemy && attacker->Enemy != Entity)
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
@@ -2929,10 +2928,10 @@ void CMonster::MonsterDeathUse ()
 	Entity->Flags &= ~(FL_FLY|FL_SWIM);
 	AIFlags &= AI_GOOD_GUY;
 
-	if (Entity->gameEntity->item)
+	if (Entity->Item)
 	{
-		Entity->gameEntity->item->DropItem (Entity);
-		Entity->gameEntity->item = NULL;
+		Entity->Item->DropItem (Entity);
+		Entity->Item = NULL;
 	}
 
 	if (Entity->DeathTarget)
@@ -3314,9 +3313,9 @@ bool CMonster::FindTarget()
 
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && Entity->GoalEntity->gameEntity->classname)
+		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && Entity->GoalEntity->ClassName)
 		{
-			if (strcmp(Entity->GoalEntity->gameEntity->classname, "target_actor") == 0)
+			if (strcmp(Entity->GoalEntity->ClassName, "target_actor") == 0)
 				return false;
 		}
 

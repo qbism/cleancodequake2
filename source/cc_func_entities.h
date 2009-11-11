@@ -80,10 +80,11 @@ public:
 class CFuncClock : public CMapEntity, public CUsableEntity, public CThinkableEntity
 {
 public:
+	char			*CountTarget;
 	FrameNumber_t	Wait;
 	uint8			Style;
-	sint32				Seconds;
-	sint32				Count;
+	sint32			Seconds;
+	sint32			Count;
 	CTargetString	*String;
 	
 	CFuncClock ();

@@ -82,7 +82,7 @@ public:
 	void Think ();
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+	static CRocket *Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage);
 
 	bool Run ();

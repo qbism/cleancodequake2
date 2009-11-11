@@ -93,6 +93,7 @@ public:
 	uint32			EntityFlags;
 	CEntityState	State;
 	EEdictFlags		Flags;
+	char			*ClassName;
 
 	struct entityTeam_t
 	{
@@ -158,7 +159,6 @@ public:
 
 	virtual void	BecomeExplosion (bool grenade);
 
-	void			SetBrushModel ();
 	void			CastTo (ECastFlags castFlags);
 	void			StuffText (char *text);
 

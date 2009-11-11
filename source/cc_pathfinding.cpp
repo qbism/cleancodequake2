@@ -38,6 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_tent.h"
 #include "cc_pathfinding.h"
 #include "cc_cmds.h"
+#include "cc_brushmodels.h"
 
 class CNodeEntity : public CBaseEntity
 {
@@ -449,7 +450,7 @@ void SaveNodes ()
 		{
 			if (NodeList[i]->LinkedEntity)
 			{
-				sint32 modelNum = atoi(NodeList[i]->LinkedEntity->gameEntity->model+1);
+				sint32 modelNum = atoi(entity_cast<CBrushModel>(NodeList[i]->LinkedEntity)->Model+1);
 				File.Write (&modelNum, sizeof(sint32));
 			}
 		}
@@ -480,14 +481,19 @@ void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
 			continue;
 		if (e->client)
 			continue;
-		if (e->Entity && (e->Entity->EntityFlags & ENT_MONSTER))
+		if (!e->Entity)
 			continue;
-		if (!e->model)
+		if (!(e->Entity->EntityFlags & ENT_BRUSHMODEL))
 			continue;
 
-		if (strcmp(e->model, tempString) == 0)
+		CBrushModel *Entity = entity_cast<CBrushModel>(e->Entity);
+
+		if (!Entity->Model)
+			continue;
+
+		if (strcmp(Entity->Model, tempString) == 0)
 		{
-			Node->LinkedEntity = e->Entity;
+			Node->LinkedEntity = Entity;
 			return;
 		}
 	}
@@ -688,10 +694,15 @@ void Cmd_Node_f (CPlayerEntity *ent)
 
 		CTrace trace (origin, end, ent, CONTENTS_MASK_ALL);
 
-		if (trace.ent && trace.ent->model && trace.ent->model[0] == '*')
+		if (trace.ent && (trace.Ent->EntityFlags & ENT_BRUSHMODEL))
 		{
-			Node->LinkedEntity = trace.Ent;
-			DebugPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.ent->classname);
+			CBrushModel *BrushModel = entity_cast<CBrushModel>(trace.Ent);
+
+			if (BrushModel->Model && BrushModel->Model[0] == '*')
+			{
+				Node->LinkedEntity = trace.Ent;
+				DebugPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.Ent->ClassName);
+			}
 		}
 	}
 	else if (Q_stricmp (cmd.c_str(), "monstergoal") == 0)

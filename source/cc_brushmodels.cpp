@@ -105,8 +105,23 @@ ENTITYFIELDS_BEGIN(CBrushModel)
 	CEntityField ("dmg", EntityMemberOffset(CBrushModel,Damage), FT_INT),
 	CEntityField ("lip", EntityMemberOffset(CBrushModel,Lip), FT_INT),
 	CEntityField ("sounds", EntityMemberOffset(CBrushModel,Sounds), FT_BYTE),
+	CEntityField ("model", EntityMemberOffset(CBrushModel,Model), FT_LEVEL_STRING),
 };
 ENTITYFIELDS_END(CBrushModel)
+
+void CBrushModel::SetBrushModel ()
+{
+	if (!Model || Model[0] != '*')
+	{
+		DebugPrintf ("CleanCode warning: SetBrushModel on a non-brush model!\n");
+		State.GetModelIndex() = ModelIndex(Model);
+		return;
+	}
+
+_CC_DISABLE_DEPRECATION
+	gi.setmodel (gameEntity, Model);
+_CC_ENABLE_DEPRECATION
+}
 
 bool			CBrushModel::ParseField (const char *Key, const char *Value)
 {
@@ -706,7 +721,7 @@ void CDoor::UseAreaPortals (bool isOpen)
 
 	while ((t = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (t, Target)) != NULL)
 	{
-		if (Q_stricmp(t->gameEntity->classname, "func_areaportal") == 0)
+		if (Q_stricmp(t->ClassName, "func_areaportal") == 0)
 		{
 			CAreaPortal *Portal = entity_cast<CAreaPortal>(t);
 			gi.SetAreaPortalState (Portal->Style, isOpen);
@@ -759,10 +774,7 @@ void CDoor::GoDown ()
 	}
 	
 	MoveState = STATE_DOWN;
-	//if (strcmp(self->classname, "func_door") == 0)
 	MoveCalc (StartOrigin, DOORENDFUNC_HITBOTTOM);
-	//else if (strcmp(self->classname, "func_door_rotating") == 0)
-	//	AngleMove_Calc (self, door_hit_bottom);
 }
 
 void CDoor::GoUp (CBaseEntity *activator)
@@ -784,10 +796,7 @@ void CDoor::GoUp (CBaseEntity *activator)
 		State.GetSound() = SoundMiddle;
 	}
 	MoveState = STATE_UP;
-	//if (strcmp(self->classname, "func_door") == 0)
 	MoveCalc (EndOrigin, DOORENDFUNC_HITTOP);
-	//else if (strcmp(self->classname, "func_door_rotating") == 0)
-	//	AngleMove_Calc (self, door_hit_top);
 
 	UseTargets (activator, Message);
 	UseAreaPortals (true);
@@ -1194,7 +1203,6 @@ void CRotatingDoor::Spawn ()
 
 	if (!Distance)
 	{
-		//gi.dprintf("%s at (%f %f %f) with no distance set\n", ent->classname, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2]);
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No distance set\n");
 		Distance = 90;
 	}
@@ -1341,8 +1349,6 @@ void CMovableWater::Spawn ()
 
 	if (Wait == -1)
 		SpawnFlags |= DOOR_TOGGLE;
-
-	//gameEntity->classname = "func_door";
 
 	Link ();
 };
@@ -1521,8 +1527,6 @@ void CDoorSecret::Spawn ()
 		Touchable = true;
 	}
 	
-	//gameEntity->classname = "func_door";
-
 	Link ();
 }
 
@@ -1786,11 +1790,10 @@ void CTrainBase::Blocked (CBaseEntity *other)
 
 void CTrainBase::TrainWait ()
 {
-	if (TargetEntity->gameEntity->pathtarget)
+	if (TargetEntity->PathTarget)
 	{
-		char	*savetarget;
-		savetarget = TargetEntity->Target;
-		TargetEntity->Target = TargetEntity->gameEntity->pathtarget;
+		char	*savetarget = TargetEntity->Target;
+		TargetEntity->Target = TargetEntity->PathTarget;
 		TargetEntity->UseTargets (Activator, Message);
 		TargetEntity->Target = savetarget;
 
@@ -1851,7 +1854,7 @@ void CTrainBase::Next ()
 		{
 			if (!first)
 			{
-				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", ent->gameEntity->classname, ent->State.GetOrigin().X, ent->State.GetOrigin().Y, ent->State.GetOrigin().Z);
+				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", ent->ClassName, ent->State.GetOrigin().X, ent->State.GetOrigin().Y, ent->State.GetOrigin().Z);
 				return;
 			}
 			first = false;
@@ -1977,6 +1980,11 @@ void CTrainBase::Spawn ()
 {
 };
 
+bool CTrainBase::ParseField (const char *Key, const char *Value)
+{
+	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
 CTrain::CTrain () :
 CBaseEntity (),
 CTrainBase ()
@@ -2057,16 +2065,23 @@ void CTriggerElevator::Use (CBaseEntity *other, CBaseEntity *activator)
 	if (MoveTarget->NextThink)
 		return;
 
-	if (!other->gameEntity->pathtarget)
+	if (!(other->EntityFlags & ENT_USABLE))
+	{
+		DebugPrintf ("elevator used with a non-usable entity\n");
+		return;
+	}
+	
+	CUsableEntity *Other = entity_cast<CUsableEntity>(other);
+	if (!Other->PathTarget)
 	{
 		DebugPrintf("elevator used with no pathtarget\n");
 		return;
 	}
 
-	CUsableEntity *target = entity_cast<CUsableEntity>(CC_PickTarget (other->gameEntity->pathtarget));
+	CUsableEntity *target = entity_cast<CUsableEntity>(CC_PickTarget (Other->PathTarget));
 	if (!target)
 	{
-		DebugPrintf("elevator used with bad pathtarget: %s\n", other->gameEntity->pathtarget);
+		DebugPrintf("elevator used with bad pathtarget: %s\n", Other->PathTarget);
 		return;
 	}
 
@@ -2089,7 +2104,7 @@ void CTriggerElevator::Think ()
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target);
 		return;
 	}
-	if (strcmp(newTarg->gameEntity->classname, "func_train") != 0)
+	if (strcmp(newTarg->ClassName, "func_train") != 0)
 	{
 		//gi.dprintf("trigger_elevator target %s is not a train\n", self->target);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target);
@@ -2957,14 +2972,16 @@ Kills everything inside when fired, irrespective of protection.
 CKillbox::CKillbox () :
 	CBaseEntity (),
 	CMapEntity (),
-	CUsableEntity ()
+	CUsableEntity (),
+	CBrushModel ()
 	{
 	};
 
 CKillbox::CKillbox (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
-	CUsableEntity (Index)
+	CUsableEntity (Index),
+	CBrushModel (Index)
 	{
 	};
 
