@@ -217,15 +217,12 @@ edict_t *G_Spawn ()
 		return NULL;
 	}
 
-	if (!e->usedBefore)
-	{
-		globals.numEdicts++;
-		e->usedBefore = true;
-	}
-
 _CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
 _CC_ENABLE_DEPRECATION
+
+	if (globals.numEdicts < e->state.number + 1)
+		globals.numEdicts = e->state.number + 1;
 
 	return e;
 }
@@ -243,12 +240,15 @@ void G_FreeEdict (edict_t *ed)
 
 	// Paril, hack
 	CBaseEntity *Entity = ed->Entity;
+	bool oldUsedBefore = ed->usedBefore;
+
 	memset (ed, 0, sizeof(*ed));
 	if (Entity)
 	{
 		ed->Entity = Entity;
 		Entity->ClassName = "freed";
 	}
+	ed->usedBefore = oldUsedBefore;
 	ed->freetime = level.Frame;
 	ed->inUse = false;
 
@@ -448,11 +448,15 @@ void			CBaseEntity::Free ()
 	{
 		Unlink ();
 
+		bool oldUsedBefore = gameEntity->usedBefore;
 		memset (gameEntity, 0, sizeof(*gameEntity));
 		gameEntity->Entity = this;
+		gameEntity->usedBefore = oldUsedBefore;
 		ClassName = "freed";
 		gameEntity->freetime = level.Frame;
 		GetInUse() = false;
+
+		RemoveEntityFromList (gameEntity);
 	}
 
 	Freed = true;

@@ -59,12 +59,26 @@ TEntityType *CC_Find (TEntityType *From, char *Match)
 		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
 			continue;
 
-		TEntityType *Check = entity_cast<TEntityType>(gameEnt->Entity);
-		char *s = *(char **) ((uint8 *)Check + FieldOfs);
-		if (!s)
-			continue;
-		if (!Q_stricmp (s, Match))
-			return Check;
+		// Special case
+		// If we're only looking for ENT_BASE
+		// we don't need to cast just yet
+		if (EntityFlags & ENT_BASE)
+		{
+			char *s = *(char **) ((uint8 *)gameEnt->Entity + FieldOfs);
+			if (!s)
+				continue;
+			if (!Q_stricmp (s, Match))
+				return entity_cast<TEntityType>(gameEnt->Entity);
+		}
+		else
+		{
+			TEntityType *Check = entity_cast<TEntityType>(gameEnt->Entity);
+			char *s = *(char **) ((uint8 *)Check + FieldOfs);
+			if (!s)
+				continue;
+			if (!Q_stricmp (s, Match))
+				return Check;
+		}
 	}
 
 	return NULL;

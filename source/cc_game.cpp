@@ -280,9 +280,6 @@ void CC_RunFrame ()
 		return;
 	}
 
-	sint32		i;
-	edict_t	*ent;
-
 	level.Frame++;
 
 	if (level.Frame == 2)
@@ -305,11 +302,20 @@ void CC_RunFrame ()
 	// treat each object in turn
 	// even the world gets a chance to think
 	//
-	ent = &g_edicts[0];
-	for (i=0 ; i<globals.numEdicts ; i++, ent++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); )
 	{
+		// Store entity pointers first
+		edict_t *ent = (*it);
+
+		// Store the next iteration
+		TEntitiesContainer::iterator next = it;
+		next++;
+
 		if (!ent->inUse)
+		{
+			it = next;
 			continue;
+		}
 
 		if (ent->Entity)
 		{
@@ -344,8 +350,9 @@ void CC_RunFrame ()
 				QDelete Entity;
 				ent->Entity = NULL;
 			}
-			continue;
 		}
+
+		it = next;
 	}
 
 	RunPrivateEntities ();
