@@ -574,7 +574,7 @@ void CC_InitGame ()
 
 	//Mem_Init ();
 	DebugPrintf ("==== InitGame ====\n");
-	DebugPrintf ("Running CleanCode Quake2 version %s, built on %s (%s %s)\nInitializing game...", CLEANCODE_VERSION, __TIMESTAMP__, BUILDSTRING, CPUSTRING);
+	DebugPrintf ("Running CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing game...", CLEANCODE_VERSION_PRINT_ARGS, __TIMESTAMP__, BUILDSTRING, CPUSTRING);
 
 	seedMT (time(NULL));
 
@@ -582,7 +582,7 @@ void CC_InitGame ()
 	G_Register();
 
 	// File-system
-	FS_Init (256);
+	FS_Init (4);
 	FS_AddPath (GAMENAME);
 
 	// Setup the gamemode

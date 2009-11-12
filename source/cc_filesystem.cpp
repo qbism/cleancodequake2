@@ -108,13 +108,19 @@ class fsHandleIndex
 {
 public:
 	fsHandleIndex() :
+	  name(name),
 	  inUse(false),
 	  openMode(FILEMODE_NONE),
 	  regFile(NULL)
 	  {
 	  };
 
-	char					name[MAX_PATHNAME];
+	void Clear ()
+	{
+		fsHandleIndex();
+	};
+
+	std::cc_string			name;
 
 	bool					inUse;
 	EFileOpMode				openMode;
@@ -122,31 +128,89 @@ public:
 	FILE					*regFile;
 };
 
-static fsHandleIndex *fs_fileIndices;
-
-static void FS_InitHandles ()
+typedef std::map<fileHandle_t, fsHandleIndex, std::less<fileHandle_t>, std::generic_allocator <std::pair<fileHandle_t, fsHandleIndex> > > THandleIndexListType;
+class fsHandleIndexList
 {
-	fs_fileIndices = new fsHandleIndex[FS_MAX_FILEINDICES];
-}
+	fileHandle_t numHandlesAllocated;
+
+	// OpenList = allocated free keys
+	// ClosedList = used keys
+	THandleIndexListType OpenList, ClosedList;
+
+	// Private members
+
+	// Creates a new key and increases allocated handles.
+	// Returns the new key.
+	THandleIndexListType::iterator Create ()
+	{
+		fileHandle_t CreatedKey = numHandlesAllocated++;
+		OpenList[CreatedKey] = fsHandleIndex();
+		return OpenList.find(CreatedKey);
+	};
+
+	// Moves "it" from OpenList to ClosedList
+	THandleIndexListType::iterator MoveToClosed (THandleIndexListType::iterator it)
+	{
+		fileHandle_t Key = (*it).first;
+		ClosedList[Key] = (*it).second;
+		OpenList.erase (it);
+		return ClosedList.find(Key);
+	};
+
+	// Moves "it" from ClosedList to OpenList
+	THandleIndexListType::iterator MoveToOpen (THandleIndexListType::iterator it)
+	{
+		(*it).second.Clear ();
+
+		fileHandle_t Key = (*it).first;
+		OpenList[Key] = (*it).second;
+		ClosedList.erase (it);
+		return OpenList.find(Key);
+	};
+
+public: // Interface
+
+	// allocated = number of handles to create automatically.
+	fsHandleIndexList (sint32 allocated = 0)
+	{
+		for (fileHandle_t i = 0; i < allocated; i++)
+			Create ();
+	};
+
+	// Returns either a free key in Open or
+	// creates a new key and returns it.
+	THandleIndexListType::iterator GetFreeHandle ()
+	{
+		if (!OpenList.empty())
+			// Re-use a key
+			return MoveToClosed(OpenList.begin());
+		else
+			// Create a new key and use that
+			return MoveToClosed(Create ());
+	};
+
+	// Gets the fsHandleIndex of a handle in-use
+	fsHandleIndex *GetHandle (fileHandle_t Key)
+	{
+		return &(*ClosedList.find(Key)).second;
+	};
+
+	// Pushes a key back into the Open list
+	// Use this when you're done with a key
+	void PushFreeHandle (fileHandle_t Key)
+	{
+		MoveToOpen (ClosedList.find(Key));
+	};
+};
+
+fsHandleIndexList *IndexList;
 
 static fileHandle_t FS_GetFreeHandle (fsHandleIndex **handle)
 {
-	fileHandle_t		i;
-	fsHandleIndex		*hIndex;
+	THandleIndexListType::iterator it = IndexList->GetFreeHandle();
 
-	for (i=0, hIndex=fs_fileIndices ; i<FS_MAX_FILEINDICES ; hIndex++, i++)
-	{
-		if (hIndex->inUse)
-			continue;
-
-		hIndex->inUse = true;
-		if (handle)
-			*handle = hIndex;
-		return i+1;
-	}
-
-	FS_Error ("no free handles!\n");
-	return 0;
+	*handle = &(*it).second;
+	return (*it).first + 1;
 }
 
 static fsHandleIndex *FS_GetHandle (fileHandle_t &fileNum)
@@ -156,11 +220,25 @@ static fsHandleIndex *FS_GetHandle (fileHandle_t &fileNum)
 	if (fileNum < 0 || fileNum > FS_MAX_FILEINDICES)
 		FS_Error ("FS_GetHandle: invalid file number");
 
-	hIndex = &fs_fileIndices[fileNum-1];
+	hIndex = IndexList->GetHandle(fileNum-1);
 	if (!hIndex->inUse)
 		FS_Error ("FS_GetHandle: invalid handle index");
 
 	return hIndex;
+}
+
+void FS_Close (fileHandle_t &handle)
+{
+	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+
+	if (handleIndex)
+	{
+		fclose(handleIndex->regFile);
+
+		// Invalidate the handle
+		IndexList->PushFreeHandle (handle - 1);
+		handle = -1;
+	}
 }
 
 // Always returns in same order:
@@ -284,7 +362,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 	if (handleIndex)
 	{
 		handleIndex->inUse = true;
-		strncpy (handleIndex->name, fileName, sizeof(handleIndex->name));
+		handleIndex->name = fileName;
 		handleIndex->openMode = Mode;
 		handleIndex->regFile = fp;
 		return handle;
@@ -371,20 +449,6 @@ bool FS_FileExists (const char *fileName)
 void FS_FreeFile (void *buffer)
 {
 	delete buffer;
-}
-
-void FS_Close (fileHandle_t &handle)
-{
-	fsHandleIndex *handleIndex = FS_GetHandle(handle);
-
-	if (handleIndex)
-	{
-		fclose(handleIndex->regFile);
-		handleIndex->regFile = NULL;
-		handleIndex->inUse = false;
-		// Invalidate the handle
-		handle = -1;
-	}
 }
 
 filePos_t FS_Tell (fileHandle_t &handle)
@@ -489,7 +553,6 @@ void FS_FreeFileList (char **fileList, sint32 numFiles)
 
 void FS_Init (sint32 maxHandles)
 {
-	FS_MAX_FILEINDICES = maxHandles;
-	FS_InitHandles ();
+	IndexList = QNew(com_genericPool, 0) fsHandleIndexList (maxHandles);
 	FS_AddPath (".");
 }
