@@ -45,7 +45,7 @@ void WriteVersion ()
 	if (!handle)
 		return;
 
-	FS_Print (handle, "%s %s %s %s", CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR, CLEANCODE_VERSION_MINOR, CLEANCODE_VERSION_BUILD);
+	FS_Print (handle, "%s %u %u %u", CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N);
 	FS_Close (handle);
 }
 
@@ -76,12 +76,12 @@ void VerifyVersionFile ()
 
 void Cmd_CCVersion_t (CPlayerEntity *Player)
 {
-	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version %s\n", CLEANCODE_VERSION);
+	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
 }
 
 void SvCmd_CCVersion_t ()
 {
-	DebugPrintf ("This server is running CleanCode version %s\n", CLEANCODE_VERSION);
+	DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
 }
 
 #include <curl/curl.h>
@@ -183,7 +183,16 @@ void CheckNewVersion ()
 		Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
 		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
-			DebugPrintf ("==================================\n*****************************\nThere is an update available for CleanCode!\nPlease go to http://code.google.com/p/cleancodequake2 and update accordingly.\nYour version:   %s\nUpdate version: \"%s.%u.%04u.%05u\"\n*****************************\n==================================\n", CLEANCODE_VERSION,
+			DebugPrintf (
+			"==================================\n"
+			"*****************************\n"
+			"There is an update available for CleanCode!\n"
+			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
+			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
+			"Update version: "CLEANCODE_VERSION_PRINT"\n"
+			"*****************************\n"
+			"==================================\n",
+			CLEANCODE_VERSION_PRINT_ARGS,
 			prefix.c_str(), major, minor, build);
 		else
 			DebugPrintf ("Your version of CleanCode is up to date.\n");

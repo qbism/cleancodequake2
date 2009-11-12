@@ -34,16 +34,18 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_VERSION_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_VERSION_H__
 
+#define TO_STRING2(x) #x
+#define TO_STRING(x) TO_STRING2(x)
+
 #define CLEANCODE_VERSION_PREFIX	"pr"
-#define CLEANCODE_VERSION_MAJOR		"0"
-#define CLEANCODE_VERSION_MINOR		"0000"
-#define CLEANCODE_VERSION_BUILD		"00204"
+#define CLEANCODE_VERSION_MAJOR_N	0			// x
+#define CLEANCODE_VERSION_MINOR_N	0			// xxxx
+#define CLEANCODE_VERSION_BUILD_N	205			// xxxx
 
-static const uint8 verMajor = atoi(CLEANCODE_VERSION_MAJOR);
-static const uint16 verMinor = atoi(CLEANCODE_VERSION_MINOR);
-static const uint32 verBuild = atoi(CLEANCODE_VERSION_BUILD);
+#define CLEANCODE_VERSION_PRINT			"\"%s.%u.%04u.%05u\""
+#define CLEANCODE_VERSION_PRINT_ARGS	CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N
 
-#define CLEANCODE_VERSION			"\""CLEANCODE_VERSION_PREFIX"."CLEANCODE_VERSION_MAJOR"."CLEANCODE_VERSION_MINOR"."CLEANCODE_VERSION_BUILD"\""
+//%s.%u.%04u.%05u
 
 CC_ENUM (uint8, EVersionComparison)
 {
@@ -55,13 +57,13 @@ CC_ENUM (uint8, EVersionComparison)
 inline EVersionComparison CompareVersion (const char *Prefix, uint8 Major, uint16 Minor, uint32 Build)
 {
 	if (!strcmp (Prefix, CLEANCODE_VERSION_PREFIX) &&
-		Major == verMajor &&
-		Minor == verMinor &&
-		Build == verBuild)
+		Major == CLEANCODE_VERSION_MAJOR_N &&
+		Minor == CLEANCODE_VERSION_MINOR_N &&
+		Build == CLEANCODE_VERSION_BUILD_N)
 		return VERSION_SAME;
-	else if (Major > verMajor ||
-			Minor > verMinor ||
-			Build > verBuild ||
+	else if (Major > CLEANCODE_VERSION_MAJOR_N ||
+			Minor > CLEANCODE_VERSION_MINOR_N ||
+			Build > CLEANCODE_VERSION_BUILD_N ||
 			strcmp (Prefix, CLEANCODE_VERSION_PREFIX))
 		return VERSION_NEWER;
 	else
