@@ -135,13 +135,13 @@ void CChaingun::Fire (CPlayerEntity *ent)
 		return;
 	}
 
-	for (sint32 i=0 ; i<3 ; i++)
+	for (uint8 i = 0; i < 3; i++)
 	{
 		ent->Client.KickOrigin[i] = crand() * 0.35;
 		ent->Client.KickAngles[i] = crand() * 0.7;
 	}
 
-	for (sint32 i=0 ; i<shots ; i++)
+	for (uint8 i = 0; i < shots; i++)
 	{
 		// get start / end positions
 		ent->Client.ViewAngle.ToVectors (&forward, &right, &up);

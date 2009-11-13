@@ -104,7 +104,7 @@ public:
 	TMapTo &Add(typename dataType<TKey>::InitType inKey, typename dataType<TMapTo>::InitType inValue)
 	{
 		// Make sure it wasn't already added
-		for (sint32 i=0 ; i<GetNum() ; i++)
+		for (sint32 i = 0; i < GetNum(); i++)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -134,24 +134,20 @@ public:
 	}
 	TMapTo *Find(const TKey &inKey)
 	{
-		for (sint32 i=0 ; i<GetNum() ; i++)
+		for (sint32 i = 0; i < GetNum(); i++)
 		{
 			if (m_mapData[i].m_key == inKey)
-			{
 				return &m_mapData[i].m_value;
-			}
 		}
 
 		return NULL;
 	}
 	const TMapTo *Find(const TKey &inKey) const
 	{
-		for (sint32 i=0 ; i<GetNum() ; i++)
+		for (sint32 i = 0; i < GetNum(); i++)
 		{
 			if (m_mapData[i].m_key == inKey)
-			{
 				return &m_mapData[i].m_value;
-			}
 		}
 
 		return NULL;
@@ -162,7 +158,7 @@ public:
 	}
 	void Remove(typename dataType<TKey>::InitType inKey)
 	{
-		for (sint32 i=0 ; i<GetNum() ; i++)
+		for (sint32 i = 0; i < GetNum(); i++)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -347,7 +343,7 @@ private:
 		if (m_hashSize > 0)
 		{
 			memset(m_hashData, BAD_HASH_INDEX, sizeof(sint32) * m_hashSize);
-			for (sint32 i=0 ; i<m_mapData.GetNum() ; i++)
+			for (sint32 i = 0; i < m_mapData.GetNum(); i++)
 			{
 				uint HashValue = (dataType<TKey>::TypeHash<uint>(m_mapData[i].m_key)&m_hashSize-1);
 				m_mapData[i].m_hashNext = m_hashData[HashValue];
@@ -382,7 +378,7 @@ public:
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 
 		// Make sure it wasn't already added
-		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i = m_hashData[HashValue]; i != BAD_HASH_INDEX; i = m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -419,7 +415,7 @@ public:
 	{
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 
-		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i = m_hashData[HashValue]; i != BAD_HASH_INDEX; i = m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -433,7 +429,7 @@ public:
 	{
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 
-		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i = m_hashData[HashValue]; i != BAD_HASH_INDEX; i = m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{
@@ -455,7 +451,7 @@ public:
 		const uint HashValue = (dataType<TKey>::TypeHash<uint>(inKey)&m_hashSize-1);
 		bool bResult = false;
 
-		for (sint32 i=m_hashData[HashValue] ; i!=BAD_HASH_INDEX ; i=m_mapData[i].m_hashNext)
+		for (sint32 i = m_hashData[HashValue]; i != BAD_HASH_INDEX; i = m_mapData[i].m_hashNext)
 		{
 			if (m_mapData[i].m_key == inKey)
 			{

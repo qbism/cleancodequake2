@@ -127,7 +127,7 @@ void CItemList::AddItemToList (CBaseItem *Item)
 
 void CItemList::SendItemNames ()
 {
-	for (sint32 i = 0 ; i < numItems ; i++)
+	for (uint8 i = 0; i < numItems; i++)
 		ConfigString (Items[i]->GetConfigStringNumber(), Items[i]->Name);
 }
 

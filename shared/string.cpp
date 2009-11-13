@@ -96,7 +96,7 @@ char *Q_strlwr(char *s)
 
 	if (s)
 	{
-		for (p=s ; *s ; s++)
+		for (p = s; *s; s++)
 			*s = Q_tolower(*s);
 		return p;
 	}
@@ -116,7 +116,7 @@ char *Q_strupr(char *s)
 
 	if (s)
 	{
-		for (p=s ; *s ; s++)
+		for (p = s; *s; s++)
 			*s = Q_toupper(*s);
 		return p;
 	}

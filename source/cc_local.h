@@ -450,9 +450,10 @@ inline CBaseEntity *CreateEntityFromClassname (const char *classname)
 _CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
 
+	level.ClassName = classname;
 	ED_CallSpawn (ent);
 
-	if (ent->inUse && !ent->Entity->Freed)
+	if (ent->inUse && ent->Entity && !ent->Entity->Freed)
 		return ent->Entity;
 	return NULL;
 _CC_ENABLE_DEPRECATION

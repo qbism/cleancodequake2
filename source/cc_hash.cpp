@@ -45,7 +45,7 @@ a bit faster.
 uint32 Com_HashGeneric (const char *name, const sint32 hashSize)
 {
 	uint32 hashValue = 0;
-	for ( ; *name ; )
+	for ( ; *name; )
 	{
 		sint32 ch = Q_tolower(*(name++));
 		hashValue = hashValue * 33 + ch;
@@ -57,8 +57,7 @@ uint32 Com_HashGeneric (const char *name, const sint32 hashSize)
 uint32 Com_HashGeneric (const std::cc_string &name, const sint32 hashSize)
 {
 	uint32 hashValue = 0;
-	uint32 i = 0;
-	for ( ; name[i] ; i++)
+	for (uint32 i = 0; name[i]; i++)
 	{
 		sint32 ch = Q_tolower(name[i]);
 		hashValue = hashValue * 33 + ch;

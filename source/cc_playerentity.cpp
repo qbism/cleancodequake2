@@ -472,7 +472,7 @@ void CPlayerEntity::PutInServer ()
 	State.GetOldOrigin() = State.GetOrigin();
 
 	// set the delta angle
-	for (i=0 ; i<3 ; i++)
+	for (i = 0; i < 3; i++)
 		Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(spawn_angles[i] - Client.Respawn.CmdAngles[i]);
 
 	State.GetAngles().Set (0, spawn_angles[YAW], 0);
@@ -1642,7 +1642,7 @@ void CPlayerEntity::EndServerFrame ()
 	// behind the body position when pushed -- "sinking into plats"
 	//
 	vec3f origin = State.GetOrigin();
-	for (i=0 ; i<3 ; i++)
+	for (i = 0; i < 3; i++)
 	{
 		Client.PlayerState.GetPMove()->origin[i] = origin[i]*8.0;
 		Client.PlayerState.GetPMove()->velocity[i] = Velocity[i]*8.0;
@@ -1812,7 +1812,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	total[0] = total[1] = 0;
 	last[0] = last[1] = 0;
 	totalscore[0] = totalscore[1] = 0;
-	for (sint32 i=0 ; i<game.maxclients ; i++)
+	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse())
@@ -1825,12 +1825,12 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 			continue; // unknown team?
 
 		Score = cl_ent->Client.Respawn.Score;
-		for (j=0 ; j<total[team] ; j++)
+		for (j = 0; j < total[team]; j++)
 		{
 			if (Score > sortedscores[team][j])
 				break;
 		}
-		for (k=total[team] ; k>j ; k--)
+		for (k =total[team]; k > j; k--)
 		{
 			sorted[team][k] = sorted[team][k-1];
 			sortedscores[team][k] = sortedscores[team][k-1];
@@ -1876,7 +1876,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 
 	len = Bar.Length ();
 
-	for (sint32 i=0 ; i<16 ; i++)
+	for (sint32 i = 0; i < 16; i++)
 	{
 		if (i >= total[0] && i >= total[1])
 			break; // we're done
@@ -2010,13 +2010,13 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 			continue;
 		Score = cl_ent->Client.Respawn.Score;
 		sint32 j = 0;
-		for ( ; j < total ; j++)
+		for ( ; j < total; j++)
 		{
 			if (Score > sortedscores[j])
 				break;
 		}
 		sint32 k = total;
-		for ( ; k > j ; k--)
+		for ( ; k > j; k--)
 		{
 			sorted[k] = sorted[k-1];
 			sortedscores[k] = sortedscores[k-1];
@@ -2030,7 +2030,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 	if (total > 12)
 		total = 12;
 
-	for (sint32 i = 0 ; i < total ; i++)
+	for (sint32 i = 0; i < total; i++)
 	{
 		sint32		x, y;
 		char	*tag;
@@ -2937,7 +2937,7 @@ CPersistentData *SavedClients;
 void CPlayerEntity::SaveClientData ()
 {
 	SavedClients = QNew (com_gamePool, 0) CPersistentData[game.maxclients];
-	for (sint32 i=0 ; i<game.maxclients ; i++)
+	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		if (!g_edicts[1+i].Entity)
 			return; // Not set up
@@ -3679,9 +3679,8 @@ void CPlayerEntity::Begin ()
 		// connecting to the server, which is different than the
 		// state when the game is saved, so we need to compensate
 		// with deltaangles
-		vec3f viewAngles = Client.PlayerState.GetViewAngles();
-		for (sint32 i=0 ; i<3 ; i++)
-			Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(viewAngles[i]);
+		for (sint32 i = 0; i < 3; i++)
+			Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Client.PlayerState.GetViewAngles()[i]);
 	}
 	else
 	{

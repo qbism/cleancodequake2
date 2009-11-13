@@ -186,6 +186,13 @@ edict_t *GetEntityFromList ()
 	return ent; // Give it to us
 }
 
+// Removes from Open, puts into end of Closed.
+void RemoveEntityFromOpen (edict_t *ent)
+{
+	level.Entities.Open.remove (ent);
+	level.Entities.Closed.push_back (ent);
+}
+
 // Removes entity from Closed, pushes into front of into Open
 void RemoveEntityFromList (edict_t *ent)
 {
@@ -337,7 +344,8 @@ CBaseEntity::~CBaseEntity ()
 		gameEntity->Entity = NULL;
 
 _CC_DISABLE_DEPRECATION
-		G_FreeEdict (gameEntity); // "delete" the entity
+		if (!Freed && !(EntityFlags & ENT_JUNK))
+			G_FreeEdict (gameEntity); // "delete" the entity
 _CC_ENABLE_DEPRECATION
 	}
 	else
@@ -456,7 +464,8 @@ void			CBaseEntity::Free ()
 		gameEntity->freetime = level.Frame;
 		GetInUse() = false;
 
-		RemoveEntityFromList (gameEntity);
+		if (!(EntityFlags & ENT_JUNK))
+			RemoveEntityFromList (gameEntity);
 	}
 
 	Freed = true;

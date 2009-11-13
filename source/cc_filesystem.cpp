@@ -541,7 +541,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 // Frees the file list made by the above function
 void FS_FreeFileList (char **fileList, sint32 numFiles)
 {
-	for (sint32 i=0 ; i<numFiles ; i++)
+	for (sint32 i = 0; i <numFiles; i++)
 	{
 		if (!fileList[i])
 			continue;

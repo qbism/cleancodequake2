@@ -302,13 +302,13 @@ void CMonster::MoveToPath (float Dist)
 
 			if (randomMT()&1) 	/*randomly determine direction of search*/
 			{
-				for (tdir=0 ; tdir<=315 ; tdir += 45)
+				for (tdir = 0; tdir <= 315; tdir += 45)
 					if (tdir!=turnaround && StepDirection(tdir, Dist) )
 							return;
 			}
 			else
 			{
-				for (tdir=315 ; tdir >=0 ; tdir -= 45)
+				for (tdir = 315; tdir >= 0; tdir -= 45)
 					if (tdir!=turnaround && StepDirection(tdir, Dist) )
 							return;
 			}
@@ -836,13 +836,10 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 bool CMonster::CloseEnough (CBaseEntity *Goal, float Dist)
 {
-	for (sint32 i=0 ; i<3 ; i++)
-	{
-		if (Goal->GetAbsMin()[i] > Entity->GetAbsMax()[i] + Dist)
-			return false;
-		if (Goal->GetAbsMax()[i] < Entity->GetAbsMin()[i] - Dist)
-			return false;
-	}
+	if (Goal->GetAbsMin() > (Entity->GetAbsMax() + Dist))
+		return false;
+	if (Goal->GetAbsMax() < (Entity->GetAbsMin() - Dist))
+		return false;
 	return true;
 }
 

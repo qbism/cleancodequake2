@@ -91,7 +91,7 @@ static void SV_PM_ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float over
 {	
 	float backoff = in.Dot (normal) * overbounce;
 
-	for (sint32 i=0 ; i<3 ; i++)
+	for (sint32 i = 0; i < 3; i++)
 	{
 		out[i] = in[i] - normal[i]*backoff;
 		if ((out[i] > -LARGE_EPSILON) && (out[i] < LARGE_EPSILON))

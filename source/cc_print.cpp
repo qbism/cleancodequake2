@@ -143,7 +143,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		sint32		i;
 		
 		// Mask off high bits
-		for (i=0 ; i<((MAX_COMPRINT/2) - 1) && string[i] ; i++)
+		for (i = 0; i < ((MAX_COMPRINT/2) - 1) && string[i]; i++)
 			copy[i] = string[i]&127;
 		copy[i] = 0;
 		Com_Printf (0, "%s", copy);

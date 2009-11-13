@@ -467,7 +467,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	game.autosaved = false;
 
 	// respawn any dead clients
-	for (sint32 i=0 ; i<game.maxclients ; i++)
+	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!client->GetInUse())
@@ -483,7 +483,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	{
 		if (game.mode == GAME_COOPERATIVE)
 		{
-			for (sint32 i=0 ; i<game.maxclients ; i++)
+			for (sint32 i = 0; i < game.maxclients; i++)
 			{
 				CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 				if (!client->GetInUse())
@@ -533,7 +533,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	level.IntermissionAngles = ent->State.GetAngles ();
 
 	// move all clients to the intermission point
-	for (sint32 i=0 ; i<game.maxclients ; i++)
+	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!client->GetInUse())

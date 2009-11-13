@@ -96,7 +96,7 @@ public:
 	{
 		if (m_numElems == Array.m_numElems)
 		{
-			for (sint32 i=0 ; i<m_numElems ; i++)
+			for (sint32 i = 0; i < m_numElems; i++)
 			{
 				if (!((*this)[i] == Array[i]))
 					return true;
@@ -124,7 +124,7 @@ public:
 	{
 		if (m_numElems == Array.m_numElems)
 		{
-			for (sint32 i=0 ; i<m_numElems ; i++)
+			for (sint32 i = 0; i < m_numElems; i++)
 			{
 				if (!((*this)[i] == Array[i]))
 					return false;
@@ -164,7 +164,7 @@ public:
 
 	sint32 AddUniqueItem(const TType &Item)
 	{
-		for (sint32 i=0 ; i<m_numElems ; i++)
+		for (sint32 i = 0; i < m_numElems; i++)
 		{
 			if ((*this)[i] == Item)
 				return i;
@@ -180,7 +180,7 @@ public:
 
 	const bool FindItem(const TType &Item, sint32 &OutIndex) const
 	{
-		for (OutIndex=0 ; OutIndex<m_numElems ; OutIndex++)
+		for (OutIndex = 0; OutIndex < m_numElems; OutIndex++)
 		{
 			if ((*this)[OutIndex] == Item)
 				return true;
@@ -192,7 +192,7 @@ public:
 
 	const sint32 FindItemIndex(const TType &Item) const
 	{
-		for (sint32 Result=0 ; Result<m_numElems ; Result++)
+		for (sint32 Result = 0; Result < m_numElems; Result++)
 		{
 			if ((*this)[Result] == Item)
 				return Result;
@@ -209,7 +209,7 @@ public:
 
 	void RemoveItem(const TType &Item)
 	{
-		for (sint32 i=0 ; i<m_numElems ; i++)
+		for (sint32 i = 0; i < m_numElems; i++)
 		{
 			if ((*this)[i] == Item)
 				Remove(i--);
@@ -251,7 +251,7 @@ public:
 			// Construct if needed
 			if (dataType<TType>::NeedsCtor)
 			{
-				for (sint32 i=0 ; i<Array.m_numElems ; i++)
+				for (sint32 i = 0; i < Array.m_numElems; i++)
 				{
 					::new(*this) TType(Array[i]);
 				}
@@ -277,7 +277,7 @@ public:
 				// Construct if necessary
 				if (dataType<TType>::NeedsCtor)
 				{
-					for (sint32 i=0 ; i<Source.m_numElems ; i++)
+					for (sint32 i = 0; i < Source.m_numElems; i++)
 					{
 						new(*this) TType(Source[i]);
 					}
@@ -300,7 +300,7 @@ public:
 	{
 		if (dataType<TType>::NeedsCtor)
 		{
-			for (sint32 i=0 ; i<m_numElems ; i++)
+			for (sint32 i = 0; i < m_numElems; i++)
 				(&(*this)[i])->~TType();
 		}
 
@@ -367,7 +367,7 @@ public:
 		{
 			if (dataType<TType>::NeedsCtor)
 			{
-				for (sint32 i=Start ; i<Start+Count ; i++)
+				for (sint32 i = Start; i < Start + Count; i++)
 					(&(*this)[i])->~TType();
 			}
 

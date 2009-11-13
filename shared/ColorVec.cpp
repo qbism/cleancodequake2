@@ -113,7 +113,8 @@ sint32 Q_ColorCharCount (const char *s, sint32 endPos)
 	const char	*end;
 
 	end = s + endPos;
-	for (count=0 ; *s && s<end ; s++) {
+	for (count = 0; *s && s < end; s++)
+	{
 		if ((s[0] & 127) != COLOR_ESCAPE)
 			continue;
 
@@ -146,12 +147,12 @@ sint32 Q_ColorCharOffset (const char *s, sint32 charCount)
 	const char	*start = s;
 	bool		skipNext = false;
 
-	for ( ; *s && charCount ; s++) {
+	for ( ; *s && charCount; s++)
+	{
 		if (skipNext)
 			skipNext = false;
-		else if (Q_IsColorString (s)) {
+		else if (Q_IsColorString (s))
 			skipNext = true;
-		}
 		else
 			charCount--;
 	}
@@ -171,7 +172,8 @@ sint32 Q_ColorStrLastColor (char *s, sint32 byteOfs)
 	sint32		lastClrIndex = Q_StrColorIndex (COLOR_WHITE);
 
 	end = s + (byteOfs - 1);	// don't check last uint8
-	for ( ; *s && s<end ; s++) {
+	for ( ; *s && s < end; s++)
+	{
 		if ((s[0] & 127) != COLOR_ESCAPE)
 			continue;
 
@@ -206,11 +208,13 @@ sint32 Q_ColorStrLastStyle (char *s, sint32 byteOfs)
 
 	end = s + (byteOfs);	// don't check last uint8
 	lastStyle = 0;
-	for ( ; *s && s<end ; s++) {
+	for ( ; *s && s < end; s++)
+	{
 		if ((s[0] & 127) != COLOR_ESCAPE)
 			continue;
 
-		switch (s[1] & 127) {
+		switch (s[1] & 127)
+		{
 		case 'i':	case 'I':
 			lastStyle ^= FS_ITALIC;
 			break;

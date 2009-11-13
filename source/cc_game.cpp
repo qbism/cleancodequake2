@@ -150,7 +150,7 @@ void CheckDMRules ()
 
 	if (fraglimit->Integer())
 	{
-		for (sint32 i=0 ; i<game.maxclients ; i++)
+		for (uint8 i = 0; i < game.maxclients; i++)
 		{
 			CPlayerEntity *cl = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			if (!cl->GetInUse())

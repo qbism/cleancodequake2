@@ -103,11 +103,12 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 	const sint32		damage = (isQuad) ? 32 : 8,
 					kick = (isQuad) ? 8 : 2;
 
-	for (sint32 i=1 ; i<3 ; i++)
+	for (uint8 i = 1; i < 3; i++)
 	{
 		ent->Client.KickOrigin[i] = crand() * 0.35;
 		ent->Client.KickAngles[i] = crand() * 0.7;
 	}
+
 	ent->Client.KickOrigin.X = crand() * 0.35;
 	ent->Client.KickAngles.X = ent->Client.Timers.MachinegunShots * -1.5;
 

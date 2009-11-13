@@ -117,7 +117,7 @@ uint8 DirToByte(const vec3_t dirVec)
 
 	uint8 best = 0;
 	float bestDot = 0;
-	for (uint8 i=0 ; i<NUMVERTEXNORMALS ; i++)
+	for (uint8 i = 0; i < NUMVERTEXNORMALS; i++)
 	{
 		float dot = Dot3Product(dirVec, m_byteDirs[i]);
 		if (dot > bestDot)
@@ -145,7 +145,7 @@ uint8 DirToByte(const vec3f &dirVec)
 
 	uint8 best = 0;
 	float bestDot = 0;
-	for (uint8 i=0 ; i<NUMVERTEXNORMALS ; i++)
+	for (uint8 i = 0; i < NUMVERTEXNORMALS; i++)
 	{
 		float dot = dirVec.Dot(m_byteDirs[i]);
 		if (dot > bestDot)

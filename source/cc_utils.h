@@ -50,7 +50,7 @@ TEntityType *CC_Find (TEntityType *From, char *Match)
 		gameEnt++;
 	}
 
-	for ( ; gameEnt < &g_edicts[globals.numEdicts] ; gameEnt++)
+	for ( ; gameEnt < &g_edicts[globals.numEdicts]; gameEnt++)
 	{
 		if (!gameEnt->inUse)
 			continue;

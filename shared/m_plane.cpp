@@ -43,60 +43,29 @@ sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane
 		return 3;
 	}
 	
-	// General case
-	float dist1, dist2;
-	switch (plane->signBits)
+	static const struct
 	{
-	case 0:
-		dist1 = plane->normal[0]*maxs[0] + plane->normal[1]*maxs[1] + plane->normal[2]*maxs[2];
-		dist2 = plane->normal[0]*mins[0] + plane->normal[1]*mins[1] + plane->normal[2]*mins[2];
-		break;
-
-	case 1:
-		dist1 = plane->normal[0]*mins[0] + plane->normal[1]*maxs[1] + plane->normal[2]*maxs[2];
-		dist2 = plane->normal[0]*maxs[0] + plane->normal[1]*mins[1] + plane->normal[2]*mins[2];
-		break;
-
-	case 2:
-		dist1 = plane->normal[0]*maxs[0] + plane->normal[1]*mins[1] + plane->normal[2]*maxs[2];
-		dist2 = plane->normal[0]*mins[0] + plane->normal[1]*maxs[1] + plane->normal[2]*mins[2];
-		break;
-
-	case 3:
-		dist1 = plane->normal[0]*mins[0] + plane->normal[1]*mins[1] + plane->normal[2]*maxs[2];
-		dist2 = plane->normal[0]*maxs[0] + plane->normal[1]*maxs[1] + plane->normal[2]*mins[2];
-		break;
-
-	case 4:
-		dist1 = plane->normal[0]*maxs[0] + plane->normal[1]*maxs[1] + plane->normal[2]*mins[2];
-		dist2 = plane->normal[0]*mins[0] + plane->normal[1]*mins[1] + plane->normal[2]*maxs[2];
-		break;
-
-	case 5:
-		dist1 = plane->normal[0]*mins[0] + plane->normal[1]*maxs[1] + plane->normal[2]*mins[2];
-		dist2 = plane->normal[0]*maxs[0] + plane->normal[1]*mins[1] + plane->normal[2]*maxs[2];
-		break;
-
-	case 6:
-		dist1 = plane->normal[0]*maxs[0] + plane->normal[1]*mins[1] + plane->normal[2]*mins[2];
-		dist2 = plane->normal[0]*mins[0] + plane->normal[1]*maxs[1] + plane->normal[2]*maxs[2];
-		break;
-
-	case 7:
-		dist1 = plane->normal[0]*mins[0] + plane->normal[1]*mins[1] + plane->normal[2]*mins[2];
-		dist2 = plane->normal[0]*maxs[0] + plane->normal[1]*maxs[1] + plane->normal[2]*maxs[2];
-		break;
-
-	default:
-		dist1 = 0;	// Shut up compiler
-		dist2 = 0;	// Shut up compiler
-		break;
-	}
+		bool IsMins[3];
+	} SignBitsRemap [] =
+	{
+		{ false, false, false },
+		{ true, false, false },
+		{ false, true, false },
+		{ true, true, false },
+		{ false, false, true },
+		{ true, false, true },
+		{ false, true, true },
+		{ true, true, true }
+	};
 
 	sint32 sides = 0;
-	if (dist1 >= plane->dist)
+	if ((plane->normal[0] * (SignBitsRemap[plane->signBits].IsMins[0] ? mins[0] : maxs[0]) +
+		plane->normal[1] * (SignBitsRemap[plane->signBits].IsMins[1] ? mins[1] : maxs[1]) +
+		plane->normal[2] * (SignBitsRemap[plane->signBits].IsMins[2] ? mins[2] : maxs[2])) >= plane->dist)
 		sides = 1;
-	if (dist2 < plane->dist)
+	if ((plane->normal[0] * (!SignBitsRemap[plane->signBits].IsMins[0] ? mins[0] : maxs[0]) +
+		plane->normal[1] * (!SignBitsRemap[plane->signBits].IsMins[1] ? mins[1] : maxs[1]) +
+		plane->normal[2] * (!SignBitsRemap[plane->signBits].IsMins[2] ? mins[2] : maxs[2])) < plane->dist)
 		sides |= 2;
 
 	return sides;
@@ -141,7 +110,8 @@ void CategorizePlane(plane_t *plane)
 {
 	plane->signBits = 0;
 	plane->type = PLANE_NON_AXIAL;
-	for (sint32 i=0 ; i<3 ; i++)
+
+	for (uint8 i = 0; i < 3; i++)
 	{
 		if (plane->normal[i] < 0)
 			plane->signBits |= BIT(i);
@@ -194,7 +164,7 @@ SnapVector
 */
 void SnapVector(vec3_t normal)
 {
-	for (sint32 i=0 ; i<3 ; i++)
+	for (uint8 i = 0; i < 3; i++)
 	{
 		if (Q_fabs (normal[i] - 1) < PLANE_NORMAL_EPSILON)
 		{

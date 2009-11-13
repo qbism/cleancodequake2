@@ -168,7 +168,7 @@ void Cmd_Players_f (CPlayerEntity *ent)
 	// print information
 	Large[0] = 0;
 
-	for (sint32 i = 0 ; i < count ; i++)
+	for (sint32 i = 0; i < count; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 		Q_snprintfz (Small, sizeof(small), "%3i %s\n",

@@ -597,8 +597,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	bool cansee;
 	CBaseEntity *what = NULL;
 
-	vec3f origin = who->State.GetOrigin();
-	while ((what = FindRadius<ENT_BASE>(what, origin, 1024, false)) != NULL)
+	while ((what = FindRadius<ENT_BASE>(what, who->State.GetOrigin(), 1024, false)) != NULL)
 	{
 		// find what in loc_classnames
 		uint32 hash = Com_HashGeneric (what->ClassName, HASHSIZE_CLASSNAMES);
@@ -621,7 +620,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 			hotindex = LocNames[i].priority;
 			hot = what;
 
-			hotdist = (what->State.GetOrigin() - origin).Length();
+			hotdist = (what->State.GetOrigin() - who->State.GetOrigin()).Length();
 			continue;
 		}
 		// if we can't see this, but we have something we can see, skip it
@@ -630,7 +629,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 		if (hotsee && hotindex < LocNames[i].priority)
 			continue;
 
-		newdist = (what->State.GetOrigin() - origin).Length();
+		newdist = (what->State.GetOrigin() - who->State.GetOrigin()).Length();
 		if (newdist < hotdist || 
 			(cansee && LocNames[i].priority < hotindex))
 		{
@@ -681,7 +680,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 		OutMessage << "in the water ";
 
 	// near or above
-	vec3f v = origin - hot->State.GetOrigin();
+	vec3f v = who->State.GetOrigin() - hot->State.GetOrigin();
 	if (Q_fabs(v.Z) > Q_fabs(v.X) && Q_fabs(v.Z) > Q_fabs(v.Y))
 		OutMessage << (v.Z > 0) ? "above " : "below ";
 	else

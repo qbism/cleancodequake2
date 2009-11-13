@@ -812,7 +812,7 @@ void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
 		if (MoveState == STATE_UP || MoveState == STATE_TOP)
 		{
 			// trigger all paired doors
-			for (CDoor *Door = this ; Door ; Door = entity_cast<CDoor>(Door->Team.Chain))	
+			for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))	
 			{
 				if (Door->Message)
 					QDelete Door->Message;
@@ -961,12 +961,12 @@ void CDoor::Blocked (CBaseEntity *other)
 	{
 		if (MoveState == STATE_DOWN)
 		{
-			for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
+			for (CBaseEntity *ent = Team.Master; ent; ent = ent->Team.Chain)
 				(entity_cast<CDoor>(ent))->GoUp ((Activator) ? Activator : NULL);
 		}
 		else
 		{
-			for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
+			for (CBaseEntity *ent = Team.Master; ent; ent = ent->Team.Chain)
 				(entity_cast<CDoor>(ent))->GoDown ();
 		}
 	}
@@ -974,7 +974,7 @@ void CDoor::Blocked (CBaseEntity *other)
 
 void CDoor::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	for (CBaseEntity *ent = Team.Master ; ent ; ent = ent->Team.Chain)
+	for (CBaseEntity *ent = Team.Master; ent; ent = ent->Team.Chain)
 	{
 		CDoor *Door = entity_cast<CDoor>(ent);
 		Door->Health = Door->MaxHealth;

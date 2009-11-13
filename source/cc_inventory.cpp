@@ -72,7 +72,7 @@ void CInventory::Draw (CPlayerEntity *ent)
 	ent->Client.LayoutFlags |= LF_SHOWINVENTORY;
 
 	WriteByte (SVC_INVENTORY);
-	for (sint32 i=0 ; i<MAX_CS_ITEMS ; i++)
+	for (uint8 i = 0; i < MAX_CS_ITEMS; i++)
 		WriteShort (Array[i]);
 	ent->CastTo (CASTFLAG_RELIABLE);
 }
@@ -82,9 +82,9 @@ void CInventory::SelectNextItem(EItemFlags Flags)
 	sint32			index;
 
 	// scan  for the next valid one
-	for (sint32 i=1 ; i<=MAX_CS_ITEMS ; i++)
+	for (uint8 i = 1; i <= MAX_CS_ITEMS; i++)
 	{
-		index = (SelectedItem + i)%MAX_CS_ITEMS;
+		index = (SelectedItem + i) % MAX_CS_ITEMS;
 		if (!Array[index])
 			continue;
 		CBaseItem *it = GetItemByIndex(index);
@@ -106,9 +106,9 @@ void CInventory::SelectPrevItem(EItemFlags Flags)
 	sint32			index;
 
 	// scan  for the next valid one
-	for (sint32 i=1 ; i<=MAX_CS_ITEMS ; i++)
+	for (uint8 i = 1; i <= MAX_CS_ITEMS; i++)
 	{
-		index = (SelectedItem + MAX_CS_ITEMS - i)%MAX_CS_ITEMS;
+		index = (SelectedItem + MAX_CS_ITEMS - i) % MAX_CS_ITEMS;
 		if (!Array[index])
 			continue;
 		CBaseItem *it = GetItemByIndex(index);
@@ -382,9 +382,9 @@ void Cmd_WeapPrev_f (CPlayerEntity *ent)
 	sint32 selectedWeaponIndex = ent->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (sint32 i=0 ; i<=GetNumItems() ; i++)
+	for (uint8 i = 0; i <= GetNumItems(); i++)
 	{
-		sint32 index = (selectedWeaponIndex + MAX_ITEMS - i)%MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + MAX_ITEMS - i) % MAX_CS_ITEMS;
 		if (!ent->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
@@ -413,9 +413,9 @@ void Cmd_WeapNext_f (CPlayerEntity *ent)
 	sint32 selectedWeaponIndex = ent->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (sint32 i=0 ; i<=GetNumItems() ; i++)
+	for (uint8 i = 0; i <= GetNumItems(); i++)
 	{
-		sint32 index = (selectedWeaponIndex + i)%MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + i) % MAX_CS_ITEMS;
 		if (!ent->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);

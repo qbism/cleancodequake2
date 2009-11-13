@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #define MAX_JUNK 35
+
 class CJunkList
 {
 public:
@@ -153,10 +154,12 @@ void Shutdown_Junk ()
 CJunkEntity::CJunkEntity () :
 CBaseEntity()
 {
+	EntityFlags |= ENT_JUNK;
 };
 CJunkEntity::CJunkEntity (sint32 Index) :
 CBaseEntity(Index)
 {
+	EntityFlags |= ENT_JUNK;
 };
 
 void CJunkEntity::Die ()

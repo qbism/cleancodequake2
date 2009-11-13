@@ -116,7 +116,7 @@ static void Mem_AddPuddles(memPuddleInfo_t *pInfo)
 	if (!Buffer)
 		Com_Error(ERR_FATAL, "Mem_AddPuddles: failed on allocation of %i bytes", TotalSize);
 
-	for (size_t i=0 ; i<pInfo->granularity ; i++)
+	for (size_t i = 0; i < pInfo->granularity; i++)
 	{
 		memPuddle_t *Puddle = (memPuddle_t*)((uint8 *)Buffer + (PuddleSize * i));
 		memBlock_t *MemBlock = (memBlock_t*)((uint8*)Puddle + sizeof(memPuddle_t));
@@ -240,14 +240,15 @@ static void Mem_PuddleInit()
 	m_puddleList[41].blockSize = 32768;
 
 	// Create a lookup table
-	for (Size=0 ; Size<MEM_MAX_PUDDLE_SIZE ; Size++)
+	for (Size = 0; Size <MEM_MAX_PUDDLE_SIZE; Size++)
 	{
-		size_t Index;
-		for (Index=0 ; m_puddleList[Index].blockSize<Size ; Index++) ;
+		size_t Index = 0;
+		for (; m_puddleList[Index].blockSize < Size; Index++);
+
 		m_sizeToPuddle[Size] = &m_puddleList[Index];
 	}
 
-	for (Size=0 ; Size<MEM_MAX_PUDDLES ; Size++)
+	for (Size = 0; Size < MEM_MAX_PUDDLES; Size++)
 	{
 		// Setup granularity values to allocate 1/4 MB at a time
 		m_puddleList[Size].granularity = (32768*8) / m_puddleList[Size].blockSize;
@@ -284,10 +285,10 @@ Mem_FindPool
 */
 static memPool_t *Mem_FindPool (const char *name)
 {
-	memPool_t	*pool;
-	uint32		i;
+	memPool_t	*pool = &m_poolList[0];
+	uint32		i = 0;
 
-	for (i=0, pool=&m_poolList[0] ; i<m_numPools ; pool++, i++)
+	for (; i < m_numPools; pool++, i++)
 	{
 		if (!pool->inUse)
 			continue;
@@ -326,7 +327,7 @@ memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const sint32 
 		return pool;
 
 	// Nope, create a slot
-	for (i=0, pool=&m_poolList[0] ; i<m_numPools ; pool++, i++)
+	for (i = 0, pool = &m_poolList[0]; i < m_numPools; pool++, i++)
 	{
 		if (!pool->inUse)
 			break;
@@ -465,7 +466,7 @@ size_t _Mem_FreeTag (struct memPool_t *pool, const sint32 tagNum, const char *fi
 
 	size = 0;
 
-	for (mem=pool->blockHeadNode.prev ; mem!=headNode ; mem=next)
+	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = next)
 	{
 		next = mem->prev;
 		if (mem->tagNum == tagNum)
@@ -493,7 +494,7 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const sint32
 		return 0;
 
 	size = 0;
-	for (mem=pool->blockHeadNode.prev ; mem!=headNode ; mem=next)
+	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = next)
 	{
 		next = mem->prev;
 		size += _Mem_Free (mem->memPointer, fileName, fileLine);
@@ -674,7 +675,7 @@ size_t _Mem_TagSize (struct memPool_t *pool, const sint32 tagNum)
 		return 0;
 
 	size = 0;
-	for (mem=pool->blockHeadNode.prev ; mem!=headNode ; mem=mem->prev)
+	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 	{
 		if (mem->tagNum == tagNum)
 			size += mem->realSize;
@@ -699,7 +700,7 @@ size_t _Mem_ChangeTag (struct memPool_t *pool, const sint32 tagFrom, const sint3
 		return 0;
 
 	numChanged = 0;
-	for (mem=pool->blockHeadNode.prev ; mem!=headNode ; mem=mem->prev)
+	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 	{
 		if (mem->tagNum == tagFrom)
 		{
@@ -729,7 +730,7 @@ void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, cons
 		return;
 
 	// Check sentinels
-	for (mem=pool->blockHeadNode.prev, blocks=0, size=0 ; mem!=headNode ; blocks++, mem=mem->prev)
+	for (mem = pool->blockHeadNode.prev, blocks = 0, size = 0; mem != headNode; blocks++, mem = mem->prev)
 	{
 		size += mem->realSize;
 		_Mem_CheckBlockIntegrity (mem, fileName, fileLine);
@@ -782,10 +783,10 @@ void _Mem_TouchPool(struct memPool_t *pool, const char *fileName, const sint32 f
 	sum = 0;
 
 	// Cycle through the blocks
-	for (mem=pool->blockHeadNode.prev ; mem!=headNode ; mem=mem->prev)
+	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 	{
 		// Touch each page
-		for (i=0 ; i<mem->memSize ; i+=MEM_TOUCH_STEP)
+		for (i = 0; i < mem->memSize; i += MEM_TOUCH_STEP)
 			sum += ((uint8 *)mem->memPointer)[i];
 	}
 }
@@ -849,7 +850,7 @@ void Mem_Stats_f(CPlayerEntity *ent)
 	size_t totalBytes = 0;
 	uint32 totalPuddles =0 ;
 	uint32 poolCount = 0;
-	for (uint32 i=0 ; i<m_numPools ; i++)
+	for (uint32 i = 0; i < m_numPools; i++)
 	{
 		memPool_t *pool = &m_poolList[i];
 		if (!pool->inUse)
@@ -860,7 +861,7 @@ void Mem_Stats_f(CPlayerEntity *ent)
 		// Cycle through the blocks, and find out how many are puddle allocations
 		uint32 numPuddles = 0;
 		memBlock_t	*headNode = &pool->blockHeadNode;
-		for (memBlock_t *mem=pool->blockHeadNode.prev ; mem!=headNode ; mem=mem->prev)
+		for (memBlock_t *mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 		{
 			if (mem->puddle)
 				numPuddles++;

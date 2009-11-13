@@ -141,7 +141,7 @@ void	G_TouchTriggers (CBaseEntity *ent)
 
 	// be careful, it is possible to have an entity in this
 	// list removed before we get to it (killtriggered)
-	for (sint32 i=0 ; i<num ; i++)
+	for (sint32 i = 0; i < num; i++)
 	{
 		edict_t *hit = touch[i];
 		CBaseEntity *Entity = hit->Entity;

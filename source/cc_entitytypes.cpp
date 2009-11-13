@@ -744,17 +744,15 @@ bool CBounceProjectile::Run ()
 	}
 	
 // check for water transition
-	vec3f or = State.GetOrigin ();
-
 	wasinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
-	WaterInfo.Type = PointContents (or);
+	WaterInfo.Type = PointContents (State.GetOrigin ());
 	isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
 
 	WaterInfo.Level = (isinwater) ? WATER_FEET : WATER_NONE;
 	if (!wasinwater && isinwater)
 		World->PlayPositionedSound (old_origin, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 	else if (wasinwater && !isinwater)
-		World->PlayPositionedSound (or, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
+		World->PlayPositionedSound (State.GetOrigin (), CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 
 // move teamslaves
 	for (CBaseEntity *slave = Team.Chain; slave; slave = slave->Team.Chain)
@@ -969,10 +967,9 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 
 	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
-		vec3f origin = State.GetOrigin ();
-		end = origin + time_left * Velocity;
+		end = State.GetOrigin () + time_left * Velocity;
 
-		CTrace trace (origin, GetMins(), GetMaxs(), end, this, mask);
+		CTrace trace (State.GetOrigin (), GetMins(), GetMaxs(), end, this, mask);
 
 		if (trace.allSolid)
 		{
@@ -1029,7 +1026,7 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 //
 // modify original_velocity so it parallels all of the clip planes
 //
-		for (i=0 ; i<numplanes ; i++)
+		for (i = 0; i < numplanes; i++)
 		{
 			ClipVelocity (original_velocity, planes[i], new_velocity, 1);
 

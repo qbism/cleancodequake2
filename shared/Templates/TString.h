@@ -348,10 +348,8 @@ public:
 		dynString Result;
 
 		Result.Reserve(GetNum());
-		for (sint32 i=Length()-1 ; i>-1 ; i--)
-		{
+		for (sint32 i = Length() - 1; i > -1; i--)
 			Result += SubStr(i, 1);
-		}
 
 		return Result;
 	}
@@ -538,7 +536,7 @@ public:
 	{
 		uint Result = 0;
 		const char *String = *Var;
-		for ( ; *String ; )
+		for ( ; *String; )
 		{
 			char Ch = *(String++);
 			Result = Result * 33 + tolower(Ch);

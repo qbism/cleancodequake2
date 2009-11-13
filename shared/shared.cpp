@@ -84,7 +84,8 @@ char *Com_Parse(char **dataPtr)
 	if (c == '\"')
 	{
 		data++;
-		for ( ; ; )
+
+		while (true)
 		{
 			c = *data++;
 			if (c == '\"' || !c)
@@ -160,18 +161,18 @@ void Com_FileBase(char *in, char *out)
 	while (s != in && *s != '.')
 		s--;
 
-	for (s2=s ; s2 != in && *s2 != '/' ; s2--) ;
+	for (s2 = s; s2 != in && *s2 != '/'; s2--) ;
 
-	if (s-s2 < 2)
-	{
+	if (s - s2 < 2)
 		out[0] = 0;
-	}
 	else
 	{
 		s--;
+
 		// Paril: this value was never used..
 		//Q_strnicmp (out, s2+1, s-s2);
-		out[s-s2] = 0;
+
+		out[s - s2] = 0;
 	}
 }
 
@@ -190,7 +191,7 @@ void Com_FileExtension(char *path, char *out, size_t size)
 
 	uint32 i;
 	path++;
-	for (i=0 ; i<size-1 && *path ; i++, path++)
+	for (i = 0; i < size - 1 && *path; i++, path++)
 		out[i] = *path;
 	out[i] = 0;
 }
@@ -227,7 +228,7 @@ void Com_NormalizePath(char *Dest, size_t DestSize, const char *Source)
 {
 	// Convert '\\' to '/'
 	size_t OutLength = 0;
-	for (size_t SrcIndex=(Source[0] == '\\' || Source[0] == '/') ? 1 : 0 ; Source[SrcIndex] && OutLength<DestSize-2 ; )
+	for (size_t SrcIndex = (Source[0] == '\\' || Source[0] == '/') ? 1 : 0; Source[SrcIndex] && OutLength < DestSize - 2; )
 	{
 		if (Source[SrcIndex] == '\\')
 			Dest[OutLength] = '/';
@@ -240,7 +241,7 @@ void Com_NormalizePath(char *Dest, size_t DestSize, const char *Source)
 	Dest[OutLength] = '\0';
 
 	// Strip out "./" and collapse "../"
-	for (char *Cur=strchr(Dest, '/') ; Cur != '\0' ; )
+	for (char *Cur = strchr(Dest, '/'); Cur != '\0'; )
 	{
 		Cur++;
 
@@ -248,23 +249,23 @@ void Com_NormalizePath(char *Dest, size_t DestSize, const char *Source)
 		if (*Cur == '/')
 		{
 			// Skip all slashes
-			for (Fwd=Cur ; (*Fwd == '/') ; Fwd++, OutLength--) ;
+			for (Fwd = Cur; (*Fwd == '/'); Fwd++, OutLength--);
 		}
 		else if (*Cur == '.' && *(Cur+1) == '/')
 		{
 			// Find where we're skipping to, past all instances of "./"
-			for (Fwd=Cur ; (*Fwd == '.' && *(Fwd+1) == '/') ; Fwd+=2, OutLength-=2) ;
+			for (Fwd = Cur; (*Fwd == '.' && *(Fwd + 1) == '/'); Fwd += 2, OutLength -= 2);
 		}
 		else if (*Cur == '.' && *(Cur+1) == '.' && *(Cur+2) == '/')
 		{
 			// Find where we're skipping to, past all isntances of "../"
 			sint32 NumBackSteps = 0;
-			for (Fwd=Cur ; (*Fwd == '.' && *(Fwd+1) == '.' && *(Fwd+2) == '/') ; Fwd+=3, OutLength-=3)
+			for (Fwd = Cur; (*Fwd == '.' && *(Fwd + 1) == '.' && *(Fwd + 2) == '/'); Fwd += 3, OutLength -= 3)
 				NumBackSteps++;
 
 			// Find where we're moving back to
 			while (NumBackSteps--)
-				for (Cur--, OutLength-- ; (*(Cur-1) != '/' && Cur-Dest) ; Cur--, OutLength--) ;
+				for (Cur--, OutLength--; (*(Cur - 1) != '/' && Cur - Dest); Cur--, OutLength--);
 		}
 		else
 		{
@@ -373,21 +374,17 @@ Removes spaces from the left/right of the string
 */
 void Com_StripPadding (char *in, char *dest)
 {
-	for (bool bHitChar=false ; *in ; )
+	for (bool bHitChar = false; *in; )
 	{
 		if (bHitChar)
-		{
 			*dest++ = *in++;
-		}
 		else if (*in != ' ')
 		{
 			bHitChar = true;
 			*dest++ = *in++;
 		}
 		else
-		{
 			in++;
-		}
 	}
 	*dest = '\0';
 

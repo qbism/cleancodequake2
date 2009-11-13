@@ -511,7 +511,7 @@ template<typename TType>
 inline TType Q_NearestPow(const TType &Value, const bool bRoundDown)
 {
 	TType Result;
-	for (Result=1 ; Result<Value ; Result<<=1) ;
+	for (Result = 1; Result < Value; Result <<= 1) ;
 
 	if (bRoundDown && Result > Value)
 		Result >>= 1;
