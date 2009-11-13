@@ -114,43 +114,6 @@ static inline bool IsPowOfTwo(const uint32 &Value)
 	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
 }
 
-#ifndef ArrayCount
-# define ArrayCount(a) (sizeof(a)/sizeof((a)[0]))
-#endif
-
-/*
-==============================================================================
-
-	STRING RELATED FUNCTIONS
-
-==============================================================================
-*/
-
-void	Q_snprintfz(char *dest, size_t size, const char *fmt, ...);
-void	Q_strcatz(char *dst, const char *src, size_t dstSize);
-size_t	Q_strncpyz(char *dest, const char *src, size_t size);
-
-char	*Q_strlwr(char *s);
-char	*Q_strupr(char *s);
-
-#ifdef id386
-sint32 __cdecl Q_tolower (sint32 c);
-#else // id386
-inline sint32 Q_tolower(sint32 chr)
-{
-	return tolower(chr);
-}
-#endif // id386
-inline sint32 Q_toupper(sint32 chr)
-{
-	return toupper(chr);
-}
-
-// ===========================================================================
-
-sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);
-std::cc_string	Q_VarArgs (char *format, ...);
-
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 #include "TArray.h"
 #include "TAutoPtr.h"

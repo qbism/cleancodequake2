@@ -95,6 +95,10 @@ inline float BYTE2ANGLE (uint8 x)
 #define TINY_NUMBER (1.e-8)
 #define SMALL_NUMBER (1.e-4)
 
+#ifndef ArrayCount
+# define ArrayCount(a) (sizeof(a)/sizeof((a)[0]))
+#endif
+
 // ===========================================================================
 
 uint8		FloatToByte(float x);

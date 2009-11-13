@@ -88,7 +88,8 @@ bool Q_IsColorString (const char *p)
 	if (!*p || (*p & 127) != COLOR_ESCAPE)
 		return false;
 
-	switch (p[1] & 127) {
+	switch (p[1] & 127)
+	{
 	case '0':	case '1':	case '2':	case '3':	case '4':
 	case '5':	case '6':	case '7':	case '8':	case '9':
 	case 'i':	case 'I':	// S_STYLE_ITALIC
@@ -109,16 +110,15 @@ Q_ColorCharCount
 */
 sint32 Q_ColorCharCount (const char *s, sint32 endPos)
 {
-	sint32			count;
-	const char	*end;
+	sint32 count = 0;
 
-	end = s + endPos;
-	for (count = 0; *s && s < end; s++)
+	for (const char	*end = s + endPos; *s && s < end; s++)
 	{
 		if ((s[0] & 127) != COLOR_ESCAPE)
 			continue;
 
-		switch (s[1] & 127) {
+		switch (s[1] & 127)
+		{
 		case '0':	case '1':	case '2':	case '3':	case '4':
 		case '5':	case '6':	case '7':	case '8':	case '9':
 		case 'i':	case 'I':
@@ -145,9 +145,8 @@ Q_ColorCharOffset
 sint32 Q_ColorCharOffset (const char *s, sint32 charCount)
 {
 	const char	*start = s;
-	bool		skipNext = false;
 
-	for ( ; *s && charCount; s++)
+	for (bool skipNext = false; *s && charCount; s++)
 	{
 		if (skipNext)
 			skipNext = false;
@@ -168,16 +167,15 @@ Q_ColorStrLastColor
 */
 sint32 Q_ColorStrLastColor (char *s, sint32 byteOfs)
 {
-	char	*end;
 	sint32		lastClrIndex = Q_StrColorIndex (COLOR_WHITE);
 
-	end = s + (byteOfs - 1);	// don't check last uint8
-	for ( ; *s && s < end; s++)
+	for (char *end = s + (byteOfs - 1); *s && s < end; s++)
 	{
 		if ((s[0] & 127) != COLOR_ESCAPE)
 			continue;
 
-		switch (s[1] & 127) {
+		switch (s[1] & 127)
+		{
 		case '0':	case '1':	case '2':	case '3':	case '4':
 		case '5':	case '6':	case '7':	case '8':	case '9':
 			lastClrIndex = (s[1] & 127) - '0';
@@ -203,12 +201,9 @@ Q_ColorStrLastStyle
 */
 sint32 Q_ColorStrLastStyle (char *s, sint32 byteOfs)
 {
-	char	*end;
-	sint32		lastStyle;
-
-	end = s + (byteOfs);	// don't check last uint8
-	lastStyle = 0;
-	for ( ; *s && s < end; s++)
+	uint32 lastStyle = 0;
+	for (char *end = s + (byteOfs); // don't check last byte
+		*s && s < end; s++)
 	{
 		if ((s[0] & 127) != COLOR_ESCAPE)
 			continue;

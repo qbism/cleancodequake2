@@ -133,9 +133,6 @@
     <Filter Include="Shared\MathLib">
       <UniqueIdentifier>{61be54fe-f8a3-412a-aa7b-a2e4104d1545}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shared\Templates">
-      <UniqueIdentifier>{9974177f-3898-4fed-94c0-72b6f593ffc2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\byteswap.cpp">
@@ -176,9 +173,6 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\string.cpp">
       <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\Templates\Templates.cpp">
-      <Filter>Shared\Templates</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_arg.cpp">
       <Filter>CleanCode Files\Game API\Arg</Filter>
@@ -503,23 +497,8 @@
     <ClInclude Include="..\..\shared\shared.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\TArray.h">
-      <Filter>Shared\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\TAutoPtr.h">
-      <Filter>Shared\Templates</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Templates\Templates.h">
-      <Filter>Shared\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\TMap.h">
-      <Filter>Shared\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\TString.h">
-      <Filter>Shared\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\TTypes.h">
-      <Filter>Shared\Templates</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_arg.h">
       <Filter>CleanCode Files\Game API\Arg</Filter>

@@ -184,6 +184,37 @@ void		Com_StripPadding (char *in, char *dest);
 /*
 ==============================================================================
 
+	STRING RELATED FUNCTIONS
+
+==============================================================================
+*/
+
+void	Q_snprintfz(char *dest, size_t size, const char *fmt, ...);
+void	Q_strcatz(char *dst, const char *src, size_t dstSize);
+size_t	Q_strncpyz(char *dest, const char *src, size_t size);
+
+char	*Q_strlwr(char *s);
+char	*Q_strupr(char *s);
+
+#ifdef id386
+sint32 __cdecl Q_tolower (sint32 c);
+#else // id386
+inline sint32 Q_tolower(sint32 chr)
+{
+	return tolower(chr);
+}
+#endif // id386
+inline sint32 Q_toupper(sint32 chr)
+{
+	return toupper(chr);
+}
+
+sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);
+std::cc_string	Q_VarArgs (char *format, ...);
+
+/*
+==============================================================================
+
 	INFO STRINGS
 
 ==============================================================================

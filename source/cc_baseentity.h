@@ -431,7 +431,7 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 template <class TClass>
 const size_t FieldSize ()
 {
-	return (sizeof(TClass::FieldsForParsing) / sizeof(TClass::FieldsForParsing[0]));
+	return ArrayCount(TClass::FieldsForParsing);
 }
 
 // Base classes

@@ -569,7 +569,7 @@ const CEntityField CMapEntity::FieldsForParsing_Map[] =
 {
 	CEntityField ("targetname",		EntityMemberOffset(CMapEntity,TargetName),		FT_LEVEL_STRING),
 };
-const size_t CMapEntity::FieldsForParsingSize_Map = sizeof(CMapEntity::FieldsForParsing_Map) / sizeof(CMapEntity::FieldsForParsing_Map[0]);
+const size_t CMapEntity::FieldsForParsingSize_Map = ArrayCount(CMapEntity::FieldsForParsing_Map);
 
 bool			CMapEntity::ParseField (const char *Key, const char *Value)
 {
