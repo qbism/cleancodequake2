@@ -193,9 +193,6 @@ void	Q_snprintfz(char *dest, size_t size, const char *fmt, ...);
 void	Q_strcatz(char *dst, const char *src, size_t dstSize);
 size_t	Q_strncpyz(char *dest, const char *src, size_t size);
 
-char	*Q_strlwr(char *s);
-char	*Q_strupr(char *s);
-
 #ifdef id386
 sint32 __cdecl Q_tolower (sint32 c);
 #else // id386
@@ -207,6 +204,59 @@ inline sint32 Q_tolower(sint32 chr)
 inline sint32 Q_toupper(sint32 chr)
 {
 	return toupper(chr);
+}
+
+/*
+===============
+Q_strlwr
+===============
+*/
+inline char *Q_strlwr(char *s)
+{
+	char *p;
+
+	if (s)
+	{
+		for (p = s; *s; s++)
+			*s = Q_tolower(*s);
+		return p;
+	}
+
+	return NULL;
+}
+
+inline std::cc_string Q_strlwr (std::cc_string s)
+{
+	for (size_t i = 0; i < s.size(); i++)
+		s[i] = Q_tolower(s[i]);
+	return s;
+}
+
+
+/*
+===============
+Q_strupr
+===============
+*/
+inline char *Q_strupr(char *s)
+{
+	char *p;
+
+	if (s)
+	{
+		for (p = s; *s; s++)
+			*s = Q_toupper(*s);
+		return p;
+	}
+
+	return NULL;
+}
+
+inline std::cc_string Q_strupr (std::cc_string s)
+{
+	for (size_t i = 0; i < s.size(); i++)
+		s[i] = Q_toupper(s[i]);
+	return s;
 }
 
 sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);

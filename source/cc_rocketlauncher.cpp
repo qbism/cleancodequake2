@@ -100,6 +100,4 @@ void CRocketLauncher::CreateItem (CItemList *List)
 		("weapon_rocketlauncher", "models/weapons/g_rocket/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_rlauncher", "Rocket Launcher",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Rockets, 1, "#w_rlauncher.md2");
-
-	List->AddItemToList (NItems::RocketLauncher);
 };

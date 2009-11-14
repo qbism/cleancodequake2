@@ -153,9 +153,6 @@ void AddFlagsToList ()
 {
 	NItems::RedFlag = QNew (com_gamePool, 0) CFlag ("item_flag_team1", "players/male/flag1.md2", EF_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
 	NItems::BlueFlag = QNew (com_gamePool, 0) CFlag ("item_flag_team2", "players/male/flag2.md2", EF_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM2);
-
-	ItemList->AddItemToList (NItems::RedFlag);
-	ItemList->AddItemToList (NItems::BlueFlag);
 }
 
 #endif

@@ -101,6 +101,4 @@ void CRailgun::CreateItem (CItemList *List)
 		("weapon_railgun", "models/weapons/g_rail/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_railgun", "Railgun",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Slugs, 1, "#w_railgun.md2");
-
-	List->AddItemToList (NItems::Railgun);
 };

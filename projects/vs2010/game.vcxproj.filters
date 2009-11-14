@@ -895,6 +895,9 @@
     <None Include="..\..\todo.txt">
       <Filter>CleanCode Files</Filter>
     </None>
+    <None Include="..\..\version.ver">
+      <Filter>CleanCode Files</Filter>
+    </None>
     <None Include="game.def">
       <Filter>Resources</Filter>
     </None>

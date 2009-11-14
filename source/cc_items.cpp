@@ -34,6 +34,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+extern CItemList *ItemList;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// \fn	CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags, char *PickupSound,
 /// 	char *Icon, char *Name, EItemFlags Flags, char *Precache) : Index(-1), Classname(Classname),
@@ -67,10 +69,7 @@ Name(Name),
 Flags(Flags),
 Precache(Precache)
 {
-	if (Classname)
-		hashedClassnameValue = Com_HashGeneric(Classname, MAX_ITEMS_HASH);
-	if (Name)
-		hashedNameValue = Com_HashGeneric(Name, MAX_ITEMS_HASH);
+	ItemList->AddItemToList (this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

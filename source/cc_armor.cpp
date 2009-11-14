@@ -188,9 +188,4 @@ void AddArmorToList ()
 	NItems::CombatArmor = QNew (com_gamePool, 0) CArmor ("item_armor_combat", "models/items/armor/combat/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_combatarmor", "Combat Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 50, 100, 60, 30);
 	NItems::BodyArmor = QNew (com_gamePool, 0) CArmor ("item_armor_body", "models/items/armor/body/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_bodyarmor", "Body Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 100, 200, 80, 60);
 	NItems::ArmorShard = QNew (com_gamePool, 0) CArmor ("item_armor_shard", "models/items/armor/shard/tris.md2", EF_ROTATE, "misc/ar2_pkup.wav", "i_jacketarmor", "Armor Shard", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 2, -1, -1, -1);
-
-	ItemList->AddItemToList (NItems::JacketArmor);
-	ItemList->AddItemToList (NItems::CombatArmor);
-	ItemList->AddItemToList (NItems::BodyArmor);
-	ItemList->AddItemToList (NItems::ArmorShard);
 }

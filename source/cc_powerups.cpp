@@ -527,17 +527,4 @@ void AddPowerupsToList ()
 	NItems::AncientHead = QNew (com_gamePool, 0) CAncientHead ("item_ancient_head", "models/items/c_head/tris.md2", EF_ROTATE, "items/pkup.wav", "i_fixme", "Ancient Head", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
 	NItems::PowerShield = QNew (com_gamePool, 0) CPowerShield ("item_power_shield", "models/items/armor/shield/tris.md2", EF_ROTATE, "misc/ar3_pkup.wav", "i_powershield", "Power Shield", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 	NItems::PowerScreen = QNew (com_gamePool, 0) CPowerShield ("item_power_screen", "models/items/armor/screen/tris.md2", EF_ROTATE, "misc/ar3_pkup.wav", "i_powerscreen", "Power Screen", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-
-	ItemList->AddItemToList (NItems::MegaHealth);
-	ItemList->AddItemToList (NItems::BackPack);
-	ItemList->AddItemToList (NItems::Quad);
-	ItemList->AddItemToList (NItems::Invul);
-	ItemList->AddItemToList (NItems::Silencer);
-	ItemList->AddItemToList (NItems::Rebreather);
-	ItemList->AddItemToList (NItems::EnvironmentSuit);
-	ItemList->AddItemToList (NItems::Bandolier);
-	ItemList->AddItemToList (NItems::Adrenaline);
-	ItemList->AddItemToList (NItems::AncientHead);
-	ItemList->AddItemToList (NItems::PowerShield);
-	ItemList->AddItemToList (NItems::PowerScreen);
 }

@@ -35,46 +35,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_cmds.h"
 #include "cc_cmds_local.h"
 
-void CCmd::Run (CPlayerEntity *ent)
+void CPlayerCommand::Run (CPlayerEntity *ent)
 {
-	if ((CmdFlags & CMD_CHEAT) && !game.cheats && (game.mode != GAME_SINGLEPLAYER))
+	if ((Flags & CMD_CHEAT) && !game.cheats && (game.mode != GAME_SINGLEPLAYER))
 	{
 		ent->PrintToClient (PRINT_HIGH, "Cheats must be enabled to use this command.\n");
 		return;
 	}
-	if (!(CmdFlags & CMD_SPECTATOR) && (ent->Client.Respawn.Spectator || ent->Client.Chase.Target))	
+	if (!(Flags & CMD_SPECTATOR) && (ent->Client.Respawn.Spectator || ent->Client.Chase.Target))	
 		return;
 
-	RunFunction (ent);
+	Func (ent);
 };
 
-CCmd::CCmd (std::cc_string name, void (*Func)(CPlayerEntity *ent), ECmdTypeFlags Flags)
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::game_allocator<size_t> > THashedPlayerCommandListType;
+typedef std::vector<CPlayerCommand*, std::game_allocator<CPlayerCommand*> > TPlayerCommandListType;
+
+TPlayerCommandListType CommandList;
+THashedPlayerCommandListType CommandHashList;
+
+CPlayerCommand *Cmd_FindCommand (std::cc_string commandName)
 {
-	cmdName = name;
-	hashValue = Com_HashGeneric(name, MAX_CMD_HASH);
-	CmdFlags = Flags;
-	RunFunction = Func;
-};
-
-CCmd::~CCmd ()
-{
-};
-
-CCmd *CommandList[MAX_COMMANDS];
-CCmd *CommandHashList[MAX_CMD_HASH];
-sint32 numCommands = 0;
-
-CCmd *Cmd_FindCommand (std::cc_string commandName)
-{
-	CCmd *Command;
-	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
-
-	for (Command = CommandHashList[hash]; Command; Command=Command->hashNext)
-	{
-		if (Q_stricmp (Command->cmdName.c_str(), commandName.c_str()) == 0)
-			return Command;
-	}
-	return NULL;
+	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, CommandList, CommandHashList> (commandName);
 }
 
 void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
@@ -87,29 +69,25 @@ void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *en
 	}
 
 	// We can add it!
-	CommandList[numCommands] = QNew (com_gamePool, 0) CCmd (commandName, Func, Flags);
+	CommandList.push_back (QNew (com_gamePool, 0) CPlayerCommand (commandName, Func, Flags));
 
 	// Link it in the hash tree
-	CommandList[numCommands]->hashNext = CommandHashList[CommandList[numCommands]->hashValue];
-	CommandHashList[CommandList[numCommands]->hashValue] = CommandList[numCommands];
-	numCommands++;
+	CommandHashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList.size()-1));
 }
 
 void Cmd_RemoveCommands ()
 {
 	// Remove all commands
-	for (sint32 i = 0; i < numCommands; i++)
-	{
-		QDelete CommandList[numCommands];
-		numCommands--;
-	}
+	for (uint32 i = 0; i < CommandList.size(); i++)
+		QDelete CommandList.at(i);
+	CommandList.clear ();
 }
 
 void Cmd_RunCommand (std::cc_string commandName, CPlayerEntity *ent)
 {
-	CCmd *Command = Cmd_FindCommand(commandName);
+	static CPlayerCommand *Command;
 
-	if (Command)
+	if ((Command = Cmd_FindCommand(commandName)) != NULL)
 		Command->Run(ent);
 	else
 		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName.c_str());

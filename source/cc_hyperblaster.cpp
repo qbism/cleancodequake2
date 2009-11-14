@@ -127,6 +127,4 @@ void CHyperBlaster::CreateItem (CItemList *List)
 		("weapon_hyperblaster", "models/weapons/g_hyperb/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
 		"w_hyperblaster", "HyperBlaster", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 1, "#w_hyperblaster.md2");
-
-	List->AddItemToList (NItems::HyperBlaster);
 };

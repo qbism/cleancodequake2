@@ -84,47 +84,6 @@ size_t Q_strncpyz(char *dest, const char *src, size_t size)
 	return size;
 }
 
-
-/*
-===============
-Q_strlwr
-===============
-*/
-char *Q_strlwr(char *s)
-{
-	char *p;
-
-	if (s)
-	{
-		for (p = s; *s; s++)
-			*s = Q_tolower(*s);
-		return p;
-	}
-
-	return NULL;
-}
-
-
-/*
-===============
-Q_strupr
-===============
-*/
-char *Q_strupr(char *s)
-{
-	char *p;
-
-	if (s)
-	{
-		for (p = s; *s; s++)
-			*s = Q_toupper(*s);
-		return p;
-	}
-
-	return NULL;
-}
-
-
 /*
 ===============
 Q_tolower

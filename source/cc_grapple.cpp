@@ -236,7 +236,6 @@ WEAPON_DEFS (CGrapple);
 void CGrapple::CreateItem (CItemList *List)
 {
 	NItems::Grapple = QNew (com_gamePool, 0) CWeaponItem (NULL, NULL, 0, NULL, "w_grapple", "Grapple", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, "", &Weapon, NULL, 0, "#w_grapple.md2");
-	List->AddItemToList (NItems::Grapple);
 };
 
 #endif

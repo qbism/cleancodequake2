@@ -105,5 +105,5 @@ void CSurfacePicker::InitWeaponVwepModel (sint32 TakeAway)
 void CSurfacePicker::CreateItem (CItemList *List)
 {
 	if (map_debug->Boolean())
-		ItemList->AddItemToList (QNew (com_gamePool, 0) CWeaponItem (NULL, NULL, 0, NULL, NULL, "Surface Picker", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, NULL, &Weapon, NULL, 0, NULL));
+		QNew (com_gamePool, 0) CWeaponItem (NULL, NULL, 0, NULL, NULL, "Surface Picker", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, NULL, &Weapon, NULL, 0, NULL);
 };

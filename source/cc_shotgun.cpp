@@ -98,6 +98,4 @@ void CShotgun::CreateItem (CItemList *List)
 		("weapon_shotgun", "models/weapons/g_shotg/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
 		"w_shotgun", "Shotgun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Shells, 1, "#w_shotgun.md2");
-
-	List->AddItemToList (NItems::Shotgun);
 };

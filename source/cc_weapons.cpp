@@ -346,13 +346,6 @@ void AddAmmoToList ()
 	NItems::Rockets = QNew (com_gamePool, 0) CAmmo("ammo_rockets", "models/items/ammo/rockets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_rockets", "Rockets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 5, CAmmo::AMMOTAG_ROCKETS, NULL, -1, NULL);
 	NItems::Cells = QNew (com_gamePool, 0) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_CELLS, NULL, -1, NULL);
 
-	ItemList->AddItemToList (NItems::Shells);
-	ItemList->AddItemToList (NItems::Bullets);
-	ItemList->AddItemToList (NItems::Slugs);
-	ItemList->AddItemToList (NItems::Grenades);
-	ItemList->AddItemToList (NItems::Rockets);
-	ItemList->AddItemToList (NItems::Cells);
-
 	AddWeapons (ItemList);
 }
 

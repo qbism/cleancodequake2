@@ -132,5 +132,4 @@ void CBFG::CreateItem (CItemList *List)
 		"misc/w_pkup.wav", "w_bfg", "BFG10k",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 50, "#w_bfg.md2");
-	List->AddItemToList (NItems::BFG);
 };

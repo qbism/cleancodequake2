@@ -52,8 +52,16 @@ name Paril 1
 ip 252.6.10.6 5
 */
 
+void CBanList::Clear ()
+{
+	for (size_t i = 0; i < BanList.size(); i++)
+		QDelete BanList.at(i);
+	BanList.clear ();
+}
+
 void CBanList::LoadFromFile ()
 {
+	Bans.Clear ();
 	CFileBuffer File ("bans.lst", true);
 
 	if (!File.Valid())
@@ -144,10 +152,19 @@ void CBanList::LoadFromFile ()
 		z = oc;
 		oc = 0;
 	}
+	
+	DebugPrintf ("Loaded %u bans from file\n", Bans.BanList.size());
 }
 
 void CBanList::SaveList ()
 {
+	// No changes detected
+	if (!Changed)
+	{
+		DebugPrintf ("No changes in ban file, skipping\n");
+		return;
+	}
+
 	CFile File ("bans.lst", FILEMODE_WRITE | FILEMODE_CREATE | FILEMODE_ASCII);
 
 	if (!File.Valid())
@@ -162,10 +179,15 @@ void CBanList::SaveList ()
 			(Index->IP) ? Index->IPAddress->str :Index->Name,
 			"%i\n", Index->Flags);
 	}
+
+	DebugPrintf ("Saved %u bans\n", Bans.BanList.size());
 }
 
-void CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
+bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
 {
+	if (InList(Adr))
+		return false;
+
 	BanIndex *NewIndex = QNew (com_gamePool, 0) BanIndex;
 	NewIndex->IP = true;
 
@@ -173,21 +195,60 @@ void CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
 	NewIndex->Flags = Flags;
 
 	BanList.push_back (NewIndex);
+	return true;
 }
 
-void CBanList::AddToList (char *Name, EBanTypeFlags Flags)
+bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
 {
+	if (InList(Name))
+		return false;
+
 	BanIndex *NewIndex = QNew (com_gamePool, 0) BanIndex;
 	NewIndex->IP = false;
 	NewIndex->Name = QNew (com_gamePool, 0) char[strlen(Name)];
-	Q_strncpyz (NewIndex->Name, Name, sizeof(NewIndex->Name));
+	Q_strncpyz (NewIndex->Name, Name, strlen(Name)+1);
 	NewIndex->Name[strlen(Name)] = 0;
 	NewIndex->Flags = Flags;
 
 	BanList.push_back (NewIndex);
+	return true;
 }
 
-void CBanList::RemoveFromList (IPAddress Adr)
+bool CBanList::InList (IPAddress Adr)
+{
+	TBanIndexContainer::iterator it;
+
+	for (it = BanList.begin(); it < BanList.end(); it++)
+	{
+		BanIndex *Index = *it;
+
+		if (!Index->IP)
+			continue;
+
+		if (!ipcmp(*Index->IPAddress, Adr))
+			return true;
+	}
+	return false;
+}
+
+bool CBanList::InList (const char *Name)
+{
+	TBanIndexContainer::iterator it;
+
+	for (it = BanList.begin(); it < BanList.end(); it++)
+	{
+		BanIndex *Index = *it;
+
+		if (Index->IP)
+			continue;
+
+		if (!strcmp(Name, Index->Name))
+			return true;
+	}
+	return false;
+}
+
+bool CBanList::RemoveFromList (IPAddress Adr)
 {
 	TBanIndexContainer::iterator it;
 
@@ -201,12 +262,13 @@ void CBanList::RemoveFromList (IPAddress Adr)
 		if (!ipcmp(*Index->IPAddress, Adr))
 		{
 			BanList.erase(it);
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
-void CBanList::RemoveFromList (char *Name)
+bool CBanList::RemoveFromList (const char *Name)
 {
 	TBanIndexContainer::iterator it;
 
@@ -220,12 +282,13 @@ void CBanList::RemoveFromList (char *Name)
 		if (!strcmp(Name, Index->Name))
 		{
 			BanList.erase(it);
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
-void CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
+bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 {
 	TBanIndexContainer::iterator it;
 
@@ -238,13 +301,17 @@ void CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 
 		if (!ipcmp(*Index->IPAddress, Adr))
 		{
+			if (Index->Flags == Flags)
+				return false;
+
 			Index->Flags = Flags;
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
-void CBanList::ChangeBan (char *Name, EBanTypeFlags Flags)
+bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
 {
 	TBanIndexContainer::iterator it;
 
@@ -257,10 +324,14 @@ void CBanList::ChangeBan (char *Name, EBanTypeFlags Flags)
 
 		if (!strcmp(Name, Index->Name))
 		{
+			if (Index->Flags == Flags)
+				return false;
+
 			Index->Flags = Flags;
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
 bool CBanList::IsSquelched (IPAddress Adr)

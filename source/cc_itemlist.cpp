@@ -103,26 +103,18 @@ CItemList *ItemList;
 CItemList::CItemList() :
 numItems(0)
 {
-	memset (HashedClassnameItemList, 0, sizeof(CBaseItem*) * MAX_ITEMS_HASH);
-	memset (HashedNameItemList, 0, sizeof(CBaseItem*) * MAX_ITEMS_HASH);
 };
 
 void CItemList::AddItemToList (CBaseItem *Item)
 {
-	Items[numItems] = Item;
+	Items.push_back (Item);
 	Item->Index = numItems++;
 
 	// Hash!
 	if (Item->Classname)
-	{
-		Item->hashClassnameNext = HashedClassnameItemList[Item->hashedClassnameValue];
-		HashedClassnameItemList[Item->hashedClassnameValue] = Item;
-	}
+		HashedClassnameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Classname, MAX_ITEMS_HASH), Item->Index));
 	if (Item->Name)
-	{
-		Item->hashNameNext = HashedNameItemList[Item->hashedNameValue];
-		HashedNameItemList[Item->hashedNameValue] = Item;
-	}
+		HashedNameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Name, MAX_ITEMS_HASH), Item->Index));
 }
 
 void CItemList::SendItemNames ()
@@ -134,12 +126,32 @@ void CItemList::SendItemNames ()
 CBaseItem *FindItem (const char *name)
 {
 	// Check through the itemlist
-	uint32 hash = Com_HashGeneric(name, MAX_ITEMS_HASH);
-	CBaseItem *Item;
+	static uint32 hash;
+	hash = Com_HashGeneric(name, MAX_ITEMS_HASH);
 
-	for (Item = ItemList->HashedNameItemList[hash]; Item; Item=Item->hashNameNext)
+	for (THashedItemListType::iterator it = ItemList->HashedNameItemList.equal_range(hash).first; it != ItemList->HashedNameItemList.equal_range(hash).second; ++it)
 	{
+		static CBaseItem *Item;
+		Item = ItemList->Items.at((*it).second);
+
 		if (Q_stricmp(Item->Name, name) == 0)
+			return Item;
+	}
+	return NULL;
+}
+
+CBaseItem *FindItemByClassname (const char *name)
+{
+	// Check through the itemlist
+	static uint32 hash;
+	hash = Com_HashGeneric(name, MAX_ITEMS_HASH);
+
+	for (THashedItemListType::iterator it = ItemList->HashedClassnameItemList.equal_range(hash).first; it != ItemList->HashedClassnameItemList.equal_range(hash).second; ++it)
+	{
+		static CBaseItem *Item;
+		Item = ItemList->Items.at((*it).second);
+
+		if (Q_stricmp(Item->Classname, name) == 0)
 			return Item;
 	}
 	return NULL;
@@ -161,23 +173,9 @@ void CBaseItem::Add (CPlayerEntity *ent, sint32 quantity)
 	ent->Client.Persistent.Inventory.Add(this, quantity);
 }
 
-CBaseItem *FindItemByClassname (const char *name)
+CBaseItem *GetItemByIndex (uint32 Index)
 {
-	// Check through the itemlist
-	uint32 hash = Com_HashGeneric(name, MAX_ITEMS_HASH);
-	CBaseItem *Item;
-
-	for (Item = ItemList->HashedClassnameItemList[hash]; Item; Item=Item->hashClassnameNext)
-	{
-		if (Q_stricmp(Item->Classname, name) == 0)
-			return Item;
-	}
-	return NULL;
-}
-
-CBaseItem *GetItemByIndex (sint32 Index)
-{
-	if (Index >= MAX_ITEMS || Index >= ItemList->numItems || Index < 0)
+	if (Index >= MAX_ITEMS || Index >= ItemList->Items.size() || Index < 0)
 		return NULL;
 	return ItemList->Items[Index];
 }

@@ -37,37 +37,79 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MAX_COMMANDS 128
 #define MAX_CMD_HASH (MAX_COMMANDS/4)
 
-class CCmd
+//typedef std::pair<size_t, size_t> THashedItemListPairType;
+//typedef std::multimap<size_t, size_t, std::less<size_t>, std::game_allocator<size_t> > THashedItemListType;
+//typedef std::vector<CBaseItem*, std::game_allocator<CBaseItem*> > TItemListType;
+
+template <typename TFunctor>
+class CCommand
 {
 public:
-	uint32			hashValue;
-	CCmd			*hashNext;
-	std::cc_string	cmdName;
+	std::cc_string		Name;
+	ECmdTypeFlags		Flags;
+	TFunctor			Func;
 
-	ECmdTypeFlags	CmdFlags;
-	void			(*RunFunction) (CPlayerEntity *ent);
+	CCommand (std::cc_string Name, TFunctor Func, ECmdTypeFlags Flags) :
+	  Name(Name),
+	  Func(Func),
+	  Flags(Flags)
+	  {
+	  };
+	
+	virtual ~CCommand ()
+	{
+	};
+};
 
-	CCmd (std::cc_string name, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags);
-	~CCmd();
+typedef void (*TCommandFunctorType) (CPlayerEntity*);
+class CPlayerCommand : public CCommand <TCommandFunctorType>
+{
+public:
+	CPlayerCommand (std::cc_string Name, TCommandFunctorType Func, ECmdTypeFlags Flags) :
+	  CCommand (Name, Func, Flags)
+	  {
+	  };
+
+	~CPlayerCommand ()
+	{
+	};
+
 	void Run (CPlayerEntity *ent);
 };
 
 // Also throwing server command class here.
-class CServerCmd
+typedef void (*TServerCommandFunctorType) ();
+class CServerCommand : public CCommand <TServerCommandFunctorType>
 {
 public:
-	uint32			hashValue;
-	CServerCmd		*hashNext;
-	std::cc_string	cmdName;
+	CServerCommand (std::cc_string Name, TServerCommandFunctorType Func) :
+	  CCommand (Name, Func, 0)
+	  {
+	  };
 
-	ECmdTypeFlags	CmdFlags;
-	void			(*RunFunction) ();
+	~CServerCommand ()
+	{
+	};
 
-	CServerCmd (std::cc_string name, void (*Func) ());
-	~CServerCmd();
-
-	void Run ();
+	void Run ()
+	{
+		Func ();
+	};
 };
+
+template <class TReturnValue, typename TListType, typename THashListType, TListType &List, THashListType &HashList>
+TReturnValue *FindCommand (std::cc_string commandName)
+{
+	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
+
+	for (THashListType::iterator it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
+	{
+		TReturnValue *Command = List.at((*it).second);
+		if (Q_stricmp (Command->Name.c_str(), commandName.c_str()) == 0)
+			return Command;
+	}
+	return NULL;
+}
 
 #else
 FILE_WARNING

@@ -672,4 +672,6 @@ void CC_ShutdownGame ()
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
+
+	Bans.SaveList ();
 }

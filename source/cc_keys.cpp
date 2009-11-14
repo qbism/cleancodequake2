@@ -139,14 +139,4 @@ void AddKeysToList ()
 	NItems::RedKey = QNew (com_gamePool, 0) CKey("key_red_key", "models/items/keys/red_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_redkey", "Red Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 	NItems::CommandersHead = QNew (com_gamePool, 0) CKey("key_commander_head", "models/monsters/commandr/head/tris.md2", EF_ROTATE, "items/pkup.wav", "k_comhead", "Commander's Head", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 	NItems::AirstrikeTarget = QNew (com_gamePool, 0) CKey("key_airstrike_target", "models/items/keys/target/tris.md2", EF_ROTATE, "items/pkup.wav", "i_airstrike", "Airstrike Marker", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-
-	ItemList->AddItemToList (NItems::DataCD);
-	ItemList->AddItemToList (NItems::PowerCube);
-	ItemList->AddItemToList (NItems::PyramidKey);
-	ItemList->AddItemToList (NItems::DataSpinner);
-	ItemList->AddItemToList (NItems::SecurityPass);
-	ItemList->AddItemToList (NItems::BlueKey);
-	ItemList->AddItemToList (NItems::RedKey);
-	ItemList->AddItemToList (NItems::CommandersHead);
-	ItemList->AddItemToList (NItems::AirstrikeTarget);
 }

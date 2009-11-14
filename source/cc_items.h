@@ -70,15 +70,6 @@ private:
 	/// Must be friends with itemlist so it can set the item.
 	friend class CItemList;
 public:
-	/// The next hash index (classname)
-	CBaseItem		*hashClassnameNext;
-	/// The next hash index (name)
-	CBaseItem		*hashNameNext;
-	/// Hashed classname value
-	uint32 hashedClassnameValue;
-	/// Hashed name value
-	uint32 hashedNameValue;
-
 	CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);

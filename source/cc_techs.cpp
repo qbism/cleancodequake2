@@ -457,7 +457,4 @@ void AddTechsToList ()
 	TechList.push_back (QNew (com_gamePool, 0) CAmmoRegenTech ("item_tech5", "models/ctf/ammo/tris.md2",
 														"tech5", "Ammo Regen", CTech::TECH_PASSIVE, CTFTECH_AMMOREGEN_NUMBER));
 #endif
-
-	for (size_t i = 0; i < TechList.size(); i++)
-		ItemList->AddItemToList (TechList[i]);
 }

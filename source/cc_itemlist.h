@@ -39,6 +39,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MAX_ITEMS		256
 #define MAX_ITEMS_HASH	(MAX_ITEMS/2)
 
+typedef std::pair<size_t, size_t> THashedItemListPairType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::game_allocator<size_t> > THashedItemListType;
+typedef std::vector<CBaseItem*, std::game_allocator<CBaseItem*> > TItemListType;
 // Generic itemlist.
 class CItemList
 {
@@ -54,18 +57,21 @@ public:
 	void AddItemToList (CBaseItem *Item);
 
 	// FIXME: Use dynamic-sized array? Good idea? :S
-	CBaseItem	*Items[MAX_ITEMS];
+	//CBaseItem	*Items[MAX_ITEMS];
+	TItemListType			Items;
 
 	// There are two hash tables for items; hashed by classname, and hashed by item name.
-	CBaseItem	*HashedClassnameItemList[MAX_ITEMS_HASH];
-	CBaseItem	*HashedNameItemList[MAX_ITEMS_HASH];
+	//CBaseItem	*HashedClassnameItemList[MAX_ITEMS_HASH];
+	//CBaseItem	*HashedNameItemList[MAX_ITEMS_HASH];
+	THashedItemListType		HashedClassnameItemList;
+	THashedItemListType		HashedNameItemList;
 };
 
 void InitItemlist ();
 bool ItemExists (edict_t *ent);
 CBaseItem *FindItemByClassname (const char *name);
 CBaseItem *FindItem (const char *name);
-CBaseItem *GetItemByIndex (sint32 Index);
+CBaseItem *GetItemByIndex (uint32 Index);
 extern sint32 GetNumItems ();
 
 void InitItemMedia ();

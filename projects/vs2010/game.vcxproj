@@ -926,6 +926,7 @@ echo Done!
     <ClInclude Include="..\..\source\m_tank.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\version.ver" />
     <None Include="game.def" />
     <None Include="..\..\todo.txt" />
   </ItemGroup>

@@ -39,37 +39,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_servercommands.h"
 #include "cc_version.h"
 
-void CServerCmd::Run ()
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::game_allocator<size_t> > THashedServerCommandListType;
+typedef std::vector<CServerCommand*, std::game_allocator<CServerCommand*> > TServerCommandListType;
+
+TServerCommandListType ServerCommandList;
+THashedServerCommandListType ServerCommandHashList;
+
+CServerCommand *SvCmd_FindCommand (std::cc_string commandName)
 {
-	RunFunction ();
-};
-
-CServerCmd::CServerCmd (std::cc_string name, void (*Func)())
-{
-	cmdName = name;
-	hashValue = Com_HashGeneric(name, MAX_CMD_HASH);
-	RunFunction = Func;
-};
-
-CServerCmd::~CServerCmd ()
-{
-};
-
-CServerCmd *ServerCommandList[MAX_COMMANDS];
-CServerCmd *ServerCommandHashList[MAX_CMD_HASH];
-sint32 numServerCommands = 0;
-
-CServerCmd *SvCmd_FindCommand (std::cc_string commandName)
-{
-	CServerCmd *Command;
-	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
-
-	for (Command = ServerCommandHashList[hash]; Command; Command=Command->hashNext)
-	{
-		if (Q_stricmp (Command->cmdName.c_str(), commandName.c_str()) == 0)
-			return Command;
-	}
-	return NULL;
+	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType, ServerCommandList, ServerCommandHashList> (commandName);
 }
 
 void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
@@ -82,28 +60,25 @@ void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
 	}
 
 	// We can add it!
-	ServerCommandList[numServerCommands] = QNew (com_gamePool, 0) CServerCmd (commandName, Func);
+	ServerCommandList.push_back (QNew (com_gamePool, 0) CServerCommand (commandName, Func));
+
 	// Link it in the hash tree
-	ServerCommandList[numServerCommands]->hashNext = ServerCommandHashList[ServerCommandList[numServerCommands]->hashValue];
-	ServerCommandHashList[ServerCommandList[numServerCommands]->hashValue] = ServerCommandList[numServerCommands];
-	numServerCommands++;
+	ServerCommandHashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList.size()-1));
 }
 
 void SvCmd_RemoveCommands ()
 {
 	// Remove all commands
-	for (sint32 i = 0; i < numServerCommands; i++)
-	{
-		QDelete ServerCommandList[numServerCommands];
-		numServerCommands--;
-	}
+	for (uint32 i = 0; i < ServerCommandList.size(); i++)
+		QDelete ServerCommandList.at(i);
+	ServerCommandList.clear ();
 }
 
 void SvCmd_RunCommand (std::cc_string commandName)
 {
-	CServerCmd *Command = SvCmd_FindCommand(commandName);
+	static CServerCommand *Command;
 
-	if (Command)
+	if ((Command = SvCmd_FindCommand(commandName)) != NULL)
 		Command->Run();
 	else
 		Com_Printf (0, "Unknown server command \"%s\"\n", commandName.c_str());
@@ -270,6 +245,116 @@ void SvCmd_Break_f ()
 
 void SvCmd_IndexList_f ();
 
+#include "cc_ban.h"
+IPAddress CopyIP (const char *val);
+
+void SvCmd_Ban_t ()
+{
+	const std::cc_string str = Q_strlwr(ArgGets(2));
+
+	if (str == "save")
+		Bans.SaveList ();
+	else if (str == "load")
+		Bans.LoadFromFile ();
+	else if (str == "list")
+	{
+		DebugPrintf (
+			"Name/IP                   IP       Flags\n"
+			"---------------------    ----      -----\n");
+
+		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); it++)
+		{
+			BanIndex *Index = *it;
+
+			if (!Index->IP)
+				continue;
+
+			DebugPrintf ("%-24s Yes         %u\n", Index->IPAddress->str, Index->Flags);
+		}
+
+		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); it++)
+		{
+			BanIndex *Index = *it;
+
+			if (Index->IP)
+				continue;
+
+			DebugPrintf ("%-24s No          %u\n", Index->Name, Index->Flags);
+		}
+	}
+	else if (str == "name")
+	{
+		if (ArgGets(3) == "remove")
+		{
+			std::cc_string name = ArgGets(4);
+			if (Bans.RemoveFromList (name.c_str()))
+				DebugPrintf ("Removed %s from ban list\n", name.c_str());
+			else
+				DebugPrintf ("%s not found in ban list\n", name.c_str());
+		}
+		else
+		{
+			std::cc_string name = ArgGets(3);
+			const uint8 flags = ArgGeti(4);
+
+			if (Bans.AddToList (name.c_str(), flags))
+				DebugPrintf ("Added %s with flags %u to ban list\n", name.c_str(), flags);
+			else if (Bans.InList (name.c_str()))
+			{
+				if (Bans.ChangeBan (name.c_str(), flags))
+					DebugPrintf ("%s flags changed to %u\n", name.c_str(), flags);
+				else
+					DebugPrintf ("%s already has flags %u\n", name.c_str(), flags);
+			}
+			else
+				DebugPrintf ("%s not found in ban list\n", name.c_str());
+		}
+	}
+	else if (str == "ip")
+	{
+		if (ArgGets(3) == "remove")
+		{
+			IPAddress Ip = CopyIP(ArgGets(4).c_str());
+			if (Bans.RemoveFromList (Ip))
+				DebugPrintf ("Removed %s from ban list\n", Ip.str);
+			else
+				DebugPrintf ("%s not found in ban list\n", Ip.str);
+		}
+		else
+		{
+			IPAddress Ip = CopyIP(ArgGets(3).c_str());
+			const uint8 flags = ArgGeti(4);
+
+			if (Bans.AddToList (Ip, flags))
+				DebugPrintf ("Added %s with flags %u to ban list\n", Ip.str, flags);
+			else if (Bans.InList (Ip))
+			{
+				if (Bans.ChangeBan (Ip, flags))
+					DebugPrintf ("%s flags changed to %u\n", Ip.str, flags);
+				else
+					DebugPrintf ("%s already has flags %u\n", Ip.str, flags);
+			}
+			else
+				DebugPrintf ("%s not found in ban list\n", Ip.str);
+		}
+	}
+	else
+		DebugPrintf (
+		"Unknown ban command \"%s\"\n"
+		"List of available ban commands:\n"
+		"list                       List all current bans\n"
+		"save                       Saves current bans to bans.lst\n"
+		"load                       Loads bans from bans.lst\n"
+		"name x [remove] flags      Ban name from server\n"
+		"ip x [remove] flags        Ban IP from server\n\n"
+		
+		"Available ban flags:\n"
+		"%u       Squelch\n"
+		"%u       Spectator Mode\n"
+		"%u       Entering Game\n"
+		, str.c_str(), BAN_SQUELCH, BAN_SPECTATOR, BAN_ENTER);
+}
+
 void SvCmd_Register ()
 {
 	SvCmd_AddCommand ("entlist",				SvCmd_EntList_f);
@@ -277,6 +362,7 @@ void SvCmd_Register ()
 	SvCmd_AddCommand ("dump",					SvCmd_Dump_f);
 	SvCmd_AddCommand ("break",					SvCmd_Break_f);
 	SvCmd_AddCommand ("cc_version",				SvCmd_CCVersion_t);
+	SvCmd_AddCommand ("ban",					SvCmd_Ban_t);
 }
 
 /*

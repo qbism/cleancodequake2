@@ -46,15 +46,16 @@ struct IPAddress
 #if !defined(__CC_BAN_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_BAN_H__
 
-CC_ENUM (sint32, EBanTypeFlags)
+CC_ENUM (uint8, EBanTypeFlags)
 {
 	BAN_SQUELCH		=	BIT(0), // Banned from talking
 	BAN_SPECTATOR	=	BIT(1), // Banned from moving to Spectator mode
 	BAN_ENTER		=	BIT(2), // Banned from entering the game
 };
 
-struct BanIndex
+class BanIndex
 {
+public:
 	bool			IP;
 	union
 	{
@@ -63,26 +64,37 @@ struct BanIndex
 	};
 
 	EBanTypeFlags	Flags;
+
+	~BanIndex ()
+	{
+		if (!IP)
+			QDelete Name;
+	};
 };
 
 typedef std::vector<BanIndex*, std::game_allocator<BanIndex*> > TBanIndexContainer;
 
 class CBanList
 {
-	TBanIndexContainer	BanList;
-
 public:
+	TBanIndexContainer	BanList;
+	bool Changed;
+
+	void Clear ();
 
 	void LoadFromFile ();
 	void SaveList ();
 
-	void AddToList (IPAddress Adr, EBanTypeFlags Flags);
-	void RemoveFromList (IPAddress Adr);
-	void AddToList (char *Name, EBanTypeFlags Flags);
-	void RemoveFromList (char *Name);
+	bool InList (IPAddress Adr);
+	bool InList (const char *Name);
 
-	void ChangeBan (IPAddress Adr, EBanTypeFlags Flags);
-	void ChangeBan (char *Name, EBanTypeFlags Flags);
+	bool AddToList (IPAddress Adr, EBanTypeFlags Flags);
+	bool AddToList (const char *Name, EBanTypeFlags Flags);
+	bool RemoveFromList (IPAddress Adr);
+	bool RemoveFromList (const char *Name);
+
+	bool ChangeBan (IPAddress Adr, EBanTypeFlags Flags);
+	bool ChangeBan (const char *Name, EBanTypeFlags Flags);
 
 	// Call these with ent->client->Persistent.IP if after spawning
 	bool IsSquelched (IPAddress IP);
