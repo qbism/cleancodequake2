@@ -836,9 +836,13 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 bool CMonster::CloseEnough (CBaseEntity *Goal, float Dist)
 {
-	if (Goal->GetAbsMin() > (Entity->GetAbsMax() + Dist))
+	if (Goal->GetAbsMin()[0] > (Entity->GetAbsMax()[0] + Dist) ||
+		Goal->GetAbsMin()[1] > (Entity->GetAbsMax()[1] + Dist) ||
+		Goal->GetAbsMin()[2] > (Entity->GetAbsMax()[2] + Dist))
 		return false;
-	if (Goal->GetAbsMax() < (Entity->GetAbsMin() - Dist))
+	if (Goal->GetAbsMax()[0] < (Entity->GetAbsMin()[0] - Dist) ||
+		Goal->GetAbsMax()[1] < (Entity->GetAbsMin()[1] - Dist) ||
+		Goal->GetAbsMax()[2] < (Entity->GetAbsMin()[2] - Dist))
 		return false;
 	return true;
 }
@@ -1219,7 +1223,7 @@ bool CMonster::FriendlyInLine (vec3f &Origin, vec3f &Direction)
 	CTrace trace (Origin, end, Entity, CONTENTS_MONSTER);
 
 	if (trace.fraction <= 0.5 && trace.ent && (trace.ent->Entity && (trace.ent->Entity->EntityFlags & ENT_MONSTER)) &&
-		(entity_cast<CMonsterEntity>(trace.Ent)->Enemy != Entity))
+		((entity_cast<CMonsterEntity>(trace.Ent)->Enemy != Entity) && (Entity->Enemy != entity_cast<CMonsterEntity>(trace.Ent))))
 		return true;
 	return false;
 }
@@ -1644,7 +1648,7 @@ void CMonster::AI_Charge(float Dist)
 
 	// This is put in there so monsters won't move towards the origin after killing
 	// a tesla. This could be problematic, so keep an eye on it.
-	if(!Entity->Enemy || !Entity->Enemy->GetInUse())		//PGM
+	if (!Entity->Enemy || !Entity->Enemy->GetInUse())		//PGM
 		return;									//PGM
 
 	// PMM - save blindfire target
@@ -2812,6 +2816,15 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
+	// They meant to shoot at us.
+	else if (attacker->Enemy == Entity)
+	{
+		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+			Entity->OldEnemy = Entity->Enemy;
+		Entity->Enemy = attacker;
+		if (!(AIFlags & AI_DUCKED))
+			FoundTarget ();
+	}
 	return;
 #else
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
@@ -3477,7 +3490,9 @@ bool CMonster::FindTarget()
 
 		if (r == RANGE_NEAR)
 		{
-			if ((client->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile < level.Frame) && !IsInFront (Entity, client))
+			if ((client->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile < level.Frame))
+				return false;
+			if (!IsInFront (Entity, client))
 				return false;
 		}
 		else if (r == RANGE_MID)

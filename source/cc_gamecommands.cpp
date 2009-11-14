@@ -437,8 +437,64 @@ void GCmd_SayTeam_f (CPlayerEntity *ent)
 	Cmd_Say_f (ent, true, false);
 }
 
+void SearchForRandomMonster (CMonsterEntity *Entity)
+{
+	static std::vector <CMonsterEntity *, std::game_allocator<CMonsterEntity *> > ChosenMonsters;
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	{
+		edict_t *ent = (*it);
+
+		if (!ent->inUse || !ent->Entity)
+			continue;
+		if (!(ent->Entity->EntityFlags & ENT_MONSTER))
+			continue;
+		if (ent->Entity == Entity)
+			continue;
+		if (!IsVisible(ent->Entity, Entity))
+			continue;
+
+		CMonsterEntity *WantedMonster = entity_cast<CMonsterEntity>(ent->Entity);
+		if (WantedMonster->Health <= 0)
+			continue;
+		if (!(WantedMonster->GetSvFlags() & SVF_MONSTER))
+			continue;
+
+		ChosenMonsters.push_back (WantedMonster);
+	}
+
+	// Pick a random one
+	if (!ChosenMonsters.size())
+		return;
+
+	CMonsterEntity *RandomPick = ChosenMonsters[irandom(ChosenMonsters.size())];
+	Entity->Enemy = RandomPick;
+	Entity->Monster->FoundTarget ();
+	if (Entity->Monster->MonsterFlags & MF_HAS_SIGHT)
+		Entity->Monster->Sight ();
+
+	ChosenMonsters.clear ();
+}
+
 void Cmd_Test_f (CPlayerEntity *ent)
 {
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	{
+		edict_t *ent = (*it);
+
+		if (!ent->inUse || !ent->Entity)
+			continue;
+		if (!(ent->Entity->EntityFlags & ENT_MONSTER))
+			continue;
+
+		CMonsterEntity *Entity = entity_cast<CMonsterEntity>(ent->Entity);
+		if (Entity->Health <= 0)
+			continue;
+		if (!(Entity->GetSvFlags() & SVF_MONSTER))
+			continue;
+
+		// Find a random monster in visibility to attack
+		SearchForRandomMonster (Entity);
+	}
 }
 
 #include "cc_menu.h"
