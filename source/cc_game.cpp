@@ -38,6 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_cmds.h"
 #include "cc_gamecommands.h"
 #include "cc_servercommands.h"
+#include "cc_version.h"
 
 game_locals_t	game;
 CLevelLocals	level;
@@ -240,6 +241,8 @@ void ClientEndServerFrames ()
 	}
 }
 
+void CheckVersionReturnance ();
+
 /*
 ================
 CC_RunFrame
@@ -266,6 +269,8 @@ void CC_RunFrame ()
 		assert(0);
 #endif
 	}
+
+	CheckVersionReturnance ();
 
 	if (level.Frame >= 3 && map_debug->Boolean())
 	{
@@ -498,6 +503,8 @@ CCvar	*instantweap;
 //ZOID
 #endif
 
+CCvar	*sv_airaccelerate;
+
 // Registers all cvars and commands
 void G_Register ()
 {
@@ -570,10 +577,42 @@ void G_Register ()
 	CTFInit();
 #endif
 
+	sv_airaccelerate = QNew (com_gamePool, 0) CCvar("sv_airaccelerate", "0", CVAR_SERVERINFO);
+
 #ifdef MONSTERS_USE_PATHFINDING
 	Nodes_Register ();
 #endif
 }
+
+#ifdef WIN32
+	#ifdef _FRONTEND
+		#ifdef _DEBUG
+			#define CONFIGURATIONSTRING "Win32 FrontEnd Debug"
+		#else
+			#define CONFIGURATIONSTRING "Win32 FrontEnd Release"
+	#endif
+	#else
+		#ifdef _DEBUG
+			#define CONFIGURATIONSTRING "Win32 Debug"
+		#else
+			#define CONFIGURATIONSTRING "Win32 Release"
+		#endif
+	#endif
+#else
+	#ifdef _FRONTEND
+		#ifdef _DEBUG
+			#define CONFIGURATIONSTRING "FrontEnd Debug"
+		#else
+			#define CONFIGURATIONSTRING "FrontEnd Release"
+		#endif
+	#else
+		#ifdef _DEBUG
+			#define CONFIGURATIONSTRING "Debug"
+		#else
+			#define CONFIGURATIONSTRING "Release"
+		#endif
+	#endif
+#endif
 
 void CC_InitGame ()
 {
@@ -581,7 +620,7 @@ void CC_InitGame ()
 
 	//Mem_Init ();
 	DebugPrintf ("==== InitGame ====\n");
-	DebugPrintf ("Running CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing game...", CLEANCODE_VERSION_PRINT_ARGS, __TIMESTAMP__, BUILDSTRING, CPUSTRING);
+	DebugPrintf ("Running CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing game...", CLEANCODE_VERSION_PRINT_ARGS, __TIMESTAMP__, CONFIGURATIONSTRING, CPUSTRING);
 
 	seedMT (time(NULL));
 

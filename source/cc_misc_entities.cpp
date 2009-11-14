@@ -84,8 +84,7 @@ public:
 			return;
 
 		float ratio = entity_cast<CPhysicsEntity>(other)->Mass / Mass;
-		vec3f v = State.GetOrigin() - other->State.GetOrigin();
-		float Yaw = (v.ToYaw ()*M_PI*2 / 360);
+		float Yaw = ((State.GetOrigin() - other->State.GetOrigin()).ToYaw ()*M_PI*2 / 360);
 		vec3f move ( cosf(Yaw)*(2 * ratio),
 							sinf(Yaw)*(2 * ratio),
 							0);
@@ -149,9 +148,7 @@ public:
 		}
 		T_RadiusDamage (this, Shooter, Damage, NULL, Damage+40, MOD_BARREL);
 
-		vec3f origin = State.GetOrigin ();
-		CTempEnt_Explosions::GrenadeExplosion (origin, this);
-
+		CTempEnt_Explosions::GrenadeExplosion (State.GetOrigin (), this);
 		Free ();
 	};
 

@@ -109,8 +109,7 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 {
 	CMonsterEntity *ent = NULL, *best = NULL;
 
-	vec3f origin = Entity->State.GetOrigin();
-	while ((ent = FindRadius<CMonsterEntity, ENT_MONSTER>(ent, origin, 1024)) != NULL)
+	while ((ent = FindRadius<CMonsterEntity, ENT_MONSTER>(ent, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
 		if (ent == Entity)
 			continue;

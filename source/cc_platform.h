@@ -40,7 +40,7 @@ void CC_ReportGameError (const char *text);
 
 // A class to simplify calls that will be ultimately different on
 // OSes
-#define TIMER_STRING "%6.2fms"
+#define TIMER_STRING "%.2fms"
 
 class CTimer
 {

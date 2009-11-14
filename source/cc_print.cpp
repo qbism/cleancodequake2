@@ -109,7 +109,6 @@ _CC_ENABLE_DEPRECATION
 }
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
-#ifdef _DEBUG
 void DebugPrintf (char *fmt, ...)
 {
 	va_list		argptr;
@@ -125,7 +124,6 @@ _CC_ENABLE_DEPRECATION
 
 	CC_OutputDebugString (text);
 }
-#endif
 
 void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 {

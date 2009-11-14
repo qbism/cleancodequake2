@@ -1313,14 +1313,13 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 		// if the entity is standing on the pusher, it will definitely be moved
 		if (Check->GroundEntity != Entity)
 		{
-			vec3f AbsMin = Check->GetAbsMin(), AbsMax = Check->GetAbsMax();
 			// see if the ent needs to be tested
-			if (AbsMin.X >= maxs.X
-			|| AbsMin.Y >= maxs.Y
-			|| AbsMin.Z >= maxs.Z
-			|| AbsMax.X <= mins.X
-			|| AbsMax.Y <= mins.Y
-			|| AbsMax.Z <= mins.Z)
+			if (Check->GetAbsMin().X >= maxs.X
+			|| Check->GetAbsMin().Y >= maxs.Y
+			|| Check->GetAbsMin().Z >= maxs.Z
+			|| Check->GetAbsMax().X <= mins.X
+			|| Check->GetAbsMax().Y <= mins.Y
+			|| Check->GetAbsMax().Z <= mins.Z)
 				continue;
 
 			// see if the ent's bbox is inside the pusher's final position
@@ -1351,12 +1350,11 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 
 			// figure movement due to the pusher's amove
 			vec3f org = Check->State.GetOrigin() - Entity->State.GetOrigin ();
-			vec3f org2 (
+			Check->State.GetOrigin() += (vec3f (
 				org.Dot (forward),
 				-org.Dot (right),
 				org.Dot (up)
-				);
-			Check->State.GetOrigin() += (org2 - org);
+				) - org);
 
 			// may have pushed them off an edge
 			if (Check->GroundEntity != Entity)

@@ -983,9 +983,8 @@ SV_CalcGunOffset
 inline void CPlayerEntity::CalcGunOffset (vec3f &forward, vec3f &right, vec3f &up, float xyspeed)
 {
 	// gun angles from bobbing
-	vec3f gunAngles = Client.PlayerState.GetGunAngles ();
-	vec3f angles	(	(bobcycle & 1) ? (-gunAngles[ROLL]) : (xyspeed * bobfracsin * 0.005), 
-						(bobcycle & 1) ? (-gunAngles[YAW]) : (xyspeed * bobfracsin * 0.01),
+	vec3f angles	(	(bobcycle & 1) ? (-Client.PlayerState.GetGunAngles ().Z) : (xyspeed * bobfracsin * 0.005), 
+						(bobcycle & 1) ? (-Client.PlayerState.GetGunAngles ().Y) : (xyspeed * bobfracsin * 0.01),
 						xyspeed * bobfracsin * 0.005
 					);
 
@@ -1246,10 +1245,8 @@ P_WorldEffects
 */
 inline void CPlayerEntity::WorldEffects ()
 {
-	bool	breather;
-	bool	envirosuit;
+	bool			breather, envirosuit;
 	EWaterLevel		waterlevel, OldWaterLevel;
-	vec3f origin = State.GetOrigin();
 
 	if (NoClip)
 	{
@@ -1269,7 +1266,7 @@ inline void CPlayerEntity::WorldEffects ()
 	//
 	if (!OldWaterLevel && waterlevel)
 	{
-		PlayerNoiseAt (origin, PNOISE_SELF);
+		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 		if (WaterInfo.Type & CONTENTS_LAVA)
 			PlaySound (CHAN_BODY, SoundIndex("player/lava_in.wav"));
 		else if (WaterInfo.Type & CONTENTS_SLIME)
@@ -1287,7 +1284,7 @@ inline void CPlayerEntity::WorldEffects ()
 	//
 	if (OldWaterLevel && !waterlevel)
 	{
-		PlayerNoiseAt (origin, PNOISE_SELF);
+		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 		PlaySound (CHAN_BODY, SoundIndex("player/watr_out.wav"));
 		Flags &= ~FL_INWATER;
 	}
@@ -1306,7 +1303,7 @@ inline void CPlayerEntity::WorldEffects ()
 		if (AirFinished < level.Frame)
 		{	// gasp for air
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp1.wav"));
-			PlayerNoiseAt (origin, PNOISE_SELF);
+			PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 		}
 		else  if (AirFinished < level.Frame + 110) // just break surface
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp2.wav"));
@@ -1326,7 +1323,7 @@ inline void CPlayerEntity::WorldEffects ()
 			{
 				PlaySound (CHAN_AUTO, SoundIndex((!Client.Timers.BreatherSound) ? "player/u_breath1.wav" : "player/u_breath2.wav"));
 				Client.Timers.BreatherSound = !Client.Timers.BreatherSound;
-				PlayerNoiseAt (origin, PNOISE_SELF);
+				PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 			}
 		}
 
@@ -1351,7 +1348,7 @@ inline void CPlayerEntity::WorldEffects ()
 
 				PainDebounceTime = level.Frame;
 
-				TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, NextDrownDamage, 0, DAMAGE_NO_ARMOR, MOD_WATER);
+				TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, NextDrownDamage, 0, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
 		}
 	}
@@ -1377,13 +1374,13 @@ inline void CPlayerEntity::WorldEffects ()
 			}
 
 			// take 1/3 damage with envirosuit
-			TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, (envirosuit) ? 1*waterlevel : 3*waterlevel, 0, 0, MOD_LAVA);
+			TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, (envirosuit) ? 1*waterlevel : 3*waterlevel, 0, 0, MOD_LAVA);
 		}
 
 		if (WaterInfo.Type & CONTENTS_SLIME)
 		{
 			if (!envirosuit) // no damage from slime with envirosuit
-				TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 1*waterlevel, 0, 0, MOD_SLIME);
+				TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 1*waterlevel, 0, 0, MOD_SLIME);
 		}
 	}
 }
@@ -1641,10 +1638,9 @@ void CPlayerEntity::EndServerFrame ()
 	// If it wasn't updated here, the view position would lag a frame
 	// behind the body position when pushed -- "sinking into plats"
 	//
-	vec3f origin = State.GetOrigin();
 	for (i = 0; i < 3; i++)
 	{
-		Client.PlayerState.GetPMove()->origin[i] = origin[i]*8.0;
+		Client.PlayerState.GetPMove()->origin[i] = State.GetOrigin()[i]*8.0;
 		Client.PlayerState.GetPMove()->velocity[i] = Velocity[i]*8.0;
 	}
 
@@ -2424,9 +2420,8 @@ void CPlayerEntity::CTFSetIDView()
 		CPlayerEntity *who = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 		if (!who->GetInUse() || who->GetSolid() == SOLID_NOT)
 			continue;
-		vec3f dir = who->State.GetOrigin() - State.GetOrigin();
-		dir.NormalizeFast ();
-		float d = forward.Dot(dir);
+
+		float d = forward.Dot((who->State.GetOrigin() - State.GetOrigin()).GetNormalizedFast ());
 		if (d > bd && loc_CanSee(this, who))
 		{
 			bd = d;
@@ -2734,7 +2729,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #ifdef USE_EXTENDED_GAME_IMPORTS
 	gi.Pmove (&pm);
 #else
-	SV_Pmove (this, &pm, CCvar("sv_airaccelerate", 0, 0).Float());
+	SV_Pmove (this, &pm, sv_airaccelerate->Float());
 #endif
 
 	// save results of pmove
@@ -2947,7 +2942,7 @@ void CPlayerEntity::SaveClientData ()
 			continue;
 
 		//memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
-		ent->Client.Persistent = CPersistentData(SavedClients[i]);
+		SavedClients[i] = CPersistentData(ent->Client.Persistent);
 		SavedClients[i].health = ent->Health;
 		SavedClients[i].max_health = ent->MaxHealth;
 		SavedClients[i].savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
@@ -3386,8 +3381,7 @@ void CPlayerEntity::UpdateChaseCam()
 
 			vec3f ownerv = targ->State.GetOrigin() + vec3f(0, 0, targ->ViewHeight);
 
-			vec3f angles = Client.PlayerState.GetViewAngles();
-			angles.ToVectors (&forward, &right, NULL);
+			Client.PlayerState.GetViewAngles().ToVectors (&forward, &right, NULL);
 			forward.NormalizeFast ();
 			vec3f o = ownerv.MultiplyAngles (-150, forward);
 
@@ -3820,7 +3814,7 @@ bool CPlayerEntity::Connect (char *userinfo)
 		BroadcastPrintf (PRINT_MEDIUM, "%s connected\n", Client.Persistent.Name.c_str());
 		
 		// But only tell the server the IP
-		DebugPrintf ("%s@%s connected\n", Client.Persistent.Name.c_str(), Info_ValueForKey (UserInfo, "ip").c_str());
+		DebugPrintf ("%s @ %s connected\n", Client.Persistent.Name.c_str(), Info_ValueForKey (UserInfo, "ip").c_str());
 	}
 
 	GetSvFlags() = 0; // make sure we start with known default

@@ -228,9 +228,8 @@ void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
 	Player->Unlink();
 	Body->Unlink();
 
-	vec3f angles = Player->State.GetAngles();
-	angles[0] = 0;
-	Body->State.GetAngles() = angles;
+	Body->State.GetAngles() = Player->State.GetAngles();
+	Body->State.GetAngles().X = 0;
 	Body->State.GetEffects() = Player->State.GetEffects();
 	Body->State.GetFrame() = Player->State.GetFrame();
 	Body->State.GetModelIndex() = Player->State.GetModelIndex();

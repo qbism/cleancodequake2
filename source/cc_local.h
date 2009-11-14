@@ -230,6 +230,8 @@ public:
 	{
 		TEntitiesContainer		Open, Closed;
 	} Entities;
+
+	bool		Demo;
 };
 
 CC_ENUM (uint8, EFuncState)
@@ -504,6 +506,8 @@ extern	CCvar	*cc_techflags;
 extern	CCvar	*capturelimit;
 extern	CCvar	*instantweap;
 #endif
+
+extern CCvar	*sv_airaccelerate;
 
 extern CBaseEntity *World;
 extern CItemList *ItemList;

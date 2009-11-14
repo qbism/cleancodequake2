@@ -167,8 +167,7 @@ public:
 
 	void Think ()
 	{
-		vec3f or = State.GetOrigin();
-		CTempEnt_Explosions::RocketExplosion (or, this);
+		CTempEnt_Explosions::RocketExplosion (State.GetOrigin(), this);
 
 		if (Damage)
 			T_RadiusDamage (this, Activator, Damage, NULL, Damage+40, MOD_EXPLOSIVE);

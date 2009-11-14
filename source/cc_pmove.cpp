@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Paril
 // Crouch-jumping!
-#define ALLOW_CROUCH_JUMPING
+//#define ALLOW_CROUCH_JUMPING
 
 #include "cc_local.h"
 

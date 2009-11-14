@@ -500,6 +500,9 @@
     <ClInclude Include="..\..\shared\Templates\Templates.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\Templates\TTypes.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\source\cc_arg.h">
       <Filter>CleanCode Files\Game API\Arg</Filter>
     </ClInclude>

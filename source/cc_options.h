@@ -101,14 +101,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Msg must only be one string; the expr is shown and
 // therefore not required to be repeated in msg. Arguments
 // will cause this function to fail (obviously)
-#if defined(ALLOW_ASSERTS)
-	#ifndef _DEBUG
-		#define _CC_ASSERT_EXPR(expr, msg)
-	#else
-		// see cc_utils.h
-		#define _CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
-	#endif
-#endif
+// see cc_utils.cpp
+#define _CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
 
 // Define this if you want to use the sin/cos tables.
 #define SINCOS_TABLES

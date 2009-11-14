@@ -264,8 +264,7 @@ void CInfantry::MachineGun ()
 
 		if (Entity->Enemy)
 		{
-			vec3f target = Entity->Enemy->State.GetOrigin();
-			target = target.MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+			vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
 			target.Z += Entity->Enemy->ViewHeight;
 
 			forward = target - start;

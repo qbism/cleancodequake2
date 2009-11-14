@@ -35,6 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 #include "cc_ban.h"
 #include "cc_cmds.h"
+#include "cc_version.h"
 
 /*
 ==================

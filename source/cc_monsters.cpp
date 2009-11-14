@@ -1259,8 +1259,7 @@ void CMonster::AlertNearbyStroggs ()
 	if (dist > 2400)
 		dist = 2400;
 
-	vec3f origin = Entity->State.GetOrigin ();
-	while ( (strogg = FindRadius<CMonsterEntity, ENT_MONSTER>(strogg, origin, dist)) != NULL)
+	while ( (strogg = FindRadius<CMonsterEntity, ENT_MONSTER>(strogg, Entity->State.GetOrigin (), dist)) != NULL)
 	{
 		if (strogg->Health < 1 || !(strogg->CanTakeDamage))
 			continue;

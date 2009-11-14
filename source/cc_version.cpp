@@ -35,6 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define CURL_STATICLIB
 #include "curl\curl.h"
+#include "cc_version.h"
 
 #define VERSION_PATH GAMENAME"/version.ver"
 
@@ -79,9 +80,13 @@ void Cmd_CCVersion_t (CPlayerEntity *Player)
 	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
 }
 
+void CheckNewVersion ();
 void SvCmd_CCVersion_t ()
 {
-	DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+	if (ArgGets (2).empty())
+		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+	else
+		CheckNewVersion ();
 }
 
 #include <curl/curl.h>
@@ -121,7 +126,66 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
 	return realsize;
 }
 
+#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
+HANDLE				hThread;
+DWORD				iID;
+long WINAPI			CheckNewVersionThread (long lParam);
+void				CheckVersionReturnance ();
+bool				VersionCheckReady;
+std::cc_string		VersionPrefix;
+uint8				VersionMajor;
+uint16				VersionMinor;
+uint32				VersionBuild;
+EVersionComparison	VersionReturnance;
+
 void CheckNewVersion ()
+{
+	if (hThread)
+		return; // Already checking version..
+
+	hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)CheckNewVersionThread, NULL, 0, &iID);
+
+	if (!hThread)
+	{
+		// Run it without a thread
+		CheckNewVersionThread (0);
+		CheckVersionReturnance ();
+	}
+}
+
+void CheckVersionReturnance ()
+{
+	if (VersionCheckReady)
+	{
+		if (VersionReturnance == VERSION_NEWER)
+			DebugPrintf (
+			"==================================\n"
+			"*****************************\n"
+			"There is an update available for CleanCode!\n"
+			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
+			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
+			"Update version: "CLEANCODE_VERSION_PRINT"\n"
+			"*****************************\n"
+			"==================================\n",
+			CLEANCODE_VERSION_PRINT_ARGS,
+			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
+		else
+			DebugPrintf ("Your version of CleanCode is up to date.\n");
+
+		VersionReturnance = VERSION_SAME;
+		VersionCheckReady = false;
+
+		CloseHandle (hThread);
+
+		hThread = NULL;
+		iID = 0;
+	}
+}
+
+long WINAPI CheckNewVersionThread (long lParam)
+#else
+void CheckNewVersion ()
+#endif
 {
 	CURL *curl_handle;
 
@@ -182,6 +246,14 @@ void CheckNewVersion ()
 		Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
 		Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
+#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
+		VersionReturnance = CompareVersion (prefix.c_str(), major, minor, build);
+		VersionPrefix = prefix;
+		VersionMinor = minor;
+		VersionMajor = major;
+		VersionBuild = build;
+		VersionCheckReady = true;
+#else
 		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
 			DebugPrintf (
 			"==================================\n"
@@ -196,12 +268,15 @@ void CheckNewVersion ()
 			prefix.c_str(), major, minor, build);
 		else
 			DebugPrintf ("Your version of CleanCode is up to date.\n");
+#endif
 
 		Mem_Free (chunk.memory);
 	}
 
 	/* we're done with libcurl, so clean it up */
 	curl_global_cleanup();
+
+	return 0;
 }
 
 void InitVersion ()

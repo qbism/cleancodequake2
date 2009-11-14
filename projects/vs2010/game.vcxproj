@@ -341,6 +341,7 @@ echo Done!
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <AdditionalIncludeDirectories>..\..\include\</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -352,9 +353,9 @@ echo Done!
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>e:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
+      <MapFileName>e:\quake2\baseq2\gamex86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x20000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -364,6 +365,8 @@ echo Done!
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\..\lib\</AdditionalLibraryDirectories>
+      <ForceSymbolReferences>__DllMainCRTStartup@12;%(ForceSymbolReferences)</ForceSymbolReferences>
+      <EntryPointSymbol>DllInit</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>echo Copying to Quake 2 Path...
@@ -790,6 +793,7 @@ echo Done!
     <ClInclude Include="..\..\shared\MathLib\MathLib.h" />
     <ClInclude Include="..\..\shared\MathLib\Vector.h" />
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
+    <ClInclude Include="..\..\shared\Templates\TTypes.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_options.h" />

@@ -325,9 +325,18 @@ parsing textual entity definitions out of an ent file.
 ==============
 */
 
+void ShutdownBodyQueue ();
+
 void InitEntityLists ();
 void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
+	if (Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".cin") == 0 || Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".dm2") == 0)
+	{
+		level.Demo = true;
+		ShutdownBodyQueue ();
+		Shutdown_Junk ();
+	}
+
 	CTimer Timer;
 
 	level.EntityNumber = 0;
@@ -354,6 +363,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	ClearTimers ();
 
 	level.ServerLevelName = ServerLevelName;
+
 	Q_strncpyz (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);
 
 	InitEntities ();
@@ -365,65 +375,70 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 		//g_edicts[i+1].Entity = SavedClients[i];
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
-		SavedClients[i] = CPersistentData(Player->Client.Persistent);
+		Player->Client.Persistent = CPersistentData(SavedClients[i]);
 		g_edicts[i+1].client = game.clients + i;
 	}
 
 	QDelete[] SavedClients;
 	SavedClients = NULL;
 
-	level.Inhibit = 0;
-
-	// Parse ents
-	CParser EntityParser (entities, PSP_COMMENT_MASK);
-
-	while (true)
+	if (!level.Demo)
 	{
-		// Clear classname
-		level.ClassName.clear ();
+		level.Inhibit = 0;
 
-		// Parse the opening brace
-		const char *token;
+		// Parse ents
+		CParser EntityParser (entities, PSP_COMMENT_MASK);
 
-		if (!EntityParser.ParseToken (PSF_ALLOW_NEWLINES, &token))
-			break;
-
-		if (token[0] != '{')
-			GameError ("ED_LoadFromFile: found %s when expecting {", token);
-
-_CC_DISABLE_DEPRECATION
-		edict_t *ent = (!World) ? g_edicts : G_Spawn();
-_CC_ENABLE_DEPRECATION
-
-		ED_ParseEdict (EntityParser, ent);
-
-		ED_CallSpawn (ent);
-		level.EntityNumber++;
-
-		if (!ent->inUse)
+		while (true)
 		{
-			level.Inhibit++;
-			if (ent->Entity && !ent->Entity->Freed)
-				_CC_ASSERT_EXPR (0, "Entity not inuse but freed!");
+			// Clear classname
+			level.ClassName.clear ();
+
+			// Parse the opening brace
+			const char *token;
+
+			if (!EntityParser.ParseToken (PSF_ALLOW_NEWLINES, &token))
+				break;
+
+			if (token[0] != '{')
+				GameError ("ED_LoadFromFile: found %s when expecting {", token);
+
+	_CC_DISABLE_DEPRECATION
+			edict_t *ent = (!World) ? g_edicts : G_Spawn();
+	_CC_ENABLE_DEPRECATION
+
+			ED_ParseEdict (EntityParser, ent);
+
+			ED_CallSpawn (ent);
+			level.EntityNumber++;
+
+			if (!ent->inUse)
+			{
+				level.Inhibit++;
+				if (ent->Entity && !ent->Entity->Freed)
+					_CC_ASSERT_EXPR (0, "Entity not inuse but freed!");
+			}
 		}
+
+		DebugPrintf ("%i entities removed (out of %i total)\n", level.Inhibit, level.EntityNumber);
+
+		G_FindTeams ();
+
+	#ifdef MONSTERS_USE_PATHFINDING
+		LoadNodes();
+		LoadPathTable ();
+	#endif
+
+		SetupTechSpawn();
+
+	#ifdef CLEANCTF_ENABLED
+	//ZOID
+		CTFSpawn();
+	//ZOID
+	#endif
 	}
-
-	DebugPrintf ("%i entities removed (out of %i total)\n", level.Inhibit, level.EntityNumber);
-
-	G_FindTeams ();
-
-#ifdef MONSTERS_USE_PATHFINDING
-	LoadNodes();
-	LoadPathTable ();
-#endif
-
-	SetupTechSpawn();
-
-#ifdef CLEANCTF_ENABLED
-//ZOID
-	CTFSpawn();
-//ZOID
-#endif
+	else
+		DebugPrintf ("Demo detected, skipping map init.\n");
 
 	DebugPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
 }

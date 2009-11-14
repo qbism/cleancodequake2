@@ -175,9 +175,10 @@ void CTurretBreach::Think ()
 	else
 	{
 		vec3f current_angles = State.GetAngles ();
-		AnglesNormalize(current_angles);
 
+		AnglesNormalize(current_angles);
 		AnglesNormalize(MoveAngles);
+
 		if (MoveAngles.X > 180)
 			MoveAngles.X -= 360;
 

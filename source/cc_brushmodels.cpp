@@ -2221,9 +2221,12 @@ void CWorldEntity::Spawn ()
 	GetInUse() = true;			// since the world doesn't use G_Spawn()
 	State.GetModelIndex() = 1;	// world model is always index 1
 
-	// reserve some spots for dead player bodies for coop / deathmatch
-	BodyQueue_Init ();
-	Init_Junk();
+	if (!level.Demo)
+	{
+		// reserve some spots for dead player bodies for coop / deathmatch
+		BodyQueue_Init ();
+		Init_Junk();
+	}
 
 	if (NextMap)
 		level.NextMap = NextMap;
@@ -2314,7 +2317,8 @@ void CWorldEntity::Spawn ()
 
 	dmFlags.UpdateFlags(dmflags->Integer());
 
-	InitPrivateEntities ();
+	if (!level.Demo)
+		InitPrivateEntities ();
 };
 
 void SpawnWorld ()

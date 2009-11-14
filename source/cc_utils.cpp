@@ -406,8 +406,7 @@ void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage
 	CHurtableEntity	*ent = NULL;
 	//DrawRadiusDebug (org, radius);
 
-	vec3f org = inflictor->State.GetOrigin();
-	while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, org, radius)) != NULL)
+	while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, inflictor->State.GetOrigin(), radius)) != NULL)
 	{
 		if (ent == ignore)
 			continue;
@@ -429,12 +428,17 @@ void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage
 
 inline void AssertExpression (const bool expr, const char *msg)
 {
+#if defined(ALLOW_ASSERTS)
 	if (!expr)
 	{
 		// On Win32, open up the Crt debug report thingy
 #if defined(WIN32)
+#if defined(_DEBUG)
 		if (_CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg) == 1)
 			_CrtDbgBreak(); // Call break if we told it to break
+#else
+		assert (0);
+#endif
 #else
 		// If you hit this, you're on non-Windows.
 		// Check msg for more information.
@@ -443,4 +447,5 @@ inline void AssertExpression (const bool expr, const char *msg)
 		// Print it to the console
 		DebugPrintf ("Assertion failed: %s\n", msg);
 	}
+#endif
 }
