@@ -33,8 +33,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#define VC_NONE		0
+#define VC_WININET	1
+#define VC_CURL		2
+
+#define VERSION_CHECKING	VC_WININET
+
+// These three stay constant
+void CheckNewVersion ();
+void CheckVersionReturnance ();
+
 #define CURL_STATICLIB
+#ifdef ALLOW_VERSION_CHECKING
 #include "curl\curl.h"
+#endif
 #include "cc_version.h"
 
 #define VERSION_PATH GAMENAME"/version.ver"
@@ -85,10 +97,175 @@ void SvCmd_CCVersion_t ()
 {
 	if (ArgGets (2).empty())
 		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+#if (VERSION_CHECKING != VC_NONE)
 	else
 		CheckNewVersion ();
+#endif
+}
+/*
+======================================
+BLANKS
+======================================
+*/
+
+#if (VERSION_CHECKING == VC_NONE)
+void CheckNewVersion ()
+{
 }
 
+void CheckVersionReturnance ()
+{
+}
+
+/*
+======================================
+WININET
+======================================
+*/
+
+#elif (VERSION_CHECKING == VC_WININET)
+
+#include <WinInet.h>
+bool				VersionCheckReady;
+std::cc_string		VersionPrefix;
+uint8				VersionMajor;
+uint16				VersionMinor;
+uint32				VersionBuild;
+EVersionComparison	VersionReturnance;
+
+#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
+HANDLE				hThread;
+DWORD				iID;
+long WINAPI CheckNewVersionThread (long lParam);
+
+void CheckNewVersion ()
+{
+	if (hThread)
+		return; // Already checking version..
+
+	hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)CheckNewVersionThread, NULL, 0, &iID);
+
+	if (!hThread)
+	{
+		// Run it without a thread
+		CheckNewVersionThread (0);
+		CheckVersionReturnance ();
+	}
+}
+
+long WINAPI CheckNewVersionThread (long lParam)
+#else
+void CheckNewVersion ()
+#endif
+{
+	HINTERNET iInternetHandle = InternetOpenA ("wininet-agent/1.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+	
+	char receiveBuffer[256];
+	memset (receiveBuffer, 0, sizeof(receiveBuffer));
+
+	if (iInternetHandle)
+	{
+		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, "http://cleancodequake2.googlecode.com/svn/trunk/version.ver", NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
+		if (iInternetFile)
+		{
+			// Start writing the file
+			char *currentReceivePos = receiveBuffer;
+			DWORD numBytesRead = 0;
+
+			while (true)
+			{
+				bool Passed = (!!InternetReadFile (iInternetFile, currentReceivePos++, 1, &numBytesRead));
+				if (!Passed || Passed && (numBytesRead == 0))
+					break;
+			}
+
+			InternetCloseHandle (iInternetFile);
+		}
+		InternetCloseHandle (iInternetHandle);
+	}
+
+	if (receiveBuffer[0])
+	{
+		CParser Parser (receiveBuffer, PSP_COMMENT_LINE);
+
+		const char *token;
+
+		std::cc_string prefix;
+		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
+		prefix = token;
+
+		uint8 minor;
+		uint16 major;
+		uint32 build;
+		Parser.ParseDataType<uint16> (PSF_ALLOW_NEWLINES, &major, 1);
+		Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
+		Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
+
+#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
+		VersionReturnance = CompareVersion (prefix.c_str(), major, minor, build);
+		VersionPrefix = prefix;
+		VersionMinor = minor;
+		VersionMajor = major;
+		VersionBuild = build;
+		VersionCheckReady = true;
+#else
+		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
+			DebugPrintf (
+			"==================================\n"
+			"*****************************\n"
+			"There is an update available for CleanCode!\n"
+			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
+			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
+			"Update version: "CLEANCODE_VERSION_PRINT"\n"
+			"*****************************\n"
+			"==================================\n",
+			CLEANCODE_VERSION_PRINT_ARGS,
+			prefix.c_str(), major, minor, build);
+		else
+			DebugPrintf ("Your version of CleanCode is up to date.\n");
+#endif
+	}
+	return 0;
+}
+
+void CheckVersionReturnance ()
+{
+#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
+	if (VersionCheckReady)
+	{
+		if (VersionReturnance == VERSION_NEWER)
+			DebugPrintf (
+			"==================================\n"
+			"*****************************\n"
+			"There is an update available for Cl	eanCode!\n"
+			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
+			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
+			"Update version: "CLEANCODE_VERSION_PRINT"\n"
+			"*****************************\n"
+			"==================================\n",
+			CLEANCODE_VERSION_PRINT_ARGS,
+			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
+		else
+			DebugPrintf ("Your version of CleanCode is up to date.\n");
+
+		VersionReturnance = VERSION_SAME;
+		VersionCheckReady = false;
+
+		CloseHandle (hThread);
+
+		hThread = NULL;
+		iID = 0;
+	}
+#endif
+}
+
+/*
+======================================
+CURL
+======================================
+*/
+
+#elif (VERSION_CHECKING == VC_CURL)
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
@@ -161,7 +338,7 @@ void CheckVersionReturnance ()
 			DebugPrintf (
 			"==================================\n"
 			"*****************************\n"
-			"There is an update available for CleanCode!\n"
+			"There is an update available for Cl	eanCode!\n"
 			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
 			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
 			"Update version: "CLEANCODE_VERSION_PRINT"\n"
@@ -278,9 +455,11 @@ void CheckNewVersion ()
 
 	return 0;
 }
+#endif
 
 void InitVersion ()
 {
+#if (VERSION_CHECKING != VC_NONE)
 	DebugPrintf ("Checking for new version...\n");
 
 	if (!FS_FileExists(VERSION_PATH))
@@ -293,4 +472,5 @@ void InitVersion ()
 		VerifyVersionFile ();
 	
 	CheckNewVersion ();
+#endif
 }

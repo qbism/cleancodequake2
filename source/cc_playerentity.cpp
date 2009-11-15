@@ -2746,7 +2746,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	for (sint32 i = 0; i < 3; i++)
 	Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
-	if (GroundEntity && !pm.groundEntity && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE))
+	if (GroundEntity && !pm.groundEntity && Velocity[2] > 0 && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE))
 	{
 		PlaySound (CHAN_VOICE, GameMedia.Player.Jump);
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
