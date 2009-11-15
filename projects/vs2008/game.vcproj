@@ -966,27 +966,7 @@
 				Name="Templates"
 				>
 				<File
-					RelativePath="..\..\shared\Templates\TArray.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\Templates\TAutoPtr.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\Templates\Templates.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\shared\Templates\Templates.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\Templates\TMap.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\Templates\TString.h"
 					>
 				</File>
 				<File
@@ -2122,6 +2102,10 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath="..\..\version.ver"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
