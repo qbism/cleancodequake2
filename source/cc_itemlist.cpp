@@ -45,15 +45,7 @@ namespace NItems
 	CHealth *SmallHealth;
 	CHealth *LargeHealth;
 
-	CKey *DataCD;
 	CPowerCube *PowerCube;
-	CKey *PyramidKey;
-	CKey *DataSpinner;
-	CKey *SecurityPass;
-	CKey *BlueKey;
-	CKey *RedKey;
-	CKey *CommandersHead;
-	CKey *AirstrikeTarget;
 
 	CWeaponItem *Blaster;
 	CWeaponItem *Shotgun;
@@ -67,11 +59,6 @@ namespace NItems
 	CWeaponItem *BFG;
 	#ifdef CLEANCTF_ENABLED
 	CWeaponItem	*Grapple;
-
-	//CTech *Regeneration;
-	//CTech *Haste;
-	//CTech *Strength;
-	//CTech *Resistance;
 
 	CFlag *RedFlag;
 	CFlag *BlueFlag;

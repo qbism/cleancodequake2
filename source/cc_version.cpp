@@ -171,12 +171,14 @@ void CheckNewVersion ()
 			// Start writing the file
 			char *currentReceivePos = receiveBuffer;
 			DWORD numBytesRead = 0;
+#define READ_BYTES_SIZE 16
 
 			while (true)
 			{
-				bool Passed = (!!InternetReadFile (iInternetFile, currentReceivePos++, 1, &numBytesRead));
-				if (!Passed || Passed && (numBytesRead == 0))
+				bool Passed = (!!InternetReadFile (iInternetFile, currentReceivePos, READ_BYTES_SIZE, &numBytesRead));
+				if (!Passed || Passed && ((numBytesRead == 0) || numBytesRead < READ_BYTES_SIZE))
 					break;
+				currentReceivePos += READ_BYTES_SIZE;
 			}
 
 			InternetCloseHandle (iInternetFile);

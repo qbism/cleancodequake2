@@ -88,15 +88,7 @@ namespace NItems
 	extern CHealth *SmallHealth;
 	extern CHealth *LargeHealth;
 
-	extern CKey *DataCD;
 	extern CPowerCube *PowerCube;
-	extern CKey *PyramidKey;
-	extern CKey *DataSpinner;
-	extern CKey *SecurityPass;
-	extern CKey *BlueKey;
-	extern CKey *RedKey;
-	extern CKey *CommandersHead;
-	extern CKey *AirstrikeTarget;
 
 	extern CWeaponItem *Blaster;
 	extern CWeaponItem *Shotgun;
@@ -110,11 +102,6 @@ namespace NItems
 	extern CWeaponItem *BFG;
 	#ifdef CLEANCTF_ENABLED
 	extern CWeaponItem	*Grapple;
-
-	//extern CTech *Regeneration;
-	//extern CTech *Haste;
-	//extern CTech *Strength;
-	//extern CTech *Resistance;
 
 	extern CFlag *RedFlag;
 	extern CFlag *BlueFlag;
