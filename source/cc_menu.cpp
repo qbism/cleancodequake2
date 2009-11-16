@@ -85,13 +85,19 @@ void CMenu::DrawItems (CStatusBar *Bar)
 		(*it)->Draw (ent, Bar);
 }
 
-CMenuState::CMenuState ()
+CMenuState::CMenuState () :
+ent (NULL),
+Cursor (-1),
+Key (0),
+CurrentMenu (NULL),
+InMenu (false)
 {
 };
 
 CMenuState::CMenuState (CPlayerEntity *ent) :
 ent(ent),
 Cursor(-1),
+Key (0),
 CurrentMenu(NULL),
 InMenu(false)
 {

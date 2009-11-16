@@ -40,7 +40,8 @@ public:
 	/**
 	 * Constructors
 	 */
-	vec2Base() {}
+	vec2Base()
+	: X(0), Y(0) {}
 
 	inline vec2Base(const vec2Base &Vec)
 	: X(Vec[0]), Y(Vec[1]) {}
@@ -229,7 +230,8 @@ public:
 	/**
 	 * Constructors
 	 */
-	vec3Base() {}
+	vec3Base()
+	: X(0), Y(0), Z(0) {}
 
 	inline vec3Base(const vec3Base &Vec)
 	: X(Vec[0]), Y(Vec[1]), Z(Vec[2]) {}

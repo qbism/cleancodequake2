@@ -117,7 +117,7 @@ public:
 
 	void Clear ()
 	{
-		fsHandleIndex();
+		*this = fsHandleIndex();
 	};
 
 	std::cc_string			name;

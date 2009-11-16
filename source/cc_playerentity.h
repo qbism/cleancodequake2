@@ -90,6 +90,33 @@ CC_ENUM (uint8, EClientState)
 class CPersistentData
 {
 public:
+	CPersistentData () :
+	  UserInfo (),
+	  Name (),
+	  IP (),
+	  hand (0),
+	  state (),
+	  health (0),
+	  max_health (0),
+	  savedFlags (0),
+	  Inventory (),
+	  Weapon (NULL),
+	  LastWeapon (NULL),
+	  Armor (NULL),
+#ifdef CLEANCTF_ENABLED
+	  Flag (NULL),
+#endif
+	  Tech (NULL),
+	  PowerCubeCount (0),
+	  Score (0),
+	  game_helpchanged (0),
+	  helpchanged (0),
+	  Spectator (false),
+	  viewBlend ()
+	  {
+		  memset (&maxAmmoValues, 0, sizeof(maxAmmoValues));
+	  }
+
 	std::cc_string	UserInfo;
 	std::cc_string	Name;
 	IPAddress	IP;
@@ -128,7 +155,7 @@ public:
 
 	void Clear ()
 	{
-		CPersistentData ();
+		*this = CPersistentData ();
 	}
 };
 
@@ -166,6 +193,22 @@ public:
 class CRespawnData
 {
 public:
+	CRespawnData () :
+	  CoopRespawn (),
+	  EnterFrame (0),
+	  Score (0),
+	  CmdAngles (),
+	  Spectator (false),
+	  Gender (GENDER_NEUTRAL),
+	  MessageLevel (0),
+#ifdef MONSTERS_USE_PATHFINDING
+	  LastNode (NULL),
+#endif
+	  MenuState ()
+	  {
+		  memset (&CTF, 0, sizeof(CTF));
+	  };
+
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
 	FrameNumber_t		EnterFrame;		// level.Frame the client entered the game
 	sint32					Score;			// frags, etc
@@ -204,7 +247,7 @@ public:
 
 	void Clear ()
 	{
-		CRespawnData ();
+		*this = CRespawnData ();
 	}
 };
 
@@ -385,7 +428,7 @@ public:
 
 	CClient (gclient_t *client);
 
-	sint32				&GetPing ();
+	sint32			&GetPing ();
 	void			Clear ();
 };
 

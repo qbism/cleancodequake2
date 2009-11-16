@@ -488,7 +488,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 				if (!client->GetInUse())
 					continue;
 				// strip players of all keys between units
-				for (sint32 n = 0; n < MAX_CS_ITEMS; n++)
+				for (uint16 n = 0; n < MAX_CS_ITEMS; n++)
 				{
 					if (n >= GetNumItems())
 						break;

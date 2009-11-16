@@ -935,15 +935,10 @@ void CBullet::DoSolidHit	(CTrace *Trace)
 
 bool CBullet::ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end)
 {
-	vec3f dir = aimDir.ToAngles();
 	vec3f forward, right, up;
-	dir.ToVectors (&forward, &right, &up);
+	aimDir.ToAngles().ToVectors (&forward, &right, &up);
 
-	float r = crand()*hSpread;
-	float u = crand()*vSpread;
-	end = start.MultiplyAngles (8192, forward);
-	end = end.MultiplyAngles (r, right);
-	end = end.MultiplyAngles (u, up);
+	end = start.MultiplyAngles (8192, forward).MultiplyAngles (crand()*hSpread, right).MultiplyAngles (crand()*vSpread, up);
 	return true;
 }
 

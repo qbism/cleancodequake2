@@ -37,15 +37,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CInventory
 {
 private:
-	sint32		Array[MAX_CS_ITEMS];
+	typedef std::map <uint8, sint16, std::less<uint8>, std::generic_allocator<std::pair<uint8, uint16 > > > TInventoryMapType;
+	TInventoryMapType Array;
 
 public:
 	sint32		SelectedItem;
 
 	void	operator += (CBaseItem *Item);
-	void	operator += (sint32 Index);
+	void	operator += (uint8 Index);
 	void	operator -= (CBaseItem *Item);
-	void	operator -= (sint32 Index);
+	void	operator -= (uint8 Index);
 
 	CInventory ();
 	// Note: All of these functions are for directly
@@ -54,8 +55,8 @@ public:
 	// ammo and such if you use these functions.
 	void	Add (CBaseItem *Item, sint32 Num);
 	void	Remove (CBaseItem *Item, sint32 Num);
-	void	Add (sint32 Index, sint32 Num);
-	void	Remove (sint32 Index, sint32 Num);
+	void	Add (uint8 Index, sint32 Num);
+	void	Remove (uint8 Index, sint32 Num);
 
 	// Draw the inventory
 	void	Draw (CPlayerEntity *ent);
@@ -66,11 +67,11 @@ public:
 	void	SelectNextItem (EItemFlags Flags);
 	void	SelectPrevItem (EItemFlags Flags);
 
-	sint32		Has	(sint32 Index);
+	sint32		Has	(uint8 Index);
 	sint32		Has	(CBaseItem *Item);
 
 	void	Set	(CBaseItem *Item, sint32 Num);
-	void	Set	(sint32 Index, sint32 Num);
+	void	Set	(uint8 Index, sint32 Num);
 };
 
 void Cmd_Use_f (CPlayerEntity *ent);

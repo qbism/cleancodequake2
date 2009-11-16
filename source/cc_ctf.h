@@ -83,6 +83,27 @@ typedef std::map<uint32, CCTFGhost*, std::less<uint16>, std::generic_allocator<s
 class CCTFGameLocals
 {
 public:
+	CCTFGameLocals () :
+	  team1(0),
+	  team2(0),
+	  total1(0),
+	  total2(0),
+	  last_flag_capture(0),
+	  last_capture_team(0),
+	  match(0),
+	  matchtime(0),
+	  lasttime(0),
+	  election(0),
+	  etarget(NULL),
+	  evotes(0),
+	  needvotes(0),
+	  electtime(0),
+	  Ghosts()
+	  {
+		  memset (&elevel, 0, sizeof(elevel));
+		  memset (&emsg, 0, sizeof(emsg));
+	  }
+
 	sint32 team1, team2;
 	sint32 total1, total2; // these are only set when going into intermission!
 	FrameNumber_t last_flag_capture;
@@ -104,7 +125,7 @@ public:
 
 	void Clear ()
 	{
-		CCTFGameLocals ();
+		*this = CCTFGameLocals ();
 	}
 };
 

@@ -330,13 +330,6 @@ void ShutdownBodyQueue ();
 void InitEntityLists ();
 void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
-	if (Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".cin") == 0 || Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".dm2") == 0)
-	{
-		level.Demo = true;
-		ShutdownBodyQueue ();
-		Shutdown_Junk ();
-	}
-
 	CTimer Timer;
 
 	level.EntityNumber = 0;
@@ -358,6 +351,14 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 #endif
 
 	level.Clear ();
+
+	if (Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".cin") == 0 || Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".dm2") == 0)
+	{
+		level.Demo = true;
+		ShutdownBodyQueue ();
+		Shutdown_Junk ();
+	}
+
 	memset (g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
 	InitEntityLists ();
 	ClearTimers ();

@@ -175,8 +175,47 @@ class CLevelLocals
 public:
 	void Clear ()
 	{
-		CLevelLocals();
+		*this = CLevelLocals();
 	};
+
+	CLevelLocals () :
+	  Frame(0),
+	  FullLevelName (),
+	  ServerLevelName (),
+	  NextMap (),
+	  ForceMap (),
+	  IntermissionTime (0),
+	  ChangeMap (NULL),
+	  ExitIntermission (false),
+	  IntermissionOrigin (),
+	  IntermissionAngles (),
+	  SightClient (NULL),
+#ifndef MONSTERS_USE_PATHFINDING
+	  SightEntity (NULL),
+	  SightEntityFrame (0),
+	  SoundEntity (NULL),
+	  SoundEntityFrame (0),
+	  SoundEntity2 (NULL),
+	  SoundEntity2Frame (0),
+#else
+	  NoiseNode (NULL),
+	  SoundEntityFramenum (0),
+	  SoundEntity (NULL),
+#endif
+	  CurrentEntity (NULL),
+	  PowerCubeCount (0),
+	  Inhibit (0),
+	  EntityNumber (0),
+	  ClassName (),
+	  ParseData (),
+	  Demo (false)
+	  {
+		  Secrets.Found = Secrets.Total = 0;
+		  Goals.Found = Goals.Total = 0;
+		  Monsters.Killed = Monsters.Total = 0;
+		  Entities.Open.clear ();
+		  Entities.Closed.clear ();
+	  };
 
 	FrameNumber_t	Frame;
 

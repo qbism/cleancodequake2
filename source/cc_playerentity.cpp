@@ -136,9 +136,49 @@ void			CPlayerState::Clear ()
 }
 
 CClient::CClient (gclient_t *client) :
-client(client),
-PlayerState(&client->playerState)
+client (client),
+PlayerState (&client->playerState),
+KickAngles (),
+KickOrigin (),
+ViewAngle (),
+DamageFrom (),
+DamageBlend (),
+#ifndef MONSTERS_USE_PATHFINDING
+mynoise (NULL),
+mynoise2 (NULL),
+#endif
+OldViewAngles (),
+OldVelocity (),
+ViewDamage (),
+ViewDamageTime (0),
+KillerYaw (),
+Persistent (),
+Respawn (),
+OldPMove (),
+LayoutFlags (0),
+Buttons (0),
+LatchedButtons (0),
+NewWeapon (NULL),
+WeaponState (0),
+FallTime (0),
+FallValue (0),
+BonusAlpha (0),
+BobTime (0),
+PowerArmorTime (0),
+OldWaterLevel (0),
+WeaponSound (0)
 {
+	memset (&Anim, 0, sizeof(Anim));
+	memset (&Timers, 0, sizeof(Timers));
+	memset (&Grenade, 0, sizeof(Grenade));
+	memset (&Flood, 0, sizeof(Flood));
+	memset (&Chase, 0, sizeof(Chase));
+#ifdef CLEANCTF_ENABLED
+	memset (&Grapple, 0, sizeof(Grapple));
+#endif
+	memset (&Tech, 0, sizeof(Tech));
+
+	memset (&DamageValues, 0, sizeof(DamageValues));
 };
 
 sint32 &CClient::GetPing ()
@@ -150,9 +190,10 @@ void CClient::Clear ()
 {
 	memset (client, 0, sizeof(*client));
 
-	gclient_t *client = this->client;
-	memset (this, 0, sizeof(*this));
-	this->client = client;
+	gclient_t *oldClient = this->client;
+	//memset (this, 0, sizeof(*this));
+	*this = CClient (oldClient);
+
 	PlayerState = CPlayerState(&client->playerState);
 }
 

@@ -34,10 +34,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_weaponmain.h"
 
-CInventory::CInventory ()
+CInventory::CInventory () :
+Array (),
+SelectedItem (-1)
 {
-	memset (Array, 0, sizeof(sint32)*MAX_CS_ITEMS);
-	SelectedItem = -1;
 }
 
 void CInventory::Add (CBaseItem *Item, sint32 Num)
@@ -47,17 +47,33 @@ void CInventory::Add (CBaseItem *Item, sint32 Num)
 
 void CInventory::Remove (CBaseItem *Item, sint32 Num)
 {
-	Array[Item->GetIndex()] -= Num;
+	TInventoryMapType::iterator it = Array.find (Item->GetIndex());
+
+	if (it == Array.end())
+		return;
+
+	if (Array[Item->GetIndex()] <= Num)
+		Array.erase (it);
+	else
+		Array[Item->GetIndex()] -= Num;
 }
 
-void CInventory::Add (sint32 Index, sint32 Num)
+void CInventory::Add (uint8 Index, sint32 Num)
 {
 	Array[Index] += Num;
 }
 
-void CInventory::Remove (sint32 Index, sint32 Num)
+void CInventory::Remove (uint8 Index, sint32 Num)
 {
-	Array[Index] -= Num;
+	TInventoryMapType::iterator it = Array.find (Index);
+
+	if (it == Array.end())
+		return;
+
+	if (Array[Index] <= Num)
+		Array.erase (it);
+	else
+		Array[Index] -= Num;
 }
 
 void CInventory::Draw (CPlayerEntity *ent)
@@ -72,8 +88,12 @@ void CInventory::Draw (CPlayerEntity *ent)
 	ent->Client.LayoutFlags |= LF_SHOWINVENTORY;
 
 	WriteByte (SVC_INVENTORY);
-	for (uint8 i = 0; i < MAX_CS_ITEMS; i++)
-		WriteShort (Array[i]);
+	for (uint16 i = 0; i < MAX_CS_ITEMS; i++)
+	{
+		TInventoryMapType::iterator it = Array.find(i);
+
+		WriteShort ((it == Array.end()) ? 0 : (*it).second);
+	}
 	ent->CastTo (CASTFLAG_RELIABLE);
 }
 
@@ -82,10 +102,10 @@ void CInventory::SelectNextItem(EItemFlags Flags)
 	sint32			index;
 
 	// scan  for the next valid one
-	for (uint8 i = 1; i <= MAX_CS_ITEMS; i++)
+	for (uint16 i = 1; i <= MAX_CS_ITEMS; i++)
 	{
 		index = (SelectedItem + i) % MAX_CS_ITEMS;
-		if (!Array[index])
+		if (Array.find(index) == Array.end())
 			continue;
 		CBaseItem *it = GetItemByIndex(index);
 		if (!(it->Flags & ITEMFLAG_USABLE))
@@ -106,10 +126,10 @@ void CInventory::SelectPrevItem(EItemFlags Flags)
 	sint32			index;
 
 	// scan  for the next valid one
-	for (uint8 i = 1; i <= MAX_CS_ITEMS; i++)
+	for (uint16 i = 1; i <= MAX_CS_ITEMS; i++)
 	{
 		index = (SelectedItem + MAX_CS_ITEMS - i) % MAX_CS_ITEMS;
-		if (!Array[index])
+		if (Array.find(index) == Array.end())
 			continue;
 		CBaseItem *it = GetItemByIndex(index);
 		if (!(it->Flags & ITEMFLAG_USABLE))
@@ -125,29 +145,55 @@ void CInventory::SelectPrevItem(EItemFlags Flags)
 	ValidateSelectedItem ();
 }
 
-sint32 CInventory::Has (sint32 Index)
+sint32 CInventory::Has (uint8 Index)
 {
-	return Array[Index];
+	TInventoryMapType::iterator it = Array.find(Index);
+
+	if (it == Array.end())
+		return 0;
+
+	return (*it).second;
 }
 
 sint32 CInventory::Has (CBaseItem *Item)
 {
-	return Array[Item->GetIndex()];
+	TInventoryMapType::iterator it = Array.find(Item->GetIndex());
+
+	if (it == Array.end())
+		return 0;
+
+	return (*it).second;
 }
 
 void CInventory::Set (CBaseItem *Item, sint32 Num)
 {
-	Array[Item->GetIndex()] = Num;
+	if (Num == 0)
+	{
+		TInventoryMapType::iterator it = Array.find(Item->GetIndex());
+
+		if (it != Array.end())
+			Array.erase (it);
+	}
+	else
+		Array[Item->GetIndex()] = Num;
 }
 
-void CInventory::Set (sint32 Index, sint32 Num)
+void CInventory::Set (uint8 Index, sint32 Num)
 {
-	Array[Index] = Num;
+	if (Num == 0)
+	{
+		TInventoryMapType::iterator it = Array.find(Index);
+
+		if (it != Array.end())
+			Array.erase (it);
+	}
+	else
+		Array[Index] = Num;
 }
 
 void CInventory::ValidateSelectedItem()
 {
-	if (Array[SelectedItem])
+	if (Array.find(SelectedItem) != Array.end())
 		return;		// valid
 
 	SelectNextItem (-1);
@@ -158,7 +204,7 @@ void CInventory::operator += (CBaseItem *Item)
 	Add(Item, 1);
 }
 
-void CInventory::operator += (sint32 Index)
+void CInventory::operator += (uint8 Index)
 {
 	Add(GetItemByIndex(Index), 1);
 }
@@ -168,7 +214,7 @@ void CInventory::operator -= (CBaseItem *Item)
 	Remove(Item, 1);
 }
 
-void CInventory::operator -= (sint32 Index)
+void CInventory::operator -= (uint8 Index)
 {
 	Remove (GetItemByIndex(Index), 1);
 }
