@@ -40,6 +40,7 @@ public:
 	CFuncTimer (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CFuncTimer)
 
 	void Think ();
 	void Use (CBaseEntity *other, CBaseEntity *activator);
@@ -57,6 +58,7 @@ public:
 	CTargetCharacter (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetCharacter)
 
 	bool Run ();
 	void Spawn ();
@@ -68,10 +70,22 @@ public:
 	CTargetString ();
 	CTargetString (sint32 Index);
 
-	virtual bool ParseField (const char *Key, const char *Value)
+	IMPLEMENT_SAVE_HEADER(CTargetString)
+
+	bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+	};
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 	void Spawn ();
@@ -91,6 +105,7 @@ public:
 	CFuncClock (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CFuncClock)
 
 	void Think ();
 	void Use (CBaseEntity *other, CBaseEntity *activator);

@@ -87,10 +87,34 @@ public:
 class CMakronJumpTimer : public virtual CBaseEntity, public CThinkableEntity
 {
 public:
-	char		*Target;
+	CMonsterEntity	*LinkedJorg;
 
 	CMakronJumpTimer ();
 	CMakronJumpTimer (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CMakronJumpTimer)
+
+	void SaveFields (CFile &File)
+	{
+		sint32 Index = -1;
+		if (LinkedJorg)
+			Index = LinkedJorg->gameEntity->state.number;
+
+		File.Write (&Index, sizeof(Index));
+
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		sint32 Index;
+		File.Read (&Index, sizeof(Index));
+
+		if (Index != -1)
+			LinkedJorg = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+
+		CThinkableEntity::LoadFields (File);
+	}
 
 	void Think ();
 	static void Spawn (class CJorg *Jorg);

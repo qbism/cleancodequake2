@@ -41,6 +41,9 @@ class CPlayerEntity;
 // Stand-alone classes
 typedef sint32	FrameNumber_t;
 
+#define TO_STRING2(x) #x
+#define TO_STRING(x) TO_STRING2(x)
+
 #include "cc_filesystem.h"
 #include "cc_platform.h"
 #include "cc_indexing.h"
@@ -55,6 +58,7 @@ typedef sint32	FrameNumber_t;
 #include "cc_ban.h"
 #undef BAN_BASIC_INFO
 #include "cc_timer.h"
+#include "cc_save.h"
 
 // Main class files
 #include "cc_items.h"

@@ -52,9 +52,21 @@ public:
 	{
 	};
 
-	virtual bool ParseField (const char *Key, const char *Value)
+	IMPLEMENT_SAVE_HEADER(CTriggerAlways)
+
+	bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
 	}
 
 	void Use (CBaseEntity *, CBaseEntity *)
@@ -117,6 +129,7 @@ public:
 	};
 
 	ENTITYFIELD_VIRTUAL_DEFS
+	ENTITYFIELDS_SAVABLE_VIRTUAL(CTriggerBase)
 
 	bool Run ()
 	{
@@ -221,8 +234,8 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerBase)
 {
-	CEntityField ("wait", EntityMemberOffset(CTriggerBase,Wait), FT_FRAMENUMBER),
-	CEntityField ("sounds", EntityMemberOffset(CTriggerBase,Sounds), FT_BYTE),
+	CEntityField ("wait", EntityMemberOffset(CTriggerBase,Wait), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("sounds", EntityMemberOffset(CTriggerBase,Sounds), FT_BYTE | FT_SAVABLE),
 }
 ENTITYFIELDS_END(CTriggerBase)
 
@@ -232,9 +245,24 @@ bool			CTriggerBase::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
+	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
 
+void			CTriggerBase::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerBase> (this, File);
+	CUsableEntity::SaveFields (File);
+	CBrushModel::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
+
+void			CTriggerBase::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerBase> (this, File);
+	CUsableEntity::LoadFields (File);
+	CBrushModel::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+}
 
 /*QUAKED trigger_multiple (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED
 Variable sized repeatable trigger.  Must be targeted at one or more entities.
@@ -280,6 +308,7 @@ public:
 
 	virtual void Spawn ()
 	{
+		Touchable = true;
 		switch (Sounds)
 		{
 		case 1:
@@ -413,6 +442,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTriggerCounter)
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -451,6 +481,7 @@ public:
 
 	void Spawn ()
 	{
+		Touchable = true;
 		Wait = -1;
 		if (!Count)
 			Count = 2;
@@ -459,7 +490,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerCounter)
 {
-	CEntityField ("count", EntityMemberOffset(CTriggerCounter,Count), FT_BYTE),
+	CEntityField ("count", EntityMemberOffset(CTriggerCounter,Count), FT_BYTE | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTriggerCounter);
 
@@ -469,6 +500,18 @@ bool CTriggerCounter::ParseField (const char *Key, const char *Value)
 		return true;
 
 	return CTriggerBase::ParseField (Key, Value);
+}
+
+void			CTriggerCounter::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerCounter> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void			CTriggerCounter::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerCounter> (this, File);
+	CUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_counter", CTriggerCounter);
@@ -502,6 +545,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTriggerPush)
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -556,6 +600,7 @@ public:
 
 	void Spawn ()
 	{
+		Touchable = true;
 		Init ();
 
 		if (!Speed)
@@ -581,7 +626,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerPush)
 {
-	CEntityField ("speed", EntityMemberOffset(CTriggerPush,Speed), FT_FLOAT),
+	CEntityField ("speed", EntityMemberOffset(CTriggerPush,Speed), FT_FLOAT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTriggerPush)
 
@@ -593,6 +638,18 @@ bool			CTriggerPush::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return CTriggerBase::ParseField (Key, Value);
 };
+
+void			CTriggerPush::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerPush> (this, File);
+	CTriggerBase::SaveFields (File);
+}
+
+void			CTriggerPush::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerPush> (this, File);
+	CTriggerBase::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("trigger_push", CTriggerPush);
 
@@ -631,6 +688,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTriggerHurt)
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -666,6 +724,7 @@ public:
 
 	void Spawn ()
 	{
+		Touchable = true;
 		Init ();
 		NoiseIndex = SoundIndex ("world/electro.wav");
 
@@ -681,7 +740,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerHurt)
 {
-	CEntityField ("dmg", EntityMemberOffset(CTriggerHurt,Damage), FT_INT),
+	CEntityField ("dmg", EntityMemberOffset(CTriggerHurt,Damage), FT_INT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTriggerHurt)
 
@@ -693,6 +752,18 @@ bool			CTriggerHurt::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return CTriggerBase::ParseField (Key, Value);
 };
+
+void			CTriggerHurt::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerHurt> (this, File);
+	CTriggerBase::SaveFields (File);
+}
+
+void			CTriggerHurt::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerHurt> (this, File);
+	CTriggerBase::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("trigger_hurt", CTriggerHurt);
 
@@ -721,6 +792,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTriggerMonsterJump)
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -748,6 +820,7 @@ public:
 
 	void Spawn ()
 	{
+		Touchable = true;
 		if (!Speed)
 			Speed = 200;
 		Speed *= 10;
@@ -764,7 +837,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerMonsterJump)
 {
-	CEntityField ("speed", EntityMemberOffset(CTriggerMonsterJump,Speed), FT_FLOAT),
+	CEntityField ("speed", EntityMemberOffset(CTriggerMonsterJump,Speed), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("height", EntityMemberOffset(CTriggerMonsterJump,MoveDir.Z), FT_FLOAT),
 };
 ENTITYFIELDS_END(CTriggerMonsterJump)
@@ -777,6 +850,18 @@ bool			CTriggerMonsterJump::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return CTriggerBase::ParseField (Key, Value);
 };
+
+void			CTriggerMonsterJump::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerMonsterJump> (this, File);
+	CTriggerBase::SaveFields (File);
+}
+
+void			CTriggerMonsterJump::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerMonsterJump> (this, File);
+	CTriggerBase::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("trigger_monsterjump", CTriggerMonsterJump);
 
@@ -803,6 +888,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTriggerGravity)
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -816,6 +902,7 @@ public:
 
 	void Spawn ()
 	{
+		Touchable = true;
 		if (!Gravity)
 		{
 			//gi.dprintf("trigger_gravity without gravity set at (%f %f %f)\n", self->state.origin[0], self->state.origin[1], self->state.origin[2]);
@@ -830,7 +917,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerGravity)
 {
-	CEntityField ("gravity",		EntityMemberOffset(CTriggerGravity,Gravity),		FT_FLOAT),
+	CEntityField ("gravity",		EntityMemberOffset(CTriggerGravity,Gravity),		FT_FLOAT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTriggerGravity)
 
@@ -842,6 +929,16 @@ bool			CTriggerGravity::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return false;
 };
+
+void			CTriggerGravity::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerGravity> (this, File);
+}
+
+void			CTriggerGravity::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerGravity> (this, File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("trigger_gravity", CTriggerGravity);
 
@@ -882,6 +979,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTriggerKey)
 
 	bool Run ()
 	{
@@ -972,7 +1070,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTriggerKey)
 {
-	CEntityField ("item", EntityMemberOffset(CTriggerKey,Item), FT_ITEM),
+	CEntityField ("item", EntityMemberOffset(CTriggerKey,Item), FT_ITEM | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTriggerKey)
 
@@ -982,6 +1080,18 @@ bool CTriggerKey::ParseField (const char *Key, const char *Value)
 		return true;
 
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
+void			CTriggerKey::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTriggerKey> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void			CTriggerKey::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTriggerKey> (this, File);
+	CUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_key", CTriggerKey);

@@ -35,6 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define MAX_JUNK 35
 
+typedef std::list<sint32, std::level_allocator<sint32> > TJunkList;
 class CJunkList
 {
 public:
@@ -42,7 +43,7 @@ public:
 
 	// OpenList = Junk that is ready to use
 	// ClosedList = Junk that is already in use
-	std::list<sint32, std::level_allocator<sint32> >	OpenList, ClosedList;
+	TJunkList			OpenList, ClosedList;
 
 	CJunkList () :
 	NumAllocatedJunk (0),
@@ -139,6 +140,59 @@ _CC_ENABLE_DEPRECATION
 
 CJunkList *JunkList;
 
+// Saves currently allocated body numbers
+void SaveJunk (CFile &File)
+{
+	if (!JunkList)
+		return; // ????
+
+	size_t num = JunkList->ClosedList.size();
+	File.Write (&num, sizeof(num));
+
+	for (TJunkList::iterator it = JunkList->ClosedList.begin(); it != JunkList->ClosedList.end(); ++it)
+	{
+		sint32 number = (*it);
+		File.Write (&number, sizeof(number));
+	}
+
+	num = JunkList->OpenList.size();
+	File.Write (&num, sizeof(num));
+
+	for (TJunkList::iterator it = JunkList->OpenList.begin(); it != JunkList->OpenList.end(); ++it)
+	{
+		sint32 number = (*it);
+		File.Write (&number, sizeof(number));
+	}
+}
+
+// Loads the bodyqueue numbers into allocationzzz
+void LoadJunk (CFile &File)
+{
+	if (!JunkList)
+		return; // ????
+
+	size_t num;
+	File.Read (&num, sizeof(num));
+
+	for (size_t i = 0; i < num; i++)
+	{
+		sint32 number;
+		File.Read (&number, sizeof(number));
+
+		JunkList->ClosedList.push_back (number);
+	}
+
+	File.Read (&num, sizeof(num));
+
+	for (size_t i = 0; i < num; i++)
+	{
+		sint32 number;
+		File.Read (&number, sizeof(number));
+
+		JunkList->OpenList.push_back (number);
+	}
+}
+
 void Init_Junk()
 {
 	JunkList = QNew (com_levelPool, 0) CJunkList;
@@ -182,12 +236,15 @@ CTossProjectile(),
 CJunkEntity()
 {
 };
+
 CGibEntity::CGibEntity (sint32 Index) :
 CBaseEntity(Index),
 CTossProjectile(Index),
 CJunkEntity(Index)
 {
 };
+
+IMPLEMENT_SAVE_SOURCE(CGibEntity)
 
 /*
 =================

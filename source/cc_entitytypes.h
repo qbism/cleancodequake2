@@ -45,6 +45,7 @@ public:
 	bool		CanTakeDamage;
 
 	ENTITYFIELD_VIRTUAL_DEFS
+	ENTITYFIELDS_SAVABLE_VIRTUAL(CHurtableEntity)
 
 	CHurtableEntity ();
 	CHurtableEntity (sint32 index);
@@ -101,6 +102,7 @@ public:
 	bool				Usable;
 
 	ENTITYFIELD_VIRTUAL_DEFS
+	ENTITYFIELDS_SAVABLE_VIRTUAL(CUsableEntity)
 
 	CUsableEntity ();
 	CUsableEntity (sint32 Index);
@@ -119,6 +121,8 @@ public:
 	CThinkableEntity ();
 	CThinkableEntity (sint32 index);
 
+	ENTITYFIELDS_SAVABLE(CThinkableEntity)
+
 	void			RunThink ();
 	virtual void	Think () = 0;
 	virtual void	PreThink () {};
@@ -129,6 +133,8 @@ class CTouchableEntity : public virtual CBaseEntity
 {
 public:
 	bool Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
+
+	ENTITYFIELDS_SAVABLE(CTouchableEntity)
 
 	CTouchableEntity ();
 	CTouchableEntity (sint32 index);

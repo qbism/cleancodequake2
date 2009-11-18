@@ -40,6 +40,35 @@ void WriteLevel (char *);
 void ReadGame (char *);
 void WriteGame (char *, BOOL);
 
+// Entity table
+class CEntityTableIndex
+{
+public:
+	const char *Name;
+	CBaseEntity *(*FuncPtr) (sint32 index);
+
+	CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index));
+
+	CBaseEntity *Create (sint32 number)
+	{
+		return FuncPtr (number);
+	};
+};
+
+#define IMPLEMENT_SAVE_STRUCTURE(unique_name,DLLClassName) \
+	CBaseEntity *LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity) (sint32 Index) \
+	{ \
+		return QNew (com_levelPool, 0) DLLClassName(Index); \
+	} \
+	CEntityTableIndex LINK_RESOLVE_CLASSNAME(unique_name, __SaveData) \
+	(TO_STRING(unique_name), LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity));
+
+#define IMPLEMENT_SAVE_SOURCE(DLLClassName) \
+	IMPLEMENT_SAVE_STRUCTURE(DLLClassName,DLLClassName)
+
+#define IMPLEMENT_SAVE_HEADER(DLLClassName) \
+	virtual const char *__GetName () { return TO_STRING(DLLClassName); };
+
 #else
 FILE_WARNING
 #endif

@@ -61,6 +61,9 @@ public:
 	virtual void Spawn (CBaseItem *item);
 
 	ENTITYFIELD_DEFS
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+	const char *__GetName () { return LinkedItem->Classname; }
 
 	// Returns a random team member of ent
 	CItemEntity *GetRandomTeamMember (CItemEntity *Master);
@@ -90,7 +93,8 @@ public:
 		return newClass; \
 	} \
 	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(mapClassName, _Linker) \
-	(LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn), #mapClassName);
+	(LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn), #mapClassName); \
+	IMPLEMENT_SAVE_STRUCTURE (mapClassName,DLLClassName)
 
 #ifdef CLEANCTF_ENABLED
 #include "cc_ctfitementities.h"

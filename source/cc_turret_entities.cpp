@@ -275,11 +275,11 @@ void CTurretBreach::Think ()
 
 ENTITYFIELDS_BEGIN(CTurretBreach)
 {
-	CEntityField ("minpitch", EntityMemberOffset(CTurretBreach,PitchOptions[0]), FT_FLOAT),
-	CEntityField ("maxpitch", EntityMemberOffset(CTurretBreach,PitchOptions[1]), FT_FLOAT),
-	CEntityField ("minyaw", EntityMemberOffset(CTurretBreach,PitchOptions[2]), FT_FLOAT),
-	CEntityField ("maxyaw", EntityMemberOffset(CTurretBreach,PitchOptions[3]), FT_FLOAT),
-	CEntityField ("target", EntityMemberOffset(CTurretBreach,Target), FT_LEVEL_STRING),
+	CEntityField ("minpitch", EntityMemberOffset(CTurretBreach,PitchOptions[0]), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("maxpitch", EntityMemberOffset(CTurretBreach,PitchOptions[1]), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("minyaw", EntityMemberOffset(CTurretBreach,PitchOptions[2]), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("maxyaw", EntityMemberOffset(CTurretBreach,PitchOptions[3]), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("target", EntityMemberOffset(CTurretBreach,Target), FT_LEVEL_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTurretBreach)
 
@@ -291,6 +291,18 @@ bool			CTurretBreach::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CTurretEntityBase::ParseField (Key, Value));
 };
+
+void			CTurretBreach::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTurretBreach> (this, File);
+	CTurretEntityBase::SaveFields (File);
+}
+
+void			CTurretBreach::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTurretBreach> (this, File);
+	CTurretEntityBase::LoadFields (File);
+}
 
 void CTurretBreach::Spawn ()
 {

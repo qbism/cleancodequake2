@@ -99,6 +99,8 @@ CThinkableEntity(Index)
 {
 };
 
+IMPLEMENT_SAVE_SOURCE(CGrenade)
+
 void CGrenade::Explode ()
 {
 	EMeansOfDeath			mod;
@@ -197,6 +199,12 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 da
 	Grenade->Damage = damage;
 	Grenade->RadiusDamage = damage_radius;
 	Grenade->ClassName = (!handNade) ? "grenade" : "hgrenade";
+	Grenade->GetClipmask() = CONTENTS_MASK_SHOT;
+	Grenade->GetSolid() = SOLID_BBOX;
+	Grenade->GetMins().Clear ();
+	Grenade->GetMaxs().Clear ();
+	Grenade->Touchable = true;
+
 	if (handNade)
 	{
 		Grenade->SpawnFlags = (held) ? (GRENADE_HAND|GRENADE_HELD) : GRENADE_HAND;
@@ -237,6 +245,8 @@ CTouchableEntity(Index),
 CThinkableEntity(Index)
 {
 };
+
+IMPLEMENT_SAVE_SOURCE(CBlasterProjectile)
 
 void CBlasterProjectile::Think ()
 {
@@ -291,6 +301,11 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->ClassName = "bolt";
 	if (isHyper)
 		Bolt->SpawnFlags = 1;
+	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
+	Bolt->GetSolid() = SOLID_BBOX;
+	Bolt->GetMins().Clear ();
+	Bolt->GetMaxs().Clear ();
+	Bolt->Touchable = true;
 	Bolt->Link ();
 
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
@@ -323,6 +338,8 @@ CTouchableEntity(Index),
 CThinkableEntity(Index)
 {
 };
+
+IMPLEMENT_SAVE_SOURCE(CRocket)
 
 void CRocket::Think ()
 {
@@ -383,6 +400,11 @@ CRocket *CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->DamageRadius = damage_radius;
 	Rocket->State.GetSound() = SoundIndex ("weapons/rockfly.wav");
 	Rocket->ClassName = "rocket";
+	Rocket->GetClipmask() = CONTENTS_MASK_SHOT;
+	Rocket->GetSolid() = SOLID_BBOX;
+	Rocket->GetMins().Clear ();
+	Rocket->GetMaxs().Clear ();
+	Rocket->Touchable = true;
 
 	if (Spawner->EntityFlags & ENT_PLAYER)
 		CheckDodge (Spawner, start, dir, speed);
@@ -411,6 +433,8 @@ CThinkableEntity(Index)
 {
 	Exploded = false;
 };
+
+IMPLEMENT_SAVE_SOURCE(CBFGBolt)
 
 void CBFGBolt::Think ()
 {
@@ -577,6 +601,11 @@ void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->State.GetSound() = SoundIndex ("weapons/bfg__l1a.wav");
 	BFG->ClassName = "bfg blast";
 	BFG->FreeTime = level.Frame + 80000/speed;
+	BFG->GetClipmask() = CONTENTS_MASK_SHOT;
+	BFG->GetSolid() = SOLID_BBOX;
+	BFG->GetMins().Clear ();
+	BFG->GetMaxs().Clear ();
+	BFG->Touchable = true;
 
 	BFG->Link ();
 }
@@ -1491,6 +1520,7 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint
 	Grapple->SetOwner (Spawner);
 	Spawner->Client.Grapple.Entity = Grapple;
 	Spawner->Client.Grapple.State = CTF_GRAPPLE_STATE_FLY; // we're firing, not on hook
+	Grapple->Touchable = true;
 	Grapple->Link ();
 
 	CTrace tr (Spawner->State.GetOrigin(), Grapple->State.GetOrigin(), Grapple, CONTENTS_MASK_SHOT);

@@ -35,21 +35,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CHurtableEntity::CHurtableEntity () :
 CBaseEntity(),
-CanTakeDamage(false)
+CanTakeDamage (false)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
 
 CHurtableEntity::CHurtableEntity (sint32 Index) :
 CBaseEntity(Index),
-CanTakeDamage(false)
+CanTakeDamage (false)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
 
 ENTITYFIELDS_BEGIN(CHurtableEntity)
 {
-	CEntityField ("health", EntityMemberOffset(CHurtableEntity,Health), FT_INT),
+	CEntityField ("health", EntityMemberOffset(CHurtableEntity,Health), FT_INT | FT_SAVABLE),
+	CEntityField ("CanTakeDamage", EntityMemberOffset(CHurtableEntity,CanTakeDamage), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CHurtableEntity)
 
@@ -60,6 +61,16 @@ bool			CHurtableEntity::ParseField (const char *Key, const char *Value)
 
 	// Couldn't find it here
 	return false;
+};
+
+void			CHurtableEntity::SaveFields (CFile &File)
+{
+	SaveEntityFields<CHurtableEntity> (this, File);
+};
+
+void			CHurtableEntity::LoadFields (CFile &File)
+{
+	LoadEntityFields<CHurtableEntity> (this, File);
 };
 
 char *ClientTeam (CPlayerEntity *ent)
@@ -557,6 +568,18 @@ CBaseEntity(Index)
 	EntityFlags |= ENT_THINKABLE;
 };
 
+void CThinkableEntity::SaveFields (CFile &File)
+{
+	// Save NextThink
+	File.Write (&NextThink, sizeof(NextThink));
+};
+
+void CThinkableEntity::LoadFields (CFile &File)
+{
+	// Save NextThink
+	File.Read (&NextThink, sizeof(NextThink));
+};
+
 void CThinkableEntity::RunThink ()
 {
 	if (NextThink <= 0 || NextThink > level.Frame)
@@ -569,15 +592,23 @@ void CThinkableEntity::RunThink ()
 CTouchableEntity::CTouchableEntity () :
 CBaseEntity()
 {
-	Touchable = true;
 	EntityFlags |= ENT_TOUCHABLE;
 };
 
 CTouchableEntity::CTouchableEntity (sint32 Index) :
 CBaseEntity(Index)
 {
-	Touchable = true;
 	EntityFlags |= ENT_TOUCHABLE;
+};
+
+void CTouchableEntity::SaveFields (CFile &File)
+{
+	File.Write (&Touchable, sizeof(Touchable));
+};
+
+void CTouchableEntity::LoadFields (CFile &File)
+{
+	File.Read (&Touchable, sizeof(Touchable));
 };
 
 void CTouchableEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
@@ -666,12 +697,6 @@ CBounceProjectile::CBounceProjectile () :
 backOff(1.5f),
 CPhysicsEntity ()
 {
-	Velocity.Clear ();
-	GetClipmask() = CONTENTS_MASK_SHOT;
-	GetSolid() = SOLID_BBOX;
-	GetMins().Clear ();
-	GetMaxs().Clear ();
-
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
@@ -679,12 +704,6 @@ CBounceProjectile::CBounceProjectile (sint32 Index) :
 backOff(1.5f),
 CPhysicsEntity (Index)
 {
-	Velocity.Clear ();
-	GetClipmask() = CONTENTS_MASK_SHOT;
-	GetSolid() = SOLID_BBOX;
-	GetMins().Clear ();
-	GetMaxs().Clear ();
-
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
@@ -783,24 +802,12 @@ CBounceProjectile (Index)
 CFlyMissileProjectile::CFlyMissileProjectile () :
 CPhysicsEntity ()
 {
-	Velocity.Clear ();
-	GetClipmask() = CONTENTS_MASK_SHOT;
-	GetSolid() = SOLID_BBOX;
-	GetMins().Clear ();
-	GetMaxs().Clear ();
-
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
 CFlyMissileProjectile::CFlyMissileProjectile (sint32 Index) :
 CPhysicsEntity (Index)
 {
-	Velocity.Clear ();
-	GetClipmask() = CONTENTS_MASK_SHOT;
-	GetSolid() = SOLID_BBOX;
-	GetMins().Clear ();
-	GetMaxs().Clear ();
-
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
@@ -877,24 +884,12 @@ bool CFlyMissileProjectile::Run ()
 CStepPhysics::CStepPhysics () :
 CPhysicsEntity ()
 {
-	Velocity.Clear ();
-	GetClipmask() = CONTENTS_MASK_SHOT;
-	GetSolid() = SOLID_BBOX;
-	GetMins().Clear ();
-	GetMaxs().Clear ();
-
 	PhysicsType = PHYSICS_STEP;
 }
 
 CStepPhysics::CStepPhysics (sint32 Index) :
 CPhysicsEntity (Index)
 {
-	Velocity.Clear (); 
-	GetClipmask() = CONTENTS_MASK_SHOT;
-	GetSolid() = SOLID_BBOX;
-	GetMins().Clear ();
-	GetMaxs().Clear ();
-
 	PhysicsType = PHYSICS_STEP;
 }
 
@@ -1533,12 +1528,12 @@ Usable (true)
 
 ENTITYFIELDS_BEGIN(CUsableEntity)
 {
-	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_LEVEL_STRING),
-	CEntityField ("noise",		EntityMemberOffset(CUsableEntity,NoiseIndex),		FT_SOUND_INDEX),
-	CEntityField ("delay",		EntityMemberOffset(CUsableEntity,Delay),			FT_FRAMENUMBER),
-	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING),
-	CEntityField ("killtarget",	EntityMemberOffset(CUsableEntity,KillTarget),		FT_LEVEL_STRING),
-	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING),
+	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("noise",		EntityMemberOffset(CUsableEntity,NoiseIndex),		FT_SOUND_INDEX | FT_SAVABLE),
+	CEntityField ("delay",		EntityMemberOffset(CUsableEntity,Delay),			FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("killtarget",	EntityMemberOffset(CUsableEntity,KillTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CUsableEntity)
 
@@ -1549,6 +1544,18 @@ bool			CUsableEntity::ParseField (const char *Key, const char *Value)
 
 	// Couldn't find it here
 	return false;
+};
+
+void			CUsableEntity::SaveFields (CFile &File)
+{
+	File.Write (&Usable, sizeof(Usable));
+	SaveEntityFields <CUsableEntity> (this, File);
+};
+
+void			CUsableEntity::LoadFields (CFile &File)
+{
+	File.Read (&Usable, sizeof(Usable));
+	LoadEntityFields <CUsableEntity> (this, File);
 };
 
 class CDelayedUse : public CThinkableEntity, public CUsableEntity
@@ -1565,6 +1572,20 @@ public:
 	  CThinkableEntity (Index)
 	  {
 	  };
+
+	IMPLEMENT_SAVE_HEADER(CDelayedUse)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+	}
 
 	void Use (CBaseEntity *, CBaseEntity *)
 	{

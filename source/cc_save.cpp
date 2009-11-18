@@ -32,297 +32,523 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_save.h"
 #include "cc_exceptionhandler.h"
 
-#if 0
-void WriteField1 (fileHandle_t f, field_t *field, uint8 *base)
+std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > EntityTable;
+
+CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index)) :
+  Name(Name),
+  FuncPtr(FuncPtr)
 {
-	void		*p;
-	size_t		len;
-	sint32			index;
+	EntityTable.push_back (this);
+};
 
-	if (field->flags & FFL_SPAWNTEMP)
-		return;
-
-	p = (void *)(base + field->ofs);
-	switch (field->type)
+CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
+{
+	for (size_t i = 0; i < EntityTable.size(); i++)
 	{
-	case F_INT:
-	case F_FLOAT:
-	case F_ANGLEHACK:
-	case F_VECTOR:
-	case F_IGNORE:
-		break;
+		if (strcmp(Name, EntityTable[i]->Name) == 0)
+			return EntityTable[i]->FuncPtr(index);
+	}
+	return NULL;
+};
 
-	case F_LSTRING:
-	case F_GSTRING:
-		if ( *(char **)p )
-			len = strlen(*(char **)p) + 1;
+CC_ENUM (uint8, EIndexType)
+{
+	INDEX_MODEL,
+	INDEX_SOUND,
+	INDEX_IMAGE
+};
+
+void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
+{
+	sint32 len = 0;
+	const char *str = NULL;
+
+	if (!Index)
+		len = 0;
+	else
+	{
+		switch (IndexType)
+		{
+		case INDEX_MODEL:
+			str = StringFromModelIndex(Index);
+			break;
+		case INDEX_SOUND:
+			str = StringFromSoundIndex(Index);
+			break;
+		case INDEX_IMAGE:
+			str = StringFromImageIndex(Index);
+			break;
+		};
+
+		if (!str)
+		{
+			// SPECIAL CASE
+			// World or inline model
+			len = -2;
+			File.Write (&len, sizeof(len));
+			File.Write (&Index, sizeof(Index));
+
+			return;
+		}
 		else
-			len = 0;
-		*(size_t *)p = len;
-		break;
-	case F_EDICT:
-		if ( *(edict_t **)p == NULL)
-			index = -1;
+			len = strlen(str) + 1;
+	}
+
+	File.Write (&len, sizeof(len));
+	if (len > 1)
+	{
+		if (!str)
+			_CC_ASSERT_EXPR (0, "How'd this happen?");
 		else
-			index = *(edict_t **)p - g_edicts;
-		*(sint32 *)p = index;
-		break;
-	case F_CLIENT:
-		if ( *(gclient_t **)p == NULL)
-			index = -1;
-		else
-			index = *(gclient_t **)p - game.clients;
-		*(sint32 *)p = index;
-		break;
-	case F_ITEM:
-/*		if ( *(edict_t **)p == NULL)
-			index = -1;
-		else
-			index = *(gitem_t **)p - itemlist;
-		*(sint32 *)p = index;*/
-		break;
-	case F_NEWITEM:
-		if ( *(edict_t **)p == NULL)
-			index = -1;
+			File.Write ((void*)str, len);
+	}
+};
+
+void ReadIndex (CFile &File, sint32 &Index, EIndexType IndexType)
+{
+	sint32 len;
+	MediaIndex In = 0;
+	File.Read (&len, sizeof(len));
+
+	if (len == -2)
+		File.Read (&In, sizeof(MediaIndex));
+	else if (len > 1)
+	{
+		char *tempBuffer = QNew (com_genericPool, 0) char[len];
+		File.Read (tempBuffer, len);
+
+		switch (IndexType)
+		{
+		case INDEX_MODEL:
+			In = ModelIndex(tempBuffer);
+			break;
+		case INDEX_SOUND:
+			In = SoundIndex(tempBuffer);
+			break;
+		case INDEX_IMAGE:
+			In = ImageIndex(tempBuffer);
+			break;
+		};
+
+		QDelete[] tempBuffer;
+	}
+
+	Index = In;
+};
+
+void WriteEntity (CFile &File, CBaseEntity *Entity)
+{
+	// Write the edict_t info first
+	File.Write (Entity->gameEntity, sizeof(edict_t));
+
+	// Write special data
+	if (Entity->gameEntity->state.number > game.maxclients)
+	{
+		sint32 OwnerNumber = -1;
+
+		if (Entity->gameEntity->owner)
+			OwnerNumber = Entity->gameEntity->owner->state.number;
+
+		File.Write (&OwnerNumber, sizeof(sint32));
+	}
+
+	WriteIndex (File, Entity->gameEntity->state.modelIndex, INDEX_MODEL);
+	WriteIndex (File, Entity->gameEntity->state.modelIndex2, INDEX_MODEL);
+	WriteIndex (File, Entity->gameEntity->state.modelIndex3, INDEX_MODEL);
+	WriteIndex (File, Entity->gameEntity->state.modelIndex4, INDEX_MODEL);
+	WriteIndex (File, Entity->gameEntity->state.sound, INDEX_SOUND);
+
+	// Write entity stuff
+	if (Entity->gameEntity->state.number > game.maxclients)
+	{
+	/*	size_t size = sizeof(*Entity);
+		File.Write (&size, sizeof(size));
+		File.Write (Entity, sizeof(*Entity));
+	}*/
+		const char *name = Entity->__GetName ();
+
+		if (name)
+		{
+			DebugPrintf ("Writing %s\n", name);
+			sint32 len = strlen(name) + 1;
+			File.Write (&len, sizeof(len));
+			File.Write ((void*)name, len);
+		}
 		else
 		{
-			CWeapon *Weap = static_cast<CWeapon *>(p);
-			CBaseItem *Item = Weap->Item;
-			index = Item->GetIndex();
+			sint32 len = -1;
+			File.Write (&len, sizeof(len));
+			return;
 		}
-		*(sint32 *)p = -1;
-		break;
+	}
 
-	//relative to code segment
-	case F_FUNCTION:
-		if (*(uint8 **)p == NULL)
-			index = 0;
+	Entity->WriteBaseEntity (File);
+
+	// Call SaveFields
+	Entity->SaveFields (File);
+}
+
+void WriteEntities (CFile &File)
+{
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	{
+		edict_t *ent = (*it);
+		sint32 number = ent->state.number;
+		File.Write (&number, sizeof(number));
+
+		CBaseEntity *Entity = ent->Entity;
+		WriteEntity (File, Entity);
+	}
+	sint32 num = -1;
+	File.Write (&num, sizeof(num));
+}
+
+// Writes out gclient_t
+void WriteClient (CFile &File, CPlayerEntity *Player)
+{
+	Player->Client.WriteClientStructure (File);
+}
+
+void WriteClients (CFile &File)
+{
+	for (sint32 i = 1; i <= game.maxclients; i++)
+		WriteClient (File, entity_cast<CPlayerEntity>(g_edicts[i].Entity));
+}
+
+void ReadEntity (CFile &File, sint32 number)
+{
+	// Get the edict_t for this number
+	edict_t *ent = &g_edicts[number];
+
+	// Restore entity
+	CBaseEntity *RestoreEntity = ent->Entity;
+
+	// Read
+	File.Read (ent, sizeof(edict_t));
+
+	// Make a copy
+	edict_t temp (*ent);
+
+	// Null out pointers
+	ent->owner = NULL;
+
+	// Restore entity
+	ent->Entity = RestoreEntity;
+
+	// Read special data
+	if (number > game.maxclients)
+	{
+		sint32 OwnerNumber = -1;
+		File.Read (&OwnerNumber, sizeof(sint32));
+
+		if (OwnerNumber == -1)
+			ent->owner = NULL;
 		else
-			index = *(uint8 **)p - ((uint8 *)InitGame);
-		*(sint32 *)p = index;
-		break;
+			ent->owner = &g_edicts[OwnerNumber];
+	}
 
-	default:
-		GameError ("WriteEdict: unknown field type");
+	ReadIndex (File, ent->state.modelIndex, INDEX_MODEL);
+	ReadIndex (File, ent->state.modelIndex2, INDEX_MODEL);
+	ReadIndex (File, ent->state.modelIndex3, INDEX_MODEL);
+	ReadIndex (File, ent->state.modelIndex4, INDEX_MODEL);
+	ReadIndex (File, ent->state.sound, INDEX_SOUND);
+
+	// Read entity stuff
+	if (number > game.maxclients)
+	{
+/*		size_t size;
+		File.Read (&size, sizeof(size));
+
+		// Create a temp buffer to develop the entity from.
+		// The virtual function pointers will be a part of this already
+		byte *buffer = QNew (com_levelPool, 0) byte[size];
+		File.Read (buffer, size);
+
+		// Create a copy here
+		CBaseEntity *Copy ((CBaseEntity*)buffer);
+		ent->Entity = Copy;*/
+		size_t len;
+		File.Read (&len, sizeof(len));
+
+		if (len == -1)
+			return;
+
+		CBaseEntity *Entity;
+		char *tempBuffer = QNew (com_genericPool, 0) char[len];
+		File.Read (tempBuffer, len);
+		
+		DebugPrintf ("Loading %s (%i)\n", tempBuffer, number);
+
+		Entity = CreateEntityFromTable (number, tempBuffer);
+		QDelete[] tempBuffer;
+
+		// Revision:
+		// This will actually change some base members..
+		// Restore them all here!
+		edict_t *oldOwner = ent->owner;
+		memcpy (ent, &temp, sizeof(edict_t));
+		ent->owner = oldOwner;
+
+		ent->Entity = Entity;
+	}
+
+	ent->Entity->ReadBaseEntity (File);
+
+	// Call LoadFields
+	ent->Entity->LoadFields (File);
+
+	// let the server rebuild world links for this ent
+	memset (&ent->area, 0, sizeof(ent->area));
+	ent->Entity->Link (); // If this passes, Entity loaded fine!
+}
+
+void ReadEntities (CFile &File)
+{
+	while (true)
+	{
+		sint32 number;
+		File.Read (&number, sizeof(number));
+
+		DebugPrintf ("Reading entity number %i\n", number);
+
+		if (number == -1)
+			break;
+
+		ReadEntity (File, number);
+	
+		if (globals.numEdicts < number + 1)
+			globals.numEdicts = number + 1;	
 	}
 }
 
-
-void WriteField2 (fileHandle_t f, field_t *field, uint8 *base)
+void ReadClient (CFile &File, sint32 i)
 {
-	size_t		len;
-	void		*p;
-
-	if (field->flags & FFL_SPAWNTEMP)
-		return;
-
-	p = (void *)(base + field->ofs);
-	switch (field->type)
-	{
-	case F_LSTRING:
-		if ( *(char **)p )
-		{
-			len = strlen(*(char **)p) + 1;
-			FS_Write (*(char **)p, len, f);
-		}
-		break;
-	}
+	CClient::ReadClientStructure (File, i);
 }
 
-void ReadField (fileHandle_t f, field_t *field, uint8 *base)
+void ReadClients (CFile &File)
 {
-	void		*p;
-	sint32			len;
-	sint32			index;
+	for (sint32 i = 0; i < game.maxclients; i++)
+		ReadClient (File, i);
+}
 
-	if (field->flags & FFL_SPAWNTEMP)
-		return;
+void WriteLevelLocals (CFile &File)
+{
+	level.Save (File);
+}
 
-	p = (void *)(base + field->ofs);
-	switch (field->type)
+void ReadLevelLocals (CFile &File)
+{
+	level.Load (File);
+}
+
+void WriteGameLocals (CFile &File, bool autosaved)
+{
+	game.autosaved = autosaved;
+	game.Save (File);
+	game.autosaved = false;
+}
+
+void ReadGameLocals (CFile &File)
+{
+	game.Load (File);
+}
+
+void CC_WriteGame (char *filename, bool autosave)
+{
+	DebugPrintf ("Writing %sgame to %s...\n", (autosave) ? "autosaved " : "", filename);
+
+	if (!autosave)
+		CPlayerEntity::SaveClientData ();
+
+	CFile File (filename, FILEMODE_WRITE | FILEMODE_CREATE);
+
+	if (!File.Valid())
 	{
-	case F_INT:
-	case F_FLOAT:
-	case F_ANGLEHACK:
-	case F_VECTOR:
-	case F_IGNORE:
-		break;
+		GameError ("Couldn't open %s", filename);
+		return; // Fix to engines who don't shutdown on gi.error
+	}
 
-	case F_LSTRING:
-		len = *(sint32 *)p;
-		if (!len)
-			*(char **)p = NULL;
-		else
-		{
-			*(char **)p = QNew (com_levelPool, 0) char[len];//(char*)gi.TagMalloc (len, TAG_LEVEL);
-			FS_Read (*(char **)p, len, f);
-		}
-		break;
-	case F_EDICT:
-		index = *(sint32 *)p;
-		if ( index == -1 )
-			*(edict_t **)p = NULL;
-		else
-			*(edict_t **)p = &g_edicts[index];
-		break;
-	case F_CLIENT:
-		index = *(sint32 *)p;
-		if ( index == -1 )
-			*(gclient_t **)p = NULL;
-		else
-			*(gclient_t **)p = &game.clients[index];
-		break;
-	case F_ITEM:
-/*		index = *(sint32 *)p;
-		if ( index == -1 )
-			*(gitem_t **)p = NULL;
-		else
-			*(gitem_t **)p = &itemlist[index];*/
-		break;
-	case F_NEWITEM:
-		index = *(sint32 *)p;
-		if ( index == -1 )
-			*(CWeapon **)p = NULL;
-		else
-		{
-		}
-		break;
-	//relative to code segment
-	case F_FUNCTION:
-		index = *(sint32 *)p;
-		if ( index == 0 )
-			*(uint8 **)p = NULL;
-		else
-			*(uint8 **)p = ((uint8 *)InitGame) + index;
-		break;
-	default:
-		GameError ("ReadEdict: unknown field type");
+	char str[16];
+	memset (str, 0, sizeof(str));
+	Q_strncpyz (str, __DATE__, sizeof(str));
+	File.Write (str, sizeof(str));
+
+	WriteGameLocals (File, autosave);
+	WriteClients (File);
+}
+
+#include "cc_ban.h"
+void InitVersion ();
+
+void CC_ReadGame (char *filename)
+{
+	DebugPrintf ("Reading game from %s...\n", filename);
+
+	// Free any game-allocated memory before us
+	Mem_FreePool (com_gamePool);
+	CFile File (filename, FILEMODE_READ);
+
+	if (!File.Valid())
+	{
+		GameError ("Couldn't open %s", filename);
+		return;
+	}
+
+	char str[16];
+	File.Read (str, sizeof(str));
+	if (strcmp (str, __DATE__))
+	{
+		GameError ("Savegame from an older version.\n");
+		return;
+	}
+
+	seedMT (time(NULL));
+
+	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
+	globals.edicts = g_edicts;
+	ReadGameLocals (File);
+
+	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
+	ReadClients (File);
+
+	Bans.LoadFromFile ();
+	InitVersion ();
+}
+
+void LoadBodyQueue (CFile &File);
+void SaveBodyQueue (CFile &File);
+void LoadJunk (CFile &File);
+void SaveJunk (CFile &File);
+
+void CC_WriteLevel (char *filename)
+{
+	DebugPrintf ("Writing level to %s...\n", filename);
+	CFile File (filename, FILEMODE_WRITE | FILEMODE_CREATE);
+
+	if (!File.Valid())
+	{
+		GameError ("Couldn't open %s", filename);
+		return;
+	}
+
+	// write out edict size for checking
+	size_t i = sizeof(edict_t);
+	File.Write (&i, sizeof(i));
+
+	// write out a function pointer for checking
+	byte *base = (byte *)CC_InitGame;
+	File.Write (&base, sizeof(base));
+
+	// write out level_locals_t
+	WriteLevelLocals (File);
+
+	// write out all the entities
+	WriteEntities (File);
+
+	// Write out systems
+	SaveBodyQueue (File);
+	SaveJunk (File);
+}
+
+void InitEntityLists ();
+void InitEntities ();
+void FireCrosslevelTrigger (CBaseEntity *Entity);
+
+void ShutdownBodyQueue ();
+void BodyQueue_Init ();
+void Init_Junk ();
+void Shutdown_Junk ();
+
+void CC_ReadLevel (char *filename)
+{
+	DebugPrintf ("Reading level from %s...\n", filename);
+	CFile File (filename, FILEMODE_READ);
+
+	if (!File.Valid())
+	{
+		GameError ("Couldn't open %s", filename);
+		return;
+	}
+
+	// Shut down any systems that may need shutting down first
+	ShutdownBodyQueue ();
+	Shutdown_Junk ();
+
+	// free any dynamic memory allocated by loading the level
+	// base state
+	Mem_FreePool (com_levelPool);
+
+	// Re-initialize the systems
+	BodyQueue_Init ();
+	Init_Junk ();
+
+	// wipe all the entities
+	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));
+
+	InitEntityLists ();
+	InitEntities (); // Get the world and players setup
+
+	// check edict size
+	size_t size;
+	File.Read (&size, sizeof(size));
+	if (size != sizeof(edict_t))
+	{
+		GameError ("ReadLevel: mismatched edict size");
+		return;
+	}
+
+	// check function pointer base address
+	byte *base;
+	File.Read (&base, sizeof(base));
+#ifdef _WIN32
+	if (base != (byte *)CC_InitGame)
+	{
+		GameError ("ReadLevel: function pointers have moved");
+		return;
+	}
+#else
+	gi.dprintf("Function offsets %d\n", ((uint8 *)base) - ((uint8 *)InitGame));
+#endif
+
+	// load the level locals
+	ReadLevelLocals (File);
+
+	// load all the entities
+	ReadEntities (File);
+
+	// Put together systems
+	LoadBodyQueue (File);
+	LoadJunk (File);
+
+	// mark all clients as unconnected
+	for (uint8 i = 0; i < game.maxclients; i++)
+	{
+		edict_t *ent = &g_edicts[i+1];
+		ent->client = game.clients + i;
+
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
+		Player->Client.RepositionClient (ent->client);
+		Player->Client.Persistent.state = SVCS_FREE;
+	}
+
+	// do any load time things at this point
+	for (sint32 i = 0; i < globals.numEdicts; i++)
+	{
+		edict_t *ent = &g_edicts[i];
+
+		if (!ent->inUse)
+			continue;
+
+		// fire any cross-level triggers
+		if ((ent->Entity->ClassName) && strcmp(ent->Entity->ClassName, "target_crosslevel_target") == 0)
+			FireCrosslevelTrigger (ent->Entity);
 	}
 }
 
 //=========================================================
-
-/*
-==============
-WriteClient
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void WriteClient (fileHandle_t f, CPlayerEntity *Player)
-{
-	// Write Persistent.weapon and Persistent.newweapon
-	sint32 pwIndex = -1, nwIndex = -1, lwIndex = -1;
-
-	if (Player->Client.Persistent.Weapon)
-	{
-		CBaseItem *Item = Player->Client.Persistent.Weapon->Item;
-		pwIndex = Item->GetIndex();
-	}
-	if (Player->Client.Persistent.LastWeapon)
-	{
-		CBaseItem *Item = Player->Client.Persistent.LastWeapon->Item;
-		lwIndex = Item->GetIndex();
-	}
-	if (Player->Client.NewWeapon)
-	{
-		CBaseItem *Item = Player->Client.NewWeapon->Item;
-		nwIndex = Item->GetIndex();
-	}
-
-	// write the block
-	FS_Write (&Player->Client, sizeof(CClient), f);
-
-	// now write any allocated data following the edict
-	/*for (field=clientfields ; field->name ; field++)
-	{
-		WriteField2 (f, field, (uint8 *)client);
-	}*/
-	FS_Write (&pwIndex, sizeof(sint32), f);
-	FS_Write (&lwIndex, sizeof(sint32), f);
-	FS_Write (&nwIndex, sizeof(sint32), f);
-}
-
-/*
-==============
-ReadClient
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void ReadClient (fileHandle_t f, CPlayerEntity *Player)
-{
-	FS_Read (&Player->Client, sizeof(CClient), f);
-
-	sint32 pwIndex, nwIndex, lwIndex;
-	FS_Read (&pwIndex, sizeof(sint32), f);
-	FS_Read (&lwIndex, sizeof(sint32), f);
-	FS_Read (&nwIndex, sizeof(sint32), f);
-
-	if (pwIndex != -1)
-	{
-		CBaseItem *It = GetItemByIndex (pwIndex);
-		if (It->Flags & ITEMFLAG_WEAPON)
-		{
-			if (It->Flags & ITEMFLAG_AMMO)
-			{
-				CAmmo *Ammo = static_cast<CAmmo*>(It);
-				Player->Client.Persistent.Weapon = Ammo->Weapon;
-			}
-			else
-			{
-				CWeaponItem *Weapon = static_cast<CWeaponItem*>(It);
-				Player->Client.Persistent.Weapon = Weapon->Weapon;
-			}
-		}
-	}
-	else
-		Player->Client.Persistent.Weapon = NULL;
-
-	if (lwIndex != -1)
-	{
-		CBaseItem *It = GetItemByIndex (lwIndex);
-		if (It->Flags & ITEMFLAG_WEAPON)
-		{
-			if (It->Flags & ITEMFLAG_AMMO)
-			{
-				CAmmo *Ammo = static_cast<CAmmo*>(It);
-				Player->Client.Persistent.LastWeapon = Ammo->Weapon;
-			}
-			else
-			{
-				CWeaponItem *Weapon = static_cast<CWeaponItem*>(It);
-				Player->Client.Persistent.LastWeapon = Weapon->Weapon;
-			}
-		}
-	}
-	else
-		Player->Client.Persistent.LastWeapon = NULL;
-
-	if (nwIndex != -1)
-	{
-		CBaseItem *It = GetItemByIndex (nwIndex);
-		if (It->Flags & ITEMFLAG_WEAPON)
-		{
-			if (It->Flags & ITEMFLAG_AMMO)
-			{
-				CAmmo *Ammo = static_cast<CAmmo*>(It);
-				Player->Client.NewWeapon = Ammo->Weapon;
-			}
-			else
-			{
-				CWeaponItem *Weapon = static_cast<CWeaponItem*>(It);
-				Player->Client.NewWeapon = Weapon->Weapon;
-			}
-		}
-	}
-	else
-		Player->Client.NewWeapon = NULL;
-}
-#endif
 
 /*
 ============
@@ -340,6 +566,13 @@ last save position.
 */
 void WriteGame (char *filename, BOOL autosave)
 {
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+	CC_WriteGame (filename, !!autosave);
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
 #if 0
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -382,6 +615,14 @@ CC_EXCEPTION_HANDLER_END
 void InitPlayers ();
 void ReadGame (char *filename)
 {
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+	CC_ReadGame (filename);
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+
 #if 0
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -427,47 +668,6 @@ CC_EXCEPTION_HANDLER_END
 #if 0
 /*
 ==============
-WriteEdict
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void WriteEdict (fileHandle_t f, edict_t *ent)
-{
-	field_t		*field;
-	edict_t		temp;
-
-	// all of the ints, floats, and vectors stay as they are
-	temp = *ent;
-
-	// change the pointers to lengths or indexes
-	for (field=fields ; field->name ; field++)
-		WriteField1 (f, field, (uint8 *)&temp);
-
-	// write the block
-	FS_Write (&temp, sizeof(temp), f);
-
-	// now write any allocated data following the edict
-	for (field=fields ; field->name ; field++)
-		WriteField2 (f, field, (uint8 *)ent);
-
-	// Write the entity, if one
-	bool hasEntity = false;
-	if (ent->Entity)
-		hasEntity = true;
-
-	FS_Write (&hasEntity, sizeof(bool), f);
-
-	if (hasEntity)
-	{
-		size_t sz = sizeof(*ent->Entity);
-		FS_Write (&sz, sizeof(sz), f);
-		FS_Write (ent->Entity, sizeof(*ent->Entity), f);
-	}
-}
-
-/*
-==============
 WriteLevelLocals
 
 All pointer variables (except function pointers) must be handled specially.
@@ -491,39 +691,6 @@ void WriteLevelLocals (fileHandle_t f)
 	// now write any allocated data following the edict
 	for (field=levelfields ; field->name ; field++)
 		WriteField2 (f, field, (uint8 *)&level);
-}
-
-
-/*
-==============
-ReadEdict
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void ReadEdict (fileHandle_t f, edict_t *ent)
-{
-	field_t		*field;
-
-	FS_Read (ent, sizeof(*ent), f);
-
-	for (field=fields ; field->name ; field++)
-		ReadField (f, field, (uint8 *)ent);
-
-	bool hasEntity = false;
-
-	FS_Read (&hasEntity, sizeof(bool), f);
-
-	if (hasEntity)
-	{
-		size_t sz;
-		FS_Read (&sz, sizeof(sz), f);
-		FS_Read (ent->Entity, sz, f);
-
-		ent->Entity->gameEntity = ent;
-	}
-	else
-		ent->Entity = NULL;
 }
 
 /*
@@ -552,6 +719,14 @@ WriteLevel
 */
 void WriteLevel (char *filename)
 {
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+	CC_WriteLevel (filename);
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+
 #if 0
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -617,6 +792,14 @@ No clients are connected yet.
 */
 void ReadLevel (char *filename)
 {
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+	CC_ReadLevel (filename);
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+
 #if 0
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN

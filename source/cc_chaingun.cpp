@@ -165,7 +165,7 @@ WEAPON_DEFS (CChaingun);
 
 void CChaingun::CreateItem (CItemList *List)
 {
-	NItems::Chaingun = QNew (com_gamePool, 0) CWeaponItem
+	NItems::Chaingun = QNew (com_genericPool, 0) CWeaponItem
 		("weapon_chaingun", "models/weapons/g_chain/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
 		"w_chaingun", "Chaingun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Bullets, 1, "#w_chaingun.md2");

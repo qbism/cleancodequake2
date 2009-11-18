@@ -115,6 +115,7 @@ public:
 	uint32		ThinkType;
 
 	ENTITYFIELD_VIRTUAL_DEFS
+	ENTITYFIELDS_SAVABLE_VIRTUAL(CBrushModel)
 
 	CBrushModel ();
 	CBrushModel (sint32 Index);
@@ -162,6 +163,19 @@ public:
 	bool Run ();
 };
 
+class CPlatFormInsideTrigger : public CTouchableEntity
+{
+public:
+	class CPlatForm	*Owner;
+
+	CPlatFormInsideTrigger ();
+	CPlatFormInsideTrigger (sint32 Index);
+
+	ENTITYFIELDS_SAVABLE(CPlatFormInsideTrigger)
+
+	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+};
+
 class CPlatForm : public CMapEntity, public CBrushModel, public CBlockableEntity, public CUsableEntity
 {
 public:
@@ -182,6 +196,7 @@ public:
 	void HitBottom ();
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CPlatForm)
 
 	enum
 	{
@@ -194,18 +209,21 @@ public:
 	void GoUp ();
 	void Think ();
 
-	class CPlatFormInsideTrigger : public CTouchableEntity
-	{
-	public:
-		CPlatForm	*Owner;
-
-		CPlatFormInsideTrigger::CPlatFormInsideTrigger ();
-		CPlatFormInsideTrigger::CPlatFormInsideTrigger (sint32 Index);
-		void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
-	};
-
 	void SpawnInsideTrigger ();
 	void Spawn ();
+};
+
+class CDoorTrigger : public CTouchableEntity
+{
+public:
+	FrameNumber_t		TouchDebounce;
+
+	CDoorTrigger::CDoorTrigger ();
+	CDoorTrigger::CDoorTrigger (sint32 Index);
+
+	ENTITYFIELDS_SAVABLE(CDoorTrigger)
+
+	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 // Base door class
@@ -223,6 +241,8 @@ public:
 	CDoor();
 	CDoor(sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CDoor)
+
 	void UseAreaPortals (bool isOpen);
 	bool Run ();
 
@@ -230,6 +250,22 @@ public:
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+		CHurtableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+		CHurtableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
 
 	enum
 	{
@@ -243,17 +279,6 @@ public:
 	virtual void GoUp (CBaseEntity *activator);
 	virtual void DoEndFunc ();
 	virtual void Think ();
-
-	class CDoorTrigger : public CTouchableEntity
-	{
-	public:
-		FrameNumber_t		TouchDebounce;
-
-		CDoorTrigger::CDoorTrigger ();
-		CDoorTrigger::CDoorTrigger (sint32 Index);
-
-		void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
-	};
 
 	virtual void Blocked (CBaseEntity *other);
 	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
@@ -274,6 +299,8 @@ public:
 	CRotatingDoor ();
 	CRotatingDoor (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CRotatingDoor)
+
 	void GoDown();
 	void GoUp (CBaseEntity *activator);
 
@@ -285,6 +312,8 @@ class CMovableWater : public CDoor
 public:
 	CMovableWater ();
 	CMovableWater (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CMovableWater)
 
 	void Spawn ();
 };
@@ -310,6 +339,8 @@ public:
 	CDoorSecret ();
 	CDoorSecret (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CDoorSecret)
+
 	void Blocked (CBaseEntity *other);
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
@@ -327,8 +358,11 @@ public:
 	{
 		BUTTONTHINK_RETURN = BRUSHTHINK_CUSTOM_START,
 	};
+
 	CButton();
 	CButton(sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CButton)
 
 	bool Run ();
 
@@ -336,6 +370,22 @@ public:
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+		CHurtableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+		CHurtableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
 
 	enum
 	{
@@ -368,8 +418,22 @@ public:
 	CTrainBase();
 	CTrainBase(sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CTrainBase)
+
 	virtual bool Run ();
 	virtual bool ParseField (const char *Key, const char *Value);
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+	}
 
 	enum
 	{
@@ -396,6 +460,8 @@ public:
 	CTrain ();
 	CTrain (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CTrain)
+
 	void Spawn ();
 };
 
@@ -407,9 +473,23 @@ public:
 	CTriggerElevator ();
 	CTriggerElevator (sint32 Index);
 
-	virtual bool ParseField (const char *Key, const char *Value)
+	IMPLEMENT_SAVE_HEADER(CTriggerElevator)
+
+	bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
 	}
 
 	void Think ();
@@ -430,6 +510,91 @@ public:
 	CWorldEntity (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	IMPLEMENT_SAVE_HEADER(CWorldEntity)
+
+	void SaveFields (CFile &File)
+	{
+		size_t len = strlen(Message) + 1;
+		File.Write (&len, sizeof(len));
+		File.Write (Message, len);
+
+		if (!Gravity)
+		{
+			len = 0;
+			File.Write (&len, sizeof(len));
+		}
+		else
+		{
+			len = strlen(Gravity) + 1;
+			File.Write (&len, sizeof(len));
+			File.Write (Gravity, len);
+		}
+
+		if (!Sky)
+		{
+			len = 0;
+			File.Write (&len, sizeof(len));
+		}
+		else
+		{
+			len = strlen(Sky) + 1;
+			File.Write (&len, sizeof(len));
+			File.Write (Sky, len);
+		}
+
+		if (!NextMap)
+		{
+			len = 0;
+			File.Write (&len, sizeof(len));
+		}
+		else
+		{
+			len = strlen(NextMap) + 1;
+			File.Write (&len, sizeof(len));
+			File.Write (NextMap, len);
+		}
+
+		File.Write (&SkyAxis, sizeof(SkyAxis));
+		File.Write (&SkyRotate, sizeof(SkyRotate));
+	}
+	
+	void LoadFields (CFile &File)
+	{
+		size_t len;
+		File.Read (&len, sizeof(len));
+		Message = QNew (com_levelPool, 0) char[len];
+		File.Read (Message, len);
+
+		File.Read (&len, sizeof(len));
+		if (len)
+		{
+			Gravity = QNew (com_levelPool, 0) char[len];
+			File.Read (Gravity, len);
+		}
+		else
+			Gravity = NULL;
+
+		File.Read (&len, sizeof(len));
+		if (len)
+		{
+			Sky = QNew (com_levelPool, 0) char[len];
+			File.Read (Sky, len);
+		}
+		else
+			Sky = NULL;
+
+		File.Read (&len, sizeof(len));
+		if (len)
+		{
+			NextMap = QNew (com_levelPool, 0) char[len];
+			File.Read (NextMap, len);
+		}
+		else
+			NextMap = NULL;
+
+		File.Read (&SkyAxis, sizeof(SkyAxis));
+		File.Read (&SkyRotate, sizeof(SkyRotate));
+	}
 
 	bool Run ();
 	void Spawn ();
@@ -443,6 +608,8 @@ public:
 	CRotatingBrush ();
 	CRotatingBrush (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CRotatingBrush)
+
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 	void Blocked (CBaseEntity *other);
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
@@ -450,6 +617,20 @@ public:
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
 	}
 
 	bool Run ();
@@ -465,6 +646,7 @@ public:
 	CConveyor (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CConveyor)
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 
@@ -482,6 +664,7 @@ public:
 	CAreaPortal (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CAreaPortal)
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 
@@ -495,9 +678,23 @@ public:
 	CFuncWall ();
 	CFuncWall (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CFuncWall)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
+		CUsableEntity::LoadFields (File);
 	}
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);
@@ -512,6 +709,8 @@ public:
 	CFuncObject ();
 	CFuncObject (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CFuncObject)
+
 	void Think ();
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
@@ -519,6 +718,20 @@ public:
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
 	}
 
 	bool Run ();
@@ -539,6 +752,7 @@ public:
 	sint32						Explosivity;
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CFuncExplosive)
 
 	CFuncExplosive ();
 	CFuncExplosive (sint32 Index);
@@ -559,9 +773,23 @@ public:
 	CKillbox ();
 	CKillbox (sint32 Index);
 
-	virtual bool ParseField (const char *Key, const char *Value)
+	IMPLEMENT_SAVE_HEADER(CKillbox)
+
+	bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
+		return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CBrushModel::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CBrushModel::LoadFields (File);
 	}
 
 	void Use (CBaseEntity *other, CBaseEntity *activator);

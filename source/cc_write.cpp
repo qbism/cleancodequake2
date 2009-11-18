@@ -126,7 +126,7 @@ public:
 	};
 };
 
-std::vector <CWriteIndex*, std::game_allocator<CWriteIndex*> > WriteQueue;
+std::vector <CWriteIndex*, std::generic_allocator<CWriteIndex*> > WriteQueue;
 
 void SendQueue (edict_t *To, bool Reliable)
 {

@@ -242,10 +242,6 @@ void CC_ReportGameError (const char *text)
 	OutputDebugStringA(text);
 #endif
 	_CrtDbgBreak ();
-	
-	// NOTE TO SELF:
-	// In unix:
-	// assert (0); // Break, if debugging
 }
 
 static sint32 sys_timeBase;

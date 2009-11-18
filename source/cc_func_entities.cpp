@@ -74,9 +74,9 @@ CFuncTimer::CFuncTimer (sint32 Index) :
 
 ENTITYFIELDS_BEGIN(CFuncTimer)
 {
-	CEntityField ("random", EntityMemberOffset(CFuncTimer,Random), FT_FRAMENUMBER),
-	CEntityField ("pausetime", EntityMemberOffset(CFuncTimer,PauseTime), FT_FRAMENUMBER),
-	CEntityField ("wait", EntityMemberOffset(CFuncTimer,Wait), FT_FRAMENUMBER),
+	CEntityField ("random", EntityMemberOffset(CFuncTimer,Random), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("pausetime", EntityMemberOffset(CFuncTimer,PauseTime), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("wait", EntityMemberOffset(CFuncTimer,Wait), FT_FRAMENUMBER | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CFuncTimer)
 
@@ -88,6 +88,20 @@ bool			CFuncTimer::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void			CFuncTimer::SaveFields (CFile &File)
+{
+	SaveEntityFields <CFuncTimer> (this, File);
+	CUsableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+}
+
+void			CFuncTimer::LoadFields (CFile &File)
+{
+	LoadEntityFields <CFuncTimer> (this, File);
+	CUsableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+}
 
 void CFuncTimer::Think ()
 {
@@ -181,7 +195,7 @@ void CTargetCharacter::Spawn ()
 
 ENTITYFIELDS_BEGIN(CTargetCharacter)
 {
-	CEntityField ("count", EntityMemberOffset(CTargetCharacter,Character), FT_BYTE),
+	CEntityField ("count", EntityMemberOffset(CTargetCharacter,Character), FT_BYTE | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetCharacter)
 
@@ -191,6 +205,18 @@ bool CTargetCharacter::ParseField (const char *Key, const char *Value)
 		return true;
 
 	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
+void			CTargetCharacter::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetCharacter> (this, File);
+	CBrushModel::SaveFields (File);
+}
+
+void			CTargetCharacter::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetCharacter> (this, File);
+	CBrushModel::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_character", CTargetCharacter);
@@ -310,6 +336,14 @@ CFuncClock::CFuncClock (sint32 Index) :
 	{
 	};
 
+ENTITYFIELDS_BEGIN(CFuncClock)
+{
+	CEntityField ("style", EntityMemberOffset(CFuncClock,Style), FT_BYTE | FT_SAVABLE),
+	CEntityField ("count", EntityMemberOffset(CFuncClock,Count), FT_INT | FT_SAVABLE),
+	CEntityField ("pathtarget", EntityMemberOffset(CFuncClock,CountTarget), FT_LEVEL_STRING | FT_SAVABLE),
+};
+ENTITYFIELDS_END (CFuncClock);
+
 bool CFuncClock::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<CFuncClock> (this, Key, Value))
@@ -322,6 +356,20 @@ bool CFuncClock::Run ()
 {
 	return CBaseEntity::Run ();
 };
+
+void		CFuncClock::SaveFields (CFile &File)
+{
+	SaveEntityFields <CFuncClock> (this, File);
+	CUsableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+}
+
+void		CFuncClock::LoadFields (CFile &File)
+{
+	LoadEntityFields <CFuncClock> (this, File);
+	CUsableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+}
 
 // don't let field width of any clock messages change, or it
 // could cause an overwrite after a game load
@@ -470,13 +518,5 @@ void CFuncClock::Spawn ()
 	else
 		NextThink = level.Frame + 10;
 }
-
-ENTITYFIELDS_BEGIN(CFuncClock)
-{
-	CEntityField ("style", EntityMemberOffset(CFuncClock,Style), FT_BYTE),
-	CEntityField ("count", EntityMemberOffset(CFuncClock,Count), FT_INT),
-	CEntityField ("pathtarget", EntityMemberOffset(CFuncClock,CountTarget), FT_LEVEL_STRING),
-};
-ENTITYFIELDS_END (CFuncClock);
 
 LINK_CLASSNAME_TO_CLASS ("func_clock", CFuncClock);

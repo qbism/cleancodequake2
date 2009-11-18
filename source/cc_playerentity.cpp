@@ -181,6 +181,23 @@ WeaponSound (0)
 	memset (&DamageValues, 0, sizeof(DamageValues));
 };
 
+void CClient::WriteClientStructure (CFile &File)
+{
+	File.Write (client, sizeof(*client));
+}
+
+void CClient::ReadClientStructure (CFile &File, sint32 index)
+{
+	gclient_t *ptr = &game.clients[index];
+	File.Read (ptr, sizeof(*ptr));
+}
+
+void CClient::RepositionClient (gclient_t *client)
+{
+	this->client = client;
+	PlayerState.playerState = &client->playerState;
+}
+
 sint32 &CClient::GetPing ()
 {
 	return client->ping;
@@ -2972,7 +2989,7 @@ CPersistentData *SavedClients;
 
 void CPlayerEntity::SaveClientData ()
 {
-	SavedClients = QNew (com_gamePool, 0) CPersistentData[game.maxclients];
+	SavedClients = QNew (com_genericPool, 0) CPersistentData[game.maxclients];
 	for (sint32 i = 0; i < game.maxclients; i++)
 	{
 		if (!g_edicts[1+i].Entity)
@@ -3746,6 +3763,8 @@ _CC_ENABLE_DEPRECATION
 
 	// make sure all view stuff is valid
 	EndServerFrame ();
+
+	Client.Persistent.state = SVCS_SPAWNED;
 }
 
 IPAddress CopyIP (const char *val)

@@ -508,76 +508,76 @@ CCvar	*sv_airaccelerate;
 // Registers all cvars and commands
 void G_Register ()
 {
-	gun_x = QNew (com_gamePool, 0) CCvar ("gun_x", "0", 0);
-	gun_y = QNew (com_gamePool, 0) CCvar ("gun_y", "0", 0);
-	gun_z = QNew (com_gamePool, 0) CCvar ("gun_z", "0", 0);
+	gun_x = QNew (com_genericPool, 0) CCvar ("gun_x", "0", 0);
+	gun_y = QNew (com_genericPool, 0) CCvar ("gun_y", "0", 0);
+	gun_z = QNew (com_genericPool, 0) CCvar ("gun_z", "0", 0);
 
 	//FIXME: sv_ prefix is wrong for these
-	sv_rollspeed = QNew (com_gamePool, 0) CCvar ("sv_rollspeed", "200", 0);
-	sv_rollangle = QNew (com_gamePool, 0) CCvar ("sv_rollangle", "2", 0);
-	sv_gravity = QNew (com_gamePool, 0) CCvar ("sv_gravity", "800", 0);
+	sv_rollspeed = QNew (com_genericPool, 0) CCvar ("sv_rollspeed", "200", 0);
+	sv_rollangle = QNew (com_genericPool, 0) CCvar ("sv_rollangle", "2", 0);
+	sv_gravity = QNew (com_genericPool, 0) CCvar ("sv_gravity", "800", 0);
 
 	// noset vars
-	dedicated = QNew (com_gamePool, 0) CCvar ("dedicated", "0", CVAR_READONLY);
+	dedicated = QNew (com_genericPool, 0) CCvar ("dedicated", "0", CVAR_READONLY);
 
-	developer = QNew (com_gamePool, 0) CCvar ("developer", "0", 0);
+	developer = QNew (com_genericPool, 0) CCvar ("developer", "0", 0);
 
 	// latched vars
-	sv_cheats = QNew (com_gamePool, 0) CCvar ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
+	sv_cheats = QNew (com_genericPool, 0) CCvar ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 	CCvar ("gamename", GAMENAME , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 	CCvar ("gamedate", __DATE__ , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 
-	maxclients = QNew (com_gamePool, 0) CCvar ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH_SERVER);
-	maxspectators = QNew (com_gamePool, 0) CCvar ("maxspectators", "4", CVAR_SERVERINFO);
-	skill = QNew (com_gamePool, 0) CCvar ("skill", "1", CVAR_LATCH_SERVER);
-	maxentities = QNew (com_gamePool, 0) CCvar ("maxentities", 1024, CVAR_LATCH_SERVER);
+	maxclients = QNew (com_genericPool, 0) CCvar ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH_SERVER);
+	maxspectators = QNew (com_genericPool, 0) CCvar ("maxspectators", "4", CVAR_SERVERINFO);
+	skill = QNew (com_genericPool, 0) CCvar ("skill", "1", CVAR_LATCH_SERVER);
+	maxentities = QNew (com_genericPool, 0) CCvar ("maxentities", 1024, CVAR_LATCH_SERVER);
 
 	// change anytime vars
-	dmflags = QNew (com_gamePool, 0) CCvar ("dmflags", "0", CVAR_SERVERINFO);
-	fraglimit = QNew (com_gamePool, 0) CCvar ("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit = QNew (com_gamePool, 0) CCvar ("timelimit", "0", CVAR_SERVERINFO);
-	password = QNew (com_gamePool, 0) CCvar ("password", "", CVAR_USERINFO);
-	spectator_password = QNew (com_gamePool, 0) CCvar ("spectator_password", "", CVAR_USERINFO);
-	needpass = QNew (com_gamePool, 0) CCvar ("needpass", "0", CVAR_SERVERINFO);
-	filterban = QNew (com_gamePool, 0) CCvar ("filterban", "1", 0);
+	dmflags = QNew (com_genericPool, 0) CCvar ("dmflags", "0", CVAR_SERVERINFO);
+	fraglimit = QNew (com_genericPool, 0) CCvar ("fraglimit", "0", CVAR_SERVERINFO);
+	timelimit = QNew (com_genericPool, 0) CCvar ("timelimit", "0", CVAR_SERVERINFO);
+	password = QNew (com_genericPool, 0) CCvar ("password", "", CVAR_USERINFO);
+	spectator_password = QNew (com_genericPool, 0) CCvar ("spectator_password", "", CVAR_USERINFO);
+	needpass = QNew (com_genericPool, 0) CCvar ("needpass", "0", CVAR_SERVERINFO);
+	filterban = QNew (com_genericPool, 0) CCvar ("filterban", "1", 0);
 
-	g_select_empty = QNew (com_gamePool, 0) CCvar ("g_select_empty", "0", CVAR_ARCHIVE);
+	g_select_empty = QNew (com_genericPool, 0) CCvar ("g_select_empty", "0", CVAR_ARCHIVE);
 
-	run_pitch = QNew (com_gamePool, 0) CCvar ("run_pitch", "0.002", 0);
-	run_roll = QNew (com_gamePool, 0) CCvar ("run_roll", "0.005", 0);
-	bob_up  = QNew (com_gamePool, 0) CCvar ("bob_up", "0.005", 0);
-	bob_pitch = QNew (com_gamePool, 0) CCvar ("bob_pitch", "0.002", 0);
-	bob_roll = QNew (com_gamePool, 0) CCvar ("bob_roll", "0.002", 0);
+	run_pitch = QNew (com_genericPool, 0) CCvar ("run_pitch", "0.002", 0);
+	run_roll = QNew (com_genericPool, 0) CCvar ("run_roll", "0.005", 0);
+	bob_up  = QNew (com_genericPool, 0) CCvar ("bob_up", "0.005", 0);
+	bob_pitch = QNew (com_genericPool, 0) CCvar ("bob_pitch", "0.002", 0);
+	bob_roll = QNew (com_genericPool, 0) CCvar ("bob_roll", "0.002", 0);
 
 	// flood control
-	flood_msgs = QNew (com_gamePool, 0) CCvar ("flood_msgs", "4", 0);
-	flood_persecond = QNew (com_gamePool, 0) CCvar ("flood_persecond", "4", 0);
-	flood_waitdelay = QNew (com_gamePool, 0) CCvar ("flood_waitdelay", "10", 0);
+	flood_msgs = QNew (com_genericPool, 0) CCvar ("flood_msgs", "4", 0);
+	flood_persecond = QNew (com_genericPool, 0) CCvar ("flood_persecond", "4", 0);
+	flood_waitdelay = QNew (com_genericPool, 0) CCvar ("flood_waitdelay", "10", 0);
 
 	// dm map list
-	sv_maplist = QNew (com_gamePool, 0) CCvar ("sv_maplist", "", 0);
+	sv_maplist = QNew (com_genericPool, 0) CCvar ("sv_maplist", "", 0);
 	
-	map_debug = QNew (com_gamePool, 0) CCvar ("map_debug", "0", CVAR_LATCH_SERVER);
-	cc_techflags = QNew (com_gamePool, 0) CCvar ("cc_techflags", "0", CVAR_LATCH_SERVER);
+	map_debug = QNew (com_genericPool, 0) CCvar ("map_debug", "0", CVAR_LATCH_SERVER);
+	cc_techflags = QNew (com_genericPool, 0) CCvar ("cc_techflags", "0", CVAR_LATCH_SERVER);
 
 	SetupArg ();
 	Cmd_Register ();
 	SvCmd_Register ();
 
 	// Gamemodes
-	deathmatch = QNew (com_gamePool, 0) CCvar ("deathmatch", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	coop = QNew (com_gamePool, 0) CCvar ("coop", "0", CVAR_LATCH_SERVER);
+	deathmatch = QNew (com_genericPool, 0) CCvar ("deathmatch", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
+	coop = QNew (com_genericPool, 0) CCvar ("coop", "0", CVAR_LATCH_SERVER);
 
 #ifdef CLEANCTF_ENABLED
 //ZOID
-	capturelimit = QNew (com_gamePool, 0) CCvar ("capturelimit", "0", CVAR_SERVERINFO);
-	instantweap = QNew (com_gamePool, 0) CCvar ("instantweap", "0", CVAR_SERVERINFO);
+	capturelimit = QNew (com_genericPool, 0) CCvar ("capturelimit", "0", CVAR_SERVERINFO);
+	instantweap = QNew (com_genericPool, 0) CCvar ("instantweap", "0", CVAR_SERVERINFO);
 
 	// Setup CTF if we have it
 	CTFInit();
 #endif
 
-	sv_airaccelerate = QNew (com_gamePool, 0) CCvar("sv_airaccelerate", "0", CVAR_SERVERINFO);
+	sv_airaccelerate = QNew (com_genericPool, 0) CCvar("sv_airaccelerate", "0", CVAR_SERVERINFO);
 
 #ifdef MONSTERS_USE_PATHFINDING
 	Nodes_Register ();
@@ -642,13 +642,13 @@ void CC_InitGame ()
 
 	// initialize all entities for this game
 	game.maxentities = maxentities->Integer();
-	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];//(edict_t*)gi.TagMalloc (game.maxentities * sizeof(g_edicts[0]), TAG_GAME);
+	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
 	globals.edicts = g_edicts;
 	globals.maxEdicts = game.maxentities;
 
 	// initialize all clients for this game
 	game.maxclients = maxclients->Integer();
-	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];//(gclient_t*)gi.TagMalloc (game.maxclients * sizeof(game.clients[0]), TAG_GAME);
+	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
 	globals.numEdicts = game.maxclients+1;
 
 	// Vars
@@ -667,8 +667,8 @@ void CC_ShutdownGame ()
 {
 	DebugPrintf ("==== ShutdownGame ====\n");
 
-	Cmd_RemoveCommands ();
-	SvCmd_RemoveCommands ();
+	//Cmd_RemoveCommands ();
+	//SvCmd_RemoveCommands ();
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();

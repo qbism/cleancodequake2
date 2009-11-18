@@ -60,9 +60,23 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMonsterBoss3Stand)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
 	}
 
 	bool Run ()

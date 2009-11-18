@@ -44,6 +44,7 @@ public:
 	void Use (CBaseEntity *other, CBaseEntity *activator);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetChangeLevel)
 
 	void Spawn ();
 };

@@ -40,6 +40,7 @@ public:
 	CPathCorner (sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CPathCorner)
 
 	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 	virtual void Spawn ();

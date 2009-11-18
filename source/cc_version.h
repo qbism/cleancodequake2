@@ -34,9 +34,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_VERSION_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_VERSION_H__
 
-#define TO_STRING2(x) #x
-#define TO_STRING(x) TO_STRING2(x)
-
 #define CLEANCODE_VERSION_PREFIX	"pr"
 #define CLEANCODE_VERSION_MAJOR_N	0			// x
 #define CLEANCODE_VERSION_MINOR_N	0			// xxxx

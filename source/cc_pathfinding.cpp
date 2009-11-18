@@ -47,13 +47,15 @@ public:
 	  CBaseEntity ()
 	  {
 	  };
+
+	IMPLEMENT_SAVE_HEADER(CNodeEntity)
 };
 
 void SpawnNodeEntity (CPathNode *Node);
 void CheckNodeFlags (CPathNode *Node);
 size_t GetNodeIndex (CPathNode *Node);
 
-typedef std::vector<CPathNode*, std::game_allocator<CPathNode*> > TPathNodeContainer;
+typedef std::vector<CPathNode*, std::generic_allocator<CPathNode*> > TPathNodeContainer;
 TPathNodeContainer		Closed, Open;
 
 #define MAX_SAVED_PATHS	512
@@ -263,7 +265,7 @@ CCvar *DebugNodes;
 void Nodes_Register ()
 {
 	Cmd_AddCommand ("node",				Cmd_Node_f);
-	DebugNodes = QNew (com_gamePool, 0) CCvar("node_debug", "0", CVAR_LATCH_SERVER);
+	DebugNodes = QNew (com_genericPool, 0) CCvar("node_debug", "0", CVAR_LATCH_SERVER);
 }
 
 void InitNodes ()
@@ -345,7 +347,7 @@ void SpawnNodeEntity (CPathNode *Node)
 	if (!DebugNodes->Integer())
 		return;
 
-	Node->Ent = new CNodeEntity;
+	Node->Ent = QNew (com_levelPool, 0) CNodeEntity;
 	Node->Ent->State.GetModelIndex() = ModelIndex("models/objects/grenade2/tris.md2");
 	Node->Ent->State.GetOrigin() = Node->Origin;
 	Node->Ent->Link ();

@@ -37,11 +37,23 @@ public:
 	CTurretEntityBase ();
 	CTurretEntityBase (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CTurretEntityBase)
+
 	void Blocked (CBaseEntity *other);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	};
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBrushModel::SaveFields (File);
+	};
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBrushModel::LoadFields (File);
 	};
 
 	bool Run ();
@@ -56,6 +68,7 @@ public:
 	char	*Target;
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTurretBreach)
 
 	CTurretBreach ();
 	CTurretBreach (sint32 Index);
@@ -71,6 +84,8 @@ class CTurretBase : public CTurretEntityBase
 public:
 	CTurretBase ();
 	CTurretBase (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CTurretBase)
 
 	void Spawn ();
 };

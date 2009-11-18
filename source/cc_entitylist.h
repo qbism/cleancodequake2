@@ -64,7 +64,8 @@ CBaseEntity *ResolveMapEntity (edict_t *ent);
 		return newClass; \
 	} \
 	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _Linker) \
-	(LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn), mapClassName);
+	(LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn), mapClassName); \
+	IMPLEMENT_SAVE_STRUCTURE (DLLClassName,DLLClassName)
 
 #else
 FILE_WARNING

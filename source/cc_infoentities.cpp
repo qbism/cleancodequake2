@@ -80,6 +80,8 @@ public:
 		{
 		};
 
+	IMPLEMENT_SAVE_HEADER(CTeleporterDest)
+
 	virtual void Spawn ()
 	{
 		CSpotBase::Spawn ();
@@ -109,6 +111,8 @@ public:
 	  Dest (NULL)
 	  {
 	  };
+
+	IMPLEMENT_SAVE_HEADER(CTeleporterTrigger)
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -174,6 +178,19 @@ public:
 		return (CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
 	};
 
+	void SaveFields (CFile &File)
+	{
+		sint32 Index = -1;
+		if (Dest)
+			Index = Dest->gameEntity->state.number;
+		File.Write (&Index, sizeof(Index));
+
+		CBrushModel::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File);
+
 	bool Run ()
 	{
 		return CMapEntity::Run ();
@@ -191,6 +208,7 @@ public:
 	char			*Target;
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTeleporter)
 
 	CTeleporter () :
 		CBaseEntity (),
@@ -239,7 +257,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTeleporter)
 {
-	CEntityField ("target", EntityMemberOffset(CTeleporter,Target), FT_LEVEL_STRING),
+	CEntityField ("target", EntityMemberOffset(CTeleporter,Target), FT_LEVEL_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTeleporter)
 
@@ -252,11 +270,52 @@ bool			CTeleporter::ParseField (const char *Key, const char *Value)
 	return (CMapEntity::ParseField (Key, Value));
 };
 
+void		CTeleporter::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTeleporter> (this, File);
+}
+
+void		CTeleporter::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTeleporter> (this, File);
+}
+
 LINK_CLASSNAME_TO_CLASS ("misc_teleporter", CTeleporter);
+
+void CTeleporterTrigger::LoadFields (CFile &File)
+{
+	sint32 Index;
+	File.Read (&Index, sizeof(Index));
+
+	if (Index != -1)
+		Dest = g_edicts[Index].Entity;
+	else
+		Dest = NULL;
+
+	Target = entity_cast<CTeleporter>(GetOwner())->Target;
+
+	CBrushModel::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
 
 /*QUAKED trigger_teleport (0.5 0.5 0.5) ?
 Players touching this will be teleported
 */
+class CNoiseMaker : public CBaseEntity
+{
+public:
+	CNoiseMaker () :
+		CBaseEntity ()
+		{
+		};
+
+	CNoiseMaker (int Index) :
+		CBaseEntity (Index)
+		{
+		};
+
+	IMPLEMENT_SAVE_HEADER(CNoiseMaker)
+};
 class CTriggerTeleportDest : public CTeleporterTrigger
 {
 public:
@@ -272,14 +331,8 @@ public:
 	  {
 	  };
 
-	class NoiseMaker : public CBaseEntity
-	{
-	public:
-		NoiseMaker () :
-			CBaseEntity ()
-			{
-			};
-	};
+	IMPLEMENT_SAVE_HEADER(CTriggerTeleportDest)
+
 	void Spawn ()
 	{
 		if (!Target)
@@ -296,12 +349,14 @@ public:
 		Link ();
 
 		// noise maker and splash effect dude
-		NoiseMaker *s = QNew (com_levelPool, 0) NoiseMaker;
+		CNoiseMaker *s = QNew (com_levelPool, 0) CNoiseMaker;
 		s->State.GetOrigin() = (GetMins() + ((GetMaxs() - GetMins()) / 2));
 		s->State.GetSound() = SoundIndex ("world/hum1.wav");
 		s->Link ();
 	};
 };
+
+IMPLEMENT_SAVE_SOURCE(CNoiseMaker)
 
 LINK_CLASSNAME_TO_CLASS ("trigger_teleport", CTriggerTeleportDest);
 
@@ -322,6 +377,8 @@ public:
 		CSpotBase (Index)
 		{
 		};
+
+	IMPLEMENT_SAVE_HEADER(CInfoTeleportDest)
 
 	void Spawn ()
 	{
@@ -351,6 +408,8 @@ public:
 		CSpotBase (Index)
 		{
 		};
+
+	IMPLEMENT_SAVE_HEADER(CPlayerDeathmatch)
 
 	virtual void Spawn ()
 	{
@@ -392,6 +451,18 @@ public:
 		CSpotBase (Index)
 		{
 		};
+
+	IMPLEMENT_SAVE_HEADER(CPlayerCoop)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	};
 
 	// this function is an ugly as hell hack to fix some map flaws
 	//
@@ -480,6 +551,8 @@ public:
 		{
 		};
 
+	IMPLEMENT_SAVE_HEADER(CPlayerIntermission)
+
 	void Spawn ()
 	{
 	};
@@ -506,6 +579,18 @@ public:
 		CSpotBase (Index)
 		{
 		};
+
+	IMPLEMENT_SAVE_HEADER(CPlayerStart)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	};
 
 	// some maps don't have any coop spots at all, so we need to create them
 	// where they should have been
@@ -562,6 +647,8 @@ public:
 		{
 		};
 
+	IMPLEMENT_SAVE_HEADER(CPlayerTeam1)
+
 	void Spawn ()
 	{
 	};
@@ -586,6 +673,8 @@ public:
 		CSpotBase (Index)
 		{
 		};
+
+	IMPLEMENT_SAVE_HEADER(CPlayerTeam2)
 
 	void Spawn ()
 	{
@@ -705,7 +794,7 @@ void CPathCorner::Spawn ()
 
 ENTITYFIELDS_BEGIN(CPathCorner)
 {
-	CEntityField ("wait", EntityMemberOffset(CPathCorner,Wait), FT_FRAMENUMBER),
+	CEntityField ("wait", EntityMemberOffset(CPathCorner,Wait), FT_FRAMENUMBER | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CPathCorner)
 
@@ -717,6 +806,18 @@ bool			CPathCorner::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CPathCorner::SaveFields (CFile &File)
+{
+	SaveEntityFields <CPathCorner> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CPathCorner::LoadFields (CFile &File)
+{
+	LoadEntityFields <CPathCorner> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("path_corner", CPathCorner);
 
@@ -835,6 +936,8 @@ public:
 	  {
 	  };
 
+	IMPLEMENT_SAVE_HEADER(CInfoNull)
+
 	void Spawn ()
 	{
 		Free ();
@@ -854,6 +957,8 @@ public:
 	  CInfoNull (Index)
 	  {
 	  };
+
+	  IMPLEMENT_SAVE_HEADER(CFuncGroup)
 };
 
 LINK_CLASSNAME_TO_CLASS ("func_group", CFuncGroup);
@@ -869,6 +974,8 @@ public:
 	  CMapEntity (Index)
 	  {
 	  };
+
+	IMPLEMENT_SAVE_HEADER(CInfoNotNull)
 
 	void Spawn ()
 	{
@@ -902,6 +1009,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CLight)
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
@@ -939,7 +1047,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CLight)
 {
-	CEntityField ("style", EntityMemberOffset(CLight,Style), FT_BYTE),
+	CEntityField ("style", EntityMemberOffset(CLight,Style), FT_BYTE | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CLight)
 
@@ -949,6 +1057,18 @@ bool CLight::ParseField (const char *Key, const char *Value)
 		return true;
 
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
+void		CLight::SaveFields (CFile &File)
+{
+	SaveEntityFields <CLight> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CLight::LoadFields (CFile &File)
+{
+	LoadEntityFields <CLight> (this, File);
+	CUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("light", CLight);
@@ -989,6 +1109,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetLightRamp)
 
 	bool Run ()
 	{
@@ -1073,8 +1194,8 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetLightRamp)
 {
-	CEntityField ("speed", EntityMemberOffset(CTargetLightRamp,Speed), FT_FLOAT),
-	CEntityField ("style", EntityMemberOffset(CTargetLightRamp,Style), FT_BYTE),
+	CEntityField ("speed", EntityMemberOffset(CTargetLightRamp,Speed), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("style", EntityMemberOffset(CTargetLightRamp,Style), FT_BYTE | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetLightRamp)
 
@@ -1086,5 +1207,19 @@ bool			CTargetLightRamp::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CTargetLightRamp::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetLightRamp> (this, File);
+	CUsableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+}
+
+void		CTargetLightRamp::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetLightRamp> (this, File);
+	CUsableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_lightramp", CTargetLightRamp);

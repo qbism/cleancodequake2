@@ -302,9 +302,9 @@ CColorPalette::CColorPalette (colorb *palette, sint32 numColors) :
 palette(palette),
 numColors(numColors)
 {
-	redSortedValues = QNew (com_gamePool, 0) uint8[numColors];
-	greenSortedValues = QNew (com_gamePool, 0) uint8[numColors];
-	blueSortedValues = QNew (com_gamePool, 0) uint8[numColors];
+	redSortedValues = QNew (com_genericPool, 0) uint8[numColors];
+	greenSortedValues = QNew (com_genericPool, 0) uint8[numColors];
+	blueSortedValues = QNew (com_genericPool, 0) uint8[numColors];
 
 	SortPaletteColorIndexes (redSortedValues, 0);
 	SortPaletteColorIndexes (greenSortedValues, 1);

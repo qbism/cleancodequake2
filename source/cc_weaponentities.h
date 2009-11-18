@@ -42,6 +42,26 @@ public:
 	CGrenade ();
 	CGrenade (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER(CGrenade)
+
+	void SaveFields (CFile &File)
+	{
+		File.Write (&Damage, sizeof(Damage));
+		File.Write (&Damage, sizeof(RadiusDamage));
+
+		CThinkableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		File.Read (&Damage, sizeof(Damage));
+		File.Read (&Damage, sizeof(RadiusDamage));
+
+		CThinkableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
+
 	void Think ();
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
@@ -61,6 +81,24 @@ public:
 	CBlasterProjectile ();
 	CBlasterProjectile (sint32 Index);
 
+	IMPLEMENT_SAVE_HEADER (CBlasterProjectile)
+
+	void SaveFields (CFile &File)
+	{
+		File.Write (&Damage, sizeof(Damage));
+
+		CThinkableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		File.Read (&Damage, sizeof(Damage));
+
+		CThinkableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
+
 	void Think ();
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 
@@ -78,6 +116,28 @@ public:
 
 	CRocket ();
 	CRocket (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CRocket)
+
+	void SaveFields (CFile &File)
+	{
+		File.Write (&Damage, sizeof(Damage));
+		File.Write (&DamageRadius, sizeof(DamageRadius));
+		File.Write (&DamageRadius, sizeof(DamageRadius));
+
+		CThinkableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		File.Read (&Damage, sizeof(Damage));
+		File.Read (&DamageRadius, sizeof(DamageRadius));
+		File.Read (&DamageRadius, sizeof(DamageRadius));
+
+		CThinkableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
 
 	void Think ();
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
@@ -97,6 +157,30 @@ public:
 
 	CBFGBolt ();
 	CBFGBolt (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CBFGBolt)
+
+	void SaveFields (CFile &File)
+	{
+		File.Write (&Exploded, sizeof(Exploded));
+		File.Write (&Damage, sizeof(Damage));
+		File.Write (&DamageRadius, sizeof(DamageRadius));
+		File.Write (&FreeTime, sizeof(FreeTime));
+
+		CThinkableEntity::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		File.Read (&Exploded, sizeof(Exploded));
+		File.Read (&Damage, sizeof(Damage));
+		File.Read (&DamageRadius, sizeof(DamageRadius));
+		File.Read (&FreeTime, sizeof(FreeTime));
+
+		CThinkableEntity::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
 
 	void Think ();
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
@@ -194,6 +278,9 @@ class CGrappleEntity : public CFlyMissileProjectile, public CTouchableEntity
 public:
 	CGrappleEntity ();
 	CGrappleEntity (sint32 Index);
+
+	ENTITYFIELDS_NONSAVABLE
+	IMPLEMENT_SAVE_HEADER(CGrappleEntity)
 
 	void ResetGrapple ();
 	void GrapplePull ();

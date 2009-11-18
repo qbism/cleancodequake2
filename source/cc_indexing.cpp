@@ -63,14 +63,18 @@ sint32 CIndexList::GetIndex (const char *String)
 
 sint32 CIndexList::AddToList (const char *String, MediaIndex Index)
 {
-	CIndex *NewIndex = QNew (com_gamePool, 0) CIndex;
+	if (!firstIndex)
+		firstIndex = Index;
+
+	CIndex *NewIndex = QNew (com_genericPool, 0) CIndex;
 	NewIndex->Index = Index;
-	NewIndex->Name = QNew (com_gamePool, 0) char[strlen(String)+1];
+	NewIndex->Name = QNew (com_genericPool, 0) char[strlen(String)+1];
 	NewIndex->HashValue = Com_HashGeneric (String, MAX_INDEXES);
 
 	Q_snprintfz(NewIndex->Name, strlen(String)+1, "%s", String);
 
-	List[numIndexes++] = NewIndex;
+	List[Index] = NewIndex;
+	numIndexes++;
 
 	NewIndex->HashNext = HashList[NewIndex->HashValue];
 	HashList[NewIndex->HashValue] = NewIndex;
@@ -81,6 +85,23 @@ sint32 CIndexList::AddToList (const char *String, MediaIndex Index)
 inline bool OverFlow ()
 {
 	return ((ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes) >= 255);
+}
+
+const char *StringFromSoundIndex (MediaIndex Index)
+{
+	return SoundList.List[Index]->Name;
+}
+
+const char *StringFromModelIndex (MediaIndex Index)
+{
+	if (Index <= ModelList.firstIndex || Index == 255)
+		return NULL;
+	return ModelList.List[Index]->Name;
+}
+
+const char *StringFromImageIndex (MediaIndex Index)
+{
+	return ImageList.List[Index]->Name;
 }
 
 _CC_DISABLE_DEPRECATION

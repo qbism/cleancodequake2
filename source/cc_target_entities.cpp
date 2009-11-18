@@ -75,6 +75,7 @@ public:
 	  };
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetSpeaker)
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
@@ -120,8 +121,8 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetSpeaker)
 {
-	CEntityField ("volume", EntityMemberOffset(CTargetSpeaker,Volume), FT_FLOAT),
-	CEntityField ("attenuation", EntityMemberOffset(CTargetSpeaker,Attenuation), FT_INT)
+	CEntityField ("volume", EntityMemberOffset(CTargetSpeaker,Volume), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("attenuation", EntityMemberOffset(CTargetSpeaker,Attenuation), FT_INT | FT_SAVABLE)
 };
 ENTITYFIELDS_END(CTargetSpeaker)
 
@@ -132,6 +133,18 @@ bool			CTargetSpeaker::ParseField (const char *Key, const char *Value)
 
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CTargetSpeaker::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetSpeaker> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CTargetSpeaker::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetSpeaker> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_speaker", CTargetSpeaker);
 
@@ -159,6 +172,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetExplosion)
 
 	bool Run ()
 	{
@@ -211,6 +225,17 @@ bool			CTargetExplosion::ParseField (const char *Key, const char *Value)
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
 
+void		CTargetExplosion::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetExplosion> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CTargetExplosion::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetExplosion> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_explosion", CTargetExplosion);
 
@@ -249,6 +274,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetSpawner)
 
 	bool Run ()
 	{
@@ -286,7 +312,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetSpawner)
 {
-	CEntityField ("speed", EntityMemberOffset(CTargetSpawner,Speed), FT_FLOAT),
+	CEntityField ("speed", EntityMemberOffset(CTargetSpawner,Speed), FT_FLOAT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetSpawner)
 
@@ -298,6 +324,18 @@ bool			CTargetSpawner::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CTargetSpawner::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetSpawner> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CTargetSpawner::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetSpawner> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_spawner", CTargetSpawner);
 
@@ -343,6 +381,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetSplash)
 
 	bool Run ()
 	{
@@ -370,9 +409,9 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetSplash)
 {
-	CEntityField ("dmg", EntityMemberOffset(CTargetSplash,Damage), FT_INT),
-	CEntityField ("sounds", EntityMemberOffset(CTargetSplash,Color), FT_BYTE),
-	CEntityField ("count", EntityMemberOffset(CTargetSplash,Count), FT_BYTE),
+	CEntityField ("dmg", EntityMemberOffset(CTargetSplash,Damage), FT_INT | FT_SAVABLE),
+	CEntityField ("sounds", EntityMemberOffset(CTargetSplash,Color), FT_BYTE | FT_SAVABLE),
+	CEntityField ("count", EntityMemberOffset(CTargetSplash,Count), FT_BYTE | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetSplash)
 
@@ -384,6 +423,18 @@ bool			CTargetSplash::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CTargetSplash::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetSplash> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CTargetSplash::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetSplash> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_splash", CTargetSplash);
 
@@ -411,6 +462,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetTempEntity)
 
 	bool Run ()
 	{
@@ -432,7 +484,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetTempEntity)
 {
-	CEntityField ("style", EntityMemberOffset(CTargetTempEntity,Style), FT_BYTE),
+	CEntityField ("style", EntityMemberOffset(CTargetTempEntity,Style), FT_BYTE | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetTempEntity)
 
@@ -442,6 +494,18 @@ bool CTargetTempEntity::ParseField (const char *Key, const char *Value)
 		return true;
 
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
+void		CTargetTempEntity::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetTempEntity> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CTargetTempEntity::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetTempEntity> (this, File);
+	CUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_temp_entity", CTargetTempEntity);
@@ -622,7 +686,7 @@ void CTargetChangeLevel::Spawn ()
 
 ENTITYFIELDS_BEGIN(CTargetChangeLevel)
 {
-	CEntityField ("map", EntityMemberOffset(CTargetChangeLevel,Map), FT_LEVEL_STRING),
+	CEntityField ("map", EntityMemberOffset(CTargetChangeLevel,Map), FT_LEVEL_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetChangeLevel)
 
@@ -634,6 +698,18 @@ bool			CTargetChangeLevel::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void			CTargetChangeLevel::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetChangeLevel> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void			CTargetChangeLevel::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetChangeLevel> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_changelevel", CTargetChangeLevel);
 
@@ -668,10 +744,22 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CCTargetCrossLevelTrigger)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+	};
 
 	bool Run ()
 	{
@@ -715,9 +803,23 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CTargetCrossLevelTarget)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
 	}
 
 	void Use (CBaseEntity *, CBaseEntity *)
@@ -751,6 +853,12 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("target_crosslevel_target", CTargetCrossLevelTarget);
 
+void FireCrosslevelTrigger (CBaseEntity *Entity)
+{
+	CTargetCrossLevelTarget *Target = entity_cast<CTargetCrossLevelTarget>(Entity);
+	Target->NextThink = level.Frame + Target->Delay;
+}
+
 /*QUAKED target_secret (1 0 1) (-8 -8 -8) (8 8 8)
 Counts a secret found.
 These are single use targets.
@@ -772,7 +880,19 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CTargetSecret)
+
 	virtual bool ParseField (const char *Key, const char *Value);
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+	};
 
 	bool Run ()
 	{
@@ -838,7 +958,19 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CTargetGoal)
+
 	virtual bool ParseField (const char *Key, const char *Value);
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+	};
 
 	bool Run ()
 	{
@@ -913,6 +1045,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetBlaster)
 
 	bool Run ()
 	{
@@ -941,8 +1074,8 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetBlaster)
 {
-	CEntityField ("speed", EntityMemberOffset(CTargetBlaster,Speed), FT_FLOAT),
-	CEntityField ("dmg", EntityMemberOffset(CTargetBlaster,Damage), FT_INT),
+	CEntityField ("speed", EntityMemberOffset(CTargetBlaster,Speed), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("dmg", EntityMemberOffset(CTargetBlaster,Damage), FT_INT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetBlaster)
 
@@ -954,6 +1087,18 @@ bool			CTargetBlaster::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CTargetBlaster::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetBlaster> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CTargetBlaster::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetBlaster> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_blaster", CTargetBlaster);
 
@@ -997,6 +1142,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetLaser)
 
 	bool Run ()
 	{
@@ -1156,7 +1302,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetLaser)
 {
-	CEntityField ("dmg", EntityMemberOffset(CTargetLaser,Damage), FT_INT),
+	CEntityField ("dmg", EntityMemberOffset(CTargetLaser,Damage), FT_INT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetLaser)
 
@@ -1168,6 +1314,18 @@ bool			CTargetLaser::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void			CTargetLaser::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetLaser> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void			CTargetLaser::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetLaser> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_laser", CTargetLaser);
 
@@ -1191,10 +1349,22 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CTargetHelp)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+	};
 
 	bool Run ()
 	{
@@ -1263,6 +1433,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetEarthquake)
 
 	bool Run ()
 	{
@@ -1334,8 +1505,8 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetEarthquake)
 {
-	CEntityField ("speed", EntityMemberOffset(CTargetEarthquake,Speed), FT_FLOAT),
-	CEntityField ("count", EntityMemberOffset(CTargetEarthquake,Duration), FT_FRAMENUMBER),
+	CEntityField ("speed", EntityMemberOffset(CTargetEarthquake,Speed), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("count", EntityMemberOffset(CTargetEarthquake,Duration), FT_FRAMENUMBER | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetEarthquake)
 
@@ -1347,5 +1518,17 @@ bool			CTargetEarthquake::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void			CTargetEarthquake::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetEarthquake> (this, File);
+	CUsableEntity::SaveFields (File);
+}
+
+void			CTargetEarthquake::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetEarthquake> (this, File);
+	CUsableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("target_earthquake", CTargetEarthquake);

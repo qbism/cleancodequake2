@@ -379,6 +379,9 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 {
 	fsHandleIndex *handleIndex = FS_GetHandle(handle);
 
+	if (!(handleIndex->openMode & FILEMODE_READ))
+		_CC_ASSERT_EXPR (0, "Tried to read on a write\n");
+
 	if (handleIndex)
 		fread (buffer, size, 1, handleIndex->regFile);
 }
@@ -387,6 +390,9 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 void FS_Write (void *buffer, size_t size, fileHandle_t &handle)
 {
 	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+
+	if (!(handleIndex->openMode & FILEMODE_WRITE))
+		_CC_ASSERT_EXPR (0, "Tried to write on a read\n");
 
 	if (handleIndex)
 		fwrite (buffer, size, 1, handleIndex->regFile);

@@ -111,31 +111,6 @@ CC_ENUM (uint16, EGameMode)
 #endif
 };
 
-struct game_locals_t
-{
-	char		helpmessage1[128];
-	char		helpmessage2[128];
-	uint8		helpchanged;	// flash F1 icon if non 0, play sound
-								// and increment only if 1, 2, or 3
-
-	gclient_t	*clients;		// [maxclients]
-
-	// can't store spawnpoint in level, because
-	// it would get overwritten by the savegame restore
-	char		spawnpoint[32];	// needed for coop respawns
-
-	// store latched cvars here that we want to get at often
-	uint8		maxclients;
-	uint8		maxspectators;
-	sint32			maxentities;
-	bool		cheats;
-	EGameMode	mode; // Game mode
-
-	// cross level triggers
-	ECrossLevelTriggerFlags		serverflags;
-	bool		autosaved;
-};
-
 //
 // this structure is cleared as each map is entered
 // it is read/written to the level.sav file for savegames
@@ -167,112 +142,6 @@ public:
 	};
 };
 
-typedef std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> > TKeyValuePairContainer;
-typedef std::list<edict_t*, std::game_allocator<edict_t*> > TEntitiesContainer;
-
-class CLevelLocals
-{
-public:
-	void Clear ()
-	{
-		*this = CLevelLocals();
-	};
-
-	CLevelLocals () :
-	  Frame(0),
-	  FullLevelName (),
-	  ServerLevelName (),
-	  NextMap (),
-	  ForceMap (),
-	  IntermissionTime (0),
-	  ChangeMap (NULL),
-	  ExitIntermission (false),
-	  IntermissionOrigin (),
-	  IntermissionAngles (),
-	  SightClient (NULL),
-#ifndef MONSTERS_USE_PATHFINDING
-	  SightEntity (NULL),
-	  SightEntityFrame (0),
-	  SoundEntity (NULL),
-	  SoundEntityFrame (0),
-	  SoundEntity2 (NULL),
-	  SoundEntity2Frame (0),
-#else
-	  NoiseNode (NULL),
-	  SoundEntityFramenum (0),
-	  SoundEntity (NULL),
-#endif
-	  CurrentEntity (NULL),
-	  PowerCubeCount (0),
-	  Inhibit (0),
-	  EntityNumber (0),
-	  ClassName (),
-	  ParseData (),
-	  Demo (false)
-	  {
-		  Secrets.Found = Secrets.Total = 0;
-		  Goals.Found = Goals.Total = 0;
-		  Monsters.Killed = Monsters.Total = 0;
-		  Entities.Open.clear ();
-		  Entities.Closed.clear ();
-	  };
-
-	FrameNumber_t	Frame;
-
-	std::cc_string	FullLevelName;		// the descriptive name (Outer Base, etc)
-	std::cc_string	ServerLevelName;		// the server name (base1, etc)
-	std::cc_string	NextMap;		// go here when fraglimit is hit
-	std::cc_string	ForceMap;		// go here
-
-	// intermission state
-	FrameNumber_t		IntermissionTime;		// time the intermission was started
-	char		*ChangeMap;
-	bool		ExitIntermission;
-	vec3f		IntermissionOrigin;
-	vec3f		IntermissionAngles;
-
-	CPlayerEntity		*SightClient;	// changed once each frame for coop games
-
-#ifndef MONSTERS_USE_PATHFINDING
-	CBaseEntity	*SightEntity;
-	FrameNumber_t	SightEntityFrame;
-	CBaseEntity	*SoundEntity;
-	FrameNumber_t	SoundEntityFrame;
-	CBaseEntity	*SoundEntity2;
-	FrameNumber_t	SoundEntity2Frame;
-#else
-	class		CPathNode	*NoiseNode;
-	float		SoundEntityFramenum;
-	CPlayerEntity		*SoundEntity;
-#endif
-
-	GoalList_t	Secrets;
-	GoalList_t	Goals;
-
-	struct MonsterCount_t
-	{
-		uint16		Total;
-		uint16		Killed;
-	} Monsters;
-
-	CBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
-
-	uint8		PowerCubeCount;		// ugly necessity for coop
-	uint32		Inhibit;
-	uint32		EntityNumber;
-
-	std::cc_string			ClassName;
-	TKeyValuePairContainer	ParseData;
-
-	// Entity list
-	struct entities_t
-	{
-		TEntitiesContainer		Open, Closed;
-	} Entities;
-
-	bool		Demo;
-};
-
 CC_ENUM (uint8, EFuncState)
 {
 	STATE_TOP,
@@ -280,9 +149,6 @@ CC_ENUM (uint8, EFuncState)
 	STATE_UP,
 	STATE_DOWN
 };
-
-extern	game_locals_t	game;
-extern	CLevelLocals	level;
 
 // means of death
 CC_ENUM (uint32, EMeansOfDeath)
@@ -486,20 +352,6 @@ void	G_FreeEdict (edict_t *e);
 
 void	ED_CallSpawn (edict_t *ent);
 
-inline CBaseEntity *CreateEntityFromClassname (const char *classname)
-{
-_CC_DISABLE_DEPRECATION
-	edict_t *ent = G_Spawn ();
-
-	level.ClassName = classname;
-	ED_CallSpawn (ent);
-
-	if (ent->inUse && ent->Entity && !ent->Entity->Freed)
-		return ent->Entity;
-	return NULL;
-_CC_ENABLE_DEPRECATION
-}
-
 extern	CCvar	*maxentities;
 extern	CCvar	*deathmatch;
 extern	CCvar	*coop;
@@ -550,6 +402,351 @@ extern CCvar	*sv_airaccelerate;
 
 extern CBaseEntity *World;
 extern CItemList *ItemList;
+
+class game_locals_t
+{
+public:
+	game_locals_t () :
+	  helpchanged (0),
+	  clients (NULL),
+	  maxclients (0),
+	  maxspectators (0),
+	  maxentities (0),
+	  cheats (false),
+	  mode (0),
+	  serverflags (0),
+	  autosaved (false)
+	  {
+		  memset (&helpmessage1, 0, sizeof(helpmessage1));
+		  memset (&helpmessage2, 0, sizeof(helpmessage2));
+		  memset (&spawnpoint, 0, sizeof(spawnpoint));
+	  };
+
+	void Save (CFile &File)
+	{
+		File.Write (&helpmessage1, sizeof(helpmessage1));
+		File.Write (&helpmessage2, sizeof(helpmessage2));
+		File.Write (&helpchanged, sizeof(helpchanged));
+		File.Write (&spawnpoint, sizeof(spawnpoint));
+		File.Write (&maxclients, sizeof(maxclients));
+		File.Write (&maxspectators, sizeof(maxspectators));
+		File.Write (&maxentities, sizeof(maxentities));
+		File.Write (&cheats, sizeof(cheats));
+		File.Write (&mode, sizeof(mode));
+		File.Write (&serverflags, sizeof(serverflags));
+		File.Write (&autosaved, sizeof(autosaved));
+	}
+
+	void Load (CFile &File)
+	{
+		File.Read (&helpmessage1, sizeof(helpmessage1));
+		File.Read (&helpmessage2, sizeof(helpmessage2));
+		File.Read (&helpchanged, sizeof(helpchanged));
+		File.Read (&spawnpoint, sizeof(spawnpoint));
+		File.Read (&maxclients, sizeof(maxclients));
+		File.Read (&maxspectators, sizeof(maxspectators));
+		File.Read (&maxentities, sizeof(maxentities));
+		File.Read (&cheats, sizeof(cheats));
+		File.Read (&mode, sizeof(mode));
+		File.Read (&serverflags, sizeof(serverflags));
+		File.Read (&autosaved, sizeof(autosaved));
+	}
+
+	char		helpmessage1[128];
+	char		helpmessage2[128];
+	uint8		helpchanged;	// flash F1 icon if non 0, play sound
+								// and increment only if 1, 2, or 3
+
+	gclient_t	*clients;		// [maxclients]
+
+	// can't store spawnpoint in level, because
+	// it would get overwritten by the savegame restore
+	char		spawnpoint[32];	// needed for coop respawns
+
+	// store latched cvars here that we want to get at often
+	uint8		maxclients;
+	uint8		maxspectators;
+	sint32			maxentities;
+	bool		cheats;
+	EGameMode	mode; // Game mode
+
+	// cross level triggers
+	ECrossLevelTriggerFlags		serverflags;
+	bool		autosaved;
+};
+
+typedef std::list<CKeyValuePair*, std::generic_allocator<CKeyValuePair*> > TKeyValuePairContainer;
+typedef std::list<edict_t*, std::generic_allocator<edict_t*> > TEntitiesContainer;
+
+class CLevelLocals
+{
+public:
+	void Clear ()
+	{
+		*this = CLevelLocals();
+	};
+
+	CLevelLocals () :
+	  Frame(0),
+	  FullLevelName (),
+	  ServerLevelName (),
+	  NextMap (),
+	  ForceMap (),
+	  IntermissionTime (0),
+	  ChangeMap (NULL),
+	  ExitIntermission (false),
+	  IntermissionOrigin (),
+	  IntermissionAngles (),
+	  SightClient (NULL),
+#ifndef MONSTERS_USE_PATHFINDING
+	  SightEntity (NULL),
+	  SightEntityFrame (0),
+	  SoundEntity (NULL),
+	  SoundEntityFrame (0),
+	  SoundEntity2 (NULL),
+	  SoundEntity2Frame (0),
+#else
+	  NoiseNode (NULL),
+	  SoundEntityFramenum (0),
+	  SoundEntity (NULL),
+#endif
+	  CurrentEntity (NULL),
+	  PowerCubeCount (0),
+	  Inhibit (0),
+	  EntityNumber (0),
+	  ClassName (),
+	  ParseData (),
+	  Demo (false)
+	  {
+		  Secrets.Found = Secrets.Total = 0;
+		  Goals.Found = Goals.Total = 0;
+		  Monsters.Killed = Monsters.Total = 0;
+		  Entities.Open.clear ();
+		  Entities.Closed.clear ();
+	  };
+
+	void Save (CFile &File)
+	{
+		File.Write (&Frame, sizeof(Frame));
+
+		size_t len = FullLevelName.size();
+		File.Write (&len, sizeof(len));
+		File.Write ((void*)FullLevelName.c_str(), len);
+
+		len = ServerLevelName.size();
+		File.Write (&len, sizeof(len));
+		File.Write ((void*)ServerLevelName.c_str(), len);
+
+		len = NextMap.size();
+		File.Write (&len, sizeof(len));
+		if (len)
+			File.Write ((void*)NextMap.c_str(), len);
+
+		len = ForceMap.size();
+		File.Write (&len, sizeof(len));
+		if (len)
+			File.Write ((void*)ForceMap.c_str(), len);
+
+		File.Write (&IntermissionTime, sizeof(IntermissionTime));
+		File.Write (&ExitIntermission, sizeof(ExitIntermission));
+		File.Write (&IntermissionOrigin, sizeof(IntermissionOrigin));
+		File.Write (&IntermissionAngles, sizeof(IntermissionAngles));
+
+		sint32 Index = -1;
+		if (SightClient)
+			Index = SightClient->gameEntity->state.number;
+
+		File.Write (&Index, sizeof(Index));
+		File.Write (&Secrets, sizeof(Secrets));
+		File.Write (&Goals, sizeof(Goals));
+		File.Write (&Monsters, sizeof(Monsters));
+		File.Write (&PowerCubeCount, sizeof(PowerCubeCount));
+		File.Write (&Inhibit, sizeof(Inhibit));
+		File.Write (&EntityNumber, sizeof(EntityNumber));
+
+		Entities.Save (File);
+	};
+
+	void Load (CFile &File)
+	{
+		File.Read (&Frame, sizeof(Frame));
+
+		size_t len;
+		File.Read (&len, sizeof(len));
+
+		char *tempBuffer = QNew (com_levelPool, 0) char[len];
+		File.Read (tempBuffer, len);
+		ServerLevelName = tempBuffer;
+		QDelete[] tempBuffer;
+
+		File.Read (&len, sizeof(len));
+		tempBuffer = QNew (com_levelPool, 0) char[len];
+		File.Read (tempBuffer, len);
+		ServerLevelName = tempBuffer;
+		QDelete[] tempBuffer;
+
+		File.Read (&len, sizeof(len));
+		if (len)
+		{
+			tempBuffer = QNew (com_levelPool, 0) char[len];
+			File.Read (tempBuffer, len);
+			NextMap = tempBuffer;
+			QDelete[] tempBuffer;
+		}
+
+		File.Read (&len, sizeof(len));
+		if (len)
+		{
+			tempBuffer = QNew (com_levelPool, 0) char[len];
+			File.Read (tempBuffer, len);
+			ForceMap = tempBuffer;
+			QDelete[] tempBuffer;
+		}
+
+		File.Read (&IntermissionTime, sizeof(IntermissionTime));
+		File.Read (&ExitIntermission, sizeof(ExitIntermission));
+		File.Read (&IntermissionOrigin, sizeof(IntermissionOrigin));
+		File.Read (&IntermissionAngles, sizeof(IntermissionAngles));
+
+		sint32 Index;
+		File.Read (&Index, sizeof(Index));
+		if (Index != -1)
+			SightClient = entity_cast<CPlayerEntity>(g_edicts[Index].Entity);
+
+		File.Read (&Secrets, sizeof(Secrets));
+		File.Read (&Goals, sizeof(Goals));
+		File.Read (&Monsters, sizeof(Monsters));
+		File.Read (&PowerCubeCount, sizeof(PowerCubeCount));
+		File.Read (&Inhibit, sizeof(Inhibit));
+		File.Read (&EntityNumber, sizeof(EntityNumber));
+
+		Entities.Load (File);
+	};
+
+	FrameNumber_t	Frame;
+
+	std::cc_string	FullLevelName;		// the descriptive name (Outer Base, etc)
+	std::cc_string	ServerLevelName;		// the server name (base1, etc)
+	std::cc_string	NextMap;		// go here when fraglimit is hit
+	std::cc_string	ForceMap;		// go here
+
+	// intermission state
+	FrameNumber_t		IntermissionTime;		// time the intermission was started
+	char		*ChangeMap;
+	bool		ExitIntermission;
+	vec3f		IntermissionOrigin;
+	vec3f		IntermissionAngles;
+
+	CPlayerEntity		*SightClient;	// changed once each frame for coop games
+
+#ifndef MONSTERS_USE_PATHFINDING
+	CBaseEntity	*SightEntity;
+	FrameNumber_t	SightEntityFrame;
+	CBaseEntity	*SoundEntity;
+	FrameNumber_t	SoundEntityFrame;
+	CBaseEntity	*SoundEntity2;
+	FrameNumber_t	SoundEntity2Frame;
+#else
+	class		CPathNode	*NoiseNode;
+	float		SoundEntityFramenum;
+	CPlayerEntity		*SoundEntity;
+#endif
+
+	GoalList_t	Secrets;
+	GoalList_t	Goals;
+
+	struct MonsterCount_t
+	{
+		uint16		Total;
+		uint16		Killed;
+	} Monsters;
+
+	CBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
+
+	uint8		PowerCubeCount;		// ugly necessity for coop
+	uint32		Inhibit;
+	uint32		EntityNumber;
+
+	std::cc_string			ClassName;
+	TKeyValuePairContainer	ParseData;
+
+	// Entity list
+	class entities_t
+	{
+	public:
+		TEntitiesContainer		Open, Closed;
+
+		void Save (CFile &File)
+		{
+			size_t size = Open.size();
+			File.Write (&size, sizeof(size));
+			for (TEntitiesContainer::iterator it = Open.begin(); it != Open.end(); ++it)
+			{
+				edict_t *entity = (*it);
+			
+				// Poop.
+				// Entities can't be guarenteed a number till
+				// they spawn the first time!
+				sint32 number = entity - g_edicts;
+				File.Write (&number, sizeof(number));
+			}
+
+			size = Closed.size();
+			File.Write (&size, sizeof(size));
+			for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
+			{
+				edict_t *entity = (*it);
+				File.Write (&entity->state.number, sizeof(entity->state.number));
+			}
+		};
+
+		void Load (CFile &File)
+		{
+			size_t size;
+			File.Read (&size, sizeof(size));
+
+			Open.clear ();
+			for (size_t i = 0; i < size; i++)
+			{
+				sint32 number;
+				File.Read (&number, sizeof(number));
+
+				Open.push_back (&g_edicts[number]);
+			}
+
+			File.Read (&size, sizeof(size));
+
+			Closed.clear ();
+			for (size_t i = 0; i < size; i++)
+			{
+				sint32 number;
+				File.Read (&number, sizeof(number));
+
+				Closed.push_back (&g_edicts[number]);
+			}
+		};
+
+	} Entities;
+
+	bool		Demo;
+};
+
+extern	game_locals_t	game;
+extern	CLevelLocals	level;
+
+inline CBaseEntity *CreateEntityFromClassname (const char *classname)
+{
+_CC_DISABLE_DEPRECATION
+	edict_t *ent = G_Spawn ();
+
+	level.ClassName = classname;
+	ED_CallSpawn (ent);
+
+	if (ent->inUse && ent->Entity && !ent->Entity->Freed)
+		return ent->Entity;
+	return NULL;
+_CC_ENABLE_DEPRECATION
+}
 
 #else
 FILE_WARNING

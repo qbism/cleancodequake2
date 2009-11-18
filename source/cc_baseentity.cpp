@@ -258,11 +258,12 @@ void G_FreeEdict (edict_t *ed)
 	ed->usedBefore = oldUsedBefore;
 	ed->freetime = level.Frame;
 	ed->inUse = false;
+	ed->state.number = ed - g_edicts;
 
 	RemoveEntityFromList (ed);
 }
 
-typedef std::vector <CBaseEntity*, std::game_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
+typedef std::vector <CBaseEntity*, std::generic_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
 TPrivateEntitiesContainer PrivateEntities;
 
 void InitPrivateEntities ()
@@ -360,6 +361,91 @@ _CC_ENABLE_DEPRECATION
 		}
 	}
 };
+
+void CBaseEntity::WriteBaseEntity (CFile &File)
+{
+	File.Write (&Freed, sizeof(Freed));
+	File.Write (&EntityFlags, sizeof(EntityFlags));
+	File.Write (&Flags, sizeof(Flags));
+
+	size_t len = (!ClassName) ? 0 : (strlen(ClassName) + 1);
+	File.Write (&len, sizeof(len));
+
+	if (len > 1)
+		File.Write (ClassName, len);
+
+	File.Write (&Team.HasTeam, sizeof(Team.HasTeam));
+
+	if (Team.HasTeam)
+	{
+		sint32 ChainNumber = Team.Chain->gameEntity->state.number;
+		sint32 MasterNumber = Team.Master->gameEntity->state.number;
+
+		File.Write (&ChainNumber, sizeof(ChainNumber));
+		File.Write (&MasterNumber, sizeof(MasterNumber));
+	}
+
+	sint32 GroundEntityNumber = (GroundEntity) ? GroundEntity->gameEntity->state.number : -1;
+	File.Write (&GroundEntityNumber, sizeof(GroundEntityNumber));
+
+	File.Write (&GroundEntityLinkCount, sizeof(GroundEntityLinkCount));
+	File.Write (&SpawnFlags, sizeof(SpawnFlags));
+
+	sint32 EnemyNumber = (Enemy) ? Enemy->gameEntity->state.number : -1;
+	File.Write (&EnemyNumber, sizeof(EnemyNumber));
+
+	File.Write (&ViewHeight, sizeof(ViewHeight));
+}
+
+void CBaseEntity::ReadBaseEntity (CFile &File)
+{
+	File.Read (&Freed, sizeof(Freed));
+	File.Read (&EntityFlags, sizeof(EntityFlags));
+	File.Read (&Flags, sizeof(Flags));
+
+	size_t len;
+	File.Read (&len, sizeof(len));
+
+	if (len > 1)
+	{
+		ClassName = QNew (com_levelPool, 0) char [len];
+		File.Read (ClassName, len);
+	}
+
+	File.Read (&Team.HasTeam, sizeof(Team.HasTeam));
+
+	if (Team.HasTeam)
+	{
+		sint32 ChainNumber;
+		sint32 MasterNumber;
+
+		File.Read (&ChainNumber, sizeof(ChainNumber));
+		File.Read (&MasterNumber, sizeof(MasterNumber));
+
+		Team.Chain = g_edicts[ChainNumber].Entity;
+		Team.Master = g_edicts[MasterNumber].Entity;
+	}
+
+	sint32 GroundEntityNumber;
+	File.Read (&GroundEntityNumber, sizeof(GroundEntityNumber));
+
+	if (GroundEntityNumber == -1)
+		GroundEntity = NULL;
+	else
+		GroundEntity = g_edicts[GroundEntityNumber].Entity;
+
+	File.Read (&GroundEntityLinkCount, sizeof(GroundEntityLinkCount));
+	File.Read (&SpawnFlags, sizeof(SpawnFlags));
+
+	sint32 EnemyNumber;
+	File.Read (&EnemyNumber, sizeof(EnemyNumber));
+	if (EnemyNumber == -1)
+		Enemy = NULL;
+	else
+		Enemy = g_edicts[EnemyNumber].Entity;
+
+	File.Read (&ViewHeight, sizeof(ViewHeight));
+}
 
 // Funtions below are to link the private gameEntity together
 CBaseEntity		*CBaseEntity::GetOwner	()
@@ -463,6 +549,7 @@ void			CBaseEntity::Free ()
 		ClassName = "freed";
 		gameEntity->freetime = level.Frame;
 		GetInUse() = false;
+		gameEntity->state.number = gameEntity - g_edicts;
 
 		if (!(EntityFlags & ENT_JUNK))
 			RemoveEntityFromList (gameEntity);
@@ -560,8 +647,6 @@ ENTITYFIELDS_BEGIN(CMapEntity)
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
 	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_LEVEL_STRING),
-
-	CEntityField ("owner",			GameEntityMemberOffset(owner),					FT_ENTITY | FT_GAME_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMapEntity)
 
@@ -647,7 +732,7 @@ void CMapEntity::ParseFields ()
 	// and report ones that are still there.
 	if (level.ParseData.size())
 	{
-		for (std::list<CKeyValuePair*, std::game_allocator<CKeyValuePair*> >::iterator it = level.ParseData.begin(); it != level.ParseData.end(); ++it)
+		for (TKeyValuePairContainer::iterator it = level.ParseData.begin(); it != level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);

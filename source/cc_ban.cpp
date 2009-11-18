@@ -96,10 +96,10 @@ void CBanList::LoadFromFile ()
 				token = line.substr (c, oc-c);
 				c = oc;
 
-				BanIndex *NewIndex = QNew (com_gamePool, 0) BanIndex;
+				BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
 				NewIndex->IP = false;
 
-				NewIndex->Name = QNew (com_gamePool, 0) char[token.length()];
+				NewIndex->Name = QNew (com_genericPool, 0) char[token.length()];
 				Q_strncpyz (NewIndex->Name, token.c_str(), token.length());
 				NewIndex->Name[token.length()] = 0;
 
@@ -119,10 +119,10 @@ void CBanList::LoadFromFile ()
 				token = line.substr (c, oc-c);
 				c = oc;
 
-				BanIndex *NewIndex = QNew (com_gamePool, 0) BanIndex;
+				BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
 				NewIndex->IP = true;
 
-				NewIndex->IPAddress = QNew (com_gamePool, 0) IPAddress;
+				NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress;
 				Q_snprintfz (NewIndex->IPAddress->str, sizeof(NewIndex->IPAddress->str), "%s", token.c_str());
 
 				oc = line.find_first_of(" \n\0", ++c);
@@ -188,10 +188,10 @@ bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
 	if (InList(Adr))
 		return false;
 
-	BanIndex *NewIndex = QNew (com_gamePool, 0) BanIndex;
+	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
 	NewIndex->IP = true;
 
-	NewIndex->IPAddress = QNew (com_gamePool, 0) IPAddress(Adr);
+	NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress(Adr);
 	NewIndex->Flags = Flags;
 
 	BanList.push_back (NewIndex);
@@ -203,9 +203,9 @@ bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
 	if (InList(Name))
 		return false;
 
-	BanIndex *NewIndex = QNew (com_gamePool, 0) BanIndex;
+	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
 	NewIndex->IP = false;
-	NewIndex->Name = QNew (com_gamePool, 0) char[strlen(Name)];
+	NewIndex->Name = QNew (com_genericPool, 0) char[strlen(Name)];
 	Q_strncpyz (NewIndex->Name, Name, strlen(Name)+1);
 	NewIndex->Name[strlen(Name)] = 0;
 	NewIndex->Flags = Flags;

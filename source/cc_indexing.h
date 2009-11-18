@@ -58,7 +58,7 @@ public:
 	CIndex	*List[MAX_INDEXES];
 	CIndex	*HashList[MAX_INDEXES];
 
-	uint8	numIndexes;
+	uint8		numIndexes, firstIndex;
 
 	sint32		AddToList (const char *String, MediaIndex Index);
 	sint32		GetIndex (const char *String);
@@ -69,6 +69,11 @@ public:
 MediaIndex ModelIndex (const char *string);
 MediaIndex SoundIndex (const char *string);
 MediaIndex ImageIndex (const char *string);
+
+const char *StringFromSoundIndex (MediaIndex Index);
+const char *StringFromModelIndex (MediaIndex Index);
+const char *StringFromImageIndex (MediaIndex Index);
+
 void ClearList ();
 
 #else

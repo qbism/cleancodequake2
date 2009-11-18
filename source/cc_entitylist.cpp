@@ -341,15 +341,6 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 
 	CPlayerEntity::SaveClientData ();
 
-	Mem_FreePool (com_levelPool);
-	gEntString = Mem_PoolStrDup(entities, com_levelPool, 0);
-
-	entities = CC_ParseSpawnEntities (ServerLevelName, entities);
-
-#ifdef MONSTERS_USE_PATHFINDING
-	InitNodes ();
-#endif
-
 	level.Clear ();
 
 	if (Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".cin") == 0 || Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".dm2") == 0)
@@ -358,6 +349,16 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 		ShutdownBodyQueue ();
 		Shutdown_Junk ();
 	}
+
+	Mem_FreePool (com_levelPool);
+	gEntString = Mem_PoolStrDup(entities, com_levelPool, 0);
+
+	entities = CC_ParseSpawnEntities (ServerLevelName, entities);
+
+#ifdef MONSTERS_USE_PATHFINDING
+	if (!level.Demo)
+		InitNodes ();
+#endif
 
 	memset (g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
 	InitEntityLists ();

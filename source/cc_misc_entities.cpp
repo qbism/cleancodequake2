@@ -53,6 +53,7 @@ public:
 	CMapEntity(),
 	CThinkableEntity(),
 	CHurtableEntity (),
+	CTouchableEntity (),
 	CStepPhysics(),
 	Explosivity(100),
 	Shooter(NULL),
@@ -66,6 +67,7 @@ public:
 	CMapEntity(Index),
 	CThinkableEntity(),
 	CHurtableEntity(Index),
+	CTouchableEntity (Index),
 	CStepPhysics(Index),
 	Explosivity(100),
 	Shooter(NULL),
@@ -74,6 +76,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CMiscExploBox)
 
 #define BARREL_STEPSIZE 8
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
@@ -192,6 +195,7 @@ public:
 			Damage = 150;
 
 		CanTakeDamage = true;
+		Touchable = true;
 		NextThink = level.Frame + FRAMETIME;
 
 		Link ();
@@ -200,8 +204,8 @@ public:
 
 ENTITYFIELDS_BEGIN(CMiscExploBox)
 {
-	CEntityField ("mass", EntityMemberOffset(CMiscExploBox,Explosivity), FT_INT),
-	CEntityField ("dmg", EntityMemberOffset(CMiscExploBox,Damage), FT_INT),
+	CEntityField ("mass", EntityMemberOffset(CMiscExploBox,Explosivity), FT_INT | FT_SAVABLE),
+	CEntityField ("dmg", EntityMemberOffset(CMiscExploBox,Damage), FT_INT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMiscExploBox)
 
@@ -212,6 +216,20 @@ bool			CMiscExploBox::ParseField (const char *Key, const char *Value)
 
 	return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CMiscExploBox::SaveFields (CFile &File)
+{
+	SaveEntityFields <CMiscExploBox> (this, File);
+	CHurtableEntity::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
+
+void		CMiscExploBox::LoadFields (CFile &File)
+{
+	LoadEntityFields <CMiscExploBox> (this, File);
+	CHurtableEntity::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("misc_explobox",CMiscExploBox);
 
@@ -230,6 +248,7 @@ public:
 	CMiscViper() :
 		CBaseEntity (),
 		CTrainBase(),
+		CTouchableEntity(),
 		MyUse(true)
 	{
 	};
@@ -237,9 +256,24 @@ public:
 	CMiscViper(sint32 Index) :
 		CBaseEntity (Index),
 		CTrainBase(Index),
+		CTouchableEntity(Index),
 		MyUse(true)
 	{
 	};
+
+	IMPLEMENT_SAVE_HEADER(CMiscViper)
+
+	void SaveFields (CFile &File)
+	{
+		CTrainBase::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CTrainBase::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
 
 	bool Run ()
 	{
@@ -336,6 +370,18 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscBanner)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	};
+
 	bool Run ()
 	{
 		return CBaseEntity::Run();
@@ -381,9 +427,23 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscBlackhole)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
 	}
 
 	bool Run ()
@@ -436,6 +496,18 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscEasterTank)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	};
+
 	bool Run ()
 	{
 		return CBaseEntity::Run();
@@ -482,6 +554,18 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscEasterChick)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	};
+
 	bool Run ()
 	{
 		return CBaseEntity::Run();
@@ -526,6 +610,18 @@ public:
 	  CMapEntity (Index),
 	  CThinkableEntity (Index)
 	{
+	};
+
+	IMPLEMENT_SAVE_HEADER(CMiscEasterChick2)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
 	};
 
 	bool Run ()
@@ -584,10 +680,26 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CCommanderBody)
+
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+		CHurtableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+		CHurtableEntity::LoadFields (File);
+	}
 
 	bool Run ()
 	{
@@ -667,6 +779,20 @@ public:
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	IMPLEMENT_SAVE_HEADER(CMiscDeadSoldier)
+
+	void SaveFields (CFile &File)
+	{
+		CHurtableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CHurtableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+	}
 
 	bool Run ()
 	{
@@ -807,6 +933,8 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscBigViper)
+
 	bool Run ()
 	{
 		return CBaseEntity::Run();
@@ -864,6 +992,7 @@ public:
 	};
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CMiscViperBomb)
 
 	bool Run ()
 	{
@@ -943,7 +1072,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CMiscViperBomb)
 {
-	CEntityField ("dmg", EntityMemberOffset(CMiscViperBomb,Damage), FT_INT),
+	CEntityField ("dmg", EntityMemberOffset(CMiscViperBomb,Damage), FT_INT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMiscViperBomb)
 
@@ -955,6 +1084,20 @@ bool			CMiscViperBomb::ParseField (const char *Key, const char *Value)
 	// Couldn't find it here
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void		CMiscViperBomb::SaveFields (CFile &File)
+{
+	SaveEntityFields <CMiscViperBomb> (this, File);
+	CUsableEntity::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
+
+void		CMiscViperBomb::LoadFields (CFile &File)
+{
+	LoadEntityFields <CMiscViperBomb> (this, File);
+	CUsableEntity::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+}
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper_bomb", CMiscViperBomb);
 
@@ -979,9 +1122,23 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscSattelite)
+
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
 		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	}
+
+	void SaveFields (CFile &File)
+	{
+		CUsableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CUsableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
 	}
 
 	bool Run ()
@@ -1029,6 +1186,8 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CLightMine1)
+
 	bool Run ()
 	{
 		return CBaseEntity::Run();
@@ -1060,6 +1219,8 @@ public:
 	  CMapEntity (Index)
 	{
 	};
+
+	IMPLEMENT_SAVE_HEADER(CLightMine2)
 
 	bool Run ()
 	{
@@ -1098,10 +1259,24 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscGibArm)
+
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	void SaveFields (CFile &File)
+	{
+		CHurtableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CHurtableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+	}
 
 	bool Run ()
 	{
@@ -1151,10 +1326,24 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscGibLeg)
+
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	void SaveFields (CFile &File)
+	{
+		CHurtableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CHurtableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+	}
 
 	bool Run ()
 	{
@@ -1204,10 +1393,24 @@ public:
 	{
 	};
 
+	IMPLEMENT_SAVE_HEADER(CMiscGibHead)
+
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
 		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 	};
+
+	void SaveFields (CFile &File)
+	{
+		CHurtableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CHurtableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+	}
 
 	bool Run ()
 	{
@@ -1251,6 +1454,8 @@ public:
 	  CMapEntity (Index)
 	  {
 	  };
+
+	IMPLEMENT_SAVE_HEADER(CMiscModel)
 
 	void Spawn ()
 	{

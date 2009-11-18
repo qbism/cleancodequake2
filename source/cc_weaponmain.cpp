@@ -51,6 +51,41 @@ void DoWeaponVweps ()
 		WeaponList->at(i)->InitWeaponVwepModel (TakeAway);
 }
 
+void SaveWeapon (CFile &File, CWeapon *Weapon)
+{
+	sint32 Index = -1;
+	if (Weapon)
+		Index = Weapon->Item->GetIndex();
+	File.Write (&Index, sizeof(Index));
+}
+
+void LoadWeapon (CFile &File, CWeapon **Weapon)
+{
+	sint32 Index;
+	File.Read (&Index, sizeof(Index));
+
+	if (Index != -1)
+	{
+		CBaseItem *Item = GetItemByIndex(Index);
+
+		if (Item && Item->Flags & ITEMFLAG_WEAPON)
+		{
+			if (Item->Flags & ITEMFLAG_AMMO)
+			{
+				CAmmo *Ammo = dynamic_cast<CAmmo*>(Item);
+				*Weapon = Ammo->Weapon;
+			}
+			else
+			{
+				CWeaponItem *WItem = dynamic_cast<CWeaponItem*>(Item);
+				*Weapon = WItem->Weapon;
+			}
+		}
+		else
+			_CC_ASSERT_EXPR (0, "Loaded weapon with no weapon!");
+	}
+}
+
 CWeapon::CWeapon(char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound) :
 ActivationStart(ActivationStart),

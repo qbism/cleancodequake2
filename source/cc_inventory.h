@@ -72,6 +72,42 @@ public:
 
 	void	Set	(CBaseItem *Item, sint32 Num);
 	void	Set	(uint8 Index, sint32 Num);
+
+	void Save (CFile &File)
+	{
+		size_t size = Array.size();
+		File.Write (&size, sizeof(size));
+
+		for (TInventoryMapType::iterator it = Array.begin(); it != Array.end(); it++)
+		{
+			uint8 first = (*it).first;
+			uint16 second = (*it).second;
+
+			File.Write (&first, sizeof(first));
+			File.Write (&second, sizeof(second));
+		}
+
+		File.Write (&SelectedItem, sizeof(SelectedItem));
+	};
+
+	void Load (CFile &File)
+	{
+		size_t size;
+		File.Read (&size, sizeof(size));
+
+		for (size_t i = 0; i < size; i++)
+		{
+			uint8 first;
+			uint16 second;
+
+			File.Read (&first, sizeof(first));
+			File.Read (&second, sizeof(second));
+
+			Array[first] = second;
+		}
+
+		File.Read (&SelectedItem, sizeof(SelectedItem));
+	}
 };
 
 void Cmd_Use_f (CPlayerEntity *ent);

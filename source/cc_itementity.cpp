@@ -148,7 +148,7 @@ void CItemEntity::Use (CBaseEntity *other, CBaseEntity *activator)
 // Returns a random team member of ent
 CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 {
-	static std::vector<CBaseEntity*, std::game_allocator<CBaseEntity*> >	Team;
+	static std::vector<CBaseEntity*, std::generic_allocator<CBaseEntity*> >	Team;
 	Team.clear ();
 
 	for (CBaseEntity *Member = Master; Member; Member = Member->Team.Chain)
@@ -281,8 +281,11 @@ void CItemEntity::Spawn (CBaseItem *item)
 
 ENTITYFIELDS_BEGIN(CItemEntity)
 {
-	CEntityField ("model", EntityMemberOffset(CItemEntity,Model), FT_LEVEL_STRING),
-	CEntityField ("item", EntityMemberOffset(CItemEntity,LinkedItem), FT_ITEM),
+	CEntityField ("model", EntityMemberOffset(CItemEntity,Model), FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("item", EntityMemberOffset(CItemEntity,LinkedItem), FT_ITEM | FT_SAVABLE),
+
+	CEntityField ("AmmoCount", EntityMemberOffset(CItemEntity,AmmoCount), FT_UINT | FT_SAVABLE | FT_NOSPAWN),
+	CEntityField ("ThinkState", EntityMemberOffset(CItemEntity,ThinkState), FT_BYTE | FT_SAVABLE | FT_NOSPAWN),
 };
 ENTITYFIELDS_END(CItemEntity)
 
@@ -292,4 +295,20 @@ bool CItemEntity::ParseField (const char *Key, const char *Value)
 		return true;
 
 	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
+void		CItemEntity::SaveFields (CFile &File)
+{
+	SaveEntityFields <CItemEntity> (this, File);
+	CUsableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
+
+void		CItemEntity::LoadFields (CFile &File)
+{
+	LoadEntityFields <CItemEntity> (this, File);
+	CUsableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
 }

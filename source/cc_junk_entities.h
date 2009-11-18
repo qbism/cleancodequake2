@@ -40,6 +40,14 @@ public:
 	CJunkEntity ();
 	CJunkEntity (sint32 Index);
 
+	virtual void SaveFields (CFile &File)
+	{
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+	}
+
 	void Die (); // CALL THIS WHEN A JUNK IS FREED INSTEAD OF FREE()!
 };
 
@@ -48,6 +56,18 @@ class CGibEntity : public CJunkEntity, public CTossProjectile, public CThinkable
 public:
 	CGibEntity ();
 	CGibEntity (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER (CGibEntity)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	}
 
 	void Think ();
 

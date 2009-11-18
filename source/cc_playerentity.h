@@ -36,6 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CPlayerState
 {
+	friend class CClient;
 protected:
 	playerState_t	*playerState; // Private so no one mucks with it if they shouldn't
 
@@ -86,6 +87,9 @@ CC_ENUM (uint8, EClientState)
 	SVCS_SPAWNED	// client is fully in game
 };
 
+void LoadWeapon (CFile &File, CWeapon **Weapon);
+void SaveWeapon (CFile &File, CWeapon *Weapon);
+
 // client data that stays across multiple level loads
 class CPersistentData
 {
@@ -117,9 +121,100 @@ public:
 		  memset (&maxAmmoValues, 0, sizeof(maxAmmoValues));
 	  }
 
+	void Save (CFile &File)
+	{
+		size_t len = UserInfo.size();
+		File.Write (&len, sizeof(len));
+
+		if (len)
+			File.Write ((void*)UserInfo.c_str(), len);
+
+		len = Name.size();
+		File.Write (&len, sizeof(len));
+
+		if (len)
+			File.Write ((void*)Name.c_str(), len);
+
+		File.Write (&IP, sizeof(IP));
+		File.Write (&hand, sizeof(hand));
+
+		File.Write (&health, sizeof(health));
+		File.Write (&max_health, sizeof(max_health));
+		File.Write (&savedFlags, sizeof(savedFlags));
+
+		Inventory.Save (File);
+		File.Write (&maxAmmoValues, sizeof(maxAmmoValues));
+
+		SaveWeapon (File, Weapon);
+		SaveWeapon (File, LastWeapon);
+
+		sint32 Index = -1;
+		if (Armor)
+			Index = Armor->GetIndex();
+		File.Write (&Index, sizeof(Index));
+
+		File.Write (&PowerCubeCount, sizeof(PowerCubeCount));
+		File.Write (&Score, sizeof(Score));
+		File.Write (&game_helpchanged, sizeof(game_helpchanged));
+		File.Write (&helpchanged, sizeof(helpchanged));
+		File.Write (&Spectator, sizeof(Spectator));
+		File.Write (&viewBlend, sizeof(viewBlend));
+	}
+
+	void Load (CFile &File)
+	{
+		size_t len;
+		File.Read (&len, sizeof(len));
+
+		if (len)
+		{
+			char *temp = QNew (com_genericPool, 0) char[len];
+			File.Read (temp, len);
+			UserInfo = temp;
+			QDelete[] temp;
+		}
+
+		len = Name.size();
+		File.Read (&len, sizeof(len));
+
+		if (len)
+		{
+			char *temp = QNew (com_genericPool, 0) char[len];
+			File.Read (temp, len);
+			Name = temp;
+			QDelete[] temp;
+		}
+
+		File.Read (&IP, sizeof(IP));
+		File.Read (&hand, sizeof(hand));
+
+		File.Read (&health, sizeof(health));
+		File.Read (&max_health, sizeof(max_health));
+		File.Read (&savedFlags, sizeof(savedFlags));
+
+		Inventory.Load (File);
+		File.Read (&maxAmmoValues, sizeof(maxAmmoValues));
+
+		LoadWeapon (File, &Weapon);
+		LoadWeapon (File, &LastWeapon);
+
+		sint32 Index;
+		File.Read (&Index, sizeof(Index));
+
+		if (Index != -1)
+			Armor = dynamic_cast<CArmor*>(GetItemByIndex(Index));
+
+		File.Read (&PowerCubeCount, sizeof(PowerCubeCount));
+		File.Read (&Score, sizeof(Score));
+		File.Read (&game_helpchanged, sizeof(game_helpchanged));
+		File.Read (&helpchanged, sizeof(helpchanged));
+		File.Read (&Spectator, sizeof(Spectator));
+		File.Read (&viewBlend, sizeof(viewBlend));
+	}
+
 	std::cc_string	UserInfo;
 	std::cc_string	Name;
-	IPAddress	IP;
+	IPAddress		IP;
 	sint32			hand;
 
 	EClientState state;			// a loadgame will leave valid entities that
@@ -130,7 +225,7 @@ public:
 	sint32			max_health;
 	sint32			savedFlags;
 
-	CInventory	Inventory;
+	CInventory		Inventory;
 
 	// ammo capacities
 	sint32			maxAmmoValues[CAmmo::AMMOTAG_MAX];
@@ -209,9 +304,39 @@ public:
 		  memset (&CTF, 0, sizeof(CTF));
 	  };
 
+	void Save (CFile &File)
+	{
+		CoopRespawn.Save (File);
+		File.Write (&EnterFrame, sizeof(EnterFrame));
+		File.Write (&Score, sizeof(Score));
+		File.Write (&CmdAngles, sizeof(CmdAngles));
+		File.Write (&Spectator, sizeof(Spectator));
+		File.Write (&Gender, sizeof(Gender));
+		File.Write (&MessageLevel, sizeof(MessageLevel));
+		File.Write (&Gender, sizeof(Gender));
+		File.Write (&Gender, sizeof(Gender));
+		File.Write (&Gender, sizeof(Gender));
+		File.Write (&Gender, sizeof(Gender));
+	}
+
+	void Load (CFile &File)
+	{
+		CoopRespawn.Load (File);
+		File.Read (&EnterFrame, sizeof(EnterFrame));
+		File.Read (&Score, sizeof(Score));
+		File.Read (&CmdAngles, sizeof(CmdAngles));
+		File.Read (&Spectator, sizeof(Spectator));
+		File.Read (&Gender, sizeof(Gender));
+		File.Read (&MessageLevel, sizeof(MessageLevel));
+		File.Read (&Gender, sizeof(Gender));
+		File.Read (&Gender, sizeof(Gender));
+		File.Read (&Gender, sizeof(Gender));
+		File.Read (&Gender, sizeof(Gender));
+	}
+
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
 	FrameNumber_t		EnterFrame;		// level.Frame the client entered the game
-	sint32					Score;			// frags, etc
+	sint32				Score;			// frags, etc
 	vec3f				CmdAngles;		// angles sent over in the last command
 
 	bool				Spectator;		// client is a Spectator
@@ -321,11 +446,94 @@ CC_ENUM (uint8, EAnimPriority)
 
 class CClient
 {
+public:
+	void Write (CFile &File)
+	{
+		File.Write (&KickAngles, sizeof(KickAngles));
+		File.Write (&KickOrigin, sizeof(KickOrigin));
+		File.Write (&ViewAngle, sizeof(ViewAngle));
+		File.Write (&DamageFrom, sizeof(DamageFrom));
+		File.Write (&DamageBlend, sizeof(DamageBlend));
+		File.Write (&OldViewAngles, sizeof(OldViewAngles));
+		File.Write (&OldVelocity, sizeof(OldVelocity));
+		File.Write (&ViewDamage, sizeof(ViewDamage));
+		File.Write (&ViewDamageTime, sizeof(ViewDamageTime));
+		File.Write (&KillerYaw, sizeof(KillerYaw));
+		File.Write (&OldPMove, sizeof(OldPMove));
+		File.Write (&LayoutFlags, sizeof(LayoutFlags));
+		File.Write (&DamageValues, sizeof(DamageValues));
+		File.Write (&Buttons, sizeof(Buttons));
+		File.Write (&LatchedButtons, sizeof(LatchedButtons));
+		File.Write (&WeaponState, sizeof(WeaponState));
+		File.Write (&FallTime, sizeof(FallTime));
+		File.Write (&FallValue, sizeof(FallValue));
+		File.Write (&BonusAlpha, sizeof(BonusAlpha));
+		File.Write (&BobTime, sizeof(BobTime));
+		File.Write (&PowerArmorTime, sizeof(PowerArmorTime));
+		File.Write (&OldWaterLevel, sizeof(OldWaterLevel));
+		File.Write (&WeaponSound, sizeof(WeaponSound));
+
+		File.Write (&Anim, sizeof(Anim));
+		File.Write (&Timers, sizeof(Timers));
+		File.Write (&Grenade, sizeof(Grenade));
+		File.Write (&Flood, sizeof(Flood));
+		File.Write (&Tech, sizeof(WeaponSound));
+
+		SaveWeapon (File, NewWeapon);
+
+		Persistent.Save (File);
+		Respawn.Save (File);
+	}
+	
+	void Load (CFile &File)
+	{
+		File.Read (&KickAngles, sizeof(KickAngles));
+		File.Read (&KickOrigin, sizeof(KickOrigin));
+		File.Read (&ViewAngle, sizeof(ViewAngle));
+		File.Read (&DamageFrom, sizeof(DamageFrom));
+		File.Read (&DamageBlend, sizeof(DamageBlend));
+		File.Read (&OldViewAngles, sizeof(OldViewAngles));
+		File.Read (&OldVelocity, sizeof(OldVelocity));
+		File.Read (&ViewDamage, sizeof(ViewDamage));
+		File.Read (&ViewDamageTime, sizeof(ViewDamageTime));
+		File.Read (&KillerYaw, sizeof(KillerYaw));
+		File.Read (&OldPMove, sizeof(OldPMove));
+		File.Read (&LayoutFlags, sizeof(LayoutFlags));
+		File.Read (&DamageValues, sizeof(DamageValues));
+		File.Read (&Buttons, sizeof(Buttons));
+		File.Read (&LatchedButtons, sizeof(LatchedButtons));
+		File.Read (&WeaponState, sizeof(WeaponState));
+		File.Read (&FallTime, sizeof(FallTime));
+		File.Read (&FallValue, sizeof(FallValue));
+		File.Read (&BonusAlpha, sizeof(BonusAlpha));
+		File.Read (&BobTime, sizeof(BobTime));
+		File.Read (&PowerArmorTime, sizeof(PowerArmorTime));
+		File.Read (&OldWaterLevel, sizeof(OldWaterLevel));
+		File.Read (&WeaponSound, sizeof(WeaponSound));
+
+		File.Read (&Anim, sizeof(Anim));
+		File.Read (&Timers, sizeof(Timers));
+		File.Read (&Grenade, sizeof(Grenade));
+		File.Read (&Flood, sizeof(Flood));
+		File.Read (&Tech, sizeof(WeaponSound));
+
+		LoadWeapon (File, &NewWeapon);
+
+		Persistent.Load (File);
+		Respawn.Load (File);
+	}
+
+	void WriteClientStructure (CFile &File);
+	static void ReadClientStructure (CFile &File, sint32 index);
+	void RepositionClient (gclient_t *client);
+
 protected:
-	gclient_t	*client; // Private so no one messes it up!
+	gclient_t		*client; // Private so no one messes it up!
 
 public:
 	CPlayerState	PlayerState;
+	CPersistentData	Persistent;
+	CRespawnData	Respawn;
 
 	vec3f			KickAngles;	// weapon kicks
 	vec3f			KickOrigin;
@@ -341,8 +549,6 @@ public:
 	vec2f			ViewDamage;
 	FrameNumber_t	ViewDamageTime;
 	float			KillerYaw;			// when dead, look at killer
-	CPersistentData	Persistent;
-	CRespawnData	Respawn;
 	pMoveState_t	OldPMove;	// for detecting out-of-pmove changes
 	ELayoutFlags	LayoutFlags;
 	// sum up damage over an entire frame, so
@@ -444,10 +650,46 @@ public:
 	FrameNumber_t		DamageDebounceTime;
 	FrameNumber_t		AirFinished;
 	FrameNumber_t		NextDrownTime;
-	sint32					NextDrownDamage;
+	sint32				NextDrownDamage;
 	FrameNumber_t		PainDebounceTime;
 
 	CPlayerEntity (sint32 Index);
+
+	void SaveFields (CFile &File)
+	{
+		CHurtableEntity::SaveFields (File);
+	
+		// Write the player data first
+		File.Write (&NoClip, sizeof(NoClip));
+		File.Write (&TossPhysics, sizeof(TossPhysics));
+		File.Write (&FlySoundDebounceTime, sizeof(FlySoundDebounceTime));
+		File.Write (&DamageDebounceTime, sizeof(DamageDebounceTime));
+		File.Write (&AirFinished, sizeof(AirFinished));
+		File.Write (&NextDrownTime, sizeof(NextDrownTime));
+		File.Write (&NextDrownDamage, sizeof(NextDrownDamage));
+		File.Write (&PainDebounceTime, sizeof(PainDebounceTime));
+
+		// Write client data
+		Client.Write (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CHurtableEntity::LoadFields (File);
+	
+		// Read the player data first
+		File.Read (&NoClip, sizeof(NoClip));
+		File.Read (&TossPhysics, sizeof(TossPhysics));
+		File.Read (&FlySoundDebounceTime, sizeof(FlySoundDebounceTime));
+		File.Read (&DamageDebounceTime, sizeof(DamageDebounceTime));
+		File.Read (&AirFinished, sizeof(AirFinished));
+		File.Read (&NextDrownTime, sizeof(NextDrownTime));
+		File.Read (&NextDrownDamage, sizeof(NextDrownDamage));
+		File.Read (&PainDebounceTime, sizeof(PainDebounceTime));
+
+		// Read client data
+		Client.Load (File);
+	}
 
 	bool			Run ();
 	void			BeginServerFrame ();
@@ -529,6 +771,8 @@ public:
 
 	void			P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result);
 	void			PlayerNoiseAt (vec3f Where, sint32 type);
+
+	IMPLEMENT_SAVE_HEADER(CPlayerEntity)
 };
 
 void ClientEndServerFrames ();

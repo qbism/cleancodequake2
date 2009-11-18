@@ -417,14 +417,15 @@ bool CMonsterEntity::CheckValidity ()
 
 void CMonsterEntity::Spawn ()
 {
+	Touchable = true;
 	PhysicsType = PHYSICS_STEP;
 };
 
 ENTITYFIELDS_BEGIN(CMonsterEntity)
 {
-	CEntityField ("deathtarget",	EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_LEVEL_STRING),
-	CEntityField ("combattarget",	EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_LEVEL_STRING),
-	CEntityField ("item",			EntityMemberOffset(CMonsterEntity,Item),				FT_ITEM),
+	CEntityField ("deathtarget",	EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("combattarget",	EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("item",			EntityMemberOffset(CMonsterEntity,Item),				FT_ITEM | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMonsterEntity)
 
@@ -435,6 +436,22 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 
 	return (CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
 };
+
+void			CMonsterEntity::SaveFields (CFile &File)
+{
+	SaveEntityFields <CMonsterEntity> (this, File);
+	CUsableEntity::SaveFields (File);
+	CHurtableEntity::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
+
+void			CMonsterEntity::LoadFields (CFile &File)
+{
+	LoadEntityFields <CMonsterEntity> (this, File);
+	CUsableEntity::LoadFields (File);
+	CHurtableEntity::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+}
 
 void CMonsterEntity::Think ()
 {
@@ -2005,6 +2022,8 @@ public:
 	  CBaseEntity (Index)
 	{
 	};
+
+	IMPLEMENT_SAVE_HEADER(CTempGoal)
 };
 
 void CMonster::AI_Run(float Dist)

@@ -105,10 +105,13 @@ public:
 	} Team;
 
 	CBaseEntity		*GroundEntity;
-	sint32				GroundEntityLinkCount;
+	sint32			GroundEntityLinkCount;
 	uint32			SpawnFlags;
 	CBaseEntity		*Enemy;
-	sint32				ViewHeight;
+	sint32			ViewHeight;
+
+	void WriteBaseEntity (CFile &File);
+	void ReadBaseEntity (CFile &File);
 
 	CBaseEntity ();
 	CBaseEntity (sint32 Index);
@@ -163,6 +166,23 @@ public:
 	void			StuffText (char *text);
 
 	void			KillBox ();
+
+	// Save functions
+	// By default, all entities are savable.
+	virtual inline bool Savable ()
+	{
+		return true;
+	};
+
+	virtual void SaveFields (CFile &File)
+	{
+	};
+
+	virtual void LoadFields (CFile &File)
+	{
+	};
+
+	virtual const char *__GetName () = 0;
 };
 
 // EntityFlags values
@@ -240,6 +260,8 @@ inline uint32 atou (const char *Str)
 
 // Convenience macros
 // CAREFUL WITH THESE!
+
+// Map field defs
 #define ENTITYFIELD_DEFS \
 	static const CEntityField FieldsForParsing[]; \
 	static const size_t FieldsForParsingSize; \
@@ -256,6 +278,35 @@ inline uint32 atou (const char *Str)
 	const CEntityField c::FieldsForParsing[] =
 #define ENTITYFIELDS_END(c) \
 	;ENTITYFIELD_SETSIZE(c)
+
+// Save field defs
+#define ENTITYFIELDS_NONSAVABLE \
+	inline bool Savable () \
+	{ \
+		return false; \
+	}; \
+	void SaveFields (CFile &File) \
+	{ \
+	}; \
+	void LoadFields (CFile &File) \
+	{ \
+	};
+#define ENTITYFIELDS_SAVABLE(x) \
+	void SaveFields (CFile &File); \
+	void LoadFields (CFile &File); \
+	const char *__GetName () { return TO_STRING(x); }
+
+#define ENTITYFIELDS_NONSAVABLE_VIRTUAL(x) \
+	inline virtual bool Savable () \
+	{ \
+		return false; \
+	} \
+	virtual const char *__GetName () { return NULL; }
+
+#define ENTITYFIELDS_SAVABLE_VIRTUAL(x) \
+	virtual void SaveFields (CFile &File); \
+	virtual void LoadFields (CFile &File); \
+	virtual const char *__GetName () { return TO_STRING(x); }
 
 CC_ENUM (uint32, EFieldType)
 {
@@ -384,6 +435,235 @@ public:
 
 				*((CBaseItem **)(ClassOffset)) = Item;
 			}
+			break;
+		};
+	};
+
+	template <class TClass>
+	void Save (TClass *Entity, CFile &File) const
+	{
+		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->gameEntity : (uint8*)Entity) + Offset;
+
+		switch (StrippedFields)
+		{
+		case FT_BOOL:
+			File.Write (((bool*)(ClassOffset)), sizeof(bool));
+			break;
+		case FT_CHAR:
+			File.Write (((sint8*)(ClassOffset)), sizeof(sint8));
+			break;
+		case FT_BYTE:
+			File.Write (((uint8*)(ClassOffset)), sizeof(uint8));
+			break;
+		case FT_SHORT:
+			File.Write (((sint16*)(ClassOffset)), sizeof(sint16));
+			break;
+		case FT_USHORT:
+			File.Write (((uint16*)(ClassOffset)), sizeof(uint16));
+			break;
+		case FT_INT:
+			File.Write (((sint32*)(ClassOffset)), sizeof(sint32));
+			break;
+		case FT_UINT:
+			File.Write (((uint32*)(ClassOffset)), sizeof(uint32));
+			break;
+		case FT_FLOAT:
+			File.Write (((float*)(ClassOffset)), sizeof(float));
+			break;
+		case FT_FLOAT_TO_BYTE:
+			File.Write (((uint8*)(ClassOffset)), sizeof(uint8));
+			break;
+		case FT_VECTOR:
+			File.Write (((vec3f*)(ClassOffset)), sizeof(vec3f));
+			break;
+		case FT_YAWANGLE:
+		case FT_IGNORE:
+			break;
+		case FT_LEVEL_STRING:
+		case FT_GAME_STRING:
+			{
+				size_t len = 0;
+
+				if (*((char**)ClassOffset))
+					len = strlen(*((char**)ClassOffset)) + 1;
+
+				File.Write (&len, sizeof(size_t));
+
+				if (len > 1)
+					File.Write (*((char**)ClassOffset), len);
+			}
+			break;
+		case FT_SOUND_INDEX:
+			{
+				size_t len = 0;
+				if (*((MediaIndex *)(ClassOffset)))
+				{
+					const char *str = StringFromSoundIndex (*((MediaIndex *)(ClassOffset)));
+					len = strlen(str) + 1;
+
+					File.Write (&len, sizeof(size_t));
+					if (len > 1)
+						File.Write ((void*)str, len);
+				}
+				else
+					File.Write (&len, sizeof(len));
+			}
+			break;
+		case FT_IMAGE_INDEX:
+			{
+				size_t len = 0;
+				if (*((MediaIndex *)(ClassOffset)))
+				{
+					const char *str = StringFromImageIndex (*((MediaIndex *)(ClassOffset)));
+					len = strlen(str) + 1;
+
+					File.Write (&len, sizeof(size_t));
+					if (len > 1)
+						File.Write ((void*)str, len);
+				}
+				else
+					File.Write (&len, sizeof(len));
+			}
+			break;
+		case FT_MODEL_INDEX:
+			{
+				size_t len = 0;
+				if (*((MediaIndex *)(ClassOffset)))
+				{
+					const char *str = StringFromModelIndex (*((MediaIndex *)(ClassOffset)));
+					len = strlen(str) + 1;
+
+					File.Write (&len, sizeof(size_t));
+					if (len > 1)
+						File.Write ((void*)str, len);
+				}
+				else
+					File.Write (&len, sizeof(len));
+			}
+			break;
+		case FT_FRAMENUMBER:
+			File.Write (((FrameNumber_t *)(ClassOffset)), sizeof(FrameNumber_t));
+			break;
+		case FT_ITEM:
+			{
+				sint32 Index = -1;
+				if (*((CBaseItem **)(ClassOffset)))
+					Index = (*((CBaseItem **)(ClassOffset)))->GetIndex();
+				
+				File.Write (&Index, sizeof(Index));
+			}
+			break;
+		};
+	};
+
+	template <class TClass>
+	void Load (TClass *Entity, CFile &File) const
+	{
+		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->gameEntity : (uint8*)Entity) + Offset;
+
+		switch (StrippedFields)
+		{
+		case FT_BOOL:
+			File.Read (((bool*)(ClassOffset)), sizeof(bool));
+			break;
+		case FT_CHAR:
+			File.Read (((sint8*)(ClassOffset)), sizeof(sint8));
+			break;
+		case FT_BYTE:
+			File.Read (((uint8*)(ClassOffset)), sizeof(uint8));
+			break;
+		case FT_SHORT:
+			File.Read (((sint16*)(ClassOffset)), sizeof(sint16));
+			break;
+		case FT_USHORT:
+			File.Read (((uint16*)(ClassOffset)), sizeof(uint16));
+			break;
+		case FT_INT:
+			File.Read (((sint32*)(ClassOffset)), sizeof(sint32));
+			break;
+		case FT_UINT:
+			File.Read (((uint32*)(ClassOffset)), sizeof(uint32));
+			break;
+		case FT_FLOAT:
+			File.Read (((float*)(ClassOffset)), sizeof(float));
+			break;
+		case FT_FLOAT_TO_BYTE:
+			File.Read (((uint8*)(ClassOffset)), sizeof(uint8));
+			break;
+		case FT_VECTOR:
+			File.Read (((vec3f*)(ClassOffset)), sizeof(vec3f));
+			break;
+		case FT_YAWANGLE:
+		case FT_IGNORE:
+			break;
+		case FT_LEVEL_STRING:
+		case FT_GAME_STRING:
+			{
+				size_t len;
+				File.Read (&len, sizeof(size_t));
+
+				if (len > 1)
+				{
+					*((char**)ClassOffset) = QNew ((FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool, 0) char[len];
+					File.Read (*((char**)ClassOffset), len);
+				}
+			}
+			break;
+		case FT_SOUND_INDEX:
+			{
+				size_t len;
+				File.Read (&len, sizeof(size_t));
+
+				if (len > 1)
+				{
+					char *str = QNew (com_genericPool, 0) char[len]; // Temp buffer
+					File.Read (str, len);
+					*((MediaIndex *)(ClassOffset)) = SoundIndex (str);
+					QDelete[] str;
+				}
+			}
+			break;
+		case FT_IMAGE_INDEX:
+			{
+				size_t len;
+				File.Read (&len, sizeof(size_t));
+
+				if (len > 1)	
+				{
+					char *str = QNew (com_genericPool, 0) char[len]; // Temp buffer
+					File.Read (str, len);
+					*((MediaIndex *)(ClassOffset)) = ImageIndex (str);
+					QDelete[] str;
+				}
+			}
+			break;
+		case FT_MODEL_INDEX:
+			{
+				size_t len;
+				File.Read (&len, sizeof(size_t));
+
+				if (len > 1)
+				{
+					char *str = QNew (com_genericPool, 0) char[len]; // Temp buffer
+					File.Read (str, len);
+					*((MediaIndex *)(ClassOffset)) = ModelIndex (str);
+					QDelete[] str;
+				}
+			}
+			break;
+		case FT_FRAMENUMBER:
+			File.Read (((FrameNumber_t *)(ClassOffset)), sizeof(FrameNumber_t));
+			break;
+		case FT_ITEM:
+			{
+				sint32 Index;
+				File.Read (&Index, sizeof(Index));
+				if (Index != -1)
+					*((CBaseItem **)(ClassOffset)) = GetItemByIndex(Index);
+				else
+					*((CBaseItem **)(ClassOffset)) = NULL;
+			}
+			break;
 		};
 	};
 };
@@ -429,6 +709,42 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 };
 
 template <class TClass>
+void SaveEntityFields (TClass *Me, CFile &File)
+{
+	for (size_t i = 0; i < TClass::FieldsForParsingSize; i++)
+	{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+		if (TClass::FieldsForParsing[i].FieldType & FT_SAVABLE)
+		{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+			TClass::FieldsForParsing[i].Save<TClass> (Me, File);
+		}
+	}
+};
+
+template <class TClass>
+void LoadEntityFields (TClass *Me, CFile &File)
+{
+	for (size_t i = 0; i < TClass::FieldsForParsingSize; i++)
+	{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+		if (TClass::FieldsForParsing[i].FieldType & FT_SAVABLE)
+		{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+			TClass::FieldsForParsing[i].Load<TClass> (Me, File);
+		}
+	}
+};
+
+template <class TClass>
 const size_t FieldSize ()
 {
 	return ArrayCount(TClass::FieldsForParsing);
@@ -463,6 +779,8 @@ public:
 	virtual bool			ParseField (const char *Key, const char *Value);
 	void					ParseFields ();
 	virtual bool			CheckValidity ();
+
+	virtual const char *__GetName () = 0;
 };
 
 #include "cc_itementity.h"

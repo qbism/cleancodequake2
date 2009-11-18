@@ -608,6 +608,18 @@ public:
 	  {
 	  };
 
+	IMPLEMENT_SAVE_HEADER(CMakronTorso)
+
+	void SaveFields (CFile &File)
+	{
+		CThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		CThinkableEntity::LoadFields (File);
+	};
+
 	void Think ()
 	{
 		if (++State.GetFrame() < 365)
@@ -993,7 +1005,7 @@ void CMakronJumpTimer::Think ()
 	newClass->State.GetOrigin() = State.GetOrigin();
 	Monster->Spawn ();
 	newClass->NextThink = level.Frame + 1;
-	newClass->Target = Target;
+	newClass->Target = LinkedJorg->Target;
 
 	// jump at player
 	CPlayerEntity *Player = level.SightClient;
@@ -1017,7 +1029,7 @@ void CMakronJumpTimer::Spawn (CJorg *Jorg)
 	CMakronJumpTimer *Timer = QNew (com_levelPool, 0) CMakronJumpTimer;
 	
 	Timer->NextThink = level.Frame + 8;
-	Timer->Target = Jorg->Entity->Target;
+	Timer->LinkedJorg = Jorg->Entity;
 	Timer->State.GetOrigin() = Jorg->Entity->State.GetOrigin();
 	Timer->Link();
 }

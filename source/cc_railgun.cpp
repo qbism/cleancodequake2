@@ -97,7 +97,7 @@ WEAPON_DEFS (CRailgun);
 
 void CRailgun::CreateItem (CItemList *List)
 {
-	NItems::Railgun = QNew (com_gamePool, 0) CWeaponItem
+	NItems::Railgun = QNew (com_genericPool, 0) CWeaponItem
 		("weapon_railgun", "models/weapons/g_rail/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_railgun", "Railgun",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Slugs, 1, "#w_railgun.md2");

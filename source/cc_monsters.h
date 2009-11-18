@@ -197,6 +197,7 @@ public:
 	CMonsterEntity	(sint32 Index);
 
 	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CMonsterEntity)
 
 	virtual bool			CheckValidity ();
 
