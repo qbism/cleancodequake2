@@ -116,7 +116,7 @@ void CGrenade::Explode ()
 		vec3f v = (HurtEnemy->GetMins() + HurtEnemy->GetMaxs());
 		v = (State.GetOrigin () - HurtEnemy->State.GetOrigin().MultiplyAngles (0.5f, v));
 
-		float points = Damage - 0.5 * v.Length();
+		float points = ((float)Damage) - 0.5 * v.Length();
 		vec3f dir = HurtEnemy->State.GetOrigin() - State.GetOrigin ();
 
 		HurtEnemy->TakeDamage	(this, GetOwner(), dir, State.GetOrigin (), vec3fOrigin, (sint32)points, (sint32)points,
@@ -176,7 +176,7 @@ void CGrenade::Think ()
 
 void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 damage, sint32 speed, float timer, float damage_radius, bool handNade, bool held)
 {
-	CGrenade	*Grenade = QNew (com_levelPool, 0) CGrenade();
+	CGrenade	*Grenade = QNewEntityOf CGrenade();
 	vec3f		forward, right, up;
 
 	vec3f dir = aimdir.ToAngles();
@@ -278,7 +278,7 @@ void CBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface
 void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 damage, sint32 speed, sint32 effect, bool isHyper)
 {
-	CBlasterProjectile		*Bolt = QNew (com_levelPool, 0) CBlasterProjectile;
+	CBlasterProjectile		*Bolt = QNewEntityOf CBlasterProjectile;
 
 	if (Spawner && Spawner->EntityFlags & ENT_PLAYER)
 		CheckDodge (Spawner, start, dir, speed);
@@ -386,7 +386,7 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 CRocket *CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
-	CRocket	*Rocket = QNew (com_levelPool, 0) CRocket;
+	CRocket	*Rocket = QNewEntityOf CRocket;
 
 	Rocket->State.GetOrigin() = start;
 	Rocket->State.GetAngles() = dir.ToAngles();
@@ -587,7 +587,7 @@ void CBFGBolt::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 damage, sint32 speed, float damage_radius)
 {
-	CBFGBolt	*BFG = QNew (com_levelPool, 0) CBFGBolt;
+	CBFGBolt	*BFG = QNewEntityOf CBFGBolt;
 
 	BFG->State.GetOrigin() = start;
 	BFG->State.GetAngles() = dir.ToAngles();
@@ -1502,7 +1502,7 @@ void CGrappleEntity::ResetGrapple ()
 
 void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint32 damage, sint32 speed)
 {
-	CGrappleEntity *Grapple = QNew (com_levelPool, 0) CGrappleEntity;
+	CGrappleEntity *Grapple = QNewEntityOf CGrappleEntity;
 	Grapple->Player = Spawner;
 	Grapple->Damage = damage;
 
@@ -1706,7 +1706,7 @@ public:
 
 		for (uint8 i = 0; i < 2; i++)
 		{
-			Projectiles[i] = QNew (com_levelPool, 0) CTazerProjectile;
+			Projectiles[i] = QNewEntityOf CTazerProjectile;
 
 			Projectiles[i]->State.GetOrigin() = results[i];
 			Projectiles[i]->State.GetOldOrigin() = results[i];
@@ -1730,7 +1730,7 @@ public:
 
 	static void Spawn (CBaseEntity *Spawner, vec3f origin, vec3f dir, sint32 damage, sint32 speed)
 	{
-		CTazerBase *Base = QNew (com_levelPool, 0) CTazerBase;
+		CTazerBase *Base = QNewEntityOf CTazerBase;
 
 		dir.NormalizeFast ();
 

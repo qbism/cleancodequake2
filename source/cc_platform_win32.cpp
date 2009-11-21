@@ -346,9 +346,7 @@ BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
 			return FALSE;
 
-		Mem_FreePool (com_levelPool);
-		Mem_FreePool (com_gamePool);
-		Mem_FreePool (com_genericPool);
+		Mem_FreePools ();
 
 		break;
 

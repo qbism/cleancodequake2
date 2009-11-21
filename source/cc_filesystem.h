@@ -80,7 +80,7 @@ typedef std::vector<std::cc_string, std::level_allocator<std::cc_string> > TFind
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
 void FS_FreeFileList (char **fileList, sint32 numFiles);
 
-void FS_Write (void *buffer, size_t size, fileHandle_t &handle);
+void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);
 void FS_Read (void *buffer, size_t size, fileHandle_t &handle);
 void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_t seekOffset);
 void FS_Print (fileHandle_t &handle, char *fmt, ...);
@@ -118,12 +118,65 @@ public:
 		return FS_FileExists (fileName);
 	};
 
-	void Write (void *buffer, size_t size)
+	void Write (const void *buffer, size_t size)
 	{
 		if (!Handle)
 			return;
 
 		FS_Write (buffer, size, Handle);
+	};
+
+	template <typename TType>
+	void Write (const void *buffer)
+	{
+		if (!Handle)
+			return;
+
+		FS_Write (buffer, sizeof(TType), Handle);
+	};
+
+	template <typename TType>
+	void Write (const TType &Ref)
+	{
+		if (!Handle)
+			return;
+
+		FS_Write (&Ref, sizeof(TType), Handle);
+	};
+
+	void WriteString (const char *Str)
+	{
+		if (!Handle)
+			return;
+
+		sint32 Length = (Str) ? strlen(Str) + 1 : -1;
+
+		FS_Write (&Length, sizeof(Length), Handle);
+
+		if (Length > 1)
+			FS_Write (Str, Length, Handle);
+	};
+
+	void WriteCCString (const std::cc_string &Ref)
+	{
+		if (!Handle)
+			return;
+
+		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
+
+		FS_Write (&Length, sizeof(Length), Handle);
+
+		if (Length > 1)
+			FS_Write (Ref.c_str(), Length, Handle);
+	};
+
+	template <typename TType>
+	void WriteArray (TType *Array, size_t Length)
+	{
+		if (!Handle)
+			return;
+
+		FS_Write (Array, sizeof(TType) * Length, Handle);
 	};
 
 	void Read (void *buffer, size_t size)
@@ -132,6 +185,73 @@ public:
 			return;
 
 		FS_Read (buffer, size, Handle);
+	};
+
+	template <typename TType>
+	void Read (void *buffer)
+	{
+		if (!Handle)
+			return;
+
+		FS_Read (buffer, sizeof(TType), Handle);
+	};
+
+	template <typename TType>
+	TType Read ()
+	{
+		TType Val;
+		memset (&Val, 0, sizeof(TType));
+
+		if (!Handle)
+			return Val;
+
+		FS_Read (&Val, sizeof(TType), Handle);
+		return Val;
+	};
+
+	char *ReadString (struct memPool_t *Pool = com_genericPool)
+	{
+		if (!Handle)
+			return NULL;
+
+		sint32 Length;
+		FS_Read (&Length, sizeof(Length), Handle);
+		
+		char *tempBuffer = NULL;
+		if (Length > 1)
+		{
+			tempBuffer = QNew (Pool, 0) char[Length];
+			FS_Read (tempBuffer, Length, Handle);
+		}
+		return tempBuffer;
+	};
+
+	std::cc_string ReadCCString ()
+	{
+		if (!Handle)
+			return "";
+
+		sint32 Length;
+		FS_Read (&Length, sizeof(Length), Handle);
+		
+		if (Length > 1)
+		{
+			char *tempBuffer = QNew (com_genericPool, 0) char[Length];
+			FS_Read (tempBuffer, Length, Handle);
+			std::cc_string str (tempBuffer);
+			QDelete[] tempBuffer;
+			return str;
+		}
+		return "";
+	};
+
+	template <typename TType>
+	void ReadArray (TType *Array, size_t Length)
+	{
+		if (!Handle)
+			return;
+
+		FS_Read (Array, sizeof(TType) * Length, Handle);
 	};
 
 	void Seek (const ESeekOrigin seekOrigin, const size_t seekOffset)

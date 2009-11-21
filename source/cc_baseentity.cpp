@@ -364,87 +364,61 @@ _CC_ENABLE_DEPRECATION
 
 void CBaseEntity::WriteBaseEntity (CFile &File)
 {
-	File.Write (&Freed, sizeof(Freed));
-	File.Write (&EntityFlags, sizeof(EntityFlags));
-	File.Write (&Flags, sizeof(Flags));
+	File.Write<bool> (Freed);
+	File.Write<uint32> (EntityFlags);
+	File.Write<EEdictFlags> (Flags);
 
-	size_t len = (!ClassName) ? 0 : (strlen(ClassName) + 1);
-	File.Write (&len, sizeof(len));
+	File.WriteString (ClassName);
 
-	if (len > 1)
-		File.Write (ClassName, len);
-
-	File.Write (&Team.HasTeam, sizeof(Team.HasTeam));
+	File.Write<bool> (Team.HasTeam);
 
 	if (Team.HasTeam)
 	{
-		sint32 ChainNumber = Team.Chain->gameEntity->state.number;
-		sint32 MasterNumber = Team.Master->gameEntity->state.number;
-
-		File.Write (&ChainNumber, sizeof(ChainNumber));
-		File.Write (&MasterNumber, sizeof(MasterNumber));
+		File.Write<sint32> ((Team.Chain) ? Team.Chain->gameEntity->state.number : -1);
+		File.Write<sint32> ((Team.Master) ? Team.Master->gameEntity->state.number : -1);
 	}
 
-	sint32 GroundEntityNumber = (GroundEntity) ? GroundEntity->gameEntity->state.number : -1;
-	File.Write (&GroundEntityNumber, sizeof(GroundEntityNumber));
+	File.Write<sint32> ((GroundEntity) ? GroundEntity->gameEntity->state.number : -1);
 
-	File.Write (&GroundEntityLinkCount, sizeof(GroundEntityLinkCount));
-	File.Write (&SpawnFlags, sizeof(SpawnFlags));
+	File.Write<sint32> (GroundEntityLinkCount);
+	File.Write<uint32> (SpawnFlags);
 
-	sint32 EnemyNumber = (Enemy) ? Enemy->gameEntity->state.number : -1;
-	File.Write (&EnemyNumber, sizeof(EnemyNumber));
+	File.Write<sint32> ((Enemy) ? Enemy->gameEntity->state.number : -1);
 
-	File.Write (&ViewHeight, sizeof(ViewHeight));
+	File.Write<sint32> (ViewHeight);
 }
 
 void CBaseEntity::ReadBaseEntity (CFile &File)
 {
-	File.Read (&Freed, sizeof(Freed));
-	File.Read (&EntityFlags, sizeof(EntityFlags));
-	File.Read (&Flags, sizeof(Flags));
+	Freed = File.Read<bool> ();
+	EntityFlags = File.Read<uint32> ();
+	Flags = File.Read<EEdictFlags> ();
 
-	size_t len;
-	File.Read (&len, sizeof(len));
+	ClassName = File.ReadString (com_levelPool);
 
-	if (len > 1)
-	{
-		ClassName = QNew (com_levelPool, 0) char [len];
-		File.Read (ClassName, len);
-	}
-
-	File.Read (&Team.HasTeam, sizeof(Team.HasTeam));
+	Team.HasTeam = File.Read<bool> ();
 
 	if (Team.HasTeam)
 	{
-		sint32 ChainNumber;
-		sint32 MasterNumber;
+		sint32 ChainNumber = File.Read<sint32> ();
+		sint32 MasterNumber = File.Read<sint32> ();
 
-		File.Read (&ChainNumber, sizeof(ChainNumber));
-		File.Read (&MasterNumber, sizeof(MasterNumber));
-
-		Team.Chain = g_edicts[ChainNumber].Entity;
-		Team.Master = g_edicts[MasterNumber].Entity;
+		if (ChainNumber != -1)
+			Team.Chain = g_edicts[ChainNumber].Entity;
+		if (MasterNumber != -1)
+			Team.Master = g_edicts[MasterNumber].Entity;
 	}
 
-	sint32 GroundEntityNumber;
-	File.Read (&GroundEntityNumber, sizeof(GroundEntityNumber));
+	sint32 GroundEntityNumber = File.Read<sint32> ();
+	GroundEntity = (GroundEntityNumber == -1) ? NULL : g_edicts[GroundEntityNumber].Entity;
 
-	if (GroundEntityNumber == -1)
-		GroundEntity = NULL;
-	else
-		GroundEntity = g_edicts[GroundEntityNumber].Entity;
+	GroundEntityLinkCount = File.Read<sint32> ();
+	SpawnFlags = File.Read<uint32> ();
 
-	File.Read (&GroundEntityLinkCount, sizeof(GroundEntityLinkCount));
-	File.Read (&SpawnFlags, sizeof(SpawnFlags));
+	sint32 EnemyNumber = File.Read<sint32> ();
+	Enemy = (EnemyNumber == -1) ? NULL : g_edicts[EnemyNumber].Entity;
 
-	sint32 EnemyNumber;
-	File.Read (&EnemyNumber, sizeof(EnemyNumber));
-	if (EnemyNumber == -1)
-		Enemy = NULL;
-	else
-		Enemy = g_edicts[EnemyNumber].Entity;
-
-	File.Read (&ViewHeight, sizeof(ViewHeight));
+	ViewHeight = File.Read<sint32> ();
 }
 
 // Funtions below are to link the private gameEntity together
@@ -652,7 +626,7 @@ ENTITYFIELDS_END(CMapEntity)
 
 const CEntityField CMapEntity::FieldsForParsing_Map[] =
 {
-	CEntityField ("targetname",		EntityMemberOffset(CMapEntity,TargetName),		FT_LEVEL_STRING),
+	CEntityField ("targetname",		EntityMemberOffset(CMapEntity,TargetName),		FT_LEVEL_STRING | FT_SAVABLE),
 };
 const size_t CMapEntity::FieldsForParsingSize_Map = ArrayCount(CMapEntity::FieldsForParsing_Map);
 
@@ -674,6 +648,40 @@ bool			CMapEntity::ParseField (const char *Key, const char *Value)
 
 	// Couldn't find it here
 	return false;
+};
+
+void CMapEntity::SaveFields (CFile &File)
+{
+	for (size_t i = 0; i < CMapEntity::FieldsForParsingSize_Map; i++)
+	{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+		if (CMapEntity::FieldsForParsing_Map[i].FieldType & FT_SAVABLE)
+		{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+			CMapEntity::FieldsForParsing_Map[i].Save<CMapEntity> (this, File);
+		}
+	}
+};
+
+void CMapEntity::LoadFields (CFile &File)
+{
+	for (size_t i = 0; i < CMapEntity::FieldsForParsingSize_Map; i++)
+	{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+		if (CMapEntity::FieldsForParsing_Map[i].FieldType & FT_SAVABLE)
+		{
+#if (MSVS_VERSION >= VS_9)
+#pragma warning (suppress : 6385 6386)
+#endif
+			CMapEntity::FieldsForParsing_Map[i].Load<CMapEntity> (this, File);
+		}
+	}
 };
 
 bool				CMapEntity::CheckValidity ()

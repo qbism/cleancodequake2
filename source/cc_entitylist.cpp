@@ -299,7 +299,7 @@ void InitPlayers ()
 		edict_t *ent = &g_edicts[i];
 
 		if (!ent->Entity)
-			ent->Entity = QNew (com_levelPool, 0) CPlayerEntity(i);
+			ent->Entity = QNewEntityOf CPlayerEntity(i);
 	}
 }
 
@@ -308,12 +308,11 @@ void InitEntities ()
 	// Set up the world
 	edict_t *theWorld = &g_edicts[0];
 	if (!theWorld->Entity)
-		theWorld->Entity = QNew (com_levelPool, 0) CWorldEntity(0);
+		theWorld->Entity = QNewEntityOf CWorldEntity(0);
 
 	InitPlayers();
 }
 
-extern CPersistentData *SavedClients;
 char *gEntString;
 
 /*
@@ -339,7 +338,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	if (skill->Integer() != skill_level)
 		skill->Set(skill_level, true);
 
-	CPlayerEntity::SaveClientData ();
+	CPlayerEntity::BackupClientData ();
 
 	level.Clear ();
 
@@ -371,18 +370,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	InitEntities ();
 
 	// set client fields on player ents
-	for (sint32 i = 0; i < game.maxclients; i++)
-	{
-		// Reset the entity states
-		//g_edicts[i+1].Entity = SavedClients[i];
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
-		Player->Client.Persistent = CPersistentData(SavedClients[i]);
-		g_edicts[i+1].client = game.clients + i;
-	}
-
-	QDelete[] SavedClients;
-	SavedClients = NULL;
+	CPlayerEntity::RestoreClientData ();
 
 	if (!level.Demo)
 	{
@@ -391,6 +379,7 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 		// Parse ents
 		CParser EntityParser (entities, PSP_COMMENT_MASK);
 
+		bool SpawnedWorld = false;
 		while (true)
 		{
 			// Clear classname
@@ -406,8 +395,9 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 				GameError ("ED_LoadFromFile: found %s when expecting {", token);
 
 	_CC_DISABLE_DEPRECATION
-			edict_t *ent = (!World) ? g_edicts : G_Spawn();
+			edict_t *ent = (!SpawnedWorld) ? g_edicts : G_Spawn();
 	_CC_ENABLE_DEPRECATION
+			SpawnedWorld = true;
 
 			ED_ParseEdict (EntityParser, ent);
 

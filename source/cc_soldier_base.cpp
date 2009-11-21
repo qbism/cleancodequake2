@@ -42,14 +42,13 @@ CMonster (ID)
 void CSoldierBase::Idle ()
 {
 	if (frand() > 0.8)
-		Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 void CSoldierBase::CockGun ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundCock);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_COCK]);
 }
-
 
 // STAND
 
@@ -353,7 +352,7 @@ void CSoldierBase::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 
 	PainDebounceTime = level.Frame + 30;
-	Entity->PlaySound (CHAN_VOICE, SoundPain);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
 	if (Entity->Velocity.Z > 100)
 	{
@@ -682,7 +681,7 @@ CAnim SoldierMoveAttack6 (FRAME_runs01, FRAME_runs14, SoldierFramesAttack6, Conv
 
 void CSoldierBase::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundSight1 : SoundSight2);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SIGHT1] : Sounds[SOUND_SIGHT2]);
 
 	if ((skill->Integer() > 0) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
 	{
@@ -1051,7 +1050,7 @@ void CSoldierBase::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 da
 	Entity->CanTakeDamage = true;
 	Entity->State.GetSkinNum() |= 1;
 
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 
 	if (Q_fabs((Entity->State.GetOrigin().Z + Entity->ViewHeight) - point[2]) <= 4)
 	{
@@ -1162,10 +1161,10 @@ void CSoldierBase::Spawn ()
 
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/soldier/tris.md2");
 
-	SoundIdle =	SoundIndex ("soldier/solidle1.wav");
-	SoundSight1 =	SoundIndex ("soldier/solsght1.wav");
-	SoundSight2 =	SoundIndex ("soldier/solsrch1.wav");
-	SoundCock =	SoundIndex ("infantry/infatck3.wav");
+	Sounds[SOUND_IDLE] =	SoundIndex ("soldier/solidle1.wav");
+	Sounds[SOUND_SIGHT1] =	SoundIndex ("soldier/solsght1.wav");
+	Sounds[SOUND_SIGHT2] =	SoundIndex ("soldier/solsrch1.wav");
+	Sounds[SOUND_COCK] =	SoundIndex ("infantry/infatck3.wav");
 
 	Entity->Mass = 100;
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_IDLE

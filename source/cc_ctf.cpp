@@ -886,11 +886,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	};
 

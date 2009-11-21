@@ -69,14 +69,18 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
+		CStepPhysics::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
+		CStepPhysics::LoadFields (File);
 	}
 
 	bool Run ()

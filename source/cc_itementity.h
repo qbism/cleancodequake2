@@ -81,7 +81,7 @@ public:
 #define LINK_ITEM_TO_CLASS(mapClassName,DLLClassName) \
 	CMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (sint32 Index) \
 	{ \
-		DLLClassName *newClass = QNew (com_levelPool, 0) DLLClassName(Index); \
+		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
 		CBaseItem *Item = FindItemByClassname(#mapClassName); \
 		if (Item) \
 		{	\

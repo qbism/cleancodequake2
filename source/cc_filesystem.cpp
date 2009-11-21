@@ -59,7 +59,7 @@ fs_pathListType fs_pathList;
 // Adds a path to the path list
 void FS_AddPath (const char *pathName)
 {
-	fs_pathIndex *path = new fs_pathIndex;
+	fs_pathIndex *path = QNew (com_genericPool, 0) fs_pathIndex;
 	strncpy (path->pathName, pathName, sizeof(path->pathName));
 	fs_pathList.push_back (path);
 }
@@ -94,7 +94,7 @@ void FS_ReorderPath (const char *pathName)
 		}
 	}
 
-	fs_pathIndex *Path = new fs_pathIndex;
+	fs_pathIndex *Path = QNew (com_genericPool, 0) fs_pathIndex;
 	strncpy (Path->pathName, pathName, sizeof(Path->pathName));
 
 	fs_pathList.insert (fs_pathList.begin(), Path);
@@ -387,7 +387,7 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 }
 
 // Writes "size" bytes from handle from "buffer"
-void FS_Write (void *buffer, size_t size, fileHandle_t &handle)
+void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 {
 	fsHandleIndex *handleIndex = FS_GetHandle(handle);
 
@@ -429,7 +429,7 @@ size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate)
 	size_t len = FS_Len (handle);
 
 	size_t termLen = (terminate) ? 2 : 0;
-	uint8 *buf = new uint8[len + termLen];
+	uint8 *buf = QNew (com_genericPool, 0) uint8[len + termLen];
 	*buffer = buf;
 
 	FS_Read(buf, len, handle);

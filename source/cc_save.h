@@ -58,7 +58,7 @@ public:
 #define IMPLEMENT_SAVE_STRUCTURE(unique_name,DLLClassName) \
 	CBaseEntity *LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity) (sint32 Index) \
 	{ \
-		return QNew (com_levelPool, 0) DLLClassName(Index); \
+		return QNew (com_entityPool, 0) DLLClassName(Index); \
 	} \
 	CEntityTableIndex LINK_RESOLVE_CLASSNAME(unique_name, __SaveData) \
 	(TO_STRING(unique_name), LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity));
@@ -68,6 +68,16 @@ public:
 
 #define IMPLEMENT_SAVE_HEADER(DLLClassName) \
 	virtual const char *__GetName () { return TO_STRING(DLLClassName); };
+
+CC_ENUM (uint8, EIndexType)
+{
+	INDEX_MODEL,
+	INDEX_SOUND,
+	INDEX_IMAGE
+};
+
+void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType);
+void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType);
 
 #else
 FILE_WARNING

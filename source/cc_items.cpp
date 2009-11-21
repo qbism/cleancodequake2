@@ -145,7 +145,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 {
-	CDroppedItemEntity	*dropped = QNew (com_levelPool, 0) CDroppedItemEntity();
+	CDroppedItemEntity	*dropped = QNewEntityOf CDroppedItemEntity();
 	vec3f	forward, right;
 
 	dropped->ClassName = Classname;

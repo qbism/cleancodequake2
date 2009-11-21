@@ -207,7 +207,7 @@ public:
 
 CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 {
-	CDroppedFlagEntity	*dropped = QNew (com_levelPool, 0) CDroppedFlagEntity();
+	CDroppedFlagEntity	*dropped = QNewEntityOf CDroppedFlagEntity();
 	vec3f	forward, right;
 
 	dropped->ClassName = Classname;

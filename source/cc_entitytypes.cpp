@@ -50,7 +50,11 @@ CanTakeDamage (false)
 ENTITYFIELDS_BEGIN(CHurtableEntity)
 {
 	CEntityField ("health", EntityMemberOffset(CHurtableEntity,Health), FT_INT | FT_SAVABLE),
+
 	CEntityField ("CanTakeDamage", EntityMemberOffset(CHurtableEntity,CanTakeDamage), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("DeadFlag", EntityMemberOffset(CHurtableEntity,DeadFlag), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MaxHealth", EntityMemberOffset(CHurtableEntity,MaxHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("GibHealth", EntityMemberOffset(CHurtableEntity,GibHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CHurtableEntity)
 
@@ -571,13 +575,13 @@ CBaseEntity(Index)
 void CThinkableEntity::SaveFields (CFile &File)
 {
 	// Save NextThink
-	File.Write (&NextThink, sizeof(NextThink));
+	File.Write<FrameNumber_t> (NextThink);
 };
 
 void CThinkableEntity::LoadFields (CFile &File)
 {
-	// Save NextThink
-	File.Read (&NextThink, sizeof(NextThink));
+	// Load NextThink
+	NextThink = File.Read<FrameNumber_t> ();
 };
 
 void CThinkableEntity::RunThink ()
@@ -603,12 +607,12 @@ CBaseEntity(Index)
 
 void CTouchableEntity::SaveFields (CFile &File)
 {
-	File.Write (&Touchable, sizeof(Touchable));
+	File.Write<bool> (Touchable);
 };
 
 void CTouchableEntity::LoadFields (CFile &File)
 {
-	File.Read (&Touchable, sizeof(Touchable));
+	Touchable = File.Read<bool> ();
 };
 
 void CTouchableEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
@@ -1534,6 +1538,8 @@ ENTITYFIELDS_BEGIN(CUsableEntity)
 	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
 	CEntityField ("killtarget",	EntityMemberOffset(CUsableEntity,KillTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+
+	CEntityField ("Usable", EntityMemberOffset(CUsableEntity,Usable),		FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CUsableEntity)
 
@@ -1548,13 +1554,11 @@ bool			CUsableEntity::ParseField (const char *Key, const char *Value)
 
 void			CUsableEntity::SaveFields (CFile &File)
 {
-	File.Write (&Usable, sizeof(Usable));
 	SaveEntityFields <CUsableEntity> (this, File);
 };
 
 void			CUsableEntity::LoadFields (CFile &File)
 {
-	File.Read (&Usable, sizeof(Usable));
 	LoadEntityFields <CUsableEntity> (this, File);
 };
 
@@ -1606,7 +1610,7 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
 	if (Delay)
 	{
 	// create a temp object to fire at a later time
-		CDelayedUse *t = QNew (com_levelPool, 0) CDelayedUse;
+		CDelayedUse *t = QNewEntityOf CDelayedUse;
 		t->ClassName = "DelayedUse";
 
 		// Paril: for compatibility

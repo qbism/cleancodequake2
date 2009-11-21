@@ -32,12 +32,196 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+/*
+===============================
+MONSTER LIST
+===============================
+*/
+
+std::vector<CMonsterTableIndex*, std::generic_allocator <CMonsterTableIndex*> > MonsterTable;
+
+CMonsterTableIndex::CMonsterTableIndex (const char *Name, CMonster *(*FuncPtr) (uint32 MonsterID)) :
+  Name(Name),
+  FuncPtr(FuncPtr)
+{
+	MonsterTable.push_back (this);
+};
+
+CMonster *CreateMonsterFromTable (uint32 MonsterID, const char *Name)
+{
+	for (size_t i = 0; i < MonsterTable.size(); i++)
+	{
+		if (strcmp(Name, MonsterTable[i]->Name) == 0)
+			return MonsterTable[i]->FuncPtr(MonsterID);
+	}
+	return NULL;
+};
+
+void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 MonsterID, CFile &File)
+{
+	// Create base monster
+	Entity->Monster = CreateMonsterFromTable (MonsterID, Entity->ClassName);
+
+	// Fill it
+	Entity->Monster->LoadFields (File);
+
+	// Check.
+	// LoadFields will actually re-load the monster's ID, so here we need to make sure
+	// they still are the same.
+	if ((Entity->Monster->MonsterID != MonsterID) || stricmp(Entity->Monster->MonsterName, LoadedName))
+		_CC_ASSERT_EXPR (0, "Loaded monster differs in ID or Name\n");
+
+	Entity->Monster->Entity = Entity;
+}
+
 #include "cc_brushmodels.h"
 #define STEPSIZE	18
 
 #ifdef MONSTERS_USE_PATHFINDING
 #include "cc_pathfinding.h"
 #include "cc_tent.h"
+
+size_t GetNodeIndex (CPathNode *Node);
+CPathNode *GetNodeByIndex (size_t index);
+
+void CMonster::SaveFields (CFile &File)
+{
+	File.Write<uint32> (MonsterID);
+	File.Write<float> (IdealYaw);
+	File.Write<float> (YawSpeed);
+	File.Write<uint32> (AIFlags);
+#ifdef MONSTER_USE_ROGUE_AI
+	File.Write<bool> (BlindFire);
+	File.Write<float> (BaseHeight);
+	File.Write<FrameNumber_t> (NextDuckTime);
+	File.Write<FrameNumber_t> (DuckWaitTime);
+	File.Write<FrameNumber_t> (BlindFireDelay);
+	File.Write<sint32> ((LastPlayerEnemy) ? LastPlayerEnemy->State.GetNumber() : -1);
+	File.Write<FrameNumber_t> (NextDuckTime);
+	File.Write<vec3f> (BlindFireTarget);
+	File.Write<sint32> ((BadMedic1) ? BadMedic1->State.GetNumber() : -1);
+	File.Write<sint32> ((BadMedic2) ? BadMedic2->State.GetNumber() : -1);
+#endif
+	File.Write<sint32> ((Healer) ? Healer->State.GetNumber() : -1);
+	File.Write<sint32> (NextFrame);
+	File.Write<float> (Scale);
+	File.Write<FrameNumber_t> (PauseTime);
+	File.Write<FrameNumber_t> (AttackFinished);
+	File.Write<FrameNumber_t> (SearchTime);
+	File.Write<vec3f> (LastSighting);
+	File.Write<vec3f> (SavedGoal);
+	File.Write<sint32> (AttackState);
+	File.Write<bool> (Lefty);
+	File.Write<float> (IdleTime);
+	File.Write<sint32> (LinkCount);
+	File.Write<EPowerArmorType> (PowerArmorType);
+	File.Write<sint32> (PowerArmorPower);
+	File.Write<uint8> (PowerArmorTime);
+	File.Write<uint8> (ExplodeCount);
+	File.Write<bool> (EnemyInfront);
+	File.Write<bool> (EnemyVis);
+	File.Write<ERangeType> (EnemyRange);
+	File.Write<float> (EnemyYaw);
+	File.Write<CAnim*> (CurrentMove);
+	File.Write<uint32> (MonsterFlags);
+	File.WriteString (MonsterName);
+	File.Write<FrameNumber_t> (PainDebounceTime);
+#ifdef MONSTERS_USE_PATHFINDING
+	File.Write<bool> (FollowingPath);
+	if (FollowingPath)
+		WriteNodeInfo (File);
+#endif
+
+	File.Write <void (CMonster::*) ()> (Think);
+
+	SaveMonsterFields (File);
+};
+
+void CMonster::LoadFields (CFile &File)
+{
+	File.Read ((void*)(&MonsterID), sizeof(uint32));
+	IdealYaw = File.Read<float> ();
+	YawSpeed = File.Read<float> ();
+	AIFlags = File.Read<uint32> ();
+	sint32 Index;
+#ifdef MONSTER_USE_ROGUE_AI
+	BlindFire = File.Read<bool> ();
+	BaseHeight = File.Read<float> ();
+	NextDuckTime = File.Read<FrameNumber_t> ();
+	DuckWaitTime = File.Read<FrameNumber_t> ();
+	BlindFireDelay = File.Read<FrameNumber_t> ();
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		LastPlayerEnemy = entity_cast<CPlayerEntity>(g_edicts[Index].Entity);
+
+	NextDuckTime = File.Read<FrameNumber_t> ();
+	BlindFireTarget = File.Read<vec3f> ();
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		BadMedic1 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		BadMedic2 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+#endif
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		Healer = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+	NextFrame = File.Read<sint32> ();
+	Scale = File.Read<float> ();
+	PauseTime = File.Read<FrameNumber_t> ();
+	AttackFinished = File.Read<FrameNumber_t> ();
+	SearchTime = File.Read<FrameNumber_t> ();
+	LastSighting = File.Read<vec3f> ();
+	SavedGoal = File.Read<vec3f> ();
+	AttackState = File.Read<sint32> ();
+	Lefty = File.Read<bool> ();
+	IdleTime = File.Read<float> ();
+	LinkCount = File.Read<sint32> ();
+	PowerArmorType = File.Read<EPowerArmorType> ();
+	PowerArmorPower = File.Read<sint32> ();
+	PowerArmorTime = File.Read<uint8> ();
+	ExplodeCount = File.Read<uint8> ();
+	EnemyInfront = File.Read<bool> ();
+	EnemyVis = File.Read<bool> ();
+	EnemyRange = File.Read<ERangeType> ();
+	EnemyYaw = File.Read<float> ();
+	CurrentMove = File.Read<CAnim*> ();
+	MonsterFlags = File.Read<uint32> ();
+	MonsterName = File.ReadString (com_entityPool); // FIXME: is this pool right?
+	PainDebounceTime = File.Read<FrameNumber_t> ();
+#ifdef MONSTERS_USE_PATHFINDING
+	FollowingPath = File.Read<bool> ();
+	if (FollowingPath)
+		ReadNodeInfo (File);
+#endif
+
+	Think = File.Read <void (CMonster::*) ()> ();
+
+	LoadMonsterFields (File);
+};
+
+void CMonster::WriteNodeInfo (CFile &File)
+{
+	P_CurrentPath->Save (File);
+	File.Write<uint32> (GetNodeIndex(P_CurrentGoalNode));
+	File.Write<uint32> (GetNodeIndex(P_CurrentNode));
+	File.Write<sint32> (P_CurrentNodeIndex);
+	File.Write<FrameNumber_t> (P_NodePathTimeout);
+	File.Write<FrameNumber_t> (P_NodeFollowTimeout);
+}
+
+void CMonster::ReadNodeInfo (CFile &File)
+{
+	P_CurrentPath = QNew (com_levelPool, 0) CPath();
+	P_CurrentPath->Load (File);
+	P_CurrentGoalNode = GetNodeByIndex(File.Read<uint32> ());
+	P_CurrentNode = GetNodeByIndex(File.Read<uint32> ());
+	P_CurrentNodeIndex = File.Read<sint32> ();
+	P_NodePathTimeout = File.Read<FrameNumber_t> ();
+	P_NodeFollowTimeout = File.Read<FrameNumber_t> ();
+}
 
 bool VecInFront (vec3f &angles, vec3f &origin1, vec3f &origin2);
 void CMonster::FoundPath ()
@@ -423,9 +607,19 @@ void CMonsterEntity::Spawn ()
 
 ENTITYFIELDS_BEGIN(CMonsterEntity)
 {
-	CEntityField ("deathtarget",	EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("combattarget",	EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("item",			EntityMemberOffset(CMonsterEntity,Item),				FT_ITEM | FT_SAVABLE),
+	CEntityField ("deathtarget",		EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("combattarget",		EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("item",				EntityMemberOffset(CMonsterEntity,Item),				FT_ITEM | FT_SAVABLE),
+
+	CEntityField ("IsHead",				EntityMemberOffset(CMonsterEntity,IsHead),				FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("UseState",			EntityMemberOffset(CMonsterEntity,UseState),			FT_BYTE | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("AirFinished",		EntityMemberOffset(CMonsterEntity,AirFinished),			FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("DamageDebounceTime",	EntityMemberOffset(CMonsterEntity,DamageDebounceTime),	FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("BonusDamageTime",	EntityMemberOffset(CMonsterEntity,BonusDamageTime),		FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("ShowHostile",		EntityMemberOffset(CMonsterEntity,ShowHostile),			FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("OldEnemy",			EntityMemberOffset(CMonsterEntity,OldEnemy),			FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("GoalEntity",			EntityMemberOffset(CMonsterEntity,GoalEntity),			FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveTarget",			EntityMemberOffset(CMonsterEntity,MoveTarget),			FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMonsterEntity)
 
@@ -439,19 +633,48 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 
 void			CMonsterEntity::SaveFields (CFile &File)
 {
+	// Write the monster's name first - this is used for checking later
+	if (!Monster || !Monster->MonsterName)
+		_CC_ASSERT_EXPR (0, "Monster with no monster or name!\n");
+
+	File.WriteString (Monster->MonsterName);
+
+	// Write ID
+	File.Write<uint32> (Monster->MonsterID);
+
 	SaveEntityFields <CMonsterEntity> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CHurtableEntity::SaveFields (File);
 	CTouchableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+	CTossProjectile::SaveFields (File);
+
+	// Write the monster's info last
+	Monster->SaveFields (File);
 }
 
 void			CMonsterEntity::LoadFields (CFile &File)
 {
+	// Load in the monster name
+	char *tempBuffer = File.ReadString ();
+	uint32 tempId = File.Read<uint32> ();
+
+	// Let the rest of the entity load first
 	LoadEntityFields <CMonsterEntity> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CHurtableEntity::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+	CTossProjectile::LoadFields (File);
+
+	// Now load the monster info
+	LoadMonsterData (this, tempBuffer, tempId, File);
+	QDelete[] tempBuffer;
 }
+
+IMPLEMENT_SAVE_STRUCTURE (CMonsterEntity, CMonsterEntity)
 
 void CMonsterEntity::Think ()
 {
@@ -2107,7 +2330,7 @@ void CMonster::AI_Run(float Dist)
 	//}
 
 	save = Entity->GoalEntity;
-	tempgoal = QNew (com_levelPool, 0) CTempGoal;
+	tempgoal = QNewEntityOf CTempGoal;
 	Entity->GoalEntity = tempgoal;
 
 	isNew = false;
@@ -2393,7 +2616,7 @@ void CMonster::AI_Run(float Dist)
 	}
 
 	save = Entity->GoalEntity;
-	tempgoal = QNew (com_levelPool, 0) CTempGoal;
+	tempgoal = QNewEntityOf CTempGoal;
 	Entity->GoalEntity = tempgoal;
 
 	isNew = false;

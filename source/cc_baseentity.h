@@ -243,10 +243,7 @@ inline char *CopyStr (const char *In, struct memPool_t *Pool)
 		i++;
 	}
 
-	char *string = new char[newString.size()+1];
-	Q_snprintfz (string, newString.size()+1, "%s", newString.c_str());
-
-	return string;
+	return Mem_PoolStrDup (newString.c_str(), Pool, 0);
 }
 
 inline uint32 atou (const char *Str)
@@ -307,6 +304,8 @@ inline uint32 atou (const char *Str)
 	virtual void SaveFields (CFile &File); \
 	virtual void LoadFields (CFile &File); \
 	virtual const char *__GetName () { return TO_STRING(x); }
+
+#define QNewEntityOf QNew (com_entityPool, 0) 
 
 CC_ENUM (uint32, EFieldType)
 {
@@ -447,102 +446,62 @@ public:
 		switch (StrippedFields)
 		{
 		case FT_BOOL:
-			File.Write (((bool*)(ClassOffset)), sizeof(bool));
+			File.Write<bool> (((bool*)(ClassOffset)));
 			break;
 		case FT_CHAR:
-			File.Write (((sint8*)(ClassOffset)), sizeof(sint8));
+			File.Write<sint8> (((sint8*)(ClassOffset)));
 			break;
 		case FT_BYTE:
-			File.Write (((uint8*)(ClassOffset)), sizeof(uint8));
+			File.Write<uint8> (((uint8*)(ClassOffset)));
 			break;
 		case FT_SHORT:
-			File.Write (((sint16*)(ClassOffset)), sizeof(sint16));
+			File.Write<sint16> (((sint16*)(ClassOffset)));
 			break;
 		case FT_USHORT:
-			File.Write (((uint16*)(ClassOffset)), sizeof(uint16));
+			File.Write<uint16> (((uint16*)(ClassOffset)));
 			break;
 		case FT_INT:
-			File.Write (((sint32*)(ClassOffset)), sizeof(sint32));
+			File.Write<sint32> (((sint32*)(ClassOffset)));
 			break;
 		case FT_UINT:
-			File.Write (((uint32*)(ClassOffset)), sizeof(uint32));
+			File.Write<uint32> (((uint32*)(ClassOffset)));
 			break;
 		case FT_FLOAT:
-			File.Write (((float*)(ClassOffset)), sizeof(float));
+			File.Write<float> (((float*)(ClassOffset)));
 			break;
 		case FT_FLOAT_TO_BYTE:
-			File.Write (((uint8*)(ClassOffset)), sizeof(uint8));
+			File.Write<uint8> (((uint8*)(ClassOffset)));
 			break;
 		case FT_VECTOR:
-			File.Write (((vec3f*)(ClassOffset)), sizeof(vec3f));
+			File.Write<vec3f> (((vec3f*)(ClassOffset)));
 			break;
 		case FT_YAWANGLE:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
 		case FT_GAME_STRING:
-			{
-				size_t len = 0;
-
-				if (*((char**)ClassOffset))
-					len = strlen(*((char**)ClassOffset)) + 1;
-
-				File.Write (&len, sizeof(size_t));
-
-				if (len > 1)
-					File.Write (*((char**)ClassOffset), len);
-			}
+			File.WriteString (*((char**)ClassOffset));
 			break;
 		case FT_SOUND_INDEX:
-			{
-				size_t len = 0;
-				if (*((MediaIndex *)(ClassOffset)))
-				{
-					const char *str = StringFromSoundIndex (*((MediaIndex *)(ClassOffset)));
-					len = strlen(str) + 1;
-
-					File.Write (&len, sizeof(size_t));
-					if (len > 1)
-						File.Write ((void*)str, len);
-				}
-				else
-					File.Write (&len, sizeof(len));
-			}
+			if (*((MediaIndex *)(ClassOffset)))
+				File.WriteString (StringFromSoundIndex (*((MediaIndex *)(ClassOffset))));
+			else
+				File.Write<sint32> (-1);
 			break;
 		case FT_IMAGE_INDEX:
-			{
-				size_t len = 0;
-				if (*((MediaIndex *)(ClassOffset)))
-				{
-					const char *str = StringFromImageIndex (*((MediaIndex *)(ClassOffset)));
-					len = strlen(str) + 1;
-
-					File.Write (&len, sizeof(size_t));
-					if (len > 1)
-						File.Write ((void*)str, len);
-				}
-				else
-					File.Write (&len, sizeof(len));
-			}
-			break;
+			if (*((MediaIndex *)(ClassOffset)))
+				File.WriteString (StringFromImageIndex (*((MediaIndex *)(ClassOffset))));
+			else
+				File.Write<sint32> (-1);
+		break;
 		case FT_MODEL_INDEX:
-			{
-				size_t len = 0;
-				if (*((MediaIndex *)(ClassOffset)))
-				{
-					const char *str = StringFromModelIndex (*((MediaIndex *)(ClassOffset)));
-					len = strlen(str) + 1;
-
-					File.Write (&len, sizeof(size_t));
-					if (len > 1)
-						File.Write ((void*)str, len);
-				}
-				else
-					File.Write (&len, sizeof(len));
-			}
+			if (*((MediaIndex *)(ClassOffset)))
+				File.WriteString (StringFromModelIndex (*((MediaIndex *)(ClassOffset))));
+			else
+				File.Write<sint32> (-1);
 			break;
 		case FT_FRAMENUMBER:
-			File.Write (((FrameNumber_t *)(ClassOffset)), sizeof(FrameNumber_t));
+			File.Write<FrameNumber_t> (((FrameNumber_t *)(ClassOffset)));
 			break;
 		case FT_ITEM:
 			{
@@ -550,7 +509,7 @@ public:
 				if (*((CBaseItem **)(ClassOffset)))
 					Index = (*((CBaseItem **)(ClassOffset)))->GetIndex();
 				
-				File.Write (&Index, sizeof(Index));
+				File.Write<sint32> (Index);
 			}
 			break;
 		};
@@ -564,60 +523,47 @@ public:
 		switch (StrippedFields)
 		{
 		case FT_BOOL:
-			File.Read (((bool*)(ClassOffset)), sizeof(bool));
+			*((bool*)(ClassOffset)) = File.Read<bool> ();
 			break;
 		case FT_CHAR:
-			File.Read (((sint8*)(ClassOffset)), sizeof(sint8));
+			*((sint8*)(ClassOffset)) = File.Read<sint8> ();
 			break;
 		case FT_BYTE:
-			File.Read (((uint8*)(ClassOffset)), sizeof(uint8));
+			*((uint8*)(ClassOffset)) = File.Read<uint8> ();
 			break;
 		case FT_SHORT:
-			File.Read (((sint16*)(ClassOffset)), sizeof(sint16));
+			*((sint16*)(ClassOffset)) = File.Read<sint16> ();
 			break;
 		case FT_USHORT:
-			File.Read (((uint16*)(ClassOffset)), sizeof(uint16));
+			*((uint16*)(ClassOffset)) = File.Read<uint16> ();
 			break;
 		case FT_INT:
-			File.Read (((sint32*)(ClassOffset)), sizeof(sint32));
+			*((sint32*)(ClassOffset)) = File.Read<sint32> ();
 			break;
 		case FT_UINT:
-			File.Read (((uint32*)(ClassOffset)), sizeof(uint32));
+			*((uint32*)(ClassOffset)) = File.Read<uint32> ();
 			break;
 		case FT_FLOAT:
-			File.Read (((float*)(ClassOffset)), sizeof(float));
+			*((float*)(ClassOffset)) = File.Read<float> ();
 			break;
 		case FT_FLOAT_TO_BYTE:
-			File.Read (((uint8*)(ClassOffset)), sizeof(uint8));
+			*((uint8*)(ClassOffset)) = File.Read<uint8> ();
 			break;
 		case FT_VECTOR:
-			File.Read (((vec3f*)(ClassOffset)), sizeof(vec3f));
+			*((vec3f*)(ClassOffset)) = File.Read<vec3f> ();
 			break;
 		case FT_YAWANGLE:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
 		case FT_GAME_STRING:
-			{
-				size_t len;
-				File.Read (&len, sizeof(size_t));
-
-				if (len > 1)
-				{
-					*((char**)ClassOffset) = QNew ((FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool, 0) char[len];
-					File.Read (*((char**)ClassOffset), len);
-				}
-			}
+			*((char**)ClassOffset) = File.ReadString ((FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
 			break;
 		case FT_SOUND_INDEX:
 			{
-				size_t len;
-				File.Read (&len, sizeof(size_t));
-
-				if (len > 1)
+				char *str = File.ReadString ();
+				if (str)
 				{
-					char *str = QNew (com_genericPool, 0) char[len]; // Temp buffer
-					File.Read (str, len);
 					*((MediaIndex *)(ClassOffset)) = SoundIndex (str);
 					QDelete[] str;
 				}
@@ -625,13 +571,9 @@ public:
 			break;
 		case FT_IMAGE_INDEX:
 			{
-				size_t len;
-				File.Read (&len, sizeof(size_t));
-
-				if (len > 1)	
+				char *str = File.ReadString ();
+				if (str)
 				{
-					char *str = QNew (com_genericPool, 0) char[len]; // Temp buffer
-					File.Read (str, len);
 					*((MediaIndex *)(ClassOffset)) = ImageIndex (str);
 					QDelete[] str;
 				}
@@ -639,29 +581,21 @@ public:
 			break;
 		case FT_MODEL_INDEX:
 			{
-				size_t len;
-				File.Read (&len, sizeof(size_t));
-
-				if (len > 1)
+				char *str = File.ReadString ();
+				if (str)
 				{
-					char *str = QNew (com_genericPool, 0) char[len]; // Temp buffer
-					File.Read (str, len);
 					*((MediaIndex *)(ClassOffset)) = ModelIndex (str);
 					QDelete[] str;
 				}
 			}
 			break;
 		case FT_FRAMENUMBER:
-			File.Read (((FrameNumber_t *)(ClassOffset)), sizeof(FrameNumber_t));
+			*((FrameNumber_t *)(ClassOffset)) = File.Read<FrameNumber_t> ();
 			break;
 		case FT_ITEM:
 			{
-				sint32 Index;
-				File.Read (&Index, sizeof(Index));
-				if (Index != -1)
-					*((CBaseItem **)(ClassOffset)) = GetItemByIndex(Index);
-				else
-					*((CBaseItem **)(ClassOffset)) = NULL;
+				sint32 Index = File.Read<sint32> ();
+				*((CBaseItem **)(ClassOffset)) = (Index != -1) ? GetItemByIndex(Index) : NULL;
 			}
 			break;
 		};
@@ -676,7 +610,10 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-		if (!(TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN) && (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0))
+		if (TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN)
+			break; // if we reach a NOSPAWN we can stop
+
+		if (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0)
 		{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
@@ -696,7 +633,10 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-		if (!(TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN) && (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0))
+		if (TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN)
+			break; // if we reach a NOSPAWN we can stop
+
+		if (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0)
 		{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
@@ -780,7 +720,8 @@ public:
 	void					ParseFields ();
 	virtual bool			CheckValidity ();
 
-	virtual const char *__GetName () = 0;
+	virtual void SaveFields (CFile &File);
+	virtual void LoadFields (CFile &File);
 };
 
 #include "cc_itementity.h"

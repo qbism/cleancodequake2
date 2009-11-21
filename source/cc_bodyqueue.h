@@ -34,9 +34,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_BODYQUEUE_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_BODYQUEUE_H__
 
-void BodyQueue_Init ();
+void BodyQueue_Init (sint32 reserve);
 void ShutdownBodyQueue ();
 void CopyToBodyQueue (CPlayerEntity *Player);
+
+#define BODY_QUEUE_SIZE	8
+
 
 #else
 FILE_WARNING

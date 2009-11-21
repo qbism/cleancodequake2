@@ -283,7 +283,7 @@ public:
 
 CItemEntity *CTech::DropItem (CBaseEntity *ent)
 {
-	CTechEntity	*dropped = QNew (com_levelPool, 0) CTechEntity();
+	CTechEntity	*dropped = QNewEntityOf CTechEntity();
 	vec3f	forward, right;
 
 	dropped->ClassName = Classname;
@@ -338,7 +338,7 @@ void CTech::Drop (CPlayerEntity *ent)
 
 void SpawnTech(CBaseItem *item, CBaseEntity *spot)
 {
-	CTechEntity *ent = QNew (com_levelPool, 0) CTechEntity ();
+	CTechEntity *ent = QNewEntityOf CTechEntity ();
 
 	ent->ClassName = item->Classname;
 	ent->LinkedItem = item;
@@ -412,7 +412,7 @@ void SetupTechSpawn()
 	if (dmFlags.dfCtfNoTech || (!(game.mode & GAME_CTF) && !dmFlags.dfDmTechs))
 		return;
 
-	QNew (com_levelPool, 0) CTechSpawner;
+	QNewEntityOf CTechSpawner;
 }
 
 void ResetTechs()

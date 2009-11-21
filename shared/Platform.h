@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #if (_MSC_VER >= 1600) // 2010
 	#define MSVS_VERSION			VS_10
 	#define MSVS_VERSION_STRING		VS_10_STR
+	#define HAS__CPP0x
 #elif (_MSC_VER >= 1500) // 2008
 	#define MSVS_VERSION			VS_9
 	#define MSVS_VERSION_STRING		VS_9_STR
@@ -68,25 +69,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 	#define MSVS_VERSION_STRING		VS_UNKNOWN_STR
 #endif
 
-#if (MSVS_VERSION <= VS_9)
+#define COMPILERSTRING MSVS_VERSION_STRING
 
 #define CC_ENUM(type,name) \
 	typedef type name; \
 	enum
-
-#elif (MSVS_VERSION == VS_10)
-// FIXME: Make this next part real. Not sure if VS10 will support this yet...
-/*
-#define CC_ENUM(type,name) enum name : type
-*/
-
-#ifndef CC_ENUM
-#define CC_ENUM(type,name) \
-	typedef type name; \
-	enum
-#endif
-
-#endif
 
 // unknown pragmas are SUPPOSED to be ignored, but....
 # pragma warning(disable : 4244)	// 'conversion' conversion from 'type1' to 'type2', possible loss of data
@@ -110,19 +97,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 # define BUILDSTRING		"Win32"
 
-# ifndef _DEBUG
-#  ifdef _M_IX86
+# ifdef _M_IX86
 #   define CPUSTRING		"x86"
-#  elif defined _M_ALPHA
-#   define CPUSTRING		"AXP"
-#  endif
-# else // _DEBUG
-#  ifdef _M_IX86
-#   define CPUSTRING		"x86 Debug"
-#  elif defined _M_ALPHA
-#   define CPUSTRING		"AXP Debug"
-#  endif
-# endif // _DEBUG
+# elif defined _M_ALPHA
+#  define CPUSTRING		"AXP"
+# elif _M_IA64
+#  define CPUSTRING		"x64"
+# endif
 
 typedef	signed char			sint8;
 typedef signed __int16		sint16;
@@ -162,19 +143,11 @@ typedef unsigned __int64	uint64;
 
 #  define BUILDSTRING		"Linux"
 
-#  ifndef _DEBUG
-#   ifdef __i386__
-#    define CPUSTRING		"i386"
-#   elif defined(__alpha__)
-#    define CPUSTRING		"AXP"
-#   endif
-#  else // _DEBUG
-#   ifdef __i386__
-#    define CPUSTRING		"i386 Debug"
-#   elif defined(__alpha__)
-#    define CPUSTRING		"AXP Debug"
-#   endif
-#  endif // _DEBUG
+#  ifdef __i386__
+#   define CPUSTRING		"i386"
+#  elif defined(__alpha__)
+#   define CPUSTRING		"AXP"
+#  endif
 
 //
 // FreeBSD
@@ -189,19 +162,11 @@ typedef unsigned __int64	uint64;
 
 #  define BUILDSTRING		"FreeBSD"
 
-#  ifndef _DEBUG
-#   ifdef __i386__
-#    define CPUSTRING		"i386"
-#   elif defined(__alpha__)
-#    define CPUSTRING		"AXP"
-#   endif
-#  else // _DEBUG
-#   ifdef __i386__
-#    define CPUSTRING		"i386 Debug"
-#   elif defined(__alpha__)
-#    define CPUSTRING		"AXP Debug"
-#   endif
-#  endif // _DEBUG
+#  ifdef __i386__
+#   define CPUSTRING		"i386"
+#  elif defined(__alpha__)
+#   define CPUSTRING		"AXP"
+#  endif
 
 # endif
 
@@ -287,4 +252,8 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 
 #ifndef CPUSTRING
 # define CPUSTRING		"Unknown"
+#endif
+
+#ifndef COMPILERSTRING
+# define COMPILERSTRING	"Unknown"
 #endif

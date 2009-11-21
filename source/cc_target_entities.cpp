@@ -54,7 +54,7 @@ class CTargetSpeaker : public CMapEntity, public CUsableEntity
 {
 public:
 	uint8		Volume;
-	sint32			Attenuation;
+	sint32		Attenuation;
 
 	CTargetSpeaker () :
 	  CBaseEntity (),
@@ -137,12 +137,14 @@ bool			CTargetSpeaker::ParseField (const char *Key, const char *Value)
 void		CTargetSpeaker::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetSpeaker> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CTargetSpeaker::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetSpeaker> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -213,7 +215,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetExplosion)
 {
-	CEntityField ("dmg", EntityMemberOffset(CTargetExplosion,Damage), FT_INT),
+	CEntityField ("dmg", EntityMemberOffset(CTargetExplosion,Damage), FT_INT | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetExplosion)
 
@@ -228,12 +230,14 @@ bool			CTargetExplosion::ParseField (const char *Key, const char *Value)
 void		CTargetExplosion::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetExplosion> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CTargetExplosion::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetExplosion> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -313,6 +317,8 @@ public:
 ENTITYFIELDS_BEGIN(CTargetSpawner)
 {
 	CEntityField ("speed", EntityMemberOffset(CTargetSpawner,Speed), FT_FLOAT | FT_SAVABLE),
+
+	CEntityField ("MoveDir", EntityMemberOffset(CTargetSpawner,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetSpawner)
 
@@ -328,12 +334,14 @@ bool			CTargetSpawner::ParseField (const char *Key, const char *Value)
 void		CTargetSpawner::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetSpawner> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CTargetSpawner::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetSpawner> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -358,7 +366,7 @@ class CTargetSplash : public CMapEntity, public CUsableEntity
 {
 public:
 	vec3f	MoveDir;
-	sint32		Damage;
+	sint32	Damage;
 	uint8	Color;
 	uint8	Count;
 
@@ -412,6 +420,8 @@ ENTITYFIELDS_BEGIN(CTargetSplash)
 	CEntityField ("dmg", EntityMemberOffset(CTargetSplash,Damage), FT_INT | FT_SAVABLE),
 	CEntityField ("sounds", EntityMemberOffset(CTargetSplash,Color), FT_BYTE | FT_SAVABLE),
 	CEntityField ("count", EntityMemberOffset(CTargetSplash,Count), FT_BYTE | FT_SAVABLE),
+
+	CEntityField ("MoveDir", EntityMemberOffset(CTargetSplash,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetSplash)
 
@@ -427,12 +437,14 @@ bool			CTargetSplash::ParseField (const char *Key, const char *Value)
 void		CTargetSplash::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetSplash> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CTargetSplash::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetSplash> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -499,12 +511,14 @@ bool CTargetTempEntity::ParseField (const char *Key, const char *Value)
 void		CTargetTempEntity::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetTempEntity> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CTargetTempEntity::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetTempEntity> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -702,12 +716,14 @@ bool			CTargetChangeLevel::ParseField (const char *Key, const char *Value)
 void			CTargetChangeLevel::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetChangeLevel> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void			CTargetChangeLevel::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetChangeLevel> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -715,7 +731,7 @@ LINK_CLASSNAME_TO_CLASS ("target_changelevel", CTargetChangeLevel);
 
 CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 {
-	CTargetChangeLevel *Temp = QNew (com_levelPool, 0) CTargetChangeLevel;
+	CTargetChangeLevel *Temp = QNewEntityOf CTargetChangeLevel;
 	Temp->ClassName = "target_changelevel";
 
 	level.NextMap = map;
@@ -727,24 +743,24 @@ CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 /*QUAKED target_crosslevel_trigger (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
 Once this trigger is touched/used, any trigger_crosslevel_target with the same trigger number is automatically used when a level is started within the same unit.  It is OK to check multiple triggers.  Message, delay, target, and killtarget also work.
 */
-class CCTargetCrossLevelTrigger : public CMapEntity, public CUsableEntity
+class CTargetCrossLevelTrigger : public CMapEntity, public CUsableEntity
 {
 public:
-	CCTargetCrossLevelTrigger () :
+	CTargetCrossLevelTrigger () :
 	  CBaseEntity (),
 	  CMapEntity (),
 	  CUsableEntity ()
 	{
 	};
 
-	CCTargetCrossLevelTrigger (sint32 Index) :
+	CTargetCrossLevelTrigger (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CUsableEntity (Index)
 	{
 	};
 
-	IMPLEMENT_SAVE_HEADER(CCTargetCrossLevelTrigger)
+	IMPLEMENT_SAVE_HEADER(CTargetCrossLevelTrigger)
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -753,11 +769,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	};
 
@@ -778,7 +796,7 @@ public:
 	};
 };
 
-LINK_CLASSNAME_TO_CLASS ("target_crosslevel_trigger", CCTargetCrossLevelTrigger);
+LINK_CLASSNAME_TO_CLASS ("target_crosslevel_trigger", CTargetCrossLevelTrigger);
 
 /*QUAKED target_crosslevel_target (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
 Triggered by a trigger_crosslevel elsewhere within a unit.  If multiple triggers are checked, all must be true.  Delay, target and
@@ -812,12 +830,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	}
@@ -886,11 +906,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	};
 
@@ -964,11 +986,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	};
 
@@ -1024,7 +1048,7 @@ class CTargetBlaster : public CMapEntity, public CUsableEntity
 public:
 	vec3f		MoveDir;
 	float		Speed;
-	sint32			Damage;
+	sint32		Damage;
 
 	CTargetBlaster () :
 	  CBaseEntity (),
@@ -1076,6 +1100,8 @@ ENTITYFIELDS_BEGIN(CTargetBlaster)
 {
 	CEntityField ("speed", EntityMemberOffset(CTargetBlaster,Speed), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("dmg", EntityMemberOffset(CTargetBlaster,Damage), FT_INT | FT_SAVABLE),
+
+	CEntityField ("MoveDir", EntityMemberOffset(CTargetBlaster,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetBlaster)
 
@@ -1091,12 +1117,14 @@ bool			CTargetBlaster::ParseField (const char *Key, const char *Value)
 void		CTargetBlaster::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetBlaster> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CTargetBlaster::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetBlaster> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -1119,7 +1147,7 @@ class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableE
 public:
 	bool		StartLaser;
 	vec3f		MoveDir;
-	sint32			Damage;
+	sint32		Damage;
 
 	CTargetLaser () :
 	  CBaseEntity (),
@@ -1303,6 +1331,9 @@ public:
 ENTITYFIELDS_BEGIN(CTargetLaser)
 {
 	CEntityField ("dmg", EntityMemberOffset(CTargetLaser,Damage), FT_INT | FT_SAVABLE),
+
+	CEntityField ("MoveDir", EntityMemberOffset(CTargetLaser,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("StartLaser", EntityMemberOffset(CTargetLaser,StartLaser), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetLaser)
 
@@ -1318,12 +1349,14 @@ bool			CTargetLaser::ParseField (const char *Key, const char *Value)
 void			CTargetLaser::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetLaser> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void			CTargetLaser::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetLaser> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -1358,11 +1391,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	};
 
@@ -1507,6 +1542,9 @@ ENTITYFIELDS_BEGIN(CTargetEarthquake)
 {
 	CEntityField ("speed", EntityMemberOffset(CTargetEarthquake,Speed), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("count", EntityMemberOffset(CTargetEarthquake,Duration), FT_FRAMENUMBER | FT_SAVABLE),
+
+	CEntityField ("LastShakeTime", EntityMemberOffset(CTargetEarthquake,LastShakeTime), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("TimeStamp", EntityMemberOffset(CTargetEarthquake,TimeStamp), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetEarthquake)
 
@@ -1522,12 +1560,14 @@ bool			CTargetEarthquake::ParseField (const char *Key, const char *Value)
 void			CTargetEarthquake::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetEarthquake> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void			CTargetEarthquake::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetEarthquake> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 

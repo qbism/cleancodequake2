@@ -180,11 +180,9 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		sint32 Index = -1;
-		if (Dest)
-			Index = Dest->gameEntity->state.number;
-		File.Write (&Index, sizeof(Index));
+		File.Write<sint32> ((Dest) ? Dest->State.GetNumber() : -1);
 
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
 	}
@@ -242,7 +240,7 @@ public:
 		GetMaxs().Set (32, 32, -16);
 		Link ();
 
-		CTeleporterTrigger *trig = QNew (com_levelPool, 0) CTeleporterTrigger;
+		CTeleporterTrigger *trig = QNewEntityOf CTeleporterTrigger;
 		trig->Touchable = true;
 		trig->GetSolid() = SOLID_TRIGGER;
 		trig->Target = Target;
@@ -284,18 +282,14 @@ LINK_CLASSNAME_TO_CLASS ("misc_teleporter", CTeleporter);
 
 void CTeleporterTrigger::LoadFields (CFile &File)
 {
-	sint32 Index;
-	File.Read (&Index, sizeof(Index));
-
-	if (Index != -1)
-		Dest = g_edicts[Index].Entity;
-	else
-		Dest = NULL;
+	sint32 Index = File.Read<sint32> ();
+	Dest = (Index != -1) ? g_edicts[Index].Entity : NULL;
 
 	Target = entity_cast<CTeleporter>(GetOwner())->Target;
 
-	CBrushModel::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
+	CMapEntity::LoadFields (File);
+	CBrushModel::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
 }
 
 /*QUAKED trigger_teleport (0.5 0.5 0.5) ?
@@ -349,7 +343,7 @@ public:
 		Link ();
 
 		// noise maker and splash effect dude
-		CNoiseMaker *s = QNew (com_levelPool, 0) CNoiseMaker;
+		CNoiseMaker *s = QNewEntityOf CNoiseMaker;
 		s->State.GetOrigin() = (GetMins() + ((GetMaxs() - GetMins()) / 2));
 		s->State.GetSound() = SoundIndex ("world/hum1.wav");
 		s->Link ();
@@ -607,7 +601,7 @@ public:
 
 			for (sint32 i = 0; i < 3; i++)
 			{
-				CPlayerCoop *spot = QNew (com_levelPool, 0) CPlayerCoop;
+				CPlayerCoop *spot = QNewEntityOf CPlayerCoop;
 				spot->ClassName = "info_player_coop";
 				spot->State.GetOrigin() = origins[i];
 				spot->TargetName = "jail3";
@@ -810,12 +804,14 @@ bool			CPathCorner::ParseField (const char *Key, const char *Value)
 void		CPathCorner::SaveFields (CFile &File)
 {
 	SaveEntityFields <CPathCorner> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CPathCorner::LoadFields (CFile &File)
 {
 	LoadEntityFields <CPathCorner> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -1062,12 +1058,14 @@ bool CLight::ParseField (const char *Key, const char *Value)
 void		CLight::SaveFields (CFile &File)
 {
 	SaveEntityFields <CLight> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void		CLight::LoadFields (CFile &File)
 {
 	LoadEntityFields <CLight> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 
@@ -1196,6 +1194,13 @@ ENTITYFIELDS_BEGIN(CTargetLightRamp)
 {
 	CEntityField ("speed", EntityMemberOffset(CTargetLightRamp,Speed), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("style", EntityMemberOffset(CTargetLightRamp,Style), FT_BYTE | FT_SAVABLE),
+
+	CEntityField ("RampMessage[0]", EntityMemberOffset(CTargetLightRamp,RampMessage[0]), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("RampMessage[1]", EntityMemberOffset(CTargetLightRamp,RampMessage[1]), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("RampMessage[2]", EntityMemberOffset(CTargetLightRamp,RampMessage[2]), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("TimeStamp", EntityMemberOffset(CTargetLightRamp,TimeStamp), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Speed", EntityMemberOffset(CTargetLightRamp,Speed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Style", EntityMemberOffset(CTargetLightRamp,Style), FT_BYTE | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetLightRamp)
 
@@ -1210,14 +1215,23 @@ bool			CTargetLightRamp::ParseField (const char *Key, const char *Value)
 
 void		CTargetLightRamp::SaveFields (CFile &File)
 {
+	File.Write<sint32> ((Light) ? Light->State.GetNumber() : -1);
+
 	SaveEntityFields <CTargetLightRamp> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CThinkableEntity::SaveFields (File);
 }
 
 void		CTargetLightRamp::LoadFields (CFile &File)
 {
+	sint32 Index = File.Read<sint32> ();
+
+	if (Index != -1)
+		Light = entity_cast<CLight>(g_edicts[Index].Entity);
+
 	LoadEntityFields <CTargetLightRamp> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CThinkableEntity::LoadFields (File);
 }

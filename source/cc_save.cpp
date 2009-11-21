@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
 
+// FIXME: Hash
 std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > EntityTable;
 
 CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index)) :
@@ -51,13 +52,6 @@ CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 			return EntityTable[i]->FuncPtr(index);
 	}
 	return NULL;
-};
-
-CC_ENUM (uint8, EIndexType)
-{
-	INDEX_MODEL,
-	INDEX_SOUND,
-	INDEX_IMAGE
 };
 
 void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
@@ -87,8 +81,8 @@ void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
 			// SPECIAL CASE
 			// World or inline model
 			len = -2;
-			File.Write (&len, sizeof(len));
-			File.Write (&Index, sizeof(Index));
+			File.Write<sint32> (len);
+			File.Write<MediaIndex> (Index);
 
 			return;
 		}
@@ -96,28 +90,27 @@ void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
 			len = strlen(str) + 1;
 	}
 
-	File.Write (&len, sizeof(len));
+	File.Write<sint32> (len);
 	if (len > 1)
 	{
 		if (!str)
 			_CC_ASSERT_EXPR (0, "How'd this happen?");
 		else
-			File.Write ((void*)str, len);
+			File.WriteArray (str, len);
 	}
 };
 
-void ReadIndex (CFile &File, sint32 &Index, EIndexType IndexType)
+void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 {
-	sint32 len;
 	MediaIndex In = 0;
-	File.Read (&len, sizeof(len));
+	sint32 len = File.Read<sint32> ();
 
 	if (len == -2)
-		File.Read (&In, sizeof(MediaIndex));
+		In = File.Read<MediaIndex> ();
 	else if (len > 1)
 	{
 		char *tempBuffer = QNew (com_genericPool, 0) char[len];
-		File.Read (tempBuffer, len);
+		File.ReadArray (tempBuffer, len);
 
 		switch (IndexType)
 		{
@@ -141,7 +134,7 @@ void ReadIndex (CFile &File, sint32 &Index, EIndexType IndexType)
 void WriteEntity (CFile &File, CBaseEntity *Entity)
 {
 	// Write the edict_t info first
-	File.Write (Entity->gameEntity, sizeof(edict_t));
+	File.Write<edict_t> (*Entity->gameEntity);
 
 	// Write special data
 	if (Entity->gameEntity->state.number > game.maxclients)
@@ -151,7 +144,7 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 		if (Entity->gameEntity->owner)
 			OwnerNumber = Entity->gameEntity->owner->state.number;
 
-		File.Write (&OwnerNumber, sizeof(sint32));
+		File.Write<sint32> (OwnerNumber);
 	}
 
 	WriteIndex (File, Entity->gameEntity->state.modelIndex, INDEX_MODEL);
@@ -163,27 +156,13 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	// Write entity stuff
 	if (Entity->gameEntity->state.number > game.maxclients)
 	{
-	/*	size_t size = sizeof(*Entity);
-		File.Write (&size, sizeof(size));
-		File.Write (Entity, sizeof(*Entity));
-	}*/
-		const char *name = Entity->__GetName ();
-
-		if (name)
-		{
-			DebugPrintf ("Writing %s\n", name);
-			sint32 len = strlen(name) + 1;
-			File.Write (&len, sizeof(len));
-			File.Write ((void*)name, len);
-		}
-		else
-		{
-			sint32 len = -1;
-			File.Write (&len, sizeof(len));
-			return;
-		}
+		DebugPrintf ("Writing %s\n", Entity->__GetName ());
+		File.WriteString (Entity->__GetName ());
 	}
+}
 
+void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
+{
 	Entity->WriteBaseEntity (File);
 
 	// Call SaveFields
@@ -195,14 +174,15 @@ void WriteEntities (CFile &File)
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
 	{
 		edict_t *ent = (*it);
-		sint32 number = ent->state.number;
-		File.Write (&number, sizeof(number));
+		File.Write<sint32> (ent->state.number);
 
 		CBaseEntity *Entity = ent->Entity;
 		WriteEntity (File, Entity);
 	}
-	sint32 num = -1;
-	File.Write (&num, sizeof(num));
+	File.Write<sint32> (-1);
+
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+		WriteFinalizedEntity (File, (*it)->Entity);
 }
 
 // Writes out gclient_t
@@ -213,7 +193,7 @@ void WriteClient (CFile &File, CPlayerEntity *Player)
 
 void WriteClients (CFile &File)
 {
-	for (sint32 i = 1; i <= game.maxclients; i++)
+	for (sint8 i = 1; i <= game.maxclients; i++)
 		WriteClient (File, entity_cast<CPlayerEntity>(g_edicts[i].Entity));
 }
 
@@ -226,7 +206,7 @@ void ReadEntity (CFile &File, sint32 number)
 	CBaseEntity *RestoreEntity = ent->Entity;
 
 	// Read
-	File.Read (ent, sizeof(edict_t));
+	*ent = File.Read<edict_t> ();
 
 	// Make a copy
 	edict_t temp (*ent);
@@ -240,45 +220,21 @@ void ReadEntity (CFile &File, sint32 number)
 	// Read special data
 	if (number > game.maxclients)
 	{
-		sint32 OwnerNumber = -1;
-		File.Read (&OwnerNumber, sizeof(sint32));
-
-		if (OwnerNumber == -1)
-			ent->owner = NULL;
-		else
-			ent->owner = &g_edicts[OwnerNumber];
+		sint32 OwnerNumber = File.Read<sint32> ();
+		ent->owner = (OwnerNumber == -1) ? NULL : &g_edicts[OwnerNumber];
 	}
 
-	ReadIndex (File, ent->state.modelIndex, INDEX_MODEL);
-	ReadIndex (File, ent->state.modelIndex2, INDEX_MODEL);
-	ReadIndex (File, ent->state.modelIndex3, INDEX_MODEL);
-	ReadIndex (File, ent->state.modelIndex4, INDEX_MODEL);
-	ReadIndex (File, ent->state.sound, INDEX_SOUND);
+	ReadIndex (File, (MediaIndex &)ent->state.modelIndex, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->state.modelIndex2, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->state.modelIndex3, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->state.modelIndex4, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->state.sound, INDEX_SOUND);
 
 	// Read entity stuff
 	if (number > game.maxclients)
 	{
-/*		size_t size;
-		File.Read (&size, sizeof(size));
-
-		// Create a temp buffer to develop the entity from.
-		// The virtual function pointers will be a part of this already
-		byte *buffer = QNew (com_levelPool, 0) byte[size];
-		File.Read (buffer, size);
-
-		// Create a copy here
-		CBaseEntity *Copy ((CBaseEntity*)buffer);
-		ent->Entity = Copy;*/
-		size_t len;
-		File.Read (&len, sizeof(len));
-
-		if (len == -1)
-			return;
-
 		CBaseEntity *Entity;
-		char *tempBuffer = QNew (com_genericPool, 0) char[len];
-		File.Read (tempBuffer, len);
-		
+		char *tempBuffer = File.ReadString ();
 		DebugPrintf ("Loading %s (%i)\n", tempBuffer, number);
 
 		Entity = CreateEntityFromTable (number, tempBuffer);
@@ -293,34 +249,41 @@ void ReadEntity (CFile &File, sint32 number)
 
 		ent->Entity = Entity;
 	}
+}
 
-	ent->Entity->ReadBaseEntity (File);
+void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
+{
+	Entity->ReadBaseEntity (File);
 
 	// Call LoadFields
-	ent->Entity->LoadFields (File);
+	Entity->LoadFields (File);
 
 	// let the server rebuild world links for this ent
-	memset (&ent->area, 0, sizeof(ent->area));
-	ent->Entity->Link (); // If this passes, Entity loaded fine!
+	Entity->ClearArea ();
+	Entity->Link (); // If this passes, Entity loaded fine!
 }
 
 void ReadEntities (CFile &File)
 {
+	std::vector <sint32, std::generic_allocator <sint32> > LoadedNumbers;
 	while (true)
 	{
-		sint32 number;
-		File.Read (&number, sizeof(number));
+		sint32 number = File.Read<sint32> ();
 
 		DebugPrintf ("Reading entity number %i\n", number);
 
 		if (number == -1)
 			break;
 
+		LoadedNumbers.push_back (number);
 		ReadEntity (File, number);
 	
 		if (globals.numEdicts < number + 1)
 			globals.numEdicts = number + 1;	
 	}
+
+	for (size_t i = 0; i < LoadedNumbers.size(); i++)
+		ReadFinalizeEntity (File, g_edicts[LoadedNumbers[i]].Entity);
 }
 
 void ReadClient (CFile &File, sint32 i)
@@ -330,7 +293,7 @@ void ReadClient (CFile &File, sint32 i)
 
 void ReadClients (CFile &File)
 {
-	for (sint32 i = 0; i < game.maxclients; i++)
+	for (uint8 i = 0; i < game.maxclients; i++)
 		ReadClient (File, i);
 }
 
@@ -371,10 +334,7 @@ void CC_WriteGame (char *filename, bool autosave)
 		return; // Fix to engines who don't shutdown on gi.error
 	}
 
-	char str[16];
-	memset (str, 0, sizeof(str));
-	Q_strncpyz (str, __DATE__, sizeof(str));
-	File.Write (str, sizeof(str));
+	File.WriteString (__DATE__);
 
 	WriteGameLocals (File, autosave);
 	WriteClients (File);
@@ -397,13 +357,13 @@ void CC_ReadGame (char *filename)
 		return;
 	}
 
-	char str[16];
-	File.Read (str, sizeof(str));
-	if (strcmp (str, __DATE__))
+	char *date = File.ReadString ();
+	if (strcmp (date, __DATE__))
 	{
 		GameError ("Savegame from an older version.\n");
 		return;
 	}
+	QDelete[] date;
 
 	seedMT (time(NULL));
 
@@ -435,8 +395,7 @@ void CC_WriteLevel (char *filename)
 	}
 
 	// write out edict size for checking
-	size_t i = sizeof(edict_t);
-	File.Write (&i, sizeof(i));
+	File.Write<size_t> (sizeof(edict_t));
 
 	// write out a function pointer for checking
 	byte *base = (byte *)CC_InitGame;
@@ -457,10 +416,7 @@ void InitEntityLists ();
 void InitEntities ();
 void FireCrosslevelTrigger (CBaseEntity *Entity);
 
-void ShutdownBodyQueue ();
-void BodyQueue_Init ();
-void Init_Junk ();
-void Shutdown_Junk ();
+#include "cc_bodyqueue.h"
 
 void CC_ReadLevel (char *filename)
 {
@@ -480,9 +436,10 @@ void CC_ReadLevel (char *filename)
 	// free any dynamic memory allocated by loading the level
 	// base state
 	Mem_FreePool (com_levelPool);
+	Mem_FreePool (com_entityPool);
 
 	// Re-initialize the systems
-	BodyQueue_Init ();
+	BodyQueue_Init (0);
 	Init_Junk ();
 
 	// wipe all the entities
@@ -492,8 +449,7 @@ void CC_ReadLevel (char *filename)
 	InitEntities (); // Get the world and players setup
 
 	// check edict size
-	size_t size;
-	File.Read (&size, sizeof(size));
+	size_t size = File.Read<size_t> ();
 	if (size != sizeof(edict_t))
 	{
 		GameError ("ReadLevel: mismatched edict size");
@@ -503,6 +459,7 @@ void CC_ReadLevel (char *filename)
 	// check function pointer base address
 	byte *base;
 	File.Read (&base, sizeof(base));
+
 #ifdef _WIN32
 	if (base != (byte *)CC_InitGame)
 	{

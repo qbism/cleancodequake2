@@ -123,93 +123,61 @@ public:
 
 	void Save (CFile &File)
 	{
-		size_t len = UserInfo.size();
-		File.Write (&len, sizeof(len));
+		File.WriteCCString (UserInfo);
+		File.WriteCCString (Name);
 
-		if (len)
-			File.Write ((void*)UserInfo.c_str(), len);
+		File.Write<IPAddress> (IP);
+		File.Write<sint32> (hand);
 
-		len = Name.size();
-		File.Write (&len, sizeof(len));
-
-		if (len)
-			File.Write ((void*)Name.c_str(), len);
-
-		File.Write (&IP, sizeof(IP));
-		File.Write (&hand, sizeof(hand));
-
-		File.Write (&health, sizeof(health));
-		File.Write (&max_health, sizeof(max_health));
-		File.Write (&savedFlags, sizeof(savedFlags));
+		File.Write<sint32> (health);
+		File.Write<sint32> (max_health);
+		File.Write<sint32> (savedFlags);
 
 		Inventory.Save (File);
-		File.Write (&maxAmmoValues, sizeof(maxAmmoValues));
+		File.WriteArray<sint32> (maxAmmoValues, CAmmo::AMMOTAG_MAX);
 
 		SaveWeapon (File, Weapon);
 		SaveWeapon (File, LastWeapon);
 
-		sint32 Index = -1;
-		if (Armor)
-			Index = Armor->GetIndex();
-		File.Write (&Index, sizeof(Index));
+		File.Write<sint32> ((Armor) ? Armor->GetIndex() : -1);
 
-		File.Write (&PowerCubeCount, sizeof(PowerCubeCount));
-		File.Write (&Score, sizeof(Score));
-		File.Write (&game_helpchanged, sizeof(game_helpchanged));
-		File.Write (&helpchanged, sizeof(helpchanged));
-		File.Write (&Spectator, sizeof(Spectator));
-		File.Write (&viewBlend, sizeof(viewBlend));
+		File.Write<sint32> (PowerCubeCount);
+		File.Write<sint32> (Score);
+		File.Write<sint32> (game_helpchanged);
+		File.Write<sint32> (helpchanged);
+		File.Write<bool> (Spectator);
+		File.Write<colorf> (viewBlend);
 	}
 
 	void Load (CFile &File)
 	{
-		size_t len;
-		File.Read (&len, sizeof(len));
+		UserInfo = File.ReadCCString ();
+		Name = File.ReadCCString ();
 
-		if (len)
-		{
-			char *temp = QNew (com_genericPool, 0) char[len];
-			File.Read (temp, len);
-			UserInfo = temp;
-			QDelete[] temp;
-		}
+		IP = File.Read<IPAddress> ();
+		hand = File.Read<sint32> ();
 
-		len = Name.size();
-		File.Read (&len, sizeof(len));
-
-		if (len)
-		{
-			char *temp = QNew (com_genericPool, 0) char[len];
-			File.Read (temp, len);
-			Name = temp;
-			QDelete[] temp;
-		}
-
-		File.Read (&IP, sizeof(IP));
-		File.Read (&hand, sizeof(hand));
-
-		File.Read (&health, sizeof(health));
-		File.Read (&max_health, sizeof(max_health));
-		File.Read (&savedFlags, sizeof(savedFlags));
+		health = File.Read<sint32> ();
+		max_health = File.Read<sint32> ();
+		savedFlags = File.Read<sint32> ();
 
 		Inventory.Load (File);
-		File.Read (&maxAmmoValues, sizeof(maxAmmoValues));
+		File.ReadArray (maxAmmoValues, CAmmo::AMMOTAG_MAX);
 
 		LoadWeapon (File, &Weapon);
 		LoadWeapon (File, &LastWeapon);
 
-		sint32 Index;
-		File.Read (&Index, sizeof(Index));
+		sint32 Index = File.Read<sint32> ();
 
 		if (Index != -1)
 			Armor = dynamic_cast<CArmor*>(GetItemByIndex(Index));
 
-		File.Read (&PowerCubeCount, sizeof(PowerCubeCount));
-		File.Read (&Score, sizeof(Score));
-		File.Read (&game_helpchanged, sizeof(game_helpchanged));
-		File.Read (&helpchanged, sizeof(helpchanged));
-		File.Read (&Spectator, sizeof(Spectator));
-		File.Read (&viewBlend, sizeof(viewBlend));
+		PowerCubeCount = File.Read<sint32> ();
+		Score = File.Read<sint32> ();
+		game_helpchanged = File.Read<sint32> ();
+		helpchanged = File.Read<sint32> ();
+		Spectator = File.Read<bool> ();
+		viewBlend = File.Read<colorf> ();
 	}
 
 	std::cc_string	UserInfo;
@@ -307,31 +275,23 @@ public:
 	void Save (CFile &File)
 	{
 		CoopRespawn.Save (File);
-		File.Write (&EnterFrame, sizeof(EnterFrame));
-		File.Write (&Score, sizeof(Score));
-		File.Write (&CmdAngles, sizeof(CmdAngles));
-		File.Write (&Spectator, sizeof(Spectator));
-		File.Write (&Gender, sizeof(Gender));
-		File.Write (&MessageLevel, sizeof(MessageLevel));
-		File.Write (&Gender, sizeof(Gender));
-		File.Write (&Gender, sizeof(Gender));
-		File.Write (&Gender, sizeof(Gender));
-		File.Write (&Gender, sizeof(Gender));
+		File.Write<FrameNumber_t> (EnterFrame);
+		File.Write<sint32> (Score);
+		File.Write<vec3f> (CmdAngles);
+		File.Write<bool> (Spectator);
+		File.Write<EGender> (Gender);
+		File.Write<EGamePrintLevel> (MessageLevel);
 	}
 
 	void Load (CFile &File)
 	{
 		CoopRespawn.Load (File);
-		File.Read (&EnterFrame, sizeof(EnterFrame));
-		File.Read (&Score, sizeof(Score));
-		File.Read (&CmdAngles, sizeof(CmdAngles));
-		File.Read (&Spectator, sizeof(Spectator));
-		File.Read (&Gender, sizeof(Gender));
-		File.Read (&MessageLevel, sizeof(MessageLevel));
-		File.Read (&Gender, sizeof(Gender));
-		File.Read (&Gender, sizeof(Gender));
-		File.Read (&Gender, sizeof(Gender));
-		File.Read (&Gender, sizeof(Gender));
+		EnterFrame = File.Read<FrameNumber_t> ();
+		Score = File.Read<sint32> ();
+		CmdAngles = File.Read<vec3f> ();
+		Spectator = File.Read<bool> ();
+		Gender = File.Read<EGender> ();
+		MessageLevel = File.Read<EGamePrintLevel> ();
 	}
 
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
@@ -449,35 +409,34 @@ class CClient
 public:
 	void Write (CFile &File)
 	{
-		File.Write (&KickAngles, sizeof(KickAngles));
-		File.Write (&KickOrigin, sizeof(KickOrigin));
-		File.Write (&ViewAngle, sizeof(ViewAngle));
-		File.Write (&DamageFrom, sizeof(DamageFrom));
-		File.Write (&DamageBlend, sizeof(DamageBlend));
-		File.Write (&OldViewAngles, sizeof(OldViewAngles));
-		File.Write (&OldVelocity, sizeof(OldVelocity));
-		File.Write (&ViewDamage, sizeof(ViewDamage));
-		File.Write (&ViewDamageTime, sizeof(ViewDamageTime));
-		File.Write (&KillerYaw, sizeof(KillerYaw));
-		File.Write (&OldPMove, sizeof(OldPMove));
-		File.Write (&LayoutFlags, sizeof(LayoutFlags));
-		File.Write (&DamageValues, sizeof(DamageValues));
-		File.Write (&Buttons, sizeof(Buttons));
-		File.Write (&LatchedButtons, sizeof(LatchedButtons));
-		File.Write (&WeaponState, sizeof(WeaponState));
-		File.Write (&FallTime, sizeof(FallTime));
-		File.Write (&FallValue, sizeof(FallValue));
-		File.Write (&BonusAlpha, sizeof(BonusAlpha));
-		File.Write (&BobTime, sizeof(BobTime));
-		File.Write (&PowerArmorTime, sizeof(PowerArmorTime));
-		File.Write (&OldWaterLevel, sizeof(OldWaterLevel));
-		File.Write (&WeaponSound, sizeof(WeaponSound));
+		File.Write<vec3f> (KickAngles);
+		File.Write<vec3f> (KickOrigin);
+		File.Write<vec3f> (ViewAngle);
+		File.Write<vec3f> (DamageFrom);
+		File.Write<colorf> (DamageBlend);
+		File.Write<vec3f> (OldViewAngles);
+		File.Write<vec3f> (OldVelocity);
+		File.Write<vec2f> (ViewDamage);
+		File.Write<FrameNumber_t> (ViewDamageTime);
+		File.Write<float> (KillerYaw);
+		File.Write<pMoveState_t> (OldPMove);
+		File.Write<ELayoutFlags> (LayoutFlags);
+		File.WriteArray<EDamageType> (DamageValues, DT_MAX);
+		File.Write<EButtons> (Buttons);
+		File.Write<EButtons> (LatchedButtons);
+		File.Write<EWeaponState> (WeaponState);
+		File.Write<FrameNumber_t> (FallTime);
+		File.Write<float> (FallValue);
+		File.Write<float> (BonusAlpha);
+		File.Write<float> (BobTime);
+		File.Write<uint8> (PowerArmorTime);
+		File.Write<EWaterLevel> (OldWaterLevel);
+		WriteIndex (File, WeaponSound, INDEX_SOUND);
 
-		File.Write (&Anim, sizeof(Anim));
-		File.Write (&Timers, sizeof(Timers));
-		File.Write (&Grenade, sizeof(Grenade));
-		File.Write (&Flood, sizeof(Flood));
-		File.Write (&Tech, sizeof(WeaponSound));
+		File.Write<client_Animation_t> (Anim);
+		File.Write<client_Timers_t> (Timers);
+		File.Write<client_Grenade_Data_t> (Grenade);
+		File.Write<client_Flood_t> (Flood);
 
 		SaveWeapon (File, NewWeapon);
 
@@ -487,35 +446,34 @@ public:
 	
 	void Load (CFile &File)
 	{
-		File.Read (&KickAngles, sizeof(KickAngles));
-		File.Read (&KickOrigin, sizeof(KickOrigin));
-		File.Read (&ViewAngle, sizeof(ViewAngle));
-		File.Read (&DamageFrom, sizeof(DamageFrom));
-		File.Read (&DamageBlend, sizeof(DamageBlend));
-		File.Read (&OldViewAngles, sizeof(OldViewAngles));
-		File.Read (&OldVelocity, sizeof(OldVelocity));
-		File.Read (&ViewDamage, sizeof(ViewDamage));
-		File.Read (&ViewDamageTime, sizeof(ViewDamageTime));
-		File.Read (&KillerYaw, sizeof(KillerYaw));
-		File.Read (&OldPMove, sizeof(OldPMove));
-		File.Read (&LayoutFlags, sizeof(LayoutFlags));
-		File.Read (&DamageValues, sizeof(DamageValues));
-		File.Read (&Buttons, sizeof(Buttons));
-		File.Read (&LatchedButtons, sizeof(LatchedButtons));
-		File.Read (&WeaponState, sizeof(WeaponState));
-		File.Read (&FallTime, sizeof(FallTime));
-		File.Read (&FallValue, sizeof(FallValue));
-		File.Read (&BonusAlpha, sizeof(BonusAlpha));
-		File.Read (&BobTime, sizeof(BobTime));
-		File.Read (&PowerArmorTime, sizeof(PowerArmorTime));
-		File.Read (&OldWaterLevel, sizeof(OldWaterLevel));
-		File.Read (&WeaponSound, sizeof(WeaponSound));
+		KickAngles = File.Read<vec3f> ();
+		KickOrigin = File.Read<vec3f> ();
+		ViewAngle = File.Read<vec3f> ();
+		DamageFrom = File.Read<vec3f> ();
+		DamageBlend = File.Read<colorf> ();
+		OldViewAngles = File.Read<vec3f> ();
+		OldVelocity = File.Read<vec3f> ();
+		ViewDamage = File.Read<vec2f> ();
+		ViewDamageTime = File.Read<FrameNumber_t> ();
+		KillerYaw = File.Read<float> ();
+		OldPMove = File.Read<pMoveState_t> ();
+		LayoutFlags = File.Read<ELayoutFlags> ();
+		File.ReadArray<EDamageType> (DamageValues, DT_MAX);
+		Buttons = File.Read<EButtons> ();
+		LatchedButtons = File.Read<EButtons> ();
+		WeaponState = File.Read<EWeaponState> ();
+		FallTime = File.Read<FrameNumber_t> ();
+		FallValue = File.Read<float> ();
+		BonusAlpha = File.Read<float> ();
+		BobTime = File.Read<float> ();
+		PowerArmorTime = File.Read<uint8> ();
+		OldWaterLevel = File.Read<EWaterLevel> ();
+		ReadIndex (File, WeaponSound, INDEX_SOUND);
 
-		File.Read (&Anim, sizeof(Anim));
-		File.Read (&Timers, sizeof(Timers));
-		File.Read (&Grenade, sizeof(Grenade));
-		File.Read (&Flood, sizeof(Flood));
-		File.Read (&Tech, sizeof(WeaponSound));
+		Anim = File.Read<client_Animation_t> ();
+		Timers = File.Read<client_Timers_t> ();
+		Grenade = File.Read<client_Grenade_Data_t> ();
+		Flood = File.Read<client_Flood_t> ();
 
 		LoadWeapon (File, &NewWeapon);
 
@@ -658,16 +616,17 @@ public:
 	void SaveFields (CFile &File)
 	{
 		CHurtableEntity::SaveFields (File);
+		CPhysicsEntity::SaveFields (File);
 	
 		// Write the player data first
-		File.Write (&NoClip, sizeof(NoClip));
-		File.Write (&TossPhysics, sizeof(TossPhysics));
-		File.Write (&FlySoundDebounceTime, sizeof(FlySoundDebounceTime));
-		File.Write (&DamageDebounceTime, sizeof(DamageDebounceTime));
-		File.Write (&AirFinished, sizeof(AirFinished));
-		File.Write (&NextDrownTime, sizeof(NextDrownTime));
-		File.Write (&NextDrownDamage, sizeof(NextDrownDamage));
-		File.Write (&PainDebounceTime, sizeof(PainDebounceTime));
+		File.Write<bool> (NoClip);
+		File.Write<bool> (TossPhysics);
+		File.Write<FrameNumber_t> (FlySoundDebounceTime);
+		File.Write<FrameNumber_t> (DamageDebounceTime);
+		File.Write<FrameNumber_t> (AirFinished);
+		File.Write<FrameNumber_t> (NextDrownTime);
+		File.Write<sint32> (NextDrownDamage);
+		File.Write<FrameNumber_t> (PainDebounceTime);
 
 		// Write client data
 		Client.Write (File);
@@ -676,16 +635,17 @@ public:
 	void LoadFields (CFile &File)
 	{
 		CHurtableEntity::LoadFields (File);
+		CPhysicsEntity::LoadFields (File);
 	
 		// Read the player data first
-		File.Read (&NoClip, sizeof(NoClip));
-		File.Read (&TossPhysics, sizeof(TossPhysics));
-		File.Read (&FlySoundDebounceTime, sizeof(FlySoundDebounceTime));
-		File.Read (&DamageDebounceTime, sizeof(DamageDebounceTime));
-		File.Read (&AirFinished, sizeof(AirFinished));
-		File.Read (&NextDrownTime, sizeof(NextDrownTime));
-		File.Read (&NextDrownDamage, sizeof(NextDrownDamage));
-		File.Read (&PainDebounceTime, sizeof(PainDebounceTime));
+		NoClip = File.Read<bool> ();
+		TossPhysics = File.Read<bool> ();
+		FlySoundDebounceTime = File.Read<FrameNumber_t> ();
+		DamageDebounceTime = File.Read<FrameNumber_t> ();
+		AirFinished = File.Read<FrameNumber_t> ();
+		NextDrownTime = File.Read<FrameNumber_t> ();
+		NextDrownDamage = File.Read<sint32> ();
+		PainDebounceTime = File.Read<FrameNumber_t> ();
 
 		// Read client data
 		Client.Load (File);
@@ -746,6 +706,8 @@ public:
 
 	void			InitResp ();
 	static void		SaveClientData ();
+	static void		BackupClientData ();
+	static void		RestoreClientData ();
 	void			SelectSpawnPoint (vec3f &origin, vec3f &angles);
 	CBaseEntity		*SelectCoopSpawnPoint ();
 

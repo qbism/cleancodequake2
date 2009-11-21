@@ -199,82 +199,71 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMonsterEntity)
 
-	virtual bool			CheckValidity ();
+	virtual bool	CheckValidity ();
 
 	void			Think ();
 
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void			Pain (CBaseEntity *other, float kick, sint32 damage);
+	void			Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 
 	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf); // Empty
-	void	Use (CBaseEntity *other, CBaseEntity *activator);
+	void			Use (CBaseEntity *other, CBaseEntity *activator);
 
 	bool			Run ();
 	void			ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type);
 
-	void Spawn ();
+	void			Spawn ();
 };
 
 class CMonster
 {
 private:
 	CMonster			&operator = (const CMonster &r) { return *this; };
-protected:
+
 public:
 	void				(CMonster::*Think) ();
-
-	// Hash
-	uint32				HashValue;
-	CMonster			*HashNext;
 
 	const uint32		MonsterID;
 	CMonsterEntity		*Entity; // Entity linked to the monster
 
-
-	uint8				ExplodeCount;
 	float				IdealYaw;
 	float				YawSpeed;
 	uint32				AIFlags;
 
 #ifdef MONSTER_USE_ROGUE_AI
 //ROGUE
-	bool		BlindFire;		// will the monster blindfire?
-	sint32			MedicTries;
+	bool				BlindFire;		// will the monster blindfire?
 
-	//  while abort_duck would be nice, only monsters which duck but don't sidestep would use it .. only the brain
-	//  not really worth it.  sidestep is an implied abort_duck
-//	void		(*abort_duck)(edict_t *self);
-	float		BaseHeight;
+	float				BaseHeight;
 	FrameNumber_t		NextDuckTime;
 	FrameNumber_t		DuckWaitTime;
 	FrameNumber_t		BlindFireDelay;
 	CPlayerEntity		*LastPlayerEnemy;
 	vec3f				BlindFireTarget;
-	// blindfire stuff .. the boolean says whether the monster will do it, and blind_fire_time is the timing
-	// (set in the monster) of the next shot
 	CMonsterEntity		*BadMedic1, *BadMedic2;	// these medics have declared this monster "unhealable"
 #endif
 	CMonsterEntity		*Healer;	// this is who is healing this monster
 
-	sint32					NextFrame;
+	sint32				NextFrame;
 	float				Scale;
-	FrameNumber_t				PauseTime;
-	FrameNumber_t				AttackFinished;
+	FrameNumber_t		PauseTime;
+	FrameNumber_t		AttackFinished;
 	
 	FrameNumber_t		SearchTime;
 	FrameNumber_t		TrailTime;
 	vec3f				LastSighting;
 	vec3f				SavedGoal;
-	sint32					AttackState;
+	sint32				AttackState;
 	bool				Lefty;
 	float				IdleTime;
-	sint32					LinkCount;
+	sint32				LinkCount;
 
 	EPowerArmorType		PowerArmorType;
-	sint32					PowerArmorPower;
+	sint32				PowerArmorPower;
 	uint8				PowerArmorTime;
-
+	uint8				ExplodeCount;
 	bool				EnemyInfront, EnemyVis;
+
 	ERangeType			EnemyRange;
 	float				EnemyYaw;
 
@@ -287,12 +276,12 @@ public:
 
 #ifdef MONSTERS_USE_PATHFINDING
 	// Pathfinding
-	class CPath				*P_CurrentPath;
-	class CPathNode			*P_CurrentGoalNode;
-	class CPathNode			*P_CurrentNode; // Always the current path node
+	class CPath			*P_CurrentPath;
+	class CPathNode		*P_CurrentGoalNode;
+	class CPathNode		*P_CurrentNode; // Always the current path node
 	sint32				P_CurrentNodeIndex;
-	FrameNumber_t				P_NodePathTimeout;
-	FrameNumber_t				P_NodeFollowTimeout;
+	FrameNumber_t		P_NodePathTimeout;
+	FrameNumber_t		P_NodeFollowTimeout;
 	bool				FollowingPath;
 
 	// Pathfinding functions
@@ -302,14 +291,48 @@ public:
 
 	CMonster(uint32 ID);
 
-	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+	void WriteNodeInfo (CFile &File);
+	void ReadNodeInfo (CFile &File);
+
+#define MONSTER_SOUND_ENUM(first,...) \
+	CC_ENUM(uint8, EMyMonsterSoundEnum) \
+	{ \
+		first, \
+		__VA_ARGS__ \
+	}; \
+	MediaIndex	Sounds[SOUND_MAX];
+
+#define SAVE_MONSTER_SOUNDS \
+	for (uint32 i = 0; i < SOUND_MAX; i++) \
+		WriteIndex (File, Sounds[i], INDEX_SOUND);
+
+#define LOAD_MONSTER_SOUNDS \
+	for (uint32 i = 0; i < SOUND_MAX; i++) \
+		ReadIndex (File, Sounds[i], INDEX_SOUND);
+
+#define MONSTER_SAVE_LOAD_NO_FIELDS \
+	void SaveMonsterFields (CFile &File) \
+	{ \
+		SAVE_MONSTER_SOUNDS \
+	} \
+	void LoadMonsterFields (CFile &File) \
+	{ \
+		LOAD_MONSTER_SOUNDS \
+	}
+
+	virtual void SaveMonsterFields (CFile &File) {};
+	virtual void LoadMonsterFields (CFile &File) {};
+
+	virtual void		Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
 
 #ifdef MONSTER_USE_ROGUE_AI
-	void DuckDown ();
-	virtual void Duck (float eta);
-	virtual void UnDuck ();
-	virtual void DuckHold ();
-	virtual void SideStep ();
+	void				DuckDown ();
+	virtual void		Duck (float eta);
+	virtual void		UnDuck ();
+	virtual void		DuckHold ();
+	virtual void		SideStep ();
 #endif
 
 	// Virtual functions
@@ -322,7 +345,7 @@ public:
 	virtual void		Dodge			(CBaseEntity *other, float eta);
 #else
 	virtual void		Dodge			(CBaseEntity *attacker, float eta, CTrace *tr);
-	void		DoneDodge	();
+	void				DoneDodge	();
 #endif
 	virtual void		Attack			();
 	virtual void		Melee			();
@@ -333,83 +356,94 @@ public:
 
 	virtual void		MonsterThink	();
 
-	void AI_Charge (float Dist);
-	void AI_Move (float Dist);
-	void AI_Stand (float Dist);
-	void AI_Run (float Dist);
-	void AI_Run_Melee ();
-	void AI_Run_Missile ();
-	void AI_Run_Slide (float Dist);
-	void AI_Walk (float Dist);
-	bool FacingIdeal ();
-	bool FindTarget ();
-	void FoundTarget ();
-	void HuntTarget ();
+	void				AI_Charge (float Dist);
+	void				AI_Move (float Dist);
+	void				AI_Stand (float Dist);
+	void				AI_Run (float Dist);
+	void				AI_Run_Melee ();
+	void				AI_Run_Missile ();
+	void				AI_Run_Slide (float Dist);
+	void				AI_Walk (float Dist);
+	
+	bool				FindTarget ();
+	void				FoundTarget ();
+	void				HuntTarget ();
+	void				AlertNearbyStroggs ();
 
-	void BossExplode ();
-	void MoveFrame ();
+	void				BossExplode ();
+	void				MoveFrame ();
 
-	bool AI_CheckAttack ();
+	bool				AI_CheckAttack ();
+	bool				FacingIdeal ();
 
-	void CatagorizePosition ();
-	void CheckGround ();
+	void				CatagorizePosition ();
+	void				CheckGround ();
 
-	void DropToFloor ();
+	void				DropToFloor ();
 
-	void FliesOff ();
-	void FliesOn ();
-	void CheckFlies ();
+	void				FliesOff ();
+	void				FliesOn ();
+	void				CheckFlies ();
 
-	void SetEffects ();
-	void WorldEffects ();
+	void				SetEffects ();
+	void				WorldEffects ();
 
-	void MonsterDeathUse ();
+	void				MonsterDeathUse ();
 
-	void MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
-	void MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect);
-	void MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype);
-	void MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype);
-	void MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
-	void MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
-	void MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
+	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect);
+	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype);
+	void				MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
+	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
+	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 
-	void AlertNearbyStroggs ();
 #ifdef MONSTERS_ARENT_STUPID
-	bool FriendlyInLine (vec3f &Origin, vec3f &Direction);
+	bool				FriendlyInLine (vec3f &Origin, vec3f &Direction);
 #endif
 
-	void MonsterTriggeredSpawn ();
-	static void _cdecl MonsterTriggeredSpawnUse (edict_t *self, edict_t *other, edict_t *activator);
-	static void _cdecl MonsterUse (edict_t *self, edict_t *other, edict_t *activator);
-	void MonsterTriggeredStart ();
+	void				MonsterTriggeredSpawn ();
+	void				MonsterTriggeredStart ();
 
-	void MonsterStart();
-	void MonsterStartGo();
+	void				MonsterStart ();
+	void				MonsterStartGo ();
 
-	void FlyMonsterStart ();
-	void FlyMonsterStartGo ();
-	void SwimMonsterStart ();
-	void SwimMonsterStartGo ();
-	void WalkMonsterStart ();
-	void WalkMonsterStartGo ();
+	void				FlyMonsterStart ();
+	void				FlyMonsterStartGo ();
+	void				SwimMonsterStart ();
+	void				SwimMonsterStartGo ();
+	void				WalkMonsterStart ();
+	void				WalkMonsterStartGo ();
 
-	void ChangeYaw ();
-	bool CheckBottom ();
-	void MoveToGoal (float Dist);
-	bool WalkMove (float Yaw, float Dist);
-	bool CloseEnough (CBaseEntity *Goal, float Dist);
-	void NewChaseDir (CBaseEntity *Enemy, float Dist);
-	bool StepDirection (float Yaw, float Dist);
-	bool MoveStep (vec3f move, bool ReLink);
+	void				ChangeYaw ();
+	bool				CheckBottom ();
+	void				MoveToGoal (float Dist);
+	bool				WalkMove (float Yaw, float Dist);
+	bool				CloseEnough (CBaseEntity *Goal, float Dist);
+	void				NewChaseDir (CBaseEntity *Enemy, float Dist);
+	bool				StepDirection (float Yaw, float Dist);
+	bool				MoveStep (vec3f move, bool ReLink);
 
-	virtual void	Spawn () = 0;
-	virtual void	Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) = 0;
-	virtual void	Pain(CBaseEntity *other, float kick, sint32 damage) = 0;
+	virtual void		Spawn () = 0;
+	virtual void		Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) = 0;
+	virtual void		Pain(CBaseEntity *other, float kick, sint32 damage) = 0;
 };
 
 #define DI_NODIR	-1
 
-void Monster_Think (edict_t *ent);
+class CMonsterTableIndex
+{
+public:
+	const char *Name;
+	CMonster *(*FuncPtr) (uint32 index);
+
+	CMonsterTableIndex (const char *Name, CMonster *(*FuncPtr) (uint32 index));
+
+	CMonster *Create (uint32 number)
+	{
+		return FuncPtr (number);
+	};
+};
 
 #define ConvertDerivedFunction(x) static_cast<void (__thiscall CMonster::* )()>(x)
 #define ConvertDerivedAIMove(x) static_cast<void (__thiscall CMonster::* )(float)>(x)
@@ -419,8 +453,8 @@ extern uint32 LastID;
 	uint32 LINK_RESOLVE_CLASSNAME(DLLClassName, _ID) = LastID++; \
 	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
-		CMonsterEntity *newClass = QNew (com_levelPool, 0) CMonsterEntity(Index); \
-		DLLClassName *Monster = QNew (com_levelPool, 0) DLLClassName (LINK_RESOLVE_CLASSNAME(DLLClassName, _ID)); \
+		CMonsterEntity *newClass = QNewEntityOf CMonsterEntity(Index); \
+		DLLClassName *Monster = QNewEntityOf DLLClassName (LINK_RESOLVE_CLASSNAME(DLLClassName, _ID)); \
 		newClass->Monster = Monster; \
 		Monster->Entity = newClass; \
 		\
@@ -434,7 +468,12 @@ extern uint32 LastID;
 		return newClass; \
 	} \
 	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _Linker) \
-	(LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn), mapClassName);
+	(LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn), mapClassName); \
+	CMonster *LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver) (uint32 ID) \
+	{ \
+		return QNewEntityOf DLLClassName(ID); \
+	} \
+	CMonsterTableIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _ResolveIndex) (mapClassName, LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver));
 
 #else
 FILE_WARNING

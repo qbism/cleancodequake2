@@ -143,8 +143,8 @@ void CSoldierLight::FireGun (sint32 FlashNumber)
 
 void CSoldierLight::SpawnSoldier ()
 {
-	SoundPain = SoundIndex ("soldier/solpain2.wav");
-	SoundDeath = SoundIndex ("soldier/soldeth2.wav");
+	Sounds[SOUND_PAIN] = SoundIndex ("soldier/solpain2.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("soldier/soldeth2.wav");
 	ModelIndex ("models/objects/laser/tris.md2");
 	SoundIndex ("misc/lasfly.wav");
 	SoundIndex ("soldier/solatck2.wav");

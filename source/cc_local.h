@@ -424,32 +424,32 @@ public:
 
 	void Save (CFile &File)
 	{
-		File.Write (&helpmessage1, sizeof(helpmessage1));
-		File.Write (&helpmessage2, sizeof(helpmessage2));
-		File.Write (&helpchanged, sizeof(helpchanged));
-		File.Write (&spawnpoint, sizeof(spawnpoint));
-		File.Write (&maxclients, sizeof(maxclients));
-		File.Write (&maxspectators, sizeof(maxspectators));
-		File.Write (&maxentities, sizeof(maxentities));
-		File.Write (&cheats, sizeof(cheats));
-		File.Write (&mode, sizeof(mode));
-		File.Write (&serverflags, sizeof(serverflags));
-		File.Write (&autosaved, sizeof(autosaved));
+		File.WriteArray (helpmessage1, sizeof(helpmessage1));
+		File.WriteArray (helpmessage2, sizeof(helpmessage2));
+		File.Write<uint8> (helpchanged);
+		File.WriteArray (spawnpoint, sizeof(spawnpoint));
+		File.Write<uint8> (maxclients);
+		File.Write<uint8> (maxspectators);
+		File.Write<sint32> (maxentities);
+		File.Write<bool> (cheats);
+		File.Write<EGameMode> (mode);
+		File.Write<ECrossLevelTriggerFlags> (serverflags);
+		File.Write<bool> (autosaved);
 	}
 
 	void Load (CFile &File)
 	{
-		File.Read (&helpmessage1, sizeof(helpmessage1));
-		File.Read (&helpmessage2, sizeof(helpmessage2));
-		File.Read (&helpchanged, sizeof(helpchanged));
-		File.Read (&spawnpoint, sizeof(spawnpoint));
-		File.Read (&maxclients, sizeof(maxclients));
-		File.Read (&maxspectators, sizeof(maxspectators));
-		File.Read (&maxentities, sizeof(maxentities));
-		File.Read (&cheats, sizeof(cheats));
-		File.Read (&mode, sizeof(mode));
-		File.Read (&serverflags, sizeof(serverflags));
-		File.Read (&autosaved, sizeof(autosaved));
+		File.ReadArray (helpmessage1, sizeof(helpmessage1));
+		File.ReadArray (helpmessage2, sizeof(helpmessage2));
+		helpchanged = File.Read<uint8> ();
+		File.ReadArray (spawnpoint, sizeof(spawnpoint));
+		maxclients = File.Read<uint8> ();
+		maxspectators = File.Read<uint8> ();
+		maxentities = File.Read<sint32> ();
+		cheats = File.Read<bool> ();
+		mode = File.Read<EGameMode> ();
+		serverflags = File.Read<ECrossLevelTriggerFlags> ();
+		autosaved = File.Read<bool> ();
 	}
 
 	char		helpmessage1[128];
@@ -527,98 +527,54 @@ public:
 
 	void Save (CFile &File)
 	{
-		File.Write (&Frame, sizeof(Frame));
+		File.Write<FrameNumber_t> (Frame);
 
-		size_t len = FullLevelName.size();
-		File.Write (&len, sizeof(len));
-		File.Write ((void*)FullLevelName.c_str(), len);
+		File.WriteCCString (FullLevelName);
+		File.WriteCCString (ServerLevelName);
+		File.WriteCCString (NextMap);
+		File.WriteCCString (ForceMap);
 
-		len = ServerLevelName.size();
-		File.Write (&len, sizeof(len));
-		File.Write ((void*)ServerLevelName.c_str(), len);
+		File.Write<FrameNumber_t> (IntermissionTime);
+		File.Write<bool> (ExitIntermission);
+		File.Write<vec3f> (IntermissionOrigin);
+		File.Write<vec3f> (IntermissionAngles);
 
-		len = NextMap.size();
-		File.Write (&len, sizeof(len));
-		if (len)
-			File.Write ((void*)NextMap.c_str(), len);
-
-		len = ForceMap.size();
-		File.Write (&len, sizeof(len));
-		if (len)
-			File.Write ((void*)ForceMap.c_str(), len);
-
-		File.Write (&IntermissionTime, sizeof(IntermissionTime));
-		File.Write (&ExitIntermission, sizeof(ExitIntermission));
-		File.Write (&IntermissionOrigin, sizeof(IntermissionOrigin));
-		File.Write (&IntermissionAngles, sizeof(IntermissionAngles));
-
-		sint32 Index = -1;
-		if (SightClient)
-			Index = SightClient->gameEntity->state.number;
-
-		File.Write (&Index, sizeof(Index));
-		File.Write (&Secrets, sizeof(Secrets));
-		File.Write (&Goals, sizeof(Goals));
-		File.Write (&Monsters, sizeof(Monsters));
-		File.Write (&PowerCubeCount, sizeof(PowerCubeCount));
-		File.Write (&Inhibit, sizeof(Inhibit));
-		File.Write (&EntityNumber, sizeof(EntityNumber));
+		File.Write<sint32> ((SightClient) ? SightClient->gameEntity->state.number : -1);
+		File.Write<GoalList_t> (Secrets);
+		File.Write<GoalList_t> (Goals);
+		File.Write<MonsterCount_t> (Monsters);
+		File.Write<uint8> (PowerCubeCount);
+		File.Write<uint32> (Inhibit);
+		File.Write<uint32> (EntityNumber);
 
 		Entities.Save (File);
 	};
 
 	void Load (CFile &File)
 	{
-		File.Read (&Frame, sizeof(Frame));
+		Frame = File.Read<FrameNumber_t> ();
 
-		size_t len;
-		File.Read (&len, sizeof(len));
 
-		char *tempBuffer = QNew (com_levelPool, 0) char[len];
-		File.Read (tempBuffer, len);
-		ServerLevelName = tempBuffer;
-		QDelete[] tempBuffer;
+		FullLevelName = File.ReadCCString ();
+		ServerLevelName = File.ReadCCString ();
+		NextMap = File.ReadCCString ();
+		ForceMap = File.ReadCCString ();
 
-		File.Read (&len, sizeof(len));
-		tempBuffer = QNew (com_levelPool, 0) char[len];
-		File.Read (tempBuffer, len);
-		ServerLevelName = tempBuffer;
-		QDelete[] tempBuffer;
+		IntermissionTime = File.Read<FrameNumber_t> ();
+		ExitIntermission = File.Read<bool> ();
+		IntermissionOrigin = File.Read<vec3f> ();
+		IntermissionAngles = File.Read<vec3f> ();
 
-		File.Read (&len, sizeof(len));
-		if (len)
-		{
-			tempBuffer = QNew (com_levelPool, 0) char[len];
-			File.Read (tempBuffer, len);
-			NextMap = tempBuffer;
-			QDelete[] tempBuffer;
-		}
-
-		File.Read (&len, sizeof(len));
-		if (len)
-		{
-			tempBuffer = QNew (com_levelPool, 0) char[len];
-			File.Read (tempBuffer, len);
-			ForceMap = tempBuffer;
-			QDelete[] tempBuffer;
-		}
-
-		File.Read (&IntermissionTime, sizeof(IntermissionTime));
-		File.Read (&ExitIntermission, sizeof(ExitIntermission));
-		File.Read (&IntermissionOrigin, sizeof(IntermissionOrigin));
-		File.Read (&IntermissionAngles, sizeof(IntermissionAngles));
-
-		sint32 Index;
-		File.Read (&Index, sizeof(Index));
+		sint32 Index = File.Read<sint32> ();
 		if (Index != -1)
 			SightClient = entity_cast<CPlayerEntity>(g_edicts[Index].Entity);
 
-		File.Read (&Secrets, sizeof(Secrets));
-		File.Read (&Goals, sizeof(Goals));
-		File.Read (&Monsters, sizeof(Monsters));
-		File.Read (&PowerCubeCount, sizeof(PowerCubeCount));
-		File.Read (&Inhibit, sizeof(Inhibit));
-		File.Read (&EntityNumber, sizeof(EntityNumber));
+		Secrets = File.Read<GoalList_t> ();
+		Goals = File.Read<GoalList_t> ();
+		Monsters = File.Read<MonsterCount_t> ();
+		PowerCubeCount = File.Read<uint8> ();
+		Inhibit = File.Read<uint32> ();
+		EntityNumber = File.Read<uint32> ();
 
 		Entities.Load (File);
 	};
@@ -678,52 +634,31 @@ public:
 
 		void Save (CFile &File)
 		{
-			size_t size = Open.size();
-			File.Write (&size, sizeof(size));
+			File.Write<size_t> (Open.size());
 			for (TEntitiesContainer::iterator it = Open.begin(); it != Open.end(); ++it)
-			{
-				edict_t *entity = (*it);
-			
 				// Poop.
 				// Entities can't be guarenteed a number till
 				// they spawn the first time!
-				sint32 number = entity - g_edicts;
-				File.Write (&number, sizeof(number));
-			}
+				File.Write<sint32> ((*it) - g_edicts);
 
-			size = Closed.size();
-			File.Write (&size, sizeof(size));
+			File.Write<size_t> (Closed.size());
 			for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
-			{
-				edict_t *entity = (*it);
-				File.Write (&entity->state.number, sizeof(entity->state.number));
-			}
+				File.Write<sint32> ((*it)->state.number);
 		};
 
 		void Load (CFile &File)
 		{
-			size_t size;
-			File.Read (&size, sizeof(size));
+			size_t size = File.Read<size_t> ();
 
 			Open.clear ();
 			for (size_t i = 0; i < size; i++)
-			{
-				sint32 number;
-				File.Read (&number, sizeof(number));
+				Open.push_back (&g_edicts[File.Read<sint32> ()]);
 
-				Open.push_back (&g_edicts[number]);
-			}
-
-			File.Read (&size, sizeof(size));
+			size = File.Read<size_t> ();
 
 			Closed.clear ();
 			for (size_t i = 0; i < size; i++)
-			{
-				sint32 number;
-				File.Read (&number, sizeof(number));
-
-				Closed.push_back (&g_edicts[number]);
-			}
+				Closed.push_back (&g_edicts[File.Read<sint32> ()]);
 		};
 
 	} Entities;

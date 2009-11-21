@@ -662,14 +662,6 @@ void Cmd_Give_f (CPlayerEntity *ent)
 
 	if (give_all || Q_stricmp (name.c_str(), "power shield") == 0)
 	{
-		/*it = NItems::PowerShield;
-		CItemEntity *it_ent = QNew (com_levelPool, 0) CItemEntity();
-		it_ent->ClassName = it->Classname;
-		it_ent->Spawn (it);
-
-		it_ent->Touch (ent, NULL, NULL);
-		if (it_ent->GetInUse())
-			it_ent->Free();*/
 		NItems::PowerShield->Add (ent, 1);
 
 		if (!give_all)
@@ -723,13 +715,12 @@ void Cmd_Give_f (CPlayerEntity *ent)
 	}
 	else
 	{
-		CItemEntity *it_ent = QNew (com_levelPool, 0) CItemEntity();
+		CItemEntity *it_ent = QNewEntityOf CItemEntity();
 		it_ent->ClassName = it->Classname;
 		it_ent->Spawn(it);
 		it_ent->Touch (ent, NULL, NULL);
 		if (it_ent->GetInUse())
 			it_ent->Free ();
-		//it->Add (ent, 1);
 	}
 }
 

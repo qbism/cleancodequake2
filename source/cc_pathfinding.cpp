@@ -210,26 +210,17 @@ void CPath::CreatePath ()
 void CPath::Save (CFile &f)
 {
 	// Save all local data
-	size_t index = GetNodeIndex(Start);
-	f.Write (&index, sizeof(uint32));
+	f.Write<uint32> (GetNodeIndex(Start));
+	f.Write<uint32> (GetNodeIndex(End));
 
-	index = GetNodeIndex(End);
-	f.Write (&index, sizeof(uint32));
-
-	f.Write (&Weight, sizeof(uint32));
-	f.Write (&NumNodes, sizeof(uint32));
+	f.Write<uint32> (Weight);
+	f.Write<uint32> (NumNodes);
 
 	// Save the path data
-	size_t pathLen = Path.size();
-	f.Write (&pathLen, sizeof(uint32));
+	f.Write<uint32> (Path.size());
 
-	for (size_t i = 0; i < pathLen; i++)
-	{
-		CPathNode *Node = Path[i];
-		index = GetNodeIndex(Node);
-
-		f.Write (&index, sizeof(uint32));
-	}
+	for (size_t i = 0; i < Path.size(); i++)
+		f.Write<uint32> (GetNodeIndex(Path[i]));
 }
 
 #define MAX_NODES 512
@@ -238,25 +229,16 @@ TPathNodeContainer NodeList;
 
 void CPath::Load (CFile &f)
 {
-	uint32 index;
-	f.Read (&index, sizeof(uint32));
-	Start = NodeList[index];
+	Start = NodeList[f.Read<uint32> ()];
+	End = NodeList[f.Read<uint32> ()];
 
-	f.Read (&index, sizeof(uint32));
-	End = NodeList[index];
-
-	f.Read (&Weight, sizeof(uint32));
-	f.Read (&NumNodes, sizeof(uint32));
+	Weight = f.Read<uint32> ();
+	NumNodes = f.Read<uint32> ();
 
 	// Save the path data
-	size_t pathLen;
-	f.Read (&pathLen, sizeof(uint32));
-
+	size_t pathLen = f.Read<uint32> ();
 	for (size_t i = 0; i < pathLen; i++)
-	{
-		f.Read (&index, sizeof(uint32));
-		Path.push_back (NodeList[index]);
-	}
+		Path.push_back (NodeList[f.Read<uint32> ()]);
 }
 
 void Cmd_Node_f (CPlayerEntity *ent);
@@ -347,7 +329,7 @@ void SpawnNodeEntity (CPathNode *Node)
 	if (!DebugNodes->Integer())
 		return;
 
-	Node->Ent = QNew (com_levelPool, 0) CNodeEntity;
+	Node->Ent = QNew (com_entityPool, 0) CNodeEntity;
 	Node->Ent->State.GetModelIndex() = ModelIndex("models/objects/grenade2/tris.md2");
 	Node->Ent->State.GetOrigin() = Node->Origin;
 	Node->Ent->Link ();
@@ -381,7 +363,7 @@ void CheckNodeFlags (CPathNode *Node)
 void ConnectNode (CPathNode *Node1, CPathNode *Node2);
 void AddNode (CPlayerEntity *ent, vec3f origin)
 {
-	NodeList.push_back(QNew (com_levelPool, 0) CPathNode(origin, NODE_REGULAR));
+	NodeList.push_back(QNew (com_entityPool, 0) CPathNode(origin, NODE_REGULAR));
 
 	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
 	ent->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
@@ -419,7 +401,7 @@ size_t GetNodeIndex (CPathNode *Node)
 #define NODE_VERSION 2
 void SaveNodes ()
 {
-	size_t numNodes = 0, numSpecialNodes = 0;
+	size_t numSpecialNodes = 0;
 	// Try to open the file
 	std::cc_string FileName;
 
@@ -433,40 +415,27 @@ void SaveNodes ()
 		return;
 
 	// Write the header
-	sint32 version = NODE_VERSION;
-	File.Write (&version, sizeof(sint32));
-	size_t siz = NodeList.size();
-	File.Write (&siz, sizeof(uint32));
+	File.Write<uint32> (NODE_VERSION);
+	File.Write<uint32> (NodeList.size());
 
-	numNodes = siz;
 	// Write each node
 	for (uint32 i = 0; i < NodeList.size(); i++)
 	{
-		File.Write (NodeList[i]->Origin, sizeof(NodeList[i]->Origin));
-		File.Write (&NodeList[i]->Type, sizeof(NodeList[i]->Type));
+		File.Write<vec3f> (NodeList[i]->Origin);
+		File.Write<ENodeType> (NodeList[i]->Type);
 
 		if (NodeList[i]->Type)
 			numSpecialNodes++;
 
-		if (NodeList[i]->Type == NODE_DOOR || NodeList[i]->Type == NODE_PLATFORM)
-		{
-			if (NodeList[i]->LinkedEntity)
-			{
-				sint32 modelNum = atoi(entity_cast<CBrushModel>(NodeList[i]->LinkedEntity)->Model+1);
-				File.Write (&modelNum, sizeof(sint32));
-			}
-		}
+		if ((NodeList[i]->Type == NODE_DOOR || NodeList[i]->Type == NODE_PLATFORM) && NodeList[i]->LinkedEntity)
+			File.Write<sint32> (atoi(entity_cast<CBrushModel>(NodeList[i]->LinkedEntity)->Model+1));
 
-		size_t num = NodeList[i]->Children.size();
-		File.Write (&num, sizeof(uint32));
+		File.Write<size_t> (NodeList[i]->Children.size());
 		for (size_t s = 0; s < NodeList[i]->Children.size(); s++)
-		{
-			size_t ind = GetNodeIndex(NodeList[i]->Children[s]);
-			File.Write (&ind, sizeof(uint32));
-		}
+			File.Write<uint32> (GetNodeIndex(NodeList[i]->Children[s]));
 	}
 
-	DebugPrintf ("Saved %u (%u special) nodes\n", numNodes, numSpecialNodes);
+	DebugPrintf ("Saved %u (%u special) nodes\n", NodeList.size(), numSpecialNodes);
 }
 
 void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
@@ -504,7 +473,7 @@ void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
 
 void LoadNodes ()
 {
-	uint32 numNodes = 0, numSpecialNodes = 0;
+	uint32 numSpecialNodes = 0;
 	// Try to open the file
 	std::cc_string FileName;
 
@@ -518,32 +487,25 @@ void LoadNodes ()
 		return;
 
 	// Write the header
-	sint32 version;
+	uint32 version;
 	uint32 lastId;
 
-	File.Read (&version, sizeof(sint32));
-	File.Read (&lastId, sizeof(uint32));
-
-	numNodes = lastId;
+	version = File.Read<uint32> ();
+	lastId = File.Read<uint32> ();
 
 	if (version != NODE_VERSION)
 		DebugPrintf ("Old version of nodes!\n");
 
-	sint32 **tempChildren;
-	tempChildren = QNew (com_genericPool, 0) sint32*[lastId];
+	sint32 **tempChildren = QNew (com_genericPool, 0) sint32*[lastId];
 
 	// Read each node
 	for (uint32 i = 0; i < lastId; i++)
 	{
-		ENodeType Type;
-		vec3f Origin;
 		if (version == 1)
-		{
-			uint32 nothing;
-			File.Read (&nothing, sizeof(uint32));
-		}
-		File.Read (&Origin, sizeof(NodeList[i]->Origin));
-		File.Read (&Type, sizeof(NodeList[i]->Type));
+			File.Read<uint32> ();
+
+		vec3f Origin = File.Read<vec3f> ();
+		ENodeType Type = File.Read<ENodeType> ();
 
 		NodeList.push_back(QNew (com_levelPool, 0) CPathNode(Origin, Type));
 
@@ -551,28 +513,17 @@ void LoadNodes ()
 
 		if(Type)
 			numSpecialNodes++;
+
 		if (Type == NODE_DOOR || Type == NODE_PLATFORM)
-		{
-			sint32 modelNum;
-			File.Read (&modelNum, sizeof(sint32));
+			LinkModelNumberToNode (NodeList[i], File.Read<sint32> ());
 
-			LinkModelNumberToNode (NodeList[i], modelNum);
-		}
+		uint32 num = File.Read<uint32> ();
 
-		uint32 num;
-		File.Read (&num, sizeof(uint32));
-
-		tempChildren[i] = QNew (com_genericPool, 0) sint32[num+1];
+		tempChildren[i] = QNew (com_genericPool, 0) sint32[num + 1];
 		tempChildren[i][0] = num;
-		/*for (size_t s = 0; s < num; s++)
-		{
-			sint32 tempId;
-			fread (&tempId, sizeof(sint32), 1, fp);
 
-			NodeList[i]->Children.push_back (NodeList[tempId]);
-		}*/
 		for (size_t s = 0; s < num; s++)
-			File.Read (&tempChildren[i][s+1], sizeof(uint32));
+			tempChildren[i][s+1] = File.Read<uint32> ();
 	}
 
 	for (size_t i = 0; i < lastId; i++)
@@ -583,7 +534,7 @@ void LoadNodes ()
 	}
 
 	QDelete[] tempChildren;
-	DebugPrintf ("Loaded %u (%u special) nodes\n", numNodes, numSpecialNodes);
+	DebugPrintf ("Loaded %u (%u special) nodes\n", lastId, numSpecialNodes);
 }
 
 bool VecInFront (vec3f &angles, vec3f &origin1, vec3f &origin2)
@@ -596,6 +547,11 @@ bool VecInFront (vec3f &angles, vec3f &origin1, vec3f &origin2)
 	if (vec.Dot (forward) > 0.3)
 		return true;
 	return false;
+}
+
+CPathNode *GetNodeByIndex (size_t index)
+{
+	return NodeList[index];
 }
 
 CPathNode *GetClosestNodeTo (vec3f origin)
@@ -807,7 +763,7 @@ void SavePathTable ()
 				count++;
 		}
 	}
-	File.Write (&count, sizeof(sint32));
+	File.Write<sint32> (count);
 
 	for (sint32 i = 0; i < MAX_SAVED_PATHS; i++)
 	{
@@ -815,8 +771,9 @@ void SavePathTable ()
 		{
 			if (SavedPaths[i].ToEnd[z])
 			{
-				File.Write (&i, sizeof(sint32));
-				File.Write (&z, sizeof(sint32));
+				File.Write<sint32> (i);
+				File.Write<sint32> (z);
+
 				SavedPaths[i].ToEnd[z]->Save(File);
 			}
 		}
@@ -844,11 +801,7 @@ void LoadPathTable ()
 
 	for (sint32 i = 0; i < count; i++)
 	{
-		sint32 indexI, indexZ;
-
-		File.Read (&indexI, sizeof(sint32));
-		File.Read (&indexZ, sizeof(sint32));
-
+		sint32 indexI = File.Read<sint32> (), indexZ = File.Read<sint32> ();
 		SavedPaths[indexI].ToEnd[indexZ] = QNew (com_levelPool, 0) CPath();
 		SavedPaths[indexI].ToEnd[indexZ]->Load (File);
 	}

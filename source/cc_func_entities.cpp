@@ -92,6 +92,7 @@ bool			CFuncTimer::ParseField (const char *Key, const char *Value)
 void			CFuncTimer::SaveFields (CFile &File)
 {
 	SaveEntityFields <CFuncTimer> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CThinkableEntity::SaveFields (File);
 }
@@ -99,6 +100,7 @@ void			CFuncTimer::SaveFields (CFile &File)
 void			CFuncTimer::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncTimer> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CThinkableEntity::LoadFields (File);
 }
@@ -210,12 +212,14 @@ bool CTargetCharacter::ParseField (const char *Key, const char *Value)
 void			CTargetCharacter::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetCharacter> (this, File);
+	CMapEntity::SaveFields (File);
 	CBrushModel::SaveFields (File);
 }
 
 void			CTargetCharacter::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetCharacter> (this, File);
+	CMapEntity::LoadFields (File);
 	CBrushModel::LoadFields (File);
 }
 
@@ -341,6 +345,9 @@ ENTITYFIELDS_BEGIN(CFuncClock)
 	CEntityField ("style", EntityMemberOffset(CFuncClock,Style), FT_BYTE | FT_SAVABLE),
 	CEntityField ("count", EntityMemberOffset(CFuncClock,Count), FT_INT | FT_SAVABLE),
 	CEntityField ("pathtarget", EntityMemberOffset(CFuncClock,CountTarget), FT_LEVEL_STRING | FT_SAVABLE),
+
+	CEntityField ("Wait", EntityMemberOffset(CFuncClock,Wait), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Seconds", EntityMemberOffset(CFuncClock,Seconds), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END (CFuncClock);
 
@@ -359,14 +366,23 @@ bool CFuncClock::Run ()
 
 void		CFuncClock::SaveFields (CFile &File)
 {
+	File.Write<sint32> ((String) ? String->State.GetNumber() : -1);
+
 	SaveEntityFields <CFuncClock> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CThinkableEntity::SaveFields (File);
 }
 
 void		CFuncClock::LoadFields (CFile &File)
 {
+	sint32 Index = File.Read<sint32> ();
+
+	if (Index != -1)
+		String = entity_cast<CTargetString>(g_edicts[Index].Entity);
+
 	LoadEntityFields <CFuncClock> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CThinkableEntity::LoadFields (File);
 }

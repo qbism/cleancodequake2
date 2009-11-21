@@ -206,6 +206,9 @@ ENTITYFIELDS_BEGIN(CMiscExploBox)
 {
 	CEntityField ("mass", EntityMemberOffset(CMiscExploBox,Explosivity), FT_INT | FT_SAVABLE),
 	CEntityField ("dmg", EntityMemberOffset(CMiscExploBox,Damage), FT_INT | FT_SAVABLE),
+
+	CEntityField ("Dropped", EntityMemberOffset(CMiscExploBox,Dropped), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Shooter", EntityMemberOffset(CMiscExploBox,Shooter), FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMiscExploBox)
 
@@ -220,6 +223,7 @@ bool			CMiscExploBox::ParseField (const char *Key, const char *Value)
 void		CMiscExploBox::SaveFields (CFile &File)
 {
 	SaveEntityFields <CMiscExploBox> (this, File);
+	CMapEntity::SaveFields (File);
 	CHurtableEntity::SaveFields (File);
 	CTouchableEntity::SaveFields (File);
 }
@@ -227,6 +231,7 @@ void		CMiscExploBox::SaveFields (CFile &File)
 void		CMiscExploBox::LoadFields (CFile &File)
 {
 	LoadEntityFields <CMiscExploBox> (this, File);
+	CMapEntity::LoadFields (File);
 	CHurtableEntity::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
 }
@@ -374,11 +379,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	};
 
@@ -436,12 +443,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	}
@@ -500,11 +509,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	};
 
@@ -558,11 +569,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	};
 
@@ -616,11 +629,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	};
 
@@ -689,6 +704,7 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
@@ -696,6 +712,7 @@ public:
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
@@ -784,14 +801,18 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
+		CTossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
+		CTossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
@@ -961,7 +982,7 @@ public:
 	bool			PreThinkable;
 	FrameNumber_t	TimeStamp;
 	vec3f			MoveDir;
-	sint32				Damage;
+	sint32			Damage;
 
 	CMiscViperBomb () :
 	  CBaseEntity (),
@@ -1073,6 +1094,10 @@ public:
 ENTITYFIELDS_BEGIN(CMiscViperBomb)
 {
 	CEntityField ("dmg", EntityMemberOffset(CMiscViperBomb,Damage), FT_INT | FT_SAVABLE),
+
+	CEntityField ("PreThinkable", EntityMemberOffset(CMiscViperBomb,PreThinkable), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("TimeStamp", EntityMemberOffset(CMiscViperBomb,TimeStamp), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveDir", EntityMemberOffset(CMiscViperBomb,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMiscViperBomb)
 
@@ -1088,15 +1113,19 @@ bool			CMiscViperBomb::ParseField (const char *Key, const char *Value)
 void		CMiscViperBomb::SaveFields (CFile &File)
 {
 	SaveEntityFields <CMiscViperBomb> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CTouchableEntity::SaveFields (File);
+	CTossProjectile::SaveFields (File);
 }
 
 void		CMiscViperBomb::LoadFields (CFile &File)
 {
 	LoadEntityFields <CMiscViperBomb> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
+	CTossProjectile::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper_bomb", CMiscViperBomb);
@@ -1131,12 +1160,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	}
@@ -1268,14 +1299,18 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
+		CTossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
+		CTossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
@@ -1335,14 +1370,18 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
+		CTossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
+		CTossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
@@ -1402,14 +1441,18 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
+		CTossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
+		CTossProjectile::LoadFields (File);
 	}
 
 	bool Run ()

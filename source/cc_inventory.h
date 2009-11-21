@@ -75,38 +75,38 @@ public:
 
 	void Save (CFile &File)
 	{
-		size_t size = Array.size();
-		File.Write (&size, sizeof(size));
+		File.Write<size_t> (Array.size());
 
 		for (TInventoryMapType::iterator it = Array.begin(); it != Array.end(); it++)
 		{
-			uint8 first = (*it).first;
+/*			uint8 first = (*it).first;
 			uint16 second = (*it).second;
 
 			File.Write (&first, sizeof(first));
-			File.Write (&second, sizeof(second));
+			File.Write (&second, sizeof(second));*/
+			File.Write <std::pair <uint8, uint16> > (*it);
 		}
 
-		File.Write (&SelectedItem, sizeof(SelectedItem));
+		File.Write<sint32> (SelectedItem);
 	};
 
 	void Load (CFile &File)
 	{
-		size_t size;
-		File.Read (&size, sizeof(size));
+		size_t size = File.Read<size_t> ();
 
 		for (size_t i = 0; i < size; i++)
 		{
-			uint8 first;
+/*			uint8 first;
 			uint16 second;
 
 			File.Read (&first, sizeof(first));
-			File.Read (&second, sizeof(second));
+			File.Read (&second, sizeof(second));*/
 
-			Array[first] = second;
+			//Array[first] = second;
+			Array.insert (File.Read <std::pair <uint8, uint16> > ());
 		}
 
-		File.Read (&SelectedItem, sizeof(SelectedItem));
+		SelectedItem = File.Read<sint32> ();
 	}
 };
 

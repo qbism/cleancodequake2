@@ -105,8 +105,8 @@ void CSoldierMachinegun::FireGun (sint32 FlashNumber)
 
 void CSoldierMachinegun::SpawnSoldier ()
 {
-	SoundPain = SoundIndex ("soldier/solpain3.wav");
-	SoundDeath = SoundIndex ("soldier/soldeth3.wav");
+	Sounds[SOUND_PAIN] = SoundIndex ("soldier/solpain3.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("soldier/soldeth3.wav");
 
 	Entity->State.GetSkinNum() = 4;
 	Entity->Health = 40;

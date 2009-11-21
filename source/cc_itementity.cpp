@@ -300,15 +300,19 @@ bool CItemEntity::ParseField (const char *Key, const char *Value)
 void		CItemEntity::SaveFields (CFile &File)
 {
 	SaveEntityFields <CItemEntity> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CThinkableEntity::SaveFields (File);
 	CTouchableEntity::SaveFields (File);
+	CTossProjectile::SaveFields (File);
 }
 
 void		CItemEntity::LoadFields (CFile &File)
 {
 	LoadEntityFields <CItemEntity> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CThinkableEntity::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
+	CTossProjectile::LoadFields (File);
 }

@@ -41,6 +41,18 @@ public:
 
 	CSoldierMachinegun(uint32 ID);
 
+	void SaveMonsterFields (CFile &File)
+	{
+		File.Write<FrameNumber_t> (Wait);
+		CSoldierBase::SaveMonsterFields (File);
+	}
+
+	void LoadMonsterFields (CFile &File)
+	{
+		Wait = File.Read<FrameNumber_t> ();
+		CSoldierBase::LoadMonsterFields (File);
+	}
+
 	void Attack ();
 	void FireGun (sint32 FlashNumber);
 	void SpawnSoldier ();

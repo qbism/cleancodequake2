@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 /*
 This source file is contained as part of CleanCode Quake2, a project maintained
-by Paril, to 'clean up' and make Quake2 an easier source base to read and work with.
 
 You may use any part of this code to help create your own bases and own mods off
 this code if you wish. It is under the same license as Quake 2 source (as above),
@@ -45,7 +44,7 @@ CMonster (ID)
 void CBoss2::Search ()
 {
 	if (frand() < 0.5)
-		Entity->PlaySound (CHAN_VOICE, SoundSearch1, 255, ATTN_NONE);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH], 255, ATTN_NONE);
 }
 
 void CBoss2::FireRocket ()
@@ -439,7 +438,7 @@ void CBoss2::Pain (CBaseEntity *other, float kick, sint32 damage)
 	PainDebounceTime = level.Frame + 30;
 
 // American wanted these at no attenuation
-	Entity->PlaySound (CHAN_VOICE, (damage < 10) ? SoundPain3 : ((damage < 30) ? SoundPain1 : SoundPain2), 255, ATTN_NONE);
+	Entity->PlaySound (CHAN_VOICE, (damage < 10) ? Sounds[SOUND_PAIN3] : ((damage < 30) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]), 255, ATTN_NONE);
 	CurrentMove = (damage < 30) ? &Boss2MovePainLight : &Boss2MovePainHeavy;
 }
 
@@ -455,7 +454,7 @@ void CBoss2::Dead ()
 
 void CBoss2::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	Entity->PlaySound (CHAN_VOICE, SoundDeath, 255, ATTN_NONE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;
 	ExplodeCount = 0;
@@ -532,11 +531,11 @@ bool CBoss2::CheckAttack ()
 */
 void CBoss2::Spawn ()
 {
-	SoundPain1 = SoundIndex ("bosshovr/bhvpain1.wav");
-	SoundPain2 = SoundIndex ("bosshovr/bhvpain2.wav");
-	SoundPain3 = SoundIndex ("bosshovr/bhvpain3.wav");
-	SoundDeath = SoundIndex ("bosshovr/bhvdeth1.wav");
-	SoundSearch1 = SoundIndex ("bosshovr/bhvunqv1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("bosshovr/bhvpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("bosshovr/bhvpain2.wav");
+	Sounds[SOUND_PAIN3] = SoundIndex ("bosshovr/bhvpain3.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("bosshovr/bhvdeth1.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("bosshovr/bhvunqv1.wav");
 
 	Entity->State.GetSound() = SoundIndex ("bosshovr/bhvengn1.wav");
 

@@ -138,12 +138,14 @@ void SendQueue (edict_t *To, bool Reliable)
 
 void Clear ()
 {
+	for (size_t i = 0; i < WriteQueue.size(); i++)
+		QDelete WriteQueue[i];
 	WriteQueue.clear();
 }
 
 void PushUp (uint8 *Ptr, EWriteType Type)
 {
-	WriteQueue.push_back (QNew (com_levelPool, 0) CWriteIndex(Ptr, Type));
+	WriteQueue.push_back (QNew (com_genericPool, 0) CWriteIndex(Ptr, Type));
 }
 
 // vec3f overloads

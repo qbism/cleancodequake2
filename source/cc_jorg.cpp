@@ -48,13 +48,13 @@ void CJorg::Search ()
 	switch (irandom(3))
 	{
 	case 0:
-		Entity->PlaySound (CHAN_VOICE, SoundSearch1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH1]);
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundSearch2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH2]);
 		break;
 	case 2:
-		Entity->PlaySound (CHAN_VOICE, SoundSearch3);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH3]);
 		break;
 	};
 }
@@ -121,22 +121,22 @@ CAnim	JorgMoveStand (FRAME_stand01, FRAME_stand51, JorgFramesStand);
 
 void CJorg::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE]);
 }
 
 void CJorg::DeathHit ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundDeathHit);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_DEATH_HIT]);
 }
 
 void CJorg::StepLeft ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundStepLeft);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_STEPLEFT]);
 }
 
 void CJorg::StepRight ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundStepRight);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_STEPRIGHT]);
 }
 
 void CJorg::Stand ()
@@ -302,17 +302,17 @@ void CJorg::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 	if (damage <= 50)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &JorgMovePain1;
 	}
 	else if (damage <= 100)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &JorgMovePain2;
 	}
 	else if (frand() <= 0.3)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain3);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN3]);
 		CurrentMove = &JorgMovePain3;
 	}
 };
@@ -379,7 +379,7 @@ void CJorg::TossMakron ()
 
 void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;
 	Entity->State.GetSound() = 0;
@@ -473,7 +473,7 @@ void CJorg::FireBFG ()
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_BFG_1], forward, right, start);
 
 	dir = ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized();
-	Entity->PlaySound (CHAN_VOICE, SoundAttack2);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK2]);
 	MonsterFireBfg (start, dir, 50, 300, 100, 200, MZ2_JORG_BFG_1);
 }
 
@@ -507,13 +507,13 @@ void CJorg::Attack()
 {
 	if (frand() <= 0.75)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundAttack1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK1]);
 		Entity->State.GetSound() = SoundIndex ("boss3/w_loop.wav");
 		CurrentMove = &JorgMoveStartAttack1;
 	}
 	else
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundAttack2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK2]);
 		CurrentMove = &JorgMoveAttack2;
 	}
 }
@@ -746,20 +746,20 @@ bool CJorg::CheckAttack ()
 */
 void CJorg::Spawn ()
 {
-	SoundPain1 = SoundIndex ("boss3/bs3pain1.wav");
-	SoundPain2 = SoundIndex ("boss3/bs3pain2.wav");
-	SoundPain3 = SoundIndex ("boss3/bs3pain3.wav");
-	SoundDeath = SoundIndex ("boss3/bs3deth1.wav");
-	SoundAttack1 = SoundIndex ("boss3/bs3atck1.wav");
-	SoundAttack2 = SoundIndex ("boss3/bs3atck2.wav");
-	SoundSearch1 = SoundIndex ("boss3/bs3srch1.wav");
-	SoundSearch2 = SoundIndex ("boss3/bs3srch2.wav");
-	SoundSearch3 = SoundIndex ("boss3/bs3srch3.wav");
-	SoundIdle = SoundIndex ("boss3/bs3idle1.wav");
-	SoundStepLeft = SoundIndex ("boss3/step1.wav");
-	SoundStepRight = SoundIndex ("boss3/step2.wav");
-	SoundFiregun = SoundIndex ("boss3/xfire.wav");
-	SoundDeathHit = SoundIndex ("boss3/d_hit.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("boss3/bs3pain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("boss3/bs3pain2.wav");
+	Sounds[SOUND_PAIN3] = SoundIndex ("boss3/bs3pain3.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("boss3/bs3deth1.wav");
+	Sounds[SOUND_ATTACK1] = SoundIndex ("boss3/bs3atck1.wav");
+	Sounds[SOUND_ATTACK2] = SoundIndex ("boss3/bs3atck2.wav");
+	Sounds[SOUND_SEARCH1] = SoundIndex ("boss3/bs3srch1.wav");
+	Sounds[SOUND_SEARCH2] = SoundIndex ("boss3/bs3srch2.wav");
+	Sounds[SOUND_SEARCH3] = SoundIndex ("boss3/bs3srch3.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("boss3/bs3idle1.wav");
+	Sounds[SOUND_STEPLEFT] = SoundIndex ("boss3/step1.wav");
+	Sounds[SOUND_STEPRIGHT] = SoundIndex ("boss3/step2.wav");
+	Sounds[SOUND_FIREGUN] = SoundIndex ("boss3/xfire.wav");
+	Sounds[SOUND_DEATH_HIT] = SoundIndex ("boss3/d_hit.wav");
 
 	CMakron::Precache ();
 

@@ -39,15 +39,21 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CSoldierBase : public CMonster
 {
 public:
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundSight1;
-	MediaIndex	SoundSight2;
-	MediaIndex	SoundCock;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_IDLE,
+		SOUND_SIGHT1,
+		SOUND_SIGHT2,
+		SOUND_COCK,
+		SOUND_PAIN,
+		SOUND_DEATH,
 
-	MediaIndex	SoundPain;
-	MediaIndex	SoundDeath;
+		SOUND_MAX
+	);
 
 	CSoldierBase (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	virtual void Attack () = 0;
 #ifndef MONSTER_USE_ROGUE_AI

@@ -41,8 +41,8 @@ public:
 	sint32			Health;
 	sint32			MaxHealth;
 	sint32			GibHealth;
-	bool		DeadFlag;
-	bool		CanTakeDamage;
+	bool			DeadFlag;
+	bool			CanTakeDamage;
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(CHurtableEntity)
@@ -173,8 +173,31 @@ public:
 	} WaterInfo;
 
 	bool				PhysicsDisabled;
+
 	CPhysicsEntity ();
 	CPhysicsEntity (sint32 index);
+
+	virtual void SaveFields (CFile &File)
+	{
+		File.Write<float> (GravityMultiplier);
+		File.Write<EPhysicsType> (PhysicsType);
+		File.Write<vec3f> (&AngularVelocity);
+		File.Write<vec3f> (&Velocity);
+		File.Write<float> (&Mass);
+		File.Write<WaterInfo_t> (WaterInfo);
+		File.Write<bool> (PhysicsDisabled);
+	};
+
+	virtual void LoadFields (CFile &File)
+	{
+		GravityMultiplier = File.Read<float> ();
+		PhysicsType = File.Read<EPhysicsType> ();
+		AngularVelocity = File.Read<vec3f> ();
+		Velocity = File.Read<vec3f> ();
+		Mass = File.Read<float> ();
+		WaterInfo = File.Read<WaterInfo_t> ();
+		PhysicsDisabled = File.Read<bool> ();
+	};
 
 	class CTrace	PushEntity (vec3f &push);
 	inline void		AddGravity ();
@@ -190,6 +213,18 @@ public:
 	CBounceProjectile ();
 	CBounceProjectile (sint32 index);
 
+	virtual void SaveFields (CFile &File)
+	{
+		File.Write<float> (backOff);
+		CPhysicsEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		backOff = File.Read<float> ();
+		CPhysicsEntity::LoadFields (File);
+	}
+
 	bool			Run ();
 };
 
@@ -199,6 +234,16 @@ class CTossProjectile : public virtual CBounceProjectile
 public:
 	CTossProjectile();
 	CTossProjectile (sint32 index);
+
+	virtual void SaveFields (CFile &File)
+	{
+		CBounceProjectile::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CBounceProjectile::LoadFields (File);
+	}
 };
 
 // Doesn't add gravity
@@ -207,6 +252,16 @@ class CFlyMissileProjectile : public virtual CPhysicsEntity
 public:
 	CFlyMissileProjectile ();
 	CFlyMissileProjectile (sint32 index);
+
+	virtual void SaveFields (CFile &File)
+	{
+		CPhysicsEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CPhysicsEntity::LoadFields (File);
+	}
 
 	bool			Run ();
 };
@@ -220,7 +275,17 @@ public:
 
 	virtual void	CheckGround ();
 
-	sint32				FlyMove (float time, sint32 mask);
+	virtual void SaveFields (CFile &File)
+	{
+		CPhysicsEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CPhysicsEntity::LoadFields (File);
+	}
+
+	sint32			FlyMove (float time, sint32 mask);
 	void			AddRotationalFriction ();
 	bool			Run ();
 };
@@ -231,6 +296,16 @@ public:
 	CPushPhysics ();
 	CPushPhysics (sint32 Index);
 
+	virtual void SaveFields (CFile &File)
+	{
+		CPhysicsEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CPhysicsEntity::LoadFields (File);
+	}
+
 	bool			Run ();
 };
 
@@ -239,6 +314,16 @@ class CStopPhysics : public virtual CPushPhysics
 public:
 	CStopPhysics ();
 	CStopPhysics (sint32 Index);
+
+	virtual void SaveFields (CFile &File)
+	{
+		CPhysicsEntity::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		CPhysicsEntity::LoadFields (File);
+	}
 
 	bool			Run ();
 };

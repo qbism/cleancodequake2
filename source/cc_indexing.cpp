@@ -172,7 +172,7 @@ void CIndexList::Clear ()
 		delete List[i];
 	}
 
-	numIndexes = 0;
+	numIndexes = firstIndex = 0;
 	memset (List, 0, sizeof(CIndex*) * MAX_INDEXES);
 	memset (HashList, 0, sizeof(CIndex*) * MAX_INDEXES);
 }

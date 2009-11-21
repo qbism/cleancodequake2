@@ -633,7 +633,7 @@ public:
 
 	static void Spawn (CMonsterEntity *Owner)
 	{
-		CMakronTorso *NewClass = QNew (com_levelPool, 0) CMakronTorso;
+		CMakronTorso *NewClass = QNewEntityOf CMakronTorso;
 
 		NewClass->State.GetOrigin() = Owner->State.GetOrigin();
 		NewClass->State.GetAngles() = Owner->State.GetAngles();
@@ -998,8 +998,8 @@ CThinkableEntity (Index)
 
 void CMakronJumpTimer::Think ()
 {
-	CMonsterEntity *newClass = QNew (com_levelPool, 0) CMonsterEntity;
-	CMakron *Monster = QNew (com_levelPool, 0) CMakron (CMakron_ID);
+	CMonsterEntity *newClass = QNewEntityOf CMonsterEntity;
+	CMakron *Monster = QNewEntityOf CMakron (CMakron_ID);
 	newClass->Monster = Monster;
 	Monster->Entity = newClass;
 	newClass->State.GetOrigin() = State.GetOrigin();
@@ -1026,7 +1026,7 @@ void CMakronJumpTimer::Think ()
 
 void CMakronJumpTimer::Spawn (CJorg *Jorg)
 {
-	CMakronJumpTimer *Timer = QNew (com_levelPool, 0) CMakronJumpTimer;
+	CMakronJumpTimer *Timer = QNewEntityOf CMakronJumpTimer;
 	
 	Timer->NextThink = level.Frame + 8;
 	Timer->LinkedJorg = Jorg->Entity;

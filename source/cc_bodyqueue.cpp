@@ -54,6 +54,7 @@ public:
 		CHurtableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
+		CTossProjectile::SaveFields (File);
 	};
 	void			LoadFields (CFile &File);
 
@@ -126,8 +127,6 @@ void CBody::TossHead (sint32 damage)
 	Link ();
 }
 
-#define BODY_QUEUE_SIZE	8
-
 typedef std::list<CBody*, std::level_allocator<CBody*> > TBodyQueueList;
 class CBodyQueue
 {
@@ -150,9 +149,11 @@ CBodyQueue	*BodyQueue;
 void	CBody::LoadFields (CFile &File)
 {
 	BodyQueueList = BodyQueue;
+	
 	CHurtableEntity::LoadFields (File);
 	CThinkableEntity::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
+	CTossProjectile::LoadFields (File);
 };
 
 void CBody::Think ()
@@ -211,7 +212,7 @@ CBodyQueue::CBodyQueue (sint32 MaxSize)
 	// Add MaxSize entities to the body queue (reserved entities)
 	for (sint32 i = 0; i < MaxSize; i++)
 	{
-		CBody *Body = QNew (com_levelPool, 0) CBody ();
+		CBody *Body = QNewEntityOf CBody ();
 		Body->ClassName = "bodyqueue";
 		Body->BodyQueueList = this;
 		Body->GetSvFlags() = SVF_NOCLIENT;
@@ -222,9 +223,9 @@ CBodyQueue::CBodyQueue (sint32 MaxSize)
 	}
 };
 
-void BodyQueue_Init ()
+void BodyQueue_Init (sint32 reserve)
 {
-	BodyQueue = QNew (com_levelPool, 0) CBodyQueue (BODY_QUEUE_SIZE);
+	BodyQueue = QNew (com_levelPool, 0) CBodyQueue (reserve);
 }
 
 // Saves currently allocated body numbers
@@ -233,23 +234,13 @@ void SaveBodyQueue (CFile &File)
 	if (!BodyQueue)
 		return; // ????
 
-	size_t num = BodyQueue->ClosedList.size();
-	File.Write (&num, sizeof(num));
-
+	File.Write<size_t> (BodyQueue->ClosedList.size());
 	for (TBodyQueueList::iterator it = BodyQueue->ClosedList.begin(); it != BodyQueue->ClosedList.end(); ++it)
-	{
-		sint32 number = (*it)->gameEntity->state.number;
-		File.Write (&number, sizeof(number));
-	}
+		File.Write<sint32> ((*it)->gameEntity->state.number);
 
-	num = BodyQueue->OpenList.size();
-	File.Write (&num, sizeof(num));
-
+	File.Write<size_t> (BodyQueue->OpenList.size());
 	for (TBodyQueueList::iterator it = BodyQueue->OpenList.begin(); it != BodyQueue->OpenList.end(); ++it)
-	{
-		sint32 number = (*it)->gameEntity->state.number;
-		File.Write (&number, sizeof(number));
-	}
+		File.Write<sint32> ((*it)->gameEntity->state.number);
 }
 
 // Loads the bodyqueue numbers into allocationzzz
@@ -258,26 +249,13 @@ void LoadBodyQueue (CFile &File)
 	if (!BodyQueue)
 		return; // ????
 
-	size_t num;
-	File.Read (&num, sizeof(num));
-
+	size_t num = File.Read <size_t> ();
 	for (size_t i = 0; i < num; i++)
-	{
-		sint32 number;
-		File.Read (&number, sizeof(number));
+		BodyQueue->ClosedList.push_back (entity_cast<CBody>(g_edicts[File.Read <sint32> ()].Entity));
 
-		BodyQueue->ClosedList.push_back (entity_cast<CBody>(g_edicts[number].Entity));
-	}
-
-	File.Read (&num, sizeof(num));
-
+	num = File.Read <size_t> ();
 	for (size_t i = 0; i < num; i++)
-	{
-		sint32 number;
-		File.Read (&number, sizeof(number));
-
-		BodyQueue->OpenList.push_back (entity_cast<CBody>(g_edicts[number].Entity));
-	}
+		BodyQueue->OpenList.push_back (entity_cast<CBody>(g_edicts[File.Read <sint32> ()].Entity));
 }
 
 void ShutdownBodyQueue ()

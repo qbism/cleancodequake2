@@ -246,7 +246,7 @@ void CPlayerEntity::BeginServerFrame ()
 	if (level.IntermissionTime)
 		return;
 
-	if ((game.mode & GAME_DEATHMATCH) && 
+	if ((game.mode & GAME_DEATHMATCH) &&  
 #ifdef CLEANCTF_ENABLED
 		!(game.mode & GAME_CTF) &&
 #endif
@@ -2987,7 +2987,7 @@ edicts are wiped.
 */
 CPersistentData *SavedClients;
 
-void CPlayerEntity::SaveClientData ()
+void CPlayerEntity::BackupClientData ()
 {
 	SavedClients = QNew (com_genericPool, 0) CPersistentData[game.maxclients];
 	for (sint32 i = 0; i < game.maxclients; i++)
@@ -3007,6 +3007,41 @@ void CPlayerEntity::SaveClientData ()
 		if (game.mode & GAME_COOPERATIVE)
 			SavedClients[i].Score = ent->Client.Respawn.Score;
 	}
+}
+
+void CPlayerEntity::SaveClientData ()
+{
+	for (sint32 i = 0; i < game.maxclients; i++)
+	{
+		if (!g_edicts[1+i].Entity)
+			return; // Not set up
+
+		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1+i].Entity);
+		if (!ent->GetInUse())
+			continue;
+
+		ent->Client.Persistent.health = ent->Health;
+		ent->Client.Persistent.max_health = ent->MaxHealth;
+		ent->Client.Persistent.savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
+		if (game.mode & GAME_COOPERATIVE)
+			ent->Client.Persistent.Score = ent->Client.Respawn.Score;
+	}
+}
+
+void CPlayerEntity::RestoreClientData ()
+{
+	for (sint32 i = 0; i < game.maxclients; i++)
+	{
+		// Reset the entity states
+		//g_edicts[i+1].Entity = SavedClients[i];
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
+		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
+		Player->Client.Persistent = CPersistentData(SavedClients[i]);
+		g_edicts[i+1].client = game.clients + i;
+	}
+
+	QDelete[] SavedClients;
+	SavedClients = NULL;
 }
 
 CBaseEntity *CPlayerEntity::SelectCoopSpawnPoint ()
@@ -3647,7 +3682,7 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 #ifndef MONSTERS_USE_PATHFINDING
 	if (!Client.mynoise)
 	{
-		CPlayerNoise *noise = QNew (com_levelPool, 0) CPlayerNoise;
+		CPlayerNoise *noise = QNewEntityOf CPlayerNoise;
 		noise->ClassName = "player_noise";
 		noise->GetMins().Set (-8);
 		noise->GetMaxs().Set (8);
@@ -3655,7 +3690,7 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 		noise->GetSvFlags() = SVF_NOCLIENT;
 		Client.mynoise = noise;
 
-		noise = QNew (com_levelPool, 0) CPlayerNoise;
+		noise = QNewEntityOf CPlayerNoise;
 		noise->ClassName = "player_noise";
 		noise->GetMins().Set (-8);
 		noise->GetMaxs().Set (8);

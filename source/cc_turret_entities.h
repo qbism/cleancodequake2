@@ -48,11 +48,13 @@ public:
 
 	virtual void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 	};
 
 	virtual void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 	};
 

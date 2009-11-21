@@ -38,16 +38,17 @@ class CMedic : public CMonster
 {
 public:
 	FrameNumber_t	MedicTryTime;
-	MediaIndex	SoundIdle1;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDie;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundHookLaunch;
-	MediaIndex	SoundHookHit;
-	MediaIndex	SoundHookHeal;
-	MediaIndex	SoundHookRetract;
+	uint8			MedicTries;
+	MediaIndex		SoundIdle1;
+	MediaIndex		SoundPain1;
+	MediaIndex		SoundPain2;
+	MediaIndex		SoundDie;
+	MediaIndex		SoundSight;
+	MediaIndex		SoundSearch;
+	MediaIndex		SoundHookLaunch;
+	MediaIndex		SoundHookHit;
+	MediaIndex		SoundHookHeal;
+	MediaIndex		SoundHookRetract;
 
 	CMedic (uint32 ID);
 

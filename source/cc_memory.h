@@ -29,6 +29,7 @@ extern struct memPool_t	*com_genericPool; // Generic memory; memory that will be
 extern struct memPool_t	*com_levelPool; // Flushed per level
 extern struct memPool_t	*com_gamePool; // Flushed per entire game
 extern struct memPool_t	*com_fileSysPool; // Flushed per entire game
+extern struct memPool_t	*com_entityPool; // Flushed specially
 
 #define Mem_AllocA(size)								_alloca((size))
 
@@ -78,6 +79,8 @@ void		_Mem_TouchGlobal(const char *fileName, const sint32 fileLine);
 void		Mem_Register();
 void		Mem_Init();
 
+void		Mem_FreePools();
+
 // These operators are for vectors and the like.
 // Deprecated; use QNew/QDelete
 
@@ -91,7 +94,14 @@ inline void operator delete(void *Pointer)
 	_Mem_Free (Pointer, "null", 0);
 }
 
-_Ret_bytecap_(_Size) inline void *__CRTDECL operator new[](size_t _Size)
+#ifdef WIN32
+_Ret_bytecap_(_Size) 
+#endif
+	inline void *
+#ifdef WIN32
+	__CRTDECL 
+#endif
+	operator new[](size_t _Size)
 {
 	return Mem_Alloc (_Size);
 }

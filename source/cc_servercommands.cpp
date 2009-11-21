@@ -119,8 +119,8 @@ public:
 	CServerEntityList () :
 		NumInList (0)
 	{
-		List = new SServerEntityListIndex*[MAX_CS_EDICTS];
-		HashedList = new SServerEntityListIndex*[MAX_CS_EDICTS];
+		List = QNew (com_genericPool, 0) SServerEntityListIndex*[MAX_CS_EDICTS];
+		HashedList = QNew (com_genericPool, 0) SServerEntityListIndex*[MAX_CS_EDICTS];
 		memset (List, 0, sizeof(List));
 		memset (HashedList, 0, sizeof(HashedList));
 	};
@@ -147,7 +147,7 @@ public:
 
 	SServerEntityListIndex *AddToList (const char *className)
 	{
-		SServerEntityListIndex *Ind = new SServerEntityListIndex(className);
+		SServerEntityListIndex *Ind = QNew (com_genericPool, 0) SServerEntityListIndex(className);
 		List[NumInList] = Ind;
 		List[NumInList]->hashNext = HashedList[List[NumInList]->hashValue];
 		HashedList[List[NumInList]->hashValue] = List[NumInList];
@@ -234,7 +234,7 @@ void SvCmd_Dump_f ()
 	if (!File.Valid())
 		return;
 
-	File.Write (gEntString, strlen(gEntString));
+	File.Write (gEntString);
 }
 
 bool requestedBreak = false;

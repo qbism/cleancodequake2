@@ -53,22 +53,18 @@ void DoWeaponVweps ()
 
 void SaveWeapon (CFile &File, CWeapon *Weapon)
 {
-	sint32 Index = -1;
-	if (Weapon)
-		Index = Weapon->Item->GetIndex();
-	File.Write (&Index, sizeof(Index));
+	File.Write<sint32> ((Weapon) ? Weapon->Item->GetIndex() : -1);
 }
 
 void LoadWeapon (CFile &File, CWeapon **Weapon)
 {
-	sint32 Index;
-	File.Read (&Index, sizeof(Index));
+	sint32 Index = File.Read<sint32> ();
 
 	if (Index != -1)
 	{
 		CBaseItem *Item = GetItemByIndex(Index);
 
-		if (Item && Item->Flags & ITEMFLAG_WEAPON)
+		if (Item && (Item->Flags & ITEMFLAG_WEAPON))
 		{
 			if (Item->Flags & ITEMFLAG_AMMO)
 			{

@@ -71,6 +71,7 @@ memPool_t	*com_genericPool; // Generic memory; memory that will be freed on leve
 memPool_t	*com_levelPool; // Flushed per level
 memPool_t	*com_gamePool; // Flushed per entire game
 memPool_t	*com_fileSysPool; // File system (same as game, just here for easy pointer access)
+memPool_t	*com_entityPool; // Flushed specially
 
 #define MEM_MAX_PUDDLES			42
 #define MEM_MAX_PUDDLE_SIZE		(32768+1)
@@ -300,7 +301,6 @@ static memPool_t *Mem_FindPool (const char *name)
 
 	return NULL;
 }
-
 
 /*
 ========================
@@ -842,9 +842,9 @@ Mem_Stats_f
 */
 void Mem_Stats_f(CPlayerEntity *ent)
 {
-	Com_Printf(0, "Memory stats:\n");
-	Com_Printf(0, "    blocks size                  puddle name\n");
-	Com_Printf(0, "--- ------ ---------- ---------- ------ --------\n");
+	ent->PrintToClient (PRINT_HIGH, "Memory stats:\n");
+	ent->PrintToClient (PRINT_HIGH, "    blocks size                  puddle name\n");
+	ent->PrintToClient (PRINT_HIGH, "--- ------ ---------- ---------- ------ --------\n");
 
 	uint32 totalBlocks = 0;
 	size_t totalBytes = 0;
@@ -870,7 +870,7 @@ void Mem_Stats_f(CPlayerEntity *ent)
 		totalPuddles += numPuddles;
 		const float puddlePercent = (pool->blockCount) ? ((float)numPuddles/(float)pool->blockCount) * 100.0f : 0.0f;
 
-		Com_Printf(0, "#%2i %6i %9iB (%6.3fMB) %5.0f%% %s\n", poolCount, pool->blockCount, pool->byteCount, pool->byteCount/1048576.0f, puddlePercent, pool->name);
+		ent->PrintToClient (PRINT_HIGH, "#%2i %6i %9iB (%6.3fMB) %5.0f%% %s\n", poolCount, pool->blockCount, pool->byteCount, pool->byteCount/1048576.0f, puddlePercent, pool->name);
 
 		totalBlocks += pool->blockCount;
 		totalBytes += pool->byteCount;
@@ -878,8 +878,8 @@ void Mem_Stats_f(CPlayerEntity *ent)
 
 	const float puddlePercent = (totalBlocks) ? ((float)totalPuddles/(float)totalBlocks) * 100.0f : 0.0f;
 
-	Com_Printf(0, "----------------------------------------\n");
-	Com_Printf(0, "Total: %i pools, %i blocks, %i bytes (%6.3fMB) (%5.2f%% in %i puddles)\n", poolCount, totalBlocks, totalBytes, totalBytes/1048576.0f, puddlePercent, m_puddleAdds);
+	ent->PrintToClient (PRINT_HIGH, "----------------------------------------\n");
+	ent->PrintToClient (PRINT_HIGH, "Total: %i pools, %i blocks, %i bytes (%6.3fMB) (%5.2f%% in %i puddles)\n", poolCount, totalBlocks, totalBytes, totalBytes/1048576.0f, puddlePercent, m_puddleAdds);
 }
 
 
@@ -891,6 +891,18 @@ Mem_Touch_f
 static void Mem_Touch_f(CPlayerEntity *ent)
 {
 	Mem_TouchGlobal();
+}
+
+/*
+========================
+Mem_FreePools
+========================
+*/
+void Mem_FreePools ()
+{
+	for (uint32 i = 0; i < m_numPools; i++)
+		Mem_DeletePool (&m_poolList[i]);
+	m_numPools = 0;
 }
 
 /*
@@ -932,4 +944,5 @@ void Mem_Init ()
 	com_levelPool = Mem_CreatePool ("Level memory pool");
 	com_gamePool = Mem_CreatePool ("Game memory pool");
 	com_fileSysPool = com_gamePool;
+	com_entityPool = Mem_CreatePool ("Entity system pool");
 }

@@ -56,7 +56,7 @@ CBaseEntity *ResolveMapEntity (edict_t *ent);
 #define LINK_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
 	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
-		DLLClassName *newClass = QNew (com_levelPool, 0) DLLClassName(Index); \
+		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
 		newClass->ParseFields (); \
 		\
 		if (newClass->CheckValidity()) \

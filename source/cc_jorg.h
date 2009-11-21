@@ -37,22 +37,29 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CJorg : public CMonster
 {
 public:
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundPain3;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundSearch1;
-	MediaIndex	SoundSearch2;
-	MediaIndex	SoundSearch3;
-	MediaIndex	SoundAttack1;
-	MediaIndex	SoundAttack2;
-	MediaIndex	SoundFiregun;
-	MediaIndex	SoundStepLeft;
-	MediaIndex	SoundStepRight;
-	MediaIndex	SoundDeathHit;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_PAIN3,
+		SOUND_IDLE,
+		SOUND_DEATH,
+		SOUND_SEARCH1,
+		SOUND_SEARCH2,
+		SOUND_SEARCH3,
+		SOUND_ATTACK1,
+		SOUND_ATTACK2,
+		SOUND_FIREGUN,
+		SOUND_STEPLEFT,
+		SOUND_STEPRIGHT,
+		SOUND_DEATH_HIT,
+
+		SOUND_MAX
+	);
 
 	CJorg (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Run ();
 	void Search ();

@@ -253,6 +253,7 @@ public:
 
 	virtual void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
@@ -261,6 +262,7 @@ public:
 
 	virtual void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
@@ -373,6 +375,7 @@ public:
 
 	virtual void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CHurtableEntity::SaveFields (File);
@@ -381,6 +384,7 @@ public:
 
 	virtual void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CHurtableEntity::LoadFields (File);
@@ -425,12 +429,21 @@ public:
 
 	virtual void SaveFields (CFile &File)
 	{
+		File.Write<sint32> ((TargetEntity) ? TargetEntity->State.GetNumber() : -1);
+
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
+		sint32 number = File.Read<sint32> ();
+
+		if (number != -1)
+			TargetEntity = entity_cast<CUsableEntity>(g_edicts[number].Entity);
+
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	}
@@ -482,12 +495,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);
 	}
@@ -512,89 +527,8 @@ public:
 	ENTITYFIELD_DEFS
 	IMPLEMENT_SAVE_HEADER(CWorldEntity)
 
-	void SaveFields (CFile &File)
-	{
-		size_t len = strlen(Message) + 1;
-		File.Write (&len, sizeof(len));
-		File.Write (Message, len);
-
-		if (!Gravity)
-		{
-			len = 0;
-			File.Write (&len, sizeof(len));
-		}
-		else
-		{
-			len = strlen(Gravity) + 1;
-			File.Write (&len, sizeof(len));
-			File.Write (Gravity, len);
-		}
-
-		if (!Sky)
-		{
-			len = 0;
-			File.Write (&len, sizeof(len));
-		}
-		else
-		{
-			len = strlen(Sky) + 1;
-			File.Write (&len, sizeof(len));
-			File.Write (Sky, len);
-		}
-
-		if (!NextMap)
-		{
-			len = 0;
-			File.Write (&len, sizeof(len));
-		}
-		else
-		{
-			len = strlen(NextMap) + 1;
-			File.Write (&len, sizeof(len));
-			File.Write (NextMap, len);
-		}
-
-		File.Write (&SkyAxis, sizeof(SkyAxis));
-		File.Write (&SkyRotate, sizeof(SkyRotate));
-	}
-	
-	void LoadFields (CFile &File)
-	{
-		size_t len;
-		File.Read (&len, sizeof(len));
-		Message = QNew (com_levelPool, 0) char[len];
-		File.Read (Message, len);
-
-		File.Read (&len, sizeof(len));
-		if (len)
-		{
-			Gravity = QNew (com_levelPool, 0) char[len];
-			File.Read (Gravity, len);
-		}
-		else
-			Gravity = NULL;
-
-		File.Read (&len, sizeof(len));
-		if (len)
-		{
-			Sky = QNew (com_levelPool, 0) char[len];
-			File.Read (Sky, len);
-		}
-		else
-			Sky = NULL;
-
-		File.Read (&len, sizeof(len));
-		if (len)
-		{
-			NextMap = QNew (com_levelPool, 0) char[len];
-			File.Read (NextMap, len);
-		}
-		else
-			NextMap = NULL;
-
-		File.Read (&SkyAxis, sizeof(SkyAxis));
-		File.Read (&SkyRotate, sizeof(SkyRotate));
-	}
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
 
 	bool Run ();
 	void Spawn ();
@@ -621,6 +555,7 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
@@ -628,6 +563,7 @@ public:
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
@@ -687,12 +623,14 @@ public:
 
 	virtual void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	}
@@ -722,16 +660,20 @@ public:
 
 	virtual void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
+		CTossProjectile::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
+		CTossProjectile::LoadFields (File);
 	}
 
 	bool Run ();
@@ -749,7 +691,7 @@ public:
 	};
 
 	EFuncExplosiveUseType	UseType;
-	sint32						Explosivity;
+	sint32					Explosivity;
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CFuncExplosive)
@@ -782,12 +724,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CBrushModel::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CBrushModel::LoadFields (File);
 	}

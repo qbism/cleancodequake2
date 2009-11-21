@@ -62,11 +62,13 @@ public:
 	void SaveFields (CFile &File)
 	{
 		CThinkableEntity::SaveFields (File);
+		CBounceProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		CThinkableEntity::LoadFields (File);
+		CBounceProjectile::LoadFields (File);
 	}
 
 	void Think ();

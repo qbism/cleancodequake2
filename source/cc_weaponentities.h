@@ -37,7 +37,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CGrenade : public CBounceProjectile, public CThinkableEntity, public CTouchableEntity
 {
 public:
-	float		Damage, RadiusDamage;
+	sint32		Damage;
+	float		RadiusDamage;
 
 	CGrenade ();
 	CGrenade (sint32 Index);
@@ -46,20 +47,22 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write (&Damage, sizeof(Damage));
-		File.Write (&Damage, sizeof(RadiusDamage));
+		File.Write<sint32> (Damage);
+		File.Write<float> (RadiusDamage);
 
 		CThinkableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
+		CBounceProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		File.Read (&Damage, sizeof(Damage));
-		File.Read (&Damage, sizeof(RadiusDamage));
+		Damage = File.Read<sint32> ();
+		RadiusDamage = File.Read<float> ();
 
 		CThinkableEntity::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
+		CBounceProjectile::LoadFields (File);
 	}
 
 	void Think ();
@@ -76,7 +79,7 @@ public:
 class CBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
 {
 public:
-	float		Damage;
+	sint32		Damage;
 
 	CBlasterProjectile ();
 	CBlasterProjectile (sint32 Index);
@@ -85,18 +88,20 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write (&Damage, sizeof(Damage));
+		File.Write<sint32> (Damage);
 
 		CThinkableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
+		CFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		File.Read (&Damage, sizeof(Damage));
+		Damage = File.Read <sint32>();
 
 		CThinkableEntity::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
+		CFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
@@ -121,22 +126,24 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write (&Damage, sizeof(Damage));
-		File.Write (&DamageRadius, sizeof(DamageRadius));
-		File.Write (&DamageRadius, sizeof(DamageRadius));
+		File.Write<sint32> (Damage);
+		File.Write<sint32> (RadiusDamage);
+		File.Write<float> (DamageRadius);
 
 		CThinkableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
+		CFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		File.Read (&Damage, sizeof(Damage));
-		File.Read (&DamageRadius, sizeof(DamageRadius));
-		File.Read (&DamageRadius, sizeof(DamageRadius));
+		Damage = File.Read<sint32> ();
+		RadiusDamage = File.Read<sint32> ();
+		DamageRadius = File.Read<float> ();
 
 		CThinkableEntity::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
+		CFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
@@ -151,8 +158,9 @@ public:
 class CBFGBolt : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
 {
 public:
-	bool	Exploded;
-	sint32		Damage, DamageRadius;
+	bool			Exploded;
+	sint32			Damage;
+	float			DamageRadius;
 	FrameNumber_t	FreeTime;
 
 	CBFGBolt ();
@@ -162,24 +170,26 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write (&Exploded, sizeof(Exploded));
-		File.Write (&Damage, sizeof(Damage));
-		File.Write (&DamageRadius, sizeof(DamageRadius));
-		File.Write (&FreeTime, sizeof(FreeTime));
+		File.Write<bool> (Exploded);
+		File.Write<sint32> (Damage);
+		File.Write<float> (DamageRadius);
+		File.Write<FrameNumber_t> (FreeTime);
 
 		CThinkableEntity::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
+		CFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		File.Read (&Exploded, sizeof(Exploded));
-		File.Read (&Damage, sizeof(Damage));
-		File.Read (&DamageRadius, sizeof(DamageRadius));
-		File.Read (&FreeTime, sizeof(FreeTime));
+		Exploded = File.Read<bool> ();
+		Damage = File.Read<sint32> ();
+		DamageRadius = File.Read<float> ();
+		FreeTime = File.Read<FrameNumber_t> ();
 
 		CThinkableEntity::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
+		CFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();

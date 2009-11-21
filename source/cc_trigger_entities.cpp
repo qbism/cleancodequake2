@@ -61,11 +61,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 	}
 
@@ -172,7 +174,7 @@ public:
 		if (MoveDir != vec3fOrigin)
 		{
 			vec3f	forward;
-			other->State.GetOrigin().ToVectors (&forward, NULL, NULL);
+			other->State.GetAngles().ToVectors (&forward, NULL, NULL);
 			if (forward.Dot(MoveDir) < 0)
 				return;
 		}
@@ -236,6 +238,9 @@ ENTITYFIELDS_BEGIN(CTriggerBase)
 {
 	CEntityField ("wait", EntityMemberOffset(CTriggerBase,Wait), FT_FRAMENUMBER | FT_SAVABLE),
 	CEntityField ("sounds", EntityMemberOffset(CTriggerBase,Sounds), FT_BYTE | FT_SAVABLE),
+
+	CEntityField ("ThinkType", EntityMemberOffset(CTriggerBase,ThinkType), FT_UINT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveDir", EntityMemberOffset(CTriggerBase,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 }
 ENTITYFIELDS_END(CTriggerBase)
 
@@ -251,6 +256,7 @@ bool			CTriggerBase::ParseField (const char *Key, const char *Value)
 void			CTriggerBase::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTriggerBase> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 	CBrushModel::SaveFields (File);
 	CTouchableEntity::SaveFields (File);
@@ -259,6 +265,7 @@ void			CTriggerBase::SaveFields (CFile &File)
 void			CTriggerBase::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTriggerBase> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 	CBrushModel::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
@@ -1085,12 +1092,14 @@ bool CTriggerKey::ParseField (const char *Key, const char *Value)
 void			CTriggerKey::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTriggerKey> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void			CTriggerKey::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTriggerKey> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 

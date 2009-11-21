@@ -62,7 +62,7 @@ public:
 		{
 			g_edicts[number].Entity->Free();
 			QDelete g_edicts[number].Entity;
-			Junk = QNew (com_levelPool, 0) JunkClassType(number);
+			Junk = QNewEntityOf JunkClassType(number);
 
 _CC_DISABLE_DEPRECATION
 			G_InitEdict (&g_edicts[number]);
@@ -72,7 +72,7 @@ _CC_ENABLE_DEPRECATION
 		}
 		else
 		{
-			Junk = QNew (com_levelPool, 0) JunkClassType(number);
+			Junk = QNewEntityOf JunkClassType(number);
 
 _CC_DISABLE_DEPRECATION
 			G_InitEdict (&g_edicts[number]);
@@ -86,7 +86,7 @@ _CC_ENABLE_DEPRECATION
 	template <class JunkClassType>
 	JunkClassType *AllocateEntity ()
 	{
-		return QNew (com_levelPool, 0) JunkClassType;
+		return QNewEntityOf JunkClassType;
 	};
 
 	template <class JunkClassType>
@@ -146,23 +146,13 @@ void SaveJunk (CFile &File)
 	if (!JunkList)
 		return; // ????
 
-	size_t num = JunkList->ClosedList.size();
-	File.Write (&num, sizeof(num));
-
+	File.Write<size_t> (JunkList->ClosedList.size());
 	for (TJunkList::iterator it = JunkList->ClosedList.begin(); it != JunkList->ClosedList.end(); ++it)
-	{
-		sint32 number = (*it);
-		File.Write (&number, sizeof(number));
-	}
+		File.Write<sint32> ((*it));
 
-	num = JunkList->OpenList.size();
-	File.Write (&num, sizeof(num));
-
+	File.Write<size_t> (JunkList->OpenList.size());
 	for (TJunkList::iterator it = JunkList->OpenList.begin(); it != JunkList->OpenList.end(); ++it)
-	{
-		sint32 number = (*it);
-		File.Write (&number, sizeof(number));
-	}
+		File.Write<sint32> ((*it));
 }
 
 // Loads the bodyqueue numbers into allocationzzz
@@ -171,26 +161,15 @@ void LoadJunk (CFile &File)
 	if (!JunkList)
 		return; // ????
 
-	size_t num;
-	File.Read (&num, sizeof(num));
+	size_t num = File.Read<size_t> ();
 
 	for (size_t i = 0; i < num; i++)
-	{
-		sint32 number;
-		File.Read (&number, sizeof(number));
+		JunkList->ClosedList.push_back (File.Read<sint32> ());
 
-		JunkList->ClosedList.push_back (number);
-	}
-
-	File.Read (&num, sizeof(num));
+	num = File.Read<size_t> ();
 
 	for (size_t i = 0; i < num; i++)
-	{
-		sint32 number;
-		File.Read (&number, sizeof(number));
-
-		JunkList->OpenList.push_back (number);
-	}
+		JunkList->OpenList.push_back (File.Read<sint32> ());
 }
 
 void Init_Junk()
