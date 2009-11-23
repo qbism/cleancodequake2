@@ -55,27 +55,27 @@ CTank (ID)
 
 void CTank::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CTank::Footstep ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundStep);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_STEP]);
 }
 
 void CTank::Thud ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundThud);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_THUD]);
 }
 
 void CTank::Windup ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundWindup);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_WINDUP]);
 }
 
 void CTank::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 //
@@ -288,7 +288,7 @@ void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 
 	PainDebounceTime = level.Frame + 30;
-	Entity->PlaySound (CHAN_VOICE, SoundPain);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
@@ -337,7 +337,7 @@ void CTank::Blaster ()
 
 void CTank::Strike ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundStrike);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_STRIKE]);
 }	
 
 void CTank::Rocket ()
@@ -455,7 +455,7 @@ void CTank::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
 
-	vec = Entity->Enemy->state.origin;
+	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;
 	dir = vec - start;
 	dir.NormalizeFast ();
@@ -873,7 +873,7 @@ void CTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, v
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDie);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
@@ -892,14 +892,14 @@ void CTank::Spawn ()
 	Entity->GetMaxs().Set (32, 32, 72);
 	Entity->GetSolid() = SOLID_BBOX;
 
-	SoundPain = SoundIndex ("tank/tnkpain2.wav");
-	SoundThud = SoundIndex ("tank/tnkdeth2.wav");
-	SoundIdle = SoundIndex ("tank/tnkidle1.wav");
-	SoundDie = SoundIndex ("tank/death.wav");
-	SoundStep = SoundIndex ("tank/step.wav");
-	SoundWindup = SoundIndex ("tank/tnkatck4.wav");
-	SoundStrike = SoundIndex ("tank/tnkatck5.wav");
-	SoundSight = SoundIndex ("tank/sight1.wav");
+	Sounds[SOUND_PAIN] = SoundIndex ("tank/tnkpain2.wav");
+	Sounds[SOUND_THUD] = SoundIndex ("tank/tnkdeth2.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("tank/tnkidle1.wav");
+	Sounds[SOUND_DIE] = SoundIndex ("tank/death.wav");
+	Sounds[SOUND_STEP] = SoundIndex ("tank/step.wav");
+	Sounds[SOUND_WINDUP] = SoundIndex ("tank/tnkatck4.wav");
+	Sounds[SOUND_STRIKE] = SoundIndex ("tank/tnkatck5.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("tank/sight1.wav");
 
 	SoundIndex ("tank/tnkatck1.wav");
 	SoundIndex ("tank/tnkatk2a.wav");

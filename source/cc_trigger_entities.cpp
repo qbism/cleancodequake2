@@ -301,6 +301,8 @@ public:
 	  {
 	  };
 
+	ENTITYFIELDS_SAVABLE(CTriggerMultiple)
+
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
 		if (ActivateUse)
@@ -365,6 +367,18 @@ public:
 	};
 };
 
+void CTriggerMultiple::SaveFields (CFile &File)
+{
+	File.Write<bool> (ActivateUse);
+	CTriggerBase::SaveFields (File);
+};
+
+void CTriggerMultiple::LoadFields (CFile &File)
+{
+	ActivateUse = File.Read<bool> ();
+	CTriggerBase::LoadFields (File);
+};
+
 LINK_CLASSNAME_TO_CLASS ("trigger_multiple", CTriggerMultiple);
 
 /*QUAKED trigger_once (.5 .5 .5) ? x x TRIGGERED
@@ -396,6 +410,8 @@ public:
 	  {
 	  };
 
+	ENTITYFIELDS_SAVABLE(CTriggerOnce)
+
 	void Spawn ()
 	{
 		// make old maps work because I messed up on flag assignments here
@@ -420,6 +436,18 @@ public:
 			SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
 		return CMapEntity::CheckValidity ();
 	};
+};
+
+void CTriggerOnce::SaveFields (CFile &File)
+{
+	File.Write<bool> (ActivateUse);
+	CTriggerBase::SaveFields (File);
+};
+
+void CTriggerOnce::LoadFields (CFile &File)
+{
+	ActivateUse = File.Read<bool> ();
+	CTriggerBase::LoadFields (File);
 };
 
 LINK_CLASSNAME_TO_CLASS ("trigger_once", CTriggerOnce);

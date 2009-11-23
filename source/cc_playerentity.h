@@ -389,6 +389,9 @@ public:
 	  CBaseEntity (Index)
 	{
 	};
+
+	ENTITYFIELDS_NONSAVABLE
+	const char *__GetName () { return "NO!"; }
 };
 #endif
 

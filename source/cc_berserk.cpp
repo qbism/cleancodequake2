@@ -44,12 +44,12 @@ CMonster(ID)
 
 void CBerserker::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CBerserker::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSearch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH]);
 }
 
 
@@ -101,7 +101,7 @@ void CBerserker::Fidget ()
 		return;
 
 	CurrentMove = &BerserkMoveStandFidget;
-	Entity->PlaySound (CHAN_WEAPON, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 
@@ -175,7 +175,7 @@ void CBerserker::AttackSpike ()
 
 void CBerserker::Swing ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundPunch);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_PUNCH]);
 }
 
 CFrame BerserkFramesAttackSpike [] =
@@ -313,7 +313,7 @@ void CBerserker::Pain (CBaseEntity *other, float kick, sint32 damage)
 		return;
 
 	PainDebounceTime = level.Frame + 30;
-	Entity->PlaySound (CHAN_VOICE, SoundPain);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
@@ -381,7 +381,7 @@ void CBerserker::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 	if (Entity->DeadFlag == true)
 		return;
 
-	Entity->PlaySound (CHAN_VOICE, SoundDie);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
@@ -402,12 +402,12 @@ void CBerserker::SideStep ()
 void CBerserker::Spawn ()
 {
 	// pre-caches
-	SoundPain  = SoundIndex ("berserk/berpain2.wav");
-	SoundDie   = SoundIndex ("berserk/berdeth2.wav");
-	SoundIdle  = SoundIndex ("berserk/beridle1.wav");
-	SoundPunch = SoundIndex ("berserk/attack.wav");
-	SoundSearch = SoundIndex ("berserk/bersrch1.wav");
-	SoundSight = SoundIndex ("berserk/sight.wav");
+	Sounds[SOUND_PAIN]  = SoundIndex ("berserk/berpain2.wav");
+	Sounds[SOUND_DIE]   = SoundIndex ("berserk/berdeth2.wav");
+	Sounds[SOUND_IDLE]  = SoundIndex ("berserk/beridle1.wav");
+	Sounds[SOUND_PUNCH] = SoundIndex ("berserk/attack.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("berserk/bersrch1.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("berserk/sight.wav");
 
 	Entity->State.GetModelIndex() = ModelIndex("models/monsters/berserk/tris.md2");
 	Entity->GetMins().Set (-16, -16, -24);

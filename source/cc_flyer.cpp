@@ -44,17 +44,17 @@ CMonster (ID)
 
 void CFlyer::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CFlyer::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 void CFlyer::PopBlades ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSproing);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SPROING]);
 }
 
 CFrame FlyerFramesStand [] =
@@ -384,14 +384,14 @@ void CFlyer::SlashLeft ()
 {
 	vec3f	aim (MELEE_DISTANCE, Entity->GetMins().X, 0);
 	CMeleeWeapon::Fire (Entity, aim, 5, 0);
-	Entity->PlaySound (CHAN_WEAPON, SoundSlash);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SLASH]);
 }
 
 void CFlyer::SlashRight ()
 {
 	vec3f	aim (MELEE_DISTANCE, Entity->GetMaxs().X, 0);
 	CMeleeWeapon::Fire (Entity, aim, 5, 0);
-	Entity->PlaySound (CHAN_WEAPON, SoundSlash);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SLASH]);
 }
 
 CFrame FlyerFramesStartMelee [] =
@@ -475,15 +475,15 @@ void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
 	switch (irandom(3))
 	{
 	case 0:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &FlyerMovePain1;
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &FlyerMovePain2;
 		break;
 	default:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &FlyerMovePain3;
 		break;
 	}
@@ -491,11 +491,11 @@ void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 void CFlyer::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	Entity->PlaySound (CHAN_VOICE, SoundDie);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->BecomeExplosion(false);
 }
 
-#ifdef FLYER_KNOWS_HOW_TO_DODGE
+#if (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
 CFrame FlyerFramesRollLeft [] =
 {
 	CFrame (ConvertDerivedAIMove(&CFlyer::AI_Roll), 15),
@@ -608,13 +608,13 @@ void CFlyer::Spawn ()
 		Entity->Target = NULL;
 	}
 
-	SoundSight = SoundIndex ("flyer/flysght1.wav");
-	SoundIdle = SoundIndex ("flyer/flysrch1.wav");
-	SoundPain1 = SoundIndex ("flyer/flypain1.wav");
-	SoundPain2 = SoundIndex ("flyer/flypain2.wav");
-	SoundSlash = SoundIndex ("flyer/flyatck2.wav");
-	SoundSproing = SoundIndex ("flyer/flyatck1.wav");
-	SoundDie = SoundIndex ("flyer/flydeth1.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("flyer/flysght1.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("flyer/flysrch1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("flyer/flypain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("flyer/flypain2.wav");
+	Sounds[SOUND_SLASH] = SoundIndex ("flyer/flyatck2.wav");
+	Sounds[SOUND_SPROING] = SoundIndex ("flyer/flyatck1.wav");
+	Sounds[SOUND_DIE] = SoundIndex ("flyer/flydeth1.wav");
 
 	SoundIndex ("flyer/flyatck3.wav");
 

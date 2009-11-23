@@ -37,15 +37,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CFloater : public CMonster
 {
 public:
-	MediaIndex	SoundAttack2;
-	MediaIndex	SoundAttack3;
-	MediaIndex	SoundDeath1;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundSight;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_ATTACK2,
+		SOUND_ATTACK3,
+		SOUND_DEATH1,
+		SOUND_IDLE,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_SIGHT,
+
+		SOUND_MAX
+	);
 
 	CFloater (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Attack ();
 	void Idle ();

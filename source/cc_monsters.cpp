@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+#include "cc_brushmodels.h"
+#include "cc_tent.h"
 
 /*
 ===============================
@@ -75,15 +77,15 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	Entity->Monster->Entity = Entity;
 }
 
-#include "cc_brushmodels.h"
 #define STEPSIZE	18
 
 #ifdef MONSTERS_USE_PATHFINDING
 #include "cc_pathfinding.h"
-#include "cc_tent.h"
 
 size_t GetNodeIndex (CPathNode *Node);
 CPathNode *GetNodeByIndex (size_t index);
+
+#endif
 
 void CMonster::SaveFields (CFile &File)
 {
@@ -202,6 +204,7 @@ void CMonster::LoadFields (CFile &File)
 	LoadMonsterFields (File);
 };
 
+#ifdef MONSTERS_USE_PATHFINDING
 void CMonster::WriteNodeInfo (CFile &File)
 {
 	P_CurrentPath->Save (File);
@@ -239,6 +242,15 @@ void CMonster::FoundPath ()
 
 	if (!P_CurrentPath)
 	{
+		P_CurrentNode = P_CurrentGoalNode = NULL;
+		P_CurrentNodeIndex = -1;
+		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
+		return;
+	}
+	else if (P_CurrentPath->Start == P_CurrentPath->End)
+	{
+		QDelete P_CurrentPath;
+		P_CurrentPath = NULL;
 		P_CurrentNode = P_CurrentGoalNode = NULL;
 		P_CurrentNodeIndex = -1;
 		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
@@ -410,6 +422,9 @@ void CMonster::MoveToPath (float Dist)
 		P_CurrentGoalNode = End;
 		P_CurrentPath = NULL;
 		FoundPath ();
+
+		if (!P_CurrentNode)
+			return;
 
 		FrameNumber_t timeOut = level.Frame + 20; // Always at least 2 seconds
 		// Calculate approximate distance and check how long we want this to time out for
@@ -1650,7 +1665,7 @@ bool CMonster::CheckAttack ()
 		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.ent != Entity->Enemy)
+		if (tr.Ent != Entity->Enemy)
 			return false;
 	}
 	
@@ -1985,12 +2000,12 @@ bool CMonster::AI_CheckAttack()
 	{
 		if (AIFlags & AI_BRUTAL)
 		{
-			if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= -80)
+			if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= -80)
 				hesDeadJim = true;
 		}
 		else
 		{
-			if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+			if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
 				hesDeadJim = true;
 		}
 	}
@@ -2368,7 +2383,6 @@ void CMonster::AI_Run(float Dist)
 		{
 //			dprint("was temp goal; retrying original\n");
 			AIFlags &= ~AI_PURSUE_TEMP;
-			marker = NULL;
 			LastSighting = SavedGoal;
 			isNew = true;
 		}
@@ -2395,9 +2409,9 @@ void CMonster::AI_Run(float Dist)
 			d1 = v.Length();
 			center = tr.fraction;
 			d2 = d1 * ((center+1)/2);
-			State.GetAngles().Y = IdealYaw = v.ToYaw();
+			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 
-			ang.ToVectors (&v_forward, &v_right, NULL);
+			Entity->State.GetAngles().ToVectors (&v_forward, &v_right, NULL);
 
 			v.Set (d2, -16, 0);
 			G_ProjectSource (origin, v, v_forward, v_right, left_target);
@@ -2424,7 +2438,7 @@ void CMonster::AI_Run(float Dist)
 				LastSighting = left_target;
 				v = Entity->GoalEntity->State.GetOrigin() - origin;
 
-				State.GetAngles().Y = IdealYaw = v.ToYaw();
+				Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 //				gi.dprintf("adjusted left\n");
 //				debug_drawline(self.origin, self.last_sighting, 152);
 			}
@@ -2441,7 +2455,7 @@ void CMonster::AI_Run(float Dist)
 				Entity->GoalEntity->State.GetOrigin() = right_target;
 				LastSighting = right_target;
 				v = Entity->GoalEntity->State.GetOrigin() - origin;
-				State.GetAngles().Y = IdealYaw = v.ToYaw();
+				Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 //				gi.dprintf("adjusted right\n");
 //				debug_drawline(self.origin, self.last_sighting, 152);
 			}
@@ -3322,8 +3336,8 @@ void CMonster::FoundTarget ()
 	// let other monsters see this monster for a while
 	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
 	{
-		level.SightEntity = this;
-		level.SightEntityFrame = level.framenum;
+		level.SightEntity = Entity;
+		level.SightEntityFrame = level.Frame;
 	}
 #endif
 

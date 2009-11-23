@@ -39,22 +39,38 @@ class CBrain : public CMonster
 public:
 	bool		Refire;
 
-	MediaIndex	SoundChestOpen;
-	MediaIndex	SoundTentaclesExtend;
-	MediaIndex	SoundTentaclesRetract;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundIdle1;
-	MediaIndex	SoundIdle2;
-	MediaIndex	SoundIdle3;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundMelee1;
-	MediaIndex	SoundMelee2;
-	MediaIndex	SoundMelee3;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_CHEST_OPEN,
+		SOUND_TENTACLES_EXTEND,
+		SOUND_TENTACLES_RETRACT,
+		SOUND_DEATH,
+		SOUND_IDLE1,
+		SOUND_IDLE2,
+		SOUND_IDLE3,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_SIGHT,
+		SOUND_SEARCH,
+		SOUND_MELEE1,
+		SOUND_MELEE2,
+		SOUND_MELEE3,
+
+		SOUND_MAX
+	);
 
 	CBrain (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		File.Write<bool> (Refire);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		Refire = File.Read<bool> ();
+	}
 
 	void Run ();
 	void Search ();

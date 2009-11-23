@@ -45,15 +45,15 @@ CMonster (ID)
 
 void CMakron::Taunt ()
 {
-	MediaIndex Sound = SoundTaunt1;
+	MediaIndex Sound = Sounds[SOUND_TAUNT1];
 	switch (irandom(3))
 	{
 	case 1:
-		Sound = SoundTaunt2;
+		Sound = Sounds[SOUND_TAUNT2];
 	default:
 		break;
 	case 2:
-		Sound = SoundTaunt3;
+		Sound = Sounds[SOUND_TAUNT3];
 		break;
 	};
 
@@ -136,32 +136,32 @@ void CMakron::Stand ()
 
 void CMakron::Hit ()
 {
-	Entity->PlaySound (CHAN_AUTO, SoundHit, 255, ATTN_NONE);
+	Entity->PlaySound (CHAN_AUTO, Sounds[SOUND_HIT], 255, ATTN_NONE);
 }
 
 void CMakron::PopUp ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundPopUp, 255, ATTN_NONE);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_POPUP], 255, ATTN_NONE);
 }
 
 void CMakron::StepLeft ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundStepLeft);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_STEPLEFT]);
 }
 
 void CMakron::StepRight ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundStepRight);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_STEPRIGHT]);
 }
 
 void CMakron::BrainSplorch ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundBrainSplorch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_BRAIN_SPLORCH]);
 }
 
 void CMakron::PreRailgun ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundPreRailgun);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_PRE_RAILGUN]);
 }
 
 CFrame MakronFramesRun [] =
@@ -272,24 +272,24 @@ void CMakron::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 	if (damage <= 40)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain4, 255, ATTN_NONE);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN4], 255, ATTN_NONE);
 		CurrentMove = &MakronMovePain4;
 	}
 	else if (damage <= 110)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain5, 255, ATTN_NONE);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN5], 255, ATTN_NONE);
 		CurrentMove = &MakronMovePain5;
 	}
 	else
 	{
 		if ((damage <= 150) && (frand() <= 0.45f))
 		{
-			Entity->PlaySound (CHAN_VOICE, SoundPain6, 255, ATTN_NONE);
+			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN6], 255, ATTN_NONE);
 			CurrentMove = &MakronMovePain6;
 		}
 		else if (frand() <= 0.35f)
 		{
-			Entity->PlaySound (CHAN_VOICE, SoundPain6, 255, ATTN_NONE);
+			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN6], 255, ATTN_NONE);
 			CurrentMove = &MakronMovePain6;
 		}
 	}
@@ -446,7 +446,7 @@ void CMakron::FireBFG ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MAKRON_BFG], forward, right, start);
 
-	Entity->PlaySound (CHAN_VOICE, SoundAttackBfg);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK_BFG]);
 	MonsterFireBfg (start,
 		((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized(),
 		50, 300, 100, 300, MZ2_MAKRON_BFG);
@@ -685,7 +685,7 @@ void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDeath, 255, ATTN_NONE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
@@ -713,7 +713,7 @@ bool CMakron::CheckAttack ()
 		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.ent != Entity->Enemy)
+		if (tr.Ent != Entity->Enemy)
 			return false;
 	}
 	
@@ -945,20 +945,20 @@ void CMakron::Precache ()
 */
 void CMakron::Spawn ()
 {
-	SoundPain4 = SoundIndex ("makron/pain3.wav");
-	SoundPain5 = SoundIndex ("makron/pain2.wav");
-	SoundPain6 = SoundIndex ("makron/pain1.wav");
-	SoundDeath = SoundIndex ("makron/death.wav");
-	SoundStepLeft = SoundIndex ("makron/step1.wav");
-	SoundStepRight = SoundIndex ("makron/step2.wav");
-	SoundAttackBfg = SoundIndex ("makron/bfg_fire.wav");
-	SoundBrainSplorch = SoundIndex ("makron/brain1.wav");
-	SoundPreRailgun = SoundIndex ("makron/rail_up.wav");
-	SoundPopUp = SoundIndex ("makron/popup.wav");
-	SoundTaunt1 = SoundIndex ("makron/voice4.wav");
-	SoundTaunt2 = SoundIndex ("makron/voice3.wav");
-	SoundTaunt3 = SoundIndex ("makron/voice.wav");
-	SoundHit = SoundIndex ("makron/bhit.wav");
+	Sounds[SOUND_PAIN4] = SoundIndex ("makron/pain3.wav");
+	Sounds[SOUND_PAIN5] = SoundIndex ("makron/pain2.wav");
+	Sounds[SOUND_PAIN6] = SoundIndex ("makron/pain1.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("makron/death.wav");
+	Sounds[SOUND_STEPLEFT] = SoundIndex ("makron/step1.wav");
+	Sounds[SOUND_STEPRIGHT] = SoundIndex ("makron/step2.wav");
+	Sounds[SOUND_ATTACK_BFG] = SoundIndex ("makron/bfg_fire.wav");
+	Sounds[SOUND_BRAIN_SPLORCH] = SoundIndex ("makron/brain1.wav");
+	Sounds[SOUND_PRE_RAILGUN] = SoundIndex ("makron/rail_up.wav");
+	Sounds[SOUND_POPUP] = SoundIndex ("makron/popup.wav");
+	Sounds[SOUND_TAUNT1] = SoundIndex ("makron/voice4.wav");
+	Sounds[SOUND_TAUNT2] = SoundIndex ("makron/voice3.wav");
+	Sounds[SOUND_TAUNT3] = SoundIndex ("makron/voice.wav");
+	Sounds[SOUND_HIT] = SoundIndex ("makron/bhit.wav");
 	
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/boss3/rider/tris.md2");

@@ -37,14 +37,21 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CBerserker : public CMonster
 {
 public:
-	MediaIndex	SoundPain;
-	MediaIndex	SoundDie;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundPunch;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN,
+		SOUND_DIE,
+		SOUND_IDLE,
+		SOUND_PUNCH,
+		SOUND_SIGHT,
+		SOUND_SEARCH,
+
+		SOUND_MAX
+	);
 
 	CBerserker (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Run ();
 	void Search ();

@@ -37,16 +37,23 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CTank : public CMonster
 {
 public:
-	MediaIndex	SoundThud;
-	MediaIndex	SoundPain;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundDie;
-	MediaIndex	SoundStep;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundWindup;
-	MediaIndex	SoundStrike;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_THUD,
+		SOUND_PAIN,
+		SOUND_IDLE,
+		SOUND_DIE,
+		SOUND_STEP,
+		SOUND_SIGHT,
+		SOUND_WINDUP,
+		SOUND_STRIKE,
+
+		SOUND_MAX
+	);
 
 	CTank (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Attack ();
 	void Idle ();

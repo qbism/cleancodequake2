@@ -34,18 +34,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_ENTITYLIST_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_ENTITYLIST_H__
 
-#define MAX_CLASSNAME_CLASSES 1024
-#define MAX_CLASSNAME_CLASSES_HASH (MAX_CLASSNAME_CLASSES / 4)
+#define MAX_CLASSNAME_CLASSES_HASH 256
 
 class CClassnameToClassIndex
 {
+public:
 	CMapEntity				*(*Spawn) (sint32 Index);
 	char					*Classname;
 	uint32					hashValue;
 	CClassnameToClassIndex	*hashNext;
 
-	friend class CEntityList;
-public:
 	CClassnameToClassIndex (CMapEntity *(*Spawn) (sint32 Index), char *Classname);
 };
 

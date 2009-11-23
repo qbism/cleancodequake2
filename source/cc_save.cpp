@@ -34,23 +34,34 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
 
-// FIXME: Hash
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityTableList;
+#define MAX_ENTITY_TABLE_HASH 256
+
 std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > EntityTable;
+THashedEntityTableList EntityTableHash;
 
 CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index)) :
   Name(Name),
   FuncPtr(FuncPtr)
 {
 	EntityTable.push_back (this);
+
+	// Link it in the hash tree
+	EntityTableHash.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_ENTITY_TABLE_HASH), EntityTable.size()-1));
 };
 
 CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 {
-	for (size_t i = 0; i < EntityTable.size(); i++)
+	uint32 hash = Com_HashGeneric(Name, MAX_ENTITY_TABLE_HASH);
+
+	for (THashedEntityTableList::iterator it = EntityTableHash.equal_range(hash).first; it != EntityTableHash.equal_range(hash).second; ++it)
 	{
-		if (strcmp(Name, EntityTable[i]->Name) == 0)
-			return EntityTable[i]->FuncPtr(index);
+		CEntityTableIndex *TableIndex = EntityTable.at((*it).second);
+		if (Q_stricmp (TableIndex->Name, Name) == 0)
+			return TableIndex->FuncPtr(index);
 	}
+
+	_CC_ASSERT_EXPR (0, "Couldn't find entity");
 	return NULL;
 };
 
@@ -161,12 +172,16 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	}
 }
 
+#define MAGIC_NUMBER 0xf2843dfa
+
 void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
 {
 	Entity->WriteBaseEntity (File);
 
 	// Call SaveFields
 	Entity->SaveFields (File);
+
+	File.Write<uint32> (MAGIC_NUMBER);
 }
 
 void WriteEntities (CFile &File)
@@ -174,6 +189,9 @@ void WriteEntities (CFile &File)
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
 	{
 		edict_t *ent = (*it);
+		if (!ent->Entity || !ent->Entity->Savable())
+			continue;
+
 		File.Write<sint32> (ent->state.number);
 
 		CBaseEntity *Entity = ent->Entity;
@@ -182,7 +200,12 @@ void WriteEntities (CFile &File)
 	File.Write<sint32> (-1);
 
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
-		WriteFinalizedEntity (File, (*it)->Entity);
+	{
+		CBaseEntity *Entity = (*it)->Entity;
+		if (!Entity || !Entity->Savable())
+			continue;
+		WriteFinalizedEntity (File, Entity);
+	}
 }
 
 // Writes out gclient_t
@@ -261,6 +284,9 @@ void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
 	// let the server rebuild world links for this ent
 	Entity->ClearArea ();
 	Entity->Link (); // If this passes, Entity loaded fine!
+
+	if (File.Read <uint32> () != MAGIC_NUMBER)
+		_CC_ASSERT_EXPR (0, "Magic number mismatch");
 }
 
 void ReadEntities (CFile &File)
@@ -282,8 +308,20 @@ void ReadEntities (CFile &File)
 			globals.numEdicts = number + 1;	
 	}
 
+	// Here, load any systems that need entity lists
+#ifdef MONSTERS_USE_PATHFINDING
+	LoadNodes ();
+	//LoadPathTable ();
+#endif
+
 	for (size_t i = 0; i < LoadedNumbers.size(); i++)
 		ReadFinalizeEntity (File, g_edicts[LoadedNumbers[i]].Entity);
+
+#ifdef MONSTERS_USE_PATHFINDING
+	FinalizeNodes ();
+#endif
+
+	World = g_edicts[0].Entity;
 }
 
 void ReadClient (CFile &File, sint32 i)
@@ -414,6 +452,10 @@ void CC_WriteLevel (char *filename)
 
 void InitEntityLists ();
 void InitEntities ();
+#ifdef MONSTERS_USE_PATHFINDING
+void InitNodes ();
+void ShutdownNodes ();
+#endif
 void FireCrosslevelTrigger (CBaseEntity *Entity);
 
 #include "cc_bodyqueue.h"
@@ -432,6 +474,9 @@ void CC_ReadLevel (char *filename)
 	// Shut down any systems that may need shutting down first
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
+#ifdef MONSTERS_USE_PATHFINDING
+	ShutdownNodes ();
+#endif
 
 	// free any dynamic memory allocated by loading the level
 	// base state
@@ -441,6 +486,9 @@ void CC_ReadLevel (char *filename)
 	// Re-initialize the systems
 	BodyQueue_Init (0);
 	Init_Junk ();
+#ifdef MONSTERS_USE_PATHFINDING
+	InitNodes ();
+#endif
 
 	// wipe all the entities
 	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));

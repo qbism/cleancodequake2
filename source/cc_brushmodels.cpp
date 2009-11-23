@@ -2914,6 +2914,8 @@ void CFuncObject::Spawn ()
 	GetClipmask() = CONTENTS_MASK_MONSTERSOLID;
 	Link ();
 }
+
+LINK_CLASSNAME_TO_CLASS ("func_object", CFuncObject)
 #pragma endregion Object
 
 #pragma region Explosive
@@ -2983,7 +2985,7 @@ void			CFuncExplosive::SaveFields (CFile &File)
 void			CFuncExplosive::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncExplosive> (this, File);
-	CMapEntity::SaveFields (File);
+	CMapEntity::LoadFields (File);
 	CBrushModel::LoadFields (File);
 	CHurtableEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
@@ -3181,8 +3183,8 @@ public:
 
 	void LoadFields (CFile &File)
 	{
-		CUsableEntity::LoadFields (File);
 		CMapEntity::LoadFields (File);
+		CUsableEntity::LoadFields (File);
 	}
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)

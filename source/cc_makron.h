@@ -54,7 +54,39 @@ public:
 	MediaIndex	SoundTaunt3;
 	MediaIndex	SoundHit;
 
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN4,
+		SOUND_PAIN5,
+		SOUND_PAIN6,
+		SOUND_DEATH,
+		SOUND_STEPLEFT,
+		SOUND_STEPRIGHT,
+		SOUND_ATTACK_BFG,
+		SOUND_BRAIN_SPLORCH,
+		SOUND_PRE_RAILGUN,
+		SOUND_POPUP,
+		SOUND_TAUNT1,
+		SOUND_TAUNT2,
+		SOUND_TAUNT3,
+		SOUND_HIT,
+
+		SOUND_MAX
+	);
+
 	CMakron (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		File.Write<vec3f> (SavedLoc);
+	}
+
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		SavedLoc = File.Read<vec3f> ();
+	}
 
 	void Run ();
 	void Stand ();

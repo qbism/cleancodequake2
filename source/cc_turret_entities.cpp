@@ -429,7 +429,7 @@ void CTurretDriver::Pain (CBaseEntity *other, float kick, sint32 damage)
 		return;
 
 	PainDebounceTime = level.Frame + 30;
-	Entity->PlaySound (CHAN_VOICE, (!irandom(2) == 0) ? SoundPain1 : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, (!irandom(2) == 0) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 }
 
 void CTurretDriver::TurretThink ()
@@ -536,10 +536,10 @@ void CTurretDriver::Spawn ()
 	Entity->Mass = 200;
 	Entity->ViewHeight = 24;
 
-	SoundPain1 = SoundIndex ("infantry/infpain1.wav");
-	SoundPain2 = SoundIndex ("infantry/infpain2.wav");
-	SoundDie1 = SoundIndex ("infantry/infdeth1.wav");
-	SoundDie2 = SoundIndex ("infantry/infdeth2.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("infantry/infpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("infantry/infpain2.wav");
+	Sounds[SOUND_DIE1] = SoundIndex ("infantry/infdeth1.wav");
+	Sounds[SOUND_DIE2] = SoundIndex ("infantry/infdeth2.wav");
 
 	Entity->Flags |= FL_NO_KNOCKBACK;
 

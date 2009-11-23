@@ -43,17 +43,17 @@ CMonster (ID)
 
 void CInsane::Fist ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundFist, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_FIST], 255, ATTN_IDLE);
 }
 
 void CInsane::Shake ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundShake, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SHAKE], 255, ATTN_IDLE);
 }
 
 void CInsane::Moan ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundMoan, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_MOAN], 255, ATTN_IDLE);
 }
 
 void CInsane::Scream ()
@@ -592,9 +592,9 @@ void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 */
 void CInsane::Spawn ()
 {
-	SoundFist = SoundIndex ("insane/insane11.wav");
-	SoundShake = SoundIndex ("insane/insane5.wav");
-	SoundMoan = SoundIndex ("insane/insane7.wav");
+	Sounds[SOUND_FIST] = SoundIndex ("insane/insane11.wav");
+	Sounds[SOUND_SHAKE] = SoundIndex ("insane/insane5.wav");
+	Sounds[SOUND_MOAN] = SoundIndex ("insane/insane7.wav");
 	SoundScream[0] = SoundIndex ("insane/insane1.wav");
 	SoundScream[1] = SoundIndex ("insane/insane2.wav");
 	SoundScream[2] = SoundIndex ("insane/insane3.wav");

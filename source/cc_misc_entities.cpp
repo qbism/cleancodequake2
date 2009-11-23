@@ -270,12 +270,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		File.Write<bool> (MyUse);
 		CTrainBase::SaveFields (File);
 		CTouchableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
+		MyUse = File.Read<bool> ();
 		CTrainBase::LoadFields (File);
 		CTouchableEntity::LoadFields (File);
 	}

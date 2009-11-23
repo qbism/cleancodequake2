@@ -37,15 +37,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CGunner : public CMonster
 {
 public:
-	MediaIndex	SoundPain;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundOpen;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundSight;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DEATH,
+		SOUND_IDLE,
+		SOUND_OPEN,
+		SOUND_SEARCH,
+		SOUND_SIGHT,
+	
+		SOUND_MAX
+	);
 
 	CGunner (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void ReFireChain ();
 	void FireChain ();

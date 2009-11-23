@@ -36,26 +36,43 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CMutant : public CMonster
 {
-	bool			AttemptJumpToLastSight;
-
 public:
+	bool		AttemptJumpToLastSight;
 	bool		Jumping;
 
-	MediaIndex	SoundSwing;
-	MediaIndex	SoundHit;
-	MediaIndex	SoundHit2;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundStep1;
-	MediaIndex	SoundStep2;
-	MediaIndex	SoundStep3;
-	MediaIndex	SoundThud;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_SWING,
+		SOUND_HIT1,
+		SOUND_HIT2,
+		SOUND_DEATH,
+		SOUND_IDLE,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_SIGHT,
+		SOUND_SEARCH,
+		SOUND_STEP1,
+		SOUND_STEP2,
+		SOUND_STEP3,
+		SOUND_THUD,
+
+		SOUND_MAX
+	);
 
 	CMutant (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		File.Write<bool> (AttemptJumpToLastSight);
+		File.Write<bool> (Jumping);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		AttemptJumpToLastSight = File.Read<bool> ();
+		Jumping = File.Read<bool> ();
+	}
 
 	void Step ();
 	void Swing ();

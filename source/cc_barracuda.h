@@ -36,17 +36,24 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CBarracudaShark : public CMonster
 {
-public:
-	MediaIndex	SoundChomp;
-	MediaIndex	SoundAttack;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundSight;
+public:	
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_CHOMP,
+		SOUND_ATTACK,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DEATH,
+		SOUND_IDLE,
+		SOUND_SEARCH,
+		SOUND_SIGHT,
+
+		SOUND_MAX
+	);
 
 	CBarracudaShark (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Run ();
 	void Sight ();

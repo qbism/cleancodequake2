@@ -131,7 +131,7 @@ CAnim InfantryMoveFidget (FRAME_stand01, FRAME_stand49, InfantryFramesFidget, &C
 void CInfantry::Idle ()
 {
 	CurrentMove = &InfantryMoveFidget;
-	Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 CFrame InfantryFramesWalk [] =
@@ -226,7 +226,7 @@ void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = (!irandom(2)) ? &InfantryMovePain1 : &InfantryMovePain2;
-	Entity->PlaySound (CHAN_VOICE, (!irandom(2)) ? SoundPain1 : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, (!irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
 #ifdef MONSTER_USE_ROGUE_AI
 	// PMM - clear duck flag
@@ -288,7 +288,7 @@ void CInfantry::MachineGun ()
 
 void CInfantry::Sight ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundSight);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_SIGHT]);
 }
 
 void CInfantry::Dead ()
@@ -403,15 +403,15 @@ void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 	case 0:
 	default:
 		Animation = &InfantryMoveDeath1;
-		pSound = SoundDie2;
+		pSound = Sounds[SOUND_DIE2];
 		break;
 	case 1:
 		Animation = &InfantryMoveDeath2;
-		pSound = SoundDie1;
+		pSound = Sounds[SOUND_DIE1];
 		break;
 	case 2:
 		Animation = &InfantryMoveDeath3;
-		pSound = SoundDie2;
+		pSound = Sounds[SOUND_DIE2];
 		break;
 	}
 	CurrentMove = Animation;
@@ -480,7 +480,7 @@ void CInfantry::Dodge (CBaseEntity *attacker, float eta)
 
 void CInfantry::CockGun ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundWeaponCock);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_WEAPON_COCK]);
 }
 
 void CInfantry::Fire ()
@@ -493,7 +493,7 @@ void CInfantry::Fire ()
 		AIFlags |= AI_HOLD_FRAME;
 }
 
-#ifndef INFANTRY_DOES_REVERSE_GUN_ATTACK
+#if !(MONSTER_SPECIFIC_FLAGS & INFANTRY_DOES_REVERSE_GUN_ATTACK)
 CFrame InfantryFramesAttack1 [] =
 {
 	CFrame (&CMonster::AI_Charge, 4),
@@ -538,14 +538,14 @@ CAnim InfantryMoveAttack1 (FRAME_attak112, FRAME_attak101, InfantryFramesAttack1
 
 void CInfantry::Swing ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundPunchSwing);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_PUNCH_SWING]);
 }
 
 void CInfantry::Smack ()
 {
 	static vec3f	aim (MELEE_DISTANCE, 0, 0);
 	if (CMeleeWeapon::Fire (Entity, aim, (5 + (irandom(5))), 50))
-		Entity->PlaySound (CHAN_WEAPON, SoundPunchHit);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_PUNCH_HIT]);
 }
 
 CFrame InfantryFramesAttack2 [] =
@@ -624,19 +624,19 @@ void CInfantry::Spawn ()
 	Entity->GetMins().Set (-16, -16, -24);
 	Entity->GetMaxs().Set (16, 16, 32);
 
-	SoundPain1 = SoundIndex ("infantry/infpain1.wav");
-	SoundPain2 = SoundIndex ("infantry/infpain2.wav");
-	SoundDie1 = SoundIndex ("infantry/infdeth1.wav");
-	SoundDie2 = SoundIndex ("infantry/infdeth2.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("infantry/infpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("infantry/infpain2.wav");
+	Sounds[SOUND_DIE1] = SoundIndex ("infantry/infdeth1.wav");
+	Sounds[SOUND_DIE2] = SoundIndex ("infantry/infdeth2.wav");
 
-	SoundGunshot = SoundIndex ("infantry/infatck1.wav");
-	SoundWeaponCock = SoundIndex ("infantry/infatck3.wav");
-	SoundPunchSwing = SoundIndex ("infantry/infatck2.wav");
-	SoundPunchHit = SoundIndex ("infantry/melee2.wav");
+	Sounds[SOUND_GUNSHOT] = SoundIndex ("infantry/infatck1.wav");
+	Sounds[SOUND_WEAPON_COCK] = SoundIndex ("infantry/infatck3.wav");
+	Sounds[SOUND_PUNCH_SWING] = SoundIndex ("infantry/infatck2.wav");
+	Sounds[SOUND_PUNCH_HIT] = SoundIndex ("infantry/melee2.wav");
 	
-	SoundSight = SoundIndex ("infantry/infsght1.wav");
-	SoundSearch = SoundIndex ("infantry/infsrch1.wav");
-	SoundIdle = SoundIndex ("infantry/infidle1.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("infantry/infsght1.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("infantry/infsrch1.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("infantry/infidle1.wav");
 
 	Entity->Health = 100;
 	Entity->GibHealth = -40;

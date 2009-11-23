@@ -44,12 +44,12 @@ CMonster (ID)
 
 void CSuperTank::PlayTreadSound ()
 {
-	Entity->PlaySound (CHAN_BODY, TreadSound);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_TREAD]);
 }
 
 void CSuperTank::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundSearch1 : SoundSearch2);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SEARCH1] : Sounds[SOUND_SEARCH2]);
 }
 
 //
@@ -176,11 +176,6 @@ CFrame SuperTankFramesForward [] =
 };
 CAnim SuperTankMoveForward (FRAME_forwrd_1, FRAME_forwrd_18, SuperTankFramesForward);
 
-/*void CSuperTank::Forward (edict_t *self)
-{
-	CurrentMove = &SuperTankMoveForward;
-}*/
-
 void CSuperTank::Walk ()
 {
 	CurrentMove = &SuperTankMoveForward;
@@ -190,52 +185,6 @@ void CSuperTank::Run ()
 {
 	CurrentMove = (AIFlags & AI_STAND_GROUND) ? &SuperTankMoveStand : &SuperTankMoveRun;
 }
-
-/*mframe_t supertank_frames_turn_right [] =
-{
-	CFrame (&CMonster::AI_Move,	0,	TreadSound,
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
-};
-mmove_t supertank_move_turn_right = {FRAME_right_1, FRAME_right_18, supertank_frames_turn_right, supertank_run};
-
-mframe_t supertank_frames_turn_left [] =
-{
-	CFrame (&CMonster::AI_Move,	0,	TreadSound,
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
-};
-mmove_t supertank_move_turn_left = {FRAME_left_1, FRAME_left_18, supertank_frames_turn_left, supertank_run};*/
 
 CFrame SuperTankFramesPain3 [] =
 {
@@ -295,7 +244,7 @@ CAnim SuperTankMoveDeath (FRAME_death_1, FRAME_death_24, SuperTankFramesDeath1, 
 
 /*mframe_t supertank_frames_backward[] =
 {
-	CFrame (&CMonster::AI_Walk, 0,	TreadSound,
+	CFrame (&CMonster::AI_Walk, 0,	Sounds[SOUND_TREAD],
 	CFrame (&CMonster::AI_Walk, 0),
 	CFrame (&CMonster::AI_Walk, 0),
 	CFrame (&CMonster::AI_Walk, 0),
@@ -316,7 +265,7 @@ CAnim SuperTankMoveDeath (FRAME_death_1, FRAME_death_24, SuperTankFramesDeath1, 
 };
 mmove_t	supertank_move_backward = {FRAME_backwd_1, FRAME_backwd_18, supertank_frames_backward, NULL};*/
 
-#ifdef SUPERTANK_USES_GRENADE_LAUNCHER
+#if (MONSTER_SPECIFIC_FLAGS & SUPERTANK_USES_GRENADES)
 CFrame SuperTankFramesAttack4[] =
 {
 	CFrame (&CMonster::AI_Move,	0, ConvertDerivedFunction(&CSuperTank::Grenade)),
@@ -352,38 +301,6 @@ void CSuperTank::Grenade ()
 	MonsterFireGrenade (start, forward, 25, 600, -1);
 }
 #endif
-
-/*mframe_t supertank_frames_attack3[]=
-{
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
-};
-mmove_t supertank_move_attack3 = {FRAME_attak3_1, FRAME_attak3_27, supertank_frames_attack3, supertank_run};*/
 
 CFrame SuperTankFramesAttack2[]=
 {
@@ -478,17 +395,17 @@ void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 	if (damage <= 10)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &SuperTankMovePain1;
 	}
 	else if (damage <= 25)
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain3);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN3]);
 		CurrentMove = &SuperTankMovePain2;
 	}
 	else
 	{
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &SuperTankMovePain3;
 	}
 
@@ -714,7 +631,7 @@ void CSuperTank::Dead ()
 
 void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;
 	ExplodeCount = 0;
@@ -729,14 +646,13 @@ void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 dama
 */
 void CSuperTank::Spawn ()
 {
-	SoundPain1 = SoundIndex ("bosstank/btkpain1.wav");
-	SoundPain2 = SoundIndex ("bosstank/btkpain2.wav");
-	SoundPain3 = SoundIndex ("bosstank/btkpain3.wav");
-	SoundDeath = SoundIndex ("bosstank/btkdeth1.wav");
-	SoundSearch1 = SoundIndex ("bosstank/btkunqv1.wav");
-	SoundSearch2 = SoundIndex ("bosstank/btkunqv2.wav");
-
-	TreadSound = SoundIndex ("bosstank/btkengn1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("bosstank/btkpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("bosstank/btkpain2.wav");
+	Sounds[SOUND_PAIN3] = SoundIndex ("bosstank/btkpain3.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("bosstank/btkdeth1.wav");
+	Sounds[SOUND_SEARCH1] = SoundIndex ("bosstank/btkunqv1.wav");
+	Sounds[SOUND_SEARCH2] = SoundIndex ("bosstank/btkunqv2.wav");
+	Sounds[SOUND_TREAD] = SoundIndex ("bosstank/btkengn1.wav");
 
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/boss1/tris.md2");

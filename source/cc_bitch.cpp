@@ -44,7 +44,7 @@ CMonster(ID)
 
 void CMaiden::Moan ()
 {
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundIdle1 : SoundIdle2, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_IDLE1] : Sounds[SOUND_IDLE2], 255, ATTN_IDLE);
 }
 
 CFrame ChickFramesFidget [] =
@@ -264,13 +264,13 @@ void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
 	{
 	case 0:
 	default:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		break;
 	case 2:
-		Entity->PlaySound (CHAN_VOICE, SoundPain3);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN3]);
 		break;
 	}
 
@@ -375,7 +375,7 @@ void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 
 	n = irandom(2);
 	CurrentMove = (!n) ? &ChickMoveDeath1 : &ChickMoveDeath2;
-	Entity->PlaySound (CHAN_VOICE, (!n) ? SoundDeath1 : SoundDeath2);
+	Entity->PlaySound (CHAN_VOICE, (!n) ? Sounds[SOUND_DEATH1] : Sounds[SOUND_DEATH2]);
 }
 
 #ifndef MONSTER_USE_ROGUE_AI
@@ -539,7 +539,7 @@ void CMaiden::Dodge (CBaseEntity *attacker, float eta)
 void CMaiden::Slash ()
 {
 	vec3f	aim (MELEE_DISTANCE, Entity->GetMins().X, 10);
-	Entity->PlaySound (CHAN_WEAPON, SoundMeleeSwing);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_MELEE_SWING]);
 	CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(6))), 100);
 }
 
@@ -626,7 +626,7 @@ void CMaiden::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	vec = Entity->Enemy->state.origin;
+	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;
 	dir = vec - start;
 	dir.NormalizeFast ();
@@ -637,12 +637,12 @@ void CMaiden::Rocket ()
 
 void CMaiden::PreAttack ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundMissilePrelaunch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_MISSILE_PRELAUNCH]);
 }
 
 void CMaiden::Reload ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundMissileReload);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_MISSILE_RELOAD]);
 }
 
 void CMaiden::ReRocket()
@@ -754,7 +754,7 @@ void CMaiden::Attack()
 
 void CMaiden::Sight()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CMaiden::Spawn ()
@@ -764,21 +764,21 @@ void CMaiden::Spawn ()
 	Entity->GetMins().Set (-16, -16, 0);
 	Entity->GetMaxs().Set (16, 16, 56);
 
-	SoundMissilePrelaunch	= SoundIndex ("chick/chkatck1.wav");	
-	SoundMissileLaunch	= SoundIndex ("chick/chkatck2.wav");	
-	SoundMeleeSwing		= SoundIndex ("chick/chkatck3.wav");	
-	SoundMeleeHit			= SoundIndex ("chick/chkatck4.wav");	
-	SoundMissileReload	= SoundIndex ("chick/chkatck5.wav");	
-	SoundDeath1			= SoundIndex ("chick/chkdeth1.wav");	
-	SoundDeath2			= SoundIndex ("chick/chkdeth2.wav");	
-	SoundFallDown			= SoundIndex ("chick/chkfall1.wav");	
-	SoundIdle1				= SoundIndex ("chick/chkidle1.wav");	
-	SoundIdle2				= SoundIndex ("chick/chkidle2.wav");	
-	SoundPain1				= SoundIndex ("chick/chkpain1.wav");	
-	SoundPain2				= SoundIndex ("chick/chkpain2.wav");	
-	SoundPain3				= SoundIndex ("chick/chkpain3.wav");	
-	SoundSight				= SoundIndex ("chick/chksght1.wav");	
-	SoundSearch			= SoundIndex ("chick/chksrch1.wav");	
+	Sounds[SOUND_MISSILE_PRELAUNCH]	= SoundIndex ("chick/chkatck1.wav");	
+	Sounds[SOUND_MISSILE_LAUNCH]	= SoundIndex ("chick/chkatck2.wav");	
+	Sounds[SOUND_MELEE_SWING]		= SoundIndex ("chick/chkatck3.wav");	
+	Sounds[SOUND_MELEE_HIT]			= SoundIndex ("chick/chkatck4.wav");	
+	Sounds[SOUND_MISSILE_RELOAD]	= SoundIndex ("chick/chkatck5.wav");	
+	Sounds[SOUND_DEATH1]			= SoundIndex ("chick/chkdeth1.wav");	
+	Sounds[SOUND_DEATH2]			= SoundIndex ("chick/chkdeth2.wav");	
+	Sounds[SOUND_FALL_DOWN]			= SoundIndex ("chick/chkfall1.wav");	
+	Sounds[SOUND_IDLE1]				= SoundIndex ("chick/chkidle1.wav");	
+	Sounds[SOUND_IDLE2]				= SoundIndex ("chick/chkidle2.wav");	
+	Sounds[SOUND_PAIN1]				= SoundIndex ("chick/chkpain1.wav");	
+	Sounds[SOUND_PAIN2]				= SoundIndex ("chick/chkpain2.wav");	
+	Sounds[SOUND_PAIN3]				= SoundIndex ("chick/chkpain3.wav");	
+	Sounds[SOUND_SIGHT]				= SoundIndex ("chick/chksght1.wav");	
+	Sounds[SOUND_SEARCH]			= SoundIndex ("chick/chksrch1.wav");	
 
 	Entity->Health = 175;
 	Entity->GibHealth = -70;

@@ -44,12 +44,12 @@ CMonster (ID)
 
 void CIcarus::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CIcarus::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundSearch1 : SoundSearch2);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SEARCH1] : Sounds[SOUND_SEARCH2]);
 }
 
 CFrame HoverFramesStand [] =
@@ -534,30 +534,30 @@ void CIcarus::Pain (CBaseEntity *other, float kick, sint32 damage)
 	{
 		if (frand() < 0.5)
 		{
-			Entity->PlaySound (CHAN_VOICE, SoundPain1);
+			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 			CurrentMove = &HoverMovePain3;
 		}
 		else
 		{
-			Entity->PlaySound (CHAN_VOICE, SoundPain2);
+			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 			CurrentMove = &HoverMovePain2;
 		}
 	}
 	else
 	{
 #ifndef MONSTER_USE_ROGUE_AI
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &HoverMovePain1;
 #else
 		//PGM pain sequence is WAY too long
 		if (frand() < (0.45 - (0.1 * skill->Float())))
 		{
-			Entity->PlaySound (CHAN_VOICE, SoundPain1);
+			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 			CurrentMove = &HoverMovePain1;
 		}
 		else
 		{
-			Entity->PlaySound (CHAN_VOICE, SoundPain2);
+			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 			CurrentMove = &HoverMovePain2;
 		}
 #endif
@@ -604,7 +604,7 @@ void CIcarus::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 
 	Entity->PhysicsType = PHYSICS_TOSS;
 // regular death
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundDeath1 : SoundDeath2);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_DEATH1] : Sounds[SOUND_DEATH2]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 	CurrentMove = &HoverMoveDeath1;
@@ -614,13 +614,13 @@ void CIcarus::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 */
 void CIcarus::Spawn ()
 {
-	SoundPain1 = SoundIndex ("hover/hovpain1.wav");	
-	SoundPain2 = SoundIndex ("hover/hovpain2.wav");	
-	SoundDeath1 = SoundIndex ("hover/hovdeth1.wav");	
-	SoundDeath2 = SoundIndex ("hover/hovdeth2.wav");	
-	SoundSight = SoundIndex ("hover/hovsght1.wav");	
-	SoundSearch1 = SoundIndex ("hover/hovsrch1.wav");	
-	SoundSearch2 = SoundIndex ("hover/hovsrch2.wav");	
+	Sounds[SOUND_PAIN1] = SoundIndex ("hover/hovpain1.wav");	
+	Sounds[SOUND_PAIN2] = SoundIndex ("hover/hovpain2.wav");	
+	Sounds[SOUND_DEATH1] = SoundIndex ("hover/hovdeth1.wav");	
+	Sounds[SOUND_DEATH2] = SoundIndex ("hover/hovdeth2.wav");	
+	Sounds[SOUND_SIGHT] = SoundIndex ("hover/hovsght1.wav");	
+	Sounds[SOUND_SEARCH1] = SoundIndex ("hover/hovsrch1.wav");	
+	Sounds[SOUND_SEARCH2] = SoundIndex ("hover/hovsrch2.wav");	
 
 	SoundIndex ("hover/hovatck1.wav");	
 

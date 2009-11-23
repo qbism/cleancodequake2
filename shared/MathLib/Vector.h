@@ -234,7 +234,7 @@ public:
 	: X(0), Y(0), Z(0) {}
 
 	inline vec3Base(const vec3Base &Vec)
-	: X(Vec[0]), Y(Vec[1]), Z(Vec[2]) {}
+	: X(Vec[0]), Y(Vec[1]), Z(Vec[2]){}
 
 	inline vec3Base(const TType Value)
 	: X(Value), Y(Value), Z(Value) {}

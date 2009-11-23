@@ -37,23 +37,30 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CMaiden : public CMonster
 {
 public:
-	MediaIndex	SoundMissilePrelaunch;
-	MediaIndex	SoundMissileLaunch;
-	MediaIndex	SoundMeleeSwing;
-	MediaIndex	SoundMeleeHit;
-	MediaIndex	SoundMissileReload;
-	MediaIndex	SoundDeath1;
-	MediaIndex	SoundDeath2;
-	MediaIndex	SoundFallDown;
-	MediaIndex	SoundIdle1;
-	MediaIndex	SoundIdle2;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundPain3;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_MISSILE_PRELAUNCH,
+		SOUND_MISSILE_LAUNCH,
+		SOUND_MISSILE_RELOAD,
+		SOUND_MELEE_SWING,
+		SOUND_MELEE_HIT,
+		SOUND_FALL_DOWN,
+		SOUND_IDLE1,
+		SOUND_IDLE2,
+		SOUND_DEATH1,
+		SOUND_DEATH2,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_PAIN3,
+		SOUND_SIGHT,
+		SOUND_SEARCH,
+
+		SOUND_MAX
+	)
 
 	CMaiden (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Attack ();
 	void Idle ();

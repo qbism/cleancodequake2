@@ -44,17 +44,17 @@ CMonster (ID)
 
 void CGunner::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 void CGunner::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CGunner::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSearch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH]);
 }
 
 CFrame GunnerFramesFidget [] =
@@ -284,7 +284,7 @@ void CGunner::Pain (CBaseEntity *other, float kick, sint32 damage)
 		return;
 
 	PainDebounceTime = level.Frame + 30;
-	Entity->PlaySound (CHAN_VOICE, (irandom(2)) ? SoundPain : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, (irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
@@ -345,7 +345,7 @@ void CGunner::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 	CurrentMove = &GunnerMoveDeath;
@@ -439,7 +439,7 @@ void CGunner::Dodge (CBaseEntity *attacker, float eta
 
 void CGunner::OpenGun ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundOpen, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_OPEN], 255, ATTN_IDLE);
 }
 
 #ifdef MONSTER_USE_ROGUE_AI
@@ -799,13 +799,13 @@ void CGunner::SideStep ()
 
 void CGunner::Spawn ()
 {
-	SoundDeath = SoundIndex ("gunner/death1.wav");	
-	SoundPain = SoundIndex ("gunner/gunpain2.wav");	
-	SoundPain2 = SoundIndex ("gunner/gunpain1.wav");	
-	SoundIdle = SoundIndex ("gunner/gunidle1.wav");	
-	SoundOpen = SoundIndex ("gunner/gunatck1.wav");	
-	SoundSearch = SoundIndex ("gunner/gunsrch1.wav");	
-	SoundSight = SoundIndex ("gunner/sight1.wav");	
+	Sounds[SOUND_DEATH] = SoundIndex ("gunner/death1.wav");	
+	Sounds[SOUND_PAIN1] = SoundIndex ("gunner/gunpain2.wav");	
+	Sounds[SOUND_PAIN2] = SoundIndex ("gunner/gunpain1.wav");	
+	Sounds[SOUND_IDLE] = SoundIndex ("gunner/gunidle1.wav");	
+	Sounds[SOUND_OPEN] = SoundIndex ("gunner/gunatck1.wav");	
+	Sounds[SOUND_SEARCH] = SoundIndex ("gunner/gunsrch1.wav");	
+	Sounds[SOUND_SIGHT] = SoundIndex ("gunner/sight1.wav");	
 
 	SoundIndex ("gunner/gunatck2.wav");
 	SoundIndex ("gunner/gunatck3.wav");

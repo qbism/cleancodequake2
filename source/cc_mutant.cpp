@@ -52,30 +52,30 @@ void CMutant::Step ()
 	{
 	case 0:
 	default:
-		Entity->PlaySound (CHAN_VOICE, SoundStep1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_STEP1]);
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundStep2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_STEP2]);
 		break;
 	case 2:
-		Entity->PlaySound (CHAN_VOICE, SoundStep3);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_STEP3]);
 		break;
 	}
 }
 
 void CMutant::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CMutant::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSearch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH]);
 }
 
 void CMutant::Swing ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSwing);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SWING]);
 }
 
 
@@ -181,7 +181,7 @@ CAnim MutantMoveIdle (FRAME_stand152, FRAME_stand164, MutantFramesIdle, &CMonste
 void CMutant::Idle ()
 {
 	CurrentMove = &MutantMoveIdle;
-	Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 //
@@ -255,9 +255,9 @@ void CMutant::HitLeft ()
 	vec3f	aim (MELEE_DISTANCE, Entity->GetMins().X, 8);
 
 	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), 100))
-		Entity->PlaySound (CHAN_WEAPON, SoundHit);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HIT1]);
 	else
-		Entity->PlaySound (CHAN_WEAPON, SoundSwing);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SWING]);
 }
 
 void CMutant::HitRight ()
@@ -265,9 +265,9 @@ void CMutant::HitRight ()
 	vec3f	aim (MELEE_DISTANCE, Entity->GetMins().X, 8);
 
 	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), 100))
-		Entity->PlaySound (CHAN_WEAPON, SoundHit2);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HIT2]);
 	else
-		Entity->PlaySound (CHAN_WEAPON, SoundSwing);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SWING]);
 }
 
 void CMutant::CheckRefire ()
@@ -346,7 +346,7 @@ void CMutant::JumpTakeOff ()
 #ifndef MUTANT_JUMPS_UNSTUPIDLY
 	vec3f	forward;
 
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 
 	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
 	Entity->Velocity = forward * 600;
@@ -364,7 +364,7 @@ void CMutant::JumpTakeOff ()
 
 	angles.ToAngles ().ToVectors (&forward, NULL, &up);
 
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 	Entity->Velocity = Entity->Velocity.MultiplyAngles (550, forward);
 	Entity->Velocity = Entity->Velocity.MultiplyAngles (60 + angles.Length(), up);
 #endif
@@ -380,7 +380,7 @@ void CMutant::CheckLanding ()
 {
 	if (Entity->GroundEntity)
 	{
-		Entity->PlaySound (CHAN_WEAPON, SoundThud);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_THUD]);
 		AttackFinished = 0;
 		AIFlags &= ~AI_DUCKED;
 		return;
@@ -601,15 +601,15 @@ void CMutant::Pain (CBaseEntity *other, float kick, sint32 damage)
 	switch (irandom(3))
 	{
 	case 0:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &MutantMovePain1;
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &MutantMovePain2;
 		break;
 	case 2:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &MutantMovePain3;
 		break;
 	}
@@ -677,7 +677,7 @@ void CMutant::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 	if (Entity->DeadFlag == true)
 		return;
 
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 	Entity->State.GetSkinNum() = 1;
@@ -694,19 +694,19 @@ void CMutant::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 */
 void CMutant::Spawn ()
 {
-	SoundSwing = SoundIndex ("mutant/mutatck1.wav");
-	SoundHit = SoundIndex ("mutant/mutatck2.wav");
-	SoundHit2 = SoundIndex ("mutant/mutatck3.wav");
-	SoundDeath = SoundIndex ("mutant/mutdeth1.wav");
-	SoundIdle = SoundIndex ("mutant/mutidle1.wav");
-	SoundPain1 = SoundIndex ("mutant/mutpain1.wav");
-	SoundPain2 = SoundIndex ("mutant/mutpain2.wav");
-	SoundSight = SoundIndex ("mutant/mutsght1.wav");
-	SoundSearch = SoundIndex ("mutant/mutsrch1.wav");
-	SoundStep1 = SoundIndex ("mutant/step1.wav");
-	SoundStep2 = SoundIndex ("mutant/step2.wav");
-	SoundStep3 = SoundIndex ("mutant/step3.wav");
-	SoundThud = SoundIndex ("mutant/thud1.wav");
+	Sounds[SOUND_SWING] = SoundIndex ("mutant/mutatck1.wav");
+	Sounds[SOUND_HIT1] = SoundIndex ("mutant/mutatck2.wav");
+	Sounds[SOUND_HIT2] = SoundIndex ("mutant/mutatck3.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("mutant/mutdeth1.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("mutant/mutidle1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("mutant/mutpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("mutant/mutpain2.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("mutant/mutsght1.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("mutant/mutsrch1.wav");
+	Sounds[SOUND_STEP1] = SoundIndex ("mutant/step1.wav");
+	Sounds[SOUND_STEP2] = SoundIndex ("mutant/step2.wav");
+	Sounds[SOUND_STEP3] = SoundIndex ("mutant/step3.wav");
+	Sounds[SOUND_THUD] = SoundIndex ("mutant/thud1.wav");
 	
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/mutant/tris.md2");

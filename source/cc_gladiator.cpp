@@ -44,22 +44,22 @@ CMonster (ID)
 
 void CGladiator::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE]);
 }
 
 void CGladiator::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CGladiator::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSearch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH]);
 }
 
 void CGladiator::SwingCleaver ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundCleaverSwing);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_CLEAVER_SWING]);
 }
 
 CFrame GladiatorFramesStand [] =
@@ -124,7 +124,7 @@ void CGladiator::Run ()
 void CGladiator::MeleeAttack ()
 {
 	vec3f	aim (MELEE_DISTANCE, Entity->GetMins().X, -4);
-	Entity->PlaySound (CHAN_AUTO, (CMeleeWeapon::Fire (Entity, aim, (20 + (irandom(5))), 300)) ? SoundCleaverHit : SoundCleaverMiss);
+	Entity->PlaySound (CHAN_AUTO, (CMeleeWeapon::Fire (Entity, aim, (20 + (irandom(5))), 300)) ? Sounds[SOUND_CLEAVER_HIT] : Sounds[SOUND_CLEAVER_MISS]);
 }
 
 CFrame GladiatorFramesAttackMelee [] =
@@ -207,7 +207,7 @@ void CGladiator::Attack ()
 		return;
 
 	// charge up the railgun
-	Entity->PlaySound (CHAN_WEAPON, SoundGun);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_GUN]);
 	SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 	CurrentMove = &GladiatorMoveAttackGun;
 }
@@ -249,7 +249,7 @@ void CGladiator::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 	PainDebounceTime = level.Frame + 30;
 
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundPain1 : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
@@ -312,7 +312,7 @@ void CGladiator::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 dama
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDie);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
@@ -324,16 +324,16 @@ void CGladiator::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 dama
 */
 void CGladiator::Spawn ()
 {
-	SoundPain1 = SoundIndex ("gladiator/pain.wav");	
-	SoundPain2 = SoundIndex ("gladiator/gldpain2.wav");	
-	SoundDie = SoundIndex ("gladiator/glddeth2.wav");	
-	SoundGun = SoundIndex ("gladiator/railgun.wav");
-	SoundCleaverSwing = SoundIndex ("gladiator/melee1.wav");
-	SoundCleaverHit = SoundIndex ("gladiator/melee2.wav");
-	SoundCleaverMiss = SoundIndex ("gladiator/melee3.wav");
-	SoundIdle = SoundIndex ("gladiator/gldidle1.wav");
-	SoundSearch = SoundIndex ("gladiator/gldsrch1.wav");
-	SoundSight = SoundIndex ("gladiator/sight.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("gladiator/pain.wav");	
+	Sounds[SOUND_PAIN2] = SoundIndex ("gladiator/gldpain2.wav");	
+	Sounds[SOUND_DIE] = SoundIndex ("gladiator/glddeth2.wav");	
+	Sounds[SOUND_GUN] = SoundIndex ("gladiator/railgun.wav");
+	Sounds[SOUND_CLEAVER_SWING] = SoundIndex ("gladiator/melee1.wav");
+	Sounds[SOUND_CLEAVER_HIT] = SoundIndex ("gladiator/melee2.wav");
+	Sounds[SOUND_CLEAVER_MISS] = SoundIndex ("gladiator/melee3.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("gladiator/gldidle1.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("gladiator/gldsrch1.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("gladiator/sight.wav");
 
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/gladiatr/tris.md2");

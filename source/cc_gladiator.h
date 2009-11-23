@@ -37,20 +37,36 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CGladiator : public CMonster
 {
 public:
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDie;
-	MediaIndex	SoundGun;
-	MediaIndex	SoundCleaverSwing;
-	MediaIndex	SoundCleaverHit;
-	MediaIndex	SoundCleaverMiss;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundSight;
-
 	vec3f		SavedFirePosition;
 
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DIE,
+		SOUND_GUN,
+		SOUND_CLEAVER_SWING,
+		SOUND_CLEAVER_HIT,
+		SOUND_CLEAVER_MISS,
+		SOUND_IDLE,
+		SOUND_SEARCH,
+		SOUND_SIGHT,
+
+		SOUND_MAX
+	);
+
 	CGladiator (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		File.Write<vec3f> (SavedFirePosition);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		SavedFirePosition = File.Read<vec3f> ();
+	}
 
 	void Attack ();
 	void Idle ();

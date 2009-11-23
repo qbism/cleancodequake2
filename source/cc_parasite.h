@@ -37,19 +37,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CParasite : public CMonster
 {
 public:
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDie;
-	MediaIndex	SoundLaunch;
-	MediaIndex	SoundImpact;
-	MediaIndex	SoundSuck;
-	MediaIndex	SoundReelIn;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundTap;
-	MediaIndex	SoundScratch;
-	MediaIndex	SoundSearch;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DIE,
+		SOUND_LAUNCH,
+		SOUND_IMPACT,
+		SOUND_SUCK,
+		SOUND_REELIN,
+		SOUND_SIGHT,
+		SOUND_TAP,
+		SOUND_SCRATCH,
+		SOUND_SEARCH,
+
+		SOUND_MAX
+	);
 
 	CParasite (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void Run ();
 	void Walk ();

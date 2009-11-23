@@ -54,6 +54,21 @@ public:
 		{
 		};
 
+	virtual bool ParseField (const char *Key, const char *Value)
+	{
+		return CMapEntity::ParseField (Key, Value);
+	};
+
+	virtual void SaveFields (CFile &File)
+	{
+		CMapEntity::SaveFields (File);
+	};
+
+	virtual void LoadFields (CFile &File)
+	{
+		CMapEntity::LoadFields (File);
+	};
+
 	virtual void Spawn ()
 	{
 		State.GetModelIndex() = ModelIndex("models/objects/dmspot/tris.md2");
@@ -451,11 +466,18 @@ public:
 	void SaveFields (CFile &File)
 	{
 		CThinkableEntity::SaveFields (File);
+		CSpotBase::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
 		CThinkableEntity::LoadFields (File);
+		CSpotBase::LoadFields (File);
+	};
+
+	bool ParseField (const char *Key, const char *Value)
+	{
+		return (CSpotBase::ParseField (Key, Value));
 	};
 
 	// this function is an ugly as hell hack to fix some map flaws
@@ -579,11 +601,18 @@ public:
 	void SaveFields (CFile &File)
 	{
 		CThinkableEntity::SaveFields (File);
+		CSpotBase::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
 		CThinkableEntity::LoadFields (File);
+		CSpotBase::LoadFields (File);
+	};
+
+	bool ParseField (const char *Key, const char *Value)
+	{
+		return (CSpotBase::ParseField (Key, Value));
 	};
 
 	// some maps don't have any coop spots at all, so we need to create them

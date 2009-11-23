@@ -44,12 +44,12 @@ CMonster (ID)
 
 void CFloater::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CFloater::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 }
 
 void CFloater::FireBlaster ()
@@ -472,7 +472,7 @@ void CFloater::Walk ()
 void CFloater::Wham ()
 {
 	static	vec3f	aim (MELEE_DISTANCE, 0, 0);
-	Entity->PlaySound (CHAN_WEAPON, SoundAttack3);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_ATTACK3]);
 	CMeleeWeapon::Fire (Entity, aim, 5 + irandom(6), -50);
 }
 
@@ -487,7 +487,7 @@ void CFloater::Zap ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), offset, forward, right, origin);
 
-	Entity->PlaySound (CHAN_WEAPON, SoundAttack2);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_ATTACK2]);
 	CTempEnt_Splashes::Splash (origin, vec3fOrigin, CTempEnt_Splashes::SPT_SPARKS, 32);
 
 	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE))
@@ -540,25 +540,25 @@ void CFloater::Pain (CBaseEntity *other, float kick, sint32 damage)
 		return;		// no pain anims in nightmare
 
 	bool n = (frand() < 0.5);
-	Entity->PlaySound (CHAN_VOICE, n ? SoundPain1 : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, n ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 	CurrentMove = n ? &FloaterMovePain1 : &FloaterMovePain2;
 }
 
 void CFloater::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
-	Entity->PlaySound (CHAN_VOICE, SoundDeath1);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH1]);
 	Entity->BecomeExplosion (false);
 }
 
 void CFloater::Spawn ()
 {
-	SoundAttack2 = SoundIndex ("floater/fltatck2.wav");
-	SoundAttack3 = SoundIndex ("floater/fltatck3.wav");
-	SoundDeath1 = SoundIndex ("floater/fltdeth1.wav");
-	SoundIdle = SoundIndex ("floater/fltidle1.wav");
-	SoundPain1 = SoundIndex ("floater/fltpain1.wav");
-	SoundPain2 = SoundIndex ("floater/fltpain2.wav");
-	SoundSight = SoundIndex ("floater/fltsght1.wav");
+	Sounds[SOUND_ATTACK2] = SoundIndex ("floater/fltatck2.wav");
+	Sounds[SOUND_ATTACK3] = SoundIndex ("floater/fltatck3.wav");
+	Sounds[SOUND_DEATH1] = SoundIndex ("floater/fltdeth1.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("floater/fltidle1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("floater/fltpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("floater/fltpain2.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("floater/fltsght1.wav");
 
 	SoundIndex ("floater/fltatck1.wav");
 

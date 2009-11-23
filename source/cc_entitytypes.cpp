@@ -1539,7 +1539,8 @@ ENTITYFIELDS_BEGIN(CUsableEntity)
 	CEntityField ("killtarget",	EntityMemberOffset(CUsableEntity,KillTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 
-	CEntityField ("Usable", EntityMemberOffset(CUsableEntity,Usable),		FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Usable", 	EntityMemberOffset(CUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Activator", 	EntityMemberOffset(CUsableEntity,Activator),		FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CUsableEntity)
 
@@ -1601,6 +1602,8 @@ public:
 		Free ();
 	}
 };
+
+IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
 void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
 {

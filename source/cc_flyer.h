@@ -34,23 +34,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_FLYER_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_FLYER_H__
 
-#define FLYER_KNOWS_HOW_TO_DODGE
-
 class CFlyer : public CMonster
 {
 public:
-	MediaIndex	SoundSight;
-	MediaIndex	SoundIdle;
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundSlash;
-	MediaIndex	SoundSproing;
-	MediaIndex	SoundDie;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_SIGHT,
+		SOUND_IDLE,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_SLASH,
+		SOUND_SPROING,
+		SOUND_DIE,
+
+		SOUND_MAX
+	);
 
 	CFlyer (uint32 ID);
 
+	MONSTER_SAVE_LOAD_NO_FIELDS
+
 	void Attack ();
-#ifdef FLYER_KNOWS_HOW_TO_DODGE
+#if (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
 #ifdef MONSTER_USE_ROGUE_AI
 	void Duck (float eta);
 	void SideStep ();

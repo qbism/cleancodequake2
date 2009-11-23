@@ -2996,7 +2996,7 @@ void CPlayerEntity::BackupClientData ()
 			return; // Not set up
 
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1+i].Entity);
-		if (!ent->GetInUse())
+		if (!level.Demo && !ent->GetInUse())
 			continue;
 
 		//memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
@@ -3017,8 +3017,8 @@ void CPlayerEntity::SaveClientData ()
 			return; // Not set up
 
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1+i].Entity);
-		if (!ent->GetInUse())
-			continue;
+		//if (!ent->GetInUse())
+		//	continue;
 
 		ent->Client.Persistent.health = ent->Health;
 		ent->Client.Persistent.max_health = ent->MaxHealth;
@@ -3037,6 +3037,11 @@ void CPlayerEntity::RestoreClientData ()
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
 		Player->Client.Persistent = CPersistentData(SavedClients[i]);
+		Player->Health = SavedClients[i].health;
+		Player->MaxHealth = SavedClients[i].max_health;
+		Player->Flags = SavedClients[i].savedFlags;
+		if (game.mode & GAME_COOPERATIVE)
+			Player->Client.Respawn.Score = SavedClients[i].Score;
 		g_edicts[i+1].client = game.clients + i;
 	}
 

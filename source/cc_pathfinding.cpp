@@ -48,7 +48,8 @@ public:
 	  {
 	  };
 
-	IMPLEMENT_SAVE_HEADER(CNodeEntity)
+	ENTITYFIELDS_NONSAVABLE
+	const char *__GetName () { return "NonSavable"; }
 };
 
 void SpawnNodeEntity (CPathNode *Node);
@@ -253,6 +254,14 @@ void Nodes_Register ()
 void InitNodes ()
 {
 	NodeList.clear();
+	memset (SavedPaths, 0, sizeof(SavedPaths));
+}
+
+void ShutdownNodes ()
+{
+	for (size_t i = 0; i < NodeList.size(); i++)
+		QDelete NodeList[i];
+	NodeList.clear ();
 	memset (SavedPaths, 0, sizeof(SavedPaths));
 }
 
@@ -515,7 +524,9 @@ void LoadNodes ()
 			numSpecialNodes++;
 
 		if (Type == NODE_DOOR || Type == NODE_PLATFORM)
-			LinkModelNumberToNode (NodeList[i], File.Read<sint32> ());
+			NodeList[i]->ModelNumber = File.Read<sint32> ();
+		else
+			NodeList[i]->ModelNumber = 0;
 
 		uint32 num = File.Read<uint32> ();
 
@@ -535,6 +546,15 @@ void LoadNodes ()
 
 	QDelete[] tempChildren;
 	DebugPrintf ("Loaded %u (%u special) nodes\n", lastId, numSpecialNodes);
+}
+
+void FinalizeNodes ()
+{
+	for (size_t i = 0; i < NodeList.size(); i++)
+	{
+		if (NodeList[i]->ModelNumber)
+			LinkModelNumberToNode (NodeList[i], NodeList[i]->ModelNumber);
+	}
 }
 
 bool VecInFront (vec3f &angles, vec3f &origin1, vec3f &origin2)
@@ -594,7 +614,10 @@ void Cmd_Node_f (CPlayerEntity *ent)
 	if (Q_stricmp (cmd.c_str(), "save") == 0)
 		SaveNodes ();
 	else if (Q_stricmp (cmd.c_str(), "load") == 0)
+	{
 		LoadNodes ();
+		FinalizeNodes ();
+	}
 	else if (Q_stricmp (cmd.c_str(), "drop") == 0)
 		AddNode (ent, origin);
 	else if (Q_stricmp (cmd.c_str(), "clearlastnode") == 0)

@@ -44,12 +44,12 @@ CMonster (ID)
 
 void CBrain::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CBrain::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSearch);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH]);
 }
 
 //
@@ -142,7 +142,7 @@ CAnim BrainMoveIdle (FRAME_stand31, FRAME_stand60, BrainFramesIdle, &CMonster::S
 
 void CBrain::Idle ()
 {
-	Entity->PlaySound (CHAN_AUTO, SoundIdle3, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_AUTO, Sounds[SOUND_IDLE3], 255, ATTN_IDLE);
 	CurrentMove = &BrainMoveIdle;
 }
 
@@ -307,15 +307,15 @@ void CBrain::Pain(CBaseEntity *other, float kick, sint32 damage)
 	switch (irandom(3))
 	{
 	case 0:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &BrainMovePain1;
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &BrainMovePain2;
 		break;
 	case 2:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &BrainMovePain3;
 		break;
 	}
@@ -463,7 +463,7 @@ void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
 	CurrentMove = (frand() <= 0.5) ? &BrainMoveDeath1 : &BrainMoveDeath2;
 }
@@ -474,7 +474,7 @@ void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 
 void CBrain::SwingRight ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundMelee1);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_MELEE1]);
 }
 
 void CBrain::HitRight ()
@@ -482,12 +482,12 @@ void CBrain::HitRight ()
 	const vec3f	aim (MELEE_DISTANCE, Entity->GetMaxs().X, 8);
 
 	if (CMeleeWeapon::Fire (Entity, aim, (15 + (irandom(5))), 40))
-		Entity->PlaySound (CHAN_WEAPON, SoundMelee3);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_MELEE3]);
 }
 
 void CBrain::SwingLeft ()
 {
-	Entity->PlaySound (CHAN_BODY, SoundMelee2);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_MELEE2]);
 }
 
 void CBrain::HitLeft ()
@@ -495,7 +495,7 @@ void CBrain::HitLeft ()
 	const vec3f	aim (MELEE_DISTANCE, Entity->GetMins().X, 8);
 
 	if (CMeleeWeapon::Fire (Entity, aim, (15 + (irandom(5))), 40))
-		Entity->PlaySound (CHAN_WEAPON, SoundMelee3);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_MELEE3]);
 }
 
 CFrame BrainFramesAttack1 [] =
@@ -525,7 +525,7 @@ void CBrain::ChestOpen ()
 {
 	Refire = false;
 	PowerArmorType = POWER_ARMOR_NONE;
-	Entity->PlaySound (CHAN_BODY, SoundChestOpen);
+	Entity->PlaySound (CHAN_BODY, Sounds[SOUND_CHEST_OPEN]);
 }
 
 void CBrain::TentacleAttack ()
@@ -534,7 +534,7 @@ void CBrain::TentacleAttack ()
 
 	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), -600) && (skill->Boolean()))
 		Refire = true;
-	Entity->PlaySound (CHAN_WEAPON, SoundTentaclesRetract);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
 }
 
 void CBrain::ChestClosed ()
@@ -605,20 +605,20 @@ void CBrain::Run ()
 */
 void CBrain::Spawn ()
 {
-	SoundChestOpen = SoundIndex ("brain/brnatck1.wav");
-	SoundTentaclesExtend = SoundIndex ("brain/brnatck2.wav");
-	SoundTentaclesRetract = SoundIndex ("brain/brnatck3.wav");
-	SoundDeath = SoundIndex ("brain/brndeth1.wav");
-	SoundIdle1 = SoundIndex ("brain/brnidle1.wav");
-	SoundIdle2 = SoundIndex ("brain/brnidle2.wav");
-	SoundIdle3 = SoundIndex ("brain/brnlens1.wav");
-	SoundPain1 = SoundIndex ("brain/brnpain1.wav");
-	SoundPain2 = SoundIndex ("brain/brnpain2.wav");
-	SoundSight = SoundIndex ("brain/brnsght1.wav");
-	SoundSearch = SoundIndex ("brain/brnsrch1.wav");
-	SoundMelee1 = SoundIndex ("brain/melee1.wav");
-	SoundMelee2 = SoundIndex ("brain/melee2.wav");
-	SoundMelee3 = SoundIndex ("brain/melee3.wav");
+	Sounds[SOUND_CHEST_OPEN] = SoundIndex ("brain/brnatck1.wav");
+	Sounds[SOUND_TENTACLES_EXTEND] = SoundIndex ("brain/brnatck2.wav");
+	Sounds[SOUND_TENTACLES_RETRACT] = SoundIndex ("brain/brnatck3.wav");
+	Sounds[SOUND_DEATH] = SoundIndex ("brain/brndeth1.wav");
+	Sounds[SOUND_IDLE1] = SoundIndex ("brain/brnidle1.wav");
+	Sounds[SOUND_IDLE2] = SoundIndex ("brain/brnidle2.wav");
+	Sounds[SOUND_IDLE3] = SoundIndex ("brain/brnlens1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("brain/brnpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("brain/brnpain2.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("brain/brnsght1.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("brain/brnsrch1.wav");
+	Sounds[SOUND_MELEE1] = SoundIndex ("brain/melee1.wav");
+	Sounds[SOUND_MELEE2] = SoundIndex ("brain/melee2.wav");
+	Sounds[SOUND_MELEE3] = SoundIndex ("brain/melee3.wav");
 
 	Entity->PhysicsType = PHYSICS_STEP;
 	Entity->GetSolid() = SOLID_BBOX;

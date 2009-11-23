@@ -185,7 +185,7 @@ void CBarracudaShark::Bite ()
 
 void CBarracudaShark::PreAttack ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundChomp);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_CHOMP]);
 }
 
 CFrame FlipperFramesAttack [] =
@@ -234,11 +234,11 @@ void CBarracudaShark::Pain (CBaseEntity *other, float kick, sint32 damage)
 	switch (irandom(2))
 	{
 	case 0:
-		Entity->PlaySound (CHAN_VOICE, SoundPain1);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &FlipperMovePain1;
 		break;
 	case 1:
-		Entity->PlaySound (CHAN_VOICE, SoundPain2);
+		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &FlipperMovePain2;
 		break;
 	}
@@ -322,7 +322,7 @@ CAnim FlipperMoveDeath (FRAME_flpdth01, FRAME_flpdth56, FlipperFramesDeath, Conv
 
 void CBarracudaShark::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 void CBarracudaShark::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
@@ -344,7 +344,7 @@ void CBarracudaShark::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDeath);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 	CurrentMove = &FlipperMoveDeath;
@@ -354,14 +354,14 @@ void CBarracudaShark::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32
 */
 void CBarracudaShark::Spawn ()
 {
-	SoundPain1		= SoundIndex ("flipper/flppain1.wav");	
-	SoundPain2		= SoundIndex ("flipper/flppain2.wav");	
-	SoundDeath		= SoundIndex ("flipper/flpdeth1.wav");	
-	SoundChomp		= SoundIndex ("flipper/flpatck1.wav");
-	SoundAttack		= SoundIndex ("flipper/flpatck2.wav");
-	SoundIdle		= SoundIndex ("flipper/flpidle1.wav");
-	SoundSearch		= SoundIndex ("flipper/flpsrch1.wav");
-	SoundSight		= SoundIndex ("flipper/flpsght1.wav");
+	Sounds[SOUND_PAIN1]		= SoundIndex ("flipper/flppain1.wav");	
+	Sounds[SOUND_PAIN2]		= SoundIndex ("flipper/flppain2.wav");	
+	Sounds[SOUND_DEATH]		= SoundIndex ("flipper/flpdeth1.wav");	
+	Sounds[SOUND_CHOMP]		= SoundIndex ("flipper/flpatck1.wav");
+	Sounds[SOUND_ATTACK]		= SoundIndex ("flipper/flpatck2.wav");
+	Sounds[SOUND_IDLE]		= SoundIndex ("flipper/flpidle1.wav");
+	Sounds[SOUND_SEARCH]		= SoundIndex ("flipper/flpsrch1.wav");
+	Sounds[SOUND_SIGHT]		= SoundIndex ("flipper/flpsght1.wav");
 
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/flipper/tris.md2");

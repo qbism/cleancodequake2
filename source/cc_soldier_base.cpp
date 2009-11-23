@@ -683,7 +683,7 @@ void CSoldierBase::Sight ()
 {
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SIGHT1] : Sounds[SOUND_SIGHT2]);
 
-	if ((skill->Integer() > 0) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
+	if ((skill->Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
 	{
 		// Only do run-shoot off the bat if we're not a shotgun soldier (too cheap)
 		if ((frand() > 0.75) && (Entity->State.GetSkinNum() < 2))

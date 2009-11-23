@@ -155,7 +155,7 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 
 void CMedic::Idle ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundIdle1, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 
 	CMonsterEntity *ent = FindDeadMonster();
 	if (ent)
@@ -169,7 +169,7 @@ void CMedic::Idle ()
 
 void CMedic::Search ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSearch, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH], 255, ATTN_IDLE);
 
 	if (!Entity->OldEnemy)
 	{
@@ -187,7 +187,7 @@ void CMedic::Search ()
 
 void CMedic::Sight ()
 {
-	Entity->PlaySound (CHAN_VOICE, SoundSight);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
 CFrame MedicFramesStand [] =
@@ -408,7 +408,7 @@ void CMedic::Pain(CBaseEntity *other, float kick, sint32 damage)
 
 	float r = frand();
 	CurrentMove = (r < 0.5) ? &MedicMovePain1 : &MedicMovePain2;
-	Entity->PlaySound (CHAN_VOICE, (r < 0.5) ? SoundPain1 : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, (r < 0.5) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 }
 
 void CMedic::FireBlaster ()
@@ -517,7 +517,7 @@ void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDie);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
@@ -572,7 +572,7 @@ CAnim MedicMoveAttackBlaster (FRAME_attack1, FRAME_attack14, MedicFramesAttackBl
 
 void CMedic::HookLaunch ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundHookLaunch);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_LAUNCH]);
 }
 
 static vec3f	MedicCableOffsets[] =
@@ -672,7 +672,7 @@ void CMedic::CableAttack ()
 	switch (Entity->State.GetFrame())
 	{
 	case FRAME_attack43:
-		Entity->PlaySound (CHAN_AUTO, SoundHookHit);
+		Entity->PlaySound (CHAN_AUTO, Sounds[SOUND_HOOK_HIT]);
 		(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->AIFlags |= AI_RESURRECTING;
 
 		Entity->Enemy->State.GetEffects() = EF_PENT;
@@ -768,7 +768,7 @@ void CMedic::CableAttack ()
 #endif
 		break;
 	case FRAME_attack44:
-		Entity->PlaySound (CHAN_WEAPON, SoundHookHeal);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_HEAL]);
 	default:
 		break;
 	}
@@ -784,7 +784,7 @@ void CMedic::CableAttack ()
 
 void CMedic::HookRetract ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundHookRetract);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_RETRACT]);
 #ifndef MONSTER_USE_ROGUE_AI
 	(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
 #endif
@@ -1027,16 +1027,16 @@ void CMedic::SideStep ()
 */
 void CMedic::Spawn ()
 {
-	SoundIdle1 = SoundIndex ("medic/idle.wav");
-	SoundPain1 = SoundIndex ("medic/medpain1.wav");
-	SoundPain2 = SoundIndex ("medic/medpain2.wav");
-	SoundDie = SoundIndex ("medic/meddeth1.wav");
-	SoundSight = SoundIndex ("medic/medsght1.wav");
-	SoundSearch = SoundIndex ("medic/medsrch1.wav");
-	SoundHookLaunch = SoundIndex ("medic/medatck2.wav");
-	SoundHookHit = SoundIndex ("medic/medatck3.wav");
-	SoundHookHeal = SoundIndex ("medic/medatck4.wav");
-	SoundHookRetract = SoundIndex ("medic/medatck5.wav");
+	Sounds[SOUND_IDLE] = SoundIndex ("medic/idle.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("medic/medpain1.wav");
+	Sounds[SOUND_PAIN2] = SoundIndex ("medic/medpain2.wav");
+	Sounds[SOUND_DIE] = SoundIndex ("medic/meddeth1.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex ("medic/medsght1.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex ("medic/medsrch1.wav");
+	Sounds[SOUND_HOOK_LAUNCH] = SoundIndex ("medic/medatck2.wav");
+	Sounds[SOUND_HOOK_HIT] = SoundIndex ("medic/medatck3.wav");
+	Sounds[SOUND_HOOK_HEAL] = SoundIndex ("medic/medatck4.wav");
+	Sounds[SOUND_HOOK_RETRACT] = SoundIndex ("medic/medatck5.wav");
 
 	SoundIndex ("medic/medatck1.wav");
 

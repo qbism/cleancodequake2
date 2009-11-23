@@ -37,12 +37,31 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CInsane : public CMonster
 {
 public:
-	MediaIndex	SoundFist;
-	MediaIndex	SoundShake;
-	MediaIndex	SoundMoan;
 	MediaIndex	SoundScream[8];
 
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_FIST,
+		SOUND_SHAKE,
+		SOUND_MOAN,
+
+		SOUND_MAX
+	)
+
 	CInsane (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		for (uint8 i = 0; i < 8; i++)
+			WriteIndex (File, SoundScream[i], INDEX_SOUND);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		for (uint8 i = 0; i < 8; i++)
+			ReadIndex (File, SoundScream[i], INDEX_SOUND);
+	}
 
 	void Fist ();
 	void Shake ();

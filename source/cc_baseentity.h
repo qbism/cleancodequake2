@@ -512,6 +512,12 @@ public:
 				File.Write<sint32> (Index);
 			}
 			break;
+		case FT_ENTITY:
+			{
+				sint32 Index = (*((CBaseEntity **)(ClassOffset))) ? (*((CBaseEntity **)(ClassOffset)))->State.GetNumber() : -1;
+				File.Write<sint32> (Index);
+			}
+			break;
 		};
 	};
 
@@ -596,6 +602,12 @@ public:
 			{
 				sint32 Index = File.Read<sint32> ();
 				*((CBaseItem **)(ClassOffset)) = (Index != -1) ? GetItemByIndex(Index) : NULL;
+			}
+			break;
+		case FT_ENTITY:
+			{
+				sint32 Index = File.Read<sint32> ();
+				*((CBaseEntity **)(ClassOffset)) = (Index == -1) ? NULL : g_edicts[Index].Entity;
 			}
 			break;
 		};

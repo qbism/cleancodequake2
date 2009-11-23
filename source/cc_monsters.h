@@ -293,8 +293,10 @@ public:
 
 	void SaveFields (CFile &File);
 	void LoadFields (CFile &File);
+#ifdef MONSTERS_USE_PATHFINDING
 	void WriteNodeInfo (CFile &File);
 	void ReadNodeInfo (CFile &File);
+#endif
 
 #define MONSTER_SOUND_ENUM(first,...) \
 	CC_ENUM(uint8, EMyMonsterSoundEnum) \

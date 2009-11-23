@@ -34,6 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_OPTIONS_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_OPTIONS_H__
 
+// Define this to override global macros
+#define ORIGINAL_QUAKE_2
+
 // Global macros
 // Monsters won't attack allies and will try not to hurt allies with shots
 #define MONSTERS_ARENT_STUPID
@@ -60,7 +63,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // This is a simple macro to disable deprecation for everything inside the macro.
 // This is only used internally; using this in your code could cause big problems.
-#if WIN32 && !defined(_NO_DEPRECATING_OLD_FUNCTIONS)
+#if defined(WIN32) && !defined(_NO_DEPRECATING_OLD_FUNCTIONS)
 	#define _CC_DISABLE_DEPRECATION		__pragma(warning(push)) \
 										__pragma(warning(disable:4996))
 
@@ -83,7 +86,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 
 // Define this if you want monsters to not be able to go through monstersolids
-//#define MONSTERS_HIT_MONSTERSOLID
+#define MONSTERS_HIT_MONSTERSOLID
 
 // Define this if you intend to use quaternions
 //#define SHARED_ALLOW_QUATERNIONS
@@ -123,6 +126,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Define this if you don't want to use CURL to get version info.
 //#define CC_NO_CURL
+
+// Monster-related preprocessor flags
+#define INFANTRY_DOES_REVERSE_GUN_ATTACK	1
+#define FLYER_KNOWS_HOW_TO_DODGE			2
+#define SUPERTANK_USES_GRENADES				4
+
+// Change this to change some global flags
+#define MONSTER_SPECIFIC_FLAGS (INFANTRY_DOES_REVERSE_GUN_ATTACK | FLYER_KNOWS_HOW_TO_DODGE | SUPERTANK_USES_GRENADES)
+
+#if defined(ORIGINAL_QUAKE_2)
+#undef MONSTERS_ARENT_STUPID
+#undef MONSTER_USE_ROGUE_AI
+#undef MONSTERS_USE_PATHFINDING
+#undef MONSTER_SPECIFIC_FLAGS
+#define MONSTER_SPECIFIC_FLAGS 0
+#endif
 
 #else
 FILE_WARNING

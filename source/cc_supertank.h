@@ -34,28 +34,32 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_SUPERTANK_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_SUPERTANK_H__
 
-#define SUPERTANK_USES_GRENADE_LAUNCHER
-
 class CSuperTank : public CMonster
 {
 public:
-	MediaIndex SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundPain3;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundSearch1;
-	MediaIndex	SoundSearch2;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_PAIN3,
+		SOUND_DEATH,
+		SOUND_SEARCH1,
+		SOUND_SEARCH2,
+		SOUND_TREAD,
 
-	MediaIndex	TreadSound;
+		SOUND_MAX
+	);
 
 	CSuperTank (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	void PlayTreadSound ();
 	void Explode ();
 	void MachineGun ();
 	void Rocket ();
 	void ReAttack1 ();
-#ifdef SUPERTANK_USES_GRENADE_LAUNCHER
+#if (MONSTER_SPECIFIC_FLAGS & SUPERTANK_USES_GRENADES)
 	void Grenade ();
 #endif
 

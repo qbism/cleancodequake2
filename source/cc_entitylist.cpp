@@ -33,6 +33,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#define MAX_CLASSNAME_CLASSES 1024
+
 class CEntityList
 {
 	CClassnameToClassIndex			*EntityList[MAX_CLASSNAME_CLASSES];
@@ -417,8 +419,9 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 		G_FindTeams ();
 
 	#ifdef MONSTERS_USE_PATHFINDING
-		LoadNodes();
-		LoadPathTable ();
+		LoadNodes ();
+		FinalizeNodes ();
+		//LoadPathTable ();
 	#endif
 
 		SetupTechSpawn();

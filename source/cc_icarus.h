@@ -39,15 +39,31 @@ class CIcarus : public CMonster
 public:
 	FrameNumber_t		TimeStamp;
 
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDeath1;
-	MediaIndex	SoundDeath2;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch1;
-	MediaIndex	SoundSearch2;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DEATH1,
+		SOUND_DEATH2,
+		SOUND_SIGHT,
+		SOUND_SEARCH1,
+		SOUND_SEARCH2,
+
+		SOUND_MAX
+	);
 
 	CIcarus (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		File.Write<FrameNumber_t> (TimeStamp);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		TimeStamp = File.Read<FrameNumber_t> ();
+	}
 
 	void ReAttack ();
 	void FireBlaster ();

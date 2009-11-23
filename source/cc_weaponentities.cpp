@@ -70,7 +70,7 @@ void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 
 		vec3f v = tr.EndPos - start;
 		float eta = (v.LengthFast() - tr.ent->maxs[0]) / speed;
-		*Monster->Monster->Dodge (self, eta);
+		Monster->Monster->Dodge (self, eta);
 	}
 #endif
 }

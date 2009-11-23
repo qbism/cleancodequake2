@@ -55,11 +55,12 @@ public:
 	vec3f						Origin; // Node's location
 	CBaseEntity					*Ent; // Node entity
 
-	TPathNodeChildrenContainer		Children;	// Children (connected nodes, basically)
+	TPathNodeChildrenContainer	Children;	// Children (connected nodes, basically)
 	CBaseEntity					*LinkedEntity;
 	// Testing 2
 	uint32						G, F, H;
 	CPathNode					*Parent;
+	sint32						ModelNumber;
 
 	CPathNode (vec3f Origin, ENodeType Type) :
 	Origin(Origin),
@@ -121,6 +122,7 @@ void InitNodes ();
 void RunNodes ();
 
 void LoadNodes();
+void FinalizeNodes ();
 
 void SavePathTable ();
 void LoadPathTable ();

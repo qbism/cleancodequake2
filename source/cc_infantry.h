@@ -34,25 +34,29 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_INFANTRY_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_INFANTRY_H__
 
-#define INFANTRY_DOES_REVERSE_GUN_ATTACK
-
 class CInfantry : public CMonster
 {
 public:
-	MediaIndex	SoundPain1;
-	MediaIndex	SoundPain2;
-	MediaIndex	SoundDie1;
-	MediaIndex	SoundDie2;
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DIE1,
+		SOUND_DIE2,
+		SOUND_GUNSHOT,
+		SOUND_WEAPON_COCK,
+		SOUND_PUNCH_SWING,
+		SOUND_PUNCH_HIT,
+		SOUND_SIGHT,
+		SOUND_SEARCH,
+		SOUND_IDLE,
 
-	MediaIndex	SoundGunshot;
-	MediaIndex	SoundWeaponCock;
-	MediaIndex	SoundPunchSwing;
-	MediaIndex	SoundPunchHit;
-	MediaIndex	SoundSight;
-	MediaIndex	SoundSearch;
-	MediaIndex	SoundIdle;
+		SOUND_MAX
+	);
 
 	CInfantry (uint32 ID);
+
+	MONSTER_SAVE_LOAD_NO_FIELDS
 
 #ifndef MONSTER_USE_ROGUE_AI
 	void Dodge (CBaseEntity *attacker, float eta);

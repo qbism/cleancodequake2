@@ -44,27 +44,27 @@ CMonster(ID)
 
 void CParasite::Launch ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundLaunch);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_LAUNCH]);
 }
 
 void CParasite::ReelIn ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundReelIn);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_REELIN]);
 }
 
 void CParasite::Sight ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundSight);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SIGHT]);
 }
 
 void CParasite::Tap ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundTap, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TAP], 255, ATTN_IDLE);
 }
 
 void CParasite::Scratch ()
 {
-	Entity->PlaySound (CHAN_WEAPON, SoundScratch, 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SCRATCH], 255, ATTN_IDLE);
 }
 
 CFrame ParasiteFramesStartFidget [] =
@@ -252,7 +252,7 @@ void CParasite::Pain (CBaseEntity *other, float kick, sint32 damage)
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? SoundPain1 : SoundPain2);
+	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
 	CurrentMove = &ParasiteMovePain1;
 }
@@ -319,9 +319,9 @@ void CParasite::DrainAttack ()
 
 	sint32 damage = (Entity->State.GetFrame() == FRAME_drain03) ? 5 : 2;
 	if (Entity->State.GetFrame() == FRAME_drain03)
-		Entity->Enemy->PlaySound (CHAN_AUTO, SoundImpact);
+		Entity->Enemy->PlaySound (CHAN_AUTO, Sounds[SOUND_IMPACT]);
 	else if (Entity->State.GetFrame() == FRAME_drain04)
-		Entity->PlaySound (CHAN_WEAPON, SoundSuck);
+		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SUCK]);
 
 	CTempEnt_Trails::FleshCable (start, end, Entity->State.GetNumber());
 
@@ -463,7 +463,7 @@ void CParasite::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 		return;
 
 // regular death
-	Entity->PlaySound (CHAN_VOICE, SoundDie);
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 	CurrentMove = &ParasiteMoveDeath;
@@ -479,17 +479,17 @@ End Death Stuff
 */
 void CParasite::Spawn ()
 {
-	SoundPain1 = SoundIndex ("parasite/parpain1.wav");	
-	SoundPain2 = SoundIndex ("parasite/parpain2.wav");	
-	SoundDie = SoundIndex ("parasite/pardeth1.wav");	
-	SoundLaunch = SoundIndex("parasite/paratck1.wav");
-	SoundImpact = SoundIndex("parasite/paratck2.wav");
-	SoundSuck = SoundIndex("parasite/paratck3.wav");
-	SoundReelIn = SoundIndex("parasite/paratck4.wav");
-	SoundSight = SoundIndex("parasite/parsght1.wav");
-	SoundTap = SoundIndex("parasite/paridle1.wav");
-	SoundScratch = SoundIndex("parasite/paridle2.wav");
-	SoundSearch = SoundIndex("parasite/parsrch1.wav");
+	Sounds[SOUND_PAIN1] = SoundIndex ("parasite/parpain1.wav");	
+	Sounds[SOUND_PAIN2] = SoundIndex ("parasite/parpain2.wav");	
+	Sounds[SOUND_DIE] = SoundIndex ("parasite/pardeth1.wav");	
+	Sounds[SOUND_LAUNCH] = SoundIndex("parasite/paratck1.wav");
+	Sounds[SOUND_IMPACT] = SoundIndex("parasite/paratck2.wav");
+	Sounds[SOUND_SUCK] = SoundIndex("parasite/paratck3.wav");
+	Sounds[SOUND_REELIN] = SoundIndex("parasite/paratck4.wav");
+	Sounds[SOUND_SIGHT] = SoundIndex("parasite/parsght1.wav");
+	Sounds[SOUND_TAP] = SoundIndex("parasite/paridle1.wav");
+	Sounds[SOUND_SCRATCH] = SoundIndex("parasite/paridle2.wav");
+	Sounds[SOUND_SEARCH] = SoundIndex("parasite/parsrch1.wav");
 
 	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/parasite/tris.md2");
 	Entity->GetMins().Set (-16, -16, -24);

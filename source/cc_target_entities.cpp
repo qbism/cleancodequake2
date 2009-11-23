@@ -1540,6 +1540,10 @@ public:
 
 ENTITYFIELDS_BEGIN(CTargetEarthquake)
 {
+	// I found this field in biggun.bsp.
+	// Supporting it.
+	CEntityField ("duration", EntityMemberOffset(CTargetEarthquake,Duration), FT_FRAMENUMBER),
+
 	CEntityField ("speed", EntityMemberOffset(CTargetEarthquake,Speed), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("count", EntityMemberOffset(CTargetEarthquake,Duration), FT_FRAMENUMBER | FT_SAVABLE),
 

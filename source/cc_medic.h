@@ -39,18 +39,37 @@ class CMedic : public CMonster
 public:
 	FrameNumber_t	MedicTryTime;
 	uint8			MedicTries;
-	MediaIndex		SoundIdle1;
-	MediaIndex		SoundPain1;
-	MediaIndex		SoundPain2;
-	MediaIndex		SoundDie;
-	MediaIndex		SoundSight;
-	MediaIndex		SoundSearch;
-	MediaIndex		SoundHookLaunch;
-	MediaIndex		SoundHookHit;
-	MediaIndex		SoundHookHeal;
-	MediaIndex		SoundHookRetract;
+
+	MONSTER_SOUND_ENUM
+	(
+		SOUND_IDLE,
+		SOUND_PAIN1,
+		SOUND_PAIN2,
+		SOUND_DIE,
+		SOUND_SIGHT,
+		SOUND_SEARCH,
+		SOUND_HOOK_LAUNCH,
+		SOUND_HOOK_HIT,
+		SOUND_HOOK_HEAL,
+		SOUND_HOOK_RETRACT,
+
+		SOUND_MAX
+	);
 
 	CMedic (uint32 ID);
+
+	void SaveMonsterFields (CFile &File)
+	{
+		SAVE_MONSTER_SOUNDS
+		File.Write<FrameNumber_t> (MedicTryTime);
+		File.Write<uint8> (MedicTries);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		MedicTryTime = File.Read<FrameNumber_t> ();
+		MedicTries = File.Read<uint8> ();
+	}
 
 	void Attack ();
 	void Run ();
