@@ -336,7 +336,7 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 		return;
 
 	if (dedicated->Integer())
-		Com_Printf(PRINT_CHAT, "%s", text);
+		DebugPrintf ("%s", text);
 
 	CSayPlayerCallback (text).Query ();
 }
@@ -640,7 +640,7 @@ void Cmd_Register ()
 ClientCommand
 =================
 */
-void CC_ClientCommand (CPlayerEntity *ent)
+void CGameAPI::ClientCommand (CPlayerEntity *ent)
 {
 	InitArg ();
 	Cmd_RunCommand (ArgGets(0), ent);

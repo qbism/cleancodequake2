@@ -34,6 +34,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
 
+#define SAVE_USE_GZ
+
+#ifdef SAVE_USE_GZ
+#define SAVE_GZ_FLAGS FILEMODE_GZ | FILEMODE_COMPRESS_HIGH
+#else
+#define SAVE_GZ_FLAGS 0
+#endif
+
 typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityTableList;
 #define MAX_ENTITY_TABLE_HASH 256
 
@@ -304,8 +312,8 @@ void ReadEntities (CFile &File)
 		LoadedNumbers.push_back (number);
 		ReadEntity (File, number);
 	
-		if (globals.numEdicts < number + 1)
-			globals.numEdicts = number + 1;	
+		if (Game.GetNumEdicts() < number + 1)
+			Game.GetNumEdicts() = number + 1;	
 	}
 
 	// Here, load any systems that need entity lists
@@ -357,14 +365,14 @@ void ReadGameLocals (CFile &File)
 	game.Load (File);
 }
 
-void CC_WriteGame (char *filename, bool autosave)
+void CGameAPI::WriteGame (char *filename, bool autosave)
 {
 	DebugPrintf ("Writing %sgame to %s...\n", (autosave) ? "autosaved " : "", filename);
 
 	if (!autosave)
 		CPlayerEntity::SaveClientData ();
 
-	CFile File (filename, FILEMODE_WRITE | FILEMODE_CREATE);
+	CFile File (filename, FILEMODE_WRITE | FILEMODE_CREATE | SAVE_GZ_FLAGS);
 
 	if (!File.Valid())
 	{
@@ -381,13 +389,13 @@ void CC_WriteGame (char *filename, bool autosave)
 #include "cc_ban.h"
 void InitVersion ();
 
-void CC_ReadGame (char *filename)
+void CGameAPI::ReadGame (char *filename)
 {
 	DebugPrintf ("Reading game from %s...\n", filename);
 
 	// Free any game-allocated memory before us
 	Mem_FreePool (com_gamePool);
-	CFile File (filename, FILEMODE_READ);
+	CFile File (filename, FILEMODE_READ | SAVE_GZ_FLAGS);
 
 	if (!File.Valid())
 	{
@@ -406,7 +414,7 @@ void CC_ReadGame (char *filename)
 	seedMT (time(NULL));
 
 	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
-	globals.edicts = g_edicts;
+	Game.SetEntities (g_edicts);
 	ReadGameLocals (File);
 
 	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
@@ -421,10 +429,10 @@ void SaveBodyQueue (CFile &File);
 void LoadJunk (CFile &File);
 void SaveJunk (CFile &File);
 
-void CC_WriteLevel (char *filename)
+void CGameAPI::WriteLevel (char *filename)
 {
 	DebugPrintf ("Writing level to %s...\n", filename);
-	CFile File (filename, FILEMODE_WRITE | FILEMODE_CREATE);
+	CFile File (filename, FILEMODE_WRITE | FILEMODE_CREATE | SAVE_GZ_FLAGS);
 
 	if (!File.Valid())
 	{
@@ -436,7 +444,7 @@ void CC_WriteLevel (char *filename)
 	File.Write<size_t> (sizeof(edict_t));
 
 	// write out a function pointer for checking
-	byte *base = (byte *)CC_InitGame;
+	byte *base = (byte *)ReadClient;
 	File.Write (&base, sizeof(base));
 
 	// write out level_locals_t
@@ -460,10 +468,10 @@ void FireCrosslevelTrigger (CBaseEntity *Entity);
 
 #include "cc_bodyqueue.h"
 
-void CC_ReadLevel (char *filename)
+void CGameAPI::ReadLevel (char *filename)
 {
 	DebugPrintf ("Reading level from %s...\n", filename);
-	CFile File (filename, FILEMODE_READ);
+	CFile File (filename, FILEMODE_READ | SAVE_GZ_FLAGS);
 
 	if (!File.Valid())
 	{
@@ -509,7 +517,7 @@ void CC_ReadLevel (char *filename)
 	File.Read (&base, sizeof(base));
 
 #ifdef _WIN32
-	if (base != (byte *)CC_InitGame)
+	if (base != (byte *)ReadClient)
 	{
 		GameError ("ReadLevel: function pointers have moved");
 		return;
@@ -540,9 +548,10 @@ void CC_ReadLevel (char *filename)
 	}
 
 	// do any load time things at this point
-	for (sint32 i = 0; i < globals.numEdicts; i++)
+	// FIXME: make this faster...
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 	{
-		edict_t *ent = &g_edicts[i];
+		edict_t *ent = (*it);
 
 		if (!ent->inUse)
 			continue;
@@ -551,357 +560,4 @@ void CC_ReadLevel (char *filename)
 		if ((ent->Entity->ClassName) && strcmp(ent->Entity->ClassName, "target_crosslevel_target") == 0)
 			FireCrosslevelTrigger (ent->Entity);
 	}
-}
-
-//=========================================================
-
-/*
-============
-WriteGame
-
-This will be called whenever the game goes to a new level,
-and when the user explicitly saves the game.
-
-Game information include cross level data, like multi level
-triggers, help computer info, and all client states.
-
-A single player death will automatically restore from the
-last save position.
-============
-*/
-void WriteGame (char *filename, BOOL autosave)
-{
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-	CC_WriteGame (filename, !!autosave);
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-#if 0
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-
-	fileHandle_t f;
-	sint32		i;
-	char	str[16];
-
-	if (!autosave)
-		CPlayerEntity::SaveClientData ();
-
-	FS_OpenFile (filename, &f, FILEMODE_WRITE, false);
-
-	if (!f)
-	{
-		GameError ("Couldn't open %s", filename);
-		return; // Fix to engines who don't shutdown on gi.error
-	}
-
-	memset (str, 0, sizeof(str));
-	Q_strncpyz (str, __DATE__, sizeof(str));
-	FS_Write (str, sizeof(str), f);
-
-	game.autosaved = autosave ? true : false;
-	FS_Write (&game, sizeof(game), f);
-	game.autosaved = false;
-
-	for (i=0 ; i<game.maxclients ; i++)
-		WriteClient (f, entity_cast<CPlayerEntity>(g_edicts[i+1].Entity));
-
-	FS_CloseFile (f);
-
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-#endif
-}
-
-void InitPlayers ();
-void ReadGame (char *filename)
-{
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-	CC_ReadGame (filename);
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-
-#if 0
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-
-	fileHandle_t	f;
-	char	str[16];
-
-	//Mem_FreePool (com_gamePool);
-	FS_OpenFile (filename, &f, FILEMODE_READ, false);
-
-	if (!f)
-		GameError ("Couldn't open %s", filename);
-
-	FS_Read (str, sizeof(str), f);
-	if (strcmp (str, __DATE__))
-	{
-		FS_CloseFile (f);
-		GameError ("Savegame from an older version.\n");
-		return;
-	}
-
-	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
-	globals.edicts = g_edicts;
-
-	FS_Read (&game, sizeof(game), f);
-	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
-	InitPlayers();
-	for (sint32 i=0 ; i<game.maxclients ; i++)
-		ReadClient (f, entity_cast<CPlayerEntity>(g_edicts[i+1].Entity));
-
-	FS_CloseFile (f);
-
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-#endif
-}
-
-//==========================================================
-
-
-#if 0
-/*
-==============
-WriteLevelLocals
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void WriteLevelLocals (fileHandle_t f)
-{
-	field_t		*field;
-	CLevelLocals		temp;
-
-	// all of the ints, floats, and vectors stay as they are
-	temp = level;
-
-	// change the pointers to lengths or indexes
-	for (field=levelfields ; field->name ; field++)
-		WriteField1 (f, field, (uint8 *)&temp);
-
-	// write the block
-	FS_Write (&temp, sizeof(temp), f);
-
-	// now write any allocated data following the edict
-	for (field=levelfields ; field->name ; field++)
-		WriteField2 (f, field, (uint8 *)&level);
-}
-
-/*
-==============
-ReadLevelLocals
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void ReadLevelLocals (fileHandle_t f)
-{
-	field_t		*field;
-
-	FS_Read (&level, sizeof(level), f);
-
-	for (field=levelfields ; field->name ; field++)
-		ReadField (f, field, (uint8 *)&level);
-}
-#endif
-
-/*
-=================
-WriteLevel
-
-=================
-*/
-void WriteLevel (char *filename)
-{
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-	CC_WriteLevel (filename);
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-
-#if 0
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-
-	sint32		i;
-	edict_t	*ent;
-	fileHandle_t	f;
-	void	*base;
-
-	FS_OpenFile (filename, &f, FILEMODE_WRITE, false);
-
-	if (!f)
-		GameError ("Couldn't open %s", filename);
-
-	// write out edict size for checking
-	i = sizeof(edict_t);
-	FS_Write (&i, sizeof(i), f);
-
-	// write out a function pointer for checking
-	base = (void *)InitGame;
-	FS_Write (&base, sizeof(base), f);
-
-	// write out level_locals_t
-	WriteLevelLocals (f);
-
-	// write out all the entities
-	for (i=0 ; i<globals.numEdicts ; i++)
-	{
-		ent = &g_edicts[i];
-		if (!ent->inUse)
-			continue;
-		FS_Write (&i, sizeof(i), f);
-		WriteEdict (f, ent);
-	}
-	i = -1;
-	FS_Write (&i, sizeof(i), f);
-
-	FS_CloseFile (f);
-
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-#endif
-}
-
-
-/*
-=================
-ReadLevel
-
-SpawnEntities will allready have been called on the
-level the same way it was when the level was saved.
-
-That is necessary to get the baselines
-set up identically.
-
-The server will have cleared all of the world links before
-calling ReadLevel.
-
-No clients are connected yet.
-=================
-*/
-void ReadLevel (char *filename)
-{
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-	CC_ReadLevel (filename);
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-
-#if 0
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_BEGIN
-#endif
-
-	sint32		entNum;
-	fileHandle_t	f;
-	sint32		i;
-	void	*base;
-	edict_t	*ent;
-
-	FS_OpenFile (filename, &f, FILEMODE_READ, false);
-
-	if (!f)
-		GameError ("Couldn't open %s", filename);
-
-	// free any dynamic memory allocated by loading the level
-	// base state
-	Mem_FreePool (com_levelPool);
-	Mem_FreePool (com_genericPool);
-
-	// wipe all the entities
-	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));
-	globals.numEdicts = game.maxclients+1;
-
-	// check edict size
-	FS_Read (&i, sizeof(i), f);
-	if (i != sizeof(edict_t))
-	{
-		FS_CloseFile (f);
-		GameError ("ReadLevel: mismatched edict size");
-	}
-
-	// check function pointer base address
-	FS_Read (&base, sizeof(base), f);
-#ifdef _WIN32
-	if (base != (void *)InitGame)
-	{
-		//FS_CloseFile (f);
-		//GameError ("ReadLevel: function pointers have moved");
-	}
-#else
-	gi.dprintf("Function offsets %d\n", ((uint8 *)base) - ((uint8 *)InitGame));
-#endif
-
-	// load the level locals
-	ReadLevelLocals (f);
-
-	// load all the entities
-	while (1)
-	{
-		if (FS_Read (&entNum, sizeof(entNum), f) == 0)
-		{
-			FS_CloseFile (f);
-			GameError ("ReadLevel: failed to read entNum");
-		}
-		if (entNum == -1)
-			break;
-		if (entNum >= globals.numEdicts)
-			globals.numEdicts = entNum+1;
-
-		ent = &g_edicts[entNum];
-		ReadEdict (f, ent);
-
-		// let the server rebuild world links for this ent
-		memset (&ent->area, 0, sizeof(ent->area));
-		gi.linkentity (ent);
-	}
-
-	FS_CloseFile (f);
-
-	InitPlayers ();
-	// mark all clients as unconnected
-	for (i=0 ; i<game.maxclients ; i++)
-	{
-		ent = &g_edicts[i+1];
-		ent->client = game.clients + i;
-
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
-		Player->Client.Persistent.state = SVCS_FREE;
-	}
-
-	// do any load time things at this point
-	for (i=0 ; i<globals.numEdicts ; i++)
-	{
-		ent = &g_edicts[i];
-
-		if (!ent->inUse)
-			continue;
-
-		// fire any cross-level triggers
-		if ((ent->Entity->ClassName) && strcmp(ent->Entity->ClassName, "target_crosslevel_target") == 0)
-			entity_cast<CThinkableEntity>(ent->Entity)->NextThink = level.Frame + (ent->delay * 10);
-	}
-
-#ifdef CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END
-#endif
-#endif
 }

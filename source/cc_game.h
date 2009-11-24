@@ -35,11 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_GAME_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_GAME_H__
 
-void CC_RunFrame ();
-void CC_InitGame ();
-void CC_ShutdownGame ();
-void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint);
-
 // edict->svFlags
 
 CC_ENUM (sint32, EServerFlags)

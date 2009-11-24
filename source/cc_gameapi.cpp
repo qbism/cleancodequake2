@@ -91,6 +91,33 @@ _CC_ENABLE_DEPRECATION
 //
 //
 
+bool CGameAPI::ClientConnect (CPlayerEntity *Player, char *userinfo)
+{
+	return Player->Connect (userinfo);
+}
+
+void CGameAPI::ClientBegin (CPlayerEntity *Player)
+{
+	Player->Begin ();
+}
+
+void CGameAPI::ClientUserinfoChanged (CPlayerEntity *Player, char *userInfo)
+{
+	Player->UserinfoChanged (userInfo);
+}
+
+void CGameAPI::ClientDisconnect (CPlayerEntity *Player)
+{
+	Player->Disconnect ();
+}
+
+void CGameAPI::ClientThink (CPlayerEntity *Player, userCmd_t *cmd)
+{
+	Player->ClientThink (cmd);
+}
+
+GAME_CLASS	Game;
+
 /*
 ===========
 ShutdownGame
@@ -104,15 +131,12 @@ void ShutdownGame ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	CC_ShutdownGame ();
+	Game.Shutdown ();
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
-
-
-#ifndef _FRONTEND
 
 /*
 ===========
@@ -128,7 +152,7 @@ void ClientBegin (edict_t *ent)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	entity_cast<CPlayerEntity>(ent->Entity)->Begin ();
+	Game.ClientBegin (entity_cast<CPlayerEntity>(ent->Entity));
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -151,7 +175,7 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	entity_cast<CPlayerEntity>(ent->Entity)->UserinfoChanged (userinfo);
+	Game.ClientUserinfoChanged (entity_cast<CPlayerEntity>(ent->Entity), userinfo);
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -177,7 +201,7 @@ BOOL ClientConnect (edict_t *ent, char *userinfo)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	return (entity_cast<CPlayerEntity>(ent->Entity)->Connect(userinfo)) ? 1 : 0;
+	return (Game.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END_CUSTOM
@@ -201,7 +225,7 @@ void ClientDisconnect (edict_t *ent)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	entity_cast<CPlayerEntity>(ent->Entity)->Disconnect();
+	Game.ClientDisconnect (entity_cast<CPlayerEntity>(ent->Entity));
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -225,7 +249,7 @@ void ClientThink (edict_t *ent, userCmd_t *ucmd)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-(entity_cast<CPlayerEntity>(ent->Entity))->ClientThink (ucmd);
+	Game.ClientThink (entity_cast<CPlayerEntity>(ent->Entity), ucmd);
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -245,7 +269,7 @@ void RunFrame ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	CC_RunFrame ();
+	Game.RunFrame ();
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -267,7 +291,7 @@ void InitGame ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	CC_InitGame ();
+	Game.Init ();
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -288,7 +312,7 @@ void SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	CC_SpawnEntities (ServerLevelName, entities, spawnpoint);
+	Game.SpawnEntities (ServerLevelName, entities, spawnpoint);
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -310,7 +334,7 @@ void ServerCommand ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	CC_ServerCommand ();
+	Game.ServerCommand ();
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -332,7 +356,98 @@ CC_EXCEPTION_HANDLER_BEGIN
 	if (!ent->client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.state != SVCS_SPAWNED))
 		return;		// not fully in game yet
 
-	CC_ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
+	Game.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
+
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+}
+
+/*
+============
+WriteGame
+
+This will be called whenever the game goes to a new level,
+and when the user explicitly saves the game.
+
+Game information include cross level data, like multi level
+triggers, help computer info, and all client states.
+
+A single player death will automatically restore from the
+last save position.
+============
+*/
+void WriteGame (char *filename, BOOL autosave)
+{
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+
+	Game.WriteGame (filename, !!autosave);
+
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+}
+
+void ReadGame (char *filename)
+{
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+
+	Game.ReadGame (filename);
+
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+}
+
+//==========================================================
+
+/*
+=================
+WriteLevel
+
+=================
+*/
+void WriteLevel (char *filename)
+{
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+
+#endif
+	Game.WriteLevel (filename);
+
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_END
+#endif
+}
+
+
+/*
+=================
+ReadLevel
+
+SpawnEntities will allready have been called on the
+level the same way it was when the level was saved.
+
+That is necessary to get the baselines
+set up identically.
+
+The server will have cleared all of the world links before
+calling ReadLevel.
+
+No clients are connected yet.
+=================
+*/
+void ReadLevel (char *filename)
+{
+#ifdef CC_USE_EXCEPTION_HANDLER
+CC_EXCEPTION_HANDLER_BEGIN
+#endif
+
+	Game.ReadLevel (filename);
 
 #ifdef CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -348,7 +463,62 @@ and global variables
 =================
 */
 
-gameExport_t	globals =
+//
+// functions exported by the game subsystem
+//
+struct gameExport_t
+{
+	sint32			apiVersion;
+
+	// the init function will only be called when a game starts,
+	// not each time a level is loaded.  Persistant data for clients
+	// and the server can be allocated in init
+	void		(*Init) ();
+	void		(*Shutdown) ();
+
+	// each new level entered will cause a call to SpawnEntities
+	void		(*SpawnEntities) (char *mapName, char *entString, char *spawnPoint);
+
+	// Read/Write Game is for storing persistant cross level information
+	// about the world state and the clients.
+	// WriteGame is called every time a level is exited.
+	// ReadGame is called on a loadgame.
+	void		(*WriteGame) (char *fileName, BOOL autoSave);
+	void		(*ReadGame) (char *fileName);
+
+	// ReadLevel is called after the default map information has been
+	// loaded with SpawnEntities
+	void		(*WriteLevel) (char *filename);
+	void		(*ReadLevel) (char *filename);
+
+	BOOL		(*ClientConnect) (edict_t *ent, char *userInfo);
+	void		(*ClientBegin) (edict_t *ent);
+	void		(*ClientUserinfoChanged) (edict_t *ent, char *userInfo);
+	void		(*ClientDisconnect) (edict_t *ent);
+	void		(*ClientCommand) (edict_t *ent);
+	void		(*ClientThink) (edict_t *ent, userCmd_t *cmd);
+
+	void		(*RunFrame) ();
+
+	// ServerCommand will be called when an "sv <command>" command is issued on the
+	// server console.
+	// The game can issue gi.argc() / gi.argv() commands to get the rest
+	// of the parameters
+	void		(*ServerCommand) ();
+
+	//
+	// global variables shared between game and server
+	//
+
+	// The edict array is allocated in the game dll so it
+	// can vary in size from one game to another.
+	// 
+	// The size will be fixed when ge->Init() is called
+	edict_t		*edicts;
+	sint32		edictSize;
+	sint32		numEdicts;		// current number, <= MAX_CS_EDICTS
+	sint32		maxEdicts;
+} globals =
 {
 	GAME_APIVERSION,
 	InitGame,
@@ -372,6 +542,31 @@ gameExport_t	globals =
 	0
 };
 
+edict_t *CGameAPI::GetEntities ()
+{
+	return globals.edicts;
+};
+
+void CGameAPI::SetEntities (edict_t *entities)
+{
+	globals.edicts = entities;
+};
+
+sint32 &CGameAPI::GetEdictSize ()
+{
+	return globals.edictSize;
+};
+
+sint32 &CGameAPI::GetNumEdicts()
+{
+	return globals.numEdicts;
+};
+
+sint32 &CGameAPI::GetMaxEdicts()
+{
+	return globals.maxEdicts;
+};
+
 gameExport_t *GetGameAPI (gameImport_t *import)
 {
 	gi = *import;
@@ -379,48 +574,3 @@ gameExport_t *GetGameAPI (gameImport_t *import)
 	Swap_Init ();
 	return &globals;
 }
-#endif
-
-#ifndef GAME_HARD_LINKED
-// this is only here so the functions in q_shared.c and q_shwin.c can link
-
-void Com_Printf (EComPrint flags, char *fmt, ...)
-{
-	va_list		argptr;
-	static char	text[MAX_COMPRINT];
-
-	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
-	va_end (argptr);
-
-	DebugPrintf ("%s", text);
-}
-
-void Com_DevPrintf (EComPrint flags, char *fmt, ...)
-{
-	va_list		argptr;
-	static char	text[MAX_COMPRINT];
-
-	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
-	va_end (argptr);
-
-	DebugPrintf ("%s", text);
-}
-
-// FIXME code is ignored
-void Com_Error (EComErrorType code, char *fmt, ...)
-{
-	va_list		argptr;
-	static char	text[MAX_COMPRINT];
-
-	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
-	va_end (argptr);
-
-_CC_DISABLE_DEPRECATION
-	gi.error ("%s", text);
-_CC_ENABLE_DEPRECATION
-}
-
-#endif

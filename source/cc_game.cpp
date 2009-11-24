@@ -245,7 +245,7 @@ void CheckVersionReturnance ();
 
 /*
 ================
-CC_RunFrame
+RunFrame
 
 Advances the world by 0.1 seconds
 ================
@@ -258,7 +258,7 @@ void			RunPrivateEntities ();
 #endif
 
 extern bool requestedBreak;
-void CC_RunFrame ()
+void CGameAPI::RunFrame ()
 {
 	if (requestedBreak)
 	{
@@ -614,7 +614,7 @@ void G_Register ()
 	#endif
 #endif
 
-void CC_InitGame ()
+void CGameAPI::Init ()
 {
 	CTimer LoadTimer;
 
@@ -643,13 +643,13 @@ void CC_InitGame ()
 	// initialize all entities for this game
 	game.maxentities = maxentities->Integer();
 	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
-	globals.edicts = g_edicts;
-	globals.maxEdicts = game.maxentities;
+	Game.SetEntities(g_edicts);
+	Game.GetMaxEdicts() = game.maxentities;
 
 	// initialize all clients for this game
 	game.maxclients = maxclients->Integer();
 	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
-	globals.numEdicts = game.maxclients+1;
+	Game.GetNumEdicts() = game.maxclients + 1;
 
 	// Vars
 	game.maxspectators = maxspectators->Integer();
@@ -660,10 +660,9 @@ void CC_InitGame ()
 	Mem_Register ();
 
 	DebugPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
-	InitVersion ();
 }
 
-void CC_ShutdownGame ()
+void CGameAPI::Shutdown ()
 {
 	DebugPrintf ("==== ShutdownGame ====\n");
 

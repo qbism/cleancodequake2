@@ -115,7 +115,7 @@ static void Mem_AddPuddles(memPuddleInfo_t *pInfo)
 
 	void *Buffer = calloc(TotalSize, 1);
 	if (!Buffer)
-		Com_Error(ERR_FATAL, "Mem_AddPuddles: failed on allocation of %i bytes", TotalSize);
+		GameError ("Mem_AddPuddles: failed on allocation of %i bytes", TotalSize);
 
 	for (size_t i = 0; i < pInfo->granularity; i++)
 	{
@@ -315,11 +315,11 @@ memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const sint32 
 	// Check name
 	if (!name || !name[0])
 	{
-		Com_Error (ERR_FATAL, "Mem_CreatePool: NULL name %s:#%i", fileName, fileLine);
+		GameError ("Mem_CreatePool: NULL name %s:#%i", fileName, fileLine);
 		return NULL;
 	}
 	if (strlen(name)+1 >= MEM_MAX_POOL_NAME)
-		Com_Printf (PRNT_WARNING, "Mem_CreatePoole: name '%s' too long, truncating!\n", name);
+		DebugPrintf ("Mem_CreatePoole: name '%s' too long, truncating!\n", name);
 
 	// See if it already exists
 	pool = Mem_FindPool (name);
@@ -335,7 +335,7 @@ memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const sint32 
 	if (i == m_numPools)
 	{
 		if (m_numPools+1 >= MEM_MAX_POOL_COUNT)
-			Com_Error (ERR_FATAL, "Mem_CreatePool: MEM_MAX_POOL_COUNT");
+			GameError ("Mem_CreatePool: MEM_MAX_POOL_COUNT");
 		pool = &m_poolList[m_numPools++];
 	}
 
@@ -393,7 +393,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 	if (mem->topSentinel != MEM_SENTINEL_TOP(mem))
 	{
 		_CC_ASSERT_EXPR (0, "Bad memory block top sentinel");
-		Com_Error (ERR_FATAL,
+		GameError (
 			"Mem_Free: bad memory block top sentinel\n"
 			"check: %s:#%i",
 			fileName, fileLine);
@@ -401,7 +401,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 	else if (*((uint8*)mem->memPointer+mem->memSize) != MEM_SENTINEL_FOOT(mem))
 	{
 		_CC_ASSERT_EXPR (0, "Bad memory footer sentinel (buffer overflow)");
-		Com_Error (ERR_FATAL,
+		GameError (
 			"Mem_Free: bad memory footer sentinel [buffer overflow]\n"
 			"pool: %s\n"
 			"alloc: %s:#%i\n"
@@ -524,11 +524,11 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const
 	// Check size
 	if (size <= 0)
 	{
-		Com_DevPrintf (PRNT_WARNING, "Mem_Alloc: Attempted allocation of '%i' memory ignored\n" "alloc: %s:#%i\n", size, fileName, fileLine);
+		DeveloperPrintf ("Mem_Alloc: Attempted allocation of '%i' memory ignored\n" "alloc: %s:#%i\n", size, fileName, fileLine);
 		return NULL;
 	}
 	if (size > MEM_MAX_ALLOC)
-		Com_Error (ERR_FATAL, "Mem_Alloc: Attempted allocation of '%i' bytes!\n" "alloc: %s:#%i\n", size, fileName, fileLine);
+		GameError ("Mem_Alloc: Attempted allocation of '%i' bytes!\n" "alloc: %s:#%i\n", size, fileName, fileLine);
 
 	// Try to allocate in a puddle
 	if (Mem_PuddleWorthy(size))
@@ -543,7 +543,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const
 		mem = (memBlock_t*)calloc (1, newSize);
 		if (!mem)
 		{
-			Com_Error (ERR_FATAL, "Mem_Alloc: failed on allocation of %i bytes\n" "alloc: %s:#%i", newSize, fileName, fileLine);
+			GameError ("Mem_Alloc: failed on allocation of %i bytes\n" "alloc: %s:#%i", newSize, fileName, fileLine);
 			return NULL;
 		}
 
@@ -738,9 +738,9 @@ void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, cons
 
 	// Check block/uint8 counts
 	if (pool->blockCount != blocks)
-		Com_Error (ERR_FATAL, "Mem_CheckPoolIntegrity: bad block count\n" "check: %s:#%i", fileName, fileLine);
+		GameError ("Mem_CheckPoolIntegrity: bad block count\n" "check: %s:#%i", fileName, fileLine);
 	if (pool->byteCount != size)
-		Com_Error (ERR_FATAL, "Mem_CheckPoolIntegrity: bad pool size\n" "check: %s:#%i", fileName, fileLine);
+		GameError ("Mem_CheckPoolIntegrity: bad pool size\n" "check: %s:#%i", fileName, fileLine);
 }
 
 
@@ -760,7 +760,7 @@ void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 			_Mem_CheckPoolIntegrity(pool, fileName, fileLine);
 	}
 
-	Com_DevPrintf (0, "Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
+	DebugPrintf ("Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
 }
 
 
@@ -813,7 +813,7 @@ void _Mem_TouchGlobal(const char *fileName, const sint32 fileLine)
 		numTouched++;
 	}
 
-	Com_DevPrintf(0, "Mem_TouchGlobal: %u pools touched in "TIMER_STRING"\n", numTouched, Timer.Get());
+	DebugPrintf("Mem_TouchGlobal: %u pools touched in "TIMER_STRING"\n", numTouched, Timer.Get());
 }
 
 /*

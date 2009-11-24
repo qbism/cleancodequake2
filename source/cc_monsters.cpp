@@ -41,22 +41,42 @@ MONSTER LIST
 ===============================
 */
 
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedMonsterListType;
+
 std::vector<CMonsterTableIndex*, std::generic_allocator <CMonsterTableIndex*> > MonsterTable;
+
+THashedMonsterListType &MonsterHashTable ()
+{
+	static THashedMonsterListType Table;
+	return Table;
+}
 
 CMonsterTableIndex::CMonsterTableIndex (const char *Name, CMonster *(*FuncPtr) (uint32 MonsterID)) :
   Name(Name),
   FuncPtr(FuncPtr)
 {
 	MonsterTable.push_back (this);
+
+	// Link it in the hash tree
+	MonsterHashTable().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_CLASSNAME_CLASSES_HASH), MonsterTable.size()-1));
 };
 
 CMonster *CreateMonsterFromTable (uint32 MonsterID, const char *Name)
 {
-	for (size_t i = 0; i < MonsterTable.size(); i++)
+/*	for (size_t i = 0; i < MonsterTable.size(); i++)
 	{
 		if (strcmp(Name, MonsterTable[i]->Name) == 0)
 			return MonsterTable[i]->FuncPtr(MonsterID);
+	}*/
+	uint32 hash = Com_HashGeneric(Name, MAX_CLASSNAME_CLASSES_HASH);
+
+	for (THashedMonsterListType::iterator it = MonsterHashTable().equal_range(hash).first; it != MonsterHashTable().equal_range(hash).second; ++it)
+	{
+		CMonsterTableIndex *Table = MonsterTable.at((*it).second);
+		if (Q_stricmp (Table->Name, Name) == 0)
+			return Table->FuncPtr(MonsterID);
 	}
+
 	return NULL;
 };
 
@@ -1654,6 +1674,9 @@ bool CMonster::CheckAttack ()
 	float	chance;
 	CTrace	tr;
 
+	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
+		return false;
+
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
@@ -1962,6 +1985,13 @@ bool CMonster::AI_CheckAttack()
 		{
 			if (Entity->Enemy)
 			{
+				if (Entity->Enemy->EntityFlags & ENT_HURTABLE)
+				{
+					AIFlags &= ~AI_SOUND_TARGET; // WTF?
+					Entity->OldEnemy = NULL;
+					return false;
+				}
+
 				if ((level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
 				{
 					if (Entity->GoalEntity == Entity->Enemy)

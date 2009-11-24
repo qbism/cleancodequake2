@@ -1477,29 +1477,25 @@ public:
 
 	void Think ()
 	{
-		sint32		i;
-		edict_t	*e;
-
 		if (LastShakeTime < level.Frame)
 		{
 			PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, NoiseIndex, 1.0, ATTN_NONE);
 			LastShakeTime = level.Frame + 5;
 		}
 
-		for (i=1, e=g_edicts+i; i < globals.numEdicts; i++,e++)
+		//for (i=1, e=g_edicts+i; i < globals.numEdicts; i++,e++)
+		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 		{
-			if (!e->inUse)
-				continue;
-			if (!e->Entity)
-				continue;
+			CBaseEntity *Entity = (*it)->Entity;
 
-			CBaseEntity *Entity = e->Entity;
+			if (!Entity || !Entity->GetInUse())
+				continue;
 
 			if (!Entity->GroundEntity)
 				continue;
 
 			if (!(Entity->EntityFlags & ENT_PLAYER))
-				continue;
+				break;
 
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 

@@ -32,6 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+#include "zlib.h"
 
 // Error management
 void FS_Error (const char *errorMsg)
@@ -110,9 +111,10 @@ public:
 	fsHandleIndex() :
 	  name(name),
 	  inUse(false),
-	  openMode(FILEMODE_NONE),
-	  regFile(NULL)
+	  openMode(FILEMODE_NONE)
 	  {
+		  file.reg = NULL;
+		  file.gz = NULL;
 	  };
 
 	void Clear ()
@@ -123,9 +125,14 @@ public:
 	std::cc_string			name;
 
 	bool					inUse;
+	EFileType				fileType;
 	EFileOpMode				openMode;
 
-	FILE					*regFile;
+	union
+	{
+		FILE					*reg;
+		gzFile					gz;
+	} file;
 };
 
 typedef std::map<fileHandle_t, fsHandleIndex, std::less<fileHandle_t>, std::generic_allocator <std::pair<fileHandle_t, fsHandleIndex> > > THandleIndexListType;
@@ -233,7 +240,10 @@ void FS_Close (fileHandle_t &handle)
 
 	if (handleIndex)
 	{
-		fclose(handleIndex->regFile);
+		if (IS_REGULAR(handleIndex))
+			fclose(handleIndex->file.reg);
+		else
+			gzclose(handleIndex->file.gz);
 
 		// Invalidate the handle
 		IndexList->PushFreeHandle (handle - 1);
@@ -242,14 +252,14 @@ void FS_Close (fileHandle_t &handle)
 }
 
 // Always returns in same order:
-// [r/a][w][b][+]
+// [r/a][w][b][+][c]
 static const char *FS_OpenModeFromEnum (EFileOpMode Mode)
 {
-	static char mode[4];
+	static char mode[5];
 	sint32 currentPos = 0;
 
 	// Reset old mode
-	mode[0] = mode[1] = mode[2] = mode[3] = 0;
+	mode[0] = mode[1] = mode[2] = mode[3] = mode[4] = 0;
 
 	if (Mode & FILEMODE_APPEND)
 	{
@@ -312,6 +322,21 @@ static const char *FS_OpenModeFromEnum (EFileOpMode Mode)
 		if (!(Mode & FILEMODE_ASCII))
 			mode[currentPos++] = 'b';
 	}
+
+	if (Mode & FILEMODE_GZ)
+	{
+		if (Mode & FILEMODE_COMPRESS_NONE)
+			mode[currentPos++] = '0';
+		else if (Mode & FILEMODE_COMPRESS_LOW)
+			mode[currentPos++] = '2';
+		else if (Mode & FILEMODE_COMPRESS_MED)
+			mode[currentPos++] = '5';
+		else if (Mode & FILEMODE_COMPRESS_HIGH)
+			mode[currentPos++] = '9';
+		else
+			mode[currentPos++] = '5';
+	}
+
 	return mode;
 }
 
@@ -327,7 +352,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 		return 0;
 
 	// Open up the file.
-	FILE *fp = NULL;
+	void *fp = NULL;
 
 	// Search each of the search paths
 	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
@@ -343,7 +368,10 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 		newFileName[sizeof(newFileName)-1] = 0;
 
 		// Try opening it
-		fp = fopen(newFileName, openMode);
+		if (Mode & FILEMODE_GZ)
+			fp = gzopen(newFileName, openMode);
+		else
+			fp = fopen(newFileName, openMode);
 
 		if (fp != NULL)
 			break; // We got it
@@ -364,12 +392,25 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 		handleIndex->inUse = true;
 		handleIndex->name = fileName;
 		handleIndex->openMode = Mode;
-		handleIndex->regFile = fp;
+
+		if (Mode & FILEMODE_GZ)
+		{
+			handleIndex->fileType = FILE_GZ;
+			handleIndex->file.gz = (gzFile)fp;
+		}
+		else
+		{
+			handleIndex->fileType = FILE_REGULAR;
+			handleIndex->file.reg = (FILE*)fp;
+		}
 		return handle;
 	}
 	else
 	{
-		fclose (fp);
+		if (Mode & FILEMODE_GZ)
+			gzclose ((gzFile)fp);
+		else
+			fclose ((FILE*)fp);
 		return 0; // Couldn't allocate a handle
 	}
 }
@@ -383,7 +424,12 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 		_CC_ASSERT_EXPR (0, "Tried to read on a write\n");
 
 	if (handleIndex)
-		fread (buffer, size, 1, handleIndex->regFile);
+	{
+		if (handleIndex->fileType == FILE_REGULAR)
+			fread (buffer, size, 1, handleIndex->file.reg);
+		else
+			gzread (handleIndex->file.gz, buffer, size);
+	}
 }
 
 // Writes "size" bytes from handle from "buffer"
@@ -395,7 +441,12 @@ void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 		_CC_ASSERT_EXPR (0, "Tried to write on a read\n");
 
 	if (handleIndex)
-		fwrite (buffer, size, 1, handleIndex->regFile);
+	{
+		if (handleIndex->fileType == FILE_REGULAR)
+			fwrite (buffer, size, 1, handleIndex->file.reg);
+		else
+			gzwrite (handleIndex->file.gz, buffer, size);
+	}
 }
 
 // Prints the format and arguments into the current position
@@ -412,7 +463,12 @@ void FS_Print (fileHandle_t &handle, char *fmt, ...)
 	text[MAX_COMPRINT/2-1] = 0;
 
 	if (handleIndex)
-		fwrite (text, strlen(text), 1, handleIndex->regFile);
+	{
+		if (handleIndex->fileType == FILE_REGULAR)
+			fwrite (text, strlen(text), 1, handleIndex->file.reg);
+		else
+			gzwrite (handleIndex->file.gz, text, strlen(text));
+	}
 }
 
 // Opens a file, reads the entire contents,
@@ -454,7 +510,7 @@ bool FS_FileExists (const char *fileName)
 
 void FS_FreeFile (void *buffer)
 {
-	delete buffer;
+	QDelete buffer;
 }
 
 filePos_t FS_Tell (fileHandle_t &handle)
@@ -462,7 +518,12 @@ filePos_t FS_Tell (fileHandle_t &handle)
 	fsHandleIndex *handleIndex = FS_GetHandle (handle);
 
 	if (handleIndex)
-		return ftell(handleIndex->regFile);
+	{
+		if (handleIndex->fileType == FILE_REGULAR)
+			return ftell(handleIndex->file.reg);
+		else
+			return gztell(handleIndex->file.gz);
+	}
 	return -1;
 }
 
@@ -484,7 +545,12 @@ void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_
 	fsHandleIndex *handleIndex = FS_GetHandle (handle);
 
 	if (handleIndex)
-		fseek (handleIndex->regFile, seekOffset, seekOrigin);
+	{
+		if (handleIndex->fileType == FILE_REGULAR)
+			fseek (handleIndex->file.reg, seekOffset, seekOrigin);
+		else
+			gzseek (handleIndex->file.gz, seekOffset, seekOrigin);
+	}
 }
 
 
@@ -542,19 +608,6 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 	}
 
 	return files;
-}
-
-// Frees the file list made by the above function
-void FS_FreeFileList (char **fileList, sint32 numFiles)
-{
-	for (sint32 i = 0; i <numFiles; i++)
-	{
-		if (!fileList[i])
-			continue;
-
-		delete fileList[i];
-		fileList[i] = NULL;
-	}
 }
 
 void FS_Init (sint32 maxHandles)

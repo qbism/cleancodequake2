@@ -72,7 +72,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 		sint32 n = ent - g_edicts;
 		if (n < 1 || n > game.maxclients)
 		{
-			Com_Printf (0, "CleanCode Warning: ClientPrintf to a non-client\n");
+			DebugPrintf ( "CleanCode Warning: ClientPrintf to a non-client\n");
 			return;
 		}
 	}
@@ -86,7 +86,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 	if (ent)
 		SV_ClientPrintf (ent, printLevel, "%s", msg);
 	else
-		Com_Printf (0, "%s", msg);
+		DebugPrintf ( "%s", msg);
 }
 
 void DeveloperPrintf (char *fmt, ...)
@@ -144,7 +144,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		for (i = 0; i < ((MAX_COMPRINT/2) - 1) && string[i]; i++)
 			copy[i] = string[i]&127;
 		copy[i] = 0;
-		Com_Printf (0, "%s", copy);
+		DebugPrintf ( "%s", copy);
 	}
 
 	for (sint32 i = 1; i <= game.maxclients; i++)

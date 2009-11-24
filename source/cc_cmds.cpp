@@ -64,7 +64,7 @@ void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *en
 	// Make sure the function doesn't already exist
 	if (Cmd_FindCommand(commandName))
 	{
-		Com_Printf (0, "%s already exists as a command!\n", commandName);
+		DebugPrintf ("%s already exists as a command!\n", commandName);
 		return;
 	}
 

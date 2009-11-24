@@ -35,27 +35,23 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CIndexList	ModelList, SoundList, ImageList;
 
-CIndex::~CIndex ()
-{
-	Mem_Free (Name);
-};
-
 CIndexList::CIndexList () :
-numIndexes(0)
+numIndexes(0),
+List(),
+HashList(),
+firstIndex(0)
 {
-	memset (List, 0, sizeof(CIndex*) * MAX_INDEXES);
-	memset (HashList, 0, sizeof(CIndex*) * MAX_INDEXES);
 }
 
 sint32 CIndexList::GetIndex (const char *String)
 {
 	// Check through the itemlist
 	uint32 hash = Com_HashGeneric(String, MAX_INDEXES);
-	CIndex *Index;
 
-	for (Index = HashList[hash]; Index; Index=Index->HashNext)
+	for (THashedMediaIndexListType::iterator it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
 	{
-		if (Q_stricmp(Index->Name, String) == 0)
+		CIndex *Index = List.at((*it).second);
+		if (Q_stricmp (Index->Name.c_str(), String) == 0)
 			return Index->Index;
 	}
 	return -1;
@@ -68,17 +64,16 @@ sint32 CIndexList::AddToList (const char *String, MediaIndex Index)
 
 	CIndex *NewIndex = QNew (com_genericPool, 0) CIndex;
 	NewIndex->Index = Index;
-	NewIndex->Name = QNew (com_genericPool, 0) char[strlen(String)+1];
-	NewIndex->HashValue = Com_HashGeneric (String, MAX_INDEXES);
+	NewIndex->Name = String;
 
-	Q_snprintfz(NewIndex->Name, strlen(String)+1, "%s", String);
+	List.push_back (NewIndex);
 
-	List[Index] = NewIndex;
+	ListMap[Index] = NewIndex;
+
+	// Link it in the hash tree
+	HashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (String, MAX_INDEXES), List.size()-1));
+
 	numIndexes++;
-
-	NewIndex->HashNext = HashList[NewIndex->HashValue];
-	HashList[NewIndex->HashValue] = NewIndex;
-
 	return Index;
 }
 
@@ -89,19 +84,25 @@ inline bool OverFlow ()
 
 const char *StringFromSoundIndex (MediaIndex Index)
 {
-	return SoundList.List[Index]->Name;
+	if (SoundList.ListMap.find(Index) == SoundList.ListMap.end())
+		return NULL;
+	return (*SoundList.ListMap.find(Index)).second->Name.c_str();
 }
 
 const char *StringFromModelIndex (MediaIndex Index)
 {
 	if (Index <= ModelList.firstIndex || Index == 255)
 		return NULL;
-	return ModelList.List[Index]->Name;
+	if (ModelList.ListMap.find(Index) == ModelList.ListMap.end())
+		return NULL;
+	return (*ModelList.ListMap.find(Index)).second->Name.c_str();
 }
 
 const char *StringFromImageIndex (MediaIndex Index)
 {
-	return ImageList.List[Index]->Name;
+	if (ImageList.ListMap.find(Index) == ImageList.ListMap.end())
+		return NULL;
+	return (*ImageList.ListMap.find(Index)).second->Name.c_str();
 }
 
 _CC_DISABLE_DEPRECATION
@@ -168,13 +169,11 @@ _CC_ENABLE_DEPRECATION
 void CIndexList::Clear ()
 {
 	for (uint8 i = 0; i < numIndexes; i++)
-	{
 		delete List[i];
-	}
 
 	numIndexes = firstIndex = 0;
-	memset (List, 0, sizeof(CIndex*) * MAX_INDEXES);
-	memset (HashList, 0, sizeof(CIndex*) * MAX_INDEXES);
+	List.clear();
+	HashList.clear();
 }
 
 void ClearList ()
@@ -186,17 +185,17 @@ void ClearList ()
 
 void SvCmd_IndexList_f ()
 {
-	DebugPrintf ("Models: (%u)\n", ModelList.numIndexes);
+	DebugPrintf ("Models: (%u) + %u inline\n", ModelList.numIndexes, ModelList.firstIndex);
 	for (uint8 i = 0; i < ModelList.numIndexes; i++)
-		DebugPrintf ("%s\n", ModelList.List[i]->Name);
+		DebugPrintf ("%s\n", ModelList.List[i]->Name.c_str());
 
 	DebugPrintf ("\nSounds: (%u)\n", SoundList.numIndexes);
 	for (uint8 i = 0; i < SoundList.numIndexes; i++)
-		DebugPrintf ("%s\n", SoundList.List[i]->Name);
+		DebugPrintf ("%s\n", SoundList.List[i]->Name.c_str());
 
 	DebugPrintf ("\nImages: (%u)\n", ImageList.numIndexes);
 	for (uint8 i = 0; i < ImageList.numIndexes; i++)
-		DebugPrintf ("%s\n", ImageList.List[i]->Name);
+		DebugPrintf ("%s\n", ImageList.List[i]->Name.c_str());
 
 	DebugPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);
 }

@@ -15,16 +15,23 @@
 // Note to self: when naming variables, name them correctly.
 typedef sint32 fileHandle_t;
 
-CC_ENUM (uint8, EFileOpMode)
+CC_ENUM (uint32, EFileOpMode)
 {
-	FILEMODE_NONE		=	0, // Internally only
+	FILEMODE_NONE			=	0, // Internally only
 
-	FILEMODE_READ		=	1, // Open a file for reading
-	FILEMODE_WRITE		=	2, // Open a file for writing (can be mixed with the reading)
-	FILEMODE_APPEND		=	4, // Open a file for appending (cannot be mixed)
+	FILEMODE_READ			=	1, // Open a file for reading
+	FILEMODE_WRITE			=	2, // Open a file for writing (can be mixed with the reading)
+	FILEMODE_APPEND			=	4, // Open a file for appending (cannot be mixed)
 
-	FILEMODE_CREATE		=	8, // Will create the file if it doesn't exist
-	FILEMODE_ASCII		=	16, // Open the file in ascii mode
+	FILEMODE_CREATE			=	8, // Will create the file if it doesn't exist
+	FILEMODE_ASCII			=	16, // Open the file in ascii mode
+
+	// GZ-related
+	FILEMODE_GZ				=	32, // load with gz (de)compression
+	FILEMODE_COMPRESS_NONE	=	64, // compression level 0
+	FILEMODE_COMPRESS_LOW	=	128, // compression level 2
+	FILEMODE_COMPRESS_MED	=	256, // compression level 5
+	FILEMODE_COMPRESS_HIGH	=	512, // compression level 9
 };
 
 CC_ENUM (uint8, ESeekOrigin)
@@ -65,6 +72,15 @@ typedef long int filePos_t;
 // Not exported
 void FS_Error (const char *errorMsg);
 #endif
+
+CC_ENUM (uint8, EFileType)
+{
+	FILE_REGULAR,		// Regular file
+	FILE_GZ,			// gz-compressed file
+};
+
+#define IS_REGULAR(h)		((h->fileType) == FILE_REGULAR)
+#define IS_GZ(h)			((h->fileType) == FILE_GZ)
 
 // Exported
 void FS_Init (sint32 maxHandles);

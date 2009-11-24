@@ -55,7 +55,7 @@ void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
 	// Make sure the function doesn't already exist
 	if (SvCmd_FindCommand(commandName))
 	{
-		Com_Printf (0, "%s already exists as a command!\n", commandName);
+		DebugPrintf ("%s already exists as a command!\n", commandName);
 		return;
 	}
 
@@ -81,7 +81,7 @@ void SvCmd_RunCommand (std::cc_string commandName)
 	if ((Command = SvCmd_FindCommand(commandName)) != NULL)
 		Command->Run();
 	else
-		Com_Printf (0, "Unknown server command \"%s\"\n", commandName.c_str());
+		DebugPrintf ( "Unknown server command \"%s\"\n", commandName.c_str());
 }
 
 struct SServerEntityListEntity
@@ -158,9 +158,9 @@ public:
 
 	void Search (const char *WildCard)
 	{
-		for (sint32 i = 0; i < globals.numEdicts; i++)
+		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 		{
-			edict_t *e = (&g_edicts[i]);
+			edict_t *e = (*it);
 			if (!e->inUse)
 				continue;
 
@@ -355,11 +355,8 @@ void SvCmd_Ban_t ()
 		, str.c_str(), BAN_SQUELCH, BAN_SPECTATOR, BAN_ENTER);
 }
 
-void CC_WriteGame (char *filename, bool autosave);
-
 void SvCmd_Test_t ()
 {
-	CC_WriteGame ("test.sav", false);
 }
 
 void SvCmd_Register ()
@@ -382,7 +379,7 @@ The game can issue gi.argc() / gi.argv() commands to get the rest
 of the parameters
 =================
 */
-void CC_ServerCommand ()
+void CGameAPI::ServerCommand ()
 {
 	InitArg ();
 	SvCmd_RunCommand (ArgGets(1));

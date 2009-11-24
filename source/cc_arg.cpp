@@ -40,19 +40,17 @@ char	*nullArg = "";
 
 uint8				numArgv;
 std::cc_string		argvConcatString;
-std::cc_string		argvStringArray[MAX_ARG];
-sint32					argvIntegerArray[MAX_ARG];
-float				argvFloatArray[MAX_ARG];
+std::vector<std::cc_string, std::generic_allocator<std::cc_string> >		argvStringArray;
+std::vector<sint32, std::generic_allocator<sint32> >						argvIntegerArray;
+std::vector<float, std::generic_allocator<float> >							argvFloatArray;
 
 void SetupArg ()
 {
 	numArgv = 0;
 
-	for (uint8 i = 0; i < MAX_ARG; i++)
-		argvStringArray[i].clear();
-
-	memset (argvIntegerArray, 0, sizeof(argvIntegerArray));
-	memset (argvFloatArray, 0, sizeof(argvFloatArray));
+	argvStringArray.clear();
+	argvIntegerArray.clear();
+	argvFloatArray.clear();
 	argvConcatString.clear();
 }
 
@@ -75,9 +73,9 @@ _CC_DISABLE_DEPRECATION
 
 	for (uint8 i = 0; i < numArgv; i++)
 	{
-		argvStringArray[i] = gi.argv(i);
-		argvFloatArray[i] = atof (argvStringArray[i].c_str());
-		argvIntegerArray[i] = (sint32)argvFloatArray[i];
+		argvStringArray.push_back (gi.argv(i));
+		argvFloatArray.push_back (atof (argvStringArray[i].c_str()));
+		argvIntegerArray.push_back ((sint32)argvFloatArray[i]);
 	}
 _CC_ENABLE_DEPRECATION
 }
@@ -85,9 +83,6 @@ _CC_ENABLE_DEPRECATION
 // Called at the end of an arg session
 void EndArg ()
 {
-	for (sint32 i = 0; i < numArgv; i++)
-		argvStringArray[i].clear();
-
 	SetupArg();
 }
 
@@ -102,35 +97,35 @@ std::cc_string ArgGetConcatenatedString ()
 	return argvConcatString;
 }
 
-std::cc_string ArgGets (sint32 Index)
+std::cc_string &ArgGets (uint32 Index)
 {
-	if (Index >= MAX_ARG)
+	if (Index >= argvStringArray.size())
 	{
 		_CC_ASSERT_EXPR (0, "ArgGets(n) index out of bounds");
-		return NULL;
+		return argvStringArray[0];
 	}
 
-	return (Index >= numArgv) ? nullArg : argvStringArray[Index];
+	return argvStringArray[Index];
 }
 
-sint32 ArgGeti (sint32 Index)
+sint32 &ArgGeti (uint32 Index)
 {
-	if (Index >= MAX_ARG)
+	if (Index >= argvStringArray.size())
 	{
 		_CC_ASSERT_EXPR (0, "ArgGeti(n) index out of bounds");
-		return NULL;
+		return argvIntegerArray[0];
 	}
 
-	return (Index >= numArgv) ? 0 : argvIntegerArray[Index];
+	return argvIntegerArray[Index];
 }
 
-float ArgGetf (sint32 Index)
+float &ArgGetf (uint32 Index)
 {
-	if (Index >= MAX_ARG)
+	if (Index >= argvStringArray.size())
 	{
 		_CC_ASSERT_EXPR (0, "ArgGetf(n) index out of bounds");
-		return NULL;
+		return argvFloatArray[0];
 	}
 
-	return (Index >= numArgv) ? 0 : argvFloatArray[Index];
+	return argvFloatArray[Index];
 }

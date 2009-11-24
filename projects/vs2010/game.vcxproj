@@ -180,7 +180,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -201,7 +201,7 @@
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
     </ClCompile>
@@ -210,7 +210,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;zlibr.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -260,7 +260,7 @@ echo Done!
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>
       </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -280,7 +280,7 @@ echo Done!
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Winmm.lib;../../lib/zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\baseq2\gamex64.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -328,7 +328,7 @@ echo Done!
       <BasicRuntimeChecks>
       </BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
@@ -342,7 +342,7 @@ echo Done!
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <AdditionalIncludeDirectories>..\..\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -350,7 +350,7 @@ echo Done!
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;zlibr.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
@@ -397,7 +397,7 @@ echo Done!
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>

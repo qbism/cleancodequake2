@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // string.c
 //
 
-#include "../source/cc_options.h"
-#include "shared.h"
+#include "../source/cc_local.h"
 
 /*
 ============================================================================
@@ -50,7 +49,6 @@ void Q_snprintfz (char *dest, size_t size, const char *fmt, ...)
 	}
 }
 
-
 /*
 ===============
 Q_strcatz
@@ -59,8 +57,9 @@ Q_strcatz
 void Q_strcatz (char *dst, const char *src, size_t dstSize)
 {
 	size_t len = strlen (dst);
-	if (len >= dstSize) {
-		Com_Printf (PRNT_ERROR, "Q_strcatz: already overflowed");
+	if (len >= dstSize)
+	{
+		DebugPrintf ("Q_strcatz: already overflowed");
 		return;
 	}
 

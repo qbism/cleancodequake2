@@ -1284,14 +1284,12 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 	Entity->Link ();
 
 	// see if any solid entities are inside the final position
-	for (sint32 e = 1; e < globals.numEdicts; e++)
+	//for (sint32 e = 1; e < globals.numEdicts; e++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
-		edict_t *check = &g_edicts[e];
-		CBaseEntity *Check = check->Entity;
+		CBaseEntity *Check = (*it)->Entity;
 
-		if (!check->inUse)
-			continue;
-		if (!check->Entity)
+		if (!Check || !Check->GetInUse())
 			continue;
 
 		if (Check->EntityFlags & ENT_PHYSICS)
@@ -1306,7 +1304,7 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 		else if (Check->GetSolid() != SOLID_BBOX)
 			continue;
 
-		if (!check->area.prev)
+		if (!Check->GetArea()->prev)
 			continue;               // not linked in anywhere
 
 		// if the entity is standing on the pusher, it will definitely be moved

@@ -153,21 +153,21 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 {
 	// Sanity checks
 	if (castType == CAST_MULTI && Ent)
-		Com_Printf (0, "Multicast with an associated Ent\n");
+		DebugPrintf ( "Multicast with an associated Ent\n");
 	else if (castType == CAST_MULTI && !SuppliedOrigin)
 	{
-		Com_Printf (0, "Multicast with no associated Origin! Can't do!\n");
+		DebugPrintf ( "Multicast with no associated Origin! Can't do!\n");
 		Clear ();
 		return;
 	}
 	else if (castType == CAST_UNI && !Ent)
 	{
-		Com_Printf (0, "Unicast with no associated Ent! Can't do!\n");
+		DebugPrintf ( "Unicast with no associated Ent! Can't do!\n");
 		Clear ();
 		return;
 	}
 	else if (castType == CAST_UNI && SuppliedOrigin)
-		Com_Printf (0, "Multicast with an associated Origin\n");
+		DebugPrintf ( "Multicast with an associated Origin\n");
 
 	CPlayerEntity *Entity = NULL;
 	if (Ent)
@@ -224,7 +224,7 @@ void WriteChar (sint8 val)
 {
 	if (val < CHAR_MIN || val > CHAR_MAX)
 	{
-		Com_Printf (0, "Malformed char written!\n");
+		DebugPrintf ( "Malformed char written!\n");
 		val = Clamp<char> (val, CHAR_MIN, CHAR_MAX);
 	}
 
@@ -236,7 +236,7 @@ void WriteByte (uint8 val)
 {
 	if (val < 0 || val > UCHAR_MAX)
 	{
-		Com_Printf (0, "Malformed uint8 written!\n");
+		DebugPrintf ( "Malformed uint8 written!\n");
 		val = Clamp<uint8> (val, 0, UCHAR_MAX);
 	}
 
@@ -248,7 +248,7 @@ void WriteShort (sint16 val)
 {
 	if (val < SHRT_MIN || val > SHRT_MAX)
 	{
-		Com_Printf (0, "Malformed sint16 written!\n");
+		DebugPrintf ( "Malformed sint16 written!\n");
 		val = Clamp<sint16> (val, SHRT_MIN, SHRT_MAX);
 	}
 
@@ -260,7 +260,7 @@ void WriteLong (long val)
 {
 	if (val < LONG_MIN || val > LONG_MAX)
 	{
-		Com_Printf (0, "Malformed long written!\n");
+		DebugPrintf ( "Malformed long written!\n");
 		val = Clamp<long> (val, LONG_MIN, LONG_MAX);
 	}
 
@@ -272,7 +272,7 @@ void WriteFloat (float val)
 {
 	if (val < FLT_MIN || val > FLT_MAX)
 	{
-		Com_Printf (0, "Malformed float written!\n");
+		DebugPrintf ( "Malformed float written!\n");
 		val = Clamp<float> (val, FLT_MIN, FLT_MAX);
 	}
 
@@ -283,7 +283,7 @@ void WriteFloat (float val)
 void WriteAngle (float val)
 {
 	if (val < 0 || val > 360)
-		Com_Printf (0, "Malformed angle may have been written!\n");
+		DebugPrintf ( "Malformed angle may have been written!\n");
 
 	WriteByte (ANGLE2BYTE (val));
 }
@@ -291,7 +291,7 @@ void WriteAngle (float val)
 void WriteAngle16 (float val)
 {
 	if (val < 0 || val > 360)
-		Com_Printf (0, "Malformed angle may have been written!\n");
+		DebugPrintf ( "Malformed angle may have been written!\n");
 
 	WriteShort (ANGLE2SHORT (val));
 }
@@ -300,7 +300,7 @@ void WriteString (const char *val)
 {
 	if (!val || val == NULL || !val[0] || strlen(val) > 1400)
 	{
-		Com_Printf (0, "Malformed string written!\n");
+		DebugPrintf ( "Malformed string written!\n");
 		// FIXME: Clamp the string??
 	}
 
@@ -328,7 +328,7 @@ void WritePosition (vec3_t val)
 		{
 			if (!Printed && (val[i] > 4096 || val[i] < -4096))
 			{			
-				Com_Printf (0, "Malformed position may have been written!\n");
+				DebugPrintf ( "Malformed position may have been written!\n");
 				Printed = true;
 			}
 
@@ -351,7 +351,7 @@ void WritePosition (vec3f &val)
 		{
 			if (!Printed && (val[i] > 4096 || val[i] < -4096))
 			{			
-				Com_Printf (0, "Malformed position may have been written!\n");
+				DebugPrintf ( "Malformed position may have been written!\n");
 				Printed = true;
 			}
 

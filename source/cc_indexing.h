@@ -39,24 +39,26 @@ typedef uint8 MediaIndex;
 class CIndex
 {
 public:
-	MediaIndex Index;
-	char *Name;
-
-	CIndex		*HashNext;
-	uint32		HashValue;
-
-	~CIndex ();
+	MediaIndex		Index;
+	std::cc_string	Name;
 };
 
 #define MAX_INDEXES 256
+
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<std::pair <size_t, size_t> > > THashedMediaIndexListType;
+typedef std::map<uint8, CIndex*, std::less<uint8>, std::generic_allocator<std::pair <uint8, CIndex*> > > TMediaIndexToPtrList;
+typedef std::vector<CIndex*, std::generic_allocator<CIndex*> > TMediaIndexListType;
 
 class CIndexList
 {
 public:
 	CIndexList();
 
-	CIndex	*List[MAX_INDEXES];
-	CIndex	*HashList[MAX_INDEXES];
+	//CIndex	*List[MAX_INDEXES];
+	//CIndex	*HashList[MAX_INDEXES];
+	TMediaIndexListType			List;
+	TMediaIndexToPtrList		ListMap;
+	THashedMediaIndexListType	HashList;
 
 	uint8		numIndexes, firstIndex;
 

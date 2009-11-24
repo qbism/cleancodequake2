@@ -417,12 +417,9 @@ void SetupTechSpawn()
 
 void ResetTechs()
 {
-	edict_t *ent;
-	sint32 i;
-
-	for (ent = g_edicts + 1, i = 1; i < globals.numEdicts; i++, ent++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Entity = ent->Entity;
+		CBaseEntity *Entity = (*it)->Entity;
 
 		if (Entity && Entity->GetInUse() && (Entity->EntityFlags & ENT_ITEM))
 		{

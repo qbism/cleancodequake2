@@ -274,11 +274,10 @@ std::cc_string	Q_VarArgs (char *format, ...);
 #define MAX_INFO_VALUE		64
 #define MAX_INFO_STRING		512
 
-void		Info_Print (std::cc_string &s);
 std::cc_string	Info_ValueForKey (std::cc_string &s, std::cc_string key);
-void		Info_RemoveKey (std::cc_string &s, std::cc_string key);
-void		Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string value);
-bool		Info_Validate (std::cc_string &s);
+void			Info_RemoveKey (std::cc_string &s, std::cc_string key);
+void			Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string value);
+bool			Info_Validate (std::cc_string &s);
 
 /*
 ==============================================================================
@@ -332,8 +331,6 @@ CC_ENUM (uint16, EComPrint)
 	PRNT_CONSOLE			= BIT(2),
 	PRNT_CHATHUD			= BIT(3)
 };
-void	Com_Printf (EComPrint flags, char *fmt, ...);
-void	Com_DevPrintf (EComPrint flags, char *fmt, ...);
 
 // Com_Error
 CC_ENUM (uint8, EComErrorType)
@@ -342,7 +339,6 @@ CC_ENUM (uint8, EComErrorType)
 	ERR_DROP,				// print to console and disconnect from game
 	ERR_DISCONNECT			// don't kill server
 };
-void	Com_Error (EComErrorType code, char *fmt, ...);
 
 //
 // styles for R_DrawString/Char
@@ -1874,7 +1870,6 @@ struct playerState_t
 };
 
 // CleanCode Stuff
-
 // Means of Death definition
 typedef uint32	EMeansOfDeath;
 

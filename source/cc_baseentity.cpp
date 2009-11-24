@@ -228,8 +228,8 @@ _CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
 _CC_ENABLE_DEPRECATION
 
-	if (globals.numEdicts < e->state.number + 1)
-		globals.numEdicts = e->state.number + 1;
+	if (Game.GetNumEdicts() < e->state.number + 1)
+		Game.GetNumEdicts() = e->state.number + 1;
 
 	return e;
 }
@@ -383,7 +383,7 @@ void CBaseEntity::WriteBaseEntity (CFile &File)
 	File.Write<sint32> (GroundEntityLinkCount);
 	File.Write<uint32> (SpawnFlags);
 
-	File.Write<sint32> ((Enemy) ? Enemy->gameEntity->state.number : -1);
+	File.Write<sint32> ((Enemy && Enemy->gameEntity) ? Enemy->gameEntity->state.number : -1);
 
 	File.Write<sint32> (ViewHeight);
 }

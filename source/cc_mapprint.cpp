@@ -46,25 +46,25 @@ void EndMapCounter ()
 	DebugPrintf ("...entities spawned with %i error(s), %i warning(s).\n======================\n", mapErrors, mapWarnings);
 }
 
+#include <sstream>
+static std::cc_stringstream PrintBuffer;
+
 void Map_Print (EMapPrintType printType, CBaseEntity *ent, vec3f &origin)
 {
 	if (printType == MAPPRINT_WARNING)
 	{
 		mapWarnings++;
-		DebugPrintf ("Warning %i>", mapWarnings);
+		PrintBuffer << "Warning " << mapWarnings << " (" << level.ClassName << " #" << level.EntityNumber << ")";
 	}
 	else if (printType == MAPPRINT_ERROR)
 	{	
 		mapErrors++;
-		DebugPrintf ("Error %i>", mapErrors);
+		PrintBuffer << "Error " << mapErrors << " (" << level.ClassName << " #" << level.EntityNumber << ")";
 	}
 
-	DebugPrintf ("Entity #%i ", level.EntityNumber);
-	if (ent && ent->ClassName)
-		DebugPrintf ("(%s) ", ent->ClassName);
 	if (origin)
-		DebugPrintf ("(%.0f %.0f %.0f)", origin.X, origin.Y, origin.Z);
-	DebugPrintf ("\n");
+		PrintBuffer << " @ (" << origin.X << " " << origin.Y << " " << origin.Z << ")";
+	PrintBuffer << ":\n";
 }
 
 void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *fmt, ...)
@@ -78,11 +78,11 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *f
 	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
 	va_end (argptr);
 
-	if (printType == MAPPRINT_WARNING)
-		DebugPrintf ("Warning %i>", mapWarnings);
-	else if (printType == MAPPRINT_ERROR)
-		DebugPrintf ("Error %i>", mapErrors);
-	DebugPrintf ("%s", text);
+	PrintBuffer << "   " << text;
+
+	DebugPrintf ("%s", PrintBuffer.str().c_str());
+
+	PrintBuffer.str().clear();
 }
 
 #define POUNDENTITIES_VERSION "1"

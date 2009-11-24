@@ -270,65 +270,45 @@ struct gameImport_t
 extern	gameImport_t	gi;
 #endif
 
-//
-// functions exported by the game subsystem
-//
-struct gameExport_t
+// C++ wrapper
+class CGameAPI
 {
-	sint32			apiVersion;
+public:
+	CGameAPI () {}
+	virtual ~CGameAPI () {}
 
-	// the init function will only be called when a game starts,
-	// not each time a level is loaded.  Persistant data for clients
-	// and the server can be allocated in init
-	void		(*Init) ();
-	void		(*Shutdown) ();
+	virtual void Init ();
+	virtual void Shutdown ();
 
-	// each new level entered will cause a call to SpawnEntities
-	void		(*SpawnEntities) (char *mapName, char *entString, char *spawnPoint);
+	virtual void SpawnEntities (char *mapName, char *entString, char *spawnPoint);
+	
+	virtual void WriteGame (char *fileName, bool autosave);
+	virtual void ReadGame (char *fileName);
+	virtual void WriteLevel (char *fileName);
+	virtual void ReadLevel (char *fileName);
 
-	// Read/Write Game is for storing persistant cross level information
-	// about the world state and the clients.
-	// WriteGame is called every time a level is exited.
-	// ReadGame is called on a loadgame.
-	void		(*WriteGame) (char *fileName, BOOL autoSave);
-	void		(*ReadGame) (char *fileName);
+	virtual bool ClientConnect (CPlayerEntity *Player, char *userinfo);
+	virtual void ClientBegin (CPlayerEntity *Player);
+	virtual void ClientUserinfoChanged (CPlayerEntity *Player, char *userinfo);
+	virtual void ClientDisconnect (CPlayerEntity *Player);
+	virtual void ClientCommand (CPlayerEntity *Player);
+	virtual void ClientThink (CPlayerEntity *Player, userCmd_t *cmd);
 
-	// ReadLevel is called after the default map information has been
-	// loaded with SpawnEntities
-	void		(*WriteLevel) (char *filename);
-	void		(*ReadLevel) (char *filename);
+	virtual void RunFrame ();
 
-	BOOL		(*ClientConnect) (edict_t *ent, char *userInfo);
-	void		(*ClientBegin) (edict_t *ent);
-	void		(*ClientUserinfoChanged) (edict_t *ent, char *userInfo);
-	void		(*ClientDisconnect) (edict_t *ent);
-	void		(*ClientCommand) (edict_t *ent);
-	void		(*ClientThink) (edict_t *ent, userCmd_t *cmd);
+	virtual void ServerCommand ();
 
-	void		(*RunFrame) ();
-
-	// ServerCommand will be called when an "sv <command>" command is issued on the
-	// server console.
-	// The game can issue gi.argc() / gi.argv() commands to get the rest
-	// of the parameters
-	void		(*ServerCommand) ();
-
-	//
-	// global variables shared between game and server
-	//
-
-	// The edict array is allocated in the game dll so it
-	// can vary in size from one game to another.
-	// 
-	// The size will be fixed when ge->Init() is called
-	edict_t			*edicts;
-	sint32				edictSize;
-	sint32				numEdicts;		// current number, <= MAX_CS_EDICTS
-	sint32				maxEdicts;
+	edict_t *GetEntities ();
+	void SetEntities (edict_t *);
+	sint32 &GetEdictSize ();
+	sint32 &GetNumEdicts();
+	sint32 &GetMaxEdicts();
 };
-extern	gameExport_t	globals;
 
-gameExport_t *GetGameApi (gameImport_t *import);
+// If you make a new class for a game API, replace this.
+#define GAME_CLASS	CGameAPI
+
+extern GAME_CLASS	Game;
 
 CC_ENUM (uint8, ECastType)
 {

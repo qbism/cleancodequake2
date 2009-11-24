@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // mathlib.c
 //
 
-#include "../source/cc_options.h"
-#include "shared.h"
+#include "../source/cc_local.h"
 
 vec2_t vec2Origin =
 {
@@ -357,7 +356,7 @@ Calculates aspect based on fovX and the screen dimensions
 float Q_CalcFovY (float fovX, float width, float height)
 {
 	if (fovX < 1 || fovX > 179)
-		Com_Printf (PRNT_ERROR, "Bad fov: %f\n", fovX);
+		DebugPrintf ("Bad fov: %f\n", fovX);
 
 	return (atanf(height / (width / tan (fovX / 360.0f * M_PI)))) * ((180.0f / M_PI) * 2);
 }

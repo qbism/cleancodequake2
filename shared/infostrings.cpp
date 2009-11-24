@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // infostrings.c
 //
 
-#include "../source/cc_options.h"
-#include "shared.h"
+#include "../source/cc_local.h"
 
 /*
 =============================================================================
@@ -31,53 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 =============================================================================
 */
-
-/*
-================
-Info_Print
-================
-*/
-void Info_Print (std::cc_string &s)
-{
-	size_t curIndex = 0;
-
-	if (s[curIndex] == '\\')
-		curIndex++;
-
-	while (s[curIndex])
-	{
-		std::cc_string	key, value;
-
-		while (s[curIndex] && s[curIndex] != '\\')
-			key += s[curIndex++];
-
-		// Number of spaces to add
-		size_t l = key.length();
-		if (l < 20)
-		{
-			for (size_t i = 0; i < (20 - l); i++)
-				key += ' ';
-		}
-
-		Com_Printf (0, "%s", key.c_str());
-
-		if (!s[curIndex])
-		{
-			Com_Printf (0, "MISSING VALUE\n");
-			return;
-		}
-
-		s[curIndex++];
-		while (s[curIndex] && s[curIndex] != '\\')
-			value += s[curIndex++];
-
-		if (s[curIndex])
-			s[curIndex++];
-
-		Com_Printf (0, "%s\n", value.c_str());
-	}
-}
-
 
 /*
 ===============
@@ -197,32 +149,32 @@ void Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string 
 	// Sanity check
 	if (key.find ('\\'))
 	{
-		Com_Printf (PRNT_WARNING, "Can't use keys with a \\\n");
+		DebugPrintf ("Can't use keys with a \\\n");
 		return;
 	}
 	if (value.find ('\\'))
 	{
-		Com_Printf (PRNT_WARNING, "Can't use values with a \\\n");
+		DebugPrintf ("Can't use values with a \\\n");
 		return;
 	}
 	if (key.find (';'))
 	{
-		Com_Printf (PRNT_WARNING, "Can't use keys or values with a semicolon\n");
+		DebugPrintf ("Can't use keys or values with a semicolon\n");
 		return;
 	}
 	if (key.find ('\"'))
 	{
-		Com_Printf (PRNT_WARNING, "Can't use keys with a \"\n");
+		DebugPrintf ("Can't use keys with a \"\n");
 		return;
 	}
 	if (value.find ('\"'))
 	{
-		Com_Printf (PRNT_WARNING, "Can't use values with a \"\n");
+		DebugPrintf ("Can't use values with a \"\n");
 		return;
 	}
 	if (key.length() > MAX_INFO_KEY-1 || value.length() > MAX_INFO_KEY-1)
 	{
-		Com_Printf (PRNT_WARNING, "Keys and values must be < %i characters.\n", MAX_INFO_KEY);
+		DebugPrintf ("Keys and values must be < %i characters.\n", MAX_INFO_KEY);
 		return;
 	}
 
@@ -235,7 +187,7 @@ void Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string 
 	std::cc_string newPair = "\\" + key + '\\' + value;
 	if (newPair.length() + s.length() > MAX_INFO_STRING-1)
 	{
-		Com_Printf (PRNT_WARNING, "Info string length exceeded\n");
+		DebugPrintf ("Info string length exceeded\n");
 		return;
 	}
 

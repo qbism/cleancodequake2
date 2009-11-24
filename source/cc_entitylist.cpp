@@ -35,72 +35,57 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define MAX_CLASSNAME_CLASSES 1024
 
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityListType;
+typedef std::vector<CClassnameToClassIndex*, std::generic_allocator<CClassnameToClassIndex*> > TEntityListType;
+
 class CEntityList
 {
-	CClassnameToClassIndex			*EntityList[MAX_CLASSNAME_CLASSES];
-	CClassnameToClassIndex			*HashedEntityList[MAX_CLASSNAME_CLASSES_HASH];
-	sint32								numEntities;
+	TEntityListType			EntityList;
+	THashedEntityListType	HashedEntityList;
+
 public:
-	CEntityList ();
-
-	void Clear ();
 	void AddToList (CClassnameToClassIndex *Entity);
-
 	CBaseEntity *Resolve (edict_t *ent);
 };
 
-CEntityList EntityList;
-
-void AddToList_Test (CClassnameToClassIndex *const Index)
+// Construct on first use idiom
+CEntityList &EntityList ()
 {
-	EntityList.AddToList (Index);
+	static CEntityList List;
+	return List;
 }
 
 CClassnameToClassIndex::CClassnameToClassIndex (CMapEntity				*(*Spawn) (sint32 Index), char *Classname) :
 Spawn(Spawn),
 Classname(Classname)
 {
-	hashValue = Com_HashGeneric(Classname, MAX_CLASSNAME_CLASSES_HASH);
-	AddToList_Test (this);
+	EntityList().AddToList (this);
 };
 
-CEntityList::CEntityList ()
+void CEntityList::AddToList (CClassnameToClassIndex *Entity)
 {
-};
-
-void CEntityList::Clear ()
-{
-	memset (EntityList, 0, sizeof(EntityList));
-	memset (HashedEntityList, 0, sizeof(HashedEntityList));
-	numEntities = 0;
-};
-
-void CEntityList::AddToList (CClassnameToClassIndex *const Entity)
-{
-	EntityList[numEntities] = Entity;
+	EntityList.push_back (Entity);
 
 	// Link it in the hash tree
-	EntityList[numEntities]->hashNext = HashedEntityList[EntityList[numEntities]->hashValue];
-	HashedEntityList[EntityList[numEntities]->hashValue] = EntityList[numEntities];
-	numEntities++;
+	HashedEntityList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Entity->Classname, MAX_CLASSNAME_CLASSES_HASH), EntityList.size()-1));
 };
 
 void SpawnWorld ();
 CBaseEntity *CEntityList::Resolve (edict_t *ent)
 {
-	CClassnameToClassIndex *Entity;
-	uint32 hash = Com_HashGeneric(level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
-
-	for (Entity = HashedEntityList[hash]; Entity; Entity=Entity->hashNext)
-	{
-		if (Q_stricmp(Entity->Classname, level.ClassName.c_str()) == 0)
-			return Entity->Spawn(ent->state.number);
-	}
-
 	if (Q_stricmp(level.ClassName.c_str(), "worldspawn") == 0)
 	{
 		SpawnWorld ();
 		return g_edicts[0].Entity;
+	}
+
+	uint32 hash = Com_HashGeneric(level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
+
+	for (THashedEntityListType::iterator it = HashedEntityList.equal_range(hash).first; it != HashedEntityList.equal_range(hash).second; ++it)
+	{
+		CClassnameToClassIndex *Table = EntityList.at((*it).second);
+		if (Q_stricmp (Table->Classname, level.ClassName.c_str()) == 0)
+			return Table->Spawn(ent->state.number);
 	}
 
 	return NULL;
@@ -108,7 +93,7 @@ CBaseEntity *CEntityList::Resolve (edict_t *ent)
 
 CBaseEntity *ResolveMapEntity (edict_t *ent)
 {
-	return EntityList.Resolve (ent);
+	return EntityList().Resolve (ent);
 };
 
 /*
@@ -238,10 +223,10 @@ void G_FindTeams ()
 {
 	sint32		c = 0, c2 = 0;
 
-	CBaseEntity *e, *e2;
-	sint32 i, j;
-	for (i = 1, e = g_edicts[i].Entity; i < globals.numEdicts; i++, e = g_edicts[i].Entity)
+//	for (i = 1, e = g_edicts[i].Entity; i < globals.numEdicts; i++, e = g_edicts[i].Entity)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
+		CBaseEntity *e = (*it)->Entity;
 		if (!e)
 			continue;
 		if (!e->GetInUse())
@@ -257,8 +242,10 @@ void G_FindTeams ()
 
 		c++;
 		c2++;
-		for (j = i + 1, e2 = g_edicts[j].Entity; j < globals.numEdicts; j++, e2 = g_edicts[j].Entity)
+		//for (j = i + 1, e2 = g_edicts[j].Entity; j < globals.numEdicts; j++, e2 = g_edicts[j].Entity)
+		for (TEntitiesContainer::iterator it2 = level.Entities.Closed.begin()++; it2 != level.Entities.Closed.end(); ++it2)
 		{
+			CBaseEntity *e2 = (*it2)->Entity;
 			if (!e2)
 				continue;
 			if (!e2->GetInUse())
@@ -327,9 +314,10 @@ parsing textual entity definitions out of an ent file.
 */
 
 void ShutdownBodyQueue ();
-
+void InitVersion ();
 void InitEntityLists ();
-void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
+
+void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
 	CTimer Timer;
 
@@ -435,5 +423,6 @@ void CC_SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 	else
 		DebugPrintf ("Demo detected, skipping map init.\n");
 
+	InitVersion ();
 	DebugPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
 }

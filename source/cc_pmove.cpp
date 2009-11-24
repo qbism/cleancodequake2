@@ -962,7 +962,7 @@ static void SV_PM_InitialSnapPosition ()
 		}
 	}
 
-	Com_DevPrintf (PRNT_WARNING, "Bad InitialSnapPosition\n");
+	DeveloperPrintf ("Bad InitialSnapPosition\n");
 }
 
 /*

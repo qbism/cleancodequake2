@@ -1034,9 +1034,10 @@ void CTFResetAllPlayers()
 	ResetTechs();
 	CTFResetFlags();
 
-	for (uint8 i = game.maxclients; i < globals.numEdicts; i++)
+	//for (uint8 i = game.maxclients; i < globals.numEdicts; i++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *ent = g_edicts[i].Entity;
+		CBaseEntity *ent = (*it)->Entity;
 
 		if (ent && ent->GetInUse() && (ent->EntityFlags & ENT_ITEM))
 		{
@@ -1049,6 +1050,7 @@ void CTFResetAllPlayers()
 			}
 		}
 	}
+
 	if (ctfgame.match == MATCH_SETUP)
 		ctfgame.matchtime = level.Frame + matchsetuptime->Integer() * 60;
 }
