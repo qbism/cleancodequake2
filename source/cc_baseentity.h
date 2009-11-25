@@ -329,12 +329,16 @@ CC_ENUM (uint32, EFieldType)
 	FT_ITEM,			// Stores value as CBaseItem (finds the item and stores it in the ptr)
 	FT_ENTITY,			// Saved as an index to an entity
 	FT_FLOAT_TO_BYTE,	// Accepted float input, stores as uint8 (0-255)
+	FT_CC_STRING,		// String, dynamic.
 
 	// Flags
 	FT_GAME_ENTITY	=	BIT(10),		// Stored in gameEntity instead of TClass
 	FT_SAVABLE		=	BIT(11),		// Field will be saved/loaded
 	FT_NOSPAWN		=	BIT(12),		// Field cannot be used as a spawn field
 };
+
+#define OFS_TO_TYPE_(x,y) (*((x*)(y)))
+#define OFS_TO_TYPE(x) OFS_TO_TYPE_(x,ClassOffset)
 
 class CEntityField
 {
@@ -353,53 +357,50 @@ public:
 		switch (StrippedFields)
 		{
 		case FT_BOOL:
-			*((bool*)(ClassOffset)) = (atoi(Value) != 0);
+			OFS_TO_TYPE(bool) = (atoi(Value) != 0);
 			break;
 		case FT_CHAR:
-			*((sint8*)(ClassOffset)) = Clamp<sint32>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
+			OFS_TO_TYPE(sint8) = Clamp<sint32>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
 			break;
 		case FT_BYTE:
-			*((uint8*)(ClassOffset)) = Clamp<uint32>(atou(Value), 0, UCHAR_MAX);
+			OFS_TO_TYPE(uint8) = Clamp<uint32>(atou(Value), 0, UCHAR_MAX);
 			break;
 		case FT_SHORT:
-			*((sint16*)(ClassOffset)) = Clamp<sint32>(atoi(Value), SHRT_MIN, SHRT_MAX);
+			OFS_TO_TYPE(sint16) = Clamp<sint32>(atoi(Value), SHRT_MIN, SHRT_MAX);
 			break;
 		case FT_USHORT:
-			*((uint16*)(ClassOffset)) = Clamp<uint32>(atoi(Value), 0, USHRT_MAX);
+			OFS_TO_TYPE(uint16) = Clamp<uint32>(atoi(Value), 0, USHRT_MAX);
 			break;
 		case FT_INT:
-			*((sint32*)(ClassOffset)) = atoi(Value);
+			OFS_TO_TYPE(sint32) = atoi(Value);
 			break;
 		case FT_UINT:
-			*((uint32*)(ClassOffset)) = atou(Value);
+			OFS_TO_TYPE(uint32) = atou(Value);
 			break;
 		case FT_FLOAT:
-			*((float*)(ClassOffset)) = atof(Value);
+			OFS_TO_TYPE(float) = atof(Value);
 			break;
 		case FT_FLOAT_TO_BYTE:
-			*((uint8*)(ClassOffset)) = (uint8)Clamp<sint32> ((sint32)(atof(Value) * 255), 0, 255);
+			OFS_TO_TYPE(uint8) = (uint8)Clamp<sint32> ((sint32)(atof(Value) * 255), 0, 255);
 			break;
 		case FT_VECTOR:
 			{
 				vec3f v;
 				sscanf_s (Value, "%f %f %f", &v.X, &v.Y, &v.Z);
-				memcpy (ClassOffset, &v, sizeof(float)*3);
+				OFS_TO_TYPE(vec3f) = v;
 			}
 			break;
 		case FT_YAWANGLE:
-			{
-				vec3f v (0, atof(Value), 0);
-				memcpy (ClassOffset, &v, sizeof(float)*3);
-			}
+			OFS_TO_TYPE(vec3f) = vec3f(0, atof(Value), 0);
 			break;
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
 		case FT_GAME_STRING:
 			if (strlen(Value))
-				*((char **)(ClassOffset)) = CopyStr(Value, (FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
+				OFS_TO_TYPE(char*) = CopyStr(Value, (FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
 			else
-				*((char **)(ClassOffset)) = NULL;
+				OFS_TO_TYPE(char*) = NULL;
 			break;
 		case FT_SOUND_INDEX:
 			{
@@ -407,19 +408,19 @@ public:
 				if (temp.find (".wav") == std::cc_string::npos)
 					temp.append (".wav");
 
-				*((MediaIndex *)(ClassOffset)) = SoundIndex (temp.c_str());
+				OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.c_str());
 			}
 			break;
 		case FT_IMAGE_INDEX:
-			*((MediaIndex *)(ClassOffset)) = ImageIndex (Value);
+			OFS_TO_TYPE(MediaIndex) = ImageIndex (Value);
 			break;
 		case FT_MODEL_INDEX:
-			*((MediaIndex *)(ClassOffset)) = ModelIndex (Value);
+			OFS_TO_TYPE(MediaIndex) = ModelIndex (Value);
 			break;
 		case FT_FRAMENUMBER:
 			{
 				float Val = atof (Value);
-				*((FrameNumber_t *)(ClassOffset)) = (Val != -1) ? (Val * 10) : -1;
+				OFS_TO_TYPE(FrameNumber_t) = (Val != -1) ? (Val * 10) : -1;
 			}
 			break;
 		case FT_ITEM:
@@ -435,8 +436,11 @@ public:
 					break;
 				}
 
-				*((CBaseItem **)(ClassOffset)) = Item;
+				OFS_TO_TYPE(CBaseItem *) = Item;
 			}
+			break;
+		case FT_CC_STRING:
+			OFS_TO_TYPE(std::cc_string) = Value;
 			break;
 		};
 	};
@@ -449,77 +453,80 @@ public:
 		switch (StrippedFields)
 		{
 		case FT_BOOL:
-			File.Write<bool> (((bool*)(ClassOffset)));
+			File.Write<bool> (OFS_TO_TYPE(bool));
 			break;
 		case FT_CHAR:
-			File.Write<sint8> (((sint8*)(ClassOffset)));
+			File.Write<sint8> (OFS_TO_TYPE(sint8));
 			break;
 		case FT_BYTE:
-			File.Write<uint8> (((uint8*)(ClassOffset)));
+			File.Write<uint8> (OFS_TO_TYPE(uint8));
 			break;
 		case FT_SHORT:
-			File.Write<sint16> (((sint16*)(ClassOffset)));
+			File.Write<sint16> (OFS_TO_TYPE(sint16));
 			break;
 		case FT_USHORT:
-			File.Write<uint16> (((uint16*)(ClassOffset)));
+			File.Write<uint16> (OFS_TO_TYPE(uint16));
 			break;
 		case FT_INT:
-			File.Write<sint32> (((sint32*)(ClassOffset)));
+			File.Write<sint32> (OFS_TO_TYPE(sint32));
 			break;
 		case FT_UINT:
-			File.Write<uint32> (((uint32*)(ClassOffset)));
+			File.Write<uint32> (OFS_TO_TYPE(uint32));
 			break;
 		case FT_FLOAT:
-			File.Write<float> (((float*)(ClassOffset)));
+			File.Write<float> (OFS_TO_TYPE(float));
 			break;
 		case FT_FLOAT_TO_BYTE:
-			File.Write<uint8> (((uint8*)(ClassOffset)));
+			File.Write<uint8> (OFS_TO_TYPE(uint8));
 			break;
 		case FT_VECTOR:
-			File.Write<vec3f> (((vec3f*)(ClassOffset)));
+			File.Write<vec3f> (OFS_TO_TYPE(vec3f));
 			break;
 		case FT_YAWANGLE:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
 		case FT_GAME_STRING:
-			File.WriteString (*((char**)ClassOffset));
+			File.WriteString (OFS_TO_TYPE(char *));
 			break;
 		case FT_SOUND_INDEX:
-			if (*((MediaIndex *)(ClassOffset)))
-				File.WriteString (StringFromSoundIndex (*((MediaIndex *)(ClassOffset))));
+			if (OFS_TO_TYPE(MediaIndex))
+				File.WriteString (StringFromSoundIndex (OFS_TO_TYPE(MediaIndex)));
 			else
 				File.Write<sint32> (-1);
 			break;
 		case FT_IMAGE_INDEX:
 			if (*((MediaIndex *)(ClassOffset)))
-				File.WriteString (StringFromImageIndex (*((MediaIndex *)(ClassOffset))));
+				File.WriteString (StringFromImageIndex (OFS_TO_TYPE(MediaIndex)));
 			else
 				File.Write<sint32> (-1);
 		break;
 		case FT_MODEL_INDEX:
 			if (*((MediaIndex *)(ClassOffset)))
-				File.WriteString (StringFromModelIndex (*((MediaIndex *)(ClassOffset))));
+				File.WriteString (StringFromModelIndex (OFS_TO_TYPE(MediaIndex)));
 			else
 				File.Write<sint32> (-1);
 			break;
 		case FT_FRAMENUMBER:
-			File.Write<FrameNumber_t> (((FrameNumber_t *)(ClassOffset)));
+			File.Write<FrameNumber_t> (OFS_TO_TYPE(FrameNumber_t));
 			break;
 		case FT_ITEM:
 			{
 				sint32 Index = -1;
-				if (*((CBaseItem **)(ClassOffset)))
-					Index = (*((CBaseItem **)(ClassOffset)))->GetIndex();
+				if (OFS_TO_TYPE(CBaseItem*))
+					Index = OFS_TO_TYPE(CBaseItem *)->GetIndex();
 				
 				File.Write<sint32> (Index);
 			}
 			break;
 		case FT_ENTITY:
 			{
-				sint32 Index = (*((CBaseEntity **)(ClassOffset)) && (*((CBaseEntity **)(ClassOffset)))->gameEntity) ? (*((CBaseEntity **)(ClassOffset)))->State.GetNumber() : -1;
+				sint32 Index = (OFS_TO_TYPE(CBaseEntity*) && OFS_TO_TYPE(CBaseEntity*)->gameEntity) ? OFS_TO_TYPE(CBaseEntity*)->State.GetNumber() : -1;
 				File.Write<sint32> (Index);
 			}
+			break;
+		case FT_CC_STRING:
+			File.WriteCCString (OFS_TO_TYPE(std::cc_string));
 			break;
 		};
 	};
@@ -532,48 +539,48 @@ public:
 		switch (StrippedFields)
 		{
 		case FT_BOOL:
-			*((bool*)(ClassOffset)) = File.Read<bool> ();
+			OFS_TO_TYPE(bool) = File.Read<bool> ();
 			break;
 		case FT_CHAR:
-			*((sint8*)(ClassOffset)) = File.Read<sint8> ();
+			OFS_TO_TYPE(sint8) = File.Read<sint8> ();
 			break;
 		case FT_BYTE:
-			*((uint8*)(ClassOffset)) = File.Read<uint8> ();
+			OFS_TO_TYPE(uint8) = File.Read<uint8> ();
 			break;
 		case FT_SHORT:
-			*((sint16*)(ClassOffset)) = File.Read<sint16> ();
+			OFS_TO_TYPE(sint16) = File.Read<sint16> ();
 			break;
 		case FT_USHORT:
-			*((uint16*)(ClassOffset)) = File.Read<uint16> ();
+			OFS_TO_TYPE(uint16) = File.Read<uint16> ();
 			break;
 		case FT_INT:
-			*((sint32*)(ClassOffset)) = File.Read<sint32> ();
+			OFS_TO_TYPE(sint32) = File.Read<sint32> ();
 			break;
 		case FT_UINT:
-			*((uint32*)(ClassOffset)) = File.Read<uint32> ();
+			OFS_TO_TYPE(uint32) = File.Read<uint32> ();
 			break;
 		case FT_FLOAT:
-			*((float*)(ClassOffset)) = File.Read<float> ();
+			OFS_TO_TYPE(float) = File.Read<float> ();
 			break;
 		case FT_FLOAT_TO_BYTE:
-			*((uint8*)(ClassOffset)) = File.Read<uint8> ();
+			OFS_TO_TYPE(uint8) = File.Read<uint8> ();
 			break;
 		case FT_VECTOR:
-			*((vec3f*)(ClassOffset)) = File.Read<vec3f> ();
+			OFS_TO_TYPE(vec3f) = File.Read<vec3f> ();
 			break;
 		case FT_YAWANGLE:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
 		case FT_GAME_STRING:
-			*((char**)ClassOffset) = File.ReadString ((FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
+			OFS_TO_TYPE(char*) = File.ReadString ((FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
 			break;
 		case FT_SOUND_INDEX:
 			{
 				char *str = File.ReadString ();
 				if (str)
 				{
-					*((MediaIndex *)(ClassOffset)) = SoundIndex (str);
+					OFS_TO_TYPE(MediaIndex) = SoundIndex (str);
 					QDelete[] str;
 				}
 			}
@@ -583,7 +590,7 @@ public:
 				char *str = File.ReadString ();
 				if (str)
 				{
-					*((MediaIndex *)(ClassOffset)) = ImageIndex (str);
+					OFS_TO_TYPE(MediaIndex) = ImageIndex (str);
 					QDelete[] str;
 				}
 			}
@@ -593,26 +600,28 @@ public:
 				char *str = File.ReadString ();
 				if (str)
 				{
-					*((MediaIndex *)(ClassOffset)) = ModelIndex (str);
+					OFS_TO_TYPE(MediaIndex) = ModelIndex (str);
 					QDelete[] str;
 				}
 			}
 			break;
 		case FT_FRAMENUMBER:
-			*((FrameNumber_t *)(ClassOffset)) = File.Read<FrameNumber_t> ();
+			OFS_TO_TYPE(FrameNumber_t) = File.Read<FrameNumber_t> ();
 			break;
 		case FT_ITEM:
 			{
 				sint32 Index = File.Read<sint32> ();
-				*((CBaseItem **)(ClassOffset)) = (Index != -1) ? GetItemByIndex(Index) : NULL;
+				OFS_TO_TYPE(CBaseItem *) = (Index != -1) ? GetItemByIndex(Index) : NULL;
 			}
 			break;
 		case FT_ENTITY:
 			{
 				sint32 Index = File.Read<sint32> ();
-				*((CBaseEntity **)(ClassOffset)) = (Index == -1) ? NULL : g_edicts[Index].Entity;
+				OFS_TO_TYPE(CBaseEntity *) = (Index == -1) ? NULL : g_edicts[Index].Entity;
 			}
 			break;
+		case FT_CC_STRING:
+			OFS_TO_TYPE(std::cc_string) = File.ReadCCString ();
 		};
 	};
 };

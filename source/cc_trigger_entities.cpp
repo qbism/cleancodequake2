@@ -1039,10 +1039,10 @@ public:
 				return;
 			TouchDebounce = level.Frame + 50;
 
-			if (!Message)
+			if (Message.empty())
 				Player->PrintToClient (PRINT_CENTER, "You need the %s", Item->Name);
 			else
-				Player->PrintToClient (PRINT_CENTER, "%s", Message);
+				Player->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
 			Player->PlaySound (CHAN_AUTO, SoundIndex ("misc/keytry.wav"));
 			return;
 		}

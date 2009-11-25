@@ -151,7 +151,7 @@ CFrame ChickFramesRun [] =
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 13),
 #ifdef MONSTER_USE_ROGUE_AI
-	CFrame (&CMonster::AI_Run, 5, &CMonster::DoneDodge), // Make sure to clear the dodge bit. FIXME: needed?
+	CFrame (&CMonster::AI_Run, 5, &CMonster::DoneDodge), // Make sure to clear the dodge bit
 #else
 	CFrame (&CMonster::AI_Run, 5),
 #endif

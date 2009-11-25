@@ -2354,7 +2354,7 @@ void CPlayerEntity::SetCTFStats()
 	//   flag taken
 	//   flag dropped
 	p1 = ImageIndex ("i_ctf1");
-	e = CC_Find<CFlagEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team1");
+	e = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team1"));
 	if (e != NULL)
 	{
 		if (e->GetSolid() == SOLID_NOT)
@@ -2379,7 +2379,7 @@ void CPlayerEntity::SetCTFStats()
 			p1 = ImageIndex ("i_ctf1d"); // must be dropped
 	}
 	p2 = ImageIndex ("i_ctf2");
-	e = CC_Find<CFlagEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team2");
+	e = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team2"));
 	if (e != NULL)
 	{
 		if (e->GetSolid() == SOLID_NOT)

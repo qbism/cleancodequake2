@@ -1530,7 +1530,7 @@ Usable (true)
 
 ENTITYFIELDS_BEGIN(CUsableEntity)
 {
-	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_CC_STRING | FT_SAVABLE),
 	CEntityField ("noise",		EntityMemberOffset(CUsableEntity,NoiseIndex),		FT_SOUND_INDEX | FT_SAVABLE),
 	CEntityField ("delay",		EntityMemberOffset(CUsableEntity,Delay),			FT_FRAMENUMBER | FT_SAVABLE),
 	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
@@ -1603,7 +1603,7 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
-void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
+void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
 {
 //
 // check for a delay
@@ -1628,10 +1628,10 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, char *Message)
 //
 // print the message
 //
-	if ((Message) && (activator->EntityFlags & ENT_PLAYER))
+	if ((!Message.empty()) && (activator->EntityFlags & ENT_PLAYER))
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
-		Player->PrintToClient (PRINT_CENTER, "%s", Message);
+		Player->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
 		Player->PlaySound (CHAN_AUTO, (NoiseIndex) ? NoiseIndex : SoundIndex ("misc/talk1.wav"));
 	}
 

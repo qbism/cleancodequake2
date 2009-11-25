@@ -1408,7 +1408,7 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		Q_strncpyz ((SpawnFlags & 1) ? game.helpmessage1 : game.helpmessage2, Message, sizeof(game.helpmessage1)-1);
+		Q_strncpyz ((SpawnFlags & 1) ? game.helpmessage1 : game.helpmessage2, Message.c_str(), sizeof(game.helpmessage1)-1);
 		game.helpchanged++;
 	};
 
@@ -1420,7 +1420,7 @@ public:
 			return;
 		}
 
-		if (!Message)
+		if (Message.empty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No message\n");
 			Free ();

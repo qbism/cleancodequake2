@@ -97,34 +97,31 @@ std::cc_string ArgGetConcatenatedString ()
 	return argvConcatString;
 }
 
-std::cc_string &ArgGets (uint32 Index)
+std::cc_string ArgGets (uint32 Index)
 {
 	if (Index >= argvStringArray.size())
-	{
-		_CC_ASSERT_EXPR (0, "ArgGets(n) index out of bounds");
-		return argvStringArray[0];
-	}
+		return "";
 
 	return argvStringArray[Index];
 }
 
-sint32 &ArgGeti (uint32 Index)
+sint32 ArgGeti (uint32 Index)
 {
 	if (Index >= argvStringArray.size())
 	{
 		_CC_ASSERT_EXPR (0, "ArgGeti(n) index out of bounds");
-		return argvIntegerArray[0];
+		return 0;
 	}
 
 	return argvIntegerArray[Index];
 }
 
-float &ArgGetf (uint32 Index)
+float ArgGetf (uint32 Index)
 {
 	if (Index >= argvStringArray.size())
 	{
 		_CC_ASSERT_EXPR (0, "ArgGetf(n) index out of bounds");
-		return argvFloatArray[0];
+		return 0;
 	}
 
 	return argvFloatArray[Index];

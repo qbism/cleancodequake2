@@ -211,7 +211,7 @@ void CMonster::LoadFields (CFile &File)
 	EnemyYaw = File.Read<float> ();
 	CurrentMove = File.Read<CAnim*> ();
 	MonsterFlags = File.Read<uint32> ();
-	MonsterName = File.ReadString (com_entityPool); // FIXME: is this pool right?
+	MonsterName = File.ReadString (com_entityPool);
 	PainDebounceTime = File.Read<FrameNumber_t> ();
 #ifdef MONSTERS_USE_PATHFINDING
 	FollowingPath = File.Read<bool> ();
@@ -2924,6 +2924,9 @@ void CMonster::AI_Stand (float Dist)
 	{
 		if (Entity->Enemy)
 		{
+			if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
+				FindTarget ();
+
 			IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 			if (Entity->State.GetAngles().Y != IdealYaw && AIFlags & AI_TEMP_STAND_GROUND)
 			{
@@ -3614,7 +3617,6 @@ bool CMonster::FindTarget()
 				return false;
 		}
 
-		//FIXME look for monsters?
 		return false;
 	}
 

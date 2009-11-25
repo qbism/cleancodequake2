@@ -885,9 +885,7 @@ void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
 			// trigger all paired doors
 			for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))	
 			{
-				if (Door->Message)
-					QDelete Door->Message;
-				Door->Message = NULL;
+				Door->Message.clear();
 				Door->Touchable = false;
 				Door->GoDown();
 			}
@@ -898,9 +896,7 @@ void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
 	// trigger all paired doors
 	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
-		if (Door->Message)
-			QDelete Door->Message;
-		Door->Message = NULL;
+		Door->Message.clear();
 		Door->Touchable = false;
 		Door->GoUp (activator);
 	}
@@ -1083,7 +1079,7 @@ void CDoor::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 
 	TouchDebounce = level.Frame + 50;
 
-	(entity_cast<CPlayerEntity>(other))->PrintToClient (PRINT_CENTER, "%s", Message);
+	(entity_cast<CPlayerEntity>(other))->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
 	other->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 }
 
@@ -1172,7 +1168,7 @@ void CDoor::Spawn ()
 		CanTakeDamage = true;
 		MaxHealth = Health;
 	}
-	else if (TargetName && Message)
+	else if (TargetName && !Message.empty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -1336,7 +1332,7 @@ void CRotatingDoor::Spawn ()
 		MaxHealth = Health;
 	}
 	
-	if (TargetName && Message)
+	if (TargetName && !Message.empty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -1606,7 +1602,7 @@ void CDoorSecret::Spawn ()
 		CanTakeDamage = true;
 		MaxHealth = Health;
 	}
-	else if (TargetName && Message)
+	else if (TargetName && !Message.empty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;

@@ -92,7 +92,7 @@ public:
 class CUsableEntity : public virtual CBaseEntity
 {
 public:
-	char				*Message;
+	std::cc_string		Message;
 	char				*Target;
 	char				*KillTarget;
 	char				*PathTarget;
@@ -108,7 +108,7 @@ public:
 	CUsableEntity (sint32 Index);
 
 	virtual void Use (CBaseEntity *other, CBaseEntity *activator) {};
-	virtual void UseTargets (CBaseEntity *activator, char *Message);
+	virtual void UseTargets (CBaseEntity *activator, std::cc_string &Message);
 };
 
 // Thinkable entity

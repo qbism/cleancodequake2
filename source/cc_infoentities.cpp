@@ -778,10 +778,12 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(other);
 		Monster->GoalEntity = Monster->MoveTarget = TempNextTarget;
 
-		Monster->Monster->PauseTime = level.Frame + Wait;
-		Monster->Monster->Stand();
-
-		if (!Wait)
+		if (Wait)
+		{
+			Monster->Monster->PauseTime = level.Frame + Wait;
+			Monster->Monster->Stand();
+		}
+		else
 		{
 			if (!Monster->MoveTarget)
 			{
@@ -1189,9 +1191,9 @@ public:
 
 	void Spawn ()
 	{
-		if (!Message || strlen(Message) != 2 || Message[0] < 'a' || Message[0] > 'z' || Message[1] < 'a' || Message[1] > 'z' || Message[0] == Message[1])
+		if (Message.empty() || Message.length() != 2 || Message[0] < 'a' || Message[0] > 'z' || Message[1] < 'a' || Message[1] > 'z' || Message[0] == Message[1])
 		{
-			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Bad ramp (%s)\n", Message);
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Bad ramp (%s)\n", Message.c_str());
 			Free ();
 			return;
 		}

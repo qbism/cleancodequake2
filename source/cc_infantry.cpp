@@ -299,7 +299,6 @@ void CInfantry::Dead ()
 	Entity->GetSvFlags() |= SVF_DEADMONSTER;
 	Entity->Link ();
 
-	// FIXME: BAD
 	CheckFlies ();
 }
 

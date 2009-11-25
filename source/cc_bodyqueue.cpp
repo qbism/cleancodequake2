@@ -33,8 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-// TODO: Is TouchableEntity needed?
-class CBody : public CHurtableEntity, public CTouchableEntity, public CTossProjectile, public CThinkableEntity
+class CBody : public CHurtableEntity, public CTossProjectile, public CThinkableEntity
 {
 public:
 	class CBodyQueue *BodyQueueList; // Queue the body belongs to
@@ -53,7 +52,6 @@ public:
 	{
 		CHurtableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
 		CTossProjectile::SaveFields (File);
 	};
 	void			LoadFields (CFile &File);
@@ -71,7 +69,6 @@ public:
 CBody::CBody () :
 CBaseEntity(),
 CHurtableEntity(),
-CTouchableEntity(),
 BodyQueueList(NULL)
 {
 };
@@ -79,7 +76,6 @@ BodyQueueList(NULL)
 CBody::CBody (sint32 Index) :
 CBaseEntity(Index),
 CHurtableEntity(Index),
-CTouchableEntity(Index),
 BodyQueueList(NULL)
 {
 };
@@ -152,7 +148,6 @@ void	CBody::LoadFields (CFile &File)
 	
 	CHurtableEntity::LoadFields (File);
 	CThinkableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
 	CTossProjectile::LoadFields (File);
 };
 

@@ -56,13 +56,9 @@ public:
 	// each TYPE of weapon, you create the item, and send it to here.
 	void AddItemToList (CBaseItem *Item);
 
-	// FIXME: Use dynamic-sized array? Good idea? :S
-	//CBaseItem	*Items[MAX_ITEMS];
 	TItemListType			Items;
 
 	// There are two hash tables for items; hashed by classname, and hashed by item name.
-	//CBaseItem	*HashedClassnameItemList[MAX_ITEMS_HASH];
-	//CBaseItem	*HashedNameItemList[MAX_ITEMS_HASH];
 	THashedItemListType		HashedClassnameItemList;
 	THashedItemListType		HashedNameItemList;
 };

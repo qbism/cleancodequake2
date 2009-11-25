@@ -243,11 +243,9 @@ CTargetString::CTargetString (sint32 Index) :
 class CTargetStringForEachCallback : public CForEachTeamChainCallback
 {
 public:
-	size_t	StrLen;
-	char	*Message;
+	std::cc_string Message;
 
-	CTargetStringForEachCallback (size_t StrLen, char *Message) :
-	StrLen(StrLen),
+	CTargetStringForEachCallback (std::cc_string &Message) :
 	Message(Message)
 	{
 	};
@@ -259,7 +257,7 @@ public:
 		if (!Entity->Character)
 			return;
 		size_t n = Entity->Character - 1;
-		if (n > StrLen)
+		if (n > Message.length())
 		{
 			e->State.GetFrame() = 12;
 			return;
@@ -294,13 +292,11 @@ public:
 
 void CTargetString::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-	CTargetStringForEachCallback (strlen(Message), Message).Query (this);
+	CTargetStringForEachCallback (Message).Query (this);
 }
 
 void CTargetString::Spawn ()
 {
-	if (!Message)
-		Message = "";
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_string", CTargetString);
@@ -407,23 +403,27 @@ void CFuncClock::Reset ()
 
 void CFuncClock::FormatCountdown ()
 {
+	char tempBuffer[CLOCK_MESSAGE_SIZE];
 	switch (Style)
 	{
 	case 0:
 	default:
-		Q_snprintfz (Message, CLOCK_MESSAGE_SIZE, "%2i", Seconds);
+		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i", Seconds);
+		Message = tempBuffer;
 		break;
 	case 1:
-		Q_snprintfz(Message, CLOCK_MESSAGE_SIZE, "%2i:%2i", Seconds / 60, Seconds % 60);
-		if (Message[3] == ' ')
-			Message[3] = '0';
+		Q_snprintfz(tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i", Seconds / 60, Seconds % 60);
+		if (tempBuffer[3] == ' ')
+			tempBuffer[3] = '0';
+		Message = tempBuffer;
 		break;
 	case 2:
-		Q_snprintfz(Message, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
-		if (Message[3] == ' ')
-			Message[3] = '0';
-		if (Message[6] == ' ')
-			Message[6] = '0';
+		Q_snprintfz(tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
+		if (tempBuffer[3] == ' ')
+			tempBuffer[3] = '0';
+		if (tempBuffer[6] == ' ')
+			tempBuffer[6] = '0';
+		Message = tempBuffer;
 		break;
 	};
 }
@@ -451,18 +451,18 @@ void CFuncClock::Think ()
 	{
 		struct tm	ltime;
 		time_t		gmtime;
+		char tempBuffer[CLOCK_MESSAGE_SIZE];
 
 		time(&gmtime);
 		localtime_s (&ltime, &gmtime);
-		Q_snprintfz (Message, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", ltime.tm_hour, ltime.tm_min, ltime.tm_sec);
-		if (Message[3] == ' ')
-			Message[3] = '0';
-		if (Message[6] == ' ')
-			Message[6] = '0';
+		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", ltime.tm_hour, ltime.tm_min, ltime.tm_sec);
+		if (tempBuffer[3] == ' ')
+			tempBuffer[3] = '0';
+		if (tempBuffer[6] == ' ')
+			tempBuffer[6] = '0';
+		Message = tempBuffer;
 	}
 
-	if (String->Message)
-		QDelete String->Message; // Already got one, free it first
 	String->Message = Message;
 	String->Use (this, this);
 
@@ -472,9 +472,9 @@ void CFuncClock::Think ()
 		if (CountTarget)
 		{
 			char *savetarget = Target;
-			char *savemessage = Message;
+			std::cc_string savemessage = Message;
 			Target = CountTarget;
-			Message = NULL;
+			Message.clear();
 			UseTargets (Activator, Message);
 			Target = savetarget;
 			Message = savemessage;
@@ -527,7 +527,6 @@ void CFuncClock::Spawn ()
 		Count = 3600;
 
 	Reset ();
-	Message = QNew (com_levelPool, 0) char[CLOCK_MESSAGE_SIZE];
 
 	if (SpawnFlags & 4)
 		Usable = true;
