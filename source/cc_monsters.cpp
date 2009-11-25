@@ -3688,7 +3688,9 @@ bool CMonster::FindTarget()
 				Entity->Enemy = client;
 
 				FoundTarget ();
+#ifdef MONSTERS_ARENT_STUPID
 				AlertNearbyStroggs ();
+#endif
 
 				if (MonsterFlags & MF_HAS_SIGHT)
 					Sight ();
@@ -3799,6 +3801,11 @@ bool CMonster::FindTarget()
 				Entity->Enemy = NULL;
 				return false;
 			}
+			else if (Entity->Enemy->Flags & FL_NOTARGET)
+			{
+				Entity->Enemy = NULL;
+				return false;
+			}
 		}
 	}
 	else	// heardit
@@ -3837,7 +3844,9 @@ bool CMonster::FindTarget()
 // got one
 //
 	FoundTarget ();
+#ifdef MONSTERS_ARENT_STUPID
 	AlertNearbyStroggs ();
+#endif
 
 	if (!(AIFlags & AI_SOUND_TARGET) && (MonsterFlags & MF_HAS_SIGHT))
 		Sight ();

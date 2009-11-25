@@ -280,16 +280,11 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 {
 	CBlasterProjectile		*Bolt = QNewEntityOf CBlasterProjectile;
 
-	if (Spawner && Spawner->EntityFlags & ENT_PLAYER)
-		CheckDodge (Spawner, start, dir, speed);
-
-	dir.NormalizeFast();
-
 	Bolt->GetSvFlags() |= (SVF_DEADMONSTER | SVF_PROJECTILE);
 	Bolt->State.GetOrigin() = start;
 	Bolt->State.GetOldOrigin() = start;
 	Bolt->State.GetAngles() = dir.ToAngles();
-	Bolt->Velocity = dir * speed;
+	Bolt->Velocity = dir.GetNormalizedFast() * speed;
 
 	Bolt->State.GetEffects() = effect;
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/laser/tris.md2");
@@ -311,13 +306,15 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
 	if (tr.fraction < 1.0)
 	{
-		start = start.MultiplyAngles (-10, dir);
+		start = start.MultiplyAngles (-10, dir.GetNormalizedFast());
 		Bolt->State.GetOrigin() = start;
 		Bolt->State.GetOldOrigin() = start;
 
 		if (tr.ent->Entity)
 			Bolt->Touch (tr.ent->Entity, &tr.plane, tr.surface);
 	}
+	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+		CheckDodge (Spawner, start, dir, speed);
 }
 
 bool CBlasterProjectile::Run ()

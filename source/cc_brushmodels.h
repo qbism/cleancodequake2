@@ -412,7 +412,7 @@ public:
 class CTrainBase : public CMapEntity, public CBrushModel, public CBlockableEntity, public CUsableEntity
 {
 public:
-	CUsableEntity	*TargetEntity;
+	class CPathCorner	*TargetEntity;
 
 	enum
 	{
@@ -427,26 +427,8 @@ public:
 	virtual bool Run ();
 	virtual bool ParseField (const char *Key, const char *Value);
 
-	virtual void SaveFields (CFile &File)
-	{
-		File.Write<sint32> ((TargetEntity) ? TargetEntity->State.GetNumber() : -1);
-
-		CMapEntity::SaveFields (File);
-		CBrushModel::SaveFields (File);
-		CUsableEntity::SaveFields (File);
-	}
-
-	virtual void LoadFields (CFile &File)
-	{
-		sint32 number = File.Read<sint32> ();
-
-		if (number != -1)
-			TargetEntity = entity_cast<CUsableEntity>(g_edicts[number].Entity);
-
-		CMapEntity::LoadFields (File);
-		CBrushModel::LoadFields (File);
-		CUsableEntity::LoadFields (File);
-	}
+	virtual void SaveFields (CFile &File);
+	virtual void LoadFields (CFile &File);
 
 	enum
 	{

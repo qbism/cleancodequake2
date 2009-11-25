@@ -1255,7 +1255,7 @@ sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 	return blocked;
 }
 
-bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
+bool Push (std::vector<CPushed, std::generic_allocator<CPushed> > &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 {
 	// clamp the move to 1/8 units, so the position will
 	// be accurate for client side prediction
@@ -1381,7 +1381,7 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 		// move back any entities we already moved
 		// go backwards, so if the same entity was pushed
 		// twice, it goes back to the original position
-		for (std::vector<CPushed, std::level_allocator<CPushed> >::reverse_iterator it = Pushed.rbegin(); it < Pushed.rend(); ++it)
+		for (std::vector<CPushed, std::generic_allocator<CPushed> >::reverse_iterator it = Pushed.rbegin(); it < Pushed.rend(); ++it)
 		{
 			CPushed &PushedEntity = *it;
 
@@ -1396,7 +1396,7 @@ bool Push (std::vector<CPushed, std::level_allocator<CPushed> > &Pushed, CBaseEn
 	}
 
 	// see if anything we moved has touched a trigger
-	for (std::vector<CPushed, std::level_allocator<CPushed> >::reverse_iterator it = Pushed.rbegin(); it < Pushed.rend(); ++it)
+	for (std::vector<CPushed, std::generic_allocator<CPushed> >::reverse_iterator it = Pushed.rbegin(); it < Pushed.rend(); ++it)
 	{
 		CPushed &PushedEntity = *it;
 		G_TouchTriggers (PushedEntity.Entity);
@@ -1409,7 +1409,7 @@ bool CPushPhysics::Run ()
 {
 	vec3f					move, amove;
 	CBaseEntity				*part;
-	std::vector <CPushed, std::level_allocator<CPushed> >	Pushed;
+	std::vector <CPushed, std::generic_allocator<CPushed> >	Pushed;
 
 	// if not a team captain, so movement will be handled elsewhere
 	if (Flags & FL_TEAMSLAVE)

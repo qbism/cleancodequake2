@@ -728,10 +728,14 @@ CPathCorner::CPathCorner (sint32 Index) :
   {
   };
 
+void CPathCorner::Think ()
+{
+	NextTarget = (Target) ? CC_PickTarget (Target) : NULL;
+}
+
 void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 {
 	vec3f			v;
-	CBaseEntity		*next;
 
 	if (other->EntityFlags & ENT_MONSTER)
 	{
@@ -760,40 +764,33 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 		Target = savetarget;
 	}
 
-	next = (Target) ? CC_PickTarget(Target) : NULL;
-	if ((next) && (next->SpawnFlags & 1))
+	CBaseEntity *TempNextTarget = NextTarget;
+
+	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & 1))
 	{
-		other->State.GetOrigin() = (next->State.GetOrigin() + vec3f(0, 0, next->GetMins().Z - other->GetMins().Z));
-		next = CC_PickTarget(entity_cast<CUsableEntity>(next)->Target);
+		other->State.GetOrigin() = (TempNextTarget->State.GetOrigin() + vec3f(0, 0, TempNextTarget->GetMins().Z - other->GetMins().Z));
+		TempNextTarget = entity_cast<CPathCorner>(TempNextTarget)->NextTarget;
 		other->State.GetEvent() = EV_OTHER_TELEPORT;
 	}
 
-	CMonsterEntity *Monster = NULL;
 	if (other->EntityFlags & ENT_MONSTER)
-		Monster = entity_cast<CMonsterEntity>(other);
-
-	if (Monster)
-		Monster->GoalEntity = Monster->MoveTarget = next;
-
-	if (Wait)
 	{
-		if (Monster)
-		{
-			Monster->Monster->PauseTime = level.Frame + Wait;
-			Monster->Monster->Stand();
-		}
-		return;
-	}
+		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(other);
+		Monster->GoalEntity = Monster->MoveTarget = TempNextTarget;
 
-	if (Monster)
-	{
-		if (!Monster->MoveTarget)
+		Monster->Monster->PauseTime = level.Frame + Wait;
+		Monster->Monster->Stand();
+
+		if (!Wait)
 		{
-			Monster->Monster->PauseTime = level.Frame + 100000000;
-			Monster->Monster->Stand ();
+			if (!Monster->MoveTarget)
+			{
+				Monster->Monster->PauseTime = level.Frame + 100000000;
+				Monster->Monster->Stand ();
+			}
+			else
+				Monster->Monster->IdealYaw = (Monster->GoalEntity->State.GetOrigin() - Monster->State.GetOrigin()).ToYaw();
 		}
-		else
-			Monster->Monster->IdealYaw = (Monster->GoalEntity->State.GetOrigin() - Monster->State.GetOrigin()).ToYaw();
 	}
 };
 
@@ -807,12 +804,14 @@ void CPathCorner::Spawn ()
 		return;
 	}
 
+	NextTarget = NULL;
 	GetSolid() = SOLID_TRIGGER;
 	Touchable = true;
 	GetMins().Set (-8);
 	GetMaxs().Set (8);
 	GetSvFlags() |= SVF_NOCLIENT;
 	Link ();
+	NextThink = level.Frame + 1;
 };
 
 ENTITYFIELDS_BEGIN(CPathCorner)

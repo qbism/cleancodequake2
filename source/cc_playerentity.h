@@ -632,7 +632,7 @@ public:
 		File.Write<FrameNumber_t> (PainDebounceTime);
 
 		// Write client data
-		Client.Write (File);
+		//Client.Write (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -651,7 +651,7 @@ public:
 		PainDebounceTime = File.Read<FrameNumber_t> ();
 
 		// Read client data
-		Client.Load (File);
+		//Client.Load (File);
 	}
 
 	bool			Run ();

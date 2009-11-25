@@ -55,9 +55,9 @@ public:
 	CHurtableEntity (),
 	CTouchableEntity (),
 	CStepPhysics(),
-	Explosivity(100),
+	Explosivity(0),
 	Shooter(NULL),
-	Damage(150)
+	Damage(0)
 	{
 	};
 
@@ -69,9 +69,9 @@ public:
 	CHurtableEntity(Index),
 	CTouchableEntity (Index),
 	CStepPhysics(Index),
-	Explosivity(100),
+	Explosivity(0),
 	Shooter(NULL),
-	Damage(150)
+	Damage(0)
 	{
 	};
 
@@ -318,6 +318,7 @@ public:
 		GetMaxs().Set (16, 16, 32);
 
 		NextThink = level.Frame + FRAMETIME;
+		ThinkType = TRAINTHINK_FIND;
 		GetSvFlags() |= SVF_NOCLIENT;
 		Accel = Decel = Speed;
 

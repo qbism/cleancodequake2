@@ -38,6 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <vector>
 #include <list>
 #include <map>
+#include <algorithm>
 
 namespace std
 {

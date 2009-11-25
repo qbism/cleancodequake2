@@ -1811,6 +1811,8 @@ LINK_CLASSNAME_TO_CLASS ("func_button", CButton);
 #define TRAIN_TOGGLE		2
 #define TRAIN_BLOCK_STOPS	4
 
+#include "cc_infoentities.h"
+
 /*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS
 Trains are moving platforms that players can ride.
 The targets origin specifies the min point of the train at each corner.
@@ -1913,37 +1915,34 @@ void CTrainBase::TrainWait ()
 		Next ();	
 }
 
-#include "cc_infoentities.h"
-
 void CTrainBase::Next ()
 {
 	bool		first = true;
 
-	CUsableEntity *ent = NULL;
 	while (true)
 	{
 		if (!Target)
 			return;
 
-		ent = entity_cast<CUsableEntity> (CC_PickTarget (Target));
-		if (!ent)
+		if (!TargetEntity)
 		{
 			DebugPrintf ("train_next: bad target %s\n", Target);
 			return;
 		}
 
-		Target = ent->Target;
+		TargetEntity = entity_cast<CPathCorner>(TargetEntity->NextTarget);
+		Target = TargetEntity->Target;
 
 		// check for a teleport path_corner
-		if (ent->SpawnFlags & 1)
+		if (TargetEntity->SpawnFlags & 1)
 		{
 			if (!first)
 			{
-				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", ent->ClassName, ent->State.GetOrigin().X, ent->State.GetOrigin().Y, ent->State.GetOrigin().Z);
+				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", TargetEntity->ClassName, TargetEntity->State.GetOrigin().X, TargetEntity->State.GetOrigin().Y, TargetEntity->State.GetOrigin().Z);
 				return;
 			}
 			first = false;
-			State.GetOrigin() = (ent->State.GetOrigin() - GetMins());
+			State.GetOrigin() = (TargetEntity->State.GetOrigin() - GetMins());
 			State.GetOldOrigin () = State.GetOrigin();
 			State.GetEvent() = EV_OTHER_TELEPORT;
 			Link ();
@@ -1952,12 +1951,8 @@ void CTrainBase::Next ()
 		break;
 	}
 
-	CPathCorner *Corner = entity_cast<CPathCorner>(ent);
-
-	if (Corner)
-		Wait = Corner->Wait;
-
-	TargetEntity = entity_cast<CUsableEntity>(ent);
+	if (TargetEntity)
+		Wait = TargetEntity->Wait;
 
 	if (!(Flags & FL_TEAMSLAVE))
 	{
@@ -1968,7 +1963,7 @@ void CTrainBase::Next ()
 
 	MoveState = STATE_TOP;
 	StartOrigin = State.GetOrigin ();
-	EndOrigin = (ent->State.GetOrigin() - GetMins());
+	EndOrigin = (TargetEntity->State.GetOrigin() - GetMins());
 	MoveCalc (EndOrigin, TRAINENDFUNC_WAIT);
 
 	SpawnFlags |= TRAIN_START_ON;
@@ -1992,13 +1987,14 @@ void CTrainBase::Find ()
 		DebugPrintf ("train_find: no target\n");
 		return;
 	}
-	CUsableEntity *ent = entity_cast<CUsableEntity>(CC_PickTarget (Target));
+	CPathCorner *ent = entity_cast<CPathCorner>(CC_PickTarget (Target));
 	if (!ent)
 	{
 		DebugPrintf ("train_find: target %s not found\n", Target);
 		return;
 	}
 	Target = ent->Target;
+	TargetEntity = ent;
 	State.GetOrigin() = (ent->State.GetOrigin() - GetMins());
 
 	Link ();
@@ -2068,6 +2064,27 @@ void CTrainBase::Spawn ()
 bool CTrainBase::ParseField (const char *Key, const char *Value)
 {
 	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+}
+
+void CTrainBase::SaveFields (CFile &File)
+{
+	File.Write<sint32> ((TargetEntity) ? TargetEntity->State.GetNumber() : -1);
+
+	CMapEntity::SaveFields (File);
+	CBrushModel::SaveFields (File);
+	CUsableEntity::SaveFields (File);
+}
+
+void CTrainBase::LoadFields (CFile &File)
+{
+	sint32 number = File.Read<sint32> ();
+
+	if (number != -1)
+		TargetEntity = entity_cast<CPathCorner>(g_edicts[number].Entity);
+
+	CMapEntity::LoadFields (File);
+	CBrushModel::LoadFields (File);
+	CUsableEntity::LoadFields (File);
 }
 
 CTrain::CTrain () :
@@ -2163,7 +2180,7 @@ void CTriggerElevator::Use (CBaseEntity *other, CBaseEntity *activator)
 		return;
 	}
 
-	CUsableEntity *target = entity_cast<CUsableEntity>(CC_PickTarget (Other->PathTarget));
+	CPathCorner *target = entity_cast<CPathCorner>(CC_PickTarget (Other->PathTarget));
 	if (!target)
 	{
 		DebugPrintf("elevator used with bad pathtarget: %s\n", Other->PathTarget);

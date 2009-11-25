@@ -1,316 +1,321 @@
-﻿Build started 23/11/2009 3:27:13 PM.
-     1>Project "F:\cleancodeq2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 287 (build target(s)).
-     1>_PrepareForBuild:
-         Creating directory ".\Win32_LIB_Release\".
-         Creating ".\Win32_LIB_Release\zlib.unsuccessfulbuild" because "AlwaysCreate" was specified.
+﻿Build started 24/11/2009 10:37:18 PM.
+     1>Project "F:\cleancodeq2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 88 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Win32_LIB_Debug\zlib.lastbuildstate".
+       _PrepareForBuild:
+         Creating "Win32_LIB_Debug\zlib.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /nologo /W4 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D WIN32 /D NDEBUG /D _VC80_UPGRADE=0x0600 /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Win32_LIB_Release\\" /Fd".\Win32_LIB_Release\\" /Gd /TC /analyze- /errorReport:prompt ..\..\adler32.c ..\..\compress.c ..\..\crc32.c ..\..\deflate.c ..\..\gzio.c ..\..\infback.c ..\..\inffast.c ..\..\inflate.c ..\..\inftrees.c ..\..\trees.c ..\..\uncompr.c ..\..\zutil.c
-         adler32.c
-     1>..\..\adler32.c(58): warning C4131: 'adler32' : uses old-style declarator
-     1>..\..\adler32.c(129): warning C4131: 'adler32_combine' : uses old-style declarator
-         compress.c
-     1>..\..\compress.c(23): warning C4131: 'compress2' : uses old-style declarator
-     1>..\..\compress.c(63): warning C4131: 'compress' : uses old-style declarator
-     1>..\..\compress.c(76): warning C4131: 'compressBound' : uses old-style declarator
-         crc32.c
-     1>..\..\crc32.c(220): warning C4131: 'crc32' : uses old-style declarator
-     1>..\..\crc32.c(232): warning C4127: conditional expression is constant
-     1>..\..\crc32.c(263): warning C4131: 'crc32_little' : uses old-style declarator
-     1>..\..\crc32.c(303): warning C4131: 'crc32_big' : uses old-style declarator
-     1>..\..\crc32.c(343): warning C4131: 'gf2_matrix_times' : uses old-style declarator
-     1>..\..\crc32.c(360): warning C4131: 'gf2_matrix_square' : uses old-style declarator
-     1>..\..\crc32.c(371): warning C4131: 'crc32_combine' : uses old-style declarator
-         deflate.c
-     1>..\..\deflate.c(205): warning C4131: 'deflateInit_' : uses old-style declarator
-     1>..\..\deflate.c(218): warning C4131: 'deflateInit2_' : uses old-style declarator
-     1>..\..\deflate.c(316): warning C4131: 'deflateSetDictionary' : uses old-style declarator
-     1>..\..\deflate.c(358): warning C4131: 'deflateReset' : uses old-style declarator
-     1>..\..\deflate.c(394): warning C4131: 'deflateSetHeader' : uses old-style declarator
-     1>..\..\deflate.c(405): warning C4131: 'deflatePrime' : uses old-style declarator
-     1>..\..\deflate.c(417): warning C4131: 'deflateParams' : uses old-style declarator
-     1>..\..\deflate.c(455): warning C4131: 'deflateTune' : uses old-style declarator
-     1>..\..\deflate.c(490): warning C4131: 'deflateBound' : uses old-style declarator
-     1>..\..\deflate.c(519): warning C4131: 'putShortMSB' : uses old-style declarator
-     1>..\..\deflate.c(533): warning C4131: 'flush_pending' : uses old-style declarator
-     1>..\..\deflate.c(553): warning C4131: 'deflate' : uses old-style declarator
-     1>..\..\deflate.c(698): warning C4244: '=' : conversion from 'int' to 'Bytef', possible loss of data
-     1>..\..\deflate.c(729): warning C4244: '=' : conversion from 'int' to 'Bytef', possible loss of data
-     1>..\..\deflate.c(860): warning C4131: 'deflateEnd' : uses old-style declarator
-     1>..\..\deflate.c(895): warning C4131: 'deflateCopy' : uses old-style declarator
-     1>..\..\deflate.c(957): warning C4131: 'read_buf' : uses old-style declarator
-     1>..\..\deflate.c(987): warning C4131: 'lm_init' : uses old-style declarator
-     1>..\..\deflate.c(1028): warning C4131: 'longest_match' : uses old-style declarator
-     1>..\..\deflate.c(1176): warning C4131: 'longest_match_fast' : uses old-style declarator
-     1>..\..\deflate.c(1267): warning C4131: 'fill_window' : uses old-style declarator
-     1>..\..\deflate.c(1278): warning C4127: conditional expression is constant
-     1>..\..\deflate.c(1391): warning C4131: 'deflate_stored' : uses old-style declarator
-     1>..\..\deflate.c(1449): warning C4131: 'deflate_fast' : uses old-style declarator
-     1>..\..\deflate.c(1502): warning C4244: 'initializing' : conversion from 'uInt' to 'uch', possible loss of data
-     1>..\..\deflate.c(1502): warning C4244: 'initializing' : conversion from 'uInt' to 'ush', possible loss of data
-     1>..\..\deflate.c(1555): warning C4131: 'deflate_slow' : uses old-style declarator
-     1>..\..\deflate.c(1624): warning C4244: 'initializing' : conversion from 'uInt' to 'uch', possible loss of data
-     1>..\..\deflate.c(1624): warning C4244: 'initializing' : conversion from 'uInt' to 'ush', possible loss of data
-         gzio.c
-     1>..\..\gzio.c(94): warning C4131: 'gz_open' : uses old-style declarator
-     1>..\..\gzio.c(131): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-     1>..\..\gzio.c(181): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
-     1>..\..\gzio.c(209): warning C4131: 'gzopen' : uses old-style declarator
-     1>..\..\gzio.c(220): warning C4131: 'gzdopen' : uses old-style declarator
-     1>..\..\gzio.c(226): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
-     1>..\..\gzio.c(235): warning C4131: 'gzsetparams' : uses old-style declarator
-     1>..\..\gzio.c(262): warning C4131: 'get_byte' : uses old-style declarator
-     1>..\..\gzio.c(289): warning C4131: 'check_header' : uses old-style declarator
-     1>..\..\gzio.c(356): warning C4131: 'destroy' : uses old-style declarator
-     1>..\..\gzio.c(395): warning C4131: 'gzread' : uses old-style declarator
-     1>..\..\gzio.c(413): warning C4244: '=' : conversion from 'int' to 'Byte', possible loss of data
-     1>..\..\gzio.c(504): warning C4131: 'gzgetc' : uses old-style declarator
-     1>..\..\gzio.c(516): warning C4131: 'gzungetc' : uses old-style declarator
-     1>..\..\gzio.c(541): warning C4131: 'gzgets' : uses old-style declarator
-     1>..\..\gzio.c(560): warning C4131: 'gzwrite' : uses old-style declarator
-     1>..\..\gzio.c(627): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files\Microsoft Visual Studio 10.0\VC\include\stdio.h(363) : see declaration of '_vsnprintf'
-     1>..\..\gzio.c(679): warning C4131: 'gzputc' : uses old-style declarator
-     1>..\..\gzio.c(694): warning C4131: 'gzputs' : uses old-style declarator
-     1>..\..\gzio.c(706): warning C4131: 'do_flush' : uses old-style declarator
-     1>..\..\gzio.c(747): warning C4131: 'gzflush' : uses old-style declarator
-     1>..\..\gzio.c(768): warning C4131: 'gzseek' : uses old-style declarator
-     1>..\..\gzio.c(858): warning C4131: 'gzrewind' : uses old-style declarator
-     1>..\..\gzio.c(882): warning C4131: 'gztell' : uses old-style declarator
-     1>..\..\gzio.c(892): warning C4131: 'gzeof' : uses old-style declarator
-     1>..\..\gzio.c(909): warning C4131: 'gzdirect' : uses old-style declarator
-     1>..\..\gzio.c(921): warning C4131: 'putLong' : uses old-style declarator
-     1>..\..\gzio.c(936): warning C4131: 'getLong' : uses old-style declarator
-     1>..\..\gzio.c(954): warning C4131: 'gzclose' : uses old-style declarator
-     1>..\..\gzio.c(988): warning C4131: 'gzerror' : uses old-style declarator
-     1>..\..\gzio.c(1001): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files\Microsoft Visual Studio 10.0\VC\include\string.h(124) : see declaration of 'strerror'
-     1>..\..\gzio.c(1008): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-     1>..\..\gzio.c(1009): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-     1>..\..\gzio.c(1010): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-     1>..\..\gzio.c(1018): warning C4131: 'gzclearerr' : uses old-style declarator
-         infback.c
-     1>..\..\infback.c(29): warning C4131: 'inflateBackInit_' : uses old-style declarator
-     1>..\..\infback.c(74): warning C4131: 'fixedtables' : uses old-style declarator
-     1>..\..\infback.c(242): warning C4131: 'inflateBack' : uses old-style declarator
-     1>..\..\infback.c(286): warning C4127: conditional expression is constant
-     1>..\..\infback.c(290): warning C4127: conditional expression is constant
-     1>..\..\infback.c(290): warning C4127: conditional expression is constant
-     1>..\..\infback.c(290): warning C4127: conditional expression is constant
-     1>..\..\infback.c(292): warning C4127: conditional expression is constant
-     1>..\..\infback.c(314): warning C4127: conditional expression is constant
-     1>..\..\infback.c(319): warning C4127: conditional expression is constant
-     1>..\..\infback.c(320): warning C4127: conditional expression is constant
-     1>..\..\infback.c(320): warning C4127: conditional expression is constant
-     1>..\..\infback.c(320): warning C4127: conditional expression is constant
-     1>..\..\infback.c(329): warning C4127: conditional expression is constant
-     1>..\..\infback.c(334): warning C4127: conditional expression is constant
-     1>..\..\infback.c(335): warning C4127: conditional expression is constant
-     1>..\..\infback.c(351): warning C4127: conditional expression is constant
-     1>..\..\infback.c(351): warning C4127: conditional expression is constant
-     1>..\..\infback.c(351): warning C4127: conditional expression is constant
-     1>..\..\infback.c(353): warning C4127: conditional expression is constant
-     1>..\..\infback.c(355): warning C4127: conditional expression is constant
-     1>..\..\infback.c(357): warning C4127: conditional expression is constant
-     1>..\..\infback.c(370): warning C4127: conditional expression is constant
-     1>..\..\infback.c(370): warning C4127: conditional expression is constant
-     1>..\..\infback.c(370): warning C4127: conditional expression is constant
-     1>..\..\infback.c(372): warning C4127: conditional expression is constant
-     1>..\..\infback.c(394): warning C4127: conditional expression is constant
-     1>..\..\infback.c(394): warning C4127: conditional expression is constant
-     1>..\..\infback.c(397): warning C4127: conditional expression is constant
-     1>..\..\infback.c(397): warning C4127: conditional expression is constant
-     1>..\..\infback.c(397): warning C4127: conditional expression is constant
-     1>..\..\infback.c(398): warning C4127: conditional expression is constant
-     1>..\..\infback.c(403): warning C4127: conditional expression is constant
-     1>..\..\infback.c(403): warning C4127: conditional expression is constant
-     1>..\..\infback.c(403): warning C4127: conditional expression is constant
-     1>..\..\infback.c(404): warning C4127: conditional expression is constant
-     1>..\..\infback.c(412): warning C4127: conditional expression is constant
-     1>..\..\infback.c(415): warning C4127: conditional expression is constant
-     1>..\..\infback.c(415): warning C4127: conditional expression is constant
-     1>..\..\infback.c(415): warning C4127: conditional expression is constant
-     1>..\..\infback.c(416): warning C4127: conditional expression is constant
-     1>..\..\infback.c(419): warning C4127: conditional expression is constant
-     1>..\..\infback.c(422): warning C4127: conditional expression is constant
-     1>..\..\infback.c(422): warning C4127: conditional expression is constant
-     1>..\..\infback.c(422): warning C4127: conditional expression is constant
-     1>..\..\infback.c(423): warning C4127: conditional expression is constant
-     1>..\..\infback.c(426): warning C4127: conditional expression is constant
-     1>..\..\infback.c(467): warning C4127: conditional expression is constant
-     1>..\..\infback.c(471): warning C4127: conditional expression is constant
-     1>..\..\infback.c(479): warning C4127: conditional expression is constant
-     1>..\..\infback.c(479): warning C4127: conditional expression is constant
-     1>..\..\infback.c(487): warning C4127: conditional expression is constant
-     1>..\..\infback.c(487): warning C4127: conditional expression is constant
-     1>..\..\infback.c(489): warning C4127: conditional expression is constant
-     1>..\..\infback.c(491): warning C4127: conditional expression is constant
-     1>..\..\infback.c(499): warning C4127: conditional expression is constant
-     1>..\..\infback.c(523): warning C4127: conditional expression is constant
-     1>..\..\infback.c(523): warning C4127: conditional expression is constant
-     1>..\..\infback.c(523): warning C4127: conditional expression is constant
-     1>..\..\infback.c(525): warning C4127: conditional expression is constant
-     1>..\..\infback.c(533): warning C4127: conditional expression is constant
-     1>..\..\infback.c(533): warning C4127: conditional expression is constant
-     1>..\..\infback.c(541): warning C4127: conditional expression is constant
-     1>..\..\infback.c(541): warning C4127: conditional expression is constant
-     1>..\..\infback.c(543): warning C4127: conditional expression is constant
-     1>..\..\infback.c(545): warning C4127: conditional expression is constant
-     1>..\..\infback.c(556): warning C4127: conditional expression is constant
-     1>..\..\infback.c(556): warning C4127: conditional expression is constant
-     1>..\..\infback.c(556): warning C4127: conditional expression is constant
-     1>..\..\infback.c(558): warning C4127: conditional expression is constant
-     1>..\..\infback.c(570): warning C4127: conditional expression is constant
-     1>..\..\infback.c(615): warning C4131: 'inflateBackEnd' : uses old-style declarator
-         inffast.c
-     1>..\..\inffast.c(68): warning C4131: 'inflate_fast' : uses old-style declarator
-         inflate.c
-     1>..\..\inflate.c(104): warning C4131: 'inflateReset' : uses old-style declarator
-     1>..\..\inflate.c(129): warning C4131: 'inflatePrime' : uses old-style declarator
-     1>..\..\inflate.c(145): warning C4131: 'inflateInit2_' : uses old-style declarator
-     1>..\..\inflate.c(188): warning C4131: 'inflateInit_' : uses old-style declarator
-     1>..\..\inflate.c(206): warning C4131: 'fixedtables' : uses old-style declarator
-     1>..\..\inflate.c(324): warning C4131: 'updatewindow' : uses old-style declarator
-     1>..\..\inflate.c(555): warning C4131: 'inflate' : uses old-style declarator
-     1>..\..\inflate.c(583): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(594): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(594): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(598): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(599): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(620): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(631): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(635): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(635): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(649): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(650): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(653): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(653): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(656): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(657): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(660): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(660): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(665): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(666): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(670): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(670): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(674): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(675): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(711): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
-     1>..\..\inflate.c(732): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
-     1>..\..\inflate.c(745): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(745): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(751): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(762): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(762): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(764): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(768): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(777): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(781): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(781): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(783): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(805): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(808): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(809): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(809): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(818): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(838): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(838): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(840): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(842): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(844): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(857): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(857): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(859): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(881): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(884): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(884): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(885): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(890): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(890): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(891): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(899): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(902): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(902): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(903): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(906): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(909): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(909): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(910): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(913): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(952): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(954): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(960): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(968): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(970): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(972): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(995): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(995): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(997): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1005): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1013): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1015): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1017): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1028): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1028): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1030): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1079): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1079): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1096): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1103): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1103): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1109): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1134): warning C4127: conditional expression is constant
-     1>..\..\inflate.c(1156): warning C4131: 'inflateEnd' : uses old-style declarator
-     1>..\..\inflate.c(1170): warning C4131: 'inflateSetDictionary' : uses old-style declarator
-     1>..\..\inflate.c(1212): warning C4131: 'inflateGetHeader' : uses old-style declarator
-     1>..\..\inflate.c(1240): warning C4131: 'syncsearch' : uses old-style declarator
-     1>..\..\inflate.c(1263): warning C4131: 'inflateSync' : uses old-style declarator
-     1>..\..\inflate.c(1314): warning C4131: 'inflateSyncPoint' : uses old-style declarator
-     1>..\..\inflate.c(1324): warning C4131: 'inflateCopy' : uses old-style declarator
-         inftrees.c
-     1>..\..\inftrees.c(33): warning C4131: 'inflate_table' : uses old-style declarator
-         trees.c
-     1>..\..\trees.c(383): warning C4131: '_tr_init' : uses old-style declarator
-     1>..\..\trees.c(412): warning C4131: 'init_block' : uses old-style declarator
-     1>..\..\trees.c(456): warning C4131: 'pqdownheap' : uses old-style declarator
-     1>..\..\trees.c(491): warning C4131: 'gen_bitlen' : uses old-style declarator
-     1>..\..\trees.c(578): warning C4131: 'gen_codes' : uses old-style declarator
-     1>..\..\trees.c(604): warning C4244: '=' : conversion from 'unsigned int' to 'ush', possible loss of data
-     1>..\..\trees.c(620): warning C4131: 'build_tree' : uses old-style declarator
-     1>..\..\trees.c(708): warning C4131: 'scan_tree' : uses old-style declarator
-     1>..\..\trees.c(728): warning C4244: '+=' : conversion from 'int' to 'ush', possible loss of data
-     1>..\..\trees.c(753): warning C4131: 'send_tree' : uses old-style declarator
-     1>..\..\trees.c(804): warning C4131: 'build_bl_tree' : uses old-style declarator
-     1>..\..\trees.c(839): warning C4131: 'send_all_trees' : uses old-style declarator
-     1>..\..\trees.c(868): warning C4131: '_tr_stored_block' : uses old-style declarator
-     1>..\..\trees.c(893): warning C4131: '_tr_align' : uses old-style declarator
-     1>..\..\trees.c(922): warning C4131: '_tr_flush_block' : uses old-style declarator
-     1>..\..\trees.c(1023): warning C4131: '_tr_tally' : uses old-style declarator
-     1>..\..\trees.c(1073): warning C4131: 'compress_block' : uses old-style declarator
-     1>..\..\trees.c(1127): warning C4131: 'set_data_type' : uses old-style declarator
-     1>..\..\trees.c(1147): warning C4131: 'bi_reverse' : uses old-style declarator
-     1>..\..\trees.c(1162): warning C4131: 'bi_flush' : uses old-style declarator
-     1>..\..\trees.c(1179): warning C4131: 'bi_windup' : uses old-style declarator
-     1>..\..\trees.c(1198): warning C4131: 'copy_block' : uses old-style declarator
-         uncompr.c
-     1>..\..\uncompr.c(27): warning C4131: 'uncompress' : uses old-style declarator
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D WIN32 /D _DEBUG /D _VC80_UPGRADE=0x0600 /Gm /EHsc /MTd /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Win32_LIB_Debug\\" /Fd"Win32_LIB_Debug\\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\..\adler32.c ..\..\compress.c ..\..\crc32.c ..\..\deflate.c ..\..\gzio.c ..\..\infback.c ..\..\inffast.c ..\..\inflate.c ..\..\inftrees.c ..\..\trees.c ..\..\uncompr.c ..\..\zutil.c
          zutil.c
-     1>..\..\zutil.c(134): warning C4131: 'zError' : uses old-style declarator
-     1>..\..\zutil.c(301): warning C4131: 'zcalloc' : uses old-style declarator
-     1>..\..\zutil.c(311): warning C4131: 'zcfree' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\zutil.c(134): warning C4131: 'zError' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\zutil.c(301): warning C4131: 'zcalloc' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\zutil.c(311): warning C4131: 'zcfree' : uses old-style declarator
+         uncompr.c
+     1>f:\cleancodeq2\trunk\zlib\uncompr.c(27): warning C4131: 'uncompress' : uses old-style declarator
+         trees.c
+     1>f:\cleancodeq2\trunk\zlib\trees.c(383): warning C4131: '_tr_init' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(412): warning C4131: 'init_block' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(456): warning C4131: 'pqdownheap' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(491): warning C4131: 'gen_bitlen' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(578): warning C4131: 'gen_codes' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(604): warning C4244: '=' : conversion from 'unsigned int' to 'ush', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\trees.c(620): warning C4131: 'build_tree' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(708): warning C4131: 'scan_tree' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(728): warning C4244: '+=' : conversion from 'int' to 'ush', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\trees.c(753): warning C4131: 'send_tree' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(804): warning C4131: 'build_bl_tree' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(839): warning C4131: 'send_all_trees' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(868): warning C4131: '_tr_stored_block' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(893): warning C4131: '_tr_align' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(922): warning C4131: '_tr_flush_block' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1023): warning C4131: '_tr_tally' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1073): warning C4131: 'compress_block' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1127): warning C4131: 'set_data_type' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1147): warning C4131: 'bi_reverse' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1162): warning C4131: 'bi_flush' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1179): warning C4131: 'bi_windup' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\trees.c(1198): warning C4131: 'copy_block' : uses old-style declarator
+         inftrees.c
+     1>f:\cleancodeq2\trunk\zlib\inftrees.c(33): warning C4131: 'inflate_table' : uses old-style declarator
+         inflate.c
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(104): warning C4131: 'inflateReset' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(129): warning C4131: 'inflatePrime' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(145): warning C4131: 'inflateInit2_' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(188): warning C4131: 'inflateInit_' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(206): warning C4131: 'fixedtables' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(324): warning C4131: 'updatewindow' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(555): warning C4131: 'inflate' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(583): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(594): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(594): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(598): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(599): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(620): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(631): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(635): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(635): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(649): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(650): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(653): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(653): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(656): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(657): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(660): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(660): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(665): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(666): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(670): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(670): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(674): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(675): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(711): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(732): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(745): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(745): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(751): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(762): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(762): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(764): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(768): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(777): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(781): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(781): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(783): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(805): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(808): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(809): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(809): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(818): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(838): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(838): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(840): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(842): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(844): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(857): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(857): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(859): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(881): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(884): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(884): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(885): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(890): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(890): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(891): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(899): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(902): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(902): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(903): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(906): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(909): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(909): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(910): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(913): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(952): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(954): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(960): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(968): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(970): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(972): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(995): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(995): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(997): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1005): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1013): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1015): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1017): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1028): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1028): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1030): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1079): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1079): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1096): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1103): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1103): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1109): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1134): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1156): warning C4131: 'inflateEnd' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1170): warning C4131: 'inflateSetDictionary' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1212): warning C4131: 'inflateGetHeader' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1240): warning C4131: 'syncsearch' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1263): warning C4131: 'inflateSync' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1314): warning C4131: 'inflateSyncPoint' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\inflate.c(1324): warning C4131: 'inflateCopy' : uses old-style declarator
+         inffast.c
+     1>f:\cleancodeq2\trunk\zlib\inffast.c(68): warning C4131: 'inflate_fast' : uses old-style declarator
+         infback.c
+     1>f:\cleancodeq2\trunk\zlib\infback.c(29): warning C4131: 'inflateBackInit_' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\infback.c(74): warning C4131: 'fixedtables' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\infback.c(242): warning C4131: 'inflateBack' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\infback.c(286): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(290): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(290): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(290): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(292): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(314): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(319): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(320): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(320): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(320): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(329): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(334): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(335): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(351): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(351): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(351): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(353): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(355): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(357): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(370): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(370): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(370): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(372): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(394): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(394): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(397): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(397): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(397): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(398): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(403): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(403): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(403): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(404): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(412): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(415): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(415): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(415): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(416): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(419): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(422): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(422): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(422): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(423): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(426): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(467): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(471): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(479): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(479): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(487): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(487): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(489): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(491): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(499): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(523): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(523): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(523): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(525): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(533): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(533): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(541): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(541): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(543): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(545): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(556): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(556): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(556): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(558): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(570): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\infback.c(615): warning C4131: 'inflateBackEnd' : uses old-style declarator
+         gzio.c
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(94): warning C4131: 'gz_open' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(131): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\string.h(72) : see declaration of 'strcpy'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(181): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(209): warning C4131: 'gzopen' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(220): warning C4131: 'gzdopen' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(226): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(235): warning C4131: 'gzsetparams' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(262): warning C4131: 'get_byte' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(289): warning C4131: 'check_header' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(356): warning C4131: 'destroy' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(395): warning C4131: 'gzread' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(413): warning C4244: '=' : conversion from 'int' to 'Byte', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(504): warning C4131: 'gzgetc' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(516): warning C4131: 'gzungetc' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(541): warning C4131: 'gzgets' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(560): warning C4131: 'gzwrite' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(627): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(363) : see declaration of '_vsnprintf'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(679): warning C4131: 'gzputc' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(694): warning C4131: 'gzputs' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(706): warning C4131: 'do_flush' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(747): warning C4131: 'gzflush' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(768): warning C4131: 'gzseek' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(858): warning C4131: 'gzrewind' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(882): warning C4131: 'gztell' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(892): warning C4131: 'gzeof' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(909): warning C4131: 'gzdirect' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(921): warning C4131: 'putLong' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(936): warning C4131: 'getLong' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(954): warning C4131: 'gzclose' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(988): warning C4131: 'gzerror' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(1001): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\string.h(124) : see declaration of 'strerror'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(1008): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\string.h(72) : see declaration of 'strcpy'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(1009): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\string.h(77) : see declaration of 'strcat'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(1010): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\string.h(77) : see declaration of 'strcat'
+     1>f:\cleancodeq2\trunk\zlib\gzio.c(1018): warning C4131: 'gzclearerr' : uses old-style declarator
+         deflate.c
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(205): warning C4131: 'deflateInit_' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(218): warning C4131: 'deflateInit2_' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(316): warning C4131: 'deflateSetDictionary' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(358): warning C4131: 'deflateReset' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(394): warning C4131: 'deflateSetHeader' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(405): warning C4131: 'deflatePrime' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(417): warning C4131: 'deflateParams' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(455): warning C4131: 'deflateTune' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(490): warning C4131: 'deflateBound' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(519): warning C4131: 'putShortMSB' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(533): warning C4131: 'flush_pending' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(553): warning C4131: 'deflate' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(698): warning C4244: '=' : conversion from 'int' to 'Bytef', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(729): warning C4244: '=' : conversion from 'int' to 'Bytef', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(860): warning C4131: 'deflateEnd' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(895): warning C4131: 'deflateCopy' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(957): warning C4131: 'read_buf' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(987): warning C4131: 'lm_init' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1028): warning C4131: 'longest_match' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1176): warning C4131: 'longest_match_fast' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1267): warning C4131: 'fill_window' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1278): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1391): warning C4131: 'deflate_stored' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1449): warning C4131: 'deflate_fast' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1502): warning C4244: 'initializing' : conversion from 'uInt' to 'uch', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1502): warning C4244: 'initializing' : conversion from 'uInt' to 'ush', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1555): warning C4131: 'deflate_slow' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1624): warning C4244: 'initializing' : conversion from 'uInt' to 'uch', possible loss of data
+     1>f:\cleancodeq2\trunk\zlib\deflate.c(1624): warning C4244: 'initializing' : conversion from 'uInt' to 'ush', possible loss of data
+         crc32.c
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(220): warning C4131: 'crc32' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(232): warning C4127: conditional expression is constant
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(263): warning C4131: 'crc32_little' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(303): warning C4131: 'crc32_big' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(343): warning C4131: 'gf2_matrix_times' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(360): warning C4131: 'gf2_matrix_square' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\crc32.c(371): warning C4131: 'crc32_combine' : uses old-style declarator
+         compress.c
+     1>f:\cleancodeq2\trunk\zlib\compress.c(23): warning C4131: 'compress2' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\compress.c(63): warning C4131: 'compress' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\compress.c(76): warning C4131: 'compressBound' : uses old-style declarator
+         adler32.c
+     1>f:\cleancodeq2\trunk\zlib\adler32.c(58): warning C4131: 'adler32' : uses old-style declarator
+     1>f:\cleancodeq2\trunk\zlib\adler32.c(129): warning C4131: 'adler32_combine' : uses old-style declarator
          Generating Code...
        ResourceCompile:
-         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D NDEBUG /D NDEBUG /D _VC80_UPGRADE=0x0600 /l"0x0409" /I\cleancodeq2\trunk\zlib\win32 /nologo /fo".\Win32_LIB_Release\zlib1.res" ..\..\win32\zlib1.rc 
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _DEBUG /D _DEBUG /D _VC80_UPGRADE=0x0600 /l"0x0409" /I\cleancodeq2\trunk\zlib\win32 /nologo /fo"Win32_LIB_Debug\zlib1.res" ..\..\win32\zlib1.rc 
        Lib:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"F:\cleancodeq2\trunk\lib\zlibr.lib" /NOLOGO .\Win32_LIB_Release\zlib1.res .\Win32_LIB_Release\\adler32.obj .\Win32_LIB_Release\\compress.obj .\Win32_LIB_Release\\crc32.obj .\Win32_LIB_Release\\deflate.obj .\Win32_LIB_Release\\gzio.obj .\Win32_LIB_Release\\infback.obj .\Win32_LIB_Release\\inffast.obj .\Win32_LIB_Release\\inflate.obj .\Win32_LIB_Release\\inftrees.obj .\Win32_LIB_Release\\trees.obj .\Win32_LIB_Release\\uncompr.obj .\Win32_LIB_Release\\zutil.obj
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"F:\cleancodeq2\trunk\lib\zlibd.lib" /NOLOGO Win32_LIB_Debug\zlib1.res Win32_LIB_Debug\\adler32.obj Win32_LIB_Debug\\compress.obj Win32_LIB_Debug\\crc32.obj Win32_LIB_Debug\\deflate.obj Win32_LIB_Debug\\gzio.obj Win32_LIB_Debug\\infback.obj Win32_LIB_Debug\\inffast.obj Win32_LIB_Debug\\inflate.obj Win32_LIB_Debug\\inftrees.obj Win32_LIB_Debug\\trees.obj Win32_LIB_Debug\\uncompr.obj Win32_LIB_Debug\\zutil.obj
      1>LINK : warning LNK4068: /MACHINE not specified; defaulting to X86
-         zlib.vcxproj -> F:\cleancodeq2\trunk\lib\zlibr.lib
+         zlib.vcxproj -> F:\cleancodeq2\trunk\lib\zlibd.lib
        _AfterBuild:
-         Deleting file ".\Win32_LIB_Release\zlib.unsuccessfulbuild".
-         Touching ".\Win32_LIB_Release\zlib.lastbuildstate".
-     1>Done Building Project "F:\cleancodeq2\trunk\zlib\projects\visualc6\zlib.vcxproj" (build target(s)).
+         Deleting file "Win32_LIB_Debug\zlib.unsuccessfulbuild".
+         Touching "Win32_LIB_Debug\zlib.lastbuildstate".
+     1>Done Building Project "F:\cleancodeq2\trunk\zlib\projects\visualc6\zlib.vcxproj" (rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.92
+Time Elapsed 00:00:00.97

@@ -34,6 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
 
+bool ReadingGame = false;
+CClient **SaveClientData;
+
 #define SAVE_USE_GZ
 
 #ifdef SAVE_USE_GZ
@@ -41,6 +44,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #else
 #define SAVE_GZ_FLAGS 0
 #endif
+
+#define MAGIC_NUMBER 0xf2843dfa
+
+// Writes the magic number
+#define WRITE_MAGIC { File.Write<uint32> (MAGIC_NUMBER); }
+
+// Reads the magic number.
+#define READ_MAGIC { if (File.Read<uint32> () != MAGIC_NUMBER) _CC_ASSERT_EXPR (0, "Magic number mismatch"); }
 
 typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityTableList;
 #define MAX_ENTITY_TABLE_HASH 256
@@ -175,12 +186,12 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	// Write entity stuff
 	if (Entity->gameEntity->state.number > game.maxclients)
 	{
-		DebugPrintf ("Writing %s\n", Entity->__GetName ());
+		//DebugPrintf ("Writing %s\n", Entity->__GetName ());
 		File.WriteString (Entity->__GetName ());
 	}
-}
 
-#define MAGIC_NUMBER 0xf2843dfa
+	WRITE_MAGIC
+}
 
 void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
 {
@@ -189,7 +200,7 @@ void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
 	// Call SaveFields
 	Entity->SaveFields (File);
 
-	File.Write<uint32> (MAGIC_NUMBER);
+	WRITE_MAGIC
 }
 
 void WriteEntities (CFile &File)
@@ -214,12 +225,17 @@ void WriteEntities (CFile &File)
 			continue;
 		WriteFinalizedEntity (File, Entity);
 	}
+
+	WRITE_MAGIC
 }
 
 // Writes out gclient_t
 void WriteClient (CFile &File, CPlayerEntity *Player)
 {
 	Player->Client.WriteClientStructure (File);
+	Player->Client.Write (File);
+
+	WRITE_MAGIC
 }
 
 void WriteClients (CFile &File)
@@ -266,7 +282,7 @@ void ReadEntity (CFile &File, sint32 number)
 	{
 		CBaseEntity *Entity;
 		char *tempBuffer = File.ReadString ();
-		DebugPrintf ("Loading %s (%i)\n", tempBuffer, number);
+		//DebugPrintf ("Loading %s (%i)\n", tempBuffer, number);
 
 		Entity = CreateEntityFromTable (number, tempBuffer);
 		QDelete[] tempBuffer;
@@ -280,6 +296,8 @@ void ReadEntity (CFile &File, sint32 number)
 
 		ent->Entity = Entity;
 	}
+
+	READ_MAGIC
 }
 
 void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
@@ -293,8 +311,7 @@ void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
 	Entity->ClearArea ();
 	Entity->Link (); // If this passes, Entity loaded fine!
 
-	if (File.Read <uint32> () != MAGIC_NUMBER)
-		_CC_ASSERT_EXPR (0, "Magic number mismatch");
+	READ_MAGIC
 }
 
 void ReadEntities (CFile &File)
@@ -304,7 +321,7 @@ void ReadEntities (CFile &File)
 	{
 		sint32 number = File.Read<sint32> ();
 
-		DebugPrintf ("Reading entity number %i\n", number);
+		//DebugPrintf ("Reading entity number %i\n", number);
 
 		if (number == -1)
 			break;
@@ -330,27 +347,38 @@ void ReadEntities (CFile &File)
 #endif
 
 	World = g_edicts[0].Entity;
+
+	READ_MAGIC
 }
 
 void ReadClient (CFile &File, sint32 i)
 {
 	CClient::ReadClientStructure (File, i);
+	SaveClientData[i]->Load (File);
 }
 
 void ReadClients (CFile &File)
 {
+	SaveClientData = QNew (com_genericPool, 0) CClient*[game.maxclients];
 	for (uint8 i = 0; i < game.maxclients; i++)
+	{
+		SaveClientData[i] = QNew (com_genericPool, 0) CClient(g_edicts[1+i].client);
 		ReadClient (File, i);
+	}
 }
 
 void WriteLevelLocals (CFile &File)
 {
 	level.Save (File);
+
+	WRITE_MAGIC
 }
 
 void ReadLevelLocals (CFile &File)
 {
 	level.Load (File);
+
+	READ_MAGIC
 }
 
 void WriteGameLocals (CFile &File, bool autosaved)
@@ -358,11 +386,16 @@ void WriteGameLocals (CFile &File, bool autosaved)
 	game.autosaved = autosaved;
 	game.Save (File);
 	game.autosaved = false;
+
+	WRITE_MAGIC
 }
 
 void ReadGameLocals (CFile &File)
 {
 	game.Load (File);
+	_CC_ASSERT_EXPR ((game.mode == GAME_COOPERATIVE), "Loaded game in non-coop?");
+
+	READ_MAGIC
 }
 
 void CGameAPI::WriteGame (char *filename, bool autosave)
@@ -384,6 +417,8 @@ void CGameAPI::WriteGame (char *filename, bool autosave)
 
 	WriteGameLocals (File, autosave);
 	WriteClients (File);
+
+	WRITE_MAGIC
 }
 
 #include "cc_ban.h"
@@ -391,6 +426,7 @@ void InitVersion ();
 
 void CGameAPI::ReadGame (char *filename)
 {
+	ReadingGame = true;
 	DebugPrintf ("Reading game from %s...\n", filename);
 
 	// Free any game-allocated memory before us
@@ -422,6 +458,8 @@ void CGameAPI::ReadGame (char *filename)
 
 	Bans.LoadFromFile ();
 	InitVersion ();
+
+	READ_MAGIC
 }
 
 void LoadBodyQueue (CFile &File);
@@ -456,6 +494,8 @@ void CGameAPI::WriteLevel (char *filename)
 	// Write out systems
 	SaveBodyQueue (File);
 	SaveJunk (File);
+
+	WRITE_MAGIC
 }
 
 void InitEntityLists ();
@@ -486,6 +526,9 @@ void CGameAPI::ReadLevel (char *filename)
 	ShutdownNodes ();
 #endif
 
+	if (!ReadingGame)
+		CPlayerEntity::BackupClientData ();
+
 	// free any dynamic memory allocated by loading the level
 	// base state
 	Mem_FreePool (com_levelPool);
@@ -502,6 +545,7 @@ void CGameAPI::ReadLevel (char *filename)
 	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));
 
 	InitEntityLists ();
+
 	InitEntities (); // Get the world and players setup
 
 	// check edict size
@@ -547,6 +591,10 @@ void CGameAPI::ReadLevel (char *filename)
 		Player->Client.Persistent.state = SVCS_FREE;
 	}
 
+	// set client fields on player ents
+	if (!ReadingGame)
+		CPlayerEntity::RestoreClientData ();
+
 	// do any load time things at this point
 	// FIXME: make this faster...
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
@@ -560,4 +608,21 @@ void CGameAPI::ReadLevel (char *filename)
 		if ((ent->Entity->ClassName) && strcmp(ent->Entity->ClassName, "target_crosslevel_target") == 0)
 			FireCrosslevelTrigger (ent->Entity);
 	}
+
+	if (ReadingGame)
+	{
+		ReadingGame = false;
+
+		for (uint8 i = 0; i < game.maxclients; i++)
+		{
+			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
+			Player->Client = CClient(*SaveClientData[i]);
+			Player->Client.RepositionClient (g_edicts[i+1].client);
+			QDelete SaveClientData[i];
+		}
+		QDelete[] SaveClientData;
+		SaveClientData = NULL;
+	}
+
+	READ_MAGIC
 }

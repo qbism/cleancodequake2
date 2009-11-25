@@ -54,7 +54,7 @@ public:
 	char		pathName[MAX_PATHNAME];
 };
 
-typedef std::vector<fs_pathIndex*> fs_pathListType;
+typedef std::vector<fs_pathIndex*, std::generic_allocator<fs_pathIndex*> > fs_pathListType;
 fs_pathListType fs_pathList;
 
 // Adds a path to the path list

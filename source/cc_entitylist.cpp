@@ -223,10 +223,9 @@ void G_FindTeams ()
 {
 	sint32		c = 0, c2 = 0;
 
-//	for (i = 1, e = g_edicts[i].Entity; i < globals.numEdicts; i++, e = g_edicts[i].Entity)
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
+	for (int i = 1; i < Game.GetNumEdicts(); i++)
 	{
-		CBaseEntity *e = (*it)->Entity;
+		CBaseEntity *e = g_edicts[i].Entity;
 		if (!e)
 			continue;
 		if (!e->GetInUse())
@@ -242,10 +241,9 @@ void G_FindTeams ()
 
 		c++;
 		c2++;
-		//for (j = i + 1, e2 = g_edicts[j].Entity; j < globals.numEdicts; j++, e2 = g_edicts[j].Entity)
-		for (TEntitiesContainer::iterator it2 = level.Entities.Closed.begin()++; it2 != level.Entities.Closed.end(); ++it2)
+		for (int j = i + 1; j < Game.GetNumEdicts(); j++)
 		{
-			CBaseEntity *e2 = (*it2)->Entity;
+			CBaseEntity *e2 = g_edicts[j].Entity;
 			if (!e2)
 				continue;
 			if (!e2->GetInUse())
@@ -261,7 +259,7 @@ void G_FindTeams ()
 				chain->Team.Chain = e2;
 				e2->Team.Master = e;
 				e2->Team.HasTeam = true;
-
+		
 				QDelete e2->Team.String; // Free team string
 
 				chain = e2;

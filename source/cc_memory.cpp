@@ -444,6 +444,10 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine)
 	else
 		free (mem);
 
+#ifdef _DEBUG
+//	_Mem_CheckGlobalIntegrity (fileName, fileLine);
+#endif
+
 	return size;
 }
 
@@ -496,12 +500,18 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const sint32
 	size = 0;
 	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = next)
 	{
+		memBlock_t *oldMem = mem;
+
 		next = mem->prev;
+		
+		if (oldMem == next)
+			break;
+		
 		size += _Mem_Free (mem->memPointer, fileName, fileLine);
 	}
 
-	_CC_ASSERT_EXPR (pool->blockCount == 0, "Pool block count is empty or overflowed");
-	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool uint8 count is empty or overflowed");
+	_CC_ASSERT_EXPR (pool->blockCount == 0, "Pool block count is not empty (improper free?)");
+	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool byte count is not empty (improper free?)");
 	return size;
 }
 
@@ -572,6 +582,10 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const
 	mem->next = pool->blockHeadNode.next;
 	mem->next->prev = mem;
 	mem->prev->next = mem;
+
+#ifdef _DEBUG
+	//_Mem_CheckGlobalIntegrity (fileName, fileLine);
+#endif
 
 	return mem->memPointer;
 }
@@ -738,9 +752,15 @@ void _Mem_CheckPoolIntegrity (struct memPool_t *pool, const char *fileName, cons
 
 	// Check block/uint8 counts
 	if (pool->blockCount != blocks)
-		GameError ("Mem_CheckPoolIntegrity: bad block count\n" "check: %s:#%i", fileName, fileLine);
+	{
+		_CC_ASSERT_EXPR (0, "Bad block count");
+		DebugPrintf ("Mem_CheckPoolIntegrity: bad block count\n" "check: %s:#%i", fileName, fileLine);
+	}
 	if (pool->byteCount != size)
-		GameError ("Mem_CheckPoolIntegrity: bad pool size\n" "check: %s:#%i", fileName, fileLine);
+	{
+		_CC_ASSERT_EXPR (0, "Bad block count");
+		DebugPrintf ("Mem_CheckPoolIntegrity: bad pool size\n" "check: %s:#%i", fileName, fileLine);
+	}
 }
 
 
@@ -751,7 +771,7 @@ _Mem_CheckGlobalIntegrity
 */
 void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 {
-	CTimer Timer;
+	//CTimer Timer;
 
 	for (uint32 i = 0; i < m_numPools; i++)
 	{
@@ -760,7 +780,7 @@ void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 			_Mem_CheckPoolIntegrity(pool, fileName, fileLine);
 	}
 
-	DebugPrintf ("Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
+	//DebugPrintf ("Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
 }
 
 

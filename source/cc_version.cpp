@@ -132,6 +132,7 @@ uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
 EVersionComparison	VersionReturnance;
+char				receiveBuffer[256];
 
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 HANDLE				hThread;
@@ -158,9 +159,10 @@ long WINAPI CheckNewVersionThread (long lParam)
 void CheckNewVersion ()
 #endif
 {
+	receiveBuffer[0] = 0;
+
 	HINTERNET iInternetHandle = InternetOpenA ("wininet-agent/1.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	
-	char receiveBuffer[256];
 	memset (receiveBuffer, 0, sizeof(receiveBuffer));
 
 	if (iInternetHandle)
@@ -186,47 +188,8 @@ void CheckNewVersion ()
 		InternetCloseHandle (iInternetHandle);
 	}
 
-	if (receiveBuffer[0])
-	{
-		CParser Parser (receiveBuffer, PSP_COMMENT_LINE);
+	VersionCheckReady = true;
 
-		const char *token;
-
-		std::cc_string prefix;
-		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
-		prefix = token;
-
-		uint8 minor;
-		uint16 major;
-		uint32 build;
-		Parser.ParseDataType<uint16> (PSF_ALLOW_NEWLINES, &major, 1);
-		Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
-		Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
-
-#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
-		VersionReturnance = CompareVersion (prefix.c_str(), major, minor, build);
-		VersionPrefix = prefix;
-		VersionMinor = minor;
-		VersionMajor = major;
-		VersionBuild = build;
-		VersionCheckReady = true;
-#else
-		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
-			DebugPrintf (
-			"==================================\n"
-			"*****************************\n"
-			"There is an update available for CleanCode!\n"
-			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
-			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
-			"Update version: "CLEANCODE_VERSION_PRINT"\n"
-			"*****************************\n"
-			"==================================\n",
-			CLEANCODE_VERSION_PRINT_ARGS,
-			prefix.c_str(), major, minor, build);
-		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
-#endif
-	}
 	return 0;
 }
 
@@ -235,6 +198,48 @@ void CheckVersionReturnance ()
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 	if (VersionCheckReady)
 	{
+		if (receiveBuffer[0])
+		{
+			CParser Parser (receiveBuffer, PSP_COMMENT_LINE);
+
+			const char *token;
+
+			std::cc_string prefix;
+			Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
+			prefix = token;
+
+			uint8 minor;
+			uint16 major;
+			uint32 build;
+			Parser.ParseDataType<uint16> (PSF_ALLOW_NEWLINES, &major, 1);
+			Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
+			Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
+
+	#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
+			VersionReturnance = CompareVersion (prefix.c_str(), major, minor, build);
+			VersionPrefix = prefix;
+			VersionMinor = minor;
+			VersionMajor = major;
+			VersionBuild = build;
+			VersionCheckReady = true;
+	#else
+			if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
+				DebugPrintf (
+				"==================================\n"
+				"*****************************\n"
+				"There is an update available for CleanCode!\n"
+				"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
+				"Your version:   "CLEANCODE_VERSION_PRINT"\n"
+				"Update version: "CLEANCODE_VERSION_PRINT"\n"
+				"*****************************\n"
+				"==================================\n",
+				CLEANCODE_VERSION_PRINT_ARGS,
+				prefix.c_str(), major, minor, build);
+			else
+				DebugPrintf ("Your version of CleanCode is up to date.\n");
+	#endif
+		}
+
 		if (VersionReturnance == VERSION_NEWER)
 			DebugPrintf (
 			"==================================\n"

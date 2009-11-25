@@ -396,12 +396,15 @@ public:
 			break;
 		case FT_LEVEL_STRING:
 		case FT_GAME_STRING:
-			*((char **)(ClassOffset)) = CopyStr(Value, (FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
+			if (strlen(Value))
+				*((char **)(ClassOffset)) = CopyStr(Value, (FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
+			else
+				*((char **)(ClassOffset)) = NULL;
 			break;
 		case FT_SOUND_INDEX:
 			{
 				std::cc_string temp = Value;
-				if (!temp.find (".wav"))
+				if (temp.find (".wav") == std::cc_string::npos)
 					temp.append (".wav");
 
 				*((MediaIndex *)(ClassOffset)) = SoundIndex (temp.c_str());
@@ -514,7 +517,7 @@ public:
 			break;
 		case FT_ENTITY:
 			{
-				sint32 Index = (*((CBaseEntity **)(ClassOffset))) ? (*((CBaseEntity **)(ClassOffset)))->State.GetNumber() : -1;
+				sint32 Index = (*((CBaseEntity **)(ClassOffset)) && (*((CBaseEntity **)(ClassOffset)))->gameEntity) ? (*((CBaseEntity **)(ClassOffset)))->State.GetNumber() : -1;
 				File.Write<sint32> (Index);
 			}
 			break;
@@ -719,6 +722,7 @@ public:
 
 	CMapEntity ();
 	CMapEntity (sint32 Index);
+	virtual ~CMapEntity ();
 
 	virtual void Spawn() = 0;
 
@@ -735,6 +739,9 @@ public:
 	virtual void SaveFields (CFile &File);
 	virtual void LoadFields (CFile &File);
 };
+
+typedef std::list<CMapEntity*, std::generic_allocator <CMapEntity*> >	TMapEntityListType;
+extern TMapEntityListType		MapEntities;
 
 #include "cc_itementity.h"
 #include "cc_junk_entities.h"

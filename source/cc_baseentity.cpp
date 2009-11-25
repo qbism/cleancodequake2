@@ -578,16 +578,25 @@ void	CBaseEntity::KillBox ()
 	}
 };
 
+TMapEntityListType		MapEntities;
+
 CMapEntity::CMapEntity () : 
 CBaseEntity()
 {
 	EntityFlags |= ENT_MAP;
+	MapEntities.push_front (this);
 };
 
 CMapEntity::CMapEntity (sint32 Index) : 
 CBaseEntity(Index)
 {
 	EntityFlags |= ENT_MAP;
+	MapEntities.push_front (this);
+};
+
+CMapEntity::~CMapEntity ()
+{
+	MapEntities.remove (this);
 };
 
 #include "cc_tent.h"
@@ -620,7 +629,7 @@ ENTITYFIELDS_BEGIN(CMapEntity)
 	CEntityField ("angles",			GameEntityMemberOffset(state.angles),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
-	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_LEVEL_STRING),
+	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_GAME_STRING),
 };
 ENTITYFIELDS_END(CMapEntity)
 

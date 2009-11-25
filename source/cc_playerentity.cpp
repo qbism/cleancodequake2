@@ -2996,8 +2996,8 @@ void CPlayerEntity::BackupClientData ()
 			return; // Not set up
 
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1+i].Entity);
-		if (!level.Demo && !ent->GetInUse())
-			continue;
+		//if (!level.Demo && !ent->GetInUse())
+		//	continue;
 
 		//memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
 		SavedClients[i] = CPersistentData(ent->Client.Persistent);

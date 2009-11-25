@@ -436,7 +436,7 @@ void CTurretDriver::TurretThink ()
 {
 	Entity->NextThink = level.Frame + FRAMETIME;
 
-	if (Entity->Enemy && (!Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0))
+	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || (!Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)))
 		Entity->Enemy = NULL;
 
 	if (!Entity->Enemy)
