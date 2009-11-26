@@ -32,7 +32,11 @@ CC_ENUM (sint8, ETeamIndex)
 {
 	CTF_NOTEAM,
 	CTF_TEAM1,
-	CTF_TEAM2
+	CTF_TEAM2,
+	CTF_TEAMNUM,
+
+	CTF_RED = CTF_TEAM1,
+	CTF_BLUE = CTF_TEAM2,
 };
 
 CC_ENUM (uint8, EGrappleState)

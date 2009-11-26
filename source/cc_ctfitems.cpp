@@ -67,6 +67,13 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s captured the %s flag!\n",
 						other->Client.Persistent.Name.c_str(), CTFOtherTeamName(team));
+
+				// Ping the transponder; tell it we moved back to base.
+				CFlagTransponder *Transponder = FindTransponder(other->Client.Persistent.Flag->team);
+				Transponder->Flag = Transponder->Base;
+				Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
+				Transponder->Holder = NULL;
+
 				other->Client.Persistent.Inventory.Set(other->Client.Persistent.Flag, 0);
 				other->Client.Persistent.Flag = NULL;
 
@@ -116,13 +123,20 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 				return false;
 			}
 			return false; // its at home base already
-		}	
+		}
+
 		// hey, its not home.  return it by teleporting it back
 		BroadcastPrintf(PRINT_HIGH, "%s returned the %s flag!\n", 
 			other->Client.Persistent.Name.c_str(), CTFTeamName(team));
 		other->Client.Respawn.Score += CTF_RECOVERY_BONUS;
 		other->Client.Respawn.CTF.LastReturnedFlag = level.Frame;
 		ent->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
+
+		// Ping the transponder; tell it we moved back to base.
+		CFlagEntity *Flag = entity_cast<CFlagEntity>(ent);
+		Flag->Transponder->Flag = Flag->Transponder->Base;
+		Flag->Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
+
 		//CTFResetFlag will remove this entity!  We must return false
 		CTFResetFlag(team);
 		return false;
@@ -132,6 +146,11 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 	BroadcastPrintf(PRINT_HIGH, "%s got the %s flag!\n",
 		other->Client.Persistent.Name.c_str(), CTFTeamName(team));
 	other->Client.Respawn.Score += CTF_FLAG_BONUS;
+
+	CFlagEntity *Flag = entity_cast<CFlagEntity>(ent);
+	Flag->Transponder->Location = CFlagTransponder::FLAG_TAKEN;
+	Flag->Transponder->Flag = NULL;
+	Flag->Transponder->Holder = other;
 
 	other->Client.Persistent.Inventory.Set(this, 1);
 	other->Client.Persistent.Flag = this;

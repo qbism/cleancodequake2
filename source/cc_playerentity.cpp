@@ -2310,9 +2310,6 @@ void CPlayerEntity::SetSpectatorStats ()
 #ifdef CLEANCTF_ENABLED
 void CPlayerEntity::SetCTFStats()
 {
-	sint32 p1, p2;
-	CFlagEntity *e;
-
 	Client.PlayerState.GetStat (STAT_CTF_MATCH) = (ctfgame.match > MATCH_NONE) ? CONFIG_CTF_MATCH : 0;
 
 	//ghosting
@@ -2353,75 +2350,57 @@ void CPlayerEntity::SetCTFStats()
 	//   flag at base
 	//   flag taken
 	//   flag dropped
-	p1 = ImageIndex ("i_ctf1");
-	e = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team1"));
-	if (e != NULL)
-	{
-		if (e->GetSolid() == SOLID_NOT)
-		{
-			// not at base
-			// check if on player
-			p1 = ImageIndex ("i_ctf1d"); // default to dropped
-			for (sint32 i = 1; i <= game.maxclients; i++)
-			{
-				CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
-				if (Player->GetInUse() &&
-					(Player->Client.Persistent.Flag == NItems::RedFlag))
-				{
-					// enemy has it
-					p1 = ImageIndex ("i_ctf1t");
-					break;
-				}
-			}
-		}
-		else if (e->SpawnFlags & DROPPED_ITEM)
-			p1 = ImageIndex ("i_ctf1d"); // must be dropped
-	}
-	p2 = ImageIndex ("i_ctf2");
-	e = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team2"));
-	if (e != NULL)
+	CFlagTransponder *Transponder = FindTransponder(CTF_TEAM1);
+	if (!Transponder)
+		Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = ImageIndex ("i_ctf1");
+	else
 	{
-		if (e->GetSolid() == SOLID_NOT)
+		switch (Transponder->Location)
 		{
-			// not at base
-			// check if on player
-			p2 = ImageIndex ("i_ctf2d"); // default to dropped
-			for (sint32 i = 1; i <= game.maxclients; i++)
-			{
-				CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
-
-				if (Player->GetInUse() &&
-					(Player->Client.Persistent.Flag == NItems::BlueFlag))
-				{
-					// enemy has it
-					p2 = ImageIndex ("i_ctf2t");
-					break;
-				}
-			}
-		}
-		else if (e->SpawnFlags & DROPPED_ITEM)
-			p2 = ImageIndex ("i_ctf2d"); // must be dropped
+		case CFlagTransponder::FLAG_AT_BASE:
+		default:
+			Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = ImageIndex ("i_ctf1");
+			break;
+		case CFlagTransponder::FLAG_DROPPED:
+			Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = ImageIndex ("i_ctf1d");
+			break;
+		case CFlagTransponder::FLAG_TAKEN:
+			Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = ImageIndex ("i_ctf1t");
+			break;
+		};
 	}
 
-
-	Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = p1;
-	Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = p2;
+	Transponder = FindTransponder(CTF_TEAM2);
+	if (!Transponder)
+		Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = ImageIndex ("i_ctf2");
+	else
+	{
+		switch (Transponder->Location)
+		{
+		case CFlagTransponder::FLAG_AT_BASE:
+		default:
+			Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = ImageIndex ("i_ctf2");
+			break;
+		case CFlagTransponder::FLAG_DROPPED:
+			Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = ImageIndex ("i_ctf2d");
+			break;
+		case CFlagTransponder::FLAG_TAKEN:
+			Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = ImageIndex ("i_ctf2t");
+			break;
+		};
+	}
 
 	if (ctfgame.last_flag_capture && level.Frame - ctfgame.last_flag_capture < 50)
 	{
 		if (ctfgame.last_capture_team == CTF_TEAM1)
 		{
-			if (level.Frame & 8)
-				Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = p1;
-			else
+			if (!(level.Frame & 8))
 				Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = 0;
 		}
 		else
 		{
-			if (level.Frame & 8)
-				Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = p2;
-			else
+			if (!(level.Frame & 8))
 				Client.PlayerState.GetStat (STAT_CTF_TEAM2_PIC) = 0;
 		}
 	}

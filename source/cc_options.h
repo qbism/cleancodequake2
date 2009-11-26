@@ -135,11 +135,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Change this to change some global flags
 #define MONSTER_SPECIFIC_FLAGS (INFANTRY_DOES_REVERSE_GUN_ATTACK | FLYER_KNOWS_HOW_TO_DODGE | SUPERTANK_USES_GRENADES)
 
+// Enable the example Ammo Regen tech
+#define AMMO_REGEN_TECH
+
 #if defined(ORIGINAL_QUAKE_2)
 #undef MONSTERS_ARENT_STUPID
 #undef MONSTER_USE_ROGUE_AI
 #undef MONSTERS_USE_PATHFINDING
 #undef MONSTER_SPECIFIC_FLAGS
+#undef AMMO_REGEN_TECH
 #define MONSTER_SPECIFIC_FLAGS 0
 #endif
 

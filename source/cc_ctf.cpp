@@ -293,7 +293,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 	// we have to find the flag and carrier entities
 
 	// find the flag
-	char *c;
+/*	char *c;
 	switch (attacker->Client.Respawn.CTF.Team)
 	{
 	case CTF_TEAM1:
@@ -311,13 +311,14 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 	{
 		if (!(flag->SpawnFlags & DROPPED_ITEM))
 			break;
-	}
+	}*/
+	CFlagTransponder *AttackerTransponder = FindTransponder (attacker->Client.Respawn.CTF.Team);
 
-	if (!flag)
+	if (!AttackerTransponder)
 		return; // can't find attacker's flag
 
 	// find attacker's team's flag carrier
-	CPlayerEntity *carrier = NULL;
+/*	CPlayerEntity *carrier = NULL;
 	for (uint8 i = 1; i <= game.maxclients; i++)
 	{
 		carrier = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
@@ -325,19 +326,19 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 			carrier->Client.Persistent.Inventory.Has(flag_item))
 			break;
 		carrier = NULL;
-	}
+	}*/
 
 	// ok we have the attackers flag and a pointer to the carrier
 
 	// check to see if we are defending the base's flag
-	if (((targ->State.GetOrigin() - flag->State.GetOrigin()).Length() < CTF_TARGET_PROTECT_RADIUS ||
-		(attacker->State.GetOrigin() - flag->State.GetOrigin()).Length() < CTF_TARGET_PROTECT_RADIUS ||
-		loc_CanSee(flag, targ) || loc_CanSee(flag, attacker)) &&
+	if (((targ->State.GetOrigin() - AttackerTransponder->Base->State.GetOrigin()).Length() < CTF_TARGET_PROTECT_RADIUS ||
+		(attacker->State.GetOrigin() - AttackerTransponder->Base->State.GetOrigin()).Length() < CTF_TARGET_PROTECT_RADIUS ||
+		loc_CanSee(AttackerTransponder->Base, targ) || loc_CanSee(AttackerTransponder->Base, attacker)) &&
 		attacker->Client.Respawn.CTF.Team != targ->Client.Respawn.CTF.Team)
 	{
 		// we defended the base flag
 		attacker->Client.Respawn.Score += CTF_FLAG_DEFENSE_BONUS;
-		if (flag->GetSolid() == SOLID_NOT)
+		if (AttackerTransponder->Base->GetSolid() == SOLID_NOT)
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s base.\n",
 				attacker->Client.Persistent.Name.c_str(), 
 				CTFTeamName(attacker->Client.Respawn.CTF.Team));
@@ -350,11 +351,11 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 		return;
 	}
 
-	if (carrier && carrier != attacker)
+	if (AttackerTransponder->Holder && AttackerTransponder->Holder != attacker)
 	{
-		if ((targ->State.GetOrigin() - carrier->State.GetOrigin()).Length() < CTF_ATTACKER_PROTECT_RADIUS ||
-			(attacker->State.GetOrigin() - carrier->State.GetOrigin()).Length() < CTF_ATTACKER_PROTECT_RADIUS ||
-			loc_CanSee(carrier, targ) || loc_CanSee(carrier, attacker))
+		if ((targ->State.GetOrigin() - AttackerTransponder->Holder->State.GetOrigin()).Length() < CTF_ATTACKER_PROTECT_RADIUS ||
+			(attacker->State.GetOrigin() - AttackerTransponder->Holder->State.GetOrigin()).Length() < CTF_ATTACKER_PROTECT_RADIUS ||
+			loc_CanSee(AttackerTransponder->Holder, targ) || loc_CanSee(AttackerTransponder->Holder, attacker))
 		{
 			attacker->Client.Respawn.Score += CTF_CARRIER_PROTECT_BONUS;
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s's flag carrier.\n",
@@ -394,32 +395,22 @@ void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *attacker)
 
 void CTFResetFlag(ETeamIndex Team)
 {
-	char *c;
-
-	switch (Team)
+	for (ETeamIndex Team = CTF_TEAM1; Team < CTF_TEAMNUM; Team++)
 	{
-	case CTF_TEAM1:
-		c = "item_flag_team1";
-		break;
-	case CTF_TEAM2:
-		c = "item_flag_team2";
-		break;
-	default:
-		return;
-	}
+		CFlagTransponder *Transponder = FindTransponder(Team);
 
-	CFlagEntity *ent = NULL;
-	while ((ent = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (ent, c))) != NULL)
-	{
-		if (ent->SpawnFlags & DROPPED_ITEM)
-			ent->Free ();
-		else
+		if (Transponder->Flag != Transponder->Base)
 		{
-			ent->GetSvFlags() &= ~SVF_NOCLIENT;
-			ent->GetSolid() = SOLID_TRIGGER;
-			ent->Link ();
-			ent->State.GetEvent() = EV_ITEM_RESPAWN;
+			Transponder->Flag->Free ();
+			Transponder->Flag = Transponder->Base;
+			Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
+			Transponder->Holder = NULL;
 		}
+
+		Transponder->Base->GetSvFlags() &= ~SVF_NOCLIENT;
+		Transponder->Base->GetSolid() = SOLID_TRIGGER;
+		Transponder->Base->Link ();
+		Transponder->Base->State.GetEvent() = EV_ITEM_RESPAWN;
 	}
 }
 
@@ -592,7 +583,6 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	sint32 hotindex = 999;
 	CBaseItem *item;
 	sint32 nearteam = -1;
-	CFlagEntity *flag1, *flag2;
 	bool hotsee = false;
 	bool cansee;
 	CBaseEntity *what = NULL;
@@ -656,11 +646,16 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 			continue;
 		// if we are here, there is more than one, find out if hot
 		// is closer to red flag or blue flag
-		if ((flag1 = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team1"))) != NULL &&
-			(flag2 = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "item_flag_team2"))) != NULL)
+
+		// FIXME: this is ambiguous.. is this base or any flag?
+		CFlagTransponder *Transponders[2];
+		Transponders[0] = FindTransponder(CTF_TEAM1);
+		Transponders[1] = FindTransponder(CTF_TEAM2);
+
+		if (Transponders[0] && Transponders[1])
 		{
-			hotdist = (hot->State.GetOrigin() - flag1->State.GetOrigin()).Length();
-			newdist = (hot->State.GetOrigin() - flag2->State.GetOrigin()).Length();
+			hotdist = (hot->State.GetOrigin() - Transponders[0]->Base->State.GetOrigin()).Length();
+			newdist = (hot->State.GetOrigin() - Transponders[1]->Base->State.GetOrigin()).Length();
 			if (hotdist < newdist)
 				nearteam = CTF_TEAM1;
 			else if (hotdist > newdist)

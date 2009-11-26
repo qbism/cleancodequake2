@@ -54,28 +54,37 @@ CClient **SaveClientData;
 #define READ_MAGIC { if (File.Read<uint32> () != MAGIC_NUMBER) _CC_ASSERT_EXPR (0, "Magic number mismatch"); }
 
 typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityTableList;
+typedef std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > TEntityTableList;
 #define MAX_ENTITY_TABLE_HASH 256
 
-std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > EntityTable;
-THashedEntityTableList EntityTableHash;
+TEntityTableList &EntityTable ()
+{
+	static TEntityTableList EntityTableV;
+	return EntityTableV;
+};
+THashedEntityTableList &EntityTableHash ()
+{
+	static THashedEntityTableList EntityTableHashV;
+	return EntityTableHashV;
+};
 
 CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index)) :
   Name(Name),
   FuncPtr(FuncPtr)
 {
-	EntityTable.push_back (this);
+	EntityTable().push_back (this);
 
 	// Link it in the hash tree
-	EntityTableHash.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_ENTITY_TABLE_HASH), EntityTable.size()-1));
+	EntityTableHash().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_ENTITY_TABLE_HASH), EntityTable().size()-1));
 };
 
 CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 {
 	uint32 hash = Com_HashGeneric(Name, MAX_ENTITY_TABLE_HASH);
 
-	for (THashedEntityTableList::iterator it = EntityTableHash.equal_range(hash).first; it != EntityTableHash.equal_range(hash).second; ++it)
+	for (THashedEntityTableList::iterator it = EntityTableHash().equal_range(hash).first; it != EntityTableHash().equal_range(hash).second; ++it)
 	{
-		CEntityTableIndex *TableIndex = EntityTable.at((*it).second);
+		CEntityTableIndex *TableIndex = EntityTable().at((*it).second);
 		if (Q_stricmp (TableIndex->Name, Name) == 0)
 			return TableIndex->FuncPtr(index);
 	}

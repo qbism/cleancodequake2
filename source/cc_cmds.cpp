@@ -51,12 +51,20 @@ void CPlayerCommand::Run (CPlayerEntity *ent)
 typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedPlayerCommandListType;
 typedef std::vector<CPlayerCommand*, std::generic_allocator<CPlayerCommand*> > TPlayerCommandListType;
 
-TPlayerCommandListType CommandList;
-THashedPlayerCommandListType CommandHashList;
+TPlayerCommandListType &CommandList ()
+{
+	static TPlayerCommandListType CommandListV;
+	return CommandListV;
+};
+THashedPlayerCommandListType &CommandHashList ()
+{
+	static THashedPlayerCommandListType CommandHashListV;
+	return CommandHashListV;
+};
 
 CPlayerCommand *Cmd_FindCommand (std::cc_string commandName)
 {
-	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, CommandList, CommandHashList> (commandName);
+	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType> (commandName, CommandList(), CommandHashList());
 }
 
 void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
@@ -69,18 +77,18 @@ void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *en
 	}
 
 	// We can add it!
-	CommandList.push_back (QNew (com_genericPool, 0) CPlayerCommand (commandName, Func, Flags));
+	CommandList().push_back (QNew (com_genericPool, 0) CPlayerCommand (commandName, Func, Flags));
 
 	// Link it in the hash tree
-	CommandHashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList.size()-1));
+	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));
 }
 
 void Cmd_RemoveCommands ()
 {
 	// Remove all commands
-	for (uint32 i = 0; i < CommandList.size(); i++)
-		QDelete CommandList.at(i);
-	CommandList.clear ();
+	for (uint32 i = 0; i < CommandList().size(); i++)
+		QDelete CommandList().at(i);
+	CommandList().clear ();
 }
 
 void Cmd_RunCommand (std::cc_string commandName, CPlayerEntity *ent)

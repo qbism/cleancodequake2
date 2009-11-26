@@ -40,6 +40,7 @@ void CGameTimer::Run ()
 }
 
 typedef std::multimap <sint32, CGameTimer *, std::less <sint32>, std::generic_allocator <std::pair <const sint32, CGameTimer*> > > TTimerListType;
+
 TTimerListType TimerList;
 
 void ClearTimers ()

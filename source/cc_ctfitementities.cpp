@@ -33,6 +33,46 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, std::game_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
+TTransponderListType Transponders;
+
+void ClearTransponders ()
+{
+	for (TTransponderListType::iterator it = Transponders.begin(); it != Transponders.end(); ++it)
+		QDelete (*it).second;
+	Transponders.clear ();
+}
+
+CFlagTransponder *FindTransponder (ETeamIndex Team)
+{
+	if (Transponders.find(Team) == Transponders.end())
+		return NULL;
+
+	return (*Transponders.find(Team)).second;
+}
+
+CFlagTransponder::CFlagTransponder (const ETeamIndex Team, class CFlagEntity *Flag) :
+  Team(Team),
+  Base(Flag),
+  Flag(Flag),
+  Holder(NULL),
+  Location(FLAG_AT_BASE)
+{
+	Transponders[Team] = this;
+};
+
+void PrintTransponders ()
+{
+	for (TTransponderListType::iterator it = Transponders.begin(); it != Transponders.end(); ++it)
+	{
+		CFlagTransponder *Transponder = (*it).second;
+		DebugPrintf ("Transponder for team %i:\n  Location: %i\n  Base: %i\n  Flag: %i\n  Holder: %i\n",
+			Transponder->Team, Transponder->Location, Transponder->Base->State.GetNumber(),
+			(Transponder->Flag) ? Transponder->Flag->State.GetNumber() : -1,
+			(Transponder->Holder) ? Transponder->Holder->State.GetNumber() : -1);
+	}
+};
+
 CFlagEntity::CFlagEntity () :
 CBaseEntity(),
 CItemEntity()
@@ -91,7 +131,7 @@ bool CFlagEntity::Run ()
 	return CItemEntity::Run ();
 };
 
-void CFlagEntity::Spawn (CBaseItem *Item)
+void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 {
 //ZOID
 //Don't spawn the flags unless enabled
@@ -109,6 +149,7 @@ void CFlagEntity::Spawn (CBaseItem *Item)
 
 	State.GetEffects() = Item->EffectFlags;
 	State.GetRenderEffects() = RF_GLOW;
+	Transponder = QNew (com_genericPool, 0) CFlagTransponder (Team, this);
 };
 
 CRedFlagEntity::CRedFlagEntity () :
@@ -235,6 +276,20 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
 			result, ent, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
+
+		// Check to see which color we are
+		dropped->Red = (Player->Client.Persistent.Flag->team == CTF_TEAM1);
+		
+		// Set up our transponder
+		dropped->Transponder = FindTransponder(Player->Client.Persistent.Flag->team);
+
+		// Tell the transponder that player dropped the flag
+		if (dropped->Transponder)
+		{
+			dropped->Transponder->Location = CFlagTransponder::FLAG_DROPPED;
+			dropped->Transponder->Flag = dropped;
+			dropped->Transponder->Holder = NULL;
+		}
 	}
 	else
 	{

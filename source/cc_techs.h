@@ -84,7 +84,6 @@ public:
 #define CTFTECH_HASTE_NUMBER		3
 #define CTFTECH_REGEN_NUMBER		4
 
-#define AMMO_REGEN_TECH
 #ifdef AMMO_REGEN_TECH
 #define CTFTECH_AMMOREGEN_NUMBER	5
 #endif

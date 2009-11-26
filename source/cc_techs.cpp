@@ -354,7 +354,7 @@ void SpawnTech(CBaseItem *item, CBaseEntity *spot)
 	vec3f forward;
 	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);
 
-	ent->State.GetOrigin() += vec3f(0,0,16);
+	ent->State.GetOrigin() = spot->State.GetOrigin() + vec3f(0,0,16);
 	forward *= 100;
 	ent->Velocity = forward;
 	ent->Velocity.Z = 300;

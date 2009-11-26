@@ -105,7 +105,11 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	}
 
 	if (LinkedItem->PickupSound)
-		Player->PlaySound (CHAN_ITEM, LinkedItem->GetPickupSound()
+		Player->PlaySound (
+#ifdef CLEANCTF_ENABLED
+		(LinkedItem == NItems::RedFlag || LinkedItem == NItems::BlueFlag) ? CHAN_AUTO : 
+#endif
+		CHAN_ITEM, LinkedItem->GetPickupSound()
 #ifdef CLEANCTF_ENABLED
 		, 255, (LinkedItem == NItems::RedFlag || LinkedItem == NItems::BlueFlag) ? ATTN_NONE : ATTN_NORM
 #endif

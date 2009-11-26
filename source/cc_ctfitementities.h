@@ -34,6 +34,29 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_CTFITEMENTITIES_H__) || !defined(INCLUDE_GUARDS)
 #define __CC_CTFITEMENTITIES_H__
 
+// A simple class to track a single flag.
+class CFlagTransponder
+{
+public:
+	CFlagTransponder (const ETeamIndex Team, class CFlagEntity	*Flag);
+
+	CC_ENUM (uint8, EFlagLocation)
+	{
+		FLAG_UNKNOWN,
+		FLAG_AT_BASE,
+		FLAG_TAKEN,
+		FLAG_DROPPED,
+	};
+
+	ETeamIndex			Team;		// Team that this transponder's flag belongs to.
+	EFlagLocation		Location;	// Where are we right now?
+	class CFlagEntity	*Base;		// Entity pointing to the flag's base. Never NULL.
+	class CFlagEntity	*Flag;		// Entity pointing to the current location of the actual flag.
+	class CPlayerEntity	*Holder;	// Entity pointing to the current person holding the flag, if any.
+};
+
+CFlagTransponder *FindTransponder (ETeamIndex Team);
+
 enum
 {
 	FTS_FLAGSETUP = ITS_CUSTOM,
@@ -43,6 +66,8 @@ enum
 class CFlagEntity : public CItemEntity
 {
 public:
+	CFlagTransponder	*Transponder;
+
 	CFlagEntity ();
 	CFlagEntity (sint32 Index);
 
@@ -51,7 +76,8 @@ public:
 	bool Run ();
 	virtual void BecomeExplosion (bool grenade) {};
 
-	virtual void Spawn (CBaseItem *item);
+	virtual void Spawn (CBaseItem *item, ETeamIndex Team);
+	virtual void Spawn (CBaseItem *Item) {};
 };
 
 class CRedFlagEntity : public CFlagEntity
@@ -62,6 +88,11 @@ public:
 
 	bool Run ();
 	void BecomeExplosion (bool grenade);
+
+	void Spawn (CBaseItem *Item)
+	{
+		CFlagEntity::Spawn (Item, CTF_TEAM1);
+	};
 };
 
 class CBlueFlagEntity : public CFlagEntity
@@ -72,6 +103,11 @@ public:
 
 	bool Run ();
 	void BecomeExplosion (bool grenade);
+
+	void Spawn (CBaseItem *Item)
+	{
+		CFlagEntity::Spawn (Item, CTF_TEAM2);
+	};
 };
 
 #else

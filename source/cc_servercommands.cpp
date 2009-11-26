@@ -42,12 +42,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedServerCommandListType;
 typedef std::vector<CServerCommand*, std::generic_allocator<CServerCommand*> > TServerCommandListType;
 
-TServerCommandListType ServerCommandList;
-THashedServerCommandListType ServerCommandHashList;
+TServerCommandListType &ServerCommandList ()
+{
+	static TServerCommandListType ServerCommandListV;
+	return ServerCommandListV;
+};
+THashedServerCommandListType &ServerCommandHashList ()
+{
+	static THashedServerCommandListType ServerCommandHashListV;
+	return ServerCommandHashListV;
+};
 
 CServerCommand *SvCmd_FindCommand (std::cc_string commandName)
 {
-	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType, ServerCommandList, ServerCommandHashList> (commandName);
+	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType> (commandName, ServerCommandList(), ServerCommandHashList());
 }
 
 void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
@@ -60,18 +68,18 @@ void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
 	}
 
 	// We can add it!
-	ServerCommandList.push_back (QNew (com_genericPool, 0) CServerCommand (commandName, Func));
+	ServerCommandList().push_back (QNew (com_genericPool, 0) CServerCommand (commandName, Func));
 
 	// Link it in the hash tree
-	ServerCommandHashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList.size()-1));
+	ServerCommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList().size()-1));
 }
 
 void SvCmd_RemoveCommands ()
 {
 	// Remove all commands
-	for (uint32 i = 0; i < ServerCommandList.size(); i++)
-		QDelete ServerCommandList.at(i);
-	ServerCommandList.clear ();
+	for (uint32 i = 0; i < ServerCommandList().size(); i++)
+		QDelete ServerCommandList().at(i);
+	ServerCommandList().clear ();
 }
 
 void SvCmd_RunCommand (std::cc_string commandName)

@@ -37,10 +37,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MAX_COMMANDS 128
 #define MAX_CMD_HASH (MAX_COMMANDS/4)
 
-//typedef std::pair<size_t, size_t> THashedItemListPairType;
-//typedef std::multimap<size_t, size_t, std::less<size_t>, std::game_allocator<size_t> > THashedItemListType;
-//typedef std::vector<CBaseItem*, std::game_allocator<CBaseItem*> > TItemListType;
-
 template <typename TFunctor>
 class CCommand
 {
@@ -97,8 +93,8 @@ public:
 	};
 };
 
-template <class TReturnValue, typename TListType, typename THashListType, TListType &List, THashListType &HashList>
-TReturnValue *FindCommand (std::cc_string commandName)
+template <class TReturnValue, typename TListType, typename THashListType>
+TReturnValue *FindCommand (std::cc_string commandName, TListType &List, THashListType &HashList)
 {
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
 

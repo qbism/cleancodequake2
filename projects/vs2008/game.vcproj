@@ -51,15 +51,15 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/analyze:stacksize1500"
+				AdditionalOptions="/analyze:stacksize1500 /MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include\"
+				AdditionalIncludeDirectories="..\..\include\;..\..\zlib\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="false"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				FloatingPointExceptions="true"
@@ -283,13 +283,13 @@
 				AdditionalOptions="/EHsc"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\lib"
+				AdditionalIncludeDirectories="..\..\include\;..\..\zlib\"
 				PreprocessorDefinitions="WIN32;_WINDOWS"
 				StringPooling="true"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="0"
 				SmallerTypeCheck="false"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				DefaultCharIsUnsigned="true"
@@ -318,7 +318,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Winmm.lib zlibr.lib libeay32.lib openldap.lib ssleay32.lib curllib_static_r.lib"
+				AdditionalDependencies="Ws2_32.lib Winmm.lib zlibr.lib wininet.lib"
 				OutputFile="..\..\baseq2\gamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -1008,6 +1008,10 @@
 			</File>
 			<File
 				RelativePath="..\..\todo.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\..\version.ver"
 				>
 			</File>
 			<Filter
@@ -2102,10 +2106,6 @@
 				</File>
 			</Filter>
 		</Filter>
-		<File
-			RelativePath="..\..\version.ver"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
