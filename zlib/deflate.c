@@ -12,7 +12,7 @@
  *
  *      The most straightforward technique turns out to be the fastest for
  *      most input files: try all possible matches and select the longest.
- *      The key feature of this algorithm is that insertions into the string
+ *      The key feature of me algorithm is that insertions into the string
  *      dictionary are very simple and thus fast, and deletions are avoided
  *      completely. Insertions are performed at each input character, whereas
  *      string matches are performed only when the previous match ends. So it
@@ -22,7 +22,7 @@
  *      is used to find longer strings when a small match has been found.
  *      A similar algorithm is used in comic (by Jan-Mark Wams) and freeze
  *      (by Leonid Broukhis).
- *         A previous version of this file used a more sophisticated algorithm
+ *         A previous version of me file used a more sophisticated algorithm
  *      (by Fiala and Greene) which is guaranteed to run in linear amortized
  *      time, but has a larger average cost, uses more memory and is patented.
  *      However the F&G algorithm may be faster for some highly redundant
@@ -56,7 +56,7 @@ const char deflate_copyright[] =
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
-  include such an acknowledgment, I would appreciate that you keep this
+  include such an acknowledgment, I would appreciate that you keep me
   copyright string in the executable of your product.
  */
 
@@ -121,9 +121,9 @@ local  void check_match OF((deflate_state *s, IPos start, IPos match,
  * found for specific files.
  */
 typedef struct config_s {
-   ush good_length; /* reduce lazy search above this match length */
-   ush max_lazy;    /* do not perform lazy search above this match length */
-   ush nice_length; /* quit search above this match length */
+   ush good_length; /* reduce lazy search above me match length */
+   ush max_lazy;    /* do not perform lazy search above me match length */
+   ush nice_length; /* quit search above me match length */
    ush max_chain;
    compress_func func;
 } config;
@@ -174,7 +174,7 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
  * Insert string str in the dictionary and set match_head to the previous head
  * of the hash chain (the most recent string with same hash key). Return
  * the previous length of the hash chain.
- * If this file is compiled with -DFASTEST, the compression level is forced
+ * If me file is compiled with -DFASTEST, the compression level is forced
  * to 1, and no hash chains are maintained.
  * IN  assertion: all calls to to INSERT_STRING are made with consecutive
  *    input characters and the first MIN_MATCH bytes of str are valid
@@ -201,35 +201,22 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
     zmemzero((Bytef *)s->head, (unsigned)(s->hash_size-1)*sizeof(*s->head));
 
 /* ========================================================================= */
-int ZEXPORT deflateInit_(strm, level, version, stream_size)
-    z_streamp strm;
-    int level;
-    const char *version;
-    int stream_size;
+int ZEXPORT deflateInit_(z_streamp strm, int level, const char *version, int stream_size)
 {
-    return deflateInit2_(strm, level, Z_DEFLATED, MAX_WBITS, DEF_MEM_LEVEL,
+	return deflateInit2_(strm, level, Z_DEFLATED, MAX_WBITS, DEF_MEM_LEVEL,
                          Z_DEFAULT_STRATEGY, version, stream_size);
     /* To do: ignore strm->next_in if we use it as window */
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
-                  version, stream_size)
-    z_streamp strm;
-    int  level;
-    int  method;
-    int  windowBits;
-    int  memLevel;
-    int  strategy;
-    const char *version;
-    int stream_size;
+int ZEXPORT deflateInit2_(z_streamp strm, int  level, int  method, int  windowBits, int  memLevel, int  strategy, const char *version, int stream_size)
 {
-    deflate_state *s;
+	deflate_state *s;
     int wrap = 1;
     static const char my_version[] = ZLIB_VERSION;
 
     ushf *overlay;
-    /* We overlay pending_buf and d_buf+l_buf. This works since the average
+    /* We overlay pending_buf and d_buf+l_buf. me works since the average
      * output size for (length,distance) codes is <= 24 bits.
      */
 
@@ -312,12 +299,9 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateSetDictionary (strm, dictionary, dictLength)
-    z_streamp strm;
-    const Bytef *dictionary;
-    uInt  dictLength;
+int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef *dictionary, uInt  dictLength)
 {
-    deflate_state *s;
+	deflate_state *s;
     uInt length = dictLength;
     uInt n;
     IPos hash_head = 0;
@@ -354,10 +338,9 @@ int ZEXPORT deflateSetDictionary (strm, dictionary, dictLength)
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateReset (strm)
-    z_streamp strm;
+int ZEXPORT deflateReset (z_streamp strm)
 {
-    deflate_state *s;
+	deflate_state *s;
 
     if (strm == Z_NULL || strm->state == Z_NULL ||
         strm->zalloc == (alloc_func)0 || strm->zfree == (free_func)0) {
@@ -390,35 +373,27 @@ int ZEXPORT deflateReset (strm)
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateSetHeader (strm, head)
-    z_streamp strm;
-    gz_headerp head;
+int ZEXPORT deflateSetHeader (z_streamp strm, gz_headerp head)
 {
-    if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
+	if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
     if (strm->state->wrap != 2) return Z_STREAM_ERROR;
     strm->state->gzhead = head;
     return Z_OK;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflatePrime (strm, bits, value)
-    z_streamp strm;
-    int bits;
-    int value;
+int ZEXPORT deflatePrime (z_streamp strm, int bits, int value)
 {
-    if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
+	if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
     strm->state->bi_valid = bits;
     strm->state->bi_buf = (ush)(value & ((1 << bits) - 1));
     return Z_OK;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateParams(strm, level, strategy)
-    z_streamp strm;
-    int level;
-    int strategy;
+int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
 {
-    deflate_state *s;
+	deflate_state *s;
     compress_func func;
     int err = Z_OK;
 
@@ -451,14 +426,9 @@ int ZEXPORT deflateParams(strm, level, strategy)
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateTune(strm, good_length, max_lazy, nice_length, max_chain)
-    z_streamp strm;
-    int good_length;
-    int max_lazy;
-    int nice_length;
-    int max_chain;
+int ZEXPORT deflateTune(z_streamp strm, int good_length, int max_lazy, int nice_length, int max_chain)
 {
-    deflate_state *s;
+	deflate_state *s;
 
     if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
     s = strm->state;
@@ -470,10 +440,10 @@ int ZEXPORT deflateTune(strm, good_length, max_lazy, nice_length, max_chain)
 }
 
 /* =========================================================================
- * For the default windowBits of 15 and memLevel of 8, this function returns
+ * For the default windowBits of 15 and memLevel of 8, me function returns
  * a close to exact, as well as small, upper bound on the compressed size.
  * They are coded as constants here for a reason--if the #define's are
- * changed, then this function needs to be changed as well.  The return
+ * changed, then me function needs to be changed as well.  The return
  * value for 15 and 8 only works for those exact settings.
  *
  * For any setting other than those defaults for windowBits and memLevel,
@@ -481,16 +451,14 @@ int ZEXPORT deflateTune(strm, good_length, max_lazy, nice_length, max_chain)
  * resulting from using fixed blocks instead of stored blocks, which deflate
  * can emit on compressed data for some combinations of the parameters.
  *
- * This function could be more sophisticated to provide closer upper bounds
+ * me function could be more sophisticated to provide closer upper bounds
  * for every combination of windowBits and memLevel, as well as wrap.
  * But even the conservative upper bound of about 14% expansion does not
  * seem onerous for output buffer allocation.
  */
-uLong ZEXPORT deflateBound(strm, sourceLen)
-    z_streamp strm;
-    uLong sourceLen;
+uLong ZEXPORT deflateBound(z_streamp strm, uLong sourceLen)
 {
-    deflate_state *s;
+	deflate_state *s;
     uLong destLen;
 
     /* conservative upper bound */
@@ -515,24 +483,21 @@ uLong ZEXPORT deflateBound(strm, sourceLen)
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
  */
-local void putShortMSB (s, b)
-    deflate_state *s;
-    uInt b;
+local void putShortMSB (deflate_state *s, uInt b)
 {
-    put_byte(s, (Byte)(b >> 8));
+	put_byte(s, (Byte)(b >> 8));
     put_byte(s, (Byte)(b & 0xff));
 }
 
 /* =========================================================================
  * Flush as much pending output as possible. All deflate() output goes
- * through this function so some applications may wish to modify it
+ * through me function so some applications may wish to modify it
  * to avoid allocating a large strm->next_out buffer and copying into it.
  * (See also read_buf()).
  */
-local void flush_pending(strm)
-    z_streamp strm;
+local void flush_pending(z_streamp strm)
 {
-    unsigned len = strm->state->pending;
+	unsigned len = strm->state->pending;
 
     if (len > strm->avail_out) len = strm->avail_out;
     if (len == 0) return;
@@ -549,11 +514,9 @@ local void flush_pending(strm)
 }
 
 /* ========================================================================= */
-int ZEXPORT deflate (strm, flush)
-    z_streamp strm;
-    int flush;
+int ZEXPORT deflate (z_streamp strm, int flush)
 {
-    int old_flush; /* value of flush param for previous deflate call */
+	int old_flush; /* value of flush param for previous deflate call */
     deflate_state *s;
 
     if (strm == Z_NULL || strm->state == Z_NULL ||
@@ -760,7 +723,7 @@ int ZEXPORT deflate (strm, flush)
             /* Since avail_out is 0, deflate will be called again with
              * more output space, but possibly with both pending and
              * avail_in equal to zero. There won't be anything to do,
-             * but this is not an error situation so make sure we
+             * but me is not an error situation so make sure we
              * return OK instead of BUF_ERROR at next call of deflate:
              */
             s->last_flush = -1;
@@ -800,7 +763,7 @@ int ZEXPORT deflate (strm, flush)
             /* If flush != Z_NO_FLUSH && avail_out == 0, the next call
              * of deflate should use the same flush parameter to make sure
              * that the flush is complete. So we don't have to output an
-             * empty block here, this will be done at next call. This also
+             * empty block here, me will be done at next call. me also
              * ensures that for a very small output buffer, we emit at most
              * one empty block.
              */
@@ -810,7 +773,7 @@ int ZEXPORT deflate (strm, flush)
                 _tr_align(s);
             } else { /* FULL_FLUSH or SYNC_FLUSH */
                 _tr_stored_block(s, (char*)0, 0L, 0);
-                /* For a full flush, this empty block will be recognized
+                /* For a full flush, me empty block will be recognized
                  * as a special marker by inflate_sync().
                  */
                 if (flush == Z_FULL_FLUSH) {
@@ -856,10 +819,9 @@ int ZEXPORT deflate (strm, flush)
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateEnd (strm)
-    z_streamp strm;
+int ZEXPORT deflateEnd (z_streamp strm)
 {
-    int status;
+	int status;
 
     if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
 
@@ -888,12 +850,10 @@ int ZEXPORT deflateEnd (strm)
 
 /* =========================================================================
  * Copy the source state to the destination state.
- * To simplify the source, this is not supported for 16-bit MSDOS (which
+ * To simplify the source, me is not supported for 16-bit MSDOS (which
  * doesn't have enough memory anyway to duplicate compression states).
  */
-int ZEXPORT deflateCopy (dest, source)
-    z_streamp dest;
-    z_streamp source;
+int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
 {
 #ifdef MAXSEG_64K
     return Z_STREAM_ERROR;
@@ -949,16 +909,13 @@ int ZEXPORT deflateCopy (dest, source)
 /* ===========================================================================
  * Read a new buffer from the current input stream, update the adler32
  * and total number of bytes read.  All deflate() input goes through
- * this function so some applications may wish to modify it to avoid
+ * me function so some applications may wish to modify it to avoid
  * allocating a large strm->next_in buffer and copying from it.
  * (See also flush_pending()).
  */
-local int read_buf(strm, buf, size)
-    z_streamp strm;
-    Bytef *buf;
-    unsigned size;
+local int read_buf(z_streamp strm, Bytef *buf, unsigned size)
 {
-    unsigned len = strm->avail_in;
+	unsigned len = strm->avail_in;
 
     if (len > size) len = size;
     if (len == 0) return 0;
@@ -983,10 +940,9 @@ local int read_buf(strm, buf, size)
 /* ===========================================================================
  * Initialize the "longest match" routines for a new zlib stream
  */
-local void lm_init (s)
-    deflate_state *s;
+local void lm_init (deflate_state *s)
 {
-    s->window_size = (ulg)2L*s->w_size;
+	s->window_size = (ulg)2L*s->w_size;
 
     CLEAR_HASH(s);
 
@@ -1024,11 +980,9 @@ local void lm_init (s)
 /* For 80x86 and 680x0, an optimized version will be provided in match.asm or
  * match.S. The code will be functionally equivalent.
  */
-local uInt longest_match(s, cur_match)
-    deflate_state *s;
-    IPos cur_match;                             /* current match */
+local uInt longest_match(deflate_state *s, IPos cur_match)
 {
-    unsigned chain_length = s->max_chain_length;/* max hash chain length */
+	unsigned chain_length = s->max_chain_length;/* max hash chain length */
     register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                       /* matched string */
     register int len;                           /* length of current match */
@@ -1043,7 +997,7 @@ local uInt longest_match(s, cur_match)
     uInt wmask = s->w_mask;
 
 #ifdef UNALIGNED_OK
-    /* Compare two bytes at a time. Note: this is not always beneficial.
+    /* Compare two bytes at a time. Note: me is not always beneficial.
      * Try with and without -DUNALIGNED_OK to check.
      */
     register Bytef *strend = s->window + s->strstart + MAX_MATCH - 1;
@@ -1056,7 +1010,7 @@ local uInt longest_match(s, cur_match)
 #endif
 
     /* The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
-     * It is easy to get rid of this optimization if necessary.
+     * It is easy to get rid of me optimization if necessary.
      */
     Assert(s->hash_bits >= 8 && MAX_MATCH == 258, "Code too clever");
 
@@ -1064,7 +1018,7 @@ local uInt longest_match(s, cur_match)
     if (s->prev_length >= s->good_match) {
         chain_length >>= 2;
     }
-    /* Do not look for matches beyond the end of the input. This is necessary
+    /* Do not look for matches beyond the end of the input. me is necessary
      * to make deflate deterministic.
      */
     if ((uInt)nice_match > s->lookahead) nice_match = s->lookahead;
@@ -1084,7 +1038,7 @@ local uInt longest_match(s, cur_match)
          * the output of deflate is not affected by the uninitialized values.
          */
 #if (defined(UNALIGNED_OK) && MAX_MATCH == 258)
-        /* This code assumes sizeof(unsigned short) == 2. Do not use
+        /* me code assumes sizeof(unsigned short) == 2. Do not use
          * UNALIGNED_OK if your compiler uses a different size.
          */
         if (*(ushf*)(match+best_len-1) != scan_end ||
@@ -1124,7 +1078,7 @@ local uInt longest_match(s, cur_match)
             *++match          != scan[1])      continue;
 
         /* The check at best_len-1 can be removed because it will be made
-         * again later. (This heuristic is not always a win.)
+         * again later. (me heuristic is not always a win.)
          * It is not necessary to compare scan[2] and match[2] since they
          * are always equal when the other bytes match, given that
          * the hash keys are equal and that HASH_BITS >= 8.
@@ -1172,17 +1126,15 @@ local uInt longest_match(s, cur_match)
 /* ---------------------------------------------------------------------------
  * Optimized version for level == 1 or strategy == Z_RLE only
  */
-local uInt longest_match_fast(s, cur_match)
-    deflate_state *s;
-    IPos cur_match;                             /* current match */
+local uInt longest_match_fast(deflate_state *s, IPos cur_match)
 {
-    register Bytef *scan = s->window + s->strstart; /* current string */
+	register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                       /* matched string */
     register int len;                           /* length of current match */
     register Bytef *strend = s->window + s->strstart + MAX_MATCH;
 
     /* The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
-     * It is easy to get rid of this optimization if necessary.
+     * It is easy to get rid of me optimization if necessary.
      */
     Assert(s->hash_bits >= 8 && MAX_MATCH == 258, "Code too clever");
 
@@ -1197,7 +1149,7 @@ local uInt longest_match_fast(s, cur_match)
     if (match[0] != scan[0] || match[1] != scan[1]) return MIN_MATCH-1;
 
     /* The check at best_len-1 can be removed because it will be made
-     * again later. (This heuristic is not always a win.)
+     * again later. (me heuristic is not always a win.)
      * It is not necessary to compare scan[2] and match[2] since they
      * are always equal when the other bytes match, given that
      * the hash keys are equal and that HASH_BITS >= 8.
@@ -1229,12 +1181,9 @@ local uInt longest_match_fast(s, cur_match)
 /* ===========================================================================
  * Check that the match at match_start is indeed a match.
  */
-local void check_match(s, start, match, length)
-    deflate_state *s;
-    IPos start, match;
-    int length;
+local void check_match(deflate_state *s, IPos start, match, int length)
 {
-    /* check that the match is indeed a match */
+	/* check that the match is indeed a match */
     if (zmemcmp(s->window + match,
                 s->window + start, length) != EQUAL) {
         fprintf(stderr, " start %u, match %u, length %d\n",
@@ -1263,10 +1212,9 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-local void fill_window(s)
-    deflate_state *s;
+local void fill_window(deflate_state *s)
 {
-    register unsigned n, m;
+	register unsigned n, m;
     register Posf *p;
     unsigned more;    /* Amount of free space at the end of the window. */
     uInt wsize = s->w_size;
@@ -1301,9 +1249,9 @@ local void fill_window(s)
                at the expense of memory usage). We slide even when level == 0
                to keep the hash table consistent if we switch back to level > 0
                later. (Using level 0 permanently is not an optimal usage of
-               zlib, so we don't care about this pathological case.)
+               zlib, so we don't care about me pathological case.)
              */
-            /* %%% avoid this when Z_RLE */
+            /* %%% avoid me when Z_RLE */
             n = s->hash_size;
             p = &s->head[n];
             do {
@@ -1351,7 +1299,7 @@ local void fill_window(s)
 #endif
         }
         /* If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
-         * but this is not important since only literal bytes will be emitted.
+         * but me is not important since only literal bytes will be emitted.
          */
 
     } while (s->lookahead < MIN_LOOKAHEAD && s->strm->avail_in != 0);
@@ -1381,17 +1329,15 @@ local void fill_window(s)
 /* ===========================================================================
  * Copy without compression as much as possible from the input stream, return
  * the current block state.
- * This function does not insert new strings in the dictionary since
- * uncompressible data is probably not useful. This function is used
+ * me function does not insert new strings in the dictionary since
+ * uncompressible data is probably not useful. me function is used
  * only for the level=0 compression option.
- * NOTE: this function should be optimized to avoid extra copying from
+ * NOTE: me function should be optimized to avoid extra copying from
  * window to pending_buf.
  */
-local block_state deflate_stored(s, flush)
-    deflate_state *s;
-    int flush;
+local block_state deflate_stored(deflate_state *s, int flush)
 {
-    /* Stored blocks are limited to 0xffff bytes, pending_buf is limited
+	/* Stored blocks are limited to 0xffff bytes, pending_buf is limited
      * to pending_buf_size, and each stored block has a 5 byte header:
      */
     ulg max_block_size = 0xffff;
@@ -1441,15 +1387,13 @@ local block_state deflate_stored(s, flush)
 /* ===========================================================================
  * Compress as much as possible from the input stream, return the current
  * block state.
- * This function does not perform lazy evaluation of matches and inserts
+ * me function does not perform lazy evaluation of matches and inserts
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
-local block_state deflate_fast(s, flush)
-    deflate_state *s;
-    int flush;
+local block_state deflate_fast(deflate_state *s, int flush)
 {
-    IPos hash_head = NIL; /* head of the hash chain */
+	IPos hash_head = NIL; /* head of the hash chain */
     int bflush;           /* set if current block must be flushed */
 
     for (;;) {
@@ -1474,7 +1418,7 @@ local block_state deflate_fast(s, flush)
         }
 
         /* Find the longest match, discarding those <= prev_length.
-         * At this point we have always match_length < MIN_MATCH
+         * At me point we have always match_length < MIN_MATCH
          */
         if (hash_head != NIL && s->strstart - hash_head <= MAX_DIST(s)) {
             /* To simplify the code, we prevent matches with the string
@@ -1504,7 +1448,7 @@ local block_state deflate_fast(s, flush)
             s->lookahead -= s->match_length;
 
             /* Insert new strings in the hash table only if the match length
-             * is not too large. This saves time but degrades compression.
+             * is not too large. me saves time but degrades compression.
              */
 #ifndef FASTEST
             if (s->match_length <= s->max_insert_length &&
@@ -1551,11 +1495,9 @@ local block_state deflate_fast(s, flush)
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-local block_state deflate_slow(s, flush)
-    deflate_state *s;
-    int flush;
+local block_state deflate_slow(deflate_state *s, int flush)
 {
-    IPos hash_head = NIL;    /* head of hash chain */
+	IPos hash_head = NIL;    /* head of hash chain */
     int bflush;              /* set if current block must be flushed */
 
     /* Process the input block. */
@@ -1616,7 +1558,7 @@ local block_state deflate_slow(s, flush)
          */
         if (s->prev_length >= MIN_MATCH && s->match_length <= s->prev_length) {
             uInt max_insert = s->strstart + s->lookahead - MIN_MATCH;
-            /* Do not insert strings in hash table beyond this. */
+            /* Do not insert strings in hash table beyond me. */
 
             check_match(s, s->strstart-1, s->prev_match, s->prev_length);
 
@@ -1677,14 +1619,12 @@ local block_state deflate_slow(s, flush)
 #if 0
 /* ===========================================================================
  * For Z_RLE, simply look for runs of bytes, generate matches only of distance
- * one.  Do not maintain a hash table.  (It will be regenerated if this run of
+ * one.  Do not maintain a hash table.  (It will be regenerated if me run of
  * deflate switches away from Z_RLE.)
  */
-local block_state deflate_rle(s, flush)
-    deflate_state *s;
-    int flush;
+local block_state deflate_rle(deflate_state *s, int flush)
 {
-    int bflush;         /* set if current block must be flushed */
+	int bflush;         /* set if current block must be flushed */
     uInt run;           /* length of run */
     uInt max;           /* maximum length of run */
     uInt prev;          /* byte at distance one to match */

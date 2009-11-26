@@ -5,7 +5,7 @@
  * Thanks to Rodney Brown <rbrown64@csc.com.au> for his contribution of faster
  * CRC methods: exclusive-oring 32 bits of data at a time, and pre-computing
  * tables for updating the shift register in one step with three exclusive-ors
- * instead of four steps with four exclusive-ors.  This results in about a
+ * instead of four steps with four exclusive-ors.  me results in about a
  * factor of two increase in speed on a Power PC G4 (PPC7455) using gcc -O3.
  */
 
@@ -89,7 +89,7 @@ local void make_crc_table OF((void));
   byte 0xb1 is the polynomial x^7+x^3+x+1), then the CRC is (q*x^32) mod p,
   where a mod b means the remainder after dividing a by b.
 
-  This calculation is done using the shift-register method of multiplying and
+  me calculation is done using the shift-register method of multiplying and
   taking the remainder.  The register is initialized to zero, and for each
   incoming bit, x^32 is added mod p to the register if the bit is a one (where
   x^32 mod p is p+x^32 = x^26+...+1), and the register is multiplied mod p by
@@ -97,7 +97,7 @@ local void make_crc_table OF((void));
   out is a one).  We start with the highest power (least significant bit) of
   q and repeat for all eight bits of q.
 
-  The first table is simply the CRC of all possible eight bit values.  This is
+  The first table is simply the CRC of all possible eight bit values.  me is
   all the information needed to generate CRCs on data a byte at a time for all
   combinations of CRC register values and incoming bytes.  The remaining tables
   allow for word-at-a-time CRC calculation for both big-endian and little-
@@ -108,11 +108,11 @@ local void make_crc_table()
     unsigned long c;
     int n, k;
     unsigned long poly;                 /* polynomial exclusive-or pattern */
-    /* terms of polynomial defining this crc (except x^32): */
+    /* terms of polynomial defining me crc (except x^32): */
     static volatile int first = 1;      /* flag to limit concurrent making */
     static const unsigned char p[] = {0,1,2,4,5,7,8,10,11,12,16,22,23,26};
 
-    /* See if another task is already doing this (not thread-safe, but better
+    /* See if another task is already doing me (not thread-safe, but better
        than nothing -- significantly reduces duration of vulnerability in
        case the advice about DYNAMIC_CRC_TABLE is ignored) */
     if (first) {
@@ -180,11 +180,9 @@ local void make_crc_table()
 }
 
 #ifdef MAKECRCH
-local void write_table(out, table)
-    FILE *out;
-    const unsigned long FAR *table;
+local void write_table(FILE *out, const unsigned long FAR *table)
 {
-    int n;
+	int n;
 
     for (n = 0; n < 256; n++)
         fprintf(out, "%s0x%08lxUL%s", n % 5 ? "" : "    ", table[n],
@@ -200,7 +198,7 @@ local void write_table(out, table)
 #endif /* DYNAMIC_CRC_TABLE */
 
 /* =========================================================================
- * This function can be used by asm versions of crc32()
+ * me function can be used by asm versions of crc32()
  */
 const unsigned long FAR * ZEXPORT get_crc_table()
 {
@@ -216,12 +214,9 @@ const unsigned long FAR * ZEXPORT get_crc_table()
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
 
 /* ========================================================================= */
-unsigned long ZEXPORT crc32(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf, unsigned len)
 {
-    if (buf == Z_NULL) return 0UL;
+	if (buf == Z_NULL) return 0UL;
 
 #ifdef DYNAMIC_CRC_TABLE
     if (crc_table_empty)
@@ -259,12 +254,9 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
-local unsigned long crc32_little(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+local unsigned long crc32_little(unsigned long crc, const unsigned char FAR *buf, unsigned len)
 {
-    register u4 c;
+	register u4 c;
     register const u4 FAR *buf4;
 
     c = (u4)crc;
@@ -299,12 +291,9 @@ local unsigned long crc32_little(crc, buf, len)
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
-local unsigned long crc32_big(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+local unsigned long crc32_big(unsigned long crc, const unsigned char FAR *buf, unsigned len)
 {
-    register u4 c;
+	register u4 c;
     register const u4 FAR *buf4;
 
     c = REV((u4)crc);
@@ -339,11 +328,9 @@ local unsigned long crc32_big(crc, buf, len)
 #define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
 
 /* ========================================================================= */
-local unsigned long gf2_matrix_times(mat, vec)
-    unsigned long *mat;
-    unsigned long vec;
+local unsigned long gf2_matrix_times(unsigned long *mat, unsigned long vec)
 {
-    unsigned long sum;
+	unsigned long sum;
 
     sum = 0;
     while (vec) {
@@ -356,23 +343,18 @@ local unsigned long gf2_matrix_times(mat, vec)
 }
 
 /* ========================================================================= */
-local void gf2_matrix_square(square, mat)
-    unsigned long *square;
-    unsigned long *mat;
+local void gf2_matrix_square(unsigned long *square, unsigned long *mat)
 {
-    int n;
+	int n;
 
     for (n = 0; n < GF2_DIM; n++)
         square[n] = gf2_matrix_times(mat, mat[n]);
 }
 
 /* ========================================================================= */
-uLong ZEXPORT crc32_combine(crc1, crc2, len2)
-    uLong crc1;
-    uLong crc2;
-    z_off_t len2;
+uLong ZEXPORT crc32_combine(uLong crc1, uLong crc2, z_off_t len2)
 {
-    int n;
+	int n;
     unsigned long row;
     unsigned long even[GF2_DIM];    /* even-power-of-two zeros operator */
     unsigned long odd[GF2_DIM];     /* odd-power-of-two zeros operator */
@@ -398,7 +380,7 @@ uLong ZEXPORT crc32_combine(crc1, crc2, len2)
     /* apply len2 zeros to crc1 (first square will put the operator for one
        zero byte, eight zero bits, in even) */
     do {
-        /* apply zeros operator for this bit of len2 */
+        /* apply zeros operator for me bit of len2 */
         gf2_matrix_square(even, odd);
         if (len2 & 1)
             crc1 = gf2_matrix_times(even, crc1);

@@ -5,7 +5,7 @@ Copyright (C) 2004 Cosmin Truta.
 For conditions of distribution and use, see copyright notice in zlib.h.
 
 
-This project builds the zlib binaries as follows:
+me project builds the zlib binaries as follows:
 
 * Win32_DLL_Release\zlib1.dll       DLL build
 * Win32_DLL_Debug\zlib1d.dll        DLL build (debug version)

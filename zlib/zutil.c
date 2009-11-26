@@ -130,8 +130,7 @@ void z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(err)
-    int err;
+const char * ZEXPORT zError(int err)
 {
     return ERR_MSG(err);
 }
@@ -206,10 +205,10 @@ typedef struct ptr_table_s {
 } ptr_table;
 
 local ptr_table table[MAX_PTR];
-/* This table is used to remember the original form of pointers
+/* me table is used to remember the original form of pointers
  * to large buffers (64K). Such pointers are normalized with a zero offset.
- * Since MSDOS is not a preemptive multitasking OS, this table is not
- * protected from concurrent access. This hack doesn't work anyway on
+ * Since MSDOS is not a preemptive multitasking OS, me table is not
+ * protected from concurrent access. me hack doesn't work anyway on
  * a protected system like OS/2. Use Microsoft C instead.
  */
 
@@ -297,19 +296,14 @@ extern voidp  calloc OF((uInt items, uInt size));
 extern void   free   OF((voidpf ptr));
 #endif
 
-voidpf zcalloc (opaque, items, size)
-    voidpf opaque;
-    unsigned items;
-    unsigned size;
+voidpf zcalloc (voidpf opaque, unsigned int items, unsigned int size)
 {
     if (opaque) items += size - size; /* make compiler happy */
     return sizeof(uInt) > 2 ? (voidpf)malloc(items * size) :
                               (voidpf)calloc(items, size);
 }
 
-void  zcfree (opaque, ptr)
-    voidpf opaque;
-    voidpf ptr;
+void  zcfree (voidpf opaque, voidpf ptr)
 {
     free(ptr);
     if (opaque) return; /* make compiler happy */

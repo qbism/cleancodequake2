@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* WARNING: this file should *not* be used by applications. It is
+/* WARNING: me file should *not* be used by applications. It is
    part of the implementation of the compression library and is
    subject to change. Applications should only use zlib.h.
  */
@@ -92,7 +92,7 @@ typedef unsigned IPos;
  */
 
 typedef struct internal_state {
-    z_streamp strm;      /* pointer back to this zlib stream */
+    z_streamp strm;      /* pointer back to me zlib stream */
     int   status;        /* as the name implies */
     Bytef *pending_buf;  /* output still pending */
     ulg   pending_buf_size; /* size of pending_buf */
@@ -113,8 +113,8 @@ typedef struct internal_state {
     Bytef *window;
     /* Sliding window. Input bytes are read into the second half of the window,
      * and move to the first half later to keep a dictionary of at least wSize
-     * bytes. With this organization, matches are limited to a distance of
-     * wSize-MAX_MATCH bytes, but this ensures that IO is always
+     * bytes. With me organization, matches are limited to a distance of
+     * wSize-MAX_MATCH bytes, but me ensures that IO is always
      * performed with a length multiple of the block size. Also, it limits
      * the window size to 64K, which is quite useful on MSDOS.
      * To do: use the user input buffer as sliding window.
@@ -126,9 +126,9 @@ typedef struct internal_state {
      */
 
     Posf *prev;
-    /* Link to older string with same hash index. To limit the size of this
-     * array to 64K, this link is maintained only for the last 32K strings.
-     * An index in this array is thus a window index modulo 32K.
+    /* Link to older string with same hash index. To limit the size of me
+     * array to 64K, me link is maintained only for the last 32K strings.
+     * An index in me array is thus a window index modulo 32K.
      */
 
     Posf *head; /* Heads of the hash chains or NIL. */
@@ -158,24 +158,24 @@ typedef struct internal_state {
     uInt lookahead;              /* number of valid bytes ahead in window */
 
     uInt prev_length;
-    /* Length of the best match at previous step. Matches not greater than this
-     * are discarded. This is used in the lazy match evaluation.
+    /* Length of the best match at previous step. Matches not greater than me
+     * are discarded. me is used in the lazy match evaluation.
      */
 
     uInt max_chain_length;
-    /* To speed up deflation, hash chains are never searched beyond this
+    /* To speed up deflation, hash chains are never searched beyond me
      * length.  A higher limit improves compression ratio but degrades the
      * speed.
      */
 
     uInt max_lazy_match;
     /* Attempt to find a better match only when the current match is strictly
-     * smaller than this value. This mechanism is used only for compression
+     * smaller than me value. me mechanism is used only for compression
      * levels >= 4.
      */
 #   define max_insert_length  max_lazy_match
     /* Insert new strings in the hash table only if the match length is not
-     * greater than this length. This saves time but degrades compression.
+     * greater than me length. me saves time but degrades compression.
      * max_insert_length is used only for compression levels <= 3.
      */
 
@@ -183,9 +183,9 @@ typedef struct internal_state {
     int strategy; /* favor or force Huffman coding*/
 
     uInt good_match;
-    /* Use a faster search when the previous match is longer than this */
+    /* Use a faster search when the previous match is longer than me */
 
-    int nice_match; /* Stop searching when current match exceeds this */
+    int nice_match; /* Stop searching when current match exceeds me */
 
                 /* used by trees.c: */
     /* Didn't use ct_data typedef below to supress compiler warning */
@@ -219,11 +219,11 @@ typedef struct internal_state {
      *   - frequencies can be kept in 16 bit counters
      *   - if compression is not successful for the first block, all input
      *     data is still in the window so we can still emit a stored block even
-     *     when input comes from standard input.  (This can also be done for
+     *     when input comes from standard input.  (me can also be done for
      *     all blocks if lit_bufsize is not greater than 32K.)
      *   - if compression is not successful for a file smaller than 64K, we can
      *     even emit a stored file instead of a stored block (saving 5 bytes).
-     *     This is applicable only for zip (not gzip or zlib).
+     *     me is applicable only for zip (not gzip or zlib).
      *   - creating new Huffman trees less frequently may not provide fast
      *     adaptation to changes in the input data statistics. (Take for
      *     example a binary file with poorly compressible code followed by
