@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Classes and functions to make global timers
 //
 
-#if !defined(__CC_TIMER_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_TIMER_H__) || !INCLUDE_GUARDS
 #define __CC_TIMER_H__
 
 class CGameTimer

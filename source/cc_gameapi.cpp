@@ -127,13 +127,13 @@ called when the game is being unloaded.
 */
 void ShutdownGame ()
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.Shutdown ();
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -148,13 +148,13 @@ to be placed into the game.  This will happen every level load.
 */
 void ClientBegin (edict_t *ent)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ClientBegin (entity_cast<CPlayerEntity>(ent->Entity));
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -171,13 +171,13 @@ The game can override any of the settings in place
 */
 void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ClientUserinfoChanged (entity_cast<CPlayerEntity>(ent->Entity), userinfo);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -197,13 +197,13 @@ loadgames will.
 */
 BOOL ClientConnect (edict_t *ent, char *userinfo)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	return (Game.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END_CUSTOM
 (
 	return 0;
@@ -221,13 +221,13 @@ Will not be called between levels.
 */
 void ClientDisconnect (edict_t *ent)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ClientDisconnect (entity_cast<CPlayerEntity>(ent->Entity));
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -245,13 +245,13 @@ usually be a couple times for each server frame.
 */
 void ClientThink (edict_t *ent, userCmd_t *ucmd)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ClientThink (entity_cast<CPlayerEntity>(ent->Entity), ucmd);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -265,13 +265,13 @@ Advances the world by 0.1 seconds
 */
 void RunFrame ()
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.RunFrame ();
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -287,13 +287,13 @@ is loaded.
 */
 void InitGame ()
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.Init ();
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -308,13 +308,13 @@ parsing textual entity definitions out of an ent file.
 */
 void SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.SpawnEntities (ServerLevelName, entities, spawnpoint);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -330,13 +330,13 @@ of the parameters
 */
 void ServerCommand ()
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ServerCommand ();
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -350,7 +350,7 @@ game commands issued by clients
 */
 void ClientCommand (edict_t *ent)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 	if (!ent->client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.state != SVCS_SPAWNED))
@@ -358,7 +358,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 
 	Game.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -379,26 +379,26 @@ last save position.
 */
 void WriteGame (char *filename, BOOL autosave)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.WriteGame (filename, !!autosave);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
 
 void ReadGame (char *filename)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ReadGame (filename);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -413,13 +413,13 @@ WriteLevel
 */
 void WriteLevel (char *filename)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 
 #endif
 	Game.WriteLevel (filename);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }
@@ -443,13 +443,13 @@ No clients are connected yet.
 */
 void ReadLevel (char *filename)
 {
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
 	Game.ReadLevel (filename);
 
-#ifdef CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
 #endif
 }

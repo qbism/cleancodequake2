@@ -135,7 +135,7 @@ public:
 		if (other->EntityFlags & ENT_PLAYER)
 			Player = entity_cast<CPlayerEntity>(other);
 
-	#ifdef CLEANCTF_ENABLED
+	#if CLEANCTF_ENABLED
 		//ZOID
 		if (Player)
 			CGrapple::PlayerResetGrapple(Player);
@@ -651,7 +651,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("info_player_start", CPlayerStart);
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 /*QUAKED info_player_team1 (1 0 0) (-16 -16 -24) (16 16 32)
 potential team1 spawning position for ctf games
 */

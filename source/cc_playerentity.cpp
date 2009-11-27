@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_bodyqueue.h"
 #include "cc_weaponmain.h"
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 #include "cc_pmove.h"
 #endif
 
@@ -143,7 +143,7 @@ KickOrigin (),
 ViewAngle (),
 DamageFrom (),
 DamageBlend (),
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 mynoise (NULL),
 mynoise2 (NULL),
 #endif
@@ -173,7 +173,7 @@ WeaponSound (0)
 	memset (&Grenade, 0, sizeof(Grenade));
 	memset (&Flood, 0, sizeof(Flood));
 	memset (&Chase, 0, sizeof(Chase));
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	memset (&Grapple, 0, sizeof(Grapple));
 #endif
 	memset (&Tech, 0, sizeof(Tech));
@@ -247,7 +247,7 @@ void CPlayerEntity::BeginServerFrame ()
 		return;
 
 	if ((game.mode & GAME_DEATHMATCH) &&  
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		!(game.mode & GAME_CTF) &&
 #endif
 		Client.Persistent.Spectator != Client.Respawn.Spectator &&
@@ -260,7 +260,7 @@ void CPlayerEntity::BeginServerFrame ()
 	// run weapon animations
 	if (!Client.Respawn.Spectator && Client.Persistent.Weapon)
 	{
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		if (!(game.mode & GAME_CTF) || ((game.mode & GAME_CTF) && !NoClip))
 #endif
 		Client.Persistent.Weapon->Think (this);
@@ -280,7 +280,7 @@ void CPlayerEntity::BeginServerFrame ()
 
 			if ( ( Client.LatchedButtons & buttonMask ) ||
 				((game.mode & GAME_DEATHMATCH) && dmFlags.dfForceRespawn ) 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 				|| CTFMatchOn()
 #endif
 				)
@@ -537,7 +537,7 @@ void CPlayerEntity::PutInServer ()
 	Client.PlayerState.GetViewAngles() = State.GetAngles();
 	Client.ViewAngle = State.GetAngles();
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if ((game.mode & GAME_CTF) && CTFStart())
 		return;
@@ -597,7 +597,7 @@ void CPlayerEntity::InitPersistent ()
 		Client.Persistent.Inventory.SelectedItem = Client.Persistent.Weapon->Item->GetIndex();
 	}
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	if (game.mode & GAME_CTF)
 		NItems::Grapple->Add(this, 1);
 	Client.Persistent.Flag = NULL;
@@ -653,7 +653,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	sint32 playernum = State.GetNumber() - 1;
 
 	// combine name and skin into a configstring
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if (game.mode & GAME_CTF)
 		CTFAssignSkin(s);
@@ -719,7 +719,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	Client.Persistent.UserInfo = userinfo;
 }
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 {
 	sint32 playernum = State.GetNumber()-1;
@@ -1231,7 +1231,7 @@ inline void CPlayerEntity::FallingDamage ()
 	if (NoClip)
 		return;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	// never take damage if just release grapple or on grapple
 	if (level.Frame - Client.Grapple.ReleaseTime <= 2 ||
@@ -1481,7 +1481,7 @@ inline void CPlayerEntity::SetClientEffects ()
 		Client.PowerArmorTime--;
 	}
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	if (game.mode & GAME_CTF)
 	{
 		State.GetEffects() &= ~(EF_FLAG1 | EF_FLAG2);
@@ -1624,7 +1624,7 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 
 	if (!GroundEntity)
 	{
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID: if on grapple, don't go into jump frame, go into standing
 //frame
 		if (Client.Grapple.Entity)
@@ -1640,7 +1640,7 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 		if (State.GetFrame() != FRAME_jump2)
 			State.GetFrame() = FRAME_jump1;
 		Client.Anim.EndFrame = FRAME_jump2;
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	}
 #endif
 	}
@@ -1782,14 +1782,14 @@ void CPlayerEntity::EndServerFrame ()
 	if (Client.Respawn.Spectator)
 		SetSpectatorStats();
 	else
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if (!Client.Chase.Target)
 //ZOID
 #endif
 		SetStats ();
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 //update chasecam follower stats
 	for (i = 1; i <= game.maxclients; i++)
@@ -1832,7 +1832,7 @@ void CPlayerEntity::EndServerFrame ()
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
 }
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 void CPlayerEntity::CTFDeadDropFlag ()
 {
 	if (Client.Persistent.Flag)
@@ -2039,7 +2039,7 @@ DeathmatchScoreboardMessage
 */
 void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 {
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if (game.mode & GAME_CTF)
 	{
@@ -2274,7 +2274,7 @@ void CPlayerEntity::SetStats ()
 		if (Client.Persistent.Tech)
 			Client.PlayerState.GetStat (STAT_TECH) = Client.Persistent.Tech->GetIconIndex();
 
-	#ifdef CLEANCTF_ENABLED
+	#if CLEANCTF_ENABLED
 	//ZOID
 		if (game.mode & GAME_CTF)
 			SetCTFStats();
@@ -2307,7 +2307,7 @@ void CPlayerEntity::SetSpectatorStats ()
 		(Client.Chase.Target && Client.Chase.Target->GetInUse()) ? (CS_PLAYERSKINS + (Client.Chase.Target->State.GetNumber() - 1)) : 0;
 }
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 void CPlayerEntity::SetCTFStats()
 {
 	Client.PlayerState.GetStat (STAT_CTF_MATCH) = (ctfgame.match > MATCH_NONE) ? CONFIG_CTF_MATCH : 0;
@@ -2644,24 +2644,21 @@ void CPlayerEntity::TossClientWeapon ()
 	}
 }
 
-#ifdef USE_EXTENDED_GAME_IMPORTS
-edict_t	*pm_passent;
+#if USE_EXTENDED_GAME_IMPORTS
+CPlayerEntity	*pm_passent;
 
 // pmove doesn't need to know about passent and contentmask
 cmTrace_t	PM_trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 {
 _CC_DISABLE_DEPRECATION
-	if (pm_passent->health > 0)
-		return gi.trace(start, mins, maxs, end, pm_passent, CONTENTS_MASK_PLAYERSOLID);
-	else
-		return gi.trace(start, mins, maxs, end, pm_passent, CONTENTS_MASK_DEADSOLID);
+	return gi.trace(start, mins, maxs, end, pm_passent->gameEntity, (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 _CC_ENABLE_DEPRECATION
 }
 #endif
 
 void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 {
-#ifdef USE_EXTENDED_GAME_IMPORTS
+#if USE_EXTENDED_GAME_IMPORTS
 	pMove_t		pm;
 #else
 	pMoveNew_t	pm;
@@ -2679,8 +2676,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 		return;
 	}
 
-#ifdef USE_EXTENDED_GAME_IMPORTS
-	pm_passent = ent;
+#if USE_EXTENDED_GAME_IMPORTS
+	pm_passent = this;
 #endif
 
 //ZOID
@@ -2757,13 +2754,13 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	pm.cmd = *ucmd;
 
-#ifdef USE_EXTENDED_GAME_IMPORTS
+#if USE_EXTENDED_GAME_IMPORTS
 	pm.trace = PM_trace;
-	pm.pointContents = PointContents;
+	pm.pointContents = gi.pointcontents;
 #endif
 
 	// perform a pmove
-#ifdef USE_EXTENDED_GAME_IMPORTS
+#if USE_EXTENDED_GAME_IMPORTS
 	gi.Pmove (&pm);
 #else
 	SV_Pmove (this, &pm, sv_airaccelerate->Float());
@@ -2804,7 +2801,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 		Client.PlayerState.GetViewAngles().Set (pm.viewAngles);
 	}
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if (Client.Grapple.Entity)
 		Client.Grapple.Entity->GrapplePull ();
@@ -2841,7 +2838,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	// Paril: Removed. See definition of userCmd_t::lightlevel for more info.
 
 	if (Client.Respawn.Spectator
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		|| ((game.mode & GAME_CTF) && NoClip)
 #endif)
 		)
@@ -2884,7 +2881,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	}
 }
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 void CPlayerEntity::CTFAssignTeam()
 {
 	sint32 i;
@@ -2927,7 +2924,7 @@ void CPlayerEntity::CTFAssignTeam()
 
 void CPlayerEntity::InitResp ()
 {
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	sint32 Team = Client.Respawn.CTF.Team;
 	bool IDState = Client.Respawn.CTF.IDState;
@@ -2936,7 +2933,7 @@ void CPlayerEntity::InitResp ()
 
 	Client.Respawn.Clear ();
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	Client.Respawn.CTF.Team = Team;
 	Client.Respawn.CTF.IDState = IDState;
@@ -2946,7 +2943,7 @@ void CPlayerEntity::InitResp ()
 	Client.Respawn.EnterFrame = level.Frame;
 	Client.Respawn.CoopRespawn = Client.Persistent;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if ((game.mode & GAME_CTF) && Client.Respawn.CTF.Team < CTF_TEAM1)
 		CTFAssignTeam();
@@ -3072,7 +3069,7 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 
 	if (!(game.mode & GAME_SINGLEPLAYER))
 		spot = 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		(game.mode & GAME_CTF) ? SelectCTFSpawnPoint() :
 #endif
 		(game.mode & GAME_DEATHMATCH) ? SelectDeathmatchSpawnPoint () : SelectCoopSpawnPoint ();
@@ -3120,7 +3117,7 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 	angles = spot->State.GetAngles ();
 }
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 /*
 ================
 SelectCTFSpawnPoint
@@ -3247,7 +3244,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 d
 		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 		Obituary (attacker);
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		if (attacker->EntityFlags & ENT_PLAYER)
 		{
 			CPlayerEntity *Attacker = entity_cast<CPlayerEntity>(attacker);
@@ -3268,7 +3265,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 d
 #endif
 		TossClientWeapon ();
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 		if ((game.mode & GAME_CTF) || Client.Grapple.Entity || Client.Persistent.Flag)
 		{
@@ -3642,7 +3639,7 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 class CPathNode *GetClosestNodeTo (vec3f origin);
 #endif
 
@@ -3663,7 +3660,7 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 	if (Flags & FL_NOTARGET)
 		return;
 
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	if (!Client.mynoise)
 	{
 		CPlayerNoise *noise = QNewEntityOf CPlayerNoise;
@@ -3873,7 +3870,7 @@ bool CPlayerEntity::Connect (char *userinfo)
 	if (!GetInUse())
 	{
 		// clear the respawning variables
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID -- force team join
 		Client.Respawn.CTF.Team = -1;
 		Client.Respawn.CTF.IDState = false; 
@@ -3909,7 +3906,7 @@ void CPlayerEntity::Disconnect ()
 	Client.Persistent.state = SVCS_FREE;
 	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.Name.c_str());
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if (game.mode & GAME_CTF)
 		CTFDeadDropFlag();
@@ -4088,7 +4085,7 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		case MOD_BARREL:
 			message = "was blown to smithereens by";
 			break;
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 		case MOD_GRAPPLE:
 			message = "was caught by";

@@ -534,7 +534,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const
 	// Check size
 	if (size <= 0)
 	{
-		DeveloperPrintf ("Mem_Alloc: Attempted allocation of '%i' memory ignored\n" "alloc: %s:#%i\n", size, fileName, fileLine);
+		DebugPrintf ("Mem_Alloc: Attempted allocation of '%i' memory ignored\n" "alloc: %s:#%i\n", size, fileName, fileLine);
 		return NULL;
 	}
 	if (size > MEM_MAX_ALLOC)

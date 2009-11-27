@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // memory.h
 //
 
-#if !defined(__CC_MEMORY_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_MEMORY_H__) || !INCLUDE_GUARDS
 #define __CC_MEMORY_H__
 
 // Constants

@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // An enumeration for each character in conchars
 //
 
-#if !defined(__CC_CONCHARS_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_CONCHARS_H__) || !INCLUDE_GUARDS
 #define __CC_CONCHARS_H__
 
 #define	CFLAG_SECONDARY		128

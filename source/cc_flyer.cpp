@@ -542,7 +542,7 @@ void CFlyer::ChooseAfterDodge ()
 	CurrentMove = (frand() < 0.5) ? &FlyerMoveRun : &FlyerMoveAttack2;
 }
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CFlyer::Dodge (CBaseEntity *attacker, float eta)
 #else
 void CFlyer::Duck (float eta)
@@ -589,7 +589,7 @@ void CFlyer::Duck (float eta)
 }
 #endif
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 void CFlyer::SideStep ()
 {
 	if (AIFlags & AI_STAND_GROUND)
@@ -629,7 +629,7 @@ void CFlyer::Spawn ()
 	Entity->Mass = 50;
 
 	MonsterFlags |= (MF_HAS_IDLE | MF_HAS_SIGHT | MF_HAS_MELEE | MF_HAS_ATTACK
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	| MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_DODGE | MF_HAS_SIDESTEP
 #endif
 		);

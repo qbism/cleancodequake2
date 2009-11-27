@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Bew pew gew.
 //
 
-#if !defined(__CC_SOLDIER_LIGHT_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_SOLDIER_LIGHT_H__) || !INCLUDE_GUARDS
 #define __CC_SOLDIER_LIGHT_H__
 
 class CSoldierLight : public CSoldierBase

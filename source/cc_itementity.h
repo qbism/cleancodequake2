@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Moved here because it's seperate from the item system.
 //
 
-#if !defined(__CC_ITEMENTITY_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_ITEMENTITY_H__) || !INCLUDE_GUARDS
 #define __CC_ITEMENTITY_H__
 
 // The item entity class
@@ -96,7 +96,7 @@ public:
 	(LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn), #mapClassName); \
 	IMPLEMENT_SAVE_STRUCTURE (mapClassName,DLLClassName)
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 #include "cc_ctfitementities.h"
 #endif
 

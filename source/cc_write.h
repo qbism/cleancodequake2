@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // "Write" functions to write and check for malformed writes.
 //
 
-#if !defined(__CC_WRITE_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_WRITE_H__) || !INCLUDE_GUARDS
 #define __CC_WRITE_H__
 
 void WriteChar (sint8 val);

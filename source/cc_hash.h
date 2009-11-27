@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Duh
 //
 
-#if !defined(__CC_HASH_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_HASH_H__) || !INCLUDE_GUARDS
 #define __CC_HASH_H__
 
 uint32 Com_HashGeneric(const char *name, const sint32 hashSize);

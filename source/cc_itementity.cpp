@@ -106,11 +106,11 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 
 	if (LinkedItem->PickupSound)
 		Player->PlaySound (
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		(LinkedItem == NItems::RedFlag || LinkedItem == NItems::BlueFlag) ? CHAN_AUTO : 
 #endif
 		CHAN_ITEM, LinkedItem->GetPickupSound()
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		, 255, (LinkedItem == NItems::RedFlag || LinkedItem == NItems::BlueFlag) ? ATTN_NONE : ATTN_NORM
 #endif
 		);
@@ -234,7 +234,7 @@ void CItemEntity::Think ()
 			{
 				CBaseEntity *Master = Team.Master;
 
-		#ifdef CLEANCTF_ENABLED
+		#if CLEANCTF_ENABLED
 		//ZOID
 		//in ctf, when we are weapons stay, only the master of a team of weapons
 		//is spawned

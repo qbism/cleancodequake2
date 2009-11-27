@@ -407,7 +407,7 @@ CFrame HoverFramesEndAttack [] =
 };
 CAnim HoverMoveEndAttack (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack, &CMonster::Run);
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 
 /* PMM - circle strafing code */
 CFrame HoverFramesStartAttack2 [] =
@@ -439,7 +439,7 @@ void CIcarus::ReAttack ()
 {
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.6)
 	{
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		CurrentMove = (AttackState == AS_SLIDING) ? &HoverMoveAttack2 : &HoverMoveAttack1;
 #else
 		CurrentMove = &HoverMoveAttack1;
@@ -483,7 +483,7 @@ void CIcarus::Walk ()
 
 void CIcarus::Attack ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	float chance;
 
 	// 0% chance of circle in easy
@@ -545,7 +545,7 @@ void CIcarus::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 	else
 	{
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &HoverMovePain1;
 #else

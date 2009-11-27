@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New item system code
 //
 
-#if !defined(__CC_WEAPONS_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_WEAPONS_H__) || !INCLUDE_GUARDS
 #define __CC_WEAPONS_H__
 
 // Class for weapon items.

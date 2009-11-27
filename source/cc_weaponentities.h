@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Entities related to weaponry
 //
 
-#if !defined(__CC_WEAPONENTITIES_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_WEAPONENTITIES_H__) || !INCLUDE_GUARDS
 #define __CC_WEAPONENTITIES_H__
 
 class CGrenade : public CBounceProjectile, public CThinkableEntity, public CTouchableEntity
@@ -278,7 +278,7 @@ public:
 	static bool		Fire (CBaseEntity *Entity, vec3f aim, sint32 damage, sint32 kick);
 };
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 // Grappling class
 class CGrappleEntity : public CFlyMissileProjectile, public CTouchableEntity
 {

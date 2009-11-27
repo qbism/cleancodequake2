@@ -334,7 +334,7 @@ Called by ClientBeginServerFrame
 */
 void CWeapon::Think (CPlayerEntity *Player)
 {
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	if ((game.mode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
 		return;
 #endif
@@ -352,7 +352,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 	isSilenced = (Player->Client.Timers.SilencerShots) ? true : false;
 	WeaponGeneric (Player);
 	if (dmFlags.dfDmTechs
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		|| (game.mode & GAME_CTF)
 #endif
 	)

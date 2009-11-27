@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Mutant
 //
 
-#if !defined(__CC_MUTANT_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_MUTANT_H__) || !INCLUDE_GUARDS
 #define __CC_MUTANT_H__
 
 class CMutant : public CMonster

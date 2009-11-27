@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Contains overloads and other neat things
 //
 
-#if !defined(__CC_GAMEAPI_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_GAMEAPI_H__) || !INCLUDE_GUARDS
 #define __CC_GAMEAPI_H__
 
 // define GAME_INCLUDE so that cc_game.h does not define the
@@ -48,28 +48,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 struct gameImport_t
 {
 	// special messages
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (BroadcastPrintf)
 #endif
 	void	(*bprintf) (EGamePrintLevel printlevel, char *fmt, ...);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (DebugPrintf)
 #endif
 	void	(*dprintf) (char *fmt, ...);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ClientPrintf)
 #endif
 	void	(*cprintf) (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (CenterPrintf)
 #endif
 	void	(*centerprintf) (edict_t *ent, char *fmt, ...);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (PlaySoundFrom or CBaseEntity->PlaySound)
 #endif
 	void	(*sound) (edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (PlaySoundAt or CBaseEntity->PlayPositionedSound)
 #endif
 	void	(*positioned_sound) (vec3_t origin, edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
@@ -78,49 +78,49 @@ struct gameImport_t
 	// and misc data like the sky definition and cdtrack.
 	// All of the current configstrings are sent to clients when
 	// they connect, and changes are sent to all connected clients.
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ConfigString)
 #endif
 	void	(*configstring) (sint32 num, char *string);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (GameError)
 #endif
 	void	(*error) (char *fmt, ...);
 
 	// the *index functions create configstrings and some internal server state
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ModelIndex)
 #endif
 	sint32		(*modelindex) (char *name);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (SoundIndex)
 #endif
 	sint32		(*soundindex) (char *name);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ImageIndex)
 #endif
 	sint32		(*imageindex) (char *name);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (SetModel)
 #endif
 	void	(*setmodel) (edict_t *ent, char *name);
 
 	// collision detection
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CTrace)
 #endif
 	cmTrace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, sint32 contentMask);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (PointContents)
 #endif
 	sint32			(*pointcontents) (vec3_t point);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (InArea)
 #endif
 	BOOL		(*inPVS) (vec3_t p1, vec3_t p2);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (InArea)
 #endif
 	BOOL		(*inPHS) (vec3_t p1, vec3_t p2);
@@ -131,26 +131,26 @@ struct gameImport_t
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
 	/*
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE ((CBaseEntity)->Link)
 #endif
 	*/
 		void	(*linkentity) (edict_t *ent);
 	/*
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE ((CBaseEntity)->Unlink)
 #endif
 	*/
 	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (BoxEdicts)
 #endif
 	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	sint32 maxCount, sint32 areaType);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (SV_Pmove)
 #endif
 	void	(*Pmove) (
-#ifdef USE_EXTENDED_GAME_IMPORTS
+#if USE_EXTENDED_GAME_IMPORTS
 	pMove_t *pMove
 #else
 	pMoveNew_t *pMove // Just to supress error
@@ -158,103 +158,103 @@ struct gameImport_t
 	);		// player movement code common with client prediction
 
 	// network messaging
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (Cast)
 #endif
 	void	(*multicast) (vec3_t origin, EMultiCast to);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (Cast)
 #endif
 	void	(*unicast) (edict_t *ent, BOOL reliable);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteChar)
 #endif
 	void	(*WriteChar) (sint32 c);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteByte)
 #endif
 	void	(*WriteByte) (sint32 c);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteShort)
 #endif
 	void	(*WriteShort) (sint32 c);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteLong)
 #endif
 	void	(*WriteLong) (sint32 c);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteFloat)
 #endif
 	void	(*WriteFloat) (float f);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteString)
 #endif
 	void	(*WriteString) (char *s);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WritePosition)
 #endif
 	void	(*WritePosition) (vec3_t pos);	// some fractional bits
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteDir)
 #endif
 	void	(*WriteDir) (vec3_t pos);		// single uint8 encoded, very coarse
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (WriteAngle)
 #endif
 	void	(*WriteAngle) (float f);
 
 	// managed memory allocation
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (QNew)
 #endif
 	void	*(*TagMalloc) (sint32 size, sint32 tag);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (QDelete)
 #endif
 	void	(*TagFree) (void *block);
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (Mem_FreePool)
 #endif
 	void	(*FreeTags) (sint32 tag);
 
 	// console variable interaction
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CCvar)
 #endif
 	cVar_t	*(*cvar) (char *varName, char *value, sint32 flags);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CCvar)
 #endif
 	cVar_t	*(*cvar_set) (char *varName, char *value);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (class CCvar)
 #endif
 	cVar_t	*(*cvar_forceset) (char *varName, char *value);
 
 	// ClientCommand and ServerCommand parameter access
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgCount)
 #endif
 	sint32		(*argc) ();
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgGets/ArgGeti/ArgGetf)
 #endif
 	char	*(*argv) (sint32 n);
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (ArgGetConcatenatedString)
 #endif
 	char	*(*args) ();	// concatenation of all argv >= 1

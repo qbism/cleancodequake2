@@ -2363,7 +2363,7 @@ void CWorldEntity::Spawn ()
 		CreateMapDebugStatusbar();
 	else if (game.mode & GAME_DEATHMATCH)
 	{
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 		if (game.mode & GAME_CTF)
 		{

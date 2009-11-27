@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 #include "cc_tent.h"
 #include "cc_pathfinding.h"
 #include "cc_cmds.h"

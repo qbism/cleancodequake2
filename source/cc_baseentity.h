@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Base entity class
 //
 
-#if !defined(__CC_BASEENTITY_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_BASEENTITY_H__) || !INCLUDE_GUARDS
 #define __CC_BASEENTITY_H__
 
 class CEntityState

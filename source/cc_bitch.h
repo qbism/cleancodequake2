@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Iron Maiden
 //
 
-#if !defined(__CC_BITCH_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_BITCH_H__) || !INCLUDE_GUARDS
 #define __CC_BITCH_H__
 
 class CMaiden : public CMonster
@@ -70,7 +70,7 @@ public:
 	void Walk ();
 	void Melee ();
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	void Duck (float eta);
 	void SideStep ();
 #else

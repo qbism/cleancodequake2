@@ -293,7 +293,7 @@ void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM - blindfire cleanup
 	AIFlags &= ~AI_MANUAL_STEERING;
 	// pmm
@@ -342,7 +342,7 @@ void CTank::Strike ()
 
 void CTank::Rocket ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	vec3f	forward, right, start, dir, vec, target;
 	sint32		flash_number, rocketSpeed;
 	CTrace	trace;
@@ -704,7 +704,7 @@ CAnim TankMoveAttackChain (FRAME_attak401, FRAME_attak429, TankFramesAttackChain
 
 void CTank::ReFireRocket ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM - blindfire cleanup
 	if (AIFlags & AI_MANUAL_STEERING)
 	{
@@ -741,7 +741,7 @@ void CTank::Attack ()
 		return;
 	}
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM 
 	if (AttackState == AS_BLIND)
 	{
@@ -915,7 +915,7 @@ void CTank::Spawn ()
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_IDLE);
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM
 	AIFlags |= AI_IGNORE_SHOTS;
 	BlindFire = true;

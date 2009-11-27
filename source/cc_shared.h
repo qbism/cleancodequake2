@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Shared header
 //
 
-#if !defined(__CC_SHARED_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_SHARED_H__) || !INCLUDE_GUARDS
 #define __CC_SHARED_H__
 
 // Pre-defined classes
@@ -63,14 +63,14 @@ typedef sint32	FrameNumber_t;
 // Main class files
 #include "cc_items.h"
 #include "cc_inventory.h"
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 #define PATHFINDING_FUNCTIONSONLY
 #include "cc_pathfinding.h"
 #undef PATHFINDING_FUNCTIONSONLY
 #endif
 #include "cc_sbar.h"
 #include "cc_mapprint.h"
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 #include "cc_ctf.h"
 #endif
 #include "cc_gameapi.h"
@@ -82,7 +82,7 @@ typedef sint32	FrameNumber_t;
 // Classes that require classes from the above includes
 #include "cc_print.h"
 #include "cc_sound.h"
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 #include "cc_ctfadmin.h"
 #include "cc_ctfmenu.h"
 #endif

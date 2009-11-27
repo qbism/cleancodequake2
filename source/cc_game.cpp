@@ -127,7 +127,7 @@ void CheckDMRules ()
 	if (!(game.mode & GAME_DEATHMATCH))
 		return;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if ((game.mode & GAME_CTF) && CTFCheckRules())
 	{
@@ -194,7 +194,7 @@ void ExitLevel ()
 			ent->Health = ent->Client.Persistent.max_health;
 	}
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	SavePathTable ();
 #endif
 }
@@ -279,7 +279,7 @@ void CGameAPI::RunFrame ()
 		// build the playerstate_t structures for all players
 		ClientEndServerFrames ();
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 		RunNodes();
 #endif
 		return;
@@ -379,7 +379,7 @@ void CGameAPI::RunFrame ()
 	DrawNewton();
 #endif
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	RunNodes();
 #endif
 }
@@ -388,7 +388,7 @@ void SetupGamemode ()
 {
 	sint32 dmInt = deathmatch->Integer(),
 		coopInt = coop->Integer();
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	sint32 ctfInt = ctf->Integer();
 #endif
 
@@ -438,7 +438,7 @@ void SetupGamemode ()
 	}
 
 	// If we reached here, we wanted deathmatch
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	if (ctfInt)
 		game.mode |= GAME_CTF;
 #endif
@@ -496,7 +496,7 @@ CCvar	*sv_maplist;
 CCvar	*map_debug;
 CCvar	*cc_techflags;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 CCvar	*capturelimit;
 CCvar	*instantweap;
@@ -568,7 +568,7 @@ void G_Register ()
 	deathmatch = QNew (com_genericPool, 0) CCvar ("deathmatch", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 	coop = QNew (com_genericPool, 0) CCvar ("coop", "0", CVAR_LATCH_SERVER);
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	capturelimit = QNew (com_genericPool, 0) CCvar ("capturelimit", "0", CVAR_SERVERINFO);
 	instantweap = QNew (com_genericPool, 0) CCvar ("instantweap", "0", CVAR_SERVERINFO);
@@ -579,7 +579,7 @@ void G_Register ()
 
 	sv_airaccelerate = QNew (com_genericPool, 0) CCvar("sv_airaccelerate", "0", CVAR_SERVERINFO);
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	Nodes_Register ();
 #endif
 }

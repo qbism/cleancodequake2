@@ -697,7 +697,7 @@ void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 
 bool CMakron::CheckAttack ()
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	vec3f	spot1, spot2;
 	float	chance;
 	CTrace	tr;

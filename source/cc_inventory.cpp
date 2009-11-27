@@ -368,7 +368,7 @@ void Cmd_Inven_f (CPlayerEntity *ent)
 		ent->Client.LayoutFlags |= LF_UPDATECHASE;
 		return;
 	}
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if ((game.mode & GAME_CTF) && ent->Client.Respawn.CTF.Team == CTF_NOTEAM)
 	{

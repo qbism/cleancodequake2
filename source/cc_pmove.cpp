@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 
 // Paril
 // Crouch-jumping!
@@ -962,7 +962,7 @@ static void SV_PM_InitialSnapPosition ()
 		}
 	}
 
-	DeveloperPrintf ("Bad InitialSnapPosition\n");
+	DebugPrintf ("Bad InitialSnapPosition\n");
 }
 
 /*

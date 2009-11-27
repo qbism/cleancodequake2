@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "../source/cc_options.h"
 #include "shared.h"
 
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 mat3x3_t	axisIdentity =  { 
 	1, 0, 0,
 	0, 1, 0,
@@ -170,7 +170,7 @@ void Matrix3_Identity (mat3x3_t mat)
 Matrix3_Matrix4
 ===============
 */
-#ifdef SHARED_ALLOW_4x4_MATRIX
+#if SHARED_ALLOW_4x4_MATRIX
 void Matrix3_Matrix4 (mat3x3_t in, vec3_t origin, mat4x4_t out)
 {
 	// Axis
@@ -222,7 +222,7 @@ void Matrix3_Multiply (mat3x3_t in1, mat3x3_t in2, mat3x3_t out)
 Matrix3_Quat
 ===============
 */
-#ifdef SHARED_ALLOW_QUATERNIONS
+#if SHARED_ALLOW_QUATERNIONS
 void Matrix3_Quat (mat3x3_t m, quat_t q)
 {
 	float	tr, s;

@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Monsters
 //
 
-#if !defined(__CC_MONSTERS_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_MONSTERS_H__) || !INCLUDE_GUARDS
 #define __CC_MONSTERS_H__
 
 class CMonster;
@@ -74,7 +74,7 @@ public:
 
 CC_ENUM (uint32, EMonsterAIFlags)
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	//monster ai flags
 	AI_STAND_GROUND			= BIT(0),
 	AI_TEMP_STAND_GROUND	= BIT(1),
@@ -138,7 +138,7 @@ CC_ENUM (uint32, EMonsterFlags)
 	MF_HAS_SEARCH			= BIT(2),
 	MF_HAS_SIGHT			= BIT(3),
 	MF_HAS_ATTACK			= BIT(4),
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	MF_HAS_DODGE			= BIT(5),
 	MF_HAS_DUCK				= BIT(6),
 	MF_HAS_UNDUCK			= BIT(7),
@@ -153,7 +153,7 @@ CC_ENUM (uint8, EAttackState)
 	AS_SLIDING,
 	AS_MELEE,
 	AS_MISSILE,
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	AS_BLIND
 #endif
 };
@@ -230,7 +230,7 @@ public:
 	float				YawSpeed;
 	uint32				AIFlags;
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 //ROGUE
 	bool				BlindFire;		// will the monster blindfire?
 
@@ -274,7 +274,7 @@ public:
 
 	FrameNumber_t		PainDebounceTime;
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	// Pathfinding
 	class CPath			*P_CurrentPath;
 	class CPathNode		*P_CurrentGoalNode;
@@ -293,7 +293,7 @@ public:
 
 	void SaveFields (CFile &File);
 	void LoadFields (CFile &File);
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	void WriteNodeInfo (CFile &File);
 	void ReadNodeInfo (CFile &File);
 #endif
@@ -329,7 +329,7 @@ public:
 
 	virtual void		Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	void				DuckDown ();
 	virtual void		Duck (float eta);
 	virtual void		UnDuck ();
@@ -343,7 +343,7 @@ public:
 	virtual void		Search			();
 	virtual void		Walk			();
 	virtual void		Run				();
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	virtual void		Dodge			(CBaseEntity *other, float eta);
 #else
 	virtual void		Dodge			(CBaseEntity *attacker, float eta, CTrace *tr);
@@ -400,7 +400,7 @@ public:
 	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
 	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	bool				FriendlyInLine (vec3f &Origin, vec3f &Direction);
 #endif
 

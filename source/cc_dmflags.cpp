@@ -47,7 +47,7 @@ void dmFlagsConfig::Reset ()
 	dfSpawnFarthest = dfForceRespawn = dfNoArmor = dfAllowExit =
 	dfInfiniteAmmo = dfQuadDrop = dfFixedFov = dfQuadFireDrop = dfNoMines =
 	dfNoStackDouble = dfNoNukes = dfNoSpheres = 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	dfCtfNoTech = dfCtfForceJoin = dfCtfArmorProtect =
 #endif
 	dfDmTechs =
@@ -99,7 +99,7 @@ void dmFlagsConfig::UpdateFlags (sint32 wantedFlags)
 		dfNoNukes = true;
 	if (wantedFlags & DF_NO_SPHERES)
 		dfNoSpheres = true;
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	if (wantedFlags & DF_CTF_FORCEJOIN)
 		dfCtfForceJoin = true;
 	if (wantedFlags & DF_ARMOR_PROTECT)

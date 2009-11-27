@@ -534,7 +534,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	if (level.IntermissionTime)
 		return;		// already activated
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if (game.mode & GAME_CTF)
 		CTFCalcScores();

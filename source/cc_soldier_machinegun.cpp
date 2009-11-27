@@ -46,7 +46,7 @@ extern CAnim SoldierMoveAttack4;
 
 void CSoldierMachinegun::Attack ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	DoneDodge ();
 #endif
 

@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // g_utils, CleanCode style
 //
 
-#if !defined(__CC_UTILS_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_UTILS_H__) || !INCLUDE_GUARDS
 #define __CC_UTILS_H__
 
 void	G_TouchTriggers (CBaseEntity *ent);

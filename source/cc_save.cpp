@@ -343,7 +343,7 @@ void ReadEntities (CFile &File)
 	}
 
 	// Here, load any systems that need entity lists
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	LoadNodes ();
 	//LoadPathTable ();
 #endif
@@ -351,7 +351,7 @@ void ReadEntities (CFile &File)
 	for (size_t i = 0; i < LoadedNumbers.size(); i++)
 		ReadFinalizeEntity (File, g_edicts[LoadedNumbers[i]].Entity);
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	FinalizeNodes ();
 #endif
 
@@ -509,7 +509,7 @@ void CGameAPI::WriteLevel (char *filename)
 
 void InitEntityLists ();
 void InitEntities ();
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 void InitNodes ();
 void ShutdownNodes ();
 #endif
@@ -531,7 +531,7 @@ void CGameAPI::ReadLevel (char *filename)
 	// Shut down any systems that may need shutting down first
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	ShutdownNodes ();
 #endif
 
@@ -546,7 +546,7 @@ void CGameAPI::ReadLevel (char *filename)
 	// Re-initialize the systems
 	BodyQueue_Init (0);
 	Init_Junk ();
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	InitNodes ();
 #endif
 

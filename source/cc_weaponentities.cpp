@@ -50,7 +50,7 @@ void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 	end = start.MultiplyAngles(8192, dir);
 	tr (start, end, self, CONTENTS_MASK_SHOT);
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if ((tr.ent) && (tr.ent->Entity) && (tr.ent->Entity->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(tr.ent->Entity)->Health > 0) && IsInFront(tr.Ent, self))
 	{
 		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.ent->Entity));
@@ -492,7 +492,7 @@ void CBFGBolt::Think ()
 			//if (!(ent->svFlags & SVF_MONSTER) && (!ent->client))
 			//	continue;
 
-	#ifdef CLEANCTF_ENABLED
+	#if CLEANCTF_ENABLED
 	//ZOID
 			//don't target players in CTF
 			if ((game.mode & GAME_CTF) && (ent->EntityFlags & ENT_PLAYER) &&
@@ -1375,7 +1375,7 @@ bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, sint32 damage, sint32 ki
 	return true;
 }
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 
 CGrappleEntity::CGrappleEntity () :
 CBaseEntity(),

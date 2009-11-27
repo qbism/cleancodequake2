@@ -149,7 +149,7 @@ bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
 
 bool CHurtableEntity::CheckTeamDamage (CBaseEntity *attacker)
 {
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if ((game.mode & GAME_CTF) && (EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
 	{
@@ -254,7 +254,7 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 dam
 	return save;
 }
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 /*
 ROGUE
 clean up heal targets for medic
@@ -275,7 +275,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 
 	Enemy = attacker;
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if (EntityFlags & ENT_MONSTER)
 	{
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
@@ -300,7 +300,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 				(entity_cast<CPlayerEntity>(attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 			if (strcmp(attacker->ClassName, "monster_medic") == 0)
 				SetOwner (attacker);
 #endif
@@ -391,7 +391,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	}
 
 	if (dmFlags.dfDmTechs
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	|| (game.mode & GAME_CTF)
 #endif
 	)
@@ -447,7 +447,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		save = damage;
 	}
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 //team armor protect
 	if ((game.mode & GAME_CTF) && isClient && (attacker->EntityFlags & ENT_PLAYER) &&
@@ -469,7 +469,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 				take -= asave;
 			}
 		}
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	}
 #endif
 
@@ -477,7 +477,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	asave += save;
 
 	if (dmFlags.dfDmTechs
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	|| (game.mode & GAME_CTF)
 #endif
 	)
@@ -500,7 +500,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (attacker))
 		return;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	if ((game.mode & GAME_CTF) && (isClient && (attacker->EntityFlags & ENT_PLAYER)))
 		CTFCheckHurtCarrier((entity_cast<CPlayerEntity>(this)), (entity_cast<CPlayerEntity>(attacker)));

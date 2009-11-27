@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#if !defined(__CC_BRAIN_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_BRAIN_H__) || !INCLUDE_GUARDS
 #define __CC_BRAIN_H__
 
 class CBrain : public CMonster
@@ -88,7 +88,7 @@ public:
 	void TentacleAttack ();
 	void ChestClosed ();
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();

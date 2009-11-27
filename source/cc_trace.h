@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // A wrapper for the ugly gi.trace system.
 //
 
-#if !defined(__CC_TRACE_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_TRACE_H__) || !INCLUDE_GUARDS
 #define __CC_TRACE_H__
 
 class CTrace

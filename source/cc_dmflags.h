@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // This is so that I don't have to keep doing dmflags->Integer(). Should be faster than bitwise ops every frame!
 //
 
-#if !defined(__CC_DMFLAGS_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_DMFLAGS_H__) || !INCLUDE_GUARDS
 #define __CC_DMFLAGS_H__
 
 class dmFlagsConfig
@@ -60,7 +60,7 @@ public:
 	bool				dfNoNukes;
 	bool				dfNoSpheres;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	bool				dfCtfNoTech;
 	bool				dfCtfForceJoin;
 	bool				dfCtfArmorProtect;

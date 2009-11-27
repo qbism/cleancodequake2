@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // CTF Item Entities
 //
 
-#if !defined(__CC_CTFITEMENTITIES_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_CTFITEMENTITIES_H__) || !INCLUDE_GUARDS
 #define __CC_CTFITEMENTITIES_H__
 
 // A simple class to track a single flag.

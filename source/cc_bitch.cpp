@@ -150,7 +150,7 @@ CFrame ChickFramesRun [] =
 	CFrame (&CMonster::AI_Run, 6),
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 13),
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	CFrame (&CMonster::AI_Run, 5, &CMonster::DoneDodge), // Make sure to clear the dodge bit
 #else
 	CFrame (&CMonster::AI_Run, 5),
@@ -186,7 +186,7 @@ void CMaiden::Walk ()
 
 void CMaiden::Run ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	DoneDodge();
 #endif
 
@@ -277,7 +277,7 @@ void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM - clear this from blindfire
 	AIFlags &= ~AI_MANUAL_STEERING;
 
@@ -378,7 +378,7 @@ void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 	Entity->PlaySound (CHAN_VOICE, (!n) ? Sounds[SOUND_DEATH1] : Sounds[SOUND_DEATH2]);
 }
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CMaiden::DuckDown ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -479,7 +479,7 @@ CFrame ChickFramesEndAttack1 [] =
 };
 CAnim ChickMoveEndAttack1 (FRAME_attak128, FRAME_attak132, ChickFramesEndAttack1, ConvertDerivedFunction(&CMaiden::Run));
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 void CMaiden::Duck (float eta)
 {
 	if ((CurrentMove == &ChickMoveStartAttack1) ||
@@ -545,7 +545,7 @@ void CMaiden::Slash ()
 
 void CMaiden::Rocket ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	vec3f	forward, right, start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 
@@ -647,7 +647,7 @@ void CMaiden::Reload ()
 
 void CMaiden::ReRocket()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if (AIFlags & AI_MANUAL_STEERING)
 		AIFlags &= ~AI_MANUAL_STEERING;
 	else
@@ -721,7 +721,7 @@ void CMaiden::Melee()
 
 void CMaiden::Attack()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	DoneDodge ();
 
 	// PMM 
@@ -785,12 +785,12 @@ void CMaiden::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_ATTACK | MF_HAS_IDLE | MF_HAS_SIGHT
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	BlindFire = true;
 #endif
 

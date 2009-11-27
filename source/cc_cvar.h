@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // A small wrapper for cvars that make managing and using cvars a bit easier.
 //
 
-#if !defined(__CC_CVAR_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_CVAR_H__) || !INCLUDE_GUARDS
 #define __CC_CVAR_H__
 
 // I know this grabs string and converts and that EGL has floatval/intval, but

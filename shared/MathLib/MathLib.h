@@ -28,15 +28,15 @@ extern vec2_t	vec2Origin;
 extern vec4_t	vec4Origin;
 #endif
 
-#ifdef SHARED_ALLOW_4x4_MATRIX
+#if SHARED_ALLOW_4x4_MATRIX
 extern mat4x4_t	mat4x4Identity;
 #endif
 
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 extern mat3x3_t	axisIdentity;
 #endif
 
-#ifdef SHARED_ALLOW_QUATERNIONS
+#if SHARED_ALLOW_QUATERNIONS
 extern quat_t	quatIdentity;
 #endif
 
@@ -541,7 +541,7 @@ float		VectorNormalizeFastf (vec3_t v);
 // m_angles.c
 //
 float		AngleModf (float a);
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 void		Angles_Matrix3 (vec3_t angles, mat3x3_t axis);
 #endif
 void		Angles_Vectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
@@ -568,17 +568,17 @@ float		RadiusFromBounds (vec3_t mins, vec3_t maxs);
 //
 // m_mat3.c
 //
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 void		Matrix3_Angles (mat3x3_t mat, vec3_t angles);
 bool		Matrix3_Compare (mat3x3_t a, mat3x3_t b);
 void		Matrix3_Copy (mat3x3_t in, mat3x3_t out);
 void		Matrix3_FromPoints (vec3_t v1, vec3_t v2, vec3_t v3, mat3x3_t m);
 void		Matrix3_Identity (mat3x3_t mat);
-#ifdef SHARED_ALLOW_4x4_MATRIX
+#if SHARED_ALLOW_4x4_MATRIX
 void		Matrix3_Matrix4 (mat3x3_t in, vec3_t origin, mat4x4_t out);
 #endif
 void		Matrix3_Multiply (mat3x3_t in1, mat3x3_t in2, mat3x3_t out);
-#ifdef SHARED_ALLOW_QUATERNIONS
+#if SHARED_ALLOW_QUATERNIONS
 void		Matrix3_Quat (mat3x3_t m, quat_t q);
 #endif
 void		Matrix3_Rotate (mat3x3_t a, float angle, float x, float y, float z);
@@ -589,12 +589,12 @@ void		Matrix3_Transpose (mat3x3_t in, mat3x3_t out);
 //
 // m_mat4.c
 //
-#ifdef SHARED_ALLOW_4x4_MATRIX
+#if SHARED_ALLOW_4x4_MATRIX
 bool		Matrix4_Compare(const mat4x4_t a, const mat4x4_t b);
 void		Matrix4_Copy(const mat4x4_t a, mat4x4_t b);
 void		Matrix4_Copy2D(const mat4x4_t m1, mat4x4_t m2);
 void		Matrix4_Identity(mat4x4_t mat);
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 void		Matrix4_Matrix3(const mat4x4_t in, mat3x3_t out);
 #endif
 void		Matrix4_Multiply(const mat4x4_t a, const mat4x4_t b, mat4x4_t product);
@@ -615,7 +615,7 @@ void		Matrix4_Transpose(const mat4x4_t m, mat4x4_t ret);
 //
 // m_quat.c
 //
-#ifdef SHARED_ALLOW_QUATERNIONS
+#if SHARED_ALLOW_QUATERNIONS
 void		Quat_ConcatTransforms (quat_t q1, vec3_t v1, quat_t q2, vec3_t v2, quat_t q, vec3_t v);
 void		Quat_Copy (quat_t q1, quat_t q2);
 void		Quat_Conjugate (quat_t q1, quat_t q2);

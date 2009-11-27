@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Player entity
 //
 
-#if !defined(__CC_PLAYERENTITY_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_PLAYERENTITY_H__) || !INCLUDE_GUARDS
 #define __CC_PLAYERENTITY_H__
 
 class CPlayerState
@@ -107,7 +107,7 @@ public:
 	  Weapon (NULL),
 	  LastWeapon (NULL),
 	  Armor (NULL),
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	  Flag (NULL),
 #endif
 	  Tech (NULL),
@@ -200,7 +200,7 @@ public:
 
 	CWeapon		*Weapon, *LastWeapon;
 	CArmor		*Armor; // Current armor.
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	CFlag		*Flag; // Set if holding a flag
 #endif
 	CTech		*Tech; // Set if holding a tech
@@ -264,7 +264,7 @@ public:
 	  Spectator (false),
 	  Gender (GENDER_NEUTRAL),
 	  MessageLevel (0),
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	  LastNode (NULL),
 #endif
 	  MenuState ()
@@ -303,13 +303,13 @@ public:
 	EGender				Gender;
 	EGamePrintLevel		MessageLevel;
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	class CPathNode		*LastNode;
 #endif
 
 	CMenuState			MenuState;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	struct respawn_CTF_t
 	{
@@ -374,7 +374,7 @@ CC_ENUM (uint8, EPowerArmorType)
 	POWER_ARMOR_SHIELD
 };
 
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 class CPlayerNoise : public virtual CBaseEntity
 {
 public:
@@ -501,7 +501,7 @@ public:
 	vec3f			ViewAngle;			// aiming direction
 	vec3f			DamageFrom;		// origin for vector calculation
 	colorf			DamageBlend;
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	CBaseEntity		*mynoise;		// can go in client only
 	CBaseEntity		*mynoise2;
 #endif
@@ -572,7 +572,7 @@ public:
 		uint8			Mode;
 	} Chase;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 //ZOID
 	struct client_CTF_Grapple_t
 	{
@@ -686,7 +686,7 @@ public:
 	inline void		SetClientFrame (float xyspeed);
 	void			SetStats ();
 	void			SetSpectatorStats ();
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	void			SetCTFStats ();
 	void			CTFSetIDView ();
 	void			CTFScoreboardMessage (bool reliable);
@@ -714,7 +714,7 @@ public:
 	void			SelectSpawnPoint (vec3f &origin, vec3f &angles);
 	CBaseEntity		*SelectCoopSpawnPoint ();
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	void			CTFDeadDropFlag ();
 	CBaseEntity		*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();

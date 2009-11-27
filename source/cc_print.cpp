@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#ifndef USE_EXTENDED_GAME_IMPORTS
+#if !USE_EXTENDED_GAME_IMPORTS
 
 /*
 =================

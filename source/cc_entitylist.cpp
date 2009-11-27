@@ -342,7 +342,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	entities = CC_ParseSpawnEntities (ServerLevelName, entities);
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	if (!level.Demo)
 		InitNodes ();
 #endif
@@ -404,7 +404,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 		G_FindTeams ();
 
-	#ifdef MONSTERS_USE_PATHFINDING
+	#if MONSTERS_USE_PATHFINDING
 		LoadNodes ();
 		FinalizeNodes ();
 		//LoadPathTable ();
@@ -412,7 +412,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 		SetupTechSpawn();
 
-	#ifdef CLEANCTF_ENABLED
+	#if CLEANCTF_ENABLED
 	//ZOID
 		CTFSpawn();
 	//ZOID

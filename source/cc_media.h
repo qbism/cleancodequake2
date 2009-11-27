@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Storage for constant media
 //
 
-#if !defined(__CC_MEDIA_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_MEDIA_H__) || !INCLUDE_GUARDS
 #define __CC_MEDIA_H__
 
 #define PUTTOGETHER(name) name##_index

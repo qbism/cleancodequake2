@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Basically the link between items and the real world
 //
 
-#if !defined(__CC_ITEMLIST_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_ITEMLIST_H__) || !INCLUDE_GUARDS
 #define __CC_ITEMLIST_H__
 
 // Just to conform to the configstrings
@@ -96,7 +96,7 @@ namespace NItems
 	extern CWeaponItem *HyperBlaster;
 	extern CWeaponItem *Railgun;
 	extern CWeaponItem *BFG;
-	#ifdef CLEANCTF_ENABLED
+	#if CLEANCTF_ENABLED
 	extern CWeaponItem	*Grapple;
 
 	extern CFlag *RedFlag;

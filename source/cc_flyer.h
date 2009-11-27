@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Flyer Monster
 //
 
-#if !defined(__CC_FLYER_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_FLYER_H__) || !INCLUDE_GUARDS
 #define __CC_FLYER_H__
 
 class CFlyer : public CMonster
@@ -56,7 +56,7 @@ public:
 
 	void Attack ();
 #if (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	void Duck (float eta);
 	void SideStep ();
 #else

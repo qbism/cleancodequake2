@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Sound replacements
 //
 
-#if !defined(__CC_SOUND_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_SOUND_H__) || !INCLUDE_GUARDS
 #define __CC_SOUND_H__
 
 void PlaySoundFrom	(CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex,

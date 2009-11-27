@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New, improved, better, stable item system!
 //
 
-#if !defined(__CC_WEAPONMAIN_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_WEAPONMAIN_H__) || !INCLUDE_GUARDS
 #define __CC_WEAPONMAIN_H__
 
 class CWeapon
@@ -152,7 +152,7 @@ public:
 #include "cc_hyperblaster.h"
 #include "cc_railgun.h"
 #include "cc_bfg.h"
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 #include "cc_grapple.h"
 #endif
 #include "cc_debugweapons.h"

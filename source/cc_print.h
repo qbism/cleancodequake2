@@ -31,12 +31,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Print replacements
 //
 
-#if !defined(__CC_PRINT_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_PRINT_H__) || !INCLUDE_GUARDS
 #define __CC_PRINT_H__
 
 // If we're using the old, extended library functions
 // we need to make sure that these just re-route to those
-#ifdef USE_EXTENDED_GAME_IMPORTS
+#if USE_EXTENDED_GAME_IMPORTS
 #define ClientPrintf gi.cprintf
 #define DebugPrintf gi.dprintf
 #define BroadcastPrintf gi.bprintf

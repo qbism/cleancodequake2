@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "../source/cc_options.h"
 #include "shared.h"
 
-#ifdef SHARED_ALLOW_4x4_MATRIX
+#if SHARED_ALLOW_4x4_MATRIX
 mat4x4_t	mat4x4Identity = { 
 	1, 0, 0, 0,
 	0, 1, 0, 0,
@@ -170,7 +170,7 @@ void Matrix4_Identity(mat4x4_t mat)
 Matrix4_Matrix3
 ===============
 */
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 void Matrix4_Matrix3(const mat4x4_t in, mat3x3_t out)
 {
 	out[0][0] = in[0 ];

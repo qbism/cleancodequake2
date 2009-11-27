@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Gunner Monster
 //
 
-#if !defined(__CC_GUNNER_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_GUNNER_H__) || !INCLUDE_GUARDS
 #define __CC_GUNNER_H__
 
 class CGunner : public CMonster
@@ -60,7 +60,7 @@ public:
 	void OpenGun ();
 	void Fire ();
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	void DuckUp ();
 	void DuckHold ();
 #else
@@ -75,7 +75,7 @@ public:
 	void Fidget ();
 
 	void Attack ();
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	void Dodge (CBaseEntity *attacker, float eta);
 #else
 	void Dodge (CBaseEntity *attacker, float eta, CTrace *trace);

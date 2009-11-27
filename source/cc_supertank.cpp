@@ -409,7 +409,7 @@ void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 		CurrentMove = &SuperTankMovePain3;
 	}
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM - blindfire cleanup
 	AIFlags &= ~AI_MANUAL_STEERING;
 	// pmm
@@ -421,12 +421,12 @@ void CSuperTank::Rocket ()
 {
 	vec3f	forward, right, start, dir, vec, target;
 	sint32		FlashNumber;
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	bool blindfire = false;
 #endif
 
 	// pmm - blindfire check
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if (AIFlags & AI_MANUAL_STEERING)
 		blindfire = true;
 #endif
@@ -442,7 +442,7 @@ void CSuperTank::Rocket ()
 	default:
 		FlashNumber = MZ2_SUPERTANK_ROCKET_3;
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		// PMM - blindfire cleanup
 		if (AIFlags & AI_MANUAL_STEERING)
 			AIFlags &= ~AI_MANUAL_STEERING;
@@ -455,7 +455,7 @@ void CSuperTank::Rocket ()
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
 
 		// PMM
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if (blindfire)
 		target = BlindFireTarget;
 	else
@@ -465,7 +465,7 @@ void CSuperTank::Rocket ()
 
 //PGM
 	// PMM - blindfire shooting
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if (blindfire)
 	{
 		vec = target;
@@ -497,7 +497,7 @@ void CSuperTank::Rocket ()
 	// pmm blindfire doesn't check target (done in checkattack)
 	// paranoia, make sure we're not shooting a target right next to us
 	CTrace trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-	#ifdef MONSTER_USE_ROGUE_AI
+	#if MONSTER_USE_ROGUE_AI
 	if (blindfire)
 	{
 		// blindfire has different fail criteria for the trace
@@ -563,7 +563,7 @@ void CSuperTank::MachineGun ()
 
 void CSuperTank::Attack ()
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM 
 	if (AttackState == AS_BLIND)
 	{
@@ -663,7 +663,7 @@ void CSuperTank::Spawn ()
 	Entity->GibHealth = -500;
 	Entity->Mass = 800;
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM
 	AIFlags |= AI_IGNORE_SHOTS;
 	BlindFire = true;

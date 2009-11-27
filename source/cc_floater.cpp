@@ -213,7 +213,7 @@ CFrame FloaterFramesAttack1 [] =
 };
 CAnim FloaterMoveAttack1 (FRAME_attak101, FRAME_attak114, FloaterFramesAttack1, ConvertDerivedFunction(&CFloater::Run));
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 CFrame FloaterFramesAttack1a [] =
 {
 	CFrame (&CMonster::AI_Charge,	10),			// Blaster attack
@@ -497,7 +497,7 @@ void CFloater::Zap ()
 
 void CFloater::Attack()
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	CurrentMove = &FloaterMoveAttack1;
 #else
 	float chance = (!skill->Integer()) ? 0 : 1.0 - (0.5/skill->Float());

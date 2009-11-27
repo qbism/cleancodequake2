@@ -57,7 +57,7 @@ namespace NItems
 	CWeaponItem *HyperBlaster;
 	CWeaponItem *Railgun;
 	CWeaponItem *BFG;
-	#ifdef CLEANCTF_ENABLED
+	#if CLEANCTF_ENABLED
 	CWeaponItem	*Grapple;
 
 	CFlag *RedFlag;
@@ -181,7 +181,7 @@ void InitItemlist ()
 	AddArmorToList();
 	AddPowerupsToList();
 	AddKeysToList();
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	if (game.mode & GAME_CTF)
 		AddFlagsToList();
 #endif

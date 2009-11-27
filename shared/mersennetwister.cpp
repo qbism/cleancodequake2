@@ -75,7 +75,7 @@ typedef uint32_t uint32;
 #define loBits(u)		((u) & 0x7FFFFFFFU)   // mask     the highest   bit of u
 #define mixBits(u, v)	(hiBit(u)|loBits(v))  // move hi bit of u to hi bit of v
 
-#if (MSVS_VERSION >= VS_9) && !defined(_CC_NO_TR1)
+#if (MSVS_VERSION >= VS_9) && !_CC_NO_TR1
 
 #include <random>
 std::tr1::mt19937 twister;

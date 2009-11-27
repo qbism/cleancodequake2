@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Infantry Monster
 //
 
-#if !defined(__CC_INFANTRY_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_INFANTRY_H__) || !INCLUDE_GUARDS
 #define __CC_INFANTRY_H__
 
 class CInfantry : public CMonster
@@ -58,7 +58,7 @@ public:
 
 	MONSTER_SAVE_LOAD_NO_FIELDS
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	void Dodge (CBaseEntity *attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();

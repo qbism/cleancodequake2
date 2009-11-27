@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Handgrenades
 //
 
-#if !defined(__CC_HANDGRENADE_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_HANDGRENADE_H__) || !INCLUDE_GUARDS
 #define __CC_HANDGRENADE_H__
 
 class CHandGrenade : public CWeapon

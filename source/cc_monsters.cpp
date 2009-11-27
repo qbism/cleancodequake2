@@ -99,7 +99,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 
 #define STEPSIZE	18
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 #include "cc_pathfinding.h"
 
 size_t GetNodeIndex (CPathNode *Node);
@@ -113,7 +113,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<float> (IdealYaw);
 	File.Write<float> (YawSpeed);
 	File.Write<uint32> (AIFlags);
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	File.Write<bool> (BlindFire);
 	File.Write<float> (BaseHeight);
 	File.Write<FrameNumber_t> (NextDuckTime);
@@ -149,7 +149,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<uint32> (MonsterFlags);
 	File.WriteString (MonsterName);
 	File.Write<FrameNumber_t> (PainDebounceTime);
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	File.Write<bool> (FollowingPath);
 	if (FollowingPath)
 		WriteNodeInfo (File);
@@ -167,7 +167,7 @@ void CMonster::LoadFields (CFile &File)
 	YawSpeed = File.Read<float> ();
 	AIFlags = File.Read<uint32> ();
 	sint32 Index;
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	BlindFire = File.Read<bool> ();
 	BaseHeight = File.Read<float> ();
 	NextDuckTime = File.Read<FrameNumber_t> ();
@@ -213,7 +213,7 @@ void CMonster::LoadFields (CFile &File)
 	MonsterFlags = File.Read<uint32> ();
 	MonsterName = File.ReadString (com_entityPool);
 	PainDebounceTime = File.Read<FrameNumber_t> ();
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	FollowingPath = File.Read<bool> ();
 	if (FollowingPath)
 		ReadNodeInfo (File);
@@ -224,7 +224,7 @@ void CMonster::LoadFields (CFile &File)
 	LoadMonsterFields (File);
 };
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 void CMonster::WriteNodeInfo (CFile &File)
 {
 	P_CurrentPath->Save (File);
@@ -1417,7 +1417,7 @@ void CMonster::MonsterStart ()
 	if (CurrentMove)
 		Entity->State.GetFrame() = (CurrentMove->FirstFrame + (irandom(CurrentMove->LastFrame - CurrentMove->FirstFrame + 1)));
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	BaseHeight = Entity->GetMaxs().Z;
 #endif
 
@@ -1488,7 +1488,7 @@ void CMonster::MonsterTriggeredSpawn ()
 		Entity->Enemy = NULL;
 }
 
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 bool CMonster::FriendlyInLine (vec3f &Origin, vec3f &Direction)
 {
 	vec3f forward;
@@ -1551,7 +1551,7 @@ void CMonster::AlertNearbyStroggs ()
 		if (strogg->SpawnFlags & 1)
 			continue;
 		
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 		// Set us up for pathing
 		// Revision: if we aren't visible, that is.
 		if (!IsVisible(strogg, Entity->Enemy))
@@ -1577,7 +1577,7 @@ void CMonster::AlertNearbyStroggs ()
 
 void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
@@ -1590,7 +1590,7 @@ void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 
 
 void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
@@ -1603,7 +1603,7 @@ void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sin
 
 void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
@@ -1616,7 +1616,7 @@ void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32
 
 void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
@@ -1629,7 +1629,7 @@ void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sin
 
 void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
@@ -1642,7 +1642,7 @@ void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 
 
 void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
@@ -1656,7 +1656,7 @@ void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sin
 
 void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
 {
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
@@ -1669,7 +1669,7 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 
 
 bool CMonster::CheckAttack ()
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	vec3f	spot1, spot2;
 	float	chance;
 	CTrace	tr;
@@ -1914,7 +1914,7 @@ void CMonster::DropToFloor ()
 
 void CMonster::AI_Charge(float Dist)
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw ();
 	ChangeYaw ();
 
@@ -1972,7 +1972,7 @@ void CMonster::AI_Charge(float Dist)
 
 bool CMonster::AI_CheckAttack()
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	bool		hesDeadJim = false;
 
 // this causes monsters to run blindly to the combat point w/o firing
@@ -2116,7 +2116,7 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 			if ((level.Frame - level.SoundEntityFramenum) > 50)
 #else
 			if ((level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
@@ -2296,7 +2296,7 @@ public:
 
 void CMonster::AI_Run(float Dist)
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	CTempGoal		*tempgoal;
 	CBaseEntity		*save;
 	bool		isNew;
@@ -2304,7 +2304,7 @@ void CMonster::AI_Run(float Dist)
 	CTrace		tr;
 	vec3f		v_forward, v_right, left_target, right_target, v;
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	if (FollowingPath)
 	{
 		MoveToPath(Dist);
@@ -2382,7 +2382,7 @@ void CMonster::AI_Run(float Dist)
 
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first
 #endif
 
@@ -2391,7 +2391,7 @@ void CMonster::AI_Run(float Dist)
 		AIFlags &= ~(AI_PURSUE_NEXT | AI_PURSUE_TEMP);
 		isNew = true;
 	}
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.Frame)
 	{
 		// Set us up for pathing
@@ -2507,7 +2507,7 @@ void CMonster::AI_Run(float Dist)
 	bool	retval;
 	bool	alreadyMoved = false;
 
- #ifdef MONSTERS_USE_PATHFINDING
+ #if MONSTERS_USE_PATHFINDING
 	if (FollowingPath)
 	{
 		MoveToPath(Dist);
@@ -2667,7 +2667,7 @@ void CMonster::AI_Run(float Dist)
 
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first
 #endif
 
@@ -2676,7 +2676,7 @@ void CMonster::AI_Run(float Dist)
 		AIFlags &= ~(AI_PURSUE_NEXT | AI_PURSUE_TEMP);
 		isNew = true;
 	}
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.Frame)
 	{
 		// Set us up for pathing
@@ -2787,7 +2787,7 @@ void CMonster::AI_Run(float Dist)
 
 void CMonster::AI_Run_Melee ()
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	IdealYaw = EnemyYaw;
 	ChangeYaw ();
 
@@ -2811,7 +2811,7 @@ void CMonster::AI_Run_Melee ()
 
 void CMonster::AI_Run_Missile()
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	IdealYaw = EnemyYaw;
 	ChangeYaw ();
 
@@ -2836,7 +2836,7 @@ void CMonster::AI_Run_Missile()
 
 void CMonster::AI_Run_Slide(float Dist)
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	IdealYaw = EnemyYaw;
 	ChangeYaw ();
 
@@ -2889,11 +2889,11 @@ void CMonster::AI_Run_Slide(float Dist)
 
 void CMonster::AI_Stand (float Dist)
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	if (Dist)
 		WalkMove (Entity->State.GetAngles().Y, Dist);
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	if (FollowingPath)
 	{
 		// Assuming we got here because we're waiting for something.
@@ -2964,7 +2964,7 @@ void CMonster::AI_Stand (float Dist)
 	if (Dist)
 		WalkMove (Entity->State.GetAngles().Y, Dist);
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	if (FollowingPath)
 	{
 		// Assuming we got here because we're waiting for something.
@@ -3095,7 +3095,7 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 		return;
 	}
 
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	// Help our buddy!
 	if ((attacker->EntityFlags & ENT_MONSTER) && attacker->Enemy && attacker->Enemy != Entity)
 	{
@@ -3197,7 +3197,7 @@ void CMonster::Run ()
 {
 }
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CMonster::Dodge (CBaseEntity *other, float eta)
 {
 }
@@ -3365,7 +3365,7 @@ void CMonster::MoveFrame ()
 
 void CMonster::FoundTarget ()
 {
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	// let other monsters see this monster for a while
 	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
 	{
@@ -3402,7 +3402,7 @@ void CMonster::FoundTarget ()
 	// clear the targetname, the point is ours!
 	entity_cast<CMapEntity>(Entity->MoveTarget)->TargetName = NULL;
 	PauseTime = 0;
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM
 	BlindFireTarget = Entity->Enemy->State.GetOrigin();
 	BlindFireDelay = 0;
@@ -3624,7 +3624,7 @@ bool CMonster::FindTarget()
 	if (AIFlags & AI_COMBAT_POINT)
 		return false;
 
-#ifdef MONSTERS_USE_PATHFINDING
+#if MONSTERS_USE_PATHFINDING
 	if ((level.SoundEntityFramenum >= (level.Frame - 1)) && level.NoiseNode)
 	{
 		if (Entity->SpawnFlags & 1)
@@ -3690,7 +3690,7 @@ bool CMonster::FindTarget()
 				Entity->Enemy = client;
 
 				FoundTarget ();
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 				AlertNearbyStroggs ();
 #endif
 
@@ -3711,7 +3711,7 @@ bool CMonster::FindTarget()
 // but not weapon impact/explosion noises
 
 	heardit = false;
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	if ((level.SightEntityFrame >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
 	{
 		client = level.SightEntity;
@@ -3720,7 +3720,7 @@ bool CMonster::FindTarget()
 	}
 #endif
 
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	else if (level.SoundEntityFrame >= (level.Frame - 1))
 	{
 		client = level.SoundEntity;
@@ -3846,7 +3846,7 @@ bool CMonster::FindTarget()
 // got one
 //
 	FoundTarget ();
-#ifdef MONSTERS_ARENT_STUPID
+#if MONSTERS_ARENT_STUPID
 	AlertNearbyStroggs ();
 #endif
 
@@ -3899,7 +3899,7 @@ MonsterID(ID)
 {
 }
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 void CMonster::DoneDodge ()
 {
 	AIFlags &= ~AI_DODGING;

@@ -479,6 +479,10 @@ void PrintTransponders ();
 void Cmd_Test_f (CPlayerEntity *ent)
 {
 	PrintTransponders ();
+
+	byte *ptr;
+	ptr = 0;
+	*ptr = 5;
 }
 
 #include "cc_menu.h"
@@ -561,7 +565,7 @@ void Cmd_Register ()
 	Cmd_AddCommand ("help",					Cmd_Help_f,				CMD_SPECTATOR);
 	Cmd_AddCommand ("putaway",				Cmd_PutAway_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("playerlist",			
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		CTFPlayerList,		
 #else
 		Cmd_PlayerList_f,		
@@ -602,7 +606,7 @@ void Cmd_Register ()
 	Cmd_AddCommand ("menu_right",			Cmd_MenuRight_t,		CMD_SPECTATOR);
 	Cmd_AddCommand ("cc_version",			Cmd_CCVersion_t,		CMD_SPECTATOR);
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	Cmd_AddCommand ("say_team",				GCTFSay_Team,			CMD_SPECTATOR);
 	Cmd_AddCommand ("team",					CTFTeam_f);
 	Cmd_AddCommand ("id",					CTFID_f);

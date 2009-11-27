@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Local header. Definitions local to the game.
 //
 
-#if !defined(__CC_LOCAL_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_LOCAL_H__) || !INCLUDE_GUARDS
 #define __CC_LOCAL_H__
 
 #include "cc_options.h"
@@ -106,7 +106,7 @@ CC_ENUM (uint16, EGameMode)
 	GAME_DEATHMATCH			=	BIT(1),
 	GAME_COOPERATIVE		=	BIT(2),
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	GAME_CTF				=	BIT(3)
 #endif
 };
@@ -187,7 +187,7 @@ CC_ENUM (uint32, EMeansOfDeath)
 	MOD_TRIGGER_HURT,
 	MOD_HIT,
 	MOD_TARGET_BLASTER,
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	MOD_GRAPPLE,
 #endif
 
@@ -393,7 +393,7 @@ extern	CCvar	*sv_maplist;
 extern	CCvar	*map_debug;
 extern	CCvar	*cc_techflags;
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 extern	CCvar	*capturelimit;
 extern	CCvar	*instantweap;
 #endif
@@ -498,7 +498,7 @@ public:
 	  IntermissionOrigin (),
 	  IntermissionAngles (),
 	  SightClient (NULL),
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	  SightEntity (NULL),
 	  SightEntityFrame (0),
 	  SoundEntity (NULL),
@@ -595,7 +595,7 @@ public:
 
 	CPlayerEntity		*SightClient;	// changed once each frame for coop games
 
-#ifndef MONSTERS_USE_PATHFINDING
+#if !MONSTERS_USE_PATHFINDING
 	CBaseEntity	*SightEntity;
 	FrameNumber_t	SightEntityFrame;
 	CBaseEntity	*SoundEntity;

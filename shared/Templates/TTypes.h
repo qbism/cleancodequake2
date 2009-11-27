@@ -73,15 +73,15 @@ typedef float	vec2_t[2];
 typedef float	vec3_t[3];
 typedef float	vec4_t[4];
 
-#ifdef SHARED_ALLOW_QUATERNIONS
+#if SHARED_ALLOW_QUATERNIONS
 typedef	float	quat_t[4];
 #endif
 
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 typedef float	mat3x3_t[3][3];
 #endif
 
-#ifdef SHARED_ALLOW_4x4_MATRIX
+#if SHARED_ALLOW_4x4_MATRIX
 typedef float	mat4x4_t[16];
 #endif
 

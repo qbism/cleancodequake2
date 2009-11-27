@@ -213,7 +213,7 @@ void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	DoneDodge();
 #endif
 
@@ -228,7 +228,7 @@ void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
 	CurrentMove = (!irandom(2)) ? &InfantryMovePain1 : &InfantryMovePain2;
 	Entity->PlaySound (CHAN_VOICE, (!irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// PMM - clear duck flag
 	if (AIFlags & AI_DUCKED)
 		UnDuck();
@@ -417,7 +417,7 @@ void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 	Entity->PlaySound (CHAN_VOICE, pSound);
 }
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CInfantry::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -448,7 +448,7 @@ void CInfantry::Duck_Up ()
 
 CFrame InfantryFramesDuck [] =
 {
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	CFrame (&CMonster::AI_Move, -2, ConvertDerivedFunction(&CInfantry::Duck_Down)),
 	CFrame (&CMonster::AI_Move, -5, ConvertDerivedFunction(&CInfantry::Duck_Hold)),
 	CFrame (&CMonster::AI_Move, 3),
@@ -464,7 +464,7 @@ CFrame InfantryFramesDuck [] =
 };
 CAnim InfantryMoveDuck (FRAME_duck01, FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CInfantry::Dodge (CBaseEntity *attacker, float eta)
 {
 	if (frand() > 0.25)
@@ -571,7 +571,7 @@ void CInfantry::Melee ()
 	CurrentMove = &InfantryMoveAttack2;
 }
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 void CInfantry::Duck (float eta)
 {
 	if ((CurrentMove == &InfantryMoveAttack1) ||
@@ -642,7 +642,7 @@ void CInfantry::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_ATTACK | MF_HAS_IDLE | MF_HAS_SIGHT
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		| MF_HAS_SIDESTEP | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_DODGE
 #endif
 		);

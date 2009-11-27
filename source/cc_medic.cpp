@@ -46,7 +46,7 @@ CMonster(ID)
 	MonsterName = "Medic";
 }
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 void CMedic::CleanupHeal (bool ChangeFrame)
 {
 	// clean up target, if we have one and it's legit
@@ -123,7 +123,7 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 			continue;
 		if (!IsVisible(Entity, ent))
 			continue;
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		// check to make sure we haven't bailed on this guy already
 		if ((ent->Monster->BadMedic1 == Entity) || (ent->Monster->BadMedic2 == Entity))
 			continue;
@@ -145,7 +145,7 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 		best = ent;
 	}
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	if (best)
 		MedicTryTime = level.Frame + MEDIC_TRY_TIME;
 #endif
@@ -317,7 +317,7 @@ CFrame MedicFramesRun [] =
 	CFrame (&CMonster::AI_Run, 18),
 	CFrame (&CMonster::AI_Run, 22.5f),
 	CFrame (&CMonster::AI_Run, 25.4f
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	, &CMonster::DoneDodge
 #endif
 	),
@@ -381,7 +381,7 @@ CAnim MedicMovePain2 (FRAME_painb1, FRAME_painb15, MedicFramesPain2, &CMonster::
 
 void CMedic::Pain(CBaseEntity *other, float kick, sint32 damage)
 {
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	DoneDodge ();
 #endif
 
@@ -396,7 +396,7 @@ void CMedic::Pain(CBaseEntity *other, float kick, sint32 damage)
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// if we're healing someone, we ignore pain
 	if (AIFlags & AI_MEDIC)
 		return;
@@ -493,7 +493,7 @@ CAnim MedicMoveDeath (FRAME_death1, FRAME_death30, MedicFramesDeath, ConvertDeri
 void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
 {
 	// if we had a pending patient, free him up for another medic
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	if ((Entity->Enemy) &&
 		(Entity->Enemy->EntityFlags & ENT_MONSTER ) && 
 		((entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->Healer == Entity))
@@ -598,7 +598,7 @@ void CMedic::CableAttack ()
 	vec3f	dir, angles;
 	float	distance;
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	if (!Entity->Enemy->GetInUse())
 		return;
 #else
@@ -630,7 +630,7 @@ void CMedic::CableAttack ()
 	//	return;
 	if (distance < MEDIC_MIN_DISTANCE)
 	{
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		AbortHeal (true, false);
 #endif
 		return;
@@ -643,7 +643,7 @@ void CMedic::CableAttack ()
 	if (fabs(angles.X) > 45)
 		return;
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
 	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
 		return;
@@ -686,7 +686,7 @@ void CMedic::CableAttack ()
 		Monster->Target = NULL;
 		Monster->TargetName = NULL;
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 		Monster->Monster->Spawn ();
 		Monster->Monster->Healer = NULL;
 		Monster->NextThink = level.Frame;
@@ -785,7 +785,7 @@ void CMedic::CableAttack ()
 void CMedic::HookRetract ()
 {
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_RETRACT]);
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
 #endif
 }
@@ -797,7 +797,7 @@ CFrame MedicFramesAttackCable [] =
 // ROGUE - switched 33-36 to ai_charge
 // ROGUE - changed frame 52 to 0 to compensate for changes in 36-40
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	CFrame (&CMonster::AI_Charge, 2),
 	CFrame (&CMonster::AI_Charge, 3),
 	CFrame (&CMonster::AI_Charge, 5),
@@ -807,7 +807,7 @@ CFrame MedicFramesAttackCable [] =
 	CFrame (&CMonster::AI_Move, 5),
 #endif
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	CFrame (&CMonster::AI_Charge, -4.4f), // 36
 	CFrame (&CMonster::AI_Charge, -4.7f),
 	CFrame (&CMonster::AI_Charge, -5),
@@ -832,7 +832,7 @@ CFrame MedicFramesAttackCable [] =
 	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
 	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
 	CFrame (&CMonster::AI_Move, 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	0
 #else
 	-15
@@ -858,7 +858,7 @@ bool CMedic::CheckAttack ()
 {
 	if (AIFlags & AI_MEDIC)
 	{
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 		Attack();
 		return true;
 #else
@@ -890,7 +890,7 @@ bool CMedic::CheckAttack ()
 #endif
 	}
 
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	// ROGUE
 	// since his idle animation looks kinda bad in combat, if we're not in easy mode, always attack
 	// when he's on a combat point
@@ -904,7 +904,7 @@ bool CMedic::CheckAttack ()
 	return CMonster::CheckAttack ();
 }
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CMedic::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -936,7 +936,7 @@ CFrame MedicFramesDuck [] =
 {
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	CFrame (&CMonster::AI_Move, -1, &CMonster::DuckDown),
 	CFrame (&CMonster::AI_Move, -1,	&CMonster::DuckHold),
 #else
@@ -946,7 +946,7 @@ CFrame MedicFramesDuck [] =
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	,	&CMonster::UnDuck // in Rogue AI, the UP is down
 #else
 	,	ConvertDerivedFunction(&CMedic::Duck_Up)
@@ -959,7 +959,7 @@ CFrame MedicFramesDuck [] =
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	, &CMonster::UnDuck
 #endif
 	),
@@ -968,7 +968,7 @@ CFrame MedicFramesDuck [] =
 };
 CAnim MedicMoveDuck (FRAME_duck1, FRAME_duck16, MedicFramesDuck, &CMonster::Run);
 
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 void CMedic::Dodge (CBaseEntity *attacker, float eta)
 {
 	if (frand() > 0.25)
@@ -1050,7 +1050,7 @@ void CMedic::Spawn ()
 	Entity->Mass = 400;
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_IDLE | MF_HAS_SEARCH
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);

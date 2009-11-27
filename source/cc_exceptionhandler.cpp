@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
+#include "cc_version.h"
 #include <errno.h>
 #include <float.h>
 #include <fcntl.h>
@@ -42,6 +43,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <conio.h>
 #include <process.h>
 #include <dbghelp.h>
+
+#define HEX_VALUE_64 "0x%08I64X"
+#define HEX_VALUE_32 "0x%08X"
 
 #ifndef VER_SUITE_WH_SERVER
 #define VER_SUITE_WH_SERVER 0x00008000 // sigh
@@ -228,7 +232,7 @@ static VOID EGLUploadCrashDump (LPCSTR crashDump, LPCSTR crashText)
 }
 #endif
 
-namespace EEnumberateLoadedModulesProcSymInfoHeap
+namespace EEnumerateLoadedModulesProcSymInfoHeap
 {
 IMAGEHLP_MODULE64	symInfo;
 FILE				*fhReport;
@@ -248,10 +252,10 @@ static const PCHAR SymTypeToString (SYM_TYPE SymType)
 
 inline void NumSpaces (FILE *fhReport, char *name, const PCHAR Type)
 {
-	fprintf (fhReport, "%s", name);
+	fprintf (fhReport, "%-60s", name);
 
-	for (size_t i = 0; i < ((strlen(name) >= 60) ? 1 : 60-strlen(name)); i++)
-		fprintf (fhReport, " ");
+//	for (size_t i = 0; i < ((strlen(name) >= 60) ? 1 : 60-strlen(name)); i++)
+//		fprintf (fhReport, " ");
 
 	fprintf (fhReport, "%s\r\n", Type);
 }
@@ -308,7 +312,7 @@ static BOOL CALLBACK EnumerateLoadedModulesProcDump (PCSTR ModuleName, DWORD64 M
 	else
 		Q_strncpyz (verString, "unknown", sizeof(verString));
 
-	fprintf (fhReport, "[0x%I64X - 0x%I64X] %s (%lu bytes, version %s)\r\n", ModuleBase, ModuleBase + (DWORD64)ModuleSize, ModuleName, ModuleSize, verString);
+	fprintf (fhReport, "["HEX_VALUE_64" - "HEX_VALUE_64"] %s (%lu bytes, version %s)\r\n", ModuleBase, ModuleBase + (DWORD64)ModuleSize, ModuleName, ModuleSize, verString);
 	return TRUE;
 }
 
@@ -366,9 +370,10 @@ BYTE	gzBuff[0xFFFF];
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
-std::cc_string GetOSDisplayString ()
+// this is the ONLY time std::string is used.
+std::string GetOSDisplayString ()
 {
-	std::cc_string Str;
+	std::string Str;
 	OSVERSIONINFOEX osvi;
 	SYSTEM_INFO si;
 	PGNSI pGNSI;
@@ -565,9 +570,17 @@ std::cc_string GetOSDisplayString ()
 		// Include service pack (if any) and build number.
 
 		if( _tcslen(osvi.szCSDVersion) > 0 )
-			Str += Q_VarArgs (" %s", osvi.szCSDVersion);
+		{
+			char temp[128];
+			Q_snprintfz (temp, sizeof(temp), " %s", osvi.szCSDVersion);
+			Str += temp;
+		}
 
-		Str += Q_VarArgs(" (build %d)", osvi.dwBuildNumber);
+		{
+			char temp[64];
+			Q_snprintfz (temp, sizeof(temp), " (build %d)", osvi.dwBuildNumber);
+			Str += temp;
+		}
 
 		if ( osvi.dwMajorVersion >= 6 )
 		{
@@ -739,10 +752,10 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fprintf (fhReport,
 		APP_FULLNAME " encountered an unhandled exception and was terminated. If you are\r\n"
 		"able to reproduce this crash, please submit the crash report when prompted, or email\r\n"
-		"the file to Paril or any CleanCode project memory. Goto http://code.google.com/p/cleancodequake2 and click on\r\n"
+		"the file to Paril or any CleanCode project member. Goto http://code.google.com/p/cleancodequake2 and click on\r\n"
 		"Issues, and file a bug report, or email paril@alteredsoftworks.com with the report.\r\n"
 		"\r\n"
-		"*** PLEASE MAKE SURE THAT YOU ARE USING THE LATEST VERSION OF CLEANCODE BEFORE SUBMITTING ***\r\n");
+		"*** PLEASE MAKE SURE THAT YOU ARE USING THE LATEST VERSION OF CLEANCODE BEFORE SUBMITTING ***\r\nYour Cleancode Version: "CLEANCODE_VERSION_PRINT"\r\n", CLEANCODE_VERSION_PRINT_ARGS);
 
 	fprintf (fhReport, "\r\n");
 
@@ -759,8 +772,8 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	// Exception information
 	fprintf (fhReport, "Exception information:\r\n");
 	fprintf (fhReport, "--------------------------------------------------\r\n");
-	fprintf (fhReport, "Code:    %x\r\n", exceptionCode);
-	fprintf (fhReport, "Address: %I64X\r\n", InstructionPtr);
+	fprintf (fhReport, "Code:    "HEX_VALUE_32"\r\n", exceptionCode);
+	fprintf (fhReport, "Address: "HEX_VALUE_64"\r\n", InstructionPtr);
 	fprintf (fhReport, "Module:  %s\r\n", szModuleName);
 
 	fprintf (fhReport, "\r\n");
@@ -769,7 +782,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fprintf (fhReport, "Symbol information:\r\n");
 	fprintf (fhReport, "Name                                                        Symbol Type\r\n");
 	fprintf (fhReport, "-----------------------------------------------------------------------\r\n");
-	fnEnumerateLoadedModules64 (hProcess, (PENUMLOADED_MODULES_CALLBACK64)EEnumberateLoadedModulesProcSymInfoHeap::EnumerateLoadedModulesProcSymInfo, (VOID *)fhReport);
+	fnEnumerateLoadedModules64 (hProcess, (PENUMLOADED_MODULES_CALLBACK64)EEnumerateLoadedModulesProcSymInfoHeap::EnumerateLoadedModulesProcSymInfo, (VOID *)fhReport);
 
 	fprintf (fhReport, "\r\n");
 
@@ -783,7 +796,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	// Stack trace
 	fprintf (fhReport, "Stack trace:\r\n");
 	fprintf (fhReport, "--------------------------------------------------\r\n");
-	fprintf (fhReport, "Stack    EIP      Arg0     Arg1     Arg2     Arg3     Address\r\n");
+	fprintf (fhReport, "Stack      EIP        Arg0       Arg1       Arg2       Arg3       Address\r\n");
 	while (fnStackWalk64 (IMAGE_FILE_MACHINE_I386, hProcess, GetCurrentThread(), &frame, &context, NULL, (PFUNCTION_TABLE_ACCESS_ROUTINE64)fnSymFunctionTableAccess64, (PGET_MODULE_BASE_ROUTINE64)fnSymGetModuleBase64, NULL))
 	{
 		Q_strncpyz (szModuleName, "<unknown>", sizeof(szModuleName));
@@ -795,10 +808,13 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 		else
 			tempPointer = szModuleName;
 
+		fprintf (fhReport, ""HEX_VALUE_64" "HEX_VALUE_64" "HEX_VALUE_32" "HEX_VALUE_32" "HEX_VALUE_32" "HEX_VALUE_32" %-20s ! ",
+			frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], tempPointer);
+
 		if (fnSymFromAddr (hProcess, frame.AddrPC.Offset, &fnOffset, symInfo) && !(symInfo->Flags & SYMFLAG_EXPORT))
-			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!%s+0x%I64X %lu\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], tempPointer, symInfo->Name, fnOffset, symInfo->Tag);
+			fprintf (fhReport, "%-24s + "HEX_VALUE_64" %lu\r\n", symInfo->Name, fnOffset, symInfo->Tag);
 		else
-			fprintf (fhReport, "%I64X %I64X %X %X %X %X %s!0x%I64X\r\n", frame.AddrStack.Offset, frame.AddrPC.Offset, (DWORD)frame.Params[0], (DWORD)frame.Params[1], (DWORD)frame.Params[2], (DWORD)frame.Params[3], tempPointer, frame.AddrPC.Offset);
+			fprintf (fhReport, ""HEX_VALUE_64"\r\n", frame.AddrPC.Offset);
 	}
 
 	fprintf (fhReport, "\r\n");
@@ -858,7 +874,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 #else
 					"dump"
 #endif
-					"was saved to %s.\r\nPlease include this file when posting a crash report.\r\n", dumpPath);
+					" was saved to %s.\r\nPlease include this file when posting a crash report.\r\n", dumpPath);
 			}
 			else
 			{
@@ -876,7 +892,8 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fnSymCleanup (hProcess);
 
 	// Let the client know
-	MessageBoxA (NULL, Q_VarArgs ("Report written to: %s\nMini-dump written to %s\nPlease include both files if you submit manually!\n", reportPath, dumpPath).c_str(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
+	std::string temp = "Report written to: " + std::string(reportPath) + "\r\nMini-dump written to " + dumpPath + "\r\nPlease include both files if you submit manually!\r\n";
+	MessageBoxA (NULL, temp.c_str(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
 
 #ifdef USE_CURL
 	if (upload)

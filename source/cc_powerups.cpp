@@ -182,7 +182,7 @@ public:
 			if (Player->Health > Player->MaxHealth
 		
 			&& ((
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 			!(game.mode & GAME_CTF) && 
 #endif
 			!dmFlags.dfDmTechs) || !Player->HasRegeneration())
@@ -228,11 +228,11 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 	CMegaHealthEntity *MegaHealth = entity_cast<CMegaHealthEntity>(ent);
 
 	if ((!dmFlags.dfDmTechs
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		&& !(game.mode & GAME_CTF)
 #endif
 		)|| ((
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 		(game.mode & GAME_CTF) || 
 #endif
 		dmFlags.dfDmTechs) && !other->HasRegeneration()))
@@ -245,7 +245,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 		MegaHealth->GetSolid() = SOLID_NOT;
 
 		other->Health += 100;
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 	}
 	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
 		MegaHealth->LinkedItem->SetRespawn (ent, 300);

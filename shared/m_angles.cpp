@@ -40,7 +40,7 @@ float AngleModf (float a)
 Angles_Matrix3
 ===============
 */
-#ifdef SHARED_ALLOW_3x3_MATRIX
+#if SHARED_ALLOW_3x3_MATRIX
 void Angles_Matrix3 (vec3_t angles, mat3x3_t axis)
 {
 	float angle;

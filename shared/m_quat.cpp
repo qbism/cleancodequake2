@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "../source/cc_options.h"
 #include "shared.h"
 
-#ifdef SHARED_ALLOW_QUATERNIONS
+#if SHARED_ALLOW_QUATERNIONS
 quat_t		quatIdentity = {
 	0, 0, 0, 1
 };

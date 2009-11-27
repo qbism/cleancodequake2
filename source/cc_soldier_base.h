@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // The base for soldier-like monsters.
 //
 
-#if !defined(__CC_SOLDIER_BASE_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_SOLDIER_BASE_H__) || !INCLUDE_GUARDS
 #define __CC_SOLDIER_BASE_H__
 
 #include "m_soldier.h"
@@ -56,7 +56,7 @@ public:
 	MONSTER_SAVE_LOAD_NO_FIELDS
 
 	virtual void Attack () = 0;
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	void Dodge (CBaseEntity *attacker, float eta);
 #endif
 	void Idle ();
@@ -66,7 +66,7 @@ public:
 	void Walk ();
 
 	void CockGun ();
-#ifndef MONSTER_USE_ROGUE_AI
+#if !MONSTER_USE_ROGUE_AI
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
@@ -94,7 +94,7 @@ public:
 	void Attack2_Refire2 ();
 	void Attack3_Refire ();
 	void Attack6_Refire ();
-#ifdef MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI
 	void Attack6_RefireBlaster();
 #endif
 

@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New, improved, better, stable item system!
 //
 
-#if !defined(__CC_ITEMS_H__) || !defined(INCLUDE_GUARDS)
+#if !defined(__CC_ITEMS_H__) || !INCLUDE_GUARDS
 #define __CC_ITEMS_H__
 
 CC_ENUM (sint32, EItemFlags)
@@ -174,7 +174,7 @@ public:
 #include "cc_keys.h"
 #include "cc_powerups.h"
 
-#ifdef CLEANCTF_ENABLED
+#if CLEANCTF_ENABLED
 #include "cc_ctfitems.h"
 #endif
 #include "cc_techs.h"
