@@ -364,6 +364,8 @@ void ReadClient (CFile &File, sint32 i)
 {
 	CClient::ReadClientStructure (File, i);
 	SaveClientData[i]->Load (File);
+
+	READ_MAGIC
 }
 
 void ReadClients (CFile &File)

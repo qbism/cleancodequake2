@@ -181,6 +181,80 @@ WeaponSound (0)
 	memset (&DamageValues, 0, sizeof(DamageValues));
 };
 
+void CClient::Write (CFile &File)
+{
+	File.Write<vec3f> (KickAngles);
+	File.Write<vec3f> (KickOrigin);
+	File.Write<vec3f> (ViewAngle);
+	File.Write<vec3f> (DamageFrom);
+	File.Write<colorf> (DamageBlend);
+	File.Write<vec3f> (OldViewAngles);
+	File.Write<vec3f> (OldVelocity);
+	File.Write<vec2f> (ViewDamage);
+	File.Write<FrameNumber_t> (ViewDamageTime);
+	File.Write<float> (KillerYaw);
+	File.Write<pMoveState_t> (OldPMove);
+	File.Write<ELayoutFlags> (LayoutFlags);
+	File.WriteArray<EDamageType> (DamageValues, DT_MAX);
+	File.Write<EButtons> (Buttons);
+	File.Write<EButtons> (LatchedButtons);
+	File.Write<EWeaponState> (WeaponState);
+	File.Write<FrameNumber_t> (FallTime);
+	File.Write<float> (FallValue);
+	File.Write<float> (BonusAlpha);
+	File.Write<float> (BobTime);
+	File.Write<uint8> (PowerArmorTime);
+	File.Write<EWaterLevel> (OldWaterLevel);
+	WriteIndex (File, WeaponSound, INDEX_SOUND);
+
+	File.Write<client_Animation_t> (Anim);
+	File.Write<client_Timers_t> (Timers);
+	File.Write<client_Grenade_Data_t> (Grenade);
+	File.Write<client_Flood_t> (Flood);
+
+	SaveWeapon (File, NewWeapon);
+
+	Persistent.Save (File);
+	Respawn.Save (File);
+}
+
+void CClient::Load (CFile &File)
+{
+	KickAngles = File.Read<vec3f> ();
+	KickOrigin = File.Read<vec3f> ();
+	ViewAngle = File.Read<vec3f> ();
+	DamageFrom = File.Read<vec3f> ();
+	DamageBlend = File.Read<colorf> ();
+	OldViewAngles = File.Read<vec3f> ();
+	OldVelocity = File.Read<vec3f> ();
+	ViewDamage = File.Read<vec2f> ();
+	ViewDamageTime = File.Read<FrameNumber_t> ();
+	KillerYaw = File.Read<float> ();
+	OldPMove = File.Read<pMoveState_t> ();
+	LayoutFlags = File.Read<ELayoutFlags> ();
+	File.ReadArray<EDamageType> (DamageValues, DT_MAX);
+	Buttons = File.Read<EButtons> ();
+	LatchedButtons = File.Read<EButtons> ();
+	WeaponState = File.Read<EWeaponState> ();
+	FallTime = File.Read<FrameNumber_t> ();
+	FallValue = File.Read<float> ();
+	BonusAlpha = File.Read<float> ();
+	BobTime = File.Read<float> ();
+	PowerArmorTime = File.Read<uint8> ();
+	OldWaterLevel = File.Read<EWaterLevel> ();
+	ReadIndex (File, WeaponSound, INDEX_SOUND);
+
+	Anim = File.Read<client_Animation_t> ();
+	Timers = File.Read<client_Timers_t> ();
+	Grenade = File.Read<client_Grenade_Data_t> ();
+	Flood = File.Read<client_Flood_t> ();
+
+	LoadWeapon (File, &NewWeapon);
+
+	Persistent.Load (File);
+	Respawn.Load (File);
+}
+
 void CClient::WriteClientStructure (CFile &File)
 {
 	File.Write (client, sizeof(*client));

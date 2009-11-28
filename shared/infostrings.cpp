@@ -38,8 +38,13 @@ Info_ValueForKey
 Searches the string for the given key and returns the associated value, or an empty string.
 ===============
 */
+#include <cctype>
+
 std::cc_string Info_ValueForKey (std::cc_string &s, std::cc_string key)
 {
+	std::transform(key.begin(), key.end(), key.begin(),
+		(sint32(*)(sint32)) std::tolower);
+
 	size_t	curIndex = 0;
 
 	if (s[curIndex] == '\\')
@@ -54,7 +59,7 @@ std::cc_string Info_ValueForKey (std::cc_string &s, std::cc_string key)
 		{
 			if (!s[curIndex])
 				return "";
-			pkey += s[curIndex++];
+			pkey += Q_tolower(s[curIndex++]);
 		}
 		curIndex++;
 
