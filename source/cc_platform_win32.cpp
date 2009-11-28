@@ -356,4 +356,20 @@ BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 
 	return TRUE;
 }
+
+void *CDynamicLibrary::OS_LoadLibrary (const char *FileName)
+{
+	return LoadLibraryA (FileName);
+};
+
+void CDynamicLibrary::OS_CloseLibrary ()
+{
+	FreeLibrary ((HMODULE)Lib);
+};
+
+void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
+{
+	return GetProcAddress((HMODULE)Lib, Symbol);
+};
+
 #endif

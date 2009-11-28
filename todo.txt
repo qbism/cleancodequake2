@@ -1,15 +1,10 @@
 Possible current version
 - Remove usage of GetModelIndex() == 255. This is stupid.
-- Look into using a sin/cos table, for Q_SinCosf. Since Quake2 snaps positions to shorts anyway,
-we shouldn't notice a big difference when using a table.
 - Remove usage of level.current_entity
 
 Future versions
 - A scripting system to replace entities like func_timer, etc.
   - I'll go more in-depth on this after CleanCode's first release, with a design doc explaining it.
-- A sound queueing system; instead of sending every played sound to clients regardless of channel
-(if you pick up an ammo and a weapon at the same time, both sounds are sent, but only one is heard,
-since they're on the same channel). This should lower latency in high-sound situations.
 - Private entity. Ran into some problems with a few functions from this (anything gameEntity related) but
 I'll take another crack at it sometime.
 - The "CleanCode Enhancements". Basically a list of enhancements to the game that don't require

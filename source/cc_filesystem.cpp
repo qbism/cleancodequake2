@@ -105,10 +105,10 @@ void FS_ReorderPath (const char *pathName)
 // Handle index is used internally
 static sint32 FS_MAX_FILEINDICES = 256;
 
-class fsHandleIndex
+class fileHandleIndex_t
 {
 public:
-	fsHandleIndex() :
+	fileHandleIndex_t() :
 	  name(name),
 	  inUse(false),
 	  openMode(FILEMODE_NONE)
@@ -119,7 +119,7 @@ public:
 
 	void Clear ()
 	{
-		*this = fsHandleIndex();
+		*this = fileHandleIndex_t();
 	};
 
 	std::cc_string			name;
@@ -135,8 +135,8 @@ public:
 	} file;
 };
 
-typedef std::map<fileHandle_t, fsHandleIndex, std::less<fileHandle_t>, std::generic_allocator <std::pair<fileHandle_t, fsHandleIndex> > > THandleIndexListType;
-class fsHandleIndexList
+typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::generic_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+class CFileHandleList
 {
 	fileHandle_t numHandlesAllocated;
 
@@ -151,7 +151,7 @@ class fsHandleIndexList
 	THandleIndexListType::iterator Create ()
 	{
 		fileHandle_t CreatedKey = numHandlesAllocated++;
-		OpenList[CreatedKey] = fsHandleIndex();
+		OpenList[CreatedKey] = fileHandleIndex_t();
 		return OpenList.find(CreatedKey);
 	};
 
@@ -178,7 +178,8 @@ class fsHandleIndexList
 public: // Interface
 
 	// allocated = number of handles to create automatically.
-	fsHandleIndexList (sint32 allocated = 0)
+	CFileHandleList (sint32 allocated = 0) :
+		numHandlesAllocated (0)
 	{
 		for (fileHandle_t i = 0; i < allocated; i++)
 			Create ();
@@ -196,8 +197,8 @@ public: // Interface
 			return MoveToClosed(Create ());
 	};
 
-	// Gets the fsHandleIndex of a handle in-use
-	fsHandleIndex *GetHandle (fileHandle_t Key)
+	// Gets the fileHandleIndex_t of a handle in-use
+	fileHandleIndex_t *GetHandle (fileHandle_t Key)
 	{
 		return &(*ClosedList.find(Key)).second;
 	};
@@ -210,9 +211,9 @@ public: // Interface
 	};
 };
 
-fsHandleIndexList *IndexList;
+CFileHandleList *IndexList;
 
-static fileHandle_t FS_GetFreeHandle (fsHandleIndex **handle)
+static fileHandle_t FS_GetFreeHandle (fileHandleIndex_t **handle)
 {
 	THandleIndexListType::iterator it = IndexList->GetFreeHandle();
 
@@ -220,9 +221,9 @@ static fileHandle_t FS_GetFreeHandle (fsHandleIndex **handle)
 	return (*it).first + 1;
 }
 
-static fsHandleIndex *FS_GetHandle (fileHandle_t &fileNum)
+static fileHandleIndex_t *FS_GetHandle (fileHandle_t &fileNum)
 {
-	fsHandleIndex *hIndex;
+	fileHandleIndex_t *hIndex;
 
 	if (fileNum < 0 || fileNum > FS_MAX_FILEINDICES)
 		FS_Error ("FS_GetHandle: invalid file number");
@@ -236,7 +237,7 @@ static fsHandleIndex *FS_GetHandle (fileHandle_t &fileNum)
 
 void FS_Close (fileHandle_t &handle)
 {
-	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
 
 	if (handleIndex)
 	{
@@ -263,11 +264,11 @@ static const char *FS_OpenModeFromEnum (EFileOpMode Mode)
 
 	if (Mode & FILEMODE_APPEND)
 	{
-		if (!(Mode & FILEMODE_CREATE))
+		/*if (!(Mode & FILEMODE_CREATE))
 		{
 			FS_Error ("Can't append and have the file exist (yet)\n");
 			return "ERR";
-		}
+		}*/
 
 		// Shove the a
 		mode[currentPos++] = 'a';
@@ -342,14 +343,15 @@ static const char *FS_OpenModeFromEnum (EFileOpMode Mode)
 
 // Opens a file and returns the allocated handle
 // 0 if file was not opened.
-// Optionally, you can pass a size as third argument
-// to store the length of the file automatically.
 fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 {
 	const char *openMode = FS_OpenModeFromEnum(Mode);
 
 	if (!strcmp(openMode,"ERR"))
+	{
+		_CC_ASSERT_EXPR (0, "Invalid file mode passed");
 		return 0;
+	}
 
 	// Open up the file.
 	void *fp = NULL;
@@ -384,7 +386,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 	// Yep
 	// Allocate a free handle and
 	// return it.
-	fsHandleIndex *handleIndex = NULL;
+	fileHandleIndex_t *handleIndex = NULL;
 	fileHandle_t handle = FS_GetFreeHandle(&handleIndex);
 
 	if (handleIndex)
@@ -418,7 +420,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 // Reads "size" bytes from handle into "buffer"
 void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 {
-	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
 
 	if (!(handleIndex->openMode & FILEMODE_READ))
 		_CC_ASSERT_EXPR (0, "Tried to read on a write\n");
@@ -435,7 +437,7 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 // Writes "size" bytes from handle from "buffer"
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 {
-	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
 
 	if (!(handleIndex->openMode & FILEMODE_WRITE))
 		_CC_ASSERT_EXPR (0, "Tried to write on a read\n");
@@ -452,7 +454,7 @@ void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 // Prints the format and arguments into the current position
 void FS_Print (fileHandle_t &handle, char *fmt, ...)
 {
-	fsHandleIndex *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
 	va_list		argptr;
 	static char		text[MAX_COMPRINT/2];
 
@@ -515,7 +517,7 @@ void FS_FreeFile (void *buffer)
 
 filePos_t FS_Tell (fileHandle_t &handle)
 {
-	fsHandleIndex *handleIndex = FS_GetHandle (handle);
+	fileHandleIndex_t *handleIndex = FS_GetHandle (handle);
 
 	if (handleIndex)
 	{
@@ -542,7 +544,7 @@ size_t FS_Len (fileHandle_t &handle)
 
 void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_t seekOffset)
 {
-	fsHandleIndex *handleIndex = FS_GetHandle (handle);
+	fileHandleIndex_t *handleIndex = FS_GetHandle (handle);
 
 	if (handleIndex)
 	{
@@ -557,7 +559,6 @@ void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_
 // Finds "maxFiles" files in "path" (optionally "recurse"ing) that match the filter "filter" and are of type "extention".
 // If "addDir" is true, it returns the stripped names, and not the full name for opening.
 // Filter can contain * for a wildcard.
-// fileList is filled with the found files.
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse)
 {
 	TFindFilesType files;
@@ -612,6 +613,6 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 
 void FS_Init (sint32 maxHandles)
 {
-	IndexList = QNew(com_genericPool, 0) fsHandleIndexList (maxHandles);
+	IndexList = QNew(com_genericPool, 0) CFileHandleList (maxHandles);
 	FS_AddPath (".");
 }

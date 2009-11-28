@@ -333,7 +333,7 @@ void CPlayerEntity::SpectatorRespawn ()
 
 	if (Client.Persistent.Spectator)
 	{
-		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "Spectator");
+		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
 		if (*spectator_password->String() && 
 			strcmp(spectator_password->String(), "none") && 
 			value != spectator_password->String())
@@ -644,7 +644,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	Client.Persistent.Name = Info_ValueForKey (UserInfo, "name");
 
 	// set Spectator
-	std::cc_string s = Info_ValueForKey (UserInfo, "Spectator");
+	std::cc_string s = Info_ValueForKey (UserInfo, "spectator");
 	// spectators are only supported in deathmatch
 	Client.Persistent.Spectator = ((game.mode & GAME_DEATHMATCH) && s.length() && s != "0");
 
@@ -3817,14 +3817,14 @@ bool CPlayerEntity::Connect (char *userinfo)
 	}
 
 	// check for a Spectator
-	value = Info_ValueForKey (UserInfo, "Spectator");
+	value = Info_ValueForKey (UserInfo, "spectator");
 	if ((game.mode & GAME_DEATHMATCH) && value.length() && value != "0")
 	{
 		sint32 i, numspec;
 
 		if (Bans.IsBannedFromSpectator(Adr) || Bans.IsBannedFromSpectator(Info_ValueForKey(UserInfo, "name").c_str()))
 		{
-			Info_SetValueForKey(UserInfo, "rejmsg", "Not permitted to enter Spectator mode");
+			Info_SetValueForKey(UserInfo, "rejmsg", "Not permitted to enter spectator mode");
 			return false;
 		}
 		if (*spectator_password->String() && 

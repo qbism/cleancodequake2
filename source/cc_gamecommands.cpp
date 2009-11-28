@@ -475,14 +475,8 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
-void PrintTransponders ();
 void Cmd_Test_f (CPlayerEntity *ent)
 {
-	PrintTransponders ();
-
-	byte *ptr;
-	ptr = 0;
-	*ptr = 5;
 }
 
 #include "cc_menu.h"

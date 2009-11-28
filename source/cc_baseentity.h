@@ -246,6 +246,28 @@ inline char *CopyStr (const char *In, struct memPool_t *Pool)
 	return Mem_PoolStrDup (newString.c_str(), Pool, 0);
 }
 
+inline std::cc_string CopyStr (const char *In)
+{
+	std::cc_string newString (In);
+	
+	size_t i = 0;
+	while (true)
+	{
+		if (i >= newString.size())
+			break;
+
+		if (newString[i] == '\\' && newString[i+1] == 'n')
+		{
+			newString[i] = '\n';
+			newString.erase (i+1, 1);
+		}
+
+		i++;
+	}
+
+	return newString;
+}
+
 inline uint32 atou (const char *Str)
 {
 	return (uint32)atol(Str);
@@ -440,7 +462,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			OFS_TO_TYPE(std::cc_string) = Value;
+			OFS_TO_TYPE(std::cc_string) = CopyStr(Value);
 			break;
 		};
 	};

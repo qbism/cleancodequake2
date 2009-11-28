@@ -339,13 +339,15 @@ void CGameAPI::RunFrame ()
 					(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 			}
 
-			if (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) 
-				entity_cast<CThinkableEntity>(Entity)->PreThink ();
+			CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
+
+			if (Thinkable) 
+				Thinkable->PreThink ();
 
 			Entity->Run ();
 
-			if (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE))
-				entity_cast<CThinkableEntity>(Entity)->RunThink ();
+			if (Thinkable)
+				Thinkable->RunThink ();
 
 			// Were we freed?
 			// This has to be processed after thinking and running, because

@@ -94,7 +94,6 @@ void FS_FreeFile (void *buffer);
 
 typedef std::vector<std::cc_string, std::level_allocator<std::cc_string> > TFindFilesType;
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
-void FS_FreeFileList (char **fileList, sint32 numFiles);
 
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);
 void FS_Read (void *buffer, size_t size, fileHandle_t &handle);
@@ -372,7 +371,6 @@ public:
 	char	*Extension;
 	bool	AddDir;
 	bool	Recurse;
-
 	TFindFilesType	Files;
 
 	CFindFiles () :

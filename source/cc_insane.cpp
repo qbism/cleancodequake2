@@ -39,6 +39,7 @@ CInsane::CInsane (uint32 ID) :
 CMonster (ID)
 {
 	Scale = MODEL_SCALE;
+	MonsterName = "Insane Dude";
 }
 
 void CInsane::Fist ()

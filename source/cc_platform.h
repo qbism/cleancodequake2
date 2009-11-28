@@ -47,11 +47,75 @@ class CTimer
 public:
 	double StartCycles;
 
-public:
 	CTimer (bool StartNow = true);
 
 	void Start ();
 	double Get (); // Automatically resets the timer as well
+};
+
+// Class to load and use dynamic libraries in respective operating systems
+class CDynamicLibrary
+{
+private:
+	std::cc_string		LoadedLibFileName;
+	void				*Lib;
+
+	void	*OS_LoadLibrary (const char *FileName);
+	void	OS_CloseLibrary ();
+	void	*OS_GetProcAddress (const char *Symbol);
+
+public:
+	CDynamicLibrary ()
+	{
+	}; // Can be loaded empty
+
+	CDynamicLibrary (const char *FileName)
+	{
+		Load (FileName);
+	};
+
+	virtual ~CDynamicLibrary ()
+	{
+		Close ();
+	};
+
+	// Returns true if the lib is valid and loaded.
+	inline bool Valid ()
+	{
+		return (!LoadedLibFileName.empty() && Lib);
+	};
+
+	inline std::cc_string GetLoadedFileName ()
+	{
+		return LoadedLibFileName;
+	};
+
+	inline bool Load (const char *FileName)
+	{
+		Lib = OS_LoadLibrary (FileName);
+		
+		if (!Lib)
+			return false;
+	
+		LoadedLibFileName = FileName;
+		return true;
+	};
+
+	inline void Close ()
+	{
+		if (!Lib)
+			return;
+
+		OS_CloseLibrary ();
+		Lib = NULL;
+		LoadedLibFileName.clear();
+	};
+
+	template <typename TFuncType>
+	inline TFuncType GetFunction (const char *Symbol)
+	{
+		return (TFuncType) OS_GetProcAddress(Symbol);
+	};
 };
 
 /*
