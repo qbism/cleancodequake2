@@ -176,24 +176,24 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	File.Write<edict_t> (*Entity->gameEntity);
 
 	// Write special data
-	if (Entity->gameEntity->state.number > game.maxclients)
+	if (Entity->State.GetNumber() > game.maxclients)
 	{
 		sint32 OwnerNumber = -1;
 
-		if (Entity->gameEntity->owner)
-			OwnerNumber = Entity->gameEntity->owner->state.number;
+		if (Entity->GetOwner())
+			OwnerNumber = Entity->GetOwner()->State.GetNumber();
 
 		File.Write<sint32> (OwnerNumber);
 	}
 
-	WriteIndex (File, Entity->gameEntity->state.modelIndex, INDEX_MODEL);
-	WriteIndex (File, Entity->gameEntity->state.modelIndex2, INDEX_MODEL);
-	WriteIndex (File, Entity->gameEntity->state.modelIndex3, INDEX_MODEL);
-	WriteIndex (File, Entity->gameEntity->state.modelIndex4, INDEX_MODEL);
-	WriteIndex (File, Entity->gameEntity->state.sound, INDEX_SOUND);
+	WriteIndex (File, Entity->State.GetModelIndex(), INDEX_MODEL);
+	WriteIndex (File, Entity->State.GetModelIndex(2), INDEX_MODEL);
+	WriteIndex (File, Entity->State.GetModelIndex(3), INDEX_MODEL);
+	WriteIndex (File, Entity->State.GetModelIndex(4), INDEX_MODEL);
+	WriteIndex (File, Entity->State.GetSound(), INDEX_SOUND);
 
 	// Write entity stuff
-	if (Entity->gameEntity->state.number > game.maxclients)
+	if (Entity->State.GetNumber() > game.maxclients)
 	{
 		//DebugPrintf ("Writing %s\n", Entity->__GetName ());
 		File.WriteString (Entity->__GetName ());

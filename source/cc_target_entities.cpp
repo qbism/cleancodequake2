@@ -1351,6 +1351,7 @@ void			CTargetLaser::SaveFields (CFile &File)
 	SaveEntityFields <CTargetLaser> (this, File);
 	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
 }
 
 void			CTargetLaser::LoadFields (CFile &File)
@@ -1358,6 +1359,7 @@ void			CTargetLaser::LoadFields (CFile &File)
 	LoadEntityFields <CTargetLaser> (this, File);
 	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_laser", CTargetLaser);

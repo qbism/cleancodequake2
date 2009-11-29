@@ -200,7 +200,7 @@ enum
 	ENT_ITEM		=	BIT(9), // Can be casted to CItemEntity
 	ENT_MAP			=	BIT(10), // Can be casted to CMapEntity
 	ENT_BRUSHMODEL	=	BIT(11), // Can be casted to CBrushModel
-	ENT_PRIVATE		=	BIT(12), // Can be casted to CPrivateEntity
+	ENT_PRIVATE		=	BIT(12), // Does not have a gameEntity structure
 	ENT_JUNK		=	BIT(13), // Can be casted to CJunkEntity
 };
 

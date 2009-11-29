@@ -163,7 +163,7 @@ public:
 	};
 };
 
-#ifdef AMMO_REGEN_TECH
+#if AMMO_REGEN_TECH
 
 #define SHELL_REGEN_COUNT	3
 #define BULLET_REGEN_COUNT	6
@@ -377,22 +377,15 @@ class CTechSpawner : public CThinkableEntity
 {
 public:
 	CTechSpawner () :
-	  CBaseEntity (),
+	  CBaseEntity (-1),
 	  CThinkableEntity ()
-	{
-		Spawn ();
-	};
-
-	CTechSpawner (sint32 Index) :
-	  CBaseEntity (Index),
-	  CThinkableEntity (Index)
 	{
 		Spawn ();
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return false;
 	};
 
 	void Think ()
@@ -450,7 +443,7 @@ void AddTechsToList ()
 	TechList.push_back (QNew (com_genericPool, 0) CRegenTech ("item_tech4", "models/ctf/regeneration/tris.md2",
 														"tech4", "AutoDoc", CTech::TECH_PASSIVE, CTFTECH_REGEN_NUMBER));
 
-#ifdef AMMO_REGEN_TECH
+#if AMMO_REGEN_TECH
 	TechList.push_back (QNew (com_genericPool, 0) CAmmoRegenTech ("item_tech5", "models/ctf/ammo/tris.md2",
 														"tech5", "Ammo Regen", CTech::TECH_PASSIVE, CTFTECH_AMMOREGEN_NUMBER));
 #endif

@@ -375,9 +375,6 @@
     <ClCompile Include="..\..\source\cc_mutant.cpp">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\cc_newton.cpp">
-      <Filter>CleanCode Files\Extras</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\cc_parasite.cpp">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClCompile>
@@ -730,9 +727,6 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_print.h">
       <Filter>CleanCode Files\Game API\Replacements</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\cc_property.h">
-      <Filter>CleanCode Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_railgun.h">
       <Filter>CleanCode Files\Items\Weapon System</Filter>

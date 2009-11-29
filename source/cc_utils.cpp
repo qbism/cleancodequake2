@@ -75,12 +75,11 @@ NULL will be returned if the end of the list is reached.
 
 =============
 */
-#define MAXCHOICES	8
 
 CBaseEntity *CC_PickTarget (char *targetname)
 {
-	sint32		num_choices = 0;
-	CBaseEntity	*choice[MAXCHOICES];
+	static TTargetList choices;
+	choices.clear();
 
 	if (!targetname)
 		return NULL;
@@ -92,18 +91,43 @@ CBaseEntity *CC_PickTarget (char *targetname)
 		if (!ent)
 			break;
 
-		choice[num_choices++] = ent;
-		if (num_choices == MAXCHOICES)
-			break;
+		choices.push_back (ent);
 	}
 
-	if (!num_choices)
+	if (!choices.size())
 	{
 		DebugPrintf("G_PickTarget: target %s not found\n", targetname);
 		return NULL;
 	}
 
-	return choice[irandom(num_choices)];
+	return choices[irandom(choices.size())];
+}
+
+TTargetList CC_GetTargets (char *targetname)
+{
+	static TTargetList choices;
+	choices.clear();
+
+	if (!targetname)
+		return choices;
+
+	CMapEntity *ent = NULL;
+	while(1)
+	{
+		ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (ent, targetname);
+		if (!ent)
+			break;
+
+		choices.push_back (ent);
+	}
+
+	if (!choices.size())
+	{
+		DebugPrintf("G_PickTarget: target %s not found\n", targetname);
+		return choices;
+	}
+
+	return choices;
 }
 
 void G_SetMovedir (vec3f &angles, vec3f &movedir)

@@ -1926,7 +1926,7 @@ void CTrainBase::Next ()
 			return;
 		}
 
-		TargetEntity = entity_cast<CPathCorner>(TargetEntity->NextTarget);
+		TargetEntity = entity_cast<CPathCorner>(TargetEntity->NextTargets[irandom(TargetEntity->NextTargets.size())]);
 		Target = TargetEntity->Target;
 
 		// check for a teleport path_corner
@@ -3016,7 +3016,7 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 
 	CanTakeDamage = false;
 
 	if (Damage)
-		T_RadiusDamage (this, attacker->gameEntity->Entity, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+		T_RadiusDamage (this, attacker, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
 	Velocity = State.GetOrigin() - inflictor->State.GetOrigin();
 	Velocity.Normalize ();

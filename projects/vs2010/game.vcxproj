@@ -740,10 +740,6 @@ echo Done!
     <ClCompile Include="..\..\source\cc_weaponmain.cpp" />
     <ClCompile Include="..\..\source\cc_inventory.cpp" />
     <ClCompile Include="..\..\source\cc_hash.cpp" />
-    <ClCompile Include="..\..\source\cc_newton.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\source\cc_ban.cpp" />
     <ClCompile Include="..\..\source\cc_monsters.cpp" />
     <ClCompile Include="..\..\source\cc_barracuda.cpp" />
@@ -900,7 +896,6 @@ echo Done!
     <ClInclude Include="..\..\source\cc_ctfitems.h" />
     <ClInclude Include="..\..\source\cc_ctfmenu.h" />
     <ClInclude Include="..\..\source\cc_grapple.h" />
-    <ClInclude Include="..\..\source\cc_property.h" />
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />
     <ClInclude Include="..\..\source\m_actor.h" />

@@ -539,7 +539,7 @@ public:
 		File.Write<vec3f> (IntermissionOrigin);
 		File.Write<vec3f> (IntermissionAngles);
 
-		File.Write<sint32> ((SightClient) ? SightClient->gameEntity->state.number : -1);
+		File.Write<sint32> ((SightClient) ? SightClient->State.GetNumber() : -1);
 		File.Write<GoalList_t> (Secrets);
 		File.Write<GoalList_t> (Goals);
 		File.Write<MonsterCount_t> (Monsters);

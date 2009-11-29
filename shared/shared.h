@@ -40,11 +40,8 @@ void AssertExpression (const bool expr, const char *msg);
 #include "../source/cc_memory.h"
 #include "../source/cc_stl.h"
 #include "Templates/Templates.h"
-#include "../source/cc_property.h"
 #include "MathLib/MathLib.h"
 #include "ColorVec.h"
-
-#define EGL_HOMEPAGE "http://egl.quakedev.com/"
 
 /*
 =============================================================================

@@ -376,16 +376,16 @@ void CBaseEntity::WriteBaseEntity (CFile &File)
 
 	if (Team.HasTeam)
 	{
-		File.Write<sint32> ((Team.Chain) ? Team.Chain->gameEntity->state.number : -1);
-		File.Write<sint32> ((Team.Master) ? Team.Master->gameEntity->state.number : -1);
+		File.Write<sint32> ((Team.Chain) ? Team.Chain->State.GetNumber() : -1);
+		File.Write<sint32> ((Team.Master) ? Team.Master->State.GetNumber() : -1);
 	}
 
-	File.Write<sint32> ((GroundEntity) ? GroundEntity->gameEntity->state.number : -1);
+	File.Write<sint32> ((GroundEntity) ? GroundEntity->State.GetNumber() : -1);
 
 	File.Write<sint32> (GroundEntityLinkCount);
 	File.Write<uint32> (SpawnFlags);
 
-	File.Write<sint32> ((Enemy && Enemy->gameEntity) ? Enemy->gameEntity->state.number : -1);
+	File.Write<sint32> ((Enemy && Enemy->gameEntity) ? Enemy->State.GetNumber() : -1);
 
 	File.Write<sint32> (ViewHeight);
 }

@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CPathCorner : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
 {
 public:
-	CBaseEntity		*NextTarget;
+	TTargetList		NextTargets;
 	FrameNumber_t	Wait;
 
 	CPathCorner ();

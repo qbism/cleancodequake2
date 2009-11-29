@@ -730,30 +730,22 @@ CPathCorner::CPathCorner (sint32 Index) :
 
 void CPathCorner::Think ()
 {
-	NextTarget = (Target) ? CC_PickTarget (Target) : NULL;
+	//NextTarget = (Target) ? CC_PickTarget (Target) : NULL;
+	if (Target)
+		NextTargets = CC_GetTargets (Target);
 }
 
 void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 {
-	vec3f			v;
+	if (!(other->EntityFlags & ENT_MONSTER))
+		return;
 
-	if (other->EntityFlags & ENT_MONSTER)
-	{
-		if (entity_cast<CMonsterEntity>(other)->MoveTarget != this)
-			return;
-	}
-	else if (other->EntityFlags & ENT_BRUSHMODEL)
-	{
-		if (entity_cast<CBrushModel>(other)->BrushType & BRUSH_TRAIN)
-		{
-			CTrainBase *Train = entity_cast<CTrainBase>(other);
+	CMonsterEntity	*Monster = entity_cast<CMonsterEntity>(other);
 
-			if (Train->TargetEntity != this)
-				return;
-		}
-	}
+	if (Monster->MoveTarget != this)
+		return;
 	
-	if (other->Enemy)
+	if (Monster->Enemy)
 		return;
 
 	if (PathTarget)
@@ -764,35 +756,31 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 		Target = savetarget;
 	}
 
-	CBaseEntity *TempNextTarget = NextTarget;
+	CBaseEntity *TempNextTarget = NextTargets[irandom(NextTargets.size())];
 
 	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & 1))
 	{
 		other->State.GetOrigin() = (TempNextTarget->State.GetOrigin() + vec3f(0, 0, TempNextTarget->GetMins().Z - other->GetMins().Z));
-		TempNextTarget = entity_cast<CPathCorner>(TempNextTarget)->NextTarget;
+		TempNextTarget = entity_cast<CPathCorner>(TempNextTarget)->NextTargets[irandom(NextTargets.size())];
 		other->State.GetEvent() = EV_OTHER_TELEPORT;
 	}
 
-	if (other->EntityFlags & ENT_MONSTER)
-	{
-		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(other);
-		Monster->GoalEntity = Monster->MoveTarget = TempNextTarget;
+	Monster->GoalEntity = Monster->MoveTarget = TempNextTarget;
 
-		if (Wait)
+	if (Wait)
+	{
+		Monster->Monster->PauseTime = level.Frame + Wait;
+		Monster->Monster->Stand();
+	}
+	else
+	{
+		if (!Monster->MoveTarget)
 		{
-			Monster->Monster->PauseTime = level.Frame + Wait;
-			Monster->Monster->Stand();
+			Monster->Monster->PauseTime = level.Frame + 100000000;
+			Monster->Monster->Stand ();
 		}
 		else
-		{
-			if (!Monster->MoveTarget)
-			{
-				Monster->Monster->PauseTime = level.Frame + 100000000;
-				Monster->Monster->Stand ();
-			}
-			else
-				Monster->Monster->IdealYaw = (Monster->GoalEntity->State.GetOrigin() - Monster->State.GetOrigin()).ToYaw();
-		}
+			Monster->Monster->IdealYaw = (Monster->GoalEntity->State.GetOrigin() - Monster->State.GetOrigin()).ToYaw();
 	}
 };
 
@@ -806,7 +794,6 @@ void CPathCorner::Spawn ()
 		return;
 	}
 
-	NextTarget = NULL;
 	GetSolid() = SOLID_TRIGGER;
 	Touchable = true;
 	GetMins().Set (-8);
