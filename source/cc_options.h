@@ -143,6 +143,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
 #define AMMO_REGEN_TECH 0
+#undef MONSTERS_HIT_MONSTERSOLID
+#define MONSTERS_HIT_MONSTERSOLID 1
 #endif
 
 #else

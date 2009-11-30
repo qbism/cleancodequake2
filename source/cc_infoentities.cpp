@@ -756,7 +756,7 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 		Target = savetarget;
 	}
 
-	CBaseEntity *TempNextTarget = NextTargets[irandom(NextTargets.size())];
+	CBaseEntity *TempNextTarget = (NextTargets.size()) ? NextTargets[irandom(NextTargets.size())] : NULL;
 
 	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & 1))
 	{
@@ -820,6 +820,11 @@ bool			CPathCorner::ParseField (const char *Key, const char *Value)
 
 void		CPathCorner::SaveFields (CFile &File)
 {
+	// Save NextTargets
+	File.Write<uint32> (NextTargets.size());
+	for (size_t i = 0; i < NextTargets.size(); i++)
+		File.Write<sint32> (NextTargets[i]->State.GetNumber());
+
 	SaveEntityFields <CPathCorner> (this, File);
 	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
@@ -827,6 +832,10 @@ void		CPathCorner::SaveFields (CFile &File)
 
 void		CPathCorner::LoadFields (CFile &File)
 {
+	uint32 Num = File.Read<uint32> ();
+	for (size_t i = 0; i < Num; i++)
+		NextTargets.push_back (g_edicts[File.Read<sint32> ()].Entity);
+
 	LoadEntityFields <CPathCorner> (this, File);
 	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);

@@ -1284,7 +1284,6 @@ bool Push (std::vector<CPushed, std::generic_allocator<CPushed> > &Pushed, CBase
 	Entity->Link ();
 
 	// see if any solid entities are inside the final position
-	//for (sint32 e = 1; e < globals.numEdicts; e++)
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
 		CBaseEntity *Check = (*it)->Entity;
@@ -1302,6 +1301,9 @@ bool Push (std::vector<CPushed, std::generic_allocator<CPushed> > &Pushed, CBase
 				continue;
 		}
 		else if (Check->GetSolid() != SOLID_BBOX)
+			continue;
+
+		if ((Check->EntityFlags & ENT_PLAYER) && (entity_cast<CPlayerEntity>(Check)->NoClip))
 			continue;
 
 		if (!Check->GetArea()->prev)
@@ -1331,6 +1333,7 @@ bool Push (std::vector<CPushed, std::generic_allocator<CPushed> > &Pushed, CBase
 
 			// try moving the contacted entity
 			Check->State.GetOrigin() += move;
+
 			if (Check->EntityFlags & ENT_PLAYER)
 			{
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Check);
@@ -1339,7 +1342,6 @@ bool Push (std::vector<CPushed, std::generic_allocator<CPushed> > &Pushed, CBase
 				//r1: dead-body-on-lift / other random view distortion fix
 				PushedEntity.DeltaYaw = Player->Client.PlayerState.GetPMove()->deltaAngles[YAW];
 			}
-
 			else
 				Check->State.GetAngles() += vec3f (0, amove.Y, 0);
 
