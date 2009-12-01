@@ -124,8 +124,8 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<vec3f> (BlindFireTarget);
 	File.Write<sint32> ((BadMedic1) ? BadMedic1->State.GetNumber() : -1);
 	File.Write<sint32> ((BadMedic2) ? BadMedic2->State.GetNumber() : -1);
+	File.Write<sint32> ((Healer && Healer->gameEntity) ? Healer->State.GetNumber() : -1);
 #endif
-	File.Write<sint32> ((Healer) ? Healer->State.GetNumber() : -1);
 	File.Write<sint32> (NextFrame);
 	File.Write<float> (Scale);
 	File.Write<FrameNumber_t> (PauseTime);
@@ -166,7 +166,6 @@ void CMonster::LoadFields (CFile &File)
 	IdealYaw = File.Read<float> ();
 	YawSpeed = File.Read<float> ();
 	AIFlags = File.Read<uint32> ();
-	sint32 Index;
 #if MONSTER_USE_ROGUE_AI
 	BlindFire = File.Read<bool> ();
 	BaseHeight = File.Read<float> ();
@@ -179,17 +178,18 @@ void CMonster::LoadFields (CFile &File)
 
 	NextDuckTime = File.Read<FrameNumber_t> ();
 	BlindFireTarget = File.Read<vec3f> ();
-	Index = File.Read<sint32> ();
+	sint32 Index = File.Read<sint32> ();
 	if (Index != -1)
 		BadMedic1 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
 
 	Index = File.Read<sint32> ();
 	if (Index != -1)
 		BadMedic2 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
-#endif
+
 	Index = File.Read<sint32> ();
 	if (Index != -1)
 		Healer = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+#endif
 	NextFrame = File.Read<sint32> ();
 	Scale = File.Read<float> ();
 	PauseTime = File.Read<FrameNumber_t> ();
@@ -2016,16 +2016,16 @@ bool CMonster::AI_CheckAttack()
 	}
 
 // see if the enemy is dead
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
-		hesDeadJim = true;
-	else if (AIFlags & AI_MEDIC)
+	if (AIFlags & AI_MEDIC)
 	{
-		if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+		if (!Entity->Enemy || !Entity->Enemy->gameEntity || (entity_cast<CHurtableEntity>(Entity->Enemy)->Health < entity_cast<CHurtableEntity>(Entity->Enemy)->GibHealth || entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0))
 		{
 			hesDeadJim = true;
 			AIFlags &= ~AI_MEDIC;
 		}
 	}
+	else if ((!Entity->Enemy) || (!Entity->Enemy->gameEntity) || (!Entity->Enemy->GetInUse()))
+		hesDeadJim = true;
 	else
 	{
 		if (AIFlags & AI_BRUTAL)
@@ -2044,7 +2044,7 @@ bool CMonster::AI_CheckAttack()
 	{
 		Entity->Enemy = NULL;
 	// FIXME: look all around for other targets
-		if (Entity->OldEnemy && entity_cast<CHurtableEntity>(Entity->OldEnemy)->Health > 0)
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->OldEnemy)->Health > 0)
 		{
 			Entity->Enemy = Entity->OldEnemy;
 			Entity->OldEnemy = NULL;

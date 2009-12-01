@@ -203,6 +203,23 @@ void RemoveEntityFromList (edict_t *ent)
 	level.Entities.Open.push_front (ent);
 }
 
+bool RemoveEntity (edict_t *ent)
+{
+	if (!ent || ent->state.number <= game.maxclients)
+		return false;
+
+	if (ent->AwaitingRemoval)
+	{
+		ent->AwaitingRemoval = false;
+
+		// Push into Open
+		level.Entities.Open.push_front (ent);
+
+		return true;
+	}
+	return false;
+}
+
 /*
 =================
 G_Spawn
@@ -247,7 +264,6 @@ void G_FreeEdict (edict_t *ed)
 
 	// Paril, hack
 	CBaseEntity *Entity = ed->Entity;
-	bool oldUsedBefore = ed->usedBefore;
 
 	memset (ed, 0, sizeof(*ed));
 	if (Entity)
@@ -255,12 +271,12 @@ void G_FreeEdict (edict_t *ed)
 		ed->Entity = Entity;
 		Entity->ClassName = "freed";
 	}
-	ed->usedBefore = oldUsedBefore;
 	ed->freetime = level.Frame;
 	ed->inUse = false;
 	ed->state.number = ed - g_edicts;
 
 	RemoveEntityFromList (ed);
+	ed->AwaitingRemoval = true;
 }
 
 typedef std::vector <CBaseEntity*, std::generic_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
@@ -518,17 +534,20 @@ void			CBaseEntity::Free ()
 	{
 		Unlink ();
 
-		bool oldUsedBefore = gameEntity->usedBefore;
 		memset (gameEntity, 0, sizeof(*gameEntity));
 		gameEntity->Entity = this;
-		gameEntity->usedBefore = oldUsedBefore;
 		ClassName = "freed";
 		gameEntity->freetime = level.Frame;
 		GetInUse() = false;
 		gameEntity->state.number = gameEntity - g_edicts;
 
 		if (!(EntityFlags & ENT_JUNK))
-			RemoveEntityFromList (gameEntity);
+		{
+			if (level.Frame == 0)
+				RemoveEntityFromList (gameEntity);
+			else
+				gameEntity->AwaitingRemoval = true;
+		}
 	}
 
 	Freed = true;

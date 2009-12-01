@@ -1481,7 +1481,7 @@ public:
 	{
 		if (LastShakeTime < level.Frame)
 		{
-			PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, NoiseIndex, 1.0, ATTN_NONE);
+			PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, NoiseIndex, 255, ATTN_NONE);
 			LastShakeTime = level.Frame + 5;
 		}
 

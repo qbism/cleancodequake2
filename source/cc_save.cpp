@@ -170,6 +170,8 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 	Index = In;
 };
 
+#include <typeinfo>
+
 void WriteEntity (CFile &File, CBaseEntity *Entity)
 {
 	// Write the edict_t info first
@@ -197,6 +199,17 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	{
 		//DebugPrintf ("Writing %s\n", Entity->__GetName ());
 		File.WriteString (Entity->__GetName ());
+
+#if WIN32 && _DEBUG
+		if (!(Entity->EntityFlags & ENT_ITEM))
+		{
+			std::cc_string name = Q_strlwr(std::cc_string(typeid(*Entity).name()));
+			std::cc_string lwrname = Q_strlwr(std::cc_string(Entity->__GetName()));
+
+			if (!strstr(name.c_str(), lwrname.c_str()))
+				DebugPrintf ("%s did not write correctly (wrote as %s)\n", lwrname.c_str(), name.c_str());
+		}
+#endif
 	}
 
 	WRITE_MAGIC
@@ -551,6 +564,8 @@ void CGameAPI::ReadLevel (char *filename)
 #if MONSTERS_USE_PATHFINDING
 	InitNodes ();
 #endif
+	memset (&GameMedia, 0, sizeof(GameMedia));
+	InitGameMedia ();
 
 	// wipe all the entities
 	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));

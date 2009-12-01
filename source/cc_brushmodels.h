@@ -477,6 +477,7 @@ public:
 
 	void SaveFields (CFile &File)
 	{
+		File.Write<sint32> ((MoveTarget) ? MoveTarget->State.GetNumber() : -1);
 		CMapEntity::SaveFields (File);
 		CUsableEntity::SaveFields (File);
 		CThinkableEntity::SaveFields (File);
@@ -484,6 +485,10 @@ public:
 
 	void LoadFields (CFile &File)
 	{
+		sint32 Index = File.Read<sint32> ();
+		if (Index != -1)
+			MoveTarget = entity_cast<CTrain>(g_edicts[Index].Entity);
+
 		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
 		CThinkableEntity::LoadFields (File);

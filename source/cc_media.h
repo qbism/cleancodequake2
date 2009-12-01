@@ -36,11 +36,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define PUTTOGETHER(name) name##_index
 #define MEDIA_INDEXING_FUNCTION(name,string,registerer) \
+private:\
+	MediaIndex PUTTOGETHER(name); \
+public:\
 	inline MediaIndex name () \
 	{ \
-		static MediaIndex PUTTOGETHER(name) = registerer (string); \
+		if (!PUTTOGETHER(name)) \
+			PUTTOGETHER(name) = registerer (string); \
 		return PUTTOGETHER(name); \
-	} \
+	}
 
 struct SPlayerMedia_t
 {

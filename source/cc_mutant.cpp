@@ -374,6 +374,7 @@ void CMutant::JumpTakeOff ()
 	AIFlags |= AI_DUCKED;
 	AttackFinished = level.Frame + 30;
 	Jumping = true;
+	Entity->Touchable = true;
 }
 
 void CMutant::CheckLanding ()
@@ -383,6 +384,7 @@ void CMutant::CheckLanding ()
 		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_THUD]);
 		AttackFinished = 0;
 		AIFlags &= ~AI_DUCKED;
+		Entity->Touchable = false;
 		return;
 	}
 

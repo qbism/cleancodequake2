@@ -717,14 +717,16 @@ Pathtarget: gets used when an entity that has
 CPathCorner::CPathCorner () :
   CBaseEntity(),
   CMapEntity (),
-  CTouchableEntity ()
+  CTouchableEntity (),
+  CUsableEntity ()
   {
   };
 
 CPathCorner::CPathCorner (sint32 Index) :
   CBaseEntity(Index),
   CMapEntity (Index),
-  CTouchableEntity (Index)
+  CTouchableEntity (Index),
+  CUsableEntity (Index)
   {
   };
 
@@ -828,6 +830,7 @@ void		CPathCorner::SaveFields (CFile &File)
 	SaveEntityFields <CPathCorner> (this, File);
 	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
 }
 
 void		CPathCorner::LoadFields (CFile &File)
@@ -839,6 +842,7 @@ void		CPathCorner::LoadFields (CFile &File)
 	LoadEntityFields <CPathCorner> (this, File);
 	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("path_corner", CPathCorner);
@@ -862,6 +866,8 @@ public:
 	  CPathCorner (Index)
 	  {
 	  };
+
+	const char *__GetName () { return "CPathCombat"; }
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -935,6 +941,7 @@ public:
 			Free ();
 			return;
 		}
+
 		GetSolid() = SOLID_TRIGGER;
 		Touchable = true;
 		GetMins().Set (-8, -8, -16);

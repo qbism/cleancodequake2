@@ -318,6 +318,160 @@ public:
 };
 #pragma warning (pop)
 
+// An inherited class to use stream-like operators
+class CFileStream : public CFile
+{
+public:
+	CFileStream (const char *fileName, EFileOpMode Mode) :
+	  CFile (fileName, Mode)
+	{
+	};
+
+	CFileStream &operator<< (bool &val)
+	{
+		Write<bool> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (sint16 &val)
+	{
+		Write<sint16> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (uint16 &val)
+	{
+		Write<uint16> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (sint32 &val)
+	{
+		Write<sint32> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (uint32 &val)
+	{
+		Write<uint32> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (long &val)
+	{
+		Write<long> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (unsigned long &val)
+	{
+		Write<unsigned long> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (float &val)
+	{
+		Write<float> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (double &val)
+	{
+		Write<double> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (long double &val)
+	{
+		Write<long double> (val);
+		return *this;
+	};
+
+	CFileStream &operator<< (const void *val)
+	{
+		Write<void*> (val);
+		return *this;
+	};
+
+	CFileStream &operator>> (bool &val)
+	{
+		val = Read<bool> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (sint16 &val)
+	{
+		val = Read<sint16> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (uint16 &val)
+	{
+		val = Read<uint16> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (sint32 &val)
+	{
+		val = Read<sint32> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (uint32 &val)
+	{
+		val = Read<uint32> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (long &val)
+	{
+		val = Read<long> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (unsigned long &val)
+	{
+		val = Read<unsigned long> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (float &val)
+	{
+		val = Read<float> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (double &val)
+	{
+		val = Read<double> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (long double &val)
+	{
+		val = Read<long double> ();
+		return *this;
+	};
+
+	CFileStream &operator>> (void *&val)
+	{
+		val = Read<void*> ();
+		return *this;
+	};
+};
+
+inline CFileStream &operator<< (CFileStream &Stream, std::cc_string &val)
+{
+	Stream.WriteCCString (val);
+	return Stream;
+};
+
+inline CFileStream &operator>> (CFileStream &Stream, std::cc_string &val)
+{
+	val = Stream.ReadCCString ();
+	return Stream;
+};
+
 // A wrapper for FS_LoadFile
 class CFileBuffer
 {

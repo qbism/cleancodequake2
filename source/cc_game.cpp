@@ -257,6 +257,55 @@ void			RunPrivateEntities ();
 #include <crtdbg.h>
 #endif
 
+void ProcessEntity (edict_t *ent)
+{
+	if (!ent->inUse)
+	{
+		if (ent->state.number > game.maxclients)
+			ent->AwaitingRemoval = true;
+		return;
+	}
+
+	if (ent->Entity)
+	{
+		CBaseEntity *Entity = ent->Entity;
+		
+		memset (&Entity->PlayedSounds, 0, sizeof(Entity->PlayedSounds));
+		
+		level.CurrentEntity = Entity;
+		Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
+
+		// if the ground entity moved, make sure we are still on it
+		if ((Entity->GroundEntity) && ((!Entity->GroundEntity->gameEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount)))
+		{
+			Entity->GroundEntity = NULL;
+			if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
+				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
+		}
+
+		CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
+
+		if (Thinkable) 
+			Thinkable->PreThink ();
+
+		Entity->Run ();
+
+		if (Thinkable)
+			Thinkable->RunThink ();
+
+		// Were we freed?
+		// This has to be processed after thinking and running, because
+		// the entity still has to be intact after that
+		if (Entity->Freed)
+		{
+			QDelete Entity;
+			ent->Entity = NULL;
+		}
+	}
+}
+
+bool RemoveEntity (edict_t *ent);
+
 extern bool requestedBreak;
 void CGameAPI::RunFrame ()
 {
@@ -307,60 +356,8 @@ void CGameAPI::RunFrame ()
 	// treat each object in turn
 	// even the world gets a chance to think
 	//
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); )
-	{
-		// Store entity pointers first
-		edict_t *ent = (*it);
-
-		// Store the next iteration
-		TEntitiesContainer::iterator next = it;
-		next++;
-
-		if (!ent->inUse)
-		{
-			it = next;
-			continue;
-		}
-
-		if (ent->Entity)
-		{
-			CBaseEntity *Entity = ent->Entity;
-			
-			memset (&Entity->PlayedSounds, 0, sizeof(Entity->PlayedSounds));
-			
-			level.CurrentEntity = Entity;
-			Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
-
-			// if the ground entity moved, make sure we are still on it
-			if ((Entity->GroundEntity) && ((!Entity->GroundEntity->gameEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount)))
-			{
-				Entity->GroundEntity = NULL;
-				if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
-					(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
-			}
-
-			CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
-
-			if (Thinkable) 
-				Thinkable->PreThink ();
-
-			Entity->Run ();
-
-			if (Thinkable)
-				Thinkable->RunThink ();
-
-			// Were we freed?
-			// This has to be processed after thinking and running, because
-			// the entity still has to be intact after that
-			if (Entity->Freed)
-			{
-				QDelete Entity;
-				ent->Entity = NULL;
-			}
-		}
-
-		it = next;
-	}
+	std::for_each (level.Entities.Closed.begin(), level.Entities.Closed.end(), ProcessEntity);
+	level.Entities.Closed.remove_if (RemoveEntity);
 
 	RunPrivateEntities ();
 	RunTimers ();

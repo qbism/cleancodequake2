@@ -309,7 +309,7 @@ struct edict_t
 	//================================
 
 	FrameNumber_t		freetime;			// sv.time when the object was freed
-	bool				usedBefore;
+	bool				AwaitingRemoval;
 	
 	//
 	// only used locally in game, not by server

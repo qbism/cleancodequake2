@@ -241,8 +241,8 @@ public:
 	CPlayerEntity		*LastPlayerEnemy;
 	vec3f				BlindFireTarget;
 	CMonsterEntity		*BadMedic1, *BadMedic2;	// these medics have declared this monster "unhealable"
-#endif
 	CMonsterEntity		*Healer;	// this is who is healing this monster
+#endif
 
 	sint32				NextFrame;
 	float				Scale;
