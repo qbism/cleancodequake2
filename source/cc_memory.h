@@ -30,6 +30,7 @@ extern struct memPool_t	*com_genericPool, // Generic memory; memory that will be
 						*com_gamePool, // Flushed per entire game
 						*com_fileSysPool, // Flushed per entire game
 						*com_entityPool, // Flushed specially
+						*com_testPool,
 						*com_zPool,
 						*com_itemPool,
 						*com_cvarPool,

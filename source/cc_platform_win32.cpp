@@ -157,7 +157,7 @@ Sys_FindFiles
 ================
 */
 
-void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fileList, bool recurse, bool addFiles, bool addDirs)
+void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, bool recurse, bool addFiles, bool addDirs)
 {
 	WIN32_FIND_DATAA	findInfo;
 	HANDLE			findHandle;
@@ -189,7 +189,7 @@ void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, char **fil
 
 			// Recurse down the next directory
 			if (recurse)
-				Sys_FindFiles (files, findPath, pattern, fileList, recurse, addFiles, addDirs);
+				Sys_FindFiles (files, findPath, pattern, recurse, addFiles, addDirs);
 		}
 		else
 		{
@@ -229,7 +229,7 @@ void CC_OutputDebugString (const char *text)
 
 /*
 ================
-CC_OutputDebugString
+CC_ReportGameError
 
 Use this to properly break the debuggers
 so you can debug fatal game errors
@@ -273,12 +273,6 @@ double Sys_MSPerCycle()
 }
 
 // Timer class
-CTimer::CTimer (bool StartNow)
-{
-	if (StartNow)
-		Start ();
-};
-
 void CTimer::Start ()
 {
 	StartCycles = Sys_Cycles();
@@ -293,6 +287,21 @@ double CTimer::Get ()
 	Start ();
 
 	return value;
+};
+
+void *CDynamicLibrary::OS_LoadLibrary (const char *FileName)
+{
+	return LoadLibraryA (FileName);
+};
+
+void CDynamicLibrary::OS_CloseLibrary ()
+{
+	FreeLibrary ((HMODULE)Lib);
+};
+
+void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
+{
+	return GetProcAddress((HMODULE)Lib, Symbol);
 };
 
 // DLL entry point (for CleanCode-managed memory)
@@ -333,20 +342,5 @@ BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 
 	return TRUE;
 }
-
-void *CDynamicLibrary::OS_LoadLibrary (const char *FileName)
-{
-	return LoadLibraryA (FileName);
-};
-
-void CDynamicLibrary::OS_CloseLibrary ()
-{
-	FreeLibrary ((HMODULE)Lib);
-};
-
-void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
-{
-	return GetProcAddress((HMODULE)Lib, Symbol);
-};
 
 #endif

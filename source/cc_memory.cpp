@@ -74,6 +74,7 @@ memPool_t	*com_levelPool; // Flushed per level
 memPool_t	*com_gamePool; // Flushed per entire game
 memPool_t	*com_fileSysPool; // File system (same as game, just here for easy pointer access)
 memPool_t	*com_entityPool; // Flushed specially
+memPool_t	*com_testPool;
 memPool_t	*com_zPool;
 memPool_t	*com_itemPool;
 memPool_t	*com_cvarPool;
@@ -526,6 +527,8 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const sint32
 	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool byte count is not empty (improper free?)");
 	return size;
 }
+
+#include <typeinfo>
 
 /*
 ========================
@@ -994,6 +997,7 @@ void Mem_Init ()
 	com_commandPool = Mem_CreatePool ("Cvar system pool");
 	com_writePool = Mem_CreatePool ("Message system pool");
 	com_indexPool = Mem_CreatePool ("Indexing system pool");
+	com_testPool = Mem_CreatePool ("Test pool");
 	com_zPool = Mem_CreatePool ("ZLib Pool");
 
 	zsetfunctions (Mem_ZAlloc, Mem_ZFree);

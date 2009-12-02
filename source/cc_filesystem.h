@@ -92,7 +92,7 @@ void FS_Close (fileHandle_t &handle);
 size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate);
 void FS_FreeFile (void *buffer);
 
-typedef std::vector<std::cc_string, std::level_allocator<std::cc_string> > TFindFilesType;
+typedef std::vector<std::cc_string, std::generic_allocator<std::cc_string> > TFindFilesType;
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
 
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);

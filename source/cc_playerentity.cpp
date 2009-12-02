@@ -303,12 +303,10 @@ TossPhysics(false)
 {
 	EntityFlags |= ENT_PLAYER;
 	PhysicsType = PHYSICS_WALK;
-	DebugPrintf ("Allocated player entity\n");
 };
 
 CPlayerEntity::~CPlayerEntity ()
 {
-	DebugPrintf ("Deallocated player entity\n");
 };
 
 bool CPlayerEntity::Run ()

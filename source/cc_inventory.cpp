@@ -40,6 +40,10 @@ SelectedItem (-1)
 {
 }
 
+CInventory::~CInventory ()
+{
+};
+
 void CInventory::Add (CBaseItem *Item, sint32 Num)
 {
 	Array[Item->GetIndex()] += Num;

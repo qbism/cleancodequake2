@@ -333,17 +333,6 @@ char *ParsePound (char *tok, char *realEntities)
 	return realEntities;
 }
 
-CFileBuffer *FileBuffer;
-
-char *CC_LoadEntFile (char *ServerLevelName, char *entities)
-{
-	FileBuffer = QNew (com_genericPool, 0) CFileBuffer ((std::cc_string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
-
-	if (FileBuffer->Valid())
-		return FileBuffer->GetBuffer<char>();
-	return entities;
-}
-
 bool TokenEnd (char *token)
 {
 	sint32 i = 0;
@@ -358,16 +347,15 @@ bool TokenEnd (char *token)
 // this goes by entire lines.
 char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 {
+	CFileBuffer FileBuffer((std::cc_string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
 	std::cc_string finalString;
 	char *realEntities;
 	char *token;
-	char *tempEntities;
 
-	tempEntities = CC_LoadEntFile (ServerLevelName, entities);
-	if (tempEntities == entities)
+	if (!FileBuffer.Valid())
 		return entities;
 	else
-		entities = tempEntities;
+		entities = FileBuffer.GetBuffer<char> ();
 	realEntities = entities;
 
 	while ((token = CC_ParseLine(&realEntities)) != NULL)
@@ -386,7 +374,6 @@ char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 	}
 
 	char *finalEntString = Mem_PoolStrDup (finalString.c_str(), com_levelPool, 0);
-	QDelete FileBuffer;
 
 	return finalEntString;
 }

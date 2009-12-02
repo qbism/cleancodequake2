@@ -96,7 +96,7 @@ CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 extern bool ShuttingDownEntities;
 bool RemoveAll (const edict_t *it)
 {
-	if (it && it->Entity && it->inUse)
+	if (it && it->Entity && (it->state.number <= game.maxclients || it->inUse))
 		QDelete it->Entity;
 	return true;
 }

@@ -158,14 +158,15 @@ CREATE_TEMPLATE_POOL_ALLOCATOR (filesystem_allocator, com_fileSysPool);
 CREATE_TEMPLATE_POOL_ALLOCATOR (write_allocator, com_writePool);
 CREATE_TEMPLATE_POOL_ALLOCATOR (index_allocator, com_indexPool);
 CREATE_TEMPLATE_POOL_ALLOCATOR (entity_allocator, com_entityPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (test_allocator, com_testPool);
 
-typedef basic_string<char, char_traits<char>, generic_allocator<char> >
+typedef basic_string<char, char_traits<char>, test_allocator<char> >
 	cc_string;
 
-typedef basic_stringbuf<char, char_traits<char>, generic_allocator<char> >
+typedef basic_stringbuf<char, char_traits<char>, write_allocator<char> >
 	cc_stringbuf;
 
-typedef basic_stringstream <char, char_traits<char>, generic_allocator<char> >
+typedef basic_stringstream <char, char_traits<char>, write_allocator<char> >
 	cc_stringstream;
 
 inline void FormatString (std::cc_string &str, const char *fmt, ...)

@@ -381,6 +381,9 @@
     <ClCompile Include="..\..\source\cc_pathfinding.cpp">
       <Filter>CleanCode Files\Pathfinding</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_platform_base.cpp">
+      <Filter>CleanCode Files\Platform</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp">
       <Filter>CleanCode Files\Platform</Filter>
     </ClCompile>

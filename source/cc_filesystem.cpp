@@ -578,10 +578,10 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 		{
 			char ext[MAX_PATHNAME/4];
 			snprintf(ext, sizeof(ext), "*.%s", extension);
-			Sys_FindFiles(dirFiles, dir, ext, 0, recurse, true, false);
+			Sys_FindFiles(dirFiles, dir, ext, recurse, true, false);
 		}
 		else
-			Sys_FindFiles(dirFiles, dir, "*", 0, recurse, true, true);
+			Sys_FindFiles(dirFiles, dir, "*", recurse, true, true);
 
 		for (size_t i = 0; i < dirFiles.size(); i++)
 		{

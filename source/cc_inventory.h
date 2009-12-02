@@ -49,6 +49,8 @@ public:
 	void	operator -= (uint8 Index);
 
 	CInventory ();
+	~CInventory ();
+
 	// Note: All of these functions are for directly
 	// adding items. This will NOT call the pickup
 	// function! You need to add your own checks in for
