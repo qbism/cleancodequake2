@@ -37,14 +37,16 @@ struct memBlock_t
 	memBlock_t			*next, *prev;				// Next/Previous block in this pool
 	struct memPool_t	*pool;						// Owner pool
 	struct memPuddle_t	*puddle;					// Puddle allocated from
-	sint32					tagNum;						// For group free
+	sint32				tagNum;						// For group free
 
 	const char			*allocFile;					// File the memory was allocated in
-	sint32					allocLine;					// Line the memory was allocated at
+	sint32				allocLine;					// Line the memory was allocated at
 
 	void				*memPointer;				// pointer to allocated memory
 	size_t				memSize;					// Size minus the header, sentinel, and any rounding up to the uint8 barrier
 	size_t				realSize;					// Actual size of block
+
+	bool				Array;						// true if allocated with new[]
 };
 
 #define MEM_MAX_POOL_COUNT		32
@@ -61,7 +63,7 @@ struct memPool_t
 	size_t				byteCount;					// Total allocated bytes
 
 	const char			*createFile;				// File this pool was created on
-	sint32					createLine;					// Line this pool was created on
+	sint32				createLine;					// Line this pool was created on
 };
 
 static memPool_t		m_poolList[MEM_MAX_POOL_COUNT];
@@ -72,6 +74,12 @@ memPool_t	*com_levelPool; // Flushed per level
 memPool_t	*com_gamePool; // Flushed per entire game
 memPool_t	*com_fileSysPool; // File system (same as game, just here for easy pointer access)
 memPool_t	*com_entityPool; // Flushed specially
+memPool_t	*com_zPool;
+memPool_t	*com_itemPool;
+memPool_t	*com_cvarPool;
+memPool_t	*com_writePool;
+memPool_t	*com_indexPool;
+memPool_t	*com_commandPool;
 
 #define MEM_MAX_PUDDLES			42
 #define MEM_MAX_PUDDLE_SIZE		(32768+1)
@@ -416,7 +424,7 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 _Mem_Free
 ========================
 */
-size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine)
+size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, bool Array)
 {
 	memBlock_t	*mem;
 	size_t		size;
@@ -428,6 +436,9 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine)
 	// Check sentinels
 	mem = (memBlock_t *)((uint8 *)ptr - sizeof(memBlock_t));
 	_Mem_CheckBlockIntegrity(mem, fileName, fileLine);
+
+	if (Array != mem->Array)
+		assert (0);
 
 	// Decrement counters
 	mem->pool->blockCount--;
@@ -474,7 +485,7 @@ size_t _Mem_FreeTag (struct memPool_t *pool, const sint32 tagNum, const char *fi
 	{
 		next = mem->prev;
 		if (mem->tagNum == tagNum)
-			size += _Mem_Free (mem->memPointer, fileName, fileLine);
+			size += _Mem_Free (mem->memPointer, fileName, fileLine, false);
 	}
 
 	return size;
@@ -498,6 +509,7 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const sint32
 		return 0;
 
 	size = 0;
+
 	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = next)
 	{
 		memBlock_t *oldMem = mem;
@@ -507,14 +519,13 @@ size_t _Mem_FreePool (struct memPool_t *pool, const char *fileName, const sint32
 		if (oldMem == next)
 			break;
 		
-		size += _Mem_Free (mem->memPointer, fileName, fileLine);
+		size += _Mem_Free (mem->memPointer, fileName, fileLine, mem->Array);
 	}
 
 	_CC_ASSERT_EXPR (pool->blockCount == 0, "Pool block count is not empty (improper free?)");
 	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool byte count is not empty (improper free?)");
 	return size;
 }
-
 
 /*
 ========================
@@ -523,7 +534,7 @@ _Mem_Alloc
 Returns 0 filled memory allocated in a pool with a tag
 ========================
 */
-void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
+void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine, bool Array)
 {
 	memBlock_t *mem;
 
@@ -561,6 +572,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const
 		mem->memSize = size;
 		mem->puddle = NULL;
 		mem->realSize = newSize;
+		mem->Array = Array;
 	}
 
 	// Fill in the header
@@ -568,6 +580,7 @@ void *_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const
 	mem->pool = pool;
 	mem->allocFile = fileName;
 	mem->allocLine = fileLine;
+	mem->Array = Array;
 
 	// Fill in the integrity sentinels
 	mem->topSentinel = MEM_SENTINEL_TOP(mem);
@@ -614,20 +627,20 @@ void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32
 		_CC_ASSERT_EXPR (Block->memPointer == ptr, "Block's memory pointer doesn't point to wanted memory");
 
 		// Allocate
-		Result = _Mem_Alloc(newSize, Block->pool, Block->tagNum, fileName, fileLine);
+		Result = _Mem_Alloc(newSize, Block->pool, Block->tagNum, fileName, fileLine, false);
 		memcpy(Result, ptr, Min(newSize,Block->memSize));
 
 		// Release old memory
-		_Mem_Free(ptr, fileName, fileLine);
+		_Mem_Free(ptr, fileName, fileLine, false);
 	}
 	else if (!ptr)
 	{
 		// FIXME: The pool and tag are 'lost' in this case...
-		Result = _Mem_Alloc(newSize, com_genericPool, 0, fileName, fileLine);
+		Result = _Mem_Alloc(newSize, com_genericPool, 0, fileName, fileLine, false);
 	}
 	else
 	{
-		_Mem_Free(ptr, fileName, fileLine);
+		_Mem_Free(ptr, fileName, fileLine, false);
 		Result = NULL;
 	}
 
@@ -653,7 +666,7 @@ char *_Mem_PoolStrDup (const char *in, struct memPool_t *pool, const sint32 tagN
 {
 	char	*out;
 
-	out = (char*)_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine);
+	out = (char*)_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine, false);
 	strcpy_s (out, (size_t)(strlen (in) + 1), in);
 
 	return out;
@@ -945,6 +958,17 @@ void Mem_Register ()
 	Cmd_AddCommand ("g_memtouch",		Mem_Touch_f);
 }
 
+#include "zlib.h"
+
+void *Mem_ZAlloc (uint32 size)
+{
+	return Mem_PoolAlloc (size, com_zPool, 0);
+}
+
+void Mem_ZFree (void *ptr)
+{
+	Mem_Free (ptr);
+}
 
 /*
 ========================
@@ -963,6 +987,14 @@ void Mem_Init ()
 	com_genericPool = Mem_CreatePool ("Generic memory pool");
 	com_levelPool = Mem_CreatePool ("Level memory pool");
 	com_gamePool = Mem_CreatePool ("Game memory pool");
-	com_fileSysPool = com_gamePool;
+	com_fileSysPool = Mem_CreatePool ("File system pool");
 	com_entityPool = Mem_CreatePool ("Entity system pool");
+	com_itemPool = Mem_CreatePool ("Item system pool");
+	com_cvarPool = Mem_CreatePool ("Cvar system pool");
+	com_commandPool = Mem_CreatePool ("Cvar system pool");
+	com_writePool = Mem_CreatePool ("Message system pool");
+	com_indexPool = Mem_CreatePool ("Indexing system pool");
+	com_zPool = Mem_CreatePool ("ZLib Pool");
+
+	zsetfunctions (Mem_ZAlloc, Mem_ZFree);
 }

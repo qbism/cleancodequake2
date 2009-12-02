@@ -56,6 +56,11 @@ state(state)
 {
 };
 
+void		CEntityState::Initialize (entityStateOld_t *state)
+{
+	this->state = state;
+};
+
 sint32		&CEntityState::GetNumber		()
 {
 	return state->number;
@@ -212,6 +217,9 @@ bool RemoveEntity (edict_t *ent)
 	{
 		ent->AwaitingRemoval = false;
 
+		QDelete ent->Entity;
+		ent->Entity = NULL;
+
 		// Push into Open
 		level.Entities.Open.push_front (ent);
 
@@ -331,7 +339,7 @@ _CC_ENABLE_DEPRECATION
 	Freed = false;
 	EntityFlags |= ENT_BASE;
 
-	State = CEntityState(&gameEntity->state);
+	State.Initialize (&gameEntity->state);
 };
 
 CBaseEntity::CBaseEntity (sint32 Index)
@@ -352,29 +360,33 @@ CBaseEntity::CBaseEntity (sint32 Index)
 
 		Freed = false;
 		EntityFlags |= ENT_BASE;
-		State = CEntityState(&gameEntity->state);
+		State.Initialize (&gameEntity->state);
 	}
 }
 
+bool ShuttingDownEntities = false;
 CBaseEntity::~CBaseEntity ()
 {
-	if (gameEntity)
+	if (!ShuttingDownEntities)
 	{
-		gameEntity->Entity = NULL;
-
-_CC_DISABLE_DEPRECATION
-		if (!Freed && !(EntityFlags & ENT_JUNK))
-			G_FreeEdict (gameEntity); // "delete" the entity
-_CC_ENABLE_DEPRECATION
-	}
-	else
-	{
-		for (TPrivateEntitiesContainer::iterator it = PrivateEntities.begin(); it < PrivateEntities.end(); it++)
+		if (gameEntity)
 		{
-			if ((*it) == this)
+			gameEntity->Entity = NULL;
+
+	_CC_DISABLE_DEPRECATION
+			if (!Freed && !(EntityFlags & ENT_JUNK))
+				G_FreeEdict (gameEntity); // "delete" the entity
+	_CC_ENABLE_DEPRECATION
+		}
+		else
+		{
+			for (TPrivateEntitiesContainer::iterator it = PrivateEntities.begin(); it < PrivateEntities.end(); it++)
 			{
-				PrivateEntities.erase (it);
-				break;
+				if ((*it) == this)
+				{
+					PrivateEntities.erase (it);
+					break;
+				}
 			}
 		}
 	}
@@ -599,25 +611,20 @@ void	CBaseEntity::KillBox ()
 	}
 };
 
-TMapEntityListType		MapEntities;
-
 CMapEntity::CMapEntity () : 
 CBaseEntity()
 {
 	EntityFlags |= ENT_MAP;
-	MapEntities.push_front (this);
 };
 
 CMapEntity::CMapEntity (sint32 Index) : 
 CBaseEntity(Index)
 {
 	EntityFlags |= ENT_MAP;
-	MapEntities.push_front (this);
 };
 
 CMapEntity::~CMapEntity ()
 {
-	MapEntities.remove (this);
 };
 
 #include "cc_tent.h"
@@ -650,7 +657,7 @@ ENTITYFIELDS_BEGIN(CMapEntity)
 	CEntityField ("angles",			GameEntityMemberOffset(state.angles),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
-	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_GAME_STRING),
+	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_LEVEL_STRING),
 };
 ENTITYFIELDS_END(CMapEntity)
 

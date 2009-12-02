@@ -45,9 +45,9 @@ public:
 
 #define MAX_INDEXES 256
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<std::pair <size_t, size_t> > > THashedMediaIndexListType;
-typedef std::map<uint8, CIndex*, std::less<uint8>, std::generic_allocator<std::pair <uint8, CIndex*> > > TMediaIndexToPtrList;
-typedef std::vector<CIndex*, std::generic_allocator<CIndex*> > TMediaIndexListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::index_allocator<std::pair <size_t, size_t> > > THashedMediaIndexListType;
+typedef std::map<uint8, CIndex*, std::less<uint8>, std::index_allocator<std::pair <uint8, CIndex*> > > TMediaIndexToPtrList;
+typedef std::vector<CIndex*, std::index_allocator<CIndex*> > TMediaIndexListType;
 
 class CIndexList
 {

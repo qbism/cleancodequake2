@@ -48,298 +48,116 @@ namespace std
 #include <new>       // Required for placement new and std::bad_alloc
 #include <stdexcept> // Required for std::length_error
 
-template <typename T> class generic_allocator
-{
-public:
-	typedef T * pointer;
-	typedef const T * const_pointer;
-	typedef T& reference;
-	typedef const T& const_reference;
-	typedef T value_type;
-	typedef size_t size_type;
-	typedef ptrdiff_t difference_type;
-
-	T * address(T& r) const
-	{
-		return &r;
-	}
-
-	const T * address(const T& s) const
-	{
-		return &s;
-	}
-
-	size_t max_size() const
-	{
-		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
-	}
-
-	template <typename U> struct rebind
-	{
-		typedef generic_allocator<U> other;
-	};
-
-	bool operator!=(const generic_allocator& other) const
-	{
-		return !(*this == other);
-	}
-
-	void construct(T * const p, const T& t) const
-	{
-		void * const pv = static_cast<void *>(p);
-		new (pv) T(t);
-	}
-
-	void destroy(T * const p) const
-	{
-		p->~T();
-	}
-
-	bool operator==(const generic_allocator& other) const
-	{
-		return true;
-	}
-
-	generic_allocator()
-	{
-	}
-
-	generic_allocator(const generic_allocator&)
-	{
-	}
-
-	template <typename U> generic_allocator(const generic_allocator<U>&)
-	{
-	}
-
-	~generic_allocator()
-	{
-	}
-
-	T * allocate(const size_t n) const
-	{
-		if (n == 0)
-		{
-			return NULL;
-		}
-
-		if (n > max_size())
-			throw std::length_error("generic_allocator<T>::allocate() - Integer overflow.");
-
-		void * const pv = _Mem_Alloc (n * sizeof(T), com_genericPool, 0, "null", 0);
-		if (pv == NULL)
-			throw std::bad_alloc();
-
-		return static_cast<T *>(pv);
-	}
-
-	void deallocate(T * const p, const size_t n) const
-	{
-		QDelete p;
-	}
-
-	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
-	{
-		return allocate(n);
-	}
-
-private:
-	generic_allocator& operator=(const generic_allocator&);
+// In the name of code reusage!
+#define CREATE_TEMPLATE_POOL_ALLOCATOR(className, pool) \
+template <typename T> class className \
+{ \
+public: \
+	typedef T * pointer; \
+	typedef const T * const_pointer; \
+	typedef T& reference; \
+	typedef const T& const_reference; \
+	typedef T value_type; \
+	typedef size_t size_type; \
+	typedef ptrdiff_t difference_type; \
+	 \
+	T * address(T& r) const \
+	{ \
+		return &r; \
+	} \
+	\
+	const T * address(const T& s) const \
+	{ \
+		return &s; \
+	} \
+	\
+	size_t max_size() const \
+	{ \
+		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T); \
+	} \
+	\
+	template <typename U> struct rebind \
+	{ \
+		typedef className<U> other; \
+	}; \
+	\
+	bool operator!=(const className& other) const \
+	{ \
+		return !(*this == other); \
+	} \
+	\
+	void construct(T * const p, const T& t) const \
+	{ \
+		void * const pv = static_cast<void *>(p); \
+		new (pv) T(t); \
+	} \
+	\
+	void destroy(T * const p) const \
+	{ \
+		p->~T(); \
+	} \
+	\
+	bool operator==(const className& other) const \
+	{ \
+		return true; \
+	} \
+	\
+	className() \
+	{ \
+	} \
+	\
+	className(const className&) \
+	{ \
+	} \
+	\
+	template <typename U> className(const className<U>&) \
+	{ \
+	} \
+	\
+	~className() \
+	{ \
+	} \
+	\
+	T * allocate(const size_t n) const \
+	{ \
+		if (n == 0) \
+		{ \
+			return NULL; \
+		} \
+		\
+		if (n > max_size()) \
+			throw std::length_error("className<T>::allocate() - Integer overflow."); \
+		\
+		void * const pv = _Mem_Alloc (n * sizeof(T), pool, 0, "null", 0, false); \
+		if (pv == NULL) \
+			throw std::bad_alloc(); \
+		\
+		return static_cast<T *>(pv); \
+	} \
+	\
+	void deallocate(T * const p, const size_t n) const \
+	{ \
+		QDelete p; \
+	} \
+	\
+	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const \
+	{ \
+		return allocate(n); \
+	} \
+	\
+private: \
+	className& operator=(const className&); \
 };
 
-template <typename T> class level_allocator
-{
-public:
-	typedef T * pointer;
-	typedef const T * const_pointer;
-	typedef T& reference;
-	typedef const T& const_reference;
-	typedef T value_type;
-	typedef size_t size_type;
-	typedef ptrdiff_t difference_type;
-
-	T * address(T& r) const
-	{
-		return &r;
-	}
-
-	const T * address(const T& s) const
-	{
-		return &s;
-	}
-
-	size_t max_size() const
-	{
-		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
-	}
-
-	template <typename U> struct rebind
-	{
-		typedef level_allocator<U> other;
-	};
-
-	bool operator!=(const level_allocator& other) const
-	{
-		return !(*this == other);
-	}
-
-	void construct(T * const p, const T& t) const
-	{
-		void * const pv = static_cast<void *>(p);
-		new (pv) T(t);
-	}
-
-	void destroy(T * const p) const
-	{
-		p->~T();
-	}
-
-	bool operator==(const level_allocator& other) const
-	{
-		return true;
-	}
-
-	level_allocator()
-	{
-	}
-
-	level_allocator(const level_allocator&)
-	{
-	}
-
-	template <typename U> level_allocator(const level_allocator<U>&)
-	{
-	}
-
-	~level_allocator()
-	{
-	}
-
-	T * allocate(const size_t n) const
-	{
-		if (n == 0)
-			return NULL;
-
-		if (n > max_size())
-			throw std::length_error("level_allocator<T>::allocate() - Integer overflow.");
-
-		void * const pv = _Mem_Alloc (n * sizeof(T), com_levelPool, 0, "null", 0);
-		if (pv == NULL)
-			throw std::bad_alloc();
-
-		return static_cast<T *>(pv);
-	}
-
-	void deallocate(T * const p, const size_t n) const
-	{
-		QDelete p;
-	}
-
-	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
-	{
-		return allocate(n);
-	}
-
-private:
-	level_allocator& operator=(const level_allocator&);
-};
-
-template <typename T> class game_allocator
-{
-public:
-	typedef T * pointer;
-	typedef const T * const_pointer;
-	typedef T& reference;
-	typedef const T& const_reference;
-	typedef T value_type;
-	typedef size_t size_type;
-	typedef ptrdiff_t difference_type;
-
-	T * address(T& r) const
-	{
-		return &r;
-	}
-
-	const T * address(const T& s) const
-	{
-		return &s;
-	}
-
-	size_t max_size() const
-	{
-		return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(T);
-	}
-
-	template <typename U> struct rebind
-	{
-		typedef game_allocator<U> other;
-	};
-
-	bool operator!=(const game_allocator& other) const
-	{
-		return !(*this == other);
-	}
-
-	void construct(T * const p, const T& t) const
-	{
-		void * const pv = static_cast<void *>(p);
-		new (pv) T(t);
-	}
-
-	void destroy(T * const p) const
-	{
-		p->~T();
-	}
-
-	bool operator==(const game_allocator& other) const
-	{
-		return true;
-	}
-
-	game_allocator()
-	{
-	}
-
-	game_allocator(const game_allocator&)
-	{
-	}
-
-	template <typename U> game_allocator(const game_allocator<U>&)
-	{
-	}
-
-	~game_allocator()
-	{
-	}
-
-	T * allocate(const size_t n) const
-	{
-		if (n == 0)
-			return NULL;
-
-		if (n > max_size())
-			throw std::length_error("game_allocator<T>::allocate() - Integer overflow.");
-
-		void * const pv = _Mem_Alloc (n * sizeof(T), com_gamePool, 0, "null", 0);
-		if (pv == NULL)
-			throw std::bad_alloc();
-
-		return static_cast<T *>(pv);
-	}
-
-	void deallocate(T * const p, const size_t n) const
-	{
-		QDelete p;
-	}
-
-	template <typename U> T * allocate(const size_t n, const U * /* const hint */) const
-	{
-		return allocate(n);
-	}
-
-private:
-	game_allocator& operator=(const game_allocator&);
-};
+CREATE_TEMPLATE_POOL_ALLOCATOR (generic_allocator, com_genericPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (level_allocator, com_levelPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (game_allocator, com_gamePool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (item_allocator, com_itemPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (command_allocator, com_commandPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (filesystem_allocator, com_fileSysPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (write_allocator, com_writePool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (index_allocator, com_indexPool);
+CREATE_TEMPLATE_POOL_ALLOCATOR (entity_allocator, com_entityPool);
 
 typedef basic_string<char, char_traits<char>, generic_allocator<char> >
 	cc_string;

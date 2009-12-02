@@ -314,6 +314,7 @@ parsing textual entity definitions out of an ent file.
 void ShutdownBodyQueue ();
 void InitVersion ();
 void InitEntityLists ();
+void DeallocateEntities ();
 
 void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
@@ -328,8 +329,6 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	CPlayerEntity::BackupClientData ();
 
-	level.Clear ();
-
 	if (Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".cin") == 0 || Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".dm2") == 0)
 	{
 		level.Demo = true;
@@ -337,10 +336,19 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		Shutdown_Junk ();
 	}
 
+	// Deallocate entities
+	DeallocateEntities ();
+
+	level.Clear ();
+
 	Mem_FreePool (com_levelPool);
 	gEntString = Mem_PoolStrDup(entities, com_levelPool, 0);
 
+	char *oldEntities = entities;
+	bool FreeIt = false;
 	entities = CC_ParseSpawnEntities (ServerLevelName, entities);
+	if (oldEntities != entities)
+		FreeIt = true;
 
 #if MONSTERS_USE_PATHFINDING
 	if (!level.Demo)
@@ -423,4 +431,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	InitVersion ();
 	DebugPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
+
+	if (FreeIt)
+		QDelete[] entities;
 }

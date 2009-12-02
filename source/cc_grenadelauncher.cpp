@@ -94,7 +94,7 @@ WEAPON_DEFS (CGrenadeLauncher);
 
 void CGrenadeLauncher::CreateItem (CItemList *List)
 {
-	NItems::GrenadeLauncher = QNew (com_genericPool, 0) CWeaponItem
+	NItems::GrenadeLauncher = QNew (com_itemPool, 0) CWeaponItem
 		("weapon_grenadelauncher", "models/weapons/g_launch/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_glauncher", "Grenade Launcher",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Grenades, 1, "#w_glauncher.md2");

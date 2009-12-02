@@ -54,13 +54,13 @@ public:
 	char		pathName[MAX_PATHNAME];
 };
 
-typedef std::vector<fs_pathIndex*, std::generic_allocator<fs_pathIndex*> > fs_pathListType;
+typedef std::vector<fs_pathIndex*, std::filesystem_allocator<fs_pathIndex*> > fs_pathListType;
 fs_pathListType fs_pathList;
 
 // Adds a path to the path list
 void FS_AddPath (const char *pathName)
 {
-	fs_pathIndex *path = QNew (com_genericPool, 0) fs_pathIndex;
+	fs_pathIndex *path = QNew (com_fileSysPool, 0) fs_pathIndex;
 	strncpy (path->pathName, pathName, sizeof(path->pathName));
 	fs_pathList.push_back (path);
 }
@@ -95,7 +95,7 @@ void FS_ReorderPath (const char *pathName)
 		}
 	}
 
-	fs_pathIndex *Path = QNew (com_genericPool, 0) fs_pathIndex;
+	fs_pathIndex *Path = QNew (com_fileSysPool, 0) fs_pathIndex;
 	strncpy (Path->pathName, pathName, sizeof(Path->pathName));
 
 	fs_pathList.insert (fs_pathList.begin(), Path);
@@ -108,18 +108,18 @@ static sint32 FS_MAX_FILEINDICES = 256;
 class fileHandleIndex_t
 {
 public:
-	fileHandleIndex_t() :
-	  name(name),
-	  inUse(false),
-	  openMode(FILEMODE_NONE)
-	  {
-		  file.reg = NULL;
-		  file.gz = NULL;
-	  };
+	fileHandleIndex_t()
+	{
+		Clear ();
+	};
 
 	void Clear ()
 	{
-		*this = fileHandleIndex_t();
+		name.clear();
+		inUse = false;
+		openMode = FILEMODE_NONE;
+		file.reg = NULL;
+		file.gz = NULL;
 	};
 
 	std::cc_string			name;
@@ -135,7 +135,7 @@ public:
 	} file;
 };
 
-typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::generic_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::filesystem_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
 class CFileHandleList
 {
 	fileHandle_t numHandlesAllocated;
@@ -487,7 +487,7 @@ size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate)
 	size_t len = FS_Len (handle);
 
 	size_t termLen = (terminate) ? 2 : 0;
-	uint8 *buf = QNew (com_genericPool, 0) uint8[len + termLen];
+	uint8 *buf = QNew (com_fileSysPool, 0) uint8[len + termLen];
 	*buffer = buf;
 
 	FS_Read(buf, len, handle);
@@ -512,7 +512,7 @@ bool FS_FileExists (const char *fileName)
 
 void FS_FreeFile (void *buffer)
 {
-	QDelete buffer;
+	QDelete[] buffer;
 }
 
 filePos_t FS_Tell (fileHandle_t &handle)
@@ -613,6 +613,6 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 
 void FS_Init (sint32 maxHandles)
 {
-	IndexList = QNew(com_genericPool, 0) CFileHandleList (maxHandles);
+	IndexList = QNew(com_fileSysPool, 0) CFileHandleList (maxHandles);
 	FS_AddPath (".");
 }

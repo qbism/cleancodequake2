@@ -87,25 +87,9 @@ typedef std::map<uint32, CCTFGhost*, std::less<uint16>, std::generic_allocator<s
 class CCTFGameLocals
 {
 public:
-	CCTFGameLocals () :
-	  team1(0),
-	  team2(0),
-	  total1(0),
-	  total2(0),
-	  last_flag_capture(0),
-	  last_capture_team(0),
-	  match(0),
-	  matchtime(0),
-	  lasttime(0),
-	  election(0),
-	  etarget(NULL),
-	  evotes(0),
-	  needvotes(0),
-	  electtime(0),
-	  Ghosts()
+	CCTFGameLocals ()
 	  {
-		  memset (&elevel, 0, sizeof(elevel));
-		  memset (&emsg, 0, sizeof(emsg));
+		  Clear ();
 	  }
 
 	sint32 team1, team2;
@@ -129,7 +113,27 @@ public:
 
 	void Clear ()
 	{
-		*this = CCTFGameLocals ();
+		team1 = 0;
+		team2 = 0;
+		total1 = 0;
+		total2 = 0;
+		last_flag_capture = 0;
+		last_capture_team = 0;
+		match = 0;
+		matchtime = 0;
+		lasttime = 0;
+		election = 0;
+		etarget = NULL;
+		evotes = 0;
+		needvotes = 0;
+		electtime = 0;
+
+		for (TGhostMapType::iterator it = Ghosts.begin(); it != Ghosts.end(); it++)
+			QDelete (*it).second;
+		Ghosts.clear();
+
+		memset (&elevel, 0, sizeof(elevel));
+		memset (&emsg, 0, sizeof(emsg));
 	}
 };
 

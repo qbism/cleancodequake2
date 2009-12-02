@@ -49,7 +49,7 @@ bool Sys_GetGameAPI ()
 {
 	string fileName;
 
-	CCvar Game = CCvar("game", "");
+	CCvar Game ("game", "");
 	fileName += Game.String();
 	fileName += "/gamex86.dll";
 

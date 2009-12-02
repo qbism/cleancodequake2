@@ -33,22 +33,27 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, std::game_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
-TTransponderListType Transponders;
+typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, std::item_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
+
+inline TTransponderListType &Transponders ()
+{
+	static TTransponderListType Transponders_;
+	return Transponders_;
+};
 
 void ClearTransponders ()
 {
-	for (TTransponderListType::iterator it = Transponders.begin(); it != Transponders.end(); ++it)
+	for (TTransponderListType::iterator it = Transponders().begin(); it != Transponders().end(); ++it)
 		QDelete (*it).second;
-	Transponders.clear ();
+	Transponders().clear ();
 }
 
 CFlagTransponder *FindTransponder (ETeamIndex Team)
 {
-	if (Transponders.find(Team) == Transponders.end())
+	if (Transponders().find(Team) == Transponders().end())
 		return NULL;
 
-	return (*Transponders.find(Team)).second;
+	return (*Transponders().find(Team)).second;
 }
 
 CFlagTransponder::CFlagTransponder (const ETeamIndex Team, class CFlagEntity *Flag) :
@@ -58,12 +63,12 @@ CFlagTransponder::CFlagTransponder (const ETeamIndex Team, class CFlagEntity *Fl
   Holder(NULL),
   Location(FLAG_AT_BASE)
 {
-	Transponders[Team] = this;
+	Transponders()[Team] = this;
 };
 
 void PrintTransponders ()
 {
-	for (TTransponderListType::iterator it = Transponders.begin(); it != Transponders.end(); ++it)
+	for (TTransponderListType::iterator it = Transponders().begin(); it != Transponders().end(); ++it)
 	{
 		CFlagTransponder *Transponder = (*it).second;
 		DebugPrintf ("Transponder for team %i:\n  Location: %i\n  Base: %i\n  Flag: %i\n  Holder: %i\n",
@@ -149,7 +154,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 
 	State.GetEffects() = Item->EffectFlags;
 	State.GetRenderEffects() = RF_GLOW;
-	Transponder = QNew (com_genericPool, 0) CFlagTransponder (Team, this);
+	Transponder = QNew (com_itemPool, 0) CFlagTransponder (Team, this);
 };
 
 CRedFlagEntity::CRedFlagEntity () :

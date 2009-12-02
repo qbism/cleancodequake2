@@ -207,7 +207,7 @@ CMenuItem(Menu, x, y)
 
 void CMenu_Box::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 {
-	static char	*Buf = QNew (com_genericPool, 0) char[MAX_COMPRINT/2];
+	static char	Buf[MAX_COMPRINT/2];
 	sint32			DrawX = (Align == LA_CENTER) ? x : x + 160, DrawY = y + 120, Index = 0;
 	sint32			W = Width+2, H = Height+2;
 

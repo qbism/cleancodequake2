@@ -74,7 +74,7 @@ void CCvar::Register(const char *cvarName, const char *defaultValue, sint32 flag
 }
 
 #include <sstream>
-static std::stringstream str;
+static std::cc_stringstream str;
 void CCvar::Register(const char *cvarName, float defaultValue, sint32 flags)
 {
 	str.clear ();

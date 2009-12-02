@@ -40,9 +40,9 @@ char	*nullArg = "";
 
 uint8				numArgv;
 std::cc_string		argvConcatString;
-std::vector<std::cc_string, std::generic_allocator<std::cc_string> >		argvStringArray;
-std::vector<sint32, std::generic_allocator<sint32> >						argvIntegerArray;
-std::vector<float, std::generic_allocator<float> >							argvFloatArray;
+std::vector<std::cc_string, std::write_allocator<std::cc_string> >		argvStringArray;
+std::vector<sint32, std::write_allocator<sint32> >						argvIntegerArray;
+std::vector<float, std::write_allocator<float> >							argvFloatArray;
 
 void SetupArg ()
 {

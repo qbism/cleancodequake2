@@ -103,6 +103,15 @@ InMenu(false)
 {
 };
 
+void CMenuState::Initialize (CPlayerEntity *ent)
+{
+	this->ent = ent;
+	Cursor = -1;
+	Key = 0;
+	CurrentMenu = NULL;
+	InMenu = false;
+};
+
 void CMenuState::OpenMenu ()
 {
 	if (!CurrentMenu)

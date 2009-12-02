@@ -244,14 +244,19 @@ class CTargetStringForEachCallback : public CForEachTeamChainCallback
 {
 public:
 	std::cc_string Message;
+	CBaseEntity *Me;
 
-	CTargetStringForEachCallback (std::cc_string &Message) :
+	CTargetStringForEachCallback (CBaseEntity *Me, std::cc_string &Message) :
+	Me(Me),
 	Message(Message)
 	{
 	};
 
 	void Callback (CBaseEntity *e)
 	{
+		if (e == Me)
+			return;
+
 		CTargetCharacter *Entity = entity_cast<CTargetCharacter>(e);
 
 		if (!Entity->Character)
@@ -292,7 +297,7 @@ public:
 
 void CTargetString::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-	CTargetStringForEachCallback (Message).Query (this);
+	CTargetStringForEachCallback (this, Message).Query (this);
 }
 
 void CTargetString::Spawn ()

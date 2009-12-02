@@ -296,16 +296,27 @@ extern voidp  calloc OF((uInt items, uInt size));
 extern void   free   OF((voidpf ptr));
 #endif
 
+// Paril, for CleanCode
+voidpf	(*MallocFunction) (unsigned int size) = NULL;
+void	(*FreeFunction) (voidpf ptr) = NULL;
+
+void zsetfunctions (voidpf	(*_MallocFunction) (unsigned int size), void	(*_FreeFunction) (voidpf ptr))
+{
+	MallocFunction = _MallocFunction;
+	FreeFunction = _FreeFunction;
+}
+
 voidpf zcalloc (voidpf opaque, unsigned int items, unsigned int size)
 {
     if (opaque) items += size - size; /* make compiler happy */
-    return sizeof(uInt) > 2 ? (voidpf)malloc(items * size) :
-                              (voidpf)calloc(items, size);
+    return /*sizeof(uInt) > 2 ? (voidpf)malloc(items * size) :
+                              (voidpf)calloc(items, size);*/ MallocFunction(items * size);
 }
 
 void  zcfree (voidpf opaque, voidpf ptr)
 {
-    free(ptr);
+ //   free(ptr);
+	FreeFunction (ptr);
     if (opaque) return; /* make compiler happy */
 }
 

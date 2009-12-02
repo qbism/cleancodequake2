@@ -47,6 +47,11 @@ playerState(playerState)
 {
 };
 
+void			CPlayerState::Initialize (playerState_t *playerState)
+{
+	this->playerState = playerState;
+};
+
 pMoveState_t	*CPlayerState::GetPMove ()
 {
 	return &playerState->pMove;
@@ -136,49 +141,10 @@ void			CPlayerState::Clear ()
 }
 
 CClient::CClient (gclient_t *client) :
-client (client),
-PlayerState (&client->playerState),
-KickAngles (),
-KickOrigin (),
-ViewAngle (),
-DamageFrom (),
-DamageBlend (),
-#if !MONSTERS_USE_PATHFINDING
-mynoise (NULL),
-mynoise2 (NULL),
-#endif
-OldViewAngles (),
-OldVelocity (),
-ViewDamage (),
-ViewDamageTime (0),
-KillerYaw (),
-Persistent (),
-Respawn (),
-OldPMove (),
-LayoutFlags (0),
-Buttons (0),
-LatchedButtons (0),
-NewWeapon (NULL),
-WeaponState (0),
-FallTime (0),
-FallValue (0),
-BonusAlpha (0),
-BobTime (0),
-PowerArmorTime (0),
-OldWaterLevel (0),
-WeaponSound (0)
+client(client),
+PlayerState(&client->playerState)
 {
-	memset (&Anim, 0, sizeof(Anim));
-	memset (&Timers, 0, sizeof(Timers));
-	memset (&Grenade, 0, sizeof(Grenade));
-	memset (&Flood, 0, sizeof(Flood));
-	memset (&Chase, 0, sizeof(Chase));
-#if CLEANCTF_ENABLED
-	memset (&Grapple, 0, sizeof(Grapple));
-#endif
-	memset (&Tech, 0, sizeof(Tech));
-
-	memset (&DamageValues, 0, sizeof(DamageValues));
+	Clear ();
 };
 
 void CClient::Write (CFile &File)
@@ -281,11 +247,48 @@ void CClient::Clear ()
 {
 	memset (client, 0, sizeof(*client));
 
-	gclient_t *oldClient = this->client;
-	//memset (this, 0, sizeof(*this));
-	*this = CClient (oldClient);
+	PlayerState.Initialize (&client->playerState);
+	KickAngles.Clear ();
+	KickOrigin.Clear ();
+	ViewAngle.Clear ();
+	DamageFrom.Clear ();
+	DamageBlend.Set (0,0,0,0);
+	#if !MONSTERS_USE_PATHFINDING
+	mynoise = NULL;
+	mynoise2 = NULL;
+	#endif
+	OldViewAngles.Clear ();
+	OldVelocity.Clear ();
+	ViewDamage.Clear ();
+	ViewDamageTime = 0;
+	KillerYaw = 0;
+	Persistent.Clear ();
+	Respawn.Clear ();
+	memset (&OldPMove, 0, sizeof(OldPMove));
+	LayoutFlags = 0;
+	Buttons = 0;
+	LatchedButtons = 0;
+	NewWeapon = NULL;
+	WeaponState = 0;
+	FallTime = 0;
+	FallValue = 0;
+	BonusAlpha = 0;
+	BobTime = 0;
+	PowerArmorTime = 0;
+	OldWaterLevel = 0;
+	WeaponSound = 0;
 
-	PlayerState = CPlayerState(&client->playerState);
+	memset (&Anim, 0, sizeof(Anim));
+	memset (&Timers, 0, sizeof(Timers));
+	memset (&Grenade, 0, sizeof(Grenade));
+	memset (&Flood, 0, sizeof(Flood));
+	memset (&Chase, 0, sizeof(Chase));
+#if CLEANCTF_ENABLED
+	memset (&Grapple, 0, sizeof(Grapple));
+#endif
+	memset (&Tech, 0, sizeof(Tech));
+
+	memset (&DamageValues, 0, sizeof(DamageValues));
 }
 
 // Players have a special way of allocating the entity.
@@ -300,6 +303,12 @@ TossPhysics(false)
 {
 	EntityFlags |= ENT_PLAYER;
 	PhysicsType = PHYSICS_WALK;
+	DebugPrintf ("Allocated player entity\n");
+};
+
+CPlayerEntity::~CPlayerEntity ()
+{
+	DebugPrintf ("Deallocated player entity\n");
 };
 
 bool CPlayerEntity::Run ()
@@ -533,6 +542,7 @@ void CPlayerEntity::PutInServer ()
 	// clear everything but the persistant data
 	saved = Client.Persistent;
 	Client.Clear ();
+
 	Client.Persistent = saved;
 	if (Client.Persistent.health <= 0)
 		InitPersistent();
@@ -560,7 +570,7 @@ void CPlayerEntity::PutInServer ()
 	Flags &= ~FL_NO_KNOCKBACK;
 	GetSvFlags() &= ~SVF_DEADMONSTER;
 	if (!Client.Respawn.MenuState.ent)
-		Client.Respawn.MenuState = CMenuState(this);
+		Client.Respawn.MenuState.Initialize (this);
 
 	GetMins() = mins;
 	GetMaxs() = maxs;
@@ -3050,7 +3060,7 @@ void CPlayerEntity::BackupClientData ()
 		//	continue;
 
 		//memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
-		SavedClients[i] = CPersistentData(ent->Client.Persistent);
+		SavedClients[i] = ent->Client.Persistent;
 		SavedClients[i].health = ent->Health;
 		SavedClients[i].max_health = ent->MaxHealth;
 		SavedClients[i].savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
@@ -3086,7 +3096,7 @@ void CPlayerEntity::RestoreClientData ()
 		//g_edicts[i+1].Entity = SavedClients[i];
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
-		Player->Client.Persistent = CPersistentData(SavedClients[i]);
+		Player->Client.Persistent = SavedClients[i];
 		Player->Health = SavedClients[i].health;
 		Player->MaxHealth = SavedClients[i].max_health;
 		Player->Flags = SavedClients[i].savedFlags;

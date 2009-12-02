@@ -296,39 +296,3 @@ ColorPalette PalToRGB =
 	colorb(135,	107,	87,	255),
 	colorb(159,	91,	83,	255)
 };
-
-
-CColorPalette::CColorPalette (colorb *palette, sint32 numColors) :
-palette(palette),
-numColors(numColors)
-{
-	redSortedValues = QNew (com_genericPool, 0) uint8[numColors];
-	greenSortedValues = QNew (com_genericPool, 0) uint8[numColors];
-	blueSortedValues = QNew (com_genericPool, 0) uint8[numColors];
-
-	SortPaletteColorIndexes (redSortedValues, 0);
-	SortPaletteColorIndexes (greenSortedValues, 1);
-	SortPaletteColorIndexes (blueSortedValues, 2);
-};
-
-void CColorPalette::SortPaletteColorIndexes (uint8 *values, uint8 index)
-{
-};
-
-uint8 CColorPalette::GetColorWeight (uint8 mainColor, uint8 newColor)
-{
-	return abs(mainColor - newColor);
-};
-
-colorb CColorPalette::GetColorFromIndex (uint8 index)
-{
-	if (index < 0 || index > 255)
-		return palette[0];
-
-	return palette[index];
-};
-
-uint8 CColorPalette::GetClosestColorFromRGB (colorb color)
-{
-	// Calculate the closest 
-};

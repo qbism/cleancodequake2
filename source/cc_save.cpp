@@ -93,6 +93,22 @@ CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 	return NULL;
 };
 
+extern bool ShuttingDownEntities;
+bool RemoveAll (const edict_t *it)
+{
+	if (it && it->Entity && it->inUse)
+		QDelete it->Entity;
+	return true;
+}
+
+void DeallocateEntities ()
+{
+	ShuttingDownEntities = true;
+	level.Entities.Closed.remove_if (RemoveAll);
+	ShuttingDownEntities = false;
+	Mem_FreePool (com_entityPool);
+};
+
 void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
 {
 	sint32 len = 0;
@@ -553,10 +569,11 @@ void CGameAPI::ReadLevel (char *filename)
 	if (!ReadingGame)
 		CPlayerEntity::BackupClientData ();
 
+	// Deallocate entities
+	DeallocateEntities ();
 	// free any dynamic memory allocated by loading the level
 	// base state
 	Mem_FreePool (com_levelPool);
-	Mem_FreePool (com_entityPool);
 
 	// Re-initialize the systems
 	BodyQueue_Init (0);
@@ -642,7 +659,7 @@ void CGameAPI::ReadLevel (char *filename)
 		for (uint8 i = 0; i < game.maxclients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-			Player->Client = CClient(*SaveClientData[i]);
+			Player->Client = *SaveClientData[i];
 			Player->Client.RepositionClient (g_edicts[i+1].client);
 			QDelete SaveClientData[i];
 		}

@@ -272,28 +272,6 @@ double Sys_MSPerCycle()
 	return sys_msPerCycle;
 }
 
-
-/*
-================
-Sys_Milliseconds
-================
-*/
-sint32 Sys_Milliseconds()
-{
-	return timeGetTime() - sys_timeBase;
-}
-
-
-/*
-================
-Sys_UMilliseconds
-================
-*/
-uint32 Sys_UMilliseconds()
-{
-	return timeGetTime() - sys_timeBase;
-}
-
 // Timer class
 CTimer::CTimer (bool StartNow)
 {
@@ -346,8 +324,7 @@ BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
 			return FALSE;
 
-		Mem_FreePools ();
-
+		//Mem_FreePools ();
 		break;
 
 	default:

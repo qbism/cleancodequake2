@@ -43,6 +43,8 @@ public:
 	CEntityState			(entityStateOld_t *state);
 	CEntityState			();
 
+	void Initialize (entityStateOld_t *state);
+
 	sint32		&GetNumber		();
 
 	vec3f	&GetOrigin		();
@@ -343,7 +345,6 @@ CC_ENUM (uint32, EFieldType)
 	FT_YAWANGLE,		// Only stores yaw, vec3f or float[3]
 	FT_IGNORE,			// Nothing happens
 	FT_LEVEL_STRING,	// String allocated on level pool
-	FT_GAME_STRING,		// Ditto, on game pool
 	FT_SOUND_INDEX,		// String stored as sound index
 	FT_IMAGE_INDEX,		// String stored as image index
 	FT_MODEL_INDEX,		// String stored as model index
@@ -418,9 +419,8 @@ public:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
-		case FT_GAME_STRING:
 			if (strlen(Value))
-				OFS_TO_TYPE(char*) = CopyStr(Value, (FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
+				OFS_TO_TYPE(char*) = CopyStr(Value, com_levelPool);
 			else
 				OFS_TO_TYPE(char*) = NULL;
 			break;
@@ -508,7 +508,6 @@ public:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
-		case FT_GAME_STRING:
 			File.WriteString (OFS_TO_TYPE(char *));
 			break;
 		case FT_SOUND_INDEX:
@@ -594,8 +593,7 @@ public:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
-		case FT_GAME_STRING:
-			OFS_TO_TYPE(char*) = File.ReadString ((FieldType == FT_LEVEL_STRING) ? com_levelPool : com_gamePool);
+			OFS_TO_TYPE(char*) = File.ReadString (com_levelPool);
 			break;
 		case FT_SOUND_INDEX:
 			{
@@ -770,9 +768,6 @@ public:
 	virtual void SaveFields (CFile &File);
 	virtual void LoadFields (CFile &File);
 };
-
-typedef std::list<CMapEntity*, std::generic_allocator <CMapEntity*> >	TMapEntityListType;
-extern TMapEntityListType		MapEntities;
 
 #include "cc_itementity.h"
 #include "cc_junk_entities.h"

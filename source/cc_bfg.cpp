@@ -127,7 +127,7 @@ WEAPON_DEFS (CBFG);
 
 void CBFG::CreateItem (CItemList *List)
 {
-	NItems::BFG = QNew (com_genericPool, 0) CWeaponItem
+	NItems::BFG = QNew (com_itemPool, 0) CWeaponItem
 		("weapon_bfg", "models/weapons/g_bfg/tris.md2", EF_ROTATE,
 		"misc/w_pkup.wav", "w_bfg", "BFG10k",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,

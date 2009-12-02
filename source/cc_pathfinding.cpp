@@ -248,7 +248,7 @@ CCvar *DebugNodes;
 void Nodes_Register ()
 {
 	Cmd_AddCommand ("node",				Cmd_Node_f);
-	DebugNodes = QNew (com_genericPool, 0) CCvar("node_debug", "0", CVAR_LATCH_SERVER);
+	DebugNodes = QNew (com_cvarPool, 0) CCvar("node_debug", "0", CVAR_LATCH_SERVER);
 }
 
 void InitNodes ()

@@ -48,8 +48,8 @@ void CPlayerCommand::Run (CPlayerEntity *ent)
 	Func (ent);
 };
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedPlayerCommandListType;
-typedef std::vector<CPlayerCommand*, std::generic_allocator<CPlayerCommand*> > TPlayerCommandListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::command_allocator<size_t> > THashedPlayerCommandListType;
+typedef std::vector<CPlayerCommand*, std::command_allocator<CPlayerCommand*> > TPlayerCommandListType;
 
 TPlayerCommandListType &CommandList ()
 {
@@ -77,7 +77,7 @@ void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *en
 	}
 
 	// We can add it!
-	CommandList().push_back (QNew (com_genericPool, 0) CPlayerCommand (commandName, Func, Flags));
+	CommandList().push_back (QNew (com_commandPool, 0) CPlayerCommand (commandName, Func, Flags));
 
 	// Link it in the hash tree
 	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));

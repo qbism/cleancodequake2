@@ -35,20 +35,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-std::vector<CWeapon*, std::generic_allocator<CWeapon*> > *WeaponList;
+typedef std::vector<CWeapon*, std::item_allocator<CWeapon*> > TWeaponListType;
+
+TWeaponListType &WeaponList ()
+{
+	static TWeaponListType WeaponList_;
+	return WeaponList_;
+};
 
 void AddWeapons (CItemList *List)
 {
-	for (size_t i = 0; i < WeaponList->size(); i++)
-		WeaponList->at(i)->AddWeaponToItemList (List);
+	for (size_t i = 0; i < WeaponList().size(); i++)
+		WeaponList()[i]->AddWeaponToItemList (List);
 }
 
 void DoWeaponVweps ()
 {
 	sint32 TakeAway = ModelIndex(NItems::Blaster->VWepModel) - 1;
 
-	for (size_t i = 0; i < WeaponList->size(); i++)
-		WeaponList->at(i)->InitWeaponVwepModel (TakeAway);
+	for (size_t i = 0; i < WeaponList().size(); i++)
+		WeaponList()[i]->InitWeaponVwepModel (TakeAway);
 }
 
 void SaveWeapon (CFile &File, CWeapon *Weapon)
@@ -101,9 +107,7 @@ WeaponSound(WeaponSound)
 	IdleNumFrames = (IdleEnd - IdleStart);
 	DeactNumFrames = (DeactEnd - DeactStart);
 
-	if (!WeaponList)
-		WeaponList = QNew (com_genericPool, 0) std::vector<CWeapon*, std::generic_allocator<CWeapon*> >;
-	WeaponList->push_back (this);
+	WeaponList().push_back (this);
 };
 
 void CWeapon::InitWeapon (CPlayerEntity *Player)

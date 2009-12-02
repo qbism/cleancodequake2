@@ -185,7 +185,7 @@ void Cmd_Players_f (CPlayerEntity *ent)
 
 	ent->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large, count);
 
-	delete[] index;
+	QDelete[] index;
 }
 
 /*
@@ -439,7 +439,7 @@ void GCmd_SayTeam_f (CPlayerEntity *ent)
 
 void SearchForRandomMonster (CMonsterEntity *Entity)
 {
-	static std::vector <CMonsterEntity *, std::game_allocator<CMonsterEntity *> > ChosenMonsters;
+	static std::vector <CMonsterEntity *, std::generic_allocator<CMonsterEntity *> > ChosenMonsters;
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
 	{
 		edict_t *ent = (*it);

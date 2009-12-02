@@ -118,61 +118,6 @@ public:
 	};
 };
 
-/*
-#ifdef WIN32
-#define _DECL_DLLMAIN   // enable prototypes for DllMain and _CRT_INIT
-#include <Windows.h>
-#include <process.h>
-
-BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason,
-	LPVOID lpReserved)
-{
-	if (fdwReason == DLL_PROCESS_ATTACH)
-	{
-
-#else
-
-void __attribute__ ((constructor)) my_load();
-void __attribute__ ((destructor)) my_unload();
-
-// Called when the library is loaded and before dlopen() returns
-void my_load()
-{
-#endif
-		Mem_Init ();
-
-#ifdef WIN32
-		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
-			return FALSE;
-	}
-
-	if (fdwReason == DLL_PROCESS_DETACH)
-	{
-#else
-// Add initialization code…
-}
-
-// Called when the library is unloaded and before dlclose()
-// returns
-void my_unload()
-{
-#endif
-		Mem_FreePool (com_gamePool);
-		Mem_FreePool (com_levelPool);
-		Mem_FreePool (com_genericPool);
-
-#ifdef WIN32
-		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
-			return FALSE;
-
-		DisableThreadLibraryCalls (hinstDLL);
-	}
-
-	return TRUE;
-#endif
-}
-*/
-
 #else
 FILE_WARNING
 #endif

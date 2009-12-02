@@ -450,7 +450,7 @@ void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage
 
 #include <crtdbg.h>
 
-inline void AssertExpression (const bool expr, const char *msg)
+void AssertExpression (const bool expr, const char *msg)
 {
 #if ALLOW_ASSERTS
 	if (!expr)

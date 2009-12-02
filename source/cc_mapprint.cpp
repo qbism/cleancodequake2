@@ -222,7 +222,7 @@ char *ParsePound (char *tok, char *realEntities)
 	else if (strcmp(token, "#elseifcvar") == 0)
 	{
 		token = Com_Parse (&tok);
-		CCvar temp = CCvar(token, "");
+		CCvar temp (token, "");
 
 		token = Com_Parse (&tok);
 		// An "else if" essentially means that we're re-evaluating the
@@ -261,7 +261,7 @@ char *ParsePound (char *tok, char *realEntities)
 	else if (strcmp(token, "#ifcvar") == 0)
 	{
 		token = Com_Parse (&tok);
-		CCvar temp = CCvar(token, "");
+		CCvar temp (token, "");
 
 		token = Com_Parse (&tok);
 		if (Q_stricmp(token, temp.String()) == 0)

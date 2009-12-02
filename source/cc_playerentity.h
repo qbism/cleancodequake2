@@ -42,6 +42,8 @@ protected:
 
 public:
 	CPlayerState (playerState_t *playerState);
+
+	void			Initialize (playerState_t *playerState);
 	
 	pMoveState_t	*GetPMove (); // Direct pointer
 	void			SetPMove (pMoveState_t *newState);
@@ -94,32 +96,10 @@ void SaveWeapon (CFile &File, CWeapon *Weapon);
 class CPersistentData
 {
 public:
-	CPersistentData () :
-	  UserInfo (),
-	  Name (),
-	  IP (),
-	  hand (0),
-	  state (),
-	  health (0),
-	  max_health (0),
-	  savedFlags (0),
-	  Inventory (),
-	  Weapon (NULL),
-	  LastWeapon (NULL),
-	  Armor (NULL),
-#if CLEANCTF_ENABLED
-	  Flag (NULL),
-#endif
-	  Tech (NULL),
-	  PowerCubeCount (0),
-	  Score (0),
-	  game_helpchanged (0),
-	  helpchanged (0),
-	  Spectator (false),
-	  viewBlend ()
-	  {
-		  memset (&maxAmmoValues, 0, sizeof(maxAmmoValues));
-	  }
+	CPersistentData ()
+	{
+		Clear ();
+	}
 
 	void Save (CFile &File)
 	{
@@ -143,8 +123,8 @@ public:
 
 		File.Write<sint32> (PowerCubeCount);
 		File.Write<sint32> (Score);
-		File.Write<sint32> (game_helpchanged);
-		File.Write<sint32> (helpchanged);
+		File.Write<uint8> (game_helpchanged);
+		File.Write<uint8> (helpchanged);
 		File.Write<bool> (Spectator);
 		File.Write<colorf> (viewBlend);
 	}
@@ -174,8 +154,8 @@ public:
 
 		PowerCubeCount = File.Read<sint32> ();
 		Score = File.Read<sint32> ();
-		game_helpchanged = File.Read<sint32> ();
-		helpchanged = File.Read<sint32> ();
+		game_helpchanged = File.Read<uint8> ();
+		helpchanged = File.Read<uint8> ();
 		Spectator = File.Read<bool> ();
 		viewBlend = File.Read<colorf> ();
 	}
@@ -209,8 +189,8 @@ public:
 	sint32			PowerCubeCount;	// used for tracking the cubes in coop games
 	sint32			Score;			// for calculating total unit Score in coop games
 
-	sint32			game_helpchanged;
-	sint32			helpchanged;
+	uint8			game_helpchanged;
+	uint8			helpchanged;
 
 	bool		Spectator;			// client is a Spectator
 
@@ -218,7 +198,30 @@ public:
 
 	void Clear ()
 	{
-		*this = CPersistentData ();
+		UserInfo.clear();
+		Name.clear();
+		memset (&IP, 0, sizeof(IP));
+		hand = 0;
+		state = 0;
+		health = 0;
+		max_health = 0;
+		savedFlags = 0;
+		Inventory.Clear();
+		Weapon = NULL;
+		LastWeapon  = NULL;
+		Armor = NULL;
+#if CLEANCTF_ENABLED
+		Flag = NULL;
+#endif
+		Tech = NULL;
+		PowerCubeCount = 0;
+		Score = 0;
+		game_helpchanged = 0;
+		helpchanged = 0;
+		Spectator = false;
+		viewBlend.Set (0,0,0,0);
+
+		memset (&maxAmmoValues, 0, sizeof(maxAmmoValues));
 	}
 };
 
@@ -244,33 +247,33 @@ public:
 	CMenuState			();
 	CMenuState			(CPlayerEntity *ent);
 
+	void Initialize		(CPlayerEntity *ent);
+
 	void OpenMenu		(); // Do this AFTER setting CurrentMenu
 	void CloseMenu		();
 
 	void SelectNext		(); // invnext
 	void SelectPrev		(); // invprev
 	void Select			(); // invuse
+
+	void Clear ()
+	{
+		ent = NULL;
+		Cursor = -1;
+		Key = KEY_NONE;
+		CurrentMenu = NULL;
+		InMenu = false;
+	}
 };
 
 // client data that stays across deathmatch respawns
 class CRespawnData
 {
 public:
-	CRespawnData () :
-	  CoopRespawn (),
-	  EnterFrame (0),
-	  Score (0),
-	  CmdAngles (),
-	  Spectator (false),
-	  Gender (GENDER_NEUTRAL),
-	  MessageLevel (0),
-#if MONSTERS_USE_PATHFINDING
-	  LastNode (NULL),
-#endif
-	  MenuState ()
-	  {
-		  memset (&CTF, 0, sizeof(CTF));
-	  };
+	CRespawnData ()
+	{
+		memset (&CTF, 0, sizeof(CTF));
+	};
 
 	void Save (CFile &File)
 	{
@@ -332,7 +335,19 @@ public:
 
 	void Clear ()
 	{
-		*this = CRespawnData ();
+		CoopRespawn.Clear ();
+		EnterFrame = 0;
+		Score = 0;
+		CmdAngles.Clear();
+		Spectator = false;
+		Gender = GENDER_NEUTRAL;
+		MessageLevel = 0;
+#if MONSTERS_USE_PATHFINDING
+		LastNode = NULL;
+#endif
+		MenuState.Clear ();
+
+		memset (&CTF, 0, sizeof(CTF));
 	}
 };
 
@@ -544,6 +559,7 @@ public:
 	FrameNumber_t		PainDebounceTime;
 
 	CPlayerEntity (sint32 Index);
+	~CPlayerEntity ();
 
 	void SaveFields (CFile &File)
 	{

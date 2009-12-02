@@ -78,14 +78,7 @@ public:
 		File.Write<size_t> (Array.size());
 
 		for (TInventoryMapType::iterator it = Array.begin(); it != Array.end(); it++)
-		{
-/*			uint8 first = (*it).first;
-			uint16 second = (*it).second;
-
-			File.Write (&first, sizeof(first));
-			File.Write (&second, sizeof(second));*/
 			File.Write <std::pair <uint8, uint16> > (*it);
-		}
 
 		File.Write<sint32> (SelectedItem);
 	};
@@ -95,19 +88,16 @@ public:
 		size_t size = File.Read<size_t> ();
 
 		for (size_t i = 0; i < size; i++)
-		{
-/*			uint8 first;
-			uint16 second;
-
-			File.Read (&first, sizeof(first));
-			File.Read (&second, sizeof(second));*/
-
-			//Array[first] = second;
 			Array.insert (File.Read <std::pair <uint8, uint16> > ());
-		}
 
 		SelectedItem = File.Read<sint32> ();
-	}
+	};
+
+	void Clear ()
+	{
+		Array.clear();
+		SelectedItem = -1;
+	};
 };
 
 void Cmd_Use_f (CPlayerEntity *ent);

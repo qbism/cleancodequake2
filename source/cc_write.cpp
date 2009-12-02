@@ -62,9 +62,9 @@ void _WriteFloat (float val)
 	gi.WriteFloat (val);
 }
 
-void _WriteString (char *val)
+void _WriteString (const char *val)
 {
-	gi.WriteString (val);
+	gi.WriteString ((char*)val);
 }
 
 CC_ENUM (uint8, EWriteType)
@@ -80,21 +80,33 @@ CC_ENUM (uint8, EWriteType)
 class CWriteIndex
 {
 public:
-	uint8		*Ptr;
 	EWriteType	Type;
 
-	CWriteIndex (uint8 *Ptr, EWriteType Type) :
-	Ptr(Ptr),
+	CWriteIndex (EWriteType Type) :
 	Type(Type)
 	{
 	};
 
-	~CWriteIndex ()
+	virtual ~CWriteIndex ()
 	{
-		if (Type == WT_STRING)
-			QDelete[] Ptr;
-		else
-			QDelete Ptr;
+	};
+
+	virtual void Write ()
+	{
+		_CC_ASSERT_EXPR (0, "WriteIndex has invalid write ID");
+	};
+};
+
+template <typename TType>
+class CWritePrimIndex : public CWriteIndex
+{
+public:
+	TType	Val;
+
+	CWritePrimIndex (TType Val, EWriteType Type) :
+	Val(Val),
+	CWriteIndex(Type)
+	{
 	};
 
 	void Write ()
@@ -102,31 +114,42 @@ public:
 		switch (Type)
 		{
 		case WT_CHAR:
-			_WriteChar ((sint8)*Ptr);
+			_WriteChar (Val);
 			break;
 		case WT_BYTE:
-			_WriteByte ((uint8)*Ptr);
+			_WriteByte (Val);
 			break;
 		case WT_SHORT:
-			_WriteShort (*((sint16*)(Ptr)));
+			_WriteShort (Val);
 			break;
 		case WT_LONG:
-			_WriteLong (*((long*)(Ptr)));
+			_WriteByte (Val);
 			break;
 		case WT_FLOAT:
-			_WriteFloat (*((float*)(Ptr)));
-			break;
-		case WT_STRING:
-			_WriteString ((char*)Ptr);
-			break;
-		default:
-			_CC_ASSERT_EXPR (0, "WriteIndex has invalid write ID");
+			_WriteFloat (Val);
 			break;
 		};
 	};
 };
 
-std::vector <CWriteIndex*, std::generic_allocator<CWriteIndex*> > WriteQueue;
+class CWriteString : public CWriteIndex
+{
+public:
+	std::cc_string	Val;
+
+	CWriteString (std::cc_string Val) :
+	Val(Val),
+	CWriteIndex(WT_STRING)
+	{
+	};
+
+	void Write ()
+	{
+		_WriteString (Val.c_str());
+	};
+};
+
+std::vector <CWriteIndex*, std::write_allocator<CWriteIndex*> > WriteQueue;
 
 void SendQueue (edict_t *To, bool Reliable)
 {
@@ -141,11 +164,6 @@ void Clear ()
 	for (size_t i = 0; i < WriteQueue.size(); i++)
 		QDelete WriteQueue[i];
 	WriteQueue.clear();
-}
-
-void PushUp (uint8 *Ptr, EWriteType Type)
-{
-	WriteQueue.push_back (QNew (com_genericPool, 0) CWriteIndex(Ptr, Type));
 }
 
 // vec3f overloads
@@ -229,7 +247,7 @@ void WriteChar (sint8 val)
 	}
 
 	//gi.WriteChar (val);
-	PushUp ((uint8*)QNew (com_levelPool, 0) sint8 (val), WT_CHAR);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint8> (val, WT_CHAR));
 }
 
 void WriteByte (uint8 val)
@@ -241,7 +259,7 @@ void WriteByte (uint8 val)
 	}
 
 	//gi.WriteByte (val);
-	PushUp ((uint8*)QNew (com_levelPool, 0) uint8 (val), WT_BYTE);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<uint8> (val, WT_BYTE));
 }
 
 void WriteShort (sint16 val)
@@ -253,7 +271,7 @@ void WriteShort (sint16 val)
 	}
 
 	//gi.WriteShort (val);
-	PushUp ((uint8*)QNew (com_levelPool, 0) sint16 (val), WT_SHORT);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint16> (val, WT_SHORT));
 }
 
 void WriteLong (long val)
@@ -265,7 +283,7 @@ void WriteLong (long val)
 	}
 
 	//gi.WriteLong (val);
-	PushUp ((uint8*)QNew (com_levelPool, 0) long (val), WT_LONG);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<long> (val, WT_LONG));
 }
 
 void WriteFloat (float val)
@@ -277,7 +295,7 @@ void WriteFloat (float val)
 	}
 
 	//gi.WriteFloat (val);
-	PushUp ((uint8*)QNew (com_levelPool, 0) float (val), WT_FLOAT);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<float> (val, WT_FLOAT));
 }
 
 void WriteAngle (float val)
@@ -305,13 +323,13 @@ void WriteString (const char *val)
 	}
 
 	//gi.WriteString (val);
-	PushUp ((uint8*)Mem_PoolStrDup (val, com_levelPool, 0), WT_STRING);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWriteString (val));
 }
 
 void WriteCoord (float f)
 {
 	//WriteShort ((sint32)(f * 8));
-	PushUp ((uint8*)QNew (com_levelPool, 0) sint16 ((sint16)(f * 8)), WT_SHORT);
+	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
 }
 
 void WritePosition (vec3_t val)

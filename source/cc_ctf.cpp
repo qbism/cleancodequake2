@@ -216,16 +216,16 @@ void CTFSpawn()
 
 void CTFInit()
 {
-	ctf = QNew (com_genericPool, 0) CCvar("ctf", "0", CVAR_LATCH_SERVER|CVAR_SERVERINFO);
-	ctf_forcejoin = QNew (com_genericPool, 0) CCvar("ctf_forcejoin", "", 0);
-	competition = QNew (com_genericPool, 0) CCvar("competition", "0", CVAR_SERVERINFO);
-	matchlock = QNew (com_genericPool, 0) CCvar("matchlock", "1", CVAR_SERVERINFO);
-	electpercentage = QNew (com_genericPool, 0) CCvar("electpercentage", "66", 0);
-	matchtime = QNew (com_genericPool, 0) CCvar("matchtime", "20", CVAR_SERVERINFO);
-	matchsetuptime = QNew (com_genericPool, 0) CCvar("matchsetuptime", "10", 0);
-	matchstarttime = QNew (com_genericPool, 0) CCvar("matchstarttime", "20", 0);
-	admin_password = QNew (com_genericPool, 0) CCvar("admin_password", "", 0);
-	warp_list = QNew (com_genericPool, 0) CCvar("warp_list", "q2ctf1 q2ctf2 q2ctf3 q2ctf4 q2ctf5", 0);
+	ctf = QNew (com_cvarPool, 0) CCvar("ctf", "0", CVAR_LATCH_SERVER|CVAR_SERVERINFO);
+	ctf_forcejoin = QNew (com_cvarPool, 0) CCvar("ctf_forcejoin", "", 0);
+	competition = QNew (com_cvarPool, 0) CCvar("competition", "0", CVAR_SERVERINFO);
+	matchlock = QNew (com_cvarPool, 0) CCvar("matchlock", "1", CVAR_SERVERINFO);
+	electpercentage = QNew (com_cvarPool, 0) CCvar("electpercentage", "66", 0);
+	matchtime = QNew (com_cvarPool, 0) CCvar("matchtime", "20", CVAR_SERVERINFO);
+	matchsetuptime = QNew (com_cvarPool, 0) CCvar("matchsetuptime", "10", 0);
+	matchstarttime = QNew (com_cvarPool, 0) CCvar("matchstarttime", "20", 0);
+	admin_password = QNew (com_cvarPool, 0) CCvar("admin_password", "", 0);
+	warp_list = QNew (com_cvarPool, 0) CCvar("warp_list", "q2ctf1 q2ctf2 q2ctf3 q2ctf4 q2ctf5", 0);
 }
 
 /*------------------------------------------------------------------------*/

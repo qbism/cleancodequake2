@@ -540,12 +540,14 @@ bool CTriggerCounter::ParseField (const char *Key, const char *Value)
 void			CTriggerCounter::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTriggerCounter> (this, File);
+	CMapEntity::SaveFields (File);
 	CUsableEntity::SaveFields (File);
 }
 
 void			CTriggerCounter::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTriggerCounter> (this, File);
+	CMapEntity::LoadFields (File);
 	CUsableEntity::LoadFields (File);
 }
 

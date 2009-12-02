@@ -210,7 +210,7 @@ public:
 
 		DrawState->AddVirtualPoint_X (drawX);
 
-		std::stringstream str;
+		std::cc_stringstream str;
 		str << Value << AppendText;
 		DrawState->AddString (str.str().c_str(), Selected, false);
 	};

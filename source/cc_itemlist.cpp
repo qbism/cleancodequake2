@@ -174,7 +174,7 @@ inline sint32 GetNumItems ()
 
 void InitItemlist ()
 {
-	ItemList = QNew (com_genericPool, 0) CItemList;
+	ItemList = QNew (com_itemPool, 0) CItemList;
 
 	AddAmmoToList();
 	AddHealthToList();
