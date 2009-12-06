@@ -253,52 +253,56 @@ sint32 &CClient::GetPing ()
 	return client->ping;
 }
 
+extern bool ReadingGame;
 void CClient::Clear ()
 {
-	memset (client, 0, sizeof(*client));
+	if (!ReadingGame)
+	{
+		memset (client, 0, sizeof(*client));
 
-	PlayerState.Initialize (&client->playerState);
-	KickAngles.Clear ();
-	KickOrigin.Clear ();
-	ViewAngle.Clear ();
-	DamageFrom.Clear ();
-	DamageBlend.Set (0,0,0,0);
-	#if !MONSTERS_USE_PATHFINDING
-	mynoise = NULL;
-	mynoise2 = NULL;
+		PlayerState.Initialize (&client->playerState);
+		KickAngles.Clear ();
+		KickOrigin.Clear ();
+		ViewAngle.Clear ();
+		DamageFrom.Clear ();
+		DamageBlend.Set (0,0,0,0);
+		#if !MONSTERS_USE_PATHFINDING
+		mynoise = NULL;
+		mynoise2 = NULL;
+		#endif
+		OldViewAngles.Clear ();
+		OldVelocity.Clear ();
+		ViewDamage.Clear ();
+		ViewDamageTime = 0;
+		KillerYaw = 0;
+		Persistent.Clear ();
+		Respawn.Clear ();
+		memset (&OldPMove, 0, sizeof(OldPMove));
+		LayoutFlags = 0;
+		Buttons = 0;
+		LatchedButtons = 0;
+		NewWeapon = NULL;
+		WeaponState = 0;
+		FallTime = 0;
+		FallValue = 0;
+		BonusAlpha = 0;
+		BobTime = 0;
+		PowerArmorTime = 0;
+		OldWaterLevel = 0;
+		WeaponSound = 0;
+
+		memset (&Anim, 0, sizeof(Anim));
+		memset (&Timers, 0, sizeof(Timers));
+		memset (&Grenade, 0, sizeof(Grenade));
+		memset (&Flood, 0, sizeof(Flood));
+		memset (&Chase, 0, sizeof(Chase));
+	#if CLEANCTF_ENABLED
+		memset (&Grapple, 0, sizeof(Grapple));
 	#endif
-	OldViewAngles.Clear ();
-	OldVelocity.Clear ();
-	ViewDamage.Clear ();
-	ViewDamageTime = 0;
-	KillerYaw = 0;
-	Persistent.Clear ();
-	Respawn.Clear ();
-	memset (&OldPMove, 0, sizeof(OldPMove));
-	LayoutFlags = 0;
-	Buttons = 0;
-	LatchedButtons = 0;
-	NewWeapon = NULL;
-	WeaponState = 0;
-	FallTime = 0;
-	FallValue = 0;
-	BonusAlpha = 0;
-	BobTime = 0;
-	PowerArmorTime = 0;
-	OldWaterLevel = 0;
-	WeaponSound = 0;
+		memset (&Tech, 0, sizeof(Tech));
 
-	memset (&Anim, 0, sizeof(Anim));
-	memset (&Timers, 0, sizeof(Timers));
-	memset (&Grenade, 0, sizeof(Grenade));
-	memset (&Flood, 0, sizeof(Flood));
-	memset (&Chase, 0, sizeof(Chase));
-#if CLEANCTF_ENABLED
-	memset (&Grapple, 0, sizeof(Grapple));
-#endif
-	memset (&Tech, 0, sizeof(Tech));
-
-	memset (&DamageValues, 0, sizeof(DamageValues));
+		memset (&DamageValues, 0, sizeof(DamageValues));
+	}
 }
 
 // Players have a special way of allocating the entity.
@@ -3849,6 +3853,9 @@ void CPlayerEntity::Begin ()
 		// with deltaangles
 		for (sint32 i = 0; i < 3; i++)
 			Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Client.PlayerState.GetViewAngles()[i]);
+
+		// also re-build the weapon model
+		Client.PlayerState.GetGunIndex() = Client.Persistent.Weapon->GetWeaponModel();
 	}
 	else
 	{

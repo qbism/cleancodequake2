@@ -343,6 +343,8 @@ public:
 	  {
 	  };
 
+	IMPLEMENT_SAVE_HEADER (CMiscStroggShip);
+
 	bool Run ()
 	{
 		return CTrainBase::Run ();

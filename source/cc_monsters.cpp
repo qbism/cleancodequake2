@@ -3060,7 +3060,7 @@ void CMonster::AI_Stand (float Dist)
 
 void CMonster::ReactToDamage (CBaseEntity *attacker)
 {
-	if (!(attacker->EntityFlags & ENT_PLAYER) && !(attacker->EntityFlags & ENT_MONSTER))
+	if (!attacker || (!(attacker->EntityFlags & ENT_PLAYER) && !(attacker->EntityFlags & ENT_MONSTER)))
 		return;
 
 	if (attacker == Entity || (Entity->Enemy && (attacker == Entity->Enemy)))

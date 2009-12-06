@@ -101,12 +101,10 @@ bool RemoveAll (const edict_t *it)
 	return true;
 }
 
-void ClearExtraEntities ();
 void DeallocateEntities ()
 {
 	ShuttingDownEntities = true;
 	level.Entities.Closed.remove_if (RemoveAll);
-	ClearExtraEntities ();
 	ShuttingDownEntities = false;
 	Mem_FreePool (com_entityPool);
 };
@@ -221,11 +219,8 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 #if WIN32 && _DEBUG
 		if (!(Entity->EntityFlags & ENT_ITEM))
 		{
-			std::cc_string name = Q_strlwr(std::cc_string(typeid(*Entity).name()));
-			std::cc_string lwrname = Q_strlwr(std::cc_string(Entity->__GetName()));
-
-			if (!strstr(name.c_str(), lwrname.c_str()))
-				DebugPrintf ("%s did not write correctly (wrote as %s)\n", lwrname.c_str(), name.c_str());
+			if (!strstr(Q_strlwr(std::cc_string(typeid(*Entity).name())).c_str(), Q_strlwr(std::cc_string(Entity->__GetName())).c_str()))
+				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->__GetName());
 		}
 #endif
 	}
@@ -496,6 +491,12 @@ void CGameAPI::ReadGame (char *filename)
 	ReadGameLocals (File);
 
 	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
+	for (uint8 i = 0; i < game.maxclients; i++)
+	{
+		edict_t *ent = &g_edicts[i+1];
+		ent->client = game.clients + i;
+	}
+
 	ReadClients (File);
 
 	Bans.LoadFromFile ();
@@ -605,7 +606,7 @@ void CGameAPI::ReadLevel (char *filename)
 	byte *base;
 	File.Read (&base, sizeof(base));
 
-#ifdef _WIN32
+#ifdef WIN32
 	if (base != (byte *)ReadClient)
 	{
 		GameError ("ReadLevel: function pointers have moved");

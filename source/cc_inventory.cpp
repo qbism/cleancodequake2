@@ -415,6 +415,7 @@ void Cmd_InvUse_f (CPlayerEntity *ent)
 		return;
 	}
 	it->Use (ent);
+	ent->Client.Persistent.Inventory.ValidateSelectedItem ();
 }
 
 /*
