@@ -42,6 +42,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_pmove.h"
 #endif
 
+
+CPersistentData::CPersistentData ()
+{
+	Clear ();
+}
+
+CPersistentData::~CPersistentData()
+{
+}
+
 CPlayerState::CPlayerState (playerState_t *playerState) :
 playerState(playerState)
 {
@@ -1904,7 +1914,11 @@ void CPlayerEntity::EndServerFrame ()
 	Client.KickOrigin.Clear();
 	Client.KickAngles.Clear();
 
-	if (((game.mode & GAME_CTF) || dmFlags.dfDmTechs) && (Client.Persistent.Tech && (Client.Persistent.Tech->TechType == CTech::TECH_PASSIVE)))
+	if ((
+#if CLEANCTF_ENABLED
+		(game.mode & GAME_CTF) || 
+#endif
+		dmFlags.dfDmTechs) && (Client.Persistent.Tech && (Client.Persistent.Tech->TechType == CTech::TECH_PASSIVE)))
 		Client.Persistent.Tech->DoPassiveTech (this);
 
 	// if the scoreboard is up, update it
@@ -3356,7 +3370,11 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 d
 		}
 //ZOID
 #endif
-		if ((game.mode & GAME_CTF) || dmFlags.dfDmTechs) 
+		if (
+#if CLEANCTF_ENABLED
+			(game.mode & GAME_CTF) || 
+#endif
+			dmFlags.dfDmTechs) 
 			DeadDropTech();
 
 		if (game.mode & GAME_DEATHMATCH)
@@ -3995,7 +4013,11 @@ void CPlayerEntity::Disconnect ()
 //ZOID
 #endif
 
-	if ((game.mode & GAME_CTF) || dmFlags.dfDmTechs) 
+	if (
+#if CLEANCTF_ENABLED
+		(game.mode & GAME_CTF) || 
+#endif
+		dmFlags.dfDmTechs) 
 		DeadDropTech();
 
 	// send effect

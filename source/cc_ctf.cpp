@@ -395,23 +395,20 @@ void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *attacker)
 
 void CTFResetFlag(ETeamIndex Team)
 {
-	for (ETeamIndex Team = CTF_TEAM1; Team < CTF_TEAMNUM; Team++)
+	CFlagTransponder *Transponder = FindTransponder(Team);
+
+	if (Transponder->Flag != Transponder->Base)
 	{
-		CFlagTransponder *Transponder = FindTransponder(Team);
-
-		if (Transponder->Flag != Transponder->Base)
-		{
-			Transponder->Flag->Free ();
-			Transponder->Flag = Transponder->Base;
-			Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
-			Transponder->Holder = NULL;
-		}
-
-		Transponder->Base->GetSvFlags() &= ~SVF_NOCLIENT;
-		Transponder->Base->GetSolid() = SOLID_TRIGGER;
-		Transponder->Base->Link ();
-		Transponder->Base->State.GetEvent() = EV_ITEM_RESPAWN;
+		Transponder->Flag->Free ();
+		Transponder->Flag = Transponder->Base;
+		Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
+		Transponder->Holder = NULL;
 	}
+
+	Transponder->Base->GetSvFlags() &= ~SVF_NOCLIENT;
+	Transponder->Base->GetSolid() = SOLID_TRIGGER;
+	Transponder->Base->Link ();
+	Transponder->Base->State.GetEvent() = EV_ITEM_RESPAWN;
 }
 
 void CTFResetFlags()

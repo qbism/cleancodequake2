@@ -96,10 +96,8 @@ void SaveWeapon (CFile &File, CWeapon *Weapon);
 class CPersistentData
 {
 public:
-	CPersistentData ()
-	{
-		Clear ();
-	}
+	CPersistentData ();
+	~CPersistentData();
 
 	void Save (CFile &File)
 	{
@@ -272,7 +270,7 @@ class CRespawnData
 public:
 	CRespawnData ()
 	{
-		memset (&CTF, 0, sizeof(CTF));
+		Clear ();
 	};
 
 	void Save (CFile &File)
@@ -347,7 +345,9 @@ public:
 #endif
 		MenuState.Clear ();
 
+#if CLEANCTF_ENABLED
 		memset (&CTF, 0, sizeof(CTF));
+#endif
 	}
 };
 
@@ -636,12 +636,12 @@ public:
 	void			CTFSetIDView ();
 	void			CTFScoreboardMessage (bool reliable);
 	void			CTFAssignGhost ();
+#endif
 
 	bool			ApplyStrengthSound();
 	bool			ApplyHaste();
 	void			ApplyHasteSound();
 	bool			HasRegeneration();
-#endif
 
 	void			DeadDropTech ();
 	void			TossClientWeapon ();

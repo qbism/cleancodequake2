@@ -41,12 +41,12 @@ template <typename TFunctor>
 class CCommand
 {
 public:
-	std::cc_string		Name;
+	char				*Name;
 	ECmdTypeFlags		Flags;
 	TFunctor			Func;
 
-	CCommand (std::cc_string Name, TFunctor Func, ECmdTypeFlags Flags) :
-	  Name(Name),
+	CCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags) :
+	  Name(Mem_PoolStrDup(Name, com_commandPool, 0)),
 	  Func(Func),
 	  Flags(Flags)
 	  {
@@ -54,6 +54,7 @@ public:
 	
 	virtual ~CCommand ()
 	{
+		QDelete[] Name;
 	};
 };
 
@@ -61,7 +62,7 @@ typedef void (*TCommandFunctorType) (CPlayerEntity*);
 class CPlayerCommand : public CCommand <TCommandFunctorType>
 {
 public:
-	CPlayerCommand (std::cc_string Name, TCommandFunctorType Func, ECmdTypeFlags Flags) :
+	CPlayerCommand (const char *Name, TCommandFunctorType Func, ECmdTypeFlags Flags) :
 	  CCommand (Name, Func, Flags)
 	  {
 	  };
@@ -78,7 +79,7 @@ typedef void (*TServerCommandFunctorType) ();
 class CServerCommand : public CCommand <TServerCommandFunctorType>
 {
 public:
-	CServerCommand (std::cc_string Name, TServerCommandFunctorType Func) :
+	CServerCommand (const char *Name, TServerCommandFunctorType Func) :
 	  CCommand (Name, Func, 0)
 	  {
 	  };
@@ -94,14 +95,14 @@ public:
 };
 
 template <class TReturnValue, typename TListType, typename THashListType>
-TReturnValue *FindCommand (std::cc_string commandName, TListType &List, THashListType &HashList)
+TReturnValue *FindCommand (const char *commandName, TListType &List, THashListType &HashList)
 {
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
 
 	for (THashListType::iterator it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
 	{
 		TReturnValue *Command = List.at((*it).second);
-		if (Q_stricmp (Command->Name.c_str(), commandName.c_str()) == 0)
+		if (Q_stricmp (Command->Name, commandName) == 0)
 			return Command;
 	}
 	return NULL;

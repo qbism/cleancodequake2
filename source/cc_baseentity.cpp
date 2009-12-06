@@ -208,9 +208,11 @@ void RemoveEntityFromList (edict_t *ent)
 	level.Entities.Open.push_front (ent);
 }
 
+#include "cc_bodyqueue.h"
+
 bool RemoveEntity (edict_t *ent)
 {
-	if (!ent || ent->state.number <= game.maxclients)
+	if (!ent || ent->state.number <= (game.maxclients + BODY_QUEUE_SIZE))
 		return false;
 
 	if (ent->AwaitingRemoval)
@@ -327,6 +329,25 @@ void			RunPrivateEntities ()
 	}
 };
 
+typedef std::list <CBaseEntity*, std::generic_allocator<CBaseEntity*> > TEntityListTestListType;
+std::list <CBaseEntity*, std::generic_allocator<CBaseEntity*> > EntityListTest;
+
+#if _WIN32
+#include <typeinfo>
+#endif
+
+void ClearExtraEntities ()
+{
+	for (TEntityListTestListType::iterator it = EntityListTest.begin(); it != EntityListTest.end(); ++it)
+	{
+#if _WIN32
+		DebugPrintf ("Entity %s didn't get freed yet\n", typeid(*(*it)).name());
+#endif
+		QDelete (*it);
+	}
+	EntityListTest.clear();
+}
+
 // Creating a new entity via constructor.
 CBaseEntity::CBaseEntity ()
 {
@@ -340,6 +361,8 @@ _CC_ENABLE_DEPRECATION
 	EntityFlags |= ENT_BASE;
 
 	State.Initialize (&gameEntity->state);
+
+	EntityListTest.push_back (this);
 };
 
 CBaseEntity::CBaseEntity (sint32 Index)
@@ -362,6 +385,7 @@ CBaseEntity::CBaseEntity (sint32 Index)
 		EntityFlags |= ENT_BASE;
 		State.Initialize (&gameEntity->state);
 	}
+	EntityListTest.push_back (this);
 }
 
 bool ShuttingDownEntities = false;
@@ -390,6 +414,7 @@ CBaseEntity::~CBaseEntity ()
 			}
 		}
 	}
+	EntityListTest.remove (this);
 };
 
 void CBaseEntity::WriteBaseEntity (CFile &File)

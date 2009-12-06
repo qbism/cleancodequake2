@@ -101,10 +101,12 @@ bool RemoveAll (const edict_t *it)
 	return true;
 }
 
+void ClearExtraEntities ();
 void DeallocateEntities ()
 {
 	ShuttingDownEntities = true;
 	level.Entities.Closed.remove_if (RemoveAll);
+	ClearExtraEntities ();
 	ShuttingDownEntities = false;
 	Mem_FreePool (com_entityPool);
 };

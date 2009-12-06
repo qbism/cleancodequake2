@@ -625,6 +625,6 @@ ClientCommand
 void CGameAPI::ClientCommand (CPlayerEntity *ent)
 {
 	InitArg ();
-	Cmd_RunCommand (ArgGets(0), ent);
+	Cmd_RunCommand (ArgGets(0).c_str(), ent);
 	EndArg ();
 }

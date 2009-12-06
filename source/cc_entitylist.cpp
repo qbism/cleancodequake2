@@ -124,6 +124,16 @@ _CC_ENABLE_DEPRECATION
 		return;
 	}
 
+	// Did we get freed?
+	if (MapEntity->Freed)
+	{
+		// We're done then
+		MapEntity->gameEntity->Entity = NULL;
+		QDelete MapEntity;
+		ent->inUse = false;
+		return;
+	}
+
 	// Link in the classname
 	MapEntity->ClassName = Mem_PoolStrDup (level.ClassName.c_str(), com_levelPool, 0);
 

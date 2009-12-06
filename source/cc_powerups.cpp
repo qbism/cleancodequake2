@@ -245,8 +245,8 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 		MegaHealth->GetSolid() = SOLID_NOT;
 
 		other->Health += 100;
-#if CLEANCTF_ENABLED
 	}
+#if CLEANCTF_ENABLED
 	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
 		MegaHealth->LinkedItem->SetRespawn (ent, 300);
 #endif

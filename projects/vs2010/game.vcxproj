@@ -688,6 +688,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
     <ClCompile Include="..\..\source\cc_platform_base.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />

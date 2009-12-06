@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_CTFITEMS_H__) || !INCLUDE_GUARDS
 #define __CC_CTFITEMS_H__
 
+#if CLEANCTF_ENABLED
 class CFlag : public CBaseItem
 {
 public:
@@ -49,8 +50,8 @@ public:
 	void	Drop (CPlayerEntity *ent);
 	void	Use (CPlayerEntity *ent);
 };
+#endif
 
-void AddTechsToList ();
 void AddFlagsToList ();
 
 #else

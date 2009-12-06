@@ -163,10 +163,10 @@ CREATE_TEMPLATE_POOL_ALLOCATOR (test_allocator, com_testPool);
 typedef basic_string<char, char_traits<char>, test_allocator<char> >
 	cc_string;
 
-typedef basic_stringbuf<char, char_traits<char>, write_allocator<char> >
+typedef basic_stringbuf<char, char_traits<char>, generic_allocator<char> >
 	cc_stringbuf;
 
-typedef basic_stringstream <char, char_traits<char>, write_allocator<char> >
+typedef basic_stringstream <char, char_traits<char>, generic_allocator<char> >
 	cc_stringstream;
 
 inline void FormatString (std::cc_string &str, const char *fmt, ...)

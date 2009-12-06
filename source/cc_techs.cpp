@@ -402,7 +402,12 @@ public:
 
 void SetupTechSpawn()
 {
-	if (dmFlags.dfCtfNoTech || (!(game.mode & GAME_CTF) && !dmFlags.dfDmTechs))
+	if (
+#if CLEANCTF_ENABLED
+		dmFlags.dfCtfNoTech || (!(game.mode & GAME_CTF) && 
+#endif
+		(!dmFlags.dfDmTechs)
+		|| !(game.mode & GAME_DEATHMATCH))
 		return;
 
 	QNewEntityOf CTechSpawner;

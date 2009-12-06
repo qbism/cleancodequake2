@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#if CLEANCTF_ENABLED
 typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, std::item_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
 
 inline TTransponderListType &Transponders ()
@@ -314,3 +315,5 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 
 LINK_ITEM_TO_CLASS (item_flag_team1, CRedFlagEntity);
 LINK_ITEM_TO_CLASS (item_flag_team2, CBlueFlagEntity);
+
+#endif

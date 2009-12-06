@@ -91,6 +91,7 @@ public:
 #define CTF_TECH_TIMEOUT					600  // seconds before techs spawn again
 
 void SetupTechSpawn ();
+void AddTechsToList ();
 void ResetTechs ();
 
 #else

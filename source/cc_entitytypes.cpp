@@ -352,7 +352,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	// knockback still occurs
 	if ((this != attacker) && ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams || dmFlags.dfModelTeams) || game.mode == GAME_COOPERATIVE))
 	{
-		if ((EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
+		if ((EntityFlags & ENT_PLAYER) && attacker && (attacker->EntityFlags & ENT_PLAYER))
 		{
 			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(attacker)))
 			{
@@ -512,7 +512,9 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	{
 		DamageEffect (dir, point, normal, take, dflags);
 
+#if CLEANCTF_ENABLED
 		if (!CTFMatchSetup())
+#endif
 			Health -= take;
 			
 		if (Health <= 0)
@@ -535,7 +537,11 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 				Monster->PainDebounceTime = level.Frame + 50;
 		}
 	}
-	else if (((EntityFlags & ENT_PLAYER) && take && !CTFMatchSetup()) || take)
+	else if (((EntityFlags & ENT_PLAYER) && take
+#if CLEANCTF_ENABLED
+		&& !CTFMatchSetup()
+#endif
+		) || take)
 		Pain (attacker, knockback, take);
 
 	// add to the damage inflicted on a player this frame
@@ -1385,9 +1391,9 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 		// move back any entities we already moved
 		// go backwards, so if the same entity was pushed
 		// twice, it goes back to the original position
-		for (TPushedList::reverse_iterator it = Pushed.rbegin(); it < Pushed.rend(); ++it)
+		for (TPushedList::reverse_iterator pit = Pushed.rbegin(); pit < Pushed.rend(); ++pit)
 		{
-			CPushed &PushedEntity = *it;
+			CPushed &PushedEntity = (*pit);
 
 			PushedEntity.Entity->State.GetOrigin() = PushedEntity.Origin;
 			PushedEntity.Entity->State.GetAngles() = PushedEntity.Angles;

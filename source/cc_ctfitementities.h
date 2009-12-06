@@ -34,6 +34,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_CTFITEMENTITIES_H__) || !INCLUDE_GUARDS
 #define __CC_CTFITEMENTITIES_H__
 
+#if CLEANCTF_ENABLED
+
 // A simple class to track a single flag.
 class CFlagTransponder
 {
@@ -109,6 +111,8 @@ public:
 		CFlagEntity::Spawn (Item, CTF_TEAM2);
 	};
 };
+
+#endif
 
 #else
 FILE_WARNING

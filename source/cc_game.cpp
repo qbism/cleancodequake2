@@ -174,8 +174,10 @@ ExitLevel
 */
 void ExitLevel ()
 {
+#if CLEANCTF_ENABLED
 	if (CTFNextMap())
 		return;
+#endif
 
 	//level.ChangeMap
 	gi.AddCommandString ((char*)(std::cc_string("gamemap \"") + level.ChangeMap + "\"\n").c_str());
@@ -261,7 +263,7 @@ void ProcessEntity (edict_t *ent)
 {
 	if (!ent->inUse)
 	{
-		if (ent->state.number > game.maxclients)
+		if (ent->state.number > (game.maxclients + BODY_QUEUE_SIZE))
 			ent->AwaitingRemoval = true;
 		return;
 	}
@@ -636,6 +638,8 @@ void CGameAPI::Init ()
 
 	// Setup the gamemode
 	SetupGamemode ();
+
+	dmFlags.UpdateFlags(dmflags->Integer());
 
 	// items
 	InitItemlist ();

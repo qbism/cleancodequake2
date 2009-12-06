@@ -62,12 +62,12 @@ THashedPlayerCommandListType &CommandHashList ()
 	return CommandHashListV;
 };
 
-CPlayerCommand *Cmd_FindCommand (std::cc_string commandName)
+CPlayerCommand *Cmd_FindCommand (const char *commandName)
 {
 	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType> (commandName, CommandList(), CommandHashList());
 }
 
-void Cmd_AddCommand (std::cc_string commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
+void Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
 	if (Cmd_FindCommand(commandName))
@@ -91,12 +91,12 @@ void Cmd_RemoveCommands ()
 	CommandList().clear ();
 }
 
-void Cmd_RunCommand (std::cc_string commandName, CPlayerEntity *ent)
+void Cmd_RunCommand (const char *commandName, CPlayerEntity *ent)
 {
 	static CPlayerCommand *Command;
 
 	if ((Command = Cmd_FindCommand(commandName)) != NULL)
 		Command->Run(ent);
 	else
-		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName.c_str());
+		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName);
 }

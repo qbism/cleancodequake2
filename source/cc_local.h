@@ -198,11 +198,6 @@ extern	EMeansOfDeath	meansOfDeath;
 
 extern	edict_t			*g_edicts;
 
-#define FOFS(x) (sint32)&(((edict_t *)0)->x)
-#define STOFS(x) (sint32)&(((spawn_temp_t *)0)->x)
-#define LLOFS(x) (sint32)&(((CLevelLocals *)0)->x)
-#define CLOFS(x) (sint32)&(((CClient *)0)->x)
-
 // Spawnflags
 // 6 bits reserved for editor flags
 // 8 bits used as power cube id bits for coop games

@@ -670,7 +670,10 @@ void			CMonsterEntity::SaveFields (CFile &File)
 {
 	// Write the monster's name first - this is used for checking later
 	if (!Monster || !Monster->MonsterName)
+	{
 		_CC_ASSERT_EXPR (0, "Monster with no monster or name!\n");
+		return;
+	}
 
 	File.WriteString (Monster->MonsterName);
 
@@ -2348,7 +2351,7 @@ void CMonster::AI_Run(float Dist)
 		return;
 	}
 
-	if (EnemyVis)
+	if (EnemyVis && Entity->Enemy)
 	{
 		//if (AIFlags & AI_LOST_SIGHT)
 			//gi.dprintf("regained sight\n");

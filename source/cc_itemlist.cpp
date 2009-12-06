@@ -186,7 +186,11 @@ void InitItemlist ()
 		AddFlagsToList();
 #endif
 
-	if (dmFlags.dfDmTechs || (game.mode & GAME_CTF))
+	if (dmFlags.dfDmTechs
+#if CLEANCTF_ENABLED
+	|| (game.mode & GAME_CTF)
+#endif
+		)
 		AddTechsToList();
 }
 

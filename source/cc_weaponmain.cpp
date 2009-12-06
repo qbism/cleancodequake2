@@ -125,7 +125,11 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 	switch (Player->Client.WeaponState)
 	{
 	case WS_ACTIVATING:
-		if (Player->Client.PlayerState.GetGunFrame() == ActivationEnd || instantweap->Boolean())
+		if (Player->Client.PlayerState.GetGunFrame() == ActivationEnd
+#if CLEANCTF_ENABLED
+			|| instantweap->Boolean()
+#endif
+			)
 		{
 			newFrame = IdleStart;
 			newState = WS_IDLE;
@@ -134,11 +138,13 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 	case WS_IDLE:
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
 		{
+#if CLEANCTF_ENABLED
 			if (instantweap->Boolean())
 			{
 				ChangeWeapon (Player);
 				return;
 			}
+#endif
 
 			// We want to go away!
 			newState = WS_DEACTIVATING;
@@ -361,14 +367,22 @@ void CWeapon::Think (CPlayerEntity *Player)
 #endif
 	)
 	{
-		if (this != &CGrapple::Weapon && Player->ApplyHaste())
+		if (
+#if CLEANCTF_ENABLED
+			this != &CGrapple::Weapon && 
+#endif
+			Player->ApplyHaste())
 			WeaponGeneric(Player);
 	}
 }
 
 void CWeapon::AttackSound(CPlayerEntity *Player)
 {
-	if ((game.mode & GAME_CTF) || dmFlags.dfDmTechs)
+	if (
+#if CLEANCTF_ENABLED
+		(game.mode & GAME_CTF) || 
+#endif
+		dmFlags.dfDmTechs)
 	{
 		Player->ApplyHasteSound();
 
@@ -377,6 +391,65 @@ void CWeapon::AttackSound(CPlayerEntity *Player)
 	}
 	else if (isQuad)
 		Player->PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
+}
+
+class CWeaponSwitcher
+{
+public:
+	CWeapon		*Weapon;
+	std::vector<CAmmo*, std::generic_allocator<CAmmo*> >		NeededAmmo;
+	std::vector<sint32, std::generic_allocator<sint32> >		NeededAmmoNumbers;
+	std::vector<CBaseItem*, std::generic_allocator<CBaseItem> >	NeededItems;
+	bool		Explosive;
+
+	CWeaponSwitcher (CWeapon *Weapon) :
+	  Weapon (Weapon),
+	  Explosive(false)
+	{
+	};
+
+	CWeaponSwitcher &AddAmmo (CAmmo *Ammo, sint32 Amount)
+	{
+		NeededAmmo.push_back (Ammo);
+		NeededAmmoNumbers.push_back (Amount);
+		return *this;
+	};
+
+	CWeaponSwitcher &AddItem (CBaseItem *Item)
+	{
+		NeededItems.push_back (Item);
+		return *this;
+	};
+
+	CWeaponSwitcher &SwitchExplosive ()
+	{
+		Explosive = !Explosive;
+		return *this;
+	};
+};
+
+typedef std::vector <CWeaponSwitcher, std::generic_allocator<CWeaponSwitcher> > TWeaponSwitcherListType;
+
+inline TWeaponSwitcherListType &WeaponSwitchList ()
+{
+	// Ordered by priority.
+	// Multiple weapons can appear in the same list.
+	static TWeaponSwitcherListType List_;
+
+	List_.push_back	(CWeaponSwitcher(&CBFG::Weapon).AddAmmo(NItems::Cells, 50).SwitchExplosive());
+	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 1));
+	List_.push_back	(CWeaponSwitcher(&CRailgun::Weapon).AddAmmo(NItems::Slugs, 1));
+	List_.push_back	(CWeaponSwitcher(&CRocketLauncher::Weapon).AddAmmo(NItems::Rockets, 1).SwitchExplosive());
+	List_.push_back	(CWeaponSwitcher(&CGrenadeLauncher::Weapon).AddAmmo(NItems::Grenades, 1).SwitchExplosive());
+	List_.push_back	(CWeaponSwitcher(&CChaingun::Weapon).AddAmmo(NItems::Bullets, 50));
+	List_.push_back	(CWeaponSwitcher(&CMachinegun::Weapon).AddAmmo(NItems::Bullets, 1));
+	List_.push_back	(CWeaponSwitcher(&CSuperShotgun::Weapon).AddAmmo(NItems::Shells, 8));
+	List_.push_back	(CWeaponSwitcher(&CShotgun::Weapon).AddAmmo(NItems::Shells, 1));
+	List_.push_back	(CWeaponSwitcher(&CSuperShotgun::Weapon).AddAmmo (NItems::Shells, 1));
+	List_.push_back	(CWeaponSwitcher(&CHandGrenade::Weapon).AddAmmo (NItems::Grenades, 1));
+	List_.push_back	(CWeaponSwitcher(&CBlaster::Weapon));
+
+	return List_;
 }
 
 // YUCK
@@ -388,96 +461,77 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 		return;
 
 	// Collect info on our current state
-	bool HasShotgun = (Player->Client.Persistent.Inventory.Has(NItems::Shotgun) != 0);
-	bool HasSuperShotgun = (Player->Client.Persistent.Inventory.Has(NItems::SuperShotgun) != 0);
-	bool HasMachinegun = (Player->Client.Persistent.Inventory.Has(NItems::Machinegun) != 0);
-	bool HasChaingun = (Player->Client.Persistent.Inventory.Has(NItems::Chaingun) != 0);
-	bool HasGrenadeLauncher = (Player->Client.Persistent.Inventory.Has(NItems::GrenadeLauncher) != 0);
-	bool HasRocketLauncher = (Player->Client.Persistent.Inventory.Has(NItems::RocketLauncher) != 0);
-	bool HasHyperblaster = (Player->Client.Persistent.Inventory.Has(NItems::HyperBlaster) != 0);
-	bool HasRailgun = (Player->Client.Persistent.Inventory.Has(NItems::Railgun) != 0);
-	bool HasBFG = (Player->Client.Persistent.Inventory.Has(NItems::BFG) != 0);
-
-	bool HasShells = (Player->Client.Persistent.Inventory.Has(NItems::Shells) != 0);
-	bool HasShells_ForSuperShotty = (Player->Client.Persistent.Inventory.Has(NItems::Shells) > 5);
-	bool HasBullets = (Player->Client.Persistent.Inventory.Has(NItems::Bullets) != 0);
-	bool HasBullets_ForChaingun = (Player->Client.Persistent.Inventory.Has(NItems::Bullets) >= 50);
-	bool HasGrenades = (Player->Client.Persistent.Inventory.Has(NItems::Grenades) != 0);
-	bool HasRockets = (Player->Client.Persistent.Inventory.Has (NItems::Rockets) != 0);
-	bool HasCells = (Player->Client.Persistent.Inventory.Has (NItems::Cells) != 0);
-	bool HasCells_ForBFG = (Player->Client.Persistent.Inventory.Has (NItems::Cells) >= 50);
-	bool HasSlugs = (Player->Client.Persistent.Inventory.Has(NItems::Slugs) != 0);
-
-	bool AlmostDead = (Player->Health <= 20);
+	bool AvoidExplosive = (Player->Health <= 20);
 
 	CWeaponItem	*Chosen_Weapon = NULL;
 	CAmmo		*Chosen_Ammo = NULL;
 
-	// Try not to choose explosive weapons
-	if (AlmostDead)
+	static TWeaponSwitcherListType &SwitchList = WeaponSwitchList();
+	for (size_t i = 0; i < SwitchList.size(); i++)
 	{
-		if (HasCells && HasHyperblaster)
-			Chosen_Weapon = NItems::HyperBlaster;
-		else if (HasSlugs && HasRailgun)
-			Chosen_Weapon = NItems::Railgun;
-		else if (HasBullets_ForChaingun && HasChaingun)
-			Chosen_Weapon = NItems::Chaingun;
-		else if (HasBullets_ForChaingun && HasMachinegun)
-			Chosen_Weapon = NItems::Machinegun;
-		else if (HasShells_ForSuperShotty && HasSuperShotgun)
-			Chosen_Weapon = NItems::SuperShotgun;
-		else if (HasShells_ForSuperShotty && HasShotgun)
-			Chosen_Weapon = NItems::Shotgun;
-		else if (HasShells && HasShotgun)
-			Chosen_Weapon = NItems::Shotgun;
-		else if (HasShells && HasSuperShotgun)
-			Chosen_Weapon = NItems::SuperShotgun;
-	}
+		CWeaponSwitcher *Start = &SwitchList[i];
 
-	// Still nothing
-	if (!Chosen_Weapon || !Chosen_Ammo)
-	{
-		if (HasCells_ForBFG && HasBFG)
-			Chosen_Weapon = NItems::BFG;
-		else if (HasCells && HasHyperblaster)
-			Chosen_Weapon = NItems::HyperBlaster;
-		else if (HasSlugs && HasRailgun)
-			Chosen_Weapon = NItems::Railgun;
-		else if (HasRockets && HasRocketLauncher)
-			Chosen_Weapon = NItems::RocketLauncher;
-		else if (HasGrenades && HasGrenadeLauncher)
-			Chosen_Weapon = NItems::GrenadeLauncher;
-		else if (HasBullets_ForChaingun && HasChaingun)
-			Chosen_Weapon = NItems::Chaingun;
-		else if (HasBullets && HasMachinegun)
-			Chosen_Weapon = NItems::Machinegun;
-		else if (HasBullets && HasChaingun)
-			Chosen_Weapon = NItems::Chaingun;
-		else if (HasShells_ForSuperShotty && HasSuperShotgun)
-			Chosen_Weapon = NItems::SuperShotgun;
-		else if (HasShells_ForSuperShotty && HasShotgun)
-			Chosen_Weapon = NItems::Shotgun;
-		else if (HasShells && HasShotgun)
-			Chosen_Weapon = NItems::Shotgun;
-		else if (HasShells && HasSuperShotgun)
-			Chosen_Weapon = NItems::SuperShotgun;
-		else if (HasGrenades)
-			Chosen_Ammo = NItems::Grenades;
+		// Explosive and almost dead?
+		if (AvoidExplosive && Start->Explosive)
+			continue;
+
+		// Do we have this weapon?
+		if (!Player->Client.Persistent.Inventory.Has(Start->Weapon->Item))
+			continue;
+
+		// Do we have the ammo?
+		bool BreakIt = false;
+		for (size_t i = 0; i < Start->NeededAmmo.size(); i++)
+		{
+			if (!Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[i]))
+			{
+				BreakIt = true;
+				break;
+			}
+
+			// Ammo amounts?
+			if (Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[i]) < Start->NeededAmmoNumbers[i])
+			{
+				BreakIt = true;
+				break;
+			}
+		}
+
+		if (BreakIt)
+			continue;
+
+		// Do we have all the extra items?
+		for (size_t i = 0; Start->NeededItems.size(); i++)
+		{
+			if (!Player->Client.Persistent.Inventory.Has(Start->NeededItems[i]))
+			{
+				BreakIt = true;
+				break;
+			}
+		}
+
+		if (BreakIt)
+			continue;
+
+		// Use it
+		if (Start->Weapon->Item->Flags & ITEMFLAG_AMMO)
+			Chosen_Ammo = dynamic_cast<CAmmo*>(Start->Weapon->Item);
+		else
+			Chosen_Weapon = dynamic_cast<CWeaponItem*>(Start->Weapon->Item);
+
+		break;
 	}
 
 	if (!Chosen_Weapon && !Chosen_Ammo)
 		Chosen_Weapon = NItems::Blaster;
 
-	bool HasCurrentWeapon = true;
-	// Do a quick check to see if we still even have the weapon we're holding.
-	if (Player->Client.Persistent.Weapon->WeaponItem && !Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->WeaponItem))
-		HasCurrentWeapon = false;
-
 	if (!Chosen_Ammo && !Chosen_Weapon)
 		return;
 
 	Player->Client.NewWeapon = (Chosen_Weapon == NULL) ? Chosen_Ammo->Weapon : Chosen_Weapon->Weapon;
-	if (!HasCurrentWeapon)
+
+	// Do a quick check to see if we still even have the weapon we're holding.
+	if ((Player->Client.Persistent.Weapon->WeaponItem && !Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->WeaponItem)))
 		Player->Client.Persistent.Weapon->ChangeWeapon(Player);
 }
 

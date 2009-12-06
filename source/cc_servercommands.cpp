@@ -53,12 +53,12 @@ THashedServerCommandListType &ServerCommandHashList ()
 	return ServerCommandHashListV;
 };
 
-CServerCommand *SvCmd_FindCommand (std::cc_string commandName)
+CServerCommand *SvCmd_FindCommand (const char *commandName)
 {
 	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType> (commandName, ServerCommandList(), ServerCommandHashList());
 }
 
-void SvCmd_AddCommand (std::cc_string commandName, void (*Func) ())
+void SvCmd_AddCommand (const char *commandName, void (*Func) ())
 {
 	// Make sure the function doesn't already exist
 	if (SvCmd_FindCommand(commandName))
@@ -82,14 +82,14 @@ void SvCmd_RemoveCommands ()
 	ServerCommandList().clear ();
 }
 
-void SvCmd_RunCommand (std::cc_string commandName)
+void SvCmd_RunCommand (const char *commandName)
 {
 	static CServerCommand *Command;
 
 	if ((Command = SvCmd_FindCommand(commandName)) != NULL)
 		Command->Run();
 	else
-		DebugPrintf ( "Unknown server command \"%s\"\n", commandName.c_str());
+		DebugPrintf ( "Unknown server command \"%s\"\n", commandName);
 }
 
 struct SServerEntityListEntity
@@ -390,7 +390,7 @@ of the parameters
 void CGameAPI::ServerCommand ()
 {
 	InitArg ();
-	SvCmd_RunCommand (ArgGets(1));
+	SvCmd_RunCommand (ArgGets(1).c_str());
 	EndArg ();
 }
 
