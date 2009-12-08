@@ -325,6 +325,7 @@ void ShutdownBodyQueue ();
 void InitVersion ();
 void InitEntityLists ();
 void DeallocateEntities ();
+void SetClientFields ();
 
 void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
@@ -377,6 +378,9 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	// set client fields on player ents
 	CPlayerEntity::RestoreClientData ();
+
+	// if we're loading a game, apply that info now
+	SetClientFields ();
 
 	if (!level.Demo)
 	{

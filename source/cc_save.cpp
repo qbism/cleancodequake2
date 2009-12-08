@@ -570,6 +570,24 @@ void ReadConfigStrings (char *filename)
 	ListConfigstrings ();
 }
 
+void SetClientFields ()
+{
+	if (ReadingGame)
+	{
+		ReadingGame = false;
+
+		for (uint8 i = 0; i < game.maxclients; i++)
+		{
+			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
+			Player->Client = *SaveClientData[i];
+			Player->Client.RepositionClient (g_edicts[i+1].client);
+			QDelete SaveClientData[i];
+		}
+		QDelete[] SaveClientData;
+		SaveClientData = NULL;
+	}
+}
+
 void CGameAPI::ReadLevel (char *filename)
 {
 	// Load configstrings
@@ -678,20 +696,7 @@ void CGameAPI::ReadLevel (char *filename)
 			FireCrosslevelTrigger (ent->Entity);
 	}
 
-	if (ReadingGame)
-	{
-		ReadingGame = false;
-
-		for (uint8 i = 0; i < game.maxclients; i++)
-		{
-			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-			Player->Client = *SaveClientData[i];
-			Player->Client.RepositionClient (g_edicts[i+1].client);
-			QDelete SaveClientData[i];
-		}
-		QDelete[] SaveClientData;
-		SaveClientData = NULL;
-	}
+	//SetClientFields ();
 
 	READ_MAGIC
 }
