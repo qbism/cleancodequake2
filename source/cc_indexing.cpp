@@ -164,8 +164,6 @@ MediaIndex ImageIndex (const char *String)
 	return Index;
 }
 
-_CC_ENABLE_DEPRECATION
-
 void CIndexList::Clear ()
 {
 	for (uint8 i = 0; i < numIndexes; i++)
@@ -181,6 +179,32 @@ void ClearList ()
 	ModelList.Clear();
 	ImageList.Clear();
 	SoundList.Clear();
+}
+
+extern char	ReadConfigSt[MAX_CFGSTRINGS][MAX_CFGSTRLEN];
+void ListConfigstrings ()
+{
+	bool firstIndex = false;
+	for (uint16 i = 1; i <= MAX_CS_MODELS; i++)
+	{
+		if (CS_MODELS+i == 33)
+			ModelList.firstIndex = 0;
+		else if (ReadConfigSt[CS_MODELS+i][0] == '*')
+			ModelList.firstIndex = atoi(ReadConfigSt[CS_MODELS+i] + 1);
+		else
+		{
+			if (!firstIndex)
+			{
+				ModelList.firstIndex++;
+				firstIndex = true;
+			}
+			ModelList.AddToList (ReadConfigSt[CS_MODELS+i], gi.modelindex(ReadConfigSt[CS_MODELS+i]));
+		}
+	}
+	for (uint16 i = 1; i <= MAX_CS_SOUNDS; i++)
+		SoundList.AddToList (ReadConfigSt[CS_SOUNDS+i], gi.soundindex(ReadConfigSt[CS_SOUNDS+i]));
+	for (uint16 i = 1; i <= MAX_CS_IMAGES; i++)
+		ImageList.AddToList (ReadConfigSt[CS_IMAGES+i], gi.imageindex(ReadConfigSt[CS_IMAGES+i]));
 }
 
 void SvCmd_IndexList_f ()
@@ -199,3 +223,5 @@ void SvCmd_IndexList_f ()
 
 	DebugPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);
 }
+
+_CC_ENABLE_DEPRECATION

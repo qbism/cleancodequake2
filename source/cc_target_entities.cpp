@@ -581,6 +581,8 @@ void BeginIntermission (CTargetChangeLevel *targ)
 		if (!(game.mode & GAME_DEATHMATCH))
 		{
 			level.ExitIntermission = true;		// go immediately to the next level
+			if (targ->ExitOnNextFrame)
+				level.ExitIntermissionOnNextFrame = true;
 			return;
 		}
 	}
@@ -623,7 +625,8 @@ CTargetChangeLevel::CTargetChangeLevel () :
 	CBaseEntity (),
 	CMapEntity (),
 	CUsableEntity (),
-	Map(NULL)
+	Map(NULL),
+	ExitOnNextFrame(false)
 {
 };
 
@@ -631,7 +634,8 @@ CTargetChangeLevel::CTargetChangeLevel (sint32 Index) :
 	CBaseEntity (Index),
 	CMapEntity (Index),
 	CUsableEntity (Index),
-	Map(NULL)
+	Map(NULL),
+	ExitOnNextFrame(false)
 {
 };
 
@@ -693,7 +697,12 @@ void CTargetChangeLevel::Spawn ()
 
 	// ugly hack because *SOMEBODY* screwed up their map
 	if ((Q_stricmp(level.ServerLevelName.c_str(), "fact1") == 0) && (Q_stricmp(Map, "fact3") == 0))
+	{
 		Map = "fact3$secret1";
+		// Paril
+		// ...
+		ExitOnNextFrame = true;
+	}
 
 	GetSvFlags() = SVF_NOCLIENT;
 };

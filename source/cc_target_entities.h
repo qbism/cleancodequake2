@@ -35,6 +35,7 @@ class CTargetChangeLevel : public CMapEntity, public CUsableEntity
 {
 public:
 	char		*Map;
+	bool		ExitOnNextFrame;
 
 	CTargetChangeLevel ();
 	CTargetChangeLevel (sint32 Index);

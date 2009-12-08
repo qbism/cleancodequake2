@@ -77,6 +77,7 @@ const char *StringFromModelIndex (MediaIndex Index);
 const char *StringFromImageIndex (MediaIndex Index);
 
 void ClearList ();
+void ListConfigstrings ();
 
 #else
 FILE_WARNING

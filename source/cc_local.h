@@ -485,7 +485,7 @@ public:
 		ForceMap.clear ();
 		IntermissionTime = 0;
 		ChangeMap = NULL;
-		ExitIntermission = false;
+		ExitIntermission = ExitIntermissionOnNextFrame = false;
 		IntermissionOrigin.Clear ();
 		IntermissionAngles.Clear ();
 		SightClient = NULL;
@@ -590,6 +590,7 @@ public:
 	FrameNumber_t		IntermissionTime;		// time the intermission was started
 	char		*ChangeMap;
 	bool		ExitIntermission;
+	bool		ExitIntermissionOnNextFrame;
 	vec3f		IntermissionOrigin;
 	vec3f		IntermissionAngles;
 

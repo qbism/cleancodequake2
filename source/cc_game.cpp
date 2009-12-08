@@ -351,6 +351,11 @@ void CGameAPI::RunFrame ()
 
 	if (level.ExitIntermission)
 	{
+		if (level.ExitIntermissionOnNextFrame)
+		{
+			level.ExitIntermissionOnNextFrame = false;
+			return;
+		}
 		ExitLevel ();
 		return;
 	}

@@ -1186,7 +1186,10 @@ void CDoor::Spawn ()
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
 	if (!Team.HasTeam)
+	{
+		Team.HasTeam = true;
 		Team.Master = this;
+	}
 
 	Link ();
 
@@ -1351,7 +1354,10 @@ void CRotatingDoor::Spawn ()
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
 	if (!Team.HasTeam)
+	{
+		Team.HasTeam = true;
 		Team.Master = this;
+	}
 
 	Link ();
 

@@ -215,6 +215,8 @@ public:
 	};
 };
 
+IMPLEMENT_SAVE_STRUCTURE (CTeleporterTrigger,CTeleporterTrigger)
+
 class CTeleporter : public CSpotBase
 {
 public:

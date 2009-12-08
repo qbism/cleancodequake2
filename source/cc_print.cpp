@@ -59,7 +59,7 @@ static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt
 	if (printLevel != PRINT_CENTER)
 		WriteByte (printLevel);
 	WriteString (string);
-	Cast (CASTFLAG_UNRELIABLE, Player);
+	Cast ((printLevel != PRINT_CENTER) ? CASTFLAG_UNRELIABLE : CASTFLAG_RELIABLE, Player);
 }
 
 void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)

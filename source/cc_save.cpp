@@ -551,8 +551,30 @@ void FireCrosslevelTrigger (CBaseEntity *Entity);
 
 #include "cc_bodyqueue.h"
 
+char	ReadConfigSt[MAX_CFGSTRINGS][MAX_CFGSTRLEN];
+void ReadConfigStrings (char *filename)
+{
+	size_t len = strlen(filename);
+
+	std::cc_string temp = filename;
+	temp[len-3] = 's';
+	temp[len-2] = 'v';
+	temp[len-1] = '2';
+
+	CFile File (temp.c_str(), FILEMODE_READ);
+
+	File.Read (ReadConfigSt, sizeof(ReadConfigSt));
+
+	// Pump to the indexing system
+	ClearList ();
+	ListConfigstrings ();
+}
+
 void CGameAPI::ReadLevel (char *filename)
 {
+	// Load configstrings
+	ReadConfigStrings (filename);
+
 	DebugPrintf ("Reading level from %s...\n", filename);
 	CFile File (filename, FILEMODE_READ | SAVE_GZ_FLAGS);
 
@@ -569,6 +591,9 @@ void CGameAPI::ReadLevel (char *filename)
 	ShutdownNodes ();
 #endif
 
+	memset (&GameMedia, 0, sizeof(GameMedia));
+	InitGameMedia ();
+
 	if (!ReadingGame)
 		CPlayerEntity::BackupClientData ();
 
@@ -584,8 +609,6 @@ void CGameAPI::ReadLevel (char *filename)
 #if MONSTERS_USE_PATHFINDING
 	InitNodes ();
 #endif
-	memset (&GameMedia, 0, sizeof(GameMedia));
-	InitGameMedia ();
 
 	// wipe all the entities
 	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));

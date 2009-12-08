@@ -280,7 +280,7 @@ bool CWeapon::AttemptToFire (CPlayerEntity *Player)
 
 	if (Item->Ammo)
 	{
-		numAmmo = Player->Client.Persistent.Inventory.Has(Item);
+		numAmmo = Player->Client.Persistent.Inventory.Has(Item->Ammo);
 		quantity = Item->Amount;
 	}
 	else
