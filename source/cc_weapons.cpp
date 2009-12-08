@@ -36,37 +36,82 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CWeaponItem::CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Quantity, char *VWepModel) :
+			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
 Weapon(Weapon),
 Ammo(Ammo),
-Quantity(Quantity),
+Amount(Amount),
 VWepModel(VWepModel)
 {
 	if (!Weapon)
 		DebugPrintf ("Warning: Weapon with no weapon!\n");
 	else
-	{
 		Weapon->Item = this;
-		Weapon->WeaponItem = this;
-	}
-	if (!Ammo && Quantity)
+
+	if (!Ammo && Amount)
 		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
+}
+
+CWeaponItem::CWeaponItem ()
+{
 }
 
 CAmmo::CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag, CWeapon *Weapon, sint32 Amount, char *VWepModel) :
+			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 Quantity(Quantity),
-Tag(Tag),
-Weapon(Weapon),
-Amount(Amount),
-VWepModel(VWepModel)
+Tag(Tag)
 {
-	if (Weapon)
+}
+
+CAmmo::CAmmo ()
+{
+}
+
+CAmmoWeapon::CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
+			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
+			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag) :
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
+		   Precache)
+{
+	this->Weapon = Weapon;
+	this->Ammo = Ammo;
+	this->Amount = Amount;
+	this->VWepModel = VWepModel;
+	this->Quantity = Quantity;
+	this->Tag = Tag;
+
+	if (!Weapon)
+		DebugPrintf ("Warning: Weapon with no weapon!\n");
+	else
 		Weapon->Item = this;
+
+	if (!Ammo && Amount)
+		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
+}
+
+CAmmoWeapon::CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
+			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
+			   char *Precache, class CWeapon *Weapon, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag) :
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
+		   Precache)
+{
+	this->Weapon = Weapon;
+	this->Ammo = this;
+	this->Amount = Amount;
+	this->VWepModel = VWepModel;
+	this->Quantity = Quantity;
+	this->Tag = Tag;
+
+	if (!Weapon)
+		DebugPrintf ("Warning: Weapon with no weapon!\n");
+	else
+		Weapon->Item = this;
+
+	if (!Ammo && Amount)
+		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
 }
 
 #ifndef NO_AUTOSWITCH
@@ -122,7 +167,7 @@ bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 			(CheckAutoSwitch(other) || 
 #endif
 			((other->Client.Persistent.Inventory.Has(this) == 1)) &&
-			( !(game.mode & GAME_DEATHMATCH) || (other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->WeaponItem == NItems::Blaster) ) )
+			( !(game.mode & GAME_DEATHMATCH) || (other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster) ) )
 #ifndef NO_AUTOSWITCH
 			)
 #endif
@@ -147,7 +192,7 @@ void CWeaponItem::Use (CPlayerEntity *ent)
 			return;
 		}
 
-		if (ent->Client.Persistent.Inventory.Has(Ammo->GetIndex()) < Quantity)
+		if (ent->Client.Persistent.Inventory.Has(Ammo->GetIndex()) < Amount)
 		{
 			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Ammo->Name, Name);
 			return;
@@ -195,7 +240,65 @@ sint32 CAmmo::GetMax (CPlayerEntity *ent)
 	return ent->Client.Persistent.maxAmmoValues[Tag];
 }
 
+bool CAmmo::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+{
+	sint32			count = Quantity;
+
+	if (ent->AmmoCount)
+		count = ent->AmmoCount;
+
+	if (!AddAmmo (other, count))
+		return false;
+
+	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.mode & GAME_DEATHMATCH))
+		SetRespawn (ent, 300);
+	return true;
+}
+
 void CAmmo::Use (CPlayerEntity *ent)
+{
+}
+
+void CAmmo::Drop (CPlayerEntity *ent)
+{
+	sint32 count = Quantity;
+	CItemEntity *dropped = DropItem(ent);
+
+	if (count > ent->Client.Persistent.Inventory.Has(this))
+		count = ent->Client.Persistent.Inventory.Has(this);
+
+	dropped->AmmoCount = count;
+
+	ent->Client.Persistent.Inventory.Remove (this, count);
+}
+
+bool CAmmoWeapon::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+{
+	sint32			oldcount = other->Client.Persistent.Inventory.Has(this);
+	sint32			count = Quantity;
+	bool		weapon = (Flags & ITEMFLAG_WEAPON);
+
+	if (weapon && dmFlags.dfInfiniteAmmo)
+		count = 1000;
+	else if (ent->AmmoCount)
+		count = ent->AmmoCount;
+
+	if (!AddAmmo (other, count))
+		return false;
+
+	if (weapon && !oldcount)
+	{
+		if (other->Client.Persistent.Weapon != Weapon && (!(game.mode & GAME_DEATHMATCH) ||
+			(other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster)))
+			other->Client.NewWeapon = Weapon;
+	}
+
+	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.mode & GAME_DEATHMATCH))
+		SetRespawn (ent, 300);
+	return true;
+}
+
+void CAmmoWeapon::Use (CPlayerEntity *ent)
 {
 	if (!(Flags & ITEMFLAG_WEAPON))
 		return;
@@ -223,7 +326,7 @@ void CAmmo::Use (CPlayerEntity *ent)
 	ent->Client.NewWeapon = Weapon;
 }
 
-void CAmmo::Drop (CPlayerEntity *ent)
+void CAmmoWeapon::Drop (CPlayerEntity *ent)
 {
 	sint32 count = Quantity;
 	CItemEntity *dropped = DropItem(ent);
@@ -258,32 +361,6 @@ bool CAmmo::AddAmmo (CPlayerEntity *ent, sint32 count)
 		return true;
 	}
 	return false;
-}
-
-bool CAmmo::Pickup (class CItemEntity *ent, CPlayerEntity *other)
-{
-	sint32			oldcount = other->Client.Persistent.Inventory.Has(this);
-	sint32			count = Quantity;
-	bool		weapon = (Flags & ITEMFLAG_WEAPON);
-
-	if (weapon && dmFlags.dfInfiniteAmmo)
-		count = 1000;
-	else if (ent->AmmoCount)
-		count = ent->AmmoCount;
-
-	if (!AddAmmo (other, count))
-		return false;
-
-	if (weapon && !oldcount)
-	{
-		if (other->Client.Persistent.Weapon != Weapon && (!(game.mode & GAME_DEATHMATCH) ||
-			(other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->WeaponItem == NItems::Blaster)))
-			other->Client.NewWeapon = Weapon;
-	}
-
-	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.mode & GAME_DEATHMATCH))
-		SetRespawn (ent, 300);
-	return true;
 }
 
 class CAmmoEntity : public CItemEntity
@@ -339,12 +416,12 @@ LINK_ITEM_TO_CLASS (weapon_bfg, CItemEntity);
 void AddWeapons (CItemList *List);
 void AddAmmoToList ()
 {
-	NItems::Shells = QNew (com_itemPool, 0) CAmmo("ammo_shells", "models/items/ammo/shells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_shells", "Shells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_SHELLS, NULL, -1, NULL);
-	NItems::Bullets = QNew (com_itemPool, 0) CAmmo("ammo_bullets", "models/items/ammo/bullets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_bullets", "Bullets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_BULLETS, NULL, -1, NULL);
-	NItems::Slugs = QNew (com_itemPool, 0) CAmmo("ammo_slugs", "models/items/ammo/slugs/medium/tris.md2", 0, "misc/am_pkup.wav", "a_slugs", "Slugs", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_SLUGS, NULL, -1, NULL);
-	NItems::Grenades = QNew (com_itemPool, 0) CAmmo("ammo_grenades", "models/items/ammo/grenades/medium/tris.md2", 0, "misc/am_pkup.wav", "a_grenades", "Grenades", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", 5, CAmmo::AMMOTAG_GRENADES, &CHandGrenade::Weapon, 1, "#a_grenades.md2");
-	NItems::Rockets = QNew (com_itemPool, 0) CAmmo("ammo_rockets", "models/items/ammo/rockets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_rockets", "Rockets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 5, CAmmo::AMMOTAG_ROCKETS, NULL, -1, NULL);
-	NItems::Cells = QNew (com_itemPool, 0) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_CELLS, NULL, -1, NULL);
+	NItems::Shells = QNew (com_itemPool, 0) CAmmo("ammo_shells", "models/items/ammo/shells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_shells", "Shells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_SHELLS);
+	NItems::Bullets = QNew (com_itemPool, 0) CAmmo("ammo_bullets", "models/items/ammo/bullets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_bullets", "Bullets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_BULLETS);
+	NItems::Slugs = QNew (com_itemPool, 0) CAmmo("ammo_slugs", "models/items/ammo/slugs/medium/tris.md2", 0, "misc/am_pkup.wav", "a_slugs", "Slugs", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_SLUGS);
+	NItems::Grenades = QNew (com_itemPool, 0) CAmmoWeapon("ammo_grenades", "models/items/ammo/grenades/medium/tris.md2", 0, "misc/am_pkup.wav", "a_grenades", "Grenades", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CHandGrenade::Weapon, 1, "#a_grenades.md2", 5, CAmmo::AMMOTAG_GRENADES);
+	NItems::Rockets = QNew (com_itemPool, 0) CAmmo("ammo_rockets", "models/items/ammo/rockets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_rockets", "Rockets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 5, CAmmo::AMMOTAG_ROCKETS);
+	NItems::Cells = QNew (com_itemPool, 0) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_CELLS);
 
 	AddWeapons (ItemList);
 }

@@ -520,6 +520,9 @@ Display the current help message
 */
 void Cmd_Help_f (CPlayerEntity *ent)
 {
+	if (level.IntermissionTime)
+		return;
+
 	// this is for backwards compatability
 	if (game.mode & GAME_DEATHMATCH)
 	{

@@ -366,6 +366,9 @@ Cmd_Inven_f
 */
 void Cmd_Inven_f (CPlayerEntity *ent)
 {
+	if (level.IntermissionTime)
+		return;
+
 	if (ent->Client.Respawn.MenuState.InMenu)
 	{
 		ent->Client.Respawn.MenuState.CloseMenu();
@@ -642,7 +645,7 @@ void Cmd_Give_f (CPlayerEntity *ent)
 			if (!(it->Flags & ITEMFLAG_AMMO))
 				continue;
 
-			CAmmo *Ammo = static_cast<CAmmo*>(it);
+			CAmmo *Ammo = dynamic_cast<CAmmo*>(it);
 			Ammo->AddAmmo (ent, 1000);
 		}
 		if (!give_all)

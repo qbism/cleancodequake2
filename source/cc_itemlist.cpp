@@ -216,16 +216,8 @@ void InvalidateItemMedia ()
 		Item->IconIndex = Item->PickupSoundIndex = 0;
 		if (Item->Flags & ITEMFLAG_WEAPON)
 		{
-			if (Item->Flags & ITEMFLAG_AMMO)
-			{
-				CAmmo *Weapon = dynamic_cast<CAmmo*>(Item);
-				Weapon->Weapon->WeaponModelIndex = Weapon->Weapon->WeaponSoundIndex = 0;
-			}
-			else
-			{
-				CWeaponItem *Weapon = dynamic_cast<CWeaponItem*>(Item);
-				Weapon->Weapon->WeaponModelIndex = Weapon->Weapon->WeaponSoundIndex = 0;
-			}
+			CWeaponItem *Weapon = dynamic_cast<CWeaponItem*>(Item);
+			Weapon->Weapon->WeaponModelIndex = Weapon->Weapon->WeaponSoundIndex = 0;
 		}
 	}
 }

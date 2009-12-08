@@ -96,7 +96,7 @@ void CChaingun::Fire (CPlayerEntity *ent)
 		return;
 	}
 	else if ((ent->Client.PlayerState.GetGunFrame() == 21) && (ent->Client.Buttons & BUTTON_ATTACK)
-		&& ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->WeaponItem->Ammo))
+		&& ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo))
 	{
 		ent->Client.PlayerState.GetGunFrame() = 15;
 	}
@@ -125,8 +125,8 @@ void CChaingun::Fire (CPlayerEntity *ent)
 	else
 		shots = 3;
 
-	if (ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->WeaponItem->Ammo) < shots)
-		shots = ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->WeaponItem->Ammo);
+	if (ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo) < shots)
+		shots = ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo);
 
 	if (!shots)
 	{

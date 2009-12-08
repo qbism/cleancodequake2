@@ -96,7 +96,7 @@ void CBFG::FireBFG (CPlayerEntity *ent)
 
 	// cells can go down during windup (from power armor hits), so
 	// check again and abort firing if we don't have enough now
-	if (ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->WeaponItem->Ammo) < 50)
+	if (ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo) < 50)
 	{
 		ent->Client.PlayerState.GetGunFrame();
 		return;

@@ -70,18 +70,10 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	{
 		CBaseItem *Item = GetItemByIndex(Index);
 
-		if (Item && (Item->Flags & ITEMFLAG_WEAPON))
+		if (Item)
 		{
-			if (Item->Flags & ITEMFLAG_AMMO)
-			{
-				CAmmo *Ammo = dynamic_cast<CAmmo*>(Item);
-				*Weapon = Ammo->Weapon;
-			}
-			else
-			{
-				CWeaponItem *WItem = dynamic_cast<CWeaponItem*>(Item);
-				*Weapon = WItem->Weapon;
-			}
+			CWeaponItem *WItem = dynamic_cast<CWeaponItem*>(Item);
+			*Weapon = WItem->Weapon;
 		}
 		else
 			_CC_ASSERT_EXPR (0, "Loaded weapon with no weapon!");
@@ -272,47 +264,29 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 
 void CWeapon::DepleteAmmo (CPlayerEntity *Player, sint32 Amount = 1)
 {
-	if (WeaponItem)
+	if (Item)
 	{
-		CAmmo *Ammo = WeaponItem->Ammo;
+		CAmmo *Ammo = Item->Ammo;
 
 		if (Ammo)
 			Player->Client.Persistent.Inventory.Remove (Ammo, Amount);
 	}
-	else if (Item && (Item->Flags & ITEMFLAG_AMMO))
-		Player->Client.Persistent.Inventory.Remove (Item, Amount);
 }
 
 bool CWeapon::AttemptToFire (CPlayerEntity *Player)
 {
 	sint32 numAmmo = 0;
-	CAmmo *Ammo;
 	sint32 quantity = 0;
 
-	if (Item && (Item->Flags & ITEMFLAG_AMMO))
+	if (Item->Ammo)
 	{
 		numAmmo = Player->Client.Persistent.Inventory.Has(Item);
-		Ammo = dynamic_cast<CAmmo*>(Item);
-		quantity = Ammo->Amount;
+		quantity = Item->Amount;
 	}
-	// Revision: Always going to be true here.
-	else
-	{
-		if (WeaponItem->Ammo)
-		{
-			Ammo = WeaponItem->Ammo;
-			quantity = WeaponItem->Quantity;
-			if (Ammo)
-				numAmmo = Player->Client.Persistent.Inventory.Has(Ammo);
-		}
-		else
-			return true;
-	}
-
-	if (numAmmo < quantity)
-		return false;
 	else
 		return true;
+
+	return !(numAmmo < quantity);
 }
 
 void CWeapon::OutOfAmmo (CPlayerEntity *Player)
@@ -464,7 +438,6 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 	bool AvoidExplosive = (Player->Health <= 20);
 
 	CWeaponItem	*Chosen_Weapon = NULL;
-	CAmmo		*Chosen_Ammo = NULL;
 
 	static TWeaponSwitcherListType &SwitchList = WeaponSwitchList();
 	for (size_t i = 0; i < SwitchList.size(); i++)
@@ -514,24 +487,20 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 			continue;
 
 		// Use it
-		if (Start->Weapon->Item->Flags & ITEMFLAG_AMMO)
-			Chosen_Ammo = dynamic_cast<CAmmo*>(Start->Weapon->Item);
-		else
-			Chosen_Weapon = dynamic_cast<CWeaponItem*>(Start->Weapon->Item);
-
+		Chosen_Weapon = Start->Weapon->Item;
 		break;
 	}
 
-	if (!Chosen_Weapon && !Chosen_Ammo)
+	if (!Chosen_Weapon)
 		Chosen_Weapon = NItems::Blaster;
 
-	if (!Chosen_Ammo && !Chosen_Weapon)
+	if (!Chosen_Weapon)
 		return;
 
-	Player->Client.NewWeapon = (Chosen_Weapon == NULL) ? Chosen_Ammo->Weapon : Chosen_Weapon->Weapon;
+	Player->Client.NewWeapon = Chosen_Weapon->Weapon;
 
 	// Do a quick check to see if we still even have the weapon we're holding.
-	if ((Player->Client.Persistent.Weapon->WeaponItem && !Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->WeaponItem)))
+	if ((Player->Client.Persistent.Weapon->Item && !Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->Item)))
 		Player->Client.Persistent.Weapon->ChangeWeapon(Player);
 }
 

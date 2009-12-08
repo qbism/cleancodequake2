@@ -51,8 +51,7 @@ protected:
 
 public:
 	bool			isQuad, isSilenced;
-	CBaseItem		*Item;
-	CWeaponItem		*WeaponItem; // The weapon that is linked to this weapon.
+	CWeaponItem		*Item; // The item that is linked to this weapon.
 
 	char			*WeaponSound;
 private:
@@ -138,7 +137,7 @@ public:
 	}; \
 	void x::InitWeaponVwepModel (sint32 TakeAway) \
 	{ \
-		vwepIndex = ModelIndex((WeaponItem) ? (WeaponItem->VWepModel) : (dynamic_cast<CAmmo*>(Item)->VWepModel)) - TakeAway; \
+		vwepIndex = ModelIndex(Item->VWepModel) - TakeAway; \
 	};
 
 #include "cc_blaster.h"

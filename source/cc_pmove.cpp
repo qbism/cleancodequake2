@@ -32,13 +32,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 
-#if !USE_EXTENDED_GAME_IMPORTS
-
 // Paril
 // Crouch-jumping!
 //#define ALLOW_CROUCH_JUMPING
 
 #include "cc_local.h"
+
+#if !USE_EXTENDED_GAME_IMPORTS
 
 // all of the locals will be zeroed before each pmove, just to make damn sure
 // we don't have any differences when running on client or server

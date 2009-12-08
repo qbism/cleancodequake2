@@ -2238,15 +2238,10 @@ void CPlayerEntity::SetStats ()
 		//
 		if (Client.Persistent.Weapon)
 		{
-			if (Client.Persistent.Weapon->WeaponItem && Client.Persistent.Weapon->WeaponItem->Ammo)
+			if (Client.Persistent.Weapon->Item->Ammo)
 			{
-				Client.PlayerState.GetStat (STAT_AMMO_ICON) = Client.Persistent.Weapon->WeaponItem->Ammo->GetIconIndex();
-				Client.PlayerState.GetStat (STAT_AMMO) = Client.Persistent.Inventory.Has(Client.Persistent.Weapon->WeaponItem->Ammo->GetIndex());
-			}
-			else if (Client.Persistent.Weapon->Item && (Client.Persistent.Weapon->Item->Flags & ITEMFLAG_AMMO))
-			{
-				Client.PlayerState.GetStat (STAT_AMMO_ICON) = Client.Persistent.Weapon->Item->GetIconIndex();
-				Client.PlayerState.GetStat (STAT_AMMO) = Client.Persistent.Inventory.Has(Client.Persistent.Weapon->Item->GetIndex());
+				Client.PlayerState.GetStat (STAT_AMMO_ICON) = Client.Persistent.Weapon->Item->Ammo->GetIconIndex();
+				Client.PlayerState.GetStat (STAT_AMMO) = Client.Persistent.Inventory.Has(Client.Persistent.Weapon->Item->Ammo->GetIndex());
 			}
 			else
 			{
@@ -2713,10 +2708,10 @@ void CPlayerEntity::TossClientWeapon ()
 	if (!(game.mode & GAME_DEATHMATCH))
 		return;
 
-	CBaseItem *Item = ((Client.Persistent.Weapon) ? ((Client.Persistent.Weapon->WeaponItem) ? Client.Persistent.Weapon->WeaponItem : Client.Persistent.Weapon->Item) : NULL);
-	// Personally, this is dumb.
-	//if (! self->client->Persistent.Inventory.Has(Item->Ammo) )
-	//	item = NULL;
+	CWeaponItem *Item = (Client.Persistent.Weapon) ? Client.Persistent.Weapon->Item : NULL;
+
+	if (!Client.Persistent.Inventory.Has(Item->Ammo))
+		Item = NULL;
 	if (Item && !Item->WorldModel)
 		Item = NULL;
 
@@ -2729,7 +2724,7 @@ void CPlayerEntity::TossClientWeapon ()
 		CItemEntity *drop = Item->DropItem (this);
 		Client.ViewAngle.Y += spread;
 		drop->SpawnFlags |= DROPPED_PLAYER_ITEM;
-		drop->AmmoCount = (Client.Persistent.Weapon->WeaponItem) ? Client.Persistent.Weapon->WeaponItem->Ammo->Quantity : (static_cast<CAmmo*>(Client.Persistent.Weapon->Item))->Quantity;
+		drop->AmmoCount = Client.Persistent.Weapon->Item->Ammo->Quantity;
 	}
 
 	if (quad)

@@ -488,7 +488,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), attacker, true, take, knockback, dflags, mod, true);
 		}
 
-		if (attacker->EntityFlags & ENT_PLAYER)
+		if ((EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
 		{
 			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))

@@ -223,7 +223,7 @@ void CC_OutputDebugString (const char *text)
 {
 #if defined(_DEBUG)
 	// Pipe to visual studio in debug mode
-	OutputDebugStringA(text);
+	//OutputDebugStringA(text);
 #endif
 }
 

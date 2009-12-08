@@ -74,6 +74,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);
 
+	CBaseItem () {}
+
 	/// Classname (for maps)
 	char		*Classname;
 	/// World model

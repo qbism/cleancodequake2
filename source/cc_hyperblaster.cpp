@@ -71,7 +71,7 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 		ent->Client.PlayerState.GetGunFrame()++;
 	else
 	{
-		if (!ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->WeaponItem->Ammo) )
+		if (!ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo) )
 		{
 			OutOfAmmo(ent);
 			NoAmmoWeaponChange (ent);
@@ -108,7 +108,7 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 		}
 
 		ent->Client.PlayerState.GetGunFrame()++;
-		if (ent->Client.PlayerState.GetGunFrame() == 12 && ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->WeaponItem->Ammo))
+		if (ent->Client.PlayerState.GetGunFrame() == 12 && ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo))
 			ent->Client.PlayerState.GetGunFrame() = 6;
 	}
 

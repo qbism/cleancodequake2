@@ -35,30 +35,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define __CC_WEAPONS_H__
 
 // Class for weapon items.
-// Named not to interfere with the CWeapon system.
-// This class is missing ViewWeapon and the like
-// because the CWeapon system will handle all of that in the weapon
-// class itself. That way we don't have a bunch of useless SHIT spread
-// all around the source code.
-class CWeaponItem : public CBaseItem
+class CWeaponItem : public virtual CBaseItem
 {
 public:
+	CWeaponItem ();
 	CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Quantity, char *VWepModel);
+			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;
-	sint32					Quantity;
-	char	*VWepModel;
+	sint32				Amount;
+	char				*VWepModel;
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
+	virtual void	Use (CPlayerEntity *ent);
+	virtual void	Drop (CPlayerEntity *ent);
 };
 
 // Class for ammo.
-class CAmmo : public CBaseItem
+class CAmmo : public virtual CBaseItem
 {
 public:
 	CC_ENUM (uint8, EAmmoTag)
@@ -73,24 +69,38 @@ public:
 		AMMOTAG_MAX
 	};
 
+	CAmmo ();
 	CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag, CWeapon *Weapon, sint32 Amount, char *VWepModel);
+			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
-	class		CWeapon	*Weapon; // For weapon ammo
-	sint32			Amount; // Taken out for weapon ammo
 	sint32			Quantity; // Number gotten when we pick this mother upper
 	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo
-	char	*VWepModel;
 
 	// Only thing different about ammo is how it's picked up.
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
+	virtual void	Use (CPlayerEntity *ent);
+	virtual void	Drop (CPlayerEntity *ent);
 
 	// Member functions
 	bool	AddAmmo (CPlayerEntity *ent, sint32 count);
-	sint32		GetMax(CPlayerEntity *ent);
+	sint32	GetMax(CPlayerEntity *ent);
+};
+
+class CAmmoWeapon : public CWeaponItem, public CAmmo
+{
+public:
+	CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
+			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
+			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+
+	CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
+			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
+			   char *Precache, class CWeapon *Weapon, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+
+	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
+	void	Use (CPlayerEntity *ent);
+	void	Drop (CPlayerEntity *ent);
 };
 
 extern sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX];

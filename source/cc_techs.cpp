@@ -184,28 +184,18 @@ public:
 	void DoPassiveTech	(	CPlayerEntity *Player	)
 	{
 		const sint32 RegenAmts[] = {SHELL_REGEN_COUNT, BULLET_REGEN_COUNT, GRENADE_REGEN_COUNT, ROCKET_REGEN_COUNT, CELL_REGEN_COUNT, SLUG_REGEN_COUNT};
-		//CAmmo *Ptrs[] = {NItems::Shells, NItems::Bullets, NItems::Grenades, NItems::Rockets, NItems::Cells, NItems::Slugs};
 
 		bool noise = false;
 		if (Player->Client.Tech.RegenTime < level.Frame)
 		{
 			if (Player->Client.Persistent.Weapon)
 			{
-				if (Player->Client.Persistent.Weapon->WeaponItem)
+				if (Player->Client.Persistent.Weapon->Item)
 				{
-					CAmmo *Ammo = Player->Client.Persistent.Weapon->WeaponItem->Ammo;
+					CAmmo *Ammo = Player->Client.Persistent.Weapon->Item->Ammo;
 	
 					if (Ammo && Player->Client.Persistent.Inventory.Has(Ammo) && Player->Client.Persistent.Inventory.Has(Ammo) < Player->Client.Persistent.maxAmmoValues[Ammo->Tag])
 					{			
-						noise = true;
-						Ammo->AddAmmo (Player, RegenAmts[Ammo->Tag]);
-					}
-				}
-				else if (Player->Client.Persistent.Weapon->Item && (Player->Client.Persistent.Weapon->Item->Flags & ITEMFLAG_AMMO))
-				{
-					CAmmo *Ammo = dynamic_cast<CAmmo*>(Player->Client.Persistent.Weapon->Item);
-					if (Player->Client.Persistent.Inventory.Has(Ammo) < Player->Client.Persistent.maxAmmoValues[Ammo->Tag])
-					{
 						noise = true;
 						Ammo->AddAmmo (Player, RegenAmts[Ammo->Tag]);
 					}
