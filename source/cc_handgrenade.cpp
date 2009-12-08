@@ -245,8 +245,6 @@ void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
 			if (!ent->Client.Persistent.Inventory.Has(Item))
 			{
 				NoAmmoWeaponChange (ent);
-				newState = WS_DEACTIVATING;
-				newFrame = DeactStart;
 				ent->Client.Grenade.Time = 0;
 				ent->Client.Grenade.Thrown = false;
 			}

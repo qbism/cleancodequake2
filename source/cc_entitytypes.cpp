@@ -823,11 +823,6 @@ CPhysicsEntity (Index)
 
 bool CFlyMissileProjectile::Run ()
 {
-	CTrace	trace;
-	vec3f		move, old_origin;
-	bool		wasinwater;
-	bool		isinwater;
-
 	// if not a team captain, so movement will be handled elsewhere
 	if (Flags & FL_TEAMSLAVE)
 		return false;
@@ -843,14 +838,14 @@ bool CFlyMissileProjectile::Run ()
 	if ( GroundEntity )
 		return false;
 
-	old_origin = State.GetOrigin();
+	vec3f old_origin = State.GetOrigin();
 
 // move angles
 	State.GetAngles() = State.GetAngles().MultiplyAngles (0.1f, AngularVelocity);
 
 // move origin
-	move = Velocity * 0.1f;
-	trace = PushEntity (move);
+	vec3f move = Velocity * 0.1f;
+	CTrace trace = PushEntity (move);
 
 	if (!GetInUse())
 		return false;
@@ -870,9 +865,9 @@ bool CFlyMissileProjectile::Run ()
 	}
 	
 // check for water transition
-	wasinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
+	bool wasinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
 	WaterInfo.Type = PointContents (State.GetOrigin());
-	isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
+	bool isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
 
 	WaterInfo.Level = (isinwater) ? WATER_FEET : WATER_NONE;
 
