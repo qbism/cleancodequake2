@@ -285,7 +285,6 @@ void G_FreeEdict (edict_t *ed)
 	ed->inUse = false;
 	ed->state.number = ed - g_edicts;
 
-	RemoveEntityFromList (ed);
 	ed->AwaitingRemoval = true;
 }
 

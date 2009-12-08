@@ -3801,15 +3801,18 @@ bool CMonster::FindTarget()
 		if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
 		{
 			Entity->Enemy = Entity->Enemy->Enemy;
-			if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
+			if (Entity->Enemy)
 			{
-				Entity->Enemy = NULL;
-				return false;
-			}
-			else if (Entity->Enemy->Flags & FL_NOTARGET)
-			{
-				Entity->Enemy = NULL;
-				return false;
+				if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
+				{
+					Entity->Enemy = NULL;
+					return false;
+				}
+				else if (Entity->Enemy->Flags & FL_NOTARGET)
+				{
+					Entity->Enemy = NULL;
+					return false;
+				}
 			}
 		}
 	}
