@@ -80,7 +80,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_USE_EXCEPTION_HANDLER			1
 
 // Define this to allow GAME_CTF
-#define CLEANCTF_ENABLED					0
+#define CLEANCTF_ENABLED					1
 
 // Don't touch this.
 #define GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY

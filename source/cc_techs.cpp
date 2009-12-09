@@ -398,6 +398,9 @@ void SetupTechSpawn()
 #endif
 		(!dmFlags.dfDmTechs)
 		|| !(game.mode & GAME_DEATHMATCH))
+#if CLEANCTF_ENABLED
+		)
+#endif
 		return;
 
 	QNewEntityOf CTechSpawner;
