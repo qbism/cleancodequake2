@@ -58,7 +58,7 @@ public:
 #define IMPLEMENT_SAVE_STRUCTURE(unique_name,DLLClassName) \
 	CBaseEntity *LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity) (sint32 Index) \
 	{ \
-		return QNew (com_entityPool, 0) DLLClassName(Index); \
+		return QNewEntityOf DLLClassName(Index); \
 	} \
 	CEntityTableIndex LINK_RESOLVE_CLASSNAME(unique_name, __SaveData) \
 	(TO_STRING(unique_name), LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity));

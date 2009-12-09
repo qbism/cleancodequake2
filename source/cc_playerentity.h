@@ -657,11 +657,11 @@ public:
 	static void		BackupClientData ();
 	static void		RestoreClientData ();
 	void			SelectSpawnPoint (vec3f &origin, vec3f &angles);
-	CBaseEntity		*SelectCoopSpawnPoint ();
+	class CSpotBase	*SelectCoopSpawnPoint ();
 
 #if CLEANCTF_ENABLED
 	void			CTFDeadDropFlag ();
-	CBaseEntity		*SelectCTFSpawnPoint ();
+	class CSpotBase	*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();
 	void			CTFAssignSkin (std::cc_string s);
 	bool			CTFStart ();

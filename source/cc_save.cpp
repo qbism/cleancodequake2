@@ -101,12 +101,15 @@ bool RemoveAll (const edict_t *it)
 	return true;
 }
 
+void ClearSpawnPoints();
+
 void DeallocateEntities ()
 {
 	ShuttingDownEntities = true;
 	level.Entities.Closed.remove_if (RemoveAll);
 	ShuttingDownEntities = false;
 	Mem_FreePool (com_entityPool);
+	ClearSpawnPoints ();
 };
 
 void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)

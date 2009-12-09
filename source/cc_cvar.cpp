@@ -77,7 +77,7 @@ void CCvar::Register(const char *cvarName, const char *defaultValue, sint32 flag
 static std::cc_stringstream str;
 void CCvar::Register(const char *cvarName, float defaultValue, sint32 flags)
 {
-	str.clear ();
+	str.str("");
 	str << defaultValue;
 
 	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
@@ -89,7 +89,7 @@ void CCvar::Register(const char *cvarName, float defaultValue, sint32 flags)
 
 void CCvar::Register(const char *cvarName, sint32 defaultValue, sint32 flags)
 {
-	str.clear ();
+	str.str("");
 	str << defaultValue;
 
 	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
@@ -109,7 +109,7 @@ void CCvar::Set (const char *value, bool Force)
 
 void CCvar::Set (float value, bool Force)
 {
-	str.clear ();
+	str.str("");
 	str << value;
 
 	if (!Force)
@@ -120,7 +120,7 @@ void CCvar::Set (float value, bool Force)
 
 void CCvar::Set (sint32 value, bool Force)
 {
-	str.clear ();
+	str.str("");
 	str << value;
 
 	if (!Force)

@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "cc_weaponmain.h"
+#include "cc_infoentities.h"
 
 CTech::CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
@@ -75,7 +76,7 @@ bool CTech::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 	return true;
 }
 
-static CBaseEntity *FindTechSpawn()
+static CSpotBase *FindTechSpawn()
 {
 	return SelectRandomDeathmatchSpawnPoint();
 }
@@ -215,7 +216,7 @@ public:
 
 std::vector<CTech*, std::item_allocator<CTech*> >		TechList;
 
-void SpawnTech(CBaseItem *item, CBaseEntity *spot);
+void SpawnTech(CBaseItem *item, CSpotBase *spot);
 class CTechEntity : public CItemEntity
 {
 public:
@@ -243,7 +244,7 @@ public:
 
 	void Think ()
 	{
-		CBaseEntity *spot;
+		CSpotBase *spot;
 
 		if ((spot = FindTechSpawn()) != NULL)
 		{
@@ -326,7 +327,7 @@ void CTech::Drop (CPlayerEntity *ent)
 	ent->Client.Persistent.Tech = NULL;
 }
 
-void SpawnTech(CBaseItem *item, CBaseEntity *spot)
+void SpawnTech(CBaseItem *item, CSpotBase *spot)
 {
 	CTechEntity *ent = QNewEntityOf CTechEntity ();
 

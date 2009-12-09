@@ -39,45 +39,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 Point teleporters at these.
 */
-class CSpotBase : public CMapEntity
+CSpotBase::CSpotBase () :
+	CBaseEntity (),
+	CMapEntity ()
+	{
+	};
+
+CSpotBase::CSpotBase(sint32 Index) :
+	CBaseEntity(Index),
+	CMapEntity(Index)
+	{
+	};
+
+void CSpotBase::Spawn ()
 {
-public:
-	CSpotBase () :
-		CBaseEntity (),
-		CMapEntity ()
-		{
-		};
-
-	CSpotBase(sint32 Index) :
-		CBaseEntity(Index),
-		CMapEntity(Index)
-		{
-		};
-
-	virtual bool ParseField (const char *Key, const char *Value)
-	{
-		return CMapEntity::ParseField (Key, Value);
-	};
-
-	virtual void SaveFields (CFile &File)
-	{
-		CMapEntity::SaveFields (File);
-	};
-
-	virtual void LoadFields (CFile &File)
-	{
-		CMapEntity::LoadFields (File);
-	};
-
-	virtual void Spawn ()
-	{
-		State.GetModelIndex() = ModelIndex("models/objects/dmspot/tris.md2");
-		State.GetSkinNum() = 0;
-		GetSolid() = SOLID_BBOX;
-		GetMins().Set (-32, -32, -24);
-		GetMaxs().Set (32, 32, -16);
-		Link ();
-	};
+	State.GetModelIndex() = ModelIndex("models/objects/dmspot/tris.md2");
+	State.GetSkinNum() = 0;
+	GetSolid() = SOLID_BBOX;
+	GetMins().Set (-32, -32, -24);
+	GetMaxs().Set (32, 32, -16);
+	Link ();
 };
 
 class CTeleporterDest : public CSpotBase
@@ -408,6 +389,18 @@ potential spawning position for deathmatch games
 class CPlayerDeathmatch : public CSpotBase
 {
 public:
+	typedef std::vector<CPlayerDeathmatch*, std::generic_allocator<CPlayerDeathmatch*> > TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
 	CPlayerDeathmatch () :
 		CBaseEntity (),
 		CSpotBase ()
@@ -421,6 +414,12 @@ public:
 		};
 
 	IMPLEMENT_SAVE_HEADER(CPlayerDeathmatch)
+
+	void LoadFields (CFile &File)
+	{
+		CSpotBase::LoadFields (File);
+		SpawnPoints().push_back (this);
+	}
 
 	virtual void Spawn ()
 	{
@@ -437,10 +436,136 @@ public:
 		}
 
 		CSpotBase::Spawn ();
+		SpawnPoints().push_back (this);
 	};
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_deathmatch", CPlayerDeathmatch);
+
+/*
+=======================================================================
+
+  SelectSpawnPoint
+
+=======================================================================
+*/
+
+/*
+================
+PlayersRangeFromSpot
+
+Returns the distance to the nearest player from the given spot
+================
+*/
+float	PlayersRangeFromSpot (CBaseEntity *spot)
+{
+	float	bestplayerdistance = 9999999;
+
+	for (sint32 n = 1; n <= game.maxclients; n++)
+	{
+		CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[n].Entity);
+
+		if (!player->GetInUse())
+			continue;
+
+		if (player->Health <= 0)
+			continue;
+
+		float length = (spot->State.GetOrigin() - player->State.GetOrigin()).Length();
+		if (length < bestplayerdistance)
+			bestplayerdistance = length;
+	}
+
+	return bestplayerdistance;
+}
+
+/*
+================
+SelectRandomDeathmatchSpawnPoint
+
+go to a random point, but NOT the two points closest
+to other players
+================
+*/
+
+CSpotBase *SelectRandomDeathmatchSpawnPoint ()
+{
+	CBaseEntity *spot1 = NULL, *spot2 = NULL;
+	float range1 = 99999, range2 = 99999;
+
+	if (!CPlayerDeathmatch::SpawnPoints().size())
+		return NULL;
+
+	for (CPlayerDeathmatch::TSpawnPointsType::iterator it = CPlayerDeathmatch::SpawnPoints().begin(); it < CPlayerDeathmatch::SpawnPoints().end(); ++it)
+	{
+		CPlayerDeathmatch *Found = (*it);
+
+		float range = PlayersRangeFromSpot (Found);
+		if (range < range1)
+		{
+			range1 = range;
+			spot1 = Found;
+		}
+		else if (range < range2)
+		{
+			range2 = range;
+			spot2 = Found;
+		}
+	}
+
+	size_t count = CPlayerDeathmatch::SpawnPoints().size();
+	if (count <= 2)
+		spot1 = spot2 = NULL;
+	else
+		count -= 2;
+
+	uint32 selection = irandom(count);
+
+	CSpotBase *spot = NULL;
+	for (size_t i = 0; i < count; i++)
+	{
+		spot = CPlayerDeathmatch::SpawnPoints()[i];
+
+		if (spot == spot1 || spot == spot2)
+			selection++;
+
+		if (!selection--)
+			break;
+	}
+
+	return spot;
+}
+
+/*
+================
+SelectFarthestDeathmatchSpawnPoint
+
+================
+*/
+CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
+{
+	CSpotBase	*bestspot = NULL, *spot = NULL;
+	float		bestdistance = 0;
+
+	for (CPlayerDeathmatch::TSpawnPointsType::iterator it = CPlayerDeathmatch::SpawnPoints().begin(); it < CPlayerDeathmatch::SpawnPoints().end(); ++it)
+	{
+		CPlayerDeathmatch *Found = (*it);
+
+		float bestplayerdistance = PlayersRangeFromSpot (Found);
+		if (bestplayerdistance > bestdistance)
+		{
+			bestspot = spot;
+			bestdistance = bestplayerdistance;
+		}
+	}
+
+	if (bestspot)
+		return bestspot;
+
+	// if there is a player just spawned on each and every start spot
+	// we have no choice to turn one into a telefrag meltdown
+	return CPlayerDeathmatch::SpawnPoints()[0];
+}
 
 /*QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
 potential spawning position for coop games
@@ -449,6 +574,18 @@ potential spawning position for coop games
 class CPlayerCoop : public CSpotBase, public CThinkableEntity
 {
 public:
+	typedef std::vector<CPlayerCoop*, std::generic_allocator<CPlayerCoop*> > TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
 	CPlayerCoop () :
 		CBaseEntity (),
 		CThinkableEntity(),
@@ -475,6 +612,7 @@ public:
 	{
 		CThinkableEntity::LoadFields (File);
 		CSpotBase::LoadFields (File);
+		SpawnPoints().push_back (this);
 	};
 
 	bool ParseField (const char *Key, const char *Value)
@@ -489,26 +627,7 @@ public:
 	//
 	// we use carnal knowledge of the maps to fix the coop spot targetnames to match
 	// that of the nearest named single player spot
-	virtual void Think ()
-	{
-		CMapEntity *spot = NULL;
-		while(1)
-		{
-			spot = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset (CMapEntity,TargetName)> (spot, "info_player_start");
-
-			if (!spot)
-				return;
-			if (!spot->TargetName)
-				continue;
-			
-			if ((State.GetOrigin() - spot->State.GetOrigin()).Length() < 384)
-			{
-				if ((!TargetName) || Q_stricmp(TargetName, spot->TargetName) != 0)
-					TargetName = spot->TargetName;
-				return;
-			}
-		}
-	};
+	virtual void Think ();;
 
 	virtual void Spawn ()
 	{
@@ -541,14 +660,51 @@ public:
 		{
 			// invoke one of our gross, ugly, disgusting hacks
 			if (strcmp(level.ServerLevelName.c_str(), CheckNames[i]) == 0)
+			{
 				NextThink = level.Frame + FRAMETIME;
-		
+				break;
+			}
+
 			i++;
 		}
+
+		SpawnPoints().push_back (this);
 	};
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_coop", CPlayerCoop);
+
+CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
+{
+	sint32 index = State.GetNumber()-1;
+
+	// player 0 starts in normal player spawn point
+	if (!index)
+		return NULL;
+
+	CPlayerCoop *spot = NULL;
+
+	// assume there are four coop spots at each spawnpoint
+	for (CPlayerCoop::TSpawnPointsType::iterator it = CPlayerCoop::SpawnPoints().begin(); it < CPlayerCoop::SpawnPoints().end(); ++it)
+	{
+		spot = (*it);
+
+		if (!spot)
+			return NULL; // wut
+
+		char *target = spot->TargetName;
+		if (!target)
+			target = "";
+		if (Q_stricmp(game.spawnpoint, target) == 0)
+		{
+			// this is a coop spawn point for one of the clients here
+			if (!--index)
+				return spot; // got it
+		}
+	}
+
+	return spot;
+}
 
 /*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
 The deathmatch intermission point will be at one of these
@@ -584,6 +740,18 @@ The normal starting point for a level.
 class CPlayerStart : public CSpotBase, public CThinkableEntity
 {
 public:
+	typedef std::vector<CPlayerStart*, std::generic_allocator<CPlayerStart*> > TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
 	CPlayerStart () :
 		CBaseEntity (),
 		CThinkableEntity(),
@@ -610,6 +778,7 @@ public:
 	{
 		CThinkableEntity::LoadFields (File);
 		CSpotBase::LoadFields (File);
+		SpawnPoints().push_back (this);
 	};
 
 	bool ParseField (const char *Key, const char *Value)
@@ -621,22 +790,24 @@ public:
 	// where they should have been
 	virtual void Think ()
 	{
-		if(Q_stricmp(level.ServerLevelName.c_str(), "security") == 0)
+		if (Q_stricmp(level.ServerLevelName.c_str(), "security") == 0)
 		{
-			vec3f origins[] =
+			static const float origins[] =
 			{
-				vec3f(124, -164, 80),
-				vec3f(252, -164, 80),
-				vec3f(316, -164, 80)
+				124,
+				252,
+				316
 			};
 
 			for (sint32 i = 0; i < 3; i++)
 			{
 				CPlayerCoop *spot = QNewEntityOf CPlayerCoop;
 				spot->ClassName = "info_player_coop";
-				spot->State.GetOrigin() = origins[i];
+				spot->State.GetOrigin() = vec3f (origins[i], -164, 80);
 				spot->TargetName = "jail3";
 				spot->State.GetAngles().Set (0, 90, 0);
+
+				CPlayerCoop::SpawnPoints().push_back (spot);
 			}
 		}
 	};
@@ -645,13 +816,35 @@ public:
 	{
 		if (game.mode != GAME_COOPERATIVE)
 			return;
-		if(Q_stricmp(level.ServerLevelName.c_str(), "security") == 0)
+		if (stricmp(level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
 			NextThink = level.Frame + FRAMETIME;
+
+		SpawnPoints().push_back (this);
 	};
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_start", CPlayerStart);
+
+void CPlayerCoop::Think ()
+{
+	for (CPlayerStart::TSpawnPointsType::iterator it = CPlayerStart::SpawnPoints().begin(); it < CPlayerStart::SpawnPoints().end(); ++it)
+	{
+		CSpotBase *spot = (*it);
+
+		if (!spot)
+			return;
+		if (!spot->TargetName)
+			continue;
+		
+		if ((State.GetOrigin() - spot->State.GetOrigin()).Length() < 384)
+		{
+			if ((!TargetName) || Q_stricmp(TargetName, spot->TargetName) != 0)
+				TargetName = spot->TargetName;
+			return;
+		}
+	}
+};
 
 #if CLEANCTF_ENABLED
 /*QUAKED info_player_team1 (1 0 0) (-16 -16 -24) (16 16 32)
@@ -660,6 +853,18 @@ potential team1 spawning position for ctf games
 class CPlayerTeam1 : public CSpotBase
 {
 public:
+	typedef std::vector<CPlayerTeam1*, std::generic_allocator<CPlayerTeam1*> > TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
 	CPlayerTeam1 () :
 		CBaseEntity (),
 		CSpotBase ()
@@ -687,6 +892,18 @@ potential team2 spawning position for ctf games
 class CPlayerTeam2 : public CSpotBase
 {
 public:
+	typedef std::vector<CPlayerTeam2*, std::generic_allocator<CPlayerTeam2*> > TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
 	CPlayerTeam2 () :
 		CBaseEntity (),
 		CSpotBase ()
@@ -708,7 +925,168 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("info_player_team2", CPlayerTeam2);
 
+/*
+================
+SelectCTFSpawnPoint
+
+go to a ctf point, but NOT the two points closest
+to other players
+================
+*/
+template <class TIterator>
+void CheckCTFSpotRanges (TIterator Begin, TIterator End, float &range1, float &range2, CSpotBase **spot1, CSpotBase **spot2)
+{
+	for (TIterator it = Begin; it < End; ++it)
+	{
+		CSpotBase *spot = (*it);
+
+		float range = PlayersRangeFromSpot(spot);
+		if (range < range1)
+		{
+			range1 = range;
+			*spot1 = spot;
+		}
+		else if (range < range2)
+		{
+			range2 = range;
+			*spot2 = spot;
+		}
+	}
+}
+
+CSpotBase *CPlayerEntity::SelectCTFSpawnPoint ()
+{
+	CSpotBase	*spot1 = NULL, *spot2 = NULL;
+	float	range1 = 99999, range2 = 99999;
+
+	if (Client.Respawn.CTF.State)
+		return (dmFlags.dfSpawnFarthest) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
+
+	Client.Respawn.CTF.State++;
+
+	size_t count;
+	switch (Client.Respawn.CTF.Team)
+	{
+	case CTF_TEAM1:
+		count = CPlayerTeam1::SpawnPoints().size();
+		CheckCTFSpotRanges<CPlayerTeam1::TSpawnPointsType::iterator> (CPlayerTeam1::SpawnPoints().begin(), CPlayerTeam1::SpawnPoints().end(), range1, range2, &spot1, &spot2); 
+		break;
+	case CTF_TEAM2:
+		count = CPlayerTeam2::SpawnPoints().size();
+		CheckCTFSpotRanges<CPlayerTeam2::TSpawnPointsType::iterator> (CPlayerTeam2::SpawnPoints().begin(), CPlayerTeam2::SpawnPoints().end(), range1, range2, &spot1, &spot2); 
+		break;
+	default:
+		return SelectRandomDeathmatchSpawnPoint();
+	}
+
+	if (!count)
+		return SelectRandomDeathmatchSpawnPoint();
+
+	if (count <= 2)
+		spot1 = spot2 = NULL;
+	else
+		count -= 2;
+
+	size_t selection = irandom(count);
+
+	CSpotBase *spot = NULL;
+	for (size_t i = 0; i < count; i++)
+	{
+		switch (Client.Respawn.CTF.Team)
+		{
+		case CTF_TEAM1:
+			spot = CPlayerTeam1::SpawnPoints()[i];
+			break;
+		case CTF_TEAM2:
+			spot = CPlayerTeam2::SpawnPoints()[i];
+			break;
+		}
+
+		if (spot == spot1 || spot == spot2)
+			selection++;
+
+		if (!selection--)
+			break;
+	}
+
+	return spot;
+}
+
 #endif
+
+void ClearSpawnPoints ()
+{
+	CPlayerDeathmatch::ClearSpawnPoints ();
+	CPlayerCoop::ClearSpawnPoints ();
+	CPlayerStart::ClearSpawnPoints ();
+#if CLEANCTF_ENABLED
+	CPlayerTeam1::ClearSpawnPoints ();
+	CPlayerTeam2::ClearSpawnPoints ();
+#endif
+}
+
+/*
+===========
+SelectSpawnPoint
+
+Chooses a player start, deathmatch start, coop start, etc
+============
+*/
+void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
+{
+	CSpotBase	*spot = NULL;
+
+	if (!(game.mode & GAME_SINGLEPLAYER))
+		spot = 
+#if CLEANCTF_ENABLED
+		(game.mode & GAME_CTF) ? SelectCTFSpawnPoint() :
+#endif
+		(game.mode & GAME_DEATHMATCH) ? SelectDeathmatchSpawnPoint () : SelectCoopSpawnPoint ();
+
+	// find a single player start spot
+	if (!spot)
+	{
+		//while ((spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_start")) != NULL)
+		for (CPlayerStart::TSpawnPointsType::iterator it = CPlayerStart::SpawnPoints().begin(); it < CPlayerStart::SpawnPoints().end(); ++it)
+		{
+			spot = (*it);
+
+			if (!game.spawnpoint[0] && !spot->TargetName)
+				break;
+
+			if (!game.spawnpoint[0] || !spot->TargetName)
+				continue;
+
+			if (Q_stricmp(game.spawnpoint, spot->TargetName) == 0)
+				break;
+		}
+
+		if (!spot)
+		{
+			// There wasn't a spawnpoint without a target, so use any
+			if (!game.spawnpoint[0])
+			{
+				spot = CPlayerStart::SpawnPoints()[0];
+
+				if (!spot)
+					spot = CPlayerDeathmatch::SpawnPoints()[0];
+			}
+
+			if (!spot)
+			{
+				MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Couldn't find a suitable spawn point!\n");
+
+				origin.Set (0, 0, 0);
+				angles.Set (0, 0, 0);
+				
+				return;
+			}
+		}
+	}
+
+	origin = spot->State.GetOrigin () + vec3f(0, 0, 9);
+	angles = spot->State.GetAngles ();
+}
 
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8) TELEPORT
 Target: next path corner

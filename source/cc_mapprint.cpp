@@ -82,7 +82,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *f
 
 	DebugPrintf ("%s", PrintBuffer.str().c_str());
 
-	PrintBuffer.str().clear();
+	PrintBuffer.str("");
 }
 
 #define POUNDENTITIES_VERSION "1"

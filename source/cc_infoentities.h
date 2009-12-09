@@ -47,3 +47,27 @@ public:
 	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
 	virtual void Spawn ();
 };
+
+class CSpotBase : public CMapEntity
+{
+public:
+	CSpotBase ();
+	CSpotBase(sint32 Index);
+
+	virtual bool ParseField (const char *Key, const char *Value)
+	{
+		return CMapEntity::ParseField (Key, Value);
+	};
+
+	virtual void SaveFields (CFile &File)
+	{
+		CMapEntity::SaveFields (File);
+	};
+
+	virtual void LoadFields (CFile &File)
+	{
+		CMapEntity::LoadFields (File);
+	};
+
+	virtual void Spawn ();
+};

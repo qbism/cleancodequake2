@@ -87,11 +87,12 @@ TEntityType *CC_Find (TEntityType *From, char *Match)
 	return NULL;
 }
 
-CBaseEntity *SelectFarthestDeathmatchSpawnPoint ();
-CBaseEntity *SelectRandomDeathmatchSpawnPoint ();
+// stored in cc_infoentities
+CSpotBase *SelectFarthestDeathmatchSpawnPoint ();
+CSpotBase *SelectRandomDeathmatchSpawnPoint ();
 float	PlayersRangeFromSpot (CBaseEntity *spot);
 
-inline CBaseEntity *SelectDeathmatchSpawnPoint ()
+inline CSpotBase *SelectDeathmatchSpawnPoint ()
 {
 	return (dmFlags.dfSpawnFarthest) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
 }

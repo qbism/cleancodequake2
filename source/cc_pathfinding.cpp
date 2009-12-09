@@ -338,7 +338,7 @@ void SpawnNodeEntity (CPathNode *Node)
 	if (!DebugNodes->Integer())
 		return;
 
-	Node->Ent = QNew (com_entityPool, 0) CNodeEntity;
+	Node->Ent = QNewEntityOf CNodeEntity;
 	Node->Ent->State.GetModelIndex() = ModelIndex("models/objects/grenade2/tris.md2");
 	Node->Ent->State.GetOrigin() = Node->Origin;
 	Node->Ent->Link ();
