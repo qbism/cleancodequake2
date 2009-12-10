@@ -37,6 +37,35 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void SvCmd_Register ();
 void SvCmd_RemoveCommands ();
 
+typedef void (*TServerCommandFunctorType) ();
+class CServerCommand : public CCommand <TServerCommandFunctorType>
+{
+public:
+	CServerCommand (const char *Name, TServerCommandFunctorType Func) :
+	  CCommand (Name, Func, 0)
+	  {
+	  };
+
+	~CServerCommand ()
+	{
+	};
+
+	void *NewOfMe (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags)
+	{
+		return QNew (com_commandPool, 0) CServerCommand (Name, Func);
+	}
+
+	void Run ()
+	{
+		Func ();
+	};
+
+	CServerCommand &AddSubCommand (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
+	{
+		return static_cast<CServerCommand&>(CCommand::AddSubCommand(Name, Func, Flags));
+	};
+};
+
 #else
 FILE_WARNING
 #endif

@@ -818,7 +818,6 @@ echo Done!
     <ClInclude Include="..\..\source\cc_sound.h" />
     <ClInclude Include="..\..\source\cc_pmove.h" />
     <ClInclude Include="..\..\source\cc_cmds.h" />
-    <ClInclude Include="..\..\source\cc_cmds_local.h" />
     <ClInclude Include="..\..\source\cc_gamecommands.h" />
     <ClInclude Include="..\..\source\cc_servercommands.h" />
     <ClInclude Include="..\..\source\cc_baseentity.h" />

@@ -299,17 +299,14 @@ void ProcessEntity (edict_t *ent)
 		// This has to be processed after thinking and running, because
 		// the entity still has to be intact after that
 		if (Entity->Freed)
-		/*{
-			QDelete Entity;
-			ent->Entity = NULL;
-		}*/
-		ent->AwaitingRemoval = true;
+			ent->AwaitingRemoval = true;
 	}
 }
 
 bool RemoveEntity (edict_t *ent);
 
 extern bool requestedBreak;
+
 void CGameAPI::RunFrame ()
 {
 	if (requestedBreak)
@@ -535,7 +532,7 @@ void G_Register ()
 	// latched vars
 	sv_cheats = QNew (com_cvarPool, 0) CCvar ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 	CCvar ("gamename", GAMENAME , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	CCvar ("gamedate", __DATE__ , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
+	CCvar ("gamedate", BuildDate(), CVAR_SERVERINFO|CVAR_LATCH_SERVER);
 
 	maxclients = QNew (com_cvarPool, 0) CCvar ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH_SERVER);
 	maxspectators = QNew (com_cvarPool, 0) CCvar ("maxspectators", "4", CVAR_SERVERINFO);

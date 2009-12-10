@@ -43,9 +43,140 @@ CC_ENUM (uint32, ECmdTypeFlags)
 	CMD_CHEAT		= 2
 };
 
+template <typename TFunctor>
+class CCommand
+{
+public:
+	typedef std::vector<CCommand<TFunctor>*, std::command_allocator<CCommand<TFunctor>*> > TCommandListType;
+	typedef std::multimap<size_t, size_t, std::less<size_t>, std::command_allocator<size_t> > THashedCommandListType;
+
+	struct SubCommands_t
+	{
+		CCommand<TFunctor>			*Owner; // Pointer to the command that owns us
+
+		TCommandListType			List;
+		THashedCommandListType		HashedList;
+	};
+
+	char					*Name;
+	ECmdTypeFlags			Flags;
+	TFunctor				Func;
+	SubCommands_t			SubCommands;
+
+	CCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags) :
+	  Name(Mem_PoolStrDup(Name, com_commandPool, 0)),
+	  Func(Func),
+	  Flags(Flags)
+	  {
+	  };
+	
+	virtual ~CCommand ()
+	{
+		QDelete[] Name;
+	};
+
+	CCommand &GoUp ()
+	{
+		if (!SubCommands.Owner)
+			return *this;
+		return *SubCommands.Owner;
+	};
+
+	virtual void *NewOfMe (const char *Name, TFunctor Func, ECmdTypeFlags Flags) = 0;
+
+	virtual CCommand &AddSubCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags)
+	{
+		CCommand *NewCommand = (CCommand*)NewOfMe (Name, Func, Flags);
+
+		// We can add it!
+		SubCommands.List.push_back (NewCommand);
+
+		// Link it in the hash tree
+		SubCommands.HashedList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_CMD_HASH), SubCommands.List.size()-1));
+		SubCommands.List[SubCommands.List.size()-1]->SubCommands.Owner = this;
+
+		return *SubCommands.List[SubCommands.List.size()-1];
+	};
+};
+
+template <class TReturnValue>
+inline TReturnValue *RecurseSubCommands (uint32 &depth, TReturnValue *Cmd)
+{
+	if (Q_stricmp (Cmd->Name, ArgGets(depth).c_str()) == 0)
+	{
+		depth++;
+		if (ArgCount() > depth)
+		{
+			for (uint32 i = 0; i < Cmd->SubCommands.List.size(); i++)
+			{
+				TReturnValue *Found = static_cast<TReturnValue*>(RecurseSubCommands (depth, Cmd->SubCommands.List[i]));
+				if (Found)
+					return Found;
+			}
+		}
+		depth--;
+		return Cmd;
+	}
+	return NULL;
+}
+
+template <class TReturnValue, typename TListType, typename THashListType>
+inline TReturnValue *FindCommand (const char *commandName, TListType &List, THashListType &HashList)
+{
+	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
+
+	for (THashListType::iterator it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
+	{
+		TReturnValue *Command = static_cast<TReturnValue*>(List.at((*it).second));
+		if (Q_stricmp (Command->Name, commandName) == 0)
+		{
+			if (ArgCount() > 1)
+			{
+				for (uint32 i = 0; i < List.at((*it).second)->SubCommands.List.size(); i++)
+				{
+					uint32 depth = 1;
+					TReturnValue *Found = static_cast<TReturnValue*>(RecurseSubCommands (depth, List.at((*it).second)->SubCommands.List[i]));
+					if (Found)
+						return Found;
+				}
+			}
+			return Command;
+		}
+	}
+	return NULL;
+}
+
+typedef void (*TPlayerCommandFunctorType) (CPlayerEntity*);
+class CPlayerCommand : public CCommand <TPlayerCommandFunctorType>
+{
+public:
+	CPlayerCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags) :
+	  CCommand (Name, Func, Flags)
+	  {
+	  };
+
+	~CPlayerCommand ()
+	{
+	};
+
+	void Run (CPlayerEntity *ent);
+
+	void *NewOfMe (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
+	{
+		return QNew (com_commandPool, 0) CPlayerCommand (Name, Func, Flags);
+	}
+
+	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
+	{
+		return static_cast<CPlayerCommand&>(CCommand::AddSubCommand(Name, Func, Flags));
+	};
+};
+
 void Cmd_RunCommand (const char *commandName, CPlayerEntity *ent);
 void Cmd_RemoveCommands ();
-void Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags = CMD_NORMAL);
+CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags = CMD_NORMAL);
+
+void AddTestDebugCommands ();
 
 #else
 FILE_WARNING

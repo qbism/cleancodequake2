@@ -1,6 +1,8 @@
-﻿Public Class Form1
+﻿Imports System
+Imports System.IO
+Imports System.Net
 
-    Dim Checker As System.Net.WebClient
+Public Class Form1
 
     Structure VersionStruct
         Public Str As String
@@ -20,23 +22,128 @@
         Return Ver
     End Function
 
-    Public Sub DoneDownloadVersion(ByVal sender As Object, ByVal e As Net.DownloadStringCompletedEventArgs)
-        Latest = ReadVersion(e.Result)
-    End Sub
+    ' Returns true if version is same
+    Public Function CompareVersions(ByVal left As VersionStruct, ByVal right As VersionStruct)
+        If (left.Str = right.Str And left.Major = right.Major And left.Minor = right.Minor And left.Build = right.Build) Then Return True
+        Return False
+    End Function
 
     Public Sub GetCurrentVersion()
-        Dim Reader As IO.StreamReader = New IO.StreamReader("version.ver")
+        Dim Reader As StreamReader = New StreamReader(TextBox1.Text + "\baseq2\version.ver")
         Dim str As String = Reader.ReadToEnd()
         Current = ReadVersion(str)
         Reader.Close()
     End Sub
 
-    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Checker = New System.Net.WebClient
-        AddHandler Checker.DownloadStringCompleted, AddressOf DoneDownloadVersion
+    Sub ChangeTheNameAndProgress(ByVal name As String)
+        Form2.Label2.Text = name
+        Form2.ProgressBar1.Style = ProgressBarStyle.Continuous
+        Form2.ProgressBar1.Value = Form2.ProgressBar1.Value + 1
 
-        Checker.DownloadStringAsync(New System.Uri("http://cleancodequake2.googlecode.com/svn/trunk/version.ver"))
+        If name = "Finished" Or name = "Done, no changes needed" Then Form2.Button1.Text = "Close"
+    End Sub
+
+    Sub ForceBar()
+        Form2.ProgressBar1.Value = Form2.ProgressBar1.Maximum
+    End Sub
+
+    Sub ChangeTheNameOnly(ByVal name As String)
+        Form2.Label2.Text = name
+    End Sub
+
+    Delegate Sub ChangeTheNameDelegate(ByVal name As String)
+    Public ChangeNameProgress As ChangeTheNameDelegate
+    Public ChangeName As ChangeTheNameDelegate
+
+    Delegate Sub ForceBarToFinishSub()
+    Public ForceBarToFinish As ForceBarToFinishSub
+
+    Public Sub DoneDLLDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
+        Form2.Invoke(Me.ChangeNameProgress, "Done download, saving...")
+
+        File.Delete(TextBox1.Text + "\baseq2\gamex86.dll")
+        Dim BWriter As New BinaryWriter(New FileStream(TextBox1.Text + "\baseq2\gamex86.dll", FileMode.Create))
+        BWriter.Write(e.Result)
+        BWriter.Close()
+
+        Dim Writer As New StreamWriter(New FileStream(TextBox1.Text + "\baseq2\version.ver", FileMode.Create))
+        Writer.Write(Latest.Str + " " + Latest.Major + " " + Latest.Minor + " " + Latest.Build)
+        Writer.Close()
+
+        Form2.Invoke(Me.ChangeNameProgress, "Finished")
+        Form2.Invoke(Me.ForceBarToFinish)
+    End Sub
+
+    Public Sub DoneVersionDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
+        Latest = ReadVersion(New System.Text.ASCIIEncoding().GetString(e.Result))
+
+        Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
+
+        If CompareVersions(Latest, Current) Then
+            Form2.Invoke(Me.ChangeNameProgress, "Done, no changes needed")
+            Form2.Invoke(Me.ForceBarToFinish)
+        Else
+            Form2.Invoke(Me.ChangeNameProgress, "Downloading DLL...")
+            DownloadFile("http://cleancodequake2.googlecode.com/svn/trunk/quake2/baseq2/gamex86.dll", AddressOf DoneDLLDownload)
+        End If
+    End Sub
+
+    Public Sub DownloadProgressChanged(ByVal sender As Object, ByVal e As DownloadProgressChangedEventArgs)
+        Form2.Invoke(Me.ChangeName, "Downloading file... (" + e.BytesReceived.ToString() + "b / " + e.TotalBytesToReceive.ToString() + "b)")
+    End Sub
+
+    Sub DownloadFile(ByVal file As String, ByVal func As DownloadDataCompletedEventHandler)
+        Form2.Invoke(Me.ChangeNameProgress, "Connecting to server...")
+
+        Dim Checker As New WebClient
+        AddHandler Checker.DownloadDataCompleted, func
+        AddHandler Checker.DownloadProgressChanged, AddressOf DownloadProgressChanged
+        Checker.DownloadDataAsync(New Uri(file))
+    End Sub
+
+    Sub DoAutoUpdate()
+        Form2.Show()
+        Form2.Invoke(Me.ChangeNameProgress, "Starting...")
+        Form2.WindowState = FormWindowState.Normal
 
         GetCurrentVersion()
+
+        Me.ShowInTaskbar = False
+        Me.WindowState = FormWindowState.Minimized
+
+        DownloadFile("http://cleancodequake2.googlecode.com/svn/trunk/version.ver", AddressOf DoneVersionDownload)
+    End Sub
+
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+        ChangeNameProgress = New ChangeTheNameDelegate(AddressOf ChangeTheNameAndProgress)
+        ChangeName = New ChangeTheNameDelegate(AddressOf ChangeTheNameOnly)
+        ForceBarToFinish = New ForceBarToFinishSub(AddressOf ForceBar)
+
+        If (File.Exists("baseq2\gamex86.dll")) Then ' This is a Q2 dir
+            DoAutoUpdate()
+        End If
+    End Sub
+
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Dim Dlg As New FolderBrowserDialog
+        Dlg.Description = "Select your Quake II directory"
+        Dlg.ShowNewFolderButton = True
+        Dlg.ShowDialog()
+
+        TextBox1.Text = Dlg.SelectedPath()
+    End Sub
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        If (File.Exists(TextBox1.Text + "\baseq2\gamex86.dll")) Then ' This is a Q2 dir
+            DoAutoUpdate()
+        Else
+            MsgBox("This path does not contain a valid Quake II installation!", MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "CleanCode Auto Updater")
+        End If
+
     End Sub
 End Class

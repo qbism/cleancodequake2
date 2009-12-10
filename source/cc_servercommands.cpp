@@ -34,13 +34,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
 #include "cc_cmds.h"
-#include "cc_cmds_local.h"
 #include "cc_gamecommands.h"
 #include "cc_servercommands.h"
 #include "cc_version.h"
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::command_allocator<size_t> > THashedServerCommandListType;
-typedef std::vector<CServerCommand*, std::command_allocator<CServerCommand*> > TServerCommandListType;
+typedef CCommand<TServerCommandFunctorType>::TCommandListType TServerCommandListType;
+typedef CCommand<TServerCommandFunctorType>::THashedCommandListType THashedServerCommandListType;
 
 TServerCommandListType &ServerCommandList ()
 {

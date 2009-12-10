@@ -34,6 +34,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_SHARED_H__) || !INCLUDE_GUARDS
 #define __CC_SHARED_H__
 
+inline const char *BuildDate()
+{
+	return __DATE__;
+};
+
 // Pre-defined classes
 class CBaseEntity;
 class CPlayerEntity;

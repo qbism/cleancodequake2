@@ -545,9 +545,6 @@
     <ClInclude Include="..\..\source\cc_cmds.h">
       <Filter>CleanCode Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\cc_cmds_local.h">
-      <Filter>CleanCode Files\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\cc_colors.h">
       <Filter>CleanCode Files\Colors</Filter>
     </ClInclude>

@@ -453,7 +453,7 @@ void CGameAPI::WriteGame (char *filename, bool autosave)
 		return; // Fix to engines who don't shutdown on gi.error
 	}
 
-	File.WriteString (__DATE__);
+	File.WriteString (BuildDate());
 
 	WriteGameLocals (File, autosave);
 	WriteClients (File);
@@ -480,7 +480,7 @@ void CGameAPI::ReadGame (char *filename)
 	}
 
 	char *date = File.ReadString ();
-	if (strcmp (date, __DATE__))
+	if (strcmp (date, BuildDate()))
 	{
 		GameError ("Savegame from an older version.\n");
 		return;

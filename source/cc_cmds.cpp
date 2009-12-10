@@ -33,7 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "cc_cmds.h"
-#include "cc_cmds_local.h"
 
 void CPlayerCommand::Run (CPlayerEntity *ent)
 {
@@ -48,8 +47,8 @@ void CPlayerCommand::Run (CPlayerEntity *ent)
 	Func (ent);
 };
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::command_allocator<size_t> > THashedPlayerCommandListType;
-typedef std::vector<CPlayerCommand*, std::command_allocator<CPlayerCommand*> > TPlayerCommandListType;
+typedef CCommand<TPlayerCommandFunctorType>::TCommandListType TPlayerCommandListType;
+typedef CCommand<TPlayerCommandFunctorType>::THashedCommandListType THashedPlayerCommandListType;
 
 TPlayerCommandListType &CommandList ()
 {
@@ -67,13 +66,14 @@ CPlayerCommand *Cmd_FindCommand (const char *commandName)
 	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType> (commandName, CommandList(), CommandHashList());
 }
 
-void Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
+CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
 	if (Cmd_FindCommand(commandName))
 	{
 		DebugPrintf ("%s already exists as a command!\n", commandName);
-		return;
+		_CC_ASSERT_EXPR (0, "Tried to re-add a command, fatal error");
+		return *static_cast<CPlayerCommand*>(CommandList()[0]);
 	}
 
 	// We can add it!
@@ -81,6 +81,8 @@ void Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent),
 
 	// Link it in the hash tree
 	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));
+
+	return *static_cast<CPlayerCommand*>(CommandList()[CommandList().size()-1]);
 }
 
 void Cmd_RemoveCommands ()
@@ -99,4 +101,60 @@ void Cmd_RunCommand (const char *commandName, CPlayerEntity *ent)
 		Command->Run(ent);
 	else
 		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName);
+}
+
+#include <sstream>
+static std::cc_stringstream printBuffer;
+
+void PrintSpaces (uint32 &num)
+{
+	printBuffer << std::cc_string (num, ' ');
+}
+
+void RecursiveCommandPrint (CPlayerCommand *Cmd, uint32 &depth)
+{
+	// Print this command
+	PrintSpaces (depth);
+	printBuffer << Cmd->Name << "\n";
+
+	// Print each sub-command
+	depth++;
+	for (uint32 i = 0; i < Cmd->SubCommands.List.size(); i++)
+		RecursiveCommandPrint (static_cast<CPlayerCommand*>(Cmd->SubCommands.List[i]), depth);
+	depth--;
+}
+
+void Cmd_Test_f (CPlayerEntity *Player)
+{
+	printBuffer.str("");
+	for (uint32 i = 0; i < CommandList().size(); i++)
+	{
+		uint32 depth = 0;
+		RecursiveCommandPrint (static_cast<CPlayerCommand*>(CommandList()[i]), depth);
+	}
+
+	DebugPrintf ("%s", printBuffer.str().c_str());
+}
+
+void Cmd_Two_t (CPlayerEntity *Player)
+{
+	DebugPrintf ("Two\n");
+}
+
+void Cmd_Three_t (CPlayerEntity *Player)
+{
+	DebugPrintf ("Three\n");
+}
+
+void Cmd_Four_t (CPlayerEntity *Player)
+{
+	DebugPrintf ("Four\n");
+}
+
+void AddTestDebugCommands ()
+{
+	Cmd_AddCommand ("test",					Cmd_Test_f)
+		.AddSubCommand ("two",				Cmd_Two_t, 0)
+			.AddSubCommand ("three",		Cmd_Three_t, 0).GoUp().GoUp()
+		.AddSubCommand ("four",				Cmd_Four_t, 0);
 }

@@ -475,12 +475,6 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
-void Cmd_Test_f (CPlayerEntity *ent)
-{
-}
-
-#include "cc_menu.h"
-
 /*
 ==================
 Cmd_Score_f
@@ -589,7 +583,9 @@ void Cmd_Register ()
 	Cmd_AddCommand ("invprevw",				Cmd_SelectPrevWeapon_f);
 	Cmd_AddCommand ("invnextp",				Cmd_SelectNextPowerup_f);
 	Cmd_AddCommand ("invprevp",				Cmd_SelectPrevPowerup_f);
-	Cmd_AddCommand ("test",					Cmd_Test_f);
+#if _DEBUG
+	AddTestDebugCommands ();
+#endif
 
 	// And last but certainly not least..
 	Cmd_AddCommand ("god",					Cmd_God_f,				CMD_CHEAT);
