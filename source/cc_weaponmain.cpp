@@ -45,8 +45,15 @@ TWeaponListType &WeaponList ()
 
 void AddWeapons (CItemList *List)
 {
+	// Add them in player-specified order
+	// Index, Order
+	std::map<int, int, std::less<int>, std::generic_allocator<std::pair<int, int> > > Order;
+
 	for (size_t i = 0; i < WeaponList().size(); i++)
-		WeaponList()[i]->AddWeaponToItemList (List);
+		Order[WeaponList()[i]->ListOrder] = i;
+
+	for (std::map<int, int, std::less<int>, std::generic_allocator<std::pair<int, int> > >::iterator it = Order.begin(); it != Order.end(); it++)
+		WeaponList()[(*it).second]->AddWeaponToItemList (List);
 }
 
 void DoWeaponVweps ()
@@ -80,8 +87,9 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	}
 }
 
-CWeapon::CWeapon(char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+CWeapon::CWeapon(int ListOrder, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound) :
+ListOrder(ListOrder),
 ActivationStart(ActivationStart),
 ActivationEnd(ActivationEnd),
 FireStart(FireStart),

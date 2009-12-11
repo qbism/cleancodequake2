@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 
 #include "cc_local.h"
-#include "cc_cmds.h"
 
 #define MEM_MAX_ALLOC			(128 * 1024 * 1024) // 128MB
 #define MEM_SENTINEL_TOP(b)		(uint8)((/*0x32 +*/ (b)->realSize) & 0xff)

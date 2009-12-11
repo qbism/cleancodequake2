@@ -35,7 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_ban.h"
 #include "cc_target_entities.h"
 #include "cc_bodyqueue.h"
-#include "cc_cmds.h"
 #include "cc_gamecommands.h"
 #include "cc_servercommands.h"
 #include "cc_version.h"
@@ -636,7 +635,6 @@ void CGameAPI::Init ()
 
 	// File-system
 	FS_Init (4);
-	FS_AddPath (GAMENAME);
 
 	// Setup the gamemode
 	SetupGamemode ();
@@ -667,6 +665,9 @@ void CGameAPI::Init ()
 	Bans.LoadFromFile ();
 
 	Mem_Register ();
+
+	LoadModules ();
+	InitializeModules ();
 
 	DebugPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
 }

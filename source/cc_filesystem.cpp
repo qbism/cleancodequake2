@@ -604,7 +604,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 			}
 
 			if (!bFound)
-				files.push_back ((addDir) ? std::cc_string(search->pathName) + "/" + name : std::cc_string(name));
+				files.push_back ((addDir) ? dirFiles[i].c_str() : std::cc_string(name));
 		}
 	}
 
@@ -615,4 +615,7 @@ void FS_Init (sint32 maxHandles)
 {
 	IndexList = QNew(com_fileSysPool, 0) CFileHandleList (maxHandles);
 	FS_AddPath (".");
+	if (strcmp(GAMENAME, "baseq2"))
+		FS_AddPath (GAMENAME);
+	FS_AddPath ("baseq2");
 }

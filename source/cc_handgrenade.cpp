@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CHandGrenade::CHandGrenade() :
-CWeapon("models/weapons/v_handgr/tris.md2", 0, 0, 0, 16,
+CWeapon(7, "models/weapons/v_handgr/tris.md2", 0, 0, 0, 16,
 		17, 48, 0, 0)
 {
 }

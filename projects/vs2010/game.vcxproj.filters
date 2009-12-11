@@ -91,6 +91,9 @@
     <Filter Include="CleanCode Files\Menu">
       <UniqueIdentifier>{594f61e7-de73-49ab-b5aa-d5de189f720e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Modules">
+      <UniqueIdentifier>{6af86e92-8b38-48e4-9f27-1f9d81c3f466}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CleanCode Files\Monsters">
       <UniqueIdentifier>{1a6cce49-b3cc-44c9-b322-0d34989960a2}</UniqueIdentifier>
     </Filter>
@@ -368,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_misc_entities.cpp">
       <Filter>CleanCode Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_modules.cpp">
+      <Filter>CleanCode Files\Modules</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_monsters.cpp">
       <Filter>CleanCode Files\Monsters</Filter>
@@ -694,6 +700,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_misc_entities.h">
       <Filter>CleanCode Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_modules.h">
+      <Filter>CleanCode Files\Modules</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_monsters.h">
       <Filter>CleanCode Files\Monsters</Filter>

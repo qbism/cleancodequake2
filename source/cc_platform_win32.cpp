@@ -164,7 +164,7 @@ void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, bool recur
 	BOOL			findRes = TRUE;
 	char			findPath[MAX_OSPATH], searchPath[MAX_OSPATH];
 
-	Q_snprintfz (searchPath, sizeof(searchPath), "%s/*", path);
+	Q_snprintfz (searchPath, sizeof(searchPath), "%s*", path);
 
 	findHandle = FindFirstFileA (searchPath, &findInfo);
 	if (findHandle == INVALID_HANDLE_VALUE)
@@ -179,7 +179,7 @@ void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, bool recur
 			continue;
 		}
 
-		Q_snprintfz (findPath, sizeof(findPath), "%s/%s", path, findInfo.cFileName);
+		Q_snprintfz (findPath, sizeof(findPath), "%s%s", path, findInfo.cFileName);
 
 		if (findInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{

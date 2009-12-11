@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CRailgun::CRailgun() :
-CWeapon("models/weapons/v_rail/tris.md2", 0, 3, 4, 18,
+CWeapon(10, "models/weapons/v_rail/tris.md2", 0, 3, 4, 18,
 		19, 56, 57, 61, "weapons/rg_hum.wav")
 {
 }

@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CHyperBlaster::CHyperBlaster() :
-CWeapon("models/weapons/v_hyperb/tris.md2", 0, 5, 6, 20,
+CWeapon(9, "models/weapons/v_hyperb/tris.md2", 0, 5, 6, 20,
 		21, 49, 50, 53)
 {
 }

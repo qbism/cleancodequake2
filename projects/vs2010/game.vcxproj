@@ -686,6 +686,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_gameapi.cpp" />
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
+    <ClCompile Include="..\..\source\cc_modules.cpp" />
     <ClCompile Include="..\..\source\cc_platform_base.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -798,6 +799,7 @@ echo Done!
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
+    <ClInclude Include="..\..\source\cc_modules.h" />
     <ClInclude Include="..\..\source\cc_options.h" />
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />

@@ -83,6 +83,8 @@ typedef sint32	FrameNumber_t;
 #include "cc_trace.h"
 #include "cc_monsters.h"
 #include "cc_utils.h"
+#include "cc_cmds.h"
+#include "cc_modules.h"
 
 // Classes that require classes from the above includes
 #include "cc_print.h"
