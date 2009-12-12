@@ -1,5 +1,5 @@
-﻿Build started 09/12/2009 5:44:25 PM.
-     1>Project "F:\cleancodeq2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 87 (rebuild target(s)).
+﻿Build started 12/12/2009 3:38:49 PM.
+     1>Project "F:\cleancodeq2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 1 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file ".\Win32_LIB_Release\zlib.lastbuildstate".
        _PrepareForBuild:
@@ -209,4 +209,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.44
+Time Elapsed 00:00:01.24

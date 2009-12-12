@@ -51,7 +51,9 @@ Public Class Form1
             Reader.Close()
         Else
             Current.Str = "no version"
-            Current.Minor = Current.Major = Current.Build = ""
+            Current.Minor = "0"
+            Current.Major = "0"
+            Current.Build = "0"
         End If
     End Sub
 
@@ -95,7 +97,7 @@ Public Class Form1
 
     Public Sub DoneInstallerDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
         Form2.Invoke(Me.ChangeNameProgress, "Writing setup...")
-        MkDir(TextBox1.Text + "\cctemp\")
+        Directory.CreateDirectory(TextBox1.Text + "\cctemp\")
         Dim BWriter As New BinaryWriter(New FileStream(TextBox1.Text + "\cctemp\ccsetup.exe", FileMode.Create))
 
         BWriter.Write(e.Result)
@@ -122,7 +124,7 @@ Public Class Form1
 
             Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
 
-            If CompareVersions(LatestInstaller, Current) = EVersionEnum.VERSION_NEWER Then
+            If CompareVersions(LatestInstaller, Current) <> EVersionEnum.VERSION_NEWER Then
                 DownloadFile("http://alteredsoftworks.com/cleancode/version.ver", AddressOf DonePatchVersionDownload)
             Else
                 If (MsgBox("A major update for your version is available:" + vbNewLine + "Your version: " + Current.GetStr() + vbNewLine + "Update version: " + LatestInstaller.GetStr() + vbNewLine + vbNewLine + "Update?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes) Then
@@ -146,7 +148,7 @@ Public Class Form1
 
             Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
 
-            If CompareVersions(LatestPatch, Current) = EVersionEnum.VERSION_NEWER Then
+            If CompareVersions(LatestPatch, Current) <> EVersionEnum.VERSION_NEWER Then
                 MsgBox("Your version is up to date.")
                 Form2.Invoke(Me.ChangeNameProgress, "Done, no changes needed")
                 Form2.Invoke(Me.ForceBarToFinish)
