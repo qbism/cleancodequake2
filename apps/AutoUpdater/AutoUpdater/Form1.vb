@@ -9,6 +9,10 @@ Public Class Form1
         Public Major As String
         Public Minor As String
         Public Build As String
+
+        Function GetStr()
+            Return Str + "." + Major + "." + Minor + "." + Build
+        End Function
     End Structure
     Dim Latest As VersionStruct, Current As VersionStruct
 
@@ -40,7 +44,7 @@ Public Class Form1
         Form2.ProgressBar1.Style = ProgressBarStyle.Continuous
         Form2.ProgressBar1.Value = Form2.ProgressBar1.Value + 1
 
-        If name = "Finished" Or name = "Done, no changes needed" Then Form2.Button1.Text = "Close"
+        If name = "Finished" Or name = "Failed" Or name = "Done, no changes needed" Then Form2.Button1.Text = "Close"
     End Sub
 
     Sub ForceBar()
@@ -75,25 +79,40 @@ Public Class Form1
     End Sub
 
     Public Sub DoneVersionDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
-        Latest = ReadVersion(New System.Text.ASCIIEncoding().GetString(e.Result))
+        If e.Cancelled = False AndAlso e.Error Is Nothing Then
+            Latest = ReadVersion(New System.Text.ASCIIEncoding().GetString(e.Result))
 
-        Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
+            Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
 
-        If CompareVersions(Latest, Current) Then
-            Form2.Invoke(Me.ChangeNameProgress, "Done, no changes needed")
-            Form2.Invoke(Me.ForceBarToFinish)
+            If CompareVersions(Latest, Current) Then
+                MsgBox("Your version is up to date.")
+                Form2.Invoke(Me.ChangeNameProgress, "Done, no changes needed")
+                Form2.Invoke(Me.ForceBarToFinish)
+            Else
+                If (MsgBox("An update for your version is available:" + vbNewLine + "Your version: " + Current.GetStr() + vbNewLine + "Update version: " + Latest.GetStr() + vbNewLine + vbNewLine + "Update?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes) Then
+                    Form2.Invoke(Me.ChangeNameProgress, "Downloading DLL...")
+                    DownloadFile("http://cleancodequake2.googlecode.com/svn/trunk/quake2/baseq2/gamex86.dll", AddressOf DoneDLLDownload)
+                Else
+                    Form2.Invoke(Me.ChangeNameProgress, "Finished")
+                    Form2.Invoke(Me.ForceBarToFinish)
+                End If
+            End If
         Else
-            Form2.Invoke(Me.ChangeNameProgress, "Downloading DLL...")
-            DownloadFile("http://cleancodequake2.googlecode.com/svn/trunk/quake2/baseq2/gamex86.dll", AddressOf DoneDLLDownload)
+            MsgBox("An error occured while trying to update CleanCode:" + vbNewLine + vbNewLine + e.Error.Message)
+            Form2.Invoke(Me.ChangeNameProgress, "Failed")
+            Form2.Invoke(Me.ForceBarToFinish)
         End If
     End Sub
 
+    Shared CurrentFile As String
     Public Sub DownloadProgressChanged(ByVal sender As Object, ByVal e As DownloadProgressChangedEventArgs)
-        Form2.Invoke(Me.ChangeName, "Downloading file... (" + e.BytesReceived.ToString() + "b / " + e.TotalBytesToReceive.ToString() + "b)")
+        Form2.Invoke(Me.ChangeName, "Downloading file " + CurrentFile + vbNewLine + e.ProgressPercentage.ToString() + "% (" + e.BytesReceived.ToString() + "b / " + e.TotalBytesToReceive.ToString() + "b)")
     End Sub
 
     Sub DownloadFile(ByVal file As String, ByVal func As DownloadDataCompletedEventHandler)
         Form2.Invoke(Me.ChangeNameProgress, "Connecting to server...")
+        Dim Stripped() As String = file.Split("/")
+        CurrentFile = Stripped(Stripped.Length - 1)
 
         Dim Checker As New WebClient
         AddHandler Checker.DownloadDataCompleted, func
@@ -120,7 +139,8 @@ Public Class Form1
         ChangeName = New ChangeTheNameDelegate(AddressOf ChangeTheNameOnly)
         ForceBarToFinish = New ForceBarToFinishSub(AddressOf ForceBar)
 
-        If (File.Exists("baseq2\gamex86.dll")) Then ' This is a Q2 dir
+        TextBox1.Text = Environment.CurrentDirectory()
+        If (File.Exists(TextBox1.Text + "\baseq2\gamex86.dll")) Then ' This is a Q2 dir
             DoAutoUpdate()
         End If
     End Sub
