@@ -814,7 +814,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (game.mode != GAME_COOPERATIVE)
+		if (game.mode == GAME_DEATHMATCH)
 			return;
 		if (stricmp(level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
@@ -1066,7 +1066,8 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 			// There wasn't a spawnpoint without a target, so use any
 			if (!game.spawnpoint[0])
 			{
-				spot = CPlayerStart::SpawnPoints()[0];
+				if (CPlayerStart::SpawnPoints().at(0))
+					spot = CPlayerStart::SpawnPoints().at(0);
 
 				if (!spot)
 					spot = CPlayerDeathmatch::SpawnPoints()[0];
