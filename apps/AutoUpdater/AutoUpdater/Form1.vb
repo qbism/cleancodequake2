@@ -164,6 +164,5 @@ Public Class Form1
         Else
             MsgBox("This path does not contain a valid Quake II installation!", MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "CleanCode Auto Updater")
         End If
-
     End Sub
 End Class

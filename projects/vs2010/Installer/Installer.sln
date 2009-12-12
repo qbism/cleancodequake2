@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Installer", "Installer.isproj", "{A09CCD4C-4B81-4A65-91AA-7A34351C543F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|AnyOS = CD_ROM|AnyOS
+		CD_ROM|Win32 = CD_ROM|Win32
+		CD_ROM|Win64 = CD_ROM|Win64
+		DVD-5|AnyOS = DVD-5|AnyOS
+		DVD-5|Win32 = DVD-5|Win32
+		DVD-5|Win64 = DVD-5|Win64
+		SingleImage|AnyOS = SingleImage|AnyOS
+		SingleImage|Win32 = SingleImage|Win32
+		SingleImage|Win64 = SingleImage|Win64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.CD_ROM|AnyOS.ActiveCfg = CD_ROM|AnyOS
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.CD_ROM|AnyOS.Build.0 = CD_ROM|AnyOS
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.CD_ROM|Win32.ActiveCfg = CD_ROM|Win32
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.CD_ROM|Win32.Build.0 = CD_ROM|Win32
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.CD_ROM|Win64.ActiveCfg = CD_ROM|Win64
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.CD_ROM|Win64.Build.0 = CD_ROM|Win64
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.DVD-5|AnyOS.ActiveCfg = DVD-5|AnyOS
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.DVD-5|AnyOS.Build.0 = DVD-5|AnyOS
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.DVD-5|Win32.ActiveCfg = DVD-5|Win32
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.DVD-5|Win32.Build.0 = DVD-5|Win32
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.DVD-5|Win64.ActiveCfg = DVD-5|Win64
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.DVD-5|Win64.Build.0 = DVD-5|Win64
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.SingleImage|AnyOS.ActiveCfg = SingleImage|AnyOS
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.SingleImage|AnyOS.Build.0 = SingleImage|AnyOS
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.SingleImage|Win32.ActiveCfg = SingleImage|Win32
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.SingleImage|Win32.Build.0 = SingleImage|Win32
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.SingleImage|Win64.ActiveCfg = SingleImage|Win64
+		{A09CCD4C-4B81-4A65-91AA-7A34351C543F}.SingleImage|Win64.Build.0 = SingleImage|Win64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
