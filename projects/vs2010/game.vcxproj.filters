@@ -895,10 +895,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\todo.txt">
+    <None Include="..\..\quake2\baseq2\version.ver">
       <Filter>CleanCode Files</Filter>
     </None>
-    <None Include="..\..\version.ver">
+    <None Include="..\..\todo.txt">
       <Filter>CleanCode Files</Filter>
     </None>
     <None Include="game.def">
