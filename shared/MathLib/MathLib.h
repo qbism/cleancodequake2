@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // ===========================================================================
 
-class vec3f; // forward declaration
+class  vec3f; // forward declaration
 
 extern vec2_t	vec2Origin;
 #ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY

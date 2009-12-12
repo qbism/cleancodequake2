@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __CC_MEMORY_H__
 
 // Constants
-extern struct memPool_t	*com_genericPool, // Generic memory; memory that will be freed on level change, but not necessarily needed for anything
+extern void	*com_genericPool, // Generic memory; memory that will be freed on level change, but not necessarily needed for anything
 						*com_levelPool, // Flushed per level
 						*com_gamePool, // Flushed per entire game
 						*com_fileSysPool, // Flushed per entire game
@@ -63,24 +63,24 @@ extern struct memPool_t	*com_genericPool, // Generic memory; memory that will be
 #define Mem_TouchGlobal()								_Mem_TouchGlobal(__FILE__,__LINE__)
 
 // Functions
-struct memPool_t *_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileLine);
-size_t		_Mem_DeletePool(struct memPool_t *pool, const char *fileName, const sint32 fileLine);
+void *_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileLine);
+size_t		_Mem_DeletePool(void *pool, const char *fileName, const sint32 fileLine);
 
 size_t		_Mem_Free(const void *ptr, const char *fileName, const sint32 fileLine, bool Array);
-size_t		_Mem_FreeTag(struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine);
-size_t		_Mem_FreePool(struct memPool_t *pool, const char *fileName, const sint32 fileLine);
-void		*_Mem_Alloc(size_t size, struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine, bool Array);
+size_t		_Mem_FreeTag(void *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine);
+size_t		_Mem_FreePool(void *pool, const char *fileName, const sint32 fileLine);
+void		*_Mem_Alloc(size_t size, void *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine, bool Array);
 void		*_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32 fileLine);
 
-char		*_Mem_PoolStrDup(const char *in, struct memPool_t *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine);
-size_t		_Mem_PoolSize(struct memPool_t *pool);
-size_t		_Mem_TagSize(struct memPool_t *pool, const sint32 tagNum);
-size_t		_Mem_ChangeTag(struct memPool_t *pool, const sint32 tagFrom, const sint32 tagTo);
+char		*_Mem_PoolStrDup(const char *in, void *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine);
+size_t		_Mem_PoolSize(void *pool);
+size_t		_Mem_TagSize(void *pool, const sint32 tagNum);
+size_t		_Mem_ChangeTag(void *pool, const sint32 tagFrom, const sint32 tagTo);
 
-void		_Mem_CheckPoolIntegrity(struct memPool_t *pool, const char *fileName, const sint32 fileLine);
+void		_Mem_CheckPoolIntegrity(void *pool, const char *fileName, const sint32 fileLine);
 void		_Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine);
 
-void		_Mem_TouchPool(struct memPool_t *pool, const char *fileName, const sint32 fileLine);
+void		_Mem_TouchPool(void *pool, const char *fileName, const sint32 fileLine);
 void		_Mem_TouchGlobal(const char *fileName, const sint32 fileLine);
 
 void		Mem_Register();
@@ -119,26 +119,26 @@ inline void operator delete[](void *Pointer)
 }
 
 // But allow these!
-inline void *operator new(size_t Size, struct memPool_t *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
+inline void *operator new(size_t Size, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
 {
 	return _Mem_Alloc(Size, Pool, TagNum, FileName, FileLine, false);
 }
 
-inline void *operator new[](size_t Size, struct memPool_t *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
+inline void *operator new[](size_t Size, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
 {
 	return _Mem_Alloc(Size, Pool, TagNum, FileName, FileLine, true);
 }
 
 #define QNew(Pool,TagNum)	new((Pool),(TagNum),__FILE__,__LINE__)
 
-inline void operator delete(void *Pointer, struct memPool_t *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
+inline void operator delete(void *Pointer, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
 {
 	_Mem_Free(Pointer, FileName, FileLine, false);
 	TagNum;
 	Pool;
 }
 
-inline void operator delete[](void *Pointer, struct memPool_t *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
+inline void operator delete[](void *Pointer, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
 {
 	_Mem_Free(Pointer, FileName, FileLine, true);
 	TagNum;

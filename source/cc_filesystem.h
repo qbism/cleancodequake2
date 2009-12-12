@@ -224,7 +224,7 @@ public:
 		return Val;
 	};
 
-	char *ReadString (struct memPool_t *Pool = com_genericPool)
+	char *ReadString (void *Pool = com_genericPool)
 	{
 		if (!Handle)
 			return NULL;

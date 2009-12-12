@@ -31,7 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // CleanModule System
 //
 
+#if 0
 #define MODULE_API_VERSION		1
+#define MODULE_ENTRY_POINT		"LoadModuleAPI"
 
 // All modules inherit this class
 class CModule
@@ -51,10 +53,6 @@ public:
 		return MODULE_API_VERSION;
 	};
 
-	// The import part of the API.
-	// Commands
-	class CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags = CMD_NORMAL);
-
 	// Functions to be overloaded
 	// Register cvars, commands, etc
 	virtual void Register () = 0;
@@ -64,7 +62,6 @@ public:
 	virtual void Shutdown () = 0;
 };
 
-#ifndef COMPILING_MODULE
 void LoadModules ();
 void InitializeModules ();
 void ShutdownModules ();

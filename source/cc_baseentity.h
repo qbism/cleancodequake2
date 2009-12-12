@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_BASEENTITY_H__) || !INCLUDE_GUARDS
 #define __CC_BASEENTITY_H__
 
-class CEntityState
+class  CEntityState
 {
 private:
 	entityStateOld_t	*state;
@@ -84,7 +84,7 @@ CC_ENUM (uint32, EEdictFlags)
 
 // CBaseEntity is abstract.
 // A base entity can't do anything
-class CBaseEntity
+class  CBaseEntity
 {
 //private:
 public: // Kept public for now because there are lots of functions that require edict_t
@@ -226,7 +226,7 @@ inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
 	return Entity; // Implicit cast already done
 }
 
-inline char *CopyStr (const char *In, struct memPool_t *Pool)
+inline char *CopyStr (const char *In, void *Pool)
 {
 	std::cc_string newString (In);
 	
@@ -363,7 +363,7 @@ CC_ENUM (uint32, EFieldType)
 #define OFS_TO_TYPE_(x,y) (*((x*)(y)))
 #define OFS_TO_TYPE(x) OFS_TO_TYPE_(x,ClassOffset)
 
-class CEntityField
+class  CEntityField
 {
 public:
 	std::cc_string	Name;
@@ -743,7 +743,7 @@ const size_t FieldSize ()
 
 // An entity that can be seen via a map.
 // Just to bypass the damn abstractness I did.
-class CMapEntity : public virtual CBaseEntity
+class  CMapEntity : public virtual CBaseEntity
 {
 public:
 	char		*Classname;

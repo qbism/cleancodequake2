@@ -60,7 +60,7 @@ CC_ENUM (sint32, EItemFlags)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void InvalidateItemMedia ();
 
-class CBaseItem
+class  CBaseItem
 {
 	friend void InvalidateItemMedia ();
 private:

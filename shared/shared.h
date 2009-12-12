@@ -34,9 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <time.h>
 #include <ctype.h>
 
+#include "Platform.h"
+
 void AssertExpression (const bool expr, const char *msg);
 
-#include "Platform.h"
 #include "../source/cc_memory.h"
 #include "../source/cc_stl.h"
 #include "Templates/Templates.h"

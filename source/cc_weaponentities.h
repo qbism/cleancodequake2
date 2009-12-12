@@ -76,7 +76,7 @@ public:
 	bool Run ();
 };
 
-class CBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class  CBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
 {
 public:
 	sint32		Damage;

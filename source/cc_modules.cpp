@@ -31,12 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // CleanModule System
 //
 
+#if 0
 #include "cc_local.h"
-
-CPlayerCommand &CModule::Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
-{
-	return ::Cmd_AddCommand (commandName, Func, Flags);
-}
 
 struct Module_t
 {
@@ -53,9 +49,9 @@ void CC_LoadModule (std::cc_string Name)
 	{
 		// Make sure the module is valid
 		typedef CModule *(*TLoadModuleAPI) ();
-		TLoadModuleAPI LoadModuleAPI;
+		TLoadLoadModuleAPI;
 
-		LoadModuleAPI = Lib->GetFunction<TLoadModuleAPI> ("LoadModuleAPI");
+		Load= Lib->GetFunction<TLoadModuleAPI> (MODULE_ENTRY_POINT);
 
 		if (LoadModuleAPI)
 		{
@@ -71,6 +67,7 @@ void CC_LoadModule (std::cc_string Name)
 				Mod->Module = Module;
 
 				Modules.push_back (Mod);
+				DebugPrintf ("Loaded module %s\n", Name.c_str());
 				return;
 			}
 			else
@@ -119,3 +116,4 @@ void ShutdownModules ()
 	for (size_t i = 0; i < Modules.size(); i++)
 		Modules[i]->Module->Shutdown ();
 }
+#endif

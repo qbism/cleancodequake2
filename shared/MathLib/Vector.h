@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifdef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 template<typename TType>
-class vec2Base
+class  vec2Base
 {
 public:
 	/**
@@ -100,7 +100,7 @@ public:
 ==============================================================================
 */
 
-class vec2f : public vec2Base<float>
+class  vec2f : public vec2Base<float>
 {
 public:
 	/**
@@ -219,7 +219,7 @@ public:
 */
 
 template<typename TType>
-class vec3Base
+class  vec3Base
 {
 public:
 	/**
@@ -293,7 +293,7 @@ public:
 ==============================================================================
 */
 
-class vec3f : public vec3Base<float>
+class  vec3f : public vec3Base<float>
 {
 public:
 	/**

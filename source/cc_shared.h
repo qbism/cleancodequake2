@@ -40,15 +40,15 @@ inline const char *BuildDate()
 };
 
 // Pre-defined classes
-class CBaseEntity;
-class CPlayerEntity;
+class  CBaseEntity;
+class  CPlayerEntity;
 
-// Stand-alone classes
 typedef sint32	FrameNumber_t;
 
 #define TO_STRING2(x) #x
 #define TO_STRING(x) TO_STRING2(x)
 
+// Stand-alone classes
 #include "cc_filesystem.h"
 #include "cc_platform.h"
 #include "cc_indexing.h"

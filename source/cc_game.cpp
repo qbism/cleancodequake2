@@ -666,8 +666,10 @@ void CGameAPI::Init ()
 
 	Mem_Register ();
 
+#if 0
 	LoadModules ();
 	InitializeModules ();
+#endif
 
 	DebugPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
 }
