@@ -226,6 +226,7 @@ void		CMiscExploBox::SaveFields (CFile &File)
 	CMapEntity::SaveFields (File);
 	CHurtableEntity::SaveFields (File);
 	CTouchableEntity::SaveFields (File);
+	CStepPhysics::SaveFields (File);
 }
 
 void		CMiscExploBox::LoadFields (CFile &File)
@@ -234,6 +235,7 @@ void		CMiscExploBox::LoadFields (CFile &File)
 	CMapEntity::LoadFields (File);
 	CHurtableEntity::LoadFields (File);
 	CTouchableEntity::LoadFields (File);
+	CStepPhysics::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_explobox",CMiscExploBox);

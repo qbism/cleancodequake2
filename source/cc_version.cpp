@@ -167,7 +167,7 @@ void CheckNewVersion ()
 
 	if (iInternetHandle)
 	{
-		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, "http://cleancodequake2.googlecode.com/svn/trunk/quake2/baseq2/version.ver", NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
+		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, "http://alteredsoftworks.com/cleancode/version.ver", NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
 		if (iInternetFile)
 		{
 			// Start writing the file

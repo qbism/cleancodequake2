@@ -14,7 +14,7 @@ Public Class Form1
             Return Str + "." + Major + "." + Minor + "." + Build
         End Function
     End Structure
-    Dim Latest As VersionStruct, Current As VersionStruct
+    Dim LatestInstaller As VersionStruct, LatestPatch As VersionStruct, Current As VersionStruct
 
     Public Function ReadVersion(ByVal str As String) As VersionStruct
         Dim Vers() As String = str.Split(" ")
@@ -71,8 +71,26 @@ Public Class Form1
         BWriter.Close()
 
         Dim Writer As New StreamWriter(New FileStream(TextBox1.Text + "\baseq2\version.ver", FileMode.Create))
-        Writer.Write(Latest.Str + " " + Latest.Major + " " + Latest.Minor + " " + Latest.Build)
+        Writer.Write(LatestPatch.Str + " " + LatestPatch.Major + " " + LatestPatch.Minor + " " + LatestPatch.Build)
         Writer.Close()
+
+        Form2.Invoke(Me.ChangeNameProgress, "Finished")
+        Form2.Invoke(Me.ForceBarToFinish)
+    End Sub
+
+    Public Sub DoneInstallerDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
+        Form2.Invoke(Me.ChangeNameProgress, "Writing setup...")
+        MkDir(TextBox1.Text + "\cctemp\")
+        Dim BWriter As New BinaryWriter(New FileStream(TextBox1.Text + "\cctemp\ccsetup.exe", FileMode.Create))
+
+        BWriter.Write(e.Result)
+        BWriter.Close()
+
+        Form2.Invoke(Me.ChangeNameProgress, "Installing...")
+        Shell(TextBox1.Text + "\cctemp\ccsetup.exe", AppWinStyle.NormalFocus, True)
+
+        ' Done installing, delete temp files
+        Directory.Delete(TextBox1.Text + "\cctemp\", True)
 
         Form2.Invoke(Me.ChangeNameProgress, "Finished")
         Form2.Invoke(Me.ForceBarToFinish)
@@ -80,18 +98,42 @@ Public Class Form1
 
     Public Sub DoneVersionDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
         If e.Cancelled = False AndAlso e.Error Is Nothing Then
-            Latest = ReadVersion(New System.Text.ASCIIEncoding().GetString(e.Result))
+            LatestInstaller = ReadVersion(New System.Text.ASCIIEncoding().GetString(e.Result))
 
             Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
 
-            If CompareVersions(Latest, Current) Then
+            If CompareVersions(LatestInstaller, Current) Then
+                DownloadFile("http://alteredsoftworks.com/cleancode/version.ver", AddressOf DonePatchVersionDownload)
+            Else
+                If (MsgBox("A major update for your version is available:" + vbNewLine + "Your version: " + Current.GetStr() + vbNewLine + "Update version: " + LatestInstaller.GetStr() + vbNewLine + vbNewLine + "Update?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes) Then
+                    Form2.Invoke(Me.ChangeNameProgress, "Downloading installer...")
+                    DownloadFile("http://alteredsoftworks.com/cleancode/files/is/ccsetup.exe", AddressOf DoneInstallerDownload)
+                Else
+                    Form2.Invoke(Me.ChangeNameProgress, "Finished")
+                    Form2.Invoke(Me.ForceBarToFinish)
+                End If
+            End If
+        Else
+            MsgBox("An error occured while trying to update CleanCode:" + vbNewLine + vbNewLine + e.Error.Message)
+            Form2.Invoke(Me.ChangeNameProgress, "Failed")
+            Form2.Invoke(Me.ForceBarToFinish)
+        End If
+    End Sub
+
+    Public Sub DonePatchVersionDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
+        If e.Cancelled = False AndAlso e.Error Is Nothing Then
+            LatestPatch = ReadVersion(New System.Text.ASCIIEncoding().GetString(e.Result))
+
+            Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
+
+            If CompareVersions(LatestPatch, Current) Then
                 MsgBox("Your version is up to date.")
                 Form2.Invoke(Me.ChangeNameProgress, "Done, no changes needed")
                 Form2.Invoke(Me.ForceBarToFinish)
             Else
-                If (MsgBox("An update for your version is available:" + vbNewLine + "Your version: " + Current.GetStr() + vbNewLine + "Update version: " + Latest.GetStr() + vbNewLine + vbNewLine + "Update?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes) Then
+                If (MsgBox("A patch update for your version is available:" + vbNewLine + "Your version: " + Current.GetStr() + vbNewLine + "Update version: " + LatestPatch.GetStr() + vbNewLine + vbNewLine + "Update?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes) Then
                     Form2.Invoke(Me.ChangeNameProgress, "Downloading DLL...")
-                    DownloadFile("http://cleancodequake2.googlecode.com/svn/trunk/quake2/baseq2/gamex86.dll", AddressOf DoneDLLDownload)
+                    DownloadFile("http://alteredsoftworks.com/cleancode/files/loose/gamex86.dll", AddressOf DoneDLLDownload)
                 Else
                     Form2.Invoke(Me.ChangeNameProgress, "Finished")
                     Form2.Invoke(Me.ForceBarToFinish)
@@ -130,7 +172,7 @@ Public Class Form1
         Me.ShowInTaskbar = False
         Me.WindowState = FormWindowState.Minimized
 
-        DownloadFile("http://cleancodequake2.googlecode.com/svn/trunk/version.ver", AddressOf DoneVersionDownload)
+        DownloadFile("http://alteredsoftworks.com/cleancode/files/is/version.ver", AddressOf DoneVersionDownload)
     End Sub
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load

@@ -147,6 +147,8 @@ MediaIndex SoundIndex (const char *String)
 
 MediaIndex ImageIndex (const char *String)
 {
+	if (strcmp(String, "m") == 0)
+		assert (0);
 	// Do we exist?
 	sint32 Index = ImageList.GetIndex(String);
 	if (Index == -1)

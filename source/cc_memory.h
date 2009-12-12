@@ -46,7 +46,7 @@ extern void	*com_genericPool, // Generic memory; memory that will be freed on le
 #define Mem_Free(ptr)									_Mem_Free((ptr),__FILE__,__LINE__,false)
 #define Mem_FreeTag(pool,tagNum)						_Mem_FreeTag((pool),(tagNum),__FILE__,__LINE__)
 #define Mem_FreePool(pool)								_Mem_FreePool((pool),__FILE__,__LINE__)
-#define Mem_Alloc(size)									_Mem_Alloc((size),com_genericPool,0,__FILE__,__LINE__,false)
+#define Mem_Alloc(size,arr)							_Mem_Alloc((size),com_genericPool,0,__FILE__,__LINE__,arr)
 #define Mem_PoolAlloc(size,pool,tagNum)					_Mem_Alloc((size),(pool),(tagNum),__FILE__,__LINE__,false)
 #define Mem_ReAlloc(ptr,newSize)						_Mem_ReAlloc((ptr),(newSize),__FILE__,__LINE__)
 
@@ -93,7 +93,7 @@ void		Mem_FreePools();
 
 inline void *operator new(size_t Size)
 {
-	return Mem_Alloc (Size);
+	return Mem_Alloc (Size, false);
 }
 
 inline void operator delete(void *Pointer)
@@ -110,7 +110,7 @@ _Ret_bytecap_(_Size)
 #endif
 	operator new[](size_t _Size)
 {
-	return Mem_Alloc (_Size);
+	return Mem_Alloc (_Size, true);
 }
 
 inline void operator delete[](void *Pointer)
