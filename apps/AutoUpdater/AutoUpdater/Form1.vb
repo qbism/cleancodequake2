@@ -27,16 +27,32 @@ Public Class Form1
     End Function
 
     ' Returns true if version is same
-    Public Function CompareVersions(ByVal left As VersionStruct, ByVal right As VersionStruct)
-        If (left.Str = right.Str And left.Major = right.Major And left.Minor = right.Minor And left.Build = right.Build) Then Return True
-        Return False
+    Enum EVersionEnum
+        VERSION_SAME
+        VERSION_NEWER
+        VERSION_OLDER
+    End Enum
+
+    ' Returns whether left is newer, older or same as right
+    Public Function CompareVersions(ByVal left As VersionStruct, ByVal right As VersionStruct) As EVersionEnum
+        If (Integer.Parse(left.Major) < Integer.Parse(right.Major) Or Integer.Parse(left.Minor) < Integer.Parse(right.Minor) Or Integer.Parse(left.Build) < Integer.Parse(right.Build)) Then
+            Return EVersionEnum.VERSION_OLDER
+        End If
+        If (left.Major = right.Major And left.Minor = right.Minor And left.Build = right.Build) Then Return EVersionEnum.VERSION_SAME
+        Return EVersionEnum.VERSION_NEWER
     End Function
 
     Public Sub GetCurrentVersion()
-        Dim Reader As StreamReader = New StreamReader(TextBox1.Text + "\baseq2\version.ver")
-        Dim str As String = Reader.ReadToEnd()
-        Current = ReadVersion(str)
-        Reader.Close()
+
+        If File.Exists(TextBox1.Text + "\baseq2\version.ver") Then
+            Dim Reader As StreamReader = New StreamReader(TextBox1.Text + "\baseq2\version.ver")
+            Dim str As String = Reader.ReadToEnd()
+            Current = ReadVersion(str)
+            Reader.Close()
+        Else
+            Current.Str = "no version"
+            Current.Minor = Current.Major = Current.Build = ""
+        End If
     End Sub
 
     Sub ChangeTheNameAndProgress(ByVal name As String)
@@ -65,7 +81,6 @@ Public Class Form1
     Public Sub DoneDLLDownload(ByVal sender As Object, ByVal e As DownloadDataCompletedEventArgs)
         Form2.Invoke(Me.ChangeNameProgress, "Done download, saving...")
 
-        File.Delete(TextBox1.Text + "\baseq2\gamex86.dll")
         Dim BWriter As New BinaryWriter(New FileStream(TextBox1.Text + "\baseq2\gamex86.dll", FileMode.Create))
         BWriter.Write(e.Result)
         BWriter.Close()
@@ -92,6 +107,11 @@ Public Class Form1
         ' Done installing, delete temp files
         Directory.Delete(TextBox1.Text + "\cctemp\", True)
 
+        ' Copy version
+        Dim Writer As New StreamWriter(New FileStream(TextBox1.Text + "\baseq2\version.ver", FileMode.Create))
+        Writer.Write(LatestInstaller.Str + " " + LatestInstaller.Major + " " + LatestInstaller.Minor + " " + LatestInstaller.Build)
+        Writer.Close()
+
         Form2.Invoke(Me.ChangeNameProgress, "Finished")
         Form2.Invoke(Me.ForceBarToFinish)
     End Sub
@@ -102,7 +122,7 @@ Public Class Form1
 
             Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
 
-            If CompareVersions(LatestInstaller, Current) Then
+            If CompareVersions(LatestInstaller, Current) = EVersionEnum.VERSION_NEWER Then
                 DownloadFile("http://alteredsoftworks.com/cleancode/version.ver", AddressOf DonePatchVersionDownload)
             Else
                 If (MsgBox("A major update for your version is available:" + vbNewLine + "Your version: " + Current.GetStr() + vbNewLine + "Update version: " + LatestInstaller.GetStr() + vbNewLine + vbNewLine + "Update?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes) Then
@@ -126,7 +146,7 @@ Public Class Form1
 
             Form2.Invoke(Me.ChangeNameProgress, "Done download, comparing versions...")
 
-            If CompareVersions(LatestPatch, Current) Then
+            If CompareVersions(LatestPatch, Current) = EVersionEnum.VERSION_NEWER Then
                 MsgBox("Your version is up to date.")
                 Form2.Invoke(Me.ChangeNameProgress, "Done, no changes needed")
                 Form2.Invoke(Me.ForceBarToFinish)

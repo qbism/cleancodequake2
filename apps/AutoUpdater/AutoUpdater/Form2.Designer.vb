@@ -50,7 +50,7 @@ Partial Class Form2
         '
         Me.ProgressBar1.Location = New System.Drawing.Point(23, 57)
         Me.ProgressBar1.MarqueeAnimationSpeed = 50
-        Me.ProgressBar1.Maximum = 10
+        Me.ProgressBar1.Maximum = 12
         Me.ProgressBar1.Name = "ProgressBar1"
         Me.ProgressBar1.Size = New System.Drawing.Size(313, 16)
         Me.ProgressBar1.Step = 1
