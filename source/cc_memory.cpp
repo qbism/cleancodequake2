@@ -438,11 +438,10 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, 
 	mem = (memBlock_t *)((uint8 *)ptr - sizeof(memBlock_t));
 	_Mem_CheckBlockIntegrity(mem, fileName, fileLine);
 
+#ifdef _DEBUG
 	if (Array != mem->Array)
-	{
-		DebugPrintf ("%s,%i\n", mem->allocFile, mem->allocLine);
 		assert (0);
-	}
+#endif
 
 	// Decrement counters
 	mem->pool->blockCount--;

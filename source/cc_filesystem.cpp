@@ -40,9 +40,10 @@ void FS_Error (const char *errorMsg)
 #ifdef _DEBUG
 #ifdef WIN32
 	OutputDebugStringA (errorMsg);
-#endif
 	assert (0);
 #endif
+#endif
+	DebugPrintf ("%s\n", errorMsg);
 }
 
 // Path management.

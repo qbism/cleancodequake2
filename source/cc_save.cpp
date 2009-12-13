@@ -433,7 +433,6 @@ void WriteGameLocals (CFile &File, bool autosaved)
 void ReadGameLocals (CFile &File)
 {
 	game.Load (File);
-	_CC_ASSERT_EXPR ((game.mode == GAME_COOPERATIVE), "Loaded game in non-coop?");
 
 	READ_MAGIC
 }
