@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 namespace NSColor
 {
-	enum EColors
+	CC_ENUM(uint8, EColors)
 	{
 		Black,
 		BlackGray,
@@ -329,6 +329,9 @@ namespace NSColor
 
 	typedef colorb ColorPalette[256];
 };
+
+NSColor::EColors IndexFromRGBA (class colorb color);
+NSColor::EColors IndexFromRGB (class colorb color);
 
 #else
 FILE_WARNING

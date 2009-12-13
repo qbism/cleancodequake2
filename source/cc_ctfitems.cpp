@@ -132,13 +132,13 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 		other->Client.Respawn.CTF.LastReturnedFlag = level.Frame;
 		ent->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
 
+		//CTFResetFlag will remove this entity!  We must return false
+		CTFResetFlag(team);
+
 		// Ping the transponder; tell it we moved back to base.
 		CFlagEntity *Flag = entity_cast<CFlagEntity>(ent);
 		Flag->Transponder->Flag = Flag->Transponder->Base;
 		Flag->Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
-
-		//CTFResetFlag will remove this entity!  We must return false
-		CTFResetFlag(team);
 		return false;
 	}
 

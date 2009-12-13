@@ -296,3 +296,32 @@ ColorPalette PalToRGB =
 	colorb(135,	107,	87,	255),
 	colorb(159,	91,	83,	255)
 };
+
+// Helper functions to get closest index to RGB(A) value
+// DO NOT USE THESE FOR RELEASE! USE THIS ONLY TO GET
+// THE VALUE YOU DESIRE!
+
+EColors IndexFromRGBA (colorb color)
+{
+	const float maxDist = 255 * 255 * 255;
+	float curDist = maxDist;
+	EColors colorIndex = 0;
+
+	for (uint16 i = 0; i < 256; i++)
+	{
+		float dist = VecxDistSquared<colorb, 4> (color, PalToRGB[i]);
+
+		if (dist < curDist)
+		{
+			curDist = dist;
+			colorIndex = i;
+		}
+	}
+
+	return colorIndex;
+};
+
+EColors IndexFromRGB (colorb color)
+{
+	return IndexFromRGBA (colorb(color.R, color.G, color.B, 0));
+};

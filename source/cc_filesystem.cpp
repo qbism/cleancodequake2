@@ -137,6 +137,8 @@ public:
 };
 
 typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::filesystem_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+class CFileHandleList *IndexList;
+
 class CFileHandleList
 {
 	fileHandle_t numHandlesAllocated;
@@ -210,35 +212,33 @@ public: // Interface
 	{
 		MoveToOpen (ClosedList.find(Key));
 	};
+
+	static fileHandle_t FS_GetFreeHandle (fileHandleIndex_t **handle)
+	{
+		THandleIndexListType::iterator it = IndexList->GetFreeHandle();
+
+		*handle = &(*it).second;
+		return (*it).first + 1;
+	}
+
+	static fileHandleIndex_t *FS_GetHandle (fileHandle_t &fileNum)
+	{
+		fileHandleIndex_t *hIndex;
+
+		if (fileNum < 0 || fileNum > FS_MAX_FILEINDICES)
+			FS_Error ("FS_GetHandle: invalid file number");
+
+		hIndex = IndexList->GetHandle(fileNum-1);
+		if (!hIndex->inUse)
+			FS_Error ("FS_GetHandle: invalid handle index");
+
+		return hIndex;
+	}
 };
-
-CFileHandleList *IndexList;
-
-static fileHandle_t FS_GetFreeHandle (fileHandleIndex_t **handle)
-{
-	THandleIndexListType::iterator it = IndexList->GetFreeHandle();
-
-	*handle = &(*it).second;
-	return (*it).first + 1;
-}
-
-static fileHandleIndex_t *FS_GetHandle (fileHandle_t &fileNum)
-{
-	fileHandleIndex_t *hIndex;
-
-	if (fileNum < 0 || fileNum > FS_MAX_FILEINDICES)
-		FS_Error ("FS_GetHandle: invalid file number");
-
-	hIndex = IndexList->GetHandle(fileNum-1);
-	if (!hIndex->inUse)
-		FS_Error ("FS_GetHandle: invalid handle index");
-
-	return hIndex;
-}
 
 void FS_Close (fileHandle_t &handle)
 {
-	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 
 	if (handleIndex)
 	{
@@ -388,7 +388,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 	// Allocate a free handle and
 	// return it.
 	fileHandleIndex_t *handleIndex = NULL;
-	fileHandle_t handle = FS_GetFreeHandle(&handleIndex);
+	fileHandle_t handle = CFileHandleList::FS_GetFreeHandle(&handleIndex);
 
 	if (handleIndex)
 	{
@@ -421,7 +421,7 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 // Reads "size" bytes from handle into "buffer"
 void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 {
-	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 
 	if (!(handleIndex->openMode & FILEMODE_READ))
 		_CC_ASSERT_EXPR (0, "Tried to read on a write\n");
@@ -438,7 +438,7 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 // Writes "size" bytes from handle from "buffer"
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 {
-	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 
 	if (!(handleIndex->openMode & FILEMODE_WRITE))
 		_CC_ASSERT_EXPR (0, "Tried to write on a read\n");
@@ -455,7 +455,7 @@ void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 // Prints the format and arguments into the current position
 void FS_Print (fileHandle_t &handle, char *fmt, ...)
 {
-	fileHandleIndex_t *handleIndex = FS_GetHandle(handle);
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 	va_list		argptr;
 	static char		text[MAX_COMPRINT/2];
 
@@ -518,7 +518,7 @@ void FS_FreeFile (void *buffer)
 
 filePos_t FS_Tell (fileHandle_t &handle)
 {
-	fileHandleIndex_t *handleIndex = FS_GetHandle (handle);
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle (handle);
 
 	if (handleIndex)
 	{
@@ -545,7 +545,7 @@ size_t FS_Len (fileHandle_t &handle)
 
 void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_t seekOffset)
 {
-	fileHandleIndex_t *handleIndex = FS_GetHandle (handle);
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle (handle);
 
 	if (handleIndex)
 	{
