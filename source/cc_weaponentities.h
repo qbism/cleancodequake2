@@ -76,7 +76,7 @@ public:
 	bool Run ();
 };
 
-class  CBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
 {
 public:
 	sint32		Damage;
@@ -205,10 +205,11 @@ class CHitScan
 {
 public:
 	bool ThroughAndThrough;
+	bool HasEffect;
 	sint32 Damage;
 	sint32 Kick;
 
-	CHitScan (sint32 damage, sint32 kick, bool throughAndThrough) :
+	CHitScan (sint32 damage, sint32 kick, bool HasEffect, bool throughAndThrough) :
 	Damage(damage),
 	Kick(kick),
 	ThroughAndThrough(throughAndThrough) {};
@@ -227,7 +228,7 @@ class CRailGunShot : public CHitScan
 {
 public:
 	CRailGunShot (sint32 damage, sint32 kick) :
-	CHitScan (damage, kick, true) {};
+	CHitScan (damage, kick, true, true) {};
 
 	inline bool		DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
 	inline void		DoEffect (vec3f &start, vec3f &end, bool water);
@@ -242,7 +243,7 @@ public:
 	sint32 vSpread, hSpread;
 
 	CBullet (sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod) :
-	CHitScan (damage, kick, false),
+	CHitScan (damage, kick, false, false),
 	vSpread(vSpread),
 	hSpread(hSpread),
 	MeansOfDeath(mod) {};

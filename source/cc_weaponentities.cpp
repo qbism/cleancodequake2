@@ -747,7 +747,7 @@ void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 				from = origin;
 
 				// Revision: Stop on solids
-				if (Target->GetSolid() == SOLID_BSP)
+				if (ThroughAndThrough && Target->GetSolid() == SOLID_BSP)
 				{
 					// Draw the effect
 					//DoEffect (from, oldFrom, false);
@@ -773,7 +773,7 @@ void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 			from = Trace.EndPos;
 
 			// Revision: Stop on solids
-			if (Target->GetSolid() == SOLID_BSP)
+			if (ThroughAndThrough && Target->GetSolid() == SOLID_BSP)
 			{
 				// Draw the effect
 				//DoEffect (from, oldFrom, false);
@@ -912,20 +912,79 @@ void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 			// It has the same PVS, meaning we don't need to
 			// do complex tracing.
 
-			// Keep going
-			from = Trace.EndPos.MultiplyAngles (0.1f, aimdir);
+			if (ThroughAndThrough)
+			{
+				// Keep going
+				from = Trace.EndPos.MultiplyAngles (0.1f, aimdir);
 
-			// Water hit effect
-			DoWaterHit (&Trace);
+				// Water hit effect
+				DoWaterHit (&Trace);
+			}
+			else
+			{
+				// Copy up our point for the effect
+				lastWaterEnd = Trace.EndPos;
+
+				// Draw the effect we have so far
+				DoEffect (from, Trace.EndPos, false);
+
+				// Water hit effect
+				DoWaterHit (&Trace);
+
+				// Set up water drawing
+				Water = true;
+				Mask = CONTENTS_MASK_SHOT;
+
+				// Find the exit point
+				sint32 tries = 20; // Cover about 2000 units
+				vec3f	stWater = from;
+				lastWaterStart.Clear();
+				
+				while (tries > 0)
+				{
+					stWater = stWater.MultiplyAngles (HITSCANSTEP, aimdir);
+
+					EBrushContents contents = PointContents(stWater);
+					if (contents == 0) // "Clear" or solid
+						break; // Got it
+					else if (contents & CONTENTS_MASK_SOLID)
+					{
+						// This is a special case in case we run into a solid.
+						// This basically means that the trace is done, so we can skip ahead right to the solid (act like
+						// we're not in water)
+						tries = 0;
+						break;
+					}
+					tries --;
+				}
+
+				if (tries != 0)
+				{
+					// We reached air
+					// Trace backwards and grab the water brush
+					vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
+					CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
+
+					if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
+					{
+						// This is our end
+						lastWaterStart = tempTrace.EndPos;
+						continue; // Head to the next area
+					}
+				}
+				// We didn't reach air if we got here.
+				// Let water handle it, it will act as solid.
+
+				// Continue the loop
+			}
+
 			continue;
 		}
 		// Assume solid
 		else
 		{
 			// Draw the effect
-			//DoEffect (from, Trace.EndPos, false);
 			DoEffect (lastDrawFrom, Trace.EndPos, DrawIsWater);
-
 			DoSolidHit (&Trace);
 			break; // We're done
 		}
@@ -974,6 +1033,8 @@ void CBullet::DoEffect	(vec3f &start, vec3f &end, bool water)
 {
 	if (water)
 		CTempEnt_Trails::BubbleTrail(start, end);
+	else
+		CTempEnt_Trails::RailTrail(start, end);
 }
 
 void CBullet::DoWaterHit	(CTrace *Trace)
@@ -1004,300 +1065,7 @@ void CBullet::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage
 // An overload to handle transparent water
 void CBullet::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 {
-	vec3f end, from;
-	vec3f lastWaterStart, lastWaterEnd;
-
-	// Calculate end
-	if (!ModifyEnd(aimdir, start, end))
-		end = start.MultiplyAngles (8192, aimdir);
-
-	from = start;
-
-	sint32 Mask = CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER;
-	bool Water = false;
-	CBaseEntity *Ignore = Entity;
-
-	lastWaterStart = start;
-
-	bool hitOutOfWater = false;
-	if (PointContents(start) & CONTENTS_MASK_WATER)
-	{
-		// Copy up our point for the effect
-		lastWaterEnd = start;
-	
-		// Special case if we started in water
-		Water = true;
-
-		Mask = CONTENTS_MASK_SHOT;
-
-		// Find the exit point
-		sint32 tries = 20; // Cover about 2000 units
-		vec3f	stWater = from;
-		lastWaterStart.Clear ();
-		
-		while (tries > 0)
-		{
-			stWater = stWater.MultiplyAngles (HITSCANSTEP, aimdir);
-
-			EBrushContents contents = PointContents(stWater);
-			if (contents == 0) // "Clear" or solid
-				break; // Got it
-			else if (contents & CONTENTS_MASK_SOLID)
-			{
-				// This is a special case in case we run into a solid.
-				// This basically means that the trace is done, so we can skip ahead right to the solid (act like
-				// we're not in water)
-				tries = 0;
-				break;
-			}
-			tries --;
-		}
-
-		if (tries != 0)
-		{
-			// We reached air
-			// Trace backwards and grab the water brush
-			vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
-			CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
-
-			if (tempTrace.contents & CONTENTS_MASK_WATER)// All is good
-			{
-				// This is our end
-				lastWaterStart = tempTrace.EndPos;
-				hitOutOfWater = true;
-			}
-		}
-		// We didn't reach air if we got here.
-		// Let water handle it, it will act as solid.
-	}
-
-	// Main loop
-	while (1)
-	{
-		// Trace from start to our end
-		CTrace Trace = DoTrace (from, end, Ignore, Mask);
-
-		// Did we hit an entity?
-		if (Trace.ent && Trace.Ent && ((Trace.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Trace.Ent)->CanTakeDamage))
-		{
-			// Convert to base entity
-			CHurtableEntity *Target = entity_cast<CHurtableEntity>(Trace.Ent);
-
-			// Hurt it
-			// Revision
-			// Startsolid mistake..
-			if (Trace.startSolid)
-			{
-				vec3f origin = Target->State.GetOrigin();
-				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.normal))
-					break; // We wanted to stop
-
-				// Set up the start from where we are now
-				vec3f oldFrom = from;
-				from = origin;
-				DoEffect (from, oldFrom, Water);
-
-				// and ignore the bastard
-				Ignore = Target;
-
-				// Continue our loop
-				continue;
-			}
-			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.normal))
-				break; // We wanted to stop
-
-			// Set up the start from where we are now
-			vec3f oldFrom = from;
-			from = Trace.EndPos;
-			DoEffect (from, oldFrom, Water);
-
-			// and ignore the bastard
-			Ignore = Target;
-
-			// Continue our loop
-			continue;
-		}
-		// If we hit something in water...
-		else if (Water)
-		{
-			Water = false;
-			// Assume solid
-			//if (Trace.contents & CONTENTS_MASK_SOLID)
-			{
-				// If we didn't grab water last time...
-				if (lastWaterStart == vec3fOrigin)
-				{
-					// We hit the ground!
-					// Swap start and end points
-					lastWaterStart = lastWaterEnd.MultiplyAngles (5, aimdir);
-
-					// Set end point
-					lastWaterEnd = Trace.EndPos;
-
-					// Draw the effect
-					DoEffect (lastWaterStart, lastWaterEnd, true);
-					DoSolidHit (&Trace);
-
-					break; // We're done
-				}
-				// Otherwise we had found an exit point
-				else
-				{
-					// Draw from water surface to water end
-					DoEffect (lastWaterEnd, lastWaterStart, true);
-	
-					// We hit the ground!
-					// Swap start and end points
-					if (!hitOutOfWater)
-						lastWaterStart = lastWaterEnd;
-					else
-						hitOutOfWater = false;
-
-					// Set end point
-					lastWaterEnd = Trace.EndPos;
-
-					// Draw the effect
-					DoEffect (lastWaterStart, lastWaterEnd, false);
-					DoSolidHit (&Trace);
-
-					break; // We're done
-				}
-			}
-			continue;
-		}
-		// If we hit non-transparent water
-		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && !(Trace.surface->flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
-		{
-			// Copy up our point for the effect
-			lastWaterEnd = Trace.EndPos;
-
-			// Tell the system we're in water
-			Water = true;
-
-			// Draw the effect
-			DoEffect (lastWaterStart, lastWaterEnd, false);
-			DoWaterHit (&Trace);
-
-			// Set up the start from where we are now
-			from = Trace.EndPos;
-			Mask = CONTENTS_MASK_SHOT;
-
-			// Find the exit point
-			sint32 tries = 20; // Cover about 2000 units
-			vec3f	stWater = from;
-			lastWaterStart.Clear();
-			
-			while (tries > 0)
-			{
-				stWater = stWater.MultiplyAngles(HITSCANSTEP, aimdir);
-
-				EBrushContents contents = PointContents(stWater);
-				if (contents == 0) // "Clear" or solid
-					break; // Got it
-				else if (contents & CONTENTS_MASK_SOLID)
-				{
-					// This is a special case in case we run into a solid.
-					// This basically means that the trace is done, so we can skip ahead right to the solid (act like
-					// we're not in water)
-					tries = 0;
-					break;
-				}
-				tries --;
-			}
-
-			if (tries != 0)
-			{
-				// We reached air
-				// Trace backwards and grab the water brush
-				vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
-				CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
-
-				if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
-				{
-					// This is our end
-					lastWaterStart = tempTrace.EndPos;
-					continue; // Head to the next area
-				}
-			}
-			// We didn't reach air if we got here.
-			// Let water handle it, it will act as solid.
-
-			// Continue the loop
-			continue;
-		}
-		// Transparent water
-		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && (Trace.surface->flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
-		{
-			// This won't count as "water" since we can see through it.
-			// It has the same PVS, meaning we don't need to
-			// do complex tracing.
-			// Copy up our point for the effect
-			lastWaterEnd = Trace.EndPos;
-
-			// Draw the effect we have so far
-			DoEffect (from, Trace.EndPos, false);
-
-			// Water hit effect
-			DoWaterHit (&Trace);
-
-			// Set up water drawing
-			Water = true;
-			Mask = CONTENTS_MASK_SHOT;
-
-			// Find the exit point
-			sint32 tries = 20; // Cover about 2000 units
-			vec3f	stWater = from;
-			lastWaterStart.Clear();
-			
-			while (tries > 0)
-			{
-				stWater = stWater.MultiplyAngles (HITSCANSTEP, aimdir);
-
-				EBrushContents contents = PointContents(stWater);
-				if (contents == 0) // "Clear" or solid
-					break; // Got it
-				else if (contents & CONTENTS_MASK_SOLID)
-				{
-					// This is a special case in case we run into a solid.
-					// This basically means that the trace is done, so we can skip ahead right to the solid (act like
-					// we're not in water)
-					tries = 0;
-					break;
-				}
-				tries --;
-			}
-
-			if (tries != 0)
-			{
-				// We reached air
-				// Trace backwards and grab the water brush
-				vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
-				CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
-
-				if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
-				{
-					// This is our end
-					lastWaterStart = tempTrace.EndPos;
-					continue; // Head to the next area
-				}
-			}
-			// We didn't reach air if we got here.
-			// Let water handle it, it will act as solid.
-
-			// Continue the loop
-			continue;
-		}
-		// Assume solid
-		else
-		{
-			// Draw the effect
-			DoEffect (from, Trace.EndPos, false);
-			DoSolidHit (&Trace);
-			break; // We're done
-		}
-	}
+	CHitScan::DoFire (Entity, start, aimdir);
 }
 
 void CShotgunPellets::DoSolidHit	(CTrace *Trace)

@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_WEAPONMAIN_H__) || !INCLUDE_GUARDS
 #define __CC_WEAPONMAIN_H__
 
-class  CWeapon
+class CWeapon
 {
 	friend void InvalidateItemMedia ();
 

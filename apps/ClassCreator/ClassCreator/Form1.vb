@@ -4,24 +4,25 @@
         Public Name As String
         Public ClassName As String
         Public HasFields As Boolean
+        Public HasSaveFields As Boolean
     End Structure
 
     Public EntityTypeArray() As Entity = { _
-    New Entity With {.Name = "Map Entity", .ClassName = "CMapEntity", .HasFields = True}, _
-    New Entity With {.Name = "Hurtable", .ClassName = "CHurtableEntity", .HasFields = True}, _
-    New Entity With {.Name = "Blockable", .ClassName = "CBlockableEntity", .HasFields = False}, _
-    New Entity With {.Name = "Thinkable", .ClassName = "CThinkableEntity", .HasFields = False}, _
-    New Entity With {.Name = "Touchable", .ClassName = "CTouchableEntity", .HasFields = False}, _
-    New Entity With {.Name = "Usable", .ClassName = "CUsableEntity", .HasFields = True}, _
-    New Entity With {.Name = "Base Physics", .ClassName = "CPhysicsEntity", .HasFields = False}, _
-    New Entity With {.Name = "Bounce Physics", .ClassName = "CBounceProjectile", .HasFields = False}, _
-    New Entity With {.Name = "Toss Physics", .ClassName = "CTossProjectile", .HasFields = False}, _
-    New Entity With {.Name = "FlyMissile Physics", .ClassName = "CFlyMissileProjectile", .HasFields = False}, _
-    New Entity With {.Name = "Step Physics", .ClassName = "CStepPhysics", .HasFields = False}, _
-    New Entity With {.Name = "Push Physics", .ClassName = "CPushPhysics", .HasFields = False}, _
-    New Entity With {.Name = "Stop Physics", .ClassName = "CStopPhysics", .HasFields = False}, _
-    New Entity With {.Name = "Junk Entity", .ClassName = "CJunkEntity", .HasFields = False}, _
-    New Entity With {.Name = "Brush Model", .ClassName = "CBrushModel", .HasFields = True} _
+    New Entity With {.Name = "Map Entity", .ClassName = "CMapEntity", .HasFields = True, .HasSaveFields = True}, _
+    New Entity With {.Name = "Hurtable", .ClassName = "CHurtableEntity", .HasFields = True, .HasSaveFields = True}, _
+    New Entity With {.Name = "Blockable", .ClassName = "CBlockableEntity", .HasFields = False, .HasSaveFields = False}, _
+    New Entity With {.Name = "Thinkable", .ClassName = "CThinkableEntity", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Touchable", .ClassName = "CTouchableEntity", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Usable", .ClassName = "CUsableEntity", .HasFields = True, .HasSaveFields = True}, _
+    New Entity With {.Name = "Base Physics", .ClassName = "CPhysicsEntity", .HasFields = False, .HasSaveFields = False}, _
+    New Entity With {.Name = "Bounce Physics", .ClassName = "CBounceProjectile", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Toss Physics", .ClassName = "CTossProjectile", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "FlyMissile Physics", .ClassName = "CFlyMissileProjectile", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Step Physics", .ClassName = "CStepPhysics", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Push Physics", .ClassName = "CPushPhysics", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Stop Physics", .ClassName = "CStopPhysics", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Junk Entity", .ClassName = "CJunkEntity", .HasFields = False, .HasSaveFields = False}, _
+    New Entity With {.Name = "Brush Model", .ClassName = "CBrushModel", .HasFields = True, .HasSaveFields = True} _
     }
 
     Structure DataType
@@ -55,7 +56,8 @@
     New DataType("Frame/Time", "FrameNumber_t", "0", "FT_FRAMENUMBER"), _
     New DataType("Item", "CBaseItem", "NULL", "FT_ITEM", True), _
     New DataType("Entity", "CBaseEntity", "NULL", "FT_ENTITY", True), _
-    New DataType("Float to Byte", "byte", "0", "FT_FLOAT_TO_BYTE") _
+    New DataType("Float to Byte", "byte", "0", "FT_FLOAT_TO_BYTE"), _
+    New DataType("CCString", "std::cc_string", "", "FT_CC_STRING") _
     }
 
     Public Function DataTypeFromString(ByRef name As String) As DataType
@@ -486,7 +488,17 @@
         Me.Close()
     End Sub
 
+    Dim LastSelectedIndexes(2) As ListBox.SelectedIndexCollection
+    Dim GotIt As Boolean = False
+
     Private Sub ListBox1_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListBox1.SelectedIndexChanged
+        If (GotIt = False) Then
+            GotIt = True
+            LastSelectedIndexes(1) = ListBox1.SelectedIndices
+        Else
+            LastSelectedIndexes(0) = LastSelectedIndexes(1)
+            LastSelectedIndexes(1) = ListBox1.SelectedIndices
+        End If
         If ListBox1.SelectedIndices.Contains(0) And TabControl1.TabPages.Contains(TabPage3) <> True Then
             TabControl1.TabPages.Add(TabPage3)
         ElseIf ListBox1.SelectedIndices.Contains(0) = False And TabControl1.TabPages.Contains(TabPage3) Then

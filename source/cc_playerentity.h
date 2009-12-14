@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(__CC_PLAYERENTITY_H__) || !INCLUDE_GUARDS
 #define __CC_PLAYERENTITY_H__
 
-class  CPlayerState
+class CPlayerState
 {
 	friend class CClient;
 protected:
@@ -93,7 +93,7 @@ void LoadWeapon (CFile &File, CWeapon **Weapon);
 void SaveWeapon (CFile &File, CWeapon *Weapon);
 
 // client data that stays across multiple level loads
-class  CPersistentData
+class CPersistentData
 {
 public:
 	CPersistentData ();
@@ -223,7 +223,7 @@ public:
 };
 
 // All players have a copy of this class.
-class  CMenuState
+class CMenuState
 {
 public:
 	CC_ENUM (uint8, EMenuKeys)
@@ -264,7 +264,7 @@ public:
 };
 
 // client data that stays across deathmatch respawns
-class  CRespawnData
+class CRespawnData
 {
 public:
 	CRespawnData ()
@@ -389,7 +389,7 @@ CC_ENUM (uint8, EPowerArmorType)
 };
 
 #if !MONSTERS_USE_PATHFINDING
-class  CPlayerNoise : public virtual CBaseEntity
+class CPlayerNoise : public virtual CBaseEntity
 {
 public:
 	FrameNumber_t	Time;
@@ -544,7 +544,7 @@ public:
 
 // Players don't think or have (game) controlled physics.
 // PhysicsEntity inherited for velocity.
-class  CPlayerEntity : public CHurtableEntity, public CPhysicsEntity
+class CPlayerEntity : public CHurtableEntity, public CPhysicsEntity
 {
 public:
 	CClient				Client;

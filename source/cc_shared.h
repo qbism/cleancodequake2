@@ -40,8 +40,8 @@ inline const char *BuildDate()
 };
 
 // Pre-defined classes
-class  CBaseEntity;
-class  CPlayerEntity;
+class CBaseEntity;
+class CPlayerEntity;
 
 typedef sint32	FrameNumber_t;
 

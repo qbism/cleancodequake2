@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define __CC_WEAPONS_H__
 
 // Class for weapon items.
-class  CWeaponItem : public virtual CBaseItem
+class CWeaponItem : public virtual CBaseItem
 {
 public:
 	CWeaponItem ();
