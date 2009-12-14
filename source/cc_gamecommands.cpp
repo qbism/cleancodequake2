@@ -166,12 +166,12 @@ void Cmd_Players_f (CPlayerEntity *ent)
 	qsort (index, count, sizeof(index[0]), PlayerSort);
 
 	// print information
-	Large[0] = 0;
+	Large[0] = Small[0] = 0;
 
 	for (sint32 i = 0; i < count; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
-		Q_snprintfz (Small, sizeof(small), "%3i %s\n",
+		Q_snprintfz (Small, sizeof(Small), "%3i %s\n",
 			Player->Client.PlayerState.GetStat(STAT_FRAGS),
 			Player->Client.Persistent.Name.c_str());
 		if (strlen (Small) + strlen(Large) > sizeof(Large) - 100 )
@@ -203,7 +203,7 @@ void Cmd_Wave_f (CPlayerEntity *ent)
 
 	ent->Client.Anim.Priority = ANIM_WAVE;
 
-	switch (ArgGeti(1))
+	switch ((ArgCount() > 1) ? ArgGeti(1) : 0)
 	{
 	case 0:
 		ent->PrintToClient (PRINT_HIGH, "flipoff\n");
@@ -361,7 +361,7 @@ public:
 		char tempString[160];
 
 		if (!Spectator)
-			Q_snprintfz(tempString, sizeof(tempString), " - %02I64d:%02I64d %4d %3d %s\n",
+			Q_snprintfz(tempString, sizeof(tempString), " - %02d:%02d %4d %3d %s\n",
 				(level.Frame - Player->Client.Respawn.EnterFrame) / 600,
 				((level.Frame - Player->Client.Respawn.EnterFrame) % 600)/10,
 				Player->Client.GetPing(),
