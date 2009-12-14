@@ -105,14 +105,14 @@ public:
 		File.WriteCCString (Name);
 
 		File.Write<IPAddress> (IP);
-		File.Write<sint32> (hand);
+		File.Write<sint32> (Hand);
 
-		File.Write<sint32> (health);
-		File.Write<sint32> (max_health);
-		File.Write<sint32> (savedFlags);
+		File.Write<sint32> (Health);
+		File.Write<sint32> (MaxHealth);
+		File.Write<sint32> (SavedFlags);
 
 		Inventory.Save (File);
-		File.WriteArray<sint32> (maxAmmoValues, CAmmo::AMMOTAG_MAX);
+		File.WriteArray<sint32> (MaxAmmoValues, CAmmo::AMMOTAG_MAX);
 
 		SaveWeapon (File, Weapon);
 		SaveWeapon (File, LastWeapon);
@@ -121,10 +121,10 @@ public:
 
 		File.Write<sint32> (PowerCubeCount);
 		File.Write<sint32> (Score);
-		File.Write<uint8> (game_helpchanged);
-		File.Write<uint8> (helpchanged);
+		File.Write<uint8> (GameHelpChanged);
+		File.Write<uint8> (HelpChanged);
 		File.Write<bool> (Spectator);
-		File.Write<colorf> (viewBlend);
+		File.Write<colorf> (ViewBlend);
 	}
 
 	void Load (CFile &File)
@@ -133,14 +133,14 @@ public:
 		Name = File.ReadCCString ();
 
 		IP = File.Read<IPAddress> ();
-		hand = File.Read<sint32> ();
+		Hand = File.Read<sint32> ();
 
-		health = File.Read<sint32> ();
-		max_health = File.Read<sint32> ();
-		savedFlags = File.Read<sint32> ();
+		Health = File.Read<sint32> ();
+		MaxHealth = File.Read<sint32> ();
+		SavedFlags = File.Read<sint32> ();
 
 		Inventory.Load (File);
-		File.ReadArray (maxAmmoValues, CAmmo::AMMOTAG_MAX);
+		File.ReadArray (MaxAmmoValues, CAmmo::AMMOTAG_MAX);
 
 		LoadWeapon (File, &Weapon);
 		LoadWeapon (File, &LastWeapon);
@@ -152,58 +152,57 @@ public:
 
 		PowerCubeCount = File.Read<sint32> ();
 		Score = File.Read<sint32> ();
-		game_helpchanged = File.Read<uint8> ();
-		helpchanged = File.Read<uint8> ();
+		GameHelpChanged = File.Read<uint8> ();
+		HelpChanged = File.Read<uint8> ();
 		Spectator = File.Read<bool> ();
-		viewBlend = File.Read<colorf> ();
+		ViewBlend = File.Read<colorf> ();
 	}
 
 	std::cc_string	UserInfo;
 	std::cc_string	Name;
 	IPAddress		IP;
-	sint32			hand;
+	sint32			Hand;
 
-	EClientState state;			// a loadgame will leave valid entities that
+	EClientState 	State;			// a loadgame will leave valid entities that
 									// just don't have a connection yet
 
 	// values saved and restored from edicts when changing levels
-	sint32			health;
-	sint32			max_health;
-	sint32			savedFlags;
+	sint32			Health;
+	sint32			MaxHealth;
+	sint32			SavedFlags;
 
 	CInventory		Inventory;
 
 	// ammo capacities
-	sint32			maxAmmoValues[CAmmo::AMMOTAG_MAX];
+	sint32			MaxAmmoValues[CAmmo::AMMOTAG_MAX];
 
-	CWeapon		*Weapon, *LastWeapon;
-	CArmor		*Armor; // Current armor.
+	CWeapon			*Weapon, *LastWeapon;
+	CArmor			*Armor; // Current armor.
 #if CLEANCTF_ENABLED
-	CFlag		*Flag; // Set if holding a flag
+	CFlag			*Flag; // Set if holding a flag
 #endif
-	CTech		*Tech; // Set if holding a tech
-	// Stored here for convenience. (dynamic_cast ew)
+	CTech			*Tech; // Set if holding a tech
 
 	sint32			PowerCubeCount;	// used for tracking the cubes in coop games
 	sint32			Score;			// for calculating total unit Score in coop games
 
-	uint8			game_helpchanged;
-	uint8			helpchanged;
+	uint8			GameHelpChanged;
+	uint8			HelpChanged;
 
-	bool		Spectator;			// client is a Spectator
+	bool			Spectator;			// client is a Spectator
 
-	colorf		viewBlend; // View blending
+	colorf			ViewBlend; // View blending
 
 	void Clear ()
 	{
 		UserInfo.clear();
 		Name.clear();
 		memset (&IP, 0, sizeof(IP));
-		hand = 0;
-		state = 0;
-		health = 0;
-		max_health = 0;
-		savedFlags = 0;
+		Hand = 0;
+		State = 0;
+		Health = 0;
+		MaxHealth = 0;
+		SavedFlags = 0;
 		Inventory.Clear();
 		Weapon = NULL;
 		LastWeapon  = NULL;
@@ -214,12 +213,12 @@ public:
 		Tech = NULL;
 		PowerCubeCount = 0;
 		Score = 0;
-		game_helpchanged = 0;
-		helpchanged = 0;
+		GameHelpChanged = 0;
+		HelpChanged = 0;
 		Spectator = false;
-		viewBlend.Set (0,0,0,0);
+		ViewBlend.Set (0,0,0,0);
 
-		memset (&maxAmmoValues, 0, sizeof(maxAmmoValues));
+		memset (&MaxAmmoValues, 0, sizeof(MaxAmmoValues));
 	}
 };
 
@@ -422,7 +421,7 @@ CC_ENUM (uint8, EAnimPriority)
 	ANIM_REVERSE
 };
 
-class  CClient
+class CClient
 {
 public:
 	void Write (CFile &File);	

@@ -191,8 +191,8 @@ void ExitLevel ()
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1 + i].Entity);
 		if (!ent->GetInUse())
 			continue;
-		if (ent->Health > ent->Client.Persistent.max_health)
-			ent->Health = ent->Client.Persistent.max_health;
+		if (ent->Health > ent->Client.Persistent.MaxHealth)
+			ent->Health = ent->Client.Persistent.MaxHealth;
 	}
 
 #if MONSTERS_USE_PATHFINDING

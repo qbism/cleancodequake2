@@ -834,7 +834,7 @@ void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse())
 			continue;
-		if (cl_ent->Client.Persistent.state != SVCS_SPAWNED)
+		if (cl_ent->Client.Persistent.State != SVCS_SPAWNED)
 			continue;
 		if (cl_ent->Client.Respawn.CTF.Team == who->Client.Respawn.CTF.Team)
 			cl_ent->PrintToClient (PRINT_CHAT, "(%s): %s\n", 
@@ -852,6 +852,8 @@ void GCTFSay_Team (CPlayerEntity *ent)
 The origin is the bottom of the banner.
 The banner is 248 tall.
 */
+#define SPAWNFLAG_BLUE 1
+
 class CMiscCTFBanner : public CMapEntity, public CThinkableEntity
 {
 public:
@@ -898,7 +900,7 @@ public:
 	{
 		GetSolid() = SOLID_NOT;
 		State.GetModelIndex() = ModelIndex ("models/ctf/banner/tris.md2");
-		if (SpawnFlags & 1) // team2
+		if (SpawnFlags & SPAWNFLAG_BLUE) // team2
 			State.GetSkinNum() = 1;
 
 		State.GetFrame() = irandom(16);
@@ -935,7 +937,7 @@ public:
 	{
 		GetSolid() = SOLID_NOT;
 		State.GetModelIndex() = ModelIndex ("models/ctf/banner/small.md2");
-		if (SpawnFlags & 1) // team2
+		if (SpawnFlags & SPAWNFLAG_BLUE) // team2
 			State.GetSkinNum() = 1;
 
 		State.GetFrame() = irandom(16);

@@ -237,7 +237,7 @@ sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 
 sint32 CAmmo::GetMax (CPlayerEntity *ent)
 {
-	return ent->Client.Persistent.maxAmmoValues[Tag];
+	return ent->Client.Persistent.MaxAmmoValues[Tag];
 }
 
 bool CAmmo::Pickup (class CItemEntity *ent, CPlayerEntity *other)

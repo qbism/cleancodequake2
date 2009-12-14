@@ -1831,7 +1831,7 @@ struct playerStateNew_t
 	sint32				gunIndex;
 	sint32				gunFrame;
 
-	vec4_t			viewBlend;		// rgba full screen effect
+	vec4_t			ViewBlend;		// rgba full screen effect
 	
 	float			fov;				// horizontal field of view
 
@@ -1858,7 +1858,7 @@ struct playerState_t
 	sint32				gunIndex;
 	sint32				gunFrame;
 
-	colorf			viewBlend;		// rgba full screen effect
+	colorf			ViewBlend;		// rgba full screen effect
 	
 	float			fov;				// horizontal field of view
 

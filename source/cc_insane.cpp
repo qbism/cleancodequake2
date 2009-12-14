@@ -35,6 +35,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_insane.h"
 #include "cc_insane.h"
 
+#define INSANE_CRAWL		4
+#define INSANE_CRUCIFIED	8
+#define INSANE_STAND_GROUND	16
+#define INSANE_ALWAYS_STAND	32
+
 CInsane::CInsane (uint32 ID) :
 CMonster (ID)
 {
@@ -434,13 +439,13 @@ void CInsane::Cross ()
 
 void CInsane::Walk ()
 {
-	if ( (Entity->SpawnFlags & 16) && (Entity->State.GetFrame() == FRAME_cr_pain10) )			// Hold Ground?
+	if ( (Entity->SpawnFlags & INSANE_STAND_GROUND) && (Entity->State.GetFrame() == FRAME_cr_pain10) )			// Hold Ground?
 	{
 		CurrentMove = &InsaneMoveDown;
 		return;
 	}
 
-	if (Entity->SpawnFlags & 4)
+	if (Entity->SpawnFlags & INSANE_CRAWL)
 		CurrentMove = &InsaneMoveCrawl;
 	else
 		CurrentMove = (frand() <= 0.5) ? &InsaneMoveWalkNormal : &InsaneMoveWalkInsane;
@@ -448,13 +453,13 @@ void CInsane::Walk ()
 
 void CInsane::Run ()
 {
-	if ( (Entity->SpawnFlags & 16) && (Entity->State.GetFrame() == FRAME_cr_pain10))			// Hold Ground?
+	if ( (Entity->SpawnFlags & INSANE_STAND_GROUND) && (Entity->State.GetFrame() == FRAME_cr_pain10))			// Hold Ground?
 	{
 		CurrentMove = &InsaneMoveDown;
 		return;
 	}
 	
-	if (Entity->SpawnFlags & 4)				// Crawling?
+	if (Entity->SpawnFlags & INSANE_CRAWL)				// Crawling?
 		CurrentMove = &InsaneMoveRunCrawl;
 	else // Else, mix it up
 		CurrentMove = (frand() <= 0.5) ? &InsaneMoveRunNormal : &InsaneMoveRunInsane;
@@ -491,7 +496,7 @@ void CInsane::Pain (CBaseEntity *other, float kick, sint32 damage)
 	// END SHIT
 
 	// Don't go into pain frames if crucified.
-	if (Entity->SpawnFlags & 8)
+	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
 	{
 		CurrentMove = &InsaneMoveStruggleCross;			
 		return;
@@ -510,7 +515,7 @@ void CInsane::OnGround ()
 
 void CInsane::CheckDown ()
 {
-	if (Entity->SpawnFlags & 32)				// Always stand
+	if (Entity->SpawnFlags & INSANE_ALWAYS_STAND)				// Always stand
 		return;
 	if (frand() < 0.3)
 		CurrentMove = (frand() < 0.5) ? &InsaneMoveUpToDown : &InsaneMoveJumpDown;
@@ -519,7 +524,7 @@ void CInsane::CheckDown ()
 void CInsane::CheckUp ()
 {
 	// If Hold_Ground and Crawl are set
-	if ( (Entity->SpawnFlags & 4) && (Entity->SpawnFlags & 16) )
+	if ( (Entity->SpawnFlags & INSANE_CRAWL) && (Entity->SpawnFlags & INSANE_STAND_GROUND) )
 		return;
 	if (frand() < 0.5)
 		CurrentMove = &InsaneMoveUpToDown;
@@ -527,13 +532,13 @@ void CInsane::CheckUp ()
 
 void CInsane::Stand ()
 {
-	if (Entity->SpawnFlags & 8)			// If crucified
+	if (Entity->SpawnFlags & INSANE_CRUCIFIED)			// If crucified
 	{
 		CurrentMove = &InsaneMoveCross;
 		AIFlags |= AI_STAND_GROUND;
 	}
 	// If Hold_Ground and Crawl are set
-	else if ( (Entity->SpawnFlags & 4) && (Entity->SpawnFlags & 16) )
+	else if ( (Entity->SpawnFlags & INSANE_CRAWL) && (Entity->SpawnFlags & 16) )
 		CurrentMove = &InsaneMoveDown;
 	else
 		CurrentMove = (frand() < 0.5) ? &InsaneMoveStandNormal : &InsaneMoveStandInsane;
@@ -541,7 +546,7 @@ void CInsane::Stand ()
 
 void CInsane::Dead ()
 {
-	if (Entity->SpawnFlags & 8)
+	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
 		Entity->Flags |= FL_FLY;
 	else
 	{
@@ -577,7 +582,7 @@ void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
-	if (Entity->SpawnFlags & 8)
+	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
 		Dead ();
 	else
 	{
@@ -591,6 +596,7 @@ void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 
 /*QUAKED misc_insane (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn CRAWL CRUCIFIED STAND_GROUND ALWAYS_STAND
 */
+
 void CInsane::Spawn ()
 {
 	Sounds[SOUND_FIST] = SoundIndex ("insane/insane11.wav");
@@ -619,12 +625,12 @@ void CInsane::Spawn ()
 
 	Entity->Link ();
 
-	if (Entity->SpawnFlags & 16)				// Stand Ground
+	if (Entity->SpawnFlags & INSANE_STAND_GROUND)				// Stand Ground
 		AIFlags |= AI_STAND_GROUND;
 
 	CurrentMove = &InsaneMoveStandNormal;
 
-	if (Entity->SpawnFlags & 8)					// Crucified ?
+	if (Entity->SpawnFlags & INSANE_CRUCIFIED)					// Crucified ?
 	{
 		Entity->GetMins().Set (-16, 0, 0);
 		Entity->GetMaxs().Set (16, 8, 32);

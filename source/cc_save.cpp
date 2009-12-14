@@ -677,7 +677,7 @@ void CGameAPI::ReadLevel (char *filename)
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
 		Player->Client.RepositionClient (ent->client);
-		Player->Client.Persistent.state = SVCS_FREE;
+		Player->Client.Persistent.State = SVCS_FREE;
 	}
 
 	// set client fields on player ents

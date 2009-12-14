@@ -50,6 +50,10 @@ Looped sounds are always atten 3 / vol 1, and the use function toggles it on/off
 Multiple identical looping sounds will just increase volume without any speed cost
 */
 
+#define SPEAKER_LOOPED_ON		1
+#define SPEAKER_LOOPED_OFF		2
+#define SPEAKER_RELIABLE		4
+
 class CTargetSpeaker : public CMapEntity, public CUsableEntity
 {
 public:
@@ -79,12 +83,12 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		if (SpawnFlags & 3) // looping sound toggles
+		if (SpawnFlags & (SPEAKER_LOOPED_ON|SPEAKER_LOOPED_OFF)) // looping sound toggles
 			State.GetSound() = (State.GetSound() ? 0 : NoiseIndex); // start or stop it
 		else
 			// use a positioned_sound, because this entity won't normally be
 			// sent to any clients because it is invisible
-			PlayPositionedSound (State.GetOrigin(), (SpawnFlags & 4) ? CHAN_VOICE|CHAN_RELIABLE : CHAN_VOICE, NoiseIndex, Volume, Attenuation);
+			PlayPositionedSound (State.GetOrigin(), (SpawnFlags & SPEAKER_RELIABLE) ? CHAN_VOICE|CHAN_RELIABLE : CHAN_VOICE, NoiseIndex, Volume, Attenuation);
 	};
 
 	void Spawn ()
@@ -110,7 +114,7 @@ public:
 		};
 
 		// check for prestarted looping sound
-		if (SpawnFlags & 1)
+		if (SpawnFlags & SPEAKER_LOOPED_ON)
 			State.GetSound() = NoiseIndex;
 
 		// must link the entity so we get areas and clusters so
@@ -1052,6 +1056,10 @@ Fires a blaster bolt in the set direction when triggered.
 dmg		default is 15
 speed	default is 1000
 */
+
+#define BLASTER_NO_TRAIL		1
+#define BLASTER_NO_EFFECTS		2
+
 class CTargetBlaster : public CMapEntity, public CUsableEntity
 {
 public:
@@ -1087,7 +1095,7 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		CBlasterProjectile::Spawn (this, State.GetOrigin(), MoveDir, Damage, Speed, (SpawnFlags & 2) ? 0 : ((SpawnFlags & 1) ? EF_HYPERBLASTER : EF_BLASTER), true);
+		CBlasterProjectile::Spawn (this, State.GetOrigin(), MoveDir, Damage, Speed, (SpawnFlags & BLASTER_NO_EFFECTS) ? 0 : ((SpawnFlags & BLASTER_NO_TRAIL) ? EF_HYPERBLASTER : EF_BLASTER), true);
 		PlaySound (CHAN_VOICE, NoiseIndex);
 	};
 
@@ -1139,24 +1147,26 @@ void		CTargetBlaster::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("target_blaster", CTargetBlaster);
 
-#define	START_ON		1
-#define	RED				2
-#define	GREEN			4
-#define	BLUE			8
-#define	YELLOW			16
-#define	ORANGE			32
-#define	FAT				64
-
 /*QUAKED target_laser (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON RED GREEN BLUE YELLOW ORANGE FAT
 When triggered, fires a laser.  You can either set a target
 or a direction.
 */
+
+#define	LASER_START_ON		1
+#define	LASER_RED			2
+#define	LASER_GREEN			4
+#define	LASER_BLUE			8
+#define	LASER_YELLOW		16
+#define	LASER_ORANGE		32
+#define	LASER_FAT			64
+
 class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
 	bool		StartLaser;
 	vec3f		MoveDir;
 	sint32		Damage;
+	bool		MakeEffect;
 
 	CTargetLaser () :
 	  CBaseEntity (),
@@ -1164,6 +1174,7 @@ public:
 	  CThinkableEntity (),
 	  CUsableEntity (),
 	  StartLaser(true),
+	  MakeEffect(false),
 	  Damage (0)
 	{
 	};
@@ -1174,6 +1185,7 @@ public:
 	  CThinkableEntity (Index),
 	  CUsableEntity (Index),
 	  StartLaser(true),
+	  MakeEffect(false),
 	  Damage (0)
 	{
 	};
@@ -1197,6 +1209,7 @@ public:
 		CBaseEntity	*ignore;
 		vec3f	start;
 		vec3f	end;
+		const uint8 Count = (MakeEffect) ? 8 : 4;
 
 		if (Enemy)
 		{
@@ -1206,7 +1219,7 @@ public:
 			MoveDir = point - State.GetOrigin();
 			MoveDir.Normalize ();
 			if (MoveDir != last_movedir)
-				SpawnFlags |= 0x80000000;
+				MakeEffect = true;
 		}
 
 		ignore = this;
@@ -1230,14 +1243,14 @@ public:
 			// if we hit something that's not a monster or player or is immune to lasers, we're done
 			if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
 			{
-				if (SpawnFlags & 0x80000000)
+				if (MakeEffect)
 				{
-					SpawnFlags &= ~0x80000000;
+					MakeEffect = false;
 					CTempEnt_Splashes::Sparks (tr.EndPos,
 						tr.plane.normal, 
 						CTempEnt_Splashes::ST_LASER_SPARKS,
 						(State.GetSkinNum() & 255),
-						(SpawnFlags & 0x80000000) ? 8 : 4);
+						Count);
 				}
 				break;
 			}
@@ -1256,7 +1269,7 @@ public:
 			return;
 
 		Activator = activator;
-		if (SpawnFlags & 1)
+		if (SpawnFlags & LASER_START_ON)
 			Off ();
 		else
 			On ();
@@ -1266,13 +1279,14 @@ public:
 	{
 		if (!Activator)
 			Activator = this;
-		SpawnFlags |= 0x80000001;
+		SpawnFlags |= LASER_START_ON;
+		MakeEffect = true;
 		GetSvFlags() &= ~SVF_NOCLIENT;
 		Think ();
 	};
 	void Off ()
 	{
-		SpawnFlags &= ~1;
+		SpawnFlags &= ~LASER_START_ON;
 		GetSvFlags() |= SVF_NOCLIENT;
 		NextThink = 0;
 	};
@@ -1283,18 +1297,18 @@ public:
 		State.GetModelIndex() = 1;			// must be non-zero
 
 		// set the beam diameter
-		State.GetFrame() = (SpawnFlags & FAT) ? 16 : 4;
+		State.GetFrame() = (SpawnFlags & LASER_FAT) ? 16 : 4;
 
 		// set the color
-		if (SpawnFlags & RED)
+		if (SpawnFlags & LASER_RED)
 			State.GetSkinNum() = Color_RGBAToHex (NSColor::PatriotRed, NSColor::PatriotRed, NSColor::Red, NSColor::Red);
-		else if (SpawnFlags & GREEN)
+		else if (SpawnFlags & LASER_GREEN)
 			State.GetSkinNum() = Color_RGBAToHex (NSColor::Green, NSColor::Lime, NSColor::FireSpeechGreen, NSColor::Harlequin);
-		else if (SpawnFlags & BLUE)
+		else if (SpawnFlags & LASER_BLUE)
 			State.GetSkinNum() = Color_RGBAToHex (NSColor::PatriotBlue, NSColor::PatriotBlue, NSColor::NeonBlue, NSColor::NeonBlue);
-		else if (SpawnFlags & YELLOW)
+		else if (SpawnFlags & LASER_YELLOW)
 			State.GetSkinNum() = Color_RGBAToHex (NSColor::ParisDaisy, NSColor::Gorse, NSColor::Lemon, NSColor::Gold);
-		else if (SpawnFlags & ORANGE)
+		else if (SpawnFlags & LASER_ORANGE)
 			State.GetSkinNum() = Color_RGBAToHex (NSColor::HarvestGold, NSColor::RobRoy, NSColor::TulipTree, NSColor::FireBush);
 
 		if (!Enemy)
@@ -1322,7 +1336,7 @@ public:
 		GetMaxs().Set (8);
 		Link ();
 
-		if (SpawnFlags & START_ON)
+		if (SpawnFlags & LASER_START_ON)
 			On ();
 		else
 			Off ();
@@ -1376,6 +1390,9 @@ LINK_CLASSNAME_TO_CLASS ("target_laser", CTargetLaser);
 /*QUAKED target_help (1 0 1) (-16 -16 -24) (16 16 24) help1
 When fired, the "message" key becomes the current personal computer string, and the message light will be set on all clients status bars.
 */
+
+#define HELP_FIRST_MESSAGE	1
+
 class CTargetHelp : public CMapEntity, public CUsableEntity
 {
 public:
@@ -1419,8 +1436,8 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		Q_strncpyz ((SpawnFlags & 1) ? game.helpmessage1 : game.helpmessage2, Message.c_str(), sizeof(game.helpmessage1)-1);
-		game.helpchanged++;
+		Q_strncpyz ((SpawnFlags & HELP_FIRST_MESSAGE) ? game.helpmessage1 : game.helpmessage2, Message.c_str(), sizeof(game.helpmessage1)-1);
+		game.HelpChanged++;
 	};
 
 	void Spawn ()

@@ -402,7 +402,7 @@ class game_locals_t
 {
 public:
 	game_locals_t () :
-	  helpchanged (0),
+	  HelpChanged (0),
 	  clients (NULL),
 	  maxclients (0),
 	  maxspectators (0),
@@ -421,7 +421,7 @@ public:
 	{
 		File.WriteArray (helpmessage1, sizeof(helpmessage1));
 		File.WriteArray (helpmessage2, sizeof(helpmessage2));
-		File.Write<uint8> (helpchanged);
+		File.Write<uint8> (HelpChanged);
 		File.WriteArray (spawnpoint, sizeof(spawnpoint));
 		File.Write<uint8> (maxclients);
 		File.Write<uint8> (maxspectators);
@@ -436,7 +436,7 @@ public:
 	{
 		File.ReadArray (helpmessage1, sizeof(helpmessage1));
 		File.ReadArray (helpmessage2, sizeof(helpmessage2));
-		helpchanged = File.Read<uint8> ();
+		HelpChanged = File.Read<uint8> ();
 		File.ReadArray (spawnpoint, sizeof(spawnpoint));
 		maxclients = File.Read<uint8> ();
 		maxspectators = File.Read<uint8> ();
@@ -449,7 +449,7 @@ public:
 
 	char		helpmessage1[128];
 	char		helpmessage2[128];
-	uint8		helpchanged;	// flash F1 icon if non 0, play sound
+	uint8		HelpChanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
 	gclient_t	*clients;		// [maxclients]

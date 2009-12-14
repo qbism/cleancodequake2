@@ -201,37 +201,27 @@ void Cmd_Wave_f (CPlayerEntity *ent)
 	if (ent->Client.Anim.Priority > ANIM_WAVE)
 		return;
 
-	ent->Client.Anim.Priority = ANIM_WAVE;
-
-	switch ((ArgCount() > 1) ? ArgGeti(1) : 0)
+	struct waveAnimations_t
 	{
-	case 0:
-		ent->PrintToClient (PRINT_HIGH, "flipoff\n");
-		ent->State.GetFrame() = FRAME_flip01 - 1;
-		ent->Client.Anim.EndFrame = FRAME_flip12;
-		break;
-	case 1:
-		ent->PrintToClient (PRINT_HIGH, "salute\n");
-		ent->State.GetFrame() = FRAME_salute01 - 1;
-		ent->Client.Anim.EndFrame = FRAME_salute11;
-		break;
-	case 2:
-		ent->PrintToClient (PRINT_HIGH, "taunt\n");
-		ent->State.GetFrame() = FRAME_taunt01 - 1;
-		ent->Client.Anim.EndFrame = FRAME_taunt17;
-		break;
-	case 3:
-		ent->PrintToClient (PRINT_HIGH, "wave\n");
-		ent->State.GetFrame() = FRAME_wave01 - 1;
-		ent->Client.Anim.EndFrame = FRAME_wave11;
-		break;
-	case 4:
-	default:
-		ent->PrintToClient (PRINT_HIGH, "point\n");
-		ent->State.GetFrame() = FRAME_point01 - 1;
-		ent->Client.Anim.EndFrame = FRAME_point12;
-		break;
-	}
+		const char	*Name;
+		uint16		StartFrame, EndFrame;
+	} WaveAnims [] =
+	{
+		{ "flipoff", FRAME_flip01 - 1, FRAME_flip12 },
+		{ "salute", FRAME_salute01 - 1, FRAME_salute11 },
+		{ "taunt", FRAME_taunt01 - 1, FRAME_taunt17 },
+		{ "wave", FRAME_wave01 - 1, FRAME_wave11 },
+		NULL
+	};
+	static const uint32 lastIndex = ArrayCount(WaveAnims) - 1;
+	uint8 WaveIndex = (ArgCount() > 1) ? 
+		(ArgGeti(1) >= lastIndex) ? lastIndex-1 : ArgGeti(1)
+		: 0;
+
+	ent->PrintToClient (PRINT_HIGH, "%s\n", WaveAnims[WaveIndex].Name);
+	ent->State.GetFrame() = WaveAnims[WaveIndex].StartFrame;
+	ent->Client.Anim.EndFrame = WaveAnims[WaveIndex].EndFrame;
+	ent->Client.Anim.Priority = ANIM_WAVE;
 }
 
 /*
@@ -390,9 +380,9 @@ public:
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
-			if (Spectator && (!Player->GetInUse() || Player->Client.Persistent.state == SVCS_SPAWNED))
+			if (Spectator && (!Player->GetInUse() || Player->Client.Persistent.State == SVCS_SPAWNED))
 				continue;
-			else if (!Spectator && (Player->Client.Persistent.state != SVCS_SPAWNED))
+			else if (!Spectator && (Player->Client.Persistent.State != SVCS_SPAWNED))
 				continue;
 
 			Index = i;
@@ -530,14 +520,14 @@ void Cmd_Help_f (CPlayerEntity *ent)
 		return;
 	}
 
-	if ((ent->Client.LayoutFlags & LF_SHOWHELP) && (ent->Client.Persistent.game_helpchanged == game.helpchanged))
+	if ((ent->Client.LayoutFlags & LF_SHOWHELP) && (ent->Client.Persistent.GameHelpChanged == game.HelpChanged))
 	{
 		ent->Client.LayoutFlags &= ~LF_SHOWHELP;
 		return;
 	}
 
 	ent->Client.LayoutFlags |= LF_SHOWHELP;
-	ent->Client.Persistent.helpchanged = 0;
+	ent->Client.Persistent.HelpChanged = 0;
 	HelpComputer (ent);
 }
 

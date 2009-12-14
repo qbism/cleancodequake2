@@ -106,12 +106,12 @@ sint32		&CPlayerState::GetGunFrame ()
 
 colorf			&CPlayerState::GetViewBlend ()
 {
-	return playerState->viewBlend;
+	return playerState->ViewBlend;
 }
 colorb			CPlayerState::GetViewBlendB ()
 {
 	// Convert it to a color uint8
-	return playerState->viewBlend;
+	return playerState->ViewBlend;
 } // Name had to be different
 
 float			&CPlayerState::GetFov ()
@@ -538,8 +538,8 @@ void CPlayerEntity::PutInServer ()
 			//memcpy (userinfo, Client.Persistent.UserInfo.c_str(), sizeof(userinfo));
 			Q_snprintfz (userinfo, sizeof(userinfo), "%s", Client.Persistent.UserInfo.c_str());
 
-			Respawn.CoopRespawn.game_helpchanged = Client.Persistent.game_helpchanged;
-			Respawn.CoopRespawn.helpchanged = Client.Persistent.helpchanged;
+			Respawn.CoopRespawn.GameHelpChanged = Client.Persistent.GameHelpChanged;
+			Respawn.CoopRespawn.HelpChanged = Client.Persistent.HelpChanged;
 			Client.Persistent = Respawn.CoopRespawn;
 			UserinfoChanged (userinfo);
 			if (Respawn.Score > Client.Persistent.Score)
@@ -556,10 +556,10 @@ void CPlayerEntity::PutInServer ()
 	Client.Clear ();
 
 	Client.Persistent = saved;
-	if (Client.Persistent.health <= 0)
+	if (Client.Persistent.Health <= 0)
 		InitPersistent();
 	Client.Respawn = Respawn;
-	Client.Persistent.state = SVCS_SPAWNED;
+	Client.Persistent.State = SVCS_SPAWNED;
 
 	// copy some data from the client to the entity
 	FetchEntData ();
@@ -702,20 +702,20 @@ void CPlayerEntity::InitPersistent ()
 	Client.Persistent.Tech = NULL;
 	Client.Persistent.Armor = NULL;
 
-	Client.Persistent.health			= 100;
-	Client.Persistent.max_health		= 100;
+	Client.Persistent.Health			= 100;
+	Client.Persistent.MaxHealth			= 100;
 
 	InitItemMaxValues();
 }
 
 void CPlayerEntity::InitItemMaxValues ()
 {
-	Client.Persistent.maxAmmoValues[CAmmo::AMMOTAG_SHELLS] = 100;
-	Client.Persistent.maxAmmoValues[CAmmo::AMMOTAG_BULLETS] = 200;
-	Client.Persistent.maxAmmoValues[CAmmo::AMMOTAG_GRENADES] = 50;
-	Client.Persistent.maxAmmoValues[CAmmo::AMMOTAG_ROCKETS] = 50;
-	Client.Persistent.maxAmmoValues[CAmmo::AMMOTAG_CELLS] = 200;
-	Client.Persistent.maxAmmoValues[CAmmo::AMMOTAG_SLUGS] = 50;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_SHELLS] = 100;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_BULLETS] = 200;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_GRENADES] = 50;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_ROCKETS] = 50;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_CELLS] = 200;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_SLUGS] = 50;
 }
 
 /*
@@ -778,7 +778,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	// handedness
 	s = Info_ValueForKey (UserInfo, "hand");
 	if (s.length())
-		Client.Persistent.hand = atoi(s.c_str());
+		Client.Persistent.Hand = atoi(s.c_str());
 
 	// IP
 	// Paril: removed. could be changed any time in-game!
@@ -867,9 +867,9 @@ bool CPlayerEntity::CTFStart ()
 
 void CPlayerEntity::FetchEntData ()
 {
-	Health = Client.Persistent.health;
-	MaxHealth = Client.Persistent.max_health;
-	Flags |= Client.Persistent.savedFlags;
+	Health = Client.Persistent.Health;
+	MaxHealth = Client.Persistent.MaxHealth;
+	Flags |= Client.Persistent.SavedFlags;
 	if (game.mode == GAME_COOPERATIVE)
 		Client.Respawn.Score = Client.Persistent.Score;
 }
@@ -1243,7 +1243,7 @@ inline void CPlayerEntity::CalcBlend ()
 			PlaySound (CHAN_ITEM, SoundIndex("items/damage2.wav"));
 
 		if (remaining > 30 || (remaining & 4) )
-			SV_AddBlend (QuadColor, Client.Persistent.viewBlend);
+			SV_AddBlend (QuadColor, Client.Persistent.ViewBlend);
 	}
 	else if (Client.Timers.Invincibility > level.Frame)
 	{
@@ -1253,7 +1253,7 @@ inline void CPlayerEntity::CalcBlend ()
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect2.wav"));
 
 		if (remaining > 30 || (remaining & 4) )
-			SV_AddBlend (InvulColor, Client.Persistent.viewBlend);
+			SV_AddBlend (InvulColor, Client.Persistent.ViewBlend);
 	}
 	else if (Client.Timers.EnvironmentSuit > level.Frame)
 	{
@@ -1263,7 +1263,7 @@ inline void CPlayerEntity::CalcBlend ()
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
 
 		if (remaining > 30 || (remaining & 4) )
-			SV_AddBlend (EnviroColor, Client.Persistent.viewBlend);
+			SV_AddBlend (EnviroColor, Client.Persistent.ViewBlend);
 	}
 	else if (Client.Timers.Rebreather > level.Frame)
 	{
@@ -1273,12 +1273,12 @@ inline void CPlayerEntity::CalcBlend ()
 			PlaySound (CHAN_ITEM, SoundIndex("items/airout.wav"));
 
 		if (remaining > 30 || (remaining & 4) )
-			SV_AddBlend (BreatherColor, Client.Persistent.viewBlend);
+			SV_AddBlend (BreatherColor, Client.Persistent.ViewBlend);
 	}
 
 	// add for damage
 	if (Client.DamageBlend.A)
-		SV_AddBlend (Client.DamageBlend, Client.Persistent.viewBlend);
+		SV_AddBlend (Client.DamageBlend, Client.Persistent.ViewBlend);
 
 	// drop the damage value
 	if (Client.DamageBlend.A)
@@ -1292,7 +1292,7 @@ inline void CPlayerEntity::CalcBlend ()
 	if (Client.BonusAlpha)
 	{
 		BonusColor.A = Client.BonusAlpha;
-		SV_AddBlend (BonusColor, Client.Persistent.viewBlend);
+		SV_AddBlend (BonusColor, Client.Persistent.ViewBlend);
 
 		Client.BonusAlpha -= 0.1f;
 		if (Client.BonusAlpha < 0)
@@ -1300,14 +1300,14 @@ inline void CPlayerEntity::CalcBlend ()
 	}
 
 	if (contents & (CONTENTS_LAVA))
-		SV_AddBlend (LavaColor, Client.Persistent.viewBlend);
+		SV_AddBlend (LavaColor, Client.Persistent.ViewBlend);
 	else if (contents & CONTENTS_SLIME)
-		SV_AddBlend (SlimeColor, Client.Persistent.viewBlend);
+		SV_AddBlend (SlimeColor, Client.Persistent.ViewBlend);
 	else if (contents & CONTENTS_WATER)
-		SV_AddBlend (WaterColor, Client.Persistent.viewBlend);
+		SV_AddBlend (WaterColor, Client.Persistent.ViewBlend);
 
-	Client.PlayerState.GetViewBlend () = Client.Persistent.viewBlend;
-	Client.Persistent.viewBlend.Set(ClearColor);
+	Client.PlayerState.GetViewBlend () = Client.Persistent.ViewBlend;
+	Client.Persistent.ViewBlend.Set(ClearColor);
 }
 
 
@@ -1639,16 +1639,16 @@ G_SetClientSound
 */
 inline void CPlayerEntity::SetClientSound ()
 {
-	if (Client.Persistent.game_helpchanged != game.helpchanged)
+	if (Client.Persistent.GameHelpChanged != game.HelpChanged)
 	{
-		Client.Persistent.game_helpchanged = game.helpchanged;
-		Client.Persistent.helpchanged = 1;
+		Client.Persistent.GameHelpChanged = game.HelpChanged;
+		Client.Persistent.HelpChanged = 1;
 	}
 
 	// help beep (no more than three times)
-	if (Client.Persistent.helpchanged && Client.Persistent.helpchanged <= 3 && !(level.Frame&63) )
+	if (Client.Persistent.HelpChanged && Client.Persistent.HelpChanged <= 3 && !(level.Frame&63) )
 	{
-		Client.Persistent.helpchanged++;
+		Client.Persistent.HelpChanged++;
 		PlaySound (CHAN_VOICE, SoundIndex ("misc/pc_up.wav"), 255, ATTN_STATIC);
 	}
 
@@ -2344,11 +2344,11 @@ void CPlayerEntity::SetStats ()
 		//
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
-		if (Client.Persistent.health <= 0 || Client.Respawn.MenuState.InMenu ||
+		if (Client.Persistent.Health <= 0 || Client.Respawn.MenuState.InMenu ||
 			(level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES)) || 
 			(!(game.mode & GAME_DEATHMATCH)) && (Client.LayoutFlags & LF_SHOWHELP))
 			Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 1;
-		if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.health > 0)
+		if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.Health > 0)
 			Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 2;
 
 		//
@@ -2359,8 +2359,8 @@ void CPlayerEntity::SetStats ()
 		//
 		// help icon / current weapon if not shown
 		//
-		Client.PlayerState.GetStat (STAT_HELPICON) = (Client.Persistent.helpchanged && (level.Frame&8) ) ? GameMedia.Hud.HelpPic :
-			(((Client.Persistent.hand == CENTER_HANDED || Client.PlayerState.GetFov() > 91)
+		Client.PlayerState.GetStat (STAT_HELPICON) = (Client.Persistent.HelpChanged && (level.Frame&8) ) ? GameMedia.Hud.HelpPic :
+			(((Client.Persistent.Hand == CENTER_HANDED || Client.PlayerState.GetFov() > 91)
 			&& Client.Persistent.Weapon && Client.Persistent.Weapon->Item) ? Client.Persistent.Weapon->Item->GetIconIndex() : 0);
 
 		Client.PlayerState.GetStat (STAT_SPECTATOR) = 0;
@@ -2393,9 +2393,9 @@ void CPlayerEntity::SetSpectatorStats ()
 	// layouts are independant in Spectator
 	Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
-	if (Client.Persistent.health <= 0 || level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES))
+	if (Client.Persistent.Health <= 0 || level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES))
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 1;
-	if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.health > 0)
+	if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.Health > 0)
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 2;
 
 	Client.PlayerState.GetStat (STAT_CHASE) = 
@@ -3074,9 +3074,9 @@ void CPlayerEntity::BackupClientData ()
 
 		//memcpy (&SavedClients[i], &ent->Client.Persistent, sizeof(CPersistentData));
 		SavedClients[i] = ent->Client.Persistent;
-		SavedClients[i].health = ent->Health;
-		SavedClients[i].max_health = ent->MaxHealth;
-		SavedClients[i].savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
+		SavedClients[i].Health = ent->Health;
+		SavedClients[i].MaxHealth = ent->MaxHealth;
+		SavedClients[i].SavedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
 		if (game.mode & GAME_COOPERATIVE)
 			SavedClients[i].Score = ent->Client.Respawn.Score;
 	}
@@ -3093,9 +3093,9 @@ void CPlayerEntity::SaveClientData ()
 		//if (!ent->GetInUse())
 		//	continue;
 
-		ent->Client.Persistent.health = ent->Health;
-		ent->Client.Persistent.max_health = ent->MaxHealth;
-		ent->Client.Persistent.savedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
+		ent->Client.Persistent.Health = ent->Health;
+		ent->Client.Persistent.MaxHealth = ent->MaxHealth;
+		ent->Client.Persistent.SavedFlags = (ent->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
 		if (game.mode & GAME_COOPERATIVE)
 			ent->Client.Persistent.Score = ent->Client.Respawn.Score;
 	}
@@ -3110,9 +3110,9 @@ void CPlayerEntity::RestoreClientData ()
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
 		Player->Client.Persistent = SavedClients[i];
-		Player->Health = SavedClients[i].health;
-		Player->MaxHealth = SavedClients[i].max_health;
-		Player->Flags = SavedClients[i].savedFlags;
+		Player->Health = SavedClients[i].Health;
+		Player->MaxHealth = SavedClients[i].MaxHealth;
+		Player->Flags = SavedClients[i].SavedFlags;
 		if (game.mode & GAME_COOPERATIVE)
 			Player->Client.Respawn.Score = SavedClients[i].Score;
 		g_edicts[i+1].client = game.clients + i;
@@ -3561,7 +3561,7 @@ void CPlayerEntity::GetChaseTarget()
 
 void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result)
 {
-	switch (Client.Persistent.hand)
+	switch (Client.Persistent.Hand)
 	{
 	case LEFT_HANDED:
 		distance.Y *= -1;
@@ -3720,7 +3720,7 @@ _CC_ENABLE_DEPRECATION
 	// make sure all view stuff is valid
 	EndServerFrame ();
 
-	Client.Persistent.state = SVCS_SPAWNED;
+	Client.Persistent.State = SVCS_SPAWNED;
 }
 
 IPAddress CopyIP (const char *val)
@@ -3834,7 +3834,7 @@ bool CPlayerEntity::Connect (char *userinfo)
 	}
 
 	GetSvFlags() = 0; // make sure we start with known default
-	Client.Persistent.state = SVCS_CONNECTED;
+	Client.Persistent.State = SVCS_CONNECTED;
 	return true;
 }
 
@@ -3843,7 +3843,7 @@ void CPlayerEntity::Disconnect ()
 	if (!gameEntity->client)
 		return;
 
-	Client.Persistent.state = SVCS_FREE;
+	Client.Persistent.State = SVCS_FREE;
 	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.Name.c_str());
 
 #if CLEANCTF_ENABLED

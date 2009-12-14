@@ -307,7 +307,6 @@ The team has completed a frame of movement, so
 change the speed for the next frame
 ==============
 */
-
 void CBrushModel::CalcAcceleratedMove()
 {
 	float	accel_dist;
@@ -430,6 +429,24 @@ void CBrushModel::ThinkAccelMove ()
 #pragma endregion Brush_Model
 
 #pragma region Platforms
+/*QUAKED func_plat (0 .5 .8) ? PLAT_LOW_TRIGGER
+speed	default 150
+
+Plats are always drawn in the extended position, so they will light correctly.
+
+If the plat is the target of another trigger or button, it will start out disabled in the extended position until it is trigger, when it will lower and become a normal plat.
+
+"speed"	overrides default 200.
+"accel" overrides default 500
+"lip"	overrides default 8 pixel lip
+
+If the "height" key is set, that will determine the amount the plat moves, instead of being implicitly determoveinfoned by the model's height.
+
+Set "sounds" to one of the following:
+1) base fast
+2) chain slow
+*/
+
 #define PLAT_LOW_TRIGGER	1
 
 CPlatForm::CPlatForm() :
@@ -743,16 +760,46 @@ LINK_CLASSNAME_TO_CLASS ("func_plat", CPlatForm);
 #pragma endregion Platforms
 
 #pragma region Doors
+/*
+======================================================================
+
+DOORS
+
+  spawn a trigger surrounding the entire team unless it is
+  already targeted by another
+
+======================================================================
+*/
+
 #pragma region Base Door
+
+/*QUAKED func_door (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE ANIMATED_FAST
+TOGGLE		wait in both the start and end states for a trigger event.
+START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+NOMONSTER	monsters will not trigger this door
+
+"message"	is printed when the door is touched if it is a trigger door and it hasn't been fired yet
+"angle"		determines the opening direction
+"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
+"health"	if set, door must be shot open
+"speed"		movement speed (100 default)
+"wait"		wait before returning (3 default, -1 = never return)
+"lip"		lip remaining at end of move (8 default)
+"dmg"		damage to inflict when blocked (2 default)
+"sounds"
+1)	silent
+2)	light
+3)	medium
+4)	heavy
+*/
 
 #define DOOR_START_OPEN		1
 #define DOOR_REVERSE		2
 #define DOOR_CRUSHER		4
 #define DOOR_NOMONSTER		8
+#define DOOR_ANIMATED		16
 #define DOOR_TOGGLE			32
-#define DOOR_X_AXIS			64
-#define DOOR_Y_AXIS			128
-
+#define DOOR_ANIMATED_FAST	64
 
 CDoor::CDoor() :
 CBaseEntity(),
@@ -1179,9 +1226,9 @@ void CDoor::Spawn ()
 	EndOrigin = Positions[1];
 	EndAngles = State.GetAngles ();
 
-	if (SpawnFlags & 16)
+	if (SpawnFlags & DOOR_ANIMATED)
 		State.GetEffects() |= EF_ANIM_ALL;
-	if (SpawnFlags & 64)
+	if (SpawnFlags & DOOR_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
@@ -1211,6 +1258,38 @@ LINK_CLASSNAME_TO_CLASS ("func_door", CDoor);
 #pragma endregion Base Door
 
 #pragma region Rotating Door
+/*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS
+TOGGLE causes the door to wait in both the start and end states for a trigger event.
+
+START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+NOMONSTER	monsters will not trigger this door
+
+You need to have an origin brush as part of this entity.  The center of that brush will be
+the point around which it is rotated. It will rotate around the Z axis by default.  You can
+check either the X_AXIS or Y_AXIS box to change that.
+
+"distance" is how many degrees the door will be rotated.
+"speed" determines how fast the door moves; default value is 100.
+
+REVERSE will cause the door to rotate in the opposite direction.
+
+"message"	is printed when the door is touched if it is a trigger door and it hasn't been fired yet
+"angle"		determines the opening direction
+"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
+"health"	if set, door must be shot open
+"speed"		movement speed (100 default)
+"wait"		wait before returning (3 default, -1 = never return)
+"dmg"		damage to inflict when blocked (2 default)
+"sounds"
+1)	silent
+2)	light
+3)	medium
+4)	heavy
+*/
+
+#define DOOR_X_AXIS			64
+#define DOOR_Y_AXIS			128
+
 CRotatingDoor::CRotatingDoor () :
 CBaseEntity(),
 CDoor ()
@@ -1349,7 +1428,7 @@ void CRotatingDoor::Spawn ()
 	StartAngles = Positions[0];
 	EndAngles = Positions[1];
 
-	if (SpawnFlags & 16)
+	if (SpawnFlags & DOOR_ANIMATED)
 		State.GetEffects() |= EF_ANIM_ALL;
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
@@ -1372,6 +1451,21 @@ LINK_CLASSNAME_TO_CLASS ("func_door_rotating", CRotatingDoor);
 #pragma endregion Rotating Door
 
 #pragma region Moving Water
+/*QUAKED func_water (0 .5 .8) ? START_OPEN
+func_water is a moveable water brush.  It must be targeted to operate.  Use a non-water texture at your own risk.
+
+START_OPEN causes the water to move to its destination when spawned and operate in reverse.
+
+"angle"		determines the opening direction (up or down only)
+"speed"		movement speed (25 default)
+"wait"		wait before returning (-1 default, -1 = TOGGLE)
+"lip"		lip remaining at end of move (0 default)
+"sounds"	(yes, these need to be changed)
+0)	no sound
+1)	water
+2)	lava
+*/
+
 CMovableWater::CMovableWater () :
 CBaseEntity(),
 CDoor ()
@@ -1809,9 +1903,6 @@ LINK_CLASSNAME_TO_CLASS ("func_button", CButton);
 #pragma endregion Button
 
 #pragma region Train
-#define TRAIN_START_ON		1
-#define TRAIN_TOGGLE		2
-#define TRAIN_BLOCK_STOPS	4
 
 #include "cc_infoentities.h"
 
@@ -1825,6 +1916,10 @@ dmg		default	2
 noise	looping sound to play when the train is in motion
 
 */
+
+#define TRAIN_START_ON		1
+#define TRAIN_TOGGLE		2
+#define TRAIN_BLOCK_STOPS	4
 
 CTrainBase::CTrainBase() :
 CBaseEntity(),
@@ -1936,7 +2031,7 @@ void CTrainBase::Next ()
 		Target = TargetEntity->Target;
 
 		// check for a teleport path_corner
-		if (TargetEntity->SpawnFlags & 1)
+		if (TargetEntity->SpawnFlags & TRAIN_START_ON)
 		{
 			if (!first)
 			{
@@ -2455,6 +2550,15 @@ REVERSE will cause the it to rotate in the opposite direction.
 STOP mean it will stop moving instead of pushing entities
 */
 
+#define ROTATING_START_ON		1
+#define ROTATING_REVERSE		2
+#define ROTATING_X_AXIS			4
+#define ROTATING_Y_AXIS			8
+#define ROTATING_TOUCH_PAIN		16
+#define ROTATING_STOP			32
+#define ROTATING_ANIMATED		64
+#define ROTATING_ANIMATED_FAST	128
+
 CRotatingBrush::CRotatingBrush () :
 	CBaseEntity(),
 	CMapEntity(),
@@ -2510,7 +2614,7 @@ void CRotatingBrush::Use (CBaseEntity *other, CBaseEntity *activator)
 		State.GetSound() = SoundMiddle;
 		AngularVelocity = MoveDir * Speed;
 
-		if (SpawnFlags & 16)
+		if (SpawnFlags & ROTATING_TOUCH_PAIN)
 			Touchable = true;
 	}
 }
@@ -2520,22 +2624,19 @@ void CRotatingBrush::Spawn ()
 	Touchable = false;
 
 	GetSolid() = SOLID_BSP;
-	if (SpawnFlags & 32)
-		PhysicsType = PHYSICS_STOP;
-	else
-		PhysicsType = PHYSICS_PUSH;
+	PhysicsType = (SpawnFlags & ROTATING_STOP) ? PHYSICS_STOP : PHYSICS_PUSH;
 
 	// set the axis of rotation
 	MoveDir.Clear ();
-	if (SpawnFlags & 4)
+	if (SpawnFlags & ROTATING_X_AXIS)
 		MoveDir.Z = 0.1f;
-	else if (SpawnFlags & 8)
+	else if (SpawnFlags & ROTATING_Y_AXIS)
 		MoveDir.X = 0.1f;
 	else // Z_AXIS
 		MoveDir.Y = 0.1f;
 
 	// check for reverse rotation
-	if (SpawnFlags & 2)
+	if (SpawnFlags & ROTATING_REVERSE)
 		MoveDir.Invert ();
 
 	if (!Speed)
@@ -2547,12 +2648,12 @@ void CRotatingBrush::Spawn ()
 	if (Damage)
 		Blockable = true;
 
-	if (SpawnFlags & 1)
+	if (SpawnFlags & ROTATING_START_ON)
 		Use (NULL, NULL);
 
-	if (SpawnFlags & 64)
+	if (SpawnFlags & ROTATING_ANIMATED)
 		State.GetEffects() |= EF_ANIM_ALL;
-	if (SpawnFlags & 128)
+	if (SpawnFlags & ROTATING_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
 	SetBrushModel ();
@@ -2568,6 +2669,9 @@ Conveyors are stationary brushes that move what's on them.
 The brush should be have a surface with at least one current content enabled.
 speed	default 100
 */
+
+#define CONVEYOR_START_ON	1
+#define CONVEYOR_TOGGLE		2
 
 CConveyor::CConveyor () :
 	CBaseEntity (),
@@ -2619,18 +2723,18 @@ void CConveyor::LoadFields (CFile &File)
 
 void CConveyor::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-	if (SpawnFlags & 1)
+	if (SpawnFlags & CONVEYOR_START_ON)
 	{
 		Speed = 0;
-		SpawnFlags &= ~1;
+		SpawnFlags &= ~CONVEYOR_START_ON;
 	}
 	else
 	{
 		Speed = SavedSpeed;
-		SpawnFlags |= 1;
+		SpawnFlags |= CONVEYOR_START_ON;
 	}
 
-	if (!(SpawnFlags & 2))
+	if (!(SpawnFlags & CONVEYOR_TOGGLE))
 		SavedSpeed = 0;
 }
 
@@ -2644,7 +2748,7 @@ void CConveyor::Spawn ()
 	if (!Speed)
 		Speed = 100;
 
-	if (!(SpawnFlags & 1))
+	if (!(SpawnFlags & CONVEYOR_START_ON))
 	{
 		SavedSpeed = Speed;
 		Speed = 0;
@@ -2743,6 +2847,13 @@ START_ON		only valid for TRIGGER_SPAWN walls
 				the wall will initially be present
 */
 
+#define WALL_TRIGGER_SPAWN		1
+#define WALL_TOGGLE				2
+#define WALL_START_ON			4
+#define WALL_ANIMATED			8
+#define WALL_ANIMATED_FAST		16
+#define WALL_JUST_A_WALL		(WALL_START_ON | WALL_TOGGLE | WALL_TRIGGER_SPAWN)
+
 CFuncWall::CFuncWall () :
 	CBaseEntity (),
 	CMapEntity (),
@@ -2779,7 +2890,7 @@ void CFuncWall::Use (CBaseEntity *other, CBaseEntity *activator)
 	}
 	Link ();
 
-	if (!(SpawnFlags & 2))
+	if (!(SpawnFlags & WALL_TOGGLE))
 		Usable = false;
 }
 
@@ -2793,13 +2904,13 @@ void CFuncWall::Spawn ()
 	PhysicsType = PHYSICS_PUSH;
 	SetBrushModel ();
 
-	if (SpawnFlags & 8)
+	if (SpawnFlags & WALL_ANIMATED)
 		State.GetEffects() |= EF_ANIM_ALL;
-	if (SpawnFlags & 16)
+	if (SpawnFlags & WALL_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
 	// just a wall
-	if ((SpawnFlags & 7) == 0)
+	if (!(SpawnFlags & WALL_JUST_A_WALL))
 	{
 		GetSolid() = SOLID_BSP;
 		Link ();
@@ -2807,22 +2918,22 @@ void CFuncWall::Spawn ()
 	}
 
 	// it must be TRIGGER_SPAWN
-	if (!(SpawnFlags & 1))
-		SpawnFlags |= 1;
+	if (!(SpawnFlags & WALL_TRIGGER_SPAWN))
+		SpawnFlags |= WALL_TRIGGER_SPAWN;
 
 	// yell if the spawnflags are odd
-	if (SpawnFlags & 4)
+	if (SpawnFlags & WALL_START_ON)
 	{
-		if (!(SpawnFlags & 2))
+		if (!(SpawnFlags & WALL_TOGGLE))
 		{
 			//gi.dprintf("func_wall START_ON without TOGGLE\n");
 			MapPrint (MAPPRINT_WARNING, this, GetAbsMin(), "Invalid spawnflags: START_ON without TOGGLE\n");
-			SpawnFlags |= 2;
+			SpawnFlags |= WALL_TOGGLE;
 		}
 	}
 
-	GetSolid() = (SpawnFlags & 4) ? SOLID_BSP : SOLID_NOT;
-	if (!(SpawnFlags & 4))
+	GetSolid() = (SpawnFlags & WALL_START_ON) ? SOLID_BSP : SOLID_NOT;
+	if (!(SpawnFlags & WALL_START_ON))
 		GetSvFlags() |= SVF_NOCLIENT;
 
 	Link ();
@@ -2836,6 +2947,10 @@ LINK_CLASSNAME_TO_CLASS ("func_wall", CFuncWall);
 /*QUAKED func_object (0 .5 .8) ? TRIGGER_SPAWN ANIMATED ANIMATED_FAST
 This is solid bmodel that will fall if it's support it removed.
 */
+
+#define OBJECT_TRIGGER_SPAWN	1
+#define OBJECT_ANIMATED			2
+#define OBJECT_ANIMATED_FAST	4
 
 CFuncObject::CFuncObject () :
 	CBaseEntity (),
@@ -2911,7 +3026,7 @@ void CFuncObject::Spawn ()
 	if (!Damage)
 		Damage = 100;
 
-	if (SpawnFlags == 0)
+	if (!SpawnFlags)
 	{
 		GetSolid() = SOLID_BSP;
 		PhysicsType = PHYSICS_PUSH;
@@ -2925,9 +3040,9 @@ void CFuncObject::Spawn ()
 		GetSvFlags() |= SVF_NOCLIENT;
 	}
 
-	if (SpawnFlags & 2)
+	if (SpawnFlags & OBJECT_ANIMATED)
 		State.GetEffects() |= EF_ANIM_ALL;
-	if (SpawnFlags & 4)
+	if (SpawnFlags & OBJECT_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
 	GetClipmask() = CONTENTS_MASK_MONSTERSOLID;
@@ -2939,7 +3054,7 @@ LINK_CLASSNAME_TO_CLASS ("func_object", CFuncObject)
 
 #pragma region Explosive
 
-/*QUAKED func_explosive (0 .5 .8) ? Trigger_Spawn ANIMATED ANIMATED_FAST
+/*QUAKED func_explosive (0 .5 .8) ? TRIGGER_SPAWN ANIMATED ANIMATED_FAST
 Any brush that you want to explode or break apart.  If you want an
 ex0plosion, set dmg and it will do a radius explosion of that amount
 at the center of the bursh.
@@ -2952,6 +3067,10 @@ mass defaults to 75.  This determines how much debris is emitted when
 it explodes.  You get one large chunk per 100 of mass (up to 8) and
 one small chunk per 25 of mass (up to 16).  So 800 gives the most
 */
+#define EXPLOSIVE_TRIGGER_SPAWN		1
+#define EXPLOSIVE_ANIMATED			2
+#define EXPLOSIVE_ANIMATED_FAST		4
+
 CFuncExplosive::CFuncExplosive () :
 	CBaseEntity (),
 	CMapEntity (),
@@ -3101,7 +3220,7 @@ void CFuncExplosive::Spawn ()
 	ModelIndex ("models/objects/debris1/tris.md2");
 	ModelIndex ("models/objects/debris2/tris.md2");
 
-	if (SpawnFlags & 1)
+	if (SpawnFlags & EXPLOSIVE_TRIGGER_SPAWN)
 	{
 		GetSvFlags() |= SVF_NOCLIENT;
 		GetSolid() = SOLID_NOT;
@@ -3116,9 +3235,9 @@ void CFuncExplosive::Spawn ()
 
 	SetBrushModel ();
 
-	if (SpawnFlags & 2)
+	if (SpawnFlags & EXPLOSIVE_ANIMATED)
 		State.GetEffects() |= EF_ANIM_ALL;
-	if (SpawnFlags & 4)
+	if (SpawnFlags & EXPLOSIVE_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
 	if (UseType != FUNCEXPLOSIVE_USE_EXPLODE)

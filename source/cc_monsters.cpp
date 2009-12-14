@@ -97,6 +97,10 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	Entity->Monster->Entity = Entity;
 }
 
+#define MONSTER_AMBUSH			1
+#define MONSTER_TRIGGER_SPAWN	2
+#define MONSTER_SIGHT			4
+
 #define STEPSIZE	18
 
 #if MONSTERS_USE_PATHFINDING
@@ -579,7 +583,7 @@ void AI_SetSightClient ()
 		if (ent->GetInUse()
 			&& (ent->Health > 0)
 			&& !(ent->Flags & FL_NOTARGET) 
-			&& (ent->Client.Persistent.state >= SVCS_SPAWNED))
+			&& (ent->Client.Persistent.State >= SVCS_SPAWNED))
 		{
 			level.SightClient = ent;
 			return;		// got one
@@ -1227,7 +1231,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 void CMonster::WalkMonsterStartGo ()
 {
-	if (!(Entity->SpawnFlags & 2) && level.Frame < 10)
+	if (!(Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN) && level.Frame < 10)
 	{
 		DropToFloor ();
 
@@ -1244,7 +1248,7 @@ void CMonster::WalkMonsterStartGo ()
 
 	MonsterStartGo ();
 
-	if (Entity->SpawnFlags & 2)
+	if (Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN)
 		MonsterTriggeredStart ();
 }
 
@@ -1263,7 +1267,7 @@ void CMonster::SwimMonsterStartGo ()
 
 	MonsterStartGo ();
 
-	if (Entity->SpawnFlags & 2)
+	if (Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN)
 		MonsterTriggeredStart ();
 }
 
@@ -1285,7 +1289,7 @@ void CMonster::FlyMonsterStartGo ()
 
 	MonsterStartGo ();
 
-	if (Entity->SpawnFlags & 2)
+	if (Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN)
 		MonsterTriggeredStart ();
 }
 
@@ -1393,10 +1397,10 @@ void CMonster::MonsterStart ()
 		return;
 	}
 
-	if ((Entity->SpawnFlags & 4) && !(AIFlags & AI_GOOD_GUY))
+	if ((Entity->SpawnFlags & MONSTER_SIGHT) && !(AIFlags & AI_GOOD_GUY))
 	{
-		Entity->SpawnFlags &= ~4;
-		Entity->SpawnFlags |= 1;
+		Entity->SpawnFlags &= ~MONSTER_SIGHT;
+		Entity->SpawnFlags |= MONSTER_AMBUSH;
 	}
 
 	if (!(AIFlags & AI_GOOD_GUY))
@@ -1485,7 +1489,7 @@ void CMonster::MonsterTriggeredSpawn ()
 
 	MonsterStartGo ();
 
-	if (Entity->Enemy && !(Entity->SpawnFlags & 1) && !(Entity->Enemy->Flags & FL_NOTARGET))
+	if (Entity->Enemy && !(Entity->SpawnFlags & MONSTER_AMBUSH) && !(Entity->Enemy->Flags & FL_NOTARGET))
 		FoundTarget ();
 	else
 		Entity->Enemy = NULL;
@@ -1551,7 +1555,7 @@ void CMonster::AlertNearbyStroggs ()
 			continue;
 		if (strogg->Enemy)
 			continue;
-		if (strogg->SpawnFlags & 1)
+		if (strogg->SpawnFlags & MONSTER_AMBUSH)
 			continue;
 		
 #if MONSTERS_USE_PATHFINDING
@@ -2953,7 +2957,7 @@ void CMonster::AI_Stand (float Dist)
 		return;
 	}
 
-	if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
+	if (!(Entity->SpawnFlags & MONSTER_AMBUSH) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
@@ -3043,7 +3047,7 @@ void CMonster::AI_Stand (float Dist)
 		return;
 	}
 
-	if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
+	if (!(Entity->SpawnFlags & MONSTER_AMBUSH) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
@@ -3630,7 +3634,7 @@ bool CMonster::FindTarget()
 #if MONSTERS_USE_PATHFINDING
 	if ((level.SoundEntityFramenum >= (level.Frame - 1)) && level.NoiseNode)
 	{
-		if (Entity->SpawnFlags & 1)
+		if (Entity->SpawnFlags & MONSTER_AMBUSH)
 		{
 			CTrace trace (Entity->State.GetOrigin(), level.NoiseNode->Origin, Entity, CONTENTS_MASK_SOLID);
 
@@ -3658,7 +3662,7 @@ bool CMonster::FindTarget()
 		FoundPath ();
 
 		// Check if we can see the entity too
-		if (IsVisible(Entity, level.SoundEntity) && !Entity->Enemy && (level.SoundEntityFramenum >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
+		if (IsVisible(Entity, level.SoundEntity) && !Entity->Enemy && (level.SoundEntityFramenum >= (level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 		{
 			client = level.SoundEntity;
 
@@ -3667,7 +3671,7 @@ bool CMonster::FindTarget()
 				if (client->Flags & FL_NOTARGET)
 					return false;
 
-				if (Entity->SpawnFlags & 1)
+				if (Entity->SpawnFlags & MONSTER_AMBUSH)
 				{
 					if (!IsVisible (Entity, client))
 						return false;
@@ -3715,7 +3719,7 @@ bool CMonster::FindTarget()
 
 	heardit = false;
 #if !MONSTERS_USE_PATHFINDING
-	if ((level.SightEntityFrame >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
+	if ((level.SightEntityFrame >= (level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
 		client = level.SightEntity;
 		if (client->Enemy == Entity->Enemy)
@@ -3729,7 +3733,7 @@ bool CMonster::FindTarget()
 		client = level.SoundEntity;
 		heardit = true;
 	}
-	else if (!(Entity->Enemy) && (level.SoundEntity2Frame >= (level.Frame - 1)) && !(Entity->SpawnFlags & 1) )
+	else if (!(Entity->Enemy) && (level.SoundEntity2Frame >= (level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
 		client = level.SoundEntity2;
 		heardit = true;
@@ -3818,7 +3822,7 @@ bool CMonster::FindTarget()
 	}
 	else	// heardit
 	{
-		if (Entity->SpawnFlags & 1)
+		if (Entity->SpawnFlags & MONSTER_AMBUSH)
 		{
 			if (!IsVisible (Entity, client))
 				return false;

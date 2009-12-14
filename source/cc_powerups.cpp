@@ -257,8 +257,8 @@ void CBackPack::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	// Increase their max ammo, if applicable
 	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
 	{
-		if (other->Client.Persistent.maxAmmoValues[i] < maxBackpackAmmoValues[i])
-			other->Client.Persistent.maxAmmoValues[i] = maxBackpackAmmoValues[i];
+		if (other->Client.Persistent.MaxAmmoValues[i] < maxBackpackAmmoValues[i])
+			other->Client.Persistent.MaxAmmoValues[i] = maxBackpackAmmoValues[i];
 	}
 
 	// Give them some more ammo
@@ -396,8 +396,8 @@ void CBandolier::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	// Increase their max ammo, if applicable
 	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
 	{
-		if (other->Client.Persistent.maxAmmoValues[i] < maxBandolierAmmoValues[i])
-			other->Client.Persistent.maxAmmoValues[i] = maxBandolierAmmoValues[i];
+		if (other->Client.Persistent.MaxAmmoValues[i] < maxBandolierAmmoValues[i])
+			other->Client.Persistent.MaxAmmoValues[i] = maxBandolierAmmoValues[i];
 	}
 
 	// Give them some more ammo

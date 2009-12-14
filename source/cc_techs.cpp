@@ -195,7 +195,7 @@ public:
 				{
 					CAmmo *Ammo = Player->Client.Persistent.Weapon->Item->Ammo;
 	
-					if (Ammo && Player->Client.Persistent.Inventory.Has(Ammo) && Player->Client.Persistent.Inventory.Has(Ammo) < Player->Client.Persistent.maxAmmoValues[Ammo->Tag])
+					if (Ammo && Player->Client.Persistent.Inventory.Has(Ammo) && Player->Client.Persistent.Inventory.Has(Ammo) < Player->Client.Persistent.MaxAmmoValues[Ammo->Tag])
 					{			
 						noise = true;
 						Ammo->AddAmmo (Player, RegenAmts[Ammo->Tag]);

@@ -232,6 +232,8 @@ CBlasterProjectile
 ================
 */
 
+#define HYPER_FLAG		1
+
 CBlasterProjectile::CBlasterProjectile () :
 CFlyMissileProjectile(),
 CTouchableEntity(),
@@ -268,7 +270,7 @@ void CBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & 1) ? MOD_HYPERBLASTER : MOD_BLASTER);
+		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & HYPER_FLAG) ? MOD_HYPERBLASTER : MOD_BLASTER);
 	else
 		CTempEnt_Splashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin);
 
@@ -295,7 +297,7 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->Damage = damage;
 	Bolt->ClassName = "bolt";
 	if (isHyper)
-		Bolt->SpawnFlags = 1;
+		Bolt->SpawnFlags = HYPER_FLAG;
 	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
 	Bolt->GetSolid() = SOLID_BBOX;
 	Bolt->GetMins().Clear ();

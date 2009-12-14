@@ -140,10 +140,10 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 	for (sint32 i = 1; i <= game.maxclients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
-		if (Player->Client.Persistent.state == SVCS_FREE)
+		if (Player->Client.Persistent.State == SVCS_FREE)
 			continue;
 
-		if (Player->Client.Persistent.state != SVCS_SPAWNED && !(channel & CHAN_RELIABLE))
+		if (Player->Client.Persistent.State != SVCS_SPAWNED && !(channel & CHAN_RELIABLE))
 			continue;
 
 		if (usePHS)

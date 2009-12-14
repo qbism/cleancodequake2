@@ -94,6 +94,10 @@ LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 
 #include "cc_brushmodels.h"
 
+#define TRIGGER_MONSTER		1
+#define TRIGGER_NOT_PLAYER	2
+#define TRIGGER_TRIGGERED	4
+
 class CTriggerBase : public CMapEntity, public CBrushModel, public CTouchableEntity, public CUsableEntity
 {
 public:
@@ -160,12 +164,12 @@ public:
 
 		if(other->EntityFlags & ENT_PLAYER)
 		{
-			if (SpawnFlags & 2)
+			if (SpawnFlags & TRIGGER_NOT_PLAYER)
 				return;
 		}
 		else if (other->EntityFlags & ENT_MONSTER)
 		{
-			if (!(SpawnFlags & 1))
+			if (!(SpawnFlags & TRIGGER_MONSTER))
 				return;
 		}
 		else
@@ -282,6 +286,7 @@ sounds
 4)
 set "message" to text string
 */
+
 class CTriggerMultiple : public CTriggerBase
 {
 public:
@@ -334,7 +339,7 @@ public:
 		if (!Wait)
 			Wait = 2;
 
-		if (SpawnFlags & 4)
+		if (SpawnFlags & TRIGGER_TRIGGERED)
 		{
 			GetSolid() = SOLID_NOT;
 			ActivateUse = true;
@@ -395,6 +400,7 @@ sounds
 
 "message"	string to be displayed when triggered
 */
+
 class CTriggerOnce : public CTriggerMultiple
 {
 public:
@@ -419,7 +425,7 @@ public:
 		if (SpawnFlags & 1)
 		{
 			SpawnFlags &= ~1;
-			SpawnFlags |= 4;
+			SpawnFlags |= TRIGGER_TRIGGERED;
 
 			vec3f origin = GetMins().MultiplyAngles (0.5f, GetSize());
 			MapPrint (MAPPRINT_WARNING, this, origin, "Fixed TRIGGERED flag\n");
@@ -459,6 +465,9 @@ If nomessage is not set, t will print "1 more.. " etc when triggered and "sequen
 
 After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
 */
+
+#define COUNTER_NO_MESSAGE	1
+
 class CTriggerCounter : public CTriggerMultiple
 {
 public:
@@ -495,7 +504,7 @@ public:
 
 		if (--Count)
 		{
-			if (! (SpawnFlags & 1))
+			if (!(SpawnFlags & COUNTER_NO_MESSAGE))
 			{
 				if (IsClient)
 					Player->PrintToClient (PRINT_CENTER, "%i more to go...", Count);
@@ -504,12 +513,13 @@ public:
 			return;
 		}
 		
-		if (! (SpawnFlags & 1))
+		if (!(SpawnFlags & COUNTER_NO_MESSAGE))
 		{
 			if (IsClient)
 				Player->PrintToClient (PRINT_CENTER, "Sequence completed!");
 			activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 		}
+
 		Activator = activator;
 		Trigger ();
 	};
@@ -626,6 +636,7 @@ public:
 					}
 				}
 			}
+
 			if (SpawnFlags & PUSH_ONCE)
 				Free ();
 		}
@@ -702,6 +713,13 @@ NO_PROTECTION	*nothing* stops the damage
 "dmg"			default 5 (whole numbers only)
 
 */
+
+#define HURT_START_OFF		1
+#define HURT_TOGGLE			2
+#define HURT_SILENT			4
+#define HURT_NO_PROTECTION	8
+#define HURT_SLOW			16
+
 class CTriggerHurt : public CTriggerMultiple
 {
 public:
@@ -735,8 +753,8 @@ public:
 		if (NextHurt > level.Frame)
 			return;
 
-		NextHurt = level.Frame + ((SpawnFlags & 16) ? 10 : FRAMETIME);
-		if (!(SpawnFlags & 4))
+		NextHurt = level.Frame + ((SpawnFlags & HURT_SLOW) ? 10 : FRAMETIME);
+		if (!(SpawnFlags & HURT_SILENT))
 		{
 			if ((level.Frame % 10) == 0)
 				other->PlaySound (CHAN_AUTO, NoiseIndex);
@@ -755,7 +773,7 @@ public:
 		GetSolid() = ((GetSolid() == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT);
 		Link ();
 
-		if (!(SpawnFlags & 2))
+		if (!(SpawnFlags & HURT_TOGGLE))
 			ActivateUse = true;
 	};
 
@@ -768,9 +786,8 @@ public:
 		if (!Damage)
 			Damage = 5;
 
-		GetSolid() = ((SpawnFlags & 1) ? SOLID_NOT : SOLID_TRIGGER);
-
-		ActivateUse = (SpawnFlags & 2) ? false : true;
+		GetSolid() = ((SpawnFlags & HURT_START_OFF) ? SOLID_NOT : SOLID_TRIGGER);
+		ActivateUse = (SpawnFlags & HURT_TOGGLE) ? false : true;
 		Link ();
 	};
 };

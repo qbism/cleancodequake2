@@ -215,7 +215,7 @@ void CForEachPlayerCallback::Query (bool MustBeInUse)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
-		if (MustBeInUse && (!Player->GetInUse() || Player->Client.Persistent.state != SVCS_SPAWNED))
+		if (MustBeInUse && (!Player->GetInUse() || Player->Client.Persistent.State != SVCS_SPAWNED))
 			continue;
 
 		Index = i;

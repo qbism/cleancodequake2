@@ -776,8 +776,17 @@ LINK_CLASSNAME_TO_CLASS ("monster_commander_body", CCommanderBody);
 /*QUAKED misc_deadsoldier (1 .5 0) (-16 -16 0) (16 16 16) ON_BACK ON_STOMACH BACK_DECAP FETAL_POS SIT_DECAP IMPALED
 This is the dead player model. Comes in 6 exciting different poses!
 */
+
+#define DEADSOLDIER_ON_BACK			1
+#define DEADSOLDIER_ON_STOMACH		2
+#define DEADSOLDIER_BACK_DECAP		4
+#define DEADSOLDIER_FETAL_POS		8
+#define DEADSOLDIER_SIT_DECAP		16
+#define DEADSOLDIER_IMPALED			32
+
 vec3f VelocityForDamage (sint32 damage);
 void ClipGibVelocity (CPhysicsEntity *ent);
+
 class CMiscDeadSoldier : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CTossProjectile
 {
 public:
@@ -918,15 +927,15 @@ public:
 		State.GetModelIndex() = ModelIndex ("models/deadbods/dude/tris.md2");
 
 		// Defaults to frame 0
-		if (SpawnFlags & 2)
+		if (SpawnFlags & DEADSOLDIER_ON_STOMACH)
 			State.GetFrame() = 1;
-		else if (SpawnFlags & 4)
+		else if (SpawnFlags & DEADSOLDIER_BACK_DECAP)
 			State.GetFrame() = 2;
-		else if (SpawnFlags & 8)
+		else if (SpawnFlags & DEADSOLDIER_FETAL_POS)
 			State.GetFrame() = 3;
-		else if (SpawnFlags & 16)
+		else if (SpawnFlags & DEADSOLDIER_SIT_DECAP)
 			State.GetFrame() = 4;
-		else if (SpawnFlags & 32)
+		else if (SpawnFlags & DEADSOLDIER_IMPALED)
 			State.GetFrame() = 5;
 		else
 			State.GetFrame() = 0;

@@ -152,7 +152,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (printLevel < Player->Client.Respawn.MessageLevel)
 			continue;
-		if (Player->Client.Persistent.state != SVCS_SPAWNED)
+		if (Player->Client.Persistent.State != SVCS_SPAWNED)
 			continue;
 
 

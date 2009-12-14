@@ -50,6 +50,8 @@ so, the basic time between firing is a random time between
 These can used but not touched.
 */
 
+#define TIMER_START_ON		1
+
 CFuncTimer::CFuncTimer () :
 	CBaseEntity (),
 	CMapEntity (),
@@ -148,7 +150,7 @@ void CFuncTimer::Spawn ()
 		//gi.dprintf("func_timer at (%f %f %f) has random >= wait\n", self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 	}
 
-	if (SpawnFlags & 1)
+	if (SpawnFlags & TIMER_START_ON)
 	{
 		// lots of backwards compatibility
 		NextThink = level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
@@ -319,6 +321,11 @@ If START_OFF, this entity must be used before it starts
 			2 "xx:xx:xx"
 */
 
+#define CLOCK_TIMER_UP		1
+#define CLOCK_TIMER_DOWN	2
+#define CLOCK_START_OFF		4
+#define CLOCK_MULTI_USE		8
+
 #define CLOCK_MESSAGE_SIZE	16
 
 CFuncClock::CFuncClock () :
@@ -394,12 +401,12 @@ void		CFuncClock::LoadFields (CFile &File)
 void CFuncClock::Reset ()
 {
 	Activator = NULL;
-	if (SpawnFlags & 1)
+	if (SpawnFlags & CLOCK_TIMER_UP)
 	{
 		Seconds = 0;
 		Wait = Count;
 	}
-	else if (SpawnFlags & 2)
+	else if (SpawnFlags & CLOCK_TIMER_DOWN)
 	{
 		Seconds = Count;
 		Wait = 0;
@@ -442,12 +449,12 @@ void CFuncClock::Think ()
 			return;
 	}
 
-	if (SpawnFlags & 1)
+	if (SpawnFlags & CLOCK_TIMER_UP)
 	{
 		FormatCountdown ();
 		Seconds++;
 	}
-	else if (SpawnFlags & 2)
+	else if (SpawnFlags & CLOCK_TIMER_DOWN)
 	{
 		FormatCountdown ();
 		Seconds--;
@@ -471,8 +478,8 @@ void CFuncClock::Think ()
 	String->Message = Message;
 	String->Use (this, this);
 
-	if (((SpawnFlags & 1) && (Seconds > Wait)) ||
-		((SpawnFlags & 2) && (Seconds < Wait)))
+	if (((SpawnFlags & CLOCK_TIMER_UP) && (Seconds > Wait)) ||
+		((SpawnFlags & CLOCK_TIMER_DOWN) && (Seconds < Wait)))
 	{
 		if (CountTarget)
 		{
@@ -485,12 +492,12 @@ void CFuncClock::Think ()
 			Message = savemessage;
 		}
 
-		if (!(SpawnFlags & 8))
+		if (!(SpawnFlags & CLOCK_MULTI_USE))
 			return;
 
 		Reset ();
 
-		if (SpawnFlags & 4)
+		if (SpawnFlags & CLOCK_START_OFF)
 			return;
 	}
 
@@ -502,7 +509,7 @@ void CFuncClock::Use (CBaseEntity *other, CBaseEntity *activator)
 	if (!Usable)
 		return;
 
-	if (!(SpawnFlags & 8))
+	if (!(SpawnFlags & CLOCK_MULTI_USE))
 		Usable = false;
 	
 	if (Activator)
@@ -521,19 +528,19 @@ void CFuncClock::Spawn ()
 		return;
 	}
 
-	if ((SpawnFlags & 2) && (!Count))
+	if ((SpawnFlags & CLOCK_TIMER_DOWN) && (!Count))
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No count\n");
 		Free ();
 		return;
 	}
 
-	if ((SpawnFlags & 1) && (!Count))
+	if ((SpawnFlags & CLOCK_TIMER_UP) && (!Count))
 		Count = 3600;
 
 	Reset ();
 
-	if (SpawnFlags & 4)
+	if (SpawnFlags & CLOCK_START_OFF)
 		Usable = true;
 	else
 		NextThink = level.Frame + 10;

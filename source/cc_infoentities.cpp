@@ -1095,6 +1095,8 @@ Pathtarget: gets used when an entity that has
 	this path_corner targeted touches it
 */
 
+#define CORNER_TELEPORT		1
+
 CPathCorner::CPathCorner () :
   CBaseEntity(),
   CMapEntity (),
@@ -1141,7 +1143,7 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 
 	CBaseEntity *TempNextTarget = (NextTargets.size()) ? NextTargets[irandom(NextTargets.size())] : NULL;
 
-	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & 1))
+	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & CORNER_TELEPORT))
 	{
 		other->State.GetOrigin() = (TempNextTarget->State.GetOrigin() + vec3f(0, 0, TempNextTarget->GetMins().Z - other->GetMins().Z));
 		TempNextTarget = entity_cast<CPathCorner>(TempNextTarget)->NextTargets[irandom(NextTargets.size())];
@@ -1276,7 +1278,7 @@ public:
 			}
 			Target = NULL;
 		}
-		else if ((SpawnFlags & 1) && !(other->Flags & (FL_SWIM|FL_FLY)))
+		else if ((SpawnFlags & CORNER_TELEPORT) && !(other->Flags & (FL_SWIM|FL_FLY)))
 		{
 			if (Monster)
 			{
@@ -1489,6 +1491,9 @@ LINK_CLASSNAME_TO_CLASS ("light", CLight);
 speed		How many seconds the ramping will take
 message		two letters; starting lightlevel and ending lightlevel
 */
+
+#define LIGHTRAMP_TOGGLE	1
+
 class CTargetLightRamp : public CMapEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
@@ -1535,7 +1540,7 @@ public:
 
 		if ((level.Frame - TimeStamp) < Speed)
 			NextThink = level.Frame + FRAMETIME;
-		else if (SpawnFlags & 1)
+		else if (SpawnFlags & LIGHTRAMP_TOGGLE)
 		{
 			sint32 temp = RampMessage[0];
 			RampMessage[0] = RampMessage[1];

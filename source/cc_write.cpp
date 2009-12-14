@@ -199,7 +199,7 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
-			if (!Player || !Player->GetInUse() || (Player->Client.Persistent.state != SVCS_SPAWNED))
+			if (!Player || !Player->GetInUse() || (Player->Client.Persistent.State != SVCS_SPAWNED))
 				continue;
 
 			if ((castFlags & CASTFLAG_PVS) && !InVisibleArea(Origin, Player->State.GetOrigin()))
