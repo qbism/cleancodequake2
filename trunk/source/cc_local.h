@@ -45,7 +45,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_shared.h"
 
 // the "gameversion" client command will print this plus compile date
-#define GAMENAME	"baseq2"
+#define GAMENAME	"arquade"
 
 //==================================================================
 
