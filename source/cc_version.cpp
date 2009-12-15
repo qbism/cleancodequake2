@@ -50,6 +50,7 @@ void CheckVersionReturnance ();
 #include "cc_version.h"
 
 #define VERSION_PATH GAMENAME"/version.ver"
+#define VERSION_URL "http://alteredsoftworks.com/cleancode/version.ver"
 
 void WriteVersion ()
 {
@@ -167,7 +168,7 @@ void CheckNewVersion ()
 
 	if (iInternetHandle)
 	{
-		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, "http://alteredsoftworks.com/cleancode/version.ver", NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
+		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, VERSION_URL, NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
 		if (iInternetFile)
 		{
 			// Start writing the file
@@ -244,8 +245,8 @@ void CheckVersionReturnance ()
 			DebugPrintf (
 			"==================================\n"
 			"*****************************\n"
-			"There is an update available for Cl	eanCode!\n"
-			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly.\n"
+			"There is an update available for CleanCode!\n"
+			"Please go to http://code.google.com/p/cleancodequake2 and update accordingly\nor run the auto updater."
 			"Your version:   "CLEANCODE_VERSION_PRINT"\n"
 			"Update version: "CLEANCODE_VERSION_PRINT"\n"
 			"*****************************\n"

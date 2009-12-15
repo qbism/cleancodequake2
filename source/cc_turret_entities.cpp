@@ -231,7 +231,7 @@ void CTurretBreach::Think ()
 		CAvelocityForEachTeamChainCallback (AngularVelocity.Y).Query (this);
 
 		// if we have adriver, adjust his velocities
-		if (GetOwner())
+		if (GetOwner() && (GetOwner()->EntityFlags & ENT_MONSTER))
 		{
 			float	angle;
 			float	target_z;

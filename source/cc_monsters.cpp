@@ -1456,6 +1456,8 @@ void CMonsterEntity::Use (CBaseEntity *other, CBaseEntity *activator)
 			return;
 		if (Health <= 0)
 			return;
+		if (!activator)
+			return;
 		if (activator->Flags & FL_NOTARGET)
 			return;
 		if (!(activator->EntityFlags & ENT_PLAYER) && !(Monster->AIFlags & AI_GOOD_GUY))
