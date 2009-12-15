@@ -1033,8 +1033,6 @@ void CBullet::DoEffect	(vec3f &start, vec3f &end, bool water)
 {
 	if (water)
 		CTempEnt_Trails::BubbleTrail(start, end);
-	else
-		CTempEnt_Trails::RailTrail(start, end);
 }
 
 void CBullet::DoWaterHit	(CTrace *Trace)
