@@ -110,6 +110,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Define this if you want to use include guards.
 #define INCLUDE_GUARDS						1
 
+// Generally keep this off if it's not CleanCode
+#define NO_VERSION_CHECKING					0
+
 #ifdef INCLUDE_GUARDS
 	#define __STR2__(str) #str
 	#define __STR1__(str) __STR2__(str)

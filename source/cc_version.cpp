@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+#include "cc_version.h"
+
+#if !NO_VERSION_CHECKING
 
 #define VC_NONE		0
 #define VC_WININET	1
@@ -47,7 +50,6 @@ void CheckVersionReturnance ();
 #ifdef ALLOW_VERSION_CHECKING
 #include "curl\curl.h"
 #endif
-#include "cc_version.h"
 
 #define VERSION_PATH GAMENAME"/version.ver"
 #define VERSION_URL "http://alteredsoftworks.com/cleancode/version.ver"
@@ -88,21 +90,6 @@ void VerifyVersionFile ()
 	}
 }
 
-void Cmd_CCVersion_t (CPlayerEntity *Player)
-{
-	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
-}
-
-void CheckNewVersion ();
-void SvCmd_CCVersion_t ()
-{
-	if (ArgGets (2).empty())
-		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
-#if (VERSION_CHECKING != VC_NONE)
-	else
-		CheckNewVersion ();
-#endif
-}
 /*
 ======================================
 BLANKS
@@ -480,5 +467,24 @@ void InitVersion ()
 		VerifyVersionFile ();
 	
 	CheckNewVersion ();
+#endif
+}
+
+#endif
+
+void Cmd_CCVersion_t (CPlayerEntity *Player)
+{
+	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+}
+
+void SvCmd_CCVersion_t ()
+{
+#if !NO_VERSION_CHECKING
+	if (ArgGets (2).empty())
+#endif
+		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+#if !NO_VERSION_CHECKING && (VERSION_CHECKING != VC_NONE)
+	else
+		CheckNewVersion ();
 #endif
 }

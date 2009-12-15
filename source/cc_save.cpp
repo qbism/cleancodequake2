@@ -502,7 +502,9 @@ void CGameAPI::ReadGame (char *filename)
 	ReadClients (File);
 
 	Bans.LoadFromFile ();
+#if !NO_VERSION_CHECKING
 	InitVersion ();
+#endif
 
 	READ_MAGIC
 }
