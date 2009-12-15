@@ -443,9 +443,11 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	else
 		DebugPrintf ("Demo detected, skipping map init.\n");
 
+#if !NO_VERSION_CHECKING
 	InitVersion ();
+#endif
 	DebugPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
 
 	if (FreeIt)
-		QDelete[] entities;
+		QDelete entities;
 }

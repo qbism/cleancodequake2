@@ -263,6 +263,25 @@ public:
 	}
 };
 
+// Arcade Quake II
+class CCameraFollowEntity : public CBaseEntity
+{
+public:
+	CCameraFollowEntity () :
+	  CBaseEntity ()
+	{
+	}
+
+	CCameraFollowEntity (int Index) :
+	  CBaseEntity (Index)
+	{
+	}
+
+	ENTITYFIELDS_NONSAVABLE
+	const char *__GetName () { return "NO!"; }
+};
+// Arcade Quake II
+
 // client data that stays across deathmatch respawns
 class CRespawnData
 {
@@ -309,6 +328,13 @@ public:
 
 	CMenuState			MenuState;
 
+	// Arcade Quake II
+	CCameraFollowEntity		*CameraPlayer;
+	float					CameraDistance;
+	int						AimType;
+	bool					AimingLeft;
+	// Arcade Quake II
+	
 #if CLEANCTF_ENABLED
 //ZOID
 	struct respawn_CTF_t
@@ -535,6 +561,15 @@ public:
 		FrameNumber_t	SoundTime;
 		FrameNumber_t	LastTechMessage;
 	} Tech;
+
+	// Arcade Quake II
+	bool			BackPedaling;
+
+	struct doubleTap_t
+	{
+		FrameNumber_t	leftVals[2], rightVals[2];
+	} DoubleTap;
+	// Arcade Quake II
 
 	CClient (gclient_t *client);
 

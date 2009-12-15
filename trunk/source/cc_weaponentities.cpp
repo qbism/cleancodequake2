@@ -1175,7 +1175,7 @@ void CGrappleEntity::GrappleDrawCable()
 
 	// adjust start for beam origin being in middle of a segment
 	end = State.GetOrigin();
-	CTempEnt_Trails::GrappleCable (origin, end, Player->State.GetNumber(), offset);
+	CTempEnt_Trails::GrappleCable (origin, end, Player->Client.Respawn.CameraPlayer->State.GetNumber(), offset);
 };
 
 void CGrappleEntity::GrapplePull()

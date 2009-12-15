@@ -66,7 +66,7 @@ bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *ent)
 void CGrenadeLauncher::Fire (CPlayerEntity *ent)
 {
 	vec3f	offset (8, 8, ent->ViewHeight-8), forward, right, start;
-	const sint32	damage = (isQuad) ? 480 : 120;
+	const sint32	damage = (isQuad) ? 320 : 80;
 	const float	radius = 160;
 
 	FireAnimation (ent);
@@ -77,7 +77,7 @@ void CGrenadeLauncher::Fire (CPlayerEntity *ent)
 	ent->Client.KickOrigin = forward * -2;
 	ent->Client.KickAngles.X = -1;
 
-	CGrenade::Spawn (ent, start, forward, damage, 600, 2.5f, radius);
+	CGrenade::Spawn (ent, start, forward, damage, 600, 3.2f, radius);
 
 	Muzzle (ent, MZ_GRENADE);
 	AttackSound (ent);

@@ -77,11 +77,11 @@ void CSuperShotgun::Fire (CPlayerEntity *ent)
 	ent->P_ProjectSource (offset, forward, right, start);
 
 	vec3f v = ent->Client.ViewAngle;
-	v.Y -= 5;
+	v.Y -= 1;
 	v.ToVectors (&forward, NULL, NULL);
 	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
 
-	v.Y += 10;
+	v.Y += 2;
 	v.ToVectors (&forward, NULL, NULL);
 	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
 

@@ -42,6 +42,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CLEANCODE_VERSION_PRINT			"\"%s.%u.%04u.%05u\""
 #define CLEANCODE_VERSION_PRINT_ARGS	CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N
 
+#if !NO_VERSION_CHECKING
 CC_ENUM (uint8, EVersionComparison)
 {
 	VERSION_SAME,
@@ -64,10 +65,12 @@ inline EVersionComparison CompareVersion (const char *Prefix, uint8 Major, uint1
 	else
 		return VERSION_OLDER;
 }
+void InitVersion ();
+
+#endif
 
 void Cmd_CCVersion_t (CPlayerEntity *Player);
 void SvCmd_CCVersion_t ();
-void InitVersion ();
 
 #else
 FILE_WARNING

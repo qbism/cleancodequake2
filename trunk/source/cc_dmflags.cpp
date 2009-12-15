@@ -56,7 +56,7 @@ void dmFlagsConfig::Reset ()
 
 void dmFlagsConfig::UpdateFlags (sint32 wantedFlags)
 {
-	dmFlagsConfig();
+	Reset();
 	if (wantedFlags & DF_NO_HEALTH)
 		dfNoHealth = true;
 	if (wantedFlags & DF_NO_ITEMS)

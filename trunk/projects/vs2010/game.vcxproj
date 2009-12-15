@@ -236,7 +236,7 @@
     <PostBuildEvent>
       <Message>Copies the output to your Quake 2 baseq2 dir</Message>
       <Command>echo Copying to Quake 2 Path...
-copy $(TargetPath) "e:\quake2\baseq2\gamex86.dll"
+copy $(TargetPath) "e:\quake2\arquade\gamex86.dll"
 copy $(TargetPath) "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
 
 echo Done!

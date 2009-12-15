@@ -240,7 +240,7 @@ void SvCmd_Dump_f ()
 	if (!File.Valid())
 		return;
 
-	File.Write (gEntString);
+	File.Print ("%s", gEntString);
 }
 
 bool requestedBreak = false;

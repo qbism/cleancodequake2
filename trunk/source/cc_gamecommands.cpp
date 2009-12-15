@@ -535,13 +535,48 @@ void GCTFSay_Team (CPlayerEntity *ent);
 void Cmd_MenuLeft_t (CPlayerEntity *ent);
 void Cmd_MenuRight_t (CPlayerEntity *ent);
 
+// Arcade Quake II
+void Cmd_Aim_Up (CPlayerEntity *ent)
+{
+	ent->Client.Respawn.AimType = 1;
+}
+void Cmd_Aim_Down (CPlayerEntity *ent)
+{
+	ent->Client.Respawn.AimType = 2;
+}
+void Cmd_AAim_Up (CPlayerEntity *ent)
+{
+	ent->Client.Respawn.AimType = 3;
+}
+void Cmd_AAim_Down (CPlayerEntity *ent)
+{
+	ent->Client.Respawn.AimType = 4;
+}
+void Cmd_Aim_Reset (CPlayerEntity *ent)
+{
+	ent->Client.Respawn.AimType = 0;
+}
+
+void Cmd_CamDist (CPlayerEntity *ent)
+{
+	float arg = ArgGetf(1);
+
+	if (arg < 0)
+		arg = 1000;
+	else if (arg > 8192)
+		arg = 8192;
+
+	ent->Client.Respawn.CameraDistance = arg;
+}
+// Arcade Quake II
+
 void Cmd_Register ()
 {
 	// These commands are generic, and can be executed any time
 	// during play, even during intermission and by spectators.
 	Cmd_AddCommand ("players",				Cmd_Players_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("say",					GCmd_Say_f,				CMD_SPECTATOR);
-	Cmd_AddCommand ("Score",				Cmd_Score_f,			CMD_SPECTATOR);
+	Cmd_AddCommand ("score",				Cmd_Score_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("help",					Cmd_Help_f,				CMD_SPECTATOR);
 	Cmd_AddCommand ("putaway",				Cmd_PutAway_f,			CMD_SPECTATOR);
 	Cmd_AddCommand ("playerlist",			
@@ -575,6 +610,15 @@ void Cmd_Register ()
 #if _DEBUG
 	AddTestDebugCommands ();
 #endif
+
+	// Arcade Quake II
+	Cmd_AddCommand ("aimup",					Cmd_Aim_Up);
+	Cmd_AddCommand ("aimdown",					Cmd_Aim_Down);
+	Cmd_AddCommand ("aimaup",					Cmd_AAim_Up);
+	Cmd_AddCommand ("aimadown",					Cmd_AAim_Down);
+	Cmd_AddCommand ("resetaim",					Cmd_Aim_Reset);
+	Cmd_AddCommand ("camdist",					Cmd_CamDist);
+	// Arcade Quake II
 
 	// And last but certainly not least..
 	Cmd_AddCommand ("god",					Cmd_God_f,				CMD_CHEAT);

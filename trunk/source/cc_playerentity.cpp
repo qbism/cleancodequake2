@@ -336,10 +336,52 @@ BeginServerFrame
 This will be called for all players
 ==============
 */
+// Arcade Quake II
+void CreateFollowDude (CPlayerEntity *Owner)
+{
+	Owner->Client.Respawn.CameraPlayer = QNew (com_levelPool, 0) CCameraFollowEntity;
+
+	Owner->Client.Respawn.CameraPlayer->State.GetAngles() = Owner->State.GetAngles();
+	Owner->Client.Respawn.CameraPlayer->State.GetEffects() = Owner->State.GetEffects();
+	Owner->Client.Respawn.CameraPlayer->State.GetFrame() = Owner->State.GetFrame();
+	Owner->Client.Respawn.CameraPlayer->State.GetModelIndex() = Owner->State.GetModelIndex();
+	Owner->Client.Respawn.CameraPlayer->State.GetModelIndex(2) = Owner->State.GetModelIndex(2);
+	Owner->Client.Respawn.CameraPlayer->State.GetModelIndex(3) = Owner->State.GetModelIndex(3);
+	Owner->Client.Respawn.CameraPlayer->State.GetModelIndex(4) = Owner->State.GetModelIndex(4);
+	Owner->Client.Respawn.CameraPlayer->State.GetOldOrigin() = Owner->State.GetOldOrigin();
+	Owner->Client.Respawn.CameraPlayer->State.GetOrigin() = Owner->State.GetOrigin();
+	Owner->Client.Respawn.CameraPlayer->State.GetRenderEffects() = Owner->State.GetRenderEffects();
+	Owner->Client.Respawn.CameraPlayer->State.GetSkinNum() = Owner->State.GetSkinNum();
+	Owner->Client.Respawn.CameraPlayer->State.GetEffects() |= RF_FRAMELERP;
+	Owner->Client.Respawn.CameraPlayer->Link ();
+}
+// Arcade Quake II
+
 void CPlayerEntity::BeginServerFrame ()
 {
 	if (level.IntermissionTime)
 		return;
+		
+	// Arcade Quake II
+	if (!Client.Respawn.CameraPlayer)
+		CreateFollowDude(this);
+	else
+	{
+		Client.Respawn.CameraPlayer->Link();
+		Client.Respawn.CameraPlayer->State.GetAngles() = State.GetAngles();
+		Client.Respawn.CameraPlayer->State.GetEffects() = State.GetEffects();
+		Client.Respawn.CameraPlayer->State.GetFrame() = State.GetFrame();
+		Client.Respawn.CameraPlayer->State.GetModelIndex() = State.GetModelIndex();
+		Client.Respawn.CameraPlayer->State.GetModelIndex(2) = State.GetModelIndex(2);
+		Client.Respawn.CameraPlayer->State.GetModelIndex(3) = State.GetModelIndex(3);
+		Client.Respawn.CameraPlayer->State.GetModelIndex(4) = State.GetModelIndex(4);
+		Client.Respawn.CameraPlayer->State.GetOldOrigin() = State.GetOldOrigin();
+		Client.Respawn.CameraPlayer->State.GetOrigin() = State.GetOrigin();
+		Client.Respawn.CameraPlayer->State.GetRenderEffects() = State.GetRenderEffects();
+		Client.Respawn.CameraPlayer->State.GetSkinNum() = State.GetSkinNum();
+		Client.Respawn.CameraPlayer->State.GetEffects() |= RF_FRAMELERP;
+	}
+	// Arcade Quake II
 
 	if ((game.mode & GAME_DEATHMATCH) &&  
 #if CLEANCTF_ENABLED
@@ -576,11 +618,14 @@ void CPlayerEntity::PutInServer ()
 	GetSolid() = SOLID_BBOX;
 	DeadFlag = false;
 	AirFinished = level.Frame + 120;
-	GetClipmask() = CONTENTS_MASK_PLAYERSOLID;
+	// Arcade Quake II
+	GetClipmask() = CONTENTS_MASK_SOLID|CONTENTS_MONSTER;
+	// Arcade Quake II
 	WaterInfo.Level = WATER_NONE;
 	WaterInfo.Type = 0;
 	Flags &= ~FL_NO_KNOCKBACK;
 	GetSvFlags() &= ~SVF_DEADMONSTER;
+	GetSvFlags() |= SVF_NOCLIENT;
 	if (!Client.Respawn.MenuState.ent)
 		Client.Respawn.MenuState.Initialize (this);
 
@@ -610,8 +655,6 @@ void CPlayerEntity::PutInServer ()
 
 		Client.PlayerState.GetFov () = fov;
 	}
-
-	//client->playerState.gunIndex = ModelIndex(client->Persistent.weapon->view_model);
 
 	// clear entity state values
 	State.GetEffects() = 0;
@@ -1037,79 +1080,11 @@ SV_CalcViewOffset
 */
 inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &up, float xyspeed)
 {
-	float		bob;
-	float		ratio;
 	vec3f		v (0, 0, 0);
-
-	// if dead, fix the angle and don't add any kick
-	if (DeadFlag)
-	{
-		Client.PlayerState.GetViewAngles().Set (-15, Client.KillerYaw, 40);
-		Client.PlayerState.GetKickAngles().Clear ();
-	}
-	else
-	{
-		// Base angles
-		vec3f angles = Client.KickAngles;
-
-		// add angles based on damage kick
-		ratio = (float)(Client.ViewDamageTime - level.Frame) / DAMAGE_TIME;
-		if (ratio < 0)
-		{
-			ratio = 0;
-			Client.ViewDamage.Clear ();
-		}
-		angles.X += ratio * Client.ViewDamage.X;
-		angles.Z += ratio * Client.ViewDamage.Y;
-
-		// add pitch based on fall kick
-		ratio = (float)(Client.FallTime - level.Frame) / FALL_TIME;
-		if (ratio < 0)
-			ratio = 0;
-		angles.X += ratio * Client.FallValue;
-
-		// add angles based on velocity
-		float delta = Velocity.Dot (forward);
-		angles.X += delta*run_pitch->Float();
-		
-		delta = Velocity.Dot (right);
-		angles.Z += delta*run_roll->Float();
-
-		// add angles based on bob
-
-		delta = bobfracsin * bob_pitch->Float() * xyspeed;
-		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
-			delta *= 6;		// crouching
-		angles.X += delta;
-		delta = bobfracsin * bob_roll->Float() * xyspeed;
-		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
-			delta *= 6;		// crouching
-		if (bobcycle & 1)
-			delta = -delta;
-		angles.Z += delta;
-
-		Client.PlayerState.GetKickAngles() = angles;
-	}
-
 //===================================
 
 	// add view height
 	v.Z += ViewHeight;
-
-	// add fall height
-	ratio = (float)(Client.FallTime - level.Frame) / FALL_TIME;
-	if (ratio < 0)
-		ratio = 0;
-	v.Z -= ratio * Client.FallValue * 0.4;
-
-	// add bob height
-	bob = bobfracsin * xyspeed * bob_up->Float();
-	if (bob > 6)
-		bob = 6;
-	v.Z += bob;
-
-	// add kick offset
-	v += Client.KickOrigin;
 
 	// absolutely bound offsets
 	// so the view can never be outside the player box
@@ -1361,7 +1336,7 @@ inline void CPlayerEntity::FallingDamage ()
 
 	if (delta < 15)
 	{
-		State.GetEvent() = EV_FOOTSTEP;
+		Client.Respawn.CameraPlayer->State.GetEvent() = EV_FOOTSTEP;
 		return;
 	}
 
@@ -1373,7 +1348,7 @@ inline void CPlayerEntity::FallingDamage ()
 	if (delta > 30)
 	{
 		if (Health > 0)
-			State.GetEvent() = (delta >= 55) ? EV_FALLFAR : EV_FALL;
+			Client.Respawn.CameraPlayer->State.GetEvent() = (delta >= 55) ? EV_FALLFAR : EV_FALL;
 
 		PainDebounceTime = level.Frame;	// no normal pain sound
 		sint32 damage = (delta-30)/2;
@@ -1387,7 +1362,7 @@ inline void CPlayerEntity::FallingDamage ()
 	}
 	else
 	{
-		State.GetEvent() = EV_FALLSHORT;
+		Client.Respawn.CameraPlayer->State.GetEvent() = EV_FALLSHORT;
 		return;
 	}
 }
@@ -1622,13 +1597,13 @@ G_SetClientEvent
 */
 inline void CPlayerEntity::SetClientEvent (float xyspeed)
 {
-	if (State.GetEvent())
+	if (!Client.Respawn.CameraPlayer || Client.Respawn.CameraPlayer->State.GetEvent())
 		return;
 
 	if ( GroundEntity && xyspeed > 225)
 	{
 		if ( (sint32)(Client.BobTime+bobmove) != bobcycle )
-			State.GetEvent() = EV_FOOTSTEP;
+			Client.Respawn.CameraPlayer->State.GetEvent() = EV_FOOTSTEP;
 	}
 }
 
@@ -1662,6 +1637,18 @@ inline void CPlayerEntity::SetClientSound ()
 		State.GetSound() = 0;
 }
 
+// Arcade Quake II
+#define MAX_STEP_FRACTION 0.80
+static const vec3f downEnd = vec3f(0, 0, -2);
+bool PlayerOnFloor (CPlayerEntity *Player)
+{
+	vec3f end = (Player->State.GetOrigin().MultiplyAngles (50, downEnd));
+	return !
+		((Player->Client.OldVelocity.Z > 0 || Player->Velocity.Z > 0) ||
+		(CTrace (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_ALL).fraction >= MAX_STEP_FRACTION));
+}
+// Arcade Quake II
+
 /*
 ===============
 G_SetClientFrame
@@ -1676,10 +1663,16 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 	if (State.GetModelIndex() != 255)
 		return;		// not in the player model
 
+	// Arcade Quake II
+	bool OnFloor = PlayerOnFloor(this);
+	// Arcade Quake II
+
 	// check for stand/duck and stop/go transitions
 	if ((duck != Client.Anim.Duck && Client.Anim.Priority < ANIM_DEATH) ||
 		(run != Client.Anim.Run && Client.Anim.Priority == ANIM_BASIC) ||
-		(!GroundEntity && Client.Anim.Priority <= ANIM_WAVE))
+		// Arcade Quake II
+		(!GroundEntity && Client.Anim.Priority <= ANIM_WAVE) && (!OnFloor || WaterInfo.Level > 2))
+		// Arcade Quake II
 		isNewAnim = true;
 
 	if (!isNewAnim)
@@ -1718,7 +1711,9 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 	Client.Anim.Duck = duck;
 	Client.Anim.Run = run;
 
-	if (!GroundEntity)
+	// Arcade Quake II
+	if (!GroundEntity && (!OnFloor || WaterInfo.Level > 2))
+	// Arcade Quake II
 	{
 #if CLEANCTF_ENABLED
 //ZOID: if on grapple, don't go into jump frame, go into standing
@@ -1749,8 +1744,19 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 		}
 		else
 		{
-			State.GetFrame() = FRAME_run1;
-			Client.Anim.EndFrame = FRAME_run6;
+			// Arcade Quake II
+			if (Client.BackPedaling)
+			{
+				Client.Anim.Priority = ANIM_REVERSE;
+				State.GetFrame() = FRAME_run6;
+				Client.Anim.EndFrame = FRAME_run1;
+			}
+			else
+			{
+				State.GetFrame() = FRAME_run1;
+				Client.Anim.EndFrame = FRAME_run6;
+			}
+			// Arcade Quake II
 		}
 	}
 	else
@@ -1797,6 +1803,14 @@ void CPlayerEntity::EndServerFrame ()
 		Client.PlayerState.GetPMove()->origin[i] = State.GetOrigin()[i]*8.0;
 		Client.PlayerState.GetPMove()->velocity[i] = Velocity[i]*8.0;
 	}
+
+	// Arcade Quake II
+	Client.PlayerState.GetPMove()->origin[1] -= Client.Respawn.CameraDistance;
+	Client.PlayerState.GetPMove()->origin[2] += Client.Respawn.CameraDistance/4.3;
+
+	if (Client.Respawn.CameraPlayer)
+		Client.Respawn.CameraPlayer->State.GetOrigin() = State.GetOrigin();
+	// Arcade Quake II
 
 	//
 	// If the end of unit layout is displayed, don't give
@@ -2761,6 +2775,10 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	pMoveNew_t	pm;
 #endif
 
+	// Arcade Quake II
+	ucmd->forwardMove = 0;
+	// Arcade Quake II
+
 	level.CurrentEntity = this;
 
 	if (level.IntermissionTime)
@@ -2776,6 +2794,13 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #if USE_EXTENDED_GAME_IMPORTS
 	pm_passent = this;
 #endif
+
+	// Arcade Quake II
+	// set the delta angle
+	static const vec3f realAngle = vec3f(10,90,0);
+	for (uint8 i = 0; i < 3; i++)
+		Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(realAngle[i] - Client.Respawn.CmdAngles[i]);
+	// Arcade Quake II
 
 //ZOID
 	static sint32 oldbuttons;
@@ -2890,6 +2915,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	if (GroundEntity)
 		GroundEntityLinkCount = GroundEntity->GetLinkCount();
 
+	// Arcade Quake II
 	if (DeadFlag)
 		Client.PlayerState.GetViewAngles().Set (-15, Client.KillerYaw, 40);
 	else
@@ -2897,6 +2923,51 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 		Client.ViewAngle.Set (pm.viewAngles);
 		Client.PlayerState.GetViewAngles().Set (pm.viewAngles);
 	}
+
+	Client.ViewAngle.Set (pm.viewAngles);
+	Client.PlayerState.GetViewAngles().Set (pm.viewAngles);
+
+	if (Client.Respawn.AimingLeft && ucmd->sideMove < 0 && !(Client.Buttons & BUTTON_ATTACK))
+		Client.Respawn.AimingLeft = false;
+	else if (!Client.Respawn.AimingLeft && ucmd->sideMove > 0 && !(Client.Buttons & BUTTON_ATTACK))
+		Client.Respawn.AimingLeft = true;
+
+	Client.ViewAngle.X = 0;
+	Client.PlayerState.GetViewAngles().X = 0;
+	if (!DeadFlag)
+	{
+		if (Client.Respawn.AimingLeft)
+		{
+			Client.ViewAngle.Y -= 90;
+			Client.PlayerState.GetViewAngles().Y -= 90;
+		}
+		else
+		{
+			Client.ViewAngle.Y += 90;
+			Client.PlayerState.GetViewAngles().Y += 90;
+		}
+	}
+
+	switch (Client.Respawn.AimType)
+	{
+	case 1:
+		Client.ViewAngle.X -= 35;
+		Client.PlayerState.GetViewAngles().Y -= 35;
+		break;
+	case 2:
+		Client.ViewAngle.X += 35;
+		Client.PlayerState.GetViewAngles().Y += 35;
+		break;
+	case 3:
+		Client.ViewAngle.X -= 90;
+		Client.PlayerState.GetViewAngles().Y -= 90;
+		break;
+	case 4:
+		Client.ViewAngle.X += 90;
+		Client.PlayerState.GetViewAngles().Y += 90;
+		break;
+	}
+	// Arcade Quake II
 
 #if CLEANCTF_ENABLED
 //ZOID
@@ -2929,6 +3000,8 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 			}
 		}
 	}
+
+	Client.PlayerState.GetPMove()->pmFlags |= PMF_NO_PREDICTION;
 
 	// save light level the player is standing on for
 	// monster sighting AI
@@ -3046,6 +3119,12 @@ void CPlayerEntity::InitResp ()
 		CTFAssignTeam();
 //ZOID
 #endif
+
+	// Arcade Quake II
+	Client.Respawn.AimType = 0;
+	Client.Respawn.AimingLeft = true;
+	Client.Respawn.CameraDistance = 2500;
+	// Arcade Quake II
 }
 
 /*
@@ -3173,7 +3252,9 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 d
 	if (!DeadFlag)
 	{
 		Client.Timers.RespawnTime = level.Frame + 10;
-		LookAtKiller (inflictor, attacker);
+		// Arcade Quake II
+		//LookAtKiller (inflictor, attacker);
+		// Arcade Quake II
 		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
 		Obituary (attacker);
 
@@ -3842,6 +3923,10 @@ void CPlayerEntity::Disconnect ()
 {
 	if (!gameEntity->client)
 		return;
+
+	// Arcade Quake II
+	Client.Respawn.CameraPlayer->Free ();
+	// Arcade Quake II
 
 	Client.Persistent.State = SVCS_FREE;
 	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.Name.c_str());

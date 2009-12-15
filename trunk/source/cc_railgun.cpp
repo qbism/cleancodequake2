@@ -65,7 +65,7 @@ void CRailgun::Fire (CPlayerEntity *ent)
 {
 	vec3f		start, forward, right, offset(0, 7,  ent->ViewHeight-8);
 	const sint32	damage = (game.mode & GAME_DEATHMATCH) ? // normal damage is too extreme in dm
-				(isQuad) ? 400 : 100
+				(isQuad) ? 300 : 75
 				:
 				(isQuad) ? 600 : 150,
 				kick = (game.mode & GAME_DEATHMATCH) ?

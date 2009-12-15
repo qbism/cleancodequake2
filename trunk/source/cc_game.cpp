@@ -318,7 +318,9 @@ void CGameAPI::RunFrame ()
 #endif
 	}
 
+#if !NO_VERSION_CHECKING
 	CheckVersionReturnance ();
+#endif
 
 	if (level.Frame >= 3 && map_debug->Boolean())
 	{

@@ -113,7 +113,9 @@ WeaponSound(WeaponSound)
 void CWeapon::InitWeapon (CPlayerEntity *Player)
 {
 	Player->Client.PlayerState.GetGunFrame() = ActivationStart;
-	Player->Client.PlayerState.GetGunIndex() = GetWeaponModel();
+	// Arcade Quake II
+	Player->Client.PlayerState.GetGunIndex() = 0;
+	// Arcade Quake II
 	Player->Client.WeaponState = WS_ACTIVATING;
 }
 
@@ -314,7 +316,9 @@ void CWeapon::Muzzle (CPlayerEntity *Player, sint32 muzzleNum)
 	if (isSilenced)
 		muzzleNum |= MZ_SILENCED;
 
-	CTempEnt::MuzzleFlash(Player->State.GetOrigin(), Player->State.GetNumber(), muzzleNum);
+	// Arcade Quake II
+	CTempEnt::MuzzleFlash(Player->Client.Respawn.CameraPlayer->State.GetOrigin(), Player->Client.Respawn.CameraPlayer->State.GetNumber(), muzzleNum);
+	// Arcade Quake II
 }
 
 /*

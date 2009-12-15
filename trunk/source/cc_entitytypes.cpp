@@ -421,7 +421,13 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 			Phys->PhysicsType == PHYSICS_BOUNCE ||
 			Phys->PhysicsType == PHYSICS_PUSH ||
 			Phys->PhysicsType == PHYSICS_STOP))
-			Phys->Velocity += dir * (((isClient && (attacker == this)) ? 1600.0f : 500.0f) * (float)knockback / Clamp<float> (Phys->Mass, 50, Phys->Mass));
+		// Arcade Quake II
+		{
+			vec3f temp = dir * (((isClient && (attacker == this)) ? 1600.0f : 500.0f) * (float)knockback / Clamp<float> (Phys->Mass, 50, Phys->Mass));
+			temp.Y = 0;
+			Phys->Velocity += temp;
+		}
+		// Arcade Quake II
 	}
 
 	take = damage;

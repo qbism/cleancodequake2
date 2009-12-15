@@ -54,7 +54,7 @@ bool CHandGrenade::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-#define GRENADE_TIMER		30
+#define GRENADE_TIMER		35
 #define GRENADE_MINSPEED	400
 #define GRENADE_MAXSPEED	800
 

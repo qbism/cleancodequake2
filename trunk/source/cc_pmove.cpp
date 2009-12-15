@@ -128,7 +128,7 @@ public:
 		for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 		{
 			end = pml.origin + time_left * pml.velocity;
-			trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+			trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
 
 			if (trace.allSolid)
 			{
@@ -235,7 +235,7 @@ public:
 				down_v = pml.velocity;
 
 		vec3f up = start_o + vec3f(0, 0, STEPSIZE);
-		CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
 		
 		if (trace.allSolid)
 			return;		// can't step up
@@ -248,7 +248,7 @@ public:
 
 		// push down the final amount
 		vec3f down = pml.origin - vec3f(0, 0, STEPSIZE);
-		trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
 		
 		if (!trace.allSolid)
 			pml.origin = trace.EndPos;
@@ -520,7 +520,7 @@ public:
 		}
 		else
 		{
-			CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+			CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
 			pml.groundSurface = trace.surface;
 			pml.groundContents = trace.contents;
 
@@ -668,12 +668,19 @@ public:
 		pml.ladder = false;
 
 		// check for ladder
-		vec3f flatforward = pml.forward;
-		flatforward.Z = 0;
-		flatforward.Normalize();
+		// Arcade Quake II
+		vec3f forw = pm->viewAngles;
+		if (pml.ent->Client.Respawn.AimingLeft)
+			forw.Y -= 90;
+		else
+			forw.Y += 90;
+		forw.X = 0;
+		vec3f flatforward;
+		forw.ToVectors (&flatforward, NULL, NULL);
+		// Arcade Quake II
 
 		vec3f spot = pml.origin.MultiplyAngles (1, flatforward);
-		CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
 		
 		if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
 			pml.ladder = true;
@@ -757,7 +764,7 @@ public:
 		if (doClip)
 		{
 			vec3f end = pml.origin.MultiplyAngles (pml.frameTime, pml.velocity);
-			pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
+			pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID).EndPos;
 		}
 		else
 			// move
@@ -805,7 +812,7 @@ public:
 			{
 				// try to stand up
 				pm->maxs.Z = 32;
-				CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+				CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
 				if (!trace.allSolid)
 					pm->state.pmFlags &= ~PMF_DUCKED;
 			}
@@ -858,7 +865,7 @@ public:
 						pm->state.origin[1]*(1.0f/8.0f),
 						pm->state.origin[2]*(1.0f/8.0f));
 	 
-		return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
+		return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID).allSolid;
 	}
 
 	/*
@@ -1020,7 +1027,7 @@ public:
 
 		pml.ent			= ent;
 
-		playerMask = (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID;
+		playerMask = (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID;
 
 		// save old org in case we get stuck
 		VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);

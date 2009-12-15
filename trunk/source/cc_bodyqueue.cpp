@@ -301,6 +301,9 @@ void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
 
 	Body->backOff = 1.0f;
 	Body->CanTakeDamage = true;
+	// Arcade Quake II
+	Body->GetSvFlags() &= ~SVF_NOCLIENT;
+	// Arcade Quake II
 
 	// Implied that Player is a dead-head (lol)
 	if (!Player->CanTakeDamage)
