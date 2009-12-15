@@ -544,7 +544,7 @@ SelectFarthestDeathmatchSpawnPoint
 */
 CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
 {
-	CSpotBase	*bestspot = NULL, *spot = NULL;
+	CSpotBase	*bestspot = NULL;
 	float		bestdistance = 0;
 
 	for (CPlayerDeathmatch::TSpawnPointsType::iterator it = CPlayerDeathmatch::SpawnPoints().begin(); it < CPlayerDeathmatch::SpawnPoints().end(); ++it)
@@ -554,7 +554,7 @@ CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
 		float bestplayerdistance = PlayersRangeFromSpot (Found);
 		if (bestplayerdistance > bestdistance)
 		{
-			bestspot = spot;
+			bestspot = Found;
 			bestdistance = bestplayerdistance;
 		}
 	}
