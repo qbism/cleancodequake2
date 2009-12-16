@@ -66,7 +66,7 @@ bool CSuperShotgun::CanStopFidgetting (CPlayerEntity *ent)
 void CSuperShotgun::Fire (CPlayerEntity *ent)
 {
 	vec3f		start, forward, right, offset (0, 8, ent->ViewHeight-8);
-	const sint32	damage = (isQuad) ? 24 : 6,
+	const sint32	damage = (isQuad) ? 20 : 5,
 				kick = (isQuad) ? 48 : 12;
 
 	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
@@ -79,11 +79,11 @@ void CSuperShotgun::Fire (CPlayerEntity *ent)
 	vec3f v = ent->Client.ViewAngle;
 	v.Y -= 1;
 	v.ToVectors (&forward, NULL, NULL);
-	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
+	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2.2, MOD_SSHOTGUN);
 
 	v.Y += 2;
 	v.ToVectors (&forward, NULL, NULL);
-	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
+	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2.2, MOD_SSHOTGUN);
 
 	// send muzzle flash
 	Muzzle (ent, MZ_SSHOTGUN);

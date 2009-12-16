@@ -352,7 +352,6 @@ void CreateFollowDude (CPlayerEntity *Owner)
 	Owner->Client.Respawn.CameraPlayer->State.GetOrigin() = Owner->State.GetOrigin();
 	Owner->Client.Respawn.CameraPlayer->State.GetRenderEffects() = Owner->State.GetRenderEffects();
 	Owner->Client.Respawn.CameraPlayer->State.GetSkinNum() = Owner->State.GetSkinNum();
-	Owner->Client.Respawn.CameraPlayer->State.GetEffects() |= RF_FRAMELERP;
 	Owner->Client.Respawn.CameraPlayer->Link ();
 }
 // Arcade Quake II
@@ -379,7 +378,6 @@ void CPlayerEntity::BeginServerFrame ()
 		Client.Respawn.CameraPlayer->State.GetOrigin() = State.GetOrigin();
 		Client.Respawn.CameraPlayer->State.GetRenderEffects() = State.GetRenderEffects();
 		Client.Respawn.CameraPlayer->State.GetSkinNum() = State.GetSkinNum();
-		Client.Respawn.CameraPlayer->State.GetEffects() |= RF_FRAMELERP;
 	}
 	// Arcade Quake II
 
@@ -443,7 +441,7 @@ void CPlayerEntity::Respawn ()
 		PutInServer ();
 
 		// add a teleportation effect
-		State.GetEvent() = EV_PLAYER_TELEPORT;
+		State.GetEvent() = Client.Respawn.CameraPlayer->State.GetEvent() = EV_PLAYER_TELEPORT;
 
 		// hold in place briefly
 		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
@@ -619,7 +617,7 @@ void CPlayerEntity::PutInServer ()
 	DeadFlag = false;
 	AirFinished = level.Frame + 120;
 	// Arcade Quake II
-	GetClipmask() = CONTENTS_MASK_SOLID|CONTENTS_MONSTER;
+	GetClipmask() = (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP);
 	// Arcade Quake II
 	WaterInfo.Level = WATER_NONE;
 	WaterInfo.Type = 0;
@@ -3318,8 +3316,14 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 d
 	if (Health < -40)
 	{	// gib
 		PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
-		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+		//for (sint32 n = 0; n < 4; n++)
+		CGibEntity::Spawn (this, GameMedia.Gib_Chest, damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Leg(), damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Leg(), damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Arm(), damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Arm(), damage*4, GIB_ORGANIC);
+		for (uint8 i = 0; i < 3; i++)
+			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage*4, GIB_ORGANIC);
 		TossHead (damage);
 
 		CanTakeDamage = false;
@@ -3642,17 +3646,17 @@ void CPlayerEntity::GetChaseTarget()
 
 void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result)
 {
-	switch (Client.Persistent.Hand)
+	/*switch (Client.Persistent.Hand)
 	{
 	case LEFT_HANDED:
 		distance.Y *= -1;
 		break;
-	case CENTER_HANDED:
+	case CENTER_HANDED:*/
 		distance.Y = 0;
-		break;
+		/*break;
 	default:
 		break;
-	}
+	}*/
 
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }

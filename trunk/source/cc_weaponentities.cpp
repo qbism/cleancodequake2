@@ -199,7 +199,7 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 da
 	Grenade->Damage = damage;
 	Grenade->RadiusDamage = damage_radius;
 	Grenade->ClassName = (!handNade) ? "grenade" : "hgrenade";
-	Grenade->GetClipmask() = CONTENTS_MASK_SHOT;
+	Grenade->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_PLAYERCLIP;
 	Grenade->GetSolid() = SOLID_BBOX;
 	Grenade->GetMins().Clear ();
 	Grenade->GetMaxs().Clear ();
@@ -298,7 +298,7 @@ void CBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->ClassName = "bolt";
 	if (isHyper)
 		Bolt->SpawnFlags = HYPER_FLAG;
-	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
+	Bolt->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_PLAYERCLIP;
 	Bolt->GetSolid() = SOLID_BBOX;
 	Bolt->GetMins().Clear ();
 	Bolt->GetMaxs().Clear ();
@@ -399,7 +399,7 @@ CRocket *CRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->DamageRadius = damage_radius;
 	Rocket->State.GetSound() = SoundIndex ("weapons/rockfly.wav");
 	Rocket->ClassName = "rocket";
-	Rocket->GetClipmask() = CONTENTS_MASK_SHOT;
+	Rocket->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_PLAYERCLIP;
 	Rocket->GetSolid() = SOLID_BBOX;
 	Rocket->GetMins().Clear ();
 	Rocket->GetMaxs().Clear ();
@@ -600,7 +600,7 @@ void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->State.GetSound() = SoundIndex ("weapons/bfg__l1a.wav");
 	BFG->ClassName = "bfg blast";
 	BFG->FreeTime = level.Frame + 80000/speed;
-	BFG->GetClipmask() = CONTENTS_MASK_SHOT;
+	BFG->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_PLAYERCLIP;
 	BFG->GetSolid() = SOLID_BBOX;
 	BFG->GetMins().Clear ();
 	BFG->GetMaxs().Clear ();
@@ -1277,7 +1277,7 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint
 	Grapple->State.GetOldOrigin() = start;
 	Grapple->State.GetAngles() = dir.ToAngles();
 	Grapple->Velocity = dir * speed;
-	Grapple->GetClipmask() = CONTENTS_MASK_SHOT;
+	Grapple->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_PLAYERCLIP;
 	Grapple->GetSolid() = SOLID_BBOX;
 	Grapple->GetMins().Clear ();
 	Grapple->GetMaxs().Clear ();

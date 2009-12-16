@@ -285,13 +285,13 @@ public:
 			return;
 
 		va_list		argptr;
-		static char		text[MAX_COMPRINT/2];
+		static char		text[SHRT_MAX];
 
 		va_start (argptr, fmt);
-		vsnprintf (text, (MAX_COMPRINT/2)-1, fmt, argptr);
+		vsnprintf (text, SHRT_MAX-1, fmt, argptr);
 		va_end (argptr);
 
-		text[MAX_COMPRINT/2-1] = 0;
+		text[SHRT_MAX/2-1] = 0;
 		Write (text, strlen(text));
 	};
 

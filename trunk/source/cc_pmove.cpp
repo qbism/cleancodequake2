@@ -36,6 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //#define ALLOW_CROUCH_JUMPING
 
 #include "cc_local.h"
+#include "cc_tent.h"
 
 #if !USE_EXTENDED_GAME_IMPORTS
 
@@ -128,7 +129,7 @@ public:
 		for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 		{
 			end = pml.origin + time_left * pml.velocity;
-			trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
+			trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 
 			if (trace.allSolid)
 			{
@@ -235,7 +236,7 @@ public:
 				down_v = pml.velocity;
 
 		vec3f up = start_o + vec3f(0, 0, STEPSIZE);
-		CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
+		CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 		
 		if (trace.allSolid)
 			return;		// can't step up
@@ -248,7 +249,7 @@ public:
 
 		// push down the final amount
 		vec3f down = pml.origin - vec3f(0, 0, STEPSIZE);
-		trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
+		trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 		
 		if (!trace.allSolid)
 			pml.origin = trace.EndPos;
@@ -485,6 +486,32 @@ public:
 
 			if (!pml.velocity.X && !pml.velocity.Y)
 				return;
+
+			StepSlide ();
+
+			// Paril, step down!
+			// Pre-categorize for check of down-step
+			CatagorizePosition ();
+			if (!pm->groundEntity)
+			{
+				static const vec3f down (0, 0, -1);
+				
+				vec3f start = pml.origin;
+				vec3f end = start.MultiplyAngles (STEPSIZE, down);
+
+				CTrace tr (start, pm->mins, pm->maxs, end, pml.ent, -1);
+
+				if (tr.fraction < 1.0)
+				{
+					// We can drop!
+					//Com_Printf (0, "GROUND IS GONE!!!\n");
+					end = start - tr.EndPos;
+
+					pml.origin[2] -= end.Length();
+				}
+			}
+			// Paril
+			return;
 		}
 		else
 		{
@@ -520,7 +547,7 @@ public:
 		}
 		else
 		{
-			CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
+			CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 			pml.groundSurface = trace.surface;
 			pml.groundContents = trace.contents;
 
@@ -680,7 +707,7 @@ public:
 		// Arcade Quake II
 
 		vec3f spot = pml.origin.MultiplyAngles (1, flatforward);
-		CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
+		CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 		
 		if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
 			pml.ladder = true;
@@ -764,7 +791,7 @@ public:
 		if (doClip)
 		{
 			vec3f end = pml.origin.MultiplyAngles (pml.frameTime, pml.velocity);
-			pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID).EndPos;
+			pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID).EndPos;
 		}
 		else
 			// move
@@ -812,7 +839,7 @@ public:
 			{
 				// try to stand up
 				pm->maxs.Z = 32;
-				CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID);
+				CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 				if (!trace.allSolid)
 					pm->state.pmFlags &= ~PMF_DUCKED;
 			}
@@ -865,7 +892,7 @@ public:
 						pm->state.origin[1]*(1.0f/8.0f),
 						pm->state.origin[2]*(1.0f/8.0f));
 	 
-		return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID).allSolid;
+		return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID).allSolid;
 	}
 
 	/*
@@ -1027,7 +1054,7 @@ public:
 
 		pml.ent			= ent;
 
-		playerMask = (pml.ent->Health > 0) ? (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP) : CONTENTS_MASK_DEADSOLID;
+		playerMask = (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID;
 
 		// save old org in case we get stuck
 		VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);

@@ -1066,10 +1066,10 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 			// There wasn't a spawnpoint without a target, so use any
 			if (!game.spawnpoint[0])
 			{
-				if (CPlayerStart::SpawnPoints().at(0))
+				if (CPlayerStart::SpawnPoints().size())
 					spot = CPlayerStart::SpawnPoints().at(0);
 
-				if (!spot)
+				if (!spot && CPlayerDeathmatch::SpawnPoints().size())
 					spot = CPlayerDeathmatch::SpawnPoints()[0];
 			}
 

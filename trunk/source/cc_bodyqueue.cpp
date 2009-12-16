@@ -169,8 +169,13 @@ void CBody::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, v
 	if (Health < -40)
 	{
 		PlaySound(CHAN_BODY, SoundIndex ("misc/udeath.wav"));
-		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Chest, damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Leg(), damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Leg(), damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Arm(), damage*4, GIB_ORGANIC);
+		CGibEntity::Spawn (this, GameMedia.Gib_Arm(), damage*4, GIB_ORGANIC);
+		for (uint8 i = 0; i < 3; i++)
+			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage*4, GIB_ORGANIC);
 			
 		State.GetOrigin().Z -= 16;
 		TossHead (damage);
