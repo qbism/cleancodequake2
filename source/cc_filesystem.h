@@ -102,6 +102,7 @@ void FS_Print (fileHandle_t &handle, char *fmt, ...);
 
 size_t FS_Len (fileHandle_t &handle);
 filePos_t FS_Tell (fileHandle_t &handle);
+bool FS_EndOfFile (fileHandle_t &handle);
 
 void FS_RemovePath (const char *pathName);
 void FS_AddPath (const char *pathName);
@@ -126,6 +127,11 @@ public:
 			return;
 
 		FS_Close (Handle);
+	};
+
+	bool EndOfFile ()
+	{
+		return FS_EndOfFile (Handle);
 	};
 
 	static bool Exists (const char *fileName)
@@ -260,6 +266,34 @@ public:
 		return "";
 	};
 
+	std::cc_string ReadLine ()
+	{
+		if (!Handle)
+			return "";
+
+		std::cc_string tempStr;
+
+		while (true)
+		{
+			char tempChar = Read<char> ();
+
+			if (tempChar == '\n' || tempChar == '\0')
+				break;
+
+			tempStr += tempChar;
+		};
+
+		return tempStr;
+	};
+
+	void ReadLine (char *buf, size_t maxSize)
+	{
+		std::cc_string line = ReadLine ();
+
+		Q_snprintfz (buf, maxSize-1, "%s", line.c_str());
+		buf[maxSize-1] = 0;
+	};
+
 	template <typename TType>
 	void ReadArray (TType *Array, size_t Length)
 	{
@@ -285,13 +319,13 @@ public:
 			return;
 
 		va_list		argptr;
-		static char		text[MAX_COMPRINT/2];
+		static char		text[SHRT_MAX];
 
 		va_start (argptr, fmt);
-		vsnprintf (text, (MAX_COMPRINT/2)-1, fmt, argptr);
+		vsnprintf (text, SHRT_MAX-1, fmt, argptr);
 		va_end (argptr);
 
-		text[MAX_COMPRINT/2-1] = 0;
+		text[SHRT_MAX/2-1] = 0;
 		Write (text, strlen(text));
 	};
 
