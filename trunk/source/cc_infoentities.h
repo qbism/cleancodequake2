@@ -31,6 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Info_ and some Target_ entities
 //
 
+#if !defined(__CC_INFOENTITIES_H__) || !INCLUDE_GUARDS
+#define __CC_INFOENTITIES_H__
+
 class CPathCorner : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
 {
 public:
@@ -71,3 +74,7 @@ public:
 
 	virtual void Spawn ();
 };
+
+#else
+FILE_WARNING
+#endif

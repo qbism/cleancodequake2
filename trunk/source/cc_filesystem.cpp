@@ -253,6 +253,20 @@ void FS_Close (fileHandle_t &handle)
 	}
 }
 
+bool FS_EndOfFile (fileHandle_t &handle)
+{
+	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
+
+	if (handleIndex)
+	{
+		if (IS_REGULAR(handleIndex))
+			return !!feof(handleIndex->file.reg);
+		else
+			return !!gzeof(handleIndex->file.gz);
+	}
+	return true;
+}
+
 // Always returns in same order:
 // [r/a][w][b][+][c]
 static const char *FS_OpenModeFromEnum (EFileOpMode Mode)

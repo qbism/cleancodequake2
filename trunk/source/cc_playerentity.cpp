@@ -1319,7 +1319,7 @@ inline void CPlayerEntity::FallingDamage ()
 			return;
 		delta = Velocity.Z - Client.OldVelocity.Z;
 	}
-	delta = delta*delta * 0.0001;
+	delta = delta*delta * 0.000078;
 
 	// never take falling damage if completely underwater
 	if (WaterInfo.Level == WATER_UNDER)
@@ -1612,6 +1612,9 @@ G_SetClientSound
 */
 inline void CPlayerEntity::SetClientSound ()
 {
+	if (!Client.Respawn.CameraPlayer)
+		return;
+
 	if (Client.Persistent.GameHelpChanged != game.HelpChanged)
 	{
 		Client.Persistent.GameHelpChanged = game.HelpChanged;
@@ -1626,13 +1629,13 @@ inline void CPlayerEntity::SetClientSound ()
 	}
 
 	if (WaterInfo.Level && (WaterInfo.Type & (CONTENTS_LAVA|CONTENTS_SLIME)))
-		State.GetSound() = GameMedia.FrySound();
+		Client.Respawn.CameraPlayer->State.GetSound() = GameMedia.FrySound();
 	else if (Client.Persistent.Weapon && Client.Persistent.Weapon->GetWeaponSound ())
-		State.GetSound() = Client.Persistent.Weapon->GetWeaponSound ();
+		Client.Respawn.CameraPlayer->State.GetSound() = Client.Persistent.Weapon->GetWeaponSound ();
 	else if (Client.WeaponSound)
-		State.GetSound() = Client.WeaponSound;
+		Client.Respawn.CameraPlayer->State.GetSound() = Client.WeaponSound;
 	else
-		State.GetSound() = 0;
+		Client.Respawn.CameraPlayer->State.GetSound() = 0;
 }
 
 // Arcade Quake II
@@ -2879,6 +2882,28 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	pm.pointContents = gi.pointcontents;
 #endif
 
+	// Arcade Quake II
+	if (ucmd->upMove >= 5)
+	{
+		if (!Client.DoubleTap.WaitForEmpty)
+		{
+			if (!Client.DoubleTap.jumpVals[0])
+				Client.DoubleTap.jumpVals[0] = level.Frame;
+			else
+			{
+				Client.DoubleTap.jumpVals[1] = Client.DoubleTap.jumpVals[0];
+				Client.DoubleTap.jumpVals[0] = level.Frame;
+
+				if ((Client.DoubleTap.jumpVals[0] - Client.DoubleTap.jumpVals[1]) < 4)
+					pm.doDoubleJump = true;
+			}
+			Client.DoubleTap.WaitForEmpty = true;
+		}
+	}
+	else if (Client.DoubleTap.WaitForEmpty)
+		Client.DoubleTap.WaitForEmpty = false;
+	// Arcade Quake II
+
 	// perform a pmove
 #if USE_EXTENDED_GAME_IMPORTS
 	gi.Pmove (&pm);
@@ -2900,11 +2925,16 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	for (sint32 i = 0; i < 3; i++)
 	Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
-	if (GroundEntity && !pm.groundEntity && Velocity[2] > 0 && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE))
+	// Arcade Quake II
+	if ((GroundEntity && !pm.groundEntity && Velocity[2] > 0 && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE)) || pm.doubleJumpDone)
 	{
 		PlaySound (CHAN_VOICE, GameMedia.Player.Jump);
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
+		
+		if (pm.doubleJumpDone)
+			Client.Respawn.AimingLeft = !Client.Respawn.AimingLeft;
 	}
+	// Arcade Quake II
 
 	ViewHeight = pm.viewHeight;
 	WaterInfo.Level = pm.waterLevel;

@@ -787,6 +787,10 @@ struct pMoveNew_t
 	struct edict_t	*groundEntity;
 	EBrushContents	waterType;
 	EWaterLevel		waterLevel;
+
+	// Arcade Quake II
+	bool			doDoubleJump, doubleJumpDone;
+	// Arcade Quake II
 };
 
 /*

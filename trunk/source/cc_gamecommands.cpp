@@ -559,6 +559,9 @@ void Cmd_Aim_Reset (CPlayerEntity *ent)
 
 void Cmd_CamDist (CPlayerEntity *ent)
 {
+	if (ArgCount() < 2)
+		return;
+
 	float arg = ArgGetf(1);
 
 	if (arg < 0)

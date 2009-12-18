@@ -472,6 +472,26 @@ public:
 						pml.velocity.Z  = 0;
 				}
 			}
+
+			if (pm->doDoubleJump)
+			{
+				// We want to double jump, so force us to jump.
+				pm->doubleJumpDone = true;
+				pml.ladder = false;
+
+				pm->state.pmFlags |= PMF_JUMP_HELD;
+
+				pm->groundEntity = NULL;
+
+				pml.velocity.Z += 180;
+				if (pml.velocity.Z < 180)
+					pml.velocity.Z = 180;
+
+				if (pml.ent->Client.Respawn.AimingLeft)
+					pml.velocity.X -= 200;
+				else
+					pml.velocity.X += 200;
+			}
 		}
 		else if (pm->groundEntity)
 		{

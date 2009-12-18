@@ -62,95 +62,58 @@ void CBanList::Clear ()
 void CBanList::LoadFromFile ()
 {
 	Bans.Clear ();
-	CFileBuffer File ("bans.lst", true);
+	CFile File ("bans.lst", FILEMODE_READ);
 
 	if (!File.Valid())
 		return;
 
-	std::cc_string mainString = File.GetBuffer<char>();
-	std::cc_string line, token;
-
-	// Get the entire line
-	size_t z = 0, c = 0, oc = 0;
-	z = mainString.find_first_of("\n\0");
-	line = mainString.substr(0, (z == -1) ? File.GetLength() : z);
-
-	while (line[0])
+	while (true)
 	{
-		// Parse the line.
-		// Get the distance to the first character.
-		oc = line.find_first_of(" \n\0", c);
-		token = line.substr (c, oc-c);
-		c = oc;
-		while (token[0])
-		{
-			if (token[0] == '/' && token[1] == '/')
-				break;
-
-			if (Q_stricmp (token.c_str(), "name") == 0)
-			{
-				// Get the distance to the next token.
-				// find_first_of operates on length so we need to calc the length
-				// of the next token as well.
-				oc = line.find_first_of(" \n\0", ++c);
-				token = line.substr (c, oc-c);
-				c = oc;
-
-				BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
-				NewIndex->IP = false;
-
-				NewIndex->Name = QNew (com_genericPool, 0) char[token.length()];
-				Q_strncpyz (NewIndex->Name, token.c_str(), token.length());
-				NewIndex->Name[token.length()] = 0;
-
-				oc = line.find_first_of(" \n\0", ++c);
-				token = line.substr (c, oc-c);
-				c = oc;
-
-				EBanTypeFlags Flags = atoi(token.c_str());
-
-				NewIndex->Flags = Flags;
-
-				BanList.push_back (NewIndex);
-			}
-			else if (Q_stricmp (token.c_str(), "ip") == 0)
-			{
-				oc = line.find_first_of(" \n\0", ++c);
-				token = line.substr (c, oc-c);
-				c = oc;
-
-				BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
-				NewIndex->IP = true;
-
-				NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress;
-				Q_snprintfz (NewIndex->IPAddress->str, sizeof(NewIndex->IPAddress->str), "%s", token.c_str());
-
-				oc = line.find_first_of(" \n\0", ++c);
-				token = line.substr (c, oc-c);
-				c = oc;
-
-				EBanTypeFlags Flags = atoi(token.c_str());
-				NewIndex->Flags = Flags;
-				BanList.push_back (NewIndex);
-			}
-
-			if (c == -1 || c == std::cc_string::npos)
-				break;
-
-			oc = line.find_first_of(" \n\0", ++c);
-			token = line.substr (c, oc-c);
-			c = oc;
-		}
-
-		c = 0;
-
-		if (z == -1)
+		if (File.EndOfFile())
 			break;
 
-		oc = mainString.find_first_of("\n\0", ++z);
-		line = mainString.substr (z, oc-z);
-		z = oc;
-		oc = 0;
+		std::cc_string line = File.ReadLine ();
+		
+		// Parse the line.
+		CParser Parser (line.c_str(), PSP_COMMENT_MASK);
+
+		const char *token;
+		if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
+			break;
+
+		if (Q_stricmp (token, "name") == 0)
+		{
+			// Get the distance to the next token.
+			// find_first_of operates on length so we need to calc the length
+			// of the next token as well.
+			if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
+				break;
+
+			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+			NewIndex->IP = false;
+			NewIndex->Name = Mem_PoolStrDup (token, com_genericPool, 0);
+
+			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
+				break;
+
+			BanList.push_back (NewIndex);
+		}
+		else if (Q_stricmp (token, "ip") == 0)
+		{
+			if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
+				break;
+
+			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+			NewIndex->IP = true;
+
+			NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress;
+			Q_snprintfz (NewIndex->IPAddress->str, sizeof(NewIndex->IPAddress->str), "%s", token);
+
+			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
+				break;
+
+			BanList.push_back (NewIndex);
+		}
 	}
 	
 	DebugPrintf ("Loaded %u bans from file\n", Bans.BanList.size());

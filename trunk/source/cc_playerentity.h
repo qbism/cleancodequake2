@@ -567,7 +567,8 @@ public:
 
 	struct doubleTap_t
 	{
-		FrameNumber_t	leftVals[2], rightVals[2];
+		FrameNumber_t	jumpVals[2];
+		bool			WaitForEmpty;
 	} DoubleTap;
 	// Arcade Quake II
 
