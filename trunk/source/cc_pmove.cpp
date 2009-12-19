@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Paril
 // Crouch-jumping!
-//#define ALLOW_CROUCH_JUMPING
+#define ALLOW_CROUCH_JUMPING
 
 #include "cc_local.h"
 #include "cc_tent.h"
@@ -43,6 +43,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CPlayerMove
 {
 public:
+	static bool WasOnLadder;
 	// all of the locals will be zeroed before each pmove, just to make damn sure
 	// we don't have any differences when running on client or server
 	struct pMoveLocal_t
@@ -472,26 +473,6 @@ public:
 						pml.velocity.Z  = 0;
 				}
 			}
-
-			if (pm->doDoubleJump)
-			{
-				// We want to double jump, so force us to jump.
-				pm->doubleJumpDone = true;
-				pml.ladder = false;
-
-				pm->state.pmFlags |= PMF_JUMP_HELD;
-
-				pm->groundEntity = NULL;
-
-				pml.velocity.Z += 180;
-				if (pml.velocity.Z < 180)
-					pml.velocity.Z = 180;
-
-				if (pml.ent->Client.Respawn.AimingLeft)
-					pml.velocity.X -= 200;
-				else
-					pml.velocity.X += 200;
-			}
 		}
 		else if (pm->groundEntity)
 		{
@@ -535,6 +516,31 @@ public:
 		}
 		else
 		{
+			if (WasOnLadder)
+			{
+				WasOnLadder = false;
+				DebugPrintf ("%i %f\n", pm->cmd.sideMove, pml.velocity.Z);
+				if ((pm->aimChanged && (pm->cmd.sideMove < -50 || pm->cmd.sideMove > 50)) && pml.velocity.Z >= 100)
+				{
+					// We want to double jump, so force us to jump.
+					pm->doubleJumpDone = true;
+					pml.ladder = false;
+
+					pm->state.pmFlags |= PMF_JUMP_HELD;
+
+					pm->groundEntity = NULL;
+
+					pml.velocity.Z += 135;
+					if (pml.velocity.Z < 135)
+						pml.velocity.Z = 135;
+
+					if (pml.ent->Client.Respawn.AimingLeft)
+						pml.velocity.X += 200;
+					else
+						pml.velocity.X -= 200;
+				}
+			}
+
 			// not on ground, so little effect on velocity
 			if (pmAirAcceleration)
 				AirAccelerate (wishdir, wishspeed, ACCELERATE);
@@ -730,7 +736,10 @@ public:
 		CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? pml.ent->GetClipmask() : CONTENTS_MASK_DEADSOLID);
 		
 		if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
+		{
 			pml.ladder = true;
+			WasOnLadder = pml.ladder;
+		}
 
 		// check for water jump
 		if (pm->waterLevel != WATER_WAIST)
@@ -1179,7 +1188,7 @@ pMoveNew_t		*CPlayerMove::pm = NULL;
 CPlayerMove::pMoveLocal_t		CPlayerMove::pml;
 float			CPlayerMove::pmAirAcceleration = 0;
 EBrushContents	CPlayerMove::playerMask = 0;
-
+bool			CPlayerMove::WasOnLadder = false;
 
 void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
 {

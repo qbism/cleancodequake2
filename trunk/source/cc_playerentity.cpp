@@ -617,13 +617,12 @@ void CPlayerEntity::PutInServer ()
 	DeadFlag = false;
 	AirFinished = level.Frame + 120;
 	// Arcade Quake II
-	GetClipmask() = (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP);
+	GetClipmask() = CONTENTS_MASK_PLAYERSOLID;
 	// Arcade Quake II
 	WaterInfo.Level = WATER_NONE;
 	WaterInfo.Type = 0;
 	Flags &= ~FL_NO_KNOCKBACK;
-	GetSvFlags() &= ~SVF_DEADMONSTER;
-	GetSvFlags() |= SVF_NOCLIENT;
+	GetSvFlags() |= (SVF_NOCLIENT|SVF_DEADMONSTER);
 	if (!Client.Respawn.MenuState.ent)
 		Client.Respawn.MenuState.Initialize (this);
 
@@ -1701,6 +1700,14 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 				return;		// stay there
 			Client.Anim.Priority = ANIM_WAVE;
 
+
+			if (duck)
+			{
+				State.GetFrame() = FRAME_crstnd01;
+				Client.Anim.EndFrame = FRAME_crstnd02;
+				return;
+			}
+
 			State.GetFrame() = FRAME_jump3;
 			Client.Anim.EndFrame = FRAME_jump6;
 			return;
@@ -1729,6 +1736,14 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 //ZOID
 #endif
 		Client.Anim.Priority = ANIM_JUMP;
+
+		if (duck)
+		{
+			State.GetFrame() = FRAME_crstnd01;
+			Client.Anim.EndFrame = FRAME_crstnd02;
+			return;
+		}
+
 		if (State.GetFrame() != FRAME_jump2)
 			State.GetFrame() = FRAME_jump1;
 		Client.Anim.EndFrame = FRAME_jump2;
@@ -2883,25 +2898,17 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #endif
 
 	// Arcade Quake II
-	if (ucmd->upMove >= 5)
+	if (Client.Respawn.AimingLeft && ucmd->sideMove < 0 && !(Client.Buttons & BUTTON_ATTACK))
 	{
-		if (!Client.DoubleTap.WaitForEmpty)
-		{
-			if (!Client.DoubleTap.jumpVals[0])
-				Client.DoubleTap.jumpVals[0] = level.Frame;
-			else
-			{
-				Client.DoubleTap.jumpVals[1] = Client.DoubleTap.jumpVals[0];
-				Client.DoubleTap.jumpVals[0] = level.Frame;
-
-				if ((Client.DoubleTap.jumpVals[0] - Client.DoubleTap.jumpVals[1]) < 4)
-					pm.doDoubleJump = true;
-			}
-			Client.DoubleTap.WaitForEmpty = true;
-		}
+		Client.Respawn.AimingLeft = false;
+		pm.aimChanged = true;
 	}
-	else if (Client.DoubleTap.WaitForEmpty)
-		Client.DoubleTap.WaitForEmpty = false;
+	else if (!Client.Respawn.AimingLeft && ucmd->sideMove > 0 && !(Client.Buttons & BUTTON_ATTACK))
+	{
+		Client.Respawn.AimingLeft = true;
+		pm.aimChanged = true;
+	}
+
 	// Arcade Quake II
 
 	// perform a pmove
@@ -2930,9 +2937,6 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	{
 		PlaySound (CHAN_VOICE, GameMedia.Player.Jump);
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
-		
-		if (pm.doubleJumpDone)
-			Client.Respawn.AimingLeft = !Client.Respawn.AimingLeft;
 	}
 	// Arcade Quake II
 
@@ -2954,11 +2958,6 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	Client.ViewAngle.Set (pm.viewAngles);
 	Client.PlayerState.GetViewAngles().Set (pm.viewAngles);
-
-	if (Client.Respawn.AimingLeft && ucmd->sideMove < 0 && !(Client.Buttons & BUTTON_ATTACK))
-		Client.Respawn.AimingLeft = false;
-	else if (!Client.Respawn.AimingLeft && ucmd->sideMove > 0 && !(Client.Buttons & BUTTON_ATTACK))
-		Client.Respawn.AimingLeft = true;
 
 	Client.ViewAngle.X = 0;
 	Client.PlayerState.GetViewAngles().X = 0;

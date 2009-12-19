@@ -390,6 +390,10 @@ void CGameAPI::RunFrame ()
 #if MONSTERS_USE_PATHFINDING
 	RunNodes();
 #endif
+
+#if _WIN32
+	Sleep (0);
+#endif
 }
 
 void SetupGamemode ()

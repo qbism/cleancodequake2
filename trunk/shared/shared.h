@@ -789,7 +789,7 @@ struct pMoveNew_t
 	EWaterLevel		waterLevel;
 
 	// Arcade Quake II
-	bool			doDoubleJump, doubleJumpDone;
+	bool			aimChanged, doubleJumpDone;
 	// Arcade Quake II
 };
 
