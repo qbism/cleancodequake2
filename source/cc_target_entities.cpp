@@ -660,7 +660,7 @@ void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 	}
 
 	// if noexit, do a ton of damage to other
-	if ((game.mode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit && (other != World))
+	if ((game.mode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit.IsEnabled() && (other != World))
 	{
 		if ((other->EntityFlags & ENT_HURTABLE))
 		{
@@ -848,12 +848,7 @@ public:
 		CThinkableEntity::SaveFields (File);
 	}
 
-	void LoadFields (CFile &File)
-	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-	}
+	void LoadFields (CFile &File);
 
 	void Use (CBaseEntity *, CBaseEntity *)
 	{
@@ -882,14 +877,40 @@ public:
 		// Paril: backwards compatibility
 		NextThink = level.Frame + Delay;
 	};
+
+	void FireTarget ();
 };
 
 LINK_CLASSNAME_TO_CLASS ("target_crosslevel_target", CTargetCrossLevelTarget);
 
-void FireCrosslevelTrigger (CBaseEntity *Entity)
+typedef std::vector<CTargetCrossLevelTarget*, std::generic_allocator<CTargetCrossLevelTarget*> > CrossLevelTargetList;
+
+CrossLevelTargetList &GetCrossLevelTargetList ()
 {
-	CTargetCrossLevelTarget *Target = entity_cast<CTargetCrossLevelTarget>(Entity);
-	Target->NextThink = level.Frame + Target->Delay;
+	static CrossLevelTargetList List;
+	return List;
+}
+
+void CTargetCrossLevelTarget::LoadFields (CFile &File)
+{
+	CMapEntity::LoadFields (File);
+	CUsableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+
+	GetCrossLevelTargetList().push_back (this);
+}
+
+void CTargetCrossLevelTarget::FireTarget ()
+{
+	NextThink = level.Frame + Delay;
+}
+
+void FireCrossLevelTargets ()
+{
+	for (CrossLevelTargetList::iterator it = GetCrossLevelTargetList().begin(); it < GetCrossLevelTargetList().end(); ++it)
+		(*it)->FireTarget ();
+
+	GetCrossLevelTargetList().clear();
 }
 
 /*QUAKED target_secret (1 0 1) (-8 -8 -8) (8 8 8)

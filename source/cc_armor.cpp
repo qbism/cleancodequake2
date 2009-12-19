@@ -161,7 +161,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfNoArmor)
+		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfNoArmor.IsEnabled())
 		{
 			Free ();
 			return;

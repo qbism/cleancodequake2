@@ -124,7 +124,7 @@ bool CheckAutoSwitch (CPlayerEntity *other)
 
 bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if ( (dmFlags.dfWeaponsStay || game.mode == GAME_COOPERATIVE) 
+	if ( (dmFlags.dfWeaponsStay.IsEnabled() || game.mode == GAME_COOPERATIVE) 
 		&& other->Client.Persistent.Inventory.Has(GetIndex()))
 	{
 		if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
@@ -138,7 +138,7 @@ bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 		// give them some ammo with it
 		if (Ammo)
 		{
-			if (dmFlags.dfInfiniteAmmo)
+			if (dmFlags.dfInfiniteAmmo.IsEnabled())
 				Ammo->AddAmmo (other, 1000);
 			else
 				Ammo->AddAmmo (other, Ammo->Quantity);
@@ -148,7 +148,7 @@ bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 		{
 			if (game.mode & GAME_DEATHMATCH)
 			{
-				if (dmFlags.dfWeaponsStay)
+				if (dmFlags.dfWeaponsStay.IsEnabled())
 					ent->Flags |= FL_RESPAWN;
 				else
 					SetRespawn (ent, 300);
@@ -278,7 +278,7 @@ bool CAmmoWeapon::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 	sint32			count = Quantity;
 	bool		weapon = (Flags & ITEMFLAG_WEAPON);
 
-	if (weapon && dmFlags.dfInfiniteAmmo)
+	if (weapon && dmFlags.dfInfiniteAmmo.IsEnabled())
 		count = 1000;
 	else if (ent->AmmoCount)
 		count = ent->AmmoCount;
@@ -380,7 +380,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo)
+		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
 		{
 			Free ();
 			return;

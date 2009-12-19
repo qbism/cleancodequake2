@@ -622,7 +622,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 				files.push_back ((addDir) ? dirFiles[i].c_str() : std::cc_string(name));
 		}
 	}
-
+	
 	return files;
 }
 

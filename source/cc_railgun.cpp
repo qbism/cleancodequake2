@@ -88,9 +88,7 @@ void CRailgun::Fire (CPlayerEntity *ent)
 
 	ent->Client.PlayerState.GetGunFrame()++;
 	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-
-	if (!dmFlags.dfInfiniteAmmo)
-		DepleteAmmo(ent, 1);
+	DepleteAmmo(ent, 1);
 }
 
 WEAPON_DEFS (CRailgun);

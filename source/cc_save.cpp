@@ -551,7 +551,6 @@ void InitEntities ();
 void InitNodes ();
 void ShutdownNodes ();
 #endif
-void FireCrosslevelTrigger (CBaseEntity *Entity);
 
 #include "cc_bodyqueue.h"
 
@@ -591,6 +590,8 @@ void SetClientFields ()
 		SaveClientData = NULL;
 	}
 }
+
+void FireCrossLevelTargets ();
 
 void CGameAPI::ReadLevel (char *filename)
 {
@@ -687,20 +688,7 @@ void CGameAPI::ReadLevel (char *filename)
 		CPlayerEntity::RestoreClientData ();
 
 	// do any load time things at this point
-	// FIXME: make this faster...
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
-	{
-		edict_t *ent = (*it);
-
-		if (!ent->inUse)
-			continue;
-
-		// fire any cross-level triggers
-		if ((ent->Entity->ClassName) && strcmp(ent->Entity->ClassName, "target_crosslevel_target") == 0)
-			FireCrosslevelTrigger (ent->Entity);
-	}
-
-	//SetClientFields ();
+	FireCrossLevelTargets ();
 
 	READ_MAGIC
 }

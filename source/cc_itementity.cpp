@@ -238,7 +238,7 @@ void CItemEntity::Think ()
 		//in ctf, when we are weapons stay, only the master of a team of weapons
 		//is spawned
 				if ((game.mode & GAME_CTF) &&
-					dmFlags.dfWeaponsStay &&
+					dmFlags.dfWeaponsStay.IsEnabled() &&
 					entity_cast<CItemEntity>(Master)->LinkedItem && (entity_cast<CItemEntity>(Master)->LinkedItem->Flags & ITEMFLAG_WEAPON))
 					RespawnedEntity = Master;
 				else

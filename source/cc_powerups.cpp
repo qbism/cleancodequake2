@@ -185,7 +185,7 @@ public:
 #if CLEANCTF_ENABLED
 			!(game.mode & GAME_CTF) && 
 #endif
-			!dmFlags.dfDmTechs) || !Player->HasRegeneration())
+			!dmFlags.dfDmTechs.IsEnabled()) || !Player->HasRegeneration())
 				)
 			{
 				NextThink = level.Frame + 10;
@@ -205,7 +205,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfNoHealth || dmFlags.dfNoItems))
+		if ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfNoHealth.IsEnabled() || dmFlags.dfNoItems.IsEnabled()))
 		{
 			Free ();
 			return;
@@ -227,7 +227,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 {
 	CMegaHealthEntity *MegaHealth = entity_cast<CMegaHealthEntity>(ent);
 
-	if ((!dmFlags.dfDmTechs
+	if ((!dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 		&& !(game.mode & GAME_CTF)
 #endif
@@ -235,7 +235,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 #if CLEANCTF_ENABLED
 		(game.mode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs) && !other->HasRegeneration()))
+		dmFlags.dfDmTechs.IsEnabled()) && !other->HasRegeneration()))
 	{
 		MegaHealth->MegaHealthThinking = true;
 		MegaHealth->NextThink = level.Frame + 50;
@@ -284,7 +284,7 @@ void CQuadDamage::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 		if (ent->SpawnFlags & DROPPED_PLAYER_ITEM)
 			quad_drop_timeout_hack = (ent->NextThink - level.Frame);
 
-		if (dmFlags.dfInstantItems)
+		if (dmFlags.dfInstantItems.IsEnabled())
 			Use (other);
 	}
 }
@@ -315,7 +315,7 @@ void CInvulnerability::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 300);
-		if (dmFlags.dfInstantItems || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (other);
 	}
 }
@@ -338,7 +338,7 @@ void CSilencer::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 300);
-		if (dmFlags.dfInstantItems || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (other);
 	}
 }
@@ -355,7 +355,7 @@ void CRebreather::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
-		if (dmFlags.dfInstantItems || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (other);
 	}
 }
@@ -376,7 +376,7 @@ void CEnvironmentSuit::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
-		if (dmFlags.dfInstantItems || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (other);
 	}
 }
@@ -484,7 +484,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfNoItems)
+		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfNoItems.IsEnabled())
 		{
 			Free ();
 			return;

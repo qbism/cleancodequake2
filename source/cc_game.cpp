@@ -56,7 +56,7 @@ void EndDMLevel ()
 	static const char *seps = " ,\n\r";
 
 	// stay on same level flag
-	if (dmFlags.dfSameLevel)
+	if (dmFlags.dfSameLevel.IsEnabled())
 	{
 		BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()));
 		return;
@@ -390,15 +390,16 @@ void CGameAPI::RunFrame ()
 #if MONSTERS_USE_PATHFINDING
 	RunNodes();
 #endif
+
+#if _WIN32
+	Sleep (0);
+#endif
 }
 
 void SetupGamemode ()
 {
 	sint32 dmInt = deathmatch->Integer(),
 		coopInt = coop->Integer();
-#if CLEANCTF_ENABLED
-	sint32 ctfInt = ctf->Integer();
-#endif
 
 	// Did we request deathmatch?
 	if (dmInt)
@@ -411,12 +412,14 @@ void SetupGamemode ()
 			{
 				// We want deathmatch
 				coop->Set (0, false);
+				deathmatch->Set (1, false);
 				// Let it fall through
 			}
 			else if (coopInt > dmInt)
 			{
 				// We want coop
 				deathmatch->Set (0, false);
+				coop->Set (1, false);
 				game.mode = GAME_COOPERATIVE;
 				return;
 			}
@@ -447,7 +450,7 @@ void SetupGamemode ()
 
 	// If we reached here, we wanted deathmatch
 #if CLEANCTF_ENABLED
-	if (ctfInt)
+	if (ctf->Integer())
 		game.mode |= GAME_CTF;
 #endif
 }
@@ -628,7 +631,7 @@ void CGameAPI::Init ()
 
 	//Mem_Init ();
 	DebugPrintf ("==== InitGame ====\n");
-	DebugPrintf ("Running CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing game...", CLEANCODE_VERSION_PRINT_ARGS, __TIMESTAMP__, CONFIGURATIONSTRING, CPUSTRING);
+	DebugPrintf ("Running CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing game...\n", CLEANCODE_VERSION_PRINT_ARGS, TimeStamp(), CONFIGURATIONSTRING, CPUSTRING);
 
 	seedMT (time(NULL));
 

@@ -156,9 +156,7 @@ void CChaingun::Fire (CPlayerEntity *ent)
 	AttackSound (ent);
 
 	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-
-	if (!dmFlags.dfInfiniteAmmo)
-		DepleteAmmo (ent, shots);
+	DepleteAmmo (ent, shots);
 }
 
 WEAPON_DEFS (CChaingun);

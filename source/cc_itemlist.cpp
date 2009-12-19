@@ -186,7 +186,7 @@ void InitItemlist ()
 		AddFlagsToList();
 #endif
 
-	if (dmFlags.dfDmTechs
+	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 	|| (game.mode & GAME_CTF)
 #endif
