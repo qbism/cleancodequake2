@@ -86,8 +86,7 @@ void CShotgun::Fire (CPlayerEntity *ent)
 	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
 	FireAnimation (ent);
 
-	if (!dmFlags.dfInfiniteAmmo)
-		DepleteAmmo(ent, 1);
+	DepleteAmmo(ent, 1);
 }
 
 WEAPON_DEFS (CShotgun);

@@ -89,7 +89,7 @@ char *ClientTeam (CPlayerEntity *ent)
 	if (!p)
 		return value;
 
-	if (dmFlags.dfModelTeams)
+	if (dmFlags.dfModelTeams.IsEnabled())
 	{
 		*p = 0;
 		return value;
@@ -104,7 +104,7 @@ bool OnSameTeam (CPlayerEntity *ent1, CPlayerEntity *ent2)
 	char	ent1Team [512];
 	char	ent2Team [512];
 
-	if (!(dmFlags.dfSkinTeams || dmFlags.dfModelTeams))
+	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
 		return false;
 
 	Q_strncpyz (ent1Team, ClientTeam (ent1), sizeof(ent1Team));
@@ -350,13 +350,13 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	// friendly fire avoidance
 	// if enabled you can't hurt teammates (but you can hurt yourself)
 	// knockback still occurs
-	if ((this != attacker) && ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams || dmFlags.dfModelTeams) || game.mode == GAME_COOPERATIVE))
+	if ((this != attacker) && ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()) || game.mode == GAME_COOPERATIVE))
 	{
 		if ((EntityFlags & ENT_PLAYER) && attacker && (attacker->EntityFlags & ENT_PLAYER))
 		{
 			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(attacker)))
 			{
-				if (dmFlags.dfNoFriendlyFire)
+				if (dmFlags.dfNoFriendlyFire.IsEnabled())
 					damage = 0;
 				else
 					mod |= MOD_FRIENDLY_FIRE;
@@ -390,7 +390,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		}
 	}
 
-	if (dmFlags.dfDmTechs
+	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 	|| (game.mode & GAME_CTF)
 #endif
@@ -458,7 +458,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 //team armor protect
 	if ((game.mode & GAME_CTF) && isClient && (attacker->EntityFlags & ENT_PLAYER) &&
 		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(attacker))->Client.Respawn.CTF.Team) &&
-		(this != attacker) && dmFlags.dfCtfArmorProtect)
+		(this != attacker) && dmFlags.dfCtfArmorProtect.IsEnabled())
 		psave = asave = 0;
 	else
 	{
@@ -482,7 +482,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	//treat cheat/powerup savings the same as armor
 	asave += save;
 
-	if (dmFlags.dfDmTechs
+	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 	|| (game.mode & GAME_CTF)
 #endif

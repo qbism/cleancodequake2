@@ -35,78 +35,65 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 dmFlagsConfig dmFlags;
 
-dmFlagsConfig::dmFlagsConfig()
+dmFlagsConfig::dmFlagsConfig() :
+  dfNoHealth (DF_NO_HEALTH),
+  dfNoItems (DF_NO_ITEMS),
+  dfWeaponsStay (DF_WEAPONS_STAY),
+  dfNoFallingDamage (DF_NO_FALLING),
+  dfInstantItems (DF_INSTANT_ITEMS),
+  dfSameLevel (DF_SAME_LEVEL),
+  dfSkinTeams (DF_SKINTEAMS),
+  dfModelTeams (DF_MODELTEAMS),
+  dfNoFriendlyFire (DF_NO_FRIENDLY_FIRE),
+  dfSpawnFarthest (DF_SPAWN_FARTHEST),
+  dfForceRespawn (DF_FORCE_RESPAWN),
+  dfNoArmor (DF_NO_ARMOR),
+  dfAllowExit (DF_ALLOW_EXIT),
+  dfInfiniteAmmo (DF_INFINITE_AMMO),
+  dfQuadDrop (DF_QUAD_DROP),
+  dfFixedFov (DF_FIXED_FOV),
+  dfQuadFireDrop (DF_QUADFIRE_DROP),
+  dfNoMines (DF_NO_MINES),
+  dfNoStackDouble (DF_NO_STACK_DOUBLE),
+  dfNoNukes (DF_NO_NUKES),
+  dfNoSpheres (DF_NO_SPHERES),
+#if CLEANCTF_ENABLED
+  dfCtfForceJoin (DF_CTF_FORCEJOIN),
+  dfCtfArmorProtect (DF_ARMOR_PROTECT),
+  dfCtfNoTech (DF_CTF_NO_TECH),
+#endif
+  dfDmTechs (DF_DM_TECHS)
 {
-	Reset ();
 };
 
-void dmFlagsConfig::Reset ()
+void dmFlagsConfig::UpdateFlags (EDeathmatchFlags wantedFlags)
 {
-	dfNoHealth = dfNoItems = dfWeaponsStay = dfNoFallingDamage =
-	dfInstantItems = dfSameLevel = dfSkinTeams = dfModelTeams = dfNoFriendlyFire =
-	dfSpawnFarthest = dfForceRespawn = dfNoArmor = dfAllowExit =
-	dfInfiniteAmmo = dfQuadDrop = dfFixedFov = dfQuadFireDrop = dfNoMines =
-	dfNoStackDouble = dfNoNukes = dfNoSpheres = 
-#if CLEANCTF_ENABLED
-	dfCtfNoTech = dfCtfForceJoin = dfCtfArmorProtect =
-#endif
-	dfDmTechs =
-	false;
-};
+	dfNoHealth.Check (wantedFlags);
+	dfNoItems.Check (wantedFlags);
+	dfWeaponsStay.Check (wantedFlags);
+	dfNoFallingDamage.Check (wantedFlags);
+	dfInstantItems.Check (wantedFlags);
+	dfSameLevel.Check (wantedFlags);
 
-void dmFlagsConfig::UpdateFlags (sint32 wantedFlags)
-{
-	Reset();
-	if (wantedFlags & DF_NO_HEALTH)
-		dfNoHealth = true;
-	if (wantedFlags & DF_NO_ITEMS)
-		dfNoItems = true;
-	if (wantedFlags & DF_WEAPONS_STAY)
-		dfWeaponsStay = true;
-	if (wantedFlags & DF_NO_FALLING)
-		dfNoFallingDamage = true;
-	if (wantedFlags & DF_INSTANT_ITEMS)
-		dfInstantItems = true;
-	if (wantedFlags & DF_SAME_LEVEL)
-		dfSameLevel = true;
-	if (wantedFlags & DF_SKINTEAMS)
-		dfSkinTeams = true;
-	if (wantedFlags & DF_MODELTEAMS)
-		dfModelTeams = true;
-	if (wantedFlags & DF_NO_FRIENDLY_FIRE)
-		dfNoFriendlyFire = true;
-	if (wantedFlags & DF_SPAWN_FARTHEST)
-		dfSpawnFarthest = true;
-	if (wantedFlags & DF_FORCE_RESPAWN)
-		dfForceRespawn = true;
-	if (wantedFlags & DF_NO_ARMOR)
-		dfNoArmor = true;
-	if (wantedFlags & DF_ALLOW_EXIT)
-		dfAllowExit = true;
-	if (wantedFlags & DF_INFINITE_AMMO)
-		dfInfiniteAmmo = true;
-	if (wantedFlags & DF_QUAD_DROP)
-		dfQuadDrop = true;
-	if (wantedFlags & DF_FIXED_FOV)
-		dfFixedFov = true;
-	if (wantedFlags & DF_QUADFIRE_DROP)
-		dfQuadFireDrop = true;
-	if (wantedFlags & DF_NO_MINES)
-		dfNoMines = true;
-	if (wantedFlags & DF_NO_STACK_DOUBLE)
-		dfNoStackDouble = true;
-	if (wantedFlags & DF_NO_NUKES)
-		dfNoNukes = true;
-	if (wantedFlags & DF_NO_SPHERES)
-		dfNoSpheres = true;
+	dfSkinTeams.Check (wantedFlags);
+	dfModelTeams.Check (wantedFlags);
+	dfNoFriendlyFire.Check (wantedFlags);
+	dfSpawnFarthest.Check (wantedFlags);
+	dfForceRespawn.Check (wantedFlags);
+	dfNoArmor.Check (wantedFlags);
+	dfAllowExit.Check (wantedFlags);
+	dfInfiniteAmmo.Check (wantedFlags);
+	dfQuadDrop.Check (wantedFlags);
+	dfFixedFov.Check (wantedFlags);
+	dfQuadFireDrop.Check (wantedFlags);
+	dfNoMines.Check (wantedFlags);
+	dfNoStackDouble.Check (wantedFlags);
+	dfNoNukes.Check (wantedFlags);
+	dfNoSpheres.Check (wantedFlags);
 #if CLEANCTF_ENABLED
-	if (wantedFlags & DF_CTF_FORCEJOIN)
-		dfCtfForceJoin = true;
-	if (wantedFlags & DF_ARMOR_PROTECT)
-		dfCtfArmorProtect = true;
-	if (wantedFlags & DF_CTF_NO_TECH)
-		dfCtfNoTech = true;
+	dfCtfForceJoin.Check (wantedFlags);
+	dfCtfArmorProtect.Check (wantedFlags);
+	dfCtfNoTech.Check (wantedFlags);
 #endif
-	if (wantedFlags & DF_DM_TECHS)
-		dfDmTechs = true;
+	dfDmTechs.Check (wantedFlags);
 };

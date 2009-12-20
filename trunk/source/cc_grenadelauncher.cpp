@@ -83,9 +83,7 @@ void CGrenadeLauncher::Fire (CPlayerEntity *ent)
 	AttackSound (ent);
 
 	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-
-	if (!dmFlags.dfInfiniteAmmo)
-		DepleteAmmo(ent, 1);
+	DepleteAmmo(ent, 1);
 
 	ent->Client.PlayerState.GetGunFrame()++;
 }

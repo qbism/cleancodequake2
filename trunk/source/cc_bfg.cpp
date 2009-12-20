@@ -118,9 +118,7 @@ void CBFG::FireBFG (CPlayerEntity *ent)
 	ent->Client.PlayerState.GetGunFrame()++;
 
 	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-
-	if (!dmFlags.dfInfiniteAmmo)
-		DepleteAmmo (ent, 50);
+	DepleteAmmo (ent, 50);
 }
 
 WEAPON_DEFS (CBFG);

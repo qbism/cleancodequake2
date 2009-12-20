@@ -94,7 +94,7 @@ float	PlayersRangeFromSpot (CBaseEntity *spot);
 
 inline CSpotBase *SelectDeathmatchSpawnPoint ()
 {
-	return (dmFlags.dfSpawnFarthest) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
+	return (dmFlags.dfSpawnFarthest.IsEnabled()) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
 }
 
 class CForEachTeamChainCallback

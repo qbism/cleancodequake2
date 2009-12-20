@@ -39,6 +39,11 @@ inline const char *BuildDate()
 	return __DATE__;
 };
 
+inline const char *TimeStamp()
+{
+	return __TIMESTAMP__;
+};
+
 // Pre-defined classes
 class CBaseEntity;
 class CPlayerEntity;

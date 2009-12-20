@@ -406,7 +406,7 @@ void CPlayerEntity::BeginServerFrame ()
 				buttonMask = -1;
 
 			if ( ( Client.LatchedButtons & buttonMask ) ||
-				((game.mode & GAME_DEATHMATCH) && dmFlags.dfForceRespawn ) 
+				((game.mode & GAME_DEATHMATCH) && dmFlags.dfForceRespawn.IsEnabled() ) 
 #if CLEANCTF_ENABLED
 				|| CTFMatchOn()
 #endif
@@ -632,7 +632,7 @@ void CPlayerEntity::PutInServer ()
 	Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 //ZOID
 
-	if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfFixedFov)
+	if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfFixedFov.IsEnabled())
 		Client.PlayerState.GetFov () = 90;
 	else
 	{
@@ -794,7 +794,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	}
 
 	// fov
-	if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfFixedFov)
+	if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfFixedFov.IsEnabled())
 		Client.PlayerState.GetFov () = 90;
 	else
 	{
@@ -880,7 +880,7 @@ bool CPlayerEntity::CTFStart ()
 	if (Client.Respawn.CTF.Team != CTF_NOTEAM)
 		return false;
 
-	if ((!dmFlags.dfCtfForceJoin || ctfgame.match >= MATCH_SETUP))
+	if ((!dmFlags.dfCtfForceJoin.IsEnabled() || ctfgame.match >= MATCH_SETUP))
 	{
 		// start as 'observer'
 		Client.Respawn.CTF.Team = CTF_NOTEAM;
@@ -1282,7 +1282,7 @@ P_FallingDamage
 */
 inline void CPlayerEntity::FallingDamage ()
 {
-	if (dmFlags.dfNoFallingDamage)
+	if (dmFlags.dfNoFallingDamage.IsEnabled())
 		return;
 
 	if (State.GetModelIndex() != 255)
@@ -1345,9 +1345,7 @@ inline void CPlayerEntity::FallingDamage ()
 			damage = 1;
 
 		static vec3f dir (0, 0, 1);
-
-		if (!dmFlags.dfNoFallingDamage )
-			TakeDamage (World, World, dir, State.GetOrigin(), vec3fOrigin, damage, 0, 0, MOD_FALLING);
+		TakeDamage (World, World, dir, State.GetOrigin(), vec3fOrigin, damage, 0, 0, MOD_FALLING);
 	}
 	else
 	{
@@ -1946,7 +1944,7 @@ void CPlayerEntity::EndServerFrame ()
 #if CLEANCTF_ENABLED
 		(game.mode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs) && (Client.Persistent.Tech && (Client.Persistent.Tech->TechType == CTech::TECH_PASSIVE)))
+		dmFlags.dfDmTechs.IsEnabled()) && (Client.Persistent.Tech && (Client.Persistent.Tech->TechType == CTech::TECH_PASSIVE)))
 		Client.Persistent.Tech->DoPassiveTech (this);
 
 	// if the scoreboard is up, update it
@@ -2767,7 +2765,7 @@ void CPlayerEntity::TossClientWeapon ()
 	if (Item && !Item->WorldModel)
 		Item = NULL;
 
-	bool quad = (!dmFlags.dfQuadDrop) ? false : (bool)(Client.Timers.QuadDamage > (level.Frame + 10));
+	bool quad = (!dmFlags.dfQuadDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadDamage > (level.Frame + 10));
 	float spread = (Item && quad) ? 22.5f : 0.0f;
 
 	if (Item)
@@ -3153,7 +3151,7 @@ void CPlayerEntity::CTFAssignTeam()
 
 	Client.Respawn.CTF.State = 0;
 
-	if (!dmFlags.dfCtfForceJoin)
+	if (!dmFlags.dfCtfForceJoin.IsEnabled())
 	{
 		Client.Respawn.CTF.Team = CTF_NOTEAM;
 		return;
@@ -3386,7 +3384,7 @@ void CPlayerEntity::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 d
 #if CLEANCTF_ENABLED
 			(game.mode & GAME_CTF) || 
 #endif
-			dmFlags.dfDmTechs) 
+			dmFlags.dfDmTechs.IsEnabled()) 
 			DeadDropTech();
 
 		if (game.mode & GAME_DEATHMATCH)
@@ -4042,7 +4040,7 @@ void CPlayerEntity::Disconnect ()
 #if CLEANCTF_ENABLED
 		(game.mode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs) 
+		dmFlags.dfDmTechs.IsEnabled()) 
 		DeadDropTech();
 
 	// send effect

@@ -116,7 +116,7 @@ public:
 			}
 
 			sint32 i = dmflags->Integer();
-			if (!!MyMenu->WeaponsStaySpin->Index != dmFlags.dfWeaponsStay)
+			if (!!MyMenu->WeaponsStaySpin->Index != dmFlags.dfWeaponsStay.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s weapons stay.\n",
 					ent->Client.Persistent.Name.c_str(), MyMenu->WeaponsStaySpin->Index ? "on" : "off");
@@ -127,7 +127,7 @@ public:
 					i &= ~DF_WEAPONS_STAY;
 			}
 
-			if (!!MyMenu->InstantItemsSpin->Index != dmFlags.dfInstantItems)
+			if (!!MyMenu->InstantItemsSpin->Index != dmFlags.dfInstantItems.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant items.\n",
 					ent->Client.Persistent.Name.c_str(), MyMenu->InstantItemsSpin->Index ? "on" : "off");
@@ -138,7 +138,7 @@ public:
 					i &= ~DF_INSTANT_ITEMS;
 			}
 
-			if (!!MyMenu->QuadDropSpin->Index != dmFlags.dfQuadDrop)
+			if (!!MyMenu->QuadDropSpin->Index != dmFlags.dfQuadDrop.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s quad drop.\n",
 					ent->Client.Persistent.Name.c_str(), MyMenu->QuadDropSpin->Index ? "on" : "off");
@@ -240,19 +240,19 @@ public:
 
 		y += 8;
 		WeaponsStaySpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		WeaponsStaySpin->Index = dmFlags.dfWeaponsStay;
+		WeaponsStaySpin->Index = dmFlags.dfWeaponsStay.IsEnabled();
 		WeaponsStaySpin->x += (8 * 4);
 		WeaponsStaySpin->Align = LA_LEFT;
 
 		y += 8;
 		InstantItemsSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		InstantItemsSpin->Index = dmFlags.dfInstantItems;
+		InstantItemsSpin->Index = dmFlags.dfInstantItems.IsEnabled();
 		InstantItemsSpin->x += (8 * 4);
 		InstantItemsSpin->Align = LA_LEFT;
 
 		y += 8;
 		QuadDropSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		QuadDropSpin->Index = dmFlags.dfQuadDrop;
+		QuadDropSpin->Index = dmFlags.dfQuadDrop.IsEnabled();
 		QuadDropSpin->x += (8 * 4);
 		QuadDropSpin->Align = LA_LEFT;
 

@@ -37,41 +37,66 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class dmFlagsConfig
 {
 public:
-	bool				dfNoHealth;
-	bool				dfNoItems;
-	bool				dfWeaponsStay;
-	bool				dfNoFallingDamage;
-	bool				dfInstantItems;
-	bool				dfSameLevel;
-	bool				dfSkinTeams;
-	bool				dfModelTeams;
-	bool				dfNoFriendlyFire;
-	bool				dfSpawnFarthest;
-	bool				dfForceRespawn;
-	bool				dfNoArmor;
-	bool				dfAllowExit;
-	bool				dfInfiniteAmmo;
-	bool				dfQuadDrop;
-	bool				dfFixedFov;
+	class dmFlagValue
+	{
+		bool					Enabled;
+		const EDeathmatchFlags	Flag;
 
-	bool				dfQuadFireDrop;
-	bool				dfNoMines;
-	bool				dfNoStackDouble;
-	bool				dfNoNukes;
-	bool				dfNoSpheres;
+	public:
+		dmFlagValue (EDeathmatchFlags Flag) :
+		  Flag (Flag),
+		  Enabled (false)
+		  {
+		  };
+
+		dmFlagValue &operator= (dmFlagValue&) { return *this; }
+
+		inline bool IsEnabled ()
+		{
+			return Enabled;
+		};
+
+		void Check (EDeathmatchFlags WantedFlags)
+		{
+			Enabled = !!(WantedFlags & Flag);
+		};
+
+		friend class dmFlagsConfig;
+	};
+
+	dmFlagValue				dfNoHealth;
+	dmFlagValue				dfNoItems;
+	dmFlagValue				dfWeaponsStay;
+	dmFlagValue				dfNoFallingDamage;
+	dmFlagValue				dfInstantItems;
+	dmFlagValue				dfSameLevel;
+	dmFlagValue				dfSkinTeams;
+	dmFlagValue				dfModelTeams;
+	dmFlagValue				dfNoFriendlyFire;
+	dmFlagValue				dfSpawnFarthest;
+	dmFlagValue				dfForceRespawn;
+	dmFlagValue				dfNoArmor;
+	dmFlagValue				dfAllowExit;
+	dmFlagValue				dfInfiniteAmmo;
+	dmFlagValue				dfQuadDrop;
+	dmFlagValue				dfFixedFov;
+
+	dmFlagValue				dfQuadFireDrop;
+	dmFlagValue				dfNoMines;
+	dmFlagValue				dfNoStackDouble;
+	dmFlagValue				dfNoNukes;
+	dmFlagValue				dfNoSpheres;
 
 #if CLEANCTF_ENABLED
-	bool				dfCtfNoTech;
-	bool				dfCtfForceJoin;
-	bool				dfCtfArmorProtect;
+	dmFlagValue				dfCtfNoTech;
+	dmFlagValue				dfCtfForceJoin;
+	dmFlagValue				dfCtfArmorProtect;
 #endif
 
-	bool				dfDmTechs;
+	dmFlagValue				dfDmTechs;
 
 	dmFlagsConfig();
-
-	void UpdateFlags (sint32 wantedFlags);
-	void Reset ();
+	void UpdateFlags (EDeathmatchFlags wantedFlags);
 };
 
 extern dmFlagsConfig dmFlags;

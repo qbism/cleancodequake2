@@ -274,6 +274,9 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 
 void CWeapon::DepleteAmmo (CPlayerEntity *Player, sint32 Amount = 1)
 {
+	if (dmFlags.dfInfiniteAmmo.IsEnabled())
+		return;
+
 	if (Item)
 	{
 		CAmmo *Ammo = Item->Ammo;
@@ -347,7 +350,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 	isQuad = (Player->Client.Timers.QuadDamage > level.Frame);
 	isSilenced = (Player->Client.Timers.SilencerShots) ? true : false;
 	WeaponGeneric (Player);
-	if (dmFlags.dfDmTechs
+	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 		|| (game.mode & GAME_CTF)
 #endif
@@ -368,7 +371,7 @@ void CWeapon::AttackSound(CPlayerEntity *Player)
 #if CLEANCTF_ENABLED
 		(game.mode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs)
+		dmFlags.dfDmTechs.IsEnabled())
 	{
 		Player->ApplyHasteSound();
 

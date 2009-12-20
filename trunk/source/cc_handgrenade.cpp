@@ -104,10 +104,8 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 #if CLEANCTF_ENABLED
 	(game.mode & GAME_CTF) || 
 #endif
-	dmFlags.dfDmTechs) && ent->ApplyHaste()) ? 5 : 10);
-
-	if (!dmFlags.dfInfiniteAmmo)
-		DepleteAmmo(ent, 1);
+	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste()) ? 5 : 10);
+	DepleteAmmo(ent, 1);
 
 	if (ent->Health <= 0 || ent->DeadFlag || ent->State.GetModelIndex() != 255) // VWep animations screw up corpses
 		return;

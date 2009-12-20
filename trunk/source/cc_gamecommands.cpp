@@ -288,7 +288,7 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 		return;
 	}
 
-	if (!(dmFlags.dfSkinTeams || dmFlags.dfModelTeams))
+	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
 		team = false;
 
 	Q_snprintfz (text, sizeof(text), (team) ? "(%s): " : "%s: ", ent->Client.Persistent.Name.c_str());

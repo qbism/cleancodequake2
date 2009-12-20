@@ -983,7 +983,7 @@ CSpotBase *CPlayerEntity::SelectCTFSpawnPoint ()
 	float	range1 = 99999, range2 = 99999;
 
 	if (Client.Respawn.CTF.State)
-		return (dmFlags.dfSpawnFarthest) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
+		return (dmFlags.dfSpawnFarthest.IsEnabled()) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
 
 	Client.Respawn.CTF.State++;
 

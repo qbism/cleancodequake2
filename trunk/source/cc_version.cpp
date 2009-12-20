@@ -83,7 +83,7 @@ void VerifyVersionFile ()
 	Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
 	Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
-	if (CompareVersion (prefix.c_str(), minor, major, build))
+	if (CompareVersion (prefix.c_str(), major, minor, build))
 	{
 		DebugPrintf ("Version file out of date; updating...\n");
 		WriteVersion ();
