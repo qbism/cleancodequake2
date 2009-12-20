@@ -49,6 +49,8 @@ public:
 		  {
 		  };
 
+		dmFlagValue &operator= (dmFlagValue&) { return *this; }
+
 		inline bool IsEnabled ()
 		{
 			return Enabled;
