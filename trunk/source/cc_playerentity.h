@@ -578,6 +578,7 @@ public:
 		float				CinematicCameraDist;
 		float				LastYValue;
 	} Cinematic;
+	bool			WasOnLadder;
 	// Arcade Quake II
 
 	CClient (gclient_t *client);
