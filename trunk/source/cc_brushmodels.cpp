@@ -448,6 +448,8 @@ Set "sounds" to one of the following:
 */
 
 #define PLAT_LOW_TRIGGER	1
+#define PLAT_ALWAYS_TRIGGER	2
+#define PLAT_CINEMATIC_WAIT 4
 
 CPlatForm::CPlatForm() :
 CBaseEntity(),
@@ -501,9 +503,13 @@ void CPlatForm::Blocked (CBaseEntity *other)
 
 void CPlatForm::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-	if (ThinkType)
+	if (!(SpawnFlags & PLAT_ALWAYS_TRIGGER) && ThinkType)
 		return;		// already down
-	GoDown ();
+
+	if (SpawnFlags & PLAT_ALWAYS_TRIGGER)
+		GoUp ();
+	else
+		GoDown ();
 };
 
 void CPlatForm::HitTop ()
@@ -517,7 +523,7 @@ void CPlatForm::HitTop ()
 	MoveState = STATE_TOP;
 
 	ThinkType = PLATTHINK_GO_DOWN;
-	NextThink = level.Frame + 30;
+	NextThink = level.Frame + ((SpawnFlags & PLAT_CINEMATIC_WAIT) ? 10 : 30);
 }
 
 void CPlatForm::HitBottom ()
@@ -623,6 +629,9 @@ void CPlatFormInsideTrigger::Touch (CBaseEntity *other, plane_t *plane, cmBspSur
 
 void CPlatForm::SpawnInsideTrigger ()
 {
+	if (SpawnFlags & PLAT_ALWAYS_TRIGGER)
+		return;
+
 	CPlatFormInsideTrigger	*trigger = QNewEntityOf CPlatFormInsideTrigger;
 	vec3f	tmin, tmax;
 
@@ -697,7 +706,7 @@ void CPlatForm::Spawn ()
 	Positions[0] = Positions[1] = State.GetOrigin ();
 	Positions[1].Z -= (Height) ? Height : ((GetMaxs().Z - GetMins().Z) - Lip);
 
-	if (TargetName)
+	if (TargetName && !(SpawnFlags & PLAT_ALWAYS_TRIGGER))
 		MoveState = STATE_UP;
 	else
 	{

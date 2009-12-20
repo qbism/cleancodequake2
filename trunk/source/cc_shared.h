@@ -85,6 +85,9 @@ typedef sint32	FrameNumber_t;
 #include "cc_utils.h"
 #include "cc_cmds.h"
 #include "cc_modules.h"
+// Arcade Quake II
+#include "cc_arcadeq2.h"
+// Arcade Quake II
 
 // Classes that require classes from the above includes
 #include "cc_print.h"

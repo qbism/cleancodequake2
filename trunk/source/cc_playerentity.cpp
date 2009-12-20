@@ -302,6 +302,9 @@ void CClient::Clear ()
 		memset (&Tech, 0, sizeof(Tech));
 
 		memset (&DamageValues, 0, sizeof(DamageValues));
+
+		memset (&DoubleTap, 0, sizeof(DoubleTap));
+		memset (&Cinematic, 0, sizeof(Cinematic));
 	}
 }
 
@@ -354,7 +357,11 @@ void CreateFollowDude (CPlayerEntity *Owner)
 	Owner->Client.Respawn.CameraPlayer->State.GetSkinNum() = Owner->State.GetSkinNum();
 	Owner->Client.Respawn.CameraPlayer->Link ();
 }
+
+#include "cc_infoentities.h"
+
 // Arcade Quake II
+
 
 void CPlayerEntity::BeginServerFrame ()
 {
@@ -364,21 +371,6 @@ void CPlayerEntity::BeginServerFrame ()
 	// Arcade Quake II
 	if (!Client.Respawn.CameraPlayer)
 		CreateFollowDude(this);
-	else
-	{
-		Client.Respawn.CameraPlayer->Link();
-		Client.Respawn.CameraPlayer->State.GetAngles() = State.GetAngles();
-		Client.Respawn.CameraPlayer->State.GetEffects() = State.GetEffects();
-		Client.Respawn.CameraPlayer->State.GetFrame() = State.GetFrame();
-		Client.Respawn.CameraPlayer->State.GetModelIndex() = State.GetModelIndex();
-		Client.Respawn.CameraPlayer->State.GetModelIndex(2) = State.GetModelIndex(2);
-		Client.Respawn.CameraPlayer->State.GetModelIndex(3) = State.GetModelIndex(3);
-		Client.Respawn.CameraPlayer->State.GetModelIndex(4) = State.GetModelIndex(4);
-		Client.Respawn.CameraPlayer->State.GetOldOrigin() = State.GetOldOrigin();
-		Client.Respawn.CameraPlayer->State.GetOrigin() = State.GetOrigin();
-		Client.Respawn.CameraPlayer->State.GetRenderEffects() = State.GetRenderEffects();
-		Client.Respawn.CameraPlayer->State.GetSkinNum() = State.GetSkinNum();
-	}
 	// Arcade Quake II
 
 	if ((game.mode & GAME_DEATHMATCH) &&  
@@ -1700,7 +1692,6 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 				return;		// stay there
 			Client.Anim.Priority = ANIM_WAVE;
 
-
 			if (duck)
 			{
 				State.GetFrame() = FRAME_crstnd01;
@@ -1821,7 +1812,10 @@ void CPlayerEntity::EndServerFrame ()
 	}
 
 	// Arcade Quake II
-	Client.PlayerState.GetPMove()->origin[1] -= Client.Respawn.CameraDistance;
+	if (Client.Cinematic.InCinematic)
+		Client.PlayerState.GetPMove()->origin[1] = Client.Cinematic.CinematicCameraDist - Client.Respawn.CameraDistance;
+	else
+		Client.PlayerState.GetPMove()->origin[1] -= Client.Respawn.CameraDistance;
 	Client.PlayerState.GetPMove()->origin[2] += Client.Respawn.CameraDistance/4.3;
 
 	if (Client.Respawn.CameraPlayer)
@@ -1960,6 +1954,32 @@ void CPlayerEntity::EndServerFrame ()
 		DeathmatchScoreboardMessage (false);
 	else if (Client.Respawn.MenuState.InMenu && !(level.Frame & 4))
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
+
+	// Arcade Quake II
+	if (Client.Respawn.CameraPlayer)
+	{
+		Client.Respawn.CameraPlayer->Link();
+		Client.Respawn.CameraPlayer->State.GetAngles() = State.GetAngles();
+
+		if (Client.Cinematic.InCinematic)
+		{
+			vec3f sub = (Client.Cinematic.CurrentCorner->State.GetOrigin() - State.GetOrigin()).ToAngles();
+			Client.Respawn.CameraPlayer->State.GetAngles().Clear ();
+			Client.Respawn.CameraPlayer->State.GetAngles().Y = sub.Y;
+		}
+
+		Client.Respawn.CameraPlayer->State.GetEffects() = State.GetEffects();
+		Client.Respawn.CameraPlayer->State.GetFrame() = State.GetFrame();
+		Client.Respawn.CameraPlayer->State.GetModelIndex() = State.GetModelIndex();
+		Client.Respawn.CameraPlayer->State.GetModelIndex(2) = State.GetModelIndex(2);
+		Client.Respawn.CameraPlayer->State.GetModelIndex(3) = State.GetModelIndex(3);
+		Client.Respawn.CameraPlayer->State.GetModelIndex(4) = State.GetModelIndex(4);
+		Client.Respawn.CameraPlayer->State.GetOldOrigin() = State.GetOldOrigin();
+		Client.Respawn.CameraPlayer->State.GetOrigin() = State.GetOrigin();
+		Client.Respawn.CameraPlayer->State.GetRenderEffects() = State.GetRenderEffects();
+		Client.Respawn.CameraPlayer->State.GetSkinNum() = State.GetSkinNum();
+	}
+	// Arcade Quake II
 }
 
 #if CLEANCTF_ENABLED
@@ -2793,6 +2813,52 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	// Arcade Quake II
 	ucmd->forwardMove = 0;
+
+	if (DeadFlag && Client.Cinematic.InCinematic)
+		Client.Cinematic.InCinematic = false;
+
+	if (Client.Cinematic.InCinematic)
+	{
+		ucmd->buttons = 0;
+		ucmd->sideMove = ucmd->upMove = 0;
+	
+		vec3f subtract = (State.GetOrigin() - Client.Cinematic.CurrentCorner->State.GetOrigin());
+		if (subtract[0] < -6)
+			ucmd->sideMove = 400;
+		else if (subtract[0] > 6)
+			ucmd->sideMove = -400;
+		if (subtract[1] < -6)
+			ucmd->forwardMove = 400;
+		else if (subtract[1] > 6)
+			ucmd->forwardMove = -400;
+
+		if (ucmd->sideMove == 0 && ucmd->forwardMove == 0)
+		{
+			if (subtract.Z < -6 || subtract.Z > 6)
+			{
+			}
+			else
+			{
+				char *SaveTarget = Client.Cinematic.CurrentCorner->Target;
+				Client.Cinematic.CurrentCorner->Target = Client.Cinematic.CurrentCorner->PathTarget;
+				Client.Cinematic.CurrentCorner->UseTargets (this, Client.Cinematic.CurrentCorner->Message);
+				Client.Cinematic.CurrentCorner->Target = SaveTarget;
+
+				State.GetOrigin () = Client.Cinematic.CurrentCorner->State.GetOrigin();
+				Velocity.Clear ();
+
+				if (Client.Cinematic.CurrentCorner->NextTargets.size())
+					Client.Cinematic.CurrentCorner = entity_cast<CPathCorner>(Client.Cinematic.CurrentCorner->NextTargets[0]);
+				else
+				{
+					Client.Cinematic.CurrentCorner = NULL;
+					Client.Cinematic.InCinematic = false;
+
+					State.GetOrigin().Y = Client.Cinematic.LastYValue;
+				}
+			}
+		}
+	}
 	// Arcade Quake II
 
 	level.CurrentEntity = this;
@@ -2800,6 +2866,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	if (level.IntermissionTime)
 	{
 		Client.PlayerState.GetPMove()->pmType = PMT_FREEZE;
+
 		// can exit intermission after five seconds
 		if (level.Frame > level.IntermissionTime + 50 
 			&& (ucmd->buttons & BUTTON_ANY) )

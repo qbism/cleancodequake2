@@ -682,6 +682,7 @@ echo Done!
     <ClCompile Include="..\..\shared\mersennetwister.cpp" />
     <ClCompile Include="..\..\shared\shared.cpp" />
     <ClCompile Include="..\..\shared\string.cpp" />
+    <ClCompile Include="..\..\source\cc_arcadeq2.cpp" />
     <ClCompile Include="..\..\source\cc_game.cpp" />
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_gameapi.cpp" />
@@ -797,6 +798,7 @@ echo Done!
     <ClInclude Include="..\..\shared\MathLib\Vector.h" />
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
+    <ClInclude Include="..\..\source\cc_arcadeq2.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_modules.h" />

@@ -68,12 +68,18 @@ void CMachinegun::FireAnimation (CPlayerEntity *ent)
 	ent->Client.Anim.Priority = ANIM_ATTACK;
 	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
-		ent->State.GetFrame() = (FRAME_crattak1 - (sint32) (frand()+0.25));
+		if (ent->State.GetFrame() != FRAME_crattak1)
+			ent->State.GetFrame() = FRAME_crattak1 - 1;
+		else
+			ent->State.GetFrame() = FRAME_crattak1;
 		ent->Client.Anim.EndFrame = FRAME_crattak9;
 	}
 	else
 	{
-		ent->State.GetFrame() = (FRAME_attack1 - (sint32) (frand()+0.25));
+		if (ent->State.GetFrame() != FRAME_attack1)
+			ent->State.GetFrame() = FRAME_attack1 - 1;
+		else
+			ent->State.GetFrame() = FRAME_attack1;
 		ent->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }

@@ -4,6 +4,9 @@
     <Filter Include="CleanCode Files">
       <UniqueIdentifier>{c1fdf26b-14e9-44e1-a690-5d94902db2f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Arquade">
+      <UniqueIdentifier>{991c91e9-7359-44ef-a9ca-4b1bb68b008b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CleanCode Files\Banning">
       <UniqueIdentifier>{6f88fd4f-008c-4fab-bb90-86df05082191}</UniqueIdentifier>
     </Filter>
@@ -176,6 +179,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\string.cpp">
       <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_arcadeq2.cpp">
+      <Filter>CleanCode Files\Arquade</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_arg.cpp">
       <Filter>CleanCode Files\Game API\Arg</Filter>
@@ -508,6 +514,9 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\Templates\TTypes.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_arcadeq2.h">
+      <Filter>CleanCode Files\Arquade</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_arg.h">
       <Filter>CleanCode Files\Game API\Arg</Filter>

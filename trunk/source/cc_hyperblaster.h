@@ -45,6 +45,8 @@ public:
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
 
+	void	FireAnimation (CPlayerEntity *Player);
+
 	WEAPON_CLASS_DEFS (CHyperBlaster);
 };
 

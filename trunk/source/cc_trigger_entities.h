@@ -31,3 +31,65 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
+class CTriggerBase : public CMapEntity, public CBrushModel, public CTouchableEntity, public CUsableEntity
+{
+public:
+	enum
+	{
+		TRIGGER_THINK_NONE,
+		TRIGGER_THINK_FREE,
+		TRIGGER_THINK_WAIT,
+
+		TRIGGER_THINK_CUSTOM
+	};
+	uint32			ThinkType;
+	vec3f			MoveDir;
+	FrameNumber_t	Wait;
+	uint8			Sounds;
+
+	CTriggerBase ();
+	CTriggerBase (sint32 Index);
+
+	ENTITYFIELD_VIRTUAL_DEFS
+	ENTITYFIELDS_SAVABLE_VIRTUAL(CTriggerBase)
+
+	bool Run ();
+
+	virtual void Think ();
+	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+
+	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+
+	void Init ();
+
+	virtual bool CheckValidity ()
+	{
+		return CMapEntity::CheckValidity();
+	};
+
+	// the trigger was just activated
+	// ent->activator should be set to the activator so it can be held through a delay
+	// so wait for the delay time before firing
+	void Trigger ();
+
+	virtual void Spawn () = 0;
+};
+
+class CTriggerMultiple : public CTriggerBase
+{
+public:
+	bool ActivateUse;
+
+	CTriggerMultiple ();
+	CTriggerMultiple (sint32 Index);
+
+	ENTITYFIELDS_SAVABLE(CTriggerMultiple)
+
+	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Spawn ();
+
+	virtual bool CheckValidity ()
+	{
+		return CMapEntity::CheckValidity();
+	};
+};

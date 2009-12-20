@@ -32,6 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+#include "cc_brushmodels.h"
 #include "cc_trigger_entities.h"
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
@@ -92,150 +93,121 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 
-#include "cc_brushmodels.h"
-
 #define TRIGGER_MONSTER		1
 #define TRIGGER_NOT_PLAYER	2
 #define TRIGGER_TRIGGERED	4
 
-class CTriggerBase : public CMapEntity, public CBrushModel, public CTouchableEntity, public CUsableEntity
+CTriggerBase::CTriggerBase () :
+  CBaseEntity (),
+  CMapEntity (),
+  CTouchableEntity (),
+  CUsableEntity (),
+  CBrushModel (),
+  ThinkType (TRIGGER_THINK_NONE)
 {
-public:
-	enum
-	{
-		TRIGGER_THINK_NONE,
-		TRIGGER_THINK_FREE,
-		TRIGGER_THINK_WAIT,
+};
 
-		TRIGGER_THINK_CUSTOM
+CTriggerBase::CTriggerBase (sint32 Index) :
+  CBaseEntity (Index),
+  CMapEntity (Index),
+  CTouchableEntity (Index),
+  CUsableEntity (Index),
+  CBrushModel (Index),
+  ThinkType (TRIGGER_THINK_NONE)
+{
+};
+
+bool CTriggerBase::Run ()
+{
+	return CBaseEntity::Run();
+};
+
+void CTriggerBase::Think ()
+{
+	switch (ThinkType)
+	{
+	case TRIGGER_THINK_WAIT:
+		NextThink = 0;
+		break;
+	case TRIGGER_THINK_FREE:
+		Free ();
+		break;
+	default:
+		break;
 	};
-	uint32			ThinkType;
-	vec3f			MoveDir;
-	FrameNumber_t	Wait;
-	uint8			Sounds;
+};
 
-	CTriggerBase () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CTouchableEntity (),
-	  CUsableEntity (),
-	  CBrushModel (),
-	  ThinkType (TRIGGER_THINK_NONE)
+void CTriggerBase::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+{
+	if (!Touchable)
+		return;
+
+	if(other->EntityFlags & ENT_PLAYER)
 	{
-	};
-
-	CTriggerBase (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CTouchableEntity (Index),
-	  CUsableEntity (Index),
-	  CBrushModel (Index),
-	  ThinkType (TRIGGER_THINK_NONE)
-	{
-	};
-
-	ENTITYFIELD_VIRTUAL_DEFS
-	ENTITYFIELDS_SAVABLE_VIRTUAL(CTriggerBase)
-
-	bool Run ()
-	{
-		return CBaseEntity::Run();
-	};
-
-	virtual void Think ()
-	{
-		switch (ThinkType)
-		{
-		case TRIGGER_THINK_WAIT:
-			NextThink = 0;
-			break;
-		case TRIGGER_THINK_FREE:
-			Free ();
-			break;
-		default:
-			break;
-		};
-	};
-
-	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
-	{
-		if (!Touchable)
+		if (SpawnFlags & TRIGGER_NOT_PLAYER)
 			return;
-
-		if(other->EntityFlags & ENT_PLAYER)
-		{
-			if (SpawnFlags & TRIGGER_NOT_PLAYER)
-				return;
-		}
-		else if (other->EntityFlags & ENT_MONSTER)
-		{
-			if (!(SpawnFlags & TRIGGER_MONSTER))
-				return;
-		}
-		else
+	}
+	else if (other->EntityFlags & ENT_MONSTER)
+	{
+		if (!(SpawnFlags & TRIGGER_MONSTER))
 			return;
+	}
+	else
+		return;
 
-		if (MoveDir != vec3fOrigin)
-		{
-			vec3f	forward;
-			other->State.GetAngles().ToVectors (&forward, NULL, NULL);
-			if (forward.Dot(MoveDir) < 0)
-				return;
-		}
-
-		Activator = other;
-		Trigger ();
-	};
-
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator)
+	if (MoveDir != vec3fOrigin)
 	{
-		Activator = activator;
-		Trigger ();
-	};
+		vec3f	forward;
+		other->State.GetAngles().ToVectors (&forward, NULL, NULL);
+		if (forward.Dot(MoveDir) < 0)
+			return;
+	}
 
-	void Init ()
+	Activator = other;
+	Trigger ();
+};
+
+void CTriggerBase::Use (CBaseEntity *other, CBaseEntity *activator)
+{
+	Activator = activator;
+	Trigger ();
+};
+
+void CTriggerBase::Init ()
+{
+	if (State.GetAngles() != vec3fOrigin)
+		G_SetMovedir (State.GetAngles(), MoveDir);
+
+	GetSolid() = SOLID_TRIGGER;
+	SetBrushModel ();
+
+	GetSvFlags() = SVF_NOCLIENT;
+};
+
+// the trigger was just activated
+// ent->activator should be set to the activator so it can be held through a delay
+// so wait for the delay time before firing
+void CTriggerBase::Trigger ()
+{
+	if (NextThink)
+		return;		// already been triggered
+
+	UseTargets (Activator, Message);
+
+	if (Wait > 0)	
 	{
-		if (State.GetAngles() != vec3fOrigin)
-			G_SetMovedir (State.GetAngles(), MoveDir);
+		ThinkType = TRIGGER_THINK_WAIT;
 
-		GetSolid() = SOLID_TRIGGER;
-		SetBrushModel ();
-
-		GetSvFlags() = SVF_NOCLIENT;
-	};
-
-	virtual bool CheckValidity ()
-	{
-		return CMapEntity::CheckValidity();
-	};
-
-	// the trigger was just activated
-	// ent->activator should be set to the activator so it can be held through a delay
-	// so wait for the delay time before firing
-	void Trigger ()
-	{
-		if (NextThink)
-			return;		// already been triggered
-
-		UseTargets (Activator, Message);
-
-		if (Wait > 0)	
-		{
-			ThinkType = TRIGGER_THINK_WAIT;
-
-			// Paril: backwards compatibility
-			NextThink = level.Frame + Wait;
-		}
-		else
-		{	// we can't just remove (self) here, because this is a touch function
-			// called while looping through area links...
-			Touchable = false;
-			NextThink = level.Frame + FRAMETIME;
-			ThinkType = TRIGGER_THINK_FREE;
-		}
-	};
-
-	virtual void Spawn () = 0;
+		// Paril: backwards compatibility
+		NextThink = level.Frame + Wait;
+	}
+	else
+	{	// we can't just remove (self) here, because this is a touch function
+		// called while looping through area links...
+		Touchable = false;
+		NextThink = level.Frame + FRAMETIME;
+		ThinkType = TRIGGER_THINK_FREE;
+	}
 };
 
 ENTITYFIELDS_BEGIN(CTriggerBase)
@@ -287,89 +259,76 @@ sounds
 set "message" to text string
 */
 
-class CTriggerMultiple : public CTriggerBase
+CTriggerMultiple::CTriggerMultiple () :
+  CBaseEntity (),
+  CTriggerBase (),
+  ActivateUse(false)
+  {
+  };
+
+CTriggerMultiple::CTriggerMultiple (sint32 Index) :
+  CBaseEntity(Index),
+  CTriggerBase (Index),
+  ActivateUse(false)
+  {
+  };
+
+void CTriggerMultiple::Use (CBaseEntity *other, CBaseEntity *activator)
 {
-public:
-	bool ActivateUse;
-
-	CTriggerMultiple () :
-	  CBaseEntity (),
-	  CTriggerBase (),
-	  ActivateUse(false)
-	  {
-	  };
-
-	CTriggerMultiple (sint32 Index) :
-	  CBaseEntity(Index),
-	  CTriggerBase (Index),
-	  ActivateUse(false)
-	  {
-	  };
-
-	ENTITYFIELDS_SAVABLE(CTriggerMultiple)
-
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	if (ActivateUse)
 	{
-		if (ActivateUse)
-		{
-			ActivateUse = false;
-			GetSolid() = SOLID_TRIGGER;
-			Link ();
-			return;
-		}
-		CTriggerBase::Use (other, activator);
-	};
-
-	virtual void Spawn ()
-	{
-		Touchable = true;
-		switch (Sounds)
-		{
-		case 1:
-			NoiseIndex = SoundIndex ("misc/secret.wav");
-			break;
-		case 2:
-			NoiseIndex = SoundIndex ("misc/talk.wav");
-			break;
-		case 3:
-			NoiseIndex = SoundIndex ("misc/trigger1.wav");
-			break;
-		}
-
-		if (!Wait)
-			Wait = 2;
-
-		if (SpawnFlags & TRIGGER_TRIGGERED)
-		{
-			GetSolid() = SOLID_NOT;
-			ActivateUse = true;
-		}
-		else
-		{
-			GetSolid() = SOLID_TRIGGER;
-			ActivateUse = false;
-		}
-
-		if (State.GetAngles() != vec3fOrigin)
-			G_SetMovedir (State.GetAngles(), MoveDir);
-
-		SetBrushModel ();
-
-		if (!map_debug->Boolean())
-			GetSvFlags() |= SVF_NOCLIENT;
-		else
-		{
-			GetSolid() = SOLID_BBOX;
-			GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
-		}
-
+		ActivateUse = false;
+		GetSolid() = SOLID_TRIGGER;
 		Link ();
-	};
+		return;
+	}
+	CTriggerBase::Use (other, activator);
+};
 
-	virtual bool CheckValidity ()
+void CTriggerMultiple::Spawn ()
+{
+	Touchable = true;
+	switch (Sounds)
 	{
-		return CMapEntity::CheckValidity();
-	};
+	case 1:
+		NoiseIndex = SoundIndex ("misc/secret.wav");
+		break;
+	case 2:
+		NoiseIndex = SoundIndex ("misc/talk.wav");
+		break;
+	case 3:
+		NoiseIndex = SoundIndex ("misc/trigger1.wav");
+		break;
+	}
+
+	if (!Wait)
+		Wait = 2;
+
+	if (SpawnFlags & TRIGGER_TRIGGERED)
+	{
+		GetSolid() = SOLID_NOT;
+		ActivateUse = true;
+	}
+	else
+	{
+		GetSolid() = SOLID_TRIGGER;
+		ActivateUse = false;
+	}
+
+	if (State.GetAngles() != vec3fOrigin)
+		G_SetMovedir (State.GetAngles(), MoveDir);
+
+	SetBrushModel ();
+
+	if (!map_debug->Boolean())
+		GetSvFlags() |= SVF_NOCLIENT;
+	else
+	{
+		GetSolid() = SOLID_BBOX;
+		GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
+	}
+
+	Link ();
 };
 
 void CTriggerMultiple::SaveFields (CFile &File)

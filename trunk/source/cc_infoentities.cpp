@@ -139,7 +139,12 @@ public:
 		}
 
 		// draw the teleport splash at source and on the player
-		other->State.GetEvent() = (Player) ? EV_PLAYER_TELEPORT : EV_OTHER_TELEPORT;
+		// Arcade Quake II
+		if (Player)
+			Player->Client.Respawn.CameraPlayer->State.GetEvent() = EV_PLAYER_TELEPORT;
+		else
+			other->State.GetEvent() = EV_OTHER_TELEPORT;
+		// Arcade Quake II
 
 		// set angles
 		if (Player)
@@ -153,6 +158,24 @@ public:
 		{
 			Player->Client.PlayerState.GetViewAngles().Clear ();
 			Player->Client.ViewAngle.Clear ();
+
+			// Arcade Quake II
+			if (Player->Client.Cinematic.InCinematic)
+			{
+				char *SaveTarget = Player->Client.Cinematic.CurrentCorner->Target;
+				Player->Client.Cinematic.CurrentCorner->Target = Player->Client.Cinematic.CurrentCorner->PathTarget;
+				Player->Client.Cinematic.CurrentCorner->UseTargets (this, Player->Client.Cinematic.CurrentCorner->Message);
+				Player->Client.Cinematic.CurrentCorner->Target = SaveTarget;
+
+				if (Player->Client.Cinematic.CurrentCorner->NextTargets.size())
+					Player->Client.Cinematic.CurrentCorner = entity_cast<CPathCorner>(Player->Client.Cinematic.CurrentCorner->NextTargets[0]);
+				else
+				{
+					Player->Client.Cinematic.CurrentCorner = NULL;
+					Player->Client.Cinematic.InCinematic = false;
+				}
+			}
+			// Arcade Quake II
 		}
 
 		// kill anything at the destination
@@ -814,8 +837,8 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (game.mode == GAME_DEATHMATCH)
-			return;
+		//if (game.mode == GAME_DEATHMATCH)
+		//	return;
 		if (stricmp(level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
 			NextThink = level.Frame + FRAMETIME;

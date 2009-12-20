@@ -570,6 +570,14 @@ public:
 		FrameNumber_t	jumpVals[2];
 		bool			WaitForEmpty;
 	} DoubleTap;
+
+	struct cinematic_t
+	{
+		bool				InCinematic;
+		class CPathCorner	*CurrentCorner;
+		float				CinematicCameraDist;
+		float				LastYValue;
+	} Cinematic;
 	// Arcade Quake II
 
 	CClient (gclient_t *client);
