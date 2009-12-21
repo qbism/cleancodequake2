@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Base entity class
 //
 
-#if !defined(__CC_BASEENTITY_H__) || !INCLUDE_GUARDS
-#define __CC_BASEENTITY_H__
+#if !defined(CC_GUARD_BASEENTITY_H) || !INCLUDE_GUARDS
+#define CC_GUARD_BASEENTITY_H
 
 class CEntityState
 {
@@ -184,7 +184,7 @@ public:
 	{
 	};
 
-	virtual const char *__GetName () = 0;
+	virtual const char *SAVE_GetName () = 0;
 };
 
 // EntityFlags values
@@ -315,19 +315,19 @@ inline uint32 atou (const char *Str)
 #define ENTITYFIELDS_SAVABLE(x) \
 	void SaveFields (CFile &File); \
 	void LoadFields (CFile &File); \
-	const char *__GetName () { return TO_STRING(x); }
+	const char *SAVE_GetName () { return TO_STRING(x); }
 
 #define ENTITYFIELDS_NONSAVABLE_VIRTUAL(x) \
 	inline virtual bool Savable () \
 	{ \
 		return false; \
 	} \
-	virtual const char *__GetName () { return NULL; }
+	virtual const char *SAVE_GetName () { return NULL; }
 
 #define ENTITYFIELDS_SAVABLE_VIRTUAL(x) \
 	virtual void SaveFields (CFile &File); \
 	virtual void LoadFields (CFile &File); \
-	virtual const char *__GetName () { return TO_STRING(x); }
+	virtual const char *SAVE_GetName () { return TO_STRING(x); }
 
 #define QNewEntityOf QNew (com_entityPool, 0) 
 

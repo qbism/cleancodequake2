@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#if !defined(__CC_BRAIN_H__) || !INCLUDE_GUARDS
-#define __CC_BRAIN_H__
+#if !defined(CC_GUARD_BRAIN_H) || !INCLUDE_GUARDS
+#define CC_GUARD_BRAIN_H
 
 class CBrain : public CMonster
 {

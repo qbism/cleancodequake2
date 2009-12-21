@@ -55,8 +55,10 @@
 // FIXME: Get these from shared.h somehow. Maybe break shared.h up such that we can just grab the typedef info.
 #ifdef WIN32
 typedef unsigned __int32 uint32;
+typedef signed __int32 sint32;
 #else
 typedef uint32_t uint32;
+typedef int32_t sint32;
 #endif
 
 #define W				(sizeof(uint32) * 8)  //
@@ -75,7 +77,7 @@ typedef uint32_t uint32;
 #define loBits(u)		((u) & 0x7FFFFFFFU)   // mask     the highest   bit of u
 #define mixBits(u, v)	(hiBit(u)|loBits(v))  // move hi bit of u to hi bit of v
 
-#if (MSVS_VERSION >= VS_9) && !_CC_NO_TR1
+#if (MSVS_VERSION >= VS_9) && defined(HAS__CPP0x)
 
 #include <random>
 std::tr1::mt19937 twister;

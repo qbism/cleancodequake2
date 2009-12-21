@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Grenade Launcher
 //
 
-#if !defined(__CC_ROCKETLAUNCHER_H__) || !INCLUDE_GUARDS
-#define __CC_ROCKETLAUNCHER_H__
+#if !defined(CC_GUARD_ROCKETLAUNCHER_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ROCKETLAUNCHER_H
 
 class CRocketLauncher : public CWeapon
 {

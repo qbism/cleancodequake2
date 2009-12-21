@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Resolves an entity from a classname
 //
 
-#if !defined(__CC_ENTITYLIST_H__) || !INCLUDE_GUARDS
-#define __CC_ENTITYLIST_H__
+#if !defined(CC_GUARD_ENTITYLIST_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ENTITYLIST_H
 
 #define MAX_CLASSNAME_CLASSES_HASH 256
 

@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // g_utils, CleanCode style
 //
 
-#if !defined(__CC_UTILS_H__) || !INCLUDE_GUARDS
-#define __CC_UTILS_H__
+#if !defined(CC_GUARD_UTILS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_UTILS_H
 
 void	G_TouchTriggers (CBaseEntity *ent);
 void G_SetMovedir (vec3f &angles, vec3f &movedir);

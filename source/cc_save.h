@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#if !defined(__CC_SAVE_H__) || !INCLUDE_GUARDS
-#define __CC_SAVE_H__
+#if !defined(CC_GUARD_SAVE_H) || !INCLUDE_GUARDS
+#define CC_GUARD_SAVE_H
 
 void ReadLevel (char *);
 void WriteLevel (char *);
@@ -67,7 +67,7 @@ public:
 	IMPLEMENT_SAVE_STRUCTURE(DLLClassName,DLLClassName)
 
 #define IMPLEMENT_SAVE_HEADER(DLLClassName) \
-	virtual const char *__GetName () { return TO_STRING(DLLClassName); };
+	virtual const char *SAVE_GetName () { return TO_STRING(DLLClassName); };
 
 CC_ENUM (uint8, EIndexType)
 {

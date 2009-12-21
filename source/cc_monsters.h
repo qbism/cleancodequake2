@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Monsters
 //
 
-#if !defined(__CC_MONSTERS_H__) || !INCLUDE_GUARDS
-#define __CC_MONSTERS_H__
+#if !defined(CC_GUARD_MONSTERS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_MONSTERS_H
 
 class CMonster;
 
@@ -447,8 +447,8 @@ public:
 	};
 };
 
-#define ConvertDerivedFunction(x) static_cast<void (__thiscall CMonster::* )()>(x)
-#define ConvertDerivedAIMove(x) static_cast<void (__thiscall CMonster::* )(float)>(x)
+#define ConvertDerivedFunction(x) static_cast<void (cc_thiscall CMonster::* )()>(x)
+#define ConvertDerivedAIMove(x) static_cast<void (cc_thiscall CMonster::* )(float)>(x)
 
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \

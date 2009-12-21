@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#if !defined(__CC_STL_H__) || !INCLUDE_GUARDS
-#define __CC_STL_H__
+#if !defined(CC_GUARD_STL_H) || !INCLUDE_GUARDS
+#define CC_GUARD_STL_H
 
 #include <string>
 #include <sstream>
@@ -129,7 +129,7 @@ public: \
 		if (n > max_size()) \
 			throw std::length_error("className<T>::allocate() - Integer overflow."); \
 		\
-		void * const pv = _Mem_Alloc (n * sizeof(T), pool, 0, "null", 0, false); \
+		void * const pv = CC_Mem_Alloc (n * sizeof(T), pool, 0, "null", 0, false); \
 		if (pv == NULL) \
 			throw std::bad_alloc(); \
 		\

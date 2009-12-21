@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // ClientCommand & related functions
 //
 
-#if !defined(__CC_GAMECOMMANDS_H__) || !INCLUDE_GUARDS
-#define __CC_GAMECOMMANDS_H__
+#if !defined(CC_GUARD_GAMECOMMANDS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_GAMECOMMANDS_H
 
 void Cmd_Register ();
 void CC_ClientCommand (CPlayerEntity *ent);

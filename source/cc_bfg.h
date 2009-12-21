@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // BFG10k
 //
 
-#if !defined(__CC_BFG_H__) || !INCLUDE_GUARDS
-#define __CC_BFG_H__
+#if !defined(CC_GUARD_BFG_H) || !INCLUDE_GUARDS
+#define CC_GUARD_BFG_H
 
 class CBFG : public CWeapon
 {

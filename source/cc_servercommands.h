@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // ServerCommand and related classes
 //
 
-#if !defined(__CC_SERVERCOMMANDS_H__) || !INCLUDE_GUARDS
-#define __CC_SERVERCOMMANDS_H__
+#if !defined(CC_GUARD_SERVERCOMMANDS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_SERVERCOMMANDS_H
 
 void SvCmd_Register ();
 void SvCmd_RemoveCommands ();

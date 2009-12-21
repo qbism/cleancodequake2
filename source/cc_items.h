@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New, improved, better, stable item system!
 //
 
-#if !defined(__CC_ITEMS_H__) || !INCLUDE_GUARDS
-#define __CC_ITEMS_H__
+#if !defined(CC_GUARD_ITEMS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ITEMS_H
 
 CC_ENUM (sint32, EItemFlags)
 {

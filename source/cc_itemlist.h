@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Basically the link between items and the real world
 //
 
-#if !defined(__CC_ITEMLIST_H__) || !INCLUDE_GUARDS
-#define __CC_ITEMLIST_H__
+#if !defined(CC_GUARD_ITEMLIST_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ITEMLIST_H
 
 // Just to conform to the configstrings
 #define MAX_ITEMS		256

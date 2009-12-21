@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Contains overloads and other neat things
 //
 
-#if !defined(__CC_GAMEAPI_H__) || !INCLUDE_GUARDS
-#define __CC_GAMEAPI_H__
+#if !defined(CC_GUARD_GAMEAPI_H) || !INCLUDE_GUARDS
+#define CC_GUARD_GAMEAPI_H
 
 // define GAME_INCLUDE so that cc_game.h does not define the
 // short, server-visible gclient_t and edict_t structures,

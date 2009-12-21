@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Local header. Definitions local to the game.
 //
 
-#if !defined(__CC_LOCAL_H__) || !INCLUDE_GUARDS
-#define __CC_LOCAL_H__
+#if !defined(CC_GUARD_LOCAL_H) || !INCLUDE_GUARDS
+#define CC_GUARD_LOCAL_H
 
 #include "cc_options.h"
 #include "../shared/shared.h"

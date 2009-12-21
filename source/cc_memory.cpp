@@ -312,10 +312,10 @@ static memPool_t *Mem_FindPool (const char *name)
 
 /*
 ========================
-_Mem_CreatePool
+CC_Mem_CreatePool
 ========================
 */
-void *_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileLine)
+void *CC_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileLine)
 {
 	memPool_t	*pool;
 	uint32		i;
@@ -362,10 +362,10 @@ void *_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileL
 
 /*
 ========================
-_Mem_DeletePool
+CC_Mem_DeletePool
 ========================
 */
-size_t _Mem_DeletePool(void *_pool, const char *fileName, const sint32 fileLine)
+size_t CC_Mem_DeletePool(void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	size_t size;
@@ -374,7 +374,7 @@ size_t _Mem_DeletePool(void *_pool, const char *fileName, const sint32 fileLine)
 		return 0;
 
 	// Release all allocated memory
-	size = _Mem_FreePool(pool, fileName, fileLine);
+	size = CC_Mem_FreePool(pool, fileName, fileLine);
 
 	// Simple, yes?
 	pool->inUse = false;
@@ -394,10 +394,10 @@ size_t _Mem_DeletePool(void *_pool, const char *fileName, const sint32 fileLine)
 
 /*
 ========================
-_Mem_CheckBlockIntegrity
+CC_Mem_CheckBlockIntegrity
 ========================
 */
-static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, const sint32 fileLine)
+static void CC_Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, const sint32 fileLine)
 {
 	if (mem->topSentinel != MEM_SENTINEL_TOP(mem))
 	{
@@ -422,10 +422,10 @@ static void _Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, con
 
 /*
 ========================
-_Mem_Free
+CC_Mem_Free
 ========================
 */
-size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, bool Array)
+size_t CC_Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, bool Array)
 {
 	memBlock_t	*mem;
 	size_t		size;
@@ -436,7 +436,7 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, 
 
 	// Check sentinels
 	mem = (memBlock_t *)((uint8 *)ptr - sizeof(memBlock_t));
-	_Mem_CheckBlockIntegrity(mem, fileName, fileLine);
+	CC_Mem_CheckBlockIntegrity(mem, fileName, fileLine);
 
 #ifdef _DEBUG
 	if (Array != mem->Array)
@@ -459,7 +459,7 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, 
 		free (mem);
 
 #ifdef _DEBUG
-//	_Mem_CheckGlobalIntegrity (fileName, fileLine);
+//	CC_Mem_CheckGlobalIntegrity (fileName, fileLine);
 #endif
 
 	return size;
@@ -468,12 +468,12 @@ size_t _Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine, 
 
 /*
 ========================
-_Mem_FreeTag
+CC_Mem_FreeTag
 
 Free memory blocks assigned to a specified tag within a pool
 ========================
 */
-size_t _Mem_FreeTag (void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
+size_t CC_Mem_FreeTag (void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t	*mem, *next;
@@ -489,7 +489,7 @@ size_t _Mem_FreeTag (void *_pool, const sint32 tagNum, const char *fileName, con
 	{
 		next = mem->prev;
 		if (mem->tagNum == tagNum)
-			size += _Mem_Free (mem->memPointer, fileName, fileLine, false);
+			size += CC_Mem_Free (mem->memPointer, fileName, fileLine, false);
 	}
 
 	return size;
@@ -498,12 +498,12 @@ size_t _Mem_FreeTag (void *_pool, const sint32 tagNum, const char *fileName, con
 
 /*
 ========================
-_Mem_FreePool
+CC_Mem_FreePool
 
 Free all items within a pool
 ========================
 */
-size_t _Mem_FreePool (void *_pool, const char *fileName, const sint32 fileLine)
+size_t CC_Mem_FreePool (void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t	*mem, *next;
@@ -524,7 +524,7 @@ size_t _Mem_FreePool (void *_pool, const char *fileName, const sint32 fileLine)
 		if (oldMem == next)
 			break;
 		
-		size += _Mem_Free (mem->memPointer, fileName, fileLine, mem->Array);
+		size += CC_Mem_Free (mem->memPointer, fileName, fileLine, mem->Array);
 	}
 
 	_CC_ASSERT_EXPR (pool->blockCount == 0, "Pool block count is not empty (improper free?)");
@@ -536,12 +536,12 @@ size_t _Mem_FreePool (void *_pool, const char *fileName, const sint32 fileLine)
 
 /*
 ========================
-_Mem_Alloc
+CC_Mem_Alloc
 
 Returns 0 filled memory allocated in a pool with a tag
 ========================
 */
-void *_Mem_Alloc(size_t size, void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine, bool Array)
+void *CC_Mem_Alloc(size_t size, void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine, bool Array)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t *mem;
@@ -605,7 +605,7 @@ void *_Mem_Alloc(size_t size, void *_pool, const sint32 tagNum, const char *file
 	mem->prev->next = mem;
 
 #ifdef _DEBUG
-	//_Mem_CheckGlobalIntegrity (fileName, fileLine);
+	//CC_Mem_CheckGlobalIntegrity (fileName, fileLine);
 #endif
 
 	return mem->memPointer;
@@ -614,10 +614,10 @@ void *_Mem_Alloc(size_t size, void *_pool, const sint32 tagNum, const char *file
 
 /*
 ========================
-_Mem_ReAlloc
+CC_Mem_ReAlloc
 ========================
 */
-void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32 fileLine)
+void *CC_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32 fileLine)
 {
 	void *Result;
 	if (ptr && newSize)
@@ -629,26 +629,26 @@ void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32
 			return ptr;
 
 		// Buffer check
-		_Mem_CheckBlockIntegrity(Block, fileName, fileLine);
+		CC_Mem_CheckBlockIntegrity(Block, fileName, fileLine);
 
 		// Locate the memory block
 		_CC_ASSERT_EXPR (Block->memPointer == ptr, "Block's memory pointer doesn't point to wanted memory");
 
 		// Allocate
-		Result = _Mem_Alloc(newSize, Block->pool, Block->tagNum, fileName, fileLine, false);
+		Result = CC_Mem_Alloc(newSize, Block->pool, Block->tagNum, fileName, fileLine, false);
 		memcpy(Result, ptr, Min(newSize,Block->memSize));
 
 		// Release old memory
-		_Mem_Free(ptr, fileName, fileLine, false);
+		CC_Mem_Free(ptr, fileName, fileLine, false);
 	}
 	else if (!ptr)
 	{
 		// FIXME: The pool and tag are 'lost' in this case...
-		Result = _Mem_Alloc(newSize, com_genericPool, 0, fileName, fileLine, false);
+		Result = CC_Mem_Alloc(newSize, com_genericPool, 0, fileName, fileLine, false);
 	}
 	else
 	{
-		_Mem_Free(ptr, fileName, fileLine, false);
+		CC_Mem_Free(ptr, fileName, fileLine, false);
 		Result = NULL;
 	}
 
@@ -665,17 +665,17 @@ void *_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32
 
 /*
 ================
-_Mem_PoolStrDup
+CC_Mem_PoolStrDup
 
 No need to null terminate the extra spot because Mem_Alloc returns zero-filled memory
 ================
 */
-char *_Mem_PoolStrDup (const char *in, void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
+char *CC_Mem_PoolStrDup (const char *in, void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	char	*out;
 
-	out = (char*)_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine, false);
+	out = (char*)CC_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine, false);
 	strcpy_s (out, (size_t)(strlen (in) + 1), in);
 
 	return out;
@@ -684,10 +684,10 @@ char *_Mem_PoolStrDup (const char *in, void *_pool, const sint32 tagNum, const c
 
 /*
 ================
-_Mem_PoolSize
+CC_Mem_PoolSize
 ================
 */
-size_t _Mem_PoolSize (void *_pool)
+size_t CC_Mem_PoolSize (void *_pool)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	if (!pool)
@@ -699,10 +699,10 @@ size_t _Mem_PoolSize (void *_pool)
 
 /*
 ================
-_Mem_TagSize
+CC_Mem_TagSize
 ================
 */
-size_t _Mem_TagSize (void *_pool, const sint32 tagNum)
+size_t CC_Mem_TagSize (void *_pool, const sint32 tagNum)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t	*mem;
@@ -725,10 +725,10 @@ size_t _Mem_TagSize (void *_pool, const sint32 tagNum)
 
 /*
 ========================
-_Mem_ChangeTag
+CC_Mem_ChangeTag
 ========================
 */
-size_t _Mem_ChangeTag (void *_pool, const sint32 tagFrom, const sint32 tagTo)
+size_t CC_Mem_ChangeTag (void *_pool, const sint32 tagFrom, const sint32 tagTo)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t	*mem;
@@ -754,10 +754,10 @@ size_t _Mem_ChangeTag (void *_pool, const sint32 tagFrom, const sint32 tagTo)
 
 /*
 ========================
-_Mem_CheckPoolIntegrity
+CC_Mem_CheckPoolIntegrity
 ========================
 */
-void _Mem_CheckPoolIntegrity (void *_pool, const char *fileName, const sint32 fileLine)
+void CC_Mem_CheckPoolIntegrity (void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t	*mem;
@@ -773,7 +773,7 @@ void _Mem_CheckPoolIntegrity (void *_pool, const char *fileName, const sint32 fi
 	for (mem = pool->blockHeadNode.prev, blocks = 0, size = 0; mem != headNode; blocks++, mem = mem->prev)
 	{
 		size += mem->realSize;
-		_Mem_CheckBlockIntegrity (mem, fileName, fileLine);
+		CC_Mem_CheckBlockIntegrity (mem, fileName, fileLine);
 	}
 
 	// Check block/uint8 counts
@@ -792,10 +792,10 @@ void _Mem_CheckPoolIntegrity (void *_pool, const char *fileName, const sint32 fi
 
 /*
 ========================
-_Mem_CheckGlobalIntegrity
+CC_Mem_CheckGlobalIntegrity
 ========================
 */
-void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
+void CC_Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 {
 	//CTimer Timer;
 
@@ -803,7 +803,7 @@ void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 	{
 		memPool_t *pool = &m_poolList[i];
 		if (pool->inUse)
-			_Mem_CheckPoolIntegrity(pool, fileName, fileLine);
+			CC_Mem_CheckPoolIntegrity(pool, fileName, fileLine);
 	}
 
 	//DebugPrintf ("Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
@@ -812,10 +812,10 @@ void _Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 
 /*
 ========================
-_Mem_TouchPool
+CC_Mem_TouchPool
 ========================
 */
-void _Mem_TouchPool(void *_pool, const char *fileName, const sint32 fileLine)
+void CC_Mem_TouchPool(void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
 	memBlock_t	*mem;
@@ -841,10 +841,10 @@ void _Mem_TouchPool(void *_pool, const char *fileName, const sint32 fileLine)
 
 /*
 ========================
-_Mem_TouchGlobal
+CC_Mem_TouchGlobal
 ========================
 */
-void _Mem_TouchGlobal(const char *fileName, const sint32 fileLine)
+void CC_Mem_TouchGlobal(const char *fileName, const sint32 fileLine)
 {
 	CTimer Timer;
 
@@ -856,7 +856,7 @@ void _Mem_TouchGlobal(const char *fileName, const sint32 fileLine)
 		if (!pool->inUse)
 			continue;
 
-		_Mem_TouchPool(pool, fileName, fileLine);
+		CC_Mem_TouchPool(pool, fileName, fileLine);
 		numTouched++;
 	}
 

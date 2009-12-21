@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Main header file. Contains the common definitions.
 //
 
-#if !defined(__CC_PLATFORM_H__) || !INCLUDE_GUARDS
-#define __CC_PLATFORM_H__
+#if !defined(CC_GUARD_PLATFORM_H) || !INCLUDE_GUARDS
+#define CC_GUARD_PLATFORM_H
 
 void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, bool recurse, bool addFiles, bool addDirs);
 void CC_OutputDebugString (const char *text);

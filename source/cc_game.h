@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Also the API.
 //
 
-#if !defined(__CC_GAME_H__) || !INCLUDE_GUARDS
-#define __CC_GAME_H__
+#if !defined(CC_GUARD_GAME_H) || !INCLUDE_GUARDS
+#define CC_GUARD_GAME_H
 
 // edict->svFlags
 

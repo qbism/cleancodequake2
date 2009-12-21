@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // CTF Grappling hook
 //
 
-#if !defined(__CC_GRAPPLE_H__) || !INCLUDE_GUARDS
-#define __CC_GRAPPLE_H__
+#if !defined(CC_GUARD_GRAPPLE_H) || !INCLUDE_GUARDS
+#define CC_GUARD_GRAPPLE_H
 
 class CGrapple : public CWeapon
 {

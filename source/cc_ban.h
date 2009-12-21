@@ -43,8 +43,8 @@ struct IPAddress
 
 #endif
 #else
-#if !defined(__CC_BAN_H__) || !INCLUDE_GUARDS
-#define __CC_BAN_H__
+#if !defined(CC_GUARD_BAN_H) || !INCLUDE_GUARDS
+#define CC_GUARD_BAN_H
 
 CC_ENUM (uint8, EBanTypeFlags)
 {

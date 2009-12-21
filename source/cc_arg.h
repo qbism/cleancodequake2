@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Wrapper for the argv/s/c system
 //
 
-#if !defined(__CC_ARG_H__) || !INCLUDE_GUARDS
-#define __CC_ARG_H__
+#if !defined(CC_GUARD_ARG_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ARG_H
 
 void				SetupArg ();
 void				InitArg ();

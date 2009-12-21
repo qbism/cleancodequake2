@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Necessary to keep 3.21 compatibility and allow cgame dlls
 //
 
-#if !defined(__CC_PMOVE_H__) || !INCLUDE_GUARDS
-#define __CC_PMOVE_H__
+#if !defined(CC_GUARD_PMOVE_H) || !INCLUDE_GUARDS
+#define CC_GUARD_PMOVE_H
 
 void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration);
 
