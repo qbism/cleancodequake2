@@ -76,7 +76,7 @@ void CSuperShotgun::Fire (CPlayerEntity *ent)
 
 	ent->P_ProjectSource (offset, forward, right, start);
 
-	vec3f v = ent->Client.ViewAngle;
+	vec3f v = (ent->Client.Cinematic.InCinematic) ? ent->Client.Respawn.CameraPlayer->State.GetAngles() : ent->Client.ViewAngle;
 	v.Y -= 1;
 	v.ToVectors (&forward, NULL, NULL);
 	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2.2, MOD_SSHOTGUN);

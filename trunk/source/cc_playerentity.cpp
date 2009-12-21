@@ -2817,7 +2817,6 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	if (Client.Cinematic.InCinematic)
 	{
-		ucmd->buttons = 0;
 		ucmd->sideMove = ucmd->upMove = 0;
 	
 		vec3f subtract = (State.GetOrigin() - Client.Cinematic.CurrentCorner->State.GetOrigin());
@@ -3040,24 +3039,10 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 		}
 	}
 
-	switch (Client.Respawn.AimType)
+	if (Client.Respawn.AimDegrees)
 	{
-	case 1:
-		Client.ViewAngle.X -= 35;
-		Client.PlayerState.GetViewAngles().Y -= 35;
-		break;
-	case 2:
-		Client.ViewAngle.X += 35;
-		Client.PlayerState.GetViewAngles().Y += 35;
-		break;
-	case 3:
-		Client.ViewAngle.X -= 90;
-		Client.PlayerState.GetViewAngles().Y -= 90;
-		break;
-	case 4:
-		Client.ViewAngle.X += 90;
-		Client.PlayerState.GetViewAngles().Y += 90;
-		break;
+		Client.ViewAngle.X -= Client.Respawn.AimDegrees;
+		Client.PlayerState.GetViewAngles().Y -= Client.Respawn.AimDegrees;
 	}
 	// Arcade Quake II
 
@@ -3213,7 +3198,7 @@ void CPlayerEntity::InitResp ()
 #endif
 
 	// Arcade Quake II
-	Client.Respawn.AimType = 0;
+	Client.Respawn.AimDegrees = 0;
 	Client.Respawn.AimingLeft = true;
 	Client.Respawn.CameraDistance = 2500;
 	// Arcade Quake II
@@ -3751,6 +3736,12 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 	default:
 		break;
 	}*/
+
+	if (Client.Cinematic.InCinematic)
+	{
+		vec3f anggg = Client.Respawn.CameraPlayer->State.GetAngles();
+		anggg.ToVectors (&forward, &right, NULL);
+	}
 
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }

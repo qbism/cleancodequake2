@@ -536,25 +536,15 @@ void Cmd_MenuLeft_t (CPlayerEntity *ent);
 void Cmd_MenuRight_t (CPlayerEntity *ent);
 
 // Arcade Quake II
-void Cmd_Aim_Up (CPlayerEntity *ent)
+void Cmd_Aim (CPlayerEntity *ent)
 {
-	ent->Client.Respawn.AimType = 1;
-}
-void Cmd_Aim_Down (CPlayerEntity *ent)
-{
-	ent->Client.Respawn.AimType = 2;
-}
-void Cmd_AAim_Up (CPlayerEntity *ent)
-{
-	ent->Client.Respawn.AimType = 3;
-}
-void Cmd_AAim_Down (CPlayerEntity *ent)
-{
-	ent->Client.Respawn.AimType = 4;
-}
-void Cmd_Aim_Reset (CPlayerEntity *ent)
-{
-	ent->Client.Respawn.AimType = 0;
+	if (ArgCount() < 2)
+	{
+		ent->Client.Respawn.AimDegrees = 0;
+		return;
+	}
+
+	ent->Client.Respawn.AimDegrees = ArgGetf (1);
 }
 
 void Cmd_CamDist (CPlayerEntity *ent)
@@ -615,12 +605,8 @@ void Cmd_Register ()
 #endif
 
 	// Arcade Quake II
-	Cmd_AddCommand ("aimup",					Cmd_Aim_Up);
-	Cmd_AddCommand ("aimdown",					Cmd_Aim_Down);
-	Cmd_AddCommand ("aimaup",					Cmd_AAim_Up);
-	Cmd_AddCommand ("aimadown",					Cmd_AAim_Down);
-	Cmd_AddCommand ("resetaim",					Cmd_Aim_Reset);
 	Cmd_AddCommand ("camdist",					Cmd_CamDist);
+	Cmd_AddCommand ("aim",						Cmd_Aim);
 	// Arcade Quake II
 
 	// And last but certainly not least..

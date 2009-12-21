@@ -559,37 +559,6 @@ CSpotBase *SelectRandomDeathmatchSpawnPoint ()
 	return spot;
 }
 
-/*
-================
-SelectFarthestDeathmatchSpawnPoint
-
-================
-*/
-CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
-{
-	CSpotBase	*bestspot = NULL;
-	float		bestdistance = 0;
-
-	for (CPlayerDeathmatch::TSpawnPointsType::iterator it = CPlayerDeathmatch::SpawnPoints().begin(); it < CPlayerDeathmatch::SpawnPoints().end(); ++it)
-	{
-		CPlayerDeathmatch *Found = (*it);
-
-		float bestplayerdistance = PlayersRangeFromSpot (Found);
-		if (bestplayerdistance > bestdistance)
-		{
-			bestspot = Found;
-			bestdistance = bestplayerdistance;
-		}
-	}
-
-	if (bestspot)
-		return bestspot;
-
-	// if there is a player just spawned on each and every start spot
-	// we have no choice to turn one into a telefrag meltdown
-	return CPlayerDeathmatch::SpawnPoints()[0];
-}
-
 /*QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
 potential spawning position for coop games
 */
@@ -848,6 +817,41 @@ public:
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_start", CPlayerStart);
+
+/*
+================
+SelectFarthestDeathmatchSpawnPoint
+
+================
+*/
+CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
+{
+	CSpotBase	*bestspot = NULL;
+	float		bestdistance = 0;
+
+	for (CPlayerDeathmatch::TSpawnPointsType::iterator it = CPlayerDeathmatch::SpawnPoints().begin(); it < CPlayerDeathmatch::SpawnPoints().end(); ++it)
+	{
+		CPlayerDeathmatch *Found = (*it);
+
+		float bestplayerdistance = PlayersRangeFromSpot (Found);
+		if (bestplayerdistance > bestdistance)
+		{
+			bestspot = Found;
+			bestdistance = bestplayerdistance;
+		}
+	}
+
+	if (bestspot)
+		return bestspot;
+
+	// if there is a player just spawned on each and every start spot
+	// we have no choice to turn one into a telefrag meltdown
+	if (!CPlayerDeathmatch::SpawnPoints().size())
+		return CPlayerStart::SpawnPoints()[0];
+
+	return CPlayerDeathmatch::SpawnPoints()[0];
+}
+
 
 void CPlayerCoop::Think ()
 {

@@ -331,7 +331,7 @@ public:
 	// Arcade Quake II
 	CCameraFollowEntity		*CameraPlayer;
 	float					CameraDistance;
-	int						AimType;
+	float					AimDegrees;
 	bool					AimingLeft;
 	// Arcade Quake II
 	
