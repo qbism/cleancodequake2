@@ -90,9 +90,9 @@ void CBFG::FireBFG (CPlayerEntity *ent)
 {
 	vec3f	offset (8, 8, ent->ViewHeight-8), start, forward, right;
 	const sint32		damage = (game.mode & GAME_DEATHMATCH) ?
-					(isQuad) ? 800 : 200
+					CalcQuadVal(200)
 					:
-					(isQuad) ? 2000 : 500;
+					CalcQuadVal(500);
 
 	// cells can go down during windup (from power armor hits), so
 	// check again and abort firing if we don't have enough now

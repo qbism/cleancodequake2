@@ -81,10 +81,10 @@ void CChaingun::Fire (CPlayerEntity *ent)
 	sint32			shots;
 	vec3f		start, forward, right, up, offset;
 	const sint32	damage = (game.mode & GAME_DEATHMATCH) ?
-				(isQuad) ? 24 : 6
+				CalcQuadVal(6)
 				:
-				(isQuad) ? 32 : 8,
-				kick = (isQuad) ? 8 : 2;
+				CalcQuadVal(8),
+				kick = CalcQuadVal(2);
 
 	if (ent->Client.PlayerState.GetGunFrame() == 5)
 		ent->PlaySound (CHAN_AUTO, SoundIndex("weapons/chngnu1a.wav"));

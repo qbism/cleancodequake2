@@ -51,6 +51,12 @@ protected:
 
 public:
 	bool			isQuad, isSilenced;
+
+	inline int CalcQuadVal (int val)
+	{
+		return (isQuad) ? (val * 4) : val;
+	};
+
 	CWeaponItem		*Item; // The item that is linked to this weapon.
 
 	char			*WeaponSound;

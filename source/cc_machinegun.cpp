@@ -100,8 +100,8 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 		return;
 	}
 
-	const sint32		damage = (isQuad) ? 32 : 8,
-					kick = (isQuad) ? 8 : 2;
+	const sint32		damage = CalcQuadVal(8),
+						kick = CalcQuadVal(2);
 
 	for (uint8 i = 1; i < 3; i++)
 	{
