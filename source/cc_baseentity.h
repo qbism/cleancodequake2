@@ -119,7 +119,7 @@ public:
 	CBaseEntity (sint32 Index);
 	virtual ~CBaseEntity ();
 
-	virtual		bool		Run () {return true;}; // Runs the entity
+	virtual	bool	Run () {return true;}; // Runs the entity
 
 	// Funtions below are to link the private gameEntity together
 	CBaseEntity		*GetOwner	();
@@ -138,17 +138,17 @@ public:
 
 	EServerFlags	&GetSvFlags ();
 
-	sint32				GetNumClusters ();
-	sint32				*GetClusterNums ();
-	sint32				GetHeadNode ();
+	sint32			GetNumClusters ();
+	sint32			*GetClusterNums ();
+	sint32			GetHeadNode ();
 
 	// Not a reference; don't let people change it.
-	sint32				GetAreaNum (bool second = false);
+	sint32			GetAreaNum (bool second = false);
 
 	link_t			*GetArea ();
 	void			ClearArea ();
 
-	sint32				GetLinkCount ();
+	sint32			GetLinkCount ();
 
 	virtual bool	&GetInUse ();
 
@@ -168,6 +168,7 @@ public:
 	void			StuffText (char *text);
 
 	void			KillBox ();
+	void			SplashDamage (CBaseEntity *attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
 
 	// Save functions
 	// By default, all entities are savable.
@@ -547,7 +548,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			File.WriteCCString (OFS_TO_TYPE(std::cc_string));
+			File.Write (OFS_TO_TYPE(std::cc_string));
 			break;
 		};
 	};
@@ -641,7 +642,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			OFS_TO_TYPE(std::cc_string) = File.ReadCCString ();
+			OFS_TO_TYPE(std::cc_string) = File.Read<std::cc_string> ();
 		};
 	};
 };

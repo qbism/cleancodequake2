@@ -80,7 +80,7 @@ void CChaingun::Fire (CPlayerEntity *ent)
 {
 	sint32			shots;
 	vec3f		start, forward, right, up, offset;
-	const sint32	damage = (game.mode & GAME_DEATHMATCH) ?
+	const sint32	damage = (game.GameMode & GAME_DEATHMATCH) ?
 				CalcQuadVal(6)
 				:
 				CalcQuadVal(8),

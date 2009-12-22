@@ -291,7 +291,7 @@ void G_FindTeams ()
 void InitPlayers ()
 {
 	// Set up the client entities
-	for (sint32 i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.MaxClients; i++)
 	{
 		edict_t *ent = &g_edicts[i];
 
@@ -366,13 +366,13 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		InitNodes ();
 #endif
 
-	memset (g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
+	memset (g_edicts, 0, game.MaxEntities * sizeof(g_edicts[0]));
 	InitEntityLists ();
 	ClearTimers ();
 
 	level.ServerLevelName = ServerLevelName;
 
-	Q_strncpyz (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);
+	game.SpawnPoint = spawnpoint;
 
 	InitEntities ();
 

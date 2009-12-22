@@ -423,7 +423,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (!(game.mode & GAME_DEATHMATCH))
+		if (!(game.GameMode & GAME_DEATHMATCH))
 		{
 #ifndef FREE_UNUSED_SPOTS
 			GetSolid() = SOLID_NOT;
@@ -461,7 +461,7 @@ float	PlayersRangeFromSpot (CBaseEntity *spot)
 {
 	float	bestplayerdistance = 9999999;
 
-	for (sint32 n = 1; n <= game.maxclients; n++)
+	for (sint32 n = 1; n <= game.MaxClients; n++)
 	{
 		CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[n].Entity);
 
@@ -649,7 +649,7 @@ public:
 			NULL
 		};
 
-		if (game.mode != GAME_COOPERATIVE)
+		if (game.GameMode != GAME_COOPERATIVE)
 		{
 			Free ();
 			return;
@@ -695,7 +695,7 @@ CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 		char *target = spot->TargetName;
 		if (!target)
 			target = "";
-		if (Q_stricmp(game.spawnpoint, target) == 0)
+		if (Q_stricmp(game.SpawnPoint.c_str(), target) == 0)
 		{
 			// this is a coop spawn point for one of the clients here
 			if (!--index)
@@ -814,7 +814,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (game.mode == GAME_DEATHMATCH)
+		if (game.GameMode == GAME_DEATHMATCH)
 			return;
 		if (stricmp(level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
@@ -1036,12 +1036,12 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 {
 	CSpotBase	*spot = NULL;
 
-	if (!(game.mode & GAME_SINGLEPLAYER))
+	if (!(game.GameMode & GAME_SINGLEPLAYER))
 		spot = 
 #if CLEANCTF_ENABLED
-		(game.mode & GAME_CTF) ? SelectCTFSpawnPoint() :
+		(game.GameMode & GAME_CTF) ? SelectCTFSpawnPoint() :
 #endif
-		(game.mode & GAME_DEATHMATCH) ? SelectDeathmatchSpawnPoint () : SelectCoopSpawnPoint ();
+		(game.GameMode & GAME_DEATHMATCH) ? SelectDeathmatchSpawnPoint () : SelectCoopSpawnPoint ();
 
 	// find a single player start spot
 	if (!spot)
@@ -1051,20 +1051,20 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 		{
 			spot = (*it);
 
-			if (!game.spawnpoint[0] && !spot->TargetName)
+			if (game.SpawnPoint.empty() && !spot->TargetName)
 				break;
 
-			if (!game.spawnpoint[0] || !spot->TargetName)
+			if (game.SpawnPoint.empty()|| !spot->TargetName)
 				continue;
 
-			if (Q_stricmp(game.spawnpoint, spot->TargetName) == 0)
+			if (Q_stricmp(game.SpawnPoint.c_str(), spot->TargetName) == 0)
 				break;
 		}
 
 		if (!spot)
 		{
 			// There wasn't a spawnpoint without a target, so use any
-			if (!game.spawnpoint[0])
+			if (game.SpawnPoint.empty())
 			{
 				if (CPlayerStart::SpawnPoints().at(0))
 					spot = CPlayerStart::SpawnPoints().at(0);
@@ -1319,7 +1319,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;
@@ -1443,7 +1443,7 @@ public:
 	void Spawn ()
 	{
 		// no targeted lights in deathmatch, because they cause global messages
-		if (!TargetName || (game.mode & GAME_DEATHMATCH))
+		if (!TargetName || (game.GameMode & GAME_DEATHMATCH))
 		{
 			Free ();
 			return;
@@ -1587,7 +1587,7 @@ public:
 			return;
 		}
 
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;

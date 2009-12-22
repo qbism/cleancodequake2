@@ -1026,7 +1026,7 @@ public:
 		}
 
 		Player->PlaySound (CHAN_AUTO, SoundIndex ("misc/keyuse.wav"));
-		if (game.mode == GAME_COOPERATIVE)
+		if (game.GameMode == GAME_COOPERATIVE)
 		{
 			if (Item == NItems::PowerCube)
 			{
@@ -1037,7 +1037,7 @@ public:
 						break;
 				}
 
-				for (sint32 player = 1; player <= game.maxclients; player++)
+				for (sint32 player = 1; player <= game.MaxClients; player++)
 				{
 					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
 					if (!ent->GetInUse())
@@ -1051,7 +1051,7 @@ public:
 			}
 			else
 			{
-				for (sint32 player = 1; player <= game.maxclients; player++)
+				for (sint32 player = 1; player <= game.MaxClients; player++)
 				{
 					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
 					if (!ent->GetInUse())

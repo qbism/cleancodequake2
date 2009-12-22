@@ -190,7 +190,7 @@ public:
 				return true;
 			}
 
-			for (sint32 i = 1; i <= game.maxclients; i++)
+			for (sint32 i = 1; i <= game.MaxClients; i++)
 			{
 				CPlayerEntity *e = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 				if (e->GetInUse() && e->GetSolid() != SOLID_NOT)
@@ -227,7 +227,7 @@ public:
 	bool				Open ()
 	{
 		sint32 num1 = 0, num2 = 0;
-		for (sint32 i = 0; i < game.maxclients; i++)
+		for (sint32 i = 0; i < game.MaxClients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			if (!Player->GetInUse())

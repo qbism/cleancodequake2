@@ -39,7 +39,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_servercommands.h"
 #include "cc_version.h"
 
-game_locals_t	game;
+CGameLocals	game;
 CLevelLocals	level;
 edict_t		*g_edicts;
 
@@ -123,12 +123,12 @@ void CheckDMRules ()
 	if (level.IntermissionTime)
 		return;
 
-	if (!(game.mode & GAME_DEATHMATCH))
+	if (!(game.GameMode & GAME_DEATHMATCH))
 		return;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((game.mode & GAME_CTF) && CTFCheckRules())
+	if ((game.GameMode & GAME_CTF) && CTFCheckRules())
 	{
 		EndDMLevel ();
 		return;
@@ -150,7 +150,7 @@ void CheckDMRules ()
 
 	if (fraglimit->Integer())
 	{
-		for (uint8 i = 0; i < game.maxclients; i++)
+		for (uint8 i = 0; i < game.MaxClients; i++)
 		{
 			CPlayerEntity *cl = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			if (!cl->GetInUse())
@@ -186,7 +186,7 @@ void ExitLevel ()
 	ClientEndServerFrames ();
 
 	// clear some things before going to next level
-	for (sint32 i = 0; i < game.maxclients; i++)
+	for (sint32 i = 0; i < game.MaxClients; i++)
 	{
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1 + i].Entity);
 		if (!ent->GetInUse())
@@ -226,7 +226,7 @@ void ClientEndServerFrames ()
 {
 	// calc the player views now that all pushing
 	// and damage has been added
-	for (sint32 i = 1; i <= game.maxclients ; i++)
+	for (sint32 i = 1; i <= game.MaxClients ; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!Player->GetInUse())
@@ -262,7 +262,7 @@ void ProcessEntity (edict_t *ent)
 {
 	if (!ent->inUse)
 	{
-		if (ent->state.number > (game.maxclients + BODY_QUEUE_SIZE))
+		if (ent->state.number > (game.MaxClients + BODY_QUEUE_SIZE))
 			ent->AwaitingRemoval = true;
 		return;
 	}
@@ -342,7 +342,7 @@ void CGameAPI::RunFrame ()
 
 	// choose a client for monsters to target this frame
 	// Only do it when we have spawned everything
-	if (!(game.mode & GAME_DEATHMATCH) && level.Frame > 20) // Paril, lol
+	if (!(game.GameMode & GAME_DEATHMATCH) && level.Frame > 20) // Paril, lol
 		AI_SetSightClient ();
 
 	// exit intermissions
@@ -420,7 +420,7 @@ void SetupGamemode ()
 				// We want coop
 				deathmatch->Set (0, false);
 				coop->Set (1, false);
-				game.mode = GAME_COOPERATIVE;
+				game.GameMode = GAME_COOPERATIVE;
 				return;
 			}
 			// We don't know what we want, forcing DM
@@ -433,25 +433,25 @@ void SetupGamemode ()
 				// Let it fall through
 			}
 		}
-		game.mode = GAME_DEATHMATCH;
+		game.GameMode = GAME_DEATHMATCH;
 	}
 	// Did we request cooperative?
 	else if (coopInt)
 	{
 		// All the above code handles the case if deathmatch is true.
-		game.mode = GAME_COOPERATIVE;
+		game.GameMode = GAME_COOPERATIVE;
 		return;
 	}
 	else
 	{
-		game.mode = GAME_SINGLEPLAYER;
+		game.GameMode = GAME_SINGLEPLAYER;
 		return;
 	}
 
 	// If we reached here, we wanted deathmatch
 #if CLEANCTF_ENABLED
 	if (ctf->Integer())
-		game.mode |= GAME_CTF;
+		game.GameMode |= GAME_CTF;
 #endif
 }
 
@@ -649,23 +649,23 @@ void CGameAPI::Init ()
 	// items
 	InitItemlist ();
 
-	Q_snprintfz (game.helpmessage1, sizeof(game.helpmessage1), "");
-	Q_snprintfz (game.helpmessage2, sizeof(game.helpmessage2), "");
+	game.HelpMessages[0].clear();
+	game.HelpMessages[1].clear();
 
 	// initialize all entities for this game
-	game.maxentities = maxentities->Integer();
-	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
+	game.MaxEntities = maxentities->Integer();
+	g_edicts = QNew (com_gamePool, 0) edict_t[game.MaxEntities];
 	Game.SetEntities(g_edicts);
-	Game.GetMaxEdicts() = game.maxentities;
+	Game.GetMaxEdicts() = game.MaxEntities;
 
 	// initialize all clients for this game
-	game.maxclients = maxclients->Integer();
-	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
-	Game.GetNumEdicts() = game.maxclients + 1;
+	game.MaxClients = maxclients->Integer();
+	game.Clients = QNew (com_gamePool, 0) gclient_t[game.MaxClients];
+	Game.GetNumEdicts() = game.MaxClients + 1;
 
 	// Vars
-	game.maxspectators = maxspectators->Integer();
-	game.cheats = (sv_cheats->Integer()) ? true : false;
+	game.MaxSpectators = maxspectators->Integer();
+	game.CheatsEnabled = (sv_cheats->Integer()) ? true : false;
 
 	Bans.LoadFromFile ();
 

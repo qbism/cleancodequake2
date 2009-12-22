@@ -113,7 +113,7 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 	ent->Client.KickAngles.X = ent->Client.Timers.MachinegunShots * -1.5;
 
 	// raise the gun as it is firing
-	if (!(game.mode & GAME_DEATHMATCH))
+	if (!(game.GameMode & GAME_DEATHMATCH))
 	{
 		ent->Client.Timers.MachinegunShots++;
 		if (ent->Client.Timers.MachinegunShots > 9)

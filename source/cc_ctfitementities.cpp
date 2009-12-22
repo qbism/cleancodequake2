@@ -141,7 +141,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 {
 //ZOID
 //Don't spawn the flags unless enabled
-	if (!(game.mode & GAME_CTF))
+	if (!(game.GameMode & GAME_CTF))
 	{
 		Free ();
 		return;

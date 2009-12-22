@@ -27,10 +27,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// sv_pmove.c
-// Necessary to keep 3.21 compatibility and allow cgame dlls
+// cc_pmove.cpp
+// Player move
 //
-
 
 // Paril
 // Crouch-jumping!

@@ -102,7 +102,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 
 	ent->Client.Grenade.Time = level.Frame + (((
 #if CLEANCTF_ENABLED
-	(game.mode & GAME_CTF) || 
+	(game.GameMode & GAME_CTF) || 
 #endif
 	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste()) ? 5 : 10);
 	DepleteAmmo(ent, 1);

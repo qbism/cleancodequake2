@@ -149,7 +149,7 @@ public:
 			Link();
 			return;
 		}
-		T_RadiusDamage (this, Shooter, Damage, NULL, Damage+40, MOD_BARREL);
+		SplashDamage (Shooter, Damage, NULL, Damage+40, MOD_BARREL);
 
 		CTempEnt_Explosions::GrenadeExplosion (State.GetOrigin (), this);
 		Free ();
@@ -916,7 +916,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -1062,7 +1062,7 @@ public:
 		UseTargets (Activator, Message);
 
 		State.GetOrigin().Z = GetAbsMin().Z + 1;
-		T_RadiusDamage (this, this, Damage, NULL, Damage+40, MOD_BOMB);
+		SplashDamage (this, Damage, NULL, Damage+40, MOD_BOMB);
 		BecomeExplosion (true);
 	};
 

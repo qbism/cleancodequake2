@@ -215,6 +215,8 @@ public:
 	void			Spawn ();
 };
 
+void AI_SetSightClient ();
+
 class CMonster
 {
 private:

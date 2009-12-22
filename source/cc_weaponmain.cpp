@@ -330,7 +330,7 @@ Called by ClientBeginServerFrame
 void CWeapon::Think (CPlayerEntity *Player)
 {
 #if CLEANCTF_ENABLED
-	if ((game.mode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
+	if ((game.GameMode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
 		return;
 #endif
 
@@ -348,7 +348,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 	WeaponGeneric (Player);
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-		|| (game.mode & GAME_CTF)
+		|| (game.GameMode & GAME_CTF)
 #endif
 	)
 	{
@@ -365,7 +365,7 @@ void CWeapon::AttackSound(CPlayerEntity *Player)
 {
 	if (
 #if CLEANCTF_ENABLED
-		(game.mode & GAME_CTF) || 
+		(game.GameMode & GAME_CTF) || 
 #endif
 		dmFlags.dfDmTechs.IsEnabled())
 	{

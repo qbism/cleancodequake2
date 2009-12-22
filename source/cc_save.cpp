@@ -96,7 +96,7 @@ CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 extern bool ShuttingDownEntities;
 bool RemoveAll (const edict_t *it)
 {
-	if (it && it->Entity && it->Entity->gameEntity && (it->state.number <= game.maxclients || it->inUse))
+	if (it && it->Entity && it->Entity->gameEntity && (it->state.number <= game.MaxClients || it->inUse))
 		QDelete it->Entity;
 	return true;
 }
@@ -197,7 +197,7 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	File.Write<edict_t> (*Entity->gameEntity);
 
 	// Write special data
-	if (Entity->State.GetNumber() > game.maxclients)
+	if (Entity->State.GetNumber() > game.MaxClients)
 	{
 		sint32 OwnerNumber = -1;
 
@@ -214,7 +214,7 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	WriteIndex (File, Entity->State.GetSound(), INDEX_SOUND);
 
 	// Write entity stuff
-	if (Entity->State.GetNumber() > game.maxclients)
+	if (Entity->State.GetNumber() > game.MaxClients)
 	{
 		//DebugPrintf ("Writing %s\n", Entity->SAVE_GetName ());
 		File.WriteString (Entity->SAVE_GetName ());
@@ -278,7 +278,7 @@ void WriteClient (CFile &File, CPlayerEntity *Player)
 
 void WriteClients (CFile &File)
 {
-	for (sint8 i = 1; i <= game.maxclients; i++)
+	for (sint8 i = 1; i <= game.MaxClients; i++)
 		WriteClient (File, entity_cast<CPlayerEntity>(g_edicts[i].Entity));
 }
 
@@ -303,7 +303,7 @@ void ReadEntity (CFile &File, sint32 number)
 	ent->Entity = RestoreEntity;
 
 	// Read special data
-	if (number > game.maxclients)
+	if (number > game.MaxClients)
 	{
 		sint32 OwnerNumber = File.Read<sint32> ();
 		ent->owner = (OwnerNumber == -1) ? NULL : &g_edicts[OwnerNumber];
@@ -316,7 +316,7 @@ void ReadEntity (CFile &File, sint32 number)
 	ReadIndex (File, (MediaIndex &)ent->state.sound, INDEX_SOUND);
 
 	// Read entity stuff
-	if (number > game.maxclients)
+	if (number > game.MaxClients)
 	{
 		CBaseEntity *Entity;
 		char *tempBuffer = File.ReadString ();
@@ -399,8 +399,8 @@ void ReadClient (CFile &File, sint32 i)
 
 void ReadClients (CFile &File)
 {
-	SaveClientData = QNew (com_genericPool, 0) CClient*[game.maxclients];
-	for (uint8 i = 0; i < game.maxclients; i++)
+	SaveClientData = QNew (com_genericPool, 0) CClient*[game.MaxClients];
+	for (uint8 i = 0; i < game.MaxClients; i++)
 	{
 		SaveClientData[i] = QNew (com_genericPool, 0) CClient(g_edicts[1+i].client);
 		ReadClient (File, i);
@@ -423,9 +423,9 @@ void ReadLevelLocals (CFile &File)
 
 void WriteGameLocals (CFile &File, bool autosaved)
 {
-	game.autosaved = autosaved;
+	game.AutoSaved = autosaved;
 	game.Save (File);
-	game.autosaved = false;
+	game.AutoSaved = false;
 
 	WRITE_MAGIC
 }
@@ -488,15 +488,15 @@ void CGameAPI::ReadGame (char *filename)
 
 	seedMT (time(NULL));
 
-	g_edicts = QNew (com_gamePool, 0) edict_t[game.maxentities];
+	g_edicts = QNew (com_gamePool, 0) edict_t[game.MaxEntities];
 	Game.SetEntities (g_edicts);
 	ReadGameLocals (File);
 
-	game.clients = QNew (com_gamePool, 0) gclient_t[game.maxclients];
-	for (uint8 i = 0; i < game.maxclients; i++)
+	game.Clients = QNew (com_gamePool, 0) gclient_t[game.MaxClients];
+	for (uint8 i = 0; i < game.MaxClients; i++)
 	{
 		edict_t *ent = &g_edicts[i+1];
-		ent->client = game.clients + i;
+		ent->client = game.Clients + i;
 	}
 
 	ReadClients (File);
@@ -579,7 +579,7 @@ void SetClientFields ()
 	{
 		ReadingGame = false;
 
-		for (uint8 i = 0; i < game.maxclients; i++)
+		for (uint8 i = 0; i < game.MaxClients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 			Player->Client = *SaveClientData[i];
@@ -634,7 +634,7 @@ void CGameAPI::ReadLevel (char *filename)
 #endif
 
 	// wipe all the entities
-	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));
+	memset (g_edicts, 0, game.MaxEntities*sizeof(g_edicts[0]));
 
 	InitEntityLists ();
 
@@ -673,10 +673,10 @@ void CGameAPI::ReadLevel (char *filename)
 	LoadJunk (File);
 
 	// mark all clients as unconnected
-	for (uint8 i = 0; i < game.maxclients; i++)
+	for (uint8 i = 0; i < game.MaxClients; i++)
 	{
 		edict_t *ent = &g_edicts[i+1];
-		ent->client = game.clients + i;
+		ent->client = game.Clients + i;
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
 		Player->Client.RepositionClient (ent->client);

@@ -89,7 +89,7 @@ void CBFG::MuzzleEffect (CPlayerEntity *ent)
 void CBFG::FireBFG (CPlayerEntity *ent)
 {
 	vec3f	offset (8, 8, ent->ViewHeight-8), start, forward, right;
-	const sint32		damage = (game.mode & GAME_DEATHMATCH) ?
+	const sint32		damage = (game.GameMode & GAME_DEATHMATCH) ?
 					CalcQuadVal(200)
 					:
 					CalcQuadVal(500);

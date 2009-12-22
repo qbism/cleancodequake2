@@ -225,11 +225,6 @@ CC_ENUM (uint32, EEdictSpawnflags)
 	SPAWNFLAG_NOT_COOP			= BIT(12)
 };
 
-//
-// g_combat.c
-//
-void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
-
 // damage flags
 enum
 {
@@ -248,16 +243,6 @@ enum
 #define DEFAULT_DEATHMATCH_SHOTGUN_COUNT	12
 #define DEFAULT_SHOTGUN_COUNT	12
 #define DEFAULT_SSHOTGUN_COUNT	20
-
-//
-// g_ai.c
-//
-void AI_SetSightClient ();
-
-//
-// g_client.c
-//
-void BeginIntermission (class CTargetChangeLevel *targ);
 
 //============================================================================
 
@@ -398,76 +383,74 @@ extern CCvar	*sv_airaccelerate;
 extern CBaseEntity *World;
 extern CItemList *ItemList;
 
-class game_locals_t
+class CGameLocals
 {
 public:
-	game_locals_t () :
+	CGameLocals () :
 	  HelpChanged (0),
-	  clients (NULL),
-	  maxclients (0),
-	  maxspectators (0),
-	  maxentities (0),
-	  cheats (false),
-	  mode (0),
-	  serverflags (0),
-	  autosaved (false)
+	  Clients (NULL),
+	  MaxClients (0),
+	  MaxSpectators (0),
+	  MaxEntities (0),
+	  CheatsEnabled (false),
+	  GameMode (0),
+	  ServerFlags (0),
+	  AutoSaved (false),
+	  HelpMessages (),
+	  SpawnPoint ()
 	  {
-		  memset (&helpmessage1, 0, sizeof(helpmessage1));
-		  memset (&helpmessage2, 0, sizeof(helpmessage2));
-		  memset (&spawnpoint, 0, sizeof(spawnpoint));
 	  };
 
 	void Save (CFile &File)
 	{
-		File.WriteArray (helpmessage1, sizeof(helpmessage1));
-		File.WriteArray (helpmessage2, sizeof(helpmessage2));
+		File.Write (HelpMessages[0]);
+		File.Write (HelpMessages[1]);
+		File.Write (SpawnPoint);
 		File.Write<uint8> (HelpChanged);
-		File.WriteArray (spawnpoint, sizeof(spawnpoint));
-		File.Write<uint8> (maxclients);
-		File.Write<uint8> (maxspectators);
-		File.Write<sint32> (maxentities);
-		File.Write<bool> (cheats);
-		File.Write<EGameMode> (mode);
-		File.Write<ECrossLevelTriggerFlags> (serverflags);
-		File.Write<bool> (autosaved);
+		File.Write<uint8> (MaxClients);
+		File.Write<uint8> (MaxSpectators);
+		File.Write<sint32> (MaxEntities);
+		File.Write<bool> (CheatsEnabled);
+		File.Write<EGameMode> (GameMode);
+		File.Write<ECrossLevelTriggerFlags> (ServerFlags);
+		File.Write<bool> (AutoSaved);
 	}
 
 	void Load (CFile &File)
 	{
-		File.ReadArray (helpmessage1, sizeof(helpmessage1));
-		File.ReadArray (helpmessage2, sizeof(helpmessage2));
+		HelpMessages[0] = File.Read<std::cc_string> ();
+		HelpMessages[1] = File.Read<std::cc_string> ();
+		SpawnPoint = File.Read<std::cc_string> ();
 		HelpChanged = File.Read<uint8> ();
-		File.ReadArray (spawnpoint, sizeof(spawnpoint));
-		maxclients = File.Read<uint8> ();
-		maxspectators = File.Read<uint8> ();
-		maxentities = File.Read<sint32> ();
-		cheats = File.Read<bool> ();
-		mode = File.Read<EGameMode> ();
-		serverflags = File.Read<ECrossLevelTriggerFlags> ();
-		autosaved = File.Read<bool> ();
+		MaxClients = File.Read<uint8> ();
+		MaxSpectators = File.Read<uint8> ();
+		MaxEntities = File.Read<sint32> ();
+		CheatsEnabled = File.Read<bool> ();
+		GameMode = File.Read<EGameMode> ();
+		ServerFlags = File.Read<ECrossLevelTriggerFlags> ();
+		AutoSaved = File.Read<bool> ();
 	}
 
-	char		helpmessage1[128];
-	char		helpmessage2[128];
-	uint8		HelpChanged;	// flash F1 icon if non 0, play sound
+	std::cc_string			HelpMessages[2];
+	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
-	gclient_t	*clients;		// [maxclients]
+	gclient_t				*Clients;		// [maxclients]
 
 	// can't store spawnpoint in level, because
 	// it would get overwritten by the savegame restore
-	char		spawnpoint[32];	// needed for coop respawns
+	std::cc_string			SpawnPoint;	// needed for coop respawns
 
 	// store latched cvars here that we want to get at often
-	uint8		maxclients;
-	uint8		maxspectators;
-	sint32			maxentities;
-	bool		cheats;
-	EGameMode	mode; // Game mode
+	uint8					MaxClients;
+	uint8					MaxSpectators;
+	sint32					MaxEntities;
+	bool					CheatsEnabled;
+	EGameMode				GameMode; // Game mode
 
 	// cross level triggers
-	ECrossLevelTriggerFlags		serverflags;
-	bool		autosaved;
+	ECrossLevelTriggerFlags	ServerFlags;
+	bool					AutoSaved;
 };
 
 typedef std::list<CKeyValuePair*, std::generic_allocator<CKeyValuePair*> > TKeyValuePairContainer;
@@ -529,10 +512,10 @@ public:
 	{
 		File.Write<FrameNumber_t> (Frame);
 
-		File.WriteCCString (FullLevelName);
-		File.WriteCCString (ServerLevelName);
-		File.WriteCCString (NextMap);
-		File.WriteCCString (ForceMap);
+		File.Write (FullLevelName);
+		File.Write (ServerLevelName);
+		File.Write (NextMap);
+		File.Write (ForceMap);
 
 		File.Write<FrameNumber_t> (IntermissionTime);
 		File.Write<bool> (ExitIntermission);
@@ -555,10 +538,10 @@ public:
 		Frame = File.Read<FrameNumber_t> ();
 
 
-		FullLevelName = File.ReadCCString ();
-		ServerLevelName = File.ReadCCString ();
-		NextMap = File.ReadCCString ();
-		ForceMap = File.ReadCCString ();
+		FullLevelName = File.Read<std::cc_string> ();
+		ServerLevelName = File.Read<std::cc_string> ();
+		NextMap = File.Read<std::cc_string> ();
+		ForceMap = File.Read<std::cc_string> ();
 
 		IntermissionTime = File.Read<FrameNumber_t> ();
 		ExitIntermission = File.Read<bool> ();
@@ -667,7 +650,7 @@ public:
 	bool		Demo;
 };
 
-extern	game_locals_t	game;
+extern	CGameLocals	game;
 extern	CLevelLocals	level;
 
 inline CBaseEntity *CreateEntityFromClassname (const char *classname)

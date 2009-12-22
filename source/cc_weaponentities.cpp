@@ -129,7 +129,8 @@ void CGrenade::Explode ()
 		mod = MOD_HG_SPLASH;
 	else
 		mod = MOD_G_SPLASH;
-	T_RadiusDamage(this, GetOwner(), Damage, (Enemy) ? Enemy : NULL, RadiusDamage, mod);
+
+	SplashDamage(GetOwner(), Damage, (Enemy) ? Enemy : NULL, RadiusDamage, mod);
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
@@ -376,7 +377,7 @@ void CRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
-	T_RadiusDamage(this, GetOwner(), RadiusDamage, other, DamageRadius, MOD_R_SPLASH);
+	SplashDamage(GetOwner(), RadiusDamage, other, DamageRadius, MOD_R_SPLASH);
 	CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free ();
@@ -481,7 +482,7 @@ void CBFGBolt::Think ()
 
 		CHurtableEntity	*ent = NULL;
 
-		const sint32 dmg = (game.mode & GAME_DEATHMATCH) ? 5 : 10;
+		const sint32 dmg = (game.GameMode & GAME_DEATHMATCH) ? 5 : 10;
 
 		while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, State.GetOrigin (), 256)) != NULL)
 		{
@@ -497,7 +498,7 @@ void CBFGBolt::Think ()
 	#if CLEANCTF_ENABLED
 	//ZOID
 			//don't target players in CTF
-			if ((game.mode & GAME_CTF) && (ent->EntityFlags & ENT_PLAYER) &&
+			if ((game.GameMode & GAME_CTF) && (ent->EntityFlags & ENT_PLAYER) &&
 				(GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER)))
 			{
 				if ((entity_cast<CPlayerEntity>(ent))->Client.Respawn.CTF.Team == (entity_cast<CPlayerEntity>(GetOwner()))->Client.Respawn.CTF.Team)
@@ -565,7 +566,7 @@ void CBFGBolt::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	// core explosion - prevents firing it into the wall/floor
 	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin, 200, 0, 0, MOD_BFG_BLAST);
-	T_RadiusDamage(this, GetOwner(), 200, other, 100, MOD_BFG_BLAST);
+	SplashDamage(GetOwner(), 200, other, 100, MOD_BFG_BLAST);
 
 	PlaySound (CHAN_VOICE, SoundIndex ("weapons/bfg__x1b.wav"));
 	GetSolid() = SOLID_NOT;

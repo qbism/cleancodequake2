@@ -51,3 +51,4 @@ public:
 };
 
 CTargetChangeLevel *CreateTargetChangeLevel(const char *map);
+void BeginIntermission (CTargetChangeLevel *targ);

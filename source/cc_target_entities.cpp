@@ -190,7 +190,7 @@ public:
 		CTempEnt_Explosions::RocketExplosion (State.GetOrigin(), this);
 
 		if (Damage)
-			T_RadiusDamage (this, Activator, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+			SplashDamage (Activator, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
 		FrameNumber_t save = Delay;
 		Delay = 0;
@@ -405,7 +405,7 @@ public:
 		CTempEnt_Splashes::Splash (State.GetOrigin(), MoveDir, Color, Count);
 
 		if (Damage)
-			T_RadiusDamage (this, activator, Damage, NULL, Damage+40, MOD_SPLASH);
+			SplashDamage (activator, Damage, NULL, Damage+40, MOD_SPLASH);
 	};
 
 	void Spawn ()
@@ -540,15 +540,15 @@ void BeginIntermission (CTargetChangeLevel *targ)
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if (game.mode & GAME_CTF)
+	if (game.GameMode & GAME_CTF)
 		CTFCalcScores();
 //ZOID
 #endif
 
-	game.autosaved = false;
+	game.AutoSaved = false;
 
 	// respawn any dead clients
-	for (sint32 i = 0; i < game.maxclients; i++)
+	for (sint32 i = 0; i < game.MaxClients; i++)
 	{
 		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!client->GetInUse())
@@ -562,9 +562,9 @@ void BeginIntermission (CTargetChangeLevel *targ)
 
 	if (strstr(level.ChangeMap, "*"))
 	{
-		if (game.mode == GAME_COOPERATIVE)
+		if (game.GameMode == GAME_COOPERATIVE)
 		{
-			for (sint32 i = 0; i < game.maxclients; i++)
+			for (sint32 i = 0; i < game.MaxClients; i++)
 			{
 				CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 				if (!client->GetInUse())
@@ -582,7 +582,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	}
 	else
 	{
-		if (!(game.mode & GAME_DEATHMATCH))
+		if (!(game.GameMode & GAME_DEATHMATCH))
 		{
 			level.ExitIntermission = true;		// go immediately to the next level
 			if (targ->ExitOnNextFrame)
@@ -616,7 +616,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	level.IntermissionAngles = ent->State.GetAngles ();
 
 	// move all clients to the intermission point
-	for (sint32 i = 0; i < game.maxclients; i++)
+	for (sint32 i = 0; i < game.MaxClients; i++)
 	{
 		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!client->GetInUse())
@@ -653,14 +653,14 @@ void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 	if (level.IntermissionTime)
 		return;		// already activated
 
-	if (game.mode == GAME_SINGLEPLAYER)
+	if (game.GameMode == GAME_SINGLEPLAYER)
 	{
 		if (entity_cast<CPlayerEntity>(g_edicts[1].Entity)->Health <= 0)
 			return;
 	}
 
 	// if noexit, do a ton of damage to other
-	if ((game.mode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit.IsEnabled() && (other != World))
+	if ((game.GameMode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit.IsEnabled() && (other != World))
 	{
 		if ((other->EntityFlags & ENT_HURTABLE))
 		{
@@ -673,7 +673,7 @@ void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 	}
 
 	// if multiplayer, let everyone know who hit the exit
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		if (activator && (activator->EntityFlags & ENT_PLAYER))
 		{
@@ -684,7 +684,7 @@ void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
 
 	// if going to a new unit, clear cross triggers
 	if (strstr(Map, "*"))	
-		game.serverflags &= ~(SFL_CROSS_TRIGGER_MASK);
+		game.ServerFlags &= ~(SFL_CROSS_TRIGGER_MASK);
 
 	BeginIntermission (this);
 };
@@ -799,7 +799,7 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		game.serverflags |= SpawnFlags;
+		game.ServerFlags |= SpawnFlags;
 		Free ();
 	};
 
@@ -861,7 +861,7 @@ public:
 
 	void Think ()
 	{
-		if (SpawnFlags == (game.serverflags & SFL_CROSS_TRIGGER_MASK & SpawnFlags))
+		if (SpawnFlags == (game.ServerFlags & SFL_CROSS_TRIGGER_MASK & SpawnFlags))
 		{
 			UseTargets (this, Message);
 			Free ();
@@ -967,7 +967,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -1050,7 +1050,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -1457,13 +1457,13 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		Q_strncpyz ((SpawnFlags & HELP_FIRST_MESSAGE) ? game.helpmessage1 : game.helpmessage2, Message.c_str(), sizeof(game.helpmessage1)-1);
+		game.HelpMessages[(SpawnFlags & HELP_FIRST_MESSAGE) ? 0 : 1] = Message;
 		game.HelpChanged++;
 	};
 
 	void Spawn ()
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;

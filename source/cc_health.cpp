@@ -70,7 +70,7 @@ bool CHealth::Pickup (CItemEntity *ent, CPlayerEntity *other)
 			other->Health = other->MaxHealth;
 	}
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 300);
 
 	return true;
@@ -93,7 +93,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfNoHealth.IsEnabled())
+		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoHealth.IsEnabled())
 		{
 			Free ();
 			return;

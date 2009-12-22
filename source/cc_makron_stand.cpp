@@ -106,7 +106,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.mode & GAME_DEATHMATCH)
+		if (game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;

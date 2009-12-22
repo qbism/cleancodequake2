@@ -182,13 +182,13 @@ void InitItemlist ()
 	AddPowerupsToList();
 	AddKeysToList();
 #if CLEANCTF_ENABLED
-	if (game.mode & GAME_CTF)
+	if (game.GameMode & GAME_CTF)
 		AddFlagsToList();
 #endif
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.mode & GAME_CTF)
+	|| (game.GameMode & GAME_CTF)
 #endif
 		)
 		AddTechsToList();
