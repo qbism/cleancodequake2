@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Moved here because it's seperate from the item system.
 //
 
-#if !defined(__CC_ITEMENTITY_H__) || !INCLUDE_GUARDS
-#define __CC_ITEMENTITY_H__
+#if !defined(CC_GUARD_ITEMENTITY_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ITEMENTITY_H
 
 // The item entity class
 CC_ENUM (uint8, EItemThinkState)
@@ -63,7 +63,7 @@ public:
 	ENTITYFIELD_DEFS
 	void SaveFields (CFile &File);
 	void LoadFields (CFile &File);
-	const char *__GetName () { return LinkedItem->Classname; }
+	const char *SAVE_GetName () { return LinkedItem->Classname; }
 
 	// Returns a random team member of ent
 	CItemEntity *GetRandomTeamMember (CItemEntity *Master);

@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New, improved, better, stable item system!
 //
 
-#if !defined(__CC_ARMOR_H__) || !INCLUDE_GUARDS
-#define __CC_ARMOR_H__
+#if !defined(CC_GUARD_ARMOR_H) || !INCLUDE_GUARDS
+#define CC_GUARD_ARMOR_H
 
 class CArmor : public CBaseItem
 {

@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Menu system
 //
 
-#if !defined(__CC_MENU_H__) || !INCLUDE_GUARDS
-#define __CC_MENU_H__
+#if !defined(CC_GUARD_MENU_H) || !INCLUDE_GUARDS
+#define CC_GUARD_MENU_H
 
 class CMenuItem
 {

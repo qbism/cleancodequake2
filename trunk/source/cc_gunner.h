@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Gunner Monster
 //
 
-#if !defined(__CC_GUNNER_H__) || !INCLUDE_GUARDS
-#define __CC_GUNNER_H__
+#if !defined(CC_GUARD_GUNNER_H) || !INCLUDE_GUARDS
+#define CC_GUARD_GUNNER_H
 
 class CGunner : public CMonster
 {

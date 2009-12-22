@@ -55,7 +55,7 @@ public:
 		return CTriggerMultiple::ParseField (Key, Value);
 	};
 
-	const char *__GetName () { return "CTriggerUse"; }
+	const char *SAVE_GetName () { return "CTriggerUse"; }
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
@@ -109,7 +109,7 @@ public:
 		return CTriggerMultiple::ParseField (Key, Value);
 	};
 
-	const char *__GetName () { return "CTriggerUse"; }
+	const char *SAVE_GetName () { return "CTriggerUse"; }
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{

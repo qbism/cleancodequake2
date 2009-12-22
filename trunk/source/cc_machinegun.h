@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Machinegun
 //
 
-#if !defined(__CC_MACHINEGUN_H__) || !INCLUDE_GUARDS
-#define __CC_MACHINEGUN_H__
+#if !defined(CC_GUARD_MACHINEGUN_H) || !INCLUDE_GUARDS
+#define CC_GUARD_MACHINEGUN_H
 
 class CMachinegun : public CWeapon
 {

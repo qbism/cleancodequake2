@@ -100,10 +100,10 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 		else
 		{
 			const sint32	effect = ((ent->Client.PlayerState.GetGunFrame() == 6) || (ent->Client.PlayerState.GetGunFrame() == 9)) ? EF_HYPERBLASTER : 0,
-						damage = (game.mode & GAME_DEATHMATCH) ?
-				(isQuad) ? 60 : 15
-				:
-				(isQuad) ? 80 : 20;
+							damage = (game.mode & GAME_DEATHMATCH) ?
+					CalcQuadVal(15)
+					:
+					CalcQuadVal(20);
 
 			vec3f	forward, right, start;
 

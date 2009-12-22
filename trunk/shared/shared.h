@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // Included first by ALL program modules
 //
 
-#ifndef __SHARED_H__
-#define __SHARED_H__
+#ifndef __SHARED_H
+#define __SHARED_H
 
 #include <assert.h>
 #include <math.h>
@@ -1875,4 +1875,4 @@ struct playerState_t
 // Means of Death definition
 typedef uint32	EMeansOfDeath;
 
-#endif // __SHARED_H__
+#endif // __SHARED_H

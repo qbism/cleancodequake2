@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Common controls
 //
 
-#if !defined(__CC_CONTROLS_H__) || !INCLUDE_GUARDS
-#define __CC_CONTROLS_H__
+#if !defined(CC_GUARD_CONTROLS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CONTROLS_H
 
 #include <sstream>
 #include "cc_conchars.h"

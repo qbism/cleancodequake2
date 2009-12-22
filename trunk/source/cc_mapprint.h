@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Contains a system to more easily-er warn about map errors
 //
 
-#if !defined(__CC_MAPPRINT_H__) || !INCLUDE_GUARDS
-#define __CC_MAPPRINT_H__
+#if !defined(CC_GUARD_MAPPRINT_H) || !INCLUDE_GUARDS
+#define CC_GUARD_MAPPRINT_H
 
 CC_ENUM (uint8, EMapPrintType)
 {

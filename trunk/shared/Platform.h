@@ -45,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #if (_MSC_VER >= 1600) // 2010
 	#define MSVS_VERSION			VS_10
 	#define MSVS_VERSION_STRING		VS_10_STR
-	#define HAS__CPP0x
+	#define HAS__CPP0x				1
 #elif (_MSC_VER >= 1500) // 2008
 	#define MSVS_VERSION			VS_9
 	#define MSVS_VERSION_STRING		VS_9_STR
@@ -118,6 +118,7 @@ typedef unsigned __int64	uint64;
 # define itoa _itoa
 
 # define __declspec_naked __declspec(naked)
+# define cc_thiscall __thiscall
 
 // =========================================================================
 // Generic Unix
@@ -134,6 +135,7 @@ typedef unsigned __int64	uint64;
 
 #  define __declspec
 #  define __declspec_naked
+#  define cc_thiscall thiscall 
 
 //
 // Linux

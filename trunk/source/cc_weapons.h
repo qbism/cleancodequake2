@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New item system code
 //
 
-#if !defined(__CC_WEAPONS_H__) || !INCLUDE_GUARDS
-#define __CC_WEAPONS_H__
+#if !defined(CC_GUARD_WEAPONS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_WEAPONS_H
 
 // Class for weapon items.
 class CWeaponItem : public virtual CBaseItem

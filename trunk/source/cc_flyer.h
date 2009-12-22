@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Flyer Monster
 //
 
-#if !defined(__CC_FLYER_H__) || !INCLUDE_GUARDS
-#define __CC_FLYER_H__
+#if !defined(CC_GUARD_FLYER_H) || !INCLUDE_GUARDS
+#define CC_GUARD_FLYER_H
 
 class CFlyer : public CMonster
 {

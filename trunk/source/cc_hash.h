@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Duh
 //
 
-#if !defined(__CC_HASH_H__) || !INCLUDE_GUARDS
-#define __CC_HASH_H__
+#if !defined(CC_GUARD_HASH_H) || !INCLUDE_GUARDS
+#define CC_GUARD_HASH_H
 
 uint32 Com_HashGeneric(const char *name, const sint32 hashSize);
 uint32 Com_HashGeneric(const std::cc_string &name, const sint32 hashSize);

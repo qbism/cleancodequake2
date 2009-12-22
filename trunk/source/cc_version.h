@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#if !defined(__CC_VERSION_H__) || !INCLUDE_GUARDS
-#define __CC_VERSION_H__
+#if !defined(CC_GUARD_VERSION_H) || !INCLUDE_GUARDS
+#define CC_GUARD_VERSION_H
 
 #define CLEANCODE_VERSION_PREFIX	"pr"
 #define CLEANCODE_VERSION_MAJOR_N	1			// x
 #define CLEANCODE_VERSION_MINOR_N	0			// xxxx
-#define CLEANCODE_VERSION_BUILD_N	288			// xxxx
+#define CLEANCODE_VERSION_BUILD_N	293			// xxxx
 
 #define CLEANCODE_VERSION_PRINT			"\"%s.%u.%04u.%05u\""
 #define CLEANCODE_VERSION_PRINT_ARGS	CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N

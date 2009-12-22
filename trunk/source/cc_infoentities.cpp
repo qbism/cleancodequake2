@@ -1277,7 +1277,7 @@ public:
 	  {
 	  };
 
-	const char *__GetName () { return "CPathCombat"; }
+	const char *SAVE_GetName () { return "CPathCombat"; }
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{

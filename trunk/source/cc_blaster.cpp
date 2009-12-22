@@ -70,9 +70,9 @@ bool CBlaster::AttemptToFire (CPlayerEntity *ent)
 void CBlaster::Fire (CPlayerEntity *ent)
 {
 	const sint32 Damage = deathmatch->Integer() ? 
-			(isQuad) ? 60 : 15
+			CalcQuadVal(15)
 			:
-			(isQuad) ? 40 : 10;
+			CalcQuadVal(10);
 	vec3f	Forward, Start, Right, Offset (24, 8, ent->ViewHeight - 8);
 
 	ent->Client.ViewAngle.ToVectors (&Forward, &Right, NULL);

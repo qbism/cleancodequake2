@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // WACHOOEYCHOY
 //
 
-#if !defined(__CC_GLADIATOR_H__) || !INCLUDE_GUARDS
-#define __CC_GLADIATOR_H__
+#if !defined(CC_GUARD_GLADIATOR_H) || !INCLUDE_GUARDS
+#define CC_GUARD_GLADIATOR_H
 
 class CGladiator : public CMonster
 {

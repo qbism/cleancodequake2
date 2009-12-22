@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Compiler options
 //
 
-#if !defined(__CC_OPTIONS_H__) || !INCLUDE_GUARDS
-#define __CC_OPTIONS_H__
+#if !defined(CC_GUARD_OPTIONS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_OPTIONS_H
 
 // Define this to override global macros
 #define ORIGINAL_QUAKE_2					1
@@ -114,15 +114,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define NO_VERSION_CHECKING					1
 
 #ifdef INCLUDE_GUARDS
-	#define __STR2__(str) #str
-	#define __STR1__(str) __STR2__(str)
-	#define __LOC__ __FILE__ "("__STR1__(__LINE__)") : warning: "
+	#define CC_STR2(str) #str
+	#define CC_STR1(str) CC_STR2(str)
+	#define CC_LOC __FILE__ "("CC_STR1(__LINE__)") : warning: "
 
-	#define FILE_WARNING __pragma(message(__LOC__"file included more than once!"))
+#if defined(_WIN32)
+	#define FILE_WARNING __pragma(message(CC_LOC"file included more than once!"))
+#else
+	#define FILE_WARNING
 #endif
-
-// Define this to get rid of TR1-specific headers
-#define _CC_NO_TR1							0
+#endif
 
 // Monster-related preprocessor flags
 #define INFANTRY_DOES_REVERSE_GUN_ATTACK	1

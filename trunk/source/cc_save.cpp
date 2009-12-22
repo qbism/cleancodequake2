@@ -216,14 +216,14 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	// Write entity stuff
 	if (Entity->State.GetNumber() > game.maxclients)
 	{
-		//DebugPrintf ("Writing %s\n", Entity->__GetName ());
-		File.WriteString (Entity->__GetName ());
+		//DebugPrintf ("Writing %s\n", Entity->SAVE_GetName ());
+		File.WriteString (Entity->SAVE_GetName ());
 
 #if WIN32 && _DEBUG
 		if (!(Entity->EntityFlags & ENT_ITEM))
 		{
-			if (!strstr(Q_strlwr(std::cc_string(typeid(*Entity).name())).c_str(), Q_strlwr(std::cc_string(Entity->__GetName())).c_str()))
-				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->__GetName());
+			if (!strstr(Q_strlwr(std::cc_string(typeid(*Entity).name())).c_str(), Q_strlwr(std::cc_string(Entity->SAVE_GetName())).c_str()))
+				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->SAVE_GetName());
 		}
 #endif
 	}

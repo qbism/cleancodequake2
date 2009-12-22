@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#if !defined(__CC_CTF_H__) || !INCLUDE_GUARDS
-#define __CC_CTF_H__
+#if !defined(CC_GUARD_CTF_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CTF_H
 
 #define CTF_VERSION			1.09b
 #define CTF_VSTRING2(x) #x

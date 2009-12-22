@@ -489,7 +489,7 @@ void CTurretDriver::TurretThink ()
 
 void CTurretDriver::TurretLink ()
 {
-	Think = static_cast<void (__thiscall CMonster::* )()>(&CTurretDriver::TurretThink);
+	Think = ConvertDerivedFunction(&CTurretDriver::TurretThink);
 	Entity->NextThink = level.Frame + FRAMETIME;
 
 	TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Entity->Target));
@@ -552,7 +552,7 @@ void CTurretDriver::Spawn ()
 	Entity->State.GetOldOrigin() = Entity->State.GetOrigin ();
 	AIFlags |= (AI_STAND_GROUND);
 
-	Think = static_cast<void (__thiscall CMonster::* )()>(&CTurretDriver::TurretLink);
+	Think = static_cast<void (cc_thiscall CMonster::* )()>(&CTurretDriver::TurretLink);
 	Entity->NextThink = level.Frame + FRAMETIME;
 
 	Entity->Link ();

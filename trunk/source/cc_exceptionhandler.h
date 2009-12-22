@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Exception handler, stolen from EGL. Shh!
 //
 
-#if !defined(__CC_EXCEPTIONHANDLER_H__) || !INCLUDE_GUARDS
-#define __CC_EXCEPTIONHANDLER_H__
+#if !defined(CC_GUARD_EXCEPTIONHANDLER_H) || !INCLUDE_GUARDS
+#define CC_GUARD_EXCEPTIONHANDLER_H
 
-#if CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER && defined(_WIN32)
 #define CC_EXCEPTION_HANDLER_BEGIN		__try		\
 										{
 
