@@ -163,4 +163,56 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		Cast (CASTFLAG_UNRELIABLE, Player);
 	}
 }
+#else
+void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+{
+	va_list		argptr;
+	static char	string[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	va_end (argptr);
+	
+	if (printLevel == PRINT_CENTER)
+		gi.centerprintf (ent, "%s", string);
+	else
+		gi.cprintf (ent, printLevel, "%s", string);
+}
+
+void DeveloperPrintf (char *fmt, ...)
+{
+	va_list		argptr;
+	static char	string[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	va_end (argptr);
+	
+	gi.dprintf ("%s", string);
+}
+
+void DebugPrintf (char *fmt, ...)
+{
+	va_list		argptr;
+	static char	string[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	va_end (argptr);
+	
+	gi.dprintf ("%s", string);
+}
+
+void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
+{
+	va_list		argptr;
+	static char	string[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	va_end (argptr);
+	
+	gi.bprintf (printLevel, "%s", string);
+}
+
 #endif

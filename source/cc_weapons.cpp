@@ -223,7 +223,12 @@ sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX] =
 	100,
 	100,
 	300,
-	100
+	100,
+
+#if XATRIX_FEATURES
+	100,
+	5,
+#endif
 };
 sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 {
@@ -232,7 +237,12 @@ sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 	50,
 	50,
 	250,
-	75
+	75,
+
+#if XATRIX_FEATURES
+	100,
+	5,
+#endif
 };
 
 sint32 CAmmo::GetMax (CPlayerEntity *ent)
@@ -363,37 +373,33 @@ bool CAmmo::AddAmmo (CPlayerEntity *ent, sint32 count)
 	return false;
 }
 
-class CAmmoEntity : public CItemEntity
+CAmmoEntity::CAmmoEntity() :
+  CBaseEntity(),
+  CItemEntity ()
+  {
+  };
+
+CAmmoEntity::CAmmoEntity (sint32 Index) :
+  CBaseEntity(Index),
+  CItemEntity (Index)
+  {
+  };
+
+void CAmmoEntity::Spawn (CBaseItem *item)
 {
-public:
-	CAmmoEntity() :
-	  CBaseEntity(),
-	  CItemEntity ()
-	  {
-	  };
-
-	CAmmoEntity (sint32 Index) :
-	  CBaseEntity(Index),
-	  CItemEntity (Index)
-	  {
-	  };
-
-	void Spawn (CBaseItem *item)
+	if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
 	{
-		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
-		{
-			Free ();
-			return;
-		}
+		Free ();
+		return;
+	}
 
-		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
-		ThinkState = ITS_DROPTOFLOOR;
-		PhysicsType = PHYSICS_NONE;
+	LinkedItem = item;
+	NextThink = level.Frame + 2;    // items start after other solids
+	ThinkState = ITS_DROPTOFLOOR;
+	PhysicsType = PHYSICS_NONE;
 
-		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
-	};
+	State.GetEffects() = item->EffectFlags;
+	State.GetRenderEffects() = RF_GLOW;
 };
 
 LINK_ITEM_TO_CLASS (ammo_shells, CAmmoEntity);
@@ -422,6 +428,10 @@ void AddAmmoToList ()
 	NItems::Grenades = QNew (com_itemPool, 0) CAmmoWeapon("ammo_grenades", "models/items/ammo/grenades/medium/tris.md2", 0, "misc/am_pkup.wav", "a_grenades", "Grenades", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CHandGrenade::Weapon, 1, "#a_grenades.md2", 5, CAmmo::AMMOTAG_GRENADES);
 	NItems::Rockets = QNew (com_itemPool, 0) CAmmo("ammo_rockets", "models/items/ammo/rockets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_rockets", "Rockets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 5, CAmmo::AMMOTAG_ROCKETS);
 	NItems::Cells = QNew (com_itemPool, 0) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_CELLS);
+
+#if XATRIX_FEATURES
+	AddXatrixAmmoToList ();
+#endif
 
 	AddWeapons (ItemList);
 }

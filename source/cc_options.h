@@ -204,7 +204,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define AMMO_REGEN_TECH 0
 #undef MONSTERS_HIT_MONSTERSOLID
 #define MONSTERS_HIT_MONSTERSOLID 1
-#undef XATRIX__FEATURES
+#undef XATRIX_FEATURES
 #define XATRIX_FEATURES 1
 #endif
 #endif

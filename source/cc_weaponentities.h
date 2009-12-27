@@ -71,7 +71,7 @@ public:
 	void Explode ();
 
 	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f aimdir,
-						sint32 damage, sint32 speed, float timer, float damage_radius, bool handNade = false, bool held = false);
+						sint32 damage, sint32 speed, FrameNumber_t timer, float damage_radius, bool handNade = false, bool held = false);
 
 	bool Run ();
 };
@@ -303,6 +303,8 @@ public:
 	static void Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint32 damage, sint32 speed);
 };
 #endif
+
+void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed);
 
 #else
 FILE_WARNING

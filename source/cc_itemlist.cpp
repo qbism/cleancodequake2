@@ -63,6 +63,12 @@ namespace NItems
 	CFlag *RedFlag;
 	CFlag *BlueFlag;
 	#endif
+	#if XATRIX_FEATURES
+	CWeaponItem	*IonRipper;	
+	CWeaponItem	*Phalanx;	
+	CAmmo		*MagSlugs;
+	CAmmo 		*Trap;
+	#endif
 
 	CAmmo *Shells;
 	CAmmo *Bullets;

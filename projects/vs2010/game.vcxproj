@@ -788,6 +788,10 @@ echo Done!
     <ClCompile Include="..\..\source\cc_ctfmenu.cpp" />
     <ClCompile Include="..\..\source\cc_grapple.cpp" />
     <ClCompile Include="..\..\source\cc_utils.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_ionripper.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_items.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_phalanx.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_trap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h" />
@@ -903,6 +907,10 @@ echo Done!
     <ClInclude Include="..\..\source\cc_grapple.h" />
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_ionripper.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_items.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_phalanx.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_trap.h" />
     <ClInclude Include="..\..\source\m_actor.h" />
     <ClInclude Include="..\..\source\m_berserk.h" />
     <ClInclude Include="..\..\source\m_boss2.h" />

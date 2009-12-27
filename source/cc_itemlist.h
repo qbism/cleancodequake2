@@ -96,12 +96,17 @@ namespace NItems
 	extern CWeaponItem *HyperBlaster;
 	extern CWeaponItem *Railgun;
 	extern CWeaponItem *BFG;
-	#if CLEANCTF_ENABLED
-	extern CWeaponItem	*Grapple;
+#if CLEANCTF_ENABLED
+	extern CWeaponItem *Grapple;
 
 	extern CFlag *RedFlag;
 	extern CFlag *BlueFlag;
-	#endif
+#endif
+#if XATRIX_FEATURES
+	extern CWeaponItem *IonRipper;	
+	extern CWeaponItem *Phalanx;	
+	extern CAmmo *MagSlugs;
+#endif
 
 	extern CAmmo *Shells;
 	extern CAmmo *Bullets;
@@ -109,6 +114,7 @@ namespace NItems
 	extern CAmmo *Rockets;
 	extern CAmmo *Cells;
 	extern CAmmo *Grenades;
+	extern CAmmo *Trap;
 
 	extern CMegaHealth *MegaHealth;
 	extern CBackPack *BackPack;

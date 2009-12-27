@@ -36,17 +36,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // If we're using the old, extended library functions
 // we need to make sure that these just re-route to those
-#if USE_EXTENDED_GAME_IMPORTS
-#define ClientPrintf gi.cprintf
-#define DebugPrintf gi.dprintf
-#define BroadcastPrintf gi.bprintf
-#else
 void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
 void DeveloperPrintf (char *fmt, ...);
 void DebugPrintf (char *fmt, ...);
 
 void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...);
-#endif
 
 #else
 FILE_WARNING

@@ -94,11 +94,11 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 	ent->P_ProjectSource (offset, forward, right, start);
 
-	float timer = (float)(ent->Client.Grenade.Time - level.Frame) / 10;
+	FrameNumber_t timer = (float)(ent->Client.Grenade.Time - level.Frame) / 10;
 	const sint32 speed = (ent->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
-	CGrenade::Spawn (ent, start, forward, damage, speed, timer, radius, true, inHand);
+	CGrenade::Spawn (ent, start, forward, damage, speed, (ent->Client.Grenade.Time - level.Frame), radius, true, inHand);
 
 	ent->Client.Grenade.Time = level.Frame + (((
 #if CLEANCTF_ENABLED

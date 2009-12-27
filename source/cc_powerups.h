@@ -67,7 +67,6 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	static void __cdecl MegaHealthThink (edict_t *ent);
 	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
 };
 

@@ -54,6 +54,7 @@ typedef sint32	FrameNumber_t;
 #define TO_STRING(x) TO_STRING2(x)
 
 // Stand-alone classes
+#include "cc_print.h"
 #include "cc_filesystem.h"
 #include "cc_platform.h"
 #include "cc_indexing.h"
@@ -92,7 +93,6 @@ typedef sint32	FrameNumber_t;
 #include "cc_modules.h"
 
 // Classes that require classes from the above includes
-#include "cc_print.h"
 #include "cc_sound.h"
 #if CLEANCTF_ENABLED
 #include "cc_ctfadmin.h"

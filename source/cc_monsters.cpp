@@ -1630,7 +1630,7 @@ void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sin
 		return;
 #endif
 
-	CGrenade::Spawn (Entity, start, aimdir, damage, speed, 2.5, damage+40);
+	CGrenade::Spawn (Entity, start, aimdir, damage, speed, 25, damage+40);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);

@@ -209,6 +209,9 @@ class CBounceProjectile : public virtual CPhysicsEntity
 {
 public:
 	float			backOff;
+	bool			AffectedByGravity;
+	bool			StopOnEqualPlane;
+	bool			AimInVelocityDirection;
 
 	CBounceProjectile ();
 	CBounceProjectile (sint32 index);
@@ -247,7 +250,7 @@ public:
 };
 
 // Doesn't add gravity
-class CFlyMissileProjectile : public virtual CPhysicsEntity
+class CFlyMissileProjectile : public virtual CBounceProjectile
 {
 public:
 	CFlyMissileProjectile ();
@@ -262,8 +265,6 @@ public:
 	{
 		CPhysicsEntity::LoadFields (File);
 	}
-
-	bool			Run ();
 };
 
 // Gravity, special edge handling

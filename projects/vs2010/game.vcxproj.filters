@@ -91,6 +91,15 @@
     <Filter Include="CleanCode Files\Menu">
       <UniqueIdentifier>{594f61e7-de73-49ab-b5aa-d5de189f720e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\Mission Packs">
+      <UniqueIdentifier>{eaeb7f5f-de27-41bc-8020-ce2540ca8cc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CleanCode Files\Mission Packs\Rogue %28Ground Zero%29">
+      <UniqueIdentifier>{ffff52bf-c324-48c3-a6f5-e2624706ce6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29">
+      <UniqueIdentifier>{a069e57a-cd20-4204-9eda-0a372021da6d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="CleanCode Files\Modules">
       <UniqueIdentifier>{6af86e92-8b38-48e4-9f27-1f9d81c3f466}</UniqueIdentifier>
     </Filter>
@@ -486,6 +495,18 @@
     <ClCompile Include="..\..\source\cc_write.cpp">
       <Filter>CleanCode Files\Game API\Messages</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_ionripper.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_items.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_phalanx.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_trap.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">
@@ -823,6 +844,18 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_write.h">
       <Filter>CleanCode Files\Game API\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_ionripper.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_items.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_phalanx.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_trap.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_actor.h">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>

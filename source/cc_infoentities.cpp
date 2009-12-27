@@ -112,6 +112,9 @@ public:
 
 	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
+		if (!Dest)
+			return;
+
 		CPlayerEntity	*Player = NULL;
 		if (other->EntityFlags & ENT_PLAYER)
 			Player = entity_cast<CPlayerEntity>(other);

@@ -78,6 +78,15 @@ public:
 	void Spawn ();
 };
 
+class CAmmoEntity : public CItemEntity
+{
+public:
+	CAmmoEntity();
+	CAmmoEntity (sint32 Index);
+
+	void Spawn (CBaseItem *item);
+};
+
 #define LINK_ITEM_TO_CLASS(mapClassName,DLLClassName) \
 	CMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (sint32 Index) \
 	{ \
