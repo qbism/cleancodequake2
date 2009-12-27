@@ -195,7 +195,7 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 	switch (castType)
 	{
 	case CAST_MULTI:
-		for (sint32 i = 1; i <= game.maxclients; i++)
+		for (sint32 i = 1; i <= game.MaxClients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 

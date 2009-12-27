@@ -151,7 +151,7 @@ bool CHurtableEntity::CheckTeamDamage (CBaseEntity *attacker)
 {
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((game.mode & GAME_CTF) && (EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
+	if ((game.GameMode & GAME_CTF) && (EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
 	{
 		CPlayerEntity *Targ = entity_cast<CPlayerEntity>(this);
 		CPlayerEntity *Attacker = entity_cast<CPlayerEntity>(attacker);
@@ -296,7 +296,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 		if (!((entity_cast<CMonsterEntity>(this))->Monster->AIFlags & AI_GOOD_GUY))
 		{
 			level.Monsters.Killed++;
-			if ((game.mode == GAME_COOPERATIVE) && (attacker->EntityFlags & ENT_PLAYER))
+			if ((game.GameMode == GAME_COOPERATIVE) && (attacker->EntityFlags & ENT_PLAYER))
 				(entity_cast<CPlayerEntity>(attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
@@ -350,7 +350,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	// friendly fire avoidance
 	// if enabled you can't hurt teammates (but you can hurt yourself)
 	// knockback still occurs
-	if ((this != attacker) && ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()) || game.mode == GAME_COOPERATIVE))
+	if ((this != attacker) && ((game.GameMode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()) || game.GameMode == GAME_COOPERATIVE))
 	{
 		if ((EntityFlags & ENT_PLAYER) && attacker && (attacker->EntityFlags & ENT_PLAYER))
 		{
@@ -366,7 +366,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	meansOfDeath = mod;
 
 	// easy mode takes half damage
-	if (skill->Integer() == 0 && !(game.mode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
+	if (skill->Integer() == 0 && !(game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
 	{
 		damage *= 0.5;
 		if (!damage)
@@ -377,7 +377,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 
 // bonus damage for surprising a monster
 // Paril revision: Allow multiple pellet weapons to take advantage of this too!
-	if (!(dflags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && (attacker->EntityFlags & ENT_PLAYER))
+	if (!(dflags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && attacker && (attacker->EntityFlags & ENT_PLAYER))
 	{
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
@@ -392,7 +392,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.mode & GAME_CTF)
+	|| (game.GameMode & GAME_CTF)
 #endif
 	)
 	{
@@ -456,7 +456,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 #if CLEANCTF_ENABLED
 //ZOID
 //team armor protect
-	if ((game.mode & GAME_CTF) && isClient && (attacker->EntityFlags & ENT_PLAYER) &&
+	if ((game.GameMode & GAME_CTF) && isClient && (attacker->EntityFlags & ENT_PLAYER) &&
 		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(attacker))->Client.Respawn.CTF.Team) &&
 		(this != attacker) && dmFlags.dfCtfArmorProtect.IsEnabled())
 		psave = asave = 0;
@@ -484,7 +484,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.mode & GAME_CTF)
+	|| (game.GameMode & GAME_CTF)
 #endif
 	)
 	{
@@ -508,7 +508,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((game.mode & GAME_CTF) && (isClient && (attacker->EntityFlags & ENT_PLAYER)))
+	if ((game.GameMode & GAME_CTF) && (isClient && (attacker->EntityFlags & ENT_PLAYER)))
 		CTFCheckHurtCarrier((entity_cast<CPlayerEntity>(this)), (entity_cast<CPlayerEntity>(attacker)));
 //ZOID
 #endif

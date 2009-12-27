@@ -1187,7 +1187,7 @@ void CDoor::Spawn ()
 	
 	if (!Speed)
 		Speed = 100;
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 		Speed *= 2;
 
 	if (!Accel)
@@ -2471,11 +2471,11 @@ void CWorldEntity::Spawn ()
 	// status bar program
 	if (map_debug->Boolean())
 		CreateMapDebugStatusbar();
-	else if (game.mode & GAME_DEATHMATCH)
+	else if (game.GameMode & GAME_DEATHMATCH)
 	{
 #if CLEANCTF_ENABLED
 //ZOID
-		if (game.mode & GAME_CTF)
+		if (game.GameMode & GAME_CTF)
 		{
 			CreateCTFStatusbar();
 
@@ -3150,7 +3150,7 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 
 	CanTakeDamage = false;
 
 	if (Damage)
-		T_RadiusDamage (this, attacker, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+		SplashDamage (attacker, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
 	Velocity = State.GetOrigin() - inflictor->State.GetOrigin();
 	Velocity.Normalize ();
@@ -3218,7 +3218,7 @@ bool CFuncExplosive::Run ()
 
 void CFuncExplosive::Spawn ()
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{	// auto-remove for deathmatch
 		Free ();
 		return;

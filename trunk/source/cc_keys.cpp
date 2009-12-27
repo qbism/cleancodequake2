@@ -60,7 +60,7 @@ CKey(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 
 bool CKey::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode == GAME_COOPERATIVE)
+	if (game.GameMode == GAME_COOPERATIVE)
 	{
 		if (other->Client.Persistent.Inventory.Has(this))
 			return false;
@@ -73,7 +73,7 @@ bool CKey::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 
 bool CPowerCube::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode == GAME_COOPERATIVE)
+	if (game.GameMode == GAME_COOPERATIVE)
 	{
 		if (other->Client.Persistent.PowerCubeCount & ((ent->SpawnFlags & 0x0000ff00)>> 8))
 			return false;
@@ -102,7 +102,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if (game.mode == GAME_COOPERATIVE)
+		if (game.GameMode == GAME_COOPERATIVE)
 		{
 			SpawnFlags |= (1 << (8 + level.PowerCubeCount));
 			level.PowerCubeCount++;

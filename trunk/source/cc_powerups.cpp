@@ -48,8 +48,8 @@ bool CBasePowerUp::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 	{
 		if (other->Client.Persistent.Inventory.Has(this) > 0 &&
 			(!(PowerupFlags & POWERFLAG_STACK) ||
-			(PowerupFlags & (POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP) && (game.mode == GAME_COOPERATIVE)) ||
-			(game.mode == GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP)))
+			(PowerupFlags & (POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP) && (game.GameMode == GAME_COOPERATIVE)) ||
+			(game.GameMode == GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP)))
 			return false;
 
 		other->Client.Persistent.Inventory += this;
@@ -183,7 +183,7 @@ public:
 		
 			&& ((
 #if CLEANCTF_ENABLED
-			!(game.mode & GAME_CTF) && 
+			!(game.GameMode & GAME_CTF) && 
 #endif
 			!dmFlags.dfDmTechs.IsEnabled()) || !Player->HasRegeneration())
 				)
@@ -193,7 +193,7 @@ public:
 				return;
 			}
 
-			if (!(SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+			if (!(SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 				LinkedItem->SetRespawn (this, 200);
 			else
 				Free ();
@@ -205,7 +205,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && (dmFlags.dfNoHealth.IsEnabled() || dmFlags.dfNoItems.IsEnabled()))
+		if ((game.GameMode & GAME_DEATHMATCH) && (dmFlags.dfNoHealth.IsEnabled() || dmFlags.dfNoItems.IsEnabled()))
 		{
 			Free ();
 			return;
@@ -229,11 +229,11 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 
 	if ((!dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-		&& !(game.mode & GAME_CTF)
+		&& !(game.GameMode & GAME_CTF)
 #endif
 		)|| ((
 #if CLEANCTF_ENABLED
-		(game.mode & GAME_CTF) || 
+		(game.GameMode & GAME_CTF) || 
 #endif
 		dmFlags.dfDmTechs.IsEnabled()) && !other->HasRegeneration()))
 	{
@@ -247,7 +247,7 @@ void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
 		other->Health += 100;
 	}
 #if CLEANCTF_ENABLED
-	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 		MegaHealth->LinkedItem->SetRespawn (ent, 300);
 #endif
 }
@@ -269,7 +269,7 @@ void CBackPack::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	NItems::Slugs->AddAmmo (other, NItems::Slugs->Quantity);
 	NItems::Rockets->AddAmmo (other, NItems::Rockets->Quantity);
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 1800);
 }
 
@@ -277,7 +277,7 @@ static sint32	quad_drop_timeout_hack;
 
 void CQuadDamage::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
@@ -311,7 +311,7 @@ void CQuadDamage::Use (CPlayerEntity *ent)
 
 void CInvulnerability::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode == GAME_DEATHMATCH)
+	if (game.GameMode == GAME_DEATHMATCH)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 300);
@@ -334,7 +334,7 @@ void CInvulnerability::Use (CPlayerEntity *ent)
 
 void CSilencer::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 300);
@@ -351,7 +351,7 @@ void CSilencer::Use (CPlayerEntity *ent)
 
 void CRebreather::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
@@ -372,7 +372,7 @@ void CRebreather::Use (CPlayerEntity *ent)
 
 void CEnvironmentSuit::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
@@ -404,19 +404,19 @@ void CBandolier::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 	NItems::Bullets->AddAmmo (other, NItems::Bullets->Quantity);
 	NItems::Shells->AddAmmo (other, NItems::Shells->Quantity);
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 600);
 }
 
 void CAdrenaline::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (!(game.mode & GAME_DEATHMATCH))
+	if (!(game.GameMode & GAME_DEATHMATCH))
 		other->MaxHealth += 1;
 
 	if (other->Health < other->MaxHealth)
 		other->Health = other->MaxHealth;
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 600);
 }
 
@@ -424,13 +424,13 @@ void CAncientHead::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
 	other->MaxHealth += 2;
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 600);
 }
 
 void CPowerShield::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		if (!(ent->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (ent, 600);
@@ -484,7 +484,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfNoItems.IsEnabled())
+		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoItems.IsEnabled())
 		{
 			Free ();
 			return;

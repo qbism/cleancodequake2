@@ -137,7 +137,7 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 		origin = (entity->GetSolid() == SOLID_BSP) ? entity->State.GetOrigin() + 0.5f * (entity->GetMins() + entity->GetMaxs()) : entity->State.GetOrigin();
 
 	// Cycle through the different targets and do attenuation calculations
-	for (sint32 i = 1; i <= game.maxclients; i++)
+	for (sint32 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (Player->Client.Persistent.State == SVCS_FREE)

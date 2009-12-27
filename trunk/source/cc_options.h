@@ -34,8 +34,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_OPTIONS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_OPTIONS_H
 
-// Define this to override global macros
-#define ORIGINAL_QUAKE_2					1
+// Define this to change options based on game mode
+#define GAME_ORIGINAL_QUAKE2				1
+#define GAME_ROGUE							2
+#define GAME_XATRIX							4
+#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
 
 // Global macros
 // Monsters won't attack allies and will try not to hurt allies with shots
@@ -136,7 +139,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Enable the example Ammo Regen tech
 #define AMMO_REGEN_TECH						1
 
-#if ORIGINAL_QUAKE_2
+// Enable Rogue entities and weapons
+#define ROGUE_FEATURES						0
+
+// Enable Xatrix entities and weapons
+#define XATRIX_FEATURES						0
+
+#if CC_GAME_MODE == GAME_ORIGINAL_QUAKE2
 #undef MONSTERS_ARENT_STUPID
 #define MONSTERS_ARENT_STUPID 0
 #undef MONSTER_USE_ROGUE_AI
@@ -149,6 +158,55 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define AMMO_REGEN_TECH 0
 #undef MONSTERS_HIT_MONSTERSOLID
 #define MONSTERS_HIT_MONSTERSOLID 1
+#else
+#if (CC_GAME_MODE & GAME_ROGUE) && (CC_GAME_MODE & GAME_XATRIX)
+#undef MONSTERS_ARENT_STUPID
+#define MONSTERS_ARENT_STUPID 0
+#undef MONSTER_USE_ROGUE_AI
+#define MONSTER_USE_ROGUE_AI 1
+#undef MONSTERS_USE_PATHFINDING
+#define MONSTERS_USE_PATHFINDING 0
+#undef MONSTER_SPECIFIC_FLAGS
+#define MONSTER_SPECIFIC_FLAGS 0
+#undef AMMO_REGEN_TECH
+#define AMMO_REGEN_TECH 0
+#undef MONSTERS_HIT_MONSTERSOLID
+#define MONSTERS_HIT_MONSTERSOLID 1
+#undef ROGUE_FEATURES
+#define ROGUE_FEATURES 1
+#undef XATRIX__FEATURES
+#define XATRIX_FEATURES 1
+#elif (CC_GAME_MODE & GAME_ROGUE)
+#undef MONSTERS_ARENT_STUPID
+#define MONSTERS_ARENT_STUPID 0
+#undef MONSTER_USE_ROGUE_AI
+#define MONSTER_USE_ROGUE_AI 1
+#undef MONSTERS_USE_PATHFINDING
+#define MONSTERS_USE_PATHFINDING 0
+#undef MONSTER_SPECIFIC_FLAGS
+#define MONSTER_SPECIFIC_FLAGS 0
+#undef AMMO_REGEN_TECH
+#define AMMO_REGEN_TECH 0
+#undef MONSTERS_HIT_MONSTERSOLID
+#define MONSTERS_HIT_MONSTERSOLID 1
+#undef ROGUE_FEATURES
+#define ROGUE_FEATURES 1
+#else
+#undef MONSTERS_ARENT_STUPID
+#define MONSTERS_ARENT_STUPID 0
+#undef MONSTER_USE_ROGUE_AI
+#define MONSTER_USE_ROGUE_AI 0
+#undef MONSTERS_USE_PATHFINDING
+#define MONSTERS_USE_PATHFINDING 0
+#undef MONSTER_SPECIFIC_FLAGS
+#define MONSTER_SPECIFIC_FLAGS 0
+#undef AMMO_REGEN_TECH
+#define AMMO_REGEN_TECH 0
+#undef MONSTERS_HIT_MONSTERSOLID
+#define MONSTERS_HIT_MONSTERSOLID 1
+#undef XATRIX__FEATURES
+#define XATRIX_FEATURES 1
+#endif
 #endif
 
 #else

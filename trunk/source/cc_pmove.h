@@ -27,8 +27,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// sv_pmove.h
-// Necessary to keep 3.21 compatibility and allow cgame dlls
+// cc_pmove.h
+// Player move
 //
 
 #if !defined(CC_GUARD_PMOVE_H) || !INCLUDE_GUARDS

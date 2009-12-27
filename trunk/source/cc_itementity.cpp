@@ -115,7 +115,7 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 #endif
 		);
 
-	if (!((game.mode & GAME_COOPERATIVE) &&  (LinkedItem->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
+	if (!((game.GameMode & GAME_COOPERATIVE) &&  (LinkedItem->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
 	{
 		if (Flags & FL_RESPAWN)
 			Flags &= ~FL_RESPAWN;
@@ -237,7 +237,7 @@ void CItemEntity::Think ()
 		//ZOID
 		//in ctf, when we are weapons stay, only the master of a team of weapons
 		//is spawned
-				if ((game.mode & GAME_CTF) &&
+				if ((game.GameMode & GAME_CTF) &&
 					dmFlags.dfWeaponsStay.IsEnabled() &&
 					entity_cast<CItemEntity>(Master)->LinkedItem && (entity_cast<CItemEntity>(Master)->LinkedItem->Flags & ITEMFLAG_WEAPON))
 					RespawnedEntity = Master;

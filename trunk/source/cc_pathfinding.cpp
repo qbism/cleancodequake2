@@ -451,7 +451,7 @@ void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
 	char tempString[7];
 	Q_snprintfz (tempString, sizeof(tempString), "*%i", modelNum);
 
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()+1; it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
 		edict_t *e = (*it);
 		if (!e->inUse)

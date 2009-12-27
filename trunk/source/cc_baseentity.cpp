@@ -147,11 +147,11 @@ void listfill (TCont &List, TType Data, size_t numElements)
 
 void InitEntityLists ()
 {
-	listfill <TEntitiesContainer, edict_t*> (level.Entities.Open, g_edicts, game.maxentities);
+	listfill <TEntitiesContainer, edict_t*> (level.Entities.Open, g_edicts, game.MaxEntities);
 	level.Entities.Closed.clear();
 
 	// Keep the first few entities in the closed list
-	for (uint8 i = 0; i < (1 + game.maxclients); i++)
+	for (uint8 i = 0; i < (1 + game.MaxClients); i++)
 	{
 		level.Entities.Closed.push_back (level.Entities.Open.front());
 		level.Entities.Open.pop_front();
@@ -212,7 +212,7 @@ void RemoveEntityFromList (edict_t *ent)
 
 bool RemoveEntity (edict_t *ent)
 {
-	if (!ent || ent->state.number <= (game.maxclients + BODY_QUEUE_SIZE))
+	if (!ent || ent->state.number <= (game.MaxClients + BODY_QUEUE_SIZE))
 		return false;
 
 	if (ent->AwaitingRemoval)
@@ -612,6 +612,28 @@ void	CBaseEntity::KillBox ()
 	}
 };
 
+void CBaseEntity::SplashDamage (CBaseEntity *attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
+{
+	CHurtableEntity	*ent = NULL;
+
+	while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, State.GetOrigin(), radius)) != NULL)
+	{
+		if (ent == ignore)
+			continue;
+		if (!ent->CanTakeDamage)
+			continue;
+
+		vec3f v = ent->GetMins() + ent->GetMaxs();
+		v =State.GetOrigin() - ent->State.GetOrigin().MultiplyAngles (0.5f, v);
+
+		float points = damage - 0.5 * v.Length();
+		if (ent == attacker)
+			points *= 0.5;
+		if ((points > 0) && ent->CanDamage (this))
+			ent->TakeDamage (this, attacker, ent->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
+	}
+}
+
 CMapEntity::CMapEntity () : 
 CBaseEntity()
 {
@@ -729,7 +751,7 @@ bool				CMapEntity::CheckValidity ()
 	{
 		if (!map_debug->Boolean())
 		{
-			if (game.mode & GAME_DEATHMATCH)
+			if (game.GameMode & GAME_DEATHMATCH)
 			{
 				if ( SpawnFlags & SPAWNFLAG_NOT_DEATHMATCH )
 				{
@@ -739,7 +761,7 @@ bool				CMapEntity::CheckValidity ()
 			}
 			else
 			{
-				if ( /* ((game.mode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
+				if ( /* ((game.GameMode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
 					((skill->Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
 					((skill->Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
 					((skill->Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))

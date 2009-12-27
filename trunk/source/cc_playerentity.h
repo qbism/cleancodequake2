@@ -101,8 +101,8 @@ public:
 
 	void Save (CFile &File)
 	{
-		File.WriteCCString (UserInfo);
-		File.WriteCCString (Name);
+		File.Write (UserInfo);
+		File.Write (Name);
 
 		File.Write<IPAddress> (IP);
 		File.Write<sint32> (Hand);
@@ -129,8 +129,8 @@ public:
 
 	void Load (CFile &File)
 	{
-		UserInfo = File.ReadCCString ();
-		Name = File.ReadCCString ();
+		UserInfo = File.Read<std::cc_string> ();
+		Name = File.Read<std::cc_string> ();
 
 		IP = File.Read<IPAddress> ();
 		Hand = File.Read<sint32> ();

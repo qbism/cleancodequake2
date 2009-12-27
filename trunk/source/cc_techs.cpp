@@ -395,10 +395,10 @@ void SetupTechSpawn()
 {
 	if (
 #if CLEANCTF_ENABLED
-		dmFlags.dfCtfNoTech.IsEnabled() || (!(game.mode & GAME_CTF) && 
+		dmFlags.dfCtfNoTech.IsEnabled() || (!(game.GameMode & GAME_CTF) && 
 #endif
 		(!dmFlags.dfDmTechs.IsEnabled())
-		|| !(game.mode & GAME_DEATHMATCH))
+		|| !(game.GameMode & GAME_DEATHMATCH))
 #if CLEANCTF_ENABLED
 		)
 #endif

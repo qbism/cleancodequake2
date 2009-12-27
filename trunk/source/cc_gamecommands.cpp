@@ -120,8 +120,8 @@ void Cmd_PutAway_f (CPlayerEntity *ent)
 
 sint32 PlayerSort (void const *a, void const *b)
 {
-	sint32 anum = game.clients[*(sint32 *)a].playerState.stats[STAT_FRAGS];
-	sint32 bnum = game.clients[*(sint32 *)b].playerState.stats[STAT_FRAGS];
+	sint32 anum = game.Clients[*(sint32 *)a].playerState.stats[STAT_FRAGS];
+	sint32 bnum = game.Clients[*(sint32 *)b].playerState.stats[STAT_FRAGS];
 
 	if (anum < bnum)
 		return -1;
@@ -158,7 +158,7 @@ void Cmd_Players_f (CPlayerEntity *ent)
 	sint32		count = 0;
 	char	Small[MAX_INFO_KEY];
 	char	Large[MAX_INFO_STRING];
-	sint32		*index = QNew (com_genericPool, 0) sint32[game.maxclients];
+	sint32		*index = QNew (com_genericPool, 0) sint32[game.MaxClients];
 
 	CPlayerListCountCallback (index, &count).Query ();
 
@@ -376,7 +376,7 @@ public:
 	bool DoQuery (bool Spectator)
 	{
 		this->Spectator = Spectator;
-		for (uint8 i = 1; i <= game.maxclients; i++)
+		for (uint8 i = 1; i <= game.MaxClients; i++)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -480,7 +480,7 @@ void Cmd_Score_f (CPlayerEntity *ent)
 		return;
 	}
 
-	if (game.mode == GAME_SINGLEPLAYER)
+	if (game.GameMode == GAME_SINGLEPLAYER)
 		return;
 
 	if (ent->Client.LayoutFlags & LF_SHOWSCORES)
@@ -507,7 +507,7 @@ void Cmd_Help_f (CPlayerEntity *ent)
 		return;
 
 	// this is for backwards compatability
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		Cmd_Score_f (ent);
 		return;
@@ -543,6 +543,9 @@ void Cmd_Aim (CPlayerEntity *ent)
 		ent->Client.Respawn.AimDegrees = 0;
 		return;
 	}
+
+	if (ArgGetf (1) > 90 || ArgGetf (1) < -90)
+		return;
 
 	ent->Client.Respawn.AimDegrees = ArgGetf (1);
 }

@@ -211,7 +211,7 @@ void CForEachTeamChainCallback::Query (CBaseEntity *Master)
 
 void CForEachPlayerCallback::Query (bool MustBeInUse)
 {
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 
@@ -266,68 +266,6 @@ bool IsInFront (CBaseEntity *self, CBaseEntity *other)
 	vec3f forward;
 	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
 	return ((other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized().Dot (forward) > 0.3);
-}
-
-/*
-============
-T_RadiusDamage
-============
-*/
-
-#if 0
-void DebugTrailAll (vec3f &left, vec3f &right)
-{
-	WriteByte (SVC_TEMP_ENTITY);
-	WriteByte (TE_DEBUGTRAIL);
-	WritePosition (left);
-	WritePosition (right);
-	World->CastTo (CASTFLAG_UNRELIABLE);
-}
-
-void DrawRadiusDebug (vec3f &origin, float radius)
-{
-#define k_segments 12
-	static const float k_increment = 2.0f * M_PI / k_segments;
-	float theta = 0.0f;
-
-	vec3f origins[k_segments];
-
-	vec2f center (origin.X, origin.Y);
-	for (sint32 i = 0; i < k_segments; ++i)
-	{
-		vec2f v = center + vec2f(cosf(theta), sinf(theta)) * radius;
-		origins[i].Set (v.X, v.Y, origin.Z + 8);
-		theta += k_increment;
-	}
-
-	for (sint32 i = 0; i < k_segments; i++)
-	{
-		DebugTrailAll (origins[i], origins[((i+1) >= k_segments) ? 0 : i+1]);
-	}
-}
-#endif
-
-void T_RadiusDamage (CBaseEntity *inflictor, CBaseEntity *attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
-{
-	CHurtableEntity	*ent = NULL;
-	//DrawRadiusDebug (org, radius);
-
-	while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, inflictor->State.GetOrigin(), radius)) != NULL)
-	{
-		if (ent == ignore)
-			continue;
-		if (!ent->CanTakeDamage)
-			continue;
-
-		vec3f v = ent->GetMins() + ent->GetMaxs();
-		v = inflictor->State.GetOrigin() - ent->State.GetOrigin().MultiplyAngles (0.5f, v);
-
-		float points = damage - 0.5 * v.Length();
-		if (ent == attacker)
-			points *= 0.5;
-		if ((points > 0) && ent->CanDamage (inflictor))
-			ent->TakeDamage (inflictor, attacker, ent->State.GetOrigin() - inflictor->State.GetOrigin(), inflictor->State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
-	}
 }
 
 #include <crtdbg.h>

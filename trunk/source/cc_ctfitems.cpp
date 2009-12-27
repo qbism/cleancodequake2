@@ -93,7 +93,7 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 					other->Client.Respawn.CTF.Ghost->caps++;
 
 				// Ok, let's do the player loop, hand out the bonuses
-				for (sint32 i = 1; i <= game.maxclients; i++)
+				for (sint32 i = 1; i <= game.MaxClients; i++)
 				{
 					CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 					if (!player->GetInUse())

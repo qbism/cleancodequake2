@@ -124,7 +124,7 @@ bool CheckAutoSwitch (CPlayerEntity *other)
 
 bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 {
-	if ( (dmFlags.dfWeaponsStay.IsEnabled() || game.mode == GAME_COOPERATIVE) 
+	if ( (dmFlags.dfWeaponsStay.IsEnabled() || game.GameMode == GAME_COOPERATIVE) 
 		&& other->Client.Persistent.Inventory.Has(GetIndex()))
 	{
 		if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
@@ -146,14 +146,14 @@ bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 
 		if (! (ent->SpawnFlags & DROPPED_PLAYER_ITEM) )
 		{
-			if (game.mode & GAME_DEATHMATCH)
+			if (game.GameMode & GAME_DEATHMATCH)
 			{
 				if (dmFlags.dfWeaponsStay.IsEnabled())
 					ent->Flags |= FL_RESPAWN;
 				else
 					SetRespawn (ent, 300);
 			}
-			if (game.mode == GAME_COOPERATIVE)
+			if (game.GameMode == GAME_COOPERATIVE)
 				ent->Flags |= FL_RESPAWN;
 		}
 	}
@@ -167,7 +167,7 @@ bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 			(CheckAutoSwitch(other) || 
 #endif
 			((other->Client.Persistent.Inventory.Has(this) == 1)) &&
-			( !(game.mode & GAME_DEATHMATCH) || (other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster) ) )
+			( !(game.GameMode & GAME_DEATHMATCH) || (other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster) ) )
 #ifndef NO_AUTOSWITCH
 			)
 #endif
@@ -250,7 +250,7 @@ bool CAmmo::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 	if (!AddAmmo (other, count))
 		return false;
 
-	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 300);
 	return true;
 }
@@ -288,12 +288,12 @@ bool CAmmoWeapon::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 
 	if (weapon && !oldcount)
 	{
-		if (other->Client.Persistent.Weapon != Weapon && (!(game.mode & GAME_DEATHMATCH) ||
+		if (other->Client.Persistent.Weapon != Weapon && (!(game.GameMode & GAME_DEATHMATCH) ||
 			(other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster)))
 			other->Client.NewWeapon = Weapon;
 	}
 
-	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.mode & GAME_DEATHMATCH))
+	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.GameMode & GAME_DEATHMATCH))
 		SetRespawn (ent, 300);
 	return true;
 }
@@ -380,7 +380,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.mode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
+		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
 		{
 			Free ();
 			return;

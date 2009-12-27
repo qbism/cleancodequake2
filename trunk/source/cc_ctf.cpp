@@ -265,7 +265,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 
 		// the target had the flag, clear the hurt carrier
 		// field on the other team
-		for (uint8 i = 1; i <= game.maxclients; i++)
+		for (uint8 i = 1; i <= game.MaxClients; i++)
 		{
 			CPlayerEntity *ent = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 			if (ent->GetInUse() && ent->Client.Respawn.CTF.Team == otherteam)
@@ -319,7 +319,7 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 
 	// find attacker's team's flag carrier
 /*	CPlayerEntity *carrier = NULL;
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		carrier = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 		if (carrier->GetInUse() && 
@@ -422,7 +422,7 @@ void CTFCalcScores()
 {
 	ctfgame.total1 = ctfgame.total2 = 0;
 
-	for (uint8 i = 0; i < game.maxclients; i++)
+	for (uint8 i = 0; i < game.MaxClients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
 
@@ -746,7 +746,7 @@ static inline void CTFSay_Team_Sight(CPlayerEntity *who, std::cc_stringstream &O
 	sint32 n = 0;
 	static std::cc_string nameStore;
 
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *targ = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!targ->GetInUse() || 
@@ -829,7 +829,7 @@ void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
 			OutMessage << msg[pm];
 	}
 
-	for (uint8 i = 0; i < game.maxclients; i++)
+	for (uint8 i = 0; i < game.MaxClients; i++)
 	{
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
 		if (!cl_ent->GetInUse())
@@ -968,7 +968,7 @@ bool CTFBeginElection(CPlayerEntity *ent, EElectState type, char *msg)
 
 	// clear votes
 	uint8 count = 0;
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *e = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 		e->Client.Respawn.CTF.Voted = false;
@@ -1001,7 +1001,7 @@ bool CTFBeginElection(CPlayerEntity *ent, EElectState type, char *msg)
 
 void CTFResetAllPlayers()
 {
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!ent->GetInUse())
@@ -1028,7 +1028,7 @@ void CTFResetAllPlayers()
 	ResetTechs();
 	CTFResetFlags();
 
-	//for (uint8 i = game.maxclients; i < globals.numEdicts; i++)
+	//for (uint8 i = game.MaxClients; i < globals.numEdicts; i++)
 	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
 	{
 		CBaseEntity *ent = (*it)->Entity;
@@ -1059,7 +1059,7 @@ void CTFStartMatch()
 
 	ctfgame.Ghosts.clear();
 
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
 		if (!ent->GetInUse())
@@ -1239,7 +1239,7 @@ void CTFReady(CPlayerEntity *ent)
 	BroadcastPrintf(PRINT_HIGH, "%s is ready.\n", ent->Client.Persistent.Name.c_str());
 
 	uint8 t1 = 0, t2 = 0, j = 0;
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *e = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!e->GetInUse())
@@ -1434,7 +1434,7 @@ bool CTFCheckRules()
 		switch (ctfgame.match)
 		{
 		case MATCH_SETUP :
-			for (uint8 i = 1; i <= game.maxclients; i++)
+			for (uint8 i = 1; i <= game.MaxClients; i++)
 			{
 				CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 				if (!ent->GetInUse())
@@ -1488,7 +1488,7 @@ void CTFStats(CPlayerEntity *ent)
 	*text = 0;
 	if (ctfgame.match == MATCH_SETUP)
 	{
-		for (uint8 i = 1; i <= game.maxclients; i++)
+		for (uint8 i = 1; i <= game.MaxClients; i++)
 		{
 			CPlayerEntity *e2 = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 			if (!e2->GetInUse())
@@ -1549,7 +1549,7 @@ void CTFStats(CPlayerEntity *ent)
 void Cmd_PlayerList_f (CPlayerEntity *ent);
 void CTFPlayerList(CPlayerEntity *ent)
 {
-	if (!(game.mode & GAME_CTF))
+	if (!(game.GameMode & GAME_CTF))
 	{
 		Cmd_PlayerList_f (ent);
 		return;
@@ -1561,7 +1561,7 @@ void CTFPlayerList(CPlayerEntity *ent)
 	*text = 0;
 	if (ctfgame.match == MATCH_SETUP)
 	{
-		for (uint8 i = 1; i <= game.maxclients; i++)
+		for (uint8 i = 1; i <= game.MaxClients; i++)
 		{
 			CPlayerEntity *e2 = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 			if (!e2->GetInUse())
@@ -1578,7 +1578,7 @@ void CTFPlayerList(CPlayerEntity *ent)
 	// number, name, connect time, ping, Score, CTF.Admin
 
 	*text = 0;
-	for (uint8 i = 1; i <= game.maxclients; i++)
+	for (uint8 i = 1; i <= game.MaxClients; i++)
 	{
 		CPlayerEntity *e2 = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
 		if (!e2->GetInUse())
@@ -1678,7 +1678,7 @@ void CTFBoot(CPlayerEntity *ent)
 	}
 
 	i = ArgGeti(1);
-	if (i < 1 || i > game.maxclients)
+	if (i < 1 || i > game.MaxClients)
 	{
 		ent->PrintToClient (PRINT_HIGH, "Invalid player number.\n");
 		return;

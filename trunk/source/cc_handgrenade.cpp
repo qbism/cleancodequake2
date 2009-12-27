@@ -86,7 +86,7 @@ void CHandGrenade::Hold (CPlayerEntity *ent)
 void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 {
 	vec3f	offset (8, 8, ent->ViewHeight-8), forward, right, start;
-	const sint32		damage = CalcQuadVal(125);
+	const sint32		damage = CalcQuadVal(85);
 	const float		radius = 165;
 
 	ent->Client.Grenade.Thrown = true;
@@ -102,7 +102,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 
 	ent->Client.Grenade.Time = level.Frame + (((
 #if CLEANCTF_ENABLED
-	(game.mode & GAME_CTF) || 
+	(game.GameMode & GAME_CTF) || 
 #endif
 	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste()) ? 5 : 10);
 	DepleteAmmo(ent, 1);

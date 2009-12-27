@@ -165,6 +165,20 @@ public:
 		FS_Write (&Ref, sizeof(TType), Handle);
 	};
 
+	template <>
+	void Write<std::cc_string> (const std::cc_string &Ref)
+	{
+		if (!Handle)
+			return;
+
+		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
+
+		FS_Write (&Length, sizeof(Length), Handle);
+
+		if (Length > 1)
+			FS_Write (Ref.c_str(), Length, Handle);
+	};
+
 	void WriteString (const char *Str)
 	{
 		if (!Handle)
@@ -176,19 +190,6 @@ public:
 
 		if (Length > 1)
 			FS_Write (Str, Length, Handle);
-	};
-
-	void WriteCCString (const std::cc_string &Ref)
-	{
-		if (!Handle)
-			return;
-
-		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
-
-		FS_Write (&Length, sizeof(Length), Handle);
-
-		if (Length > 1)
-			FS_Write (Ref.c_str(), Length, Handle);
 	};
 
 	template <typename TType>
@@ -230,24 +231,8 @@ public:
 		return Val;
 	};
 
-	char *ReadString (void *Pool = com_genericPool)
-	{
-		if (!Handle)
-			return NULL;
-
-		sint32 Length;
-		FS_Read (&Length, sizeof(Length), Handle);
-		
-		char *tempBuffer = NULL;
-		if (Length > 1)
-		{
-			tempBuffer = QNew (Pool, 0) char[Length];
-			FS_Read (tempBuffer, Length, Handle);
-		}
-		return tempBuffer;
-	};
-
-	std::cc_string ReadCCString ()
+	template <>
+	std::cc_string Read<std::cc_string> ()
 	{
 		if (!Handle)
 			return "";
@@ -264,6 +249,23 @@ public:
 			return str;
 		}
 		return "";
+	};
+
+	char *ReadString (void *Pool = com_genericPool)
+	{
+		if (!Handle)
+			return NULL;
+
+		sint32 Length;
+		FS_Read (&Length, sizeof(Length), Handle);
+		
+		char *tempBuffer = NULL;
+		if (Length > 1)
+		{
+			tempBuffer = QNew (Pool, 0) char[Length];
+			FS_Read (tempBuffer, Length, Handle);
+		}
+		return tempBuffer;
 	};
 
 	std::cc_string ReadLine ()
@@ -496,13 +498,13 @@ public:
 
 inline CFileStream &operator<< (CFileStream &Stream, std::cc_string &val)
 {
-	Stream.WriteCCString (val);
+	Stream.Write (val);
 	return Stream;
 };
 
 inline CFileStream &operator>> (CFileStream &Stream, std::cc_string &val)
 {
-	val = Stream.ReadCCString ();
+	val = Stream.Read<std::cc_string> ();
 	return Stream;
 };
 

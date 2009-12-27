@@ -1,7 +1,8 @@
-﻿Build started 15/12/2009 10:47:31 PM.
-     1>Project "F:\cleancodeq2\branches\ArcadeQuake2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 1 (build target(s)).
-     1>_PrepareForBuild:
-         Creating directory ".\Win32_LIB_Release\".
+﻿Build started 22/12/2009 9:58:31 PM.
+     1>Project "F:\cleancodeq2\branches\ArcadeQuake2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 129 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file ".\Win32_LIB_Release\zlib.lastbuildstate".
+       _PrepareForBuild:
          Creating ".\Win32_LIB_Release\zlib.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /nologo /W4 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D WIN32 /D NDEBUG /D _VC80_UPGRADE=0x0600 /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Win32_LIB_Release\\" /Fd".\Win32_LIB_Release\\" /Gd /TC /analyze- /errorReport:prompt ..\..\adler32.c ..\..\compress.c ..\..\crc32.c ..\..\deflate.c ..\..\gzio.c ..\..\infback.c ..\..\inffast.c ..\..\inflate.c ..\..\inftrees.c ..\..\trees.c ..\..\uncompr.c ..\..\zutil.c
@@ -204,8 +205,8 @@
        _AfterBuild:
          Deleting file ".\Win32_LIB_Release\zlib.unsuccessfulbuild".
          Touching ".\Win32_LIB_Release\zlib.lastbuildstate".
-     1>Done Building Project "F:\cleancodeq2\branches\ArcadeQuake2\trunk\zlib\projects\visualc6\zlib.vcxproj" (build target(s)).
+     1>Done Building Project "F:\cleancodeq2\branches\ArcadeQuake2\trunk\zlib\projects\visualc6\zlib.vcxproj" (rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.63
+Time Elapsed 00:00:01.49

@@ -176,13 +176,13 @@ void CMonster::LoadFields (CFile &File)
 	NextDuckTime = File.Read<FrameNumber_t> ();
 	DuckWaitTime = File.Read<FrameNumber_t> ();
 	BlindFireDelay = File.Read<FrameNumber_t> ();
-	Index = File.Read<sint32> ();
+	sint32 Index = File.Read<sint32> ();
 	if (Index != -1)
 		LastPlayerEnemy = entity_cast<CPlayerEntity>(g_edicts[Index].Entity);
 
 	NextDuckTime = File.Read<FrameNumber_t> ();
 	BlindFireTarget = File.Read<vec3f> ();
-	sint32 Index = File.Read<sint32> ();
+	Index = File.Read<sint32> ();
 	if (Index != -1)
 		BadMedic1 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
 
@@ -577,7 +577,7 @@ void AI_SetSightClient ()
 	while (1)
 	{
 		check++;
-		if (check > game.maxclients)
+		if (check > game.MaxClients)
 			check = 1;
 		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[check].Entity);
 		if (ent->GetInUse()
@@ -630,7 +630,7 @@ UseState(MONSTERENTITY_THINK_NONE)
 
 bool CMonsterEntity::CheckValidity ()
 {
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		Free ();
 		return false;
@@ -1391,7 +1391,7 @@ void CMonster::MonsterStartGo ()
 void CMonster::MonsterStart ()
 {
 //	DebugPrintf ("%s spawned with ID %u\n", MonsterName, MonsterID);
-	if (game.mode & GAME_DEATHMATCH)
+	if (game.GameMode & GAME_DEATHMATCH)
 	{
 		Entity->Free ();
 		return;
@@ -2369,7 +2369,7 @@ void CMonster::AI_Run(float Dist)
 	}
 
 	// coop will change to another enemy if visible
-	if (game.mode == GAME_COOPERATIVE)
+	if (game.GameMode == GAME_COOPERATIVE)
 	{	// FIXME: insane guys get mad with this, which causes crashes!
 		if (FindTarget ())
 			return;
@@ -2652,7 +2652,7 @@ void CMonster::AI_Run(float Dist)
 
 // PMM - moved down here to allow monsters to get on hint paths
 	// coop will change to another enemy if visible
-	if (game.mode == GAME_COOPERATIVE)
+	if (game.GameMode == GAME_COOPERATIVE)
 	{	// FIXME: insane guys get mad with this, which causes crashes!
 		if (FindTarget ())
 			return;

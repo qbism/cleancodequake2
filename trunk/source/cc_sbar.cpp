@@ -147,13 +147,13 @@ void CStatusBar::AddArmorNum ()
 
 void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping, sint32 time)
 {
-	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
+	_CC_ASSERT_EXPR (!(cNum >= game.MaxClients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, Score, ping, time);
 }
 
 void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping)
 {
-	_CC_ASSERT_EXPR (!(cNum >= game.maxclients || cNum < 0), "Client number out of bounds");
+	_CC_ASSERT_EXPR (!(cNum >= game.MaxClients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, Score, ping);
 }
 
@@ -352,10 +352,10 @@ void HelpComputer (CPlayerEntity *ent)
 	Scoreboard.AddString (level.FullLevelName.c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (54);
-	Scoreboard.AddString (game.helpmessage1, true, true);
+	Scoreboard.AddString (game.HelpMessages[0].c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (110);
-	Scoreboard.AddString (game.helpmessage2, true, true);
+	Scoreboard.AddString (game.HelpMessages[1].c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_X (50);
 	Scoreboard.AddVirtualPoint_Y (164);
