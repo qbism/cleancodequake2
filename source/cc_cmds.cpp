@@ -137,7 +137,6 @@ void Cmd_Test_f (CPlayerEntity *Player)
 
 void Cmd_Two_t (CPlayerEntity *Player)
 {
-	DebugPrintf ("Two\n");
 }
 
 void Cmd_Three_t (CPlayerEntity *Player)

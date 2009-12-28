@@ -529,8 +529,8 @@ void CGameAPI::WriteLevel (char *filename)
 	File.Write<size_t> (sizeof(edict_t));
 
 	// write out a function pointer for checking
-	byte *base = (byte *)ReadClient;
-	File.Write (&base, sizeof(base));
+	//byte *base = (byte *)ReadClient;
+	File.Write<size_t> (reinterpret_cast<size_t>(ReadClient));
 
 	// write out level_locals_t
 	WriteLevelLocals (File);
@@ -649,11 +649,11 @@ void CGameAPI::ReadLevel (char *filename)
 	}
 
 	// check function pointer base address
-	byte *base;
-	File.Read (&base, sizeof(base));
+	//byte *base;
+	//File.Read (&base, sizeof(base));
 
 #ifdef WIN32
-	if (base != (byte *)ReadClient)
+	if (File.Read<size_t> () != reinterpret_cast<size_t>(ReadClient))
 	{
 		GameError ("ReadLevel: function pointers have moved");
 		return;
@@ -686,6 +686,9 @@ void CGameAPI::ReadLevel (char *filename)
 	// set client fields on player ents
 	if (!ReadingGame)
 		CPlayerEntity::RestoreClientData ();
+
+	// if we're loading a game, apply that info now
+	SetClientFields ();
 
 	// do any load time things at this point
 	FireCrossLevelTargets ();
