@@ -402,6 +402,10 @@ public:
 	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
 	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 
+#if XATRIX_FEATURES
+	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+#endif
+
 #if MONSTERS_ARENT_STUPID
 	bool				FriendlyInLine (vec3f &Origin, vec3f &Direction);
 #endif

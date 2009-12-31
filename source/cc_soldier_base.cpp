@@ -686,7 +686,7 @@ void CSoldierBase::Sight ()
 	if ((skill->Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
 	{
 		// Only do run-shoot off the bat if we're not a shotgun soldier (too cheap)
-		if ((frand() > 0.75) && (SoldierAI != AI_BLASTER))
+		if ((frand() > 0.75) && (SoldierAI == AI_BLASTER))
 			CurrentMove = &SoldierMoveAttack6;
 	}
 }

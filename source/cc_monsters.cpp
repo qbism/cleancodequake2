@@ -1676,6 +1676,25 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
+#if XATRIX_FEATURES
+#include "cc_weaponmain.h"
+#include "cc_xatrix_ionripper.h"
+
+void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+{
+#if MONSTERS_ARENT_STUPID
+	if (FriendlyInLine (start, dir))
+		return;
+#endif
+
+	CIonRipperBoomerang::Spawn (Entity, start, dir, damage, speed);
+
+	if (flashtype != -1)
+		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+}	
+#endif
+
+
 bool CMonster::CheckAttack ()
 {
 #if !MONSTER_USE_ROGUE_AI

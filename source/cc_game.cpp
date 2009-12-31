@@ -383,10 +383,6 @@ void CGameAPI::RunFrame ()
 	if (dmflags->Modified())
 		dmFlags.UpdateFlags(dmflags->Integer());
 
-#if 0
-	DrawNewton();
-#endif
-
 #if MONSTERS_USE_PATHFINDING
 	RunNodes();
 #endif

@@ -195,13 +195,13 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 		Q_strncpyz (keyName, token, sizeof(keyName));
 		
 		// Parse value	
-		if (!data.ParseToken (PSF_ALLOW_NEWLINES, &token))
+		if (!data.ParseToken (PSF_ALLOW_NEWLINES, &token) && data.IsEOF())
 			GameError ("ED_ParseEntity: EOF without closing brace");
 
 		if (token[0] == '}')
 			GameError ("ED_ParseEntity: closing brace without data");
 
-		init = true;	
+		init = true;
 
 		// Keynames with a leading underscore are used for utility comments,
 		// and are immediately discarded by quake

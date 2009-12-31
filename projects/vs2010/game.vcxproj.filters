@@ -504,6 +504,9 @@
     <ClCompile Include="..\..\source\cc_xatrix_phalanx.cpp">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_ripper.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClCompile>
@@ -852,6 +855,9 @@
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_xatrix_phalanx.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_ripper.h">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_xatrix_trap.h">

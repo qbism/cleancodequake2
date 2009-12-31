@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_ORIGINAL_QUAKE2				1
 #define GAME_ROGUE							2
 #define GAME_XATRIX							4
-#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
+#define CC_GAME_MODE						GAME_XATRIX
 
 // Global macros
 // Monsters won't attack allies and will try not to hurt allies with shots

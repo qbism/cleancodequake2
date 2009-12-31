@@ -791,6 +791,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_xatrix_ionripper.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_items.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_phalanx.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_ripper.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -910,6 +911,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_xatrix_ionripper.h" />
     <ClInclude Include="..\..\source\cc_xatrix_items.h" />
     <ClInclude Include="..\..\source\cc_xatrix_phalanx.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_ripper.h" />
     <ClInclude Include="..\..\source\cc_xatrix_trap.h" />
     <ClInclude Include="..\..\source\m_actor.h" />
     <ClInclude Include="..\..\source\m_berserk.h" />

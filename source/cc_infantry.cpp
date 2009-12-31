@@ -256,7 +256,13 @@ void CInfantry::MachineGun ()
 	vec3f	start, forward, right;
 	sint32		flash_number;
 
-	if (Entity->State.GetFrame() == FRAME_attak111)
+	if (Entity->State.GetFrame() == 
+#if XATRIX_FEATURES
+		FRAME_attak103
+#else
+		FRAME_attak111
+#endif
+		)
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_1;
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
@@ -492,7 +498,27 @@ void CInfantry::Fire ()
 		AIFlags |= AI_HOLD_FRAME;
 }
 
-#if !(MONSTER_SPECIFIC_FLAGS & INFANTRY_DOES_REVERSE_GUN_ATTACK)
+#if XATRIX_FEATURES
+CFrame InfantryFramesAttack1 [] =
+{
+	CFrame (&CMonster::AI_Charge, 10),
+	CFrame (&CMonster::AI_Charge, 6),
+	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::Fire)),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 1),
+	CFrame (&CMonster::AI_Charge, -7),
+	CFrame (&CMonster::AI_Charge, -6),
+	CFrame (&CMonster::AI_Charge, -1),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::CockGun)),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, -1),
+	CFrame (&CMonster::AI_Charge, -1)
+};
+CAnim InfantryMoveAttack1 (FRAME_attak101, FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
+#elif !(MONSTER_SPECIFIC_FLAGS & INFANTRY_DOES_REVERSE_GUN_ATTACK)
 CFrame InfantryFramesAttack1 [] =
 {
 	CFrame (&CMonster::AI_Charge, 4),
