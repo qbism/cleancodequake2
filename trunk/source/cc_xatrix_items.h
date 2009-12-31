@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,20 +27,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_print.h
-// Print replacements
+// cc_xatrix_items.h
+// 
 //
 
-#if !defined(CC_GUARD_PRINT_H) || !INCLUDE_GUARDS
-#define CC_GUARD_PRINT_H
+#if !defined(CC_GUARD_CC_XATRIX_ITEMS_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CC_XATRIX_ITEMS_H
 
-// If we're using the old, extended library functions
-// we need to make sure that these just re-route to those
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
-void DeveloperPrintf (char *fmt, ...);
-void DebugPrintf (char *fmt, ...);
+void AddXatrixAmmoToList ();
+extern class CFoodCube *FoodCubeItem;
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...);
 
 #else
 FILE_WARNING

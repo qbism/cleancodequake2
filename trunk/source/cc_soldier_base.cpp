@@ -397,7 +397,7 @@ void CSoldierBase::Attack1_Refire1 ()
 	// pmm
 #endif
 
-	if (Entity->State.GetSkinNum() > 1)
+	if (SoldierAI != AI_BLASTER)
 		return;
 
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
@@ -414,7 +414,7 @@ void CSoldierBase::Attack1_Refire1 ()
 
 void CSoldierBase::Attack1_Refire2 ()
 {
-	if (Entity->State.GetSkinNum() < 2)
+	if (SoldierAI == AI_BLASTER)
 		return;
 
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
@@ -453,7 +453,7 @@ void CSoldierBase::Fire2 ()
 
 void CSoldierBase::Attack2_Refire1 ()
 {
-	if (Entity->State.GetSkinNum() > 1)
+	if (SoldierAI != AI_BLASTER)
 		return;
 
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
@@ -470,7 +470,7 @@ void CSoldierBase::Attack2_Refire1 ()
 
 void CSoldierBase::Attack2_Refire2 ()
 {
-	if (Entity->State.GetSkinNum() < 2)
+	if (SoldierAI == AI_BLASTER)
 		return;
 
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
@@ -597,14 +597,14 @@ void CSoldierBase::Attack6_Refire ()
 	if (!EnemyVis)
 		return;
 
-	if (((skill->Integer() == 3 && (Entity->State.GetSkinNum() < 2)) || ((frand() < (0.09*((float)skill->Integer()))))))
+	if (((skill->Integer() == 3 && (SoldierAI == AI_BLASTER)) || ((frand() < (0.09*((float)skill->Integer()))))))
 		NextFrame = FRAME_runs03;
 }
 
 #if MONSTER_USE_ROGUE_AI
 void CSoldierBase::Attack6_RefireBlaster ()
 {
-	if (Entity->State.GetSkinNum() > 1)
+	if (SoldierAI != AI_BLASTER)
 		return;
 
 	// PMM - make sure dodge & charge bits are cleared
@@ -686,7 +686,7 @@ void CSoldierBase::Sight ()
 	if ((skill->Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
 	{
 		// Only do run-shoot off the bat if we're not a shotgun soldier (too cheap)
-		if ((frand() > 0.75) && (Entity->State.GetSkinNum() < 2))
+		if ((frand() > 0.75) && (SoldierAI != AI_BLASTER))
 			CurrentMove = &SoldierMoveAttack6;
 	}
 }
@@ -1119,7 +1119,7 @@ void CSoldierBase::Duck (float eta)
 
 void CSoldierBase::SideStep ()
 {
-	if (Entity->State.GetSkinNum() <= 3)
+	if (SoldierAI != AI_MACHINEGUN)
 	{
 		if (CurrentMove != &SoldierMoveAttack6)
 			CurrentMove = &SoldierMoveAttack6;

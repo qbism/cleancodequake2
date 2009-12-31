@@ -50,7 +50,6 @@ CC_ENUM (uint8, ESessionProperties)
 
 #include <climits>
 
-void DebugPrintf (char *, ...);
 class CParser
 {
 	std::cc_string		ScratchToken;	// Used for temporary storage during data-type/post parsing

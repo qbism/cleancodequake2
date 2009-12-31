@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,21 +27,27 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_print.h
-// Print replacements
+// cc_xatrix_items.cpp
+// 
 //
 
-#if !defined(CC_GUARD_PRINT_H) || !INCLUDE_GUARDS
-#define CC_GUARD_PRINT_H
+#include "cc_local.h"
 
-// If we're using the old, extended library functions
-// we need to make sure that these just re-route to those
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
-void DeveloperPrintf (char *fmt, ...);
-void DebugPrintf (char *fmt, ...);
+#if XATRIX_FEATURES
+#include "cc_weaponmain.h"
+#include "cc_xatrix_trap.h"
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...);
+CFoodCube *FoodCubeItem;
 
-#else
-FILE_WARNING
+LINK_ITEM_TO_CLASS (weapon_boomer, CItemEntity);
+LINK_ITEM_TO_CLASS (weapon_phalanx, CItemEntity);
+LINK_ITEM_TO_CLASS (ammo_magslug, CAmmoEntity);
+LINK_ITEM_TO_CLASS (ammo_trap, CAmmoEntity);
+
+void AddXatrixAmmoToList ()
+{
+	NItems::MagSlugs = QNew (com_itemPool, 0) CAmmo("ammo_magslug", "models/objects/ammo/tris.md2", 0, "misc/am_pkup.wav", "a_mslugs", "Mag Slug", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_MAGSLUGS);
+	NItems::Trap = QNew (com_itemPool, 0) CAmmoWeapon("ammo_trap", "models/weapons/g_trap/tris.md2", EF_ROTATE, "misc/am_pkup.wav", "a_trap", "Trap", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTrap::Weapon, 1, "#a_trap.md2", 1, CAmmo::AMMOTAG_TRAP);
+	FoodCubeItem = QNew (com_itemPool, 0) CFoodCube;
+}
 #endif

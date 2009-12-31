@@ -77,7 +77,7 @@ void CGrenadeLauncher::Fire (CPlayerEntity *ent)
 	ent->Client.KickOrigin = forward * -2;
 	ent->Client.KickAngles.X = -1;
 
-	CGrenade::Spawn (ent, start, forward, damage, 600, 3.2f, radius);
+	CGrenade::Spawn (ent, start, forward, damage, 600, 32, radius);
 
 	Muzzle (ent, MZ_GRENADE);
 	AttackSound (ent);

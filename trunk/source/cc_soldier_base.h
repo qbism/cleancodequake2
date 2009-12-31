@@ -51,9 +51,27 @@ public:
 		SOUND_MAX
 	);
 
+	CC_ENUM (uint8, ESoldierAIType)
+	{
+		AI_BLASTER,			// Regular firing, run-fire
+		AI_MACHINEGUN,		// Special fire frame, no running
+		AI_SHOTGUN,			// Regular firing, no run fire
+	};
+
+	ESoldierAIType		SoldierAI;
+
 	CSoldierBase (uint32 ID);
 
-	MONSTER_SAVE_LOAD_NO_FIELDS
+	void SaveMonsterFields (CFile &File)
+	{ 
+		SAVE_MONSTER_SOUNDS
+		File.Write<ESoldierAIType> (SoldierAI);
+	}
+	void LoadMonsterFields (CFile &File)
+	{
+		LOAD_MONSTER_SOUNDS
+		SoldierAI = File.Read<ESoldierAIType> ();
+	}
 
 	virtual void Attack () = 0;
 #if !MONSTER_USE_ROGUE_AI

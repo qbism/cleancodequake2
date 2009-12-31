@@ -643,6 +643,7 @@ public:
 			break;
 		case FT_CC_STRING:
 			OFS_TO_TYPE(std::cc_string) = File.Read<std::cc_string> ();
+			break;
 		};
 	};
 };

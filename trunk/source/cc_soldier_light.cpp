@@ -150,6 +150,7 @@ void CSoldierLight::SpawnSoldier ()
 	SoundIndex ("soldier/solatck2.wav");
 
 	Entity->State.GetSkinNum() = 0;
+	SoldierAI = AI_BLASTER;
 	Entity->Health = 20;
 	Entity->GibHealth = -30;
 

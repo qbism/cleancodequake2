@@ -748,6 +748,10 @@ void CPlayerEntity::InitItemMaxValues ()
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_ROCKETS] = 50;
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_CELLS] = 200;
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_SLUGS] = 50;
+#if XATRIX_FEATURES
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_MAGSLUGS] = 50;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_TRAP] = 5;
+#endif
 }
 
 /*
@@ -4106,6 +4110,11 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		case MOD_BFG_BLAST:
 			message = "should have used a smaller gun";
 			break;
+#if XATRIX_FEATURES
+		case MOD_TRAP:
+		 	message = "got sucked into his own trap";
+			break;
+#endif
 		default:
 			switch (Client.Respawn.Gender)
 			{
@@ -4211,6 +4220,15 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 			break;
 //ZOID
 #endif
+#if XATRIX_FEATURES
+		case MOD_RIPPER:
+			message = "was ripped to shreds by";
+			message2 = "'s ripper gun";
+			break;
+		case MOD_TRAP:
+			message = "was caught in trap by";
+			break;
+#endif
 		}
 		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.Name.c_str(), message, Attacker->Client.Persistent.Name.c_str(), message2);
 		if (game.GameMode & GAME_DEATHMATCH)
@@ -4276,6 +4294,12 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		case MOD_BARREL:
 			message = "was blown to smithereens by";
 			break;
+#if XATRIX_FEATURES
+		case MOD_RIPPER:
+			message = "was ripped to shreds by";
+			message2 = "'s ripper gun";
+			break;
+#endif
 		default:
 			message = "was killed by";
 			break;

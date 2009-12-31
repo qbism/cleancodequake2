@@ -379,9 +379,6 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	// set client fields on player ents
 	CPlayerEntity::RestoreClientData ();
 
-	// if we're loading a game, apply that info now
-	SetClientFields ();
-
 	if (!level.Demo)
 	{
 		level.Inhibit = 0;

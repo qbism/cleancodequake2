@@ -711,6 +711,9 @@ void CPhysicsEntity::Impact (CTrace *trace)
 
 CBounceProjectile::CBounceProjectile () :
 backOff(1.5f),
+AffectedByGravity(true),
+StopOnEqualPlane(true),
+AimInVelocityDirection(false),
 CPhysicsEntity ()
 {
 	PhysicsType = PHYSICS_BOUNCE;
@@ -718,6 +721,9 @@ CPhysicsEntity ()
 
 CBounceProjectile::CBounceProjectile (sint32 Index) :
 backOff(1.5f),
+AffectedByGravity(true),
+StopOnEqualPlane(true),
+AimInVelocityDirection(false),
 CPhysicsEntity (Index)
 {
 	PhysicsType = PHYSICS_BOUNCE;
@@ -749,7 +755,8 @@ bool CBounceProjectile::Run ()
 	old_origin = State.GetOrigin();
 
 // add gravity
-	AddGravity ();
+	if (AffectedByGravity)
+		AddGravity ();
 
 // move angles
 	State.GetAngles() = State.GetAngles().MultiplyAngles (0.1f, AngularVelocity);
@@ -765,8 +772,11 @@ bool CBounceProjectile::Run ()
 	{
 		ClipVelocity (Velocity, trace.plane.normal, Velocity, backOff);
 
+		if (AimInVelocityDirection)
+			State.GetAngles() = Velocity.ToAngles();
+
 		// stop if on ground
-		if (trace.plane.normal[2] > 0.9)
+		if (trace.plane.normal[2] > 0.7 && StopOnEqualPlane)
 		{		
 			if (Velocity.Z < 60)
 			{
@@ -816,80 +826,19 @@ CBounceProjectile (Index)
 }
 
 CFlyMissileProjectile::CFlyMissileProjectile () :
-CPhysicsEntity ()
+CBounceProjectile ()
 {
+	AffectedByGravity = false;
+	backOff = 1.0f;
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
 CFlyMissileProjectile::CFlyMissileProjectile (sint32 Index) :
-CPhysicsEntity (Index)
+CBounceProjectile (Index)
 {
+	AffectedByGravity = false;
+	backOff = 1.0f;
 	PhysicsType = PHYSICS_FLYMISSILE;
-}
-
-bool CFlyMissileProjectile::Run ()
-{
-	// if not a team captain, so movement will be handled elsewhere
-	if (Flags & FL_TEAMSLAVE)
-		return false;
-
-	if (Velocity.Z > 0)
-		GroundEntity = NULL;
-
-// check for the groundentity going away
-	if (GroundEntity && !GroundEntity->GetInUse())
-		GroundEntity = NULL;
-
-// if onground, return without moving
-	if ( GroundEntity )
-		return false;
-
-	vec3f old_origin = State.GetOrigin();
-
-// move angles
-	State.GetAngles() = State.GetAngles().MultiplyAngles (0.1f, AngularVelocity);
-
-// move origin
-	vec3f move = Velocity * 0.1f;
-	CTrace trace = PushEntity (move);
-
-	if (!GetInUse())
-		return false;
-
-	if (trace.fraction < 1)
-	{
-		ClipVelocity (Velocity, trace.plane.normal, Velocity, 1.0);
-
-		// stop if on ground
-		if (trace.plane.normal[2] > 0.9)
-		{		
-			GroundEntity = trace.Ent;
-			GroundEntityLinkCount = GroundEntity->GetLinkCount();
-			Velocity.Clear ();
-			AngularVelocity.Clear ();
-		}
-	}
-	
-// check for water transition
-	bool wasinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
-	WaterInfo.Type = PointContents (State.GetOrigin());
-	bool isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
-
-	WaterInfo.Level = (isinwater) ? WATER_FEET : WATER_NONE;
-
-	if (!wasinwater && isinwater)
-		World->PlayPositionedSound (old_origin, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
-	else if (wasinwater && !isinwater)
-		World->PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
-
-// move teamslaves
-	for (CBaseEntity *slave = Team.Chain; slave; slave = slave->Team.Chain)
-	{
-		slave->State.GetOrigin() = State.GetOrigin();
-		slave->Link ();
-	}
-
-	return true;
 }
 
 CStepPhysics::CStepPhysics () :

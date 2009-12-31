@@ -122,6 +122,7 @@ static void SV_PM_StepSlideMove_ ()
 	CTrace		trace;
 	vec3f		end;
 	float		time_left = pml.frameTime;
+	float orgY = pml.origin.Y;
 
 	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{

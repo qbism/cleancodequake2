@@ -187,7 +187,7 @@ void ListConfigstrings ()
 	bool firstIndex = false;
 	for (uint16 i = 1; i <= MAX_CS_MODELS; i++)
 	{
-		if (!strlen(ReadConfigSt[CS_MODELS+1]))
+		if (!strlen(ReadConfigSt[CS_MODELS+i]))
 			continue;
 		else if (CS_MODELS+i == 33)
 			ModelList.firstIndex = 0;
@@ -205,13 +205,13 @@ void ListConfigstrings ()
 	}
 	for (uint16 i = 1; i <= MAX_CS_SOUNDS; i++)
 	{
-		if (!strlen(ReadConfigSt[CS_SOUNDS+1]))
+		if (!strlen(ReadConfigSt[CS_SOUNDS+i]))
 			continue;
 		SoundList.AddToList (ReadConfigSt[CS_SOUNDS+i], gi.soundindex(ReadConfigSt[CS_SOUNDS+i]));
 	}
 	for (uint16 i = 1; i <= MAX_CS_IMAGES; i++)
 	{
-		if (!strlen(ReadConfigSt[CS_IMAGES+1]))
+		if (!strlen(ReadConfigSt[CS_IMAGES+i]))
 			continue;
 		ImageList.AddToList (ReadConfigSt[CS_IMAGES+i], gi.imageindex(ReadConfigSt[CS_IMAGES+i]));
 	}

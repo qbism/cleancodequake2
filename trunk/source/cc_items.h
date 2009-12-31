@@ -180,6 +180,9 @@ public:
 #include "cc_ctfitems.h"
 #endif
 #include "cc_techs.h"
+#if XATRIX_FEATURES
+#include "cc_xatrix_items.h"
+#endif
 
 #include "cc_itemlist.h"
 

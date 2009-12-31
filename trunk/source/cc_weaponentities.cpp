@@ -37,9 +37,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 {
-	vec3f	end;
-	CTrace	tr;
-
 	// easy mode only ducks one quarter the time
 	if (skill->Integer() == 0)
 	{
@@ -47,32 +44,22 @@ void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 			return;
 	}
 
-	end = start.MultiplyAngles(8192, dir);
-	tr (start, end, self, CONTENTS_MASK_SHOT);
+	vec3f end = start.MultiplyAngles(8192, dir);
+	CTrace tr (start, end, self, CONTENTS_MASK_SHOT);
 
+	if ((tr.ent) && (tr.ent->Entity) && (tr.ent->Entity->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(tr.ent->Entity)->Health > 0) && IsInFront(tr.Ent, self))
+	{
+		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.ent->Entity));
+		if (Monster->Enemy != self)
+			Monster->Enemy = self;
+
+		float eta = ((tr.EndPos - start).LengthFast() - tr.ent->maxs[0]) / speed;
+		Monster->Monster->Dodge (self, eta
 #if MONSTER_USE_ROGUE_AI
-	if ((tr.ent) && (tr.ent->Entity) && (tr.ent->Entity->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(tr.ent->Entity)->Health > 0) && IsInFront(tr.Ent, self))
-	{
-		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.ent->Entity));
-		if (Monster->Enemy != self)
-			Monster->Enemy = self;
-
-		vec3f v = tr.EndPos - start;
-		float eta = (v.LengthFast() - tr.ent->maxs[0]) / speed;
-		Monster->Monster->Dodge (self, eta, &tr);
-	}
-#else
-	if ((tr.ent) && (tr.ent->Entity) && (tr.ent->Entity->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(tr.ent->Entity)->Health > 0) && IsInFront(tr.Ent, self))
-	{
-		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.ent->Entity));
-		if (Monster->Enemy != self)
-			Monster->Enemy = self;
-
-		vec3f v = tr.EndPos - start;
-		float eta = (v.LengthFast() - tr.ent->maxs[0]) / speed;
-		Monster->Monster->Dodge (self, eta);
-	}
+		, &tr
 #endif
+		);
+	}
 }
 
 /*
@@ -175,13 +162,12 @@ void CGrenade::Think ()
 	Explode();
 }
 
-void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 damage, sint32 speed, float timer, float damage_radius, bool handNade, bool held)
+void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 damage, sint32 speed, FrameNumber_t timer, float damage_radius, bool handNade, bool held)
 {
 	CGrenade	*Grenade = QNewEntityOf CGrenade();
 	vec3f		forward, right, up;
 
 	vec3f dir = aimdir.ToAngles();
-	VecToAngles (aimdir, dir);
 
 	dir.ToVectors (&forward, &right, &up);
 
@@ -196,7 +182,7 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 da
 	Grenade->State.GetEffects() = EF_GRENADE;
 	Grenade->State.GetModelIndex() = (!handNade) ? ModelIndex ("models/objects/grenade/tris.md2") : ModelIndex ("models/objects/grenade2/tris.md2");
 	Grenade->SetOwner(Spawner);
-	Grenade->NextThink = level.Frame + (timer * 10);
+	Grenade->NextThink = level.Frame + timer;
 	Grenade->Damage = damage;
 	Grenade->RadiusDamage = damage_radius;
 	Grenade->ClassName = (!handNade) ? "grenade" : "hgrenade";

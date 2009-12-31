@@ -572,7 +572,7 @@ public:
 		else
 		{
 			// FIXME: replace this shit
-			if (strcmp(other->ClassName, "grenade") == 0)
+			if (other->ClassName && strcmp(other->ClassName, "grenade") == 0)
 			{
 				if (other->EntityFlags & ENT_PHYSICS)
 					entity_cast<CPhysicsEntity>(other)->Velocity = vel;
