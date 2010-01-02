@@ -788,9 +788,13 @@ echo Done!
     <ClCompile Include="..\..\source\cc_ctfmenu.cpp" />
     <ClCompile Include="..\..\source\cc_grapple.cpp" />
     <ClCompile Include="..\..\source\cc_utils.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_gladiator_phalanx.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_ionripper.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_items.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_phalanx.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_hyper.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_laser.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_soldier_ripper.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp" />
   </ItemGroup>
@@ -908,9 +912,12 @@ echo Done!
     <ClInclude Include="..\..\source\cc_grapple.h" />
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_gladiator_phalanx.h" />
     <ClInclude Include="..\..\source\cc_xatrix_ionripper.h" />
     <ClInclude Include="..\..\source\cc_xatrix_items.h" />
     <ClInclude Include="..\..\source\cc_xatrix_phalanx.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_hyper.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_laser.h" />
     <ClInclude Include="..\..\source\cc_xatrix_soldier_ripper.h" />
     <ClInclude Include="..\..\source\cc_xatrix_trap.h" />
     <ClInclude Include="..\..\source\m_actor.h" />

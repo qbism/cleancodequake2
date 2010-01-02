@@ -1,0 +1,378 @@
+/*
+Copyright (C) 1997-2001 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+/*
+This source file is contained as part of CleanCode Quake2, a project maintained
+by Paril, to 'clean up' and make Quake2 an easier source base to read and work with.
+
+You may use any part of this code to help create your own bases and own mods off
+this code if you wish. It is under the same license as Quake 2 source (as above),
+therefore you are free to have to fun with it. All I ask is you email me so I can
+list the mod on my page for CleanCode Quake2 to help get the word around. Thanks.
+*/
+
+//
+// cc_xatrix_entities.cpp
+// 
+//
+
+#include "cc_local.h"
+#include "cc_tent.h"
+
+/*QUAKED rotating_light (0 .5 .8) (-8 -8 -8) (8 8 8) START_OFF ALARM
+"health"	if set, the light may be killed.
+*/
+
+// RAFAEL 
+// note to self
+// the lights will take damage from explosions
+// this could leave a player in total darkness very bad
+ 
+#define ROTATING_LIGHT_START_OFF	1
+#define ROTATING_LIGHT_ALARM		2
+
+class CRotatingLight : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CUsableEntity
+{
+public:
+	bool		DoFree;
+	MediaIndex	AlarmSound;
+
+	CRotatingLight () :
+	  CMapEntity (),
+	  CHurtableEntity (),
+	  CThinkableEntity (),
+	  CUsableEntity ()
+	{
+	};
+
+	CRotatingLight (int Index) :
+	  CBaseEntity (Index),
+	  CMapEntity (Index),
+	  CHurtableEntity (Index),
+	  CThinkableEntity (Index),
+	  CUsableEntity (Index)
+	{
+	};
+
+	IMPLEMENT_SAVE_HEADER(CRotatingLight)
+
+	bool			ParseField (const char *Key, const char *Value)
+	{
+		return (CMapEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value));
+	};
+
+	void			SaveFields (CFile &File)
+	{
+		File.Write<bool> (DoFree);
+		WriteIndex (File, AlarmSound, INDEX_SOUND);
+
+		CMapEntity::SaveFields (File);
+		CHurtableEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+	};
+	void			LoadFields (CFile &File)
+	{
+		DoFree = File.Read<bool> ();
+		ReadIndex (File, AlarmSound, INDEX_SOUND);
+
+		CMapEntity::LoadFields (File);
+		CHurtableEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+	};
+
+	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	{
+		CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + randomMT()&7, 30);
+
+		State.GetEffects() &= ~EF_SPINNINGLIGHTS;
+		Usable = false;
+
+		DoFree = true;
+		NextThink = level.Frame + 1;
+	};
+
+	void Think ()
+	{
+		if (DoFree)
+		{
+			Free ();
+			return;
+		}
+
+		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
+			NextThink = 0;	
+		else
+		{
+			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, AlarmSound, 255, ATTN_STATIC, 0);
+			NextThink = level.Frame + 10;
+		}
+	};
+
+	void Use (CBaseEntity *other, CBaseEntity *activator)
+	{
+		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
+		{
+			SpawnFlags &= ~ROTATING_LIGHT_START_OFF;
+			State.GetEffects() |= EF_SPINNINGLIGHTS;
+
+			if (SpawnFlags & ROTATING_LIGHT_ALARM)
+				NextThink = level.Frame + 1;
+		}
+		else
+		{
+			SpawnFlags |= ROTATING_LIGHT_START_OFF;
+			State.GetEffects() &= ~EF_SPINNINGLIGHTS;
+		}
+	};
+
+	void Spawn ()
+	{
+		GetSolid() = SOLID_BBOX;
+		State.GetModelIndex() = ModelIndex ("models/objects/light/tris.md2");	
+		State.GetFrame() = 0;
+			
+		Usable = true;
+		
+		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
+			State.GetEffects() &= ~EF_SPINNINGLIGHTS;
+		else
+			State.GetEffects() |= EF_SPINNINGLIGHTS;
+
+		if (!Health)
+			Health = 10;
+
+		MaxHealth = Health;
+		CanTakeDamage = true;
+	
+		if (SpawnFlags & ROTATING_LIGHT_ALARM)
+			AlarmSound = SoundIndex ("misc/alarm.wav");	
+		
+		Link ();
+	};
+};
+
+LINK_CLASSNAME_TO_CLASS ("rotating_light", CRotatingLight);
+
+#include "cc_brushmodels.h"
+
+/*QUAKED misc_crashviper (1 .5 0) (-176 -120 -24) (176 120 72) 
+This is a large viper about to crash
+*/
+class CMiscCrashViper : public CTrainBase, public CTouchableEntity
+{
+	bool MyUse;
+public:
+	CMiscCrashViper() :
+		CBaseEntity (),
+		CTrainBase(),
+		CTouchableEntity(),
+		MyUse(true)
+	{
+	};
+
+	CMiscCrashViper(sint32 Index) :
+		CBaseEntity (Index),
+		CTrainBase(Index),
+		CTouchableEntity(Index),
+		MyUse(true)
+	{
+	};
+
+	IMPLEMENT_SAVE_HEADER(CMiscCrashViper)
+
+	void SaveFields (CFile &File)
+	{
+		File.Write<bool> (MyUse);
+		CTrainBase::SaveFields (File);
+		CTouchableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		MyUse = File.Read<bool> ();
+		CTrainBase::LoadFields (File);
+		CTouchableEntity::LoadFields (File);
+	}
+
+	bool Run ()
+	{
+		return CTrainBase::Run ();
+	};
+
+	virtual void Use (CBaseEntity *other, CBaseEntity *activator)
+	{
+		if (MyUse)
+		{
+			GetSvFlags() &= ~SVF_NOCLIENT;
+			MyUse = false;
+		}
+		CTrainBase::Use (other, activator);
+	};
+
+	virtual void Spawn ()
+	{
+		if (!Target)
+		{
+			//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
+			Free ();
+			return;
+		}
+
+		if (!Speed)
+			Speed = 300;
+
+		PhysicsType = PHYSICS_PUSH;
+		Touchable = true;
+		GetSolid() = SOLID_NOT;
+		State.GetModelIndex() = ModelIndex ("models/ships/bigviper/tris.md2");
+		GetMins().Set (-16, -16, 0);
+		GetMaxs().Set (16, 16, 32);
+
+		NextThink = level.Frame + FRAMETIME;
+		ThinkType = TRAINTHINK_FIND;
+		GetSvFlags() |= SVF_NOCLIENT;
+		Accel = Decel = Speed;
+
+		Link ();
+	};
+};
+
+LINK_CLASSNAME_TO_CLASS ("misc_viper", CMiscCrashViper);
+
+/*QUAKED misc_amb4 (1 0 0) (-16 -16 -16) (16 16 16)
+Mal's amb4 loop entity
+*/
+class CMiscAmb4 : public CMapEntity, public CThinkableEntity
+{
+public:
+	MediaIndex	Amb4Sound;
+
+	CMiscAmb4 () :
+		CBaseEntity (),
+		CMapEntity (),
+		CThinkableEntity ()
+	{
+	};
+
+	CMiscAmb4 (int Index) :
+		CBaseEntity (Index),
+		CMapEntity (Index),
+		CThinkableEntity (Index)
+	{
+	};
+
+	IMPLEMENT_SAVE_HEADER(CMiscAmb4)
+
+	void SaveFields (CFile &File)
+	{
+		WriteIndex (File, Amb4Sound, INDEX_SOUND);
+		CMapEntity::SaveFields (File);
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		ReadIndex (File, Amb4Sound, INDEX_SOUND);
+		CMapEntity::LoadFields (File);
+		CThinkableEntity::LoadFields (File);
+	}
+
+	void Think ()
+	{
+		NextThink = level.Frame + 27;
+		PlaySound (CHAN_VOICE, Amb4Sound, 255, ATTN_NONE);
+	}
+
+	void Spawn ()
+	{
+		NextThink = level.Frame + 10;
+		Amb4Sound = SoundIndex ("world/amb4.wav");
+		Link ();
+	}
+};
+
+LINK_CLASSNAME_TO_CLASS ("misc_amb4", CMiscAmb4);
+
+/*QUAKED misc_nuke (1 0 0) (-16 -16 -16) (16 16 16)
+*/
+class CMiscNuke : public CMapEntity, public CUsableEntity
+{
+public:
+	CMiscNuke () :
+		CBaseEntity (),
+		CMapEntity (),
+		CUsableEntity ()
+	{
+	};
+
+	CMiscNuke (int Index) :
+		CBaseEntity (Index),
+		CMapEntity (Index),
+		CUsableEntity (Index)
+	{
+	};
+
+	IMPLEMENT_SAVE_HEADER(CMiscNuke)
+
+	void SaveFields (CFile &File)
+	{
+		CMapEntity::SaveFields (File);
+		CUsableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CMapEntity::LoadFields (File);
+		CUsableEntity::LoadFields (File);
+	}
+
+	void Use (CBaseEntity *other, CBaseEntity *activator)
+	{
+		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+		{
+			edict_t *ent = (*it);
+			if (!ent->inUse || !ent->Entity)
+				continue;
+
+			if (!(ent->Entity->EntityFlags & ENT_HURTABLE))
+				continue;
+
+			if (ent->Entity == this)
+				continue;
+
+			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(ent->Entity);
+
+			if (Hurtable->EntityFlags & ENT_PLAYER)
+				Hurtable->TakeDamage (this, this, vec3fOrigin, Hurtable->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_TRAP);
+			else if (Hurtable->EntityFlags & ENT_MONSTER)
+				Hurtable->Free ();
+		}
+
+		Usable = false;
+	}
+
+	void Spawn ()
+	{
+		Usable = true;
+	}
+};
+
+LINK_CLASSNAME_TO_CLASS ("misc_nuke", CMiscNuke);

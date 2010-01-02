@@ -68,6 +68,9 @@ public:
 		SavedFirePosition = File.Read<vec3f> ();
 	}
 
+#if XATRIX_FEATURES
+	virtual
+#endif
 	void Attack ();
 	void Idle ();
 	void Run ();
@@ -86,6 +89,9 @@ public:
 	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
 	void Pain (CBaseEntity *other, float kick, sint32 damage);
 
+#if XATRIX_FEATURES
+	virtual
+#endif
 	void Spawn ();
 };
 

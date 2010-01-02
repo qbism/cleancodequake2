@@ -340,10 +340,9 @@ void CMutant::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	Jumping = false;
 }
 
-#define MUTANT_JUMPS_UNSTUPIDLY
 void CMutant::JumpTakeOff ()
 {
-#ifndef MUTANT_JUMPS_UNSTUPIDLY
+#if !(MONSTER_SPECIFIC_FLAGS & MUTANT_JUMPS_UNSTUPIDLY)
 	vec3f	forward;
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
