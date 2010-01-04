@@ -121,7 +121,7 @@ bool CPhalanxPlasma::Run ()
 }
 
 CPhalanx::CPhalanx() :
-CWeapon(13, "models/weapons/v_shotx/tris.md2", 0, 5, 6, 20,
+CWeapon(9, 1, "models/weapons/v_shotx/tris.md2", 0, 5, 6, 20,
 		21, 58, 59, 63, "weapons/phaloop.wav")
 {
 }

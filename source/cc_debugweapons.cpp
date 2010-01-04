@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 
 CDebugWeapon::CDebugWeapon () :
-CWeapon (12, NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL)
+CWeapon (11, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL)
 {
 };
 

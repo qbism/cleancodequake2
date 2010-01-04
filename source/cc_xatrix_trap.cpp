@@ -368,7 +368,7 @@ bool CTrapProjectile::Run ()
 }
 
 CTrap::CTrap() :
-CWeapon(14, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
+CWeapon(0, -2, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
 		17, 48, 0, 0)
 {
 }

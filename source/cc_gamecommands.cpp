@@ -262,22 +262,25 @@ bool CheckFlood(CPlayerEntity *ent)
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
-	char	*Text;
+	std::cc_string &Text;
 
-	CSayPlayerCallback (char *Text) :
+	CSayPlayerCallback (std::cc_string &Text) :
 	Text(Text)
 	{
 	};
 
+	CSayPlayerCallback &operator= (CSayPlayerCallback&) { return *this; }
+
 	void Callback (CPlayerEntity *Player)
 	{
-		Player->PrintToClient (PRINT_CHAT, "%s", Text);
+		Player->PrintToClient (PRINT_CHAT, "%s", Text.c_str());
 	}
 };
 
 void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 {
-	char	text[MAX_TALK_STRING];
+	//char	text[MAX_TALK_STRING];
+	static std::cc_string text;
 
 	if (ArgCount () < 2 && !arg0)
 		return;
@@ -291,14 +294,10 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
 		team = false;
 
-	Q_snprintfz (text, sizeof(text), (team) ? "(%s): " : "%s: ", ent->Client.Persistent.Name.c_str());
+	text = (team) ? ("(" + ent->Client.Persistent.Name + "): ") : (ent->Client.Persistent.Name + ": ");
 
 	if (arg0)
-	{
-		Q_strcatz (text, ArgGets(0).c_str(), sizeof(text));
-		Q_strcatz (text, " ", sizeof(text));
-		Q_strcatz (text, ArgGetConcatenatedString().c_str(), sizeof(text));
-	}
+		text += ArgGets(0) + " " + ArgGetConcatenatedString();
 	else
 	{
 		std::cc_string p = ArgGetConcatenatedString();
@@ -309,17 +308,14 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 			p.erase (p.end()-1);
 		}
 
-		Q_strcatz(text, p.c_str(), sizeof(text));
+		text += p;
 	}
 
 	// don't let text be too long for malicious reasons
-	if (strlen(text) >= sizeof(text)-1)
-	{
-		text[sizeof(text)-1] = 0;
-		text[sizeof(text)-2] = '\n';
-	}
-	else
-		Q_strcatz(text, "\n", sizeof(text));
+	if (text.length() >= MAX_TALK_STRING-1)
+		text.erase (MAX_TALK_STRING-1);
+
+	text += "\n";
 
 	if (CheckFlood(ent))
 		return;
