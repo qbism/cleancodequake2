@@ -131,6 +131,11 @@ public:
 		return CurrentToken;
 	};
 
+	inline bool IsEOF ()
+	{
+		return !DataPointer;
+	};
+
 	// A quick note:
 	// ParseToken will give you a pointer to a CONST char.
 	// DON'T CHANGE RETURNED TOKENS!

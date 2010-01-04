@@ -167,6 +167,7 @@ void CGladiator::FireRail ()
 
 void CGladiator::StorePosition ()
 {
+#if 0
 	switch (Entity->State.GetFrame())
 	{
 	case FRAME_attack1:
@@ -184,13 +185,16 @@ void CGladiator::StorePosition ()
 	default:
 		break;
 	}
+#else
+	SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
+#endif
 }
 
 CFrame GladiatorFramesAttackGun [] =
 {
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::StorePosition)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::StorePosition)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::StorePosition)),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::FireRail)),
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0),
@@ -207,6 +211,7 @@ void CGladiator::Attack ()
 		return;
 
 	// charge up the railgun
+	StorePosition ();
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_GUN]);
 	SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 	CurrentMove = &GladiatorMoveAttackGun;

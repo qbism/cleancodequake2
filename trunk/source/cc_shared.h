@@ -44,7 +44,7 @@ inline const char *TimeStamp()
 	return __TIMESTAMP__;
 };
 
-// Pre-defined classes
+// Forward declarations
 class CBaseEntity;
 class CPlayerEntity;
 
@@ -102,11 +102,6 @@ typedef sint32	FrameNumber_t;
 #include "cc_ctfmenu.h"
 #endif
 #include "cc_entitylist.h"
-
-
-#if 0
-void DrawNewton ();
-#endif
 
 #else
 FILE_WARNING

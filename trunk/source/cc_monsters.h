@@ -402,6 +402,12 @@ public:
 	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
 	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 
+#if XATRIX_FEATURES
+	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireBeam (class CMonsterBeamLaser *Laser);
+	void				MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+#endif
+
 #if MONSTERS_ARENT_STUPID
 	bool				FriendlyInLine (vec3f &Origin, vec3f &Direction);
 #endif
@@ -432,6 +438,43 @@ public:
 	virtual void		Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) = 0;
 	virtual void		Pain(CBaseEntity *other, float kick, sint32 damage) = 0;
 };
+
+#if XATRIX_FEATURES
+class CMonsterBeamLaser : public CThinkableEntity
+{
+public:
+	vec3f		MoveDir;
+	bool		DoFree;
+	bool		MakeEffect;
+	sint32		Damage;
+
+	CMonsterBeamLaser ();
+
+	IMPLEMENT_SAVE_HEADER (CMonsterBeamLaser)
+
+	void SaveFields (CFile &File)
+	{
+		File.Write<sint32> (Damage);
+		File.Write<bool> (MakeEffect);
+		File.Write<bool> (DoFree);
+		File.Write<vec3f> (MoveDir);
+
+		CThinkableEntity::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		Damage = File.Read <sint32>();
+		MakeEffect = File.Read <bool>();
+		DoFree = File.Read <bool>();
+		MoveDir = File.Read <vec3f>();
+
+		CThinkableEntity::LoadFields (File);
+	}
+
+	void Think ();
+};
+#endif
 
 #define DI_NODIR	-1
 

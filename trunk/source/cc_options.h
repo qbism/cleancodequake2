@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_ORIGINAL_QUAKE2				1
 #define GAME_ROGUE							2
 #define GAME_XATRIX							4
-#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
+#define CC_GAME_MODE						GAME_XATRIX
 
 // Global macros
 // Monsters won't attack allies and will try not to hurt allies with shots
@@ -132,9 +132,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define INFANTRY_DOES_REVERSE_GUN_ATTACK	1
 #define FLYER_KNOWS_HOW_TO_DODGE			2
 #define SUPERTANK_USES_GRENADES				4
+#define MUTANT_JUMPS_UNSTUPIDLY				8
 
 // Change this to change some global flags
-#define MONSTER_SPECIFIC_FLAGS (INFANTRY_DOES_REVERSE_GUN_ATTACK | FLYER_KNOWS_HOW_TO_DODGE | SUPERTANK_USES_GRENADES)
+#define MONSTER_SPECIFIC_FLAGS (INFANTRY_DOES_REVERSE_GUN_ATTACK | FLYER_KNOWS_HOW_TO_DODGE | SUPERTANK_USES_GRENADES | MUTANT_JUMPS_UNSTUPIDLY)
 
 // Enable the example Ammo Regen tech
 #define AMMO_REGEN_TECH						1

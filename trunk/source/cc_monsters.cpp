@@ -1676,6 +1676,150 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
+#if XATRIX_FEATURES
+#include "cc_weaponmain.h"
+#include "cc_xatrix_ionripper.h"
+#include "cc_soldier_base.h"
+#include "cc_xatrix_soldier_hyper.h"
+
+void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+{
+#if MONSTERS_ARENT_STUPID
+	if (FriendlyInLine (start, dir))
+		return;
+#endif
+
+	CIonRipperBoomerang::Spawn (Entity, start, dir, damage, speed);
+
+	if (flashtype != -1)
+		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+}
+
+void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+{
+#if MONSTERS_ARENT_STUPID
+	if (FriendlyInLine (start, dir))
+		return;
+#endif
+
+	CBlueBlasterProjectile::Spawn (Entity, start, dir, damage, speed, EF_BLUEHYPERBLASTER);
+
+	if (flashtype != -1)
+		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+}
+
+// RAFAEL
+CMonsterBeamLaser::CMonsterBeamLaser () :
+CThinkableEntity ()
+{
+};
+
+void CMonsterBeamLaser::Think ()
+{
+	if (DoFree)
+	{
+		Free ();
+		return;
+	}
+
+	CBaseEntity	*ignore;
+	vec3f	start;
+	vec3f	end;
+	const uint8 Count = (MakeEffect) ? 8 : 4;
+
+	ignore = this;
+	start = State.GetOrigin();
+	end = start.MultiplyAngles (2048, MoveDir);
+	CTrace tr;
+	while(1)
+	{
+		tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
+
+		if (!tr.ent)
+			break;
+		if (!tr.ent->Entity)
+			break;
+
+		CBaseEntity *Entity = tr.ent->Entity;
+		// hurt it if we can
+		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
+			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, skill->Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
+
+		if (Damage < 0) // healer ray
+		{
+			// when player is at 100 health
+			// just undo health fix
+			// keeping fx
+			if (Entity->EntityFlags & ENT_PLAYER)
+			{
+				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
+				if (Player->Health > 100)
+					Player->Health += Damage; 
+			}
+		}
+
+		// if we hit something that's not a monster or player or is immune to lasers, we're done
+		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
+		{
+			if (MakeEffect)
+			{
+				MakeEffect = false;
+				CTempEnt_Splashes::Sparks (tr.EndPos,
+					tr.plane.normal, 
+					CTempEnt_Splashes::ST_LASER_SPARKS,
+					(State.GetSkinNum() & 255),
+					Count);
+			}
+			break;
+		}
+
+		ignore = tr.Ent;
+		start = tr.EndPos;
+	}
+
+	State.GetOldOrigin() = tr.EndPos;
+	NextThink = level.Frame + FRAMETIME;
+	DoFree = true;
+}
+
+// RAFAEL
+void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
+{	
+	Ent->GetSolid() = SOLID_NOT;
+	Ent->State.GetRenderEffects() |= RF_BEAM|RF_TRANSLUCENT;
+	Ent->State.GetModelIndex() = 1;
+		
+	Ent->State.GetFrame() = 2;
+	
+	if (AIFlags & AI_MEDIC)
+		Ent->State.GetSkinNum() = 0xf3f3f1f1;
+	else
+		Ent->State.GetSkinNum() = 0xf2f2f0f0;
+
+	if (Entity->Enemy)
+	{
+		vec3f lastMoveDir = Ent->MoveDir;
+		vec3f point = Entity->Enemy->GetAbsMin().MultiplyAngles (0.5f, Entity->Enemy->GetSize());
+		if (AIFlags & AI_MEDIC)
+			point.X += (sinf (level.Frame) * 8) * 10;
+		Ent->MoveDir = (point - Ent->State.GetOrigin()).GetNormalized();
+		if (Ent->MoveDir != lastMoveDir)
+			Ent->MakeEffect = true;
+	}
+	else
+		Ent->MoveDir = Ent->State.GetAngles();
+
+	Ent->NextThink = level.Frame + 1;
+	Ent->GetMins().Set (-8, -8, -8);
+	Ent->GetMaxs().Set (8, 8, 8);
+	Ent->Link ();
+ 	
+	Ent->MakeEffect = true;
+	Ent->GetSvFlags() &= ~SVF_NOCLIENT;
+}
+#endif
+
+
 bool CMonster::CheckAttack ()
 {
 #if !MONSTER_USE_ROGUE_AI

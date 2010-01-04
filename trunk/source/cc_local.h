@@ -37,10 +37,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_options.h"
 #include "../shared/shared.h"
 
-#if 0
-#include "Newton.h"
-#endif
-
 // Paril, CleanCode Quake2
 #include "cc_shared.h"
 
@@ -300,9 +296,6 @@ struct edict_t
 	//
 	// Paril
 	CBaseEntity		*Entity;
-#if 0
-	const NewtonBody	*newtonBody;
-#endif
 };
 
 //

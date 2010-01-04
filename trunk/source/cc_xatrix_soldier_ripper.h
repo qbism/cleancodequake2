@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,72 +27,21 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_gladiator.h
-// WACHOOEYCHOY
+// cc_xatrix_soldier_ripper.h
+// 
 //
 
-#if !defined(CC_GUARD_GLADIATOR_H) || !INCLUDE_GUARDS
-#define CC_GUARD_GLADIATOR_H
+#if !defined(CC_GUARD_CC_XATRIX_SOLDIER_RIPPER_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CC_XATRIX_SOLDIER_RIPPER_H
 
-class CGladiator : public CMonster
+class CSoldierRipper : public CSoldierBase
 {
 public:
-	vec3f		SavedFirePosition;
+	CSoldierRipper(uint32 ID);
 
-	MONSTER_SOUND_ENUM
-	(
-		SOUND_PAIN1,
-		SOUND_PAIN2,
-		SOUND_DIE,
-		SOUND_GUN,
-		SOUND_CLEAVER_SWING,
-		SOUND_CLEAVER_HIT,
-		SOUND_CLEAVER_MISS,
-		SOUND_IDLE,
-		SOUND_SEARCH,
-		SOUND_SIGHT,
-
-		SOUND_MAX
-	);
-
-	CGladiator (uint32 ID);
-
-	void SaveMonsterFields (CFile &File)
-	{
-		SAVE_MONSTER_SOUNDS
-		File.Write<vec3f> (SavedFirePosition);
-	}
-	void LoadMonsterFields (CFile &File)
-	{
-		LOAD_MONSTER_SOUNDS
-		SavedFirePosition = File.Read<vec3f> ();
-	}
-
-#if XATRIX_FEATURES
-	virtual
-#endif
 	void Attack ();
-	void Idle ();
-	void Run ();
-	void Sight ();
-	void Stand ();
-	void Walk ();
-	void Melee ();
-	void Search ();
-
-	void FireRail ();
-	void StorePosition ();
-	void SwingCleaver ();
-	void MeleeAttack ();
-
-	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
-
-#if XATRIX_FEATURES
-	virtual
-#endif
-	void Spawn ();
+	void FireGun (sint32 FlashNumber);
+	void SpawnSoldier ();
 };
 
 #else
