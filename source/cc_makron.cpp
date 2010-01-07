@@ -1033,3 +1033,4 @@ void CMakronJumpTimer::Spawn (CJorg *Jorg)
 	Timer->State.GetOrigin() = Jorg->Entity->State.GetOrigin();
 	Timer->Link();
 }
+

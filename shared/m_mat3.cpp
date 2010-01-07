@@ -329,3 +329,4 @@ void Matrix3_Transpose (mat3x3_t in, mat3x3_t out)
 	out[2][1] = in[1][2];
 }
 #endif
+

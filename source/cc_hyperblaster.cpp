@@ -126,3 +126,4 @@ void CHyperBlaster::CreateItem (CItemList *List)
 		"w_hyperblaster", "HyperBlaster", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 1, "#w_hyperblaster.md2");
 };
+

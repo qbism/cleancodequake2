@@ -90,3 +90,4 @@ void CTrace::operator () (vec3f &start, vec3f &end, sint32 contentMask)
 }
 
 _CC_ENABLE_DEPRECATION
+

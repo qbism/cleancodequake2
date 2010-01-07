@@ -766,3 +766,4 @@ void Cmd_Give (CPlayerEntity *ent)
 		Spawned->Link ();
 	}
 }
+

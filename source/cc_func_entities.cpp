@@ -547,3 +547,4 @@ void CFuncClock::Spawn ()
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_clock", CFuncClock);
+

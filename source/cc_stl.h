@@ -186,3 +186,4 @@ inline void FormatString (std::cc_string &str, const char *fmt, ...)
 #else
 FILE_WARNING
 #endif
+

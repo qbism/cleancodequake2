@@ -168,3 +168,4 @@ void CChaingun::CreateItem (CItemList *List)
 		"w_chaingun", "Chaingun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Bullets, 1, "#w_chaingun.md2");
 };
+

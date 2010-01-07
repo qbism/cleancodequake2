@@ -39,7 +39,9 @@ void FS_Error (const char *errorMsg)
 {
 #ifdef _DEBUG
 #ifdef WIN32
+#if !defined(CC_STDC_CONFORMANCE)
 	OutputDebugStringA (errorMsg);
+#endif
 	assert (0);
 #endif
 #endif
@@ -634,3 +636,4 @@ void FS_Init (sint32 maxHandles)
 		FS_AddPath (GAMENAME);
 	FS_AddPath ("baseq2");
 }
+

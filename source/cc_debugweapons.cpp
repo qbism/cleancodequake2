@@ -55,13 +55,13 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 
 		tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
 
-		if (tr.fraction < 1 && tr.Ent && tr.Ent->ClassName)
+		if (tr.fraction < 1 && tr.Ent && !tr.Ent->ClassName.empty())
 		{
 			if (!tr.surface)
-				ConfigString (CS_POINTING_SURFACE-1, tr.Ent->ClassName, Player);
+				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Ent->ClassName.c_str()), Player);
 			else
 			{
-				std::cc_string temp = std::cc_string(tr.Ent->ClassName) + std::cc_string(" (") + std::cc_string(tr.surface->name) + std::cc_string(")");
+				std::cc_string temp = tr.Ent->ClassName + std::cc_string(" (") + std::cc_string(tr.surface->name) + std::cc_string(")");
 				ConfigString (CS_POINTING_SURFACE-1, temp.c_str(), Player);
 			}
 		}
@@ -107,3 +107,4 @@ void CSurfacePicker::CreateItem (CItemList *List)
 	if (map_debug->Boolean())
 		QNew (com_itemPool, 0) CWeaponItem (NULL, NULL, 0, NULL, NULL, "Surface Picker", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, NULL, &Weapon, NULL, 0, NULL);
 };
+

@@ -100,19 +100,19 @@ public:
 	vec3f		Positions[2];
 	vec3f		MoveOrigin, MoveAngles;
 
-	sint32			Lip;
+	sint32		Lip;
 
 	// state data
-	sint32			MoveState;
+	sint32		MoveState;
 	vec3f		Dir;
 	float		CurrentSpeed;
 	float		MoveSpeed;
 	float		NextSpeed;
 	float		RemainingDistance;
 	float		DecelDistance;
-	uint32		EndFunc;
+	uint8		EndFunc;
 
-	uint32		ThinkType;
+	uint8		ThinkType;
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(CBrushModel)

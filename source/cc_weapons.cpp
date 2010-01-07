@@ -430,8 +430,9 @@ void AddAmmoToList ()
 	NItems::Cells = QNew (com_itemPool, 0) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_CELLS);
 
 #if XATRIX_FEATURES
-	AddXatrixAmmoToList ();
+	AddXatrixItemsToList ();
 #endif
 
 	AddWeapons (ItemList);
 }
+

@@ -127,8 +127,8 @@ public:
 	{
 		List = QNew (com_genericPool, 0) SServerEntityListIndex*[MAX_CS_EDICTS];
 		HashedList = QNew (com_genericPool, 0) SServerEntityListIndex*[MAX_CS_EDICTS];
-		memset (List, 0, sizeof(List));
-		memset (HashedList, 0, sizeof(HashedList));
+		Mem_Zero (List, sizeof(List));
+		Mem_Zero (HashedList, sizeof(HashedList));
 	};
 
 	~CServerEntityList ()
@@ -170,13 +170,13 @@ public:
 			if (!e->inUse)
 				continue;
 
-			if (!Q_WildcardMatch (WildCard, e->Entity->ClassName, true))
+			if (!Q_WildcardMatch (WildCard, e->Entity->ClassName.c_str(), true))
 				continue;
 
-			SServerEntityListIndex *Index = Exists(e->Entity->ClassName);
+			SServerEntityListIndex *Index = Exists(e->Entity->ClassName.c_str());
 
 			if (!Index)
-				Index = AddToList (e->Entity->ClassName);
+				Index = AddToList (e->Entity->ClassName.c_str());
 
 			if (e->Entity)
 			{
@@ -391,4 +391,5 @@ void CGameAPI::ServerCommand ()
 	SvCmd_RunCommand (ArgGets(1).c_str());
 	EndArg ();
 }
+
 

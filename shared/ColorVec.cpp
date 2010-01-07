@@ -228,3 +228,4 @@ sint32 Q_ColorStrLastStyle (char *s, sint32 byteOfs)
 
 	return lastStyle;
 }
+

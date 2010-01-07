@@ -100,11 +100,15 @@ void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
 		: 25; // If we're dead, don't toss it 5 yards.
 	CGrenade::Spawn (ent, start, forward, damage, speed, (ent->Client.Grenade.Time - level.Frame), radius, true, inHand);
 
-	ent->Client.Grenade.Time = level.Frame + (((
+	ent->Client.Grenade.Time = level.Frame + ((((
 #if CLEANCTF_ENABLED
 	(game.GameMode & GAME_CTF) || 
 #endif
-	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste()) ? 5 : 10);
+	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste())
+#if XATRIX_FEATURES
+	|| isQuadFire
+#endif
+	) ? 5 : 10);
 	DepleteAmmo(ent, 1);
 
 	if (ent->Health <= 0 || ent->DeadFlag || ent->State.GetModelIndex() != 255) // VWep animations screw up corpses
@@ -276,3 +280,4 @@ WEAPON_DEFS (CHandGrenade);
 void CHandGrenade::CreateItem (CItemList *List)
 {
 };
+

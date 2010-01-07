@@ -128,3 +128,4 @@ public:
 };
 
 LINK_CLASSNAME_TO_CLASS ("monster_boss3_stand", CMonsterBoss3Stand);
+

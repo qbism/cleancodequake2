@@ -470,23 +470,27 @@ public:
 	// Error management
 	void AddError (const char *errorMsg, ...)
 	{
-	#ifdef _DEBUG
-	#ifdef WIN32
+#ifdef _DEBUG
+#ifdef WIN32
+#if !defined(CC_STDC_CONFORMANCE)
 		OutputDebugStringA (errorMsg);
+#endif
 		assert (0);
-	#endif
-	#endif
+#endif
+#endif
 		DebugPrintf ("%s\n", errorMsg);
 	}
 
 	void AddWarning (const char *errorMsg, ...)
 	{
-	#ifdef _DEBUG
-	#ifdef WIN32
+#ifdef _DEBUG
+#ifdef WIN32
+#if !defined(CC_STDC_CONFORMANCE)
 		OutputDebugStringA (errorMsg);
+#endif
 		assert (0);
-	#endif
-	#endif
+#endif
+#endif
 		DebugPrintf ("%s\n", errorMsg);
 	}
 
@@ -822,3 +826,4 @@ private:
 		return true;
 	}
 };
+

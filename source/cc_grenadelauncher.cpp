@@ -97,3 +97,4 @@ void CGrenadeLauncher::CreateItem (CItemList *List)
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Grenades, 1, "#w_glauncher.md2");
 };
+

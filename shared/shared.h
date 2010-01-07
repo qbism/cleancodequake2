@@ -191,7 +191,7 @@ void	Q_snprintfz(char *dest, size_t size, const char *fmt, ...);
 void	Q_strcatz(char *dst, const char *src, size_t dstSize);
 size_t	Q_strncpyz(char *dest, const char *src, size_t size);
 
-#ifdef id386
+#if defined(id386) && ((!defined(MSVS_VERSION) && defined(CC_STDC_CONFORMANCE)) || !defined(CC_STDC_CONFORMANCE))
 sint32 __cdecl Q_tolower (sint32 c);
 #else // id386
 inline sint32 Q_tolower(sint32 chr)
@@ -840,10 +840,13 @@ CC_ENUM (uint32, EEntityStateEffects)
 	EF_TRACKERTRAIL		= BIT(31),
 
 	// Overloads
-	EF_SEMITRANS_BLACKORB	= (EF_TRACKERTRAIL | EF_SPHERETRANS),
+	
+	// FIXME: these two cause errors because BIT(31) is the highest you can go...
+//	EF_SEMITRANS_BLACKORB	= (EF_TRACKERTRAIL | EF_SPHERETRANS),
+//	EF_BLACKVOID			= (EF_TRACKERTRAIL | EF_TRACKER),
+
 	EF_GREENBLASTER			= (EF_BLASTER | EF_TRACKER),
 	EF_GREENHYPERBLASTER	= (EF_HYPERBLASTER | EF_TRACKER),
-	EF_BLACKVOID			= (EF_TRACKERTRAIL | EF_TRACKER),
 	EF_PLASMATRAIL			= (EF_PLASMA | EF_ANIM_ALLFAST),
 };
 
@@ -1872,3 +1875,4 @@ struct playerState_t
 typedef uint32	EMeansOfDeath;
 
 #endif // __SHARED_H
+

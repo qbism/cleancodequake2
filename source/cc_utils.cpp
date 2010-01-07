@@ -151,7 +151,7 @@ G_TouchTriggers
 void	G_TouchTriggers (CBaseEntity *ent)
 {
 	static edict_t		*touch[MAX_CS_EDICTS];
-	memset(touch, 0, sizeof(touch));
+	Mem_Zero(touch, sizeof(touch));
 
 	// dead things don't activate triggers!
 	if (ent->EntityFlags & ENT_HURTABLE)
@@ -265,7 +265,7 @@ bool IsInFront (CBaseEntity *self, CBaseEntity *other)
 {	
 	vec3f forward;
 	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	return ((other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized().Dot (forward) > 0.3);
+	return (((other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3);
 }
 
 #include <crtdbg.h>

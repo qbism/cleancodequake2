@@ -90,7 +90,7 @@ Q_tolower
 by R1CH
 ===============
 */
-#ifdef id386
+#if defined(id386) && ((!defined(MSVS_VERSION) && defined(CC_STDC_CONFORMANCE)) || !defined(CC_STDC_CONFORMANCE))
 __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
 {
 	__asm {
@@ -147,3 +147,4 @@ std::cc_string Q_VarArgs (char *format, ...)
 
 	return string;
 }
+

@@ -76,7 +76,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
 		// if the first badMedic slot is filled by a medic, skip it and use the second one
 		if ((Enemy->Monster->BadMedic1) && (Enemy->Monster->BadMedic1->GetInUse())
-			&& (!strncmp(Enemy->Monster->BadMedic1->ClassName, "monster_medic", 13)) )
+			&& (!strncmp(Enemy->Monster->BadMedic1->ClassName.c_str(), "monster_medic", 13)) )
 			Enemy->Monster->BadMedic2 = Entity;
 		else
 			Enemy->Monster->BadMedic1 = Entity;

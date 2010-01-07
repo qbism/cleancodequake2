@@ -100,9 +100,9 @@ void CStatusBar::AddString (const char *string, bool highBit = false, bool cente
 	AddToBarBuffer ("%sstring%s \"%s\" ", center ? "c" : "", highBit ? "2" : "", string);
 }
 
-void CStatusBar::AddStatString (sint32 stat)
+void CStatusBar::AddStatString (sint32 statIndex)
 {
-	AddToBarBuffer ("stat_string %i ", stat);
+	AddToBarBuffer ("stat_string %i ", statIndex);
 }
 
 void CStatusBar::AddPic (const char *pic)
@@ -110,19 +110,19 @@ void CStatusBar::AddPic (const char *pic)
 	AddToBarBuffer ("picn %s ", pic);
 }
 
-void CStatusBar::AddPicStat (sint32 stat)
+void CStatusBar::AddPicStat (sint32 statIndex)
 {
-	AddToBarBuffer ("pic %i ", stat);
+	AddToBarBuffer ("pic %i ", statIndex);
 }
 
-void CStatusBar::AddNumStat (sint32 stat, sint32 width = 3)
+void CStatusBar::AddNumStat (sint32 statIndex, sint32 width = 3)
 {
-	AddToBarBuffer ("num %i %i ", width, stat);
+	AddToBarBuffer ("num %i %i ", width, statIndex);
 }
 
-void CStatusBar::AddIf (sint32 stat)
+void CStatusBar::AddIf (sint32 statIndex)
 {
-	AddToBarBuffer ("if %i ", stat);
+	AddToBarBuffer ("if %i ", statIndex);
 }
 
 void CStatusBar::AddEndIf ()
@@ -372,3 +372,4 @@ void HelpComputer (CPlayerEntity *ent)
 
 	Scoreboard.SendMsg (ent, true);
 }
+

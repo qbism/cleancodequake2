@@ -146,3 +146,4 @@ void CMachinegun::CreateItem (CItemList *List)
 		"Machinegun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Bullets, 1, "#w_machinegun.md2");
 };
+

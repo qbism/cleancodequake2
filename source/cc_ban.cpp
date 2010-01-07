@@ -398,3 +398,4 @@ bool CBanList::IsBanned (const char *Name)
 	}
 	return false;
 }
+

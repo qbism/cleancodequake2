@@ -204,3 +204,4 @@ void Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string 
 			s += c;
 	}
 }
+

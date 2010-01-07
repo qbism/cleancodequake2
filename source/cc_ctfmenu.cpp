@@ -142,7 +142,7 @@ public:
 			ent->GetSvFlags() &= ~SVF_NOCLIENT;
 			ent->Client.Respawn.CTF.Team = team;
 			ent->Client.Respawn.CTF.State = 0;
-			ent->CTFAssignSkin(Info_ValueForKey (ent->Client.Persistent.UserInfo, "skin"));
+			ent->CTFAssignSkin(ent->Client.Persistent.UserInfo);
 
 			// assign a ghost if we are in match mode
 			if (ctfgame.match == MATCH_GAME)

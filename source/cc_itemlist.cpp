@@ -80,6 +80,9 @@ namespace NItems
 	CMegaHealth *MegaHealth;
 	CBackPack *BackPack;
 	CQuadDamage *Quad;
+#if XATRIX_FEATURES
+	CBasePowerUp *QuadFire;
+#endif
 	CInvulnerability *Invul;
 	CSilencer *Silencer;
 	CRebreather *Rebreather;
@@ -94,20 +97,84 @@ namespace NItems
 CItemList *ItemList;
 
 CItemList::CItemList() :
-numItems(0)
+numItems(0),
+TempList (QNew(com_itemPool, 0) TItemListType)
 {
 };
 
 void CItemList::AddItemToList (CBaseItem *Item)
 {
-	Items.push_back (Item);
+/*	Items.push_back (Item);
 	Item->Index = numItems++;
 
 	// Hash!
 	if (Item->Classname)
 		HashedClassnameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Classname, MAX_ITEMS_HASH), Item->Index));
 	if (Item->Name)
-		HashedNameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Name, MAX_ITEMS_HASH), Item->Index));
+		HashedNameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Name, MAX_ITEMS_HASH), Item->Index));*/
+	TempList->push_back (Item);
+}
+
+typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::generic_allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+
+void AddWeaponsToListLocations (CItemList *List);
+
+void CItemList::SortAndFinalize ()
+{
+	// Sort
+	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
+	bool *SortedValues = QNew (com_itemPool, 0) bool[TempList->size()];
+	Mem_Zero (SortedValues, sizeof(*SortedValues));
+
+	for (int z = 0; z < 5; z++)
+	{
+		if (z == 1)
+			AddWeaponsToListLocations (this);
+		else
+		{
+			for (size_t i = 0; i < TempList->size(); ++i)
+			{
+				if (TempList->at(i)->Flags & ITEMFLAG_WEAPON)
+					continue;
+
+				if (!SortedValues[i] && (TempList->at(i)->Flags & sortOrder[z]))
+				{
+					SortedValues[i] = true;
+					Items.push_back (TempList->at(i));
+				}
+			}
+		}
+	}
+	
+	// Put everything else in the list now
+	for (size_t i = 0; i < TempList->size(); ++i)
+	{
+		if (TempList->at(i)->Flags & ITEMFLAG_WEAPON)
+			continue;
+
+		if (!SortedValues[i])
+			Items.push_back (TempList->at(i));
+	}
+
+	QDelete[] SortedValues;
+
+	// Finalize
+	for (TItemListType::iterator it = Items.begin(); it < Items.end(); ++it)
+	{
+		CBaseItem *Item = (*it);
+
+		Item->Index = numItems++;
+
+		// Hash!
+		if (Item->Classname)
+			HashedClassnameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Classname, MAX_ITEMS_HASH), Item->Index));
+		if (Item->Name)
+			HashedNameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Name, MAX_ITEMS_HASH), Item->Index));
+	}
+
+	// Delete
+	QDelete TempList;
 }
 
 void CItemList::SendItemNames ()
@@ -198,6 +265,8 @@ void InitItemlist ()
 #endif
 		)
 		AddTechsToList();
+
+	ItemList->SortAndFinalize ();
 }
 
 void SetItemNames ()

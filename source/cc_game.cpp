@@ -102,7 +102,7 @@ void EndDMLevel ()
 		BeginIntermission (CreateTargetChangeLevel (level.NextMap.c_str()) );
 	else
 	{	// search for a changelevel
-		CTargetChangeLevel *ent = CC_Find<CTargetChangeLevel, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "target_changelevel");
+		CTargetChangeLevel *ent = CC_FindByClassName<CTargetChangeLevel, ENT_BASE> (NULL, "target_changelevel");
 		if (!ent)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
@@ -234,7 +234,7 @@ void ClientEndServerFrames ()
 
 		if (map_debug->Boolean())
 		{
-			memset (&Player->PlayedSounds, 0, sizeof(Player->PlayedSounds));
+			Mem_Zero (&Player->PlayedSounds, sizeof(Player->PlayedSounds));
 			Player->BeginServerFrame ();
 		}
 
@@ -271,7 +271,7 @@ void ProcessEntity (edict_t *ent)
 	{
 		CBaseEntity *Entity = ent->Entity;
 		
-		memset (&Entity->PlayedSounds, 0, sizeof(Entity->PlayedSounds));
+		Mem_Zero (&Entity->PlayedSounds, sizeof(Entity->PlayedSounds));
 		
 		level.CurrentEntity = Entity;
 		Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
@@ -387,7 +387,7 @@ void CGameAPI::RunFrame ()
 	RunNodes();
 #endif
 
-#if _WIN32
+#if _WIN32 && !defined(CC_STDC_CONFORMANCE)
 	Sleep (0);
 #endif
 }

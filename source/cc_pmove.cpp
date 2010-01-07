@@ -88,7 +88,7 @@ returns the blocked flags (1 = floor, 2 = step / wall)
 */
 static void SV_PM_ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 {	
-	float backoff = in.Dot (normal) * overbounce;
+	float backoff = (in | normal) * overbounce;
 
 	for (sint32 i = 0; i < 3; i++)
 	{
@@ -185,7 +185,7 @@ static void SV_PM_StepSlideMove_ ()
 			{
 				if (j != i)
 				{
-					if (pml.velocity.Dot (planes[j]) < 0)
+					if ((pml.velocity | planes[j]) < 0)
 						break;	// not ok
 				}
 			}
@@ -202,8 +202,8 @@ static void SV_PM_StepSlideMove_ ()
 				pml.velocity.Clear ();
 				break;
 			}
-			dir = planes[0].Cross (planes[1]);
-			d = dir.Dot (pml.velocity);
+			dir = planes[0] ^ planes[1];
+			d = dir | pml.velocity;
 			pml.velocity = dir * d;
 		}
 
@@ -211,7 +211,7 @@ static void SV_PM_StepSlideMove_ ()
 		** if velocity is against the original velocity, stop dead
 		** to avoid tiny occilations in sloping corners
 		*/
-		if (pml.velocity.Dot (primal_velocity) <= 0)
+		if ((pml.velocity | primal_velocity) <= 0)
 		{
 			pml.velocity.Clear ();
 			break;
@@ -316,7 +316,7 @@ Handles user intended acceleration
 */
 static void SV_PM_Accelerate (vec3f &wishdir, float wishspeed, float accel)
 {
-	float addspeed = wishspeed - pml.velocity.Dot (wishdir);
+	float addspeed = wishspeed - (pml.velocity | wishdir);
 	if (addspeed <= 0)
 		return;
 
@@ -341,7 +341,7 @@ static void SV_PM_AirAccelerate (vec3f &wishdir, float wishspeed, float accel)
 	if (wishspd > 30)
 		wishspd = 30;
 
-	float addspeed = wishspd - pml.velocity.Dot (wishdir);
+	float addspeed = wishspd - (pml.velocity | wishdir);
 	if (addspeed <= 0)
 		return;
 
@@ -756,7 +756,7 @@ static void SV_PM_FlyMove (bool doClip)
 	if (wishspeed > SV_PM_MAXSPEED)
 		wishspeed = SV_PM_MAXSPEED;
 
-	float addspeed = wishspeed - pml.velocity.Dot (wishvel);
+	float addspeed = wishspeed - (pml.velocity | wishvel);
 	if (addspeed <= 0)
 		return;
 
@@ -1020,7 +1020,7 @@ void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
 	pm->waterLevel = WATER_NONE;
 
 	// clear all pmove local vars
-	memset (&pml, 0, sizeof(pml));
+	Mem_Zero (&pml, sizeof(pml));
 
 	// convert origin and velocity to float values
 	pml.origin.X = pm->state.origin[0]*(1.0f/8.0f);

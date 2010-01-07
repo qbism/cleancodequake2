@@ -58,10 +58,8 @@ public:
 	 * Operators
 	 */
 	inline bool operator !=(const colorf &Other) { return (R != Other.R || G != Other.G || B != Other.B || A != Other.A); }
-	inline const bool operator !=(const colorf &Other) const { return (R != Other.R || G != Other.G || B != Other.B || A != Other.A); }
 
 	inline bool operator ==(const colorf &Other) { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
-	inline const bool operator ==(const colorf &Other) const { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
 
 	inline const float &operator [](const sint32 Index) const { return (&R)[Index]; }
 	inline float &operator [](const sint32 Index) { return (&R)[Index]; }
@@ -137,10 +135,8 @@ public:
 	 * Operators
 	 */
 	inline bool operator !=(const colorb &Other) { return (R != Other.R || G != Other.G || B != Other.B || A != Other.A); }
-	inline const bool operator !=(const colorb &Other) const { return (R != Other.R || G != Other.G || B != Other.B || A != Other.A); }
 
 	inline bool operator ==(const colorb &Other) { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
-	inline const bool operator ==(const colorb &Other) const { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
 
 	inline const uint8 &operator [](const sint32 Index) const { return (&R)[Index]; }
 	inline uint8 &operator [](const sint32 Index) { return (&R)[Index]; }

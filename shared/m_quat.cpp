@@ -217,3 +217,4 @@ void Quat_TransformVector (quat_t q, vec3_t v, vec3_t out)
 	out[2] = (float)((xz - wy) * v[0] + (yz + wx) * v[1] + (1.0f - xx - yy) * v[2]);
 }
 #endif
+

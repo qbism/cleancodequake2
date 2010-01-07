@@ -308,3 +308,4 @@ void CSoldierHyper::SpawnSoldier ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_soldier_hypergun", CSoldierHyper);
+

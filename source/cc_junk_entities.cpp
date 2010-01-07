@@ -235,20 +235,11 @@ vec3f VelocityForDamage (sint32 damage)
 	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (damage < 50) ? 0.7f : 1.2f;
 }
 
-void ClipGibVelocity (CPhysicsEntity *ent)
+void CGibEntity::ClipGibVelocity ()
 {
-	if (ent->Velocity.X < -300)
-		ent->Velocity.X = -300;
-	else if (ent->Velocity.X > 300)
-		ent->Velocity.X = 300;
-	if (ent->Velocity.Y < -300)
-		ent->Velocity.Y = -300;
-	else if (ent->Velocity.Y > 300)
-		ent->Velocity.Y = 300;
-	if (ent->Velocity.Z < 200)
-		ent->Velocity.Z = 200;	// always some upwards
-	else if (ent->Velocity.Z > 500)
-		ent->Velocity.Z = 500;
+	Velocity.X = Clamp<float> (Velocity.X, -300, 300);
+	Velocity.Y = Clamp<float> (Velocity.Y, -300, 300);
+	Velocity.Z = Clamp<float> (Velocity.Z, 200, 500); // always some upwards
 }
 
 bool CGibEntity::Run ()
@@ -261,7 +252,7 @@ void CGibEntity::Think ()
 	Die ();
 }
 
-void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type)
+void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects)
 {
 	CGibEntity *Junk = JunkList->GetFreeJunk<CGibEntity>();
 
@@ -278,7 +269,7 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, 
 	Junk->GetMins().Clear ();
 	Junk->GetMaxs().Clear ();
 	Junk->GetSolid() = SOLID_NOT;
-	Junk->State.GetEffects() = EF_GIB;
+	Junk->State.GetEffects() = effects;
 
 	Junk->backOff = (type == GIB_ORGANIC) ? 1.0f : 1.5f;
 	float vscale = (type == GIB_ORGANIC) ? 0.5f : 1.0f;
@@ -288,10 +279,11 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, 
 	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<CPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
 	velocity.MultiplyAngles (vscale, vd);
 	Junk->Velocity = velocity;
-	ClipGibVelocity (Junk);
+	Junk->ClipGibVelocity ();
 
 	Junk->AngularVelocity.Set (crand()*600, crand()*600, crand()*600);
 	Junk->NextThink = level.Frame + 100 + frand()*100;
 
 	Junk->Link ();
 }
+

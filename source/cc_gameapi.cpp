@@ -196,18 +196,21 @@ loadgames will.
 */
 BOOL ClientConnect (edict_t *ent, char *userinfo)
 {
+	int returnVal = 0;
+
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	return (Game.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
+	returnVal = (Game.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
 
 #if CC_USE_EXCEPTION_HANDLER
-CC_EXCEPTION_HANDLER_END_CUSTOM
-(
-	return 0;
-)
+CC_EXCEPTION_HANDLER_END_CUSTOM_BEGIN
+	returnVal = 0;
+CC_EXCEPTION_HANDLER_END_CUSTOM_END
 #endif
+
+	return returnVal;
 }
 
 /*
@@ -573,3 +576,4 @@ gameExport_t *GetGameAPI (gameImport_t *import)
 	Swap_Init ();
 	return &globals;
 }
+

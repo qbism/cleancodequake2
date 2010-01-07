@@ -102,3 +102,4 @@ void CBlaster::CreateItem (CItemList *List)
 		ITEMFLAG_WEAPON|ITEMFLAG_USABLE, "", &Weapon, NULL,
 		0, "#w_blaster.md2");
 };
+

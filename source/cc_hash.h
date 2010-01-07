@@ -40,3 +40,4 @@ uint32 Com_HashGeneric(const std::cc_string &name, const sint32 hashSize);
 #else
 FILE_WARNING
 #endif
+

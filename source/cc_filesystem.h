@@ -54,7 +54,9 @@ typedef long int filePos_t;
 #define MAX_PATHNAME 128
 
 #ifdef WIN32
+#if !defined(CC_STDC_CONFORMANCE)
 #include <windows.h>
+#endif
 #ifdef COMPILING_LIB
 #include "sys_win32.h"
 #endif
@@ -222,7 +224,7 @@ public:
 	TType Read ()
 	{
 		TType Val;
-		memset (&Val, 0, sizeof(TType));
+		Mem_Zero (&Val, sizeof(TType));
 
 		if (!Handle)
 			return Val;

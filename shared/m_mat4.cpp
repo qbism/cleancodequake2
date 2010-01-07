@@ -432,3 +432,4 @@ void Matrix4_Transpose(const mat4x4_t m, mat4x4_t ret)
 	ret[12] = m[3]; ret[13] = m[7]; ret[14] = m[11]; ret[15] = m[15];
 }
 #endif
+

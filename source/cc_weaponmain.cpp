@@ -59,6 +59,22 @@ void AddWeapons (CItemList *List)
 		WeaponList()[(*it).second]->AddWeaponToItemList (List);
 }
 
+void AddWeaponsToListLocations (CItemList *List)
+{
+	// Add them in player-specified order
+	// Index, Order
+	TWeaponMultiMapType Order;
+
+	for (size_t i = 0; i < WeaponList().size(); i++)
+		Order.insert (std::make_pair (WeaponList()[i]->ListOrder, i));
+
+	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); it++)
+	{
+		if (WeaponList()[(*it).second]->Item)
+			List->Items.push_back (WeaponList()[(*it).second]->Item);
+	}
+}
+
 void DoWeaponVweps ()
 {
 	sint32 TakeAway = ModelIndex(NItems::Blaster->VWepModel) - 1;
@@ -347,8 +363,16 @@ void CWeapon::Think (CPlayerEntity *Player)
 
 	// call active weapon think routine
 	isQuad = (Player->Client.Timers.QuadDamage > level.Frame);
+#if XATRIX_FEATURES
+	isQuadFire = (Player->Client.Timers.QuadFire > level.Frame);
+#endif
 	isSilenced = (Player->Client.Timers.SilencerShots) ? true : false;
 	WeaponGeneric (Player);
+
+#if XATRIX_FEATURES
+	bool Applied = false;
+#endif
+
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 		|| (game.GameMode & GAME_CTF)
@@ -360,8 +384,18 @@ void CWeapon::Think (CPlayerEntity *Player)
 			this != &CGrapple::Weapon && 
 #endif
 			Player->ApplyHaste())
+		{
 			WeaponGeneric(Player);
+#if XATRIX_FEATURES
+			Applied = true;
+#endif
+		}
 	}
+
+#if XATRIX_FEATURES
+	if (!Applied && isQuadFire)
+		WeaponGeneric(Player);
+#endif
 }
 
 void CWeapon::AttackSound(CPlayerEntity *Player)

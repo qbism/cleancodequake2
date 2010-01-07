@@ -109,7 +109,7 @@ void CFlagEntity::Think ()
 			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), dest, this, CONTENTS_MASK_SOLID);
 			if (tr.startSolid)
 			{
-				DebugPrintf ("CTFFlagSetup: %s startSolid at (%f %f %f)\n", ClassName, State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z);
+				DebugPrintf ("CTFFlagSetup: %s startSolid at (%f %f %f)\n", ClassName.c_str(), State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z);
 				Free ();
 				return;
 			}

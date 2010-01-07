@@ -197,7 +197,7 @@ public:
 	{
 		UserInfo.clear();
 		Name.clear();
-		memset (&IP, 0, sizeof(IP));
+		Mem_Zero (&IP, sizeof(IP));
 		Hand = 0;
 		State = 0;
 		Health = 0;
@@ -218,7 +218,7 @@ public:
 		Spectator = false;
 		ViewBlend.Set (0,0,0,0);
 
-		memset (&MaxAmmoValues, 0, sizeof(MaxAmmoValues));
+		Mem_Zero (&MaxAmmoValues, sizeof(MaxAmmoValues));
 	}
 };
 
@@ -345,7 +345,7 @@ public:
 		MenuState.Clear ();
 
 #if CLEANCTF_ENABLED
-		memset (&CTF, 0, sizeof(CTF));
+		Mem_Zero (&CTF, sizeof(CTF));
 #endif
 	}
 };
@@ -484,7 +484,11 @@ public:
 		FrameNumber_t		QuadDamage,
 							Invincibility,
 							Rebreather,
-							EnvironmentSuit;
+							EnvironmentSuit
+#if XATRIX_FEATURES
+						,	QuadFire
+#endif
+						;
 
 		sint16				SilencerShots;
 
@@ -662,7 +666,7 @@ public:
 	void			CTFDeadDropFlag ();
 	class CSpotBase	*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();
-	void			CTFAssignSkin (std::cc_string s);
+	void			CTFAssignSkin (std::cc_string &s);
 	bool			CTFStart ();
 #endif
 

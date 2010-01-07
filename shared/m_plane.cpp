@@ -221,3 +221,4 @@ sint32 SignbitsForPlane(const plane_t *plane)
 
 	return bits;
 }
+

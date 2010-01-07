@@ -50,7 +50,11 @@ protected:
 	CWeapon ();
 
 public:
-	bool			isQuad, isSilenced;
+	bool			isQuad, isSilenced
+#if XATRIX_FEATURES
+				,	isQuadFire
+#endif
+		;
 
 	inline int CalcQuadVal (int val)
 	{

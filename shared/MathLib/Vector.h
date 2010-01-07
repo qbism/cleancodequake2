@@ -64,10 +64,8 @@ public:
 	 * Operators
 	 */
 	inline bool operator !=(const vec2Base &Vec) { return (X != Vec[0] || Y != Vec[1]); }
-	inline const bool operator !=(const vec2Base &Vec) const { return (X != Vec[0] || Y != Vec[1]); }
 
 	inline bool operator ==(const vec2Base &Vec) { return (X == Vec[0] && Y == Vec[1]); }
-	inline const bool operator ==(const vec2Base &Vec) const { return (X == Vec[0] && Y == Vec[1]); }
 
 	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
 	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
@@ -78,14 +76,14 @@ public:
 	/**
 	 * Functions
 	 */
-	inline const bool Compare(const vec2Base &Vec) const { return (X == Vec[0] && Y == Vec[1]); }
+	inline bool Compare(const vec2Base &Vec) const { return (X == Vec[0] && Y == Vec[1]); }
 
 	inline void Copy(const vec2Base &Vec) { X = Vec[0]; Y = Vec[1]; }
 
 	inline void Invert() { X = -X; Y = -Y; }
 	inline vec2Base GetInverted() const { return vec2Base(-X, -Y); }
 
-	inline const bool IsZero() const { return (X == 0 && Y == 0); }
+	inline bool IsZero() const { return (X == 0 && Y == 0); }
 
 	inline void Set(const TType Number) { X = Number; Y = Number; }
 	inline void Set(const TType InX, const TType InY) { X = InX; Y = InY; }
@@ -176,7 +174,6 @@ public:
 	}
 
 	inline bool operator <(const vec2f &Vec) { return (X < Vec[0] && Y < Vec[1]); }
-	inline const bool operator <(const vec2f &Vec) const { return (X < Vec[0] && Y < Vec[1]); }
 
 	inline vec2f &operator =(const vec2f &Vec)
 	{
@@ -187,14 +184,13 @@ public:
 	}
 
 	inline bool operator >(const vec2f &Vec) { return (X > Vec[0] && Y > Vec[1]); }
-	inline const bool operator >(const vec2f &Vec) const { return (X > Vec[0] && Y > Vec[1]); }
 
 	/**
 	 * Functions
 	 */
 	inline void Clear() { *(sint32*)&X = 0; *(sint32*)&Y = 0; }
 
-	const bool Compare(const vec2f &Vec, const float Epsilon) const
+	bool Compare(const vec2f &Vec, const float Epsilon) const
 	{
 		if (Q_fabs(X-Vec[0]) > Epsilon)
 			return false;
@@ -203,7 +199,7 @@ public:
 		return true;
 	}
 
-	const bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon); }
+	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon); }
 
 	inline void Scale(const float Scale) { X *= Scale; Y *= Scale; }
 	inline void Scale(const vec2f &Vec) { X *= Vec[0]; Y *= Vec[1]; }
@@ -254,10 +250,8 @@ public:
 	 * Operators
 	 */
 	inline bool operator !=(const vec3Base &Vec) { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2]); }
-	inline const bool operator !=(const vec3Base &Vec) const { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2]); }
 
 	inline bool operator ==(const vec3Base &Vec) { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
-	inline const bool operator ==(const vec3Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
 
 	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
 	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
@@ -268,7 +262,7 @@ public:
 	/**
 	 * Functions
 	 */
-	inline const bool Compare(const vec3Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
+	inline bool Compare(const vec3Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
 
 	inline void Copy(const vec3Base &Vec) { X = Vec[0]; Y = Vec[1]; Z = Vec[2]; }
 
@@ -278,7 +272,7 @@ public:
 	inline void Abs() { X = Q_fabs(X); Y = Q_fabs(Y); Z = Q_fabs(Z); }
 	inline vec3Base GetAbs() const { return vec3Base(Q_fabs(X), Q_fabs(Y), Q_fabs(Z)); }
 
-	inline const bool IsZero() const { return (X == 0 && Y == 0 && Z == 0); }
+	inline bool IsZero() const { return (X == 0 && Y == 0 && Z == 0); }
 
 	inline void Set(const TType Number) { X = Number; Y = Number; Z = Number; }
 	inline void Set(const TType InX, const TType InY, const TType InZ) { X = InX; Y = InY; Z = InZ; }
@@ -375,7 +369,6 @@ public:
 	}
 
 	inline bool operator <(const vec3f &Vec) { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2]); }
-	inline const bool operator <(const vec3f &Vec) const { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2]); }
 
 	inline vec3f &operator =(const vec3f &Vec)
 	{
@@ -387,10 +380,9 @@ public:
 	}
 
 	inline bool operator >(const vec3f &Vec) { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2]); }
-	inline const bool operator >(const vec3f &Vec) const { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2]); }
 
-	inline vec3f operator ^(const vec3f &Vec) const { return Cross(Vec); }
-	inline float operator |(const vec3f &Vec) const { return Dot(Vec); }
+	inline vec3f operator ^(const vec3f &Vec) { return Cross(Vec); }
+	inline float operator |(const vec3f &Vec) { return Dot(Vec); }
 
 	// Paril, unary operators
 	inline vec3f operator - () const { return vec3f(-X, -Y, -Z); }
@@ -400,7 +392,7 @@ public:
 	 */
 	inline void Clear() { *(sint32 *)&X = 0; *(sint32 *)&Y = 0; *(sint32 *)&Z = 0; }
 
-	const bool Compare(const vec3f &Vec, const float Epsilon) const
+	bool Compare(const vec3f &Vec, const float Epsilon) const
 	{
 		if (Q_fabs(X-Vec[0]) > Epsilon)
 			return false;
@@ -414,20 +406,16 @@ public:
 	inline vec3f Cross(const vec3f &Vec) const { return vec3f(Y*Vec[2] - Z*Vec[1], Z*Vec[0] - X*Vec[2], X*Vec[1] - Y*Vec[0]); }
 
 	inline float Dist(const vec3f &Vec) { return sqrtf((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
-	inline const float Dist(const vec3f &Vec) const { return sqrtf((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
 	inline float DistFast(const vec3f &Vec) { return Q_FastSqrt((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
-	inline const float DistFast(const vec3f &Vec) const { return Q_FastSqrt((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
 	inline float DistSq(const vec3f &Vec) { return (X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2]); }
-	inline const float DistSq(const vec3f &Vec) const { return (X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2]); }
 
-	inline float Dot(const vec3f &Vec) { return X*Vec[0] + Y*Vec[1] + Z*Vec[2]; }
-	inline const float Dot(const vec3f &Vec) const { return X*Vec[0] + Y*Vec[1] + Z*Vec[2]; }
+	inline float Dot(const vec3f &Vec) { return X*Vec.X + Y*Vec.Y + Z*Vec.Z; }
 
-	const bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon); }
+	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon); }
 
-	inline const float Length() const { return sqrtf(X*X + Y*Y + Z*Z); }
-	inline const float LengthFast() const { return Q_FastSqrt(X*X + Y*Y + Z*Z); }
-	inline const float LengthSq() const { return X*X + Y*Y + Z*Z; }
+	inline float Length() const { return sqrtf(X*X + Y*Y + Z*Z); }
+	inline float LengthFast() const { return Q_FastSqrt(X*X + Y*Y + Z*Z); }
+	inline float LengthSq() const { return X*X + Y*Y + Z*Z; }
 
 	float Normalize()
 	{
@@ -610,10 +598,8 @@ public:
 	 * Operators
 	 */
 	inline bool operator !=(const vec4Base &Vec) { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2] || W != Vec[3]); }
-	inline const bool operator !=(const vec4Base &Vec) const { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2] || W != Vec[3]); }
 
 	inline bool operator ==(const vec4Base &Vec) { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2] && W == Vec[3]); }
-	inline const bool operator ==(const vec4Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2] && W == Vec[3]); }
 
 	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
 	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
@@ -624,14 +610,14 @@ public:
 	/**
 	 * Functions
 	 */
-	inline const bool Compare(const vec4Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2] && W == Vec[3]); }
+	inline bool Compare(const vec4Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2] && W == Vec[3]); }
 
 	inline void Copy(const vec4Base &Vec) { X = Vec[0]; Y = Vec[1]; Z = Vec[2]; W = Vec[3]; }
 
 	inline void Invert() { X = -X; Y = -Y; Z = -Z; W = -W; }
 	inline vec4Base GetInverted() const { return vec4Base(-X, -Y, -Z, -W); }
 
-	inline const bool IsZero() const { return (X == 0 && Y == 0 && Z == 0 && W == 0); }
+	inline bool IsZero() const { return (X == 0 && Y == 0 && Z == 0 && W == 0); }
 
 	inline void Set(const TType Number) { X = Number; Y = Number; Z = Number; W = Number; }
 	inline void Set(const TType InX, const TType InY, const TType InZ, const TType InW) { X = InX; Y = InY; Z = InZ; W = InW; }
@@ -727,7 +713,6 @@ public:
 	 * Operators
 	 */
 	inline bool operator !=(const vec4f &Vec) { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2] || W != Vec[3]); }
-	inline const bool operator !=(const vec4f &Vec) const { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2] || W != Vec[3]); }
 
 	inline vec4f operator *(const vec4f &Vec) const { return vec4f(X*Vec[0], Y*Vec[1], Z*Vec[2], W*Vec[3]); }
 	inline vec4f operator *(const float Scale) const { return vec4f(X*Scale, Y*Scale, Z*Scale, W*Scale); }
@@ -802,7 +787,6 @@ public:
 	}
 
 	inline bool operator <(const vec4f &Vec) { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2] && W < Vec[3]); }
-	inline const bool operator <(const vec4f &Vec) const { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2] && W < Vec[3]); }
 
 	inline vec4f &operator =(const vec4f &Vec)
 	{
@@ -815,14 +799,13 @@ public:
 	}
 
 	inline bool operator >(const vec4f &Vec) { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2] && W > Vec[3]); }
-	inline const bool operator >(const vec4f &Vec) const { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2] && W > Vec[3]); }
 
 	/**
 	 * Functions
 	 */
 	inline void Clear() { *(sint32 *)&X = 0; *(sint32 *)&Y = 0; *(sint32 *)&Z = 0; *(sint32 *)&W = 0; }
 
-	const bool Compare(const vec4f &Vec, const float Epsilon) const
+	bool Compare(const vec4f &Vec, const float Epsilon) const
 	{
 		if (Q_fabs(X-Vec[0]) > Epsilon)
 			return false;
@@ -835,9 +818,10 @@ public:
 		return true;
 	}
 
-	const bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon && Q_fabs(W) <= Epsilon); }
+	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon && Q_fabs(W) <= Epsilon); }
 
 	inline void Scale(const float Scale) { X *= Scale; Y *= Scale; Z *= Scale; W *= Scale; }
 	inline void Scale(const vec4f &Vec) { X *= Vec[0]; Y *= Vec[1]; Z *= Vec[2]; W *= Vec[3]; }
 };
 #endif
+

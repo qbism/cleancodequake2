@@ -376,3 +376,357 @@ public:
 };
 
 LINK_CLASSNAME_TO_CLASS ("misc_nuke", CMiscNuke);
+
+// RAFAEL
+/*QUAKED misc_viper_missile (1 0 0) (-8 -8 -8) (8 8 8)
+"dmg"	how much boom should the bomb make? the default value is 250
+*/
+
+/*QUAKED misc_viper_bomb (1 0 0) (-8 -8 -8) (8 8 8)
+"dmg"	how much boom should the bomb make?
+*/
+class CMiscViperMissile : public CMapEntity,public CUsableEntity
+{
+public:
+	sint32			Damage;
+
+	CMiscViperMissile () :
+	  CBaseEntity (),
+	  CMapEntity (),
+	  CUsableEntity ()
+	{
+	};
+
+	CMiscViperMissile (sint32 Index) :
+	  CBaseEntity (Index),
+	  CMapEntity (Index),
+	  CUsableEntity (Index)
+	{
+	};
+
+	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CMiscViperMissile)
+
+	void Use (CBaseEntity *other, CBaseEntity *activator)
+	{
+		vec3f	start, dir;
+		vec3f	vec;
+				
+		CBaseEntity *target = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, Target);
+		
+		vec = target->State.GetOrigin();
+		vec.Z += 16;
+		
+		start = State.GetOrigin();
+		dir = (vec - start).GetNormalized();
+		
+		CRocket::Spawn (World, start, dir, Damage, 500, Damage, Damage+40);
+		CTempEnt::MonsterFlash (State.GetOrigin(), State.GetNumber(), MZ2_CHICK_ROCKET_1);
+		
+		Free ();
+	};
+
+	void Spawn ()
+	{
+		GetSolid() = SOLID_NOT;
+		GetMins().Set (-8);
+		GetMaxs().Set (8);
+
+		State.GetModelIndex() = ModelIndex ("models/objects/bomb/tris.md2");
+
+		if (!Damage)
+			Damage = 1000;
+
+		GetSvFlags() |= SVF_NOCLIENT;
+		Link ();
+	};
+};
+
+ENTITYFIELDS_BEGIN(CMiscViperMissile)
+{
+	CEntityField ("dmg", EntityMemberOffset(CMiscViperMissile,Damage), FT_INT | FT_SAVABLE)
+};
+ENTITYFIELDS_END(CMiscViperMissile)
+
+bool			CMiscViperMissile::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CMiscViperMissile> (this, Key, Value))
+		return true;
+
+	// Couldn't find it here
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+};
+
+void		CMiscViperMissile::SaveFields (CFile &File)
+{
+	SaveEntityFields <CMiscViperMissile> (this, File);
+	CMapEntity::SaveFields (File);
+	CUsableEntity::SaveFields (File);
+}
+
+void		CMiscViperMissile::LoadFields (CFile &File)
+{
+	LoadEntityFields <CMiscViperMissile> (this, File);
+	CMapEntity::LoadFields (File);
+	CUsableEntity::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("misc_viper_missile", CMiscViperMissile);
+
+#include "cc_misc_entities.h"
+
+// RAFAEL 17-APR-98
+/*QUAKED misc_transport (1 0 0) (-8 -8 -8) (8 8 8) TRIGGER_SPAWN
+Maxx's transport at end of game
+*/
+
+class CMiscTransport : public CMiscViper
+{
+public:
+	CMiscTransport () :
+	  CBaseEntity (),
+	  CMiscViper ()
+	  {
+	  };
+
+	CMiscTransport (sint32 Index) :
+	  CBaseEntity (Index),
+	  CMiscViper (Index)
+	  {
+	  };
+
+	IMPLEMENT_SAVE_HEADER (CMiscTransport);
+
+	bool Run ()
+	{
+		return CTrainBase::Run ();
+	};
+
+	void Spawn ()
+	{
+		if (!(SpawnFlags & 1))
+			SpawnFlags |= 1;
+
+		CMiscViper::Spawn ();
+		State.GetModelIndex() = ModelIndex ("models/objects/ship/tris.md2");
+	};
+};
+
+LINK_CLASSNAME_TO_CLASS ("misc_transport", CMiscTransport);
+
+// RAFAEL 15-APR-98
+/*QUAKED target_mal_laser (1 0 0) (-4 -4 -4) (4 4 4) START_ON RED GREEN BLUE YELLOW ORANGE FAT
+Mal's laser
+*/
+#include "cc_target_entities.h"
+
+class CTargetMalLaser : public CTargetLaser
+{
+public:
+	FrameNumber_t		Wait;
+	FrameNumber_t		Delay;
+
+	CTargetMalLaser () :
+	  CTargetLaser ()
+	  {
+	  };
+
+	CTargetMalLaser (int Index) :
+	  CBaseEntity (Index),
+	  CTargetLaser (Index)
+	  {
+	  };
+
+	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE (CTargetMalLaser)
+
+	void On ()
+	{
+		if (!Activator)
+			Activator = this;
+		SpawnFlags |= 0x80000001;
+		GetSvFlags() &= ~SVF_NOCLIENT;
+
+		NextThink = level.Frame + Wait + Delay;
+	};
+
+	void Think ()
+	{
+		CTargetLaser::Think ();
+		NextThink = level.Frame + Wait + 1;
+		SpawnFlags |= 0x80000000;
+	};
+};
+
+ENTITYFIELDS_BEGIN(CTargetMalLaser)
+{
+	CEntityField ("wait", EntityMemberOffset(CTargetMalLaser,Wait), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("delay", EntityMemberOffset(CTargetMalLaser,Delay), FT_FRAMENUMBER | FT_SAVABLE),
+};
+ENTITYFIELDS_END(CTargetMalLaser)
+
+bool			CTargetMalLaser::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTargetMalLaser> (this, Key, Value))
+		return true;
+
+	// Couldn't find it here
+	return CTargetLaser::ParseField (Key, Value);
+};
+
+void			CTargetMalLaser::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetLaser> (this, File);
+	CTargetLaser::SaveFields (File);
+}
+
+void			CTargetMalLaser::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetLaser> (this, File);
+	CTargetLaser::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("target_mal_laser", CTargetMalLaser);
+
+/*QUAKED func_object_repair (1 .5 0) (-8 -8 -8) (8 8 8) 
+object to be repaired.
+The default delay is 1 second
+"delay" the delay in seconds for spark to occur
+*/
+
+class CFuncObjectRepair : public CMapEntity, public CThinkableEntity, public CHurtableEntity, public CUsableEntity
+{
+public:
+	CC_ENUM (uint8, ERepairThinkType)
+	{
+		THINK_NONE,
+		THINK_SPARKS,
+		THINK_DEAD,
+		THINK_FX
+	};
+
+	FrameNumber_t		Delay;
+	ERepairThinkType	ThinkType;
+
+	CFuncObjectRepair () :
+	  CMapEntity (),
+	  CThinkableEntity (),
+	  CHurtableEntity (),
+	  CUsableEntity ()
+	  {
+	  };
+
+	CFuncObjectRepair (int Index) :
+	  CBaseEntity (Index),
+	  CMapEntity (Index),
+	  CThinkableEntity (Index),
+	  CHurtableEntity (Index),
+	  CUsableEntity (Index)
+	  {
+	  };
+
+	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE (CFuncObjectRepair)
+
+	bool Run ()
+	{
+		return CBaseEntity::Run ();
+	};
+
+	void RepairFX ()
+	{
+		NextThink = level.Frame + Delay;
+
+		if (Health <= 100)
+			Health++;
+		else
+			CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
+	};
+
+	void Dead ()
+	{
+		UseTargets (this, Message);
+		NextThink = level.Frame + 1;
+		ThinkType = THINK_FX;
+	};
+
+	void Sparks ()
+	{
+		if (Health < 0)
+		{
+			NextThink = level.Frame + 1;
+			ThinkType = THINK_DEAD;
+			return;
+		}
+
+		NextThink = level.Frame + Delay;
+	
+		CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
+	};
+	
+	void Think ()
+	{
+		switch (ThinkType)
+		{
+		case THINK_NONE:
+			return;
+		case THINK_SPARKS:
+			Sparks ();
+			break;
+		case THINK_DEAD:
+			Dead ();
+			break;
+		case THINK_FX:
+			RepairFX ();
+			break;
+		};
+	};
+
+	void Spawn ()
+	{
+		GetSolid() = SOLID_BBOX;
+		GetMins().Set (-8, -8, 8);
+		GetMaxs().Set (8, 8, 8);
+		NextThink = level.Frame + FRAMETIME;
+		ThinkType = THINK_SPARKS;
+		Health = 100;
+
+		if (!Delay)
+			Delay = 10;
+	};
+};
+
+ENTITYFIELDS_BEGIN(CFuncObjectRepair)
+{
+	CEntityField ("delay", EntityMemberOffset(CFuncObjectRepair,Delay), FT_FRAMENUMBER | FT_SAVABLE)
+};
+ENTITYFIELDS_END(CFuncObjectRepair)
+
+bool			CFuncObjectRepair::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CFuncObjectRepair> (this, Key, Value))
+		return true;
+
+	// Couldn't find it here
+	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField(Key, Value) || CHurtableEntity::ParseField (Key, Value));
+};
+
+void			CFuncObjectRepair::SaveFields (CFile &File)
+{
+	SaveEntityFields <CFuncObjectRepair> (this, File);
+	CMapEntity::SaveFields (File);
+	CUsableEntity::SaveFields (File);
+	CHurtableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+}
+
+void			CFuncObjectRepair::LoadFields (CFile &File)
+{
+	LoadEntityFields <CFuncObjectRepair> (this, File);
+	CMapEntity::LoadFields (File);
+	CUsableEntity::LoadFields (File);
+	CHurtableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("func_object_repair", CFuncObjectRepair);

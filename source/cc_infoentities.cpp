@@ -682,7 +682,7 @@ CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 	sint32 index = State.GetNumber()-1;
 
 	// player 0 starts in normal player spawn point
-	if (!index)
+	if (!index || !CPlayerCoop::SpawnPoints().size())
 		return NULL;
 
 	CPlayerCoop *spot = NULL;
@@ -817,9 +817,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (game.GameMode == GAME_DEATHMATCH)
-			return;
-		if (stricmp(level.ServerLevelName.c_str(), "security") == 0)
+		if ((game.GameMode == GAME_COOPERATIVE) && stricmp(level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
 			NextThink = level.Frame + FRAMETIME;
 
@@ -1049,7 +1047,6 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 	// find a single player start spot
 	if (!spot)
 	{
-		//while ((spot = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (spot, "info_player_start")) != NULL)
 		for (CPlayerStart::TSpawnPointsType::iterator it = CPlayerStart::SpawnPoints().begin(); it < CPlayerStart::SpawnPoints().end(); ++it)
 		{
 			spot = (*it);
@@ -1069,10 +1066,10 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 			// There wasn't a spawnpoint without a target, so use any
 			if (game.SpawnPoint.empty())
 			{
-				if (CPlayerStart::SpawnPoints().at(0))
+				if (CPlayerStart::SpawnPoints().size() && CPlayerStart::SpawnPoints().at(0))
 					spot = CPlayerStart::SpawnPoints().at(0);
 
-				if (!spot)
+				if (!spot && CPlayerDeathmatch::SpawnPoints().size())
 					spot = CPlayerDeathmatch::SpawnPoints()[0];
 			}
 
@@ -1276,7 +1273,7 @@ public:
 			}
 			if (Monster && !Monster->GoalEntity)
 			{
-				DebugPrintf("%s at (%f %f %f) target %s does not exist\n", ClassName, State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z, Target);
+				DebugPrintf("%s at (%f %f %f) target %s does not exist\n", ClassName.c_str(), State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z, Target);
 				Monster->MoveTarget = this;
 			}
 			Target = NULL;
@@ -1563,7 +1560,7 @@ public:
 				e = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (e, Target);
 				if (!e)
 					break;
-				if (strcmp(e->ClassName, "light") != 0)
+				if (strcmp(e->ClassName.c_str(), "light") != 0)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" is not a light\n", Target);
 				else
 					Light = entity_cast<CLight>(e);
@@ -1659,3 +1656,4 @@ void		CTargetLightRamp::LoadFields (CFile &File)
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_lightramp", CTargetLightRamp);
+

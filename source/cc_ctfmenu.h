@@ -30,3 +30,4 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // cc_ctfmenu.g
 // Self-explanatory
 //
+

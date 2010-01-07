@@ -642,3 +642,4 @@ extern vec3_t	m_byteDirs[NUMVERTEXNORMALS];
 uint8		DirToByte(const vec3_t dirVec);
 uint8		DirToByte(const vec3f &dirVec);
 void		ByteToDir(const uint8 dirByte, vec3_t dirVec);
+

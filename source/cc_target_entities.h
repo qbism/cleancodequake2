@@ -52,3 +52,38 @@ public:
 
 CTargetChangeLevel *CreateTargetChangeLevel(const char *map);
 void BeginIntermission (CTargetChangeLevel *targ);
+
+#define	LASER_START_ON		1
+#define	LASER_RED			2
+#define	LASER_GREEN			4
+#define	LASER_BLUE			8
+#define	LASER_YELLOW		16
+#define	LASER_ORANGE		32
+#define	LASER_FAT			64
+
+class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableEntity
+{
+public:
+	bool		StartLaser;
+	vec3f		MoveDir;
+	sint32		Damage;
+	bool		MakeEffect;
+
+	CTargetLaser ();
+	CTargetLaser (sint32 Index);
+
+	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetLaser)
+
+	bool Run ();
+
+	virtual void Think ();
+
+	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+
+	virtual void On ();
+	virtual void Off ();
+	virtual void Start ();
+
+	virtual void Spawn ();
+};

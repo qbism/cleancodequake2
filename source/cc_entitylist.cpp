@@ -179,6 +179,8 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 {
 	bool	init = false;
 
+	level.ParseData.clear();
+
 	// Go through all the dictionary pairs
 	while (true)
 	{
@@ -215,7 +217,7 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 	}
 
 	if (!init)
-		memset (ent, 0, sizeof(*ent));
+		Mem_Zero (ent, sizeof(*ent));
 }
 
 
@@ -366,7 +368,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		InitNodes ();
 #endif
 
-	memset (g_edicts, 0, game.MaxEntities * sizeof(g_edicts[0]));
+	Mem_Zero (g_edicts, game.MaxEntities * sizeof(g_edicts[0]));
 	InitEntityLists ();
 	ClearTimers ();
 
@@ -448,3 +450,4 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	if (FreeIt)
 		QDelete[] entities;
 }
+

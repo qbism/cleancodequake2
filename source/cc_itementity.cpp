@@ -319,3 +319,4 @@ void		CItemEntity::LoadFields (CFile &File)
 	CTouchableEntity::LoadFields (File);
 	CTossProjectile::LoadFields (File);
 }
+

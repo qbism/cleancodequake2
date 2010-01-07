@@ -205,3 +205,4 @@ float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 
 	return (float)Vec3Length (corner);
 }
+

@@ -275,7 +275,7 @@ void G_FreeEdict (edict_t *ed)
 	// Paril, hack
 	CBaseEntity *Entity = ed->Entity;
 
-	memset (ed, 0, sizeof(*ed));
+	Mem_Zero (ed, sizeof(*ed));
 	if (Entity)
 	{
 		ed->Entity = Entity;
@@ -399,14 +399,14 @@ void CBaseEntity::WriteBaseEntity (CFile &File)
 	File.Write<uint32> (EntityFlags);
 	File.Write<EEdictFlags> (Flags);
 
-	File.WriteString (ClassName);
+	File.Write<std::cc_string> (ClassName);
 
 	File.Write<bool> (Team.HasTeam);
 
 	if (Team.HasTeam)
 	{
-		File.Write<sint32> ((Team.Chain) ? Team.Chain->State.GetNumber() : -1);
-		File.Write<sint32> ((Team.Master) ? Team.Master->State.GetNumber() : -1);
+		File.Write<sint32> ((Team.Chain && Team.Chain->gameEntity) ? Team.Chain->State.GetNumber() : -1);
+		File.Write<sint32> ((Team.Master && Team.Master->gameEntity) ? Team.Master->State.GetNumber() : -1);
 	}
 
 	File.Write<sint32> ((GroundEntity) ? GroundEntity->State.GetNumber() : -1);
@@ -425,7 +425,7 @@ void CBaseEntity::ReadBaseEntity (CFile &File)
 	EntityFlags = File.Read<uint32> ();
 	Flags = File.Read<EEdictFlags> ();
 
-	ClassName = File.ReadString (com_levelPool);
+	ClassName = File.Read<std::cc_string> ();
 
 	Team.HasTeam = File.Read<bool> ();
 
@@ -518,7 +518,7 @@ link_t			*CBaseEntity::GetArea ()
 }
 void			CBaseEntity::ClearArea ()
 {
-	memset (&gameEntity->area, 0, sizeof(gameEntity->area));
+	Mem_Zero (&gameEntity->area, sizeof(gameEntity->area));
 }
 
 sint32				CBaseEntity::GetLinkCount ()
@@ -547,7 +547,7 @@ void			CBaseEntity::Free ()
 	{
 		Unlink ();
 
-		memset (gameEntity, 0, sizeof(*gameEntity));
+		Mem_Zero (gameEntity, sizeof(*gameEntity));
 		gameEntity->Entity = this;
 		ClassName = "freed";
 		gameEntity->freetime = level.Frame;
@@ -806,5 +806,4 @@ void CMapEntity::ParseFields ()
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);
 		}
 	}
-	level.ParseData.clear();
 };

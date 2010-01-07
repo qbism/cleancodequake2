@@ -34,20 +34,18 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_version.h"
 
-#if !NO_VERSION_CHECKING
-
-#define VC_NONE		0
-#define VC_WININET	1
-#define VC_CURL		2
-
-#define VERSION_CHECKING	VC_WININET
+// Paril: Don't do this if we don't have STDC (Win32)
+#if defined(CC_STDC_CONFORMANCE)
+#undef VERSION_CHECKING
+#define VERSION_CHECKING VC_NONE
+#endif
 
 // These three stay constant
 void CheckNewVersion ();
 void CheckVersionReturnance ();
 
+#if VERSION_CHECKING == VC_CURL
 #define CURL_STATICLIB
-#ifdef ALLOW_VERSION_CHECKING
 #include "curl\curl.h"
 #endif
 
@@ -151,7 +149,7 @@ void CheckNewVersion ()
 
 	HINTERNET iInternetHandle = InternetOpenA ("wininet-agent/1.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	
-	memset (receiveBuffer, 0, sizeof(receiveBuffer));
+	Mem_Zero (receiveBuffer, sizeof(receiveBuffer));
 
 	if (iInternetHandle)
 	{
@@ -470,8 +468,6 @@ void InitVersion ()
 #endif
 }
 
-#endif
-
 void Cmd_CCVersion_t (CPlayerEntity *Player)
 {
 	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
@@ -479,12 +475,13 @@ void Cmd_CCVersion_t (CPlayerEntity *Player)
 
 void SvCmd_CCVersion_t ()
 {
-#if !NO_VERSION_CHECKING
+#if (VERSION_CHECKING != VC_NONE)
 	if (ArgGets (2).empty())
 #endif
 		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
-#if !NO_VERSION_CHECKING && (VERSION_CHECKING != VC_NONE)
+#if (VERSION_CHECKING != VC_NONE)
 	else
 		CheckNewVersion ();
 #endif
 }
+

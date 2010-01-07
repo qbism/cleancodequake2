@@ -253,7 +253,7 @@ void Nodes_Register ()
 void InitNodes ()
 {
 	NodeList.clear();
-	memset (SavedPaths, 0, sizeof(SavedPaths));
+	Mem_Zero (SavedPaths, sizeof(SavedPaths));
 }
 
 void ShutdownNodes ()
@@ -261,7 +261,7 @@ void ShutdownNodes ()
 	for (size_t i = 0; i < NodeList.size(); i++)
 		QDelete NodeList[i];
 	NodeList.clear ();
-	memset (SavedPaths, 0, sizeof(SavedPaths));
+	Mem_Zero (SavedPaths, sizeof(SavedPaths));
 }
 
 edict_t *PlayerNearby (vec3f origin, sint32 distance)
@@ -561,7 +561,7 @@ bool VecInFront (vec3f &angles, vec3f &origin1, vec3f &origin2)
 	vec3f vec = origin1 - origin2;
 	vec.Normalize ();
 
-	if (vec.Dot (forward) > 0.3)
+	if ((vec | forward) > 0.3)
 		return true;
 	return false;
 }
@@ -679,7 +679,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 			if (BrushModel->Model && BrushModel->Model[0] == '*')
 			{
 				Node->LinkedEntity = trace.Ent;
-				DebugPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.Ent->ClassName);
+				DebugPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.Ent->ClassName.c_str());
 			}
 		}
 	}

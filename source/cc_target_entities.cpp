@@ -594,21 +594,21 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	level.ExitIntermission = false;
 
 	// find an intermission spot
-	ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_intermission");
+	ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
 	if (!ent)
 	{	// the map creator forgot to put in an intermission point...
-		ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_start");
+		ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_start");
 		if (!ent)
-			ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "info_player_deathmatch");
+			ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_deathmatch");
 	}
 	else
 	{	// chose one of four spots
 		sint32 i = irandom(4);
 		while (i--)
 		{
-			ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (ent, "info_player_intermission");
+			ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (ent, "info_player_intermission");
 			if (!ent)	// wrap around the list
-				ent = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (ent, "info_player_intermission");
+				ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (ent, "info_player_intermission");
 		}
 	}
 
@@ -1173,203 +1173,183 @@ When triggered, fires a laser.  You can either set a target
 or a direction.
 */
 
-#define	LASER_START_ON		1
-#define	LASER_RED			2
-#define	LASER_GREEN			4
-#define	LASER_BLUE			8
-#define	LASER_YELLOW		16
-#define	LASER_ORANGE		32
-#define	LASER_FAT			64
-
-class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableEntity
+CTargetLaser::CTargetLaser () :
+  CBaseEntity (),
+  CMapEntity (),
+  CThinkableEntity (),
+  CUsableEntity (),
+  StartLaser(true),
+  MakeEffect(false),
+  Damage (0)
 {
-public:
-	bool		StartLaser;
-	vec3f		MoveDir;
-	sint32		Damage;
-	bool		MakeEffect;
+};
 
-	CTargetLaser () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
-	  StartLaser(true),
-	  MakeEffect(false),
-	  Damage (0)
+CTargetLaser::CTargetLaser (sint32 Index) :
+  CBaseEntity (Index),
+  CMapEntity (Index),
+  CThinkableEntity (Index),
+  CUsableEntity (Index),
+  StartLaser(true),
+  MakeEffect(false),
+  Damage (0)
+{
+};
+
+bool CTargetLaser::Run ()
+{
+	return CBaseEntity::Run();
+};
+
+void CTargetLaser::Think ()
+{
+	if (StartLaser)
 	{
-	};
+		Start ();
+		return;
+	}
 
-	CTargetLaser (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
-	  StartLaser(true),
-	  MakeEffect(false),
-	  Damage (0)
+	CBaseEntity	*ignore;
+	vec3f	start;
+	vec3f	end;
+	const uint8 Count = (MakeEffect) ? 8 : 4;
+
+	if (Enemy)
 	{
-	};
+		vec3f last_movedir = MoveDir;
+		vec3f point = Enemy->GetAbsMin().MultiplyAngles (0.5f, Enemy->GetSize());
 
-	ENTITYFIELD_DEFS
-	ENTITYFIELDS_SAVABLE(CTargetLaser)
+		MoveDir = point - State.GetOrigin();
+		MoveDir.Normalize ();
+		if (MoveDir != last_movedir)
+			MakeEffect = true;
+	}
 
-	bool Run ()
+	ignore = this;
+	start = State.GetOrigin();
+	end = start.MultiplyAngles (2048, MoveDir);
+	CTrace tr;
+	while(1)
 	{
-		return CBaseEntity::Run();
-	};
+		tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
 
-	void Think ()
-	{
-		if (StartLaser)
+		if (!tr.ent)
+			break;
+		if (!tr.ent->Entity)
+			break;
+
+		CBaseEntity *Entity = tr.ent->Entity;
+		// hurt it if we can
+		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
+			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, Activator, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
+
+		// if we hit something that's not a monster or player or is immune to lasers, we're done
+		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
 		{
-			Start ();
-			return;
-		}
-
-		CBaseEntity	*ignore;
-		vec3f	start;
-		vec3f	end;
-		const uint8 Count = (MakeEffect) ? 8 : 4;
-
-		if (Enemy)
-		{
-			vec3f last_movedir = MoveDir;
-			vec3f point = Enemy->GetAbsMin().MultiplyAngles (0.5f, Enemy->GetSize());
-
-			MoveDir = point - State.GetOrigin();
-			MoveDir.Normalize ();
-			if (MoveDir != last_movedir)
-				MakeEffect = true;
-		}
-
-		ignore = this;
-		start = State.GetOrigin();
-		end = start.MultiplyAngles (2048, MoveDir);
-		CTrace tr;
-		while(1)
-		{
-			tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
-
-			if (!tr.ent)
-				break;
-			if (!tr.ent->Entity)
-				break;
-
-			CBaseEntity *Entity = tr.ent->Entity;
-			// hurt it if we can
-			if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
-				entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, Activator, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
-
-			// if we hit something that's not a monster or player or is immune to lasers, we're done
-			if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
+			if (MakeEffect)
 			{
-				if (MakeEffect)
-				{
-					MakeEffect = false;
-					CTempEnt_Splashes::Sparks (tr.EndPos,
-						tr.plane.normal, 
-						CTempEnt_Splashes::ST_LASER_SPARKS,
-						(State.GetSkinNum() & 255),
-						Count);
-				}
-				break;
+				MakeEffect = false;
+				CTempEnt_Splashes::Sparks (tr.EndPos,
+					tr.plane.normal, 
+					CTempEnt_Splashes::ST_LASER_SPARKS,
+					(State.GetSkinNum() & 255),
+					Count);
 			}
-
-			ignore = tr.Ent;
-			start = tr.EndPos;
+			break;
 		}
 
-		State.GetOldOrigin() = tr.EndPos;
-		NextThink = level.Frame + FRAMETIME;
-	};
+		ignore = tr.Ent;
+		start = tr.EndPos;
+	}
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	State.GetOldOrigin() = tr.EndPos;
+	NextThink = level.Frame + FRAMETIME;
+};
+
+void CTargetLaser::Use (CBaseEntity *other, CBaseEntity *activator)
+{
+	if (!Usable)
+		return;
+
+	Activator = activator;
+	if (SpawnFlags & LASER_START_ON)
+		Off ();
+	else
+		On ();
+};
+
+void CTargetLaser::On ()
+{
+	if (!Activator)
+		Activator = this;
+	SpawnFlags |= LASER_START_ON;
+	MakeEffect = true;
+	GetSvFlags() &= ~SVF_NOCLIENT;
+	Think ();
+};
+void CTargetLaser::Off ()
+{
+	SpawnFlags &= ~LASER_START_ON;
+	GetSvFlags() |= SVF_NOCLIENT;
+	NextThink = 0;
+};
+void CTargetLaser::Start ()
+{
+	GetSolid() = SOLID_NOT;
+	State.GetRenderEffects() |= (RF_BEAM|RF_TRANSLUCENT);
+	State.GetModelIndex() = 1;			// must be non-zero
+
+	// set the beam diameter
+	State.GetFrame() = (SpawnFlags & LASER_FAT) ? 16 : 4;
+
+	// set the color
+	if (SpawnFlags & LASER_RED)
+		State.GetSkinNum() = Color_RGBAToHex (NSColor::PatriotRed, NSColor::PatriotRed, NSColor::Red, NSColor::Red);
+	else if (SpawnFlags & LASER_GREEN)
+		State.GetSkinNum() = Color_RGBAToHex (NSColor::Green, NSColor::Lime, NSColor::FireSpeechGreen, NSColor::Harlequin);
+	else if (SpawnFlags & LASER_BLUE)
+		State.GetSkinNum() = Color_RGBAToHex (NSColor::PatriotBlue, NSColor::PatriotBlue, NSColor::NeonBlue, NSColor::NeonBlue);
+	else if (SpawnFlags & LASER_YELLOW)
+		State.GetSkinNum() = Color_RGBAToHex (NSColor::ParisDaisy, NSColor::Gorse, NSColor::Lemon, NSColor::Gold);
+	else if (SpawnFlags & LASER_ORANGE)
+		State.GetSkinNum() = Color_RGBAToHex (NSColor::HarvestGold, NSColor::RobRoy, NSColor::TulipTree, NSColor::FireBush);
+
+	if (!Enemy)
 	{
-		if (!Usable)
-			return;
-
-		Activator = activator;
-		if (SpawnFlags & LASER_START_ON)
-			Off ();
+		if (Target)
+		{
+			CBaseEntity *ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
+			if (!ent)
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
+			Enemy = ent;
+		}
 		else
-			On ();
-	};
-
-	void On ()
-	{
-		if (!Activator)
-			Activator = this;
-		SpawnFlags |= LASER_START_ON;
-		MakeEffect = true;
-		GetSvFlags() &= ~SVF_NOCLIENT;
-		Think ();
-	};
-	void Off ()
-	{
-		SpawnFlags &= ~LASER_START_ON;
-		GetSvFlags() |= SVF_NOCLIENT;
-		NextThink = 0;
-	};
-	void Start ()
-	{
-		GetSolid() = SOLID_NOT;
-		State.GetRenderEffects() |= (RF_BEAM|RF_TRANSLUCENT);
-		State.GetModelIndex() = 1;			// must be non-zero
-
-		// set the beam diameter
-		State.GetFrame() = (SpawnFlags & LASER_FAT) ? 16 : 4;
-
-		// set the color
-		if (SpawnFlags & LASER_RED)
-			State.GetSkinNum() = Color_RGBAToHex (NSColor::PatriotRed, NSColor::PatriotRed, NSColor::Red, NSColor::Red);
-		else if (SpawnFlags & LASER_GREEN)
-			State.GetSkinNum() = Color_RGBAToHex (NSColor::Green, NSColor::Lime, NSColor::FireSpeechGreen, NSColor::Harlequin);
-		else if (SpawnFlags & LASER_BLUE)
-			State.GetSkinNum() = Color_RGBAToHex (NSColor::PatriotBlue, NSColor::PatriotBlue, NSColor::NeonBlue, NSColor::NeonBlue);
-		else if (SpawnFlags & LASER_YELLOW)
-			State.GetSkinNum() = Color_RGBAToHex (NSColor::ParisDaisy, NSColor::Gorse, NSColor::Lemon, NSColor::Gold);
-		else if (SpawnFlags & LASER_ORANGE)
-			State.GetSkinNum() = Color_RGBAToHex (NSColor::HarvestGold, NSColor::RobRoy, NSColor::TulipTree, NSColor::FireBush);
-
-		if (!Enemy)
 		{
-			if (Target)
-			{
-				CBaseEntity *ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
-				if (!ent)
-					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
-				Enemy = ent;
-			}
-			else
-			{
-				G_SetMovedir (State.GetAngles(), MoveDir);
-			}
+			G_SetMovedir (State.GetAngles(), MoveDir);
 		}
+	}
 
-		Usable = true;
-		StartLaser = false;
+	Usable = true;
+	StartLaser = false;
 
-		if (!Damage)
-			Damage = 1;
+	if (!Damage)
+		Damage = 1;
 
-		GetMins().Set (-8);
-		GetMaxs().Set (8);
-		Link ();
+	GetMins().Set (-8);
+	GetMaxs().Set (8);
+	Link ();
 
-		if (SpawnFlags & LASER_START_ON)
-			On ();
-		else
-			Off ();
-	};
+	if (SpawnFlags & LASER_START_ON)
+		On ();
+	else
+		Off ();
+};
 
-	void Spawn ()
-	{
-		Usable = false;
+void CTargetLaser::Spawn ()
+{
+	Usable = false;
 
-		// let everything else get spawned before we start firing
-		NextThink = level.Frame + 10;
-	};
+	// let everything else get spawned before we start firing
+	NextThink = level.Frame + 10;
 };
 
 ENTITYFIELDS_BEGIN(CTargetLaser)
@@ -1621,3 +1601,4 @@ void			CTargetEarthquake::LoadFields (CFile &File)
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_earthquake", CTargetEarthquake);
+

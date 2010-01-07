@@ -100,3 +100,4 @@ void CRailgun::CreateItem (CItemList *List)
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Slugs, 1, "#w_railgun.md2");
 };
+

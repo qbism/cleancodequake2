@@ -467,37 +467,33 @@ void CPowerShield::Drop (CPlayerEntity *ent)
 	CBasePowerUp::Drop (ent);
 }
 
-class CPowerupEntity : public CItemEntity
+CPowerupEntity::CPowerupEntity() :
+  CBaseEntity(),
+  CItemEntity ()
+  {
+  };
+
+CPowerupEntity::CPowerupEntity (sint32 Index) :
+  CBaseEntity(Index),
+  CItemEntity (Index)
+  {
+  };
+
+void CPowerupEntity::Spawn (CBaseItem *item)
 {
-public:
-	CPowerupEntity() :
-	  CBaseEntity(),
-	  CItemEntity ()
-	  {
-	  };
-
-	CPowerupEntity (sint32 Index) :
-	  CBaseEntity(Index),
-	  CItemEntity (Index)
-	  {
-	  };
-
-	void Spawn (CBaseItem *item)
+	if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoItems.IsEnabled())
 	{
-		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoItems.IsEnabled())
-		{
-			Free ();
-			return;
-		}
+		Free ();
+		return;
+	}
 
-		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
-		ThinkState = ITS_DROPTOFLOOR;
-		PhysicsType = PHYSICS_NONE;
+	LinkedItem = item;
+	NextThink = level.Frame + 2;    // items start after other solids
+	ThinkState = ITS_DROPTOFLOOR;
+	PhysicsType = PHYSICS_NONE;
 
-		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
-	};
+	State.GetEffects() = item->EffectFlags;
+	State.GetRenderEffects() = RF_GLOW;
 };
 
 LINK_ITEM_TO_CLASS (item_health_mega, CMegaHealthEntity);

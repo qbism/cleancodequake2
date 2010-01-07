@@ -113,8 +113,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Define this if you want to use include guards.
 #define INCLUDE_GUARDS						1
 
-// Generally keep this off if it's not CleanCode
-#define NO_VERSION_CHECKING					0
+// Generally keep this VC_NONE if it's not CleanCode base
+#define VC_NONE		0
+#define VC_WININET	1
+#define VC_CURL		2
+
+#define VERSION_CHECKING	VC_WININET
 
 #ifdef INCLUDE_GUARDS
 	#define CC_STR2(str) #str
@@ -213,3 +217,4 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #else
 FILE_WARNING
 #endif
+

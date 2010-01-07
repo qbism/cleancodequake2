@@ -293,41 +293,12 @@ void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker)
 	// we have to find the flag and carrier entities
 
 	// find the flag
-/*	char *c;
-	switch (attacker->Client.Respawn.CTF.Team)
-	{
-	case CTF_TEAM1:
-		c = "item_flag_team1";
-		break;
-	case CTF_TEAM2:
-		c = "item_flag_team2";
-		break;
-	default:
-		return;
-	}
-
-	CFlagEntity *flag = NULL;
-	while ((flag = entity_cast<CFlagEntity>(CC_Find<CBaseEntity, ENT_ITEM, EntityMemberOffset(CBaseEntity,ClassName)> (flag, c))) != NULL)
-	{
-		if (!(flag->SpawnFlags & DROPPED_ITEM))
-			break;
-	}*/
 	CFlagTransponder *AttackerTransponder = FindTransponder (attacker->Client.Respawn.CTF.Team);
 
 	if (!AttackerTransponder)
 		return; // can't find attacker's flag
 
 	// find attacker's team's flag carrier
-/*	CPlayerEntity *carrier = NULL;
-	for (uint8 i = 1; i <= game.MaxClients; i++)
-	{
-		carrier = entity_cast<CPlayerEntity>((g_edicts + i)->Entity);
-		if (carrier->GetInUse() && 
-			carrier->Client.Persistent.Inventory.Has(flag_item))
-			break;
-		carrier = NULL;
-	}*/
-
 	// ok we have the attackers flag and a pointer to the carrier
 
 	// check to see if we are defending the base's flag
@@ -489,7 +460,7 @@ void CTFTeam_f (CPlayerEntity *ent)
 	ent->Flags &= ~FL_GODMODE;
 	ent->Client.Respawn.CTF.Team = desired_team;
 	ent->Client.Respawn.CTF.State = 0;
-	ent->CTFAssignSkin(Info_ValueForKey (ent->Client.Persistent.UserInfo, "skin"));
+	ent->CTFAssignSkin(ent->Client.Persistent.UserInfo);
 
 	if (ent->GetSolid() == SOLID_NOT)
 	{ // Spectator
@@ -592,7 +563,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 		uint8 i;
 		for (i = 0; !LocNames[i].classname.empty(); i++)
 		{
-			if (hash == LocNames[i].hash && strcmp(what->ClassName, LocNames[i].classname.c_str()) == 0)
+			if (hash == LocNames[i].hash && (what->ClassName == LocNames[i].classname.c_str()))
 				break;
 		}
 
@@ -637,7 +608,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	// see if there's more than one in the map, if so
 	// we need to determine what team is closest
 	what = NULL;
-	while ((what = CC_Find<CBaseEntity, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (what, hot->ClassName)) != NULL)
+	while ((what = CC_FindByClassName<CBaseEntity, ENT_BASE> (what, hot->ClassName.c_str())) != NULL)
 	{
 		if (what == hot)
 			continue;
@@ -661,7 +632,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 		break;
 	}
 
-	if ((item = FindItemByClassname(hot->ClassName)) == NULL)
+	if ((item = FindItemByClassname(hot->ClassName.c_str())) == NULL)
 	{
 		OutMessage << "nowhere";
 		return;
@@ -1695,3 +1666,4 @@ void CTFBoot(CPlayerEntity *ent)
 	gi.AddCommandString(text);
 }
 #endif
+

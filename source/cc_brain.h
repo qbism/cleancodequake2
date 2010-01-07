@@ -88,6 +88,14 @@ public:
 	void TentacleAttack ();
 	void ChestClosed ();
 
+#if XATRIX_FEATURES
+	void Attack ();
+
+	void TongueAttack ();
+	void LaserBeamFire ();
+	void LaserBeamRefire ();
+#endif
+
 #if !MONSTER_USE_ROGUE_AI
 	void Duck_Down ();
 	void Duck_Hold ();

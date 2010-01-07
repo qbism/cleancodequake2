@@ -1073,6 +1073,9 @@ bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, sint32 damage, sint32 ki
 	//see if enemy is in range
 	CBaseEntity *Enemy = Entity->Enemy;
 
+	if (!Enemy)
+		return false;
+
 	dir = Enemy->State.GetOrigin() - Entity->State.GetOrigin();
 	range = dir.Length();
 	if (range > aim.X)
@@ -1324,3 +1327,4 @@ bool CGrappleEntity::Run ()
 	return CFlyMissileProjectile::Run();
 };
 #endif
+

@@ -495,7 +495,13 @@
     <ClCompile Include="..\..\source\cc_write.cpp">
       <Filter>CleanCode Files\Game API\Messages</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_chick_heat.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\source\cc_xatrix_entities.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_gekk.cpp">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_xatrix_gladiator_phalanx.cpp">
@@ -517,6 +523,9 @@
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_xatrix_soldier_ripper.cpp">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_xatrix_supertank_boss5.cpp">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp">
@@ -860,6 +869,12 @@
     <ClInclude Include="..\..\source\cc_write.h">
       <Filter>CleanCode Files\Game API\Messages</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_chick_heat.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_gekk.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\source\cc_xatrix_gladiator_phalanx.h">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
@@ -879,6 +894,9 @@
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_xatrix_soldier_ripper.h">
+      <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_xatrix_supertank_boss5.h">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_xatrix_trap.h">

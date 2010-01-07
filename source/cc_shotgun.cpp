@@ -98,3 +98,4 @@ void CShotgun::CreateItem (CItemList *List)
 		"w_shotgun", "Shotgun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Shells, 1, "#w_shotgun.md2");
 };
+

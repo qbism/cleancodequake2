@@ -146,7 +146,7 @@ uint8 DirToByte(const vec3f &dirVec)
 	float bestDot = 0;
 	for (uint8 i = 0; i < NUMVERTEXNORMALS; i++)
 	{
-		float dot = dirVec.Dot(m_byteDirs[i]);
+		float dot = vec3f(m_byteDirs[i]) | dirVec;
 		if (dot > bestDot)
 		{
 			bestDot = dot;
@@ -616,3 +616,4 @@ float VectorNormalizeFastf(vec3_t v)
 
 	return 0.0f;
 }
+

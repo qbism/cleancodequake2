@@ -208,3 +208,4 @@ float VecToYaw (vec3_t vec)
 
 	return yaw;
 }
+

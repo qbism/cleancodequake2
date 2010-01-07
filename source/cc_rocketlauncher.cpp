@@ -99,3 +99,4 @@ void CRocketLauncher::CreateItem (CItemList *List)
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Rockets, 1, "#w_rlauncher.md2");
 };
+

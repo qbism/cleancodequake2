@@ -129,3 +129,4 @@ template<> class dataType<sint32> : public dataType_Atomic<sint32> {};
 template<> class dataType<sint16> : public dataType_Atomic<sint16> {};
 template<> class dataType<uint32> : public dataType_Atomic<uint32> {};
 template<> class dataType<ushort> : public dataType_Atomic<ushort> {};
+

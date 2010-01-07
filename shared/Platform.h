@@ -70,6 +70,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #define COMPILERSTRING MSVS_VERSION_STRING
+#ifndef _MSC_EXTENSIONS
+#define CC_STDC_CONFORMANCE
+#endif
 
 #define CC_ENUM(type,name) \
 	typedef type name; \
@@ -258,4 +261,8 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 
 #ifndef COMPILERSTRING
 # define COMPILERSTRING	"Unknown"
+#endif
+
+#if defined(__STDC__) && !defined(CC_STDC_CONFORMANCE)
+#define CC_STDC_CONFORMANCE
 #endif

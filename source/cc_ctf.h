@@ -132,8 +132,8 @@ public:
 			QDelete (*it).second;
 		Ghosts.clear();
 
-		memset (&elevel, 0, sizeof(elevel));
-		memset (&emsg, 0, sizeof(emsg));
+		Mem_Zero (&elevel, sizeof(elevel));
+		Mem_Zero (&emsg, sizeof(emsg));
 	}
 };
 

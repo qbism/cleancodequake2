@@ -374,8 +374,8 @@ void CSuperTank::ReAttack1 ()
 
 void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 {
-	if (Entity->Health < (Entity->MaxHealth / 2))
-			Entity->State.GetSkinNum() = 1;
+	if (!(Entity->State.GetSkinNum() & 1) && Entity->Health < (Entity->MaxHealth / 2))
+			Entity->State.GetSkinNum() |= 1;
 
 	if (level.Frame < PainDebounceTime)
 			return;
@@ -419,6 +419,7 @@ void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 void CSuperTank::Rocket ()
 {
+#if MONSTERS_ARENT_STUPID
 	vec3f	forward, right, start, dir, vec, target;
 	sint32		FlashNumber;
 #if MONSTER_USE_ROGUE_AI
@@ -538,6 +539,28 @@ void CSuperTank::Rocket ()
 	//			gi.dprintf("didn't make it halfway to target...aborting\n");
 		}
 	}
+#else
+	vec3f	forward, right, start;
+	int		FlashNumber;
+
+	switch (Entity->State.GetFrame())
+	{
+	case FRAME_attak2_8:
+		FlashNumber = MZ2_SUPERTANK_ROCKET_1;
+		break;
+	case FRAME_attak2_11:
+		FlashNumber = MZ2_SUPERTANK_ROCKET_2;
+		break;
+	default:
+		FlashNumber = MZ2_SUPERTANK_ROCKET_3;
+		break;
+	}
+
+	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
+	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+
+	MonsterFireRocket (start, ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized(), 50, 500, FlashNumber);
+#endif
 }	
 
 void CSuperTank::MachineGun ()
@@ -644,6 +667,11 @@ void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 dama
 
 /*QUAKED monster_supertank (1 .5 0) (-64 -64 0) (64 64 72) Ambush Trigger_Spawn Sight
 */
+
+#if XATRIX_FEATURES
+#define SPAWNFLAG_SUPERTANK_POWER_SHIELD		8
+#endif
+
 void CSuperTank::Spawn ()
 {
 	Sounds[SOUND_PAIN1] = SoundIndex ("bosstank/btkpain1.wav");
@@ -671,10 +699,17 @@ void CSuperTank::Spawn ()
 #endif
 
 	MonsterFlags = (MF_HAS_ATTACK | MF_HAS_SEARCH);
-
 	Entity->Link ();
-	
 	Stand();
+
+#if XATRIX_FEATURES
+	// Paril FIXME: used? or is boss5 replacement??
+	if (Entity->SpawnFlags & SPAWNFLAG_SUPERTANK_POWER_SHIELD)
+	{
+		PowerArmorType = POWER_ARMOR_SHIELD;
+		PowerArmorPower = 400;
+	}
+#endif
 
 	WalkMonsterStart();
 }

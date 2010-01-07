@@ -106,3 +106,4 @@ void CSuperShotgun::CreateItem (CItemList *List)
 		"Super Shotgun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Shells, 2, "#w_sshotgun.md2");
 };
+
