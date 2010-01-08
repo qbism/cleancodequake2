@@ -625,7 +625,6 @@ void CGameAPI::ReadLevel (char *filename)
 	ShutdownNodes ();
 #endif
 
-	Mem_Zero (&GameMedia, sizeof(GameMedia));
 	InitGameMedia ();
 
 	if (!ReadingGame)

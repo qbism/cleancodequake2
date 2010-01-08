@@ -103,6 +103,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Define this to enable some custom asserts that we place in some places
 #define ALLOW_ASSERTS						1
 
+// Define this if you want hand grenades to drop instead of explode
+// if killed while it's primed
+#define DROP_DEATH_GRENADES					1
+
 // Notes regarding CC_ASSERT_EXPR:
 // Msg must only be one string; the expr is shown and
 // therefore not required to be repeated in msg. Arguments
@@ -163,6 +167,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define AMMO_REGEN_TECH 0
 #undef MONSTERS_HIT_MONSTERSOLID
 #define MONSTERS_HIT_MONSTERSOLID 1
+#undef DROP_DEATH_GRENADES
+#define DROP_DEATH_GRENADES 0
 #else
 #if (CC_GAME_MODE & GAME_ROGUE) && (CC_GAME_MODE & GAME_XATRIX)
 #undef MONSTERS_ARENT_STUPID
@@ -181,6 +187,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROGUE_FEATURES 1
 #undef XATRIX__FEATURES
 #define XATRIX_FEATURES 1
+#undef DROP_DEATH_GRENADES
+#define DROP_DEATH_GRENADES 0
 #elif (CC_GAME_MODE & GAME_ROGUE)
 #undef MONSTERS_ARENT_STUPID
 #define MONSTERS_ARENT_STUPID 0
@@ -196,6 +204,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_HIT_MONSTERSOLID 1
 #undef ROGUE_FEATURES
 #define ROGUE_FEATURES 1
+#undef DROP_DEATH_GRENADES
+#define DROP_DEATH_GRENADES 0
 #else
 #undef MONSTERS_ARENT_STUPID
 #define MONSTERS_ARENT_STUPID 0
@@ -211,6 +221,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_HIT_MONSTERSOLID 1
 #undef XATRIX_FEATURES
 #define XATRIX_FEATURES 1
+#undef DROP_DEATH_GRENADES
+#define DROP_DEATH_GRENADES 0
 #endif
 #endif
 

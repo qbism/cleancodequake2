@@ -268,6 +268,9 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 		Player->Client.PlayerState.GetGunIndex() = 0;
 		if (!Player->Client.Grenade.Thrown && !Player->Client.Grenade.BlewUp && Player->Client.Grenade.Time >= level.Frame) // We had a grenade cocked
 		{
+#if !DROP_DEATH_GRENADES
+			Player->Client.Grenade.Time = level.Frame;
+#endif
 			CHandGrenade::Weapon.FireGrenade(Player, false);
 			Player->Client.Grenade.Time = 0;
 		}

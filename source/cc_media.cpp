@@ -39,6 +39,8 @@ void InitGameMedia ()
 {
 	char buffer[MAX_INFO_KEY];
 
+	Mem_Zero (&GameMedia, sizeof(GameMedia));
+
 	for (sint32 i = 0; i < 4; i++)
 	{
 		Q_snprintfz (buffer, sizeof(buffer), "*death%i.wav", i+1);
