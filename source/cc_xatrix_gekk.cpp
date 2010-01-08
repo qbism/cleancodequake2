@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if XATRIX_FEATURES
 #include "cc_xatrix_gekk.h"
 #include "cc_tent.h"
 
@@ -1478,3 +1480,4 @@ void CGekk::LandToWater ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_gekk", CGekk);
+#endif

@@ -491,6 +491,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_utils.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_chick_heat.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_fixbot.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_gekk.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_gladiator_phalanx.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_ionripper.cpp" />
@@ -617,6 +618,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />
     <ClInclude Include="..\..\source\cc_xatrix_chick_heat.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_fixbot.h" />
     <ClInclude Include="..\..\source\cc_xatrix_gekk.h" />
     <ClInclude Include="..\..\source\cc_xatrix_gladiator_phalanx.h" />
     <ClInclude Include="..\..\source\cc_xatrix_ionripper.h" />

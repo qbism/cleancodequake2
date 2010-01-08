@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if XATRIX_FEATURES
 #include "cc_tent.h"
 
 /*QUAKED rotating_light (0 .5 .8) (-8 -8 -8) (8 8 8) START_OFF ALARM
@@ -730,3 +732,4 @@ void			CFuncObjectRepair::LoadFields (CFile &File)
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_object_repair", CFuncObjectRepair);
+#endif

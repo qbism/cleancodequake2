@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if XATRIX_FEATURES
 #include "cc_bitch.h"
 #include "cc_xatrix_chick_heat.h"
 #include "cc_tent.h"
@@ -278,3 +280,4 @@ void CHeatMaiden::Spawn ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_chick_heat", CHeatMaiden);
+#endif

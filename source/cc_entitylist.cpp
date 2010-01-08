@@ -329,6 +329,15 @@ void InitEntityLists ();
 void DeallocateEntities ();
 void SetClientFields ();
 
+void FixDemoSetup ()
+{
+	// Deallocate entities
+	DeallocateEntities ();
+
+	InitEntityLists ();
+	InitEntities ();
+}
+
 void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 {
 	CTimer Timer;

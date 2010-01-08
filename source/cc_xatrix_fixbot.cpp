@@ -27,29 +27,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_xatrix_supertank_boss5.cpp
+// cc_xatrix_fixbot.cpp
 // 
 //
 
 #include "cc_local.h"
 
 #if XATRIX_FEATURES
-#include "cc_supertank.h"
-#include "cc_xatrix_supertank_boss5.h"
-
-CBoss5::CBoss5 (uint32 ID) :
-CSuperTank (ID)
-{
-	MonsterName = "SuperDuperTank";
-};
-
-void CBoss5::Spawn ()
-{
-	CSuperTank::Spawn ();
-	Entity->State.GetModelIndex() = ModelIndex ("models/monsters/boss5/tris.md2");
-	PowerArmorType = POWER_ARMOR_SHIELD;
-	PowerArmorPower = 400;
-}
-
-LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_boss5", CBoss5);
 #endif

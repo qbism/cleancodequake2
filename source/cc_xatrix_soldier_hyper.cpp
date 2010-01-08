@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if XATRIX_FEATURES
 #include "cc_soldier_base.h"
 #include "cc_xatrix_soldier_hyper.h"
 #include "cc_tent.h"
@@ -308,4 +310,4 @@ void CSoldierHyper::SpawnSoldier ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_soldier_hypergun", CSoldierHyper);
-
+#endif

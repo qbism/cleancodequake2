@@ -36,8 +36,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define VS_UNKNOWN_STR	"Unknown Visual Studio"
 #define VS_5_STR		"Visual C++ 5.0"
 #define VS_6_STR		"Visual C++ 6.0"
-#define VS_7_STR		"Visual C++ 7.0"
-#define VS_71_STR		"Visual C++ 7.1"
+#define VS_7_STR		"Visual Studio .NET" // 7.0
+#define VS_71_STR		"Visual Studio .NET 2003" // 7.1
 #define VS_8_STR		"Visual Studio 2005"
 #define VS_9_STR		"Visual Studio 2008"
 #define VS_10_STR		"Visual Studio 2010 BETA"
