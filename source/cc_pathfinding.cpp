@@ -113,7 +113,7 @@ void CPath::RemoveFromClosed (CPathNode *Node)
 
 bool CPath::NodeIsOpen (CPathNode *Node)
 {
-	for (TPathNodeContainer::iterator it = Open.begin(); it < Open.end(); it++ )
+	for (TPathNodeContainer::iterator it = Open.begin(); it < Open.end(); ++it)
 	{
 		CPathNode *Check = *it;
 
@@ -321,7 +321,7 @@ void RunNodes()
 	{
 		if (PlayerNearby(NodeList[i]->Origin, 250))
 		{
-			for (TPathNodeChildrenContainer::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); it++ )
+			for (TPathNodeChildrenContainer::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); ++it)
 			{
 				CPathNode *Child = *it;
 				CTempEnt_Trails::BFGLaser (NodeList[i]->Origin, Child->Origin);

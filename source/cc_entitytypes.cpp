@@ -327,6 +327,7 @@ void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sin
 		CTempEnt_Splashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? CTempEnt_Splashes::ST_BULLET_SPARKS : CTempEnt_Splashes::ST_SPARKS, CTempEnt_Splashes::SPT_SPARKS);
 }
 
+bool LastPelletShot = true;
 void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 								vec3f dir, vec3f point, vec3f normal, sint32 damage,
 								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
@@ -526,15 +527,18 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		}
 	}
 
-	if ((EntityFlags & ENT_MONSTER))
+	if (EntityFlags & ENT_MONSTER)
 	{
 		CMonster *Monster = (entity_cast<CMonsterEntity>(this))->Monster;
 		Monster->ReactToDamage (attacker);
 		if (!(Monster->AIFlags & AI_DUCKED) && take)
 		{
-			Pain (attacker, knockback, take);
-			if (skill->Integer() == 3)
-				Monster->PainDebounceTime = level.Frame + 50;
+			if (LastPelletShot)
+			{
+				Pain (attacker, knockback, take);
+				if (skill->Integer() == 3)
+					Monster->PainDebounceTime = level.Frame + 50;
+			}
 		}
 	}
 	else if (((EntityFlags & ENT_PLAYER) && take

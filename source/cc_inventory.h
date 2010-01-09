@@ -79,7 +79,7 @@ public:
 	{
 		File.Write<size_t> (Array.size());
 
-		for (TInventoryMapType::iterator it = Array.begin(); it != Array.end(); it++)
+		for (TInventoryMapType::iterator it = Array.begin(); it != Array.end(); ++it)
 			File.Write <std::pair <uint8, uint16> > (*it);
 
 		File.Write<sint32> (SelectedItem);

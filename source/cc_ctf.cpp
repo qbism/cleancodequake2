@@ -1283,8 +1283,8 @@ void CTFGhost(CPlayerEntity *ent)
 	}
 
 	sint32 n = ArgGeti(1);
-	TGhostMapType::iterator it;
-	if ((it = ctfgame.Ghosts.find(n)) == ctfgame.Ghosts.end())
+	TGhostMapType::iterator it = ctfgame.Ghosts.find(n);
+	if (it == ctfgame.Ghosts.end())
 	{
 		ent->PrintToClient (PRINT_HIGH, "Invalid ghost code.\n");
 		return;
@@ -1483,7 +1483,7 @@ void CTFStats(CPlayerEntity *ent)
 
 	Q_strcatz(text, "  #|Name            |Score|Kills|Death|BasDf|CarDf|Effcy|\n", sizeof(text));
 
-	for (TGhostMapType::iterator it = ctfgame.Ghosts.begin(); it != ctfgame.Ghosts.end(); it++)
+	for (TGhostMapType::iterator it = ctfgame.Ghosts.begin(); it != ctfgame.Ghosts.end(); ++it)
 	{
 		CCTFGhost *Ghost = (*it).second;
 

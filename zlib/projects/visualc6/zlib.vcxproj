@@ -39,11 +39,13 @@
     <OutDir>F:\cleancodeq2\trunk\lib\</OutDir>
     <IntDir>.\Win32_LIB_Release\</IntDir>
     <TargetName>zlibr</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LIB Debug|Win32'">
     <OutDir>F:\cleancodeq2\trunk\lib\</OutDir>
     <IntDir>Win32_LIB_Debug\</IntDir>
     <TargetName>zlibd</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LIB Release|Win32'">
     <ClCompile>

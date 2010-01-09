@@ -55,6 +55,11 @@ class fs_pathIndex
 {
 public:
 	char		pathName[MAX_PATHNAME];
+
+	fs_pathIndex ()
+	{
+		pathName[0] = 0;
+	};
 };
 
 typedef std::vector<fs_pathIndex*, std::filesystem_allocator<fs_pathIndex*> > fs_pathListType;
@@ -71,12 +76,12 @@ void FS_AddPath (const char *pathName)
 // Removes a path from the list
 void FS_RemovePath (const char *pathName)
 {
-	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
+	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
 	{
-		if (strcmp(pathName, (*i)->pathName) == 0)
+		if (strcmp(pathName, (*it)->pathName) == 0)
 		{
-			delete (*i);
-			fs_pathList.erase (i);
+			delete (*it);
+			fs_pathList.erase (it);
 			return;
 		}
 	}
@@ -86,13 +91,13 @@ void FS_RemovePath (const char *pathName)
 // If it doesn't exist, it adds it.
 void FS_ReorderPath (const char *pathName)
 {
-	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
+	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
 	{
-		if (strcmp(pathName, (*i)->pathName) == 0)
+		if (strcmp(pathName, (*it)->pathName) == 0)
 		{
-			fs_pathIndex *Path = (*i);
+			fs_pathIndex *Path = (*it);
 
-			fs_pathList.erase (i);
+			fs_pathList.erase (it);
 			fs_pathList.insert (fs_pathList.begin(), Path);
 			return;
 		}
@@ -374,10 +379,10 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 	void *fp = NULL;
 
 	// Search each of the search paths
-	for (fs_pathListType::iterator i = fs_pathList.begin(); i < fs_pathList.end(); i++)
+	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
 	{
 		char newFileName[MAX_PATHNAME];
-		fs_pathIndex *Index = (*i);
+		fs_pathIndex *Index = (*it);
 
 		char slashCheck = Index->pathName[strlen(Index->pathName)-1];
 		if (slashCheck != '\\' && slashCheck != '/')
@@ -581,7 +586,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 	TFindFilesType files;
 
 	// Search through the path, one element at a time
-	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); it++)
+	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
 	{
 		fs_pathIndex *search = (*it);
 

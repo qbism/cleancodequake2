@@ -58,7 +58,9 @@ public:
 	  CMapEntity (),
 	  CHurtableEntity (),
 	  CThinkableEntity (),
-	  CUsableEntity ()
+	  CUsableEntity (),
+	  DoFree (false),
+	  AlarmSound (0)
 	{
 	};
 
@@ -67,7 +69,9 @@ public:
 	  CMapEntity (Index),
 	  CHurtableEntity (Index),
 	  CThinkableEntity (Index),
-	  CUsableEntity (Index)
+	  CUsableEntity (Index),
+	  DoFree (false),
+	  AlarmSound (0)
 	{
 	};
 
@@ -348,7 +352,7 @@ public:
 
 	void Use (CBaseEntity *other, CBaseEntity *activator)
 	{
-		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 		{
 			edict_t *ent = (*it);
 			if (!ent->inUse || !ent->Entity)

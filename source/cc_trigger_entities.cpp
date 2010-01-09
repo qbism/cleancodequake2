@@ -890,13 +890,15 @@ public:
 
 	CTriggerGravity () :
 	  CBaseEntity (),
-	  CTriggerMultiple ()
+	  CTriggerMultiple (),
+	  Gravity (0)
 	  {
 	  };
 
 	CTriggerGravity (sint32 Index) :
 	  CBaseEntity (Index),
-	  CTriggerMultiple (Index)
+	  CTriggerMultiple (Index),
+	  Gravity (0)
 	  {
 	  };
 

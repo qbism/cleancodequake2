@@ -268,20 +268,7 @@ void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 	PainDebounceTime = level.Frame + 30;
 
-	sint32 r = irandom(3);
-	switch (r)
-	{
-	case 0:
-	default:
-		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
-		break;
-	case 1:
-		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
-		break;
-	case 2:
-		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN3]);
-		break;
-	}
+	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1+irandom(3)]);
 
 	if (skill->Integer() == 3)
 		return;		// no pain anims in nightmare

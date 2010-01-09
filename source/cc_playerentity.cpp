@@ -2736,12 +2736,15 @@ void CPlayerEntity::TossClientWeapon ()
 
 	CWeaponItem *Item = (Client.Persistent.Weapon) ? Client.Persistent.Weapon->Item : NULL;
 
-	if (!Item->Ammo)
-		Item = NULL;
-	if (Item && !Client.Persistent.Inventory.Has(Item->Ammo))
-		Item = NULL;
-	if (Item && !Item->WorldModel)
-		Item = NULL;
+	if (Item)
+	{
+		if (!Item->Ammo)
+			Item = NULL;
+		if (Item && !Client.Persistent.Inventory.Has(Item->Ammo))
+			Item = NULL;
+		if (Item && !Item->WorldModel)
+			Item = NULL;
+	}
 
 	bool quad = (!dmFlags.dfQuadDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadDamage > (level.Frame + 10));
 #if XATRIX_FEATURES

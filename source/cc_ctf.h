@@ -128,7 +128,7 @@ public:
 		needvotes = 0;
 		electtime = 0;
 
-		for (TGhostMapType::iterator it = Ghosts.begin(); it != Ghosts.end(); it++)
+		for (TGhostMapType::iterator it = Ghosts.begin(); it != Ghosts.end(); ++it)
 			QDelete (*it).second;
 		Ghosts.clear();
 

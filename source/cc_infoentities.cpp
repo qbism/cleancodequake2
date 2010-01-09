@@ -96,7 +96,8 @@ public:
 	  CBaseEntity (),
 	  CMapEntity(),
 	  CBrushModel (),
-	  Dest (NULL)
+	  Dest (NULL),
+	  Target (NULL)
 	  {
 	  };
 
@@ -104,7 +105,8 @@ public:
 	  CBaseEntity (Index),
 	  CMapEntity(),
 	  CBrushModel (Index),
-	  Dest (NULL)
+	  Dest (NULL),
+	  Target (NULL)
 	  {
 	  };
 
@@ -211,13 +213,15 @@ public:
 
 	CTeleporter () :
 		CBaseEntity (),
-		CSpotBase ()
+		CSpotBase (),
+		Target (NULL)
 		{
 		};
 
 	CTeleporter (sint32 Index) :
 		CBaseEntity (Index),
-		CSpotBase (Index)
+		CSpotBase (Index),
+		Target (NULL)
 		{
 		};
 

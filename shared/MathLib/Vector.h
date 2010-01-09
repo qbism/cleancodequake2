@@ -538,8 +538,7 @@ public:
 			if (yaw < 0)
 				yaw += 360;
 
-			float forward = sqrtf(X * X + Y * Y);
-			pitch = atan2f(Z, forward) * (180.0f / M_PI);
+			pitch = atan2f(Z, sqrtf(X * X + Y * Y)) * (180.0f / M_PI);
 			if (pitch < 0)
 				pitch += 360;
 		}

@@ -1851,9 +1851,7 @@ void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
 bool CMonster::CheckAttack ()
 {
 #if !MONSTER_USE_ROGUE_AI
-	vec3f	spot1, spot2;
 	float	chance;
-	CTrace	tr;
 
 	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
 		return false;
@@ -1861,12 +1859,12 @@ bool CMonster::CheckAttack ()
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
-		spot1 = Entity->State.GetOrigin();
+		vec3f spot1 = Entity->State.GetOrigin();
 		spot1.Z += Entity->ViewHeight;
-		spot2 = Entity->Enemy->State.GetOrigin();
+		vec3f spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)
@@ -2481,9 +2479,8 @@ void CMonster::AI_Run(float Dist)
 	CTempGoal		*tempgoal;
 	CBaseEntity		*save;
 	bool		isNew;
-	float		d1, d2, left, center, right;
-	CTrace		tr;
-	vec3f		v_forward, v_right, left_target, right_target, v;
+	float		d1;
+	vec3f		v_forward, v_right, v;
 
 #if MONSTERS_USE_PATHFINDING
 	if (FollowingPath)
@@ -2613,26 +2610,27 @@ void CMonster::AI_Run(float Dist)
 	{
 //		gi.dprintf("checking for course correction\n");
 
-		tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
+		CTrace tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 		if (tr.fraction < 1)
 		{
 			v = Entity->GoalEntity->State.GetOrigin() - origin;
 			d1 = v.Length();
-			center = tr.fraction;
-			d2 = d1 * ((center+1)/2);
+			float center = tr.fraction;
+			float d2 = d1 * ((center+1)/2);
 			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 
 			Entity->State.GetAngles().ToVectors (&v_forward, &v_right, NULL);
 
 			v.Set (d2, -16, 0);
+			vec3f left_target, right_target;
 			G_ProjectSource (origin, v, v_forward, v_right, left_target);
 			tr (origin, Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			left = tr.fraction;
+			float left = tr.fraction;
 
 			v.Set (d2, 16, 0);
 			G_ProjectSource (origin, v, v_forward, v_right, right_target);
 			tr (origin, Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			right = tr.fraction;
+			float right = tr.fraction;
 
 			center = (d1*center)/d2;
 			if (left >= center && left > right)
@@ -3928,7 +3926,7 @@ bool CMonster::FindTarget()
 
 	if (!client)
 		client = level.SightClient;
-	if (!client)
+	if (!client || !client->gameEntity || client->Freed)
 		return false;
 
 	// if the entity went away, forget it

@@ -126,7 +126,7 @@ void RecursiveCommandPrint (CPlayerCommand *Cmd, uint32 &depth)
 void SearchForRandomMonster (CMonsterEntity *Entity)
 {
 	static std::vector <CMonsterEntity *, std::generic_allocator<CMonsterEntity *> > ChosenMonsters;
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 	{
 		edict_t *ent = (*it);
 

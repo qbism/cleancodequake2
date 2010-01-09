@@ -55,7 +55,7 @@ void AddWeapons (CItemList *List)
 	for (size_t i = 0; i < WeaponList().size(); i++)
 		Order.insert (std::make_pair (WeaponList()[i]->ListOrder, i));
 
-	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); it++)
+	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
 		WeaponList()[(*it).second]->AddWeaponToItemList (List);
 }
 
@@ -68,7 +68,7 @@ void AddWeaponsToListLocations (CItemList *List)
 	for (size_t i = 0; i < WeaponList().size(); i++)
 		Order.insert (std::make_pair (WeaponList()[i]->ListOrder, i));
 
-	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); it++)
+	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
 	{
 		if (WeaponList()[(*it).second]->Item)
 			List->Items.push_back (WeaponList()[(*it).second]->Item);
@@ -505,16 +505,16 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 
 		// Do we have the ammo?
 		bool BreakIt = false;
-		for (size_t i = 0; i < Start->NeededAmmo.size(); i++)
+		for (size_t z = 0; z < Start->NeededAmmo.size(); z++)
 		{
-			if (!Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[i]))
+			if (!Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[z]))
 			{
 				BreakIt = true;
 				break;
 			}
 
 			// Ammo amounts?
-			if (Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[i]) < Start->NeededAmmoNumbers[i])
+			if (Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[z]) < Start->NeededAmmoNumbers[z])
 			{
 				BreakIt = true;
 				break;
@@ -525,9 +525,9 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 			continue;
 
 		// Do we have all the extra items?
-		for (size_t i = 0; Start->NeededItems.size(); i++)
+		for (size_t z = 0; Start->NeededItems.size(); z++)
 		{
-			if (!Player->Client.Persistent.Inventory.Has(Start->NeededItems[i]))
+			if (!Player->Client.Persistent.Inventory.Has(Start->NeededItems[z]))
 			{
 				BreakIt = true;
 				break;

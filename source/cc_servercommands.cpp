@@ -268,7 +268,7 @@ void SvCmd_Ban_t ()
 			"Name/IP                   IP       Flags\n"
 			"---------------------    ----      -----\n");
 
-		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); it++)
+		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); ++it)
 		{
 			BanIndex *Index = *it;
 
@@ -278,7 +278,7 @@ void SvCmd_Ban_t ()
 			DebugPrintf ("%-24s Yes         %u\n", Index->IPAddress->str, Index->Flags);
 		}
 
-		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); it++)
+		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); ++it)
 		{
 			BanIndex *Index = *it;
 

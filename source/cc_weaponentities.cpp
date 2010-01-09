@@ -1059,10 +1059,17 @@ void CShotgunPellets::DoSolidHit	(CTrace *Trace)
 		CTempEnt_Splashes::Shotgun (Trace->EndPos, Trace->plane.normal);
 }
 
+extern bool LastPelletShot;
 void CShotgunPellets::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 Count, sint32 mod)
 {
+	LastPelletShot = false;
 	for (sint32 i = 0; i < Count; i++)
+	{
+		if (i == Count - 1)
+			LastPelletShot = true;
+
 		CShotgunPellets(damage, kick, hSpread, vSpread, mod).DoFire (Entity, start, aimdir);
+	}
 }
 
 bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, sint32 damage, sint32 kick)

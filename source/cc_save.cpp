@@ -254,7 +254,7 @@ void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
 
 void WriteEntities (CFile &File)
 {
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 	{
 		edict_t *ent = (*it);
 		if (!ent->Entity || !ent->Entity->Savable())
@@ -267,7 +267,7 @@ void WriteEntities (CFile &File)
 	}
 	File.Write<sint32> (-1);
 
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 	{
 		CBaseEntity *Entity = (*it)->Entity;
 		if (!Entity || !Entity->Savable())

@@ -81,7 +81,7 @@ void CMenu::AddItem (CMenuItem *Item)
 
 void CMenu::DrawItems (CStatusBar *Bar)
 {
-	for (TMenuItemsContainer::iterator it = Items.begin(); it < Items.end(); it++)
+	for (TMenuItemsContainer::iterator it = Items.begin(); it < Items.end(); ++it)
 		(*it)->Draw (ent, Bar);
 }
 

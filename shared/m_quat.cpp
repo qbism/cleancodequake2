@@ -133,7 +133,7 @@ Quat_Lerp
 void Quat_Lerp (quat_t q1, quat_t q2, float t, quat_t out)
 {
 	quat_t	p1;
-	float	omega, cosom, sinom, scale0, scale1;
+	float	cosom, scale0, scale1;
 
 	cosom = q1[0] * q2[0] + q1[1] * q2[1] + q1[2] * q2[2] + q1[3] * q2[3];
 	if (cosom < 0.0) { 
@@ -147,8 +147,8 @@ void Quat_Lerp (quat_t q1, quat_t q2, float t, quat_t out)
 	}
 
 	if (cosom < 1.0 - 0.001) {
-		omega = acosf(cosom);
-		sinom = 1.0f / sinf(omega);
+		float omega = acosf(cosom);
+		float sinom = 1.0f / sinf(omega);
 		scale0 = sinf((1.0f - t) * omega) * sinom;
 		scale1 = sinf(t * omega) * sinom;
 	}

@@ -106,7 +106,8 @@ CTurretBreach::CTurretBreach () :
 CBaseEntity (),
 CTurretEntityBase (),
 FinishInit(true),
-ShouldFire(false)
+ShouldFire(false),
+Target(NULL)
 {
 	PitchOptions[0] = PitchOptions[1] = PitchOptions[2] = PitchOptions[3] = 0;
 };
@@ -115,7 +116,8 @@ CTurretBreach::CTurretBreach (sint32 Index) :
 CBaseEntity (Index),
 CTurretEntityBase (Index),
 FinishInit(true),
-ShouldFire(false)
+ShouldFire(false),
+Target(NULL)
 {
 	PitchOptions[0] = PitchOptions[1] = PitchOptions[2] = PitchOptions[3] = 0;
 };
@@ -429,6 +431,7 @@ void CTurretDriver::Pain (CBaseEntity *other, float kick, sint32 damage)
 		return;
 
 	PainDebounceTime = level.Frame + 30;
+
 	Entity->PlaySound (CHAN_VOICE, (!irandom(2) == 0) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 }
 

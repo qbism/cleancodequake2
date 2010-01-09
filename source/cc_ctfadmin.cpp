@@ -172,7 +172,12 @@ public:
 	};
 
 	CCTFSettingsMenu	(CPlayerEntity *Player) :
-	  CMenu (Player)
+	  CMenu (Player),
+	  WeaponsStaySpin (NULL),
+	  InstantItemsSpin (NULL),
+	  QuadDropSpin (NULL),
+	  InstantWeaponsSpin (NULL),
+	  MatchLockSpin (NULL)
 	  {
 	  };
 

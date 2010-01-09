@@ -129,7 +129,6 @@ VecToAngles
 */
 void VecToAngles (vec3_t vec, vec3_t angles)
 {
-	float	forward;
 	float	yaw, pitch;
 	
 	if (vec[1] == 0 && vec[0] == 0) {
@@ -150,8 +149,7 @@ void VecToAngles (vec3_t vec, vec3_t angles)
 		if (yaw < 0)
 			yaw += 360;
 
-		forward = sqrtf(vec[0] * vec[0] + vec[1] * vec[1]);
-		pitch = atan2f(vec[2], forward) * (180.0f / M_PI);
+		pitch = atan2f(vec[2], sqrtf(vec[0] * vec[0] + vec[1] * vec[1])) * (180.0f / M_PI);
 		if (pitch < 0)
 			pitch += 360;
 	}

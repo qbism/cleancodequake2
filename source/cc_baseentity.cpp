@@ -166,9 +166,9 @@ edict_t *GetEntityFromList ()
 
 	// Take entity off of list, obeying freetime
 	edict_t *ent = NULL;
-	TEntitiesContainer::iterator it;
 
-	for (it = level.Entities.Open.begin(); it != level.Entities.Open.end(); it++)
+	TEntitiesContainer::iterator it;
+	for (it = level.Entities.Open.begin(); it != level.Entities.Open.end(); ++it)
 	{
 		edict_t *check = (*it);
 
@@ -381,7 +381,7 @@ CBaseEntity::~CBaseEntity ()
 		}
 		else
 		{
-			for (TPrivateEntitiesContainer::iterator it = PrivateEntities.begin(); it < PrivateEntities.end(); it++)
+			for (TPrivateEntitiesContainer::iterator it = PrivateEntities.begin(); it < PrivateEntities.end(); ++it)
 			{
 				if ((*it) == this)
 				{

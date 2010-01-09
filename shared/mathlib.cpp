@@ -281,7 +281,7 @@ Q_FastSqrt
 #ifdef id386
 float Q_FastSqrt(float value)
 {
-	float result;
+	float result = 0;
 	__asm {
 		mov eax, value
 		sub eax, 0x3f800000
