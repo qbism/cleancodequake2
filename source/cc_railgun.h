@@ -45,6 +45,10 @@ public:
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
 
+#if XATRIX_FEATURES
+	void Use (CWeaponItem *Wanted, CPlayerEntity *ent);
+#endif
+
 	WEAPON_CLASS_DEFS (CRailgun);
 };
 

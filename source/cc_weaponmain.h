@@ -132,6 +132,8 @@ public:
 	virtual void CreateItem (CItemList *List)
 	{
 	};
+
+	virtual void Use (CWeaponItem *Wanted, CPlayerEntity *ent);
 };
 
 #define WEAPON_CLASS_DEFS(x) \

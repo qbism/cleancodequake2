@@ -250,7 +250,7 @@ void Cmd_Use_f (CPlayerEntity *ent)
 		ent->PrintToClient (PRINT_HIGH, "Item is not usable.\n");
 		return;
 	}
-	if (!ent->Client.Persistent.Inventory.Has(Item))
+	if ((!(Item->Flags & ITEMFLAG_WEAPON)) && !ent->Client.Persistent.Inventory.Has(Item))
 	{
 		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.c_str());
 		return;

@@ -455,18 +455,33 @@ public:
 
 typedef std::vector <CWeaponSwitcher, std::generic_allocator<CWeaponSwitcher> > TWeaponSwitcherListType;
 
+#if XATRIX_FEATURES
+#include "cc_xatrix_ionripper.h"
+#include "cc_xatrix_phalanx.h"
+#endif
+
 inline TWeaponSwitcherListType &WeaponSwitchList ()
 {
 	// Ordered by priority.
-	// Multiple weapons can appear in the same list.
+	// Same weapon can appear multiple times.
 	static TWeaponSwitcherListType List_;
 
 	List_.push_back	(CWeaponSwitcher(&CBFG::Weapon).AddAmmo(NItems::Cells, 50).SwitchExplosive());
-	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 1));
 	List_.push_back	(CWeaponSwitcher(&CRailgun::Weapon).AddAmmo(NItems::Slugs, 1));
+#if XATRIX_FEATURES
+	List_.push_back	(CWeaponSwitcher(&CIonRipper::Weapon).AddAmmo(NItems::Cells, 40));
+#endif
+	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 20));
 	List_.push_back	(CWeaponSwitcher(&CRocketLauncher::Weapon).AddAmmo(NItems::Rockets, 1).SwitchExplosive());
+#if XATRIX_FEATURES
+	List_.push_back	(CWeaponSwitcher(&CPhalanx::Weapon).AddAmmo(NItems::MagSlugs, 1).SwitchExplosive());
+#endif
 	List_.push_back	(CWeaponSwitcher(&CGrenadeLauncher::Weapon).AddAmmo(NItems::Grenades, 1).SwitchExplosive());
 	List_.push_back	(CWeaponSwitcher(&CChaingun::Weapon).AddAmmo(NItems::Bullets, 50));
+#if XATRIX_FEATURES
+	List_.push_back	(CWeaponSwitcher(&CIonRipper::Weapon).AddAmmo(NItems::Cells, 2));
+#endif
+	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 1));
 	List_.push_back	(CWeaponSwitcher(&CMachinegun::Weapon).AddAmmo(NItems::Bullets, 1));
 	List_.push_back	(CWeaponSwitcher(&CSuperShotgun::Weapon).AddAmmo(NItems::Shells, 8));
 	List_.push_back	(CWeaponSwitcher(&CShotgun::Weapon).AddAmmo(NItems::Shells, 1));
@@ -477,8 +492,6 @@ inline TWeaponSwitcherListType &WeaponSwitchList ()
 	return List_;
 }
 
-// YUCK
-// Better way?
 void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 {
 	// Dead?
@@ -553,6 +566,37 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 	// Do a quick check to see if we still even have the weapon we're holding.
 	if ((Player->Client.Persistent.Weapon->Item && !Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->Item)))
 		Player->Client.Persistent.Weapon->ChangeWeapon(Player);
+}
+
+void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *ent)
+{
+	if (!ent->Client.Persistent.Inventory.Has(Wanted))
+	{
+		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
+		return;
+	}
+
+	// see if we're already using it
+	if (ent->Client.Persistent.Weapon == this)
+		return;
+
+	if (Wanted->Ammo && !g_select_empty->Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	{
+		if (!ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+		{
+			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			return;
+		}
+
+		if (ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+		{
+			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			return;
+		}
+	}
+
+	// change to this weapon when down
+	ent->Client.NewWeapon = this;
 }
 
 void CWeapon::FireAnimation (CPlayerEntity *Player)

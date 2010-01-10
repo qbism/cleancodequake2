@@ -959,20 +959,6 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	}
 
 	// the total alpha of the blend is always proportional to count
-/*	sint32 Alpha = Client.DamageBlend.A + count*3;
-	if (Alpha < 51)
-		Alpha = 51;
-	if (Alpha > 153)
-		Alpha = 153;		// don't go too saturated
-
-	// the color of the blend will vary based on how much was absorbed
-	// by different armors
-	Client.DamageBlend.Set (
-							(BloodColor.R * ((float)Client.DamageValues[DT_BLOOD]/(float)realcount)) + (ArmorColor.R * ((float)Client.DamageValues[DT_ARMOR]/(float)realcount)) + (PowerColor.R * ((float)Client.DamageValues[DT_POWERARMOR]/(float)realcount)),
-							(BloodColor.G * ((float)Client.DamageValues[DT_BLOOD]/(float)realcount)) + (ArmorColor.G * ((float)Client.DamageValues[DT_ARMOR]/(float)realcount)) + (PowerColor.G * ((float)Client.DamageValues[DT_POWERARMOR]/(float)realcount)),
-							(BloodColor.B * ((float)Client.DamageValues[DT_BLOOD]/(float)realcount)) + (ArmorColor.B * ((float)Client.DamageValues[DT_ARMOR]/(float)realcount)) + (PowerColor.B * ((float)Client.DamageValues[DT_POWERARMOR]/(float)realcount)),
-							Alpha);*/
-	// the total alpha of the blend is always proportional to count
 	if (Client.DamageBlend.A < 0)
 		Client.DamageBlend.A = 0;
 	Client.DamageBlend.A += count*0.01f;
