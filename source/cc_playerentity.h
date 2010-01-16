@@ -551,15 +551,15 @@ public:
 class CPlayerEntity : public CHurtableEntity, public CPhysicsEntity
 {
 public:
-	CClient				Client;
-	bool				NoClip;
-	bool				TossPhysics;
-	FrameNumber_t		FlySoundDebounceTime;
-	FrameNumber_t		DamageDebounceTime;
-	FrameNumber_t		AirFinished;
-	FrameNumber_t		NextDrownTime;
-	sint32				NextDrownDamage;
-	FrameNumber_t		PainDebounceTime;
+	CClient					Client;
+	bool					NoClip;
+	bool					TossPhysics;
+	FrameNumber_t			FlySoundDebounceTime;
+	FrameNumber_t			DamageDebounceTime;
+	FrameNumber_t			AirFinished;
+	FrameNumber_t			NextDrownTime;
+	sint32					NextDrownDamage;
+	FrameNumber_t			PainDebounceTime;
 
 	CPlayerEntity (sint32 Index);
 	~CPlayerEntity ();

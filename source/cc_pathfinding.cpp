@@ -307,7 +307,7 @@ CPathNode *DropNode (edict_t *ent)
 	NodeList.push_back(QNew (com_levelPool, 0) CPathNode(ent->state.origin, NODE_REGULAR));
 
 	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
-	ClientPrintf (ent, PRINT_HIGH, "Node %i added\n", NodeList.size());
+	ent->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
 
 	return NodeList.at(NodeList.size() - 1);
 }
