@@ -209,8 +209,10 @@ public:
 	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf); // Empty
 	void			Use (CBaseEntity *other, CBaseEntity *activator);
 
+	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+
 	bool			Run ();
-	void			ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type);
+	void			ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects = EF_GIB);
 
 	void			Spawn ();
 };
@@ -359,6 +361,7 @@ public:
 	virtual void		ReactToDamage	(CBaseEntity *attacker);
 
 	virtual void		MonsterThink	();
+	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
 	void				AI_Charge (float Dist);
 	void				AI_Move (float Dist);
@@ -406,6 +409,7 @@ public:
 	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 	void				MonsterFireBeam (class CMonsterBeamLaser *Laser);
 	void				MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
 #endif
 
 #if MONSTERS_ARENT_STUPID

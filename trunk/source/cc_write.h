@@ -51,3 +51,4 @@ void WriteDirection (vec3f &val);
 #else
 FILE_WARNING
 #endif
+

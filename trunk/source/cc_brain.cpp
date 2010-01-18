@@ -574,6 +574,206 @@ void CBrain::Melee ()
 	CurrentMove = (frand() <= 0.5) ? &BrainMoveAttack1 : &BrainMoveAttack2;
 }
 
+#if XATRIX_FEATURES
+static bool BrainTongueAttackCheck (vec3f &start, vec3f &end)
+{
+	vec3f dir = start - end;
+
+	// check for max distance
+	if (dir.Length() > 512)
+		return false;
+
+	// check for min/max pitch
+	vec3f angles = dir.ToAngles();
+	if (angles.X < -180)
+		angles.X += 360;
+	if (fabsf(angles.X) > 30)
+		return false;
+
+	return true;
+}
+
+#include "cc_tent.h"
+
+void CBrain::TongueAttack ()
+{
+	static const vec3f offset (24, 0, 16);
+	vec3f	start = Entity->State.GetOrigin(), f, r;
+
+	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
+
+	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, start);
+
+	vec3f end = Entity->Enemy->State.GetOrigin();
+	if (!BrainTongueAttackCheck(start, end))
+	{
+		end.Z = Entity->Enemy->State.GetOrigin().Z + Entity->Enemy->GetMaxs().Z - 8;
+		if (!BrainTongueAttackCheck(start, end))
+		{
+			end[2] = Entity->Enemy->State.GetOrigin().Z + Entity->Enemy->GetMins().Z + 8;
+			if (!BrainTongueAttackCheck(start, end))
+				return;
+		}
+	}
+	end = Entity->Enemy->State.GetOrigin();
+
+	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
+	if (tr.Ent != Entity->Enemy)
+		return;
+
+	static const int damage = 5;
+	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
+
+	CTempEnt_Trails::FleshCable (start, end, Entity->State.GetNumber());
+
+	vec3f dir = start - end;
+	entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+
+	// pull the enemy in
+	Entity->Enemy->State.GetOrigin().Z += 1;
+	entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity = f * -1200;;
+}
+
+// Brian right eye center
+const vec3f brain_reye [11] =
+{
+	vec3f ( 0.746700f, 0.238370f, 34.167690f ),
+	vec3f ( -1.076390f, 0.238370f, 33.386372f ),
+	vec3f ( -1.335500f, 5.334300f, 32.177170f ),
+	vec3f ( -0.175360f, 8.846370f, 30.635479f ),
+	vec3f ( -2.757590f, 7.804610f, 30.150860f ),
+	vec3f ( -5.575090f, 5.152840f, 30.056160f ),
+	vec3f ( -7.017550f, 3.262470f, 30.552521f ),
+	vec3f ( -7.915740f, 0.638800f, 33.176189f ),
+	vec3f ( -3.915390f, 8.285730f, 33.976349f ),
+	vec3f ( -0.913540f, 10.933030f, 34.141811f ),
+	vec3f ( -0.369900f, 8.923900f, 34.189079f )
+};
+
+// Brain left eye center
+const vec3f brain_leye [11] =
+{
+	vec3f ( -3.364710f, 0.327750f, 33.938381f ),
+	vec3f ( -5.140450f, 0.493480f, 32.659851f ),
+	vec3f ( -5.341980f, 5.646980f, 31.277901f ),
+	vec3f ( -4.134480f, 9.277440f, 29.925621f ),
+	vec3f ( -6.598340f, 6.815090f, 29.322620f ),
+	vec3f ( -8.610840f, 2.529650f, 29.251591f ),
+	vec3f ( -9.231360f, 0.093280f, 29.747959f ),
+	vec3f ( -11.004110f, 1.936930f, 32.395260f ),
+	vec3f ( -7.878310f, 7.648190f, 33.148151f ),
+	vec3f ( -4.947370f, 11.430050f, 33.313610f ),
+	vec3f ( -4.332820f, 9.444570f, 33.526340f )
+};
+
+// note to self
+// need to get an x,y,z offset for
+// each frame of the run cycle
+void CBrain::LaserBeamFire ()
+{
+	vec3f forward, right, up;
+
+	// RAFAEL
+	// cant call sound this frequent
+	if (frand() > 0.8)
+		Entity->PlaySound (CHAN_AUTO, SoundIndex("misc/lasfly.wav"), 255, ATTN_STATIC);
+
+	vec3f angles = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToAngles();
+	
+	// dis is my right eye
+	CMonsterBeamLaser *Laser = QNewEntityOf CMonsterBeamLaser;
+	Laser->State.GetOrigin() = Entity->State.GetOrigin();
+	angles.ToVectors (&forward, &right, &up);
+	Laser->State.GetAngles() = angles;
+	Laser->State.GetOrigin() = Laser->State.GetOrigin().
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].X, right).
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].Y, forward).
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
+
+	Laser->Enemy = Entity->Enemy;
+	Laser->SetOwner (Entity);
+	Laser->Damage = 1;
+	MonsterFireBeam (Laser);
+   
+	// dis is me left eye
+	Laser = QNewEntityOf CMonsterBeamLaser;
+	Laser->State.GetOrigin() = Entity->State.GetOrigin();
+	angles.ToVectors (&forward, &right, &up);
+	Laser->State.GetAngles() = angles;
+	Laser->State.GetOrigin() = Laser->State.GetOrigin().
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].X, right).
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].Y, forward).
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
+
+	Laser->Enemy = Entity->Enemy;
+	Laser->SetOwner (Entity);
+	Laser->Damage = 1;
+	MonsterFireBeam (Laser);
+}
+
+void CBrain::LaserBeamRefire ()
+{
+	if (frand() < 0.5 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+		Entity->State.GetFrame() = FRAME_walk101;
+}
+
+CFrame BrainFramesAttack3 [] =
+{
+	CFrame (&CMonster::AI_Charge, 5),
+	CFrame (&CMonster::AI_Charge, -4),
+	CFrame (&CMonster::AI_Charge, -4),
+	CFrame (&CMonster::AI_Charge, -3),
+	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::ChestOpen)),
+	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TongueAttack)),
+	CFrame (&CMonster::AI_Charge, 13),
+	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TentacleAttack)),
+	CFrame (&CMonster::AI_Charge, 2),
+	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TongueAttack)),
+	CFrame (&CMonster::AI_Charge, -9,	ConvertDerivedFunction(&CBrain::ChestClosed)),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, 4),
+	CFrame (&CMonster::AI_Charge, 3),
+	CFrame (&CMonster::AI_Charge, 2),
+	CFrame (&CMonster::AI_Charge, -3),
+	CFrame (&CMonster::AI_Charge, -6)
+};
+CAnim BrainMoveAttack3 (FRAME_attak201, FRAME_attak217, BrainFramesAttack3, &CMonster::Run);
+
+CFrame BrainFramesAttack4 [] =
+{
+	CFrame (&CMonster::AI_Charge, 9,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 3,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 3,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 10,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, -4,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, -1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&CMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamRefire))
+};
+CAnim BrainMoveAttack4 (FRAME_walk101, FRAME_walk111, BrainFramesAttack4, &CMonster::Run);
+
+void CBrain::Attack ()
+{	
+	if (frand() < 0.8)
+	{
+		ERangeType r = Range (Entity, Entity->Enemy);
+
+		switch (r)
+		{
+		case RANGE_NEAR:
+			CurrentMove = (frand() <= 0.5) ? &BrainMoveAttack3 : &BrainMoveAttack4;
+			break;
+		case RANGE_MID:
+		case RANGE_FAR:
+			CurrentMove = &BrainMoveAttack4;
+			break;
+		}
+	}
+}
+#endif
 
 //
 // RUN
@@ -633,6 +833,9 @@ void CBrain::Spawn ()
 	MonsterFlags |= (MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_SEARCH | MF_HAS_IDLE
 #if MONSTER_USE_ROGUE_AI
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK
+#endif
+#if XATRIX_FEATURES
+		| MF_HAS_ATTACK
 #endif
 		);
 

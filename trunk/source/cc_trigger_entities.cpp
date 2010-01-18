@@ -159,7 +159,7 @@ void CTriggerBase::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *su
 	{
 		vec3f	forward;
 		other->State.GetAngles().ToVectors (&forward, NULL, NULL);
-		if (forward.Dot(MoveDir) < 0)
+		if ((forward | MoveDir) < 0)
 			return;
 	}
 
@@ -572,7 +572,7 @@ public:
 		else
 		{
 			// FIXME: replace this shit
-			if (other->ClassName && strcmp(other->ClassName, "grenade") == 0)
+			if (!other->ClassName.empty() && strcmp(other->ClassName.c_str(), "grenade") == 0)
 			{
 				if (other->EntityFlags & ENT_PHYSICS)
 					entity_cast<CPhysicsEntity>(other)->Velocity = vel;
@@ -890,13 +890,15 @@ public:
 
 	CTriggerGravity () :
 	  CBaseEntity (),
-	  CTriggerMultiple ()
+	  CTriggerMultiple (),
+	  Gravity (0)
 	  {
 	  };
 
 	CTriggerGravity (sint32 Index) :
 	  CBaseEntity (Index),
-	  CTriggerMultiple (Index)
+	  CTriggerMultiple (Index),
+	  Gravity (0)
 	  {
 	  };
 

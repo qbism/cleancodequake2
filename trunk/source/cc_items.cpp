@@ -189,3 +189,4 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 
 	return dropped;
 }
+

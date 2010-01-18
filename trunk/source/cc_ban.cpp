@@ -179,9 +179,7 @@ bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
 
 bool CBanList::InList (IPAddress Adr)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -196,9 +194,7 @@ bool CBanList::InList (IPAddress Adr)
 
 bool CBanList::InList (const char *Name)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -213,9 +209,7 @@ bool CBanList::InList (const char *Name)
 
 bool CBanList::RemoveFromList (IPAddress Adr)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -233,9 +227,7 @@ bool CBanList::RemoveFromList (IPAddress Adr)
 
 bool CBanList::RemoveFromList (const char *Name)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -253,9 +245,7 @@ bool CBanList::RemoveFromList (const char *Name)
 
 bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -276,9 +266,7 @@ bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 
 bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -299,9 +287,7 @@ bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
 
 bool CBanList::IsSquelched (IPAddress Adr)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -316,9 +302,7 @@ bool CBanList::IsSquelched (IPAddress Adr)
 
 bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -333,9 +317,7 @@ bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 
 bool CBanList::IsBanned (IPAddress Adr)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -350,9 +332,7 @@ bool CBanList::IsBanned (IPAddress Adr)
 
 bool CBanList::IsSquelched (const char *Name)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -367,9 +347,7 @@ bool CBanList::IsSquelched (const char *Name)
 
 bool CBanList::IsBannedFromSpectator (const char *Name)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -384,9 +362,7 @@ bool CBanList::IsBannedFromSpectator (const char *Name)
 
 bool CBanList::IsBanned (const char *Name)
 {
-	TBanIndexContainer::iterator it;
-
-	for (it = BanList.begin(); it < BanList.end(); it++)
+	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
 	{
 		BanIndex *Index = *it;
 
@@ -398,3 +374,4 @@ bool CBanList::IsBanned (const char *Name)
 	}
 	return false;
 }
+

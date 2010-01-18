@@ -147,7 +147,7 @@ EStatIndex *CPlayerState::GetStats ()
 
 void			CPlayerState::Clear ()
 {
-	memset (playerState, 0, sizeof(&playerState));
+	Mem_Zero (playerState, sizeof(&playerState));
 }
 
 CClient::CClient (gclient_t *client) :
@@ -258,7 +258,7 @@ void CClient::Clear ()
 {
 	if (!ReadingGame)
 	{
-		memset (client, 0, sizeof(*client));
+		Mem_Zero (client, sizeof(*client));
 
 		PlayerState.Initialize (&client->playerState);
 		KickAngles.Clear ();
@@ -277,7 +277,7 @@ void CClient::Clear ()
 		KillerYaw = 0;
 		Persistent.Clear ();
 		Respawn.Clear ();
-		memset (&OldPMove, 0, sizeof(OldPMove));
+		Mem_Zero (&OldPMove, sizeof(OldPMove));
 		LayoutFlags = 0;
 		Buttons = 0;
 		LatchedButtons = 0;
@@ -291,17 +291,17 @@ void CClient::Clear ()
 		OldWaterLevel = 0;
 		WeaponSound = 0;
 
-		memset (&Anim, 0, sizeof(Anim));
-		memset (&Timers, 0, sizeof(Timers));
-		memset (&Grenade, 0, sizeof(Grenade));
-		memset (&Flood, 0, sizeof(Flood));
-		memset (&Chase, 0, sizeof(Chase));
+		Mem_Zero (&Anim, sizeof(Anim));
+		Mem_Zero (&Timers, sizeof(Timers));
+		Mem_Zero (&Grenade, sizeof(Grenade));
+		Mem_Zero (&Flood, sizeof(Flood));
+		Mem_Zero (&Chase, sizeof(Chase));
 	#if CLEANCTF_ENABLED
-		memset (&Grapple, 0, sizeof(Grapple));
+		Mem_Zero (&Grapple, sizeof(Grapple));
 	#endif
-		memset (&Tech, 0, sizeof(Tech));
+		Mem_Zero (&Tech, sizeof(Tech));
 
-		memset (&DamageValues, 0, sizeof(DamageValues));
+		Mem_Zero (&DamageValues, sizeof(DamageValues));
 
 		memset (&DoubleTap, 0, sizeof(DoubleTap));
 		memset (&Cinematic, 0, sizeof(Cinematic));
@@ -578,7 +578,6 @@ void CPlayerEntity::PutInServer ()
 				Client.Persistent.Score = Respawn.Score;
 		break;
 	case GAME_SINGLEPLAYER:
-			//memset (&Respawn, 0, sizeof(Respawn));
 			Respawn.Clear ();
 		break;
 	}
@@ -707,7 +706,6 @@ but is called after each death and level change in deathmatch
 */
 void CPlayerEntity::InitPersistent ()
 {
-	//memset (&Client.Persistent, 0, sizeof(Client.Persistent));
 	Client.Persistent.Clear ();
 
 	if (!map_debug->Boolean())
@@ -788,7 +786,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 #if CLEANCTF_ENABLED
 //ZOID
 	if (game.GameMode & GAME_CTF)
-		CTFAssignSkin(s);
+		CTFAssignSkin(UserInfo);
 	else
 //ZOID
 #endif
@@ -803,12 +801,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	else
 	{
 		float fov = atof(Info_ValueForKey(UserInfo, "fov").c_str());
-		if (fov < 1)
-			fov = 90;
-		else if (fov > 160)
-			fov = 160;
-
-		Client.PlayerState.GetFov () = fov;
+		Client.PlayerState.GetFov () = Clamp<float> (fov, 1, 160);
 	}
 
 	// handedness
@@ -852,10 +845,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 }
 
 #if CLEANCTF_ENABLED
-void CPlayerEntity::CTFAssignSkin(std::cc_string s)
+void CPlayerEntity::CTFAssignSkin(std::cc_string &s)
 {
 	sint32 playernum = State.GetNumber()-1;
-	std::cc_string t = s;
+	std::cc_string t = Info_ValueForKey(s, "skin");
 
 	if (t.find('/'))
 		t.erase (t.find('/') + 1);
@@ -865,16 +858,13 @@ void CPlayerEntity::CTFAssignSkin(std::cc_string s)
 	switch (Client.Respawn.CTF.Team)
 	{
 	case CTF_TEAM1:
-		ConfigString (CS_PLAYERSKINS+playernum, Q_VarArgs("%s\\%s"CTF_TEAM1_SKIN, 
-			Client.Persistent.Name.c_str(), t.c_str()).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM1_SKIN).c_str());
 		break;
 	case CTF_TEAM2:
-		ConfigString (CS_PLAYERSKINS+playernum,
-			Q_VarArgs("%s\\%s"CTF_TEAM2_SKIN, Client.Persistent.Name.c_str(), t.c_str()).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM2_SKIN).c_str());
 		break;
 	default:
-		ConfigString (CS_PLAYERSKINS+playernum, 
-			Q_VarArgs("%s\\%s", Client.Persistent.Name.c_str(), s.c_str()).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + s).c_str());
 		break;
 	}
 }
@@ -924,7 +914,7 @@ CalcRoll
 */
 inline float CPlayerEntity::CalcRoll (vec3f &velocity, vec3f &right)
 {
-	float	side = Q_fabs(velocity.Dot (right));
+	float	side = Q_fabs(velocity | right);
 	float	sign = side < 0 ? -1 : 1;
 
 	if (side < sv_rollspeed->Float())
@@ -1001,20 +991,6 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	}
 
 	// the total alpha of the blend is always proportional to count
-/*	sint32 Alpha = Client.DamageBlend.A + count*3;
-	if (Alpha < 51)
-		Alpha = 51;
-	if (Alpha > 153)
-		Alpha = 153;		// don't go too saturated
-
-	// the color of the blend will vary based on how much was absorbed
-	// by different armors
-	Client.DamageBlend.Set (
-							(BloodColor.R * ((float)Client.DamageValues[DT_BLOOD]/(float)realcount)) + (ArmorColor.R * ((float)Client.DamageValues[DT_ARMOR]/(float)realcount)) + (PowerColor.R * ((float)Client.DamageValues[DT_POWERARMOR]/(float)realcount)),
-							(BloodColor.G * ((float)Client.DamageValues[DT_BLOOD]/(float)realcount)) + (ArmorColor.G * ((float)Client.DamageValues[DT_ARMOR]/(float)realcount)) + (PowerColor.G * ((float)Client.DamageValues[DT_POWERARMOR]/(float)realcount)),
-							(BloodColor.B * ((float)Client.DamageValues[DT_BLOOD]/(float)realcount)) + (ArmorColor.B * ((float)Client.DamageValues[DT_ARMOR]/(float)realcount)) + (PowerColor.B * ((float)Client.DamageValues[DT_POWERARMOR]/(float)realcount)),
-							Alpha);*/
-	// the total alpha of the blend is always proportional to count
 	if (Client.DamageBlend.A < 0)
 		Client.DamageBlend.A = 0;
 	Client.DamageBlend.A += count*0.01f;
@@ -1055,15 +1031,15 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 
 		vec3f v = (Client.DamageFrom - State.GetOrigin ()).GetNormalized();
 		
-		Client.ViewDamage.Y = kick*v.Dot (right)*0.3;
-		Client.ViewDamage.X = kick*-v.Dot (forward)*0.3;
+		Client.ViewDamage.Y = kick*(v | right)*0.3;
+		Client.ViewDamage.X = kick*-(v | forward)*0.3;
 		Client.ViewDamageTime = level.Frame + DAMAGE_TIME;
 	}
 
 	//
 	// clear totals
 	//
-	memset (&Client.DamageValues, 0, sizeof(Client.DamageValues));
+	Mem_Zero (&Client.DamageValues, sizeof(Client.DamageValues));
 }
 
 /*
@@ -1185,6 +1161,9 @@ static const colorf LavaColor (1.0f, 0.3f, 0.0f, 0.6f);
 static const colorf SlimeColor (0.0f, 0.1f, 0.05f, 0.6f);
 static const colorf WaterColor (0.5f, 0.3f, 0.2f, 0.4f);
 static const colorf QuadColor (0, 0, 1, 0.08f);
+#if XATRIX_FEATURES
+static const colorf QuadFireColor (1, 0.2f, 0.5f, 0.08f);
+#endif
 static const colorf InvulColor (1, 1, 0, 0.08f);
 static const colorf EnviroColor (0, 1, 0, 0.08f);
 static const colorf BreatherColor (0.4f, 1, 0.4f, 0.04f);
@@ -1213,6 +1192,18 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (QuadColor, Client.Persistent.ViewBlend);
 	}
+#if XATRIX_FEATURES
+	if (Client.Timers.QuadFire > level.Frame)
+	{
+		sint32 remaining = Client.Timers.QuadFire - level.Frame;
+
+		if (remaining == 30)	// beginning to fade
+			PlaySound (CHAN_ITEM, SoundIndex("items/quadfire2.wav"));
+
+		if (remaining > 30 || (remaining & 4) )
+			SV_AddBlend (QuadFireColor, Client.Persistent.ViewBlend);
+	}
+#endif
 	else if (Client.Timers.Invincibility > level.Frame)
 	{
 		sint32 remaining = Client.Timers.Invincibility - level.Frame;
@@ -1564,6 +1555,15 @@ inline void CPlayerEntity::SetClientEffects ()
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_QUAD;
 	}
+
+#if XATRIX_FEATURES
+	if (Client.Timers.QuadFire > level.Frame)
+	{
+		sint32 remaining = Client.Timers.QuadFire - level.Frame;
+		if (remaining > 30 || (remaining & 4) )
+			State.GetEffects() |= EF_DOUBLE; // Paril disting.
+	}
+#endif
 
 	if (Client.Timers.Invincibility > level.Frame)
 	{
@@ -2357,6 +2357,13 @@ void CPlayerEntity::SetStats ()
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Quad->GetIconIndex();
 			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.QuadDamage - level.Frame)/10;
 		}
+#if XATRIX_FEATURES
+		else if (Client.Timers.QuadFire > level.Frame)
+		{
+			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::QuadFire->GetIconIndex();
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.QuadFire - level.Frame)/10;
+		}
+#endif
 		else if (Client.Timers.Invincibility > level.Frame)
 		{
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Invul->GetIconIndex();
@@ -2605,7 +2612,7 @@ void CPlayerEntity::CTFSetIDView()
 		if (!who->GetInUse() || who->GetSolid() == SOLID_NOT)
 			continue;
 
-		float d = forward.Dot((who->State.GetOrigin() - State.GetOrigin()).GetNormalizedFast ());
+		float d = forward | (who->State.GetOrigin() - State.GetOrigin()).GetNormalizedFast ();
 		if (d > bd && loc_CanSee(this, who))
 		{
 			bd = d;
@@ -2667,6 +2674,9 @@ void CPlayerEntity::MoveToIntermission ()
 	Client.Timers.Invincibility = 0;
 	Client.Timers.Rebreather = 0;
 	Client.Timers.EnvironmentSuit = 0;
+#if XATRIX_FEATURES
+	Client.Timers.QuadFire = 0;
+#endif
 	Client.Grenade.BlewUp = Client.Grenade.Thrown = false;
 	Client.Grenade.Time = 0;
 
@@ -2762,14 +2772,20 @@ void CPlayerEntity::TossClientWeapon ()
 
 	CWeaponItem *Item = (Client.Persistent.Weapon) ? Client.Persistent.Weapon->Item : NULL;
 
-	if (!Item->Ammo)
-		Item = NULL;
-	if (Item && !Client.Persistent.Inventory.Has(Item->Ammo))
-		Item = NULL;
-	if (Item && !Item->WorldModel)
-		Item = NULL;
+	if (Item)
+	{
+		if (!Item->Ammo)
+			Item = NULL;
+		if (Item && !Client.Persistent.Inventory.Has(Item->Ammo))
+			Item = NULL;
+		if (Item && !Item->WorldModel)
+			Item = NULL;
+	}
 
 	bool quad = (!dmFlags.dfQuadDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadDamage > (level.Frame + 10));
+#if XATRIX_FEATURES
+	bool quadfire = (!dmFlags.dfQuadFireDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadFire > (level.Frame + 10));
+#endif
 	float spread = (Item && quad) ? 22.5f : 0.0f;
 
 	if (Item)
@@ -2791,6 +2807,19 @@ void CPlayerEntity::TossClientWeapon ()
 		drop->NextThink = level.Frame + (Client.Timers.QuadDamage - level.Frame);
 		drop->ThinkState = ITS_FREE;
 	}
+
+#if XATRIX_FEATURES
+	if (quadfire)
+	{
+		Client.ViewAngle.Y += spread;
+		CItemEntity *drop = NItems::QuadFire->DropItem (this);
+		Client.ViewAngle.Y -= spread;
+		drop->SpawnFlags |= DROPPED_PLAYER_ITEM;
+
+		drop->NextThink = level.Frame + (Client.Timers.QuadFire - level.Frame);
+		drop->ThinkState = ITS_FREE;
+	}
+#endif
 }
 
 #if USE_EXTENDED_GAME_IMPORTS
@@ -2932,7 +2961,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 //ZOID
 
 	// set up for pmove
-	memset (&pm, 0, sizeof(pm));
+	Mem_Zero (&pm, sizeof(pm));
 
 	if (NoClip)
 		Client.PlayerState.GetPMove()->pmType = PMT_SPECTATOR;
@@ -3091,7 +3120,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	if (Client.Respawn.Spectator
 #if CLEANCTF_ENABLED
 		|| ((game.GameMode & GAME_CTF) && NoClip)
-#endif)
+#endif
 		)
 	{
 		if (Client.LatchedButtons & BUTTON_ATTACK)
@@ -4070,7 +4099,7 @@ inline const char *MonsterAOrAn (const char *Name)
 
 void CPlayerEntity::Obituary (CBaseEntity *attacker)
 {
-	char *message = "", *message2 = "";
+	static const char *message = "", *message2 = "";
 	if (attacker == this)
 	{
 		switch (meansOfDeath)
@@ -4362,3 +4391,4 @@ void CPlayerEntity::Obituary (CBaseEntity *attacker)
 		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message);
 	}
 }
+

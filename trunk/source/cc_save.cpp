@@ -47,11 +47,22 @@ CClient **SaveClientData;
 
 #define MAGIC_NUMBER 0xf2843dfa
 
+void WriteMagic (CFile &File)
+{
+	File.Write<uint32> (MAGIC_NUMBER);
+}
+
+void ReadMagic (CFile &File)
+{
+	if (File.Read<uint32> () != MAGIC_NUMBER)
+		_CC_ASSERT_EXPR (0, "Magic number mismatch");
+}
+
 // Writes the magic number
-#define WRITE_MAGIC { File.Write<uint32> (MAGIC_NUMBER); }
+#define WRITE_MAGIC WriteMagic(File);
 
 // Reads the magic number.
-#define READ_MAGIC { if (File.Read<uint32> () != MAGIC_NUMBER) _CC_ASSERT_EXPR (0, "Magic number mismatch"); }
+#define READ_MAGIC ReadMagic(File);
 
 typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityTableList;
 typedef std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > TEntityTableList;
@@ -243,7 +254,7 @@ void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
 
 void WriteEntities (CFile &File)
 {
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 	{
 		edict_t *ent = (*it);
 		if (!ent->Entity || !ent->Entity->Savable())
@@ -256,7 +267,7 @@ void WriteEntities (CFile &File)
 	}
 	File.Write<sint32> (-1);
 
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
+	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
 	{
 		CBaseEntity *Entity = (*it)->Entity;
 		if (!Entity || !Entity->Savable())
@@ -614,7 +625,6 @@ void CGameAPI::ReadLevel (char *filename)
 	ShutdownNodes ();
 #endif
 
-	memset (&GameMedia, 0, sizeof(GameMedia));
 	InitGameMedia ();
 
 	if (!ReadingGame)
@@ -634,7 +644,7 @@ void CGameAPI::ReadLevel (char *filename)
 #endif
 
 	// wipe all the entities
-	memset (g_edicts, 0, game.MaxEntities*sizeof(g_edicts[0]));
+	Mem_Zero (g_edicts, game.MaxEntities*sizeof(g_edicts[0]));
 
 	InitEntityLists ();
 
@@ -695,3 +705,4 @@ void CGameAPI::ReadLevel (char *filename)
 
 	READ_MAGIC
 }
+

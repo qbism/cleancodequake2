@@ -145,6 +145,12 @@ inline void operator delete[](void *Pointer, void *Pool, const sint32 TagNum, co
 
 #define QDelete	delete
 
+inline void Mem_Zero (void *ptr, size_t size)
+{
+	memset (ptr, 0, size);
+}
+
 #else
 FILE_WARNING
 #endif
+

@@ -36,11 +36,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if CLEANCTF_ENABLED
 
+// Forward declaration
+class CFlagEntity;
+
 // A simple class to track a single flag.
 class CFlagTransponder
 {
 public:
-	CFlagTransponder (const ETeamIndex Team, class CFlagEntity	*Flag);
+	CFlagTransponder (const ETeamIndex Team, CFlagEntity *Flag);
 
 	CC_ENUM (uint8, EFlagLocation)
 	{

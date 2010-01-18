@@ -35,7 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #ifdef WIN32
 #define _DECL_DLLMAIN   /* enable prototypes for DllMain and _CRT_INIT */
-#include <windows.h>
 #include <process.h>
 #include <crtdbg.h>
 

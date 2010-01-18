@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+#include "cc_brushmodels.h"
+#include "cc_misc_entities.h"
 #include "cc_tent.h"
 
 /*QUAKED misc_explobox (0 .5 .8) (-16 -16 0) (16 16 40)
@@ -240,7 +242,6 @@ void		CMiscExploBox::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("misc_explobox",CMiscExploBox);
 
-#include "cc_brushmodels.h"
 /*QUAKED misc_viper (1 .5 0) (-16 -16 0) (16 16 32)
 This is the Viper for the flyby bombing.
 It is trigger_spawned, so you must have something use it for it to show up.
@@ -248,84 +249,78 @@ There must be a path for it to follow once it is activated.
 
 "speed"		How fast the Viper should fly
 */
-class CMiscViper : public CTrainBase, public CTouchableEntity
+
+CMiscViper::CMiscViper() :
+	CBaseEntity (),
+	CTrainBase(),
+	CTouchableEntity(),
+	MyUse(true)
 {
-	bool MyUse;
-public:
-	CMiscViper() :
-		CBaseEntity (),
-		CTrainBase(),
-		CTouchableEntity(),
-		MyUse(true)
-	{
-	};
+};
 
-	CMiscViper(sint32 Index) :
-		CBaseEntity (Index),
-		CTrainBase(Index),
-		CTouchableEntity(Index),
-		MyUse(true)
-	{
-	};
+CMiscViper::CMiscViper(sint32 Index) :
+	CBaseEntity (Index),
+	CTrainBase(Index),
+	CTouchableEntity(Index),
+	MyUse(true)
+{
+};
 
-	IMPLEMENT_SAVE_HEADER(CMiscViper)
+void CMiscViper::SaveFields (CFile &File)
+{
+	File.Write<bool> (MyUse);
+	CTrainBase::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+}
 
-	void SaveFields (CFile &File)
+void CMiscViper::LoadFields (CFile &File)
+{
+	MyUse = File.Read<bool> ();
+	CTrainBase::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+}
+
+bool CMiscViper::Run ()
+{
+	return CTrainBase::Run ();
+};
+
+void CMiscViper::Use (CBaseEntity *other, CBaseEntity *activator)
+{
+	if (MyUse)
 	{
-		File.Write<bool> (MyUse);
-		CTrainBase::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
+		GetSvFlags() &= ~SVF_NOCLIENT;
+		MyUse = false;
+	}
+	CTrainBase::Use (other, activator);
+};
+
+void CMiscViper::Spawn ()
+{
+	if (!Target)
+	{
+		//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
+		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
+		Free ();
+		return;
 	}
 
-	void LoadFields (CFile &File)
-	{
-		MyUse = File.Read<bool> ();
-		CTrainBase::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-	}
+	if (!Speed)
+		Speed = 300;
 
-	bool Run ()
-	{
-		return CTrainBase::Run ();
-	};
+	PhysicsType = PHYSICS_PUSH;
+	Touchable = true;
+	GetSolid() = SOLID_NOT;
+	State.GetModelIndex() = ModelIndex ("models/ships/viper/tris.md2");
+	GetMins().Set (-16, -16, 0);
+	GetMaxs().Set (16, 16, 32);
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator)
-	{
-		if (MyUse)
-		{
-			GetSvFlags() &= ~SVF_NOCLIENT;
-			MyUse = false;
-		}
-		CTrainBase::Use (other, activator);
-	};
+	NextThink = level.Frame + FRAMETIME;
+	ThinkType = TRAINTHINK_FIND;
+	GetSvFlags() |= SVF_NOCLIENT;
+	Accel = Decel = Speed;
 
-	virtual void Spawn ()
-	{
-		if (!Target)
-		{
-			//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
-			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
-			Free ();
-			return;
-		}
-
-		if (!Speed)
-			Speed = 300;
-
-		PhysicsType = PHYSICS_PUSH;
-		Touchable = true;
-		GetSolid() = SOLID_NOT;
-		State.GetModelIndex() = ModelIndex ("models/ships/viper/tris.md2");
-		GetMins().Set (-16, -16, 0);
-		GetMaxs().Set (16, 16, 32);
-
-		NextThink = level.Frame + FRAMETIME;
-		ThinkType = TRAINTHINK_FIND;
-		GetSvFlags() |= SVF_NOCLIENT;
-		Accel = Decel = Speed;
-
-		Link ();
-	};
+	Link ();
 };
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper", CMiscViper);
@@ -785,7 +780,6 @@ This is the dead player model. Comes in 6 exciting different poses!
 #define DEADSOLDIER_IMPALED			32
 
 vec3f VelocityForDamage (sint32 damage);
-void ClipGibVelocity (CPhysicsEntity *ent);
 
 class CMiscDeadSoldier : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CTossProjectile
 {
@@ -900,7 +894,9 @@ public:
 		velocity.MultiplyAngles (vscale, vd);
 		Velocity = velocity;
 
-		ClipGibVelocity (this);
+		Velocity.X = Clamp<float> (Velocity.X, -300, 300);
+		Velocity.Y = Clamp<float> (Velocity.Y, -300, 300);
+		Velocity.Z = Clamp<float> (Velocity.Z, 200, 500); // always some upwards
 
 		AngularVelocity.Y = crand()*600;
 
@@ -1080,7 +1076,7 @@ public:
 		Touchable = true;
 		Activator = activator;
 
-		CMiscViper *viper = CC_Find<CMiscViper, ENT_BASE, EntityMemberOffset(CBaseEntity,ClassName)> (NULL, "misc_viper");
+		CMiscViper *viper = CC_FindByClassName<CMiscViper, ENT_BASE> (NULL, "misc_viper");
 
 		Velocity = viper->Dir * viper->Speed;
 
@@ -1523,4 +1519,5 @@ public:
 };
 
 LINK_CLASSNAME_TO_CLASS ("misc_model", CMiscModel);
+
 

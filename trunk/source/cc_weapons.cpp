@@ -180,27 +180,7 @@ bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
 
 void CWeaponItem::Use (CPlayerEntity *ent)
 {
-	// see if we're already using it
-	if (Weapon == ent->Client.Persistent.Weapon)
-		return;
-
-	if (Ammo && !g_select_empty->Integer() && !(Flags & ITEMFLAG_AMMO))
-	{
-		if (!ent->Client.Persistent.Inventory.Has(Ammo->GetIndex()))
-		{
-			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Ammo->Name, Name);
-			return;
-		}
-
-		if (ent->Client.Persistent.Inventory.Has(Ammo->GetIndex()) < Amount)
-		{
-			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Ammo->Name, Name);
-			return;
-		}
-	}
-
-	// change to this weapon when down
-	ent->Client.NewWeapon = Weapon;
+	Weapon->Use (this, ent);
 }
 
 void CWeaponItem::Drop (CPlayerEntity *ent)
@@ -430,8 +410,9 @@ void AddAmmoToList ()
 	NItems::Cells = QNew (com_itemPool, 0) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_CELLS);
 
 #if XATRIX_FEATURES
-	AddXatrixAmmoToList ();
+	AddXatrixItemsToList ();
 #endif
 
 	AddWeapons (ItemList);
 }
+

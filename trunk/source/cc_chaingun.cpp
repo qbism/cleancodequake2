@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CChaingun::CChaingun() :
-CWeapon(5, "models/weapons/v_chain/tris.md2", 0, 4, 5, 31,
+CWeapon(4, 0, "models/weapons/v_chain/tris.md2", 0, 4, 5, 31,
 		32, 61, 62, 64)
 {
 }
@@ -168,3 +168,4 @@ void CChaingun::CreateItem (CItemList *List)
 		"w_chaingun", "Chaingun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Bullets, 1, "#w_chaingun.md2");
 };
+

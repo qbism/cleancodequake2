@@ -50,7 +50,11 @@ protected:
 	CWeapon ();
 
 public:
-	bool			isQuad, isSilenced;
+	bool			isQuad, isSilenced
+#if XATRIX_FEATURES
+				,	isQuadFire
+#endif
+		;
 
 	inline int CalcQuadVal (int val)
 	{
@@ -83,10 +87,10 @@ public:
 			: 0;
 	};
 
-	MediaIndex		vwepIndex;
-	int				ListOrder;
+	MediaIndex					vwepIndex;
+	std::pair <sint8, sint8>	ListOrder;
 
-	CWeapon(int ListOrder, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+	CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound = NULL);
 
 	// InitWeapon "clears" the previous weapon by introducing the current weapon.
@@ -128,6 +132,8 @@ public:
 	virtual void CreateItem (CItemList *List)
 	{
 	};
+
+	virtual void Use (CWeaponItem *Wanted, CPlayerEntity *ent);
 };
 
 #define WEAPON_CLASS_DEFS(x) \

@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CHyperBlaster::CHyperBlaster() :
-CWeapon(9, "models/weapons/v_hyperb/tris.md2", 0, 5, 6, 20,
+CWeapon(8, 0, "models/weapons/v_hyperb/tris.md2", 0, 5, 6, 20,
 		21, 49, 50, 53)
 {
 }
@@ -138,6 +138,50 @@ void CHyperBlaster::Fire (CPlayerEntity *ent)
 	}
 }
 
+#if XATRIX_FEATURES
+#include "cc_xatrix_ionripper.h"
+
+void CHyperBlaster::Use (CWeaponItem *Wanted, CPlayerEntity *ent)
+{
+	if (!ent->Client.Persistent.Inventory.Has(Wanted))
+	{
+		// Do we have an ion ripper?
+		if (ent->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
+			CIonRipper::Weapon.Use (Wanted, ent); // Use that.
+		else
+			ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
+		return;
+	}
+
+	// see if we're already using it
+	if (ent->Client.Persistent.Weapon == this)
+	{
+		// Do we have an ion ripper?
+		if (ent->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
+			CIonRipper::Weapon.Use (Wanted, ent); // Use that.
+		return;
+	}
+
+	if (Wanted->Ammo && !g_select_empty->Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	{
+		if (!ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+		{
+			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			return;
+		}
+
+		if (ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+		{
+			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			return;
+		}
+	}
+
+	// change to this weapon when down
+	ent->Client.NewWeapon = this;
+}
+#endif
+
 WEAPON_DEFS (CHyperBlaster);
 
 void CHyperBlaster::CreateItem (CItemList *List)
@@ -147,3 +191,4 @@ void CHyperBlaster::CreateItem (CItemList *List)
 		"w_hyperblaster", "HyperBlaster", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 1, "#w_hyperblaster.md2");
 };
+

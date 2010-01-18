@@ -52,11 +52,11 @@ public:
 	void AddPoint_X (sint32 x, bool inverted);
 	void AddPoint_Y (sint32 y, bool inverted);
 	void AddString (const char *string, bool highBi, bool center);
-	void AddStatString (sint32 stat);
+	void AddStatString (sint32 statIndex);
 	void AddPic (const char *pic);
-	void AddPicStat (sint32 stat);
-	void AddNumStat (sint32 stat, sint32 width);
-	void AddIf (sint32 stat);
+	void AddPicStat (sint32 statIndex);
+	void AddNumStat (sint32 statIndex, sint32 width);
+	void AddIf (sint32 statIndex);
 	void AddEndIf ();
 	void AddAmmoNum ();
 	void AddHealthNum ();

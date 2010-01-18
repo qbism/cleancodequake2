@@ -34,6 +34,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_WEAPONS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_WEAPONS_H
 
+// Forward declarations
+class CWeapon;
+class CAmmo;
+
 // Class for weapon items.
 class CWeaponItem : public virtual CBaseItem
 {
@@ -41,7 +45,7 @@ public:
 	CWeaponItem ();
 	CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel);
+			   char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;

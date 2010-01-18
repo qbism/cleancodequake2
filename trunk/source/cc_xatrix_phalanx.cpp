@@ -121,7 +121,7 @@ bool CPhalanxPlasma::Run ()
 }
 
 CPhalanx::CPhalanx() :
-CWeapon(13, "models/weapons/v_shotx/tris.md2", 0, 5, 6, 20,
+CWeapon(9, 1, "models/weapons/v_shotx/tris.md2", 0, 5, 6, 20,
 		21, 58, 59, 63, "weapons/phaloop.wav")
 {
 }
@@ -189,6 +189,6 @@ void CPhalanx::CreateItem (CItemList *List)
 	NItems::Phalanx = QNew (com_itemPool, 0) CWeaponItem
 		("weapon_phalanx", "models/weapons/g_shotx/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
 		"w_phallanx", "Phalanx", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
-		"", &Weapon, NItems::MagSlugs, 1, "#w_shotx.md2");
+		"", &Weapon, NItems::MagSlugs, 1, "#w_phalanx.md2");
 };
 #endif

@@ -937,3 +937,4 @@ void CTankCommander::Spawn ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_tank_commander", CTankCommander);
+

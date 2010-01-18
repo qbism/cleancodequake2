@@ -124,3 +124,4 @@ uint32 MurmurHash2 (const char *text, sint32 len, uint32 seed)
 
 	return h;
 } 
+

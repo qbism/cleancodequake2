@@ -521,19 +521,17 @@ void CJorg::Attack()
 bool CJorg::CheckAttack ()
 {
 #if !MONSTER_USE_ROGUE_AI
-	vec3f	spot1, spot2;
 	float	chance;
-	CTrace	tr;
 
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
-		spot1 = Entity->State.GetOrigin();
+		vec3f spot1 = Entity->State.GetOrigin();
 		spot1.Z += Entity->ViewHeight;
-		spot2 = Entity->Enemy->State.GetOrigin();
+		vec3f spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)
@@ -713,13 +711,13 @@ bool CJorg::CheckAttack ()
 	{
 		// originally, just 0.3
 		float strafe_chance;
-		if (!(strcmp(Entity->ClassName, "monster_daedalus")))
+		if (!(strcmp(Entity->ClassName.c_str(), "monster_daedalus")))
 			strafe_chance = 0.8f;
 		else
 			strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
+		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)

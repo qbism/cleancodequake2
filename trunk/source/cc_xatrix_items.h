@@ -34,9 +34,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_XATRIX_ITEMS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_XATRIX_ITEMS_H
 
-void AddXatrixAmmoToList ();
+void AddXatrixItemsToList ();
 extern class CFoodCube *FoodCubeItem;
 
+// Quad Fire
+class CQuadFire : public CBasePowerUp
+{
+public:
+	CQuadFire (char *Classname, char *WorldModel, sint32 EffectFlags,
+			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
+			   char *Precache, EPowerupFlags PowerupFlags);
+
+	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void Use (CPlayerEntity *ent);
+};
 
 #else
 FILE_WARNING

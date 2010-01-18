@@ -77,7 +77,10 @@ public:
 	void Spawn ()
 	{
 		Touchable = true;
-		Wait = 1;
+
+		if (!Wait)
+			Wait = 1;
+
 		Init ();
 		Link ();
 	};

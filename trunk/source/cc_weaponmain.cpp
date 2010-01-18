@@ -43,17 +43,36 @@ TWeaponListType &WeaponList ()
 	return WeaponList_;
 };
 
+typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::generic_allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+
 void AddWeapons (CItemList *List)
 {
 	// Add them in player-specified order
 	// Index, Order
-	std::map<int, int, std::less<int>, std::generic_allocator<std::pair<int, int> > > Order;
+	TWeaponMultiMapType Order;
 
 	for (size_t i = 0; i < WeaponList().size(); i++)
-		Order[WeaponList()[i]->ListOrder] = i;
+		Order.insert (std::make_pair (WeaponList()[i]->ListOrder, i));
 
-	for (std::map<int, int, std::less<int>, std::generic_allocator<std::pair<int, int> > >::iterator it = Order.begin(); it != Order.end(); it++)
+	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
 		WeaponList()[(*it).second]->AddWeaponToItemList (List);
+}
+
+void AddWeaponsToListLocations (CItemList *List)
+{
+	// Add them in player-specified order
+	// Index, Order
+	TWeaponMultiMapType Order;
+
+	for (size_t i = 0; i < WeaponList().size(); i++)
+		Order.insert (std::make_pair (WeaponList()[i]->ListOrder, i));
+
+	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
+	{
+		if (WeaponList()[(*it).second]->Item)
+			List->Items.push_back (WeaponList()[(*it).second]->Item);
+	}
 }
 
 void DoWeaponVweps ()
@@ -87,9 +106,9 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	}
 }
 
-CWeapon::CWeapon(int ListOrder, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+CWeapon::CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound) :
-ListOrder(ListOrder),
+ListOrder(std::make_pair (ListOrderHigh, ListOrderLow)),
 ActivationStart(ActivationStart),
 ActivationEnd(ActivationEnd),
 FireStart(FireStart),
@@ -251,6 +270,9 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 		Player->Client.PlayerState.GetGunIndex() = 0;
 		if (!Player->Client.Grenade.Thrown && !Player->Client.Grenade.BlewUp && Player->Client.Grenade.Time >= level.Frame) // We had a grenade cocked
 		{
+#if !DROP_DEATH_GRENADES
+			Player->Client.Grenade.Time = level.Frame;
+#endif
 			CHandGrenade::Weapon.FireGrenade(Player, false);
 			Player->Client.Grenade.Time = 0;
 		}
@@ -348,8 +370,16 @@ void CWeapon::Think (CPlayerEntity *Player)
 
 	// call active weapon think routine
 	isQuad = (Player->Client.Timers.QuadDamage > level.Frame);
+#if XATRIX_FEATURES
+	isQuadFire = (Player->Client.Timers.QuadFire > level.Frame);
+#endif
 	isSilenced = (Player->Client.Timers.SilencerShots) ? true : false;
 	WeaponGeneric (Player);
+
+#if XATRIX_FEATURES
+	bool Applied = false;
+#endif
+
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 		|| (game.GameMode & GAME_CTF)
@@ -361,8 +391,18 @@ void CWeapon::Think (CPlayerEntity *Player)
 			this != &CGrapple::Weapon && 
 #endif
 			Player->ApplyHaste())
+		{
 			WeaponGeneric(Player);
+#if XATRIX_FEATURES
+			Applied = true;
+#endif
+		}
 	}
+
+#if XATRIX_FEATURES
+	if (!Applied && isQuadFire)
+		WeaponGeneric(Player);
+#endif
 }
 
 void CWeapon::AttackSound(CPlayerEntity *Player)
@@ -419,18 +459,33 @@ public:
 
 typedef std::vector <CWeaponSwitcher, std::generic_allocator<CWeaponSwitcher> > TWeaponSwitcherListType;
 
+#if XATRIX_FEATURES
+#include "cc_xatrix_ionripper.h"
+#include "cc_xatrix_phalanx.h"
+#endif
+
 inline TWeaponSwitcherListType &WeaponSwitchList ()
 {
 	// Ordered by priority.
-	// Multiple weapons can appear in the same list.
+	// Same weapon can appear multiple times.
 	static TWeaponSwitcherListType List_;
 
 	List_.push_back	(CWeaponSwitcher(&CBFG::Weapon).AddAmmo(NItems::Cells, 50).SwitchExplosive());
-	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 1));
 	List_.push_back	(CWeaponSwitcher(&CRailgun::Weapon).AddAmmo(NItems::Slugs, 1));
+#if XATRIX_FEATURES
+	List_.push_back	(CWeaponSwitcher(&CIonRipper::Weapon).AddAmmo(NItems::Cells, 40));
+#endif
+	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 20));
 	List_.push_back	(CWeaponSwitcher(&CRocketLauncher::Weapon).AddAmmo(NItems::Rockets, 1).SwitchExplosive());
+#if XATRIX_FEATURES
+	List_.push_back	(CWeaponSwitcher(&CPhalanx::Weapon).AddAmmo(NItems::MagSlugs, 1).SwitchExplosive());
+#endif
 	List_.push_back	(CWeaponSwitcher(&CGrenadeLauncher::Weapon).AddAmmo(NItems::Grenades, 1).SwitchExplosive());
 	List_.push_back	(CWeaponSwitcher(&CChaingun::Weapon).AddAmmo(NItems::Bullets, 50));
+#if XATRIX_FEATURES
+	List_.push_back	(CWeaponSwitcher(&CIonRipper::Weapon).AddAmmo(NItems::Cells, 2));
+#endif
+	List_.push_back	(CWeaponSwitcher(&CHyperBlaster::Weapon).AddAmmo(NItems::Cells, 1));
 	List_.push_back	(CWeaponSwitcher(&CMachinegun::Weapon).AddAmmo(NItems::Bullets, 1));
 	List_.push_back	(CWeaponSwitcher(&CSuperShotgun::Weapon).AddAmmo(NItems::Shells, 8));
 	List_.push_back	(CWeaponSwitcher(&CShotgun::Weapon).AddAmmo(NItems::Shells, 1));
@@ -441,8 +496,6 @@ inline TWeaponSwitcherListType &WeaponSwitchList ()
 	return List_;
 }
 
-// YUCK
-// Better way?
 void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 {
 	// Dead?
@@ -469,16 +522,16 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 
 		// Do we have the ammo?
 		bool BreakIt = false;
-		for (size_t i = 0; i < Start->NeededAmmo.size(); i++)
+		for (size_t z = 0; z < Start->NeededAmmo.size(); z++)
 		{
-			if (!Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[i]))
+			if (!Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[z]))
 			{
 				BreakIt = true;
 				break;
 			}
 
 			// Ammo amounts?
-			if (Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[i]) < Start->NeededAmmoNumbers[i])
+			if (Player->Client.Persistent.Inventory.Has(Start->NeededAmmo[z]) < Start->NeededAmmoNumbers[z])
 			{
 				BreakIt = true;
 				break;
@@ -489,9 +542,9 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 			continue;
 
 		// Do we have all the extra items?
-		for (size_t i = 0; Start->NeededItems.size(); i++)
+		for (size_t z = 0; Start->NeededItems.size(); z++)
 		{
-			if (!Player->Client.Persistent.Inventory.Has(Start->NeededItems[i]))
+			if (!Player->Client.Persistent.Inventory.Has(Start->NeededItems[z]))
 			{
 				BreakIt = true;
 				break;
@@ -517,6 +570,37 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 	// Do a quick check to see if we still even have the weapon we're holding.
 	if ((Player->Client.Persistent.Weapon->Item && !Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->Item)))
 		Player->Client.Persistent.Weapon->ChangeWeapon(Player);
+}
+
+void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *ent)
+{
+	if (!ent->Client.Persistent.Inventory.Has(Wanted))
+	{
+		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
+		return;
+	}
+
+	// see if we're already using it
+	if (ent->Client.Persistent.Weapon == this)
+		return;
+
+	if (Wanted->Ammo && !g_select_empty->Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	{
+		if (!ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+		{
+			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			return;
+		}
+
+		if (ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+		{
+			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			return;
+		}
+	}
+
+	// change to this weapon when down
+	ent->Client.NewWeapon = this;
 }
 
 void CWeapon::FireAnimation (CPlayerEntity *Player)

@@ -42,7 +42,7 @@ CBaseEntity *CC_PickTarget (char *targetname);
 TTargetList CC_GetTargets (char *targetname);
 
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
-TEntityType *CC_Find (TEntityType *From, char *Match)
+TEntityType *CC_Find (CBaseEntity *From, const char *Match)
 {
 	edict_t *gameEnt;
 	if (!From)
@@ -82,6 +82,36 @@ TEntityType *CC_Find (TEntityType *From, char *Match)
 			if (!Q_stricmp (s, Match))
 				return Check;
 		}
+	}
+
+	return NULL;
+}
+
+template <class TEntityType, uint32 EntityFlags>
+TEntityType *CC_FindByClassName (CBaseEntity *From, const char *Match)
+{
+	edict_t *gameEnt;
+	if (!From)
+		gameEnt = g_edicts;
+	else
+	{
+		gameEnt = From->gameEntity;
+		gameEnt++;
+	}
+
+	for ( ; gameEnt < &g_edicts[Game.GetNumEdicts()]; gameEnt++)
+	{
+		if (!gameEnt->inUse)
+			continue;
+		if (!gameEnt->Entity)
+			continue;
+		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
+			continue;
+
+		if (gameEnt->Entity->ClassName.empty())
+			continue;
+		if (!Q_stricmp (gameEnt->Entity->ClassName.c_str(), Match))
+			return entity_cast<TEntityType>(gameEnt->Entity);
 	}
 
 	return NULL;

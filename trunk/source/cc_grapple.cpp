@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CGrapple::CGrapple() :
-CWeapon(0, "models/weapons/grapple/tris.md2", 0, 5, 6, 9,
+CWeapon(0, -1, "models/weapons/grapple/tris.md2", 0, 5, 6, 9,
 		10, 31, 32, 36)
 {
 }

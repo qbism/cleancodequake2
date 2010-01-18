@@ -56,6 +56,11 @@ public:
 	// each TYPE of weapon, you create the item, and send it to here.
 	void AddItemToList (CBaseItem *Item);
 
+	// Sorts the list and adds the items
+	void SortAndFinalize ();
+
+	TItemListType			*TempList;
+
 	TItemListType			Items;
 
 	// There are two hash tables for items; hashed by classname, and hashed by item name.
@@ -119,6 +124,9 @@ namespace NItems
 	extern CMegaHealth *MegaHealth;
 	extern CBackPack *BackPack;
 	extern CQuadDamage *Quad;
+#if XATRIX_FEATURES
+	extern CBasePowerUp *QuadFire;
+#endif
 	extern CInvulnerability *Invul;
 	extern CSilencer *Silencer;
 	extern CRebreather *Rebreather;

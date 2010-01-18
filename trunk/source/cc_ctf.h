@@ -128,12 +128,12 @@ public:
 		needvotes = 0;
 		electtime = 0;
 
-		for (TGhostMapType::iterator it = Ghosts.begin(); it != Ghosts.end(); it++)
+		for (TGhostMapType::iterator it = Ghosts.begin(); it != Ghosts.end(); ++it)
 			QDelete (*it).second;
 		Ghosts.clear();
 
-		memset (&elevel, 0, sizeof(elevel));
-		memset (&emsg, 0, sizeof(emsg));
+		Mem_Zero (&elevel, sizeof(elevel));
+		Mem_Zero (&emsg, sizeof(emsg));
 	}
 };
 

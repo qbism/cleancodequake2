@@ -334,7 +334,11 @@ CFuncClock::CFuncClock () :
 	CThinkableEntity (),
 	CUsableEntity (),
 	Seconds(0),
-	String(NULL)
+	String(NULL),
+	Wait(0),
+	Style(0),
+	Count(0),
+	CountTarget(NULL)
 	{
 	};
 
@@ -344,7 +348,11 @@ CFuncClock::CFuncClock (sint32 Index) :
 	CThinkableEntity (Index),
 	CUsableEntity (Index),
 	Seconds(0),
-	String(NULL)
+	String(NULL),
+	Wait(0),
+	Style(0),
+	Count(0),
+	CountTarget(NULL)
 	{
 	};
 
@@ -547,3 +555,4 @@ void CFuncClock::Spawn ()
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_clock", CFuncClock);
+

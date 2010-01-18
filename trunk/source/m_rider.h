@@ -64,3 +64,4 @@
 #define FRAME_stand260        	59
 
 #define MODEL_SCALE		1.000000
+

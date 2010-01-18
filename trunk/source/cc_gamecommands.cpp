@@ -262,22 +262,25 @@ bool CheckFlood(CPlayerEntity *ent)
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
-	char	*Text;
+	std::cc_string &Text;
 
-	CSayPlayerCallback (char *Text) :
+	CSayPlayerCallback (std::cc_string &Text) :
 	Text(Text)
 	{
 	};
 
+	CSayPlayerCallback &operator= (CSayPlayerCallback&) { return *this; }
+
 	void Callback (CPlayerEntity *Player)
 	{
-		Player->PrintToClient (PRINT_CHAT, "%s", Text);
+		Player->PrintToClient (PRINT_CHAT, "%s", Text.c_str());
 	}
 };
 
 void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 {
-	char	text[MAX_TALK_STRING];
+	//char	text[MAX_TALK_STRING];
+	static std::cc_string text;
 
 	if (ArgCount () < 2 && !arg0)
 		return;
@@ -291,14 +294,10 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
 		team = false;
 
-	Q_snprintfz (text, sizeof(text), (team) ? "(%s): " : "%s: ", ent->Client.Persistent.Name.c_str());
+	text = (team) ? ("(" + ent->Client.Persistent.Name + "): ") : (ent->Client.Persistent.Name + ": ");
 
 	if (arg0)
-	{
-		Q_strcatz (text, ArgGets(0).c_str(), sizeof(text));
-		Q_strcatz (text, " ", sizeof(text));
-		Q_strcatz (text, ArgGetConcatenatedString().c_str(), sizeof(text));
-	}
+		text += ArgGets(0) + " " + ArgGetConcatenatedString();
 	else
 	{
 		std::cc_string p = ArgGetConcatenatedString();
@@ -309,17 +308,14 @@ void Cmd_Say_f (CPlayerEntity *ent, bool team, bool arg0)
 			p.erase (p.end()-1);
 		}
 
-		Q_strcatz(text, p.c_str(), sizeof(text));
+		text += p;
 	}
 
 	// don't let text be too long for malicious reasons
-	if (strlen(text) >= sizeof(text)-1)
-	{
-		text[sizeof(text)-1] = 0;
-		text[sizeof(text)-2] = '\n';
-	}
-	else
-		Q_strcatz(text, "\n", sizeof(text));
+	if (text.length() >= MAX_TALK_STRING-1)
+		text.erase (MAX_TALK_STRING-1);
+
+	text += "\n";
 
 	if (CheckFlood(ent))
 		return;
@@ -424,44 +420,6 @@ void GCmd_Say_f (CPlayerEntity *ent)
 void GCmd_SayTeam_f (CPlayerEntity *ent)
 {
 	Cmd_Say_f (ent, true, false);
-}
-
-void SearchForRandomMonster (CMonsterEntity *Entity)
-{
-	static std::vector <CMonsterEntity *, std::generic_allocator<CMonsterEntity *> > ChosenMonsters;
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); it++)
-	{
-		edict_t *ent = (*it);
-
-		if (!ent->inUse || !ent->Entity)
-			continue;
-		if (!(ent->Entity->EntityFlags & ENT_MONSTER))
-			continue;
-		if (ent->Entity == Entity)
-			continue;
-		if (!IsVisible(ent->Entity, Entity))
-			continue;
-
-		CMonsterEntity *WantedMonster = entity_cast<CMonsterEntity>(ent->Entity);
-		if (WantedMonster->Health <= 0)
-			continue;
-		if (!(WantedMonster->GetSvFlags() & SVF_MONSTER))
-			continue;
-
-		ChosenMonsters.push_back (WantedMonster);
-	}
-
-	// Pick a random one
-	if (!ChosenMonsters.size())
-		return;
-
-	CMonsterEntity *RandomPick = ChosenMonsters[irandom(ChosenMonsters.size())];
-	Entity->Enemy = RandomPick;
-	Entity->Monster->FoundTarget ();
-	if (Entity->Monster->MonsterFlags & MF_HAS_SIGHT)
-		Entity->Monster->Sight ();
-
-	ChosenMonsters.clear ();
 }
 
 /*
@@ -652,3 +610,4 @@ void CGameAPI::ClientCommand (CPlayerEntity *ent)
 	Cmd_RunCommand (ArgGets(0).c_str(), ent);
 	EndArg ();
 }
+

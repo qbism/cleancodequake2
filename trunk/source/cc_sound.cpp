@@ -163,7 +163,7 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 
 		vec3f listenerRight;
 		Player->State.GetAngles().ToVectors (NULL, &listenerRight, NULL);
-		float dot = listenerRight.Dot (sourceVec);
+		float dot = listenerRight | sourceVec;
 
 		// no attenuation = no spatialization
 		float rightScale = 1.0f, leftScale = 1.0f;
@@ -175,8 +175,8 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 		}
 
 		// add in distance effect
-		float rightVol = ((vol / 255) * ((1.0f - dist) * rightScale));
-		float leftVol = ((vol / 255) * ((1.0f - dist) * leftScale));
+		float rightVol = ((static_cast<float>(vol) / 255) * ((1.0f - dist) * rightScale));
+		float leftVol = ((static_cast<float>(vol) / 255) * ((1.0f - dist) * leftScale));
 
 		if (rightVol <= 0 && leftVol <= 0)
 			continue; // silent

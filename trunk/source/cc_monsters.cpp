@@ -83,7 +83,7 @@ CMonster *CreateMonsterFromTable (uint32 MonsterID, const char *Name)
 void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 MonsterID, CFile &File)
 {
 	// Create base monster
-	Entity->Monster = CreateMonsterFromTable (MonsterID, Entity->ClassName);
+	Entity->Monster = CreateMonsterFromTable (MonsterID, Entity->ClassName.c_str());
 
 	// Fill it
 	Entity->Monster->LoadFields (File);
@@ -745,8 +745,8 @@ void CMonsterEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 }
 
 vec3f VelocityForDamage (sint32 damage);
-void ClipGibVelocity (CPhysicsEntity *);
-void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type)
+
+void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects)
 {
 	float	vscale;
 
@@ -760,7 +760,7 @@ void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type)
 	State.GetModelIndex(2) = 0;
 	State.GetModelIndex() = gibIndex;
 	GetSolid() = SOLID_NOT;
-	State.GetEffects() |= EF_GIB;
+	State.GetEffects() |= effects;
 	State.GetEffects() &= ~EF_FLIES;
 	State.GetSound() = 0;
 	Flags |= FL_NO_KNOCKBACK;
@@ -779,7 +779,10 @@ void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type)
 	}
 	
 	Velocity = Velocity.MultiplyAngles (vscale, VelocityForDamage (damage));
-	ClipGibVelocity (this);
+	Velocity.X = Clamp<float> (Velocity.X, -300, 300);
+	Velocity.Y = Clamp<float> (Velocity.Y, -300, 300);
+	Velocity.Z = Clamp<float> (Velocity.Z, 200, 500); // always some upwards
+
 	AngularVelocity.Y = crand()*600;
 
 	NextThink = level.Frame + 100 + frand()*100;
@@ -801,6 +804,16 @@ bool CMonsterEntity::Run ()
 	default:
 		return CStepPhysics::Run ();
 	};
+}
+
+void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+{
+	Monster->DamageEffect (dir, point, normal, damage, dflags);
+}
+
+void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+{
+	CTempEnt_Splashes::Blood (point, normal);
 }
 
 void CMonster::ChangeYaw ()
@@ -1313,7 +1326,7 @@ void CMonster::MonsterStartGo ()
 
 		while ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (target, Entity->Target)) != NULL)
 		{
-			if (strcmp(target->ClassName, "point_combat") == 0)
+			if (strcmp(target->ClassName.c_str(), "point_combat") == 0)
 			{
 				Entity->CombatTarget = Entity->Target;
 				fixup = true;
@@ -1333,7 +1346,7 @@ void CMonster::MonsterStartGo ()
 		CMapEntity		*target = NULL;
 		while ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (target, Entity->CombatTarget)) != NULL)
 		{
-			if (strcmp(target->ClassName, "point_combat") != 0)
+			if (strcmp(target->ClassName.c_str(), "point_combat") != 0)
 				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget);
 		}
 	}
@@ -1351,7 +1364,7 @@ void CMonster::MonsterStartGo ()
 			PauseTime = 100000000;
 			Stand ();
 		}
-		else if (strcmp (Entity->MoveTarget->ClassName, "path_corner") == 0)
+		else if (strcmp (Entity->MoveTarget->ClassName.c_str(), "path_corner") == 0)
 		{
 			IdealYaw = Entity->State.GetAngles().Y = (Entity->GoalEntity->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 			Walk ();
@@ -1681,6 +1694,8 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 
 #include "cc_xatrix_ionripper.h"
 #include "cc_soldier_base.h"
 #include "cc_xatrix_soldier_hyper.h"
+#include "cc_bitch.h"
+#include "cc_xatrix_chick_heat.h"
 
 void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
 {
@@ -1707,6 +1722,19 @@ void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, si
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
+
+void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+{
+#if MONSTERS_ARENT_STUPID
+	if (FriendlyInLine (start, dir))
+		return;
+#endif
+
+	CHeatRocket::Spawn (Entity, start, dir, damage, speed, damage+20, damage);
+
+	if (flashtype != -1)
+		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+}	
 
 // RAFAEL
 CMonsterBeamLaser::CMonsterBeamLaser () :
@@ -1823,9 +1851,7 @@ void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
 bool CMonster::CheckAttack ()
 {
 #if !MONSTER_USE_ROGUE_AI
-	vec3f	spot1, spot2;
 	float	chance;
-	CTrace	tr;
 
 	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
 		return false;
@@ -1833,12 +1859,12 @@ bool CMonster::CheckAttack ()
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
-		spot1 = Entity->State.GetOrigin();
+		vec3f spot1 = Entity->State.GetOrigin();
 		spot1.Z += Entity->ViewHeight;
-		spot2 = Entity->Enemy->State.GetOrigin();
+		vec3f spot2 = Entity->Enemy->State.GetOrigin();
 		spot2.Z += Entity->Enemy->ViewHeight;
 
-		tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.Ent != Entity->Enemy)
@@ -2019,13 +2045,13 @@ bool CMonster::CheckAttack ()
 	{
 		// originally, just 0.3
 		float strafe_chance;
-		if (!(strcmp(Entity->ClassName, "monster_daedalus")))
+		if (!(strcmp(Entity->ClassName.c_str(), "monster_daedalus")))
 			strafe_chance = 0.8f;
 		else
 			strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
+		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)
@@ -2103,7 +2129,7 @@ void CMonster::AI_Charge(float Dist)
 		{
 			float ofs;
 			// if we're fighting a tesla, NEVER circle strafe
-			if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
+			if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))
 				ofs = 0;
 			else if (Lefty)
 				ofs = 90;
@@ -2453,9 +2479,8 @@ void CMonster::AI_Run(float Dist)
 	CTempGoal		*tempgoal;
 	CBaseEntity		*save;
 	bool		isNew;
-	float		d1, d2, left, center, right;
-	CTrace		tr;
-	vec3f		v_forward, v_right, left_target, right_target, v;
+	float		d1;
+	vec3f		v_forward, v_right, v;
 
 #if MONSTERS_USE_PATHFINDING
 	if (FollowingPath)
@@ -2585,26 +2610,27 @@ void CMonster::AI_Run(float Dist)
 	{
 //		gi.dprintf("checking for course correction\n");
 
-		tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
+		CTrace tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 		if (tr.fraction < 1)
 		{
 			v = Entity->GoalEntity->State.GetOrigin() - origin;
 			d1 = v.Length();
-			center = tr.fraction;
-			d2 = d1 * ((center+1)/2);
+			float center = tr.fraction;
+			float d2 = d1 * ((center+1)/2);
 			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 
 			Entity->State.GetAngles().ToVectors (&v_forward, &v_right, NULL);
 
 			v.Set (d2, -16, 0);
+			vec3f left_target, right_target;
 			G_ProjectSource (origin, v, v_forward, v_right, left_target);
 			tr (origin, Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			left = tr.fraction;
+			float left = tr.fraction;
 
 			v.Set (d2, 16, 0);
 			G_ProjectSource (origin, v, v_forward, v_right, right_target);
 			tr (origin, Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			right = tr.fraction;
+			float right = tr.fraction;
 
 			center = (d1*center)/d2;
 			if (left >= center && left > right)
@@ -3272,11 +3298,11 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
 	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (attacker->Flags & (FL_FLY|FL_SWIM))) &&
-		 (strcmp (Entity->ClassName, attacker->ClassName) != 0) &&
-		 (strcmp(attacker->ClassName, "monster_tank") != 0) &&
-		 (strcmp(attacker->ClassName, "monster_supertank") != 0) &&
-		 (strcmp(attacker->ClassName, "monster_makron") != 0) &&
-		 (strcmp(attacker->ClassName, "monster_jorg") != 0))
+		 (strcmp (Entity->ClassName.c_str(), attacker->ClassName.c_str()) != 0) &&
+		 (strcmp(attacker->ClassName.c_str(), "monster_tank") != 0) &&
+		 (strcmp(attacker->ClassName.c_str(), "monster_supertank") != 0) &&
+		 (strcmp(attacker->ClassName.c_str(), "monster_makron") != 0) &&
+		 (strcmp(attacker->ClassName.c_str(), "monster_jorg") != 0))
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
@@ -3764,9 +3790,9 @@ bool CMonster::FindTarget()
 
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && Entity->GoalEntity->ClassName)
+		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && !Entity->GoalEntity->ClassName.empty())
 		{
-			if (strcmp(Entity->GoalEntity->ClassName, "target_actor") == 0)
+			if (strcmp(Entity->GoalEntity->ClassName.c_str(), "target_actor") == 0)
 				return false;
 		}
 
@@ -3900,7 +3926,7 @@ bool CMonster::FindTarget()
 
 	if (!client)
 		client = level.SightClient;
-	if (!client)
+	if (!client || !client->gameEntity || client->Freed)
 		return false;
 
 	// if the entity went away, forget it
@@ -4138,7 +4164,7 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 			vec3f right;
 
 			Entity->State.GetAngles().ToVectors (NULL, &right, NULL);
-			Lefty = !(right.Dot (tr->EndPos - Entity->State.GetOrigin()) < 0);	
+			Lefty = !((right | tr->EndPos - Entity->State.GetOrigin()) < 0);	
 			// if we are currently ducked, unduck
 
 			if ((ducker) && (AIFlags & AI_DUCKED))
@@ -4265,3 +4291,4 @@ void CMonster::BossExplode ()
 	CTempEnt_Explosions::RocketExplosion (org, Entity);
 	Entity->NextThink = level.Frame + FRAMETIME;
 }
+

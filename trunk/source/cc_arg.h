@@ -46,3 +46,4 @@ std::cc_string		ArgGetConcatenatedString ();
 #else
 FILE_WARNING
 #endif
+

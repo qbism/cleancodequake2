@@ -193,7 +193,7 @@ static void Mem_PuddleFree(memPuddle_t *Puddle)
 	pInfo->freePuddles = Puddle;
 
 	// Zero-fill the memory
-	memset(Puddle->block->memPointer, 0, Puddle->block->memSize);
+	Mem_Zero (Puddle->block->memPointer, Puddle->block->memSize);
 }
 
 /*
@@ -992,7 +992,7 @@ Mem_Init
 void Mem_Init ()
 {
 	// Clear
-	memset(&m_poolList, 0, sizeof(m_poolList));
+	Mem_Zero (&m_poolList, sizeof(m_poolList));
 	m_numPools = 0;
 
 	// Setup puddles
@@ -1013,3 +1013,4 @@ void Mem_Init ()
 
 	zsetfunctions (Mem_ZAlloc, Mem_ZFree);
 }
+

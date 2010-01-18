@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if XATRIX_FEATURES
 #include "cc_gladiator.h"
 #include "cc_xatrix_gladiator_phalanx.h"
 #include "cc_weaponmain.h"
@@ -102,3 +104,4 @@ void CPhalanxGladiator::Spawn ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_gladb", CPhalanxGladiator);
+#endif

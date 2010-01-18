@@ -36,10 +36,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #ifdef _FRONTEND
 
-#include <windows.h>
-#include <string>
-using namespace std;
-
 HMODULE Library;
 
 gameExport_t *_ge;

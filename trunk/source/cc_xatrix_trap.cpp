@@ -134,12 +134,12 @@ void CTrapProjectile::Think ()
 					best->GetMins().Clear();
 					best->GetMaxs().Clear();
 
-					/*if (strcmp (ent->enemy->classname, "monster_gekk") == 0)
+					if ((Enemy->EntityFlags & ENT_MONSTER) && (Enemy->ClassName == "monster_gekk"))
 					{
-						best->s.modelindex = gi.modelindex ("models/objects/gekkgib/torso/tris.md2");	
-						best->s.effects |= EF_GREENGIB;
+						best->State.GetModelIndex() = ModelIndex ("models/objects/gekkgib/torso/tris.md2");	
+						best->State.GetEffects() |= EF_GREENGIB;
 					}
-					else */if (Mass >= 200)
+					else if (Mass >= 200)
 					{
 						best->State.GetModelIndex() = GameMedia.Gib_Chest;	
 						best->State.GetEffects() |= EF_GIB;
@@ -368,7 +368,7 @@ bool CTrapProjectile::Run ()
 }
 
 CTrap::CTrap() :
-CWeapon(14, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
+CWeapon(6, 1, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
 		17, 48, 0, 0)
 {
 }
@@ -432,11 +432,15 @@ void CTrap::FireGrenade (CPlayerEntity *ent, bool inHand)
 		: 25; // If we're dead, don't toss it 5 yards.
 	CTrapProjectile::Spawn (ent, start, forward, damage, timer, speed);
 
-	ent->Client.Grenade.Time = level.Frame + (((
+	ent->Client.Grenade.Time = level.Frame + ((((
 #if CLEANCTF_ENABLED
 	(game.GameMode & GAME_CTF) || 
 #endif
-	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste()) ? 5 : 10);
+	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste())
+#if XATRIX_FEATURES
+	|| isQuadFire
+#endif
+	) ? 5 : 10);
 	DepleteAmmo(ent, 1);
 
 	if (ent->Health <= 0 || ent->DeadFlag || ent->State.GetModelIndex() != 255) // VWep animations screw up corpses

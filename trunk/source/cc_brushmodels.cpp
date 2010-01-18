@@ -848,7 +848,7 @@ void CDoor::UseAreaPortals (bool isOpen)
 
 	while ((t = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (t, Target)) != NULL)
 	{
-		if (Q_stricmp(t->ClassName, "func_areaportal") == 0)
+		if (Q_stricmp(t->ClassName.c_str(), "func_areaportal") == 0)
 		{
 			CAreaPortal *Portal = entity_cast<CAreaPortal>(t);
 			gi.SetAreaPortalState (Portal->Style, isOpen);
@@ -1698,8 +1698,8 @@ void CDoorSecret::Spawn ()
 	State.GetAngles().ToVectors (&forward, &right, &up);
 	State.GetAngles().Clear ();
 
-	float width = (SpawnFlags & SECRET_1ST_DOWN) ? Q_fabs(up.Dot (GetSize())) : Q_fabs(right.Dot (GetSize()));
-	float length = Q_fabs(forward.Dot (GetSize()));
+	float width = (SpawnFlags & SECRET_1ST_DOWN) ? Q_fabs(up | GetSize()) : Q_fabs(right | GetSize());
+	float length = Q_fabs(forward | GetSize());
 	if (SpawnFlags & SECRET_1ST_DOWN)
 		Positions[0] = State.GetOrigin ().MultiplyAngles (-1 * width, up);
 	else
@@ -2044,7 +2044,7 @@ void CTrainBase::Next ()
 		{
 			if (!first)
 			{
-				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", TargetEntity->ClassName, TargetEntity->State.GetOrigin().X, TargetEntity->State.GetOrigin().Y, TargetEntity->State.GetOrigin().Z);
+				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", TargetEntity->ClassName.c_str(), TargetEntity->State.GetOrigin().X, TargetEntity->State.GetOrigin().Y, TargetEntity->State.GetOrigin().Z);
 				return;
 			}
 			first = false;
@@ -2312,7 +2312,7 @@ void CTriggerElevator::Think ()
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target);
 		return;
 	}
-	if (strcmp(newTarg->ClassName, "func_train") != 0)
+	if (strcmp(newTarg->ClassName.c_str(), "func_train") != 0)
 	{
 		//gi.dprintf("trigger_elevator target %s is not a train\n", self->target);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target);
@@ -3345,3 +3345,4 @@ public:
 };
 
 LINK_CLASSNAME_TO_CLASS ("trigger_relay", CTriggerRelay);
+

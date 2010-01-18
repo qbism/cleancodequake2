@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if XATRIX_FEATURES
 #include "cc_soldier_base.h"
 #include "cc_xatrix_soldier_laser.h"
 
@@ -56,6 +58,9 @@ void CSoldierLaser::Attack ()
 static sint32 MachinegunFlash [] = {MZ2_SOLDIER_MACHINEGUN_1, MZ2_SOLDIER_MACHINEGUN_2, MZ2_SOLDIER_MACHINEGUN_3, MZ2_SOLDIER_MACHINEGUN_4, MZ2_SOLDIER_MACHINEGUN_5, MZ2_SOLDIER_MACHINEGUN_6, MZ2_SOLDIER_MACHINEGUN_7, MZ2_SOLDIER_MACHINEGUN_8};
 void CSoldierLaser::FireGun (sint32 FlashNumber)
 {
+	if (Entity->Health <= 0)
+		return;
+
 	sint32		flashIndex = MachinegunFlash[FlashNumber];
 
 	if (!(AIFlags & AI_HOLD_FRAME))
@@ -116,3 +121,4 @@ void CSoldierLaser::SpawnSoldier ()
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_soldier_lasergun", CSoldierLaser);
+#endif

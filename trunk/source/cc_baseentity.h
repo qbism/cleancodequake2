@@ -95,7 +95,7 @@ public:
 	uint32			EntityFlags;
 	CEntityState	State;
 	EEdictFlags		Flags;
-	char			*ClassName;
+	std::cc_string	ClassName;
 
 	struct entityTeam_t
 	{
@@ -731,7 +731,7 @@ void LoadEntityFields (TClass *Me, CFile &File)
 };
 
 template <class TClass>
-const size_t FieldSize ()
+size_t FieldSize ()
 {
 	return ArrayCount(TClass::FieldsForParsing);
 }

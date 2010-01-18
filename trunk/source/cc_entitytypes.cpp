@@ -214,7 +214,7 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 dam
 			State.GetAngles().ToVectors(&forward, NULL, NULL);
 			vec = point - State.GetOrigin();
 			vec.Normalize ();
-			if (vec.Dot (forward) <= 0.3)
+			if ((vec | forward) <= 0.3)
 				return 0;
 
 			damagePerCell = 1;
@@ -301,7 +301,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 			// medics won't heal monsters that they kill themselves
 
 #if !MONSTER_USE_ROGUE_AI
-			if (strcmp(attacker->ClassName, "monster_medic") == 0)
+			if (strcmp(attacker->ClassName.c_str(), "monster_medic") == 0)
 				SetOwner (attacker);
 #endif
 		}
@@ -327,6 +327,7 @@ void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sin
 		CTempEnt_Splashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? CTempEnt_Splashes::ST_BULLET_SPARKS : CTempEnt_Splashes::ST_SPARKS, CTempEnt_Splashes::SPT_SPARKS);
 }
 
+bool LastPelletShot = true;
 void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 								vec3f dir, vec3f point, vec3f normal, sint32 damage,
 								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
@@ -532,15 +533,18 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		}
 	}
 
-	if ((EntityFlags & ENT_MONSTER))
+	if (EntityFlags & ENT_MONSTER)
 	{
 		CMonster *Monster = (entity_cast<CMonsterEntity>(this))->Monster;
 		Monster->ReactToDamage (attacker);
 		if (!(Monster->AIFlags & AI_DUCKED) && take)
 		{
-			Pain (attacker, knockback, take);
-			if (skill->Integer() == 3)
-				Monster->PainDebounceTime = level.Frame + 50;
+			if (LastPelletShot)
+			{
+				Pain (attacker, knockback, take);
+				if (skill->Integer() == 3)
+					Monster->PainDebounceTime = level.Frame + 50;
+			}
 		}
 	}
 	else if (((EntityFlags & ENT_PLAYER) && take
@@ -989,7 +993,7 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 			{
 				if ((j != i) && planes[i] != planes[j])
 				{
-					if (new_velocity.Dot (planes[j]) < 0)
+					if ((new_velocity | planes[j]) < 0)
 						break;	// not ok
 				}
 			}
@@ -1012,8 +1016,8 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 				Velocity.Clear ();
 				return 7;
 			}
-			dir = planes[0].Cross (planes[1]);
-			d = dir.Dot (Velocity);
+			dir = planes[0] ^ planes[1];
+			d = dir | Velocity;
 			Velocity = dir * d;
 		}
 
@@ -1021,7 +1025,7 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 // if original velocity is against the original velocity, stop dead
 // to avoid tiny occilations in sloping corners
 //
-		if (Velocity.Dot (primal_velocity) <= 0)
+		if ((Velocity | primal_velocity) <= 0)
 		{
 			Velocity.Clear ();
 			return blocked;
@@ -1198,7 +1202,7 @@ sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 	if (!normal[2])
 		blocked |= 2;           // step
 
-	float backoff = in.Dot (normal) * overbounce;
+	float backoff = (in | normal) * overbounce;
 
 	for (sint32 i = 0; i < 3; i++)
 	{
@@ -1308,9 +1312,9 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 			// figure movement due to the pusher's amove
 			vec3f org = Check->State.GetOrigin() - Entity->State.GetOrigin ();
 			Check->State.GetOrigin() += (vec3f (
-				org.Dot (forward),
-				-org.Dot (right),
-				org.Dot (up)
+				org | forward,
+				-(org | right),
+				org | up
 				) - org);
 
 			// may have pushed them off an edge
@@ -1625,8 +1629,8 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
 				continue;
 
 			// doors fire area portals in a specific way
-			if (!Q_stricmp(Ent->ClassName, "func_areaportal") &&
-				(!Q_stricmp(Ent->ClassName, "func_door") || !Q_stricmp(Ent->ClassName, "func_door_rotating")))
+			if (!Q_stricmp(Ent->ClassName.c_str(), "func_areaportal") &&
+				(!Q_stricmp(Ent->ClassName.c_str(), "func_door") || !Q_stricmp(Ent->ClassName.c_str(), "func_door_rotating")))
 				continue;
 
 			if (Ent->EntityFlags & ENT_USABLE)

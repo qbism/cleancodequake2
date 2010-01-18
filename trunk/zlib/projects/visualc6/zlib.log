@@ -1,5 +1,5 @@
-﻿Build started 22/12/2009 9:58:31 PM.
-     1>Project "F:\cleancodeq2\branches\ArcadeQuake2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 129 (rebuild target(s)).
+﻿Build started 16/01/2010 12:38:11 PM.
+     1>Project "F:\cleancodeq2\branches\ArcadeQuake2\trunk\zlib\projects\visualc6\zlib.vcxproj" on node 3 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file ".\Win32_LIB_Release\zlib.lastbuildstate".
        _PrepareForBuild:
@@ -209,4 +209,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.49
+Time Elapsed 00:00:01.46

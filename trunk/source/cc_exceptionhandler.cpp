@@ -33,6 +33,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "cc_exceptionhandler.h"
+
+#if CC_USE_EXCEPTION_HANDLER && (MSVS_VERSION >= VS_9) && !defined(CC_STDC_CONFORMANCE)
 #include "cc_version.h"
 #include <errno.h>
 #include <float.h>
@@ -253,16 +255,12 @@ static const PCHAR SymTypeToString (SYM_TYPE SymType)
 inline void NumSpaces (FILE *fhReport, char *name, const PCHAR Type)
 {
 	fprintf (fhReport, "%-60s", name);
-
-//	for (size_t i = 0; i < ((strlen(name) >= 60) ? 1 : 60-strlen(name)); i++)
-//		fprintf (fhReport, " ");
-
 	fprintf (fhReport, "%s\r\n", Type);
 }
 
 static BOOL CALLBACK EnumerateLoadedModulesProcSymInfo (PSTR ModuleName, DWORD64 ModuleBase, ULONG ModuleSize, PVOID UserContext)
 {
-	memset (&symInfo, 0, sizeof(symInfo));
+	Mem_Zero (&symInfo, sizeof(symInfo));
 	fhReport = (FILE *)UserContext;
 
 	symInfo.SizeOfStruct = sizeof(symInfo);
@@ -716,7 +714,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fnOffset = 0;
 
 	// Get OS info
-	memset (&osInfo, 0, sizeof(osInfo));
+	Mem_Zero (&osInfo, sizeof(osInfo));
 	osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	if (!GetVersionEx ((OSVERSIONINFO *)&osInfo))
 	{
@@ -915,3 +913,4 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }
+#endif
