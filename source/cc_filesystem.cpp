@@ -45,7 +45,7 @@ void FS_Error (const char *errorMsg)
 	assert (0);
 #endif
 #endif
-	DebugPrintf ("%s\n", errorMsg);
+	ServerPrintf ("%s\n", errorMsg);
 }
 
 // Path management.
@@ -369,11 +369,8 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode)
 {
 	const char *openMode = FS_OpenModeFromEnum(Mode);
 
-	if (!strcmp(openMode,"ERR"))
-	{
-		_CC_ASSERT_EXPR (0, "Invalid file mode passed");
+	if (_CC_ASSERT_EXPR (strcmp(openMode,"ERR"), "Invalid file mode passed"))
 		return 0;
-	}
 
 	// Open up the file.
 	void *fp = NULL;
@@ -444,8 +441,7 @@ void FS_Read (void *buffer, size_t size, fileHandle_t &handle)
 {
 	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 
-	if (!(handleIndex->openMode & FILEMODE_READ))
-		_CC_ASSERT_EXPR (0, "Tried to read on a write\n");
+	_CC_ASSERT_EXPR ((handleIndex->openMode & FILEMODE_READ), "Tried to read on a write\n");
 
 	if (handleIndex)
 	{
@@ -461,8 +457,7 @@ void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 {
 	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 
-	if (!(handleIndex->openMode & FILEMODE_WRITE))
-		_CC_ASSERT_EXPR (0, "Tried to write on a read\n");
+	_CC_ASSERT_EXPR ((handleIndex->openMode & FILEMODE_WRITE), "Tried to write on a read\n");
 
 	if (handleIndex)
 	{

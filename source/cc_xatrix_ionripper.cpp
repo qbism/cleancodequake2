@@ -62,9 +62,9 @@ void CIonRipperBoomerang::Think ()
 	Free();
 }
 
-void CIonRipperBoomerang::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CIonRipperBoomerang::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -76,15 +76,15 @@ void CIonRipperBoomerang::Touch (CBaseEntity *other, plane_t *plane, cmBspSurfac
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
 	{
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_RIPPER);
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_RIPPER);
 		Free (); // "delete" the entity
 	}
 }
 
 void CIonRipperBoomerang::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed)
+						sint32 Damage, sint32 speed)
 {
 	CIonRipperBoomerang		*Bolt = QNewEntityOf CIonRipperBoomerang;
 
@@ -100,8 +100,8 @@ void CIonRipperBoomerang::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
 	Bolt->SetOwner (Spawner);
-	Bolt->NextThink = level.Frame + 30;
-	Bolt->Damage = damage;
+	Bolt->NextThink = Level.Frame + 30;
+	Bolt->Damage = Damage;
 	Bolt->ClassName = "boomrang";
 	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
 	Bolt->GetSolid() = SOLID_BBOX;
@@ -138,9 +138,9 @@ CWeapon(8, 1, "models/weapons/v_boomer/tris.md2", 0, 4, 5, 6,
 {
 }
 
-bool CIonRipper::CanFire (CPlayerEntity *ent)
+bool CIonRipper::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 5:
 		return true;
@@ -148,9 +148,9 @@ bool CIonRipper::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CIonRipper::CanStopFidgetting (CPlayerEntity *ent)
+bool CIonRipper::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 36:
 		return true;
@@ -158,29 +158,29 @@ bool CIonRipper::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CIonRipper::Fire (CPlayerEntity *ent)
+void CIonRipper::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset (16, 7,  ent->ViewHeight-8);
-	const sint32	damage = (game.GameMode & GAME_DEATHMATCH) ? CalcQuadVal(30) : CalcQuadVal(50);
+	vec3f		start, forward, right, offset (16, 7,  Player->ViewHeight-8);
+	const sint32	damage = (Game.GameMode & GAME_DEATHMATCH) ? CalcQuadVal(30) : CalcQuadVal(50);
 
-	(ent->Client.ViewAngle + vec3f(0, crand(), 0)).ToVectors (&forward, &right, NULL);
+	(Player->Client.ViewAngle + vec3f(0, crand(), 0)).ToVectors (&forward, &right, NULL);
 
-	ent->Client.KickOrigin = forward * -3;
-	ent->Client.KickAngles.X = -3;
+	Player->Client.KickOrigin = forward * -3;
+	Player->Client.KickAngles.X = -3;
 
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	CIonRipperBoomerang::Spawn (ent, start, forward, damage, 500);
+	CIonRipperBoomerang::Spawn (Player, start, forward, damage, 500);
 
 	// send muzzle flash
-	Muzzle (ent, MZ_IONRIPPER);
-	AttackSound (ent);
+	Muzzle (Player, MZ_IONRIPPER);
+	AttackSound (Player);
 
-	ent->Client.PlayerState.GetGunFrame()++;
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	FireAnimation (ent);
+	Player->Client.PlayerState.GetGunFrame()++;
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	FireAnimation (Player);
 
-	DepleteAmmo(ent, 2);
+	DepleteAmmo(Player, 2);
 }
 
 WEAPON_DEFS (CIonRipper);

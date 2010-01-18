@@ -77,7 +77,7 @@ public:
 	void DuckDown ();
 	void DuckHold ();
 	void DuckUp ();
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (CBaseEntity *Attacker, float eta);
 #endif
 
 	void Moan ();
@@ -94,8 +94,8 @@ public:
 	void Attack1 ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 #if XATRIX_FEATURES
 	virtual

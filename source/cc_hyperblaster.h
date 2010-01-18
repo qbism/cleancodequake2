@@ -46,7 +46,7 @@ public:
 	void	Fire (CPlayerEntity *Player);
 
 #if XATRIX_FEATURES
-	void	Use (CWeaponItem *Wanted, CPlayerEntity *ent);
+	void	Use (CWeaponItem *Wanted, CPlayerEntity *Player);
 #endif
 
 	WEAPON_CLASS_DEFS (CHyperBlaster);

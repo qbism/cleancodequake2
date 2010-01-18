@@ -111,7 +111,7 @@ char *Sys_FindFirst (char *path, uint32 mustHave, uint32 cantHave)
 	WIN32_FIND_DATAA	findinfo;
 
 	if (sys_findHandle != INVALID_HANDLE_VALUE)
-		DebugPrintf ( "Sys_BeginFind without close");
+		DebugPrintf ("Sys_BeginFind without close\n");
 
 	Com_FilePath (path, sys_findBase, sizeof(sys_findBase));
 	sys_findHandle = FindFirstFileA (path, &findinfo);

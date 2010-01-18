@@ -98,7 +98,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Explode ();
 
@@ -112,7 +112,7 @@ class CFoodCube : public CBasePowerUp
 {
 public:
 	CFoodCube ();
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
 
 #else

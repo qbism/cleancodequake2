@@ -73,18 +73,18 @@ void CEntityList::AddToList (CClassnameToClassIndex *Entity)
 void SpawnWorld ();
 CBaseEntity *CEntityList::Resolve (edict_t *ent)
 {
-	if (Q_stricmp(level.ClassName.c_str(), "worldspawn") == 0)
+	if (Q_stricmp(Level.ClassName.c_str(), "worldspawn") == 0)
 	{
 		SpawnWorld ();
-		return g_edicts[0].Entity;
+		return Game.Entities[0].Entity;
 	}
 
-	uint32 hash = Com_HashGeneric(level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
+	uint32 hash = Com_HashGeneric(Level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
 
 	for (THashedEntityListType::iterator it = HashedEntityList.equal_range(hash).first; it != HashedEntityList.equal_range(hash).second; ++it)
 	{
 		CClassnameToClassIndex *Table = EntityList.at((*it).second);
-		if (Q_stricmp (Table->Classname, level.ClassName.c_str()) == 0)
+		if (Q_stricmp (Table->Classname, Level.ClassName.c_str()) == 0)
 			return Table->Spawn(ent->state.number);
 	}
 
@@ -105,7 +105,7 @@ Finds the spawn function for the entity and calls it
 */
 void ED_CallSpawn (edict_t *ent)
 {
-	if (level.ClassName.empty())
+	if (Level.ClassName.empty())
 	{
 		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "NULL classname!\n");
 		return;
@@ -116,7 +116,7 @@ void ED_CallSpawn (edict_t *ent)
 
 	if (!MapEntity)
 	{
-		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", level.ClassName.c_str());
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", Level.ClassName.c_str());
 
 _CC_DISABLE_DEPRECATION
 		G_FreeEdict (ent);
@@ -135,9 +135,9 @@ _CC_ENABLE_DEPRECATION
 	}
 
 	// Link in the classname
-	MapEntity->ClassName = Mem_PoolStrDup (level.ClassName.c_str(), com_levelPool, 0);
+	MapEntity->ClassName = Mem_PoolStrDup (Level.ClassName.c_str(), com_levelPool, 0);
 
-	if (map_debug->Boolean())
+	if (map_debug.Boolean())
 	{
 		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_EASY)
 		{
@@ -179,7 +179,7 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 {
 	bool	init = false;
 
-	level.ParseData.clear();
+	Level.ParseData.clear();
 
 	// Go through all the dictionary pairs
 	while (true)
@@ -210,10 +210,10 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 		if (keyName[0] == '_')
 			continue;
 		else if (Q_stricmp (keyName, "classname") == 0)
-			level.ClassName = token;
+			Level.ClassName = token;
 		else
 			// push it in the list for the entity
-			level.ParseData.push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
+			Level.ParseData.push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
 	}
 
 	if (!init)
@@ -235,9 +235,9 @@ void G_FindTeams ()
 {
 	sint32		c = 0, c2 = 0;
 
-	for (int i = 1; i < Game.GetNumEdicts(); i++)
+	for (int i = 1; i < GameAPI.GetNumEdicts(); i++)
 	{
-		CBaseEntity *e = g_edicts[i].Entity;
+		CBaseEntity *e = Game.Entities[i].Entity;
 		if (!e)
 			continue;
 		if (!e->GetInUse())
@@ -253,9 +253,9 @@ void G_FindTeams ()
 
 		c++;
 		c2++;
-		for (int j = i + 1; j < Game.GetNumEdicts(); j++)
+		for (int j = i + 1; j < GameAPI.GetNumEdicts(); j++)
 		{
-			CBaseEntity *e2 = g_edicts[j].Entity;
+			CBaseEntity *e2 = Game.Entities[j].Entity;
 			if (!e2)
 				continue;
 			if (!e2->GetInUse())
@@ -282,7 +282,7 @@ void G_FindTeams ()
 		QDelete e->Team.String; // Free team string
 	}
 
-	DebugPrintf ("%i teams with %i entities\n", c, c2);
+	ServerPrintf ("%i teams with %i entities\n", c, c2);
 }
 
 
@@ -293,9 +293,9 @@ void G_FindTeams ()
 void InitPlayers ()
 {
 	// Set up the client entities
-	for (sint32 i = 1; i <= game.MaxClients; i++)
+	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
-		edict_t *ent = &g_edicts[i];
+		edict_t *ent = &Game.Entities[i];
 
 		if (!ent->Entity)
 			ent->Entity = QNewEntityOf CPlayerEntity(i);
@@ -305,7 +305,7 @@ void InitPlayers ()
 void InitEntities ()
 {
 	// Set up the world
-	edict_t *theWorld = &g_edicts[0];
+	edict_t *theWorld = &Game.Entities[0];
 	if (!theWorld->Entity)
 		theWorld->Entity = QNewEntityOf CWorldEntity(0);
 
@@ -342,18 +342,18 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 {
 	CTimer Timer;
 
-	level.EntityNumber = 0;
+	Level.EntityNumber = 0;
 	InitMapCounter();
 
-	sint32 skill_level = Clamp (skill->Integer(), 0, 3);
-	if (skill->Integer() != skill_level)
-		skill->Set(skill_level, true);
+	sint32 skill_level = Clamp (skill.Integer(), 0, 3);
+	if (skill.Integer() != skill_level)
+		skill.Set (skill_level, true);
 
 	CPlayerEntity::BackupClientData ();
 
 	if (Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".cin") == 0 || Q_stricmp (ServerLevelName + strlen(ServerLevelName) - 4, ".dm2") == 0)
 	{
-		level.Demo = true;
+		Level.Demo = true;
 		ShutdownBodyQueue ();
 		Shutdown_Junk ();
 	}
@@ -361,7 +361,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	// Deallocate entities
 	DeallocateEntities ();
 
-	level.Clear ();
+	Level.Clear ();
 
 	Mem_FreePool (com_levelPool);
 	gEntString = Mem_PoolStrDup(entities, com_levelPool, 0);
@@ -373,26 +373,26 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		FreeIt = true;
 
 #if MONSTERS_USE_PATHFINDING
-	if (!level.Demo)
+	if (!Level.Demo)
 		InitNodes ();
 #endif
 
-	Mem_Zero (g_edicts, game.MaxEntities * sizeof(g_edicts[0]));
+	Mem_Zero (Game.Entities, Game.MaxEntities * sizeof(Game.Entities[0]));
 	InitEntityLists ();
 	ClearTimers ();
 
-	level.ServerLevelName = ServerLevelName;
+	Level.ServerLevelName = ServerLevelName;
 
-	game.SpawnPoint = spawnpoint;
+	Game.SpawnPoint = spawnpoint;
 
 	InitEntities ();
 
 	// set client fields on player ents
 	CPlayerEntity::RestoreClientData ();
 
-	if (!level.Demo)
+	if (!Level.Demo)
 	{
-		level.Inhibit = 0;
+		Level.Inhibit = 0;
 
 		// Parse ents
 		CParser EntityParser (entities, PSP_COMMENT_MASK);
@@ -401,7 +401,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		while (true)
 		{
 			// Clear classname
-			level.ClassName.clear ();
+			Level.ClassName.clear ();
 
 			// Parse the opening brace
 			const char *token;
@@ -413,24 +413,23 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 				GameError ("ED_LoadFromFile: found %s when expecting {", token);
 
 	_CC_DISABLE_DEPRECATION
-			edict_t *ent = (!SpawnedWorld) ? g_edicts : G_Spawn();
+			edict_t *ent = (!SpawnedWorld) ? Game.Entities : G_Spawn();
 	_CC_ENABLE_DEPRECATION
 			SpawnedWorld = true;
 
 			ED_ParseEdict (EntityParser, ent);
 
 			ED_CallSpawn (ent);
-			level.EntityNumber++;
+			Level.EntityNumber++;
 
 			if (!ent->inUse)
 			{
-				level.Inhibit++;
-				if (ent->Entity && !ent->Entity->Freed)
-					_CC_ASSERT_EXPR (0, "Entity not inuse but freed!");
+				Level.Inhibit++;
+				_CC_ASSERT_EXPR (!(ent->Entity && !ent->Entity->Freed), "Entity not inuse but freed!");
 			}
 		}
 
-		DebugPrintf ("%i entities removed (out of %i total)\n", level.Inhibit, level.EntityNumber);
+		ServerPrintf ("%i entities removed (out of %i total)\n", Level.Inhibit, Level.EntityNumber);
 
 		G_FindTeams ();
 
@@ -449,12 +448,12 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	#endif
 	}
 	else
-		DebugPrintf ("Demo detected, skipping map init.\n");
+		ServerPrintf ("Demo detected, skipping map init.\n");
 
 #if !NO_VERSION_CHECKING
 	InitVersion ();
 #endif
-	DebugPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
+	ServerPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
 
 	if (FreeIt)
 		QDelete[] entities;

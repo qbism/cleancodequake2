@@ -500,7 +500,7 @@ void CFloater::Attack()
 #if !MONSTER_USE_ROGUE_AI
 	CurrentMove = &FloaterMoveAttack1;
 #else
-	float chance = (!skill->Integer()) ? 0 : 1.0 - (0.5/skill->Float());
+	float chance = (!skill.Integer()) ? 0 : 1.0 - (0.5/skill.Float());
 
 	// 0% chance of circle in easy
 	// 50% chance in normal
@@ -527,16 +527,16 @@ void CFloater::Melee ()
 	CurrentMove = (frand() < 0.5) ? &FloaterMoveAttack3 : &FloaterMoveAttack2;
 }
 
-void CFloater::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CFloater::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	bool n = (frand() < 0.5);
@@ -544,7 +544,7 @@ void CFloater::Pain (CBaseEntity *other, float kick, sint32 damage)
 	CurrentMove = n ? &FloaterMovePain1 : &FloaterMovePain2;
 }
 
-void CFloater::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CFloater::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH1]);
 	Entity->BecomeExplosion (false);

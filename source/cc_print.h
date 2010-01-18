@@ -39,6 +39,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
 void DeveloperPrintf (char *fmt, ...);
 void DebugPrintf (char *fmt, ...);
+void ServerPrintf (char *fmt, ...);
 
 void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...);
 

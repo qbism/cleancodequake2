@@ -218,19 +218,19 @@ CBaseItem *FindItemByClassname (const char *name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::Add (edict_t *ent, sint32 quantity)
+/// \fn	void CBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
 ///
-/// \brief	Adds 'quantity' amount of this to 'ent' (ignores any max)
+/// \brief	Adds 'quantity' amount of this to 'Player' (ignores any max)
 ///
 /// \author	Paril
 /// \date	5/9/2009
 ///
-/// \param	ent		 - If non-null, the entity to add the amount to. 
+/// \param	Player		 - If non-null, the entity to add the amount to. 
 /// \param	quantity - The amount to add. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CBaseItem::Add (CPlayerEntity *ent, sint32 quantity)
+void CBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
 {
-	ent->Client.Persistent.Inventory.Add(this, quantity);
+	Player->Client.Persistent.Inventory.Add(this, quantity);
 }
 
 CBaseItem *GetItemByIndex (uint32 Index)
@@ -255,13 +255,13 @@ void InitItemlist ()
 	AddPowerupsToList();
 	AddKeysToList();
 #if CLEANCTF_ENABLED
-	if (game.GameMode & GAME_CTF)
+	if (Game.GameMode & GAME_CTF)
 		AddFlagsToList();
 #endif
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.GameMode & GAME_CTF)
+	|| (Game.GameMode & GAME_CTF)
 #endif
 		)
 		AddTechsToList();

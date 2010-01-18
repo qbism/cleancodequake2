@@ -43,35 +43,35 @@ HealthFlags(HealthFlags)
 {
 };
 
-bool CHealth::Pickup (CItemEntity *ent, CPlayerEntity *other)
+bool CHealth::Pickup (CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (!(HealthFlags & HEALTHFLAG_IGNOREMAX) && (other->Health >= other->MaxHealth))
+	if (!(HealthFlags & HEALTHFLAG_IGNOREMAX) && (Other->Health >= Other->MaxHealth))
 		return false;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if (other->Health >= 250 && Amount > 25)
+	if (Other->Health >= 250 && Amount > 25)
 		return false;
 //ZOID
 #endif
 
-	other->Health += Amount;
+	Other->Health += Amount;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if (other->Health > 250 && Amount > 25)
-		other->Health = 250;
+	if (Other->Health > 250 && Amount > 25)
+		Other->Health = 250;
 //ZOID
 #endif
 
 	if (!(HealthFlags & HEALTHFLAG_IGNOREMAX))
 	{
-		if (other->Health > other->MaxHealth)
-			other->Health = other->MaxHealth;
+		if (Other->Health > Other->MaxHealth)
+			Other->Health = Other->MaxHealth;
 	}
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 300);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 300);
 
 	return true;
 }
@@ -93,14 +93,14 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoHealth.IsEnabled())
+		if ((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoHealth.IsEnabled())
 		{
 			Free ();
 			return;
 		}
 
 		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
+		NextThink = Level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 

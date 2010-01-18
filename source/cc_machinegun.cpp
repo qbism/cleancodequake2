@@ -41,9 +41,9 @@ CWeapon(3, 0, "models/weapons/v_machn/tris.md2", 0, 3, 4, 5,
 {
 }
 
-bool CMachinegun::CanFire (CPlayerEntity *ent)
+bool CMachinegun::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 4:
 	case 5:
@@ -52,9 +52,9 @@ bool CMachinegun::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CMachinegun::CanStopFidgetting (CPlayerEntity *ent)
+bool CMachinegun::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 23:
 	case 45:
@@ -63,40 +63,40 @@ bool CMachinegun::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CMachinegun::FireAnimation (CPlayerEntity *ent)
+void CMachinegun::FireAnimation (CPlayerEntity *Player)
 {
-	ent->Client.Anim.Priority = ANIM_ATTACK;
-	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	Player->Client.Anim.Priority = ANIM_ATTACK;
+	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
-		ent->State.GetFrame() = (FRAME_crattak1 - (sint32) (frand()+0.25));
-		ent->Client.Anim.EndFrame = FRAME_crattak9;
+		Player->State.GetFrame() = (FRAME_crattak1 - (sint32) (frand()+0.25));
+		Player->Client.Anim.EndFrame = FRAME_crattak9;
 	}
 	else
 	{
-		ent->State.GetFrame() = (FRAME_attack1 - (sint32) (frand()+0.25));
-		ent->Client.Anim.EndFrame = FRAME_attack8;
+		Player->State.GetFrame() = (FRAME_attack1 - (sint32) (frand()+0.25));
+		Player->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }
 
-void CMachinegun::Fire (CPlayerEntity *ent)
+void CMachinegun::Fire (CPlayerEntity *Player)
 {
-	if (!(ent->Client.Buttons & BUTTON_ATTACK))
+	if (!(Player->Client.Buttons & BUTTON_ATTACK))
 	{
-		ent->Client.Timers.MachinegunShots = 0;
-		ent->Client.PlayerState.GetGunFrame()++;
+		Player->Client.Timers.MachinegunShots = 0;
+		Player->Client.PlayerState.GetGunFrame()++;
 		return;
 	}
 
-	if (ent->Client.PlayerState.GetGunFrame() == 5)
-		ent->Client.PlayerState.GetGunFrame() = 4;
+	if (Player->Client.PlayerState.GetGunFrame() == 5)
+		Player->Client.PlayerState.GetGunFrame() = 4;
 	else
-		ent->Client.PlayerState.GetGunFrame() = 5;
+		Player->Client.PlayerState.GetGunFrame() = 5;
 
-	if (!AttemptToFire(ent))
+	if (!AttemptToFire(Player))
 	{
-		ent->Client.PlayerState.GetGunFrame() = 6;
-		OutOfAmmo(ent);
-		NoAmmoWeaponChange (ent);
+		Player->Client.PlayerState.GetGunFrame() = 6;
+		OutOfAmmo(Player);
+		NoAmmoWeaponChange (Player);
 		return;
 	}
 
@@ -105,36 +105,36 @@ void CMachinegun::Fire (CPlayerEntity *ent)
 
 	for (uint8 i = 1; i < 3; i++)
 	{
-		ent->Client.KickOrigin[i] = crand() * 0.35;
-		ent->Client.KickAngles[i] = crand() * 0.7;
+		Player->Client.KickOrigin[i] = crand() * 0.35;
+		Player->Client.KickAngles[i] = crand() * 0.7;
 	}
 
-	ent->Client.KickOrigin.X = crand() * 0.35;
-	ent->Client.KickAngles.X = ent->Client.Timers.MachinegunShots * -1.5;
+	Player->Client.KickOrigin.X = crand() * 0.35;
+	Player->Client.KickAngles.X = Player->Client.Timers.MachinegunShots * -1.5;
 
 	// raise the gun as it is firing
-	if (!(game.GameMode & GAME_DEATHMATCH))
+	if (!(Game.GameMode & GAME_DEATHMATCH))
 	{
-		ent->Client.Timers.MachinegunShots++;
-		if (ent->Client.Timers.MachinegunShots > 9)
-			ent->Client.Timers.MachinegunShots = 9;
+		Player->Client.Timers.MachinegunShots++;
+		if (Player->Client.Timers.MachinegunShots > 9)
+			Player->Client.Timers.MachinegunShots = 9;
 	}
 
 	// get start / end positions
-	vec3f start, forward, right, offset (0, 8, ent->ViewHeight-8), 
-		angles = ent->Client.ViewAngle + ent->Client.KickAngles;
+	vec3f start, forward, right, offset (0, 8, Player->ViewHeight-8), 
+		angles = Player->Client.ViewAngle + Player->Client.KickAngles;
 	angles.ToVectors (&forward, &right, NULL);
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	CBullet::Fire (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
+	CBullet::Fire (Player, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
 
-	Muzzle (ent, MZ_MACHINEGUN);
-	AttackSound (ent);
+	Muzzle (Player, MZ_MACHINEGUN);
+	AttackSound (Player);
 
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	DepleteAmmo(ent, 1);
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	DepleteAmmo(Player, 1);
 
-	FireAnimation (ent);
+	FireAnimation (Player);
 }
 
 WEAPON_DEFS (CMachinegun);

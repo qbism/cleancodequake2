@@ -28,7 +28,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_dmflags.h
-// This is so that I don't have to keep doing dmflags->Integer(). Should be faster than manually re-getting the value every frame!
+// This is so that I don't have to keep doing dmflags.Integer(). Should be faster than manually re-getting the value every frame!
 //
 
 #include "cc_local.h"

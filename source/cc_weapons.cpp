@@ -115,85 +115,85 @@ CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 }
 
 #ifndef NO_AUTOSWITCH
-bool CheckAutoSwitch (CPlayerEntity *other)
+bool CheckAutoSwitch (CPlayerEntity *Other)
 {
-	sint32 val = atoi(Info_ValueForKey (other->Client.Persistent.UserInfo, "cc_autoswitch").c_str());
+	sint32 val = atoi(Info_ValueForKey (Other->Client.Persistent.UserInfo, "cc_autoswitch").c_str());
 	return (val == 1);
 }
 #endif
 
-bool CWeaponItem::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CWeaponItem::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
-	if ( (dmFlags.dfWeaponsStay.IsEnabled() || game.GameMode == GAME_COOPERATIVE) 
-		&& other->Client.Persistent.Inventory.Has(GetIndex()))
+	if ( (dmFlags.dfWeaponsStay.IsEnabled() || Game.GameMode == GAME_COOPERATIVE) 
+		&& Other->Client.Persistent.Inventory.Has(GetIndex()))
 	{
-		if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+		if (!(Player->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
 			return false;	// leave the weapon for others to pickup
 	}
 
-	other->Client.Persistent.Inventory += this;
+	Other->Client.Persistent.Inventory += this;
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) )
+	if (!(Player->SpawnFlags & DROPPED_ITEM) )
 	{
 		// give them some ammo with it
 		if (Ammo)
 		{
 			if (dmFlags.dfInfiniteAmmo.IsEnabled())
-				Ammo->AddAmmo (other, 1000);
+				Ammo->AddAmmo (Other, 1000);
 			else
-				Ammo->AddAmmo (other, Ammo->Quantity);
+				Ammo->AddAmmo (Other, Ammo->Quantity);
 		}
 
-		if (! (ent->SpawnFlags & DROPPED_PLAYER_ITEM) )
+		if (! (Player->SpawnFlags & DROPPED_PLAYER_ITEM) )
 		{
-			if (game.GameMode & GAME_DEATHMATCH)
+			if (Game.GameMode & GAME_DEATHMATCH)
 			{
 				if (dmFlags.dfWeaponsStay.IsEnabled())
-					ent->Flags |= FL_RESPAWN;
+					Player->Flags |= FL_RESPAWN;
 				else
-					SetRespawn (ent, 300);
+					SetRespawn (Player, 300);
 			}
-			if (game.GameMode == GAME_COOPERATIVE)
-				ent->Flags |= FL_RESPAWN;
+			if (Game.GameMode == GAME_COOPERATIVE)
+				Player->Flags |= FL_RESPAWN;
 		}
 	}
-	else if (ent->AmmoCount)
-		Ammo->AddAmmo (other, ent->AmmoCount);
+	else if (Player->AmmoCount)
+		Ammo->AddAmmo (Other, Player->AmmoCount);
 
 	if (Weapon)
 	{
-		if (other->Client.Persistent.Weapon != Weapon && 
+		if (Other->Client.Persistent.Weapon != Weapon && 
 #ifndef NO_AUTOSWITCH
-			(CheckAutoSwitch(other) || 
+			(CheckAutoSwitch(Other) || 
 #endif
-			((other->Client.Persistent.Inventory.Has(this) == 1)) &&
-			( !(game.GameMode & GAME_DEATHMATCH) || (other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster) ) )
+			((Other->Client.Persistent.Inventory.Has(this) == 1)) &&
+			( !(Game.GameMode & GAME_DEATHMATCH) || (Other->Client.Persistent.Weapon && Other->Client.Persistent.Weapon->Item == NItems::Blaster) ) )
 #ifndef NO_AUTOSWITCH
 			)
 #endif
-			other->Client.NewWeapon = Weapon;
+			Other->Client.NewWeapon = Weapon;
 	}
 
 
 	return true;
 }
 
-void CWeaponItem::Use (CPlayerEntity *ent)
+void CWeaponItem::Use (CPlayerEntity *Player)
 {
-	Weapon->Use (this, ent);
+	Weapon->Use (this, Player);
 }
 
-void CWeaponItem::Drop (CPlayerEntity *ent)
+void CWeaponItem::Drop (CPlayerEntity *Player)
 {
-	if ((Weapon == ent->Client.Persistent.Weapon) && (ent->Client.WeaponState != WS_IDLE))
+	if ((Weapon == Player->Client.Persistent.Weapon) && (Player->Client.WeaponState != WS_IDLE))
 		return;
 
-	DropItem(ent);
+	DropItem(Player);
 
-	ent->Client.Persistent.Inventory -= this;
+	Player->Client.Persistent.Inventory -= this;
 
-	if (Weapon == ent->Client.Persistent.Weapon)
-		ent->Client.Persistent.Weapon->NoAmmoWeaponChange(ent);
+	if (Weapon == Player->Client.Persistent.Weapon)
+		Player->Client.Persistent.Weapon->NoAmmoWeaponChange(Player);
 }
 
 sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX] =
@@ -225,128 +225,128 @@ sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 #endif
 };
 
-sint32 CAmmo::GetMax (CPlayerEntity *ent)
+sint32 CAmmo::GetMax (CPlayerEntity *Player)
 {
-	return ent->Client.Persistent.MaxAmmoValues[Tag];
+	return Player->Client.Persistent.MaxAmmoValues[Tag];
 }
 
-bool CAmmo::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CAmmo::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
 	sint32			count = Quantity;
 
-	if (ent->AmmoCount)
-		count = ent->AmmoCount;
+	if (Player->AmmoCount)
+		count = Player->AmmoCount;
 
-	if (!AddAmmo (other, count))
+	if (!AddAmmo (Other, count))
 		return false;
 
-	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 300);
+	if (!(Player->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Player, 300);
 	return true;
 }
 
-void CAmmo::Use (CPlayerEntity *ent)
+void CAmmo::Use (CPlayerEntity *Player)
 {
 }
 
-void CAmmo::Drop (CPlayerEntity *ent)
+void CAmmo::Drop (CPlayerEntity *Player)
 {
 	sint32 count = Quantity;
-	CItemEntity *dropped = DropItem(ent);
+	CItemEntity *dropped = DropItem(Player);
 
-	if (count > ent->Client.Persistent.Inventory.Has(this))
-		count = ent->Client.Persistent.Inventory.Has(this);
+	if (count > Player->Client.Persistent.Inventory.Has(this))
+		count = Player->Client.Persistent.Inventory.Has(this);
 
 	dropped->AmmoCount = count;
 
-	ent->Client.Persistent.Inventory.Remove (this, count);
+	Player->Client.Persistent.Inventory.Remove (this, count);
 }
 
-bool CAmmoWeapon::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CAmmoWeapon::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
-	sint32			oldcount = other->Client.Persistent.Inventory.Has(this);
+	sint32			oldcount = Other->Client.Persistent.Inventory.Has(this);
 	sint32			count = Quantity;
 	bool		weapon = (Flags & ITEMFLAG_WEAPON);
 
 	if (weapon && dmFlags.dfInfiniteAmmo.IsEnabled())
 		count = 1000;
-	else if (ent->AmmoCount)
-		count = ent->AmmoCount;
+	else if (Player->AmmoCount)
+		count = Player->AmmoCount;
 
-	if (!AddAmmo (other, count))
+	if (!AddAmmo (Other, count))
 		return false;
 
 	if (weapon && !oldcount)
 	{
-		if (other->Client.Persistent.Weapon != Weapon && (!(game.GameMode & GAME_DEATHMATCH) ||
-			(other->Client.Persistent.Weapon && other->Client.Persistent.Weapon->Item == NItems::Blaster)))
-			other->Client.NewWeapon = Weapon;
+		if (Other->Client.Persistent.Weapon != Weapon && (!(Game.GameMode & GAME_DEATHMATCH) ||
+			(Other->Client.Persistent.Weapon && Other->Client.Persistent.Weapon->Item == NItems::Blaster)))
+			Other->Client.NewWeapon = Weapon;
 	}
 
-	if (!(ent->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 300);
+	if (!(Player->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Player, 300);
 	return true;
 }
 
-void CAmmoWeapon::Use (CPlayerEntity *ent)
+void CAmmoWeapon::Use (CPlayerEntity *Player)
 {
 	if (!(Flags & ITEMFLAG_WEAPON))
 		return;
 
 	// see if we're already using it
-	if (Weapon == ent->Client.Persistent.Weapon)
+	if (Weapon == Player->Client.Persistent.Weapon)
 		return;
 
-	if (!g_select_empty->Integer())
+	if (!g_select_empty.Integer())
 	{
-		if (!ent->Client.Persistent.Inventory.Has(GetIndex()))
+		if (!Player->Client.Persistent.Inventory.Has(GetIndex()))
 		{
-			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Name, Name);
+			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Name, Name);
 			return;
 		}
 
-		if (ent->Client.Persistent.Inventory.Has(GetIndex()) < Amount)
+		if (Player->Client.Persistent.Inventory.Has(GetIndex()) < Amount)
 		{
-			ent->PrintToClient (PRINT_HIGH, "Not enough %s.\n", Name);
+			Player->PrintToClient (PRINT_HIGH, "Not enough %s.\n", Name);
 			return;
 		}
 	}
 
 	// change to this weapon when down
-	ent->Client.NewWeapon = Weapon;
+	Player->Client.NewWeapon = Weapon;
 }
 
-void CAmmoWeapon::Drop (CPlayerEntity *ent)
+void CAmmoWeapon::Drop (CPlayerEntity *Player)
 {
 	sint32 count = Quantity;
-	CItemEntity *dropped = DropItem(ent);
+	CItemEntity *dropped = DropItem(Player);
 
-	if (count > ent->Client.Persistent.Inventory.Has(this))
-		count = ent->Client.Persistent.Inventory.Has(this);
+	if (count > Player->Client.Persistent.Inventory.Has(this))
+		count = Player->Client.Persistent.Inventory.Has(this);
 
 	dropped->AmmoCount = count;
 
-	ent->Client.Persistent.Inventory.Remove (this, count);
+	Player->Client.Persistent.Inventory.Remove (this, count);
 
-	if (Weapon && ent->Client.Persistent.Weapon && (ent->Client.Persistent.Weapon == Weapon) &&
-		!ent->Client.Persistent.Inventory.Has(this))
-		ent->Client.Persistent.Weapon->NoAmmoWeaponChange(ent);
+	if (Weapon && Player->Client.Persistent.Weapon && (Player->Client.Persistent.Weapon == Weapon) &&
+		!Player->Client.Persistent.Inventory.Has(this))
+		Player->Client.Persistent.Weapon->NoAmmoWeaponChange(Player);
 }
 
-bool CAmmo::AddAmmo (CPlayerEntity *ent, sint32 count)
+bool CAmmo::AddAmmo (CPlayerEntity *Player, sint32 count)
 {
 	// YUCK
-	sint32 max = GetMax(ent);
+	sint32 max = GetMax(Player);
 
 	if (!max)
 		return false;
 
-	if (ent->Client.Persistent.Inventory.Has(this) < max)
+	if (Player->Client.Persistent.Inventory.Has(this) < max)
 	{
-		ent->Client.Persistent.Inventory.Add (this, count);
+		Player->Client.Persistent.Inventory.Add (this, count);
 
-		if (ent->Client.Persistent.Inventory.Has(this) > max)
-			ent->Client.Persistent.Inventory.Set(this, max);
+		if (Player->Client.Persistent.Inventory.Has(this) > max)
+			Player->Client.Persistent.Inventory.Set(this, max);
 
 		return true;
 	}
@@ -367,14 +367,14 @@ CAmmoEntity::CAmmoEntity (sint32 Index) :
 
 void CAmmoEntity::Spawn (CBaseItem *item)
 {
-	if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
+	if ((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
 	{
 		Free ();
 		return;
 	}
 
 	LinkedItem = item;
-	NextThink = level.Frame + 2;    // items start after other solids
+	NextThink = Level.Frame + 2;    // items start after other solids
 	ThinkState = ITS_DROPTOFLOOR;
 	PhysicsType = PHYSICS_NONE;
 

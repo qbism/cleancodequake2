@@ -192,12 +192,12 @@ public:
 class CTempEnt_Explosions
 {
 public:
-	static void RocketExplosion	(vec3f &Origin, CBaseEntity *ent,
+	static void RocketExplosion	(vec3f &Origin, CBaseEntity *Entity,
 							bool Water = false,
 							bool Particles = true);
 
 	static void GrenadeExplosion	(vec3f &Origin,
-							CBaseEntity *ent,
+							CBaseEntity *Entity,
 							bool Water = false);
 
 	static void BFGExplosion		(vec3f &Origin,

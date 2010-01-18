@@ -115,7 +115,7 @@ void CGameAPI::ClientThink (CPlayerEntity *Player, userCmd_t *cmd)
 	Player->ClientThink (cmd);
 }
 
-GAME_CLASS	Game;
+GAME_CLASS	GameAPI;
 
 /*
 ===========
@@ -130,7 +130,7 @@ void ShutdownGame ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.Shutdown ();
+	GameAPI.Shutdown ();
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -142,7 +142,7 @@ CC_EXCEPTION_HANDLER_END
 ClientBegin
 
 called when a client has finished connecting, and is ready
-to be placed into the game.  This will happen every level load.
+to be placed into the Game.  This will happen every level load.
 ============
 */
 void ClientBegin (edict_t *ent)
@@ -151,7 +151,7 @@ void ClientBegin (edict_t *ent)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ClientBegin (entity_cast<CPlayerEntity>(ent->Entity));
+	GameAPI.ClientBegin (entity_cast<CPlayerEntity>(ent->Entity));
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -174,7 +174,7 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ClientUserinfoChanged (entity_cast<CPlayerEntity>(ent->Entity), userinfo);
+	GameAPI.ClientUserinfoChanged (entity_cast<CPlayerEntity>(ent->Entity), userinfo);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -209,12 +209,11 @@ CC_EXCEPTION_HANDLER_BEGIN
 	// Smart, but it breaks shit.
 	if (!ent->Entity)
 	{
-		DebugPrintf ("Fixing R1Q2 non-attract-loop code...\n");
-		
+		ServerPrintf ("Fixing R1Q2 non-attract-loop code...\n");
 		FixDemoSetup ();
 	}
 
-	returnVal = (Game.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
+	returnVal = (GameAPI.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END_CUSTOM_BEGIN
@@ -239,7 +238,7 @@ void ClientDisconnect (edict_t *ent)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ClientDisconnect (entity_cast<CPlayerEntity>(ent->Entity));
+	GameAPI.ClientDisconnect (entity_cast<CPlayerEntity>(ent->Entity));
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -263,7 +262,7 @@ void ClientThink (edict_t *ent, userCmd_t *ucmd)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ClientThink (entity_cast<CPlayerEntity>(ent->Entity), ucmd);
+	GameAPI.ClientThink (entity_cast<CPlayerEntity>(ent->Entity), ucmd);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -283,7 +282,7 @@ void RunFrame ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.RunFrame ();
+	GameAPI.RunFrame ();
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -305,7 +304,7 @@ void InitGame ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.Init ();
+	GameAPI.Init ();
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -326,7 +325,7 @@ void SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.SpawnEntities (ServerLevelName, entities, spawnpoint);
+	GameAPI.SpawnEntities (ServerLevelName, entities, spawnpoint);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -348,7 +347,7 @@ void ServerCommand ()
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ServerCommand ();
+	GameAPI.ServerCommand ();
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -370,7 +369,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	if (!ent->client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
 		return;		// not fully in game yet
 
-	Game.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
+	GameAPI.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -382,7 +381,7 @@ CC_EXCEPTION_HANDLER_END
 WriteGame
 
 This will be called whenever the game goes to a new level,
-and when the user explicitly saves the game.
+and when the user explicitly saves the Game.
 
 Game information include cross level data, like multi level
 triggers, help computer info, and all client states.
@@ -397,7 +396,7 @@ void WriteGame (char *filename, BOOL autosave)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.WriteGame (filename, !!autosave);
+	GameAPI.WriteGame (filename, !!autosave);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -410,7 +409,7 @@ void ReadGame (char *filename)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ReadGame (filename);
+	GameAPI.ReadGame (filename);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -431,7 +430,7 @@ void WriteLevel (char *filename)
 CC_EXCEPTION_HANDLER_BEGIN
 
 #endif
-	Game.WriteLevel (filename);
+	GameAPI.WriteLevel (filename);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END
@@ -461,7 +460,7 @@ void ReadLevel (char *filename)
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
 
-	Game.ReadLevel (filename);
+	GameAPI.ReadLevel (filename);
 
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_END

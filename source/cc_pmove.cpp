@@ -56,7 +56,7 @@ struct pMoveLocal_t
 	svec3_t			previousOrigin;
 	bool			ladder;
 
-	CPlayerEntity	*ent;
+	CPlayerEntity	*Player;
 };
 
 static pMoveNew_t	*pm;
@@ -126,7 +126,7 @@ static void SV_PM_StepSlideMove_ ()
 	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
 		end = pml.origin + time_left * pml.velocity;
-		trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		trace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 
 		if (trace.allSolid)
 		{
@@ -233,7 +233,7 @@ static void SV_PM_StepSlideMove ()
 	vec3f down_v = pml.velocity;
 
 	vec3f up = start_o + vec3f(0, 0, STEPSIZE);
-	CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	CTrace trace (up, pm->mins, pm->maxs, up, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
 	if (trace.allSolid)
 		return;		// can't step up
@@ -246,7 +246,7 @@ static void SV_PM_StepSlideMove ()
 
 	// push down the final amount
 	vec3f down = pml.origin - vec3f(0, 0, STEPSIZE);
-	trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	trace (pml.origin, pm->mins, pm->maxs, down, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
 	if (!trace.allSolid)
 		pml.origin = trace.EndPos;
@@ -533,7 +533,7 @@ static void SV_PM_CatagorizePosition ()
 	}
 	else
 	{
-		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 		pml.groundSurface = trace.surface;
 		pml.groundContents = trace.contents;
 
@@ -686,7 +686,7 @@ static void SV_PM_CheckSpecialMovement ()
 	flatforward.Normalize();
 
 	vec3f spot = pml.origin.MultiplyAngles (1, flatforward);
-	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
 	if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
 		pml.ladder = true;
@@ -770,7 +770,7 @@ static void SV_PM_FlyMove (bool doClip)
 	if (doClip)
 	{
 		vec3f end = pml.origin.MultiplyAngles (pml.frameTime, pml.velocity);
-		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
+		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
 	}
 	else
 		// move
@@ -818,7 +818,7 @@ static void SV_PM_CheckDuck ()
 		{
 			// try to stand up
 			pm->maxs.Z = 32;
-			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 			if (!trace.allSolid)
 				pm->state.pmFlags &= ~PMF_DUCKED;
 		}
@@ -871,7 +871,7 @@ static bool SV_PM_GoodPosition ()
 					pm->state.origin[1]*(1.0f/8.0f),
 					pm->state.origin[2]*(1.0f/8.0f));
  
-	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
+	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
 }
 
 /*
@@ -1006,7 +1006,7 @@ SV_Pmove
 Can be called by either the server or the client
 ================
 */
-void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
+void SV_Pmove (CPlayerEntity *Player, pMoveNew_t *pMove, float airAcceleration)
 {
 	pm = pMove;
 	pmAirAcceleration = airAcceleration;
@@ -1031,7 +1031,7 @@ void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
 	pml.velocity.Y = pm->state.velocity[1]*(1.0f/8.0f);
 	pml.velocity.Z = pm->state.velocity[2]*(1.0f/8.0f);
 
-	pml.ent			= ent;
+	pml.Player			= Player;
 
 	// save old org in case we get stuck
 	VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);

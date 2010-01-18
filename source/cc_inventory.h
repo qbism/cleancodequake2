@@ -61,7 +61,7 @@ public:
 	void	Remove (uint8 Index, sint32 Num);
 
 	// Draw the inventory
-	void	Draw (CPlayerEntity *ent);
+	void	Draw (CPlayerEntity *Player);
 
 	// Validate items selected with functions below
 	void	ValidateSelectedItem ();
@@ -102,23 +102,23 @@ public:
 	};
 };
 
-void Cmd_Use_f (CPlayerEntity *ent);
-void Cmd_UseList_f (CPlayerEntity *ent);
-void Cmd_Drop_f (CPlayerEntity *ent);
-void Cmd_Inven_f (CPlayerEntity *ent);
-void Cmd_InvUse_f (CPlayerEntity *ent);
-void Cmd_WeapPrev_f (CPlayerEntity *ent);
-void Cmd_WeapNext_f (CPlayerEntity *ent);
-void Cmd_WeapLast_f (CPlayerEntity *ent);
-void Cmd_InvDrop_f (CPlayerEntity *ent);
-void Cmd_SelectNextItem_f (CPlayerEntity *ent);
-void Cmd_SelectPrevItem_f (CPlayerEntity *ent);
-void Cmd_SelectNextWeapon_f (CPlayerEntity *ent);
-void Cmd_SelectPrevWeapon_f (CPlayerEntity *ent);
-void Cmd_SelectNextPowerup_f (CPlayerEntity *ent);
-void Cmd_SelectPrevPowerup_f (CPlayerEntity *ent);
-void Cmd_Give (CPlayerEntity *ent);
-void Cmd_Give_f (CPlayerEntity *ent);
+void Cmd_Use_f (CPlayerEntity *Player);
+void Cmd_UseList_f (CPlayerEntity *Player);
+void Cmd_Drop_f (CPlayerEntity *Player);
+void Cmd_Inven_f (CPlayerEntity *Player);
+void Cmd_InvUse_f (CPlayerEntity *Player);
+void Cmd_WeapPrev_f (CPlayerEntity *Player);
+void Cmd_WeapNext_f (CPlayerEntity *Player);
+void Cmd_WeapLast_f (CPlayerEntity *Player);
+void Cmd_InvDrop_f (CPlayerEntity *Player);
+void Cmd_SelectNextItem_f (CPlayerEntity *Player);
+void Cmd_SelectPrevItem_f (CPlayerEntity *Player);
+void Cmd_SelectNextWeapon_f (CPlayerEntity *Player);
+void Cmd_SelectPrevWeapon_f (CPlayerEntity *Player);
+void Cmd_SelectNextPowerup_f (CPlayerEntity *Player);
+void Cmd_SelectPrevPowerup_f (CPlayerEntity *Player);
+void Cmd_Give (CPlayerEntity *Player);
+void Cmd_Give_f (CPlayerEntity *Player);
 
 #else
 FILE_WARNING

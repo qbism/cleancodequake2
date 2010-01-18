@@ -42,9 +42,9 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player);
+	void	Drop (CPlayerEntity *Player);
 };
 
 class CPowerCube : public CKey
@@ -54,7 +54,7 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
+	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 void AddKeysToList ();

@@ -327,7 +327,7 @@ void *CC_Mem_CreatePool(const char *name, const char *fileName, const sint32 fil
 		return NULL;
 	}
 	if (strlen(name)+1 >= MEM_MAX_POOL_NAME)
-		DebugPrintf ("Mem_CreatePoole: name '%s' too long, truncating!\n", name);
+		DebugPrintf ("Mem_CreatePool: name '%s' too long, truncating!\n", name);
 
 	// See if it already exists
 	pool = Mem_FindPool (name);
@@ -367,14 +367,13 @@ CC_Mem_DeletePool
 */
 size_t CC_Mem_DeletePool(void *_pool, const char *fileName, const sint32 fileLine)
 {
-	memPool_t *pool = (memPool_t*)_pool;
-	size_t size;
-
-	if (!pool)
+	if (!_pool)
 		return 0;
 
+	memPool_t *pool = (memPool_t*)_pool;
+
 	// Release all allocated memory
-	size = CC_Mem_FreePool(pool, fileName, fileLine);
+	size_t size = CC_Mem_FreePool(pool, fileName, fileLine);
 
 	// Simple, yes?
 	pool->inUse = false;
@@ -399,17 +398,17 @@ CC_Mem_CheckBlockIntegrity
 */
 static void CC_Mem_CheckBlockIntegrity (memBlock_t *mem, const char *fileName, const sint32 fileLine)
 {
-	if (mem->topSentinel != MEM_SENTINEL_TOP(mem))
+	if (_CC_ASSERT_EXPR (!(mem->topSentinel != MEM_SENTINEL_TOP(mem)), "Bad memory block top sentinel"))
 	{
-		_CC_ASSERT_EXPR (0, "Bad memory block top sentinel");
+		
 		GameError (
 			"Mem_Free: bad memory block top sentinel\n"
 			"check: %s:#%i",
 			fileName, fileLine);
 	}
-	else if (*((uint8*)mem->memPointer+mem->memSize) != MEM_SENTINEL_FOOT(mem))
+	else if (_CC_ASSERT_EXPR (!(*((uint8*)mem->memPointer+mem->memSize) != MEM_SENTINEL_FOOT(mem)), "Bad memory footer sentinel (buffer overflow)"))
 	{
-		_CC_ASSERT_EXPR (0, "Bad memory footer sentinel (buffer overflow)");
+		
 		GameError (
 			"Mem_Free: bad memory footer sentinel [buffer overflow]\n"
 			"pool: %s\n"
@@ -430,7 +429,6 @@ size_t CC_Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine
 	memBlock_t	*mem;
 	size_t		size;
 
-	//_CC_ASSERT_EXPR (ptr, "Attempted to free NULL");
 	if (!ptr)
 		return 0;
 
@@ -458,10 +456,6 @@ size_t CC_Mem_Free (const void *ptr, const char *fileName, const sint32 fileLine
 	else
 		free (mem);
 
-#ifdef _DEBUG
-//	CC_Mem_CheckGlobalIntegrity (fileName, fileLine);
-#endif
-
 	return size;
 }
 
@@ -476,16 +470,14 @@ Free memory blocks assigned to a specified tag within a pool
 size_t CC_Mem_FreeTag (void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	memBlock_t	*mem, *next;
 	memBlock_t	*headNode = &pool->blockHeadNode;
-	size_t		size;
 
 	if (!pool)
 		return 0;
 
-	size = 0;
+	size_t size = 0;
 
-	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = next)
+	for (memBlock_t *mem = pool->blockHeadNode.prev, *next = NULL; mem != headNode; mem = next)
 	{
 		next = mem->prev;
 		if (mem->tagNum == tagNum)
@@ -506,16 +498,14 @@ Free all items within a pool
 size_t CC_Mem_FreePool (void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	memBlock_t	*mem, *next;
 	memBlock_t	*headNode = &pool->blockHeadNode;
-	size_t		size;
 
 	if (!pool)
 		return 0;
 
-	size = 0;
+	size_t size = 0;
 
-	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = next)
+	for (memBlock_t *mem = pool->blockHeadNode.prev, *next = NULL; mem != headNode; mem = next)
 	{
 		memBlock_t *oldMem = mem;
 
@@ -531,8 +521,6 @@ size_t CC_Mem_FreePool (void *_pool, const char *fileName, const sint32 fileLine
 	_CC_ASSERT_EXPR (pool->byteCount == 0, "Pool byte count is not empty (improper free?)");
 	return size;
 }
-
-#include <typeinfo>
 
 /*
 ========================
@@ -604,10 +592,6 @@ void *CC_Mem_Alloc(size_t size, void *_pool, const sint32 tagNum, const char *fi
 	mem->next->prev = mem;
 	mem->prev->next = mem;
 
-#ifdef _DEBUG
-	//CC_Mem_CheckGlobalIntegrity (fileName, fileLine);
-#endif
-
 	return mem->memPointer;
 }
 
@@ -673,9 +657,8 @@ No need to null terminate the extra spot because Mem_Alloc returns zero-filled m
 char *CC_Mem_PoolStrDup (const char *in, void *_pool, const sint32 tagNum, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	char	*out;
-
-	out = (char*)CC_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine, false);
+	
+	char	*out = (char*)CC_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine, false);
 	strcpy_s (out, (size_t)(strlen (in) + 1), in);
 
 	return out;
@@ -689,11 +672,7 @@ CC_Mem_PoolSize
 */
 size_t CC_Mem_PoolSize (void *_pool)
 {
-	memPool_t *pool = (memPool_t*)_pool;
-	if (!pool)
-		return 0;
-
-	return pool->byteCount;
+	return (!_pool || !(memPool_t*)_pool) ? 0 : ((memPool_t*)_pool)->byteCount;
 }
 
 
@@ -705,15 +684,13 @@ CC_Mem_TagSize
 size_t CC_Mem_TagSize (void *_pool, const sint32 tagNum)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	memBlock_t	*mem;
 	memBlock_t	*headNode = &pool->blockHeadNode;
-	size_t		size;
 
 	if (!pool)
 		return 0;
 
-	size = 0;
-	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
+	size_t		size = 0;
+	for (memBlock_t *mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 	{
 		if (mem->tagNum == tagNum)
 			size += mem->realSize;
@@ -731,15 +708,13 @@ CC_Mem_ChangeTag
 size_t CC_Mem_ChangeTag (void *_pool, const sint32 tagFrom, const sint32 tagTo)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	memBlock_t	*mem;
-	memBlock_t	*headNode = &pool->blockHeadNode;
-	uint32		numChanged;
 
 	if (!pool)
 		return 0;
 
-	numChanged = 0;
-	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
+	memBlock_t	*headNode = &pool->blockHeadNode;
+	uint32		numChanged = 0;
+	for (memBlock_t *mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 	{
 		if (mem->tagNum == tagFrom)
 		{
@@ -760,33 +735,26 @@ CC_Mem_CheckPoolIntegrity
 void CC_Mem_CheckPoolIntegrity (void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	memBlock_t	*mem;
 	memBlock_t	*headNode = &pool->blockHeadNode;
-	uint32		blocks;
-	size_t		size;
 
-	_CC_ASSERT_EXPR (pool, "Tried to check integrity of a NULL pool");
-	if (!pool)
+	if (_CC_ASSERT_EXPR (pool, "Tried to check integrity of a NULL pool"))
 		return;
 
+	uint32		blocks = 0, size = 0;
+
 	// Check sentinels
-	for (mem = pool->blockHeadNode.prev, blocks = 0, size = 0; mem != headNode; blocks++, mem = mem->prev)
+	for (memBlock_t *mem = pool->blockHeadNode.prev; mem != headNode; blocks++, mem = mem->prev)
 	{
 		size += mem->realSize;
 		CC_Mem_CheckBlockIntegrity (mem, fileName, fileLine);
 	}
 
 	// Check block/uint8 counts
-	if (pool->blockCount != blocks)
-	{
-		_CC_ASSERT_EXPR (0, "Bad block count");
+	if (_CC_ASSERT_EXPR (!(pool->blockCount != blocks), "Bad block count"))
 		DebugPrintf ("Mem_CheckPoolIntegrity: bad block count\n" "check: %s:#%i", fileName, fileLine);
-	}
-	if (pool->byteCount != size)
-	{
-		_CC_ASSERT_EXPR (0, "Bad block count");
+
+	if (_CC_ASSERT_EXPR (!(pool->byteCount != size), "Bad byte count"))
 		DebugPrintf ("Mem_CheckPoolIntegrity: bad pool size\n" "check: %s:#%i", fileName, fileLine);
-	}
 }
 
 
@@ -797,16 +765,12 @@ CC_Mem_CheckGlobalIntegrity
 */
 void CC_Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine)
 {
-	//CTimer Timer;
-
 	for (uint32 i = 0; i < m_numPools; i++)
 	{
 		memPool_t *pool = &m_poolList[i];
 		if (pool->inUse)
 			CC_Mem_CheckPoolIntegrity(pool, fileName, fileLine);
 	}
-
-	//DebugPrintf ("Mem_CheckGlobalIntegrity: "TIMER_STRING"\n", Timer.Get());
 }
 
 
@@ -818,22 +782,18 @@ CC_Mem_TouchPool
 void CC_Mem_TouchPool(void *_pool, const char *fileName, const sint32 fileLine)
 {
 	memPool_t *pool = (memPool_t*)_pool;
-	memBlock_t	*mem;
-	memBlock_t	*headNode = &pool->blockHeadNode;
-	uint32		i;
-	sint32			sum;
 
-	_CC_ASSERT_EXPR (pool, "Attempted to touch a NULL pool");
-	if (!pool)
+	if (_CC_ASSERT_EXPR (pool, "Attempted to touch a NULL pool"))
 		return;
 
-	sum = 0;
+	sint32 sum = 0;
+	memBlock_t	*headNode = &pool->blockHeadNode;
 
 	// Cycle through the blocks
-	for (mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
+	for (memBlock_t *mem = pool->blockHeadNode.prev; mem != headNode; mem = mem->prev)
 	{
 		// Touch each page
-		for (i = 0; i < mem->memSize; i += MEM_TOUCH_STEP)
+		for (uint32 i = 0; i < mem->memSize; i += MEM_TOUCH_STEP)
 			sum += ((uint8 *)mem->memPointer)[i];
 	}
 }
@@ -876,7 +836,7 @@ void CC_Mem_TouchGlobal(const char *fileName, const sint32 fileLine)
 Mem_Check_f
 ========================
 */
-static void Mem_Check_f(CPlayerEntity *ent)
+static void Mem_Check_f(CPlayerEntity *Player)
 {
 	Mem_CheckGlobalIntegrity();
 }
@@ -887,15 +847,15 @@ static void Mem_Check_f(CPlayerEntity *ent)
 Mem_Stats_f
 ========================
 */
-void Mem_Stats_f(CPlayerEntity *ent)
+void Mem_Stats_f(CPlayerEntity *Player)
 {
-	ent->PrintToClient (PRINT_HIGH, "Memory stats:\n");
-	ent->PrintToClient (PRINT_HIGH, "    blocks size                  puddle name\n");
-	ent->PrintToClient (PRINT_HIGH, "--- ------ ---------- ---------- ------ --------\n");
+	Player->PrintToClient (PRINT_HIGH, "Memory stats:\n");
+	Player->PrintToClient (PRINT_HIGH, "    blocks size                  puddle name\n");
+	Player->PrintToClient (PRINT_HIGH, "--- ------ ---------- ---------- ------ --------\n");
 
 	uint32 totalBlocks = 0;
 	size_t totalBytes = 0;
-	uint32 totalPuddles =0 ;
+	uint32 totalPuddles = 0;
 	uint32 poolCount = 0;
 	for (uint32 i = 0; i < m_numPools; i++)
 	{
@@ -917,7 +877,7 @@ void Mem_Stats_f(CPlayerEntity *ent)
 		totalPuddles += numPuddles;
 		const float puddlePercent = (pool->blockCount) ? ((float)numPuddles/(float)pool->blockCount) * 100.0f : 0.0f;
 
-		ent->PrintToClient (PRINT_HIGH, "#%2i %6i %9iB (%6.3fMB) %5.0f%% %s\n", poolCount, pool->blockCount, pool->byteCount, pool->byteCount/1048576.0f, puddlePercent, pool->name);
+		Player->PrintToClient (PRINT_HIGH, "#%2i %6i %9iB (%6.3fMB) %5.0f%% %s\n", poolCount, pool->blockCount, pool->byteCount, pool->byteCount/1048576.0f, puddlePercent, pool->name);
 
 		totalBlocks += pool->blockCount;
 		totalBytes += pool->byteCount;
@@ -925,8 +885,8 @@ void Mem_Stats_f(CPlayerEntity *ent)
 
 	const float puddlePercent = (totalBlocks) ? ((float)totalPuddles/(float)totalBlocks) * 100.0f : 0.0f;
 
-	ent->PrintToClient (PRINT_HIGH, "----------------------------------------\n");
-	ent->PrintToClient (PRINT_HIGH, "Total: %i pools, %i blocks, %i bytes (%6.3fMB) (%5.2f%% in %i puddles)\n", poolCount, totalBlocks, totalBytes, totalBytes/1048576.0f, puddlePercent, m_puddleAdds);
+	Player->PrintToClient (PRINT_HIGH, "----------------------------------------\n");
+	Player->PrintToClient (PRINT_HIGH, "Total: %i pools, %i blocks, %i bytes (%6.3fMB) (%5.2f%% in %i puddles)\n", poolCount, totalBlocks, totalBytes, totalBytes/1048576.0f, puddlePercent, m_puddleAdds);
 }
 
 
@@ -935,7 +895,7 @@ void Mem_Stats_f(CPlayerEntity *ent)
 Mem_Touch_f
 ========================
 */
-static void Mem_Touch_f(CPlayerEntity *ent)
+static void Mem_Touch_f(CPlayerEntity *Player)
 {
 	Mem_TouchGlobal();
 }

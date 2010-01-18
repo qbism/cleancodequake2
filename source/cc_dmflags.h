@@ -28,7 +28,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_dmflags.h
-// This is so that I don't have to keep doing dmflags->Integer(). Should be faster than bitwise ops every frame!
+// This is so that I don't have to keep doing dmflags.Integer(). Should be faster than bitwise ops every frame!
 //
 
 #if !defined(CC_GUARD_DMFLAGS_H) || !INCLUDE_GUARDS

@@ -68,10 +68,10 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	static CHeatRocket *Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage);
+						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage);
 
 	bool Run ();
 };

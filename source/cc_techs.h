@@ -54,11 +54,11 @@ public:
 
 	CTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber);
 
-	CItemEntity *DropItem (CBaseEntity *ent);
+	CItemEntity *DropItem (CBaseEntity *Entity);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Drop (CPlayerEntity *ent);
-	void	Use (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	void	Drop (CPlayerEntity *Player);
+	void	Use (CPlayerEntity *Player);
 
 	inline uint32 GetTechNumber ()
 	{

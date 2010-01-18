@@ -58,27 +58,27 @@ public:
 	JunkClassType *ReallocateEntity (sint32 number)
 	{
 		JunkClassType *Junk;
-		if (g_edicts[number].Entity)
+		if (Game.Entities[number].Entity)
 		{
-			g_edicts[number].Entity->Free();
-			QDelete g_edicts[number].Entity;
+			Game.Entities[number].Entity->Free();
+			QDelete Game.Entities[number].Entity;
 			Junk = QNewEntityOf JunkClassType(number);
 
 _CC_DISABLE_DEPRECATION
-			G_InitEdict (&g_edicts[number]);
+			G_InitEdict (&Game.Entities[number]);
 _CC_ENABLE_DEPRECATION
 
-			g_edicts[number].Entity = Junk;
+			Game.Entities[number].Entity = Junk;
 		}
 		else
 		{
 			Junk = QNewEntityOf JunkClassType(number);
 
 _CC_DISABLE_DEPRECATION
-			G_InitEdict (&g_edicts[number]);
+			G_InitEdict (&Game.Entities[number]);
 _CC_ENABLE_DEPRECATION
 
-			g_edicts[number].Entity = Junk;
+			Game.Entities[number].Entity = Junk;
 		}
 		return Junk;
 	};
@@ -230,9 +230,9 @@ IMPLEMENT_SAVE_SOURCE(CGibEntity)
 Misc functions
 =================
 */
-vec3f VelocityForDamage (sint32 damage)
+vec3f VelocityForDamage (sint32 Damage)
 {
-	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (damage < 50) ? 0.7f : 1.2f;
+	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (Damage < 50) ? 0.7f : 1.2f;
 }
 
 void CGibEntity::ClipGibVelocity ()
@@ -252,7 +252,7 @@ void CGibEntity::Think ()
 	Die ();
 }
 
-void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects)
+void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects)
 {
 	CGibEntity *Junk = JunkList->GetFreeJunk<CGibEntity>();
 
@@ -274,7 +274,7 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, 
 	Junk->backOff = (type == GIB_ORGANIC) ? 1.0f : 1.5f;
 	float vscale = (type == GIB_ORGANIC) ? 0.5f : 1.0f;
 
-	vec3f vd = VelocityForDamage (damage);
+	vec3f vd = VelocityForDamage (Damage);
 
 	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<CPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
 	velocity.MultiplyAngles (vscale, vd);
@@ -282,7 +282,7 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, 
 	Junk->ClipGibVelocity ();
 
 	Junk->AngularVelocity.Set (crand()*600, crand()*600, crand()*600);
-	Junk->NextThink = level.Frame + 100 + frand()*100;
+	Junk->NextThink = Level.Frame + 100 + frand()*100;
 
 	Junk->Link ();
 }

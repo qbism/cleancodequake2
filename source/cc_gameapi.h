@@ -53,7 +53,7 @@ struct gameImport_t
 #endif
 	void	(*bprintf) (EGamePrintLevel printlevel, char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (DebugPrintf)
+	_CC_INSECURE_DEPRECATE (ServerPrintf or DebugPrintf)
 #endif
 	void	(*dprintf) (char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
@@ -308,7 +308,7 @@ public:
 // If you make a new class for a game API, replace this.
 #define GAME_CLASS	CGameAPI
 
-extern GAME_CLASS	Game;
+extern GAME_CLASS	GameAPI;
 
 CC_ENUM (uint8, ECastType)
 {

@@ -44,11 +44,11 @@ public:
 
 	CMenuItem		(class CMenu *Menu, sint32 x, sint32 y);
 
-	virtual void	Draw (CPlayerEntity *ent, CStatusBar *DrawState) = 0;
+	virtual void	Draw (CPlayerEntity *Player, CStatusBar *DrawState) = 0;
 
-	virtual bool	CanSelect (CPlayerEntity *ent); // Returns false if the option can't be selected
-	virtual void	Update (CPlayerEntity *ent); // Updates the control
-	virtual bool	Select (CPlayerEntity *ent); // What happens when you hit enter (return true to close the menu)
+	virtual bool	CanSelect (CPlayerEntity *Player); // Returns false if the option can't be selected
+	virtual void	Update (CPlayerEntity *Player); // Updates the control
+	virtual bool	Select (CPlayerEntity *Player); // What happens when you hit enter (return true to close the menu)
 };
 
 typedef std::vector<CMenuItem*, std::level_allocator<CMenuItem*> > TMenuItemsContainer;
@@ -57,10 +57,10 @@ class CMenu
 {
 public:
 	sint32							Cursor; // Where to position the cursor on start
-	CPlayerEntity				*ent; // A pointer to the entity that is running the show (needed?)
+	CPlayerEntity				*Player; // A pointer to the entity that is running the show (needed?)
 	std::vector<CMenuItem*, std::level_allocator<CMenuItem*> >		Items;
 
-	CMenu						(CPlayerEntity *ent);
+	CMenu						(CPlayerEntity *Player);
 	~CMenu						();
 
 	virtual bool				Open () = 0;
@@ -71,8 +71,8 @@ public:
 	void						AddItem (CMenuItem *Item);
 };
 
-void Cmd_MenuLeft_t (CPlayerEntity *ent);
-void Cmd_MenuRight_t (CPlayerEntity *ent);
+void Cmd_MenuLeft_t (CPlayerEntity *Player);
+void Cmd_MenuRight_t (CPlayerEntity *Player);
 
 // Controls
 #include "cc_controls.h"

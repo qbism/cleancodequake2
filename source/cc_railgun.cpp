@@ -41,9 +41,9 @@ CWeapon(9, 0, "models/weapons/v_rail/tris.md2", 0, 3, 4, 18,
 {
 }
 
-bool CRailgun::CanFire (CPlayerEntity *ent)
+bool CRailgun::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 4:
 		return true;
@@ -51,9 +51,9 @@ bool CRailgun::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CRailgun::CanStopFidgetting (CPlayerEntity *ent)
+bool CRailgun::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 56:
 		return true;
@@ -61,77 +61,77 @@ bool CRailgun::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CRailgun::Fire (CPlayerEntity *ent)
+void CRailgun::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset(0, 7,  ent->ViewHeight-8);
-	const sint32	damage = (game.GameMode & GAME_DEATHMATCH) ? // normal damage is too extreme in dm
+	vec3f		start, forward, right, offset(0, 7,  Player->ViewHeight-8);
+	const sint32	damage = (Game.GameMode & GAME_DEATHMATCH) ? // normal damage is too extreme in dm
 				CalcQuadVal(100)
 				:
 				CalcQuadVal(150),
-				kick = (game.GameMode & GAME_DEATHMATCH) ?
+				kick = (Game.GameMode & GAME_DEATHMATCH) ?
 				CalcQuadVal(200) 
 				:
 				CalcQuadVal(250);
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 
-	ent->Client.KickOrigin = forward * -3;
-	ent->Client.KickAngles.X = -3;
+	Player->Client.KickOrigin = forward * -3;
+	Player->Client.KickAngles.X = -3;
 
-	ent->P_ProjectSource (offset, forward, right, start);
-	CRailGunShot::Fire (ent, start, forward, damage, kick);
+	Player->P_ProjectSource (offset, forward, right, start);
+	CRailGunShot::Fire (Player, start, forward, damage, kick);
 
 	// send muzzle flash
-	Muzzle (ent, MZ_RAILGUN);
-	FireAnimation (ent);
-	AttackSound (ent);
+	Muzzle (Player, MZ_RAILGUN);
+	FireAnimation (Player);
+	AttackSound (Player);
 
-	ent->Client.PlayerState.GetGunFrame()++;
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	DepleteAmmo(ent, 1);
+	Player->Client.PlayerState.GetGunFrame()++;
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	DepleteAmmo(Player, 1);
 }
 
 #if XATRIX_FEATURES
 #include "cc_xatrix_phalanx.h"
 
-void CRailgun::Use (CWeaponItem *Wanted, CPlayerEntity *ent)
+void CRailgun::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 {
-	if (!ent->Client.Persistent.Inventory.Has(Wanted))
+	if (!Player->Client.Persistent.Inventory.Has(Wanted))
 	{
 		// Do we have an ion ripper?
-		if (ent->Client.Persistent.Inventory.Has(CPhalanx::Weapon.Item))
-			CPhalanx::Weapon.Use (Wanted, ent); // Use that.
+		if (Player->Client.Persistent.Inventory.Has(CPhalanx::Weapon.Item))
+			CPhalanx::Weapon.Use (Wanted, Player); // Use that.
 		else
-			ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
 		return;
 	}
 
 	// see if we're already using it
-	if (ent->Client.Persistent.Weapon == this)
+	if (Player->Client.Persistent.Weapon == this)
 	{
 		// Do we have an ion ripper?
-		if (ent->Client.Persistent.Inventory.Has(CPhalanx::Weapon.Item))
-			CPhalanx::Weapon.Use (Wanted, ent); // Use that.
+		if (Player->Client.Persistent.Inventory.Has(CPhalanx::Weapon.Item))
+			CPhalanx::Weapon.Use (Wanted, Player); // Use that.
 		return;
 	}
 
-	if (Wanted->Ammo && !g_select_empty->Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	if (Wanted->Ammo && !g_select_empty.Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
 	{
-		if (!ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+		if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
 		{
-			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
 			return;
 		}
 
-		if (ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+		if (Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
 		{
-			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
 			return;
 		}
 	}
 
 	// change to this weapon when down
-	ent->Client.NewWeapon = this;
+	Player->Client.NewWeapon = this;
 }
 #endif
 

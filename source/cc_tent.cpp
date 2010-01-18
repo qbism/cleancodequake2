@@ -249,16 +249,16 @@ void CTempEnt_Trails::HeatBeam (vec3f &Start, vec3f &End, sint16 Ent, bool Monst
 	BaseTrail(Start, End, Ent);
 }
 
-void CTempEnt_Explosions::RocketExplosion (vec3f &Start, CBaseEntity *ent, bool Water, bool Particles)
+void CTempEnt_Explosions::RocketExplosion (vec3f &Start, CBaseEntity *Entity, bool Water, bool Particles)
 {
 	// Water and NoParticles fight over a spot.. water will win, in the end
-	TECast cast (ent->State.GetOrigin(), Water ? TE_ROCKET_EXPLOSION_WATER : (Particles ? TE_ROCKET_EXPLOSION : TE_EXPLOSION1_NP));
+	TECast cast (Entity->State.GetOrigin(), Water ? TE_ROCKET_EXPLOSION_WATER : (Particles ? TE_ROCKET_EXPLOSION : TE_EXPLOSION1_NP));
 	WritePosition (Start);
 }
 
-void CTempEnt_Explosions::GrenadeExplosion (vec3f &Start, CBaseEntity *ent, bool Water)
+void CTempEnt_Explosions::GrenadeExplosion (vec3f &Start, CBaseEntity *Entity, bool Water)
 {
-	TECast cast (ent->State.GetOrigin(), Water ? TE_GRENADE_EXPLOSION_WATER : TE_GRENADE_EXPLOSION);
+	TECast cast (Entity->State.GetOrigin(), Water ? TE_GRENADE_EXPLOSION_WATER : TE_GRENADE_EXPLOSION);
 	WritePosition (Start);
 }
 

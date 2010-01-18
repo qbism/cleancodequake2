@@ -49,7 +49,7 @@ have the origin explicitly sent.
 Channel 0 is an auto-allocate channel, the others override anything
 already running on that entity/channel pair.
 
-An attenuation of 0 will play full volume everywhere in the level.
+An attenuation of 0 will play full volume everywhere in the Level.
 Larger attenuations will drop off.  (max 4 attenuation)
 
 timeOffset can range from 0.0 to 0.1 to cause sounds to be started
@@ -75,9 +75,9 @@ enum
 #define DEFAULT_SOUND_PACKET_VOLUME			255
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0
 
-static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 vol, EAttenuation attenuation, uint8 timeOffset, bool Positioned)
+static void SV_StartSound (vec3f origin, CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 vol, EAttenuation attenuation, uint8 timeOffset, bool Positioned)
 {
-	if (!Positioned && !entity)
+	if (!Positioned && !Entity)
 	{
 		DebugPrintf ("CleanCode SV_StartSound: Not positioned and no entity!\n");
 		return;
@@ -111,7 +111,7 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 		channel &= 7;
 	}
 
-	sint32 sendChan = (entity->State.GetNumber() << 3) | (channel & 7);
+	sint32 sendChan = (Entity->State.GetNumber() << 3) | (channel & 7);
 
 	sint32 flags = 0;
 	if (vol != DEFAULT_SOUND_PACKET_VOLUME)
@@ -123,7 +123,7 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 	** the client doesn't know that bmodels have weird origins
 	** the origin can also be explicitly set
 	*/
-	if ((entity->GetSvFlags() & SVF_NOCLIENT) || (entity->GetSolid() == SOLID_BSP) || Positioned)
+	if ((Entity->GetSvFlags() & SVF_NOCLIENT) || (Entity->GetSolid() == SOLID_BSP) || Positioned)
 		flags |= SND_POS;
 
 	// always send the entity number for channel overrides
@@ -134,12 +134,12 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 
 	// use the entity origin/bmodel origin if the origin is specified
 	if (!Positioned)
-		origin = (entity->GetSolid() == SOLID_BSP) ? entity->State.GetOrigin() + 0.5f * (entity->GetMins() + entity->GetMaxs()) : entity->State.GetOrigin();
+		origin = (Entity->GetSolid() == SOLID_BSP) ? Entity->State.GetOrigin() + 0.5f * (Entity->GetMins() + Entity->GetMaxs()) : Entity->State.GetOrigin();
 
 	// Cycle through the different targets and do attenuation calculations
-	for (sint32 i = 1; i <= game.MaxClients; i++)
+	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 		if (Player->Client.Persistent.State == SVCS_FREE)
 			continue;
 
@@ -204,12 +204,12 @@ static void SV_StartSound (vec3f origin, CBaseEntity *entity, EEntSndChannel cha
 	}
 }
 
-void PlaySoundFrom (CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void PlaySoundFrom (CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
-	SV_StartSound (vec3fOrigin, ent, channel, soundIndex, volume, attenuation, timeOfs, false);
+	SV_StartSound (vec3fOrigin, Entity, channel, soundIndex, volume, attenuation, timeOfs, false);
 }
 
-void PlaySoundAt (vec3f origin, CBaseEntity *ent, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void PlaySoundAt (vec3f origin, CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
-	SV_StartSound (origin, ent, channel, soundIndex, volume, attenuation, timeOfs, true);
+	SV_StartSound (origin, Entity, channel, soundIndex, volume, attenuation, timeOfs, true);
 }

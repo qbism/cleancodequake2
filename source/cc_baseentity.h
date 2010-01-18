@@ -123,7 +123,7 @@ public:
 
 	// Funtions below are to link the private gameEntity together
 	CBaseEntity		*GetOwner	();
-	void			SetOwner	(CBaseEntity *ent);
+	void			SetOwner	(CBaseEntity *Entity);
 
 	EBrushContents	&GetClipmask	();
 	ESolidType		&GetSolid ();
@@ -168,7 +168,7 @@ public:
 	void			StuffText (char *text);
 
 	void			KillBox ();
-	void			SplashDamage (CBaseEntity *attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
+	void			SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
 
 	// Save functions
 	// By default, all entities are savable.
@@ -215,8 +215,7 @@ inline TType *entity_cast (CBaseEntity *Entity)
 
 	TType *Casted = dynamic_cast<TType*> (Entity);
 
-	if (Casted == NULL)
-		_CC_ASSERT_EXPR (0, "Attempted cast of an entity uncastable to this type");
+	_CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
 
 	return Casted;
 }
@@ -410,12 +409,12 @@ public:
 		case FT_VECTOR:
 			{
 				vec3f v;
-				sscanf_s (Value, "%f %f %f", &v.X, &v.Y, &v.Z);
+				sscanf_s (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z);
 				OFS_TO_TYPE(vec3f) = v;
 			}
 			break;
 		case FT_YAWANGLE:
-			OFS_TO_TYPE(vec3f) = vec3f(0, atof(Value), 0);
+			OFS_TO_TYPE(vec3f).Set (0, atof(Value), 0);
 			break;
 		case FT_IGNORE:
 			break;
@@ -638,7 +637,7 @@ public:
 		case FT_ENTITY:
 			{
 				sint32 Index = File.Read<sint32> ();
-				OFS_TO_TYPE(CBaseEntity *) = (Index == -1) ? NULL : g_edicts[Index].Entity;
+				OFS_TO_TYPE(CBaseEntity *) = (Index == -1) ? NULL : Game.Entities[Index].Entity;
 			}
 			break;
 		case FT_CC_STRING:

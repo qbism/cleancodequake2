@@ -47,37 +47,37 @@ team(team)
 {
 };
 
-void	CFlag::Drop (CPlayerEntity *ent)
+void	CFlag::Drop (CPlayerEntity *Player)
 {
 }
 
-void	CFlag::Use (CPlayerEntity *ent)
+void	CFlag::Use (CPlayerEntity *Player)
 {
 }
 
-bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
+bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 {
-	if (team == other->Client.Respawn.CTF.Team)
+	if (team == Other->Client.Respawn.CTF.Team)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM))
+		if (!(Player->SpawnFlags & DROPPED_ITEM))
 		{
 			// If we have the flag, but the flag isn't this, then we have another flag.
 			// FIXME this code here will break with > 2 teams (when we get there)!!
-			if (other->Client.Persistent.Flag && (other->Client.Persistent.Flag != this))
+			if (Other->Client.Persistent.Flag && (Other->Client.Persistent.Flag != this))
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s captured the %s flag!\n",
-						other->Client.Persistent.Name.c_str(), CTFOtherTeamName(team));
+						Other->Client.Persistent.Name.c_str(), CTFOtherTeamName(team));
 
 				// Ping the transponder; tell it we moved back to base.
-				CFlagTransponder *Transponder = FindTransponder(other->Client.Persistent.Flag->team);
+				CFlagTransponder *Transponder = FindTransponder(Other->Client.Persistent.Flag->team);
 				Transponder->Flag = Transponder->Base;
 				Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
 				Transponder->Holder = NULL;
 
-				other->Client.Persistent.Inventory.Set(other->Client.Persistent.Flag, 0);
-				other->Client.Persistent.Flag = NULL;
+				Other->Client.Persistent.Inventory.Set(Other->Client.Persistent.Flag, 0);
+				Other->Client.Persistent.Flag = NULL;
 
-				ctfgame.last_flag_capture = level.Frame;
+				ctfgame.last_flag_capture = Level.Frame;
 				ctfgame.last_capture_team = team;
 
 				if (team == CTF_TEAM1)
@@ -85,33 +85,33 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 				else
 					ctfgame.team2++;
 
-				ent->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagcap.wav"), 255, ATTN_NONE);
+				Player->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagcap.wav"), 255, ATTN_NONE);
 
 				// other gets another 10 frag bonus
-				other->Client.Respawn.Score += CTF_CAPTURE_BONUS;
-				if (other->Client.Respawn.CTF.Ghost)
-					other->Client.Respawn.CTF.Ghost->caps++;
+				Other->Client.Respawn.Score += CTF_CAPTURE_BONUS;
+				if (Other->Client.Respawn.CTF.Ghost)
+					Other->Client.Respawn.CTF.Ghost->caps++;
 
 				// Ok, let's do the player loop, hand out the bonuses
-				for (sint32 i = 1; i <= game.MaxClients; i++)
+				for (sint32 i = 1; i <= Game.MaxClients; i++)
 				{
-					CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+					CPlayerEntity *player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 					if (!player->GetInUse())
 						continue;
 
-					if (player->Client.Respawn.CTF.Team != other->Client.Respawn.CTF.Team)
+					if (player->Client.Respawn.CTF.Team != Other->Client.Respawn.CTF.Team)
 						player->Client.Respawn.CTF.LastHurtCarrier = -5;
-					else if (player->Client.Respawn.CTF.Team == other->Client.Respawn.CTF.Team)
+					else if (player->Client.Respawn.CTF.Team == Other->Client.Respawn.CTF.Team)
 					{
-						if (player != other)
+						if (player != Other)
 							player->Client.Respawn.Score += CTF_TEAM_BONUS;
 						// award extra points for capture assists
-						if (player->Client.Respawn.CTF.LastReturnedFlag + CTF_RETURN_FLAG_ASSIST_TIMEOUT > level.Frame)
+						if (player->Client.Respawn.CTF.LastReturnedFlag + CTF_RETURN_FLAG_ASSIST_TIMEOUT > Level.Frame)
 						{
 							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for returning the flag!\n", player->Client.Persistent.Name.c_str());
 							player->Client.Respawn.Score += CTF_RETURN_FLAG_ASSIST_BONUS;
 						}
-						if (player->Client.Respawn.CTF.LastFraggedCarrier + CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.Frame)
+						if (player->Client.Respawn.CTF.LastFraggedCarrier + CTF_FRAG_CARRIER_ASSIST_TIMEOUT > Level.Frame)
 						{
 							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for fragging the flag carrier!\n", player->Client.Persistent.Name.c_str());
 							player->Client.Respawn.Score += CTF_FRAG_CARRIER_ASSIST_BONUS;
@@ -127,16 +127,16 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 
 		// hey, its not home.  return it by teleporting it back
 		BroadcastPrintf(PRINT_HIGH, "%s returned the %s flag!\n", 
-			other->Client.Persistent.Name.c_str(), CTFTeamName(team));
-		other->Client.Respawn.Score += CTF_RECOVERY_BONUS;
-		other->Client.Respawn.CTF.LastReturnedFlag = level.Frame;
-		ent->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
+			Other->Client.Persistent.Name.c_str(), CTFTeamName(team));
+		Other->Client.Respawn.Score += CTF_RECOVERY_BONUS;
+		Other->Client.Respawn.CTF.LastReturnedFlag = Level.Frame;
+		Player->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
 
 		//CTFResetFlag will remove this entity!  We must return false
 		CTFResetFlag(team);
 
 		// Ping the transponder; tell it we moved back to base.
-		CFlagEntity *Flag = entity_cast<CFlagEntity>(ent);
+		CFlagEntity *Flag = entity_cast<CFlagEntity>(Player);
 		Flag->Transponder->Flag = Flag->Transponder->Base;
 		Flag->Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
 		return false;
@@ -144,26 +144,26 @@ bool CFlag::Pickup(CItemEntity *ent, CPlayerEntity *other)
 
 	// hey, its not our flag, pick it up
 	BroadcastPrintf(PRINT_HIGH, "%s got the %s flag!\n",
-		other->Client.Persistent.Name.c_str(), CTFTeamName(team));
-	other->Client.Respawn.Score += CTF_FLAG_BONUS;
+		Other->Client.Persistent.Name.c_str(), CTFTeamName(team));
+	Other->Client.Respawn.Score += CTF_FLAG_BONUS;
 
-	CFlagEntity *Flag = entity_cast<CFlagEntity>(ent);
+	CFlagEntity *Flag = entity_cast<CFlagEntity>(Player);
 	Flag->Transponder->Location = CFlagTransponder::FLAG_TAKEN;
 	Flag->Transponder->Flag = NULL;
-	Flag->Transponder->Holder = other;
+	Flag->Transponder->Holder = Other;
 
-	other->Client.Persistent.Inventory.Set(this, 1);
-	other->Client.Persistent.Flag = this;
-	other->Client.Respawn.CTF.FlagSince = level.Frame;
+	Other->Client.Persistent.Inventory.Set(this, 1);
+	Other->Client.Persistent.Flag = this;
+	Other->Client.Respawn.CTF.FlagSince = Level.Frame;
 
 	// pick up the flag
 	// if it's not a dropped flag, we just make is disappear
 	// if it's dropped, it will be removed by the pickup caller
-	if (!(ent->SpawnFlags & DROPPED_ITEM))
+	if (!(Player->SpawnFlags & DROPPED_ITEM))
 	{
-		ent->Flags |= FL_RESPAWN;
-		ent->GetSvFlags() |= SVF_NOCLIENT;
-		ent->GetSolid() = SOLID_NOT;
+		Player->Flags |= FL_RESPAWN;
+		Player->GetSvFlags() |= SVF_NOCLIENT;
+		Player->GetSolid() = SOLID_NOT;
 	}
 	return true;
 }

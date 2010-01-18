@@ -112,14 +112,14 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CTeleporterTrigger)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (!Dest)
 			return;
 
 		CPlayerEntity	*Player = NULL;
-		if (other->EntityFlags & ENT_PLAYER)
-			Player = entity_cast<CPlayerEntity>(other);
+		if (Other->EntityFlags & ENT_PLAYER)
+			Player = entity_cast<CPlayerEntity>(Other);
 
 	#if CLEANCTF_ENABLED
 		//ZOID
@@ -129,14 +129,14 @@ public:
 	#endif
 
 		// unlink to make sure it can't possibly interfere with KillBox
-		other->Unlink ();
+		Other->Unlink ();
 
-		other->State.GetOrigin() = (Dest->State.GetOrigin() + vec3f(0,0,10));
-		other->State.GetOldOrigin() = Dest->State.GetOrigin();
+		Other->State.GetOrigin() = (Dest->State.GetOrigin() + vec3f(0,0,10));
+		Other->State.GetOldOrigin() = Dest->State.GetOrigin();
 
 		// clear the velocity and hold them in place briefly
-		if (other->EntityFlags & ENT_PHYSICS)
-			entity_cast<CPhysicsEntity>(other)->Velocity.Clear ();
+		if (Other->EntityFlags & ENT_PHYSICS)
+			entity_cast<CPhysicsEntity>(Other)->Velocity.Clear ();
 		if (Player)
 		{
 			Player->Client.PlayerState.GetPMove()->pmTime = 160>>3;		// hold time
@@ -144,7 +144,7 @@ public:
 		}
 
 		// draw the teleport splash at source and on the player
-		other->State.GetEvent() = (Player) ? EV_PLAYER_TELEPORT : EV_OTHER_TELEPORT;
+		Other->State.GetEvent() = (Player) ? EV_PLAYER_TELEPORT : EV_OTHER_TELEPORT;
 
 		// set angles
 		if (Player)
@@ -153,7 +153,7 @@ public:
 				Player->Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Dest->State.GetAngles()[i] - Player->Client.Respawn.CmdAngles[i]);
 		}
 
-		other->State.GetAngles().Clear ();
+		Other->State.GetAngles().Clear ();
 		if (Player)
 		{
 			Player->Client.PlayerState.GetViewAngles().Clear ();
@@ -161,9 +161,9 @@ public:
 		}
 
 		// kill anything at the destination
-		other->KillBox ();
+		Other->KillBox ();
 
-		other->Link ();
+		Other->Link ();
 	};
 
 	void Think ()
@@ -171,7 +171,7 @@ public:
 		Dest = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
 	
 		if (!Dest)
-			DebugPrintf ("Couldn't find teleporter\n");
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target);
 	};
 
 	bool ParseField (const char *Key, const char *Value)
@@ -197,7 +197,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		NextThink = level.Frame + 1;
+		NextThink = Level.Frame + 1;
 	};
 };
 
@@ -229,7 +229,6 @@ public:
 	{
 		if (!Target)
 		{
-			//gi.dprintf ("teleporter without a target.\n");
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
@@ -253,7 +252,7 @@ public:
 		trig->State.GetOrigin() = State.GetOrigin();
 		trig->GetMins().Set (-8, -8, 8);
 		trig->GetMaxs().Set (8, 8, 24);
-		trig->NextThink = level.Frame + 1;
+		trig->NextThink = Level.Frame + 1;
 		trig->Link ();
 	};
 };
@@ -288,7 +287,7 @@ LINK_CLASSNAME_TO_CLASS ("misc_teleporter", CTeleporter);
 void CTeleporterTrigger::LoadFields (CFile &File)
 {
 	sint32 Index = File.Read<sint32> ();
-	Dest = (Index != -1) ? g_edicts[Index].Entity : NULL;
+	Dest = (Index != -1) ? Game.Entities[Index].Entity : NULL;
 
 	Target = entity_cast<CTeleporter>(GetOwner())->Target;
 
@@ -336,7 +335,7 @@ public:
 	{
 		if (!Target)
 		{
-			DebugPrintf ("teleporter without a target.\n");
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
 		}
@@ -430,7 +429,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (!(game.GameMode & GAME_DEATHMATCH))
+		if (!(Game.GameMode & GAME_DEATHMATCH))
 		{
 #ifndef FREE_UNUSED_SPOTS
 			GetSolid() = SOLID_NOT;
@@ -468,9 +467,9 @@ float	PlayersRangeFromSpot (CBaseEntity *spot)
 {
 	float	bestplayerdistance = 9999999;
 
-	for (sint32 n = 1; n <= game.MaxClients; n++)
+	for (sint32 n = 1; n <= Game.MaxClients; n++)
 	{
-		CPlayerEntity *player = entity_cast<CPlayerEntity>(g_edicts[n].Entity);
+		CPlayerEntity *player = entity_cast<CPlayerEntity>(Game.Entities[n].Entity);
 
 		if (!player->GetInUse())
 			continue;
@@ -656,7 +655,7 @@ public:
 			NULL
 		};
 
-		if (game.GameMode != GAME_COOPERATIVE)
+		if (Game.GameMode != GAME_COOPERATIVE)
 		{
 			Free ();
 			return;
@@ -666,9 +665,9 @@ public:
 		while (CheckNames[i] != NULL)
 		{
 			// invoke one of our gross, ugly, disgusting hacks
-			if (strcmp(level.ServerLevelName.c_str(), CheckNames[i]) == 0)
+			if (strcmp(Level.ServerLevelName.c_str(), CheckNames[i]) == 0)
 			{
-				NextThink = level.Frame + FRAMETIME;
+				NextThink = Level.Frame + FRAMETIME;
 				break;
 			}
 
@@ -702,7 +701,7 @@ CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 		char *target = spot->TargetName;
 		if (!target)
 			target = "";
-		if (Q_stricmp(game.SpawnPoint.c_str(), target) == 0)
+		if (Q_stricmp(Game.SpawnPoint.c_str(), target) == 0)
 		{
 			// this is a coop spawn point for one of the clients here
 			if (!--index)
@@ -742,7 +741,7 @@ public:
 LINK_CLASSNAME_TO_CLASS ("info_player_intermission", CPlayerIntermission);
 
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-The normal starting point for a level.
+The normal starting point for a Level.
 */
 class CPlayerStart : public CSpotBase, public CThinkableEntity
 {
@@ -797,7 +796,7 @@ public:
 	// where they should have been
 	virtual void Think ()
 	{
-		if (Q_stricmp(level.ServerLevelName.c_str(), "security") == 0)
+		if (Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
 		{
 			static const float origins[] =
 			{
@@ -810,7 +809,7 @@ public:
 			{
 				CPlayerCoop *spot = QNewEntityOf CPlayerCoop;
 				spot->ClassName = "info_player_coop";
-				spot->State.GetOrigin() = vec3f (origins[i], -164, 80);
+				spot->State.GetOrigin().Set (origins[i], -164, 80);
 				spot->TargetName = "jail3";
 				spot->State.GetAngles().Set (0, 90, 0);
 
@@ -821,9 +820,9 @@ public:
 
 	virtual void Spawn ()
 	{
-		if ((game.GameMode == GAME_COOPERATIVE) && stricmp(level.ServerLevelName.c_str(), "security") == 0)
+		if ((Game.GameMode == GAME_COOPERATIVE) && stricmp(Level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 
 		SpawnPoints().push_back (this);
 	};
@@ -1041,12 +1040,12 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 {
 	CSpotBase	*spot = NULL;
 
-	if (!(game.GameMode & GAME_SINGLEPLAYER))
+	if (!(Game.GameMode & GAME_SINGLEPLAYER))
 		spot = 
 #if CLEANCTF_ENABLED
-		(game.GameMode & GAME_CTF) ? SelectCTFSpawnPoint() :
+		(Game.GameMode & GAME_CTF) ? SelectCTFSpawnPoint() :
 #endif
-		(game.GameMode & GAME_DEATHMATCH) ? SelectDeathmatchSpawnPoint () : SelectCoopSpawnPoint ();
+		(Game.GameMode & GAME_DEATHMATCH) ? SelectDeathmatchSpawnPoint () : SelectCoopSpawnPoint ();
 
 	// find a single player start spot
 	if (!spot)
@@ -1055,20 +1054,20 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 		{
 			spot = (*it);
 
-			if (game.SpawnPoint.empty() && !spot->TargetName)
+			if (Game.SpawnPoint.empty() && !spot->TargetName)
 				break;
 
-			if (game.SpawnPoint.empty()|| !spot->TargetName)
+			if (Game.SpawnPoint.empty()|| !spot->TargetName)
 				continue;
 
-			if (Q_stricmp(game.SpawnPoint.c_str(), spot->TargetName) == 0)
+			if (Q_stricmp(Game.SpawnPoint.c_str(), spot->TargetName) == 0)
 				break;
 		}
 
 		if (!spot)
 		{
 			// There wasn't a spawnpoint without a target, so use any
-			if (game.SpawnPoint.empty())
+			if (Game.SpawnPoint.empty())
 			{
 				if (CPlayerStart::SpawnPoints().size() && CPlayerStart::SpawnPoints().at(0))
 					spot = CPlayerStart::SpawnPoints().at(0);
@@ -1124,12 +1123,12 @@ void CPathCorner::Think ()
 		NextTargets = CC_GetTargets (Target);
 }
 
-void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CPathCorner::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(other->EntityFlags & ENT_MONSTER))
+	if (!(Other->EntityFlags & ENT_MONSTER))
 		return;
 
-	CMonsterEntity	*Monster = entity_cast<CMonsterEntity>(other);
+	CMonsterEntity	*Monster = entity_cast<CMonsterEntity>(Other);
 
 	if (Monster->MoveTarget != this)
 		return;
@@ -1141,7 +1140,7 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 	{
 		char *savetarget = Target;
 		Target = PathTarget;
-		UseTargets (other, Message);
+		UseTargets (Other, Message);
 		Target = savetarget;
 	}
 
@@ -1149,23 +1148,23 @@ void CPathCorner::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 
 	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & CORNER_TELEPORT))
 	{
-		other->State.GetOrigin() = (TempNextTarget->State.GetOrigin() + vec3f(0, 0, TempNextTarget->GetMins().Z - other->GetMins().Z));
+		Other->State.GetOrigin() = (TempNextTarget->State.GetOrigin() + vec3f(0, 0, TempNextTarget->GetMins().Z - Other->GetMins().Z));
 		TempNextTarget = entity_cast<CPathCorner>(TempNextTarget)->NextTargets[irandom(NextTargets.size())];
-		other->State.GetEvent() = EV_OTHER_TELEPORT;
+		Other->State.GetEvent() = EV_OTHER_TELEPORT;
 	}
 
 	Monster->GoalEntity = Monster->MoveTarget = TempNextTarget;
 
 	if (Wait)
 	{
-		Monster->Monster->PauseTime = level.Frame + Wait;
+		Monster->Monster->PauseTime = Level.Frame + Wait;
 		Monster->Monster->Stand();
 	}
 	else
 	{
 		if (!Monster->MoveTarget)
 		{
-			Monster->Monster->PauseTime = level.Frame + 100000000;
+			Monster->Monster->PauseTime = Level.Frame + 100000000;
 			Monster->Monster->Stand ();
 		}
 		else
@@ -1177,7 +1176,6 @@ void CPathCorner::Spawn ()
 {
 	if (!TargetName)
 	{
-		//gi.dprintf ("path_corner with no targetname at (%f %f %f)\n", self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();
 		return;
@@ -1189,7 +1187,7 @@ void CPathCorner::Spawn ()
 	GetMaxs().Set (8);
 	GetSvFlags() |= SVF_NOCLIENT;
 	Link ();
-	NextThink = level.Frame + 1;
+	NextThink = Level.Frame + 1;
 };
 
 ENTITYFIELDS_BEGIN(CPathCorner)
@@ -1224,7 +1222,7 @@ void		CPathCorner::LoadFields (CFile &File)
 {
 	uint32 Num = File.Read<uint32> ();
 	for (size_t i = 0; i < Num; i++)
-		NextTargets.push_back (g_edicts[File.Read<sint32> ()].Entity);
+		NextTargets.push_back (Game.Entities[File.Read<sint32> ()].Entity);
 
 	LoadEntityFields <CPathCorner> (this, File);
 	CMapEntity::LoadFields (File);
@@ -1236,7 +1234,7 @@ LINK_CLASSNAME_TO_CLASS ("path_corner", CPathCorner);
 
 /*QUAKED point_combat (0.5 0.3 0) (-8 -8 -8) (8 8 8) Hold
 Makes this the target of a monster and it will head here
-when first activated before going after the activator.  If
+when first activated before going after the Activator.  If
 hold is selected, it will stay here.
 */
 class CPathCombat : public CPathCorner
@@ -1256,37 +1254,39 @@ public:
 
 	const char *SAVE_GetName () { return "CPathCombat"; }
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		CMonsterEntity *Monster = NULL;
-		if (other->EntityFlags & ENT_MONSTER)
-			Monster = entity_cast<CMonsterEntity>(other);
+		if (Other->EntityFlags & ENT_MONSTER)
+			Monster = entity_cast<CMonsterEntity>(Other);
 
 		if (Monster && (!Monster->MoveTarget || Monster->MoveTarget != this))
 			return;
 
 		if (Target)
 		{
-			if (other->EntityFlags & ENT_USABLE)
+			if (Other->EntityFlags & ENT_USABLE)
 			{
-				CUsableEntity *Usable = entity_cast<CUsableEntity>(other);
+				CUsableEntity *Usable = entity_cast<CUsableEntity>(Other);
 				Usable->Target = Target;
 
 				if (Monster)
 					Monster->GoalEntity = Monster->MoveTarget = CC_PickTarget(Usable->Target);
 			}
+
 			if (Monster && !Monster->GoalEntity)
 			{
-				DebugPrintf("%s at (%f %f %f) target %s does not exist\n", ClassName.c_str(), State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z, Target);
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target %s does not exist\n", Target);
 				Monster->MoveTarget = this;
 			}
+
 			Target = NULL;
 		}
-		else if ((SpawnFlags & CORNER_TELEPORT) && !(other->Flags & (FL_SWIM|FL_FLY)))
+		else if ((SpawnFlags & CORNER_TELEPORT) && !(Other->Flags & (FL_SWIM|FL_FLY)))
 		{
 			if (Monster)
 			{
-				Monster->Monster->PauseTime = level.Frame + 100000000;
+				Monster->Monster->PauseTime = Level.Frame + 100000000;
 				Monster->Monster->AIFlags |= AI_STAND_GROUND;
 				Monster->Monster->Stand ();
 			}
@@ -1303,27 +1303,27 @@ public:
 
 		if (PathTarget)
 		{
-			CBaseEntity *activator;
+			CBaseEntity *Activator;
 
 			char *savetarget = Target;
 			Target = PathTarget;
-			if (other->Enemy && (other->Enemy->EntityFlags & ENT_PLAYER))
-				activator = other->Enemy;
+			if (Other->Enemy && (Other->Enemy->EntityFlags & ENT_PLAYER))
+				Activator = Other->Enemy;
 			else if ((Monster) &&
 				(Monster->OldEnemy) && (Monster->OldEnemy->EntityFlags & ENT_PLAYER))
-				activator = Monster->OldEnemy;
-			else if ((other->EntityFlags & ENT_USABLE) && (entity_cast<CUsableEntity>(other)->Activator) && ((entity_cast<CUsableEntity>(other)->Activator)->EntityFlags & ENT_PLAYER))
-				activator = (entity_cast<CUsableEntity>(other)->Activator);
+				Activator = Monster->OldEnemy;
+			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<CUsableEntity>(Other)->User) && ((entity_cast<CUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
+				Activator = (entity_cast<CUsableEntity>(Other)->User);
 			else
-				activator = other;
-			UseTargets (activator, Message);
+				Activator = Other;
+			UseTargets (Activator, Message);
 			Target = savetarget;
 		}
 	};
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;
@@ -1427,7 +1427,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CLight)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (!Usable)
 			return;
@@ -1447,7 +1447,7 @@ public:
 	void Spawn ()
 	{
 		// no targeted lights in deathmatch, because they cause global messages
-		if (!TargetName || (game.GameMode & GAME_DEATHMATCH))
+		if (!TargetName || (Game.GameMode & GAME_DEATHMATCH))
 		{
 			Free ();
 			return;
@@ -1539,11 +1539,11 @@ public:
 
 	void Think ()
 	{
-		char	style[2] = {'a' + RampMessage[0] + (level.Frame - TimeStamp) / 0.1f * RampMessage[2], 0};
+		char	style[2] = {'a' + RampMessage[0] + (Level.Frame - TimeStamp) / 0.1f * RampMessage[2], 0};
 		ConfigString (CS_LIGHTS+Light->Style, style);
 
-		if ((level.Frame - TimeStamp) < Speed)
-			NextThink = level.Frame + FRAMETIME;
+		if ((Level.Frame - TimeStamp) < Speed)
+			NextThink = Level.Frame + FRAMETIME;
 		else if (SpawnFlags & LIGHTRAMP_TOGGLE)
 		{
 			sint32 temp = RampMessage[0];
@@ -1553,7 +1553,7 @@ public:
 		}
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (!Light)
 		{
@@ -1578,7 +1578,7 @@ public:
 			}
 		}
 
-		TimeStamp = level.Frame;
+		TimeStamp = Level.Frame;
 		Think ();
 	};
 
@@ -1591,7 +1591,7 @@ public:
 			return;
 		}
 
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;
@@ -1599,7 +1599,6 @@ public:
 
 		if (!Target)
 		{
-			//gi.dprintf("%s with no target at (%f %f %f)\n", self->classname, self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
@@ -1651,7 +1650,7 @@ void		CTargetLightRamp::LoadFields (CFile &File)
 	sint32 Index = File.Read<sint32> ();
 
 	if (Index != -1)
-		Light = entity_cast<CLight>(g_edicts[Index].Entity);
+		Light = entity_cast<CLight>(Game.Entities[Index].Entity);
 
 	LoadEntityFields <CTargetLightRamp> (this, File);
 	CMapEntity::LoadFields (File);

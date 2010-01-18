@@ -59,9 +59,9 @@ void CBlueBlasterProjectile::Think ()
 	Free();
 }
 
-void CBlueBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CBlueBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -73,8 +73,8 @@ void CBlueBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSur
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
 	else
 		CTempEnt_Splashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin, CTempEnt_Splashes::BL_BLUE_HYPERBLASTER);
 
@@ -82,7 +82,7 @@ void CBlueBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSur
 }
 
 void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, sint32 effect)
+						sint32 Damage, sint32 speed, sint32 effect)
 {
 	CBlueBlasterProjectile		*Bolt = QNewEntityOf CBlueBlasterProjectile;
 
@@ -97,8 +97,8 @@ void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
 	Bolt->SetOwner (Spawner);
-	Bolt->NextThink = level.Frame + 20;
-	Bolt->Damage = damage;
+	Bolt->NextThink = Level.Frame + 20;
+	Bolt->Damage = Damage;
 	Bolt->ClassName = "bolt";
 	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
 	Bolt->GetSolid() = SOLID_BBOX;
@@ -229,7 +229,7 @@ void CSoldierHyper::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SoldierHMoveAttack1;
-		AttackFinished = level.Frame + ((1.5 + frand()) * 10);
+		AttackFinished = Level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}
 	// pmm
@@ -237,7 +237,7 @@ void CSoldierHyper::Attack ()
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
 		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
-		(r < (skill->Integer()*0.25)))
+		(r < (skill.Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif

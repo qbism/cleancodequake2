@@ -33,17 +33,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-void CPlayerCommand::Run (CPlayerEntity *ent)
+void CPlayerCommand::Run (CPlayerEntity *Player)
 {
-	if ((Flags & CMD_CHEAT) && !game.CheatsEnabled && (game.GameMode != GAME_SINGLEPLAYER))
+	if ((Flags & CMD_CHEAT) && !Game.CheatsEnabled && (Game.GameMode != GAME_SINGLEPLAYER))
 	{
-		ent->PrintToClient (PRINT_HIGH, "Cheats must be enabled to use this command.\n");
+		Player->PrintToClient (PRINT_HIGH, "Cheats must be enabled to use this command.\n");
 		return;
 	}
-	if (!(Flags & CMD_SPECTATOR) && (ent->Client.Respawn.Spectator || ent->Client.Chase.Target))	
+	if (!(Flags & CMD_SPECTATOR) && (Player->Client.Respawn.Spectator || Player->Client.Chase.Target))	
 		return;
 
-	Func (ent);
+	Func (Player);
 };
 
 typedef CCommand<TPlayerCommandFunctorType>::TCommandListType TPlayerCommandListType;
@@ -65,15 +65,11 @@ CPlayerCommand *Cmd_FindCommand (const char *commandName)
 	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType> (commandName, CommandList(), CommandHashList());
 }
 
-CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags)
+CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
-	if (Cmd_FindCommand(commandName))
-	{
-		DebugPrintf ("%s already exists as a command!\n", commandName);
-		_CC_ASSERT_EXPR (0, "Tried to re-add a command, fatal error");
+	if (_CC_ASSERT_EXPR (!Cmd_FindCommand(commandName), "Tried to re-add a command, fatal error"))
 		return *static_cast<CPlayerCommand*>(CommandList()[0]);
-	}
 
 	// We can add it!
 	CommandList().push_back (QNew (com_commandPool, 0) CPlayerCommand (commandName, Func, Flags));
@@ -92,14 +88,14 @@ void Cmd_RemoveCommands ()
 	CommandList().clear ();
 }
 
-void Cmd_RunCommand (const char *commandName, CPlayerEntity *ent)
+void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player)
 {
 	static CPlayerCommand *Command;
 
 	if ((Command = Cmd_FindCommand(commandName)) != NULL)
-		Command->Run(ent);
+		Command->Run(Player);
 	else
-		ent->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName);
+		Player->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName);
 }
 
 #include <sstream>
@@ -126,7 +122,7 @@ void RecursiveCommandPrint (CPlayerCommand *Cmd, uint32 &depth)
 void SearchForRandomMonster (CMonsterEntity *Entity)
 {
 	static std::vector <CMonsterEntity *, std::generic_allocator<CMonsterEntity *> > ChosenMonsters;
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
 		edict_t *ent = (*it);
 
@@ -170,12 +166,12 @@ void Cmd_Test_f (CPlayerEntity *Player)
 		RecursiveCommandPrint (static_cast<CPlayerCommand*>(CommandList()[i]), depth);
 	}
 
-	DebugPrintf ("%s", printBuffer.str().c_str());
+	ServerPrintf ("%s", printBuffer.str().c_str());
 }
 
 void Cmd_Two_t (CPlayerEntity *Player)
 {
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
 		if (!(*it)->Entity || !((*it)->Entity->EntityFlags & ENT_MONSTER))
 			continue;
@@ -190,12 +186,12 @@ void Cmd_Two_t (CPlayerEntity *Player)
 
 void Cmd_Three_t (CPlayerEntity *Player)
 {
-	DebugPrintf ("Three\n");
+	ServerPrintf ("Three\n");
 }
 
 void Cmd_Four_t (CPlayerEntity *Player)
 {
-	DebugPrintf ("Four\n");
+	ServerPrintf ("Four\n");
 }
 
 void AddTestDebugCommands ()

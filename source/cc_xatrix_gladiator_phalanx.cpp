@@ -48,7 +48,7 @@ CGladiator (ID)
 
 void CPhalanxGladiator::FirePhalanx ()
 {
-	if (Entity->State.GetFrame() == FRAME_attack9 && skill->Integer() != 3)
+	if (Entity->State.GetFrame() == FRAME_attack9 && skill.Integer() != 3)
 		return;
 
 	vec3f	start, forward, right;

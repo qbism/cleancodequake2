@@ -41,9 +41,6 @@ typedef sint32 BOOL;
 
 // ===========================================================================
 
-typedef uint8 uint8;
-typedef uint16 ushort;
-
 #ifdef _WIN64
 typedef unsigned __int64	intptr;
 #elif defined(__LP32__)
@@ -128,5 +125,5 @@ template<> class dataType<float> : public dataType_Atomic<float> {};
 template<> class dataType<sint32> : public dataType_Atomic<sint32> {};
 template<> class dataType<sint16> : public dataType_Atomic<sint16> {};
 template<> class dataType<uint32> : public dataType_Atomic<uint32> {};
-template<> class dataType<ushort> : public dataType_Atomic<ushort> {};
+template<> class dataType<uint16> : public dataType_Atomic<uint16> {};
 

@@ -112,12 +112,12 @@ void CHeatRocket::Think ()
 		Velocity = vec * 500;
 	}
 
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CHeatRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CHeatRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -129,19 +129,19 @@ void CHeatRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
-	SplashDamage(GetOwner(), RadiusDamage, other, DamageRadius, MOD_R_SPLASH);
+	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
 	CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free ();
 }
 
 CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage)
+						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CHeatRocket	*Rocket = QNewEntityOf CHeatRocket;
 
@@ -151,8 +151,8 @@ CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->State.GetEffects() = EF_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
 	Rocket->SetOwner (Spawner);
-	Rocket->NextThink = level.Frame + FRAMETIME;
-	Rocket->Damage = damage;
+	Rocket->NextThink = Level.Frame + FRAMETIME;
+	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;
 	Rocket->DamageRadius = damage_radius;
 	Rocket->State.GetSound() = SoundIndex ("weapons/rockfly.wav");
@@ -190,7 +190,7 @@ void CHeatMaiden::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	sint32 rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
+	sint32 rocketSpeed = 500 + (100 * skill.Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 	if (blindfire)
@@ -215,7 +215,7 @@ void CHeatMaiden::Rocket ()
 
 	// Lead target  (not when blindfiring)
 	// 20, 35, 50, 65 chance of leading
-	if((!blindfire) && ((frand() < (0.2 + ((3 - skill->Integer()) * 0.15)))))
+	if((!blindfire) && ((frand() < (0.2 + ((3 - skill.Integer()) * 0.15)))))
 	{
 		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;

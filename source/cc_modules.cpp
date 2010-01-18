@@ -67,22 +67,22 @@ void CC_LoadModule (std::cc_string Name)
 				Mod->Module = Module;
 
 				Modules.push_back (Mod);
-				DebugPrintf ("Loaded module %s\n", Name.c_str());
+				ServerPrintf ("Loaded module %s\n", Name.c_str());
 				return;
 			}
 			else
 			{
 				if (!Module)
-					DebugPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
+					ServerPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
 				else
-					DebugPrintf ("WARNING: Module %s (%s) does not have the correct API version (%f, should be %f)\n", Name.c_str(), Module->Name.c_str(), Module->GetAPIVersion(), MODULE_API_VERSION);
+					ServerPrintf ("WARNING: Module %s (%s) does not have the correct API version (%f, should be %f)\n", Name.c_str(), Module->Name.c_str(), Module->GetAPIVersion(), MODULE_API_VERSION);
 			}
 		}
 		else
-			DebugPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
+			ServerPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
 	}
 	else
-		DebugPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
+		ServerPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
 
 	// Failed
 	QDelete Lib;
@@ -90,7 +90,7 @@ void CC_LoadModule (std::cc_string Name)
 
 void LoadModules ()
 {
-	DebugPrintf ("\n==== Module Initialization ====\n");
+	ServerPrintf ("\n==== Module Initialization ====\n");
 	// Search for DLLs beginning with cc_
 	CFindFiles Find (NULL, "cc_*", "dll");
 
@@ -98,11 +98,11 @@ void LoadModules ()
 		CC_LoadModule (Find.Files[i]);
 
 	if (!Find.Files.size())
-		DebugPrintf ("No modules found\n");
+		ServerPrintf ("No modules found\n");
 	else
-		DebugPrintf ("Found %u modules, loaded %u modules\n", Find.Files.size(), Modules.size());
+		ServerPrintf ("Found %u modules, loaded %u modules\n", Find.Files.size(), Modules.size());
 
-	DebugPrintf ("=================================\n\n");
+	ServerPrintf ("=================================\n\n");
 }
 
 void InitializeModules ()

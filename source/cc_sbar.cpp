@@ -53,11 +53,11 @@ void CStatusBar::Send ()
 	ConfigString (CS_STATUSBAR, Bar.c_str());
 }
 
-void CStatusBar::SendMsg (CPlayerEntity *ent, bool reliable)
+void CStatusBar::SendMsg (CPlayerEntity *Player, bool reliable)
 {
 	WriteByte (SVC_LAYOUT);
 	WriteString (Bar.c_str());
-	ent->CastTo ((reliable) ? CASTFLAG_RELIABLE : CASTFLAG_UNRELIABLE);
+	Player->CastTo ((reliable) ? CASTFLAG_RELIABLE : CASTFLAG_UNRELIABLE);
 }
 
 void CStatusBar::AddToBarBuffer (char *fmt, ...)
@@ -69,8 +69,7 @@ void CStatusBar::AddToBarBuffer (char *fmt, ...)
 	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
 	va_end (argptr);
 
-	if (Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1)
-		_CC_ASSERT_EXPR (0, "Bar overflowed");
+	_CC_ASSERT_EXPR (!(Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1), "Statusbar overflowed");
 
 	Bar += text;
 }
@@ -147,13 +146,13 @@ void CStatusBar::AddArmorNum ()
 
 void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping, sint32 time)
 {
-	_CC_ASSERT_EXPR (!(cNum >= game.MaxClients || cNum < 0), "Client number out of bounds");
+	_CC_ASSERT_EXPR (!(cNum >= Game.MaxClients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, Score, ping, time);
 }
 
 void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping)
 {
-	_CC_ASSERT_EXPR (!(cNum >= game.MaxClients || cNum < 0), "Client number out of bounds");
+	_CC_ASSERT_EXPR (!(cNum >= Game.MaxClients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, Score, ping);
 }
 
@@ -314,14 +313,14 @@ HelpComputer
 Draw help computer.
 ==================
 */
-void HelpComputer (CPlayerEntity *ent)
+void HelpComputer (CPlayerEntity *Player)
 {
 	CStatusBar Scoreboard;
 	static char	*sk = NULL;
 
 	if (sk == NULL)
 	{
-		switch (skill->Integer())
+		switch (skill.Integer())
 		{
 		case 0:
 			sk = "easy";
@@ -349,13 +348,13 @@ void HelpComputer (CPlayerEntity *ent)
 	Scoreboard.AddVirtualPoint_X (0);
 
 	Scoreboard.AddVirtualPoint_Y (24);
-	Scoreboard.AddString (level.FullLevelName.c_str(), true, true);
+	Scoreboard.AddString (Level.FullLevelName.c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (54);
-	Scoreboard.AddString (game.HelpMessages[0].c_str(), true, true);
+	Scoreboard.AddString (Game.HelpMessages[0].c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (110);
-	Scoreboard.AddString (game.HelpMessages[1].c_str(), true, true);
+	Scoreboard.AddString (Game.HelpMessages[1].c_str(), true, true);
 
 	Scoreboard.AddVirtualPoint_X (50);
 	Scoreboard.AddVirtualPoint_Y (164);
@@ -364,12 +363,12 @@ void HelpComputer (CPlayerEntity *ent)
 	Scoreboard.AddVirtualPoint_Y (172);
 
 	char tempBuffer[MAX_INFO_KEY];
-	Q_snprintfz (tempBuffer, sizeof(tempBuffer), "%3i/%3i     %i/%i       %i/%i", level.Monsters.Killed, level.Monsters.Total, 
-		level.Goals.Found, level.Goals.Total,
-		level.Secrets.Found, level.Secrets.Total);
+	Q_snprintfz (tempBuffer, sizeof(tempBuffer), "%3i/%3i     %i/%i       %i/%i", Level.Monsters.Killed, Level.Monsters.Total, 
+		Level.Goals.Found, Level.Goals.Total,
+		Level.Secrets.Found, Level.Secrets.Total);
 
 	Scoreboard.AddString (tempBuffer, true);
 
-	Scoreboard.SendMsg (ent, true);
+	Scoreboard.SendMsg (Player, true);
 }
 

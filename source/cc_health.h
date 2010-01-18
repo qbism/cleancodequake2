@@ -52,9 +52,9 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, sint32 Amount, EHealthFlags HealthFlags);
 
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent) {};
-	void	Drop (CPlayerEntity *ent) {};
+	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player) {};
+	void	Drop (CPlayerEntity *Player) {};
 };
 
 void AddHealthToList ();

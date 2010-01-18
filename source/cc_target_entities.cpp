@@ -81,7 +81,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTargetSpeaker)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (SpawnFlags & (SPEAKER_LOOPED_ON|SPEAKER_LOOPED_OFF)) // looping sound toggles
 			State.GetSound() = (State.GetSound() ? 0 : NoiseIndex); // start or stop it
@@ -95,7 +95,6 @@ public:
 	{
 		if(!NoiseIndex)
 		{
-			//gi.dprintf("target_speaker with no noise set at (%f %f %f)\n", ent->state.origin[0], ent->state.origin[1], ent->state.origin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No or missing noise set\n");
 			return;
 		}
@@ -190,17 +189,17 @@ public:
 		CTempEnt_Explosions::RocketExplosion (State.GetOrigin(), this);
 
 		if (Damage)
-			SplashDamage (Activator, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+			SplashDamage (User, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
 		FrameNumber_t save = Delay;
 		Delay = 0;
-		UseTargets (Activator, Message);
+		UseTargets (User, Message);
 		Delay = save;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		Activator = activator;
+		User = Activator;
 
 		if (!Delay)
 		{
@@ -208,7 +207,7 @@ public:
 			return;
 		}
 
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 	};
 
 	void Spawn ()
@@ -289,7 +288,7 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		CBaseEntity *Entity = CreateEntityFromClassname(Target);
 
@@ -400,12 +399,12 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		CTempEnt_Splashes::Splash (State.GetOrigin(), MoveDir, Color, Count);
 
 		if (Damage)
-			SplashDamage (activator, Damage, NULL, Damage+40, MOD_SPLASH);
+			SplashDamage (Activator, Damage, NULL, Damage+40, MOD_SPLASH);
 	};
 
 	void Spawn ()
@@ -485,7 +484,7 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		WriteByte (SVC_TEMP_ENTITY);
 		WriteByte (Style);
@@ -533,41 +532,39 @@ Changes level to "map" when fired
 */
 void BeginIntermission (CTargetChangeLevel *targ)
 {
-	CBaseEntity	*ent;
-
-	if (level.IntermissionTime)
+	if (Level.IntermissionTime)
 		return;		// already activated
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if (game.GameMode & GAME_CTF)
+	if (Game.GameMode & GAME_CTF)
 		CTFCalcScores();
 //ZOID
 #endif
 
-	game.AutoSaved = false;
+	Game.AutoSaved = false;
 
 	// respawn any dead clients
-	for (sint32 i = 0; i < game.MaxClients; i++)
+	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
-		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
-		if (!client->GetInUse())
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>((Game.Entities + 1 + i)->Entity);
+		if (!Player->GetInUse())
 			continue;
-		if (client->Health <= 0)
-			client->Respawn();
+		if (Player->Health <= 0)
+			Player->Respawn();
 	}
 
-	level.IntermissionTime = level.Frame;
-	level.ChangeMap = targ->Map;
+	Level.IntermissionTime = Level.Frame;
+	Level.ChangeMap = targ->Map;
 
-	if (strstr(level.ChangeMap, "*"))
+	if (strstr(Level.ChangeMap, "*"))
 	{
-		if (game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode == GAME_COOPERATIVE)
 		{
-			for (sint32 i = 0; i < game.MaxClients; i++)
+			for (sint32 i = 0; i < Game.MaxClients; i++)
 			{
-				CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
-				if (!client->GetInUse())
+				CPlayerEntity *Player = entity_cast<CPlayerEntity>((Game.Entities + 1 + i)->Entity);
+				if (!Player->GetInUse())
 					continue;
 				// strip players of all keys between units
 				for (uint16 n = 0; n < MAX_CS_ITEMS; n++)
@@ -575,53 +572,53 @@ void BeginIntermission (CTargetChangeLevel *targ)
 					if (n >= GetNumItems())
 						break;
 					if (GetItemByIndex(n)->Flags & ITEMFLAG_KEY)
-						client->Client.Persistent.Inventory.Set(n, 0);
+						Player->Client.Persistent.Inventory.Set(n, 0);
 				}
 			}
 		}
 	}
 	else
 	{
-		if (!(game.GameMode & GAME_DEATHMATCH))
+		if (!(Game.GameMode & GAME_DEATHMATCH))
 		{
-			level.ExitIntermission = true;		// go immediately to the next level
+			Level.ExitIntermission = true;		// go immediately to the next level
 			if (targ->ExitOnNextFrame)
-				level.ExitIntermissionOnNextFrame = true;
+				Level.ExitIntermissionOnNextFrame = true;
 			return;
 		}
 	}
 
-	level.ExitIntermission = false;
+	Level.ExitIntermission = false;
 
 	// find an intermission spot
-	ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
-	if (!ent)
+	CBaseEntity *Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
+	if (!Entity)
 	{	// the map creator forgot to put in an intermission point...
-		ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_start");
-		if (!ent)
-			ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_deathmatch");
+		Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_start");
+		if (!Entity)
+			Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_deathmatch");
 	}
 	else
 	{	// chose one of four spots
 		sint32 i = irandom(4);
 		while (i--)
 		{
-			ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (ent, "info_player_intermission");
-			if (!ent)	// wrap around the list
-				ent = CC_FindByClassName<CBaseEntity, ENT_BASE> (ent, "info_player_intermission");
+			Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
+			if (!Entity)	// wrap around the list
+				Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
 		}
 	}
 
-	level.IntermissionOrigin = ent->State.GetOrigin ();
-	level.IntermissionAngles = ent->State.GetAngles ();
+	Level.IntermissionOrigin = Entity->State.GetOrigin ();
+	Level.IntermissionAngles = Entity->State.GetAngles ();
 
 	// move all clients to the intermission point
-	for (sint32 i = 0; i < game.MaxClients; i++)
+	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
-		CPlayerEntity *client = entity_cast<CPlayerEntity>((g_edicts + 1 + i)->Entity);
-		if (!client->GetInUse())
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>((Game.Entities + 1 + i)->Entity);
+		if (!Player->GetInUse())
 			continue;
-		client->MoveToIntermission();
+		Player->MoveToIntermission();
 	}
 }
 
@@ -648,43 +645,43 @@ bool CTargetChangeLevel::Run ()
 	return CBaseEntity::Run ();
 };
 
-void CTargetChangeLevel::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTargetChangeLevel::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
-	if (level.IntermissionTime)
+	if (Level.IntermissionTime)
 		return;		// already activated
 
-	if (game.GameMode == GAME_SINGLEPLAYER)
+	if (Game.GameMode == GAME_SINGLEPLAYER)
 	{
-		if (entity_cast<CPlayerEntity>(g_edicts[1].Entity)->Health <= 0)
+		if (entity_cast<CPlayerEntity>(Game.Entities[1].Entity)->Health <= 0)
 			return;
 	}
 
 	// if noexit, do a ton of damage to other
-	if ((game.GameMode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit.IsEnabled() && (other != World))
+	if ((Game.GameMode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit.IsEnabled() && (Other != World))
 	{
-		if ((other->EntityFlags & ENT_HURTABLE))
+		if ((Other->EntityFlags & ENT_HURTABLE))
 		{
-			CHurtableEntity *Other = entity_cast<CHurtableEntity>(other);
+			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Other);
 
-			if (Other->CanTakeDamage)
-				Other->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 10 * Other->MaxHealth, 1000, 0, MOD_EXIT);
+			if (Hurtable->CanTakeDamage)
+				Hurtable->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 10 * Hurtable->MaxHealth, 1000, 0, MOD_EXIT);
 		}
 		return;
 	}
 
 	// if multiplayer, let everyone know who hit the exit
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (activator && (activator->EntityFlags & ENT_PLAYER))
+		if (Activator && (Activator->EntityFlags & ENT_PLAYER))
 		{
-			CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
-			BroadcastPrintf (PRINT_HIGH, "%s exited the level.\n", Player->Client.Persistent.Name.c_str());
+			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
+			BroadcastPrintf (PRINT_HIGH, "%s exited the Level.\n", Player->Client.Persistent.Name.c_str());
 		}
 	}
 
 	// if going to a new unit, clear cross triggers
 	if (strstr(Map, "*"))	
-		game.ServerFlags &= ~(SFL_CROSS_TRIGGER_MASK);
+		Game.ServerFlags &= ~(SFL_CROSS_TRIGGER_MASK);
 
 	BeginIntermission (this);
 };
@@ -693,14 +690,13 @@ void CTargetChangeLevel::Spawn ()
 {
 	if (!Map)
 	{
-		//gi.dprintf("target_changelevel with no map at (%f %f %f)\n", ent->state.origin[0], ent->state.origin[1], ent->state.origin[2]);
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No map\n");
 		Free ();
 		return;
 	}
 
 	// ugly hack because *SOMEBODY* screwed up their map
-	if ((Q_stricmp(level.ServerLevelName.c_str(), "fact1") == 0) && (Q_stricmp(Map, "fact3") == 0))
+	if ((Q_stricmp(Level.ServerLevelName.c_str(), "fact1") == 0) && (Q_stricmp(Map, "fact3") == 0))
 	{
 		Map = "fact3$secret1";
 		// Paril
@@ -747,8 +743,8 @@ CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 	CTargetChangeLevel *Temp = QNewEntityOf CTargetChangeLevel;
 	Temp->ClassName = "target_changelevel";
 
-	level.NextMap = map;
-	Temp->Map = (char*)level.NextMap.c_str();
+	Level.NextMap = map;
+	Temp->Map = (char*)Level.NextMap.c_str();
 
 	return Temp;
 }
@@ -797,9 +793,9 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		game.ServerFlags |= SpawnFlags;
+		Game.ServerFlags |= SpawnFlags;
 		Free ();
 	};
 
@@ -861,7 +857,7 @@ public:
 
 	void Think ()
 	{
-		if (SpawnFlags == (game.ServerFlags & SFL_CROSS_TRIGGER_MASK & SpawnFlags))
+		if (SpawnFlags == (Game.ServerFlags & SFL_CROSS_TRIGGER_MASK & SpawnFlags))
 		{
 			UseTargets (this, Message);
 			Free ();
@@ -875,7 +871,7 @@ public:
 		GetSvFlags() = SVF_NOCLIENT;
 		
 		// Paril: backwards compatibility
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 	};
 
 	void FireTarget ();
@@ -902,7 +898,7 @@ void CTargetCrossLevelTarget::LoadFields (CFile &File)
 
 void CTargetCrossLevelTarget::FireTarget ()
 {
-	NextThink = level.Frame + Delay;
+	NextThink = Level.Frame + Delay;
 }
 
 void FireCrossLevelTargets ()
@@ -955,19 +951,19 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		PlaySound (CHAN_VOICE, NoiseIndex);
 
-		level.Secrets.Found++;
+		Level.Secrets.Found++;
 
-		UseTargets (activator, Message);
+		UseTargets (Activator, Message);
 		Free ();
 	};
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -977,10 +973,10 @@ public:
 			NoiseIndex = SoundIndex("misc/secret.wav");
 
 		GetSvFlags() = SVF_NOCLIENT;
-		level.Secrets.Total++;
+		Level.Secrets.Total++;
 		// map bug hack
 
-		if (!Q_stricmp(level.ServerLevelName.c_str(), "mine3") && (State.GetOrigin() == vec3f(280, -2048, -624)))
+		if (!Q_stricmp(Level.ServerLevelName.c_str(), "mine3") && (State.GetOrigin() == vec3f(280, -2048, -624)))
 			//(State.GetOrigin().X == 280 && State.GetOrigin().Y == -2048 && State.GetOrigin().Z == -624))
 			Message = "You have found a secret area.";
 	};
@@ -1035,22 +1031,22 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		PlaySound (CHAN_VOICE, NoiseIndex);
 
-		level.Goals.Found++;
+		Level.Goals.Found++;
 
-		if (level.Goals.Found == level.Goals.Total)
+		if (Level.Goals.Found == Level.Goals.Total)
 			ConfigString (CS_CDTRACK, "0");
 
-		UseTargets (activator, Message);
+		UseTargets (Activator, Message);
 		Free ();
 	};
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -1060,7 +1056,7 @@ public:
 			NoiseIndex = SoundIndex ("misc/secret.wav");
 
 		GetSvFlags() = SVF_NOCLIENT;
-		level.Goals.Total++;
+		Level.Goals.Total++;
 	};
 };
 
@@ -1114,7 +1110,7 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		CBlasterProjectile::Spawn (this, State.GetOrigin(), MoveDir, Damage, Speed, (SpawnFlags & BLASTER_NO_EFFECTS) ? 0 : ((SpawnFlags & BLASTER_NO_TRAIL) ? EF_HYPERBLASTER : EF_BLASTER), true);
 		PlaySound (CHAN_VOICE, NoiseIndex);
@@ -1240,7 +1236,7 @@ void CTargetLaser::Think ()
 		CBaseEntity *Entity = tr.ent->Entity;
 		// hurt it if we can
 		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
-			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, Activator, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
+			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, User, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done
 		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
@@ -1262,15 +1258,15 @@ void CTargetLaser::Think ()
 	}
 
 	State.GetOldOrigin() = tr.EndPos;
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 };
 
-void CTargetLaser::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTargetLaser::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (!Usable)
 		return;
 
-	Activator = activator;
+	User = Activator;
 	if (SpawnFlags & LASER_START_ON)
 		Off ();
 	else
@@ -1279,8 +1275,8 @@ void CTargetLaser::Use (CBaseEntity *other, CBaseEntity *activator)
 
 void CTargetLaser::On ()
 {
-	if (!Activator)
-		Activator = this;
+	if (!User)
+		User = this;
 	SpawnFlags |= LASER_START_ON;
 	MakeEffect = true;
 	GetSvFlags() &= ~SVF_NOCLIENT;
@@ -1317,10 +1313,10 @@ void CTargetLaser::Start ()
 	{
 		if (Target)
 		{
-			CBaseEntity *ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
-			if (!ent)
+			CBaseEntity *Entity = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
+			if (!Entity)
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
-			Enemy = ent;
+			Enemy = Entity;
 		}
 		else
 		{
@@ -1349,7 +1345,7 @@ void CTargetLaser::Spawn ()
 	Usable = false;
 
 	// let everything else get spawned before we start firing
-	NextThink = level.Frame + 10;
+	NextThink = Level.Frame + 10;
 };
 
 ENTITYFIELDS_BEGIN(CTargetLaser)
@@ -1435,15 +1431,15 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		game.HelpMessages[(SpawnFlags & HELP_FIRST_MESSAGE) ? 0 : 1] = Message;
-		game.HelpChanged++;
+		Game.HelpMessages[(SpawnFlags & HELP_FIRST_MESSAGE) ? 0 : 1] = Message;
+		Game.HelpChanged++;
 	};
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -1506,14 +1502,14 @@ public:
 
 	void Think ()
 	{
-		if (LastShakeTime < level.Frame)
+		if (LastShakeTime < Level.Frame)
 		{
 			PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, NoiseIndex, 255, ATTN_NONE);
-			LastShakeTime = level.Frame + 5;
+			LastShakeTime = Level.Frame + 5;
 		}
 
-		//for (i=1, e=g_edicts+i; i < globals.numEdicts; i++,e++)
-		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
+		//for (i=1, e=Game.Entities+i; i < globals.numEdicts; i++,e++)
+		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 		{
 			CBaseEntity *Entity = (*it)->Entity;
 
@@ -1534,15 +1530,15 @@ public:
 			Player->Velocity.Z = Speed * (100.0 / Player->Mass);
 		}
 
-		if (level.Frame < TimeStamp)
-			NextThink = level.Frame + FRAMETIME;
+		if (Level.Frame < TimeStamp)
+			NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		// Paril, Backwards compatibility
-		TimeStamp = level.Frame + Duration;
-		NextThink = level.Frame + FRAMETIME;
+		TimeStamp = Level.Frame + Duration;
+		NextThink = Level.Frame + FRAMETIME;
 		LastShakeTime = 0;
 	};
 

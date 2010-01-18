@@ -117,46 +117,46 @@ public:
 	char		*Precache;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual bool Pickup (edict_t *ent, edict_t *other) = 0
+	/// \fn	virtual bool Pickup (CPlayerEntity *Player, CPlayerEntity *Other) = 0
 	///
 	/// \brief	Attempts to pickup the item. 
 	///
 	/// \author	Paril
 	/// \date	5/9/2009
 	///
-	/// \param	ent		 - If non-null, the item entity. 
+	/// \param	Player		 - If non-null, the item entity. 
 	/// \param	other	 - If non-null, the player who picked the item up. 
 	///
 	/// \retval	true if it succeeds, false if it fails. 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other) = 0;
+	virtual	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other) = 0;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual void Use (edict_t *ent) = 0
+	/// \fn	virtual void Use (CPlayerEntity *Player) = 0
 	///
 	/// \brief	Attempts to uses the item. 
 	///
 	/// \author	Paril
 	/// \date	5/9/2009
 	///
-	/// \param	ent	 - If non-null, the entity that used the item. 
+	/// \param	Player	 - If non-null, the entity that used the item. 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	void	Use (CPlayerEntity *ent) = 0;
+	virtual	void	Use (CPlayerEntity *Player) = 0;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual void Drop (edict_t *ent) = 0
+	/// \fn	virtual void Drop (CPlayerEntity *Player) = 0
 	///
 	/// \brief	Attempts to drops the item. 
 	///
 	/// \author	Paril
 	/// \date	5/9/2009
 	///
-	/// \param	ent	 - If non-null, the ent. 
+	/// \param	Player	 - If non-null, the Player. 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	void	Drop (CPlayerEntity *ent) = 0;
-	virtual class CItemEntity	*DropItem (CBaseEntity *ent);
+	virtual	void	Drop (CPlayerEntity *Player) = 0;
+	virtual class CItemEntity	*DropItem (CBaseEntity *Entity);
 
-	virtual void	SetRespawn (class CItemEntity *ent, FrameNumber_t delay);
+	virtual void	SetRespawn (class CItemEntity *Player, FrameNumber_t delay);
 
 	inline sint32		GetIndex ()
 	{
@@ -167,7 +167,7 @@ public:
 		return CS_ITEMS+Index;
 	};
 
-	virtual void	Add (CPlayerEntity *ent, sint32 quantity);
+	virtual void	Add (CPlayerEntity *Player, sint32 quantity);
 };
 
 #include "cc_weapons.h"

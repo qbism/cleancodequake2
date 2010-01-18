@@ -52,9 +52,9 @@ public:
 	sint32				Amount;
 	char				*VWepModel;
 
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	virtual void	Use (CPlayerEntity *ent);
-	virtual void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	virtual void	Use (CPlayerEntity *Player);
+	virtual void	Drop (CPlayerEntity *Player);
 };
 
 // Class for ammo.
@@ -87,13 +87,13 @@ public:
 	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo
 
 	// Only thing different about ammo is how it's picked up.
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	virtual void	Use (CPlayerEntity *ent);
-	virtual void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	virtual void	Use (CPlayerEntity *Player);
+	virtual void	Drop (CPlayerEntity *Player);
 
 	// Member functions
-	bool	AddAmmo (CPlayerEntity *ent, sint32 count);
-	sint32	GetMax(CPlayerEntity *ent);
+	bool	AddAmmo (CPlayerEntity *Player, sint32 count);
+	sint32	GetMax(CPlayerEntity *Player);
 };
 
 class CAmmoWeapon : public CWeaponItem, public CAmmo
@@ -107,14 +107,13 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, class CWeapon *Weapon, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player);
+	void	Drop (CPlayerEntity *Player);
 };
 
 extern sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX];
 extern sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX];
-void InitItemMaxValues (edict_t *ent);
 
 void AddAmmoToList();
 void DoWeaponVweps();

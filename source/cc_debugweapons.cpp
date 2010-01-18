@@ -42,7 +42,7 @@ CWeapon (11, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL)
 void CDebugWeapon::Think (CPlayerEntity *Player)
 {
 	// Update pointing surface
-	//if (!(level.Frame & 2))
+	//if (!(Level.Frame & 2))
 	{
 		vec3f forward;
 		Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
@@ -94,7 +94,7 @@ void CSurfacePicker::Fire (CPlayerEntity *Player)
 
 void CSurfacePicker::AddWeaponToItemList (CItemList *List)
 {
-	if (map_debug->Boolean())
+	if (map_debug.Boolean())
 		CreateItem (List);
 };
 
@@ -104,7 +104,7 @@ void CSurfacePicker::InitWeaponVwepModel (sint32 TakeAway)
 
 void CSurfacePicker::CreateItem (CItemList *List)
 {
-	if (map_debug->Boolean())
+	if (map_debug.Boolean())
 		QNew (com_itemPool, 0) CWeaponItem (NULL, NULL, 0, NULL, NULL, "Surface Picker", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, NULL, &Weapon, NULL, 0, NULL);
 };
 

@@ -86,7 +86,7 @@ public:
 	bool CheckMelee ();
 	bool CheckJump ();
 	
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Attack ();
 	void Melee ();
@@ -100,8 +100,8 @@ public:
 	bool CheckAttack ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 };

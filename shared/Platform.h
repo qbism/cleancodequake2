@@ -108,14 +108,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  define CPUSTRING		"x64"
 # endif
 
-typedef	signed char			sint8;
+/*typedef	signed char			sint8;
 typedef signed __int16		sint16;
 typedef signed __int32		sint32;
 typedef signed __int64		sint64;
 typedef unsigned char		uint8;
 typedef unsigned __int16	uint16;
 typedef unsigned __int32	uint32;
-typedef unsigned __int64	uint64;
+typedef unsigned __int64	uint64;*/
+typedef signed char				int8_t;
+typedef unsigned char			uint8_t;
+typedef signed short int		int16_t;
+typedef unsigned short int		uint16_t;
+typedef signed int				int32_t;
+typedef unsigned int			uint32_t;
+typedef unsigned long long		uint64_t;
+typedef long long				int64_t;
 
 # define strdup _strdup
 # define itoa _itoa
@@ -175,16 +183,19 @@ typedef unsigned __int64	uint64;
 
 # endif
 
-typedef int16_t				sint16;
-typedef int32_t				sint32;
-typedef int64_t				int64;
-typedef uint16_t			uint16;
-typedef uint32_t			uint32;
-typedef uint64_t			uint64;
-
 #endif	// __unix__
 
 // =========================================================================
+
+// Types
+typedef int8_t				sint8;
+typedef int16_t				sint16;
+typedef int32_t				sint32;
+typedef int64_t				sint64;
+typedef uint8_t				uint8;
+typedef uint16_t			uint16;
+typedef uint32_t			uint32;
+typedef uint64_t			uint64;
 
 #ifndef HAVE__CDECL
 # define __cdecl

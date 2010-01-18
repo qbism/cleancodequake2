@@ -77,51 +77,39 @@ void			CHurtableEntity::LoadFields (CFile &File)
 	LoadEntityFields<CHurtableEntity> (this, File);
 };
 
-char *ClientTeam (CPlayerEntity *ent)
+std::cc_string ClientTeam (CPlayerEntity *Player)
 {
-	char		*p;
-	static char	value[512];
+	std::cc_string val = Q_strlwr(Info_ValueForKey (Player->Client.Persistent.UserInfo, "skin"));
 
-	value[0] = 0;
-
-	Q_strncpyz(value, Info_ValueForKey (ent->Client.Persistent.UserInfo, "skin").c_str(), sizeof(value));
-	p = strchr(value, '/');
-	if (!p)
-		return value;
+	size_t slash = val.find_first_of('/');
+	if (slash == std::cc_string::npos)
+		return val;
 
 	if (dmFlags.dfModelTeams.IsEnabled())
 	{
-		*p = 0;
-		return value;
+		val.erase (slash);
+		return val;
 	}
 
-	// if ((sint32)(dmflags->value) & DF_SKINTEAMS)
-	return ++p;
+	val.erase (0, 1);
+	return val;
 }
 
-bool OnSameTeam (CPlayerEntity *ent1, CPlayerEntity *ent2)
+bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 {
-	char	ent1Team [512];
-	char	ent2Team [512];
-
 	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
 		return false;
 
-	Q_strncpyz (ent1Team, ClientTeam (ent1), sizeof(ent1Team));
-	Q_strncpyz (ent2Team, ClientTeam (ent2), sizeof(ent2Team));
-
-	if (strcmp(ent1Team, ent2Team) == 0)
-		return true;
-	return false;
+	return ClientTeam (Player1) == ClientTeam (Player2);
 }
 
-bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
+bool CHurtableEntity::CanDamage (CBaseEntity *Inflictor)
 {
 // bmodels need special checking because their origin is 0,0,0
 	if ((EntityFlags & ENT_PHYSICS) && ((entity_cast<CPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
 	{
 		vec3f dest = (GetAbsMin() + GetAbsMax()) * 0.5f;
-		CTrace trace (inflictor->State.GetOrigin(), dest, inflictor, CONTENTS_MASK_SOLID);
+		CTrace trace (Inflictor->State.GetOrigin(), dest, Inflictor, CONTENTS_MASK_SOLID);
 		if (trace.fraction == 1.0 || trace.Ent == this)
 			return true;
 		return false;
@@ -139,7 +127,7 @@ bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
 	for (sint32 i = 0; i < 5; i++)
 	{
 		vec3f end = State.GetOrigin() + additions[i];
-		CTrace trace (inflictor->State.GetOrigin(), end, inflictor, CONTENTS_MASK_SOLID);
+		CTrace trace (Inflictor->State.GetOrigin(), end, Inflictor, CONTENTS_MASK_SOLID);
 		if (trace.fraction == 1.0)
 			return true;
 	};
@@ -147,16 +135,16 @@ bool CHurtableEntity::CanDamage (CBaseEntity *inflictor)
 	return false;
 }
 
-bool CHurtableEntity::CheckTeamDamage (CBaseEntity *attacker)
+bool CHurtableEntity::CheckTeamDamage (CBaseEntity *Attacker)
 {
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((game.GameMode & GAME_CTF) && (EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
+	if ((Game.GameMode & GAME_CTF) && (EntityFlags & ENT_PLAYER) && (Attacker->EntityFlags & ENT_PLAYER))
 	{
 		CPlayerEntity *Targ = entity_cast<CPlayerEntity>(this);
-		CPlayerEntity *Attacker = entity_cast<CPlayerEntity>(attacker);
-		if (Targ->Client.Respawn.CTF.Team == Attacker->Client.Respawn.CTF.Team &&
-			(this != attacker))
+		CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
+		if (Targ->Client.Respawn.CTF.Team == PlayerAttacker->Client.Respawn.CTF.Team &&
+			(this != PlayerAttacker))
 			return true;
 	}
 //ZOID
@@ -167,9 +155,9 @@ bool CHurtableEntity::CheckTeamDamage (CBaseEntity *attacker)
 
 #include "cc_tent.h"
 
-sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 damage, sint32 dflags)
+sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
 {
-	if (!damage)
+	if (!Damage)
 		return 0;
 
 	if (dflags & DAMAGE_NO_ARMOR)
@@ -177,31 +165,33 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 dam
 
 	static const sint32	index = NItems::Cells->GetIndex();
 
-	sint32			power_armor_type, damagePerCell, pa_te_type, power = 0, power_used;
+	sint32			Type, DamagePerCell, Power = 0;
+	bool			ScreenSparks = false;
 
 	bool		IsClient = !!(EntityFlags & ENT_PLAYER),
 				IsMonster = !!(EntityFlags & ENT_MONSTER);
+
 	CPlayerEntity	*Player = (IsClient) ? entity_cast<CPlayerEntity>(this) : NULL;
 	CMonsterEntity	*Monster = (IsMonster) ? entity_cast<CMonsterEntity>(this) : NULL;
 
 	if (IsClient)
 	{
-		power_armor_type = Player->PowerArmorType ();
-		if (power_armor_type != POWER_ARMOR_NONE)
-			power = Player->Client.Persistent.Inventory.Has(index);
+		Type = Player->PowerArmorType ();
+		if (Type != POWER_ARMOR_NONE)
+			Power = Player->Client.Persistent.Inventory.Has(index);
 	}
 	else if (IsMonster)
 	{
-		power_armor_type = Monster->Monster->PowerArmorType;
-		power = Monster->Monster->PowerArmorPower;
+		Type = Monster->Monster->PowerArmorType;
+		Power = Monster->Monster->PowerArmorPower;
 	}
 	else
 		return 0;
 
-	if (!power)
+	if (!Power)
 		return 0;
 
-	switch (power_armor_type)
+	switch (Type)
 	{
 	case POWER_ARMOR_NONE:
 	default:
@@ -217,41 +207,41 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 dam
 			if ((vec | forward) <= 0.3)
 				return 0;
 
-			damagePerCell = 1;
-			pa_te_type = TE_SCREEN_SPARKS;
-			damage = damage / 3;
+			DamagePerCell = 1;
+			ScreenSparks = true;
+			Damage /= 3;
 		}
 		break;
 	case POWER_ARMOR_SHIELD:
-		damagePerCell = 2;
-		pa_te_type = TE_SHIELD_SPARKS;
-		damage = (2 * damage) / 3;
+		DamagePerCell = 2;
+		Damage = (2 * Damage) / 3;
 		break;
 	};
 
-	sint32 save = power * damagePerCell;
-	if (!save)
+	sint32 Saved = Power * DamagePerCell;
+	if (!Saved)
 		return 0;
-	if (save > damage)
-		save = damage;
+	if (Saved > Damage)
+		Saved = Damage;
 
-	CTempEnt_Splashes::ShieldSparks (point, normal, (pa_te_type == TE_SCREEN_SPARKS) ? true : false);
+	CTempEnt_Splashes::ShieldSparks (point, normal, ScreenSparks);
 
-	power_used = save / damagePerCell;
-	if (!power_used)
-		power_used = 1;
+	sint32 PowerUsed = Saved / DamagePerCell;
+	if (!PowerUsed)
+		PowerUsed = 1;
 
 	if (IsClient)
 	{
-		Player->Client.Persistent.Inventory.Remove(index, power_used);
+		Player->Client.Persistent.Inventory.Remove(index, PowerUsed);
 		Player->Client.PowerArmorTime = 2;
 	}
 	else if (IsMonster)
 	{
-		Monster->Monster->PowerArmorPower -= power_used;
+		Monster->Monster->PowerArmorPower -= PowerUsed;
 		Monster->Monster->PowerArmorTime = 2;
 	}
-	return save;
+
+	return Saved;
 }
 
 #if MONSTER_USE_ROGUE_AI
@@ -259,21 +249,21 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 dam
 ROGUE
 clean up heal targets for medic
 */
-void CleanupHealTarget (CMonsterEntity *ent)
+void CleanupHealTarget (CMonsterEntity *Monster)
 {
-	ent->Monster->Healer = NULL;
-	ent->CanTakeDamage = true;
-	ent->Monster->AIFlags &= ~AI_RESURRECTING;
-	ent->Monster->SetEffects ();
+	Monster->Monster->Healer = NULL;
+	Monster->CanTakeDamage = true;
+	Monster->Monster->AIFlags &= ~AI_RESURRECTING;
+	Monster->Monster->SetEffects ();
 }
 #endif
 
-void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Health < -999)
 		Health = -999;
 
-	Enemy = attacker;
+	Enemy = Attacker;
 
 #if MONSTER_USE_ROGUE_AI
 	if (EntityFlags & ENT_MONSTER)
@@ -286,7 +276,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 
 			// clean up self
 			Monster->Monster->AIFlags &= ~AI_MEDIC;
-			Monster->Enemy = attacker;
+			Monster->Enemy = Attacker;
 		}
 	}
 #endif
@@ -295,14 +285,14 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 	{
 		if (!((entity_cast<CMonsterEntity>(this))->Monster->AIFlags & AI_GOOD_GUY))
 		{
-			level.Monsters.Killed++;
-			if ((game.GameMode == GAME_COOPERATIVE) && (attacker->EntityFlags & ENT_PLAYER))
-				(entity_cast<CPlayerEntity>(attacker))->Client.Respawn.Score++;
+			Level.Monsters.Killed++;
+			if ((Game.GameMode == GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
 #if !MONSTER_USE_ROGUE_AI
-			if (strcmp(attacker->ClassName.c_str(), "monster_medic") == 0)
-				SetOwner (attacker);
+			if (strcmp(Attacker->ClassName.c_str(), "monster_medic") == 0)
+				SetOwner (Attacker);
 #endif
 		}
 	}
@@ -316,7 +306,7 @@ void CHurtableEntity::Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sin
 	}
 
 	if (((EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(this)->CanTakeDamage))
-		(entity_cast<CHurtableEntity>(this))->Die (inflictor, attacker, damage, point);
+		(entity_cast<CHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, point);
 }
 
 void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
@@ -328,11 +318,11 @@ void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sin
 }
 
 bool LastPelletShot = true;
-void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
-								vec3f dir, vec3f point, vec3f normal, sint32 damage,
+void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
+								vec3f dir, vec3f point, vec3f normal, sint32 Damage,
 								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
 {
-	if (map_debug->Boolean())
+	if (map_debug.Boolean())
 		return;
 
 	sint32			take;
@@ -351,14 +341,14 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	// friendly fire avoidance
 	// if enabled you can't hurt teammates (but you can hurt yourself)
 	// knockback still occurs
-	if ((this != attacker) && ((game.GameMode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()) || game.GameMode == GAME_COOPERATIVE))
+	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()) || Game.GameMode == GAME_COOPERATIVE))
 	{
-		if ((EntityFlags & ENT_PLAYER) && attacker && (attacker->EntityFlags & ENT_PLAYER))
+		if ((EntityFlags & ENT_PLAYER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 		{
-			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(attacker)))
+			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(Attacker)))
 			{
 				if (dmFlags.dfNoFriendlyFire.IsEnabled())
-					damage = 0;
+					Damage = 0;
 				else
 					mod |= MOD_FRIENDLY_FIRE;
 			}
@@ -367,47 +357,47 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	meansOfDeath = mod;
 
 	// easy mode takes half damage
-	if (skill->Integer() == 0 && !(game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
+	if (skill.Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
 	{
-		damage *= 0.5;
-		if (!damage)
-			damage = 1;
+		Damage *= 0.5;
+		if (!Damage)
+			Damage = 1;
 	}
 
 	dir.Normalize ();
 
 // bonus damage for surprising a monster
 // Paril revision: Allow multiple pellet weapons to take advantage of this too!
-	if (!(dflags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && attacker && (attacker->EntityFlags & ENT_PLAYER))
+	if (!(dflags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 	{
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
 		if ((Health > 0) &&
-			(!Enemy && (Monster->BonusDamageTime <= level.Frame)) ||
-			(Enemy && (Monster->BonusDamageTime == level.Frame)))
+			(!Enemy && (Monster->BonusDamageTime <= Level.Frame)) ||
+			(Enemy && (Monster->BonusDamageTime == Level.Frame)))
 		{
-			Monster->BonusDamageTime = level.Frame;
-			damage *= 2;
+			Monster->BonusDamageTime = Level.Frame;
+			Damage *= 2;
 		}
 	}
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.GameMode & GAME_CTF)
+	|| (Game.GameMode & GAME_CTF)
 #endif
 	)
 	{
 		if (isClient)
 		{
 			if (Client->Persistent.Tech && (Client->Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				Client->Persistent.Tech->DoAggressiveTech (Player, attacker, false, damage, knockback, dflags, mod, true);
+				Client->Persistent.Tech->DoAggressiveTech (Player, Attacker, false, Damage, knockback, dflags, mod, true);
 		}
 
-		if (attacker->EntityFlags & ENT_PLAYER)
+		if (Attacker->EntityFlags & ENT_PLAYER)
 		{
-			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(attacker);
+			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				entity_cast<CPlayerEntity>(attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, Player, false, damage, knockback, dflags, mod, false);
+				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, Player, false, Damage, knockback, dflags, mod, false);
 		}
 	}
 
@@ -422,38 +412,38 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 			Phys->PhysicsType == PHYSICS_BOUNCE ||
 			Phys->PhysicsType == PHYSICS_PUSH ||
 			Phys->PhysicsType == PHYSICS_STOP))
-			Phys->Velocity += dir * (((isClient && (attacker == this)) ? 1600.0f : 500.0f) * (float)knockback / Clamp<float> (Phys->Mass, 50, Phys->Mass));
+			Phys->Velocity += dir * (((isClient && (Attacker == this)) ? 1600.0f : 500.0f) * (float)knockback / Clamp<float> (Phys->Mass, 50, Phys->Mass));
 	}
 
-	take = damage;
+	take = Damage;
 	save = 0;
 
 	// check for godmode
 	if ( (Flags & FL_GODMODE) && !(dflags & DAMAGE_NO_PROTECTION) )
 	{
 		take = 0;
-		save = damage;
+		save = Damage;
 		CTempEnt_Splashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? CTempEnt_Splashes::ST_BULLET_SPARKS : CTempEnt_Splashes::ST_SPARKS, CTempEnt_Splashes::SPT_SPARKS);
 	}
 
 	// check for invincibility
-	if ((isClient && (Client->Timers.Invincibility > level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
+	if ((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
 	{
-		if (Player->PainDebounceTime < level.Frame)
+		if (Player->PainDebounceTime < Level.Frame)
 		{
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect4.wav"));
-			Player->PainDebounceTime = level.Frame + 20;
+			Player->PainDebounceTime = Level.Frame + 20;
 		}
 		take = 0;
-		save = damage;
+		save = Damage;
 	}
 
 #if CLEANCTF_ENABLED
 //ZOID
 //team armor protect
-	if ((game.GameMode & GAME_CTF) && isClient && (attacker->EntityFlags & ENT_PLAYER) &&
-		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(attacker))->Client.Respawn.CTF.Team) &&
-		(this != attacker) && dmFlags.dfCtfArmorProtect.IsEnabled())
+	if ((Game.GameMode & GAME_CTF) && isClient && (Attacker->EntityFlags & ENT_PLAYER) &&
+		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.CTF.Team) &&
+		(this != Attacker) && dmFlags.dfCtfArmorProtect.IsEnabled())
 		psave = asave = 0;
 	else
 	{
@@ -479,32 +469,32 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.GameMode & GAME_CTF)
+	|| (Game.GameMode & GAME_CTF)
 #endif
 	)
 	{
 		if (isClient)
 		{
 			if (Client->Persistent.Tech && (Client->Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), attacker, true, take, knockback, dflags, mod, true);
+				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), Attacker, true, take, knockback, dflags, mod, true);
 		}
 
-		if ((EntityFlags & ENT_PLAYER) && (attacker->EntityFlags & ENT_PLAYER))
+		if ((EntityFlags & ENT_PLAYER) && (Attacker->EntityFlags & ENT_PLAYER))
 		{
-			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(attacker);
+			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				entity_cast<CPlayerEntity>(attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, entity_cast<CPlayerEntity>(this), true, damage, knockback, dflags, mod, false);
+				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, entity_cast<CPlayerEntity>(this), true, Damage, knockback, dflags, mod, false);
 		}
 	}
 
 	// team damage avoidance
-	if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (attacker))
+	if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (Attacker))
 		return;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((game.GameMode & GAME_CTF) && (isClient && (attacker->EntityFlags & ENT_PLAYER)))
-		CTFCheckHurtCarrier((entity_cast<CPlayerEntity>(this)), (entity_cast<CPlayerEntity>(attacker)));
+	if ((Game.GameMode & GAME_CTF) && (isClient && (Attacker->EntityFlags & ENT_PLAYER)))
+		CTFCheckHurtCarrier((entity_cast<CPlayerEntity>(this)), (entity_cast<CPlayerEntity>(Attacker)));
 //ZOID
 #endif
 
@@ -522,7 +512,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		{
 			if ((EntityFlags & ENT_MONSTER) || (isClient))
 				Flags |= FL_NO_KNOCKBACK;
-			Killed (inflictor, attacker, take, point);
+			Killed (Inflictor, Attacker, take, point);
 			return;
 		}
 	}
@@ -530,14 +520,14 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	if (EntityFlags & ENT_MONSTER)
 	{
 		CMonster *Monster = (entity_cast<CMonsterEntity>(this))->Monster;
-		Monster->ReactToDamage (attacker);
+		Monster->ReactToDamage (Attacker);
 		if (!(Monster->AIFlags & AI_DUCKED) && take)
 		{
 			if (LastPelletShot)
 			{
-				Pain (attacker, knockback, take);
-				if (skill->Integer() == 3)
-					Monster->PainDebounceTime = level.Frame + 50;
+				Pain (Attacker, take);
+				if (skill.Integer() == 3)
+					Monster->PainDebounceTime = Level.Frame + 50;
 			}
 		}
 	}
@@ -546,7 +536,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 		&& !CTFMatchSetup()
 #endif
 		) || take)
-		Pain (attacker, knockback, take);
+		Pain (Attacker, take);
 
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
@@ -561,13 +551,13 @@ void CHurtableEntity::TakeDamage (CBaseEntity *inflictor, CBaseEntity *attacker,
 	}
 }
 	
-void CHurtableEntity::TakeDamage (CBaseEntity *targ, CBaseEntity *inflictor,
-								CBaseEntity *attacker, vec3f dir, vec3f point,
-								vec3f normal, sint32 damage, sint32 knockback,
+void CHurtableEntity::TakeDamage (CBaseEntity *targ, CBaseEntity *Inflictor,
+								CBaseEntity *Attacker, vec3f dir, vec3f point,
+								vec3f normal, sint32 Damage, sint32 knockback,
 								sint32 dflags, EMeansOfDeath mod)
 {
 	if ((targ->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(targ)->CanTakeDamage)
-		(entity_cast<CHurtableEntity>(targ))->TakeDamage (inflictor, attacker, dir, point, normal, damage, knockback, dflags, mod);
+		(entity_cast<CHurtableEntity>(targ))->TakeDamage (Inflictor, Attacker, dir, point, normal, Damage, knockback, dflags, mod);
 }
 
 CThinkableEntity::CThinkableEntity () :
@@ -596,7 +586,7 @@ void CThinkableEntity::LoadFields (CFile &File)
 
 void CThinkableEntity::RunThink ()
 {
-	if (NextThink <= 0 || NextThink > level.Frame)
+	if (NextThink <= 0 || NextThink > Level.Frame)
 		return;
 	
 	NextThink = 0;
@@ -647,7 +637,7 @@ GravityMultiplier(1.0f)
 
 void CPhysicsEntity::AddGravity()
 {
-	Velocity.Z -= GravityMultiplier * sv_gravity->Float() * 0.1f;
+	Velocity.Z -= GravityMultiplier * sv_gravity.Float() * 0.1f;
 }
 
 CTrace CPhysicsEntity::PushEntity (vec3f &push)
@@ -1006,7 +996,6 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 			// go along the crease
 			if (numplanes != 2)
 			{
-				//gi.dprintf ("clip velocity, numplanes == %i\n",numplanes);
 				Velocity.Clear ();
 				return 7;
 			}
@@ -1058,7 +1047,7 @@ bool CStepPhysics::Run ()
 		{
 			if (!((Flags & FL_SWIM) && (WaterInfo.Level > WATER_WAIST)))
 			{
-				if (Velocity.Z < sv_gravity->Float() * -0.1)
+				if (Velocity.Z < sv_gravity.Float() * -0.1)
 					hitsound = true;
 				if (WaterInfo.Level == WATER_NONE)
 					AddGravity ();
@@ -1173,9 +1162,9 @@ SV_TestEntityPosition
 
 ============
 */
-CBaseEntity *SV_TestEntityPosition (CBaseEntity *ent)
+inline CBaseEntity *SV_TestEntityPosition (CBaseEntity *Entity)
 {
-	return (CTrace(ent->State.GetOrigin(), ent->GetMins(), ent->GetMaxs(), ent->State.GetOrigin(), ent, (ent->GetClipmask()) ? ent->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
+	return (CTrace(Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), Entity->State.GetOrigin(), Entity, (Entity->GetClipmask()) ? Entity->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
 }
 
 /*
@@ -1240,7 +1229,7 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 	Entity->Link ();
 
 	// see if any solid entities are inside the final position
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
 		CBaseEntity *Check = (*it)->Entity;
 
@@ -1299,7 +1288,7 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 				PushedEntity.DeltaYaw = Player->Client.PlayerState.GetPMove()->deltaAngles[YAW];
 			}
 			else
-				Check->State.GetAngles() += vec3f (0, amove.Y, 0);
+				Check->State.GetAngles().Y += amove.Y;
 
 			Pushed.push_back (PushedEntity);
 
@@ -1496,7 +1485,7 @@ ENTITYFIELDS_BEGIN(CUsableEntity)
 	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 
 	CEntityField ("Usable", 	EntityMemberOffset(CUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("Activator", 	EntityMemberOffset(CUsableEntity,Activator),		FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("User", 		EntityMemberOffset(CUsableEntity,User),		FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CUsableEntity)
 
@@ -1554,14 +1543,14 @@ public:
 
 	void Think ()
 	{
-		UseTargets (Activator, Message);
+		UseTargets (User, Message);
 		Free ();
 	}
 };
 
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
-void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
+void CUsableEntity::UseTargets (CBaseEntity *Activator, std::cc_string &Message)
 {
 //
 // check for a delay
@@ -1573,10 +1562,13 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
 		t->ClassName = "DelayedUse";
 
 		// Paril: for compatibility
-		t->NextThink = level.Frame + Delay;
-		t->Activator = activator;
-		if (!activator)
-			DebugPrintf ("DelayedUse with no activator\n");
+		t->NextThink = Level.Frame + Delay;
+		t->User = Activator;
+
+		// Does this EVER happen? It needs to be called with an Activator...
+		if (!Activator)
+			DebugPrintf ("DelayedUse with no Activator\n");
+
 		t->Message = Message;
 		t->Target = Target;
 		t->KillTarget = KillTarget;
@@ -1586,9 +1578,9 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
 //
 // print the message
 //
-	if ((!Message.empty()) && (activator->EntityFlags & ENT_PLAYER))
+	if ((!Message.empty()) && (Activator->EntityFlags & ENT_PLAYER))
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
 		Player->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
 		Player->PlaySound (CHAN_AUTO, (NoiseIndex) ? NoiseIndex : SoundIndex ("misc/talk1.wav"));
 	}
@@ -1605,7 +1597,7 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
 
 			if (!GetInUse())
 			{
-				DebugPrintf("entity was removed while using killtargets\n");
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity was removed while using killtargets\n");
 				return;
 			}
 		}
@@ -1632,14 +1624,15 @@ void CUsableEntity::UseTargets (CBaseEntity *activator, std::cc_string &Message)
 				CUsableEntity *Used = entity_cast<CUsableEntity>(Ent);
 				
 				if (Used == this)
-					DebugPrintf ("WARNING: Entity used itself.\n");
+					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
 
 				if (Used->Usable)
-					Used->Use (this, activator);
+					Used->Use (this, Activator);
 			}
+
 			if (!GetInUse())
 			{
-				DebugPrintf("entity was removed while using targets\n");
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity was removed while using targets\n");
 				return;
 			}
 		}

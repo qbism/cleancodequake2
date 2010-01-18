@@ -91,8 +91,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	// Check.
 	// LoadFields will actually re-load the monster's ID, so here we need to make sure
 	// they still are the same.
-	if ((Entity->Monster->MonsterID != MonsterID) || stricmp(Entity->Monster->MonsterName, LoadedName))
-		_CC_ASSERT_EXPR (0, "Loaded monster differs in ID or Name\n");
+	_CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || stricmp(Entity->Monster->MonsterName, LoadedName)), "Loaded monster differs in ID or Name\n");
 
 	Entity->Monster->Entity = Entity;
 }
@@ -178,21 +177,21 @@ void CMonster::LoadFields (CFile &File)
 	BlindFireDelay = File.Read<FrameNumber_t> ();
 	sint32 Index = File.Read<sint32> ();
 	if (Index != -1)
-		LastPlayerEnemy = entity_cast<CPlayerEntity>(g_edicts[Index].Entity);
+		LastPlayerEnemy = entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
 
 	NextDuckTime = File.Read<FrameNumber_t> ();
 	BlindFireTarget = File.Read<vec3f> ();
 	Index = File.Read<sint32> ();
 	if (Index != -1)
-		BadMedic1 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+		BadMedic1 = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 
 	Index = File.Read<sint32> ();
 	if (Index != -1)
-		BadMedic2 = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+		BadMedic2 = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 
 	Index = File.Read<sint32> ();
 	if (Index != -1)
-		Healer = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+		Healer = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 #endif
 	NextFrame = File.Read<sint32> ();
 	Scale = File.Read<float> ();
@@ -255,7 +254,7 @@ void CMonster::FoundPath ()
 {
 	if (!P_CurrentGoalNode || !P_CurrentNode)
 	{
-		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
+		P_NodePathTimeout = Level.Frame + 100; // in 10 seconds we will try again.
 		return;
 	}
 	// Just in case...
@@ -268,7 +267,7 @@ void CMonster::FoundPath ()
 	{
 		P_CurrentNode = P_CurrentGoalNode = NULL;
 		P_CurrentNodeIndex = -1;
-		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
+		P_NodePathTimeout = Level.Frame + 100; // in 10 seconds we will try again.
 		return;
 	}
 	else if (P_CurrentPath->Start == P_CurrentPath->End)
@@ -277,7 +276,7 @@ void CMonster::FoundPath ()
 		P_CurrentPath = NULL;
 		P_CurrentNode = P_CurrentGoalNode = NULL;
 		P_CurrentNodeIndex = -1;
-		P_NodePathTimeout = level.Frame + 100; // in 10 seconds we will try again.
+		P_NodePathTimeout = Level.Frame + 100; // in 10 seconds we will try again.
 		return;
 	}
 
@@ -292,7 +291,7 @@ void CMonster::FoundPath ()
 
 	P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
 
-	float timeOut = level.Frame + 20; // Always at least 2 seconds
+	float timeOut = Level.Frame + 20; // Always at least 2 seconds
 	// Calculate approximate distance and check how long we want this to time out for
 	switch (Range(origin, P_CurrentNode->Origin))
 	{
@@ -315,7 +314,6 @@ void CMonster::FoundPath ()
 	Run ();
 }
 
-void ForcePlatToGoUp (CBaseEntity *Entity);
 void CMonster::MoveToPath (float Dist)
 {
 	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
@@ -352,7 +350,6 @@ void CMonster::MoveToPath (float Dist)
 			P_CurrentNodeIndex--; // Head to the next node.
 			// Set our new path to the next node
 			P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
-		//	DebugPrintf ("Hit node %u\n", P_CurrentNodeIndex);
 			doit = true;
 			switch (P_CurrentNode->Type)
 			{
@@ -373,7 +370,6 @@ void CMonster::MoveToPath (float Dist)
 						{
 							P_CurrentNodeIndex += 2;
 							P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
-							DebugPrintf ("Plat in bad spot: going back to %u\n", P_CurrentNodeIndex);
 						}
 					}
 					else
@@ -382,8 +378,7 @@ void CMonster::MoveToPath (float Dist)
 						if (Plat->MoveState == STATE_BOTTOM)
 							Plat->GoUp ();
 						else if (Plat->MoveState == STATE_TOP)
-							Plat->NextThink = level.Frame + 10;	// the player is still on the plat, so delay going down
-						//ForcePlatToGoUp (P_CurrentNode->LinkedEntity->Entity);
+							Plat->NextThink = Level.Frame + 10;	// the player is still on the plat, so delay going down
 					}
 				}
 
@@ -438,7 +433,7 @@ void CMonster::MoveToPath (float Dist)
 		}
 	}
 
-	if (P_NodeFollowTimeout < level.Frame && P_CurrentPath && P_CurrentNode)
+	if (P_NodeFollowTimeout < Level.Frame && P_CurrentPath && P_CurrentNode)
 	{
 		// Re-evaluate start and end nodes
 		CPathNode *End = P_CurrentPath->Path[0];
@@ -450,7 +445,7 @@ void CMonster::MoveToPath (float Dist)
 		if (!P_CurrentNode)
 			return;
 
-		FrameNumber_t timeOut = level.Frame + 20; // Always at least 2 seconds
+		FrameNumber_t timeOut = Level.Frame + 20; // Always at least 2 seconds
 		// Calculate approximate distance and check how long we want this to time out for
 		switch (Range(Entity->State.GetOrigin(), P_CurrentNode->Origin))
 		{
@@ -555,7 +550,7 @@ void CMonster::MoveToPath (float Dist)
 =================
 AI_SetSightClient
 
-Called once each frame to set level.SightClient to the
+Called once each frame to set Level.SightClient to the
 player to be checked for in findtarget.
 
 If all clients are either dead or in notarget, SightClient
@@ -568,29 +563,29 @@ void AI_SetSightClient ()
 {
 	sint32		start, check;
 
-	if (level.SightClient == NULL)
+	if (Level.SightClient == NULL)
 		start = 1;
 	else
-		start = level.SightClient->State.GetNumber();
+		start = Level.SightClient->State.GetNumber();
 
 	check = start;
 	while (1)
 	{
 		check++;
-		if (check > game.MaxClients)
+		if (check > Game.MaxClients)
 			check = 1;
-		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[check].Entity);
-		if (ent->GetInUse()
-			&& (ent->Health > 0)
-			&& !(ent->Flags & FL_NOTARGET) 
-			&& (ent->Client.Persistent.State >= SVCS_SPAWNED))
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[check].Entity);
+		if (Player->GetInUse()
+			&& (Player->Health > 0)
+			&& !(Player->Flags & FL_NOTARGET) 
+			&& (Player->Client.Persistent.State >= SVCS_SPAWNED))
 		{
-			level.SightClient = ent;
+			Level.SightClient = Player;
 			return;		// got one
 		}
 		if (check == start)
 		{
-			level.SightClient = NULL;
+			Level.SightClient = NULL;
 			return;		// nobody to see
 		}
 	}
@@ -630,7 +625,7 @@ UseState(MONSTERENTITY_THINK_NONE)
 
 bool CMonsterEntity::CheckValidity ()
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		Free ();
 		return false;
@@ -673,11 +668,8 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 void			CMonsterEntity::SaveFields (CFile &File)
 {
 	// Write the monster's name first - this is used for checking later
-	if (!Monster || !Monster->MonsterName)
-	{
-		_CC_ASSERT_EXPR (0, "Monster with no monster or name!\n");
+	if (_CC_ASSERT_EXPR (!(!Monster || !Monster->MonsterName), "Monster with no monster or name!\n"))
 		return;
-	}
 
 	File.WriteString (Monster->MonsterName);
 
@@ -729,24 +721,24 @@ void CMonsterEntity::Think ()
 	}
 }
 
-void CMonsterEntity::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CMonsterEntity::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
-	Monster->Die (inflictor, attacker, damage, point);
+	Monster->Die (Inflictor, Attacker, Damage, point);
 }
 
-void CMonsterEntity::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CMonsterEntity::Pain (CBaseEntity *Other, sint32 Damage)
 {
-	Monster->Pain (other, kick, damage);
+	Monster->Pain (Other, Damage);
 }
 
-void CMonsterEntity::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CMonsterEntity::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	Monster->Touch (other, plane, surf);
+	Monster->Touch (Other, plane, surf);
 }
 
-vec3f VelocityForDamage (sint32 damage);
+vec3f VelocityForDamage (sint32 Damage);
 
-void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects)
+void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects)
 {
 	float	vscale;
 
@@ -778,14 +770,14 @@ void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type,
 		vscale = 1.0;
 	}
 	
-	Velocity = Velocity.MultiplyAngles (vscale, VelocityForDamage (damage));
+	Velocity = Velocity.MultiplyAngles (vscale, VelocityForDamage (Damage));
 	Velocity.X = Clamp<float> (Velocity.X, -300, 300);
 	Velocity.Y = Clamp<float> (Velocity.Y, -300, 300);
 	Velocity.Z = Clamp<float> (Velocity.Z, 200, 500); // always some upwards
 
 	AngularVelocity.Y = crand()*600;
 
-	NextThink = level.Frame + 100 + frand()*100;
+	NextThink = Level.Frame + 100 + frand()*100;
 
 	Link();
 }
@@ -1244,7 +1236,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 void CMonster::WalkMonsterStartGo ()
 {
-	if (!(Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN) && level.Frame < 10)
+	if (!(Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN) && Level.Frame < 10)
 	{
 		DropToFloor ();
 
@@ -1268,7 +1260,7 @@ void CMonster::WalkMonsterStartGo ()
 void CMonster::WalkMonsterStart ()
 {
 	Think = &CMonster::WalkMonsterStartGo;
-	Entity->NextThink = level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + FRAMETIME;
 	MonsterStart ();
 }
 
@@ -1384,7 +1376,7 @@ void CMonster::MonsterStartGo ()
 	}
 
 	// are we in debug mode?
-	if (map_debug->Integer())
+	if (map_debug.Integer())
 	{
 		Think = NULL; // Don't think
 		
@@ -1397,14 +1389,13 @@ void CMonster::MonsterStartGo ()
 	else
 	{
 		Think = &CMonster::MonsterThink;
-		Entity->NextThink = level.Frame + FRAMETIME;
+		Entity->NextThink = Level.Frame + FRAMETIME;
 	}
 }
 
 void CMonster::MonsterStart ()
 {
-//	DebugPrintf ("%s spawned with ID %u\n", MonsterName, MonsterID);
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		Entity->Free ();
 		return;
@@ -1417,13 +1408,13 @@ void CMonster::MonsterStart ()
 	}
 
 	if (!(AIFlags & AI_GOOD_GUY))
-		level.Monsters.Total++;
+		Level.Monsters.Total++;
 
-	Entity->NextThink = level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + FRAMETIME;
 	Entity->GetSvFlags() |= SVF_MONSTER;
 	Entity->State.GetRenderEffects() |= RF_FRAMELERP;
 	Entity->CanTakeDamage = true;
-	Entity->AirFinished = level.Frame + 120;
+	Entity->AirFinished = Level.Frame + 120;
 	Entity->UseState = MONSTERENTITY_THINK_USE;
 	Entity->MaxHealth = Entity->Health;
 	Entity->GetClipmask() = CONTENTS_MASK_MONSTERSOLID;
@@ -1441,7 +1432,7 @@ void CMonster::MonsterStart ()
 	BaseHeight = Entity->GetMaxs().Z;
 #endif
 
-	Entity->NextThink = level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + FRAMETIME;
 }
 
 void CMonster::MonsterTriggeredStart ()
@@ -1449,7 +1440,7 @@ void CMonster::MonsterTriggeredStart ()
 	Entity->GetSolid() = SOLID_NOT;
 	Entity->PhysicsDisabled = true;
 
-	if (!map_debug->Integer())
+	if (!map_debug.Integer())
 		Entity->GetSvFlags() |= SVF_NOCLIENT;
 	else
 		Entity->State.GetEffects() = EF_SPHERETRANS;
@@ -1458,7 +1449,7 @@ void CMonster::MonsterTriggeredStart ()
 	Entity->UseState = MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE;
 }
 
-void CMonsterEntity::Use (CBaseEntity *other, CBaseEntity *activator)
+void CMonsterEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	switch (UseState)
 	{
@@ -1469,23 +1460,23 @@ void CMonsterEntity::Use (CBaseEntity *other, CBaseEntity *activator)
 			return;
 		if (Health <= 0)
 			return;
-		if (!activator)
+		if (!Activator)
 			return;
-		if (activator->Flags & FL_NOTARGET)
+		if (Activator->Flags & FL_NOTARGET)
 			return;
-		if (!(activator->EntityFlags & ENT_PLAYER) && !(Monster->AIFlags & AI_GOOD_GUY))
+		if (!(Activator->EntityFlags & ENT_PLAYER) && !(Monster->AIFlags & AI_GOOD_GUY))
 			return;
 		
 	// delay reaction so if the monster is teleported, its sound is still heard
-		Enemy = activator;
+		Enemy = Activator;
 		Monster->FoundTarget ();
 		break;
 	case MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE:
 		// we have a one frame delay here so we don't telefrag the guy who activated us
 		Monster->Think = &CMonster::MonsterTriggeredSpawn;
-		NextThink = level.Frame + FRAMETIME;
-		if (activator->EntityFlags & ENT_PLAYER)
-			Enemy = activator;
+		NextThink = Level.Frame + FRAMETIME;
+		if (Activator->EntityFlags & ENT_PLAYER)
+			Enemy = Activator;
 		UseState = MONSTERENTITY_THINK_USE;
 		break;
 	};
@@ -1499,7 +1490,7 @@ void CMonster::MonsterTriggeredSpawn ()
 	Entity->GetSolid() = SOLID_BBOX;
 	Entity->PhysicsDisabled = false;
 	Entity->GetSvFlags() &= ~SVF_NOCLIENT;
-	Entity->AirFinished = level.Frame + 120;
+	Entity->AirFinished = Level.Frame + 120;
 	Entity->Link ();
 
 	MonsterStartGo ();
@@ -1542,7 +1533,7 @@ void CMonster::AlertNearbyStroggs ()
 	if (Entity->Enemy->Flags & FL_NOTARGET)
 		return;
 
-	switch (skill->Integer())
+	switch (skill.Integer())
 	{
 	case 0:
 		return;
@@ -1553,7 +1544,7 @@ void CMonster::AlertNearbyStroggs ()
 		dist = 500;
 		break;
 	default:
-		dist = 750 + (skill->Integer()) * 75;
+		dist = 750 + (skill.Integer()) * 75;
 		break;
 	}
 
@@ -1597,72 +1588,72 @@ void CMonster::AlertNearbyStroggs ()
 	}
 }
 
-void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
+void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
 
-	CBullet::Fire (Entity, start, dir, damage, kick, hspread, vspread, MOD_MACHINEGUN);
+	CBullet::Fire (Entity, start, dir, Damage, kick, hspread, vspread, MOD_MACHINEGUN);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
+void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
 
-	CShotgunPellets::Fire (Entity, start, aimdir, damage, kick, hspread, vspread, count, MOD_SHOTGUN);
+	CShotgunPellets::Fire (Entity, start, aimdir, Damage, kick, hspread, vspread, count, MOD_SHOTGUN);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect)
+void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
 
-	CBlasterProjectile::Spawn (Entity, start, dir, damage, speed, effect, false);
+	CBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, effect, false);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }	
 
-void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype)
+void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
 
-	CGrenade::Spawn (Entity, start, aimdir, damage, speed, 25, damage+40);
+	CGrenade::Spawn (Entity, start, aimdir, Damage, speed, 25, Damage+40);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
 
-	CRocket::Spawn (Entity, start, dir, damage, speed, damage+20, damage);
+	CRocket::Spawn (Entity, start, dir, Damage, speed, Damage+20, Damage);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }	
 
-void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype)
+void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
@@ -1670,20 +1661,20 @@ void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sin
 #endif
 
 	if (!(PointContents (start) & CONTENTS_MASK_SOLID))
-		CRailGunShot::Fire (Entity, start, aimdir, damage, kick);
+		CRailGunShot::Fire (Entity, start, aimdir, Damage, kick);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
+void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, aimdir))
 		return;
 #endif
 
-	CBFGBolt::Spawn (Entity, start, aimdir, damage, speed, damage_radius);
+	CBFGBolt::Spawn (Entity, start, aimdir, Damage, speed, damage_radius);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
@@ -1697,40 +1688,40 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 
 #include "cc_bitch.h"
 #include "cc_xatrix_chick_heat.h"
 
-void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
 
-	CIonRipperBoomerang::Spawn (Entity, start, dir, damage, speed);
+	CIonRipperBoomerang::Spawn (Entity, start, dir, Damage, speed);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
 
-	CBlueBlasterProjectile::Spawn (Entity, start, dir, damage, speed, EF_BLUEHYPERBLASTER);
+	CBlueBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, EF_BLUEHYPERBLASTER);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
 }
 
-void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype)
+void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 #if MONSTERS_ARENT_STUPID
 	if (FriendlyInLine (start, dir))
 		return;
 #endif
 
-	CHeatRocket::Spawn (Entity, start, dir, damage, speed, damage+20, damage);
+	CHeatRocket::Spawn (Entity, start, dir, Damage, speed, Damage+20, Damage);
 
 	if (flashtype != -1)
 		CTempEnt::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
@@ -1771,7 +1762,7 @@ void CMonsterBeamLaser::Think ()
 		CBaseEntity *Entity = tr.ent->Entity;
 		// hurt it if we can
 		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
-			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, skill->Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
+			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, skill.Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		if (Damage < 0) // healer ray
 		{
@@ -1806,7 +1797,7 @@ void CMonsterBeamLaser::Think ()
 	}
 
 	State.GetOldOrigin() = tr.EndPos;
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 	DoFree = true;
 }
 
@@ -1829,7 +1820,7 @@ void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
 		vec3f lastMoveDir = Ent->MoveDir;
 		vec3f point = Entity->Enemy->GetAbsMin().MultiplyAngles (0.5f, Entity->Enemy->GetSize());
 		if (AIFlags & AI_MEDIC)
-			point.X += (sinf (level.Frame) * 8) * 10;
+			point.X += (sinf (Level.Frame) * 8) * 10;
 		Ent->MoveDir = (point - Ent->State.GetOrigin()).GetNormalized();
 		if (Ent->MoveDir != lastMoveDir)
 			Ent->MakeEffect = true;
@@ -1837,7 +1828,7 @@ void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
 	else
 		Ent->MoveDir = Ent->State.GetAngles();
 
-	Ent->NextThink = level.Frame + 1;
+	Ent->NextThink = Level.Frame + 1;
 	Ent->GetMins().Set (-8, -8, -8);
 	Ent->GetMaxs().Set (8, 8, 8);
 	Ent->Link ();
@@ -1875,7 +1866,7 @@ bool CMonster::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (skill.Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -1888,7 +1879,7 @@ bool CMonster::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -1915,15 +1906,15 @@ bool CMonster::CheckAttack ()
 		return false;
 	}
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (skill.Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -1961,9 +1952,9 @@ bool CMonster::CheckAttack ()
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.Frame < AttackFinished)
+						if (Level.Frame < AttackFinished)
 							return false;
-						if (level.Frame < (TrailTime + BlindFireDelay))
+						if (Level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
@@ -1988,7 +1979,7 @@ bool CMonster::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (skill.Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -2009,7 +2000,7 @@ bool CMonster::CheckAttack ()
 		return false;
 	}
 	
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -2026,16 +2017,16 @@ bool CMonster::CheckAttack ()
 	else
 		return false;
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (skill.Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -2171,7 +2162,7 @@ bool CMonster::AI_CheckAttack()
 					return false;
 				}
 
-				if ((level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
+				if ((Level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
 				{
 					if (Entity->GoalEntity == Entity->Enemy)
 					{
@@ -2187,7 +2178,7 @@ bool CMonster::AI_CheckAttack()
 				}
 				else
 				{
-					Entity->ShowHostile = level.Frame + 10;
+					Entity->ShowHostile = Level.Frame + 10;
 					return false;
 				}
 			}
@@ -2242,20 +2233,20 @@ bool CMonster::AI_CheckAttack()
 				// will just revert to walking with no target and
 				// the monsters will wonder around aimlessly trying
 				// to hunt the world entity
-				PauseTime = level.Frame + 100000000;
+				PauseTime = Level.Frame + 100000000;
 				Stand ();
 			}
 			return true;
 		}
 	}
 
-	Entity->ShowHostile = level.Frame + 10;		// wake up other monsters
+	Entity->ShowHostile = Level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
 	EnemyVis = IsVisible(Entity, Entity->Enemy);
 	if (EnemyVis)
 	{
-		SearchTime = level.Frame + 50;
+		SearchTime = Level.Frame + 50;
 		LastSighting = Entity->Enemy->State.GetOrigin();
 	}
 
@@ -2296,9 +2287,9 @@ bool CMonster::AI_CheckAttack()
 		if (AIFlags & AI_SOUND_TARGET)
 		{
 #if MONSTERS_USE_PATHFINDING
-			if ((level.Frame - level.SoundEntityFramenum) > 50)
+			if ((Level.Frame - Level.SoundEntityFramenum) > 50)
 #else
-			if ((level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
+			if ((Level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
 #endif
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
@@ -2315,7 +2306,7 @@ bool CMonster::AI_CheckAttack()
 			}
 			else
 			{
-				Entity->ShowHostile = level.Frame + 10;
+				Entity->ShowHostile = Level.Frame + 10;
 
 				if (!Entity->Enemy || (Entity->Enemy && !IsVisible(Entity, Entity->Enemy)))
 					return false;
@@ -2367,8 +2358,6 @@ bool CMonster::AI_CheckAttack()
 //ROGUE - multiple teslas make monsters lose track of the player.
 		else if(LastPlayerEnemy && LastPlayerEnemy->Health > 0)
 		{
-//			if ((g_showlogic) && (g_showlogic->value))
-//				gi.dprintf("resorting to last_player_enemy...\n");
 			Entity->Enemy = LastPlayerEnemy;
 			Entity->OldEnemy = NULL;
 			LastPlayerEnemy = NULL;
@@ -2388,24 +2377,24 @@ bool CMonster::AI_CheckAttack()
 				// will just revert to walking with no target and
 				// the monsters will wonder around aimlessly trying
 				// to hunt the world entity
-				PauseTime = level.Frame + 100000000;
+				PauseTime = Level.Frame + 100000000;
 				Stand ();
 			}
 			return true;
 		}
 	}
 
-	Entity->ShowHostile = level.Frame + 10;		// wake up other monsters
+	Entity->ShowHostile = Level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
 	EnemyVis = IsVisible(Entity, Entity->Enemy);
 	if (EnemyVis)
 	{
-		SearchTime = level.Frame + 50;
+		SearchTime = Level.Frame + 50;
 		LastSighting = Entity->Enemy->State.GetOrigin();
 		// PMM
 		AIFlags &= ~AI_LOST_SIGHT;
-		TrailTime = level.Frame;
+		TrailTime = Level.Frame;
 		BlindFireTarget = Entity->Enemy->State.GetOrigin();
 		BlindFireDelay = 0;
 		// pmm
@@ -2528,23 +2517,21 @@ void CMonster::AI_Run(float Dist)
 
 	if (EnemyVis && Entity->Enemy)
 	{
-		//if (AIFlags & AI_LOST_SIGHT)
-			//gi.dprintf("regained sight\n");
 		MoveToGoal (Dist);
 		AIFlags &= ~AI_LOST_SIGHT;
 		LastSighting = Entity->Enemy->State.GetOrigin();
-		TrailTime = level.Frame;
+		TrailTime = Level.Frame;
 		return;
 	}
 
 	// coop will change to another enemy if visible
-	if (game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode == GAME_COOPERATIVE)
 	{	// FIXME: insane guys get mad with this, which causes crashes!
 		if (FindTarget ())
 			return;
 	}
 
-	//if (SearchTime && (level.Frame > (SearchTime + 200)))
+	//if (SearchTime && (Level.Frame > (SearchTime + 200)))
 	//{
 	//	MoveToGoal (Dist);
 	//	SearchTime = 0;
@@ -2561,7 +2548,7 @@ void CMonster::AI_Run(float Dist)
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
 #if MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first
+		P_NodePathTimeout = Level.Frame + 100; // Do "blind fire" first
 #endif
 
 		// just lost sight of the player, decide where to go first
@@ -2570,7 +2557,7 @@ void CMonster::AI_Run(float Dist)
 		isNew = true;
 	}
 #if MONSTERS_USE_PATHFINDING
-	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.Frame)
+	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < Level.Frame)
 	{
 		// Set us up for pathing
 		P_CurrentNode = GetClosestNodeTo(origin);
@@ -2585,7 +2572,7 @@ void CMonster::AI_Run(float Dist)
 //		dprint("reached current goal: "); dprint(vtos(self.origin)); dprint(" "); dprint(vtos(self.last_sighting)); dprint(" "); dprint(ftos(vlen(self.origin - self.last_sighting))); dprint("\n");
 
 		// give ourself more time since we got this far
-		SearchTime = level.Frame + 50;
+		SearchTime = Level.Frame + 50;
 
 		if (AIFlags & AI_PURSUE_TEMP)
 		{
@@ -2608,8 +2595,6 @@ void CMonster::AI_Run(float Dist)
 
 	if (isNew)
 	{
-//		gi.dprintf("checking for course correction\n");
-
 		CTrace tr (origin, Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 		if (tr.fraction < 1)
 		{
@@ -2639,7 +2624,6 @@ void CMonster::AI_Run(float Dist)
 				{
 					v.Set (d2 * left * 0.5, -16, 0);
 					G_ProjectSource (origin, v, v_forward, v_right, left_target);
-//					gi.dprintf("incomplete path, go part way and adjust again\n");
 				}
 				SavedGoal = LastSighting;
 				AIFlags |= AI_PURSUE_TEMP;
@@ -2648,8 +2632,6 @@ void CMonster::AI_Run(float Dist)
 				v = Entity->GoalEntity->State.GetOrigin() - origin;
 
 				Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
-//				gi.dprintf("adjusted left\n");
-//				debug_drawline(self.origin, self.last_sighting, 152);
 			}
 			else if (right >= center && right > left)
 			{
@@ -2657,7 +2639,6 @@ void CMonster::AI_Run(float Dist)
 				{
 					v.Set (d2 * right * 0.5, -16, 0);
 					G_ProjectSource (origin, v, v_forward, v_right, right_target);
-//					gi.dprintf("incomplete path, go part way and adjust again\n");
 				}
 				SavedGoal = LastSighting;
 				AIFlags |= AI_PURSUE_TEMP;
@@ -2665,11 +2646,8 @@ void CMonster::AI_Run(float Dist)
 				LastSighting = right_target;
 				v = Entity->GoalEntity->State.GetOrigin() - origin;
 				Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
-//				gi.dprintf("adjusted right\n");
-//				debug_drawline(self.origin, self.last_sighting, 152);
 			}
 		}
-//		else gi.dprintf("course was fine\n");
 	}
 
 	MoveToGoal (Dist);
@@ -2703,22 +2681,9 @@ void CMonster::AI_Run(float Dist)
 
 	// PMM
 	if (AIFlags & AI_DUCKED)
-	{
-//		if ((g_showlogic) && (g_showlogic->value))
-//			gi.dprintf ("%s - duck flag cleaned up!\n", self->classname);
 		AIFlags &= ~AI_DUCKED;
-	}
 	if (Entity->GetMaxs().Z != BaseHeight)
-	{
-//		if ((g_showlogic) && (g_showlogic->value))
-//			gi.dprintf ("%s - ducked height corrected!\n", self->classname);
 		UnDuck ();
-	}
-//	if ((self->monsterinfo.aiflags & AI_MANUAL_STEERING) && (strcmp(self->classname, "monster_turret")))
-//	{
-//		if ((g_showlogic) && (g_showlogic->value))
-//			gi.dprintf ("%s - manual steering in ai_run!\n", self->classname);
-//	}
 	// pmm
 
 	if (AIFlags & AI_SOUND_TARGET)
@@ -2791,7 +2756,7 @@ void CMonster::AI_Run(float Dist)
 		{
 			AIFlags &= ~AI_LOST_SIGHT;
 			LastSighting = Entity->Enemy->State.GetOrigin();
-			TrailTime = level.Frame;
+			TrailTime = Level.Frame;
 			//PMM
 			BlindFireTarget = Entity->Enemy->State.GetOrigin();
 			BlindFireDelay = 0;
@@ -2812,7 +2777,7 @@ void CMonster::AI_Run(float Dist)
 
 		AIFlags &= ~AI_LOST_SIGHT;
 		LastSighting = Entity->Enemy->State.GetOrigin();
-		TrailTime = level.Frame;
+		TrailTime = Level.Frame;
 		// PMM
 		BlindFireTarget = Entity->Enemy->State.GetOrigin();
 		BlindFireDelay = 0;
@@ -2822,14 +2787,14 @@ void CMonster::AI_Run(float Dist)
 
 // PMM - moved down here to allow monsters to get on hint paths
 	// coop will change to another enemy if visible
-	if (game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode == GAME_COOPERATIVE)
 	{	// FIXME: insane guys get mad with this, which causes crashes!
 		if (FindTarget ())
 			return;
 	}
 // pmm
 
-	if ((SearchTime) && (level.Frame > (SearchTime + 200)))
+	if ((SearchTime) && (Level.Frame > (SearchTime + 200)))
 	{
 		// PMM - double move protection
 		if (!alreadyMoved)
@@ -2847,7 +2812,7 @@ void CMonster::AI_Run(float Dist)
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
 #if MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = level.Frame + 100; // Do "blind fire" first
+		P_NodePathTimeout = Level.Frame + 100; // Do "blind fire" first
 #endif
 
 		// just lost sight of the player, decide where to go first
@@ -2856,7 +2821,7 @@ void CMonster::AI_Run(float Dist)
 		isNew = true;
 	}
 #if MONSTERS_USE_PATHFINDING
-	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < level.Frame)
+	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < Level.Frame)
 	{
 		// Set us up for pathing
 		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
@@ -2870,7 +2835,7 @@ void CMonster::AI_Run(float Dist)
 		AIFlags &= ~AI_PURSUE_NEXT;
 
 		// give ourself more time since we got this far
-		SearchTime = level.Frame + 50;
+		SearchTime = Level.Frame + 50;
 
 		if (AIFlags & AI_PURSUE_TEMP)
 		{
@@ -3123,21 +3088,21 @@ void CMonster::AI_Stand (float Dist)
 	if (FindTarget ())
 		return;
 	
-	if (level.Frame > PauseTime)
+	if (Level.Frame > PauseTime)
 	{
 		Walk ();
 		return;
 	}
 
-	if (!(Entity->SpawnFlags & MONSTER_AMBUSH) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
+	if (!(Entity->SpawnFlags & MONSTER_AMBUSH) && (MonsterFlags & MF_HAS_IDLE) && (Level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
 			Idle ();
-			IdleTime = level.Frame + 150 + (frand() * 150);
+			IdleTime = Level.Frame + 150 + (frand() * 150);
 		}
 		else
-			IdleTime = level.Frame + (frand() * 150);
+			IdleTime = Level.Frame + (frand() * 150);
 	}
 #else
 	if (Dist)
@@ -3193,7 +3158,7 @@ void CMonster::AI_Stand (float Dist)
 				AIFlags &= ~AI_LOST_SIGHT;
 				LastSighting = Entity->Enemy->State.GetOrigin();
 				BlindFireTarget = Entity->Enemy->State.GetOrigin();
-				TrailTime = level.Frame;
+				TrailTime = Level.Frame;
 				BlindFireDelay = 0;
 			}
 			// check retval to make sure we're not blindfiring
@@ -3213,47 +3178,47 @@ void CMonster::AI_Stand (float Dist)
 	if (FindTarget ())
 		return;
 	
-	if (level.Frame > PauseTime)
+	if (Level.Frame > PauseTime)
 	{
 		Walk ();
 		return;
 	}
 
-	if (!(Entity->SpawnFlags & MONSTER_AMBUSH) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
+	if (!(Entity->SpawnFlags & MONSTER_AMBUSH) && (MonsterFlags & MF_HAS_IDLE) && (Level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
 			Idle ();
-			IdleTime = level.Frame + 150 + frand() * 150;
+			IdleTime = Level.Frame + 150 + frand() * 150;
 		}
 		else
 		{
-			IdleTime = level.Frame + frand() * 150;
+			IdleTime = Level.Frame + frand() * 150;
 		}
 	}
 #endif
 }
 
-void CMonster::ReactToDamage (CBaseEntity *attacker)
+void CMonster::ReactToDamage (CBaseEntity *Attacker)
 {
-	if (!attacker || (!(attacker->EntityFlags & ENT_PLAYER) && !(attacker->EntityFlags & ENT_MONSTER)))
+	if (!Attacker || (!(Attacker->EntityFlags & ENT_PLAYER) && !(Attacker->EntityFlags & ENT_MONSTER)))
 		return;
 
-	if (attacker == Entity || (Entity->Enemy && (attacker == Entity->Enemy)))
+	if (Attacker == Entity || (Entity->Enemy && (Attacker == Entity->Enemy)))
 		return;
 
-	// if we are a good guy monster and our attacker is a player
+	// if we are a good guy monster and our Attacker is a player
 	// or another good guy, do not get mad at them
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if ((attacker->EntityFlags & ENT_PLAYER) || ((attacker->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(attacker))->Monster->AIFlags & AI_GOOD_GUY))
+		if ((Attacker->EntityFlags & ENT_PLAYER) || ((Attacker->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(Attacker))->Monster->AIFlags & AI_GOOD_GUY))
 			return;
 	}
 
 	// we now know that we are not both good guys
 
-	// if attacker is a client, get mad at them because he's good and we're not
-	if (attacker->EntityFlags & ENT_PLAYER)
+	// if Attacker is a client, get mad at them because he's good and we're not
+	if (Attacker->EntityFlags & ENT_PLAYER)
 	{
 		AIFlags &= ~AI_SOUND_TARGET;
 
@@ -3263,12 +3228,12 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 		{
 			if (IsVisible(Entity, Entity->Enemy))
 			{
-				Entity->OldEnemy = attacker;
+				Entity->OldEnemy = Attacker;
 				return;
 			}
 			Entity->OldEnemy = Entity->Enemy;
 		}
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 		return;
@@ -3276,20 +3241,20 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 
 #if MONSTERS_ARENT_STUPID
 	// Help our buddy!
-	if ((attacker->EntityFlags & ENT_MONSTER) && attacker->Enemy && attacker->Enemy != Entity)
+	if ((Attacker->EntityFlags & ENT_MONSTER) && Attacker->Enemy && Attacker->Enemy != Entity)
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker->Enemy;
+		Entity->Enemy = Attacker->Enemy;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
 	// They meant to shoot at us.
-	else if (attacker->Enemy == Entity)
+	else if (Attacker->Enemy == Entity)
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
@@ -3297,34 +3262,34 @@ void CMonster::ReactToDamage (CBaseEntity *attacker)
 #else
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
-	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (attacker->Flags & (FL_FLY|FL_SWIM))) &&
-		 (strcmp (Entity->ClassName.c_str(), attacker->ClassName.c_str()) != 0) &&
-		 (strcmp(attacker->ClassName.c_str(), "monster_tank") != 0) &&
-		 (strcmp(attacker->ClassName.c_str(), "monster_supertank") != 0) &&
-		 (strcmp(attacker->ClassName.c_str(), "monster_makron") != 0) &&
-		 (strcmp(attacker->ClassName.c_str(), "monster_jorg") != 0))
+	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (Attacker->Flags & (FL_FLY|FL_SWIM))) &&
+		 (strcmp (Entity->ClassName.c_str(), Attacker->ClassName.c_str()) != 0) &&
+		 (strcmp(Attacker->ClassName.c_str(), "monster_tank") != 0) &&
+		 (strcmp(Attacker->ClassName.c_str(), "monster_supertank") != 0) &&
+		 (strcmp(Attacker->ClassName.c_str(), "monster_makron") != 0) &&
+		 (strcmp(Attacker->ClassName.c_str(), "monster_jorg") != 0))
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
 	// if they *meant* to shoot us, then shoot back
-	else if (attacker->Enemy == Entity)
+	else if (Attacker->Enemy == Entity)
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
 	// Help our buddy!
-	else if ((attacker->EntityFlags & ENT_MONSTER) && attacker->Enemy && attacker->Enemy != Entity)
+	else if ((Attacker->EntityFlags & ENT_MONSTER) && Attacker->Enemy && Attacker->Enemy != Entity)
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
-		Entity->Enemy = attacker->Enemy;
+		Entity->Enemy = Attacker->Enemy;
 		if (!(AIFlags & AI_DUCKED))
 			FoundTarget ();
 	}
@@ -3339,15 +3304,15 @@ void CMonster::AI_Walk(float Dist)
 	if (FindTarget ())
 		return;
 
-	if ((MonsterFlags & MF_HAS_SEARCH) && (level.Frame > IdleTime))
+	if ((MonsterFlags & MF_HAS_SEARCH) && (Level.Frame > IdleTime))
 	{
 		if (IdleTime)
 		{
 			Search ();
-			IdleTime = level.Frame + 150 + (frand() * 150);
+			IdleTime = Level.Frame + 150 + (frand() * 150);
 		}
 		else
-			IdleTime = level.Frame + (frand() * 150);
+			IdleTime = Level.Frame + (frand() * 150);
 	}
 }
 
@@ -3377,7 +3342,7 @@ void CMonster::Run ()
 }
 
 #if !MONSTER_USE_ROGUE_AI
-void CMonster::Dodge (CBaseEntity *other, float eta)
+void CMonster::Dodge (CBaseEntity *Other, float eta)
 {
 }
 #endif
@@ -3422,7 +3387,7 @@ void CMonster::MonsterDeathUse ()
 
 void CMonster::MonsterThink ()
 {
-	Entity->NextThink = level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + FRAMETIME;
 	MoveFrame ();
 	if (Entity->GetLinkCount() != LinkCount)
 	{
@@ -3548,15 +3513,15 @@ void CMonster::FoundTarget ()
 	// let other monsters see this monster for a while
 	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
 	{
-		level.SightEntity = Entity;
-		level.SightEntityFrame = level.Frame;
+		Level.SightEntity = Entity;
+		Level.SightEntityFrame = Level.Frame;
 	}
 #endif
 
-	Entity->ShowHostile = level.Frame + 10;		// wake up other monsters
+	Entity->ShowHostile = Level.Frame + 10;		// wake up other monsters
 
 	LastSighting = Entity->Enemy->State.GetOrigin();
-	TrailTime = level.Frame;
+	TrailTime = Level.Frame;
 
 	if (!Entity->CombatTarget)
 	{
@@ -3631,32 +3596,32 @@ void CMonster::WorldEffects()
 		if (!(Entity->Flags & FL_SWIM))
 		{
 			if (Entity->WaterInfo.Level < WATER_UNDER)
-				Entity->AirFinished = level.Frame + 120;
-			else if (Entity->AirFinished < level.Frame)
+				Entity->AirFinished = Level.Frame + 120;
+			else if (Entity->AirFinished < Level.Frame)
 			{
-				if (PainDebounceTime < level.Frame)
+				if (PainDebounceTime < Level.Frame)
 				{
-					sint32 dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
+					sint32 dmg = 2 + 2 * (Level.Frame - Entity->AirFinished);
 					if (dmg > 15)
 						dmg = 15;
 					Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, dmg, 0, DAMAGE_NO_ARMOR, MOD_WATER);
-					PainDebounceTime = level.Frame + 10;
+					PainDebounceTime = Level.Frame + 10;
 				}
 			}
 		}
 		else
 		{
 			if (Entity->WaterInfo.Level > WATER_NONE)
-				Entity->AirFinished = level.Frame + 90;
-			else if (Entity->AirFinished < level.Frame)
+				Entity->AirFinished = Level.Frame + 90;
+			else if (Entity->AirFinished < Level.Frame)
 			{	// suffocate!
-				if (PainDebounceTime < level.Frame)
+				if (PainDebounceTime < Level.Frame)
 				{
-					sint32 dmg = 2 + 2 * (level.Frame - Entity->AirFinished);
+					sint32 dmg = 2 + 2 * (Level.Frame - Entity->AirFinished);
 					if (dmg > 15)
 						dmg = 15;
 					Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, dmg, 0, DAMAGE_NO_ARMOR, MOD_WATER);
-					PainDebounceTime = level.Frame + 10;
+					PainDebounceTime = Level.Frame + 10;
 				}
 			}
 		}
@@ -3674,17 +3639,17 @@ void CMonster::WorldEffects()
 
 	if ((Entity->WaterInfo.Type & CONTENTS_LAVA) && !(Entity->Flags & FL_IMMUNE_LAVA))
 	{
-		if (Entity->DamageDebounceTime < level.Frame)
+		if (Entity->DamageDebounceTime < Level.Frame)
 		{
-			Entity->DamageDebounceTime = level.Frame + 2;
+			Entity->DamageDebounceTime = Level.Frame + 2;
 			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 10*Entity->WaterInfo.Level, 0, 0, MOD_LAVA);
 		}
 	}
 	if ((Entity->WaterInfo.Type & CONTENTS_SLIME) && !(Entity->Flags & FL_IMMUNE_SLIME))
 	{
-		if (Entity->DamageDebounceTime < level.Frame)
+		if (Entity->DamageDebounceTime < Level.Frame)
 		{
-			Entity->DamageDebounceTime = level.Frame + 10;
+			Entity->DamageDebounceTime = Level.Frame + 10;
 			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 4*Entity->WaterInfo.Level, 0, 0, MOD_SLIME);
 		}
 	}
@@ -3780,7 +3745,7 @@ void CMonster::HuntTarget()
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 	// wait a while before first attack
 	if (!(AIFlags & AI_STAND_GROUND))
-		AttackFinished = level.Frame + 1;
+		AttackFinished = Level.Frame + 1;
 }
 
 bool CMonster::FindTarget()
@@ -3804,22 +3769,22 @@ bool CMonster::FindTarget()
 		return false;
 
 #if MONSTERS_USE_PATHFINDING
-	if ((level.SoundEntityFramenum >= (level.Frame - 1)) && level.NoiseNode)
+	if ((Level.SoundEntityFramenum >= (Level.Frame - 1)) && Level.NoiseNode)
 	{
 		if (Entity->SpawnFlags & MONSTER_AMBUSH)
 		{
-			CTrace trace (Entity->State.GetOrigin(), level.NoiseNode->Origin, Entity, CONTENTS_MASK_SOLID);
+			CTrace trace (Entity->State.GetOrigin(), Level.NoiseNode->Origin, Entity, CONTENTS_MASK_SOLID);
 
 			if (trace.fraction < 1.0)
 				return false;
 		}
 		else
 		{
-			if (!InHearableArea(Entity->State.GetOrigin(), level.NoiseNode->Origin))
+			if (!InHearableArea(Entity->State.GetOrigin(), Level.NoiseNode->Origin))
 				return false;
 		}
 
-		vec3f temp = level.NoiseNode->Origin - Entity->State.GetOrigin();
+		vec3f temp = Level.NoiseNode->Origin - Entity->State.GetOrigin();
 		if (temp.Length() > 1000)	// too far to hear
 			return false;
 
@@ -3830,13 +3795,13 @@ bool CMonster::FindTarget()
 		AIFlags |= AI_SOUND_TARGET;
 
 		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
-		P_CurrentGoalNode = level.NoiseNode;
+		P_CurrentGoalNode = Level.NoiseNode;
 		FoundPath ();
 
 		// Check if we can see the entity too
-		if (IsVisible(Entity, level.SoundEntity) && !Entity->Enemy && (level.SoundEntityFramenum >= (level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
+		if (IsVisible(Entity, Level.SoundEntity) && !Entity->Enemy && (Level.SoundEntityFramenum >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 		{
-			client = level.SoundEntity;
+			client = Level.SoundEntity;
 
 			if (client)
 			{
@@ -3891,41 +3856,41 @@ bool CMonster::FindTarget()
 
 	heardit = false;
 #if !MONSTERS_USE_PATHFINDING
-	if ((level.SightEntityFrame >= (level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
+	if ((Level.SightEntityFrame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
-		client = level.SightEntity;
+		client = Level.SightEntity;
 		if (client->Enemy == Entity->Enemy)
 			return false;
 	}
 #endif
 
 #if !MONSTERS_USE_PATHFINDING
-	else if (level.SoundEntityFrame >= (level.Frame - 1))
+	else if (Level.SoundEntityFrame >= (Level.Frame - 1))
 	{
-		client = level.SoundEntity;
+		client = Level.SoundEntity;
 		heardit = true;
 	}
-	else if (!(Entity->Enemy) && (level.SoundEntity2Frame >= (level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
+	else if (!(Entity->Enemy) && (Level.SoundEntity2Frame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
-		client = level.SoundEntity2;
+		client = Level.SoundEntity2;
 		heardit = true;
 	}
 #else
-	if (level.SoundEntityFramenum >= (level.Frame - 1))
+	if (Level.SoundEntityFramenum >= (Level.Frame - 1))
 	{
-		client = level.SoundEntity;
+		client = Level.SoundEntity;
 		heardit = true;
 	}
 #endif
 	else
 	{
-		client = level.SightClient;
+		client = Level.SightClient;
 		if (!client)
 			return false;	// no clients to get mad at
 	}
 
 	if (!client)
-		client = level.SightClient;
+		client = Level.SightClient;
 	if (!client || !client->gameEntity || client->Freed)
 		return false;
 
@@ -3959,7 +3924,7 @@ bool CMonster::FindTarget()
 
 		if (r == RANGE_NEAR)
 		{
-			if ((client->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile < level.Frame))
+			if ((client->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile < Level.Frame))
 				return false;
 			if (!IsInFront (Entity, client))
 				return false;
@@ -4059,7 +4024,7 @@ void CMonster::FliesOn ()
 	Entity->State.GetEffects() |= EF_FLIES;
 	Entity->State.GetSound() = SoundIndex ("infantry/inflies1.wav");
 	Think = &CMonster::FliesOff;
-	Entity->NextThink = level.Frame + 600;
+	Entity->NextThink = Level.Frame + 600;
 }
 
 void CMonster::CheckFlies ()
@@ -4071,7 +4036,7 @@ void CMonster::CheckFlies ()
 		return;
 
 	Think = &CMonster::FliesOn;
-	Entity->NextThink = level.Frame + ((5 + 10 * frand()) * 10);
+	Entity->NextThink = Level.Frame + ((5 + 10 * frand()) * 10);
 }
 
 uint32 LastID = 0;
@@ -4091,7 +4056,7 @@ void CMonster::SideStep ()
 {
 }
 
-void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
+void CMonster::Dodge (CBaseEntity *Attacker, float eta, CTrace *tr)
 {
 	float	r = frand();
 	float	height;
@@ -4111,7 +4076,7 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 
 	if (!Entity->Enemy)
 	{
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 		FoundTarget ();
 	}
 
@@ -4125,7 +4090,7 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 	}
 
 	// skill level determination..
-	if (r > (0.25*((skill->Integer())+1)))
+	if (r > (0.25*((skill.Integer())+1)))
 	{
 		return;
 	}
@@ -4152,11 +4117,7 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 	{
 		// if we're already dodging, just finish the sequence, i.e. don't do anything else
 		if (AIFlags & AI_DODGING)
-		{
-//			if ((g_showlogic) && (g_showlogic->value))
-//				gi.dprintf ("already dodging\n");
 			return;
-		}
 
 		// if we're ducking already, or the shot is at our knees
 		if ((tr->EndPos[2] <= height) || (AIFlags & AI_DUCKED))
@@ -4164,15 +4125,11 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 			vec3f right;
 
 			Entity->State.GetAngles().ToVectors (NULL, &right, NULL);
-			Lefty = !((right | tr->EndPos - Entity->State.GetOrigin()) < 0);	
-			// if we are currently ducked, unduck
+			Lefty = !((right | tr->EndPos - Entity->State.GetOrigin()) < 0);
 
-			if ((ducker) && (AIFlags & AI_DUCKED))
-			{
-//				if ((g_showlogic) && (g_showlogic->value))
-//					gi.dprintf ("unducking - ");
+			// if we are currently ducked, unduck
+			if (ducker && (AIFlags & AI_DUCKED))
 				UnDuck();
-			}
 
 			AIFlags |= AI_DODGING;
 			AttackState = AS_SLIDING;
@@ -4185,15 +4142,8 @@ void CMonster::Dodge (CBaseEntity *attacker, float eta, CTrace *tr)
 
 	if (ducker)
 	{
-		if (NextDuckTime > level.Frame)
-		{
-//			if ((g_showlogic) && (g_showlogic->value))
-//				gi.dprintf ("ducked too often, not ducking\n");
+		if (NextDuckTime > Level.Frame)
 			return;
-		}
-
-//		if ((g_showlogic) && (g_showlogic->value))
-//			gi.dprintf ("ducking!\n");
 
 		DoneDodge ();
 		// set this prematurely; it doesn't hurt, and prevents extra iterations
@@ -4209,14 +4159,14 @@ void CMonster::DuckDown ()
 
 	Entity->GetMaxs().Z = BaseHeight - 32;
 	Entity->CanTakeDamage = true;
-	if (DuckWaitTime < level.Frame)
-		DuckWaitTime = level.Frame + 10;
+	if (DuckWaitTime < Level.Frame)
+		DuckWaitTime = Level.Frame + 10;
 	Entity->Link ();
 }
 
 void CMonster::DuckHold ()
 {
-	if (level.Frame >= DuckWaitTime)
+	if (Level.Frame >= DuckWaitTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -4232,7 +4182,7 @@ void CMonster::UnDuck ()
 
 	Entity->GetMaxs().Z = BaseHeight;
 	Entity->CanTakeDamage = true;
-	NextDuckTime = level.Frame + 5;
+	NextDuckTime = Level.Frame + 5;
 	Entity->Link ();
 }
 #endif
@@ -4289,6 +4239,6 @@ void CMonster::BossExplode ()
 	}
 
 	CTempEnt_Explosions::RocketExplosion (org, Entity);
-	Entity->NextThink = level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + FRAMETIME;
 }
 

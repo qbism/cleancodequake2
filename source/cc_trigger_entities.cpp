@@ -137,17 +137,17 @@ void CTriggerBase::Think ()
 	};
 };
 
-void CTriggerBase::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CTriggerBase::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!Touchable)
 		return;
 
-	if(other->EntityFlags & ENT_PLAYER)
+	if(Other->EntityFlags & ENT_PLAYER)
 	{
 		if (SpawnFlags & TRIGGER_NOT_PLAYER)
 			return;
 	}
-	else if (other->EntityFlags & ENT_MONSTER)
+	else if (Other->EntityFlags & ENT_MONSTER)
 	{
 		if (!(SpawnFlags & TRIGGER_MONSTER))
 			return;
@@ -158,18 +158,18 @@ void CTriggerBase::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *su
 	if (MoveDir != vec3fOrigin)
 	{
 		vec3f	forward;
-		other->State.GetAngles().ToVectors (&forward, NULL, NULL);
+		Other->State.GetAngles().ToVectors (&forward, NULL, NULL);
 		if ((forward | MoveDir) < 0)
 			return;
 	}
 
-	Activator = other;
+	User = Other;
 	Trigger ();
 };
 
-void CTriggerBase::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTriggerBase::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
-	Activator = activator;
+	User = Activator;
 	Trigger ();
 };
 
@@ -185,27 +185,27 @@ void CTriggerBase::Init ()
 };
 
 // the trigger was just activated
-// ent->activator should be set to the activator so it can be held through a delay
+// ent->Activator should be set to the Activator so it can be held through a delay
 // so wait for the delay time before firing
 void CTriggerBase::Trigger ()
 {
 	if (NextThink)
 		return;		// already been triggered
 
-	UseTargets (Activator, Message);
+	UseTargets (User, Message);
 
 	if (Wait > 0)	
 	{
 		ThinkType = TRIGGER_THINK_WAIT;
 
 		// Paril: backwards compatibility
-		NextThink = level.Frame + Wait;
+		NextThink = Level.Frame + Wait;
 	}
 	else
 	{	// we can't just remove (self) here, because this is a touch function
 		// called while looping through area links...
 		Touchable = false;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = TRIGGER_THINK_FREE;
 	}
 };
@@ -273,7 +273,7 @@ CTriggerMultiple::CTriggerMultiple (sint32 Index) :
   {
   };
 
-void CTriggerMultiple::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTriggerMultiple::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (ActivateUse)
 	{
@@ -282,7 +282,7 @@ void CTriggerMultiple::Use (CBaseEntity *other, CBaseEntity *activator)
 		Link ();
 		return;
 	}
-	CTriggerBase::Use (other, activator);
+	CTriggerBase::Use (Other, Activator);
 };
 
 void CTriggerMultiple::Spawn ()
@@ -320,7 +320,7 @@ void CTriggerMultiple::Spawn ()
 
 	SetBrushModel ();
 
-	if (!map_debug->Boolean())
+	if (!map_debug.Boolean())
 		GetSvFlags() |= SVF_NOCLIENT;
 	else
 	{
@@ -397,7 +397,7 @@ public:
 	bool CheckValidity ()
 	{
 		// Yet another map hack
-		if (!Q_stricmp(level.ServerLevelName.c_str(), "command") && !Q_stricmp(Model, "*27"))
+		if (!Q_stricmp(Level.ServerLevelName.c_str(), "command") && !Q_stricmp(Model, "*27"))
 			SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
 		return CMapEntity::CheckValidity ();
 	};
@@ -447,19 +447,19 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerCounter)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		bool IsClient = true;
 		if (Count == 0)
 			return;
-		if (!(activator->EntityFlags & ENT_PLAYER))
+		if (!(Activator->EntityFlags & ENT_PLAYER))
 			IsClient = false;
 		
-		CPlayerEntity *Player = (IsClient) ? entity_cast<CPlayerEntity>(activator) : NULL;
+		CPlayerEntity *Player = (IsClient) ? entity_cast<CPlayerEntity>(Activator) : NULL;
 
 		if (--Count)
 		{
@@ -467,7 +467,7 @@ public:
 			{
 				if (IsClient)
 					Player->PrintToClient (PRINT_CENTER, "%i more to go...", Count);
-				activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
+				Activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 			}
 			return;
 		}
@@ -476,10 +476,10 @@ public:
 		{
 			if (IsClient)
 				Player->PrintToClient (PRINT_CENTER, "Sequence completed!");
-			activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
+			Activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 		}
 
-		Activator = activator;
+		User = Activator;
 		Trigger ();
 	};
 
@@ -553,45 +553,45 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerPush)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		vec3f vel = MoveDir * Speed;
 
 		if (Q3Touch)
 		{
-			if (other->EntityFlags & ENT_PHYSICS)
-				entity_cast<CPhysicsEntity>(other)->Velocity = vel;
+			if (Other->EntityFlags & ENT_PHYSICS)
+				entity_cast<CPhysicsEntity>(Other)->Velocity = vel;
 
-			if (other->EntityFlags & ENT_PLAYER)
+			if (Other->EntityFlags & ENT_PLAYER)
 			{
 				// don't take falling damage immediately from this
-				CPlayerEntity *Player = entity_cast<CPlayerEntity>(other);
+				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Other);
 				Player->Client.OldVelocity = Player->Velocity;
 			}
 		}
 		else
 		{
 			// FIXME: replace this shit
-			if (!other->ClassName.empty() && strcmp(other->ClassName.c_str(), "grenade") == 0)
+			if (!Other->ClassName.empty() && strcmp(Other->ClassName.c_str(), "grenade") == 0)
 			{
-				if (other->EntityFlags & ENT_PHYSICS)
-					entity_cast<CPhysicsEntity>(other)->Velocity = vel;
+				if (Other->EntityFlags & ENT_PHYSICS)
+					entity_cast<CPhysicsEntity>(Other)->Velocity = vel;
 			}
-			else if ((other->EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(other)->Health > 0))
+			else if ((Other->EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(Other)->Health > 0))
 			{
-				if (other->EntityFlags & ENT_PHYSICS)
-					entity_cast<CPhysicsEntity>(other)->Velocity = vel;
+				if (Other->EntityFlags & ENT_PHYSICS)
+					entity_cast<CPhysicsEntity>(Other)->Velocity = vel;
 
-				if (other->EntityFlags & ENT_PLAYER)
+				if (Other->EntityFlags & ENT_PLAYER)
 				{
-					CPlayerEntity *Player = entity_cast<CPlayerEntity>(other);
+					CPlayerEntity *Player = entity_cast<CPlayerEntity>(Other);
 
 					// don't take falling damage immediately from this
 					Player->Client.OldVelocity = Player->Velocity;
-					if (Player->FlySoundDebounceTime < level.Frame)
+					if (Player->FlySoundDebounceTime < Level.Frame)
 					{
-						Player->FlySoundDebounceTime = level.Frame + 15;
-						other->PlaySound (CHAN_AUTO, GameMedia.FlySound());
+						Player->FlySoundDebounceTime = Level.Frame + 15;
+						Other->PlaySound (CHAN_AUTO, GameMedia.FlySound());
 					}
 				}
 			}
@@ -601,7 +601,7 @@ public:
 		}
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 	};
 
@@ -704,27 +704,27 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerHurt)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (!((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage))
+		if (!((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage))
 			return;
 
-		if (NextHurt > level.Frame)
+		if (NextHurt > Level.Frame)
 			return;
 
-		NextHurt = level.Frame + ((SpawnFlags & HURT_SLOW) ? 10 : FRAMETIME);
+		NextHurt = Level.Frame + ((SpawnFlags & HURT_SLOW) ? 10 : FRAMETIME);
 		if (!(SpawnFlags & HURT_SILENT))
 		{
-			if ((level.Frame % 10) == 0)
-				other->PlaySound (CHAN_AUTO, NoiseIndex);
+			if ((Level.Frame % 10) == 0)
+				Other->PlaySound (CHAN_AUTO, NoiseIndex);
 		}
 
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(),
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(),
 															vec3fOrigin, Damage, Damage,
 															(SpawnFlags & 8) ? DAMAGE_NO_PROTECTION : 0, MOD_TRIGGER_HURT);
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (ActivateUse)
 			return;
@@ -807,21 +807,21 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerMonsterJump)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		if ( !(other->EntityFlags & ENT_MONSTER))
+		if ( !(Other->EntityFlags & ENT_MONSTER))
 			return;
-		if (other->Flags & (FL_FLY | FL_SWIM) )
+		if (Other->Flags & (FL_FLY | FL_SWIM) )
 			return;
-		if (other->GetSvFlags() & SVF_DEADMONSTER)
+		if (Other->GetSvFlags() & SVF_DEADMONSTER)
 			return;
 
 	// set XY even if not on ground, so the jump will clear lips
-		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(other);
+		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Other);
 		Monster->Velocity = MoveDir * Speed;
 		
 		if (!Monster->GroundEntity)
@@ -881,7 +881,7 @@ LINK_CLASSNAME_TO_CLASS ("trigger_monsterjump", CTriggerMonsterJump);
 /*QUAKED trigger_gravity (.5 .5 .5) ?
 Changes the touching entites gravity to
 the value of "gravity".  1.0 is standard
-gravity for the level.
+gravity for the Level.
 */
 class CTriggerGravity : public CTriggerMultiple
 {
@@ -905,13 +905,13 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerGravity)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (other->EntityFlags & ENT_PHYSICS)
-			entity_cast<CPhysicsEntity>(other)->GravityMultiplier = Gravity;
+		if (Other->EntityFlags & ENT_PHYSICS)
+			entity_cast<CPhysicsEntity>(Other)->GravityMultiplier = Gravity;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 	};
 
@@ -920,7 +920,6 @@ public:
 		Touchable = true;
 		if (!Gravity)
 		{
-			//gi.dprintf("trigger_gravity without gravity set at (%f %f %f)\n", self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No gravity set\n");
 			Free ();
 			return;
@@ -1001,23 +1000,23 @@ public:
 		return CBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (!Usable)
 			return;
 		if (!Item)
 			return;
-		if (!(activator->EntityFlags & ENT_PLAYER))
+		if (!(Activator->EntityFlags & ENT_PLAYER))
 			return;
 
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
 
 		sint32 index = Item->GetIndex();
 		if (!Player->Client.Persistent.Inventory.Has(index))
 		{
-			if (level.Frame < TouchDebounce)
+			if (Level.Frame < TouchDebounce)
 				return;
-			TouchDebounce = level.Frame + 50;
+			TouchDebounce = Level.Frame + 50;
 
 			if (Message.empty())
 				Player->PrintToClient (PRINT_CENTER, "You need the %s", Item->Name);
@@ -1028,7 +1027,7 @@ public:
 		}
 
 		Player->PlaySound (CHAN_AUTO, SoundIndex ("misc/keyuse.wav"));
-		if (game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode == GAME_COOPERATIVE)
 		{
 			if (Item == NItems::PowerCube)
 			{
@@ -1039,33 +1038,33 @@ public:
 						break;
 				}
 
-				for (sint32 player = 1; player <= game.MaxClients; player++)
+				for (sint32 player = 1; player <= Game.MaxClients; player++)
 				{
-					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
-					if (!ent->GetInUse())
+					CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
+					if (!Player->GetInUse())
 						continue;
-					if (ent->Client.Persistent.PowerCubeCount & (1 << cube))
+					if (Player->Client.Persistent.PowerCubeCount & (1 << cube))
 					{
-						ent->Client.Persistent.Inventory -= index;
-						ent->Client.Persistent.PowerCubeCount &= ~(1 << cube);
+						Player->Client.Persistent.Inventory -= index;
+						Player->Client.Persistent.PowerCubeCount &= ~(1 << cube);
 					}
 				}
 			}
 			else
 			{
-				for (sint32 player = 1; player <= game.MaxClients; player++)
+				for (sint32 player = 1; player <= Game.MaxClients; player++)
 				{
-					CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[player].Entity);
-					if (!ent->GetInUse())
+					CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
+					if (!Player->GetInUse())
 						continue;
-					ent->Client.Persistent.Inventory.Set(index, 0);
+					Player->Client.Persistent.Inventory.Set(index, 0);
 				}
 			}
 		}
 		else
 			Player->Client.Persistent.Inventory -= index;
 
-		UseTargets (activator, Message);
+		UseTargets (Activator, Message);
 
 		Usable = false;
 	};

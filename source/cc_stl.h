@@ -82,9 +82,9 @@ public: \
 		typedef className<U> other; \
 	}; \
 	\
-	bool operator!=(const className& other) const \
+	bool operator!=(const className& Other) const \
 	{ \
-		return !(*this == other); \
+		return !(*this == Other); \
 	} \
 	\
 	void construct(T * const p, const T& t) const \
@@ -98,7 +98,7 @@ public: \
 		p->~T(); \
 	} \
 	\
-	bool operator==(const className& other) const \
+	bool operator==(const className& Other) const \
 	{ \
 		return true; \
 	} \

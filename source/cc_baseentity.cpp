@@ -133,7 +133,7 @@ EEventEffect	&CEntityState::GetEvent			()
 void G_InitEdict (edict_t *e)
 {
 	e->inUse = true;
-	e->state.number = e - g_edicts;
+	e->state.number = e - Game.Entities;
 }
 
 template <typename TCont, typename TType>
@@ -147,34 +147,34 @@ void listfill (TCont &List, TType Data, size_t numElements)
 
 void InitEntityLists ()
 {
-	listfill <TEntitiesContainer, edict_t*> (level.Entities.Open, g_edicts, game.MaxEntities);
-	level.Entities.Closed.clear();
+	listfill <TEntitiesContainer, edict_t*> (Level.Entities.Open, Game.Entities, Game.MaxEntities);
+	Level.Entities.Closed.clear();
 
 	// Keep the first few entities in the closed list
-	for (uint8 i = 0; i < (1 + game.MaxClients); i++)
+	for (uint8 i = 0; i < (1 + Game.MaxClients); i++)
 	{
-		level.Entities.Closed.push_back (level.Entities.Open.front());
-		level.Entities.Open.pop_front();
+		Level.Entities.Closed.push_back (Level.Entities.Open.front());
+		Level.Entities.Open.pop_front();
 	}
 }
 
 // Removes a free entity from Open, pushes into Closed.
 edict_t *GetEntityFromList ()
 {
-	if (level.Entities.Open.empty())
+	if (Level.Entities.Open.empty())
 		return NULL;
 
 	// Take entity off of list, obeying freetime
 	edict_t *ent = NULL;
 
 	TEntitiesContainer::iterator it;
-	for (it = level.Entities.Open.begin(); it != level.Entities.Open.end(); ++it)
+	for (it = Level.Entities.Open.begin(); it != Level.Entities.Open.end(); ++it)
 	{
 		edict_t *check = (*it);
 
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (!check->inUse && (check->freetime < 20 || level.Frame - check->freetime > 5))
+		if (!check->inUse && (check->freetime < 20 || Level.Frame - check->freetime > 5))
 		{
 			ent = check;
 			break;
@@ -184,35 +184,35 @@ edict_t *GetEntityFromList ()
 	if (ent == NULL)
 		return NULL;
 
-	level.Entities.Open.erase (it);
+	Level.Entities.Open.erase (it);
 	
 	// Put into closed
-	level.Entities.Closed.push_back (ent);
+	Level.Entities.Closed.push_back (ent);
 	return ent; // Give it to us
 }
 
 // Removes from Open, puts into end of Closed.
 void RemoveEntityFromOpen (edict_t *ent)
 {
-	level.Entities.Open.remove (ent);
-	level.Entities.Closed.push_back (ent);
+	Level.Entities.Open.remove (ent);
+	Level.Entities.Closed.push_back (ent);
 }
 
 // Removes entity from Closed, pushes into front of into Open
 void RemoveEntityFromList (edict_t *ent)
 {
 	// Take entity out of list
-	level.Entities.Closed.remove (ent);
+	Level.Entities.Closed.remove (ent);
 
 	// Push into Open
-	level.Entities.Open.push_front (ent);
+	Level.Entities.Open.push_front (ent);
 }
 
 #include "cc_bodyqueue.h"
 
 bool RemoveEntity (edict_t *ent)
 {
-	if (!ent || ent->state.number <= (game.MaxClients + BODY_QUEUE_SIZE))
+	if (!ent || ent->state.number <= (Game.MaxClients + BODY_QUEUE_SIZE))
 		return false;
 
 	if (ent->AwaitingRemoval)
@@ -223,7 +223,7 @@ bool RemoveEntity (edict_t *ent)
 		ent->Entity = NULL;
 
 		// Push into Open
-		level.Entities.Open.push_front (ent);
+		Level.Entities.Open.push_front (ent);
 
 		return true;
 	}
@@ -255,8 +255,8 @@ _CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
 _CC_ENABLE_DEPRECATION
 
-	if (Game.GetNumEdicts() < e->state.number + 1)
-		Game.GetNumEdicts() = e->state.number + 1;
+	if (GameAPI.GetNumEdicts() < e->state.number + 1)
+		GameAPI.GetNumEdicts() = e->state.number + 1;
 
 	return e;
 }
@@ -281,9 +281,9 @@ void G_FreeEdict (edict_t *ed)
 		ed->Entity = Entity;
 		Entity->ClassName = "freed";
 	}
-	ed->freetime = level.Frame;
+	ed->freetime = Level.Frame;
 	ed->inUse = false;
-	ed->state.number = ed - g_edicts;
+	ed->state.number = ed - Game.Entities;
 
 	ed->AwaitingRemoval = true;
 }
@@ -303,7 +303,7 @@ void			RunPrivateEntities ()
 	{
 		CBaseEntity *Entity = (*it);
 		
-		level.CurrentEntity = Entity;
+		Level.CurrentEntity = Entity;
 
 		CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
 
@@ -355,7 +355,7 @@ CBaseEntity::CBaseEntity (sint32 Index)
 	}
 	else
 	{
-		gameEntity = &g_edicts[Index];
+		gameEntity = &Game.Entities[Index];
 		gameEntity->Entity = this;
 		gameEntity->state.number = Index;
 
@@ -435,19 +435,19 @@ void CBaseEntity::ReadBaseEntity (CFile &File)
 		sint32 MasterNumber = File.Read<sint32> ();
 
 		if (ChainNumber != -1)
-			Team.Chain = g_edicts[ChainNumber].Entity;
+			Team.Chain = Game.Entities[ChainNumber].Entity;
 		if (MasterNumber != -1)
-			Team.Master = g_edicts[MasterNumber].Entity;
+			Team.Master = Game.Entities[MasterNumber].Entity;
 	}
 
 	sint32 GroundEntityNumber = File.Read<sint32> ();
-	GroundEntity = (GroundEntityNumber == -1) ? NULL : g_edicts[GroundEntityNumber].Entity;
+	GroundEntity = (GroundEntityNumber == -1) ? NULL : Game.Entities[GroundEntityNumber].Entity;
 
 	GroundEntityLinkCount = File.Read<sint32> ();
 	SpawnFlags = File.Read<uint32> ();
 
 	sint32 EnemyNumber = File.Read<sint32> ();
-	Enemy = (EnemyNumber == -1) ? NULL : g_edicts[EnemyNumber].Entity;
+	Enemy = (EnemyNumber == -1) ? NULL : Game.Entities[EnemyNumber].Entity;
 
 	ViewHeight = File.Read<sint32> ();
 }
@@ -457,15 +457,15 @@ CBaseEntity		*CBaseEntity::GetOwner	()
 {
 	return (gameEntity->owner) ? gameEntity->owner->Entity : NULL;
 }
-void			CBaseEntity::SetOwner	(CBaseEntity *ent)
+void			CBaseEntity::SetOwner	(CBaseEntity *Entity)
 {
-	if (!ent || !ent->gameEntity)
+	if (!Entity || !Entity->gameEntity)
 	{
 		gameEntity->owner = NULL;
 		return;
 	}
 
-	gameEntity->owner = ent->gameEntity;
+	gameEntity->owner = Entity->gameEntity;
 }
 
 EBrushContents	&CBaseEntity::GetClipmask	()
@@ -550,13 +550,13 @@ void			CBaseEntity::Free ()
 		Mem_Zero (gameEntity, sizeof(*gameEntity));
 		gameEntity->Entity = this;
 		ClassName = "freed";
-		gameEntity->freetime = level.Frame;
+		gameEntity->freetime = Level.Frame;
 		GetInUse() = false;
-		gameEntity->state.number = gameEntity - g_edicts;
+		gameEntity->state.number = gameEntity - Game.Entities;
 
 		if (!(EntityFlags & ENT_JUNK))
 		{
-			if (level.Frame == 0)
+			if (Level.Frame == 0)
 				RemoveEntityFromList (gameEntity);
 			else
 				gameEntity->AwaitingRemoval = true;
@@ -612,25 +612,23 @@ void	CBaseEntity::KillBox ()
 	}
 };
 
-void CBaseEntity::SplashDamage (CBaseEntity *attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
+void CBaseEntity::SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
 {
-	CHurtableEntity	*ent = NULL;
+	CHurtableEntity	*Entity = NULL;
 
-	while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, State.GetOrigin(), radius)) != NULL)
+	while ((Entity = FindRadius<CHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
 	{
-		if (ent == ignore)
+		if (Entity == ignore)
 			continue;
-		if (!ent->CanTakeDamage)
+		if (!Entity->CanTakeDamage)
 			continue;
 
-		vec3f v = ent->GetMins() + ent->GetMaxs();
-		v =State.GetOrigin() - ent->State.GetOrigin().MultiplyAngles (0.5f, v);
+		float points = damage - 0.5 * (State.GetOrigin() - Entity->State.GetOrigin().MultiplyAngles (0.5f, Entity->GetMins() + Entity->GetMaxs())).Length();
 
-		float points = damage - 0.5 * v.Length();
-		if (ent == attacker)
+		if (Entity == Attacker)
 			points *= 0.5;
-		if ((points > 0) && ent->CanDamage (this))
-			ent->TakeDamage (this, attacker, ent->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
+		if ((points > 0) && Entity->CanDamage (this))
+			Entity->TakeDamage (this, Attacker, Entity->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
 	}
 }
 
@@ -749,9 +747,9 @@ bool				CMapEntity::CheckValidity ()
 	// Remove things (except the world) from different skill levels or deathmatch
 	if (this != World)
 	{
-		if (!map_debug->Boolean())
+		if (!map_debug.Boolean())
 		{
-			if (game.GameMode & GAME_DEATHMATCH)
+			if (Game.GameMode & GAME_DEATHMATCH)
 			{
 				if ( SpawnFlags & SPAWNFLAG_NOT_DEATHMATCH )
 				{
@@ -761,10 +759,10 @@ bool				CMapEntity::CheckValidity ()
 			}
 			else
 			{
-				if ( /* ((game.GameMode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
-					((skill->Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
-					((skill->Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
-					((skill->Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))
+				if ( /* ((Game.GameMode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
+					((skill.Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
+					((skill.Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
+					((skill.Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))
 					)
 					{
 						Free ();
@@ -780,17 +778,17 @@ bool				CMapEntity::CheckValidity ()
 
 void CMapEntity::ParseFields ()
 {
-	if (!level.ParseData.size())
+	if (!Level.ParseData.size())
 		return;
 
 	// Go through all the dictionary pairs
 	{
-		TKeyValuePairContainer::iterator it = level.ParseData.begin();
-		while (it != level.ParseData.end())
+		TKeyValuePairContainer::iterator it = Level.ParseData.begin();
+		while (it != Level.ParseData.end())
 		{
 			CKeyValuePair *PairPtr = (*it);
 			if (ParseField (PairPtr->Key, PairPtr->Value))
-				level.ParseData.erase (it++);
+				Level.ParseData.erase (it++);
 			else
 				++it;
 		}
@@ -798,9 +796,9 @@ void CMapEntity::ParseFields ()
 
 	// Since this is the last part, go through the rest of the list now
 	// and report ones that are still there.
-	if (level.ParseData.size())
+	if (Level.ParseData.size())
 	{
-		for (TKeyValuePairContainer::iterator it = level.ParseData.begin(); it != level.ParseData.end(); ++it)
+		for (TKeyValuePairContainer::iterator it = Level.ParseData.begin(); it != Level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);

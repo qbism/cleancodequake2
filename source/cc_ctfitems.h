@@ -44,11 +44,11 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, sint32 team);
 
-	CItemEntity *DropItem (CBaseEntity *ent);
+	CItemEntity *DropItem (CBaseEntity *Entity);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Drop (CPlayerEntity *ent);
-	void	Use (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void	Drop (CPlayerEntity *Player);
+	void	Use (CPlayerEntity *Player);
 };
 #endif
 

@@ -56,10 +56,10 @@ public:
 	};
 	void			LoadFields (CFile &File);
 
-	void TossHead (sint32 damage);
+	void TossHead (sint32 Damage);
 
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	void Think	(); // Only done if we're a head
 
@@ -87,12 +87,12 @@ bool CBody::Run ()
 	return (GetSvFlags() & SVF_NOCLIENT) ? false : CTossProjectile::Run();
 }
 
-void CBody::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CBody::Pain (CBaseEntity *Other, sint32 Damage)
 {
 }
 
-vec3f VelocityForDamage (sint32 damage);
-void CBody::TossHead (sint32 damage)
+vec3f VelocityForDamage (sint32 Damage);
+void CBody::TossHead (sint32 Damage)
 {
 	if (irandom(2))
 	{
@@ -116,9 +116,9 @@ void CBody::TossHead (sint32 damage)
 	Flags |= FL_NO_KNOCKBACK;
 
 	backOff = 1.5f;	
-	Velocity += VelocityForDamage (damage);
+	Velocity += VelocityForDamage (Damage);
 
-	NextThink = level.Frame + 100 + frand()*100;
+	NextThink = Level.Frame + 100 + frand()*100;
 
 	Link ();
 }
@@ -164,16 +164,16 @@ void CBody::Think ()
 	GetSvFlags() = SVF_NOCLIENT;
 }
 
-void CBody::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CBody::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Health < -40)
 	{
 		PlaySound(CHAN_BODY, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 			
 		State.GetOrigin().Z -= 16;
-		TossHead (damage);
+		TossHead (Damage);
 	}
 }
 
@@ -246,11 +246,11 @@ void LoadBodyQueue (CFile &File)
 
 	size_t num = File.Read <size_t> ();
 	for (size_t i = 0; i < num; i++)
-		BodyQueue->ClosedList.push_back (entity_cast<CBody>(g_edicts[File.Read <sint32> ()].Entity));
+		BodyQueue->ClosedList.push_back (entity_cast<CBody>(Game.Entities[File.Read <sint32> ()].Entity));
 
 	num = File.Read <size_t> ();
 	for (size_t i = 0; i < num; i++)
-		BodyQueue->OpenList.push_back (entity_cast<CBody>(g_edicts[File.Read <sint32> ()].Entity));
+		BodyQueue->OpenList.push_back (entity_cast<CBody>(Game.Entities[File.Read <sint32> ()].Entity));
 }
 
 void ShutdownBodyQueue ()

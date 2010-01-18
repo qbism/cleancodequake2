@@ -56,9 +56,9 @@ public:
 	bool Run ();
 
 	virtual void Think ();
-	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	void Init ();
 
@@ -68,7 +68,7 @@ public:
 	};
 
 	// the trigger was just activated
-	// ent->activator should be set to the activator so it can be held through a delay
+	// ent->Activator should be set to the Activator so it can be held through a delay
 	// so wait for the delay time before firing
 	void Trigger ();
 
@@ -85,7 +85,7 @@ public:
 
 	ENTITYFIELDS_SAVABLE(CTriggerMultiple)
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
 	virtual void Spawn ();
 
 	virtual bool CheckValidity ()

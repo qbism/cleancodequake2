@@ -95,10 +95,10 @@ public:
 		else
 			State.GetFrame()++;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		CTempEnt::BossTeleport (State.GetOrigin());
 		Free ();
@@ -106,7 +106,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;
@@ -122,7 +122,7 @@ public:
 		GetMins().Set (32, -32, 0);
 		GetMaxs().Set (32, 32, 90);
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		Link ();
 	};
 };

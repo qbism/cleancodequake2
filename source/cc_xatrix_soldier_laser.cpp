@@ -64,7 +64,7 @@ void CSoldierLaser::FireGun (sint32 FlashNumber)
 	sint32		flashIndex = MachinegunFlash[FlashNumber];
 
 	if (!(AIFlags & AI_HOLD_FRAME))
-		Wait = level.Frame + (3 + irandom(8));
+		Wait = Level.Frame + (3 + irandom(8));
 
 	//MonsterFireBullet (start, aim, 2, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flashIndex);
 	CMonsterBeamLaser *Laser;
@@ -102,7 +102,7 @@ void CSoldierLaser::FireGun (sint32 FlashNumber)
 
 	MonsterFireBeam (Laser);
 
-	if (level.Frame >= Wait)
+	if (Level.Frame >= Wait)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;

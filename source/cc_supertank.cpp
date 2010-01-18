@@ -372,33 +372,33 @@ void CSuperTank::ReAttack1 ()
 		CurrentMove = &SuperTankMoveEndAttack1;
 }
 
-void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CSuperTank::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (!(Entity->State.GetSkinNum() & 1) && Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() |= 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames
-	if (damage <= 25 && frand() < 0.2)
+	if (Damage <= 25 && frand() < 0.2)
 		return;
 
 	// Don't go into pain if he's firing his rockets
-	if (skill->Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attak2_1) && (Entity->State.GetFrame() <= FRAME_attak2_14) )
+	if (skill.Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attak2_1) && (Entity->State.GetFrame() <= FRAME_attak2_14) )
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	if (skill->Integer() == 3)
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 10)
+	if (Damage <= 10)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &SuperTankMovePain1;
 	}
-	else if (damage <= 25)
+	else if (Damage <= 25)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN3]);
 		CurrentMove = &SuperTankMovePain2;
@@ -478,14 +478,12 @@ void CSuperTank::Rocket ()
 #endif
 	if(frand() < 0.66 || (start.Z < Entity->Enemy->GetAbsMin().Z))
 	{
-//		gi.dprintf("normal shot\n");
 		vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;
 		dir = vec - start;
 	}
 	else
 	{
-//		gi.dprintf("shooting at feet!\n");
 		vec = Entity->Enemy->State.GetOrigin();
 		vec.Z = Entity->Enemy->ViewHeight;
 		dir = vec - start;
@@ -535,8 +533,6 @@ void CSuperTank::Rocket ()
 		{
 			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
 				MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-	//		else
-	//			gi.dprintf("didn't make it halfway to target...aborting\n");
 		}
 	}
 #else
@@ -614,7 +610,7 @@ void CSuperTank::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SuperTankMoveAttack2;
-		AttackFinished = level.Frame + 30 + 20*frand();
+		AttackFinished = Level.Frame + 30 + 20*frand();
 		return;
 	}
 	// pmm
@@ -652,7 +648,7 @@ void CSuperTank::Dead ()
 	Entity->Link ();
 }
 
-void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CSuperTank::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;

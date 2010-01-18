@@ -75,7 +75,7 @@ public:
 
 	virtual void Attack () = 0;
 #if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (CBaseEntity *Attacker, float eta);
 #endif
 	void Idle ();
 	void Run ();
@@ -117,8 +117,8 @@ public:
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	void Spawn (); // Initialize "commonalities"
 	virtual void SpawnSoldier () = 0; // Initialize health, etc.

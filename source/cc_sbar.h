@@ -44,7 +44,7 @@ public:
 	~CStatusBar();
 
 	void Send ();
-	void SendMsg (CPlayerEntity *ent, bool reliable = true);
+	void SendMsg (CPlayerEntity *Player, bool reliable = true);
 
 	void AddToBarBuffer (char *fmt, ...);
 	void AddVirtualPoint_Y (sint32 y);
@@ -67,7 +67,7 @@ public:
 	size_t	Length ();
 };
 
-void HelpComputer (CPlayerEntity *ent);
+void HelpComputer (CPlayerEntity *Player);
 
 #else
 FILE_WARNING

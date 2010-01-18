@@ -109,7 +109,7 @@ void CFlagEntity::Think ()
 			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), dest, this, CONTENTS_MASK_SOLID);
 			if (tr.startSolid)
 			{
-				DebugPrintf ("CTFFlagSetup: %s startSolid at (%f %f %f)\n", ClassName.c_str(), State.GetOrigin().X, State.GetOrigin().Y, State.GetOrigin().Z);
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity is inside a solid brush\n");
 				Free ();
 				return;
 			}
@@ -118,14 +118,14 @@ void CFlagEntity::Think ()
 
 			Link ();
 
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 			ThinkState = FTS_FLAGTHINK;
 		}
 		break;
 	case FTS_FLAGTHINK:
 		if (GetSolid() != SOLID_NOT)
 			State.GetFrame() = (173 + (((State.GetFrame() - 173) + 1) % 16));
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		break;
 	default:
 		CItemEntity::Think ();
@@ -141,7 +141,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 {
 //ZOID
 //Don't spawn the flags unless enabled
-	if (!(game.GameMode & GAME_CTF))
+	if (!(Game.GameMode & GAME_CTF))
 	{
 		Free ();
 		return;
@@ -149,7 +149,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 
 	LinkedItem = Item;
 
-	NextThink = level.Frame + 2;    // items start after other solids
+	NextThink = Level.Frame + 2;    // items start after other solids
 	ThinkState = FTS_FLAGSETUP;
 	PhysicsType = PHYSICS_NONE;
 
@@ -223,12 +223,12 @@ public:
 	{
 	};
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (((other == GetOwner()) && (NextThink - level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
+		if (((Other == GetOwner()) && (NextThink - Level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
 			return;
 
-		CItemEntity::Touch (other, plane, surf);
+		CItemEntity::Touch (Other, plane, surf);
 	};
 
 	void Think ()
@@ -252,7 +252,7 @@ public:
 	};
 };
 
-CItemEntity *CFlag::DropItem (CBaseEntity *ent)
+CItemEntity *CFlag::DropItem (CBaseEntity *Entity)
 {
 	CDroppedFlagEntity	*dropped = QNewEntityOf CDroppedFlagEntity();
 	vec3f	forward, right;
@@ -266,21 +266,21 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (ent);
+	dropped->SetOwner (Entity);
 
-	if (ent->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & ENT_PLAYER)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
 		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
 
-		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent, CONTENTS_SOLID);
+		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
+			result, Player, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
 
 		// Check to see which color we are
@@ -299,15 +299,15 @@ CItemEntity *CFlag::DropItem (CBaseEntity *ent)
 	}
 	else
 	{
-		ent->State.GetAngles().ToVectors(&forward, &right, NULL);
-		dropped->State.GetOrigin() = ent->State.GetOrigin();
+		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
 	forward *= 100;
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.Frame + CTF_AUTO_FLAG_RETURN_TIMEOUT;
+	dropped->NextThink = Level.Frame + CTF_AUTO_FLAG_RETURN_TIMEOUT;
 	dropped->Link ();
 
 	return dropped;

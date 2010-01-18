@@ -119,7 +119,7 @@ void CSoldierRipper::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SoldierHMoveAttack1;
-		AttackFinished = level.Frame + ((1.5 + frand()) * 10);
+		AttackFinished = Level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}
 	// pmm
@@ -127,7 +127,7 @@ void CSoldierRipper::Attack ()
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
 		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
-		(r < (skill->Integer()*0.25)))
+		(r < (skill.Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif

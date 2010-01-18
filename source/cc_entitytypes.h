@@ -50,13 +50,13 @@ public:
 	CHurtableEntity ();
 	CHurtableEntity (sint32 index);
 
-	virtual void Pain (CBaseEntity *other, float kick, sint32 damage) {};
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) {};
+	virtual void Pain (CBaseEntity *Other, sint32 Damage) {};
+	virtual void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point) {};
 
-	virtual bool CanDamage (CBaseEntity *inflictor);
-	virtual bool CheckTeamDamage (CBaseEntity *attacker);
-	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 damage, sint32 dflags);
-	virtual void Killed (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	virtual bool CanDamage (CBaseEntity *Inflictor);
+	virtual bool CheckTeamDamage (CBaseEntity *Attacker);
+	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags);
+	virtual void Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	// An "extension" of sorts to TakeDamage
 	// which handles the effects when we are hurt
@@ -66,17 +66,17 @@ public:
 	// For this, "this" is target. Use this if the
 	// entity can be casted to CHurtableEntity or is CHurtableEntity
 	// without question.
-	virtual void TakeDamage (	CBaseEntity *inflictor, CBaseEntity *attacker,
-							vec3f dir, vec3f point, vec3f normal, sint32 damage,
+	virtual void TakeDamage (	CBaseEntity *Inflictor, CBaseEntity *Attacker,
+							vec3f dir, vec3f point, vec3f normal, sint32 Damage,
 							sint32 knockback, sint32 dflags, EMeansOfDeath mod);
 	
 	// This is a convenient static version.
 	// This will cast targ to CHurtableEntity
 	// and make the necessary damage adjustments if possible.
 	// If "targ" can't take damage, nothing will happen.
-	static void TakeDamage (	CBaseEntity *targ, CBaseEntity *inflictor,
-							CBaseEntity *attacker, vec3f dir, vec3f point,
-							vec3f normal, sint32 damage, sint32 knockback,
+	static void TakeDamage (	CBaseEntity *targ, CBaseEntity *Inflictor,
+							CBaseEntity *Attacker, vec3f dir, vec3f point,
+							vec3f normal, sint32 Damage, sint32 knockback,
 							sint32 dflags, EMeansOfDeath mod);
 };
 
@@ -86,7 +86,7 @@ public:
 	CBlockableEntity ();
 	CBlockableEntity (sint32 Index);
 
-	virtual void Blocked (CBaseEntity *other) = 0;
+	virtual void Blocked (CBaseEntity *Other) = 0;
 };
 
 class CUsableEntity : public virtual CBaseEntity
@@ -96,7 +96,7 @@ public:
 	char				*Target;
 	char				*KillTarget;
 	char				*PathTarget;
-	CBaseEntity			*Activator;
+	CBaseEntity			*User;
 	FrameNumber_t		Delay;
 	MediaIndex			NoiseIndex;
 	bool				Usable;
@@ -107,8 +107,8 @@ public:
 	CUsableEntity ();
 	CUsableEntity (sint32 Index);
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator) {};
-	virtual void UseTargets (CBaseEntity *activator, std::cc_string &Message);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator) {};
+	virtual void UseTargets (CBaseEntity *Activator, std::cc_string &Message);
 };
 
 // Thinkable entity
@@ -139,7 +139,7 @@ public:
 	CTouchableEntity ();
 	CTouchableEntity (sint32 index);
 
-	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void	Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 CC_ENUM (uint8, EPhysicsType)

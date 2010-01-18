@@ -159,7 +159,7 @@ public:
 	{
 	};
 
-	void Run (CPlayerEntity *ent);
+	void Run (CPlayerEntity *Player);
 
 	void *NewOfMe (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
 	{
@@ -172,9 +172,9 @@ public:
 	};
 };
 
-void Cmd_RunCommand (const char *commandName, CPlayerEntity *ent);
+void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player);
 void Cmd_RemoveCommands ();
-CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *ent), ECmdTypeFlags Flags = CMD_NORMAL);
+CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags = CMD_NORMAL);
 
 void AddTestDebugCommands ();
 

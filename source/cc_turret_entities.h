@@ -39,7 +39,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CTurretEntityBase)
 
-	void Blocked (CBaseEntity *other);
+	void Blocked (CBaseEntity *Other);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -107,8 +107,8 @@ public:
 	void Walk () {};
 	void Melee () {};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	void TurretThink ();
 	void TurretLink ();

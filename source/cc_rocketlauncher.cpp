@@ -41,9 +41,9 @@ CWeapon(7, 0, "models/weapons/v_rocket/tris.md2", 0, 4, 5, 12,
 {
 }
 
-bool CRocketLauncher::CanFire (CPlayerEntity *ent)
+bool CRocketLauncher::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 5:
 		return true;
@@ -51,9 +51,9 @@ bool CRocketLauncher::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CRocketLauncher::CanStopFidgetting (CPlayerEntity *ent)
+bool CRocketLauncher::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 25:
 	case 33:
@@ -64,30 +64,30 @@ bool CRocketLauncher::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CRocketLauncher::Fire (CPlayerEntity *ent)
+void CRocketLauncher::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, ent->ViewHeight-8), start, forward, right;
+	vec3f	offset (8, 8, Player->ViewHeight-8), start, forward, right;
 	const sint32	damage = CalcQuadVal(100 + (sint32)(frand() * 20.0)),
 					radius_damage = CalcQuadVal(120);
 	const float		damage_radius = 120;
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 
-	ent->Client.KickOrigin = forward * -2;
-	ent->Client.KickAngles.X = -1;
+	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickAngles.X = -1;
 
-	ent->P_ProjectSource (offset, forward, right, start);
-	CRocket::Spawn (ent, start, forward, damage, 650, damage_radius, radius_damage);
+	Player->P_ProjectSource (offset, forward, right, start);
+	CRocket::Spawn (Player, start, forward, damage, 650, damage_radius, radius_damage);
 
 	// send muzzle flash
-	Muzzle (ent, MZ_ROCKET);
-	AttackSound (ent);
+	Muzzle (Player, MZ_ROCKET);
+	AttackSound (Player);
 
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	FireAnimation (ent);
-	DepleteAmmo(ent, 1);
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	FireAnimation (Player);
+	DepleteAmmo(Player, 1);
 
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
 WEAPON_DEFS (CRocketLauncher);

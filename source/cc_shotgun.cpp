@@ -41,9 +41,9 @@ CWeapon(1, 0, "models/weapons/v_shotg/tris.md2", 0, 7, 8, 18,
 {
 }
 
-bool CShotgun::CanFire (CPlayerEntity *ent)
+bool CShotgun::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 8:
 		return true;
@@ -51,9 +51,9 @@ bool CShotgun::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CShotgun::CanStopFidgetting (CPlayerEntity *ent)
+bool CShotgun::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 22:
 	case 28:
@@ -63,30 +63,30 @@ bool CShotgun::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CShotgun::Fire (CPlayerEntity *ent)
+void CShotgun::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset (0, 8,  ent->ViewHeight-8);
+	vec3f		start, forward, right, offset (0, 8,  Player->ViewHeight-8);
 	const sint32	damage = CalcQuadVal(4),
 					kick = CalcQuadVal(8);
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 
-	ent->Client.KickOrigin = forward * -2;
-	ent->Client.KickAngles.X = -2;
+	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickAngles.X = -2;
 
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	CShotgunPellets::Fire (ent, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
+	CShotgunPellets::Fire (Player, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
 
 	// send muzzle flash
-	Muzzle (ent, MZ_SHOTGUN);
-	AttackSound (ent);
+	Muzzle (Player, MZ_SHOTGUN);
+	AttackSound (Player);
 
-	ent->Client.PlayerState.GetGunFrame()++;
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	FireAnimation (ent);
+	Player->Client.PlayerState.GetGunFrame()++;
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	FireAnimation (Player);
 
-	DepleteAmmo(ent, 1);
+	DepleteAmmo(Player, 1);
 }
 
 WEAPON_DEFS (CShotgun);

@@ -76,8 +76,8 @@ public:
 	void ReFireRocket ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	virtual void Spawn ();
 };

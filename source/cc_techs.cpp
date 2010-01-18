@@ -57,22 +57,22 @@ TechType(TechType)
 /*------------------------------------------------------------------------*/
 
 
-bool CTech::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CTech::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
-	if (other->Client.Persistent.Tech)
+	if (Other->Client.Persistent.Tech)
 	{
-		if (level.Frame - other->Client.Tech.LastTechMessage > 20)
+		if (Level.Frame - Other->Client.Tech.LastTechMessage > 20)
 		{
-			other->PrintToClient(PRINT_CENTER, "You already have a TECH powerup.");
-			other->Client.Tech.LastTechMessage = level.Frame;
+			Other->PrintToClient(PRINT_CENTER, "You already have a TECH powerup.");
+			Other->Client.Tech.LastTechMessage = Level.Frame;
 		}
 		return false; // has this one
 	}
 	
 	// client only gets one tech
-	other->Client.Persistent.Inventory.Set(this, 1);
-	other->Client.Persistent.Tech = this;
-	other->Client.Tech.RegenTime = level.Frame;
+	Other->Client.Persistent.Inventory.Set(this, 1);
+	Other->Client.Persistent.Tech = this;
+	Other->Client.Tech.RegenTime = Level.Frame;
 	return true;
 }
 
@@ -131,13 +131,13 @@ public:
 	{
 	};
 
-	void DoPassiveTech	(	CPlayerEntity *Player	)
+	void DoPassiveTech	(CPlayerEntity *Player)
 	{
 		CBaseItem *index;
 		bool noise = false;
-		if (Player->Client.Tech.RegenTime < level.Frame)
+		if (Player->Client.Tech.RegenTime < Level.Frame)
 		{
-			Player->Client.Tech.RegenTime = level.Frame;
+			Player->Client.Tech.RegenTime = Level.Frame;
 			if (Player->Health < 150)
 			{
 				Player->Health += 5;
@@ -156,9 +156,9 @@ public:
 				noise = true;
 			}
 		}
-		if (noise && Player->Client.Tech.SoundTime < level.Frame)
+		if (noise && Player->Client.Tech.SoundTime < Level.Frame)
 		{
-			Player->Client.Tech.SoundTime = level.Frame + 10;
+			Player->Client.Tech.SoundTime = Level.Frame + 10;
 			Player->PlaySound (CHAN_AUTO, SoundIndex("ctf/tech4.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 		}
 	};
@@ -182,12 +182,12 @@ public:
 	{
 	};
 
-	void DoPassiveTech	(	CPlayerEntity *Player	)
+	void DoPassiveTech	(CPlayerEntity *Player)
 	{
 		const sint32 RegenAmts[] = {SHELL_REGEN_COUNT, BULLET_REGEN_COUNT, GRENADE_REGEN_COUNT, ROCKET_REGEN_COUNT, CELL_REGEN_COUNT, SLUG_REGEN_COUNT};
 
 		bool noise = false;
-		if (Player->Client.Tech.RegenTime < level.Frame)
+		if (Player->Client.Tech.RegenTime < Level.Frame)
 		{
 			if (Player->Client.Persistent.Weapon)
 			{
@@ -203,11 +203,11 @@ public:
 				}
 			}
 
-			Player->Client.Tech.RegenTime = level.Frame + AMMO_REGEN_TIME;
+			Player->Client.Tech.RegenTime = Level.Frame + AMMO_REGEN_TIME;
 		}
-		if (noise && Player->Client.Tech.SoundTime < level.Frame)
+		if (noise && Player->Client.Tech.SoundTime < Level.Frame)
 		{
-			Player->Client.Tech.SoundTime = level.Frame + AMMO_REGEN_TIME;
+			Player->Client.Tech.SoundTime = Level.Frame + AMMO_REGEN_TIME;
 			Player->PlaySound (CHAN_AUTO, SoundIndex("ctf/tech5.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 		}
 	};
@@ -234,12 +234,12 @@ public:
 	  {
 	  };
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (AvoidOwner && (other == GetOwner()))
+		if (AvoidOwner && (Other == GetOwner()))
 			return;
 
-		CItemEntity::Touch (other, plane, surf);
+		CItemEntity::Touch (Other, plane, surf);
 	};
 
 	void Think ()
@@ -252,7 +252,7 @@ public:
 			Free ();
 		}
 		else
-			NextThink = level.Frame + CTF_TECH_TIMEOUT;
+			NextThink = Level.Frame + CTF_TECH_TIMEOUT;
 	};
 
 	void Respawn ()
@@ -272,7 +272,7 @@ public:
 	};
 };
 
-CItemEntity *CTech::DropItem (CBaseEntity *ent)
+CItemEntity *CTech::DropItem (CBaseEntity *Entity)
 {
 	CTechEntity	*dropped = QNewEntityOf CTechEntity();
 	vec3f	forward, right;
@@ -286,80 +286,80 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (ent);
+	dropped->SetOwner (Entity);
 
-	if (ent->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & ENT_PLAYER)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
 		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
 
-		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent, CONTENTS_SOLID);
+		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
+			result, Player, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
 	}
 	else
 	{
-		ent->State.GetAngles().ToVectors(&forward, &right, NULL);
-		dropped->State.GetOrigin() = ent->State.GetOrigin();
+		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
 	forward *= 100;
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.Frame + 10;
+	dropped->NextThink = Level.Frame + 10;
 	dropped->Link ();
 
 	return dropped;
 }
 
-void CTech::Drop (CPlayerEntity *ent)
+void CTech::Drop (CPlayerEntity *Player)
 {
-	CItemEntity *tech = DropItem(ent);
-	tech->NextThink = level.Frame + CTF_TECH_TIMEOUT;
-	ent->Client.Persistent.Inventory.Set(this, 0);
-	ent->Client.Persistent.Tech = NULL;
+	CItemEntity *tech = DropItem(Player);
+	tech->NextThink = Level.Frame + CTF_TECH_TIMEOUT;
+	Player->Client.Persistent.Inventory.Set(this, 0);
+	Player->Client.Persistent.Tech = NULL;
 }
 
 void SpawnTech(CBaseItem *item, CSpotBase *spot)
 {
-	CTechEntity *ent = QNewEntityOf CTechEntity ();
+	CTechEntity *Player = QNewEntityOf CTechEntity ();
 
-	ent->ClassName = item->Classname;
-	ent->LinkedItem = item;
-	ent->SpawnFlags = DROPPED_ITEM;
-	ent->State.GetEffects() = item->EffectFlags;
-	ent->State.GetRenderEffects() = RF_GLOW;
-	ent->GetMins().Set (-15);
-	ent->GetMaxs().Set (15);
-	ent->State.GetModelIndex() = ModelIndex(item->WorldModel);
-	ent->GetSolid() = SOLID_TRIGGER;
-	ent->SetOwner (ent);
+	Player->ClassName = item->Classname;
+	Player->LinkedItem = item;
+	Player->SpawnFlags = DROPPED_ITEM;
+	Player->State.GetEffects() = item->EffectFlags;
+	Player->State.GetRenderEffects() = RF_GLOW;
+	Player->GetMins().Set (-15);
+	Player->GetMaxs().Set (15);
+	Player->State.GetModelIndex() = ModelIndex(item->WorldModel);
+	Player->GetSolid() = SOLID_TRIGGER;
+	Player->SetOwner (Player);
 
 	vec3f forward;
 	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);
 
-	ent->State.GetOrigin() = spot->State.GetOrigin() + vec3f(0,0,16);
+	Player->State.GetOrigin() = spot->State.GetOrigin() + vec3f(0,0,16);
 	forward *= 100;
-	ent->Velocity = forward;
-	ent->Velocity.Z = 300;
+	Player->Velocity = forward;
+	Player->Velocity.Z = 300;
 
-	ent->NextThink = level.Frame + CTF_TECH_TIMEOUT;
+	Player->NextThink = Level.Frame + CTF_TECH_TIMEOUT;
 
-	ent->Link ();
+	Player->Link ();
 }
 
 static void SpawnTechs()
 {
 	for (size_t i = 0; i < TechList.size(); i++)
 	{
-		if (!cc_techflags->Integer() || (cc_techflags->Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
+		if (!cc_techflags.Integer() || (cc_techflags.Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
 			SpawnTech (TechList[i], FindTechSpawn ());
 	}
 }
@@ -387,7 +387,7 @@ public:
 
 	void Spawn ()
 	{
-		NextThink = level.Frame + 20;
+		NextThink = Level.Frame + 20;
 	};
 };
 
@@ -395,10 +395,10 @@ void SetupTechSpawn()
 {
 	if (
 #if CLEANCTF_ENABLED
-		dmFlags.dfCtfNoTech.IsEnabled() || (!(game.GameMode & GAME_CTF) && 
+		dmFlags.dfCtfNoTech.IsEnabled() || (!(Game.GameMode & GAME_CTF) && 
 #endif
 		(!dmFlags.dfDmTechs.IsEnabled())
-		|| !(game.GameMode & GAME_DEATHMATCH))
+		|| !(Game.GameMode & GAME_DEATHMATCH))
 #if CLEANCTF_ENABLED
 		)
 #endif
@@ -409,7 +409,7 @@ void SetupTechSpawn()
 
 void ResetTechs()
 {
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
 		CBaseEntity *Entity = (*it)->Entity;
 
@@ -424,7 +424,7 @@ void ResetTechs()
 	SpawnTechs();
 }
 
-void	CTech::Use (CPlayerEntity *ent)
+void	CTech::Use (CPlayerEntity *Player)
 {
 }
 

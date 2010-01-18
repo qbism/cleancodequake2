@@ -43,7 +43,7 @@ public:
 	ENTITYFIELDS_SAVABLE(CFuncTimer)
 
 	void Think ();
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	bool Run ();
 	void Spawn ();
@@ -89,7 +89,7 @@ public:
 		CUsableEntity::LoadFields (File);
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 	void Spawn ();
 };
 
@@ -110,7 +110,7 @@ public:
 	ENTITYFIELDS_SAVABLE(CFuncClock)
 
 	void Think ();
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	void FormatCountdown ();
 	void Reset ();

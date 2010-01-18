@@ -466,17 +466,17 @@ void CInsane::Run ()
 }
 
 
-void CInsane::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CInsane::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	sint32	l,r;
 
 //	if (self->health < (self->max_health / 2))
 //		self->state.skinnum = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
 	// Paril
 	// As much as I hate this, this needs to stay
@@ -560,16 +560,16 @@ void CInsane::Dead ()
 }
 
 
-void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CInsane::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"), 255, ATTN_IDLE);
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}

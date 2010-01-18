@@ -107,22 +107,16 @@ std::cc_string ArgGets (uint32 Index)
 
 sint32 ArgGeti (uint32 Index)
 {
-	if (Index >= argvStringArray.size())
-	{
-		_CC_ASSERT_EXPR (0, "ArgGeti(n) index out of bounds");
+	if (_CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGeti(n) index out of bounds"))
 		return 0;
-	}
 
 	return argvIntegerArray[Index];
 }
 
 float ArgGetf (uint32 Index)
 {
-	if (Index >= argvStringArray.size())
-	{
-		_CC_ASSERT_EXPR (0, "ArgGetf(n) index out of bounds");
+	if (_CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGetf(n) index out of bounds"))
 		return 0;
-	}
 
 	return argvFloatArray[Index];
 }

@@ -57,17 +57,17 @@ public:
 	ELabelAlign				Align;
 
 	CMenu_Label				(CMenu *Menu, sint32 x, sint32 y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
 	}
 };
@@ -79,17 +79,17 @@ public:
 	sint32						Width, Height;
 
 	CMenu_Image				(CMenu *Menu, sint32 x, sint32 y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
 	}
 };
@@ -110,17 +110,17 @@ public:
 	SSpinControlIndex		*Indices;
 
 	CMenu_Spin				(CMenu *Menu, sint32 x, sint32 y, SSpinControlIndex *Indices);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent);
+	virtual void	Update (CPlayerEntity *Player);
 };
 
 CC_ENUM (uint8, ESliderTextPosition)
@@ -153,7 +153,7 @@ public:
 	{
 	};
 
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState)
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState)
 	{
 		if (Width > (MAX_INFO_KEY*2)-3)
 			Width = (MAX_INFO_KEY*2)-3;
@@ -215,17 +215,17 @@ public:
 		DrawState->AddString (str.str().c_str(), Selected, false);
 	};
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
-		switch (ent->Client.Respawn.MenuState.Key)
+		switch (Player->Client.Respawn.MenuState.Key)
 		{
 		case CMenuState::KEY_RIGHT:
 			if (Value == Max)
@@ -260,18 +260,18 @@ public:
 	sint32						Type;
 
 	CMenu_Box			(CMenu *Menu, sint32 x, sint32 y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
 	// Can't select
-	bool	CanSelect (CPlayerEntity *ent)
+	bool	CanSelect (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	bool	Select (CPlayerEntity *ent)
+	bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
 	};
 };

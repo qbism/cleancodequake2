@@ -31,6 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Info_ and some Target_ entities
 //
 
+#if !defined(CC_GUARD_CC_INFOENTITIES_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CC_INFOENTITIES_H
+
 class CPathCorner : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
 {
 public:
@@ -44,7 +47,7 @@ public:
 	ENTITYFIELDS_SAVABLE(CPathCorner)
 
 	virtual void Think ();
-	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 	virtual void Spawn ();
 };
 
@@ -71,3 +74,7 @@ public:
 
 	virtual void Spawn ();
 };
+
+#else
+FILE_WARNING
+#endif

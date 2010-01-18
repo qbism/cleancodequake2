@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CGameTimer::Run ()
 {
-	if (EndTime <= level.Frame)
+	if (EndTime <= Level.Frame)
 		OnTimeUp ();
 }
 
@@ -57,7 +57,7 @@ void RunTimers ()
 		Timer->Run ();
 
 		// Done
-		if (Timer->EndTime <= level.Frame)
+		if (Timer->EndTime <= Level.Frame)
 		{
 			it = TimerList.erase (it);
 

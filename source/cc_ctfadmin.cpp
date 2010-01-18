@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_menu.h"
 
 #if CLEANCTF_ENABLED
-bool CTFBeginElection(CPlayerEntity *ent, EElectState type, char *msg);
+bool CTFBeginElection(CPlayerEntity *Player, EElectState type, char *msg);
 void CTFResetAllPlayers();
 
 class CCTFSettingsMenu : public CMenu
@@ -59,7 +59,7 @@ public:
 		{
 		};
 
-		bool Select (CPlayerEntity *ent)
+		bool Select (CPlayerEntity *Player)
 		{
 			return true;
 		};
@@ -76,50 +76,50 @@ public:
 		{
 		};
 
-		bool Select (CPlayerEntity *ent)
+		bool Select (CPlayerEntity *Player)
 		{
-			if (MyMenu->MatchLength->Value != matchtime->Float())
+			if (MyMenu->MatchLength->Value != matchtime.Float())
 			{
 				BroadcastPrintf (PRINT_HIGH, "%s changed the match length to %d minutes.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->MatchLength->Value);
+					Player->Client.Persistent.Name.c_str(), MyMenu->MatchLength->Value);
 
 				if (ctfgame.match == MATCH_GAME)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - matchtime->Float()*600) + MyMenu->MatchLength->Value*600;
+					ctfgame.matchtime = (ctfgame.matchtime - matchtime.Float()*600) + MyMenu->MatchLength->Value*600;
 
-				matchtime->Set (MyMenu->MatchLength->Value);
+				matchtime.Set (MyMenu->MatchLength->Value);
 			}
 
-			if (MyMenu->MatchSetupLength->Value != matchsetuptime->Float())
+			if (MyMenu->MatchSetupLength->Value != matchsetuptime.Float())
 			{
 				BroadcastPrintf (PRINT_HIGH, "%s changed the match setup time to %d minutes.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->MatchSetupLength->Value);
+					Player->Client.Persistent.Name.c_str(), MyMenu->MatchSetupLength->Value);
 
 				if (ctfgame.match == MATCH_SETUP)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - matchsetuptime->Float()*60) + MyMenu->MatchSetupLength->Value*60;
+					ctfgame.matchtime = (ctfgame.matchtime - matchsetuptime.Float()*60) + MyMenu->MatchSetupLength->Value*60;
 
 
-				matchsetuptime->Set (MyMenu->MatchSetupLength->Value);
+				matchsetuptime.Set (MyMenu->MatchSetupLength->Value);
 			}
 
-			if (MyMenu->MatchStartLength->Value != matchstarttime->Integer())
+			if (MyMenu->MatchStartLength->Value != matchstarttime.Integer())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s changed the match start time to %d seconds.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->MatchStartLength->Value);
+					Player->Client.Persistent.Name.c_str(), MyMenu->MatchStartLength->Value);
 
 				if (ctfgame.match == MATCH_PREGAME)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - (matchstarttime->Integer()*10)) + (MyMenu->MatchStartLength->Value*10);
+					ctfgame.matchtime = (ctfgame.matchtime - (matchstarttime.Integer()*10)) + (MyMenu->MatchStartLength->Value*10);
 
-				matchstarttime->Set (MyMenu->MatchStartLength->Value);
+				matchstarttime.Set (MyMenu->MatchStartLength->Value);
 			}
 
-			sint32 i = dmflags->Integer();
+			sint32 i = dmflags.Integer();
 			if (!!MyMenu->WeaponsStaySpin->Index != dmFlags.dfWeaponsStay.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s weapons stay.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->WeaponsStaySpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.c_str(), MyMenu->WeaponsStaySpin->Index ? "on" : "off");
 
 				if (MyMenu->WeaponsStaySpin->Index)
 					i |= DF_WEAPONS_STAY;
@@ -130,7 +130,7 @@ public:
 			if (!!MyMenu->InstantItemsSpin->Index != dmFlags.dfInstantItems.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant items.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->InstantItemsSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.c_str(), MyMenu->InstantItemsSpin->Index ? "on" : "off");
 
 				if (MyMenu->InstantItemsSpin->Index)
 					i |= DF_INSTANT_ITEMS;
@@ -141,7 +141,7 @@ public:
 			if (!!MyMenu->QuadDropSpin->Index != dmFlags.dfQuadDrop.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s quad drop.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->QuadDropSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.c_str(), MyMenu->QuadDropSpin->Index ? "on" : "off");
 
 				if (MyMenu->QuadDropSpin->Index)
 					i |= DF_QUAD_DROP;
@@ -149,22 +149,22 @@ public:
 					i &= ~DF_QUAD_DROP;
 			}
 
-			dmflags->Set (i);
+			dmflags.Set (i);
 
-			if (!!MyMenu->InstantWeaponsSpin->Index != instantweap->Boolean())
+			if (!!MyMenu->InstantWeaponsSpin->Index != instantweap.Boolean())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant weapons.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->InstantWeaponsSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.c_str(), MyMenu->InstantWeaponsSpin->Index ? "on" : "off");
 
-				instantweap->Set (MyMenu->InstantWeaponsSpin->Index);
+				instantweap.Set (MyMenu->InstantWeaponsSpin->Index);
 			}
 
-			if (!!MyMenu->MatchLockSpin->Index != matchlock->Boolean())
+			if (!!MyMenu->MatchLockSpin->Index != matchlock.Boolean())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s match lock.\n",
-					ent->Client.Persistent.Name.c_str(), MyMenu->MatchLockSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.c_str(), MyMenu->MatchLockSpin->Index ? "on" : "off");
 
-				matchlock->Set (MyMenu->MatchLockSpin->Index);
+				matchlock.Set (MyMenu->MatchLockSpin->Index);
 			}
 
 			return true;
@@ -215,7 +215,7 @@ public:
 		MatchLength->Max = 60.0f;
 		MatchLength->Step = 0.5f;
 		MatchLength->Width = 6;
-		MatchLength->Value = matchtime->Float();
+		MatchLength->Value = matchtime.Float();
 		MatchLength->Enabled = true;
 		MatchLength->x += 8 * 2;
 
@@ -227,7 +227,7 @@ public:
 		MatchSetupLength->Max = 60.0f;
 		MatchSetupLength->Step = 0.5f;
 		MatchSetupLength->Width = 6;
-		MatchSetupLength->Value = matchsetuptime->Float();
+		MatchSetupLength->Value = matchsetuptime.Float();
 		MatchSetupLength->Enabled = true;
 		MatchSetupLength->x += 8 * 2;
 
@@ -239,7 +239,7 @@ public:
 		MatchStartLength->Max = 60.0f;
 		MatchStartLength->Step = 1;
 		MatchStartLength->Width = 6;
-		MatchStartLength->Value = matchstarttime->Integer();
+		MatchStartLength->Value = matchstarttime.Integer();
 		MatchStartLength->Enabled = true;
 		MatchStartLength->x += 8 * 2;
 
@@ -263,13 +263,13 @@ public:
 
 		y += 8;
 		InstantWeaponsSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		InstantWeaponsSpin->Index = instantweap->Boolean();
+		InstantWeaponsSpin->Index = instantweap.Boolean();
 		InstantWeaponsSpin->x += (8 * 4);
 		InstantWeaponsSpin->Align = LA_LEFT;
 
 		y += 8;
 		MatchLockSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		MatchLockSpin->Index = matchlock->Boolean();
+		MatchLockSpin->Index = matchlock.Boolean();
 		MatchLockSpin->x += (8 * 4);
 		MatchLockSpin->Align = LA_LEFT;
 
@@ -347,19 +347,19 @@ public:
 		CStatusBar Bar;
 
 		DrawItems(&Bar);
-		Bar.SendMsg(ent, reliable);
+		Bar.SendMsg(Player, reliable);
 	};
 };
 
-void CTFOpenAdminSettings (CPlayerEntity *ent)
+void CTFOpenAdminSettings (CPlayerEntity *Player)
 {
-	if (ent->Client.Respawn.MenuState.InMenu)
+	if (Player->Client.Respawn.MenuState.InMenu)
 		return;
 
-	ent->Client.Respawn.MenuState.CurrentMenu = QNew (com_levelPool, 0) CCTFSettingsMenu(ent);
-	ent->Client.Respawn.MenuState.OpenMenu ();
+	Player->Client.Respawn.MenuState.CurrentMenu = QNew (com_levelPool, 0) CCTFSettingsMenu(Player);
+	Player->Client.Respawn.MenuState.OpenMenu ();
 
-	ent->Client.Respawn.MenuState.CurrentMenu->Draw (true);
+	Player->Client.Respawn.MenuState.CurrentMenu->Draw (true);
 }
 
 class CCTFAdminMenu : public CMenu
@@ -378,19 +378,19 @@ public:
 		{
 		};
 
-		bool Select (CPlayerEntity *ent)
+		bool Select (CPlayerEntity *Player)
 		{
 			switch (ctfgame.match)
 			{
 			case MATCH_SETUP:
 				BroadcastPrintf (PRINT_CHAT, "Match has been forced to start.\n");
 				ctfgame.match = MATCH_PREGAME;
-				ctfgame.matchtime = level.Frame + (matchstarttime->Float() * 10);
+				ctfgame.matchtime = Level.Frame + (matchstarttime.Float() * 10);
 				break;
 			case MATCH_GAME:
 				BroadcastPrintf(PRINT_CHAT, "Match has been forced to terminate.\n");
 				ctfgame.match = MATCH_SETUP;
-				ctfgame.matchtime = level.Frame + (matchsetuptime->Float() * 60);
+				ctfgame.matchtime = Level.Frame + (matchsetuptime.Float() * 60);
 				CTFResetAllPlayers();
 				break;
 			}
@@ -406,12 +406,12 @@ public:
 		{
 		};
 
-		bool Select (CPlayerEntity *ent)
+		bool Select (CPlayerEntity *Player)
 		{
 			if (ctfgame.match != MATCH_SETUP)
 			{
-				if (competition->Integer() < 3)
-					competition->Set (2);
+				if (competition.Integer() < 3)
+					competition.Set (2);
 				ctfgame.match = MATCH_SETUP;
 				CTFResetAllPlayers();
 			}
@@ -428,7 +428,7 @@ public:
 		{
 		};
 
-		bool Select (CPlayerEntity *ent)
+		bool Select (CPlayerEntity *Player)
 		{
 			return true;
 		};
@@ -442,10 +442,10 @@ public:
 		{
 		};
 
-		bool Select (CPlayerEntity *ent)
+		bool Select (CPlayerEntity *Player)
 		{
-			ent->Client.Respawn.MenuState.CloseMenu();
-			CTFOpenAdminSettings (ent);
+			Player->Client.Respawn.MenuState.CloseMenu();
+			CTFOpenAdminSettings (Player);
 
 			return false;
 		};
@@ -477,7 +477,7 @@ public:
 
 		y += 8;
 
-		if (competition->Integer())
+		if (competition.Integer())
 		{
 			CMenu_Label *MatchLabel;
 
@@ -520,38 +520,38 @@ public:
 		CStatusBar Bar;
 
 		DrawItems(&Bar);
-		Bar.SendMsg(ent, reliable);
+		Bar.SendMsg(Player, reliable);
 	};
 };
 
-void CTFAdmin(CPlayerEntity *ent)
+void CTFAdmin(CPlayerEntity *Player)
 {
 	char text[1024];
 
-	if (ArgCount() > 1 && admin_password->String() && *admin_password->String() &&
-		!ent->Client.Respawn.CTF.Admin && strcmp(admin_password->String(), ArgGets(1).c_str()) == 0)
+	if (ArgCount() > 1 && admin_password.String() && *admin_password.String() &&
+		!Player->Client.Respawn.CTF.Admin && strcmp(admin_password.String(), ArgGets(1).c_str()) == 0)
 	{
-		ent->Client.Respawn.CTF.Admin = true;
-		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", ent->Client.Persistent.Name.c_str());
-		ent->PrintToClient (PRINT_HIGH, "Type 'admin' to access the adminstration menu.\n");
+		Player->Client.Respawn.CTF.Admin = true;
+		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", Player->Client.Persistent.Name.c_str());
+		Player->PrintToClient (PRINT_HIGH, "Type 'admin' to access the adminstration menu.\n");
 
 		return;
 	}
 
-	if (!ent->Client.Respawn.CTF.Admin)
+	if (!Player->Client.Respawn.CTF.Admin)
 	{
 		Q_snprintfz(text, sizeof(text), "%s has requested admin rights.",
-			ent->Client.Persistent.Name.c_str());
-		CTFBeginElection(ent, ELECT_ADMIN, text);
+			Player->Client.Persistent.Name.c_str());
+		CTFBeginElection(Player, ELECT_ADMIN, text);
 		return;
 	}
 
-	if (ent->Client.Respawn.MenuState.InMenu)
+	if (Player->Client.Respawn.MenuState.InMenu)
 		return;
 
-	ent->Client.Respawn.MenuState.CurrentMenu = QNew (com_levelPool, 0) CCTFAdminMenu(ent);
-	ent->Client.Respawn.MenuState.OpenMenu ();
+	Player->Client.Respawn.MenuState.CurrentMenu = QNew (com_levelPool, 0) CCTFAdminMenu(Player);
+	Player->Client.Respawn.MenuState.OpenMenu ();
 
-	ent->Client.Respawn.MenuState.CurrentMenu->Draw (true);
+	Player->Client.Respawn.MenuState.CurrentMenu->Draw (true);
 }
 #endif

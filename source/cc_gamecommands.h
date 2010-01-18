@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_GAMECOMMANDS_H
 
 void Cmd_Register ();
-void CC_ClientCommand (CPlayerEntity *ent);
+void CC_ClientCommand (CPlayerEntity *Player);
 
 #else
 FILE_WARNING

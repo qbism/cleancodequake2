@@ -42,7 +42,7 @@ public:
 
 	bool Run ();
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTargetChangeLevel)
@@ -79,7 +79,7 @@ public:
 
 	virtual void Think ();
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	virtual void On ();
 	virtual void Off ();

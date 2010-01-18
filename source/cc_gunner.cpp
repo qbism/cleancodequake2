@@ -271,7 +271,7 @@ CFrame GunnerFramesPain1 [] =
 };
 CAnim GunnerMovePain1 (FRAME_pain101, FRAME_pain118, GunnerFramesPain1, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CGunner::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -280,16 +280,16 @@ void CGunner::Pain (CBaseEntity *other, float kick, sint32 damage)
 	DoneDodge();
 #endif
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, (irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
-	if (skill->Integer() == 3)
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	CurrentMove = ((damage <= 10) ? &GunnerMovePain3 : ((damage <= 25) ? &GunnerMovePain2 : &GunnerMovePain1));
+	CurrentMove = ((Damage <= 10) ? &GunnerMovePain3 : ((Damage <= 25) ? &GunnerMovePain2 : &GunnerMovePain1));
 
 #if MONSTER_USE_ROGUE_AI
 	AIFlags &= ~AI_MANUAL_STEERING;
@@ -326,17 +326,17 @@ CFrame GunnerFramesDeath [] =
 };
 CAnim GunnerMoveDeath (FRAME_death01, FRAME_death11, GunnerFramesDeath, ConvertDerivedFunction(&CGunner::Dead));
 
-void CGunner::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CGunner::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -357,7 +357,7 @@ void CGunner::DuckDown ()
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
-	if (skill->Integer() >= 2)
+	if (skill.Integer() >= 2)
 	{
 		if (frand() > 0.5)
 			Grenade ();
@@ -365,11 +365,11 @@ void CGunner::DuckDown ()
 
 	Entity->GetMaxs().Z -= 32;
 	Entity->CanTakeDamage = true;
-	PauseTime = level.Frame + 10;
+	PauseTime = Level.Frame + 10;
 	Entity->Link ();
 #else
 	AIFlags |= AI_DUCKED;
-	if (skill->Integer() >= 2)
+	if (skill.Integer() >= 2)
 	{
 		if (frand() > 0.5)
 			Grenade ();
@@ -377,8 +377,8 @@ void CGunner::DuckDown ()
 
 	Entity->GetMaxs().Z = BaseHeight - 32;
 	Entity->CanTakeDamage = true;
-	if (DuckWaitTime < level.Frame)
-		DuckWaitTime = level.Frame + 10;
+	if (DuckWaitTime < Level.Frame)
+		DuckWaitTime = Level.Frame + 10;
 	Entity->Link ();
 #endif
 }
@@ -386,7 +386,7 @@ void CGunner::DuckDown ()
 #if !MONSTER_USE_ROGUE_AI
 void CGunner::DuckHold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -422,7 +422,7 @@ CFrame GunnerFramesDuck [] =
 };
 CAnim GunnerMoveDuck (FRAME_duck01, FRAME_duck08, GunnerFramesDuck, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Dodge (CBaseEntity *attacker, float eta
+void CGunner::Dodge (CBaseEntity *Attacker, float eta
 #if MONSTER_USE_ROGUE_AI
 					 , CTrace *tr
 #endif
@@ -432,7 +432,7 @@ void CGunner::Dodge (CBaseEntity *attacker, float eta
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
 	CurrentMove = &GunnerMoveDuck;
 }
@@ -718,7 +718,7 @@ void CGunner::Attack()
 		{
 			// if the check passes, go for the attack
 			CurrentMove = &GunnerMoveAttackGrenade;
-			AttackFinished = level.Frame + ((2*frand())*10);
+			AttackFinished = Level.Frame + ((2*frand())*10);
 		}
 		// turn off blindfire flag
 		AIFlags &= ~AI_MANUAL_STEERING;
@@ -757,18 +757,18 @@ void CGunner::Duck (float eta)
 		(CurrentMove == &GunnerMoveAttackGrenade))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (skill.Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		// PMM - stupid dodge
-		DuckWaitTime = level.Frame + ((eta + 1) * 10);
+		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer()))) * 10);
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -785,7 +785,7 @@ void CGunner::SideStep ()
 		(CurrentMove == &GunnerMoveAttackGrenade))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (skill.Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;

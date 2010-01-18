@@ -116,7 +116,7 @@ void CBanList::LoadFromFile ()
 		}
 	}
 	
-	DebugPrintf ("Loaded %u bans from file\n", Bans.BanList.size());
+	ServerPrintf ("Loaded %u bans from file\n", Bans.BanList.size());
 }
 
 void CBanList::SaveList ()
@@ -124,7 +124,7 @@ void CBanList::SaveList ()
 	// No changes detected
 	if (!Changed)
 	{
-		DebugPrintf ("No changes in ban file, skipping\n");
+		ServerPrintf ("No changes in ban file, skipping\n");
 		return;
 	}
 
@@ -143,7 +143,7 @@ void CBanList::SaveList ()
 			"%i\n", Index->Flags);
 	}
 
-	DebugPrintf ("Saved %u bans\n", Bans.BanList.size());
+	ServerPrintf ("Saved %u bans\n", Bans.BanList.size());
 }
 
 bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)

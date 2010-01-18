@@ -60,9 +60,9 @@ void CPhalanxPlasma::Think ()
 	Free (); // "delete" the entity
 }
 
-void CPhalanxPlasma::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CPhalanxPlasma::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
 	if (surf && (surf->flags & SURF_TEXINFO_SKY))
@@ -74,19 +74,19 @@ void CPhalanxPlasma::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
-	SplashDamage(GetOwner(), RadiusDamage, other, DamageRadius, MOD_R_SPLASH);
+	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
 	CTempEnt_Explosions::PlasmaExplosion(origin);
 
 	Free ();
 }
 
 CPhalanxPlasma *CPhalanxPlasma::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage)
+						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CPhalanxPlasma	*Rocket = QNewEntityOf CPhalanxPlasma;
 
@@ -96,8 +96,8 @@ CPhalanxPlasma *CPhalanxPlasma::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f 
 	Rocket->State.GetEffects() = EF_PLASMA | EF_ANIM_ALLFAST;
 	Rocket->State.GetModelIndex() = ModelIndex ("sprites/s_photon.sp2");
 	Rocket->SetOwner (Spawner);
-	Rocket->NextThink = level.Frame + 80000/speed;
-	Rocket->Damage = damage;
+	Rocket->NextThink = Level.Frame + 80000/speed;
+	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;
 	Rocket->DamageRadius = damage_radius;
 	Rocket->State.GetSound() = SoundIndex ("weapons/rockfly.wav");
@@ -126,9 +126,9 @@ CWeapon(9, 1, "models/weapons/v_shotx/tris.md2", 0, 5, 6, 20,
 {
 }
 
-bool CPhalanx::CanFire (CPlayerEntity *ent)
+bool CPhalanx::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 7:
 	case 8:
@@ -137,9 +137,9 @@ bool CPhalanx::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CPhalanx::CanStopFidgetting (CPlayerEntity *ent)
+bool CPhalanx::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 29:
 	case 42:
@@ -149,37 +149,37 @@ bool CPhalanx::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CPhalanx::Fire (CPlayerEntity *ent)
+void CPhalanx::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset (0, 8, ent->ViewHeight-8);
+	vec3f		start, forward, right, offset (0, 8, Player->ViewHeight-8);
 	const sint32	damage = CalcQuadVal(70 + irandom(10.0));
 
-	ent->Client.KickOrigin = forward * -2;
-	ent->Client.KickAngles.X = -2;
+	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickAngles.X = -2;
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	(ent->Client.ViewAngle + vec3f(0, ((ent->Client.PlayerState.GetGunFrame() == 8)) ? -1.5f : 1.5f, 0)).ToVectors (&forward, &right, NULL);
+	(Player->Client.ViewAngle + vec3f(0, ((Player->Client.PlayerState.GetGunFrame() == 8)) ? -1.5f : 1.5f, 0)).ToVectors (&forward, &right, NULL);
 
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 8:
-		CPhalanxPlasma::Spawn (ent, start, forward, damage, 725, 30, 120);
-		DepleteAmmo (ent, 1);
+		CPhalanxPlasma::Spawn (Player, start, forward, damage, 725, 30, 120);
+		DepleteAmmo (Player, 1);
 		break;
 	default:
-		CPhalanxPlasma::Spawn (ent, start, forward, damage, 725, 120, CalcQuadVal(120));
+		CPhalanxPlasma::Spawn (Player, start, forward, damage, 725, 120, CalcQuadVal(120));
 
 		// send muzzle flash
-		Muzzle (ent, MZ_PHALANX);
-		AttackSound (ent);
+		Muzzle (Player, MZ_PHALANX);
+		AttackSound (Player);
 
-		ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-		FireAnimation (ent);
+		Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+		FireAnimation (Player);
 		break;
 	};
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
 WEAPON_DEFS (CPhalanx);

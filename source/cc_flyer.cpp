@@ -460,16 +460,16 @@ void CFlyer::CheckMelee ()
 		CurrentMove = &FlyerMoveEndMelee;
 }
 
-void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CFlyer::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))
@@ -489,7 +489,7 @@ void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 }
 
-void CFlyer::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CFlyer::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->BecomeExplosion(false);
@@ -543,12 +543,12 @@ void CFlyer::ChooseAfterDodge ()
 }
 
 #if !MONSTER_USE_ROGUE_AI
-void CFlyer::Dodge (CBaseEntity *attacker, float eta)
+void CFlyer::Dodge (CBaseEntity *Attacker, float eta)
 #else
 void CFlyer::Duck (float eta)
 #endif
 {
-	if (frand() > (0.35f + ((skill->Float()+1) / 10)) )
+	if (frand() > (0.35f + ((skill.Float()+1) / 10)) )
 		return;
 	
 	// Don't dodge if we're attacking or dodging already
@@ -602,7 +602,7 @@ void CFlyer::SideStep ()
 void CFlyer::Spawn ()
 {
 	// fix a map bug in jail5.bsp
-	if (!Q_stricmp(level.ServerLevelName.c_str(), "jail5") && (Entity->State.GetOrigin().Z == -104))
+	if (!Q_stricmp(Level.ServerLevelName.c_str(), "jail5") && (Entity->State.GetOrigin().Z == -104))
 	{
 		Entity->TargetName = Entity->Target;
 		Entity->Target = NULL;

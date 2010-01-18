@@ -96,13 +96,11 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	{
 		CBaseItem *Item = GetItemByIndex(Index);
 
-		if (Item)
+		if (!_CC_ASSERT_EXPR (Item, "Loaded weapon with no weapon!"))
 		{
 			CWeaponItem *WItem = dynamic_cast<CWeaponItem*>(Item);
 			*Weapon = WItem->Weapon;
-		}
-		else
-			_CC_ASSERT_EXPR (0, "Loaded weapon with no weapon!");
+		}			
 	}
 }
 
@@ -146,7 +144,7 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 	case WS_ACTIVATING:
 		if (Player->Client.PlayerState.GetGunFrame() == ActivationEnd
 #if CLEANCTF_ENABLED
-			|| instantweap->Boolean()
+			|| instantweap.Boolean()
 #endif
 			)
 		{
@@ -158,7 +156,7 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
 		{
 #if CLEANCTF_ENABLED
-			if (instantweap->Boolean())
+			if (instantweap.Boolean())
 			{
 				ChangeWeapon (Player);
 				return;
@@ -266,10 +264,10 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	if (!Player->Client.Persistent.Weapon)
 	{	// dead
 		Player->Client.PlayerState.GetGunIndex() = 0;
-		if (!Player->Client.Grenade.Thrown && !Player->Client.Grenade.BlewUp && Player->Client.Grenade.Time >= level.Frame) // We had a grenade cocked
+		if (!Player->Client.Grenade.Thrown && !Player->Client.Grenade.BlewUp && Player->Client.Grenade.Time >= Level.Frame) // We had a grenade cocked
 		{
 #if !DROP_DEATH_GRENADES
-			Player->Client.Grenade.Time = level.Frame;
+			Player->Client.Grenade.Time = Level.Frame;
 #endif
 			CHandGrenade::Weapon.FireGrenade(Player, false);
 			Player->Client.Grenade.Time = 0;
@@ -325,10 +323,10 @@ bool CWeapon::AttemptToFire (CPlayerEntity *Player)
 void CWeapon::OutOfAmmo (CPlayerEntity *Player)
 {
 	// Doesn't affect pain anymore!
-	if (level.Frame >= Player->DamageDebounceTime)
+	if (Level.Frame >= Player->DamageDebounceTime)
 	{
 		Player->PlaySound (CHAN_AUTO, SoundIndex("weapons/noammo.wav"));
-		Player->DamageDebounceTime = level.Frame + 10;
+		Player->DamageDebounceTime = Level.Frame + 10;
 	}
 }
 
@@ -352,7 +350,7 @@ Called by ClientBeginServerFrame
 void CWeapon::Think (CPlayerEntity *Player)
 {
 #if CLEANCTF_ENABLED
-	if ((game.GameMode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
+	if ((Game.GameMode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
 		return;
 #endif
 
@@ -365,9 +363,9 @@ void CWeapon::Think (CPlayerEntity *Player)
 	}
 
 	// call active weapon think routine
-	isQuad = (Player->Client.Timers.QuadDamage > level.Frame);
+	isQuad = (Player->Client.Timers.QuadDamage > Level.Frame);
 #if XATRIX_FEATURES
-	isQuadFire = (Player->Client.Timers.QuadFire > level.Frame);
+	isQuadFire = (Player->Client.Timers.QuadFire > Level.Frame);
 #endif
 	isSilenced = (Player->Client.Timers.SilencerShots) ? true : false;
 	WeaponGeneric (Player);
@@ -378,7 +376,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 
 	if (dmFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-		|| (game.GameMode & GAME_CTF)
+		|| (Game.GameMode & GAME_CTF)
 #endif
 	)
 	{
@@ -405,7 +403,7 @@ void CWeapon::AttackSound(CPlayerEntity *Player)
 {
 	if (
 #if CLEANCTF_ENABLED
-		(game.GameMode & GAME_CTF) || 
+		(Game.GameMode & GAME_CTF) || 
 #endif
 		dmFlags.dfDmTechs.IsEnabled())
 	{
@@ -568,35 +566,35 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 		Player->Client.Persistent.Weapon->ChangeWeapon(Player);
 }
 
-void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *ent)
+void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 {
-	if (!ent->Client.Persistent.Inventory.Has(Wanted))
+	if (!Player->Client.Persistent.Inventory.Has(Wanted))
 	{
-		ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
+		Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
 		return;
 	}
 
 	// see if we're already using it
-	if (ent->Client.Persistent.Weapon == this)
+	if (Player->Client.Persistent.Weapon == this)
 		return;
 
-	if (Wanted->Ammo && !g_select_empty->Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	if (Wanted->Ammo && !g_select_empty.Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
 	{
-		if (!ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+		if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
 		{
-			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
 			return;
 		}
 
-		if (ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+		if (Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
 		{
-			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
 			return;
 		}
 	}
 
 	// change to this weapon when down
-	ent->Client.NewWeapon = this;
+	Player->Client.NewWeapon = this;
 }
 
 void CWeapon::FireAnimation (CPlayerEntity *Player)

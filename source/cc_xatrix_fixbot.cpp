@@ -48,31 +48,31 @@ CMonster (ID)
 
 CMonsterEntity *CFixbot::FindDeadMonster ()
 {
-	CMonsterEntity *ent = NULL, *best = NULL;
+	CMonsterEntity *FoundMonster = NULL, *BestMonster = NULL;
 
-	while ((ent = FindRadius<CMonsterEntity, ENT_MONSTER>(ent, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((FoundMonster = FindRadius<CMonsterEntity, ENT_MONSTER>(FoundMonster, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
-		if (ent == Entity)
+		if (FoundMonster == Entity)
 			continue;
-		if (ent->Monster->AIFlags & AI_GOOD_GUY)
+		if (FoundMonster->Monster->AIFlags & AI_GOOD_GUY)
 			continue;
-		if (ent->Health > 0)
+		if (FoundMonster->Health > 0)
 			continue;
-		if (ent->NextThink)
+		if (FoundMonster->NextThink)
 			continue;
-		if (!IsVisible(Entity, ent))
+		if (!IsVisible(Entity, FoundMonster))
 			continue;
-		if (!best)
+		if (!BestMonster)
 		{
-			best = ent;
+			BestMonster = FoundMonster;
 			continue;
 		}
-		if (ent->MaxHealth <= best->MaxHealth)
+		if (FoundMonster->MaxHealth <= BestMonster->MaxHealth)
 			continue;
-		best = ent;
+		BestMonster = FoundMonster;
 	}
 
-	return best;
+	return BestMonster;
 }
 
 bool CFixbot::SearchForMonsters ()
@@ -693,52 +693,49 @@ void CFixbot::FireBlaster ()
 void CFixbot::LandingGoal ()
 {
 	vec3f forward, right, up, end;
-	CBotGoal *ent;
+
+	CBotGoal *Goal = QNewEntityOf CBotGoal;	
+	Goal->ClassName = "bot_goal";
+	Goal->GetSolid() = SOLID_BBOX;
+	Goal->SetOwner (Entity);
+	Goal->Link ();
 	
-	ent = QNewEntityOf CBotGoal;	
-	ent->ClassName = "bot_goal";
-	ent->GetSolid() = SOLID_BBOX;
-	ent->SetOwner (Entity);
-	ent->Link ();
-	
-	ent->GetMins().Set (-32, -32, -24);
-	ent->GetMaxs().Set (32, 32, 24);
+	Goal->GetMins().Set (-32, -32, -24);
+	Goal->GetMaxs().Set (32, 32, 24);
 	
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
 	end = Entity->State.GetOrigin().MultiplyAngles (32, forward).
 									MultiplyAngles (-8096, up);
 		
-	CTrace tr (Entity->State.GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
+	CTrace tr (Entity->State.GetOrigin(), Goal->GetMins(), Goal->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	ent->State.GetAngles() = tr.EndPos;
+	Goal->State.GetAngles() = tr.EndPos;
 	
-	Entity->GoalEntity = Entity->Enemy = ent;
+	Entity->GoalEntity = Entity->Enemy = Goal;
 	CurrentMove = &FixbotMoveLanding;
 }
 
 void CFixbot::TakeOffGoal ()
 {
 	vec3f forward, right, up, end;
-	CBotGoal *ent;
+	CBotGoal *Goal = QNewEntityOf CBotGoal;	
+	Goal->ClassName = "bot_goal";
+	Goal->GetSolid() = SOLID_BBOX;
+	Goal->SetOwner (Entity);
+	Goal->Link ();
 	
-	ent = QNewEntityOf CBotGoal;	
-	ent->ClassName = "bot_goal";
-	ent->GetSolid() = SOLID_BBOX;
-	ent->SetOwner (Entity);
-	ent->Link ();
-	
-	ent->GetMins().Set (-32, -32, -24);
-	ent->GetMaxs().Set (32, 32, 24);
+	Goal->GetMins().Set (-32, -32, -24);
+	Goal->GetMaxs().Set (32, 32, 24);
 	
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
 	end = Entity->State.GetOrigin().MultiplyAngles (32, forward).
 									MultiplyAngles (128, up);
 		
-	CTrace tr (Entity->State.GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
+	CTrace tr (Entity->State.GetOrigin(), Goal->GetMins(), Goal->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	ent->State.GetAngles() = tr.EndPos;
+	Goal->State.GetAngles() = tr.EndPos;
 	
-	Entity->GoalEntity = Entity->Enemy = ent;
+	Entity->GoalEntity = Entity->Enemy = Goal;
 	CurrentMove = &FixbotMoveTakeOff;
 }
 
@@ -776,14 +773,13 @@ void CFixbot::ChangeToRoam ()
 void CFixbot::RoamGoal ()
 {
 	vec3f		forward, right, up, end, vec, whichvec, dang;
-	CBotGoal	*ent;
 	int			len;
 		
-	ent = QNewEntityOf CBotGoal;	
-	ent->ClassName = "bot_goal";
-	ent->GetSolid() = SOLID_BBOX;
-	ent->SetOwner (Entity);
-	ent->Link ();
+	CBotGoal *Goal = QNewEntityOf CBotGoal;	
+	Goal->ClassName = "bot_goal";
+	Goal->GetSolid() = SOLID_BBOX;
+	Goal->SetOwner (Entity);
+	Goal->Link ();
 
 	int oldlen = 0;
 	for (int i = 0; i < 12; i++) 
@@ -810,32 +806,32 @@ void CFixbot::RoamGoal ()
 		}
 	}
 	
-	ent->State.GetOrigin() = whichvec;
-	Entity->GoalEntity = Entity->Enemy = ent;
+	Goal->State.GetOrigin() = whichvec;
+	Entity->GoalEntity = Entity->Enemy = Goal;
 	
 	CurrentMove = &FixbotMoveTurn;
 }
 
 void CFixbot::UseScanner ()
 {
-	CHurtableEntity *ent = NULL;
+	CHurtableEntity *Hurtable = NULL;
 
-	while ((ent = FindRadius<CHurtableEntity, ENT_HURTABLE> (ent, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((Hurtable = FindRadius<CHurtableEntity, ENT_HURTABLE> (Hurtable, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
-		if (ent->Health >= 100)
+		if (Hurtable->Health >= 100)
 		{
-			if (ent->ClassName == "func_object_repair")
+			if (Hurtable->ClassName == "func_object_repair")
 			{
-				if (IsVisible (ent, Entity))
+				if (IsVisible (Hurtable, Entity))
 				{	
 					// remove the old one
 					if (Entity->GoalEntity->ClassName == "bot_goal")
 					{
 						CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
-						Thinkable->NextThink = level.Frame + 1;
+						Thinkable->NextThink = Level.Frame + 1;
 					}	
 					
-					Entity->GoalEntity = Entity->Enemy = ent;
+					Entity->GoalEntity = Entity->Enemy = Hurtable;
 
 					if ((Entity->State.GetOrigin() - Entity->GoalEntity->State.GetOrigin()).Normalize() < 32)
 						CurrentMove = &FixbotMoveWeldStart;
@@ -856,7 +852,7 @@ void CFixbot::UseScanner ()
 		else 
 		{
 			CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
-			Thinkable->NextThink = level.Frame + 1;
+			Thinkable->NextThink = Level.Frame + 1;
 			Entity->GoalEntity = Entity->Enemy = NULL;
 			CurrentMove = &FixbotMoveStand;
 		}
@@ -876,7 +872,7 @@ void CFixbot::UseScanner ()
 		else 
 		{
 			CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
-			Thinkable->NextThink = level.Frame + 1;
+			Thinkable->NextThink = Level.Frame + 1;
 			Entity->GoalEntity = Entity->Enemy = NULL;
 			CurrentMove = &FixbotMoveStand;
 		}
@@ -891,7 +887,13 @@ void CFixbot::UseScanner ()
 	decend translated along the z the current
 	frames are at 10fps
 */ 
-void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, int damage, int kick, int te_impact, int hspread, int vspread)
+
+// Paril
+// I commented this out because this seems to be unused code..
+// I studied the fixbot's under different cirumstances and never found this being called or used
+// in the maps.
+
+void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, int te_impact, int hspread, int vspread)
 {
 /*	trace_t		tr;
 	vec3_t		dir;
@@ -1040,7 +1042,7 @@ void CFixbot::FlyVertical ()
 	{
 		CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
 
-		Thinkable->NextThink = level.Frame + 1;
+		Thinkable->NextThink = Level.Frame + 1;
 		// NOTE: DO FREE
 
 		CurrentMove = &FixbotMoveStand;
@@ -1070,7 +1072,7 @@ void CFixbot::FlyVertical2 ()
 	{
 		CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
 
-		Thinkable->NextThink = level.Frame + 1;
+		Thinkable->NextThink = Level.Frame + 1;
 		// NOTE: DO FREE
 
 		CurrentMove = &FixbotMoveStand;
@@ -1119,23 +1121,18 @@ void CFixbot::Attack ()
 		CurrentMove = &FixbotMoveAttack2;
 }
 
-void CFixbot::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CFixbot::Pain (CBaseEntity *Other, sint32 Damage)
 {
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 
-	if (damage <= 10)
-		CurrentMove = &FixbotMovePain3;
-	else if (damage <= 25)
-		CurrentMove = &FixbotMovePain2;
-	else
-		CurrentMove = &FixbotMovePain1;
+	CurrentMove = (Damage <= 10) ? &FixbotMovePain3 : ((Damage <= 25) ? &FixbotMovePain2 : &FixbotMovePain1);
 }
 
-void CFixbot::Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)
+void CFixbot::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->BecomeExplosion (false);
@@ -1168,8 +1165,6 @@ void CFixbot::Spawn ()
 
 	CurrentMove = &FixbotMoveStand;				
 	FlyMonsterStart ();	
-
-	DebugPrintf ("spawned fixbot\n");
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_fixbot", CFixbot);

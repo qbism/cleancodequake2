@@ -427,19 +427,19 @@ void CBoss2::ReAttackMg ()
 		((frand() <= 0.7) ? &Boss2MoveAttackMg : &Boss2MoveAttackPostMg) : &Boss2MoveAttackPostMg;
 }
 
-void CBoss2::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CBoss2::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
 // American wanted these at no attenuation
-	Entity->PlaySound (CHAN_VOICE, (damage < 10) ? Sounds[SOUND_PAIN3] : ((damage < 30) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]), 255, ATTN_NONE);
-	CurrentMove = (damage < 30) ? &Boss2MovePainLight : &Boss2MovePainHeavy;
+	Entity->PlaySound (CHAN_VOICE, (Damage < 10) ? Sounds[SOUND_PAIN3] : ((Damage < 30) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]), 255, ATTN_NONE);
+	CurrentMove = (Damage < 30) ? &Boss2MovePainLight : &Boss2MovePainHeavy;
 }
 
 void CBoss2::Dead ()
@@ -452,7 +452,7 @@ void CBoss2::Dead ()
 	Entity->Link ();
 }
 
-void CBoss2::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CBoss2::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
 	Entity->DeadFlag = true;
@@ -499,7 +499,7 @@ bool CBoss2::CheckAttack ()
 	}
 	
 // missile attack
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (enemy_range == RANGE_FAR)
@@ -519,7 +519,7 @@ bool CBoss2::CheckAttack ()
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + (2*frand())*10;
+		AttackFinished = Level.Frame + (2*frand())*10;
 		return true;
 	}
 

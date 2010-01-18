@@ -48,11 +48,11 @@ public:
 			   char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
 			   float energyProtection);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player);
+	void	Drop (CPlayerEntity *Player);
 
-	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 damage, sint32 dflags);
+	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags);
 };
 
 void AddArmorToList ();

@@ -101,14 +101,14 @@ public:
 	void Duck_Hold ();
 	void Duck_Up ();
 
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (CBaseEntity *Attacker, float eta);
 #else
 	void Duck (float eta);
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 };

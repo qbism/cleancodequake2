@@ -66,12 +66,12 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Explode ();
 
 	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f aimdir,
-						sint32 damage, sint32 speed, FrameNumber_t timer, float damage_radius, bool handNade = false, bool held = false);
+						sint32 Damage, sint32 speed, FrameNumber_t timer, float damage_radius, bool handNade = false, bool held = false);
 
 	bool Run ();
 };
@@ -105,10 +105,10 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, sint32 effect, bool isHyper);
+						sint32 Damage, sint32 speed, sint32 effect, bool isHyper);
 
 	bool Run ();
 };
@@ -147,10 +147,10 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	static CRocket *Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage);
+						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage);
 
 	bool Run ();
 };
@@ -193,10 +193,10 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius);
+						sint32 Damage, sint32 speed, float damage_radius);
 
 	bool Run ();
 };
@@ -209,10 +209,10 @@ public:
 	sint32 Damage;
 	sint32 Kick;
 
-	CHitScan (sint32 damage, sint32 kick, bool HasEffect, bool throughAndThrough) :
-	Damage(damage),
-	Kick(kick),
-	ThroughAndThrough(throughAndThrough) {};
+	CHitScan (sint32 Damage, sint32 Kick, bool HasEffect, bool ThroughAndThrough) :
+	Damage(Damage),
+	Kick(Kick),
+	ThroughAndThrough(ThroughAndThrough) {};
 
 	virtual inline CTrace	DoTrace		(vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 mask);
 	virtual inline bool		DoDamage	(CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
@@ -227,13 +227,13 @@ public:
 class CRailGunShot : public CHitScan
 {
 public:
-	CRailGunShot (sint32 damage, sint32 kick) :
-	CHitScan (damage, kick, true, true) {};
+	CRailGunShot (sint32 Damage, sint32 Kick) :
+	CHitScan (Damage, Kick, true, true) {};
 
 	inline bool		DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
 	inline void		DoEffect (vec3f &start, vec3f &end, bool water);
 
-	static void		Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick);
+	static void		Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick);
 };
 
 class CBullet : public CHitScan
@@ -242,8 +242,8 @@ public:
 	EMeansOfDeath MeansOfDeath;
 	sint32 vSpread, hSpread;
 
-	CBullet (sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod) :
-	CHitScan (damage, kick, false, false),
+	CBullet (sint32 Damage, sint32 Kick, sint32 hSpread, sint32 vSpread, sint32 mod) :
+	CHitScan (Damage, Kick, false, false),
 	vSpread(vSpread),
 	hSpread(hSpread),
 	MeansOfDeath(mod) {};
@@ -255,20 +255,20 @@ public:
 	void					DoEffect (vec3f &start, vec3f &end, bool water);
 	virtual void			DoFire		(CBaseEntity *Entity, vec3f start, vec3f aimdir);
 
-	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod);
+	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod);
 };
 
 class CShotgunPellets : public CBullet
 {
 public:
-	CShotgunPellets (sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod) :
-	CBullet (damage, kick, hSpread, vSpread, mod)
+	CShotgunPellets (sint32 Damage, sint32 Kick, sint32 hSpread, sint32 vSpread, sint32 mod) :
+	CBullet (Damage, Kick, hSpread, vSpread, mod)
 	{
 	};
 
 	inline void				DoSolidHit (CTrace *Trace);
 
-	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 Count, sint32 mod);
+	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 Count, sint32 mod);
 };
 
 class CMeleeWeapon
@@ -276,7 +276,7 @@ class CMeleeWeapon
 public:
 	CMeleeWeapon();
 
-	static bool		Fire (CBaseEntity *Entity, vec3f aim, sint32 damage, sint32 kick);
+	static bool		Fire (CBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 kick);
 };
 
 #if CLEANCTF_ENABLED
@@ -297,10 +297,10 @@ public:
 	void GrapplePull ();
 	void GrappleDrawCable ();
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 	bool Run ();
 
-	static void Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint32 damage, sint32 speed);
+	static void Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint32 Damage, sint32 speed);
 };
 #endif
 

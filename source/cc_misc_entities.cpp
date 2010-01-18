@@ -81,15 +81,15 @@ public:
 	ENTITYFIELDS_SAVABLE(CMiscExploBox)
 
 #define BARREL_STEPSIZE 8
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if ((!other->GroundEntity) || (other->GroundEntity == this))
+		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
 			return;
-		if (!(other->EntityFlags & ENT_PHYSICS))
+		if (!(Other->EntityFlags & ENT_PHYSICS))
 			return;
 
-		float ratio = entity_cast<CPhysicsEntity>(other)->Mass / Mass;
-		float Yaw = ((State.GetOrigin() - other->State.GetOrigin()).ToYaw ()*M_PI*2 / 360);
+		float ratio = entity_cast<CPhysicsEntity>(Other)->Mass / Mass;
+		float Yaw = ((State.GetOrigin() - Other->State.GetOrigin()).ToYaw ()*M_PI*2 / 360);
 		vec3f move ( cosf(Yaw)*(2 * ratio),
 							sinf(Yaw)*(2 * ratio),
 							0);
@@ -139,7 +139,7 @@ public:
 			vec3f		origin = State.GetOrigin();
 
 			origin.Z += 1;
-			vec3f end = vec3f(origin);
+			vec3f end = origin;
 			end.Z -= 256;
 			
 			trace (origin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
@@ -157,14 +157,14 @@ public:
 		Free ();
 	};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
 		CanTakeDamage = false;
-		NextThink = level.Frame + 2;
-		Shooter = attacker;
+		NextThink = Level.Frame + 2;
+		Shooter = Attacker;
 	};
 
-	void Pain (CBaseEntity *other, float kick, sint32 damage) {};
+	void Pain (CBaseEntity *Other, sint32 Damage) {};
 
 	bool Run ()
 	{
@@ -173,7 +173,7 @@ public:
 
 	void Spawn ()
 	{
-		if (deathmatch->Boolean())
+		if (deathmatch.Boolean())
 		{
 			Free ();
 			return;
@@ -198,7 +198,7 @@ public:
 
 		CanTakeDamage = true;
 		Touchable = true;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 
 		Link ();
 	};
@@ -285,21 +285,20 @@ bool CMiscViper::Run ()
 	return CTrainBase::Run ();
 };
 
-void CMiscViper::Use (CBaseEntity *other, CBaseEntity *activator)
+void CMiscViper::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (MyUse)
 	{
 		GetSvFlags() &= ~SVF_NOCLIENT;
 		MyUse = false;
 	}
-	CTrainBase::Use (other, activator);
+	CTrainBase::Use (Other, Activator);
 };
 
 void CMiscViper::Spawn ()
 {
 	if (!Target)
 	{
-		//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();
 		return;
@@ -315,7 +314,7 @@ void CMiscViper::Spawn ()
 	GetMins().Set (-16, -16, 0);
 	GetMaxs().Set (16, 16, 32);
 
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 	ThinkType = TRAINTHINK_FIND;
 	GetSvFlags() |= SVF_NOCLIENT;
 	Accel = Decel = Speed;
@@ -399,7 +398,7 @@ public:
 	void Think ()
 	{
 		State.GetFrame() = (State.GetFrame() + 1) % 16;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -409,7 +408,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 };
 
@@ -466,10 +465,10 @@ public:
 	{
 		if (++State.GetFrame() >= 19)
 			State.GetFrame() = 0;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		Free ();
 	};
@@ -481,7 +480,7 @@ public:
 		GetMaxs().Set (64, 64, 8);
 		State.GetModelIndex() = ModelIndex ("models/objects/black/tris.md2");
 		State.GetRenderEffects() = RF_TRANSLUCENT;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -531,7 +530,7 @@ public:
 		if (++State.GetFrame() >= 293)
 			State.GetFrame() = 254;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -541,7 +540,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/tank/tris.md2");
 		State.GetFrame() = 254;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -591,7 +590,7 @@ public:
 		if (++State.GetFrame() >= 247)
 			State.GetFrame() = 208;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -601,7 +600,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/bitch/tris.md2");
 		State.GetFrame() = 208;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -651,7 +650,7 @@ public:
 		if (++State.GetFrame() >= 287)
 			State.GetFrame() = 248;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -661,7 +660,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/bitch/tris.md2");
 		State.GetFrame() = 248;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -729,7 +728,7 @@ public:
 	{
 		if (!Drop)
 		{
-			NextThink = (++State.GetFrame() < 24) ? level.Frame + FRAMETIME : 0;
+			NextThink = (++State.GetFrame() < 24) ? Level.Frame + FRAMETIME : 0;
 			if (State.GetFrame() == 22)
 				PlaySound (CHAN_BODY, SoundIndex ("tank/thud.wav"));
 		}
@@ -741,9 +740,9 @@ public:
 		}
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		PlaySound (CHAN_BODY, SoundIndex ("tank/pain.wav"));
 	};
 
@@ -762,7 +761,7 @@ public:
 		SoundIndex ("tank/thud.wav");
 		SoundIndex ("tank/pain.wav");
 
-		NextThink = level.Frame + 5;
+		NextThink = Level.Frame + 5;
 	};
 };
 
@@ -779,7 +778,7 @@ This is the dead player model. Comes in 6 exciting different poses!
 #define DEADSOLDIER_SIT_DECAP		16
 #define DEADSOLDIER_IMPALED			32
 
-vec3f VelocityForDamage (sint32 damage);
+vec3f VelocityForDamage (sint32 Damage);
 
 class CMiscDeadSoldier : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CTossProjectile
 {
@@ -844,18 +843,18 @@ public:
 		CTempEnt_Splashes::Blood (point, normal);
 	}
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
 		if (Health > -80)
 			return;
 
 		PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		TossHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		TossHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 	};
 
-	void TossHead (MediaIndex gibIndex, sint32 damage, sint32 type)
+	void TossHead (MediaIndex gibIndex, sint32 Damage, sint32 type)
 	{
 		float	vscale;
 
@@ -888,7 +887,7 @@ public:
 			vscale = 1.0;
 		}
 
-		vec3f vd = VelocityForDamage (damage);
+		vec3f vd = VelocityForDamage (Damage);
 		
 		vec3f velocity (Velocity);
 		velocity.MultiplyAngles (vscale, vd);
@@ -900,7 +899,7 @@ public:
 
 		AngularVelocity.Y = crand()*600;
 
-		NextThink = level.Frame + 100 + frand()*100;
+		NextThink = Level.Frame + 100 + frand()*100;
 
 		Link();
 	};
@@ -912,7 +911,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -1039,7 +1038,7 @@ public:
 	{
 		GroundEntity = NULL;
 
-		float diff = TimeStamp - level.Frame;
+		float diff = TimeStamp - Level.Frame;
 		if (diff < -1.0)
 			diff = -1.0;
 
@@ -1053,16 +1052,16 @@ public:
 		State.GetAngles() = angles;
 	};
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		UseTargets (Activator, Message);
+		UseTargets (User, Message);
 
 		State.GetOrigin().Z = GetAbsMin().Z + 1;
 		SplashDamage (this, Damage, NULL, Damage+40, MOD_BOMB);
 		BecomeExplosion (true);
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (!Usable)
 			return;
@@ -1074,13 +1073,13 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		PreThinkable = true;
 		Touchable = true;
-		Activator = activator;
+		User = Activator;
 
 		CMiscViper *viper = CC_FindByClassName<CMiscViper, ENT_BASE> (NULL, "misc_viper");
 
 		Velocity = viper->Dir * viper->Speed;
 
-		TimeStamp = level.Frame;
+		TimeStamp = Level.Frame;
 		MoveDir = viper->Dir;
 	};
 
@@ -1192,12 +1191,12 @@ public:
 	void Think ()
 	{
 		if (++State.GetFrame() < 38)
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -1344,7 +1343,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.Frame + 300;
+		NextThink = Level.Frame + 300;
 		Link ();
 	};
 };
@@ -1415,7 +1414,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.Frame + 300;
+		NextThink = Level.Frame + 300;
 		Link ();
 	};
 };
@@ -1486,7 +1485,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.Frame + 300;
+		NextThink = Level.Frame + 300;
 		Link ();
 	};
 };

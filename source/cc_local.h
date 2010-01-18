@@ -28,7 +28,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_local.h
-// Local header. Definitions local to the game.
+// Local header. Definitions local to the Game.
 //
 
 #if !defined(CC_GUARD_LOCAL_H) || !INCLUDE_GUARDS
@@ -109,7 +109,7 @@ CC_ENUM (uint16, EGameMode)
 
 //
 // this structure is cleared as each map is entered
-// it is read/written to the level.sav file for savegames
+// it is read/written to the Level.sav file for savegames
 //
 struct GoalList_t
 {
@@ -195,8 +195,6 @@ CC_ENUM (uint32, EMeansOfDeath)
 };
 
 extern	EMeansOfDeath	meansOfDeath;
-
-extern	edict_t			*g_edicts;
 
 // Spawnflags
 // 6 bits reserved for editor flags
@@ -329,54 +327,41 @@ void	G_FreeEdict (edict_t *e);
 
 void	ED_CallSpawn (edict_t *ent);
 
-extern	CCvar	*maxentities;
-extern	CCvar	*deathmatch;
-extern	CCvar	*coop;
-extern	CCvar	*dmflags;
-extern	CCvar	*skill;
-extern	CCvar	*fraglimit;
-extern	CCvar	*timelimit;
-extern	CCvar	*password;
-extern	CCvar	*spectator_password;
-extern	CCvar	*needpass;
-extern	CCvar	*g_select_empty;
-extern	CCvar	*dedicated;
-
-extern	CCvar	*filterban;
-
-extern	CCvar	*sv_gravity;
-
-extern	CCvar	*gun_x, *gun_y, *gun_z;
-extern	CCvar	*sv_rollspeed;
-extern	CCvar	*sv_rollangle;
-
-extern	CCvar	*run_pitch;
-extern	CCvar	*run_roll;
-extern	CCvar	*bob_up;
-extern	CCvar	*bob_pitch;
-extern	CCvar	*bob_roll;
-
-extern	CCvar	*developer;
-
-extern	CCvar	*sv_cheats;
-extern	CCvar	*maxclients;
-extern	CCvar	*maxspectators;
-
-extern	CCvar	*flood_msgs;
-extern	CCvar	*flood_persecond;
-extern	CCvar	*flood_waitdelay;
-
-extern	CCvar	*sv_maplist;
-extern	CCvar	*map_debug;
-extern	CCvar	*cc_techflags;
-
-#if CLEANCTF_ENABLED
-extern	CCvar	*capturelimit;
-extern	CCvar	*instantweap;
-#endif
-
-extern CCvar	*sv_airaccelerate;
-
+extern CCvar	deathmatch,
+		coop,
+		dmflags,
+		skill,
+		fraglimit,
+		timelimit,
+		password,
+		spectator_password,
+		needpass,
+		maxclients,
+		maxspectators,
+		maxentities,
+		g_select_empty,
+		dedicated,
+		developer,
+		filterban,
+		sv_gravity,
+		sv_rollspeed,
+		sv_rollangle,
+		gun_x,
+		gun_y,
+		gun_z,
+		run_pitch,
+		run_roll,
+		bob_up,
+		bob_pitch,
+		bob_roll,
+		sv_cheats,
+		flood_msgs,
+		flood_persecond,
+		flood_waitdelay,
+		sv_maplist,
+		map_debug,
+		cc_techflags,
+		sv_airaccelerate;
 extern CBaseEntity *World;
 extern CItemList *ItemList;
 
@@ -433,6 +418,7 @@ public:
 								// and increment only if 1, 2, or 3
 
 	gclient_t				*Clients;		// [maxclients]
+	edict_t					*Entities;
 
 	// can't store spawnpoint in level, because
 	// it would get overwritten by the savegame restore
@@ -449,6 +435,8 @@ public:
 	ECrossLevelTriggerFlags	ServerFlags;
 	bool					AutoSaved;
 };
+
+extern	CGameLocals		Game;
 
 typedef std::list<CKeyValuePair*, std::generic_allocator<CKeyValuePair*> > TKeyValuePairContainer;
 typedef std::list<edict_t*, std::generic_allocator<edict_t*> > TEntitiesContainer;
@@ -547,7 +535,7 @@ public:
 
 		sint32 Index = File.Read<sint32> ();
 		if (Index != -1)
-			SightClient = entity_cast<CPlayerEntity>(g_edicts[Index].Entity);
+			SightClient = entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
 
 		Secrets = File.Read<GoalList_t> ();
 		Goals = File.Read<GoalList_t> ();
@@ -620,7 +608,7 @@ public:
 				// Poop.
 				// Entities can't be guarenteed a number till
 				// they spawn the first time!
-				File.Write<sint32> ((*it) - g_edicts);
+				File.Write<sint32> ((*it) - Game.Entities);
 
 			File.Write<size_t> (Closed.size());
 			for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
@@ -633,13 +621,13 @@ public:
 
 			Open.clear ();
 			for (size_t i = 0; i < size; i++)
-				Open.push_back (&g_edicts[File.Read<sint32> ()]);
+				Open.push_back (&Game.Entities[File.Read<sint32> ()]);
 
 			size = File.Read<size_t> ();
 
 			Closed.clear ();
 			for (size_t i = 0; i < size; i++)
-				Closed.push_back (&g_edicts[File.Read<sint32> ()]);
+				Closed.push_back (&Game.Entities[File.Read<sint32> ()]);
 		};
 
 	} Entities;
@@ -647,15 +635,14 @@ public:
 	bool		Demo;
 };
 
-extern	CGameLocals	game;
-extern	CLevelLocals	level;
+extern	CLevelLocals	Level;
 
 inline CBaseEntity *CreateEntityFromClassname (const char *classname)
 {
 _CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
 
-	level.ClassName = classname;
+	Level.ClassName = classname;
 	ED_CallSpawn (ent);
 
 	if (ent->inUse && ent->Entity && !ent->Entity->Freed)

@@ -267,18 +267,18 @@ CFrame JorgFramesPain1 [] =
 };
 CAnim JorgMovePain1 (FRAME_pain101, FRAME_pain103, JorgFramesPain1, &CMonster::Run);
 
-void CJorg::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CJorg::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
 	
 	Entity->State.GetSound() = 0;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames if he takes little damage
-	if ((damage <= 40) && (frand() <= 0.6))
+	if ((Damage <= 40) && (frand() <= 0.6))
 		return;
 
 	/* 
@@ -296,16 +296,16 @@ void CJorg::Pain (CBaseEntity *other, float kick, sint32 damage)
 	if (((frame >= FRAME_attak201) && (frame <= FRAME_attak208)) && (frand() <= 0.005))
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 50)
+	if (Damage <= 50)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &JorgMovePain1;
 	}
-	else if (damage <= 100)
+	else if (Damage <= 100)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &JorgMovePain2;
@@ -377,7 +377,7 @@ void CJorg::TossMakron ()
 	CMakronJumpTimer::Spawn (this);
 };
 
-void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CJorg::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
@@ -542,7 +542,7 @@ bool CJorg::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (skill.Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -555,7 +555,7 @@ bool CJorg::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -582,15 +582,15 @@ bool CJorg::CheckAttack ()
 		return false;
 	}
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (skill.Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -627,9 +627,9 @@ bool CJorg::CheckAttack ()
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.Frame < AttackFinished)
+						if (Level.Frame < AttackFinished)
 							return false;
-						if (level.Frame < (TrailTime + BlindFireDelay))
+						if (Level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
@@ -654,7 +654,7 @@ bool CJorg::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (skill.Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -675,7 +675,7 @@ bool CJorg::CheckAttack ()
 		return false;
 	}
 	
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -692,16 +692,16 @@ bool CJorg::CheckAttack ()
 	else
 		return false;
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (skill.Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 

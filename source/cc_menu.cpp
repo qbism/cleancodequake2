@@ -44,23 +44,23 @@ Enabled(true)
 	Menu->AddItem (this);
 };
 
-bool CMenuItem::CanSelect (CPlayerEntity *ent)
+bool CMenuItem::CanSelect (CPlayerEntity *Player)
 {
 	return Enabled;
 }
 
-void CMenuItem::Update (CPlayerEntity *ent)
+void CMenuItem::Update (CPlayerEntity *Player)
 {
 }
 
-bool CMenuItem::Select (CPlayerEntity *ent)
+bool CMenuItem::Select (CPlayerEntity *Player)
 {
 	return false;
 }
 
-CMenu::CMenu (CPlayerEntity *ent) :
+CMenu::CMenu (CPlayerEntity *Player) :
 Cursor(-1),
-ent(ent)
+Player(Player)
 {
 };
 
@@ -82,11 +82,11 @@ void CMenu::AddItem (CMenuItem *Item)
 void CMenu::DrawItems (CStatusBar *Bar)
 {
 	for (TMenuItemsContainer::iterator it = Items.begin(); it < Items.end(); ++it)
-		(*it)->Draw (ent, Bar);
+		(*it)->Draw (Player, Bar);
 }
 
 CMenuState::CMenuState () :
-ent (NULL),
+Player (NULL),
 Cursor (-1),
 Key (0),
 CurrentMenu (NULL),
@@ -94,8 +94,8 @@ InMenu (false)
 {
 };
 
-CMenuState::CMenuState (CPlayerEntity *ent) :
-ent(ent),
+CMenuState::CMenuState (CPlayerEntity *Player) :
+Player(Player),
 Cursor(-1),
 Key (0),
 CurrentMenu(NULL),
@@ -103,9 +103,9 @@ InMenu(false)
 {
 };
 
-void CMenuState::Initialize (CPlayerEntity *ent)
+void CMenuState::Initialize (CPlayerEntity *Player)
 {
-	this->ent = ent;
+	this->Player = Player;
 	Cursor = -1;
 	Key = 0;
 	CurrentMenu = NULL;
@@ -139,7 +139,7 @@ void CMenuState::OpenMenu ()
 	{
 		for (size_t i = 0; i < CurrentMenu->Items.size(); i++)
 		{
-			if (CurrentMenu->Items[i]->CanSelect(ent))
+			if (CurrentMenu->Items[i]->CanSelect(Player))
 			{
 				Cursor = i;
 				CurrentMenu->Items[i]->Selected = true;
@@ -188,7 +188,7 @@ void CMenuState::SelectNext ()
 			continue;
 
 		CMenuItem *Item = CurrentMenu->Items.at(i);
-		if (Item && Item->CanSelect(ent))
+		if (Item && Item->CanSelect(Player))
 		{
 			Cursor = i;
 			CurrentMenu->Items.at(Cursor)->Selected = true;
@@ -204,7 +204,7 @@ void CMenuState::SelectNext ()
 			continue;
 
 		CMenuItem *Item = CurrentMenu->Items.at(i);
-		if (Item && Item->CanSelect(ent))
+		if (Item && Item->CanSelect(Player))
 		{
 			Cursor = i;
 			CurrentMenu->Items.at(Cursor)->Selected = true;
@@ -241,7 +241,7 @@ void CMenuState::SelectPrev ()
 			continue;
 
 		CMenuItem *Item = CurrentMenu->Items.at(i);
-		if (Item && Item->CanSelect(ent))
+		if (Item && Item->CanSelect(Player))
 		{
 			Cursor = i;
 			CurrentMenu->Items.at(Cursor)->Selected = true;
@@ -257,7 +257,7 @@ void CMenuState::SelectPrev ()
 			continue;
 
 		CMenuItem *Item = CurrentMenu->Items.at(i);
-		if (Item && Item->CanSelect(ent))
+		if (Item && Item->CanSelect(Player))
 		{
 			Cursor = i;
 			CurrentMenu->Items.at(Cursor)->Selected = true;
@@ -281,13 +281,13 @@ void CMenuState::Select ()
 	if (Cursor == -1)
 		return;
 
-	if (Cursor > (signed)(CurrentMenu->Items.size()-1))
+	if (Cursor > (sint8)(CurrentMenu->Items.size()-1))
 	{
-		DebugPrintf ("Funny cursor size\n");
+		DebugPrintf ("CMenuState::Select: Funny cursor size\n");
 		return;
 	}
 
-	if (CurrentMenu->Items.at(Cursor)->Select(ent))
+	if (CurrentMenu->Items.at(Cursor)->Select(Player))
 		CloseMenu ();
 }
 

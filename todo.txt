@@ -1,6 +1,6 @@
 Possible current version
 - Remove usage of GetModelIndex() == 255. This is stupid.
-- Remove usage of level.current_entity
+- Remove usage of Level.current_entity
 - Print buffer for each player & for console (shove all prints into buffer then print them at the end of the frame)
 
 Future versions

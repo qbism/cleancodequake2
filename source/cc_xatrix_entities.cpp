@@ -103,7 +103,7 @@ public:
 		CUsableEntity::LoadFields (File);
 	};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
 		CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + randomMT()&7, 30);
 
@@ -111,7 +111,7 @@ public:
 		Usable = false;
 
 		DoFree = true;
-		NextThink = level.Frame + 1;
+		NextThink = Level.Frame + 1;
 	};
 
 	void Think ()
@@ -127,11 +127,11 @@ public:
 		else
 		{
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, AlarmSound, 255, ATTN_STATIC, 0);
-			NextThink = level.Frame + 10;
+			NextThink = Level.Frame + 10;
 		}
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
 		{
@@ -139,7 +139,7 @@ public:
 			State.GetEffects() |= EF_SPINNINGLIGHTS;
 
 			if (SpawnFlags & ROTATING_LIGHT_ALARM)
-				NextThink = level.Frame + 1;
+				NextThink = Level.Frame + 1;
 		}
 		else
 		{
@@ -222,21 +222,20 @@ public:
 		return CTrainBase::Run ();
 	};
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator)
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if (MyUse)
 		{
 			GetSvFlags() &= ~SVF_NOCLIENT;
 			MyUse = false;
 		}
-		CTrainBase::Use (other, activator);
+		CTrainBase::Use (Other, Activator);
 	};
 
 	virtual void Spawn ()
 	{
 		if (!Target)
 		{
-			//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 			Free ();
 			return;
@@ -252,7 +251,7 @@ public:
 		GetMins().Set (-16, -16, 0);
 		GetMaxs().Set (16, 16, 32);
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = TRAINTHINK_FIND;
 		GetSvFlags() |= SVF_NOCLIENT;
 		Accel = Decel = Speed;
@@ -303,13 +302,13 @@ public:
 
 	void Think ()
 	{
-		NextThink = level.Frame + 27;
+		NextThink = Level.Frame + 27;
 		PlaySound (CHAN_VOICE, Amb4Sound, 255, ATTN_NONE);
 	}
 
 	void Spawn ()
 	{
-		NextThink = level.Frame + 10;
+		NextThink = Level.Frame + 10;
 		Amb4Sound = SoundIndex ("world/amb4.wav");
 		Link ();
 	}
@@ -350,9 +349,9 @@ public:
 		CUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 		{
 			edict_t *ent = (*it);
 			if (!ent->inUse || !ent->Entity)
@@ -413,7 +412,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMiscViperMissile)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		vec3f	start, dir;
 		vec3f	vec;
@@ -548,18 +547,18 @@ public:
 
 	void On ()
 	{
-		if (!Activator)
-			Activator = this;
+		if (!User)
+			User = this;
 		SpawnFlags |= 0x80000001;
 		GetSvFlags() &= ~SVF_NOCLIENT;
 
-		NextThink = level.Frame + Wait + Delay;
+		NextThink = Level.Frame + Wait + Delay;
 	};
 
 	void Think ()
 	{
 		CTargetLaser::Think ();
-		NextThink = level.Frame + Wait + 1;
+		NextThink = Level.Frame + Wait + 1;
 		SpawnFlags |= 0x80000000;
 	};
 };
@@ -641,7 +640,7 @@ public:
 
 	void RepairFX ()
 	{
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 
 		if (Health <= 100)
 			Health++;
@@ -652,7 +651,7 @@ public:
 	void Dead ()
 	{
 		UseTargets (this, Message);
-		NextThink = level.Frame + 1;
+		NextThink = Level.Frame + 1;
 		ThinkType = THINK_FX;
 	};
 
@@ -660,12 +659,12 @@ public:
 	{
 		if (Health < 0)
 		{
-			NextThink = level.Frame + 1;
+			NextThink = Level.Frame + 1;
 			ThinkType = THINK_DEAD;
 			return;
 		}
 
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 	
 		CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
 	};
@@ -693,7 +692,7 @@ public:
 		GetSolid() = SOLID_BBOX;
 		GetMins().Set (-8, -8, 8);
 		GetMaxs().Set (8, 8, 8);
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = THINK_SPARKS;
 		Health = 100;
 

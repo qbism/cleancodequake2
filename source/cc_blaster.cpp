@@ -41,9 +41,9 @@ CWeapon(0, 0, "models/weapons/v_blast/tris.md2", 0, 4, 5, 8,
 {
 }
 
-bool CBlaster::CanFire (CPlayerEntity *ent)
+bool CBlaster::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 5:
 		return true;
@@ -51,9 +51,9 @@ bool CBlaster::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CBlaster::CanStopFidgetting (CPlayerEntity *ent)
+bool CBlaster::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 19:
 	case 32:
@@ -62,35 +62,35 @@ bool CBlaster::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-bool CBlaster::AttemptToFire (CPlayerEntity *ent)
+bool CBlaster::AttemptToFire (CPlayerEntity *Player)
 {
 	return true;
 }
 
-void CBlaster::Fire (CPlayerEntity *ent)
+void CBlaster::Fire (CPlayerEntity *Player)
 {
-	const sint32 Damage = deathmatch->Integer() ? 
+	const sint32 Damage = deathmatch.Integer() ? 
 			CalcQuadVal(15)
 			:
 			CalcQuadVal(10);
-	vec3f	Forward, Start, Right, Offset (24, 8, ent->ViewHeight - 8);
+	vec3f	Forward, Start, Right, Offset (24, 8, Player->ViewHeight - 8);
 
-	ent->Client.ViewAngle.ToVectors (&Forward, &Right, NULL);
-	ent->P_ProjectSource (Offset, Forward, Right, Start);
+	Player->Client.ViewAngle.ToVectors (&Forward, &Right, NULL);
+	Player->P_ProjectSource (Offset, Forward, Right, Start);
 
-	ent->Client.KickOrigin = Forward * -2;
-	ent->Client.KickAngles.X = -1;
+	Player->Client.KickOrigin = Forward * -2;
+	Player->Client.KickAngles.X = -1;
 
-	CBlasterProjectile::Spawn (ent, Start, Forward, Damage, 1000, EF_BLASTER, false);
+	CBlasterProjectile::Spawn (Player, Start, Forward, Damage, 1000, EF_BLASTER, false);
 
 	// send muzzle flash
-	Muzzle (ent, MZ_BLASTER);
-	AttackSound (ent);
+	Muzzle (Player, MZ_BLASTER);
+	AttackSound (Player);
 
-	ent->PlayerNoiseAt(Start, PNOISE_WEAPON);
-	FireAnimation(ent);
+	Player->PlayerNoiseAt(Start, PNOISE_WEAPON);
+	FireAnimation(Player);
 
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
 WEAPON_DEFS (CBlaster);

@@ -62,24 +62,24 @@ void CItemEntity::Spawn ()
 {
 } // Just to fill CMapEntity
 
-void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CItemEntity::Touch(CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!other)
+	if (!Other)
 		return;
-	if (!(other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
 
 	if (!(LinkedItem->Flags & ITEMFLAG_GRABBABLE))
 		return;		// not a grabbable item?
 
-	CPlayerEntity *Player = entity_cast<CPlayerEntity>(other);
+	CPlayerEntity *Player = entity_cast<CPlayerEntity>(Other);
 
 	if (Player->Health <= 0)
 		return; // Dead players can't grab items
 
 	if (!(SpawnFlags & ITEM_TARGETS_USED))
 	{
-		UseTargets (other, Message);
+		UseTargets (Other, Message);
 		SpawnFlags |= ITEM_TARGETS_USED;
 	}
 
@@ -90,11 +90,11 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 	Player->Client.BonusAlpha = 0.25;	
 
 	// show icon and name on status bar
-	if (Player->Client.Timers.PickupMessageTime != (level.Frame + 30))
+	if (Player->Client.Timers.PickupMessageTime != (Level.Frame + 30))
 	{
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_ICON) = LinkedItem->GetIconIndex();
 		Player->Client.PlayerState.GetStat (STAT_PICKUP_STRING) = LinkedItem->GetConfigStringNumber();
-		Player->Client.Timers.PickupMessageTime = level.Frame + 30;
+		Player->Client.Timers.PickupMessageTime = Level.Frame + 30;
 	}
 
 	// change selected item
@@ -115,7 +115,7 @@ void CItemEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf
 #endif
 		);
 
-	if (!((game.GameMode & GAME_COOPERATIVE) &&  (LinkedItem->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
+	if (!((Game.GameMode & GAME_COOPERATIVE) &&  (LinkedItem->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
 	{
 		if (Flags & FL_RESPAWN)
 			Flags &= ~FL_RESPAWN;
@@ -129,7 +129,7 @@ bool CItemEntity::Run ()
 	return (PhysicsType == PHYSICS_TOSS) ? CTossProjectile::Run() : false;
 }
 
-void CItemEntity::Use (CBaseEntity *other, CBaseEntity *activator)
+void CItemEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	GetSvFlags() &= ~SVF_NOCLIENT;
 	Usable = false;
@@ -194,7 +194,7 @@ void CItemEntity::Think ()
 				GetSolid() = SOLID_NOT;
 				if (Team.Master == this)
 				{
-					NextThink = level.Frame + FRAMETIME;
+					NextThink = Level.Frame + FRAMETIME;
 					ThinkState = ITS_RESPAWN;
 				}
 			}
@@ -214,7 +214,7 @@ void CItemEntity::Think ()
 				Usable = true;
 			}
 			
-			if (map_debug->Boolean())
+			if (map_debug.Boolean())
 			{
 				GetSolid() = SOLID_BBOX;
 				GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
@@ -237,7 +237,7 @@ void CItemEntity::Think ()
 		//ZOID
 		//in ctf, when we are weapons stay, only the master of a team of weapons
 		//is spawned
-				if ((game.GameMode & GAME_CTF) &&
+				if ((Game.GameMode & GAME_CTF) &&
 					dmFlags.dfWeaponsStay.IsEnabled() &&
 					entity_cast<CItemEntity>(Master)->LinkedItem && (entity_cast<CItemEntity>(Master)->LinkedItem->Flags & ITEMFLAG_WEAPON))
 					RespawnedEntity = Master;
@@ -267,14 +267,13 @@ void CItemEntity::Spawn (CBaseItem *item)
 {
 	LinkedItem = item;
 
-	if (!item)
+	if (_CC_ASSERT_EXPR (!(item == NULL), "Item without an item!"))
 	{
-		_CC_ASSERT_EXPR (0, "Item without an item!");
 		Free ();
 		return;
 	}
 
-	NextThink = level.Frame + 2;    // items start after other solids
+	NextThink = Level.Frame + 2;    // items start after other solids
 	ThinkState = ITS_DROPTOFLOOR;
 	PhysicsType = PHYSICS_NONE;
 

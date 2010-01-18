@@ -304,21 +304,21 @@ CFrame BerserkFramesPain2 [] =
 };
 CAnim BerserkMovePain2 (FRAME_painb1, FRAME_painb20, BerserkFramesPain2, &CMonster::Run);
 
-void CBerserker::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CBerserker::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
-	if (skill->Integer() == 3)
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	CurrentMove = ((damage < 20) || (frand() < 0.5)) ? &BerserkMovePain1 : &BerserkMovePain2;
+	CurrentMove = ((Damage < 20) || (frand() < 0.5)) ? &BerserkMovePain1 : &BerserkMovePain2;
 }
 
 void CBerserker::Dead ()
@@ -364,16 +364,16 @@ CFrame BerserkFramesDeath2 [] =
 };
 CAnim BerserkMoveDeath2 (FRAME_deathc1, FRAME_deathc8, BerserkFramesDeath2, ConvertDerivedFunction(&CBerserker::Dead));
 
-void CBerserker::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CBerserker::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -385,7 +385,7 @@ void CBerserker::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
-	CurrentMove = (damage >= 50) ? &BerserkMoveDeath1 : &BerserkMoveDeath2;
+	CurrentMove = (Damage >= 50) ? &BerserkMoveDeath1 : &BerserkMoveDeath2;
 }
 
 #if MONSTER_USE_ROGUE_AI

@@ -52,11 +52,11 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	virtual void	Use (CPlayerEntity *ent);
-	virtual void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	virtual void	Use (CPlayerEntity *Player);
+	virtual void	Drop (CPlayerEntity *Player);
 
-	virtual void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	virtual void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Mega Health powerup
@@ -67,7 +67,7 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Backpack powerup
@@ -78,7 +78,7 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Quad Damage
@@ -89,8 +89,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
 };
 
 // Invul
@@ -101,8 +101,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
 };
 
 // Silèncier
@@ -113,8 +113,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
 };
 
 // Rebreather (noun, "to breathe again")
@@ -125,8 +125,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
 };
 
 // Rebreather (noun, "to breathe again")
@@ -137,8 +137,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
 };
 
 // Bandolier
@@ -149,7 +149,7 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Adrenaline
@@ -160,7 +160,7 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Ancient Head
@@ -171,7 +171,7 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Power Shield
@@ -182,9 +182,9 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
-	void Drop (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
+	void Drop (CPlayerEntity *Player);
 };
 
 void AddPowerupsToList();

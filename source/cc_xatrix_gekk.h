@@ -112,7 +112,7 @@ public:
 	void Sight ();
 	void Melee ();
 #if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (CBaseEntity *Attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
@@ -123,11 +123,11 @@ public:
 
 	bool CheckAttack ();
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
 	void Spawn ();
@@ -162,10 +162,10 @@ public:
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed);
+						sint32 Damage, sint32 speed);
 
 	bool Run ();
 };

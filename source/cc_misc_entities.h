@@ -46,6 +46,6 @@ public:
 
 	bool Run ();
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
 	virtual void Spawn ();
 };

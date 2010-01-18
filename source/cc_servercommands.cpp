@@ -59,11 +59,8 @@ CServerCommand *SvCmd_FindCommand (const char *commandName)
 void SvCmd_AddCommand (const char *commandName, void (*Func) ())
 {
 	// Make sure the function doesn't already exist
-	if (SvCmd_FindCommand(commandName))
-	{
-		DebugPrintf ("%s already exists as a command!\n", commandName);
+	if (_CC_ASSERT_EXPR (!SvCmd_FindCommand(commandName), "Attempted to re-add a command to the list!\n"))
 		return;
-	}
 
 	// We can add it!
 	ServerCommandList().push_back (QNew (com_commandPool, 0) CServerCommand (commandName, Func));
@@ -87,7 +84,7 @@ void SvCmd_RunCommand (const char *commandName)
 	if ((Command = SvCmd_FindCommand(commandName)) != NULL)
 		Command->Run();
 	else
-		DebugPrintf ( "Unknown server command \"%s\"\n", commandName);
+		ServerPrintf ( "Unknown server command \"%s\"\n", commandName);
 }
 
 struct SServerEntityListEntity
@@ -164,7 +161,7 @@ public:
 
 	void Search (const char *WildCard)
 	{
-		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 		{
 			edict_t *e = (*it);
 			if (!e->inUse)
@@ -201,14 +198,14 @@ void SvCmd_EntList_f ()
 	CServerEntityList tmp;
 	tmp.Search (WildCard.c_str());
 
-	DebugPrintf ("Entity Stats\n"
+	ServerPrintf ("Entity Stats\n"
 			"      old        amount       origin             classname\n"
 			"----  ---        ------       ----------------   --------------------\n");
 
 	uint32 oldCount = 0, newCount = 0;
 	for (uint32 i = 0; i < tmp.NumInList; i++)
 	{
-		DebugPrintf (
+		ServerPrintf (
 			"#%3u  %s         %5u                          %s\n",
 			i, (tmp.List[i]->Old) ? "Yes" : "No ", tmp.List[i]->Num, tmp.List[i]->className);
 
@@ -216,7 +213,7 @@ void SvCmd_EntList_f ()
 		{
 			SServerEntityListEntity &ent = tmp.List[i]->List[z];
 
-			DebugPrintf (
+			ServerPrintf (
 			"[%2u]                         %4.0f %4.0f %4.0f\n",
 			z+1, ent.Origin.X, ent.Origin.Y, ent.Origin.Z);
 		}
@@ -227,15 +224,16 @@ void SvCmd_EntList_f ()
 			newCount += tmp.List[i]->Num;
 	}
 
-	DebugPrintf ("----  ---        ------       --------------------------\n");
-	DebugPrintf ("Tally Old:       %5u          %5.0f%%\n", oldCount, (!oldCount) ? 0 : (float)oldCount / ((float)(oldCount + newCount)) * 100);
-	DebugPrintf ("Tally New:       %5u          %5.0f%%\n", newCount, (!newCount) ? 0 : (float)newCount / ((float)(oldCount + newCount)) * 100);
+	ServerPrintf (	"----  ---        ------       --------------------------\n"
+					"Tally Old:       %5u          %5.0f%%\n"
+					"Tally New:       %5u          %5.0f%%\n",					
+	oldCount, (!oldCount) ? 0 : (float)oldCount / ((float)(oldCount + newCount)) * 100, newCount, (!newCount) ? 0 : (float)newCount / ((float)(oldCount + newCount)) * 100);
 }
 
 extern char *gEntString;
 void SvCmd_Dump_f ()
 {
-	CFile File ((std::cc_string("/maps/ents/") + level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
+	CFile File ((std::cc_string("/maps/ents/") + Level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
 
 	if (!File.Valid())
 		return;
@@ -264,7 +262,7 @@ void SvCmd_Ban_t ()
 		Bans.LoadFromFile ();
 	else if (str == "list")
 	{
-		DebugPrintf (
+		ServerPrintf (
 			"Name/IP                   IP       Flags\n"
 			"---------------------    ----      -----\n");
 
@@ -275,7 +273,7 @@ void SvCmd_Ban_t ()
 			if (!Index->IP)
 				continue;
 
-			DebugPrintf ("%-24s Yes         %u\n", Index->IPAddress->str, Index->Flags);
+			ServerPrintf ("%-24s Yes         %u\n", Index->IPAddress->str, Index->Flags);
 		}
 
 		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); ++it)
@@ -285,7 +283,7 @@ void SvCmd_Ban_t ()
 			if (Index->IP)
 				continue;
 
-			DebugPrintf ("%-24s No          %u\n", Index->Name, Index->Flags);
+			ServerPrintf ("%-24s No          %u\n", Index->Name, Index->Flags);
 		}
 	}
 	else if (str == "name")
@@ -294,9 +292,9 @@ void SvCmd_Ban_t ()
 		{
 			std::cc_string name = ArgGets(4);
 			if (Bans.RemoveFromList (name.c_str()))
-				DebugPrintf ("Removed %s from ban list\n", name.c_str());
+				ServerPrintf ("Removed %s from ban list\n", name.c_str());
 			else
-				DebugPrintf ("%s not found in ban list\n", name.c_str());
+				ServerPrintf ("%s not found in ban list\n", name.c_str());
 		}
 		else
 		{
@@ -304,16 +302,16 @@ void SvCmd_Ban_t ()
 			const uint8 flags = ArgGeti(4);
 
 			if (Bans.AddToList (name.c_str(), flags))
-				DebugPrintf ("Added %s with flags %u to ban list\n", name.c_str(), flags);
+				ServerPrintf ("Added %s with flags %u to ban list\n", name.c_str(), flags);
 			else if (Bans.InList (name.c_str()))
 			{
 				if (Bans.ChangeBan (name.c_str(), flags))
-					DebugPrintf ("%s flags changed to %u\n", name.c_str(), flags);
+					ServerPrintf ("%s flags changed to %u\n", name.c_str(), flags);
 				else
-					DebugPrintf ("%s already has flags %u\n", name.c_str(), flags);
+					ServerPrintf ("%s already has flags %u\n", name.c_str(), flags);
 			}
 			else
-				DebugPrintf ("%s not found in ban list\n", name.c_str());
+				ServerPrintf ("%s not found in ban list\n", name.c_str());
 		}
 	}
 	else if (str == "ip")
@@ -322,9 +320,9 @@ void SvCmd_Ban_t ()
 		{
 			IPAddress Ip = CopyIP(ArgGets(4).c_str());
 			if (Bans.RemoveFromList (Ip))
-				DebugPrintf ("Removed %s from ban list\n", Ip.str);
+				ServerPrintf ("Removed %s from ban list\n", Ip.str);
 			else
-				DebugPrintf ("%s not found in ban list\n", Ip.str);
+				ServerPrintf ("%s not found in ban list\n", Ip.str);
 		}
 		else
 		{
@@ -332,20 +330,20 @@ void SvCmd_Ban_t ()
 			const uint8 flags = ArgGeti(4);
 
 			if (Bans.AddToList (Ip, flags))
-				DebugPrintf ("Added %s with flags %u to ban list\n", Ip.str, flags);
+				ServerPrintf ("Added %s with flags %u to ban list\n", Ip.str, flags);
 			else if (Bans.InList (Ip))
 			{
 				if (Bans.ChangeBan (Ip, flags))
-					DebugPrintf ("%s flags changed to %u\n", Ip.str, flags);
+					ServerPrintf ("%s flags changed to %u\n", Ip.str, flags);
 				else
-					DebugPrintf ("%s already has flags %u\n", Ip.str, flags);
+					ServerPrintf ("%s already has flags %u\n", Ip.str, flags);
 			}
 			else
-				DebugPrintf ("%s not found in ban list\n", Ip.str);
+				ServerPrintf ("%s not found in ban list\n", Ip.str);
 		}
 	}
 	else
-		DebugPrintf (
+		ServerPrintf (
 		"Unknown ban command \"%s\"\n"
 		"List of available ban commands:\n"
 		"list                       List all current bans\n"

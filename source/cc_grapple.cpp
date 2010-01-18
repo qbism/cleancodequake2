@@ -42,9 +42,9 @@ CWeapon(0, -1, "models/weapons/grapple/tris.md2", 0, 5, 6, 9,
 {
 }
 
-bool CGrapple::CanFire (CPlayerEntity *ent)
+bool CGrapple::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 6:
 		return true;
@@ -52,9 +52,9 @@ bool CGrapple::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CGrapple::CanStopFidgetting (CPlayerEntity *ent)
+bool CGrapple::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 10:
 	case 18:
@@ -64,16 +64,16 @@ bool CGrapple::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-bool CGrapple::AttemptToFire (CPlayerEntity *ent)
+bool CGrapple::AttemptToFire (CPlayerEntity *Player)
 {
 	return true;
 }
 
-// ent is player
-void CGrapple::PlayerResetGrapple(CPlayerEntity *ent)
+// Player is player
+void CGrapple::PlayerResetGrapple(CPlayerEntity *Player)
 {
-	if (ent->Client.Grapple.Entity)
-		ent->Client.Grapple.Entity->ResetGrapple ();
+	if (Player->Client.Grapple.Entity)
+		Player->Client.Grapple.Entity->ResetGrapple ();
 }
 
 void CGrapple::Fire (CPlayerEntity *Player)

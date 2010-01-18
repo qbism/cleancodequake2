@@ -233,7 +233,7 @@ public:
 		KEY_RIGHT
 	};
 
-	CPlayerEntity		*ent; // A pointer to the entity that is running the show (needed?)
+	CPlayerEntity		*Player; // A pointer to the entity that is running the show (needed?)
 	sint8				Cursor; // Cursor position (relative to order)
 	EMenuKeys			Key; // Key hit this frame
 	// CurrentMenu is set to a copy of whatever menu class
@@ -242,9 +242,9 @@ public:
 	bool				InMenu;
 
 	CMenuState			();
-	CMenuState			(CPlayerEntity *ent);
+	CMenuState			(CPlayerEntity *Player);
 
-	void Initialize		(CPlayerEntity *ent);
+	void Initialize		(CPlayerEntity *Player);
 
 	void OpenMenu		(); // Do this AFTER setting CurrentMenu
 	void CloseMenu		();
@@ -255,7 +255,7 @@ public:
 
 	void Clear ()
 	{
-		ent = NULL;
+		Player = NULL;
 		Cursor = -1;
 		Key = KEY_NONE;
 		CurrentMenu = NULL;
@@ -295,7 +295,7 @@ public:
 	}
 
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
-	FrameNumber_t		EnterFrame;		// level.Frame the client entered the game
+	FrameNumber_t		EnterFrame;		// Level.Frame the client entered the game
 	sint32				Score;			// frags, etc
 	vec3f				CmdAngles;		// angles sent over in the last command
 
@@ -609,7 +609,7 @@ public:
 	void			Begin ();
 	bool			Connect (char *userinfo);
 	void			Disconnect ();
-	void			Obituary (CBaseEntity *attacker);
+	void			Obituary (CBaseEntity *Attacker);
 
 	void			SpectatorRespawn ();
 	void			Respawn ();
@@ -653,7 +653,7 @@ public:
 
 	void			DeathmatchScoreboardMessage (bool reliable);
 	void			EndServerFrame ();
-	void			LookAtKiller (CBaseEntity *inflictor, CBaseEntity *attacker);
+	void			LookAtKiller (CBaseEntity *Inflictor, CBaseEntity *Attacker);
 
 	void			InitResp ();
 	static void		SaveClientData ();
@@ -670,7 +670,7 @@ public:
 	bool			CTFStart ();
 #endif
 
-	void			Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void			Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	// Printing routines
 	inline void		PrintToClient (EGamePrintLevel printLevel, char *fmt, ...);
@@ -680,7 +680,7 @@ public:
 	void			ChasePrev();
 	void			GetChaseTarget ();
 
-	void			TossHead (sint32 damage);
+	void			TossHead (sint32 Damage);
 
 	void			P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result);
 	void			PlayerNoiseAt (vec3f Where, sint32 type);

@@ -164,7 +164,6 @@ void CPath::CreatePath ()
 		if (n == End)
 		{
 			// Construct path
-			//gi.dprintf ("Path!\n");
 			Incomplete = false;
 
 			while (n)
@@ -241,13 +240,13 @@ void CPath::Load (CFile &f)
 		Path.push_back (NodeList[f.Read<uint32> ()]);
 }
 
-void Cmd_Node_f (CPlayerEntity *ent);
-CCvar *DebugNodes;
+void Cmd_Node_f (CPlayerEntity *Player);
+CCvar DebugNodes;
 
 void Nodes_Register ()
 {
 	Cmd_AddCommand ("node",				Cmd_Node_f);
-	DebugNodes = QNew (com_cvarPool, 0) CCvar("node_debug", "0", CVAR_LATCH_SERVER);
+	DebugNodes.Register ("node_debug", "0", CVAR_LATCH_SERVER);
 }
 
 void InitNodes ()
@@ -266,23 +265,23 @@ void ShutdownNodes ()
 
 edict_t *PlayerNearby (vec3f origin, sint32 distance)
 {
-	CPlayerEntity *ent = NULL;
+	CPlayerEntity *Player = NULL;
 
-	while ((ent = FindRadius <CPlayerEntity, ENT_PLAYER> (ent, origin, distance)) != NULL)
+	while ((Player = FindRadius <CPlayerEntity, ENT_PLAYER> (ent, origin, distance)) != NULL)
 	{
-		if (ent->GetInUse())
-			return ent->gameEntity;
+		if (Player->GetInUse())
+			return Player->gameEntity;
 	}
 	return NULL;
 }
 
 void PrintVerboseNodes (vec3f origin, uint32 numNode, ENodeType Type)
 {
-	CPlayerEntity *ent = NULL;
+	CPlayerEntity *Player = NULL;
 
-	while ((ent = FindRadius <CPlayerEntity, ENT_PLAYER>(ent, origin, 25)) != NULL)
+	while ((Player = FindRadius <CPlayerEntity, ENT_PLAYER>(ent, origin, 25)) != NULL)
 	{
-		if (ent->GetInUse())
+		if (Player->GetInUse())
 		{
 			char *nodeType = "normal";
 			switch (Type)
@@ -297,7 +296,7 @@ void PrintVerboseNodes (vec3f origin, uint32 numNode, ENodeType Type)
 				nodeType = "jump";
 				break;
 			}
-			ent->PrintToClient (PRINT_HIGH, "You are very close to node %i (%s)\n", numNode, nodeType);
+			Player->PrintToClient (PRINT_HIGH, "You are very close to node %i (%s)\n", numNode, nodeType);
 		}
 	}
 }
@@ -314,7 +313,7 @@ CPathNode *DropNode (edict_t *ent)
 
 void RunNodes()
 {
-	if (!DebugNodes->Integer())
+	if (!DebugNodes.Integer())
 		return;
 
 	for (uint32 i = 0; i < NodeList.size(); i++)
@@ -334,7 +333,7 @@ void RunNodes()
 
 void SpawnNodeEntity (CPathNode *Node)
 {
-	if (!DebugNodes->Integer())
+	if (!DebugNodes.Integer())
 		return;
 
 	Node->Ent = QNewEntityOf CNodeEntity;
@@ -346,7 +345,7 @@ void SpawnNodeEntity (CPathNode *Node)
 
 void CheckNodeFlags (CPathNode *Node)
 {
-	if (!DebugNodes->Integer())
+	if (!DebugNodes.Integer())
 		return;
 
 	Node->Ent->State.GetEffects() = Node->Ent->State.GetRenderEffects() = 0;
@@ -369,19 +368,19 @@ void CheckNodeFlags (CPathNode *Node)
 }
 
 void ConnectNode (CPathNode *Node1, CPathNode *Node2);
-void AddNode (CPlayerEntity *ent, vec3f origin)
+void AddNode (CPlayerEntity *Player, vec3f origin)
 {
 	NodeList.push_back(QNew (com_entityPool, 0) CPathNode(origin, NODE_REGULAR));
 
 	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
-	ent->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
+	Player->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
 
 	if (Q_stricmp (ArgGets(2).c_str(), "connect") == 0)
 	{
-		if (ent->Client.Respawn.LastNode)
-			ConnectNode (ent->Client.Respawn.LastNode, NodeList.at(NodeList.size() - 1));
+		if (Player->Client.Respawn.LastNode)
+			ConnectNode (Player->Client.Respawn.LastNode, NodeList.at(NodeList.size() - 1));
 	}
-	ent->Client.Respawn.LastNode = NodeList.at(NodeList.size() - 1);
+	Player->Client.Respawn.LastNode = NodeList.at(NodeList.size() - 1);
 }
 
 void ConnectNode (CPathNode *Node1, CPathNode *Node2)
@@ -402,7 +401,7 @@ size_t GetNodeIndex (CPathNode *Node)
 		if (Node == NodeList[i])
 			return i;
 	}
-	DebugPrintf ("OMG BAD\n");
+
 	return 0;
 }
 
@@ -414,7 +413,7 @@ void SaveNodes ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.ServerLevelName;
+	FileName += Level.ServerLevelName;
 	FileName += ".ccn";
 
 	CFile File (FileName.c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
@@ -443,7 +442,7 @@ void SaveNodes ()
 			File.Write<uint32> (GetNodeIndex(NodeList[i]->Children[s]));
 	}
 
-	DebugPrintf ("Saved %u (%u special) nodes\n", NodeList.size(), numSpecialNodes);
+	ServerPrintf ("Saved %u (%u special) nodes\n", NodeList.size(), numSpecialNodes);
 }
 
 void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
@@ -451,7 +450,7 @@ void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
 	char tempString[7];
 	Q_snprintfz (tempString, sizeof(tempString), "*%i", modelNum);
 
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
 		edict_t *e = (*it);
 		if (!e->inUse)
@@ -474,7 +473,7 @@ void LinkModelNumberToNode (CPathNode *Node, sint32 modelNum)
 			return;
 		}
 	}
-	DebugPrintf ("WARNING: Couldn't find linked model for node!\n");
+	ServerPrintf ("WARNING: Couldn't find linked model for node!\n");
 }
 
 void LoadNodes ()
@@ -484,7 +483,7 @@ void LoadNodes ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.ServerLevelName;
+	FileName += Level.ServerLevelName;
 	FileName += ".ccn";
 
 	CFile File (FileName.c_str(), FILEMODE_READ);
@@ -500,7 +499,7 @@ void LoadNodes ()
 	lastId = File.Read<uint32> ();
 
 	if (version != NODE_VERSION)
-		DebugPrintf ("Old version of nodes!\n");
+		ServerPrintf ("Old version of nodes!\n");
 
 	sint32 **tempChildren = QNew (com_genericPool, 0) sint32*[lastId];
 
@@ -542,7 +541,7 @@ void LoadNodes ()
 	}
 
 	QDelete[] tempChildren;
-	DebugPrintf ("Loaded %u (%u special) nodes\n", lastId, numSpecialNodes);
+	ServerPrintf ("Loaded %u (%u special) nodes\n", lastId, numSpecialNodes);
 }
 
 void FinalizeNodes ()
@@ -603,9 +602,9 @@ CPathNode *GetClosestNodeTo (vec3f origin)
 	return Best;
 }
 
-void Cmd_Node_f (CPlayerEntity *ent)
+void Cmd_Node_f (CPlayerEntity *Player)
 {
-	vec3f origin = ent->State.GetOrigin();
+	vec3f origin = Player->State.GetOrigin();
 	std::cc_string cmd = ArgGets(1);
 
 	if (Q_stricmp (cmd.c_str(), "save") == 0)
@@ -616,9 +615,9 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		FinalizeNodes ();
 	}
 	else if (Q_stricmp (cmd.c_str(), "drop") == 0)
-		AddNode (ent, origin);
+		AddNode (Player, origin);
 	else if (Q_stricmp (cmd.c_str(), "clearlastnode") == 0)
-		ent->Client.Respawn.LastNode = NULL;
+		Player->Client.Respawn.LastNode = NULL;
 	else if (Q_stricmp (cmd.c_str(), "connect") == 0)
 	{
 		uint32 firstId = ArgGeti(2);
@@ -635,7 +634,7 @@ void Cmd_Node_f (CPlayerEntity *ent)
 			return;
 		}
 
-		ent->PrintToClient (PRINT_HIGH, "Connecting nodes %i and %i...\n", firstId, secondId);
+		Player->PrintToClient (PRINT_HIGH, "Connecting nodes %i and %i...\n", firstId, secondId);
 		ConnectNode (NodeList[firstId], NodeList[secondId]);
 	}
 	else if (Q_stricmp (cmd.c_str(), "clearstate") == 0)
@@ -667,10 +666,10 @@ void Cmd_Node_f (CPlayerEntity *ent)
 		CPathNode *Node = NodeList[ArgGeti(2)];
 
 		vec3f forward;
-		ent->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
+		Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
 		vec3f end = origin.MultiplyAngles (8192, forward);
 
-		CTrace trace (origin, end, ent, CONTENTS_MASK_ALL);
+		CTrace trace (origin, end, Player, CONTENTS_MASK_ALL);
 
 		if (trace.ent && (trace.Ent->EntityFlags & ENT_BRUSHMODEL))
 		{
@@ -679,17 +678,17 @@ void Cmd_Node_f (CPlayerEntity *ent)
 			if (BrushModel->Model && BrushModel->Model[0] == '*')
 			{
 				Node->LinkedEntity = trace.Ent;
-				DebugPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.Ent->ClassName.c_str());
+				ServerPrintf ("Linked %u with %s\n", GetNodeIndex(Node), trace.Ent->ClassName.c_str());
 			}
 		}
 	}
 	else if (Q_stricmp (cmd.c_str(), "monstergoal") == 0)
 	{
 		vec3f forward;
-		ent->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
+		Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
 		vec3f end = origin.MultiplyAngles (8192, forward);
 
-		CTrace trace (origin, end, ent, CONTENTS_MASK_ALL);
+		CTrace trace (origin, end, Player, CONTENTS_MASK_ALL);
 
 		if (trace.Ent && (trace.Ent->EntityFlags & ENT_MONSTER))
 		{
@@ -765,7 +764,7 @@ void SavePathTable ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.ServerLevelName;
+	FileName += Level.ServerLevelName;
 	FileName += ".cnt";
 
 	CFile File (FileName.c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
@@ -806,7 +805,7 @@ void LoadPathTable ()
 	std::cc_string FileName;
 
 	FileName += "maps/nodes/";
-	FileName += level.ServerLevelName;
+	FileName += Level.ServerLevelName;
 	FileName += ".cnt";
 
 	CFile File (FileName.c_str(), FILEMODE_READ);

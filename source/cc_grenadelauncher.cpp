@@ -41,9 +41,9 @@ CWeapon(5, 0, "models/weapons/v_launch/tris.md2", 0, 5, 6, 16,
 {
 }
 
-bool CGrenadeLauncher::CanFire (CPlayerEntity *ent)
+bool CGrenadeLauncher::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 6:
 		return true;
@@ -51,9 +51,9 @@ bool CGrenadeLauncher::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *ent)
+bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 34:
 	case 51:
@@ -63,29 +63,29 @@ bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CGrenadeLauncher::Fire (CPlayerEntity *ent)
+void CGrenadeLauncher::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, ent->ViewHeight-8), forward, right, start;
+	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
 	const sint32	damage = CalcQuadVal(120);
 	const float	radius = 160;
 
-	FireAnimation (ent);
+	FireAnimation (Player);
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	ent->Client.KickOrigin = forward * -2;
-	ent->Client.KickAngles.X = -1;
+	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickAngles.X = -1;
 
-	CGrenade::Spawn (ent, start, forward, damage, 600, 25, radius);
+	CGrenade::Spawn (Player, start, forward, damage, 600, 25, radius);
 
-	Muzzle (ent, MZ_GRENADE);
-	AttackSound (ent);
+	Muzzle (Player, MZ_GRENADE);
+	AttackSound (Player);
 
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	DepleteAmmo(ent, 1);
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	DepleteAmmo(Player, 1);
 
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
 WEAPON_DEFS (CGrenadeLauncher);

@@ -203,16 +203,16 @@ public:
 
 	void			Think ();
 
-	void			Pain (CBaseEntity *other, float kick, sint32 damage);
-	void			Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void			Pain (CBaseEntity *Other, sint32 Damage);
+	void			Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
-	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf); // Empty
-	void			Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void	Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf); // Empty
+	void			Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
 	bool			Run ();
-	void			ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects = EF_GIB);
+	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
 
 	void			Spawn ();
 };
@@ -331,7 +331,7 @@ public:
 	virtual void SaveMonsterFields (CFile &File) {};
 	virtual void LoadMonsterFields (CFile &File) {};
 
-	virtual void		Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
+	virtual void		Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
 
 #if MONSTER_USE_ROGUE_AI
 	void				DuckDown ();
@@ -348,9 +348,9 @@ public:
 	virtual void		Walk			();
 	virtual void		Run				();
 #if !MONSTER_USE_ROGUE_AI
-	virtual void		Dodge			(CBaseEntity *other, float eta);
+	virtual void		Dodge			(CBaseEntity *Other, float eta);
 #else
-	virtual void		Dodge			(CBaseEntity *attacker, float eta, CTrace *tr);
+	virtual void		Dodge			(CBaseEntity *Attacker, float eta, CTrace *tr);
 	void				DoneDodge	();
 #endif
 	virtual void		Attack			();
@@ -358,7 +358,7 @@ public:
 	virtual void		Sight			();
 	virtual bool		CheckAttack		();
 
-	virtual void		ReactToDamage	(CBaseEntity *attacker);
+	virtual void		ReactToDamage	(CBaseEntity *Attacker);
 
 	virtual void		MonsterThink	();
 	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
@@ -397,19 +397,19 @@ public:
 
 	void				MonsterDeathUse ();
 
-	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
-	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect);
-	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype);
-	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype);
-	void				MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
-	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
-	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
+	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
+	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype);
+	void				MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
+	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
+	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 
 #if XATRIX_FEATURES
-	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 	void				MonsterFireBeam (class CMonsterBeamLaser *Laser);
-	void				MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
-	void				MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 #endif
 
 #if MONSTERS_ARENT_STUPID
@@ -439,8 +439,8 @@ public:
 	bool				MoveStep (vec3f move, bool ReLink);
 
 	virtual void		Spawn () = 0;
-	virtual void		Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) = 0;
-	virtual void		Pain(CBaseEntity *other, float kick, sint32 damage) = 0;
+	virtual void		Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
+	virtual void		Pain(CBaseEntity *Other, sint32 Damage) = 0;
 };
 
 #if XATRIX_FEATURES
@@ -514,7 +514,7 @@ extern uint32 LastID;
 		if (newClass->CheckValidity()) \
 		{	\
 			Monster->Spawn (); \
-			newClass->NextThink = level.Frame + 1; \
+			newClass->NextThink = Level.Frame + 1; \
 		}	\
 		return newClass; \
 	} \

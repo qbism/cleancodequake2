@@ -45,8 +45,8 @@ public:
 			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
 			   char *Precache, EPowerupFlags PowerupFlags);
 
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
-	void Use (CPlayerEntity *ent);
+	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	void Use (CPlayerEntity *Player);
 };
 
 #else

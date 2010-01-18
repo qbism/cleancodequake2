@@ -108,8 +108,8 @@ public:
 	void SavePosition ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 	static void Precache ();
@@ -138,7 +138,7 @@ public:
 		sint32 Index = File.Read<sint32> ();
 
 		if (Index != -1)
-			LinkedJorg = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+			LinkedJorg = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 
 		CThinkableEntity::LoadFields (File);
 	}

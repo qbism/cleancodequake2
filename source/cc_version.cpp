@@ -83,7 +83,7 @@ void VerifyVersionFile ()
 
 	if (CompareVersion (prefix.c_str(), major, minor, build))
 	{
-		DebugPrintf ("Version file out of date; updating...\n");
+		ServerPrintf ("Version file out of date; updating...\n");
 		WriteVersion ();
 	}
 }
@@ -210,7 +210,7 @@ void CheckVersionReturnance ()
 			VersionCheckReady = true;
 	#else
 			if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
-				DebugPrintf (
+				ServerPrintf (
 				"==================================\n"
 				"*****************************\n"
 				"There is an update available for CleanCode!\n"
@@ -222,12 +222,12 @@ void CheckVersionReturnance ()
 				CLEANCODE_VERSION_PRINT_ARGS,
 				prefix.c_str(), major, minor, build);
 			else
-				DebugPrintf ("Your version of CleanCode is up to date.\n");
+				ServerPrintf ("Your version of CleanCode is up to date.\n");
 	#endif
 		}
 
 		if (VersionReturnance == VERSION_NEWER)
-			DebugPrintf (
+			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
 			"There is an update available for CleanCode!\n"
@@ -239,7 +239,7 @@ void CheckVersionReturnance ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
 		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrintf ("Your version of CleanCode is up to date.\n");
 
 		VersionReturnance = VERSION_SAME;
 		VersionCheckReady = false;
@@ -328,7 +328,7 @@ void CheckVersionReturnance ()
 	if (VersionCheckReady)
 	{
 		if (VersionReturnance == VERSION_NEWER)
-			DebugPrintf (
+			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
 			"There is an update available for Cl	eanCode!\n"
@@ -340,7 +340,7 @@ void CheckVersionReturnance ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
 		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrintf ("Your version of CleanCode is up to date.\n");
 
 		VersionReturnance = VERSION_SAME;
 		VersionCheckReady = false;
@@ -425,7 +425,7 @@ void CheckNewVersion ()
 		VersionCheckReady = true;
 #else
 		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
-			DebugPrintf (
+			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
 			"There is an update available for CleanCode!\n"
@@ -437,7 +437,7 @@ void CheckNewVersion ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			prefix.c_str(), major, minor, build);
 		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrintf ("Your version of CleanCode is up to date.\n");
 #endif
 
 		Mem_Free (chunk.memory);
@@ -453,13 +453,13 @@ void CheckNewVersion ()
 void InitVersion ()
 {
 #if (VERSION_CHECKING != VC_NONE)
-	DebugPrintf ("Checking for new version...\n");
+	ServerPrintf ("Checking for new version...\n");
 
 	if (!FS_FileExists(VERSION_PATH))
 	{
-		DebugPrintf ("Version file non-existant, writing... ");
+		ServerPrintf ("Version file non-existant, writing... ");
 		WriteVersion ();
-		DebugPrintf ("done\n");
+		ServerPrintf ("done\n");
 	}
 	else
 		VerifyVersionFile ();
@@ -478,7 +478,7 @@ void SvCmd_CCVersion_t ()
 #if (VERSION_CHECKING != VC_NONE)
 	if (ArgGets (2).empty())
 #endif
-		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+		ServerPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
 #if (VERSION_CHECKING != VC_NONE)
 	else
 		CheckNewVersion ();

@@ -63,7 +63,7 @@ public:
 
 	sint32 team; // team
 	sint32 Score; // frags at time of disconnect
-	CPlayerEntity *ent;
+	CPlayerEntity *Player;
 };
 
 CC_ENUM (uint8, EMatchState)
@@ -137,8 +137,6 @@ public:
 	}
 };
 
-extern CCvar *ctf;
-
 #define CTF_TEAM1_SKIN "ctf_r"
 #define CTF_TEAM2_SKIN "ctf_b"
 
@@ -156,7 +154,7 @@ extern CCvar *ctf;
 #define CTF_FRAG_CARRIER_ASSIST_BONUS		2	// award for fragging a flag carrier if a capture happens almost immediately
 
 #define CTF_TARGET_PROTECT_RADIUS			400	// the radius around an object being defended where a target will be worth extra frags
-#define CTF_ATTACKER_PROTECT_RADIUS			400	// the radius around an object being defended where an attacker will get extra frags when making kills
+#define CTF_ATTACKER_PROTECT_RADIUS			400	// the radius around an object being defended where an Attacker will get extra frags when making kills
 
 #define CTF_CARRIER_DANGER_PROTECT_TIMEOUT	80
 #define CTF_FRAG_CARRIER_ASSIST_TIMEOUT		100
@@ -210,51 +208,50 @@ inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 }
 
 
-edict_t *SelectCTFSpawnPoint (edict_t *ent);
 void CTFCalcScores();
-void SetCTFStats(edict_t *ent);
-void CTFTeam_f (CPlayerEntity *ent);
-void CTFID_f (CPlayerEntity *ent);
+void CTFTeam_f (CPlayerEntity *Player);
+void CTFID_f (CPlayerEntity *Player);
 void CTFSay_Team(CPlayerEntity *who, char *msg);
 void CTFResetFlag(ETeamIndex Team);
-void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *attacker);
-void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *attacker);
+void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *Attacker);
+void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *Attacker);
 
 //TECH
-void CTFOpenJoinMenu(CPlayerEntity *ent);
-void CTFVoteYes(CPlayerEntity *ent);
-void CTFVoteNo(CPlayerEntity *ent);
-void CTFReady(CPlayerEntity *ent);
-void CTFNotReady(CPlayerEntity *ent);
+void CTFOpenJoinMenu(CPlayerEntity *Player);
+void CTFVoteYes(CPlayerEntity *Player);
+void CTFVoteNo(CPlayerEntity *Player);
+void CTFReady(CPlayerEntity *Player);
+void CTFNotReady(CPlayerEntity *Player);
 bool CTFNextMap();
 bool CTFMatchSetup();
 bool CTFMatchOn();
-void CTFGhost(CPlayerEntity *ent);
-void CTFAdmin(CPlayerEntity *ent);
+void CTFGhost(CPlayerEntity *Player);
+void CTFAdmin(CPlayerEntity *Player);
 bool CTFInMatch();
-void CTFStats(CPlayerEntity *ent);
-void CTFWarp(CPlayerEntity *ent);
-void CTFBoot(CPlayerEntity *ent);
-void CTFPlayerList(CPlayerEntity *ent);
+void CTFStats(CPlayerEntity *Player);
+void CTFWarp(CPlayerEntity *Player);
+void CTFBoot(CPlayerEntity *Player);
+void CTFPlayerList(CPlayerEntity *Player);
 
 bool CTFCheckRules();
 void CreateCTFStatusbar ();
 
-void CTFObserver(CPlayerEntity *ent);
+void CTFObserver(CPlayerEntity *Player);
 
 extern CCTFGameLocals ctfgame;
 
-extern	CCvar *ctf;
-extern	CCvar *ctf_forcejoin;
-
-extern	CCvar *competition;
-extern	CCvar *matchlock;
-extern	CCvar *electpercentage;
-extern	CCvar *matchtime;
-extern	CCvar *matchsetuptime;
-extern	CCvar *matchstarttime;
-extern	CCvar *admin_password;
-extern	CCvar *warp_list;
+extern CCvar	ctf,
+		ctf_forcejoin,
+		competition,
+		matchlock,
+		electpercentage,
+		matchtime,
+		matchsetuptime,
+		matchstarttime,
+		admin_password,
+		warp_list,
+		capturelimit,
+		instantweap;
 
 #else
 FILE_WARNING

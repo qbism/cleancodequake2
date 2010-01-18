@@ -41,14 +41,14 @@ CWeapon(8, 0, "models/weapons/v_hyperb/tris.md2", 0, 5, 6, 20,
 {
 }
 
-bool CHyperBlaster::CanFire (CPlayerEntity *ent)
+bool CHyperBlaster::CanFire (CPlayerEntity *Player)
 {
-	if (ent->Client.PlayerState.GetGunFrame() >= 6 && ent->Client.PlayerState.GetGunFrame() <= 11)
+	if (Player->Client.PlayerState.GetGunFrame() >= 6 && Player->Client.PlayerState.GetGunFrame() <= 11)
 		return true;
 	return false;
 }
 
-bool CHyperBlaster::CanStopFidgetting (CPlayerEntity *ent)
+bool CHyperBlaster::CanStopFidgetting (CPlayerEntity *Player)
 {
 	return false;
 }
@@ -63,101 +63,101 @@ vec3f hyperblasterOffsetTable[] =
 	vec3f( 0, 0, 4.0f		)
 };
 
-void CHyperBlaster::Fire (CPlayerEntity *ent)
+void CHyperBlaster::Fire (CPlayerEntity *Player)
 {
-	ent->Client.WeaponSound = SoundIndex("weapons/hyprbl1a.wav");
+	Player->Client.WeaponSound = SoundIndex("weapons/hyprbl1a.wav");
 
-	if (!(ent->Client.Buttons & BUTTON_ATTACK))
-		ent->Client.PlayerState.GetGunFrame()++;
+	if (!(Player->Client.Buttons & BUTTON_ATTACK))
+		Player->Client.PlayerState.GetGunFrame()++;
 	else
 	{
-		if (!ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo) )
+		if (!Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->Item->Ammo) )
 		{
-			OutOfAmmo(ent);
-			NoAmmoWeaponChange (ent);
+			OutOfAmmo(Player);
+			NoAmmoWeaponChange (Player);
 		}
 		else
 		{
-			const sint32	effect = ((ent->Client.PlayerState.GetGunFrame() == 6) || (ent->Client.PlayerState.GetGunFrame() == 9)) ? EF_HYPERBLASTER : 0,
-							damage = (game.GameMode & GAME_DEATHMATCH) ?
+			const sint32	effect = ((Player->Client.PlayerState.GetGunFrame() == 6) || (Player->Client.PlayerState.GetGunFrame() == 9)) ? EF_HYPERBLASTER : 0,
+							damage = (Game.GameMode & GAME_DEATHMATCH) ?
 					CalcQuadVal(15)
 					:
 					CalcQuadVal(20);
 
 			vec3f	forward, right, start;
 
-			ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+			Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 			// I replaced this part with a table because they are constant.
-			ent->P_ProjectSource (vec3f(24, 8, ent->ViewHeight-8) + hyperblasterOffsetTable[ent->Client.PlayerState.GetGunFrame() - 6], forward, right, start);
+			Player->P_ProjectSource (vec3f(24, 8, Player->ViewHeight-8) + hyperblasterOffsetTable[Player->Client.PlayerState.GetGunFrame() - 6], forward, right, start);
 
-			ent->Client.KickOrigin = forward * -2;
-			ent->Client.KickAngles.X = -1;
+			Player->Client.KickOrigin = forward * -2;
+			Player->Client.KickAngles.X = -1;
 
-			CBlasterProjectile::Spawn (ent, start, forward, damage, 1000, effect, true);
+			CBlasterProjectile::Spawn (Player, start, forward, damage, 1000, effect, true);
 
 			// send muzzle flash
-			Muzzle (ent, MZ_HYPERBLASTER);
-			AttackSound (ent);
+			Muzzle (Player, MZ_HYPERBLASTER);
+			AttackSound (Player);
 
-			ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-			DepleteAmmo (ent, 1);
+			Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+			DepleteAmmo (Player, 1);
 
-			FireAnimation (ent);
+			FireAnimation (Player);
 		}
 
-		ent->Client.PlayerState.GetGunFrame()++;
-		if (ent->Client.PlayerState.GetGunFrame() == 12 && ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo))
-			ent->Client.PlayerState.GetGunFrame() = 6;
+		Player->Client.PlayerState.GetGunFrame()++;
+		if (Player->Client.PlayerState.GetGunFrame() == 12 && Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->Item->Ammo))
+			Player->Client.PlayerState.GetGunFrame() = 6;
 	}
 
-	if (ent->Client.PlayerState.GetGunFrame() == 12)
+	if (Player->Client.PlayerState.GetGunFrame() == 12)
 	{
-		ent->PlaySound (CHAN_AUTO, SoundIndex("weapons/hyprbd1a.wav"));
-		ent->Client.WeaponSound = 0;
+		Player->PlaySound (CHAN_AUTO, SoundIndex("weapons/hyprbd1a.wav"));
+		Player->Client.WeaponSound = 0;
 	}
 }
 
 #if XATRIX_FEATURES
 #include "cc_xatrix_ionripper.h"
 
-void CHyperBlaster::Use (CWeaponItem *Wanted, CPlayerEntity *ent)
+void CHyperBlaster::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 {
-	if (!ent->Client.Persistent.Inventory.Has(Wanted))
+	if (!Player->Client.Persistent.Inventory.Has(Wanted))
 	{
 		// Do we have an ion ripper?
-		if (ent->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
-			CIonRipper::Weapon.Use (Wanted, ent); // Use that.
+		if (Player->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
+			CIonRipper::Weapon.Use (Wanted, Player); // Use that.
 		else
-			ent->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
 		return;
 	}
 
 	// see if we're already using it
-	if (ent->Client.Persistent.Weapon == this)
+	if (Player->Client.Persistent.Weapon == this)
 	{
 		// Do we have an ion ripper?
-		if (ent->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
-			CIonRipper::Weapon.Use (Wanted, ent); // Use that.
+		if (Player->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
+			CIonRipper::Weapon.Use (Wanted, Player); // Use that.
 		return;
 	}
 
-	if (Wanted->Ammo && !g_select_empty->Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	if (Wanted->Ammo && !g_select_empty.Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
 	{
-		if (!ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+		if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
 		{
-			ent->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
 			return;
 		}
 
-		if (ent->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+		if (Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
 		{
-			ent->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
+			Player->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
 			return;
 		}
 	}
 
 	// change to this weapon when down
-	ent->Client.NewWeapon = this;
+	Player->Client.NewWeapon = this;
 }
 #endif
 

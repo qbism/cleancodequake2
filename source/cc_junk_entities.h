@@ -76,7 +76,7 @@ public:
 	void Think ();
 
 	bool Run ();
-	static void Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects = EF_GIB);
+	static void Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
 };
 
 void Init_Junk();

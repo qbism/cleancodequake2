@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_UTILS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_UTILS_H
 
-void	G_TouchTriggers (CBaseEntity *ent);
+void	G_TouchTriggers (CBaseEntity *Entity);
 void G_SetMovedir (vec3f &angles, vec3f &movedir);
 
 typedef std::vector<CBaseEntity*, std::generic_allocator<CBaseEntity*> > TTargetList;
@@ -46,14 +46,14 @@ TEntityType *CC_Find (CBaseEntity *From, const char *Match)
 {
 	edict_t *gameEnt;
 	if (!From)
-		gameEnt = g_edicts;
+		gameEnt = Game.Entities;
 	else
 	{
 		gameEnt = From->gameEntity;
 		gameEnt++;
 	}
 
-	for ( ; gameEnt < &g_edicts[Game.GetNumEdicts()]; gameEnt++)
+	for ( ; gameEnt < &Game.Entities[GameAPI.GetNumEdicts()]; gameEnt++)
 	{
 		if (!gameEnt->inUse)
 			continue;
@@ -92,14 +92,14 @@ TEntityType *CC_FindByClassName (CBaseEntity *From, const char *Match)
 {
 	edict_t *gameEnt;
 	if (!From)
-		gameEnt = g_edicts;
+		gameEnt = Game.Entities;
 	else
 	{
 		gameEnt = From->gameEntity;
 		gameEnt++;
 	}
 
-	for ( ; gameEnt < &g_edicts[Game.GetNumEdicts()]; gameEnt++)
+	for ( ; gameEnt < &Game.Entities[GameAPI.GetNumEdicts()]; gameEnt++)
 	{
 		if (!gameEnt->inUse)
 			continue;
@@ -174,9 +174,9 @@ inline ERangeType Range (vec3f left, vec3f right)
 	return RANGE_FAR;
 }
 
-ERangeType Range (CBaseEntity *self, CBaseEntity *other);
-bool IsInFront (CBaseEntity *self, CBaseEntity *other);
-bool IsVisible (CBaseEntity *self, CBaseEntity *other);
+ERangeType Range (CBaseEntity *self, CBaseEntity *Other);
+bool IsInFront (CBaseEntity *self, CBaseEntity *Other);
+bool IsVisible (CBaseEntity *self, CBaseEntity *Other);
 
 #else
 FILE_WARNING

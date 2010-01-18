@@ -187,7 +187,7 @@ void CBrushModel::MoveFinal ()
 	Velocity = Dir * RemainingDistance;
 
 	ThinkType = BRUSHTHINK_MOVEDONE;
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 }
 
 void CBrushModel::MoveBegin ()
@@ -201,7 +201,7 @@ void CBrushModel::MoveBegin ()
 
 	float frames = floor((RemainingDistance / Speed) / 0.1f);
 	RemainingDistance -= (frames * Speed / 10);
-	NextThink = level.Frame + frames;
+	NextThink = Level.Frame + frames;
 	ThinkType = BRUSHTHINK_MOVEFINAL;
 }
 
@@ -214,11 +214,11 @@ void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 
 	if (Speed == Accel && Speed == Decel)
 	{
-		if (level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
+		if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 			MoveBegin ();
 		else
 		{
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 			ThinkType = BRUSHTHINK_MOVEBEGIN;
 		}
 	}
@@ -227,7 +227,7 @@ void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 		// accelerative
 		CurrentSpeed = 0;
 		ThinkType = BRUSHTHINK_MOVEACCEL;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	}
 }
 
@@ -255,7 +255,7 @@ void CBrushModel::AngleMoveFinal ()
 	AngularVelocity = move;
 
 	ThinkType = BRUSHTHINK_AMOVEDONE;
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 }
 
 void CBrushModel::AngleMoveBegin ()
@@ -282,7 +282,7 @@ void CBrushModel::AngleMoveBegin ()
 	AngularVelocity = destdelta * 1.0 / (traveltime * 10);
 
 	// set nextthink to trigger a think when dest is reached
-	NextThink = level.Frame + frames;
+	NextThink = Level.Frame + frames;
 	ThinkType = BRUSHTHINK_AMOVEFINAL;
 }
 
@@ -290,11 +290,11 @@ void CBrushModel::AngleMoveCalc (uint32 EndFunc)
 {
 	AngularVelocity.Clear ();
 	this->EndFunc = EndFunc;
-	if (level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
+	if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 		AngleMoveBegin ();
 	else
 	{
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = BRUSHTHINK_AMOVEBEGIN;
 	}
 }
@@ -423,7 +423,7 @@ void CBrushModel::ThinkAccelMove ()
 	}
 
 	Velocity = Dir * CurrentSpeed;
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 	ThinkType = BRUSHTHINK_MOVEACCEL;
 }
 #pragma endregion Brush_Model
@@ -476,22 +476,22 @@ bool CPlatForm::Run ()
 	return CBrushModel::Run();
 };
 
-void CPlatForm::Blocked (CBaseEntity *other)
+void CPlatForm::Blocked (CBaseEntity *Other)
 {
-	if (!(other->GetSvFlags() & SVF_MONSTER) && !(other->EntityFlags & ENT_PLAYER) )
+	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & ENT_PLAYER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
-		if (!other->Freed)
-			other->BecomeExplosion(false);
+		if (!Other->Freed)
+			Other->BecomeExplosion(false);
 		return;
 	}
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 
 	if (MoveState == STATE_UP)
 		GoDown ();
@@ -499,7 +499,7 @@ void CPlatForm::Blocked (CBaseEntity *other)
 		GoUp ();
 };
 
-void CPlatForm::Use (CBaseEntity *other, CBaseEntity *activator)
+void CPlatForm::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (ThinkType)
 		return;		// already down
@@ -517,7 +517,7 @@ void CPlatForm::HitTop ()
 	MoveState = STATE_TOP;
 
 	ThinkType = PLATTHINK_GO_DOWN;
-	NextThink = level.Frame + 30;
+	NextThink = Level.Frame + 30;
 }
 
 void CPlatForm::HitBottom ()
@@ -601,24 +601,24 @@ void CPlatFormInsideTrigger::SaveFields (CFile &File)
 void CPlatFormInsideTrigger::LoadFields (CFile &File)
 {
 	sint32 number = File.Read<sint32> ();
-	Owner = (number == -1) ? NULL : entity_cast<CPlatForm>(g_edicts[number].Entity);
+	Owner = (number == -1) ? NULL : entity_cast<CPlatForm>(Game.Entities[number].Entity);
 
 	CTouchableEntity::LoadFields (File);
 };
 
 IMPLEMENT_SAVE_SOURCE (CPlatFormInsideTrigger)
 
-void CPlatFormInsideTrigger::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CPlatFormInsideTrigger::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(other)->Health <= 0)
+	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(Other)->Health <= 0)
 		return;
-	if (!(other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
 
 	if (Owner->MoveState == STATE_BOTTOM)
 		Owner->GoUp ();
 	else if (Owner->MoveState == STATE_TOP)
-		Owner->NextThink = level.Frame + 10;	// the player is still on the plat, so delay going down
+		Owner->NextThink = Level.Frame + 10;	// the player is still on the plat, so delay going down
 };
 
 void CPlatForm::SpawnInsideTrigger ()
@@ -715,7 +715,7 @@ void CPlatForm::Spawn ()
 	SoundMiddle = SoundIndex ("plats/pt1_mid.wav");
 	SoundEnd = SoundIndex ("plats/pt1_end.wav");
 
-	if (!map_debug->Boolean())
+	if (!map_debug.Boolean())
 		SpawnInsideTrigger ();	// the "start moving" trigger	
 	else
 	{
@@ -861,7 +861,7 @@ void CDoor::HitTop ()
 	if (Wait >= 0)
 	{
 		ThinkType = DOORTHINK_GODOWN;
-		NextThink = level.Frame + Wait;
+		NextThink = Level.Frame + Wait;
 	}
 }
 
@@ -895,7 +895,7 @@ void CDoor::GoDown ()
 	MoveCalc (StartOrigin, DOORENDFUNC_HITBOTTOM);
 }
 
-void CDoor::GoUp (CBaseEntity *activator)
+void CDoor::GoUp (CBaseEntity *Activator)
 {
 	if (MoveState == STATE_UP)
 		return;		// already going up
@@ -903,7 +903,7 @@ void CDoor::GoUp (CBaseEntity *activator)
 	if (MoveState == STATE_TOP)
 	{	// reset top wait time
 		if (Wait >= 0)
-			NextThink = level.Frame + Wait;
+			NextThink = Level.Frame + Wait;
 		return;
 	}
 	
@@ -916,11 +916,11 @@ void CDoor::GoUp (CBaseEntity *activator)
 	MoveState = STATE_UP;
 	MoveCalc (EndOrigin, DOORENDFUNC_HITTOP);
 
-	UseTargets (activator, Message);
+	UseTargets (Activator, Message);
 	UseAreaPortals (true);
 }
 
-void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
+void CDoor::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (Flags & FL_TEAMSLAVE)
 		return;
@@ -945,7 +945,7 @@ void CDoor::Use (CBaseEntity *other, CBaseEntity *activator)
 	{
 		Door->Message.clear();
 		Door->Touchable = false;
-		Door->GoUp (activator);
+		Door->GoUp (Activator);
 	}
 };
 
@@ -975,22 +975,22 @@ void CDoorTrigger::LoadFields (CFile &File)
 	CTouchableEntity::LoadFields (File);
 };
 
-void CDoorTrigger::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CDoorTrigger::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(other)->Health <= 0)
+	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(Other)->Health <= 0)
 		return;
 
-	if (!(other->GetSvFlags() & SVF_MONSTER) && (!(other->EntityFlags & ENT_PLAYER)))
+	if (!(Other->GetSvFlags() & SVF_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)))
 		return;
 
-	if ((GetOwner()->SpawnFlags & DOOR_NOMONSTER) && (other->EntityFlags & ENT_MONSTER))
+	if ((GetOwner()->SpawnFlags & DOOR_NOMONSTER) && (Other->EntityFlags & ENT_MONSTER))
 		return;
 
-	if (level.Frame < TouchDebounce)
+	if (Level.Frame < TouchDebounce)
 		return;
-	TouchDebounce = level.Frame + 10;
+	TouchDebounce = Level.Frame + 10;
 
-	(entity_cast<CDoor>(GetOwner()))->Use (other, other);
+	(entity_cast<CDoor>(GetOwner()))->Use (Other, Other);
 }
 
 void CDoor::CalcMoveSpeed ()
@@ -1036,10 +1036,10 @@ void CDoor::SpawnDoorTrigger ()
 	mins = GetAbsMin ();
 	maxs = GetAbsMax ();
 
-	for (CBaseEntity *other = Team.Chain; other; other = other->Team.Chain)
+	for (CBaseEntity *Other = Team.Chain; Other; Other = Other->Team.Chain)
 	{
-		AddPointToBounds (other->GetAbsMin(), mins, maxs);
-		AddPointToBounds (other->GetAbsMax(), mins, maxs);
+		AddPointToBounds (Other->GetAbsMin(), mins, maxs);
+		AddPointToBounds (Other->GetAbsMax(), mins, maxs);
 	}
 
 	// expand 
@@ -1062,22 +1062,22 @@ void CDoor::SpawnDoorTrigger ()
 	CalcMoveSpeed ();
 }
 
-void CDoor::Blocked (CBaseEntity *other)
+void CDoor::Blocked (CBaseEntity *Other)
 {
-	if (!(other->EntityFlags & ENT_PLAYER) && !(other->EntityFlags & ENT_MONSTER) )
+	if (!(Other->EntityFlags & ENT_PLAYER) && !(Other->EntityFlags & ENT_MONSTER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
-		if (other->GetInUse())
-			other->BecomeExplosion (false);
+		if (Other->GetInUse())
+			Other->BecomeExplosion (false);
 		return;
 	}
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 
 	if (SpawnFlags & DOOR_CRUSHER)
 		return;
@@ -1089,45 +1089,45 @@ void CDoor::Blocked (CBaseEntity *other)
 	{
 		if (MoveState == STATE_DOWN)
 		{
-			for (CBaseEntity *ent = Team.Master; ent; ent = ent->Team.Chain)
-				(entity_cast<CDoor>(ent))->GoUp ((Activator) ? Activator : NULL);
+			for (CBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
+				(entity_cast<CDoor>(Entity))->GoUp ((User) ? User : NULL);
 		}
 		else
 		{
-			for (CBaseEntity *ent = Team.Master; ent; ent = ent->Team.Chain)
-				(entity_cast<CDoor>(ent))->GoDown ();
+			for (CBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
+				(entity_cast<CDoor>(Entity))->GoDown ();
 		}
 	}
 }
 
-void CDoor::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CDoor::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
-	for (CBaseEntity *ent = Team.Master; ent; ent = ent->Team.Chain)
+	for (CBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
 	{
-		CDoor *Door = entity_cast<CDoor>(ent);
+		CDoor *Door = entity_cast<CDoor>(Entity);
 		Door->Health = Door->MaxHealth;
 		Door->CanTakeDamage = false;
 	}
 
-	(entity_cast<CDoor>(Team.Master))->Use (attacker, attacker);
+	(entity_cast<CDoor>(Team.Master))->Use (Attacker, Attacker);
 }
 
-void CDoor::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CDoor::Pain (CBaseEntity *Other, sint32 Damage)
 {
 }
 
-void CDoor::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CDoor::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
 
-	if (level.Frame < TouchDebounce)
+	if (Level.Frame < TouchDebounce)
 		return;
 
-	TouchDebounce = level.Frame + 50;
+	TouchDebounce = Level.Frame + 50;
 
-	(entity_cast<CPlayerEntity>(other))->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
-	other->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
+	(entity_cast<CPlayerEntity>(Other))->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
+	Other->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 }
 
 void CDoor::DoEndFunc ()
@@ -1178,7 +1178,7 @@ void CDoor::Spawn ()
 	
 	if (!Speed)
 		Speed = 100;
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 		Speed *= 2;
 
 	if (!Accel)
@@ -1240,9 +1240,9 @@ void CDoor::Spawn ()
 
 	Link ();
 
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 
-	if (map_debug->Boolean())
+	if (map_debug.Boolean())
 	{
 		GetSolid() = SOLID_BSP;
 		GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
@@ -1322,7 +1322,7 @@ void CRotatingDoor::GoDown ()
 	AngleMoveCalc (DOORENDFUNC_HITBOTTOM);
 }
 
-void CRotatingDoor::GoUp (CBaseEntity *activator)
+void CRotatingDoor::GoUp (CBaseEntity *Activator)
 {
 	if (MoveState == STATE_UP)
 		return;		// already going up
@@ -1330,7 +1330,7 @@ void CRotatingDoor::GoUp (CBaseEntity *activator)
 	if (MoveState == STATE_TOP)
 	{	// reset top wait time
 		if (Wait >= 0)
-			NextThink = level.Frame + Wait;
+			NextThink = Level.Frame + Wait;
 		return;
 	}
 	
@@ -1343,7 +1343,7 @@ void CRotatingDoor::GoUp (CBaseEntity *activator)
 	MoveState = STATE_UP;
 	AngleMoveCalc (DOORENDFUNC_HITTOP);
 
-	UseTargets (activator, Message);
+	UseTargets (Activator, Message);
 	UseAreaPortals (true);
 }
 
@@ -1440,7 +1440,7 @@ void CRotatingDoor::Spawn ()
 
 	Link ();
 
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 	if (Health || TargetName)
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
@@ -1582,7 +1582,7 @@ void CDoorSecret::DoEndFunc ()
 			UseAreaPortals (false);
 			break;
 		case DOORSECRETENDFUNC_5:
-			NextThink = level.Frame + 10;
+			NextThink = Level.Frame + 10;
 			ThinkType = DOORSECRETTHINK_6;
 			break;
 		case DOORSECRETENDFUNC_3:
@@ -1590,11 +1590,11 @@ void CDoorSecret::DoEndFunc ()
 				return;
 
 			// Backcompat
-			NextThink = level.Frame + Wait;
+			NextThink = Level.Frame + Wait;
 			ThinkType = DOORSECRETTHINK_4;
 			break;
 		case DOORSECRETENDFUNC_1:
-			NextThink = level.Frame + 10;
+			NextThink = Level.Frame + 10;
 			ThinkType = DOORSECRETTHINK_2;
 			break;
 	};
@@ -1618,7 +1618,7 @@ void CDoorSecret::Think ()
 	}
 }
 
-void CDoorSecret::Use (CBaseEntity *other, CBaseEntity *activator)
+void CDoorSecret::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	// make sure we're not already moving
 	if (State.GetOrigin() != vec3fOrigin)
@@ -1628,32 +1628,32 @@ void CDoorSecret::Use (CBaseEntity *other, CBaseEntity *activator)
 	UseAreaPortals (true);
 }
 
-void CDoorSecret::Blocked (CBaseEntity *other)
+void CDoorSecret::Blocked (CBaseEntity *Other)
 {
-	if (!(other->EntityFlags & ENT_MONSTER) && (!(other->EntityFlags & ENT_PLAYER)) )
+	if (!(Other->EntityFlags & ENT_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
-		if (other->GetInUse())
-			other->BecomeExplosion(false);
+		if (Other->GetInUse())
+			Other->BecomeExplosion(false);
 		return;
 	}
 
-	if (level.Frame < TouchDebounce)
+	if (Level.Frame < TouchDebounce)
 		return;
-	TouchDebounce = level.Frame + 5;
+	TouchDebounce = Level.Frame + 5;
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CDoorSecret::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CDoorSecret::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	CanTakeDamage = false;
-	Use (attacker, attacker);
+	Use (Attacker, Attacker);
 }
 
 void CDoorSecret::Spawn ()
@@ -1768,7 +1768,7 @@ bool CButton::Run ()
 	return CBrushModel::Run ();
 };
 
-void CButton::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CButton::Pain (CBaseEntity *Other, sint32 Damage)
 {
 };
 
@@ -1786,11 +1786,11 @@ void CButton::DoEndFunc ()
 		State.GetEffects() &= ~EF_ANIM01;
 		State.GetEffects() |= EF_ANIM23;
 
-		UseTargets (Activator, Message);
+		UseTargets (User, Message);
 		State.GetFrame() = 1;
 		if (Wait >= 0)
 		{
-			NextThink = level.Frame + Wait;
+			NextThink = Level.Frame + Wait;
 			ThinkType = BUTTONTHINK_RETURN;
 		}
 		break;
@@ -1825,27 +1825,27 @@ void CButton::Fire ()
 	MoveCalc (EndOrigin, BUTTONENDFUNC_WAIT);
 }
 
-void CButton::Use (CBaseEntity *other, CBaseEntity *activator)
+void CButton::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
-	Activator = activator;
+	User = Activator;
 	Fire ();
 }
 
-void CButton::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CButton::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
 
-	if (entity_cast<CPlayerEntity>(other)->Health <= 0)
+	if (entity_cast<CPlayerEntity>(Other)->Health <= 0)
 		return;
 
-	Activator = other;
+	User = Other;
 	Fire ();
 }
 
-void CButton::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CButton::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
-	Activator = attacker;
+	User = Attacker;
 	Health = MaxHealth;
 	CanTakeDamage = false;
 	Fire ();
@@ -1946,30 +1946,30 @@ bool CTrainBase::Run ()
 	return CBrushModel::Run ();
 };
 
-void CTrainBase::Blocked (CBaseEntity *other)
+void CTrainBase::Blocked (CBaseEntity *Other)
 {
-	if (!(other->EntityFlags & ENT_MONSTER) && (!(other->EntityFlags & ENT_PLAYER)) )
+	if (!(Other->EntityFlags & ENT_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
-		if (other->GetInUse())
-			other->BecomeExplosion (false);
+		if (Other->GetInUse())
+			Other->BecomeExplosion (false);
 		return;
 	}
 
-	if (level.Frame < TouchDebounce)
+	if (Level.Frame < TouchDebounce)
 		return;
 
 	if (!Damage)
 		return;
 
-	TouchDebounce = level.Frame + 5;
+	TouchDebounce = Level.Frame + 5;
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
 void CTrainBase::TrainWait ()
@@ -1978,7 +1978,7 @@ void CTrainBase::TrainWait ()
 	{
 		char	*savetarget = TargetEntity->Target;
 		TargetEntity->Target = TargetEntity->PathTarget;
-		TargetEntity->UseTargets (Activator, Message);
+		TargetEntity->UseTargets (User, Message);
 		TargetEntity->Target = savetarget;
 
 		// make sure we didn't get killed by a killtarget
@@ -1990,7 +1990,7 @@ void CTrainBase::TrainWait ()
 	{
 		if (Wait > 0)
 		{
-			NextThink = level.Frame + Wait;
+			NextThink = Level.Frame + Wait;
 			ThinkType = TRAINTHINK_NEXT;
 		}
 		else if (SpawnFlags & TRAIN_TOGGLE)  // && wait < 0
@@ -2023,7 +2023,7 @@ void CTrainBase::Next ()
 
 		if (!TargetEntity)
 		{
-			DebugPrintf ("train_next: bad target %s\n", Target);
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Bad Target \"%s\"\n", Target);
 			return;
 		}
 
@@ -2035,9 +2035,10 @@ void CTrainBase::Next ()
 		{
 			if (!first)
 			{
-				DebugPrintf ("connected teleport path_corners, see %s at (%f %f %f)\n", TargetEntity->ClassName.c_str(), TargetEntity->State.GetOrigin().X, TargetEntity->State.GetOrigin().Y, TargetEntity->State.GetOrigin().Z);
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Connected teleport paths. See path_corner at ("VECTOR_STRING")\n", PRINT_VECTOR_ARGS(TargetEntity->State.GetOrigin()));
 				return;
 			}
+
 			first = false;
 			State.GetOrigin() = (TargetEntity->State.GetOrigin() - GetMins());
 			State.GetOldOrigin () = State.GetOrigin();
@@ -2068,9 +2069,7 @@ void CTrainBase::Next ()
 
 void CTrainBase::Resume ()
 {
-	CBaseEntity *ent = TargetEntity;
-
-	EndOrigin = ent->State.GetOrigin() - GetMins();
+	EndOrigin = TargetEntity->State.GetOrigin() - GetMins();
 	MoveState = STATE_TOP;
 	StartOrigin = State.GetOrigin ();
 	MoveCalc (EndOrigin, TRAINENDFUNC_WAIT);
@@ -2081,18 +2080,20 @@ void CTrainBase::Find ()
 {
 	if (!Target)
 	{
-		DebugPrintf ("train_find: no target\n");
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 		return;
 	}
-	CPathCorner *ent = entity_cast<CPathCorner>(CC_PickTarget (Target));
-	if (!ent)
+
+	CPathCorner *Corner = entity_cast<CPathCorner>(CC_PickTarget (Target));
+	if (!Corner)
 	{
-		DebugPrintf ("train_find: target %s not found\n", Target);
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" not found\n", Target);
 		return;
 	}
-	Target = ent->Target;
-	TargetEntity = ent;
-	State.GetOrigin() = (ent->State.GetOrigin() - GetMins());
+
+	Target = Corner->Target;
+	TargetEntity = Corner;
+	State.GetOrigin() = (Corner->State.GetOrigin() - GetMins());
 
 	Link ();
 
@@ -2102,15 +2103,15 @@ void CTrainBase::Find ()
 
 	if (SpawnFlags & TRAIN_START_ON)
 	{
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = TRAINTHINK_NEXT;
-		Activator = this;
+		User = this;
 	}
 }
 
-void CTrainBase::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTrainBase::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
-	Activator = activator;
+	User = Activator;
 
 	if (SpawnFlags & TRAIN_START_ON)
 	{
@@ -2177,7 +2178,7 @@ void CTrainBase::LoadFields (CFile &File)
 	sint32 number = File.Read<sint32> ();
 
 	if (number != -1)
-		TargetEntity = entity_cast<CPathCorner>(g_edicts[number].Entity);
+		TargetEntity = entity_cast<CPathCorner>(Game.Entities[number].Entity);
 
 	CMapEntity::LoadFields (File);
 	CBrushModel::LoadFields (File);
@@ -2225,14 +2226,11 @@ void CTrain::Spawn ()
 	{
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = TRAINTHINK_FIND;
 	}
 	else
-	{
-		//gi.dprintf ("func_train without a target at (%f %f %f)\n", self->absMin[0], self->absMin[1], self->absMin[2]);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
-	}
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_train", CTrain);
@@ -2256,7 +2254,7 @@ CUsableEntity (Index)
 {
 };
 
-void CTriggerElevator::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTriggerElevator::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (!MoveTarget)
 		return;
@@ -2264,23 +2262,23 @@ void CTriggerElevator::Use (CBaseEntity *other, CBaseEntity *activator)
 	if (MoveTarget->NextThink)
 		return;
 
-	if (!(other->EntityFlags & ENT_USABLE))
+	if (!(Other->EntityFlags & ENT_USABLE))
 	{
-		DebugPrintf ("elevator used with a non-usable entity\n");
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with a non-usable entity\n");
 		return;
 	}
 	
-	CUsableEntity *Other = entity_cast<CUsableEntity>(other);
-	if (!Other->PathTarget)
+	CUsableEntity *Usable = entity_cast<CUsableEntity>(Other);
+	if (!Usable->PathTarget)
 	{
-		DebugPrintf("elevator used with no pathtarget\n");
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with no pathtarget.\n");
 		return;
 	}
 
-	CPathCorner *target = entity_cast<CPathCorner>(CC_PickTarget (Other->PathTarget));
+	CPathCorner *target = entity_cast<CPathCorner>(CC_PickTarget (Usable->PathTarget));
 	if (!target)
 	{
-		DebugPrintf("elevator used with bad pathtarget: %s\n", Other->PathTarget);
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with bad pathtarget \"%s\"\n", Usable->PathTarget);
 		return;
 	}
 
@@ -2292,20 +2290,17 @@ void CTriggerElevator::Think ()
 {
 	if (!Target)
 	{
-		//gi.dprintf("trigger_elevator has no target\n");
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		return;
 	}
 	CBaseEntity *newTarg = CC_PickTarget (Target);
 	if (!newTarg)
 	{
-		//gi.dprintf("trigger_elevator unable to find target %s\n", self->target);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target);
 		return;
 	}
 	if (strcmp(newTarg->ClassName.c_str(), "func_train") != 0)
 	{
-		//gi.dprintf("trigger_elevator target %s is not a train\n", self->target);
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target);
 		return;
 	}
@@ -2317,7 +2312,7 @@ void CTriggerElevator::Think ()
 
 void CTriggerElevator::Spawn ()
 {
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_elevator", CTriggerElevator);
@@ -2430,7 +2425,7 @@ void CWorldEntity::Spawn ()
 	GetInUse() = true;			// since the world doesn't use G_Spawn()
 	State.GetModelIndex() = 1;	// world model is always index 1
 
-	if (!level.Demo)
+	if (!Level.Demo)
 	{
 		// reserve some spots for dead player bodies for coop / deathmatch
 		BodyQueue_Init (BODY_QUEUE_SIZE);
@@ -2438,35 +2433,35 @@ void CWorldEntity::Spawn ()
 	}
 
 	if (NextMap)
-		level.NextMap = NextMap;
+		Level.NextMap = NextMap;
 
 	// make some data visible to the server
 	if (Message && Message[0])
 	{
 		ConfigString (CS_NAME, Message);
-		level.FullLevelName = Message;
+		Level.FullLevelName = Message;
 	}
 	else
-		level.FullLevelName = level.ServerLevelName;
+		Level.FullLevelName = Level.ServerLevelName;
 
 	ConfigString (CS_SKY, (Sky && Sky[0]) ? Sky : "unit1_");
 	ConfigString (CS_SKYROTATE, Q_VarArgs ("%f", SkyRotate).c_str());
 
-	ConfigString (CS_SKYAXIS, Q_VarArgs ("%f %f %f",
-		SkyAxis.X, SkyAxis.Y, SkyAxis.Z).c_str());
+	ConfigString (CS_SKYAXIS, Q_VarArgs (VECTOR_STRING,
+		PRINT_VECTOR_ARGS(SkyAxis)).c_str());
 
 	ConfigString (CS_CDTRACK, Q_VarArgs ("%i", Sounds).c_str());
 
-	ConfigString (CS_MAXCLIENTS, maxclients->String());
+	ConfigString (CS_MAXCLIENTS, maxclients.String());
 
 	// status bar program
-	if (map_debug->Boolean())
+	if (map_debug.Boolean())
 		CreateMapDebugStatusbar();
-	else if (game.GameMode & GAME_DEATHMATCH)
+	else if (Game.GameMode & GAME_DEATHMATCH)
 	{
 #if CLEANCTF_ENABLED
 //ZOID
-		if (game.GameMode & GAME_CTF)
+		if (Game.GameMode & GAME_CTF)
 		{
 			CreateCTFStatusbar();
 
@@ -2490,7 +2485,7 @@ void CWorldEntity::Spawn ()
 	//---------------
 	SetItemNames();
 
-	sv_gravity->Set((Gravity) ? Gravity : "800");
+	sv_gravity.Set ((Gravity) ? Gravity : "800");
 
 	SoundIndex ("player/lava1.wav");
 	SoundIndex ("player/lava2.wav");
@@ -2524,16 +2519,16 @@ void CWorldEntity::Spawn ()
 //
 	SetupLights ();
 
-	dmFlags.UpdateFlags(dmflags->Integer());
+	dmFlags.UpdateFlags(dmflags.Integer());
 
-	if (!level.Demo)
+	if (!Level.Demo)
 		InitPrivateEntities ();
 };
 
 void SpawnWorld ()
 {
-	(entity_cast<CWorldEntity>(g_edicts[0].Entity))->ParseFields ();
-	(entity_cast<CWorldEntity>(g_edicts[0].Entity))->Spawn ();
+	(entity_cast<CWorldEntity>(Game.Entities[0].Entity))->ParseFields ();
+	(entity_cast<CWorldEntity>(Game.Entities[0].Entity))->Spawn ();
 };
 #pragma endregion World
 
@@ -2586,22 +2581,22 @@ bool CRotatingBrush::Run ()
 	return CBrushModel::Run ();
 };
 
-void CRotatingBrush::Blocked (CBaseEntity *other)
+void CRotatingBrush::Blocked (CBaseEntity *Other)
 {
 	if (!Blockable)
 		return;
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CRotatingBrush::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CRotatingBrush::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if ((AngularVelocity != vec3fOrigin) && ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage))
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((AngularVelocity != vec3fOrigin) && ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage))
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CRotatingBrush::Use (CBaseEntity *other, CBaseEntity *activator)
+void CRotatingBrush::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (AngularVelocity != vec3fOrigin)
 	{
@@ -2721,7 +2716,7 @@ void CConveyor::LoadFields (CFile &File)
 	CUsableEntity::LoadFields (File);
 }
 
-void CConveyor::Use (CBaseEntity *other, CBaseEntity *activator)
+void CConveyor::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (SpawnFlags & CONVEYOR_START_ON)
 	{
@@ -2812,7 +2807,7 @@ void			CAreaPortal::LoadFields (CFile &File)
 	CUsableEntity::LoadFields (File);
 }
 
-void CAreaPortal::Use (CBaseEntity *other, CBaseEntity *activator)
+void CAreaPortal::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	// toggle state
 	gi.SetAreaPortalState (Style, (PortalState = !PortalState));
@@ -2872,7 +2867,7 @@ CFuncWall::CFuncWall (sint32 Index) :
 		BrushType |= BRUSH_WALL;
 	};
 
-void CFuncWall::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncWall::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (!Usable)
 		return;
@@ -2926,7 +2921,6 @@ void CFuncWall::Spawn ()
 	{
 		if (!(SpawnFlags & WALL_TOGGLE))
 		{
-			//gi.dprintf("func_wall START_ON without TOGGLE\n");
 			MapPrint (MAPPRINT_WARNING, this, GetAbsMin(), "Invalid spawnflags: START_ON without TOGGLE\n");
 			SpawnFlags |= WALL_TOGGLE;
 		}
@@ -2985,19 +2979,19 @@ bool CFuncObject::Run ()
 	};
 };
 
-void CFuncObject::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CFuncObject::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	// only squash thing we fall on top of
 	if (!plane)
 		return;
 	if (plane->normal[2] < 1.0)
 		return;
-	if (!(other->EntityFlags & ENT_HURTABLE))
+	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;
-	if (!entity_cast<CHurtableEntity>(other)->CanTakeDamage)
+	if (!entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
 		return;
 
-	entity_cast<CHurtableEntity>(other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 };
 
 void CFuncObject::Think ()
@@ -3006,7 +3000,7 @@ void CFuncObject::Think ()
 	Touchable = true;
 };
 
-void CFuncObject::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncObject::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	GetSolid() = SOLID_BSP;
 	GetSvFlags() &= ~SVF_NOCLIENT;
@@ -3030,7 +3024,7 @@ void CFuncObject::Spawn ()
 	{
 		GetSolid() = SOLID_BSP;
 		PhysicsType = PHYSICS_PUSH;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 	}
 	else
 	{
@@ -3129,11 +3123,11 @@ void			CFuncExplosive::LoadFields (CFile &File)
 	CUsableEntity::LoadFields (File);
 }
 
-void CFuncExplosive::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CFuncExplosive::Pain (CBaseEntity *Other, sint32 Damage)
 {
 };
 
-void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CFuncExplosive::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	// bmodel origins are (0 0 0), we need to adjust that here
 	State.GetOrigin() = (GetAbsMin() + (GetSize() * 0.5f));
@@ -3141,9 +3135,9 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 
 	CanTakeDamage = false;
 
 	if (Damage)
-		SplashDamage (attacker, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+		SplashDamage (Attacker, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
-	Velocity = State.GetOrigin() - inflictor->State.GetOrigin();
+	Velocity = State.GetOrigin() - Inflictor->State.GetOrigin();
 	Velocity.Normalize ();
 	Velocity *= 150;
 
@@ -3170,7 +3164,7 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 
 	while(count--)
 		ThrowDebris (gameEntity, "models/objects/debris2/tris.md2", 2, vec3f (origin + (crand() * size)));*/
 
-	UseTargets (attacker, Message);
+	UseTargets (Attacker, Message);
 
 	if (Damage)
 		BecomeExplosion (true);
@@ -3178,12 +3172,12 @@ void CFuncExplosive::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 
 		Free ();
 }
 
-void CFuncExplosive::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncExplosive::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	switch (UseType)
 	{
 	case FUNCEXPLOSIVE_USE_EXPLODE:
-		Die (this, other, Health, vec3fOrigin);
+		Die (this, Other, Health, vec3fOrigin);
 		break;
 	case FUNCEXPLOSIVE_USE_SPAWN:
 		DoSpawn ();
@@ -3209,7 +3203,7 @@ bool CFuncExplosive::Run ()
 
 void CFuncExplosive::Spawn ()
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{	// auto-remove for deathmatch
 		Free ();
 		return;
@@ -3274,7 +3268,7 @@ CKillbox::CKillbox (sint32 Index) :
 	{
 	};
 
-void CKillbox::Use (CBaseEntity *other, CBaseEntity *activator)
+void CKillbox::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	KillBox ();
 }
@@ -3325,9 +3319,9 @@ public:
 		CUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		UseTargets (activator, Message);
+		UseTargets (Activator, Message);
 	};
 
 	void Spawn ()

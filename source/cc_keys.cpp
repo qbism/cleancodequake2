@@ -41,11 +41,11 @@ CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 {
 };
 
-void CKey::Use (CPlayerEntity *ent)
+void CKey::Use (CPlayerEntity *Player)
 {
 }
 
-void CKey::Drop (CPlayerEntity *ent)
+void CKey::Drop (CPlayerEntity *Player)
 {
 }
 
@@ -58,30 +58,30 @@ CKey(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 };
 
 
-bool CKey::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CKey::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
-	if (game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode == GAME_COOPERATIVE)
 	{
-		if (other->Client.Persistent.Inventory.Has(this))
+		if (Other->Client.Persistent.Inventory.Has(this))
 			return false;
-		other->Client.Persistent.Inventory.Set (this, 1);
+		Other->Client.Persistent.Inventory.Set (this, 1);
 		return true;
 	}
-	other->Client.Persistent.Inventory += this;
+	Other->Client.Persistent.Inventory += this;
 	return true;
 }
 
-bool CPowerCube::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CPowerCube::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
-	if (game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode == GAME_COOPERATIVE)
 	{
-		if (other->Client.Persistent.PowerCubeCount & ((ent->SpawnFlags & 0x0000ff00)>> 8))
+		if (Other->Client.Persistent.PowerCubeCount & ((Player->SpawnFlags & 0x0000ff00)>> 8))
 			return false;
-		other->Client.Persistent.Inventory += this;
-		other->Client.Persistent.PowerCubeCount |= ((ent->SpawnFlags & 0x0000ff00) >> 8);
+		Other->Client.Persistent.Inventory += this;
+		Other->Client.Persistent.PowerCubeCount |= ((Player->SpawnFlags & 0x0000ff00) >> 8);
 		return true;
 	}
-	other->Client.Persistent.Inventory += this;
+	Other->Client.Persistent.Inventory += this;
 	return true;
 }
 
@@ -102,14 +102,14 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if (game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode == GAME_COOPERATIVE)
 		{
-			SpawnFlags |= (1 << (8 + level.PowerCubeCount));
-			level.PowerCubeCount++;
+			SpawnFlags |= (1 << (8 + Level.PowerCubeCount));
+			Level.PowerCubeCount++;
 		}
 
 		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
+		NextThink = Level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 

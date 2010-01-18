@@ -109,8 +109,8 @@ void			CFuncTimer::LoadFields (CFile &File)
 
 void CFuncTimer::Think ()
 {
-	UseTargets (Activator, Message);
-	NextThink = level.Frame + (Wait + (irandom(Random)));
+	UseTargets (User, Message);
+	NextThink = Level.Frame + (Wait + (irandom(Random)));
 }
 
 bool CFuncTimer::Run ()
@@ -118,9 +118,9 @@ bool CFuncTimer::Run ()
 	return CBaseEntity::Run ();
 };
 
-void CFuncTimer::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncTimer::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
-	Activator = activator;
+	User = Activator;
 
 	// if on, turn it off
 	if (NextThink)
@@ -131,7 +131,7 @@ void CFuncTimer::Use (CBaseEntity *other, CBaseEntity *activator)
 
 	// turn it on
 	if (Delay)
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 	else
 		Think ();
 }
@@ -147,14 +147,13 @@ void CFuncTimer::Spawn ()
 		// Paril FIXME
 		// This to me seems like a very silly warning.
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Random is greater than or equal to wait\n");
-		//gi.dprintf("func_timer at (%f %f %f) has random >= wait\n", self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 	}
 
 	if (SpawnFlags & TIMER_START_ON)
 	{
 		// lots of backwards compatibility
-		NextThink = level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
-		Activator = this;
+		NextThink = Level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
+		User = this;
 	}
 
 	GetSvFlags() = SVF_NOCLIENT;
@@ -297,7 +296,7 @@ public:
 	};
 };
 
-void CTargetString::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTargetString::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	CTargetStringForEachCallback (this, Message).Query (this);
 }
@@ -395,7 +394,7 @@ void		CFuncClock::LoadFields (CFile &File)
 	sint32 Index = File.Read<sint32> ();
 
 	if (Index != -1)
-		String = entity_cast<CTargetString>(g_edicts[Index].Entity);
+		String = entity_cast<CTargetString>(Game.Entities[Index].Entity);
 
 	LoadEntityFields <CFuncClock> (this, File);
 	CMapEntity::LoadFields (File);
@@ -408,7 +407,7 @@ void		CFuncClock::LoadFields (CFile &File)
 
 void CFuncClock::Reset ()
 {
-	Activator = NULL;
+	User = NULL;
 	if (SpawnFlags & CLOCK_TIMER_UP)
 	{
 		Seconds = 0;
@@ -495,7 +494,7 @@ void CFuncClock::Think ()
 			std::cc_string savemessage = Message;
 			Target = CountTarget;
 			Message.clear();
-			UseTargets (Activator, Message);
+			UseTargets (User, Message);
 			Target = savetarget;
 			Message = savemessage;
 		}
@@ -509,10 +508,10 @@ void CFuncClock::Think ()
 			return;
 	}
 
-	NextThink = level.Frame + 10;
+	NextThink = Level.Frame + 10;
 }
 
-void CFuncClock::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncClock::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (!Usable)
 		return;
@@ -520,10 +519,10 @@ void CFuncClock::Use (CBaseEntity *other, CBaseEntity *activator)
 	if (!(SpawnFlags & CLOCK_MULTI_USE))
 		Usable = false;
 	
-	if (Activator)
+	if (User)
 		return;
 
-	Activator = activator;
+	User = Activator;
 	Think ();
 }
 
@@ -551,7 +550,7 @@ void CFuncClock::Spawn ()
 	if (SpawnFlags & CLOCK_START_OFF)
 		Usable = true;
 	else
-		NextThink = level.Frame + 10;
+		NextThink = Level.Frame + 10;
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_clock", CFuncClock);

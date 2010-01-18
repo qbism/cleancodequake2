@@ -69,10 +69,10 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 
 	if (ent)
 	{
-		sint32 n = ent - g_edicts;
-		if (n < 1 || n > game.MaxClients)
+		sint32 n = ent - Game.Entities;
+		if (n < 1 || n > Game.MaxClients)
 		{
-			DebugPrintf ( "CleanCode Warning: ClientPrintf to a non-client\n");
+			DebugPrintf ("CleanCode Warning: ClientPrintf to a non-client\n");
 			return;
 		}
 	}
@@ -86,12 +86,12 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 	if (ent)
 		SV_ClientPrintf (ent, printLevel, "%s", msg);
 	else
-		DebugPrintf ( "%s", msg);
+		ServerPrintf ("%s", msg);
 }
 
 void DeveloperPrintf (char *fmt, ...)
 {
-	if (!developer->Integer())
+	if (!developer.Integer())
 		return;
 
 	va_list		argptr;
@@ -110,6 +110,24 @@ _CC_ENABLE_DEPRECATION
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
 void DebugPrintf (char *fmt, ...)
+{
+#if _DEBUG
+	va_list		argptr;
+	static char	text[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	va_end (argptr);
+
+_CC_DISABLE_DEPRECATION
+	gi.dprintf ("%s", text);
+_CC_ENABLE_DEPRECATION
+
+	CC_OutputDebugString (text);
+#endif
+}
+
+void ServerPrintf (char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
@@ -135,7 +153,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 	va_end (argptr);
 	
 	// Echo to console
-	if (dedicated->Integer())
+	if (dedicated.Integer())
 	{
 		static char	copy[1024];
 		sint32		i;
@@ -144,12 +162,12 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		for (i = 0; i < ((MAX_COMPRINT/2) - 1) && string[i]; i++)
 			copy[i] = string[i]&127;
 		copy[i] = 0;
-		DebugPrintf ( "%s", copy);
+		ServerPrintf ("%s", copy);
 	}
 
-	for (sint32 i = 1; i <= game.MaxClients; i++)
+	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 		if (printLevel < Player->Client.Respawn.MessageLevel)
 			continue;
 		if (Player->Client.Persistent.State != SVCS_SPAWNED)

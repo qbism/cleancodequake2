@@ -264,22 +264,22 @@ CFrame TankFramesPain3 [] =
 };
 CAnim TankMovePain3 (FRAME_pain301, FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
 
-void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CTank::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() |= 1;
 
-	if (damage <= 10)
+	if (Damage <= 10)
 		return;
 
-	if (level.Frame < PainDebounceTime)
-			return;
+	if (Level.Frame < PainDebounceTime)
+		return;
 
-	if (damage <= 30 && frand() > 0.2)
+	if (Damage <= 30 && frand() > 0.2)
 		return;
 	
 	// If hard or nightmare, don't go into pain while attacking
-	if ( skill->Integer() >= 2)
+	if ( skill.Integer() >= 2)
 	{
 		if ( (Entity->State.GetFrame() >= FRAME_attak301) && (Entity->State.GetFrame() <= FRAME_attak330) )
 			return;
@@ -287,10 +287,10 @@ void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 			return;
 	}
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
-	if (skill->Integer() == 3)
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
 #if MONSTER_USE_ROGUE_AI
@@ -299,7 +299,7 @@ void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 	// pmm
 #endif
 
-	CurrentMove = ((damage <= 60) ? ((damage <= 30) ? &TankMovePain1 : &TankMovePain2) : &TankMovePain3);
+	CurrentMove = ((Damage <= 60) ? ((Damage <= 30) ? &TankMovePain1 : &TankMovePain2) : &TankMovePain3);
 };
 
 
@@ -370,7 +370,7 @@ void CTank::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
 
-	rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
+	rocketSpeed = 500 + (100 * skill.Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 
@@ -392,7 +392,7 @@ void CTank::Rocket ()
 		dir = vec - start;
 	}
 
-	if (!blindfire && ((frand() < (0.2 + ((3 - skill->Integer()) * 0.15)))))
+	if (!blindfire && ((frand() < (0.2 + ((3 - skill.Integer()) * 0.15)))))
 	{
 		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
@@ -539,7 +539,7 @@ CAnim TankMoveAttackPostBlast (FRAME_attak117, FRAME_attak122, TankFramesAttackP
 
 void CTank::ReAttackBlaster ()
 {
-	if (skill->Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
+	if (skill.Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
 	{
 		CurrentMove = &TankMoveReAttackBlast;
 		return;
@@ -716,7 +716,7 @@ void CTank::ReFireRocket ()
 #endif
 
 	// Only on hard or nightmare
-	if ( skill->Integer() >= 2 && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
+	if ( skill.Integer() >= 2 && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
 	{
 		CurrentMove = &TankMoveAttackFireRocket;
 		return;
@@ -763,8 +763,8 @@ void CTank::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &TankMoveAttackFireRocket;
-		AttackFinished = level.Frame + 30 + ((2*frand())*10);
-		PainDebounceTime = level.Frame + 50;	// no pain for a while
+		AttackFinished = Level.Frame + 30 + ((2*frand())*10);
+		PainDebounceTime = Level.Frame + 50;	// no pain for a while
 		return;
 	}
 	// pmm
@@ -794,7 +794,7 @@ void CTank::Attack ()
 		else if (r < 0.66)
 		{
 			CurrentMove = &TankMoveAttackPreRocket;
-			PainDebounceTime = level.Frame + 50;	// no pain for a while
+			PainDebounceTime = Level.Frame + 50;	// no pain for a while
 		}
 		else
 			CurrentMove = &TankMoveAttackBlast;
@@ -853,18 +853,18 @@ CFrame TankFramesDeath1 [] =
 };
 CAnim TankMoveDeath (FRAME_death101, FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
 
-void CTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CTank::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 1 /*4*/; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), damage, GIB_METALLIC);
-		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), damage, GIB_METALLIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), Damage, GIB_METALLIC);
+		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Gear(), Damage, GIB_METALLIC);
 		Entity->DeadFlag = true;
 		return;
 	}

@@ -35,25 +35,35 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 _CC_DISABLE_DEPRECATION
 
-CCvar::CCvar ()
+CCvar::CCvar () :
+	cVar(NULL),
+	mainValue(NULL),
+	floatVal(0),
+	intVal(0)
 {
-	cVar = NULL;
-	mainValue = NULL;
-	floatVal = intVal = 0;
 }
-CCvar::CCvar (const char *cvarName, const char *defaultValue, sint32 flags)
+CCvar::CCvar (const char *cvarName, const char *defaultValue, sint32 flags) :
+	cVar(NULL),
+	mainValue(NULL),
+	floatVal(0),
+	intVal(0)
 {
-	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
-CCvar::CCvar (const char *cvarName, sint32 defaultValue, sint32 flags)
+CCvar::CCvar (const char *cvarName, sint32 defaultValue, sint32 flags) :
+	cVar(NULL),
+	mainValue(NULL),
+	floatVal(0),
+	intVal(0)
 {
-	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
-CCvar::CCvar (const char *cvarName, float defaultValue, sint32 flags)
+CCvar::CCvar (const char *cvarName, float defaultValue, sint32 flags) :
+	cVar(NULL),
+	mainValue(NULL),
+	floatVal(0),
+	intVal(0)
 {
-	CCvar();
 	Register(cvarName, defaultValue, flags);
 }
 

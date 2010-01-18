@@ -61,7 +61,7 @@ CThinkableEntity(Index)
 
 IMPLEMENT_SAVE_SOURCE(CTrapProjectile)
 
-void CTrapProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CTrapProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 }
 
@@ -83,10 +83,10 @@ CFoodCube::CFoodCube () :
 {
 };
 
-void CFoodCube::DoPickup (CItemEntity *ent, CPlayerEntity *other)
+void CFoodCube::DoPickup (CItemEntity *Player, CPlayerEntity *Other)
 {
-	other->Health += ent->AmmoCount;
-	ent->PlaySound (CHAN_ITEM, GetPickupSound());
+	Other->Health += Player->AmmoCount;
+	Player->PlaySound (CHAN_ITEM, GetPickupSound());
 };
 
 void CTrapProjectile::Think ()
@@ -97,7 +97,7 @@ void CTrapProjectile::Think ()
 		return;
 	}
 	
-	if (TimeStamp < level.Frame)
+	if (TimeStamp < Level.Frame)
 	{
 		BecomeExplosion(false);
 		// note to self
@@ -105,7 +105,7 @@ void CTrapProjectile::Think ()
 		return;
 	}
 	
-	NextThink = level.Frame + 1;
+	NextThink = Level.Frame + 1;
 	
 	if (!GroundEntity)
 		return;
@@ -119,7 +119,7 @@ void CTrapProjectile::Think ()
 				PlaySound (CHAN_VOICE, SoundIndex ("weapons/trapdown.wav"), 255, ATTN_IDLE);
 
 			Wait -= 2;
-			Delay += level.Frame;
+			Delay += Level.Frame;
 
 			for (uint8 i = 0; i < 3; i++)
 			{
@@ -177,7 +177,7 @@ void CTrapProjectile::Think ()
 		State.GetFrame() ++;
 		if (State.GetFrame() == 8)
 		{
-			NextThink = level.Frame + 10;
+			NextThink = Level.Frame + 10;
 			DoFree = true;
 
 			CItemEntity *it_ent = QNewEntityOf CItemEntity;
@@ -274,8 +274,8 @@ void CTrapProjectile::Think ()
 					Enemy = best;
 					Wait = 64;
 					State.GetOldOrigin() = State.GetOrigin();
-					TimeStamp = level.Frame + 300;
-					if (game.GameMode & GAME_DEATHMATCH)
+					TimeStamp = Level.Frame + 300;
+					if (Game.GameMode & GAME_DEATHMATCH)
 						Mass = Phys->Mass/4;
 					else
 						Mass = Phys->Mass/10;
@@ -345,7 +345,7 @@ void CTrapProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, in
 	Grenade->AngularVelocity.Set (0, 300, 0);
 	Grenade->State.GetModelIndex() = ModelIndex ("models/weapons/z_trap/tris.md2");
 	Grenade->SetOwner(Spawner);
-	Grenade->NextThink = level.Frame + 10;
+	Grenade->NextThink = Level.Frame + 10;
 	Grenade->ClassName = "htrap";
 	Grenade->GetClipmask() = CONTENTS_MASK_SHOT;
 	Grenade->GetSolid() = SOLID_BBOX;
@@ -353,7 +353,7 @@ void CTrapProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, in
 	Grenade->GetMaxs().Set (4, 4, 8);
 	Grenade->Touchable = true;
 	Grenade->State.GetSound() = SoundIndex("weapons/traploop.wav");
-	Grenade->TimeStamp = level.Frame + 300;
+	Grenade->TimeStamp = Level.Frame + 300;
 	Grenade->Damage = damage;
 
 	if (timer <= 0.0)
@@ -373,9 +373,9 @@ CWeapon(6, 1, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
 {
 }
 
-bool CTrap::CanStopFidgetting (CPlayerEntity *ent)
+bool CTrap::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 29:
 	case 34:
@@ -391,112 +391,112 @@ bool CTrap::CanStopFidgetting (CPlayerEntity *ent)
 #define TRAP_MINSPEED		300
 #define TRAP_MAXSPEED		700
 
-void CTrap::Hold (CPlayerEntity *ent)
+void CTrap::Hold (CPlayerEntity *Player)
 {
-	if (!ent->Client.Grenade.Time)
+	if (!Player->Client.Grenade.Time)
 	{
-		ent->Client.Grenade.Time = level.Frame + TRAP_TIMER + 2;
-		ent->Client.WeaponSound = SoundIndex("weapons/traploop.wav");
+		Player->Client.Grenade.Time = Level.Frame + TRAP_TIMER + 2;
+		Player->Client.WeaponSound = SoundIndex("weapons/traploop.wav");
 	}
 
 	// they waited too long, detonate it in their hand
-	if (!ent->Client.Grenade.BlewUp && (level.Frame >= ent->Client.Grenade.Time))
+	if (!Player->Client.Grenade.BlewUp && (Level.Frame >= Player->Client.Grenade.Time))
 	{
-		ent->Client.WeaponSound = 0;
-		FireGrenade (ent, true);
-		ent->Client.Grenade.BlewUp = true;
+		Player->Client.WeaponSound = 0;
+		FireGrenade (Player, true);
+		Player->Client.Grenade.BlewUp = true;
 
-		ent->Client.PlayerState.GetGunFrame() = 15;
+		Player->Client.PlayerState.GetGunFrame() = 15;
 		return;
 	}
 
-	if (ent->Client.Buttons & BUTTON_ATTACK)
+	if (Player->Client.Buttons & BUTTON_ATTACK)
 		return;
 
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CTrap::FireGrenade (CPlayerEntity *ent, bool inHand)
+void CTrap::FireGrenade (CPlayerEntity *Player, bool inHand)
 {
-	vec3f	offset (8, 8, ent->ViewHeight-8), forward, right, start;
+	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
 	const sint32		damage = CalcQuadVal(125);
 
-	ent->Client.Grenade.Thrown = true;
+	Player->Client.Grenade.Thrown = true;
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	float timer = (float)(ent->Client.Grenade.Time - level.Frame) / 10;
-	const sint32 speed = (ent->Client.Persistent.Weapon) ? 
+	float timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
+	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(TRAP_MINSPEED + ((TRAP_TIMER/10) - timer) * ((TRAP_MAXSPEED - TRAP_MINSPEED) / (TRAP_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
-	CTrapProjectile::Spawn (ent, start, forward, damage, timer, speed);
+	CTrapProjectile::Spawn (Player, start, forward, damage, timer, speed);
 
-	ent->Client.Grenade.Time = level.Frame + ((((
+	Player->Client.Grenade.Time = Level.Frame + ((((
 #if CLEANCTF_ENABLED
-	(game.GameMode & GAME_CTF) || 
+	(Game.GameMode & GAME_CTF) || 
 #endif
-	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste())
+	dmFlags.dfDmTechs.IsEnabled()) && Player->ApplyHaste())
 #if XATRIX_FEATURES
 	|| isQuadFire
 #endif
 	) ? 5 : 10);
-	DepleteAmmo(ent, 1);
+	DepleteAmmo(Player, 1);
 
-	if (ent->Health <= 0 || ent->DeadFlag || ent->State.GetModelIndex() != 255) // VWep animations screw up corpses
+	if (Player->Health <= 0 || Player->DeadFlag || Player->State.GetModelIndex() != 255) // VWep animations screw up corpses
 		return;
 
-	AttackSound (ent);
+	AttackSound (Player);
 
-	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 	{
-		ent->Client.Anim.Priority = ANIM_ATTACK;
-		ent->State.GetFrame() = FRAME_crattak1 - 1;
-		ent->Client.Anim.EndFrame = FRAME_crattak3;
+		Player->Client.Anim.Priority = ANIM_ATTACK;
+		Player->State.GetFrame() = FRAME_crattak1 - 1;
+		Player->Client.Anim.EndFrame = FRAME_crattak3;
 	}
 	else
 	{
-		ent->Client.Anim.Priority = ANIM_REVERSE;
-		ent->State.GetFrame() = FRAME_wave08;
-		ent->Client.Anim.EndFrame = FRAME_wave01;
+		Player->Client.Anim.Priority = ANIM_REVERSE;
+		Player->State.GetFrame() = FRAME_wave08;
+		Player->Client.Anim.EndFrame = FRAME_wave01;
 	}
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CTrap::Wait (CPlayerEntity *ent)
+void CTrap::Wait (CPlayerEntity *Player)
 {
-	ent->Client.Grenade.BlewUp = false;
-	if (level.Frame < ent->Client.Grenade.Time)
+	Player->Client.Grenade.BlewUp = false;
+	if (Level.Frame < Player->Client.Grenade.Time)
 		return;
 
-	if (!ent->DeadFlag)
-		ent->Client.Grenade.Thrown = false;
-	ent->Client.PlayerState.GetGunFrame()++;
+	if (!Player->DeadFlag)
+		Player->Client.Grenade.Thrown = false;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CTrap::Fire (CPlayerEntity *ent)
+void CTrap::Fire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 11:
-		Hold (ent);
+		Hold (Player);
 		break;
 	case 12:
-		ent->Client.WeaponSound = 0;
-		FireGrenade(ent, false);
+		Player->Client.WeaponSound = 0;
+		FireGrenade(Player, false);
 		break;
 	case 15:
-		Wait(ent);
+		Wait(Player);
 		break;
 	}
 }
 
-bool CTrap::CanFire (CPlayerEntity *ent)
+bool CTrap::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 5:
-		ent->PlaySound (CHAN_WEAPON, SoundIndex("weapons/trapcock.wav"));
+		Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/trapcock.wav"));
 		return false;
 	case 11:
 	case 12:
@@ -506,86 +506,86 @@ bool CTrap::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-void CTrap::WeaponGeneric (CPlayerEntity *ent)
+void CTrap::WeaponGeneric (CPlayerEntity *Player)
 {
 	// Idea from Brazen source
 	sint32 newFrame = -1, newState = -1;
 
-	switch (ent->Client.WeaponState)
+	switch (Player->Client.WeaponState)
 	{
 	case WS_ACTIVATING:
 		newFrame = IdleStart;
 		newState = WS_IDLE;
 		break;
 	case WS_IDLE:
-		if (ent->Client.NewWeapon && ent->Client.NewWeapon != this)
+		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
 		{
 			// We want to go away!
 			newState = WS_DEACTIVATING;
 			newFrame = DeactStart;
 		}
-		else if ((ent->Client.Buttons|ent->Client.LatchedButtons) & BUTTON_ATTACK)
+		else if ((Player->Client.Buttons|Player->Client.LatchedButtons) & BUTTON_ATTACK)
 		{
-			ent->Client.LatchedButtons &= ~BUTTON_ATTACK;
+			Player->Client.LatchedButtons &= ~BUTTON_ATTACK;
 
 			// We want to attack!
 			// First call, check AttemptToFire
-			if (AttemptToFire(ent))
+			if (AttemptToFire(Player))
 			{
 				// Got here, we can fire!
-				ent->Client.PlayerState.GetGunFrame() = FireStart;
-				ent->Client.WeaponState = WS_FIRING;
-				ent->Client.Grenade.Time = 0;
+				Player->Client.PlayerState.GetGunFrame() = FireStart;
+				Player->Client.WeaponState = WS_FIRING;
+				Player->Client.Grenade.Time = 0;
 
 				// We need to check against us right away for first-frame firing
-				WeaponGeneric(ent);
+				WeaponGeneric(Player);
 				return;
 			}
 			else
 			{
-				OutOfAmmo(ent);
-				NoAmmoWeaponChange (ent);
+				OutOfAmmo(Player);
+				NoAmmoWeaponChange (Player);
 			}
 		}
 
 		// Either we are still idle or a failed fire.
 		if (newState == -1)
 		{
-			if (ent->Client.PlayerState.GetGunFrame() == IdleEnd)
+			if (Player->Client.PlayerState.GetGunFrame() == IdleEnd)
 				newFrame = IdleStart;
 			else
 			{
-				if (CanStopFidgetting(ent) && (randomMT()&15))
-					newFrame = ent->Client.PlayerState.GetGunFrame();
+				if (CanStopFidgetting(Player) && (randomMT()&15))
+					newFrame = Player->Client.PlayerState.GetGunFrame();
 			}
 		}
 		break;
 	case WS_FIRING:
 		// Check if this is a firing frame.
-		if (CanFire(ent))
+		if (CanFire(Player))
 		{
-			Fire(ent);
+			Fire(Player);
 
 			// Now, this call above CAN change the underlying frame and state.
 			// We need this block to make sure we are still doing what we are supposed to.
-			newState = ent->Client.WeaponState;
-			newFrame = ent->Client.PlayerState.GetGunFrame();
+			newState = Player->Client.WeaponState;
+			newFrame = Player->Client.PlayerState.GetGunFrame();
 		}
 
 		// Only do this if we haven't been explicitely set a newFrame
 		// because we might want to keep firing beyond this point
-		if (newFrame == -1 && ent->Client.PlayerState.GetGunFrame() == FireEnd)
+		if (newFrame == -1 && Player->Client.PlayerState.GetGunFrame() == FireEnd)
 		{
-			if (!ent->Client.Persistent.Inventory.Has(Item))
+			if (!Player->Client.Persistent.Inventory.Has(Item))
 			{
-				NoAmmoWeaponChange (ent);
-				ent->Client.Grenade.Time = 0;
-				ent->Client.Grenade.Thrown = false;
+				NoAmmoWeaponChange (Player);
+				Player->Client.Grenade.Time = 0;
+				Player->Client.Grenade.Thrown = false;
 			}
 			else
 			{
-				ent->Client.Grenade.Time = 0;
-				ent->Client.Grenade.Thrown = false;
+				Player->Client.Grenade.Time = 0;
+				Player->Client.Grenade.Thrown = false;
 				newFrame = IdleStart;
 				newState = WS_IDLE;
 			}
@@ -593,18 +593,18 @@ void CTrap::WeaponGeneric (CPlayerEntity *ent)
 		break;
 	case WS_DEACTIVATING:
 		// Change weapon
-		ChangeWeapon (ent);
+		ChangeWeapon (Player);
 		return;
 		break;
 	}
 
 	if (newFrame != -1)
-		ent->Client.PlayerState.GetGunFrame() = newFrame;
+		Player->Client.PlayerState.GetGunFrame() = newFrame;
 	if (newState != -1)
-		ent->Client.WeaponState = newState;
+		Player->Client.WeaponState = newState;
 
 	if (newFrame == -1 && newState == -1)
-		ent->Client.PlayerState.GetGunFrame()++;
+		Player->Client.PlayerState.GetGunFrame()++;
 }
 
 WEAPON_DEFS (CTrap);

@@ -48,21 +48,21 @@ CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 {
 };
 
-void CQuadFire::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CQuadFire::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 600);
-		if (ent->SpawnFlags & DROPPED_PLAYER_ITEM)
-			quad_fire_drop_timeout_hack = (ent->NextThink - level.Frame);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (Item->SpawnFlags & DROPPED_PLAYER_ITEM)
+			quad_fire_drop_timeout_hack = (Item->NextThink - Level.Frame);
 
 		if (dmFlags.dfInstantItems.IsEnabled())
-			Use (other);
+			Use (Other);
 	}
 }
 
-void CQuadFire::Use (CPlayerEntity *ent)
+void CQuadFire::Use (CPlayerEntity *Player)
 {
 	sint32 timeOut = 300;
 
@@ -72,14 +72,13 @@ void CQuadFire::Use (CPlayerEntity *ent)
 		quad_fire_drop_timeout_hack = 0;
 	}
 
-	if (ent->Client.Timers.QuadFire > level.Frame)
-		ent->Client.Timers.QuadFire += timeOut;
+	if (Player->Client.Timers.QuadFire > Level.Frame)
+		Player->Client.Timers.QuadFire += timeOut;
 	else
-		ent->Client.Timers.QuadFire = level.Frame + timeOut;
+		Player->Client.Timers.QuadFire = Level.Frame + timeOut;
 
-	ent->Client.Persistent.Inventory -= this;
-
-	ent->PlaySound (CHAN_ITEM, SoundIndex("items/quadfire1.wav"));
+	Player->Client.Persistent.Inventory -= this;
+	Player->PlaySound (CHAN_ITEM, SoundIndex("items/quadfire1.wav"));
 }
 
 LINK_ITEM_TO_CLASS (weapon_boomer, CItemEntity);

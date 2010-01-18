@@ -208,7 +208,7 @@ CFrame InfantryFramesPain2 [] =
 };
 CAnim InfantryMovePain2 (FRAME_pain201, FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
 
-void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CInfantry::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -217,12 +217,12 @@ void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
 	DoneDodge();
 #endif
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	
-	if (skill->Integer() == 3)
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = (!irandom(2)) ? &InfantryMovePain1 : &InfantryMovePain2;
@@ -379,17 +379,17 @@ CFrame InfantryFramesDeath3 [] =
 CAnim InfantryMoveDeath3 (FRAME_death301, FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
 
 
-void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CInfantry::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -431,13 +431,13 @@ void CInfantry::Duck_Down ()
 	AIFlags |= AI_DUCKED;
 	Entity->GetMaxs().Z -= 32;
 	Entity->CanTakeDamage = true;
-	PauseTime = level.Frame + 10;
+	PauseTime = Level.Frame + 10;
 	Entity->Link ();
 }
 
 void CInfantry::Duck_Hold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -471,13 +471,13 @@ CFrame InfantryFramesDuck [] =
 CAnim InfantryMoveDuck (FRAME_duck01, FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
 
 #if !MONSTER_USE_ROGUE_AI
-void CInfantry::Dodge (CBaseEntity *attacker, float eta)
+void CInfantry::Dodge (CBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
 	CurrentMove = &InfantryMoveDuck;
 }
@@ -492,7 +492,7 @@ void CInfantry::Fire ()
 {
 	MachineGun ();
 
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -588,7 +588,7 @@ CAnim InfantryMoveAttack2 (FRAME_attak201, FRAME_attak208, InfantryFramesAttack2
 
 void CInfantry::Attack ()
 {
-	PauseTime = level.Frame + ((randomMT() & 15) + 11);
+	PauseTime = Level.Frame + ((randomMT() & 15) + 11);
 	CurrentMove = &InfantryMoveAttack1;
 }
 
@@ -604,18 +604,18 @@ void CInfantry::Duck (float eta)
 		(CurrentMove == &InfantryMoveAttack2))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (skill.Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		// PMM - stupid dodge
-		DuckWaitTime = level.Frame + ((eta + 1) * 10);
+		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer()))) * 10);
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -630,7 +630,7 @@ void CInfantry::SideStep ()
 		(CurrentMove == &InfantryMoveAttack2))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (skill.Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;

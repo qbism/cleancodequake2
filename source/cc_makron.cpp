@@ -254,35 +254,35 @@ CFrame MakronFramesPain4 [] =
 };
 CAnim MakronMovePain4 (FRAME_pain401, FRAME_pain404, MakronFramesPain4, &CMonster::Run);
 
-void CMakron::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CMakron::Pain (CBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames
-	if ((damage <= 25) && (frand() < 0.2f))
+	if ((Damage <= 25) && (frand() < 0.2f))
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (skill.Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 40)
+	if (Damage <= 40)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN4], 255, ATTN_NONE);
 		CurrentMove = &MakronMovePain4;
 	}
-	else if (damage <= 110)
+	else if (Damage <= 110)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN5], 255, ATTN_NONE);
 		CurrentMove = &MakronMovePain5;
 	}
 	else
 	{
-		if ((damage <= 150) && (frand() <= 0.45f))
+		if ((Damage <= 150) && (frand() <= 0.45f))
 		{
 			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN6], 255, ATTN_NONE);
 			CurrentMove = &MakronMovePain6;
@@ -623,11 +623,11 @@ public:
 	void Think ()
 	{
 		if (++State.GetFrame() < 365)
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 		else
 		{		
 			State.GetFrame() = 346;
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 		}
 	};
 
@@ -643,7 +643,7 @@ public:
 		NewClass->GetMins().Set (-8, -8, 0);
 		NewClass->GetMaxs().Set (8);
 		NewClass->State.GetModelIndex() = Owner->State.GetModelIndex();
-		NewClass->NextThink = level.Frame + 2;
+		NewClass->NextThink = Level.Frame + 2;
 		NewClass->State.GetSound() = SoundIndex("makron/spine.wav");
 		NewClass->State.GetFrame() = 346;
 		NewClass->GetSolid() = SOLID_NOT;
@@ -665,7 +665,7 @@ void CMakron::Dead ()
 	Entity->Link ();
 }
 
-void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CMakron::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->State.GetSound() = 0;
 	// check for gib
@@ -673,10 +673,10 @@ void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 1 /*4*/; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), damage, GIB_METALLIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), damage, GIB_METALLIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), Damage, GIB_METALLIC);
+		Entity->ThrowHead (GameMedia.Gib_Gear(), Damage, GIB_METALLIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -719,7 +719,7 @@ bool CMakron::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (skill.Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -732,7 +732,7 @@ bool CMakron::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -759,15 +759,15 @@ bool CMakron::CheckAttack ()
 		return false;
 	}
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (skill.Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -802,9 +802,9 @@ bool CMakron::CheckAttack ()
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.Frame < AttackFinished)
+						if (Level.Frame < AttackFinished)
 							return false;
-						if (level.Frame < (TrailTime + BlindFireDelay))
+						if (Level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
@@ -829,7 +829,7 @@ bool CMakron::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (skill.Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -850,7 +850,7 @@ bool CMakron::CheckAttack ()
 		return false;
 	}
 	
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -867,16 +867,16 @@ bool CMakron::CheckAttack ()
 	else
 		return false;
 
-	if (skill->Integer() == 0)
+	if (skill.Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (skill.Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
@@ -1002,11 +1002,11 @@ void CMakronJumpTimer::Think ()
 	Monster->Entity = newClass;
 	newClass->State.GetOrigin() = State.GetOrigin();
 	Monster->Spawn ();
-	newClass->NextThink = level.Frame + 1;
+	newClass->NextThink = Level.Frame + 1;
 	newClass->Target = LinkedJorg->Target;
 
 	// jump at player
-	CPlayerEntity *Player = level.SightClient;
+	CPlayerEntity *Player = Level.SightClient;
 	if (!Player)
 		return;
 
@@ -1026,7 +1026,7 @@ void CMakronJumpTimer::Spawn (CJorg *Jorg)
 {
 	CMakronJumpTimer *Timer = QNewEntityOf CMakronJumpTimer;
 	
-	Timer->NextThink = level.Frame + 8;
+	Timer->NextThink = Level.Frame + 8;
 	Timer->LinkedJorg = Jorg->Entity;
 	Timer->State.GetOrigin() = Jorg->Entity->State.GetOrigin();
 	Timer->Link();

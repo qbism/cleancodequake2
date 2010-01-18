@@ -94,37 +94,37 @@ public:
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound = NULL);
 
 	// InitWeapon "clears" the previous weapon by introducing the current weapon.
-	virtual void	InitWeapon (CPlayerEntity *ent);
+	virtual void	InitWeapon (CPlayerEntity *Player);
 
 	// Muzzle flash
-	virtual void	Muzzle (CPlayerEntity *ent, sint32 muzzleNum);
-	virtual inline void	FireAnimation (CPlayerEntity *ent);
-	void		AttackSound (CPlayerEntity *ent); // Sound for quad and CTF techs
+	virtual void	Muzzle (CPlayerEntity *Player, sint32 muzzleNum);
+	virtual inline void	FireAnimation (CPlayerEntity *Player);
+	void		AttackSound (CPlayerEntity *Player); // Sound for quad and CTF techs
 
 	// General animating function.
 	// Doesn't need to be changed.
-	virtual void	WeaponGeneric (CPlayerEntity *ent);
+	virtual void	WeaponGeneric (CPlayerEntity *Player);
 
 	// These two functions replace the need for an array for
 	// pause and fire frames.
-	virtual inline bool	CanFire	(CPlayerEntity *ent) = 0;
-	virtual inline bool	CanStopFidgetting (CPlayerEntity *ent) = 0;
+	virtual inline bool	CanFire	(CPlayerEntity *Player) = 0;
+	virtual inline bool	CanStopFidgetting (CPlayerEntity *Player) = 0;
 
 	// Ammo usage
-	virtual void	DepleteAmmo(CPlayerEntity *ent, sint32 Amount);
+	virtual void	DepleteAmmo(CPlayerEntity *Player, sint32 Amount);
 	
 	// This function is called when the player hits the attack button.
 	// Returns "true" if the animation can go ahead (check for ammo, etc here)
-	virtual void	OutOfAmmo (CPlayerEntity *ent);
-	virtual bool	AttemptToFire (CPlayerEntity *ent); 
+	virtual void	OutOfAmmo (CPlayerEntity *Player);
+	virtual bool	AttemptToFire (CPlayerEntity *Player); 
 
 	// The function called to "fire"
-	virtual void	Fire (CPlayerEntity *ent) = 0;
+	virtual void	Fire (CPlayerEntity *Player) = 0;
 
-	void ChangeWeapon (CPlayerEntity *ent);
-	virtual void	Think (CPlayerEntity *ent);
+	void ChangeWeapon (CPlayerEntity *Player);
+	virtual void	Think (CPlayerEntity *Player);
 
-	void	NoAmmoWeaponChange (CPlayerEntity *ent);
+	void	NoAmmoWeaponChange (CPlayerEntity *Player);
 
 	virtual void AddWeaponToItemList (CItemList *List) = 0;
 	virtual void InitWeaponVwepModel (sint32 TakeAway) = 0;
@@ -133,7 +133,7 @@ public:
 	{
 	};
 
-	virtual void Use (CWeaponItem *Wanted, CPlayerEntity *ent);
+	virtual void Use (CWeaponItem *Wanted, CPlayerEntity *Player);
 };
 
 #define WEAPON_CLASS_DEFS(x) \

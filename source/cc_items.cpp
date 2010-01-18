@@ -73,7 +73,7 @@ Precache(Precache)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::SetRespawn (edict_t *ent, float delay)
+/// \fn	void CBaseItem::SetRespawn (CItemEntity *Item, float delay)
 ///
 /// \brief	Sets a respawn time on the item and makes it invisible. 
 ///
@@ -83,14 +83,14 @@ Precache(Precache)
 /// \param	ent		 - If non-null, the entity to be respawned. 
 /// \param	delay	 - The delay until it's respawned. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CBaseItem::SetRespawn (CItemEntity *ent, FrameNumber_t delay)
+void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber_t delay)
 {
-	ent->Flags |= FL_RESPAWN;
-	ent->GetSvFlags() |= SVF_NOCLIENT;
-	ent->GetSolid() = SOLID_NOT;
-	ent->NextThink = level.Frame + delay;
-	ent->ThinkState = ITS_RESPAWN;
-	ent->Link();
+	Item->Flags |= FL_RESPAWN;
+	Item->GetSvFlags() |= SVF_NOCLIENT;
+	Item->GetSolid() = SOLID_NOT;
+	Item->NextThink = Level.Frame + delay;
+	Item->ThinkState = ITS_RESPAWN;
+	Item->Link();
 }
 
 class CDroppedItemEntity : public CItemEntity
@@ -109,12 +109,12 @@ public:
 		AvoidOwner = true;
 	};
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (AvoidOwner && (other == GetOwner()))
+		if (AvoidOwner && (Other == GetOwner()))
 			return;
 
-		CItemEntity::Touch (other, plane, surf);
+		CItemEntity::Touch (Other, plane, surf);
 	};
 
 	void Think ()
@@ -122,7 +122,7 @@ public:
 		if (AvoidOwner)
 		{
 			AvoidOwner = false;
-			NextThink = level.Frame + 290;
+			NextThink = Level.Frame + 290;
 		}
 		else
 			Free ();
@@ -143,7 +143,7 @@ public:
 ///
 /// \retval	null if it fails, else. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
+CItemEntity *CBaseItem::DropItem (CBaseEntity *Entity)
 {
 	CDroppedItemEntity	*dropped = QNewEntityOf CDroppedItemEntity();
 	vec3f	forward, right;
@@ -157,34 +157,34 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (ent);
+	dropped->SetOwner (Entity);
 
-	if (ent->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & ENT_PLAYER)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
 		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
 
-		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent, CONTENTS_SOLID);
+		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
+			result, Player, CONTENTS_SOLID);
 		dropped->State.GetOrigin() = trace.EndPos;
 	}
 	else
 	{
-		ent->State.GetAngles().ToVectors(&forward, &right, NULL);
-		dropped->State.GetOrigin() = ent->State.GetOrigin();
+		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
 	forward *= 100;
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.Frame + 10;
+	dropped->NextThink = Level.Frame + 10;
 	dropped->Link ();
 
 	return dropped;

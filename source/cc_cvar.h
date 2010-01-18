@@ -42,7 +42,7 @@ class CCvar
 
 	char			*mainValue;
 	float			floatVal;
-	sint32				intVal;
+	sint32			intVal;
 
 	// Updates the cvar values above. Private because it won't be called from anywhere else but here.
 	void Update ();
@@ -53,7 +53,7 @@ public:
 	CCvar (const char *cvarName, const char *defaultValue, sint32 flags = 0);
 	CCvar (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
 	CCvar (const char *cvarName, float defaultValue, sint32 flags = 0);
-	// I didn't list any deconstructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
+	// I didn't list any destructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
 
 	void Register (const char *cvarName, const char *defaultValue, sint32 flags = 0);
 	void Register (const char *cvarName, sint32 defaultValue, sint32 flags = 0);

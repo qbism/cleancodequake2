@@ -38,28 +38,28 @@ static sint32 mapWarnings, mapErrors;
 void InitMapCounter ()
 {
 	mapWarnings = mapErrors = 0;
-	DebugPrintf ("======================\nSpawning entities...\n");
+	ServerPrintf ("======================\nSpawning entities...\n");
 }
 
 void EndMapCounter ()
 {
-	DebugPrintf ("...entities spawned with %i error(s), %i warning(s).\n======================\n", mapErrors, mapWarnings);
+	ServerPrintf ("...entities spawned with %i error(s), %i warning(s).\n======================\n", mapErrors, mapWarnings);
 }
 
 #include <sstream>
 static std::cc_stringstream PrintBuffer;
 
-void Map_Print (EMapPrintType printType, CBaseEntity *ent, vec3f &origin)
+void Map_Print (EMapPrintType printType, vec3f &origin)
 {
 	if (printType == MAPPRINT_WARNING)
 	{
 		mapWarnings++;
-		PrintBuffer << "Warning " << mapWarnings << " (" << level.ClassName << " #" << level.EntityNumber << ")";
+		PrintBuffer << "Warning " << mapWarnings << " (" << Level.ClassName << " #" << Level.EntityNumber << ")";
 	}
 	else if (printType == MAPPRINT_ERROR)
 	{	
 		mapErrors++;
-		PrintBuffer << "Error " << mapErrors << " (" << level.ClassName << " #" << level.EntityNumber << ")";
+		PrintBuffer << "Error " << mapErrors << " (" << Level.ClassName << " #" << Level.EntityNumber << ")";
 	}
 
 	if (origin)
@@ -67,9 +67,12 @@ void Map_Print (EMapPrintType printType, CBaseEntity *ent, vec3f &origin)
 	PrintBuffer << ":\n";
 }
 
-void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *fmt, ...)
+void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, char *fmt, ...)
 {
-	Map_Print (printType, ent, origin);
+	if (!Entity->ClassName.empty() && Level.ClassName != Entity->ClassName)
+		Level.ClassName = Entity->ClassName;
+
+	Map_Print (printType, origin);
 
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
@@ -79,8 +82,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *ent, vec3f &origin, char *f
 	va_end (argptr);
 
 	PrintBuffer << "   " << text;
-
-	DebugPrintf ("%s", PrintBuffer.str().c_str());
+	ServerPrintf ("%s", PrintBuffer.str().c_str());
 
 	PrintBuffer.str("");
 }
@@ -158,7 +160,7 @@ char *ParsePound (char *tok, char *realEntities)
 	{
 		token = Com_Parse (&tok);
 		if (strcmp(token, POUNDENTITIES_VERSION))
-			DebugPrintf ("Pound entity file is version %s against version "POUNDENTITIES_VERSION"!\n", token);
+			ServerPrintf ("Pound entity file is version %s against version "POUNDENTITIES_VERSION"!\n", token);
 		fileVersion = atoi(token);
 	}
 	else if (strcmp(token, "#dim") == 0)

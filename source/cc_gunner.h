@@ -76,9 +76,9 @@ public:
 
 	void Attack ();
 #if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (CBaseEntity *Attacker, float eta);
 #else
-	void Dodge (CBaseEntity *attacker, float eta, CTrace *trace);
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *trace);
 #endif
 	void Idle ();
 	void Search ();
@@ -88,8 +88,8 @@ public:
 	void Walk ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (CBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 };

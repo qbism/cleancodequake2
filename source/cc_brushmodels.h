@@ -173,7 +173,7 @@ public:
 
 	ENTITYFIELDS_SAVABLE(CPlatFormInsideTrigger)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 class CPlatForm : public CMapEntity, public CBrushModel, public CBlockableEntity, public CUsableEntity
@@ -190,8 +190,8 @@ public:
 	CPlatForm(sint32 Index);
 
 	bool Run ();
-	void Blocked (CBaseEntity *other);
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Blocked (CBaseEntity *Other);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 	void HitTop ();
 	void HitBottom ();
 
@@ -223,7 +223,7 @@ public:
 
 	ENTITYFIELDS_SAVABLE(CDoorTrigger)
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 // Base door class
@@ -278,15 +278,15 @@ public:
 	virtual void HitTop ();
 	virtual void HitBottom ();
 	virtual void GoDown ();
-	virtual void GoUp (CBaseEntity *activator);
+	virtual void GoUp (CBaseEntity *Activator);
 	virtual void DoEndFunc ();
 	virtual void Think ();
 
-	virtual void Blocked (CBaseEntity *other);
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	virtual void Pain (CBaseEntity *other, float kick, sint32 damage);
-	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Blocked (CBaseEntity *Other);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual void Pain (CBaseEntity *Other, sint32 Damage);
+	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	// Thinks
 	void SpawnDoorTrigger ();
@@ -304,7 +304,7 @@ public:
 	IMPLEMENT_SAVE_HEADER(CRotatingDoor)
 
 	void GoDown();
-	void GoUp (CBaseEntity *activator);
+	void GoUp (CBaseEntity *Activator);
 
 	void Spawn ();
 };
@@ -343,9 +343,9 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CDoorSecret)
 
-	void Blocked (CBaseEntity *other);
-	void Use (CBaseEntity *other, CBaseEntity *activator);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void Blocked (CBaseEntity *Other);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	void DoEndFunc ();
 	void Think ();
@@ -401,10 +401,10 @@ public:
 	virtual void Think ();
 	virtual void Fire ();
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	virtual void Pain (CBaseEntity *other, float kick, sint32 damage);
-	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual void Pain (CBaseEntity *Other, sint32 Damage);
+	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	virtual void Spawn ();
 };
@@ -443,8 +443,8 @@ public:
 	virtual void DoEndFunc ();
 	virtual void Think ();
 
-	virtual void Blocked (CBaseEntity *other);
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Blocked (CBaseEntity *Other);
+	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	virtual void Spawn ();
 };
@@ -487,7 +487,7 @@ public:
 	{
 		sint32 Index = File.Read<sint32> ();
 		if (Index != -1)
-			MoveTarget = entity_cast<CTrain>(g_edicts[Index].Entity);
+			MoveTarget = entity_cast<CTrain>(Game.Entities[Index].Entity);
 
 		CMapEntity::LoadFields (File);
 		CUsableEntity::LoadFields (File);
@@ -495,7 +495,7 @@ public:
 	}
 
 	void Think ();
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	void Spawn ();
 };
@@ -531,9 +531,9 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CRotatingBrush)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
-	void Blocked (CBaseEntity *other);
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	void Blocked (CBaseEntity *Other);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -571,7 +571,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CConveyor)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	bool Run ();
 	void Spawn ();
@@ -589,7 +589,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CAreaPortal)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	bool Run ();
 	void Spawn ();
@@ -622,7 +622,7 @@ public:
 		CUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	bool Run ();
 	void Spawn ();
@@ -637,8 +637,8 @@ public:
 	IMPLEMENT_SAVE_HEADER(CFuncObject)
 
 	void Think ();
-	void Use (CBaseEntity *other, CBaseEntity *activator);
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -688,9 +688,9 @@ public:
 
 	void DoSpawn ();
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	bool Run ();
 	void Spawn ();
@@ -723,7 +723,7 @@ public:
 		CBrushModel::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (CBaseEntity *Other, CBaseEntity *Activator);
 
 	bool Run ()
 	{
