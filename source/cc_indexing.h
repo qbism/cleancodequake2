@@ -40,14 +40,14 @@ class CIndex
 {
 public:
 	MediaIndex		Index;
-	std::cc_string	Name;
+	cc_string	Name;
 };
 
 #define MAX_INDEXES 256
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::index_allocator<std::pair <size_t, size_t> > > THashedMediaIndexListType;
-typedef std::map<uint8, CIndex*, std::less<uint8>, std::index_allocator<std::pair <uint8, CIndex*> > > TMediaIndexToPtrList;
-typedef std::vector<CIndex*, std::index_allocator<CIndex*> > TMediaIndexListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, index_allocator<std::pair <size_t, size_t> > > THashedMediaIndexListType;
+typedef std::map<uint8, CIndex*, std::less<uint8>, index_allocator<std::pair <uint8, CIndex*> > > TMediaIndexToPtrList;
+typedef std::vector<CIndex*, index_allocator<CIndex*> > TMediaIndexListType;
 
 class CIndexList
 {

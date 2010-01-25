@@ -222,7 +222,7 @@ void CInfantry::Pain (CBaseEntity *Other, sint32 Damage)
 
 	PainDebounceTime = Level.Frame + 30;
 	
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = (!irandom(2)) ? &InfantryMovePain1 : &InfantryMovePain2;
@@ -604,18 +604,18 @@ void CInfantry::Duck (float eta)
 		(CurrentMove == &InfantryMoveAttack2))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		// PMM - stupid dodge
 		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -630,7 +630,7 @@ void CInfantry::SideStep ()
 		(CurrentMove == &InfantryMoveAttack2))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;

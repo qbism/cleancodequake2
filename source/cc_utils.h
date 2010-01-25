@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void	G_TouchTriggers (CBaseEntity *Entity);
 void G_SetMovedir (vec3f &angles, vec3f &movedir);
 
-typedef std::vector<CBaseEntity*, std::generic_allocator<CBaseEntity*> > TTargetList;
+typedef std::vector<CBaseEntity*, generic_allocator<CBaseEntity*> > TTargetList;
 CBaseEntity *CC_PickTarget (char *targetname);
 TTargetList CC_GetTargets (char *targetname);
 
@@ -124,7 +124,7 @@ float	PlayersRangeFromSpot (CBaseEntity *spot);
 
 inline CSpotBase *SelectDeathmatchSpawnPoint ()
 {
-	return (dmFlags.dfSpawnFarthest.IsEnabled()) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
+	return (DeathmatchFlags.dfSpawnFarthest.IsEnabled()) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
 }
 
 class CForEachTeamChainCallback

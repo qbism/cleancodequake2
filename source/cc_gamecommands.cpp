@@ -233,7 +233,7 @@ Cmd_Say_f
 
 bool CheckFlood(CPlayerEntity *Player)
 {
-	if (flood_msgs.Integer())
+	if (CvarList[CV_FLOOD_MSGS].Integer())
 	{
 		if (Level.Frame < Player->Client.Flood.LockTill)
 		{
@@ -241,15 +241,15 @@ bool CheckFlood(CPlayerEntity *Player)
 				(sint32)((Player->Client.Flood.LockTill - Level.Frame)/10));
 			return true;
 		}
-		sint32 i = Player->Client.Flood.WhenHead - flood_msgs.Integer() + 1;
+		sint32 i = Player->Client.Flood.WhenHead - CvarList[CV_FLOOD_MSGS].Integer() + 1;
 		if (i < 0)
 			i = (sizeof(Player->Client.Flood.When)/sizeof(Player->Client.Flood.When[0])) + i;
 		if (Player->Client.Flood.When[i] && 
-			((Level.Frame - Player->Client.Flood.When[i])/10) < flood_persecond.Integer())
+			((Level.Frame - Player->Client.Flood.When[i])/10) < CvarList[CV_FLOOD_PER_SECOND].Integer())
 		{
-			Player->Client.Flood.LockTill = Level.Frame + (flood_waitdelay.Float() * 10);
+			Player->Client.Flood.LockTill = Level.Frame + (CvarList[CV_FLOOD_DELAY].Float() * 10);
 			Player->PrintToClient (PRINT_CHAT, "Flood protection:  You can't talk for %d seconds.\n",
-				flood_waitdelay.Integer());
+				CvarList[CV_FLOOD_DELAY].Integer());
 			return true;
 		}
 		Player->Client.Flood.WhenHead = (Player->Client.Flood.WhenHead + 1) %
@@ -262,9 +262,9 @@ bool CheckFlood(CPlayerEntity *Player)
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
-	std::cc_string &Text;
+	cc_string &Text;
 
-	CSayPlayerCallback (std::cc_string &Text) :
+	CSayPlayerCallback (cc_string &Text) :
 	Text(Text)
 	{
 	};
@@ -280,7 +280,7 @@ public:
 void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 {
 	//char	text[MAX_TALK_STRING];
-	static std::cc_string text;
+	static cc_string text;
 
 	if (ArgCount () < 2 && !arg0)
 		return;
@@ -291,7 +291,7 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 		return;
 	}
 
-	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
+	if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
 		team = false;
 
 	text = (team) ? ("(" + Player->Client.Persistent.Name + "): ") : (Player->Client.Persistent.Name + ": ");
@@ -300,7 +300,7 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 		text += ArgGets(0) + " " + ArgGetConcatenatedString();
 	else
 	{
-		std::cc_string p = ArgGetConcatenatedString();
+		cc_string p = ArgGetConcatenatedString();
 
 		if (p[0] == '"')
 		{
@@ -320,7 +320,7 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 	if (CheckFlood(Player))
 		return;
 
-	if (dedicated.Integer())
+	if (CvarList[CV_DEDICATED].Integer())
 		ServerPrintf ("%s", text);
 
 	CSayPlayerCallback (text).Query ();

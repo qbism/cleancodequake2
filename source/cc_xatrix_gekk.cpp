@@ -673,7 +673,7 @@ void CGekk::CheckMeleeRefire ()
 	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
-	if (frand() < (skill.Integer() * 0.1))
+	if (frand() < (CvarList[CV_SKILL].Integer() * 0.1))
 	{
 		if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
 		{
@@ -1333,7 +1333,7 @@ void CGekk::
 		return;
 	}
 
-	switch (skill.Integer())
+	switch (CvarList[CV_SKILL].Integer())
 	{
 	case 0:
 		if (frand() > 0.5)

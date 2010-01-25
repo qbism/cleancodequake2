@@ -62,7 +62,7 @@ public:
 	};
 };
 
-typedef std::vector<fs_pathIndex*, std::filesystem_allocator<fs_pathIndex*> > fs_pathListType;
+typedef std::vector<fs_pathIndex*, filesystem_allocator<fs_pathIndex*> > fs_pathListType;
 fs_pathListType fs_pathList;
 
 // Adds a path to the path list
@@ -130,7 +130,7 @@ public:
 		file.gz = NULL;
 	};
 
-	std::cc_string			name;
+	cc_string			name;
 
 	bool					inUse;
 	EFileType				fileType;
@@ -143,7 +143,7 @@ public:
 	} file;
 };
 
-typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::filesystem_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, filesystem_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
 class CFileHandleList *IndexList;
 
 class CFileHandleList
@@ -621,7 +621,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 			}
 
 			if (!bFound)
-				files.push_back ((addDir) ? dirFiles[i].c_str() : std::cc_string(name));
+				files.push_back ((addDir) ? dirFiles[i].c_str() : cc_string(name));
 		}
 	}
 	

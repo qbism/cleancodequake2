@@ -57,7 +57,7 @@ void CQuadFire::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 		if (Item->SpawnFlags & DROPPED_PLAYER_ITEM)
 			quad_fire_drop_timeout_hack = (Item->NextThink - Level.Frame);
 
-		if (dmFlags.dfInstantItems.IsEnabled())
+		if (DeathmatchFlags.dfInstantItems.IsEnabled())
 			Use (Other);
 	}
 }
@@ -81,8 +81,6 @@ void CQuadFire::Use (CPlayerEntity *Player)
 	Player->PlaySound (CHAN_ITEM, SoundIndex("items/quadfire1.wav"));
 }
 
-LINK_ITEM_TO_CLASS (weapon_boomer, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_phalanx, CItemEntity);
 LINK_ITEM_TO_CLASS (ammo_magslug, CAmmoEntity);
 LINK_ITEM_TO_CLASS (ammo_trap, CAmmoEntity);
 LINK_ITEM_TO_CLASS (item_quadfire, CPowerupEntity);

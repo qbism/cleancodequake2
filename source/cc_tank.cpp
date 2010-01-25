@@ -279,7 +279,7 @@ void CTank::Pain (CBaseEntity *Other, sint32 Damage)
 		return;
 	
 	// If hard or nightmare, don't go into pain while attacking
-	if ( skill.Integer() >= 2)
+	if ( CvarList[CV_SKILL].Integer() >= 2)
 	{
 		if ( (Entity->State.GetFrame() >= FRAME_attak301) && (Entity->State.GetFrame() <= FRAME_attak330) )
 			return;
@@ -290,7 +290,7 @@ void CTank::Pain (CBaseEntity *Other, sint32 Damage)
 	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 #if MONSTER_USE_ROGUE_AI
@@ -370,7 +370,7 @@ void CTank::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
 
-	rocketSpeed = 500 + (100 * skill.Integer());	// PGM rock & roll.... :)
+	rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 
@@ -392,7 +392,7 @@ void CTank::Rocket ()
 		dir = vec - start;
 	}
 
-	if (!blindfire && ((frand() < (0.2 + ((3 - skill.Integer()) * 0.15)))))
+	if (!blindfire && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
 		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
@@ -539,7 +539,7 @@ CAnim TankMoveAttackPostBlast (FRAME_attak117, FRAME_attak122, TankFramesAttackP
 
 void CTank::ReAttackBlaster ()
 {
-	if (skill.Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
+	if (CvarList[CV_SKILL].Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
 	{
 		CurrentMove = &TankMoveReAttackBlast;
 		return;
@@ -716,7 +716,7 @@ void CTank::ReFireRocket ()
 #endif
 
 	// Only on hard or nightmare
-	if ( skill.Integer() >= 2 && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
+	if ( CvarList[CV_SKILL].Integer() >= 2 && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
 	{
 		CurrentMove = &TankMoveAttackFireRocket;
 		return;

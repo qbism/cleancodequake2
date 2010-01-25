@@ -555,14 +555,9 @@ struct gameExport_t
 	0
 };
 
-edict_t *CGameAPI::GetEntities ()
+edict_t *&CGameAPI::GetEntities ()
 {
 	return globals.edicts;
-};
-
-void CGameAPI::SetEntities (edict_t *entities)
-{
-	globals.edicts = entities;
 };
 
 sint32 &CGameAPI::GetEdictSize ()

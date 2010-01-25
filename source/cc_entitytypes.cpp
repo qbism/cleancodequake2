@@ -77,15 +77,15 @@ void			CHurtableEntity::LoadFields (CFile &File)
 	LoadEntityFields<CHurtableEntity> (this, File);
 };
 
-std::cc_string ClientTeam (CPlayerEntity *Player)
+cc_string ClientTeam (CPlayerEntity *Player)
 {
-	std::cc_string val = Q_strlwr(Info_ValueForKey (Player->Client.Persistent.UserInfo, "skin"));
+	cc_string val = Q_strlwr(Info_ValueForKey (Player->Client.Persistent.UserInfo, "skin"));
 
 	size_t slash = val.find_first_of('/');
-	if (slash == std::cc_string::npos)
+	if (slash == cc_string::npos)
 		return val;
 
-	if (dmFlags.dfModelTeams.IsEnabled())
+	if (DeathmatchFlags.dfModelTeams.IsEnabled())
 	{
 		val.erase (slash);
 		return val;
@@ -97,7 +97,7 @@ std::cc_string ClientTeam (CPlayerEntity *Player)
 
 bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 {
-	if (!(dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()))
+	if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
 		return false;
 
 	return ClientTeam (Player1) == ClientTeam (Player2);
@@ -322,7 +322,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 								vec3f dir, vec3f point, vec3f normal, sint32 Damage,
 								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
 {
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 		return;
 
 	sint32			take;
@@ -341,13 +341,13 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	// friendly fire avoidance
 	// if enabled you can't hurt teammates (but you can hurt yourself)
 	// knockback still occurs
-	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (dmFlags.dfSkinTeams.IsEnabled() || dmFlags.dfModelTeams.IsEnabled()) || Game.GameMode == GAME_COOPERATIVE))
+	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()) || Game.GameMode == GAME_COOPERATIVE))
 	{
 		if ((EntityFlags & ENT_PLAYER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 		{
 			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(Attacker)))
 			{
-				if (dmFlags.dfNoFriendlyFire.IsEnabled())
+				if (DeathmatchFlags.dfNoFriendlyFire.IsEnabled())
 					Damage = 0;
 				else
 					mod |= MOD_FRIENDLY_FIRE;
@@ -357,7 +357,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	meansOfDeath = mod;
 
 	// easy mode takes half damage
-	if (skill.Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
+	if (CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
 	{
 		Damage *= 0.5;
 		if (!Damage)
@@ -381,7 +381,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 		}
 	}
 
-	if (dmFlags.dfDmTechs.IsEnabled()
+	if (DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 	|| (Game.GameMode & GAME_CTF)
 #endif
@@ -443,7 +443,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 //team armor protect
 	if ((Game.GameMode & GAME_CTF) && isClient && (Attacker->EntityFlags & ENT_PLAYER) &&
 		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.CTF.Team) &&
-		(this != Attacker) && dmFlags.dfCtfArmorProtect.IsEnabled())
+		(this != Attacker) && DeathmatchFlags.dfCtfArmorProtect.IsEnabled())
 		psave = asave = 0;
 	else
 	{
@@ -467,7 +467,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	//treat cheat/powerup savings the same as armor
 	asave += save;
 
-	if (dmFlags.dfDmTechs.IsEnabled()
+	if (DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 	|| (Game.GameMode & GAME_CTF)
 #endif
@@ -526,7 +526,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 			if (LastPelletShot)
 			{
 				Pain (Attacker, take);
-				if (skill.Integer() == 3)
+				if (CvarList[CV_SKILL].Integer() == 3)
 					Monster->PainDebounceTime = Level.Frame + 50;
 			}
 		}
@@ -637,7 +637,7 @@ GravityMultiplier(1.0f)
 
 void CPhysicsEntity::AddGravity()
 {
-	Velocity.Z -= GravityMultiplier * sv_gravity.Float() * 0.1f;
+	Velocity.Z -= GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f;
 }
 
 CTrace CPhysicsEntity::PushEntity (vec3f &push)
@@ -1047,7 +1047,7 @@ bool CStepPhysics::Run ()
 		{
 			if (!((Flags & FL_SWIM) && (WaterInfo.Level > WATER_WAIST)))
 			{
-				if (Velocity.Z < sv_gravity.Float() * -0.1)
+				if (Velocity.Z < CvarList[CV_GRAVITY].Float() * -0.1)
 					hitsound = true;
 				if (WaterInfo.Level == WATER_NONE)
 					AddGravity ();
@@ -1198,7 +1198,7 @@ sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 	return blocked;
 }
 
-typedef std::vector<CPushed, std::generic_allocator<CPushed> > TPushedList;
+typedef std::vector<CPushed, generic_allocator<CPushed> > TPushedList;
 
 bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 {
@@ -1550,7 +1550,7 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
-void CUsableEntity::UseTargets (CBaseEntity *Activator, std::cc_string &Message)
+void CUsableEntity::UseTargets (CBaseEntity *Activator, cc_string &Message)
 {
 //
 // check for a delay

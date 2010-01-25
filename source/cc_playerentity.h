@@ -129,8 +129,8 @@ public:
 
 	void Load (CFile &File)
 	{
-		UserInfo = File.Read<std::cc_string> ();
-		Name = File.Read<std::cc_string> ();
+		UserInfo = File.Read<cc_string> ();
+		Name = File.Read<cc_string> ();
 
 		IP = File.Read<IPAddress> ();
 		Hand = File.Read<sint32> ();
@@ -158,8 +158,8 @@ public:
 		ViewBlend = File.Read<colorf> ();
 	}
 
-	std::cc_string	UserInfo;
-	std::cc_string	Name;
+	cc_string	UserInfo;
+	cc_string	Name;
 	IPAddress		IP;
 	sint32			Hand;
 
@@ -666,7 +666,7 @@ public:
 	void			CTFDeadDropFlag ();
 	class CSpotBase	*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();
-	void			CTFAssignSkin (std::cc_string &s);
+	void			CTFAssignSkin (cc_string &s);
 	bool			CTFStart ();
 #endif
 

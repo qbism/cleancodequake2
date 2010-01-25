@@ -29,19 +29,6 @@ void EndDMLevel ();
 
 CCTFGameLocals ctfgame;
 
-CCvar	ctf,
-		ctf_forcejoin,
-		competition,
-		matchlock,
-		electpercentage,
-		matchtime,
-		matchsetuptime,
-		matchstarttime,
-		admin_password,
-		warp_list,
-		capturelimit,
-		instantweap;
-
 void CreateCTFStatusbar ()
 {
 	CStatusBar CTFBar;
@@ -200,25 +187,11 @@ void CTFSpawn()
 {
 	ctfgame.Clear ();
 
-	if (competition.Integer() > 1)
+	if (CvarList[CV_COMPETITION].Integer() > 1)
 	{
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = Level.Frame + matchsetuptime.Integer() * 60;
+		ctfgame.matchtime = Level.Frame + CvarList[CV_MATCH_SETUP_TIME].Integer() * 60;
 	}
-}
-
-void CTFInit()
-{
-	ctf.Register ("ctf", "0", CVAR_LATCH_SERVER|CVAR_SERVERINFO);
-	ctf_forcejoin.Register ("ctf_forcejoin", "", 0);
-	competition.Register ("competition", "0", CVAR_SERVERINFO);
-	matchlock.Register ("matchlock", "1", CVAR_SERVERINFO);
-	electpercentage.Register ("electpercentage", "66", 0);
-	matchtime.Register ("matchtime", "20", CVAR_SERVERINFO);
-	matchsetuptime.Register ("matchsetuptime", "10", 0);
-	matchstarttime.Register ("matchstarttime", "20", 0);
-	admin_password.Register ("admin_password", "", 0);
-	warp_list.Register ("warp_list", "q2ctf1 q2ctf2 q2ctf3 q2ctf4 q2ctf5", 0);
 }
 
 /*------------------------------------------------------------------------*/
@@ -417,7 +390,7 @@ void CTFTeam_f (CPlayerEntity *Player)
 {
 	sint32 desired_team;
 
-	std::cc_string t = ArgGetConcatenatedString();
+	cc_string t = ArgGetConcatenatedString();
 	if (!t[0])
 	{
 		Player->PrintToClient (PRINT_HIGH, "You are on the %s team.\n",
@@ -495,7 +468,7 @@ SAY_TEAM
 class CLocName
 {
 public:
-	std::cc_string		classname;
+	cc_string		classname;
 	uint32				hash;
 
 	uint8				priority;
@@ -537,7 +510,7 @@ CLocName LocNames[] =
 	CLocName(	"",							0 )
 };
 
-static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Location(CPlayerEntity *who, cc_stringstream &OutMessage)
 {
 	CBaseEntity *hot = NULL;
 	float hotdist = 999999, newdist;
@@ -658,7 +631,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::cc_stringstream
 	OutMessage << item->Name;
 }
 
-static inline void CTFSay_Team_Armor(CPlayerEntity *who, std::cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Armor(CPlayerEntity *who, cc_stringstream &OutMessage)
 {
 	CBaseItem		*item = who->Client.Persistent.Armor;
 	EPowerArmorType power_armor_type = who->PowerArmorType ();
@@ -680,7 +653,7 @@ static inline void CTFSay_Team_Armor(CPlayerEntity *who, std::cc_stringstream &O
 		OutMessage << "no armor";
 }
 
-static inline void CTFSay_Team_Health(CPlayerEntity *who, std::cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Health(CPlayerEntity *who, cc_stringstream &OutMessage)
 {
 	if (who->Health <= 0)
 		OutMessage << "dead";
@@ -688,7 +661,7 @@ static inline void CTFSay_Team_Health(CPlayerEntity *who, std::cc_stringstream &
 		OutMessage << who->Health << " health";
 }
 
-static inline void CTFSay_Team_Tech(CPlayerEntity *who, std::cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Tech(CPlayerEntity *who, cc_stringstream &OutMessage)
 {
 	// see if the player has a tech powerup
 	if (who->Client.Persistent.Tech)
@@ -697,7 +670,7 @@ static inline void CTFSay_Team_Tech(CPlayerEntity *who, std::cc_stringstream &Ou
 		OutMessage << "no powerup";
 }
 
-static inline void CTFSay_Team_Weapon(CPlayerEntity *who, std::cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Weapon(CPlayerEntity *who, cc_stringstream &OutMessage)
 {
 	if (who->Client.Persistent.Weapon)
 		OutMessage << who->Client.Persistent.Weapon->Item->Name;
@@ -705,10 +678,10 @@ static inline void CTFSay_Team_Weapon(CPlayerEntity *who, std::cc_stringstream &
 		OutMessage << "none";
 }
 
-static inline void CTFSay_Team_Sight(CPlayerEntity *who, std::cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Sight(CPlayerEntity *who, cc_stringstream &OutMessage)
 {
 	sint32 n = 0;
-	static std::cc_string nameStore;
+	static cc_string nameStore;
 
 	for (uint8 i = 1; i <= Game.MaxClients; i++)
 	{
@@ -745,9 +718,9 @@ static inline void CTFSay_Team_Sight(CPlayerEntity *who, std::cc_stringstream &O
 }
 
 bool CheckFlood(CPlayerEntity *Player);
-void CTFSay_Team(CPlayerEntity *who, std::cc_string msg)
+void CTFSay_Team(CPlayerEntity *who, cc_string msg)
 {
-	static std::cc_stringstream OutMessage;
+	static cc_stringstream OutMessage;
 	
 	if (CheckFlood(who))
 		return;
@@ -917,7 +890,7 @@ LINK_CLASSNAME_TO_CLASS ("misc_ctf_banner_small", CMiscCTFBannerSmall);
 
 bool CTFBeginElection(CPlayerEntity *Player, EElectState type, char *msg)
 {
-	if (electpercentage.Integer() == 0)
+	if (CvarList[CV_ELECT_PERCENTAGE].Integer() == 0)
 	{
 		Player->PrintToClient (PRINT_HIGH, "Elections are disabled, only an admin can process this action.\n");
 		return false;
@@ -949,7 +922,7 @@ bool CTFBeginElection(CPlayerEntity *Player, EElectState type, char *msg)
 	ctfgame.etarget = Player;
 	ctfgame.election = type;
 	ctfgame.evotes = 0;
-	ctfgame.needvotes = (count * electpercentage.Integer()) / 100;
+	ctfgame.needvotes = (count * CvarList[CV_ELECT_PERCENTAGE].Integer()) / 100;
 	ctfgame.electtime = Level.Frame + 200; // twenty seconds for election
 	Q_strncpyz(ctfgame.emsg, msg, sizeof(ctfgame.emsg) - 1);
 
@@ -1009,14 +982,14 @@ void CTFResetAllPlayers()
 	}
 
 	if (ctfgame.match == MATCH_SETUP)
-		ctfgame.matchtime = Level.Frame + matchsetuptime.Integer() * 60;
+		ctfgame.matchtime = Level.Frame + CvarList[CV_MATCH_SETUP_TIME].Integer() * 60;
 }
 
 // start a match
 void CTFStartMatch()
 {
 	ctfgame.match = MATCH_GAME;
-	ctfgame.matchtime = Level.Frame + matchtime.Integer() * 60;
+	ctfgame.matchtime = Level.Frame + CvarList[CV_MATCH_TIME].Integer() * 60;
 
 	ctfgame.team1 = ctfgame.team2 = 0;
 
@@ -1057,7 +1030,7 @@ void CTFStartMatch()
 
 void CTFEndMatch()
 {
-	static std::cc_stringstream BroadcastString;
+	static cc_stringstream BroadcastString;
 	BroadcastString.str("");
 
 	ctfgame.match = MATCH_POST;
@@ -1099,8 +1072,8 @@ void CTFWinElection()
 	{
 	case ELECT_MATCH :
 		// reset into match mode
-		if (competition.Integer() < 3)
-			competition.Set (2);
+		if (CvarList[CV_COMPETITION].Integer() < 3)
+			CvarList[CV_COMPETITION].Set (2);
 		ctfgame.match = MATCH_SETUP;
 		CTFResetAllPlayers();
 		break;
@@ -1220,7 +1193,7 @@ void CTFReady(CPlayerEntity *Player)
 		// everyone has commited
 		BroadcastPrintf(PRINT_CHAT, "All players have commited.  Match starting\n");
 		ctfgame.match = MATCH_PREGAME;
-		ctfgame.matchtime = Level.Frame + (matchstarttime.Float() * 10);
+		ctfgame.matchtime = Level.Frame + (CvarList[CV_MATCH_START_TIME].Float() * 10);
 	}
 }
 
@@ -1251,7 +1224,7 @@ void CTFNotReady(CPlayerEntity *Player)
 	{
 		BroadcastPrintf(PRINT_CHAT, "Match halted.\n");
 		ctfgame.match = MATCH_SETUP;
-		ctfgame.matchtime = Level.Frame + matchsetuptime.Integer() * 60;
+		ctfgame.matchtime = Level.Frame + CvarList[CV_MATCH_SETUP_TIME].Integer() * 60;
 	}
 }
 
@@ -1365,15 +1338,15 @@ bool CTFCheckRules()
 			{
 			case MATCH_SETUP :
 				// go back to normal mode
-				if (competition.Integer() < 3)
+				if (CvarList[CV_COMPETITION].Integer() < 3)
 				{
 					ctfgame.match = MATCH_NONE;
-					competition.Set(1);
+					CvarList[CV_COMPETITION].Set(1);
 					CTFResetAllPlayers();
 				}
 				else
 					// reset the time
-					ctfgame.matchtime = Level.Frame + matchsetuptime.Integer() * 60;
+					ctfgame.matchtime = Level.Frame + CvarList[CV_MATCH_SETUP_TIME].Integer() * 60;
 				return false;
 
 			case MATCH_PREGAME :
@@ -1407,7 +1380,7 @@ bool CTFCheckRules()
 					j++;
 			}
 
-			if (competition.Integer() < 3)
+			if (CvarList[CV_COMPETITION].Integer() < 3)
 				Q_snprintfz(text, sizeof(text), "%02d:%02d SETUP: %d not ready",
 					t / 60, t % 60, j);
 			else
@@ -1432,9 +1405,9 @@ bool CTFCheckRules()
 		return false;
 	}
 
-	if (capturelimit.Integer() && 
-		(ctfgame.team1 >= capturelimit.Integer() ||
-		ctfgame.team2 >= capturelimit.Integer())) {
+	if (CvarList[CV_CAPTURE_LIMIT].Integer() && 
+		(ctfgame.team1 >= CvarList[CV_CAPTURE_LIMIT].Integer() ||
+		ctfgame.team2 >= CvarList[CV_CAPTURE_LIMIT].Integer())) {
 		BroadcastPrintf (PRINT_HIGH, "Capturelimit hit.\n");
 		return true;
 	}
@@ -1578,11 +1551,11 @@ void CTFWarp(CPlayerEntity *Player)
 
 	if (ArgCount() < 2)
 	{
-		Player->PrintToClient (PRINT_HIGH, "Where do you want to warp to?\nAvailable levels are: %s\n", warp_list.String());
+		Player->PrintToClient (PRINT_HIGH, "Where do you want to warp to?\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].String());
 		return;
 	}
 
-	mlist = Mem_PoolStrDup(warp_list.String(), com_genericPool, 0);
+	mlist = Mem_PoolStrDup(CvarList[CV_WARP_LIST].String(), com_genericPool, 0);
 
 	token = strtok(mlist, seps);
 	while (token != NULL)
@@ -1594,8 +1567,7 @@ void CTFWarp(CPlayerEntity *Player)
 
 	if (token == NULL)
 	{
-		Player->PrintToClient (PRINT_HIGH, "Unknown CTF Level.\n");
-		Player->PrintToClient (PRINT_HIGH, "Available levels are: %s\n", warp_list.String());
+		Player->PrintToClient (PRINT_HIGH, "Unknown CTF Level.\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].String());
 		QDelete mlist;
 		return;
 	}

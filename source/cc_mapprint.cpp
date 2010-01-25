@@ -47,7 +47,7 @@ void EndMapCounter ()
 }
 
 #include <sstream>
-static std::cc_stringstream PrintBuffer;
+static cc_stringstream PrintBuffer;
 
 void Map_Print (EMapPrintType printType, vec3f &origin)
 {
@@ -69,7 +69,7 @@ void Map_Print (EMapPrintType printType, vec3f &origin)
 
 void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, char *fmt, ...)
 {
-	if (!Entity->ClassName.empty() && Level.ClassName != Entity->ClassName)
+	if (Entity && !Entity->ClassName.empty() && Level.ClassName != Entity->ClassName)
 		Level.ClassName = Entity->ClassName;
 
 	Map_Print (printType, origin);
@@ -91,7 +91,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, char
 sint32 fileVersion;
 
 sint32 curIf = 0;
-std::vector<bool, std::generic_allocator<bool> > ifLists;
+std::vector<bool, generic_allocator<bool> > ifLists;
 
 inline void PushIf (bool expr)
 {
@@ -141,7 +141,7 @@ struct PoundVariable_t
 	} vars;
 };
 
-std::vector<PoundVariable_t *, std::generic_allocator<PoundVariable_t*> > VariableList;
+std::vector<PoundVariable_t *, generic_allocator<PoundVariable_t*> > VariableList;
 
 PoundVariable_t *Pound_FindVar (char *name)
 {
@@ -349,8 +349,8 @@ bool TokenEnd (char *token)
 // this goes by entire lines.
 char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 {
-	CFileBuffer FileBuffer((std::cc_string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
-	std::cc_string finalString;
+	CFileBuffer FileBuffer((cc_string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
+	cc_string finalString;
 	char *realEntities;
 	char *token;
 

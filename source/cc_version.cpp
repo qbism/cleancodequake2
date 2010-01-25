@@ -70,7 +70,7 @@ void VerifyVersionFile ()
 
 	const char *token;
 
-	std::cc_string prefix;
+	cc_string prefix;
 	Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 	prefix = token;
 
@@ -113,7 +113,7 @@ WININET
 
 #include <WinInet.h>
 bool				VersionCheckReady;
-std::cc_string		VersionPrefix;
+cc_string		VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
@@ -190,7 +190,7 @@ void CheckVersionReturnance ()
 
 			const char *token;
 
-			std::cc_string prefix;
+			cc_string prefix;
 			Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 			prefix = token;
 
@@ -302,7 +302,7 @@ DWORD				iID;
 long WINAPI			CheckNewVersionThread (long lParam);
 void				CheckVersionReturnance ();
 bool				VersionCheckReady;
-std::cc_string		VersionPrefix;
+cc_string		VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
@@ -405,7 +405,7 @@ void CheckNewVersion ()
 
 		const char *token;
 
-		std::cc_string prefix;
+		cc_string prefix;
 		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 		prefix = token;
 

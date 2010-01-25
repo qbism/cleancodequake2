@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 {
 	// easy mode only ducks one quarter the time
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 	{
 		if (frand() > 0.25)
 			return;

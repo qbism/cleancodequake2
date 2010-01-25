@@ -41,8 +41,8 @@ MONSTER LIST
 ===============================
 */
 
-typedef std::vector<CMonsterTableIndex*, std::generic_allocator <CMonsterTableIndex*> > TMonsterListType;
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedMonsterListType;
+typedef std::vector<CMonsterTableIndex*, generic_allocator <CMonsterTableIndex*> > TMonsterListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, generic_allocator<size_t> > THashedMonsterListType;
 
 TMonsterListType &MonsterTable ()
 {
@@ -1376,7 +1376,7 @@ void CMonster::MonsterStartGo ()
 	}
 
 	// are we in debug mode?
-	if (map_debug.Integer())
+	if (CvarList[CV_MAP_DEBUG].Integer())
 	{
 		Think = NULL; // Don't think
 		
@@ -1440,7 +1440,7 @@ void CMonster::MonsterTriggeredStart ()
 	Entity->GetSolid() = SOLID_NOT;
 	Entity->PhysicsDisabled = true;
 
-	if (!map_debug.Integer())
+	if (!CvarList[CV_MAP_DEBUG].Integer())
 		Entity->GetSvFlags() |= SVF_NOCLIENT;
 	else
 		Entity->State.GetEffects() = EF_SPHERETRANS;
@@ -1533,7 +1533,7 @@ void CMonster::AlertNearbyStroggs ()
 	if (Entity->Enemy->Flags & FL_NOTARGET)
 		return;
 
-	switch (skill.Integer())
+	switch (CvarList[CV_SKILL].Integer())
 	{
 	case 0:
 		return;
@@ -1544,7 +1544,7 @@ void CMonster::AlertNearbyStroggs ()
 		dist = 500;
 		break;
 	default:
-		dist = 750 + (skill.Integer()) * 75;
+		dist = 750 + (CvarList[CV_SKILL].Integer()) * 75;
 		break;
 	}
 
@@ -1762,7 +1762,7 @@ void CMonsterBeamLaser::Think ()
 		CBaseEntity *Entity = tr.ent->Entity;
 		// hurt it if we can
 		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
-			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, skill.Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
+			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		if (Damage < 0) // healer ray
 		{
@@ -1866,7 +1866,7 @@ bool CMonster::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill.Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -1906,9 +1906,9 @@ bool CMonster::CheckAttack ()
 		return false;
 	}
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill.Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
@@ -1979,7 +1979,7 @@ bool CMonster::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill.Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -2017,9 +2017,9 @@ bool CMonster::CheckAttack ()
 	else
 		return false;
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill.Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
@@ -4090,7 +4090,7 @@ void CMonster::Dodge (CBaseEntity *Attacker, float eta, CTrace *tr)
 	}
 
 	// skill level determination..
-	if (r > (0.25*((skill.Integer())+1)))
+	if (r > (0.25*((CvarList[CV_SKILL].Integer())+1)))
 	{
 		return;
 	}

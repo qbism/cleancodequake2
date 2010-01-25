@@ -436,7 +436,7 @@ void CTrap::FireGrenade (CPlayerEntity *Player, bool inHand)
 #if CLEANCTF_ENABLED
 	(Game.GameMode & GAME_CTF) || 
 #endif
-	dmFlags.dfDmTechs.IsEnabled()) && Player->ApplyHaste())
+	DeathmatchFlags.dfDmTechs.IsEnabled()) && Player->ApplyHaste())
 #if XATRIX_FEATURES
 	|| isQuadFire
 #endif

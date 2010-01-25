@@ -55,7 +55,7 @@ void EndDMLevel ()
 	static const char *seps = " ,\n\r";
 
 	// stay on same level flag
-	if (dmFlags.dfSameLevel.IsEnabled())
+	if (DeathmatchFlags.dfSameLevel.IsEnabled())
 	{
 		BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()));
 		return;
@@ -68,9 +68,9 @@ void EndDMLevel ()
 	}
 
 	// see if it's in the map list
-	if (*sv_maplist.String())
+	if (*CvarList[CV_MAPLIST].String())
 	{
-		s = Mem_StrDup(sv_maplist.String());
+		s = Mem_StrDup(CvarList[CV_MAPLIST].String());
 		f = NULL;
 		t = strtok(s, seps);
 
@@ -137,9 +137,9 @@ void CheckDMRules ()
 //ZOID
 #endif
 
-	if (timelimit.Float())
+	if (CvarList[CV_TIME_LIMIT].Float())
 	{
-		if (Level.Frame >= ((timelimit.Float()*60)*10))
+		if (Level.Frame >= ((CvarList[CV_TIME_LIMIT].Float()*60)*10))
 		{
 			BroadcastPrintf (PRINT_HIGH, "Timelimit hit.\n");
 			EndDMLevel ();
@@ -147,7 +147,7 @@ void CheckDMRules ()
 		}
 	}
 
-	if (fraglimit.Integer())
+	if (CvarList[CV_FRAG_LIMIT].Integer())
 	{
 		for (uint8 i = 0; i < Game.MaxClients; i++)
 		{
@@ -155,7 +155,7 @@ void CheckDMRules ()
 			if (!cl->GetInUse())
 				continue;
 
-			if (cl->Client.Respawn.Score >= fraglimit.Integer())
+			if (cl->Client.Respawn.Score >= CvarList[CV_FRAG_LIMIT].Integer())
 			{
 				BroadcastPrintf (PRINT_HIGH, "Fraglimit hit.\n");
 				EndDMLevel ();
@@ -177,8 +177,7 @@ void ExitLevel ()
 		return;
 #endif
 
-	//Level.ChangeMap
-	gi.AddCommandString ((char*)(std::cc_string("gamemap \"") + Level.ChangeMap + "\"\n").c_str());
+	gi.AddCommandString ((char*)(cc_string("gamemap \"") + Level.ChangeMap + "\"\n").c_str());
 	Level.ChangeMap = NULL;
 	Level.ExitIntermission = false;
 	Level.IntermissionTime = 0;
@@ -208,16 +207,16 @@ inline void CheckNeedPass ()
 {
 	// if password or spectator_password has changed, update needpass
 	// as needed
-	if (password.Modified() || spectator_password.Modified()) 
+	if (CvarList[CV_PASSWORD].Modified() || CvarList[CV_SPECTATOR_PASSWORD].Modified()) 
 	{
 		sint32 need = 0;
 
-		if (*password.String() && Q_stricmp(password.String(), "none"))
+		if (*CvarList[CV_PASSWORD].String() && Q_stricmp(CvarList[CV_PASSWORD].String(), "none"))
 			need |= 1;
-		if (*spectator_password.String() && Q_stricmp(spectator_password.String(), "none"))
+		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && Q_stricmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none"))
 			need |= 2;
 
-		needpass.Set(need);
+		CvarList[CV_NEEDPASS].Set(need);
 	}
 }
 
@@ -231,7 +230,7 @@ void ClientEndServerFrames ()
 		if (!Player->GetInUse())
 			continue;
 
-		if (map_debug.Boolean())
+		if (CvarList[CV_MAP_DEBUG].Boolean())
 		{
 			Mem_Zero (&Player->PlayedSounds, sizeof(Player->PlayedSounds));
 			Player->BeginServerFrame ();
@@ -321,7 +320,7 @@ void CGameAPI::RunFrame ()
 	CheckVersionReturnance ();
 #endif
 
-	if (Level.Frame >= 3 && map_debug.Boolean())
+	if (Level.Frame >= 3 && CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		Level.Frame ++;
 		// Run the players only
@@ -379,8 +378,8 @@ void CGameAPI::RunFrame ()
 	// build the playerstate_t structures for all players
 	ClientEndServerFrames ();
 
-	if (dmflags.Modified())
-		dmFlags.UpdateFlags(dmflags.Integer());
+	if (CvarList[CV_DMFLAGS].Modified())
+		DeathmatchFlags.UpdateFlags(CvarList[CV_DMFLAGS].Integer());
 
 #if MONSTERS_USE_PATHFINDING
 	RunNodes();
@@ -389,8 +388,8 @@ void CGameAPI::RunFrame ()
 
 void SetupGamemode ()
 {
-	sint32 dmInt = deathmatch.Integer(),
-		coopInt = coop.Integer();
+	sint32 dmInt = CvarList[CV_DEATHMATCH].Integer(),
+		coopInt = CvarList[CV_COOP].Integer();
 
 	// Did we request deathmatch?
 	if (dmInt)
@@ -402,23 +401,23 @@ void SetupGamemode ()
 			if (dmInt > coopInt)
 			{
 				// We want deathmatch
-				coop.Set (0, false);
-				deathmatch.Set (1, false);
+				CvarList[CV_COOP].Set (0, false);
+				CvarList[CV_DEATHMATCH].Set (1, false);
 				// Let it fall through
 			}
 			else if (coopInt > dmInt)
 			{
 				// We want coop
-				deathmatch.Set (0, false);
-				coop.Set (1, false);
+				CvarList[CV_DEATHMATCH].Set (0, false);
+				CvarList[CV_COOP].Set (1, false);
 				Game.GameMode = GAME_COOPERATIVE;
 				return;
 			}
 			// We don't know what we want, forcing DM
 			else
 			{
-				coop.Set (0, false);
-				DebugPrintf		("CleanCode Warning: Both deathmatch and coop are 1; forcing to deathmatch.\n"
+				CvarList[CV_COOP].Set (0, false);
+				DebugPrintf		("CleanCode Warning: Both deathmatch and coop are 1; forcing to CvarList[CV_DEATHMATCH].\n"
 								 "Did you know you can make one take priority if you intend to only set one?\n"
 								 "If deathmatch is 1 and you want to switch to coop, just type \"coop 2\" and change maps!\n");
 				// Let it fall through
@@ -441,7 +440,7 @@ void SetupGamemode ()
 
 	// If we reached here, we wanted deathmatch
 #if CLEANCTF_ENABLED
-	if (ctf.Integer())
+	if (CvarList[CV_CTF].Integer())
 		Game.GameMode |= GAME_CTF;
 #endif
 }
@@ -456,115 +455,14 @@ is loaded.
 ============
 */
 
-CCvar	deathmatch,
-		coop,
-		dmflags,
-		skill,
-		fraglimit,
-		timelimit,
-		password,
-		spectator_password,
-		needpass,
-		maxclients,
-		maxspectators,
-		maxentities,
-		g_select_empty,
-		dedicated,
-		developer,
-		filterban,
-		sv_gravity,
-		sv_rollspeed,
-		sv_rollangle,
-		gun_x,
-		gun_y,
-		gun_z,
-		run_pitch,
-		run_roll,
-		bob_up,
-		bob_pitch,
-		bob_roll,
-		sv_cheats,
-		flood_msgs,
-		flood_persecond,
-		flood_waitdelay,
-		sv_maplist,
-		map_debug,
-		cc_techflags,
-		sv_airaccelerate;
-
 // Registers all cvars and commands
 void G_Register ()
 {
-	gun_x.Register ("gun_x", "0", 0);
-	gun_y.Register ("gun_y", "0", 0);
-	gun_z.Register ("gun_z", "0", 0);
-
-	//FIXME: sv_ prefix is wrong for these
-	sv_rollspeed.Register ("sv_rollspeed", "200", 0);
-	sv_rollangle.Register ("sv_rollangle", "2", 0);
-	sv_gravity.Register ("sv_gravity", "800", 0);
-
-	// noset vars
-	dedicated.Register ("dedicated", "0", CVAR_READONLY);
-
-	developer.Register ("developer", "0", 0);
-
-	// latched vars
-	sv_cheats.Register ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	CCvar ("gamename", GAMENAME , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	CCvar ("gamedate", BuildDate(), CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-
-	maxclients.Register ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH_SERVER);
-	maxspectators.Register ("maxspectators", "4", CVAR_SERVERINFO);
-	skill.Register ("skill", "1", CVAR_LATCH_SERVER);
-	maxentities.Register ("maxentities", 1024, CVAR_LATCH_SERVER);
-
-	// change anytime vars
-	dmflags.Register ("dmflags", "0", CVAR_SERVERINFO);
-	fraglimit.Register ("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit.Register ("timelimit", "0", CVAR_SERVERINFO);
-	password.Register ("password", "", CVAR_USERINFO);
-	spectator_password.Register ("spectator_password", "", CVAR_USERINFO);
-	needpass.Register ("needpass", "0", CVAR_SERVERINFO);
-	filterban.Register ("filterban", "1", 0);
-
-	g_select_empty.Register ("g_select_empty", "0", CVAR_ARCHIVE);
-
-	run_pitch.Register ("run_pitch", "0.002", 0);
-	run_roll.Register ("run_roll", "0.005", 0);
-	bob_up .Register ("bob_up", "0.005", 0);
-	bob_pitch.Register ("bob_pitch", "0.002", 0);
-	bob_roll.Register ("bob_roll", "0.002", 0);
-
-	// flood control
-	flood_msgs.Register ("flood_msgs", "4", 0);
-	flood_persecond.Register ("flood_persecond", "4", 0);
-	flood_waitdelay.Register ("flood_waitdelay", "10", 0);
-
-	// dm map list
-	sv_maplist.Register ("sv_maplist", "", 0);
-	
-	map_debug.Register ("map_debug", "0", CVAR_LATCH_SERVER);
-	cc_techflags.Register ("cc_techflags", "0", CVAR_LATCH_SERVER);
+	Cvar_Register ();
 
 	SetupArg ();
 	Cmd_Register ();
 	SvCmd_Register ();
-
-	// Gamemodes
-	deathmatch.Register ("deathmatch", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	coop.Register ("coop", "0", CVAR_LATCH_SERVER);
-
-#if CLEANCTF_ENABLED
-//ZOID
-	capturelimit.Register ("capturelimit", "0", CVAR_SERVERINFO);
-	instantweap.Register ("instantweap", "0", CVAR_SERVERINFO);
-
-	// Setup CTF if we have it
-	CTFInit();
-#endif
-
-	sv_airaccelerate.Register ("sv_airaccelerate", "0", CVAR_SERVERINFO);
 
 #if MONSTERS_USE_PATHFINDING
 	Nodes_Register ();
@@ -619,7 +517,7 @@ void CGameAPI::Init ()
 	// Setup the gamemode
 	SetupGamemode ();
 
-	dmFlags.UpdateFlags(dmflags.Integer());
+	DeathmatchFlags.UpdateFlags(CvarList[CV_DMFLAGS].Integer());
 
 	// items
 	InitItemlist ();
@@ -628,19 +526,19 @@ void CGameAPI::Init ()
 	Game.HelpMessages[1].clear();
 
 	// initialize all entities for this game
-	Game.MaxEntities = maxentities.Integer();
+	Game.MaxEntities = CvarList[CV_MAXENTITIES].Integer();
 	Game.Entities = QNew (com_gamePool, 0) edict_t[Game.MaxEntities];
-	GameAPI.SetEntities(Game.Entities);
+	GameAPI.GetEntities() = Game.Entities;
 	GameAPI.GetMaxEdicts() = Game.MaxEntities;
 
 	// initialize all clients for this game
-	Game.MaxClients = maxclients.Integer();
+	Game.MaxClients = CvarList[CV_MAXCLIENTS].Integer();
 	Game.Clients = QNew (com_gamePool, 0) gclient_t[Game.MaxClients];
 	GameAPI.GetNumEdicts() = Game.MaxClients + 1;
 
 	// Vars
-	Game.MaxSpectators = maxspectators.Integer();
-	Game.CheatsEnabled = (sv_cheats.Integer()) ? true : false;
+	Game.MaxSpectators = CvarList[CV_MAXSPECTATORS].Integer();
+	Game.CheatsEnabled = (CvarList[CV_CHEATS].Integer()) ? true : false;
 
 	Bans.LoadFromFile ();
 
@@ -657,9 +555,6 @@ void CGameAPI::Init ()
 void CGameAPI::Shutdown ()
 {
 	ServerPrintf ("==== ShutdownGame ====\n");
-
-	//Cmd_RemoveCommands ();
-	//SvCmd_RemoveCommands ();
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();

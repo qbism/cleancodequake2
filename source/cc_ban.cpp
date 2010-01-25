@@ -72,7 +72,7 @@ void CBanList::LoadFromFile ()
 		if (File.EndOfFile())
 			break;
 
-		std::cc_string line = File.ReadLine ();
+		cc_string line = File.ReadLine ();
 		
 		// Parse the line.
 		CParser Parser (line.c_str(), PSP_COMMENT_MASK);

@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define MAX_CLASSNAME_CLASSES 1024
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityListType;
-typedef std::vector<CClassnameToClassIndex*, std::generic_allocator<CClassnameToClassIndex*> > TEntityListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, generic_allocator<size_t> > THashedEntityListType;
+typedef std::vector<CClassnameToClassIndex*, generic_allocator<CClassnameToClassIndex*> > TEntityListType;
 
 class CEntityList
 {
@@ -137,7 +137,7 @@ _CC_ENABLE_DEPRECATION
 	// Link in the classname
 	MapEntity->ClassName = Mem_PoolStrDup (Level.ClassName.c_str(), com_levelPool, 0);
 
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_EASY)
 		{
@@ -345,9 +345,9 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	Level.EntityNumber = 0;
 	InitMapCounter();
 
-	sint32 skill_level = Clamp (skill.Integer(), 0, 3);
-	if (skill.Integer() != skill_level)
-		skill.Set (skill_level, true);
+	sint32 skill_level = Clamp (CvarList[CV_SKILL].Integer(), 0, 3);
+	if (CvarList[CV_SKILL].Integer() != skill_level)
+		CvarList[CV_SKILL].Set (skill_level, true);
 
 	CPlayerEntity::BackupClientData ();
 

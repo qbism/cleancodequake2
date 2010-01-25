@@ -371,7 +371,7 @@ void CPlayerEntity::BeginServerFrame ()
 				buttonMask = -1;
 
 			if ( ( Client.LatchedButtons & buttonMask ) ||
-				((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfForceRespawn.IsEnabled() ) 
+				((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfForceRespawn.IsEnabled() ) 
 #if CLEANCTF_ENABLED
 				|| CTFMatchOn()
 #endif
@@ -425,10 +425,10 @@ void CPlayerEntity::SpectatorRespawn ()
 
 	if (Client.Persistent.Spectator)
 	{
-		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
-		if (*spectator_password.String() && 
-			strcmp(spectator_password.String(), "none") && 
-			value != spectator_password.String())
+		cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
+		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && 
+			strcmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none") && 
+			value != CvarList[CV_SPECTATOR_PASSWORD].String())
 		{
 			PrintToClient (PRINT_HIGH, "Spectator password incorrect.\n");
 			Client.Persistent.Spectator = false;
@@ -458,9 +458,9 @@ void CPlayerEntity::SpectatorRespawn ()
 	{
 		// he was a Spectator and wants to join the game
 		// he must have the right password
-		std::cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
-		if (*password.String() && strcmp(password.String(), "none") && 
-			value != password.String())
+		cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
+		if (*CvarList[CV_PASSWORD].String() && strcmp(CvarList[CV_PASSWORD].String(), "none") && 
+			value != CvarList[CV_PASSWORD].String())
 		{
 			PrintToClient (PRINT_HIGH, "Password incorrect.\n");
 			Client.Persistent.Spectator = true;
@@ -499,7 +499,7 @@ void CPlayerEntity::SpectatorRespawn ()
 PutInServer
 
 Called when a player connects to a server or respawns in
-a deathmatch.
+a CvarList[CV_DEATHMATCH].
 ============
 */
 void CPlayerEntity::PutInServer ()
@@ -594,7 +594,7 @@ void CPlayerEntity::PutInServer ()
 	Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
 //ZOID
 
-	if ((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfFixedFov.IsEnabled())
+	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfFixedFov.IsEnabled())
 		Client.PlayerState.GetFov () = 90;
 	else
 	{
@@ -673,7 +673,7 @@ void CPlayerEntity::InitPersistent ()
 {
 	Client.Persistent.Clear ();
 
-	if (!map_debug.Boolean())
+	if (!CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		NItems::Blaster->Add(this, 1);
 		Client.Persistent.Weapon = &CBlaster::Weapon;
@@ -729,7 +729,7 @@ The game can override any of the settings in place
 */
 void CPlayerEntity::UserinfoChanged (char *userinfo)
 {
-	std::cc_string UserInfo = userinfo;
+	cc_string UserInfo = userinfo;
 
 	// check for malformed or illegal info strings
 	if (!Info_Validate(UserInfo))
@@ -739,7 +739,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	Client.Persistent.Name = Info_ValueForKey (UserInfo, "name");
 
 	// set Spectator
-	std::cc_string s = Info_ValueForKey (UserInfo, "spectator");
+	cc_string s = Info_ValueForKey (UserInfo, "spectator");
 	// spectators are only supported in deathmatch
 	Client.Persistent.Spectator = ((Game.GameMode & GAME_DEATHMATCH) && s.length() && s != "0");
 
@@ -756,12 +756,12 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 //ZOID
 #endif
 	{
-		std::cc_string temp = Client.Persistent.Name + "\\" + s;
+		cc_string temp = Client.Persistent.Name + "\\" + s;
 		ConfigString (CS_PLAYERSKINS+playernum, temp.c_str());
 	}
 
 	// fov
-	if ((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfFixedFov.IsEnabled())
+	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfFixedFov.IsEnabled())
 		Client.PlayerState.GetFov () = 90;
 	else
 	{
@@ -810,10 +810,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 }
 
 #if CLEANCTF_ENABLED
-void CPlayerEntity::CTFAssignSkin(std::cc_string &s)
+void CPlayerEntity::CTFAssignSkin(cc_string &s)
 {
 	sint32 playernum = State.GetNumber()-1;
-	std::cc_string t = Info_ValueForKey(s, "skin");
+	cc_string t = Info_ValueForKey(s, "skin");
 
 	if (t.find('/'))
 		t.erase (t.find('/') + 1);
@@ -839,7 +839,7 @@ bool CPlayerEntity::CTFStart ()
 	if (Client.Respawn.CTF.Team != CTF_NOTEAM)
 		return false;
 
-	if ((!dmFlags.dfCtfForceJoin.IsEnabled() || ctfgame.match >= MATCH_SETUP))
+	if ((!DeathmatchFlags.dfCtfForceJoin.IsEnabled() || ctfgame.match >= MATCH_SETUP))
 	{
 		// start as 'observer'
 		Client.Respawn.CTF.Team = CTF_NOTEAM;
@@ -882,10 +882,10 @@ inline float CPlayerEntity::CalcRoll (vec3f &velocity, vec3f &right)
 	float	side = Q_fabs(velocity | right);
 	float	sign = side < 0 ? -1 : 1;
 
-	if (side < sv_rollspeed.Float())
-		side = side * sv_rollangle.Float() / sv_rollspeed.Float();
+	if (side < CvarList[CV_ROLLSPEED].Float())
+		side = side * CvarList[CV_ROLLANGLE].Float() / CvarList[CV_ROLLSPEED].Float();
 	else
-		side = sv_rollangle.Float();
+		side = CvarList[CV_ROLLANGLE].Float();
 	
 	return side*sign;
 }
@@ -1047,18 +1047,18 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 
 		// add angles based on velocity
 		float delta = Velocity | forward;
-		angles.X += delta*run_pitch.Float();
+		angles.X += delta*CvarList[CV_RUN_PITCH].Float();
 		
 		delta = Velocity | right;
-		angles.Z += delta*run_roll.Float();
+		angles.Z += delta*CvarList[CV_RUN_ROLL].Float();
 
 		// add angles based on bob
 
-		delta = bobfracsin * bob_pitch.Float() * xyspeed;
+		delta = bobfracsin * CvarList[CV_BOB_PITCH].Float() * xyspeed;
 		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 			delta *= 6;		// crouching
 		angles.X += delta;
-		delta = bobfracsin * bob_roll.Float() * xyspeed;
+		delta = bobfracsin * CvarList[CV_BOB_ROLL].Float() * xyspeed;
 		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
 			delta *= 6;		// crouching
 		if (bobcycle & 1)
@@ -1080,7 +1080,7 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 	v.Z -= ratio * Client.FallValue * 0.4;
 
 	// add bob height
-	bob = bobfracsin * xyspeed * bob_up.Float();
+	bob = bobfracsin * xyspeed * CvarList[CV_BOB_UP].Float();
 	if (bob > 6)
 		bob = 6;
 	v.Z += bob;
@@ -1146,9 +1146,9 @@ inline void CPlayerEntity::CalcGunOffset (vec3f &forward, vec3f &right, vec3f &u
 	// gun_x / gun_y / gun_z are development tools
 	for (sint32 i = 0; i < 3; i++)
 	{
-		angles[i] += forward[i] * gun_y.Float();
-		angles[i] += right[i] * gun_x.Float();
-		angles[i] += up[i] * -gun_z.Float();
+		angles[i] += forward[i] * CvarList[CV_GUN_Y].Float();
+		angles[i] += right[i] * CvarList[CV_GUN_X].Float();
+		angles[i] += up[i] * -CvarList[CV_GUN_Z].Float();
 	}
 
 	Client.PlayerState.GetGunAngles() = angles;
@@ -1310,7 +1310,7 @@ P_FallingDamage
 */
 inline void CPlayerEntity::FallingDamage ()
 {
-	if (dmFlags.dfNoFallingDamage.IsEnabled())
+	if (DeathmatchFlags.dfNoFallingDamage.IsEnabled())
 		return;
 
 	if (State.GetModelIndex() != 255)
@@ -1921,7 +1921,7 @@ void CPlayerEntity::EndServerFrame ()
 #if CLEANCTF_ENABLED
 		(Game.GameMode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs.IsEnabled()) && (Client.Persistent.Tech && (Client.Persistent.Tech->TechType == CTech::TECH_PASSIVE)))
+		DeathmatchFlags.dfDmTechs.IsEnabled()) && (Client.Persistent.Tech && (Client.Persistent.Tech->TechType == CTech::TECH_PASSIVE)))
 		Client.Persistent.Tech->DoPassiveTech (this);
 
 	// if the scoreboard is up, update it
@@ -2219,7 +2219,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 
 void CPlayerEntity::SetStats ()
 {
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		Client.PlayerState.GetStat (STAT_PICKUP_STRING) = CS_POINTING_SURFACE;
 		Client.PlayerState.GetStat (STAT_TIMER_ICON) = CS_POINTING_SURFACE-1;
@@ -2729,9 +2729,9 @@ void CPlayerEntity::TossClientWeapon ()
 			Item = NULL;
 	}
 
-	bool quad = (!dmFlags.dfQuadDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadDamage > (Level.Frame + 10));
+	bool quad = (!DeathmatchFlags.dfQuadDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadDamage > (Level.Frame + 10));
 #if XATRIX_FEATURES
-	bool quadfire = (!dmFlags.dfQuadFireDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadFire > (Level.Frame + 10));
+	bool quadfire = (!DeathmatchFlags.dfQuadFireDrop.IsEnabled()) ? false : (bool)(Client.Timers.QuadFire > (Level.Frame + 10));
 #endif
 	float spread = (Item && quad) ? 22.5f : 0.0f;
 
@@ -2862,7 +2862,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	else
 		Client.PlayerState.GetPMove()->pmType = PMT_NORMAL;
 
-	Client.PlayerState.GetPMove()->gravity = sv_gravity.Float();
+	Client.PlayerState.GetPMove()->gravity = CvarList[CV_GRAVITY].Float();
 	pm.state = *Client.PlayerState.GetPMove();
 
 	for (sint32 i = 0; i < 3; i++)
@@ -2885,7 +2885,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #if USE_EXTENDED_GAME_IMPORTS
 	gi.Pmove (&pm);
 #else
-	SV_Pmove (this, &pm, sv_airaccelerate.Float());
+	SV_Pmove (this, &pm, CvarList[CV_AIRACCELERATE].Float());
 #endif
 
 	// save results of pmove
@@ -2932,11 +2932,11 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	Link ();
 
-	if (!NoClip && !(map_debug.Boolean()))
+	if (!NoClip && !(CvarList[CV_MAP_DEBUG].Boolean()))
 		G_TouchTriggers (this);
 
 	// touch other objects
-	if (!map_debug.Boolean())
+	if (!CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		for (sint32 i = 0; i < pm.numTouch; i++)
 		{
@@ -3011,7 +3011,7 @@ void CPlayerEntity::CTFAssignTeam()
 
 	Client.Respawn.CTF.State = 0;
 
-	if (!dmFlags.dfCtfForceJoin.IsEnabled())
+	if (!DeathmatchFlags.dfCtfForceJoin.IsEnabled())
 	{
 		Client.Respawn.CTF.Team = CTF_NOTEAM;
 		return;
@@ -3231,7 +3231,7 @@ void CPlayerEntity::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 D
 #if CLEANCTF_ENABLED
 			(Game.GameMode & GAME_CTF) || 
 #endif
-			dmFlags.dfDmTechs.IsEnabled()) 
+			DeathmatchFlags.dfDmTechs.IsEnabled()) 
 			DeadDropTech();
 
 		if (Game.GameMode & GAME_DEATHMATCH)
@@ -3746,11 +3746,11 @@ _CC_ENABLE_DEPRECATION
 IPAddress CopyIP (const char *val)
 {
 	// Do we have a :?
-	std::cc_string str (val);
+	cc_string str (val);
 
 	size_t loc = str.find_first_of (':');
 
-	if (loc != std::cc_string::npos)
+	if (loc != cc_string::npos)
 		str = str.substr(0, loc);
 
 	IPAddress Adr;
@@ -3763,10 +3763,10 @@ IPAddress CopyIP (const char *val)
 
 bool CPlayerEntity::Connect (char *userinfo)
 {
-	std::cc_string	UserInfo = userinfo;
+	cc_string	UserInfo = userinfo;
 
 	// check to see if they are on the banned IP list
-	std::cc_string value = Info_ValueForKey (UserInfo, "ip");
+	cc_string value = Info_ValueForKey (UserInfo, "ip");
 	IPAddress Adr = CopyIP (value.c_str());
 
 	if (Bans.IsBanned(Adr) || Bans.IsBanned(Info_ValueForKey(UserInfo, "name").c_str()))
@@ -3786,9 +3786,9 @@ bool CPlayerEntity::Connect (char *userinfo)
 			Info_SetValueForKey(UserInfo, "rejmsg", "Not permitted to enter spectator mode");
 			return false;
 		}
-		if (*spectator_password.String() && 
-			strcmp(spectator_password.String(), "none") && 
-			spectator_password.String() != value)
+		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && 
+			strcmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none") && 
+			CvarList[CV_SPECTATOR_PASSWORD].String() != value)
 		{
 			Info_SetValueForKey(UserInfo, "rejmsg", "Spectator password required or incorrect.");
 			return false;
@@ -3812,8 +3812,8 @@ bool CPlayerEntity::Connect (char *userinfo)
 	{
 		// check for a password
 		value = Info_ValueForKey (UserInfo, "password");
-		if (*password.String() && strcmp(password.String(), "none") && 
-			password.String() != value)
+		if (*CvarList[CV_PASSWORD].String() && strcmp(CvarList[CV_PASSWORD].String(), "none") && 
+			CvarList[CV_PASSWORD].String() != value)
 		{
 			Info_SetValueForKey(UserInfo, "rejmsg", "Password required or incorrect.");
 			return false;
@@ -3876,7 +3876,7 @@ void CPlayerEntity::Disconnect ()
 #if CLEANCTF_ENABLED
 		(Game.GameMode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs.IsEnabled()) 
+		DeathmatchFlags.dfDmTechs.IsEnabled()) 
 		DeadDropTech();
 
 	// send effect

@@ -50,18 +50,18 @@ class CCvar
 public:
 	// Constructors, to make it a bit easier (using 'new')
 	CCvar ();
-	CCvar (const char *cvarName, const char *defaultValue, sint32 flags = 0);
-	CCvar (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
-	CCvar (const char *cvarName, float defaultValue, sint32 flags = 0);
+	CCvar (const char *cvarName, const char *defaultValue, ECvarFlags flags = 0);
+	CCvar (const char *cvarName, sint32 defaultValue, ECvarFlags flags = 0);
+	CCvar (const char *cvarName, float defaultValue, ECvarFlags flags = 0);
 	// I didn't list any destructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
 
-	void Register (const char *cvarName, const char *defaultValue, sint32 flags = 0);
-	void Register (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
-	void Register (const char *cvarName, float defaultValue, sint32 flags = 0);
+	void Register (const char *cvarName, const char *defaultValue, ECvarFlags flags = 0);
+	void Register (const char *cvarName, sint32 defaultValue, ECvarFlags flags = 0);
+	void Register (const char *cvarName, float defaultValue, ECvarFlags flags = 0);
 
 	// Let me know if these defs cause any problems with types.
 	float		Float ();
-	sint32			Integer();
+	sint32		Integer();
 	char		*String();
 	bool		Boolean (bool MustBeOne = false);
 
@@ -71,6 +71,78 @@ public:
 
 	bool Modified ();
 };
+
+CC_ENUM (uint16, ECvars)
+{
+	CV_DEATHMATCH,
+	CV_COOP,
+	CV_DMFLAGS,
+	CV_SKILL,
+	CV_FRAG_LIMIT,
+	CV_TIME_LIMIT,
+	CV_PASSWORD,
+	CV_SPECTATOR_PASSWORD,
+	CV_NEEDPASS,
+	CV_MAXCLIENTS,
+	CV_MAXSPECTATORS,
+	CV_MAXENTITIES,
+	CV_SELECT_EMPTY,
+	CV_DEDICATED,
+	CV_DEVELOPER,
+	CV_FILTERBAN,
+	CV_GRAVITY,
+	CV_ROLLSPEED,
+	CV_ROLLANGLE,
+	CV_GUN_X,
+	CV_GUN_Y,
+	CV_GUN_Z,
+	CV_RUN_PITCH,
+	CV_RUN_ROLL,
+	CV_BOB_UP,
+	CV_BOB_PITCH,
+	CV_BOB_ROLL,
+	CV_CHEATS,
+	CV_FLOOD_MSGS,
+	CV_FLOOD_PER_SECOND,
+	CV_FLOOD_DELAY,
+	CV_MAPLIST,
+	CV_MAP_DEBUG,
+	CV_AIRACCELERATE,
+	CV_CC_TECHFLAGS,
+
+#if CLEANCTF_ENABLED
+	CV_CTF,
+	CV_CTF_FORCEJOIN,
+	CV_COMPETITION,
+	CV_MATCH_LOCK,
+	CV_ELECT_PERCENTAGE,
+	CV_MATCH_TIME,
+	CV_MATCH_SETUP_TIME,
+	CV_MATCH_START_TIME,
+	CV_ADMIN_PASSWORD,
+	CV_WARP_LIST,
+	CV_CAPTURE_LIMIT,
+	CV_INSTANT_WEAPONS,
+#endif
+
+#if MONSTERS_USE_PATHFINDING
+	CV_PATH_NODE_DEBUG,
+#endif
+
+	CV_TOTAL_CVARS
+};
+
+struct cvarDefaultValue_s
+{
+	ECvars		cvarIndex;
+	const char	*cvarName;
+	const char	*cvarDefaultValue;
+	ECvarFlags	cvarFlags;
+};
+
+extern CCvar	CvarList[CV_TOTAL_CVARS];
+
+void Cvar_Register ();
 
 #else
 FILE_WARNING

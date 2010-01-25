@@ -91,6 +91,8 @@ void CShotgun::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CShotgun);
 
+LINK_ITEM_TO_CLASS (weapon_shotgun, CItemEntity);
+
 void CShotgun::CreateItem (CItemList *List)
 {
 	NItems::Shotgun = QNew (com_itemPool, 0) CWeaponItem

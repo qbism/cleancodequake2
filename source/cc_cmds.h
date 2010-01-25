@@ -47,8 +47,8 @@ template <typename TFunctor>
 class CCommand
 {
 public:
-	typedef std::vector<CCommand<TFunctor>*, std::command_allocator<CCommand<TFunctor>*> > TCommandListType;
-	typedef std::multimap<size_t, size_t, std::less<size_t>, std::command_allocator<size_t> > THashedCommandListType;
+	typedef std::vector<CCommand<TFunctor>*, command_allocator<CCommand<TFunctor>*> > TCommandListType;
+	typedef std::multimap<size_t, size_t, std::less<size_t>, command_allocator<size_t> > THashedCommandListType;
 
 	struct SubCommands_t
 	{
@@ -174,7 +174,8 @@ public:
 
 void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player);
 void Cmd_RemoveCommands ();
-CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags = CMD_NORMAL);
+
+CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags = 0);
 
 void AddTestDebugCommands ();
 

@@ -469,7 +469,7 @@ void CFlyer::Pain (CBaseEntity *Other, sint32 Damage)
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))
@@ -548,7 +548,7 @@ void CFlyer::Dodge (CBaseEntity *Attacker, float eta)
 void CFlyer::Duck (float eta)
 #endif
 {
-	if (frand() > (0.35f + ((skill.Float()+1) / 10)) )
+	if (frand() > (0.35f + ((CvarList[CV_SKILL].Float()+1) / 10)) )
 		return;
 	
 	// Don't dodge if we're attacking or dodging already

@@ -397,7 +397,7 @@ void CMedic::Pain(CBaseEntity *Other, sint32 Damage)
 
 	PainDebounceTime = Level.Frame + 30;
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 #if MONSTER_USE_ROGUE_AI
@@ -911,7 +911,7 @@ bool CMedic::CheckAttack ()
 	// ROGUE
 	// since his idle animation looks kinda bad in combat, if we're not in easy mode, always attack
 	// when he's on a combat point
-	if ((skill.Integer() > 0) && (AIFlags & AI_STAND_GROUND))
+	if ((CvarList[CV_SKILL].Integer() > 0) && (AIFlags & AI_STAND_GROUND))
 	{
 		AttackState = AS_MISSILE;
 		return true;
@@ -1012,7 +1012,7 @@ void CMedic::Duck (float eta)
 		return;
 	}
 
-	DuckWaitTime = Level.Frame + ((skill.Integer() == 0) ? ((eta + 1) * 10) : ((eta + (0.1 * (3 - skill.Integer()))) * 10));
+	DuckWaitTime = Level.Frame + ((CvarList[CV_SKILL].Integer() == 0) ? ((eta + 1) * 10) : ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10));
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -1028,7 +1028,7 @@ void CMedic::SideStep ()
 		(CurrentMove == &MedicMoveAttackBlaster))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;

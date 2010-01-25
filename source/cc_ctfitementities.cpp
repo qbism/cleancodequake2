@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if CLEANCTF_ENABLED
-typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, std::item_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
+typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, item_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
 
 inline TTransponderListType &Transponders ()
 {

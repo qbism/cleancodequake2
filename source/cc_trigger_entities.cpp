@@ -320,7 +320,7 @@ void CTriggerMultiple::Spawn ()
 
 	SetBrushModel ();
 
-	if (!map_debug.Boolean())
+	if (!CvarList[CV_MAP_DEBUG].Boolean())
 		GetSvFlags() |= SVF_NOCLIENT;
 	else
 	{

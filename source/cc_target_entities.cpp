@@ -657,7 +657,7 @@ void CTargetChangeLevel::Use (CBaseEntity *Other, CBaseEntity *Activator)
 	}
 
 	// if noexit, do a ton of damage to other
-	if ((Game.GameMode & GAME_DEATHMATCH) && !dmFlags.dfAllowExit.IsEnabled() && (Other != World))
+	if ((Game.GameMode & GAME_DEATHMATCH) && !DeathmatchFlags.dfAllowExit.IsEnabled() && (Other != World))
 	{
 		if ((Other->EntityFlags & ENT_HURTABLE))
 		{
@@ -879,7 +879,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("target_crosslevel_target", CTargetCrossLevelTarget);
 
-typedef std::vector<CTargetCrossLevelTarget*, std::generic_allocator<CTargetCrossLevelTarget*> > CrossLevelTargetList;
+typedef std::vector<CTargetCrossLevelTarget*, generic_allocator<CTargetCrossLevelTarget*> > CrossLevelTargetList;
 
 CrossLevelTargetList &GetCrossLevelTargetList ()
 {

@@ -270,7 +270,7 @@ void CMaiden::Pain (CBaseEntity *Other, sint32 Damage)
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1+irandom(3)]);
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 #if MONSTER_USE_ROGUE_AI
@@ -477,18 +477,18 @@ void CMaiden::Duck (float eta)
 		(CurrentMove == &ChickMoveAttack1))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (!skill.Integer())
+	if (!CvarList[CV_SKILL].Integer())
 		// PMM - stupid dodge
 		DuckWaitTime = Level.Frame + ((eta + 1 * 10));
 	else
-		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer())) * 10));
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer())) * 10));
 
 	// has to be done immediately otherwise she can get stuck
 	DuckDown();
@@ -504,7 +504,7 @@ void CMaiden::SideStep ()
 		(CurrentMove == &ChickMoveAttack1))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;
@@ -543,7 +543,7 @@ void CMaiden::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	sint32 rocketSpeed = 500 + (100 * skill.Integer());	// PGM rock & roll.... :)
+	sint32 rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 	if (blindfire)
@@ -568,7 +568,7 @@ void CMaiden::Rocket ()
 
 	// Lead target  (not when blindfiring)
 	// 20, 35, 50, 65 chance of leading
-	if((!blindfire) && ((frand() < (0.2 + ((3 - skill.Integer()) * 0.15)))))
+	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
 		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
@@ -647,7 +647,7 @@ void CMaiden::ReRocket()
 	{
 		if (Range (Entity, Entity->Enemy) > RANGE_MELEE &&
 			IsVisible (Entity, Entity->Enemy) &&
-			(frand() <= (0.6 + (0.05*skill.Float()))))
+			(frand() <= (0.6 + (0.05*CvarList[CV_SKILL].Float()))))
 		{
 			CurrentMove = &ChickMoveAttack1;
 			return;

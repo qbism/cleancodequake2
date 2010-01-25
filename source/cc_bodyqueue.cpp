@@ -123,7 +123,7 @@ void CBody::TossHead (sint32 Damage)
 	Link ();
 }
 
-typedef std::list<CBody*, std::level_allocator<CBody*> > TBodyQueueList;
+typedef std::list<CBody*, level_allocator<CBody*> > TBodyQueueList;
 class CBodyQueue
 {
 public:

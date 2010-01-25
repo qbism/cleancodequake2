@@ -190,7 +190,7 @@ void CHeatMaiden::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	sint32 rocketSpeed = 500 + (100 * skill.Integer());	// PGM rock & roll.... :)
+	sint32 rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 	if (blindfire)
@@ -215,7 +215,7 @@ void CHeatMaiden::Rocket ()
 
 	// Lead target  (not when blindfiring)
 	// 20, 35, 50, 65 chance of leading
-	if((!blindfire) && ((frand() < (0.2 + ((3 - skill.Integer()) * 0.15)))))
+	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
 		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;

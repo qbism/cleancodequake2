@@ -95,7 +95,7 @@ public:
 	uint32			EntityFlags;
 	CEntityState	State;
 	EEdictFlags		Flags;
-	std::cc_string	ClassName;
+	cc_string	ClassName;
 
 	struct entityTeam_t
 	{
@@ -214,7 +214,6 @@ inline TType *entity_cast (CBaseEntity *Entity)
 		return NULL;
 
 	TType *Casted = dynamic_cast<TType*> (Entity);
-
 	_CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
 
 	return Casted;
@@ -228,7 +227,7 @@ inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
 
 inline char *CopyStr (const char *In, void *Pool)
 {
-	std::cc_string newString (In);
+	cc_string newString (In);
 	
 	size_t i = 0;
 	while (true)
@@ -248,9 +247,9 @@ inline char *CopyStr (const char *In, void *Pool)
 	return Mem_PoolStrDup (newString.c_str(), Pool, 0);
 }
 
-inline std::cc_string CopyStr (const char *In)
+inline cc_string CopyStr (const char *In)
 {
-	std::cc_string newString (In);
+	cc_string newString (In);
 	
 	size_t i = 0;
 	while (true)
@@ -366,7 +365,7 @@ CC_ENUM (uint32, EFieldType)
 class CEntityField
 {
 public:
-	std::cc_string	Name;
+	cc_string	Name;
 	size_t			Offset;
 	EFieldType		FieldType, StrippedFields;
 
@@ -426,8 +425,8 @@ public:
 			break;
 		case FT_SOUND_INDEX:
 			{
-				std::cc_string temp = Value;
-				if (temp.find (".wav") == std::cc_string::npos)
+				cc_string temp = Value;
+				if (temp.find (".wav") == cc_string::npos)
 					temp.append (".wav");
 
 				OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.c_str());
@@ -462,7 +461,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			OFS_TO_TYPE(std::cc_string) = CopyStr(Value);
+			OFS_TO_TYPE(cc_string) = CopyStr(Value);
 			break;
 		};
 	};
@@ -521,7 +520,7 @@ public:
 				File.WriteString (StringFromImageIndex (OFS_TO_TYPE(MediaIndex)));
 			else
 				File.Write<sint32> (-1);
-		break;
+			break;
 		case FT_MODEL_INDEX:
 			if (*((MediaIndex *)(ClassOffset)))
 				File.WriteString (StringFromModelIndex (OFS_TO_TYPE(MediaIndex)));
@@ -547,7 +546,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			File.Write (OFS_TO_TYPE(std::cc_string));
+			File.Write (OFS_TO_TYPE(cc_string));
 			break;
 		};
 	};
@@ -641,7 +640,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			OFS_TO_TYPE(std::cc_string) = File.Read<std::cc_string> ();
+			OFS_TO_TYPE(cc_string) = File.Read<cc_string> ();
 			break;
 		};
 	};

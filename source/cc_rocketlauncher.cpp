@@ -92,6 +92,8 @@ void CRocketLauncher::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CRocketLauncher);
 
+LINK_ITEM_TO_CLASS (weapon_rocketlauncher, CItemEntity);
+
 void CRocketLauncher::CreateItem (CItemList *List)
 {
 	NItems::RocketLauncher = QNew (com_itemPool, 0) CWeaponItem

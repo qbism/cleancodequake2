@@ -214,7 +214,7 @@ public:
 };
 #endif
 
-std::vector<CTech*, std::item_allocator<CTech*> >		TechList;
+std::vector<CTech*, item_allocator<CTech*> >		TechList;
 
 void SpawnTech(CBaseItem *item, CSpotBase *spot);
 class CTechEntity : public CItemEntity
@@ -359,7 +359,7 @@ static void SpawnTechs()
 {
 	for (size_t i = 0; i < TechList.size(); i++)
 	{
-		if (!cc_techflags.Integer() || (cc_techflags.Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
+		if (!CvarList[CV_CC_TECHFLAGS].Integer() || (CvarList[CV_CC_TECHFLAGS].Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
 			SpawnTech (TechList[i], FindTechSpawn ());
 	}
 }
@@ -395,9 +395,9 @@ void SetupTechSpawn()
 {
 	if (
 #if CLEANCTF_ENABLED
-		dmFlags.dfCtfNoTech.IsEnabled() || (!(Game.GameMode & GAME_CTF) && 
+		DeathmatchFlags.dfCtfNoTech.IsEnabled() || (!(Game.GameMode & GAME_CTF) && 
 #endif
-		(!dmFlags.dfDmTechs.IsEnabled())
+		(!DeathmatchFlags.dfDmTechs.IsEnabled())
 		|| !(Game.GameMode & GAME_DEATHMATCH))
 #if CLEANCTF_ENABLED
 		)

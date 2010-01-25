@@ -39,10 +39,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CModule
 {
 public:
-	std::cc_string	Name; // Name of the module
+	cc_string	Name; // Name of the module
 
 	// Constructor; set Name here.
-	CModule (std::cc_string Name) :
+	CModule (cc_string Name) :
 	  Name (Name)
 	  {
 	  };

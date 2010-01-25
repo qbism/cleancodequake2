@@ -228,7 +228,7 @@ void CBarracudaShark::Pain (CBaseEntity *Other, sint32 Damage)
 
 	PainDebounceTime = Level.Frame + 30;
 	
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(2))

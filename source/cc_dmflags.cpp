@@ -27,15 +27,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_dmflags.h
-// This is so that I don't have to keep doing dmflags.Integer(). Should be faster than manually re-getting the value every frame!
+// cc_DeathmatchFlags.h
+// This is so that I don't have to keep doing DeathmatchFlags.Integer(). Should be faster than manually re-getting the value every frame!
 //
 
 #include "cc_local.h"
 
-dmFlagsConfig dmFlags;
+CDeathmatchFlags DeathmatchFlags;
 
-dmFlagsConfig::dmFlagsConfig() :
+CDeathmatchFlags::CDeathmatchFlags() :
   dfNoHealth (DF_NO_HEALTH),
   dfNoItems (DF_NO_ITEMS),
   dfWeaponsStay (DF_WEAPONS_STAY),
@@ -66,7 +66,7 @@ dmFlagsConfig::dmFlagsConfig() :
 {
 };
 
-void dmFlagsConfig::UpdateFlags (EDeathmatchFlags wantedFlags)
+void CDeathmatchFlags::UpdateFlags (EDeathmatchFlags wantedFlags)
 {
 	dfNoHealth.Check (wantedFlags);
 	dfNoItems.Check (wantedFlags);

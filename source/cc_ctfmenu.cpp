@@ -293,16 +293,16 @@ public:
 		y += 8 * 3;
 		x = -98;
 
-		if (ctfgame.match >= MATCH_PREGAME && matchlock.Integer())
+		if (ctfgame.match >= MATCH_PREGAME && CvarList[CV_MATCH_LOCK].Integer())
 		{
 			CMenu_Label *LockedMsg = QNew (com_levelPool, 0) CMenu_Label(this, x, y);
 			LockedMsg->Enabled = false;
 			LockedMsg->Align = LA_LEFT;
 			LockedMsg->LabelString = "MATCH IS LOCKED\n(entry is not permitted)";
 		}
-		else if (ctf_forcejoin.String() && *ctf_forcejoin.String())
+		else if (CvarList[CV_CTF_FORCEJOIN].String() && *CvarList[CV_CTF_FORCEJOIN].String())
 		{
-			if (Q_stricmp(ctf_forcejoin.String(), "red") == 0)
+			if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "red") == 0)
 			{
 				// Only add red
 				CJoinGameLabel *JoinRed = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y, CTF_TEAM1);
@@ -310,7 +310,7 @@ public:
 				JoinRed->Align = LA_LEFT;
 				FormatString (JoinRed->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 			}
-			else if (Q_stricmp(ctf_forcejoin.String(), "blue") == 0)
+			else if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "blue") == 0)
 			{
 				// Only add blue
 				CJoinGameLabel *JoinBlue = QNew (com_levelPool, 0) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);

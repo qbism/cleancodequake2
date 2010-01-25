@@ -385,12 +385,12 @@ void CSuperTank::Pain (CBaseEntity *Other, sint32 Damage)
 		return;
 
 	// Don't go into pain if he's firing his rockets
-	if (skill.Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attak2_1) && (Entity->State.GetFrame() <= FRAME_attak2_14) )
+	if (CvarList[CV_SKILL].Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attak2_1) && (Entity->State.GetFrame() <= FRAME_attak2_14) )
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	if (Damage <= 10)

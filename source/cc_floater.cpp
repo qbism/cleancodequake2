@@ -500,7 +500,7 @@ void CFloater::Attack()
 #if !MONSTER_USE_ROGUE_AI
 	CurrentMove = &FloaterMoveAttack1;
 #else
-	float chance = (!skill.Integer()) ? 0 : 1.0 - (0.5/skill.Float());
+	float chance = (!CvarList[CV_SKILL].Integer()) ? 0 : 1.0 - (0.5/CvarList[CV_SKILL].Float());
 
 	// 0% chance of circle in easy
 	// 50% chance in normal
@@ -536,7 +536,7 @@ void CFloater::Pain (CBaseEntity *Other, sint32 Damage)
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	bool n = (frand() < 0.5);

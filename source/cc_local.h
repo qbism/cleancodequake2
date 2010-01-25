@@ -327,41 +327,6 @@ void	G_FreeEdict (edict_t *e);
 
 void	ED_CallSpawn (edict_t *ent);
 
-extern CCvar	deathmatch,
-		coop,
-		dmflags,
-		skill,
-		fraglimit,
-		timelimit,
-		password,
-		spectator_password,
-		needpass,
-		maxclients,
-		maxspectators,
-		maxentities,
-		g_select_empty,
-		dedicated,
-		developer,
-		filterban,
-		sv_gravity,
-		sv_rollspeed,
-		sv_rollangle,
-		gun_x,
-		gun_y,
-		gun_z,
-		run_pitch,
-		run_roll,
-		bob_up,
-		bob_pitch,
-		bob_roll,
-		sv_cheats,
-		flood_msgs,
-		flood_persecond,
-		flood_waitdelay,
-		sv_maplist,
-		map_debug,
-		cc_techflags,
-		sv_airaccelerate;
 extern CBaseEntity *World;
 extern CItemList *ItemList;
 
@@ -400,9 +365,9 @@ public:
 
 	void Load (CFile &File)
 	{
-		HelpMessages[0] = File.Read<std::cc_string> ();
-		HelpMessages[1] = File.Read<std::cc_string> ();
-		SpawnPoint = File.Read<std::cc_string> ();
+		HelpMessages[0] = File.Read<cc_string> ();
+		HelpMessages[1] = File.Read<cc_string> ();
+		SpawnPoint = File.Read<cc_string> ();
 		HelpChanged = File.Read<uint8> ();
 		MaxClients = File.Read<uint8> ();
 		MaxSpectators = File.Read<uint8> ();
@@ -413,7 +378,7 @@ public:
 		AutoSaved = File.Read<bool> ();
 	}
 
-	std::cc_string			HelpMessages[2];
+	cc_string			HelpMessages[2];
 	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
@@ -422,7 +387,7 @@ public:
 
 	// can't store spawnpoint in level, because
 	// it would get overwritten by the savegame restore
-	std::cc_string			SpawnPoint;	// needed for coop respawns
+	cc_string			SpawnPoint;	// needed for coop respawns
 
 	// store latched cvars here that we want to get at often
 	uint8					MaxClients;
@@ -438,8 +403,8 @@ public:
 
 extern	CGameLocals		Game;
 
-typedef std::list<CKeyValuePair*, std::generic_allocator<CKeyValuePair*> > TKeyValuePairContainer;
-typedef std::list<edict_t*, std::generic_allocator<edict_t*> > TEntitiesContainer;
+typedef std::list<CKeyValuePair*, generic_allocator<CKeyValuePair*> > TKeyValuePairContainer;
+typedef std::list<edict_t*, generic_allocator<edict_t*> > TEntitiesContainer;
 
 class CLevelLocals
 {
@@ -523,10 +488,10 @@ public:
 		Frame = File.Read<FrameNumber_t> ();
 
 
-		FullLevelName = File.Read<std::cc_string> ();
-		ServerLevelName = File.Read<std::cc_string> ();
-		NextMap = File.Read<std::cc_string> ();
-		ForceMap = File.Read<std::cc_string> ();
+		FullLevelName = File.Read<cc_string> ();
+		ServerLevelName = File.Read<cc_string> ();
+		NextMap = File.Read<cc_string> ();
+		ForceMap = File.Read<cc_string> ();
 
 		IntermissionTime = File.Read<FrameNumber_t> ();
 		ExitIntermission = File.Read<bool> ();
@@ -549,10 +514,10 @@ public:
 
 	FrameNumber_t	Frame;
 
-	std::cc_string	FullLevelName;		// the descriptive name (Outer Base, etc)
-	std::cc_string	ServerLevelName;		// the server name (base1, etc)
-	std::cc_string	NextMap;		// go here when fraglimit is hit
-	std::cc_string	ForceMap;		// go here
+	cc_string	FullLevelName;		// the descriptive name (Outer Base, etc)
+	cc_string	ServerLevelName;		// the server name (base1, etc)
+	cc_string	NextMap;		// go here when fraglimit is hit
+	cc_string	ForceMap;		// go here
 
 	// intermission state
 	FrameNumber_t		IntermissionTime;		// time the intermission was started
@@ -592,7 +557,7 @@ public:
 	uint32		Inhibit;
 	uint32		EntityNumber;
 
-	std::cc_string			ClassName;
+	cc_string			ClassName;
 	TKeyValuePairContainer	ParseData;
 
 	// Entity list

@@ -185,6 +185,8 @@ void CIonRipper::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CIonRipper);
 
+LINK_ITEM_TO_CLASS (weapon_boomer, CItemEntity);
+
 void CIonRipper::CreateItem (CItemList *List)
 {
 	NItems::IonRipper = QNew (com_itemPool, 0) CWeaponItem

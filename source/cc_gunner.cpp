@@ -286,7 +286,7 @@ void CGunner::Pain (CBaseEntity *Other, sint32 Damage)
 	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, (irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = ((Damage <= 10) ? &GunnerMovePain3 : ((Damage <= 25) ? &GunnerMovePain2 : &GunnerMovePain1));
@@ -357,7 +357,7 @@ void CGunner::DuckDown ()
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
-	if (skill.Integer() >= 2)
+	if (CvarList[CV_SKILL].Integer() >= 2)
 	{
 		if (frand() > 0.5)
 			Grenade ();
@@ -369,7 +369,7 @@ void CGunner::DuckDown ()
 	Entity->Link ();
 #else
 	AIFlags |= AI_DUCKED;
-	if (skill.Integer() >= 2)
+	if (CvarList[CV_SKILL].Integer() >= 2)
 	{
 		if (frand() > 0.5)
 			Grenade ();
@@ -757,18 +757,18 @@ void CGunner::Duck (float eta)
 		(CurrentMove == &GunnerMoveAttackGrenade))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		// PMM - stupid dodge
 		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -785,7 +785,7 @@ void CGunner::SideStep ()
 		(CurrentMove == &GunnerMoveAttackGrenade))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill.Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;

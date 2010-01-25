@@ -270,7 +270,9 @@ Marks the edict as free
 */
 void G_FreeEdict (edict_t *ed)
 {
+_CC_DISABLE_DEPRECATION
 	gi.unlinkentity (ed);		// unlink from world
+_CC_ENABLE_DEPRECATION
 
 	// Paril, hack
 	CBaseEntity *Entity = ed->Entity;
@@ -288,7 +290,7 @@ void G_FreeEdict (edict_t *ed)
 	ed->AwaitingRemoval = true;
 }
 
-typedef std::vector <CBaseEntity*, std::generic_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
+typedef std::vector <CBaseEntity*, generic_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
 TPrivateEntitiesContainer PrivateEntities;
 
 void InitPrivateEntities ()
@@ -399,7 +401,7 @@ void CBaseEntity::WriteBaseEntity (CFile &File)
 	File.Write<uint32> (EntityFlags);
 	File.Write<EEdictFlags> (Flags);
 
-	File.Write<std::cc_string> (ClassName);
+	File.Write<cc_string> (ClassName);
 
 	File.Write<bool> (Team.HasTeam);
 
@@ -425,7 +427,7 @@ void CBaseEntity::ReadBaseEntity (CFile &File)
 	EntityFlags = File.Read<uint32> ();
 	Flags = File.Read<EEdictFlags> ();
 
-	ClassName = File.Read<std::cc_string> ();
+	ClassName = File.Read<cc_string> ();
 
 	Team.HasTeam = File.Read<bool> ();
 
@@ -531,6 +533,7 @@ bool			&CBaseEntity::GetInUse ()
 	return (bool&)gameEntity->inUse;
 }
 
+_CC_DISABLE_DEPRECATION
 void			CBaseEntity::Link ()
 {
 	gi.linkentity (gameEntity);
@@ -540,6 +543,7 @@ void			CBaseEntity::Unlink ()
 {
 	gi.unlinkentity (gameEntity);
 }
+_CC_ENABLE_DEPRECATION
 
 void			CBaseEntity::Free ()
 {
@@ -747,7 +751,7 @@ bool				CMapEntity::CheckValidity ()
 	// Remove things (except the world) from different skill levels or deathmatch
 	if (this != World)
 	{
-		if (!map_debug.Boolean())
+		if (!CvarList[CV_MAP_DEBUG].Boolean())
 		{
 			if (Game.GameMode & GAME_DEATHMATCH)
 			{
@@ -760,9 +764,9 @@ bool				CMapEntity::CheckValidity ()
 			else
 			{
 				if ( /* ((Game.GameMode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
-					((skill.Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
-					((skill.Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
-					((skill.Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))
+					((CvarList[CV_SKILL].Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
+					((CvarList[CV_SKILL].Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
+					((CvarList[CV_SKILL].Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))
 					)
 					{
 						Free ();

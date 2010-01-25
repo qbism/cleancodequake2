@@ -320,7 +320,7 @@ void HelpComputer (CPlayerEntity *Player)
 
 	if (sk == NULL)
 	{
-		switch (skill.Integer())
+		switch (CvarList[CV_SKILL].Integer())
 		{
 		case 0:
 			sk = "easy";

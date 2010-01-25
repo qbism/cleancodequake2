@@ -124,7 +124,7 @@ bool CheckAutoSwitch (CPlayerEntity *Other)
 
 bool CWeaponItem::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 {
-	if ( (dmFlags.dfWeaponsStay.IsEnabled() || Game.GameMode == GAME_COOPERATIVE) 
+	if ( (DeathmatchFlags.dfWeaponsStay.IsEnabled() || Game.GameMode == GAME_COOPERATIVE) 
 		&& Other->Client.Persistent.Inventory.Has(GetIndex()))
 	{
 		if (!(Player->SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
@@ -138,7 +138,7 @@ bool CWeaponItem::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 		// give them some ammo with it
 		if (Ammo)
 		{
-			if (dmFlags.dfInfiniteAmmo.IsEnabled())
+			if (DeathmatchFlags.dfInfiniteAmmo.IsEnabled())
 				Ammo->AddAmmo (Other, 1000);
 			else
 				Ammo->AddAmmo (Other, Ammo->Quantity);
@@ -148,7 +148,7 @@ bool CWeaponItem::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 		{
 			if (Game.GameMode & GAME_DEATHMATCH)
 			{
-				if (dmFlags.dfWeaponsStay.IsEnabled())
+				if (DeathmatchFlags.dfWeaponsStay.IsEnabled())
 					Player->Flags |= FL_RESPAWN;
 				else
 					SetRespawn (Player, 300);
@@ -268,7 +268,7 @@ bool CAmmoWeapon::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 	sint32			count = Quantity;
 	bool		weapon = (Flags & ITEMFLAG_WEAPON);
 
-	if (weapon && dmFlags.dfInfiniteAmmo.IsEnabled())
+	if (weapon && DeathmatchFlags.dfInfiniteAmmo.IsEnabled())
 		count = 1000;
 	else if (Player->AmmoCount)
 		count = Player->AmmoCount;
@@ -297,7 +297,7 @@ void CAmmoWeapon::Use (CPlayerEntity *Player)
 	if (Weapon == Player->Client.Persistent.Weapon)
 		return;
 
-	if (!g_select_empty.Integer())
+	if (!CvarList[CV_SELECT_EMPTY].Integer())
 	{
 		if (!Player->Client.Persistent.Inventory.Has(GetIndex()))
 		{
@@ -367,7 +367,7 @@ CAmmoEntity::CAmmoEntity (sint32 Index) :
 
 void CAmmoEntity::Spawn (CBaseItem *item)
 {
-	if ((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfInfiniteAmmo.IsEnabled())
+	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfInfiniteAmmo.IsEnabled())
 	{
 		Free ();
 		return;
@@ -388,16 +388,6 @@ LINK_ITEM_TO_CLASS (ammo_slugs, CAmmoEntity);
 LINK_ITEM_TO_CLASS (ammo_grenades, CAmmoEntity);
 LINK_ITEM_TO_CLASS (ammo_rockets, CAmmoEntity);
 LINK_ITEM_TO_CLASS (ammo_cells, CAmmoEntity);
-
-LINK_ITEM_TO_CLASS (weapon_shotgun, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_supershotgun, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_machinegun, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_chaingun, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_grenadelauncher, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_rocketlauncher, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_hyperblaster, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_railgun, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_bfg, CItemEntity);
 
 void AddWeapons (CItemList *List);
 void AddAmmoToList ()

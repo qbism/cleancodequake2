@@ -360,7 +360,7 @@ void CSoldierBase::Pain (CBaseEntity *Other, sint32 Damage)
 		return;
 	}
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	float r = frand();
@@ -406,7 +406,7 @@ void CSoldierBase::Attack1_Refire1 ()
 	if (!EnemyVis)
 		return;
 
-	if ( ((skill.Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak102;
 	else
 		NextFrame = FRAME_attak110;
@@ -423,7 +423,7 @@ void CSoldierBase::Attack1_Refire2 ()
 	if (!EnemyVis)
 		return;
 
-	if ( ((skill.Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak102;
 }
 
@@ -462,7 +462,7 @@ void CSoldierBase::Attack2_Refire1 ()
 	if (!EnemyVis)
 		return;
 
-	if ( ((skill.Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak204;
 	else
 		NextFrame = FRAME_attak216;
@@ -479,7 +479,7 @@ void CSoldierBase::Attack2_Refire2 ()
 	if (!EnemyVis)
 		return;
 
-	if ( ((skill.Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak204;
 }
 
@@ -558,7 +558,7 @@ void CSoldierBase::Fire4 ()
 //	if (self->enemy->health <= 0)
 //		return;
 //
-//	if ( ((skill.Integer() == 3) && (frand() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
+//	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
 //		self->monsterinfo.nextframe = FRAME_attak402;
 }
 
@@ -597,7 +597,7 @@ void CSoldierBase::Attack6_Refire ()
 	if (!EnemyVis)
 		return;
 
-	if (((skill.Integer() == 3 && (SoldierAI == AI_BLASTER)) || ((frand() < (0.09*((float)skill.Integer()))))))
+	if (((CvarList[CV_SKILL].Integer() == 3 && (SoldierAI == AI_BLASTER)) || ((frand() < (0.09*((float)CvarList[CV_SKILL].Integer()))))))
 		NextFrame = FRAME_runs03;
 }
 
@@ -620,7 +620,7 @@ void CSoldierBase::Attack6_RefireBlaster ()
 	if (!EnemyVis)
 		return;
 
-	if ((skill.Integer() == 3) || ((frand() < (0.25*((float)skill.Integer())))))
+	if ((CvarList[CV_SKILL].Integer() == 3) || ((frand() < (0.25*((float)CvarList[CV_SKILL].Integer())))))
 		NextFrame = FRAME_runs03;
 	else
 		NextFrame = FRAME_runs14;
@@ -683,7 +683,7 @@ void CSoldierBase::Sight ()
 {
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SIGHT1] : Sounds[SOUND_SIGHT2]);
 
-	if ((skill.Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
+	if ((CvarList[CV_SKILL].Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
 	{
 		// Only do run-shoot off the bat if we're not a shotgun soldier (too cheap)
 		if ((frand() > 0.75) && (SoldierAI == AI_BLASTER))
@@ -724,7 +724,7 @@ void CSoldierBase::Dodge (CBaseEntity *Attacker, float eta)
 
 	PauseTime = Level.Frame + ((eta + 0.3) * 10);
 
-	switch (skill.Integer())
+	switch (CvarList[CV_SKILL].Integer())
 	{
 	case 0:
 	case 1:
@@ -1091,7 +1091,7 @@ void CSoldierBase::Duck (float eta)
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 	{
 		// PMM - stupid dodge
 		NextFrame = FRAME_duck01;
@@ -1102,11 +1102,11 @@ void CSoldierBase::Duck (float eta)
 
 	r = frand();
 
-	if (r > (skill.Integer() * 0.3))
+	if (r > (CvarList[CV_SKILL].Integer() * 0.3))
 	{
 		NextFrame = FRAME_duck01;
 		CurrentMove = &SoldierMoveDuck;
-		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 	}
 	else
 	{

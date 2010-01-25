@@ -244,10 +244,10 @@ CTargetString::CTargetString (sint32 Index) :
 class CTargetStringForEachCallback : public CForEachTeamChainCallback
 {
 public:
-	std::cc_string Message;
+	cc_string Message;
 	CBaseEntity *Me;
 
-	CTargetStringForEachCallback (CBaseEntity *Me, std::cc_string &Message) :
+	CTargetStringForEachCallback (CBaseEntity *Me, cc_string &Message) :
 	Me(Me),
 	Message(Message)
 	{
@@ -491,7 +491,7 @@ void CFuncClock::Think ()
 		if (CountTarget)
 		{
 			char *savetarget = Target;
-			std::cc_string savemessage = Message;
+			cc_string savemessage = Message;
 			Target = CountTarget;
 			Message.clear();
 			UseTargets (User, Message);

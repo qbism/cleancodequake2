@@ -131,7 +131,7 @@ void CTurretBreach::Fire ()
 	start = start.MultiplyAngles (MoveOrigin.Z, u);
 
 	sint32 Damage = 100 + frand() * 50;
-	CRocket::Spawn (Team.Master->GetOwner(), start, f, Damage, 550 + 50 * skill.Integer(), 150, Damage);
+	CRocket::Spawn (Team.Master->GetOwner(), start, f, Damage, 550 + 50 * CvarList[CV_SKILL].Integer(), 150, Damage);
 	PlayPositionedSound (start, CHAN_WEAPON, SoundIndex("weapons/rocklf1a.wav"));
 }
 
@@ -480,7 +480,7 @@ void CTurretDriver::TurretThink ()
 		if (Level.Frame < AttackFinished)
 			return;
 
-		float reaction_time = (3 - skill.Integer()) * 1.0;
+		float reaction_time = (3 - CvarList[CV_SKILL].Integer()) * 1.0;
 		if ((Level.Frame - TrailTime) < (reaction_time * 10))
 			return;
 
@@ -522,7 +522,7 @@ void CTurretDriver::TurretLink ()
 
 void CTurretDriver::Spawn ()
 {
-	if (deathmatch.Integer())
+	if (CvarList[CV_DEATHMATCH].Integer())
 	{
 		Entity->Free ();
 		return;

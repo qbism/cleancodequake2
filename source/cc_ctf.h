@@ -51,7 +51,7 @@ class CCTFGhost
 public:
 	uint32	Code;
 
-	std::cc_string name;
+	cc_string name;
 	sint32 number;
 
 	// stats
@@ -83,7 +83,7 @@ CC_ENUM (uint8, EElectState)
 	ELECT_MAP
 };
 
-typedef std::map<uint32, CCTFGhost*, std::less<uint16>, std::generic_allocator<std::pair <const uint32, CCTFGhost*> > > TGhostMapType;
+typedef std::map<uint32, CCTFGhost*, std::less<uint16>, generic_allocator<std::pair <const uint32, CCTFGhost*> > > TGhostMapType;
 class CCTFGameLocals
 {
 public:
@@ -239,19 +239,6 @@ void CreateCTFStatusbar ();
 void CTFObserver(CPlayerEntity *Player);
 
 extern CCTFGameLocals ctfgame;
-
-extern CCvar	ctf,
-		ctf_forcejoin,
-		competition,
-		matchlock,
-		electpercentage,
-		matchtime,
-		matchsetuptime,
-		matchstarttime,
-		admin_password,
-		warp_list,
-		capturelimit,
-		instantweap;
 
 #else
 FILE_WARNING

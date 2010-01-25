@@ -115,7 +115,7 @@ void CRailgun::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 		return;
 	}
 
-	if (Wanted->Ammo && !g_select_empty.Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+	if (Wanted->Ammo && !CvarList[CV_SELECT_EMPTY].Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
 	{
 		if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
 		{
@@ -136,6 +136,8 @@ void CRailgun::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 #endif
 
 WEAPON_DEFS (CRailgun);
+
+LINK_ITEM_TO_CLASS (weapon_railgun, CItemEntity);
 
 void CRailgun::CreateItem (CItemList *List)
 {

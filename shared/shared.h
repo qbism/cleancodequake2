@@ -223,7 +223,7 @@ inline char *Q_strlwr(char *s)
 	return NULL;
 }
 
-inline std::cc_string Q_strlwr (std::cc_string s)
+inline cc_string Q_strlwr (cc_string s)
 {
 	for (size_t i = 0; i < s.size(); i++)
 		s[i] = Q_tolower(s[i]);
@@ -250,7 +250,7 @@ inline char *Q_strupr(char *s)
 	return NULL;
 }
 
-inline std::cc_string Q_strupr (std::cc_string s)
+inline cc_string Q_strupr (cc_string s)
 {
 	for (size_t i = 0; i < s.size(); i++)
 		s[i] = Q_toupper(s[i]);
@@ -258,7 +258,7 @@ inline std::cc_string Q_strupr (std::cc_string s)
 }
 
 sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);
-std::cc_string	Q_VarArgs (char *format, ...);
+cc_string	Q_VarArgs (char *format, ...);
 
 /*
 ==============================================================================
@@ -272,10 +272,10 @@ std::cc_string	Q_VarArgs (char *format, ...);
 #define MAX_INFO_VALUE		64
 #define MAX_INFO_STRING		512
 
-std::cc_string	Info_ValueForKey (std::cc_string &s, std::cc_string key);
-void			Info_RemoveKey (std::cc_string &s, std::cc_string key);
-void			Info_SetValueForKey (std::cc_string &s, std::cc_string key, std::cc_string value);
-bool			Info_Validate (std::cc_string &s);
+cc_string	Info_ValueForKey (cc_string &s, cc_string key);
+void			Info_RemoveKey (cc_string &s, cc_string key);
+void			Info_SetValueForKey (cc_string &s, cc_string key, cc_string value);
+bool			Info_Validate (cc_string &s);
 
 /*
 ==============================================================================
@@ -361,7 +361,7 @@ enum
 ==============================================================================
 */
 
-enum
+CC_ENUM (uint16, ECvarFlags)
 {
 	CVAR_ARCHIVE		= BIT(0),	// saved to config
 	CVAR_USERINFO		= BIT(1),	// added to userinfo  when changed
@@ -382,7 +382,7 @@ struct cVar_t
 	char			*name;
 	char			*string;
 	char			*latchedString;	// for CVAR_LATCH vars
-	sint32				flags;
+	sint32			flags;
 	BOOL			modified;		// set each time the cvar is changed
 	float			floatVal;
 
@@ -1580,7 +1580,7 @@ CC_ENUM (uint8, EAttenuation)
 ==============================================================================
 */
 
-// dmflags->floatVal flags
+// DeathmatchFlags->floatVal flags
 CC_ENUM (sint32, EDeathmatchFlags)
 {
 	DF_NO_HEALTH		= BIT(0),

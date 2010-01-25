@@ -315,7 +315,7 @@ void CBerserker::Pain (CBaseEntity *Other, sint32 Damage)
 	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = ((Damage < 20) || (frand() < 0.5)) ? &BerserkMovePain1 : &BerserkMovePain2;

@@ -173,7 +173,7 @@ public:
 
 	void Spawn ()
 	{
-		if (deathmatch.Boolean())
+		if (CvarList[CV_DEATHMATCH].Boolean())
 		{
 			Free ();
 			return;

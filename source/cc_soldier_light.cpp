@@ -87,7 +87,7 @@ void CSoldierLight::Attack ()
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
 		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
-		(r < (skill.Integer()*0.25)))
+		(r < (CvarList[CV_SKILL].Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif

@@ -69,7 +69,7 @@ bool CBlaster::AttemptToFire (CPlayerEntity *Player)
 
 void CBlaster::Fire (CPlayerEntity *Player)
 {
-	const sint32 Damage = deathmatch.Integer() ? 
+	const sint32 Damage = CvarList[CV_DEATHMATCH].Integer() ? 
 			CalcQuadVal(15)
 			:
 			CalcQuadVal(10);

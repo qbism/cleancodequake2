@@ -184,6 +184,8 @@ void CPhalanx::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CPhalanx);
 
+LINK_ITEM_TO_CLASS (weapon_phalanx, CItemEntity);
+
 void CPhalanx::CreateItem (CItemList *List)
 {
 	NItems::Phalanx = QNew (com_itemPool, 0) CWeaponItem

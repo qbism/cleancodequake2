@@ -139,6 +139,8 @@ void CMachinegun::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CMachinegun);
 
+LINK_ITEM_TO_CLASS (weapon_machinegun, CItemEntity);
+
 void CMachinegun::CreateItem (CItemList *List)
 {
 	NItems::Machinegun = QNew (com_itemPool, 0) CWeaponItem

@@ -171,15 +171,15 @@ void CGladiator::StorePosition ()
 	switch (Entity->State.GetFrame())
 	{
 	case FRAME_attack1:
-		if (skill.Integer() == 1)
+		if (CvarList[CV_SKILL].Integer() == 1)
 			SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 		break;
 	case FRAME_attack2:
-		if (skill.Integer() == 2)
+		if (CvarList[CV_SKILL].Integer() == 2)
 			SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 		break;
 	case FRAME_attack3:
-		if (skill.Integer() == 3)
+		if (CvarList[CV_SKILL].Integer() == 3)
 			SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 		break;
 	default:
@@ -255,7 +255,7 @@ void CGladiator::Pain (CBaseEntity *Other, sint32 Damage)
 	PainDebounceTime = Level.Frame + 30;
 
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = (Entity->Velocity.Z > 100) ? &GladiatorMovePainAir : &GladiatorMovePain;

@@ -715,7 +715,7 @@ void CPlatForm::Spawn ()
 	SoundMiddle = SoundIndex ("plats/pt1_mid.wav");
 	SoundEnd = SoundIndex ("plats/pt1_end.wav");
 
-	if (!map_debug.Boolean())
+	if (!CvarList[CV_MAP_DEBUG].Boolean())
 		SpawnInsideTrigger ();	// the "start moving" trigger	
 	else
 	{
@@ -1242,7 +1242,7 @@ void CDoor::Spawn ()
 
 	NextThink = Level.Frame + FRAMETIME;
 
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		GetSolid() = SOLID_BSP;
 		GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
@@ -2452,10 +2452,10 @@ void CWorldEntity::Spawn ()
 
 	ConfigString (CS_CDTRACK, Q_VarArgs ("%i", Sounds).c_str());
 
-	ConfigString (CS_MAXCLIENTS, maxclients.String());
+	ConfigString (CS_MAXCLIENTS, CvarList[CV_MAXCLIENTS].String());
 
 	// status bar program
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 		CreateMapDebugStatusbar();
 	else if (Game.GameMode & GAME_DEATHMATCH)
 	{
@@ -2485,7 +2485,7 @@ void CWorldEntity::Spawn ()
 	//---------------
 	SetItemNames();
 
-	sv_gravity.Set ((Gravity) ? Gravity : "800");
+	CvarList[CV_GRAVITY].Set ((Gravity) ? Gravity : "800");
 
 	SoundIndex ("player/lava1.wav");
 	SoundIndex ("player/lava2.wav");
@@ -2519,7 +2519,7 @@ void CWorldEntity::Spawn ()
 //
 	SetupLights ();
 
-	dmFlags.UpdateFlags(dmflags.Integer());
+	DeathmatchFlags.UpdateFlags(CvarList[CV_DMFLAGS].Integer());
 
 	if (!Level.Demo)
 		InitPrivateEntities ();

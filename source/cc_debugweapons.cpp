@@ -61,7 +61,7 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Ent->ClassName.c_str()), Player);
 			else
 			{
-				std::cc_string temp = tr.Ent->ClassName + std::cc_string(" (") + std::cc_string(tr.surface->name) + std::cc_string(")");
+				cc_string temp = tr.Ent->ClassName + cc_string(" (") + cc_string(tr.surface->name) + cc_string(")");
 				ConfigString (CS_POINTING_SURFACE-1, temp.c_str(), Player);
 			}
 		}
@@ -94,7 +94,7 @@ void CSurfacePicker::Fire (CPlayerEntity *Player)
 
 void CSurfacePicker::AddWeaponToItemList (CItemList *List)
 {
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 		CreateItem (List);
 };
 
@@ -104,7 +104,7 @@ void CSurfacePicker::InitWeaponVwepModel (sint32 TakeAway)
 
 void CSurfacePicker::CreateItem (CItemList *List)
 {
-	if (map_debug.Boolean())
+	if (CvarList[CV_MAP_DEBUG].Boolean())
 		QNew (com_itemPool, 0) CWeaponItem (NULL, NULL, 0, NULL, NULL, "Surface Picker", ITEMFLAG_WEAPON|ITEMFLAG_USABLE, NULL, &Weapon, NULL, 0, NULL);
 };
 

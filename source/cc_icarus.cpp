@@ -490,10 +490,10 @@ void CIcarus::Attack ()
 	// 50% chance in normal
 	// 75% chance in hard
 	// 86.67% chance in nightmare
-	if (!skill.Integer())
+	if (!CvarList[CV_SKILL].Integer())
 		chance = 0;
 	else
-		chance = 1.0f - (0.5f/skill.Float());
+		chance = 1.0f - (0.5f/CvarList[CV_SKILL].Float());
 
 	if (frand() > chance)
 	{
@@ -527,7 +527,7 @@ void CIcarus::Pain (CBaseEntity *Other, sint32 Damage)
 
 	PainDebounceTime = Level.Frame + 30;
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	if (Damage <= 25)
@@ -550,7 +550,7 @@ void CIcarus::Pain (CBaseEntity *Other, sint32 Damage)
 		CurrentMove = &HoverMovePain1;
 #else
 		//PGM pain sequence is WAY too long
-		if (frand() < (0.45 - (0.1 * skill.Float())))
+		if (frand() < (0.45 - (0.1 * CvarList[CV_SKILL].Float())))
 		{
 			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 			CurrentMove = &HoverMovePain1;

@@ -41,9 +41,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <map>
 #include <algorithm>
 
-namespace std
-{
-
 // The following headers are required for all allocators.
 #include <stddef.h>  // Required for size_t and ptrdiff_t and NULL
 #include <new>       // Required for placement new and std::bad_alloc
@@ -161,16 +158,16 @@ CREATE_TEMPLATE_POOL_ALLOCATOR (index_allocator, com_indexPool);
 CREATE_TEMPLATE_POOL_ALLOCATOR (entity_allocator, com_entityPool);
 CREATE_TEMPLATE_POOL_ALLOCATOR (test_allocator, com_testPool);
 
-typedef basic_string<char, char_traits<char>, test_allocator<char> >
+typedef std::basic_string<char, std::char_traits<char>, test_allocator<char> >
 	cc_string;
 
-typedef basic_stringbuf<char, char_traits<char>, generic_allocator<char> >
+typedef std::basic_stringbuf<char, std::char_traits<char>, generic_allocator<char> >
 	cc_stringbuf;
 
-typedef basic_stringstream <char, char_traits<char>, generic_allocator<char> >
+typedef std::basic_stringstream <char, std::char_traits<char>, generic_allocator<char> >
 	cc_stringstream;
 
-inline void FormatString (std::cc_string &str, const char *fmt, ...)
+inline void FormatString (cc_string &str, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[2048];
@@ -180,7 +177,6 @@ inline void FormatString (std::cc_string &str, const char *fmt, ...)
 	va_end (argptr);
 
 	str.assign (text);
-};
 };
 
 #else

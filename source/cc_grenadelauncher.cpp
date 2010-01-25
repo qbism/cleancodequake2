@@ -90,6 +90,8 @@ void CGrenadeLauncher::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CGrenadeLauncher);
 
+LINK_ITEM_TO_CLASS (weapon_grenadelauncher, CItemEntity);
+
 void CGrenadeLauncher::CreateItem (CItemList *List)
 {
 	NItems::GrenadeLauncher = QNew (com_itemPool, 0) CWeaponItem

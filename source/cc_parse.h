@@ -52,11 +52,11 @@ CC_ENUM (uint8, ESessionProperties)
 
 class CParser
 {
-	std::cc_string		ScratchToken;	// Used for temporary storage during data-type/post parsing
+	cc_string		ScratchToken;	// Used for temporary storage during data-type/post parsing
 
 	uint32				CurrentColumn;
 	uint32				CurrentLine;
-	std::cc_string		CurrentToken;
+	cc_string		CurrentToken;
 
 	const char			*DataPointer;
 	const char			*DataPointerLast;
@@ -126,7 +126,7 @@ public:
 		CParser (DataPointer, Properties);
 	};
 
-	std::cc_string GetCurrentToken ()
+	cc_string GetCurrentToken ()
 	{
 		return CurrentToken;
 	};

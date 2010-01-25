@@ -267,7 +267,7 @@ void CMakron::Pain (CBaseEntity *Other, sint32 Damage)
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	if (Damage <= 40)
@@ -719,7 +719,7 @@ bool CMakron::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill.Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -759,9 +759,9 @@ bool CMakron::CheckAttack ()
 		return false;
 	}
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill.Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
@@ -829,7 +829,7 @@ bool CMakron::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill.Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -867,9 +867,9 @@ bool CMakron::CheckAttack ()
 	else
 		return false;
 
-	if (skill.Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill.Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull

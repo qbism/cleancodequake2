@@ -151,7 +151,7 @@ void CItemEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
 // Returns a random team member of ent
 CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 {
-	static std::vector<CBaseEntity*, std::generic_allocator<CBaseEntity*> >	Team;
+	static std::vector<CBaseEntity*, generic_allocator<CBaseEntity*> >	Team;
 	Team.clear ();
 
 	for (CBaseEntity *Member = Master; Member; Member = Member->Team.Chain)
@@ -214,7 +214,7 @@ void CItemEntity::Think ()
 				Usable = true;
 			}
 			
-			if (map_debug.Boolean())
+			if (CvarList[CV_MAP_DEBUG].Boolean())
 			{
 				GetSolid() = SOLID_BBOX;
 				GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
@@ -238,7 +238,7 @@ void CItemEntity::Think ()
 		//in ctf, when we are weapons stay, only the master of a team of weapons
 		//is spawned
 				if ((Game.GameMode & GAME_CTF) &&
-					dmFlags.dfWeaponsStay.IsEnabled() &&
+					DeathmatchFlags.dfWeaponsStay.IsEnabled() &&
 					entity_cast<CItemEntity>(Master)->LinkedItem && (entity_cast<CItemEntity>(Master)->LinkedItem->Flags & ITEMFLAG_WEAPON))
 					RespawnedEntity = Master;
 				else

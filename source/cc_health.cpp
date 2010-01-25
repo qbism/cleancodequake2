@@ -93,7 +93,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((Game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoHealth.IsEnabled())
+		if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoHealth.IsEnabled())
 		{
 			Free ();
 			return;

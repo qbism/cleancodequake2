@@ -99,6 +99,8 @@ void CSuperShotgun::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CSuperShotgun);
 
+LINK_ITEM_TO_CLASS (weapon_supershotgun, CItemEntity);
+
 void CSuperShotgun::CreateItem (CItemList *List)
 {
 	NItems::SuperShotgun = QNew (com_itemPool, 0) CWeaponItem

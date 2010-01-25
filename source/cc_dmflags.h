@@ -28,28 +28,27 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_dmflags.h
-// This is so that I don't have to keep doing dmflags.Integer(). Should be faster than bitwise ops every frame!
+// This is so that I don't have to keep doing DeathmatchFlags.Integer(). Should be faster than bitwise ops every frame!
 //
 
 #if !defined(CC_GUARD_DMFLAGS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_DMFLAGS_H
 
-class dmFlagsConfig
+class CDeathmatchFlags
 {
-public:
-	class dmFlagValue
+	class CDeathmatchFlag
 	{
 		bool					Enabled;
 		const EDeathmatchFlags	Flag;
 
 	public:
-		dmFlagValue (EDeathmatchFlags Flag) :
+		CDeathmatchFlag (EDeathmatchFlags Flag) :
 		  Flag (Flag),
 		  Enabled (false)
 		  {
 		  };
 
-		dmFlagValue &operator= (dmFlagValue&) { return *this; }
+		CDeathmatchFlag &operator= (CDeathmatchFlag&) { return *this; }
 
 		inline bool IsEnabled ()
 		{
@@ -61,45 +60,46 @@ public:
 			Enabled = !!(WantedFlags & Flag);
 		};
 
-		friend class dmFlagsConfig;
+		friend class CDeathmatchFlags;
 	};
 
-	dmFlagValue				dfNoHealth;
-	dmFlagValue				dfNoItems;
-	dmFlagValue				dfWeaponsStay;
-	dmFlagValue				dfNoFallingDamage;
-	dmFlagValue				dfInstantItems;
-	dmFlagValue				dfSameLevel;
-	dmFlagValue				dfSkinTeams;
-	dmFlagValue				dfModelTeams;
-	dmFlagValue				dfNoFriendlyFire;
-	dmFlagValue				dfSpawnFarthest;
-	dmFlagValue				dfForceRespawn;
-	dmFlagValue				dfNoArmor;
-	dmFlagValue				dfAllowExit;
-	dmFlagValue				dfInfiniteAmmo;
-	dmFlagValue				dfQuadDrop;
-	dmFlagValue				dfFixedFov;
+public:
+	CDeathmatchFlag		dfNoHealth,
+						dfNoItems,
+						dfWeaponsStay,
+						dfNoFallingDamage,
+						dfInstantItems,
+						dfSameLevel,
+						dfSkinTeams,
+						dfModelTeams,
+						dfNoFriendlyFire,
+						dfSpawnFarthest,
+						dfForceRespawn,
+						dfNoArmor,
+						dfAllowExit,
+						dfInfiniteAmmo,
+						dfQuadDrop,
+						dfFixedFov,
 
-	dmFlagValue				dfQuadFireDrop;
-	dmFlagValue				dfNoMines;
-	dmFlagValue				dfNoStackDouble;
-	dmFlagValue				dfNoNukes;
-	dmFlagValue				dfNoSpheres;
+						dfQuadFireDrop,
+						dfNoMines,
+						dfNoStackDouble,
+						dfNoNukes,
+						dfNoSpheres,
 
 #if CLEANCTF_ENABLED
-	dmFlagValue				dfCtfNoTech;
-	dmFlagValue				dfCtfForceJoin;
-	dmFlagValue				dfCtfArmorProtect;
+						dfCtfNoTech,
+						dfCtfForceJoin,
+						dfCtfArmorProtect,
 #endif
 
-	dmFlagValue				dfDmTechs;
+						dfDmTechs;
 
-	dmFlagsConfig();
+	CDeathmatchFlags();
 	void UpdateFlags (EDeathmatchFlags wantedFlags);
 };
 
-extern dmFlagsConfig dmFlags;
+extern CDeathmatchFlags DeathmatchFlags;
 
 #else
 FILE_WARNING

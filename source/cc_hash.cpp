@@ -54,7 +54,7 @@ uint32 Com_HashGeneric (const char *name, const sint32 hashSize)
 	return (hashValue + (hashValue >> 5)) & (hashSize-1);
 }
 
-uint32 Com_HashGeneric (const std::cc_string &name, const sint32 hashSize)
+uint32 Com_HashGeneric (const cc_string &name, const sint32 hashSize)
 {
 	uint32 hashValue = 0;
 	for (uint32 i = 0; name[i]; i++)

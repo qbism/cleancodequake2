@@ -91,7 +91,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 
 void DeveloperPrintf (char *fmt, ...)
 {
-	if (!developer.Integer())
+	if (!CvarList[CV_DEVELOPER].Integer())
 		return;
 
 	va_list		argptr;
@@ -153,7 +153,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 	va_end (argptr);
 	
 	// Echo to console
-	if (dedicated.Integer())
+	if (CvarList[CV_DEDICATED].Integer())
 	{
 		static char	copy[1024];
 		sint32		i;

@@ -301,7 +301,7 @@ void CBrain::Pain(CBaseEntity *Other, sint32 Damage)
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))
@@ -387,11 +387,11 @@ void CBrain::Duck (float eta)
 	// has to be done immediately otherwise he can get stuck
 	DuckDown ();
 
-	if (!skill.Boolean())
+	if (!CvarList[CV_SKILL].Boolean())
 		// PMM - stupid dodge
 		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - skill.Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	CurrentMove = &BrainMoveDuck;
 	NextFrame = FRAME_duck01;
@@ -532,7 +532,7 @@ void CBrain::TentacleAttack ()
 {
 	static const vec3f aim (MELEE_DISTANCE, 0, 8);
 
-	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), -600) && (skill.Boolean()))
+	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), -600) && (CvarList[CV_SKILL].Boolean()))
 		Refire = true;
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
 }

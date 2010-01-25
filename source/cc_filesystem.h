@@ -94,7 +94,7 @@ void FS_Close (fileHandle_t &handle);
 size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate);
 void FS_FreeFile (void *buffer);
 
-typedef std::vector<std::cc_string, std::generic_allocator<std::cc_string> > TFindFilesType;
+typedef std::vector<cc_string, generic_allocator<cc_string> > TFindFilesType;
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
 
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);
@@ -168,7 +168,7 @@ public:
 	};
 
 	template <>
-	void Write<std::cc_string> (const std::cc_string &Ref)
+	void Write<cc_string> (const cc_string &Ref)
 	{
 		if (!Handle)
 			return;
@@ -234,7 +234,7 @@ public:
 	};
 
 	template <>
-	std::cc_string Read<std::cc_string> ()
+	cc_string Read<cc_string> ()
 	{
 		if (!Handle)
 			return "";
@@ -246,7 +246,7 @@ public:
 		{
 			char *tempBuffer = QNew (com_genericPool, 0) char[Length];
 			FS_Read (tempBuffer, Length, Handle);
-			std::cc_string str (tempBuffer);
+			cc_string str (tempBuffer);
 			QDelete[] tempBuffer;
 			return str;
 		}
@@ -270,12 +270,12 @@ public:
 		return tempBuffer;
 	};
 
-	std::cc_string ReadLine ()
+	cc_string ReadLine ()
 	{
 		if (!Handle)
 			return "";
 
-		std::cc_string tempStr;
+		cc_string tempStr;
 
 		while (true)
 		{
@@ -292,7 +292,7 @@ public:
 
 	void ReadLine (char *buf, size_t maxSize)
 	{
-		std::cc_string line = ReadLine ();
+		cc_string line = ReadLine ();
 
 		Q_snprintfz (buf, maxSize-1, "%s", line.c_str());
 		buf[maxSize-1] = 0;
@@ -498,15 +498,15 @@ public:
 	};
 };
 
-inline CFileStream &operator<< (CFileStream &Stream, std::cc_string &val)
+inline CFileStream &operator<< (CFileStream &Stream, cc_string &val)
 {
 	Stream.Write (val);
 	return Stream;
 };
 
-inline CFileStream &operator>> (CFileStream &Stream, std::cc_string &val)
+inline CFileStream &operator>> (CFileStream &Stream, cc_string &val)
 {
-	val = Stream.Read<std::cc_string> ();
+	val = Stream.Read<cc_string> ();
 	return Stream;
 };
 
@@ -550,7 +550,7 @@ public:
 class CFindFilesCallback
 {
 public:
-	virtual void Query (std::cc_string &fileName) {};
+	virtual void Query (cc_string &fileName) {};
 };
 
 //(const char *path, const char *filter, const char *extension, char **fileList, sint32 maxFiles, const bool addDir, const bool recurse);

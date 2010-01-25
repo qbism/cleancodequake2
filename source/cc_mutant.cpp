@@ -277,7 +277,7 @@ void CMutant::CheckRefire ()
 
 	// Paril, this was kinda dumb because he would keep refiring on nightmare
 	// making him really easy to kill
-	if ((skill.Integer() == 3) && (frand() < 0.5))
+	if ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5))
 		return;
 
 	if (Range(Entity, Entity->Enemy) == RANGE_MELEE)
@@ -593,7 +593,7 @@ void CMutant::Pain (CBaseEntity *Other, sint32 Damage)
 
 	PainDebounceTime = Level.Frame + 30;
 
-	if (skill.Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))

@@ -78,45 +78,45 @@ public:
 
 		bool Select (CPlayerEntity *Player)
 		{
-			if (MyMenu->MatchLength->Value != matchtime.Float())
+			if (MyMenu->MatchLength->Value != CvarList[CV_MATCH_TIME].Float())
 			{
 				BroadcastPrintf (PRINT_HIGH, "%s changed the match length to %d minutes.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->MatchLength->Value);
 
 				if (ctfgame.match == MATCH_GAME)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - matchtime.Float()*600) + MyMenu->MatchLength->Value*600;
+					ctfgame.matchtime = (ctfgame.matchtime - CvarList[CV_MATCH_TIME].Float()*600) + MyMenu->MatchLength->Value*600;
 
-				matchtime.Set (MyMenu->MatchLength->Value);
+				CvarList[CV_MATCH_TIME].Set (MyMenu->MatchLength->Value);
 			}
 
-			if (MyMenu->MatchSetupLength->Value != matchsetuptime.Float())
+			if (MyMenu->MatchSetupLength->Value != CvarList[CV_MATCH_SETUP_TIME].Float())
 			{
 				BroadcastPrintf (PRINT_HIGH, "%s changed the match setup time to %d minutes.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->MatchSetupLength->Value);
 
 				if (ctfgame.match == MATCH_SETUP)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - matchsetuptime.Float()*60) + MyMenu->MatchSetupLength->Value*60;
+					ctfgame.matchtime = (ctfgame.matchtime - CvarList[CV_MATCH_SETUP_TIME].Float()*60) + MyMenu->MatchSetupLength->Value*60;
 
 
-				matchsetuptime.Set (MyMenu->MatchSetupLength->Value);
+				CvarList[CV_MATCH_SETUP_TIME].Set (MyMenu->MatchSetupLength->Value);
 			}
 
-			if (MyMenu->MatchStartLength->Value != matchstarttime.Integer())
+			if (MyMenu->MatchStartLength->Value != CvarList[CV_MATCH_START_TIME].Integer())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s changed the match start time to %d seconds.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->MatchStartLength->Value);
 
 				if (ctfgame.match == MATCH_PREGAME)
 					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - (matchstarttime.Integer()*10)) + (MyMenu->MatchStartLength->Value*10);
+					ctfgame.matchtime = (ctfgame.matchtime - (CvarList[CV_MATCH_START_TIME].Integer()*10)) + (MyMenu->MatchStartLength->Value*10);
 
-				matchstarttime.Set (MyMenu->MatchStartLength->Value);
+				CvarList[CV_MATCH_START_TIME].Set (MyMenu->MatchStartLength->Value);
 			}
 
-			sint32 i = dmflags.Integer();
-			if (!!MyMenu->WeaponsStaySpin->Index != dmFlags.dfWeaponsStay.IsEnabled())
+			sint32 i = CvarList[CV_DMFLAGS].Integer();
+			if (!!MyMenu->WeaponsStaySpin->Index != DeathmatchFlags.dfWeaponsStay.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s weapons stay.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->WeaponsStaySpin->Index ? "on" : "off");
@@ -127,7 +127,7 @@ public:
 					i &= ~DF_WEAPONS_STAY;
 			}
 
-			if (!!MyMenu->InstantItemsSpin->Index != dmFlags.dfInstantItems.IsEnabled())
+			if (!!MyMenu->InstantItemsSpin->Index != DeathmatchFlags.dfInstantItems.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant items.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->InstantItemsSpin->Index ? "on" : "off");
@@ -138,7 +138,7 @@ public:
 					i &= ~DF_INSTANT_ITEMS;
 			}
 
-			if (!!MyMenu->QuadDropSpin->Index != dmFlags.dfQuadDrop.IsEnabled())
+			if (!!MyMenu->QuadDropSpin->Index != DeathmatchFlags.dfQuadDrop.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s quad drop.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->QuadDropSpin->Index ? "on" : "off");
@@ -149,22 +149,22 @@ public:
 					i &= ~DF_QUAD_DROP;
 			}
 
-			dmflags.Set (i);
+			CvarList[CV_DMFLAGS].Set (i);
 
-			if (!!MyMenu->InstantWeaponsSpin->Index != instantweap.Boolean())
+			if (!!MyMenu->InstantWeaponsSpin->Index != CvarList[CV_INSTANT_WEAPONS].Boolean())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant weapons.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->InstantWeaponsSpin->Index ? "on" : "off");
 
-				instantweap.Set (MyMenu->InstantWeaponsSpin->Index);
+				CvarList[CV_INSTANT_WEAPONS].Set (MyMenu->InstantWeaponsSpin->Index);
 			}
 
-			if (!!MyMenu->MatchLockSpin->Index != matchlock.Boolean())
+			if (!!MyMenu->MatchLockSpin->Index != CvarList[CV_MATCH_LOCK].Boolean())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s match lock.\n",
 					Player->Client.Persistent.Name.c_str(), MyMenu->MatchLockSpin->Index ? "on" : "off");
 
-				matchlock.Set (MyMenu->MatchLockSpin->Index);
+				CvarList[CV_MATCH_LOCK].Set (MyMenu->MatchLockSpin->Index);
 			}
 
 			return true;
@@ -215,7 +215,7 @@ public:
 		MatchLength->Max = 60.0f;
 		MatchLength->Step = 0.5f;
 		MatchLength->Width = 6;
-		MatchLength->Value = matchtime.Float();
+		MatchLength->Value = CvarList[CV_MATCH_LOCK].Float();
 		MatchLength->Enabled = true;
 		MatchLength->x += 8 * 2;
 
@@ -227,7 +227,7 @@ public:
 		MatchSetupLength->Max = 60.0f;
 		MatchSetupLength->Step = 0.5f;
 		MatchSetupLength->Width = 6;
-		MatchSetupLength->Value = matchsetuptime.Float();
+		MatchSetupLength->Value = CvarList[CV_MATCH_SETUP_TIME].Float();
 		MatchSetupLength->Enabled = true;
 		MatchSetupLength->x += 8 * 2;
 
@@ -239,37 +239,37 @@ public:
 		MatchStartLength->Max = 60.0f;
 		MatchStartLength->Step = 1;
 		MatchStartLength->Width = 6;
-		MatchStartLength->Value = matchstarttime.Integer();
+		MatchStartLength->Value = CvarList[CV_MATCH_START_TIME].Integer();
 		MatchStartLength->Enabled = true;
 		MatchStartLength->x += 8 * 2;
 
 		y += 8;
 		WeaponsStaySpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		WeaponsStaySpin->Index = dmFlags.dfWeaponsStay.IsEnabled();
+		WeaponsStaySpin->Index = DeathmatchFlags.dfWeaponsStay.IsEnabled();
 		WeaponsStaySpin->x += (8 * 4);
 		WeaponsStaySpin->Align = LA_LEFT;
 
 		y += 8;
 		InstantItemsSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		InstantItemsSpin->Index = dmFlags.dfInstantItems.IsEnabled();
+		InstantItemsSpin->Index = DeathmatchFlags.dfInstantItems.IsEnabled();
 		InstantItemsSpin->x += (8 * 4);
 		InstantItemsSpin->Align = LA_LEFT;
 
 		y += 8;
 		QuadDropSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		QuadDropSpin->Index = dmFlags.dfQuadDrop.IsEnabled();
+		QuadDropSpin->Index = DeathmatchFlags.dfQuadDrop.IsEnabled();
 		QuadDropSpin->x += (8 * 4);
 		QuadDropSpin->Align = LA_LEFT;
 
 		y += 8;
 		InstantWeaponsSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		InstantWeaponsSpin->Index = instantweap.Boolean();
+		InstantWeaponsSpin->Index = CvarList[CV_INSTANT_WEAPONS].Boolean();
 		InstantWeaponsSpin->x += (8 * 4);
 		InstantWeaponsSpin->Align = LA_LEFT;
 
 		y += 8;
 		MatchLockSpin = QNew (com_levelPool, 0) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		MatchLockSpin->Index = matchlock.Boolean();
+		MatchLockSpin->Index = CvarList[CV_MATCH_LOCK].Boolean();
 		MatchLockSpin->x += (8 * 4);
 		MatchLockSpin->Align = LA_LEFT;
 
@@ -385,12 +385,12 @@ public:
 			case MATCH_SETUP:
 				BroadcastPrintf (PRINT_CHAT, "Match has been forced to start.\n");
 				ctfgame.match = MATCH_PREGAME;
-				ctfgame.matchtime = Level.Frame + (matchstarttime.Float() * 10);
+				ctfgame.matchtime = Level.Frame + (CvarList[CV_MATCH_START_TIME].Float() * 10);
 				break;
 			case MATCH_GAME:
 				BroadcastPrintf(PRINT_CHAT, "Match has been forced to terminate.\n");
 				ctfgame.match = MATCH_SETUP;
-				ctfgame.matchtime = Level.Frame + (matchsetuptime.Float() * 60);
+				ctfgame.matchtime = Level.Frame + (CvarList[CV_MATCH_SETUP_TIME].Float() * 60);
 				CTFResetAllPlayers();
 				break;
 			}
@@ -410,8 +410,8 @@ public:
 		{
 			if (ctfgame.match != MATCH_SETUP)
 			{
-				if (competition.Integer() < 3)
-					competition.Set (2);
+				if (CvarList[CV_COMPETITION].Integer() < 3)
+					CvarList[CV_COMPETITION].Set (2);
 				ctfgame.match = MATCH_SETUP;
 				CTFResetAllPlayers();
 			}
@@ -477,7 +477,7 @@ public:
 
 		y += 8;
 
-		if (competition.Integer())
+		if (CvarList[CV_COMPETITION].Integer())
 		{
 			CMenu_Label *MatchLabel;
 
@@ -528,8 +528,8 @@ void CTFAdmin(CPlayerEntity *Player)
 {
 	char text[1024];
 
-	if (ArgCount() > 1 && admin_password.String() && *admin_password.String() &&
-		!Player->Client.Respawn.CTF.Admin && strcmp(admin_password.String(), ArgGets(1).c_str()) == 0)
+	if (ArgCount() > 1 && CvarList[CV_ADMIN_PASSWORD].String() && *CvarList[CV_ADMIN_PASSWORD].String() &&
+		!Player->Client.Respawn.CTF.Admin && strcmp(CvarList[CV_ADMIN_PASSWORD].String(), ArgGets(1).c_str()) == 0)
 	{
 		Player->Client.Respawn.CTF.Admin = true;
 		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", Player->Client.Persistent.Name.c_str());

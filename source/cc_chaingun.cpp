@@ -161,6 +161,8 @@ void CChaingun::Fire (CPlayerEntity *Player)
 
 WEAPON_DEFS (CChaingun);
 
+LINK_ITEM_TO_CLASS (weapon_chaingun, CItemEntity);
+
 void CChaingun::CreateItem (CItemList *List)
 {
 	NItems::Chaingun = QNew (com_itemPool, 0) CWeaponItem

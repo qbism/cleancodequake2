@@ -130,17 +130,13 @@ struct gameImport_t
 	// an entity will never be sent to a client or used for collision
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
-	/*
 #if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE ((CBaseEntity)->Link)
 #endif
-	*/
 		void	(*linkentity) (edict_t *ent);
-	/*
 #if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE ((CBaseEntity)->Unlink)
 #endif
-	*/
 	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
 #if !USE_EXTENDED_GAME_IMPORTS
 	_CC_INSECURE_DEPRECATE (BoxEdicts)
@@ -298,8 +294,7 @@ public:
 
 	virtual void ServerCommand ();
 
-	edict_t *GetEntities ();
-	void SetEntities (edict_t *);
+	edict_t *&GetEntities ();
 	sint32 &GetEdictSize ();
 	sint32 &GetNumEdicts();
 	sint32 &GetMaxEdicts();

@@ -116,7 +116,7 @@ void CItemList::AddItemToList (CBaseItem *Item)
 }
 
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
-typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::generic_allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, generic_allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
 
 void AddWeaponsToListLocations (CItemList *List);
 
@@ -259,7 +259,7 @@ void InitItemlist ()
 		AddFlagsToList();
 #endif
 
-	if (dmFlags.dfDmTechs.IsEnabled()
+	if (DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
 	|| (Game.GameMode & GAME_CTF)
 #endif
