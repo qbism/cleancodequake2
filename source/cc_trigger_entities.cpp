@@ -571,30 +571,8 @@ public:
 		}
 		else
 		{
-			// FIXME: replace this shit
-			if (!Other->ClassName.empty() && strcmp(Other->ClassName.c_str(), "grenade") == 0)
-			{
-				if (Other->EntityFlags & ENT_PHYSICS)
-					entity_cast<CPhysicsEntity>(Other)->Velocity = vel;
-			}
-			else if ((Other->EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(Other)->Health > 0))
-			{
-				if (Other->EntityFlags & ENT_PHYSICS)
-					entity_cast<CPhysicsEntity>(Other)->Velocity = vel;
-
-				if (Other->EntityFlags & ENT_PLAYER)
-				{
-					CPlayerEntity *Player = entity_cast<CPlayerEntity>(Other);
-
-					// don't take falling damage immediately from this
-					Player->Client.OldVelocity = Player->Velocity;
-					if (Player->FlySoundDebounceTime < Level.Frame)
-					{
-						Player->FlySoundDebounceTime = Level.Frame + 15;
-						Other->PlaySound (CHAN_AUTO, GameMedia.FlySound());
-					}
-				}
-			}
+			if (Other->EntityFlags & ENT_PHYSICS)
+				entity_cast<CPhysicsEntity>(Other)->PushInDirection (vel);
 
 			if (SpawnFlags & PUSH_ONCE)
 				Free ();

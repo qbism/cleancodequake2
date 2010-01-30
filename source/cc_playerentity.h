@@ -685,6 +685,8 @@ public:
 	void			P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result);
 	void			PlayerNoiseAt (vec3f Where, sint32 type);
 
+	void			PushInDirection (vec3f vel);
+
 	IMPLEMENT_SAVE_HEADER(CPlayerEntity)
 };
 

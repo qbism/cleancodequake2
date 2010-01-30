@@ -697,6 +697,12 @@ void CPhysicsEntity::Impact (CTrace *trace)
 	}
 }
 
+void CPhysicsEntity::PushInDirection (vec3f vel)
+{
+	if ((EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(this)->Health > 0))
+		Velocity = vel;
+}
+
 CBounceProjectile::CBounceProjectile () :
 backOff(1.5f),
 AffectedByGravity(true),

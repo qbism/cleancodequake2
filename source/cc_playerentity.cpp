@@ -4205,3 +4205,18 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 	}
 }
 
+void CPlayerEntity::PushInDirection (vec3f vel)
+{
+	if (Health > 0)
+	{
+		Velocity = vel;
+
+		// don't take falling damage immediately from this
+		Client.OldVelocity = Velocity;
+		if (FlySoundDebounceTime < Level.Frame)
+		{
+			FlySoundDebounceTime = Level.Frame + 15;
+			PlaySound (CHAN_AUTO, GameMedia.FlySound());
+		}
+	}
+}

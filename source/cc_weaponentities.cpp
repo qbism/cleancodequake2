@@ -157,6 +157,11 @@ void CGrenade::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	Explode ();
 }
 
+void CGrenade::PushInDirection (vec3f vel)
+{
+	Velocity = vel;
+}
+
 void CGrenade::Think ()
 {
 	Explode();

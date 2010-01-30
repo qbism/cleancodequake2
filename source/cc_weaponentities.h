@@ -67,6 +67,7 @@ public:
 
 	void Think ();
 	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void PushInDirection (vec3f vel);
 
 	void Explode ();
 
