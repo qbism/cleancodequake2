@@ -135,7 +135,7 @@ void CHeatRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *sur
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
-	CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
+	NTempEnts::NExplosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free ();
 }

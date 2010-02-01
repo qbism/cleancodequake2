@@ -657,9 +657,9 @@ CMapEntity::~CMapEntity ()
 void CBaseEntity::BecomeExplosion (bool grenade)
 {
 	if (grenade)
-		CTempEnt_Explosions::GrenadeExplosion (State.GetOrigin(), this);
+		NTempEnts::NExplosions::GrenadeExplosion (State.GetOrigin(), this);
 	else
-		CTempEnt_Explosions::RocketExplosion (State.GetOrigin(), this);
+		NTempEnts::NExplosions::RocketExplosion (State.GetOrigin(), this);
 	Free ();
 }
 

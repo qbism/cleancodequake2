@@ -186,7 +186,7 @@ public:
 
 	void Think ()
 	{
-		CTempEnt_Explosions::RocketExplosion (State.GetOrigin(), this);
+		NTempEnts::NExplosions::RocketExplosion (State.GetOrigin(), this);
 
 		if (Damage)
 			SplashDamage (User, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
@@ -401,7 +401,7 @@ public:
 
 	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		CTempEnt_Splashes::Splash (State.GetOrigin(), MoveDir, Color, Count);
+		NTempEnts::NSplashes::Splash (State.GetOrigin(), MoveDir, Color, Count);
 
 		if (Damage)
 			SplashDamage (Activator, Damage, NULL, Damage+40, MOD_SPLASH);
@@ -1244,9 +1244,9 @@ void CTargetLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				CTempEnt_Splashes::Sparks (tr.EndPos,
+				NTempEnts::NSplashes::Sparks (tr.EndPos,
 					tr.plane.normal, 
-					CTempEnt_Splashes::ST_LASER_SPARKS,
+					NTempEnts::NSplashes::ST_LASER_SPARKS,
 					(State.GetSkinNum() & 255),
 					Count);
 			}

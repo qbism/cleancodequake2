@@ -76,7 +76,7 @@ void CBlueBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSur
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
 	else
-		CTempEnt_Splashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin, CTempEnt_Splashes::BL_BLUE_HYPERBLASTER);
+		NTempEnts::NSplashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin, NTempEnts::NSplashes::BL_BLUE_HYPERBLASTER);
 
 	Free (); // "delete" the entity
 }

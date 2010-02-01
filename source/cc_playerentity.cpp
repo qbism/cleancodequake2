@@ -479,7 +479,7 @@ void CPlayerEntity::SpectatorRespawn ()
 	if (!Client.Persistent.Spectator)
 	{
 		// send effect
-		CTempEnt::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
+		NTempEnts::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
 
 		// hold in place briefly
 		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
@@ -3678,7 +3678,7 @@ _CC_ENABLE_DEPRECATION
 		MoveToIntermission();
 	else
 		// send effect
-		CTempEnt::MuzzleFlash (State.GetOrigin (), State.GetNumber(), MZ_LOGIN);
+		NTempEnts::MuzzleFlash (State.GetOrigin (), State.GetNumber(), MZ_LOGIN);
 
 	BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.c_str());
 
@@ -3732,7 +3732,7 @@ _CC_ENABLE_DEPRECATION
 		// send effect if in a multiplayer game
 		if (Game.MaxClients > 1)
 		{
-			CTempEnt::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
+			NTempEnts::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
 			BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.c_str());
 		}
 	}
@@ -3880,7 +3880,7 @@ void CPlayerEntity::Disconnect ()
 		DeadDropTech();
 
 	// send effect
-	CTempEnt::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
+	NTempEnts::MuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_LOGIN);
 
 	Unlink ();
 	State.GetModelIndex() = 0;

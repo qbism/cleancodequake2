@@ -624,7 +624,7 @@ void CBrain::TongueAttack ()
 	static const int damage = 5;
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
 
-	CTempEnt_Trails::FleshCable (start, end, Entity->State.GetNumber());
+	NTempEnts::NTrails::FleshCable (start, end, Entity->State.GetNumber());
 
 	vec3f dir = start - end;
 	entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);

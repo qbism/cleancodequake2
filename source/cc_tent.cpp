@@ -1,8 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \file	game\cc_tent.cpp
-///
-/// \brief	Implements the temporary entity classes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
 
@@ -87,28 +82,28 @@ public:
 	};
 };
 
-void CTempEnt_Splashes::Gunshot (vec3f &Origin, vec3f &Plane)
+void NTempEnts::NSplashes::Gunshot (vec3f &Origin, vec3f &Plane)
 {
 	TECast cast(Origin, TE_GUNSHOT);
 	WritePosition (Origin);
 	WriteDirection (Plane ? Plane : vec3fOrigin);
 }
 
-void CTempEnt_Splashes::Shotgun (vec3f &Origin, vec3f &Plane)
+void NTempEnts::NSplashes::Shotgun (vec3f &Origin, vec3f &Plane)
 {
 	TECast cast(Origin, TE_SHOTGUN);
 	WritePosition (Origin);
 	WriteDirection (Plane ? Plane : vec3fOrigin);
 }
 
-void CTempEnt_Splashes::Blood (vec3f &Origin, vec3f &Plane, EBloodType BloodType)
+void NTempEnts::NSplashes::Blood (vec3f &Origin, vec3f &Plane, EBloodType BloodType)
 {
 	TECast cast(Origin, BloodType);
 	WritePosition (Origin);
 	WriteDirection (Plane ? Plane : vec3fOrigin);
 }
 
-void CTempEnt_Splashes::Blaster (vec3f &Origin, vec3f &Plane, EBlasterType BlasterType)
+void NTempEnts::NSplashes::Blaster (vec3f &Origin, vec3f &Plane, EBlasterType BlasterType)
 {
 	TECast cast(Origin, BlasterType);
 	WritePosition (Origin);
@@ -121,7 +116,7 @@ void CTempEnt_Splashes::Blaster (vec3f &Origin, vec3f &Plane, EBlasterType Blast
 		WriteDirection (Plane ? Plane : vec3fOrigin);
 }
 
-void CTempEnt_Splashes::Sparks (vec3f &Origin, vec3f &Plane, ESparkType SparkType, ESplashType color, uint8 amount)
+void NTempEnts::NSplashes::Sparks (vec3f &Origin, vec3f &Plane, ESparkType SparkType, ESplashType color, uint8 amount)
 {
 	TECast cast(Origin, SparkType);
 
@@ -139,7 +134,7 @@ void CTempEnt_Splashes::Sparks (vec3f &Origin, vec3f &Plane, ESparkType SparkTyp
 	}
 }
 
-void CTempEnt_Splashes::Splash (vec3f &Origin, vec3f &Plane, ESplashType color, uint8 amount)
+void NTempEnts::NSplashes::Splash (vec3f &Origin, vec3f &Plane, ESplashType color, uint8 amount)
 {
 	TECast cast(Origin, TE_SPLASH);
 	WriteByte (amount);
@@ -148,14 +143,14 @@ void CTempEnt_Splashes::Splash (vec3f &Origin, vec3f &Plane, ESplashType color, 
 	WriteByte (color);
 }
 
-void CTempEnt_Splashes::ShieldSparks (vec3f &Origin, vec3f &Plane, bool Screen)
+void NTempEnts::NSplashes::ShieldSparks (vec3f &Origin, vec3f &Plane, bool Screen)
 {
 	TECast cast(Origin, Screen ? TE_SCREEN_SPARKS : TE_SHIELD_SPARKS);
 	WritePosition (Origin);
 	WriteDirection (Plane ? Plane : vec3fOrigin);
 }
 
-void CTempEnt_Splashes::Steam (vec3f &Origin, vec3f &Normal, uint8 count, ESplashType color, sint16 magnitude, sint16 id, long endTime)
+void NTempEnts::NSplashes::Steam (vec3f &Origin, vec3f &Normal, uint8 count, ESplashType color, sint16 magnitude, sint16 id, long endTime)
 {
 	TECast cast(Origin, TE_STEAM);
 	WriteShort (id);
@@ -170,14 +165,14 @@ void CTempEnt_Splashes::Steam (vec3f &Origin, vec3f &Normal, uint8 count, ESplas
 		WriteLong (endTime);
 }
 
-void CTempEnt_Splashes::HeatSteam (vec3f &Origin, vec3f &Normal)
+void NTempEnts::NSplashes::HeatSteam (vec3f &Origin, vec3f &Normal)
 {
 	TECast cast(Origin, TE_HEATBEAM_STEAM);
 	WritePosition (Origin);
 	WriteDirection (Normal ? Normal : vec3fOrigin);
 }
 
-void CTempEnt_Splashes::ChainfistSmoke (vec3f &Origin)
+void NTempEnts::NSplashes::ChainfistSmoke (vec3f &Origin)
 {
 	TECast cast(Origin, TE_CHAINFIST_SMOKE);
 	WritePosition (Origin);
@@ -191,38 +186,38 @@ static void BaseTrail (vec3f &Start, vec3f &End, sint16 Ent = -1)
 	WritePosition (End);
 }
 
-void CTempEnt_Trails::RailTrail (vec3f &Start, vec3f &End)
+void NTempEnts::NTrails::RailTrail (vec3f &Start, vec3f &End)
 {
 	TECast cast(Start, TE_RAILTRAIL);
 	BaseTrail(Start, End);
 }
 
-void CTempEnt_Trails::BubbleTrail (vec3f &Start, vec3f &End)
+void NTempEnts::NTrails::BubbleTrail (vec3f &Start, vec3f &End)
 {
 	TECast cast(Start, TE_BUBBLETRAIL);
 	BaseTrail(Start, End);
 }
 
-void CTempEnt_Trails::FleshCable (vec3f &Start, vec3f &End, sint16 Ent)
+void NTempEnts::NTrails::FleshCable (vec3f &Start, vec3f &End, sint16 Ent)
 {
 	TECast cast(Start, TE_PARASITE_ATTACK);
 	BaseTrail(Start, End, Ent);
 }
 
-void CTempEnt_Trails::BFGLaser (vec3f &Start, vec3f &End)
+void NTempEnts::NTrails::BFGLaser (vec3f &Start, vec3f &End)
 {
 	TECast cast(Start, TE_BFG_LASER);
 	BaseTrail(Start, End);
 }
 
-void CTempEnt_Trails::GrappleCable (vec3f &Start, vec3f &End, sint16 Ent, vec3f &Offset)
+void NTempEnts::NTrails::GrappleCable (vec3f &Start, vec3f &End, sint16 Ent, vec3f &Offset)
 {
 	TECast cast(Start, TE_GRAPPLE_CABLE);
 	BaseTrail(Start, End, Ent);
 	WritePosition (Offset);
 }
 
-void CTempEnt_Trails::Lightning (vec3f &Start, vec3f &End, sint16 SrcEnt, sint16 DestEnt)
+void NTempEnts::NTrails::Lightning (vec3f &Start, vec3f &End, sint16 SrcEnt, sint16 DestEnt)
 {
 	TECast cast(Start, TE_LIGHTNING);
 	WriteShort (SrcEnt);
@@ -230,102 +225,102 @@ void CTempEnt_Trails::Lightning (vec3f &Start, vec3f &End, sint16 SrcEnt, sint16
 	BaseTrail(Start, End);
 }
 
-void CTempEnt_Trails::DebugTrail (vec3f &Start, vec3f &End)
+void NTempEnts::NTrails::DebugTrail (vec3f &Start, vec3f &End)
 {
 	TECast cast(Start, TE_DEBUGTRAIL);
 	BaseTrail(Start, End);
 }
 
-void CTempEnt_Trails::ForceWall (vec3f &Start, vec3f &End, uint8 color)
+void NTempEnts::NTrails::ForceWall (vec3f &Start, vec3f &End, uint8 color)
 {
 	TECast cast(Start, TE_FORCEWALL);
 	BaseTrail(Start, End);
 	WriteByte (color);
 }
 
-void CTempEnt_Trails::HeatBeam (vec3f &Start, vec3f &End, sint16 Ent, bool Monster)
+void NTempEnts::NTrails::HeatBeam (vec3f &Start, vec3f &End, sint16 Ent, bool Monster)
 {
 	TECast cast(Start, Monster ? TE_MONSTER_HEATBEAM : TE_HEATBEAM);
 	BaseTrail(Start, End, Ent);
 }
 
-void CTempEnt_Explosions::RocketExplosion (vec3f &Start, CBaseEntity *Entity, bool Water, bool Particles)
+void NTempEnts::NExplosions::RocketExplosion (vec3f &Start, CBaseEntity *Entity, bool Water, bool Particles)
 {
 	// Water and NoParticles fight over a spot.. water will win, in the end
 	TECast cast (Entity->State.GetOrigin(), Water ? TE_ROCKET_EXPLOSION_WATER : (Particles ? TE_ROCKET_EXPLOSION : TE_EXPLOSION1_NP));
 	WritePosition (Start);
 }
 
-void CTempEnt_Explosions::GrenadeExplosion (vec3f &Start, CBaseEntity *Entity, bool Water)
+void NTempEnts::NExplosions::GrenadeExplosion (vec3f &Start, CBaseEntity *Entity, bool Water)
 {
 	TECast cast (Entity->State.GetOrigin(), Water ? TE_GRENADE_EXPLOSION_WATER : TE_GRENADE_EXPLOSION);
 	WritePosition (Start);
 }
 
-void CTempEnt_Explosions::BFGExplosion (vec3f &Origin, bool Big)
+void NTempEnts::NExplosions::BFGExplosion (vec3f &Origin, bool Big)
 {
 	TECast cast (Origin, Big ? TE_BFG_BIGEXPLOSION : TE_BFG_EXPLOSION);
 	WritePosition (Origin);
 }
 
-void CTempEnt_Explosions::PlasmaExplosion (vec3f &Origin)
+void NTempEnts::NExplosions::PlasmaExplosion (vec3f &Origin)
 {
 	TECast cast (Origin, TE_PLASMA_EXPLOSION);
 	WritePosition (Origin);
 }
 
-void CTempEnt_Explosions::TrackerExplosion (vec3f &Origin)
+void NTempEnts::NExplosions::TrackerExplosion (vec3f &Origin)
 {
 	TECast cast (Origin, TE_TRACKER_EXPLOSION);
 	WritePosition (Origin);
 }
 
-void CTempEnt_Explosions::NukeBlast (vec3f &Origin)
+void NTempEnts::NExplosions::NukeBlast (vec3f &Origin)
 {
 	TECast cast (Origin, TE_NUKEBLAST);
 	WritePosition (Origin);
 }
 
-void CTempEnt::Flashlight (vec3f &Origin, sint16 Ent)
+void NTempEnts::Flashlight (vec3f &Origin, sint16 Ent)
 {
 	TECast cast(Origin, TE_FLASHLIGHT);
 	WritePosition(Origin);
 	WriteShort (Ent);
 }
 
-void CTempEnt::BossTeleport (vec3f &Origin)
+void NTempEnts::BossTeleport (vec3f &Origin)
 {
 	TECast cast(Origin, TE_BOSSTPORT);
 	WritePosition(Origin);
 }
 
-void CTempEnt::TeleportEffect (vec3f &Origin)
+void NTempEnts::TeleportEffect (vec3f &Origin)
 {
 	TECast cast(Origin, TE_TELEPORT_EFFECT);
 	WritePosition(Origin);
 }
 
-void CTempEnt::WidowBeamOut (vec3f &Origin, sint16 id)
+void NTempEnts::WidowBeamOut (vec3f &Origin, sint16 id)
 {
 	TECast cast(Origin, TE_WIDOWBEAMOUT);
 	WriteShort (id);
 	WritePosition(Origin);
 }
 
-void CTempEnt::WidowSplash (vec3f &Origin)
+void NTempEnts::WidowSplash (vec3f &Origin)
 {
 	TECast cast(Origin, TE_WIDOWSPLASH);
 	WritePosition(Origin);
 }
 
-void CTempEnt::MuzzleFlash (vec3f &Origin, sint16 Ent, sint16 id)
+void NTempEnts::MuzzleFlash (vec3f &Origin, sint16 Ent, sint16 id)
 {
 	MultiCast cast (Origin, SVC_MUZZLEFLASH);
 	WriteShort (Ent);
 	WriteByte (id);
 }
 
-void CTempEnt::MonsterFlash (vec3f &Origin, sint16 Ent, sint16 id)
+void NTempEnts::MonsterFlash (vec3f &Origin, sint16 Ent, sint16 id)
 {
 	MultiCast cast (Origin, SVC_MUZZLEFLASH2);
 	WriteShort (Ent);

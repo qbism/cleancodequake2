@@ -321,7 +321,7 @@ void RunNodes()
 			for (TPathNodeChildrenContainer::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); ++it)
 			{
 				CPathNode *Child = *it;
-				CTempEnt_Trails::BFGLaser (NodeList[i]->Origin, Child->Origin);
+				NTempEnts::NTrails::BFGLaser (NodeList[i]->Origin, Child->Origin);
 			}
 
 			PrintVerboseNodes (NodeList[i]->Origin, i, NodeList[i]->Type);

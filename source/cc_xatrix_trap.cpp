@@ -319,9 +319,9 @@ void CTrapProjectile::Explode ()
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
-		CTempEnt_Explosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
+		NTempEnts::NExplosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
 	else
-		CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
+		NTempEnts::NExplosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free (); // "delete" the entity
 }

@@ -41,203 +41,166 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_colors.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class	CTempEnt_Splashes
-///
-/// \brief	Temporary entity splashes
-///
-/// \author	Paril
-/// \date	5/10/2009
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class CTempEnt_Splashes
+namespace NTempEnts
 {
-public:
-	CC_ENUM (uint8, ESplashType)
+	namespace NSplashes
 	{
-		SPT_UNKNOWN,
-		SPT_SPARKS,
-		SPT_WATER,
-		SPT_MUD,
-		SPT_SLIME,
-		SPT_LAVA,
-		SPT_BLOOD
-	};
+		CC_ENUM (uint8, ESplashType)
+		{
+			SPT_UNKNOWN,
+			SPT_SPARKS,
+			SPT_WATER,
+			SPT_MUD,
+			SPT_SLIME,
+			SPT_LAVA,
+			SPT_BLOOD
+		};
 
-	CC_ENUM (uint8, EBloodType)
-	{
-		BT_BLOOD = TE_BLOOD,
-		BT_MORE_BLOOD = TE_MOREBLOOD,
-		BT_GREEN_BLOOD = TE_GREENBLOOD
-	};
+		CC_ENUM (uint8, EBloodType)
+		{
+			BT_BLOOD = TE_BLOOD,
+			BT_MORE_BLOOD = TE_MOREBLOOD,
+			BT_GREEN_BLOOD = TE_GREENBLOOD
+		};
 
-	CC_ENUM (uint8, EBlasterType)
-	{
-		BL_BLASTER = TE_BLASTER,
-		BL_BLUE_HYPERBLASTER = TE_BLUEHYPERBLASTER,
-		BL_FLECHETTE = TE_FLECHETTE,
-		BL_GREEN_BLASTER = TE_BLASTER2
-	};
+		CC_ENUM (uint8, EBlasterType)
+		{
+			BL_BLASTER = TE_BLASTER,
+			BL_BLUE_HYPERBLASTER = TE_BLUEHYPERBLASTER,
+			BL_FLECHETTE = TE_FLECHETTE,
+			BL_GREEN_BLASTER = TE_BLASTER2
+		};
 
-	CC_ENUM (uint8, ESparkType)
-	{
-		ST_SPARKS = TE_SPARKS,
-		ST_BULLET_SPARKS = TE_BULLET_SPARKS,
-		ST_HEATBEAM_SPARKS = TE_HEATBEAM_SPARKS,
-		ST_ELECTRIC_SPARKS = TE_ELECTRIC_SPARKS,
+		CC_ENUM (uint8, ESparkType)
+		{
+			ST_SPARKS = TE_SPARKS,
+			ST_BULLET_SPARKS = TE_BULLET_SPARKS,
+			ST_HEATBEAM_SPARKS = TE_HEATBEAM_SPARKS,
+			ST_ELECTRIC_SPARKS = TE_ELECTRIC_SPARKS,
 
-		// Ones that have amount/color
-		ST_LASER_SPARKS = TE_LASER_SPARKS,
-		ST_WELDING_SPARKS = TE_WELDING_SPARKS,
-		ST_TUNNEL_SPARKS = TE_TUNNEL_SPARKS
-	};
+			// Ones that have amount/color
+			ST_LASER_SPARKS = TE_LASER_SPARKS,
+			ST_WELDING_SPARKS = TE_WELDING_SPARKS,
+			ST_TUNNEL_SPARKS = TE_TUNNEL_SPARKS
+		};
 
-	static void Gunshot	(vec3f &Origin,
-					vec3f &Normal);
+		void Gunshot	(vec3f &Origin,
+						vec3f &Normal);
 
-	static void Shotgun	(vec3f &Origin,
-					vec3f &Normal);
+		void Shotgun	(vec3f &Origin,
+						vec3f &Normal);
 
-	static void Blood	(vec3f &Origin,
-				vec3f &Normal,
-				EBloodType BloodType = BT_BLOOD);
-
-	static void Blaster	(vec3f &Origin,
+		void Blood	(vec3f &Origin,
 					vec3f &Normal,
-					EBlasterType BlasterType = BL_BLASTER);
+					EBloodType BloodType = BT_BLOOD);
 
-	static void Sparks	(vec3f &Origin,
-				vec3f &Normal,
-				ESparkType SparkType = ST_SPARKS,
-				ESplashType color = SPT_UNKNOWN,
-				uint8 amount = 8);
-
-	static void Splash	(vec3f &Origin,
-				vec3f &Normal,
-				ESplashType color = SPT_UNKNOWN,
-				uint8 amount = 8);
-
-	static void ShieldSparks	(vec3f &Origin,
+		void Blaster	(vec3f &Origin,
 						vec3f &Normal,
-						bool Screen = false);
+						EBlasterType BlasterType = BL_BLASTER);
 
-	static void Steam	(vec3f &Origin,
-				vec3f &Normal,
-				uint8 count = 8,
-				ESplashType color = SPT_UNKNOWN,
-				sint16 magnitude = 12,
-				sint16 id = -1,
-				long endTime = 0);
+		void Sparks	(vec3f &Origin,
+					vec3f &Normal,
+					ESparkType SparkType = ST_SPARKS,
+					ESplashType color = SPT_UNKNOWN,
+					uint8 amount = 8);
 
-	static void HeatSteam	(vec3f &Origin,
-					vec3f &Normal);
+		void Splash	(vec3f &Origin,
+					vec3f &Normal,
+					ESplashType color = SPT_UNKNOWN,
+					uint8 amount = 8);
 
-	static void ChainfistSmoke	(vec3f &Origin);
-};
+		void ShieldSparks	(vec3f &Origin,
+							vec3f &Normal,
+							bool Screen = false);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class	CTempEnt_Trails
-///
-/// \brief	Temporary entities that deal with trails (start & end)
-///
-/// \author	Paril
-/// \date	5/10/2009
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class CTempEnt_Trails
-{
-public:
-	static void RailTrail	(vec3f &Start,
-					vec3f &End);
+		void Steam	(vec3f &Origin,
+					vec3f &Normal,
+					uint8 count = 8,
+					ESplashType color = SPT_UNKNOWN,
+					sint16 magnitude = 12,
+					sint16 id = -1,
+					long endTime = 0);
 
-	static void HeatBeam	(vec3f & Start,
-					vec3f &End,
-					sint16 Ent,
-					bool Monster = false);
+		void HeatSteam	(vec3f &Origin,
+						vec3f &Normal);
 
-	static void ForceWall	(vec3f &Start,
-					vec3f &End,
-					uint8 color = NSColor::Lime);
+		void ChainfistSmoke	(vec3f &Origin);
+	};
 
-	static void DebugTrail	(vec3f &Start,
-					vec3f &End);
-
-	static void Lightning	(vec3f &Start,
-					vec3f &End,
-					sint16 SrcEnt,
-					sint16 DestEnt);
-
-	static void GrappleCable	(vec3f &Start,
-						vec3f &End,
-						sint16 Ent,
-						vec3f &Offset = vec3fOrigin);
-
-	static void BFGLaser	(vec3f &Start,
-					vec3f &End);
-
-	static void FleshCable		(vec3f &Start,
-						vec3f &End,
-						sint16 Ent);
-	static void BubbleTrail	(vec3f &Start,
+	namespace NTrails
+	{
+		void RailTrail	(vec3f &Start,
 						vec3f &End);
 
-};
+		void HeatBeam	(vec3f & Start,
+						vec3f &End,
+						sint16 Ent,
+						bool Monster = false);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class	CTempEnt_Explosions
-///
-/// \brief	Temporary entity explosions
-///
-/// \author	Paril
-/// \date	5/10/2009
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class CTempEnt_Explosions
-{
-public:
-	static void RocketExplosion	(vec3f &Origin, CBaseEntity *Entity,
-							bool Water = false,
-							bool Particles = true);
+		void ForceWall	(vec3f &Start,
+						vec3f &End,
+						uint8 color = NSColor::Lime);
 
-	static void GrenadeExplosion	(vec3f &Origin,
-							CBaseEntity *Entity,
-							bool Water = false);
+		void DebugTrail	(vec3f &Start,
+						vec3f &End);
 
-	static void BFGExplosion		(vec3f &Origin,
-							bool Big = false);
+		void Lightning	(vec3f &Start,
+						vec3f &End,
+						sint16 SrcEnt,
+						sint16 DestEnt);
 
-	static void PlasmaExplosion	(vec3f &Origin);
+		void GrappleCable	(vec3f &Start,
+							vec3f &End,
+							sint16 Ent,
+							vec3f &Offset = vec3fOrigin);
 
-	static void TrackerExplosion	(vec3f &Origin);
+		void BFGLaser	(vec3f &Start,
+						vec3f &End);
 
-	static void NukeBlast			(vec3f &Origin);
-};
+		void FleshCable		(vec3f &Start,
+							vec3f &End,
+							sint16 Ent);
+		void BubbleTrail	(vec3f &Start,
+							vec3f &End);
+	};
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class	CTempEnt
-///
-/// \brief	Implements all temporary entities above and new ones
-///
-/// \author	Paril
-/// \date	5/10/2009
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class CTempEnt
-{
-public:
-	static void Flashlight		(vec3f &Origin,
+	namespace NExplosions
+	{
+		void RocketExplosion	(vec3f &Origin, CBaseEntity *Entity,
+								bool Water = false,
+								bool Particles = true);
+
+		void GrenadeExplosion	(vec3f &Origin,
+								CBaseEntity *Entity,
+								bool Water = false);
+
+		void BFGExplosion		(vec3f &Origin,
+								bool Big = false);
+
+		void PlasmaExplosion	(vec3f &Origin);
+
+		void TrackerExplosion	(vec3f &Origin);
+
+		void NukeBlast			(vec3f &Origin);
+	};
+
+	void Flashlight		(vec3f &Origin,
 						sint16 Ent);
 
-	static void BossTeleport	(vec3f &Origin);
+	void BossTeleport	(vec3f &Origin);
 
-	static void TeleportEffect	(vec3f &Origin);
+	void TeleportEffect	(vec3f &Origin);
 
-	static void WidowBeamOut	(vec3f &Origin,
+	void WidowBeamOut	(vec3f &Origin,
 						sint16 id = -1);
 
-	static void WidowSplash	(vec3f &Origin);
+	void WidowSplash	(vec3f &Origin);
 
-	static void MuzzleFlash	(vec3f &Origin,
+	void MuzzleFlash	(vec3f &Origin,
 						sint16 Ent,
 						sint16 id);
 
-	static void MonsterFlash	(vec3f &Origin,
+	void MonsterFlash	(vec3f &Origin,
 						sint16 Ent,
 						sint16 id);
 };

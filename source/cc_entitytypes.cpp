@@ -224,7 +224,7 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	if (Saved > Damage)
 		Saved = Damage;
 
-	CTempEnt_Splashes::ShieldSparks (point, normal, ScreenSparks);
+	NTempEnts::NSplashes::ShieldSparks (point, normal, ScreenSparks);
 
 	sint32 PowerUsed = Saved / DamagePerCell;
 	if (!PowerUsed)
@@ -312,9 +312,9 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
-		CTempEnt_Splashes::Blood (point, normal);
+		NTempEnts::NSplashes::Blood (point, normal);
 	else
-		CTempEnt_Splashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? CTempEnt_Splashes::ST_BULLET_SPARKS : CTempEnt_Splashes::ST_SPARKS, CTempEnt_Splashes::SPT_SPARKS);
+		NTempEnts::NSplashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? NTempEnts::NSplashes::ST_BULLET_SPARKS : NTempEnts::NSplashes::ST_SPARKS, NTempEnts::NSplashes::SPT_SPARKS);
 }
 
 bool LastPelletShot = true;
@@ -423,7 +423,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	{
 		take = 0;
 		save = Damage;
-		CTempEnt_Splashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? CTempEnt_Splashes::ST_BULLET_SPARKS : CTempEnt_Splashes::ST_SPARKS, CTempEnt_Splashes::SPT_SPARKS);
+		NTempEnts::NSplashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? NTempEnts::NSplashes::ST_BULLET_SPARKS : NTempEnts::NSplashes::ST_SPARKS, NTempEnts::NSplashes::SPT_SPARKS);
 	}
 
 	// check for invincibility

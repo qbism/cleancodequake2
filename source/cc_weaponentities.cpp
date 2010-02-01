@@ -121,9 +121,9 @@ void CGrenade::Explode ()
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
-		CTempEnt_Explosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
+		NTempEnts::NExplosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
 	else
-		CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
+		NTempEnts::NExplosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free (); // "delete" the entity
 }
@@ -264,7 +264,7 @@ void CBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & HYPER_FLAG) ? MOD_HYPERBLASTER : MOD_BLASTER);
 	else
-		CTempEnt_Splashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin);
+		NTempEnts::NSplashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin);
 
 	Free (); // "delete" the entity
 }
@@ -369,7 +369,7 @@ void CRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
-	CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
+	NTempEnts::NExplosions::RocketExplosion(origin, this, !!WaterInfo.Level);
 
 	Free ();
 }
@@ -451,7 +451,7 @@ void CBFGBolt::Think ()
 				if (Entity == GetOwner())
 					points = points * 0.5;
 
-				CTempEnt_Explosions::BFGExplosion (Entity->State.GetOrigin());
+				NTempEnts::NExplosions::BFGExplosion (Entity->State.GetOrigin());
 				Entity->TakeDamage (this, GetOwner(), Velocity, Entity->State.GetOrigin(), vec3fOrigin, (sint32)points, 0, DAMAGE_ENERGY, MOD_BFG_EFFECT);
 			}
 		}
@@ -519,7 +519,7 @@ void CBFGBolt::Think ()
 				//if (!(tr.ent->svFlags & SVF_MONSTER) && (!tr.ent->client))
 				if (!(tr.Ent->EntityFlags & ENT_MONSTER) && !(tr.Ent->EntityFlags & ENT_PLAYER))
 				{
-					CTempEnt_Splashes::Sparks (tr.EndPos, tr.plane.normal, CTempEnt_Splashes::ST_LASER_SPARKS, State.GetSkinNum(), 4);
+					NTempEnts::NSplashes::Sparks (tr.EndPos, tr.plane.normal, NTempEnts::NSplashes::ST_LASER_SPARKS, State.GetSkinNum(), 4);
 					break;
 				}
 
@@ -527,7 +527,7 @@ void CBFGBolt::Think ()
 				start = tr.EndPos;
 			}
 
-			CTempEnt_Trails::BFGLaser(State.GetOrigin(), tr.EndPos);
+			NTempEnts::NTrails::BFGLaser(State.GetOrigin(), tr.EndPos);
 		}
 
 		NextThink = Level.Frame + FRAMETIME;
@@ -569,7 +569,7 @@ void CBFGBolt::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	NextThink = Level.Frame + FRAMETIME;
 	Enemy = Other;
 
-	CTempEnt_Explosions::BFGExplosion (State.GetOrigin(), true);
+	NTempEnts::NExplosions::BFGExplosion (State.GetOrigin(), true);
 }
 
 void CBFGBolt::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
@@ -989,7 +989,7 @@ bool CRailGunShot::DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec
 
 void CRailGunShot::DoEffect	(vec3f &start, vec3f &end, bool water)
 {
-	CTempEnt_Trails::RailTrail (start, end);
+	NTempEnts::NTrails::RailTrail (start, end);
 }
 
 void CRailGunShot::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick)
@@ -1006,7 +1006,7 @@ bool CBullet::DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &d
 void CBullet::DoSolidHit	(CTrace *Trace)
 {
 	if (!(Trace->surface->flags & SURF_TEXINFO_SKY))
-		CTempEnt_Splashes::Gunshot (Trace->EndPos, Trace->plane.normal);
+		NTempEnts::NSplashes::Gunshot (Trace->EndPos, Trace->plane.normal);
 }
 
 bool CBullet::ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end)
@@ -1021,27 +1021,27 @@ bool CBullet::ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end)
 void CBullet::DoEffect	(vec3f &start, vec3f &end, bool water)
 {
 	if (water)
-		CTempEnt_Trails::BubbleTrail(start, end);
+		NTempEnts::NTrails::BubbleTrail(start, end);
 }
 
 void CBullet::DoWaterHit	(CTrace *Trace)
 {
-	CTempEnt_Splashes::ESplashType color;
+	NTempEnts::NSplashes::ESplashType color;
 	if (Trace->contents & CONTENTS_WATER)
 	{
 		if (strcmp(Trace->surface->name, "*brwater") == 0)
-			color = CTempEnt_Splashes::SPT_MUD;
+			color = NTempEnts::NSplashes::SPT_MUD;
 		else
-			color = CTempEnt_Splashes::SPT_WATER;
+			color = NTempEnts::NSplashes::SPT_WATER;
 	}
 	else if (Trace->contents & CONTENTS_SLIME)
-		color = CTempEnt_Splashes::SPT_SLIME;
+		color = NTempEnts::NSplashes::SPT_SLIME;
 	else if (Trace->contents & CONTENTS_LAVA)
-		color = CTempEnt_Splashes::SPT_LAVA;
+		color = NTempEnts::NSplashes::SPT_LAVA;
 	else
 		return;
 
-	CTempEnt_Splashes::Splash (Trace->EndPos, Trace->plane.normal, color);
+	NTempEnts::NSplashes::Splash (Trace->EndPos, Trace->plane.normal, color);
 }
 
 void CBullet::Fire(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod)
@@ -1058,7 +1058,7 @@ void CBullet::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 void CShotgunPellets::DoSolidHit	(CTrace *Trace)
 {
 	if (!(Trace->surface->flags & SURF_TEXINFO_SKY))
-		CTempEnt_Splashes::Shotgun (Trace->EndPos, Trace->plane.normal);
+		NTempEnts::NSplashes::Shotgun (Trace->EndPos, Trace->plane.normal);
 }
 
 extern bool LastPelletShot;
@@ -1174,7 +1174,7 @@ void CGrappleEntity::GrappleDrawCable()
 
 	// adjust start for beam origin being in middle of a segment
 	end = State.GetOrigin();
-	CTempEnt_Trails::GrappleCable (origin, end, Player->State.GetNumber(), offset);
+	NTempEnts::NTrails::GrappleCable (origin, end, Player->State.GetNumber(), offset);
 };
 
 void CGrappleEntity::GrapplePull()
@@ -1328,7 +1328,7 @@ void CGrappleEntity::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grpull.wav"), volume);
 	PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhit.wav"), volume);
 
-	CTempEnt_Splashes::Sparks (State.GetOrigin(), (!plane) ? vec3fOrigin : plane->normal);
+	NTempEnts::NSplashes::Sparks (State.GetOrigin(), (!plane) ? vec3fOrigin : plane->normal);
 };
 
 bool CGrappleEntity::Run ()
