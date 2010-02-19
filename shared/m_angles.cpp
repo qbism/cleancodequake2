@@ -34,7 +34,6 @@ float AngleModf (float a)
 	return (360.0f/65536.0f) * ((sint32)(a*(65536.0f/360.0f)) & 65535);
 }
 
-
 /*
 ===============
 Angles_Matrix3
@@ -72,42 +71,6 @@ void Angles_Matrix3 (vec3_t angles, mat3x3_t axis)
 
 /*
 ===============
-Angles_Vectors
-===============
-*/
-#include <errno.h>
-void Angles_Vectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
-{
-	float angle;
-	float sr, sp, sy, cr, cp, cy;
-
-	angle = DEG2RAD (angles[YAW]);
-	Q_SinCosf(angle, &sy, &cy);
-	angle = DEG2RAD (angles[PITCH]);
-	Q_SinCosf(angle, &sp, &cp);
-	angle = DEG2RAD (angles[ROLL]);
-	Q_SinCosf(angle, &sr, &cr);
-
-	if (forward) {
-		forward[0] = cp * cy;
-		forward[1] = cp * sy;
-		forward[2] = -sp;
-	}
-	if (right) {
-		right[0] = (-1 * sr * sp * cy + -1 * cr * -sy);
-		right[1] = (-1 * sr * sp * sy + -1 * cr * cy);
-		right[2] = -1 * sr * cp;
-	}
-	if (up) {
-		up[0] = (cr * sp * cy + -sr * -sy);
-		up[1] = (cr * sp * sy + -sr * cy);
-		up[2] = cr * cp;
-	}
-}
-
-
-/*
-===============
 LerpAngle
 ===============
 */
@@ -120,90 +83,3 @@ float LerpAngle (float a2, float a1, float frac)
 
 	return a2 + frac * (a1 - a2);
 }
-
-
-/*
-===============
-VecToAngles
-===============
-*/
-void VecToAngles (vec3_t vec, vec3_t angles)
-{
-	float	yaw, pitch;
-	
-	if (vec[1] == 0 && vec[0] == 0) {
-		yaw = 0;
-		if (vec[2] > 0)
-			pitch = 90;
-		else
-			pitch = 270;
-	}
-	else {
-		if (vec[0])
-			yaw = atan2f(vec[1], vec[0]) * (180.0f / M_PI);
-		else if (vec[1] > 0)
-			yaw = 90;
-		else
-			yaw = 270;
-
-		if (yaw < 0)
-			yaw += 360;
-
-		pitch = atan2f(vec[2], sqrtf(vec[0] * vec[0] + vec[1] * vec[1])) * (180.0f / M_PI);
-		if (pitch < 0)
-			pitch += 360;
-	}
-
-	angles[PITCH] = -pitch;
-	angles[YAW] = yaw;
-	angles[ROLL] = 0;
-}
-
-
-/*
-===============
-VecToAngleRolled
-===============
-*/
-void VecToAngleRolled (vec3_t value, float angleYaw, vec3_t angles)
-{
-	float	forward, yaw, pitch;
-
-	yaw = atan2f(value[1], value[0]) * 180.0f / M_PI;
-	forward = sqrtf(value[0]*value[0] + value[1]*value[1]);
-	pitch = atan2f(value[2], forward) * 180.0f / M_PI;
-
-	if (pitch < 0)
-		pitch += 360;
-
-	angles[PITCH] = -pitch;
-	angles[YAW] = yaw;
-	angles[ROLL] = -angleYaw;
-}
-
-
-/*
-===============
-VecToYaw
-===============
-*/
-float VecToYaw (vec3_t vec)
-{
-	float	yaw;
-
-	if (vec[PITCH] == 0) {
-		yaw = 0;
-		if (vec[YAW] > 0)
-			yaw = 90;
-		else if (vec[YAW] < 0)
-			yaw = -90;
-	}
-	else {
-		yaw = atan2f(vec[YAW], vec[PITCH]) * 180 / M_PI;
-		if (yaw < 0)
-			yaw += 360;
-	}
-
-	return yaw;
-}
-

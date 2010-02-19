@@ -156,7 +156,7 @@ void CTrapProjectile::Think ()
 				vec3f forward, right, up, vec;
 				State.GetAngles().ToVectors (&forward, &right, &up);
 
-				RotatePointAroundVector ((float*)&vec.X, (float*)&up.X, (float*)&right.X, ((360.0/3)* i)+Delay);
+				RotatePointAroundVector (vec, up, right, ((360.0/3)* i)+Delay);
 				vec = vec.MultiplyAngles (Wait/2, vec) + State.GetOrigin();
 				best->State.GetOrigin() = vec + forward;
 				best->State.GetOrigin().Z = State.GetOrigin().Z + Wait;

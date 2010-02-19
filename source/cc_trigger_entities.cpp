@@ -1018,13 +1018,13 @@ public:
 
 				for (sint32 player = 1; player <= Game.MaxClients; player++)
 				{
-					CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
-					if (!Player->GetInUse())
+					CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
+					if (!LoopPlayer->GetInUse())
 						continue;
-					if (Player->Client.Persistent.PowerCubeCount & (1 << cube))
+					if (LoopPlayer->Client.Persistent.PowerCubeCount & (1 << cube))
 					{
-						Player->Client.Persistent.Inventory -= index;
-						Player->Client.Persistent.PowerCubeCount &= ~(1 << cube);
+						LoopPlayer->Client.Persistent.Inventory -= index;
+						LoopPlayer->Client.Persistent.PowerCubeCount &= ~(1 << cube);
 					}
 				}
 			}
@@ -1032,10 +1032,10 @@ public:
 			{
 				for (sint32 player = 1; player <= Game.MaxClients; player++)
 				{
-					CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
-					if (!Player->GetInUse())
+					CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
+					if (!LoopPlayer->GetInUse())
 						continue;
-					Player->Client.Persistent.Inventory.Set(index, 0);
+					LoopPlayer->Client.Persistent.Inventory.Set(index, 0);
 				}
 			}
 		}

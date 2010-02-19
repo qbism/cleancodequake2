@@ -57,7 +57,6 @@ IMPLEMENT_SAVE_SOURCE(CHeatRocket)
 void CHeatRocket::Think ()
 {
 	CHurtableEntity	*target = NULL, *aquire = NULL;
-	vec3f		vec (0, 0, 0);
 	int			oldlen = 0;
 
 	// aquire new target
@@ -105,7 +104,7 @@ void CHeatRocket::Think ()
 	if (aquire != NULL)
 	{
 		vec3f oldang = State.GetAngles();
-		vec = aquire->State.GetOrigin() - State.GetOrigin();
+		vec3f vec = aquire->State.GetOrigin() - State.GetOrigin();
 
 		State.GetAngles() = vec.ToAngles();
 		vec.Normalize();

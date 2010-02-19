@@ -109,34 +109,6 @@ DirToByte
 This isn't a real cheap function to call!
 =================
 */
-uint8 DirToByte(const vec3_t dirVec)
-{
-	if (!dirVec)
-		return 0;
-
-	uint8 best = 0;
-	float bestDot = 0;
-	for (uint8 i = 0; i < NUMVERTEXNORMALS; i++)
-	{
-		float dot = Dot3Product(dirVec, m_byteDirs[i]);
-		if (dot > bestDot)
-		{
-			bestDot = dot;
-			best = i;
-		}
-	}
-
-	return best;
-}
-
-
-/*
-=================
-DirToByte
-
-This isn't a real cheap function to call!
-=================
-*/
 uint8 DirToByte(const vec3f &dirVec)
 {
 	if (!dirVec)
@@ -162,15 +134,15 @@ uint8 DirToByte(const vec3f &dirVec)
 ByteToDir
 =================
 */
-void ByteToDir(const uint8 dirByte, vec3_t dirVec)
+void ByteToDir(const uint8 dirByte, vec3f &dirVec)
 {
 	if (dirByte >= NUMVERTEXNORMALS)
 	{
-		Vec3Clear(dirVec);
+		dirVec.Clear();
 		return;
 	}
 
-	Vec3Copy(m_byteDirs[dirByte], dirVec);
+	dirVec = m_byteDirs[dirByte];
 }
 
 // ===========================================================================
@@ -486,15 +458,13 @@ void LatLongToNorm(const uint8 latLong[2], vec3_t out)
 MakeNormalVectorsf
 ===============
 */
-void MakeNormalVectorsf(const vec3_t forward, vec3_t right, vec3_t up)
+void MakeNormalVectorsf(const vec3f &forward, vec3f &right, vec3f &up)
 {
 	// This rotate and negate guarantees a vector not colinear with the original
-	Vec3Set(right, forward[2], -forward[0], forward[1]);
+	right.Set (forward[2], -forward[0], forward[1]);
 
-	float d = Dot3Product(right, forward);
-	Vec3MA(right, -d, forward, right);
-	VectorNormalizef(right, right);
-	CrossProduct(right, forward, up);
+	right = right.MultiplyAngles (-(right | forward), forward).GetNormalized();
+	up = right ^ forward;
 }
 
 
@@ -505,32 +475,31 @@ PerpendicularVector
 Assumes "src" is normalized
 ===============
 */
-void PerpendicularVector(const vec3_t src, vec3_t dst)
+void PerpendicularVector(const vec3f &src, vec3f &dst)
 {
 	uint8	pos = 5;
 	float	minElem = 1.0f;
-	vec3_t	tempVec;
+	vec3f	tempVec;
 
 	// Find the smallest magnitude axially aligned vector
-	if (Q_fabs(src[0]) < minElem)
+	if (Q_fabs(src.X) < minElem)
 	{
 		pos = 0;
-		minElem = Q_fabs(src[0]);
+		minElem = Q_fabs(src.X);
 	}
-	if (Q_fabs(src[1]) < minElem)
+	if (Q_fabs(src.Y) < minElem)
 	{
 		pos = 1;
-		minElem = Q_fabs(src[1]);
+		minElem = Q_fabs(src.Y);
 	}
-	if (Q_fabs(src[2]) < minElem)
+	if (Q_fabs(src.Z) < minElem)
 	{
 		pos = 2;
-		minElem = Q_fabs(src[2]);
+		minElem = Q_fabs(src.Z);
 	}
 
 	_CC_ASSERT_EXPR(pos != 5, "Couldn't find smallest magnitude");
 
-	Vec3Clear(tempVec);
 	if (pos < 3)
 		tempVec[pos] = 1.0F;
 
@@ -538,7 +507,7 @@ void PerpendicularVector(const vec3_t src, vec3_t dst)
 	ProjectPointOnPlane(dst, tempVec, src);
 
 	// Normalize the result
-	VectorNormalizef(dst, dst);
+	dst.Normalize();
 }
 
 
@@ -547,73 +516,30 @@ void PerpendicularVector(const vec3_t src, vec3_t dst)
 RotatePointAroundVector
 ===============
 */
-void RotatePointAroundVector(vec3_t dest, const vec3_t dir, const vec3_t point, const float degrees)
+void RotatePointAroundVector(vec3f &dest, const vec3f &dir, const vec3f &point, const float degrees)
 {
 	float c, s;
 	Q_SinCosf(DEG2RAD(degrees), &s, &c);
 
-	vec3_t vr, vu;
+	vec3f vr, vu;
 	MakeNormalVectorsf(dir, vr, vu);
 
 	float t0, t1;
-	t0 = vr[0] * c + vu[0] * -s;
-	t1 = vr[0] * s + vu[0] *  c;
-	dest[0] = (t0 * vr[0] + t1 * vu[0] + dir[0] * dir[0]) * point[0]
-			+ (t0 * vr[1] + t1 * vu[1] + dir[0] * dir[1]) * point[1]
-			+ (t0 * vr[2] + t1 * vu[2] + dir[0] * dir[2]) * point[2];
+	t0 = vr.X * c + vu.X * -s;
+	t1 = vr.X * s + vu.X *  c;
+	dest.X = (t0 * vr.X + t1 * vu.X + dir.X * dir.X) * point.X
+			+ (t0 * vr.Y + t1 * vu.Y + dir.X * dir.Y) * point.Y
+			+ (t0 * vr.Z + t1 * vu.Z + dir.X * dir.Z) * point.Z;
 
-	t0 = vr[1] * c + vu[1] * -s;
-	t1 = vr[1] * s + vu[1] *  c;
-	dest[1] = (t0 * vr[0] + t1 * vu[0] + dir[1] * dir[0]) * point[0]
-			+ (t0 * vr[1] + t1 * vu[1] + dir[1] * dir[1]) * point[1]
-			+ (t0 * vr[2] + t1 * vu[2] + dir[1] * dir[2]) * point[2];
+	t0 = vr.Y * c + vu.Y * -s;
+	t1 = vr.Y * s + vu.Y *  c;
+	dest.Y = (t0 * vr.X + t1 * vu.X + dir.Y * dir.X) * point.X
+			+ (t0 * vr.Y + t1 * vu.Y + dir.Y * dir.Y) * point.Y
+			+ (t0 * vr.Z + t1 * vu.Z + dir.Y * dir.Z) * point.Z;
 
-	t0 = vr[2] * c + vu[2] * -s;
-	t1 = vr[2] * s + vu[2] *  c;
-	dest[2] = (t0 * vr[0] + t1 * vu[0] + dir[2] * dir[0]) * point[0]
-			+ (t0 * vr[1] + t1 * vu[1] + dir[2] * dir[1]) * point[1]
-			+ (t0 * vr[2] + t1 * vu[2] + dir[2] * dir[2]) * point[2];
+	t0 = vr.Z * c + vu.Z * -s;
+	t1 = vr.Z * s + vu.Z *  c;
+	dest.Z = (t0 * vr.X + t1 * vu.X + dir.Z * dir.X) * point.X
+			+ (t0 * vr.Y + t1 * vu.Y + dir.Z * dir.Y) * point.Y
+			+ (t0 * vr.Z + t1 * vu.Z + dir.Z * dir.Z) * point.Z;
 }
-
-
-/*
-===============
-VectorNormalizef
-===============
-*/
-float VectorNormalizef(const vec3_t in, vec3_t out)
-{
-	float length = Vec3Length(in);
-	if (length)
-	{
-		float invLength = 1.0f/length;
-		Vec3Scale(in, invLength, out);
-	}
-	else
-	{
-		Vec3Clear(out);
-	}
-		
-	return length;
-}
-
-
-/*
-===============
-VectorNormalizeFastf
-===============
-*/
-float VectorNormalizeFastf(vec3_t v)
-{
-	float invLength = Q_RSqrtf(Dot3Product(v,v));
-
-	v[0] *= invLength;
-	v[1] *= invLength;
-	v[2] *= invLength;
-
-	if (invLength != 0)
-		return 1.0f / invLength;
-
-	return 0.0f;
-}
-

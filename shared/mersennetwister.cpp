@@ -43,8 +43,10 @@
 // It would be nice to CC: <Cokus@math.washington.edu> when you write.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include "Platform.h"
 
 //
 // uint32 must be an unsigned integer type capable of holding at least 32
@@ -77,7 +79,7 @@ typedef int32_t sint32;
 #define loBits(u)		((u) & 0x7FFFFFFFU)   // mask     the highest   bit of u
 #define mixBits(u, v)	(hiBit(u)|loBits(v))  // move hi bit of u to hi bit of v
 
-#if (MSVS_VERSION >= VS_9) && defined(HAS__CPP0x)
+#if defined(HAS__CPP0x)
 
 #include <random>
 std::tr1::mt19937 twister;

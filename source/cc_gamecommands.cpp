@@ -170,10 +170,10 @@ void Cmd_Players_f (CPlayerEntity *Player)
 
 	for (sint32 i = 0; i < count; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
+		CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
 		Q_snprintfz (Small, sizeof(Small), "%3i %s\n",
-			Player->Client.PlayerState.GetStat(STAT_FRAGS),
-			Player->Client.Persistent.Name.c_str());
+			LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
+			LoopPlayer->Client.Persistent.Name.c_str());
 		if (strlen (Small) + strlen(Large) > sizeof(Large) - 100 )
 		{	// can't print all of them in one packet
 			Q_strcatz (Large, "...\n", MAX_INFO_STRING);

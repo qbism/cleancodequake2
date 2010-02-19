@@ -269,9 +269,6 @@ public:
 	inline void Invert() { X = -X; Y = -Y; Z = -Z; }
 	inline vec3Base GetInverted() const { return vec3Base(-X, -Y, -Z); }
 
-	inline void Abs() { X = Q_fabs(X); Y = Q_fabs(Y); Z = Q_fabs(Z); }
-	inline vec3Base GetAbs() const { return vec3Base(Q_fabs(X), Q_fabs(Y), Q_fabs(Z)); }
-
 	inline bool IsZero() const { return (X == 0 && Y == 0 && Z == 0); }
 
 	inline void Set(const TType Number) { X = Number; Y = Number; Z = Number; }
@@ -368,7 +365,8 @@ public:
 		return *this;
 	}
 
-	inline bool operator <(const vec3f &Vec) { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2]); }
+	inline bool operator <(const vec3f &Vec) const { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2]); }
+	inline bool operator <(const float Number) const { return (X < Number && Y < Number && Z < Number); }
 
 	inline vec3f &operator =(const vec3f &Vec)
 	{
@@ -379,10 +377,11 @@ public:
 		return *this;
 	}
 
-	inline bool operator >(const vec3f &Vec) { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2]); }
+	inline bool operator >(const vec3f &Vec) const { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2]); }
+	inline bool operator >(const float Number) const { return (X > Number && Y > Number && Z > Number); }
 
-	inline vec3f operator ^(const vec3f &Vec) { return Cross(Vec); }
-	inline float operator |(const vec3f &Vec) { return Dot(Vec); }
+	inline vec3f operator ^(const vec3f &Vec) const { return Cross(Vec); }
+	inline float operator |(const vec3f &Vec) const { return Dot(Vec); }
 
 	// Paril, unary operators
 	inline vec3f operator - () const { return vec3f(-X, -Y, -Z); }
@@ -391,6 +390,9 @@ public:
 	 * Functions
 	 */
 	inline void Clear() { *(sint32 *)&X = 0; *(sint32 *)&Y = 0; *(sint32 *)&Z = 0; }
+	
+	inline void Abs() { X = Q_fabs(X); Y = Q_fabs(Y); Z = Q_fabs(Z); }
+	inline vec3f GetAbs() const { return vec3f(Q_fabs(X), Q_fabs(Y), Q_fabs(Z)); }
 
 	bool Compare(const vec3f &Vec, const float Epsilon) const
 	{
@@ -405,13 +407,13 @@ public:
 
 	inline vec3f Cross(const vec3f &Vec) const { return vec3f(Y*Vec[2] - Z*Vec[1], Z*Vec[0] - X*Vec[2], X*Vec[1] - Y*Vec[0]); }
 
-	inline float Dist(const vec3f &Vec) { return sqrtf((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
-	inline float DistFast(const vec3f &Vec) { return Q_FastSqrt((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
-	inline float DistSq(const vec3f &Vec) { return (X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2]); }
+	inline float Dist(const vec3f &Vec) const { return sqrtf((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
+	inline float DistFast(const vec3f &Vec) const { return Q_FastSqrt((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
+	inline float DistSq(const vec3f &Vec) const { return (X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2]); }
 
-	inline float Dot(const vec3f &Vec) { return X*Vec.X + Y*Vec.Y + Z*Vec.Z; }
+	inline float Dot(const vec3f &Vec) const { return X*Vec.X + Y*Vec.Y + Z*Vec.Z; }
 
-	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon); }
+	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) const { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon); }
 
 	inline float Length() const { return sqrtf(X*X + Y*Y + Z*Z); }
 	inline float LengthFast() const { return Q_FastSqrt(X*X + Y*Y + Z*Z); }
@@ -435,35 +437,35 @@ public:
 		return (Len) ? (1.0f / Len) : 0;
 	}
 
-	inline vec3f GetNormalized ()
+	inline vec3f const GetNormalized ()
 	{
 		vec3f val (*this);
 		val.Normalize ();
 		return val;
 	}
 
-	inline vec3f GetNormalizedFast ()
+	inline vec3f const GetNormalizedFast ()
 	{
 		vec3f val (*this);
 		val.NormalizeFast ();
 		return val;
 	}
 
-	inline vec3f GetNormalized (float &length)
+	inline vec3f const GetNormalized (float &length)
 	{
 		vec3f val (*this);
 		length = val.Normalize ();
 		return val;
 	}
 
-	inline vec3f GetNormalizedFast (float &length)
+	inline vec3f const GetNormalizedFast (float &length)
 	{
 		vec3f val (*this);
 		length = val.NormalizeFast ();
 		return val;
 	}
 
-	float ToYaw ()
+	float ToYaw () const
 	{
 		float	yaw;
 
@@ -488,7 +490,7 @@ public:
 	inline void Scale(const float Scale) { X *= Scale; Y *= Scale; Z *= Scale; }
 	inline void Scale(const vec3f &Vec) { X *= Vec[0]; Y *= Vec[1]; Z *= Vec[2]; }
 
-	void ToVectors (vec3f *forward, vec3f *right, vec3f *up)
+	void ToVectors (vec3f *forward, vec3f *right, vec3f *up) const
 	{
 		float sr, sp, sy, cr, cp, cy;
 		Q_SinCosf(DEG2RAD (X), &sp, &cp);
@@ -514,7 +516,7 @@ public:
 						Z + b.Z * scale);
 	}
 
-	vec3f ToAngles ()
+	vec3f ToAngles () const
 	{
 		float	yaw, pitch;
 		

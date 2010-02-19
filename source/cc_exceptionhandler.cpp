@@ -36,10 +36,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if CC_USE_EXCEPTION_HANDLER && (MSVS_VERSION >= VS_9) && !defined(CC_STDC_CONFORMANCE)
 #include "cc_version.h"
-#include <errno.h>
-#include <float.h>
+#include <cerrno>
+#include <cfloat>
+
 #include <fcntl.h>
-#include <stdio.h>
 #include <direct.h>
 #include <io.h>
 #include <conio.h>

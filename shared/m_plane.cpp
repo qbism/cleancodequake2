@@ -31,7 +31,7 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 ==================
 */
-sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane)
+sint32 BoxOnPlaneSide(const vec3f &mins, const vec3f &maxs, const plane_t *plane)
 {
 	// Fast axial cases
 	if (plane->type < 3)
@@ -59,13 +59,13 @@ sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane
 	};
 
 	sint32 sides = 0;
-	if ((plane->normal[0] * (SignBitsRemap[plane->signBits].IsMins[0] ? mins[0] : maxs[0]) +
-		plane->normal[1] * (SignBitsRemap[plane->signBits].IsMins[1] ? mins[1] : maxs[1]) +
-		plane->normal[2] * (SignBitsRemap[plane->signBits].IsMins[2] ? mins[2] : maxs[2])) >= plane->dist)
+	if ((plane->normal.X * (SignBitsRemap[plane->signBits].IsMins[0] ? mins.X : maxs.X) +
+		plane->normal.Y * (SignBitsRemap[plane->signBits].IsMins[1] ? mins.Y : maxs.Y) +
+		plane->normal.Z * (SignBitsRemap[plane->signBits].IsMins[2] ? mins.Z : maxs.Z)) >= plane->dist)
 		sides = 1;
-	if ((plane->normal[0] * (!SignBitsRemap[plane->signBits].IsMins[0] ? mins[0] : maxs[0]) +
-		plane->normal[1] * (!SignBitsRemap[plane->signBits].IsMins[1] ? mins[1] : maxs[1]) +
-		plane->normal[2] * (!SignBitsRemap[plane->signBits].IsMins[2] ? mins[2] : maxs[2])) < plane->dist)
+	if ((plane->normal.X * (!SignBitsRemap[plane->signBits].IsMins[0] ? mins.X : maxs.X) +
+		plane->normal.Y * (!SignBitsRemap[plane->signBits].IsMins[1] ? mins.Y : maxs.Y) +
+		plane->normal.Z * (!SignBitsRemap[plane->signBits].IsMins[2] ? mins.Z : maxs.Z)) < plane->dist)
 		sides |= 2;
 
 	return sides;
@@ -77,23 +77,21 @@ sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane
 PlaneTypeForNormal
 =================
 */
-EPlaneInfo	PlaneTypeForNormal(const vec3_t normal)
+EPlaneInfo	PlaneTypeForNormal(const vec3f &normal)
 {
 	// NOTE: should these have an epsilon around 1.0?		
-	if (normal[0] >= 1.0)
+	if (normal.X >= 1.0)
 		return PLANE_X;
-	if (normal[1] >= 1.0)
+	if (normal.Y >= 1.0)
 		return PLANE_Y;
-	if (normal[2] >= 1.0)
+	if (normal.Z >= 1.0)
 		return PLANE_Z;
 
-	const float ax = Q_fabs(normal[0]);
-	const float ay = Q_fabs(normal[1]);
-	const float az = Q_fabs(normal[2]);
+	const vec3f a = normal.GetAbs();
 
-	if (ax >= ay && ax >= az)
+	if (a.X >= a.Y && a.X >= a.Z)
 		return PLANE_ANYX;
-	if (ay >= ax && ay >= az)
+	if (a.Y >= a.X && a.Y >= a.Z)
 		return PLANE_ANYY;
 	return PLANE_ANYZ;
 }
@@ -126,30 +124,27 @@ void CategorizePlane(plane_t *plane)
 PlaneFromPoints
 =================
 */
-void PlaneFromPoints(const vec3_t verts[3], plane_t *plane)
-{
-	vec3_t	v1, v2;
-
-	Vec3Subtract(verts[1], verts[0], v1);
-	Vec3Subtract(verts[2], verts[0], v2);
-	CrossProduct(v2, v1, plane->normal);
-	VectorNormalizef(plane->normal, plane->normal);
-	plane->dist = Dot3Product(verts[0], plane->normal);
+void PlaneFromPoints(const vec3f verts[3], plane_t *plane)
+{	
+	plane->normal = ((verts[2] - verts[0]) ^ (verts[1] - verts[0])).GetNormalized();
+	plane->dist = verts[0] | plane->normal;
 }
 
-#define PLANE_NORMAL_EPSILON	0.00001
-#define PLANE_DIST_EPSILON		0.01
+#define PLANE_NORMAL_EPSILON	0.00001f
+#define PLANE_DIST_EPSILON		0.01f
 
 /*
 =================
 ComparePlanes
 =================
 */
-bool ComparePlanes(const vec3_t p1normal, const float p1dist, const vec3_t p2normal, const float p2dist)
+bool ComparePlanes(const vec3f &p1normal, const float p1dist, const vec3f &p2normal, const float p2dist)
 {
-	if (Q_fabs (p1normal[0] - p2normal[0]) < PLANE_NORMAL_EPSILON
-	&& Q_fabs (p1normal[1] - p2normal[1]) < PLANE_NORMAL_EPSILON
-	&& Q_fabs (p1normal[2] - p2normal[2]) < PLANE_NORMAL_EPSILON
+	//if (Q_fabs (p1normal.X - p2normal.X) < PLANE_NORMAL_EPSILON
+	//&& Q_fabs (p1normal.Y - p2normal.Y) < PLANE_NORMAL_EPSILON
+	//&& Q_fabs (p1normal.Z - p2normal.Z) < PLANE_NORMAL_EPSILON
+
+	if ((p1normal - p2normal).GetAbs() < PLANE_NORMAL_EPSILON
 	&& Q_fabs (p1dist - p2dist) < PLANE_DIST_EPSILON)
 		return true;
 
@@ -162,19 +157,19 @@ bool ComparePlanes(const vec3_t p1normal, const float p1dist, const vec3_t p2nor
 SnapVector
 ==============
 */
-void SnapVector(vec3_t normal)
+void SnapVector(vec3f &normal)
 {
 	for (uint8 i = 0; i < 3; i++)
 	{
 		if (Q_fabs (normal[i] - 1) < PLANE_NORMAL_EPSILON)
 		{
-			Vec3Clear(normal);
+			normal.Clear();
 			normal[i] = 1;
 			break;
 		}
 		if (Q_fabs (normal[i] - -1) < PLANE_NORMAL_EPSILON)
 		{
-			Vec3Clear(normal);
+			normal.Clear();
 			normal[i] = -1;
 			break;
 		}
@@ -187,19 +182,11 @@ void SnapVector(vec3_t normal)
 ProjectPointOnPlane
 ===============
 */
-void ProjectPointOnPlane(vec3_t dst, const vec3_t point, const vec3_t normal)
+void ProjectPointOnPlane(vec3f &dst, const vec3f &point, const vec3f &normal)
 {
-	const float invDenom = 1.0f / Dot3Product(normal, normal);
-	const float dot = Dot3Product(normal, point) * invDenom;
-
-	vec3_t n;
-	n[0] = normal[0] * invDenom;
-	n[1] = normal[1] * invDenom;
-	n[2] = normal[2] * invDenom;
-
-	dst[0] = point[0] - dot * n[0];
-	dst[1] = point[1] - dot * n[1];
-	dst[2] = point[2] - dot * n[2];
+	const float invDenom = 1.0f / (normal | normal);
+	const float dot = (normal | point) * invDenom;
+	dst = point - dot * (normal * invDenom);
 }
 
 
@@ -212,11 +199,11 @@ sint32 SignbitsForPlane(const plane_t *plane)
 {
 	// For fast box on planeside test
 	sint32 bits = 0;
-	if (plane->normal[0] < 0)
+	if (plane->normal.X < 0)
 		bits |= 1 << 0;
-	if (plane->normal[1] < 0)
+	if (plane->normal.Y < 0)
 		bits |= 1 << 1;
-	if (plane->normal[2] < 0)
+	if (plane->normal.Z < 0)
 		bits |= 1 << 2;
 
 	return bits;

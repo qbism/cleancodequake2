@@ -25,14 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __SHARED_H
 #define __SHARED_H
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <ctype.h>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdarg>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <cctype>
+#include <malloc.h>
+#include <memory.h>
 
 #include "Platform.h"
 
@@ -586,21 +588,21 @@ struct plane_t
 //
 // m_plane.c
 //
-sint32 BoxOnPlaneSide(const vec3_t mins, const vec3_t maxs, const plane_t *plane);
-EPlaneInfo PlaneTypeForNormal(const vec3_t normal);
+sint32 BoxOnPlaneSide(const vec3f &mins, const vec3f &maxs, const plane_t *plane);
+EPlaneInfo PlaneTypeForNormal(const vec3f &normal);
 void CategorizePlane(plane_t *plane);
-void PlaneFromPoints(const vec3_t verts[3], plane_t *plane);
-bool ComparePlanes(const vec3_t p1normal, const float p1dist, const vec3_t p2normal, const float p2dist);
-void SnapVector(vec3_t normal);
-void ProjectPointOnPlane(vec3_t dst, const vec3_t point, const vec3_t normal);
+void PlaneFromPoints(const vec3f verts[3], plane_t *plane);
+bool ComparePlanes(const vec3f &p1normal, const float p1dist, const vec3f &p2normal, const float p2dist);
+void SnapVector(vec3f &normal);
+void ProjectPointOnPlane(vec3f &dst, const vec3f &point, const vec3f &normal);
 sint32 SignbitsForPlane(const plane_t *out);
 
-inline float PlaneDiff (vec3_t point, plane_t *plane)
+inline float PlaneDiff (vec3f &point, plane_t *plane)
 {
-	return ((plane->type < 3 ? point[plane->type] : Dot3Product(point, plane->normal)) - plane->dist);
+	return ((plane->type < 3 ? point[plane->type] : (point | plane->normal)) - plane->dist);
 }
 
-inline sint32 Box_On_Plane_Side (const vec3_t mins, const vec3_t maxs, const plane_t *p)
+inline sint32 Box_On_Plane_Side (const vec3f &mins, const vec3f &maxs, const plane_t *p)
 {
 	return ((p->type < 3) ?
 		(p->dist <= mins[p->type]) ?

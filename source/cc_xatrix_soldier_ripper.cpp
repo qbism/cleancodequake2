@@ -168,13 +168,11 @@ void CSoldierRipper::FireGun (sint32 FlashNumber)
 
 			vec3f up;
 			dir.ToVectors (&forward, &right, &up);
+			end = start.MultiplyAngles (8192, forward)
+			.MultiplyAngles (crand() * 100, right)
+			.MultiplyAngles (crand() * 50, up);
 
-			end = start.MultiplyAngles (8192, forward);
-			end = end.MultiplyAngles (crand() * 100, right);
-			end = end.MultiplyAngles (crand() * 50, up);
-
-			aim = end - start;
-			aim.Normalize ();
+			aim = (end - start).GetNormalized();
 		}
 		break;
 	};

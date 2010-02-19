@@ -531,11 +531,9 @@ float	Q_CalcFovY (float fovX, float width, float height);
 void		NormToLatLong(const vec3_t normal, uint8 out[2]);
 void		LatLongToNorm(const uint8 latlong[2], vec3_t out);
 #endif
-void		MakeNormalVectorsf (const vec3_t forward, vec3_t right, vec3_t up);
-void		PerpendicularVector (const vec3_t src, vec3_t dst);
-void		RotatePointAroundVector(vec3_t dest, const vec3_t dir, const vec3_t point, const float degrees);
-float		VectorNormalizef (const vec3_t in, vec3_t out);
-float		VectorNormalizeFastf (vec3_t v);
+void		MakeNormalVectorsf (const vec3f &forward, vec3f &right, vec3f &up);
+void		PerpendicularVector (const vec3f &src, vec3f &dst);
+void		RotatePointAroundVector(vec3f &dest, const vec3f &dir, const vec3f &point, const float degrees);
 
 //
 // m_angles.c
@@ -544,26 +542,25 @@ float		AngleModf (float a);
 #if SHARED_ALLOW_3x3_MATRIX
 void		Angles_Matrix3 (vec3_t angles, mat3x3_t axis);
 #endif
-void		Angles_Vectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 float		LerpAngle (float a1, float a2, float frac);
-void		VecToAngles (vec3_t vec, vec3_t angles);
-void		VecToAngleRolled (vec3_t value, float angleYaw, vec3_t angles);
-float		VecToYaw (vec3_t vec);
 
 //
 // m_bounds.c
 //
+
+#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 void		AddBoundsTo2DBounds (vec2_t inMins, vec2_t inMaxs, vec2_t outMins, vec2_t outMaxs);
 void		AddPointTo2DBounds (vec2_t v, vec2_t mins, vec2_t maxs);
 void		Clear2DBounds (vec2_t mins, vec2_t maxs);
+#endif
 
 void		AddPointToBounds (vec3f v, vec3f &mins, vec3f &maxs);
-bool		BoundsAndSphereIntersect (const vec3_t mins, const vec3_t maxs, const vec3_t centre, float radius);
-bool		BoundsIntersect (const vec3_t mins1, const vec3_t maxs1, const vec3_t mins2, const vec3_t maxs2);
-void		ClearBounds (vec3_t mins, vec3_t maxs);
-void		MinMins (vec3_t a, vec3_t b, vec3_t out);
-void		MaxMaxs (vec3_t a, vec3_t b, vec3_t out);
-float		RadiusFromBounds (vec3_t mins, vec3_t maxs);
+bool		BoundsAndSphereIntersect (const vec3f &mins, const vec3f &maxs, const vec3f &centre, float radius);
+bool		BoundsIntersect (const vec3f &mins1, const vec3f &maxs1, const vec3f &mins2, const vec3f &maxs2);
+void		ClearBounds (vec3f &mins, vec3f &maxs);
+void		MinMins (const vec3f &a, const vec3f &b, vec3f &out);
+void		MaxMaxs (const vec3f &a, const vec3f &b, vec3f &out);
+float		RadiusFromBounds (const vec3f &mins, const vec3f &maxs);
 
 //
 // m_mat3.c
@@ -639,7 +636,6 @@ extern vec3f vec3fOrigin;
 #define NUMVERTEXNORMALS	162
 extern vec3_t	m_byteDirs[NUMVERTEXNORMALS];
 
-uint8		DirToByte(const vec3_t dirVec);
 uint8		DirToByte(const vec3f &dirVec);
-void		ByteToDir(const uint8 dirByte, vec3_t dirVec);
+void		ByteToDir(const uint8 dirByte, vec3f &dirVec);
 

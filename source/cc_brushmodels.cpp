@@ -2527,8 +2527,10 @@ void CWorldEntity::Spawn ()
 
 void SpawnWorld ()
 {
-	(entity_cast<CWorldEntity>(Game.Entities[0].Entity))->ParseFields ();
-	(entity_cast<CWorldEntity>(Game.Entities[0].Entity))->Spawn ();
+	CWorldEntity *WorldEntity = (entity_cast<CWorldEntity>(Game.Entities[0].Entity));
+	
+	WorldEntity->ParseFields ();
+	WorldEntity->Spawn ();
 };
 #pragma endregion World
 

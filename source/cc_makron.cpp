@@ -886,13 +886,13 @@ bool CMakron::CheckAttack ()
 	{
 		// originally, just 0.3
 		float strafe_chance;
-		if (!(strcmp(Entity->ClassName, "monster_daedalus")))
+		if (Entity->ClassName != "monster_daedalus")
 			strafe_chance = 0.8f;
 		else
 			strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
+		if (Entity->Enemy && (Entity->Enemy->ClassName != "tesla"))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)

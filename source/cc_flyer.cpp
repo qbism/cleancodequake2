@@ -589,7 +589,7 @@ void CFlyer::Duck (float eta)
 }
 #endif
 
-#if MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI && (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
 void CFlyer::SideStep ()
 {
 	if (AIFlags & AI_STAND_GROUND)
@@ -629,7 +629,7 @@ void CFlyer::Spawn ()
 	Entity->Mass = 50;
 
 	MonsterFlags |= (MF_HAS_IDLE | MF_HAS_SIGHT | MF_HAS_MELEE | MF_HAS_ATTACK
-#if MONSTER_USE_ROGUE_AI
+#if MONSTER_USE_ROGUE_AI && (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
 	| MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_DODGE | MF_HAS_SIDESTEP
 #endif
 		);

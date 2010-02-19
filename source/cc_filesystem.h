@@ -1,12 +1,3 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <string.h>
-#include <assert.h>
-#include <vector>
-
 #ifndef WIN32
 #include <strings.h>
 #include <ctype.h>

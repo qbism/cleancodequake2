@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "../source/cc_options.h"
 #include "shared.h"
 
+#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 /*
 =============================================================================
 
@@ -84,6 +85,7 @@ void Clear2DBounds (vec2_t mins, vec2_t maxs)
 	mins[0] = mins[1] = 999999;
 	maxs[0] = maxs[1] = -999999;
 }
+#endif
 
 /*
 =============================================================================
@@ -125,14 +127,9 @@ void AddPointToBounds (vec3f v, vec3f &mins, vec3f &maxs)
 BoundsAndSphereIntersect
 =================
 */
-bool BoundsAndSphereIntersect (const vec3_t mins, const vec3_t maxs, const vec3_t centre, float radius)
+bool BoundsAndSphereIntersect (const vec3f &mins, const vec3f &maxs, const vec3f &centre, float radius)
 {
-	return (bool)(mins[0] <= centre[0]+radius
-		&& mins[1] <= centre[1]+radius
-		&& mins[2] <= centre[2]+radius
-		&& maxs[0] >= centre[0]-radius
-		&& maxs[1] >= centre[1]-radius
-		&& maxs[2] >= centre[2]-radius);
+	return (mins <= (centre+radius) && maxs >= (centre+radius));
 }
 
 
@@ -141,14 +138,9 @@ bool BoundsAndSphereIntersect (const vec3_t mins, const vec3_t maxs, const vec3_
 BoundsIntersect
 =================
 */
-bool BoundsIntersect (const vec3_t mins1, const vec3_t maxs1, const vec3_t mins2, const vec3_t maxs2)
+bool BoundsIntersect (const vec3f &mins1, const vec3f &maxs1, const vec3f &mins2, const vec3f &maxs2)
 {
-	return (bool)(mins1[0] <= maxs2[0]
-		&& mins1[1] <= maxs2[1]
-		&& mins1[2] <= maxs2[2]
-		&& maxs1[0] >= mins2[0]
-		&& maxs1[1] >= mins2[1]
-		&& maxs1[2] >= mins2[2]);
+	return (mins1 <= maxs2 && maxs1 >= mins2);
 }
 
 
@@ -157,10 +149,9 @@ bool BoundsIntersect (const vec3_t mins1, const vec3_t maxs1, const vec3_t mins2
 ClearBounds
 ===============
 */
-void ClearBounds (vec3_t mins, vec3_t maxs)
+void ClearBounds (vec3f &mins, vec3f &maxs)
 {
-	mins[0] = mins[1] = mins[2] = 999999;
-	maxs[0] = maxs[1] = maxs[2] = -999999;
+	mins = maxs = 999999;
 }
 
 
@@ -169,11 +160,9 @@ void ClearBounds (vec3_t mins, vec3_t maxs)
 MinMins
 ===============
 */
-void MinMins (vec3_t a, vec3_t b, vec3_t out)
+void MinMins (const vec3f &a, const vec3f &b, vec3f &out)
 {
-	out[0] = Min<> (a[0], b[0]);
-	out[1] = Min<> (a[1], b[1]);
-	out[2] = Min<> (a[2], b[2]);
+	out = Min<vec3f> (a, b);
 }
 
 
@@ -182,11 +171,9 @@ void MinMins (vec3_t a, vec3_t b, vec3_t out)
 MaxMaxs
 ===============
 */
-void MaxMaxs (vec3_t a, vec3_t b, vec3_t out)
+void MaxMaxs (const vec3f &a, const vec3f &b, vec3f &out)
 {
-	out[0] = Max<> (a[0], b[0]);
-	out[1] = Max<> (a[1], b[1]);
-	out[2] = Max<> (a[2], b[2]);
+	out = Max<vec3f> (a, b);
 }
 
 
@@ -195,14 +182,7 @@ void MaxMaxs (vec3_t a, vec3_t b, vec3_t out)
 RadiusFromBounds
 =================
 */
-float RadiusFromBounds (vec3_t mins, vec3_t maxs)
+float RadiusFromBounds (const vec3f &mins, const vec3f &maxs)
 {
-	vec3_t	corner;
-
-	corner[0] = Q_fabs(mins[0]) > Q_fabs(maxs[0]) ? Q_fabs(mins[0]) : Q_fabs(maxs[0]);
-	corner[1] = Q_fabs(mins[1]) > Q_fabs(maxs[1]) ? Q_fabs(mins[1]) : Q_fabs(maxs[1]);
-	corner[2] = Q_fabs(mins[2]) > Q_fabs(maxs[2]) ? Q_fabs(mins[2]) : Q_fabs(maxs[2]);
-
-	return (float)Vec3Length (corner);
+	return (mins.GetAbs() > maxs.GetAbs() ? mins.GetAbs() : maxs.GetAbs()).Length();
 }
-

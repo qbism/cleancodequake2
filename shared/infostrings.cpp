@@ -57,15 +57,15 @@ cc_string Info_ValueForKey (cc_string &s, cc_string key)
 
 		while (s[curIndex] != '\\')
 		{
-			if (!s[curIndex])
+			if (curIndex == s.length() || !s[curIndex])
 				return "";
 			pkey += Q_tolower(s[curIndex++]);
 		}
 		curIndex++;
 
-		while (s[curIndex] != '\\' && s[curIndex])
+		while (curIndex != s.length() && s[curIndex] && s[curIndex] != '\\')
 		{
-			if (!s[curIndex])
+			if (!s[curIndex] || curIndex == s.length())
 				return "";
 			value += s[curIndex++];
 		}
@@ -73,7 +73,7 @@ cc_string Info_ValueForKey (cc_string &s, cc_string key)
 		if (key == pkey)
 			return value;
 
-		if (!s[curIndex])
+		if (curIndex == s.length() || !s[curIndex])
 			return "";
 		curIndex++;
 	}
