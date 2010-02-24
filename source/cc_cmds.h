@@ -120,12 +120,12 @@ inline TReturnValue *RecurseSubCommands (uint32 &depth, TReturnValue *Cmd)
 	return NULL;
 }
 
-template <class TReturnValue, class TListType, class THashListType>
+template <class TReturnValue, class TListType, class THashListType, class TItType>
 inline TReturnValue *FindCommand (const char *commandName, TListType &List, THashListType &HashList)
 {
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
 
-	for (THashListType::iterator it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
+	for (TItType it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
 	{
 		TReturnValue *Command = static_cast<TReturnValue*>(List.at((*it).second));
 		if (Q_stricmp (Command->Name, commandName) == 0)

@@ -62,7 +62,7 @@ THashedPlayerCommandListType &CommandHashList ()
 
 CPlayerCommand *Cmd_FindCommand (const char *commandName)
 {
-	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType> (commandName, CommandList(), CommandHashList());
+	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, THashedPlayerCommandListType::iterator> (commandName, CommandList(), CommandHashList());
 }
 
 CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags)

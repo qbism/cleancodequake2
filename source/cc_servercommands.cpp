@@ -53,7 +53,7 @@ THashedServerCommandListType &ServerCommandHashList ()
 
 CServerCommand *SvCmd_FindCommand (const char *commandName)
 {
-	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType> (commandName, ServerCommandList(), ServerCommandHashList());
+	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType, THashedServerCommandListType::iterator> (commandName, ServerCommandList(), ServerCommandHashList());
 }
 
 void SvCmd_AddCommand (const char *commandName, void (*Func) ())

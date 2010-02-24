@@ -362,6 +362,9 @@ CC_ENUM (uint32, EFieldType)
 #define OFS_TO_TYPE_(x,y) (*((x*)(y)))
 #define OFS_TO_TYPE(x) OFS_TO_TYPE_(x,ClassOffset)
 
+// Forward declaration, defined in cc_utils.
+CBaseEntity *LoadEntity (uint32 Index);
+
 class CEntityField
 {
 public:

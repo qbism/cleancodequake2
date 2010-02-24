@@ -178,8 +178,6 @@ ERangeType Range (CBaseEntity *self, CBaseEntity *Other);
 bool IsInFront (CBaseEntity *self, CBaseEntity *Other);
 bool IsVisible (CBaseEntity *self, CBaseEntity *Other);
 
-CBaseEntity *LoadEntity (uint32 Index);
-
 #else
 FILE_WARNING
 #endif
