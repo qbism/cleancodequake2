@@ -555,7 +555,7 @@ void CTurretDriver::Spawn ()
 	Entity->State.GetOldOrigin() = Entity->State.GetOrigin ();
 	AIFlags |= (AI_STAND_GROUND);
 
-	Think = static_cast<void (cc_thiscall CMonster::* )()>(&CTurretDriver::TurretLink);
+	Think = ConvertDerivedFunction(&CTurretDriver::TurretLink);
 	Entity->NextThink = Level.Frame + FRAMETIME;
 
 	Entity->Link ();
