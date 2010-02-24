@@ -247,17 +247,17 @@ public:
 	~vec3Base() {}
 
 	// Convert to another vec3Base type
-	template <typename TType>
-	vec3Base<TType> Convert ()
+	template <typename TNewType>
+	vec3Base<TNewType> Convert ()
 	{
-		return vec3Base<TType> (X, Y, Z);
+		return vec3Base<TNewType> (X, Y, Z);
 	}
 
 	// Convert to another type based off vec3Base
-	template <typename TType>
-	TType ConvertDerived ()
+	template <typename TNewType>
+	TNewType ConvertDerived ()
 	{
-		return TType (X, Y, Z);
+		return TNewType (X, Y, Z);
 	}
 
 	/**

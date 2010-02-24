@@ -318,4 +318,3 @@ void Cmd_MenuRight_t (CPlayerEntity *Player)
 
 	Player->Client.Respawn.MenuState.Key = CMenuState::KEY_NONE;
 }
-

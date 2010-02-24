@@ -158,8 +158,7 @@ public:
 		FS_Write (&Ref, sizeof(TType), Handle);
 	};
 
-	template <>
-	void Write<cc_string> (const cc_string &Ref)
+	void Write (const cc_string &Ref)
 	{
 		if (!Handle)
 			return;
@@ -224,8 +223,7 @@ public:
 		return Val;
 	};
 
-	template <>
-	cc_string Read<cc_string> ()
+	cc_string Read ()
 	{
 		if (!Handle)
 			return "";

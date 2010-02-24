@@ -497,7 +497,7 @@ inline sint32 Q_rint (float x)
 inline void Q_SinCosf(const float X, float *Sin, float *Cos)
 {
 #if defined(HAVE_SINCOSF)
-	sincosf(X, &Sin, &Cos);
+	sincosf(X, Sin, Cos);
 #elif defined(id386)
 	__asm fld X
 	__asm fsincos
