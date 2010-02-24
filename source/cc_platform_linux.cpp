@@ -27,13 +27,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_platform_base.cpp
-// Platform file base
+// cc_platform_linux.cpp
+// Linux/GCC Compiler Platform
 //
 
 #include "cc_local.h"
-
-// Include OS-specific header files here.
+#include <sys/time.h>
+#include <dlfcn.h>
 
 
 // Functions
@@ -86,6 +86,27 @@ void CC_ReportGameError (const char *text)
 
 /*
 ================
+Sys_UMilliseconds
+================
+*/
+uint32 Sys_UMilliseconds ()
+{
+	struct timeval	tp;
+	struct timezone	tzp;
+	static int		secbase;
+
+	gettimeofday (&tp, &tzp);
+
+	if (!secbase) {
+		secbase = tp.tv_sec;
+		return tp.tv_usec/1000;
+	}
+	
+	return (tp.tv_sec - secbase)*1000 + tp.tv_usec/1000;
+}
+
+/*
+================
 CTimer::Start
 
 This function starts the timer. Generally you would
@@ -94,6 +115,7 @@ return the milliseconds and store in StartCycles.
 */
 void CTimer::Start ()
 {
+	StartCycles = Sys_UMilliseconds();
 };
 
 /*
@@ -106,7 +128,13 @@ restarts timer, and returns the difference.
 */
 double CTimer::Get ()
 {
-	return 0;
+	// Grab the value
+	double value = (Sys_UMilliseconds()-StartCycles);
+
+	// Restart the timer
+	Start ();
+
+	return value;
 };
 
 // Dynamic libraries
@@ -121,7 +149,7 @@ returns it. Return NULL if the library is not found.
 */
 void *CDynamicLibrary::OS_LoadLibrary (const char *FileName)
 {
-	return NULL;
+	return dlopen(FileName, RTLD_LAZY);
 };
 
 /*
@@ -133,6 +161,7 @@ Expected to close and free library handles.
 */
 void CDynamicLibrary::OS_CloseLibrary ()
 {
+	dlclose (Lib);
 };
 
 /*
@@ -145,16 +174,15 @@ NULL if error.
 */
 void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
 {
-	return NULL;
+	return dlsym(Lib, Symbol);
 };
 
 
 // Entry point
-// ================
-// IMPORTANT
-// IMPORTANT
-// IMPORTANT
-// ================
-// Your operating system files MUST contain
-// an entry point that calls Mem_Init __BEFORE__ the
-// CRT is initialized!
+void __attribute__ ((constructor)) my_load(void);
+
+// Called when the library is loaded and before dlopen() returns
+void my_load(void)
+{
+    Mem_Init ();
+}

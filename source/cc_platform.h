@@ -62,7 +62,7 @@ class CDynamicLibrary
 {
 private:
 	cc_string		LoadedLibFileName;
-	void				*Lib;
+	void			*Lib;
 
 	void	*OS_LoadLibrary (const char *FileName);
 	void	OS_CloseLibrary ();
