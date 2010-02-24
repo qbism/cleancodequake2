@@ -273,7 +273,9 @@ CBaseEntity *LoadEntity (uint32 Index)
 	return (Index == -1) ? NULL : Game.Entities[Index].Entity;
 }
 
+#if defined(WIN32)
 #include <crtdbg.h>
+#endif
 
 bool AssertExpression (const bool expr, const char *msg)
 {
