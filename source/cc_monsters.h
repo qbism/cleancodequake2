@@ -496,8 +496,8 @@ public:
 	};
 };
 
-#define ConvertDerivedFunction(x) static_cast<void (cc_thiscall CMonster::* )()>(x)
-#define ConvertDerivedAIMove(x) static_cast<void (cc_thiscall CMonster::* )(float)>(x)
+#define ConvertDerivedFunction(x) static_cast<void (CMonster::* )()>(x)
+#define ConvertDerivedAIMove(x) static_cast<void (CMonster::* )(float)>(x)
 
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
