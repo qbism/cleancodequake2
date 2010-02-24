@@ -74,7 +74,6 @@ void			*com_genericPool, // Generic memory; memory that will be freed on level c
 				*com_fileSysPool, // File system (same as game, just here for easy pointer access)
 				*com_entityPool, // Flushed specially
 				*com_testPool,
-				*com_zPool,
 				*com_itemPool,
 				*com_cvarPool,
 				*com_writePool,
@@ -932,18 +931,6 @@ void Mem_Register ()
 	Cmd_AddCommand ("g_memtouch",		Mem_Touch_f);
 }
 
-#include "zlib.h"
-
-void *Mem_ZAlloc (uint32 size)
-{
-	return Mem_PoolAlloc (size, com_zPool, 0);
-}
-
-void Mem_ZFree (void *ptr)
-{
-	Mem_Free (ptr);
-}
-
 /*
 ========================
 Mem_Init
@@ -969,9 +956,6 @@ void Mem_Init ()
 	com_writePool = Mem_CreatePool ("Message system pool");
 	com_indexPool = Mem_CreatePool ("Indexing system pool");
 	com_testPool = Mem_CreatePool ("Test pool");
-	com_zPool = Mem_CreatePool ("ZLib Pool");
-
-	zsetfunctions (Mem_ZAlloc, Mem_ZFree);
 }
 
 // C++!

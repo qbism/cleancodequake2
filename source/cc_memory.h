@@ -33,7 +33,6 @@ extern void	*com_genericPool, // Generic memory; memory that will be freed on le
 						*com_fileSysPool, // Flushed per entire game
 						*com_entityPool, // Flushed specially
 						*com_testPool,
-						*com_zPool,
 						*com_itemPool,
 						*com_cvarPool,
 						*com_writePool,
