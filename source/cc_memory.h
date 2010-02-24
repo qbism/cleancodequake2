@@ -92,52 +92,24 @@ void		Mem_FreePools();
 // Deprecated; use QNew/QDelete
 
 #ifdef WIN32
-inline void *operator new(size_t Size)
-{
-	return Mem_Alloc (Size, false);
-}
-
-inline void operator delete(void *Pointer)
-{
-	CC_Mem_Free (Pointer, "null", 0, false);
-}
+void *operator new(size_t Size);
+void operator delete(void *Pointer);
 
 #if MSVS_VERSION >= VS_8
 _Ret_bytecap_(_Size) 
 #endif
-	inline void *
+	void *
 #if MSVS_VERSION >= VS_6
 	__CRTDECL 
 #endif
-	operator new[](size_t _Size)
-{
-	return Mem_Alloc (_Size, true);
-}
+	operator new[](size_t _Size);
 
-inline void operator delete[](void *Pointer)
-{
-	CC_Mem_Free (Pointer, "null", 0, true);
-}
+void operator delete[](void *Pointer);
 #else
-inline void *operator new(size_t Size) throw (std::bad_alloc)
-{
-	return Mem_Alloc (Size, false);
-}
-
-inline void operator delete(void *Pointer) throw()
-{
-	CC_Mem_Free (Pointer, "null", 0, false);
-}
-
-inline void * operator new[](size_t _Size) throw (std::bad_alloc)
-{
-	return Mem_Alloc (_Size, true);
-}
-
-inline void operator delete[](void *Pointer) throw()
-{
-	CC_Mem_Free (Pointer, "null", 0, true);
-}
+void *operator new(size_t Size) throw (std::bad_alloc);
+void operator delete(void *Pointer) throw();
+void * operator new[](size_t _Size) throw (std::bad_alloc);
+void operator delete[](void *Pointer) throw();
 #endif
 
 

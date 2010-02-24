@@ -974,3 +974,52 @@ void Mem_Init ()
 	zsetfunctions (Mem_ZAlloc, Mem_ZFree);
 }
 
+// C++!
+#ifdef WIN32
+void *operator new(size_t Size)
+{
+	return Mem_Alloc (Size, false);
+}
+
+void operator delete(void *Pointer)
+{
+	CC_Mem_Free (Pointer, "null", 0, false);
+}
+
+#if MSVS_VERSION >= VS_8
+_Ret_bytecap_(_Size) 
+#endif
+	void *
+#if MSVS_VERSION >= VS_6
+	__CRTDECL 
+#endif
+	operator new[](size_t _Size)
+{
+	return Mem_Alloc (_Size, true);
+}
+
+void operator delete[](void *Pointer)
+{
+	CC_Mem_Free (Pointer, "null", 0, true);
+}
+#else
+void *operator new(size_t Size)
+{
+	return Mem_Alloc (Size, false);
+}
+
+void operator delete(void *Pointer)
+{
+	CC_Mem_Free (Pointer, "null", 0, false);
+}
+
+void * operator new[](size_t _Size)
+{
+	return Mem_Alloc (_Size, true);
+}
+
+void operator delete[](void *Pointer)
+{
+	CC_Mem_Free (Pointer, "null", 0, true);
+}
+#endif
