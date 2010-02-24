@@ -42,7 +42,7 @@ class CServerCommand : public CCommand <TServerCommandFunctorType>
 {
 public:
 	CServerCommand (const char *Name, TServerCommandFunctorType Func) :
-	  CCommand (Name, Func, 0)
+	  CCommand<TServerCommandFunctorType> (Name, Func, 0)
 	  {
 	  };
 
@@ -62,7 +62,7 @@ public:
 
 	CServerCommand &AddSubCommand (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
 	{
-		return static_cast<CServerCommand&>(CCommand::AddSubCommand(Name, Func, Flags));
+		return static_cast<CServerCommand&>(CCommand<TServerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
 	};
 };
 
