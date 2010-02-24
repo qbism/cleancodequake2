@@ -91,7 +91,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	// Check.
 	// LoadFields will actually re-load the monster's ID, so here we need to make sure
 	// they still are the same.
-	_CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || stricmp(Entity->Monster->MonsterName.c_str(), LoadedName)), "Loaded monster differs in ID or Name\n");
+	_CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || Q_stricmp(Entity->Monster->MonsterName.c_str(), LoadedName)), "Loaded monster differs in ID or Name\n");
 
 	Entity->Monster->Entity = Entity;
 }

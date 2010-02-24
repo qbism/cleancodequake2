@@ -820,7 +820,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if ((Game.GameMode == GAME_COOPERATIVE) && stricmp(Level.ServerLevelName.c_str(), "security") == 0)
+		if ((Game.GameMode == GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
 			NextThink = Level.Frame + FRAMETIME;
 
