@@ -225,39 +225,6 @@ void CFlyer::Stand ()
 	CurrentMove = &FlyerMoveStand;
 }
 
-/*mframe_t flyer_frames_start [] =
-{
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	flyer_nextmove
-};
-mmove_t flyer_move_start = {FRAME_start01, FRAME_start06, flyer_frames_start, NULL};
-
-mframe_t flyer_frames_stop [] =
-{
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	flyer_nextmove
-};
-mmove_t flyer_move_stop = {FRAME_stop01, FRAME_stop07, flyer_frames_stop, NULL};
-
-void flyer_stop (edict_t *self)
-{
-		self->monsterinfo.currentmove = &flyer_move_stop;
-}
-
-void flyer_start (edict_t *self)
-{
-		self->monsterinfo.currentmove = &flyer_move_start;
-}*/
-
 CFrame FlyerFramesPain3 [] =
 {	
 	CFrame (&CMonster::AI_Move, 0),
@@ -289,41 +256,6 @@ CFrame FlyerFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0)
 };
 CAnim FlyerMovePain1 (FRAME_pain101, FRAME_pain109, FlyerFramesPain1, ConvertDerivedFunction(&CFlyer::Run));
-
-/*mframe_t flyer_frames_defense [] = 
-{
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,		// Hold this frame
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
-};
-mmove_t flyer_move_defense = {FRAME_defens01, FRAME_defens06, flyer_frames_defense, NULL};
-
-mframe_t flyer_frames_bankright [] =
-{
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
-};
-mmove_t flyer_move_bankright = {FRAME_bankr01, FRAME_bankr07, flyer_frames_bankright, NULL};
-
-mframe_t flyer_frames_bankleft [] =
-{
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
-};
-mmove_t flyer_move_bankleft = {FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, NULL};*/	
 
 void CFlyer::Fire (sint32 FlashNumber)
 {
@@ -413,7 +345,6 @@ CFrame FlyerFramesEndMelee [] =
 };
 CAnim FlyerMoveEndMelee (FRAME_attak119, FRAME_attak121, FlyerFramesEndMelee, ConvertDerivedFunction(&CFlyer::Run));
 
-
 CFrame FlyerFramesLoopMelee [] =
 {
 	CFrame (&CMonster::AI_Charge, 0),		// Loop Start
@@ -433,17 +364,11 @@ CAnim FlyerMoveLoopMelee (FRAME_attak107, FRAME_attak118, FlyerFramesLoopMelee, 
 
 void CFlyer::LoopMelee ()
 {
-/*	if (frand() <= 0.5)	
-		self->monsterinfo.currentmove = &flyer_move_attack1;
-	else */
 	CurrentMove = &FlyerMoveLoopMelee;
 }
 
 void CFlyer::Attack ()
 {
-/*	if (frand() <= 0.5)	
-		self->monsterinfo.currentmove = &flyer_move_attack1;
-	else */
 	CurrentMove = &FlyerMoveAttack2;
 }
 

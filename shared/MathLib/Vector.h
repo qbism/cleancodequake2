@@ -105,10 +105,10 @@ public:
 	 * Constructors
 	 */
 	vec2f() {}
-	inline vec2f(const vec2f &Vec) : vec2Base(Vec) {}
-	inline vec2f(const float Value) : vec2Base(Value) {}
-	inline vec2f(const float Values[2]) : vec2Base(Values) {}
-	inline vec2f(const float InX, const float InY) : vec2Base(InX, InY) {}
+	inline vec2f(const vec2f &Vec) : vec2Base<float>(Vec) {}
+	inline vec2f(const float Value) : vec2Base<float>(Value) {}
+	inline vec2f(const float Values[2]) : vec2Base<float>(Values) {}
+	inline vec2f(const float InX, const float InY) : vec2Base<float>(InX, InY) {}
 
 	/**
 	 * Operators
@@ -246,6 +246,20 @@ public:
 	 */
 	~vec3Base() {}
 
+	// Convert to another vec3Base type
+	template <typename TType>
+	vec3Base<TType> Convert ()
+	{
+		return vec3Base<TType> (X, Y, Z);
+	}
+
+	// Convert to another type based off vec3Base
+	template <typename TType>
+	TType ConvertDerived ()
+	{
+		return TType (X, Y, Z);
+	}
+
 	/**
 	 * Operators
 	 */
@@ -291,10 +305,10 @@ public:
 	 * Constructors
 	 */
 	vec3f() {}
-	inline vec3f(const vec3f &Vec) : vec3Base(Vec) {}
-	inline vec3f(const float Value) : vec3Base(Value) {}
-	inline vec3f(const float Values[3]) : vec3Base(Values) {}
-	inline vec3f(const float InX, const float InY, const float InZ) : vec3Base(InX, InY, InZ) {}
+	inline vec3f(const vec3f &Vec) : vec3Base<float>(Vec) {}
+	inline vec3f(const float Value) : vec3Base<float>(Value) {}
+	inline vec3f(const float Values[3]) : vec3Base<float>(Values) {}
+	inline vec3f(const float InX, const float InY, const float InZ) : vec3Base<float>(InX, InY, InZ) {}
 
 	/**
 	 * Operators

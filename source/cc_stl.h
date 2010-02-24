@@ -173,7 +173,7 @@ inline void FormatString (cc_string &str, const char *fmt, ...)
 	static char	text[2048];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), 2048, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	str.assign (text);

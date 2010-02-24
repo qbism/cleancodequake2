@@ -52,7 +52,7 @@ static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt
 		return;
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 
 	WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
@@ -79,7 +79,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 
 	// Evaluate args
 	va_start (argptr, fmt);
-	vsnprintf_s (msg, sizeof(msg), sizeof(msg), fmt, argptr);
+	vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
 
 	// Print
@@ -98,7 +98,7 @@ void DeveloperPrintf (char *fmt, ...)
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 _CC_DISABLE_DEPRECATION
@@ -116,7 +116,7 @@ void DebugPrintf (char *fmt, ...)
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 _CC_DISABLE_DEPRECATION
@@ -133,7 +133,7 @@ void ServerPrintf (char *fmt, ...)
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 _CC_DISABLE_DEPRECATION
@@ -149,7 +149,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	// Echo to console
@@ -188,7 +188,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	if (printLevel == PRINT_CENTER)
@@ -203,7 +203,7 @@ void DeveloperPrintf (char *fmt, ...)
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	gi.dprintf ("%s", string);
@@ -215,7 +215,7 @@ void DebugPrintf (char *fmt, ...)
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	gi.dprintf ("%s", string);
@@ -227,7 +227,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	gi.bprintf (printLevel, "%s", string);

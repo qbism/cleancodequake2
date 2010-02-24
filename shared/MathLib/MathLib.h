@@ -119,28 +119,28 @@ inline float Q_fabs (float val) { return ((val < 0.f) ? -val : val); }
 
 // Template functions
 template <class CType, sint32 numElements>
-inline void VecxAdd (const CType a, const CType b, CType c)
+inline void VecxAdd (const CType &a, const CType &b, CType &c)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		c[i] = a[i] + b[i];
 }
 
 template <class CType, sint32 numElements>
-inline void VecxAverage (const CType a, const CType b, CType c)
+inline void VecxAverage (const CType &a, const CType &b, CType &c)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		c[i] = (a[i] + b[i])*0.5f;
 }
 
 template <class CType, sint32 numElements>
-inline void VecxClear (CType a)
+inline void VecxClear (CType &a)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		*(sint32*)&a[i] = 0;
 }
 
 template <class CType, sint32 numElements>
-inline bool VecxCompare (const CType a, const CType b)
+inline bool VecxCompare (const CType &a, const CType &b)
 {
 	for (sint32 i = 0; i < numElements; i++)
 	{
@@ -151,56 +151,56 @@ inline bool VecxCompare (const CType a, const CType b)
 }
 
 template <class CType, sint32 numElements>
-inline void VecxCopy (const CType a, CType b)
+inline void VecxCopy (const CType &a, CType &b)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		b[i] = a[i];
 }
 
 template <class CType, sint32 numElements>
-inline void VecxIdentity (CType a)
+inline void VecxIdentity (CType &a)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		a[i] = 0;
 }
 
 template <class CType, sint32 numElements>
-inline void VecxInverse (CType a)
+inline void VecxInverse (CType &a)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		a[i] = -a[i];
 }
 
 template <class CType, sint32 numElements>
-inline void VecxMA (const CType v, const float scale, const CType b, CType o)
+inline void VecxMA (const CType &v, const float scale, const CType &b, CType &o)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		o[i] = v[i]+b[i]*scale;
 }
 
 template <class CType, sint32 numElements>
-inline void VecxNegate (const CType a, CType b)
+inline void VecxNegate (const CType &a, CType &b)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		b[i] = -a[i];
 }
 
 template <class CType, sint32 numElements>
-inline void VecxScale (const CType in, const float scale, CType out)
+inline void VecxScale (const CType &in, const float scale, CType &out)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		out[i] = in[i]*scale;
 }
 
 template <class CType, sint32 numElements>
-inline void VecxSubtract (const CType a, const CType b, CType c)
+inline void VecxSubtract (const CType &a, const CType &b, CType &c)
 {
 	for (sint32 i = 0; i < numElements; i++)
 		c[i] = a[i]-b[i];
 }
 
 template <class CType, sint32 numElements>
-inline float VecxDistSquared (const CType v1, const CType v2)
+inline float VecxDistSquared (const CType &v1, const CType &v2)
 {
 	float returnValue = 0;
 	for (sint32 i = 0; i < numElements; i++)
@@ -209,19 +209,19 @@ inline float VecxDistSquared (const CType v1, const CType v2)
 }
 
 template <class CType, sint32 numElements>
-inline float VecxDist (const CType v1, const CType v2)
+inline float VecxDist (const CType &v1, const CType &v2)
 {
 	return sqrtf(VecxDistSquared<CType, numElements>(v1, v2));
 }
 
 template <class CType, sint32 numElements>
-inline float VecxDistFast (const CType v1, const CType v2)
+inline float VecxDistFast (const CType &v1, const CType &v2)
 {
 	return Q_FastSqrt(VecxDistSquared<CType, numElements>(v1, v2));
 }
 
 template <class CType, sint32 numElements>
-inline float DotxProduct (const CType x, const CType y)
+inline float DotxProduct (const CType &x, const CType &y)
 {
 	float returnValue = 0;
 	for (sint32 i = 0; i < numElements; i++)
@@ -229,8 +229,9 @@ inline float DotxProduct (const CType x, const CType y)
 	return returnValue;
 }
 
+#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 // vec2_t manipulation
-inline float Dot2Product (const vec2_t x, const vec2_t y)
+inline float Dot2Product (const vec2_t &x, const vec2_t &y)
 {
 	return DotxProduct<vec2_t, 2>(x, y);
 }
@@ -305,107 +306,109 @@ inline void Vec2Subtract (const vec2_t a, const vec2_t b, vec2_t c)
 {
 	VecxSubtract <vec2_t, 2> (a, b, c);
 }
+#endif
 
 // vec3_t routines
-inline void CrossProduct (const vec3_t v1, const vec3_t v2, vec3_t cr)
+inline void CrossProduct (const vec3_t &v1, const vec3_t &v2, vec3_t &cr)
 {
 	cr[0] = v1[1] * v2[2] - v1[2] * v2[1];
 	cr[1] = v1[2] * v2[0] - v1[0] * v2[2];
 	cr[2] = v1[0] * v2[1] - v1[1] * v2[0];
 }
 
-inline float Dot3Product (const vec3_t x, const vec3_t y)
+inline float Dot3Product (const vec3_t &x, const vec3_t &y)
 {
 	return DotxProduct<vec3_t, 3>(x, y);
 }
 
-inline void Vec3Add (const vec3_t a, const vec3_t b, vec3_t out)
+inline void Vec3Add (const vec3_t &a, const vec3_t &b, vec3_t &out)
 {
 	VecxAdd<vec3_t, 3>(a, b, out);
 }
 
-inline void Vec3Average (const vec3_t a, const vec3_t b, vec3_t c)
+inline void Vec3Average (const vec3_t &a, const vec3_t &b, vec3_t &c)
 {
 	VecxAverage<vec3_t, 3>(a, b, c);
 }
 
-inline void Vec3Clear (vec3_t a)
+inline void Vec3Clear (vec3_t &a)
 {
 	VecxClear<vec3_t, 3>(a);
 }
 
-inline bool Vec3Compare (const vec3_t v1, const vec3_t v2)
+inline bool Vec3Compare (const vec3_t &v1, const vec3_t &v2)
 {
 	return VecxCompare<vec3_t, 3>(v1, v2);
 }
 
-inline void Vec3Copy (const vec3_t a, vec3_t b)
+inline void Vec3Copy (const vec3_t &a, vec3_t &b)
 {
 	VecxCopy<vec3_t, 3>(a, b);
 }
 
-inline float Vec3DistSquared (const vec3_t v1, const vec3_t v2)
+inline float Vec3DistSquared (const vec3_t &v1, const vec3_t &v2)
 {
 	return VecxDistSquared<vec3_t, 3>(v1, v2);
 }
 
-inline float Vec3Dist (const vec3_t v1, const vec3_t v2)
+inline float Vec3Dist (const vec3_t &v1, const vec3_t &v2)
 {
 	return VecxDist<vec3_t, 3>(v1, v2);
 }
 
-inline float Vec3DistFast (const vec3_t v1, const vec3_t v2)
+inline float Vec3DistFast (const vec3_t &v1, const vec3_t &v2)
 {
 	return VecxDistFast<vec3_t, 3>(v1, v2);
 }
 
-inline void Vec3Identity (vec3_t in)
+inline void Vec3Identity (vec3_t &in)
 {
 	VecxIdentity<vec3_t, 3> (in);
 }
 
-inline void Vec3Inverse (vec3_t v)
+inline void Vec3Inverse (vec3_t &v)
 {
 	VecxInverse<vec3_t, 3> (v);
 }
 
-inline float Vec3Length (const vec3_t v)
+inline float Vec3Length (const vec3_t &v)
 {
 	return sqrtf(Dot3Product(v,v));
 }
 
-inline float Vec3LengthFast (const vec3_t v)
+inline float Vec3LengthFast (const vec3_t &v)
 {
 	return Q_FastSqrt(Dot3Product(v,v));
 }
 
-inline void Vec3MA (const vec3_t v, float s, const vec3_t b, vec3_t o)
+inline void Vec3MA (const vec3_t &v, float s, const vec3_t &b, vec3_t &o)
 {
 	VecxMA<vec3_t, 3>(v, s, b, o);
 }
 
-inline void Vec3Negate (const vec3_t a, vec3_t b)
+inline void Vec3Negate (const vec3_t &a, vec3_t &b)
 {
 	VecxNegate<vec3_t, 3>(a, b);
 }
 
-inline void Vec3Scale (const vec3_t in, float s, vec3_t out)
+inline void Vec3Scale (const vec3_t &in, float s, vec3_t &out)
 {
 	VecxScale<vec3_t, 3>(in, s, out);
 }
 
-inline void Vec3Set (vec3_t v, float x, float y, float z)
+inline void Vec3Set (vec3_t &v, float x, float y, float z)
 {
 	v[0] = x;
 	v[1] = y;
 	v[2] = z;
 }
 
-inline void Vec3Subtract (const vec3_t a, const vec3_t b, vec3_t c)
+inline void Vec3Subtract (const vec3_t &a, const vec3_t &b, vec3_t &c)
 {
 	VecxSubtract<vec3_t, 3>(a, b, c);
 }
 
+#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 // vec4_t routines
 inline float Dot4Product (const vec4_t x, const vec4_t y)
 {
@@ -482,6 +485,7 @@ inline void Vec4Subtract (const vec4_t a, const vec4_t b, vec4_t c)
 {
 	VecxSubtract <vec4_t, 4> (a, b, c);
 }
+#endif
 
 // ===========================================================================
 

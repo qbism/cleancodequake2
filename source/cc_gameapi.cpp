@@ -74,7 +74,7 @@ void GameError (char *fmt, ...)
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	CC_ReportGameError (text);

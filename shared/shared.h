@@ -686,13 +686,13 @@ struct pMoveState_t
 {
 	sint32				pmType;
 
-	svec3_t			origin;			// 12.3
-	svec3_t			velocity;		// 12.3
-	uint8			pmFlags;		// ducked, jump_held, etc
-	uint8			pmTime;			// each unit = 8 ms
-	sint16			gravity;
-	svec3_t			deltaAngles;	// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
+	vec3Base<sint16>	origin;			// 12.3
+	vec3Base<sint16>	velocity;		// 12.3
+	uint8				pmFlags;		// ducked, jump_held, etc
+	uint8				pmTime;			// each unit = 8 ms
+	sint16				gravity;
+	vec3Base<sint16>	deltaAngles;	// add to command angles to get view direction
+										// changed by spawns, rotating objects, and teleporters
 };
 
 //

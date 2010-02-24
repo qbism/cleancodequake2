@@ -78,7 +78,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, char
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	PrintBuffer << "   " << text;

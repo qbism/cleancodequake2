@@ -74,10 +74,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define CC_STDC_CONFORMANCE
 #endif
 
-#define CC_ENUM(type,name) \
-	typedef type name; \
-	enum
-
 // unknown pragmas are SUPPOSED to be ignored, but....
 # pragma warning(disable : 4244)	// 'conversion' conversion from 'type1' to 'type2', possible loss of data
 
@@ -108,14 +104,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  define CPUSTRING		"x64"
 # endif
 
-/*typedef	signed char			sint8;
-typedef signed __int16		sint16;
-typedef signed __int32		sint32;
-typedef signed __int64		sint64;
-typedef unsigned char		uint8;
-typedef unsigned __int16	uint16;
-typedef unsigned __int32	uint32;
-typedef unsigned __int64	uint64;*/
 typedef signed char				int8_t;
 typedef unsigned char			uint8_t;
 typedef signed short int		int16_t;
@@ -277,3 +265,7 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 #if defined(__STDC__) && !defined(CC_STDC_CONFORMANCE)
 #define CC_STDC_CONFORMANCE
 #endif
+
+#define CC_ENUM(type,name) \
+	typedef type name; \
+	enum

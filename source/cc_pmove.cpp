@@ -51,9 +51,9 @@ struct pMoveLocal_t
 	float			frameTime;
 
 	cmBspSurface_t	*groundSurface;
-	sint32				groundContents;
+	sint32			groundContents;
 
-	svec3_t			previousOrigin;
+	vec3Base<sint16>previousOrigin;
 	bool			ladder;
 
 	CPlayerEntity	*Player;
@@ -884,8 +884,8 @@ precision of the network channel and in a valid position.
 */
 static void SV_PM_SnapPosition ()
 {
-	sint32		sign[3];
-	sint16	base[3];
+	vec3Base<sint32>	sign;
+	vec3Base<sint16>	base;
 	// try all single bits first
 	static const uint8 jitterBits[8] = {0,4,1,2,3,5,6,7};
 
@@ -905,13 +905,13 @@ static void SV_PM_SnapPosition ()
 		if (pm->state.origin[i]*(1.0f/8.0f) == pml.origin[i])
 			sign[i] = 0;
 	}
-	VecxCopy<svec3_t, 3> (pm->state.origin, base);
+	base = pm->state.origin;
 
 	// try all combinations
 	for (sint32 i = 0; i < 8; i++)
 	{
 		sint32 bits = jitterBits[i];
-		VecxCopy<svec3_t, 3> (base, pm->state.origin);
+		pm->state.origin = base;
 
 		if (bits & BIT(0))
 			pm->state.origin[0] += sign[0];
@@ -925,7 +925,7 @@ static void SV_PM_SnapPosition ()
 	}
 
 	// go back to the last position
-	VecxCopy<svec3_t, 3> (pml.previousOrigin, pm->state.origin);
+	pm->state.origin = pml.previousOrigin;
 }
 
 /*
@@ -935,10 +935,10 @@ SV_PM_InitialSnapPosition
 */
 static void SV_PM_InitialSnapPosition ()
 {
-	sint16		base[3];
-	static sint8	offset[3] = { 0, -1, 1 };
+	vec3Base<sint16>	base;
+	static sint8		offset[3] = { 0, -1, 1 };
 
-	VecxCopy<svec3_t, 3> (pm->state.origin, base);
+	base = pm->state.origin;
 
 	for (uint8 z = 0; z < 3; z++)
 	{
@@ -951,10 +951,8 @@ static void SV_PM_InitialSnapPosition ()
 				pm->state.origin[0] = base[0] + offset[x];
 				if (SV_PM_GoodPosition ())
 				{
-					pml.origin.X = pm->state.origin[0]*(1.0f/8.0f);
-					pml.origin.Y = pm->state.origin[1]*(1.0f/8.0f);
-					pml.origin.Z = pm->state.origin[2]*(1.0f/8.0f);
-					VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);
+					pml.origin = pm->state.origin.ConvertDerived<vec3f>()*(1.0f/8.0f);
+					pml.previousOrigin = pm->state.origin;
 					return;
 				}
 			}
@@ -972,22 +970,14 @@ SV_PM_ClampAngles
 static void SV_PM_ClampAngles ()
 {
 	if (pm->state.pmFlags & PMF_TIME_TELEPORT)
-	{
-		pm->viewAngles.Y = SHORT2ANGLE (pm->cmd.angles[YAW] + pm->state.deltaAngles[YAW]);
-		pm->viewAngles.X = 0;
-		pm->viewAngles.Z = 0;
-	}
+		pm->viewAngles.Set (0, SHORT2ANGLE (pm->cmd.angles[YAW] + pm->state.deltaAngles[YAW]), 0);
 	else
 	{
 		// circularly clamp the angles with deltas
-		sint16 temp = pm->cmd.angles[0] + pm->state.deltaAngles[0];
-		pm->viewAngles.X = SHORT2ANGLE(temp);
-
-		temp = pm->cmd.angles[1] + pm->state.deltaAngles[1];
-		pm->viewAngles.Y = SHORT2ANGLE(temp);
-
-		temp = pm->cmd.angles[2] + pm->state.deltaAngles[2];
-		pm->viewAngles.Z = SHORT2ANGLE(temp);
+		pm->viewAngles.Set (
+			SHORT2ANGLE(pm->cmd.angles[0] + pm->state.deltaAngles[0]),
+			SHORT2ANGLE(pm->cmd.angles[1] + pm->state.deltaAngles[1]),
+			SHORT2ANGLE(pm->cmd.angles[2] + pm->state.deltaAngles[2]));
 
 		// don't let the player look up or down more than 90 degrees
 		if ((pm->viewAngles.X > 89) && (pm->viewAngles.X < 180))
@@ -1023,18 +1013,14 @@ void SV_Pmove (CPlayerEntity *Player, pMoveNew_t *pMove, float airAcceleration)
 	Mem_Zero (&pml, sizeof(pml));
 
 	// convert origin and velocity to float values
-	pml.origin.X = pm->state.origin[0]*(1.0f/8.0f);
-	pml.origin.Y = pm->state.origin[1]*(1.0f/8.0f);
-	pml.origin.Z = pm->state.origin[2]*(1.0f/8.0f);
+	pml.origin = pm->state.origin.ConvertDerived<vec3f>()*(1.0f/8.0f);
 
-	pml.velocity.X = pm->state.velocity[0]*(1.0f/8.0f);
-	pml.velocity.Y = pm->state.velocity[1]*(1.0f/8.0f);
-	pml.velocity.Z = pm->state.velocity[2]*(1.0f/8.0f);
+	pml.velocity = pm->state.velocity.ConvertDerived<vec3f>()*(1.0f/8.0f);
 
 	pml.Player			= Player;
 
 	// save old org in case we get stuck
-	VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);
+	pml.previousOrigin = pm->state.origin;
 
 	pml.frameTime = pm->cmd.msec * 0.001;
 

@@ -1930,7 +1930,7 @@ bool CMonster::CheckAttack ()
 #else
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1, spot2;
@@ -2332,15 +2332,18 @@ bool CMonster::AI_CheckAttack()
 	}
 	else
 	{
-		if (AIFlags & AI_BRUTAL)
+		if (Entity->Enemy->EntityFlags & ENT_HURTABLE)
 		{
-			if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= -80)
-				hesDeadJim = true;
-		}
-		else
-		{
-			if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
-				hesDeadJim = true;
+			if (AIFlags & AI_BRUTAL)
+			{
+				if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= -80)
+					hesDeadJim = true;
+			}
+			else
+			{
+				if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+					hesDeadJim = true;
+			}
 		}
 	}
 

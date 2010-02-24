@@ -567,15 +567,6 @@ private:
 		return PS_VerifyVecI <uint32> (token, target, 0, UINT_MAX);
 	}
 
-	#ifndef _I64_MIN
-	/* minimum signed 64 bit value */
-	#define _I64_MIN    (-9223372036854775807i64 - 1)
-	/* maximum signed 64 bit value */
-	#define _I64_MAX      9223372036854775807i64
-	/* maximum unsigned 64 bit value */
-	#define _UI64_MAX     0xffffffffffffffffui64
-	#endif
-
 	template <>
 	static bool PS_VerifyVec <long> (const char *token, void *target)
 	{
@@ -586,18 +577,6 @@ private:
 	static bool PS_VerifyVec <unsigned long> (const char *token, void *target)
 	{
 		return PS_VerifyVecI <unsigned long> (token, target, 0, ULONG_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint64> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint64> (token, target, _I64_MIN, _I64_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint64> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint64> (token, target, 0, _UI64_MAX);
 	}
 
 	// Parse float
@@ -676,8 +655,6 @@ private:
 	template <> static const char *PS_DataName <uint32> () { return "<uint32>"; }
 	template <> static const char *PS_DataName <long> () { return "<long>"; }
 	template <> static const char *PS_DataName <unsigned long> () { return "<unsigned long>"; }
-	template <> static const char *PS_DataName <sint64> () { return "<sint64>"; }
-	template <> static const char *PS_DataName <uint64> () { return "<uint64>"; }
 	template <> static const char *PS_DataName <float> () { return "<float>"; }
 	template <> static const char *PS_DataName <double> () { return "<double>"; }
 	template <> static const char *PS_DataName <bool> () { return "<bool>"; }

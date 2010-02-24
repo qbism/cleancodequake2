@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #if !defined(CC_GUARD_MEMORY_H) || !INCLUDE_GUARDS
 #define CC_GUARD_MEMORY_H
 
+#include <exception>
+
 // Constants
 extern void	*com_genericPool, // Generic memory; memory that will be freed on level change, but not necessarily needed for anything
 						*com_levelPool, // Flushed per level
@@ -90,11 +92,17 @@ void		Mem_FreePools();
 // Deprecated; use QNew/QDelete
 
 inline void *operator new(size_t Size)
+#ifndef _WIN32
+	throw (std::bad_alloc)
+#endif
 {
 	return Mem_Alloc (Size, false);
 }
 
 inline void operator delete(void *Pointer)
+#ifndef _WIN32
+	throw ()
+#endif
 {
 	CC_Mem_Free (Pointer, "null", 0, false);
 }
@@ -107,11 +115,17 @@ _Ret_bytecap_(_Size)
 	__CRTDECL 
 #endif
 	operator new[](size_t _Size)
+#ifndef _WIN32
+	throw (std::bad_alloc)
+#endif
 {
 	return Mem_Alloc (_Size, true);
 }
 
 inline void operator delete[](void *Pointer)
+#ifndef _WIN32
+	throw ()
+#endif
 {
 	CC_Mem_Free (Pointer, "null", 0, true);
 }

@@ -66,7 +66,7 @@ void CStatusBar::AddToBarBuffer (char *fmt, ...)
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	_CC_ASSERT_EXPR (!(Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1), "Statusbar overflowed");
