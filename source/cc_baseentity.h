@@ -274,9 +274,9 @@ inline uint32 atou (const char *Str)
 	return (uint32)atol(Str);
 }
 
-#define EntityMemberOffset(y,x) (size_t)&(((y*)0)->x)
-#define GameEntityMemberOffset(x) (size_t)&(((edict_t*)0)->x)
-#define SpawnTempMemberOffset(x) (size_t)&(((spawn_temp_t*)0)->x)
+#define EntityMemberOffset(y,x) offsetof(y,x)
+#define GameEntityMemberOffset(x) offsetof(edict_t,x)
+#define SpawnTempMemberOffset(x) offsetof(spawn_temp_t,x)
 
 // Convenience macros
 // CAREFUL WITH THESE!

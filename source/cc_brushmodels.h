@@ -70,7 +70,7 @@ CC_ENUM (uint32, EBrushType)
 };
 
 // Contains code common to brush models
-class CBrushModel : public virtual CBaseEntity, public CThinkableEntity, public CPushPhysics, public CStopPhysics
+class CBrushModel : public virtual CBaseEntity, public CThinkableEntity, public CStopPhysics
 {
 public:
 	EBrushType	BrushType;
@@ -218,8 +218,8 @@ class CDoorTrigger : public CTouchableEntity
 public:
 	FrameNumber_t		TouchDebounce;
 
-	CDoorTrigger::CDoorTrigger ();
-	CDoorTrigger::CDoorTrigger (sint32 Index);
+	CDoorTrigger ();
+	CDoorTrigger (sint32 Index);
 
 	ENTITYFIELDS_SAVABLE(CDoorTrigger)
 

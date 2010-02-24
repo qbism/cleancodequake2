@@ -67,7 +67,7 @@ void Map_Print (EMapPrintType printType, vec3f &origin)
 	PrintBuffer << ":\n";
 }
 
-void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, char *fmt, ...)
+void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, const char *fmt, ...)
 {
 	if (Entity && !Entity->ClassName.empty() && Level.ClassName != Entity->ClassName)
 		Level.ClassName = Entity->ClassName;
