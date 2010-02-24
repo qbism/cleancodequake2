@@ -468,13 +468,13 @@ void CFuncClock::Think ()
 	}
 	else
 	{
-		struct tm	ltime;
+		struct tm	*ltime;
 		time_t		gmtime;
 		char tempBuffer[CLOCK_MESSAGE_SIZE];
 
 		time(&gmtime);
-		localtime_s (&ltime, &gmtime);
-		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", ltime.tm_hour, ltime.tm_min, ltime.tm_sec);
+		ltime = localtime (&gmtime);
+		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", ltime->tm_hour, ltime->tm_min, ltime->tm_sec);
 		if (tempBuffer[3] == ' ')
 			tempBuffer[3] = '0';
 		if (tempBuffer[6] == ' ')
