@@ -40,11 +40,11 @@ class CClassnameToClassIndex
 {
 public:
 	CMapEntity				*(*Spawn) (sint32 Index);
-	char					*Classname;
+	const char				*Classname;
 	uint32					hashValue;
 	CClassnameToClassIndex	*hashNext;
 
-	CClassnameToClassIndex (CMapEntity *(*Spawn) (sint32 Index), char *Classname);
+	CClassnameToClassIndex (CMapEntity *(*Spawn) (sint32 Index), const char *Classname);
 };
 
 CBaseEntity *ResolveMapEntity (edict_t *ent);

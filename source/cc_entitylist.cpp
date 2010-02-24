@@ -55,7 +55,7 @@ CEntityList &EntityList ()
 	return List;
 }
 
-CClassnameToClassIndex::CClassnameToClassIndex (CMapEntity				*(*Spawn) (sint32 Index), char *Classname) :
+CClassnameToClassIndex::CClassnameToClassIndex (CMapEntity				*(*Spawn) (sint32 Index), const char *Classname) :
 Spawn(Spawn),
 Classname(Classname)
 {

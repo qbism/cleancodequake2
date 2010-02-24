@@ -306,7 +306,7 @@ public:
 
 	// There's like three of these Print wrappers nesting..
 	// Somewhere someone must die.
-	void Print (char *fmt, ...)
+	void Print (const char *fmt, ...)
 	{
 		if (!Handle)
 			return;

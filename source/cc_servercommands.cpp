@@ -273,7 +273,7 @@ void SvCmd_Ban_t ()
 			if (!Index->IP)
 				continue;
 
-			ServerPrintf ("%-24s Yes         %u\n", Index->IPAddress->str, Index->Flags);
+			ServerPrintf ("%-24s Yes         %u\n", Index->Address->str, Index->Flags);
 		}
 
 		for (TBanIndexContainer::iterator it = Bans.BanList.begin(); it < Bans.BanList.end(); ++it)

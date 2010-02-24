@@ -106,8 +106,8 @@ void CBanList::LoadFromFile ()
 			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
 			NewIndex->IP = true;
 
-			NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress;
-			Q_snprintfz (NewIndex->IPAddress->str, sizeof(NewIndex->IPAddress->str), "%s", token);
+			NewIndex->Address = QNew (com_genericPool, 0) IPAddress;
+			Q_snprintfz (NewIndex->Address->str, sizeof(NewIndex->Address->str), "%s", token);
 
 			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
 				break;
@@ -139,7 +139,7 @@ void CBanList::SaveList ()
 
 		File.Print ("%s %s %i\n",
 			(Index->IP) ? "ip" : "name",
-			(Index->IP) ? Index->IPAddress->str :Index->Name,
+			(Index->IP) ? Index->Address->str :Index->Name,
 			"%i\n", Index->Flags);
 	}
 
@@ -154,7 +154,7 @@ bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
 	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
 	NewIndex->IP = true;
 
-	NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress(Adr);
+	NewIndex->Address = QNew (com_genericPool, 0) IPAddress(Adr);
 	NewIndex->Flags = Flags;
 
 	BanList.push_back (NewIndex);
@@ -186,7 +186,7 @@ bool CBanList::InList (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return true;
 	}
 	return false;
@@ -216,7 +216,7 @@ bool CBanList::RemoveFromList (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 		{
 			BanList.erase(it);
 			return true;
@@ -252,7 +252,7 @@ bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 		{
 			if (Index->Flags == Flags)
 				return false;
@@ -294,7 +294,7 @@ bool CBanList::IsSquelched (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return !!(Index->Flags & BAN_SQUELCH);
 	}
 	return false;
@@ -309,7 +309,7 @@ bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return !!(Index->Flags & BAN_SPECTATOR);
 	}
 	return false;
@@ -324,7 +324,7 @@ bool CBanList::IsBanned (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return !!(Index->Flags & BAN_ENTER);
 	}
 	return false;

@@ -59,7 +59,7 @@ public:
 	bool			IP;
 	union
 	{
-		IPAddress	*IPAddress;
+		IPAddress	*Address;
 		char		*Name;
 	};
 
