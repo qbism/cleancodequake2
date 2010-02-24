@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#if 0
 void CGameTimer::Run ()
 {
 	if (EndTime <= Level.Frame)
@@ -92,3 +93,4 @@ void KillTimer (sint32 Key)
 		QDelete Timer;
 	}
 }
+#endif

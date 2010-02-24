@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_TIMER_H) || !INCLUDE_GUARDS
 #define CC_GUARD_TIMER_H
 
+#if 0
 class CGameTimer
 {
 public:
@@ -96,6 +97,14 @@ void KillTimer (sint32 Key);
 void RunTimers ();
 void ClearTimers ();
 void SaveTimers ();
+#else
+inline void ClearTimers ()
+{
+}
+inline void RunTimers ()
+{
+}
+#endif
 
 #else
 FILE_WARNING
