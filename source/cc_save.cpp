@@ -664,7 +664,7 @@ void CGameAPI::ReadLevel (char *filename)
 		return;
 	}
 #else
-	DebugPrintf("Function offsets %d\n", File.Read<size_t> () - reinterpret_cast<size_t>(ReadClient)));
+	DebugPrintf("Function offsets %d\n", File.Read<size_t> () - reinterpret_cast<size_t>(ReadClient));
 #endif
 
 	// load the level locals
