@@ -91,28 +91,6 @@ void		Mem_FreePools();
 // These operators are for vectors and the like.
 // Deprecated; use QNew/QDelete
 
-#ifdef WIN32
-void *operator new(size_t Size);
-void operator delete(void *Pointer);
-
-#if MSVS_VERSION >= VS_8
-_Ret_bytecap_(_Size) 
-#endif
-	void *
-#if MSVS_VERSION >= VS_6
-	__CRTDECL 
-#endif
-	operator new[](size_t _Size);
-
-void operator delete[](void *Pointer);
-#else
-void *operator new(size_t Size) throw (std::bad_alloc);
-void operator delete(void *Pointer) throw();
-void * operator new[](size_t _Size) throw (std::bad_alloc);
-void operator delete[](void *Pointer) throw();
-#endif
-
-
 // But allow these!
 inline void *operator new(size_t Size, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
 {
