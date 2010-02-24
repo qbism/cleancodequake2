@@ -72,7 +72,7 @@ void InitItemlist ();
 CBaseItem *FindItemByClassname (const char *name);
 CBaseItem *FindItem (const char *name);
 CBaseItem *GetItemByIndex (uint32 Index);
-extern sint32 GetNumItems ();
+sint32 GetNumItems ();
 
 void InitItemMedia ();
 

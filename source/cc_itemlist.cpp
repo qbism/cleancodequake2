@@ -240,7 +240,7 @@ CBaseItem *GetItemByIndex (uint32 Index)
 	return ItemList->Items[Index];
 }
 
-inline sint32 GetNumItems ()
+sint32 GetNumItems ()
 {
 	return ItemList->numItems;
 }
