@@ -268,6 +268,11 @@ bool IsInFront (CBaseEntity *self, CBaseEntity *Other)
 	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3);
 }
 
+CBaseEntity *LoadEntity (uint32 Index)
+{
+	return (Index == -1) ? NULL : Game.Entities[Index].Entity;
+}
+
 #include <crtdbg.h>
 
 bool AssertExpression (const bool expr, const char *msg)

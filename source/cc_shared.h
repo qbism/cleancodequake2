@@ -92,7 +92,6 @@ typedef sint32	FrameNumber_t;
 #include "cc_baseentity.h"
 #include "cc_trace.h"
 #include "cc_monsters.h"
-#include "cc_utils.h"
 #include "cc_cmds.h"
 #include "cc_modules.h"
 

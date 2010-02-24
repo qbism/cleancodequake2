@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_UTILS_H
 
 void	G_TouchTriggers (CBaseEntity *Entity);
-void G_SetMovedir (vec3f &angles, vec3f &movedir);
+void	G_SetMovedir (vec3f &angles, vec3f &movedir);
 
 typedef std::vector<CBaseEntity*, generic_allocator<CBaseEntity*> > TTargetList;
 CBaseEntity *CC_PickTarget (char *targetname);
@@ -177,6 +177,8 @@ inline ERangeType Range (vec3f left, vec3f right)
 ERangeType Range (CBaseEntity *self, CBaseEntity *Other);
 bool IsInFront (CBaseEntity *self, CBaseEntity *Other);
 bool IsVisible (CBaseEntity *self, CBaseEntity *Other);
+
+CBaseEntity *LoadEntity (uint32 Index);
 
 #else
 FILE_WARNING

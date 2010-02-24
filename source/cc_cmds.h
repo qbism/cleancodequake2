@@ -120,7 +120,7 @@ inline TReturnValue *RecurseSubCommands (uint32 &depth, TReturnValue *Cmd)
 	return NULL;
 }
 
-template <class TReturnValue, typename TListType, typename THashListType>
+template <class TReturnValue, class TListType, class THashListType>
 inline TReturnValue *FindCommand (const char *commandName, TListType &List, THashListType &HashList)
 {
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
@@ -147,11 +147,11 @@ inline TReturnValue *FindCommand (const char *commandName, TListType &List, THas
 }
 
 typedef void (*TPlayerCommandFunctorType) (CPlayerEntity*);
-class CPlayerCommand : public CCommand <TPlayerCommandFunctorType>
+class CPlayerCommand : public CCommand<TPlayerCommandFunctorType>
 {
 public:
 	CPlayerCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags) :
-	  CCommand (Name, Func, Flags)
+	  CCommand<TPlayerCommandFunctorType> (Name, Func, Flags)
 	  {
 	  };
 
@@ -168,7 +168,7 @@ public:
 
 	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
 	{
-		return static_cast<CPlayerCommand&>(CCommand::AddSubCommand(Name, Func, Flags));
+		return static_cast<CPlayerCommand&>(CCommand<TPlayerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
 	};
 };
 

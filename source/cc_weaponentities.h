@@ -215,14 +215,14 @@ public:
 	Kick(Kick),
 	ThroughAndThrough(ThroughAndThrough) {};
 
-	virtual inline CTrace	DoTrace		(vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 mask);
-	virtual inline bool		DoDamage	(CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
-	virtual inline void		DoEffect	(vec3f &start, vec3f &end, bool water);
-	virtual inline void		DoSolidHit	(CTrace *Trace);
-	virtual inline void		DoWaterHit	(CTrace *Trace);
-	virtual bool			ModifyEnd	(vec3f &aimDir, vec3f &start, vec3f &end);
+	virtual CTrace		DoTrace		(vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 mask);
+	virtual bool		DoDamage	(CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	virtual void		DoEffect	(vec3f &start, vec3f &end, bool water);
+	virtual void		DoSolidHit	(CTrace *Trace);
+	virtual void		DoWaterHit	(CTrace *Trace);
+	virtual bool		ModifyEnd	(vec3f &aimDir, vec3f &start, vec3f &end);
 
-	virtual void			DoFire		(CBaseEntity *Entity, vec3f start, vec3f aimdir);
+	virtual void		DoFire		(CBaseEntity *Entity, vec3f start, vec3f aimdir);
 };
 
 class CRailGunShot : public CHitScan
@@ -231,8 +231,8 @@ public:
 	CRailGunShot (sint32 Damage, sint32 Kick) :
 	CHitScan (Damage, Kick, true, true) {};
 
-	inline bool		DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
-	inline void		DoEffect (vec3f &start, vec3f &end, bool water);
+	bool		DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	void		DoEffect (vec3f &start, vec3f &end, bool water);
 
 	static void		Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick);
 };
@@ -249,9 +249,9 @@ public:
 	hSpread(hSpread),
 	MeansOfDeath(mod) {};
 
-	inline bool				DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
-	virtual inline void		DoSolidHit	(CTrace *Trace);
-	inline void				DoWaterHit	(CTrace *Trace);
+	bool					DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	virtual void			DoSolidHit	(CTrace *Trace);
+	void					DoWaterHit	(CTrace *Trace);
 	bool					ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end);
 	void					DoEffect (vec3f &start, vec3f &end, bool water);
 	virtual void			DoFire		(CBaseEntity *Entity, vec3f start, vec3f aimdir);
@@ -267,7 +267,7 @@ public:
 	{
 	};
 
-	inline void				DoSolidHit (CTrace *Trace);
+	void					DoSolidHit (CTrace *Trace);
 
 	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 Count, sint32 mod);
 };

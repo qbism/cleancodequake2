@@ -42,7 +42,7 @@ SV_ClientPrintf
 Sends text across to be displayed if the level passes
 =================
 */
-static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
@@ -62,7 +62,7 @@ static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt
 	Cast ((printLevel != PRINT_CENTER) ? CASTFLAG_UNRELIABLE : CASTFLAG_RELIABLE, Player);
 }
 
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	static char	msg[MAX_COMPRINT];
 	va_list		argptr;
@@ -89,7 +89,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 		ServerPrintf ("%s", msg);
 }
 
-void DeveloperPrintf (char *fmt, ...)
+void DeveloperPrintf (const char *fmt, ...)
 {
 	if (!CvarList[CV_DEVELOPER].Integer())
 		return;
@@ -109,7 +109,7 @@ _CC_ENABLE_DEPRECATION
 }
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
-void DebugPrintf (char *fmt, ...)
+void DebugPrintf (const char *fmt, ...)
 {
 #if _DEBUG
 	va_list		argptr;
@@ -127,7 +127,7 @@ _CC_ENABLE_DEPRECATION
 #endif
 }
 
-void ServerPrintf (char *fmt, ...)
+void ServerPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
@@ -143,7 +143,7 @@ _CC_ENABLE_DEPRECATION
 	CC_OutputDebugString (text);
 }
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
+void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
@@ -182,7 +182,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 	}
 }
 #else
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
@@ -197,7 +197,7 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 		gi.cprintf (ent, printLevel, "%s", string);
 }
 
-void DeveloperPrintf (char *fmt, ...)
+void DeveloperPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
@@ -209,7 +209,7 @@ void DeveloperPrintf (char *fmt, ...)
 	gi.dprintf ("%s", string);
 }
 
-void DebugPrintf (char *fmt, ...)
+void DebugPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
@@ -221,7 +221,7 @@ void DebugPrintf (char *fmt, ...)
 	gi.dprintf ("%s", string);
 }
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
+void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];

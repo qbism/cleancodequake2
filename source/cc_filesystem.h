@@ -547,17 +547,17 @@ public:
 class CFindFiles
 {
 public:
-	char	*Path;
-	char	*Filter;
-	char	*Extension;
-	bool	AddDir;
-	bool	Recurse;
+	cc_string		Path;
+	cc_string		Filter;
+	cc_string		Extension;
+	bool			AddDir;
+	bool			Recurse;
 	TFindFilesType	Files;
 
 	CFindFiles () :
-		Path(NULL),
-		Filter(NULL),
-		Extension(NULL),
+		Path(),
+		Filter(),
+		Extension(),
 		AddDir(false),
 		Recurse(false),
 		Files()
@@ -603,14 +603,12 @@ public:
 
 	void FindFiles (CFindFilesCallback *Callback)
 	{
-		if (!Path)
-			Path = "";
-		if (!Filter)
+		if (Filter.empty())
 			Filter = "*";
-		if (!Extension)
+		if (Extension.empty())
 			Extension = "*";
 
-		Files = FS_FindFiles (Path, Filter, Extension, AddDir, Recurse);
+		Files = FS_FindFiles (Path.c_str(), Filter.c_str(), Extension.c_str(), AddDir, Recurse);
 
 		if (Callback)
 		{

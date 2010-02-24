@@ -408,7 +408,7 @@ public:
 		case FT_VECTOR:
 			{
 				vec3f v;
-				sscanf_s (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z);
+				sscanf (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z);
 				OFS_TO_TYPE(vec3f) = v;
 			}
 			break;
@@ -636,7 +636,7 @@ public:
 		case FT_ENTITY:
 			{
 				sint32 Index = File.Read<sint32> ();
-				OFS_TO_TYPE(CBaseEntity *) = (Index == -1) ? NULL : Game.Entities[Index].Entity;
+				OFS_TO_TYPE(CBaseEntity *) = LoadEntity (Index);
 			}
 			break;
 		case FT_CC_STRING:
@@ -662,7 +662,7 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-			TClass::FieldsForParsing[i].Create<TPassClass> (Me, Value);
+			TClass::FieldsForParsing[i]. template Create<TPassClass> (Me, Value);
 			return true;
 		}
 	}
@@ -685,7 +685,7 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-			TClass::FieldsForParsing[i].Create<TClass> (Me, Value);
+			TClass::FieldsForParsing[i]. template Create<TClass> (Me, Value);
 			return true;
 		}
 	}
@@ -705,7 +705,7 @@ void SaveEntityFields (TClass *Me, CFile &File)
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-			TClass::FieldsForParsing[i].Save<TClass> (Me, File);
+			TClass::FieldsForParsing[i]. template Save<TClass> (Me, File);
 		}
 	}
 };
@@ -723,7 +723,7 @@ void LoadEntityFields (TClass *Me, CFile &File)
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-			TClass::FieldsForParsing[i].Load<TClass> (Me, File);
+			TClass::FieldsForParsing[i]. template Load<TClass> (Me, File);
 		}
 	}
 };

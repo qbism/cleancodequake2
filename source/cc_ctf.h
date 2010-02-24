@@ -168,7 +168,7 @@ public:
 void CTFInit();
 void CTFSpawn();
 
-inline char *CTFTeamName(ETeamIndex team)
+inline const char *CTFTeamName(ETeamIndex team)
 {
 	switch (team)
 	{
@@ -181,7 +181,7 @@ inline char *CTFTeamName(ETeamIndex team)
 	}
 }
 
-inline char *CTFOtherTeamName(ETeamIndex team)
+inline const char *CTFOtherTeamName(ETeamIndex team)
 {
 	switch (team)
 	{

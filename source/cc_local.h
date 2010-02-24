@@ -616,6 +616,8 @@ _CC_DISABLE_DEPRECATION
 _CC_ENABLE_DEPRECATION
 }
 
+#include "cc_utils.h"
+
 #else
 FILE_WARNING
 #endif

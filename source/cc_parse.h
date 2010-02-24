@@ -49,6 +49,166 @@ CC_ENUM (uint8, ESessionProperties)
 };
 
 #include <climits>
+// Data type stuff
+template <typename TType> inline const char *PS_DataName () { return "<unknown>"; }
+template <> inline const char *PS_DataName <sint8> () { return "<sint8>"; }
+template <> inline const char *PS_DataName <uint8> () { return "<uint8>"; }
+template <> inline const char *PS_DataName <sint16> () { return "<sint16>"; }
+template <> inline const char *PS_DataName <uint16> () { return "<uint16>"; }
+template <> inline const char *PS_DataName <sint32> () { return "<sint32>"; }
+template <> inline const char *PS_DataName <uint32> () { return "<uint32>"; }
+template <> inline const char *PS_DataName <long> () { return "<long>"; }
+template <> inline const char *PS_DataName <unsigned long> () { return "<unsigned long>"; }
+template <> inline const char *PS_DataName <float> () { return "<float>"; }
+template <> inline const char *PS_DataName <double> () { return "<double>"; }
+template <> inline const char *PS_DataName <bool> () { return "<bool>"; }
+template <typename TType>
+inline bool PS_VerifyVec (const char *token, void *target)
+{
+	_CC_ASSERT_EXPR (0, "PS_VerifyVec called without type specialization");
+	return false;
+}
+
+// Parse integral value
+template <typename TType>
+inline bool PS_VerifyVecI (const char *token, void *target, const TType MinValue, const TType MaxValue)
+{
+	uint32 i, len = strlen (token);
+
+	for (i = 0; i < len; i++)
+	{
+		if (token[i] >= '0' || token[i] <= '9')
+			continue;
+		if (token[i] == '-' && i == 0)
+			continue;
+		break;
+	}
+
+	if (i != len)
+		return false;
+
+	TType temp = atol (token);
+	if ((MinValue && (temp < MinValue)) || temp > MaxValue)
+		return false;
+
+	*(TType*)target = (TType)temp;
+	return true;
+}
+
+template <>
+inline bool PS_VerifyVec <sint8> (const char *token, void *target)
+{
+	return PS_VerifyVecI <sint8> (token, target, SCHAR_MIN, SCHAR_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <uint8> (const char *token, void *target)
+{
+	return PS_VerifyVecI <uint8> (token, target, 0, CHAR_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <sint16> (const char *token, void *target)
+{
+	return PS_VerifyVecI <sint16> (token, target, SHRT_MIN, SHRT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <uint16> (const char *token, void *target)
+{
+	return PS_VerifyVecI <uint16> (token, target, 0, USHRT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <sint32> (const char *token, void *target)
+{
+	return PS_VerifyVecI <sint32> (token, target, INT_MIN, INT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <uint32> (const char *token, void *target)
+{
+	return PS_VerifyVecI <uint32> (token, target, 0, UINT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <long> (const char *token, void *target)
+{
+	return PS_VerifyVecI <long> (token, target, LONG_MIN, LONG_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <unsigned long> (const char *token, void *target)
+{
+	return PS_VerifyVecI <unsigned long> (token, target, 0, ULONG_MAX);
+}
+
+// Parse float
+template <typename TType>
+inline bool PS_VerifyVecF (const char *token, void *target)
+{
+	bool		dot = false;
+	uint32		i, len = strlen (token);
+
+	for (i = 0; i < len; i++)
+	{
+		if (token[i] >= '0' || token[i] <= '9')
+			continue;
+		
+		if (token[i] == '.' && !dot)
+		{
+			dot = true;
+			continue;
+		}
+		
+		if (i == 0)
+		{
+			if (token[i] == '-')
+				continue;
+		}
+
+		else if (i == (len-1) && (Q_tolower(token[i]) == 'f' || Q_tolower(token[i]) == 'd'))
+			continue;
+
+		break;
+	}
+
+	if (i != len)
+		return false;
+
+	*(TType*)target = (TType)atof (token);
+	return true;
+}
+
+template <>
+inline bool PS_VerifyVec <float> (const char *token, void *target)
+{
+	return PS_VerifyVecF <float> (token, target);
+}
+
+template <>
+inline bool PS_VerifyVec <double> (const char *token, void *target)
+{
+	return PS_VerifyVecF <double> (token, target);
+}
+
+template <>
+inline bool PS_VerifyVec <bool> (const char *token, void *target)
+{
+	if (!strcmp (token, "1") || !Q_stricmp (token, "true"))
+	{
+		*(bool*)target = true;
+		return true;
+	}
+
+	if (!strcmp (token, "0") || !Q_stricmp (token, "false"))
+	{
+		*(bool*)target = false;
+		return true;
+	}
+
+	return false;
+}
 
 class CParser
 {
@@ -496,168 +656,6 @@ public:
 
 	// Private interface
 private:
-
-	template <typename TType>
-	static bool PS_VerifyVec (const char *token, void *target)
-	{
-		_CC_ASSERT_EXPR (0, "PS_VerifyVec called without type specialization");
-		return false;
-	}
-
-	// Parse integral value
-	template <typename TType>
-	static bool PS_VerifyVecI (const char *token, void *target, const TType MinValue, const TType MaxValue)
-	{
-		uint32 i, 
-			len = strlen (token);
-
-		for (i = 0; i < len; i++)
-		{
-			if (token[i] >= '0' || token[i] <= '9')
-				continue;
-			if (token[i] == '-' && i == 0)
-				continue;
-			break;
-		}
-
-		if (i != len)
-			return false;
-
-		TType temp = atol (token);
-		if ((MinValue && (temp < MinValue)) || temp > MaxValue)
-			return false;
-
-		*(TType*)target = (TType)temp;
-		return true;
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint8> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint8> (token, target, SCHAR_MIN, SCHAR_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint8> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint8> (token, target, 0, CHAR_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint16> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint16> (token, target, SHRT_MIN, SHRT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint16> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint16> (token, target, 0, USHRT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint32> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint32> (token, target, INT_MIN, INT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint32> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint32> (token, target, 0, UINT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <long> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <long> (token, target, LONG_MIN, LONG_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <unsigned long> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <unsigned long> (token, target, 0, ULONG_MAX);
-	}
-
-	// Parse float
-	template <typename TType>
-	static bool PS_VerifyVecF (const char *token, void *target)
-	{
-		bool		dot = false;
-		uint32		i, len = strlen (token);
-
-		for (i = 0; i < len; i++)
-		{
-			if (token[i] >= '0' || token[i] <= '9')
-				continue;
-			
-			if (token[i] == '.' && !dot)
-			{
-				dot = true;
-				continue;
-			}
-			
-			if (i == 0)
-			{
-				if (token[i] == '-')
-					continue;
-			}
-
-			else if (i == (len-1) && (Q_tolower(token[i]) == 'f' || Q_tolower(token[i]) == 'd'))
-				continue;
-
-			break;
-		}
-
-		if (i != len)
-			return false;
-
-		*(TType*)target = (TType)atof (token);
-		return true;
-	}
-
-	template <>
-	static bool PS_VerifyVec <float> (const char *token, void *target)
-	{
-		return PS_VerifyVecF <float> (token, target);
-	}
-
-	template <>
-	static bool PS_VerifyVec <double> (const char *token, void *target)
-	{
-		return PS_VerifyVecF <double> (token, target);
-	}
-
-	template <>
-	static bool PS_VerifyVec <bool> (const char *token, void *target)
-	{
-		if (!strcmp (token, "1") || !Q_stricmp (token, "true"))
-		{
-			*(bool*)target = true;
-			return true;
-		}
-
-		if (!strcmp (token, "0") || !Q_stricmp (token, "false"))
-		{
-			*(bool*)target = false;
-			return true;
-		}
-
-		return false;
-	}
-
-	template <typename TType> static const char *PS_DataName () { return "<unknown>"; }
-	template <> static const char *PS_DataName <sint8> () { return "<sint8>"; }
-	template <> static const char *PS_DataName <uint8> () { return "<uint8>"; }
-	template <> static const char *PS_DataName <sint16> () { return "<sint16>"; }
-	template <> static const char *PS_DataName <uint16> () { return "<uint16>"; }
-	template <> static const char *PS_DataName <sint32> () { return "<sint32>"; }
-	template <> static const char *PS_DataName <uint32> () { return "<uint32>"; }
-	template <> static const char *PS_DataName <long> () { return "<long>"; }
-	template <> static const char *PS_DataName <unsigned long> () { return "<unsigned long>"; }
-	template <> static const char *PS_DataName <float> () { return "<float>"; }
-	template <> static const char *PS_DataName <double> () { return "<double>"; }
-	template <> static const char *PS_DataName <bool> () { return "<bool>"; }
 
 	bool SkipComments (const char **data, EParseFlags flags)
 	{

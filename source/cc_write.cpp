@@ -33,9 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#include <limits.h>
-#include <float.h>
-
 _CC_DISABLE_DEPRECATION
 void _WriteChar (sint8 val)
 {
