@@ -4148,7 +4148,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 		};
 
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Attacker);
-		char *Name = Monster->Monster->MonsterName;
+		const char *Name = Monster->Monster->MonsterName.c_str();
 
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;

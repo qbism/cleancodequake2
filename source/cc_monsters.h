@@ -274,7 +274,7 @@ public:
 	CAnim				*CurrentMove;
 
 	uint32				MonsterFlags;
-	char				*MonsterName;
+	cc_string			MonsterName;
 
 	FrameNumber_t		PainDebounceTime;
 

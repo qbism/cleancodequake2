@@ -91,7 +91,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	// Check.
 	// LoadFields will actually re-load the monster's ID, so here we need to make sure
 	// they still are the same.
-	_CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || stricmp(Entity->Monster->MonsterName, LoadedName)), "Loaded monster differs in ID or Name\n");
+	_CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || stricmp(Entity->Monster->MonsterName.c_str(), LoadedName)), "Loaded monster differs in ID or Name\n");
 
 	Entity->Monster->Entity = Entity;
 }
@@ -150,7 +150,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<float> (EnemyYaw);
 	File.Write<CAnim*> (CurrentMove);
 	File.Write<uint32> (MonsterFlags);
-	File.WriteString (MonsterName);
+	File.Write (MonsterName);
 	File.Write<FrameNumber_t> (PainDebounceTime);
 #if MONSTERS_USE_PATHFINDING
 	File.Write<bool> (FollowingPath);
@@ -214,7 +214,7 @@ void CMonster::LoadFields (CFile &File)
 	EnemyYaw = File.Read<float> ();
 	CurrentMove = File.Read<CAnim*> ();
 	MonsterFlags = File.Read<uint32> ();
-	MonsterName = File.ReadString (com_entityPool);
+	MonsterName = File.Read ();
 	PainDebounceTime = File.Read<FrameNumber_t> ();
 #if MONSTERS_USE_PATHFINDING
 	FollowingPath = File.Read<bool> ();
@@ -668,10 +668,10 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 void			CMonsterEntity::SaveFields (CFile &File)
 {
 	// Write the monster's name first - this is used for checking later
-	if (_CC_ASSERT_EXPR (!(!Monster || !Monster->MonsterName), "Monster with no monster or name!\n"))
+	if (_CC_ASSERT_EXPR (!(!Monster || Monster->MonsterName.empty()), "Monster with no monster or name!\n"))
 		return;
 
-	File.WriteString (Monster->MonsterName);
+	File.Write (Monster->MonsterName);
 
 	// Write ID
 	File.Write<uint32> (Monster->MonsterID);
@@ -4044,7 +4044,7 @@ void CMonster::CheckFlies ()
 
 uint32 LastID = 0;
 CMonster::CMonster (uint32 ID) :
-MonsterName(NULL),
+MonsterName(),
 MonsterID(ID)
 {
 }
