@@ -659,7 +659,7 @@ char *CC_Mem_PoolStrDup (const char *in, void *_pool, const sint32 tagNum, const
 	memPool_t *pool = (memPool_t*)_pool;
 	
 	char	*out = (char*)CC_Mem_Alloc ((size_t)(strlen (in) + 1), pool, tagNum, fileName, fileLine, false);
-	strcpy_s (out, (size_t)(strlen (in) + 1), in);
+	Q_strncpyz (out, in, (size_t)(strlen (in) + 1));
 
 	return out;
 }

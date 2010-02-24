@@ -68,7 +68,7 @@ _CC_ENABLE_DEPRECATION
 	}
 }
 
-void GameError (char *fmt, ...)
+void GameError (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];

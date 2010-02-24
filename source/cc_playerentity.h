@@ -673,7 +673,7 @@ public:
 	void			Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	// Printing routines
-	inline void		PrintToClient (EGamePrintLevel printLevel, char *fmt, ...);
+	void			PrintToClient (EGamePrintLevel printLevel, const char *fmt, ...);
 
 	void			UpdateChaseCam();
 	void			ChaseNext();

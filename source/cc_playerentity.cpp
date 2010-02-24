@@ -3308,7 +3308,7 @@ void CPlayerEntity::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 D
 	Link ();
 };
 
-void CPlayerEntity::PrintToClient (EGamePrintLevel printLevel, char *fmt, ...)
+void CPlayerEntity::PrintToClient (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
