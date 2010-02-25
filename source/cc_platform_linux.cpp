@@ -178,7 +178,9 @@ void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
 };
 
 // Called when the library is loaded and before dlopen() returns
-void __attribute__ ((constructor)) my_load(void)
+void __attribute__((constructor)) my_init()
 {
     Mem_Init ();
+	char *holynull = (char*)0x02;
+	printf ("%s", holynull);
 }
