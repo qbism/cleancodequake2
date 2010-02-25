@@ -177,12 +177,8 @@ void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
 	return dlsym(Lib, Symbol);
 };
 
-
-// Entry point
-void __attribute__ ((constructor)) my_load(void);
-
 // Called when the library is loaded and before dlopen() returns
-void my_load(void)
+void __attribute__ ((constructor)) my_load(void)
 {
     Mem_Init ();
 }
