@@ -534,6 +534,9 @@
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_platform_linux.cpp">
+      <Filter>CleanCode Files\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">

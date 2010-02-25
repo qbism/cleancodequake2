@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // =========================================================================
 // Windows
 //
-#ifdef WIN32
-
 #define VS_UNKNOWN	0
 #define VS_5		1
 #define VS_6		2
@@ -41,6 +39,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define VS_8_STR		"Visual Studio 2005"
 #define VS_9_STR		"Visual Studio 2008"
 #define VS_10_STR		"Visual Studio 2010 BETA"
+
+#ifdef WIN32
 
 #if (_MSC_VER >= 1600) // 2010
 	#define MSVS_VERSION			VS_10
@@ -269,3 +269,8 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 #define CC_ENUM(type,name) \
 	typedef type name; \
 	enum
+
+#ifndef MSVS_VERSION
+#define MSVS_VERSION			VS_UNKNOWN
+#define MSVS_VERSION_STRING		VS_UNKNOWN_STR
+#endif

@@ -101,8 +101,6 @@ void FS_RemovePath (const char *pathName);
 void FS_AddPath (const char *pathName);
 void FS_ReorderPath (const char *pathName);
 
-#pragma warning (push)
-#pragma warning (disable : 4996)
 // A wrapper class for reading/writing to files.
 class CFile
 {
@@ -343,7 +341,6 @@ public:
 		return (Handle != 0);
 	};
 };
-#pragma warning (pop)
 
 // An inherited class to use stream-like operators
 class CFileStream : public CFile
