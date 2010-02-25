@@ -39,8 +39,8 @@ class CGrapple : public CWeapon
 public:
 	CGrapple();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 	
 	// This function is called when the player hits the attack button.
 	// Returns "true" if the animation can go ahead (check for ammo, etc here)

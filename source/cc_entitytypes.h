@@ -200,7 +200,7 @@ public:
 	};
 
 	class CTrace	PushEntity (vec3f &push);
-	inline void		AddGravity ();
+	void			AddGravity ();
 	void			Impact (CTrace *trace);
 	virtual void	PushInDirection (vec3f vel);
 };

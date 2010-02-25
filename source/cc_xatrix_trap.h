@@ -41,8 +41,8 @@ public:
 	CTrap(char *model, sint32 FireStart, sint32 FireNumFrames,
 						 sint32 IdleStart, sint32 IdleNumFrames);
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	void	WeaponGeneric (CPlayerEntity *Player);
 

@@ -39,8 +39,8 @@ class CBFG : public CWeapon
 public:
 	CBFG();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	MuzzleEffect (CPlayerEntity *Player);

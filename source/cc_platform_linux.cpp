@@ -182,6 +182,4 @@ static void MyInit() __attribute__((__constructor__));
 static void MyInit()
 {
     Mem_Init ();
-	char *holynull = (char*)0x02;
-	printf ("%s", holynull);
 }

@@ -39,8 +39,8 @@ class CIonRipper : public CWeapon
 public:
 	CIonRipper();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);

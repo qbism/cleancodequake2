@@ -98,8 +98,8 @@ public:
 
 	// Muzzle flash
 	virtual void	Muzzle (CPlayerEntity *Player, sint32 muzzleNum);
-	virtual inline void	FireAnimation (CPlayerEntity *Player);
-	void		AttackSound (CPlayerEntity *Player); // Sound for quad and CTF techs
+	virtual void	FireAnimation (CPlayerEntity *Player);
+	void			AttackSound (CPlayerEntity *Player); // Sound for quad and CTF techs
 
 	// General animating function.
 	// Doesn't need to be changed.
@@ -107,8 +107,8 @@ public:
 
 	// These two functions replace the need for an array for
 	// pause and fire frames.
-	virtual inline bool	CanFire	(CPlayerEntity *Player) = 0;
-	virtual inline bool	CanStopFidgetting (CPlayerEntity *Player) = 0;
+	virtual bool	CanFire	(CPlayerEntity *Player) = 0;
+	virtual bool	CanStopFidgetting (CPlayerEntity *Player) = 0;
 
 	// Ammo usage
 	virtual void	DepleteAmmo(CPlayerEntity *Player, sint32 Amount);

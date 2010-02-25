@@ -39,11 +39,11 @@ class CDebugWeapon : public CWeapon
 public:
 	CDebugWeapon();
 
-	inline bool	CanFire	(CPlayerEntity *Player)
+	bool		CanFire	(CPlayerEntity *Player)
 	{
 		return true;
 	};
-	inline bool	CanStopFidgetting (CPlayerEntity *Player)
+	bool		CanStopFidgetting (CPlayerEntity *Player)
 	{
 		return true;
 	};

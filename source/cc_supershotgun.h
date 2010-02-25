@@ -39,8 +39,8 @@ class CSuperShotgun : public CWeapon
 public:
 	CSuperShotgun();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
