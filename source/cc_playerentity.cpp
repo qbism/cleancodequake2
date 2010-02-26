@@ -3763,26 +3763,22 @@ bool CPlayerEntity::Connect (char *userinfo)
 {
 	cc_string	UserInfo = userinfo;
 
-	ServerPrintf ("Client connection from userinfo %s\n", userinfo);
 	// check to see if they are on the banned IP list
 	cc_string value = Info_ValueForKey (UserInfo, "ip");
 	IPAddress Adr = CopyIP (value.c_str());
 
-	ServerPrintf("Checking ban list...\n");
 	if (Bans.IsBanned(Adr) || Bans.IsBanned(Info_ValueForKey(UserInfo, "name").c_str()))
 	{
 		Info_SetValueForKey(UserInfo, "rejmsg", "Connection refused.");
 		return false;
 	}
 
-	ServerPrintf("Not banned, checking spectator...\n");
 	// check for a Spectator
 	value = Info_ValueForKey (UserInfo, "spectator");
 	if ((Game.GameMode & GAME_DEATHMATCH) && value.length() && value != "0")
 	{
 		sint32 i, numspec;
 
-		ServerPrintf("is a spectator, trying entering.\n");
 		if (Bans.IsBannedFromSpectator(Adr) || Bans.IsBannedFromSpectator(Info_ValueForKey(UserInfo, "name").c_str()))
 		{
 			Info_SetValueForKey(UserInfo, "rejmsg", "Not permitted to enter spectator mode");
@@ -3809,11 +3805,9 @@ bool CPlayerEntity::Connect (char *userinfo)
 			Info_SetValueForKey(UserInfo, "rejmsg", "Server Spectator limit is full.");
 			return false;
 		}
-		ServerPrintf ("spectator mode passed\n");
 	}
 	else
 	{
-		ServerPrintf ("not spectator check password\n");
 		// check for a password
 		value = Info_ValueForKey (UserInfo, "password");
 		if (*CvarList[CV_PASSWORD].String() && strcmp(CvarList[CV_PASSWORD].String(), "none") && 
@@ -3824,7 +3818,7 @@ bool CPlayerEntity::Connect (char *userinfo)
 		}
 	}
 
-	ServerPrintf ("connection valid\n");
+
 	// they can connect
 	gameEntity->client = Game.Clients + (State.GetNumber()-1);
 

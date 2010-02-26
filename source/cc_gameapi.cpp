@@ -215,7 +215,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 
 	returnVal = (GameAPI.ClientConnect (entity_cast<CPlayerEntity>(ent->Entity), userinfo) ? 1 : 0);
 
-#if CC_USE_EXCEPTION_HANDLER
+#if CC_USE_EXCEPTION_HANDLER && WIN32
 CC_EXCEPTION_HANDLER_END_CUSTOM_BEGIN
 	returnVal = 0;
 CC_EXCEPTION_HANDLER_END_CUSTOM_END
