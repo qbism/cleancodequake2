@@ -575,11 +575,14 @@ sint32 &CGameAPI::GetMaxEdicts()
 	return globals.maxEdicts;
 };
 
-gameExport_t *GetGameAPI (gameImport_t *import)
+extern "C"
 {
-	gi = *import;
-
-	Swap_Init ();
-	return &globals;
+	gameExport_t *GetGameAPI (gameImport_t *import)
+	{
+		gi = *import;
+		
+		Swap_Init ();
+		return &globals;
+	}
 }
 
