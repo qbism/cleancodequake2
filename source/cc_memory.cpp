@@ -27,13 +27,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 _CC_DISABLE_DEPRECATION
 static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 {
-	void *Mem = (TagNum == -1) ? malloc((Size + sizeof(byte))) : gi.TagMalloc((Size + sizeof(byte)), TagNum);
+	void *Mem = (TagNum == -1) ? malloc((Size + sizeof(uint8))) : gi.TagMalloc((Size + sizeof(uint8)), TagNum);
 	Mem_Zero (Mem, Size);
 
 	// Set the first byte to 255 if we're Generic memory, otherwise 0.
-	*(byte*)Mem = (TagNum == TAG_GENERIC) ? 255 : 0;
+	*(uint8*)Mem = (TagNum == TAG_GENERIC) ? 255 : 0;
 
-	return (void*)((byte*)Mem + sizeof(byte));
+	return (void*)((uint8*)Mem + sizeof(uint8));
 }
 
 static void Mem_TagFree (void *Pointer)
@@ -41,7 +41,7 @@ static void Mem_TagFree (void *Pointer)
 	if (Pointer == NULL)
 		return;
 
-	byte *realMem = (byte*)Pointer - sizeof(byte);
+	uint8 *realMem = (uint8*)Pointer - sizeof(uint8);
 	
 	if (*realMem == 255)
 		free (realMem);
