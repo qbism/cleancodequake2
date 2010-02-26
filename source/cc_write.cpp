@@ -146,7 +146,7 @@ public:
 	};
 };
 
-std::vector <CWriteIndex*, write_allocator<CWriteIndex*> > WriteQueue;
+std::vector <CWriteIndex*, std::allocator<CWriteIndex*> > WriteQueue;
 
 void SendQueue (edict_t *To, bool Reliable)
 {
@@ -244,7 +244,7 @@ void WriteChar (sint8 val)
 	}
 
 	//gi.WriteChar (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint8> (val, WT_CHAR));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint8> (val, WT_CHAR));
 }
 
 void WriteByte (uint8 val)
@@ -256,7 +256,7 @@ void WriteByte (uint8 val)
 	}
 
 	//gi.WriteByte (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<uint8> (val, WT_BYTE));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<uint8> (val, WT_BYTE));
 }
 
 void WriteShort (sint16 val)
@@ -268,7 +268,7 @@ void WriteShort (sint16 val)
 	}
 
 	//gi.WriteShort (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint16> (val, WT_SHORT));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> (val, WT_SHORT));
 }
 
 void WriteLong (long val)
@@ -280,7 +280,7 @@ void WriteLong (long val)
 	}
 
 	//gi.WriteLong (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<long> (val, WT_LONG));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<long> (val, WT_LONG));
 }
 
 void WriteFloat (float val)
@@ -292,7 +292,7 @@ void WriteFloat (float val)
 	}
 
 	//gi.WriteFloat (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<float> (val, WT_FLOAT));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<float> (val, WT_FLOAT));
 }
 
 void WriteAngle (float val)
@@ -320,13 +320,13 @@ void WriteString (const char *val)
 	}
 
 	//gi.WriteString (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWriteString (val));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (val));
 }
 
 void WriteCoord (float f)
 {
 	//WriteShort ((sint32)(f * 8));
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
 }
 
 void WritePosition (vec3_t val)

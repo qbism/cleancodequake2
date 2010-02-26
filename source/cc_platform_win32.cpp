@@ -271,9 +271,27 @@ double Sys_MSPerCycle()
 	return sys_msPerCycle;
 }
 
+bool TimeInitiated = false;
+
 // Timer class
 void CTimer::Start ()
 {
+	if (!TimeInitiated)
+	{
+		// Make sure the timer is high precision, otherwise NT gets 18ms resolution
+		timeBeginPeriod(1);
+		sys_timeBase = timeGetTime() & 0xffff0000;
+
+		// This is later multiplied times a cycle duration to get the CPU time in MS
+		{
+			LARGE_INTEGER PF;
+			QueryPerformanceFrequency(&PF);
+			sys_msPerCycle = (1.0 / (double)PF.QuadPart) * 1000.0;
+		}
+
+		TimeInitiated = true;
+	}
+
 	StartCycles = Sys_Cycles();
 };
 
@@ -302,44 +320,5 @@ void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
 {
 	return GetProcAddress((HMODULE)Lib, Symbol);
 };
-
-// DLL entry point (for CleanCode-managed memory)
-BOOL WINAPI DllInit(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
-{
-	switch (fdwReason)
-	{
-	case DLL_PROCESS_ATTACH:
-		DisableThreadLibraryCalls (hinstDLL);
-
-		// Make sure the timer is high precision, otherwise NT gets 18ms resolution
-		timeBeginPeriod(1);
-		sys_timeBase = timeGetTime() & 0xffff0000;
-
-		// This is later multiplied times a cycle duration to get the CPU time in MS
-		{
-			LARGE_INTEGER PF;
-			QueryPerformanceFrequency(&PF);
-			sys_msPerCycle = (1.0 / (double)PF.QuadPart) * 1000.0;
-		}
-
-		Mem_Init ();
-
-		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
-			return FALSE;
-		break;
-
-	case DLL_PROCESS_DETACH:
-		if (!_CRT_INIT(hinstDLL, fdwReason, lpReserved))
-			return FALSE;
-
-		//Mem_FreePools ();
-		break;
-
-	default:
-		break;
-	}
-
-	return TRUE;
-}
 
 #endif

@@ -63,8 +63,8 @@ void ReadMagic (CFile &File)
 // Reads the magic number.
 #define READ_MAGIC ReadMagic(File);
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, generic_allocator<size_t> > THashedEntityTableList;
-typedef std::vector<CEntityTableIndex*, generic_allocator <CEntityTableIndex*> > TEntityTableList;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedEntityTableList;
+typedef std::vector<CEntityTableIndex*, std::allocator <CEntityTableIndex*> > TEntityTableList;
 #define MAX_ENTITY_TABLE_HASH 256
 
 TEntityTableList &EntityTable ()
@@ -118,7 +118,7 @@ void DeallocateEntities ()
 	ShuttingDownEntities = true;
 	Level.Entities.Closed.remove_if (RemoveAll);
 	ShuttingDownEntities = false;
-	Mem_FreePool (com_entityPool);
+	Mem_FreeTag (TAG_ENTITY);
 	ClearSpawnPoints ();
 };
 
@@ -177,7 +177,7 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 		In = File.Read<MediaIndex> ();
 	else if (len > 1)
 	{
-		char *tempBuffer = QNew (com_genericPool, 0) char[len];
+		char *tempBuffer = QNew (TAG_GENERIC) char[len];
 		File.ReadArray (tempBuffer, len);
 
 		switch (IndexType)
@@ -362,7 +362,7 @@ void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
 
 void ReadEntities (CFile &File)
 {
-	std::vector <sint32, generic_allocator <sint32> > LoadedNumbers;
+	std::vector <sint32, std::allocator <sint32> > LoadedNumbers;
 	while (true)
 	{
 		sint32 number = File.Read<sint32> ();
@@ -405,10 +405,10 @@ void ReadClient (CFile &File, sint32 i)
 
 void ReadClients (CFile &File)
 {
-	SaveClientData = QNew (com_genericPool, 0) CClient*[Game.MaxClients];
+	SaveClientData = QNew (TAG_GENERIC) CClient*[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		SaveClientData[i] = QNew (com_genericPool, 0) CClient(Game.Entities[1+i].client);
+		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].client);
 		ReadClient (File, i);
 	}
 }
@@ -475,7 +475,7 @@ void CGameAPI::ReadGame (char *filename)
 	DebugPrintf ("Reading game from %s...\n", filename);
 
 	// Free any game-allocated memory before us
-	Mem_FreePool (com_gamePool);
+	Mem_FreeTag (TAG_GAME);
 	CFile File (filename, FILEMODE_READ | SAVE_GZ_FLAGS);
 
 	if (!File.Valid())
@@ -494,11 +494,11 @@ void CGameAPI::ReadGame (char *filename)
 
 	seedMT (time(NULL));
 
-	Game.Entities = QNew (com_gamePool, 0) edict_t[Game.MaxEntities];
+	Game.Entities = QNew (TAG_GAME) edict_t[Game.MaxEntities];
 	GameAPI.GetEntities() = Game.Entities;
 	ReadGameLocals (File);
 
-	Game.Clients = QNew (com_gamePool, 0) gclient_t[Game.MaxClients];
+	Game.Clients = QNew (TAG_GAME) gclient_t[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
 		edict_t *ent = &Game.Entities[i+1];
@@ -629,7 +629,7 @@ void CGameAPI::ReadLevel (char *filename)
 	DeallocateEntities ();
 	// free any dynamic memory allocated by loading the level
 	// base state
-	Mem_FreePool (com_levelPool);
+	Mem_FreeTag (TAG_LEVEL);
 
 	// Re-initialize the systems
 	BodyQueue_Init (0);

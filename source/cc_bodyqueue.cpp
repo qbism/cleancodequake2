@@ -123,7 +123,7 @@ void CBody::TossHead (sint32 Damage)
 	Link ();
 }
 
-typedef std::list<CBody*, level_allocator<CBody*> > TBodyQueueList;
+typedef std::list<CBody*, std::allocator<CBody*> > TBodyQueueList;
 class CBodyQueue
 {
 public:
@@ -220,7 +220,7 @@ CBodyQueue::CBodyQueue (sint32 MaxSize)
 
 void BodyQueue_Init (sint32 reserve)
 {
-	BodyQueue = QNew (com_levelPool, 0) CBodyQueue (reserve);
+	BodyQueue = QNew (TAG_LEVEL) CBodyQueue (reserve);
 }
 
 // Saves currently allocated body numbers

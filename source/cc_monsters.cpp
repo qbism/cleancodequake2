@@ -41,8 +41,8 @@ MONSTER LIST
 ===============================
 */
 
-typedef std::vector<CMonsterTableIndex*, generic_allocator <CMonsterTableIndex*> > TMonsterListType;
-typedef std::multimap<size_t, size_t, std::less<size_t>, generic_allocator<size_t> > THashedMonsterListType;
+typedef std::vector<CMonsterTableIndex*, std::allocator <CMonsterTableIndex*> > TMonsterListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedMonsterListType;
 
 TMonsterListType &MonsterTable ()
 {
@@ -214,7 +214,7 @@ void CMonster::LoadFields (CFile &File)
 	EnemyYaw = File.Read<float> ();
 	CurrentMove = File.Read<CAnim*> ();
 	MonsterFlags = File.Read<uint32> ();
-	MonsterName = File.Read ();
+	MonsterName = File.ReadCCString ();
 	PainDebounceTime = File.Read<FrameNumber_t> ();
 #if MONSTERS_USE_PATHFINDING
 	FollowingPath = File.Read<bool> ();
@@ -240,7 +240,7 @@ void CMonster::WriteNodeInfo (CFile &File)
 
 void CMonster::ReadNodeInfo (CFile &File)
 {
-	P_CurrentPath = QNew (com_levelPool, 0) CPath();
+	P_CurrentPath = QNew (TAG_LEVEL) CPath();
 	P_CurrentPath->Load (File);
 	P_CurrentGoalNode = GetNodeByIndex(File.Read<uint32> ());
 	P_CurrentNode = GetNodeByIndex(File.Read<uint32> ());

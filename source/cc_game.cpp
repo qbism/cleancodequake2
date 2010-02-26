@@ -527,13 +527,13 @@ void CGameAPI::Init ()
 
 	// initialize all entities for this game
 	Game.MaxEntities = CvarList[CV_MAXENTITIES].Integer();
-	Game.Entities = QNew (com_gamePool, 0) edict_t[Game.MaxEntities];
+	Game.Entities = QNew (TAG_GAME) edict_t[Game.MaxEntities];
 	GameAPI.GetEntities() = Game.Entities;
 	GameAPI.GetMaxEdicts() = Game.MaxEntities;
 
 	// initialize all clients for this game
 	Game.MaxClients = CvarList[CV_MAXCLIENTS].Integer();
-	Game.Clients = QNew (com_gamePool, 0) gclient_t[Game.MaxClients];
+	Game.Clients = QNew (TAG_GAME) gclient_t[Game.MaxClients];
 	GameAPI.GetNumEdicts() = Game.MaxClients + 1;
 
 	// Vars
@@ -542,7 +542,7 @@ void CGameAPI::Init ()
 
 	Bans.LoadFromFile ();
 
-	Mem_Register ();
+//	Mem_Register ();
 
 #if 0
 	LoadModules ();

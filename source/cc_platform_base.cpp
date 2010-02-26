@@ -147,14 +147,3 @@ void *CDynamicLibrary::OS_GetProcAddress (const char *Symbol)
 {
 	return NULL;
 };
-
-
-// Entry point
-// ================
-// IMPORTANT
-// IMPORTANT
-// IMPORTANT
-// ================
-// Your operating system files MUST contain
-// an entry point that calls Mem_Init __BEFORE__ the
-// CRT is initialized!

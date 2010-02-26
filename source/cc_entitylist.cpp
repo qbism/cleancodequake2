@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define MAX_CLASSNAME_CLASSES 1024
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, generic_allocator<size_t> > THashedEntityListType;
-typedef std::vector<CClassnameToClassIndex*, generic_allocator<CClassnameToClassIndex*> > TEntityListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedEntityListType;
+typedef std::vector<CClassnameToClassIndex*, std::allocator<CClassnameToClassIndex*> > TEntityListType;
 
 class CEntityList
 {
@@ -135,7 +135,7 @@ _CC_ENABLE_DEPRECATION
 	}
 
 	// Link in the classname
-	MapEntity->ClassName = Mem_PoolStrDup (Level.ClassName.c_str(), com_levelPool, 0);
+	MapEntity->ClassName = Mem_TagStrDup (Level.ClassName.c_str(), TAG_LEVEL);
 
 	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
@@ -213,7 +213,7 @@ static void ED_ParseEdict (CParser &data, edict_t *ent)
 			Level.ClassName = token;
 		else
 			// push it in the list for the entity
-			Level.ParseData.push_back (QNew (com_levelPool, 0) CKeyValuePair (keyName, token));
+			Level.ParseData.push_back (QNew (TAG_LEVEL) CKeyValuePair (keyName, token));
 	}
 
 	if (!init)
@@ -363,8 +363,8 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	Level.Clear ();
 
-	Mem_FreePool (com_levelPool);
-	gEntString = Mem_PoolStrDup(entities, com_levelPool, 0);
+	Mem_FreeTag (TAG_LEVEL);
+	gEntString = Mem_TagStrDup(entities, TAG_LEVEL);
 
 	char *oldEntities = entities;
 	bool FreeIt = false;

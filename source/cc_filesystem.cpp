@@ -62,13 +62,13 @@ public:
 	};
 };
 
-typedef std::vector<fs_pathIndex*, filesystem_allocator<fs_pathIndex*> > fs_pathListType;
+typedef std::vector<fs_pathIndex*, std::allocator<fs_pathIndex*> > fs_pathListType;
 fs_pathListType fs_pathList;
 
 // Adds a path to the path list
 void FS_AddPath (const char *pathName)
 {
-	fs_pathIndex *path = QNew (com_fileSysPool, 0) fs_pathIndex;
+	fs_pathIndex *path = QNew (TAG_GENERIC) fs_pathIndex;
 	strncpy (path->pathName, pathName, sizeof(path->pathName));
 	fs_pathList.push_back (path);
 }
@@ -103,7 +103,7 @@ void FS_ReorderPath (const char *pathName)
 		}
 	}
 
-	fs_pathIndex *Path = QNew (com_fileSysPool, 0) fs_pathIndex;
+	fs_pathIndex *Path = QNew (TAG_GENERIC) fs_pathIndex;
 	strncpy (Path->pathName, pathName, sizeof(Path->pathName));
 
 	fs_pathList.insert (fs_pathList.begin(), Path);
@@ -143,7 +143,7 @@ public:
 	} file;
 };
 
-typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, filesystem_allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
 class CFileHandleList *IndexList;
 
 class CFileHandleList
@@ -504,7 +504,7 @@ size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate)
 	size_t len = FS_Len (handle);
 
 	size_t termLen = (terminate) ? 2 : 0;
-	uint8 *buf = QNew (com_fileSysPool, 0) uint8[len + termLen];
+	uint8 *buf = QNew (TAG_GENERIC) uint8[len + termLen];
 	*buffer = buf;
 
 	FS_Read(buf, len, handle);
@@ -630,7 +630,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 
 void FS_Init (sint32 maxHandles)
 {
-	IndexList = QNew(com_fileSysPool, 0) CFileHandleList (maxHandles);
+	IndexList = QNew(TAG_GENERIC) CFileHandleList (maxHandles);
 	FS_AddPath (".");
 	if (strcmp(GAMENAME, "baseq2"))
 		FS_AddPath (GAMENAME);

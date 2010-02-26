@@ -1555,7 +1555,7 @@ void CTFWarp(CPlayerEntity *Player)
 		return;
 	}
 
-	mlist = Mem_PoolStrDup(CvarList[CV_WARP_LIST].String(), com_genericPool, 0);
+	mlist = Mem_StrDup(CvarList[CV_WARP_LIST].String());
 
 	token = strtok(mlist, seps);
 	while (token != NULL)

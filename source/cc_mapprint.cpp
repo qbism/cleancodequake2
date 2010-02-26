@@ -91,7 +91,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, cons
 sint32 fileVersion;
 
 sint32 curIf = 0;
-std::vector<bool, generic_allocator<bool> > ifLists;
+std::vector<bool, std::allocator<bool> > ifLists;
 
 inline void PushIf (bool expr)
 {
@@ -141,7 +141,7 @@ struct PoundVariable_t
 	} vars;
 };
 
-std::vector<PoundVariable_t *, generic_allocator<PoundVariable_t*> > VariableList;
+std::vector<PoundVariable_t *, std::allocator<PoundVariable_t*> > VariableList;
 
 PoundVariable_t *Pound_FindVar (char *name)
 {
@@ -168,8 +168,8 @@ char *ParsePound (char *tok, char *realEntities)
 		token = Com_Parse (&tok);
 
 		// Name of variable
-		PoundVariable_t *newVar = QNew (com_levelPool, 0) PoundVariable_t;
-		newVar->variableName = Mem_PoolStrDup (token, com_levelPool, 0);
+		PoundVariable_t *newVar = QNew (TAG_LEVEL) PoundVariable_t;
+		newVar->variableName = Mem_TagStrDup (token, TAG_LEVEL);
 
 		token = Com_Parse (&tok);
 		sint32 completed = 0;
@@ -188,7 +188,7 @@ char *ParsePound (char *tok, char *realEntities)
 		if (completed == strlen(token))
 		{
 			sint32 value = atoi(token);
-			newVar->vars.integer = QNew (com_levelPool, 0) sint32(value);
+			newVar->vars.integer = QNew (TAG_LEVEL) sint32(value);
 			newVar->variableType = POUNDVARIABLE_INTEGER;
 		}
 		else
@@ -209,13 +209,13 @@ char *ParsePound (char *tok, char *realEntities)
 			if (completed == strlen(token))
 			{
 				float value = atof(token);
-				newVar->vars.floating = QNew (com_levelPool, 0) float(value);
+				newVar->vars.floating = QNew (TAG_LEVEL) float(value);
 				newVar->variableType = POUNDVARIABLE_FLOATING;
 			}
 			else
 			{
 				// Must be a string then
-				newVar->vars.string = Mem_PoolStrDup (token, com_levelPool, 0);
+				newVar->vars.string = Mem_TagStrDup (token, TAG_LEVEL);
 				newVar->variableType = POUNDVARIABLE_STRING;
 			}
 		}
@@ -375,7 +375,7 @@ char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 			break;
 	}
 
-	char *finalEntString = Mem_PoolStrDup (finalString.c_str(), com_levelPool, 0);
+	char *finalEntString = Mem_TagStrDup (finalString.c_str(), TAG_LEVEL);
 
 	return finalEntString;
 }

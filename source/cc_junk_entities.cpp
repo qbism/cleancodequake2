@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define MAX_JUNK 35
 
-typedef std::list<sint32, level_allocator<sint32> > TJunkList;
+typedef std::list<sint32, std::allocator<sint32> > TJunkList;
 class CJunkList
 {
 public:
@@ -174,7 +174,7 @@ void LoadJunk (CFile &File)
 
 void Init_Junk()
 {
-	JunkList = QNew (com_levelPool, 0) CJunkList;
+	JunkList = QNew (TAG_LEVEL) CJunkList;
 }
 
 void Shutdown_Junk ()

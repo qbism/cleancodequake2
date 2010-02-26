@@ -395,7 +395,7 @@ potential spawning position for deathmatch games
 class CPlayerDeathmatch : public CSpotBase
 {
 public:
-	typedef std::vector<CPlayerDeathmatch*, generic_allocator<CPlayerDeathmatch*> > TSpawnPointsType;
+	typedef std::vector<CPlayerDeathmatch*, std::allocator<CPlayerDeathmatch*> > TSpawnPointsType;
 	static inline TSpawnPointsType &SpawnPoints ()
 	{
 		static TSpawnPointsType Points;
@@ -580,7 +580,7 @@ potential spawning position for coop games
 class CPlayerCoop : public CSpotBase, public CThinkableEntity
 {
 public:
-	typedef std::vector<CPlayerCoop*, generic_allocator<CPlayerCoop*> > TSpawnPointsType;
+	typedef std::vector<CPlayerCoop*, std::allocator<CPlayerCoop*> > TSpawnPointsType;
 	static inline TSpawnPointsType &SpawnPoints ()
 	{
 		static TSpawnPointsType Points;
@@ -746,7 +746,7 @@ The normal starting point for a Level.
 class CPlayerStart : public CSpotBase, public CThinkableEntity
 {
 public:
-	typedef std::vector<CPlayerStart*, generic_allocator<CPlayerStart*> > TSpawnPointsType;
+	typedef std::vector<CPlayerStart*, std::allocator<CPlayerStart*> > TSpawnPointsType;
 	static inline TSpawnPointsType &SpawnPoints ()
 	{
 		static TSpawnPointsType Points;
@@ -857,7 +857,7 @@ potential team1 spawning position for ctf games
 class CPlayerTeam1 : public CSpotBase
 {
 public:
-	typedef std::vector<CPlayerTeam1*, generic_allocator<CPlayerTeam1*> > TSpawnPointsType;
+	typedef std::vector<CPlayerTeam1*, std::allocator<CPlayerTeam1*> > TSpawnPointsType;
 	static inline TSpawnPointsType &SpawnPoints ()
 	{
 		static TSpawnPointsType Points;
@@ -896,7 +896,7 @@ potential team2 spawning position for ctf games
 class CPlayerTeam2 : public CSpotBase
 {
 public:
-	typedef std::vector<CPlayerTeam2*, generic_allocator<CPlayerTeam2*> > TSpawnPointsType;
+	typedef std::vector<CPlayerTeam2*, std::allocator<CPlayerTeam2*> > TSpawnPointsType;
 	static inline TSpawnPointsType &SpawnPoints ()
 	{
 		static TSpawnPointsType Points;

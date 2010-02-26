@@ -219,7 +219,7 @@ struct gameImport_t
 #endif
 	void	(*TagFree) (void *block);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (Mem_FreePool)
+	_CC_INSECURE_DEPRECATE (Mem_FreeTag)
 #endif
 	void	(*FreeTags) (sint32 tag);
 

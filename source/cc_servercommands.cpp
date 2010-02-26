@@ -63,7 +63,7 @@ void SvCmd_AddCommand (const char *commandName, void (*Func) ())
 		return;
 
 	// We can add it!
-	ServerCommandList().push_back (QNew (com_commandPool, 0) CServerCommand (commandName, Func));
+	ServerCommandList().push_back (QNew (TAG_GENERIC) CServerCommand (commandName, Func));
 
 	// Link it in the hash tree
 	ServerCommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList().size()-1));
@@ -97,7 +97,7 @@ struct SServerEntityListIndex
 	const char	*className;
 	uint32		Num;
 	bool		Old;
-	std::vector<SServerEntityListEntity, generic_allocator<SServerEntityListEntity> > List;
+	std::vector<SServerEntityListEntity, std::allocator<SServerEntityListEntity> > List;
 
 	SServerEntityListIndex			*hashNext;
 	uint32							hashValue;
@@ -122,8 +122,8 @@ public:
 	CServerEntityList () :
 		NumInList (0)
 	{
-		List = QNew (com_genericPool, 0) SServerEntityListIndex*[MAX_CS_EDICTS];
-		HashedList = QNew (com_genericPool, 0) SServerEntityListIndex*[MAX_CS_EDICTS];
+		List = QNew (TAG_GENERIC) SServerEntityListIndex*[MAX_CS_EDICTS];
+		HashedList = QNew (TAG_GENERIC) SServerEntityListIndex*[MAX_CS_EDICTS];
 		Mem_Zero (List, sizeof(List));
 		Mem_Zero (HashedList, sizeof(HashedList));
 	};
@@ -150,7 +150,7 @@ public:
 
 	SServerEntityListIndex *AddToList (const char *className)
 	{
-		SServerEntityListIndex *Ind = QNew (com_genericPool, 0) SServerEntityListIndex(className);
+		SServerEntityListIndex *Ind = QNew (TAG_GENERIC) SServerEntityListIndex(className);
 		List[NumInList] = Ind;
 		List[NumInList]->hashNext = HashedList[List[NumInList]->hashValue];
 		HashedList[List[NumInList]->hashValue] = List[NumInList];

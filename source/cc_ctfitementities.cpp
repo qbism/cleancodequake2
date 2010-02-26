@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if CLEANCTF_ENABLED
-typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, item_allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
+typedef std::map <ETeamIndex, CFlagTransponder*, std::less<ETeamIndex>, std::allocator <std::pair<ETeamIndex, CFlagTransponder*> > > TTransponderListType;
 
 inline TTransponderListType &Transponders ()
 {
@@ -155,7 +155,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 
 	State.GetEffects() = Item->EffectFlags;
 	State.GetRenderEffects() = RF_GLOW;
-	Transponder = QNew (com_itemPool, 0) CFlagTransponder (Team, this);
+	Transponder = QNew (TAG_GENERIC) CFlagTransponder (Team, this);
 };
 
 CRedFlagEntity::CRedFlagEntity () :

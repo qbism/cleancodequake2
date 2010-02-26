@@ -89,7 +89,7 @@ CC_ENUM (sint32, ETimerKeys)
 template <typename TType>
 void CreateTimer (FrameNumber_t	EndTime, sint32 Key = TIMER_NONE)
 {
-	AddTimer (QNew (com_levelPool, 0) TType (EndTime, Key), Key);
+	AddTimer (QNew (TAG_LEVEL) TType (EndTime, Key), Key);
 }
 
 void KillTimer (sint32 Key);

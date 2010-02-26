@@ -51,10 +51,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define FRAMETIME		1
 
-// memory tags to allow dynamic memory to be cleaned up
-#define TAG_GAME	765		// clear when unloading the dll
-#define TAG_LEVEL	766		// clear when loading a new level
-
 //gib types
 CC_ENUM (uint8, EGibType)
 {
@@ -124,8 +120,8 @@ public:
 	char	*Value;
 
 	CKeyValuePair (const char *Key, const char *Value) :
-	Key((Key) ? Q_strlwr(Mem_PoolStrDup(Key, com_levelPool, 0)) : NULL),
-	Value((Key) ? Mem_PoolStrDup(Value, com_levelPool, 0) : NULL)
+	Key((Key) ? Q_strlwr(Mem_TagStrDup(Key, TAG_LEVEL)) : NULL),
+	Value((Key) ? Mem_TagStrDup(Value, TAG_LEVEL) : NULL)
 	{
 	};
 
@@ -365,9 +361,9 @@ public:
 
 	void Load (CFile &File)
 	{
-		HelpMessages[0] = File.Read<cc_string> ();
-		HelpMessages[1] = File.Read<cc_string> ();
-		SpawnPoint = File.Read<cc_string> ();
+		HelpMessages[0] = File.ReadCCString ();
+		HelpMessages[1] = File.ReadCCString ();
+		SpawnPoint = File.ReadCCString ();
 		HelpChanged = File.Read<uint8> ();
 		MaxClients = File.Read<uint8> ();
 		MaxSpectators = File.Read<uint8> ();
@@ -403,8 +399,8 @@ public:
 
 extern	CGameLocals		Game;
 
-typedef std::list<CKeyValuePair*, generic_allocator<CKeyValuePair*> > TKeyValuePairContainer;
-typedef std::list<edict_t*, generic_allocator<edict_t*> > TEntitiesContainer;
+typedef std::list<CKeyValuePair*, std::allocator<CKeyValuePair*> > TKeyValuePairContainer;
+typedef std::list<edict_t*, std::allocator<edict_t*> > TEntitiesContainer;
 
 class CLevelLocals
 {
@@ -488,10 +484,10 @@ public:
 		Frame = File.Read<FrameNumber_t> ();
 
 
-		FullLevelName = File.Read<cc_string> ();
-		ServerLevelName = File.Read<cc_string> ();
-		NextMap = File.Read<cc_string> ();
-		ForceMap = File.Read<cc_string> ();
+		FullLevelName = File.ReadCCString ();
+		ServerLevelName = File.ReadCCString ();
+		NextMap = File.ReadCCString ();
+		ForceMap = File.ReadCCString ();
 
 		IntermissionTime = File.Read<FrameNumber_t> ();
 		ExitIntermission = File.Read<bool> ();

@@ -290,7 +290,7 @@ _CC_ENABLE_DEPRECATION
 	ed->AwaitingRemoval = true;
 }
 
-typedef std::vector <CBaseEntity*, generic_allocator<CBaseEntity*> > TPrivateEntitiesContainer;
+typedef std::vector <CBaseEntity*, std::allocator<CBaseEntity*> > TPrivateEntitiesContainer;
 TPrivateEntitiesContainer PrivateEntities;
 
 void InitPrivateEntities ()
@@ -401,7 +401,7 @@ void CBaseEntity::WriteBaseEntity (CFile &File)
 	File.Write<uint32> (EntityFlags);
 	File.Write<EEdictFlags> (Flags);
 
-	File.Write<cc_string> (ClassName);
+	File.Write (ClassName);
 
 	File.Write<bool> (Team.HasTeam);
 
@@ -427,7 +427,7 @@ void CBaseEntity::ReadBaseEntity (CFile &File)
 	EntityFlags = File.Read<uint32> ();
 	Flags = File.Read<EEdictFlags> ();
 
-	ClassName = File.Read<cc_string> ();
+	ClassName = File.ReadCCString ();
 
 	Team.HasTeam = File.Read<bool> ();
 

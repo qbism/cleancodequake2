@@ -89,9 +89,9 @@ void CBanList::LoadFromFile ()
 			if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
 				break;
 
-			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+			BanIndex *NewIndex = QNew (TAG_GENERIC) BanIndex;
 			NewIndex->IP = false;
-			NewIndex->Name = Mem_PoolStrDup (token, com_genericPool, 0);
+			NewIndex->Name = Mem_StrDup (token);
 
 			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
 				break;
@@ -103,10 +103,10 @@ void CBanList::LoadFromFile ()
 			if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
 				break;
 
-			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+			BanIndex *NewIndex = QNew (TAG_GENERIC) BanIndex;
 			NewIndex->IP = true;
 
-			NewIndex->Address = QNew (com_genericPool, 0) IPAddress;
+			NewIndex->Address = QNew (TAG_GENERIC) IPAddress;
 			Q_snprintfz (NewIndex->Address->str, sizeof(NewIndex->Address->str), "%s", token);
 
 			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
@@ -151,10 +151,10 @@ bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
 	if (InList(Adr))
 		return false;
 
-	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+	BanIndex *NewIndex = QNew (TAG_GENERIC) BanIndex;
 	NewIndex->IP = true;
 
-	NewIndex->Address = QNew (com_genericPool, 0) IPAddress(Adr);
+	NewIndex->Address = QNew (TAG_GENERIC) IPAddress(Adr);
 	NewIndex->Flags = Flags;
 
 	BanList.push_back (NewIndex);
@@ -166,9 +166,9 @@ bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
 	if (InList(Name))
 		return false;
 
-	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+	BanIndex *NewIndex = QNew (TAG_GENERIC) BanIndex;
 	NewIndex->IP = false;
-	NewIndex->Name = QNew (com_genericPool, 0) char[strlen(Name)];
+	NewIndex->Name = QNew (TAG_GENERIC) char[strlen(Name)];
 	Q_strncpyz (NewIndex->Name, Name, strlen(Name)+1);
 	NewIndex->Name[strlen(Name)] = 0;
 	NewIndex->Flags = Flags;

@@ -45,7 +45,7 @@ enum ENodeType
 	NODE_PLATFORM, // Special handling
 };
 
-typedef std::vector<CPathNode*, level_allocator<CPathNode*> > TPathNodeChildrenContainer;
+typedef std::vector<CPathNode*, std::allocator<CPathNode*> > TPathNodeChildrenContainer;
 
 // One node
 class CPathNode

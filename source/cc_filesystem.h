@@ -85,7 +85,7 @@ void FS_Close (fileHandle_t &handle);
 size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate);
 void FS_FreeFile (void *buffer);
 
-typedef std::vector<cc_string, generic_allocator<cc_string> > TFindFilesType;
+typedef std::vector<cc_string, std::allocator<cc_string> > TFindFilesType;
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
 
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);
@@ -221,7 +221,7 @@ public:
 		return Val;
 	};
 
-	cc_string Read ()
+	cc_string ReadCCString ()
 	{
 		if (!Handle)
 			return "";
@@ -231,7 +231,7 @@ public:
 		
 		if (Length > 1)
 		{
-			char *tempBuffer = QNew (com_genericPool, 0) char[Length];
+			char *tempBuffer = QNew (TAG_GENERIC) char[Length];
 			FS_Read (tempBuffer, Length, Handle);
 			cc_string str (tempBuffer);
 			QDelete[] tempBuffer;
@@ -240,7 +240,7 @@ public:
 		return "";
 	};
 
-	char *ReadString (void *Pool = com_genericPool)
+	char *ReadString (sint32 Tag = TAG_GENERIC)
 	{
 		if (!Handle)
 			return NULL;
@@ -251,7 +251,7 @@ public:
 		char *tempBuffer = NULL;
 		if (Length > 1)
 		{
-			tempBuffer = QNew (Pool, 0) char[Length];
+			tempBuffer = QNew (Tag) char[Length];
 			FS_Read (tempBuffer, Length, Handle);
 		}
 		return tempBuffer;

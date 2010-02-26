@@ -40,11 +40,11 @@ struct Module_t
 	CDynamicLibrary	*Lib;
 };
 
-std::vector <Module_t*, generic_allocator<Module_t*> > Modules;
+std::vector <Module_t*, std::allocator<Module_t*> > Modules;
 
 void CC_LoadModule (cc_string Name)
 {
-	CDynamicLibrary *Lib = QNew (com_genericPool, 0) CDynamicLibrary (Name.c_str());
+	CDynamicLibrary *Lib = QNew (TAG_GENERIC) CDynamicLibrary (Name.c_str());
 	if (Lib->Valid())
 	{
 		// Make sure the module is valid
@@ -62,7 +62,7 @@ void CC_LoadModule (cc_string Name)
 			if (Module && Module->GetAPIVersion() == MODULE_API_VERSION)
 			{
 				// We're good
-				Module_t *Mod = QNew (com_genericPool, 0) Module_t;
+				Module_t *Mod = QNew (TAG_GENERIC) Module_t;
 				Mod->Lib = Lib;
 				Mod->Module = Module;
 

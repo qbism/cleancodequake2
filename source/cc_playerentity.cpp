@@ -2572,7 +2572,7 @@ void CPlayerEntity::CTFSetIDView()
 
 void CPlayerEntity::CTFAssignGhost()
 {
-	CCTFGhost *Ghost = QNew (com_levelPool, 0) CCTFGhost;
+	CCTFGhost *Ghost = QNew (TAG_LEVEL) CCTFGhost;
 
 	Ghost->team = Client.Respawn.CTF.Team;
 	Ghost->Score = 0;
@@ -3087,7 +3087,7 @@ CPersistentData *SavedClients;
 
 void CPlayerEntity::BackupClientData ()
 {
-	SavedClients = QNew (com_genericPool, 0) CPersistentData[Game.MaxClients];
+	SavedClients = QNew (TAG_GENERIC) CPersistentData[Game.MaxClients];
 	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
 		if (!Game.Entities[1+i].Entity)

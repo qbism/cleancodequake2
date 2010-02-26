@@ -88,11 +88,11 @@ LINK_ITEM_TO_CLASS (key_green_key, CItemEntity);
 
 void AddXatrixItemsToList ()
 {
-	NItems::MagSlugs = QNew (com_itemPool, 0) CAmmo("ammo_magslug", "models/objects/ammo/tris.md2", 0, "misc/am_pkup.wav", "a_mslugs", "Mag Slug", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_MAGSLUGS);
-	NItems::Trap = QNew (com_itemPool, 0) CAmmoWeapon("ammo_trap", "models/weapons/g_trap/tris.md2", EF_ROTATE, "misc/am_pkup.wav", "a_trap", "Trap", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTrap::Weapon, 1, "#a_grenades.md2", 1, CAmmo::AMMOTAG_TRAP);
-	FoodCubeItem = QNew (com_itemPool, 0) CFoodCube;
+	NItems::MagSlugs = QNew (TAG_GENERIC) CAmmo("ammo_magslug", "models/objects/ammo/tris.md2", 0, "misc/am_pkup.wav", "a_mslugs", "Mag Slug", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_MAGSLUGS);
+	NItems::Trap = QNew (TAG_GENERIC) CAmmoWeapon("ammo_trap", "models/weapons/g_trap/tris.md2", EF_ROTATE, "misc/am_pkup.wav", "a_trap", "Trap", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTrap::Weapon, 1, "#a_grenades.md2", 1, CAmmo::AMMOTAG_TRAP);
+	FoodCubeItem = QNew (TAG_GENERIC) CFoodCube;
 
-	NItems::QuadFire = QNew (com_itemPool, 0) CQuadFire ("item_quadfire", "models/items/quadfire/tris.md2", EF_ROTATE, "items/pkup.wav", "p_quadfire", "DualFire Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	QNew (com_itemPool, 0) CKey("key_green_key", "models/items/keys/green_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_greenkey", "Green Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	NItems::QuadFire = QNew (TAG_GENERIC) CQuadFire ("item_quadfire", "models/items/quadfire/tris.md2", EF_ROTATE, "items/pkup.wav", "p_quadfire", "DualFire Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	QNew (TAG_GENERIC) CKey("key_green_key", "models/items/keys/green_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_greenkey", "Green Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 }
 #endif

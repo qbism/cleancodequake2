@@ -26,97 +26,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <exception>
 
-// Constants
-extern void	*com_genericPool, // Generic memory; memory that will be freed on level change, but not necessarily needed for anything
-						*com_levelPool, // Flushed per level
-						*com_gamePool, // Flushed per entire game
-						*com_fileSysPool, // Flushed per entire game
-						*com_entityPool, // Flushed specially
-						*com_testPool,
-						*com_itemPool,
-						*com_cvarPool,
-						*com_writePool,
-						*com_indexPool,
-						*com_commandPool;
-
-#define Mem_CreatePool(name)							CC_Mem_CreatePool((name),__FILE__,__LINE__)
-#define Mem_DeletePool(pool)							CC_Mem_DeletePool((pool),__FILE__,__LINE__)
-
-#define Mem_Free(ptr)									CC_Mem_Free((ptr),__FILE__,__LINE__,false)
-#define Mem_FreeTag(pool,tagNum)						CC_Mem_FreeTag((pool),(tagNum),__FILE__,__LINE__)
-#define Mem_FreePool(pool)								CC_Mem_FreePool((pool),__FILE__,__LINE__)
-#define Mem_Alloc(size,arr)								CC_Mem_Alloc((size),com_genericPool,0,__FILE__,__LINE__,arr)
-#define Mem_PoolAlloc(size,pool,tagNum)					CC_Mem_Alloc((size),(pool),(tagNum),__FILE__,__LINE__,false)
-#define Mem_ReAlloc(ptr,newSize)						CC_Mem_ReAlloc((ptr),(newSize),__FILE__,__LINE__)
-
-#define Mem_StrDup(in)									CC_Mem_PoolStrDup((in),com_genericPool,0,__FILE__,__LINE__)
-#define Mem_PoolStrDup(in,pool,tagNum)					CC_Mem_PoolStrDup((in),(pool),(tagNum),__FILE__,__LINE__)
-#define Mem_PoolSize(pool)								CC_Mem_PoolSize((pool))
-#define Mem_TagSize(pool,tagNum)						CC_Mem_TagSize((pool),(tagNum))
-#define Mem_ChangeTag(pool,tagFrom,tagTo)				CC_Mem_ChangeTag((pool),(tagFrom),(tagTo))
-
-#define Mem_CheckPoolIntegrity(pool)					CC_Mem_CheckPoolIntegrity((pool),__FILE__,__LINE__)
-#define Mem_CheckGlobalIntegrity()						CC_Mem_CheckGlobalIntegrity(__FILE__,__LINE__)
-
-#define Mem_TouchPool(pool)								CC_Mem_TouchPool((pool),__FILE__,__LINE__)
-#define Mem_TouchGlobal()								CC_Mem_TouchGlobal(__FILE__,__LINE__)
-
-// Functions
-void *CC_Mem_CreatePool(const char *name, const char *fileName, const sint32 fileLine);
-size_t		CC_Mem_DeletePool(void *pool, const char *fileName, const sint32 fileLine);
-
-size_t		CC_Mem_Free(const void *ptr, const char *fileName, const sint32 fileLine, bool Array);
-size_t		CC_Mem_FreeTag(void *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine);
-size_t		CC_Mem_FreePool(void *pool, const char *fileName, const sint32 fileLine);
-void		*CC_Mem_Alloc(size_t size, void *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine, bool Array);
-void		*CC_Mem_ReAlloc(void *ptr, size_t newSize, const char *fileName, const sint32 fileLine);
-
-char		*CC_Mem_PoolStrDup(const char *in, void *pool, const sint32 tagNum, const char *fileName, const sint32 fileLine);
-size_t		CC_Mem_PoolSize(void *pool);
-size_t		CC_Mem_TagSize(void *pool, const sint32 tagNum);
-size_t		CC_Mem_ChangeTag(void *pool, const sint32 tagFrom, const sint32 tagTo);
-
-void		CC_Mem_CheckPoolIntegrity(void *pool, const char *fileName, const sint32 fileLine);
-void		CC_Mem_CheckGlobalIntegrity(const char *fileName, const sint32 fileLine);
-
-void		CC_Mem_TouchPool(void *pool, const char *fileName, const sint32 fileLine);
-void		CC_Mem_TouchGlobal(const char *fileName, const sint32 fileLine);
-
-void		Mem_Register();
-void		Mem_Init();
-
-void		Mem_FreePools();
-
-// These operators are for vectors and the like.
-// Deprecated; use QNew/QDelete
-
-// But allow these!
-inline void *operator new(size_t Size, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
+// memory tags to allow dynamic memory to be cleaned up
+// moved from cc_local.h
+CC_ENUM(sint16, EMemoryTags)
 {
-	return CC_Mem_Alloc(Size, Pool, TagNum, FileName, FileLine, false);
+	TAG_GENERIC = -1,
+	TAG_GAME	= 765,
+	TAG_LEVEL,
+	TAG_ENTITY
+};
+
+char						*Mem_TagStrDup (const char *in, const sint32 tagNum);
+
+inline char *Mem_StrDup(const char *in)
+{
+	return Mem_TagStrDup(in, TAG_GENERIC);
 }
 
-inline void *operator new[](size_t Size, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
-{
-	return CC_Mem_Alloc(Size, Pool, TagNum, FileName, FileLine, true);
-}
+void *operator new(size_t Size, const sint32 TagNum);
+void *operator new[](size_t Size, const sint32 TagNum);
+void operator delete(void *Pointer, const sint32 TagNum);
+void operator delete[](void *Pointer, const sint32 TagNum);
 
-#define QNew(Pool,TagNum)	new((Pool),(TagNum),__FILE__,__LINE__)
+void Mem_FreeTag (const sint32 TagNum);
 
-inline void operator delete(void *Pointer, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
-{
-	CC_Mem_Free(Pointer, FileName, FileLine, false);
-	TagNum;
-	Pool;
-}
-
-inline void operator delete[](void *Pointer, void *Pool, const sint32 TagNum, const char *FileName, const sint32 FileLine)
-{
-	CC_Mem_Free(Pointer, FileName, FileLine, true);
-	TagNum;
-	Pool;
-}
-
+#define QNew(TagNum)	new((TagNum))
 #define QDelete	delete
 
 inline void Mem_Zero (void *ptr, size_t size)

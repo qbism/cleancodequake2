@@ -40,8 +40,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MAX_ITEMS_HASH	(MAX_ITEMS/2)
 
 typedef std::pair<size_t, size_t> THashedItemListPairType;
-typedef std::multimap<size_t, size_t, std::less<size_t>, item_allocator<size_t> > THashedItemListType;
-typedef std::vector<CBaseItem*, item_allocator<CBaseItem*> > TItemListType;
+typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedItemListType;
+typedef std::vector<CBaseItem*, std::allocator<CBaseItem*> > TItemListType;
 // Generic itemlist.
 class CItemList
 {

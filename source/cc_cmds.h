@@ -47,8 +47,8 @@ template <typename TFunctor>
 class CCommand
 {
 public:
-	typedef std::vector<CCommand<TFunctor>*, command_allocator<CCommand<TFunctor>*> > TCommandListType;
-	typedef std::multimap<size_t, size_t, std::less<size_t>, command_allocator<size_t> > THashedCommandListType;
+	typedef std::vector<CCommand<TFunctor>*, std::allocator<CCommand<TFunctor>*> > TCommandListType;
+	typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedCommandListType;
 
 	struct SubCommands_t
 	{
@@ -64,7 +64,7 @@ public:
 	SubCommands_t			SubCommands;
 
 	CCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags) :
-	  Name(Mem_PoolStrDup(Name, com_commandPool, 0)),
+	  Name(Mem_StrDup(Name)),
 	  Func(Func),
 	  Flags(Flags)
 	  {
@@ -163,7 +163,7 @@ public:
 
 	void *NewOfMe (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
 	{
-		return QNew (com_commandPool, 0) CPlayerCommand (Name, Func, Flags);
+		return QNew (TAG_GENERIC) CPlayerCommand (Name, Func, Flags);
 	}
 
 	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)

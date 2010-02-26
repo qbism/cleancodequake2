@@ -55,7 +55,7 @@ void SpawnNodeEntity (CPathNode *Node);
 void CheckNodeFlags (CPathNode *Node);
 size_t GetNodeIndex (CPathNode *Node);
 
-typedef std::vector<CPathNode*, generic_allocator<CPathNode*> > TPathNodeContainer;
+typedef std::vector<CPathNode*, std::allocator<CPathNode*> > TPathNodeContainer;
 TPathNodeContainer		Closed, Open;
 
 #define MAX_SAVED_PATHS	512
@@ -301,7 +301,7 @@ void PrintVerboseNodes (vec3f origin, uint32 numNode, ENodeType Type)
 
 CPathNode *DropNode (edict_t *ent)
 {
-	NodeList.push_back(QNew (com_levelPool, 0) CPathNode(ent->state.origin, NODE_REGULAR));
+	NodeList.push_back(QNew (TAG_LEVEL) CPathNode(ent->state.origin, NODE_REGULAR));
 
 	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
 	ent->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
@@ -368,7 +368,7 @@ void CheckNodeFlags (CPathNode *Node)
 void ConnectNode (CPathNode *Node1, CPathNode *Node2);
 void AddNode (CPlayerEntity *Player, vec3f origin)
 {
-	NodeList.push_back(QNew (com_entityPool, 0) CPathNode(origin, NODE_REGULAR));
+	NodeList.push_back(QNew (TAG_ENTITY) CPathNode(origin, NODE_REGULAR));
 
 	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
 	Player->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
@@ -499,7 +499,7 @@ void LoadNodes ()
 	if (version != NODE_VERSION)
 		ServerPrintf ("Old version of nodes!\n");
 
-	sint32 **tempChildren = QNew (com_genericPool, 0) sint32*[lastId];
+	sint32 **tempChildren = QNew (TAG_GENERIC) sint32*[lastId];
 
 	// Read each node
 	for (uint32 i = 0; i < lastId; i++)
@@ -510,7 +510,7 @@ void LoadNodes ()
 		vec3f Origin = File.Read<vec3f> ();
 		ENodeType Type = File.Read<ENodeType> ();
 
-		NodeList.push_back(QNew (com_levelPool, 0) CPathNode(Origin, Type));
+		NodeList.push_back(QNew (TAG_LEVEL) CPathNode(Origin, Type));
 
 		SpawnNodeEntity (NodeList[i]);
 
@@ -524,7 +524,7 @@ void LoadNodes ()
 
 		uint32 num = File.Read<uint32> ();
 
-		tempChildren[i] = QNew (com_genericPool, 0) sint32[num + 1];
+		tempChildren[i] = QNew (TAG_GENERIC) sint32[num + 1];
 		tempChildren[i][0] = num;
 
 		for (size_t s = 0; s < num; s++)
@@ -744,7 +744,7 @@ void Cmd_Node_f (CPlayerEntity *Player)
 
 CPath *CreatePath (CPathNode *Start, CPathNode *End)
 {
-	CPath *New = QNew (com_levelPool, 0) CPath(Start, End);
+	CPath *New = QNew (TAG_LEVEL) CPath(Start, End);
 
 	if (New->Incomplete)
 	{
@@ -819,7 +819,7 @@ void LoadPathTable ()
 	for (sint32 i = 0; i < count; i++)
 	{
 		sint32 indexI = File.Read<sint32> (), indexZ = File.Read<sint32> ();
-		SavedPaths[indexI].ToEnd[indexZ] = QNew (com_levelPool, 0) CPath();
+		SavedPaths[indexI].ToEnd[indexZ] = QNew (TAG_LEVEL) CPath();
 		SavedPaths[indexI].ToEnd[indexZ]->Load (File);
 	}
 }

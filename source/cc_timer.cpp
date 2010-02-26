@@ -40,7 +40,7 @@ void CGameTimer::Run ()
 		OnTimeUp ();
 }
 
-typedef std::multimap <sint32, CGameTimer *, std::less <sint32>, generic_allocator <std::pair <const sint32, CGameTimer*> > > TTimerListType;
+typedef std::multimap <sint32, CGameTimer *, std::less <sint32>, std::allocator <std::pair <const sint32, CGameTimer*> > > TTimerListType;
 
 TTimerListType TimerList;
 

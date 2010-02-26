@@ -98,7 +98,7 @@ CItemList *ItemList;
 
 CItemList::CItemList() :
 numItems(0),
-TempList (QNew(com_itemPool, 0) TItemListType)
+TempList (QNew(TAG_GENERIC) TItemListType)
 {
 };
 
@@ -116,7 +116,7 @@ void CItemList::AddItemToList (CBaseItem *Item)
 }
 
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
-typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, generic_allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
 
 void AddWeaponsToListLocations (CItemList *List);
 
@@ -124,7 +124,7 @@ void CItemList::SortAndFinalize ()
 {
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
-	bool *SortedValues = QNew (com_itemPool, 0) bool[TempList->size()];
+	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList->size()];
 	Mem_Zero (SortedValues, sizeof(*SortedValues));
 
 	for (int z = 0; z < 5; z++)
@@ -247,7 +247,7 @@ sint32 GetNumItems ()
 
 void InitItemlist ()
 {
-	ItemList = QNew (com_itemPool, 0) CItemList;
+	ItemList = QNew (TAG_GENERIC) CItemList;
 
 	AddAmmoToList();
 	AddHealthToList();

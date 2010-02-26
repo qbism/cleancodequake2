@@ -1204,7 +1204,7 @@ sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 	return blocked;
 }
 
-typedef std::vector<CPushed, generic_allocator<CPushed> > TPushedList;
+typedef std::vector<CPushed, std::allocator<CPushed> > TPushedList;
 
 bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 {

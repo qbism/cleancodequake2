@@ -141,7 +141,7 @@ LINK_ITEM_TO_CLASS (weapon_railgun, CItemEntity);
 
 void CRailgun::CreateItem (CItemList *List)
 {
-	NItems::Railgun = QNew (com_itemPool, 0) CWeaponItem
+	NItems::Railgun = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_railgun", "models/weapons/g_rail/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_railgun", "Railgun",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
 		&Weapon, NItems::Slugs, 1, "#w_railgun.md2");

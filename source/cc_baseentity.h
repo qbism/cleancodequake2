@@ -225,7 +225,7 @@ inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
 	return Entity; // Implicit cast already done
 }
 
-inline char *CopyStr (const char *In, void *Pool)
+inline char *CopyStr (const char *In, const sint16 Tag)
 {
 	cc_string newString (In);
 	
@@ -244,7 +244,7 @@ inline char *CopyStr (const char *In, void *Pool)
 		i++;
 	}
 
-	return Mem_PoolStrDup (newString.c_str(), Pool, 0);
+	return Mem_TagStrDup (newString.c_str(), Tag);
 }
 
 inline cc_string CopyStr (const char *In)
@@ -328,7 +328,7 @@ inline uint32 atou (const char *Str)
 	virtual void LoadFields (CFile &File); \
 	virtual const char *SAVE_GetName () { return TO_STRING(x); }
 
-#define QNewEntityOf QNew (com_entityPool, 0) 
+#define QNewEntityOf QNew (TAG_ENTITY) 
 
 CC_ENUM (uint32, EFieldType)
 {
@@ -422,7 +422,7 @@ public:
 			break;
 		case FT_LEVEL_STRING:
 			if (strlen(Value))
-				OFS_TO_TYPE(char*) = CopyStr(Value, com_levelPool);
+				OFS_TO_TYPE(char*) = CopyStr(Value, TAG_LEVEL);
 			else
 				OFS_TO_TYPE(char*) = NULL;
 			break;
@@ -595,7 +595,7 @@ public:
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
-			OFS_TO_TYPE(char*) = File.ReadString (com_levelPool);
+			OFS_TO_TYPE(char*) = File.ReadString (TAG_LEVEL);
 			break;
 		case FT_SOUND_INDEX:
 			{
@@ -643,7 +643,7 @@ public:
 			}
 			break;
 		case FT_CC_STRING:
-			OFS_TO_TYPE(cc_string) = File.Read<cc_string> ();
+			OFS_TO_TYPE(cc_string) = File.ReadCCString ();
 			break;
 		};
 	};

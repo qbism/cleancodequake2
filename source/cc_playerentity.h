@@ -129,8 +129,8 @@ public:
 
 	void Load (CFile &File)
 	{
-		UserInfo = File.Read<cc_string> ();
-		Name = File.Read<cc_string> ();
+		UserInfo = File.ReadCCString ();
+		Name = File.ReadCCString ();
 
 		IP = File.Read<IPAddress> ();
 		Hand = File.Read<sint32> ();

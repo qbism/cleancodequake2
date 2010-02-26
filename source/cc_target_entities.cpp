@@ -879,7 +879,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("target_crosslevel_target", CTargetCrossLevelTarget);
 
-typedef std::vector<CTargetCrossLevelTarget*, generic_allocator<CTargetCrossLevelTarget*> > CrossLevelTargetList;
+typedef std::vector<CTargetCrossLevelTarget*, std::allocator<CTargetCrossLevelTarget*> > CrossLevelTargetList;
 
 CrossLevelTargetList &GetCrossLevelTargetList ()
 {
