@@ -3769,7 +3769,7 @@ bool CPlayerEntity::Connect (char *userinfo)
 
 	if (Bans.IsBanned(Adr) || Bans.IsBanned(Info_ValueForKey(UserInfo, "name").c_str()))
 	{
-		Info_SetValueForKey(UserInfo, "rejmsg", "Connection refused.");
+		Info_SetValueForKey(UserInfo, "rejmsg", "Connection refused (secret: you were banned. HAHAHAHA.).");
 		return false;
 	}
 
