@@ -165,7 +165,7 @@ public:
 	virtual void	BecomeExplosion (bool grenade);
 
 	void			CastTo (ECastFlags castFlags);
-	void			StuffText (char *text);
+	void			StuffText (const char *text);
 
 	void			KillBox ();
 	void			SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);

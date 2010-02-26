@@ -43,9 +43,9 @@ public:
 	signed char	normalProtection;	// -1 = Always add to current armor
 	signed char	energyProtection;	// -1 = Nothing
 
-	CArmor (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
+	CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
 			   float energyProtection);
 
 	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);

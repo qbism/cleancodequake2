@@ -136,7 +136,7 @@ Does a varargs printf into a temp buffer, so I don't need to have
 varargs versions of all text functions.
 ============
 */
-cc_string Q_VarArgs (char *format, ...)
+cc_string Q_VarArgs (const char *format, ...)
 {
 	va_list		argptr;
 	static char	string[1024];

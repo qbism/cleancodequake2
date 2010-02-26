@@ -35,9 +35,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "cc_infoentities.h"
 
-CTech::CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, uint32 TechNumber, ETechType TechType) :
+CTech::CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, uint32 TechNumber, ETechType TechType) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 TechNumber(TechNumber),
@@ -45,7 +45,7 @@ TechType(TechType)
 {
 };
 
-CTech::CTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+CTech::CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 CBaseItem (Classname, Model, EF_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH,
 			NULL),
 TechNumber(TechNumber),
@@ -84,7 +84,7 @@ static CSpotBase *FindTechSpawn()
 class CResistanceTech : public CTech
 {
 public:
-	CResistanceTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CResistanceTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
@@ -107,7 +107,7 @@ public:
 class CStrengthTech : public CTech
 {
 public:
-	CStrengthTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CStrengthTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
@@ -126,7 +126,7 @@ public:
 class CRegenTech : public CTech
 {
 public:
-	CRegenTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CRegenTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
@@ -177,7 +177,7 @@ public:
 class CAmmoRegenTech : public CTech
 {
 public:
-	CAmmoRegenTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CAmmoRegenTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};

@@ -668,7 +668,7 @@ void CBaseEntity::CastTo (ECastFlags CastFlags)
 	Cast (CastFlags, this);
 }
 
-void CBaseEntity::StuffText (char *text)
+void CBaseEntity::StuffText (const char *text)
 {
    	WriteByte (SVC_STUFFTEXT);	        
 	WriteString (text);

@@ -33,9 +33,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CBasePowerUp::CBasePowerUp(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CBasePowerUp::CBasePowerUp(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
 PowerupFlags(PowerupFlags)
 {
@@ -76,79 +76,79 @@ void CBasePowerUp::Drop (CPlayerEntity *Player)
 	}
 }
 
-CMegaHealth::CMegaHealth(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CMegaHealth::CMegaHealth(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CBackPack::CBackPack(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CBackPack::CBackPack(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CQuadDamage::CQuadDamage(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CQuadDamage::CQuadDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CInvulnerability::CInvulnerability(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CInvulnerability::CInvulnerability(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CSilencer::CSilencer(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CSilencer::CSilencer(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CRebreather::CRebreather(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CRebreather::CRebreather(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CEnvironmentSuit::CEnvironmentSuit(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CEnvironmentSuit::CEnvironmentSuit(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CBandolier::CBandolier(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CBandolier::CBandolier(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CAdrenaline::CAdrenaline(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CAdrenaline::CAdrenaline(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CAncientHead::CAncientHead(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CAncientHead::CAncientHead(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CPowerShield::CPowerShield(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CPowerShield::CPowerShield(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };

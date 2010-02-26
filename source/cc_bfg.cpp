@@ -122,7 +122,6 @@ void CBFG::FireBFG (CPlayerEntity *Player)
 }
 
 WEAPON_DEFS (CBFG);
-
 LINK_ITEM_TO_CLASS (weapon_bfg, CItemEntity);
 
 void CBFG::CreateItem (CItemList *List)

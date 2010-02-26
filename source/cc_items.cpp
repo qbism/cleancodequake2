@@ -36,29 +36,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 extern CItemList *ItemList;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags, char *PickupSound,
-/// 	char *Icon, char *Name, EItemFlags Flags, char *Precache) : Index(-1), Classname(Classname),
-/// 	WorldModel(WorldModel), EffectFlags(EffectFlags), PickupSound(PickupSound), Icon(Icon),
-/// 	Name(Name), Flags(Flags), Precache(Precache)
-///
-/// \brief	Constructor. 
-///
-/// \author	Paril
-/// \date	5/9/2009
-///
-/// \param	Classname	 - If non-null, the classname of the item. 
-/// \param	WorldModel	 - If non-null, the world model. 
-/// \param	EffectFlags	 - The effect flags. 
-/// \param	PickupSound	 - If non-null, the pickup sound. 
-/// \param	Icon		 - If non-null, the icon. 
-/// \param	Name		 - If non-null, the name. 
-/// \param	Flags		 - Item flags. 
-/// \param	Precache	 - If non-null, the precache. 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache) :
+CBaseItem::CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache) :
 Index(-1),
 Classname(Classname),
 WorldModel(WorldModel),
@@ -72,17 +52,7 @@ Precache(Precache)
 	ItemList->AddItemToList (this);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::SetRespawn (CItemEntity *Item, float delay)
-///
-/// \brief	Sets a respawn time on the item and makes it invisible. 
-///
-/// \author	Paril
-/// \date	5/9/2009
-///
-/// \param	ent		 - If non-null, the entity to be respawned. 
-/// \param	delay	 - The delay until it's respawned. 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+// Sets a respawn time on the item and makes it invisible. 
 void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber_t delay)
 {
 	Item->Flags |= FL_RESPAWN;
@@ -131,18 +101,7 @@ public:
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	edict_t *CBaseItem::DropItem (edict_t *ent)
-///
-/// \brief	Creates the item entity.
-///
-/// \author	Paril
-/// \date	5/9/2009
-///
-/// \param	ent	 - If non-null, the item entity. 
-///
-/// \retval	null if it fails, else. 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+// Creates the item entity.
 CItemEntity *CBaseItem::DropItem (CBaseEntity *Entity)
 {
 	CDroppedItemEntity	*dropped = QNewEntityOf CDroppedItemEntity();

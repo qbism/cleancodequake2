@@ -698,7 +698,7 @@ CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 		if (!spot)
 			return NULL; // wut
 
-		char *target = spot->TargetName;
+		const char *target = spot->TargetName;
 		if (!target)
 			target = "";
 		if (Q_stricmp(Game.SpawnPoint.c_str(), target) == 0)

@@ -104,8 +104,8 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	}
 }
 
-CWeapon::CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
-				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound) :
+CWeapon::CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, const char *WeaponSound) :
 ListOrder(std::make_pair (ListOrderHigh, ListOrderLow)),
 ActivationStart(ActivationStart),
 ActivationEnd(ActivationEnd),
@@ -115,10 +115,9 @@ IdleStart(IdleStart),
 IdleEnd(IdleEnd),
 DeactStart(DeactStart),
 DeactEnd(DeactEnd),
-WeaponSound(WeaponSound)
+WeaponSound(WeaponSound),
+WeaponModelString(model)
 {
-	WeaponModelString = model;
-
 	ActivationNumFrames = (ActivationEnd - ActivationStart);
 	FireNumFrames = (FireEnd - FireStart);
 	IdleNumFrames = (IdleEnd - IdleStart);

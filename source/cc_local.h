@@ -66,7 +66,9 @@ CC_ENUM (uint8, EHandedness)
 	CENTER_HANDED
 };
 
-CC_ENUM (uint8, ECrossLevelTriggerFlags)
+// Paril: Increased to uint16. There seems to be a bit of trouble
+// with TRIGGER_MASK overflowing (Linux-only?)
+CC_ENUM (uint16, ECrossLevelTriggerFlags)
 {
 	SFL_CROSS_TRIGGER_1		= BIT(0),
 	SFL_CROSS_TRIGGER_2		= BIT(1),

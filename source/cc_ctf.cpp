@@ -410,7 +410,7 @@ void CTFTeam_f (CPlayerEntity *Player)
 		desired_team = CTF_TEAM2;
 	else
 	{
-		Player->PrintToClient (PRINT_HIGH, "Unknown team %s.\n", t);
+		Player->PrintToClient (PRINT_HIGH, "Unknown team %s.\n", t.c_str());
 		return;
 	}
 

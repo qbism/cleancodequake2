@@ -40,6 +40,7 @@ Parse a token out of a string
 ============
 */
 static char com_token[MAX_TOKEN_CHARS];
+static char emptyToken[1] = {'\0'};
 char *Com_Parse(char **dataPtr)
 {
 	sint32		c;
@@ -53,7 +54,7 @@ char *Com_Parse(char **dataPtr)
 	if (!data)
 	{
 		*dataPtr = NULL;
-		return "";
+		return emptyToken;
 	}
 		
 	// Skip whitespace
@@ -64,7 +65,7 @@ char *Com_Parse(char **dataPtr)
 			if (c == 0)
 			{
 				*dataPtr = NULL;
-				return "";
+				return emptyToken;
 			}
 
 			data++;

@@ -63,7 +63,7 @@ public:
 
 	CWeaponItem		*Item; // The item that is linked to this weapon.
 
-	char			*WeaponSound;
+	const char			*WeaponSound;
 private:
 	MediaIndex		WeaponSoundIndex;
 
@@ -75,7 +75,7 @@ public:
 			: 0;
 	};
 
-	char			*WeaponModelString; // Temporary
+	const char			*WeaponModelString; // Temporary
 private:
 	MediaIndex		WeaponModelIndex;
 
@@ -90,8 +90,8 @@ public:
 	MediaIndex					vwepIndex;
 	std::pair <sint8, sint8>	ListOrder;
 
-	CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
-				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, char *WeaponSound = NULL);
+	CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, const char *WeaponSound = NULL);
 
 	// InitWeapon "clears" the previous weapon by introducing the current weapon.
 	virtual void	InitWeapon (CPlayerEntity *Player);

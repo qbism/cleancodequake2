@@ -46,7 +46,7 @@ public:
 	void Send ();
 	void SendMsg (CPlayerEntity *Player, bool reliable = true);
 
-	void AddToBarBuffer (char *fmt, ...);
+	void AddToBarBuffer (const char *fmt, ...);
 	void AddVirtualPoint_Y (sint32 y);
 	void AddVirtualPoint_X (sint32 x);
 	void AddPoint_X (sint32 x, bool inverted);

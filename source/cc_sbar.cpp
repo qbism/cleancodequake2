@@ -60,7 +60,7 @@ void CStatusBar::SendMsg (CPlayerEntity *Player, bool reliable)
 	Player->CastTo ((reliable) ? CASTFLAG_RELIABLE : CASTFLAG_UNRELIABLE);
 }
 
-void CStatusBar::AddToBarBuffer (char *fmt, ...)
+void CStatusBar::AddToBarBuffer (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
@@ -316,7 +316,7 @@ Draw help computer.
 void HelpComputer (CPlayerEntity *Player)
 {
 	CStatusBar Scoreboard;
-	static char	*sk = NULL;
+	static const char	*sk = NULL;
 
 	if (sk == NULL)
 	{

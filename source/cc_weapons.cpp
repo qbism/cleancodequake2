@@ -34,9 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_weaponmain.h"
 
-CWeaponItem::CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel) :
+CWeaponItem::CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, char *VWepModel) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
 Weapon(Weapon),
 Ammo(Ammo),
@@ -56,9 +56,9 @@ CWeaponItem::CWeaponItem ()
 {
 }
 
-CAmmo::CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag) :
+CAmmo::CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 Quantity(Quantity),
@@ -70,9 +70,10 @@ CAmmo::CAmmo ()
 {
 }
 
-CAmmoWeapon::CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag) :
+CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel,
+			   sint32 Quantity, CAmmo::EAmmoTag Tag) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache)
 {
@@ -92,9 +93,10 @@ CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
 }
 
-CAmmoWeapon::CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag) :
+CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   sint32 Quantity, CAmmo::EAmmoTag Tag) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache)
 {

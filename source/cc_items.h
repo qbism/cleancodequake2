@@ -50,41 +50,33 @@ CC_ENUM (sint32, EItemFlags)
 	ITEMFLAG_TECH				= BIT(10),
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class	CBaseItem
-///
-/// \brief	The base item class. Contains the basic information that an item needs to spawn and be active. 
-///
-/// \author	Paril
-/// \date	5/9/2009
-////////////////////////////////////////////////////////////////////////////////////////////////////
 void InvalidateItemMedia ();
 
 class CBaseItem
 {
 	friend void InvalidateItemMedia ();
 private:
-	/// The index of this item in the item list
+	// The index of this item in the item list
 	sint32			Index;
 
-	/// Must be friends with itemlist so it can set the item.
+	// Must be friends with itemlist so it can set the item.
 	friend class CItemList;
 public:
-	CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache);
+	CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache);
 
 	CBaseItem () {}
 
-	/// Classname (for maps)
-	char		*Classname;
-	/// World model
-	char		*WorldModel;
-	/// Effect flags (EF_ROTATE, etc)
+	// Classname (for maps)
+	const char		*Classname;
+	// World model
+	const char		*WorldModel;
+	// Effect flags (EF_ROTATE, etc)
 	sint32			EffectFlags;
 
-	/// The sound on pickup
-	char		*PickupSound;
+	// The sound on pickup
+	const char		*PickupSound;
 private:
 	MediaIndex	PickupSoundIndex;
 
@@ -95,7 +87,7 @@ public:
 	}
 
 	/// HUD Icon
-	char		*Icon;
+	const char		*Icon;
 private:
 	MediaIndex	IconIndex;
 
@@ -105,54 +97,24 @@ public:
 		return (Icon && !IconIndex) ? (IconIndex = ImageIndex(Icon)) : IconIndex;
 	}
 
-	/// Name on pickup
-	char		*Name;
+	// Name on pickup
+	const char		*Name;
 
-	/// Item flags
+	// Item flags
 	EItemFlags	Flags;
 
-	/// Precached sounds/models/images.
-	/// I don't necessarily like the fact that the precache
-	/// list here is parsed. Anyone have a better idea? :S
-	char		*Precache;
+	// Precached sounds/models/images.
+	// FIXME: I don't necessarily like the fact that the precache
+	// list here is parsed. Anyone have a better idea? :S
+	const char		*Precache;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual bool Pickup (CPlayerEntity *Player, CPlayerEntity *Other) = 0
-	///
-	/// \brief	Attempts to pickup the item. 
-	///
-	/// \author	Paril
-	/// \date	5/9/2009
-	///
-	/// \param	Player		 - If non-null, the item entity. 
-	/// \param	other	 - If non-null, the player who picked the item up. 
-	///
-	/// \retval	true if it succeeds, false if it fails. 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// \brief	Attempts to pickup the item. 
 	virtual	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other) = 0;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual void Use (CPlayerEntity *Player) = 0
-	///
-	/// \brief	Attempts to uses the item. 
-	///
-	/// \author	Paril
-	/// \date	5/9/2009
-	///
-	/// \param	Player	 - If non-null, the entity that used the item. 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Attempts to uses the item. 
 	virtual	void	Use (CPlayerEntity *Player) = 0;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual void Drop (CPlayerEntity *Player) = 0
-	///
-	/// \brief	Attempts to drops the item. 
-	///
-	/// \author	Paril
-	/// \date	5/9/2009
-	///
-	/// \param	Player	 - If non-null, the Player. 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Attempts to drops the item. 
 	virtual	void	Drop (CPlayerEntity *Player) = 0;
 	virtual class CItemEntity	*DropItem (CBaseEntity *Entity);
 

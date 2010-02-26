@@ -83,7 +83,6 @@ fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode);
 void FS_Close (fileHandle_t &handle);
 
 size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate);
-void FS_FreeFile (void *buffer);
 
 typedef std::vector<cc_string, std::allocator<cc_string> > TFindFilesType;
 TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
@@ -91,7 +90,7 @@ TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *ex
 void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);
 void FS_Read (void *buffer, size_t size, fileHandle_t &handle);
 void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_t seekOffset);
-void FS_Print (fileHandle_t &handle, char *fmt, ...);
+void FS_Print (fileHandle_t &handle, const char *fmt, ...);
 
 size_t FS_Len (fileHandle_t &handle);
 filePos_t FS_Tell (fileHandle_t &handle);
@@ -499,7 +498,7 @@ inline CFileStream &operator>> (CFileStream &Stream, cc_string &val)
 // A wrapper for FS_LoadFile
 class CFileBuffer
 {
-	void *buffer;
+	uint8 *buffer;
 	size_t bufSize;
 
 public:
@@ -507,12 +506,12 @@ public:
 	  buffer(NULL),
 	  bufSize(0)
 	{
-		bufSize = FS_LoadFile (fileName, &buffer, Terminate);
+		bufSize = FS_LoadFile (fileName, (void**)&buffer, Terminate);
 	};
 
 	~CFileBuffer ()
 	{
-		FS_FreeFile (buffer);
+		QDelete[] buffer;
 	};
 
 	template <typename type>

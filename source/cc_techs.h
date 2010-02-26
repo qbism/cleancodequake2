@@ -48,11 +48,11 @@ public:
 
 	ETechType	TechType;
 
-	CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, uint32 TechNumber, ETechType TechType);
+	CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, uint32 TechNumber, ETechType TechType);
 
-	CTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber);
+	CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber);
 
 	CItemEntity *DropItem (CBaseEntity *Entity);
 

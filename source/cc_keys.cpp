@@ -33,9 +33,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CKey::CKey(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache) :
+CKey::CKey(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 				Precache)
 {
@@ -49,9 +49,9 @@ void CKey::Drop (CPlayerEntity *Player)
 {
 }
 
-CPowerCube::CPowerCube(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache) :
+CPowerCube::CPowerCube(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache) :
 CKey(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 				Precache)
 {

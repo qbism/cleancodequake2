@@ -48,9 +48,9 @@ public:
 	sint32				Amount; // You spin me right round baby right round
 	EHealthFlags	HealthFlags;
 
-	CHealth (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Amount, EHealthFlags HealthFlags);
+	CHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 Amount, EHealthFlags HealthFlags);
 
 	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player) {};

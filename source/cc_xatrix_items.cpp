@@ -41,14 +41,14 @@ CFoodCube *FoodCubeItem;
 
 static sint32	quad_fire_drop_timeout_hack;
 
-CQuadFire::CQuadFire(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CQuadFire::CQuadFire(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-void CQuadFire::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
+void CQuadFire::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{

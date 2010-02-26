@@ -469,7 +469,7 @@ void FS_Write (const void *buffer, size_t size, fileHandle_t &handle)
 }
 
 // Prints the format and arguments into the current position
-void FS_Print (fileHandle_t &handle, char *fmt, ...)
+void FS_Print (fileHandle_t &handle, const char *fmt, ...)
 {
 	fileHandleIndex_t *handleIndex = CFileHandleList::FS_GetHandle(handle);
 	va_list		argptr;
@@ -525,11 +525,6 @@ bool FS_FileExists (const char *fileName)
 		return false;
 	FS_Close (handle);
 	return true;
-}
-
-void FS_FreeFile (void *buffer)
-{
-	QDelete[] buffer;
 }
 
 filePos_t FS_Tell (fileHandle_t &handle)

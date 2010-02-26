@@ -2378,7 +2378,7 @@ void SetItemNames ();
 
 void SetupLights ()
 {
-	static char *LightTable[] =
+	static const char *LightTable[] =
 	{
 		"m",														// 0 normal
 		"mmnmmommommnonmmonqnmmo",									// 1 FLICKER (first variety)

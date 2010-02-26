@@ -38,9 +38,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CKey : public CBaseItem
 {
 public:
-	CKey(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache);
+	CKey(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache);
 
 	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);
@@ -50,9 +50,9 @@ public:
 class CPowerCube : public CKey
 {
 public:
-	CPowerCube(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache);
+	CPowerCube(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache);
 
 	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
 };

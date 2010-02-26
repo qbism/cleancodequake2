@@ -43,14 +43,14 @@ class CWeaponItem : public virtual CBaseItem
 {
 public:
 	CWeaponItem ();
-	CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, char *VWepModel);
+	CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;
 	sint32				Amount;
-	char				*VWepModel;
+	const char			*VWepModel;
 
 	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	virtual void	Use (CPlayerEntity *Player);
@@ -79,9 +79,9 @@ public:
 	};
 
 	CAmmo ();
-	CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
 	sint32			Quantity; // Number gotten when we pick this mother upper
 	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo
@@ -99,13 +99,15 @@ public:
 class CAmmoWeapon : public CWeaponItem, public CAmmo
 {
 public:
-	CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount,
+			   const char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
-	CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   sint32 Quantity, CAmmo::EAmmoTag Tag);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);

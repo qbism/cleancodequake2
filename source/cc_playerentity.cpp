@@ -432,7 +432,7 @@ void CPlayerEntity::SpectatorRespawn ()
 		{
 			PrintToClient (PRINT_HIGH, "Spectator password incorrect.\n");
 			Client.Persistent.Spectator = false;
-			StuffText ("Spectator 0\n");
+			StuffText ("spectator 0\n");
 			return;
 		}
 
@@ -450,7 +450,7 @@ void CPlayerEntity::SpectatorRespawn ()
 			PrintToClient (PRINT_HIGH, "Server Spectator limit is full.");
 			Client.Persistent.Spectator = false;
 			// reset his Spectator var
-			StuffText ("Spectator 0\n");
+			StuffText ("spectator 0\n");
 			return;
 		}
 	}
@@ -464,7 +464,7 @@ void CPlayerEntity::SpectatorRespawn ()
 		{
 			PrintToClient (PRINT_HIGH, "Password incorrect.\n");
 			Client.Persistent.Spectator = true;
-			StuffText ("Spectator 1\n");
+			StuffText ("spectator 1\n");
 			return;
 		}
 	}
@@ -2186,7 +2186,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 	for (sint32 i = 0; i < total; i++)
 	{
 		sint32		x, y;
-		char	*tag;
+		const char	*tag = NULL;
 		CPlayerEntity *cl_ent = entity_cast<CPlayerEntity>((Game.Entities + 1 + sorted[i])->Entity);
 
 		if (!cl_ent)
@@ -2200,8 +2200,6 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 			tag = "tag1";
 		else if (cl_ent == Killer)
 			tag = "tag2";
-		else
-			tag = NULL;
 
 		if (tag)
 		{

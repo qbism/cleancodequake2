@@ -263,7 +263,7 @@ inline cc_string Q_strupr (cc_string s)
 }
 
 sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);
-cc_string	Q_VarArgs (char *format, ...);
+cc_string	Q_VarArgs (const char *format, ...);
 
 /*
 ==============================================================================

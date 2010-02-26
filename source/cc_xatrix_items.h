@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_XATRIX_ITEMS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_XATRIX_ITEMS_H
 
+#if XATRIX_FEATURES
 void AddXatrixItemsToList ();
 extern class CFoodCube *FoodCubeItem;
 
@@ -41,13 +42,14 @@ extern class CFoodCube *FoodCubeItem;
 class CQuadFire : public CBasePowerUp
 {
 public:
-	CQuadFire (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags);
+	CQuadFire (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);
 };
+#endif
 
 #else
 FILE_WARNING

@@ -40,9 +40,9 @@ class CFlag : public CBaseItem
 public:
 	sint32		team;
 
-	CFlag (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 team);
+	CFlag (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 team);
 
 	CItemEntity *DropItem (CBaseEntity *Entity);
 
