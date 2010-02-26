@@ -578,8 +578,10 @@ sint32 &CGameAPI::GetMaxEdicts()
 gameExport_t *GetGameAPI (gameImport_t *import)
 {
 	gi = *import;
+	gi.dprintf ("Reached GetGameAPI\n");
 
 	Swap_Init ();
+	gi.dprintf ("Swap_Init completed\n");
 	return &globals;
 }
 
