@@ -359,7 +359,7 @@ static void SpawnTechs()
 {
 	for (size_t i = 0; i < TechList.size(); i++)
 	{
-		if (!CvarList[CV_CC_TECHFLAGS].Integer() || (CvarList[CV_CC_TECHFLAGS].Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
+		if (!CvarList[CV_CC_TECHFLAGS].Integer() || (CvarList[CV_CC_TECHFLAGS].Integer() & BIT(TechList[i]->GetTechNumber())))
 			SpawnTech (TechList[i], FindTechSpawn ());
 	}
 }

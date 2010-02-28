@@ -969,7 +969,7 @@ enum
 };
 
 // monster muzzle flashes
-
+// FIXME: maybe try to replace this with something cooler?
 const vec3_t dumb_and_hacky_monster_MuzzFlashOffset [] = {
 	0.0f,			0.0f,			0.0f,			// not used							0
 

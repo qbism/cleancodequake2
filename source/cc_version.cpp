@@ -54,13 +54,12 @@ void CheckVersionReturnance ();
 
 void WriteVersion ()
 {
-	fileHandle_t handle = FS_OpenFile (VERSION_PATH, FILEMODE_WRITE|FILEMODE_CREATE);
+	CFile File (VERSION_PATH, FILEMODE_WRITE|FILEMODE_CREATE);
 
-	if (!handle)
+	if (!File.Valid())
 		return;
 
-	FS_Print (handle, "%s %u %u %u", CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N);
-	FS_Close (handle);
+	File.Print ("%s %u %u %u", CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N);
 }
 
 void VerifyVersionFile ()
@@ -455,7 +454,7 @@ void InitVersion ()
 #if (VERSION_CHECKING != VC_NONE)
 	ServerPrintf ("Checking for new version...\n");
 
-	if (!FS_FileExists(VERSION_PATH))
+	if (!CFile::Exists(VERSION_PATH))
 	{
 		ServerPrintf ("Version file non-existant, writing... ");
 		WriteVersion ();

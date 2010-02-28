@@ -43,6 +43,7 @@ typedef long int filePos_t;
 
 #define FS_MAX_FINDFILES 512
 #define MAX_PATHNAME 128
+#define FS_MAX_FILE_INDICES 256
 
 #ifdef WIN32
 #if !defined(CC_STDC_CONFORMANCE)
@@ -58,6 +59,8 @@ typedef long int filePos_t;
 #endif
 #define EXPORT_FUNCTION
 #endif
+
+#include "zlib.h"
 
 #ifdef COMPILING_LIB
 #include "sys_portable.h"
@@ -75,40 +78,216 @@ CC_ENUM (uint8, EFileType)
 #define IS_REGULAR(h)		((h->fileType) == FILE_REGULAR)
 #define IS_GZ(h)			((h->fileType) == FILE_GZ)
 
-// Exported
+// Path management.
+// This may seem empty. It will be filled more once
+// zip loading is in.
+class fs_pathIndex
+{
+public:
+	char		pathName[MAX_PATHNAME];
+
+	fs_pathIndex ()
+	{
+		pathName[0] = 0;
+	};
+};
+typedef std::vector<fs_pathIndex*, std::allocator<fs_pathIndex*> > fs_pathListType;
+extern fs_pathListType fs_pathList;
+
 void FS_Init (sint32 maxHandles);
-
-bool FS_FileExists (const char *fileName);
-fileHandle_t FS_OpenFile (const char *fileName, EFileOpMode Mode);
-void FS_Close (fileHandle_t &handle);
-
-size_t FS_LoadFile (const char *fileName, void **buffer, const bool terminate);
-
-typedef std::vector<cc_string, std::allocator<cc_string> > TFindFilesType;
-TFindFilesType FS_FindFiles(const char *path, const char *filter, const char *extension, const bool addDir, const bool recurse);
-
-void FS_Write (const void *buffer, size_t size, fileHandle_t &handle);
-void FS_Read (void *buffer, size_t size, fileHandle_t &handle);
-void FS_Seek (fileHandle_t &handle, const ESeekOrigin seekOrigin, const filePos_t seekOffset);
-void FS_Print (fileHandle_t &handle, const char *fmt, ...);
-
-size_t FS_Len (fileHandle_t &handle);
-filePos_t FS_Tell (fileHandle_t &handle);
-bool FS_EndOfFile (fileHandle_t &handle);
 
 void FS_RemovePath (const char *pathName);
 void FS_AddPath (const char *pathName);
 void FS_ReorderPath (const char *pathName);
 
+class fileHandleIndex_t
+{
+public:
+	fileHandle_t			handleIndex;
+	cc_string				name;
+
+	bool					inUse;
+	EFileType				fileType;
+	EFileOpMode				openMode;
+
+	union
+	{
+		FILE					*reg;
+		gzFile					gz;
+	} file;
+
+	fileHandleIndex_t() { }
+
+	fileHandleIndex_t(fileHandle_t &handleIndex) :
+	  handleIndex(handleIndex)
+	{
+		Clear ();
+	};
+
+	void Clear ()
+	{
+		name.clear();
+		inUse = false;
+		openMode = FILEMODE_NONE;
+		file.reg = NULL;
+	};
+};
+typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+
+class CFileHandleList
+{
+	fileHandle_t numHandlesAllocated;
+
+	// OpenList = allocated free keys
+	// ClosedList = used keys
+	THandleIndexListType OpenList, ClosedList;
+
+	// Private members
+
+	// Creates a new key and increases allocated handles.
+	// Returns the new key.
+	THandleIndexListType::iterator Create ();
+
+	// Moves "it" from OpenList to ClosedList
+	THandleIndexListType::iterator MoveToClosed (THandleIndexListType::iterator it);
+
+	// Moves "it" from ClosedList to OpenList
+	THandleIndexListType::iterator MoveToOpen (THandleIndexListType::iterator it);
+
+public: // Interface
+
+	// allocated = number of handles to create automatically.
+	CFileHandleList (sint32 allocated = 0);
+
+	// Returns either a free key in Open or
+	// creates a new key and returns it.
+	THandleIndexListType::iterator GetFreeHandle ();
+
+	// Gets the fileHandleIndex_t of a handle in-use
+	fileHandleIndex_t *GetHandle (fileHandle_t Key);
+
+	// Pushes a key back into the Open list
+	// Use this when you're done with a key
+	void PushFreeHandle (fileHandle_t Key);
+
+	// Grabs a free handle
+	static fileHandle_t FS_GetFreeHandle (fileHandleIndex_t **handle);
+
+	// Returns the handle pointer for handle "fileNum"
+	static fileHandleIndex_t *FS_GetHandle (fileHandle_t &fileNum);
+};
+
 // A wrapper class for reading/writing to files.
 class CFile
 {
-	fileHandle_t	Handle;
+	friend class CFileHandleList;
+	friend void FS_Init (sint32 maxHandles);
+	static class CFileHandleList *IndexList;
+
+	fileHandleIndex_t	*Handle;
+
+	// Error management
+	static void OutputError (const char *errorMsg)
+	{
+#ifdef _DEBUG
+#ifdef WIN32
+#if !defined(CC_STDC_CONFORMANCE)
+		OutputDebugStringA (errorMsg);
+#endif
+		assert (0);
+#endif
+#endif
+		ServerPrintf ("%s\n", errorMsg);
+	}
+
+	// Always returns in same order:
+	// [r/a][w][b][+][c]
+	static const char *OpenModeFromEnum (EFileOpMode Mode)
+	{
+		static char mode[5];
+		sint32 currentPos = 0;
+
+		// Reset old mode
+		mode[0] = mode[1] = mode[2] = mode[3] = mode[4] = 0;
+
+		if (Mode & FILEMODE_APPEND)
+		{
+			// Shove the a
+			mode[currentPos++] = 'a';
+
+			// Shove the + if we want to write
+			if (Mode & FILEMODE_WRITE)
+				mode[currentPos++] = '+';
+
+			// Are we binary?
+			if (!(Mode & FILEMODE_ASCII))
+				mode[currentPos++] = 'b';
+		}
+		else if (Mode & FILEMODE_READ)
+		{
+			// Calculate the characters
+			// We wanted reading, so push that in there.
+			if (Mode & FILEMODE_CREATE)
+				mode[currentPos++] = 'w';
+			else
+				mode[currentPos++] = 'r';
+
+			// Did we want writing?
+			// If we must exist, we need the +
+			// to get r+ (reading + writing and must exist)
+			if (Mode & FILEMODE_WRITE)
+				mode[currentPos++] = '+';
+
+			// Are we binary?
+			if (!(Mode & FILEMODE_ASCII))
+				mode[currentPos++] = 'b';
+		}
+		// If we got here, we only wanted
+		// to open a file for writing.
+		else if (Mode & FILEMODE_WRITE)
+		{
+			// Error checking
+			if (Mode & FILEMODE_APPEND)
+			{
+				CFile::OutputError ("Write and Append mixed\n");
+				return "ERR";
+			}
+
+			if (Mode & FILEMODE_CREATE)
+				mode[currentPos++] = 'w';
+			else
+			{
+				mode[currentPos++] = 'r';
+				mode[currentPos++] = '+';
+			}
+
+			// Are we binary?
+			if (!(Mode & FILEMODE_ASCII))
+				mode[currentPos++] = 'b';
+		}
+
+		if (Mode & FILEMODE_GZ)
+		{
+			if (Mode & FILEMODE_COMPRESS_NONE)
+				mode[currentPos++] = '0';
+			else if (Mode & FILEMODE_COMPRESS_LOW)
+				mode[currentPos++] = '2';
+			else if (Mode & FILEMODE_COMPRESS_MED)
+				mode[currentPos++] = '5';
+			else if (Mode & FILEMODE_COMPRESS_HIGH)
+				mode[currentPos++] = '9';
+			else
+				mode[currentPos++] = '5';
+		}
+
+		return mode;
+	}
+
 public:
 	CFile (const char *fileName, EFileOpMode Mode) :
 	  Handle (0)
 	{
-		Handle = FS_OpenFile (fileName, Mode);
+		Open (fileName, Mode);
 	};
 
 	virtual ~CFile ()
@@ -116,17 +295,105 @@ public:
 		if (!Handle)
 			return;
 
-		FS_Close (Handle);
+		Close ();
+	};
+
+	// Opens a file.
+	void Open (const char *fileName, EFileOpMode Mode)
+	{
+		const char *openMode = CFile::OpenModeFromEnum(Mode);
+
+		if (_CC_ASSERT_EXPR (strcmp(openMode,"ERR"), "Invalid file mode passed"))
+			return;
+
+		// Open up the file.
+		void *fp = NULL;
+
+		// Search each of the search paths
+		for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
+		{
+			char newFileName[MAX_PATHNAME];
+			fs_pathIndex *Index = (*it);
+
+			char slashCheck = Index->pathName[strlen(Index->pathName)-1];
+			if (slashCheck != '\\' && slashCheck != '/')
+				snprintf (newFileName, sizeof(newFileName)-1, "%s/%s", Index->pathName, fileName);
+			else
+				snprintf (newFileName, sizeof(newFileName)-1, "%s%s", Index->pathName, fileName);
+			newFileName[sizeof(newFileName)-1] = 0;
+
+			// Try opening it
+			if (Mode & FILEMODE_GZ)
+				fp = gzopen(newFileName, openMode);
+			else
+				fp = fopen(newFileName, openMode);
+
+			if (fp != NULL)
+				break; // We got it
+		}
+
+		// Did we open?
+		if (!fp)
+			return; // Nope
+
+		// Yep
+		// Allocate a free handle
+		CFileHandleList::FS_GetFreeHandle(&Handle);
+
+		if (Handle)
+		{
+			Handle->inUse = true;
+			Handle->name = fileName;
+			Handle->openMode = Mode;
+
+			if (Mode & FILEMODE_GZ)
+				Handle->fileType = FILE_GZ;
+			else
+				Handle->fileType = FILE_REGULAR;
+
+			Handle->file.reg = (FILE*)fp;
+		}
+		else
+		{
+			if (Mode & FILEMODE_GZ)
+				gzclose ((gzFile)fp);
+			else
+				fclose ((FILE*)fp);
+		}
+	};
+
+	void Close ()
+	{
+		if (!Handle)
+			return;
+
+		if (IS_REGULAR(Handle))
+			fclose(Handle->file.reg);
+		else
+			gzclose(Handle->file.gz);
+
+		// Invalidate the handle
+		IndexList->PushFreeHandle (Handle->handleIndex);
+		Handle = NULL;
 	};
 
 	bool EndOfFile ()
 	{
-		return FS_EndOfFile (Handle);
+		if (!Handle)
+			return true;
+
+		if (IS_REGULAR(Handle))
+			return !!feof(Handle->file.reg);
+		return !!gzeof(Handle->file.gz);
 	};
 
 	static bool Exists (const char *fileName)
 	{
-		return FS_FileExists (fileName);
+		CFile File (fileName, FILEMODE_READ);
+
+		if (!File.Valid())
+			return false;
+		return true;
 	};
 
 	void Write (const void *buffer, size_t size)
@@ -134,60 +401,50 @@ public:
 		if (!Handle)
 			return;
 
-		FS_Write (buffer, size, Handle);
+		_CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_WRITE), "Tried to write on a read\n");
+
+		if (IS_REGULAR(Handle))
+			fwrite (buffer, size, 1, Handle->file.reg);
+		else
+			gzwrite (Handle->file.gz, buffer, size);
 	};
 
 	template <typename TType>
 	void Write (const void *buffer)
 	{
-		if (!Handle)
-			return;
-
-		FS_Write (buffer, sizeof(TType), Handle);
+		Write (buffer, sizeof(TType));
 	};
 
 	template <typename TType>
 	void Write (const TType &Ref)
 	{
-		if (!Handle)
-			return;
-
-		FS_Write (&Ref, sizeof(TType), Handle);
+		Write (&Ref, sizeof(TType));
 	};
 
 	void Write (const cc_string &Ref)
 	{
-		if (!Handle)
-			return;
-
 		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
 
-		FS_Write (&Length, sizeof(Length), Handle);
+		Write (&Length, sizeof(Length));
 
 		if (Length > 1)
-			FS_Write (Ref.c_str(), Length, Handle);
+			Write (Ref.c_str(), Length);
 	};
 
 	void WriteString (const char *Str)
 	{
-		if (!Handle)
-			return;
-
 		sint32 Length = (Str) ? strlen(Str) + 1 : -1;
 
-		FS_Write (&Length, sizeof(Length), Handle);
+		Write (&Length, sizeof(Length));
 
 		if (Length > 1)
-			FS_Write (Str, Length, Handle);
+			Write (Str, Length);
 	};
 
 	template <typename TType>
 	void WriteArray (TType *Array, size_t Length)
 	{
-		if (!Handle)
-			return;
-
-		FS_Write (Array, sizeof(TType) * Length, Handle);
+		Write (Array, sizeof(TType) * Length);
 	};
 
 	void Read (void *buffer, size_t size)
@@ -195,16 +452,18 @@ public:
 		if (!Handle)
 			return;
 
-		FS_Read (buffer, size, Handle);
+		_CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_READ), "Tried to read on a write\n");
+
+		if (IS_REGULAR(Handle))
+			fread (buffer, size, 1, Handle->file.reg);
+		else
+			gzread (Handle->file.gz, buffer, size);
 	};
 
 	template <typename TType>
 	void Read (void *buffer)
 	{
-		if (!Handle)
-			return;
-
-		FS_Read (buffer, sizeof(TType), Handle);
+		Read (buffer, sizeof(TType));
 	};
 
 	template <typename TType>
@@ -213,30 +472,8 @@ public:
 		TType Val;
 		Mem_Zero (&Val, sizeof(TType));
 
-		if (!Handle)
-			return Val;
-
-		FS_Read (&Val, sizeof(TType), Handle);
+		Read (&Val, sizeof(TType));
 		return Val;
-	};
-
-	cc_string ReadCCString ()
-	{
-		if (!Handle)
-			return "";
-
-		sint32 Length;
-		FS_Read (&Length, sizeof(Length), Handle);
-		
-		if (Length > 1)
-		{
-			char *tempBuffer = QNew (TAG_GENERIC) char[Length];
-			FS_Read (tempBuffer, Length, Handle);
-			cc_string str (tempBuffer);
-			QDelete[] tempBuffer;
-			return str;
-		}
-		return "";
 	};
 
 	char *ReadString (sint32 Tag = TAG_GENERIC)
@@ -245,15 +482,26 @@ public:
 			return NULL;
 
 		sint32 Length;
-		FS_Read (&Length, sizeof(Length), Handle);
+		Read (&Length, sizeof(Length));
 		
 		char *tempBuffer = NULL;
 		if (Length > 1)
 		{
 			tempBuffer = QNew (Tag) char[Length];
-			FS_Read (tempBuffer, Length, Handle);
+			Read (tempBuffer, Length);
 		}
 		return tempBuffer;
+	};
+
+	cc_string ReadCCString ()
+	{
+		if (!Handle)
+			return "";
+
+		char *stringBuffer = ReadString();
+		cc_string str (stringBuffer);
+		QDelete[] stringBuffer;
+		return str;
 	};
 
 	cc_string ReadLine ()
@@ -278,6 +526,9 @@ public:
 
 	void ReadLine (char *buf, size_t maxSize)
 	{
+		if (!Handle)
+			return;
+
 		cc_string line = ReadLine ();
 
 		Q_snprintfz (buf, maxSize-1, "%s", line.c_str());
@@ -287,10 +538,7 @@ public:
 	template <typename TType>
 	void ReadArray (TType *Array, size_t Length)
 	{
-		if (!Handle)
-			return;
-
-		FS_Read (Array, sizeof(TType) * Length, Handle);
+		Read (Array, sizeof(TType) * Length);
 	};
 
 	void Seek (const ESeekOrigin seekOrigin, const size_t seekOffset)
@@ -298,7 +546,10 @@ public:
 		if (!Handle)
 			return;
 
-		FS_Seek (Handle, seekOrigin, seekOffset);
+		if (IS_REGULAR(Handle))
+			fseek (Handle->file.reg, seekOffset, seekOrigin);
+		else
+			gzseek (Handle->file.gz, seekOffset, seekOrigin);
 	};
 
 	// There's like three of these Print wrappers nesting..
@@ -324,20 +575,29 @@ public:
 		if (!Handle)
 			return 0;
 
-		return FS_Len (Handle);
+		filePos_t currentPos = Tell();
+
+		Seek (SEEKORIGIN_END, 0);
+		size_t len = Tell();
+		Seek (SEEKORIGIN_SET, currentPos);
+
+		return len;
 	};
 
 	inline filePos_t Tell ()
 	{
 		if (!Handle)
-			return 0;
+			return -1;
 
-		return FS_Tell (Handle);
+		if (IS_REGULAR(Handle))
+			return ftell(Handle->file.reg);
+		else
+			return gztell(Handle->file.gz);
 	};
 
 	inline bool Valid ()
 	{
-		return (Handle != 0);
+		return (Handle != NULL);
 	};
 };
 
@@ -498,38 +758,65 @@ inline CFileStream &operator>> (CFileStream &Stream, cc_string &val)
 // A wrapper for FS_LoadFile
 class CFileBuffer
 {
-	uint8 *buffer;
-	size_t bufSize;
+	uint8 *Buffer;
+	size_t BufSize;
 
 public:
-	CFileBuffer (const char *fileName, bool Terminate) :
-	  buffer(NULL),
-	  bufSize(0)
+	CFileBuffer (const char *FileName, bool Terminate) :
+	  Buffer(NULL),
+	  BufSize(0)
 	{
-		bufSize = FS_LoadFile (fileName, (void**)&buffer, Terminate);
+		Open (FileName, Terminate);
 	};
 
 	~CFileBuffer ()
 	{
-		QDelete[] buffer;
+		Close ();
+	};
+
+	void Open (const char *FileName, bool Terminate)
+	{
+		CFile File (FileName, FILEMODE_READ);
+
+		if (!File.Valid())
+			return;
+
+		size_t len = File.Length();
+
+		size_t termLen = (Terminate) ? 2 : 0;
+		Buffer = QNew (TAG_GENERIC) uint8[len + termLen];
+
+		File.Read (Buffer, len);
+
+		if (Terminate)
+			strncpy((char *)Buffer+len, "\n\0", termLen);
+
+		BufSize = len + termLen;
+	};
+
+	void Close ()
+	{
+		QDelete[] Buffer;
 	};
 
 	template <typename type>
 	inline type *GetBuffer ()
 	{
-		return (type*)buffer;
+		return (type*)Buffer;
 	};
 
 	inline size_t GetLength ()
 	{
-		return bufSize;
+		return BufSize;
 	};
 
 	inline bool Valid ()
 	{
-		return (buffer != NULL);
+		return (Buffer != NULL);
 	};
 };
+
+typedef std::vector<cc_string, std::allocator<cc_string> > TFindFilesType;
 
 // A wrapper for FS_FindFiles
 class CFindFilesCallback
@@ -538,7 +825,9 @@ public:
 	virtual void Query (cc_string &fileName) {};
 };
 
-//(const char *path, const char *filter, const char *extension, char **fileList, sint32 maxFiles, const bool addDir, const bool recurse);
+// Finds files in "Path" (optionally "Recurse"ing) that match the filter "Filter" and are of type "Extention".
+// If "AddDir" is true, it returns the stripped names, and not the full name for opening.
+// Filter and Extension can contain * for wildcards.
 #define MAX_FINDFILES_PATH	256
 class CFindFiles
 {
@@ -597,19 +886,5 @@ public:
 	{
 	};
 
-	void FindFiles (CFindFilesCallback *Callback)
-	{
-		if (Filter.empty())
-			Filter = "*";
-		if (Extension.empty())
-			Extension = "*";
-
-		Files = FS_FindFiles (Path.c_str(), Filter.c_str(), Extension.c_str(), AddDir, Recurse);
-
-		if (Callback)
-		{
-			for (size_t i = 0; i < Files.size(); i++)
-				Callback->Query (Files[i]);
-		}
-	};
+	void FindFiles (CFindFilesCallback *Callback);
 };
