@@ -321,7 +321,7 @@ void CTrapProjectile::Explode ()
 	if (GroundEntity)
 		NTempEnts::NExplosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
 	else
-		NTempEnts::NExplosions::RocketExplosion(origin, this, !!WaterInfo.Level);
+		CRocketExplosion(origin, !!WaterInfo.Level).Send();
 
 	Free (); // "delete" the entity
 }

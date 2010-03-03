@@ -3909,7 +3909,10 @@ inline const char *MonsterAOrAn (const char *Name)
 
 void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 {
-	static const char *message = "", *message2 = "";
+	static cc_string message, message2;
+	message.clear();
+	message2.clear();
+
 	if (Attacker == this)
 	{
 		switch (meansOfDeath)
@@ -3971,7 +3974,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 		}
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message);
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message.c_str());
 	}
 	else if (Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 	{
@@ -4070,7 +4073,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 			break;
 #endif
 		}
-		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.Name.c_str(), message, PlayerAttacker->Client.Persistent.Name.c_str(), message2);
+		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.Name.c_str(), message.c_str(), PlayerAttacker->Client.Persistent.Name.c_str(), message2.c_str());
 		if (Game.GameMode & GAME_DEATHMATCH)
 			PlayerAttacker->Client.Respawn.Score++;
 	}
@@ -4150,7 +4153,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.c_str(), message, MonsterAOrAn(Name), Name, message2);
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.c_str(), message.c_str(), MonsterAOrAn(Name), Name, message2.c_str());
 	}
 	else
 	{
@@ -4199,7 +4202,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message);
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message.c_str());
 	}
 }
 

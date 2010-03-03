@@ -34,6 +34,55 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_tent.h"
 
+const CTempEntFlags CTempEntFlags::DefaultTempEntFlags (CAST_MULTI, CASTFLAG_PVS);
+
+void CForEachPlayerMulticastCallback::Query (bool MustBeInUse)
+{
+	for (uint8 i = 1; i <= Game.MaxClients; i++)
+	{
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
+
+		if (MustBeInUse && (!Player->GetInUse() || Player->Client.Persistent.State != SVCS_SPAWNED))
+			continue;
+
+		Index = i;
+		if (Callback (Player))
+			TempEnt->SendTo (Player);
+	}
+};
+
+void CTempEnt::Send ()
+{
+	if (Flags.Type == CAST_UNI)
+		SendTo (Player);
+	else
+	{
+		SendHeader ();
+		SendData ();
+		
+		Cast (Flags.Type, Flags.Flags, Origin, NULL, true);
+	}
+};
+
+void CTempEnt::SendTo (CPlayerEntity *Player)
+{
+	SendHeader ();
+	SendData ();
+
+	Cast (Flags.Type, Flags.Flags, (ToPlayerOrigin && Player) ? Player->State.GetOrigin() : Origin, Player, true);
+};
+
+void CRocketExplosion::SendHeader ()
+{
+	WriteByte (SVC_TEMP_ENTITY);
+	WriteByte (Water ? TE_ROCKET_EXPLOSION_WATER : (Particles ? TE_ROCKET_EXPLOSION : TE_EXPLOSION1_NP));
+};
+
+void CRocketExplosion::SendData ()
+{
+	WritePosition (ExplosionOrigin);
+};
+
 // A small class to automatically multicast and do the first two writebytes.
 class TECast
 {
@@ -242,13 +291,6 @@ void NTempEnts::NTrails::HeatBeam (vec3f &Start, vec3f &End, sint16 Ent, bool Mo
 {
 	TECast cast(Start, Monster ? TE_MONSTER_HEATBEAM : TE_HEATBEAM);
 	BaseTrail(Start, End, Ent);
-}
-
-void NTempEnts::NExplosions::RocketExplosion (vec3f &Start, CBaseEntity *Entity, bool Water, bool Particles)
-{
-	// Water and NoParticles fight over a spot.. water will win, in the end
-	TECast cast (Entity->State.GetOrigin(), Water ? TE_ROCKET_EXPLOSION_WATER : (Particles ? TE_ROCKET_EXPLOSION : TE_EXPLOSION1_NP));
-	WritePosition (Start);
 }
 
 void NTempEnts::NExplosions::GrenadeExplosion (vec3f &Start, CBaseEntity *Entity, bool Water)

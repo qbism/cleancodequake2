@@ -659,7 +659,7 @@ void CBaseEntity::BecomeExplosion (bool grenade)
 	if (grenade)
 		NTempEnts::NExplosions::GrenadeExplosion (State.GetOrigin(), this);
 	else
-		NTempEnts::NExplosions::RocketExplosion (State.GetOrigin(), this);
+		CRocketExplosion (State.GetOrigin()).Send();
 	Free ();
 }
 

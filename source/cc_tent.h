@@ -41,6 +41,162 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_colors.h"
 
+// The NEW AND IMPROVED TempEnt system
+class CTempEntFlags
+{
+public:
+	static const CTempEntFlags DefaultTempEntFlags;
+
+	ECastType	Type;
+	ECastFlags	Flags;
+
+	CTempEntFlags (ECastType Type, ECastFlags Flags) :
+	  Type(Type),
+	  Flags(Flags)
+	{
+	};
+
+	CTempEntFlags (const CTempEntFlags &right) :
+	  Type(right.Type),
+	  Flags(right.Flags)
+	{
+	};
+
+	CTempEntFlags &operator = (const CTempEntFlags &right)
+	{
+		Type = right.Type;
+		Flags = right.Flags;
+	};
+};
+
+class CForEachPlayerMulticastCallback
+{
+public:
+	sint32			Index;
+	class CTempEnt	*TempEnt;
+
+	virtual bool Callback (CPlayerEntity *Player) = 0;
+	virtual void Query (bool MustBeInUse = true);
+};
+
+class CTempEnt
+{
+	CTempEntFlags		Flags;
+	vec3f				Origin;
+	bool				ToPlayerOrigin;
+	CPlayerEntity		*Player;
+
+	// This function must be overridden.
+	// It sends out the actual tempent-based data to the player(s).
+	virtual void SendData () = 0;
+
+	// Writes the header
+	virtual void SendHeader () = 0;
+
+public:
+	CTempEnt (vec3f Origin = vec3fOrigin, CPlayerEntity *Player = NULL) :
+	  Flags(CTempEntFlags::DefaultTempEntFlags),
+	  Origin(Origin),
+	  Player(Player),
+	  ToPlayerOrigin(true)
+	{
+	};
+
+	CTempEnt (CTempEntFlags Flags, vec3f Origin = vec3fOrigin, CPlayerEntity *Player = NULL) :
+	  Flags(Flags),
+	  Origin(Origin),
+	  Player(Player),
+	  ToPlayerOrigin(true)
+	{
+	};
+
+	CTempEnt &AtPlayer (bool ToPlayerOrigin)
+	{
+		this->ToPlayerOrigin = ToPlayerOrigin;
+		return *this;
+	};
+
+	CTempEnt &At (vec3f Origin)
+	{
+		this->Origin = Origin;
+		return *this;
+	};
+
+	CTempEnt &To (CPlayerEntity *Player)
+	{
+		this->Player = Player;
+		return *this;
+	};
+
+	CTempEnt &AssignFlags (CTempEntFlags Flags)
+	{
+		this->Flags = Flags;
+		return *this;
+	};
+
+	// Sends to "Player" or "Origin" depending on "Flags".
+	// Sends to all players if using multicast, no exceptions.
+	void Send ();
+
+	// Sends to players between first and last.
+	// Can be done on both uni and multi.
+	// Use to send to a range of players stored in a vector/list.
+	template <class TIterator>
+	void Send (TIterator first, TIterator last)
+	{
+		for (TIterator it = first; it != last; ++it)
+			SendTo (*it);
+	};
+
+	// Sends to argument "Player".
+	// Uses Flags.Flags only (forces unicast)
+	void SendTo (CPlayerEntity *Player);
+};
+
+class CRocketExplosion : public CTempEnt
+{
+	bool	Water, Particles;
+	vec3f	ExplosionOrigin;
+
+	void SendHeader ();
+	void SendData ();
+
+public:
+	CRocketExplosion (vec3f ExplosionOrigin, bool Water = false, bool Particles = true) :
+	  CTempEnt (ExplosionOrigin),
+	  ExplosionOrigin(ExplosionOrigin),
+	  Water(Water),
+	  Particles(Particles)
+	{
+	};
+
+	CRocketExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin, bool Water = false, bool Particles = true) :
+	  CTempEnt (Flags, ExplosionOrigin),
+	  ExplosionOrigin(ExplosionOrigin),
+	  Water(Water),
+	  Particles(Particles)
+	{
+	};
+
+	CRocketExplosion &IsInWater (bool Water)
+	{
+		this->Water = Water;
+		return *this;
+	};
+
+	CRocketExplosion &HasParticles (bool Particles)
+	{
+		this->Particles = Particles;
+		return *this;
+	};
+
+	CRocketExplosion &ExplodeAt (vec3f ExplosionOrigin)
+	{
+		this->ExplosionOrigin = ExplosionOrigin;
+		return *this;
+	};
+};
+
 namespace NTempEnts
 {
 	namespace NSplashes

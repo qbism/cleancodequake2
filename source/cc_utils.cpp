@@ -184,24 +184,6 @@ void	G_TouchTriggers (CBaseEntity *Entity)
 	}
 }
 
-/*
-==============================================================================
-
-Kill box
-
-==============================================================================
-*/
-
-/*
-=================
-KillBox
-
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
-=================
-*/
-
-
 // Calls the callback for each member of the team in "ent"
 void CForEachTeamChainCallback::Query (CBaseEntity *Master)
 {

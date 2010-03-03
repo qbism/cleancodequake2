@@ -320,6 +320,7 @@ CC_ENUM (uint8, ECastFlags)
 	CASTFLAG_RELIABLE = 4
 };
 
+void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity *Ent, bool SuppliedOrigin);
 void Cast (ECastFlags castFlags, CBaseEntity *Ent);
 void Cast (ECastFlags castFlags, vec3f &Origin);
 

@@ -181,8 +181,6 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 		Clear ();
 		return;
 	}
-	else if (castType == CAST_UNI && SuppliedOrigin)
-		DebugPrintf ("Multicast with an associated Origin\n");
 
 	CPlayerEntity *Entity = NULL;
 	if (Ent)

@@ -4241,7 +4241,7 @@ void CMonster::BossExplode ()
 		return;
 	}
 
-	NTempEnts::NExplosions::RocketExplosion (org, Entity);
+	CRocketExplosion (org).Send();
 	Entity->NextThink = Level.Frame + FRAMETIME;
 }
 

@@ -186,7 +186,7 @@ public:
 
 	void Think ()
 	{
-		NTempEnts::NExplosions::RocketExplosion (State.GetOrigin(), this);
+		CRocketExplosion (State.GetOrigin()).Send();
 
 		if (Damage)
 			SplashDamage (User, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
