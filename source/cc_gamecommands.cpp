@@ -321,7 +321,7 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 		return;
 
 	if (CvarList[CV_DEDICATED].Integer())
-		ServerPrintf ("%s", text);
+		ServerPrintf ("%s", text.c_str());
 
 	CSayPlayerCallback (text).Query ();
 }
