@@ -187,7 +187,7 @@ static cvarDefaultValue_s CvarDefaults[] =
 
 	{ CV_DEATHMATCH,			"deathmatch",			"0",			CVAR_SERVERINFO | CVAR_LATCH_SERVER		},
 	{ CV_COOP,					"coop",					"0",			CVAR_LATCH_SERVER						},
-	{ CV_DMFLAGS,				"dmflags",				"0",			CVAR_LATCH_SERVER						},
+	{ CV_DMFLAGS,				"dmflags",				"0",			CVAR_SERVERINFO							},
 	{ CV_SKILL,					"skill",				"1",			CVAR_LATCH_SERVER						},
 	{ CV_FRAG_LIMIT,			"fraglimit",			"0",			CVAR_SERVERINFO							},
 	{ CV_TIME_LIMIT,			"timelimit",			"0",			CVAR_SERVERINFO							},
