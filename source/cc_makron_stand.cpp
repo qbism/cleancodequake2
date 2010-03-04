@@ -100,7 +100,7 @@ public:
 
 	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		NTempEnts::BossTeleport (State.GetOrigin());
+		CBossTeleport(State.GetOrigin()).Send();
 		Free ();
 	};
 

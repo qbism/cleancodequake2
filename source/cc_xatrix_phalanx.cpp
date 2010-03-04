@@ -78,9 +78,8 @@ void CPhalanxPlasma::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
-	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
-	NTempEnts::NExplosions::PlasmaExplosion(origin);
+	CPlasmaExplosion(State.GetOrigin().MultiplyAngles (-0.02f, Velocity)).Send();
 
 	Free ();
 }

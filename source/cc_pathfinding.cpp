@@ -321,7 +321,7 @@ void RunNodes()
 			for (TPathNodeChildrenContainer::iterator it = NodeList[i]->Children.begin(); it < NodeList[i]->Children.end(); ++it)
 			{
 				CPathNode *Child = *it;
-				NTempEnts::NTrails::BFGLaser (NodeList[i]->Origin, Child->Origin);
+				CBFGLaser(NodeList[i]->Origin, Child->Origin).Send();
 			}
 
 			PrintVerboseNodes (NodeList[i]->Origin, i, NodeList[i]->Type);

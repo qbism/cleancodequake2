@@ -319,7 +319,7 @@ void CTrapProjectile::Explode ()
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
-		NTempEnts::NExplosions::GrenadeExplosion(origin, this, !!WaterInfo.Level);
+		CGrenadeExplosion(origin, !!WaterInfo.Level).Send();
 	else
 		CRocketExplosion(origin, !!WaterInfo.Level).Send();
 

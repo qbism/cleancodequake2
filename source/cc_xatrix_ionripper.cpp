@@ -58,7 +58,7 @@ IMPLEMENT_SAVE_SOURCE(CIonRipperBoomerang)
 
 void CIonRipperBoomerang::Think ()
 {
-	NTempEnts::NSplashes::Sparks (State.GetOrigin(), vec3fOrigin, NTempEnts::NSplashes::ST_WELDING_SPARKS, 0xe4 + (rand()&3), 0);
+	CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe4 + irandom(3), 0).Send();
 	Free();
 }
 

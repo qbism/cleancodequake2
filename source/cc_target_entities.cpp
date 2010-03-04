@@ -401,7 +401,7 @@ public:
 
 	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
-		NTempEnts::NSplashes::Splash (State.GetOrigin(), MoveDir, Color, Count);
+		CSplash(State.GetOrigin(), MoveDir, Color, Count).Send();
 
 		if (Damage)
 			SplashDamage (Activator, Damage, NULL, Damage+40, MOD_SPLASH);
@@ -1244,11 +1244,7 @@ void CTargetLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				NTempEnts::NSplashes::Sparks (tr.EndPos,
-					tr.plane.normal, 
-					NTempEnts::NSplashes::ST_LASER_SPARKS,
-					(State.GetSkinNum() & 255),
-					Count);
+				CSparks(tr.EndPos, tr.plane.normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
 			}
 			break;
 		}

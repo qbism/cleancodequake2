@@ -787,7 +787,7 @@ void CMedic::CableAttack ()
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z = Entity->Enemy->GetAbsMin().Z + Entity->Enemy->GetSize().Z / 2;
 
-	NTempEnts::NTrails::FleshCable (start, end, Entity->State.GetNumber());
+	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 }
 
 void CMedic::HookRetract ()

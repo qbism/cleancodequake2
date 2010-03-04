@@ -105,7 +105,7 @@ public:
 
 	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
-		NTempEnts::NSplashes::Sparks (State.GetOrigin(), vec3fOrigin, NTempEnts::NSplashes::ST_WELDING_SPARKS, 0xe0 + randomMT()&7, 30);
+		CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 30).Send();
 
 		State.GetEffects() &= ~EF_SPINNINGLIGHTS;
 		Usable = false;
@@ -426,7 +426,7 @@ public:
 		dir = (vec - start).GetNormalized();
 		
 		CRocket::Spawn (World, start, dir, Damage, 500, Damage, Damage+40);
-		NTempEnts::MonsterFlash (State.GetOrigin(), State.GetNumber(), MZ2_CHICK_ROCKET_1);
+		CMuzzleFlash(State.GetOrigin(), State.GetNumber(), MZ2_CHICK_ROCKET_1, true).Send();
 		
 		Free ();
 	};
@@ -645,7 +645,7 @@ public:
 		if (Health <= 100)
 			Health++;
 		else
-			NTempEnts::NSplashes::Sparks (State.GetOrigin(), vec3fOrigin, NTempEnts::NSplashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
+			CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 10).Send();
 	};
 
 	void Dead ()
@@ -666,7 +666,7 @@ public:
 
 		NextThink = Level.Frame + Delay;
 	
-		NTempEnts::NSplashes::Sparks (State.GetOrigin(), vec3fOrigin, NTempEnts::NSplashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
+		CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 10).Send();
 	};
 	
 	void Think ()

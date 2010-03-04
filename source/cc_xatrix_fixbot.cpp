@@ -669,7 +669,7 @@ void CFixbot::FireWelder ()
 
 	vec3f dir = Entity->Enemy->State.GetOrigin() - start;
 
-	NTempEnts::NSplashes::Sparks (start, vec3fOrigin, NTempEnts::NSplashes::ST_WELDING_SPARKS, 0xe0 + irandom(7), 10);
+	CSparks(start, vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 10).Send();
 
 	if (frand() > 0.8)
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_WELD1 + irandom(3)], 255, ATTN_IDLE); 

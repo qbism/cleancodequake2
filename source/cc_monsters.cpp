@@ -339,7 +339,7 @@ void CMonster::MoveToPath (float Dist)
 
 	// Check if we hit our new path.
 	vec3f sub = Entity->State.GetOrigin() - P_CurrentNode->Origin;
-	//NTempEnts::NTrails::FleshCable (origin, P_CurrentNode->Origin, Entity->State.GetNumber());
+
 	if (sub.Length() < 30)
 	{
 		bool shouldJump = (P_CurrentNode->Type == NODE_JUMP);
@@ -805,7 +805,7 @@ void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint
 
 void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 {
-	NTempEnts::NSplashes::Blood (point, normal);
+	CBlood(point, normal).Send();
 }
 
 void CMonster::ChangeYaw ()
@@ -1598,7 +1598,7 @@ void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 
 	CBullet::Fire (Entity, start, dir, Damage, kick, hspread, vspread, MOD_MACHINEGUN);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
@@ -1611,7 +1611,7 @@ void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sin
 	CShotgunPellets::Fire (Entity, start, aimdir, Damage, kick, hspread, vspread, count, MOD_SHOTGUN);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
@@ -1624,7 +1624,7 @@ void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32
 	CBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, effect, false);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }	
 
 void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype)
@@ -1637,7 +1637,7 @@ void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sin
 	CGrenade::Spawn (Entity, start, aimdir, Damage, speed, 25, Damage+40);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
@@ -1650,7 +1650,7 @@ void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 
 	CRocket::Spawn (Entity, start, dir, Damage, speed, Damage+20, Damage);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }	
 
 void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype)
@@ -1664,7 +1664,7 @@ void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sin
 		CRailGunShot::Fire (Entity, start, aimdir, Damage, kick);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
@@ -1677,7 +1677,7 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 
 	CBFGBolt::Spawn (Entity, start, aimdir, Damage, speed, damage_radius);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 #if XATRIX_FEATURES
@@ -1698,7 +1698,7 @@ void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 
 	CIonRipperBoomerang::Spawn (Entity, start, dir, Damage, speed);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
@@ -1711,7 +1711,7 @@ void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, si
 	CBlueBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, EF_BLUEHYPERBLASTER);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
 void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
@@ -1724,7 +1724,7 @@ void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sin
 	CHeatRocket::Spawn (Entity, start, dir, Damage, speed, Damage+20, Damage);
 
 	if (flashtype != -1)
-		NTempEnts::MonsterFlash (start, Entity->State.GetNumber(), flashtype);
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }	
 
 // RAFAEL
@@ -1783,11 +1783,7 @@ void CMonsterBeamLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				NTempEnts::NSplashes::Sparks (tr.EndPos,
-					tr.plane.normal, 
-					NTempEnts::NSplashes::ST_LASER_SPARKS,
-					(State.GetSkinNum() & 255),
-					Count);
+				CSparks(tr.EndPos, tr.plane.normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
 			}
 			break;
 		}

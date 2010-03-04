@@ -135,7 +135,7 @@ CMonster (ID)
 
 void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 {
-	NTempEnts::NSplashes::Blood (point, normal, NTempEnts::NSplashes::BT_GREEN_BLOOD);
+	CBlood(point, normal, BT_GREEN_BLOOD).Send();
 }
 
 bool CGekk::CheckMelee ()

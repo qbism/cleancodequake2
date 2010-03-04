@@ -224,7 +224,7 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	if (Saved > Damage)
 		Saved = Damage;
 
-	NTempEnts::NSplashes::ShieldSparks (point, normal, ScreenSparks);
+	CShieldSparks(point, normal, ScreenSparks).Send();
 
 	sint32 PowerUsed = Saved / DamagePerCell;
 	if (!PowerUsed)
@@ -312,9 +312,9 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
-		NTempEnts::NSplashes::Blood (point, normal);
+		CBlood(point, normal).Send();
 	else
-		NTempEnts::NSplashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? NTempEnts::NSplashes::ST_BULLET_SPARKS : NTempEnts::NSplashes::ST_SPARKS, NTempEnts::NSplashes::SPT_SPARKS);
+		CSparks(point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 }
 
 bool LastPelletShot = true;
@@ -423,7 +423,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	{
 		take = 0;
 		save = Damage;
-		NTempEnts::NSplashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? NTempEnts::NSplashes::ST_BULLET_SPARKS : NTempEnts::NSplashes::ST_SPARKS, NTempEnts::NSplashes::SPT_SPARKS);
+		CSparks (point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 	}
 
 	// check for invincibility

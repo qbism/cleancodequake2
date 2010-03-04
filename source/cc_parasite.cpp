@@ -323,7 +323,7 @@ void CParasite::DrainAttack ()
 	else if (Entity->State.GetFrame() == FRAME_drain04)
 		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SUCK]);
 
-	NTempEnts::NTrails::FleshCable (start, end, Entity->State.GetNumber());
+	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 
 	vec3f dir = start - end;
 	if (Entity->Enemy)

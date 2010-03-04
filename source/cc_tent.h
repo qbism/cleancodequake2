@@ -1,8 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \file	game\cc_tent.h
-///
-/// \brief	Declares the temporary entity classes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
 
@@ -41,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_colors.h"
 
-// The NEW AND IMPROVED TempEnt system
+// The NEW AND IMPROVED AND NEW AND IMPROVED AND CLASS-BASED AND IMPROVED TempEnt system
 class CTempEntFlags
 {
 public:
@@ -81,6 +76,7 @@ public:
 
 class CTempEnt
 {
+protected:
 	CTempEntFlags		Flags;
 	vec3f				Origin;
 	bool				ToPlayerOrigin;
@@ -89,9 +85,6 @@ class CTempEnt
 	// This function must be overridden.
 	// It sends out the actual tempent-based data to the player(s).
 	virtual void SendData () = 0;
-
-	// Writes the header
-	virtual void SendHeader () = 0;
 
 public:
 	CTempEnt (vec3f Origin = vec3fOrigin, CPlayerEntity *Player = NULL) :
@@ -151,28 +144,56 @@ public:
 	// Sends to argument "Player".
 	// Uses Flags.Flags only (forces unicast)
 	void SendTo (CPlayerEntity *Player);
+
+	// Writes the header
+	virtual void SendHeader (ESVCType Enum);
 };
 
-class CRocketExplosion : public CTempEnt
+class CExplosionBase : public CTempEnt
 {
-	bool	Water, Particles;
+protected:
 	vec3f	ExplosionOrigin;
 
-	void SendHeader ();
+	virtual void SendData () = 0;
+
+public:
+	CExplosionBase (vec3f ExplosionOrigin) :
+	  CTempEnt (ExplosionOrigin),
+	  ExplosionOrigin(ExplosionOrigin)
+	{
+	};
+
+	CExplosionBase (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CTempEnt (Flags, ExplosionOrigin),
+	  ExplosionOrigin(ExplosionOrigin)
+	{
+	};
+
+	CExplosionBase &ExplodeAt (vec3f ExplosionOrigin)
+	{
+		this->ExplosionOrigin = ExplosionOrigin;
+		return *this;
+	};
+};
+
+// The rocket explosion.
+class CRocketExplosion : public CExplosionBase
+{
+protected:
+	bool	Water, Particles;
+
 	void SendData ();
 
 public:
 	CRocketExplosion (vec3f ExplosionOrigin, bool Water = false, bool Particles = true) :
-	  CTempEnt (ExplosionOrigin),
-	  ExplosionOrigin(ExplosionOrigin),
+	  CExplosionBase (ExplosionOrigin),
 	  Water(Water),
 	  Particles(Particles)
 	{
 	};
 
 	CRocketExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin, bool Water = false, bool Particles = true) :
-	  CTempEnt (Flags, ExplosionOrigin),
-	  ExplosionOrigin(ExplosionOrigin),
+	  CExplosionBase (Flags, ExplosionOrigin),
 	  Water(Water),
 	  Particles(Particles)
 	{
@@ -189,176 +210,887 @@ public:
 		this->Particles = Particles;
 		return *this;
 	};
+};
 
-	CRocketExplosion &ExplodeAt (vec3f ExplosionOrigin)
+// Grenade explosion
+class CGrenadeExplosion : public CExplosionBase
+{
+protected:
+	bool	Water;
+
+	void SendData ();
+
+public:
+	CGrenadeExplosion (vec3f ExplosionOrigin, bool Water = false) :
+	  CExplosionBase (ExplosionOrigin),
+	  Water(Water)
 	{
-		this->ExplosionOrigin = ExplosionOrigin;
+	};
+
+	CGrenadeExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin, bool Water = false) :
+	  CExplosionBase (Flags, ExplosionOrigin),
+	  Water(Water)
+	{
+	};
+
+	CGrenadeExplosion &IsInWater (bool Water)
+	{
+		this->Water = Water;
 		return *this;
 	};
 };
 
-namespace NTempEnts
+// BFG explosion
+class CBFGExplosion : public CExplosionBase
 {
-	namespace NSplashes
+protected:
+	bool	Big;
+
+	void SendData ();
+
+public:
+	CBFGExplosion (vec3f ExplosionOrigin, bool Big = false) :
+	  CExplosionBase (ExplosionOrigin),
+	  Big(Big)
 	{
-		CC_ENUM (uint8, ESplashType)
-		{
-			SPT_UNKNOWN,
-			SPT_SPARKS,
-			SPT_WATER,
-			SPT_MUD,
-			SPT_SLIME,
-			SPT_LAVA,
-			SPT_BLOOD
-		};
-
-		CC_ENUM (uint8, EBloodType)
-		{
-			BT_BLOOD = TE_BLOOD,
-			BT_MORE_BLOOD = TE_MOREBLOOD,
-			BT_GREEN_BLOOD = TE_GREENBLOOD
-		};
-
-		CC_ENUM (uint8, EBlasterType)
-		{
-			BL_BLASTER = TE_BLASTER,
-			BL_BLUE_HYPERBLASTER = TE_BLUEHYPERBLASTER,
-			BL_FLECHETTE = TE_FLECHETTE,
-			BL_GREEN_BLASTER = TE_BLASTER2
-		};
-
-		CC_ENUM (uint8, ESparkType)
-		{
-			ST_SPARKS = TE_SPARKS,
-			ST_BULLET_SPARKS = TE_BULLET_SPARKS,
-			ST_HEATBEAM_SPARKS = TE_HEATBEAM_SPARKS,
-			ST_ELECTRIC_SPARKS = TE_ELECTRIC_SPARKS,
-
-			// Ones that have amount/color
-			ST_LASER_SPARKS = TE_LASER_SPARKS,
-			ST_WELDING_SPARKS = TE_WELDING_SPARKS,
-			ST_TUNNEL_SPARKS = TE_TUNNEL_SPARKS
-		};
-
-		void Gunshot	(vec3f &Origin,
-						vec3f &Normal);
-
-		void Shotgun	(vec3f &Origin,
-						vec3f &Normal);
-
-		void Blood	(vec3f &Origin,
-					vec3f &Normal,
-					EBloodType BloodType = BT_BLOOD);
-
-		void Blaster	(vec3f &Origin,
-						vec3f &Normal,
-						EBlasterType BlasterType = BL_BLASTER);
-
-		void Sparks	(vec3f &Origin,
-					vec3f &Normal,
-					ESparkType SparkType = ST_SPARKS,
-					ESplashType color = SPT_UNKNOWN,
-					uint8 amount = 8);
-
-		void Splash	(vec3f &Origin,
-					vec3f &Normal,
-					ESplashType color = SPT_UNKNOWN,
-					uint8 amount = 8);
-
-		void ShieldSparks	(vec3f &Origin,
-							vec3f &Normal,
-							bool Screen = false);
-
-		void Steam	(vec3f &Origin,
-					vec3f &Normal,
-					uint8 count = 8,
-					ESplashType color = SPT_UNKNOWN,
-					sint16 magnitude = 12,
-					sint16 id = -1,
-					long endTime = 0);
-
-		void HeatSteam	(vec3f &Origin,
-						vec3f &Normal);
-
-		void ChainfistSmoke	(vec3f &Origin);
 	};
 
-	namespace NTrails
+	CBFGExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin, bool Big = false) :
+	  CExplosionBase (Flags, ExplosionOrigin),
+	  Big(Big)
 	{
-		void RailTrail	(vec3f &Start,
-						vec3f &End);
-
-		void HeatBeam	(vec3f & Start,
-						vec3f &End,
-						sint16 Ent,
-						bool Monster = false);
-
-		void ForceWall	(vec3f &Start,
-						vec3f &End,
-						uint8 color = NSColor::Lime);
-
-		void DebugTrail	(vec3f &Start,
-						vec3f &End);
-
-		void Lightning	(vec3f &Start,
-						vec3f &End,
-						sint16 SrcEnt,
-						sint16 DestEnt);
-
-		void GrappleCable	(vec3f &Start,
-							vec3f &End,
-							sint16 Ent,
-							vec3f &Offset = vec3fOrigin);
-
-		void BFGLaser	(vec3f &Start,
-						vec3f &End);
-
-		void FleshCable		(vec3f &Start,
-							vec3f &End,
-							sint16 Ent);
-		void BubbleTrail	(vec3f &Start,
-							vec3f &End);
 	};
 
-	namespace NExplosions
+	CBFGExplosion &IsBig (bool Big)
 	{
-		void RocketExplosion	(vec3f &Origin, CBaseEntity *Entity,
-								bool Water = false,
-								bool Particles = true);
+		this->Big = Big;
+		return *this;
+	};
+};
 
-		void GrenadeExplosion	(vec3f &Origin,
-								CBaseEntity *Entity,
-								bool Water = false);
+// Plasma explosion
+class CPlasmaExplosion : public CExplosionBase
+{
+protected:
+	void SendData ();
 
-		void BFGExplosion		(vec3f &Origin,
-								bool Big = false);
-
-		void PlasmaExplosion	(vec3f &Origin);
-
-		void TrackerExplosion	(vec3f &Origin);
-
-		void NukeBlast			(vec3f &Origin);
+public:
+	CPlasmaExplosion (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
 	};
 
-	void Flashlight		(vec3f &Origin,
-						sint16 Ent);
+	CPlasmaExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
 
-	void BossTeleport	(vec3f &Origin);
+// Plasma explosion
+class CTrackerExplosion : public CExplosionBase
+{
+protected:
+	void SendData ();
 
-	void TeleportEffect	(vec3f &Origin);
+public:
+	CTrackerExplosion (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
+	};
 
-	void WidowBeamOut	(vec3f &Origin,
-						sint16 id = -1);
+	CTrackerExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
 
-	void WidowSplash	(vec3f &Origin);
+// Nuke explosion
+class CNukeExplosion : public CExplosionBase
+{
+protected:
+	void SendData ();
 
-	void MuzzleFlash	(vec3f &Origin,
-						sint16 Ent,
-						sint16 id);
+public:
+	CNukeExplosion (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
+	};
 
-	void MonsterFlash	(vec3f &Origin,
-						sint16 Ent,
-						sint16 id);
+	CNukeExplosion (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
+
+// Base class for something that requires an origin and a normal
+class CSplashBase : public CTempEnt
+{
+protected:
+	vec3f		SplashOrigin, SplashNormal;
+
+	virtual void SendData () = 0;
+
+public:
+	CSplashBase (vec3f SplashOrigin, vec3f SplashNormal) :
+	  CTempEnt (SplashOrigin),
+	  SplashOrigin(SplashOrigin),
+	  SplashNormal(SplashNormal)
+	{
+	};
+
+	CSplashBase (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal) :
+	  CTempEnt (Flags, SplashOrigin),
+	  SplashOrigin(SplashOrigin),
+	  SplashNormal(SplashNormal)
+	{
+	};
+
+	CSplashBase &SetSplashOrigin (vec3f SplashOrigin)
+	{
+		this->SplashOrigin = SplashOrigin;
+		return *this;
+	};
+
+	CSplashBase &SetSplashNormal (vec3f SplashNormal)
+	{
+		this->SplashNormal = SplashNormal;
+		return *this;
+	};
+};
+
+// Gunshot ricochet
+class CGunshotRicochet : public CSplashBase
+{
+protected:
+	void SendData ();
+
+public:
+	CGunshotRicochet (vec3f SplashOrigin, vec3f SplashNormal) :
+	  CSplashBase (SplashOrigin, SplashNormal)
+	{
+	};
+
+	CGunshotRicochet (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal)
+	{
+	};
+};
+
+// Shotgun ricochet
+class CShotgunRicochet : public CSplashBase
+{
+protected:
+	void SendData ();
+
+public:
+	CShotgunRicochet (vec3f SplashOrigin, vec3f SplashNormal) :
+	  CSplashBase (SplashOrigin, SplashNormal)
+	{
+	};
+
+	CShotgunRicochet (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal)
+	{
+	};
+};
+
+CC_ENUM (uint8, EBloodType)
+{
+	BT_BLOOD = TE_BLOOD,
+	BT_MORE_BLOOD = TE_MOREBLOOD,
+	BT_GREEN_BLOOD = TE_GREENBLOOD
+};
+
+// Blood
+class CBlood : public CSplashBase
+{
+protected:
+	EBloodType	Type;
+
+	void SendData ();
+
+public:
+	CBlood (vec3f SplashOrigin, vec3f SplashNormal, EBloodType Type = BT_BLOOD) :
+	  CSplashBase (SplashOrigin, SplashNormal),
+	  Type(Type)
+	{
+	};
+
+	CBlood (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal, EBloodType Type = BT_BLOOD) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal),
+	  Type(Type)
+	{
+	};
+
+	CBlood &BloodType (EBloodType Type)
+	{
+		this->Type = Type;
+		return *this;
+	};
+};
+
+CC_ENUM (uint8, EBlasterType)
+{
+	BL_BLASTER = TE_BLASTER,
+	BL_BLUE_HYPERBLASTER = TE_BLUEHYPERBLASTER,
+	BL_FLECHETTE = TE_FLECHETTE,
+	BL_GREEN_BLASTER = TE_BLASTER2
+};
+
+// Blaster
+class CBlasterSplash : public CSplashBase
+{
+protected:
+	EBlasterType	Type;
+
+	void SendData ();
+
+public:
+	CBlasterSplash (vec3f SplashOrigin, vec3f SplashNormal, EBlasterType Type = BL_BLASTER) :
+	  CSplashBase (SplashOrigin, SplashNormal),
+	  Type(Type)
+	{
+	};
+
+	CBlasterSplash (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal, EBlasterType Type = BL_BLASTER) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal),
+	  Type(Type)
+	{
+	};
+
+	CBlasterSplash &BlasterType (EBlasterType Type)
+	{
+		this->Type = Type;
+		return *this;
+	};
+};
+
+CC_ENUM (uint8, ESplashType)
+{
+	SPT_UNKNOWN,
+	SPT_SPARKS,
+	SPT_WATER,
+	SPT_MUD,
+	SPT_SLIME,
+	SPT_LAVA,
+	SPT_BLOOD
+};
+
+// Splash
+class CSplash : public CSplashBase
+{
+protected:
+	ESplashType		Color;
+	uint8			Amount;
+
+	virtual void SendData ();
+
+public:
+	CSplash (vec3f SplashOrigin, vec3f SplashNormal, ESplashType Color = SPT_UNKNOWN, uint8 Amount = 8) :
+	  CSplashBase (SplashOrigin, SplashNormal),
+	  Color(Color),
+	  Amount(Amount)
+	{
+	};
+
+	CSplash (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal, ESplashType Color = SPT_UNKNOWN, uint8 amount = 8) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal),
+	  Color(Color),
+	  Amount(Amount)
+	{
+	};
+
+	CSplash &SplashColor (ESplashType Color)
+	{
+		this->Color = Color;
+		return *this;
+	};
+
+	CSplash &ParticleCount (uint8 Amount)
+	{
+		this->Amount = Amount;
+		return *this;
+	};
+};
+
+CC_ENUM (uint8, ESparkType)
+{
+	ST_SPARKS = TE_SPARKS,
+	ST_BULLET_SPARKS = TE_BULLET_SPARKS,
+	ST_HEATBEAM_SPARKS = TE_HEATBEAM_SPARKS,
+	ST_ELECTRIC_SPARKS = TE_ELECTRIC_SPARKS,
+
+	// Ones that have amount/color
+	ST_LASER_SPARKS = TE_LASER_SPARKS,
+	ST_WELDING_SPARKS = TE_WELDING_SPARKS,
+	ST_TUNNEL_SPARKS = TE_TUNNEL_SPARKS
+};
+
+// Sparks
+class CSparks : public CSplash
+{
+protected:
+	ESparkType		Type;
+
+	void SendData ();
+
+public:
+	CSparks (vec3f SplashOrigin, vec3f SplashNormal, ESparkType Type = ST_SPARKS, ESplashType Color = SPT_UNKNOWN, uint8 Amount = 8) :
+	  CSplash (SplashOrigin, SplashNormal, Color, Amount),
+	  Type(Type)
+	{
+	};
+
+	CSparks (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal, ESparkType Type = ST_SPARKS, ESplashType Color = SPT_UNKNOWN, uint8 Amount = 8) :
+	  CSplash (Flags, SplashOrigin, SplashNormal, Color, Amount),
+	  Type(Type)
+	{
+	};
+
+	CSparks &SparkType (ESparkType Type)
+	{
+		this->Type = Type;
+		return *this;
+	};
+};
+
+// Shield sparks
+class CShieldSparks : public CSplashBase
+{
+protected:
+	bool	Screen;
+
+	void SendData ();
+
+public:
+	CShieldSparks (vec3f SplashOrigin, vec3f SplashNormal, bool Screen = false) :
+	  CSplashBase (SplashOrigin, SplashNormal),
+	  Screen(Screen)
+	{
+	};
+
+	CShieldSparks (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal, bool Screen = false) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal),
+	  Screen(Screen)
+	{
+	};
+
+	CShieldSparks &IsScreen (bool Screen)
+	{
+		this->Screen = Screen;
+		return *this;
+	};
+};
+
+// Shield sparks
+class CSteam : public CSplashBase
+{
+protected:
+	void SendData ();
+	
+	uint8			Count;
+	ESplashType		Color;
+	sint16			Magnitude;
+	sint16			ID;
+	long			EndTime;
+
+public:
+	CSteam (vec3f SplashOrigin, vec3f SplashNormal, uint8 Count = 8, ESplashType Color = SPT_UNKNOWN, sint16 Magnitude = 12, sint16 ID = -1, long EndTime = 0) :
+	  CSplashBase (SplashOrigin, SplashNormal),
+	  Count(Count),
+	  Color(Color),
+	  Magnitude(Magnitude),
+	  ID(ID),
+	  EndTime(EndTime)
+	{
+	};
+
+	CSteam (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal, uint8 Count = 8, ESplashType Color = SPT_UNKNOWN, sint16 Magnitude = 12, sint16 ID = -1, long EndTime = 0) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal),
+	  Count(Count),
+	  Color(Color),
+	  Magnitude(Magnitude),
+	  ID(ID),
+	  EndTime(EndTime)
+	{
+	};
+
+	CSteam &ParticleCount (uint8 Count)
+	{
+		this->Count = Count;
+		return *this;
+	};
+
+	CSteam &ParticleColor (ESplashType Color)
+	{
+		this->Color = Color;
+		return *this;
+	};
+	
+	CSteam &ParticleMagnitude (sint16 Magnitude)
+	{
+		this->Magnitude = Magnitude;
+		return *this;
+	};
+	
+	CSteam &SetID (sint16 ID)
+	{
+		this->ID = ID;
+		return *this;
+	};
+
+	CSteam &Longetivity (long EndTime)
+	{
+		this->EndTime = EndTime;
+		return *this;
+	};
+};
+
+// Heatbeam steam
+class CHeatSteam : public CSplashBase
+{
+protected:
+	void SendData ();
+
+public:
+	CHeatSteam (vec3f SplashOrigin, vec3f SplashNormal) :
+	  CSplashBase (SplashOrigin, SplashNormal)
+	{
+	};
+
+	CHeatSteam (CTempEntFlags Flags, vec3f SplashOrigin, vec3f SplashNormal) :
+	  CSplashBase (Flags, SplashOrigin, SplashNormal)
+	{
+	};
+};
+
+// Nuke explosion
+class CChainfistSmoke : public CExplosionBase
+{
+protected:
+	void SendData ();
+
+public:
+	CChainfistSmoke (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
+	};
+
+	CChainfistSmoke (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
+
+// Base trail code
+class CTrailBase : public CTempEnt
+{
+protected:
+	vec3f		TrailStart;
+	vec3f		TrailEnd;
+	sint16		EntityNumber;
+
+	virtual void SendData () = 0;
+	void SendTrailBase ();
+
+public:
+	CTrailBase (vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber = -1) :
+	  CTempEnt (TrailStart),
+	  TrailStart(TrailStart),
+	  TrailEnd(TrailEnd),
+	  EntityNumber(EntityNumber)
+	{
+	};
+
+	CTrailBase (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber = -1) :
+	  CTempEnt (Flags, TrailStart),
+	  TrailStart(TrailStart),
+	  TrailEnd(TrailEnd),
+	  EntityNumber(EntityNumber)
+	{
+	};
+
+	CTrailBase &StartAt (vec3f TrailStart)
+	{
+		this->TrailStart = TrailStart;
+		return *this;
+	};
+
+	CTrailBase &EndAt (vec3f TrailEnd)
+	{
+		this->TrailEnd = TrailEnd;
+		return *this;
+	};
+
+	CTrailBase &FromEntity (sint16 EntityNumber)
+	{
+		this->EntityNumber = EntityNumber;
+		return *this;
+	};
+};
+
+// Rail trail
+class CRailTrail : public CTrailBase
+{
+protected:
+	void SendData ();
+
+public:
+	CRailTrail (vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (TrailStart, TrailEnd)
+	{
+	};
+
+	CRailTrail (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (Flags, TrailStart, TrailEnd)
+	{
+	};
+};
+
+// Bubble trail
+class CBubbleTrail : public CTrailBase
+{
+protected:
+	void SendData ();
+
+public:
+	CBubbleTrail (vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (TrailStart, TrailEnd)
+	{
+	};
+
+	CBubbleTrail (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (Flags, TrailStart, TrailEnd)
+	{
+	};
+};
+
+// Flesh cable
+class CFleshCable : public CTrailBase
+{
+protected:
+	void SendData ();
+
+public:
+	CFleshCable (vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber) :
+	  CTrailBase (TrailStart, TrailEnd, EntityNumber)
+	{
+	};
+
+	CFleshCable (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber) :
+	  CTrailBase (Flags, TrailStart, TrailEnd, EntityNumber)
+	{
+	};
+};
+
+// BFG laser
+class CBFGLaser : public CTrailBase
+{
+protected:
+	void SendData ();
+
+public:
+	CBFGLaser (vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (TrailStart, TrailEnd)
+	{
+	};
+
+	CBFGLaser (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (Flags, TrailStart, TrailEnd)
+	{
+	};
+};
+
+// Grapple cable
+class CGrappleCable : public CTrailBase
+{
+protected:
+	vec3f		Offset;
+
+	void SendData ();
+
+public:
+	CGrappleCable (vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber, vec3f Offset = vec3fOrigin) :
+	  CTrailBase (TrailStart, TrailEnd, EntityNumber),
+	  Offset(Offset)
+	{
+	};
+
+	CGrappleCable (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber, vec3f Offset = vec3fOrigin) :
+	  CTrailBase (Flags, TrailStart, TrailEnd, EntityNumber),
+	  Offset(Offset)
+	{
+	};
+
+	CGrappleCable &CableOffset (vec3f Offset)
+	{
+		this->Offset = Offset;
+		return *this;
+	};
+};
+
+// Lightning trail
+class CLightning : public CTrailBase
+{
+protected:
+	sint16		DestinationEntity;
+
+	void SendData ();
+
+public:
+	CLightning (vec3f TrailStart, vec3f TrailEnd, sint16 SourceEntity, sint32 DestinationEntity) :
+	  CTrailBase (TrailStart, TrailEnd, SourceEntity),
+	  DestinationEntity(DestinationEntity)
+	{
+	};
+
+	CLightning (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 SourceEntity, sint32 DestinationEntity) :
+	  CTrailBase (Flags, TrailStart, TrailEnd, SourceEntity),
+	  DestinationEntity(DestinationEntity)
+	{
+	};
+
+	CLightning &Source (sint16 SourceEntity)
+	{
+		this->EntityNumber = SourceEntity;
+		return *this;
+	};
+
+	CLightning &Destination (sint16 DestinationEntity)
+	{
+		this->DestinationEntity = DestinationEntity;
+		return *this;
+	};
+};
+
+// Heat beam
+class CHeatBeamLaser : public CTrailBase
+{
+protected:
+	bool		Monster;
+
+	void SendData ();
+
+public:
+	CHeatBeamLaser (vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber, bool Monster = false) :
+	  CTrailBase (TrailStart, TrailEnd, EntityNumber),
+	  Monster(Monster)
+	{
+	};
+
+	CHeatBeamLaser (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 EntityNumber, bool Monster = false) :
+	  CTrailBase (Flags, TrailStart, TrailEnd, EntityNumber),
+	  Monster(Monster)
+	{
+	};
+
+	CHeatBeamLaser &IsMonster (bool Monster)
+	{
+		this->Monster = Monster;
+		return *this;
+	};
+};
+
+// Debug trail
+class CDebugTrail : public CTrailBase
+{
+protected:
+	void SendData ();
+
+public:
+	CDebugTrail (vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (TrailStart, TrailEnd)
+	{
+	};
+
+	CDebugTrail (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd) :
+	  CTrailBase (Flags, TrailStart, TrailEnd)
+	{
+	};
+};
+
+// Force wall
+class CForceWall : public CTrailBase
+{
+protected:
+	NSColor::EColors		Color;
+
+	void SendData ();
+
+public:
+	CForceWall (vec3f TrailStart, vec3f TrailEnd, NSColor::EColors Color) :
+	  CTrailBase (TrailStart, TrailEnd),
+	  Color(Color)
+	{
+	};
+
+	CForceWall (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, NSColor::EColors Color) :
+	  CTrailBase (Flags, TrailStart, TrailEnd),
+	  Color(Color)
+	{
+	};
+
+	CForceWall &ParticleColor (NSColor::EColors Color)
+	{
+		this->Color = Color;
+		return *this;
+	};
+};
+
+// Flash light
+class CFlashLight : public CExplosionBase
+{
+protected:
+	sint16		EntityNumber;
+
+	void SendData ();
+
+public:
+	CFlashLight (vec3f ExplosionOrigin, sint16 EntityNumber) :
+	  CExplosionBase (ExplosionOrigin),
+	  EntityNumber(EntityNumber)
+	{
+	};
+
+	CFlashLight (CTempEntFlags Flags, vec3f ExplosionOrigin, sint16 EntityNumber) :
+	  CExplosionBase (Flags, ExplosionOrigin),
+	  EntityNumber(EntityNumber)
+	{
+	};
+
+	CFlashLight &FromEntity (sint16 EntityNumber)
+	{
+		this->EntityNumber = EntityNumber;
+		return *this;
+	};
+};
+
+// Boss teleport
+class CBossTeleport : public CExplosionBase
+{
+protected:
+	void SendData ();
+
+public:
+	CBossTeleport (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
+	};
+
+	CBossTeleport (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
+
+// Teleport effect
+class CTeleportEffect : public CExplosionBase
+{
+protected:
+	void SendData ();
+
+public:
+	CTeleportEffect (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
+	};
+
+	CTeleportEffect (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
+
+// Teleport effect
+class CWidowBeamOut : public CExplosionBase
+{
+protected:
+	sint16			ID;
+
+	void SendData ();
+
+public:
+	CWidowBeamOut (vec3f ExplosionOrigin, sint16 ID) :
+	  CExplosionBase (ExplosionOrigin),
+	  ID(ID)
+	{
+	};
+
+	CWidowBeamOut (CTempEntFlags Flags, vec3f ExplosionOrigin, sint16 ID) :
+	  CExplosionBase (Flags, ExplosionOrigin),
+	  ID(ID)
+	{
+	};
+
+	CWidowBeamOut &BeamID (sint16 ID)
+	{
+		this->ID = ID;
+		return *this;
+	};
+};
+
+// Widow splash
+class CWidowSplash : public CExplosionBase
+{
+protected:
+	void SendData ();
+
+public:
+	CWidowSplash (vec3f ExplosionOrigin) :
+	  CExplosionBase (ExplosionOrigin)
+	{
+	};
+
+	CWidowSplash (CTempEntFlags Flags, vec3f ExplosionOrigin) :
+	  CExplosionBase (Flags, ExplosionOrigin)
+	{
+	};
+};
+
+// Muzzle flash
+class CMuzzleFlash : public CExplosionBase
+{
+protected:
+	sint16			EntityNumber;
+	EMuzzleFlash	Flash;
+	bool			Monster;
+
+	void SendData ();
+
+public:
+	CMuzzleFlash (vec3f ExplosionOrigin, sint16 EntityNumber, EMuzzleFlash Flash, bool Monster = false) :
+	  CExplosionBase (ExplosionOrigin),
+	  EntityNumber(EntityNumber),
+	  Flash(Flash),
+	  Monster(Monster)
+	{
+	};
+
+	CMuzzleFlash (CTempEntFlags Flags, vec3f ExplosionOrigin, sint16 EntityNumber, EMuzzleFlash Flash, bool Monster = false) :
+	  CExplosionBase (Flags, ExplosionOrigin),
+	  EntityNumber(EntityNumber),
+	  Flash(Flash),
+	  Monster(Monster)
+	{
+	};
+
+	CMuzzleFlash &FromEntity (sint16 EntityNumber)
+	{
+		this->EntityNumber = EntityNumber;
+		return *this;
+	};
+
+	CMuzzleFlash &FlashType (EMuzzleFlash Flash)
+	{
+		this->Flash = Flash;
+		return *this;
+	};
+
+	CMuzzleFlash &IsMonsterFlash (bool Monster)
+	{
+		this->Monster = Monster;
+		return *this;
+	};
 };
 
 #else

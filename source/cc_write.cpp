@@ -202,7 +202,6 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 			if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Player->State.GetOrigin()))
 				continue;
 
-			//gi.unicast (e, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 			SendQueue (Player->gameEntity, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		}
 		break;
@@ -213,15 +212,10 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 		if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Entity->State.GetOrigin()))
 			break;
 
-		//gi.unicast (Ent, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		SendQueue (Ent->gameEntity, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		break;
 	}
 
-	//if (castType == CAST_MULTI)
-	//	gi.multicast (Origin, (castFlags & CASTFLAG_PVS) ? MULTICAST_PVS : MULTICAST_PHS);
-	//else if (castType == CAST_UNI)
-	//	gi.unicast (Ent, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 	Clear ();
 }
 void Cast (ECastFlags castFlags, vec3f &Origin)
@@ -241,7 +235,6 @@ void WriteChar (sint8 val)
 		val = Clamp<char> (val, CHAR_MIN, CHAR_MAX);
 	}
 
-	//gi.WriteChar (val);
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint8> (val, WT_CHAR));
 }
 
@@ -253,7 +246,6 @@ void WriteByte (uint8 val)
 		val = Clamp<uint8> (val, 0, UCHAR_MAX);
 	}
 
-	//gi.WriteByte (val);
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<uint8> (val, WT_BYTE));
 }
 
@@ -265,7 +257,6 @@ void WriteShort (sint16 val)
 		val = Clamp<sint16> (val, SHRT_MIN, SHRT_MAX);
 	}
 
-	//gi.WriteShort (val);
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> (val, WT_SHORT));
 }
 
@@ -277,7 +268,6 @@ void WriteLong (long val)
 		val = Clamp<long> (val, LONG_MIN, LONG_MAX);
 	}
 
-	//gi.WriteLong (val);
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<long> (val, WT_LONG));
 }
 
@@ -289,7 +279,6 @@ void WriteFloat (float val)
 		val = Clamp<float> (val, FLT_MIN, FLT_MAX);
 	}
 
-	//gi.WriteFloat (val);
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<float> (val, WT_FLOAT));
 }
 
@@ -317,13 +306,11 @@ void WriteString (const char *val)
 		// FIXME: Clamp the string??
 	}
 
-	//gi.WriteString (val);
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (val));
 }
 
 void WriteCoord (float f)
 {
-	//WriteShort ((sint32)(f * 8));
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
 }
 

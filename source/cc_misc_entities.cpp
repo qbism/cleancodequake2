@@ -153,7 +153,7 @@ public:
 		}
 		SplashDamage (Shooter, Damage, NULL, Damage+40, MOD_BARREL);
 
-		NTempEnts::NExplosions::GrenadeExplosion (State.GetOrigin (), this);
+		CGrenadeExplosion (State.GetOrigin ()).Send();
 		Free ();
 	};
 
@@ -840,7 +840,7 @@ public:
 
 	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 	{
-		NTempEnts::NSplashes::Blood (point, normal);
+		CBlood(point, normal).Send();
 	}
 
 	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)

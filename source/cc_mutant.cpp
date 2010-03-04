@@ -444,8 +444,6 @@ bool CMutant::CheckJump ()
 		// Can we jump to the last spot we saw him?
 		CTrace trace (origin, LastSighting, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-		//NTempEnts::NTrails::DebugTrail (origin, LastSighting);
-
 		// Clear shot
 		if (trace.fraction == 1.0)
 		{
@@ -453,7 +451,7 @@ bool CMutant::CheckJump ()
 			vec3f below = LastSighting - vec3f(0, 0, 64);
 
 			trace (LastSighting, below, Entity, CONTENTS_MASK_MONSTERSOLID);
-			//NTempEnts::NTrails::DebugTrail (LastSighting, below);
+
 			if (trace.fraction < 1.0)
 			{
 				// Hit floor, we're solid and can do this jump
@@ -480,7 +478,6 @@ bool CMutant::CheckJump ()
 				
 				temp = temp.MultiplyAngles (-15, forward);
 				trace (origin, temp, Entity, CONTENTS_MASK_MONSTERSOLID);
-				//NTempEnts::NTrails::DebugTrail (origin, temp);
 			}
 
 			// Push it up a bit
@@ -489,7 +486,6 @@ bool CMutant::CheckJump ()
 			if (escape != 100)
 			{
 				// Assume our last trace passed
-				//NTempEnts::TeleportEffect (temp);
 				AttemptJumpToLastSight = true;
 				LastSighting = temp;
 				return true;

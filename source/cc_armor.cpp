@@ -135,7 +135,7 @@ sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, s
 		return 0;
 
 	Player->Client.Persistent.Inventory.Remove(GetIndex(), save);
-	NTempEnts::NSplashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? NTempEnts::NSplashes::ST_BULLET_SPARKS : NTempEnts::NSplashes::ST_SPARKS, NTempEnts::NSplashes::SPT_SPARKS);
+	CSparks(point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 
 	// Ran out of armor?
 	if (!Player->Client.Persistent.Inventory.Has(this))
