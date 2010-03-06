@@ -156,7 +156,7 @@ Sys_FindFiles
 ================
 */
 
-void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, bool recurse, bool addFiles, bool addDirs)
+void Sys_FindFiles (TFindFilesType &files, const char *path, const char *pattern, bool recurse, bool addFiles, bool addDirs)
 {
 	WIN32_FIND_DATAA	findInfo;
 	HANDLE			findHandle;

@@ -48,7 +48,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 											return;	\
 										CC_EXCEPTION_HANDLER_END_CUSTOM_END
 
-#include <windows.h>
 DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionInfo);
 #else
 #define CC_EXCEPTION_HANDLER_BEGIN

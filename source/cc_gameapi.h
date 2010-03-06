@@ -328,7 +328,7 @@ EBrushContents PointContents (vec3f &start);
 
 sint32 BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, sint32 maxCount, bool triggers);
 
-void ConfigString (sint32 configStringIndex, const char *configStringValue, CPlayerEntity *Audience = NULL);
+void ConfigString (sint32 configStringIndex, const char *configStringValue, ...);
 void GameError (const char *fmt, ...);
 
 _CC_DISABLE_DEPRECATION

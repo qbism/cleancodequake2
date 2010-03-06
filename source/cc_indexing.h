@@ -54,8 +54,6 @@ class CIndexList
 public:
 	CIndexList();
 
-	//CIndex	*List[MAX_INDEXES];
-	//CIndex	*HashList[MAX_INDEXES];
 	TMediaIndexListType			List;
 	TMediaIndexToPtrList		ListMap;
 	THashedMediaIndexListType	HashList;
@@ -68,9 +66,9 @@ public:
 	void	Clear ();
 };
 
-MediaIndex ModelIndex (const char *string);
-MediaIndex SoundIndex (const char *string);
-MediaIndex ImageIndex (const char *string);
+MediaIndex ModelIndex (const char *string, ...);
+MediaIndex SoundIndex (const char *string, ...);
+MediaIndex ImageIndex (const char *string, ...);
 
 const char *StringFromSoundIndex (MediaIndex Index);
 const char *StringFromModelIndex (MediaIndex Index);

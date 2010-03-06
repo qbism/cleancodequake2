@@ -308,6 +308,12 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 			p.erase (p.end()-1);
 		}
 
+		if (p[0] == '!' && Player->Client.Respawn.IRC)
+		{
+			Player->Client.Respawn.IRC->SendMessage (p.substr (1));
+			return;
+		}
+
 		text += p;
 	}
 
@@ -493,6 +499,100 @@ void GCTFSay_Team (CPlayerEntity *Player);
 void Cmd_MenuLeft_t (CPlayerEntity *Player);
 void Cmd_MenuRight_t (CPlayerEntity *Player);
 
+#if 0
+struct irc_server serverTest;
+bool connected = false;
+void Cmd_Irc_t (CPlayerEntity *Player)
+{
+	serverTest.server = "irc.globalgamerscenter.net";
+	serverTest.port = 6667;
+	serverTest.nick = "Paril|Q2";
+	serverTest.user = "Paril|Q2";
+	serverTest.real_name = "Testing IRC";
+
+	if (connected == false)
+	{
+	    irc_ini_server(&serverTest);
+		irc_connect (&serverTest);
+	
+		u_long iMode = 1;
+		ioctlsocket(serverTest.sock, FIONBIO, &iMode);
+
+		bool doOnce = false;
+		while (serverTest.status != DISCONNECTED)
+		{
+			// Blocks until new data arrives, then gets it.
+			irc_receive(&serverTest, 0);
+
+			// Only exec one time and exec when registered.
+			if(!doOnce && serverTest.status == CONNECTED)
+			{
+				doOnce = true;
+				 //irc_send_cmd(&serverTest, PRIVMSG, "#tastycast :hi guize");
+				irc_send_cmd(&serverTest, JOIN, "#tastycast");
+				//break;
+			}
+
+			// If read characters is > 0 ...
+			if (serverTest.received > 0) 
+			{
+				// If server pings, we pong.
+				if( serverTest.msg.command == IRC_PING ){
+					irc_pong(&serverTest);
+				}
+			}
+
+			Sleep(10);
+		}
+	}	
+	else
+		irc_disconnect (&serverTest, "Testing disconnecting");
+}
+#endif
+
+void Cmd_Irc_t (CPlayerEntity *Player)
+{
+}
+
+void Cmd_Irc_Connect_t (CPlayerEntity *Player)
+{
+	// irc connect hostname nickname
+	if (ArgCount() < 4)
+		return;
+
+	Player->Client.Respawn.IRC = new CIRCClient(ArgGets(2), ArgGets(3), ArgGets(3), "", "Real");
+	Player->Client.Respawn.IRC->Player = Player;
+	Player->Client.Respawn.IRC->Connect ();
+};
+
+void Cmd_Irc_Join_t (CPlayerEntity *Player)
+{
+	// irc join channel
+	if (ArgCount() < 3)
+		return;
+
+	Player->Client.Respawn.IRC->JoinChannel (ArgGets(2));
+};
+
+void Cmd_Irc_Say_t (CPlayerEntity *Player)
+{
+	// irc say "xxx"
+	if (ArgCount() < 3)
+		return;
+
+	Player->Client.Respawn.IRC->SendMessage (ArgGets(2));
+};
+
+void Cmd_Irc_Disconnect_t (CPlayerEntity *Player)
+{
+	// irc disconnect
+	if (ArgCount() < 2)
+		return;
+
+	QDelete Player->Client.Respawn.IRC;
+	Player->Client.Respawn.IRC = NULL;
+};
+
 void Cmd_Register ()
 {
 	// These commands are generic, and can be executed any time
@@ -561,6 +661,12 @@ void Cmd_Register ()
 	Cmd_AddCommand ("boot",					CTFBoot);
 	Cmd_AddCommand ("observer",				CTFObserver);
 #endif
+
+	Cmd_AddCommand ("irc",					Cmd_Irc_t)
+		.AddSubCommand ("connect",			Cmd_Irc_Connect_t, 0).GoUp()
+		.AddSubCommand ("join",				Cmd_Irc_Join_t, 0).GoUp()
+		.AddSubCommand ("say",				Cmd_Irc_Say_t, 0).GoUp()
+		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect_t, 0);
 }
 
 /*

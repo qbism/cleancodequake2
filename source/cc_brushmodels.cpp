@@ -2445,12 +2445,11 @@ void CWorldEntity::Spawn ()
 		Level.FullLevelName = Level.ServerLevelName;
 
 	ConfigString (CS_SKY, (Sky && Sky[0]) ? Sky : "unit1_");
-	ConfigString (CS_SKYROTATE, Q_VarArgs ("%f", SkyRotate).c_str());
+	ConfigString (CS_SKYROTATE, "%f", SkyRotate);
 
-	ConfigString (CS_SKYAXIS, Q_VarArgs (VECTOR_STRING,
-		PRINT_VECTOR_ARGS(SkyAxis)).c_str());
+	ConfigString (CS_SKYAXIS, VECTOR_STRING, PRINT_VECTOR_ARGS(SkyAxis));
 
-	ConfigString (CS_CDTRACK, Q_VarArgs ("%i", Sounds).c_str());
+	ConfigString (CS_CDTRACK, "%i", Sounds);
 
 	ConfigString (CS_MAXCLIENTS, CvarList[CV_MAXCLIENTS].String());
 

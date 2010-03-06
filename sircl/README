@@ -1,0 +1,27 @@
+Simple IRC Library.
+
+Author: Francisco Javier Yáñez Fernández (ckroom).
+Homepage: http://telefonica.net/webs/ckroom
+e-mail: ckroom@telefonica.net
+date: 2004 summer.
+
+Description:
+
+sircl is an irc library in C. The major features are small size and
+portability. sircl can be used to program interactive or no 
+interactive irc clients, for example chats programs, irc bots, etc.
+
+Target (2004):
+
+sircl is a small and portable irc library. Portable irc libraries exist,
+but in java. I wanted (and didn't find) a library to make small irc
+programs, so I decided to program my own library in C. This irc
+library is full rfc1459(irc protocol) compliant, and it works fine
+by now. The basic functions are implemented and the next target of
+the project is program ctcp and DCC operations. 
+
+Documentation:
+
+See "doc" dir.
+
+

@@ -1929,6 +1929,9 @@ void CPlayerEntity::EndServerFrame ()
 		DeathmatchScoreboardMessage (false);
 	else if (Client.Respawn.MenuState.InMenu && !(Level.Frame & 4))
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
+
+	if (Client.Respawn.IRC)
+		Client.Respawn.IRC->Update ();
 }
 
 #if CLEANCTF_ENABLED

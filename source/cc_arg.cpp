@@ -36,13 +36,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MAX_ARG_CONCAT	256
 #define MAX_ARG		64
 
-char	*nullArg = "";
-
-uint8				numArgv;
-std::string		argvConcatString;
+uint8							numArgv;
+std::string						argvConcatString;
 std::vector<std::string>		argvStringArray;
-std::vector<sint32>						argvIntegerArray;
-std::vector<float>							argvFloatArray;
+std::vector<sint32>				argvIntegerArray;
+std::vector<float>				argvFloatArray;
 
 void SetupArg ()
 {

@@ -96,8 +96,8 @@ public:
 
 struct SSpinControlIndex
 {
-	char		*Text;
-	char		*Value;
+	const char		*Text;
+	const char		*Value;
 };
 
 class CMenu_Spin : public CMenuItem

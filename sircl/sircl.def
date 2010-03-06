@@ -1,0 +1,9 @@
+EXPORTS
+	irc_connect
+	irc_disconnect
+	irc_receive
+	irc_pong
+	irc_raw_send
+	irc_raw_receive
+	irc_send_cmd
+	irc_ini_server

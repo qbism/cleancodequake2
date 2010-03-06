@@ -145,6 +145,9 @@
     <Filter Include="Shared\MathLib">
       <UniqueIdentifier>{61be54fe-f8a3-412a-aa7b-a2e4104d1545}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CleanCode Files\IRC">
+      <UniqueIdentifier>{f334cc69-d14e-4500-98f8-54f8bd6453e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\byteswap.cpp">
@@ -536,6 +539,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_linux.cpp">
       <Filter>CleanCode Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_irc.cpp">
+      <Filter>CleanCode Files\IRC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -979,6 +985,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\m_tank.h">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_irc.h">
+      <Filter>CleanCode Files\IRC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -51,9 +51,16 @@ _CC_DISABLE_DEPRECATION
 _CC_ENABLE_DEPRECATION
 }
 
-void ConfigString (sint32 configStringIndex, const char *configStringValue, CPlayerEntity *Audience)
+void ConfigString (sint32 configStringIndex, const char *configStringValue, ...)
 {
-	if (Audience)
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, configStringValue);
+	vsnprintf (string, 1024, configStringValue, argptr);
+	va_end (argptr);
+
+	/*	if (Audience)
 	{
 		WriteChar (SVC_CONFIGSTRING);
 		WriteShort (configStringIndex);
@@ -61,11 +68,11 @@ void ConfigString (sint32 configStringIndex, const char *configStringValue, CPla
 		Audience->CastTo (CASTFLAG_UNRELIABLE);
 	}
 	else
-	{
+	{*/
 _CC_DISABLE_DEPRECATION
-		gi.configstring (configStringIndex, const_cast<char*>(configStringValue));
+		gi.configstring (configStringIndex, string);
 _CC_ENABLE_DEPRECATION
-	}
+	//}
 }
 
 void GameError (const char *fmt, ...)

@@ -45,7 +45,7 @@ public:
 	CWeaponItem ();
 	CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, char *VWepModel);
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;

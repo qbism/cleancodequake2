@@ -74,6 +74,7 @@ typedef sint32	FrameNumber_t;
 #undef BAN_BASIC_INFO
 #include "cc_timer.h"
 #include "cc_save.h"
+#include "cc_irc.h"
 
 // Main class files
 #include "cc_items.h"

@@ -107,53 +107,74 @@ const char *StringFromImageIndex (MediaIndex Index)
 
 _CC_DISABLE_DEPRECATION
 
-MediaIndex ModelIndex (const char *String)
+MediaIndex ModelIndex (const char *String, ...)
 {
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, String);
+	vsnprintf (string, 1024, String, argptr);
+	va_end (argptr);
+
 	// Do we exist?
-	sint32 Index = ModelList.GetIndex(String);
+	sint32 Index = ModelList.GetIndex(string);
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", String);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string);
 			return 0;
 		}
 
-		return ModelList.AddToList (String, gi.modelindex(const_cast<char*>(String)));
+		return ModelList.AddToList (string, gi.modelindex(string));
 	}
 	return Index;
 }
 
-MediaIndex SoundIndex (const char *String)
+MediaIndex SoundIndex (const char *String, ...)
 {
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, String);
+	vsnprintf (string, 1024, String, argptr);
+	va_end (argptr);
+
 	// Do we exist?
-	sint32 Index = SoundList.GetIndex(String);
+	sint32 Index = SoundList.GetIndex(string);
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", String);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string);
 			return 0;
 		}
 
-		return SoundList.AddToList (String, gi.soundindex(const_cast<char*>(String)));
+		return SoundList.AddToList (string, gi.soundindex(string));
 	}
 	return Index;
 }
 
-MediaIndex ImageIndex (const char *String)
+MediaIndex ImageIndex (const char *String, ...)
 {
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, String);
+	vsnprintf (string, 1024, String, argptr);
+	va_end (argptr);
+
 	// Do we exist?
-	sint32 Index = ImageList.GetIndex(String);
+	sint32 Index = ImageList.GetIndex(string);
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", String);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string);
 			return 0;
 		}
 
-		return ImageList.AddToList (String, gi.imageindex(const_cast<char*>(String)));
+		return ImageList.AddToList (string, gi.imageindex(string));
 	}
 	return Index;
 }

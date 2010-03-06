@@ -47,6 +47,7 @@ typedef long int filePos_t;
 
 #ifdef WIN32
 #if !defined(CC_STDC_CONFORMANCE)
+#include <WinSock2.h>
 #include <windows.h>
 #endif
 #ifdef COMPILING_LIB

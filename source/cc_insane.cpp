@@ -468,8 +468,6 @@ void CInsane::Run ()
 
 void CInsane::Pain (CBaseEntity *Other, sint32 Damage)
 {
-	sint32	l,r;
-
 //	if (self->health < (self->max_health / 2))
 //		self->state.skinnum = 1;
 
@@ -478,22 +476,8 @@ void CInsane::Pain (CBaseEntity *Other, sint32 Damage)
 
 	PainDebounceTime = Level.Frame + 30;
 
-	// Paril
-	// As much as I hate this, this needs to stay
-	// until further notice.
-
-	// START SHIT
-	r = 1 + (randomMT()&1);
-	if (Entity->Health < 25)
-		l = 25;
-	else if (Entity->Health < 50)
-		l = 50;
-	else if (Entity->Health < 75)
-		l = 75;
-	else
-		l = 100;
-	Entity->PlaySound (CHAN_VOICE, SoundIndex (Q_VarArgs("player/male/pain%i_%i.wav", l, r).c_str()), 255, ATTN_IDLE);
-	// END SHIT
+	sint32 l = Clamp<sint32>(((floorf((Max<>(0, Entity->Health-1)) / 25))), 0, 3);
+	Entity->PlaySound (CHAN_VOICE, GameMedia.Player.Pain[l][(irandom(2))]);
 
 	// Don't go into pain frames if crucified.
 	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
@@ -577,7 +561,7 @@ void CInsane::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage,
 	if (Entity->DeadFlag == true)
 		return;
 
-	Entity->PlaySound (CHAN_VOICE, SoundIndex(Q_VarArgs("player/male/death%i.wav", (irandom(4))+1).c_str()), 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, GameMedia.Player.Death[irandom(4)], 255, ATTN_IDLE);
 
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;

@@ -130,7 +130,7 @@
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\;..\..\sircl\include\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
@@ -142,12 +142,12 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibd.lib;sircl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
-      <ForceSymbolReferences>__DllMainCRTStartup@12;%(ForceSymbolReferences)</ForceSymbolReferences>
+      <ForceSymbolReferences>%(ForceSymbolReferences)</ForceSymbolReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
@@ -388,6 +388,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_gameapi.cpp" />
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
+    <ClCompile Include="..\..\source\cc_irc.cpp" />
     <ClCompile Include="..\..\source\cc_modules.cpp" />
     <ClCompile Include="..\..\source\cc_platform_base.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -516,6 +517,7 @@ echo Done!
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
+    <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_modules.h" />
     <ClInclude Include="..\..\source\cc_options.h" />

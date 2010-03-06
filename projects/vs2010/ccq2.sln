@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "AutoUpdater", "..\..\apps\AutoUpdater\AutoUpdater\AutoUpdater.vbproj", "{439F0F6B-3127-43D7-B66A-F2DC492C04BD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sircl", "..\..\sircl\sircl.vcxproj", "{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ccq2.vsmdi
@@ -93,6 +95,20 @@ Global
 		{439F0F6B-3127-43D7-B66A-F2DC492C04BD}.Release|x64.ActiveCfg = Release|x86
 		{439F0F6B-3127-43D7-B66A-F2DC492C04BD}.Release|x86.ActiveCfg = Release|x86
 		{439F0F6B-3127-43D7-B66A-F2DC492C04BD}.Release|x86.Build.0 = Release|x86
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|Win32.Build.0 = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|x64.ActiveCfg = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Debug|x86.ActiveCfg = Debug|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|Any CPU.ActiveCfg = Release|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|Win32.ActiveCfg = Release|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|Win32.Build.0 = Release|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|x64.ActiveCfg = Release|Win32
+		{B9F3AC0E-FB59-4F68-94AC-BD6B4F693EC2}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
