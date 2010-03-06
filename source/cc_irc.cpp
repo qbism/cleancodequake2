@@ -68,9 +68,7 @@ void CIRCClient::Connect ()
 		return;
 
 	irc_connect (&IRCServer);
-
-	u_long iMode = 1;
-	ioctlsocket(IRCServer.sock, FIONBIO, &iMode);
+	_net_setnonblocking (IRCServer.sock);
 };
 
 // One update frame
