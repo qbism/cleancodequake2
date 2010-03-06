@@ -31,6 +31,9 @@
 #ifndef _sircl_h
 #define _sircl_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -98,11 +101,6 @@
   * @pre Use irc_ini_server(&your_server) first!
   */
 enum { DISCONNECTED, CONNECTING, CONNECTED };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 
 /*******************************************************************/
 //  IRC high-level functions.
