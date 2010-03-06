@@ -66,7 +66,7 @@ _net_build_select_list (int *sock)
 }
 
 void
-_net_create_sock (struct irc_server *server)
+_net_create_sock (irc_server *server)
 {
   if ((server->sock = socket (AF_INET, SOCK_STREAM, 0)) == -1)
       exit (-1);

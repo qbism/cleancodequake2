@@ -20,7 +20,7 @@
 #include "sircl.h"
 
 int
-irc_connect (struct irc_server *server)
+irc_connect (irc_server *server)
 {
   struct sockaddr_in conexion;
   struct hostent *host;
@@ -54,7 +54,7 @@ irc_connect (struct irc_server *server)
 }
 
 int
-irc_receive (struct irc_server *server, int timeout)
+irc_receive (irc_server *server, int timeout)
 {
   int ret;
 
@@ -84,7 +84,7 @@ irc_receive (struct irc_server *server, int timeout)
 }
 
 void
-irc_disconnect (struct irc_server *server, char *msg)
+irc_disconnect (irc_server *server, char *msg)
 {
   _clear_msg (server);
 
@@ -98,7 +98,7 @@ irc_disconnect (struct irc_server *server, char *msg)
 }
 
 int
-irc_pong (struct irc_server *server)
+irc_pong (irc_server *server)
 {
   char *pingkey = NULL;
 
@@ -117,7 +117,7 @@ irc_pong (struct irc_server *server)
 }
 
 int
-irc_raw_send (const struct irc_server *server, char *fmt, ...)
+irc_raw_send (const irc_server *server, char *fmt, ...)
 {
   int w;
   va_list ap;
@@ -146,7 +146,7 @@ irc_raw_send (const struct irc_server *server, char *fmt, ...)
 }
 
 int
-irc_raw_receive (struct irc_server *server)
+irc_raw_receive (irc_server *server)
 {
   char c, c_next;
   int i, retval;
@@ -230,7 +230,7 @@ irc_raw_receive (struct irc_server *server)
 }
 
 int
-irc_send_cmd (struct irc_server *server, int command, char *fmt, ...)
+irc_send_cmd (irc_server *server, int command, char *fmt, ...)
 {
   va_list ap;
   char tmp[BUF_SIZE];
@@ -245,7 +245,7 @@ irc_send_cmd (struct irc_server *server, int command, char *fmt, ...)
 }
 
 void
-irc_ini_server (struct irc_server *server)
+irc_ini_server (irc_server *server)
 {  
   _net_create_sock (server);
   

@@ -32,8 +32,8 @@ fd_set _net_build_select_list(int *sock);
 void _net_setnonblocking(int sock);
 
 void
-_net_create_sock (struct irc_server *server);
-	
+_net_create_sock (irc_server *server);
+
 /*******************************************************************/
 
 

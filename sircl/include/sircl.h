@@ -118,7 +118,7 @@ extern "C" {
   * @retval -1 if the connection atempt failed.
   *
   */
-extern int irc_connect(struct irc_server *server );
+extern int irc_connect(irc_server *server );
 
 /**
   *
@@ -129,7 +129,7 @@ extern int irc_connect(struct irc_server *server );
   * @param quit_msg quit message.
   *
   */
-extern void irc_disconnect(struct irc_server *server, char *quit_msg );
+extern void irc_disconnect(irc_server *server, char *quit_msg );
 
 /**
   *
@@ -144,7 +144,7 @@ extern void irc_disconnect(struct irc_server *server, char *quit_msg );
   * @retval -2 The connection is closed.
   *
   */
-extern int irc_receive(struct irc_server *server, int timeout);
+extern int irc_receive(irc_server *server, int timeout);
 
 /**
   *
@@ -156,7 +156,7 @@ extern int irc_receive(struct irc_server *server, int timeout);
   * command.
   *
   */
-extern int irc_pong(struct irc_server *server );
+extern int irc_pong(irc_server *server );
 
 
 
@@ -170,7 +170,7 @@ extern int irc_pong(struct irc_server *server );
   * @return The number of characters sent
   *
   */
-extern int irc_raw_send(const struct irc_server *server, 
+extern int irc_raw_send(const irc_server *server, 
                  char *string, ... );
 
 /**
@@ -183,7 +183,7 @@ extern int irc_raw_send(const struct irc_server *server,
   * @retval -2 The connection is closed.
   *
   */
-extern int irc_raw_receive(struct irc_server *server );
+extern int irc_raw_receive(irc_server *server );
 
 /**
   *
@@ -196,7 +196,7 @@ extern int irc_raw_receive(struct irc_server *server );
   * @retval -1 An error ocurred.
   *
   */
-extern int irc_send_cmd(struct irc_server *server,
+extern int irc_send_cmd(irc_server *server,
                  int command, 
                  char  *parameters, ... );
 
@@ -206,7 +206,7 @@ extern int irc_send_cmd(struct irc_server *server,
   * @param server irc_server struct to initialize.
   *
   */
-extern void irc_ini_server(struct irc_server *server);
+extern void irc_ini_server(irc_server *server);
 
 /*******************************************************************/
 

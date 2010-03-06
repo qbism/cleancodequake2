@@ -43,7 +43,7 @@
   * @brief Struct which stores information about an irc server.
   *
   */
-struct irc_server 
+typedef struct irc_server_s 
 {
     //! Connection's socket.
     int sock;
@@ -79,7 +79,7 @@ struct irc_server
     //irc_raw_received();
     int received;
     
-};
+} irc_server;
 
 
 #endif

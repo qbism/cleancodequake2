@@ -25,11 +25,11 @@
 //  IRC low-level functions.
 /*******************************************************************/
 
-void _irc_create_sock(struct irc_server * );
+void _irc_create_sock(irc_server * );
 
-void _irc_register(const struct irc_server * );
+void _irc_register(const irc_server * );
 
-int _irc_new_data(struct irc_server *, int );
+int _irc_new_data(irc_server *, int );
 
 /*******************************************************************/
 

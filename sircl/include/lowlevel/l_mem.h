@@ -25,15 +25,15 @@
 //  Memory management low-level functions.
 /*******************************************************************/
 
-void _clear_msg(struct irc_server * );
+void _clear_msg(irc_server * );
 
-void _clear_msg_raw (struct irc_server * );
+void _clear_msg_raw (irc_server * );
 
-void _clear_msg_prefix (struct irc_server * );
+void _clear_msg_prefix (irc_server * );
 
-void _clear_msg_command (struct irc_server * );
+void _clear_msg_command (irc_server * );
 
-void _clear_msg_params (struct irc_server * );
+void _clear_msg_params (irc_server * );
 
 /*******************************************************************/
 

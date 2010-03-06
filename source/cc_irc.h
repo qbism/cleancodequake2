@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CIRCClient
 {
-	struct irc_server	IRCServer;
+	irc_server	IRCServer;
 
 public:
 	class CPlayerEntity	*Player;

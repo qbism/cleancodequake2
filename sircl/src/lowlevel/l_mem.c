@@ -21,7 +21,7 @@
 
 
 void
-_clear_msg (struct irc_server *server)
+_clear_msg (irc_server *server)
 {
    _clear_msg_raw(server);
    _clear_msg_prefix(server);
@@ -30,7 +30,7 @@ _clear_msg (struct irc_server *server)
 }
 
 void
-_clear_msg_raw (struct irc_server *server)
+_clear_msg_raw (irc_server *server)
 {
   if (server->msg.raw)
     {
@@ -40,7 +40,7 @@ _clear_msg_raw (struct irc_server *server)
 }
 
 void
-_clear_msg_prefix (struct irc_server *server)
+_clear_msg_prefix (irc_server *server)
 {
   if (server->msg.prefix)
     {
@@ -50,7 +50,7 @@ _clear_msg_prefix (struct irc_server *server)
 }
 
 void
-_clear_msg_command (struct irc_server *server)
+_clear_msg_command (irc_server *server)
 {
   if (server->msg.command_str)
   {
@@ -63,7 +63,7 @@ _clear_msg_command (struct irc_server *server)
 
 // BUGGY BUUGY BUGYY
 void
-_clear_msg_params (struct irc_server *server)
+_clear_msg_params (irc_server *server)
 {
   int i;
   printf ("START %d\n", server->msg.number_of_params);

@@ -21,7 +21,7 @@
 
 
 void
-_irc_register (const struct irc_server *server)
+_irc_register (const irc_server *server)
 {
   irc_raw_send (server, "PASS inetlib");
   irc_raw_send (server, "NICK %s %s", server->nick, server->pass);
@@ -30,7 +30,7 @@ _irc_register (const struct irc_server *server)
 }
 
 int
-_irc_new_data (struct irc_server *server, int t_out)
+_irc_new_data (irc_server *server, int t_out)
 {
 
   fd_set socks;

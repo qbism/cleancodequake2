@@ -500,7 +500,7 @@ void Cmd_MenuLeft_t (CPlayerEntity *Player);
 void Cmd_MenuRight_t (CPlayerEntity *Player);
 
 #if 0
-struct irc_server serverTest;
+irc_server serverTest;
 bool connected = false;
 void Cmd_Irc_t (CPlayerEntity *Player)
 {

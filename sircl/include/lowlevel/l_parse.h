@@ -29,22 +29,22 @@ int
 _parse_istrailing (char *string);
 
 int
-_parse_count_params (struct irc_server *server);
+_parse_count_params (irc_server *server);
 
 void
-_parse_prefix (struct irc_server *server);
+_parse_prefix (irc_server *server);
 
 void
-_parse_command (struct irc_server *server);
+_parse_command (irc_server *server);
 
 void
-_parse_params (struct irc_server *server);
+_parse_params (irc_server *server);
 
 void
-_parse_msg (struct irc_server *server);
+_parse_msg (irc_server *server);
 	
 void
-_parse_ind_params (struct irc_server *server);
+_parse_ind_params (irc_server *server);
 
 /*******************************************************************/
 

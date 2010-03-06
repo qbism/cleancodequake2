@@ -20,7 +20,7 @@
 #include "sircl.h"
 
 int
-_parse_count_params (struct irc_server *server)
+_parse_count_params (irc_server *server)
 {
   int params;
   char *beg;
@@ -51,7 +51,7 @@ _parse_count_params (struct irc_server *server)
 }
 
 void
-_parse_prefix (struct irc_server *server)
+_parse_prefix (irc_server *server)
 {
   char *beg, *end;
 
@@ -80,7 +80,7 @@ _parse_prefix (struct irc_server *server)
 }
 
 void
-_parse_command (struct irc_server *server)
+_parse_command (irc_server *server)
 {
   // <command> ::=
   //     <letter> { <letter> } | <number> <number> <number>
@@ -121,7 +121,7 @@ _parse_command (struct irc_server *server)
 }
 
 void
-_parse_params (struct irc_server *server)
+_parse_params (irc_server *server)
 {
   char *beg, *end;
 
@@ -176,7 +176,7 @@ _parse_params (struct irc_server *server)
 }
 
 void
-_parse_msg (struct irc_server *server)
+_parse_msg (irc_server *server)
 {
   // <message> ::=
   //    [':' <prefix> <SPACE> ] <command> <params> <crlf>
@@ -195,7 +195,7 @@ _parse_msg (struct irc_server *server)
 }
 
 void
-_parse_ind_params (struct irc_server *server)
+_parse_ind_params (irc_server *server)
 {
   char *beg, *end;
   int i;
