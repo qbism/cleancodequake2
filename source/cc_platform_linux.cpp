@@ -51,7 +51,7 @@ Files will be put into "files".
 ================
 */
 
-void Sys_FindFiles (TFindFilesType &files, char *path, char *pattern, bool recurse, bool addFiles, bool addDirs)
+void Sys_FindFiles (TFindFilesType &files, const char *path, const char *pattern, bool recurse, bool addFiles, bool addDirs)
 {
 }
 
