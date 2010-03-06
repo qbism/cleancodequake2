@@ -116,7 +116,7 @@ void CItemList::AddItemToList (CBaseItem *Item)
 }
 
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
-typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8> TWeaponMultiMapType;
 
 void AddWeaponsToListLocations (CItemList *List);
 

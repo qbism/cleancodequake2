@@ -211,7 +211,7 @@ void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 			}
 
 			if (!bFound)
-				Files.push_back ((AddDir) ? dirFiles[i].c_str() : cc_string(name));
+				Files.push_back ((AddDir) ? dirFiles[i].c_str() : std::string(name));
 		}
 	}
 

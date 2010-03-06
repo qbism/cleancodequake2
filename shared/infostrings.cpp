@@ -40,7 +40,7 @@ Searches the string for the given key and returns the associated value, or an em
 */
 #include <cctype>
 
-cc_string Info_ValueForKey (cc_string &s, cc_string key)
+std::string Info_ValueForKey (std::string &s, std::string key)
 {
 	std::transform(key.begin(), key.end(), key.begin(),
 		(sint32(*)(sint32)) std::tolower);
@@ -52,8 +52,8 @@ cc_string Info_ValueForKey (cc_string &s, cc_string key)
 
 	while (true)
 	{
-		cc_string pkey;
-		cc_string value;
+		std::string pkey;
+		std::string value;
 
 		while (s[curIndex] != '\\')
 		{
@@ -85,13 +85,13 @@ cc_string Info_ValueForKey (cc_string &s, cc_string key)
 Info_RemoveKey
 ==================
 */
-void Info_RemoveKey (cc_string &s, cc_string key)
+void Info_RemoveKey (std::string &s, std::string key)
 {
 	if (key.find ('\\'))
 		return;
 
 	size_t	curIndex = 0;
-	cc_string	pkey, value;
+	std::string	pkey, value;
 	while (true)
 	{
 		size_t start = curIndex;
@@ -138,7 +138,7 @@ Some characters are illegal in info strings because they
 can mess up the server's parsing
 ==================
 */
-bool Info_Validate (cc_string &s)
+bool Info_Validate (std::string &s)
 {
 	return (s.find ('\"') || s.find (';'));
 }
@@ -149,7 +149,7 @@ bool Info_Validate (cc_string &s)
 Info_SetValueForKey
 ==================
 */
-void Info_SetValueForKey (cc_string &s, cc_string key, cc_string value)
+void Info_SetValueForKey (std::string &s, std::string key, std::string value)
 {
 	// Sanity check
 	if (key.find ('\\'))
@@ -189,7 +189,7 @@ void Info_SetValueForKey (cc_string &s, cc_string key, cc_string value)
 		return;
 
 	// Generate the key and make sure it will fit
-	cc_string newPair = "\\" + key + '\\' + value;
+	std::string newPair = "\\" + key + '\\' + value;
 	if (newPair.length() + s.length() > MAX_INFO_STRING-1)
 	{
 		DebugPrintf ("Info string length exceeded\n");

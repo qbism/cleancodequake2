@@ -91,7 +91,7 @@ public:
 		pathName[0] = 0;
 	};
 };
-typedef std::vector<fs_pathIndex*, std::allocator<fs_pathIndex*> > fs_pathListType;
+typedef std::vector<fs_pathIndex*> fs_pathListType;
 extern fs_pathListType fs_pathList;
 
 void FS_Init (sint32 maxHandles);
@@ -104,7 +104,7 @@ class fileHandleIndex_t
 {
 public:
 	fileHandle_t			handleIndex;
-	cc_string				name;
+	std::string				name;
 
 	bool					inUse;
 	EFileType				fileType;
@@ -132,7 +132,7 @@ public:
 		file.reg = NULL;
 	};
 };
-typedef std::map<fileHandle_t, fileHandleIndex_t, std::less<fileHandle_t>, std::allocator <std::pair<fileHandle_t, fileHandleIndex_t> > > THandleIndexListType;
+typedef std::map<fileHandle_t, fileHandleIndex_t> THandleIndexListType;
 
 class CFileHandleList
 {
@@ -421,7 +421,7 @@ public:
 		Write (&Ref, sizeof(TType));
 	};
 
-	void Write (const cc_string &Ref)
+	void Write (const std::string &Ref)
 	{
 		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
 
@@ -493,23 +493,23 @@ public:
 		return tempBuffer;
 	};
 
-	cc_string ReadCCString ()
+	std::string ReadCCString ()
 	{
 		if (!Handle)
 			return "";
 
 		char *stringBuffer = ReadString();
-		cc_string str (stringBuffer);
+		std::string str (stringBuffer);
 		QDelete[] stringBuffer;
 		return str;
 	};
 
-	cc_string ReadLine ()
+	std::string ReadLine ()
 	{
 		if (!Handle)
 			return "";
 
-		cc_string tempStr;
+		std::string tempStr;
 
 		while (true)
 		{
@@ -529,7 +529,7 @@ public:
 		if (!Handle)
 			return;
 
-		cc_string line = ReadLine ();
+		std::string line = ReadLine ();
 
 		Q_snprintfz (buf, maxSize-1, "%s", line.c_str());
 		buf[maxSize-1] = 0;
@@ -743,15 +743,15 @@ public:
 	};
 };
 
-inline CFileStream &operator<< (CFileStream &Stream, cc_string &val)
+inline CFileStream &operator<< (CFileStream &Stream, std::string &val)
 {
 	Stream.Write (val);
 	return Stream;
 };
 
-inline CFileStream &operator>> (CFileStream &Stream, cc_string &val)
+inline CFileStream &operator>> (CFileStream &Stream, std::string &val)
 {
-	val = Stream.Read<cc_string> ();
+	val = Stream.Read<std::string> ();
 	return Stream;
 };
 
@@ -816,13 +816,13 @@ public:
 	};
 };
 
-typedef std::vector<cc_string, std::allocator<cc_string> > TFindFilesType;
+typedef std::vector<std::string> TFindFilesType;
 
 // A wrapper for FS_FindFiles
 class CFindFilesCallback
 {
 public:
-	virtual void Query (cc_string &fileName) {};
+	virtual void Query (std::string &fileName) {};
 };
 
 // Finds files in "Path" (optionally "Recurse"ing) that match the filter "Filter" and are of type "Extention".
@@ -832,9 +832,9 @@ public:
 class CFindFiles
 {
 public:
-	cc_string		Path;
-	cc_string		Filter;
-	cc_string		Extension;
+	std::string		Path;
+	std::string		Filter;
+	std::string		Extension;
 	bool			AddDir;
 	bool			Recurse;
 	TFindFilesType	Files;

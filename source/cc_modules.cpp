@@ -40,9 +40,9 @@ struct Module_t
 	CDynamicLibrary	*Lib;
 };
 
-std::vector <Module_t*, std::allocator<Module_t*> > Modules;
+std::vector <Module_t*> Modules;
 
-void CC_LoadModule (cc_string Name)
+void CC_LoadModule (std::string Name)
 {
 	CDynamicLibrary *Lib = QNew (TAG_GENERIC) CDynamicLibrary (Name.c_str());
 	if (Lib->Valid())

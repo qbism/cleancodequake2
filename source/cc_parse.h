@@ -212,11 +212,11 @@ inline bool PS_VerifyVec <bool> (const char *token, void *target)
 
 class CParser
 {
-	cc_string		ScratchToken;	// Used for temporary storage during data-type/post parsing
+	std::string		ScratchToken;	// Used for temporary storage during data-type/post parsing
 
 	uint32				CurrentColumn;
 	uint32				CurrentLine;
-	cc_string		CurrentToken;
+	std::string		CurrentToken;
 
 	const char			*DataPointer;
 	const char			*DataPointerLast;
@@ -286,7 +286,7 @@ public:
 		CParser (DataPointer, Properties);
 	};
 
-	cc_string GetCurrentToken ()
+	std::string GetCurrentToken ()
 	{
 		return CurrentToken;
 	};

@@ -63,8 +63,8 @@ void ReadMagic (CFile &File)
 // Reads the magic number.
 #define READ_MAGIC ReadMagic(File);
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedEntityTableList;
-typedef std::vector<CEntityTableIndex*, std::allocator <CEntityTableIndex*> > TEntityTableList;
+typedef std::multimap<size_t, size_t> THashedEntityTableList;
+typedef std::vector<CEntityTableIndex*> TEntityTableList;
 #define MAX_ENTITY_TABLE_HASH 256
 
 TEntityTableList &EntityTable ()
@@ -231,7 +231,7 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 #if WIN32 && _DEBUG
 		if (!(Entity->EntityFlags & ENT_ITEM))
 		{
-			if (!strstr(Q_strlwr(cc_string(typeid(*Entity).name())).c_str(), Q_strlwr(cc_string(Entity->SAVE_GetName())).c_str()))
+			if (!strstr(Q_strlwr(std::string(typeid(*Entity).name())).c_str(), Q_strlwr(std::string(Entity->SAVE_GetName())).c_str()))
 				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->SAVE_GetName());
 		}
 #endif
@@ -362,7 +362,7 @@ void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
 
 void ReadEntities (CFile &File)
 {
-	std::vector <sint32, std::allocator <sint32> > LoadedNumbers;
+	std::vector <sint32> LoadedNumbers;
 	while (true)
 	{
 		sint32 number = File.Read<sint32> ();
@@ -565,7 +565,7 @@ void ReadConfigStrings (char *filename)
 {
 	size_t len = strlen(filename);
 
-	cc_string temp = filename;
+	std::string temp = filename;
 	temp[len-3] = 's';
 	temp[len-2] = 'v';
 	temp[len-1] = '2';

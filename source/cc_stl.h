@@ -41,16 +41,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <map>
 #include <algorithm>
 
-typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> >
-	cc_string;
-
-typedef std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >
-	cc_stringbuf;
-
-typedef std::basic_stringstream <char, std::char_traits<char>, std::allocator<char> >
-	cc_stringstream;
-
-inline void FormatString (cc_string &str, const char *fmt, ...)
+inline void FormatString (std::string &str, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[2048];

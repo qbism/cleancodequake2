@@ -232,7 +232,7 @@ Use an inventory item
 */
 void Cmd_Use_f (CPlayerEntity *Player)
 {
-	cc_string s = ArgGetConcatenatedString();
+	std::string s = ArgGetConcatenatedString();
 	CBaseItem *Item = FindItem(s.c_str());
 
 	if (!Item)
@@ -273,7 +273,7 @@ void Cmd_UseList_f (CPlayerEntity *Player)
 {
 	for (sint32 i = 1; i < ArgCount(); i++)
 	{
-		cc_string s = ArgGets(i);
+		std::string s = ArgGets(i);
 		CBaseItem *Item = FindItem(s.c_str());
 
 		if (!Item)
@@ -320,7 +320,7 @@ Drop an inventory item
 */
 void Cmd_Drop_f (CPlayerEntity *Player)
 {
-	cc_string s = ArgGetConcatenatedString();
+	std::string s = ArgGetConcatenatedString();
 
 	if (Q_stricmp (s.c_str(), "tech") == 0)
 	{
@@ -609,7 +609,7 @@ void Cmd_Give_f (CPlayerEntity *Player)
 {
 	CBaseItem *it;
 
-	cc_string name = ArgGets(1);
+	std::string name = ArgGets(1);
 	bool give_all = (Q_stricmp (name.c_str(), "all") == 0);
 
 	if (give_all || Q_stricmp (name.c_str(), "health") == 0)

@@ -84,7 +84,7 @@ void CCvar::Register(const char *cvarName, const char *defaultValue, ECvarFlags 
 }
 
 #include <sstream>
-static cc_stringstream str;
+static std::stringstream str;
 void CCvar::Register(const char *cvarName, float defaultValue, ECvarFlags flags)
 {
 	str.str("");

@@ -72,7 +72,7 @@ public:
 	};
 };
 
-typedef std::vector<BanIndex*, std::allocator<BanIndex*> > TBanIndexContainer;
+typedef std::vector<BanIndex*> TBanIndexContainer;
 
 class CBanList
 {

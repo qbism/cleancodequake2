@@ -214,7 +214,7 @@ public:
 };
 #endif
 
-std::vector<CTech*, std::allocator<CTech*> >		TechList;
+std::vector<CTech*>		TechList;
 
 void SpawnTech(CBaseItem *item, CSpotBase *spot);
 class CTechEntity : public CItemEntity

@@ -69,7 +69,7 @@ void VerifyVersionFile ()
 
 	const char *token;
 
-	cc_string prefix;
+	std::string prefix;
 	Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 	prefix = token;
 
@@ -112,7 +112,7 @@ WININET
 
 #include <WinInet.h>
 bool				VersionCheckReady;
-cc_string		VersionPrefix;
+std::string		VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
@@ -189,7 +189,7 @@ void CheckVersionReturnance ()
 
 			const char *token;
 
-			cc_string prefix;
+			std::string prefix;
 			Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 			prefix = token;
 
@@ -301,7 +301,7 @@ DWORD				iID;
 long WINAPI			CheckNewVersionThread (long lParam);
 void				CheckVersionReturnance ();
 bool				VersionCheckReady;
-cc_string		VersionPrefix;
+std::string		VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
@@ -404,7 +404,7 @@ void CheckNewVersion ()
 
 		const char *token;
 
-		cc_string prefix;
+		std::string prefix;
 		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 		prefix = token;
 
@@ -467,9 +467,11 @@ void InitVersion ()
 #endif
 }
 
+std::string ConfigTimeString ();
+
 void Cmd_CCVersion_t (CPlayerEntity *Player)
 {
-	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT", built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 }
 
 void SvCmd_CCVersion_t ()
@@ -477,7 +479,7 @@ void SvCmd_CCVersion_t ()
 #if (VERSION_CHECKING != VC_NONE)
 	if (ArgGets (2).empty())
 #endif
-		ServerPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+		ServerPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT" built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 #if (VERSION_CHECKING != VC_NONE)
 	else
 		CheckNewVersion ();

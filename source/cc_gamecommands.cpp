@@ -262,9 +262,9 @@ bool CheckFlood(CPlayerEntity *Player)
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
-	cc_string &Text;
+	std::string &Text;
 
-	CSayPlayerCallback (cc_string &Text) :
+	CSayPlayerCallback (std::string &Text) :
 	Text(Text)
 	{
 	};
@@ -280,7 +280,7 @@ public:
 void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 {
 	//char	text[MAX_TALK_STRING];
-	static cc_string text;
+	static std::string text;
 
 	if (ArgCount () < 2 && !arg0)
 		return;
@@ -300,7 +300,7 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 		text += ArgGets(0) + " " + ArgGetConcatenatedString();
 	else
 	{
-		cc_string p = ArgGetConcatenatedString();
+		std::string p = ArgGetConcatenatedString();
 
 		if (p[0] == '"')
 		{

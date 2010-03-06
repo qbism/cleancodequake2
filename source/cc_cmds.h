@@ -47,8 +47,8 @@ template <typename TFunctor>
 class CCommand
 {
 public:
-	typedef std::vector<CCommand<TFunctor>*, std::allocator<CCommand<TFunctor>*> > TCommandListType;
-	typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedCommandListType;
+	typedef std::vector<CCommand<TFunctor>*> TCommandListType;
+	typedef std::multimap<size_t, size_t> THashedCommandListType;
 
 	struct SubCommands_t
 	{

@@ -61,7 +61,7 @@ public:
 class CDynamicLibrary
 {
 private:
-	cc_string		LoadedLibFileName;
+	std::string		LoadedLibFileName;
 	void			*Lib;
 
 	void	*OS_LoadLibrary (const char *FileName);
@@ -89,7 +89,7 @@ public:
 		return (!LoadedLibFileName.empty() && Lib);
 	};
 
-	inline cc_string GetLoadedFileName ()
+	inline std::string GetLoadedFileName ()
 	{
 		return LoadedLibFileName;
 	};

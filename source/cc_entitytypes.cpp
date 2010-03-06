@@ -77,12 +77,12 @@ void			CHurtableEntity::LoadFields (CFile &File)
 	LoadEntityFields<CHurtableEntity> (this, File);
 };
 
-cc_string ClientTeam (CPlayerEntity *Player)
+std::string ClientTeam (CPlayerEntity *Player)
 {
-	cc_string val = Q_strlwr(Info_ValueForKey (Player->Client.Persistent.UserInfo, "skin"));
+	std::string val = Q_strlwr(Info_ValueForKey (Player->Client.Persistent.UserInfo, "skin"));
 
 	size_t slash = val.find_first_of('/');
-	if (slash == cc_string::npos)
+	if (slash == std::string::npos)
 		return val;
 
 	if (DeathmatchFlags.dfModelTeams.IsEnabled())
@@ -1204,7 +1204,7 @@ sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 	return blocked;
 }
 
-typedef std::vector<CPushed, std::allocator<CPushed> > TPushedList;
+typedef std::vector<CPushed> TPushedList;
 
 bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 {
@@ -1483,7 +1483,7 @@ Usable (true)
 
 ENTITYFIELDS_BEGIN(CUsableEntity)
 {
-	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_CC_STRING | FT_SAVABLE),
+	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_STRING | FT_SAVABLE),
 	CEntityField ("noise",		EntityMemberOffset(CUsableEntity,NoiseIndex),		FT_SOUND_INDEX | FT_SAVABLE),
 	CEntityField ("delay",		EntityMemberOffset(CUsableEntity,Delay),			FT_FRAMENUMBER | FT_SAVABLE),
 	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
@@ -1556,7 +1556,7 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
-void CUsableEntity::UseTargets (CBaseEntity *Activator, cc_string &Message)
+void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 {
 //
 // check for a delay

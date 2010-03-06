@@ -51,7 +51,7 @@ class CCTFGhost
 public:
 	uint32	Code;
 
-	cc_string name;
+	std::string name;
 	sint32 number;
 
 	// stats
@@ -83,7 +83,7 @@ CC_ENUM (uint8, EElectState)
 	ELECT_MAP
 };
 
-typedef std::map<uint32, CCTFGhost*, std::less<uint16>, std::allocator<std::pair <const uint32, CCTFGhost*> > > TGhostMapType;
+typedef std::map<uint32, CCTFGhost*> TGhostMapType;
 class CCTFGameLocals
 {
 public:

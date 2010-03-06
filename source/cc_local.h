@@ -376,7 +376,7 @@ public:
 		AutoSaved = File.Read<bool> ();
 	}
 
-	cc_string			HelpMessages[2];
+	std::string			HelpMessages[2];
 	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
@@ -385,7 +385,7 @@ public:
 
 	// can't store spawnpoint in level, because
 	// it would get overwritten by the savegame restore
-	cc_string			SpawnPoint;	// needed for coop respawns
+	std::string			SpawnPoint;	// needed for coop respawns
 
 	// store latched cvars here that we want to get at often
 	uint8					MaxClients;
@@ -401,8 +401,8 @@ public:
 
 extern	CGameLocals		Game;
 
-typedef std::list<CKeyValuePair*, std::allocator<CKeyValuePair*> > TKeyValuePairContainer;
-typedef std::list<edict_t*, std::allocator<edict_t*> > TEntitiesContainer;
+typedef std::list<CKeyValuePair*> TKeyValuePairContainer;
+typedef std::list<edict_t*> TEntitiesContainer;
 
 class CLevelLocals
 {
@@ -512,10 +512,10 @@ public:
 
 	FrameNumber_t	Frame;
 
-	cc_string	FullLevelName;		// the descriptive name (Outer Base, etc)
-	cc_string	ServerLevelName;		// the server name (base1, etc)
-	cc_string	NextMap;		// go here when fraglimit is hit
-	cc_string	ForceMap;		// go here
+	std::string	FullLevelName;		// the descriptive name (Outer Base, etc)
+	std::string	ServerLevelName;		// the server name (base1, etc)
+	std::string	NextMap;		// go here when fraglimit is hit
+	std::string	ForceMap;		// go here
 
 	// intermission state
 	FrameNumber_t		IntermissionTime;		// time the intermission was started
@@ -555,7 +555,7 @@ public:
 	uint32		Inhibit;
 	uint32		EntityNumber;
 
-	cc_string			ClassName;
+	std::string			ClassName;
 	TKeyValuePairContainer	ParseData;
 
 	// Entity list

@@ -132,9 +132,9 @@ public:
 class CWriteString : public CWriteIndex
 {
 public:
-	cc_string	Val;
+	std::string	Val;
 
-	CWriteString (cc_string Val) :
+	CWriteString (std::string Val) :
 	Val(Val),
 	CWriteIndex(WT_STRING)
 	{
@@ -146,7 +146,7 @@ public:
 	};
 };
 
-std::vector <CWriteIndex*, std::allocator<CWriteIndex*> > WriteQueue;
+std::vector <CWriteIndex*> WriteQueue;
 
 void SendQueue (edict_t *To, bool Reliable)
 {

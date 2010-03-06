@@ -52,7 +52,7 @@ CC_ENUM (uint8, ELabelAlign)
 class CMenu_Label : public CMenuItem
 {
 public:
-	cc_string			LabelString;
+	std::string			LabelString;
 	ELabelFlags				Flags;
 	ELabelAlign				Align;
 
@@ -75,7 +75,7 @@ public:
 class CMenu_Image : public CMenuItem
 {
 public:
-	cc_string			ImageString;
+	std::string			ImageString;
 	sint32						Width, Height;
 
 	CMenu_Image				(CMenu *Menu, sint32 x, sint32 y);
@@ -146,7 +146,7 @@ public:
 	TType					Max;
 	TType					Step;
 	TType					Value;
-	cc_string			AppendText;
+	std::string			AppendText;
 
 	CMenu_Slider			(CMenu *Menu, sint32 x, sint32 y) :
 	  CMenuItem(Menu, x, y)
@@ -210,7 +210,7 @@ public:
 
 		DrawState->AddVirtualPoint_X (drawX);
 
-		cc_stringstream str;
+		std::stringstream str;
 		str << Value << AppendText;
 		DrawState->AddString (str.str().c_str(), Selected, false);
 	};

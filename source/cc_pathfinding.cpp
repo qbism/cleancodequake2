@@ -55,7 +55,7 @@ void SpawnNodeEntity (CPathNode *Node);
 void CheckNodeFlags (CPathNode *Node);
 size_t GetNodeIndex (CPathNode *Node);
 
-typedef std::vector<CPathNode*, std::allocator<CPathNode*> > TPathNodeContainer;
+typedef std::vector<CPathNode*> TPathNodeContainer;
 TPathNodeContainer		Closed, Open;
 
 #define MAX_SAVED_PATHS	512
@@ -408,7 +408,7 @@ void SaveNodes ()
 {
 	size_t numSpecialNodes = 0;
 	// Try to open the file
-	cc_string FileName;
+	std::string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += Level.ServerLevelName;
@@ -478,7 +478,7 @@ void LoadNodes ()
 {
 	uint32 numSpecialNodes = 0;
 	// Try to open the file
-	cc_string FileName;
+	std::string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += Level.ServerLevelName;
@@ -603,7 +603,7 @@ CPathNode *GetClosestNodeTo (vec3f origin)
 void Cmd_Node_f (CPlayerEntity *Player)
 {
 	vec3f origin = Player->State.GetOrigin();
-	cc_string cmd = ArgGets(1);
+	std::string cmd = ArgGets(1);
 
 	if (Q_stricmp (cmd.c_str(), "save") == 0)
 		SaveNodes ();
@@ -759,7 +759,7 @@ CPath *CreatePath (CPathNode *Start, CPathNode *End)
 void SavePathTable ()
 {
 	// Try to open the file
-	cc_string FileName;
+	std::string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += Level.ServerLevelName;
@@ -800,7 +800,7 @@ void SavePathTable ()
 void LoadPathTable ()
 {
 	// Try to open the file
-	cc_string FileName;
+	std::string FileName;
 
 	FileName += "maps/nodes/";
 	FileName += Level.ServerLevelName;

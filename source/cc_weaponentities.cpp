@@ -504,6 +504,9 @@ void CBFGBolt::Think ()
 			vec3f start = State.GetOrigin();
 			vec3f end = start.MultiplyAngles (2048, dir);
 			CTrace tr;
+
+			CBFGLaser LaserTempEnt (vec3fOrigin, vec3fOrigin);
+
 			while(1)
 			{
 				tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
@@ -527,7 +530,7 @@ void CBFGBolt::Think ()
 				start = tr.EndPos;
 			}
 
-			CBFGLaser(State.GetOrigin(), tr.EndPos).Send();
+			LaserTempEnt.StartAt(State.GetOrigin()).EndAt(tr.EndPos).Send();
 		}
 
 		NextThink = Level.Frame + FRAMETIME;

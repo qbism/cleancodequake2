@@ -38,7 +38,7 @@ CC_ENUM (uint8, EMapPrintType)
 {
 	MAPPRINT_WARNING,
 	MAPPRINT_ERROR,
-	MAPPRINT_NORMAL
+	MAPPRINT_MESSAGE
 };
 
 void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, const char *fmt, ...);

@@ -51,14 +51,14 @@ public:
 	virtual bool	Select (CPlayerEntity *Player); // What happens when you hit enter (return true to close the menu)
 };
 
-typedef std::vector<CMenuItem*, std::allocator<CMenuItem*> > TMenuItemsContainer;
+typedef std::vector<CMenuItem*> TMenuItemsContainer;
 
 class CMenu 
 {
 public:
 	sint32							Cursor; // Where to position the cursor on start
 	CPlayerEntity					*Player; // A pointer to the entity that is running the show (needed?)
-	std::vector<CMenuItem*, std::allocator<CMenuItem*> >		Items;
+	std::vector<CMenuItem*>			Items;
 
 	CMenu						(CPlayerEntity *Player);
 	~CMenu						();

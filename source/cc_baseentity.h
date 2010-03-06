@@ -95,7 +95,7 @@ public:
 	uint32			EntityFlags;
 	CEntityState	State;
 	EEdictFlags		Flags;
-	cc_string	ClassName;
+	std::string	ClassName;
 
 	struct entityTeam_t
 	{
@@ -227,7 +227,7 @@ inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
 
 inline char *CopyStr (const char *In, const sint16 Tag)
 {
-	cc_string newString (In);
+	std::string newString (In);
 	
 	size_t i = 0;
 	while (true)
@@ -247,9 +247,9 @@ inline char *CopyStr (const char *In, const sint16 Tag)
 	return Mem_TagStrDup (newString.c_str(), Tag);
 }
 
-inline cc_string CopyStr (const char *In)
+inline std::string CopyStr (const char *In)
 {
-	cc_string newString (In);
+	std::string newString (In);
 	
 	size_t i = 0;
 	while (true)
@@ -351,7 +351,7 @@ CC_ENUM (uint32, EFieldType)
 	FT_ITEM,			// Stores value as CBaseItem (finds the item and stores it in the ptr)
 	FT_ENTITY,			// Saved as an index to an entity
 	FT_FLOAT_TO_BYTE,	// Accepted float input, stores as uint8 (0-255)
-	FT_CC_STRING,		// String, dynamic.
+	FT_STRING,		// String, dynamic.
 
 	// Flags
 	FT_GAME_ENTITY	=	BIT(10),		// Stored in gameEntity instead of TClass
@@ -368,7 +368,7 @@ CBaseEntity *LoadEntity (uint32 Index);
 class CEntityField
 {
 public:
-	cc_string	Name;
+	std::string	Name;
 	size_t			Offset;
 	EFieldType		FieldType, StrippedFields;
 
@@ -411,7 +411,12 @@ public:
 		case FT_VECTOR:
 			{
 				vec3f v;
-				sscanf (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z);
+				//if (sscanf (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z) == EOF)
+				//	_CC_ASSERT_EXPR (0, "sscanf failed")
+
+				std::istringstream strm (Value);
+				strm >> v.X >> v.Y >> v.Z;
+
 				OFS_TO_TYPE(vec3f) = v;
 			}
 			break;
@@ -428,8 +433,8 @@ public:
 			break;
 		case FT_SOUND_INDEX:
 			{
-				cc_string temp = Value;
-				if (temp.find (".wav") == cc_string::npos)
+				std::string temp = Value;
+				if (temp.find (".wav") == std::string::npos)
 					temp.append (".wav");
 
 				OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.c_str());
@@ -463,8 +468,8 @@ public:
 				OFS_TO_TYPE(CBaseItem *) = Item;
 			}
 			break;
-		case FT_CC_STRING:
-			OFS_TO_TYPE(cc_string) = CopyStr(Value);
+		case FT_STRING:
+			OFS_TO_TYPE(std::string) = CopyStr(Value);
 			break;
 		};
 	};
@@ -548,8 +553,8 @@ public:
 				File.Write<sint32> (Index);
 			}
 			break;
-		case FT_CC_STRING:
-			File.Write (OFS_TO_TYPE(cc_string));
+		case FT_STRING:
+			File.Write (OFS_TO_TYPE(std::string));
 			break;
 		};
 	};
@@ -642,8 +647,8 @@ public:
 				OFS_TO_TYPE(CBaseEntity *) = LoadEntity (Index);
 			}
 			break;
-		case FT_CC_STRING:
-			OFS_TO_TYPE(cc_string) = File.ReadCCString ();
+		case FT_STRING:
+			OFS_TO_TYPE(std::string) = File.ReadCCString ();
 			break;
 		};
 	};

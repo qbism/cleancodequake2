@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #define MAX_CLASSNAME_CLASSES 1024
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedEntityListType;
-typedef std::vector<CClassnameToClassIndex*, std::allocator<CClassnameToClassIndex*> > TEntityListType;
+typedef std::multimap<size_t, size_t> THashedEntityListType;
+typedef std::vector<CClassnameToClassIndex*> TEntityListType;
 
 class CEntityList
 {

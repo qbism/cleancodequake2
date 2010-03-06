@@ -41,8 +41,8 @@ MONSTER LIST
 ===============================
 */
 
-typedef std::vector<CMonsterTableIndex*, std::allocator <CMonsterTableIndex*> > TMonsterListType;
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::allocator<size_t> > THashedMonsterListType;
+typedef std::vector<CMonsterTableIndex*> TMonsterListType;
+typedef std::multimap<size_t, size_t> THashedMonsterListType;
 
 TMonsterListType &MonsterTable ()
 {

@@ -390,7 +390,7 @@ void CTFTeam_f (CPlayerEntity *Player)
 {
 	sint32 desired_team;
 
-	cc_string t = ArgGetConcatenatedString();
+	std::string t = ArgGetConcatenatedString();
 	if (!t[0])
 	{
 		Player->PrintToClient (PRINT_HIGH, "You are on the %s team.\n",
@@ -468,7 +468,7 @@ SAY_TEAM
 class CLocName
 {
 public:
-	cc_string		classname;
+	std::string		classname;
 	uint32				hash;
 
 	uint8				priority;
@@ -510,7 +510,7 @@ CLocName LocNames[] =
 	CLocName(	"",							0 )
 };
 
-static inline void CTFSay_Team_Location(CPlayerEntity *who, cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Location(CPlayerEntity *who, std::stringstream &OutMessage)
 {
 	CBaseEntity *hot = NULL;
 	float hotdist = 999999, newdist;
@@ -631,7 +631,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, cc_stringstream &Out
 	OutMessage << item->Name;
 }
 
-static inline void CTFSay_Team_Armor(CPlayerEntity *who, cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Armor(CPlayerEntity *who, std::stringstream &OutMessage)
 {
 	CBaseItem		*item = who->Client.Persistent.Armor;
 	EPowerArmorType power_armor_type = who->PowerArmorType ();
@@ -653,7 +653,7 @@ static inline void CTFSay_Team_Armor(CPlayerEntity *who, cc_stringstream &OutMes
 		OutMessage << "no armor";
 }
 
-static inline void CTFSay_Team_Health(CPlayerEntity *who, cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Health(CPlayerEntity *who, std::stringstream &OutMessage)
 {
 	if (who->Health <= 0)
 		OutMessage << "dead";
@@ -661,7 +661,7 @@ static inline void CTFSay_Team_Health(CPlayerEntity *who, cc_stringstream &OutMe
 		OutMessage << who->Health << " health";
 }
 
-static inline void CTFSay_Team_Tech(CPlayerEntity *who, cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Tech(CPlayerEntity *who, std::stringstream &OutMessage)
 {
 	// see if the player has a tech powerup
 	if (who->Client.Persistent.Tech)
@@ -670,7 +670,7 @@ static inline void CTFSay_Team_Tech(CPlayerEntity *who, cc_stringstream &OutMess
 		OutMessage << "no powerup";
 }
 
-static inline void CTFSay_Team_Weapon(CPlayerEntity *who, cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Weapon(CPlayerEntity *who, std::stringstream &OutMessage)
 {
 	if (who->Client.Persistent.Weapon)
 		OutMessage << who->Client.Persistent.Weapon->Item->Name;
@@ -678,10 +678,10 @@ static inline void CTFSay_Team_Weapon(CPlayerEntity *who, cc_stringstream &OutMe
 		OutMessage << "none";
 }
 
-static inline void CTFSay_Team_Sight(CPlayerEntity *who, cc_stringstream &OutMessage)
+static inline void CTFSay_Team_Sight(CPlayerEntity *who, std::stringstream &OutMessage)
 {
 	sint32 n = 0;
-	static cc_string nameStore;
+	static std::string nameStore;
 
 	for (uint8 i = 1; i <= Game.MaxClients; i++)
 	{
@@ -718,9 +718,9 @@ static inline void CTFSay_Team_Sight(CPlayerEntity *who, cc_stringstream &OutMes
 }
 
 bool CheckFlood(CPlayerEntity *Player);
-void CTFSay_Team(CPlayerEntity *who, cc_string msg)
+void CTFSay_Team(CPlayerEntity *who, std::string msg)
 {
-	static cc_stringstream OutMessage;
+	static std::stringstream OutMessage;
 	
 	if (CheckFlood(who))
 		return;
@@ -1030,7 +1030,7 @@ void CTFStartMatch()
 
 void CTFEndMatch()
 {
-	static cc_stringstream BroadcastString;
+	static std::stringstream BroadcastString;
 	BroadcastString.str("");
 
 	ctfgame.match = MATCH_POST;

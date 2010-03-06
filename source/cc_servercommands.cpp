@@ -97,7 +97,7 @@ struct SServerEntityListIndex
 	const char	*className;
 	uint32		Num;
 	bool		Old;
-	std::vector<SServerEntityListEntity, std::allocator<SServerEntityListEntity> > List;
+	std::vector<SServerEntityListEntity> List;
 
 	SServerEntityListIndex			*hashNext;
 	uint32							hashValue;
@@ -194,7 +194,7 @@ public:
 
 void SvCmd_EntList_f ()
 {
-	cc_string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
+	std::string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
 	CServerEntityList tmp;
 	tmp.Search (WildCard.c_str());
 
@@ -233,7 +233,7 @@ void SvCmd_EntList_f ()
 extern char *gEntString;
 void SvCmd_Dump_f ()
 {
-	CFile File ((cc_string("/maps/ents/") + Level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
+	CFile File ((std::string("/maps/ents/") + Level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
 
 	if (!File.Valid())
 		return;
@@ -254,7 +254,7 @@ IPAddress CopyIP (const char *val);
 
 void SvCmd_Ban_t ()
 {
-	const cc_string str = Q_strlwr(ArgGets(2));
+	const std::string str = Q_strlwr(ArgGets(2));
 
 	if (str == "save")
 		Bans.SaveList ();
@@ -290,7 +290,7 @@ void SvCmd_Ban_t ()
 	{
 		if (ArgGets(3) == "remove")
 		{
-			cc_string name = ArgGets(4);
+			std::string name = ArgGets(4);
 			if (Bans.RemoveFromList (name.c_str()))
 				ServerPrintf ("Removed %s from ban list\n", name.c_str());
 			else
@@ -298,7 +298,7 @@ void SvCmd_Ban_t ()
 		}
 		else
 		{
-			cc_string name = ArgGets(3);
+			std::string name = ArgGets(3);
 			const uint8 flags = ArgGeti(4);
 
 			if (Bans.AddToList (name.c_str(), flags))

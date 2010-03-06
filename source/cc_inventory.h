@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CInventory
 {
 private:
-	typedef std::map <uint8, sint16, std::less<uint8>, std::allocator<std::pair<uint8, uint16 > > > TInventoryMapType;
+	typedef std::map <uint8, sint16> TInventoryMapType;
 	TInventoryMapType Array;
 
 public:

@@ -47,19 +47,23 @@ void EndMapCounter ()
 }
 
 #include <sstream>
-static cc_stringstream PrintBuffer;
+static std::stringstream PrintBuffer;
 
 void Map_Print (EMapPrintType printType, vec3f &origin)
 {
-	if (printType == MAPPRINT_WARNING)
+	switch (printType)
 	{
+	case MAPPRINT_WARNING:
 		mapWarnings++;
 		PrintBuffer << "Warning " << mapWarnings << " (" << Level.ClassName << " #" << Level.EntityNumber << ")";
-	}
-	else if (printType == MAPPRINT_ERROR)
-	{	
+		break;
+	case MAPPRINT_ERROR:
 		mapErrors++;
 		PrintBuffer << "Error " << mapErrors << " (" << Level.ClassName << " #" << Level.EntityNumber << ")";
+		break;
+	default:
+		PrintBuffer << "Message (" << Level.ClassName << " #" << Level.EntityNumber << ")";
+		break;
 	}
 
 	if (origin)
@@ -91,7 +95,7 @@ void MapPrint (EMapPrintType printType, CBaseEntity *Entity, vec3f &origin, cons
 sint32 fileVersion;
 
 sint32 curIf = 0;
-std::vector<bool, std::allocator<bool> > ifLists;
+std::vector<bool> ifLists;
 
 inline void PushIf (bool expr)
 {
@@ -141,7 +145,7 @@ struct PoundVariable_t
 	} vars;
 };
 
-std::vector<PoundVariable_t *, std::allocator<PoundVariable_t*> > VariableList;
+std::vector<PoundVariable_t *> VariableList;
 
 PoundVariable_t *Pound_FindVar (char *name)
 {
@@ -349,8 +353,8 @@ bool TokenEnd (char *token)
 // this goes by entire lines.
 char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 {
-	CFileBuffer FileBuffer((cc_string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
-	cc_string finalString;
+	CFileBuffer FileBuffer((std::string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
+	std::string finalString;
 	char *realEntities;
 	char *token;
 
@@ -358,24 +362,23 @@ char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 		return entities;
 	else
 		entities = FileBuffer.GetBuffer<char> ();
+
 	realEntities = entities;
 
 	while ((token = CC_ParseLine(&realEntities)) != NULL)
 	{
 		if (token == NULL)
 			break; // ever happen?
+
 		if (token[0] == '#' && (realEntities = ParsePound(token, realEntities)) != NULL)
 			continue;
 
 		// Basically if we reach here, this part makes it into the final compilation.
-		finalString += token;
-		finalString += "\n";
+		finalString += std::string(token) + "\n";
 
 		if (TokenEnd(token))
 			break;
 	}
 
-	char *finalEntString = Mem_TagStrDup (finalString.c_str(), TAG_LEVEL);
-
-	return finalEntString;
+	return Mem_TagStrDup (finalString.c_str(), TAG_LEVEL);
 }

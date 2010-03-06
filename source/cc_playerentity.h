@@ -158,8 +158,8 @@ public:
 		ViewBlend = File.Read<colorf> ();
 	}
 
-	cc_string	UserInfo;
-	cc_string	Name;
+	std::string	UserInfo;
+	std::string	Name;
 	IPAddress		IP;
 	sint32			Hand;
 
@@ -666,7 +666,7 @@ public:
 	void			CTFDeadDropFlag ();
 	class CSpotBase	*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();
-	void			CTFAssignSkin (cc_string &s);
+	void			CTFAssignSkin (std::string &s);
 	bool			CTFStart ();
 #endif
 

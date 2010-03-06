@@ -290,7 +290,7 @@ _CC_ENABLE_DEPRECATION
 	ed->AwaitingRemoval = true;
 }
 
-typedef std::vector <CBaseEntity*, std::allocator<CBaseEntity*> > TPrivateEntitiesContainer;
+typedef std::vector <CBaseEntity*> TPrivateEntitiesContainer;
 TPrivateEntitiesContainer PrivateEntities;
 
 void InitPrivateEntities ()
@@ -786,16 +786,14 @@ void CMapEntity::ParseFields ()
 		return;
 
 	// Go through all the dictionary pairs
+	TKeyValuePairContainer::iterator it = Level.ParseData.begin();
+	while (it != Level.ParseData.end())
 	{
-		TKeyValuePairContainer::iterator it = Level.ParseData.begin();
-		while (it != Level.ParseData.end())
-		{
-			CKeyValuePair *PairPtr = (*it);
-			if (ParseField (PairPtr->Key, PairPtr->Value))
-				Level.ParseData.erase (it++);
-			else
-				++it;
-		}
+		CKeyValuePair *PairPtr = (*it);
+		if (ParseField (PairPtr->Key, PairPtr->Value))
+			Level.ParseData.erase (it++);
+		else
+			++it;
 	}
 
 	// Since this is the last part, go through the rest of the list now
@@ -805,7 +803,7 @@ void CMapEntity::ParseFields ()
 		for (TKeyValuePairContainer::iterator it = Level.ParseData.begin(); it != Level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
-			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);
 		}
 	}
 };

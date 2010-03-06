@@ -39,10 +39,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 char	*nullArg = "";
 
 uint8				numArgv;
-cc_string		argvConcatString;
-std::vector<cc_string, std::allocator<cc_string> >		argvStringArray;
-std::vector<sint32, std::allocator<sint32> >						argvIntegerArray;
-std::vector<float, std::allocator<float> >							argvFloatArray;
+std::string		argvConcatString;
+std::vector<std::string>		argvStringArray;
+std::vector<sint32>						argvIntegerArray;
+std::vector<float>							argvFloatArray;
 
 void SetupArg ()
 {
@@ -92,12 +92,12 @@ uint8 ArgCount ()
 	return numArgv;
 }
 
-cc_string ArgGetConcatenatedString ()
+std::string ArgGetConcatenatedString ()
 {
 	return argvConcatString;
 }
 
-cc_string ArgGets (uint32 Index)
+std::string ArgGets (uint32 Index)
 {
 	if (Index >= argvStringArray.size())
 		return "";

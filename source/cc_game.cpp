@@ -177,7 +177,7 @@ void ExitLevel ()
 		return;
 #endif
 
-	gi.AddCommandString ((char*)(cc_string("gamemap \"") + Level.ChangeMap + "\"\n").c_str());
+	gi.AddCommandString ((char*)(std::string("gamemap \"") + Level.ChangeMap + "\"\n").c_str());
 	Level.ChangeMap = NULL;
 	Level.ExitIntermission = false;
 	Level.IntermissionTime = 0;
@@ -499,12 +499,17 @@ void G_Register ()
 	#endif
 #endif
 
+std::string ConfigTimeString ()
+{
+	return std::string(TimeStamp()) + " (running on " + CPUSTRING + " " + CONFIGURATIONSTRING + ")";
+}
+
 void CGameAPI::Init ()
 {
 	CTimer LoadTimer;
 
 	//Mem_Init ();
-	ServerPrintf ("==== InitGame ====\nRunning CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing Game...\n", CLEANCODE_VERSION_PRINT_ARGS, TimeStamp(), CONFIGURATIONSTRING, CPUSTRING);
+	ServerPrintf ("==== InitGame ====\nRunning CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s\nInitializing Game...\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 
 	seedMT (time(NULL));
 

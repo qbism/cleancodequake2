@@ -425,7 +425,7 @@ void CPlayerEntity::SpectatorRespawn ()
 
 	if (Client.Persistent.Spectator)
 	{
-		cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
+		std::string value = Info_ValueForKey (Client.Persistent.UserInfo, "spectator");
 		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && 
 			strcmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none") && 
 			value != CvarList[CV_SPECTATOR_PASSWORD].String())
@@ -458,7 +458,7 @@ void CPlayerEntity::SpectatorRespawn ()
 	{
 		// he was a Spectator and wants to join the game
 		// he must have the right password
-		cc_string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
+		std::string value = Info_ValueForKey (Client.Persistent.UserInfo, "password");
 		if (*CvarList[CV_PASSWORD].String() && strcmp(CvarList[CV_PASSWORD].String(), "none") && 
 			value != CvarList[CV_PASSWORD].String())
 		{
@@ -729,7 +729,7 @@ The game can override any of the settings in place
 */
 void CPlayerEntity::UserinfoChanged (char *userinfo)
 {
-	cc_string UserInfo = userinfo;
+	std::string UserInfo = userinfo;
 
 	// check for malformed or illegal info strings
 	if (!Info_Validate(UserInfo))
@@ -739,7 +739,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 	Client.Persistent.Name = Info_ValueForKey (UserInfo, "name");
 
 	// set Spectator
-	cc_string s = Info_ValueForKey (UserInfo, "spectator");
+	std::string s = Info_ValueForKey (UserInfo, "spectator");
 	// spectators are only supported in deathmatch
 	Client.Persistent.Spectator = ((Game.GameMode & GAME_DEATHMATCH) && s.length() && s != "0");
 
@@ -756,7 +756,7 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 //ZOID
 #endif
 	{
-		cc_string temp = Client.Persistent.Name + "\\" + s;
+		std::string temp = Client.Persistent.Name + "\\" + s;
 		ConfigString (CS_PLAYERSKINS+playernum, temp.c_str());
 	}
 
@@ -810,10 +810,10 @@ void CPlayerEntity::UserinfoChanged (char *userinfo)
 }
 
 #if CLEANCTF_ENABLED
-void CPlayerEntity::CTFAssignSkin(cc_string &s)
+void CPlayerEntity::CTFAssignSkin(std::string &s)
 {
 	sint32 playernum = State.GetNumber()-1;
-	cc_string t = Info_ValueForKey(s, "skin");
+	std::string t = Info_ValueForKey(s, "skin");
 
 	if (t.find('/'))
 		t.erase (t.find('/') + 1);
@@ -3744,11 +3744,11 @@ _CC_ENABLE_DEPRECATION
 IPAddress CopyIP (const char *val)
 {
 	// Do we have a :?
-	cc_string str (val);
+	std::string str (val);
 
 	size_t loc = str.find_first_of (':');
 
-	if (loc != cc_string::npos)
+	if (loc != std::string::npos)
 		str = str.substr(0, loc);
 
 	IPAddress Adr;
@@ -3761,10 +3761,10 @@ IPAddress CopyIP (const char *val)
 
 bool CPlayerEntity::Connect (char *userinfo)
 {
-	cc_string	UserInfo = userinfo;
+	std::string	UserInfo = userinfo;
 
 	// check to see if they are on the banned IP list
-	cc_string value = Info_ValueForKey (UserInfo, "ip");
+	std::string value = Info_ValueForKey (UserInfo, "ip");
 	IPAddress Adr = CopyIP (value.c_str());
 
 	if (Bans.IsBanned(Adr) || Bans.IsBanned(Info_ValueForKey(UserInfo, "name").c_str()))
@@ -3909,7 +3909,7 @@ inline const char *MonsterAOrAn (const char *Name)
 
 void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 {
-	static cc_string message, message2;
+	static std::string message, message2;
 	message.clear();
 	message2.clear();
 

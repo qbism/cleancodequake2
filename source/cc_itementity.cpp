@@ -151,7 +151,7 @@ void CItemEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
 // Returns a random team member of ent
 CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 {
-	static std::vector<CBaseEntity*, std::allocator<CBaseEntity*> >	Team;
+	static std::vector<CBaseEntity*>	Team;
 	Team.clear ();
 
 	for (CBaseEntity *Member = Master; Member; Member = Member->Team.Chain)
@@ -267,7 +267,7 @@ void CItemEntity::Spawn (CBaseItem *item)
 {
 	LinkedItem = item;
 
-	if (_CC_ASSERT_EXPR (!(item == NULL), "Item without an item!"))
+	if (_CC_ASSERT_EXPR (item != NULL, "Item without an item!"))
 	{
 		Free ();
 		return;

@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weaponmain.h"
 #include "m_player.h"
 
-typedef std::vector<CWeapon*, std::allocator<CWeapon*> > TWeaponListType;
+typedef std::vector<CWeapon*> TWeaponListType;
 
 TWeaponListType &WeaponList ()
 {
@@ -44,7 +44,7 @@ TWeaponListType &WeaponList ()
 };
 
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
-typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8> TWeaponMultiMapType;
 
 void AddWeapons (CItemList *List)
 {
@@ -419,9 +419,9 @@ class CWeaponSwitcher
 {
 public:
 	CWeapon		*Weapon;
-	std::vector<CAmmo*, std::allocator<CAmmo*> >		NeededAmmo;
-	std::vector<sint32, std::allocator<sint32> >		NeededAmmoNumbers;
-	std::vector<CBaseItem*, std::allocator<CBaseItem> >	NeededItems;
+	std::vector<CAmmo*>		NeededAmmo;
+	std::vector<sint32>		NeededAmmoNumbers;
+	std::vector<CBaseItem*>	NeededItems;
 	bool		Explosive;
 
 	CWeaponSwitcher (CWeapon *Weapon) :
@@ -450,7 +450,7 @@ public:
 	};
 };
 
-typedef std::vector <CWeaponSwitcher, std::allocator<CWeaponSwitcher> > TWeaponSwitcherListType;
+typedef std::vector <CWeaponSwitcher> TWeaponSwitcherListType;
 
 #if XATRIX_FEATURES
 #include "cc_xatrix_ionripper.h"

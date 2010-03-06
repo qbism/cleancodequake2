@@ -99,11 +99,11 @@ void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player)
 }
 
 #include <sstream>
-static cc_stringstream printBuffer;
+static std::stringstream printBuffer;
 
 void PrintSpaces (uint32 &num)
 {
-	printBuffer << cc_string (num, ' ');
+	printBuffer << std::string (num, ' ');
 }
 
 void RecursiveCommandPrint (CPlayerCommand *Cmd, uint32 &depth)
@@ -121,7 +121,7 @@ void RecursiveCommandPrint (CPlayerCommand *Cmd, uint32 &depth)
 
 void SearchForRandomMonster (CMonsterEntity *Entity)
 {
-	static std::vector <CMonsterEntity *, std::allocator<CMonsterEntity *> > ChosenMonsters;
+	static std::vector <CMonsterEntity *> ChosenMonsters;
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
 		edict_t *ent = (*it);
