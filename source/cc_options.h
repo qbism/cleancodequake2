@@ -52,6 +52,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTER_USE_ROGUE_AI				1
 #endif
 
+// Enable IRC
+#ifndef CLEANCODE_IRC
+#define CLEANCODE_IRC						0
+#endif
+
 // Makes pathfinding work.
 #ifndef MONSTERS_USE_PATHFINDING
 #define MONSTERS_USE_PATHFINDING			1

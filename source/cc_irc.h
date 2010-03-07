@@ -31,6 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
+#if CLEANCODE_IRC
+
 #include "sircl.h"
 
 class CIRCClient
@@ -49,3 +51,5 @@ public:
 	void Update ();
 	void JoinChannel (std::string ChannelName);
 };
+
+#endif

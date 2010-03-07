@@ -308,11 +308,13 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 			p.erase (p.end()-1);
 		}
 
+#if CLEANCODE_IRC
 		if (p[0] == '!' && Player->Client.Respawn.IRC)
 		{
 			Player->Client.Respawn.IRC->SendMessage (p.substr (1));
 			return;
 		}
+#endif
 
 		text += p;
 	}
@@ -550,6 +552,7 @@ void Cmd_Irc_t (CPlayerEntity *Player)
 }
 #endif
 
+#if CLEANCODE_IRC
 void Cmd_Irc_t (CPlayerEntity *Player)
 {
 }
@@ -592,6 +595,7 @@ void Cmd_Irc_Disconnect_t (CPlayerEntity *Player)
 	QDelete Player->Client.Respawn.IRC;
 	Player->Client.Respawn.IRC = NULL;
 };
+#endif
 
 void Cmd_Register ()
 {
@@ -662,11 +666,13 @@ void Cmd_Register ()
 	Cmd_AddCommand ("observer",				CTFObserver);
 #endif
 
+#if CLEANCODE_IRC
 	Cmd_AddCommand ("irc",					Cmd_Irc_t)
 		.AddSubCommand ("connect",			Cmd_Irc_Connect_t, 0).GoUp()
 		.AddSubCommand ("join",				Cmd_Irc_Join_t, 0).GoUp()
 		.AddSubCommand ("say",				Cmd_Irc_Say_t, 0).GoUp()
 		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect_t, 0);
+#endif
 }
 
 /*

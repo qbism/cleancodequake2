@@ -33,6 +33,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#if CLEANCODE_IRC
+
 bool CIRCClient::Connected ()
 {
 	return (IRCServer.status != DISCONNECTED);
@@ -112,3 +114,5 @@ void CIRCClient::JoinChannel (std::string ChannelName)
 {
 	irc_send_cmd(&IRCServer, JOIN, "%s", ChannelName.c_str());
 };
+
+#endif

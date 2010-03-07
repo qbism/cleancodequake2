@@ -1930,8 +1930,10 @@ void CPlayerEntity::EndServerFrame ()
 	else if (Client.Respawn.MenuState.InMenu && !(Level.Frame & 4))
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
 
+#if CLEANCODE_IRC
 	if (Client.Respawn.IRC)
 		Client.Respawn.IRC->Update ();
+#endif
 }
 
 #if CLEANCTF_ENABLED

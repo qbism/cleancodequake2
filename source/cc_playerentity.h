@@ -302,7 +302,9 @@ public:
 	bool				Spectator;		// client is a Spectator
 	EGender				Gender;
 	EGamePrintLevel		MessageLevel;
+#if CLEANCODE_IRC
 	CIRCClient			*IRC;
+#endif
 
 #if MONSTERS_USE_PATHFINDING
 	class CPathNode		*LastNode;
