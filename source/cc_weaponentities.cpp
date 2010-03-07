@@ -121,9 +121,9 @@ void CGrenade::Explode ()
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
-		CGrenadeExplosion(origin, !!WaterInfo.Level).Send();
+		CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
 	else
-		CRocketExplosion(origin, !!WaterInfo.Level).Send();
+		CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
 
 	Free (); // "delete" the entity
 }
@@ -369,7 +369,7 @@ void CRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
-	CRocketExplosion(origin, !!WaterInfo.Level).Send();
+	CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
 
 	Free ();
 }

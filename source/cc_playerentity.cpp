@@ -3892,6 +3892,12 @@ void CPlayerEntity::Disconnect ()
 	ClassName = "disconnected";
 
 	ConfigString (CS_PLAYERSKINS+(State.GetNumber()-1), "");
+
+	if (Client.Respawn.IRC)
+	{
+		QDelete Client.Respawn.IRC;
+		Client.Respawn.IRC = NULL;
+	}
 }
 
 inline const char *MonsterAOrAn (const char *Name)
