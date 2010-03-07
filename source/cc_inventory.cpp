@@ -197,7 +197,7 @@ void CInventory::Set (uint8 Index, sint32 Num)
 
 void CInventory::ValidateSelectedItem()
 {
-	if (Array.find(SelectedItem) != Array.end())
+	if (SelectedItem == -1 || Array.find(SelectedItem) != Array.end())
 		return;		// valid
 
 	SelectNextItem (-1);
@@ -430,15 +430,15 @@ void Cmd_WeapPrev_f (CPlayerEntity *Player)
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->DeadFlag)	
 		return;
 
 	sint32 selectedWeaponIndex = Player->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (uint8 i = 0; i <= GetNumItems(); i++)
+	for (uint8 i = 1; i <= GetNumItems(); i++)
 	{
-		sint32 index = (selectedWeaponIndex + MAX_ITEMS - i) % MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + i) % MAX_CS_ITEMS;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
@@ -467,9 +467,9 @@ void Cmd_WeapNext_f (CPlayerEntity *Player)
 	sint32 selectedWeaponIndex = Player->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (uint8 i = 0; i <= GetNumItems(); i++)
+	for (uint8 i = 1; i <= GetNumItems(); i++)
 	{
-		sint32 index = (selectedWeaponIndex + i) % MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + MAX_CS_ITEMS - i) % MAX_CS_ITEMS;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);

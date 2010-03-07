@@ -255,7 +255,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROGUE_FEATURES 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
-#else
+#elif (CC_GAME_MODE & GAME_XATRIX)
 #undef MONSTERS_ARENT_STUPID
 #define MONSTERS_ARENT_STUPID 0
 #undef MONSTER_USE_ROGUE_AI

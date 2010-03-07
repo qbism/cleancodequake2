@@ -38,9 +38,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CIRCClient
 {
 	irc_server	IRCServer;
+	bool		ConnectFirst;
 
 public:
-	class CPlayerEntity	*Player;
+	class CPlayerEntity		*Player;
+	std::string				Channel;
 
 	CIRCClient (std::string HostName, std::string Nick, std::string User, std::string Pass, std::string RealName, int port = 6667);
 	~CIRCClient ();
@@ -50,6 +52,7 @@ public:
 	void SendMessage (std::string Message);
 	void Update ();
 	void JoinChannel (std::string ChannelName);
+	void LeaveChannel ();
 };
 
 #endif

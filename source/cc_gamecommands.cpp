@@ -559,12 +559,13 @@ void Cmd_Irc_t (CPlayerEntity *Player)
 
 void Cmd_Irc_Connect_t (CPlayerEntity *Player)
 {
-	// irc connect hostname nickname
+	// irc connect hostname nickname (channel)
 	if (ArgCount() < 4)
 		return;
 
 	Player->Client.Respawn.IRC = new CIRCClient(ArgGets(2), ArgGets(3), ArgGets(3), "", "Real");
 	Player->Client.Respawn.IRC->Player = Player;
+	Player->Client.Respawn.IRC->Channel = ArgGets(4);
 	Player->Client.Respawn.IRC->Connect ();
 };
 
@@ -594,6 +595,11 @@ void Cmd_Irc_Disconnect_t (CPlayerEntity *Player)
 
 	QDelete Player->Client.Respawn.IRC;
 	Player->Client.Respawn.IRC = NULL;
+};
+
+void Cmd_Irc_Leave_t (CPlayerEntity *Player)
+{
+	Player->Client.Respawn.IRC->LeaveChannel ();
 };
 #endif
 
@@ -668,10 +674,11 @@ void Cmd_Register ()
 
 #if CLEANCODE_IRC
 	Cmd_AddCommand ("irc",					Cmd_Irc_t)
-		.AddSubCommand ("connect",			Cmd_Irc_Connect_t, 0).GoUp()
-		.AddSubCommand ("join",				Cmd_Irc_Join_t, 0).GoUp()
-		.AddSubCommand ("say",				Cmd_Irc_Say_t, 0).GoUp()
-		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect_t, 0);
+		.AddSubCommand ("connect",			Cmd_Irc_Connect_t,		0).GoUp()
+		.AddSubCommand ("join",				Cmd_Irc_Join_t,			0).GoUp()
+		.AddSubCommand ("say",				Cmd_Irc_Say_t,			0).GoUp()
+		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect_t,	0).GoUp()
+		.AddSubCommand ("leave",			Cmd_Irc_Leave_t,		0);
 #endif
 }
 

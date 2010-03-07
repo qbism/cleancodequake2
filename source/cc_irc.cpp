@@ -42,6 +42,7 @@ bool CIRCClient::Connected ()
 
 CIRCClient::CIRCClient (std::string HostName, std::string Nick, std::string User, std::string Pass, std::string RealName, int port)
 {
+	ConnectFirst = false;
 	IRCServer.port = port;
 	IRCServer.server = Mem_StrDup(HostName.c_str());
 	IRCServer.nick = Mem_StrDup(Nick.c_str());
@@ -55,6 +56,7 @@ CIRCClient::CIRCClient (std::string HostName, std::string Nick, std::string User
 
 CIRCClient::~CIRCClient ()
 {
+	Player->PrintToClient (PRINT_HIGH, "Disconnected from %s\n", IRCServer.server);
 	irc_disconnect (&IRCServer, "Quit");
 
 	QDelete IRCServer.server;
@@ -71,48 +73,70 @@ void CIRCClient::Connect ()
 
 	irc_connect (&IRCServer);
 	_net_setnonblocking (IRCServer.sock);
+
+	if (!Channel.empty())
+		ConnectFirst = true;
 };
 
 // One update frame
 void CIRCClient::Update ()
 {
-	irc_receive(&IRCServer, 0);
-
-	// If read characters is > 0 ...
-	if (IRCServer.received > 0)
+	int retVal = irc_receive(&IRCServer, 0);
+	if (retVal >= 0)
 	{
-		// If server pings, we pong.
-		if (IRCServer.msg.command == IRC_PING)
-			irc_pong(&IRCServer);
-
-		if (IRCServer.msg.command == PRIVMSG)
+		// If read characters is > 0 ...
+		if (IRCServer.received > 0)
 		{
-			// Get name
-			std::string otherName = IRCServer.msg.prefix;
-			otherName = otherName.substr(0, otherName.find_first_of('!'));
+			// If server pings, we pong.
+			if (IRCServer.msg.command == IRC_PING)
+				irc_pong(&IRCServer);
 
-			std::string message = IRCServer.msg.params;
-			message = message.substr (message.find_first_of(':') + 1);
+			if (IRCServer.status == CONNECTED && ConnectFirst)
+			{
+				ConnectFirst = false;
+				JoinChannel (Channel);
+			}
 
-			Player->PrintToClient (PRINT_CHAT, "[IRC] <%s> %s\n", otherName.c_str(), message.c_str());
+			if (IRCServer.msg.command == PRIVMSG)
+			{
+				// Get name
+				std::string otherName = IRCServer.msg.prefix;
+				otherName = otherName.substr(0, otherName.find_first_of('!'));
+
+				std::string message = IRCServer.msg.params;
+				message = message.substr (message.find_first_of(':') + 1);
+
+				Player->PrintToClient (PRINT_CHAT, "[IRC] <%s> %s\n", otherName.c_str(), message.c_str());
+			}
+			else
+				Player->PrintToClient (PRINT_HIGH, "[IRC] %s\n", IRCServer.msg.raw);
 		}
-		else
-			Player->PrintToClient (PRINT_HIGH, "[IRC] %s\n", IRCServer.msg.raw);
-	}
 
-	// clear message
-	IRCServer.received = 0;
+		IRCServer.received = 0;
+	}
+	else if (retVal < 0)
+		Player->PrintToClient (PRINT_HIGH, "IRC Shit broke\n");
 };
 
 void CIRCClient::SendMessage (std::string Message)
 {
-	irc_send_cmd(&IRCServer, PRIVMSG, "#tastycast :%s", Message.c_str());
+	irc_send_cmd(&IRCServer, PRIVMSG, "%s :%s", Channel.c_str(), Message.c_str());
 	Player->PrintToClient (PRINT_CHAT, "[IRC] <%s> %s\n", IRCServer.nick, Message.c_str());
 };
 
 void CIRCClient::JoinChannel (std::string ChannelName)
 {
 	irc_send_cmd(&IRCServer, JOIN, "%s", ChannelName.c_str());
+	Channel = ChannelName;
+};
+
+void CIRCClient::LeaveChannel ()
+{
+	if (Channel.empty())
+		return;
+
+	irc_send_cmd(&IRCServer, PART, "%s", Channel.c_str());
+	Channel.clear();
 };
 
 #endif
