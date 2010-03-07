@@ -71,12 +71,24 @@ void *operator new[](size_t Size, const sint32 TagNum)
 
 void operator delete(void *Pointer, const sint32 TagNum)
 {
+	if (Pointer == NULL)
+	{
+		_CC_ASSERT_EXPR (0, "Attempted to free NULL");
+		return;
+	}
+
 	Mem_TagFree (Pointer);
 	TagNum;
 }
 
 void operator delete[](void *Pointer, const sint32 TagNum)
 {
+	if (Pointer == NULL)
+	{
+		_CC_ASSERT_EXPR (0, "Attempted to free NULL");
+		return;
+	}
+
 	Mem_TagFree (Pointer);
 	TagNum;
 }
