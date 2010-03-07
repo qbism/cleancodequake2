@@ -3829,7 +3829,12 @@ bool CPlayerEntity::Connect (char *userinfo)
 
 	// if there is already a body waiting for us (a loadgame), just
 	// take it, otherwise spawn one from scratch
-	if (!GetInUse())
+	// Paril: Fix for an engine bug that causes
+	// players to be kicked for the same IP but
+	// takes over an existing spot.
+	bool SameConnection = (GetInUse() && (Q_strlwr(Client.Persistent.UserInfo).compare(Q_strlwr(userinfo))));
+
+	if (!GetInUse() || SameConnection)
 	{
 		// clear the respawning variables
 #if CLEANCTF_ENABLED
@@ -3839,8 +3844,14 @@ bool CPlayerEntity::Connect (char *userinfo)
 //ZOID
 #endif
 		InitResp ();
+
 		if (!Game.AutoSaved || !Client.Persistent.Weapon)
 			InitPersistent();
+		else if (SameConnection)
+		{
+			GetInUse() = false;
+			InitPersistent();
+		}
 	}
 
 	UserinfoChanged (userinfo);

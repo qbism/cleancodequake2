@@ -265,7 +265,7 @@ edict_t *PlayerNearby (vec3f origin, sint32 distance)
 {
 	CPlayerEntity *Player = NULL;
 
-	while ((Player = FindRadius <CPlayerEntity, ENT_PLAYER> (ent, origin, distance)) != NULL)
+	while ((Player = FindRadius <CPlayerEntity, ENT_PLAYER> (Player, origin, distance)) != NULL)
 	{
 		if (Player->GetInUse())
 			return Player->gameEntity;
@@ -277,7 +277,7 @@ void PrintVerboseNodes (vec3f origin, uint32 numNode, ENodeType Type)
 {
 	CPlayerEntity *Player = NULL;
 
-	while ((Player = FindRadius <CPlayerEntity, ENT_PLAYER>(ent, origin, 25)) != NULL)
+	while ((Player = FindRadius <CPlayerEntity, ENT_PLAYER>(Player, origin, 25)) != NULL)
 	{
 		if (Player->GetInUse())
 		{
@@ -299,19 +299,9 @@ void PrintVerboseNodes (vec3f origin, uint32 numNode, ENodeType Type)
 	}
 }
 
-CPathNode *DropNode (edict_t *ent)
-{
-	NodeList.push_back(QNew (TAG_LEVEL) CPathNode(ent->state.origin, NODE_REGULAR));
-
-	SpawnNodeEntity (NodeList.at(NodeList.size() - 1));
-	ent->PrintToClient (PRINT_HIGH, "Node %i added\n", NodeList.size());
-
-	return NodeList.at(NodeList.size() - 1);
-}
-
 void RunNodes()
 {
-	if (!DebugNodes.Integer())
+	if (!CvarList[CV_PATH_NODE_DEBUG].Integer())
 		return;
 
 	for (uint32 i = 0; i < NodeList.size(); i++)
@@ -331,7 +321,7 @@ void RunNodes()
 
 void SpawnNodeEntity (CPathNode *Node)
 {
-	if (!DebugNodes.Integer())
+	if (!CvarList[CV_PATH_NODE_DEBUG].Integer())
 		return;
 
 	Node->Ent = QNewEntityOf CNodeEntity;
@@ -343,7 +333,7 @@ void SpawnNodeEntity (CPathNode *Node)
 
 void CheckNodeFlags (CPathNode *Node)
 {
-	if (!DebugNodes.Integer())
+	if (!CvarList[CV_PATH_NODE_DEBUG].Integer())
 		return;
 
 	Node->Ent->State.GetEffects() = Node->Ent->State.GetRenderEffects() = 0;
@@ -623,12 +613,12 @@ void Cmd_Node_f (CPlayerEntity *Player)
 
 		if (firstId >= NodeList.size())
 		{
-			ent->PrintToClient (PRINT_HIGH, "Node %i doesn't exist!\n", firstId);
+			Player->PrintToClient (PRINT_HIGH, "Node %i doesn't exist!\n", firstId);
 			return;
 		}
 		if (secondId >= NodeList.size())
 		{
-			ent->PrintToClient (PRINT_HIGH, "Node %i doesn't exist!\n", secondId);
+			Player->PrintToClient (PRINT_HIGH, "Node %i doesn't exist!\n", secondId);
 			return;
 		}
 

@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
+#define CC_GAME_MODE						0
 #endif
 
 // Global macros
