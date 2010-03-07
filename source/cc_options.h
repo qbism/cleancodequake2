@@ -54,7 +54,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Enable IRC
 #ifndef CLEANCODE_IRC
-#define CLEANCODE_IRC						0
+#define CLEANCODE_IRC						1
 #endif
 
 // Makes pathfinding work.
