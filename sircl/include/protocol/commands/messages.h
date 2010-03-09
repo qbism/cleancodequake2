@@ -20,10 +20,71 @@
 #ifndef _sircl_messages_h
 #define _sircl_messages_h
 
+// IRC messages by standard
 
-/* messages (4000-4999) */
+enum
+{
+	// connection messages (1000-1999)
+	CMD_CONNECTION = 1000,
+	PASS,
+	NICK,
+	USER,
+	SERVER,
+	OPER,
+	QUIT,
+	SQUIT,
 
-enum { CMD_MESSAGES = 4000, PRIVMSG, NOTICE };
+	// Queries and commands (3000-3999)
+	CMD_SERVER = 3000,
+	VERSION,
+	STATS,
+	LINKS,
+	TIME,
+	CONNECT,
+	TRACE,
+	ADMIN,
+	INFO,
+    
+	// channel operations (2000-2999)
+	CMD_CHANNEL = 2000,
+	JOIN,
+	PART,
+	MODE,
+	TOPIC,
+	NAMES,
+	LIST,
+	INVITE,
+	KICK,
+
+	// messages (4000-4999)
+	CMD_MESSAGES = 4000,
+	PRIVMSG,
+	NOTICE,
+
+	// User based queries (5000-5999)
+	CMD_USER = 5000,
+	WHO,
+	WHOIS,
+	WHOWAS,
+
+	// miscellaneous messages (6000-6999)
+	CMD_MISC = 6000,
+	KILL,
+	PING,
+	PONG,
+	EERROR,
+
+	// Optionals messages (7000-7999)
+	CMD_OPTIONALS = 7000,
+	AWAY,
+	REHASH,
+	RESTART,
+	SUMMON,
+	USERS,
+	WALLOPS,
+	USERHOST,
+	ISON,
+};
 
 
 #endif

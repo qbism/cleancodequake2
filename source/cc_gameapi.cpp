@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 gameImport_t	gi;
 
-EBrushContents PointContents (vec3f &start)
+EBrushContents PointContents (vec3f start)
 {
 _CC_DISABLE_DEPRECATION
 	return gi.pointcontents(start);

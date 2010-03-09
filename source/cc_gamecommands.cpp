@@ -309,9 +309,9 @@ void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
 		}
 
 #if CLEANCODE_IRC
-		if (p[0] == '!' && Player->Client.Respawn.IRC)
+		if (!p.empty() && p[0] == '!' && Player->Client.Respawn.IRC.Connected())
 		{
-			Player->Client.Respawn.IRC->SendMessage (p.substr (1));
+			Player->Client.Respawn.IRC.SendMessage (p.substr (1));
 			return;
 		}
 #endif
@@ -552,57 +552,6 @@ void Cmd_Irc_t (CPlayerEntity *Player)
 }
 #endif
 
-#if CLEANCODE_IRC
-void Cmd_Irc_t (CPlayerEntity *Player)
-{
-}
-
-void Cmd_Irc_Connect_t (CPlayerEntity *Player)
-{
-	// irc connect hostname nickname (channel)
-	if (ArgCount() < 4)
-		return;
-
-	Player->Client.Respawn.IRC = new CIRCClient(ArgGets(2), ArgGets(3), ArgGets(3), "", "Real");
-	Player->Client.Respawn.IRC->Player = Player;
-	Player->Client.Respawn.IRC->Channel = ArgGets(4);
-	Player->Client.Respawn.IRC->Connect ();
-};
-
-void Cmd_Irc_Join_t (CPlayerEntity *Player)
-{
-	// irc join channel
-	if (ArgCount() < 3)
-		return;
-
-	Player->Client.Respawn.IRC->JoinChannel (ArgGets(2));
-};
-
-void Cmd_Irc_Say_t (CPlayerEntity *Player)
-{
-	// irc say "xxx"
-	if (ArgCount() < 3)
-		return;
-
-	Player->Client.Respawn.IRC->SendMessage (ArgGets(2));
-};
-
-void Cmd_Irc_Disconnect_t (CPlayerEntity *Player)
-{
-	// irc disconnect
-	if (ArgCount() < 2)
-		return;
-
-	QDelete Player->Client.Respawn.IRC;
-	Player->Client.Respawn.IRC = NULL;
-};
-
-void Cmd_Irc_Leave_t (CPlayerEntity *Player)
-{
-	Player->Client.Respawn.IRC->LeaveChannel ();
-};
-#endif
-
 void Cmd_Register ()
 {
 	// These commands are generic, and can be executed any time
@@ -678,7 +627,8 @@ void Cmd_Register ()
 		.AddSubCommand ("join",				Cmd_Irc_Join_t,			0).GoUp()
 		.AddSubCommand ("say",				Cmd_Irc_Say_t,			0).GoUp()
 		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect_t,	0).GoUp()
-		.AddSubCommand ("leave",			Cmd_Irc_Leave_t,		0);
+		.AddSubCommand ("leave",			Cmd_Irc_Leave_t,		0).GoUp()
+		.AddSubCommand ("list",				Cmd_Irc_List_t,			0);
 #endif
 }
 

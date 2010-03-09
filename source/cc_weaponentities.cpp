@@ -72,17 +72,20 @@ enum // EGrenadeFlags
 	GRENADE_HAND = BIT(0),
 	GRENADE_HELD = BIT(1),
 };
+
 CGrenade::CGrenade () :
-CBounceProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CBaseEntity(),
+  CBounceProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CGrenade::CGrenade (sint32 Index) :
-CBounceProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity(Index),
+  CBounceProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -183,7 +186,6 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 Da
 	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (200 + crand() * 10.0f, up);
 	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (crand() * 10.0, right);
 
-	Grenade->AngularVelocity.Set (300);
 	Grenade->State.GetEffects() = EF_GRENADE;
 	Grenade->State.GetModelIndex() = (!handNade) ? ModelIndex ("models/objects/grenade/tris.md2") : ModelIndex ("models/objects/grenade2/tris.md2");
 	Grenade->SetOwner(Spawner);
@@ -353,18 +355,6 @@ void CRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
-/*	else
-	{
-		// don't throw any debris in net games
-		if (Game.mode == GAME_SINGLEPLAYER)
-		{
-			if ((surf) && !(surf->flags & (SURF_TEXINFO_WARP|SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66|SURF_TEXINFO_FLOWING)))
-			{
-				for (sint32 n = 0; n < randomMT()%5; n++)
-					ThrowDebris (gameEntity, "models/objects/debris2/tris.md2", 2, origin);
-			}
-		}
-	}*/
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);

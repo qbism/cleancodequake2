@@ -55,6 +55,8 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -76,6 +78,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\include\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -85,40 +88,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-    <None Include="sircl.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\highlevel\h_commands.c" />
-    <ClCompile Include="src\highlevel\h_ctcp.c" />
-    <ClCompile Include="src\highlevel\h_dcc.c" />
-    <ClCompile Include="src\highlevel\h_irc.c" />
-    <ClCompile Include="src\lowlevel\l_commands.c" />
-    <ClCompile Include="src\lowlevel\l_ctcp.c" />
-    <ClCompile Include="src\lowlevel\l_dcc.c" />
-    <ClCompile Include="src\lowlevel\l_irc.c" />
-    <ClCompile Include="src\lowlevel\l_mem.c" />
-    <ClCompile Include="src\lowlevel\l_net.c" />
-    <ClCompile Include="src\lowlevel\l_parse.c" />
+    <ClCompile Include="src\highlevel\h_irc.cpp" />
+    <ClCompile Include="src\lowlevel\l_commands.cpp" />
+    <ClCompile Include="src\lowlevel\l_irc.cpp" />
+    <ClCompile Include="src\lowlevel\l_mem.cpp" />
+    <ClCompile Include="src\lowlevel\l_net.cpp" />
+    <ClCompile Include="src\lowlevel\l_parse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\highlevel\structs.h" />
     <ClInclude Include="include\lowlevel\l_commands.h" />
-    <ClInclude Include="include\lowlevel\l_ctcp.h" />
-    <ClInclude Include="include\lowlevel\l_dcc.h" />
     <ClInclude Include="include\lowlevel\l_irc.h" />
     <ClInclude Include="include\lowlevel\l_mem.h" />
     <ClInclude Include="include\lowlevel\l_net.h" />
     <ClInclude Include="include\lowlevel\l_parse.h" />
     <ClInclude Include="include\lowlevel\l_structs.h" />
-    <ClInclude Include="include\protocol\commands\channel.h" />
-    <ClInclude Include="include\protocol\commands\connection.h" />
     <ClInclude Include="include\protocol\commands\messages.h" />
-    <ClInclude Include="include\protocol\commands\misc.h" />
-    <ClInclude Include="include\protocol\commands\optional.h" />
-    <ClInclude Include="include\protocol\commands\server.h" />
-    <ClInclude Include="include\protocol\commands\user.h" />
-    <ClInclude Include="include\protocol\misc.h" />
     <ClInclude Include="include\protocol\replies\error.h" />
     <ClInclude Include="include\protocol\replies\responses.h" />
     <ClInclude Include="include\sircl.h" />

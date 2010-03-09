@@ -35,24 +35,71 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "sircl.h"
 
-class CIRCClient
+// The client redirection service.
+// This is a single IRC server connection.
+typedef std::vector<class CPlayerEntity*> TConnectedIRCPlayers;
+
+class CIRCClientServerChannel
 {
-	irc_server	IRCServer;
-	bool		ConnectFirst;
-
 public:
-	class CPlayerEntity		*Player;
-	std::string				Channel;
+	std::string				ChannelName;
+	TConnectedIRCPlayers	Players; // players on this channel
+	class CIRCClientServer	*Server;
 
-	CIRCClient (std::string HostName, std::string Nick, std::string User, std::string Pass, std::string RealName, int port = 6667);
-	~CIRCClient ();
+	void Join (class CPlayerEntity *Player);
+	void Leave (class CPlayerEntity *Player);
+};
+
+typedef std::vector<CIRCClientServerChannel> TIRCChannels;
+
+class CIRCClientServer
+{
+public:
+	irc_server				IRCServer;
+	TConnectedIRCPlayers	ConnectedPlayers; // players using this server
+	TIRCChannels			Channels;
+
+	CIRCClientServerChannel *FindChannel (std::string ChannelName);
 
 	bool Connected ();
-	void Connect ();
-	void SendMessage (std::string Message);
+	void Connect (std::string HostName, std::string Nick, std::string User, std::string Pass, std::string RealName, int port = 6667);
+	void Disconnect ();
+	void SendMessage (class CPlayerEntity *Player, std::string Message);
 	void Update ();
+	void ListChannels (class CPlayerEntity *Player);
+	void JoinChannel (class CPlayerEntity *Player, std::string ChannelName);
+	void LeaveChannel (class CPlayerEntity *Player, std::string ChannelName);
+};
+
+typedef std::vector<CIRCClientServer*> TIRCServers;
+
+// Player client class
+class CIRCClient
+{
+public:
+	class CPlayerEntity	*Player;
+	std::string			Nick;
+	std::string			Channel;
+	uint8				ConnectedTo;
+
+	bool Connected ();
+	void Connect (uint8 ServerIndex);
 	void JoinChannel (std::string ChannelName);
 	void LeaveChannel ();
+	void List ();
+	void Disconnect ();
+	void SendMessage (std::string Msg);
 };
+
+void Cmd_Irc_t (CPlayerEntity *Player);
+void Cmd_Irc_Connect_t (CPlayerEntity *Player);
+void Cmd_Irc_Join_t (CPlayerEntity *Player);
+void Cmd_Irc_Say_t (CPlayerEntity *Player);
+void Cmd_Irc_Disconnect_t (CPlayerEntity *Player);
+void Cmd_Irc_Leave_t (CPlayerEntity *Player);
+void Cmd_Irc_List_t (CPlayerEntity *Player);
+
+void SvCmd_Irc_ConnectTo_t ();
+void UpdateIRCServers ();
 
 #endif

@@ -579,6 +579,7 @@ void CPlayerEntity::PutInServer ()
 	GetSvFlags() &= ~SVF_DEADMONSTER;
 	if (!Client.Respawn.MenuState.Player)
 		Client.Respawn.MenuState.Initialize (this);
+	Client.Respawn.IRC.Player = this;
 
 	GetMins() = mins;
 	GetMaxs() = maxs;
@@ -1929,11 +1930,6 @@ void CPlayerEntity::EndServerFrame ()
 		DeathmatchScoreboardMessage (false);
 	else if (Client.Respawn.MenuState.InMenu && !(Level.Frame & 4))
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
-
-#if CLEANCODE_IRC
-	if (Client.Respawn.IRC)
-		Client.Respawn.IRC->Update ();
-#endif
 }
 
 #if CLEANCTF_ENABLED
@@ -3904,11 +3900,8 @@ void CPlayerEntity::Disconnect ()
 
 	ConfigString (CS_PLAYERSKINS+(State.GetNumber()-1), "");
 
-	if (Client.Respawn.IRC)
-	{
-		QDelete Client.Respawn.IRC;
-		Client.Respawn.IRC = NULL;
-	}
+	if (Client.Respawn.IRC.Connected())
+		Client.Respawn.IRC.Disconnect();
 }
 
 inline const char *MonsterAOrAn (const char *Name)

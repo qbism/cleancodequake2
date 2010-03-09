@@ -621,7 +621,10 @@ void CTouchableEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t 
 
 CPhysicsEntity::CPhysicsEntity () :
 CBaseEntity(),
-GravityMultiplier(1.0f)
+GravityMultiplier(1.0f),
+PhysicsFlags(0),
+DampeningEffect(1, 1, 1),
+ADampeningEffect(1, 1, 1)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
@@ -629,7 +632,10 @@ GravityMultiplier(1.0f)
 
 CPhysicsEntity::CPhysicsEntity (sint32 Index) :
 CBaseEntity(Index),
-GravityMultiplier(1.0f)
+GravityMultiplier(1.0f),
+PhysicsFlags(0),
+DampeningEffect(1, 1, 1),
+ADampeningEffect(1, 1, 1)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
@@ -799,6 +805,26 @@ bool CBounceProjectile::Run ()
 		slave->State.GetOrigin() = State.GetOrigin();
 		slave->Link ();
 	}
+
+	// Run physics modifiers
+	if (PhysicsFlags & PHYSICFLAG_BUOYANCY)
+		entity_cast<CBuoyancyPhysics>(this)->RunBouyancy ();
+
+	if (PhysicsFlags & PHYSICFLAG_RESISTANCE)
+		entity_cast<CResistancePhysics>(this)->RunResistance ();
+
+	if (PhysicsFlags & PHYSICFLAG_AERODYNAMICS)
+		entity_cast<CAerodynamicPhysics>(this)->RunAerodynamics();
+
+	// Use data
+	Velocity *= DampeningEffect;
+	Velocity += VelocityEffect;	
+	AngularVelocity *= ADampeningEffect;
+	AngularVelocity += AVelocityEffect;	
+	
+	// Reset data
+	VelocityEffect = AVelocityEffect = vec3fOrigin;
+	DampeningEffect = ADampeningEffect = vec3f (1, 1, 1);
 
 	return true;
 }
@@ -1644,3 +1670,177 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 		}
 	}
 }
+
+// Buoyancy class
+CBuoyancyPhysics::CBuoyancyPhysics () :
+  CBaseEntity (),
+  CPhysicsEntity ()
+{
+	PhysicsFlags |= PHYSICFLAG_BUOYANCY;
+};
+
+CBuoyancyPhysics::CBuoyancyPhysics (sint32 Index) :
+  CBaseEntity (Index),
+  CPhysicsEntity (Index)
+{
+	PhysicsFlags |= PHYSICFLAG_BUOYANCY;
+};
+
+void CBuoyancyPhysics::RunBouyancy ()
+{
+	EBrushContents Contents;
+	float EndPower = BuoyancyPowerAir;
+	bool InWater = false;
+
+	Contents = PointContents(State.GetOrigin());
+
+	if (Contents & CONTENTS_MASK_WATER)
+	{
+		EndPower = BuoyancyPowerWater;
+		InWater = true;
+	}
+
+	PhysicsFlags &= ~PHYSICFLAG_FLOATING;
+
+	if (VelocityEffect.Z < 60.0f && VelocityEffect.Z > -60.0f)
+	{
+		EBrushContents TopContents = PointContents (State.GetOrigin() + vec3f(0, 0, 2.4f));
+
+		if (TopContents != Contents)
+		{
+			float TopPower = BuoyancyPowerAir;
+
+			if (TopContents & CONTENTS_MASK_WATER)
+				TopPower = BuoyancyPowerWater;
+
+			EBrushContents MidContents = PointContents(State.GetOrigin() + vec3f(0, 0, 1.2f));
+			float MidPower;
+
+			if (MidContents == TopContents)
+				MidPower = TopPower;
+			else
+				MidPower = EndPower;
+
+			EndPower = (EndPower + TopPower + MidPower) / 3;
+			DampeningEffect.Z *= powf (0.2f, FRAMETIME / 10);
+			PhysicsFlags |= PHYSICFLAG_FLOATING;
+		}
+	}
+
+	VelocityEffect.Z += (EndPower * CvarList[CV_GRAVITY].Float() * 0.1f);
+
+	// Add
+	Velocity *= DampeningEffect;
+	Velocity += VelocityEffect;
+
+	DampeningEffect.Set (1, 1, 1);
+	VelocityEffect.Clear();
+};
+
+void CBuoyancyPhysics::SetBuoyancy (float Power, float ModAir, float ModWater)
+{
+	float BuoyPower = Power / Mass;
+
+	BuoyancyPowerAir = BuoyPower * ModAir;
+	BuoyancyPowerWater = BuoyPower * ModWater;
+};
+
+// Resistance class
+CResistancePhysics::CResistancePhysics () :
+  CBaseEntity (),
+  CPhysicsEntity ()
+{
+	PhysicsFlags |= PHYSICFLAG_RESISTANCE;
+};
+
+CResistancePhysics::CResistancePhysics (sint32 Index) :
+  CBaseEntity (Index),
+  CPhysicsEntity (Index)
+{
+	PhysicsFlags |= PHYSICFLAG_RESISTANCE;
+};
+
+void CResistancePhysics::RunResistance ()
+{
+	float ResistPower = ResistPowerAir;
+	EBrushContents Contents = PointContents(State.GetOrigin());
+
+	if (Contents & CONTENTS_MASK_WATER)
+		ResistPower = ResistPowerWater;
+
+	ResistPower = powf (ResistPower, (float)FRAMETIME / 10);
+	DampeningEffect *= ResistPower;
+	ADampeningEffect *= ResistPower;
+};
+
+void CResistancePhysics::SetResistance (float Power, float ModAir, float ModWater)
+{
+	ResistPowerAir = 1.0f / (((Power * ModAir * 10.0f) / Mass) + 1.0f);
+	ResistPowerWater = 1.0f / (((Power * ModWater * 10.0f) / Mass) + 1.0f);
+};
+
+// Aerodynamics class
+CAerodynamicPhysics::CAerodynamicPhysics () :
+  CBaseEntity (),
+  CPhysicsEntity ()
+{
+	PhysicsFlags |= PHYSICFLAG_AERODYNAMICS;
+};
+
+CAerodynamicPhysics::CAerodynamicPhysics (sint32 Index) :
+  CBaseEntity (Index),
+  CPhysicsEntity (Index)
+{
+	PhysicsFlags |= PHYSICFLAG_AERODYNAMICS;
+};
+
+void CAerodynamicPhysics::RunAerodynamics ()
+{
+	if (Velocity.IsNearlyZero())
+		return;
+
+	float MoveSpeed = Velocity.LengthFast(), Power, AVelMult, ADampMult;
+	vec3f MoveAngle;
+
+	if (AeroPower > 0)
+	{
+		Power = AeroPower * 0.01f;
+		MoveAngle = Velocity.ToAngles();
+	}
+	else
+	{
+		Power = AeroPower * -0.01f;
+		MoveAngle = (vec3fOrigin - Velocity).ToAngles();
+	}
+
+	if (PhysicsFlags & PHYSICFLAG_FLOATING)
+	{
+		MoveAngle.X = 0;
+		MoveSpeed += 200;
+	}
+
+	AVelMult = MoveSpeed * Power;
+	ADampMult = 1.0 / ((MoveSpeed * Power * 0.2) + 1.0f);
+
+	vec3f TurnAngle = MoveAngle - State.GetAngles();
+	while (TurnAngle.X > 180)
+		TurnAngle.X -= 360;
+	while (TurnAngle.X < -180)
+		TurnAngle.X += 360;
+	while (TurnAngle.Y > 180)
+		TurnAngle.Y -= 360;
+	while (TurnAngle.Y < -180)
+		TurnAngle.Y += 360;
+	while (TurnAngle.Z > 180)
+		TurnAngle.Z -= 360;
+	while (TurnAngle.Z < -180)
+		TurnAngle.Z += 360;
+
+	AVelocityEffect += (TurnAngle * AVelMult * ((float)FRAMETIME / 10));
+	ADampeningEffect *= powf (ADampMult, (float)FRAMETIME / 10);
+};
+
+void CAerodynamicPhysics::SetAerodynamics (float Power)
+{
+	AeroPower = Power / Mass;
+};

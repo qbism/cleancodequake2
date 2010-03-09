@@ -372,6 +372,8 @@ void SvCmd_Register ()
 	SvCmd_AddCommand ("cc_version",				SvCmd_CCVersion_t);
 	SvCmd_AddCommand ("ban",					SvCmd_Ban_t);
 	SvCmd_AddCommand ("test",					SvCmd_Test_t);
+
+	SvCmd_AddCommand ("irc",					SvCmd_Irc_ConnectTo_t);
 }
 
 /*

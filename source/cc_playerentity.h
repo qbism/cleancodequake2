@@ -303,7 +303,7 @@ public:
 	EGender				Gender;
 	EGamePrintLevel		MessageLevel;
 #if CLEANCODE_IRC
-	CIRCClient			*IRC;
+	CIRCClient			IRC;
 #endif
 
 #if MONSTERS_USE_PATHFINDING

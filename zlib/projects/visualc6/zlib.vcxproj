@@ -63,6 +63,7 @@
       </PrecompiledHeader>
       <ObjectFileName>.\Win32_LIB_Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Win32_LIB_Release\</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -95,6 +96,7 @@
       <ObjectFileName>.\Win32_LIB_Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Win32_LIB_Debug\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4127;4244;4996</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>

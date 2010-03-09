@@ -384,6 +384,10 @@ void CGameAPI::RunFrame ()
 #if MONSTERS_USE_PATHFINDING
 	RunNodes();
 #endif
+
+#if CLEANCODE_IRC
+	UpdateIRCServers ();
+#endif
 }
 
 void SetupGamemode ()

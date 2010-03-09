@@ -156,6 +156,18 @@ CC_ENUM (uint8, EPhysicsType)
 	PHYSICS_FLYMISSILE,
 	PHYSICS_BOUNCE
 };
+
+CC_ENUM (uint32, EPhysicsFlags)
+{
+	// Class flags
+	PHYSICFLAG_BUOYANCY			=	BIT(0), // Has CBuoyancyPhysics
+	PHYSICFLAG_RESISTANCE		=	BIT(1), // Has CResistancePhysics
+	PHYSICFLAG_AERODYNAMICS		=	BIT(2), // Has CAerodynamicPhysics
+
+	// Other flags
+	PHYSICFLAG_FLOATING			=	BIT(16), // Is "floating"
+};
+
 // Contains common code that projectiles will use
 class CPhysicsEntity : public virtual CBaseEntity
 {
@@ -163,6 +175,7 @@ public:
 	float				GravityMultiplier;	// per entity gravity multiplier (1.0 is normal)
 											// use for lowgrav artifact, flares
 	EPhysicsType		PhysicsType;
+	EPhysicsFlags		PhysicsFlags;
 	vec3f				AngularVelocity;
 	vec3f				Velocity;
 	float				Mass;
@@ -173,6 +186,7 @@ public:
 	} WaterInfo;
 
 	bool				PhysicsDisabled;
+	vec3f				VelocityEffect, DampeningEffect, AVelocityEffect, ADampeningEffect;
 
 	CPhysicsEntity ();
 	CPhysicsEntity (sint32 index);
@@ -328,6 +342,47 @@ public:
 	}
 
 	bool			Run ();
+};
+
+// Buoyancy physics.
+// Only works for: Bounce, Toss (via Bounce)
+class CBuoyancyPhysics : public virtual CPhysicsEntity
+{
+public:
+	float		BuoyancyPowerWater, BuoyancyPowerAir;
+
+	CBuoyancyPhysics ();
+	CBuoyancyPhysics (sint32 Index);
+
+	void RunBouyancy ();
+	void SetBuoyancy (float Power, float ModAir = 0.0f, float ModWater = 1.0f);
+};
+
+// Resistance physics.
+// Only works for: Bounce, Toss (via Bounce)
+class CResistancePhysics : public virtual CPhysicsEntity
+{
+public:
+	float		ResistPowerWater, ResistPowerAir;
+
+	CResistancePhysics ();
+	CResistancePhysics (sint32 Index);
+
+	void RunResistance ();
+	void SetResistance (float Power, float ModAir = 0.0f, float ModWater = 1.0f);
+};
+
+// Aerodynamics
+class CAerodynamicPhysics : public virtual CPhysicsEntity
+{
+public:
+	float		AeroPower;
+
+	CAerodynamicPhysics ();
+	CAerodynamicPhysics (sint32 Index);
+
+	void RunAerodynamics ();
+	void SetAerodynamics (float Power);
 };
 
 #else

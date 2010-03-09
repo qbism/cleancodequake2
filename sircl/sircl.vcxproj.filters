@@ -15,43 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-    <None Include="sircl.def">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\highlevel\h_commands.c">
+    <ClCompile Include="src\lowlevel\l_parse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\highlevel\h_ctcp.c">
+    <ClCompile Include="src\lowlevel\l_net.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\highlevel\h_dcc.c">
+    <ClCompile Include="src\lowlevel\l_mem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\highlevel\h_irc.c">
+    <ClCompile Include="src\lowlevel\l_irc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\lowlevel\l_commands.c">
+    <ClCompile Include="src\lowlevel\l_commands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\lowlevel\l_ctcp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lowlevel\l_dcc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lowlevel\l_irc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lowlevel\l_mem.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lowlevel\l_net.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lowlevel\l_parse.c">
+    <ClCompile Include="src\highlevel\h_irc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,12 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\lowlevel\l_commands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\lowlevel\l_ctcp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\lowlevel\l_dcc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\lowlevel\l_irc.h">
@@ -83,28 +56,7 @@
     <ClInclude Include="include\lowlevel\l_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\protocol\misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\protocol\commands\channel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\protocol\commands\connection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\protocol\commands\messages.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\protocol\commands\misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\protocol\commands\optional.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\protocol\commands\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\protocol\commands\user.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\protocol\replies\error.h">

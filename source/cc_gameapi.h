@@ -324,7 +324,7 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 void Cast (ECastFlags castFlags, CBaseEntity *Ent);
 void Cast (ECastFlags castFlags, vec3f &Origin);
 
-EBrushContents PointContents (vec3f &start);
+EBrushContents PointContents (vec3f start);
 
 sint32 BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, sint32 maxCount, bool triggers);
 
