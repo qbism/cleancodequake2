@@ -415,13 +415,39 @@ SV_PM_WaterMove
 */
 static void SV_PM_WaterMove ()
 {
+	short		forwardMove, sideMove, upMove;
+
+	//r1: keep a local version of these values, this prevents a physics exploit where a ridiculously high
+	//forwardmove/sidemove can allow player to negate effects of water currents. value of 400 is still higher
+	//than maxvel (300), but 400 is the default q2 run speed, so we keep it for compatibility.
+	if (pm->cmd.forwardMove > 400)
+		forwardMove = 400;
+	else if (pm->cmd.forwardMove < -400)
+		forwardMove = -400;
+	else
+		forwardMove = pm->cmd.forwardMove;
+
+	if (pm->cmd.sideMove > 400)
+		sideMove = 400;
+	else if (pm->cmd.sideMove < -400)
+		sideMove = -400;
+	else
+		sideMove = pm->cmd.sideMove;
+
+	if (pm->cmd.upMove > 400)
+		upMove = 400;
+	else if (pm->cmd.upMove < -400)
+		upMove = -400;
+	else
+		upMove = pm->cmd.upMove;
+
 	// user intentions
-	vec3f wishvel ( pml.forward.X*pm->cmd.forwardMove + pml.right.X*pm->cmd.sideMove,
-					pml.forward.Y*pm->cmd.forwardMove + pml.right.Y*pm->cmd.sideMove,
-					pml.forward.Z*pm->cmd.forwardMove + pml.right.Z*pm->cmd.sideMove);
+	vec3f wishvel ( pml.forward.X*forwardMove + pml.right.X*sideMove,
+					pml.forward.Y*forwardMove + pml.right.Y*sideMove,
+					pml.forward.Z*forwardMove + pml.right.Z*sideMove);
 
 	// drift towards bottom
-	wishvel.Z += ((!pm->cmd.forwardMove && !pm->cmd.sideMove && !pm->cmd.upMove) ? -60 : pm->cmd.upMove);
+	wishvel.Z += ((!forwardMove && !sideMove && !upMove) ? -60 : upMove);
 
 	SV_PM_AddCurrents (wishvel);
 
@@ -1035,6 +1061,9 @@ void SV_Pmove (CPlayerEntity *Player, pMoveNew_t *pMove, float airAcceleration)
 
 	if (pm->state.pmType >= PMT_DEAD)
 	{
+		if (Game.R1Protocol)
+			pml.frameTime *= 2;
+
 		pm->cmd.forwardMove = 0;
 		pm->cmd.sideMove = 0;
 		pm->cmd.upMove = 0;

@@ -52,12 +52,23 @@ public:
 
 typedef std::vector<CIRCClientServerChannel> TIRCChannels;
 
+typedef std::pair<int, std::string> TIRCMessage;
+typedef std::vector<TIRCMessage> TIRCMessageQueue;
+
 class CIRCClientServer
 {
 public:
 	irc_server				IRCServer;
 	TConnectedIRCPlayers	ConnectedPlayers; // players using this server
 	TIRCChannels			Channels;
+	TIRCMessageQueue		IRCMsgQueue;
+	bool					CanSendMessages;
+	std::string				HostName;
+
+	CIRCClientServer () :
+	  CanSendMessages(true)
+	{
+	};
 
 	CIRCClientServerChannel *FindChannel (std::string ChannelName);
 
@@ -69,6 +80,8 @@ public:
 	void ListChannels (class CPlayerEntity *Player);
 	void JoinChannel (class CPlayerEntity *Player, std::string ChannelName);
 	void LeaveChannel (class CPlayerEntity *Player, std::string ChannelName);
+	void PushMessage (int Cmd, std::string Str);
+	void SendMsgQueue ();
 };
 
 typedef std::vector<CIRCClientServer*> TIRCServers;

@@ -558,6 +558,9 @@ void CGameAPI::Init ()
 	InitializeModules ();
 #endif
 
+	// Set R1 protocol flags
+	Game.R1Protocol = (CCvar("protocol", "").Integer() == ENHANCED_PROTOCOL_VERSION);
+
 	ServerPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
 }
 
@@ -569,4 +572,8 @@ void CGameAPI::Shutdown ()
 	Shutdown_Junk ();
 
 	Bans.SaveList ();
+
+	Mem_FreeTag (TAG_GAME);
+	Mem_FreeTag (TAG_LEVEL);
+	Mem_FreeTag (TAG_ENTITY);
 }

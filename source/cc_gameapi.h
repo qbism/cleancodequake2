@@ -146,11 +146,7 @@ struct gameImport_t
 	_CC_INSECURE_DEPRECATE (SV_Pmove)
 #endif
 	void	(*Pmove) (
-#if USE_EXTENDED_GAME_IMPORTS
 	pMove_t *pMove
-#else
-	pMoveNew_t *pMove // Just to supress error
-#endif
 	);		// player movement code common with client prediction
 
 	// network messaging

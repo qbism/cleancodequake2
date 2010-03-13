@@ -397,6 +397,8 @@ public:
 	// cross level triggers
 	ECrossLevelTriggerFlags	ServerFlags;
 	bool					AutoSaved;
+
+	bool					R1Protocol;
 };
 
 extern	CGameLocals		Game;

@@ -123,6 +123,10 @@ void CGrenade::Explode ()
 	SplashDamage(GetOwner(), Damage, (Enemy) ? Enemy : NULL, RadiusDamage, mod);
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
+	
+	if (PointContents(origin) & CONTENTS_MASK_SOLID)
+		origin = State.GetOrigin();
+	
 	if (GroundEntity)
 		CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
 	else
@@ -182,9 +186,8 @@ void CGrenade::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 Da
 	Grenade->State.GetOrigin() = start;
 	aimdir *= speed;
 
-	Grenade->Velocity = aimdir;
-	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (200 + crand() * 10.0f, up);
-	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (crand() * 10.0, right);
+	Grenade->Velocity = aimdir.MultiplyAngles (200 + crand() * 10.0f, up).MultiplyAngles (crand() * 10.0, right);
+	Grenade->AngularVelocity = 300;
 
 	Grenade->State.GetEffects() = EF_GRENADE;
 	Grenade->State.GetModelIndex() = (!handNade) ? ModelIndex ("models/objects/grenade/tris.md2") : ModelIndex ("models/objects/grenade2/tris.md2");

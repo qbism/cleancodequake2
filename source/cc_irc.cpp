@@ -51,7 +51,7 @@ void CIRCClientServerChannel::Join (CPlayerEntity *Player)
 {
 	Players.push_back (Player);
 
-	irc_send_cmd(&Server->IRCServer, IRC::PRIVMSG, "%s :%s has joined channel %s", ChannelName.c_str(), Player->Client.Respawn.IRC.Nick.c_str(), ChannelName.c_str());
+	Server->PushMessage(IRC::PRIVMSG, Q_VarArgs("%s :%s has joined channel %s", ChannelName.c_str(), Player->Client.Respawn.IRC.Nick.c_str(), ChannelName.c_str()));
 	for (TConnectedIRCPlayers::iterator it = Players.begin(); it != Players.end(); ++it)
 		(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s has joined channel %s\n", Player->Client.Respawn.IRC.Nick.c_str(), ChannelName.c_str());
 	
@@ -60,7 +60,7 @@ void CIRCClientServerChannel::Join (CPlayerEntity *Player)
 
 void CIRCClientServerChannel::Leave (CPlayerEntity *Player)
 {
-	irc_send_cmd(&Server->IRCServer, IRC::PRIVMSG, "%s :%s has left channel %s", ChannelName.c_str(), Player->Client.Respawn.IRC.Nick.c_str(), ChannelName.c_str());
+	Server->PushMessage(IRC::PRIVMSG, Q_VarArgs("%s :%s has left channel %s", ChannelName.c_str(), Player->Client.Respawn.IRC.Nick.c_str(), ChannelName.c_str()));
 	for (TConnectedIRCPlayers::iterator it = Players.begin(); it != Players.end(); ++it)
 		(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s has left channel %s\n", Player->Client.Respawn.IRC.Nick.c_str(), ChannelName.c_str());
 
@@ -107,6 +107,28 @@ void CIRCClientServer::Connect (std::string HostName, std::string Nick, std::str
 	_net_setnonblocking (IRCServer.sock);
 };
 
+class CIRCListPlayerCallback : public CForEachPlayerCallback
+{
+public:
+	CIRCClientServer		*Server;
+	std::string				&chan;
+	int						Count;
+
+	CIRCListPlayerCallback (CIRCClientServer *Server, std::string &chan) :
+	Server(Server),
+	chan(chan),
+	Count(0)
+	{
+	};
+
+	CIRCListPlayerCallback &operator= (CIRCListPlayerCallback&) { return *this; }
+
+	void Callback (CPlayerEntity *Player)
+	{
+		Server->PushMessage (IRC::PRIVMSG, Q_VarArgs("%s :%i:   %s%s", chan.c_str(), Count, Player->Client.Persistent.Name.c_str(), (Player->Client.Respawn.IRC.Connected()) ? Q_VarArgs(" [In IRC as %s]", Player->Client.Respawn.IRC.Nick.c_str()).c_str() : ""));
+	}
+};
+
 // One update frame
 void CIRCClientServer::Update ()
 {
@@ -117,77 +139,76 @@ void CIRCClientServer::Update ()
 		if (IRCServer.received > 0)
 		{
 			// If server pings, we pong.
-			if (IRCServer.msg.command == IRC::PING)
+			switch (IRCServer.msg.command)
+			{
+			case IRC::RPL_CREATED:
+				HostName = IRCServer.msg.prefix;
+				break;
+			case IRC::PING:
 				irc_pong(&IRCServer);
-
-			if (IRCServer.msg.command == IRC::PRIVMSG)
-			{
-				// Get name
-				std::string otherName = IRCServer.msg.prefix.substr(0, IRCServer.msg.prefix.find_first_of('!'));
-				std::string message = IRCServer.msg.param[1].substr(1);
-
-				bool isAction = (message.length() > 6 && message[0] == 1 && (strncmp(message.c_str()+1, "ACTION ", 7) == 0));
-
-				// Trim whitespace
-				while (message[0] == ' ' || message[0] == 1 || message[0] == 13)
-					message.erase(0, 1);
-				while (message[message.length()-1] == ' ' || message[message.length()-1] == 1 || message[message.length()-1] == 13)
-					message.erase (message.length()-1, 1);
-
-				// Trim "ACTION "
-				if (isAction)
-					message.erase (0, 7);
-
-				std::string channel = IRCServer.msg.param[0];
-				CIRCClientServerChannel *Chan = FindChannel(channel);
-
-				for (TConnectedIRCPlayers::iterator it = Chan->Players.begin(); it != Chan->Players.end(); ++it)
+				break;
+			case IRC::PRIVMSG:
 				{
-					if (!isAction)
-						(*it)->PrintToClient (PRINT_CHAT, "[IRC] <%s> %s\n", otherName.c_str(), message.c_str());
-					else
-						(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s %s\n", otherName.c_str(), message.c_str());
-				}
-			}
-			else if (IRCServer.msg.command == IRC::JOIN)
-			{
-				// Get name
-				std::string otherName = IRCServer.msg.prefix.substr(0, IRCServer.msg.prefix.find_first_of('!'));
+					// Get name
+					std::string otherName = IRCServer.msg.prefix.substr(0, IRCServer.msg.prefix.find_first_of('!'));
+					std::string message = IRCServer.msg.param[1].substr(1);
 
-				if (otherName != IRCServer.nick)
-				{
-					std::string channel = IRCServer.msg.params;
-					channel = channel.substr(1, channel.length()-2);
-					CIRCClientServerChannel *Chan = FindChannel(channel);
+					bool isAction = (message.length() > 6 && message[0] == 1 && (strncmp(message.c_str()+1, "ACTION ", 7) == 0));
 
-					for (TConnectedIRCPlayers::iterator it = Chan->Players.begin(); it != Chan->Players.end(); ++it)
-						(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s has joined channel %s\n", otherName.c_str(), channel.c_str());
-				}
-			}
-			else if (IRCServer.msg.command == IRC::PART)
-			{
-				// Get name
-				std::string otherName = IRCServer.msg.prefix.substr(0, IRCServer.msg.prefix.find_first_of('!'));
+					// Trim whitespace
+					while (message[0] == ' ' || message[0] == 1 || message[0] == 13)
+						message.erase(0, 1);
+					while (message[message.length()-1] == ' ' || message[message.length()-1] == 1 || message[message.length()-1] == 13)
+						message.erase (message.length()-1, 1);
 
-				if (otherName != IRCServer.nick)
-				{
+					// Trim "ACTION "
+					if (isAction)
+						message.erase (0, 7);
+
 					std::string channel = IRCServer.msg.param[0];
 					CIRCClientServerChannel *Chan = FindChannel(channel);
 
+					if (Q_strnicmp(message.c_str(), "!Q2Serv ", 8) == 0)
+					{
+						std::string cmds = message.substr(8);
+
+						if (Q_stricmp(cmds.c_str(), "players") == 0)
+						{
+							PushMessage (IRC::PRIVMSG, Q_VarArgs("%s :The following players are in the server:", channel.c_str()));
+							CIRCListPlayerCallback(this, channel).Query();
+						}
+						break;
+					}
+
 					for (TConnectedIRCPlayers::iterator it = Chan->Players.begin(); it != Chan->Players.end(); ++it)
-						(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s has left channel %s\n", otherName.c_str(), channel.c_str());
+					{
+						if (!isAction)
+							(*it)->PrintToClient (PRINT_CHAT, "[IRC] <%s> %s\n", otherName.c_str(), message.c_str());
+						else
+							(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s %s\n", otherName.c_str(), message.c_str());
+					}
 				}
+				break;
+			case IRC::JOIN:
+				{
+					// Get name
+					std::string otherName = IRCServer.msg.prefix.substr(0, IRCServer.msg.prefix.find_first_of('!'));
+
+					if (otherName != IRCServer.nick)
+					{
+						std::string channel = IRCServer.msg.params;
+						channel = channel.substr(1, channel.length()-2);
+						CIRCClientServerChannel *Chan = FindChannel(channel);
+
+						for (TConnectedIRCPlayers::iterator it = Chan->Players.begin(); it != Chan->Players.end(); ++it)
+							(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s has %s channel %s\n", otherName.c_str(), (IRCServer.msg.command == IRC::JOIN) ? "joined" : "left", channel.c_str());
+					}
+				}
+				break;
+			case IRC::PONG:
+				CanSendMessages = true;
+				break;
 			}
-			/*else if (IRCServer.msg.command == NOTICE)
-			{
-				for (TConnectedIRCPlayers::iterator it = ConnectedPlayers.begin(); it != ConnectedPlayers.end(); ++it)
-					(*it)->PrintToClient (PRINT_HIGH, "[IRC] %s\n", IRCServer.msg.raw);
-			}
-			else if (Chan)
-			{
-				for (TConnectedIRCPlayers::iterator it = Chan->Players.begin(); it != Chan->Players.end(); ++it)
-					(*it)->PrintToClient (PRINT_HIGH, "[IRC] %s\n", IRCServer.msg.raw);
-			}*/
 		}
 
 		IRCServer.received = 0;
@@ -197,6 +218,9 @@ void CIRCClientServer::Update ()
 		DebugPrintf ("IRC Shit broke\n");
 		Disconnect ();
 	}
+
+	// Send messages
+	SendMsgQueue ();
 };
 
 void CIRCClientServer::SendMessage (CPlayerEntity *Player, std::string Message)
@@ -205,17 +229,63 @@ void CIRCClientServer::SendMessage (CPlayerEntity *Player, std::string Message)
 	if (Message.length() > 4 && strncmp(Message.c_str(), "/me ", 4) == 0)
 	{
 		Message.erase (0, 4);
-		irc_send_cmd(&IRCServer, IRC::PRIVMSG, "%s :%cACTION >>>> %s %s", Player->Client.Respawn.IRC.Channel.c_str(), 1, Player->Client.Respawn.IRC.Nick.c_str(), Message.c_str());
+		PushMessage(IRC::PRIVMSG, Q_VarArgs("%s :%cACTION >>>> %s %s", Player->Client.Respawn.IRC.Channel.c_str(), 1, Player->Client.Respawn.IRC.Nick.c_str(), Message.c_str()));
 	
 		for (TConnectedIRCPlayers::iterator it = ConnectedPlayers.begin(); it != ConnectedPlayers.end(); ++it)
 			(*it)->PrintToClient (PRINT_CHAT, "[IRC] %s %s\n", Player->Client.Respawn.IRC.Nick.c_str(), Message.c_str());
 	}
 	else
 	{
-		irc_send_cmd(&IRCServer, IRC::PRIVMSG, "%s :<%s> %s", Player->Client.Respawn.IRC.Channel.c_str(), Player->Client.Respawn.IRC.Nick.c_str(), Message.c_str());
+		PushMessage(IRC::PRIVMSG, Q_VarArgs("%s :<%s> %s", Player->Client.Respawn.IRC.Channel.c_str(), Player->Client.Respawn.IRC.Nick.c_str(), Message.c_str()));
 	
 		for (TConnectedIRCPlayers::iterator it = ConnectedPlayers.begin(); it != ConnectedPlayers.end(); ++it)
 			(*it)->PrintToClient (PRINT_CHAT, "[IRC] <%s> %s\n", Player->Client.Respawn.IRC.Nick.c_str(), Message.c_str());
+	}
+};
+
+void CIRCClientServer::PushMessage (int Cmd, std::string Str)
+{
+	IRCMsgQueue.push_back (TIRCMessage(Cmd, Str));
+
+	size_t count = 0;
+	for (size_t i = 0; i < IRCMsgQueue.size(); ++i)
+	{
+		if (IRCMsgQueue[i].first != IRC::PING)
+			count++;
+	}
+
+	if ((count % 4) == 0)
+		IRCMsgQueue.push_back (TIRCMessage(IRC::PING, ""));
+};
+
+void CIRCClientServer::SendMsgQueue ()
+{
+	if (!CanSendMessages)
+		return;
+	if (IRCMsgQueue.empty())
+		return;
+
+	for (TIRCMessageQueue::iterator it = IRCMsgQueue.begin(); it != IRCMsgQueue.end(); ++it)
+	{
+		if ((*it).first == IRC::PING)
+		{
+			CanSendMessages = false;
+			irc_send_cmd (&IRCServer, IRC::PING, "%s", HostName.c_str());
+			break;
+		}
+
+		irc_send_cmd (&IRCServer, (*it).first, "%s", (*it).second.c_str());
+	}
+
+	while (IRCMsgQueue.size())
+	{
+		if (IRCMsgQueue[0].first == IRC::PING)
+		{
+			IRCMsgQueue.erase(IRCMsgQueue.begin());
+			break;
+		}
+
+		IRCMsgQueue.erase (IRCMsgQueue.begin());
 	}
 };
 
@@ -242,7 +312,7 @@ void CIRCClientServer::JoinChannel (CPlayerEntity *Player, std::string ChannelNa
 		Channel.Server = this;
 
 		// not created, make the channel
-		irc_send_cmd(&IRCServer, IRC::JOIN, "%s", ChannelName.c_str());
+		PushMessage (IRC::JOIN, Q_VarArgs("%s", ChannelName.c_str()));
 
 		Channel.Join (Player);
 		Channels.push_back (Channel);
@@ -262,7 +332,7 @@ void CIRCClientServer::LeaveChannel (CPlayerEntity *Player, std::string ChannelN
 	// No players, just leave
 	if (!Chan->Players.size())
 	{
-		irc_send_cmd(&IRCServer, IRC::PART, "%s", Chan->ChannelName.c_str());
+		PushMessage (IRC::PART, Q_VarArgs("%s", Chan->ChannelName.c_str()));
 		
 		for (TIRCChannels::iterator it = Channels.begin(); it != Channels.end(); ++it)
 		{
@@ -348,7 +418,7 @@ void CIRCClient::List ()
 
 	for (size_t i = 0; i < IRCServerList.size(); ++i)
 	{
-		buf += Q_VarArgs ("%i            %s\n", i+1, IRCServerList[i]->IRCServer.server);
+		buf += Q_VarArgs ("%i            %s\n", i+1, IRCServerList[i]->IRCServer.server.c_str());
 		for (size_t z = 0; z < IRCServerList[i]->Channels.size(); ++z)
 			buf += Q_VarArgs ("        %i    %s\n", IRCServerList[i]->Channels[z].Players.size(), IRCServerList[i]->Channels[z].ChannelName.c_str());
 	}
@@ -366,6 +436,12 @@ void CIRCClient::SendMessage (std::string Msg)
 
 void Cmd_Irc_t (CPlayerEntity *Player)
 {
+	Player->Client.Respawn.IRC.SendMessage ("Test1");
+	Player->Client.Respawn.IRC.SendMessage ("Test2");
+	Player->Client.Respawn.IRC.SendMessage ("Test3");
+	Player->Client.Respawn.IRC.SendMessage ("Test4");
+	Player->Client.Respawn.IRC.SendMessage ("Test5");
+	Player->Client.Respawn.IRC.SendMessage ("Test6");
 }
 
 void Cmd_Irc_Connect_t (CPlayerEntity *Player)

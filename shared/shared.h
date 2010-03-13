@@ -57,7 +57,6 @@ bool AssertExpression (const bool expr, const char *msg);
 =============================================================================
 */
 
-#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
 #define ORIGINAL_PROTOCOL_VERSION		34
 
 #define ENHANCED_PROTOCOL_VERSION		35
@@ -66,7 +65,6 @@ bool AssertExpression (const bool expr, const char *msg);
 #define MINOR_VERSION_R1Q2_BASE			1903
 #define MINOR_VERSION_R1Q2_UCMD_UPDATES	1904
 #define	MINOR_VERSION_R1Q2_32BIT_SOLID	1905
-#endif
 
 //
 // server to client
@@ -742,6 +740,30 @@ struct userCmd_t
 };
 
 #define MAXTOUCH	32
+
+struct pMoveNew_t
+{
+	// state (in / out)
+	pMoveState_t	state;
+
+	// command (in)
+	userCmd_t		cmd;
+	BOOL			snapInitial;	// if s has been changed outside pmove
+
+	// results (out)
+	sint32				numTouch;
+	struct edict_t	*touchEnts[MAXTOUCH];
+
+	vec3f			viewAngles;			// clamped
+	float			viewHeight;
+
+	vec3f			mins, maxs;			// bounding box size
+
+	struct edict_t	*groundEntity;
+	EBrushContents	waterType;
+	EWaterLevel		waterLevel;
+};
+
 #if USE_EXTENDED_GAME_IMPORTS
 struct pMove_t
 {
@@ -769,30 +791,9 @@ struct pMove_t
 	cmTrace_t		(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
 	sint32				(*pointContents) (vec3_t point);
 };
+#else
+typedef pMoveNew_t pMove_t;
 #endif
-
-struct pMoveNew_t
-{
-	// state (in / out)
-	pMoveState_t	state;
-
-	// command (in)
-	userCmd_t		cmd;
-	BOOL			snapInitial;	// if s has been changed outside pmove
-
-	// results (out)
-	sint32				numTouch;
-	struct edict_t	*touchEnts[MAXTOUCH];
-
-	vec3f			viewAngles;			// clamped
-	float			viewHeight;
-
-	vec3f			mins, maxs;			// bounding box size
-
-	struct edict_t	*groundEntity;
-	EBrushContents	waterType;
-	EWaterLevel		waterLevel;
-};
 
 /*
 ==============================================================================

@@ -614,7 +614,7 @@ void CMedic::CableAttack ()
 
 	// see if our enemy has changed to a client, or our target has more than 0 health,
 	// abort it .. we got switched to someone else due to damage
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (dynamic_cast<CHurtableEntity*>(Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0))
 	{
 		AbortHeal (false, false);
 		return;
