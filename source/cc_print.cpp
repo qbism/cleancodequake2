@@ -233,4 +233,16 @@ void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 	gi.bprintf (printLevel, "%s", string);
 }
 
+void ServerPrintf (const char *fmt, ...)
+{
+	va_list		argptr;
+	static char	string[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf (string, sizeof(string), fmt, argptr);
+	va_end (argptr);
+	
+	gi.dprintf ("%s", string);
+}
+
 #endif
