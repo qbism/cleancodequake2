@@ -3902,8 +3902,10 @@ void CPlayerEntity::Disconnect ()
 
 	ConfigString (CS_PLAYERSKINS+(State.GetNumber()-1), "");
 
+#if CLEANCODE_IRC
 	if (Client.Respawn.IRC.Connected())
 		Client.Respawn.IRC.Disconnect();
+#endif
 }
 
 inline const char *MonsterAOrAn (const char *Name)
