@@ -373,7 +373,9 @@ void SvCmd_Register ()
 	SvCmd_AddCommand ("ban",					SvCmd_Ban_t);
 	SvCmd_AddCommand ("test",					SvCmd_Test_t);
 
+#if CLEANCODE_IRC
 	SvCmd_AddCommand ("irc",					SvCmd_Irc_ConnectTo_t);
+#endif
 }
 
 /*

@@ -579,7 +579,9 @@ void CPlayerEntity::PutInServer ()
 	GetSvFlags() &= ~SVF_DEADMONSTER;
 	if (!Client.Respawn.MenuState.Player)
 		Client.Respawn.MenuState.Initialize (this);
+#if CLEANCODE_IRC
 	Client.Respawn.IRC.Player = this;
+#endif
 
 	GetMins() = mins;
 	GetMaxs() = maxs;
