@@ -407,8 +407,17 @@ public:
 	{
 	};
 
-	ENTITYFIELDS_NONSAVABLE
-	const char *SAVE_GetName () { return "NO!"; }
+	void SaveFields (CFile &File)
+	{
+		File.Write<FrameNumber_t> (Time);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		Time = File.Read<FrameNumber_t> ();
+	}
+
+	IMPLEMENT_SAVE_HEADER(CPlayerNoise);
 };
 #endif
 
@@ -473,6 +482,10 @@ public:
 	EWaterLevel		OldWaterLevel;
 	MediaIndex		WeaponSound;
 
+#if ROGUE_FEATURES
+	class CRogueBaseSphere	*OwnedSphere;
+#endif
+
 	// animation vars
 	struct client_Animation_t
 	{
@@ -490,6 +503,13 @@ public:
 							EnvironmentSuit
 #if XATRIX_FEATURES
 						,	QuadFire
+#endif
+
+#if ROGUE_FEATURES
+						, Double,
+						IR,
+						Nuke,
+						Tracker
 #endif
 						;
 
@@ -689,6 +709,10 @@ public:
 	void			PlayerNoiseAt (vec3f Where, sint32 type);
 
 	void			PushInDirection (vec3f vel);
+
+#if ROGUE_FEATURES
+	void			RemoveAttackingPainDaemons ();
+#endif
 
 	IMPLEMENT_SAVE_HEADER(CPlayerEntity)
 };

@@ -79,17 +79,25 @@ void InitItemMedia ();
 // A non-yuck way to my yuck in Weapons!
 namespace NItems
 {
+	// Armor
 	extern CArmor *JacketArmor;
 	extern CArmor *CombatArmor;
 	extern CArmor *BodyArmor;
 	extern CArmor *ArmorShard;
 
+	// Health
 	extern CHealth *StimPack;
 	extern CHealth *SmallHealth;
 	extern CHealth *LargeHealth;
 
+	// Keys
 	extern CPowerCube *PowerCube;
+#if CLEANCTF_ENABLED
+	extern CFlag *RedFlag;
+	extern CFlag *BlueFlag;
+#endif
 
+	// Weapons
 	extern CWeaponItem *Blaster;
 	extern CWeaponItem *Shotgun;
 	extern CWeaponItem *SuperShotgun;
@@ -102,16 +110,13 @@ namespace NItems
 	extern CWeaponItem *BFG;
 #if CLEANCTF_ENABLED
 	extern CWeaponItem *Grapple;
-
-	extern CFlag *RedFlag;
-	extern CFlag *BlueFlag;
 #endif
 #if XATRIX_FEATURES
 	extern CWeaponItem *IonRipper;	
 	extern CWeaponItem *Phalanx;	
-	extern CAmmo *MagSlugs;
 #endif
 
+	// Ammo
 	extern CAmmo *Shells;
 	extern CAmmo *Bullets;
 	extern CAmmo *Slugs;
@@ -119,12 +124,25 @@ namespace NItems
 	extern CAmmo *Cells;
 	extern CAmmo *Grenades;
 	extern CAmmo *Trap;
+#if XATRIX_FEATURES
+	extern CAmmo *MagSlugs;
+#endif
+#if ROGUE_FEATURES
+	extern CAmmo *Prox;
+	extern CAmmo *Flechettes;
+	extern CAmmoWeapon *Tesla;
+#endif
 
+	// Powerups
 	extern CMegaHealth *MegaHealth;
 	extern CBackPack *BackPack;
 	extern CQuadDamage *Quad;
 #if XATRIX_FEATURES
 	extern CBasePowerUp *QuadFire;
+#endif
+#if ROGUE_FEATURES
+	extern CDoubleDamage *Double;
+	extern CIRGoggles *IRGoggles;
 #endif
 	extern CInvulnerability *Invul;
 	extern CSilencer *Silencer;

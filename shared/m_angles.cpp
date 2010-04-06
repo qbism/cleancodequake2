@@ -36,41 +36,6 @@ float AngleModf (float a)
 
 /*
 ===============
-Angles_Matrix3
-===============
-*/
-#if SHARED_ALLOW_3x3_MATRIX
-void Angles_Matrix3 (vec3_t angles, mat3x3_t axis)
-{
-	float angle;
-	float sr, sp, sy, cr, cp, cy;
-
-	angle = DEG2RAD (angles[YAW]);
-	Q_SinCosf(angle, &sy, &cy);
-	angle = DEG2RAD (angles[PITCH]);
-	Q_SinCosf(angle, &sp, &cp);
-	angle = DEG2RAD (angles[ROLL]);
-	Q_SinCosf(angle, &sr, &cr);
-
-	// Forward
-	axis[0][0] = cp * cy;
-	axis[0][1] = cp * sy;
-	axis[0][2] = -sp;
-
-	// Left
-	axis[1][0] = (-1 * sr * sp * cy + -1 * cr * -sy) * -1;
-	axis[1][1] = (-1 * sr * sp * sy + -1 * cr * cy) * -1;
-	axis[1][2] = (-1 * sr * cp) * -1;
-
-	// Up
-	axis[2][0] = (cr * sp * cy + -sr * -sy);
-	axis[2][1] = (cr * sp * sy + -sr * cy);
-	axis[2][2] = cr * cp;
-}
-#endif
-
-/*
-===============
 LerpAngle
 ===============
 */

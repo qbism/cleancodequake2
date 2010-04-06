@@ -230,12 +230,26 @@ public:
 class CDoor : public CMapEntity, public CBrushModel, public CHurtableEntity, public CBlockableEntity, public CTouchableEntity, public CUsableEntity
 {
 public:
+#if ROGUE_FEATURES
+	CC_ENUM (uint8, EDoorUse)
+	{
+		DOORUSE_NONE,
+		DOORUSE_NORMAL,
+		DOORUSE_ACTIVATE
+	};
+	EDoorUse	UseType;
+#endif
+
 	enum
 	{
 		DOORTHINK_SPAWNDOORTRIGGER = BRUSHTHINK_CUSTOM_START,
 		DOORTHINK_CALCMOVESPEED,
 
 		DOORTHINK_GODOWN,
+
+#if ROGUE_FEATURES
+		DOORTHINK_SMARTWATER_GOUP,
+#endif
 	};
 
 	CDoor();
@@ -281,6 +295,11 @@ public:
 	virtual void GoUp (CBaseEntity *Activator);
 	virtual void DoEndFunc ();
 	virtual void Think ();
+
+#if ROGUE_FEATURES
+	void SmartWaterGoUp ();
+	void Activate ();
+#endif
 
 	virtual void Blocked (CBaseEntity *Other);
 	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
@@ -556,6 +575,18 @@ public:
 		CTouchableEntity::LoadFields (File);
 	}
 
+#if ROGUE_FEATURES
+	CC_ENUM (uint8, ERotatingBrushThinkType)
+	{
+		ROTATINGTHINK_ACCEL,
+		ROTATINGTHINK_DECEL
+	};
+
+	void Accelerate ();
+	void Decelerate ();
+	void Think ();
+#endif
+
 	bool Run ();
 	void Spawn ();
 };
@@ -674,7 +705,10 @@ public:
 	{
 		FUNCEXPLOSIVE_USE_NONE,
 		FUNCEXPLOSIVE_USE_SPAWN,
-		FUNCEXPLOSIVE_USE_EXPLODE
+		FUNCEXPLOSIVE_USE_EXPLODE,
+#if ROGUE_FEATURES
+		FUNCEXPLOSIVE_USE_ACTIVATE,
+#endif
 	};
 
 	EFuncExplosiveUseType	UseType;
@@ -689,6 +723,9 @@ public:
 	void DoSpawn ();
 
 	void Use (CBaseEntity *Other, CBaseEntity *Activator);
+#if ROGUE_FEATURES
+	void Activate (CBaseEntity *Other, CBaseEntity *Activator);
+#endif
 	void Pain (CBaseEntity *Other, sint32 Damage);
 	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 

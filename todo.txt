@@ -1,7 +1,25 @@
-Possible current version
+Present
 - Remove usage of GetModelIndex() == 255. This is stupid.
 - Remove usage of Level.current_entity
 - Print buffer for each player & for console (shove all prints into buffer then print them at the end of the frame)
+- Make a unified CMeleeWeapon class...
+- Unified CWeaponThrowable class for Grenade, Trap and Tesla
+- As much as I hate it, the AI is fucked beyond repair. The entire AI needs to be re-written. Honestly
+  the way I tackled the monster system is actually very juvenile - this was one of the first systems I did and
+  obviously one of the worst systems I did. Trying to do the Stalker from Rogue showed me that a lot of things are.. broken.
+  Before I can call this thing "finished" and "clean", the AI system needs to be re-done, no exceptions.
+
+Rogue
+- Remove heat beam bobbing
+- weapon_nailgun, etc item name replacements
+  - Idea: LINK_ITEM_TO_EXISTING_CLASSNAME?
+- PUSH_SILENT flag for CTriggerPush (seems my PushInDirection implementation didn't think of this)
+- Being able to use one weapon switch for multiple guns. Few viable methods:
+  1) Use weapon sort order (major for the gun "list", minor for the ordering)
+  2) NextWeapon() and PrevWeapon() functions in CWeapon
+  3) Mix both (discover weapon list via sort order, store in the weapons, use Next and Prev to get the weapons)
+3 is my favorite option over using just one of the two first ones.
+- BT_MORE_BLOOD for MOD_CHAINFIST (overlooked means of death in DamageEffect)
 
 Future versions
 - A scripting system to replace entities like func_timer, etc.

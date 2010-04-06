@@ -52,6 +52,12 @@ Precache(Precache)
 	ItemList->AddItemToList (this);
 }
 
+CBaseItem::CBaseItem () :
+Index(-1)
+{
+	ItemList->AddItemToList (this);
+};
+
 // Sets a respawn time on the item and makes it invisible. 
 void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber_t delay)
 {
@@ -111,7 +117,7 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *Entity)
 	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
-	dropped->State.GetRenderEffects() = RF_GLOW;
+	dropped->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	dropped->GetMins().Set (-15);
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);

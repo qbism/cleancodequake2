@@ -183,7 +183,8 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 				Player->Client.WeaponState = WS_FIRING;
 
 				// We need to check against us right away for first-frame firing
-				WeaponGeneric(Player);
+				// Paril: Fix for weapons who have extra checking in their WeaponGeneric.
+				CWeapon::WeaponGeneric(Player);
 				return;
 			}
 			else
@@ -363,6 +364,19 @@ void CWeapon::Think (CPlayerEntity *Player)
 
 	// call active weapon think routine
 	isQuad = (Player->Client.Timers.QuadDamage > Level.Frame);
+
+	if (isQuad)
+		damageMultiplier = 4;
+	else
+		damageMultiplier = 1;
+
+#if ROGUE_FEATURES
+	isDouble = (Player->Client.Timers.Double > Level.Frame);
+
+	if (isDouble && ((damageMultiplier == 4 && !DeathmatchFlags.dfNoStackDouble.IsEnabled()) || damageMultiplier == 1))
+		damageMultiplier *= 2;
+#endif
+
 #if XATRIX_FEATURES
 	isQuadFire = (Player->Client.Timers.QuadFire > Level.Frame);
 #endif
@@ -408,21 +422,32 @@ void CWeapon::AttackSound(CPlayerEntity *Player)
 	{
 		Player->ApplyHasteSound();
 
-		if (!Player->ApplyStrengthSound() && isQuad)
-			Player->PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
+		if (!Player->ApplyStrengthSound())
+		{	
+			if (isQuad)
+				Player->PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
+#if ROGUE_FEATURES
+			else if (isDouble)
+				Player->PlaySound (CHAN_ITEM, SoundIndex("misc/ddamage3.wav"));
+#endif
+		}
 	}
 	else if (isQuad)
 		Player->PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
+#if ROGUE_FEATURES
+	else if (isDouble)
+		Player->PlaySound (CHAN_ITEM, SoundIndex("misc/ddamage3.wav"));
+#endif
 }
 
 class CWeaponSwitcher
 {
 public:
-	CWeapon		*Weapon;
+	CWeapon					*Weapon;
 	std::vector<CAmmo*>		NeededAmmo;
 	std::vector<sint32>		NeededAmmoNumbers;
 	std::vector<CBaseItem*>	NeededItems;
-	bool		Explosive;
+	bool					Explosive;
 
 	CWeaponSwitcher (CWeapon *Weapon) :
 	  Weapon (Weapon),
@@ -455,6 +480,9 @@ typedef std::vector <CWeaponSwitcher> TWeaponSwitcherListType;
 #if XATRIX_FEATURES
 #include "cc_xatrix_ionripper.h"
 #include "cc_xatrix_phalanx.h"
+#endif
+#if ROGUE_FEATURES
+#include "cc_rogue_prox_launcher.h"
 #endif
 
 inline TWeaponSwitcherListType &WeaponSwitchList ()

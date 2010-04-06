@@ -202,15 +202,16 @@ public:
 	bool Run ();
 };
 
+#define HITSCANSTEP 100
+
 class CHitScan
 {
 public:
 	bool ThroughAndThrough;
-	bool HasEffect;
 	sint32 Damage;
 	sint32 Kick;
 
-	CHitScan (sint32 Damage, sint32 Kick, bool HasEffect, bool ThroughAndThrough) :
+	CHitScan (sint32 Damage, sint32 Kick, bool ThroughAndThrough) :
 	Damage(Damage),
 	Kick(Kick),
 	ThroughAndThrough(ThroughAndThrough) {};
@@ -229,7 +230,7 @@ class CRailGunShot : public CHitScan
 {
 public:
 	CRailGunShot (sint32 Damage, sint32 Kick) :
-	CHitScan (Damage, Kick, true, true) {};
+	CHitScan (Damage, Kick, true) {};
 
 	bool		DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
 	void		DoEffect (vec3f &start, vec3f &end, bool water);
@@ -244,7 +245,7 @@ public:
 	sint32 vSpread, hSpread;
 
 	CBullet (sint32 Damage, sint32 Kick, sint32 hSpread, sint32 vSpread, sint32 mod) :
-	CHitScan (Damage, Kick, false, false),
+	CHitScan (Damage, Kick, false),
 	vSpread(vSpread),
 	hSpread(hSpread),
 	MeansOfDeath(mod) {};
@@ -272,12 +273,21 @@ public:
 	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 Count, sint32 mod);
 };
 
+// FIXME: see todo.txt
 class CMeleeWeapon
 {
-public:
-	CMeleeWeapon();
+	CMeleeWeapon() {};
 
+public:
 	static bool		Fire (CBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 kick);
+};
+
+class CPlayerMeleeWeapon
+{
+	CPlayerMeleeWeapon () {};
+
+public:
+	static void		Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, int Reach, int Damage, int Kick, EMeansOfDeath Mod);
 };
 
 #if CLEANCTF_ENABLED
@@ -291,7 +301,9 @@ public:
 	CGrappleEntity ();
 	CGrappleEntity (sint32 Index);
 
-	ENTITYFIELDS_NONSAVABLE
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+
 	IMPLEMENT_SAVE_HEADER(CGrappleEntity)
 
 	void ResetGrapple ();

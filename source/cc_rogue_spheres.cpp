@@ -1,0 +1,549 @@
+/*
+Copyright (C) 1997-2001 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+/*
+This source file is contained as part of CleanCode Quake2, a project maintained
+by Paril, to 'clean up' and make Quake2 an easier source base to read and work with.
+
+You may use any part of this code to help create your own bases and own mods off
+this code if you wish. It is under the same license as Quake 2 source (as above),
+therefore you are free to have to fun with it. All I ask is you email me so I can
+list the mod on my page for CleanCode Quake2 to help get the word around. Thanks.
+*/
+
+//
+// cc_rogue_spheres.cpp
+// 
+//
+
+#include "cc_local.h"
+#include "cc_rogue_weaponry.h"
+
+#define DEFENDER_LIFESPAN	300
+#define HUNTER_LIFESPAN		300
+#define VENGEANCE_LIFESPAN	300
+#define MINIMUM_FLY_TIME	150
+
+void CRogueBaseSphere::SaveFields (CFile &File)
+{
+	CFlyMissileProjectile::SaveFields (File);
+	CHurtableEntity::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+
+	File.Write<FrameNumber_t> (Wait);
+	File.Write<ESphereType> (SphereType);
+	File.Write<ESphereFlags> (Flags);
+	File.Write<sint32> ((OwnedPlayer) ? OwnedPlayer->State.GetNumber() : -1);
+	File.Write<sint32> ((SphereEnemy) ? SphereEnemy->State.GetNumber() : -1);
+	File.Write<vec3f> (SavedGoal);
+}
+
+void CRogueBaseSphere::LoadFields (CFile &File)
+{
+	CFlyMissileProjectile::LoadFields (File);
+	CHurtableEntity::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+
+	Wait = File.Read<FrameNumber_t> ();
+	SphereType = File.Read<ESphereType> ();
+	Flags = File.Read<ESphereFlags> ();
+
+	sint32 Index = File.Read<sint32> ();
+	OwnedPlayer = (Index == -1) ? NULL : entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
+
+	Index = File.Read<sint32> ();
+	SphereEnemy = (Index == -1) ? NULL : entity_cast<CHurtableEntity>(Game.Entities[Index].Entity);
+
+	SavedGoal = File.Read<vec3f> ();
+}
+
+void CRogueBaseSphere::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+{
+	if ((SphereType == SPHERE_DEFENDER) || !SphereEnemy)
+		Explode ();
+}
+
+void CRogueBaseSphere::Explode ()
+{
+	if (OwnedPlayer && !(SphereFlags & SPHERE_DOPPLEGANGER))
+		OwnedPlayer->Client.OwnedSphere = NULL;
+
+	BecomeExplosion (false);
+}
+
+void CRogueBaseSphere::Fly ()
+{
+	if (Level.Frame >= Wait)
+	{
+		Explode ();
+		return;
+	}
+
+	vec3f dest = GetOwner()->State.GetOrigin();
+	dest.Z = GetOwner()->GetAbsMax().Z + 4;
+
+	if (Level.Frame % 10)
+	{
+		if (!IsVisible (this, GetOwner()))
+		{
+			State.GetOrigin() = dest;
+			Link ();
+			return;
+		}
+	}
+
+	Velocity = (dest - State.GetOrigin()) * 5;
+}
+
+void CRogueBaseSphere::Chase (bool stupidChase)
+{
+	if (Level.Frame >= Wait || (SphereEnemy && SphereEnemy->Health < 1))
+	{
+		Explode ();
+		return;
+	}
+
+	vec3f dest = SphereEnemy->State.GetOrigin();
+	if (SphereEnemy->EntityFlags & ENT_PLAYER)
+		dest.Z += SphereEnemy->ViewHeight;
+
+	if (IsVisible (this, SphereEnemy) || stupidChase)
+	{
+		// if moving, hunter sphere uses active sound
+		if (!stupidChase)
+			State.GetSound() = SoundIndex ("spheres/h_active.wav");
+
+		vec3f dir = (dest - State.GetOrigin()).GetNormalized();
+		State.GetAngles() = dir.ToAngles();
+		Velocity = dir * 500;
+		SavedGoal = dest;
+	}
+	else if (SavedGoal.IsZero())
+	{
+		vec3f dir = (SphereEnemy->State.GetOrigin() - State.GetOrigin()).GetNormalized();
+		State.GetAngles() = dir.ToAngles();
+
+		// if lurking, hunter sphere uses lurking sound
+		State.GetSound() = SoundIndex ("spheres/h_lurk.wav");
+		Velocity.Clear();
+	}
+	else
+	{
+		vec3f dir = SavedGoal - State.GetOrigin();
+		float dist = dir.Normalize();
+
+		if (dist > 1)
+		{
+			State.GetAngles() = dir.ToAngles();
+
+			if(dist > 500)			
+				Velocity = dir * 500;
+			else if (dist < 20)
+				Velocity = dir * (dist / 0.1f);
+			else
+				Velocity = dir * dist;
+
+			// if moving, hunter sphere uses active sound
+			if (!stupidChase)
+				State.GetSound() = SoundIndex ("spheres/h_active.wav");
+		}
+		else
+		{
+			dir = SphereEnemy->State.GetOrigin() - State.GetOrigin();
+			dist = dir.Normalize();
+			State.GetAngles() = dir.ToAngles();
+
+			// if not moving, hunter sphere uses lurk sound
+			if (!stupidChase)
+				State.GetSound() = SoundIndex ("spheres/h_lurk.wav");
+
+			Velocity.Clear();
+		}
+	}
+}
+
+void CRogueBaseSphere::BaseTouch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod)
+{
+	if (SphereFlags & SPHERE_DOPPLEGANGER)
+	{
+		if (Other == Team.Master)
+			return;
+
+		CanTakeDamage = false;
+		SetOwner (Team.Master);
+		Team.Master = NULL;
+	}
+	else
+	{
+		if (Other == GetOwner())
+			return;
+
+		// PMM - don't blow up on bodies
+		if (!strcmp(Other->ClassName.c_str(), "bodyque"))
+			return;
+	}
+
+	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	{
+		Free ();
+		return;
+	}
+
+	if (Other->EntityFlags & ENT_HURTABLE)
+	{
+		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->normal,
+			10000, 1, DAMAGE_DESTROY_ARMOR, Mod);
+	}
+	else
+		SplashDamage (GetOwner(), 512, GetOwner(), 256, Mod);
+
+	Explode ();
+}
+
+void CRogueBaseSphere::OwnSphere (CPlayerEntity *Player)
+{
+	if (Player->Client.OwnedSphere && Player->Client.OwnedSphere->GetInUse())
+		Player->Client.OwnedSphere->Free ();
+
+	Player->Client.OwnedSphere = this;
+}
+
+// DEFENDER
+void CRogueDefenderSphere::Pain (CBaseEntity *Other, sint32 Damage)
+{
+	if (Other == GetOwner() || !(Other->EntityFlags & ENT_HURTABLE))
+		return;
+
+	SphereEnemy = entity_cast<CHurtableEntity>(Other);
+}
+
+void CRogueDefenderSphere::Shoot (CHurtableEntity *At)
+{
+	if (!(At->GetInUse()) || At->Health <= 0)
+		return;
+	if (At == GetOwner())
+		return;
+	if (AttackFinished > Level.Frame)
+		return;
+	if (!IsVisible(this, At))
+		return;
+
+	CGreenBlasterProjectile::Spawn (GetOwner(), State.GetOrigin() + vec3f(0, 0, 2), (At->State.GetOrigin() - State.GetOrigin()).GetNormalized(), 10, 1000, EF_BLASTER | EF_TRACKER);
+	AttackFinished = Level.Frame + 4;
+}
+
+void CRogueDefenderSphere::Think ()
+{
+	if (!GetOwner())
+	{
+		Free ();
+		return;
+	}
+
+	// if we've exited the level, just remove ourselves.
+	if (Level.IntermissionTime)
+	{	
+		Explode ();
+		return;
+	}	
+
+	if (entity_cast<CHurtableEntity>(GetOwner())->Health <= 0)
+	{
+		Explode ();
+		return;
+	}
+
+	if ((++State.GetFrame()) > 19)
+		State.GetFrame() = 0;
+
+	if (SphereEnemy)
+	{
+		if (SphereEnemy->Health > 0)
+			Shoot (SphereEnemy);
+		else
+			SphereEnemy = NULL;
+	}
+
+	Fly ();
+
+	if (GetInUse())
+		NextThink = Level.Frame + FRAMETIME;
+}
+
+void CRogueDefenderSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
+{
+	CRogueDefenderSphere *Sphere = CreateBaseSphere<CRogueDefenderSphere> (Owner, SPHERE_DEFENDER, Flags);
+
+	Sphere->State.GetModelIndex() = ModelIndex("models/items/defender/tris.md2");
+	Sphere->State.GetModelIndex(2) = ModelIndex("models/items/shell/tris.md2");
+	Sphere->State.GetSound() = SoundIndex ("spheres/d_idle.wav");
+	Sphere->Wait = Level.Frame + DEFENDER_LIFESPAN;
+}
+
+IMPLEMENT_SAVE_SOURCE(CRogueDefenderSphere);
+
+// VENGEANCE
+void CRogueVengeanceSphere::Pain (CBaseEntity *Other, sint32 Damage)
+{
+	if (SphereEnemy)
+		return;
+
+	if (!(SphereFlags & SPHERE_DOPPLEGANGER))
+	{
+		if (OwnedPlayer->Health >= 25)
+			return;
+		if (Other == GetOwner())
+			return;
+	}
+	else
+		Wait = Level.Frame + MINIMUM_FLY_TIME;
+
+	if ((Wait - Level.Frame) < MINIMUM_FLY_TIME)
+		Wait = Level.Frame + MINIMUM_FLY_TIME;
+
+	State.GetEffects() |= EF_ROCKET;
+	Touchable = true;
+	SphereEnemy = entity_cast<CHurtableEntity>(Other);
+}
+
+void CRogueVengeanceSphere::Think ()
+{
+	// if we've exited the level, just remove ourselves.
+	if (Level.IntermissionTime)
+	{	
+		Explode ();
+		return;
+	}	
+
+	if (!(GetOwner()) && !(SphereFlags & SPHERE_DOPPLEGANGER))
+	{
+		Free ();
+		return;
+	}
+
+	if (SphereEnemy)
+		Chase (true);
+	else
+		Fly ();
+
+	if (GetInUse())
+		NextThink = Level.Frame + FRAMETIME;
+}
+
+void CRogueVengeanceSphere::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+{
+	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
+}
+
+void CRogueVengeanceSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
+{
+	CRogueVengeanceSphere *Sphere = CreateBaseSphere<CRogueVengeanceSphere> (Owner, SPHERE_VENGEANCE, Flags);
+
+	Sphere->State.GetModelIndex() = ModelIndex("models/items/vengnce/tris.md2");
+	Sphere->State.GetSound() = SoundIndex ("spheres/v_idle.wav");
+	Sphere->Wait = Level.Frame + VENGEANCE_LIFESPAN;
+	Sphere->Touchable = false;
+	Sphere->AngularVelocity.Set (30, 30, 0);
+}
+
+IMPLEMENT_SAVE_SOURCE(CRogueVengeanceSphere);
+
+void BodyGib (CPlayerEntity *Player)
+{
+	Player->PlaySound (CHAN_BODY, SoundIndex("misc/udeath.wav"));
+	for (int n = 0; n < 4; n++)
+		CGibEntity::Spawn (Player, GameMedia.Gib_SmallMeat, 50, GIB_ORGANIC);
+	CGibEntity::Spawn (Player, GameMedia.Gib_Skull, 50, GIB_ORGANIC);
+}
+
+// VENGEANCE
+void CRogueHunterSphere::Pain (CBaseEntity *Other, sint32 Damage)
+{
+	if (SphereEnemy)
+		return;
+
+	if (!(SphereFlags & SPHERE_DOPPLEGANGER))
+	{
+		if (GetOwner() && (OwnedPlayer->Health > 0))
+			return;
+
+		if (Other == GetOwner())
+			return;
+	}
+	else
+		Wait = Level.Frame + MINIMUM_FLY_TIME;
+
+	if ((Wait - Level.Frame) < MINIMUM_FLY_TIME)
+		Wait = Level.Frame + MINIMUM_FLY_TIME;
+
+	State.GetEffects() |= (EF_BLASTER | EF_TRACKER);
+	Touchable = true;
+	SphereEnemy = entity_cast<CHurtableEntity>(Other);
+
+	if ((SphereFlags & SPHERE_DOPPLEGANGER)  || !OwnedPlayer)
+		return;
+
+	if (!DeathmatchFlags.dfForceRespawn.IsEnabled())
+	{
+		vec3f dir = Other->State.GetOrigin() - State.GetOrigin();
+		float dist = dir.Length();
+
+		if (GetOwner() && (dist >= 192))
+		{
+			// detach owner from body and send him flying
+			PhysicsType = PHYSICS_FLYMISSILE;
+
+			// gib like we just died, even though we didn't, really.
+			BodyGib(OwnedPlayer);
+
+			// move the sphere to the owner's current viewpoint.
+			// we know it's a valid spot (or will be momentarily)
+			State.GetOrigin() = OwnedPlayer->State.GetOrigin() + vec3f(0, 0, OwnedPlayer->ViewHeight);
+
+			// move the player's origin to the sphere's new origin
+			OwnedPlayer->State.GetOrigin() = State.GetOrigin();
+			OwnedPlayer->State.GetAngles() = State.GetAngles();
+			OwnedPlayer->Client.ViewAngle = State.GetAngles();
+			
+			OwnedPlayer->GetMins().Set(-5, -5, -5);
+			OwnedPlayer->GetMaxs().Set(5, 5, 5);
+			OwnedPlayer->Client.PlayerState.GetFov() = 140;
+			OwnedPlayer->State.GetModelIndex() = 0;
+			OwnedPlayer->State.GetModelIndex(2) = 0;
+			OwnedPlayer->ViewHeight = 8;
+			OwnedPlayer->GetSolid() = SOLID_NOT;
+			OwnedPlayer->Flags |= FL_SAM_RAIMI;
+			OwnedPlayer->Link ();
+
+			// PMM - set bounding box so we don't clip out of world
+			GetSolid() = SOLID_BBOX;
+			Link ();
+		}
+	}
+}
+
+void CRogueHunterSphere::ChangeYaw (float IdealYaw)
+{
+	float current = AngleModf (State.GetAngles().Y);
+
+	if (current == IdealYaw)
+		return;
+
+	float move = IdealYaw - current;
+	if (IdealYaw > current)
+	{
+		if (move >= 180)
+			move = move - 360;
+	}
+	else
+	{
+		if (move <= -180)
+			move = move + 360;
+	}
+
+	if (move > 0)
+	{
+		if (move > 40)
+			move = 40;
+	}
+	else
+	{
+		if (move < -40)
+			move = -40;
+	}
+	
+	State.GetAngles().Y = AngleModf(current + move);
+}
+
+void CRogueHunterSphere::Think ()
+{
+	// if we've exited the level, just remove ourselves.
+	if (Level.IntermissionTime)
+	{	
+		Explode ();
+		return;
+	}	
+
+	if (!GetOwner() && !(SphereFlags & SPHERE_DOPPLEGANGER))
+	{
+		Free ();
+		return;
+	}
+
+	float IdealYaw = 0;
+
+	if (GetOwner())
+		IdealYaw = OwnedPlayer->State.GetAngles().Y;
+	else if (SphereEnemy)		// fired by doppleganger
+		IdealYaw = (SphereEnemy->State.GetOrigin() - State.GetOrigin()).ToAngles().Y;
+
+	ChangeYaw (IdealYaw);
+
+	if (SphereEnemy)
+	{
+		Chase (false);
+
+		// deal with sam raimi cam
+		if (OwnedPlayer && (OwnedPlayer->Flags & FL_SAM_RAIMI)) 
+		{
+			if (GetInUse())
+			{
+				OwnedPlayer->LookAtKiller (this, SphereEnemy);
+
+				// owner is flying with us, move him too
+				OwnedPlayer->PhysicsType = PHYSICS_FLYMISSILE;
+				OwnedPlayer->ViewHeight = State.GetOrigin().Z - OwnedPlayer->State.GetOrigin().Z;
+				OwnedPlayer->State.GetOrigin() = State.GetOrigin();
+				OwnedPlayer->Velocity = Velocity;
+				OwnedPlayer->GetMins().Clear();
+				OwnedPlayer->GetMaxs().Clear();
+				OwnedPlayer->Link ();
+			}
+			else	// sphere timed out
+			{
+				OwnedPlayer->Velocity.Clear();
+				OwnedPlayer->PhysicsType = PHYSICS_NONE;
+				OwnedPlayer->Link ();
+			}
+		}
+	}
+	else 
+		Fly ();
+
+	if (GetInUse())
+		NextThink = Level.Frame + FRAMETIME;
+}
+
+void CRogueHunterSphere::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+{
+	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
+}
+
+void CRogueHunterSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
+{
+	CRogueHunterSphere *Sphere = CreateBaseSphere<CRogueHunterSphere> (Owner, SPHERE_VENGEANCE, Flags);
+
+	Sphere->State.GetModelIndex() = ModelIndex("models/items/hunter/tris.md2");
+	Sphere->State.GetSound() = SoundIndex ("spheres/h_idle.wav");
+	Sphere->Wait = Level.Frame + HUNTER_LIFESPAN;
+	Sphere->Touchable = false;
+}
+
+IMPLEMENT_SAVE_SOURCE(CRogueHunterSphere);

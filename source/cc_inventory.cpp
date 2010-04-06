@@ -438,7 +438,7 @@ void Cmd_WeapPrev_f (CPlayerEntity *Player)
 	// scan  for the next valid one
 	for (uint8 i = 1; i <= GetNumItems(); i++)
 	{
-		sint32 index = (selectedWeaponIndex + i) % MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + MAX_ITEMS - i) % MAX_ITEMS;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
@@ -447,7 +447,7 @@ void Cmd_WeapPrev_f (CPlayerEntity *Player)
 		if (! (Item->Flags & ITEMFLAG_WEAPON) )
 			continue;
 		Item->Use (Player);
-		if (Player->Client.NewWeapon && Player->Client.NewWeapon->Item == Item || Player->Client.Persistent.Weapon->Item == Item)
+		if (Player->Client.NewWeapon && Player->Client.NewWeapon->Item == Item)
 			return;	// successful
 	}
 }
@@ -469,7 +469,7 @@ void Cmd_WeapNext_f (CPlayerEntity *Player)
 	// scan  for the next valid one
 	for (uint8 i = 1; i <= GetNumItems(); i++)
 	{
-		sint32 index = (selectedWeaponIndex + MAX_CS_ITEMS - i) % MAX_CS_ITEMS;
+		sint32 index = (selectedWeaponIndex + i) % MAX_ITEMS;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
@@ -478,7 +478,7 @@ void Cmd_WeapNext_f (CPlayerEntity *Player)
 		if (! (Item->Flags & ITEMFLAG_WEAPON) )
 			continue;
 		Item->Use (Player);
-		if (Player->Client.NewWeapon && Player->Client.NewWeapon->Item == Item || Player->Client.Persistent.Weapon->Item == Item)
+		if (Player->Client.NewWeapon && Player->Client.NewWeapon->Item == Item)
 			return;	// successful
 	}
 }
@@ -683,7 +683,7 @@ void Cmd_Give_f (CPlayerEntity *Player)
 			it = GetItemByIndex(i);
 			if (!(it->Flags & ITEMFLAG_GRABBABLE))
 				continue;
-			if (it->Flags & (ITEMFLAG_HEALTH|ITEMFLAG_ARMOR|ITEMFLAG_WEAPON|ITEMFLAG_AMMO))
+			if (it->Flags & (ITEMFLAG_HEALTH|ITEMFLAG_ARMOR|ITEMFLAG_WEAPON|ITEMFLAG_AMMO|ITEMFLAG_NOT_GIVEABLE))
 				continue;
 			Player->Client.Persistent.Inventory.Set (i, 1);
 		}
@@ -705,6 +705,12 @@ void Cmd_Give_f (CPlayerEntity *Player)
 				return;
 			}
 		}
+	}
+
+	if (it->Flags & ITEMFLAG_NOT_GIVEABLE)		
+	{
+		Player->PrintToClient (PRINT_HIGH, "Item cannot be given\n");
+		return;							
 	}
 
 	if (!(it->Flags & ITEMFLAG_GRABBABLE))

@@ -734,7 +734,7 @@ void CTank::Attack ()
 	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
 		return;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health < 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health < 0)
 	{
 		CurrentMove = &TankMoveAttackStrike;
 		AIFlags &= ~AI_BRUTAL;

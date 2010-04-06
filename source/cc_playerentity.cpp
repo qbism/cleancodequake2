@@ -42,6 +42,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_pmove.h"
 #endif
 
+#if !MONSTERS_USE_PATHFINDING
+IMPLEMENT_SAVE_SOURCE(CPlayerNoise);
+#endif
 
 CPersistentData::CPersistentData ()
 {
@@ -187,6 +190,10 @@ void CClient::Write (CFile &File)
 
 	SaveWeapon (File, NewWeapon);
 
+#if ROGUE_FEATURES
+	File.Write<sint32> ((OwnedSphere != NULL) ? OwnedSphere->State.GetNumber() : -1);
+#endif
+
 	Persistent.Save (File);
 	Respawn.Save (File);
 }
@@ -223,6 +230,12 @@ void CClient::Load (CFile &File)
 	Flood = File.Read<client_Flood_t> ();
 
 	LoadWeapon (File, &NewWeapon);
+
+#if ROGUE_FEATURES
+	sint32 Index = File.Read<sint32> ();
+	if (Index != -1)
+		OwnedSphere = entity_cast<CRogueBaseSphere>(Game.Entities[Index].Entity);
+#endif
 
 	Persistent.Load (File);
 	Respawn.Load (File);
@@ -579,8 +592,13 @@ void CPlayerEntity::PutInServer ()
 	GetSvFlags() &= ~SVF_DEADMONSTER;
 	if (!Client.Respawn.MenuState.Player)
 		Client.Respawn.MenuState.Initialize (this);
+
 #if CLEANCODE_IRC
 	Client.Respawn.IRC.Player = this;
+#endif
+
+#if ROGUE_FEATURES
+	Flags &= ~FL_SAM_RAIMI;		// PGM - turn off sam raimi flag
 #endif
 
 	GetMins() = mins;
@@ -717,6 +735,11 @@ void CPlayerEntity::InitItemMaxValues ()
 #if XATRIX_FEATURES
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_MAGSLUGS] = 50;
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_TRAP] = 5;
+#endif
+#if ROGUE_FEATURES
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_PROX] = 50;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_FLECHETTES] = 200;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_TESLA] = 50;
 #endif
 }
 
@@ -1116,6 +1139,8 @@ SV_CalcGunOffset
 */
 inline void CPlayerEntity::CalcGunOffset (vec3f &forward, vec3f &right, vec3f &up, float xyspeed)
 {
+	// FIXME: heatbeam no bob
+
 	// gun angles from bobbing
 	vec3f angles	(	(bobcycle & 1) ? (-Client.PlayerState.GetGunAngles ().Z) : (xyspeed * bobfracsin * 0.005), 
 						(bobcycle & 1) ? (-Client.PlayerState.GetGunAngles ().Y) : (xyspeed * bobfracsin * 0.01),
@@ -1200,6 +1225,10 @@ static const colorf QuadColor (0, 0, 1, 0.08f);
 #if XATRIX_FEATURES
 static const colorf QuadFireColor (1, 0.2f, 0.5f, 0.08f);
 #endif
+#if ROGUE_FEATURES
+static const colorf DoubleColor (0.9f, 0.7f, 0, 0.08f);
+static const colorf IRColor (0, 0, 0, 0.2f);
+#endif
 static const colorf InvulColor (1, 1, 0, 0.08f);
 static const colorf EnviroColor (0, 1, 0, 0.08f);
 static const colorf BreatherColor (0.4f, 1, 0.4f, 0.04f);
@@ -1228,8 +1257,20 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (QuadColor, Client.Persistent.ViewBlend);
 	}
+#if ROGUE_FEATURES
+	else if (Client.Timers.Double > Level.Frame)
+	{
+		sint32 remaining = Client.Timers.Double - Level.Frame;
+
+		if (remaining == 30)	// beginning to fade
+			PlaySound (CHAN_ITEM, SoundIndex("misc/ddamage2.wav"));
+
+		if (remaining > 30 || (remaining & 4) )
+			SV_AddBlend (DoubleColor, Client.Persistent.ViewBlend);
+	}
+#endif
 #if XATRIX_FEATURES
-	if (Client.Timers.QuadFire > Level.Frame)
+	else if (Client.Timers.QuadFire > Level.Frame)
 	{
 		sint32 remaining = Client.Timers.QuadFire - Level.Frame;
 
@@ -1270,6 +1311,28 @@ inline void CPlayerEntity::CalcBlend ()
 		if (remaining > 30 || (remaining & 4) )
 			SV_AddBlend (BreatherColor, Client.Persistent.ViewBlend);
 	}
+
+#if ROGUE_FEATURES
+//PGM
+	if (Client.Timers.Nuke > Level.Frame)
+		SV_AddBlend (colorf (1, 1, 1, (Client.Timers.Nuke - Level.Frame) / 20.0), Client.Persistent.ViewBlend);
+
+	if (Client.Timers.IR > Level.Frame)
+	{
+		sint32 remaining = Client.Timers.IR - Level.Frame;
+
+		if(remaining > 30 || (remaining & 4))
+		{
+			Client.PlayerState.GetRdFlags() |= RDF_IRGOGGLES;
+			SV_AddBlend (IRColor, Client.Persistent.ViewBlend);
+		}
+		else
+			Client.PlayerState.GetRdFlags() &= ~RDF_IRGOGGLES;
+	}
+	else
+		Client.PlayerState.GetRdFlags() &= ~RDF_IRGOGGLES;
+//PGM
+#endif
 
 	// add for damage
 	if (Client.DamageBlend.A)
@@ -1553,8 +1616,17 @@ inline void CPlayerEntity::SetClientEffects ()
 {
 	State.GetEffects() = State.GetRenderEffects() = 0;
 
+#if ROGUE_FEATURES
+	State.GetRenderEffects() = RF_IR_VISIBLE;
+#endif
+
 	if (Health <= 0 || Level.IntermissionTime)
 		return;
+
+#if ROGUE_FEATURES
+	if (Flags & FL_DISGUISED)
+		State.GetRenderEffects() |= RF_USE_DISGUISE;
+#endif
 
 	if (Client.PowerArmorTime)
 	{
@@ -1599,6 +1671,20 @@ inline void CPlayerEntity::SetClientEffects ()
 		if (remaining > 30 || (remaining & 4) )
 			State.GetEffects() |= EF_DOUBLE; // Paril disting.
 	}
+#endif
+
+#if ROGUE_FEATURES
+	if (Client.Timers.Double > Level.Frame)
+	{
+		sint32 remaining = Client.Timers.Double - Level.Frame;
+		if (remaining > 30 || (remaining & 4) )
+			State.GetEffects() |= EF_DOUBLE;
+	}
+	if ((Client.OwnedSphere) && (Client.OwnedSphere->SpawnFlags == 1))
+		State.GetEffects() |= EF_HALF_DAMAGE;
+
+	if (Client.Timers.Tracker > Level.Frame)
+		State.GetEffects() |= EF_TRACKERTRAIL;
 #endif
 
 	if (Client.Timers.Invincibility > Level.Frame)
@@ -2305,6 +2391,13 @@ void CPlayerEntity::SetStats ()
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Quad->GetIconIndex();
 			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.QuadDamage - Level.Frame)/10;
 		}
+#if ROGUE_FEATURES
+		else if (Client.Timers.Double > Level.Frame)
+		{
+			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Double->GetIconIndex();
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.Double - Level.Frame)/10;
+		}
+#endif
 #if XATRIX_FEATURES
 		else if (Client.Timers.QuadFire > Level.Frame)
 		{
@@ -2327,6 +2420,30 @@ void CPlayerEntity::SetStats ()
 			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::Rebreather->GetIconIndex();
 			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.Rebreather - Level.Frame)/10;
 		}
+#if ROGUE_FEATURES
+		else if (Client.OwnedSphere)
+		{
+			switch (Client.OwnedSphere->SphereType)
+			{
+			case SPHERE_DEFENDER:
+				Client.PlayerState.GetStat (STAT_TIMER_ICON) = ImageIndex ("p_defender");
+				break;
+			case SPHERE_HUNTER:
+				Client.PlayerState.GetStat (STAT_TIMER_ICON) = ImageIndex ("p_hunter");
+				break;
+			case SPHERE_VENGEANCE:
+				Client.PlayerState.GetStat (STAT_TIMER_ICON) = ImageIndex ("p_vengeance");
+				break;
+			}
+
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.OwnedSphere->Wait - Level.Frame) / 10;
+		}
+		else if (Client.Timers.IR > Level.Frame)
+		{
+			Client.PlayerState.GetStat (STAT_TIMER_ICON) = NItems::IRGoggles->GetIconIndex();
+			Client.PlayerState.GetStat (STAT_TIMER) = (Client.Timers.IR - Level.Frame)/10;
+		}
+#endif
 		// Paril, show silencer
 		else if (Client.Timers.SilencerShots)
 		{
@@ -2622,6 +2739,14 @@ void CPlayerEntity::MoveToIntermission ()
 	Client.Timers.Invincibility = 0;
 	Client.Timers.Rebreather = 0;
 	Client.Timers.EnvironmentSuit = 0;
+
+#if ROGUE_FEATURES
+	Client.PlayerState.GetRdFlags() &= ~RDF_IRGOGGLES;		// PGM
+	Client.Timers.IR = 0;					// PGM
+	Client.Timers.Nuke = 0;					// PMM
+	Client.Timers.Double = 0;				// PMM
+#endif
+
 #if XATRIX_FEATURES
 	Client.Timers.QuadFire = 0;
 #endif
@@ -2692,7 +2817,7 @@ void CPlayerEntity::LookAtKiller (CBaseEntity *Inflictor, CBaseEntity *Attacker)
 		return;
 	}
 
-	Client.KillerYaw = (dir.X) ? (180/M_PI*atan2f(dir.Y, dir.X)) : (((dir.Y > 0) ? 90 : dir.Y < 0) ? -90 : 0);
+	Client.KillerYaw = (dir.X) ? (180 / M_PI * atan2f(dir.Y, dir.X)) : (((dir.Y > 0) ? 90 : (dir.Y < 0 ? 270 : 0)));
 	if (Client.KillerYaw < 0)
 		Client.KillerYaw += 360;
 }
@@ -2863,7 +2988,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	else
 		Client.PlayerState.GetPMove()->pmType = PMT_NORMAL;
 
-	Client.PlayerState.GetPMove()->gravity = CvarList[CV_GRAVITY].Float();
+	Client.PlayerState.GetPMove()->gravity = CvarList[CV_GRAVITY].Float() * GravityMultiplier;
 	pm.state = *Client.PlayerState.GetPMove();
 
 	for (sint32 i = 0; i < 3; i++)
@@ -2910,6 +3035,12 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	}
 
 	ViewHeight = pm.viewHeight;
+
+#if ROGUE_FEATURES
+		if (Flags & FL_SAM_RAIMI)
+			ViewHeight = 8;
+#endif
+
 	WaterInfo.Level = pm.waterLevel;
 	WaterInfo.Type = pm.waterType;
 	GroundEntity = (pm.groundEntity) ? pm.groundEntity->Entity : NULL;
@@ -2932,6 +3063,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 #endif
 
 	Link ();
+	GravityMultiplier = 1.0f;
 
 	if (!NoClip && !(CvarList[CV_MAP_DEBUG].Boolean()))
 		G_TouchTriggers (this);
@@ -3255,12 +3387,47 @@ void CPlayerEntity::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 D
 	Client.Timers.EnvironmentSuit = 0;
 	Flags &= ~FL_POWER_ARMOR;
 
+#if ROGUE_FEATURES
+	Client.Timers.Double = 0;
+
+	// if there's a sphere around, let it know the player died.
+	// vengeance and hunter will die if they're not attacking,
+	// defender should always die
+	if (Client.OwnedSphere)
+		Client.OwnedSphere->Die (this, this, 0, vec3fOrigin);
+
+	// if we've been killed by the tracker, GIB!
+	if ((meansOfDeath & ~MOD_FRIENDLY_FIRE) == MOD_TRACKER)
+	{
+		Health = -100;
+		Damage = 400;
+	}
+
+	// make sure no trackers are still hurting us.
+	if (Client.Timers.Tracker)
+		RemoveAttackingPainDaemons ();
+	
+	// if we got obliterated by the nuke, don't gib
+	if ((Health < -80) && (meansOfDeath == MOD_NUKE))
+		Flags |= FL_NOGIB;
+#endif
+
 	if (Health < -40)
-	{	// gib
-		PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
-		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
-		TossHead (Damage);
+	{
+#if ROGUE_FEATURES
+		// don't toss gibs if we got vaped by the nuke
+		if (!(Flags & FL_NOGIB))
+		{
+#endif
+			// gib
+			PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
+			for (sint32 n = 0; n < 4; n++)
+				CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+			TossHead (Damage);
+#if ROGUE_FEATURES
+		}
+		Flags &= ~FL_NOGIB;
+#endif
 
 		CanTakeDamage = false;
 //ZOID
@@ -3891,6 +4058,18 @@ void CPlayerEntity::Disconnect ()
 		DeathmatchFlags.dfDmTechs.IsEnabled()) 
 		DeadDropTech();
 
+#if ROGUE_FEATURES
+	if(Client.Timers.Tracker)
+		RemoveAttackingPainDaemons ();
+
+	if (Client.OwnedSphere)
+	{
+		if (Client.OwnedSphere->GetInUse())
+			Client.OwnedSphere->Free ();
+		Client.OwnedSphere = NULL;
+	}
+#endif
+
 	// send effect
 	CMuzzleFlash(State.GetOrigin(), State.GetNumber(), MZ_LOGIN).Send();
 
@@ -3971,9 +4150,38 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 		case MOD_BFG_BLAST:
 			message = "should have used a smaller gun";
 			break;
+
 #if XATRIX_FEATURES
 		case MOD_TRAP:
-		 	message = "got sucked into his own trap";
+			switch (Client.Respawn.Gender)
+			{
+			case GENDER_MALE:
+				message = "got sucked into his own trap";
+				break;
+			case GENDER_FEMALE:
+				message = "got sucked into her own trap";
+				break;
+			default:
+				message = "got sucked into it's own trap";
+				break;
+			}
+			break;
+#endif
+
+#if ROGUE_FEATURES
+		case MOD_DOPPLE_EXPLODE:
+			switch (Client.Respawn.Gender)
+			{
+			case GENDER_MALE:
+				message = "got caught in his own trap";
+				break;
+			case GENDER_FEMALE:
+				message = "got caught in her own trap";
+				break;
+			default:
+				message = "got caught in it's own trap";
+				break;
+			}
 			break;
 #endif
 		default:
@@ -3986,7 +4194,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 				message = "killed herself";
 				break;
 			default:
-				message = "killed himself";
+				message = "killed itself";
 				break;
 			}
 			break;
@@ -4074,6 +4282,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 		case MOD_BARREL:
 			message = "was blown to smithereens by";
 			break;
+
 #if CLEANCTF_ENABLED
 //ZOID
 		case MOD_GRAPPLE:
@@ -4082,6 +4291,7 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 			break;
 //ZOID
 #endif
+
 #if XATRIX_FEATURES
 		case MOD_RIPPER:
 			message = "was ripped to shreds by";
@@ -4089,6 +4299,64 @@ void CPlayerEntity::Obituary (CBaseEntity *Attacker)
 			break;
 		case MOD_TRAP:
 			message = "was caught in trap by";
+			break;
+#endif
+
+#if ROGUE_FEATURES
+		case MOD_CHAINFIST:
+			message = "was shredded by";
+			message2 = "'s ripsaw";
+			break;
+		case MOD_DISINTEGRATOR:
+			message = "lost his grip courtesy of";
+			message2 = "'s disintegrator";
+			break;
+		case MOD_ETF_RIFLE:
+			message = "was perforated by";
+			break;
+		case MOD_HEATBEAM:
+			message = "was scorched by";
+			message2 = "'s plasma beam";
+			break;
+		case MOD_TESLA:
+			message = "was enlightened by";
+			message2 = "'s tesla mine";
+			break;
+		case MOD_PROX:
+			message = "got too close to";
+			message2 = "'s proximity mine";
+			break;
+		case MOD_NUKE:
+			message = "was nuked by";
+			message2 = "'s antimatter bomb";
+			break;
+		case MOD_VENGEANCE_SPHERE:
+			message = "was purged by";
+			message2 = "'s vengeance sphere";
+			break;
+		case MOD_DEFENDER_SPHERE:
+			message = "had a blast with";
+			message2 = "'s defender sphere";
+			break;
+		case MOD_HUNTER_SPHERE:
+			message = "was killed like a dog by";
+			message2 = "'s hunter sphere";
+			break;
+		case MOD_TRACKER:
+			message = "was annihilated by";
+			message2 = "'s disruptor";
+			break;
+		case MOD_DOPPLE_EXPLODE:
+			message = "was blown up by";
+			message2 = "'s doppleganger";
+			break;
+		case MOD_DOPPLE_VENGEANCE:
+			message = "was purged by";
+			message2 = "'s doppleganger";
+			break;
+		case MOD_DOPPLE_HUNTER:
+			message = "was hunted down by";
+			message2 = "'s doppleganger";
 			break;
 #endif
 		}
@@ -4239,4 +4507,20 @@ void CPlayerEntity::PushInDirection (vec3f vel)
 			PlaySound (CHAN_AUTO, GameMedia.FlySound());
 		}
 	}
+}
+
+void CPlayerEntity::RemoveAttackingPainDaemons ()
+{
+	CBaseEntity *tracker = NULL;
+
+	do
+	{
+		tracker = CC_FindByClassName<CBaseEntity, ENT_BASE> (tracker, "pain daemon");
+
+		if (tracker->Enemy == this)
+			tracker->Free ();
+	}
+	while (tracker);
+
+	Client.Timers.Tracker = 0;
 }

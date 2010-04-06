@@ -228,7 +228,7 @@ void CSoldierHyper::Attack ()
 
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
-		CurrentMove = &SoldierHMoveAttack1;
+		CurrentMove = &SoldierHyperMoveAttack1;
 		AttackFinished = Level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}

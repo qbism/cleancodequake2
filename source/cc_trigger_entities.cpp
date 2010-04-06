@@ -96,6 +96,9 @@ LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 #define TRIGGER_MONSTER		1
 #define TRIGGER_NOT_PLAYER	2
 #define TRIGGER_TRIGGERED	4
+#if ROGUE_FEATURES
+#define TRIGGER_TOGGLE		8
+#endif
 
 CTriggerBase::CTriggerBase () :
   CBaseEntity (),
@@ -169,6 +172,16 @@ void CTriggerBase::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *su
 
 void CTriggerBase::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
+#if ROGUE_FEATURES
+	if (SpawnFlags & TRIGGER_TOGGLE)
+	{
+		GetSolid() = (GetSolid() == SOLID_TRIGGER) ? SOLID_NOT : SOLID_TRIGGER;	
+
+		Link ();
+		return;
+	}
+
+#endif
 	User = Activator;
 	Trigger ();
 };
@@ -304,7 +317,11 @@ void CTriggerMultiple::Spawn ()
 	if (!Wait)
 		Wait = 2;
 
-	if (SpawnFlags & TRIGGER_TRIGGERED)
+	if (SpawnFlags & (TRIGGER_TRIGGERED
+#if ROGUE_FEATURES
+		| TRIGGER_TOGGLE
+#endif
+		))
 	{
 		GetSolid() = SOLID_NOT;
 		ActivateUse = true;
@@ -523,6 +540,10 @@ void			CTriggerCounter::LoadFields (CFile &File)
 LINK_CLASSNAME_TO_CLASS ("trigger_counter", CTriggerCounter);
 
 #define PUSH_ONCE		1
+#if ROGUE_FEATURES
+#define PUSH_START_OFF	2
+#define PUSH_SILENT		4
+#endif
 
 /*QUAKED trigger_push (.5 .5 .5) ? PUSH_ONCE
 Pushes the player
@@ -581,6 +602,10 @@ public:
 
 	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
+#if ROGUE_FEATURES
+		GetSolid() = (GetSolid() == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT;
+		Link ();
+#endif
 	};
 
 	void Spawn ()
@@ -604,6 +629,24 @@ public:
 			Free ();
 			return;
 		}
+
+		Usable = false;
+
+#if ROGUE_FEATURES
+		if (TargetName)		// toggleable
+		{
+			Usable = true;
+			if (SpawnFlags & PUSH_START_OFF)
+				GetSolid() = SOLID_NOT;
+		}
+		else if (SpawnFlags & PUSH_START_OFF)
+		{
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "START_OFF but not targeted.\n");
+			GetSvFlags() = 0;
+			Touchable = false;
+			GetSolid() = SOLID_BSP;
+		}
+#endif
 
 		Link ();
 	};
@@ -861,6 +904,11 @@ Changes the touching entites gravity to
 the value of "gravity".  1.0 is standard
 gravity for the Level.
 */
+#if ROGUE_FEATURES
+#define GRAVITY_TOGGLE		1
+#define GRAVITY_START_OFF	2
+#endif
+
 class CTriggerGravity : public CTriggerMultiple
 {
 public:
@@ -891,17 +939,33 @@ public:
 
 	void Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
+#if ROGUE_FEATURES
+		GetSolid() = (GetSolid() == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT;
+		Link ();
+#endif
 	};
 
 	void Spawn ()
 	{
 		Touchable = true;
+		Usable = false;
 		if (!Gravity)
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No gravity set\n");
 			Free ();
 			return;
 		}
+
+#if ROGUE_FEATURES
+		if (SpawnFlags & GRAVITY_TOGGLE)
+			Usable = true;
+
+		if (SpawnFlags & GRAVITY_START_OFF)
+		{
+			Usable = true;
+			GetSolid() = SOLID_NOT;
+		}
+#endif
 
 		Init ();
 	};

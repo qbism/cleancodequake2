@@ -79,7 +79,14 @@ CC_ENUM (uint32, EEdictFlags)
 	FL_TEAMSLAVE		= BIT(9),
 	FL_NO_KNOCKBACK		= BIT(10),
 	FL_POWER_ARMOR		= BIT(11),
-	FL_RESPAWN			= BIT(12)
+	FL_RESPAWN			= BIT(12),
+	FL_NOGIB			= BIT(13),
+	FL_MECHANICAL		= BIT(14),
+
+#if ROGUE_FEATURES
+	FL_SAM_RAIMI		= BIT(15),
+	FL_DISGUISED		= BIT(16),
+#endif
 };
 
 // CBaseEntity is abstract.
@@ -169,6 +176,9 @@ public:
 
 	void			KillBox ();
 	void			SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
+#if ROGUE_FEATURES
+	void			NukeSplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
+#endif
 
 	// Save functions
 	// By default, all entities are savable.
@@ -779,6 +789,10 @@ public:
 
 #include "cc_itementity.h"
 #include "cc_junk_entities.h"
+
+#if ROGUE_FEATURES
+#include "cc_rogue_spheres.h"
+#endif
 
 #else
 FILE_WARNING

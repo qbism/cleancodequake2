@@ -244,35 +244,21 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	return Saved;
 }
 
-#if MONSTER_USE_ROGUE_AI
-/*
-ROGUE
-clean up heal targets for medic
-*/
-void CleanupHealTarget (CMonsterEntity *Monster)
-{
-	Monster->Monster->Healer = NULL;
-	Monster->CanTakeDamage = true;
-	Monster->Monster->AIFlags &= ~AI_RESURRECTING;
-	Monster->Monster->SetEffects ();
-}
-#endif
-
 void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Health < -999)
 		Health = -999;
 
 	Enemy = Attacker;
+	CMonsterEntity *Monster = (EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(this) : NULL;
 
 #if MONSTER_USE_ROGUE_AI
 	if (EntityFlags & ENT_MONSTER)
 	{
-		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 		if (Monster->Monster->AIFlags & AI_MEDIC)
 		{
 			if (Monster->Enemy && (Monster->Enemy->EntityFlags & ENT_MONSTER))  // god, I hope so
-				CleanupHealTarget (entity_cast<CMonsterEntity>(Monster->Enemy));
+				entity_cast<CMonsterEntity>(Monster->Enemy)->Monster->CleanupHealTarget ();
 
 			// clean up self
 			Monster->Monster->AIFlags &= ~AI_MEDIC;
@@ -281,9 +267,47 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 	}
 #endif
 
+#if ROGUE_FEATURES
 	if ((!DeadFlag) && (EntityFlags & ENT_MONSTER))
 	{
-		if (!((entity_cast<CMonsterEntity>(this))->Monster->AIFlags & AI_GOOD_GUY))
+		if (Monster->Monster->AIFlags & AI_SPAWNED_CARRIER)
+		{
+			if (Monster->Monster->Commander && Monster->Monster->Commander->GetInUse() && 
+				!strcmp(Monster->Monster->Commander->ClassName.c_str(), "monster_carrier"))
+				Monster->Monster->Commander->Monster->MonsterSlots++;
+		}
+
+		if (Monster->Monster->AIFlags & AI_SPAWNED_MEDIC_C)
+		{
+			if (Monster->Monster->Commander)
+			{
+				if (Monster->Monster->Commander->GetInUse() && !strcmp(Monster->Monster->Commander->ClassName.c_str(), "monster_medic_commander"))
+					Monster->Monster->Commander->Monster->MonsterSlots++;
+			}
+		}
+
+		if (Monster->Monster->AIFlags & AI_SPAWNED_WIDOW)
+		{
+			// need to check this because we can have variable numbers of coop players
+			if (Monster->Monster->Commander && Monster->Monster->Commander->GetInUse() && 
+				!strncmp(Monster->Monster->Commander->ClassName.c_str(), "monster_widow", 13))
+			{
+				if (Monster->Monster->Commander->Monster->MonsterUsed > 0)
+					Monster->Monster->Commander->Monster->MonsterUsed--;
+			}
+		}
+
+		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY) && !(Monster->Monster->AIFlags & AI_DO_NOT_COUNT))
+		{
+			Level.Monsters.Killed++;
+			if ((Game.GameMode == GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
+		}
+	}
+#else
+	if ((!DeadFlag) && (EntityFlags & ENT_MONSTER))
+	{
+		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY))
 		{
 			Level.Monsters.Killed++;
 			if ((Game.GameMode == GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
@@ -296,6 +320,7 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 #endif
 		}
 	}
+#endif
 
 	if ((EntityFlags & ENT_MONSTER) && (!DeadFlag))
 	{
@@ -347,7 +372,11 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 		{
 			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(Attacker)))
 			{
-				if (DeathmatchFlags.dfNoFriendlyFire.IsEnabled())
+				if (DeathmatchFlags.dfNoFriendlyFire.IsEnabled()
+#if ROGUE_FEATURES
+					&& (mod != MOD_NUKE)
+#endif
+					)
 					Damage = 0;
 				else
 					mod |= MOD_FRIENDLY_FIRE;
@@ -357,12 +386,18 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	meansOfDeath = mod;
 
 	// easy mode takes half damage
+#if ROGUE_FEATURES
+	if ((CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER)) ||
+		(isClient) && (Player->Client.OwnedSphere) && (Player->Client.OwnedSphere->SpawnFlags == 1))
+#else
 	if (CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
+#endif
 	{
 		Damage *= 0.5;
 		if (!Damage)
 			Damage = 1;
 	}
+
 
 	dir.Normalize ();
 
@@ -427,12 +462,27 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	}
 
 	// check for invincibility
-	if ((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
+	if (((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
+#if ROGUE_FEATURES
+		|| ((((EntityFlags & ENT_MONSTER) && ((entity_cast<CMonsterEntity>(this))->Monster->InvincibleFramenum) > Level.Frame ) && !(dflags & DAMAGE_NO_PROTECTION)))
+#endif
+		)
 	{
+#if ROGUE_FEATURES
+		if ((isClient && Player->PainDebounceTime < Level.Frame) || ((EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime < Level.Frame))
+#else
 		if (Player->PainDebounceTime < Level.Frame)
+#endif
 		{
 			PlaySound (CHAN_ITEM, SoundIndex("items/protect4.wav"));
+#if ROGUE_FEATURES
+			if (isClient)
+				Player->PainDebounceTime = Level.Frame + 20;
+			else
+				entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime = Level.Frame + 20;
+#else
 			Player->PainDebounceTime = Level.Frame + 20;
+#endif
 		}
 		take = 0;
 		save = Damage;
@@ -491,6 +541,15 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (Attacker))
 		return;
 
+// ROGUE - this option will do damage both to the armor and person. originally for DPU rounds
+	if (dflags & DAMAGE_DESTROY_ARMOR)
+	{
+		if(!(Flags & FL_GODMODE) && !(dflags & DAMAGE_NO_PROTECTION) &&
+		   !(isClient && Player->Client.Timers.Invincibility > Level.Frame))
+			take = Damage;
+	}
+// ROGUE
+
 #if CLEANCTF_ENABLED
 //ZOID
 	if ((Game.GameMode & GAME_CTF) && (isClient && (Attacker->EntityFlags & ENT_PLAYER)))
@@ -507,20 +566,25 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 		if (!CTFMatchSetup())
 #endif
 			Health -= take;
-			
-		if (Health <= 0)
-		{
-			if ((EntityFlags & ENT_MONSTER) || (isClient))
-				Flags |= FL_NO_KNOCKBACK;
-			Killed (Inflictor, Attacker, take, point);
-			return;
-		}
+	}
+
+#if ROGUE_FEATURES
+	if(isClient && Player->Client.OwnedSphere)
+		Player->Client.OwnedSphere->Pain (Attacker, 0);
+#endif
+
+	if (Health <= 0)
+	{
+		if ((EntityFlags & ENT_MONSTER) || (isClient))
+			Flags |= FL_NO_KNOCKBACK;
+		Killed (Inflictor, Attacker, take, point);
+		return;
 	}
 
 	if (EntityFlags & ENT_MONSTER)
 	{
 		CMonster *Monster = (entity_cast<CMonsterEntity>(this))->Monster;
-		Monster->ReactToDamage (Attacker);
+		Monster->ReactToDamage (Attacker, Inflictor);
 		if (!(Monster->AIFlags & AI_DUCKED) && take)
 		{
 			if (LastPelletShot)
@@ -624,7 +688,8 @@ CBaseEntity(),
 GravityMultiplier(1.0f),
 PhysicsFlags(0),
 DampeningEffect(1, 1, 1),
-ADampeningEffect(1, 1, 1)
+ADampeningEffect(1, 1, 1),
+GravityVector(0, 0, -1)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
@@ -635,7 +700,8 @@ CBaseEntity(Index),
 GravityMultiplier(1.0f),
 PhysicsFlags(0),
 DampeningEffect(1, 1, 1),
-ADampeningEffect(1, 1, 1)
+ADampeningEffect(1, 1, 1),
+GravityVector(0, 0, -1)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
@@ -643,7 +709,10 @@ ADampeningEffect(1, 1, 1)
 
 void CPhysicsEntity::AddGravity()
 {
-	Velocity.Z -= GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f;
+	if (GravityVector[2] > 0)
+		Velocity = Velocity.MultiplyAngles (GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f, GravityVector);
+	else
+		Velocity.Z -= GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f;
 }
 
 CTrace CPhysicsEntity::PushEntity (vec3f &push)
@@ -749,7 +818,7 @@ bool CBounceProjectile::Run ()
 		GroundEntity = NULL;
 
 // if onground, return without moving
-	if ( GroundEntity )
+	if (GroundEntity && GravityMultiplier > 0.0)
 		return false;
 
 	old_origin = State.GetOrigin();
@@ -984,8 +1053,7 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 		Impact (&trace);
 		if (!GetInUse())
 			break;		// removed by the impact function
-
-		
+	
 		time_left -= time_left * trace.fraction;
 		
 	// cliped to another plane
@@ -1055,6 +1123,7 @@ bool CStepPhysics::Run ()
 	bool		hitsound = false;
 	float		speed, newspeed, control;
 	float		friction;
+	vec3f		saveOrigin = State.GetOrigin();
 
 	if (PhysicsDisabled)
 		return false;
@@ -1138,6 +1207,9 @@ bool CStepPhysics::Run ()
 		FlyMove (0.1f,  (EntityFlags & ENT_MONSTER) ? CONTENTS_MASK_MONSTERSOLID : CONTENTS_MASK_SOLID);
 
 		Link();
+
+		GravityMultiplier = 1.0f;
+
 		G_TouchTriggers (this);
 		if (!GetInUse())
 			return false;
@@ -1145,6 +1217,18 @@ bool CStepPhysics::Run ()
 		if (GroundEntity && !wasonground && hitsound)
 			PlaySound (CHAN_AUTO, SoundIndex("world/land.wav"));
 	}
+
+	// if we moved, check and fix origin if needed
+	if (State.GetOrigin() != saveOrigin)
+	{
+		CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), saveOrigin, this, CONTENTS_MASK_MONSTERSOLID);
+		if(tr.allSolid || tr.startSolid)
+		{
+			State.GetOrigin() = saveOrigin;
+			Link ();
+		}
+	}
+
 	return true;
 }
 
@@ -1625,6 +1709,27 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 		CMapEntity *t = NULL;
 		while ((t = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (t, KillTarget)) != NULL)
 		{
+#if ROGUE_FEATURES
+			// if this entity is part of a train, cleanly remove it
+			if (t->Flags & FL_TEAMSLAVE)
+			{
+				if (t->Team.Master)
+				{
+					CBaseEntity *master = t->Team.Master;
+					bool done = false;
+					while (!done)
+					{
+						if (master->Team.Chain == t)
+						{
+							master->Team.Chain = t->Team.Chain;
+							done = true;
+						}
+						master = master->Team.Chain;
+					}
+				}
+			}
+#endif
+
 			t->Free ();
 
 			if (!GetInUse())

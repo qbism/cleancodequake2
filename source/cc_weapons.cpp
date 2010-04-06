@@ -211,6 +211,12 @@ sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX] =
 	100,
 	5,
 #endif
+
+#if ROGUE_FEATURES
+	50,
+	250,
+	50,
+#endif
 };
 sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 {
@@ -224,6 +230,12 @@ sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX] =
 #if XATRIX_FEATURES
 	100,
 	5,
+#endif
+
+#if ROGUE_FEATURES
+	50,
+	200,
+	50,
 #endif
 };
 
@@ -299,19 +311,10 @@ void CAmmoWeapon::Use (CPlayerEntity *Player)
 	if (Weapon == Player->Client.Persistent.Weapon)
 		return;
 
-	if (!CvarList[CV_SELECT_EMPTY].Integer())
+	if (!Player->Client.Persistent.Inventory.Has(GetIndex()))
 	{
-		if (!Player->Client.Persistent.Inventory.Has(GetIndex()))
-		{
-			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Name, Name);
-			return;
-		}
-
-		if (Player->Client.Persistent.Inventory.Has(GetIndex()) < Amount)
-		{
-			Player->PrintToClient (PRINT_HIGH, "Not enough %s.\n", Name);
-			return;
-		}
+		Player->PrintToClient (PRINT_HIGH, "Out of Item: %s.\n", Name);
+		return;
 	}
 
 	// change to this weapon when down
@@ -381,7 +384,7 @@ void CAmmoEntity::Spawn (CBaseItem *item)
 	PhysicsType = PHYSICS_NONE;
 
 	State.GetEffects() = item->EffectFlags;
-	State.GetRenderEffects() = RF_GLOW;
+	State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 };
 
 LINK_ITEM_TO_CLASS (ammo_shells, CAmmoEntity);
@@ -403,6 +406,10 @@ void AddAmmoToList ()
 
 #if XATRIX_FEATURES
 	AddXatrixItemsToList ();
+#endif
+
+#if ROGUE_FEATURES
+	AddRogueItemsToList ();
 #endif
 
 	AddWeapons (ItemList);

@@ -215,18 +215,26 @@ bool RemoveEntity (edict_t *ent)
 	if (!ent || ent->state.number <= (Game.MaxClients + BODY_QUEUE_SIZE))
 		return false;
 
-	if (ent->AwaitingRemoval)
+	if (!ent->Entity || ent->AwaitingRemoval)
 	{
-		ent->AwaitingRemoval = false;
+		ent->RemovalFrames--;
 
-		QDelete ent->Entity;
-		ent->Entity = NULL;
+		if (!(--ent->RemovalFrames))
+		{
+			ent->AwaitingRemoval = false;
 
-		// Push into Open
-		Level.Entities.Open.push_front (ent);
+			QDelete ent->Entity;
+			ent->Entity = NULL;
 
-		return true;
+			// Push into Open
+			Level.Entities.Open.push_front (ent);
+
+			return true;
+		}
 	}
+	else if (ent->Entity->GroundEntity && ent->Entity->GroundEntity->Freed)
+		ent->Entity->GroundEntity = NULL;
+
 	return false;
 }
 
@@ -288,6 +296,7 @@ _CC_ENABLE_DEPRECATION
 	ed->state.number = ed - Game.Entities;
 
 	ed->AwaitingRemoval = true;
+	ed->RemovalFrames = 4;
 }
 
 typedef std::vector <CBaseEntity*> TPrivateEntitiesContainer;
@@ -563,7 +572,10 @@ void			CBaseEntity::Free ()
 			if (Level.Frame == 0)
 				RemoveEntityFromList (gameEntity);
 			else
+			{
 				gameEntity->AwaitingRemoval = true;
+				gameEntity->RemovalFrames = 4;
+			}
 		}
 	}
 
@@ -635,6 +647,92 @@ void CBaseEntity::SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity
 			Entity->TakeDamage (this, Attacker, Entity->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
 	}
 }
+
+#if ROGUE_FEATURES
+
+/*
+============
+NukeSplashDamage
+
+Like SplashDamage, but ignores walls (skips CanDamage check, among others)
+// up to KILLZONE radius, do 10,000 points
+// after that, do damage linearly out to KILLZONE2 radius
+============
+*/
+class CNukePlayerCallBack : public CForEachPlayerCallback
+{
+public:
+	CBaseEntity *Inflictor;
+
+	CNukePlayerCallBack (CBaseEntity *Inflictor) :
+	Inflictor(Inflictor)
+	{
+	};
+
+	void Callback (CPlayerEntity *Player)
+	{
+		if (Player->Client.Timers.Nuke != Level.Frame + 20)
+		{
+			CTrace tr (Inflictor->State.GetOrigin(), Player->State.GetOrigin(), Inflictor, CONTENTS_MASK_SOLID);
+
+			if (tr.fraction == 1.0)
+				Player->Client.Timers.Nuke = Level.Frame + 20;
+			else
+				Player->Client.Timers.Nuke = Max<>(Player->Client.Timers.Nuke, Level.Frame + (RangeFrom (Player->State.GetOrigin(), Inflictor->State.GetOrigin()) < 2048) ? 15 : 10);
+		}
+	}
+};
+
+void CBaseEntity::NukeSplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
+{
+	float	points;
+	CHurtableEntity	*Entity = NULL;
+	vec3f	v;
+	vec3f	dir;
+	float	len;
+
+	float killzone = radius;
+	float killzone2 = radius*2.0;
+
+	while ((Entity = FindRadius<CHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
+	{
+// ignore nobody
+		if (Entity == ignore)
+			continue;
+		if (!Entity->CanTakeDamage)
+			continue;
+		if (!Entity->GetInUse())
+			continue;
+
+		v = (Entity->GetMins() + Entity->GetMaxs());
+		v = Entity->State.GetOrigin().MultiplyAngles (0.5f, v);
+		v = State.GetOrigin() - v;
+
+		len = v.Length();
+
+		if (len <= killzone)
+		{
+			if (Entity->EntityFlags & ENT_PLAYER)
+				Entity->Flags |= FL_NOGIB;
+			points = 10000;
+		}
+		else if (len <= killzone2)
+			points = (damage/killzone)*(killzone2 - len);
+		else
+			points = 0;
+
+		if (points > 0)
+		{
+			if (Entity->EntityFlags & ENT_PLAYER)
+				(entity_cast<CPlayerEntity>(Entity))->Client.Timers.Nuke = Level.Frame + 20;
+			dir = Entity->State.GetOrigin() - State.GetOrigin();
+			Entity->TakeDamage (this, Attacker, dir, State.GetOrigin(), vec3fOrigin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+		}
+	}
+
+	CNukePlayerCallBack (this).Query ();
+}
+#endif
 
 CMapEntity::CMapEntity () : 
 CBaseEntity()

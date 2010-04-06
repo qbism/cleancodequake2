@@ -248,6 +248,20 @@ public:
 	CMonsterEntity		*Healer;	// this is who is healing this monster
 #endif
 
+#if ROGUE_FEATURES
+	// used by the spawners to not spawn too much and keep track of #s of monsters spawned
+	uint8			MonsterSlots;
+	uint8			MonsterUsed;
+	CMonsterEntity	*Commander;
+	// powerup timers, used by widow, our friend
+	FrameNumber_t	QuadFramenum;
+	FrameNumber_t	InvincibleFramenum;
+	FrameNumber_t	DoubleFramenum;
+
+	// this is for the count of monsters
+	inline uint8 SlotsLeft () { return MonsterSlots - MonsterUsed; }
+#endif
+
 	sint32				NextFrame;
 	float				Scale;
 	FrameNumber_t		PauseTime;
@@ -358,7 +372,7 @@ public:
 	virtual void		Sight			();
 	virtual bool		CheckAttack		();
 
-	virtual void		ReactToDamage	(CBaseEntity *Attacker);
+	virtual void		ReactToDamage	(CBaseEntity *Attacker, CBaseEntity *Inflictor);
 
 	virtual void		MonsterThink	();
 	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
@@ -399,6 +413,9 @@ public:
 
 	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
 	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
+#if ROGUE_FEATURES
+	void				MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
+#endif
 	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype);
 	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype);
 	void				MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
@@ -441,6 +458,14 @@ public:
 	virtual void		Spawn () = 0;
 	virtual void		Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
 	virtual void		Pain(CBaseEntity *Other, sint32 Damage) = 0;
+
+#if MONSTER_USE_ROGUE_AI
+	void CleanupHealTarget ();
+#endif
+
+#if ROGUE_FEATURES
+	void TargetTesla	(CBaseEntity *Inflictor);
+#endif
 };
 
 #if XATRIX_FEATURES

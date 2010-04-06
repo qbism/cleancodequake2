@@ -159,14 +159,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 
 void Cmd_Test_f (CPlayerEntity *Player)
 {
-	printBuffer.str("");
-	for (uint32 i = 0; i < CommandList().size(); i++)
-	{
-		uint32 depth = 0;
-		RecursiveCommandPrint (static_cast<CPlayerCommand*>(CommandList()[i]), depth);
-	}
-
-	ServerPrintf ("%s", printBuffer.str().c_str());
+	CRogueDefenderSphere::Create(Player, 0);
 }
 
 void Cmd_Two_t (CPlayerEntity *Player)

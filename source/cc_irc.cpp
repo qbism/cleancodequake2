@@ -179,6 +179,11 @@ void CIRCClientServer::Update ()
 						}
 						break;
 					}
+					else if (Q_stricmp(channel.c_str(), "Q2Serv") == 0)
+					{
+						PushMessage (IRC::PRIVMSG, Q_VarArgs("%s :I am not a bot, just a redirection service. Commands list coming soon.", otherName.c_str()));
+						break;
+					}
 
 					for (TConnectedIRCPlayers::iterator it = Chan->Players.begin(); it != Chan->Players.end(); ++it)
 					{

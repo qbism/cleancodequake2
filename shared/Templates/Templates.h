@@ -113,12 +113,3 @@ inline bool IsPowOfTwo(const uint32 &Value)
 {
 	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
 }
-
-#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-#include "TArray.h"
-#include "TAutoPtr.h"
-#include "TMap.h"
-#include "TString.h"
-#endif
-
-

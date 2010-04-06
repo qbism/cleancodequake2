@@ -67,7 +67,7 @@ void CTempEnt::SendTo (CPlayerEntity *Player)
 {
 	SendData ();
 
-	Cast (Flags.Type, Flags.Flags, (ToPlayerOrigin && Player) ? Player->State.GetOrigin() : Origin, Player, true);
+	Cast (CAST_UNI, Flags.Flags, (ToPlayerOrigin && Player) ? Player->State.GetOrigin() : Origin, Player, true);
 };
 
 void CTempEnt::SendHeader (ESVCType Enum)

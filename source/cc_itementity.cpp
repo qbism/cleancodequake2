@@ -278,15 +278,15 @@ void CItemEntity::Spawn (CBaseItem *item)
 	PhysicsType = PHYSICS_NONE;
 
 	State.GetEffects() = item->EffectFlags;
-	State.GetRenderEffects() = RF_GLOW;
+	State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 }
 
 ENTITYFIELDS_BEGIN(CItemEntity)
 {
 	CEntityField ("model", EntityMemberOffset(CItemEntity,Model), FT_LEVEL_STRING | FT_SAVABLE),
 	CEntityField ("item", EntityMemberOffset(CItemEntity,LinkedItem), FT_ITEM | FT_SAVABLE),
+	CEntityField ("count", EntityMemberOffset(CItemEntity,AmmoCount), FT_UINT | FT_SAVABLE),
 
-	CEntityField ("AmmoCount", EntityMemberOffset(CItemEntity,AmmoCount), FT_UINT | FT_SAVABLE | FT_NOSPAWN),
 	CEntityField ("ThinkState", EntityMemberOffset(CItemEntity,ThinkState), FT_BYTE | FT_SAVABLE | FT_NOSPAWN),
 };
 ENTITYFIELDS_END(CItemEntity)

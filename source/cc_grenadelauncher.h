@@ -39,11 +39,11 @@ class CGrenadeLauncher : public CWeapon
 public:
 	CGrenadeLauncher();
 
-	bool		CanFire	(CPlayerEntity *Player);
-	bool		CanStopFidgetting (CPlayerEntity *Player);
+	bool			CanFire	(CPlayerEntity *Player);
+	bool			CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
-	void	Fire (CPlayerEntity *Player);
+	void			Fire (CPlayerEntity *Player);
 
 	WEAPON_CLASS_DEFS (CGrenadeLauncher);
 };

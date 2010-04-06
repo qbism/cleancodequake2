@@ -314,7 +314,7 @@ void WriteCoord (float f)
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
 }
 
-void WritePosition (vec3_t val)
+void WritePosition (vec3f val)
 {
 	if (!val)
 	{
@@ -337,35 +337,7 @@ void WritePosition (vec3_t val)
 	}
 }
 
-void WritePosition (vec3f &val)
-{
-	if (!val)
-	{
-		for (sint32 i = 0; i < 3; i++)
-			WriteCoord(vec3fOrigin[i]);
-	}
-	else
-	{
-		bool Printed = false;
-		for (sint32 i = 0; i < 3; i++)
-		{
-			if (!Printed && (val[i] > 4096 || val[i] < -4096))
-			{			
-				DebugPrintf ("Malformed position may have been written!\n");
-				Printed = true;
-			}
-
-			WriteCoord(val[i]);
-		}
-	}
-}
-
-void WriteDirection (vec3_t val)
-{
-	WriteByte (DirToByte (val));
-}
-
-void WriteDirection (vec3f &val)
+void WriteDirection (vec3f val)
 {
 	WriteByte (DirToByte (val));
 }

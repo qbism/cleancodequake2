@@ -94,6 +94,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # define HAVE__VSNPRINTF 1
 # define HAVE__CDECL 1
 
+# define isnan _isnan
+
 # define BUILDSTRING		"Win32"
 
 # ifdef _M_IX86
@@ -238,6 +240,10 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 # ifndef vsnprintf
 #  define vsnprintf _vsnprintf
 # endif
+#endif
+
+#ifndef isnan
+#define isnan std::isnan
 #endif
 
 // =========================================================================

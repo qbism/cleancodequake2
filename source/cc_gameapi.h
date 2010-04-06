@@ -45,6 +45,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 // functions provided by the main engine
 //
+typedef float vec3_t[3];
 struct gameImport_t
 {
 	// special messages
@@ -310,10 +311,12 @@ CC_ENUM (uint8, ECastType)
 
 CC_ENUM (uint8, ECastFlags)
 {
-	CASTFLAG_UNRELIABLE = 0,
-	CASTFLAG_PVS = 1,
-	CASTFLAG_PHS = 2,
-	CASTFLAG_RELIABLE = 4
+	// Paril: whoops...
+	CASTFLAG_NONE = 0,
+	CASTFLAG_UNRELIABLE = 1,
+	CASTFLAG_PVS = 2,
+	CASTFLAG_PHS = 4,
+	CASTFLAG_RELIABLE = 8
 };
 
 void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity *Ent, bool SuppliedOrigin);
@@ -322,7 +325,8 @@ void Cast (ECastFlags castFlags, vec3f &Origin);
 
 EBrushContents PointContents (vec3f start);
 
-sint32 BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, sint32 maxCount, bool triggers);
+typedef std::vector<CBaseEntity*> TBoxEdictsEntityList;
+TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers);
 
 void ConfigString (sint32 configStringIndex, const char *configStringValue, ...);
 void GameError (const char *fmt, ...);

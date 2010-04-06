@@ -49,8 +49,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define DAMAGE_TIME		5
 #define FALL_TIME		3
 
-#define FRAMETIME		1
-
 //gib types
 CC_ENUM (uint8, EGibType)
 {
@@ -181,12 +179,32 @@ CC_ENUM (uint32, EMeansOfDeath)
 	MOD_TRIGGER_HURT,
 	MOD_HIT,
 	MOD_TARGET_BLASTER,
+
 #if CLEANCTF_ENABLED
 	MOD_GRAPPLE,
 #endif
+
 #if XATRIX_FEATURES
 	MOD_RIPPER,
 	MOD_TRAP,
+#endif
+
+#if ROGUE_FEATURES
+	MOD_CHAINFIST,
+	MOD_DISINTEGRATOR,
+	MOD_ETF_RIFLE,
+	MOD_BLASTER2,
+	MOD_HEATBEAM,
+	MOD_TESLA,
+	MOD_PROX,
+	MOD_NUKE,
+	MOD_VENGEANCE_SPHERE,
+	MOD_HUNTER_SPHERE,
+	MOD_DEFENDER_SPHERE,
+	MOD_TRACKER,
+	MOD_DOPPLE_EXPLODE,
+	MOD_DOPPLE_VENGEANCE,
+	MOD_DOPPLE_HUNTER,
 #endif
 
 	MOD_FRIENDLY_FIRE		=	512
@@ -229,7 +247,10 @@ enum
 	DAMAGE_ENERGY				= BIT(2), // Energy-based (blaster)
 	DAMAGE_NO_KNOCKBACK			= BIT(3), // Don't add knockback
 	DAMAGE_BULLET				= BIT(4), // Bullet damage (used for ricochets)
-	DAMAGE_NO_PROTECTION		= BIT(5)  // Always damages
+	DAMAGE_NO_PROTECTION		= BIT(5), // Always damages
+	DAMAGE_DESTROY_ARMOR		= BIT(6), // Damage is done to armor and health.
+	DAMAGE_NO_REG_ARMOR			= BIT(7), // Damage skips regular armor
+	DAMAGE_NO_POWER_ARMOR		= BIT(8), // Damage skips power armor
 };
 
 #define DEFAULT_BULLET_HSPREAD	300
@@ -286,6 +307,9 @@ struct edict_t
 
 	FrameNumber_t		freetime;			// sv.time when the object was freed
 	bool				AwaitingRemoval;
+	// Paril: trying something new. Instead of removing the entity the frame AFTER it was removed,
+	// remove it four frames after. This should be enough time for other entities to realize the entity is gone.
+	uint8				RemovalFrames;
 	
 	//
 	// only used locally in game, not by server
@@ -480,13 +504,17 @@ public:
 		File.Write<uint32> (Inhibit);
 		File.Write<uint32> (EntityNumber);
 
+#if ROGUE_FEATURES
+		File.Write<FrameNumber_t> (DisguiseViolationFrametime);
+		File.Write<sint32> ((DisguiseViolator) ? DisguiseViolator->State.GetNumber() : -1);
+#endif
+
 		Entities.Save (File);
 	};
 
 	void Load (CFile &File)
 	{
 		Frame = File.Read<FrameNumber_t> ();
-
 
 		FullLevelName = File.ReadCCString ();
 		ServerLevelName = File.ReadCCString ();
@@ -508,6 +536,14 @@ public:
 		PowerCubeCount = File.Read<uint8> ();
 		Inhibit = File.Read<uint32> ();
 		EntityNumber = File.Read<uint32> ();
+
+#if ROGUE_FEATURES
+		DisguiseViolationFrametime = File.Read<FrameNumber_t> ();
+
+		Index = File.Read<sint32> ();
+		if (Index != -1)
+			DisguiseViolator = Game.Entities[Index].Entity;
+#endif
 
 		Entities.Load (File);
 	};
@@ -598,6 +634,11 @@ public:
 	} Entities;
 
 	bool		Demo;
+
+#if ROGUE_FEATURES
+	CBaseEntity			*DisguiseViolator;
+	FrameNumber_t		DisguiseViolationFrametime;
+#endif
 };
 
 extern	CLevelLocals	Level;

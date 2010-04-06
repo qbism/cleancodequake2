@@ -73,9 +73,15 @@ public:
 	  {
 	  };
 
-	ENTITYFIELDS_NONSAVABLE
-	const char *SAVE_GetName () { return "NonSavable"; }
+	CJustAModel (int Index) :
+	  CBaseEntity (Index)
+	  {
+	  };
+
+	IMPLEMENT_SAVE_HEADER(CJustAModel);
 };
+
+IMPLEMENT_SAVE_SOURCE(CJustAModel);
 
 // Foodcube
 CFoodCube::CFoodCube () :

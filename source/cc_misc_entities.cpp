@@ -199,6 +199,7 @@ public:
 		CanTakeDamage = true;
 		Touchable = true;
 		NextThink = Level.Frame + FRAMETIME;
+		Flags |= FL_IMMUNE_SLIME;
 
 		Link ();
 	};

@@ -56,7 +56,7 @@ public:
 	virtual void	Use (CPlayerEntity *Player);
 	virtual void	Drop (CPlayerEntity *Player);
 
-	virtual void DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
+	virtual void	DoPickup (class CItemEntity *Player, CPlayerEntity *Other);
 };
 
 // Mega Health powerup

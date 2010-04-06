@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
+#define CC_GAME_MODE						(GAME_ROGUE|GAME_XATRIX)
 #endif
 
 // Global macros
@@ -107,27 +107,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CLEANCTF_ENABLED					1
 #endif
 
-// Don't touch this.
-#define GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-
 // Define this if you want monsters to not be able to go through monstersolids
 #ifndef MONSTERS_HIT_MONSTERSOLID
 #define MONSTERS_HIT_MONSTERSOLID			0
-#endif
-
-// Define this if you intend to use quaternions
-#ifndef SHARED_ALLOW_QUATERNIONS
-#define SHARED_ALLOW_QUATERNIONS			0
-#endif
-
-// Define this if you intend to use 3x3 matrix'
-#ifndef SHARED_ALLOW_3x3_MATRIX
-#define SHARED_ALLOW_3x3_MATRIX				0
-#endif
-
-// Define this if you intend to use 4x4 matrix'
-#ifndef SHARED_ALLOW_4x4_MATRIX
-#define SHARED_ALLOW_4x4_MATRIX				0
 #endif
 
 // Define this to enable some custom asserts that we place in some places
@@ -234,7 +216,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_HIT_MONSTERSOLID 1
 #undef ROGUE_FEATURES
 #define ROGUE_FEATURES 1
-#undef XATRIX__FEATURES
+#undef XATRIX_FEATURES
 #define XATRIX_FEATURES 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0

@@ -44,11 +44,23 @@ _CC_DISABLE_DEPRECATION
 	return gi.pointcontents(start);
 _CC_ENABLE_DEPRECATION};
 
-sint32 BoxEdicts (vec3f &mins, vec3f &maxs, edict_t **list, sint32 maxCount, bool triggers)
+TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers)
 {
+	static edict_t *list[MAX_CS_EDICTS];
+	Mem_Zero (list, sizeof(list));
+
 _CC_DISABLE_DEPRECATION
-	return gi.BoxEdicts (mins, maxs, list, maxCount, (triggers) ? AREA_TRIGGERS : AREA_SOLID);
+	int count = gi.BoxEdicts (mins, maxs, list, MAX_CS_EDICTS, (triggers) ? AREA_TRIGGERS : AREA_SOLID);
 _CC_ENABLE_DEPRECATION
+
+	TBoxEdictsEntityList Ents;
+	for (int i = 0; i < count; ++i)
+	{
+		if (list[i]->Entity)
+			Ents.push_back (list[i]->Entity);
+	}
+
+	return Ents;
 }
 
 void ConfigString (sint32 configStringIndex, const char *configStringValue, ...)
@@ -581,6 +593,7 @@ sint32 &CGameAPI::GetMaxEdicts()
 {
 	return globals.maxEdicts;
 };
+
 
 extern "C"
 {

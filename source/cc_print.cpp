@@ -173,11 +173,13 @@ void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 		if (Player->Client.Persistent.State != SVCS_SPAWNED)
 			continue;
 
-
 		WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
+
 		if (printLevel != PRINT_CENTER)
 			WriteByte (printLevel);
+
 		WriteString (string);
+
 		Cast (CASTFLAG_UNRELIABLE, Player);
 	}
 }

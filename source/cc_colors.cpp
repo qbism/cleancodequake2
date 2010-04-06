@@ -309,7 +309,7 @@ EColors IndexFromRGBA (colorb color)
 
 	for (uint16 i = 0; i < 256; i++)
 	{
-		float dist = VecxDistSquared<colorb, 4> (color, PalToRGB[i]);
+		float dist = color.DistanceFrom (PalToRGB[i]);
 
 		if (dist < curDist)
 		{

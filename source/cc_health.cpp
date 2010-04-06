@@ -105,7 +105,7 @@ public:
 		PhysicsType = PHYSICS_NONE;
 
 		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
+		State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	};
 };
 

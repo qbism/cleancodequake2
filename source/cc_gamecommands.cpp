@@ -96,6 +96,18 @@ void Cmd_Kill_f (CPlayerEntity *Player)
 	if((Level.Frame - Player->Client.Timers.RespawnTime) < 50)
 		return;
 
+#if ROGUE_FEATURES
+	// make sure no trackers are still hurting us.
+	if (Player->Client.Timers.Tracker)
+		Player->RemoveAttackingPainDaemons ();
+
+	if (Player->Client.OwnedSphere)
+	{
+		Player->Client.OwnedSphere->Free ();
+		Player->Client.OwnedSphere = NULL;
+	}
+#endif
+
 	Player->Flags &= ~FL_GODMODE;
 	Player->Health = 0;
 	meansOfDeath = MOD_SUICIDE;
@@ -500,57 +512,6 @@ void Cmd_Help_f (CPlayerEntity *Player)
 void GCTFSay_Team (CPlayerEntity *Player);
 void Cmd_MenuLeft_t (CPlayerEntity *Player);
 void Cmd_MenuRight_t (CPlayerEntity *Player);
-
-#if 0
-irc_server serverTest;
-bool connected = false;
-void Cmd_Irc_t (CPlayerEntity *Player)
-{
-	serverTest.server = "irc.globalgamerscenter.net";
-	serverTest.port = 6667;
-	serverTest.nick = "Paril|Q2";
-	serverTest.user = "Paril|Q2";
-	serverTest.real_name = "Testing IRC";
-
-	if (connected == false)
-	{
-	    irc_ini_server(&serverTest);
-		irc_connect (&serverTest);
-	
-		u_long iMode = 1;
-		ioctlsocket(serverTest.sock, FIONBIO, &iMode);
-
-		bool doOnce = false;
-		while (serverTest.status != DISCONNECTED)
-		{
-			// Blocks until new data arrives, then gets it.
-			irc_receive(&serverTest, 0);
-
-			// Only exec one time and exec when registered.
-			if(!doOnce && serverTest.status == CONNECTED)
-			{
-				doOnce = true;
-				 //irc_send_cmd(&serverTest, PRIVMSG, "#tastycast :hi guize");
-				irc_send_cmd(&serverTest, JOIN, "#tastycast");
-				//break;
-			}
-
-			// If read characters is > 0 ...
-			if (serverTest.received > 0) 
-			{
-				// If server pings, we pong.
-				if( serverTest.msg.command == IRC_PING ){
-					irc_pong(&serverTest);
-				}
-			}
-
-			Sleep(10);
-		}
-	}	
-	else
-		irc_disconnect (&serverTest, "Testing disconnecting");
-}
-#endif
 
 void Cmd_Register ()
 {

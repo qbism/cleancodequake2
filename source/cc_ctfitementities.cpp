@@ -154,7 +154,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 	PhysicsType = PHYSICS_NONE;
 
 	State.GetEffects() = Item->EffectFlags;
-	State.GetRenderEffects() = RF_GLOW;
+	State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	Transponder = QNew (TAG_GENERIC) CFlagTransponder (Team, this);
 };
 
@@ -261,7 +261,7 @@ CItemEntity *CFlag::DropItem (CBaseEntity *Entity)
 	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
-	dropped->State.GetRenderEffects() = RF_GLOW;
+	dropped->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	dropped->GetMins().Set (-15);
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);

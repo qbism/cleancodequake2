@@ -295,6 +295,9 @@ public:
 		if (!Entity)
 			return;
 
+#if ROGUE_FEATURES
+		Entity->State.GetRenderEffects() = RF_IR_VISIBLE;
+#endif
 		Entity->State.GetOrigin() = State.GetOrigin();
 		Entity->State.GetAngles() = State.GetAngles();
 
@@ -1226,7 +1229,7 @@ void CTargetLaser::Think ()
 	CTrace tr;
 	while(1)
 	{
-		tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
+		tr (start, end, ignore, (SpawnFlags & LASER_STOPWINDOW) ? CONTENTS_MASK_SHOT : CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
 
 		if (!tr.ent)
 			break;
@@ -1460,6 +1463,22 @@ All players and monsters are affected.
 "speed"		severity of the quake (default:200)
 "count"		duration of the quake (default:5)
 */
+
+#if ROGUE_FEATURES
+#define EARTHQUAKE_SILENT 1
+#endif
+
+void CEarthQuakeShakePlayers::Callback (CPlayerEntity *Player)
+{
+	if (!Player->GroundEntity)
+		return;
+
+	Player->GroundEntity = NULL;
+	Player->Velocity.X += crand()* 150;
+	Player->Velocity.Y += crand()* 150;
+	Player->Velocity.Z = Speed * (100.0 / Player->Mass);
+}
+
 class CTargetEarthquake : public CMapEntity, public CThinkableEntity, public CUsableEntity
 {
 public:
@@ -1498,33 +1517,17 @@ public:
 
 	void Think ()
 	{
-		if (LastShakeTime < Level.Frame)
+		if (
+#if ROGUE_FEATURES
+			!(SpawnFlags & EARTHQUAKE_SILENT) && 
+#endif
+			LastShakeTime < Level.Frame)
 		{
 			PlayPositionedSound (State.GetOrigin(), CHAN_AUTO, NoiseIndex, 255, ATTN_NONE);
 			LastShakeTime = Level.Frame + 5;
 		}
 
-		//for (i=1, e=Game.Entities+i; i < globals.numEdicts; i++,e++)
-		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
-		{
-			CBaseEntity *Entity = (*it)->Entity;
-
-			if (!Entity || !Entity->GetInUse())
-				continue;
-
-			if (!Entity->GroundEntity)
-				continue;
-
-			if (!(Entity->EntityFlags & ENT_PLAYER))
-				break;
-
-			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
-
-			Player->GroundEntity = NULL;
-			Player->Velocity.X += crand()* 150;
-			Player->Velocity.Y += crand()* 150;
-			Player->Velocity.Z = Speed * (100.0 / Player->Mass);
-		}
+		CEarthQuakeShakePlayers(Speed).Query();
 
 		if (Level.Frame < TimeStamp)
 			NextThink = Level.Frame + FRAMETIME;
@@ -1551,7 +1554,10 @@ public:
 
 		GetSvFlags() |= SVF_NOCLIENT;
 
-		NoiseIndex = SoundIndex ("world/quake.wav");
+#if ROGUE_FEATURES
+		if (!(SpawnFlags & EARTHQUAKE_SILENT))
+#endif
+			NoiseIndex = SoundIndex ("world/quake.wav");
 	};
 };
 

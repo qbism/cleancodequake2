@@ -60,6 +60,7 @@ void BeginIntermission (CTargetChangeLevel *targ);
 #define	LASER_YELLOW		16
 #define	LASER_ORANGE		32
 #define	LASER_FAT			64
+#define LASER_STOPWINDOW	128
 
 class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableEntity
 {
@@ -86,4 +87,17 @@ public:
 	virtual void Start ();
 
 	virtual void Spawn ();
+};
+
+class CEarthQuakeShakePlayers : public CForEachPlayerCallback
+{
+public:
+	int Speed;
+
+	CEarthQuakeShakePlayers (int Speed) :
+	  Speed (Speed)
+	  {
+	  };
+
+	void Callback (CPlayerEntity *Player);
 };

@@ -171,7 +171,7 @@
     <PostBuildEvent>
       <Message>Copies the output to your Quake 2 baseq2 dir</Message>
       <Command>echo Copying to Quake 2 Path...
-copy "$(TargetPath)" "c:\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "c:\quake2\rogue\gamex86.dll"
 copy "$(TargetPath)" "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
 
 echo Done!
@@ -277,7 +277,7 @@ echo Done!
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\;..\..\sircl\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
@@ -286,14 +286,14 @@ echo Done!
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibr.lib;sircl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>e:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>e:\quake2\baseq2\gamex86.map</MapFileName>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x20000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -303,13 +303,14 @@ echo Done!
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\..\lib\</AdditionalLibraryDirectories>
-      <ForceSymbolReferences>__DllMainCRTStartup@12;%(ForceSymbolReferences)</ForceSymbolReferences>
-      <EntryPointSymbol>DllInit</EntryPointSymbol>
+      <ForceSymbolReferences>%(ForceSymbolReferences)</ForceSymbolReferences>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>echo Copying to Quake 2 Path...
-copy $(TargetPath) "e:\quake2\baseq2\gamex86.dll"
-copy $(TargetPath) "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "c:\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
 
 echo Done!
 </Command>
@@ -376,10 +377,7 @@ echo Done!
     <ClCompile Include="..\..\shared\infostrings.cpp" />
     <ClCompile Include="..\..\shared\m_angles.cpp" />
     <ClCompile Include="..\..\shared\m_bounds.cpp" />
-    <ClCompile Include="..\..\shared\m_mat3.cpp" />
-    <ClCompile Include="..\..\shared\m_mat4.cpp" />
     <ClCompile Include="..\..\shared\m_plane.cpp" />
-    <ClCompile Include="..\..\shared\m_quat.cpp" />
     <ClCompile Include="..\..\shared\mathlib.cpp" />
     <ClCompile Include="..\..\shared\mersennetwister.cpp" />
     <ClCompile Include="..\..\shared\shared.cpp" />
@@ -396,8 +394,20 @@ echo Done!
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_linux.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_chainfist.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_disruptor.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_etf_rifle.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_heatbeam.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_items.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_misc_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_prox_launcher.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_spheres.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_stalker.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_tesla.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_weaponry.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_timer.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
@@ -523,6 +533,17 @@ echo Done!
     <ClInclude Include="..\..\source\cc_options.h" />
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />
+    <ClInclude Include="..\..\source\cc_rogue_chainfist.h" />
+    <ClInclude Include="..\..\source\cc_rogue_disruptor.h" />
+    <ClInclude Include="..\..\source\cc_rogue_etf_rifle.h" />
+    <ClInclude Include="..\..\source\cc_rogue_heatbeam.h" />
+    <ClInclude Include="..\..\source\cc_rogue_items.h" />
+    <ClInclude Include="..\..\source\cc_rogue_misc_entities.h" />
+    <ClInclude Include="..\..\source\cc_rogue_prox_launcher.h" />
+    <ClInclude Include="..\..\source\cc_rogue_spheres.h" />
+    <ClInclude Include="..\..\source\cc_rogue_stalker.h" />
+    <ClInclude Include="..\..\source\cc_rogue_tesla.h" />
+    <ClInclude Include="..\..\source\cc_rogue_weaponry.h" />
     <ClInclude Include="..\..\source\cc_save.h" />
     <ClInclude Include="..\..\source\cc_shared.h" />
     <ClInclude Include="..\..\source\cc_dmflags.h" />

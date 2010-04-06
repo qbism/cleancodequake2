@@ -281,7 +281,7 @@ CItemEntity *CTech::DropItem (CBaseEntity *Entity)
 	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
-	dropped->State.GetRenderEffects() = RF_GLOW;
+	dropped->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	dropped->GetMins().Set (-15);
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
@@ -335,7 +335,7 @@ void SpawnTech(CBaseItem *item, CSpotBase *spot)
 	Player->LinkedItem = item;
 	Player->SpawnFlags = DROPPED_ITEM;
 	Player->State.GetEffects() = item->EffectFlags;
-	Player->State.GetRenderEffects() = RF_GLOW;
+	Player->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	Player->GetMins().Set (-15);
 	Player->GetMaxs().Set (15);
 	Player->State.GetModelIndex() = ModelIndex(item->WorldModel);

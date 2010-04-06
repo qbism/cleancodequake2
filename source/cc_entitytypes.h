@@ -178,6 +178,7 @@ public:
 	EPhysicsFlags		PhysicsFlags;
 	vec3f				AngularVelocity;
 	vec3f				Velocity;
+	vec3f				GravityVector;
 	float				Mass;
 	struct WaterInfo_t
 	{
@@ -197,6 +198,7 @@ public:
 		File.Write<EPhysicsType> (PhysicsType);
 		File.Write<vec3f> (&AngularVelocity);
 		File.Write<vec3f> (&Velocity);
+		File.Write<vec3f> (&GravityVector);
 		File.Write<float> (&Mass);
 		File.Write<WaterInfo_t> (WaterInfo);
 		File.Write<bool> (PhysicsDisabled);
@@ -208,6 +210,7 @@ public:
 		PhysicsType = File.Read<EPhysicsType> ();
 		AngularVelocity = File.Read<vec3f> ();
 		Velocity = File.Read<vec3f> ();
+		GravityVector = File.Read<vec3f> ();
 		Mass = File.Read<float> ();
 		WaterInfo = File.Read<WaterInfo_t> ();
 		PhysicsDisabled = File.Read<bool> ();

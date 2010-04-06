@@ -150,9 +150,6 @@ G_TouchTriggers
 */
 void	G_TouchTriggers (CBaseEntity *Entity)
 {
-	static edict_t		*touch[MAX_CS_EDICTS];
-	Mem_Zero(touch, sizeof(touch));
-
 	// dead things don't activate triggers!
 	if (Entity->EntityFlags & ENT_HURTABLE)
 	{
@@ -161,14 +158,13 @@ void	G_TouchTriggers (CBaseEntity *Entity)
 			return;
 	}
 
-	sint32 num = BoxEdicts (Entity->GetAbsMin(), Entity->GetAbsMax(), touch, MAX_CS_EDICTS, true);
+	TBoxEdictsEntityList Entities = BoxEdicts (Entity->GetAbsMin(), Entity->GetAbsMax(), true);
 
 	// be careful, it is possible to have an entity in this
 	// list removed before we get to it (killtriggered)
-	for (sint32 i = 0; i < num; i++)
+	for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
 	{
-		edict_t *hit = touch[i];
-		CBaseEntity *TouchedEntity = hit->Entity;
+		CBaseEntity *TouchedEntity = (*it);
 
 		if (!TouchedEntity || !TouchedEntity->GetInUse())
 			continue;

@@ -417,7 +417,7 @@ void CSoldierBase::Attack1_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)

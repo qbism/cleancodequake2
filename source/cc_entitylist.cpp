@@ -420,6 +420,12 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 			ED_ParseEdict (EntityParser, ent);
 
 			ED_CallSpawn (ent);
+
+#if ROGUE_FEATURES
+			if (ent->Entity)
+				ent->Entity->State.GetRenderEffects() = RF_IR_VISIBLE;
+#endif
+
 			Level.EntityNumber++;
 
 			if (!ent->inUse)

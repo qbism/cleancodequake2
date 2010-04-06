@@ -118,14 +118,6 @@ public:
 		, B(FloatToByte(Other.B))
 		, A(FloatToByte(Other.A)) {}
 
-#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-	inline colorb(const vec4_t Other)
-		: R(FloatToByte(Other[0]))
-		, G(FloatToByte(Other[1]))
-		, B(FloatToByte(Other[2]))
-		, A(FloatToByte(Other[3])) {}
-#endif
-
 	/**
 	 * Destructors
 	 */
@@ -161,6 +153,15 @@ public:
 	inline void Set(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA) { R = InR; G = InG; B = InB; A = InA; }
 
 	inline void Set(const colorf &Other) { R = FloatToByte(Other.R); G = FloatToByte(Other.G); B = FloatToByte(Other.B); A = FloatToByte(Other.A); }
+
+	inline float DistanceFrom (colorb &Other)
+	{
+		return 
+			((R - Other.R) * (R - Other.R)) +
+			((R - Other.G) * (G - Other.G)) +
+			((R - Other.B) * (B - Other.B)) +
+			((R - Other.A) * (A - Other.A));
+	}
 };
 
 inline colorf::colorf(const colorb &Other)

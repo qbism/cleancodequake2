@@ -1245,6 +1245,14 @@ void CGekk::Duck_Hold ()
 	else
 		AIFlags |= AI_HOLD_FRAME;
 }
+#else
+void CGekk::SideStep ()
+{
+	if (AIFlags & AI_STAND_GROUND)
+		CurrentMove = &GekkMoveStand;
+	else
+		CurrentMove = &GekkMoveRun;
+}
 #endif
 
 CFrame GekkFramesLDuck[] = 

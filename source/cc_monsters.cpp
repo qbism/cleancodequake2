@@ -160,6 +160,15 @@ void CMonster::SaveFields (CFile &File)
 
 	File.Write <void (CMonster::*) ()> (Think);
 
+#if ROGUE_FEATURES
+	File.Write<uint8> (MonsterSlots);
+	File.Write<uint8> (MonsterUsed);
+	File.Write<sint32> ((Commander && Commander->gameEntity) ? Commander->State.GetNumber() : -1);
+	File.Write<FrameNumber_t> (QuadFramenum);
+	File.Write<FrameNumber_t> (InvincibleFramenum);
+	File.Write<FrameNumber_t> (DoubleFramenum);
+#endif
+
 	SaveMonsterFields (File);
 };
 
@@ -223,6 +232,19 @@ void CMonster::LoadFields (CFile &File)
 #endif
 
 	Think = File.Read <void (CMonster::*) ()> ();
+
+#if ROGUE_FEATURES
+	MonsterSlots = File.Read<uint8> ();
+	MonsterUsed = File.Read<uint8> ();
+
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		Commander = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
+
+	QuadFramenum = File.Read<FrameNumber_t> ();
+	InvincibleFramenum = File.Read<FrameNumber_t> ();
+	DoubleFramenum = File.Read<FrameNumber_t> ();
+#endif
 
 	LoadMonsterFields (File);
 };
@@ -854,7 +876,10 @@ bool CMonster::CheckBottom ()
 // with the tougher checks
 // the corners must be within 16 of the midpoint
 	bool gotOutEasy = false;
-	start[2] = mins[2] - 1;
+
+	// FIXME - this will only handle 0,0,1 and 0,0,-1 gravity vectors
+	start.Z = mins.Z - ((Entity->GravityVector.Z > 0) ? -1 : 1);
+
 	for	(x=0 ; x<=1 && !gotOutEasy; x++)
 	{
 		for	(y=0 ; y<=1 && !gotOutEasy; y++)
@@ -879,7 +904,18 @@ bool CMonster::CheckBottom ()
 // the midpoint must be within 16 of the bottom
 	start.X = stop.X = (mins.X + maxs.X)*0.5;
 	start.Y = stop.Y = (mins.Y + maxs.Y)*0.5;
-	stop.Z = start.Z - 2*STEPSIZE;
+
+	if (Entity->GravityVector.Z < 0)
+	{
+		start.Z = mins.Z;
+		stop.Z = start.Z - (STEPSIZE * 2);
+	}
+	else
+	{
+		start.Z = maxs.Z;
+		stop.Z = start.Z + (STEPSIZE * 2);
+	}
+
 	trace (start, stop, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.fraction == 1.0)
@@ -895,10 +931,21 @@ bool CMonster::CheckBottom ()
 			
 			trace (start, stop, Entity, CONTENTS_MASK_MONSTERSOLID);
 			
-			if (trace.fraction != 1.0 && trace.EndPos[2] > bottom)
-				bottom = trace.EndPos[2];
-			if (trace.fraction == 1.0 || mid - trace.EndPos[2] > STEPSIZE)
-				return false;
+			// FIXME - this will only handle 0,0,1 and 0,0,-1 gravity vectors
+			if (Entity->GravityVector.Z > 0)
+			{
+				if (trace.fraction != 1.0 && trace.EndPos.Z < bottom)
+					bottom = trace.EndPos.Z;
+				if (trace.fraction == 1.0 || trace.EndPos.Z - mid > STEPSIZE)
+					return false;
+			}
+			else
+			{
+				if (trace.fraction != 1.0 && trace.EndPos.Z > bottom)
+					bottom = trace.EndPos.Z;
+				if (trace.fraction == 1.0 || mid - trace.EndPos.Z > STEPSIZE)
+					return false;
+			}
 		}
 
 	return true;
@@ -956,10 +1003,16 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				float dz = oldorg.Z - Entity->GoalEntity->State.GetOrigin().Z;
 				if (Entity->GoalEntity->EntityFlags & ENT_PLAYER)
 				{
-					if (dz > 40)
+					float minHeight = 
+#if ROGUE_FEATURES
+						strcmp(Entity->ClassName.c_str(), "monster_carrier") ? 104 : 
+#endif
+						40;
+
+					if (dz > minHeight)
 						neworg.Z -= 8;
 
-					if (!((Entity->Flags & FL_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < 30))
+					if (!((Entity->Flags & FL_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < (minHeight - 10)))
 						neworg.Z += 8;
 				}
 				else
@@ -1000,7 +1053,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				}
 			}
 
-			if (trace.fraction == 1)
+			if (trace.fraction == 1 && (!trace.allSolid) && (!trace.startSolid))
 			{
 				Entity->State.GetOrigin() = trace.EndPos;
 				if (ReLink)
@@ -1023,9 +1076,9 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	// push down from a step height above the wished position
 	stepsize = (AIFlags & AI_NOSTEP) ? 1 :  STEPSIZE;
 
-	neworg.Z += stepsize;
-	end = neworg;
-	end.Z -= stepsize * 2;
+	// trace from 1 stepsize gravityUp to 2 stepsize gravityDown.
+	neworg = neworg.MultiplyAngles (-1 * stepsize, Entity->GravityVector);
+	end = neworg.MultiplyAngles (2 * stepsize, Entity->GravityVector);
 
 	trace (neworg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
@@ -1249,7 +1302,14 @@ void CMonster::WalkMonsterStartGo ()
 	
 	if (!YawSpeed)
 		YawSpeed = 20;
-	Entity->ViewHeight = 25;
+
+#if ROGUE_FEATURES
+	// FIXME: move to stalker.cpp
+	if (!(strcmp(Entity->ClassName.c_str(), "monster_stalker")))
+		Entity->ViewHeight = 15;
+	else
+#endif
+		Entity->ViewHeight = 25;
 
 	MonsterStartGo ();
 
@@ -1466,7 +1526,11 @@ void CMonsterEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
 			return;
 		if (!(Activator->EntityFlags & ENT_PLAYER) && !(Monster->AIFlags & AI_GOOD_GUY))
 			return;
-		
+#if ROGUE_FEATURES
+		if (Activator->Flags & FL_DISGUISED)		// PGM
+			return;									// PGM
+#endif
+
 	// delay reaction so if the monster is teleported, its sound is still heard
 		Enemy = Activator;
 		Monster->FoundTarget ();
@@ -1496,7 +1560,16 @@ void CMonster::MonsterTriggeredSpawn ()
 	MonsterStartGo ();
 
 	if (Entity->Enemy && !(Entity->SpawnFlags & MONSTER_AMBUSH) && !(Entity->Enemy->Flags & FL_NOTARGET))
+#if ROGUE_FEATURES
+	{
+		if(!(Entity->Enemy->Flags & FL_DISGUISED))		// PGM
+			FoundTarget ();
+		else // PMM - just in case, make sure to clear the enemy so FindTarget doesn't get confused
+			Entity->Enemy = NULL;
+	}
+#else
 		FoundTarget ();
+#endif
 	else
 		Entity->Enemy = NULL;
 }
@@ -1679,6 +1752,23 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 
 	if (flashtype != -1)
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
+
+#if ROGUE_FEATURES
+#include "cc_rogue_weaponry.h"
+
+void CMonster::MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
+{
+#if MONSTERS_ARENT_STUPID
+	if (FriendlyInLine (start, dir))
+		return;
+#endif
+
+	CGreenBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, effect);
+
+	if (flashtype != -1)
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
+}
+#endif
 
 #if XATRIX_FEATURES
 #include "cc_weaponmain.h"
@@ -1926,7 +2016,13 @@ bool CMonster::CheckAttack ()
 #else
 	float	chance;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
+	{
+		AIFlags |= AI_SOUND_TARGET;
+		return false;
+	}
+
+	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1, spot2;
@@ -2063,9 +2159,19 @@ bool CMonster::CheckAttack ()
 
 void CMonster::DropToFloor ()
 {
-	Entity->State.GetOrigin().Z += 1;
+	vec3f end = Entity->State.GetOrigin();
 
-	vec3f end = Entity->State.GetOrigin() - vec3f(0, 0, 256);	
+	if (Entity->GravityVector.Z < 0)
+	{
+		Entity->State.GetOrigin().Z += 1;
+		end.Z -= 256;
+	}
+	else
+	{
+		Entity->State.GetOrigin().Z -= 1;
+		end.Z += 256;
+	}
+
 	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.fraction == 1 || trace.allSolid)
@@ -2285,7 +2391,7 @@ bool CMonster::AI_CheckAttack()
 #if MONSTERS_USE_PATHFINDING
 			if ((Level.Frame - Level.SoundEntityFramenum) > 50)
 #else
-			if ((Level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
+			if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
 #endif
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
@@ -2697,6 +2803,7 @@ void CMonster::AI_Run(float Dist)
 			// pmm
 		{
 			AIFlags |= (AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
+			Entity->Enemy = NULL;
 			Stand ();
 			return;
 		}
@@ -3198,12 +3305,71 @@ void CMonster::AI_Stand (float Dist)
 #endif
 }
 
-void CMonster::ReactToDamage (CBaseEntity *Attacker)
+#if MONSTER_USE_ROGUE_AI
+void CMonster::CleanupHealTarget ()
+{
+	Healer = NULL;
+	Entity->CanTakeDamage = true;
+	AIFlags &= ~AI_RESURRECTING;
+	SetEffects ();
+}
+#endif
+
+#if ROGUE_FEATURES
+void CMonster::TargetTesla (CBaseEntity *Tesla)
+{
+	if (!Tesla)
+		return;
+
+	// PMM - medic bails on healing things
+	if (AIFlags & AI_MEDIC)
+	{
+		if (Entity->Enemy)
+			entity_cast<CMonsterEntity>(Entity->Enemy)->Monster->CleanupHealTarget();
+		AIFlags &= ~AI_MEDIC;
+	}
+
+	// store the player enemy in case we lose track of him.
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		LastPlayerEnemy = entity_cast<CPlayerEntity>(Entity->Enemy);
+
+	if(Entity->Enemy != Tesla)
+	{
+		Entity->OldEnemy = Entity->Enemy;
+		Entity->Enemy = Tesla;
+
+		if (MonsterFlags & MF_HAS_ATTACK)
+		{
+			if (Entity->Health <= 0)
+				return;
+
+			Attack();
+		}
+		else
+			FoundTarget();
+	}
+}
+#endif
+
+void CMonster::ReactToDamage (CBaseEntity *Attacker, CBaseEntity *Inflictor)
 {
 	if (!Attacker || (!(Attacker->EntityFlags & ENT_PLAYER) && !(Attacker->EntityFlags & ENT_MONSTER)))
 		return;
+	if (Attacker == Entity)
+		return;
 
-	if (Attacker == Entity || (Entity->Enemy && (Attacker == Entity->Enemy)))
+#if ROGUE_FEATURES
+	// logic for tesla - if you are hit by a tesla, and can't see who you should be mad at (attacker)
+	// attack the tesla
+	// also, target the tesla if it's a "new" tesla
+	if ((Inflictor) && (!strcmp(Inflictor->ClassName.c_str(), "tesla")))
+	{
+		TargetTesla (Inflictor);
+		return;
+	}
+#endif
+
+	if (Entity->Enemy && (Attacker == Entity->Enemy))
 		return;
 
 	// if we are a good guy monster and our Attacker is a player
@@ -3213,6 +3379,40 @@ void CMonster::ReactToDamage (CBaseEntity *Attacker)
 		if ((Attacker->EntityFlags & ENT_PLAYER) || ((Attacker->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(Attacker))->Monster->AIFlags & AI_GOOD_GUY))
 			return;
 	}
+
+#if ROGUE_FEATURES
+//PGM
+	// if we're currently mad at something a target_anger made us mad at, ignore
+	// damage
+	if (Entity->Enemy && (AIFlags & AI_TARGET_ANGER))
+	{
+		// make sure whatever we were pissed at is still around.
+		if(Entity->Enemy->GetInUse())
+		{
+			if (((float)(Entity->Health) / (float)(Entity->MaxHealth)) > 0.33)
+				return;
+		}
+
+		// remove the target anger flag
+		AIFlags &= ~AI_TARGET_ANGER;
+	}
+//PGM
+
+// PMM
+// if we're healing someone, do like above and try to stay with them
+	if ((Entity->Enemy) && (AIFlags & AI_MEDIC))
+	{
+		float percentHealth = (float)(Entity->Health) / (float)(Entity->MaxHealth);
+		// ignore it some of the time
+		if (Entity->Enemy->GetInUse() && percentHealth > 0.25)
+			return;
+
+		// remove the medic flag
+		AIFlags &= ~AI_MEDIC;
+		entity_cast<CMonsterEntity>(Entity->Enemy)->Monster->CleanupHealTarget();
+	}
+// PMM
+#endif
 
 	// we now know that we are not both good guys
 
@@ -3396,6 +3596,27 @@ void CMonster::MonsterThink ()
 	CatagorizePosition ();
 	WorldEffects ();
 	SetEffects ();
+
+	// Paril: Last ditch attempt at fixing this...
+	if (Entity->OldEnemy && (Entity->OldEnemy->Freed || !Entity->OldEnemy->GetInUse()))
+		Entity->OldEnemy = NULL;
+	if (Entity->Enemy && (Entity->Enemy->Freed || !Entity->Enemy->GetInUse()))
+	{
+		if (Entity->OldEnemy)
+		{
+			Entity->Enemy = Entity->OldEnemy;
+		
+			if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
+			{
+				AIFlags |= AI_SOUND_TARGET;
+				Entity->GoalEntity = Entity->Enemy;
+			}
+
+			FoundTarget ();
+		}
+		else
+			Entity->Enemy = NULL;
+	}
 }
 
 void CMonster::MoveFrame ()
@@ -3581,6 +3802,27 @@ void CMonster::SetEffects()
 		}
 		PowerArmorTime--;
 	}
+
+	if (QuadFramenum > Level.Frame)
+	{
+		FrameNumber_t remaining = QuadFramenum - Level.Frame;
+		if (remaining > 30 || (remaining & 4) )
+			Entity->State.GetEffects() |= EF_QUAD;
+	}
+
+	if (DoubleFramenum > Level.Frame)
+	{
+		FrameNumber_t remaining = DoubleFramenum - Level.Frame;
+		if (remaining > 30 || (remaining & 4) )
+			Entity->State.GetEffects() |= EF_DOUBLE;
+	}
+
+	if (InvincibleFramenum > Level.Frame)
+	{
+		FrameNumber_t remaining = InvincibleFramenum - Level.Frame;
+		if (remaining > 30 || (remaining & 4) )
+			Entity->State.GetEffects() |= EF_PENT;
+	}
 }
 
 void CMonster::WorldEffects()
@@ -3707,21 +3949,32 @@ void CMonster::CheckGround()
 	if (Entity->Flags & (FL_SWIM|FL_FLY))
 		return;
 
-	if (Entity->Velocity.Z > 100)
+	if ((Entity->Velocity.Z * Entity->GravityVector.Z) < -100)
 	{
 		Entity->GroundEntity = NULL;
 		return;
 	}
 
 // if the hull point one-quarter unit down is solid the entity is on ground
-	vec3f point = Entity->State.GetOrigin() - vec3f(0, 0, 0.25f);
+	vec3f point = Entity->State.GetOrigin() + vec3f(0, 0, 0.25 * Entity->GravityVector.Z);
 	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), point, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	// check steepness
-	if (trace.plane.normal[2] < 0.7 && !trace.startSolid)
+	if (Entity->GravityVector.Z < 0)		// normal gravity
 	{
-		Entity->GroundEntity = NULL;
-		return;
+		if (trace.plane.normal.Z < 0.7 && !trace.startSolid)
+		{
+			Entity->GroundEntity = NULL;
+			return;
+		}
+	}
+	else								// inverted gravity
+	{
+		if (trace.plane.normal.Z > -0.7 && !trace.startSolid)
+		{
+			Entity->GroundEntity = NULL;
+			return;
+		}
 	}
 
 	if (!trace.startSolid && !trace.allSolid)

@@ -36,17 +36,25 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 namespace NItems
 {
+	// Armor
 	CArmor *JacketArmor;
 	CArmor *CombatArmor;
 	CArmor *BodyArmor;
 	CArmor *ArmorShard;
 
+	// Health
 	CHealth *StimPack;
 	CHealth *SmallHealth;
 	CHealth *LargeHealth;
 
+	// Keys
 	CPowerCube *PowerCube;
+#if CLEANCTF_ENABLED
+	CFlag *RedFlag;
+	CFlag *BlueFlag;
+#endif
 
+	// Weapons
 	CWeaponItem *Blaster;
 	CWeaponItem *Shotgun;
 	CWeaponItem *SuperShotgun;
@@ -57,31 +65,41 @@ namespace NItems
 	CWeaponItem *HyperBlaster;
 	CWeaponItem *Railgun;
 	CWeaponItem *BFG;
-	#if CLEANCTF_ENABLED
-	CWeaponItem	*Grapple;
+#if CLEANCTF_ENABLED
+	CWeaponItem *Grapple;
+#endif
+#if XATRIX_FEATURES
+	CWeaponItem *IonRipper;	
+	CWeaponItem *Phalanx;	
+#endif
 
-	CFlag *RedFlag;
-	CFlag *BlueFlag;
-	#endif
-	#if XATRIX_FEATURES
-	CWeaponItem	*IonRipper;	
-	CWeaponItem	*Phalanx;	
-	CAmmo		*MagSlugs;
-	CAmmo 		*Trap;
-	#endif
-
+	// Ammo
 	CAmmo *Shells;
 	CAmmo *Bullets;
 	CAmmo *Slugs;
 	CAmmo *Rockets;
 	CAmmo *Cells;
 	CAmmo *Grenades;
+	CAmmo *Trap;
+#if XATRIX_FEATURES
+	CAmmo *MagSlugs;
+#endif
+#if ROGUE_FEATURES
+	CAmmo *Prox;
+	CAmmo *Flechettes;
+	CAmmoWeapon *Tesla;
+#endif
 
+	// Powerups
 	CMegaHealth *MegaHealth;
 	CBackPack *BackPack;
 	CQuadDamage *Quad;
 #if XATRIX_FEATURES
 	CBasePowerUp *QuadFire;
+#endif
+#if ROGUE_FEATURES
+	CDoubleDamage *Double;
+	CIRGoggles *IRGoggles;
 #endif
 	CInvulnerability *Invul;
 	CSilencer *Silencer;
@@ -104,17 +122,9 @@ TempList (QNew(TAG_GENERIC) TItemListType)
 
 void CItemList::AddItemToList (CBaseItem *Item)
 {
-/*	Items.push_back (Item);
-	Item->Index = numItems++;
-
-	// Hash!
-	if (Item->Classname)
-		HashedClassnameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Classname, MAX_ITEMS_HASH), Item->Index));
-	if (Item->Name)
-		HashedNameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Name, MAX_ITEMS_HASH), Item->Index));*/
 	TempList->push_back (Item);
 }
-
+	
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
 typedef std::multimap<TWeaponMultiMapPairType, sint8> TWeaponMultiMapType;
 

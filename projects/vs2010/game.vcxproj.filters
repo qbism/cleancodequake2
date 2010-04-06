@@ -171,16 +171,7 @@
     <ClCompile Include="..\..\shared\m_bounds.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\m_mat3.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\m_mat4.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\m_plane.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\m_quat.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\shared.cpp">
@@ -542,6 +533,39 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_irc.cpp">
       <Filter>CleanCode Files\IRC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_misc_entities.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_items.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_prox_launcher.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_weaponry.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_heatbeam.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_etf_rifle.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_chainfist.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_tesla.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_spheres.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_disruptor.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_stalker.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -988,6 +1012,39 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_irc.h">
       <Filter>CleanCode Files\IRC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_spheres.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_misc_entities.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_items.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_prox_launcher.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_weaponry.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_heatbeam.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_etf_rifle.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_chainfist.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_tesla.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_disruptor.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_stalker.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

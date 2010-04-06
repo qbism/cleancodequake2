@@ -440,9 +440,6 @@ void CBFGBolt::Think ()
 
 				float dist = (State.GetOrigin() - Entity->State.GetOrigin().MultiplyAngles (0.5f, (Entity->GetMins() + Entity->GetMaxs()))).Length();
 				float points = Damage * (1.0f - sqrtf(dist/DamageRadius));
-	
-				if (Entity == GetOwner())
-					points = points * 0.5;
 
 				CBFGExplosion(Entity->State.GetOrigin()).Send();
 				Entity->TakeDamage (this, GetOwner(), Velocity, Entity->State.GetOrigin(), vec3fOrigin, (sint32)points, 0, DAMAGE_ENERGY, MOD_BFG_EFFECT);
@@ -626,7 +623,6 @@ void CHitScan::DoWaterHit (CTrace *Trace)
 {
 }
 
-#define HITSCANSTEP 100
 void CHitScan::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 {
 	vec3f end, from;
@@ -1138,6 +1134,36 @@ bool CMeleeWeapon::Fire(CBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 	return true;
 }
 
+void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, int Reach, int Damage, int Kick, EMeansOfDeath Mod)
+{
+	vec3f forward, right, up;
+	(Aim.ToAngles()).ToVectors (&forward, &right, &up);
+	forward.Normalize();
+
+	vec3f point = Start.MultiplyAngles (Reach, forward);
+
+	//see if the hit connects
+	CTrace tr (Start, point, Entity, CONTENTS_MASK_SHOT);
+	if (tr.fraction == 1.0)
+		return;
+
+	if (tr.Ent->EntityFlags & ENT_HURTABLE)
+	{
+		CHurtableEntity *Hurt = entity_cast<CHurtableEntity>(tr.Ent);
+
+		Entity->Velocity =	Entity->Velocity
+							.MultiplyAngles (75, forward)
+							.MultiplyAngles (75, up);
+
+		// do the damage
+		// FIXME - make the damage appear at right spot and direction
+		Hurt->TakeDamage (Entity, Entity, vec3fOrigin, Entity->State.GetOrigin(), vec3fOrigin, Damage, Kick/2, 
+					(Mod == MOD_CHAINFIST) ? (DAMAGE_DESTROY_ARMOR | DAMAGE_NO_KNOCKBACK) : (DAMAGE_NO_KNOCKBACK), Mod);
+	}
+	else
+		CGunshotRicochet (tr.EndPos, tr.plane.normal).Send();
+}
+
 #if CLEANCTF_ENABLED
 
 CGrappleEntity::CGrappleEntity () :
@@ -1323,7 +1349,7 @@ void CGrappleEntity::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	uint8 volume = (Player->Client.Timers.SilencerShots) ? 51 : 255;
 	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grpull.wav"), volume);
 	PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhit.wav"), volume);
-
+	
 	CSparks(State.GetOrigin(), (!plane) ? vec3fOrigin : plane->normal).Send();
 };
 
@@ -1331,5 +1357,27 @@ bool CGrappleEntity::Run ()
 {
 	return CFlyMissileProjectile::Run();
 };
+
+void CGrappleEntity::SaveFields (CFile &File)
+{
+	CFlyMissileProjectile::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+
+	File.Write<sint32> ((Player != NULL) ? Player->State.GetNumber() : -1);
+	File.Write<float> (Damage);
+}
+
+void CGrappleEntity::LoadFields (CFile &File)
+{
+	CFlyMissileProjectile::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+
+	sint32 Index = File.Read<sint32> ();
+	Player = (Index == -1) ? NULL : entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
+
+	Damage = File.Read<float> ();
+}
+
+IMPLEMENT_SAVE_SOURCE(CGrappleEntity);
 #endif
 

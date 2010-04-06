@@ -260,6 +260,15 @@ void CBrushModel::AngleMoveFinal ()
 
 void CBrushModel::AngleMoveBegin ()
 {
+#if ROGUE_FEATURES
+	if (MoveSpeed < Speed)
+	{
+		MoveSpeed += Accel;
+		if (MoveSpeed > Speed)
+			MoveSpeed = Speed;
+	}
+#endif
+
 	// set destdelta to the vector needed to move
 	vec3f	destdelta = ((MoveState == STATE_UP) ? EndAngles : StartAngles) - State.GetAngles();
 	
@@ -278,16 +287,36 @@ void CBrushModel::AngleMoveBegin ()
 	float frames = floor(traveltime / 0.1f);
 
 	// scale the destdelta vector by the time spent traveling to get velocity
-	//Vec3Scale (destdelta, 1.0 / (traveltime * 10), gameEntity->avelocity);
 	AngularVelocity = destdelta * 1.0 / (traveltime * 10);
 
+#if ROGUE_FEATURES
+	// if we're done accelerating, act as a normal rotation
+	if (MoveSpeed >= Speed)
+	{
+		// set nextthink to trigger a think when dest is reached
+		NextThink = Level.Frame + frames;
+		ThinkType = BRUSHTHINK_AMOVEFINAL;
+	}
+	else
+	{
+		NextThink = Level.Frame + FRAMETIME;
+		ThinkType = BRUSHTHINK_AMOVEBEGIN;
+	}
+#else
 	// set nextthink to trigger a think when dest is reached
 	NextThink = Level.Frame + frames;
 	ThinkType = BRUSHTHINK_AMOVEFINAL;
+#endif
 }
 
 void CBrushModel::AngleMoveCalc (uint32 EndFunc)
 {
+#if ROGUE_FEATURES
+	// if we're supposed to accelerate, this will tell anglemove_begin to do so
+	if (Accel != Speed)
+		MoveSpeed = 0;
+#endif
+
 	AngularVelocity.Clear ();
 	this->EndFunc = EndFunc;
 	if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
@@ -447,7 +476,10 @@ Set "sounds" to one of the following:
 2) chain slow
 */
 
-#define PLAT_LOW_TRIGGER	1
+CC_ENUM (uint8, EPlatformSpawnflags)
+{
+	PLAT_LOW_TRIGGER	= BIT(0),
+};
 
 CPlatForm::CPlatForm() :
 CBaseEntity(),
@@ -793,13 +825,19 @@ NOMONSTER	monsters will not trigger this door
 4)	heavy
 */
 
-#define DOOR_START_OPEN		1
-#define DOOR_REVERSE		2
-#define DOOR_CRUSHER		4
-#define DOOR_NOMONSTER		8
-#define DOOR_ANIMATED		16
-#define DOOR_TOGGLE			32
-#define DOOR_ANIMATED_FAST	64
+CC_ENUM (uint16, EDoorSpawnflags)
+{
+	DOOR_START_OPEN			= BIT(0),
+	DOOR_REVERSE			= BIT(1),
+	DOOR_CRUSHER			= BIT(2),
+	DOOR_NOMONSTER			= BIT(3),
+	DOOR_ANIMATED			= BIT(4),
+	DOOR_TOGGLE				= BIT(5),
+	DOOR_ANIMATED_FAST		= BIT(6),
+#if ROGUE_FEATURES
+	DOOR_INACTIVE			= BIT(13)
+#endif
+};
 
 CDoor::CDoor() :
 CBaseEntity(),
@@ -808,7 +846,8 @@ CBrushModel(),
 CBlockableEntity(),
 CUsableEntity(),
 CHurtableEntity(),
-CTouchableEntity()
+CTouchableEntity(),
+UseType(DOORUSE_NORMAL)
 {
 	BrushType |= BRUSH_DOOR;
 };
@@ -820,7 +859,8 @@ CBrushModel(Index),
 CBlockableEntity(Index),
 CUsableEntity(Index),
 CHurtableEntity(Index),
-CTouchableEntity(Index)
+CTouchableEntity(Index),
+UseType(DOORUSE_NORMAL)
 {
 	BrushType |= BRUSH_DOOR;
 };
@@ -920,33 +960,171 @@ void CDoor::GoUp (CBaseEntity *Activator)
 	UseAreaPortals (true);
 }
 
-void CDoor::Use (CBaseEntity *Other, CBaseEntity *Activator)
+#if ROGUE_FEATURES
+class CFindLowestPlayerCallback : public CForEachPlayerCallback
 {
-	if (Flags & FL_TEAMSLAVE)
-		return;
+public:
+	CPlayerEntity		*Lowest;
+	float				LowestPlayerPt;
 
-	if (SpawnFlags & DOOR_TOGGLE)
+	CFindLowestPlayerCallback () :
+	Lowest(NULL),
+	LowestPlayerPt(99999)
 	{
-		if (MoveState == STATE_UP || MoveState == STATE_TOP)
+		Query ();
+	};
+
+	void Callback (CPlayerEntity *Player)
+	{
+		if (Player->Health > 0)
 		{
-			// trigger all paired doors
-			for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))	
+			if (Player->GetAbsMin().Z < LowestPlayerPt)
 			{
-				Door->Message.clear();
-				Door->Touchable = false;
-				Door->GoDown();
+				LowestPlayerPt = Player->GetAbsMin().Z;
+				Lowest = Player;
 			}
+		}
+	}
+};
+
+void CDoor::SmartWaterGoUp ()
+{
+	if (MoveState == STATE_TOP)
+	{	// reset top wait time
+		if (Wait >= 0)
+			NextThink = Level.Frame + Wait;
+		return;
+	}
+
+	if (Health)
+	{
+		if (GetAbsMax().Z >= Health)
+		{
+			Velocity.Clear();
+			NextThink = 0;
+			MoveState = STATE_TOP;
 			return;
 		}
 	}
-	
-	// trigger all paired doors
-	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
+
+	if (!(Flags & FL_TEAMSLAVE))
 	{
-		Door->Message.clear();
-		Door->Touchable = false;
-		Door->GoUp (Activator);
+		if (SoundStart)
+			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
+		State.GetSound() = SoundMiddle;
 	}
+
+	// find the lowest player point.
+	CFindLowestPlayerCallback findLowestPoint;
+
+	if (!findLowestPoint.Lowest)
+		return;
+
+	float distance = findLowestPoint.LowestPlayerPt - GetAbsMax().Z;
+
+	// for the calculations, make sure we intend to go up at least a little.
+	if(distance < Accel)
+	{
+		distance = 100;
+		Speed = 5;
+	}
+	else
+		Speed = distance / Accel;
+
+	if (Speed < 5)
+		Speed = 5;
+	else if (Speed > MoveSpeed)
+		Speed = MoveSpeed;
+
+	// FIXME - should this allow any movement other than straight up?
+	Dir.Set (0, 0, 1);	
+	Velocity = Dir * Speed;
+	RemainingDistance = distance;
+
+	if (MoveState != STATE_UP)
+	{
+		UseTargets (findLowestPoint.Lowest, Message);
+		UseAreaPortals (true);
+		MoveState = STATE_UP;
+	}
+
+	ThinkType = DOORTHINK_SMARTWATER_GOUP;
+	NextThink = Level.Frame + FRAMETIME;
+}
+
+void CDoor::Activate ()
+{
+	UseType = DOORUSE_NONE;
+	
+	if (Health)
+	{
+		CanTakeDamage = true;
+		MaxHealth = Health;
+	}
+
+	if (Health)
+		ThinkType = DOORTHINK_CALCMOVESPEED;
+	else
+		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
+	NextThink = Level.Frame + FRAMETIME;
+}
+#endif
+
+void CDoor::Use (CBaseEntity *Other, CBaseEntity *Activator)
+{
+#if ROGUE_FEATURES
+	switch (UseType)
+	{
+	case DOORUSE_NONE:
+		return;
+	case DOORUSE_ACTIVATE:
+		Activate ();
+		break;
+	case DOORUSE_NORMAL:
+	default:
+#endif
+
+		if (Flags & FL_TEAMSLAVE)
+			return;
+
+		if (SpawnFlags & DOOR_TOGGLE)
+		{
+			if (MoveState == STATE_UP || MoveState == STATE_TOP)
+			{
+				// trigger all paired doors
+				for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))	
+				{
+					Door->Message.clear();
+					Door->Touchable = false;
+					Door->GoDown();
+				}
+				return;
+			}
+		}
+
+	#if ROGUE_FEATURES
+		// smart water is different
+		if ((PointContents ((GetMins() + GetMaxs()) * 0.5f) & CONTENTS_MASK_WATER) && (SpawnFlags & DOOR_REVERSE))
+		{
+			Message = "";
+			Touchable = false;
+			Enemy = Activator;
+			SmartWaterGoUp ();
+			return;
+		}
+	#endif
+		
+		// trigger all paired doors
+		for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
+		{
+			Door->Message.clear();
+			Door->Touchable = false;
+			Door->GoUp (Activator);
+		}
+
+#if ROGUE_FEATURES
+	};
+#endif
 };
 
 CDoorTrigger::CDoorTrigger () :
@@ -1156,6 +1334,11 @@ void CDoor::Think ()
 	case DOORTHINK_GODOWN:
 		GoDown ();
 		break;
+#if ROGUE_FEATURES
+	case DOORTHINK_SMARTWATER_GOUP:
+		SmartWaterGoUp ();
+		break;
+#endif
 	default:
 		CBrushModel::Think ();
 	};
@@ -1287,8 +1470,11 @@ REVERSE will cause the door to rotate in the opposite direction.
 4)	heavy
 */
 
-#define DOOR_X_AXIS			64
-#define DOOR_Y_AXIS			128
+CC_ENUM(uint8, ERotatingDoorSpawnflags)
+{
+	DOOR_X_AXIS		= BIT(6),
+	DOOR_Y_AXIS		= BIT(7),
+};
 
 CRotatingDoor::CRotatingDoor () :
 CBaseEntity(),
@@ -1445,6 +1631,16 @@ void CRotatingDoor::Spawn ()
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
 		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
+
+#if ROGUE_FEATURES
+	if (SpawnFlags & DOOR_INACTIVE)
+	{
+		CanTakeDamage = false;
+		ThinkType = BRUSHTHINK_NONE;
+		NextThink = 0;
+		UseType = DOORUSE_ACTIVATE;
+	}
+#endif
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_door_rotating", CRotatingDoor);
@@ -1551,9 +1747,12 @@ always_shoot	door is shootebale even if targeted
 "wait"		how long to hold in the open position (default 5, -1 means hold)
 */
 
-#define SECRET_ALWAYS_SHOOT	1
-#define SECRET_1ST_LEFT		2
-#define SECRET_1ST_DOWN		4
+CC_ENUM (uint8, EDoorSecretSpawnflags)
+{
+	SECRET_ALWAYS_SHOOT		= BIT(0),
+	SECRET_1ST_LEFT			= BIT(1),
+	SECRET_1ST_DOWN			= BIT(2),
+};
 
 CDoorSecret::CDoorSecret () :
 CBaseEntity(),
@@ -1917,9 +2116,12 @@ noise	looping sound to play when the train is in motion
 
 */
 
-#define TRAIN_START_ON		1
-#define TRAIN_TOGGLE		2
-#define TRAIN_BLOCK_STOPS	4
+CC_ENUM (uint8, ETrainSpawnflags)
+{
+	TRAIN_START_ON		= BIT(0),
+	TRAIN_TOGGLE		= BIT(1),
+	TRAIN_BLOCK_STOPS	= BIT(2),
+};
 
 CTrainBase::CTrainBase() :
 CBaseEntity(),
@@ -2049,6 +2251,26 @@ void CTrainBase::Next ()
 		break;
 	}
 
+#if ROGUE_FEATURES
+	if (TargetEntity->Speed)
+	{
+		MoveSpeed = TargetEntity->Speed;
+		Speed = MoveSpeed;
+
+		if (TargetEntity->Accel)
+			Accel = TargetEntity->Accel;
+		else
+			Accel = Speed;
+		
+		if (TargetEntity->Decel)
+			Decel = TargetEntity->Decel;
+		else
+			Decel = Speed;
+		
+		CurrentSpeed = 0;
+	}
+#endif
+
 	if (TargetEntity)
 		Wait = TargetEntity->Wait;
 
@@ -2065,6 +2287,30 @@ void CTrainBase::Next ()
 	MoveCalc (EndOrigin, TRAINENDFUNC_WAIT);
 
 	SpawnFlags |= TRAIN_START_ON;
+
+#if ROGUE_FEATURES
+	if (Team.HasTeam)
+	{
+		vec3f dir = EndOrigin - State.GetOrigin();
+
+		for (CBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
+		{
+			CBrushModel *Brush = entity_cast<CBrushModel>(e);
+			
+			vec3f dst = dir + Brush->State.GetOrigin();
+			Brush->StartOrigin = Brush->State.GetOrigin();
+			Brush->EndOrigin = dst;
+
+			Brush->MoveState = STATE_TOP;
+			Brush->MoveSpeed = MoveSpeed;
+			Brush->Speed = Speed;
+			Brush->Accel = Accel;
+			Brush->Decel = Decel;
+			Brush->PhysicsType = PHYSICS_PUSH; // FIXME: required?
+			Brush->MoveCalc (dst, 0); // FIXME: 0 always works here??
+		}
+	}
+#endif
 }
 
 void CTrainBase::Resume ()
@@ -2546,14 +2792,21 @@ REVERSE will cause the it to rotate in the opposite direction.
 STOP mean it will stop moving instead of pushing entities
 */
 
-#define ROTATING_START_ON		1
-#define ROTATING_REVERSE		2
-#define ROTATING_X_AXIS			4
-#define ROTATING_Y_AXIS			8
-#define ROTATING_TOUCH_PAIN		16
-#define ROTATING_STOP			32
-#define ROTATING_ANIMATED		64
-#define ROTATING_ANIMATED_FAST	128
+CC_ENUM (uint8, ERotatingSpawnflags)
+{
+	ROTATING_START_ON		= BIT(0),
+	ROTATING_REVERSE		= BIT(1),
+	ROTATING_X_AXIS			= BIT(2),
+	ROTATING_Y_AXIS			= BIT(3),
+	ROTATING_TOUCH_PAIN		= BIT(4),
+	ROTATING_STOP			= BIT(5),
+	ROTATING_ANIMATED		= BIT(6),
+	ROTATING_ANIMATED_FAST	= BIT(7),
+
+#if ROGUE_FEATURES
+	ROTATING_ACCELERATION	= BIT(13),
+#endif
+};
 
 CRotatingBrush::CRotatingBrush () :
 	CBaseEntity(),
@@ -2597,21 +2850,99 @@ void CRotatingBrush::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
+#if ROGUE_FEATURES
+void CRotatingBrush::Accelerate ()
+{
+	float	current_speed = AngularVelocity.Length();
+
+	if (current_speed >= (Speed - Accel))		// done
+	{
+		AngularVelocity = MoveDir * Speed;
+		UseTargets (this, Message);
+	}
+	else
+	{
+		current_speed += Accel;
+		AngularVelocity = MoveDir * current_speed;
+		ThinkType = ROTATINGTHINK_ACCEL;
+		NextThink = Level.Frame + FRAMETIME;
+	}
+}
+
+void CRotatingBrush::Decelerate ()
+{
+	float	current_speed = AngularVelocity.Length();
+
+	if(current_speed <= Decel)		// done
+	{
+		AngularVelocity.Clear();
+		UseTargets (this, Message);
+		Touchable = false;
+	}
+	else
+	{
+		current_speed -= Decel;
+		AngularVelocity = MoveDir * current_speed;
+		ThinkType = ROTATINGTHINK_DECEL;
+		NextThink = Level.Frame + FRAMETIME;
+	}
+}
+
+void CRotatingBrush::Think ()
+{
+	switch (ThinkType)
+	{
+	case ROTATINGTHINK_ACCEL:
+		Accelerate ();
+		break;
+	case ROTATINGTHINK_DECEL:
+		Decelerate ();
+		break;
+	};
+}
+#endif
+
 void CRotatingBrush::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	if (AngularVelocity != vec3fOrigin)
 	{
 		State.GetSound() = 0;
+
+#if ROGUE_FEATURES
+		if (SpawnFlags & ROTATING_ACCELERATION)	// Decelerate
+			Decelerate ();
+		else
+		{
+			AngularVelocity.Clear ();
+			UseTargets (this, Message);
+			Touchable = false;
+		}
+#else
 		AngularVelocity.Clear();
 		Touchable = false;
+#endif
 	}
 	else
 	{
 		State.GetSound() = SoundMiddle;
+
+#if ROGUE_FEATURES
+		if (SpawnFlags & ROTATING_ACCELERATION)	// accelerate
+			Accelerate ();
+		else
+		{
+			AngularVelocity = MoveDir * MoveSpeed;
+			UseTargets (this, Message);
+		}
+
+		if (SpawnFlags & ROTATING_TOUCH_PAIN)
+			Touchable = true;
+#else
 		AngularVelocity = MoveDir * Speed;
 
 		if (SpawnFlags & ROTATING_TOUCH_PAIN)
 			Touchable = true;
+#endif
 	}
 }
 
@@ -2652,6 +2983,21 @@ void CRotatingBrush::Spawn ()
 	if (SpawnFlags & ROTATING_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
+#if ROGUE_FEATURES
+	if (SpawnFlags & ROTATING_ACCELERATION)	// Accelerate / Decelerate
+	{
+		if (!Accel)
+			Accel = 1;
+		else if (Accel > Speed)
+			Accel = Speed;
+
+		if (!Decel)
+			Decel = 1;
+		else if (Decel > Speed)
+			Decel = Speed;
+	}
+#endif
+
 	SetBrushModel ();
 	Link ();
 }
@@ -2666,8 +3012,11 @@ The brush should be have a surface with at least one current content enabled.
 speed	default 100
 */
 
-#define CONVEYOR_START_ON	1
-#define CONVEYOR_TOGGLE		2
+CC_ENUM (uint8, EConveyorSpawnflags)
+{
+	CONVEYOR_START_ON	= BIT(0),
+	CONVEYOR_TOGGLE		= BIT(1),
+};
 
 CConveyor::CConveyor () :
 	CBaseEntity (),
@@ -2843,12 +3192,16 @@ START_ON		only valid for TRIGGER_SPAWN walls
 				the wall will initially be present
 */
 
-#define WALL_TRIGGER_SPAWN		1
-#define WALL_TOGGLE				2
-#define WALL_START_ON			4
-#define WALL_ANIMATED			8
-#define WALL_ANIMATED_FAST		16
-#define WALL_JUST_A_WALL		(WALL_START_ON | WALL_TOGGLE | WALL_TRIGGER_SPAWN)
+CC_ENUM (uint8, EWallSpawnflags)
+{
+	WALL_TRIGGER_SPAWN		= BIT(0),
+	WALL_TOGGLE				= BIT(1),
+	WALL_START_ON			= BIT(2),
+	WALL_ANIMATED			= BIT(3),
+	WALL_ANIMATED_FAST		= BIT(4),
+
+	WALL_JUST_A_WALL		= (WALL_START_ON | WALL_TOGGLE | WALL_TRIGGER_SPAWN)
+};
 
 CFuncWall::CFuncWall () :
 	CBaseEntity (),
@@ -2943,9 +3296,12 @@ LINK_CLASSNAME_TO_CLASS ("func_wall", CFuncWall);
 This is solid bmodel that will fall if it's support it removed.
 */
 
-#define OBJECT_TRIGGER_SPAWN	1
-#define OBJECT_ANIMATED			2
-#define OBJECT_ANIMATED_FAST	4
+CC_ENUM (uint8, EObjectSpawnflags)
+{
+	OBJECT_TRIGGER_SPAWN	= BIT(0),
+	OBJECT_ANIMATED			= BIT(1),
+	OBJECT_ANIMATED_FAST	= BIT(2),
+};
 
 CFuncObject::CFuncObject () :
 	CBaseEntity (),
@@ -3062,9 +3418,14 @@ mass defaults to 75.  This determines how much debris is emitted when
 it explodes.  You get one large chunk per 100 of mass (up to 8) and
 one small chunk per 25 of mass (up to 16).  So 800 gives the most
 */
-#define EXPLOSIVE_TRIGGER_SPAWN		1
-#define EXPLOSIVE_ANIMATED			2
-#define EXPLOSIVE_ANIMATED_FAST		4
+
+CC_ENUM (uint8, EExplosiveSpawnflags)
+{
+	EXPLOSIVE_TRIGGER_SPAWN	= BIT(0),
+	EXPLOSIVE_ANIMATED		= BIT(1),
+	EXPLOSIVE_ANIMATED_FAST	= BIT(2),
+};
+
 
 CFuncExplosive::CFuncExplosive () :
 	CBaseEntity (),
@@ -3165,6 +3526,30 @@ void CFuncExplosive::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 
 	while(count--)
 		ThrowDebris (gameEntity, "models/objects/debris2/tris.md2", 2, vec3f (origin + (crand() * size)));*/
 
+#if ROGUE_FEATURES
+	// PMM - if we're part of a train, clean ourselves out of it
+	if (Flags & FL_TEAMSLAVE)
+	{
+		if (Team.Master)
+		{
+			CBaseEntity *master = Team.Master;
+			if (master && master->GetInUse())		// because mappers (other than jim (usually)) are stupid....
+			{
+				bool done = false;
+				while (!done)
+				{
+					if (master->Team.Chain == this)
+					{
+						master->Team.Chain = Team.Chain;
+						done = true;
+					}
+					master = master->Team.Chain;
+				}
+			}
+		}
+	}
+#endif
+
 	UseTargets (Attacker, Message);
 
 	if (Damage)
@@ -3173,6 +3558,34 @@ void CFuncExplosive::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 
 		Free ();
 }
 
+#if ROGUE_FEATURES
+void CFuncExplosive::Activate (CBaseEntity *Other, CBaseEntity *Activator)
+{
+	bool approved = false;
+	CUsableEntity *OtherUsable = entity_cast<CUsableEntity>(Other),
+				  *ActivatorUsable = entity_cast<CUsableEntity>(Activator);
+
+	if (OtherUsable != NULL && OtherUsable->Target)
+	{
+		if (!strcmp(OtherUsable->Target, TargetName))
+			approved = true;
+	}
+	if (!approved && ActivatorUsable != NULL && ActivatorUsable->Target)
+	{
+		if (!strcmp(ActivatorUsable->Target, TargetName))
+			approved = true;
+	}
+
+	if (!approved)
+		return;
+
+	UseType = FUNCEXPLOSIVE_USE_EXPLODE;
+	if (!Health)
+		Health = 100;
+	CanTakeDamage = true;
+}
+#endif
+
 void CFuncExplosive::Use (CBaseEntity *Other, CBaseEntity *Activator)
 {
 	switch (UseType)
@@ -3180,6 +3593,11 @@ void CFuncExplosive::Use (CBaseEntity *Other, CBaseEntity *Activator)
 	case FUNCEXPLOSIVE_USE_EXPLODE:
 		Die (this, Other, Health, vec3fOrigin);
 		break;
+#if ROGUE_FEATURES
+	case FUNCEXPLOSIVE_USE_ACTIVATE:
+		Activate (Other, Activator);
+		break;
+#endif
 	case FUNCEXPLOSIVE_USE_SPAWN:
 		DoSpawn ();
 		break;
@@ -3221,6 +3639,14 @@ void CFuncExplosive::Spawn ()
 		GetSolid() = SOLID_NOT;
 		UseType = FUNCEXPLOSIVE_USE_SPAWN;
 	}
+#if ROGUE_FEATURES
+	else if (SpawnFlags & 8)
+	{
+		GetSolid() = SOLID_NOT;
+		if (TargetName)
+			UseType = FUNCEXPLOSIVE_USE_ACTIVATE;
+	}
+#endif
 	else
 	{
 		GetSolid() = SOLID_BSP;
@@ -3235,7 +3661,11 @@ void CFuncExplosive::Spawn ()
 	if (SpawnFlags & EXPLOSIVE_ANIMATED_FAST)
 		State.GetEffects() |= EF_ANIM_ALLFAST;
 
-	if (UseType != FUNCEXPLOSIVE_USE_EXPLODE)
+	if (UseType != FUNCEXPLOSIVE_USE_EXPLODE
+#if ROGUE_FEATURES
+		&& UseType != FUNCEXPLOSIVE_USE_ACTIVATE
+#endif
+		)
 	{
 		if (!Health)
 			Health = 100;

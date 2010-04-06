@@ -48,7 +48,7 @@ public:
 	  };
 
 	ENTITYFIELDS_NONSAVABLE
-	const char *SAVE_GetName () { return "NonSavable"; }
+	IMPLEMENT_SAVE_HEADER(NonSavable);
 };
 
 void SpawnNodeEntity (CPathNode *Node);

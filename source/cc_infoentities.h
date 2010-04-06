@@ -39,6 +39,9 @@ class CPathCorner : public CMapEntity, public CThinkableEntity, public CTouchabl
 public:
 	TTargetList		NextTargets;
 	FrameNumber_t	Wait;
+#if ROGUE_FEATURES
+	float			Accel, Decel, Speed;
+#endif
 
 	CPathCorner ();
 	CPathCorner (sint32 Index);

@@ -1193,6 +1193,12 @@ void CPathCorner::Spawn ()
 ENTITYFIELDS_BEGIN(CPathCorner)
 {
 	CEntityField ("wait", EntityMemberOffset(CPathCorner,Wait), FT_FRAMENUMBER | FT_SAVABLE),
+
+#if ROGUE_FEATURES
+	CEntityField ("speed", EntityMemberOffset(CPathCorner,Speed), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("accel", EntityMemberOffset(CPathCorner,Accel), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("decel", EntityMemberOffset(CPathCorner,Decel), FT_FLOAT | FT_SAVABLE),
+#endif
 };
 ENTITYFIELDS_END(CPathCorner)
 
@@ -1252,7 +1258,7 @@ public:
 	  {
 	  };
 
-	const char *SAVE_GetName () { return "CPathCombat"; }
+	IMPLEMENT_SAVE_HEADER(CPathCombat);
 
 	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{

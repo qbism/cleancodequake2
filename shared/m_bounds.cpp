@@ -24,69 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "../source/cc_options.h"
 #include "shared.h"
 
-#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-/*
-=============================================================================
-
-	2D
-
-=============================================================================
-*/
-
-/*
-===============
-AddBoundsTo2DBounds
-===============
-*/
-void AddBoundsTo2DBounds (vec2_t inMins, vec2_t inMaxs, vec2_t outMins, vec2_t outMaxs)
-{
-	// X Vector
-	if (inMins[0] < outMins[0])
-		outMins[0] = inMins[0];
-	if (inMaxs[0] > outMaxs[0])
-		outMaxs[0] = inMaxs[0];
-
-	// Y Vector
-	if (inMins[1] < outMins[1])
-		outMins[1] = inMins[1];
-	if (inMaxs[1] > outMaxs[1])
-		outMaxs[1] = inMaxs[1];
-}
-
-
-/*
-===============
-AddPointTo2DBounds
-===============
-*/
-void AddPointTo2DBounds (vec2_t v, vec2_t mins, vec2_t maxs)
-{
-	// X Vector
-	if (v[0] < mins[0])
-		mins[0] = v[0];
-	if (v[0] > maxs[0])
-		maxs[0] = v[0];
-
-	// Y Vector
-	if (v[1] < mins[1])
-		mins[1] = v[1];
-	if (v[1] > maxs[1])
-		maxs[1] = v[1];
-}
-
-
-/*
-===============
-Clear2DBounds
-===============
-*/
-void Clear2DBounds (vec2_t mins, vec2_t maxs)
-{
-	mins[0] = mins[1] = 999999;
-	maxs[0] = maxs[1] = -999999;
-}
-#endif
-
 /*
 =============================================================================
 

@@ -48,6 +48,8 @@ CC_ENUM (sint32, EItemFlags)
 	ITEMFLAG_USABLE				= BIT(8),
 	ITEMFLAG_DROPPABLE			= BIT(9),
 	ITEMFLAG_TECH				= BIT(10),
+	ITEMFLAG_NOT_GIVEABLE		= BIT(11), // item cannot be give'd
+	ITEMFLAG_MELEE				= BIT(12),
 };
 
 void InvalidateItemMedia ();
@@ -66,7 +68,7 @@ public:
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache);
 
-	CBaseItem () {}
+	CBaseItem ();
 
 	// Classname (for maps)
 	const char		*Classname;
@@ -118,7 +120,7 @@ public:
 	virtual	void	Drop (CPlayerEntity *Player) = 0;
 	virtual class CItemEntity	*DropItem (CBaseEntity *Entity);
 
-	virtual void	SetRespawn (class CItemEntity *Player, FrameNumber_t delay);
+	virtual void	SetRespawn (class CItemEntity *Item, FrameNumber_t delay);
 
 	inline sint32		GetIndex ()
 	{
@@ -144,6 +146,9 @@ public:
 #include "cc_techs.h"
 #if XATRIX_FEATURES
 #include "cc_xatrix_items.h"
+#endif
+#if ROGUE_FEATURES
+#include "cc_rogue_items.h"
 #endif
 
 #include "cc_itemlist.h"

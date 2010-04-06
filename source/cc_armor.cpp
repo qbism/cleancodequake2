@@ -122,9 +122,7 @@ void CArmor::Drop (CPlayerEntity *Player)
 
 sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
 {
-	if (!Damage)
-		return 0;
-	if (dflags & DAMAGE_NO_ARMOR)
+	if (!Damage || dflags & (DAMAGE_NO_ARMOR | DAMAGE_NO_REG_ARMOR))
 		return 0;
 
 	sint32 save = ceil (((dflags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * Damage);
@@ -173,7 +171,7 @@ public:
 		PhysicsType = PHYSICS_NONE;
 
 		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
+		State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	};
 };
 

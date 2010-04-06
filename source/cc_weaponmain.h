@@ -54,11 +54,16 @@ public:
 #if XATRIX_FEATURES
 				,	isQuadFire
 #endif
+#if ROGUE_FEATURES
+				,	isDouble
+#endif
 		;
+
+	uint8		damageMultiplier;
 
 	inline int CalcQuadVal (int val)
 	{
-		return (isQuad) ? (val * 4) : val;
+		return (val * damageMultiplier);
 	};
 
 	CWeaponItem		*Item; // The item that is linked to this weapon.

@@ -261,7 +261,10 @@ void ProcessEntity (edict_t *ent)
 	if (!ent->inUse)
 	{
 		if (ent->state.number > (Game.MaxClients + BODY_QUEUE_SIZE))
+		{
+			ent->RemovalFrames = 4;
 			ent->AwaitingRemoval = true;
+		}
 		return;
 	}
 
@@ -296,7 +299,10 @@ void ProcessEntity (edict_t *ent)
 		// This has to be processed after thinking and running, because
 		// the entity still has to be intact after that
 		if (Entity->Freed)
+		{
 			ent->AwaitingRemoval = true;
+			ent->RemovalFrames = 4;
+		}
 	}
 }
 

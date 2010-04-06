@@ -330,8 +330,8 @@ namespace NSColor
 	typedef colorb ColorPalette[256];
 };
 
-NSColor::EColors IndexFromRGBA (class colorb color);
-NSColor::EColors IndexFromRGB (class colorb color);
+NSColor::EColors IndexFromRGBA (colorb color);
+NSColor::EColors IndexFromRGB (colorb color);
 
 #else
 FILE_WARNING
