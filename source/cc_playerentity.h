@@ -306,10 +306,6 @@ public:
 	CIRCClient			IRC;
 #endif
 
-#if MONSTERS_USE_PATHFINDING
-	class CPathNode		*LastNode;
-#endif
-
 	CMenuState			MenuState;
 
 #if CLEANCTF_ENABLED
@@ -342,9 +338,6 @@ public:
 		Spectator = false;
 		Gender = GENDER_NEUTRAL;
 		MessageLevel = 0;
-#if MONSTERS_USE_PATHFINDING
-		LastNode = NULL;
-#endif
 		MenuState.Clear ();
 
 #if CLEANCTF_ENABLED
@@ -391,7 +384,6 @@ CC_ENUM (uint8, EPowerArmorType)
 	POWER_ARMOR_SHIELD
 };
 
-#if !MONSTERS_USE_PATHFINDING
 class CPlayerNoise : public virtual CBaseEntity
 {
 public:
@@ -419,7 +411,6 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CPlayerNoise);
 };
-#endif
 
 // client_t->Anim.Priority
 CC_ENUM (uint8, EAnimPriority)
@@ -456,10 +447,8 @@ public:
 	vec3f			ViewAngle;			// aiming direction
 	vec3f			DamageFrom;		// origin for vector calculation
 	colorf			DamageBlend;
-#if !MONSTERS_USE_PATHFINDING
 	CBaseEntity		*mynoise;		// can go in client only
 	CBaseEntity		*mynoise2;
-#endif
 	vec3f			OldViewAngles;
 	vec3f			OldVelocity;
 	vec2f			ViewDamage;

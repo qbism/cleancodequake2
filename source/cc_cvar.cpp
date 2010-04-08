@@ -235,10 +235,6 @@ static cvarDefaultValue_s CvarDefaults[] =
 	{ CV_CAPTURE_LIMIT,			"capturelimit",			"0",			CVAR_SERVERINFO							},
 	{ CV_INSTANT_WEAPONS,		"capturelimit",			"0",			CVAR_SERVERINFO							},
 #endif
-
-#if MONSTERS_USE_PATHFINDING
-	{ CV_PATH_NODE_DEBUG,		"node_debug",			"0",			CVAR_LATCH_SERVER						},
-#endif
 };
 
 void Cvar_Register ()

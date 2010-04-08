@@ -79,11 +79,6 @@ typedef sint32	FrameNumber_t;
 // Main class files
 #include "cc_items.h"
 #include "cc_inventory.h"
-#if MONSTERS_USE_PATHFINDING
-#define PATHFINDING_FUNCTIONSONLY
-#include "cc_pathfinding.h"
-#undef PATHFINDING_FUNCTIONSONLY
-#endif
 #include "cc_sbar.h"
 #include "cc_mapprint.h"
 #if CLEANCTF_ENABLED

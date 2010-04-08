@@ -10,9 +10,9 @@ Present
   Before I can call this thing "finished" and "clean", the AI system needs to be re-done, no exceptions.
 
 Rogue
-- Remove heat beam bobbing
+- Remove heat beam bobbing (even required? I don't notice any problems..)
 - weapon_nailgun, etc item name replacements
-  - Idea: LINK_ITEM_TO_EXISTING_CLASSNAME?
+  - Idea: LINK_CLASSNAME_TO_EXISTING_ITEM?
 - PUSH_SILENT flag for CTriggerPush (seems my PushInDirection implementation didn't think of this)
 - Being able to use one weapon switch for multiple guns. Few viable methods:
   1) Use weapon sort order (major for the gun "list", minor for the ordering)

@@ -57,11 +57,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CLEANCODE_IRC						1
 #endif
 
-// Makes pathfinding work.
-#ifndef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING			1
-#endif
-
 // "Extended game imports" refers to all deprecated imports.
 // This is actually a bad thing, even though it sounds good!
 #ifndef USE_EXTENDED_GAME_IMPORTS
@@ -190,8 +185,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_ARENT_STUPID 0
 #undef MONSTER_USE_ROGUE_AI
 #define MONSTER_USE_ROGUE_AI 0
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -206,8 +199,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_ARENT_STUPID 0
 #undef MONSTER_USE_ROGUE_AI
 #define MONSTER_USE_ROGUE_AI 1
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -225,8 +216,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_ARENT_STUPID 0
 #undef MONSTER_USE_ROGUE_AI
 #define MONSTER_USE_ROGUE_AI 1
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -242,8 +231,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_ARENT_STUPID 0
 #undef MONSTER_USE_ROGUE_AI
 #define MONSTER_USE_ROGUE_AI 0
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH

@@ -292,29 +292,10 @@ public:
 
 	FrameNumber_t		PainDebounceTime;
 
-#if MONSTERS_USE_PATHFINDING
-	// Pathfinding
-	class CPath			*P_CurrentPath;
-	class CPathNode		*P_CurrentGoalNode;
-	class CPathNode		*P_CurrentNode; // Always the current path node
-	sint32				P_CurrentNodeIndex;
-	FrameNumber_t		P_NodePathTimeout;
-	FrameNumber_t		P_NodeFollowTimeout;
-	bool				FollowingPath;
-
-	// Pathfinding functions
-	void	FoundPath		(); // Give it current and goal node and you can do this.
-	void	MoveToPath		(float Dist);
-#endif
-
 	CMonster(uint32 ID);
 
 	void SaveFields (CFile &File);
 	void LoadFields (CFile &File);
-#if MONSTERS_USE_PATHFINDING
-	void WriteNodeInfo (CFile &File);
-	void ReadNodeInfo (CFile &File);
-#endif
 
 #define MONSTER_SOUND_ENUM(first,...) \
 	CC_ENUM(uint8, EMyMonsterSoundEnum) \

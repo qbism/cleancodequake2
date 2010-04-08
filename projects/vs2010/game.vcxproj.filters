@@ -118,9 +118,6 @@
     <Filter Include="CleanCode Files\Parse System">
       <UniqueIdentifier>{8feb8d9f-1280-449f-82e8-ed8f38227494}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CleanCode Files\Pathfinding">
-      <UniqueIdentifier>{7a3f918c-909f-4035-98de-6f853f801a59}</UniqueIdentifier>
-    </Filter>
     <Filter Include="CleanCode Files\Platform">
       <UniqueIdentifier>{bd304aaa-42f3-453a-aebd-7b37e2ec2d11}</UniqueIdentifier>
     </Filter>
@@ -386,9 +383,6 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_parasite.cpp">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\cc_pathfinding.cpp">
-      <Filter>CleanCode Files\Pathfinding</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_base.cpp">
       <Filter>CleanCode Files\Platform</Filter>
@@ -799,9 +793,6 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_parse.h">
       <Filter>CleanCode Files\Parse System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\cc_pathfinding.h">
-      <Filter>CleanCode Files\Pathfinding</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_platform.h">
       <Filter>CleanCode Files\Platform</Filter>

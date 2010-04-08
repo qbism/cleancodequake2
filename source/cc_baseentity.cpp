@@ -217,9 +217,7 @@ bool RemoveEntity (edict_t *ent)
 
 	if (!ent->Entity || ent->AwaitingRemoval)
 	{
-		ent->RemovalFrames--;
-
-		if (!(--ent->RemovalFrames))
+		if (!ent->RemovalFrames)
 		{
 			ent->AwaitingRemoval = false;
 
@@ -231,6 +229,8 @@ bool RemoveEntity (edict_t *ent)
 
 			return true;
 		}
+
+		ent->RemovalFrames--;
 	}
 	else if (ent->Entity->GroundEntity && ent->Entity->GroundEntity->Freed)
 		ent->Entity->GroundEntity = NULL;
@@ -296,7 +296,7 @@ _CC_ENABLE_DEPRECATION
 	ed->state.number = ed - Game.Entities;
 
 	ed->AwaitingRemoval = true;
-	ed->RemovalFrames = 4;
+	ed->RemovalFrames = 1;
 }
 
 typedef std::vector <CBaseEntity*> TPrivateEntitiesContainer;
@@ -574,7 +574,7 @@ void			CBaseEntity::Free ()
 			else
 			{
 				gameEntity->AwaitingRemoval = true;
-				gameEntity->RemovalFrames = 4;
+				gameEntity->RemovalFrames = 1;
 			}
 		}
 	}

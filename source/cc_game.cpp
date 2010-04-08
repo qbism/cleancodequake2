@@ -192,10 +192,6 @@ void ExitLevel ()
 		if (Player->Health > Player->Client.Persistent.MaxHealth)
 			Player->Health = Player->Client.Persistent.MaxHealth;
 	}
-
-#if MONSTERS_USE_PATHFINDING
-	SavePathTable ();
-#endif
 }
 
 /*
@@ -262,8 +258,11 @@ void ProcessEntity (edict_t *ent)
 	{
 		if (ent->state.number > (Game.MaxClients + BODY_QUEUE_SIZE))
 		{
-			ent->RemovalFrames = 4;
-			ent->AwaitingRemoval = true;
+			if (!ent->AwaitingRemoval)
+			{
+				ent->RemovalFrames = 1;
+				ent->AwaitingRemoval = true;
+			}
 		}
 		return;
 	}
@@ -300,8 +299,11 @@ void ProcessEntity (edict_t *ent)
 		// the entity still has to be intact after that
 		if (Entity->Freed)
 		{
-			ent->AwaitingRemoval = true;
-			ent->RemovalFrames = 4;
+			if (!ent->AwaitingRemoval)
+			{
+				ent->RemovalFrames = 1;
+				ent->AwaitingRemoval = true;
+			}
 		}
 	}
 }
@@ -332,10 +334,6 @@ void CGameAPI::RunFrame ()
 		// Run the players only
 		// build the playerstate_t structures for all players
 		ClientEndServerFrames ();
-
-#if MONSTERS_USE_PATHFINDING
-		RunNodes();
-#endif
 		return;
 	}
 
@@ -386,10 +384,6 @@ void CGameAPI::RunFrame ()
 
 	if (CvarList[CV_DMFLAGS].Modified())
 		DeathmatchFlags.UpdateFlags(CvarList[CV_DMFLAGS].Integer());
-
-#if MONSTERS_USE_PATHFINDING
-	RunNodes();
-#endif
 
 #if CLEANCODE_IRC
 	UpdateIRCServers ();
@@ -473,10 +467,6 @@ void G_Register ()
 	SetupArg ();
 	Cmd_Register ();
 	SvCmd_Register ();
-
-#if MONSTERS_USE_PATHFINDING
-	Nodes_Register ();
-#endif
 }
 
 #ifdef WIN32

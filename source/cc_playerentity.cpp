@@ -42,9 +42,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_pmove.h"
 #endif
 
-#if !MONSTERS_USE_PATHFINDING
 IMPLEMENT_SAVE_SOURCE(CPlayerNoise);
-#endif
 
 CPersistentData::CPersistentData ()
 {
@@ -276,10 +274,8 @@ void CClient::Clear ()
 		ViewAngle.Clear ();
 		DamageFrom.Clear ();
 		DamageBlend.Set (0,0,0,0);
-		#if !MONSTERS_USE_PATHFINDING
 		mynoise = NULL;
 		mynoise2 = NULL;
-		#endif
 		OldViewAngles.Clear ();
 		OldVelocity.Clear ();
 		ViewDamage.Clear ();
@@ -3764,10 +3760,6 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }
 
-#if MONSTERS_USE_PATHFINDING
-class CPathNode *GetClosestNodeTo (vec3f origin);
-#endif
-
 void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 {
 	if (type == PNOISE_WEAPON)
@@ -3785,7 +3777,6 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 	if (Flags & FL_NOTARGET)
 		return;
 
-#if !MONSTERS_USE_PATHFINDING
 	if (!Client.mynoise)
 	{
 		CPlayerNoise *noise = QNewEntityOf CPlayerNoise;
@@ -3824,11 +3815,6 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 	noise->GetAbsMax() = (Where + noise->GetMaxs());
 	noise->Time = Level.Frame;
 	noise->Link ();
-#else
-	Level.NoiseNode = GetClosestNodeTo(Where);
-	Level.SoundEntityFramenum = Level.Frame;
-	Level.SoundEntity = this;
-#endif
 }
 
 void CPlayerEntity::BeginDeathmatch ()

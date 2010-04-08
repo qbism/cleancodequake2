@@ -488,7 +488,6 @@ echo Done!
     <ClCompile Include="..\..\source\cc_soldier_machinegun.cpp" />
     <ClCompile Include="..\..\source\cc_soldier_shotgun.cpp" />
     <ClCompile Include="..\..\source\cc_colors.cpp" />
-    <ClCompile Include="..\..\source\cc_pathfinding.cpp" />
     <ClCompile Include="..\..\source\cc_media.cpp" />
     <ClCompile Include="..\..\source\cc_controls.cpp" />
     <ClCompile Include="..\..\source\cc_menu.cpp" />
@@ -626,7 +625,6 @@ echo Done!
     <ClInclude Include="..\..\source\cc_soldier_machinegun.h" />
     <ClInclude Include="..\..\source\cc_soldier_shotgun.h" />
     <ClInclude Include="..\..\source\cc_colors.h" />
-    <ClInclude Include="..\..\source\cc_pathfinding.h" />
     <ClInclude Include="..\..\source\cc_media.h" />
     <ClInclude Include="..\..\source\cc_conchars.h" />
     <ClInclude Include="..\..\source\cc_controls.h" />

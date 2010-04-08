@@ -372,11 +372,6 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	if (oldEntities != entities)
 		FreeIt = true;
 
-#if MONSTERS_USE_PATHFINDING
-	if (!Level.Demo)
-		InitNodes ();
-#endif
-
 	Mem_Zero (Game.Entities, Game.MaxEntities * sizeof(Game.Entities[0]));
 	InitEntityLists ();
 	ClearTimers ();
@@ -438,12 +433,6 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		ServerPrintf ("%i entities removed (out of %i total)\n", Level.Inhibit, Level.EntityNumber);
 
 		G_FindTeams ();
-
-	#if MONSTERS_USE_PATHFINDING
-		LoadNodes ();
-		FinalizeNodes ();
-		//LoadPathTable ();
-	#endif
 
 		SetupTechSpawn();
 

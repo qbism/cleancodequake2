@@ -446,18 +446,12 @@ public:
 		IntermissionOrigin.Clear ();
 		IntermissionAngles.Clear ();
 		SightClient = NULL;
-#if !MONSTERS_USE_PATHFINDING
 		SightEntity = NULL;
 		SightEntityFrame = 0;
 		SoundEntity = NULL;
 		SoundEntityFrame = 0;
 		SoundEntity2 = NULL;
 		SoundEntity2Frame = 0;
-#else
-		NoiseNode = NULL;
-		SoundEntityFramenum = 0;
-		SoundEntity = NULL;
-#endif
 		CurrentEntity = NULL;
 		PowerCubeCount = 0;
 		Inhibit = 0;
@@ -565,18 +559,12 @@ public:
 
 	CPlayerEntity		*SightClient;	// changed once each frame for coop games
 
-#if !MONSTERS_USE_PATHFINDING
 	CBaseEntity	*SightEntity;
 	FrameNumber_t	SightEntityFrame;
 	CBaseEntity	*SoundEntity;
 	FrameNumber_t	SoundEntityFrame;
 	CBaseEntity	*SoundEntity2;
 	FrameNumber_t	SoundEntity2Frame;
-#else
-	class		CPathNode	*NoiseNode;
-	float		SoundEntityFramenum;
-	CPlayerEntity		*SoundEntity;
-#endif
 
 	GoalList_t	Secrets;
 	GoalList_t	Goals;

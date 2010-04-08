@@ -102,14 +102,6 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 
 #define STEPSIZE	18
 
-#if MONSTERS_USE_PATHFINDING
-#include "cc_pathfinding.h"
-
-size_t GetNodeIndex (CPathNode *Node);
-CPathNode *GetNodeByIndex (size_t index);
-
-#endif
-
 void CMonster::SaveFields (CFile &File)
 {
 	File.Write<uint32> (MonsterID);
@@ -152,11 +144,6 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<uint32> (MonsterFlags);
 	File.Write (MonsterName);
 	File.Write<FrameNumber_t> (PainDebounceTime);
-#if MONSTERS_USE_PATHFINDING
-	File.Write<bool> (FollowingPath);
-	if (FollowingPath)
-		WriteNodeInfo (File);
-#endif
 
 	File.Write <void (CMonster::*) ()> (Think);
 
@@ -225,11 +212,6 @@ void CMonster::LoadFields (CFile &File)
 	MonsterFlags = File.Read<uint32> ();
 	MonsterName = File.ReadCCString ();
 	PainDebounceTime = File.Read<FrameNumber_t> ();
-#if MONSTERS_USE_PATHFINDING
-	FollowingPath = File.Read<bool> ();
-	if (FollowingPath)
-		ReadNodeInfo (File);
-#endif
 
 	Think = File.Read <void (CMonster::*) ()> ();
 
@@ -248,325 +230,6 @@ void CMonster::LoadFields (CFile &File)
 
 	LoadMonsterFields (File);
 };
-
-#if MONSTERS_USE_PATHFINDING
-void CMonster::WriteNodeInfo (CFile &File)
-{
-	P_CurrentPath->Save (File);
-	File.Write<uint32> (GetNodeIndex(P_CurrentGoalNode));
-	File.Write<uint32> (GetNodeIndex(P_CurrentNode));
-	File.Write<sint32> (P_CurrentNodeIndex);
-	File.Write<FrameNumber_t> (P_NodePathTimeout);
-	File.Write<FrameNumber_t> (P_NodeFollowTimeout);
-}
-
-void CMonster::ReadNodeInfo (CFile &File)
-{
-	P_CurrentPath = QNew (TAG_LEVEL) CPath();
-	P_CurrentPath->Load (File);
-	P_CurrentGoalNode = GetNodeByIndex(File.Read<uint32> ());
-	P_CurrentNode = GetNodeByIndex(File.Read<uint32> ());
-	P_CurrentNodeIndex = File.Read<sint32> ();
-	P_NodePathTimeout = File.Read<FrameNumber_t> ();
-	P_NodeFollowTimeout = File.Read<FrameNumber_t> ();
-}
-
-bool VecInFront (vec3f &angles, vec3f &origin1, vec3f &origin2);
-void CMonster::FoundPath ()
-{
-	if (!P_CurrentGoalNode || !P_CurrentNode)
-	{
-		P_NodePathTimeout = Level.Frame + 100; // in 10 seconds we will try again.
-		return;
-	}
-	// Just in case...
-	if (P_CurrentGoalNode == P_CurrentNode)
-		return;
-
-	P_CurrentPath = GetPath(P_CurrentNode, P_CurrentGoalNode);
-
-	if (!P_CurrentPath)
-	{
-		P_CurrentNode = P_CurrentGoalNode = NULL;
-		P_CurrentNodeIndex = -1;
-		P_NodePathTimeout = Level.Frame + 100; // in 10 seconds we will try again.
-		return;
-	}
-	else if (P_CurrentPath->Start == P_CurrentPath->End)
-	{
-		QDelete P_CurrentPath;
-		P_CurrentPath = NULL;
-		P_CurrentNode = P_CurrentGoalNode = NULL;
-		P_CurrentNodeIndex = -1;
-		P_NodePathTimeout = Level.Frame + 100; // in 10 seconds we will try again.
-		return;
-	}
-
-	P_CurrentNodeIndex = (sint32)P_CurrentPath->Path.size()-1;
-
-	// If our first node is behind us and it's not too far away, we can
-	// just skip this node and go to the next one.	
-	// Revision: Only do this if we have > 2 nodes (it messes up if we have exactly 2)
-	vec3f a = Entity->State.GetAngles(), origin = Entity->State.GetOrigin();
-	if (VecInFront(a, origin, P_CurrentPath->Path[P_CurrentNodeIndex]->Origin) && P_CurrentPath->Path.size() > 2)
-		P_CurrentNodeIndex--;
-
-	P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
-
-	float timeOut = Level.Frame + 20; // Always at least 2 seconds
-	// Calculate approximate distance and check how long we want this to time out for
-	switch (Range(origin, P_CurrentNode->Origin))
-	{
-	case RANGE_MELEE:
-		timeOut += 60; // 10 seconds max
-		break;
-	case RANGE_NEAR:
-		timeOut += 230; // 25 seconds
-		break;
-	case RANGE_MID:
-		timeOut += 160; // 18 seconds
-		break;
-	case RANGE_FAR:
-		timeOut += 300; // 32 seconds
-		break;
-	}
-	P_NodeFollowTimeout = timeOut;
-
-	FollowingPath = true;
-	Run ();
-}
-
-void CMonster::MoveToPath (float Dist)
-{
-	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
-		return;
-	if (FindTarget() && (Entity->Enemy && IsVisible(Entity, Entity->Enemy))) // Did we find an enemy while going to our path?
-	{
-		FollowingPath = false;
-		PauseTime = 100000000;
-
-		P_CurrentPath = NULL;
-		P_CurrentNode = P_CurrentGoalNode = NULL;
-		Entity->Flags &= ~AI_SOUND_TARGET;
-		return;
-	}
-
-	bool doit = false;
-
-	if (!P_CurrentNode || !P_CurrentPath || !P_CurrentPath->Path.size())
-	{
-		FollowingPath = false;
-		return;
-	}
-
-	// Check if we hit our new path.
-	vec3f sub = Entity->State.GetOrigin() - P_CurrentNode->Origin;
-
-	if (sub.Length() < 30)
-	{
-		bool shouldJump = (P_CurrentNode->Type == NODE_JUMP);
-		// Hit the path.
-		// If our node isn't the goal...
-		if (P_CurrentNodeIndex > 0)
-		{
-			P_CurrentNodeIndex--; // Head to the next node.
-			// Set our new path to the next node
-			P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
-			doit = true;
-			switch (P_CurrentNode->Type)
-			{
-			case NODE_DOOR:
-					{
-						CDoor *Door = entity_cast<CDoor>(P_CurrentNode->LinkedEntity); // get the plat
-						Door->Use (Entity, Entity);
-					}
-					Stand (); // We stand, and wait.
-				break;
-			case NODE_PLATFORM:
-				{
-					CPlatForm *Plat = entity_cast<CPlatForm>(P_CurrentNode->LinkedEntity); // get the plat
-					// If we reached the node, but the platform isn't down, go back two nodes
-					if (Plat->MoveState != STATE_BOTTOM)
-					{
-						if (P_CurrentPath->Path.size() > (uint32)(P_CurrentNodeIndex + 2)) // Can we even go that far?
-						{
-							P_CurrentNodeIndex += 2;
-							P_CurrentNode = P_CurrentPath->Path[P_CurrentNodeIndex];
-						}
-					}
-					else
-					{
-						Stand (); // We stand, and wait.
-						if (Plat->MoveState == STATE_BOTTOM)
-							Plat->GoUp ();
-						else if (Plat->MoveState == STATE_TOP)
-							Plat->NextThink = Level.Frame + 10;	// the player is still on the plat, so delay going down
-					}
-				}
-
-				break;
-			default:
-				break;
-			};
-
-			if (P_CurrentNodeIndex > 1) // If we have two more goals to destination
-			{
-				// In two goals, do we reach the platform node?
-				if (P_CurrentPath->Path[P_CurrentNodeIndex-1]->Type == NODE_PLATFORM)
-				{
-					CPlatForm *Plat = entity_cast<CPlatForm>(P_CurrentPath->Path[P_CurrentNodeIndex-1]->LinkedEntity); // get the plat
-					// Is it at bottom?
-					if (Plat->MoveState != STATE_BOTTOM)
-						Stand (); // We wait till it comes down
-				}
-			}
-
-			if (shouldJump)
-			{
-				vec3f sub2 = P_CurrentNode->Origin - Entity->State.GetOrigin(), forward;
-				sub2.ToVectors (&forward, NULL, NULL);
-				Entity->Velocity = Entity->Velocity.MultiplyAngles (1.5, sub2);
-				Entity->Velocity.Z = 300;
-				Entity->GroundEntity = NULL;
-				CheckGround();
-			}
-		}
-		else
-		{
-			if (Entity->Enemy)
-			{
-				sub = (Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin());
-				if (sub.Length() < 250) // If we're still close enough that it's possible
-					// to hear him breathing (lol), start back on the trail
-				{
-					P_CurrentPath = NULL;
-					P_CurrentGoalNode = GetClosestNodeTo(Entity->Enemy->State.GetOrigin());
-					FoundPath ();
-					return;
-				}
-				return;
-			}
-			FollowingPath = false;
-			PauseTime = 100000000;
-			Stand ();
-			P_CurrentPath = NULL;
-			P_CurrentNode = P_CurrentGoalNode = NULL;
-			return;
-		}
-	}
-
-	if (P_NodeFollowTimeout < Level.Frame && P_CurrentPath && P_CurrentNode)
-	{
-		// Re-evaluate start and end nodes
-		CPathNode *End = P_CurrentPath->Path[0];
-		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
-		P_CurrentGoalNode = End;
-		P_CurrentPath = NULL;
-		FoundPath ();
-
-		if (!P_CurrentNode)
-			return;
-
-		FrameNumber_t timeOut = Level.Frame + 20; // Always at least 2 seconds
-		// Calculate approximate distance and check how long we want this to time out for
-		switch (Range(Entity->State.GetOrigin(), P_CurrentNode->Origin))
-		{
-		case RANGE_MELEE:
-			timeOut += 60; // 10 seconds max
-			break;
-		case RANGE_NEAR:
-			timeOut += 230; // 25 seconds
-			break;
-		case RANGE_MID:
-			timeOut += 160; // 18 seconds
-			break;
-		case RANGE_FAR:
-			timeOut += 300; // 32 seconds
-			break;
-		}
-		P_NodeFollowTimeout = timeOut;
-		return;
-	}
-
-// bump around...
-	if ( doit || (randomMT()&3) == 1 || !StepDirection (IdealYaw, Dist))
-	{
-		if (Entity->GetInUse())
-		{
-			float	deltax,deltay;
-			float	tdir, olddir, turnaround;
-
-			olddir = AngleModf ((sint32)(IdealYaw/45)*45);
-			turnaround = AngleModf (olddir - 180);
-
-			deltax = P_CurrentNode->Origin.X - Entity->State.GetOrigin().X;
-			deltay = P_CurrentNode->Origin.Y - Entity->State.GetOrigin().Y;
-			
-			vec2f d (
-				(deltax > 10) ? 0 : ((deltax < -10) ? 180 : DI_NODIR),
-				(deltay < -10) ? 270 : ((deltay > 10) ? 90 : DI_NODIR)
-				);
-
-		// try direct route
-			if (d.X != DI_NODIR && d.Y != DI_NODIR)
-			{
-				if (d.X == 0)
-					tdir = d.Y == 90 ? 45 : 315;
-				else
-					tdir = d.Y == 90 ? 135 : 215;
-					
-				if (tdir != turnaround && StepDirection(tdir, Dist))
-					return;
-			}
-
-		// try other directions
-			if ( ((randomMT()&3) & 1) ||  Q_fabs(deltay)>Q_fabs(deltax))
-			{
-				tdir=d.X;
-				d.X=d.Y;
-				d.Y=tdir;
-			}
-
-			if (d.X!=DI_NODIR && d.X!=turnaround 
-			&& StepDirection(d.X, Dist))
-					return;
-
-			if (d.Y!=DI_NODIR && d.Y!=turnaround
-			&& StepDirection(d.Y, Dist))
-					return;
-
-		/* there is no direct path to the player, so pick another direction */
-
-			if (olddir!=DI_NODIR && StepDirection(olddir, Dist))
-					return;
-
-			if (randomMT()&1) 	/*randomly determine direction of search*/
-			{
-				for (tdir = 0; tdir <= 315; tdir += 45)
-					if (tdir!=turnaround && StepDirection(tdir, Dist) )
-							return;
-			}
-			else
-			{
-				for (tdir = 315; tdir >= 0; tdir -= 45)
-					if (tdir!=turnaround && StepDirection(tdir, Dist) )
-							return;
-			}
-
-			if (turnaround != DI_NODIR && StepDirection(turnaround, Dist) )
-					return;
-
-			IdealYaw = olddir;		// can't move
-
-		// if a bridge was pulled out from underneath a monster, it may not have
-		// a valid standing position at all
-
-			if (!CheckBottom ())
-				Entity->Flags |= FL_PARTIALGROUND;
-		}
-	}
-}
-#endif
 
 /*
 =================
@@ -1637,27 +1300,9 @@ void CMonster::AlertNearbyStroggs ()
 		if (strogg->SpawnFlags & MONSTER_AMBUSH)
 			continue;
 		
-#if MONSTERS_USE_PATHFINDING
-		// Set us up for pathing
-		// Revision: if we aren't visible, that is.
-		if (!IsVisible(strogg, Entity->Enemy))
-		{
-			strogg->Monster->P_CurrentNode = GetClosestNodeTo(strogg->State.GetOrigin());
-			strogg->Monster->P_CurrentGoalNode = GetClosestNodeTo(Entity->Enemy->State.GetOrigin());
-			//FoundStrogg->Enemy = Entity->Enemy;
-			strogg->Monster->FoundPath ();
-		}
-		else
-		{
-			strogg->Enemy = Entity->Enemy;
-			strogg->Monster->FoundTarget ();
-			strogg->Monster->Sight ();
-		}
-#else
 		strogg->Enemy = Entity->Enemy;
 		strogg->Monster->FoundTarget ();
 		strogg->Monster->Sight ();
-#endif
 	}
 }
 
@@ -2388,11 +2033,7 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-#if MONSTERS_USE_PATHFINDING
-			if ((Level.Frame - Level.SoundEntityFramenum) > 50)
-#else
 			if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
-#endif
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
@@ -2576,14 +2217,6 @@ void CMonster::AI_Run(float Dist)
 	float		d1;
 	vec3f		v_forward, v_right, v;
 
-#if MONSTERS_USE_PATHFINDING
-	if (FollowingPath)
-	{
-		MoveToPath(Dist);
-		return;
-	}
-#endif
-
 	// if we're going to a combat point, just proceed
 	if (AIFlags & AI_COMBAT_POINT)
 	{
@@ -2652,24 +2285,11 @@ void CMonster::AI_Run(float Dist)
 
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
-#if MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = Level.Frame + 100; // Do "blind fire" first
-#endif
-
 		// just lost sight of the player, decide where to go first
 		AIFlags |= (AI_LOST_SIGHT | AI_PURSUIT_LAST_SEEN);
 		AIFlags &= ~(AI_PURSUE_NEXT | AI_PURSUE_TEMP);
 		isNew = true;
 	}
-#if MONSTERS_USE_PATHFINDING
-	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < Level.Frame)
-	{
-		// Set us up for pathing
-		P_CurrentNode = GetClosestNodeTo(origin);
-		P_CurrentGoalNode = GetClosestNodeTo(Entity->Enemy->state.origin);
-		FoundPath ();
-	}
-#endif
 
 	if (AIFlags & AI_PURSUE_NEXT)
 	{
@@ -2758,6 +2378,7 @@ void CMonster::AI_Run(float Dist)
 	MoveToGoal (Dist);
 
 	tempgoal->Free ();
+	tempgoal->gameEntity->RemovalFrames = 0;
 
 	if (Entity)
 		Entity->GoalEntity = save;
@@ -2768,14 +2389,6 @@ void CMonster::AI_Run(float Dist)
 	//PMM
 	bool	retval;
 	bool	alreadyMoved = false;
-
- #if MONSTERS_USE_PATHFINDING
-	if (FollowingPath)
-	{
-		MoveToPath(Dist);
-		return;
-	}
-#endif
 
 	// if we're going to a combat point, just proceed
 	if (AIFlags & AI_COMBAT_POINT)
@@ -2917,24 +2530,11 @@ void CMonster::AI_Run(float Dist)
 
 	if (!(AIFlags & AI_LOST_SIGHT))
 	{
-#if MONSTERS_USE_PATHFINDING
-		P_NodePathTimeout = Level.Frame + 100; // Do "blind fire" first
-#endif
-
 		// just lost sight of the player, decide where to go first
 		AIFlags |= (AI_LOST_SIGHT | AI_PURSUIT_LAST_SEEN);
 		AIFlags &= ~(AI_PURSUE_NEXT | AI_PURSUE_TEMP);
 		isNew = true;
 	}
-#if MONSTERS_USE_PATHFINDING
-	else if ((AIFlags & AI_LOST_SIGHT) && P_NodePathTimeout < Level.Frame)
-	{
-		// Set us up for pathing
-		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
-		P_CurrentGoalNode = GetClosestNodeTo(Entity->Enemy->State.GetOrigin());
-		FoundPath ();
-	}
-#endif
 
 	if (AIFlags & AI_PURSUE_NEXT)
 	{
@@ -3026,6 +2626,7 @@ void CMonster::AI_Run(float Dist)
 	MoveToGoal (Dist);
 
 	tempgoal->Free ();
+	tempgoal->gameEntity->RemovalFrames = 0;
 
 	if(!Entity->GetInUse())
 		return;			// PGM - g_touchtrigger free problem
@@ -3143,33 +2744,6 @@ void CMonster::AI_Stand (float Dist)
 	if (Dist)
 		WalkMove (Entity->State.GetAngles().Y, Dist);
 
-#if MONSTERS_USE_PATHFINDING
-	if (FollowingPath)
-	{
-		// Assuming we got here because we're waiting for something.
-		if (P_CurrentNode->Type == NODE_DOOR || P_CurrentNode->Type == NODE_PLATFORM)
-		{
-			CBrushModel *Door = entity_cast<CBrushModel>(P_CurrentNode->LinkedEntity);
-			if (Door->MoveState == STATE_TOP)
-				Run(); // We can go again!
-		}
-		// In two goals, do we reach the platform node?
-		else if (P_CurrentPath->Path[P_CurrentNodeIndex-1]->Type == NODE_PLATFORM)
-		{
-			CPlatForm *Plat = entity_cast<CPlatForm>(P_CurrentPath->Path[P_CurrentNodeIndex-1]->LinkedEntity); // get the plat
-			// Is it at bottom?
-			if (Plat->MoveState == STATE_BOTTOM)
-				Run (); // Go!
-		}
-		else
-		{
-			// ...this shouldn't happen. FIND OUT WHY PLZ
-			FollowingPath = false;
-		}
-		return;
-	}
-#endif
-
 	if (AIFlags & AI_STAND_GROUND)
 	{
 		if (Entity->Enemy)
@@ -3213,33 +2787,6 @@ void CMonster::AI_Stand (float Dist)
 #else
 	if (Dist)
 		WalkMove (Entity->State.GetAngles().Y, Dist);
-
-#if MONSTERS_USE_PATHFINDING
-	if (FollowingPath)
-	{
-		// Assuming we got here because we're waiting for something.
-		if (P_CurrentNode->Type == NODE_DOOR || P_CurrentNode->Type == NODE_PLATFORM)
-		{
-			CBrushModel *Door = entity_cast<CBrushModel>(P_CurrentNode->LinkedEntity);
-			if (Door->MoveState == STATE_TOP)
-				Run(); // We can go again!
-		}
-		// In two goals, do we reach the platform node?
-		else if (P_CurrentPath->Path[P_CurrentNodeIndex-1]->Type == NODE_PLATFORM)
-		{
-			CPlatForm *Plat = entity_cast<CPlatForm>(P_CurrentPath->Path[P_CurrentNodeIndex-1]->LinkedEntity); // get the plat
-			// Is it at bottom?
-			if (Plat->MoveState == STATE_BOTTOM)
-				Run (); // Go!
-		}
-		else
-		{
-			// ...this shouldn't happen. FIND OUT WHY PLZ
-			FollowingPath = false;
-		}
-		return;
-	}
-#endif
 
 	if (AIFlags & AI_STAND_GROUND)
 	{
@@ -3729,14 +3276,12 @@ void CMonster::MoveFrame ()
 
 void CMonster::FoundTarget ()
 {
-#if !MONSTERS_USE_PATHFINDING
 	// let other monsters see this monster for a while
 	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
 	{
 		Level.SightEntity = Entity;
 		Level.SightEntityFrame = Level.Frame;
 	}
-#endif
 
 	Entity->ShowHostile = Level.Frame + 10;		// wake up other monsters
 
@@ -4020,85 +3565,6 @@ bool CMonster::FindTarget()
 	if (AIFlags & AI_COMBAT_POINT)
 		return false;
 
-#if MONSTERS_USE_PATHFINDING
-	if ((Level.SoundEntityFramenum >= (Level.Frame - 1)) && Level.NoiseNode)
-	{
-		if (Entity->SpawnFlags & MONSTER_AMBUSH)
-		{
-			CTrace trace (Entity->State.GetOrigin(), Level.NoiseNode->Origin, Entity, CONTENTS_MASK_SOLID);
-
-			if (trace.fraction < 1.0)
-				return false;
-		}
-		else
-		{
-			if (!InHearableArea(Entity->State.GetOrigin(), Level.NoiseNode->Origin))
-				return false;
-		}
-
-		vec3f temp = Level.NoiseNode->Origin - Entity->State.GetOrigin();
-		if (temp.Length() > 1000)	// too far to hear
-			return false;
-
-		IdealYaw = temp.ToYaw ();
-		ChangeYaw ();
-
-		// hunt the sound for a bit; hopefully find the real player
-		AIFlags |= AI_SOUND_TARGET;
-
-		P_CurrentNode = GetClosestNodeTo(Entity->State.GetOrigin());
-		P_CurrentGoalNode = Level.NoiseNode;
-		FoundPath ();
-
-		// Check if we can see the entity too
-		if (IsVisible(Entity, Level.SoundEntity) && !Entity->Enemy && (Level.SoundEntityFramenum >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
-		{
-			client = Level.SoundEntity;
-
-			if (client)
-			{
-				if (client->Flags & FL_NOTARGET)
-					return false;
-
-				if (Entity->SpawnFlags & MONSTER_AMBUSH)
-				{
-					if (!IsVisible (Entity, client))
-						return false;
-				}
-				else
-				{
-					if (!InHearableArea(Entity->State.GetOrigin(), client->State.GetOrigin()))
-						return false;
-				}
-
-				temp = client->State.GetOrigin() - Entity->State.GetOrigin();
-				if (temp.Length() > 1000)	// too far to hear
-					return false;
-
-				// check area portals - if they are different and not connected then we can't hear it
-				if (client->GetAreaNum() != Entity->GetAreaNum())
-				{
-					if (!gi.AreasConnected(Entity->GetAreaNum(), client->GetAreaNum()))
-						return false;
-				}
-
-				// hunt the sound for a bit; hopefully find the real player
-				Entity->Enemy = client;
-
-				FoundTarget ();
-#if MONSTERS_ARENT_STUPID
-				AlertNearbyStroggs ();
-#endif
-
-				if (MonsterFlags & MF_HAS_SIGHT)
-					Sight ();
-			}
-		}
-
-		return true;
-	}
-#endif
-
 // if the first spawnflag bit is set, the monster will only wake up on
 // really seeing the player, not another monster getting angry or hearing
 // something
@@ -4107,16 +3573,13 @@ bool CMonster::FindTarget()
 // but not weapon impact/explosion noises
 
 	heardit = false;
-#if !MONSTERS_USE_PATHFINDING
+
 	if ((Level.SightEntityFrame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
 		client = Level.SightEntity;
 		if (client->Enemy == Entity->Enemy)
 			return false;
 	}
-#endif
-
-#if !MONSTERS_USE_PATHFINDING
 	else if (Level.SoundEntityFrame >= (Level.Frame - 1))
 	{
 		client = Level.SoundEntity;
@@ -4127,13 +3590,6 @@ bool CMonster::FindTarget()
 		client = Level.SoundEntity2;
 		heardit = true;
 	}
-#else
-	if (Level.SoundEntityFramenum >= (Level.Frame - 1))
-	{
-		client = Level.SoundEntity;
-		heardit = true;
-	}
-#endif
 	else
 	{
 		client = Level.SightClient;
