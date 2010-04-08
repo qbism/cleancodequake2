@@ -506,6 +506,10 @@ public:
 			return "";
 
 		char *stringBuffer = ReadString();
+
+		if (!stringBuffer)
+			return "";
+
 		std::string str (stringBuffer);
 		QDelete[] stringBuffer;
 		return str;
