@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_rogue_weaponry.h"
 
 #define DEFENDER_LIFESPAN	300
@@ -547,3 +550,5 @@ void CRogueHunterSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
 }
 
 IMPLEMENT_SAVE_SOURCE(CRogueHunterSphere);
+
+#endif

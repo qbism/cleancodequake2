@@ -75,12 +75,14 @@ public:
 	bool AvoidOwner;
 
 	CDroppedItemEntity() :
-	CItemEntity()
+	  CItemEntity()
 	{
 		AvoidOwner = true;
 	};
+
 	CDroppedItemEntity(sint32 Index) :
-	CItemEntity(Index)
+ 	  CBaseEntity (Index),
+	  CItemEntity(Index)
 	{
 		AvoidOwner = true;
 	};

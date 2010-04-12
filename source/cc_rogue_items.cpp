@@ -135,7 +135,7 @@ public:
 	  {
 	  };
 
-	CNukeEntity (int Index) :
+	CNukeEntity (sint32 Index) :
 	  CBaseEntity (Index),
 	  CBounceProjectile (Index),
 	  CThinkableEntity (Index),

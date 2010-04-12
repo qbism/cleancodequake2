@@ -46,16 +46,17 @@ CTrapProjectile
 */
 
 CTrapProjectile::CTrapProjectile () :
-CBounceProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CBounceProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CTrapProjectile::CTrapProjectile (sint32 Index) :
-CBounceProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CBounceProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -73,7 +74,7 @@ public:
 	  {
 	  };
 
-	CJustAModel (int Index) :
+	CJustAModel (sint32 Index) :
 	  CBaseEntity (Index)
 	  {
 	  };

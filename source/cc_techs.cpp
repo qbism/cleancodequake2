@@ -223,16 +223,17 @@ public:
 	bool AvoidOwner;
 
 	CTechEntity() :
-	  CItemEntity (),
-	  AvoidOwner(true)
+	    CItemEntity (),
+	    AvoidOwner(true)
 	  {
 	  };
 
-	  CTechEntity (sint32 Index) :
+	CTechEntity (sint32 Index) :
+	  CBaseEntity (Index),
 	  CItemEntity(Index),
 	  AvoidOwner(true)
-	  {
-	  };
+	{
+	};
 
 	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{

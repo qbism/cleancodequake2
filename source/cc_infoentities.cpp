@@ -307,7 +307,7 @@ public:
 		{
 		};
 
-	CNoiseMaker (int Index) :
+	CNoiseMaker (sint32 Index) :
 		CBaseEntity (Index)
 		{
 		};

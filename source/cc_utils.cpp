@@ -232,6 +232,12 @@ bool IsVisible (CBaseEntity *self, CBaseEntity *Other)
 		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
 }
 
+bool IsVisible (vec3f left, vec3f right, CBaseEntity *self)
+{
+	return (CTrace (left, right,
+		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
+}
+
 /*
 =============
 infront

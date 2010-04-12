@@ -64,7 +64,7 @@ public:
 	{
 	};
 
-	CRotatingLight (int Index) :
+	CRotatingLight (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CHurtableEntity (Index),
@@ -277,7 +277,7 @@ public:
 	{
 	};
 
-	CMiscAmb4 (int Index) :
+	CMiscAmb4 (sint32 Index) :
 		CBaseEntity (Index),
 		CMapEntity (Index),
 		CThinkableEntity (Index)
@@ -328,7 +328,7 @@ public:
 	{
 	};
 
-	CMiscNuke (int Index) :
+	CMiscNuke (sint32 Index) :
 		CBaseEntity (Index),
 		CMapEntity (Index),
 		CUsableEntity (Index)
@@ -536,7 +536,7 @@ public:
 	  {
 	  };
 
-	CTargetMalLaser (int Index) :
+	CTargetMalLaser (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTargetLaser (Index)
 	  {
@@ -621,7 +621,7 @@ public:
 	  {
 	  };
 
-	CFuncObjectRepair (int Index) :
+	CFuncObjectRepair (sint32 Index) :
 	  CBaseEntity (Index),
 	  CMapEntity (Index),
 	  CThinkableEntity (Index),

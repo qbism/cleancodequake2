@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_weaponmain.h"
 #include "cc_rogue_chainfist.h"
 #include "cc_tent.h"
@@ -182,3 +185,5 @@ void CChainfist::CreateItem (CItemList *List)
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NULL, 0, "#w_chainfist.md2");
 };
+
+#endif

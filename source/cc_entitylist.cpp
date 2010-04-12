@@ -452,5 +452,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	if (FreeIt)
 		QDelete[] entities;
+
+	PlayerTrail_Init ();
 }
 

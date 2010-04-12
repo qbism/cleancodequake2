@@ -846,8 +846,11 @@ CBrushModel(),
 CBlockableEntity(),
 CUsableEntity(),
 CHurtableEntity(),
-CTouchableEntity(),
+CTouchableEntity()
+#if ROGUE_FEATURES
+,
 UseType(DOORUSE_NORMAL)
+#endif
 {
 	BrushType |= BRUSH_DOOR;
 };
@@ -859,8 +862,11 @@ CBrushModel(Index),
 CBlockableEntity(Index),
 CUsableEntity(Index),
 CHurtableEntity(Index),
-CTouchableEntity(Index),
+CTouchableEntity(Index)
+#if ROGUE_FEATURES
+,
 UseType(DOORUSE_NORMAL)
+#endif
 {
 	BrushType |= BRUSH_DOOR;
 };

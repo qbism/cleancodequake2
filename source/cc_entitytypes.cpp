@@ -779,21 +779,22 @@ void CPhysicsEntity::PushInDirection (vec3f vel)
 }
 
 CBounceProjectile::CBounceProjectile () :
-backOff(1.5f),
-AffectedByGravity(true),
-StopOnEqualPlane(true),
-AimInVelocityDirection(false),
-CPhysicsEntity ()
+  CPhysicsEntity (),
+  backOff(1.5f),
+  AffectedByGravity(true),
+  StopOnEqualPlane(true),
+  AimInVelocityDirection(false)
 {
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
 CBounceProjectile::CBounceProjectile (sint32 Index) :
-backOff(1.5f),
-AffectedByGravity(true),
-StopOnEqualPlane(true),
-AimInVelocityDirection(false),
-CPhysicsEntity (Index)
+  CBaseEntity(Index),
+  CPhysicsEntity (Index),
+  backOff(1.5f),
+  AffectedByGravity(true),
+  StopOnEqualPlane(true),
+  AimInVelocityDirection(false)
 {
 	PhysicsType = PHYSICS_BOUNCE;
 }
@@ -899,7 +900,7 @@ bool CBounceProjectile::Run ()
 }
 
 CTossProjectile::CTossProjectile () :
-CBounceProjectile ()
+  CBounceProjectile ()
 {
 	backOff = 1.0f;
 
@@ -907,7 +908,8 @@ CBounceProjectile ()
 }
 
 CTossProjectile::CTossProjectile (sint32 Index) :
-CBounceProjectile (Index)
+  CBaseEntity (Index),
+  CBounceProjectile (Index)
 {
 	backOff = 1.0f;
 
@@ -915,7 +917,7 @@ CBounceProjectile (Index)
 }
 
 CFlyMissileProjectile::CFlyMissileProjectile () :
-CBounceProjectile ()
+  CBounceProjectile ()
 {
 	AffectedByGravity = false;
 	backOff = 1.0f;
@@ -923,7 +925,8 @@ CBounceProjectile ()
 }
 
 CFlyMissileProjectile::CFlyMissileProjectile (sint32 Index) :
-CBounceProjectile (Index)
+  CBaseEntity (Index),
+  CBounceProjectile (Index)
 {
 	AffectedByGravity = false;
 	backOff = 1.0f;
@@ -931,13 +934,14 @@ CBounceProjectile (Index)
 }
 
 CStepPhysics::CStepPhysics () :
-CPhysicsEntity ()
+  CPhysicsEntity ()
 {
 	PhysicsType = PHYSICS_STEP;
 }
 
 CStepPhysics::CStepPhysics (sint32 Index) :
-CPhysicsEntity (Index)
+  CBaseEntity (Index),
+  CPhysicsEntity (Index)
 {
 	PhysicsType = PHYSICS_STEP;
 }
@@ -1234,13 +1238,14 @@ bool CStepPhysics::Run ()
 
 // Move physics
 CPushPhysics::CPushPhysics() :
-CPhysicsEntity()
+  CPhysicsEntity()
 {
 	PhysicsType = PHYSICS_PUSH;
 };
 
 CPushPhysics::CPushPhysics(sint32 Index) :
-CPhysicsEntity(Index)
+  CBaseEntity (Index),
+  CPhysicsEntity(Index)
 {
 	PhysicsType = PHYSICS_PUSH;
 };

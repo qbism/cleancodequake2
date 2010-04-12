@@ -42,9 +42,9 @@ public:
 	  {
 	  };
 
-	CMiscNukeCore (int Index) :
-	  CMapEntity (Index),
+	CMiscNukeCore (sint32 Index) :
 	  CBaseEntity (Index),
+	  CMapEntity (Index),
 	  CUsableEntity (Index)
 	  {
 	  };

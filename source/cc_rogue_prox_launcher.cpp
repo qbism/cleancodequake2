@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_weaponmain.h"
 #include "cc_tent.h"
 #include "cc_rogue_prox_launcher.h"
@@ -47,7 +50,7 @@ public:
 	  {
 	  };
 
-	CProxField (int Index) :
+	CProxField (sint32 Index) :
 	  CBaseEntity (Index),
 	  CTouchableEntity (Index)
 	  {
@@ -94,7 +97,7 @@ public:
 	  {
 	  };
 
-	CProx (int Index) :
+	CProx (sint32 Index) :
 	  CBaseEntity (Index),
 	  CBounceProjectile (Index),
 	  CTouchableEntity (Index),
@@ -577,3 +580,4 @@ void CProxLauncher::CreateItem (CItemList *List)
 		NItems::Prox, 1, "#w_plauncher.md2");
 };
 
+#endif

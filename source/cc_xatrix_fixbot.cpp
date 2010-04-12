@@ -102,7 +102,7 @@ public:
 	  {
 	  };
 
-	CBotGoal (int Index) : 
+	CBotGoal (sint32 Index) : 
 	  CBaseEntity (Index),
 	  CThinkableEntity (Index)
 	  {

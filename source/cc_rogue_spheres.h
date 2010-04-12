@@ -64,7 +64,7 @@ public:
 	  {
 	  };
 
-	CRogueBaseSphere (int Index) :
+	CRogueBaseSphere (sint32 Index) :
 	  CBaseEntity(Index),
 	  CHurtableEntity(Index),
 	  CTouchableEntity(Index),
@@ -139,7 +139,7 @@ public:
 	  {
 	  };
 
-	CRogueDefenderSphere (int Index) :
+	CRogueDefenderSphere (sint32 Index) :
 	  CBaseEntity (Index),
 	  CRogueBaseSphere (Index)
 	  {
@@ -177,7 +177,7 @@ public:
 	  {
 	  };
 
-	CRogueHunterSphere (int Index) :
+	CRogueHunterSphere (sint32 Index) :
 	  CBaseEntity (Index),
 	  CRogueBaseSphere (Index)
 	  {
@@ -211,7 +211,7 @@ public:
 	  {
 	  };
 
-	CRogueVengeanceSphere (int Index) :
+	CRogueVengeanceSphere (sint32 Index) :
 	  CBaseEntity (Index),
 	  CRogueBaseSphere (Index)
 	  {

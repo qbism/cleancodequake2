@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_weaponmain.h"
 #include "cc_rogue_disruptor.h"
 #include "cc_rogue_weaponry.h"
@@ -127,3 +130,5 @@ void CDisruptor::CreateItem (CItemList *List)
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Cells, 1, "#w_disrupt.md2");
 };
+
+#endif

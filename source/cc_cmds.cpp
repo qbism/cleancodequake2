@@ -159,7 +159,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 
 void Cmd_Test_f (CPlayerEntity *Player)
 {
-	CRogueDefenderSphere::Create(Player, 0);
+//	CRogueDefenderSphere::Create(Player, 0);
 }
 
 void Cmd_Two_t (CPlayerEntity *Player)

@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_rogue_weaponry.h"
 #include "cc_tent.h"
 
@@ -422,16 +425,17 @@ CFlechette
 */
 
 CFlechette::CFlechette () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CFlechette::CFlechette (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -530,7 +534,7 @@ public:
 	  {
 	  };
 
-	CDisruptorPainDaemon(int Index) :
+	CDisruptorPainDaemon(sint32 Index) :
 	  CBaseEntity (Index),
 	  CThinkableEntity (Index)
 	  {
@@ -627,16 +631,17 @@ public:
 IMPLEMENT_SAVE_SOURCE (CDisruptorPainDaemon);
 
 CDisruptorTracker::CDisruptorTracker () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CDisruptorTracker::CDisruptorTracker (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -775,16 +780,17 @@ bool CDisruptorTracker::Run ()
 #define HYPER_FLAG		1
 
 CGreenBlasterProjectile::CGreenBlasterProjectile () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CGreenBlasterProjectile::CGreenBlasterProjectile (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -889,3 +895,5 @@ bool CGreenBlasterProjectile::Run ()
 {
 	return CFlyMissileProjectile::Run();
 }
+
+#endif

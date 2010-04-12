@@ -393,6 +393,10 @@ void CPlayerEntity::BeginServerFrame ()
 		return;
 	}
 
+	// add player trail so monsters can follow
+	if (!CvarList[CV_DEATHMATCH].Boolean() && !IsVisible (State.GetOrigin() + vec3f(0, 0, ViewHeight), PlayerTrail_LastSpot()->Origin, this))
+		PlayerTrail_Add (State.GetOldOrigin());
+
 	Client.LatchedButtons = 0;
 };
 
@@ -4495,6 +4499,7 @@ void CPlayerEntity::PushInDirection (vec3f vel)
 	}
 }
 
+#if ROGUE_FEATURES
 void CPlayerEntity::RemoveAttackingPainDaemons ()
 {
 	CBaseEntity *tracker = NULL;
@@ -4510,3 +4515,4 @@ void CPlayerEntity::RemoveAttackingPainDaemons ()
 
 	Client.Timers.Tracker = 0;
 }
+#endif

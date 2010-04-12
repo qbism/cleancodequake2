@@ -177,6 +177,7 @@ inline ERangeType Range (vec3f left, vec3f right)
 ERangeType Range (CBaseEntity *self, CBaseEntity *Other);
 bool IsInFront (CBaseEntity *self, CBaseEntity *Other);
 bool IsVisible (CBaseEntity *self, CBaseEntity *Other);
+bool IsVisible (vec3f left, vec3f right, CBaseEntity *self);
 
 #else
 FILE_WARNING

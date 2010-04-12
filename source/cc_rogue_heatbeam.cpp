@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_weaponmain.h"
 #include "cc_rogue_heatbeam.h"
 #include "cc_rogue_weaponry.h"
@@ -137,3 +140,5 @@ void CHeatBeamWeapon::CreateItem (CItemList *List)
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Cells, 2, "#w_plasma.md2");
 };
+
+#endif

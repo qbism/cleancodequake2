@@ -39,16 +39,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_tent.h"
 
 CBlueBlasterProjectile::CBlueBlasterProjectile () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CBlueBlasterProjectile::CBlueBlasterProjectile (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 

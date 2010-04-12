@@ -74,7 +74,6 @@ public:
 
 CC_ENUM (uint32, EMonsterAIFlags)
 {
-#if !MONSTER_USE_ROGUE_AI
 	//monster ai flags
 	AI_STAND_GROUND			= BIT(0),
 	AI_TEMP_STAND_GROUND	= BIT(1),
@@ -91,25 +90,7 @@ CC_ENUM (uint32, EMonsterAIFlags)
 	AI_COMBAT_POINT			= BIT(12),
 	AI_MEDIC				= BIT(13),
 	AI_RESURRECTING			= BIT(14),
-	AI_SLIDE				= BIT(15),
-#else
-	//monster ai flags
-	AI_STAND_GROUND			= BIT(0),
-	AI_TEMP_STAND_GROUND	= BIT(1),
-	AI_SOUND_TARGET			= BIT(2),
-	AI_LOST_SIGHT			= BIT(3),
-	AI_PURSUIT_LAST_SEEN	= BIT(4),
-	AI_PURSUE_NEXT			= BIT(5),
-	AI_PURSUE_TEMP			= BIT(6),
-	AI_HOLD_FRAME			= BIT(7),
-	AI_GOOD_GUY				= BIT(8),
-	AI_BRUTAL				= BIT(9),
-	AI_NOSTEP				= BIT(10),
-	AI_DUCKED				= BIT(11),
-	AI_COMBAT_POINT			= BIT(12),
-	AI_MEDIC				= BIT(13),
-	AI_RESURRECTING			= BIT(14),
-
+#if MONSTER_USE_ROGUE_AI
 	//ROGUE
 	AI_WALK_WALLS			= BIT(15),
 	AI_MANUAL_STEERING		= BIT(16),
@@ -175,6 +156,15 @@ enum
 	MONSTERENTITY_THINK_USE,
 	MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE
 };
+
+CC_ENUM (uint8, EMonsterSpawnflags)
+{
+	MONSTER_AMBUSH			= 	BIT(0),
+	MONSTER_TRIGGER_SPAWN	=	BIT(1),
+	MONSTER_SIGHT			=	BIT(2),
+};
+
+#define STEPSIZE	18
 
 class CMonsterEntity : public CMapEntity, public CStepPhysics, public CTossProjectile, public CPushPhysics, public CHurtableEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
 {
@@ -328,26 +318,13 @@ public:
 
 	virtual void		Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
 
-#if MONSTER_USE_ROGUE_AI
-	void				DuckDown ();
-	virtual void		Duck (float eta);
-	virtual void		UnDuck ();
-	virtual void		DuckHold ();
-	virtual void		SideStep ();
-#endif
-
 	// Virtual functions
 	virtual void		Stand			();
 	virtual void		Idle			();
 	virtual void		Search			();
 	virtual void		Walk			();
 	virtual void		Run				();
-#if !MONSTER_USE_ROGUE_AI
 	virtual void		Dodge			(CBaseEntity *Other, float eta);
-#else
-	virtual void		Dodge			(CBaseEntity *Attacker, float eta, CTrace *tr);
-	void				DoneDodge	();
-#endif
 	virtual void		Attack			();
 	virtual void		Melee			();
 	virtual void		Sight			();
@@ -439,14 +416,6 @@ public:
 	virtual void		Spawn () = 0;
 	virtual void		Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
 	virtual void		Pain(CBaseEntity *Other, sint32 Damage) = 0;
-
-#if MONSTER_USE_ROGUE_AI
-	void CleanupHealTarget ();
-#endif
-
-#if ROGUE_FEATURES
-	void TargetTesla	(CBaseEntity *Inflictor);
-#endif
 };
 
 #if XATRIX_FEATURES
@@ -531,6 +500,8 @@ extern uint32 LastID;
 		return QNewEntityOf DLLClassName(ID); \
 	} \
 	CMonsterTableIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _ResolveIndex) (mapClassName, LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver));
+
+#include "cc_player_trail.h"
 
 #else
 FILE_WARNING

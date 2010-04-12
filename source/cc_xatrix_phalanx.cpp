@@ -40,16 +40,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CPhalanxPlasma::CPhalanxPlasma () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CPhalanxPlasma::CPhalanxPlasma (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 

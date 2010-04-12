@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_weaponmain.h"
 #include "cc_rogue_etf_rifle.h"
 #include "cc_rogue_weaponry.h"
@@ -129,3 +132,4 @@ void CETFRifle::CreateItem (CItemList *List)
 		NItems::Flechettes, 1, "#w_etfrifle.md2");
 };
 
+#endif

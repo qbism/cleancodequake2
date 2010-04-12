@@ -388,6 +388,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
     <ClCompile Include="..\..\source\cc_irc.cpp" />
     <ClCompile Include="..\..\source\cc_modules.cpp" />
+    <ClCompile Include="..\..\source\cc_monster_ai.cpp" />
     <ClCompile Include="..\..\source\cc_platform_base.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -397,6 +398,7 @@ echo Done!
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
+    <ClCompile Include="..\..\source\cc_player_trail.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_chainfist.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_disruptor.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_etf_rifle.cpp" />
@@ -529,9 +531,11 @@ echo Done!
     <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_modules.h" />
+    <ClInclude Include="..\..\source\cc_monster_ai.h" />
     <ClInclude Include="..\..\source\cc_options.h" />
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />
+    <ClInclude Include="..\..\source\cc_player_trail.h" />
     <ClInclude Include="..\..\source\cc_rogue_chainfist.h" />
     <ClInclude Include="..\..\source\cc_rogue_disruptor.h" />
     <ClInclude Include="..\..\source\cc_rogue_etf_rifle.h" />

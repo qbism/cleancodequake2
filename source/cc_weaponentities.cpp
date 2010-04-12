@@ -232,16 +232,17 @@ CBlasterProjectile
 #define HYPER_FLAG		1
 
 CBlasterProjectile::CBlasterProjectile () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CBlasterProjectile::CBlasterProjectile (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -322,16 +323,17 @@ bool CBlasterProjectile::Run ()
 }
 
 CRocket::CRocket () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 };
 
 CRocket::CRocket (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 };
 
@@ -403,17 +405,18 @@ bool CRocket::Run ()
 }
 
 CBFGBolt::CBFGBolt () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  CFlyMissileProjectile(),
+  CTouchableEntity(),
+  CThinkableEntity()
 {
 	Exploded = false;
 };
 
 CBFGBolt::CBFGBolt (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  CBaseEntity (Index),
+  CFlyMissileProjectile(Index),
+  CTouchableEntity(Index),
+  CThinkableEntity(Index)
 {
 	Exploded = false;
 };
@@ -1158,7 +1161,10 @@ void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, in
 		// do the damage
 		// FIXME - make the damage appear at right spot and direction
 		Hurt->TakeDamage (Entity, Entity, vec3fOrigin, Entity->State.GetOrigin(), vec3fOrigin, Damage, Kick/2, 
-					(Mod == MOD_CHAINFIST) ? (DAMAGE_DESTROY_ARMOR | DAMAGE_NO_KNOCKBACK) : (DAMAGE_NO_KNOCKBACK), Mod);
+#if ROGUE_FEATURES
+					(Mod == MOD_CHAINFIST) ? (DAMAGE_DESTROY_ARMOR | DAMAGE_NO_KNOCKBACK) :
+#endif
+					(DAMAGE_NO_KNOCKBACK), Mod);
 	}
 	else
 		CGunshotRicochet (tr.EndPos, tr.plane.normal).Send();

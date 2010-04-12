@@ -213,13 +213,15 @@ public:
 	bool Red;
 
 	CDroppedFlagEntity() :
-	CFlagEntity(),
-	Red(false)
+	  CFlagEntity(),
+	  Red(false)
 	{
 	};
+
 	CDroppedFlagEntity(sint32 Index) :
-	CFlagEntity(Index),
-	Red(false)
+	  CBaseEntity(Index),
+	  CFlagEntity(Index),
+	  Red(false)
 	{
 	};
 

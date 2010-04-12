@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if ROGUE_FEATURES
+
 #include "cc_weaponmain.h"
 #include "cc_rogue_tesla.h"
 #include "cc_tent.h"
@@ -73,7 +76,7 @@ public:
 	  {
 	  };
 
-	CTesla (int Index) :
+	CTesla (sint32 Index) :
 	  CBaseEntity (Index),
 	  CBounceProjectile (Index),
 	  CTouchableEntity (Index),
@@ -640,3 +643,4 @@ void CTeslaWeapon::CreateItem (CItemList *List)
 {
 };
 
+#endif
