@@ -179,6 +179,97 @@ public:
 	bool Run ();
 };
 
+class CBadArea
+{
+public:
+	vec3f			AbsMin, AbsMax, Origin, Mins, Maxs;
+	CBaseEntity		*Owner;
+	FrameNumber_t	Lifespan;
+	bool			Remove;
+
+	CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, CBaseEntity *Owner);
+	CBadArea () : Remove(false) { };
+
+	void Save (CFile &File)
+	{
+		File.Write<vec3f> (AbsMin);
+		File.Write<vec3f> (AbsMax);
+		File.Write<vec3f> (Origin);
+		File.Write<vec3f> (Mins);
+		File.Write<vec3f> (Maxs);
+		WriteEntity (File, Owner);
+		File.Write<FrameNumber_t> (Lifespan);
+	}
+
+	CBadArea (CFile &File)
+	{
+		AbsMin = File.Read<vec3f> ();
+		AbsMax = File.Read<vec3f> ();
+		Origin = File.Read<vec3f> ();
+		Mins = File.Read<vec3f> ();
+		Maxs = File.Read<vec3f> ();
+		Owner = ReadEntity (File);
+		Lifespan = File.Read<FrameNumber_t> ();
+	}
+
+	void Run ()
+	{
+		if (Remove)
+			return;
+
+		if (!Owner || !Owner->GetInUse() || Owner->Freed || (Lifespan != -1 && Lifespan < Level.Frame))
+		{
+			Remove = true;
+			Owner = NULL;
+		}
+	}
+};
+
+class CTesla : public CBounceProjectile, public CHurtableEntity, public CTouchableEntity, public CThinkableEntity
+{
+public:
+	CC_ENUM (uint8, ETeslaThinkType)
+	{
+		TESLATHINK_NONE,
+
+		TESLATHINK_ACTIVE,
+		TESLATHINK_DONEACTIVATE,
+		TESLATHINK_ACTIVATE,
+	};
+
+	ETeslaThinkType		ThinkType;
+	CPlayerEntity		*Firer;
+	bool				DoExplosion;
+	int					Damage;
+	FrameNumber_t		RemoveTime;
+	CBadArea			*BadArea;
+
+	CTesla ();
+	CTesla (sint32 Index);
+
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+
+	IMPLEMENT_SAVE_HEADER(CTesla);
+
+	bool Run ();
+	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+
+	void Remove ();
+	void Explode ();
+
+	void Blow ();
+	void Active ();
+	void DoneActivate ();
+	void Activate ();
+
+	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+
+	void Think ();
+
+	static void Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int DamageMultiplier, int Speed);
+};
+
 #else
 FILE_WARNING
 #endif

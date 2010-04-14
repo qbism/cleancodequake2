@@ -437,10 +437,12 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		SetupTechSpawn();
 
 	#if CLEANCTF_ENABLED
-	//ZOID
 		CTFSpawn();
-	//ZOID
 	#endif
+
+#if ROGUE_FEATURES
+		InitBadAreas ();
+#endif
 	}
 	else
 		ServerPrintf ("Demo detected, skipping map init.\n");

@@ -36,6 +36,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <cctype>
 #include <algorithm>
 
+CBaseEntity *GetGameEntity (sint32 Index)
+{
+	return Game.Entities[Index].Entity;
+}
+
 CEntityField::CEntityField (const char *Name, size_t Offset, EFieldType FieldType) :
 Name(Name),
 Offset(Offset),
@@ -295,8 +300,11 @@ _CC_ENABLE_DEPRECATION
 	ed->inUse = false;
 	ed->state.number = ed - Game.Entities;
 
-	ed->AwaitingRemoval = true;
-	ed->RemovalFrames = 1;
+	if (!ed->AwaitingRemoval)
+	{
+		ed->AwaitingRemoval = true;
+		ed->RemovalFrames = 2;
+	}
 }
 
 typedef std::vector <CBaseEntity*> TPrivateEntitiesContainer;
@@ -571,10 +579,10 @@ void			CBaseEntity::Free ()
 		{
 			if (Level.Frame == 0)
 				RemoveEntityFromList (gameEntity);
-			else
+			else if (!gameEntity->AwaitingRemoval)
 			{
 				gameEntity->AwaitingRemoval = true;
-				gameEntity->RemovalFrames = 1;
+				gameEntity->RemovalFrames = 2;
 			}
 		}
 	}

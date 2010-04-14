@@ -60,7 +60,7 @@ public:
 	void OpenGun ();
 	void Fire ();
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void DuckUp ();
 	void DuckHold ();
 #else
@@ -75,10 +75,10 @@ public:
 	void Fidget ();
 
 	void Attack ();
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Dodge (CBaseEntity *Attacker, float eta);
 #else
-	void Dodge (CBaseEntity *Attacker, float eta, CTrace *trace);
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #endif
 	void Idle ();
 	void Search ();

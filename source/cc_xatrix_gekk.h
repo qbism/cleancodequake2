@@ -111,7 +111,7 @@ public:
 	void Idle ();
 	void Sight ();
 	void Melee ();
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Dodge (CBaseEntity *Attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();

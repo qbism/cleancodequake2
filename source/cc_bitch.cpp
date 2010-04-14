@@ -150,7 +150,7 @@ CFrame ChickFramesRun [] =
 	CFrame (&CMonster::AI_Run, 6),
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 13),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Run, 5, &CMonster::DoneDodge), // Make sure to clear the dodge bit
 #else
 	CFrame (&CMonster::AI_Run, 5),
@@ -186,7 +186,7 @@ void CMaiden::Walk ()
 
 void CMaiden::Run ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 
@@ -273,7 +273,7 @@ void CMaiden::Pain (CBaseEntity *Other, sint32 Damage)
 	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - clear this from blindfire
 	AIFlags &= ~AI_MANUAL_STEERING;
 
@@ -369,7 +369,7 @@ void CMaiden::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage,
 	Entity->PlaySound (CHAN_VOICE, (!n) ? Sounds[SOUND_DEATH1] : Sounds[SOUND_DEATH2]);
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CMaiden::DuckDown ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -470,7 +470,7 @@ CFrame ChickFramesEndAttack1 [] =
 };
 CAnim ChickMoveEndAttack1 (FRAME_attak128, FRAME_attak132, ChickFramesEndAttack1, ConvertDerivedFunction(&CMaiden::Run));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CMaiden::Duck (float eta)
 {
 	if ((CurrentMove == &ChickMoveStartAttack1) ||
@@ -536,7 +536,7 @@ void CMaiden::Slash ()
 
 void CMaiden::Rocket ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 
@@ -638,7 +638,7 @@ void CMaiden::Reload ()
 
 void CMaiden::ReRocket()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	if (AIFlags & AI_MANUAL_STEERING)
 		AIFlags &= ~AI_MANUAL_STEERING;
 	else
@@ -712,7 +712,7 @@ void CMaiden::Melee()
 
 void CMaiden::Attack()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM 
@@ -776,12 +776,12 @@ void CMaiden::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_ATTACK | MF_HAS_IDLE | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 

@@ -201,7 +201,7 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 
 #include <typeinfo>
 
-void WriteEntity (CFile &File, CBaseEntity *Entity)
+void WriteEntireEntity (CFile &File, CBaseEntity *Entity)
 {
 	// Write the edict_t info first
 	File.Write<edict_t> (*Entity->gameEntity);
@@ -261,7 +261,7 @@ void WriteEntities (CFile &File)
 		File.Write<sint32> (ent->state.number);
 
 		CBaseEntity *Entity = ent->Entity;
-		WriteEntity (File, Entity);
+		WriteEntireEntity (File, Entity);
 	}
 	File.Write<sint32> (-1);
 
@@ -291,7 +291,7 @@ void WriteClients (CFile &File)
 		WriteClient (File, entity_cast<CPlayerEntity>(Game.Entities[i].Entity));
 }
 
-void ReadEntity (CFile &File, sint32 number)
+void ReadRealEntity (CFile &File, sint32 number)
 {
 	// Get the edict_t for this number
 	edict_t *ent = &Game.Entities[number];
@@ -371,7 +371,7 @@ void ReadEntities (CFile &File)
 			break;
 
 		LoadedNumbers.push_back (number);
-		ReadEntity (File, number);
+		ReadRealEntity (File, number);
 	
 		if (GameAPI.GetNumEdicts() < number + 1)
 			GameAPI.GetNumEdicts() = number + 1;	
@@ -533,6 +533,10 @@ void CGameAPI::WriteLevel (char *filename)
 	// write out level_locals_t
 	WriteLevelLocals (File);
 
+#if ROGUE_FEATURES
+	SaveBadAreas (File);
+#endif
+
 	// write out all the entities
 	WriteEntities (File);
 
@@ -651,6 +655,10 @@ void CGameAPI::ReadLevel (char *filename)
 
 	// load the level locals
 	ReadLevelLocals (File);
+
+#if ROGUE_FEATURES
+	LoadBadAreas (File);
+#endif
 
 	// load all the entities
 	ReadEntities (File);

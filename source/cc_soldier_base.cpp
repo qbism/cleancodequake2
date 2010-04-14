@@ -333,7 +333,7 @@ void CSoldierBase::Pain (CBaseEntity *Other, sint32 Damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() |= 1;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 	StopCharge();
 
@@ -386,7 +386,7 @@ void CSoldierBase::Fire1 ()
 
 void CSoldierBase::Attack1_Refire1 ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - blindfire
 	if (AIFlags & AI_MANUAL_STEERING)
 	{
@@ -510,7 +510,7 @@ CAnim SoldierMoveAttack2 (FRAME_attak201, FRAME_attak218, SoldierFramesAttack2, 
 
 void CSoldierBase::Fire3 ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DuckDown ();
 #else
 	Duck_Down ();
@@ -523,7 +523,7 @@ void CSoldierBase::Attack3_Refire ()
 	if (!EnemyVis)
 		return;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	if ((Level.Frame + 4) < DuckWaitTime)
 #else
 	if ((Level.Frame + 4) < PauseTime)
@@ -539,7 +539,7 @@ CFrame SoldierFramesAttack3 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack3_Refire)),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Charge, 0, &CMonster::UnDuck),
 #else
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Duck_Up)),
@@ -582,7 +582,7 @@ void CSoldierBase::Fire8 ()
 
 void CSoldierBase::Attack6_Refire ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - make sure dodge & charge bits are cleared
 	DoneDodge ();
 	StopCharge ();
@@ -601,7 +601,7 @@ void CSoldierBase::Attack6_Refire ()
 		NextFrame = FRAME_runs03;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CSoldierBase::Attack6_RefireBlaster ()
 {
 	if (SoldierAI != AI_BLASTER)
@@ -627,7 +627,7 @@ void CSoldierBase::Attack6_RefireBlaster ()
 }
 #endif
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CSoldierBase::StartCharge ()
 {
 	AIFlags |= AI_CHARGING;
@@ -641,7 +641,7 @@ void CSoldierBase::StopCharge ()
 
 CFrame SoldierFramesAttack6 [] =
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Charge, 10),
 	CFrame (&CMonster::AI_Charge,  4),
 	CFrame (&CMonster::AI_Charge, 12),
@@ -697,7 +697,7 @@ void CSoldierBase::Sight ()
 
 CFrame SoldierFramesDuck [] =
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, 5, &CMonster::DuckDown),
 	CFrame (&CMonster::AI_Move, -1, &CMonster::DuckHold),
 	CFrame (&CMonster::AI_Move, 1),
@@ -713,7 +713,7 @@ CFrame SoldierFramesDuck [] =
 };
 CAnim SoldierMoveDuck (FRAME_duck01, FRAME_duck05, SoldierFramesDuck, ConvertDerivedFunction(&CSoldierBase::Run));
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CSoldierBase::Dodge (CBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
@@ -1083,7 +1083,7 @@ void CSoldierBase::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Da
 // NEW DODGE CODE
 //
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CSoldierBase::Duck (float eta)
 {
 	float r;
@@ -1130,6 +1130,7 @@ void CSoldierBase::SideStep ()
 			CurrentMove = &SoldierMoveStartRun;
 	}
 }
+
 #else
 void CSoldierBase::Duck_Down ()
 {
@@ -1168,7 +1169,7 @@ void CSoldierBase::Spawn ()
 
 	Entity->Mass = 100;
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_IDLE
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);

@@ -1221,7 +1221,7 @@ void CGekk::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, v
 /*
 duck
 */
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CGekk::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -1317,13 +1317,13 @@ void CGekk::Attack ()
 }
 
 void CGekk::
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	Dodge 
 #else
 	Duck
 #endif
 	(
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CBaseEntity *Attacker, 
 #endif
 	float eta)
@@ -1331,7 +1331,7 @@ void CGekk::
 	if (frand() > 0.25)
 		return;
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 #endif
@@ -1350,7 +1350,7 @@ void CGekk::
 		else 
 			CurrentMove = &GekkMoveRDuck;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 			// has to be done immediately otherwise he can get stuck
 			DuckDown();
 #endif
@@ -1364,7 +1364,7 @@ void CGekk::
 			else 
 				CurrentMove = &GekkMoveRDuck;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 			// has to be done immediately otherwise he can get stuck
 			DuckDown();
 #endif
@@ -1386,7 +1386,7 @@ void CGekk::
 			else 
 				CurrentMove = &GekkMoveRDuck;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 			// has to be done immediately otherwise he can get stuck
 			DuckDown();
 #endif
@@ -1448,7 +1448,7 @@ void CGekk::Spawn ()
 	Entity->Mass = 300;
 
 	MonsterFlags = (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_SEARCH | MF_HAS_IDLE | MF_HAS_MELEE
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK
 #endif
 		);

@@ -48,7 +48,7 @@ extern CAnim SoldierMoveAttack6;
 
 void CSoldierShotgun::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	float r = frand();

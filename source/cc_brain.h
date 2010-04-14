@@ -96,13 +96,14 @@ public:
 	void LaserBeamRefire ();
 #endif
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
 
 	void Dodge (CBaseEntity *Attacker, float eta);
 #else
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 #endif
 

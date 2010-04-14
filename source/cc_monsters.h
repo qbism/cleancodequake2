@@ -90,7 +90,7 @@ CC_ENUM (uint32, EMonsterAIFlags)
 	AI_COMBAT_POINT			= BIT(12),
 	AI_MEDIC				= BIT(13),
 	AI_RESURRECTING			= BIT(14),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	//ROGUE
 	AI_WALK_WALLS			= BIT(15),
 	AI_MANUAL_STEERING		= BIT(16),
@@ -119,7 +119,7 @@ CC_ENUM (uint32, EMonsterFlags)
 	MF_HAS_SEARCH			= BIT(2),
 	MF_HAS_SIGHT			= BIT(3),
 	MF_HAS_ATTACK			= BIT(4),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	MF_HAS_DODGE			= BIT(5),
 	MF_HAS_DUCK				= BIT(6),
 	MF_HAS_UNDUCK			= BIT(7),
@@ -134,7 +134,7 @@ CC_ENUM (uint8, EAttackState)
 	AS_SLIDING,
 	AS_MELEE,
 	AS_MISSILE,
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	AS_BLIND
 #endif
 };
@@ -224,7 +224,7 @@ public:
 	float				YawSpeed;
 	uint32				AIFlags;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 //ROGUE
 	bool				BlindFire;		// will the monster blindfire?
 
@@ -247,6 +247,7 @@ public:
 	FrameNumber_t	QuadFramenum;
 	FrameNumber_t	InvincibleFramenum;
 	FrameNumber_t	DoubleFramenum;
+	class CBadArea	*BadArea;
 
 	// this is for the count of monsters
 	inline uint8 SlotsLeft () { return MonsterSlots - MonsterUsed; }
@@ -324,7 +325,11 @@ public:
 	virtual void		Search			();
 	virtual void		Walk			();
 	virtual void		Run				();
-	virtual void		Dodge			(CBaseEntity *Other, float eta);
+	virtual void		Dodge			(CBaseEntity *Other, float eta
+#if ROGUE_FEATURES
+		, CTrace *tr
+#endif
+		);
 	virtual void		Attack			();
 	virtual void		Melee			();
 	virtual void		Sight			();
@@ -387,8 +392,22 @@ public:
 	void				MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 #endif
 
-#if MONSTERS_ARENT_STUPID
-	bool				FriendlyInLine (vec3f &Origin, vec3f &Direction);
+#if ROGUE_FEATURES
+	void				CleanupHealTarget ();
+	void				DoneDodge ();
+	void				MonsterDodge (CBaseEntity *Attacker, float eta, CTrace *tr);
+	virtual void		DuckUp ();
+	virtual void		DuckHold ();
+	virtual void		DuckDown ();
+
+	virtual void		SideStep () {};
+	virtual void		UnDuck () {};
+	virtual void		Duck (float eta) {};
+
+	class CBadArea		*CheckForBadArea ();
+	bool				MarkTeslaArea (class CTesla *Tesla);
+	void				TargetTesla (class CTesla *Tesla);
+	bool				IsBadAhead (CBadArea *bad, vec3f move);
 #endif
 
 	void				MonsterTriggeredSpawn ();
@@ -502,6 +521,15 @@ extern uint32 LastID;
 	CMonsterTableIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _ResolveIndex) (mapClassName, LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver));
 
 #include "cc_player_trail.h"
+
+#if ROGUE_FEATURES
+void InitBadAreas ();
+void SaveBadAreas (CFile &File);
+void LoadBadAreas (CFile &File);
+void RunBadAreas ();
+void SaveBadArea (CFile &File, CBadArea *Area);
+CBadArea *LoadBadArea (CFile &File);
+#endif
 
 #else
 FILE_WARNING

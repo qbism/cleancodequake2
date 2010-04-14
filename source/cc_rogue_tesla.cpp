@@ -37,6 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_weaponmain.h"
 #include "cc_rogue_tesla.h"
+#include "cc_rogue_weaponry.h"
 #include "cc_tent.h"
 #include "m_player.h"
 
@@ -50,362 +51,347 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define TESLA_EXPLOSION_DAMAGE_MULT		50		// this is the amount the damage is multiplied by for underwater explosions
 #define	TESLA_EXPLOSION_RADIUS			200
 
-class CTesla : public CBounceProjectile, public CHurtableEntity, public CTouchableEntity, public CThinkableEntity
+CTesla::CTesla () :
+  CBounceProjectile (),
+  CTouchableEntity (),
+  CHurtableEntity (),
+  CThinkableEntity (),
+  BadArea(NULL)
+  {
+  };
+
+CTesla::CTesla (sint32 Index) :
+  CBaseEntity (Index),
+  CBounceProjectile (Index),
+  CTouchableEntity (Index),
+  CHurtableEntity (Index),
+  CThinkableEntity (Index),
+  BadArea(NULL)
+  {
+  };
+
+void CTesla::SaveFields (CFile &File)
 {
-public:
-	CC_ENUM (uint8, ETeslaThinkType)
+	CBounceProjectile::SaveFields (File);
+	CTouchableEntity::SaveFields (File);
+	CHurtableEntity::SaveFields (File);
+	CThinkableEntity::SaveFields (File);
+
+	File.Write<ETeslaThinkType> (ThinkType);
+
+	File.Write<sint32> ((Firer != NULL && Firer->GetInUse()) ? Firer->State.GetNumber() : -1);
+
+	File.Write<bool> (DoExplosion);
+	File.Write<int> (Damage);
+	File.Write<FrameNumber_t> (RemoveTime);
+
+	SaveBadArea (File, BadArea);
+};
+
+void CTesla::LoadFields (CFile &File)
+{
+	CBounceProjectile::LoadFields (File);
+	CTouchableEntity::LoadFields (File);
+	CHurtableEntity::LoadFields (File);
+	CThinkableEntity::LoadFields (File);
+
+	ThinkType = File.Read<ETeslaThinkType> ();
+
+	sint32 index = File.Read<sint32>();
+	if (index != -1)
+		Firer = entity_cast<CPlayerEntity>(Game.Entities[index].Entity);
+
+	DoExplosion = File.Read<bool>();
+	Damage = File.Read<int>();
+	RemoveTime = File.Read<FrameNumber_t>();
+
+	BadArea = LoadBadArea (File);
+};
+
+bool CTesla::Run ()
+{
+	return CBounceProjectile::Run();
+}
+
+void CTesla::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+{
+	Remove ();
+
+	if (Attacker->EntityFlags & ENT_MONSTER)
 	{
-		TESLATHINK_NONE,
+		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Attacker);
 
-		TESLATHINK_ACTIVE,
-		TESLATHINK_DONEACTIVATE,
-		TESLATHINK_ACTIVATE,
-	};
-
-	ETeslaThinkType		ThinkType;
-	CPlayerEntity		*Firer;
-	bool				DoExplosion;
-	int					Damage;
-	FrameNumber_t		RemoveTime;
-
-	CTesla () :
-	  CBounceProjectile (),
-	  CTouchableEntity (),
-	  CHurtableEntity (),
-	  CThinkableEntity ()
-	  {
-	  };
-
-	CTesla (sint32 Index) :
-	  CBaseEntity (Index),
-	  CBounceProjectile (Index),
-	  CTouchableEntity (Index),
-	  CHurtableEntity (Index),
-	  CThinkableEntity (Index)
-	  {
-	  };
-
-	void SaveFields (CFile &File)
-	{
-		CBounceProjectile::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-
-		File.Write<ETeslaThinkType> (ThinkType);
-
-		File.Write<sint32> ((Firer != NULL && Firer->GetInUse()) ? Firer->State.GetNumber() : -1);
-
-		File.Write<bool> (DoExplosion);
-		File.Write<int> (Damage);
-		File.Write<FrameNumber_t> (RemoveTime);
-	};
-
-	void LoadFields (CFile &File)
-	{
-		CBounceProjectile::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-
-		ThinkType = File.Read<ETeslaThinkType> ();
-
-		sint32 index = File.Read<sint32>();
-		if (index != -1)
-			Firer = entity_cast<CPlayerEntity>(Game.Entities[index].Entity);
-
-		DoExplosion = File.Read<bool>();
-		Damage = File.Read<int>();
-		RemoveTime = File.Read<FrameNumber_t>();
-	};
-
-	IMPLEMENT_SAVE_HEADER(CTesla);
-
-	bool Run ()
-	{
-		return CBounceProjectile::Run();
-	}
-
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
-	{
-		Remove ();
-
-		if (Attacker->EntityFlags & ENT_MONSTER)
+		// Paril: Last ditch attempt at fixing this...
+		if (Monster->OldEnemy && (Monster->OldEnemy->Freed || !Monster->OldEnemy->GetInUse()))
+			Monster->OldEnemy = NULL;
+		if (Monster->Enemy && (Monster->Enemy->Freed || !Monster->Enemy->GetInUse()))
 		{
-			CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Attacker);
-
-			// Paril: Last ditch attempt at fixing this...
-			if (Monster->OldEnemy && (Monster->OldEnemy->Freed || !Monster->OldEnemy->GetInUse()))
-				Monster->OldEnemy = NULL;
-			if (Monster->Enemy && (Monster->Enemy->Freed || !Monster->Enemy->GetInUse()))
+			if (Monster->OldEnemy)
 			{
-				if (Monster->OldEnemy)
+				Monster->Enemy = Monster->OldEnemy;
+			
+				if (!(Monster->Enemy->EntityFlags & ENT_HURTABLE))
 				{
-					Monster->Enemy = Monster->OldEnemy;
-				
-					if (!(Monster->Enemy->EntityFlags & ENT_HURTABLE))
-					{
-						Monster->Monster->AIFlags |= AI_SOUND_TARGET;
-						Monster->GoalEntity = Monster->Enemy;
-					}
-
-					Monster->Monster->FoundTarget ();
+					Monster->Monster->AIFlags |= AI_SOUND_TARGET;
+					Monster->GoalEntity = Monster->Enemy;
 				}
-				else
-					Monster->Enemy = NULL;
+
+				Monster->Monster->FoundTarget ();
 			}
+			else
+				Monster->Enemy = (GetOwner()) ? GetOwner() : NULL;
 		}
 	}
+}
 
-	void Remove ()
+void CTesla::Remove ()
+{
+	CanTakeDamage = false;
+	SetOwner (Firer);	// Going away, set the owner correctly.
+	Enemy = NULL;
+
+	// play quad sound if quadded and an underwater explosion
+	if (DoExplosion && (Damage > (TESLA_DAMAGE * TESLA_EXPLOSION_DAMAGE_MULT)))
+		PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
+
+	Explode ();
+}
+
+void CTesla::Explode ()
+{
+	//if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	//	entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
+
+	SplashDamage(GetOwner(), Damage, (Enemy) ? Enemy : NULL, (DoExplosion) ? TESLA_DAMAGE_RADIUS : 0, MOD_G_SPLASH);
+
+	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
+	
+	if (PointContents(origin) & CONTENTS_MASK_SOLID)
+		origin = State.GetOrigin();
+	
+	if (GroundEntity)
+		CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
+	else
+		CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
+
+	Free (); // "delete" the entity
+}
+
+void CTesla::Blow ()
+{
+	Damage *= TESLA_EXPLOSION_DAMAGE_MULT;
+	DoExplosion = true;
+	Remove ();
+}
+
+void CTesla::Active ()
+{		
+	if (Level.Frame > RemoveTime)
 	{
-		CanTakeDamage = false;
-		SetOwner (Firer);	// Going away, set the owner correctly.
-		Enemy = NULL;
-
-		// play quad sound if quadded and an underwater explosion
-		if (DoExplosion && (Damage > (TESLA_DAMAGE * TESLA_EXPLOSION_DAMAGE_MULT)))
-			PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
-
-		Explode ();
-	}
-
-	void Explode ()
-	{
-		if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
-			entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
-
-		SplashDamage(GetOwner(), Damage, (Enemy) ? Enemy : NULL, (DoExplosion) ? TESLA_DAMAGE_RADIUS : 0, MOD_G_SPLASH);
-
-		vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
-		
-		if (PointContents(origin) & CONTENTS_MASK_SOLID)
-			origin = State.GetOrigin();
-		
-		if (GroundEntity)
-			CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
-		else
-			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
-
-		Free (); // "delete" the entity
-	}
-
-	void Blow ()
-	{
-		Damage *= TESLA_EXPLOSION_DAMAGE_MULT;
-		DoExplosion = true;
 		Remove ();
+		return;
 	}
 
-	void Active ()
-	{		
-		if (Level.Frame > RemoveTime)
+	vec3f start = State.GetOrigin() + vec3f(0, 0, 16);
+	TBoxEdictsEntityList Entities = BoxEdicts(State.GetOrigin() + vec3f(-TESLA_DAMAGE_RADIUS, -TESLA_DAMAGE_RADIUS, GetMins().Z), State.GetOrigin() + vec3f(TESLA_DAMAGE_RADIUS, TESLA_DAMAGE_RADIUS, TESLA_DAMAGE_RADIUS), false);
+
+	for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
+	{
+		// if the tesla died while zapping things, stop zapping.
+		if (!GetInUse())
+			break;
+
+		CBaseEntity *Hit = (*it);
+
+		if (!Hit->GetInUse())
+			continue;
+		if (!(Hit->EntityFlags & ENT_HURTABLE))
+			continue;
+		if (Hit == this)
+			continue;
+
+		CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Hit);
+
+		if (Hurtable->Health < 1)
+			continue;
+
+		// don't hit clients in single-player or coop
+		if ((Hit->EntityFlags & ENT_PLAYER) && !CvarList[CV_DEATHMATCH].Boolean())
+			continue;
+	
+		CTrace tr (start, Hit->State.GetOrigin(), this, CONTENTS_MASK_SHOT);
+		if (tr.fraction == 1 || tr.Ent == Hit)
 		{
-			Remove ();
-			return;
+			vec3f dir = Hit->State.GetOrigin() - start;
+			
+			// PMM - play quad sound if it's above the "normal" damage
+			if (Damage > TESLA_DAMAGE)
+				PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
+
+			// PGM - don't do knockback to walking monsters
+			if (Hit->Flags & (FL_FLY|FL_SWIM))
+				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.normal,
+					Damage, 0, 0, MOD_TESLA);
+			else
+				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.normal,
+					Damage, TESLA_KNOCKBACK, 0, MOD_TESLA);
+
+			CLightning(tr.EndPos, start, State.GetNumber(), Hit->State.GetNumber()).Send();
 		}
+	}
 
-		vec3f start = State.GetOrigin() + vec3f(0, 0, 16);
-		TBoxEdictsEntityList Entities = BoxEdicts(State.GetOrigin() + vec3f(-TESLA_DAMAGE_RADIUS, -TESLA_DAMAGE_RADIUS, GetMins().Z), State.GetOrigin() + vec3f(TESLA_DAMAGE_RADIUS, TESLA_DAMAGE_RADIUS, TESLA_DAMAGE_RADIUS), false);
+	if (GetInUse())
+		NextThink = Level.Frame + FRAMETIME;
+}
 
-		for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
+void CTesla::DoneActivate ()
+{
+	if (PointContents (State.GetOrigin()) & CONTENTS_MASK_WATER)
+	{
+		Blow ();
+		return;
+	}
+
+	// only check for spawn points in deathmatch
+	if (CvarList[CV_DEATHMATCH].Boolean())
+	{
+		CBaseEntity *Search = NULL;
+		while ((Search = FindRadius<ENT_BASE> (Search, State.GetOrigin(), 1.5 * TESLA_DAMAGE_RADIUS)) != NULL)
 		{
-			// if the tesla died while zapping things, stop zapping.
-			if (!GetInUse())
-				break;
-
-			CBaseEntity *Hit = (*it);
-
-			if (!Hit->GetInUse())
-				continue;
-			if (!(Hit->EntityFlags & ENT_HURTABLE))
-				continue;
-			if (Hit == this)
-				continue;
-
-			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Hit);
-
-			if (Hurtable->Health < 1)
-				continue;
-
-			// don't hit clients in single-player or coop
-			if ((Hit->EntityFlags & ENT_PLAYER) && !CvarList[CV_DEATHMATCH].Boolean())
-				continue;
-		
-			CTrace tr (start, Hit->State.GetOrigin(), this, CONTENTS_MASK_SHOT);
-			if (tr.fraction == 1 || tr.Ent == Hit)
+			// if it's a deathmatch start point
+			// and we can see it
+			// blow up
+			if (!Search->ClassName.empty())
 			{
-				vec3f dir = Hit->State.GetOrigin() - start;
-				
-				// PMM - play quad sound if it's above the "normal" damage
-				if (Damage > TESLA_DAMAGE)
-					PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
-
-				// PGM - don't do knockback to walking monsters
-				if (Hit->Flags & (FL_FLY|FL_SWIM))
-					Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.normal,
-						Damage, 0, 0, MOD_TESLA);
-				else
-					Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.normal,
-						Damage, TESLA_KNOCKBACK, 0, MOD_TESLA);
-
-				CLightning(tr.EndPos, start, State.GetNumber(), Hit->State.GetNumber()).Send();
+				if ( ( (!strcmp(Search->ClassName.c_str(), "info_player_deathmatch"))
+					|| (!strcmp(Search->ClassName.c_str(), "info_player_start"))
+					|| (!strcmp(Search->ClassName.c_str(), "info_player_coop"))
+					|| (!strcmp(Search->ClassName.c_str(), "misc_teleporter_dest"))) 
+					&& (IsVisible (Search, this)))
+				{
+					Remove ();
+					return;
+				}
 			}
 		}
-
-		if (GetInUse())
-			NextThink = Level.Frame + FRAMETIME;
 	}
 
-	void DoneActivate ()
+	State.GetAngles().Clear();
+	// clear the owner if in deathmatch
+	if (CvarList[CV_DEATHMATCH].Boolean())
+		SetOwner (NULL);
+
+	ThinkType = TESLATHINK_ACTIVE;
+	NextThink = Level.Frame + FRAMETIME;
+	RemoveTime = Level.Frame + TESLA_TIME_TO_LIVE;
+}
+
+void CTesla::Activate ()
+{
+	if (PointContents (State.GetOrigin()) & (CONTENTS_SLIME|CONTENTS_LAVA))
 	{
-		if (PointContents (State.GetOrigin()) & CONTENTS_MASK_WATER)
+		Remove ();
+		return;
+	}
+
+	State.GetAngles().Clear ();
+
+	if(!State.GetFrame())
+		PlaySound (CHAN_VOICE, SoundIndex ("weapons/teslaopen.wav"));
+
+	if ((++State.GetFrame()) > 14)
+	{
+		State.GetFrame() = 14;
+		ThinkType = TESLATHINK_DONEACTIVATE;
+		NextThink = Level.Frame + FRAMETIME;
+	}
+	else
+	{
+		if (State.GetFrame() > 9)
+		{
+			if (State.GetFrame() == 10)
+			{
+				//if (Firer)
+				//	Firer->PlayerNoiseAt (State.GetOrigin(), PNOISE_WEAPON);
+
+				State.GetSkinNum() = 1;
+			}
+			else if (State.GetFrame() == 12)
+				State.GetSkinNum() = 2;
+			else if (State.GetFrame() == 14)
+				State.GetSkinNum() = 3;
+		}
+		
+		NextThink = Level.Frame + FRAMETIME;
+	}
+}
+
+void CTesla::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+{
+	if (plane->normal)
+	{
+		if (PointContents(State.GetOrigin().MultiplyAngles (-20.0f, plane->normal)) & (CONTENTS_SLIME|CONTENTS_LAVA))
 		{
 			Blow ();
 			return;
 		}
-
-		// only check for spawn points in deathmatch
-		if (CvarList[CV_DEATHMATCH].Boolean())
-		{
-			CBaseEntity *Search = NULL;
-			while ((Search = FindRadius<ENT_BASE> (Search, State.GetOrigin(), 1.5 * TESLA_DAMAGE_RADIUS)) != NULL)
-			{
-				// if it's a deathmatch start point
-				// and we can see it
-				// blow up
-				if (!Search->ClassName.empty())
-				{
-					if ( ( (!strcmp(Search->ClassName.c_str(), "info_player_deathmatch"))
-						|| (!strcmp(Search->ClassName.c_str(), "info_player_start"))
-						|| (!strcmp(Search->ClassName.c_str(), "info_player_coop"))
-						|| (!strcmp(Search->ClassName.c_str(), "misc_teleporter_dest"))) 
-						&& (IsVisible (Search, this)))
-					{
-						Remove ();
-						return;
-					}
-				}
-			}
-		}
-
-		State.GetAngles().Clear();
-		// clear the owner if in deathmatch
-		if (CvarList[CV_DEATHMATCH].Boolean())
-			SetOwner (NULL);
-
-		ThinkType = TESLATHINK_ACTIVE;
-		NextThink = Level.Frame + FRAMETIME;
-		RemoveTime = Level.Frame + TESLA_TIME_TO_LIVE;
 	}
 
-	void Activate ()
+	PlaySound (CHAN_VOICE, SoundIndex (frand() > 0.5f ? "weapons/hgrenb1a.wav" : "weapons/hgrenb2a.wav"));
+}
+
+void CTesla::Think ()
+{
+	switch (ThinkType)
 	{
-		if (PointContents (State.GetOrigin()) & (CONTENTS_SLIME|CONTENTS_LAVA))
-		{
-			Remove ();
-			return;
-		}
+	case TESLATHINK_ACTIVE:
+		Active ();
+		break;
+	case TESLATHINK_ACTIVATE:
+		Activate ();
+		break;
+	case TESLATHINK_DONEACTIVATE:
+		DoneActivate ();
+		break;
+	};
+}
 
-		State.GetAngles().Clear ();
+void CTesla::Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int DamageMultiplier, int Speed)
+{
+	vec3f	forward, right, up;
+	(AimDir.ToAngles()).ToVectors (&forward, &right, &up);
 
-		if(!State.GetFrame())
-			PlaySound (CHAN_VOICE, SoundIndex ("weapons/teslaopen.wav"));
+	CTesla *Tesla = QNewEntityOf CTesla;
+	Tesla->State.GetOrigin() = Start;
+	Tesla->Velocity =	(AimDir * Speed)
+						.MultiplyAngles (200 + crand() * 10.0f, up)
+						.MultiplyAngles (crand() * 10.0f, right);
 
-		if ((++State.GetFrame()) > 14)
-		{
-			State.GetFrame() = 14;
-			ThinkType = TESLATHINK_DONEACTIVATE;
-			NextThink = Level.Frame + FRAMETIME;
-		}
-		else
-		{
-			if (State.GetFrame() > 9)
-			{
-				if (State.GetFrame() == 10)
-				{
-					if (Firer)
-						Firer->PlayerNoiseAt (State.GetOrigin(), PNOISE_WEAPON);
+	Tesla->State.GetAngles().Clear();
+	Tesla->GetSolid() = SOLID_BBOX;
+	Tesla->State.GetEffects() |= EF_GRENADE;
+	Tesla->State.GetRenderEffects() |= RF_IR_VISIBLE;
+	Tesla->GetMins().Set (-12, -12, 0);
+	Tesla->GetMaxs().Set (12, 12, 20);
+	Tesla->State.GetModelIndex() = ModelIndex ("models/weapons/g_tesla/tris.md2");
+	
+	Tesla->SetOwner (Player);
+	Tesla->Firer = Player;
 
-					State.GetSkinNum() = 1;
-				}
-				else if (State.GetFrame() == 12)
-					State.GetSkinNum() = 2;
-				else if (State.GetFrame() == 14)
-					State.GetSkinNum() = 3;
-			}
-			
-			NextThink = Level.Frame + FRAMETIME;
-		}
-	}
+	Tesla->ThinkType = TESLATHINK_ACTIVATE;
+	Tesla->NextThink = Level.Frame + TESLA_ACTIVATE_TIME;
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
-	{
-		if (plane->normal)
-		{
-			if (PointContents(State.GetOrigin().MultiplyAngles (-20.0f, plane->normal)) & (CONTENTS_SLIME|CONTENTS_LAVA))
-			{
-				Blow ();
-				return;
-			}
-		}
+	Tesla->Touchable = true;
 
-		PlaySound (CHAN_VOICE, SoundIndex (frand() > 0.5f ? "weapons/hgrenb1a.wav" : "weapons/hgrenb2a.wav"));
-	}
+	Tesla->Health = (CvarList[CV_DEATHMATCH].Boolean()) ? 20 : 30;
+	Tesla->CanTakeDamage = true;
+	Tesla->Damage = TESLA_DAMAGE*DamageMultiplier;
+	Tesla->ClassName = "tesla";
+	Tesla->GetClipmask() = (CONTENTS_MASK_SHOT|CONTENTS_SLIME|CONTENTS_LAVA);
+	Tesla->Flags |= FL_MECHANICAL;
 
-	void Think ()
-	{
-		switch (ThinkType)
-		{
-		case TESLATHINK_ACTIVE:
-			Active ();
-			break;
-		case TESLATHINK_ACTIVATE:
-			Activate ();
-			break;
-		case TESLATHINK_DONEACTIVATE:
-			DoneActivate ();
-			break;
-		};
-	}
-
-	static void Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int DamageMultiplier, int Speed)
-	{
-		vec3f	forward, right, up;
-		(AimDir.ToAngles()).ToVectors (&forward, &right, &up);
-
-		CTesla *Tesla = QNewEntityOf CTesla;
-		Tesla->State.GetOrigin() = Start;
-		Tesla->Velocity =	(AimDir * Speed)
-							.MultiplyAngles (200 + crand() * 10.0f, up)
-							.MultiplyAngles (crand() * 10.0f, right);
-
-		Tesla->State.GetAngles().Clear();
-		Tesla->GetSolid() = SOLID_BBOX;
-		Tesla->State.GetEffects() |= EF_GRENADE;
-		Tesla->State.GetRenderEffects() |= RF_IR_VISIBLE;
-		Tesla->GetMins().Set (-12, -12, 0);
-		Tesla->GetMaxs().Set (12, 12, 20);
-		Tesla->State.GetModelIndex() = ModelIndex ("models/weapons/g_tesla/tris.md2");
-		
-		Tesla->SetOwner (Player);
-		Tesla->Firer = Player;
-
-		Tesla->ThinkType = TESLATHINK_ACTIVATE;
-		Tesla->NextThink = Level.Frame + TESLA_ACTIVATE_TIME;
-
-		Tesla->Touchable = true;
-
-		Tesla->Health = (CvarList[CV_DEATHMATCH].Boolean()) ? 20 : 30;
-		Tesla->CanTakeDamage = true;
-		Tesla->Damage = TESLA_DAMAGE*DamageMultiplier;
-		Tesla->ClassName = "tesla";
-		Tesla->GetClipmask() = (CONTENTS_MASK_SHOT|CONTENTS_SLIME|CONTENTS_LAVA);
-		Tesla->Flags |= FL_MECHANICAL;
-
-		Tesla->Link ();
-	}
-};
+	Tesla->Link ();
+}
 
 IMPLEMENT_SAVE_SOURCE (CTesla);
 

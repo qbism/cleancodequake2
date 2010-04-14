@@ -183,7 +183,7 @@ CMaiden (ID)
 
 void CHeatMaiden::Rocket ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 

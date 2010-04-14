@@ -65,8 +65,9 @@ public:
 	void AttackClub ();
 	void Swing ();
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void SideStep ();
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #endif
 
 	void Dead ();

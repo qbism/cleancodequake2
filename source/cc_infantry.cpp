@@ -213,7 +213,7 @@ void CInfantry::Pain (CBaseEntity *Other, sint32 Damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 
@@ -228,7 +228,7 @@ void CInfantry::Pain (CBaseEntity *Other, sint32 Damage)
 	CurrentMove = (!irandom(2)) ? &InfantryMovePain1 : &InfantryMovePain2;
 	Entity->PlaySound (CHAN_VOICE, (!irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - clear duck flag
 	if (AIFlags & AI_DUCKED)
 		UnDuck();
@@ -423,7 +423,7 @@ void CInfantry::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damag
 	Entity->PlaySound (CHAN_VOICE, pSound);
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CInfantry::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -454,7 +454,7 @@ void CInfantry::Duck_Up ()
 
 CFrame InfantryFramesDuck [] =
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, -2, ConvertDerivedFunction(&CInfantry::Duck_Down)),
 	CFrame (&CMonster::AI_Move, -5, ConvertDerivedFunction(&CInfantry::Duck_Hold)),
 	CFrame (&CMonster::AI_Move, 3),
@@ -470,7 +470,7 @@ CFrame InfantryFramesDuck [] =
 };
 CAnim InfantryMoveDuck (FRAME_duck01, FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CInfantry::Dodge (CBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
@@ -617,7 +617,7 @@ void CInfantry::Melee ()
 	CurrentMove = &InfantryMoveAttack2;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CInfantry::Duck (float eta)
 {
 	if ((CurrentMove == &InfantryMoveAttack1) ||
@@ -688,7 +688,7 @@ void CInfantry::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_ATTACK | MF_HAS_IDLE | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_SIDESTEP | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_DODGE
 #endif
 		);

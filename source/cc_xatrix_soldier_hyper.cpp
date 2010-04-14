@@ -199,7 +199,7 @@ void CSoldierHyper::HyperRefire2 ()
 
 void CSoldierHyper::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM - blindfire!
@@ -305,7 +305,7 @@ void CSoldierHyper::SpawnSoldier ()
 	Entity->Health = 60;
 	Entity->GibHealth = -30;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 }

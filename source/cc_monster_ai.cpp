@@ -32,6 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+
+#if !ROGUE_FEATURES
+
 #include "cc_brushmodels.h"
 #include "cc_tent.h"
 
@@ -157,7 +160,7 @@ bool CMonster::FindTarget()
 
 		Entity->Enemy = client;
 
-		if (strcmp(Entity->Enemy->ClassName.c_str(), "player_noise") != 0)
+		if (!(Entity->Enemy->EntityFlags & ENT_NOISE))
 		{
 			AIFlags &= ~AI_SOUND_TARGET;
 
@@ -722,7 +725,7 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-			if ((Level.Frame - (entity_cast<CPlayerNoise>(Entity->Enemy)->Time)) > 50)
+			if ((Entity->Enemy->EntityFlags & ENT_NOISE) && (Level.Frame - (entity_cast<CPlayerNoise>(Entity->Enemy)->Time)) > 50)
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
@@ -844,22 +847,6 @@ void CMonster::AI_Move (float Dist)
 {
 	WalkMove (Entity->State.GetAngles().Y, Dist);
 }
-
-class CTempGoal : public virtual CBaseEntity
-{
-public:
-	CTempGoal () :
-	  CBaseEntity ()
-	{
-	};
-
-	CTempGoal (sint32 Index) :
-	  CBaseEntity (Index)
-	{
-	};
-
-	IMPLEMENT_SAVE_HEADER(CTempGoal)
-};
 
 void CMonster::AI_Run(float Dist)
 {
@@ -1167,3 +1154,5 @@ void CMonster::FoundTarget ()
 	// run for it
 	Run ();
 }
+
+#endif

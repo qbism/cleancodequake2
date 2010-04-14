@@ -79,12 +79,13 @@ public:
 	void Stand ();
 	void Walk ();
 	bool CheckAttack ();
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Dodge (CBaseEntity *Attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
 #else
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 	void SideStep ();
 #endif
@@ -96,7 +97,7 @@ public:
 	void HookRetract();
 	void CableAttack ();
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void CleanupHeal (bool ChangeFrame = false);
 	void AbortHeal (bool Gib, bool Mark);
 #endif

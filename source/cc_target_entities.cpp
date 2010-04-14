@@ -1286,6 +1286,7 @@ void CTargetLaser::Off ()
 	SpawnFlags &= ~LASER_START_ON;
 	GetSvFlags() |= SVF_NOCLIENT;
 	NextThink = 0;
+	User = NULL;
 };
 void CTargetLaser::Start ()
 {

@@ -260,7 +260,7 @@ void ProcessEntity (edict_t *ent)
 		{
 			if (!ent->AwaitingRemoval)
 			{
-				ent->RemovalFrames = 1;
+				ent->RemovalFrames = 2;
 				ent->AwaitingRemoval = true;
 			}
 		}
@@ -301,7 +301,7 @@ void ProcessEntity (edict_t *ent)
 		{
 			if (!ent->AwaitingRemoval)
 			{
-				ent->RemovalFrames = 1;
+				ent->RemovalFrames = 2;
 				ent->AwaitingRemoval = true;
 			}
 		}
@@ -387,6 +387,10 @@ void CGameAPI::RunFrame ()
 
 #if CLEANCODE_IRC
 	UpdateIRCServers ();
+#endif
+
+#if ROGUE_FEATURES
+	RunBadAreas ();
 #endif
 }
 

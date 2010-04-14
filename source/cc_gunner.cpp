@@ -203,7 +203,7 @@ CAnim GunnerMoveRun(FRAME_run01, FRAME_run08, GunnerFramesRun);
 
 void CGunner::Run ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 	CurrentMove = (AIFlags & AI_STAND_GROUND) ? &GunnerMoveStand : &GunnerMoveRun;
@@ -276,7 +276,7 @@ void CGunner::Pain (CBaseEntity *Other, sint32 Damage)
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 
@@ -291,7 +291,7 @@ void CGunner::Pain (CBaseEntity *Other, sint32 Damage)
 
 	CurrentMove = ((Damage <= 10) ? &GunnerMovePain3 : ((Damage <= 25) ? &GunnerMovePain2 : &GunnerMovePain1));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	AIFlags &= ~AI_MANUAL_STEERING;
 
 	// PMM - clear duck flag
@@ -353,7 +353,7 @@ void CGunner::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage,
 
 void CGunner::DuckDown ()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
@@ -383,7 +383,7 @@ void CGunner::DuckDown ()
 #endif
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CGunner::DuckHold ()
 {
 	if (Level.Frame >= PauseTime)
@@ -405,7 +405,7 @@ CFrame GunnerFramesDuck [] =
 {
 	CFrame (&CMonster::AI_Move, 1, ConvertDerivedFunction(&CGunner::DuckDown)),
 	CFrame (&CMonster::AI_Move, 1),
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, 1, ConvertDerivedFunction(&CGunner::DuckHold)),
 #else
 	CFrame (&CMonster::AI_Move, 1, &CMonster::DuckHold),
@@ -413,7 +413,7 @@ CFrame GunnerFramesDuck [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CGunner::DuckUp)),
 #else
 	CFrame (&CMonster::AI_Move, 0, &CGunner::UnDuck),
@@ -422,11 +422,8 @@ CFrame GunnerFramesDuck [] =
 };
 CAnim GunnerMoveDuck (FRAME_duck01, FRAME_duck08, GunnerFramesDuck, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Dodge (CBaseEntity *Attacker, float eta
-#if MONSTER_USE_ROGUE_AI
-					 , CTrace *tr
-#endif
-					 )
+#if !ROGUE_FEATURES
+void CGunner::Dodge (CBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
@@ -436,13 +433,14 @@ void CGunner::Dodge (CBaseEntity *Attacker, float eta
 
 	CurrentMove = &GunnerMoveDuck;
 }
+#endif
 
 void CGunner::OpenGun ()
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_OPEN], 255, ATTN_IDLE);
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 bool CGunner::GrenadeCheck()
 {
 	if(!Entity->Enemy)
@@ -503,7 +501,7 @@ void CGunner::Fire ()
 
 void CGunner::Grenade ()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	vec3f	start, forward, right;
 	sint32		flash_number;
 
@@ -646,7 +644,7 @@ CFrame GunnerFramesEndFireChain [] =
 };
 CAnim GunnerMoveEndFireChain (FRAME_attak224, FRAME_attak230, GunnerFramesEndFireChain, ConvertDerivedFunction(&CGunner::Run));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CGunner::BlindCheck ()
 {
 	if (AIFlags & AI_MANUAL_STEERING)
@@ -656,7 +654,7 @@ void CGunner::BlindCheck ()
 
 CFrame GunnerFramesAttackGrenade [] =
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGunner::BlindCheck)),
 #else
 	CFrame (&CMonster::AI_Charge, 0),
@@ -686,7 +684,7 @@ CAnim GunnerMoveAttackGrenade (FRAME_attak101, FRAME_attak121, GunnerFramesAttac
 
 void CGunner::Attack()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = &GunnerMoveAttackChain;
 	else
@@ -749,7 +747,7 @@ void CGunner::ReFireChain ()
 	CurrentMove = &GunnerMoveEndFireChain;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CGunner::Duck (float eta)
 {
 	if ((CurrentMove == &GunnerMoveAttackChain) ||
@@ -820,13 +818,13 @@ void CGunner::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);
 	Entity->Link ();
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 

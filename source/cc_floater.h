@@ -69,6 +69,10 @@ public:
 	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	void Pain (CBaseEntity *Other, sint32 Damage);
 
+#if ROGUE_FEATURES
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
+#endif
+
 	void Spawn ();
 };
 

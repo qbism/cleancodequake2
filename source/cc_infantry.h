@@ -58,12 +58,13 @@ public:
 
 	MONSTER_SAVE_LOAD_NO_FIELDS
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Dodge (CBaseEntity *Attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
 #else
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 	void SideStep ();
 #endif

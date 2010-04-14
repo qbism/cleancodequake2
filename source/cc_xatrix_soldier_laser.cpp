@@ -48,7 +48,7 @@ extern CAnim SoldierMoveAttack4;
 
 void CSoldierLaser::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 #endif
 

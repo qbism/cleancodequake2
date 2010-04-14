@@ -417,6 +417,11 @@ public:
 		return true;
 	}
 
+	bool Inside (const vec3f Min, const vec3f Max) const
+	{
+		return ((*this > Min) && (*this < Max));
+	}
+
 	inline vec3f Cross(const vec3f &Vec) const { return vec3f(Y*Vec[2] - Z*Vec[1], Z*Vec[0] - X*Vec[2], X*Vec[1] - Y*Vec[0]); }
 
 	inline float Dist(const vec3f &Vec) const { return sqrtf((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }

@@ -252,7 +252,7 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 	Enemy = Attacker;
 	CMonsterEntity *Monster = (EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(this) : NULL;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	if (EntityFlags & ENT_MONSTER)
 	{
 		if (Monster->Monster->AIFlags & AI_MEDIC)
@@ -314,7 +314,7 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 			if (strcmp(Attacker->ClassName.c_str(), "monster_medic") == 0)
 				SetOwner (Attacker);
 #endif

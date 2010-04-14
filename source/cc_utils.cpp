@@ -226,6 +226,9 @@ returns 1 if the entity is visible to self, even if not infront ()
 */
 bool IsVisible (CBaseEntity *self, CBaseEntity *Other)
 {
+	if (!self || !Other)
+		return false;
+
 	vec3f start = self->State.GetOrigin() + vec3f(0, 0, self->ViewHeight),
 		  end = Other->State.GetOrigin() + vec3f(0, 0, Other->ViewHeight);
 	return (CTrace (start, end,

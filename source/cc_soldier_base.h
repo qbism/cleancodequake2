@@ -74,8 +74,10 @@ public:
 	}
 
 	virtual void Attack () = 0;
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Dodge (CBaseEntity *Attacker, float eta);
+#else
+	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #endif
 	void Idle ();
 	void Run ();
@@ -84,7 +86,7 @@ public:
 	void Walk ();
 
 	void CockGun ();
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
@@ -112,7 +114,7 @@ public:
 	void Attack2_Refire2 ();
 	void Attack3_Refire ();
 	void Attack6_Refire ();
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void Attack6_RefireBlaster();
 #endif
 

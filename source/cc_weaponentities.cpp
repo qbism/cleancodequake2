@@ -54,8 +54,9 @@ void CheckDodge (CBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 			Monster->Enemy = self;
 
 		float eta = ((tr.EndPos - start).LengthFast() - tr.ent->maxs[0]) / speed;
+
 		Monster->Monster->Dodge (self, eta
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		, &tr
 #endif
 		);

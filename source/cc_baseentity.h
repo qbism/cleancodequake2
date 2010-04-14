@@ -215,6 +215,7 @@ enum
 	ENT_BRUSHMODEL	=	BIT(11), // Can be casted to CBrushModel
 	ENT_PRIVATE		=	BIT(12), // Does not have a gameEntity structure
 	ENT_JUNK		=	BIT(13), // Can be casted to CJunkEntity
+	ENT_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
 };
 
 template <class TType>
@@ -750,6 +751,32 @@ template <class TClass>
 size_t FieldSize ()
 {
 	return ArrayCount(TClass::FieldsForParsing);
+}
+
+// File system aid
+CBaseEntity *GetGameEntity (sint32 Index);
+inline void WriteEntity (CFile &File, CBaseEntity *Entity)
+{
+	File.Write<sint32> ((Entity && Entity->GetInUse()) ? Entity->State.GetNumber() : -1);
+}
+
+inline CBaseEntity *ReadEntity (CFile &File)
+{
+	sint32 Index = File.Read<sint32> ();
+
+	if (Index != -1)
+		return GetGameEntity(Index);
+	return NULL;
+}
+
+template <class TType>
+inline TType *ReadEntity (CFile &File)
+{
+	sint32 Index = File.Read<sint32> ();
+
+	if (Index != -1)
+		return entity_cast<TType>(GetGameEntity(Index));
+	return NULL;
 }
 
 // Base classes

@@ -409,133 +409,15 @@ void CSuperTank::Pain (CBaseEntity *Other, sint32 Damage)
 		CurrentMove = &SuperTankMovePain3;
 	}
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - blindfire cleanup
 	AIFlags &= ~AI_MANUAL_STEERING;
 	// pmm
 #endif
 };
 
-
 void CSuperTank::Rocket ()
 {
-#if MONSTERS_ARENT_STUPID
-	vec3f	forward, right, start, dir, vec, target;
-	sint32		FlashNumber;
-#if MONSTER_USE_ROGUE_AI
-	bool blindfire = false;
-#endif
-
-	// pmm - blindfire check
-#if MONSTER_USE_ROGUE_AI
-	if (AIFlags & AI_MANUAL_STEERING)
-		blindfire = true;
-#endif
-
-	switch (Entity->State.GetFrame())
-	{
-	case FRAME_attak2_8:
-		FlashNumber = MZ2_SUPERTANK_ROCKET_1;
-		break;
-	case FRAME_attak2_11:
-		FlashNumber = MZ2_SUPERTANK_ROCKET_2;
-		break;
-	default:
-		FlashNumber = MZ2_SUPERTANK_ROCKET_3;
-
-#if MONSTER_USE_ROGUE_AI
-		// PMM - blindfire cleanup
-		if (AIFlags & AI_MANUAL_STEERING)
-			AIFlags &= ~AI_MANUAL_STEERING;
-		// pmm
-#endif
-		break;
-	}
-
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
-
-		// PMM
-#if MONSTER_USE_ROGUE_AI
-	if (blindfire)
-		target = BlindFireTarget;
-	else
-#endif
-		target = Entity->Enemy->State.GetOrigin();
-	// pmm
-
-//PGM
-	// PMM - blindfire shooting
-#if MONSTER_USE_ROGUE_AI
-	if (blindfire)
-	{
-		vec = target;
-		dir = vec - start;
-	}
-	// pmm
-	// don't shoot at feet if they're above me.
-	else
-#endif
-	if(frand() < 0.66 || (start.Z < Entity->Enemy->GetAbsMin().Z))
-	{
-		vec = Entity->Enemy->State.GetOrigin();
-		vec.Z += Entity->Enemy->ViewHeight;
-		dir = vec - start;
-	}
-	else
-	{
-		vec = Entity->Enemy->State.GetOrigin();
-		vec.Z = Entity->Enemy->ViewHeight;
-		dir = vec - start;
-	}
-//PGM
-	
-//======
-	dir.Normalize ();
-
-	// pmm blindfire doesn't check target (done in checkattack)
-	// paranoia, make sure we're not shooting a target right next to us
-	CTrace trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-	#if MONSTER_USE_ROGUE_AI
-	if (blindfire)
-	{
-		// blindfire has different fail criteria for the trace
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
-			MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-		else 
-		{
-			// try shifting the target to the left a little (to help counter large offset)
-			vec = target.MultiplyAngles (-20, right);
-			dir = vec - start;
-			dir.Normalize ();
-
-			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
-				MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-			else 
-			{
-				// ok, that failed.  try to the right
-				vec = target.MultiplyAngles (20, right);
-				dir = vec - start;
-				dir.Normalize ();
-
-				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
-					MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-			}
-		}
-	}
-	else
-#endif
-	{
-		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-		if(trace.Ent == Entity->Enemy || trace.Ent == World)
-		{
-			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
-				MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-		}
-	}
-#else
 	vec3f	forward, right, start;
 	int		FlashNumber;
 
@@ -556,7 +438,6 @@ void CSuperTank::Rocket ()
 	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
 
 	MonsterFireRocket (start, ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized(), 50, 500, FlashNumber);
-#endif
 }	
 
 void CSuperTank::MachineGun ()
@@ -582,7 +463,7 @@ void CSuperTank::MachineGun ()
 
 void CSuperTank::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM 
 	if (AttackState == AS_BLIND)
 	{
@@ -687,7 +568,7 @@ void CSuperTank::Spawn ()
 	Entity->GibHealth = -500;
 	Entity->Mass = 800;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM
 	AIFlags |= AI_IGNORE_SHOTS;
 	BlindFire = true;

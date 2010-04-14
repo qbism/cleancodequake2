@@ -405,6 +405,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_rogue_heatbeam.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_items.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_misc_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_monster_ai.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_prox_launcher.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_spheres.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_stalker.cpp" />
@@ -531,7 +532,6 @@ echo Done!
     <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_modules.h" />
-    <ClInclude Include="..\..\source\cc_monster_ai.h" />
     <ClInclude Include="..\..\source\cc_options.h" />
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />

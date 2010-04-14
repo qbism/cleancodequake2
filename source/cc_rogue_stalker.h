@@ -81,7 +81,7 @@ public:
 	bool CheckLZ (CBaseEntity *target, vec3f dest);
 		
 	void Dodge (CBaseEntity *Attacker, float eta
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		, CTrace *tr
 #endif
 		);

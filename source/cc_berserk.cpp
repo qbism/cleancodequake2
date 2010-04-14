@@ -388,7 +388,7 @@ void CBerserker::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damag
 	CurrentMove = (Damage >= 50) ? &BerserkMoveDeath1 : &BerserkMoveDeath2;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CBerserker::SideStep ()
 {
 	// don't check for attack; the eta should suffice for melee monsters
@@ -419,7 +419,7 @@ void CBerserker::Spawn ()
 	Entity->Mass = 250;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_SEARCH | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_SIDESTEP
 #endif
 		);

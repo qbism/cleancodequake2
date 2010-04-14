@@ -697,7 +697,7 @@ void CMakron::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, 
 
 bool CMakron::CheckAttack ()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	float	chance;
 
 	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)

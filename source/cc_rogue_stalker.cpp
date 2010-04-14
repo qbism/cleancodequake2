@@ -823,7 +823,7 @@ CFrame StalkerFramesDodgeRun [] =
 	CFrame (&CMonster::AI_Run, 17),
 	CFrame (&CMonster::AI_Run, 21),
 	CFrame (&CMonster::AI_Run, 18
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	, &CMonster::DoneDodge
 #endif
 	)
@@ -831,7 +831,7 @@ CFrame StalkerFramesDodgeRun [] =
 CAnim StalkerMoveDodgeRun (FRAME_run01, FRAME_run04, StalkerFramesDodgeRun);
 
 void CStalker::Dodge (CBaseEntity *Attacker, float eta
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		, CTrace *tr
 #endif
 		)
@@ -947,7 +947,7 @@ void CStalker::Spawn ()
 	Entity->GibHealth = -50; 
 	Entity->Mass = 250;
 
-	MonsterFlags = (MF_HAS_ATTACK | MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_IDLE | MF_HAS_DODGE);
+	MonsterFlags = (MF_HAS_ATTACK | MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_IDLE);
 
 	Entity->Link ();
 

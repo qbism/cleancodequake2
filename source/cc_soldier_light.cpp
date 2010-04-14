@@ -48,7 +48,7 @@ extern CAnim SoldierMoveAttack6;
 
 void CSoldierLight::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM - blindfire!
@@ -154,7 +154,7 @@ void CSoldierLight::SpawnSoldier ()
 	Entity->Health = 20;
 	Entity->GibHealth = -30;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 }

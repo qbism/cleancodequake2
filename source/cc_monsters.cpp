@@ -102,7 +102,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<float> (IdealYaw);
 	File.Write<float> (YawSpeed);
 	File.Write<uint32> (AIFlags);
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	File.Write<bool> (BlindFire);
 	File.Write<float> (BaseHeight);
 	File.Write<FrameNumber_t> (NextDuckTime);
@@ -148,6 +148,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<FrameNumber_t> (QuadFramenum);
 	File.Write<FrameNumber_t> (InvincibleFramenum);
 	File.Write<FrameNumber_t> (DoubleFramenum);
+	SaveBadArea (File, BadArea);
 #endif
 
 	SaveMonsterFields (File);
@@ -159,7 +160,7 @@ void CMonster::LoadFields (CFile &File)
 	IdealYaw = File.Read<float> ();
 	YawSpeed = File.Read<float> ();
 	AIFlags = File.Read<uint32> ();
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = File.Read<bool> ();
 	BaseHeight = File.Read<float> ();
 	NextDuckTime = File.Read<FrameNumber_t> ();
@@ -220,6 +221,7 @@ void CMonster::LoadFields (CFile &File)
 	QuadFramenum = File.Read<FrameNumber_t> ();
 	InvincibleFramenum = File.Read<FrameNumber_t> ();
 	DoubleFramenum = File.Read<FrameNumber_t> ();
+	BadArea = LoadBadArea (File);
 #endif
 
 	LoadMonsterFields (File);
@@ -831,7 +833,7 @@ void CMonster::MonsterStart ()
 	if (CurrentMove)
 		Entity->State.GetFrame() = (CurrentMove->FirstFrame + (irandom(CurrentMove->LastFrame - CurrentMove->FirstFrame + 1)));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BaseHeight = Entity->GetMaxs().Z;
 #endif
 
@@ -1179,11 +1181,13 @@ void CMonster::Run ()
 {
 }
 
-#if !MONSTER_USE_ROGUE_AI
-void CMonster::Dodge (CBaseEntity *Other, float eta)
+void CMonster::Dodge (CBaseEntity *Other, float eta
+#if ROGUE_FEATURES
+		, CTrace *tr
+#endif
+		)
 {
 }
-#endif
 
 void CMonster::Attack()
 {

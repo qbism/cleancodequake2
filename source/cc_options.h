@@ -38,18 +38,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
+#define CC_GAME_MODE						GAME_ROGUE
 #endif
 
 // Global macros
-// Monsters won't attack allies and will try not to hurt allies with shots
-#ifndef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID				1
-#endif
-
 // Use the Rogue AI instead of regular AI
-#ifndef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI				1
+#ifndef ROGUE_FEATURES
+#define ROGUE_FEATURES				1
 #endif
 
 // Enable IRC
@@ -181,10 +176,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #endif
 
 #if CC_GAME_MODE == GAME_ORIGINAL_QUAKE2
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 0
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -195,10 +186,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define DROP_DEATH_GRENADES 0
 #else
 #if (CC_GAME_MODE & GAME_ROGUE) && (CC_GAME_MODE & GAME_XATRIX)
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 1
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -212,10 +199,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
 #elif (CC_GAME_MODE & GAME_ROGUE)
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 1
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -227,10 +210,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
 #elif (CC_GAME_MODE & GAME_XATRIX)
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 0
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH

@@ -213,7 +213,7 @@ CFrame FloaterFramesAttack1 [] =
 };
 CAnim FloaterMoveAttack1 (FRAME_attak101, FRAME_attak114, FloaterFramesAttack1, ConvertDerivedFunction(&CFloater::Run));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 CFrame FloaterFramesAttack1a [] =
 {
 	CFrame (&CMonster::AI_Charge,	10),			// Blaster attack
@@ -497,7 +497,7 @@ void CFloater::Zap ()
 
 void CFloater::Attack()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CurrentMove = &FloaterMoveAttack1;
 #else
 	float chance = (!CvarList[CV_SKILL].Integer()) ? 0 : 1.0 - (0.5/CvarList[CV_SKILL].Float());

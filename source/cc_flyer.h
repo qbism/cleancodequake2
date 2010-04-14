@@ -56,7 +56,7 @@ public:
 
 	void Attack ();
 #if (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void Duck (float eta);
 	void SideStep ();
 #else

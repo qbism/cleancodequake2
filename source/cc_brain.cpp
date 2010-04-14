@@ -328,7 +328,7 @@ void CBrain::Pain(CBaseEntity *Other, sint32 Damage)
 CFrame BrainFramesDuck [] =
 {
 	CFrame (&CMonster::AI_Move,	0),
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move,	-2,	ConvertDerivedFunction(&CBrain::Duck_Down)),
 	CFrame (&CMonster::AI_Move,	17,	ConvertDerivedFunction(&CBrain::Duck_Hold)),
 	CFrame (&CMonster::AI_Move,	-3),
@@ -345,7 +345,7 @@ CFrame BrainFramesDuck [] =
 };
 CAnim BrainMoveDuck (FRAME_duck01, FRAME_duck08, BrainFramesDuck, &CMonster::Run);
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CBrain::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -831,7 +831,7 @@ void CBrain::Spawn ()
 	Entity->Mass = 400;
 
 	MonsterFlags |= (MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_SEARCH | MF_HAS_IDLE
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK
 #endif
 #if XATRIX_FEATURES
