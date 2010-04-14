@@ -50,9 +50,6 @@ CMonster(ID)
 //=========================
 bool CStalker::OKToTransition ()
 {
-	return false;
-
-#if 0
 	float MaxDist = -384;
 	float Margin = Entity->GetMins().Z - 8;
 
@@ -128,7 +125,6 @@ bool CStalker::OKToTransition ()
 		return false;
 
 	return true;
-#endif
 }
 
 //=========================
@@ -799,7 +795,7 @@ void CStalker::JumpWaitLand ()
 		Entity->GravityMultiplier = 1.3f;
 		NextFrame = Entity->State.GetFrame();
 
-		if ((Level.Frame - TimeStamp) > 3)
+		if ((Level.Frame - TimeStamp) > 30)
 		{
 			Entity->GravityMultiplier = 1;
 			NextFrame = Entity->State.GetFrame() + 1;

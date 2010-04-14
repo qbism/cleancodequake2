@@ -1135,7 +1135,7 @@ bool CStepPhysics::Run ()
 	// airborn monsters should always check for ground
 	if (!GroundEntity && (EntityFlags & ENT_MONSTER))
 		(entity_cast<CMonsterEntity>(this))->Monster->CheckGround ();
-	else
+	else if (!(EntityFlags & ENT_MONSTER))
 		CheckGround (); // Specific non-monster checkground
 
 	bool wasonground = (GroundEntity) ? true : false;
