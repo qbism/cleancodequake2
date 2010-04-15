@@ -45,7 +45,7 @@ class CEntityList
 
 public:
 	void AddToList (CClassnameToClassIndex *Entity);
-	CBaseEntity *Resolve (edict_t *ent);
+	IBaseEntity *Resolve (edict_t *ent);
 };
 
 // Construct on first use idiom
@@ -55,7 +55,7 @@ CEntityList &EntityList ()
 	return List;
 }
 
-CClassnameToClassIndex::CClassnameToClassIndex (CMapEntity				*(*Spawn) (sint32 Index), const char *Classname) :
+CClassnameToClassIndex::CClassnameToClassIndex (IMapEntity				*(*Spawn) (sint32 Index), const char *Classname) :
 Spawn(Spawn),
 Classname(Classname)
 {
@@ -71,7 +71,7 @@ void CEntityList::AddToList (CClassnameToClassIndex *Entity)
 };
 
 void SpawnWorld ();
-CBaseEntity *CEntityList::Resolve (edict_t *ent)
+IBaseEntity *CEntityList::Resolve (edict_t *ent)
 {
 	if (Q_stricmp(Level.ClassName.c_str(), "worldspawn") == 0)
 	{
@@ -91,7 +91,7 @@ CBaseEntity *CEntityList::Resolve (edict_t *ent)
 	return NULL;
 }
 
-CBaseEntity *ResolveMapEntity (edict_t *ent)
+IBaseEntity *ResolveMapEntity (edict_t *ent)
 {
 	return EntityList().Resolve (ent);
 };
@@ -112,7 +112,7 @@ void ED_CallSpawn (edict_t *ent)
 	}
 
 	// Check CleanCode stuff
-	CBaseEntity *MapEntity = ResolveMapEntity(ent);
+	IBaseEntity *MapEntity = ResolveMapEntity(ent);
 
 	if (!MapEntity)
 	{
@@ -237,7 +237,7 @@ void G_FindTeams ()
 
 	for (int i = 1; i < GameAPI.GetNumEdicts(); i++)
 	{
-		CBaseEntity *e = Game.Entities[i].Entity;
+		IBaseEntity *e = Game.Entities[i].Entity;
 		if (!e)
 			continue;
 		if (!e->GetInUse())
@@ -247,7 +247,7 @@ void G_FindTeams ()
 		if (e->Flags & FL_TEAMSLAVE)
 			continue;
 
-		CBaseEntity *chain = e;
+		IBaseEntity *chain = e;
 		e->Team.Master = e;
 		e->Team.HasTeam = true;
 
@@ -255,7 +255,7 @@ void G_FindTeams ()
 		c2++;
 		for (int j = i + 1; j < GameAPI.GetNumEdicts(); j++)
 		{
-			CBaseEntity *e2 = Game.Entities[j].Entity;
+			IBaseEntity *e2 = Game.Entities[j].Entity;
 			if (!e2)
 				continue;
 			if (!e2->GetInUse())

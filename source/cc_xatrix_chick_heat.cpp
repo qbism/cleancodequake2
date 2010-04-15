@@ -39,17 +39,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_tent.h"
 
 CHeatRocket::CHeatRocket () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CHeatRocket::CHeatRocket (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -57,11 +57,11 @@ IMPLEMENT_SAVE_SOURCE(CHeatRocket)
 
 void CHeatRocket::Think ()
 {
-	CHurtableEntity	*target = NULL, *aquire = NULL;
+	IHurtableEntity	*target = NULL, *aquire = NULL;
 	int			oldlen = 0;
 
 	// aquire new target
-	while ((target = FindRadius<CHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin(), 1024)) != NULL)
+	while ((target = FindRadius<IHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin(), 1024)) != NULL)
 	{
 		if (target == GetOwner())
 			continue;
@@ -115,7 +115,7 @@ void CHeatRocket::Think ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CHeatRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CHeatRocket::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -129,8 +129,8 @@ void CHeatRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *sur
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
@@ -140,7 +140,7 @@ void CHeatRocket::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *sur
 	Free ();
 }
 
-CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+CHeatRocket *CHeatRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CHeatRocket	*Rocket = QNewEntityOf CHeatRocket;
@@ -172,7 +172,7 @@ CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 bool CHeatRocket::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CHeatMaiden::CHeatMaiden (uint32 ID) :
@@ -217,7 +217,7 @@ void CHeatMaiden::Rocket ()
 	// 20, 35, 50, 65 chance of leading
 	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 

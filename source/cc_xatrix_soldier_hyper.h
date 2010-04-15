@@ -47,7 +47,7 @@ public:
 	void SpawnSoldier ();
 };
 
-class CBlueBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CBlueBlasterProjectile : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage;
@@ -61,24 +61,24 @@ public:
 	{
 		File.Write<sint32> (Damage);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		Damage = File.Read <sint32>();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, sint32 effect);
 
 	bool Run ();

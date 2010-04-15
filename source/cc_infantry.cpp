@@ -208,7 +208,7 @@ CFrame InfantryFramesPain2 [] =
 };
 CAnim InfantryMovePain2 (FRAME_pain201, FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
 
-void CInfantry::Pain (CBaseEntity *Other, sint32 Damage)
+void CInfantry::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -270,7 +270,7 @@ void CInfantry::MachineGun ()
 
 		if (Entity->Enemy)
 		{
-			vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+			vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 			target.Z += Entity->Enemy->ViewHeight;
 
 			forward = target - start;
@@ -379,7 +379,7 @@ CFrame InfantryFramesDeath3 [] =
 CAnim InfantryMoveDeath3 (FRAME_death301, FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
 
 
-void CInfantry::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CInfantry::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
@@ -471,7 +471,7 @@ CFrame InfantryFramesDuck [] =
 CAnim InfantryMoveDuck (FRAME_duck01, FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
 
 #if !ROGUE_FEATURES
-void CInfantry::Dodge (CBaseEntity *Attacker, float eta)
+void CInfantry::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;

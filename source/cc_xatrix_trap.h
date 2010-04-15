@@ -56,7 +56,7 @@ public:
 	WEAPON_CLASS_DEFS (CTrap);
 };
 
-class CTrapProjectile : public CBounceProjectile, public CThinkableEntity, public CTouchableEntity
+class CTrapProjectile : public IBounceProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	FrameNumber_t		TimeStamp;
@@ -64,7 +64,7 @@ public:
 	int					Wait;
 	FrameNumber_t		Delay;
 	bool				DoFree;
-	CBaseEntity			*TrapEntities[3];
+	IBaseEntity			*TrapEntities[3];
 
 	CTrapProjectile ();
 	CTrapProjectile (sint32 Index);
@@ -79,9 +79,9 @@ public:
 		File.Write<FrameNumber_t> (Delay);
 		File.Write<bool> (DoFree);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CBounceProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -92,17 +92,17 @@ public:
 		Delay = File.Read<FrameNumber_t> ();
 		DoFree = File.Read<bool> ();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CBounceProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Explode ();
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed);
+	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed);
 
 	bool Run ();
 };

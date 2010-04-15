@@ -89,7 +89,7 @@ public:
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (!Calculated)
@@ -112,7 +112,7 @@ public:
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (Calculated || (Left == Right))
@@ -229,13 +229,13 @@ public:
 	  };
 
 	CTechEntity (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CItemEntity(Index),
 	  AvoidOwner(true)
 	{
 	};
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (AvoidOwner && (Other == GetOwner()))
 			return;
@@ -273,7 +273,7 @@ public:
 	};
 };
 
-CItemEntity *CTech::DropItem (CBaseEntity *Entity)
+CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 {
 	CTechEntity	*dropped = QNewEntityOf CTechEntity();
 	vec3f	forward, right;
@@ -365,12 +365,12 @@ static void SpawnTechs()
 	}
 }
 
-class CTechSpawner : public CThinkableEntity
+class CTechSpawner : public IThinkableEntity
 {
 public:
 	CTechSpawner () :
-	  CBaseEntity (-1),
-	  CThinkableEntity ()
+	  IBaseEntity (-1),
+	  IThinkableEntity ()
 	{
 		Spawn ();
 	};
@@ -412,7 +412,7 @@ void ResetTechs()
 {
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Entity = (*it)->Entity;
+		IBaseEntity *Entity = (*it)->Entity;
 
 		if (Entity && Entity->GetInUse() && (Entity->EntityFlags & ENT_ITEM))
 		{

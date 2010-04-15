@@ -384,19 +384,19 @@ CC_ENUM (uint8, EPowerArmorType)
 	POWER_ARMOR_SHIELD
 };
 
-class CPlayerNoise : public virtual CBaseEntity
+class CPlayerNoise : public virtual IBaseEntity
 {
 public:
 	FrameNumber_t	Time;
 
 	CPlayerNoise () :
-	  CBaseEntity ()
+	  IBaseEntity ()
 	{
 		EntityFlags |= ENT_NOISE;
 	};
 
 	CPlayerNoise (sint32 Index) :
-	  CBaseEntity (Index)
+	  IBaseEntity (Index)
 	{
 		EntityFlags |= ENT_NOISE;
 	};
@@ -449,8 +449,8 @@ public:
 	vec3f			ViewAngle;			// aiming direction
 	vec3f			DamageFrom;		// origin for vector calculation
 	colorf			DamageBlend;
-	CBaseEntity		*mynoise;		// can go in client only
-	CBaseEntity		*mynoise2;
+	IBaseEntity		*mynoise;		// can go in client only
+	IBaseEntity		*mynoise2;
 	vec3f			OldViewAngles;
 	vec3f			OldVelocity;
 	vec2f			ViewDamage;
@@ -562,7 +562,7 @@ public:
 
 // Players don't think or have (game) controlled physics.
 // PhysicsEntity inherited for velocity.
-class CPlayerEntity : public CHurtableEntity, public CPhysicsEntity
+class CPlayerEntity : public IHurtableEntity, public IPhysicsEntity
 {
 public:
 	CClient					Client;
@@ -580,8 +580,8 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CHurtableEntity::SaveFields (File);
-		CPhysicsEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IPhysicsEntity::SaveFields (File);
 	
 		// Write the player data first
 		File.Write<bool> (NoClip);
@@ -599,8 +599,8 @@ public:
 
 	void LoadFields (CFile &File)
 	{
-		CHurtableEntity::LoadFields (File);
-		CPhysicsEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IPhysicsEntity::LoadFields (File);
 	
 		// Read the player data first
 		NoClip = File.Read<bool> ();
@@ -623,7 +623,7 @@ public:
 	void			Begin ();
 	bool			Connect (char *userinfo);
 	void			Disconnect ();
-	void			Obituary (CBaseEntity *Attacker);
+	void			Obituary (IBaseEntity *Attacker);
 
 	void			SpectatorRespawn ();
 	void			Respawn ();
@@ -667,7 +667,7 @@ public:
 
 	void			DeathmatchScoreboardMessage (bool reliable);
 	void			EndServerFrame ();
-	void			LookAtKiller (CBaseEntity *Inflictor, CBaseEntity *Attacker);
+	void			LookAtKiller (IBaseEntity *Inflictor, IBaseEntity *Attacker);
 
 	void			InitResp ();
 	static void		SaveClientData ();
@@ -684,7 +684,7 @@ public:
 	bool			CTFStart ();
 #endif
 
-	void			Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	// Printing routines
 	void			PrintToClient (EGamePrintLevel printLevel, const char *fmt, ...);

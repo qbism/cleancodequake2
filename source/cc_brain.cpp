@@ -292,7 +292,7 @@ CFrame BrainFramesPain1 [] =
 };
 CAnim BrainMovePain1 (FRAME_pain101, FRAME_pain121, BrainFramesPain1, &CMonster::Run);
 
-void CBrain::Pain(CBaseEntity *Other, sint32 Damage)
+void CBrain::Pain(IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -370,7 +370,7 @@ void CBrain::Duck_Up ()
 	Entity->Link ();
 }
 
-void CBrain::Dodge (CBaseEntity *Attacker, float eta)
+void CBrain::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25f)
 		return;
@@ -442,7 +442,7 @@ void CBrain::Dead ()
 	Entity->Link ();
 }
 
-void CBrain::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBrain::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->State.GetEffects() = 0;
 	PowerArmorType = POWER_ARMOR_NONE;
@@ -627,11 +627,11 @@ void CBrain::TongueAttack ()
 	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 
 	vec3f dir = start - end;
-	entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+	entity_cast<IHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 
 	// pull the enemy in
 	Entity->Enemy->State.GetOrigin().Z += 1;
-	entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity = f * -1200;;
+	entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity = f * -1200;;
 }
 
 // Brian right eye center
@@ -713,7 +713,7 @@ void CBrain::LaserBeamFire ()
 
 void CBrain::LaserBeamRefire ()
 {
-	if (frand() < 0.5 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (frand() < 0.5 && IsVisible (Entity, Entity->Enemy) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
 		Entity->State.GetFrame() = FRAME_walk101;
 }
 

@@ -41,13 +41,13 @@ void G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &fo
 }
 
 
-CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
+IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
 {
 	for (edict_t *from = (!From) ? Game.Entities : (From->gameEntity + 1); from < &Game.Entities[GameAPI.GetNumEdicts()]; from++)
 	{
 		if (!from->Entity)
 			continue;
-		CBaseEntity *Entity = from->Entity;
+		IBaseEntity *Entity = from->Entity;
 		if (!Entity->GetInUse())
 			continue;
 		if (CheckNonSolid && (Entity->GetSolid() == SOLID_NOT))
@@ -76,7 +76,7 @@ NULL will be returned if the end of the list is reached.
 =============
 */
 
-CBaseEntity *CC_PickTarget (char *targetname)
+IBaseEntity *CC_PickTarget (char *targetname)
 {
 	static TTargetList choices;
 	choices.clear();
@@ -84,10 +84,10 @@ CBaseEntity *CC_PickTarget (char *targetname)
 	if (!targetname)
 		return NULL;
 
-	CMapEntity *Entity = NULL;
+	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		Entity = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (Entity, targetname);
+		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname);
 		if (!Entity)
 			break;
 
@@ -111,10 +111,10 @@ TTargetList CC_GetTargets (char *targetname)
 	if (!targetname)
 		return choices;
 
-	CMapEntity *Entity = NULL;
+	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		Entity = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (Entity, targetname);
+		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname);
 		if (!Entity)
 			break;
 
@@ -148,12 +148,12 @@ G_TouchTriggers
 
 ============
 */
-void	G_TouchTriggers (CBaseEntity *Entity)
+void	G_TouchTriggers (IBaseEntity *Entity)
 {
 	// dead things don't activate triggers!
 	if (Entity->EntityFlags & ENT_HURTABLE)
 	{
-		CHurtableEntity *Hurt = entity_cast<CHurtableEntity>(Entity);
+		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(Entity);
 		if ((Hurt->CanTakeDamage) && (Hurt->Health <= 0))
 			return;
 	}
@@ -164,14 +164,14 @@ void	G_TouchTriggers (CBaseEntity *Entity)
 	// list removed before we get to it (killtriggered)
 	for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
 	{
-		CBaseEntity *TouchedEntity = (*it);
+		IBaseEntity *TouchedEntity = (*it);
 
 		if (!TouchedEntity || !TouchedEntity->GetInUse())
 			continue;
 
 		if (TouchedEntity->EntityFlags & ENT_TOUCHABLE)
 		{
-			(entity_cast<CTouchableEntity>(TouchedEntity))->Touch (Entity, NULL, NULL);
+			(entity_cast<ITouchableEntity>(TouchedEntity))->Touch (Entity, NULL, NULL);
 			continue;
 		}
 
@@ -181,9 +181,9 @@ void	G_TouchTriggers (CBaseEntity *Entity)
 }
 
 // Calls the callback for each member of the team in "ent"
-void CForEachTeamChainCallback::Query (CBaseEntity *Master)
+void CForEachTeamChainCallback::Query (IBaseEntity *Master)
 {
-	for (CBaseEntity *e = Master->Team.Master; e; e = e->Team.Chain)
+	for (IBaseEntity *e = Master->Team.Master; e; e = e->Team.Chain)
 		Callback (e);
 }
 
@@ -212,7 +212,7 @@ returns the range catagorization of an entity reletive to self
 3	only triggered by damage
 =============
 */
-ERangeType Range (CBaseEntity *self, CBaseEntity *Other)
+ERangeType Range (IBaseEntity *self, IBaseEntity *Other)
 {
 	return Range(self->State.GetOrigin(), Other->State.GetOrigin());
 }
@@ -224,7 +224,7 @@ visible
 returns 1 if the entity is visible to self, even if not infront ()
 =============
 */
-bool IsVisible (CBaseEntity *self, CBaseEntity *Other)
+bool IsVisible (IBaseEntity *self, IBaseEntity *Other)
 {
 	if (!self || !Other)
 		return false;
@@ -235,7 +235,7 @@ bool IsVisible (CBaseEntity *self, CBaseEntity *Other)
 		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
 }
 
-bool IsVisible (vec3f left, vec3f right, CBaseEntity *self)
+bool IsVisible (vec3f left, vec3f right, IBaseEntity *self)
 {
 	return (CTrace (left, right,
 		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
@@ -248,14 +248,14 @@ infront
 returns 1 if the entity is in front (in sight) of self
 =============
 */
-bool IsInFront (CBaseEntity *self, CBaseEntity *Other)
+bool IsInFront (IBaseEntity *self, IBaseEntity *Other)
 {	
 	vec3f forward;
 	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
 	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3);
 }
 
-CBaseEntity *LoadEntity (uint32 Index)
+IBaseEntity *LoadEntity (uint32 Index)
 {
 	return (Index == -1) ? NULL : Game.Entities[Index].Entity;
 }

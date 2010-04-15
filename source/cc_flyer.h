@@ -60,7 +60,7 @@ public:
 	void Duck (float eta);
 	void SideStep ();
 #else
-	void Dodge (CBaseEntity *Attacker, float eta);
+	void Dodge (IBaseEntity *Attacker, float eta);
 #endif
 
 	void ChooseAfterDodge ();
@@ -83,8 +83,8 @@ public:
 	void Fire (sint32 FlashNumber);
 
 	void Dead ();
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
-	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 };

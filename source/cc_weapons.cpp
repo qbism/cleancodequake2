@@ -359,13 +359,13 @@ bool CAmmo::AddAmmo (CPlayerEntity *Player, sint32 count)
 }
 
 CAmmoEntity::CAmmoEntity() :
-  CBaseEntity(),
+  IBaseEntity(),
   CItemEntity ()
   {
   };
 
 CAmmoEntity::CAmmoEntity (sint32 Index) :
-  CBaseEntity(Index),
+  IBaseEntity(Index),
   CItemEntity (Index)
   {
   };

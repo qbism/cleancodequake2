@@ -44,10 +44,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CRogueBaseSphere::SaveFields (CFile &File)
 {
-	CFlyMissileProjectile::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IFlyMissileProjectile::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 
 	File.Write<FrameNumber_t> (Wait);
 	File.Write<ESphereType> (SphereType);
@@ -59,10 +59,10 @@ void CRogueBaseSphere::SaveFields (CFile &File)
 
 void CRogueBaseSphere::LoadFields (CFile &File)
 {
-	CFlyMissileProjectile::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IFlyMissileProjectile::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 
 	Wait = File.Read<FrameNumber_t> ();
 	SphereType = File.Read<ESphereType> ();
@@ -72,12 +72,12 @@ void CRogueBaseSphere::LoadFields (CFile &File)
 	OwnedPlayer = (Index == -1) ? NULL : entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
 
 	Index = File.Read<sint32> ();
-	SphereEnemy = (Index == -1) ? NULL : entity_cast<CHurtableEntity>(Game.Entities[Index].Entity);
+	SphereEnemy = (Index == -1) ? NULL : entity_cast<IHurtableEntity>(Game.Entities[Index].Entity);
 
 	SavedGoal = File.Read<vec3f> ();
 }
 
-void CRogueBaseSphere::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CRogueBaseSphere::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if ((SphereType == SPHERE_DEFENDER) || !SphereEnemy)
 		Explode ();
@@ -182,7 +182,7 @@ void CRogueBaseSphere::Chase (bool stupidChase)
 	}
 }
 
-void CRogueBaseSphere::BaseTouch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod)
+void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod)
 {
 	if (SphereFlags & SPHERE_DOPPLEGANGER)
 	{
@@ -211,7 +211,7 @@ void CRogueBaseSphere::BaseTouch (CBaseEntity *Other, plane_t *plane, cmBspSurfa
 
 	if (Other->EntityFlags & ENT_HURTABLE)
 	{
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->normal,
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->normal,
 			10000, 1, DAMAGE_DESTROY_ARMOR, Mod);
 	}
 	else
@@ -229,15 +229,15 @@ void CRogueBaseSphere::OwnSphere (CPlayerEntity *Player)
 }
 
 // DEFENDER
-void CRogueDefenderSphere::Pain (CBaseEntity *Other, sint32 Damage)
+void CRogueDefenderSphere::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Other == GetOwner() || !(Other->EntityFlags & ENT_HURTABLE))
 		return;
 
-	SphereEnemy = entity_cast<CHurtableEntity>(Other);
+	SphereEnemy = entity_cast<IHurtableEntity>(Other);
 }
 
-void CRogueDefenderSphere::Shoot (CHurtableEntity *At)
+void CRogueDefenderSphere::Shoot (IHurtableEntity *At)
 {
 	if (!(At->GetInUse()) || At->Health <= 0)
 		return;
@@ -267,7 +267,7 @@ void CRogueDefenderSphere::Think ()
 		return;
 	}	
 
-	if (entity_cast<CHurtableEntity>(GetOwner())->Health <= 0)
+	if (entity_cast<IHurtableEntity>(GetOwner())->Health <= 0)
 	{
 		Explode ();
 		return;
@@ -290,7 +290,7 @@ void CRogueDefenderSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-void CRogueDefenderSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
+void CRogueDefenderSphere::Create (IBaseEntity *Owner, ESphereFlags Flags)
 {
 	CRogueDefenderSphere *Sphere = CreateBaseSphere<CRogueDefenderSphere> (Owner, SPHERE_DEFENDER, Flags);
 
@@ -303,7 +303,7 @@ void CRogueDefenderSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
 IMPLEMENT_SAVE_SOURCE(CRogueDefenderSphere);
 
 // VENGEANCE
-void CRogueVengeanceSphere::Pain (CBaseEntity *Other, sint32 Damage)
+void CRogueVengeanceSphere::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (SphereEnemy)
 		return;
@@ -323,7 +323,7 @@ void CRogueVengeanceSphere::Pain (CBaseEntity *Other, sint32 Damage)
 
 	State.GetEffects() |= EF_ROCKET;
 	Touchable = true;
-	SphereEnemy = entity_cast<CHurtableEntity>(Other);
+	SphereEnemy = entity_cast<IHurtableEntity>(Other);
 }
 
 void CRogueVengeanceSphere::Think ()
@@ -350,12 +350,12 @@ void CRogueVengeanceSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-void CRogueVengeanceSphere::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRogueVengeanceSphere::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
 
-void CRogueVengeanceSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
+void CRogueVengeanceSphere::Create (IBaseEntity *Owner, ESphereFlags Flags)
 {
 	CRogueVengeanceSphere *Sphere = CreateBaseSphere<CRogueVengeanceSphere> (Owner, SPHERE_VENGEANCE, Flags);
 
@@ -377,7 +377,7 @@ void BodyGib (CPlayerEntity *Player)
 }
 
 // VENGEANCE
-void CRogueHunterSphere::Pain (CBaseEntity *Other, sint32 Damage)
+void CRogueHunterSphere::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (SphereEnemy)
 		return;
@@ -398,7 +398,7 @@ void CRogueHunterSphere::Pain (CBaseEntity *Other, sint32 Damage)
 
 	State.GetEffects() |= (EF_BLASTER | EF_TRACKER);
 	Touchable = true;
-	SphereEnemy = entity_cast<CHurtableEntity>(Other);
+	SphereEnemy = entity_cast<IHurtableEntity>(Other);
 
 	if ((SphereFlags & SPHERE_DOPPLEGANGER)  || !OwnedPlayer)
 		return;
@@ -534,12 +534,12 @@ void CRogueHunterSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-void CRogueHunterSphere::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRogueHunterSphere::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
 
-void CRogueHunterSphere::Create (CBaseEntity *Owner, ESphereFlags Flags)
+void CRogueHunterSphere::Create (IBaseEntity *Owner, ESphereFlags Flags)
 {
 	CRogueHunterSphere *Sphere = CreateBaseSphere<CRogueHunterSphere> (Owner, SPHERE_VENGEANCE, Flags);
 

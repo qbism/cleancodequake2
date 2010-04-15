@@ -49,7 +49,7 @@ inline const char *TimeStamp()
 #define PRINT_VECTOR_ARGS(x) (x).X, (x).Y, (x).Z
 
 // Forward declarations
-class CBaseEntity;
+class IBaseEntity;
 class CPlayerEntity;
 
 typedef sint32	FrameNumber_t;

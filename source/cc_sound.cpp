@@ -75,7 +75,7 @@ enum
 #define DEFAULT_SOUND_PACKET_VOLUME			255
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0
 
-static void SV_StartSound (vec3f origin, CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 vol, EAttenuation attenuation, uint8 timeOffset, bool Positioned)
+static void SV_StartSound (vec3f origin, IBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 vol, EAttenuation attenuation, uint8 timeOffset, bool Positioned)
 {
 	if (!Positioned && !Entity)
 	{
@@ -204,12 +204,12 @@ static void SV_StartSound (vec3f origin, CBaseEntity *Entity, EEntSndChannel cha
 	}
 }
 
-void PlaySoundFrom (CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void PlaySoundFrom (IBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	SV_StartSound (vec3fOrigin, Entity, channel, soundIndex, volume, attenuation, timeOfs, false);
 }
 
-void PlaySoundAt (vec3f origin, CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void PlaySoundAt (vec3f origin, IBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	SV_StartSound (origin, Entity, channel, soundIndex, volume, attenuation, timeOfs, true);
 }

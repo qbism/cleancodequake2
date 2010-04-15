@@ -78,9 +78,9 @@ public:
 	void Heal ();
 	void ShootAttack ();
 	void ShootAttack2 ();
-	bool CheckLZ (CBaseEntity *target, vec3f dest);
+	bool CheckLZ (IBaseEntity *target, vec3f dest);
 		
-	void Dodge (CBaseEntity *Attacker, float eta
+	void Dodge (IBaseEntity *Attacker, float eta
 #if ROGUE_FEATURES
 		, CTrace *tr
 #endif
@@ -104,15 +104,15 @@ public:
 		if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
 			return false;
 
-		if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health < 1)
+		if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health < 1)
 			return false;
 
 		return true;
 	}
 
 	void Dead ();
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
-	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 };

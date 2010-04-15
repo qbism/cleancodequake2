@@ -315,7 +315,7 @@ struct edict_t
 	// only used locally in game, not by server
 	//
 	// Paril
-	CBaseEntity		*Entity;
+	IBaseEntity		*Entity;
 };
 
 //
@@ -324,16 +324,16 @@ struct edict_t
 void	G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result);
 
 // Changed to sint32, rarely used as a float..
-CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid);
+IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid);
 
 template <class ReturnType, uint32 EntityFlags>
-ReturnType *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
+ReturnType *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
 {
 	return entity_cast<ReturnType>(FindRadius (From, org, Radius, EntityFlags, CheckNonSolid));
 }
 
 template <uint32 EntityFlags>
-inline CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
+inline IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
 {
 	return FindRadius (From, org, Radius, EntityFlags, CheckNonSolid);
 }
@@ -349,7 +349,7 @@ void	G_FreeEdict (edict_t *e);
 
 void	ED_CallSpawn (edict_t *ent);
 
-extern CBaseEntity *World;
+extern IBaseEntity *World;
 extern CItemList *ItemList;
 
 class CGameLocals
@@ -559,11 +559,11 @@ public:
 
 	CPlayerEntity		*SightClient;	// changed once each frame for coop games
 
-	CBaseEntity	*SightEntity;
+	IBaseEntity	*SightEntity;
 	FrameNumber_t	SightEntityFrame;
-	CBaseEntity	*SoundEntity;
+	IBaseEntity	*SoundEntity;
 	FrameNumber_t	SoundEntityFrame;
-	CBaseEntity	*SoundEntity2;
+	IBaseEntity	*SoundEntity2;
 	FrameNumber_t	SoundEntity2Frame;
 
 	GoalList_t	Secrets;
@@ -575,7 +575,7 @@ public:
 		uint16		Killed;
 	} Monsters;
 
-	CBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
+	IBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
 
 	uint8		PowerCubeCount;		// ugly necessity for coop
 	uint32		Inhibit;
@@ -624,14 +624,14 @@ public:
 	bool		Demo;
 
 #if ROGUE_FEATURES
-	CBaseEntity			*DisguiseViolator;
+	IBaseEntity			*DisguiseViolator;
 	FrameNumber_t		DisguiseViolationFrametime;
 #endif
 };
 
 extern	CLevelLocals	Level;
 
-inline CBaseEntity *CreateEntityFromClassname (const char *classname)
+inline IBaseEntity *CreateEntityFromClassname (const char *classname)
 {
 _CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();

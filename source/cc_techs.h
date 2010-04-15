@@ -54,7 +54,7 @@ public:
 
 	CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber);
 
-	CItemEntity *DropItem (CBaseEntity *Entity);
+	CItemEntity *DropItem (IBaseEntity *Entity);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Drop (CPlayerEntity *Player);
@@ -75,7 +75,7 @@ public:
 	// true means it's modifying "take".
 	// Defending is if the Left is defending the Right's shot.
 	// Rest are self explanatory.
-	virtual void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	virtual void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	) {};
 };
 

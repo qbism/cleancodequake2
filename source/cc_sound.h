@@ -34,9 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_SOUND_H) || !INCLUDE_GUARDS
 #define CC_GUARD_SOUND_H
 
-void PlaySoundFrom	(CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex,
+void PlaySoundFrom	(IBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex,
 					uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
-void PlaySoundAt	(vec3f origin, CBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex,
+void PlaySoundAt	(vec3f origin, IBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex,
 					uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
 
 #else

@@ -383,7 +383,7 @@ CFrame MedicFramesPain2 [] =
 };
 CAnim MedicMovePain2 (FRAME_painb1, FRAME_painb15, MedicFramesPain2, &CMonster::Run);
 
-void CMedic::Pain(CBaseEntity *Other, sint32 Damage)
+void CMedic::Pain(IBaseEntity *Other, sint32 Damage)
 {
 #if ROGUE_FEATURES
 	DoneDodge ();
@@ -494,7 +494,7 @@ CFrame MedicFramesDeath [] =
 };
 CAnim MedicMoveDeath (FRAME_death1, FRAME_death30, MedicFramesDeath, ConvertDerivedFunction(&CMedic::Dead));
 
-void CMedic::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	// if we had a pending patient, free him up for another medic
 #if ROGUE_FEATURES
@@ -614,7 +614,7 @@ void CMedic::CableAttack ()
 
 	// see if our enemy has changed to a client, or our target has more than 0 health,
 	// abort it .. we got switched to someone else due to damage
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0))
 	{
 		AbortHeal (false, false);
 		return;
@@ -871,7 +871,7 @@ bool CMedic::CheckAttack ()
 	if (AIFlags & AI_MEDIC)
 	{
 #if !ROGUE_FEATURES
-		if ((Entity->Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > entity_cast<CHurtableEntity>(Entity->Enemy)->GibHealth))
+		if ((Entity->Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > entity_cast<IHurtableEntity>(Entity->Enemy)->GibHealth))
 		{
 			Attack();
 			return true;
@@ -986,7 +986,7 @@ CFrame MedicFramesDuck [] =
 CAnim MedicMoveDuck (FRAME_duck1, FRAME_duck16, MedicFramesDuck, &CMonster::Run);
 
 #if !ROGUE_FEATURES
-void CMedic::Dodge (CBaseEntity *Attacker, float eta)
+void CMedic::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;

@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-class CTriggerBase : public CMapEntity, public CBrushModel, public CTouchableEntity, public CUsableEntity
+class CTriggerBase : public IMapEntity, public IBrushModel, public ITouchableEntity, public IUsableEntity
 {
 public:
 	enum
@@ -56,15 +56,15 @@ public:
 	bool Run ();
 
 	virtual void Think ();
-	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	void Init ();
 
 	virtual bool CheckValidity ()
 	{
-		return CMapEntity::CheckValidity();
+		return IMapEntity::CheckValidity();
 	};
 
 	// the trigger was just activated
@@ -85,11 +85,11 @@ public:
 
 	ENTITYFIELDS_SAVABLE(CTriggerMultiple)
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	virtual void Spawn ();
 
 	virtual bool CheckValidity ()
 	{
-		return CMapEntity::CheckValidity();
+		return IMapEntity::CheckValidity();
 	};
 };

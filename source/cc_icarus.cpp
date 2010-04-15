@@ -437,7 +437,7 @@ CAnim HoverMoveEndAttack2 (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack2
 
 void CIcarus::ReAttack ()
 {
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.6)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.6)
 	{
 #if ROGUE_FEATURES
 		CurrentMove = (AttackState == AS_SLIDING) ? &HoverMoveAttack2 : &HoverMoveAttack1;
@@ -517,7 +517,7 @@ void CIcarus::StartAttack()
 	CurrentMove = &HoverMoveAttack1;
 }
 
-void CIcarus::Pain (CBaseEntity *Other, sint32 Damage)
+void CIcarus::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -584,7 +584,7 @@ void CIcarus::Dead ()
 	Entity->Link ();
 }
 
-void CIcarus::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CIcarus::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

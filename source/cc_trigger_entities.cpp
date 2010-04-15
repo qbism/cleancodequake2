@@ -38,18 +38,18 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
 This trigger will always fire.  It is activated by the world.
 */
-class CTriggerAlways : public CMapEntity, public CUsableEntity
+class CTriggerAlways : public IMapEntity, public IUsableEntity
 {
 public:
 	CTriggerAlways () :
-	  CBaseEntity (),
-	  CMapEntity ()
+	  IBaseEntity (),
+	  IMapEntity ()
 	{
 	};
 
 	CTriggerAlways (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	{
 	};
 
@@ -57,28 +57,28 @@ public:
 
 	bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *, CBaseEntity *)
+	void Use (IBaseEntity *, IBaseEntity *)
 	{
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Spawn ()
@@ -101,28 +101,28 @@ LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 #endif
 
 CTriggerBase::CTriggerBase () :
-  CBaseEntity (),
-  CMapEntity (),
-  CTouchableEntity (),
-  CUsableEntity (),
-  CBrushModel (),
+  IBaseEntity (),
+  IMapEntity (),
+  ITouchableEntity (),
+  IUsableEntity (),
+  IBrushModel (),
   ThinkType (TRIGGER_THINK_NONE)
 {
 };
 
 CTriggerBase::CTriggerBase (sint32 Index) :
-  CBaseEntity (Index),
-  CMapEntity (Index),
-  CTouchableEntity (Index),
-  CUsableEntity (Index),
-  CBrushModel (Index),
+  IBaseEntity (Index),
+  IMapEntity (Index),
+  ITouchableEntity (Index),
+  IUsableEntity (Index),
+  IBrushModel (Index),
   ThinkType (TRIGGER_THINK_NONE)
 {
 };
 
 bool CTriggerBase::Run ()
 {
-	return CBaseEntity::Run();
+	return IBaseEntity::Run();
 };
 
 void CTriggerBase::Think ()
@@ -140,7 +140,7 @@ void CTriggerBase::Think ()
 	};
 };
 
-void CTriggerBase::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CTriggerBase::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!Touchable)
 		return;
@@ -170,7 +170,7 @@ void CTriggerBase::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *su
 	Trigger ();
 };
 
-void CTriggerBase::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTriggerBase::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 #if ROGUE_FEATURES
 	if (SpawnFlags & TRIGGER_TOGGLE)
@@ -239,25 +239,25 @@ bool			CTriggerBase::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CTriggerBase::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTriggerBase> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
 }
 
 void			CTriggerBase::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTriggerBase> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 }
 
 /*QUAKED trigger_multiple (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED
@@ -273,20 +273,20 @@ set "message" to text string
 */
 
 CTriggerMultiple::CTriggerMultiple () :
-  CBaseEntity (),
+  IBaseEntity (),
   CTriggerBase (),
   ActivateUse(false)
   {
   };
 
 CTriggerMultiple::CTriggerMultiple (sint32 Index) :
-  CBaseEntity(Index),
+  IBaseEntity(Index),
   CTriggerBase (Index),
   ActivateUse(false)
   {
   };
 
-void CTriggerMultiple::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTriggerMultiple::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (ActivateUse)
 	{
@@ -381,13 +381,13 @@ class CTriggerOnce : public CTriggerMultiple
 {
 public:
 	CTriggerOnce () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple ()
 	  {
 	  };
 
 	CTriggerOnce (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
 	  };
@@ -416,7 +416,7 @@ public:
 		// Yet another map hack
 		if (!Q_stricmp(Level.ServerLevelName.c_str(), "command") && !Q_stricmp(Model, "*27"))
 			SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
-		return CMapEntity::CheckValidity ();
+		return IMapEntity::CheckValidity ();
 	};
 };
 
@@ -450,13 +450,13 @@ public:
 	uint8			Count;
 
 	CTriggerCounter () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple ()
 	  {
 	  };
 
 	CTriggerCounter (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
 	  };
@@ -464,11 +464,11 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerCounter)
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		bool IsClient = true;
 		if (Count == 0)
@@ -526,15 +526,15 @@ bool CTriggerCounter::ParseField (const char *Key, const char *Value)
 void			CTriggerCounter::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTriggerCounter> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void			CTriggerCounter::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTriggerCounter> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_counter", CTriggerCounter);
@@ -556,7 +556,7 @@ public:
 	float	Speed;
 
 	CTriggerPush () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple (),
 	  Q3Touch(false),
 	  Speed (0)
@@ -564,7 +564,7 @@ public:
 	  };
 
 	CTriggerPush (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  Q3Touch(false),
 	  Speed (0)
@@ -574,14 +574,14 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerPush)
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		vec3f vel = MoveDir * Speed;
 
 		if (Q3Touch)
 		{
 			if (Other->EntityFlags & ENT_PHYSICS)
-				entity_cast<CPhysicsEntity>(Other)->Velocity = vel;
+				entity_cast<IPhysicsEntity>(Other)->Velocity = vel;
 
 			if (Other->EntityFlags & ENT_PLAYER)
 			{
@@ -593,14 +593,14 @@ public:
 		else
 		{
 			if (Other->EntityFlags & ENT_PHYSICS)
-				entity_cast<CPhysicsEntity>(Other)->PushInDirection (vel);
+				entity_cast<IPhysicsEntity>(Other)->PushInDirection (vel);
 
 			if (SpawnFlags & PUSH_ONCE)
 				Free ();
 		}
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 #if ROGUE_FEATURES
 		GetSolid() = (GetSolid() == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT;
@@ -617,10 +617,10 @@ public:
 			Speed = 1000;
 		Speed *= 10;
 
-		CBaseEntity *target;
+		IBaseEntity *target;
 		if (!Target)
 			Q3Touch = false;
-		else if ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target)) != NULL)
+		else if ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target)) != NULL)
 		{
 			// Quake3
 			//self->touch = trigger_push_q3touch;
@@ -707,7 +707,7 @@ public:
 	sint32					Damage;
 
 	CTriggerHurt () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple (),
 	  NextHurt(0),
 	  Damage (0)
@@ -715,7 +715,7 @@ public:
 	  };
 
 	CTriggerHurt (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  NextHurt(0),
 	  Damage (0)
@@ -725,9 +725,9 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerHurt)
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (!((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage))
+		if (!((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
 			return;
 
 		if (NextHurt > Level.Frame)
@@ -740,12 +740,12 @@ public:
 				Other->PlaySound (CHAN_AUTO, NoiseIndex);
 		}
 
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(),
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(),
 															vec3fOrigin, Damage, Damage,
 															(SpawnFlags & 8) ? DAMAGE_NO_PROTECTION : 0, MOD_TRIGGER_HURT);
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (ActivateUse)
 			return;
@@ -812,14 +812,14 @@ public:
 	float	Speed;
 
 	CTriggerMonsterJump () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple (),
 	  Speed (0)
 	  {
 	  };
 
 	CTriggerMonsterJump (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  Speed (0)
 	  {
@@ -828,11 +828,11 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerMonsterJump)
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if ( !(Other->EntityFlags & ENT_MONSTER))
 			return;
@@ -915,14 +915,14 @@ public:
 	float	Gravity;
 
 	CTriggerGravity () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple (),
 	  Gravity (0)
 	  {
 	  };
 
 	CTriggerGravity (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index),
 	  Gravity (0)
 	  {
@@ -931,13 +931,13 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerGravity)
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (Other->EntityFlags & ENT_PHYSICS)
-			entity_cast<CPhysicsEntity>(Other)->GravityMultiplier = Gravity;
+			entity_cast<IPhysicsEntity>(Other)->GravityMultiplier = Gravity;
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 #if ROGUE_FEATURES
 		GetSolid() = (GetSolid() == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT;
@@ -1010,25 +1010,25 @@ trigger_key
 A relay trigger that only fires it's targets if player has the proper key.
 Use "item" to specify the required key, for example "key_data_cd"
 */
-class CTriggerKey : public CMapEntity, public CUsableEntity
+class CTriggerKey : public IMapEntity, public IUsableEntity
 {
 public:
 	CBaseItem			*Item;
 	FrameNumber_t		TouchDebounce;
 
 	CTriggerKey () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity (),
 	  TouchDebounce(0),
 	  Item(NULL)
 	{
 	};
 
 	CTriggerKey (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index),
 	  TouchDebounce(0),
 	  Item(NULL)
 	{
@@ -1039,10 +1039,10 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (!Usable)
 			return;
@@ -1135,21 +1135,21 @@ bool CTriggerKey::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CTriggerKey> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void			CTriggerKey::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTriggerKey> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void			CTriggerKey::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTriggerKey> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_key", CTriggerKey);

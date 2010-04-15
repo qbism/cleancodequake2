@@ -239,7 +239,7 @@ CFrame ParasiteFramesPain1 [] =
 };
 CAnim ParasiteMovePain1 (FRAME_pain101, FRAME_pain111, ParasiteFramesPain1, &CMonster::Run);
 
-void CParasite::Pain (CBaseEntity *Other, sint32 Damage)
+void CParasite::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -327,7 +327,7 @@ void CParasite::DrainAttack ()
 
 	vec3f dir = start - end;
 	if (Entity->Enemy)
-		entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, Damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+		entity_cast<IHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, Damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 }
 
 CFrame ParasiteFramesDrain [] =
@@ -444,7 +444,7 @@ CFrame ParasiteFramesDeath [] =
 };
 CAnim ParasiteMoveDeath (FRAME_death101, FRAME_death107, ParasiteFramesDeath, ConvertDerivedFunction(&CParasite::Dead));
 
-void CParasite::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CParasite::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

@@ -40,17 +40,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 
 CPhalanxPlasma::CPhalanxPlasma () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CPhalanxPlasma::CPhalanxPlasma (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -61,7 +61,7 @@ void CPhalanxPlasma::Think ()
 	Free (); // "delete" the entity
 }
 
-void CPhalanxPlasma::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPhalanxPlasma::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -75,8 +75,8 @@ void CPhalanxPlasma::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
@@ -85,7 +85,7 @@ void CPhalanxPlasma::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	Free ();
 }
 
-CPhalanxPlasma *CPhalanxPlasma::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+CPhalanxPlasma *CPhalanxPlasma::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CPhalanxPlasma	*Rocket = QNewEntityOf CPhalanxPlasma;
@@ -117,7 +117,7 @@ CPhalanxPlasma *CPhalanxPlasma::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f 
 
 bool CPhalanxPlasma::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CPhalanx::CPhalanx() :

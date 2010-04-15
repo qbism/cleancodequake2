@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_ENTITYTYPES_H
 
 // "Hurtable" entity
-class CHurtableEntity : public virtual CBaseEntity
+class IHurtableEntity : public virtual IBaseEntity
 {
 public:
 	sint32			Health;
@@ -45,18 +45,18 @@ public:
 	bool			CanTakeDamage;
 
 	ENTITYFIELD_VIRTUAL_DEFS
-	ENTITYFIELDS_SAVABLE_VIRTUAL(CHurtableEntity)
+	ENTITYFIELDS_SAVABLE_VIRTUAL(IHurtableEntity)
 
-	CHurtableEntity ();
-	CHurtableEntity (sint32 index);
+	IHurtableEntity ();
+	IHurtableEntity (sint32 index);
 
-	virtual void Pain (CBaseEntity *Other, sint32 Damage) {};
-	virtual void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point) {};
+	virtual void Pain (IBaseEntity *Other, sint32 Damage) {};
+	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point) {};
 
-	virtual bool CanDamage (CBaseEntity *Inflictor);
-	virtual bool CheckTeamDamage (CBaseEntity *Attacker);
+	virtual bool CanDamage (IBaseEntity *Inflictor);
+	virtual bool CheckTeamDamage (IBaseEntity *Attacker);
 	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags);
-	virtual void Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	// An "extension" of sorts to TakeDamage
 	// which handles the effects when we are hurt
@@ -64,64 +64,64 @@ public:
 
 	// Takes damage.
 	// For this, "this" is target. Use this if the
-	// entity can be casted to CHurtableEntity or is CHurtableEntity
+	// entity can be casted to IHurtableEntity or is IHurtableEntity
 	// without question.
-	virtual void TakeDamage (	CBaseEntity *Inflictor, CBaseEntity *Attacker,
+	virtual void TakeDamage (	IBaseEntity *Inflictor, IBaseEntity *Attacker,
 							vec3f dir, vec3f point, vec3f normal, sint32 Damage,
 							sint32 knockback, sint32 dflags, EMeansOfDeath mod);
 	
 	// This is a convenient static version.
-	// This will cast targ to CHurtableEntity
+	// This will cast targ to IHurtableEntity
 	// and make the necessary damage adjustments if possible.
 	// If "targ" can't take damage, nothing will happen.
-	static void TakeDamage (	CBaseEntity *targ, CBaseEntity *Inflictor,
-							CBaseEntity *Attacker, vec3f dir, vec3f point,
+	static void TakeDamage (	IBaseEntity *targ, IBaseEntity *Inflictor,
+							IBaseEntity *Attacker, vec3f dir, vec3f point,
 							vec3f normal, sint32 Damage, sint32 knockback,
 							sint32 dflags, EMeansOfDeath mod);
 };
 
-class CBlockableEntity : public virtual CBaseEntity
+class IBlockableEntity : public virtual IBaseEntity
 {
 public:
-	CBlockableEntity ();
-	CBlockableEntity (sint32 Index);
+	IBlockableEntity ();
+	IBlockableEntity (sint32 Index);
 
-	virtual void Blocked (CBaseEntity *Other) = 0;
+	virtual void Blocked (IBaseEntity *Other) = 0;
 };
 
-class CUsableEntity : public virtual CBaseEntity
+class IUsableEntity : public virtual IBaseEntity
 {
 public:
 	std::string		Message;
 	char				*Target;
 	char				*KillTarget;
 	char				*PathTarget;
-	CBaseEntity			*User;
+	IBaseEntity			*User;
 	FrameNumber_t		Delay;
 	MediaIndex			NoiseIndex;
 	bool				Usable;
 
 	ENTITYFIELD_VIRTUAL_DEFS
-	ENTITYFIELDS_SAVABLE_VIRTUAL(CUsableEntity)
+	ENTITYFIELDS_SAVABLE_VIRTUAL(IUsableEntity)
 
-	CUsableEntity ();
-	CUsableEntity (sint32 Index);
+	IUsableEntity ();
+	IUsableEntity (sint32 Index);
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator) {};
-	virtual void UseTargets (CBaseEntity *Activator, std::string &Message);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator) {};
+	virtual void UseTargets (IBaseEntity *Activator, std::string &Message);
 };
 
 // Thinkable entity
 // Simple think function
-class CThinkableEntity : public virtual CBaseEntity
+class IThinkableEntity : public virtual IBaseEntity
 {
 public:
 	FrameNumber_t		NextThink;
 
-	CThinkableEntity ();
-	CThinkableEntity (sint32 index);
+	IThinkableEntity ();
+	IThinkableEntity (sint32 index);
 
-	ENTITYFIELDS_SAVABLE(CThinkableEntity)
+	ENTITYFIELDS_SAVABLE(IThinkableEntity)
 
 	void			RunThink ();
 	virtual void	Think () = 0;
@@ -129,17 +129,17 @@ public:
 };
 
 // Touchable entity
-class CTouchableEntity : public virtual CBaseEntity
+class ITouchableEntity : public virtual IBaseEntity
 {
 public:
 	bool Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
 
-	ENTITYFIELDS_SAVABLE(CTouchableEntity)
+	ENTITYFIELDS_SAVABLE(ITouchableEntity)
 
-	CTouchableEntity ();
-	CTouchableEntity (sint32 index);
+	ITouchableEntity ();
+	ITouchableEntity (sint32 index);
 
-	virtual void	Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 CC_ENUM (uint8, EPhysicsType)
@@ -160,16 +160,16 @@ CC_ENUM (uint8, EPhysicsType)
 CC_ENUM (uint32, EPhysicsFlags)
 {
 	// Class flags
-	PHYSICFLAG_BUOYANCY			=	BIT(0), // Has CBuoyancyPhysics
-	PHYSICFLAG_RESISTANCE		=	BIT(1), // Has CResistancePhysics
-	PHYSICFLAG_AERODYNAMICS		=	BIT(2), // Has CAerodynamicPhysics
+	PHYSICFLAG_BUOYANCY			=	BIT(0), // Has IBuoyancyPhysics
+	PHYSICFLAG_RESISTANCE		=	BIT(1), // Has IResistancePhysics
+	PHYSICFLAG_AERODYNAMICS		=	BIT(2), // Has IAerodynamicPhysics
 
 	// Other flags
 	PHYSICFLAG_FLOATING			=	BIT(16), // Is "floating"
 };
 
 // Contains common code that projectiles will use
-class CPhysicsEntity : public virtual CBaseEntity
+class IPhysicsEntity : public virtual IBaseEntity
 {
 public:
 	float				GravityMultiplier;	// per entity gravity multiplier (1.0 is normal)
@@ -189,8 +189,8 @@ public:
 	bool				PhysicsDisabled;
 	vec3f				VelocityEffect, DampeningEffect, AVelocityEffect, ADampeningEffect;
 
-	CPhysicsEntity ();
-	CPhysicsEntity (sint32 index);
+	IPhysicsEntity ();
+	IPhysicsEntity (sint32 index);
 
 	virtual void SaveFields (CFile &File)
 	{
@@ -223,7 +223,7 @@ public:
 };
 
 // "Bouncy" projectile
-class CBounceProjectile : public virtual CPhysicsEntity
+class IBounceProjectile : public virtual IPhysicsEntity
 {
 public:
 	float			backOff;
@@ -231,77 +231,77 @@ public:
 	bool			StopOnEqualPlane;
 	bool			AimInVelocityDirection;
 
-	CBounceProjectile ();
-	CBounceProjectile (sint32 index);
+	IBounceProjectile ();
+	IBounceProjectile (sint32 index);
 
 	virtual void SaveFields (CFile &File)
 	{
 		File.Write<float> (backOff);
-		CPhysicsEntity::SaveFields (File);
+		IPhysicsEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
 		backOff = File.Read<float> ();
-		CPhysicsEntity::LoadFields (File);
+		IPhysicsEntity::LoadFields (File);
 	}
 
 	bool			Run ();
 };
 
 // Same as bouncy, except doesn't bounce
-class CTossProjectile : public virtual CBounceProjectile
+class ITossProjectile : public virtual IBounceProjectile
 {
 public:
-	CTossProjectile();
-	CTossProjectile (sint32 index);
+	ITossProjectile();
+	ITossProjectile (sint32 index);
 
 	virtual void SaveFields (CFile &File)
 	{
-		CBounceProjectile::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
-		CBounceProjectile::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
 	}
 };
 
 // Doesn't add gravity
-class CFlyMissileProjectile : public virtual CBounceProjectile
+class IFlyMissileProjectile : public virtual IBounceProjectile
 {
 public:
-	CFlyMissileProjectile ();
-	CFlyMissileProjectile (sint32 index);
+	IFlyMissileProjectile ();
+	IFlyMissileProjectile (sint32 index);
 
 	virtual void SaveFields (CFile &File)
 	{
-		CPhysicsEntity::SaveFields (File);
+		IPhysicsEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
-		CPhysicsEntity::LoadFields (File);
+		IPhysicsEntity::LoadFields (File);
 	}
 };
 
 // Gravity, special edge handling
-class CStepPhysics : public virtual CPhysicsEntity
+class IStepPhysics : public virtual IPhysicsEntity
 {
 public:
-	CStepPhysics ();
-	CStepPhysics (sint32 index);
+	IStepPhysics ();
+	IStepPhysics (sint32 index);
 
 	virtual void	CheckGround ();
 
 	virtual void SaveFields (CFile &File)
 	{
-		CPhysicsEntity::SaveFields (File);
+		IPhysicsEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
-		CPhysicsEntity::LoadFields (File);
+		IPhysicsEntity::LoadFields (File);
 	}
 
 	sint32			FlyMove (float time, sint32 mask);
@@ -309,39 +309,39 @@ public:
 	bool			Run ();
 };
 
-class CPushPhysics : public virtual CPhysicsEntity
+class IPushPhysics : public virtual IPhysicsEntity
 {
 public:
-	CPushPhysics ();
-	CPushPhysics (sint32 Index);
+	IPushPhysics ();
+	IPushPhysics (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
-		CPhysicsEntity::SaveFields (File);
+		IPhysicsEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
-		CPhysicsEntity::LoadFields (File);
+		IPhysicsEntity::LoadFields (File);
 	}
 
 	bool			Run ();
 };
 
-class CStopPhysics : public virtual CPushPhysics
+class IStopPhysics : public virtual IPushPhysics
 {
 public:
-	CStopPhysics ();
-	CStopPhysics (sint32 Index);
+	IStopPhysics ();
+	IStopPhysics (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
-		CPhysicsEntity::SaveFields (File);
+		IPhysicsEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
-		CPhysicsEntity::LoadFields (File);
+		IPhysicsEntity::LoadFields (File);
 	}
 
 	bool			Run ();
@@ -349,13 +349,13 @@ public:
 
 // Buoyancy physics.
 // Only works for: Bounce, Toss (via Bounce)
-class CBuoyancyPhysics : public virtual CPhysicsEntity
+class IBuoyancyPhysics : public virtual IPhysicsEntity
 {
 public:
 	float		BuoyancyPowerWater, BuoyancyPowerAir;
 
-	CBuoyancyPhysics ();
-	CBuoyancyPhysics (sint32 Index);
+	IBuoyancyPhysics ();
+	IBuoyancyPhysics (sint32 Index);
 
 	void RunBouyancy ();
 	void SetBuoyancy (float Power, float ModAir = 0.0f, float ModWater = 1.0f);
@@ -363,26 +363,26 @@ public:
 
 // Resistance physics.
 // Only works for: Bounce, Toss (via Bounce)
-class CResistancePhysics : public virtual CPhysicsEntity
+class IResistancePhysics : public virtual IPhysicsEntity
 {
 public:
 	float		ResistPowerWater, ResistPowerAir;
 
-	CResistancePhysics ();
-	CResistancePhysics (sint32 Index);
+	IResistancePhysics ();
+	IResistancePhysics (sint32 Index);
 
 	void RunResistance ();
 	void SetResistance (float Power, float ModAir = 0.0f, float ModWater = 1.0f);
 };
 
 // Aerodynamics
-class CAerodynamicPhysics : public virtual CPhysicsEntity
+class IAerodynamicPhysics : public virtual IPhysicsEntity
 {
 public:
 	float		AeroPower;
 
-	CAerodynamicPhysics ();
-	CAerodynamicPhysics (sint32 Index);
+	IAerodynamicPhysics ();
+	IAerodynamicPhysics (sint32 Index);
 
 	void RunAerodynamics ();
 	void SetAerodynamics (float Power);

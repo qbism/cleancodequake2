@@ -33,37 +33,37 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-class CMiscNukeCore : public CMapEntity, public CUsableEntity
+class CMiscNukeCore : public IMapEntity, public IUsableEntity
 {
 public:
 	CMiscNukeCore () :
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IMapEntity (),
+	  IUsableEntity ()
 	  {
 	  };
 
 	CMiscNukeCore (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	  {
 	  };
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	}
 
 	IMPLEMENT_SAVE_HEADER(CMiscNukeCore);
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		GetSvFlags() ^= SVF_NOCLIENT;
 	}

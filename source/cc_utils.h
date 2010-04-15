@@ -34,15 +34,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_UTILS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_UTILS_H
 
-void	G_TouchTriggers (CBaseEntity *Entity);
+void	G_TouchTriggers (IBaseEntity *Entity);
 void	G_SetMovedir (vec3f &angles, vec3f &movedir);
 
-typedef std::vector<CBaseEntity*> TTargetList;
-CBaseEntity *CC_PickTarget (char *targetname);
+typedef std::vector<IBaseEntity*> TTargetList;
+IBaseEntity *CC_PickTarget (char *targetname);
 TTargetList CC_GetTargets (char *targetname);
 
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
-TEntityType *CC_Find (CBaseEntity *From, const char *Match)
+TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 {
 	edict_t *gameEnt;
 	if (!From)
@@ -88,7 +88,7 @@ TEntityType *CC_Find (CBaseEntity *From, const char *Match)
 }
 
 template <class TEntityType, uint32 EntityFlags>
-TEntityType *CC_FindByClassName (CBaseEntity *From, const char *Match)
+TEntityType *CC_FindByClassName (IBaseEntity *From, const char *Match)
 {
 	edict_t *gameEnt;
 	if (!From)
@@ -120,7 +120,7 @@ TEntityType *CC_FindByClassName (CBaseEntity *From, const char *Match)
 // stored in cc_infoentities
 CSpotBase *SelectFarthestDeathmatchSpawnPoint ();
 CSpotBase *SelectRandomDeathmatchSpawnPoint ();
-float	PlayersRangeFromSpot (CBaseEntity *spot);
+float	PlayersRangeFromSpot (IBaseEntity *spot);
 
 inline CSpotBase *SelectDeathmatchSpawnPoint ()
 {
@@ -130,8 +130,8 @@ inline CSpotBase *SelectDeathmatchSpawnPoint ()
 class CForEachTeamChainCallback
 {
 public:
-	virtual void Callback (CBaseEntity *Entity) = 0;
-	virtual void Query (CBaseEntity *Master);
+	virtual void Callback (IBaseEntity *Entity) = 0;
+	virtual void Query (IBaseEntity *Master);
 };
 
 class CForEachPlayerCallback
@@ -174,10 +174,10 @@ inline ERangeType Range (vec3f left, vec3f right)
 	return RANGE_FAR;
 }
 
-ERangeType Range (CBaseEntity *self, CBaseEntity *Other);
-bool IsInFront (CBaseEntity *self, CBaseEntity *Other);
-bool IsVisible (CBaseEntity *self, CBaseEntity *Other);
-bool IsVisible (vec3f left, vec3f right, CBaseEntity *self);
+ERangeType Range (IBaseEntity *self, IBaseEntity *Other);
+bool IsInFront (IBaseEntity *self, IBaseEntity *Other);
+bool IsVisible (IBaseEntity *self, IBaseEntity *Other);
+bool IsVisible (vec3f left, vec3f right, IBaseEntity *self);
 
 #else
 FILE_WARNING

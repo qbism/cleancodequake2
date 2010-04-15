@@ -240,7 +240,7 @@ CFrame GladiatorFramesPainAir [] =
 };
 CAnim GladiatorMovePainAir (FRAME_painup1, FRAME_painup7, GladiatorFramesPainAir, &CMonster::Run);
 
-void CGladiator::Pain (CBaseEntity *Other, sint32 Damage)
+void CGladiator::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -298,7 +298,7 @@ CFrame GladiatorFramesDeath [] =
 };
 CAnim GladiatorMoveDeath (FRAME_death1, FRAME_death22, GladiatorFramesDeath, ConvertDerivedFunction(&CGladiator::Dead));
 
-void CGladiator::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CGladiator::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

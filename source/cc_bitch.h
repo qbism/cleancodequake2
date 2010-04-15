@@ -73,12 +73,12 @@ public:
 #if ROGUE_FEATURES
 	void Duck (float eta);
 	void SideStep ();
-	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #else
 	void DuckDown ();
 	void DuckHold ();
 	void DuckUp ();
-	void Dodge (CBaseEntity *Attacker, float eta);
+	void Dodge (IBaseEntity *Attacker, float eta);
 #endif
 
 	void Moan ();
@@ -95,8 +95,8 @@ public:
 	void Attack1 ();
 
 	void Dead ();
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
-	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 #if XATRIX_FEATURES
 	virtual

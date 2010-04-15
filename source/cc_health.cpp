@@ -80,13 +80,13 @@ class CHealthEntity : public CItemEntity
 {
 public:
 	CHealthEntity() :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity ()
 	  {
 	  };
 
 	CHealthEntity (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CItemEntity (Index)
 	  {
 	  };

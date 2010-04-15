@@ -269,7 +269,7 @@ void ProcessEntity (edict_t *ent)
 
 	if (ent->Entity)
 	{
-		CBaseEntity *Entity = ent->Entity;
+		IBaseEntity *Entity = ent->Entity;
 		
 		Mem_Zero (&Entity->PlayedSounds, sizeof(Entity->PlayedSounds));
 		
@@ -284,7 +284,7 @@ void ProcessEntity (edict_t *ent)
 				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 		}
 
-		CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
+		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
 
 		if (Thinkable) 
 			Thinkable->PreThink ();

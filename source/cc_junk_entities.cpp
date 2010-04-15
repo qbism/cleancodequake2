@@ -184,18 +184,18 @@ void Shutdown_Junk ()
 	JunkList = NULL;
 }
 
-CJunkEntity::CJunkEntity () :
-CBaseEntity()
+IJunkEntity::IJunkEntity () :
+IBaseEntity()
 {
 	EntityFlags |= ENT_JUNK;
 };
-CJunkEntity::CJunkEntity (sint32 Index) :
-CBaseEntity(Index)
+IJunkEntity::IJunkEntity (sint32 Index) :
+IBaseEntity(Index)
 {
 	EntityFlags |= ENT_JUNK;
 };
 
-void CJunkEntity::Die ()
+void IJunkEntity::Die ()
 {
 	// Take us out of the closed list
 	JunkList->ClosedList.remove (State.GetNumber());
@@ -210,16 +210,16 @@ void CJunkEntity::Die ()
 }
 
 CGibEntity::CGibEntity () :
-CBaseEntity(),
-CTossProjectile(),
-CJunkEntity()
+IBaseEntity(),
+ITossProjectile(),
+IJunkEntity()
 {
 };
 
 CGibEntity::CGibEntity (sint32 Index) :
-CBaseEntity(Index),
-CTossProjectile(Index),
-CJunkEntity(Index)
+IBaseEntity(Index),
+ITossProjectile(Index),
+IJunkEntity(Index)
 {
 };
 
@@ -244,7 +244,7 @@ void CGibEntity::ClipGibVelocity ()
 
 bool CGibEntity::Run ()
 {
-	return CBounceProjectile::Run();
+	return IBounceProjectile::Run();
 }
 
 void CGibEntity::Think ()
@@ -252,7 +252,7 @@ void CGibEntity::Think ()
 	Die ();
 }
 
-void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects)
+void CGibEntity::Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects)
 {
 	CGibEntity *Junk = JunkList->GetFreeJunk<CGibEntity>();
 
@@ -277,7 +277,7 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, 
 
 	vec3f vd = VelocityForDamage (Damage);
 
-	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<CPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
+	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<IPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
 	velocity.MultiplyAngles (vscale, vd);
 	Junk->Velocity = velocity;
 	Junk->ClipGibVelocity ();

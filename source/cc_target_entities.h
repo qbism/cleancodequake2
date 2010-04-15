@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-class CTargetChangeLevel : public CMapEntity, public CUsableEntity
+class CTargetChangeLevel : public IMapEntity, public IUsableEntity
 {
 public:
 	char		*Map;
@@ -42,7 +42,7 @@ public:
 
 	bool Run ();
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTargetChangeLevel)
@@ -62,7 +62,7 @@ void BeginIntermission (CTargetChangeLevel *targ);
 #define	LASER_FAT			64
 #define LASER_STOPWINDOW	128
 
-class CTargetLaser : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CTargetLaser : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	bool		StartLaser;
@@ -80,7 +80,7 @@ public:
 
 	virtual void Think ();
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	virtual void On ();
 	virtual void Off ();

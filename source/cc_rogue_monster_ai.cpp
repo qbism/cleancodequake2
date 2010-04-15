@@ -82,7 +82,7 @@ void RunBadAreas ()
 	std::remove_if (BadAreas.begin(), BadAreas.end(), RemoveBadArea);
 }
 
-CBadArea::CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, CBaseEntity *Owner) :
+CBadArea::CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, IBaseEntity *Owner) :
   AbsMin (AbsMin),
   AbsMax (AbsMax),
   Lifespan (Lifespan),
@@ -191,7 +191,7 @@ void CMonster::DoneDodge ()
 	AIFlags &= ~AI_DODGING;
 }
 
-void CMonster::MonsterDodge (CBaseEntity *Attacker, float eta, CTrace *tr)
+void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 {
 	// this needs to be here since this can be called after the monster has "died"
 	if (Entity->Health < 1)
@@ -353,7 +353,7 @@ bool CMonster::FindTarget()
 // revised behavior so they will wake up if they "see" a player make a noise
 // but not weapon impact/explosion noises
 
-	CBaseEntity *client;
+	IBaseEntity *client;
 	bool heardit = false;
 	if ((Level.SightEntityFrame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
@@ -495,7 +495,7 @@ bool CMonster::FindTarget()
 
 void CMonster::MoveToGoal (float Dist)
 {	
-	CBaseEntity *goal = Entity->GoalEntity;
+	IBaseEntity *goal = Entity->GoalEntity;
 
 	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
 		return;
@@ -794,7 +794,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	return true;
 }
 
-void CMonster::NewChaseDir (CBaseEntity *Enemy, float Dist)
+void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 {
 	if (!Enemy)
 		return;
@@ -921,7 +921,7 @@ bool CMonster::CheckAttack ()
 {
 	if (Entity->Enemy)
 	{
-		if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+		if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 			return false;
 
 	// see if any entities are in the way of the shot
@@ -1062,7 +1062,7 @@ bool CMonster::CheckAttack ()
 	return false;
 }
 
-void CMonster::ReactToDamage (CBaseEntity *Attacker, CBaseEntity *Inflictor)
+void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {
 	// pmm
 	if (!(Attacker->EntityFlags & ENT_PLAYER) && !(Attacker->EntityFlags & ENT_MONSTER))
@@ -1299,7 +1299,7 @@ bool CMonster::AI_CheckAttack()
 
 // see if the enemy is dead
 	bool hesDeadJim = false;
-	CHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<CHurtableEntity>(Entity->Enemy) : NULL;
+	IHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Entity->Enemy) : NULL;
 
 	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
 		hesDeadJim = true;
@@ -1330,7 +1330,7 @@ bool CMonster::AI_CheckAttack()
 		AIFlags &= ~AI_MEDIC;
 		Entity->Enemy = NULL;
 
-		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->OldEnemy)->Health > 0)
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->OldEnemy)->Health > 0)
 		{
 			Entity->Enemy = Entity->OldEnemy;
 			Entity->OldEnemy = NULL;
@@ -1449,7 +1449,7 @@ void CMonster::AI_Run(float Dist)
 	// if we're currently looking for a hint path
 	if (AIFlags & AI_HINT_PATH)
 	{
-		CBaseEntity *realEnemy;
+		IBaseEntity *realEnemy;
 		// determine direction to our destination hintpath.
 		// FIXME - is this needed EVERY time? I was having trouble with them
 		// sometimes not going after it, and this fixed it.
@@ -1927,7 +1927,7 @@ void CMonster::FoundTarget ()
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<CMapEntity>(Entity->MoveTarget)->ClassName.clear();
+	entity_cast<IMapEntity>(Entity->MoveTarget)->ClassName.clear();
 	PauseTime = 0;
 
 	// run for it

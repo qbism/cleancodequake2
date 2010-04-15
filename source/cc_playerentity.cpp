@@ -314,9 +314,9 @@ void CClient::Clear ()
 // Players have a special way of allocating the entity.
 // We won't automatically allocate it since it already exists
 CPlayerEntity::CPlayerEntity (sint32 Index) :
-CBaseEntity(Index),
-CHurtableEntity(Index),
-CPhysicsEntity(Index),
+IBaseEntity(Index),
+IHurtableEntity(Index),
+IPhysicsEntity(Index),
 Client(&Game.Clients[State.GetNumber()-1]),
 NoClip(false),
 TossPhysics(false)
@@ -2651,7 +2651,7 @@ void CPlayerEntity::SetCTFStats()
 		CTFSetIDView();
 }
 
-bool loc_CanSee (CBaseEntity *targ, CBaseEntity *Inflictor);
+bool loc_CanSee (IBaseEntity *targ, IBaseEntity *Inflictor);
 void CPlayerEntity::CTFSetIDView()
 {
 	Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = 0;
@@ -2804,7 +2804,7 @@ bool CPlayerEntity::HasRegeneration()
 LookAtKiller
 ==================
 */
-void CPlayerEntity::LookAtKiller (CBaseEntity *Inflictor, CBaseEntity *Attacker)
+void CPlayerEntity::LookAtKiller (IBaseEntity *Inflictor, IBaseEntity *Attacker)
 {
 	vec3f dir;
 	if (Attacker && (Attacker != World) && (Attacker != this))
@@ -3078,7 +3078,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 			{
 				if ((Other->Entity->EntityFlags & ENT_TOUCHABLE) && Other->Entity->GetInUse())
 				{
-					CTouchableEntity *Touchered = entity_cast<CTouchableEntity>(Other->Entity);
+					ITouchableEntity *Touchered = entity_cast<ITouchableEntity>(Other->Entity);
 
 					if (Touchered->Touchable)
 						Touchered->Touch (this, NULL, NULL);
@@ -3307,7 +3307,7 @@ void CPlayerEntity::TossHead (sint32 Damage)
 EMeansOfDeath meansOfDeath;
 void Cmd_Help_f (CPlayerEntity *Player);
 
-void CPlayerEntity::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	CanTakeDamage = true;
 	TossPhysics = true;
@@ -4095,7 +4095,7 @@ inline const char *MonsterAOrAn (const char *Name)
 	};
 }
 
-void CPlayerEntity::Obituary (CBaseEntity *Attacker)
+void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 {
 	static std::string message, message2;
 	message.clear();
@@ -4502,11 +4502,11 @@ void CPlayerEntity::PushInDirection (vec3f vel)
 #if ROGUE_FEATURES
 void CPlayerEntity::RemoveAttackingPainDaemons ()
 {
-	CBaseEntity *tracker = NULL;
+	IBaseEntity *tracker = NULL;
 
 	do
 	{
-		tracker = CC_FindByClassName<CBaseEntity, ENT_BASE> (tracker, "pain daemon");
+		tracker = CC_FindByClassName<IBaseEntity, ENT_BASE> (tracker, "pain daemon");
 
 		if (tracker->Enemy == this)
 			tracker->Free ();

@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_INFOENTITIES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_INFOENTITIES_H
 
-class CPathCorner : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
+class CPathCorner : public IMapEntity, public IThinkableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
 	TTargetList		NextTargets;
@@ -50,11 +50,11 @@ public:
 	ENTITYFIELDS_SAVABLE(CPathCorner)
 
 	virtual void Think ();
-	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 	virtual void Spawn ();
 };
 
-class CSpotBase : public CMapEntity
+class CSpotBase : public IMapEntity
 {
 public:
 	CSpotBase ();
@@ -62,17 +62,17 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return CMapEntity::ParseField (Key, Value);
+		return IMapEntity::ParseField (Key, Value);
 	};
 
 	virtual void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
 	};
 
 	virtual void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
 	};
 
 	virtual void Spawn ();

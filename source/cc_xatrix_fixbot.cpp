@@ -93,18 +93,18 @@ bool CFixbot::SearchForMonsters ()
 	return false;
 }
 
-class CBotGoal : public CThinkableEntity
+class CBotGoal : public IThinkableEntity
 {
 public:
 	CBotGoal () :
-	  CBaseEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IThinkableEntity ()
 	  {
 	  };
 
 	CBotGoal (sint32 Index) : 
-	  CBaseEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IThinkableEntity (Index)
 	  {
 	  };
 
@@ -112,12 +112,12 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ()
@@ -456,7 +456,7 @@ bool CFixbot::CheckTelefrag ()
 	CTrace tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), Entity->Enemy->GetMaxs(), start, Entity, CONTENTS_MASK_MONSTERSOLID);
 	if (tr.Ent->EntityFlags & ENT_HURTABLE)
 	{
-		entity_cast<CHurtableEntity>(tr.Ent)->TakeDamage (Entity, Entity, vec3fOrigin, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 999999, 0, DAMAGE_NO_PROTECTION, MOD_UNKNOWN);
+		entity_cast<IHurtableEntity>(tr.Ent)->TakeDamage (Entity, Entity, vec3fOrigin, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 999999, 0, DAMAGE_NO_PROTECTION, MOD_UNKNOWN);
 		return false;
 	}
 			
@@ -640,13 +640,13 @@ void CFixbot::WeldState ()
 		CurrentMove = &FixbotMoveWeld;
 		break;
 	case FRAME_weldmiddle_07:
-		if (entity_cast<CHurtableEntity>(Entity->GoalEntity)->Health < 0) 
+		if (entity_cast<IHurtableEntity>(Entity->GoalEntity)->Health < 0) 
 		{
 			Entity->Enemy->SetOwner (NULL);
 			CurrentMove = &FixbotMoveWeldEnd;
 		}
 		else
-			entity_cast<CHurtableEntity>(Entity->GoalEntity)->Health -= 10;
+			entity_cast<IHurtableEntity>(Entity->GoalEntity)->Health -= 10;
 		break;
 	default:
 		Entity->GoalEntity = Entity->Enemy = NULL;
@@ -814,9 +814,9 @@ void CFixbot::RoamGoal ()
 
 void CFixbot::UseScanner ()
 {
-	CHurtableEntity *Hurtable = NULL;
+	IHurtableEntity *Hurtable = NULL;
 
-	while ((Hurtable = FindRadius<CHurtableEntity, ENT_HURTABLE> (Hurtable, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((Hurtable = FindRadius<IHurtableEntity, ENT_HURTABLE> (Hurtable, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
 		if (Hurtable->Health >= 100)
 		{
@@ -827,7 +827,7 @@ void CFixbot::UseScanner ()
 					// remove the old one
 					if (Entity->GoalEntity->ClassName == "bot_goal")
 					{
-						CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
+						IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
 						Thinkable->NextThink = Level.Frame + 1;
 					}	
 					
@@ -851,7 +851,7 @@ void CFixbot::UseScanner ()
 			CurrentMove = &FixbotMoveWeldStart;
 		else 
 		{
-			CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
+			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
 			Thinkable->NextThink = Level.Frame + 1;
 			Entity->GoalEntity = Entity->Enemy = NULL;
 			CurrentMove = &FixbotMoveStand;
@@ -871,7 +871,7 @@ void CFixbot::UseScanner ()
 			CurrentMove = &FixbotMoveStand;
 		else 
 		{
-			CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
+			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
 			Thinkable->NextThink = Level.Frame + 1;
 			Entity->GoalEntity = Entity->Enemy = NULL;
 			CurrentMove = &FixbotMoveStand;
@@ -1040,7 +1040,7 @@ void CFixbot::FlyVertical ()
 	
 	if (Entity->State.GetFrame() == FRAME_landing_58 || Entity->State.GetFrame() == FRAME_takeoff_16)
 	{
-		CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
+		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
 
 		Thinkable->NextThink = Level.Frame + 1;
 		// NOTE: DO FREE
@@ -1070,7 +1070,7 @@ void CFixbot::FlyVertical2 ()
 	
 	if (subtract.Length() < 32)
 	{
-		CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(Entity->GoalEntity);
+		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
 
 		Thinkable->NextThink = Level.Frame + 1;
 		// NOTE: DO FREE
@@ -1121,7 +1121,7 @@ void CFixbot::Attack ()
 		CurrentMove = &FixbotMoveAttack2;
 }
 
-void CFixbot::Pain (CBaseEntity *Other, sint32 Damage)
+void CFixbot::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Level.Frame < PainDebounceTime)
 		return;
@@ -1132,7 +1132,7 @@ void CFixbot::Pain (CBaseEntity *Other, sint32 Damage)
 	CurrentMove = (Damage <= 10) ? &FixbotMovePain3 : ((Damage <= 25) ? &FixbotMovePain2 : &FixbotMovePain1);
 }
 
-void CFixbot::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CFixbot::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->BecomeExplosion (false);

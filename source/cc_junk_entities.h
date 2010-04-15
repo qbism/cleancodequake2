@@ -34,11 +34,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_JUNK_ENTITIES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_JUNK_ENTITIES_H
 
-class CJunkEntity : public virtual CBaseEntity
+class IJunkEntity : public virtual IBaseEntity
 {
 public:
-	CJunkEntity ();
-	CJunkEntity (sint32 Index);
+	IJunkEntity ();
+	IJunkEntity (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
@@ -51,7 +51,7 @@ public:
 	void Die (); // CALL THIS WHEN A JUNK IS FREED INSTEAD OF FREE()!
 };
 
-class CGibEntity : public CJunkEntity, public CTossProjectile, public CThinkableEntity
+class CGibEntity : public IJunkEntity, public ITossProjectile, public IThinkableEntity
 {
 public:
 	CGibEntity ();
@@ -61,14 +61,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
-		CBounceProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
-		CBounceProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
 	}
 
 	void ClipGibVelocity ();
@@ -76,7 +76,7 @@ public:
 	void Think ();
 
 	bool Run ();
-	static void Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
+	static void Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
 };
 
 void Init_Junk();

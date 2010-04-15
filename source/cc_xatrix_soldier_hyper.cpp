@@ -39,17 +39,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_tent.h"
 
 CBlueBlasterProjectile::CBlueBlasterProjectile () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CBlueBlasterProjectile::CBlueBlasterProjectile (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -60,7 +60,7 @@ void CBlueBlasterProjectile::Think ()
 	Free();
 }
 
-void CBlueBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CBlueBlasterProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -74,15 +74,15 @@ void CBlueBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSur
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
 	else
 		CBlasterSplash(State.GetOrigin(), plane ? plane->normal : vec3fOrigin, BL_BLUE_HYPERBLASTER).Send();
 
 	Free (); // "delete" the entity
 }
 
-void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
+void CBlueBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, sint32 effect)
 {
 	CBlueBlasterProjectile		*Bolt = QNewEntityOf CBlueBlasterProjectile;
@@ -124,7 +124,7 @@ void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir
 
 bool CBlueBlasterProjectile::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CSoldierHyper::CSoldierHyper (uint32 ID) :
@@ -266,7 +266,7 @@ void CSoldierHyper::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			CBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);

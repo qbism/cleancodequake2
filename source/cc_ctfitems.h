@@ -44,7 +44,7 @@ public:
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache, sint32 team);
 
-	CItemEntity *DropItem (CBaseEntity *Entity);
+	CItemEntity *DropItem (IBaseEntity *Entity);
 
 	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
 	void	Drop (CPlayerEntity *Player);

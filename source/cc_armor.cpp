@@ -146,13 +146,13 @@ class CArmorEntity : public CItemEntity
 {
 public:
 	CArmorEntity() :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity ()
 	  {
 	  };
 
 	CArmorEntity (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CItemEntity (Index)
 	  {
 	  };

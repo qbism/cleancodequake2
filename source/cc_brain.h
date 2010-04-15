@@ -101,15 +101,15 @@ public:
 	void Duck_Hold ();
 	void Duck_Up ();
 
-	void Dodge (CBaseEntity *Attacker, float eta);
+	void Dodge (IBaseEntity *Attacker, float eta);
 #else
-	void Dodge (CBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
-	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 };

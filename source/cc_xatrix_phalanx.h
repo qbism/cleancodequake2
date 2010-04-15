@@ -48,7 +48,7 @@ public:
 	WEAPON_CLASS_DEFS (CPhalanx);
 };
 
-class CPhalanxPlasma : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CPhalanxPlasma : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage, RadiusDamage;
@@ -65,9 +65,9 @@ public:
 		File.Write<sint32> (RadiusDamage);
 		File.Write<float> (DamageRadius);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -76,15 +76,15 @@ public:
 		RadiusDamage = File.Read<sint32> ();
 		DamageRadius = File.Read<float> ();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	static CPhalanxPlasma *Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+	static CPhalanxPlasma *Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 									sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage);
 
 	bool Run ();

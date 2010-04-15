@@ -33,48 +33,48 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CHurtableEntity::CHurtableEntity () :
-CBaseEntity(),
+IHurtableEntity::IHurtableEntity () :
+IBaseEntity(),
 CanTakeDamage (false)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
 
-CHurtableEntity::CHurtableEntity (sint32 Index) :
-CBaseEntity(Index),
+IHurtableEntity::IHurtableEntity (sint32 Index) :
+IBaseEntity(Index),
 CanTakeDamage (false)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
 
-ENTITYFIELDS_BEGIN(CHurtableEntity)
+ENTITYFIELDS_BEGIN(IHurtableEntity)
 {
-	CEntityField ("health", EntityMemberOffset(CHurtableEntity,Health), FT_INT | FT_SAVABLE),
+	CEntityField ("health", EntityMemberOffset(IHurtableEntity,Health), FT_INT | FT_SAVABLE),
 
-	CEntityField ("CanTakeDamage", EntityMemberOffset(CHurtableEntity,CanTakeDamage), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("DeadFlag", EntityMemberOffset(CHurtableEntity,DeadFlag), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MaxHealth", EntityMemberOffset(CHurtableEntity,MaxHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("GibHealth", EntityMemberOffset(CHurtableEntity,GibHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("CanTakeDamage", EntityMemberOffset(IHurtableEntity,CanTakeDamage), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("DeadFlag", EntityMemberOffset(IHurtableEntity,DeadFlag), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MaxHealth", EntityMemberOffset(IHurtableEntity,MaxHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("GibHealth", EntityMemberOffset(IHurtableEntity,GibHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 };
-ENTITYFIELDS_END(CHurtableEntity)
+ENTITYFIELDS_END(IHurtableEntity)
 
-bool			CHurtableEntity::ParseField (const char *Key, const char *Value)
+bool			IHurtableEntity::ParseField (const char *Key, const char *Value)
 {
-	if (CheckFields<CHurtableEntity> (this, Key, Value))
+	if (CheckFields<IHurtableEntity> (this, Key, Value))
 		return true;
 
 	// Couldn't find it here
 	return false;
 };
 
-void			CHurtableEntity::SaveFields (CFile &File)
+void			IHurtableEntity::SaveFields (CFile &File)
 {
-	SaveEntityFields<CHurtableEntity> (this, File);
+	SaveEntityFields<IHurtableEntity> (this, File);
 };
 
-void			CHurtableEntity::LoadFields (CFile &File)
+void			IHurtableEntity::LoadFields (CFile &File)
 {
-	LoadEntityFields<CHurtableEntity> (this, File);
+	LoadEntityFields<IHurtableEntity> (this, File);
 };
 
 std::string ClientTeam (CPlayerEntity *Player)
@@ -103,10 +103,10 @@ bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 	return ClientTeam (Player1) == ClientTeam (Player2);
 }
 
-bool CHurtableEntity::CanDamage (CBaseEntity *Inflictor)
+bool IHurtableEntity::CanDamage (IBaseEntity *Inflictor)
 {
 // bmodels need special checking because their origin is 0,0,0
-	if ((EntityFlags & ENT_PHYSICS) && ((entity_cast<CPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
+	if ((EntityFlags & ENT_PHYSICS) && ((entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
 	{
 		vec3f dest = (GetAbsMin() + GetAbsMax()) * 0.5f;
 		CTrace trace (Inflictor->State.GetOrigin(), dest, Inflictor, CONTENTS_MASK_SOLID);
@@ -135,7 +135,7 @@ bool CHurtableEntity::CanDamage (CBaseEntity *Inflictor)
 	return false;
 }
 
-bool CHurtableEntity::CheckTeamDamage (CBaseEntity *Attacker)
+bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 {
 #if CLEANCTF_ENABLED
 //ZOID
@@ -155,7 +155,7 @@ bool CHurtableEntity::CheckTeamDamage (CBaseEntity *Attacker)
 
 #include "cc_tent.h"
 
-sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
+sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
 {
 	if (!Damage)
 		return 0;
@@ -244,7 +244,7 @@ sint32 CHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	return Saved;
 }
 
-void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Health < -999)
 		Health = -999;
@@ -325,16 +325,16 @@ void CHurtableEntity::Killed (CBaseEntity *Inflictor, CBaseEntity *Attacker, sin
 	if ((EntityFlags & ENT_MONSTER) && (!DeadFlag))
 	{
 		if (EntityFlags & ENT_TOUCHABLE)
-			(entity_cast<CTouchableEntity>(this))->Touchable = false;
+			(entity_cast<ITouchableEntity>(this))->Touchable = false;
 		if (EntityFlags & ENT_MONSTER)
 			(entity_cast<CMonsterEntity>(this))->Monster->MonsterDeathUse();
 	}
 
-	if (((EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(this)->CanTakeDamage))
-		(entity_cast<CHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, point);
+	if (((EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(this)->CanTakeDamage))
+		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, point);
 }
 
-void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
 		CBlood(point, normal).Send();
@@ -343,7 +343,7 @@ void CHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sin
 }
 
 bool LastPelletShot = true;
-void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
+void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 								vec3f dir, vec3f point, vec3f normal, sint32 Damage,
 								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
 {
@@ -442,7 +442,7 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 // figure momentum add
 	if (knockback && !(dflags & DAMAGE_NO_KNOCKBACK) && (EntityFlags & ENT_PHYSICS))
 	{
-		CPhysicsEntity *Phys = entity_cast<CPhysicsEntity>(this);
+		IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(this);
 		if (!(Phys->PhysicsType == PHYSICS_NONE ||
 			Phys->PhysicsType == PHYSICS_BOUNCE ||
 			Phys->PhysicsType == PHYSICS_PUSH ||
@@ -615,40 +615,40 @@ void CHurtableEntity::TakeDamage (CBaseEntity *Inflictor, CBaseEntity *Attacker,
 	}
 }
 	
-void CHurtableEntity::TakeDamage (CBaseEntity *targ, CBaseEntity *Inflictor,
-								CBaseEntity *Attacker, vec3f dir, vec3f point,
+void IHurtableEntity::TakeDamage (IBaseEntity *targ, IBaseEntity *Inflictor,
+								IBaseEntity *Attacker, vec3f dir, vec3f point,
 								vec3f normal, sint32 Damage, sint32 knockback,
 								sint32 dflags, EMeansOfDeath mod)
 {
-	if ((targ->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(targ)->CanTakeDamage)
-		(entity_cast<CHurtableEntity>(targ))->TakeDamage (Inflictor, Attacker, dir, point, normal, Damage, knockback, dflags, mod);
+	if ((targ->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(targ)->CanTakeDamage)
+		(entity_cast<IHurtableEntity>(targ))->TakeDamage (Inflictor, Attacker, dir, point, normal, Damage, knockback, dflags, mod);
 }
 
-CThinkableEntity::CThinkableEntity () :
-CBaseEntity()
+IThinkableEntity::IThinkableEntity () :
+IBaseEntity()
 {
 	EntityFlags |= ENT_THINKABLE;
 };
 
-CThinkableEntity::CThinkableEntity (sint32 Index) :
-CBaseEntity(Index)
+IThinkableEntity::IThinkableEntity (sint32 Index) :
+IBaseEntity(Index)
 {
 	EntityFlags |= ENT_THINKABLE;
 };
 
-void CThinkableEntity::SaveFields (CFile &File)
+void IThinkableEntity::SaveFields (CFile &File)
 {
 	// Save NextThink
 	File.Write<FrameNumber_t> (NextThink);
 };
 
-void CThinkableEntity::LoadFields (CFile &File)
+void IThinkableEntity::LoadFields (CFile &File)
 {
 	// Load NextThink
 	NextThink = File.Read<FrameNumber_t> ();
 };
 
-void CThinkableEntity::RunThink ()
+void IThinkableEntity::RunThink ()
 {
 	if (NextThink <= 0 || NextThink > Level.Frame)
 		return;
@@ -657,34 +657,34 @@ void CThinkableEntity::RunThink ()
 	Think ();
 }
 
-CTouchableEntity::CTouchableEntity () :
-CBaseEntity()
+ITouchableEntity::ITouchableEntity () :
+IBaseEntity()
 {
 	EntityFlags |= ENT_TOUCHABLE;
 };
 
-CTouchableEntity::CTouchableEntity (sint32 Index) :
-CBaseEntity(Index)
+ITouchableEntity::ITouchableEntity (sint32 Index) :
+IBaseEntity(Index)
 {
 	EntityFlags |= ENT_TOUCHABLE;
 };
 
-void CTouchableEntity::SaveFields (CFile &File)
+void ITouchableEntity::SaveFields (CFile &File)
 {
 	File.Write<bool> (Touchable);
 };
 
-void CTouchableEntity::LoadFields (CFile &File)
+void ITouchableEntity::LoadFields (CFile &File)
 {
 	Touchable = File.Read<bool> ();
 };
 
-void CTouchableEntity::Touch(CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void ITouchableEntity::Touch(IBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 {
 }
 
-CPhysicsEntity::CPhysicsEntity () :
-CBaseEntity(),
+IPhysicsEntity::IPhysicsEntity () :
+IBaseEntity(),
 GravityMultiplier(1.0f),
 PhysicsFlags(0),
 DampeningEffect(1, 1, 1),
@@ -695,8 +695,8 @@ GravityVector(0, 0, -1)
 	PhysicsType = PHYSICS_NONE;
 };
 
-CPhysicsEntity::CPhysicsEntity (sint32 Index) :
-CBaseEntity(Index),
+IPhysicsEntity::IPhysicsEntity (sint32 Index) :
+IBaseEntity(Index),
 GravityMultiplier(1.0f),
 PhysicsFlags(0),
 DampeningEffect(1, 1, 1),
@@ -707,7 +707,7 @@ GravityVector(0, 0, -1)
 	PhysicsType = PHYSICS_NONE;
 };
 
-void CPhysicsEntity::AddGravity()
+void IPhysicsEntity::AddGravity()
 {
 	if (GravityVector[2] > 0)
 		Velocity = Velocity.MultiplyAngles (GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f, GravityVector);
@@ -715,7 +715,7 @@ void CPhysicsEntity::AddGravity()
 		Velocity.Z -= GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f;
 }
 
-CTrace CPhysicsEntity::PushEntity (vec3f &push)
+CTrace IPhysicsEntity::PushEntity (vec3f &push)
 {
 	vec3f		Start = State.GetOrigin();
 	vec3f		End = Start + push;
@@ -750,14 +750,14 @@ CTrace CPhysicsEntity::PushEntity (vec3f &push)
 	return Trace;
 }
 
-void CPhysicsEntity::Impact (CTrace *trace)
+void IPhysicsEntity::Impact (CTrace *trace)
 {
 	if (!trace->ent->Entity)
 		return;
 
 	if (GetSolid() != SOLID_NOT && (EntityFlags & ENT_TOUCHABLE))
 	{
-		CTouchableEntity *Touched = entity_cast<CTouchableEntity>(this);
+		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(this);
 
 		if (Touched->Touchable)
 			Touched->Touch (trace->Ent, &trace->plane, trace->surface);
@@ -765,21 +765,21 @@ void CPhysicsEntity::Impact (CTrace *trace)
 
 	if ((trace->Ent->EntityFlags & ENT_TOUCHABLE) && trace->Ent->GetSolid() != SOLID_NOT)
 	{
-		CTouchableEntity *Touched = entity_cast<CTouchableEntity>(trace->Ent);
+		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(trace->Ent);
 
 		if (Touched->Touchable)
 			Touched->Touch (this, NULL, NULL);
 	}
 }
 
-void CPhysicsEntity::PushInDirection (vec3f vel)
+void IPhysicsEntity::PushInDirection (vec3f vel)
 {
-	if ((EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(this)->Health > 0))
+	if ((EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(this)->Health > 0))
 		Velocity = vel;
 }
 
-CBounceProjectile::CBounceProjectile () :
-  CPhysicsEntity (),
+IBounceProjectile::IBounceProjectile () :
+  IPhysicsEntity (),
   backOff(1.5f),
   AffectedByGravity(true),
   StopOnEqualPlane(true),
@@ -788,9 +788,9 @@ CBounceProjectile::CBounceProjectile () :
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
-CBounceProjectile::CBounceProjectile (sint32 Index) :
-  CBaseEntity(Index),
-  CPhysicsEntity (Index),
+IBounceProjectile::IBounceProjectile (sint32 Index) :
+  IBaseEntity(Index),
+  IPhysicsEntity (Index),
   backOff(1.5f),
   AffectedByGravity(true),
   StopOnEqualPlane(true),
@@ -800,7 +800,7 @@ CBounceProjectile::CBounceProjectile (sint32 Index) :
 }
 
 sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce);
-bool CBounceProjectile::Run ()
+bool IBounceProjectile::Run ()
 {
 	CTrace	trace;
 	vec3f		move, old_origin;
@@ -870,7 +870,7 @@ bool CBounceProjectile::Run ()
 		World->PlayPositionedSound (State.GetOrigin (), CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 
 // move teamslaves
-	for (CBaseEntity *slave = Team.Chain; slave; slave = slave->Team.Chain)
+	for (IBaseEntity *slave = Team.Chain; slave; slave = slave->Team.Chain)
 	{
 		slave->State.GetOrigin() = State.GetOrigin();
 		slave->Link ();
@@ -878,13 +878,13 @@ bool CBounceProjectile::Run ()
 
 	// Run physics modifiers
 	if (PhysicsFlags & PHYSICFLAG_BUOYANCY)
-		entity_cast<CBuoyancyPhysics>(this)->RunBouyancy ();
+		entity_cast<IBuoyancyPhysics>(this)->RunBouyancy ();
 
 	if (PhysicsFlags & PHYSICFLAG_RESISTANCE)
-		entity_cast<CResistancePhysics>(this)->RunResistance ();
+		entity_cast<IResistancePhysics>(this)->RunResistance ();
 
 	if (PhysicsFlags & PHYSICFLAG_AERODYNAMICS)
-		entity_cast<CAerodynamicPhysics>(this)->RunAerodynamics();
+		entity_cast<IAerodynamicPhysics>(this)->RunAerodynamics();
 
 	// Use data
 	Velocity *= DampeningEffect;
@@ -899,54 +899,54 @@ bool CBounceProjectile::Run ()
 	return true;
 }
 
-CTossProjectile::CTossProjectile () :
-  CBounceProjectile ()
+ITossProjectile::ITossProjectile () :
+  IBounceProjectile ()
 {
 	backOff = 1.0f;
 
 	PhysicsType = PHYSICS_TOSS;
 }
 
-CTossProjectile::CTossProjectile (sint32 Index) :
-  CBaseEntity (Index),
-  CBounceProjectile (Index)
+ITossProjectile::ITossProjectile (sint32 Index) :
+  IBaseEntity (Index),
+  IBounceProjectile (Index)
 {
 	backOff = 1.0f;
 
 	PhysicsType = PHYSICS_TOSS;
 }
 
-CFlyMissileProjectile::CFlyMissileProjectile () :
-  CBounceProjectile ()
+IFlyMissileProjectile::IFlyMissileProjectile () :
+  IBounceProjectile ()
 {
 	AffectedByGravity = false;
 	backOff = 1.0f;
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
-CFlyMissileProjectile::CFlyMissileProjectile (sint32 Index) :
-  CBaseEntity (Index),
-  CBounceProjectile (Index)
+IFlyMissileProjectile::IFlyMissileProjectile (sint32 Index) :
+  IBaseEntity (Index),
+  IBounceProjectile (Index)
 {
 	AffectedByGravity = false;
 	backOff = 1.0f;
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
-CStepPhysics::CStepPhysics () :
-  CPhysicsEntity ()
+IStepPhysics::IStepPhysics () :
+  IPhysicsEntity ()
 {
 	PhysicsType = PHYSICS_STEP;
 }
 
-CStepPhysics::CStepPhysics (sint32 Index) :
-  CBaseEntity (Index),
-  CPhysicsEntity (Index)
+IStepPhysics::IStepPhysics (sint32 Index) :
+  IBaseEntity (Index),
+  IPhysicsEntity (Index)
 {
 	PhysicsType = PHYSICS_STEP;
 }
 
-void CStepPhysics::CheckGround ()
+void IStepPhysics::CheckGround ()
 {
 	if (Velocity.Z > 100)
 	{
@@ -980,7 +980,7 @@ void CStepPhysics::CheckGround ()
 #define SV_FRICTION			6
 #define SV_WATERFRICTION	1
 
-void CStepPhysics::AddRotationalFriction ()
+void IStepPhysics::AddRotationalFriction ()
 {
 	State.GetAngles() = State.GetAngles().MultiplyAngles (0.1f, AngularVelocity);
 
@@ -1003,7 +1003,7 @@ void CStepPhysics::AddRotationalFriction ()
 }
 
 #define MAX_CLIP_PLANES	5
-sint32 CStepPhysics::FlyMove (float time, sint32 mask)
+sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 {
 	edict_t		*hit;
 	sint32			i, j, blocked = 0, numplanes = 0, numbumps = 4;
@@ -1122,7 +1122,7 @@ sint32 CStepPhysics::FlyMove (float time, sint32 mask)
 	return blocked;
 }
 
-bool CStepPhysics::Run ()
+bool IStepPhysics::Run ()
 {
 	bool		hitsound = false;
 	float		speed, newspeed, control;
@@ -1237,15 +1237,15 @@ bool CStepPhysics::Run ()
 }
 
 // Move physics
-CPushPhysics::CPushPhysics() :
-  CPhysicsEntity()
+IPushPhysics::IPushPhysics() :
+  IPhysicsEntity()
 {
 	PhysicsType = PHYSICS_PUSH;
 };
 
-CPushPhysics::CPushPhysics(sint32 Index) :
-  CBaseEntity (Index),
-  CPhysicsEntity(Index)
+IPushPhysics::IPushPhysics(sint32 Index) :
+  IBaseEntity (Index),
+  IPhysicsEntity(Index)
 {
 	PhysicsType = PHYSICS_PUSH;
 };
@@ -1253,7 +1253,7 @@ CPushPhysics::CPushPhysics(sint32 Index) :
 class CPushed
 {
 public:
-	CBaseEntity		*Entity;
+	IBaseEntity		*Entity;
 	float			DeltaYaw;
 	vec3f			Origin;
 	vec3f			Angles;
@@ -1266,7 +1266,7 @@ public:
 	{
 	};
 
-	CPushed (CBaseEntity *Entity, float DeltaYaw, vec3f Origin, vec3f Angles) :
+	CPushed (IBaseEntity *Entity, float DeltaYaw, vec3f Origin, vec3f Angles) :
 	Entity(Entity),
 	DeltaYaw(DeltaYaw),
 	Origin(Origin),
@@ -1275,7 +1275,7 @@ public:
 	};
 };
 
-CBaseEntity *obstacle;
+IBaseEntity *obstacle;
 
 /*
 ============
@@ -1283,7 +1283,7 @@ SV_TestEntityPosition
 
 ============
 */
-inline CBaseEntity *SV_TestEntityPosition (CBaseEntity *Entity)
+inline IBaseEntity *SV_TestEntityPosition (IBaseEntity *Entity)
 {
 	return (CTrace(Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), Entity->State.GetOrigin(), Entity, (Entity->GetClipmask()) ? Entity->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
 }
@@ -1321,7 +1321,7 @@ sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
 
 typedef std::vector<CPushed> TPushedList;
 
-bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
+bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 {
 	// clamp the move to 1/8 units, so the position will
 	// be accurate for client side prediction
@@ -1352,14 +1352,14 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 	// see if any solid entities are inside the final position
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Check = (*it)->Entity;
+		IBaseEntity *Check = (*it)->Entity;
 
 		if (!Check || !Check->GetInUse())
 			continue;
 
 		if (Check->EntityFlags & ENT_PHYSICS)
 		{
-			CPhysicsEntity *CheckPhys = entity_cast<CPhysicsEntity>(Check);
+			IPhysicsEntity *CheckPhys = entity_cast<IPhysicsEntity>(Check);
 			if (CheckPhys->PhysicsType == PHYSICS_PUSH
 				|| CheckPhys->PhysicsType == PHYSICS_STOP
 				|| CheckPhys->PhysicsType == PHYSICS_NONE
@@ -1392,7 +1392,7 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 				continue;
 		}
 
-		if ((entity_cast<CPhysicsEntity>(Entity)->PhysicsType == PHYSICS_PUSH) || (Check->GroundEntity == Entity))
+		if ((entity_cast<IPhysicsEntity>(Entity)->PhysicsType == PHYSICS_PUSH) || (Check->GroundEntity == Entity))
 		{
 			// move this entity
 			CPushed PushedEntity (Check, 0, Check->State.GetOrigin(), Check->State.GetAngles());
@@ -1473,10 +1473,10 @@ bool Push (TPushedList &Pushed, CBaseEntity *Entity, vec3f &move, vec3f &amove)
 	return true;
 }
 
-bool CPushPhysics::Run ()
+bool IPushPhysics::Run ()
 {
 	vec3f					move, amove;
-	CBaseEntity				*part;
+	IBaseEntity				*part;
 	TPushedList				Pushed;
 
 	// if not a team captain, so movement will be handled elsewhere
@@ -1491,7 +1491,7 @@ bool CPushPhysics::Run ()
 		if (!(part->EntityFlags & ENT_PHYSICS))
 			continue;
 
-		CPhysicsEntity *Phys = entity_cast<CPhysicsEntity>(part);
+		IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(part);
 
 		if ((Phys->Velocity.X || Phys->Velocity.Y || Phys->Velocity.Z) ||
 			(Phys->AngularVelocity.X || Phys->AngularVelocity.Y || Phys->AngularVelocity.Z))
@@ -1515,11 +1515,11 @@ bool CPushPhysics::Run ()
 	if (part)
 	{
 		// the move failed, bump all nextthink times and back out moves
-		for (CBaseEntity *mv = this; mv; mv = mv->Team.Chain)
+		for (IBaseEntity *mv = this; mv; mv = mv->Team.Chain)
 		{
 			if (mv->EntityFlags & ENT_THINKABLE)
 			{
-				CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(mv);
+				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(mv);
 
 				if (Thinkable->NextThink > 0)
 					Thinkable->NextThink += FRAMETIME;
@@ -1529,7 +1529,7 @@ bool CPushPhysics::Run ()
 		// if the pusher has a "blocked" function, call it
 		// otherwise, just stay in place until the obstacle is gone
 		if ((part->EntityFlags & ENT_BLOCKABLE) && obstacle)
-			(entity_cast<CBlockableEntity>(part))->Blocked (obstacle);
+			(entity_cast<IBlockableEntity>(part))->Blocked (obstacle);
 	}
 	else
 	{
@@ -1538,7 +1538,7 @@ bool CPushPhysics::Run ()
 		{
 			if (part->EntityFlags & ENT_THINKABLE)
 			{
-				CThinkableEntity *Thinkable = entity_cast<CThinkableEntity>(part);
+				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(part);
 				Thinkable->RunThink ();
 			}
 		}
@@ -1549,37 +1549,37 @@ bool CPushPhysics::Run ()
 
 
 
-CStopPhysics::CStopPhysics () :
-CPushPhysics()
+IStopPhysics::IStopPhysics () :
+IPushPhysics()
 {
 	PhysicsType = PHYSICS_STOP;
 };
 
-CStopPhysics::CStopPhysics (sint32 Index) :
-CPushPhysics(Index)
+IStopPhysics::IStopPhysics (sint32 Index) :
+IPushPhysics(Index)
 {
 	PhysicsType = PHYSICS_STOP;
 };
 
-bool CStopPhysics::Run ()
+bool IStopPhysics::Run ()
 {
-	return CPushPhysics::Run ();
+	return IPushPhysics::Run ();
 }
 
-CBlockableEntity::CBlockableEntity () :
-CBaseEntity ()
-{
-	EntityFlags |= ENT_BLOCKABLE;
-}
-
-CBlockableEntity::CBlockableEntity (sint32 Index) :
-CBaseEntity (Index)
+IBlockableEntity::IBlockableEntity () :
+IBaseEntity ()
 {
 	EntityFlags |= ENT_BLOCKABLE;
 }
 
-CUsableEntity::CUsableEntity () :
-CBaseEntity (),
+IBlockableEntity::IBlockableEntity (sint32 Index) :
+IBaseEntity (Index)
+{
+	EntityFlags |= ENT_BLOCKABLE;
+}
+
+IUsableEntity::IUsableEntity () :
+IBaseEntity (),
 NoiseIndex (0),
 Delay (0),
 Usable (true)
@@ -1587,8 +1587,8 @@ Usable (true)
 	EntityFlags |= ENT_USABLE;
 }
 
-CUsableEntity::CUsableEntity (sint32 Index) :
-CBaseEntity (Index),
+IUsableEntity::IUsableEntity (sint32 Index) :
+IBaseEntity (Index),
 NoiseIndex (0),
 Delay (0),
 Usable (true)
@@ -1596,51 +1596,51 @@ Usable (true)
 	EntityFlags |= ENT_USABLE;
 }
 
-ENTITYFIELDS_BEGIN(CUsableEntity)
+ENTITYFIELDS_BEGIN(IUsableEntity)
 {
-	CEntityField ("message",	EntityMemberOffset(CUsableEntity,Message),			FT_STRING | FT_SAVABLE),
-	CEntityField ("noise",		EntityMemberOffset(CUsableEntity,NoiseIndex),		FT_SOUND_INDEX | FT_SAVABLE),
-	CEntityField ("delay",		EntityMemberOffset(CUsableEntity,Delay),			FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("target",		EntityMemberOffset(CUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("killtarget",	EntityMemberOffset(CUsableEntity,KillTarget),		FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("pathtarget", EntityMemberOffset(CUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("message",	EntityMemberOffset(IUsableEntity,Message),			FT_STRING | FT_SAVABLE),
+	CEntityField ("noise",		EntityMemberOffset(IUsableEntity,NoiseIndex),		FT_SOUND_INDEX | FT_SAVABLE),
+	CEntityField ("delay",		EntityMemberOffset(IUsableEntity,Delay),			FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("target",		EntityMemberOffset(IUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("killtarget",	EntityMemberOffset(IUsableEntity,KillTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("pathtarget", EntityMemberOffset(IUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 
-	CEntityField ("Usable", 	EntityMemberOffset(CUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("User", 		EntityMemberOffset(CUsableEntity,User),		FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Usable", 	EntityMemberOffset(IUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("User", 		EntityMemberOffset(IUsableEntity,User),		FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
-ENTITYFIELDS_END(CUsableEntity)
+ENTITYFIELDS_END(IUsableEntity)
 
-bool			CUsableEntity::ParseField (const char *Key, const char *Value)
+bool			IUsableEntity::ParseField (const char *Key, const char *Value)
 {
-	if (CheckFields<CUsableEntity> (this, Key, Value))
+	if (CheckFields<IUsableEntity> (this, Key, Value))
 		return true;
 
 	// Couldn't find it here
 	return false;
 };
 
-void			CUsableEntity::SaveFields (CFile &File)
+void			IUsableEntity::SaveFields (CFile &File)
 {
-	SaveEntityFields <CUsableEntity> (this, File);
+	SaveEntityFields <IUsableEntity> (this, File);
 };
 
-void			CUsableEntity::LoadFields (CFile &File)
+void			IUsableEntity::LoadFields (CFile &File)
 {
-	LoadEntityFields <CUsableEntity> (this, File);
+	LoadEntityFields <IUsableEntity> (this, File);
 };
 
-class CDelayedUse : public CThinkableEntity, public CUsableEntity
+class CDelayedUse : public IThinkableEntity, public IUsableEntity
 {
 public:
 	CDelayedUse () :
-	  CBaseEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IThinkableEntity ()
 	  {
 	  };
 
 	CDelayedUse (sint32 Index) :
-	  CBaseEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IThinkableEntity (Index)
 	  {
 	  };
 
@@ -1648,17 +1648,17 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *, CBaseEntity *)
+	void Use (IBaseEntity *, IBaseEntity *)
 	{
 	};
 
@@ -1671,7 +1671,7 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
-void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
+void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 {
 //
 // check for a delay
@@ -1711,8 +1711,8 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 //
 	if (KillTarget)
 	{
-		CMapEntity *t = NULL;
-		while ((t = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (t, KillTarget)) != NULL)
+		IMapEntity *t = NULL;
+		while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget)) != NULL)
 		{
 #if ROGUE_FEATURES
 			// if this entity is part of a train, cleanly remove it
@@ -1720,7 +1720,7 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 			{
 				if (t->Team.Master)
 				{
-					CBaseEntity *master = t->Team.Master;
+					IBaseEntity *master = t->Team.Master;
 					bool done = false;
 					while (!done)
 					{
@@ -1750,8 +1750,8 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 //
 	if (Target)
 	{
-		CMapEntity *Ent = NULL;
-		while ((Ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (Ent, Target)) != NULL)
+		IMapEntity *Ent = NULL;
+		while ((Ent = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target)) != NULL)
 		{
 			if (!Ent)
 				continue;
@@ -1763,7 +1763,7 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 
 			if (Ent->EntityFlags & ENT_USABLE)
 			{
-				CUsableEntity *Used = entity_cast<CUsableEntity>(Ent);
+				IUsableEntity *Used = entity_cast<IUsableEntity>(Ent);
 				
 				if (Used == this)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
@@ -1782,21 +1782,21 @@ void CUsableEntity::UseTargets (CBaseEntity *Activator, std::string &Message)
 }
 
 // Buoyancy class
-CBuoyancyPhysics::CBuoyancyPhysics () :
-  CBaseEntity (),
-  CPhysicsEntity ()
+IBuoyancyPhysics::IBuoyancyPhysics () :
+  IBaseEntity (),
+  IPhysicsEntity ()
 {
 	PhysicsFlags |= PHYSICFLAG_BUOYANCY;
 };
 
-CBuoyancyPhysics::CBuoyancyPhysics (sint32 Index) :
-  CBaseEntity (Index),
-  CPhysicsEntity (Index)
+IBuoyancyPhysics::IBuoyancyPhysics (sint32 Index) :
+  IBaseEntity (Index),
+  IPhysicsEntity (Index)
 {
 	PhysicsFlags |= PHYSICFLAG_BUOYANCY;
 };
 
-void CBuoyancyPhysics::RunBouyancy ()
+void IBuoyancyPhysics::RunBouyancy ()
 {
 	EBrushContents Contents;
 	float EndPower = BuoyancyPowerAir;
@@ -1847,7 +1847,7 @@ void CBuoyancyPhysics::RunBouyancy ()
 	VelocityEffect.Clear();
 };
 
-void CBuoyancyPhysics::SetBuoyancy (float Power, float ModAir, float ModWater)
+void IBuoyancyPhysics::SetBuoyancy (float Power, float ModAir, float ModWater)
 {
 	float BuoyPower = Power / Mass;
 
@@ -1856,21 +1856,21 @@ void CBuoyancyPhysics::SetBuoyancy (float Power, float ModAir, float ModWater)
 };
 
 // Resistance class
-CResistancePhysics::CResistancePhysics () :
-  CBaseEntity (),
-  CPhysicsEntity ()
+IResistancePhysics::IResistancePhysics () :
+  IBaseEntity (),
+  IPhysicsEntity ()
 {
 	PhysicsFlags |= PHYSICFLAG_RESISTANCE;
 };
 
-CResistancePhysics::CResistancePhysics (sint32 Index) :
-  CBaseEntity (Index),
-  CPhysicsEntity (Index)
+IResistancePhysics::IResistancePhysics (sint32 Index) :
+  IBaseEntity (Index),
+  IPhysicsEntity (Index)
 {
 	PhysicsFlags |= PHYSICFLAG_RESISTANCE;
 };
 
-void CResistancePhysics::RunResistance ()
+void IResistancePhysics::RunResistance ()
 {
 	float ResistPower = ResistPowerAir;
 	EBrushContents Contents = PointContents(State.GetOrigin());
@@ -1883,28 +1883,28 @@ void CResistancePhysics::RunResistance ()
 	ADampeningEffect *= ResistPower;
 };
 
-void CResistancePhysics::SetResistance (float Power, float ModAir, float ModWater)
+void IResistancePhysics::SetResistance (float Power, float ModAir, float ModWater)
 {
 	ResistPowerAir = 1.0f / (((Power * ModAir * 10.0f) / Mass) + 1.0f);
 	ResistPowerWater = 1.0f / (((Power * ModWater * 10.0f) / Mass) + 1.0f);
 };
 
 // Aerodynamics class
-CAerodynamicPhysics::CAerodynamicPhysics () :
-  CBaseEntity (),
-  CPhysicsEntity ()
+IAerodynamicPhysics::IAerodynamicPhysics () :
+  IBaseEntity (),
+  IPhysicsEntity ()
 {
 	PhysicsFlags |= PHYSICFLAG_AERODYNAMICS;
 };
 
-CAerodynamicPhysics::CAerodynamicPhysics (sint32 Index) :
-  CBaseEntity (Index),
-  CPhysicsEntity (Index)
+IAerodynamicPhysics::IAerodynamicPhysics (sint32 Index) :
+  IBaseEntity (Index),
+  IPhysicsEntity (Index)
 {
 	PhysicsFlags |= PHYSICFLAG_AERODYNAMICS;
 };
 
-void CAerodynamicPhysics::RunAerodynamics ()
+void IAerodynamicPhysics::RunAerodynamics ()
 {
 	if (Velocity.IsNearlyZero())
 		return;
@@ -1950,7 +1950,7 @@ void CAerodynamicPhysics::RunAerodynamics ()
 	ADampeningEffect *= powf (ADampMult, (float)FRAMETIME / 10);
 };
 
-void CAerodynamicPhysics::SetAerodynamics (float Power)
+void IAerodynamicPhysics::SetAerodynamics (float Power)
 {
 	AeroPower = Power / Mass;
 };

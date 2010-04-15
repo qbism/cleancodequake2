@@ -40,19 +40,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_rogue_prox_launcher.h"
 
 // Prox
-class CProxField : public CTouchableEntity
+class CProxField : public ITouchableEntity
 {
 public:
 	class CProx			*Prox;
 
 	CProxField () :
-	  CTouchableEntity ()
+	  ITouchableEntity ()
 	  {
 	  };
 
 	CProxField (sint32 Index) :
-	  CBaseEntity (Index),
-	  CTouchableEntity (Index)
+	  IBaseEntity (Index),
+	  ITouchableEntity (Index)
 	  {
 	  };
 
@@ -61,7 +61,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CProxField);
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 #define PROX_TIME_TO_LIVE	450		// 450, 300, 150, 100
@@ -71,7 +71,7 @@ public:
 #define PROX_HEALTH			20
 #define	PROX_DAMAGE			90
 
-class CProx : public CBounceProjectile, public CHurtableEntity, public CTouchableEntity, public CThinkableEntity
+class CProx : public IBounceProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
 public:
 	CC_ENUM (uint8, EProxThinkType)
@@ -90,28 +90,28 @@ public:
 	FrameNumber_t		Wait;
 	
 	CProx () :
-	  CBounceProjectile (),
-	  CTouchableEntity (),
-	  CHurtableEntity (),
-	  CThinkableEntity ()
+	  IBounceProjectile (),
+	  ITouchableEntity (),
+	  IHurtableEntity (),
+	  IThinkableEntity ()
 	  {
 	  };
 
 	CProx (sint32 Index) :
-	  CBaseEntity (Index),
-	  CBounceProjectile (Index),
-	  CTouchableEntity (Index),
-	  CHurtableEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IBounceProjectile (Index),
+	  ITouchableEntity (Index),
+	  IHurtableEntity (Index),
+	  IThinkableEntity (Index)
 	  {
 	  };
 
 	void SaveFields (CFile &File)
 	{
-		CBounceProjectile::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 
 		File.Write<EProxThinkType> (ThinkType);
 		File.Write<sint32> ((Field != NULL && Field->GetInUse()) ? Field->State.GetNumber() : -1);
@@ -122,10 +122,10 @@ public:
 
 	void LoadFields (CFile &File)
 	{
-		CBounceProjectile::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 
 		ThinkType = File.Read<EProxThinkType> ();
 
@@ -145,10 +145,10 @@ public:
 
 	bool Run ()
 	{
-		return (PhysicsType == PHYSICS_BOUNCE) ? CBounceProjectile::Run() : false;
+		return (PhysicsType == PHYSICS_BOUNCE) ? IBounceProjectile::Run() : false;
 	}
 
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
 		// if set off by another prox, delay a little (chained explosions)
 		if (Inflictor->ClassName == "prox")
@@ -169,7 +169,7 @@ public:
 		if (Field && Field->GetOwner() == this)
 			Field->Free ();
 
-		CBaseEntity *Owner = this;
+		IBaseEntity *Owner = this;
 		if (Firer)
 		{
 			Owner = Firer;
@@ -207,7 +207,7 @@ public:
 
 	void Open ()
 	{
-		CBaseEntity *search = NULL;
+		IBaseEntity *search = NULL;
 
 		if (State.GetFrame() == 9)	// end of opening animation
 		{
@@ -230,7 +230,7 @@ public:
 				// blow up
 				if (
 					(
-						(((search->EntityFlags & ENT_MONSTER) || (search->EntityFlags & ENT_PLAYER)) && (entity_cast<CHurtableEntity>(search)->Health > 0))	|| 
+						(((search->EntityFlags & ENT_MONSTER) || (search->EntityFlags & ENT_PLAYER)) && (entity_cast<IHurtableEntity>(search)->Health > 0))	|| 
 						(
 							(CvarList[CV_DEATHMATCH].Boolean()) && 
 							(
@@ -288,7 +288,7 @@ public:
 		}
 	}
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (surf && (surf->flags & SURF_TEXINFO_SKY))
 		{
@@ -329,7 +329,7 @@ public:
 				return;
 			}
 
-			if ((Other->EntityFlags & ENT_PHYSICS) && (entity_cast<CPhysicsEntity>(Other)->PhysicsType == PHYSICS_PUSH) && (plane->normal.Z > 0.7f))
+			if ((Other->EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(Other)->PhysicsType == PHYSICS_PUSH) && (plane->normal.Z > 0.7f))
 				StickOK = true;
 
 			float backoff = (Velocity | plane->normal) * 1.5f;
@@ -475,21 +475,21 @@ public:
 
 void CProxField::SaveFields (CFile &File)
 {
-	CTouchableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
 
 	File.Write<sint32> ((Prox != NULL && Prox->GetInUse()) ? Prox->State.GetNumber() : -1);
 };
 
 void CProxField::LoadFields (CFile &File)
 {
-	CTouchableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 
 	sint32 index = File.Read<sint32>();
 	if (index != -1)
 		Prox = entity_cast<CProx>(Game.Entities[index].Entity);
 };
 
-void CProxField::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CProxField::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;

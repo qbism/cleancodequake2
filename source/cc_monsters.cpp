@@ -273,15 +273,15 @@ void AI_SetSightClient ()
 }
 
 CMonsterEntity::CMonsterEntity () :
-CBaseEntity(),
-CMapEntity(),
-CTossProjectile(),
-CPushPhysics(),
-CHurtableEntity(),
-CThinkableEntity(),
-CStepPhysics(),
-CTouchableEntity(),
-CUsableEntity(),
+IBaseEntity(),
+IMapEntity(),
+ITossProjectile(),
+IPushPhysics(),
+IHurtableEntity(),
+IThinkableEntity(),
+IStepPhysics(),
+ITouchableEntity(),
+IUsableEntity(),
 UseState(MONSTERENTITY_THINK_NONE)
 {
 	EntityFlags |= ENT_MONSTER;
@@ -289,15 +289,15 @@ UseState(MONSTERENTITY_THINK_NONE)
 };
 
 CMonsterEntity::CMonsterEntity (sint32 Index) :
-CBaseEntity(Index),
-CMapEntity(Index),
-CTossProjectile(Index),
-CPushPhysics(Index),
-CHurtableEntity(Index),
-CThinkableEntity(Index),
-CStepPhysics(Index),
-CTouchableEntity(Index),
-CUsableEntity(Index),
+IBaseEntity(Index),
+IMapEntity(Index),
+ITossProjectile(Index),
+IPushPhysics(Index),
+IHurtableEntity(Index),
+IThinkableEntity(Index),
+IStepPhysics(Index),
+ITouchableEntity(Index),
+IUsableEntity(Index),
 UseState(MONSTERENTITY_THINK_NONE)
 {
 	EntityFlags |= ENT_MONSTER;
@@ -311,7 +311,7 @@ bool CMonsterEntity::CheckValidity ()
 		Free ();
 		return false;
 	}
-	return CMapEntity::CheckValidity ();
+	return IMapEntity::CheckValidity ();
 }
 
 void CMonsterEntity::Spawn ()
@@ -343,7 +343,7 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CMonsterEntity> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CMonsterEntity::SaveFields (CFile &File)
@@ -358,12 +358,12 @@ void			CMonsterEntity::SaveFields (CFile &File)
 	File.Write<uint32> (Monster->MonsterID);
 
 	SaveEntityFields <CMonsterEntity> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
-	CTossProjectile::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
+	ITossProjectile::SaveFields (File);
 
 	// Write the monster's info last
 	Monster->SaveFields (File);
@@ -377,12 +377,12 @@ void			CMonsterEntity::LoadFields (CFile &File)
 
 	// Let the rest of the entity load first
 	LoadEntityFields <CMonsterEntity> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
-	CTossProjectile::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
+	ITossProjectile::LoadFields (File);
 
 	// Now load the monster info
 	LoadMonsterData (this, tempBuffer, tempId, File);
@@ -402,17 +402,17 @@ void CMonsterEntity::Think ()
 	}
 }
 
-void CMonsterEntity::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMonsterEntity::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Monster->Die (Inflictor, Attacker, Damage, point);
 }
 
-void CMonsterEntity::Pain (CBaseEntity *Other, sint32 Damage)
+void CMonsterEntity::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	Monster->Pain (Other, Damage);
 }
 
-void CMonsterEntity::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CMonsterEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	Monster->Touch (Other, plane, surf);
 }
@@ -468,14 +468,14 @@ bool CMonsterEntity::Run ()
 	switch (PhysicsType)
 	{
 	case PHYSICS_TOSS:
-		return CTossProjectile::Run();
+		return ITossProjectile::Run();
 	case PHYSICS_BOUNCE:
 		backOff = 1.5f;
-		return CBounceProjectile::Run ();
+		return IBounceProjectile::Run ();
 	case PHYSICS_PUSH:
-		return CPushPhysics::Run ();
+		return IPushPhysics::Run ();
 	default:
-		return CStepPhysics::Run ();
+		return IStepPhysics::Run ();
 	};
 }
 
@@ -619,7 +619,7 @@ bool CMonster::WalkMove (float Yaw, float Dist)
 	return MoveStep(vec3f (cosf(Yaw)*Dist, sinf(Yaw)*Dist, 0), true);
 }
 
-bool CMonster::CloseEnough (CBaseEntity *Goal, float Dist)
+bool CMonster::CloseEnough (IBaseEntity *Goal, float Dist)
 {
 	if (Goal->GetAbsMin()[0] > (Entity->GetAbsMax()[0] + Dist) ||
 		Goal->GetAbsMin()[1] > (Entity->GetAbsMax()[1] + Dist) ||
@@ -719,9 +719,9 @@ void CMonster::MonsterStartGo ()
 	if (Entity->Target)
 	{
 		bool		notcombat = false, fixup = false;
-		CMapEntity		*target = NULL;
+		IMapEntity		*target = NULL;
 
-		while ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (target, Entity->Target)) != NULL)
+		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target)) != NULL)
 		{
 			if (strcmp(target->ClassName.c_str(), "point_combat") == 0)
 			{
@@ -740,8 +740,8 @@ void CMonster::MonsterStartGo ()
 	// validate combattarget
 	if (Entity->CombatTarget)
 	{
-		CMapEntity		*target = NULL;
-		while ((target = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (target, Entity->CombatTarget)) != NULL)
+		IMapEntity		*target = NULL;
+		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget)) != NULL)
 		{
 			if (strcmp(target->ClassName.c_str(), "point_combat") != 0)
 				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget);
@@ -750,7 +750,7 @@ void CMonster::MonsterStartGo ()
 
 	if (Entity->Target)
 	{
-		CBaseEntity *Target = CC_PickTarget(Entity->Target);
+		IBaseEntity *Target = CC_PickTarget(Entity->Target);
 
 		if (Target)
 			Entity->GoalEntity = Entity->MoveTarget = Target;
@@ -854,7 +854,7 @@ void CMonster::MonsterTriggeredStart ()
 	Entity->UseState = MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE;
 }
 
-void CMonsterEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	switch (UseState)
 	{
@@ -1024,7 +1024,7 @@ void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sin
 
 // RAFAEL
 CMonsterBeamLaser::CMonsterBeamLaser () :
-CThinkableEntity ()
+IThinkableEntity ()
 {
 };
 
@@ -1036,7 +1036,7 @@ void CMonsterBeamLaser::Think ()
 		return;
 	}
 
-	CBaseEntity	*ignore;
+	IBaseEntity	*ignore;
 	vec3f	start;
 	vec3f	end;
 	const uint8 Count = (MakeEffect) ? 8 : 4;
@@ -1054,10 +1054,10 @@ void CMonsterBeamLaser::Think ()
 		if (!tr.ent->Entity)
 			break;
 
-		CBaseEntity *Entity = tr.ent->Entity;
+		IBaseEntity *Entity = tr.ent->Entity;
 		// hurt it if we can
-		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
-			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
+		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
+			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		if (Damage < 0) // healer ray
 		{
@@ -1181,7 +1181,7 @@ void CMonster::Run ()
 {
 }
 
-void CMonster::Dodge (CBaseEntity *Other, float eta
+void CMonster::Dodge (IBaseEntity *Other, float eta
 #if ROGUE_FEATURES
 		, CTrace *tr
 #endif

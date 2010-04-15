@@ -80,7 +80,7 @@ bool CMonster::FindTarget()
 // but not weapon impact/explosion noises
 
 	bool heardit = false;
-	CBaseEntity *client = NULL;
+	IBaseEntity *client = NULL;
 
 	if ((Level.SightEntityFrame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
@@ -219,7 +219,7 @@ bool CMonster::FindTarget()
 
 void CMonster::MoveToGoal (float Dist)
 {	
-	CBaseEntity *Goal = Entity->GoalEntity;
+	IBaseEntity *Goal = Entity->GoalEntity;
 
 	if (!Entity->GoalEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
 		return;
@@ -403,7 +403,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	return true;
 }
 
-void CMonster::NewChaseDir (CBaseEntity *Enemy, float Dist)
+void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 {
 	if (!Enemy)
 		return;
@@ -517,7 +517,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 bool CMonster::CheckAttack ()
 {
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0))
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -602,7 +602,7 @@ bool CMonster::CheckAttack ()
 	return false;
 }
 
-void CMonster::ReactToDamage (CBaseEntity *Attacker, CBaseEntity *Inflictor)
+void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {
 	if (!(Attacker->EntityFlags & ENT_PLAYER) && !(Attacker->EntityFlags & ENT_MONSTER))
 		return;
@@ -751,7 +751,7 @@ bool CMonster::AI_CheckAttack()
 
 // see if the enemy is dead
 	bool hesDeadJim = false;
-	CHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<CHurtableEntity>(Entity->Enemy) : NULL;
+	IHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Entity->Enemy) : NULL;
 
 	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
 		hesDeadJim = true;
@@ -782,7 +782,7 @@ bool CMonster::AI_CheckAttack()
 		Entity->Enemy = NULL;
 
 	// FIXME: look all around for other targets
-		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && (entity_cast<CHurtableEntity>(Entity->OldEnemy)->Health > 0))
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Entity->OldEnemy)->Health > 0))
 		{
 			Entity->Enemy = Entity->OldEnemy;
 			Entity->OldEnemy = NULL;
@@ -1148,7 +1148,7 @@ void CMonster::FoundTarget ()
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<CMapEntity>(Entity->MoveTarget)->TargetName = NULL;
+	entity_cast<IMapEntity>(Entity->MoveTarget)->TargetName = NULL;
 	PauseTime = 0;
 
 	// run for it

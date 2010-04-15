@@ -108,15 +108,15 @@ public:
 	void SavePosition ();
 
 	void Dead ();
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
-	void Pain (CBaseEntity *Other, sint32 Damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 	static void Precache ();
-	static void Toss (CBaseEntity *Spawner);
+	static void Toss (IBaseEntity *Spawner);
 };
 
-class CMakronJumpTimer : public virtual CBaseEntity, public CThinkableEntity
+class CMakronJumpTimer : public virtual IBaseEntity, public IThinkableEntity
 {
 public:
 	CMonsterEntity	*LinkedJorg;
@@ -130,7 +130,7 @@ public:
 	{
 		File.Write<sint32> ((LinkedJorg) ? LinkedJorg->State.GetNumber() : -1);
 
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -140,7 +140,7 @@ public:
 		if (Index != -1)
 			LinkedJorg = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ();

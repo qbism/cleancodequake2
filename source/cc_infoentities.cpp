@@ -40,14 +40,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 Point teleporters at these.
 */
 CSpotBase::CSpotBase () :
-	CBaseEntity (),
-	CMapEntity ()
+	IBaseEntity (),
+	IMapEntity ()
 	{
 	};
 
 CSpotBase::CSpotBase(sint32 Index) :
-	CBaseEntity(Index),
-	CMapEntity(Index)
+	IBaseEntity(Index),
+	IMapEntity(Index)
 	{
 	};
 
@@ -65,13 +65,13 @@ class CTeleporterDest : public CSpotBase
 {
 public:
 	CTeleporterDest () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase ()
 		{
 		};
 
 	CTeleporterDest (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index)
 		{
 		};
@@ -86,25 +86,25 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("misc_teleporter_dest", CTeleporterDest);
 
-class CTeleporterTrigger : public CMapEntity, public CTouchableEntity, public CBrushModel
+class CTeleporterTrigger : public IMapEntity, public ITouchableEntity, public IBrushModel
 {
 public:
-	CBaseEntity		*Dest;
+	IBaseEntity		*Dest;
 	char			*Target;
 
 	CTeleporterTrigger() :
-	  CBaseEntity (),
-	  CMapEntity(),
-	  CBrushModel (),
+	  IBaseEntity (),
+	  IMapEntity(),
+	  IBrushModel (),
 	  Dest (NULL),
 	  Target (NULL)
 	  {
 	  };
 
 	CTeleporterTrigger(sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity(),
-	  CBrushModel (Index),
+	  IBaseEntity (Index),
+	  IMapEntity(),
+	  IBrushModel (Index),
 	  Dest (NULL),
 	  Target (NULL)
 	  {
@@ -112,7 +112,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CTeleporterTrigger)
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (!Dest)
 			return;
@@ -136,7 +136,7 @@ public:
 
 		// clear the velocity and hold them in place briefly
 		if (Other->EntityFlags & ENT_PHYSICS)
-			entity_cast<CPhysicsEntity>(Other)->Velocity.Clear ();
+			entity_cast<IPhysicsEntity>(Other)->Velocity.Clear ();
 		if (Player)
 		{
 			Player->Client.PlayerState.GetPMove()->pmTime = 160>>3;		// hold time
@@ -168,7 +168,7 @@ public:
 
 	void Think ()
 	{
-		Dest = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
+		Dest = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target);
 	
 		if (!Dest)
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target);
@@ -176,23 +176,23 @@ public:
 
 	bool ParseField (const char *Key, const char *Value)
 	{
-		return (CMapEntity::ParseField (Key, Value) || CBrushModel::ParseField (Key, Value));
+		return (IMapEntity::ParseField (Key, Value) || IBrushModel::ParseField (Key, Value));
 	};
 
 	void SaveFields (CFile &File)
 	{
 		File.Write<sint32> ((Dest) ? Dest->State.GetNumber() : -1);
 
-		CMapEntity::SaveFields (File);
-		CBrushModel::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IBrushModel::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File);
 
 	bool Run ()
 	{
-		return CMapEntity::Run ();
+		return IMapEntity::Run ();
 	};
 
 	virtual void Spawn ()
@@ -212,14 +212,14 @@ public:
 	ENTITYFIELDS_SAVABLE(CTeleporter)
 
 	CTeleporter () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase (),
 		Target (NULL)
 		{
 		};
 
 	CTeleporter (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index),
 		Target (NULL)
 		{
@@ -269,17 +269,19 @@ bool			CTeleporter::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CMapEntity::ParseField (Key, Value));
+	return (IMapEntity::ParseField (Key, Value));
 };
 
 void		CTeleporter::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTeleporter> (this, File);
+	CSpotBase::SaveFields (File);
 }
 
 void		CTeleporter::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTeleporter> (this, File);
+	CSpotBase::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_teleporter", CTeleporter);
@@ -291,24 +293,24 @@ void CTeleporterTrigger::LoadFields (CFile &File)
 
 	Target = entity_cast<CTeleporter>(GetOwner())->Target;
 
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 }
 
 /*QUAKED trigger_teleport (0.5 0.5 0.5) ?
 Players touching this will be teleported
 */
-class CNoiseMaker : public CBaseEntity
+class CNoiseMaker : public IBaseEntity
 {
 public:
 	CNoiseMaker () :
-		CBaseEntity ()
+		IBaseEntity ()
 		{
 		};
 
 	CNoiseMaker (sint32 Index) :
-		CBaseEntity (Index)
+		IBaseEntity (Index)
 		{
 		};
 
@@ -318,13 +320,13 @@ class CTriggerTeleportDest : public CTeleporterTrigger
 {
 public:
 	CTriggerTeleportDest () :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CTeleporterTrigger ()
 	  {
 	  };
 
 	CTriggerTeleportDest (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CTeleporterTrigger (Index)
 	  {
 	  };
@@ -365,13 +367,13 @@ class CInfoTeleportDest : public CSpotBase
 {
 public:
 	CInfoTeleportDest () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase ()
 		{
 		};
 
 	CInfoTeleportDest (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index)
 		{
 		};
@@ -408,13 +410,13 @@ public:
 	}
 
 	CPlayerDeathmatch () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase ()
 		{
 		};
 
 	CPlayerDeathmatch (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index)
 		{
 		};
@@ -463,7 +465,7 @@ PlayersRangeFromSpot
 Returns the distance to the nearest player from the given spot
 ================
 */
-float	PlayersRangeFromSpot (CBaseEntity *spot)
+float	PlayersRangeFromSpot (IBaseEntity *spot)
 {
 	float	bestplayerdistance = 9999999;
 
@@ -496,7 +498,7 @@ to other players
 
 CSpotBase *SelectRandomDeathmatchSpawnPoint ()
 {
-	CBaseEntity *spot1 = NULL, *spot2 = NULL;
+	IBaseEntity *spot1 = NULL, *spot2 = NULL;
 	float range1 = 99999, range2 = 99999;
 
 	if (!CPlayerDeathmatch::SpawnPoints().size())
@@ -577,7 +579,7 @@ CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
 potential spawning position for coop games
 */
 
-class CPlayerCoop : public CSpotBase, public CThinkableEntity
+class CPlayerCoop : public CSpotBase, public IThinkableEntity
 {
 public:
 	typedef std::vector<CPlayerCoop*> TSpawnPointsType;
@@ -593,15 +595,15 @@ public:
 	}
 
 	CPlayerCoop () :
-		CBaseEntity (),
-		CThinkableEntity(),
+		IBaseEntity (),
+		IThinkableEntity(),
 		CSpotBase ()
 		{
 		};
 
 	CPlayerCoop (sint32 Index) :
-		CBaseEntity (Index),
-		CThinkableEntity(),
+		IBaseEntity (Index),
+		IThinkableEntity(),
 		CSpotBase (Index)
 		{
 		};
@@ -610,13 +612,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 		CSpotBase::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 		CSpotBase::LoadFields (File);
 		SpawnPoints().push_back (this);
 	};
@@ -720,13 +722,13 @@ class CPlayerIntermission : public CSpotBase
 {
 public:
 	CPlayerIntermission () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase ()
 		{
 		};
 
 	CPlayerIntermission (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index)
 		{
 		};
@@ -743,7 +745,7 @@ LINK_CLASSNAME_TO_CLASS ("info_player_intermission", CPlayerIntermission);
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
 The normal starting point for a Level.
 */
-class CPlayerStart : public CSpotBase, public CThinkableEntity
+class CPlayerStart : public CSpotBase, public IThinkableEntity
 {
 public:
 	typedef std::vector<CPlayerStart*> TSpawnPointsType;
@@ -759,15 +761,15 @@ public:
 	}
 
 	CPlayerStart () :
-		CBaseEntity (),
-		CThinkableEntity(),
+		IBaseEntity (),
+		IThinkableEntity(),
 		CSpotBase ()
 		{
 		};
 
 	CPlayerStart (sint32 Index) :
-		CBaseEntity (Index),
-		CThinkableEntity(),
+		IBaseEntity (Index),
+		IThinkableEntity(),
 		CSpotBase (Index)
 		{
 		};
@@ -776,13 +778,13 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 		CSpotBase::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 		CSpotBase::LoadFields (File);
 		SpawnPoints().push_back (this);
 	};
@@ -870,13 +872,13 @@ public:
 	}
 
 	CPlayerTeam1 () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase ()
 		{
 		};
 
 	CPlayerTeam1 (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index)
 		{
 		};
@@ -909,13 +911,13 @@ public:
 	}
 
 	CPlayerTeam2 () :
-		CBaseEntity (),
+		IBaseEntity (),
 		CSpotBase ()
 		{
 		};
 
 	CPlayerTeam2 (sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CSpotBase (Index)
 		{
 		};
@@ -1101,18 +1103,18 @@ Pathtarget: gets used when an entity that has
 #define CORNER_TELEPORT		1
 
 CPathCorner::CPathCorner () :
-  CBaseEntity(),
-  CMapEntity (),
-  CTouchableEntity (),
-  CUsableEntity ()
+  IBaseEntity(),
+  IMapEntity (),
+  ITouchableEntity (),
+  IUsableEntity ()
   {
   };
 
 CPathCorner::CPathCorner (sint32 Index) :
-  CBaseEntity(Index),
-  CMapEntity (Index),
-  CTouchableEntity (Index),
-  CUsableEntity (Index)
+  IBaseEntity(Index),
+  IMapEntity (Index),
+  ITouchableEntity (Index),
+  IUsableEntity (Index)
   {
   };
 
@@ -1123,7 +1125,7 @@ void CPathCorner::Think ()
 		NextTargets = CC_GetTargets (Target);
 }
 
-void CPathCorner::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPathCorner::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!(Other->EntityFlags & ENT_MONSTER))
 		return;
@@ -1144,7 +1146,7 @@ void CPathCorner::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *sur
 		Target = savetarget;
 	}
 
-	CBaseEntity *TempNextTarget = (NextTargets.size()) ? NextTargets[irandom(NextTargets.size())] : NULL;
+	IBaseEntity *TempNextTarget = (NextTargets.size()) ? NextTargets[irandom(NextTargets.size())] : NULL;
 
 	if ((TempNextTarget) && (TempNextTarget->SpawnFlags & CORNER_TELEPORT))
 	{
@@ -1208,7 +1210,7 @@ bool			CPathCorner::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CPathCorner::SaveFields (CFile &File)
@@ -1219,9 +1221,9 @@ void		CPathCorner::SaveFields (CFile &File)
 		File.Write<sint32> (NextTargets[i]->State.GetNumber());
 
 	SaveEntityFields <CPathCorner> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
 }
 
 void		CPathCorner::LoadFields (CFile &File)
@@ -1231,9 +1233,9 @@ void		CPathCorner::LoadFields (CFile &File)
 		NextTargets.push_back (Game.Entities[File.Read<sint32> ()].Entity);
 
 	LoadEntityFields <CPathCorner> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("path_corner", CPathCorner);
@@ -1247,20 +1249,20 @@ class CPathCombat : public CPathCorner
 {
 public:
 	CPathCombat () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CPathCorner ()
 	  {
 	  };
 
 	CPathCombat (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CPathCorner (Index)
 	  {
 	  };
 
 	IMPLEMENT_SAVE_HEADER(CPathCombat);
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		CMonsterEntity *Monster = NULL;
 		if (Other->EntityFlags & ENT_MONSTER)
@@ -1273,7 +1275,7 @@ public:
 		{
 			if (Other->EntityFlags & ENT_USABLE)
 			{
-				CUsableEntity *Usable = entity_cast<CUsableEntity>(Other);
+				IUsableEntity *Usable = entity_cast<IUsableEntity>(Other);
 				Usable->Target = Target;
 
 				if (Monster)
@@ -1309,7 +1311,7 @@ public:
 
 		if (PathTarget)
 		{
-			CBaseEntity *Activator;
+			IBaseEntity *Activator;
 
 			char *savetarget = Target;
 			Target = PathTarget;
@@ -1318,8 +1320,8 @@ public:
 			else if ((Monster) &&
 				(Monster->OldEnemy) && (Monster->OldEnemy->EntityFlags & ENT_PLAYER))
 				Activator = Monster->OldEnemy;
-			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<CUsableEntity>(Other)->User) && ((entity_cast<CUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
-				Activator = (entity_cast<CUsableEntity>(Other)->User);
+			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<IUsableEntity>(Other)->User) && ((entity_cast<IUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
+				Activator = (entity_cast<IUsableEntity>(Other)->User);
 			else
 				Activator = Other;
 			UseTargets (Activator, Message);
@@ -1349,12 +1351,12 @@ LINK_CLASSNAME_TO_CLASS ("point_combat", CPathCombat);
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for spotlights, etc.
 */
-class CInfoNull : public CMapEntity
+class CInfoNull : public IMapEntity
 {
 public:
 	CInfoNull (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	  {
 	  };
 
@@ -1375,7 +1377,7 @@ class CFuncGroup : public CInfoNull
 {
 public:
 	CFuncGroup (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CInfoNull (Index)
 	  {
 	  };
@@ -1388,12 +1390,12 @@ LINK_CLASSNAME_TO_CLASS ("func_group", CFuncGroup);
 /*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for lightning.
 */
-class CInfoNotNull : public CMapEntity
+class CInfoNotNull : public IMapEntity
 {
 public:
 	CInfoNotNull (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	  {
 	  };
 
@@ -1418,22 +1420,22 @@ Default _cone value is 10 (used to set size of light for spotlights)
 
 #define START_OFF	1
 
-class CLight : public CMapEntity, public CUsableEntity
+class CLight : public IMapEntity, public IUsableEntity
 {
 public:
 	uint8		Style;
 
 	CLight (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	  {
 	  };
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CLight)
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (!Usable)
 			return;
@@ -1478,21 +1480,21 @@ bool CLight::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CLight> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void		CLight::SaveFields (CFile &File)
 {
 	SaveEntityFields <CLight> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CLight::LoadFields (CFile &File)
 {
 	LoadEntityFields <CLight> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("light", CLight);
@@ -1504,7 +1506,7 @@ message		two letters; starting lightlevel and ending lightlevel
 
 #define LIGHTRAMP_TOGGLE	1
 
-class CTargetLightRamp : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CTargetLightRamp : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	sint32			RampMessage[3];
@@ -1514,10 +1516,10 @@ public:
 	uint8			Style;
 
 	CTargetLightRamp () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
 	  Light (NULL),
 	  Speed (0)
 	{
@@ -1525,10 +1527,10 @@ public:
 	};
 
 	CTargetLightRamp (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
 	  Light (NULL),
 	  Speed (0)
 	{
@@ -1540,7 +1542,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -1559,15 +1561,15 @@ public:
 		}
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (!Light)
 		{
 			// check all the targets
-			CMapEntity *e = NULL;
+			IMapEntity *e = NULL;
 			while (1)
 			{
-				e = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (e, Target);
+				e = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target);
 				if (!e)
 					break;
 				if (strcmp(e->ClassName.c_str(), "light") != 0)
@@ -1638,7 +1640,7 @@ bool			CTargetLightRamp::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CTargetLightRamp::SaveFields (CFile &File)
@@ -1646,9 +1648,9 @@ void		CTargetLightRamp::SaveFields (CFile &File)
 	File.Write<sint32> ((Light) ? Light->State.GetNumber() : -1);
 
 	SaveEntityFields <CTargetLightRamp> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void		CTargetLightRamp::LoadFields (CFile &File)
@@ -1659,9 +1661,9 @@ void		CTargetLightRamp::LoadFields (CFile &File)
 		Light = entity_cast<CLight>(Game.Entities[Index].Entity);
 
 	LoadEntityFields <CTargetLightRamp> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_lightramp", CTargetLightRamp);

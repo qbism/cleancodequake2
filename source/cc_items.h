@@ -118,7 +118,7 @@ public:
 
 	// Attempts to drops the item. 
 	virtual	void	Drop (CPlayerEntity *Player) = 0;
-	virtual class CItemEntity	*DropItem (CBaseEntity *Entity);
+	virtual class CItemEntity	*DropItem (IBaseEntity *Entity);
 
 	virtual void	SetRespawn (class CItemEntity *Item, FrameNumber_t delay);
 

@@ -110,7 +110,7 @@ void CIRGoggles::Use (CPlayerEntity *Player)
 #define	NUKE_QUAKE_TIME		30
 #define NUKE_QUAKE_STRENGTH	100
 
-class CNukeEntity : public CBounceProjectile, public CThinkableEntity, public CTouchableEntity, public CHurtableEntity
+class CNukeEntity : public IBounceProjectile, public IThinkableEntity, public ITouchableEntity, public IHurtableEntity
 {
 public:
 	CC_ENUM (uint8, ENukeThinkType)
@@ -124,32 +124,32 @@ public:
 	FrameNumber_t		LastQuakeTime, QuakeTime, Wait;
 	MediaIndex			NoiseIndex;
 	CPlayerEntity		*ThrowerPlayer;
-	CBaseEntity			*Thrower;
+	IBaseEntity			*Thrower;
 	int					Damage, DamageRadius;
 
 	CNukeEntity () :
-	  CBounceProjectile (),
-	  CThinkableEntity (),
-	  CTouchableEntity (),
-	  CHurtableEntity ()
+	  IBounceProjectile (),
+	  IThinkableEntity (),
+	  ITouchableEntity (),
+	  IHurtableEntity ()
 	  {
 	  };
 
 	CNukeEntity (sint32 Index) :
-	  CBaseEntity (Index),
-	  CBounceProjectile (Index),
-	  CThinkableEntity (Index),
-	  CTouchableEntity (Index),
-	  CHurtableEntity (Index)
+	  IBaseEntity (Index),
+	  IBounceProjectile (Index),
+	  IThinkableEntity (Index),
+	  ITouchableEntity (Index),
+	  IHurtableEntity (Index)
 	  {
 	  };
 
 	void SaveFields (CFile &File)
 	{
-		CBounceProjectile::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
 
 		File.Write<ENukeThinkType> (ThinkType);
 		File.Write<FrameNumber_t> (LastQuakeTime);
@@ -164,10 +164,10 @@ public:
 
 	void LoadFields (CFile &File)
 	{
-		CBounceProjectile::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
 
 		ThinkType = File.Read<ENukeThinkType> ();
 
@@ -193,7 +193,7 @@ public:
 
 	bool Run ()
 	{
-		return CBounceProjectile::Run();
+		return IBounceProjectile::Run();
 	}
 
 	void Quake ()
@@ -236,7 +236,7 @@ public:
 		LastQuakeTime = 0;
 	}
 
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
 		CanTakeDamage = false;
 
@@ -325,12 +325,12 @@ public:
 		};
 	}
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		PlaySound (CHAN_VOICE, SoundIndex (frand() > 0.5f ? "weapons/hgrenb1a.wav" : "weapons/hgrenb2a.wav"));
 	}
 
-	static void Spawn (CBaseEntity *Entity, vec3f Start, vec3f AimDir, int Speed)
+	static void Spawn (IBaseEntity *Entity, vec3f Start, vec3f AimDir, int Speed)
 	{
 		int DamModifier = 1;
 
@@ -446,6 +446,12 @@ LINK_ITEM_TO_CLASS (item_ir_goggles, CItemEntity);
 
 LINK_ITEM_TO_CLASS (ammo_prox, CAmmoEntity);
 LINK_ITEM_TO_CLASS (ammo_nuke, CItemEntity);
+LINK_ITEM_TO_CLASS (ammo_flechettes, CItemEntity);
+LINK_EXISTING_ITEM_TO_NEW_CLASS (ammo_nails, "ammo_flechettes", CItemEntity);
+LINK_ITEM_TO_CLASS (ammo_tesla, CItemEntity);
+
+LINK_ITEM_TO_CLASS (key_nuke_container, CItemEntity);
+LINK_ITEM_TO_CLASS (key_nuke, CItemEntity);
 
 void AddRogueItemsToList ()
 {
@@ -459,6 +465,9 @@ void AddRogueItemsToList ()
 		ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTeslaWeapon::Weapon, 1, "#a_grenades.md2", 5, CAmmo::AMMOTAG_TESLA);
 
 	QNew (TAG_GENERIC) CAMBomb("ammo_nuke", "models/weapons/g_nuke/tris.md2", 0, "misc/am_pkup.wav", "p_nuke", "A-M Bomb", ITEMFLAG_DROPPABLE|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE, "");
+
+	QNew (TAG_GENERIC) CKey("key_nuke_container", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_contain", "Antimatter Pod", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_nuke", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_nuke", "Antimatter Bomb", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 }
 
 #endif

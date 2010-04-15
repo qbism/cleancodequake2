@@ -166,7 +166,7 @@ CC_ENUM (uint8, EMonsterSpawnflags)
 
 #define STEPSIZE	18
 
-class CMonsterEntity : public CMapEntity, public CStepPhysics, public CTossProjectile, public CPushPhysics, public CHurtableEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
+class CMonsterEntity : public IMapEntity, public IStepPhysics, public ITossProjectile, public IPushPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
 	bool			IsHead;
@@ -175,9 +175,9 @@ public:
 	FrameNumber_t	DamageDebounceTime;
 	FrameNumber_t	BonusDamageTime;
 	FrameNumber_t	ShowHostile;
-	CBaseEntity		*OldEnemy;
-	CBaseEntity		*GoalEntity;
-	CBaseEntity		*MoveTarget;
+	IBaseEntity		*OldEnemy;
+	IBaseEntity		*GoalEntity;
+	IBaseEntity		*MoveTarget;
 	class CMonster	*Monster;
 	char			*DeathTarget;
 	char			*CombatTarget;
@@ -193,11 +193,11 @@ public:
 
 	void			Think ();
 
-	void			Pain (CBaseEntity *Other, sint32 Damage);
-	void			Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void			Pain (IBaseEntity *Other, sint32 Damage);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
-	virtual void	Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf); // Empty
-	void			Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf); // Empty
+	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
@@ -317,7 +317,7 @@ public:
 	virtual void SaveMonsterFields (CFile &File) {};
 	virtual void LoadMonsterFields (CFile &File) {};
 
-	virtual void		Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
+	virtual void		Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
 
 	// Virtual functions
 	virtual void		Stand			();
@@ -325,7 +325,7 @@ public:
 	virtual void		Search			();
 	virtual void		Walk			();
 	virtual void		Run				();
-	virtual void		Dodge			(CBaseEntity *Other, float eta
+	virtual void		Dodge			(IBaseEntity *Other, float eta
 #if ROGUE_FEATURES
 		, CTrace *tr
 #endif
@@ -335,7 +335,7 @@ public:
 	virtual void		Sight			();
 	virtual bool		CheckAttack		();
 
-	virtual void		ReactToDamage	(CBaseEntity *Attacker, CBaseEntity *Inflictor);
+	virtual void		ReactToDamage	(IBaseEntity *Attacker, IBaseEntity *Inflictor);
 
 	virtual void		MonsterThink	();
 	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
@@ -395,7 +395,7 @@ public:
 #if ROGUE_FEATURES
 	void				CleanupHealTarget ();
 	void				DoneDodge ();
-	void				MonsterDodge (CBaseEntity *Attacker, float eta, CTrace *tr);
+	void				MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr);
 	virtual void		DuckUp ();
 	virtual void		DuckHold ();
 	virtual void		DuckDown ();
@@ -427,18 +427,18 @@ public:
 	bool				CheckBottom ();
 	void				MoveToGoal (float Dist);
 	bool				WalkMove (float Yaw, float Dist);
-	bool				CloseEnough (CBaseEntity *Goal, float Dist);
-	void				NewChaseDir (CBaseEntity *Enemy, float Dist);
+	bool				CloseEnough (IBaseEntity *Goal, float Dist);
+	void				NewChaseDir (IBaseEntity *Enemy, float Dist);
 	bool				StepDirection (float Yaw, float Dist);
 	bool				MoveStep (vec3f move, bool ReLink);
 
 	virtual void		Spawn () = 0;
-	virtual void		Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
-	virtual void		Pain(CBaseEntity *Other, sint32 Damage) = 0;
+	virtual void		Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
+	virtual void		Pain(IBaseEntity *Other, sint32 Damage) = 0;
 };
 
 #if XATRIX_FEATURES
-class CMonsterBeamLaser : public CThinkableEntity
+class CMonsterBeamLaser : public IThinkableEntity
 {
 public:
 	vec3f		MoveDir;
@@ -457,7 +457,7 @@ public:
 		File.Write<bool> (DoFree);
 		File.Write<vec3f> (MoveDir);
 
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -467,7 +467,7 @@ public:
 		DoFree = File.Read <bool>();
 		MoveDir = File.Read <vec3f>();
 
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ();
@@ -496,7 +496,7 @@ public:
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
 	uint32 LINK_RESOLVE_CLASSNAME(DLLClassName, _ID) = LastID++; \
-	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
+	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
 		CMonsterEntity *newClass = QNewEntityOf CMonsterEntity(Index); \
 		DLLClassName *Monster = QNewEntityOf DLLClassName (LINK_RESOLVE_CLASSNAME(DLLClassName, _ID)); \

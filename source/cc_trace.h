@@ -49,16 +49,16 @@ public:
 	sint32					contents;
 
 	// For vec3f
-	CBaseEntity			*Ent;
+	IBaseEntity			*Ent;
 
 	CTrace ();
 
-	CTrace (vec3f start, vec3f mins, vec3f maxs, vec3f end, CBaseEntity *ignore, sint32 contentMask);
-	CTrace (vec3f start, vec3f end, CBaseEntity *ignore, sint32 contentMask);
+	CTrace (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask);
+	CTrace (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask);
 	CTrace (vec3f start, vec3f end, sint32 contentMask);
 
-	void operator () (vec3f start, vec3f mins, vec3f maxs, vec3f end, CBaseEntity *ignore, sint32 contentMask); 
-	void operator () (vec3f start, vec3f end, CBaseEntity *ignore, sint32 contentMask); 
+	void operator () (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask); 
+	void operator () (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask); 
 	void operator () (vec3f start, vec3f end, sint32 contentMask); 
 };
 

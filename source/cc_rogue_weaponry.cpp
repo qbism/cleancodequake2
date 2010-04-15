@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_rogue_weaponry.h"
 #include "cc_tent.h"
 
-bool CHeatBeam::DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
+bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
 {
 	Target->TakeDamage (Attacker, Attacker, dir, point, normal, (PointContents(point) & CONTENTS_MASK_WATER) ? (Damage / 2) : Damage, Kick, DAMAGE_ENERGY, MeansOfDeath);
 	return ThroughAndThrough;
@@ -63,7 +63,7 @@ void CHeatBeam::DoWaterHit	(CTrace *Trace)
 	CSparks(Trace->EndPos, Trace->plane.normal, ST_HEATBEAM_SPARKS).Send();
 }
 
-void CHeatBeam::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
+void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 {
 	vec3f end, from;
 	vec3f lastWaterStart, lastWaterEnd;
@@ -80,7 +80,7 @@ void CHeatBeam::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 
 	sint32 Mask = CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER;
 	bool Water = false;
-	CBaseEntity *Ignore = Entity;
+	IBaseEntity *Ignore = Entity;
 
 	lastWaterStart = start;
 
@@ -146,10 +146,10 @@ void CHeatBeam::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 		CTrace Trace = DoTrace (from, end, Ignore, Mask);
 
 		// Did we hit an entity?
-		if (Trace.ent && Trace.Ent && ((Trace.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Trace.Ent)->CanTakeDamage))
+		if (Trace.ent && Trace.Ent && ((Trace.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Ent)->CanTakeDamage))
 		{
 			// Convert to base entity
-			CHurtableEntity *Target = entity_cast<CHurtableEntity>(Trace.Ent);
+			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Ent);
 
 			// Hurt it
 			// Revision
@@ -413,7 +413,7 @@ void CHeatBeam::DoFire(CBaseEntity *Entity, vec3f start, vec3f aimdir)
 }
 
 // An overload to handle transparent water
-void CHeatBeam::Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 mod, bool Monster)
+void CHeatBeam::Fire		(IBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 mod, bool Monster)
 {
 	CHeatBeam(Entity, Damage, kick, mod, Monster).DoFire (Entity, start, aimdir);
 }
@@ -425,17 +425,17 @@ CFlechette
 */
 
 CFlechette::CFlechette () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CFlechette::CFlechette (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -446,7 +446,7 @@ void CFlechette::Think ()
 	Free();
 }
 
-void CFlechette::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CFlechette::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -460,15 +460,15 @@ void CFlechette::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, Kick, DAMAGE_NO_REG_ARMOR, MOD_ETF_RIFLE);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, Kick, DAMAGE_NO_REG_ARMOR, MOD_ETF_RIFLE);
 	else
 		CBlasterSplash(State.GetOrigin(), plane ? plane->normal : vec3fOrigin, BL_FLECHETTE).Send();
 
 	Free (); // "delete" the entity
 }
 
-void CFlechette::Spawn	(CBaseEntity *Spawner, vec3f Start, vec3f Dir,
+void CFlechette::Spawn	(IBaseEntity *Spawner, vec3f Start, vec3f Dir,
 						sint32 Damage, sint32 Kick, sint32 Speed)
 {
 	CFlechette		*Bolt = QNewEntityOf CFlechette;
@@ -508,7 +508,7 @@ void CFlechette::Spawn	(CBaseEntity *Spawner, vec3f Start, vec3f Dir,
 
 bool CFlechette::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 /*
@@ -523,20 +523,20 @@ CDisruptorTracker
 #define TRACKER_DAMAGE_TIME		5
 
 // FIXME: make private!!!
-class CDisruptorPainDaemon : public CThinkableEntity
+class CDisruptorPainDaemon : public IThinkableEntity
 {
 public:
 	sint32			Damage;
 	FrameNumber_t	LifeTime;
 
 	CDisruptorPainDaemon() :
-	  CThinkableEntity ()
+	  IThinkableEntity ()
 	  {
 	  };
 
 	CDisruptorPainDaemon(sint32 Index) :
-	  CBaseEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IThinkableEntity (Index)
 	  {
 	  };
 
@@ -545,7 +545,7 @@ public:
 		File.Write<sint32> (Damage);
 		File.Write<FrameNumber_t> (LifeTime);
 
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -553,7 +553,7 @@ public:
 		Damage = File.Read<sint32>();
 		LifeTime = File.Read<FrameNumber_t>();
 
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	IMPLEMENT_SAVE_HEADER (CDisruptorPainDaemon);
@@ -573,7 +573,7 @@ public:
 		}
 		else
 		{
-			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Enemy);
+			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Enemy);
 
 			if (Hurtable->Health > 0)
 			{
@@ -610,7 +610,7 @@ public:
 		}
 	}
 
-	static void Spawn (CBaseEntity *Owner, CBaseEntity *Enemy, sint32 Damage)
+	static void Spawn (IBaseEntity *Owner, IBaseEntity *Enemy, sint32 Damage)
 	{
 		if (!Enemy)
 			return;
@@ -631,17 +631,17 @@ public:
 IMPLEMENT_SAVE_SOURCE (CDisruptorPainDaemon);
 
 CDisruptorTracker::CDisruptorTracker () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CDisruptorTracker::CDisruptorTracker (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -655,7 +655,7 @@ void CDisruptorTracker::Think ()
 		return;
 	}
 
-	if ((!Enemy) || (!Enemy->GetInUse()) || (entity_cast<CHurtableEntity>(Enemy)->Health < 1))
+	if ((!Enemy) || (!Enemy->GetInUse()) || (entity_cast<IHurtableEntity>(Enemy)->Health < 1))
 	{
 		Explode (NULL);
 		return;
@@ -677,7 +677,7 @@ void CDisruptorTracker::Think ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CDisruptorTracker::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CDisruptorTracker::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -693,7 +693,7 @@ void CDisruptorTracker::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_
 
 	if (Other && (Other->EntityFlags & ENT_HURTABLE))
 	{
-		CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Other);
+		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
 		if (Hurtable->EntityFlags & (ENT_MONSTER|ENT_PLAYER))
 		{
@@ -703,7 +703,7 @@ void CDisruptorTracker::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_
 							0, (Damage*3), TRACKER_IMPACT_FLAGS, MOD_TRACKER);
 				
 				if (!(Hurtable->Flags & (FL_FLY|FL_SWIM)))
-					entity_cast<CPhysicsEntity>(Hurtable)->Velocity.Z += 140;
+					entity_cast<IPhysicsEntity>(Hurtable)->Velocity.Z += 140;
 				
 				CDisruptorPainDaemon::Spawn (GetOwner(), Other, (int)(((((float)Damage)*0.1f) / 0.5f)));
 			}
@@ -725,8 +725,8 @@ void CDisruptorTracker::Explode (plane_t *plane)
 	Free ();
 }
 
-void CDisruptorTracker::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 Damage, sint32 speed, CBaseEntity *enemy)
+void CDisruptorTracker::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed, IBaseEntity *enemy)
 {
 	CDisruptorTracker	*Bolt = QNewEntityOf CDisruptorTracker;
 
@@ -774,23 +774,23 @@ void CDisruptorTracker::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 bool CDisruptorTracker::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 #define HYPER_FLAG		1
 
 CGreenBlasterProjectile::CGreenBlasterProjectile () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CGreenBlasterProjectile::CGreenBlasterProjectile (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -801,7 +801,7 @@ void CGreenBlasterProjectile::Think ()
 	Free();
 }
 
-void CGreenBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CGreenBlasterProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -817,13 +817,13 @@ void CGreenBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSu
 
 	if (Other->EntityFlags & ENT_HURTABLE)
 	{
-		CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Other);
+		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
 		// the only time players will be firing blaster2 bolts will be from the 
 		// defender sphere.
 		EMeansOfDeath mod = (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER)) ? MOD_DEFENDER_SPHERE : MOD_BLASTER2;
 
-		CHurtableEntity *Owner = (GetOwner() && (GetOwner()->EntityFlags & ENT_HURTABLE)) ? entity_cast<CHurtableEntity>(GetOwner()) : NULL;
+		IHurtableEntity *Owner = (GetOwner() && (GetOwner()->EntityFlags & ENT_HURTABLE)) ? entity_cast<IHurtableEntity>(GetOwner()) : NULL;
 		bool WasDamageable = false;
 
 		if (Owner)
@@ -851,7 +851,7 @@ void CGreenBlasterProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSu
 	Free ();
 }
 
-void CGreenBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
+void CGreenBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, sint32 effect)
 {
 	CGreenBlasterProjectile		*Bolt = QNewEntityOf CGreenBlasterProjectile;
@@ -893,7 +893,7 @@ void CGreenBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f di
 
 bool CGreenBlasterProjectile::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 #endif

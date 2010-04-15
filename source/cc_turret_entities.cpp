@@ -59,31 +59,31 @@ float SnapToEights(float x)
 }
 
 CTurretEntityBase::CTurretEntityBase () :
-CBaseEntity (),
-CMapEntity (),
-CBrushModel (),
-CBlockableEntity ()
+IBaseEntity (),
+IMapEntity (),
+IBrushModel (),
+IBlockableEntity ()
 {
 };
 
 CTurretEntityBase::CTurretEntityBase (sint32 Index) :
-CBaseEntity (Index),
-CMapEntity (Index),
-CBrushModel (Index),
-CBlockableEntity (Index)
+IBaseEntity (Index),
+IMapEntity (Index),
+IBrushModel (Index),
+IBlockableEntity (Index)
 {
 };
 
 bool CTurretEntityBase::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 };
 
-void CTurretEntityBase::Blocked (CBaseEntity *Other)
+void CTurretEntityBase::Blocked (IBaseEntity *Other)
 {
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, (Team.Master->GetOwner()) ? Team.Master->GetOwner() : Team.Master,
-					vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, entity_cast<CBrushModel>(Team.Master)->Damage, 10, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, (Team.Master->GetOwner()) ? Team.Master->GetOwner() : Team.Master,
+					vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, entity_cast<IBrushModel>(Team.Master)->Damage, 10, 0, MOD_CRUSH);
 }
 
 /*QUAKED turret_breach (0 0 0) ?
@@ -103,7 +103,7 @@ Use "angle" to set the starting angle.
 */
 
 CTurretBreach::CTurretBreach () :
-CBaseEntity (),
+IBaseEntity (),
 CTurretEntityBase (),
 FinishInit(true),
 ShouldFire(false),
@@ -113,7 +113,7 @@ Target(NULL)
 };
 
 CTurretBreach::CTurretBreach (sint32 Index) :
-CBaseEntity (Index),
+IBaseEntity (Index),
 CTurretEntityBase (Index),
 FinishInit(true),
 ShouldFire(false),
@@ -145,10 +145,10 @@ public:
 	{
 	};
 
-	void Callback (CBaseEntity *Entity)
+	void Callback (IBaseEntity *Entity)
 	{
 		if (Entity->EntityFlags & ENT_PHYSICS)
-			entity_cast<CPhysicsEntity>(Entity)->AngularVelocity.Y = avelYaw;
+			entity_cast<IPhysicsEntity>(Entity)->AngularVelocity.Y = avelYaw;
 	};
 };
 
@@ -163,7 +163,7 @@ void CTurretBreach::Think ()
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Needs a target\n");
 		else
 		{
-			CBaseEntity *targ = CC_PickTarget (Target);
+			IBaseEntity *targ = CC_PickTarget (Target);
 			MoveOrigin = (targ->State.GetOrigin() - State.GetOrigin());
 			targ->Free();
 
@@ -171,7 +171,7 @@ void CTurretBreach::Think ()
 			Target = NULL;
 		}
 
-		entity_cast<CBrushModel>(Team.Master)->Damage = Damage;
+		entity_cast<IBrushModel>(Team.Master)->Damage = Damage;
 		Think ();
 	}
 	else
@@ -344,13 +344,13 @@ MUST be teamed with a turret_breach.
 */
 
 CTurretBase::CTurretBase () :
-CBaseEntity (),
+IBaseEntity (),
 CTurretEntityBase ()
 {
 };
 
 CTurretBase::CTurretBase (sint32 Index) :
-CBaseEntity (Index),
+IBaseEntity (Index),
 CTurretEntityBase (Index)
 {
 };
@@ -383,7 +383,7 @@ TargetedBreach(NULL)
 {
 };
 
-void CTurretDriver::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
@@ -401,7 +401,7 @@ void CTurretDriver::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 D
 	if (Entity->DeadFlag == true)
 		return;
 
-	CBaseEntity	*TeamEntity;
+	IBaseEntity	*TeamEntity;
 
 	// level the gun
 	TargetedBreach->MoveAngles.X = 0;
@@ -422,7 +422,7 @@ void CTurretDriver::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 D
 	Entity->NextThink = Level.Frame + FRAMETIME;
 }
 
-void CTurretDriver::Pain (CBaseEntity *Other, sint32 Damage)
+void CTurretDriver::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -439,7 +439,7 @@ void CTurretDriver::TurretThink ()
 {
 	Entity->NextThink = Level.Frame + FRAMETIME;
 
-	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || (!Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)))
+	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || (!Entity->Enemy->GetInUse() || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)))
 		Entity->Enemy = NULL;
 
 	if (!Entity->Enemy)
@@ -512,7 +512,7 @@ void CTurretDriver::TurretLink ()
 	MoveOrigin.Z = Entity->State.GetOrigin().Z - TargetedBreach->State.GetOrigin().Z;
 
 	// add the driver to the end of them team chain
-	CBaseEntity	*TeamEntity;
+	IBaseEntity	*TeamEntity;
 	for (TeamEntity = TargetedBreach->Team.Master; TeamEntity->Team.Chain; TeamEntity = TeamEntity->Team.Chain)
 		;
 	TeamEntity->Team.Chain = Entity;

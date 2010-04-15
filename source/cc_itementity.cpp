@@ -35,24 +35,24 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 CItemEntity::CItemEntity () :
-CBaseEntity(),
-CMapEntity(),
-CTossProjectile(),
-CTouchableEntity(),
-CThinkableEntity(),
-CUsableEntity(),
+IBaseEntity(),
+IMapEntity(),
+ITossProjectile(),
+ITouchableEntity(),
+IThinkableEntity(),
+IUsableEntity(),
 Model(NULL)
 {
 	EntityFlags |= ENT_ITEM;
 };
 
 CItemEntity::CItemEntity (sint32 Index) :
-CBaseEntity(Index),
-CMapEntity(Index),
-CTossProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index),
-CUsableEntity(Index),
+IBaseEntity(Index),
+IMapEntity(Index),
+ITossProjectile(Index),
+ITouchableEntity(Index),
+IThinkableEntity(Index),
+IUsableEntity(Index),
 Model(NULL)
 {
 	EntityFlags |= ENT_ITEM;
@@ -60,9 +60,9 @@ Model(NULL)
 
 void CItemEntity::Spawn ()
 {
-} // Just to fill CMapEntity
+} // Just to fill IMapEntity
 
-void CItemEntity::Touch(CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CItemEntity::Touch(IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!Other)
 		return;
@@ -126,10 +126,10 @@ void CItemEntity::Touch(CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf
 
 bool CItemEntity::Run ()
 {
-	return (PhysicsType == PHYSICS_TOSS) ? CTossProjectile::Run() : false;
+	return (PhysicsType == PHYSICS_TOSS) ? ITossProjectile::Run() : false;
 }
 
-void CItemEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CItemEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	GetSvFlags() &= ~SVF_NOCLIENT;
 	Usable = false;
@@ -151,10 +151,10 @@ void CItemEntity::Use (CBaseEntity *Other, CBaseEntity *Activator)
 // Returns a random team member of ent
 CItemEntity *CItemEntity::GetRandomTeamMember (CItemEntity *Master)
 {
-	static std::vector<CBaseEntity*>	Team;
+	static std::vector<IBaseEntity*>	Team;
 	Team.clear ();
 
-	for (CBaseEntity *Member = Master; Member; Member = Member->Team.Chain)
+	for (IBaseEntity *Member = Master; Member; Member = Member->Team.Chain)
 		Team.push_back (Member);
 
 	return entity_cast<CItemEntity>(Team[irandom(Team.size())]);
@@ -228,10 +228,10 @@ void CItemEntity::Think ()
 		ThinkState = ITS_NONE;
 
 		{
-			CBaseEntity *RespawnedEntity = this;
+			IBaseEntity *RespawnedEntity = this;
 			if (Team.HasTeam)
 			{
-				CBaseEntity *Master = Team.Master;
+				IBaseEntity *Master = Team.Master;
 
 		#if CLEANCTF_ENABLED
 		//ZOID
@@ -296,26 +296,26 @@ bool CItemEntity::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CItemEntity> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void		CItemEntity::SaveFields (CFile &File)
 {
 	SaveEntityFields <CItemEntity> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
-	CTossProjectile::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
+	ITossProjectile::SaveFields (File);
 }
 
 void		CItemEntity::LoadFields (CFile &File)
 {
 	LoadEntityFields <CItemEntity> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
-	CTossProjectile::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
+	ITossProjectile::LoadFields (File);
 }
 

@@ -78,7 +78,7 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 	Player->P_ProjectSource (offset, forward, right, start);
 
-	CBaseEntity *Enemy = NULL;
+	IBaseEntity *Enemy = NULL;
 
 	vec3f end = start.MultiplyAngles (8192, forward);
 	CTrace tr (start, end, Player, CONTENTS_MASK_SHOT);
@@ -87,7 +87,7 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 	{
 		if (tr.Ent->EntityFlags & ENT_HURTABLE)
 		{
-			if (entity_cast<CHurtableEntity>(tr.Ent)->Health > 0)
+			if (entity_cast<IHurtableEntity>(tr.Ent)->Health > 0)
 				Enemy = tr.Ent;
 		}
 	}
@@ -99,7 +99,7 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 		{
 			if (tr.Ent->EntityFlags & ENT_HURTABLE)
 			{
-				if (entity_cast<CHurtableEntity>(tr.Ent)->Health > 0)
+				if (entity_cast<IHurtableEntity>(tr.Ent)->Health > 0)
 					Enemy = tr.Ent;
 			}
 		}

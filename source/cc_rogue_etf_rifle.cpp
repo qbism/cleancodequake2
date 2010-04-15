@@ -123,6 +123,7 @@ void CETFRifle::WeaponGeneric (CPlayerEntity *Player)
 WEAPON_DEFS (CETFRifle);
 
 LINK_ITEM_TO_CLASS (weapon_etf_rifle, CItemEntity);
+LINK_EXISTING_ITEM_TO_NEW_CLASS (weapon_nailgun, "weapon_etf_rifle", CItemEntity);
 
 void CETFRifle::CreateItem (CItemList *List)
 {

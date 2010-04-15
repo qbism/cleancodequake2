@@ -52,30 +52,30 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define	TESLA_EXPLOSION_RADIUS			200
 
 CTesla::CTesla () :
-  CBounceProjectile (),
-  CTouchableEntity (),
-  CHurtableEntity (),
-  CThinkableEntity (),
+  IBounceProjectile (),
+  ITouchableEntity (),
+  IHurtableEntity (),
+  IThinkableEntity (),
   BadArea(NULL)
   {
   };
 
 CTesla::CTesla (sint32 Index) :
-  CBaseEntity (Index),
-  CBounceProjectile (Index),
-  CTouchableEntity (Index),
-  CHurtableEntity (Index),
-  CThinkableEntity (Index),
+  IBaseEntity (Index),
+  IBounceProjectile (Index),
+  ITouchableEntity (Index),
+  IHurtableEntity (Index),
+  IThinkableEntity (Index),
   BadArea(NULL)
   {
   };
 
 void CTesla::SaveFields (CFile &File)
 {
-	CBounceProjectile::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IBounceProjectile::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 
 	File.Write<ETeslaThinkType> (ThinkType);
 
@@ -90,10 +90,10 @@ void CTesla::SaveFields (CFile &File)
 
 void CTesla::LoadFields (CFile &File)
 {
-	CBounceProjectile::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IBounceProjectile::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 
 	ThinkType = File.Read<ETeslaThinkType> ();
 
@@ -110,10 +110,10 @@ void CTesla::LoadFields (CFile &File)
 
 bool CTesla::Run ()
 {
-	return CBounceProjectile::Run();
+	return IBounceProjectile::Run();
 }
 
-void CTesla::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Remove ();
 
@@ -201,7 +201,7 @@ void CTesla::Active ()
 		if (!GetInUse())
 			break;
 
-		CBaseEntity *Hit = (*it);
+		IBaseEntity *Hit = (*it);
 
 		if (!Hit->GetInUse())
 			continue;
@@ -210,7 +210,7 @@ void CTesla::Active ()
 		if (Hit == this)
 			continue;
 
-		CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Hit);
+		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Hit);
 
 		if (Hurtable->Health < 1)
 			continue;
@@ -255,7 +255,7 @@ void CTesla::DoneActivate ()
 	// only check for spawn points in deathmatch
 	if (CvarList[CV_DEATHMATCH].Boolean())
 	{
-		CBaseEntity *Search = NULL;
+		IBaseEntity *Search = NULL;
 		while ((Search = FindRadius<ENT_BASE> (Search, State.GetOrigin(), 1.5 * TESLA_DAMAGE_RADIUS)) != NULL)
 		{
 			// if it's a deathmatch start point
@@ -326,7 +326,7 @@ void CTesla::Activate ()
 	}
 }
 
-void CTesla::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CTesla::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (plane->normal)
 	{

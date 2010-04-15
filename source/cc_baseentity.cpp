@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <cctype>
 #include <algorithm>
 
-CBaseEntity *GetGameEntity (sint32 Index)
+IBaseEntity *GetGameEntity (sint32 Index)
 {
 	return Game.Entities[Index].Entity;
 }
@@ -288,7 +288,7 @@ _CC_DISABLE_DEPRECATION
 _CC_ENABLE_DEPRECATION
 
 	// Paril, hack
-	CBaseEntity *Entity = ed->Entity;
+	IBaseEntity *Entity = ed->Entity;
 
 	Mem_Zero (ed, sizeof(*ed));
 	if (Entity)
@@ -307,7 +307,7 @@ _CC_ENABLE_DEPRECATION
 	}
 }
 
-typedef std::vector <CBaseEntity*> TPrivateEntitiesContainer;
+typedef std::vector <IBaseEntity*> TPrivateEntitiesContainer;
 TPrivateEntitiesContainer PrivateEntities;
 
 void InitPrivateEntities ()
@@ -320,11 +320,11 @@ void			RunPrivateEntities ()
 	TPrivateEntitiesContainer::iterator it = PrivateEntities.begin();
 	while (it != PrivateEntities.end())
 	{
-		CBaseEntity *Entity = (*it);
+		IBaseEntity *Entity = (*it);
 		
 		Level.CurrentEntity = Entity;
 
-		CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
+		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
 
 		if (Thinkable) 
 			Thinkable->PreThink ();
@@ -348,7 +348,7 @@ void			RunPrivateEntities ()
 };
 
 // Creating a new entity via constructor.
-CBaseEntity::CBaseEntity ()
+IBaseEntity::IBaseEntity ()
 {
 _CC_DISABLE_DEPRECATION
 	gameEntity = G_Spawn ();
@@ -362,7 +362,7 @@ _CC_ENABLE_DEPRECATION
 	State.Initialize (&gameEntity->state);
 };
 
-CBaseEntity::CBaseEntity (sint32 Index)
+IBaseEntity::IBaseEntity (sint32 Index)
 {
 	if (Index < 0)
 	{
@@ -385,7 +385,7 @@ CBaseEntity::CBaseEntity (sint32 Index)
 }
 
 bool ShuttingDownEntities = false;
-CBaseEntity::~CBaseEntity ()
+IBaseEntity::~IBaseEntity ()
 {
 	if (!ShuttingDownEntities)
 	{
@@ -412,7 +412,7 @@ CBaseEntity::~CBaseEntity ()
 	}
 };
 
-void CBaseEntity::WriteBaseEntity (CFile &File)
+void IBaseEntity::WriteBaseEntity (CFile &File)
 {
 	File.Write<bool> (Freed);
 	File.Write<uint32> (EntityFlags);
@@ -438,7 +438,7 @@ void CBaseEntity::WriteBaseEntity (CFile &File)
 	File.Write<sint32> (ViewHeight);
 }
 
-void CBaseEntity::ReadBaseEntity (CFile &File)
+void IBaseEntity::ReadBaseEntity (CFile &File)
 {
 	Freed = File.Read<bool> ();
 	EntityFlags = File.Read<uint32> ();
@@ -472,11 +472,11 @@ void CBaseEntity::ReadBaseEntity (CFile &File)
 }
 
 // Funtions below are to link the private gameEntity together
-CBaseEntity		*CBaseEntity::GetOwner	()
+IBaseEntity		*IBaseEntity::GetOwner	()
 {
 	return (gameEntity->owner) ? gameEntity->owner->Entity : NULL;
 }
-void			CBaseEntity::SetOwner	(CBaseEntity *Entity)
+void			IBaseEntity::SetOwner	(IBaseEntity *Entity)
 {
 	if (!Entity || !Entity->gameEntity)
 	{
@@ -487,82 +487,82 @@ void			CBaseEntity::SetOwner	(CBaseEntity *Entity)
 	gameEntity->owner = Entity->gameEntity;
 }
 
-EBrushContents	&CBaseEntity::GetClipmask	()
+EBrushContents	&IBaseEntity::GetClipmask	()
 {
 	return gameEntity->clipMask;
 }
 
-ESolidType		&CBaseEntity::GetSolid ()
+ESolidType		&IBaseEntity::GetSolid ()
 {
 	return gameEntity->solid;
 }
 
 // Unless, of course, you use the vec3f class :D
-vec3f			&CBaseEntity::GetMins ()
+vec3f			&IBaseEntity::GetMins ()
 {
 	return gameEntity->mins;
 }
-vec3f			&CBaseEntity::GetMaxs ()
+vec3f			&IBaseEntity::GetMaxs ()
 {
 
 	return gameEntity->maxs;
 }
 
-vec3f			&CBaseEntity::GetAbsMin ()
+vec3f			&IBaseEntity::GetAbsMin ()
 {
 	return gameEntity->absMin;
 }
-vec3f			&CBaseEntity::GetAbsMax ()
+vec3f			&IBaseEntity::GetAbsMax ()
 {
 	return gameEntity->absMax;
 }
-vec3f			&CBaseEntity::GetSize ()
+vec3f			&IBaseEntity::GetSize ()
 {
 	return gameEntity->size;
 }
 
-EServerFlags	&CBaseEntity::GetSvFlags ()
+EServerFlags	&IBaseEntity::GetSvFlags ()
 {
 	return gameEntity->svFlags;
 }
 
-sint32				CBaseEntity::GetAreaNum (bool second)
+sint32				IBaseEntity::GetAreaNum (bool second)
 {
 	return ((second) ? gameEntity->areaNum2 : gameEntity->areaNum);
 }
 
-link_t			*CBaseEntity::GetArea ()
+link_t			*IBaseEntity::GetArea ()
 {
 	return &gameEntity->area;
 }
-void			CBaseEntity::ClearArea ()
+void			IBaseEntity::ClearArea ()
 {
 	Mem_Zero (&gameEntity->area, sizeof(gameEntity->area));
 }
 
-sint32				CBaseEntity::GetLinkCount ()
+sint32				IBaseEntity::GetLinkCount ()
 {
 	return gameEntity->linkCount;
 }
 
-bool			&CBaseEntity::GetInUse ()
+bool			&IBaseEntity::GetInUse ()
 {
 	return (bool&)gameEntity->inUse;
 }
 
 _CC_DISABLE_DEPRECATION
-void			CBaseEntity::Link ()
+void			IBaseEntity::Link ()
 {
 	gi.linkentity (gameEntity);
 }
 
-void			CBaseEntity::Unlink ()
+void			IBaseEntity::Unlink ()
 {
 	gi.unlinkentity (gameEntity);
 }
 _CC_ENABLE_DEPRECATION
 
-void			CBaseEntity::Free ()
+void			IBaseEntity::Free ()
 {
 	if (gameEntity)
 	{
@@ -590,7 +590,7 @@ void			CBaseEntity::Free ()
 	Freed = true;
 }
 
-void	CBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void	IBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
 	{
@@ -603,7 +603,7 @@ void	CBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint
 	PlaySoundFrom (this, channel, soundIndex, volume, attenuation, timeOfs);
 };
 
-void	CBaseEntity::PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void	IBaseEntity::PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
 	{
@@ -616,7 +616,7 @@ void	CBaseEntity::PlayPositionedSound (vec3f origin, EEntSndChannel channel, Med
 	PlaySoundAt (origin, this, channel, soundIndex, volume, attenuation, timeOfs);
 };
 
-void	CBaseEntity::KillBox ()
+void	IBaseEntity::KillBox ()
 {
 	while (1)
 	{
@@ -624,10 +624,10 @@ void	CBaseEntity::KillBox ()
 		if (!tr.ent || !tr.Ent)
 			break;
 
-		if ((tr.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(tr.Ent)->CanTakeDamage)
+		if ((tr.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Ent)->CanTakeDamage)
 		{
 			// nail it
-			entity_cast<CHurtableEntity>(tr.Ent)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(),
+			entity_cast<IHurtableEntity>(tr.Ent)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(),
 																vec3fOrigin, 100000, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 		}
 
@@ -636,11 +636,11 @@ void	CBaseEntity::KillBox ()
 	}
 };
 
-void CBaseEntity::SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
+void IBaseEntity::SplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod)
 {
-	CHurtableEntity	*Entity = NULL;
+	IHurtableEntity	*Entity = NULL;
 
-	while ((Entity = FindRadius<CHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
+	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
 	{
 		if (Entity == ignore)
 			continue;
@@ -670,9 +670,9 @@ Like SplashDamage, but ignores walls (skips CanDamage check, among others)
 class CNukePlayerCallBack : public CForEachPlayerCallback
 {
 public:
-	CBaseEntity *Inflictor;
+	IBaseEntity *Inflictor;
 
-	CNukePlayerCallBack (CBaseEntity *Inflictor) :
+	CNukePlayerCallBack (IBaseEntity *Inflictor) :
 	Inflictor(Inflictor)
 	{
 	};
@@ -691,10 +691,10 @@ public:
 	}
 };
 
-void CBaseEntity::NukeSplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod)
+void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod)
 {
 	float	points;
-	CHurtableEntity	*Entity = NULL;
+	IHurtableEntity	*Entity = NULL;
 	vec3f	v;
 	vec3f	dir;
 	float	len;
@@ -702,7 +702,7 @@ void CBaseEntity::NukeSplashDamage (CBaseEntity *Attacker, float damage, CBaseEn
 	float killzone = radius;
 	float killzone2 = radius*2.0;
 
-	while ((Entity = FindRadius<CHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
+	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
 	{
 // ignore nobody
 		if (Entity == ignore)
@@ -742,25 +742,25 @@ void CBaseEntity::NukeSplashDamage (CBaseEntity *Attacker, float damage, CBaseEn
 }
 #endif
 
-CMapEntity::CMapEntity () : 
-CBaseEntity()
+IMapEntity::IMapEntity () : 
+IBaseEntity()
 {
 	EntityFlags |= ENT_MAP;
 };
 
-CMapEntity::CMapEntity (sint32 Index) : 
-CBaseEntity(Index)
+IMapEntity::IMapEntity (sint32 Index) : 
+IBaseEntity(Index)
 {
 	EntityFlags |= ENT_MAP;
 };
 
-CMapEntity::~CMapEntity ()
+IMapEntity::~IMapEntity ()
 {
 };
 
 #include "cc_tent.h"
 
-void CBaseEntity::BecomeExplosion (bool grenade)
+void IBaseEntity::BecomeExplosion (bool grenade)
 {
 	if (grenade)
 		CGrenadeExplosion (State.GetOrigin()).Send();
@@ -769,46 +769,46 @@ void CBaseEntity::BecomeExplosion (bool grenade)
 	Free ();
 }
 
-void CBaseEntity::CastTo (ECastFlags CastFlags)
+void IBaseEntity::CastTo (ECastFlags CastFlags)
 {
 	Cast (CastFlags, this);
 }
 
-void CBaseEntity::StuffText (const char *text)
+void IBaseEntity::StuffText (const char *text)
 {
    	WriteByte (SVC_STUFFTEXT);	        
 	WriteString (text);
     CastTo (CASTFLAG_RELIABLE);	
 }
 
-ENTITYFIELDS_BEGIN(CMapEntity)
+ENTITYFIELDS_BEGIN(IMapEntity)
 {
-	CEntityField ("spawnflags",		EntityMemberOffset(CBaseEntity,SpawnFlags),		FT_UINT),
+	CEntityField ("spawnflags",		EntityMemberOffset(IBaseEntity,SpawnFlags),		FT_UINT),
 	CEntityField ("origin",			GameEntityMemberOffset(state.origin),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angles",			GameEntityMemberOffset(state.angles),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
-	CEntityField ("team",			EntityMemberOffset(CBaseEntity,Team.String),	FT_LEVEL_STRING),
+	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.String),	FT_LEVEL_STRING),
 };
-ENTITYFIELDS_END(CMapEntity)
+ENTITYFIELDS_END(IMapEntity)
 
-const CEntityField CMapEntity::FieldsForParsing_Map[] =
+const CEntityField IMapEntity::FieldsForParsing_Map[] =
 {
-	CEntityField ("targetname",		EntityMemberOffset(CMapEntity,TargetName),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("targetname",		EntityMemberOffset(IMapEntity,TargetName),		FT_LEVEL_STRING | FT_SAVABLE),
 };
-const size_t CMapEntity::FieldsForParsingSize_Map = ArrayCount(CMapEntity::FieldsForParsing_Map);
+const size_t IMapEntity::FieldsForParsingSize_Map = ArrayCount(IMapEntity::FieldsForParsing_Map);
 
-bool			CMapEntity::ParseField (const char *Key, const char *Value)
+bool			IMapEntity::ParseField (const char *Key, const char *Value)
 {
-	if (CheckFields<CMapEntity, CBaseEntity> (this, Key, Value))
+	if (CheckFields<IMapEntity, IBaseEntity> (this, Key, Value))
 		return true;
 	else
 	{
-		for (size_t i = 0; i < CMapEntity::FieldsForParsingSize_Map; i++)
+		for (size_t i = 0; i < IMapEntity::FieldsForParsingSize_Map; i++)
 		{
-			if (!(CMapEntity::FieldsForParsing_Map[i].FieldType & FT_NOSPAWN) && (strcmp (Key, CMapEntity::FieldsForParsing_Map[i].Name.c_str()) == 0))
+			if (!(IMapEntity::FieldsForParsing_Map[i].FieldType & FT_NOSPAWN) && (strcmp (Key, IMapEntity::FieldsForParsing_Map[i].Name.c_str()) == 0))
 			{
-				CMapEntity::FieldsForParsing_Map[i].Create<CMapEntity> (this, Value);
+				IMapEntity::FieldsForParsing_Map[i].Create<IMapEntity> (this, Value);
 				return true;
 			}
 		}
@@ -818,41 +818,41 @@ bool			CMapEntity::ParseField (const char *Key, const char *Value)
 	return false;
 };
 
-void CMapEntity::SaveFields (CFile &File)
+void IMapEntity::SaveFields (CFile &File)
 {
-	for (size_t i = 0; i < CMapEntity::FieldsForParsingSize_Map; i++)
+	for (size_t i = 0; i < IMapEntity::FieldsForParsingSize_Map; i++)
 	{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-		if (CMapEntity::FieldsForParsing_Map[i].FieldType & FT_SAVABLE)
+		if (IMapEntity::FieldsForParsing_Map[i].FieldType & FT_SAVABLE)
 		{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-			CMapEntity::FieldsForParsing_Map[i].Save<CMapEntity> (this, File);
+			IMapEntity::FieldsForParsing_Map[i].Save<IMapEntity> (this, File);
 		}
 	}
 };
 
-void CMapEntity::LoadFields (CFile &File)
+void IMapEntity::LoadFields (CFile &File)
 {
-	for (size_t i = 0; i < CMapEntity::FieldsForParsingSize_Map; i++)
+	for (size_t i = 0; i < IMapEntity::FieldsForParsingSize_Map; i++)
 	{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-		if (CMapEntity::FieldsForParsing_Map[i].FieldType & FT_SAVABLE)
+		if (IMapEntity::FieldsForParsing_Map[i].FieldType & FT_SAVABLE)
 		{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
 #endif
-			CMapEntity::FieldsForParsing_Map[i].Load<CMapEntity> (this, File);
+			IMapEntity::FieldsForParsing_Map[i].Load<IMapEntity> (this, File);
 		}
 	}
 };
 
-bool				CMapEntity::CheckValidity ()
+bool				IMapEntity::CheckValidity ()
 {
 	// Remove things (except the world) from different skill levels or deathmatch
 	if (this != World)
@@ -886,7 +886,7 @@ bool				CMapEntity::CheckValidity ()
 	return true;
 };
 
-void CMapEntity::ParseFields ()
+void IMapEntity::ParseFields ()
 {
 	if (!Level.ParseData.size())
 		return;

@@ -78,7 +78,7 @@ THashedEntityTableList &EntityTableHash ()
 	return EntityTableHashV;
 };
 
-CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index)) :
+CEntityTableIndex::CEntityTableIndex (const char *Name, IBaseEntity *(*FuncPtr) (sint32 index)) :
   Name(Name),
   FuncPtr(FuncPtr)
 {
@@ -88,7 +88,7 @@ CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) 
 	EntityTableHash().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_ENTITY_TABLE_HASH), EntityTable().size()-1));
 };
 
-CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
+IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 {
 	uint32 hash = Com_HashGeneric(Name, MAX_ENTITY_TABLE_HASH);
 
@@ -201,7 +201,7 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 
 #include <typeinfo>
 
-void WriteEntireEntity (CFile &File, CBaseEntity *Entity)
+void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 {
 	// Write the edict_t info first
 	File.Write<edict_t> (*Entity->gameEntity);
@@ -240,7 +240,7 @@ void WriteEntireEntity (CFile &File, CBaseEntity *Entity)
 	WRITE_MAGIC
 }
 
-void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
+void WriteFinalizedEntity (CFile &File, IBaseEntity *Entity)
 {
 	Entity->WriteBaseEntity (File);
 
@@ -260,14 +260,14 @@ void WriteEntities (CFile &File)
 
 		File.Write<sint32> (ent->state.number);
 
-		CBaseEntity *Entity = ent->Entity;
+		IBaseEntity *Entity = ent->Entity;
 		WriteEntireEntity (File, Entity);
 	}
 	File.Write<sint32> (-1);
 
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Entity = (*it)->Entity;
+		IBaseEntity *Entity = (*it)->Entity;
 		if (!Entity || !Entity->Savable())
 			continue;
 		WriteFinalizedEntity (File, Entity);
@@ -297,7 +297,7 @@ void ReadRealEntity (CFile &File, sint32 number)
 	edict_t *ent = &Game.Entities[number];
 
 	// Restore entity
-	CBaseEntity *RestoreEntity = ent->Entity;
+	IBaseEntity *RestoreEntity = ent->Entity;
 
 	// Read
 	*ent = File.Read<edict_t> ();
@@ -327,7 +327,7 @@ void ReadRealEntity (CFile &File, sint32 number)
 	// Read entity stuff
 	if (number > Game.MaxClients)
 	{
-		CBaseEntity *Entity;
+		IBaseEntity *Entity;
 		char *tempBuffer = File.ReadString ();
 
 		Entity = CreateEntityFromTable (number, tempBuffer);
@@ -346,7 +346,7 @@ void ReadRealEntity (CFile &File, sint32 number)
 	READ_MAGIC
 }
 
-void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
+void ReadFinalizeEntity (CFile &File, IBaseEntity *Entity)
 {
 	Entity->ReadBaseEntity (File);
 

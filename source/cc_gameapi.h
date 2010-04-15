@@ -67,11 +67,11 @@ struct gameImport_t
 	void	(*centerprintf) (edict_t *ent, char *fmt, ...);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (PlaySoundFrom or CBaseEntity->PlaySound)
+	_CC_INSECURE_DEPRECATE (PlaySoundFrom or IBaseEntity->PlaySound)
 #endif
 	void	(*sound) (edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (PlaySoundAt or CBaseEntity->PlayPositionedSound)
+	_CC_INSECURE_DEPRECATE (PlaySoundAt or IBaseEntity->PlayPositionedSound)
 #endif
 	void	(*positioned_sound) (vec3_t origin, edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 
@@ -132,11 +132,11 @@ struct gameImport_t
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE ((CBaseEntity)->Link)
+	_CC_INSECURE_DEPRECATE ((IBaseEntity)->Link)
 #endif
 		void	(*linkentity) (edict_t *ent);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE ((CBaseEntity)->Unlink)
+	_CC_INSECURE_DEPRECATE ((IBaseEntity)->Unlink)
 #endif
 	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
 #if !USE_EXTENDED_GAME_IMPORTS
@@ -319,13 +319,13 @@ CC_ENUM (uint8, ECastFlags)
 	CASTFLAG_RELIABLE = 8
 };
 
-void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity *Ent, bool SuppliedOrigin);
-void Cast (ECastFlags castFlags, CBaseEntity *Ent);
+void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, IBaseEntity *Ent, bool SuppliedOrigin);
+void Cast (ECastFlags castFlags, IBaseEntity *Ent);
 void Cast (ECastFlags castFlags, vec3f &Origin);
 
 EBrushContents PointContents (vec3f start);
 
-typedef std::vector<CBaseEntity*> TBoxEdictsEntityList;
+typedef std::vector<IBaseEntity*> TBoxEdictsEntityList;
 TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers);
 
 void ConfigString (sint32 configStringIndex, const char *configStringValue, ...);

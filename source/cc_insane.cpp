@@ -466,7 +466,7 @@ void CInsane::Run ()
 }
 
 
-void CInsane::Pain (CBaseEntity *Other, sint32 Damage)
+void CInsane::Pain (IBaseEntity *Other, sint32 Damage)
 {
 //	if (self->health < (self->max_health / 2))
 //		self->state.skinnum = 1;
@@ -544,7 +544,7 @@ void CInsane::Dead ()
 }
 
 
-void CInsane::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CInsane::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{

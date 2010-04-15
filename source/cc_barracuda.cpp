@@ -218,7 +218,7 @@ void CBarracudaShark::Melee()
 	CurrentMove = &FlipperMoveAttack;
 }
 
-void CBarracudaShark::Pain (CBaseEntity *Other, sint32 Damage)
+void CBarracudaShark::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -325,7 +325,7 @@ void CBarracudaShark::Sight ()
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
-void CBarracudaShark::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBarracudaShark::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

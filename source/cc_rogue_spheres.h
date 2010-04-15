@@ -46,30 +46,30 @@ CC_ENUM (uint8, ESphereFlags)
 	SPHERE_DOPPLEGANGER		= BIT(0),
 };
 
-class CRogueBaseSphere : public CFlyMissileProjectile, public CHurtableEntity, public CTouchableEntity, public CThinkableEntity
+class CRogueBaseSphere : public IFlyMissileProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
 public:
 	FrameNumber_t		Wait;
 	ESphereType			SphereType;
 	ESphereFlags		SphereFlags;
 	CPlayerEntity		*OwnedPlayer;
-	CHurtableEntity		*SphereEnemy;
+	IHurtableEntity		*SphereEnemy;
 	vec3f				SavedGoal;
 
 	CRogueBaseSphere () :
-	  CHurtableEntity(),
-	  CTouchableEntity(),
-	  CThinkableEntity(),
-	  CFlyMissileProjectile()
+	  IHurtableEntity(),
+	  ITouchableEntity(),
+	  IThinkableEntity(),
+	  IFlyMissileProjectile()
 	  {
 	  };
 
 	CRogueBaseSphere (sint32 Index) :
-	  CBaseEntity(Index),
-	  CHurtableEntity(Index),
-	  CTouchableEntity(Index),
-	  CThinkableEntity(Index),
-	  CFlyMissileProjectile(Index)
+	  IBaseEntity(Index),
+	  IHurtableEntity(Index),
+	  ITouchableEntity(Index),
+	  IThinkableEntity(Index),
+	  IFlyMissileProjectile(Index)
 	  {
 	  };
 
@@ -79,23 +79,23 @@ public:
 
 	bool Run ()
 	{
-		return ((PhysicsType == PHYSICS_FLYMISSILE) ? CFlyMissileProjectile::Run() : false);
+		return ((PhysicsType == PHYSICS_FLYMISSILE) ? IFlyMissileProjectile::Run() : false);
 	}
 
-	virtual void 	Pain (CBaseEntity *Other, sint32 Damage) = 0;
-	virtual void 	Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual void 	Pain (IBaseEntity *Other, sint32 Damage) = 0;
+	virtual void 	Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
-	virtual void	Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {};
+	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {};
 
 	virtual void	Think () = 0;
 
-	void			BaseTouch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod);
+	void			BaseTouch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod);
 	void			Explode ();
 	void			Fly ();
 	void			Chase (bool stupidChase);
 
 	template <class TType>
-	static TType	*CreateBaseSphere (CBaseEntity *Owner, ESphereType Type, ESphereFlags Flags)
+	static TType	*CreateBaseSphere (IBaseEntity *Owner, ESphereType Type, ESphereFlags Flags)
 	{
 		TType *Sphere = QNewEntityOf TType;
 
@@ -140,7 +140,7 @@ public:
 	  };
 
 	CRogueDefenderSphere (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CRogueBaseSphere (Index)
 	  {
 	  };
@@ -161,12 +161,12 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CRogueDefenderSphere);
 
-	void 			Pain (CBaseEntity *Other, sint32 Damage);
+	void 			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Think ();
 
-	void			Shoot (CHurtableEntity *At);
+	void			Shoot (IHurtableEntity *At);
 
-	static void		Create (CBaseEntity *Owner, ESphereFlags Flags);
+	static void		Create (IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 class CRogueHunterSphere : public CRogueBaseSphere
@@ -178,7 +178,7 @@ public:
 	  };
 
 	CRogueHunterSphere (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CRogueBaseSphere (Index)
 	  {
 	  };
@@ -195,12 +195,12 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CRogueVengeanceSphere);
 
-	void 			Pain (CBaseEntity *Other, sint32 Damage);
+	void 			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Think ();
-	void			Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void			Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void			ChangeYaw (float IdealYaw);
-	static void		Create (CBaseEntity *Owner, ESphereFlags Flags);
+	static void		Create (IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 class CRogueVengeanceSphere : public CRogueBaseSphere
@@ -212,7 +212,7 @@ public:
 	  };
 
 	CRogueVengeanceSphere (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CRogueBaseSphere (Index)
 	  {
 	  };
@@ -229,11 +229,11 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CRogueVengeanceSphere);
 
-	void 			Pain (CBaseEntity *Other, sint32 Damage);
+	void 			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Think ();
-	void			Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void			Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	static void		Create (CBaseEntity *Owner, ESphereFlags Flags);
+	static void		Create (IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 #else

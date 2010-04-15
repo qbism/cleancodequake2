@@ -47,7 +47,7 @@ CC_ENUM (uint8, EItemThinkState)
 };
 
 // Item entity
-class CItemEntity : public CMapEntity, public CTossProjectile, public CTouchableEntity, public CThinkableEntity, public CUsableEntity
+class CItemEntity : public IMapEntity, public ITossProjectile, public ITouchableEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	char				*Model;
@@ -69,9 +69,9 @@ public:
 	CItemEntity *GetRandomTeamMember (CItemEntity *Master);
 
 	virtual void Think ();
-	virtual void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	bool Run ();
 
@@ -97,7 +97,7 @@ public:
 };
 
 #define LINK_ITEM_TO_CLASS(mapClassName,DLLClassName) \
-	CMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (sint32 Index) \
+	IMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (sint32 Index) \
 	{ \
 		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
 		CBaseItem *Item = FindItemByClassname(#mapClassName); \
@@ -113,6 +113,24 @@ public:
 	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(mapClassName, _Linker) \
 	(LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn), #mapClassName); \
 	IMPLEMENT_SAVE_STRUCTURE (mapClassName,DLLClassName)
+
+#define LINK_EXISTING_ITEM_TO_NEW_CLASS(DLLItemName, mapClassName,DLLClassName) \
+	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLItemName, _Spawn) (sint32 Index) \
+	{ \
+		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
+		CBaseItem *Item = FindItemByClassname(mapClassName); \
+		if (Item) \
+		{	\
+			newClass->ParseFields (); \
+			\
+			if (newClass->CheckValidity()) \
+				newClass->Spawn (Item); \
+		}	\
+		return newClass; \
+	} \
+	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(DLLItemName, _Linker) \
+	(LINK_RESOLVE_CLASSNAME(DLLItemName, _Spawn), #DLLItemName); \
+	IMPLEMENT_SAVE_STRUCTURE (DLLItemName,DLLClassName)
 
 #if CLEANCTF_ENABLED
 #include "cc_ctfitementities.h"

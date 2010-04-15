@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // misc_* entities
 //
 
-class CMiscViper : public CTrainBase, public CTouchableEntity
+class CMiscViper : public CTrainBase, public ITouchableEntity
 {
 	bool MyUse;
 public:
@@ -46,6 +46,6 @@ public:
 
 	bool Run ();
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	virtual void Spawn ();
 };

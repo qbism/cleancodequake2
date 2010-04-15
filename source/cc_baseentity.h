@@ -89,9 +89,9 @@ CC_ENUM (uint32, EEdictFlags)
 #endif
 };
 
-// CBaseEntity is abstract.
+// IBaseEntity is abstract.
 // A base entity can't do anything
-class CBaseEntity
+class IBaseEntity
 {
 //private:
 public: // Kept public for now because there are lots of functions that require edict_t
@@ -109,28 +109,28 @@ public:
 		char			*String;
 
 		bool			HasTeam;
-		CBaseEntity		*Chain;
-		CBaseEntity		*Master;
+		IBaseEntity		*Chain;
+		IBaseEntity		*Master;
 	} Team;
 
-	CBaseEntity		*GroundEntity;
+	IBaseEntity		*GroundEntity;
 	sint32			GroundEntityLinkCount;
 	uint32			SpawnFlags;
-	CBaseEntity		*Enemy;
+	IBaseEntity		*Enemy;
 	sint32			ViewHeight;
 
 	void WriteBaseEntity (CFile &File);
 	void ReadBaseEntity (CFile &File);
 
-	CBaseEntity ();
-	CBaseEntity (sint32 Index);
-	virtual ~CBaseEntity ();
+	IBaseEntity ();
+	IBaseEntity (sint32 Index);
+	virtual ~IBaseEntity ();
 
 	virtual	bool	Run () {return true;}; // Runs the entity
 
 	// Funtions below are to link the private gameEntity together
-	CBaseEntity		*GetOwner	();
-	void			SetOwner	(CBaseEntity *Entity);
+	IBaseEntity		*GetOwner	();
+	void			SetOwner	(IBaseEntity *Entity);
 
 	EBrushContents	&GetClipmask	();
 	ESolidType		&GetSolid ();
@@ -175,9 +175,9 @@ public:
 	void			StuffText (const char *text);
 
 	void			KillBox ();
-	void			SplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
+	void			SplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod);
 #if ROGUE_FEATURES
-	void			NukeSplashDamage (CBaseEntity *Attacker, float damage, CBaseEntity *ignore, float radius, EMeansOfDeath mod);
+	void			NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod);
 #endif
 
 	// Save functions
@@ -201,25 +201,25 @@ public:
 // EntityFlags values
 enum
 {
-	ENT_BASE		=	BIT(0), // Can be casted to CBaseEntity
-	ENT_HURTABLE	=	BIT(1), // Can be casted to CHurtableEntity
-	ENT_THINKABLE	=	BIT(2), // Can be casted to CThinkableEntity
-	ENT_TOUCHABLE	=	BIT(3), // Can be casted to CTouchableEntity
+	ENT_BASE		=	BIT(0), // Can be casted to IBaseEntity
+	ENT_HURTABLE	=	BIT(1), // Can be casted to IHurtableEntity
+	ENT_THINKABLE	=	BIT(2), // Can be casted to IThinkableEntity
+	ENT_TOUCHABLE	=	BIT(3), // Can be casted to ITouchableEntity
 	ENT_PLAYER		=	BIT(4), // Can be casted to CPlayerEntity
 	ENT_MONSTER		=	BIT(5), // Can be casted to CMonsterEntity
-	ENT_PHYSICS		=	BIT(6), // Can be casted to CPhysicsEntity
-	ENT_BLOCKABLE	=	BIT(7), // Can be casted to CBlockableEntity
-	ENT_USABLE		=	BIT(8), // Can be casted to CUsableEntity
+	ENT_PHYSICS		=	BIT(6), // Can be casted to IPhysicsEntity
+	ENT_BLOCKABLE	=	BIT(7), // Can be casted to IBlockableEntity
+	ENT_USABLE		=	BIT(8), // Can be casted to IUsableEntity
 	ENT_ITEM		=	BIT(9), // Can be casted to CItemEntity
-	ENT_MAP			=	BIT(10), // Can be casted to CMapEntity
-	ENT_BRUSHMODEL	=	BIT(11), // Can be casted to CBrushModel
+	ENT_MAP			=	BIT(10), // Can be casted to IMapEntity
+	ENT_BRUSHMODEL	=	BIT(11), // Can be casted to IBrushModel
 	ENT_PRIVATE		=	BIT(12), // Does not have a gameEntity structure
-	ENT_JUNK		=	BIT(13), // Can be casted to CJunkEntity
+	ENT_JUNK		=	BIT(13), // Can be casted to IJunkEntity
 	ENT_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
 };
 
 template <class TType>
-inline TType *entity_cast (CBaseEntity *Entity)
+inline TType *entity_cast (IBaseEntity *Entity)
 {
 	if (Entity == NULL)
 		return NULL;
@@ -231,7 +231,7 @@ inline TType *entity_cast (CBaseEntity *Entity)
 }
 
 template <>
-inline CBaseEntity *entity_cast<CBaseEntity> (CBaseEntity *Entity)
+inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 {
 	return Entity; // Implicit cast already done
 }
@@ -374,7 +374,7 @@ CC_ENUM (uint32, EFieldType)
 #define OFS_TO_TYPE(x) OFS_TO_TYPE_(x,ClassOffset)
 
 // Forward declaration, defined in cc_utils.
-CBaseEntity *LoadEntity (uint32 Index);
+IBaseEntity *LoadEntity (uint32 Index);
 
 class CEntityField
 {
@@ -560,7 +560,7 @@ public:
 			break;
 		case FT_ENTITY:
 			{
-				sint32 Index = (OFS_TO_TYPE(CBaseEntity*) && OFS_TO_TYPE(CBaseEntity*)->gameEntity) ? OFS_TO_TYPE(CBaseEntity*)->State.GetNumber() : -1;
+				sint32 Index = (OFS_TO_TYPE(IBaseEntity*) && OFS_TO_TYPE(IBaseEntity*)->gameEntity) ? OFS_TO_TYPE(IBaseEntity*)->State.GetNumber() : -1;
 				File.Write<sint32> (Index);
 			}
 			break;
@@ -655,7 +655,7 @@ public:
 		case FT_ENTITY:
 			{
 				sint32 Index = File.Read<sint32> ();
-				OFS_TO_TYPE(CBaseEntity *) = LoadEntity (Index);
+				OFS_TO_TYPE(IBaseEntity *) = LoadEntity (Index);
 			}
 			break;
 		case FT_STRING:
@@ -754,13 +754,13 @@ size_t FieldSize ()
 }
 
 // File system aid
-CBaseEntity *GetGameEntity (sint32 Index);
-inline void WriteEntity (CFile &File, CBaseEntity *Entity)
+IBaseEntity *GetGameEntity (sint32 Index);
+inline void WriteEntity (CFile &File, IBaseEntity *Entity)
 {
 	File.Write<sint32> ((Entity && Entity->GetInUse()) ? Entity->State.GetNumber() : -1);
 }
 
-inline CBaseEntity *ReadEntity (CFile &File)
+inline IBaseEntity *ReadEntity (CFile &File)
 {
 	sint32 Index = File.Read<sint32> ();
 
@@ -788,15 +788,15 @@ inline TType *ReadEntity (CFile &File)
 
 // An entity that can be seen via a map.
 // Just to bypass the damn abstractness I did.
-class CMapEntity : public virtual CBaseEntity
+class IMapEntity : public virtual IBaseEntity
 {
 public:
 	char		*Classname;
 	char		*TargetName;
 
-	CMapEntity ();
-	CMapEntity (sint32 Index);
-	virtual ~CMapEntity ();
+	IMapEntity ();
+	IMapEntity (sint32 Index);
+	virtual ~IMapEntity ();
 
 	virtual void Spawn() = 0;
 

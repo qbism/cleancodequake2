@@ -39,20 +39,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CClassnameToClassIndex
 {
 public:
-	CMapEntity				*(*Spawn) (sint32 Index);
+	IMapEntity				*(*Spawn) (sint32 Index);
 	const char				*Classname;
 	uint32					hashValue;
 	CClassnameToClassIndex	*hashNext;
 
-	CClassnameToClassIndex (CMapEntity *(*Spawn) (sint32 Index), const char *Classname);
+	CClassnameToClassIndex (IMapEntity *(*Spawn) (sint32 Index), const char *Classname);
 };
 
-CBaseEntity *ResolveMapEntity (edict_t *ent);
+IBaseEntity *ResolveMapEntity (edict_t *ent);
 
 #define LINK_RESOLVE_CLASSNAME(x,y) x##y
 
 #define LINK_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
-	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
+	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
 		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
 		newClass->ParseFields (); \

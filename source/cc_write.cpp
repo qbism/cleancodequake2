@@ -164,7 +164,7 @@ void Clear ()
 }
 
 // vec3f overloads
-void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity *Ent, bool SuppliedOrigin)
+void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, IBaseEntity *Ent, bool SuppliedOrigin)
 {
 	// Sanity checks
 	if (castType == CAST_MULTI && Ent)
@@ -222,7 +222,7 @@ void Cast (ECastFlags castFlags, vec3f &Origin)
 {
 	Cast (CAST_MULTI, castFlags, Origin, NULL, true);
 }
-void Cast (ECastFlags castFlags, CBaseEntity *Ent)
+void Cast (ECastFlags castFlags, IBaseEntity *Ent)
 {
 	Cast (CAST_UNI, castFlags, vec3fOrigin, Ent, false);
 }

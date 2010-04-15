@@ -38,17 +38,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_tent.h"
 
 CLoogie::CLoogie () :
-  CFlyMissileProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CLoogie::CLoogie (sint32 Index) :
-  CBaseEntity (Index),
-  CFlyMissileProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -59,7 +59,7 @@ void CLoogie::Think ()
 	Free();
 }
 
-void CLoogie::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CLoogie::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -73,13 +73,13 @@ void CLoogie::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
 
 	Free (); // "delete" the entity
 }
 
-void CLoogie::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
+void CLoogie::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed)
 {
 	CLoogie		*Bolt = QNewEntityOf CLoogie;
@@ -120,7 +120,7 @@ void CLoogie::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 bool CLoogie::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CGekk::CGekk (uint32 ID) :
@@ -141,7 +141,7 @@ void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damag
 
 bool CGekk::CheckMelee ()
 {
-	if (!Entity->Enemy || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
@@ -182,7 +182,7 @@ bool CGekk::CheckJumpClose ()
 
 bool CGekk::CheckAttack ()
 {
-	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())
@@ -379,7 +379,7 @@ void CGekk::SwimLoop ()
 
 void CGekk::Swim ()
 {
-	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<CPhysicsEntity>(Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
+	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<IPhysicsEntity>(Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
 		WaterToLand ();
 	else
 		CurrentMove = &GekkMoveSwimStart;
@@ -597,7 +597,7 @@ void CGekk::Loogie ()
 	vec3f dir;
 	static const vec3f fireOffset (-18, -0.8f, 24);
 
-	if (!Entity->Enemy || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
@@ -632,7 +632,7 @@ void CGekk::ReFireLoogie ()
 		return;
 	}
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health >= 0 && frand() > 0.7 && (Range(Entity, Entity->Enemy) == RANGE_NEAR))
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health >= 0 && frand() > 0.7 && (Range(Entity, Entity->Enemy) == RANGE_NEAR))
 		CurrentMove = &GekkMoveSpit;
 }
 
@@ -671,7 +671,7 @@ CAnim GekkMoveAttack2 (FRAME_clawatk5_01, FRAME_clawatk5_09, GekkFramesAttack2, 
 
 void CGekk::CheckMeleeRefire ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (frand() < (CvarList[CV_SKILL].Integer() * 0.1))
@@ -797,7 +797,7 @@ void CGekk::Melee ()
 // ATTACK
 //
 
-void CGekk::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CGekk::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!Jumping)
 		return;
@@ -811,7 +811,7 @@ void CGekk::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;
 
-	CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Other);
+	IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
 	if (Hurtable->CanTakeDamage)
 	{
@@ -975,7 +975,7 @@ CFrame GekkFramesPain2[] =
 };
 CAnim GekkMovePain2 (FRAME_pain4_01, FRAME_pain4_13, GekkFramesPain2, &CMonster::Run);
 
-void CGekk::Pain (CBaseEntity *Other, sint32 Damage)
+void CGekk::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->SpawnFlags & 8)
 	{
@@ -1172,7 +1172,7 @@ CFrame GekkFramesWDeath[] =
 };
 CAnim GekkMoveWDeath (FRAME_wdeath_01, FRAME_wdeath_45, GekkFramesWDeath, ConvertDerivedFunction(&CGekk::Dead));
 
-void CGekk::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CGekk::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {	
 	if (Entity->Health < Entity->GibHealth)
 	{
@@ -1324,7 +1324,7 @@ void CGekk::
 #endif
 	(
 #if !ROGUE_FEATURES
-	CBaseEntity *Attacker, 
+	IBaseEntity *Attacker, 
 #endif
 	float eta)
 {

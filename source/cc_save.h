@@ -45,18 +45,18 @@ class CEntityTableIndex
 {
 public:
 	const char *Name;
-	CBaseEntity *(*FuncPtr) (sint32 index);
+	IBaseEntity *(*FuncPtr) (sint32 index);
 
-	CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index));
+	CEntityTableIndex (const char *Name, IBaseEntity *(*FuncPtr) (sint32 index));
 
-	CBaseEntity *Create (sint32 number)
+	IBaseEntity *Create (sint32 number)
 	{
 		return FuncPtr (number);
 	};
 };
 
 #define IMPLEMENT_SAVE_STRUCTURE(unique_name,DLLClassName) \
-	CBaseEntity *LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity) (sint32 Index) \
+	IBaseEntity *LINK_RESOLVE_CLASSNAME(unique_name, _RecreateEntity) (sint32 Index) \
 	{ \
 		return QNewEntityOf DLLClassName(Index); \
 	} \

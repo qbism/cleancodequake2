@@ -53,10 +53,10 @@ These can used but not touched.
 #define TIMER_START_ON		1
 
 CFuncTimer::CFuncTimer () :
-	CBaseEntity (),
-	CMapEntity (),
-	CThinkableEntity (),
-	CUsableEntity (),
+	IBaseEntity (),
+	IMapEntity (),
+	IThinkableEntity (),
+	IUsableEntity (),
 	Wait (0),
 	Random (0),
 	PauseTime (0)
@@ -64,10 +64,10 @@ CFuncTimer::CFuncTimer () :
 	};
 
 CFuncTimer::CFuncTimer (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CThinkableEntity (Index),
-	CUsableEntity (Index),
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IThinkableEntity (Index),
+	IUsableEntity (Index),
 	Wait (0),
 	Random (0),
 	PauseTime (0)
@@ -88,23 +88,23 @@ bool			CFuncTimer::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CFuncTimer::SaveFields (CFile &File)
 {
 	SaveEntityFields <CFuncTimer> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void			CFuncTimer::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncTimer> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 void CFuncTimer::Think ()
@@ -115,10 +115,10 @@ void CFuncTimer::Think ()
 
 bool CFuncTimer::Run ()
 {
-	return CBaseEntity::Run ();
+	return IBaseEntity::Run ();
 };
 
-void CFuncTimer::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CFuncTimer::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	User = Activator;
 
@@ -169,22 +169,22 @@ used with target_string (must be on same "team")
 */
 
 CTargetCharacter::CTargetCharacter () :
-	CBaseEntity (),
-	CMapEntity (),
-	CBrushModel ()
+	IBaseEntity (),
+	IMapEntity (),
+	IBrushModel ()
 	{
 	};
 
 CTargetCharacter::CTargetCharacter (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CBrushModel (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IBrushModel (Index)
 	{
 	};
 
 bool CTargetCharacter::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 };
 
 void CTargetCharacter::Spawn ()
@@ -207,21 +207,21 @@ bool CTargetCharacter::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CTargetCharacter> (this, Key, Value))
 		return true;
 
-	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void			CTargetCharacter::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetCharacter> (this, File);
-	CMapEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
 }
 
 void			CTargetCharacter::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetCharacter> (this, File);
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_character", CTargetCharacter);
@@ -230,14 +230,14 @@ LINK_CLASSNAME_TO_CLASS ("target_character", CTargetCharacter);
 */
 
 CTargetString::CTargetString () :
-	CBaseEntity (),
-	CMapEntity ()
+	IBaseEntity (),
+	IMapEntity ()
 	{
 	};
 
 CTargetString::CTargetString (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index)
 	{
 	};
 
@@ -245,15 +245,15 @@ class CTargetStringForEachCallback : public CForEachTeamChainCallback
 {
 public:
 	std::string Message;
-	CBaseEntity *Me;
+	IBaseEntity *Me;
 
-	CTargetStringForEachCallback (CBaseEntity *Me, std::string &Message) :
+	CTargetStringForEachCallback (IBaseEntity *Me, std::string &Message) :
 	Me(Me),
 	Message(Message)
 	{
 	};
 
-	void Callback (CBaseEntity *e)
+	void Callback (IBaseEntity *e)
 	{
 		if (e == Me)
 			return;
@@ -296,7 +296,7 @@ public:
 	};
 };
 
-void CTargetString::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTargetString::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	CTargetStringForEachCallback (this, Message).Query (this);
 }
@@ -328,10 +328,10 @@ If START_OFF, this entity must be used before it starts
 #define CLOCK_MESSAGE_SIZE	16
 
 CFuncClock::CFuncClock () :
-	CBaseEntity (),
-	CMapEntity (),
-	CThinkableEntity (),
-	CUsableEntity (),
+	IBaseEntity (),
+	IMapEntity (),
+	IThinkableEntity (),
+	IUsableEntity (),
 	Seconds(0),
 	String(NULL),
 	Wait(0),
@@ -342,10 +342,10 @@ CFuncClock::CFuncClock () :
 	};
 
 CFuncClock::CFuncClock (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CThinkableEntity (Index),
-	CUsableEntity (Index),
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IThinkableEntity (Index),
+	IUsableEntity (Index),
 	Seconds(0),
 	String(NULL),
 	Wait(0),
@@ -371,12 +371,12 @@ bool CFuncClock::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CFuncClock> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 bool CFuncClock::Run ()
 {
-	return CBaseEntity::Run ();
+	return IBaseEntity::Run ();
 };
 
 void		CFuncClock::SaveFields (CFile &File)
@@ -384,9 +384,9 @@ void		CFuncClock::SaveFields (CFile &File)
 	File.Write<sint32> ((String) ? String->State.GetNumber() : -1);
 
 	SaveEntityFields <CFuncClock> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void		CFuncClock::LoadFields (CFile &File)
@@ -397,9 +397,9 @@ void		CFuncClock::LoadFields (CFile &File)
 		String = entity_cast<CTargetString>(Game.Entities[Index].Entity);
 
 	LoadEntityFields <CFuncClock> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 // don't let field width of any clock messages change, or it
@@ -451,7 +451,7 @@ void CFuncClock::Think ()
 {
 	if (!String)
 	{
-		String = entity_cast<CTargetString>(CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target));
+		String = entity_cast<CTargetString>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target));
 		if (!String)
 			return;
 	}
@@ -511,7 +511,7 @@ void CFuncClock::Think ()
 	NextThink = Level.Frame + 10;
 }
 
-void CFuncClock::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CFuncClock::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (!Usable)
 		return;

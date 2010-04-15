@@ -304,7 +304,7 @@ CFrame BerserkFramesPain2 [] =
 };
 CAnim BerserkMovePain2 (FRAME_painb1, FRAME_painb20, BerserkFramesPain2, &CMonster::Run);
 
-void CBerserker::Pain (CBaseEntity *Other, sint32 Damage)
+void CBerserker::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -364,7 +364,7 @@ CFrame BerserkFramesDeath2 [] =
 };
 CAnim BerserkMoveDeath2 (FRAME_deathc1, FRAME_deathc8, BerserkFramesDeath2, ConvertDerivedFunction(&CBerserker::Dead));
 
-void CBerserker::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBerserker::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{

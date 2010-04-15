@@ -89,13 +89,13 @@ class CPowerCubeEntity : public CItemEntity
 {
 public:
 	CPowerCubeEntity() :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity ()
 	  {
 	  };
 
 	CPowerCubeEntity (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CItemEntity (Index)
 	  {
 	  };

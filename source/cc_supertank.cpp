@@ -372,7 +372,7 @@ void CSuperTank::ReAttack1 ()
 		CurrentMove = &SuperTankMoveEndAttack1;
 }
 
-void CSuperTank::Pain (CBaseEntity *Other, sint32 Damage)
+void CSuperTank::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (!(Entity->State.GetSkinNum() & 1) && Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() |= 1;
@@ -529,7 +529,7 @@ void CSuperTank::Dead ()
 	Entity->Link ();
 }
 
-void CSuperTank::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CSuperTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;

@@ -249,7 +249,7 @@ CFrame ChickFramesPain3 [] =
 };
 CAnim ChickMovePain3 (FRAME_pain301, FRAME_pain321, ChickFramesPain3, ConvertDerivedFunction(&CMaiden::Run));
 
-void CMaiden::Pain (CBaseEntity *Other, sint32 Damage)
+void CMaiden::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 #if XATRIX_FEATURES
@@ -340,7 +340,7 @@ CFrame ChickFramesDeath1 [] =
 };
 CAnim ChickMoveDeath1 (FRAME_death101, FRAME_death112, ChickFramesDeath1, ConvertDerivedFunction(&CMaiden::Dead));
 
-void CMaiden::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMaiden::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	sint32		n;
 
@@ -515,7 +515,7 @@ void CMaiden::SideStep ()
 		CurrentMove = &ChickMoveRun;
 }
 #else
-void CMaiden::Dodge (CBaseEntity *Attacker, float eta)
+void CMaiden::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
@@ -570,7 +570,7 @@ void CMaiden::Rocket ()
 	// 20, 35, 50, 65 chance of leading
 	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -643,7 +643,7 @@ void CMaiden::ReRocket()
 		AIFlags &= ~AI_MANUAL_STEERING;
 	else
 #endif
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 		if (Range (Entity, Entity->Enemy) > RANGE_MELEE &&
 			IsVisible (Entity, Entity->Enemy) &&
@@ -686,7 +686,7 @@ CAnim ChickMoveEndSlash (FRAME_attak213, FRAME_attak216, ChickFramesEndSlash, Co
 
 void CMaiden::ReSlash()
 {
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && (Range (Entity, Entity->Enemy) == RANGE_MELEE) && (frand() <= 0.9))
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && (Range (Entity, Entity->Enemy) == RANGE_MELEE) && (frand() <= 0.9))
 		CurrentMove = &ChickMoveSlash;
 	else
 		CurrentMove = &ChickMoveEndSlash;

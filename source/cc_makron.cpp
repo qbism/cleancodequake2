@@ -254,7 +254,7 @@ CFrame MakronFramesPain4 [] =
 };
 CAnim MakronMovePain4 (FRAME_pain401, FRAME_pain404, MakronFramesPain4, &CMonster::Run);
 
-void CMakron::Pain (CBaseEntity *Other, sint32 Damage)
+void CMakron::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
@@ -593,18 +593,18 @@ Makron Torso. This needs to be spawned in
 ---
 */
 
-class CMakronTorso : public virtual CBaseEntity, public CThinkableEntity
+class CMakronTorso : public virtual IBaseEntity, public IThinkableEntity
 {
 public:
 	CMakronTorso () :
-	  CBaseEntity(),
-	  CThinkableEntity()
+	  IBaseEntity(),
+	  IThinkableEntity()
 	  {
 	  };
 
 	CMakronTorso (sint32 Index) :
-	  CBaseEntity(Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity(Index),
+	  IThinkableEntity (Index)
 	  {
 	  };
 
@@ -612,12 +612,12 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	void Think ()
@@ -665,7 +665,7 @@ void CMakron::Dead ()
 	Entity->Link ();
 }
 
-void CMakron::Die(CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMakron::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->State.GetSound() = 0;
 	// check for gib
@@ -700,7 +700,7 @@ bool CMakron::CheckAttack ()
 #if !ROGUE_FEATURES
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -783,7 +783,7 @@ bool CMakron::CheckAttack ()
 #else
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight);
@@ -984,13 +984,13 @@ Jorg is just about dead, so set up to launch Makron out
 =================
 */
 CMakronJumpTimer::CMakronJumpTimer () :
-CBaseEntity(),
-CThinkableEntity ()
+IBaseEntity(),
+IThinkableEntity ()
 {
 };
 CMakronJumpTimer::CMakronJumpTimer (sint32 Index) :
-CBaseEntity(Index),
-CThinkableEntity (Index)
+IBaseEntity(Index),
+IThinkableEntity (Index)
 {
 };
 

@@ -763,7 +763,7 @@ void Cmd_Give (CPlayerEntity *Player)
 	if (PointContents(Origin) & CONTENTS_SOLID)
 		return;
 
-	CBaseEntity *Spawned = CreateEntityFromClassname(ArgGetConcatenatedString().c_str());
+	IBaseEntity *Spawned = CreateEntityFromClassname(ArgGetConcatenatedString().c_str());
 	if (Spawned && Spawned->GetInUse())
 	{
 		Spawned->State.GetOrigin() = Origin;

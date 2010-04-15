@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_brushmodels.h"
 
 #pragma region Brush_Model
-void CBrushModel::Think ()
+void IBrushModel::Think ()
 {
 	switch (ThinkType)
 	{
@@ -68,95 +68,95 @@ void CBrushModel::Think ()
 	};
 };
 
-bool CBrushModel::Run ()
+bool IBrushModel::Run ()
 {
-	return (PhysicsType == PHYSICS_STOP) ? CStopPhysics::Run() : CPushPhysics::Run();
+	return (PhysicsType == PHYSICS_STOP) ? IStopPhysics::Run() : IPushPhysics::Run();
 }
 
-CBrushModel::CBrushModel () :
-CBaseEntity (),
-CThinkableEntity (),
-CPushPhysics (),
-CStopPhysics (),
+IBrushModel::IBrushModel () :
+IBaseEntity (),
+IThinkableEntity (),
+IPushPhysics (),
+IStopPhysics (),
 BrushType(0)
 {
 	EntityFlags |= ENT_BRUSHMODEL;
 	BrushType |= BRUSH_BASE;
 };
 
-CBrushModel::CBrushModel (sint32 Index) :
-CBaseEntity (Index),
-CThinkableEntity (Index),
-CPushPhysics (Index),
-CStopPhysics (Index),
+IBrushModel::IBrushModel (sint32 Index) :
+IBaseEntity (Index),
+IThinkableEntity (Index),
+IPushPhysics (Index),
+IStopPhysics (Index),
 BrushType(0)
 {
 	EntityFlags |= ENT_BRUSHMODEL;
 	BrushType |= BRUSH_BASE;
 };
 
-ENTITYFIELDS_BEGIN(CBrushModel)
+ENTITYFIELDS_BEGIN(IBrushModel)
 {
-	CEntityField ("wait", EntityMemberOffset(CBrushModel,Wait), FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("speed", EntityMemberOffset(CBrushModel,Speed), FT_FLOAT | FT_SAVABLE),
-	CEntityField ("accel", EntityMemberOffset(CBrushModel,Accel), FT_FLOAT | FT_SAVABLE),
-	CEntityField ("decel", EntityMemberOffset(CBrushModel,Decel), FT_FLOAT | FT_SAVABLE),
-	CEntityField ("distance", EntityMemberOffset(CBrushModel,Distance), FT_INT | FT_SAVABLE),
-	CEntityField ("dmg", EntityMemberOffset(CBrushModel,Damage), FT_INT | FT_SAVABLE),
-	CEntityField ("lip", EntityMemberOffset(CBrushModel,Lip), FT_INT | FT_SAVABLE),
-	CEntityField ("sounds", EntityMemberOffset(CBrushModel,Sounds), FT_BYTE | FT_SAVABLE),
-	CEntityField ("model", EntityMemberOffset(CBrushModel,Model), FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("wait", EntityMemberOffset(IBrushModel,Wait), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("speed", EntityMemberOffset(IBrushModel,Speed), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("accel", EntityMemberOffset(IBrushModel,Accel), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("decel", EntityMemberOffset(IBrushModel,Decel), FT_FLOAT | FT_SAVABLE),
+	CEntityField ("distance", EntityMemberOffset(IBrushModel,Distance), FT_INT | FT_SAVABLE),
+	CEntityField ("dmg", EntityMemberOffset(IBrushModel,Damage), FT_INT | FT_SAVABLE),
+	CEntityField ("lip", EntityMemberOffset(IBrushModel,Lip), FT_INT | FT_SAVABLE),
+	CEntityField ("sounds", EntityMemberOffset(IBrushModel,Sounds), FT_BYTE | FT_SAVABLE),
+	CEntityField ("model", EntityMemberOffset(IBrushModel,Model), FT_LEVEL_STRING | FT_SAVABLE),
 
-	CEntityField ("BrushType", EntityMemberOffset(CBrushModel,BrushType), FT_INT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("TouchDebounce", EntityMemberOffset(CBrushModel,TouchDebounce), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("StartOrigin", EntityMemberOffset(CBrushModel,StartOrigin), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("StartAngles", EntityMemberOffset(CBrushModel,StartAngles), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("EndOrigin", EntityMemberOffset(CBrushModel,EndOrigin), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("EndAngles", EntityMemberOffset(CBrushModel,EndAngles), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("SoundStart", EntityMemberOffset(CBrushModel,SoundStart), FT_SOUND_INDEX | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("SoundMiddle", EntityMemberOffset(CBrushModel,SoundMiddle), FT_SOUND_INDEX | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("SoundEnd", EntityMemberOffset(CBrushModel,SoundEnd), FT_SOUND_INDEX | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MoveDir", EntityMemberOffset(CBrushModel,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("Positions[0]", EntityMemberOffset(CBrushModel,Positions[0]), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("Positions[1]", EntityMemberOffset(CBrushModel,Positions[1]), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MoveOrigin", EntityMemberOffset(CBrushModel,MoveOrigin), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MoveAngles", EntityMemberOffset(CBrushModel,MoveAngles), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MoveState", EntityMemberOffset(CBrushModel,MoveState), FT_INT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("Dir", EntityMemberOffset(CBrushModel,Dir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("CurrentSpeed", EntityMemberOffset(CBrushModel,CurrentSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MoveSpeed", EntityMemberOffset(CBrushModel,MoveSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("NextSpeed", EntityMemberOffset(CBrushModel,NextSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("RemainingDistance", EntityMemberOffset(CBrushModel,RemainingDistance), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("DecelDistance", EntityMemberOffset(CBrushModel,DecelDistance), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("EndFunc", EntityMemberOffset(CBrushModel,EndFunc), FT_UINT | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("ThinkType", EntityMemberOffset(CBrushModel,ThinkType), FT_UINT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("BrushType", EntityMemberOffset(IBrushModel,BrushType), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("TouchDebounce", EntityMemberOffset(IBrushModel,TouchDebounce), FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("StartOrigin", EntityMemberOffset(IBrushModel,StartOrigin), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("StartAngles", EntityMemberOffset(IBrushModel,StartAngles), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("EndOrigin", EntityMemberOffset(IBrushModel,EndOrigin), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("EndAngles", EntityMemberOffset(IBrushModel,EndAngles), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("SoundStart", EntityMemberOffset(IBrushModel,SoundStart), FT_SOUND_INDEX | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("SoundMiddle", EntityMemberOffset(IBrushModel,SoundMiddle), FT_SOUND_INDEX | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("SoundEnd", EntityMemberOffset(IBrushModel,SoundEnd), FT_SOUND_INDEX | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveDir", EntityMemberOffset(IBrushModel,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Positions[0]", EntityMemberOffset(IBrushModel,Positions[0]), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Positions[1]", EntityMemberOffset(IBrushModel,Positions[1]), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveOrigin", EntityMemberOffset(IBrushModel,MoveOrigin), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveAngles", EntityMemberOffset(IBrushModel,MoveAngles), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveState", EntityMemberOffset(IBrushModel,MoveState), FT_INT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("Dir", EntityMemberOffset(IBrushModel,Dir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("CurrentSpeed", EntityMemberOffset(IBrushModel,CurrentSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveSpeed", EntityMemberOffset(IBrushModel,MoveSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("NextSpeed", EntityMemberOffset(IBrushModel,NextSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("RemainingDistance", EntityMemberOffset(IBrushModel,RemainingDistance), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("DecelDistance", EntityMemberOffset(IBrushModel,DecelDistance), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("EndFunc", EntityMemberOffset(IBrushModel,EndFunc), FT_UINT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("ThinkType", EntityMemberOffset(IBrushModel,ThinkType), FT_UINT | FT_NOSPAWN | FT_SAVABLE),
 };
-ENTITYFIELDS_END(CBrushModel)
+ENTITYFIELDS_END(IBrushModel)
 
-bool			CBrushModel::ParseField (const char *Key, const char *Value)
+bool			IBrushModel::ParseField (const char *Key, const char *Value)
 {
-	if (CheckFields<CBrushModel> (this, Key, Value))
+	if (CheckFields<IBrushModel> (this, Key, Value))
 		return true;
 
 	// Couldn't find it here
 	return false;
 };
 
-void			CBrushModel::SaveFields (CFile &File)
+void			IBrushModel::SaveFields (CFile &File)
 {
-	SaveEntityFields<CBrushModel> (this, File);
-	CThinkableEntity::SaveFields (File);
-	CPushPhysics::SaveFields (File);
+	SaveEntityFields<IBrushModel> (this, File);
+	IThinkableEntity::SaveFields (File);
+	IPushPhysics::SaveFields (File);
 };
 
-void			CBrushModel::LoadFields (CFile &File)
+void			IBrushModel::LoadFields (CFile &File)
 {
-	LoadEntityFields<CBrushModel> (this, File);
-	CThinkableEntity::LoadFields (File);
-	CPushPhysics::LoadFields (File);
+	LoadEntityFields<IBrushModel> (this, File);
+	IThinkableEntity::LoadFields (File);
+	IPushPhysics::LoadFields (File);
 };
 
-void CBrushModel::SetBrushModel ()
+void IBrushModel::SetBrushModel ()
 {
 	if (!Model || Model[0] != '*')
 	{
@@ -170,13 +170,13 @@ _CC_DISABLE_DEPRECATION
 _CC_ENABLE_DEPRECATION
 }
 
-void CBrushModel::MoveDone ()
+void IBrushModel::MoveDone ()
 {
 	Velocity.Clear ();
 	DoEndFunc ();
 }
 
-void CBrushModel::MoveFinal ()
+void IBrushModel::MoveFinal ()
 {
 	if (RemainingDistance == 0)
 	{
@@ -190,7 +190,7 @@ void CBrushModel::MoveFinal ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CBrushModel::MoveBegin ()
+void IBrushModel::MoveBegin ()
 {
 	if ((Speed * 0.1f) >= RemainingDistance)
 	{
@@ -205,7 +205,7 @@ void CBrushModel::MoveBegin ()
 	ThinkType = BRUSHTHINK_MOVEFINAL;
 }
 
-void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
+void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 {
 	Velocity.Clear ();
 	Dir = dest - State.GetOrigin();
@@ -236,13 +236,13 @@ void CBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 // Support routines for angular movement (changes in angle using avelocity)
 //
 
-void CBrushModel::AngleMoveDone ()
+void IBrushModel::AngleMoveDone ()
 {
 	AngularVelocity.Clear ();
 	DoEndFunc ();
 }
 
-void CBrushModel::AngleMoveFinal ()
+void IBrushModel::AngleMoveFinal ()
 {
 	vec3f move = ((MoveState == STATE_UP) ? EndAngles : StartAngles) - State.GetAngles();
 
@@ -258,7 +258,7 @@ void CBrushModel::AngleMoveFinal ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CBrushModel::AngleMoveBegin ()
+void IBrushModel::AngleMoveBegin ()
 {
 #if ROGUE_FEATURES
 	if (MoveSpeed < Speed)
@@ -309,7 +309,7 @@ void CBrushModel::AngleMoveBegin ()
 #endif
 }
 
-void CBrushModel::AngleMoveCalc (uint32 EndFunc)
+void IBrushModel::AngleMoveCalc (uint32 EndFunc)
 {
 #if ROGUE_FEATURES
 	// if we're supposed to accelerate, this will tell anglemove_begin to do so
@@ -336,7 +336,7 @@ The team has completed a frame of movement, so
 change the speed for the next frame
 ==============
 */
-void CBrushModel::CalcAcceleratedMove()
+void IBrushModel::CalcAcceleratedMove()
 {
 	float	accel_dist;
 	float	decel_dist;
@@ -364,7 +364,7 @@ void CBrushModel::CalcAcceleratedMove()
 	DecelDistance = decel_dist;
 };
 
-void CBrushModel::Accelerate ()
+void IBrushModel::Accelerate ()
 {
 	// are we decelerating?
 	if (RemainingDistance <= DecelDistance)
@@ -435,7 +435,7 @@ void CBrushModel::Accelerate ()
 	return;
 };
 
-void CBrushModel::ThinkAccelMove ()
+void IBrushModel::ThinkAccelMove ()
 {
 	RemainingDistance -= CurrentSpeed;
 
@@ -482,22 +482,22 @@ CC_ENUM (uint8, EPlatformSpawnflags)
 };
 
 CPlatForm::CPlatForm() :
-CBaseEntity(),
-CMapEntity(),
-CBlockableEntity(),
-CUsableEntity(),
-CBrushModel(),
+IBaseEntity(),
+IMapEntity(),
+IBlockableEntity(),
+IUsableEntity(),
+IBrushModel(),
 Height (0)
 {
 	BrushType |= BRUSH_PLATFORM;
 };
 
 CPlatForm::CPlatForm(sint32 Index) :
-CBaseEntity(Index),
-CMapEntity(Index),
-CBlockableEntity(Index),
-CUsableEntity(Index),
-CBrushModel(Index),
+IBaseEntity(Index),
+IMapEntity(Index),
+IBlockableEntity(Index),
+IUsableEntity(Index),
+IBrushModel(Index),
 Height (0)
 {
 	BrushType |= BRUSH_PLATFORM;
@@ -505,16 +505,16 @@ Height (0)
 
 bool CPlatForm::Run ()
 {
-	return CBrushModel::Run();
+	return IBrushModel::Run();
 };
 
-void CPlatForm::Blocked (CBaseEntity *Other)
+void CPlatForm::Blocked (IBaseEntity *Other)
 {
 	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & ENT_PLAYER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
 		if (!Other->Freed)
@@ -522,8 +522,8 @@ void CPlatForm::Blocked (CBaseEntity *Other)
 		return;
 	}
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 
 	if (MoveState == STATE_UP)
 		GoDown ();
@@ -531,7 +531,7 @@ void CPlatForm::Blocked (CBaseEntity *Other)
 		GoUp ();
 };
 
-void CPlatForm::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CPlatForm::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (ThinkType)
 		return;		// already down
@@ -608,26 +608,26 @@ void CPlatForm::Think ()
 		GoDown ();
 		break;
 	default:
-		CBrushModel::Think ();
+		IBrushModel::Think ();
 	};
 }
 
 CPlatFormInsideTrigger::CPlatFormInsideTrigger () :
-CBaseEntity(),		
-CTouchableEntity()
+IBaseEntity(),		
+ITouchableEntity()
 {
 };
 
 CPlatFormInsideTrigger::CPlatFormInsideTrigger (sint32 Index) :
-CBaseEntity(Index),
-CTouchableEntity(Index)
+IBaseEntity(Index),
+ITouchableEntity(Index)
 {
 };
 
 void CPlatFormInsideTrigger::SaveFields (CFile &File)
 {
 	File.Write<sint32> ((Owner) ? Owner->State.GetNumber() : -1);
-	CTouchableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
 };
 
 void CPlatFormInsideTrigger::LoadFields (CFile &File)
@@ -635,14 +635,14 @@ void CPlatFormInsideTrigger::LoadFields (CFile &File)
 	sint32 number = File.Read<sint32> ();
 	Owner = (number == -1) ? NULL : entity_cast<CPlatForm>(Game.Entities[number].Entity);
 
-	CTouchableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 };
 
 IMPLEMENT_SAVE_SOURCE (CPlatFormInsideTrigger)
 
-void CPlatFormInsideTrigger::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPlatFormInsideTrigger::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(Other)->Health <= 0)
+	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
 	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
@@ -769,23 +769,23 @@ bool			CPlatForm::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CPlatForm::SaveFields (CFile &File)
 {
 	SaveEntityFields <CPlatForm> (this, File);
-	CMapEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 };
 
 void			CPlatForm::LoadFields (CFile &File)
 {
 	LoadEntityFields <CPlatForm> (this, File);
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 };
 
 LINK_CLASSNAME_TO_CLASS ("func_plat", CPlatForm);
@@ -840,13 +840,13 @@ CC_ENUM (uint16, EDoorSpawnflags)
 };
 
 CDoor::CDoor() :
-CBaseEntity(),
-CMapEntity(),
-CBrushModel(),
-CBlockableEntity(),
-CUsableEntity(),
-CHurtableEntity(),
-CTouchableEntity()
+IBaseEntity(),
+IMapEntity(),
+IBrushModel(),
+IBlockableEntity(),
+IUsableEntity(),
+IHurtableEntity(),
+ITouchableEntity()
 #if ROGUE_FEATURES
 ,
 UseType(DOORUSE_NORMAL)
@@ -856,13 +856,13 @@ UseType(DOORUSE_NORMAL)
 };
 
 CDoor::CDoor(sint32 Index) :
-CBaseEntity(Index),
-CMapEntity(Index),
-CBrushModel(Index),
-CBlockableEntity(Index),
-CUsableEntity(Index),
-CHurtableEntity(Index),
-CTouchableEntity(Index)
+IBaseEntity(Index),
+IMapEntity(Index),
+IBrushModel(Index),
+IBlockableEntity(Index),
+IUsableEntity(Index),
+IHurtableEntity(Index),
+ITouchableEntity(Index)
 #if ROGUE_FEATURES
 ,
 UseType(DOORUSE_NORMAL)
@@ -873,17 +873,17 @@ UseType(DOORUSE_NORMAL)
 
 bool CDoor::Run ()
 {
-	return CBrushModel::Run();
+	return IBrushModel::Run();
 };
 
 void CDoor::UseAreaPortals (bool isOpen)
 {
-	CMapEntity	*t = NULL;
+	IMapEntity	*t = NULL;
 
 	if (!Target)
 		return;
 
-	while ((t = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (t, Target)) != NULL)
+	while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target)) != NULL)
 	{
 		if (Q_stricmp(t->ClassName.c_str(), "func_areaportal") == 0)
 		{
@@ -941,7 +941,7 @@ void CDoor::GoDown ()
 	MoveCalc (StartOrigin, DOORENDFUNC_HITBOTTOM);
 }
 
-void CDoor::GoUp (CBaseEntity *Activator)
+void CDoor::GoUp (IBaseEntity *Activator)
 {
 	if (MoveState == STATE_UP)
 		return;		// already going up
@@ -1076,7 +1076,7 @@ void CDoor::Activate ()
 }
 #endif
 
-void CDoor::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CDoor::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 #if ROGUE_FEATURES
 	switch (UseType)
@@ -1134,14 +1134,14 @@ void CDoor::Use (CBaseEntity *Other, CBaseEntity *Activator)
 };
 
 CDoorTrigger::CDoorTrigger () :
-CBaseEntity(),		
-CTouchableEntity()
+IBaseEntity(),		
+ITouchableEntity()
 {
 };
 
 CDoorTrigger::CDoorTrigger (sint32 Index) :
-CBaseEntity(Index),
-CTouchableEntity(Index)
+IBaseEntity(Index),
+ITouchableEntity(Index)
 {
 };
 
@@ -1150,18 +1150,18 @@ IMPLEMENT_SAVE_SOURCE (CDoorTrigger)
 void CDoorTrigger::SaveFields (CFile &File)
 {
 	File.Write<FrameNumber_t> (TouchDebounce);
-	CTouchableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
 };
 
 void CDoorTrigger::LoadFields (CFile &File)
 {
 	TouchDebounce = File.Read<FrameNumber_t> ();
-	CTouchableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 };
 
-void CDoorTrigger::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CDoorTrigger::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(Other)->Health <= 0)
+	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
 
 	if (!(Other->GetSvFlags() & SVF_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)))
@@ -1220,7 +1220,7 @@ void CDoor::SpawnDoorTrigger ()
 	mins = GetAbsMin ();
 	maxs = GetAbsMax ();
 
-	for (CBaseEntity *Other = Team.Chain; Other; Other = Other->Team.Chain)
+	for (IBaseEntity *Other = Team.Chain; Other; Other = Other->Team.Chain)
 	{
 		AddPointToBounds (Other->GetAbsMin(), mins, maxs);
 		AddPointToBounds (Other->GetAbsMax(), mins, maxs);
@@ -1246,13 +1246,13 @@ void CDoor::SpawnDoorTrigger ()
 	CalcMoveSpeed ();
 }
 
-void CDoor::Blocked (CBaseEntity *Other)
+void CDoor::Blocked (IBaseEntity *Other)
 {
 	if (!(Other->EntityFlags & ENT_PLAYER) && !(Other->EntityFlags & ENT_MONSTER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
 		if (Other->GetInUse())
@@ -1260,8 +1260,8 @@ void CDoor::Blocked (CBaseEntity *Other)
 		return;
 	}
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 
 	if (SpawnFlags & DOOR_CRUSHER)
 		return;
@@ -1273,20 +1273,20 @@ void CDoor::Blocked (CBaseEntity *Other)
 	{
 		if (MoveState == STATE_DOWN)
 		{
-			for (CBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
+			for (IBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
 				(entity_cast<CDoor>(Entity))->GoUp ((User) ? User : NULL);
 		}
 		else
 		{
-			for (CBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
+			for (IBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
 				(entity_cast<CDoor>(Entity))->GoDown ();
 		}
 	}
 }
 
-void CDoor::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CDoor::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
-	for (CBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
+	for (IBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
 	{
 		CDoor *Door = entity_cast<CDoor>(Entity);
 		Door->Health = Door->MaxHealth;
@@ -1296,11 +1296,11 @@ void CDoor::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, v
 	(entity_cast<CDoor>(Team.Master))->Use (Attacker, Attacker);
 }
 
-void CDoor::Pain (CBaseEntity *Other, sint32 Damage)
+void CDoor::Pain (IBaseEntity *Other, sint32 Damage)
 {
 }
 
-void CDoor::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CDoor::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
@@ -1346,7 +1346,7 @@ void CDoor::Think ()
 		break;
 #endif
 	default:
-		CBrushModel::Think ();
+		IBrushModel::Think ();
 	};
 }
 
@@ -1483,14 +1483,14 @@ CC_ENUM(uint8, ERotatingDoorSpawnflags)
 };
 
 CRotatingDoor::CRotatingDoor () :
-CBaseEntity(),
+IBaseEntity(),
 CDoor ()
 {
 	BrushType |= BRUSH_ROTATINGDOOR;
 };
 
 CRotatingDoor::CRotatingDoor (sint32 Index) :
-CBaseEntity(Index),
+IBaseEntity(Index),
 CDoor(Index)
 {
 	BrushType |= BRUSH_ROTATINGDOOR;
@@ -1514,7 +1514,7 @@ void CRotatingDoor::GoDown ()
 	AngleMoveCalc (DOORENDFUNC_HITBOTTOM);
 }
 
-void CRotatingDoor::GoUp (CBaseEntity *Activator)
+void CRotatingDoor::GoUp (IBaseEntity *Activator)
 {
 	if (MoveState == STATE_UP)
 		return;		// already going up
@@ -1669,13 +1669,13 @@ START_OPEN causes the water to move to its destination when spawned and operate 
 */
 
 CMovableWater::CMovableWater () :
-CBaseEntity(),
+IBaseEntity(),
 CDoor ()
 {
 };
 
 CMovableWater::CMovableWater (sint32 Index) :
-CBaseEntity(Index),
+IBaseEntity(Index),
 CDoor(Index)
 {
 };
@@ -1761,14 +1761,14 @@ CC_ENUM (uint8, EDoorSecretSpawnflags)
 };
 
 CDoorSecret::CDoorSecret () :
-CBaseEntity(),
+IBaseEntity(),
 CDoor ()
 {
 	BrushType |= BRUSH_SECRETDOOR;
 };
 
 CDoorSecret::CDoorSecret (sint32 Index) :
-CBaseEntity(Index),
+IBaseEntity(Index),
 CDoor(Index)
 {
 	BrushType |= BRUSH_SECRETDOOR;
@@ -1819,11 +1819,11 @@ void CDoorSecret::Think ()
 		MoveCalc (Positions[1], DOORSECRETENDFUNC_3);
 		break;
 	default:
-		CBrushModel::Think ();
+		IBrushModel::Think ();
 	}
 }
 
-void CDoorSecret::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CDoorSecret::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	// make sure we're not already moving
 	if (State.GetOrigin() != vec3fOrigin)
@@ -1833,13 +1833,13 @@ void CDoorSecret::Use (CBaseEntity *Other, CBaseEntity *Activator)
 	UseAreaPortals (true);
 }
 
-void CDoorSecret::Blocked (CBaseEntity *Other)
+void CDoorSecret::Blocked (IBaseEntity *Other)
 {
 	if (!(Other->EntityFlags & ENT_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
 		if (Other->GetInUse())
@@ -1851,11 +1851,11 @@ void CDoorSecret::Blocked (CBaseEntity *Other)
 		return;
 	TouchDebounce = Level.Frame + 5;
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CDoorSecret::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CDoorSecret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	CanTakeDamage = false;
 	Use (Attacker, Attacker);
@@ -1947,33 +1947,33 @@ When a button is touched, it moves some distance in the direction of it's angle,
 */
 
 CButton::CButton() :
-CBaseEntity(),
-CMapEntity(),
-CBrushModel(),
-CUsableEntity(),
-CHurtableEntity(),
-CTouchableEntity()
+IBaseEntity(),
+IMapEntity(),
+IBrushModel(),
+IUsableEntity(),
+IHurtableEntity(),
+ITouchableEntity()
 {
 	BrushType |= BRUSH_BUTTON;
 };
 
 CButton::CButton(sint32 Index) :
-CBaseEntity(Index),
-CMapEntity(Index),
-CBrushModel(Index),
-CUsableEntity(Index),
-CHurtableEntity(Index),
-CTouchableEntity(Index)
+IBaseEntity(Index),
+IMapEntity(Index),
+IBrushModel(Index),
+IUsableEntity(Index),
+IHurtableEntity(Index),
+ITouchableEntity(Index)
 {
 	BrushType |= BRUSH_BUTTON;
 };
 
 bool CButton::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 };
 
-void CButton::Pain (CBaseEntity *Other, sint32 Damage)
+void CButton::Pain (IBaseEntity *Other, sint32 Damage)
 {
 };
 
@@ -2015,7 +2015,7 @@ void CButton::Think ()
 			CanTakeDamage = true;
 		break;
 	default:
-		CBrushModel::Think ();
+		IBrushModel::Think ();
 	};
 }
 
@@ -2030,13 +2030,13 @@ void CButton::Fire ()
 	MoveCalc (EndOrigin, BUTTONENDFUNC_WAIT);
 }
 
-void CButton::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CButton::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	User = Activator;
 	Fire ();
 }
 
-void CButton::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CButton::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
@@ -2048,7 +2048,7 @@ void CButton::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	Fire ();
 }
 
-void CButton::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CButton::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	User = Attacker;
 	Health = MaxHealth;
@@ -2130,37 +2130,37 @@ CC_ENUM (uint8, ETrainSpawnflags)
 };
 
 CTrainBase::CTrainBase() :
-CBaseEntity(),
-CMapEntity(),
-CBrushModel(),
-CBlockableEntity(),
-CUsableEntity()
+IBaseEntity(),
+IMapEntity(),
+IBrushModel(),
+IBlockableEntity(),
+IUsableEntity()
 {
 	BrushType |= BRUSH_TRAIN;
 };
 
 CTrainBase::CTrainBase(sint32 Index) :
-CBaseEntity(Index),
-CMapEntity(Index),
-CBrushModel(Index),
-CBlockableEntity(Index),
-CUsableEntity(Index)
+IBaseEntity(Index),
+IMapEntity(Index),
+IBrushModel(Index),
+IBlockableEntity(Index),
+IUsableEntity(Index)
 {
 	BrushType |= BRUSH_TRAIN;
 };
 
 bool CTrainBase::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 };
 
-void CTrainBase::Blocked (CBaseEntity *Other)
+void CTrainBase::Blocked (IBaseEntity *Other)
 {
 	if (!(Other->EntityFlags & ENT_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-			entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
 		if (Other->GetInUse())
@@ -2176,8 +2176,8 @@ void CTrainBase::Blocked (CBaseEntity *Other)
 
 	TouchDebounce = Level.Frame + 5;
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
 void CTrainBase::TrainWait ()
@@ -2299,9 +2299,9 @@ void CTrainBase::Next ()
 	{
 		vec3f dir = EndOrigin - State.GetOrigin();
 
-		for (CBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
+		for (IBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
 		{
-			CBrushModel *Brush = entity_cast<CBrushModel>(e);
+			IBrushModel *Brush = entity_cast<IBrushModel>(e);
 			
 			vec3f dst = dir + Brush->State.GetOrigin();
 			Brush->StartOrigin = Brush->State.GetOrigin();
@@ -2361,7 +2361,7 @@ void CTrainBase::Find ()
 	}
 }
 
-void CTrainBase::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTrainBase::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	User = Activator;
 
@@ -2403,7 +2403,7 @@ void CTrainBase::Think ()
 		Next ();
 		break;
 	default:
-		CBrushModel::Think ();
+		IBrushModel::Think ();
 	}
 }
 
@@ -2413,16 +2413,16 @@ void CTrainBase::Spawn ()
 
 bool CTrainBase::ParseField (const char *Key, const char *Value)
 {
-	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void CTrainBase::SaveFields (CFile &File)
 {
 	File.Write<sint32> ((TargetEntity) ? TargetEntity->State.GetNumber() : -1);
 
-	CMapEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void CTrainBase::LoadFields (CFile &File)
@@ -2432,19 +2432,19 @@ void CTrainBase::LoadFields (CFile &File)
 	if (number != -1)
 		TargetEntity = entity_cast<CPathCorner>(Game.Entities[number].Entity);
 
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 CTrain::CTrain () :
-CBaseEntity (),
+IBaseEntity (),
 CTrainBase ()
 {
 };
 
 CTrain::CTrain (sint32 Index) :
-CBaseEntity (Index),
+IBaseEntity (Index),
 CTrainBase (Index)
 {
 };
@@ -2491,22 +2491,22 @@ LINK_CLASSNAME_TO_CLASS ("func_train", CTrain);
 */
 
 CTriggerElevator::CTriggerElevator () :
-CBaseEntity (),
-CMapEntity (),
-CThinkableEntity (),
-CUsableEntity ()
+IBaseEntity (),
+IMapEntity (),
+IThinkableEntity (),
+IUsableEntity ()
 {
 };
 
 CTriggerElevator::CTriggerElevator (sint32 Index) :
-CBaseEntity (Index),
-CMapEntity (Index),
-CThinkableEntity (Index),
-CUsableEntity (Index)
+IBaseEntity (Index),
+IMapEntity (Index),
+IThinkableEntity (Index),
+IUsableEntity (Index)
 {
 };
 
-void CTriggerElevator::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (!MoveTarget)
 		return;
@@ -2520,7 +2520,7 @@ void CTriggerElevator::Use (CBaseEntity *Other, CBaseEntity *Activator)
 		return;
 	}
 	
-	CUsableEntity *Usable = entity_cast<CUsableEntity>(Other);
+	IUsableEntity *Usable = entity_cast<IUsableEntity>(Other);
 	if (!Usable->PathTarget)
 	{
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with no pathtarget.\n");
@@ -2545,7 +2545,7 @@ void CTriggerElevator::Think ()
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		return;
 	}
-	CBaseEntity *newTarg = CC_PickTarget (Target);
+	IBaseEntity *newTarg = CC_PickTarget (Target);
 	if (!newTarg)
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target);
@@ -2575,16 +2575,16 @@ LINK_CLASSNAME_TO_CLASS ("trigger_elevator", CTriggerElevator);
 #include "cc_bodyqueue.h"
 
 CWorldEntity::CWorldEntity () : 
-CBaseEntity(),
-CMapEntity(),
-CBrushModel()
+IBaseEntity(),
+IMapEntity(),
+IBrushModel()
 {
 };
 
 CWorldEntity::CWorldEntity (sint32 Index) : 
-CBaseEntity(Index),
-CMapEntity(Index),
-CBrushModel(Index)
+IBaseEntity(Index),
+IMapEntity(Index),
+IBrushModel(Index)
 {
 };
 
@@ -2605,7 +2605,7 @@ bool			CWorldEntity::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void CWorldEntity::SaveFields (CFile &File)
@@ -2620,7 +2620,7 @@ void CWorldEntity::LoadFields (CFile &File)
 
 bool CWorldEntity::Run ()
 {
-	return CBrushModel::Run();
+	return IBrushModel::Run();
 };
 
 void CreateDMStatusbar ();
@@ -2663,7 +2663,7 @@ void SetupLights ()
 	ConfigString(CS_LIGHTS+63, "a");
 }
 
-CBaseEntity *World;
+IBaseEntity *World;
 void InitPrivateEntities ();
 
 void CWorldEntity::Spawn ()
@@ -2815,45 +2815,45 @@ CC_ENUM (uint8, ERotatingSpawnflags)
 };
 
 CRotatingBrush::CRotatingBrush () :
-	CBaseEntity(),
-	CMapEntity(),
-	CBrushModel(),
-	CUsableEntity(),
-	CBlockableEntity(),
-	CTouchableEntity()
+	IBaseEntity(),
+	IMapEntity(),
+	IBrushModel(),
+	IUsableEntity(),
+	IBlockableEntity(),
+	ITouchableEntity()
 {
 	BrushType |= BRUSH_ROTATING;
 };
 
 CRotatingBrush::CRotatingBrush (sint32 Index) :
-	CBaseEntity(Index),
-	CMapEntity(Index),
-	CBrushModel(Index),
-	CUsableEntity(Index),
-	CBlockableEntity(Index),
-	CTouchableEntity(Index)
+	IBaseEntity(Index),
+	IMapEntity(Index),
+	IBrushModel(Index),
+	IUsableEntity(Index),
+	IBlockableEntity(Index),
+	ITouchableEntity(Index)
 {
 	BrushType |= BRUSH_ROTATING;
 };
 
 bool CRotatingBrush::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 };
 
-void CRotatingBrush::Blocked (CBaseEntity *Other)
+void CRotatingBrush::Blocked (IBaseEntity *Other)
 {
 	if (!Blockable)
 		return;
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CRotatingBrush::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRotatingBrush::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
-	if ((AngularVelocity != vec3fOrigin) && ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Other)->CanTakeDamage))
-		entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	if ((AngularVelocity != vec3fOrigin) && ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
 #if ROGUE_FEATURES
@@ -2908,7 +2908,7 @@ void CRotatingBrush::Think ()
 }
 #endif
 
-void CRotatingBrush::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CRotatingBrush::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (AngularVelocity != vec3fOrigin)
 	{
@@ -3025,19 +3025,19 @@ CC_ENUM (uint8, EConveyorSpawnflags)
 };
 
 CConveyor::CConveyor () :
-	CBaseEntity (),
-	CMapEntity (),
-	CBrushModel (),
-	CUsableEntity ()
+	IBaseEntity (),
+	IMapEntity (),
+	IBrushModel (),
+	IUsableEntity ()
 	{
 		BrushType |= BRUSH_CONVEYOR;
 	};
 
 CConveyor::CConveyor (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CBrushModel (Index),
-	CUsableEntity (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IBrushModel (Index),
+	IUsableEntity (Index)
 	{
 		BrushType |= BRUSH_CONVEYOR;
 	};
@@ -3053,26 +3053,26 @@ bool CConveyor::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CConveyor> (this, Key, Value))
 		return true;
 
-	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void CConveyor::SaveFields (CFile &File)
 {
 	SaveEntityFields <CConveyor> (this, File);
-	CMapEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void CConveyor::LoadFields (CFile &File)
 {
 	LoadEntityFields <CConveyor> (this, File);
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
-void CConveyor::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CConveyor::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (SpawnFlags & CONVEYOR_START_ON)
 	{
@@ -3091,7 +3091,7 @@ void CConveyor::Use (CBaseEntity *Other, CBaseEntity *Activator)
 
 bool CConveyor::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 }
 
 void CConveyor::Spawn ()
@@ -3121,16 +3121,16 @@ areas that are seperated when this portal is not activated.
 Usually enclosed in the middle of a door.
 */
 CAreaPortal::CAreaPortal () :
-	CBaseEntity (),
-	CMapEntity (),
-	CUsableEntity ()
+	IBaseEntity (),
+	IMapEntity (),
+	IUsableEntity ()
 	{
 	};
 
 CAreaPortal::CAreaPortal (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CUsableEntity (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IUsableEntity (Index)
 	{
 	};
 
@@ -3146,24 +3146,24 @@ bool			CAreaPortal::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CAreaPortal> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CAreaPortal::SaveFields (CFile &File)
 {
 	SaveEntityFields <CAreaPortal> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void			CAreaPortal::LoadFields (CFile &File)
 {
 	LoadEntityFields <CAreaPortal> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
-void CAreaPortal::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CAreaPortal::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	// toggle state
 	gi.SetAreaPortalState (Style, (PortalState = !PortalState));
@@ -3171,7 +3171,7 @@ void CAreaPortal::Use (CBaseEntity *Other, CBaseEntity *Activator)
 
 bool CAreaPortal::Run ()
 {
-	return CBaseEntity::Run ();
+	return IBaseEntity::Run ();
 }
 
 void CAreaPortal::Spawn ()
@@ -3210,24 +3210,24 @@ CC_ENUM (uint8, EWallSpawnflags)
 };
 
 CFuncWall::CFuncWall () :
-	CBaseEntity (),
-	CMapEntity (),
-	CBrushModel (),
-	CUsableEntity ()
+	IBaseEntity (),
+	IMapEntity (),
+	IBrushModel (),
+	IUsableEntity ()
 	{
 		BrushType |= BRUSH_WALL;
 	};
 
 CFuncWall::CFuncWall (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CBrushModel (Index),
-	CUsableEntity (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IBrushModel (Index),
+	IUsableEntity (Index)
 	{
 		BrushType |= BRUSH_WALL;
 	};
 
-void CFuncWall::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CFuncWall::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (!Usable)
 		return;
@@ -3251,7 +3251,7 @@ void CFuncWall::Use (CBaseEntity *Other, CBaseEntity *Activator)
 
 bool CFuncWall::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 }
 
 void CFuncWall::Spawn ()
@@ -3310,23 +3310,23 @@ CC_ENUM (uint8, EObjectSpawnflags)
 };
 
 CFuncObject::CFuncObject () :
-	CBaseEntity (),
-	CMapEntity (),
-	CBrushModel (),
-	CTouchableEntity (),
-	CUsableEntity (),
-	CTossProjectile ()
+	IBaseEntity (),
+	IMapEntity (),
+	IBrushModel (),
+	ITouchableEntity (),
+	IUsableEntity (),
+	ITossProjectile ()
 	{
 		BrushType |= BRUSH_OBJECT;
 	};
 
 CFuncObject::CFuncObject (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CBrushModel (Index),
-	CTouchableEntity (Index),
-	CUsableEntity (Index),
-	CTossProjectile (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IBrushModel (Index),
+	ITouchableEntity (Index),
+	IUsableEntity (Index),
+	ITossProjectile (Index)
 	{
 		BrushType |= BRUSH_OBJECT;
 	};
@@ -3336,13 +3336,13 @@ bool CFuncObject::Run ()
 	switch (PhysicsType)
 	{
 	case PHYSICS_TOSS:
-		return CTossProjectile::Run ();
+		return ITossProjectile::Run ();
 	default:
-		return CBrushModel::Run ();
+		return IBrushModel::Run ();
 	};
 };
 
-void CFuncObject::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CFuncObject::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	// only squash thing we fall on top of
 	if (!plane)
@@ -3351,10 +3351,10 @@ void CFuncObject::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *sur
 		return;
 	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;
-	if (!entity_cast<CHurtableEntity>(Other)->CanTakeDamage)
+	if (!entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		return;
 
-	entity_cast<CHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 };
 
 void CFuncObject::Think ()
@@ -3363,7 +3363,7 @@ void CFuncObject::Think ()
 	Touchable = true;
 };
 
-void CFuncObject::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CFuncObject::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	GetSolid() = SOLID_BSP;
 	GetSvFlags() &= ~SVF_NOCLIENT;
@@ -3434,11 +3434,11 @@ CC_ENUM (uint8, EExplosiveSpawnflags)
 
 
 CFuncExplosive::CFuncExplosive () :
-	CBaseEntity (),
-	CMapEntity (),
-	CBrushModel (),
-	CUsableEntity (),
-	CHurtableEntity (),
+	IBaseEntity (),
+	IMapEntity (),
+	IBrushModel (),
+	IUsableEntity (),
+	IHurtableEntity (),
 	UseType(FUNCEXPLOSIVE_USE_NONE),
 	Explosivity (75)
 	{
@@ -3446,11 +3446,11 @@ CFuncExplosive::CFuncExplosive () :
 	};
 
 CFuncExplosive::CFuncExplosive (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CBrushModel (Index),
-	CUsableEntity (Index),
-	CHurtableEntity (Index),
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IBrushModel (Index),
+	IUsableEntity (Index),
+	IHurtableEntity (Index),
 	UseType(FUNCEXPLOSIVE_USE_NONE),
 	Explosivity (75)
 	{
@@ -3470,32 +3470,32 @@ bool			CFuncExplosive::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CFuncExplosive> (this, Key, Value))
 		return true;
 
-	return (CBrushModel::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value) || IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CFuncExplosive::SaveFields (CFile &File)
 {
 	SaveEntityFields <CFuncExplosive> (this, File);
-	CMapEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void			CFuncExplosive::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncExplosive> (this, File);
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
-void CFuncExplosive::Pain (CBaseEntity *Other, sint32 Damage)
+void CFuncExplosive::Pain (IBaseEntity *Other, sint32 Damage)
 {
 };
 
-void CFuncExplosive::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	// bmodel origins are (0 0 0), we need to adjust that here
 	State.GetOrigin() = (GetAbsMin() + (GetSize() * 0.5f));
@@ -3538,7 +3538,7 @@ void CFuncExplosive::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 
 	{
 		if (Team.Master)
 		{
-			CBaseEntity *master = Team.Master;
+			IBaseEntity *master = Team.Master;
 			if (master && master->GetInUse())		// because mappers (other than jim (usually)) are stupid....
 			{
 				bool done = false;
@@ -3565,11 +3565,11 @@ void CFuncExplosive::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 
 }
 
 #if ROGUE_FEATURES
-void CFuncExplosive::Activate (CBaseEntity *Other, CBaseEntity *Activator)
+void CFuncExplosive::Activate (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	bool approved = false;
-	CUsableEntity *OtherUsable = entity_cast<CUsableEntity>(Other),
-				  *ActivatorUsable = entity_cast<CUsableEntity>(Activator);
+	IUsableEntity *OtherUsable = entity_cast<IUsableEntity>(Other),
+				  *ActivatorUsable = entity_cast<IUsableEntity>(Activator);
 
 	if (OtherUsable != NULL && OtherUsable->Target)
 	{
@@ -3592,7 +3592,7 @@ void CFuncExplosive::Activate (CBaseEntity *Other, CBaseEntity *Activator)
 }
 #endif
 
-void CFuncExplosive::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CFuncExplosive::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	switch (UseType)
 	{
@@ -3623,7 +3623,7 @@ void CFuncExplosive::DoSpawn ()
 
 bool CFuncExplosive::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 }
 
 void CFuncExplosive::Spawn ()
@@ -3690,22 +3690,22 @@ LINK_CLASSNAME_TO_CLASS ("func_explosive", CFuncExplosive);
 Kills everything inside when fired, irrespective of protection.
 */
 CKillbox::CKillbox () :
-	CBaseEntity (),
-	CMapEntity (),
-	CUsableEntity (),
-	CBrushModel ()
+	IBaseEntity (),
+	IMapEntity (),
+	IUsableEntity (),
+	IBrushModel ()
 	{
 	};
 
 CKillbox::CKillbox (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CUsableEntity (Index),
-	CBrushModel (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IUsableEntity (Index),
+	IBrushModel (Index)
 	{
 	};
 
-void CKillbox::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CKillbox::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	KillBox ();
 }
@@ -3720,20 +3720,20 @@ LINK_CLASSNAME_TO_CLASS ("func_killbox", CKillbox);
 
 #pragma endregion Killbox
 
-class CTriggerRelay : public CMapEntity, public CUsableEntity
+class CTriggerRelay : public IMapEntity, public IUsableEntity
 {
 public:
 	CTriggerRelay () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	  {
 	  };
 
 	CTriggerRelay (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	  {
 	  };
 
@@ -3741,22 +3741,22 @@ public:
 
 	bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		UseTargets (Activator, Message);
 	};

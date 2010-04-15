@@ -54,25 +54,25 @@ Multiple identical looping sounds will just increase volume without any speed co
 #define SPEAKER_LOOPED_OFF		2
 #define SPEAKER_RELIABLE		4
 
-class CTargetSpeaker : public CMapEntity, public CUsableEntity
+class CTargetSpeaker : public IMapEntity, public IUsableEntity
 {
 public:
 	uint8		Volume;
 	sint32		Attenuation;
 
 	CTargetSpeaker () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity (),
 	  Volume(0),
 	  Attenuation(0)
 	  {
 	  };
 
 	CTargetSpeaker (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index),
 	  Volume(0),
 	  Attenuation(0)
 	  {
@@ -81,7 +81,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTargetSpeaker)
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (SpawnFlags & (SPEAKER_LOOPED_ON|SPEAKER_LOOPED_OFF)) // looping sound toggles
 			State.GetSound() = (State.GetSound() ? 0 : NoiseIndex); // start or stop it
@@ -134,44 +134,44 @@ bool			CTargetSpeaker::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CTargetSpeaker> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CTargetSpeaker::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetSpeaker> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CTargetSpeaker::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetSpeaker> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_speaker", CTargetSpeaker);
 
-class CTargetExplosion : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CTargetExplosion : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	sint32			Damage;
 
 	CTargetExplosion () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
 	  Damage(0)
 	{
 	};
 
 	CTargetExplosion (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
 	  Damage(0)
 	{
 	};
@@ -181,7 +181,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -197,7 +197,7 @@ public:
 		Delay = save;
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		User = Activator;
 
@@ -227,21 +227,21 @@ bool			CTargetExplosion::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CTargetExplosion> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CTargetExplosion::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetExplosion> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CTargetExplosion::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetExplosion> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_explosion", CTargetExplosion);
@@ -258,24 +258,24 @@ For gibs:
 	speed how fast it should be moving otherwise it
 	will just be dropped
 */
-class CTargetSpawner : public CMapEntity, public CUsableEntity
+class CTargetSpawner : public IMapEntity, public IUsableEntity
 {
 public:
 	vec3f	MoveDir;
 	float	Speed;
 
 	CTargetSpawner () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity (),
 	  Speed (0)
 	{
 	};
 
 	CTargetSpawner (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index),
 	  Speed (0)
 	{
 	};
@@ -285,12 +285,12 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		CBaseEntity *Entity = CreateEntityFromClassname(Target);
+		IBaseEntity *Entity = CreateEntityFromClassname(Target);
 
 		if (!Entity)
 			return;
@@ -306,7 +306,7 @@ public:
 		Entity->Link ();
 
 		if (Speed && (Entity->EntityFlags & ENT_PHYSICS))
-			entity_cast<CPhysicsEntity>(Entity)->Velocity = MoveDir;
+			entity_cast<IPhysicsEntity>(Entity)->Velocity = MoveDir;
 	};
 
 	void Spawn ()
@@ -334,21 +334,21 @@ bool			CTargetSpawner::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CTargetSpawner::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetSpawner> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CTargetSpawner::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetSpawner> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_spawner", CTargetSpawner);
@@ -368,7 +368,7 @@ Set "sounds" to one of the following:
 "dmg"	if set, does a radius damage at this location when it splashes
 		useful for lava/sparks
 */
-class CTargetSplash : public CMapEntity, public CUsableEntity
+class CTargetSplash : public IMapEntity, public IUsableEntity
 {
 public:
 	vec3f	MoveDir;
@@ -377,18 +377,18 @@ public:
 	uint8	Count;
 
 	CTargetSplash () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity (),
 	  Damage (0),
 	  Count (0)
 	{
 	};
 
 	CTargetSplash (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index),
 	  Damage (0),
 	  Count (0)
 	{
@@ -399,10 +399,10 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		CSplash(State.GetOrigin(), MoveDir, Color, Count).Send();
 
@@ -437,21 +437,21 @@ bool			CTargetSplash::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CTargetSplash::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetSplash> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CTargetSplash::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetSplash> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_splash", CTargetSplash);
@@ -460,22 +460,22 @@ LINK_CLASSNAME_TO_CLASS ("target_splash", CTargetSplash);
 Fire an origin based temp entity event to the clients.
 "style"		type uint8
 */
-class CTargetTempEntity : public CMapEntity, public CUsableEntity
+class CTargetTempEntity : public IMapEntity, public IUsableEntity
 {
 public:
 	uint8		Style;
 
 	CTargetTempEntity () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CTargetTempEntity (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -484,10 +484,10 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		WriteByte (SVC_TEMP_ENTITY);
 		WriteByte (Style);
@@ -511,21 +511,21 @@ bool CTargetTempEntity::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CTargetTempEntity> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void		CTargetTempEntity::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetTempEntity> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CTargetTempEntity::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetTempEntity> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_temp_entity", CTargetTempEntity);
@@ -594,21 +594,21 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	Level.ExitIntermission = false;
 
 	// find an intermission spot
-	CBaseEntity *Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
+	IBaseEntity *Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
 	if (!Entity)
 	{	// the map creator forgot to put in an intermission point...
-		Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_start");
+		Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_start");
 		if (!Entity)
-			Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, "info_player_deathmatch");
+			Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_deathmatch");
 	}
 	else
 	{	// chose one of four spots
 		sint32 i = irandom(4);
 		while (i--)
 		{
-			Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
+			Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
 			if (!Entity)	// wrap around the list
-				Entity = CC_FindByClassName<CBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
+				Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
 		}
 	}
 
@@ -626,18 +626,18 @@ void BeginIntermission (CTargetChangeLevel *targ)
 }
 
 CTargetChangeLevel::CTargetChangeLevel () :
-	CBaseEntity (),
-	CMapEntity (),
-	CUsableEntity (),
+	IBaseEntity (),
+	IMapEntity (),
+	IUsableEntity (),
 	Map(NULL),
 	ExitOnNextFrame(false)
 {
 };
 
 CTargetChangeLevel::CTargetChangeLevel (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CUsableEntity (Index),
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IUsableEntity (Index),
 	Map(NULL),
 	ExitOnNextFrame(false)
 {
@@ -645,10 +645,10 @@ CTargetChangeLevel::CTargetChangeLevel (sint32 Index) :
 
 bool CTargetChangeLevel::Run ()
 {
-	return CBaseEntity::Run ();
+	return IBaseEntity::Run ();
 };
 
-void CTargetChangeLevel::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (Level.IntermissionTime)
 		return;		// already activated
@@ -664,7 +664,7 @@ void CTargetChangeLevel::Use (CBaseEntity *Other, CBaseEntity *Activator)
 	{
 		if ((Other->EntityFlags & ENT_HURTABLE))
 		{
-			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(Other);
+			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
 			if (Hurtable->CanTakeDamage)
 				Hurtable->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 10 * Hurtable->MaxHealth, 1000, 0, MOD_EXIT);
@@ -722,21 +722,21 @@ bool			CTargetChangeLevel::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CTargetChangeLevel::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetChangeLevel> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void			CTargetChangeLevel::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetChangeLevel> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_changelevel", CTargetChangeLevel);
@@ -755,20 +755,20 @@ CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 /*QUAKED target_crosslevel_trigger (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
 Once this trigger is touched/used, any trigger_crosslevel_target with the same trigger number is automatically used when a level is started within the same unit.  It is OK to check multiple triggers.  Message, delay, target, and killtarget also work.
 */
-class CTargetCrossLevelTrigger : public CMapEntity, public CUsableEntity
+class CTargetCrossLevelTrigger : public IMapEntity, public IUsableEntity
 {
 public:
 	CTargetCrossLevelTrigger () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CTargetCrossLevelTrigger (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -776,27 +776,27 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		Game.ServerFlags |= SpawnFlags;
 		Free ();
@@ -816,20 +816,20 @@ killtarget also work.
 
 "delay"		delay before using targets if the trigger has been activated (default 1)
 */
-class CTargetCrossLevelTarget : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CTargetCrossLevelTarget : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	CTargetCrossLevelTarget () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity ()
 	{
 	};
 
 	CTargetCrossLevelTarget (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index)
 	{
 	};
 
@@ -837,25 +837,25 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File);
 
-	void Use (CBaseEntity *, CBaseEntity *)
+	void Use (IBaseEntity *, IBaseEntity *)
 	{
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -892,9 +892,9 @@ CrossLevelTargetList &GetCrossLevelTargetList ()
 
 void CTargetCrossLevelTarget::LoadFields (CFile &File)
 {
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 
 	GetCrossLevelTargetList().push_back (this);
 }
@@ -916,20 +916,20 @@ void FireCrossLevelTargets ()
 Counts a secret found.
 These are single use targets.
 */
-class CTargetSecret : public CMapEntity, public CUsableEntity
+class CTargetSecret : public IMapEntity, public IUsableEntity
 {
 public:
 	CTargetSecret () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CTargetSecret (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -939,22 +939,22 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		PlaySound (CHAN_VOICE, NoiseIndex);
 
@@ -987,7 +987,7 @@ public:
 
 bool			CTargetSecret::ParseField (const char *Key, const char *Value)
 {
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_secret", CTargetSecret);
@@ -996,20 +996,20 @@ LINK_CLASSNAME_TO_CLASS ("target_secret", CTargetSecret);
 Counts a goal completed.
 These are single use targets.
 */
-class CTargetGoal : public CMapEntity, public CUsableEntity
+class CTargetGoal : public IMapEntity, public IUsableEntity
 {
 public:
 	CTargetGoal () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CTargetGoal (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -1019,22 +1019,22 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		PlaySound (CHAN_VOICE, NoiseIndex);
 
@@ -1065,7 +1065,7 @@ public:
 
 bool			CTargetGoal::ParseField (const char *Key, const char *Value)
 {
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_goal", CTargetGoal);
@@ -1080,7 +1080,7 @@ speed	default is 1000
 #define BLASTER_NO_TRAIL		1
 #define BLASTER_NO_EFFECTS		2
 
-class CTargetBlaster : public CMapEntity, public CUsableEntity
+class CTargetBlaster : public IMapEntity, public IUsableEntity
 {
 public:
 	vec3f		MoveDir;
@@ -1088,18 +1088,18 @@ public:
 	sint32		Damage;
 
 	CTargetBlaster () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity (),
 	  Speed (0),
 	  Damage (0)
 	{
 	};
 
 	CTargetBlaster (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index),
 	  Speed (0),
 	  Damage (0)
 	{
@@ -1110,10 +1110,10 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		CBlasterProjectile::Spawn (this, State.GetOrigin(), MoveDir, Damage, Speed, (SpawnFlags & BLASTER_NO_EFFECTS) ? 0 : ((SpawnFlags & BLASTER_NO_TRAIL) ? EF_HYPERBLASTER : EF_BLASTER), true);
 		PlaySound (CHAN_VOICE, NoiseIndex);
@@ -1148,21 +1148,21 @@ bool			CTargetBlaster::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CTargetBlaster::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetBlaster> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CTargetBlaster::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetBlaster> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_blaster", CTargetBlaster);
@@ -1173,10 +1173,10 @@ or a direction.
 */
 
 CTargetLaser::CTargetLaser () :
-  CBaseEntity (),
-  CMapEntity (),
-  CThinkableEntity (),
-  CUsableEntity (),
+  IBaseEntity (),
+  IMapEntity (),
+  IThinkableEntity (),
+  IUsableEntity (),
   StartLaser(true),
   MakeEffect(false),
   Damage (0)
@@ -1184,10 +1184,10 @@ CTargetLaser::CTargetLaser () :
 };
 
 CTargetLaser::CTargetLaser (sint32 Index) :
-  CBaseEntity (Index),
-  CMapEntity (Index),
-  CThinkableEntity (Index),
-  CUsableEntity (Index),
+  IBaseEntity (Index),
+  IMapEntity (Index),
+  IThinkableEntity (Index),
+  IUsableEntity (Index),
   StartLaser(true),
   MakeEffect(false),
   Damage (0)
@@ -1196,7 +1196,7 @@ CTargetLaser::CTargetLaser (sint32 Index) :
 
 bool CTargetLaser::Run ()
 {
-	return CBaseEntity::Run();
+	return IBaseEntity::Run();
 };
 
 void CTargetLaser::Think ()
@@ -1207,7 +1207,7 @@ void CTargetLaser::Think ()
 		return;
 	}
 
-	CBaseEntity	*ignore;
+	IBaseEntity	*ignore;
 	vec3f	start;
 	vec3f	end;
 	const uint8 Count = (MakeEffect) ? 8 : 4;
@@ -1236,10 +1236,10 @@ void CTargetLaser::Think ()
 		if (!tr.ent->Entity)
 			break;
 
-		CBaseEntity *Entity = tr.ent->Entity;
+		IBaseEntity *Entity = tr.ent->Entity;
 		// hurt it if we can
-		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
-			entity_cast<CHurtableEntity>(Entity)->TakeDamage (this, User, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
+		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
+			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, User, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done
 		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
@@ -1260,7 +1260,7 @@ void CTargetLaser::Think ()
 	NextThink = Level.Frame + FRAMETIME;
 };
 
-void CTargetLaser::Use (CBaseEntity *Other, CBaseEntity *Activator)
+void CTargetLaser::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (!Usable)
 		return;
@@ -1313,7 +1313,7 @@ void CTargetLaser::Start ()
 	{
 		if (Target)
 		{
-			CBaseEntity *Entity = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target);
+			IBaseEntity *Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target);
 			if (!Entity)
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
 			Enemy = Entity;
@@ -1363,23 +1363,23 @@ bool			CTargetLaser::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CTargetLaser::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetLaser> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void			CTargetLaser::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetLaser> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_laser", CTargetLaser);
@@ -1390,20 +1390,20 @@ When fired, the "message" key becomes the current personal computer string, and 
 
 #define HELP_FIRST_MESSAGE	1
 
-class CTargetHelp : public CMapEntity, public CUsableEntity
+class CTargetHelp : public IMapEntity, public IUsableEntity
 {
 public:
 	CTargetHelp () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CTargetHelp (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -1411,27 +1411,27 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		Game.HelpMessages[(SpawnFlags & HELP_FIRST_MESSAGE) ? 0 : 1] = Message;
 		Game.HelpChanged++;
@@ -1480,7 +1480,7 @@ void CEarthQuakeShakePlayers::Callback (CPlayerEntity *Player)
 	Player->Velocity.Z = Speed * (100.0 / Player->Mass);
 }
 
-class CTargetEarthquake : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CTargetEarthquake : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	FrameNumber_t		LastShakeTime;
@@ -1489,20 +1489,20 @@ public:
 	FrameNumber_t		Duration;
 
 	CTargetEarthquake () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
 	  LastShakeTime (0),
 	  Speed (0)
 	{
 	};
 
 	CTargetEarthquake (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
 	  LastShakeTime (0),
 	  Speed (0)
 	{
@@ -1513,7 +1513,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -1534,7 +1534,7 @@ public:
 			NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		// Paril, Backwards compatibility
 		TimeStamp = Level.Frame + Duration;
@@ -1582,21 +1582,21 @@ bool			CTargetEarthquake::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CTargetEarthquake::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetEarthquake> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void			CTargetEarthquake::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetEarthquake> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_earthquake", CTargetEarthquake);

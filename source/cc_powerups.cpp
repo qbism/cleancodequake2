@@ -160,7 +160,7 @@ public:
 	CPlayerEntity	*Player;
 
 	CMegaHealthEntity () :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity(),
 	  Player(NULL)
 	  {
@@ -168,7 +168,7 @@ public:
 	  };
 
 	CMegaHealthEntity (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CItemEntity(Index),
 	  Player(NULL)
 	  {
@@ -468,13 +468,13 @@ void CPowerShield::Drop (CPlayerEntity *Player)
 }
 
 CPowerupEntity::CPowerupEntity() :
-  CBaseEntity(),
+  IBaseEntity(),
   CItemEntity ()
   {
   };
 
 CPowerupEntity::CPowerupEntity (sint32 Index) :
-  CBaseEntity(Index),
+  IBaseEntity(Index),
   CItemEntity (Index)
   {
   };

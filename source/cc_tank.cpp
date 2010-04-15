@@ -264,7 +264,7 @@ CFrame TankFramesPain3 [] =
 };
 CAnim TankMovePain3 (FRAME_pain301, FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
 
-void CTank::Pain (CBaseEntity *Other, sint32 Damage)
+void CTank::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() |= 1;
@@ -397,7 +397,7 @@ void CTank::Rocket ()
 
 	if (!blindfire && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -542,7 +542,7 @@ CAnim TankMoveAttackPostBlast (FRAME_attak117, FRAME_attak122, TankFramesAttackP
 
 void CTank::ReAttackBlaster ()
 {
-	if (CvarList[CV_SKILL].Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
+	if (CvarList[CV_SKILL].Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
 	{
 		CurrentMove = &TankMoveReAttackBlast;
 		return;
@@ -719,7 +719,7 @@ void CTank::ReFireRocket ()
 #endif
 
 	// Only on hard or nightmare
-	if ( CvarList[CV_SKILL].Integer() >= 2 && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
+	if ( CvarList[CV_SKILL].Integer() >= 2 && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
 	{
 		CurrentMove = &TankMoveAttackFireRocket;
 		return;
@@ -737,7 +737,7 @@ void CTank::Attack ()
 	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
 		return;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health < 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health < 0)
 	{
 		CurrentMove = &TankMoveAttackStrike;
 		AIFlags &= ~AI_BRUTAL;
@@ -856,7 +856,7 @@ CFrame TankFramesDeath1 [] =
 };
 CAnim TankMoveDeath (FRAME_death101, FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
 
-void CTank::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

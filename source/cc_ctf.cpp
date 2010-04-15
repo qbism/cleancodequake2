@@ -161,10 +161,10 @@ static inline void BuildBoxPoints(vec3f p[8], vec3f &org, vec3f &mins, vec3f &ma
 	p[7] = p[0] - vec3f(maxs.X, maxs.Y, 0);
 }
 
-bool loc_CanSee (CBaseEntity *targ, CBaseEntity *Inflictor)
+bool loc_CanSee (IBaseEntity *targ, IBaseEntity *Inflictor)
 {
 	// bmodels need special checking because their origin is 0,0,0
-	if ((targ->EntityFlags & ENT_PHYSICS) && (entity_cast<CPhysicsEntity>(targ))->PhysicsType == PHYSICS_PUSH)
+	if ((targ->EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(targ))->PhysicsType == PHYSICS_PUSH)
 		return false; // bmodels not supported
 
 	vec3f	targpoints[8];
@@ -512,14 +512,14 @@ CLocName LocNames[] =
 
 static inline void CTFSay_Team_Location(CPlayerEntity *who, std::stringstream &OutMessage)
 {
-	CBaseEntity *hot = NULL;
+	IBaseEntity *hot = NULL;
 	float hotdist = 999999, newdist;
 	sint32 hotindex = 999;
 	CBaseItem *item;
 	sint32 nearteam = -1;
 	bool hotsee = false;
 	bool cansee;
-	CBaseEntity *what = NULL;
+	IBaseEntity *what = NULL;
 
 	while ((what = FindRadius<ENT_BASE>(what, who->State.GetOrigin(), 1024, false)) != NULL)
 	{
@@ -574,7 +574,7 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::stringstream &O
 	// see if there's more than one in the map, if so
 	// we need to determine what team is closest
 	what = NULL;
-	while ((what = CC_FindByClassName<CBaseEntity, ENT_BASE> (what, hot->ClassName.c_str())) != NULL)
+	while ((what = CC_FindByClassName<IBaseEntity, ENT_BASE> (what, hot->ClassName.c_str())) != NULL)
 	{
 		if (what == hot)
 			continue;
@@ -791,20 +791,20 @@ The banner is 248 tall.
 */
 #define SPAWNFLAG_BLUE 1
 
-class CMiscCTFBanner : public CMapEntity, public CThinkableEntity
+class CMiscCTFBanner : public IMapEntity, public IThinkableEntity
 {
 public:
 	CMiscCTFBanner () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity ()
 	{
 	};
 
 	CMiscCTFBanner (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index)
 	{
 	};
 
@@ -812,19 +812,19 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	void Think ()
@@ -857,13 +857,13 @@ class CMiscCTFBannerSmall : public CMiscCTFBanner
 {
 public:
 	CMiscCTFBannerSmall () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CMiscCTFBanner ()
 	{
 	};
 
 	CMiscCTFBannerSmall (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CMiscCTFBanner (Index)
 	{
 	};
@@ -967,7 +967,7 @@ void CTFResetAllPlayers()
 
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Entity = (*it)->Entity;
+		IBaseEntity *Entity = (*it)->Entity;
 
 		if (Entity && Entity->GetInUse() && (Entity->EntityFlags & ENT_ITEM))
 		{

@@ -272,7 +272,7 @@ void CMutant::HitRight ()
 
 void CMutant::CheckRefire ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	// Paril, this was kinda dumb because he would keep refiring on nightmare
@@ -305,7 +305,7 @@ void CMutant::Melee ()
 // ATTACK
 //
 
-void CMutant::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CMutant::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 	if (!Jumping)
 		return;
@@ -323,7 +323,7 @@ void CMutant::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 			vec3f	normal (Entity->Velocity.GetNormalized());
 
 			sint32 Damage = 40 + 10 * frand();
-			entity_cast<CHurtableEntity>(Other)->TakeDamage (Entity, Entity, Entity->Velocity, Entity->State.GetOrigin().MultiplyAngles (Entity->GetMaxs().X, normal), normal, Damage, Damage, 0, MOD_UNKNOWN);
+			entity_cast<IHurtableEntity>(Other)->TakeDamage (Entity, Entity, Entity->Velocity, Entity->State.GetOrigin().MultiplyAngles (Entity->GetMaxs().X, normal), normal, Damage, Damage, 0, MOD_UNKNOWN);
 		}
 	}
 
@@ -519,7 +519,7 @@ bool CMutant::CheckJump ()
 
 bool CMutant::CheckAttack ()
 {
-	if (!Entity->Enemy || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())
@@ -579,7 +579,7 @@ CFrame MutantFramesPain3 [] =
 };
 CAnim MutantMovePain3 (FRAME_pain301, FRAME_pain311, MutantFramesPain3, &CMonster::Run);
 
-void CMutant::Pain (CBaseEntity *Other, sint32 Damage)
+void CMutant::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -654,7 +654,7 @@ CFrame MutantFramesDeath2 [] =
 };
 CAnim MutantMoveDeath2 (FRAME_death201, FRAME_death210, MutantFramesDeath2, ConvertDerivedFunction(&CMutant::Dead));
 
-void CMutant::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMutant::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{

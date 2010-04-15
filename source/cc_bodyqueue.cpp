@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-class CBody : public CHurtableEntity, public CTossProjectile, public CThinkableEntity
+class CBody : public IHurtableEntity, public ITossProjectile, public IThinkableEntity
 {
 public:
 	class CBodyQueue *BodyQueueList; // Queue the body belongs to
@@ -50,16 +50,16 @@ public:
 
 	void			SaveFields (CFile &File)
 	{
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CTossProjectile::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITossProjectile::SaveFields (File);
 	};
 	void			LoadFields (CFile &File);
 
 	void TossHead (sint32 Damage);
 
-	void Pain (CBaseEntity *Other, sint32 Damage);
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	void Think	(); // Only done if we're a head
 
@@ -67,15 +67,15 @@ public:
 };
 
 CBody::CBody () :
-CBaseEntity(),
-CHurtableEntity(),
+IBaseEntity(),
+IHurtableEntity(),
 BodyQueueList(NULL)
 {
 };
 
 CBody::CBody (sint32 Index) :
-CBaseEntity(Index),
-CHurtableEntity(Index),
+IBaseEntity(Index),
+IHurtableEntity(Index),
 BodyQueueList(NULL)
 {
 };
@@ -84,10 +84,10 @@ IMPLEMENT_SAVE_SOURCE (CBody)
 
 bool CBody::Run ()
 {
-	return (GetSvFlags() & SVF_NOCLIENT) ? false : CTossProjectile::Run();
+	return (GetSvFlags() & SVF_NOCLIENT) ? false : ITossProjectile::Run();
 }
 
-void CBody::Pain (CBaseEntity *Other, sint32 Damage)
+void CBody::Pain (IBaseEntity *Other, sint32 Damage)
 {
 }
 
@@ -146,9 +146,9 @@ void	CBody::LoadFields (CFile &File)
 {
 	BodyQueueList = BodyQueue;
 	
-	CHurtableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
-	CTossProjectile::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
+	ITossProjectile::LoadFields (File);
 };
 
 void CBody::Think ()
@@ -164,7 +164,7 @@ void CBody::Think ()
 	GetSvFlags() = SVF_NOCLIENT;
 }
 
-void CBody::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBody::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Health < -40)
 	{
@@ -295,7 +295,7 @@ void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
 	Body->GetSolid() = Player->GetSolid();
 	Body->GetClipmask() = Player->GetClipmask();
 	Body->Velocity.Clear ();
-	CBaseEntity *owner;
+	IBaseEntity *owner;
 	if ((owner = Player->GetOwner()) != 0)
 		Body->SetOwner (owner);
 

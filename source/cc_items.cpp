@@ -81,13 +81,13 @@ public:
 	};
 
 	CDroppedItemEntity(sint32 Index) :
- 	  CBaseEntity (Index),
+ 	  IBaseEntity (Index),
 	  CItemEntity(Index)
 	{
 		AvoidOwner = true;
 	};
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (AvoidOwner && (Other == GetOwner()))
 			return;
@@ -110,7 +110,7 @@ public:
 
 
 // Creates the item entity.
-CItemEntity *CBaseItem::DropItem (CBaseEntity *Entity)
+CItemEntity *CBaseItem::DropItem (IBaseEntity *Entity)
 {
 	CDroppedItemEntity	*dropped = QNewEntityOf CDroppedItemEntity();
 	vec3f	forward, right;

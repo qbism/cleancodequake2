@@ -39,9 +39,9 @@ class CHeatBeam : public CHitScan
 public:
 	EMeansOfDeath		MeansOfDeath;
 	bool				MonsterBeam;
-	CBaseEntity			*Firer;
+	IBaseEntity			*Firer;
 
-	CHeatBeam (CBaseEntity *Firer, sint32 Damage, sint32 Kick, sint32 mod, bool MonsterBeam) :
+	CHeatBeam (IBaseEntity *Firer, sint32 Damage, sint32 Kick, sint32 mod, bool MonsterBeam) :
 	  CHitScan (Damage, Kick, false),
 	  MeansOfDeath(mod),
 	  Firer(Firer),
@@ -49,16 +49,16 @@ public:
 	  {
 	  };
 
-	bool					DoDamage (CBaseEntity *Attacker, CHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	bool					DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
 	void					DoSolidHit	(CTrace *Trace);
 	void					DoWaterHit	(CTrace *Trace);
 	void					DoEffect (vec3f &start, vec3f &end, bool water);
-	void					DoFire		(CBaseEntity *Entity, vec3f start, vec3f aimdir);
+	void					DoFire		(IBaseEntity *Entity, vec3f start, vec3f aimdir);
 
-	static void				Fire		(CBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 mod, bool Monster);
+	static void				Fire		(IBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 mod, bool Monster);
 };
 
-class CFlechette : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CFlechette : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage, Kick;
@@ -73,9 +73,9 @@ public:
 		File.Write<sint32> (Damage);
 		File.Write<sint32> (Kick);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -83,21 +83,21 @@ public:
 		Damage = File.Read <sint32>();
 		Kick = File.Read <sint32>();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f Start, vec3f Dir,
+	static void Spawn	(IBaseEntity *Spawner, vec3f Start, vec3f Dir,
 						sint32 Damage, sint32 Kick, sint32 Speed);
 
 	bool Run ();
 };
 
-class CDisruptorTracker : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CDisruptorTracker : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage;
@@ -115,9 +115,9 @@ public:
 		File.Write<sint32> (Speed);
 		File.Write<bool> (DoFree);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -126,23 +126,23 @@ public:
 		Speed = File.Read<sint32>();
 		DoFree = File.Read<bool>();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Explode (plane_t *plane);
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 Damage, sint32 speed, CBaseEntity *enemy);
+	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed, IBaseEntity *enemy);
 
 	bool Run ();
 };
 
-class CGreenBlasterProjectile : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CGreenBlasterProjectile : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage;
@@ -156,24 +156,24 @@ public:
 	{
 		File.Write<sint32> (Damage);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		Damage = File.Read <sint32>();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
+	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, sint32 effect);
 
 	bool Run ();
@@ -183,11 +183,11 @@ class CBadArea
 {
 public:
 	vec3f			AbsMin, AbsMax, Origin, Mins, Maxs;
-	CBaseEntity		*Owner;
+	IBaseEntity		*Owner;
 	FrameNumber_t	Lifespan;
 	bool			Remove;
 
-	CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, CBaseEntity *Owner);
+	CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, IBaseEntity *Owner);
 	CBadArea () : Remove(false) { };
 
 	void Save (CFile &File)
@@ -225,7 +225,7 @@ public:
 	}
 };
 
-class CTesla : public CBounceProjectile, public CHurtableEntity, public CTouchableEntity, public CThinkableEntity
+class CTesla : public IBounceProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
 public:
 	CC_ENUM (uint8, ETeslaThinkType)
@@ -253,7 +253,7 @@ public:
 	IMPLEMENT_SAVE_HEADER(CTesla);
 
 	bool Run ();
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	void Remove ();
 	void Explode ();
@@ -263,7 +263,7 @@ public:
 	void DoneActivate ();
 	void Activate ();
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void Think ();
 

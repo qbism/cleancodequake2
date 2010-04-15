@@ -80,13 +80,13 @@ void PrintTransponders ()
 };
 
 CFlagEntity::CFlagEntity () :
-CBaseEntity(),
+IBaseEntity(),
 CItemEntity()
 {
 };
 
 CFlagEntity::CFlagEntity (sint32 Index) :
-CBaseEntity(Index),
+IBaseEntity(Index),
 CItemEntity(Index)
 {
 };
@@ -159,13 +159,13 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 };
 
 CRedFlagEntity::CRedFlagEntity () :
-CBaseEntity(),
+IBaseEntity(),
 CFlagEntity()
 {
 };
 
 CRedFlagEntity::CRedFlagEntity (sint32 Index) :
-CBaseEntity(Index),
+IBaseEntity(Index),
 CFlagEntity(Index)
 {
 };
@@ -184,13 +184,13 @@ void CRedFlagEntity::BecomeExplosion (bool grenade)
 
 
 CBlueFlagEntity::CBlueFlagEntity () :
-CBaseEntity(),
+IBaseEntity(),
 CFlagEntity()
 {
 };
 
 CBlueFlagEntity::CBlueFlagEntity (sint32 Index) :
-CBaseEntity(Index),
+IBaseEntity(Index),
 CFlagEntity(Index)
 {
 };
@@ -219,13 +219,13 @@ public:
 	};
 
 	CDroppedFlagEntity(sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CFlagEntity(Index),
 	  Red(false)
 	{
 	};
 
-	void Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (((Other == GetOwner()) && (NextThink - Level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
 			return;
@@ -254,7 +254,7 @@ public:
 	};
 };
 
-CItemEntity *CFlag::DropItem (CBaseEntity *Entity)
+CItemEntity *CFlag::DropItem (IBaseEntity *Entity)
 {
 	CDroppedFlagEntity	*dropped = QNewEntityOf CDroppedFlagEntity();
 	vec3f	forward, right;

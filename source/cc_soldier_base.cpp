@@ -328,7 +328,7 @@ CFrame SoldierFramesPain4 [] =
 CAnim SoldierMovePain4 (FRAME_pain401, FRAME_pain417, SoldierFramesPain4, ConvertDerivedFunction(&CSoldierBase::Run));
 
 
-void CSoldierBase::Pain (CBaseEntity *Other, sint32 Damage)
+void CSoldierBase::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() |= 1;
@@ -400,7 +400,7 @@ void CSoldierBase::Attack1_Refire1 ()
 	if (SoldierAI != AI_BLASTER)
 		return;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -417,7 +417,7 @@ void CSoldierBase::Attack1_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -456,7 +456,7 @@ void CSoldierBase::Attack2_Refire1 ()
 	if (SoldierAI != AI_BLASTER)
 		return;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -473,7 +473,7 @@ void CSoldierBase::Attack2_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -588,7 +588,7 @@ void CSoldierBase::Attack6_Refire ()
 	StopCharge ();
 #endif
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (Range(Entity, Entity->Enemy) < RANGE_NEAR)
@@ -611,7 +611,7 @@ void CSoldierBase::Attack6_RefireBlaster ()
 	DoneDodge ();
 	StopCharge ();
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
 		return;
 
 	if (Range(Entity, Entity->Enemy) < RANGE_NEAR)
@@ -714,7 +714,7 @@ CFrame SoldierFramesDuck [] =
 CAnim SoldierMoveDuck (FRAME_duck01, FRAME_duck05, SoldierFramesDuck, ConvertDerivedFunction(&CSoldierBase::Run));
 
 #if !ROGUE_FEATURES
-void CSoldierBase::Dodge (CBaseEntity *Attacker, float eta)
+void CSoldierBase::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
@@ -1028,7 +1028,7 @@ CFrame SoldierFramesDeath6 [] =
 };
 CAnim SoldierMoveDeath6 (FRAME_death601, FRAME_death610, SoldierFramesDeath6, ConvertDerivedFunction(&CSoldierBase::Dead));
 
-void CSoldierBase::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

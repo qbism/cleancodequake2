@@ -271,7 +271,7 @@ CFrame GunnerFramesPain1 [] =
 };
 CAnim GunnerMovePain1 (FRAME_pain101, FRAME_pain118, GunnerFramesPain1, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Pain (CBaseEntity *Other, sint32 Damage)
+void CGunner::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
@@ -326,7 +326,7 @@ CFrame GunnerFramesDeath [] =
 };
 CAnim GunnerMoveDeath (FRAME_death01, FRAME_death11, GunnerFramesDeath, ConvertDerivedFunction(&CGunner::Dead));
 
-void CGunner::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CGunner::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
@@ -423,7 +423,7 @@ CFrame GunnerFramesDuck [] =
 CAnim GunnerMoveDuck (FRAME_duck01, FRAME_duck08, GunnerFramesDuck, ConvertDerivedFunction(&CGunner::Run));
 
 #if !ROGUE_FEATURES
-void CGunner::Dodge (CBaseEntity *Attacker, float eta)
+void CGunner::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
@@ -490,7 +490,7 @@ void CGunner::Fire ()
 
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
-	target = target.MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+	target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 	target.Z += Entity->Enemy->ViewHeight;
 
 	aim = target - start;
@@ -739,7 +739,7 @@ void CGunner::FireChain ()
 
 void CGunner::ReFireChain ()
 {
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.5)
+	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.5)
 	{
 		CurrentMove = &GunnerMoveFireChain;
 		return;

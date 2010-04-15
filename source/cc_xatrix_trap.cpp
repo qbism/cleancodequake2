@@ -46,36 +46,36 @@ CTrapProjectile
 */
 
 CTrapProjectile::CTrapProjectile () :
-  CBounceProjectile(),
-  CTouchableEntity(),
-  CThinkableEntity()
+  IBounceProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CTrapProjectile::CTrapProjectile (sint32 Index) :
-  CBaseEntity (Index),
-  CBounceProjectile(Index),
-  CTouchableEntity(Index),
-  CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IBounceProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
 IMPLEMENT_SAVE_SOURCE(CTrapProjectile)
 
-void CTrapProjectile::Touch (CBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CTrapProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 {
 }
 
-class CJustAModel : public CBaseEntity
+class CJustAModel : public IBaseEntity
 {
 public:
 	CJustAModel () :
-	  CBaseEntity ()
+	  IBaseEntity ()
 	  {
 	  };
 
 	CJustAModel (sint32 Index) :
-	  CBaseEntity (Index)
+	  IBaseEntity (Index)
 	  {
 	  };
 
@@ -130,7 +130,7 @@ void CTrapProjectile::Think ()
 
 			for (uint8 i = 0; i < 3; i++)
 			{
-				CBaseEntity *best;
+				IBaseEntity *best;
 				if (!TrapEntities[i])
 				{
 					best = QNewEntityOf CJustAModel;
@@ -213,10 +213,10 @@ void CTrapProjectile::Think ()
 	if (State.GetFrame() < 4)
 		State.GetFrame()++;
 
-	CHurtableEntity *target = NULL;
-	CHurtableEntity *best = NULL;
+	IHurtableEntity *target = NULL;
+	IHurtableEntity *best = NULL;
 	float oldlen = 99999;
-	while ((target = FindRadius<CHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin (), 256)) != NULL)
+	while ((target = FindRadius<IHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin (), 256)) != NULL)
 	{
 		if (target->Health <= 0)
 			continue;
@@ -273,7 +273,7 @@ void CTrapProjectile::Think ()
 		{
 			if (best->EntityFlags & ENT_PHYSICS)
 			{
-				CPhysicsEntity *Phys = entity_cast<CPhysicsEntity>(best);
+				IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(best);
 				
 				if (Phys->Mass < 400)
 				{
@@ -310,7 +310,7 @@ void CTrapProjectile::Explode ()
 	//FIXME: if we are onground then raise our Z just a bit since we are a point?
 	if (Enemy)
 	{
-		CHurtableEntity *HurtEnemy = entity_cast<CHurtableEntity>(Enemy);
+		IHurtableEntity *HurtEnemy = entity_cast<IHurtableEntity>(Enemy);
 
 		vec3f v = (HurtEnemy->GetMins() + HurtEnemy->GetMaxs());
 		v = (State.GetOrigin () - HurtEnemy->State.GetOrigin().MultiplyAngles (0.5f, v));
@@ -333,7 +333,7 @@ void CTrapProjectile::Explode ()
 	Free (); // "delete" the entity
 }
 
-void CTrapProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed)
+void CTrapProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed)
 {
 	CTrapProjectile	*Grenade = QNewEntityOf CTrapProjectile;
 	vec3f		forward, right, up;
@@ -371,7 +371,7 @@ void CTrapProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f aimdir, in
 
 bool CTrapProjectile::Run ()
 {
-	return CBounceProjectile::Run();
+	return IBounceProjectile::Run();
 }
 
 CTrap::CTrap() :

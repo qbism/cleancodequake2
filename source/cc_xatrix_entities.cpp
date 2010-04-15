@@ -48,28 +48,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROTATING_LIGHT_START_OFF	1
 #define ROTATING_LIGHT_ALARM		2
 
-class CRotatingLight : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CUsableEntity
+class CRotatingLight : public IMapEntity, public IHurtableEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	bool		DoFree;
 	MediaIndex	AlarmSound;
 
 	CRotatingLight () :
-	  CMapEntity (),
-	  CHurtableEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
+	  IMapEntity (),
+	  IHurtableEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
 	  DoFree (false),
 	  AlarmSound (0)
 	{
 	};
 
 	CRotatingLight (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CHurtableEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IHurtableEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
 	  DoFree (false),
 	  AlarmSound (0)
 	{
@@ -79,7 +79,7 @@ public:
 
 	bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CMapEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value));
+		return (IMapEntity::ParseField (Key, Value) || IHurtableEntity::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value));
 	};
 
 	void			SaveFields (CFile &File)
@@ -87,23 +87,23 @@ public:
 		File.Write<bool> (DoFree);
 		WriteIndex (File, AlarmSound, INDEX_SOUND);
 
-		CMapEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 	void			LoadFields (CFile &File)
 	{
 		DoFree = File.Read<bool> ();
 		ReadIndex (File, AlarmSound, INDEX_SOUND);
 
-		CMapEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
-	void Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 	{
 		CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 30).Send();
 
@@ -131,7 +131,7 @@ public:
 		}
 	};
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
 		{
@@ -181,22 +181,22 @@ LINK_CLASSNAME_TO_CLASS ("rotating_light", CRotatingLight);
 /*QUAKED misc_crashviper (1 .5 0) (-176 -120 -24) (176 120 72) 
 This is a large viper about to crash
 */
-class CMiscCrashViper : public CTrainBase, public CTouchableEntity
+class CMiscCrashViper : public CTrainBase, public ITouchableEntity
 {
 	bool MyUse;
 public:
 	CMiscCrashViper() :
-		CBaseEntity (),
+		IBaseEntity (),
 		CTrainBase(),
-		CTouchableEntity(),
+		ITouchableEntity(),
 		MyUse(true)
 	{
 	};
 
 	CMiscCrashViper(sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CTrainBase(Index),
-		CTouchableEntity(Index),
+		ITouchableEntity(Index),
 		MyUse(true)
 	{
 	};
@@ -207,14 +207,14 @@ public:
 	{
 		File.Write<bool> (MyUse);
 		CTrainBase::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		MyUse = File.Read<bool> ();
 		CTrainBase::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
 	}
 
 	bool Run ()
@@ -222,7 +222,7 @@ public:
 		return CTrainBase::Run ();
 	};
 
-	virtual void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (MyUse)
 		{
@@ -265,22 +265,22 @@ LINK_CLASSNAME_TO_CLASS ("misc_viper", CMiscCrashViper);
 /*QUAKED misc_amb4 (1 0 0) (-16 -16 -16) (16 16 16)
 Mal's amb4 loop entity
 */
-class CMiscAmb4 : public CMapEntity, public CThinkableEntity
+class CMiscAmb4 : public IMapEntity, public IThinkableEntity
 {
 public:
 	MediaIndex	Amb4Sound;
 
 	CMiscAmb4 () :
-		CBaseEntity (),
-		CMapEntity (),
-		CThinkableEntity ()
+		IBaseEntity (),
+		IMapEntity (),
+		IThinkableEntity ()
 	{
 	};
 
 	CMiscAmb4 (sint32 Index) :
-		CBaseEntity (Index),
-		CMapEntity (Index),
-		CThinkableEntity (Index)
+		IBaseEntity (Index),
+		IMapEntity (Index),
+		IThinkableEntity (Index)
 	{
 	};
 
@@ -289,15 +289,15 @@ public:
 	void SaveFields (CFile &File)
 	{
 		WriteIndex (File, Amb4Sound, INDEX_SOUND);
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		ReadIndex (File, Amb4Sound, INDEX_SOUND);
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ()
@@ -318,20 +318,20 @@ LINK_CLASSNAME_TO_CLASS ("misc_amb4", CMiscAmb4);
 
 /*QUAKED misc_nuke (1 0 0) (-16 -16 -16) (16 16 16)
 */
-class CMiscNuke : public CMapEntity, public CUsableEntity
+class CMiscNuke : public IMapEntity, public IUsableEntity
 {
 public:
 	CMiscNuke () :
-		CBaseEntity (),
-		CMapEntity (),
-		CUsableEntity ()
+		IBaseEntity (),
+		IMapEntity (),
+		IUsableEntity ()
 	{
 	};
 
 	CMiscNuke (sint32 Index) :
-		CBaseEntity (Index),
-		CMapEntity (Index),
-		CUsableEntity (Index)
+		IBaseEntity (Index),
+		IMapEntity (Index),
+		IUsableEntity (Index)
 	{
 	};
 
@@ -339,17 +339,17 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 		{
@@ -363,7 +363,7 @@ public:
 			if (ent->Entity == this)
 				continue;
 
-			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(ent->Entity);
+			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(ent->Entity);
 
 			if (Hurtable->EntityFlags & ENT_PLAYER)
 				Hurtable->TakeDamage (this, this, vec3fOrigin, Hurtable->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_TRAP);
@@ -390,34 +390,34 @@ LINK_CLASSNAME_TO_CLASS ("misc_nuke", CMiscNuke);
 /*QUAKED misc_viper_bomb (1 0 0) (-8 -8 -8) (8 8 8)
 "dmg"	how much boom should the bomb make?
 */
-class CMiscViperMissile : public CMapEntity,public CUsableEntity
+class CMiscViperMissile : public IMapEntity,public IUsableEntity
 {
 public:
 	sint32			Damage;
 
 	CMiscViperMissile () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CMiscViperMissile (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMiscViperMissile)
 
-	void Use (CBaseEntity *Other, CBaseEntity *Activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		vec3f	start, dir;
 		vec3f	vec;
 				
-		CBaseEntity *target = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, Target);
+		IBaseEntity *target = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, Target);
 		
 		vec = target->State.GetOrigin();
 		vec.Z += 16;
@@ -459,21 +459,21 @@ bool			CMiscViperMissile::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CMiscViperMissile::SaveFields (CFile &File)
 {
 	SaveEntityFields <CMiscViperMissile> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CMiscViperMissile::LoadFields (CFile &File)
 {
 	LoadEntityFields <CMiscViperMissile> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper_missile", CMiscViperMissile);
@@ -489,13 +489,13 @@ class CMiscTransport : public CMiscViper
 {
 public:
 	CMiscTransport () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CMiscViper ()
 	  {
 	  };
 
 	CMiscTransport (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CMiscViper (Index)
 	  {
 	  };
@@ -537,7 +537,7 @@ public:
 	  };
 
 	CTargetMalLaser (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTargetLaser (Index)
 	  {
 	  };
@@ -599,7 +599,7 @@ The default delay is 1 second
 "delay" the delay in seconds for spark to occur
 */
 
-class CFuncObjectRepair : public CMapEntity, public CThinkableEntity, public CHurtableEntity, public CUsableEntity
+class CFuncObjectRepair : public IMapEntity, public IThinkableEntity, public IHurtableEntity, public IUsableEntity
 {
 public:
 	CC_ENUM (uint8, ERepairThinkType)
@@ -614,19 +614,19 @@ public:
 	ERepairThinkType	ThinkType;
 
 	CFuncObjectRepair () :
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CHurtableEntity (),
-	  CUsableEntity ()
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IHurtableEntity (),
+	  IUsableEntity ()
 	  {
 	  };
 
 	CFuncObjectRepair (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CHurtableEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IHurtableEntity (Index),
+	  IUsableEntity (Index)
 	  {
 	  };
 
@@ -635,7 +635,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run ();
+		return IBaseEntity::Run ();
 	};
 
 	void RepairFX ()
@@ -713,25 +713,25 @@ bool			CFuncObjectRepair::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField(Key, Value) || CHurtableEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField(Key, Value) || IHurtableEntity::ParseField (Key, Value));
 };
 
 void			CFuncObjectRepair::SaveFields (CFile &File)
 {
 	SaveEntityFields <CFuncObjectRepair> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void			CFuncObjectRepair::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncObjectRepair> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_object_repair", CFuncObjectRepair);

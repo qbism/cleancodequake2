@@ -383,7 +383,7 @@ CFrame StalkerFramesPain [] =
 };
 CAnim StalkerMovePain (FRAME_pain01, FRAME_pain04, StalkerFramesPain, &CMonster::Run);
 
-void CStalker::Pain (CBaseEntity *Other, sint32 Damage)
+void CStalker::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->DeadFlag)
 		return;
@@ -465,7 +465,7 @@ void CStalker::ShootAttack ()
 
 	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && frand() < (0.20f + 0.1f * CvarList[CV_SKILL].Float()))
 	{
-		end = Entity->Enemy->State.GetOldOrigin().MultiplyAngles (dir.Length() / 1000, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		end = Entity->Enemy->State.GetOldOrigin().MultiplyAngles (dir.Length() / 1000, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = end - start;
 	}	
 	else
@@ -619,12 +619,12 @@ void CalcJumpAngle(vec3f start, vec3f end, float velocity, vec3f &angles)
 
 // ====================
 // ====================
-bool CStalker::CheckLZ (CBaseEntity *target, vec3f dest)
+bool CStalker::CheckLZ (IBaseEntity *target, vec3f dest)
 {
 	if (!(target->EntityFlags & ENT_HURTABLE) || !(target->EntityFlags & ENT_PHYSICS))
 		return false;
 
-	if ((PointContents (dest) & CONTENTS_MASK_WATER) || entity_cast<CPhysicsEntity>(target)->WaterInfo.Level)
+	if ((PointContents (dest) & CONTENTS_MASK_WATER) || entity_cast<IPhysicsEntity>(target)->WaterInfo.Level)
 		return false;
 
 	if (!target->GroundEntity)
@@ -826,7 +826,7 @@ CFrame StalkerFramesDodgeRun [] =
 };
 CAnim StalkerMoveDodgeRun (FRAME_run01, FRAME_run04, StalkerFramesDodgeRun);
 
-void CStalker::Dodge (CBaseEntity *Attacker, float eta
+void CStalker::Dodge (IBaseEntity *Attacker, float eta
 #if ROGUE_FEATURES
 		, CTrace *tr
 #endif
@@ -881,7 +881,7 @@ CFrame StalkerFramesDeath [] =
 };
 CAnim StalkerMoveDeath (FRAME_death01, FRAME_death09, StalkerFramesDeath, ConvertDerivedFunction(&CStalker::Dead));
 
-void CStalker::Die (CBaseEntity *Inflictor, CBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CStalker::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Entity->PhysicsType = PHYSICS_TOSS;
 	Entity->State.GetAngles().Z = 0;
