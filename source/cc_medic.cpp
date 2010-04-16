@@ -390,7 +390,7 @@ void CMedic::Pain(IBaseEntity *Other, sint32 Damage)
 #endif
 
 	if (Entity->Health < (Entity->MaxHealth / 2))
-		Entity->State.GetSkinNum() = 1;
+		Entity->State.GetSkinNum() |= 1;
 
 	if (Level.Frame < PainDebounceTime)
 		return;
@@ -863,6 +863,10 @@ CAnim MedicMoveAttackCable (FRAME_attack33, FRAME_attack60, MedicFramesAttackCab
 
 void CMedic::Attack()
 {
+#if ROGUE_FEATURES
+	DoneDodge ();
+#endif
+
 	CurrentMove = (AIFlags & AI_MEDIC) ? &MedicMoveAttackCable : &MedicMoveAttackBlaster;
 }
 

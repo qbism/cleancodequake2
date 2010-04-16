@@ -125,7 +125,7 @@ LINK_ITEM_TO_CLASS (weapon_disintegrator, CItemEntity);
 
 void CDisruptor::CreateItem (CItemList *List)
 {
-	QNew (TAG_GENERIC) CWeaponItem
+	QNew (TAG_GAME) CWeaponItem
 		("weapon_disintegrator", "models/weapons/g_dist/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_disintegrator", "Disruptor",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Cells, 1, "#w_disrupt.md2");

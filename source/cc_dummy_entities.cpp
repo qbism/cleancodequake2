@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,45 +27,41 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_servercommands.h
-// ServerCommand and related classes
+// cc_dummy_entities.cpp
+// 
 //
 
-#if !defined(CC_GUARD_SERVERCOMMANDS_H) || !INCLUDE_GUARDS
-#define CC_GUARD_SERVERCOMMANDS_H
+#include "cc_local.h"
 
-void SvCmd_Register ();
-void SvCmd_RemoveCommands ();
-
-typedef void (*TServerCommandFunctorType) ();
-class CServerCommand : public CCommand <TServerCommandFunctorType>
+class CDummyEntity : public IMapEntity
 {
 public:
-	CServerCommand (const char *Name, TServerCommandFunctorType Func) :
-	  CCommand<TServerCommandFunctorType> (Name, Func, 0)
+	CDummyEntity () :
+	  IMapEntity ()
 	  {
 	  };
 
-	~CServerCommand ()
-	{
-	};
+	CDummyEntity (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
+	  {
+	  };
 
-	void *NewOfMe (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags)
+	ENTITYFIELDS_NONSAVABLE
+
+	bool				ParseField (const char *Key, const char *Value)
 	{
-		return QNew (TAG_GAME) CServerCommand (Name, Func);
+		return true;
 	}
 
-	void Run ()
+	void Spawn ()
 	{
-		Func ();
-	};
-
-	CServerCommand &AddSubCommand (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
-	{
-		return static_cast<CServerCommand&>(CCommand<TServerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
+		Free ();
 	};
 };
 
-#else
-FILE_WARNING
+#if ROGUE_FEATURES
+LINK_CLASSNAME_TO_EXISTING_CLASS (hint_path, "hint_path", CDummyEntity);
+LINK_CLASSNAME_TO_EXISTING_CLASS (dm_tag_token, "dm_tag_token", CDummyEntity);
+
 #endif

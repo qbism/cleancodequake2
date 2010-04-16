@@ -173,27 +173,40 @@ public:
 
 	ENTITYFIELDS_SAVABLE(CPlatFormInsideTrigger)
 
+	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+};
+
+class CPlatForm2InsideTrigger : public CPlatFormInsideTrigger
+{
+public:
+	CPlatForm2InsideTrigger ();
+	CPlatForm2InsideTrigger (sint32 Index);
+
+	ENTITYFIELDS_INHERIT(CPlatForm2InsideTrigger)
+
 	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
 class CPlatForm : public IMapEntity, public IBrushModel, public IBlockableEntity, public IUsableEntity
 {
 public:
-	sint32	Height;
+	sint32					Height;
+	CPlatFormInsideTrigger	*InsideTrigger;
 
 	enum
 	{
-		PLATTHINK_GO_DOWN = BRUSHTHINK_CUSTOM_START
+		PLATTHINK_GO_DOWN = BRUSHTHINK_CUSTOM_START,
+		PLATTHINK_GO_UP
 	};
 
 	CPlatForm();
 	CPlatForm(sint32 Index);
 
 	bool Run ();
-	void Blocked (IBaseEntity *Other);
-	void Use (IBaseEntity *Other, IBaseEntity *Activator);
-	void HitTop ();
-	void HitBottom ();
+	virtual void Blocked (IBaseEntity *Other);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
+	virtual void HitTop ();
+	virtual void HitBottom ();
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CPlatForm)
@@ -204,14 +217,54 @@ public:
 		PLATENDFUNC_HITTOP
 	};
 
+	virtual void DoEndFunc ();
+	virtual void GoDown ();
+	virtual void GoUp ();
+	virtual void Think ();
+
+	void SpawnInsideTrigger ();
+	virtual void Spawn ();
+};
+
+#if ROGUE_FEATURES
+
+class CPlatForm2 : public CPlatForm
+{
+public:
+	CC_ENUM (uint8, EPlat2Flags)
+	{
+		PLAT2_CALLED	= BIT(0),
+		PLAT2_MOVING	= BIT(1),
+		PLAT2_WAITING	= BIT(2)
+	};
+
+	bool			RequiresActivation;
+	FrameNumber_t	LastMoveTime;
+	EPlat2Flags		PlatFlags;
+	class CBadArea	*BadArea;
+
+	CPlatForm2();
+	CPlatForm2(sint32 Index);
+
+	void Blocked (IBaseEntity *Other);
+	void Use (IBaseEntity *Other, IBaseEntity *Activator);
+	void HitTop ();
+	void HitBottom ();
+
+	ENTITYFIELDS_SAVABLE(CPlatForm2)
+
 	void DoEndFunc ();
 	void GoDown ();
 	void GoUp ();
+	void Operate (IBaseEntity *Other);
 	void Think ();
+	void SpawnDangerArea ();
+	void KillDangerArea ();
 
-	void SpawnInsideTrigger ();
+	CPlatFormInsideTrigger *SpawnInsideTrigger ();
 	void Spawn ();
 };
+#endif
 
 class CDoorTrigger : public ITouchableEntity
 {

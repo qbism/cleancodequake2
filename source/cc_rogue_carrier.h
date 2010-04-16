@@ -27,86 +27,78 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_medic.h
-// Medic
+// cc_rogue_carrier.h
+// 
 //
 
-#if !defined(CC_GUARD_MEDIC_H) || !INCLUDE_GUARDS
-#define CC_GUARD_MEDIC_H
+#if !defined(CC_GUARD_CC_ROGUE_CARRIER_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CC_ROGUE_CARRIER_H
 
-class CMedic : public CMonster
+class CCarrier : public CMonster
 {
 public:
-	FrameNumber_t	MedicTryTime;
-	uint8			MedicTries;
+	float			OriginalYawSpeed;
+	FrameNumber_t	RefireWait, FrameCalc;
+	vec3f			RailFireSpot;
 
 	MONSTER_SOUND_ENUM
 	(
-		SOUND_IDLE,
 		SOUND_PAIN1,
 		SOUND_PAIN2,
-		SOUND_DIE,
+		SOUND_PAIN3,
+		SOUND_DEATH,
 		SOUND_SIGHT,
-		SOUND_SEARCH,
-		SOUND_HOOK_LAUNCH,
-		SOUND_HOOK_HIT,
-		SOUND_HOOK_HEAL,
-		SOUND_HOOK_RETRACT,
+		SOUND_RAIL,
+		SOUND_SPAWN,
 
 		SOUND_MAX
 	);
 
-	CMedic (uint32 ID);
+	CCarrier (uint32 ID);
 
-	ROGUE_VIRTUAL void SaveMonsterFields (CFile &File)
+	void SaveMonsterFields (CFile &File)
 	{
+		File.Write<float> (OriginalYawSpeed);
 		SAVE_MONSTER_SOUNDS
-		File.Write<FrameNumber_t> (MedicTryTime);
-		File.Write<uint8> (MedicTries);
-	}
-	ROGUE_VIRTUAL void LoadMonsterFields (CFile &File)
-	{
-		LOAD_MONSTER_SOUNDS
-		MedicTryTime = File.Read<FrameNumber_t> ();
-		MedicTries = File.Read<uint8> ();
 	}
 
-	ROGUE_VIRTUAL void Attack ();
+	void LoadMonsterFields (CFile &File)
+	{
+		OriginalYawSpeed = File.Read<float> ();
+		LOAD_MONSTER_SOUNDS
+	}
+
+	void Attack ();
 	void Run ();
-	void Search ();
-	void Idle ();
 	void Sight ();
 	void Stand ();
 	void Walk ();
-	ROGUE_VIRTUAL bool CheckAttack ();
-#if !ROGUE_FEATURES
-	void Dodge (IBaseEntity *Attacker, float eta);
-	void Duck_Down ();
-	void Duck_Hold ();
-	void Duck_Up ();
-#else
-	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
-	void Duck (float eta);
-	void SideStep ();
-#endif
+	bool CheckAttack ();
 
-	CMonsterEntity	*FindDeadMonster ();
-	ROGUE_VIRTUAL void FireBlaster ();
-	void ContinueFiring ();
-	void HookLaunch ();
-	void HookRetract();
-	void CableAttack ();
-
-#if ROGUE_FEATURES
-	void CleanupHeal (bool ChangeFrame = false);
-	void AbortHeal (bool Gib, bool Mark);
-#endif
+	void ReAttackGrenade ();
+	void AttackGrenade ();
+	void ReAttackMachinegun ();
+	void AttackMachinegun ();
+	void Rocket ();
+	void PredictiveRocket ();
+	void Grenade ();
+	void MachineGun ();
+	void FireBulletRight ();
+	void FireBulletLeft ();
+	void SpawnMonsters ();
+	void PrepSpawn ();
+	void SpawnCheck ();
+	void ReadySpawn ();
+	void StartSpawn ();
+	void CoopCheck ();
+	void Rail ();
+	void SaveLoc ();
 
 	void Dead ();
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	void Pain (IBaseEntity *Other, sint32 Damage);
 
-	ROGUE_VIRTUAL void Spawn ();
+	void Spawn ();
 };
 
 #else

@@ -66,12 +66,17 @@ void LoadBadAreas (CFile &File)
 
 	size_t sz = File.Read<size_t> ();
 	for (size_t i = 0; i < sz; ++i)
-		BadAreas.push_back (QNew (TAG_GENERIC) CBadArea(File));
+		BadAreas.push_back (QNew (TAG_GAME) CBadArea(File));
 }
 
 bool RemoveBadArea (CBadArea *Area)
 {
-	return Area->Remove;
+	if (Area->Remove)
+	{
+		QDelete Area;
+		return true;
+	}
+	return false;
 }
 
 void RunBadAreas ()
@@ -79,7 +84,8 @@ void RunBadAreas ()
 	for (size_t i = 0; i < BadAreas.size(); ++i)
 		BadAreas[i]->Run ();
 
-	std::remove_if (BadAreas.begin(), BadAreas.end(), RemoveBadArea);
+	//std::remove_if (BadAreas.begin(), BadAreas.end(), RemoveBadArea);
+	BadAreas.erase(std::remove_if(BadAreas.begin(), BadAreas.end(), RemoveBadArea), BadAreas.end());
 }
 
 CBadArea::CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, IBaseEntity *Owner) :
@@ -145,7 +151,7 @@ bool CMonster::MarkTeslaArea (CTesla *Tesla)
 	vec3f mins = Tesla->State.GetOrigin() + vec3f(-TESLA_DAMAGE_RADIUS, -TESLA_DAMAGE_RADIUS, Tesla->GetMins().Z);
 	vec3f maxs = Tesla->State.GetOrigin() + vec3f(TESLA_DAMAGE_RADIUS, TESLA_DAMAGE_RADIUS, TESLA_DAMAGE_RADIUS);
 
-	CBadArea *area = QNew(TAG_GENERIC) CBadArea (mins, maxs, (Tesla->RemoveTime) ? Tesla->RemoveTime : (Tesla->NextThink) ? Tesla->NextThink : 30, Tesla);
+	CBadArea *area = QNew(TAG_GAME) CBadArea (mins, maxs, (Tesla->RemoveTime) ? Tesla->RemoveTime : (Tesla->NextThink) ? Tesla->NextThink : 30, Tesla);
 	Tesla->BadArea = area;
 
 	return true;
@@ -850,6 +856,14 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 	&& StepDirection(d[2], Dist))
 			return;
 
+//ROGUE
+	if ((Entity->GetInUse()) && (Entity->Health > 0))
+	{
+		if (Entity->Blocked (Entity))
+			return;
+	}
+//ROGUE
+
 /* there is no direct path to the player, so pick another direction */
 
 	if (olddir!=DI_NODIR && StepDirection(olddir, Dist))
@@ -925,7 +939,7 @@ bool CMonster::CheckAttack ()
 			return false;
 
 	// see if any entities are in the way of the shot
-		vec3f spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight), spot2 = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
+		vec3f spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight), spot2 = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, (Entity->Enemy->ViewHeight > Entity->Enemy->GetMaxs().Z) ? Entity->Enemy->GetMaxs().Z / 2 : Entity->Enemy->ViewHeight);
 
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 

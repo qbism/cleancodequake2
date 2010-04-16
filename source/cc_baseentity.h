@@ -321,10 +321,14 @@ inline uint32 atou (const char *Str)
 	}; \
 	void LoadFields (CFile &File) \
 	{ \
-	};
+	};\
+	const char *SAVE_GetName () { return NULL; }
 #define ENTITYFIELDS_SAVABLE(x) \
 	void SaveFields (CFile &File); \
 	void LoadFields (CFile &File); \
+	const char *SAVE_GetName () { return TO_STRING(x); }
+
+#define ENTITYFIELDS_INHERIT(x) \
 	const char *SAVE_GetName () { return TO_STRING(x); }
 
 #define ENTITYFIELDS_NONSAVABLE_VIRTUAL(x) \

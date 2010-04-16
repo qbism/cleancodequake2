@@ -188,7 +188,7 @@ LINK_ITEM_TO_CLASS (weapon_phalanx, CItemEntity);
 
 void CPhalanx::CreateItem (CItemList *List)
 {
-	NItems::Phalanx = QNew (TAG_GENERIC) CWeaponItem
+	NItems::Phalanx = QNew (TAG_GAME) CWeaponItem
 		("weapon_phalanx", "models/weapons/g_shotx/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
 		"w_phallanx", "Phalanx", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::MagSlugs, 1, "#w_phalanx.md2");

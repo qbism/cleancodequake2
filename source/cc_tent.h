@@ -44,23 +44,20 @@ public:
 
 	ECastType	Type;
 	ECastFlags	Flags;
+	vec3f		CastOrigin;
 
-	CTempEntFlags (ECastType Type, ECastFlags Flags) :
+	CTempEntFlags (ECastType Type, ECastFlags Flags, vec3f CastOrigin) :
 	  Type(Type),
-	  Flags(Flags)
+	  Flags(Flags),
+	  CastOrigin(CastOrigin)
 	{
 	};
 
 	CTempEntFlags (const CTempEntFlags &right) :
 	  Type(right.Type),
-	  Flags(right.Flags)
+	  Flags(right.Flags),
+	  CastOrigin(right.CastOrigin)
 	{
-	};
-
-	CTempEntFlags &operator = (const CTempEntFlags &right)
-	{
-		Type = right.Type;
-		Flags = right.Flags;
 	};
 };
 
@@ -97,7 +94,7 @@ public:
 
 	CTempEnt (CTempEntFlags Flags, vec3f Origin = vec3fOrigin, CPlayerEntity *Player = NULL) :
 	  Flags(Flags),
-	  Origin(Origin),
+	  Origin(Flags.CastOrigin),
 	  Player(Player),
 	  ToPlayerOrigin(true)
 	{
@@ -713,6 +710,7 @@ public:
 	CTrailBase &StartAt (vec3f TrailStart)
 	{
 		this->TrailStart = TrailStart;
+		this->Origin = TrailStart;
 		return *this;
 	};
 

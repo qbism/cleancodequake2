@@ -530,7 +530,7 @@ void SvCmd_Irc_ConnectTo_t ()
 		if (ArgCount() >= 5)
 			port = ArgGeti(4);
 			
-		CIRCClientServer *Server = QNew (TAG_GENERIC) CIRCClientServer;
+		CIRCClientServer *Server = QNew (TAG_GAME) CIRCClientServer;
 		Server->Connect (ArgGets(3).c_str(), "Q2Serv", "Q2Serv", "", "Q2Serv", port);
 		
 		IRCServerList.push_back (Server);

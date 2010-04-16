@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_tent.h"
 
-const CTempEntFlags CTempEntFlags::DefaultTempEntFlags (CAST_MULTI, CASTFLAG_PVS);
+const CTempEntFlags CTempEntFlags::DefaultTempEntFlags (CAST_MULTI, CASTFLAG_PVS, vec3fOrigin);
 
 void CForEachPlayerMulticastCallback::Query (bool MustBeInUse)
 {

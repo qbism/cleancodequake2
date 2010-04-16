@@ -382,6 +382,7 @@ echo Done!
     <ClCompile Include="..\..\shared\mersennetwister.cpp" />
     <ClCompile Include="..\..\shared\shared.cpp" />
     <ClCompile Include="..\..\shared\string.cpp" />
+    <ClCompile Include="..\..\source\cc_dummy_entities.cpp" />
     <ClCompile Include="..\..\source\cc_game.cpp" />
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_gameapi.cpp" />
@@ -399,13 +400,18 @@ echo Done!
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
     <ClCompile Include="..\..\source\cc_player_trail.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_carrier.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_chainfist.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_deadalus.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_disruptor.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_etf_rifle.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_flyer_kamikaze.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_heatbeam.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_items.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_medic_commander.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_misc_entities.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_monster_ai.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_monster_spawning.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_prox_launcher.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_spheres.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_stalker.cpp" />
@@ -538,12 +544,17 @@ echo Done!
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />
     <ClInclude Include="..\..\source\cc_player_trail.h" />
+    <ClInclude Include="..\..\source\cc_rogue_carrier.h" />
     <ClInclude Include="..\..\source\cc_rogue_chainfist.h" />
+    <ClInclude Include="..\..\source\cc_rogue_deadalus.h" />
     <ClInclude Include="..\..\source\cc_rogue_disruptor.h" />
     <ClInclude Include="..\..\source\cc_rogue_etf_rifle.h" />
+    <ClInclude Include="..\..\source\cc_rogue_flyer_kamikaze.h" />
     <ClInclude Include="..\..\source\cc_rogue_heatbeam.h" />
     <ClInclude Include="..\..\source\cc_rogue_items.h" />
+    <ClInclude Include="..\..\source\cc_rogue_medic_commander.h" />
     <ClInclude Include="..\..\source\cc_rogue_misc_entities.h" />
+    <ClInclude Include="..\..\source\cc_rogue_monster_spawning.h" />
     <ClInclude Include="..\..\source\cc_rogue_prox_launcher.h" />
     <ClInclude Include="..\..\source\cc_rogue_spheres.h" />
     <ClInclude Include="..\..\source\cc_rogue_stalker.h" />

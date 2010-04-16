@@ -511,7 +511,8 @@ CAnim SoldierMoveAttack2 (FRAME_attak201, FRAME_attak218, SoldierFramesAttack2, 
 void CSoldierBase::Fire3 ()
 {
 #if ROGUE_FEATURES
-	DuckDown ();
+	if (!(AIFlags & AI_DUCKED))
+		DuckDown ();
 #else
 	Duck_Down ();
 #endif

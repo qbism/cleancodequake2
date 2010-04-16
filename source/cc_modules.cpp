@@ -44,7 +44,7 @@ std::vector <Module_t*> Modules;
 
 void CC_LoadModule (std::string Name)
 {
-	CDynamicLibrary *Lib = QNew (TAG_GENERIC) CDynamicLibrary (Name.c_str());
+	CDynamicLibrary *Lib = QNew (TAG_GAME) CDynamicLibrary (Name.c_str());
 	if (Lib->Valid())
 	{
 		// Make sure the module is valid
@@ -62,7 +62,7 @@ void CC_LoadModule (std::string Name)
 			if (Module && Module->GetAPIVersion() == MODULE_API_VERSION)
 			{
 				// We're good
-				Module_t *Mod = QNew (TAG_GENERIC) Module_t;
+				Module_t *Mod = QNew (TAG_GAME) Module_t;
 				Mod->Lib = Lib;
 				Mod->Module = Module;
 

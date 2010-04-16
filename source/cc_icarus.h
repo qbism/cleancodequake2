@@ -66,7 +66,7 @@ public:
 	}
 
 	void ReAttack ();
-	void FireBlaster ();
+	ROGUE_VIRTUAL void FireBlaster ();
 	void DeadThink ();
 	void StartAttack ();
 
@@ -81,7 +81,7 @@ public:
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	void Pain (IBaseEntity *Other, sint32 Damage);
 
-	void Spawn ();
+	ROGUE_VIRTUAL void Spawn ();
 };
 
 #else

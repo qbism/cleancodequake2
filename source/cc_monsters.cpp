@@ -402,6 +402,11 @@ void CMonsterEntity::Think ()
 	}
 }
 
+bool CMonsterEntity::Blocked (IBaseEntity *Other)
+{
+	return Monster->Blocked (Other);
+}
+
 void CMonsterEntity::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Monster->Die (Inflictor, Attacker, Damage, point);
@@ -814,7 +819,7 @@ void CMonster::MonsterStart ()
 		Entity->SpawnFlags |= MONSTER_AMBUSH;
 	}
 
-	if (!(AIFlags & AI_GOOD_GUY))
+	if (!(AIFlags & AI_GOOD_GUY) && !(Entity->SpawnFlags & MONSTER_DONT_COUNT))
 		Level.Monsters.Total++;
 
 	Entity->NextThink = Level.Frame + FRAMETIME;
@@ -1249,20 +1254,8 @@ void CMonster::MonsterDeathUse ()
 	Entity->UseTargets (Entity->Enemy, Entity->Message);
 }
 
-void CMonster::MonsterThink ()
+void CMonster::FixInvalidEntities ()
 {
-	Entity->NextThink = Level.Frame + FRAMETIME;
-	MoveFrame ();
-	if (Entity->GetLinkCount() != LinkCount)
-	{
-		LinkCount = Entity->GetLinkCount();
-		CheckGround ();
-	}
-	CatagorizePosition ();
-	WorldEffects ();
-	SetEffects ();
-
-	// Paril: Fix up invalid entities
 	if (Entity->OldEnemy && (Entity->OldEnemy->Freed || !Entity->OldEnemy->GetInUse()))
 		Entity->OldEnemy = NULL;
 	if (Entity->GoalEntity && (Entity->GoalEntity->Freed || !Entity->GoalEntity->GetInUse()))
@@ -1284,6 +1277,26 @@ void CMonster::MonsterThink ()
 		else
 			Entity->Enemy = NULL;
 	}
+
+	if (Commander && (Commander->Freed || !Commander->GetInUse()))
+		Commander = NULL;
+}
+
+void CMonster::MonsterThink ()
+{
+	Entity->NextThink = Level.Frame + FRAMETIME;
+	MoveFrame ();
+	if (Entity->GetLinkCount() != LinkCount)
+	{
+		LinkCount = Entity->GetLinkCount();
+		CheckGround ();
+	}
+	CatagorizePosition ();
+	WorldEffects ();
+	SetEffects ();
+
+	// Paril: Fix up invalid entities
+	FixInvalidEntities ();
 }
 
 void CMonster::MoveFrame ()

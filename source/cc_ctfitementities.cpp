@@ -155,7 +155,7 @@ void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
 
 	State.GetEffects() = Item->EffectFlags;
 	State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
-	Transponder = QNew (TAG_GENERIC) CFlagTransponder (Team, this);
+	Transponder = QNew (TAG_GAME) CFlagTransponder (Team, this);
 };
 
 CRedFlagEntity::CRedFlagEntity () :

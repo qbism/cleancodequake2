@@ -163,6 +163,7 @@ CC_ENUM (uint8, EMonsterSpawnflags)
 	MONSTER_AMBUSH			= 	BIT(0),
 	MONSTER_TRIGGER_SPAWN	=	BIT(1),
 	MONSTER_SIGHT			=	BIT(2),
+	MONSTER_DONT_COUNT		=	BIT(3),
 };
 
 #define STEPSIZE	18
@@ -199,6 +200,7 @@ public:
 
 	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf); // Empty
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
+	bool			Blocked (IBaseEntity *Other);
 
 	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
@@ -341,6 +343,8 @@ public:
 	virtual void		MonsterThink	();
 	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
+	virtual bool		Blocked (IBaseEntity *Other) {return false;}
+
 	void				AI_Charge (float Dist);
 	void				AI_Move (float Dist);
 	void				AI_Stand (float Dist);
@@ -354,6 +358,8 @@ public:
 	void				FoundTarget ();
 	void				HuntTarget ();
 	void				AlertNearbyStroggs ();
+
+	void				FixInvalidEntities ();
 
 	void				BossExplode ();
 	void				MoveFrame ();

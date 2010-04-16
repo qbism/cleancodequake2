@@ -163,7 +163,7 @@ public:
 
 	void *NewOfMe (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
 	{
-		return QNew (TAG_GENERIC) CPlayerCommand (Name, Func, Flags);
+		return QNew (TAG_GAME) CPlayerCommand (Name, Func, Flags);
 	}
 
 	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)

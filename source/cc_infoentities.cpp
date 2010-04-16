@@ -112,7 +112,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CTeleporterTrigger)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if (!Dest)
 			return;
@@ -316,49 +316,104 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CNoiseMaker)
 };
-class CTriggerTeleportDest : public CTeleporterTrigger
+
+IMPLEMENT_SAVE_SOURCE(CNoiseMaker)
+
+#if ROGUE_FEATURES
+
+CC_ENUM (uint8, ETriggerTeleporterSpawnflags)
+{
+	TELEPORT_PLAYER_ONLY	=	BIT(0),
+	TELEPORT_SILENT			=	BIT(1),
+	TELEPORT_CTF_ONLY		=	BIT(2),
+	TELEPORT_START_ON		=	BIT(3)
+};
+
+class CTriggerTeleportTeleporter : public CTeleporterTrigger, public IUsableEntity
 {
 public:
-	CTriggerTeleportDest () :
+	bool		Enabled;
+
+	CTriggerTeleportTeleporter () :
 	  IBaseEntity(),
-	  CTeleporterTrigger ()
+	  CTeleporterTrigger (),
+	  IUsableEntity ()
 	  {
 	  };
 
-	CTriggerTeleportDest (sint32 Index) :
+	CTriggerTeleportTeleporter (sint32 Index) :
 	  IBaseEntity(Index),
-	  CTeleporterTrigger (Index)
+	  CTeleporterTrigger (Index),
+	  IUsableEntity (Index)
 	  {
 	  };
 
-	IMPLEMENT_SAVE_HEADER(CTriggerTeleportDest)
+	IMPLEMENT_SAVE_HEADER(CTriggerTeleportTeleporter)
+
+	bool Run ()
+	{
+		return CTeleporterTrigger::Run ();
+	};
+
+	void SaveFields (CFile &File)
+	{
+		File.Write<bool> (Enabled);
+		CTeleporterTrigger::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		Enabled = File.Read<bool> ();
+		CTeleporterTrigger::LoadFields (File);
+	}
+
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	{
+		if (Enabled)
+			return;
+
+		CTeleporterTrigger::Touch (Other, plane, surf);
+	}
+
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	{
+		Enabled = !Enabled;
+	};
 
 	void Spawn ()
 	{
-		if (!Target)
+		if (!Wait)
+			Wait = 2;
+
+		Enabled = false;
+		
+		if (TargetName)
+		{
+			Usable = true;
+			if(!(SpawnFlags & TELEPORT_START_ON))
+				Enabled = true;
+		}
+	
+		if (!CTeleporterTrigger::Target)
 		{
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
 		}
 
-		GetSvFlags() |= SVF_NOCLIENT;
 		GetSolid() = SOLID_TRIGGER;
 		Touchable = true;
+
+		if (State.GetAngles() != vec3fOrigin)
+			G_SetMovedir (State.GetAngles(), MoveDir);
+
 		SetBrushModel ();
 		Link ();
-
-		// noise maker and splash effect dude
-		CNoiseMaker *s = QNewEntityOf CNoiseMaker;
-		s->State.GetOrigin() = (GetMins() + ((GetMaxs() - GetMins()) / 2));
-		s->State.GetSound() = SoundIndex ("world/hum1.wav");
-		s->Link ();
 	};
 };
 
-IMPLEMENT_SAVE_SOURCE(CNoiseMaker)
-
-LINK_CLASSNAME_TO_CLASS ("trigger_teleport", CTriggerTeleportDest);
+LINK_CLASSNAME_TO_CLASS ("trigger_teleport", CTriggerTeleportTeleporter);
+#endif
 
 /*QUAKED info_teleport_destination (0.5 0.5 0.5) (-16 -16 -24) (16 16 32)
 Point trigger_teleports at these.

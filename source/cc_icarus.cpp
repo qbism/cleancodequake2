@@ -495,6 +495,10 @@ void CIcarus::Attack ()
 	else
 		chance = 1.0f - (0.5f/CvarList[CV_SKILL].Float());
 
+	// daedalus strafes more
+	if (Entity->State.GetSkinNum() >= 2)
+		chance += 0.1f;
+
 	if (frand() > chance)
 	{
 		CurrentMove = &HoverMoveStartAttack;
@@ -520,7 +524,7 @@ void CIcarus::StartAttack()
 void CIcarus::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
-		Entity->State.GetSkinNum() = 1;
+		Entity->State.GetSkinNum() |= 1;
 
 	if (Level.Frame < PainDebounceTime)
 		return;

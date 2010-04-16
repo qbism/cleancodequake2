@@ -4,6 +4,18 @@ Present
 - Print buffer for each player & for console (shove all prints into buffer then print them at the end of the frame)
 - Make a unified CMeleeWeapon class...
 - Unified CWeaponThrowable class for Grenade, Trap and Tesla
+- Monsters and some other entities will still attempt to access an entity that was recently freed.
+  Things like smart pointers MIGHT be a fix here.. a fix that will be very tough to implement all
+  over the place. I've added a few pieces of code that fix up entities in monsters (the biggest
+  problem), but they still exist in some places. The problem stems from the fact that edict_t's never
+  go away, but all IBaseEntity-inherited entities get freed. Since all entities are stored as IBaseEntity (or
+  a sub-class) after they get freed their pointers become invalid. I implemented fix #1, which was to make fred
+  entities stay for about 3 frames before getting deleted, which fixed a few entities that already had checks
+  for GetInUse() or Freed, but some just assume the entity is still there (or use checks like if (Entity) which is
+  true even if it's freed). Fix #2 could be to implement a (safe) operator bool() so that if (Entity) when Entity->Freed == true
+  will return NULL or something, but this will still cause a problem because after the entity is freed going if (Entity) will cause
+  an access violation.
+- Noticed an odd bug where a grenade had an owner on spawn, but when it reached Explode (on a Flyer), GetOwner() returned NULL..
 
 Rogue
 - PUSH_SILENT flag for CTriggerPush (seems my PushInDirection implementation didn't think of this)

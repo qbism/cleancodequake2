@@ -284,7 +284,7 @@ void CWallTurret::Fire ()
 				dir = (end.MultiplyAngles(dir.Length() / 1000, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity) - start);
 		}
 
-		dir.Normalize ();
+		//dir.Normalize ();
 		CTrace trace (start, end, Entity, CONTENTS_MASK_SHOT);
 
 		if (trace.Ent == Entity->Enemy || trace.Ent == World)
@@ -296,7 +296,7 @@ void CWallTurret::Fire ()
 			else if (Entity->SpawnFlags & SPAWN_ROCKET)
 			{
 				if (dir.Length() * trace.fraction > 72)
-					MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_TURRET_ROCKET);
+					MonsterFireRocket (start, dir.GetNormalized(), 50, rocketSpeed, MZ2_TURRET_ROCKET);
 			}
 		}	
 	}
@@ -618,7 +618,7 @@ void CWallTurret::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CWallTurret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
-	CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), Entity->State.GetOrigin(), false, true).Send();
+	CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, Entity->State.GetOrigin()), Entity->State.GetOrigin(), false, true).Send();
 
 	vec3f forward;
 	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);

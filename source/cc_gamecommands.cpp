@@ -170,7 +170,7 @@ void Cmd_Players_f (CPlayerEntity *Player)
 	sint32		count = 0;
 	char	Small[MAX_INFO_KEY];
 	char	Large[MAX_INFO_STRING];
-	sint32		*index = QNew (TAG_GENERIC) sint32[Game.MaxClients];
+	sint32		*index = QNew (TAG_GAME) sint32[Game.MaxClients];
 
 	CPlayerListCountCallback (index, &count).Query ();
 

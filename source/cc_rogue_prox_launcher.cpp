@@ -574,7 +574,7 @@ LINK_ITEM_TO_CLASS (weapon_proxlauncher, CItemEntity);
 
 void CProxLauncher::CreateItem (CItemList *List)
 {
-	QNew (TAG_GENERIC) CWeaponItem
+	QNew (TAG_GAME) CWeaponItem
 		("weapon_proxlauncher", "models/weapons/g_plaunch/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_proxlaunch", "Prox Launcher",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Prox, 1, "#w_plauncher.md2");

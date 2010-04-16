@@ -507,6 +507,8 @@ void CParasite::Spawn ()
 
 	CurrentMove = &ParasiteMoveStand;	
 	WalkMonsterStart ();
+
+	Entity->ViewHeight = 12;
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_parasite", CParasite);

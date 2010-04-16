@@ -3220,7 +3220,7 @@ CPersistentData *SavedClients;
 
 void CPlayerEntity::BackupClientData ()
 {
-	SavedClients = QNew (TAG_GENERIC) CPersistentData[Game.MaxClients];
+	SavedClients = QNew (TAG_GAME) CPersistentData[Game.MaxClients];
 	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
 		if (!Game.Entities[1+i].Entity)

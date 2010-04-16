@@ -72,7 +72,7 @@ CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEn
 		return *static_cast<CPlayerCommand*>(CommandList()[0]);
 
 	// We can add it!
-	CommandList().push_back (QNew (TAG_GENERIC) CPlayerCommand (commandName, Func, Flags));
+	CommandList().push_back (QNew (TAG_GAME) CPlayerCommand (commandName, Func, Flags));
 
 	// Link it in the hash tree
 	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));

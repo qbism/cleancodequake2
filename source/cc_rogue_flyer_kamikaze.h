@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,43 +27,30 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_servercommands.h
-// ServerCommand and related classes
+// cc_rogue_flyer_kamikaze.h
+// 
 //
 
-#if !defined(CC_GUARD_SERVERCOMMANDS_H) || !INCLUDE_GUARDS
-#define CC_GUARD_SERVERCOMMANDS_H
+#if !defined(CC_GUARD_CC_ROGUE_FLYER_KAMIKAZE_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CC_ROGUE_FLYER_KAMIKAZE_H
 
-void SvCmd_Register ();
-void SvCmd_RemoveCommands ();
-
-typedef void (*TServerCommandFunctorType) ();
-class CServerCommand : public CCommand <TServerCommandFunctorType>
+class CFlyerKamikaze : public CFlyer
 {
 public:
-	CServerCommand (const char *Name, TServerCommandFunctorType Func) :
-	  CCommand<TServerCommandFunctorType> (Name, Func, 0)
-	  {
-	  };
+	CFlyerKamikaze (uint32 ID);
 
-	~CServerCommand ()
-	{
-	};
+	void Run ();
+	void Stand () { Run(); };
+	void Walk () { Run(); };
+	void Attack () { Run(); };
+	void Melee () { Run(); };
 
-	void *NewOfMe (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags)
-	{
-		return QNew (TAG_GAME) CServerCommand (Name, Func);
-	}
-
-	void Run ()
-	{
-		Func ();
-	};
-
-	CServerCommand &AddSubCommand (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
-	{
-		return static_cast<CServerCommand&>(CCommand<TServerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
-	};
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
+	bool Blocked (IBaseEntity *Other);
+	
+	void KamikazeExplode ();
+	void KamikazeCheck ();
 };
 
 #else

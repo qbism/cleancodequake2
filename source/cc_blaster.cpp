@@ -97,7 +97,7 @@ WEAPON_DEFS (CBlaster);
 
 void CBlaster::CreateItem (CItemList *List)
 {
-	NItems::Blaster = QNew (TAG_GENERIC)
+	NItems::Blaster = QNew (TAG_GAME)
 		CWeaponItem(NULL, NULL, 0, NULL, "w_blaster", "Blaster",
 		ITEMFLAG_WEAPON|ITEMFLAG_USABLE, "", &Weapon, NULL,
 		0, "#w_blaster.md2");

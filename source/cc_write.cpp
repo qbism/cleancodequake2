@@ -235,7 +235,7 @@ void WriteChar (sint8 val)
 		val = Clamp<char> (val, CHAR_MIN, CHAR_MAX);
 	}
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint8> (val, WT_CHAR));
+	WriteQueue.push_back (QNew (TAG_GAME) CWritePrimIndex<sint8> (val, WT_CHAR));
 }
 
 void WriteByte (uint8 val)
@@ -246,7 +246,7 @@ void WriteByte (uint8 val)
 		val = Clamp<uint8> (val, 0, UCHAR_MAX);
 	}
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<uint8> (val, WT_BYTE));
+	WriteQueue.push_back (QNew (TAG_GAME) CWritePrimIndex<uint8> (val, WT_BYTE));
 }
 
 void WriteShort (sint16 val)
@@ -257,7 +257,7 @@ void WriteShort (sint16 val)
 		val = Clamp<sint16> (val, SHRT_MIN, SHRT_MAX);
 	}
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> (val, WT_SHORT));
+	WriteQueue.push_back (QNew (TAG_GAME) CWritePrimIndex<sint16> (val, WT_SHORT));
 }
 
 void WriteLong (long val)
@@ -268,7 +268,7 @@ void WriteLong (long val)
 		val = Clamp<long> (val, LONG_MIN, LONG_MAX);
 	}
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<long> (val, WT_LONG));
+	WriteQueue.push_back (QNew (TAG_GAME) CWritePrimIndex<long> (val, WT_LONG));
 }
 
 void WriteFloat (float val)
@@ -279,7 +279,7 @@ void WriteFloat (float val)
 		val = Clamp<float> (val, FLT_MIN, FLT_MAX);
 	}
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<float> (val, WT_FLOAT));
+	WriteQueue.push_back (QNew (TAG_GAME) CWritePrimIndex<float> (val, WT_FLOAT));
 }
 
 void WriteAngle (float val)
@@ -306,12 +306,12 @@ void WriteString (const char *val)
 		// FIXME: Clamp the string??
 	}
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (val));
+	WriteQueue.push_back (QNew (TAG_GAME) CWriteString (val));
 }
 
 void WriteCoord (float f)
 {
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
+	WriteQueue.push_back (QNew (TAG_GAME) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
 }
 
 void WritePosition (vec3f val)

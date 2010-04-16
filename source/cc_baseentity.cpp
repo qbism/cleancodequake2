@@ -138,6 +138,7 @@ EEventEffect	&CEntityState::GetEvent			()
 void G_InitEdict (edict_t *e)
 {
 	e->inUse = true;
+	memset (&e->state, 0, sizeof(e->state));
 	e->state.number = e - Game.Entities;
 }
 
@@ -231,7 +232,6 @@ bool RemoveEntity (edict_t *ent)
 
 			// Push into Open
 			Level.Entities.Open.push_front (ent);
-
 			return true;
 		}
 
@@ -783,7 +783,7 @@ void IBaseEntity::StuffText (const char *text)
 
 ENTITYFIELDS_BEGIN(IMapEntity)
 {
-	CEntityField ("spawnflags",		EntityMemberOffset(IBaseEntity,SpawnFlags),		FT_UINT),
+	CEntityField ("spawnflags",		EntityMemberOffset(IBaseEntity,SpawnFlags),		FT_UINT | FT_SAVABLE),
 	CEntityField ("origin",			GameEntityMemberOffset(state.origin),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angles",			GameEntityMemberOffset(state.angles),			FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),

@@ -183,6 +183,8 @@ inline ERangeType Range (vec3f left, vec3f right)
 
 ERangeType Range (IBaseEntity *self, IBaseEntity *Other);
 bool IsInFront (IBaseEntity *self, IBaseEntity *Other);
+bool IsInBack (IBaseEntity *self, IBaseEntity *Other);
+bool IsBelow (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (vec3f left, vec3f right, IBaseEntity *self);
 

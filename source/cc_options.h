@@ -170,9 +170,23 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROGUE_FEATURES						0
 #endif
 
+// just to reduce verbosity
+#if ROGUE_FEATURES
+#define ROGUE_VIRTUAL virtual
+#else
+#define ROGUE_VIRTUAL
+#endif
+
 // Enable Xatrix entities and weapons
 #ifndef XATRIX_FEATURES
 #define XATRIX_FEATURES						0
+#endif
+
+// just to reduce verbosity
+#if XATRIX_FEATURES
+#define XATRIX_VIRTUAL virtual
+#else
+#define XATRIX_VIRTUAL
 #endif
 
 #if CC_GAME_MODE == GAME_ORIGINAL_QUAKE2

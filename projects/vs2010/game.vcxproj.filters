@@ -576,6 +576,24 @@
     <ClCompile Include="..\..\source\cc_rogue_wall_turret.cpp">
       <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_dummy_entities.cpp">
+      <Filter>CleanCode Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_deadalus.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_medic_commander.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_flyer_kamikaze.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_carrier.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_monster_spawning.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">
@@ -1059,6 +1077,21 @@
       <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_rogue_wall_turret.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_deadalus.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_medic_commander.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_flyer_kamikaze.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_carrier.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_monster_spawning.h">
       <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClInclude>
   </ItemGroup>

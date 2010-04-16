@@ -482,6 +482,9 @@ bool CGunner::GrenadeCheck()
 
 void CGunner::Fire ()
 {
+	if (!Entity->Enemy)
+		return;
+
 	vec3f	start, forward, right, target, aim;
 	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak216);
 
@@ -739,7 +742,7 @@ void CGunner::FireChain ()
 
 void CGunner::ReFireChain ()
 {
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.5)
+	if (Entity->Enemy && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.5)
 	{
 		CurrentMove = &GunnerMoveFireChain;
 		return;

@@ -65,6 +65,20 @@ IBaseEntity *ResolveMapEntity (edict_t *ent);
 	(LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn), mapClassName); \
 	IMPLEMENT_SAVE_STRUCTURE (DLLClassName,DLLClassName)
 
+#define LINK_CLASSNAME_TO_EXISTING_CLASS(DLLClassID,mapClassName,DLLClassName) \
+	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassID, _Spawn) (sint32 Index) \
+	{ \
+		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
+		newClass->ParseFields (); \
+		\
+		if (newClass->CheckValidity()) \
+			newClass->Spawn (); \
+		return newClass; \
+	} \
+	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(DLLClassID, _Linker) \
+	(LINK_RESOLVE_CLASSNAME(DLLClassID, _Spawn), mapClassName); \
+	IMPLEMENT_SAVE_STRUCTURE (DLLClassID,DLLClassName)
+
 #else
 FILE_WARNING
 #endif

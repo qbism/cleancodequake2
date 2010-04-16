@@ -483,7 +483,7 @@ public:
 		return Val;
 	};
 
-	char *ReadString (sint32 Tag = TAG_GENERIC)
+	char *ReadString (sint32 Tag = TAG_GAME)
 	{
 		if (!Handle)
 			return NULL;
@@ -551,7 +551,7 @@ public:
 	{
 		if (Array == NULL)
 		{
-			TType *TArray = QNew (TAG_GENERIC) TType[Length];
+			TType *TArray = QNew (TAG_GAME) TType[Length];
 			Read (TArray, sizeof(TType) * Length);
 			QDelete TArray;
 			return;
@@ -794,7 +794,7 @@ public:
 		size_t len = File.Length();
 
 		size_t termLen = (Terminate) ? 2 : 0;
-		Buffer = QNew (TAG_GENERIC) uint8[len + termLen];
+		Buffer = QNew (TAG_GAME) uint8[len + termLen];
 
 		File.Read (Buffer, len);
 

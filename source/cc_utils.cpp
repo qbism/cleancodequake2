@@ -264,11 +264,26 @@ infront
 returns 1 if the entity is in front (in sight) of self
 =============
 */
+
 bool IsInFront (IBaseEntity *self, IBaseEntity *Other)
 {	
 	vec3f forward;
 	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3);
+	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3f);
+}
+
+bool IsInBack (IBaseEntity *self, IBaseEntity *Other)
+{	
+	vec3f forward;
+	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
+	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) < -0.3f);
+}
+
+bool IsBelow (IBaseEntity *self, IBaseEntity *Other)
+{
+	if (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | vec3f(0, 0, -1)) > 0.95)  // 18 degree arc below
+		return true;
+	return false;
 }
 
 IBaseEntity *LoadEntity (uint32 Index)

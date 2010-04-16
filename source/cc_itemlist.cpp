@@ -116,7 +116,7 @@ CItemList *ItemList;
 
 CItemList::CItemList() :
 numItems(0),
-TempList (QNew(TAG_GENERIC) TItemListType)
+TempList (QNew(TAG_GAME) TItemListType)
 {
 };
 
@@ -134,7 +134,7 @@ void CItemList::SortAndFinalize ()
 {
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
-	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList->size()];
+	bool *SortedValues = QNew (TAG_GAME) bool[TempList->size()];
 	Mem_Zero (SortedValues, sizeof(*SortedValues));
 
 	for (int z = 0; z < 5; z++)
@@ -257,7 +257,7 @@ sint32 GetNumItems ()
 
 void InitItemlist ()
 {
-	ItemList = QNew (TAG_GENERIC) CItemList;
+	ItemList = QNew (TAG_GAME) CItemList;
 
 	AddAmmoToList();
 	AddHealthToList();

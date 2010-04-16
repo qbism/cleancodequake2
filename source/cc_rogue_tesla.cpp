@@ -122,27 +122,7 @@ void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Attacker);
 
 		// Paril: Last ditch attempt at fixing this...
-		if (Monster->OldEnemy && (Monster->OldEnemy->Freed || !Monster->OldEnemy->GetInUse()))
-			Monster->OldEnemy = NULL;
-		if (Monster->GoalEntity && (Monster->GoalEntity->Freed || !Monster->GoalEntity->GetInUse()))
-			Monster->GoalEntity = NULL;
-		if (Monster->Enemy && (Monster->Enemy->Freed || !Monster->Enemy->GetInUse()))
-		{
-			if (Monster->OldEnemy)
-			{
-				Monster->Enemy = Monster->OldEnemy;
-			
-				if (!(Monster->Enemy->EntityFlags & ENT_HURTABLE))
-				{
-					Monster->Monster->AIFlags |= AI_SOUND_TARGET;
-					Monster->GoalEntity = Monster->Enemy;
-				}
-
-				Monster->Monster->FoundTarget ();
-			}
-			else
-				Monster->Enemy = (GetOwner()) ? GetOwner() : NULL;
-		}
+		Monster->Monster->FixInvalidEntities();
 	}
 }
 
@@ -172,9 +152,9 @@ void CTesla::Explode ()
 		origin = State.GetOrigin();
 	
 	if (GroundEntity)
-		CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
+		CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, State.GetOrigin()), origin, !!WaterInfo.Level).Send();
 	else
-		CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS), origin, !!WaterInfo.Level).Send();
+		CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, State.GetOrigin()), origin, !!WaterInfo.Level).Send();
 
 	Free (); // "delete" the entity
 }

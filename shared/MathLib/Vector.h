@@ -526,7 +526,7 @@ public:
 						cr * cp);
 	};
 
-	inline vec3f MultiplyAngles (const float scale, const vec3f &b)
+	inline vec3f MultiplyAngles (const float scale, const vec3f &b) const
 	{
 		return vec3f(	X + b.X * scale,
 						Y + b.Y * scale,

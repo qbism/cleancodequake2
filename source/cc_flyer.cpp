@@ -562,6 +562,8 @@ void CFlyer::Spawn ()
 
 	CurrentMove = &FlyerMoveStand;
 	FlyMonsterStart ();
+
+	Entity->ViewHeight = 8;
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_flyer", CFlyer);
