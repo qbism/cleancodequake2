@@ -120,7 +120,7 @@ public:
 			_WriteShort (Val);
 			break;
 		case WT_LONG:
-			_WriteByte (Val);
+			_WriteLong (Val);
 			break;
 		case WT_FLOAT:
 			_WriteFloat (Val);

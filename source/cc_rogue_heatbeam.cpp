@@ -132,6 +132,7 @@ void CHeatBeamWeapon::WeaponGeneric (CPlayerEntity *Player)
 WEAPON_DEFS (CHeatBeamWeapon);
 
 LINK_ITEM_TO_CLASS (weapon_plasmabeam, CItemEntity);
+LINK_EXISTING_ITEM_TO_NEW_CLASS (weapon_heatbeam, "weapon_plasmabeam", CItemEntity);
 
 void CHeatBeamWeapon::CreateItem (CItemList *List)
 {

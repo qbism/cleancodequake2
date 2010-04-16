@@ -1590,6 +1590,7 @@ void			CTargetEarthquake::SaveFields (CFile &File)
 	SaveEntityFields <CTargetEarthquake> (this, File);
 	IMapEntity::SaveFields (File);
 	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void			CTargetEarthquake::LoadFields (CFile &File)
@@ -1597,6 +1598,7 @@ void			CTargetEarthquake::LoadFields (CFile &File)
 	LoadEntityFields <CTargetEarthquake> (this, File);
 	IMapEntity::LoadFields (File);
 	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_earthquake", CTargetEarthquake);

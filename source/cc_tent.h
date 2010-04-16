@@ -582,7 +582,7 @@ public:
 	};
 };
 
-// Shield sparks
+// Steam sparks
 class CSteam : public CSplashBase
 {
 protected:

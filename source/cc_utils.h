@@ -143,6 +143,13 @@ public:
 	virtual void Query (bool MustBeInUse = true);
 };
 
+class CForEachEntityCallback
+{
+public:
+	virtual void Callback (IBaseEntity *Entity) = 0;
+	virtual void Query (uint32 FlagsCanHave, uint32 FlagsCantHave = 0, bool MustBeInUse = true);
+};
+
 /*
 class CMyPlayerCallback : public CForEachPlayerCallback
 {

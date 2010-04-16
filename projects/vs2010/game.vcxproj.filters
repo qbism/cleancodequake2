@@ -573,6 +573,9 @@
     <ClCompile Include="..\..\source\cc_rogue_target_entities.cpp">
       <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_rogue_wall_turret.cpp">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">
@@ -1053,6 +1056,9 @@
       <Filter>CleanCode Files\Monsters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_rogue_target_entities.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_rogue_wall_turret.h">
       <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
     </ClInclude>
   </ItemGroup>

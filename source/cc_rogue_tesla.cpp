@@ -124,6 +124,8 @@ void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 		// Paril: Last ditch attempt at fixing this...
 		if (Monster->OldEnemy && (Monster->OldEnemy->Freed || !Monster->OldEnemy->GetInUse()))
 			Monster->OldEnemy = NULL;
+		if (Monster->GoalEntity && (Monster->GoalEntity->Freed || !Monster->GoalEntity->GetInUse()))
+			Monster->GoalEntity = NULL;
 		if (Monster->Enemy && (Monster->Enemy->Freed || !Monster->Enemy->GetInUse()))
 		{
 			if (Monster->OldEnemy)

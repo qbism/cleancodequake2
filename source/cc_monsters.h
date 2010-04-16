@@ -154,7 +154,8 @@ enum
 {
 	MONSTERENTITY_THINK_NONE,
 	MONSTERENTITY_THINK_USE,
-	MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE
+	MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE,
+	MONSTERENTITY_THINK_CUSTOM
 };
 
 CC_ENUM (uint8, EMonsterSpawnflags)
@@ -373,6 +374,7 @@ public:
 	void				WorldEffects ();
 
 	void				MonsterDeathUse ();
+	virtual void		Use (IBaseEntity *Other, IBaseEntity *Activator) {};
 
 	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
 	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
@@ -422,6 +424,9 @@ public:
 	void				SwimMonsterStartGo ();
 	void				WalkMonsterStart ();
 	void				WalkMonsterStartGo ();
+
+	void				StationaryMonsterStart ();
+	void				StationaryMonsterStartGo ();
 
 	void				ChangeYaw ();
 	bool				CheckBottom ();

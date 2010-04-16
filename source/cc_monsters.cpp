@@ -474,6 +474,8 @@ bool CMonsterEntity::Run ()
 		return IBounceProjectile::Run ();
 	case PHYSICS_PUSH:
 		return IPushPhysics::Run ();
+	case PHYSICS_NONE:
+		return false;
 	default:
 		return IStepPhysics::Run ();
 	};
@@ -854,11 +856,31 @@ void CMonster::MonsterTriggeredStart ()
 	Entity->UseState = MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE;
 }
 
+void CMonster::StationaryMonsterStartGo ()
+{	
+	if (!YawSpeed)
+		YawSpeed = 20;
+
+	MonsterStartGo ();
+
+	if (Entity->SpawnFlags & 2)
+		MonsterTriggeredStart ();
+}
+
+void CMonster::StationaryMonsterStart ()
+{
+	MonsterStart ();
+	Think = &CMonster::StationaryMonsterStartGo;
+}
+
 void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	switch (UseState)
 	{
 	case MONSTERENTITY_THINK_NONE:
+		break;
+	case MONSTERENTITY_THINK_CUSTOM:
+		Monster->Use (Other, Activator);
 		break;
 	case MONSTERENTITY_THINK_USE:
 		if (Enemy)
@@ -1243,6 +1265,8 @@ void CMonster::MonsterThink ()
 	// Paril: Fix up invalid entities
 	if (Entity->OldEnemy && (Entity->OldEnemy->Freed || !Entity->OldEnemy->GetInUse()))
 		Entity->OldEnemy = NULL;
+	if (Entity->GoalEntity && (Entity->GoalEntity->Freed || !Entity->GoalEntity->GetInUse()))
+		Entity->GoalEntity = NULL;
 	if (Entity->Enemy && (Entity->Enemy->Freed || !Entity->Enemy->GetInUse()))
 	{
 		if (Entity->OldEnemy)

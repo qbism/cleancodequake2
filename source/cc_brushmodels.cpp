@@ -2203,7 +2203,12 @@ void CTrainBase::TrainWait ()
 		}
 		else if (SpawnFlags & TRAIN_TOGGLE)  // && wait < 0
 		{
+#if ROGUE_FEATURES
+			// clear target_ent, let train_next get called when we get used
+			TargetEntity = NULL;
+#else
 			Next ();
+#endif
 			SpawnFlags &= ~TRAIN_START_ON;
 			Velocity.Clear ();
 			NextThink = 0;
@@ -2301,19 +2306,22 @@ void CTrainBase::Next ()
 
 		for (IBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
 		{
-			IBrushModel *Brush = entity_cast<IBrushModel>(e);
+			if (e->EntityFlags & ENT_BRUSHMODEL)
+			{
+				IBrushModel *Brush = entity_cast<IBrushModel>(e);
 			
-			vec3f dst = dir + Brush->State.GetOrigin();
-			Brush->StartOrigin = Brush->State.GetOrigin();
-			Brush->EndOrigin = dst;
+				vec3f dst = dir + Brush->State.GetOrigin();
+				Brush->StartOrigin = Brush->State.GetOrigin();
+				Brush->EndOrigin = dst;
 
-			Brush->MoveState = STATE_TOP;
-			Brush->MoveSpeed = MoveSpeed;
-			Brush->Speed = Speed;
-			Brush->Accel = Accel;
-			Brush->Decel = Decel;
-			Brush->PhysicsType = PHYSICS_PUSH; // FIXME: required?
-			Brush->MoveCalc (dst, 0); // FIXME: 0 always works here??
+				Brush->MoveState = STATE_TOP;
+				Brush->MoveSpeed = MoveSpeed;
+				Brush->Speed = Speed;
+				Brush->Accel = Accel;
+				Brush->Decel = Decel;
+				Brush->PhysicsType = PHYSICS_PUSH; // FIXME: required?
+				Brush->MoveCalc (dst, TRAINENDFUNC_NONE);
+			}
 		}
 	}
 #endif

@@ -411,6 +411,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_rogue_stalker.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_target_entities.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_tesla.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_wall_turret.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_weaponry.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_timer.cpp" />
@@ -548,6 +549,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_rogue_stalker.h" />
     <ClInclude Include="..\..\source\cc_rogue_target_entities.h" />
     <ClInclude Include="..\..\source\cc_rogue_tesla.h" />
+    <ClInclude Include="..\..\source\cc_rogue_wall_turret.h" />
     <ClInclude Include="..\..\source\cc_rogue_weaponry.h" />
     <ClInclude Include="..\..\source\cc_save.h" />
     <ClInclude Include="..\..\source\cc_shared.h" />

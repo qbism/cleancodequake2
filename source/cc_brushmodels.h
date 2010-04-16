@@ -451,6 +451,7 @@ public:
 
 	enum
 	{
+		TRAINENDFUNC_NONE,
 		TRAINENDFUNC_WAIT,
 	};
 

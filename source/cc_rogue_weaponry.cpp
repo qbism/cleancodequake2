@@ -171,13 +171,13 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				if (ThroughAndThrough && Target->GetSolid() == SOLID_BSP)
 				{
 					// Draw the effect
-					//DoEffect (from, oldFrom, false);
+					DoEffect (from, oldFrom, false);
 
 					DoSolidHit (&Trace);
 					break;
 				}
 
-				//DoEffect (from, oldFrom, Water);
+				DoEffect (from, oldFrom, Water);
 
 				// and ignore the bastard
 				Ignore = Target;
@@ -187,7 +187,10 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			}
 
 			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.normal))
+			{
+				DoEffect (from, Trace.EndPos, DrawIsWater);
 				break; // We wanted to stop
+			}
 
 			// Set up the start from where we are now
 			vec3f oldFrom = from;
@@ -197,14 +200,14 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			if (ThroughAndThrough && Target->GetSolid() == SOLID_BSP)
 			{
 				// Draw the effect
-				//DoEffect (from, oldFrom, false);
+				DoEffect (from, oldFrom, false);
 
 				DoEffect (from, oldFrom, DrawIsWater);
 				DoSolidHit (&Trace);
 				break;
 			}
 
-			//DoEffect (from, oldFrom, Water);
+			DoEffect (from, oldFrom, Water);
 
 			// and ignore the bastard
 			Ignore = Target;

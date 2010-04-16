@@ -1265,6 +1265,9 @@ bool CMonster::AI_CheckAttack()
 {
 	bool	retval;
 
+	if (!Entity->Enemy)
+		return false;
+
 // this causes monsters to run blindly to the combat point w/o firing
 	if (Entity->GoalEntity)
 	{

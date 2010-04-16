@@ -35,8 +35,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 
-#if 0
-//==========================================================
+#include "cc_brushmodels.h"
+#include "cc_func_entities.h"
+#include "cc_tent.h"
 
 /*QUAKED target_steam (1 0 0) (-8 -8 -8) (8 8 8)
 Creates a steam effect (particles w/ velocity in a line).
@@ -60,161 +61,152 @@ Creates a steam effect (particles w/ velocity in a line).
   208 - slime
   232 - blood
 */
-
-void use_target_steam (edict_t *self, edict_t *other, edict_t *activator)
+class CTargetSteam : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
-	// FIXME - this needs to be a global
-	static int	nextid;
-	vec3_t		point;
+public:
+	sint32				Speed, Count, Color, Wait;
+	vec3f				MoveDir;
 
-	if (nextid > 20000)
-		nextid = nextid %20000;
-
-	nextid++;
-	
-	// automagically set wait from func_timer unless they set it already, or
-	// default to 1000 if not called by a func_timer (eek!)
-	if (!self->wait)
-		if (other)
-			self->wait = other->wait * 1000;
-		else
-			self->wait = 1000;
-
-	if (self->enemy)
+	CTargetSteam () :
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity ()
 	{
-		VectorMA (self->enemy->absmin, 0.5, self->enemy->size, point);
-		VectorSubtract (point, self->s.origin, self->movedir);
-		VectorNormalize (self->movedir);
-	}
+	};
 
-	VectorMA (self->s.origin, self->plat2flags*0.5, self->movedir, point);
-	if (self->wait > 100)
+	CTargetSteam (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index)
 	{
-		gi.WriteByte (svc_temp_entity);
-		gi.WriteByte (TE_STEAM);
-		gi.WriteShort (nextid);
-		gi.WriteByte (self->count);
-		gi.WritePosition (self->s.origin);
-		gi.WriteDir (self->movedir);
-		gi.WriteByte (self->sounds&0xff);
-		gi.WriteShort ( (short int)(self->plat2flags) );
-		gi.WriteLong ( (int)(self->wait) );
-		gi.multicast (self->s.origin, MULTICAST_PVS);
-	}
-	else
+	};
+
+	ENTITYFIELD_DEFS
+	ENTITYFIELDS_SAVABLE(CTargetSteam)
+
+	bool Run ()
 	{
-		gi.WriteByte (svc_temp_entity);
-		gi.WriteByte (TE_STEAM);
-		gi.WriteShort ((short int)-1);
-		gi.WriteByte (self->count);
-		gi.WritePosition (self->s.origin);
-		gi.WriteDir (self->movedir);
-		gi.WriteByte (self->sounds&0xff);
-		gi.WriteShort ( (short int)(self->plat2flags) );
-		gi.multicast (self->s.origin, MULTICAST_PVS);
-	}
-}
+		return IBaseEntity::Run();
+	};
 
-void target_steam_start (edict_t *self)
-{
-	edict_t	*ent;
-
-	self->use = use_target_steam;
-
-	if (self->target)
+	void Think ()
 	{
-		ent = G_Find (NULL, FOFS(targetname), self->target);
-		if (!ent)
-			gi.dprintf ("%s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target);
-		self->enemy = ent;
-	}
-	else
-	{
-		G_SetMovedir (self->s.angles, self->movedir);
-	}
+		Usable = true;
 
-	if (!self->count)
-		self->count = 32;
-	if (!self->plat2flags)
-		self->plat2flags = 75;
-	if (!self->sounds)
-		self->sounds = 8;
-	if (self->wait)
-		self->wait *= 1000;  // we want it in milliseconds, not seconds
-
-	// paranoia is good
-	self->sounds &= 0xff;
-	self->count &= 0xff;
-
-	self->svflags = SVF_NOCLIENT;
-
-	gi.linkentity (self);
-}
-
-void SP_target_steam (edict_t *self)
-{
-	self->plat2flags = self->speed;
-
-	if (self->target)
-	{
-		self->think = target_steam_start;
-		self->nextthink = level.time + 1;
-	}
-	else
-		target_steam_start (self);
-}
-
-
-//==========================================================
-// target_anger
-//==========================================================
-
-void target_anger_use (edict_t *self, edict_t *other, edict_t *activator)
-{
-	edict_t		*target;
-	edict_t		*t;
-
-	t = NULL;
-	target = G_Find (t, FOFS(targetname), self->killtarget);
-
-	if (target && self->target)
-	{
-		// Make whatever a "good guy" so the monster will try to kill it!
-		target->monsterinfo.aiflags |= AI_GOOD_GUY;
-		target->svflags |= SVF_MONSTER;
-		target->health = 300;
-
-		t = NULL;
-		while ((t = G_Find (t, FOFS(targetname), self->target)))
+		if (Target)
 		{
-			if (t == self)
-			{
-				gi.dprintf ("WARNING: entity used itself.\n");
-			}
-			else
-			{
-				if (t->use)
-				{
-					if (t->health < 0)
-					{
-//						if ((g_showlogic) && (g_showlogic->value))
-//							gi.dprintf ("target_anger with dead monster!\n");
-						return;
-					}
-					t->enemy = target;
-					t->monsterinfo.aiflags |= AI_TARGET_ANGER;
-					FoundTarget (t);
-				}
-			}
-			if (!self->inuse)
-			{
-				gi.dprintf("entity was removed while using targets\n");
-				return;
-			}
+			IBaseEntity *ent = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target);
+			if (!ent)
+				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
+			Enemy = ent;
 		}
-	}
+		else
+			G_SetMovedir (State.GetAngles(), MoveDir);
 
+		if (!Count)
+			Count = 32;
+		if (!Speed)
+			Speed = 75;
+		if (!Color)
+			Color = 8;
+		if (Wait)
+			Wait *= 1000;  // we want it in milliseconds, not seconds
+
+		// paranoia is good
+		Color &= 0xff;
+		Count &= 0xff;
+
+		GetSvFlags() = SVF_NOCLIENT;
+
+		Link ();
+	};
+
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	{
+		// FIXME - this needs to be a global
+		static int	nextid;
+
+		if (nextid > 20000)
+			nextid = nextid %20000;
+
+		nextid++;
+	
+		// automagically set wait from func_timer unless they set it already, or
+		// default to 1000 if not called by a func_timer (eek!)
+		if (!Wait)
+		{
+			if (Other && Other->ClassName == "func_timer")
+				Wait = entity_cast<CFuncTimer>(Other)->Wait * 1000;
+			else
+				Wait = 1000;
+		}
+
+		if (Enemy)
+			MoveDir = ((Enemy->GetAbsMin().MultiplyAngles (0.5f, Enemy->GetSize())) - State.GetOrigin()).GetNormalized();
+
+		vec3f point = State.GetOrigin().MultiplyAngles (Speed * 0.5f, MoveDir);
+
+_CC_DISABLE_DEPRECATION
+		if (Wait > 100)
+			CSteam(State.GetOrigin(), MoveDir, Count, Color & 0xFF, Speed, nextid, Wait).Send();
+		else
+			CSteam(State.GetOrigin(), MoveDir, Count, Color & 0xFF, Speed, -1).Send();
+_CC_ENABLE_DEPRECATION
+	};
+
+	void Spawn ()
+	{
+		Usable = false;
+
+		if (Target)
+			NextThink = Level.Frame + 10;
+		else
+			Think ();
+	};
+};
+
+ENTITYFIELDS_BEGIN(CTargetSteam)
+{
+	// I found this field in biggun.bsp.
+	// Supporting it.
+	CEntityField ("speed", EntityMemberOffset(CTargetSteam,Speed), FT_INT | FT_SAVABLE),
+	CEntityField ("count", EntityMemberOffset(CTargetSteam,Count), FT_INT | FT_SAVABLE),
+	CEntityField ("sounds", EntityMemberOffset(CTargetSteam,Color), FT_INT | FT_SAVABLE),
+	CEntityField ("wait", EntityMemberOffset(CTargetSteam,Wait), FT_INT | FT_SAVABLE),
+
+	CEntityField ("MoveDir", EntityMemberOffset(CTargetSteam,MoveDir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
+};
+ENTITYFIELDS_END(CTargetSteam)
+
+bool			CTargetSteam::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTargetSteam> (this, Key, Value))
+		return true;
+
+	// Couldn't find it here
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
+};
+
+void			CTargetSteam::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTargetSteam> (this, File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
+
+void			CTargetSteam::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTargetSteam> (this, File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("target_steam", CTargetSteam);
+
 
 /*QUAKED target_anger (1 0 0) (-8 -8 -8) (8 8 8)
 This trigger will cause an entity to be angry at another entity when a player touches it. Target the
@@ -223,83 +215,212 @@ entity you want to anger, and killtarget the entity you want it to be angry at.
 target - entity to piss off
 killtarget - entity to be pissed off at
 */
-void SP_target_anger (edict_t *self)
-{	
-	if (!self->target)
-	{
-		gi.dprintf("target_anger without target!\n");
-		G_FreeEdict (self);
-		return;
-	}
-	if (!self->killtarget)
-	{
-		gi.dprintf("target_anger without killtarget!\n");
-		G_FreeEdict (self);
-		return;
-	}
-
-	self->use = target_anger_use;
-	self->svflags = SVF_NOCLIENT;
-}
-
-// ***********************************
-// target_killplayers
-// ***********************************
-
-void target_killplayers_use (edict_t *self, edict_t *other, edict_t *activator)
+class CTargetAnger : public IMapEntity, public IUsableEntity
 {
-	int		i;
-	edict_t	*ent, *player;
-
-	// kill the players
-	for (i=0 ; i<game.maxclients ; i++)
+public:
+	CTargetAnger () :
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
-		player = &g_edicts[1+i];
-		if (!player->inuse)
-			continue;
+	};
 
-		// nail it
-		T_Damage (player, self, self, vec3_origin, self->s.origin, vec3_origin, 100000, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+	CTargetAnger (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
+	{
+	};
+
+	ENTITYFIELDS_SAVABLE(CTargetAnger)
+	bool		ParseField (const char *Key, const char *Value)
+	{
+		return (IMapEntity::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value));
 	}
 
-	// kill any visible monsters
-	for (ent = g_edicts; ent < &g_edicts[globals.num_edicts] ; ent++)
+	bool Run ()
 	{
-		if (!ent->inuse)
-			continue;
-		if (ent->health < 1)
-			continue;
-		if (!ent->takedamage)
-			continue;
-		
-		for(i=0;i<game.maxclients ; i++)
+		return IBaseEntity::Run();
+	};
+
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	{
+		IMapEntity *AngryMonster = entity_cast<IMapEntity>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity, TargetName)>  (NULL, KillTarget));
+
+		if (AngryMonster && Target)
 		{
-			player = &g_edicts[1+i];
-			if(!player->inuse)
-				continue;
-			
-			if(visible(player, ent))
+			// Make whatever a "good guy" so the monster will try to kill it!
+			if (AngryMonster->EntityFlags & ENT_MONSTER)
+				entity_cast<CMonsterEntity>(AngryMonster)->Monster->AIFlags |= AI_GOOD_GUY;
+			AngryMonster->GetSvFlags() |= SVF_MONSTER;
+			if (AngryMonster->EntityFlags & ENT_HURTABLE)
+				entity_cast<IHurtableEntity>(AngryMonster)->Health = 300;
+
+			IBaseEntity *t = NULL;
+			while (((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target))) != NULL)
 			{
-				T_Damage (ent, self, self, vec3_origin, ent->s.origin, vec3_origin, 
-							ent->health, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
-				break;
+				if (t == this)
+					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
+				else
+				{
+					CMonsterEntity *Monster = entity_cast<CMonsterEntity>(t);
+					if (Monster->Usable)
+					{
+						if (Monster->Health < 0)
+							return;
+
+						Monster->Enemy = AngryMonster;
+						Monster->Monster->AIFlags |= AI_TARGET_ANGER;
+						Monster->Monster->FoundTarget ();
+					}
+				}
 			}
 		}
-	}
+	};
 
+	void Spawn ()
+	{
+		if (!Target)
+		{
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
+			Free ();
+			return;
+		}
+		if (!KillTarget)
+		{
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No killtarget\n");
+			Free ();
+			return;
+		}
+
+		Usable = true;
+		GetSvFlags() = SVF_NOCLIENT;
+	};
+};
+
+void		CTargetAnger::SaveFields (CFile &File)
+{
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
+
+void		CTargetAnger::LoadFields (CFile &File)
+{
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("target_anger", CTargetAnger);
 
 /*QUAKED target_killplayers (1 0 0) (-8 -8 -8) (8 8 8)
 When triggered, this will kill all the players on the map.
 */
-void SP_target_killplayers (edict_t *self)
+
+void NailHurtableEntity (IBaseEntity *Killer, IHurtableEntity *Hurtable)
 {
-	self->use = target_killplayers_use;
-	self->svflags = SVF_NOCLIENT;
+	Hurtable->TakeDamage (Killer, Killer, vec3fOrigin, Killer->State.GetOrigin(), vec3fOrigin, (Hurtable->EntityFlags & ENT_PLAYER) ? 100000 : Hurtable->Health, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 }
 
-#endif
+class CForEachPlayerKillCallback : public CForEachPlayerCallback
+{
+public:
+	IBaseEntity *Killer;
 
+	CForEachPlayerKillCallback (IBaseEntity *Killer) :
+	  Killer (Killer)
+	  {
+	  };
+
+	void Callback (CPlayerEntity *Player)
+	{
+		NailHurtableEntity (Killer, Player);
+	}
+};
+
+class CForEachNailMonsterCallback : public CForEachEntityCallback
+{
+public:
+	IBaseEntity *Killer;
+
+	CForEachNailMonsterCallback (IBaseEntity *Killer) :
+	  Killer (Killer)
+	  {
+	  };
+
+	void Callback (IBaseEntity *Entity)
+	{
+		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Entity);
+
+		if (Hurtable->Health < 1)
+			return;
+		if (!Hurtable->CanTakeDamage)
+			return;
+
+		for (uint8 i = 1; i <= 8; ++i)
+		{
+			if (Game.Entities[i].Entity->GetInUse() && IsVisible(Game.Entities[i].Entity, Hurtable))
+			{
+				NailHurtableEntity (Killer, entity_cast<IHurtableEntity>(Entity));
+				break;
+			}
+		}
+	}
+};
+
+class CTargetKillPlayers : public IMapEntity, public IUsableEntity
+{
+public:
+	CTargetKillPlayers () :
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
+	{
+	};
+
+	CTargetKillPlayers (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
+	{
+	};
+
+	ENTITYFIELDS_SAVABLE(CTargetKillPlayers)
+	bool		ParseField (const char *Key, const char *Value)
+	{
+		return (IMapEntity::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value));
+	}
+
+	bool Run ()
+	{
+		return IBaseEntity::Run();
+	};
+
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	{
+		CForEachPlayerKillCallback(this).Query();
+		CForEachNailMonsterCallback(this).Query(ENT_HURTABLE|ENT_MONSTER);
+	};
+
+	void Spawn ()
+	{
+		Usable = true;
+		GetSvFlags() = SVF_NOCLIENT;
+	};
+};
+
+void		CTargetKillPlayers::SaveFields (CFile &File)
+{
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+}
+
+void		CTargetKillPlayers::LoadFields (CFile &File)
+{
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("target_killplayers", CTargetKillPlayers);
 
 /*QUAKED target_blacklight (1 0 1) (-16 -16 -24) (16 16 24) 
 Pulsing black light with sphere in the center

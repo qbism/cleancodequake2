@@ -201,6 +201,22 @@ void CForEachPlayerCallback::Query (bool MustBeInUse)
 	}
 }
 
+void CForEachEntityCallback::Query (uint32 FlagsCanHave, uint32 FlagsCantHave, bool MustBeInUse)
+{
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
+	{
+		IBaseEntity *Entity = (*it)->Entity;
+
+		if (MustBeInUse && (!Entity->GetInUse()))
+			continue;
+		if (FlagsCanHave && !(Entity->EntityFlags & FlagsCanHave))
+			continue;
+		if (FlagsCantHave && (Entity->EntityFlags & FlagsCantHave))
+			continue;
+
+		Callback (Entity);
+	}
+}
 /*
 =============
 range

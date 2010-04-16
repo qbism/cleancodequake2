@@ -231,6 +231,76 @@ All but the first will have the FL_TEAMSLAVE flag set.
 All but the last will have the teamchain field set to the next one
 ================
 */
+
+#if ROGUE_FEATURES
+// From Rogue, seems to fix trains (moves them to master I think)
+#include "cc_brushmodels.h"
+
+void G_FixTeams ()
+{
+	int c = 0;
+	int c2 = 0;
+	for (int i = 1; i < GameAPI.GetNumEdicts(); i++)
+	{
+		IBaseEntity *e = Game.Entities[i].Entity;
+		if (!e)
+			continue;
+		if (!e->GetInUse())
+			continue;
+		if (!e->Team.HasTeam)
+			continue;
+
+		if (e->ClassName == "func_train")
+		{
+			if (e->Flags & FL_TEAMSLAVE)
+			{
+				IBaseEntity *chain = e;
+				e->Team.Master = e;
+				e->Team.Chain = NULL;
+				e->Flags &= ~FL_TEAMSLAVE;
+
+				c++;
+				c2++;
+
+				for (int j = 1; j < GameAPI.GetNumEdicts(); j++)
+				{
+					IBaseEntity *e2 = Game.Entities[j].Entity;
+					if (!e2)
+						continue;
+					if (e2 == e)
+						continue;
+					if (!e2->GetInUse())
+						continue;
+					if (!e2->Team.HasTeam || !e2->Team.String)
+						continue;
+
+					if (!strcmp(e->Team.String, e2->Team.String))
+					{
+						c2++;
+						chain->Team.Chain = e2;
+						e2->Team.Master = e;
+						e2->Team.Chain = NULL;
+						chain = e2;
+						e2->Flags |= FL_TEAMSLAVE;
+
+						if (e2->EntityFlags & ENT_BRUSHMODEL)
+						{
+							IBrushModel *Phys = entity_cast<IBrushModel>(e2);
+							Phys->PhysicsType = PHYSICS_PUSH;
+							Phys->MoveSpeed = Phys->Speed = entity_cast<IBrushModel>(e)->MoveSpeed;
+							//e2->movetype = MOVETYPE_PUSH;
+							//e2->speed = e->speed;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	DebugPrintf ("%i teams repaired\n", c);
+}
+#endif
+
 void G_FindTeams ()
 {
 	sint32		c = 0, c2 = 0;
@@ -272,23 +342,33 @@ void G_FindTeams ()
 				e2->Team.Master = e;
 				e2->Team.HasTeam = true;
 		
-				QDelete e2->Team.String; // Free team string
-
 				chain = e2;
 				e2->Flags |= FL_TEAMSLAVE;
 			}
 		}
-
-		QDelete e->Team.String; // Free team string
 	}
 
 	ServerPrintf ("%i teams with %i entities\n", c, c2);
+
+#if ROGUE_FEATURES
+	G_FixTeams ();
+#endif
+
+	for (int i = 0; i < GameAPI.GetNumEdicts(); i++)
+	{
+		IBaseEntity *e = Game.Entities[i].Entity;
+
+		if (e && e->Team.HasTeam && e->Team.String)
+		{
+			QDelete e->Team.String;
+			e->Team.String = NULL;
+		}
+	}
 }
 
 
 
 #include "cc_exceptionhandler.h"
-#include "cc_brushmodels.h"
 
 void InitPlayers ()
 {
