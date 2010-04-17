@@ -40,7 +40,7 @@ fs_pathListType fs_pathList;
 // Adds a path to the path list
 void FS_AddPath (const char *pathName)
 {
-	fs_pathIndex *path = QNew (TAG_GAME) fs_pathIndex;
+	fs_pathIndex *path = QNew (TAG_GENERIC) fs_pathIndex;
 	strncpy (path->pathName, pathName, sizeof(path->pathName));
 	fs_pathList.push_back (path);
 }
@@ -75,7 +75,7 @@ void FS_ReorderPath (const char *pathName)
 		}
 	}
 
-	fs_pathIndex *Path = QNew (TAG_GAME) fs_pathIndex;
+	fs_pathIndex *Path = QNew (TAG_GENERIC) fs_pathIndex;
 	strncpy (Path->pathName, pathName, sizeof(Path->pathName));
 
 	fs_pathList.insert (fs_pathList.begin(), Path);
@@ -224,7 +224,7 @@ void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 
 void FS_Init (sint32 maxHandles)
 {
-	CFile::IndexList = QNew(TAG_GAME) CFileHandleList (maxHandles);
+	CFile::IndexList = QNew(TAG_GENERIC) CFileHandleList (maxHandles);
 	FS_AddPath (".");
 	if (strcmp(GAMENAME, "baseq2"))
 		FS_AddPath (GAMENAME);

@@ -435,7 +435,7 @@ void CSuperTank::Rocket ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 
 	MonsterFireRocket (start, ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized(), 50, 500, FlashNumber);
 }	
@@ -447,7 +447,7 @@ void CSuperTank::MachineGun ()
 	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak1_1);
 
 	dir.ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 
 	if (Entity->Enemy)
 	{

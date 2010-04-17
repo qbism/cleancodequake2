@@ -256,7 +256,7 @@ void CSoldierHyper::FireGun (sint32 FlashNumber)
 	vec3f	start, forward, right, aim;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[BlasterFlash[FlashNumber]], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[BlasterFlash[FlashNumber]], forward, right, start);
 
 	switch (FlashNumber)
 	{

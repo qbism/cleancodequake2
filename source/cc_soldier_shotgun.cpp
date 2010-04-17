@@ -73,7 +73,7 @@ void CSoldierShotgun::FireGun (sint32 FlashNumber)
 	sint32		flashIndex = ShotgunFlash[FlashNumber];
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashIndex], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashIndex], forward, right, start);
 
 	switch (FlashNumber)
 	{

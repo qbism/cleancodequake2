@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#if ROGUE_FEATURES
 class CMiscNukeCore : public IMapEntity, public IUsableEntity
 {
 public:
@@ -479,3 +480,472 @@ public:
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_teleport_destination", CInfoTeleportDestination);
+
+#include "cc_rogue_weaponry.h"
+
+CC_ENUM (uint8, EPlatformSpawnflags)
+{
+	PLAT2_TOGGLE			= BIT(1),
+	PLAT2_TOP				= BIT(2),
+	PLAT2_TRIGGER_TOP		= BIT(3),
+	PLAT2_TRIGGER_BOTTOM	= BIT(4),
+	PLAT2_BOX_LIFT			= BIT(5)
+};
+
+CPlatForm2::CPlatForm2() :
+IBaseEntity(),
+CPlatForm()
+{
+};
+
+CPlatForm2::CPlatForm2(sint32 Index) :
+IBaseEntity(Index),
+CPlatForm(Index)
+{
+};
+
+void CPlatForm2::Blocked (IBaseEntity *Other)
+{
+	IHurtableEntity *HurtableOther = (Other->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Other) : NULL;
+
+	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & ENT_PLAYER) )
+	{
+		// give it a chance to go away on it's own terms (like gibs)
+		if (HurtableOther && HurtableOther->CanTakeDamage)
+			HurtableOther->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
+
+		// if it's still there, nuke it
+		if (!Other->Freed)
+			Other->BecomeExplosion(false);
+		return;
+	}
+
+	if (HurtableOther && HurtableOther->CanTakeDamage)
+	{
+		if (HurtableOther->Health < 0)
+			HurtableOther->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100, 1, 0, MOD_CRUSH);
+		HurtableOther->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
+	}
+
+	if (MoveState == STATE_UP)
+		GoDown ();
+	else if (MoveState == STATE_DOWN)
+		GoUp ();
+}
+
+void CPlatForm2::Use (IBaseEntity *Other, IBaseEntity *Activator)
+{
+	if (RequiresActivation)
+	{
+		RequiresActivation = false;
+
+		InsideTrigger = SpawnInsideTrigger();
+
+		InsideTrigger->GetMaxs().X += 10;
+		InsideTrigger->GetMaxs().Y += 10;
+		InsideTrigger->GetMins().X -= 10;
+		InsideTrigger->GetMins().X -=10;
+
+		InsideTrigger->Link ();
+	
+		GoDown ();
+		return;
+	}
+
+	if (MoveState > STATE_BOTTOM)
+		return;
+	if ((LastMoveTime + 20) > Level.Frame)
+		return;
+
+	Operate (Activator);
+};
+
+void CPlatForm2::HitTop ()
+{
+	if (!(Flags & FL_TEAMSLAVE))
+	{
+		if (SoundEnd)
+			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
+		State.GetSound() = 0;
+	}
+	MoveState = STATE_TOP;
+
+	if (PlatFlags & PLAT2_CALLED)
+	{
+		PlatFlags = PLAT2_WAITING;
+		if (!(SpawnFlags & PLAT2_TOGGLE))
+		{
+			ThinkType = PLATTHINK_GO_DOWN;
+			NextThink = Level.Frame + 50;
+		}
+
+		if (Game.GameMode == GAME_DEATHMATCH)
+			LastMoveTime = Level.Frame - 10;
+		else
+			LastMoveTime = Level.Frame - 20;
+	}
+	else if ((SpawnFlags & PLAT2_TOP) && !(SpawnFlags & PLAT2_TOGGLE))
+	{
+		PlatFlags = 0;
+		ThinkType = PLATTHINK_GO_DOWN;
+		NextThink = Level.Frame + 20;
+		LastMoveTime = Level.Frame;
+	}
+	else
+	{
+		PlatFlags = 0;
+		LastMoveTime = Level.Frame;
+	}
+
+	UseTargets (this, Message);
+}
+
+void CPlatForm2::HitBottom ()
+{
+	if (!(Flags & FL_TEAMSLAVE))
+	{
+		if (SoundEnd)
+			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
+		State.GetSound() = 0;
+	}
+	MoveState = STATE_BOTTOM;
+	
+	if (PlatFlags & PLAT2_CALLED)
+	{
+		PlatFlags = PLAT2_WAITING;
+		if (!(SpawnFlags & PLAT2_TOGGLE))
+		{
+			ThinkType = PLATTHINK_GO_UP;
+			NextThink = Level.Frame + 50;
+		}
+
+		if (Game.GameMode == GAME_DEATHMATCH)
+			LastMoveTime = Level.Frame - 10;
+		else
+			LastMoveTime = Level.Frame - 20;
+	}
+	else if ((SpawnFlags & PLAT2_TOP) && !(SpawnFlags & PLAT2_TOGGLE))
+	{
+		PlatFlags = 0;
+		ThinkType = PLATTHINK_GO_UP;
+		NextThink = Level.Frame + 20;
+		LastMoveTime = Level.Frame;
+	}
+	else
+	{
+		PlatFlags = 0;
+		LastMoveTime = Level.Frame;
+	}
+
+	KillDangerArea ();
+	UseTargets (this, Message);
+}
+
+void CPlatForm2::SpawnDangerArea ()
+{
+	if (BadArea)
+		return;
+
+	vec3f mins = GetMins(), maxs = GetMaxs();
+	maxs.Z = mins.Z + 64;
+
+	BadArea = QNew (TAG_GAME) CBadArea (mins, maxs, 0, this);
+}
+
+void CPlatForm2::KillDangerArea ()
+{
+	if (BadArea)
+	{
+		BadArea->Remove = true;
+		BadArea->Owner = NULL;
+		BadArea = NULL;
+	}
+};
+
+void CPlatForm2::DoEndFunc ()
+{
+	switch (EndFunc)
+	{
+	case PLATENDFUNC_HITBOTTOM:
+		HitBottom ();
+		break;
+	case PLATENDFUNC_HITTOP:
+		HitTop ();
+		break;
+	};
+};
+
+void CPlatForm2::GoDown ()
+{
+	if (!(Flags & FL_TEAMSLAVE))
+	{
+		if (SoundStart)
+			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
+		State.GetSound() = SoundMiddle;
+	}
+
+	MoveState = STATE_DOWN;
+	PlatFlags |= PLAT2_MOVING;
+
+	MoveCalc (EndOrigin, PLATENDFUNC_HITBOTTOM);
+}
+
+void CPlatForm2::GoUp ()
+{
+	if (!(Flags & FL_TEAMSLAVE))
+	{
+		if (SoundStart)
+			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
+		State.GetSound() = SoundMiddle;
+	}
+
+	MoveState = STATE_UP;
+	PlatFlags |= PLAT2_MOVING;
+	SpawnDangerArea ();
+
+	MoveCalc (StartOrigin, PLATENDFUNC_HITTOP);
+}
+
+void CPlatForm2::Think ()
+{
+	switch (ThinkType)
+	{
+	case PLATTHINK_GO_DOWN:
+		GoDown ();
+		break;
+	case PLATTHINK_GO_UP:
+		GoUp ();
+		break;
+	default:
+		IBrushModel::Think ();
+	};
+}
+
+void CPlatForm2::Operate (IBaseEntity *Other)
+{
+	if (PlatFlags & PLAT2_MOVING)
+		return;
+
+	if ((LastMoveTime + 20) > Level.Frame)
+		return;
+
+	float platCenter = (InsideTrigger->GetAbsMin().Z + InsideTrigger->GetAbsMax().Z) / 2;
+
+	sint32 otherState;
+
+	if (MoveState == STATE_TOP)
+	{
+		otherState = STATE_TOP;
+		if (SpawnFlags & PLAT2_BOX_LIFT)
+		{
+			if (platCenter > Other->State.GetOrigin().Z)
+				otherState = STATE_BOTTOM;
+		}
+		else
+		{
+			if (InsideTrigger->GetAbsMax().Z > Other->State.GetOrigin().Z)
+				otherState = STATE_BOTTOM;
+		}
+	}
+	else
+	{
+		otherState = STATE_BOTTOM;
+		if (Other->State.GetOrigin().Z > platCenter)
+			otherState = STATE_TOP;
+	}
+
+	PlatFlags = PLAT2_MOVING;
+
+	FrameNumber_t pauseTime = (Game.GameMode == GAME_DEATHMATCH) ? 3 : 5;
+
+	if (MoveState != otherState)
+	{
+		PlatFlags |= PLAT2_CALLED;
+		pauseTime = 1;
+	}
+
+	LastMoveTime = Level.Frame;
+	
+	if (MoveState == STATE_BOTTOM)
+	{
+		ThinkType = PLATTHINK_GO_UP;
+		NextThink = Level.Frame + pauseTime;
+	}
+	else
+	{
+		ThinkType = PLATTHINK_GO_DOWN;
+		NextThink = Level.Frame + pauseTime;
+	}
+}
+
+CPlatForm2InsideTrigger::CPlatForm2InsideTrigger () :
+CPlatFormInsideTrigger()
+{
+};
+
+CPlatForm2InsideTrigger::CPlatForm2InsideTrigger (sint32 Index) :
+IBaseEntity(Index),
+CPlatFormInsideTrigger(Index)
+{
+};
+
+IMPLEMENT_SAVE_SOURCE (CPlatForm2InsideTrigger)
+
+void CPlatForm2InsideTrigger::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+{
+	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
+		return;
+	if (!(Other->EntityFlags & ENT_PLAYER) && !(Other->EntityFlags & ENT_MONSTER))
+		return;
+
+	entity_cast<CPlatForm2>(Owner)->Operate (Other);
+};
+
+CPlatFormInsideTrigger *CPlatForm2::SpawnInsideTrigger ()
+{
+	CPlatForm2InsideTrigger	*trigger = QNewEntityOf CPlatForm2InsideTrigger;
+	vec3f	tmin, tmax;
+
+	//
+	// middle trigger
+	//	
+	trigger->GetSolid() = SOLID_TRIGGER;
+	trigger->Owner = this;
+
+	tmin = GetMins();
+	tmin.X += 25;
+	tmin.Y += 25;
+
+	tmax = GetMaxs();
+	tmax.X -= 25;
+	tmax.Y -= 25;
+	tmax.Z += 8;
+
+	tmin.Z = tmax.Z - (Positions[0].Z - Positions[1].Z + Lip);
+
+	if (SpawnFlags & PLAT_LOW_TRIGGER)
+		tmax.Z = tmin.Z + 8;
+
+	if (tmax.X - tmin.X <= 0)
+	{
+		tmin.X = (GetMins().X + GetMaxs().X) *0.5;
+		tmax.X = tmin.X + 1;
+	}
+	if (tmax.Y - tmin.Y <= 0)
+	{
+		tmin.Y = (GetMins().Y + GetMaxs().Y) *0.5;
+		tmax.Y = tmin.Y + 1;
+	}
+
+	trigger->GetMins() = tmin;
+	trigger->GetMaxs() = tmax;
+	trigger->Touchable = true;
+
+	trigger->Link ();
+
+	return trigger;
+};
+
+void CPlatForm2::Spawn ()
+{
+	State.GetAngles().Clear ();
+	GetSolid() = SOLID_BSP;
+	PhysicsType = PHYSICS_PUSH;
+
+	SetBrushModel ();
+
+	if (!Speed)
+		Speed = 20;
+	else
+		Speed *= 0.1f;
+
+	if (!Accel)
+		Accel = 5;
+	else
+		Accel *= 0.1f;
+
+	if (!Decel)
+		Decel = 5;
+	else
+		Decel *= 0.1f;
+
+	if (!Damage)
+		Damage = 2;
+
+	if (!Lip)
+		Lip = 8;
+
+	if (Game.GameMode == GAME_DEATHMATCH)
+	{
+		Speed *= 2;
+		Accel *= 2;
+		Decel *= 2;
+	}
+
+	//PMM Added to kill things it's being blocked by 
+	if (!Damage)
+		Damage = 2;
+
+	// pos1 is the top position, pos2 is the bottom
+	Positions[0] = Positions[1] = State.GetOrigin ();
+	Positions[1].Z -= (Height) ? Height : ((GetMaxs().Z - GetMins().Z) - Lip);
+
+	MoveState = STATE_TOP;
+
+	if (TargetName)
+		RequiresActivation = true;
+	else
+	{
+		RequiresActivation = false;
+
+		InsideTrigger = SpawnInsideTrigger ();	// the "start moving" trigger	
+
+		// PGM - debugging??
+		InsideTrigger->GetMaxs().X += 10;
+		InsideTrigger->GetMaxs().Y += 10;
+		InsideTrigger->GetMins().X -= 10;
+		InsideTrigger->GetMins().X -=10;
+
+		InsideTrigger->Link ();
+
+		if (!(SpawnFlags & PLAT2_TOP))
+		{
+			State.GetOrigin() = Positions[1];
+			MoveState = STATE_BOTTOM;
+		}	
+	}
+
+	Link ();
+
+	MoveSpeed = Speed;
+	StartOrigin = Positions[0];
+	StartAngles = State.GetAngles();
+	EndOrigin = Positions[1];
+	EndAngles = State.GetAngles();
+
+	SoundStart = SoundIndex ("plats/pt1_strt.wav");
+	SoundMiddle = SoundIndex ("plats/pt1_mid.wav");
+	SoundEnd = SoundIndex ("plats/pt1_end.wav");
+};
+
+void			CPlatForm2::SaveFields (CFile &File)
+{
+	File.Write<bool> (RequiresActivation);
+	File.Write<FrameNumber_t> (LastMoveTime);
+	File.Write<EPlat2Flags> (PlatFlags);
+	SaveBadArea (File, BadArea);
+	CPlatForm::SaveFields (File);
+};
+
+void			CPlatForm2::LoadFields (CFile &File)
+{
+	RequiresActivation = File.Read<bool> ();
+	LastMoveTime = File.Read<FrameNumber_t> ();
+	PlatFlags = File.Read<EPlat2Flags> ();
+	BadArea = LoadBadArea (File);
+	CPlatForm::LoadFields (File);
+};
+
+LINK_CLASSNAME_TO_CLASS ("func_plat2", CPlatForm2);
+
+#endif

@@ -200,7 +200,7 @@ public:
 
 	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf); // Empty
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
-	bool			Blocked (IBaseEntity *Other);
+	bool			Blocked (float Dist);
 
 	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
@@ -343,7 +343,7 @@ public:
 	virtual void		MonsterThink	();
 	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
-	virtual bool		Blocked (IBaseEntity *Other) {return false;}
+	virtual bool		Blocked (float Dist) {return false;}
 
 	void				AI_Charge (float Dist);
 	void				AI_Move (float Dist);
@@ -386,6 +386,8 @@ public:
 	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
 #if ROGUE_FEATURES
 	void				MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
+	void				MonsterFireTracker (vec3f start, vec3f dir, int damage, int speed, IBaseEntity *enemy, int flashtype);
+	void				MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, int flashtype);
 #endif
 	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype);
 	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype);

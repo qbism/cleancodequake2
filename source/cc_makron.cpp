@@ -444,7 +444,7 @@ void CMakron::FireBFG ()
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MAKRON_BFG], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_BFG], forward, right, start);
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK_BFG]);
 	MonsterFireBfg (start,
@@ -505,7 +505,7 @@ void CMakron::FireHyperblaster ()
 	sint32		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - FRAME_attak405);
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	if (Entity->Enemy)
 		dir.X = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight) - start).ToAngles().X;
@@ -556,7 +556,7 @@ void CMakron::FireRailgun ()
 	vec3f	forward, right;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MAKRON_RAILGUN_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_RAILGUN_1], forward, right, start);
 	
 	// calc direction to where we targted
 	dir = SavedLoc - start;

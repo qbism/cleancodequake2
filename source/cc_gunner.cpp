@@ -462,7 +462,7 @@ bool CGunner::GrenadeCheck()
 	// check to see that we can trace to the player before we start
 	// tossing grenades around.
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_GUNNER_GRENADE_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GUNNER_GRENADE_1], forward, right, start);
 
 	// pmm - check for blindfire flag
 	target = (AIFlags & AI_MANUAL_STEERING) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
@@ -489,7 +489,7 @@ void CGunner::Fire ()
 	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak216);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
@@ -525,7 +525,7 @@ void CGunner::Grenade ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	MonsterFireGrenade (start, forward, 50, 600, flash_number);
 #else
@@ -575,7 +575,7 @@ void CGunner::Grenade ()
 	// pmm
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);	//PGM
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 //PGM
 	if(Entity->Enemy)

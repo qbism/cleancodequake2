@@ -859,7 +859,7 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 //ROGUE
 	if ((Entity->GetInUse()) && (Entity->Health > 0))
 	{
-		if (Entity->Blocked (Entity))
+		if (Entity->Blocked (Dist))
 			return;
 	}
 //ROGUE

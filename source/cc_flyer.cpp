@@ -271,7 +271,7 @@ void CFlyer::Fire (sint32 FlashNumber)
 		effect = 0;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 	
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;

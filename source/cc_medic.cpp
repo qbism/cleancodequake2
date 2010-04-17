@@ -440,7 +440,7 @@ void CMedic::FireBlaster ()
 	};
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MEDIC_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_1], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -759,7 +759,7 @@ void CMedic::CableAttack ()
 				if (!entity_cast<CMonsterEntity>(Entity->Enemy)->Monster->FindTarget ())
 				{
 					// no valid enemy, so stop acting
-					Monster->Monster->PauseTime = Level.Frame + 1000000000;
+					Monster->Monster->PauseTime = Level.Frame + 100000000;
 					Monster->Monster->Stand ();
 				}
 				Entity->Enemy = NULL;
@@ -767,7 +767,7 @@ void CMedic::CableAttack ()
 				if (!FindTarget ())
 				{
 					// no valid enemy, so stop acting
-					PauseTime = Level.Frame + 1000000000;
+					PauseTime = Level.Frame + 100000000;
 					Stand ();
 					return;
 				}

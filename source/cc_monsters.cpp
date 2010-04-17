@@ -402,9 +402,9 @@ void CMonsterEntity::Think ()
 	}
 }
 
-bool CMonsterEntity::Blocked (IBaseEntity *Other)
+bool CMonsterEntity::Blocked (float Dist)
 {
-	return Monster->Blocked (Other);
+	return Monster->Blocked (Dist);
 }
 
 void CMonsterEntity::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
@@ -1011,6 +1011,22 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 
 void CMonster::MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
 	CGreenBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, effect);
+
+	if (flashtype != -1)
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
+}
+
+void CMonster::MonsterFireTracker (vec3f start, vec3f dir, int damage, int speed, IBaseEntity *enemy, int flashtype)
+{
+	CDisruptorTracker::Spawn (Entity, start, dir, damage, speed, enemy);
+
+	if (flashtype != -1)
+		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
+}
+
+void CMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, int flashtype)
+{
+	CHeatBeam::Fire (Entity, start, dir, damage, kick, MOD_HEATBEAM, true);
 
 	if (flashtype != -1)
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();

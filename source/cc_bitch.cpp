@@ -541,7 +541,7 @@ void CMaiden::Rocket ()
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
 
 	sint32 rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
@@ -615,7 +615,7 @@ void CMaiden::Rocket ()
 	vec3f	forward, right, start, dir, vec;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;

@@ -683,7 +683,7 @@ void CFixbot::FireBlaster ()
 		CurrentMove = &FixbotMoveRun;
 	
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_FIXBOT_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FIXBOT_BLASTER_1], forward, right, start);
 
 	dir = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start;
 

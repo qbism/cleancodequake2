@@ -470,7 +470,7 @@ void CJorg::FireBFG ()
 	vec3f	vec;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_BFG_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_BFG_1], forward, right, start);
 
 	dir = ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized();
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK2]);
@@ -483,7 +483,7 @@ void CJorg::FireBullet ()
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_MACHINEGUN_R1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_MACHINEGUN_R1], forward, right, start);
 
 	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 	target[2] += Entity->Enemy->ViewHeight;
@@ -493,7 +493,7 @@ void CJorg::FireBullet ()
 	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_JORG_MACHINEGUN_R1);
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_MACHINEGUN_L1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_MACHINEGUN_L1], forward, right, start);
 
 	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 	target[2] += Entity->Enemy->ViewHeight;

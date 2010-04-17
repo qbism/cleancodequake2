@@ -266,7 +266,7 @@ void CInfantry::MachineGun ()
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_1;
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-		G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 		if (Entity->Enemy)
 		{
@@ -284,7 +284,7 @@ void CInfantry::MachineGun ()
 		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (Entity->State.GetFrame() - FRAME_death211);
 
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-		G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 		(Entity->State.GetAngles() - DeathAimAngles[flash_number-MZ2_INFANTRY_MACHINEGUN_2]).ToVectors (&forward, NULL, NULL);
 	}

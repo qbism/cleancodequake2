@@ -57,7 +57,7 @@ void CBoss2::FireRocket ()
 //1
 	vec3f origin = Entity->State.GetOrigin();
 
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_1], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_1], forward, right, start);
 	vec3f vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	vec3f dir = vec - start;
@@ -65,7 +65,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_1);
 
 //2
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_2], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_2], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -73,7 +73,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_2);
 
 //3
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_3], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_3], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -81,7 +81,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_3);
 
 //4
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_4], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_4], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -95,7 +95,7 @@ void CBoss2::FireBulletRight ()
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
@@ -114,7 +114,7 @@ void CBoss2::FireBulletLeft ()
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)

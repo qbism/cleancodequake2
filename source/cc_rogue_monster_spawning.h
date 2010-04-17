@@ -57,6 +57,8 @@ bool CheckSpawnPoint (vec3f origin, vec3f mins, vec3f maxs);
 bool FindSpawnPoint (vec3f startpoint, vec3f mins, vec3f maxs, vec3f &spawnpoint, float maxMoveUp);
 CMonsterEntity *CreateMonster(vec3f origin, vec3f angles, const char *classname);
 void PredictAim (IBaseEntity *target, vec3f start, float bolt_speed, bool eye_height, float offset, vec3f *aimdir, vec3f *aimpoint);
+CPlayerEntity *PickCoopTarget (IBaseEntity *Entity);
+int CountPlayers ();
 
 class CSpawnGrow : public IThinkableEntity
 {

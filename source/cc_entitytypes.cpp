@@ -1606,7 +1606,7 @@ ENTITYFIELDS_BEGIN(IUsableEntity)
 	CEntityField ("pathtarget", EntityMemberOffset(IUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 
 	CEntityField ("Usable", 	EntityMemberOffset(IUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("User", 		EntityMemberOffset(IUsableEntity,User),		FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("User", 		EntityMemberOffset(IUsableEntity,User),				FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(IUsableEntity)
 

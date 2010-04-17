@@ -54,7 +54,7 @@ void CPhalanxGladiator::FirePhalanx ()
 	vec3f	start, forward, right;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
 
 	// calc direction to where we targted
 	CPhalanxPlasma::Spawn (Entity, start, (SavedFirePosition - start).GetNormalized(), 100, 725, 60, 60);

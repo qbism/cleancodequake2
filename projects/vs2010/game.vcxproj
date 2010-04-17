@@ -400,9 +400,10 @@ echo Done!
     </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
     <ClCompile Include="..\..\source\cc_player_trail.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_black_widow.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_carrier.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_chainfist.cpp" />
-    <ClCompile Include="..\..\source\cc_rogue_deadalus.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_daedalus.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_disruptor.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_etf_rifle.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_flyer_kamikaze.cpp" />
@@ -419,6 +420,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_rogue_tesla.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_wall_turret.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_weaponry.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_widow_stand.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_timer.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
@@ -544,9 +546,10 @@ echo Done!
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />
     <ClInclude Include="..\..\source\cc_player_trail.h" />
+    <ClInclude Include="..\..\source\cc_rogue_black_widow.h" />
     <ClInclude Include="..\..\source\cc_rogue_carrier.h" />
     <ClInclude Include="..\..\source\cc_rogue_chainfist.h" />
-    <ClInclude Include="..\..\source\cc_rogue_deadalus.h" />
+    <ClInclude Include="..\..\source\cc_rogue_daedalus.h" />
     <ClInclude Include="..\..\source\cc_rogue_disruptor.h" />
     <ClInclude Include="..\..\source\cc_rogue_etf_rifle.h" />
     <ClInclude Include="..\..\source\cc_rogue_flyer_kamikaze.h" />
@@ -562,6 +565,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_rogue_tesla.h" />
     <ClInclude Include="..\..\source\cc_rogue_wall_turret.h" />
     <ClInclude Include="..\..\source\cc_rogue_weaponry.h" />
+    <ClInclude Include="..\..\source\cc_rogue_widow_stand.h" />
     <ClInclude Include="..\..\source\cc_save.h" />
     <ClInclude Include="..\..\source\cc_shared.h" />
     <ClInclude Include="..\..\source\cc_dmflags.h" />

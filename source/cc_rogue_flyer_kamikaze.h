@@ -47,7 +47,7 @@ public:
 
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	void Pain (IBaseEntity *Other, sint32 Damage);
-	bool Blocked (IBaseEntity *Other);
+	bool Blocked (float Dist);
 	
 	void KamikazeExplode ();
 	void KamikazeCheck ();

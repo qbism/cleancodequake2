@@ -39,21 +39,6 @@ class CMakron : public CMonster
 public:
 	vec3f		SavedLoc;
 
-	MediaIndex	SoundPain4;
-	MediaIndex	SoundPain5;
-	MediaIndex	SoundPain6;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundStepLeft;
-	MediaIndex	SoundStepRight;
-	MediaIndex	SoundAttackBfg;
-	MediaIndex	SoundBrainSplorch;
-	MediaIndex	SoundPreRailgun;
-	MediaIndex	SoundPopUp;
-	MediaIndex	SoundTaunt1;
-	MediaIndex	SoundTaunt2;
-	MediaIndex	SoundTaunt3;
-	MediaIndex	SoundHit;
-
 	MONSTER_SOUND_ENUM
 	(
 		SOUND_PAIN4,

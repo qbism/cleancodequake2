@@ -1148,7 +1148,7 @@ CC_ENUM (uint8, EMuzzleFlash)
 
 // monster muzzle flashes
 // FIXME: maybe try to replace this with something cooler?
-const vec3f dumb_and_hacky_monster_MuzzFlashOffset [] = {
+const vec3f MonsterFlashOffsets [] = {
 	vec3f(0.0f,					0.0f,			0.0f),			// not used							0
 
 	vec3f(20.7f,				-18.5f,			28.7f),			// MZ2_TANK_BLASTER_1				1

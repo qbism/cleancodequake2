@@ -152,7 +152,7 @@ void CCarrier::Grenade ()
 	vec3f forward, right, up, start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_GRENADE], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_GRENADE], forward, right, start);
 
 	vec3f aim = (Entity->Enemy->State.GetOrigin() - start).GetNormalized()
 				.MultiplyAngles (spreadR, right)
@@ -172,22 +172,22 @@ void CCarrier::PredictiveRocket  ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 
 //1
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], forward, right, start);
 	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.3f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_1);
 
 //2
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_2], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], forward, right, start);
 	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.15f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_2);
 
 //3
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_3], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], forward, right, start);
 	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_3);
 
 //4
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_4], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], forward, right, start);
 	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0.15f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_4);
 }	
@@ -208,25 +208,25 @@ void CCarrier::Rocket ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 
 //1
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], forward, right, start);
 	vec = (Entity->Enemy->State.GetOrigin() - vec3f(0, 0, 15));
 	dir = (vec - start).GetNormalized().MultiplyAngles (0.4f, right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_1);
 
 //2
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_2], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	dir = (vec - start).GetNormalized().MultiplyAngles (0.025f, right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_2);
 
 //3
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_3], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	dir = (vec - start).GetNormalized().MultiplyAngles (-0.025f, right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_3);
 
 //4
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_ROCKET_4], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], forward, right, start);
 	vec = (Entity->Enemy->State.GetOrigin() - vec3f(0, 0, 15));
 	dir = (vec - start).GetNormalized().MultiplyAngles (-0.4f, right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_4);
@@ -239,7 +239,7 @@ void CCarrier::FireBulletRight ()
 
 	vec3f forward, right, start;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashnum], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
 	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
 	forward = (target - start).GetNormalized();
@@ -254,7 +254,7 @@ void CCarrier::FireBulletLeft ()
 
 	vec3f forward, right, start;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashnum], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
 	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
 	forward = (target - start).GetNormalized();
@@ -545,7 +545,7 @@ void CCarrier::Rail ()
 
 	vec3f forward, right, start;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CARRIER_RAILGUN], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_RAILGUN], forward, right, start);
 
 	// calc direction to where we targeted
 	vec3f dir = (RailFireSpot - start).GetNormalized();

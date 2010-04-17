@@ -187,6 +187,11 @@ public:
 	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
+CC_ENUM (uint8, EPlatformSpawnflags)
+{
+	PLAT_LOW_TRIGGER	= BIT(0),
+};
+
 class CPlatForm : public IMapEntity, public IBrushModel, public IBlockableEntity, public IUsableEntity
 {
 public:

@@ -66,7 +66,7 @@ void CFloater::FireBlaster ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_FLOAT_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FLOAT_BLASTER_1], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;

@@ -329,7 +329,7 @@ void CTank::Blaster ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -371,7 +371,7 @@ void CTank::Rocket ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
@@ -456,7 +456,7 @@ void CTank::Rocket ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;
@@ -473,7 +473,7 @@ void CTank::MachineGun ()
 	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak406);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	if (Entity->Enemy)
 	{

@@ -57,7 +57,7 @@ void CFlyerKamikaze::Pain (IBaseEntity *Other, sint32 Damage)
 	// We don't feel pain
 };
 
-bool CFlyerKamikaze::Blocked (IBaseEntity *Other)
+bool CFlyerKamikaze::Blocked (float Dist)
 {
 	KamikazeCheck();
 

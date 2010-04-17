@@ -78,7 +78,7 @@ void CSoldierLaser::FireGun (sint32 FlashNumber)
 	vec3f end = Entity->Enemy->State.GetOrigin();
 	vec3f dir = end - start;
 	vec3f angles = dir.ToAngles();
-	vec3f tempvec = dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber];
+	vec3f tempvec = MonsterFlashOffsets[FlashNumber];
 	
 	Laser = QNewEntityOf CMonsterBeamLaser;
 	vec3f tempang = angles;

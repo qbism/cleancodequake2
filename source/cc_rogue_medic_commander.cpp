@@ -82,7 +82,7 @@ void CMedicCommander::FireBlaster ()
 	};
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MEDIC_BLASTER_2], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_2], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -205,56 +205,6 @@ void CMedicCommander::DetermineSpawn ()
 
 	if (num_success == 0)
 		NextFrame = FRAME_attack53;
-}
-
-// this returns a randomly selected coop player who is visible to self
-// returns NULL if bad
-CPlayerEntity *PickCoopTarget (IBaseEntity *Entity)
-{
-	static std::vector<CPlayerEntity*> targets;
-
-	// if we're not in coop, this is a noop
-	if (Game.GameMode != GAME_COOPERATIVE)
-		return NULL;
-
-	targets.clear ();
-
-	for (int player = 1; player <= Game.MaxClients; player++)
-	{
-		CPlayerEntity *ent = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
-		if (!ent->GetInUse())
-			continue;
-		if (IsVisible(Entity, ent))
-			targets.push_back (ent);
-	}
-
-	if (targets.empty())
-		return NULL;
-
-	// get a number from 0 to (num_targets-1)
-	int targetID = irandom(targets.size());
-	
-	return targets[targetID];
-}
-
-// only meant to be used in coop
-int CountPlayers (void)
-{
-	int		count = 0;
-
-	// if we're not in coop, this is a noop
-	if (Game.GameMode != GAME_COOPERATIVE)
-		return 1;
-
-	for (int player = 1; player <= Game.MaxClients; player++)
-	{
-		CPlayerEntity *ent = entity_cast<CPlayerEntity>(Game.Entities[player].Entity);
-		if (!ent->GetInUse())
-			continue;
-		count++;
-	}
-
-	return count;
 }
 
 void CMedicCommander::SpawnGrows ()
