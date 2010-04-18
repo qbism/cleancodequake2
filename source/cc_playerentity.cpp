@@ -740,6 +740,7 @@ void CPlayerEntity::InitItemMaxValues ()
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_PROX] = 50;
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_FLECHETTES] = 200;
 	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_TESLA] = 50;
+	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_ROUNDS] = 100;
 #endif
 }
 
@@ -3220,7 +3221,7 @@ CPersistentData *SavedClients;
 
 void CPlayerEntity::BackupClientData ()
 {
-	SavedClients = QNew (TAG_GAME) CPersistentData[Game.MaxClients];
+	SavedClients = QNew (TAG_GENERIC) CPersistentData[Game.MaxClients];
 	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
 		if (!Game.Entities[1+i].Entity)
@@ -4508,7 +4509,7 @@ void CPlayerEntity::RemoveAttackingPainDaemons ()
 	{
 		tracker = CC_FindByClassName<IBaseEntity, ENT_BASE> (tracker, "pain daemon");
 
-		if (tracker->Enemy == this)
+		if (tracker && tracker->Enemy == this)
 			tracker->Free ();
 	}
 	while (tracker);

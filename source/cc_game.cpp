@@ -294,6 +294,10 @@ void ProcessEntity (edict_t *ent)
 		if (Thinkable)
 			Thinkable->RunThink ();
 
+		// Entity fixes
+		if (Entity->Enemy && Entity->Enemy->Freed)
+			Entity->Enemy = NULL;
+
 		// Were we freed?
 		// This has to be processed after thinking and running, because
 		// the entity still has to be intact after that

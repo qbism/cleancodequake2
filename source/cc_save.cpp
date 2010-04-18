@@ -177,7 +177,7 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 		In = File.Read<MediaIndex> ();
 	else if (len > 1)
 	{
-		char *tempBuffer = QNew (TAG_GAME) char[len];
+		char *tempBuffer = QNew (TAG_GENERIC) char[len];
 		File.ReadArray (tempBuffer, len);
 
 		switch (IndexType)
@@ -397,10 +397,10 @@ void ReadClient (CFile &File, sint32 i)
 
 void ReadClients (CFile &File)
 {
-	SaveClientData = QNew (TAG_GAME) CClient*[Game.MaxClients];
+	SaveClientData = QNew (TAG_GENERIC) CClient*[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		SaveClientData[i] = QNew (TAG_GAME) CClient(Game.Entities[1+i].client);
+		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].client);
 		ReadClient (File, i);
 	}
 }

@@ -431,20 +431,20 @@ void	CTech::Use (CPlayerEntity *Player)
 
 void AddTechsToList ()
 {
-	TechList.push_back (QNew (TAG_GAME) CResistanceTech ("item_tech1", "models/ctf/resistance/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CResistanceTech ("item_tech1", "models/ctf/resistance/tris.md2",
 														"tech1", "Disruptor Shield", CTech::TECH_AGGRESSIVE, CTFTECH_RESISTANCE_NUMBER));
 
-	TechList.push_back (QNew (TAG_GAME) CStrengthTech ("item_tech2", "models/ctf/strength/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CStrengthTech ("item_tech2", "models/ctf/strength/tris.md2",
 														"tech2", "Power Amplifier", CTech::TECH_AGGRESSIVE, CTFTECH_STRENGTH_NUMBER));
 
-	TechList.push_back (QNew (TAG_GAME) CTech ("item_tech3", "models/ctf/haste/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CTech ("item_tech3", "models/ctf/haste/tris.md2",
 														"tech3", "Time Accel", CTech::TECH_CUSTOM, CTFTECH_HASTE_NUMBER));
 
-	TechList.push_back (QNew (TAG_GAME) CRegenTech ("item_tech4", "models/ctf/regeneration/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CRegenTech ("item_tech4", "models/ctf/regeneration/tris.md2",
 														"tech4", "AutoDoc", CTech::TECH_PASSIVE, CTFTECH_REGEN_NUMBER));
 
 #if AMMO_REGEN_TECH
-	TechList.push_back (QNew (TAG_GAME) CAmmoRegenTech ("item_tech5", "models/ctf/ammo/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CAmmoRegenTech ("item_tech5", "models/ctf/ammo/tris.md2",
 														"tech5", "Ammo Regen", CTech::TECH_PASSIVE, CTFTECH_AMMOREGEN_NUMBER));
 #endif
 }

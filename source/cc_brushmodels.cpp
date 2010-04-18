@@ -1037,19 +1037,18 @@ void CDoor::SmartWaterGoUp ()
 	if(distance < Accel)
 	{
 		distance = 100;
-		Speed = 5;
+		MoveSpeed = 5;
 	}
 	else
-		Speed = distance / Accel;
+		MoveSpeed = distance / Accel;
 
-	if (Speed < 5)
-		Speed = 5;
-	else if (Speed > MoveSpeed)
-		Speed = MoveSpeed;
+	if (MoveSpeed < 5)
+		MoveSpeed = 5;
+	else if (MoveSpeed > Speed)
+		MoveSpeed = Speed;
 
-	// FIXME - should this allow any movement other than straight up?
 	Dir.Set (0, 0, 1);	
-	Velocity = Dir * Speed;
+	Velocity = Dir * (MoveSpeed * 0.1f);
 	RemainingDistance = distance;
 
 	if (MoveState != STATE_UP)
@@ -2003,6 +2002,7 @@ void CButton::DoEndFunc ()
 			NextThink = Level.Frame + Wait;
 			ThinkType = BUTTONTHINK_RETURN;
 		}
+		User = NULL;
 		break;
 	};
 }
@@ -2324,7 +2324,7 @@ void CTrainBase::Next ()
 				Brush->Speed = Speed;
 				Brush->Accel = Accel;
 				Brush->Decel = Decel;
-				Brush->PhysicsType = PHYSICS_PUSH; // FIXME: required?
+				Brush->PhysicsType = PHYSICS_PUSH;
 				Brush->MoveCalc (dst, TRAINENDFUNC_NONE);
 			}
 		}

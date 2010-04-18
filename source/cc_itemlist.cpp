@@ -87,6 +87,7 @@ namespace NItems
 #if ROGUE_FEATURES
 	CAmmo *Prox;
 	CAmmo *Flechettes;
+	CAmmo *Rounds;
 	CAmmoWeapon *Tesla;
 #endif
 
@@ -116,7 +117,7 @@ CItemList *ItemList;
 
 CItemList::CItemList() :
 numItems(0),
-TempList (QNew(TAG_GAME) TItemListType)
+TempList (QNew(TAG_GENERIC) TItemListType)
 {
 };
 
@@ -134,7 +135,7 @@ void CItemList::SortAndFinalize ()
 {
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
-	bool *SortedValues = QNew (TAG_GAME) bool[TempList->size()];
+	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList->size()];
 	Mem_Zero (SortedValues, sizeof(*SortedValues));
 
 	for (int z = 0; z < 5; z++)
@@ -257,7 +258,7 @@ sint32 GetNumItems ()
 
 void InitItemlist ()
 {
-	ItemList = QNew (TAG_GAME) CItemList;
+	ItemList = QNew (TAG_GENERIC) CItemList;
 
 	AddAmmoToList();
 	AddHealthToList();

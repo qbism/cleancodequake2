@@ -47,6 +47,9 @@ std::string Info_ValueForKey (std::string &s, std::string key)
 
 	size_t	curIndex = 0;
 
+	if (s.empty())
+		return "";
+
 	if (s[curIndex] == '\\')
 		curIndex++;
 

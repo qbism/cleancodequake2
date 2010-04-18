@@ -212,17 +212,7 @@ public:
 		Lifespan = File.Read<FrameNumber_t> ();
 	}
 
-	void Run ()
-	{
-		if (Remove)
-			return;
-
-		if (!Owner || !Owner->GetInUse() || Owner->Freed || (Lifespan != -1 && Lifespan < Level.Frame))
-		{
-			Remove = true;
-			Owner = NULL;
-		}
-	}
+	void Run ();
 };
 
 class CTesla : public IBounceProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity

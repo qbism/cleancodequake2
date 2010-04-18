@@ -25,29 +25,61 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "cc_local.h"
 
 _CC_DISABLE_DEPRECATION
+
+#define MAGIC_NUMBER (('E'<<24)+('N'<<16)+('E'<<8)+'G')
+
+struct MemHeader
+{
+	void		*Address;
+	uint32		Magic;
+	sint32		TagNum;
+	size_t		Size, RealSize;
+};
+
 static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 {
-	void *Mem = (TagNum == TAG_GENERIC) ? malloc(Size + sizeof(int)) : gi.TagMalloc(Size + sizeof(int), TagNum);
+/*	void *Mem = (TagNum == TAG_GENERIC) ? malloc(Size + sizeof(int)) : gi.TagMalloc(Size + sizeof(int), TagNum);
 
 	Mem_Zero (Mem, Size + sizeof(int));
 
 	// Set the first byte to 255 if we're Generic memory, otherwise 0.
-	*(int*)Mem = (TagNum == TAG_GENERIC) ? 255 : 0;
+	*(int*)Mem = (TagNum == TAG_GENERIC) ? MAGIC_NUMBER : 0;
 
-	return (void*)((uint8*)Mem + sizeof(int));
+	return (void*)((uint8*)Mem + sizeof(int));*/
+	size_t RealSize = Size + sizeof(MemHeader);
+	MemHeader *Mem = (TagNum == TAG_GENERIC) ? (MemHeader*)malloc(RealSize) : (MemHeader*)gi.TagMalloc(RealSize, TagNum);
+
+	Mem_Zero (Mem, RealSize);
+
+	Mem->Magic = MAGIC_NUMBER;
+	Mem->TagNum = TagNum;
+	Mem->Size = Size;
+	Mem->RealSize = RealSize;
+	Mem->Address = ((void*)(Mem + 1));
+
+	return Mem->Address;
 }
 
 static void Mem_TagFree (void *Pointer)
 {
-	if (Pointer == NULL)
+/*	if (Pointer == NULL)
 		return;
 
 	uint8 *realMem = (uint8*)Pointer - sizeof(int);
 	
-	if (*(int*)realMem == 255)
+	if (*(int*)realMem == MAGIC_NUMBER)
 		free (realMem);
 	else
-		gi.TagFree (realMem);
+		gi.TagFree (realMem);*/
+	MemHeader *Header = (((MemHeader*)Pointer)-1);
+
+	if (Header->Magic != MAGIC_NUMBER)
+		assert (0);
+
+	if (Header->TagNum == TAG_GENERIC)
+		free (Header);
+	else
+		gi.TagFree (Header);
 }
 
 void Mem_FreeTag (const sint32 TagNum)

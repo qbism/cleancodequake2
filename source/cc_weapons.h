@@ -78,6 +78,7 @@ public:
 		AMMOTAG_PROX,
 		AMMOTAG_FLECHETTES,
 		AMMOTAG_TESLA,
+		AMMOTAG_ROUNDS,
 #endif
 
 		AMMOTAG_MAX
@@ -87,6 +88,7 @@ public:
 	CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
 	sint32			Quantity; // Number gotten when we pick this mother upper
 	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo

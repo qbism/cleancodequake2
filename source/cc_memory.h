@@ -40,7 +40,7 @@ char						*Mem_TagStrDup (const char *in, const sint32 tagNum);
 
 inline char *Mem_StrDup(const char *in)
 {
-	return Mem_TagStrDup(in, TAG_GAME);
+	return Mem_TagStrDup(in, TAG_GENERIC);
 }
 
 void *operator new(size_t Size, const sint32 TagNum);

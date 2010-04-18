@@ -136,7 +136,7 @@ LINK_EXISTING_ITEM_TO_NEW_CLASS (weapon_heatbeam, "weapon_plasmabeam", CItemEnti
 
 void CHeatBeamWeapon::CreateItem (CItemList *List)
 {
-	QNew (TAG_GAME) CWeaponItem
+	QNew (TAG_GENERIC) CWeaponItem
 		("weapon_plasmabeam", "models/weapons/g_beamer/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_heatbeam", "Plasma Beam",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Cells, 2, "#w_plasma.md2");

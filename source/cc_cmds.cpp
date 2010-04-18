@@ -157,9 +157,14 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
+#include "cc_rogue_weaponry.h"
+
 void Cmd_Test_f (CPlayerEntity *Player)
 {
 //	CRogueDefenderSphere::Create(Player, 0);
+	vec3f mins = Player->State.GetOrigin() + vec3f(-64, -64, Player->GetMins().Z);
+	vec3f maxs = Player->State.GetOrigin() + vec3f(64, 64, 64);
+	QNew (TAG_GAME) CBadArea (mins, maxs, 1000, Player);
 }
 
 void Cmd_Two_t (CPlayerEntity *Player)

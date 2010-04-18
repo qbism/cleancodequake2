@@ -62,7 +62,6 @@ bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 		if (!(Player->SpawnFlags & DROPPED_ITEM))
 		{
 			// If we have the flag, but the flag isn't this, then we have another flag.
-			// FIXME this code here will break with > 2 teams (when we get there)!!
 			if (Other->Client.Persistent.Flag && (Other->Client.Persistent.Flag != this))
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s captured the %s flag!\n",
@@ -170,8 +169,8 @@ bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 
 void AddFlagsToList ()
 {
-	NItems::RedFlag = QNew (TAG_GAME) CFlag ("item_flag_team1", "players/male/flag1.md2", EF_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
-	NItems::BlueFlag = QNew (TAG_GAME) CFlag ("item_flag_team2", "players/male/flag2.md2", EF_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM2);
+	NItems::RedFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team1", "players/male/flag1.md2", EF_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
+	NItems::BlueFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team2", "players/male/flag2.md2", EF_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM2);
 }
 
 #endif

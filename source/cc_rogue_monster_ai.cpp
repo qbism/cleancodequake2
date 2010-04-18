@@ -41,6 +41,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Monster "Bad" Areas
 // 
 
+#include "cc_tent.h"
+
+void CBadArea::Run ()
+{
+	if (Remove)
+		return;
+
+	if (!Owner || !Owner->GetInUse() || Owner->Freed || (Lifespan >= 1 && Lifespan < Level.Frame))
+	{
+		Remove = true;
+		Owner = NULL;
+	}
+
+	if ((Level.Frame % 10) == 0)
+	{
+		CDebugTrail (Origin - vec3f(0, Mins.Y, 0), Origin + vec3f(0, Mins.Y, 0)).Send();
+		CDebugTrail (Origin - vec3f(Mins.X, 0, 0), Origin + vec3f(Mins.X, 0, 0)).Send();
+	}
+}
+
 std::vector<CBadArea*> BadAreas;
 
 void InitBadAreas ()
@@ -84,7 +104,6 @@ void RunBadAreas ()
 	for (size_t i = 0; i < BadAreas.size(); ++i)
 		BadAreas[i]->Run ();
 
-	//std::remove_if (BadAreas.begin(), BadAreas.end(), RemoveBadArea);
 	BadAreas.erase(std::remove_if(BadAreas.begin(), BadAreas.end(), RemoveBadArea), BadAreas.end());
 }
 
@@ -96,8 +115,8 @@ CBadArea::CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, IBaseEnt
   Remove (false)
   {
 	  Origin = (AbsMin + AbsMax) * 0.5f;
-	  Maxs = Origin - Maxs;
-	  Mins = Origin - Mins;
+	  Maxs = Origin - AbsMax;
+	  Mins = Origin - AbsMin;
 
 	  BadAreas.push_back(this);
   };

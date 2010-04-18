@@ -63,7 +63,7 @@ void SvCmd_AddCommand (const char *commandName, void (*Func) ())
 		return;
 
 	// We can add it!
-	ServerCommandList().push_back (QNew (TAG_GAME) CServerCommand (commandName, Func));
+	ServerCommandList().push_back (QNew (TAG_GENERIC) CServerCommand (commandName, Func));
 
 	// Link it in the hash tree
 	ServerCommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList().size()-1));

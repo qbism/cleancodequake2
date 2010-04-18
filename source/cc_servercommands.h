@@ -52,7 +52,7 @@ public:
 
 	void *NewOfMe (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags)
 	{
-		return QNew (TAG_GAME) CServerCommand (Name, Func);
+		return QNew (TAG_GENERIC) CServerCommand (Name, Func);
 	}
 
 	void Run ()

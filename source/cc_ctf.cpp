@@ -581,7 +581,6 @@ static inline void CTFSay_Team_Location(CPlayerEntity *who, std::stringstream &O
 		// if we are here, there is more than one, find out if hot
 		// is closer to red flag or blue flag
 
-		// FIXME: this is ambiguous.. is this base or any flag?
 		CFlagTransponder *Transponders[2];
 		Transponders[0] = FindTransponder(CTF_TEAM1);
 		Transponders[1] = FindTransponder(CTF_TEAM2);

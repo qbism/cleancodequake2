@@ -130,6 +130,7 @@ namespace NItems
 #if ROGUE_FEATURES
 	extern CAmmo *Prox;
 	extern CAmmo *Flechettes;
+	extern CAmmo *Rounds;
 	extern CAmmoWeapon *Tesla;
 #endif
 

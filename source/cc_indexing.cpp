@@ -62,7 +62,7 @@ sint32 CIndexList::AddToList (const char *String, MediaIndex Index)
 	if (!firstIndex)
 		firstIndex = Index;
 
-	CIndex *NewIndex = QNew (TAG_GAME) CIndex;
+	CIndex *NewIndex = QNew (TAG_GENERIC) CIndex;
 	NewIndex->Index = Index;
 	NewIndex->Name = String;
 

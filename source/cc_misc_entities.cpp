@@ -1060,6 +1060,8 @@ public:
 		State.GetOrigin().Z = GetAbsMin().Z + 1;
 		SplashDamage (this, Damage, NULL, Damage+40, MOD_BOMB);
 		BecomeExplosion (true);
+
+		User = NULL;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)

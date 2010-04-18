@@ -387,11 +387,8 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CNukeEntity);
 
-// Nuke item
-CAMBomb::CAMBomb (const char *Classname, const char *WorldModel, sint32 EffectFlags,
-			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
+CAMBomb::CAMBomb (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
+CBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE, ""),
 CAmmo (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, 1, 0)
 {
 }
@@ -455,19 +452,19 @@ LINK_ITEM_TO_CLASS (key_nuke, CItemEntity);
 
 void AddRogueItemsToList ()
 {
-	NItems::Double = QNew (TAG_GAME) CDoubleDamage ("item_double", "models/items/ddamage/tris.md2", EF_ROTATE, "items/pkup.wav", "p_double", "Double Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::IRGoggles = QNew (TAG_GAME) CIRGoggles ("item_ir_goggles", "models/items/goggles/tris.md2", EF_ROTATE, "items/pkup.wav", "p_ir", "IR Goggles", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Double = QNew (TAG_GENERIC) CDoubleDamage ("item_double", "models/items/ddamage/tris.md2", EF_ROTATE, "items/pkup.wav", "p_double", "Double Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::IRGoggles = QNew (TAG_GENERIC) CIRGoggles ("item_ir_goggles", "models/items/goggles/tris.md2", EF_ROTATE, "items/pkup.wav", "p_ir", "IR Goggles", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 
-	NItems::Prox = QNew (TAG_GAME) CAmmo("ammo_prox", "models/ammo/am_prox/tris.md2", 0, "misc/am_pkup.wav", "a_prox", "Prox", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 5, CAmmo::AMMOTAG_PROX);
-	NItems::Flechettes = QNew (TAG_GAME) CAmmo("ammo_flechettes", "models/ammo/am_flechette/tris.md2", 0, "misc/am_pkup.wav", "a_flechettes", "Flechettes", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, CAmmo::AMMOTAG_FLECHETTES);
-
-	NItems::Tesla = QNew (TAG_GAME) CAmmoWeapon("ammo_tesla", "models/ammo/am_tesl/tris.md2", 0, "misc/am_pkup.wav", "a_tesla", "Tesla",
+	NItems::Prox = QNew (TAG_GENERIC) CAmmo("ammo_prox", "models/ammo/am_prox/tris.md2", "a_prox", "Prox", 5, CAmmo::AMMOTAG_PROX);
+	NItems::Flechettes = QNew (TAG_GENERIC) CAmmo("ammo_flechettes", "models/ammo/am_flechette/tris.md2", "a_flechettes", "Flechettes", 50, CAmmo::AMMOTAG_FLECHETTES);
+	NItems::Rounds = QNew (TAG_GENERIC) CAmmo("ammo_disruptor", "models/ammo/am_disr/tris.md2", "a_disruptor", "Rounds", 50, CAmmo::AMMOTAG_ROUNDS); 
+	NItems::Tesla = QNew (TAG_GENERIC) CAmmoWeapon("ammo_tesla", "models/ammo/am_tesl/tris.md2", 0, "misc/am_pkup.wav", "a_tesla", "Tesla",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTeslaWeapon::Weapon, 1, "#a_grenades.md2", 5, CAmmo::AMMOTAG_TESLA);
 
-	QNew (TAG_GAME) CAMBomb("ammo_nuke", "models/weapons/g_nuke/tris.md2", 0, "misc/am_pkup.wav", "p_nuke", "A-M Bomb", ITEMFLAG_DROPPABLE|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE, "");
+	QNew (TAG_GENERIC) CAMBomb("ammo_nuke", "models/weapons/g_nuke/tris.md2", "p_nuke", "A-M Bomb");
 
-	QNew (TAG_GAME) CKey("key_nuke_container", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_contain", "Antimatter Pod", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (TAG_GAME) CKey("key_nuke", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_nuke", "Antimatter Bomb", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_nuke_container", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_contain", "Antimatter Pod", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_nuke", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_nuke", "Antimatter Bomb", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 }
 
 #endif

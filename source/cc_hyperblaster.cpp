@@ -167,7 +167,7 @@ LINK_ITEM_TO_CLASS (weapon_hyperblaster, CItemEntity);
 
 void CHyperBlaster::CreateItem (CItemList *List)
 {
-	NItems::HyperBlaster = QNew (TAG_GAME) CWeaponItem
+	NItems::HyperBlaster = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_hyperblaster", "models/weapons/g_hyperb/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
 		"w_hyperblaster", "HyperBlaster", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 1, "#w_hyperblaster.md2");

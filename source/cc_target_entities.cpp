@@ -195,6 +195,8 @@ public:
 		Delay = 0;
 		UseTargets (User, Message);
 		Delay = save;
+
+		User = NULL;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
