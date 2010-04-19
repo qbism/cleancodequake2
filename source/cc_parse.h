@@ -386,7 +386,7 @@ public:
 					DataPointer = data;
 
 					// Empty token
-					if (!CurrentToken[0])
+					if (CurrentToken.empty())
 						return false;
 
 					// Lower-case if desired

@@ -2327,6 +2327,10 @@ void CTrainBase::Next ()
 				Brush->PhysicsType = PHYSICS_PUSH;
 				Brush->MoveCalc (dst, TRAINENDFUNC_NONE);
 			}
+			else
+			{
+			//	e->State.GetOrigin() = EndOrigin; 
+			}
 		}
 	}
 #endif
@@ -3581,8 +3585,8 @@ void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 
 void CFuncExplosive::Activate (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	bool approved = false;
-	IUsableEntity *OtherUsable = entity_cast<IUsableEntity>(Other),
-				  *ActivatorUsable = entity_cast<IUsableEntity>(Activator);
+	IUsableEntity *OtherUsable = (Other->EntityFlags & ENT_USABLE) ? entity_cast<IUsableEntity>(Other) : NULL,
+				  *ActivatorUsable = (Activator->EntityFlags & ENT_USABLE) ? entity_cast<IUsableEntity>(Activator) : NULL;
 
 	if (OtherUsable != NULL && OtherUsable->Target)
 	{

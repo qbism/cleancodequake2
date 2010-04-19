@@ -114,3 +114,5 @@ public:
 	void TurretLink ();
 	void Spawn ();
 };
+
+void AnglesNormalize(vec3f &vec);

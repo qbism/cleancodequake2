@@ -265,12 +265,12 @@ void CTurretBreach::Think ()
 
 			diff = target_z - TheDriver->State.GetOrigin().Z;
 			TheDriver->Velocity.Z = diff * 1.0 / 1;
+		}
 
-			if (ShouldFire)
-			{
-				Fire ();
-				ShouldFire = false;
-			}
+		if (ShouldFire)
+		{
+			Fire ();
+			ShouldFire = false;
 		}
 	}
 }

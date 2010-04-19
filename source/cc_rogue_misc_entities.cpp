@@ -948,4 +948,262 @@ void			CPlatForm2::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("func_plat2", CPlatForm2);
 
+#include "cc_infantry.h"
+#include "cc_turret_entities.h"
+
+// invisible turret drivers so we can have unmanned turrets.
+// originally designed to shoot at func_trains and such, so they
+// fire at the center of the bounding box, rather than the entity's
+// origin.
+
+/*QUAKED turret_invisible_brain (1 .5 0) (-16 -16 -16) (16 16 16)
+Invisible brain to drive the turret.
+
+Does not search for targets. If targeted, can only be turned on once
+and then off once. After that they are completely disabled.
+
+"delay" the delay between firing (default ramps for skill level)
+"Target" the turret breach
+"Killtarget" the item you want it to attack.
+Target the brain if you want it activated later, instead of immediately. It will wait 3 seconds
+before firing to acquire the target.
+*/
+class CTurretBrain : public IMapEntity, public IUsableEntity, public IThinkableEntity
+{
+public:
+	CC_ENUM (uint8, ETurretBrainThinkAndUseTypes)
+	{
+		BRAINTHINK_NONE = 0,
+		BRAINTHINK_LINK,
+		BRAINTHINK_TURRET,
+
+		BRAINUSE_NONE = 0,
+		BRAINUSE_ACTIVATE,
+		BRAINUSE_DEACTIVATE
+	};
+
+	ETurretBrainThinkAndUseTypes	ThinkType;
+	ETurretBrainThinkAndUseTypes	UseType;
+	FrameNumber_t					Delay;
+	CTurretBreach					*TargetedBreach;
+	vec3f							MoveOrigin;
+	FrameNumber_t					AttackFinished;
+	FrameNumber_t					TrailTime;
+	bool							LostSight;
+
+	CTurretBrain () :
+	  IMapEntity (),
+	  IUsableEntity (),
+	  IThinkableEntity ()
+	  {
+	  };
+
+	CTurretBrain (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index),
+	  IThinkableEntity (Index)
+	  {
+	  };
+
+	ENTITYFIELDS_SAVABLE(CTurretBrain)
+	ENTITYFIELD_DEFS
+
+	void Activate (IBaseEntity *Activator)
+	{
+		if (!Enemy)
+			Enemy = Activator;
+
+		// wait at least 3 seconds to fire.
+		AttackFinished = Level.Frame + 30;
+		UseType = BRAINUSE_DEACTIVATE;
+
+		ThinkType = BRAINTHINK_LINK;
+		NextThink = Level.Frame + FRAMETIME;
+	};
+
+	void Deactivate ()
+	{
+		ThinkType = BRAINTHINK_NONE;
+		NextThink = 0;
+	};
+
+	void LinkTurret ()
+	{
+		if (KillTarget)
+			Enemy = CC_PickTarget (KillTarget);
+
+		ThinkType = BRAINTHINK_TURRET;
+		NextThink = Level.Frame + FRAMETIME;
+
+		TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Target));
+		TargetedBreach->SetOwner (this);
+		TargetedBreach->Team.Master->SetOwner (this);
+		State.GetAngles() = TargetedBreach->State.GetAngles();
+
+		vec3f vec = (TargetedBreach->State.GetOrigin() - State.GetOrigin());
+		vec.Z = 0;
+		MoveOrigin.X = vec.Length();
+
+		vec = (State.GetOrigin() - TargetedBreach->State.GetOrigin());
+		vec = vec.ToAngles();
+		AnglesNormalize(vec);
+		MoveOrigin.Y = vec.Y;
+
+		MoveOrigin.Z = State.GetOrigin().Z - TargetedBreach->State.GetOrigin().Z;
+
+		// add the driver to the end of them team chain
+		IBaseEntity	*TeamEntity;
+		for (TeamEntity = TargetedBreach->Team.Master; TeamEntity->Team.Chain; TeamEntity = TeamEntity->Team.Chain)
+			;
+		TeamEntity->Team.Chain = this;
+		Team.Master = TargetedBreach->Team.Master;
+		TargetedBreach->Enemy = Enemy;
+		Flags |= FL_TEAMSLAVE;
+	};
+
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	{
+		switch (UseType)
+		{
+		case BRAINUSE_ACTIVATE:
+			Activate (Activator);
+			break;
+		case BRAINUSE_DEACTIVATE:
+			Deactivate ();
+			break;
+		};
+	};
+
+	void ThinkTurret ()
+	{
+		NextThink = Level.Frame + FRAMETIME;
+
+		if (Enemy)
+		{
+			if (!Enemy->GetInUse())
+				Enemy = NULL;
+			else if ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Enemy)->Health <= 0 && entity_cast<IHurtableEntity>(Enemy)->CanTakeDamage)
+				Enemy = NULL;
+		}
+
+		vec3f endpos = (Enemy->GetAbsMax() + Enemy->GetAbsMin()) * 0.5f;
+			
+		CTrace trace (TargetedBreach->State.GetOrigin(), endpos, TargetedBreach, CONTENTS_MASK_SHOT);
+		if (trace.fraction == 1 || trace.Ent == Enemy)
+		{
+			if (LostSight)
+			{
+				TrailTime = Level.Frame;
+				LostSight = !LostSight;
+			}
+		}
+		else
+		{
+			LostSight = true;
+			return;
+		}
+
+		// let the turret know where we want it to aim
+		vec3f dir = (endpos - TargetedBreach->State.GetOrigin()).ToAngles();
+		TargetedBreach->MoveAngles = dir;
+		TargetedBreach->SetOwner (this);
+
+		// decide if we should shoot
+		if (Level.Frame < AttackFinished)
+			return;
+
+		FrameNumber_t reaction_time;
+		if (Delay)
+			reaction_time = Delay;
+		else
+			reaction_time = ((3 - CvarList[CV_SKILL].Integer()) * 10) * 10;
+		if ((Level.Frame - TrailTime) < reaction_time)
+			return;
+
+		AttackFinished = Level.Frame + reaction_time + 10;
+		TargetedBreach->ShouldFire = true;
+	};
+
+	void Think ()
+	{
+		switch (ThinkType)
+		{
+		case BRAINTHINK_LINK:
+			LinkTurret ();
+			break;
+		case BRAINTHINK_TURRET:
+			ThinkTurret ();
+			break;
+		};
+	};
+
+	void Spawn ()
+	{
+		if (!KillTarget)
+		{
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No killtarget\n");
+			Free ();
+			return;
+		}
+		if (!Target)
+		{
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
+			Free ();
+			return;
+		}
+
+		if (TargetName)
+			UseType = BRAINUSE_ACTIVATE;
+		else
+		{
+			ThinkType = BRAINTHINK_LINK;
+			NextThink = Level.Frame + FRAMETIME;
+		}
+
+		Link ();
+	};
+};
+
+ENTITYFIELDS_BEGIN(CTurretBrain)
+{
+	CEntityField ("delay",		EntityMemberOffset(CTurretBrain,Delay),		FT_FRAMENUMBER | FT_SAVABLE),
+
+	CEntityField ("ThinkType",	EntityMemberOffset(CTurretBrain,ThinkType),	FT_BYTE | FT_SAVABLE | FT_NOSPAWN),
+	CEntityField ("UseType",	EntityMemberOffset(CTurretBrain,UseType),	FT_BYTE | FT_SAVABLE | FT_NOSPAWN),
+	CEntityField ("TargetedBreach",	EntityMemberOffset(CTurretBrain,TargetedBreach),	FT_ENTITY | FT_SAVABLE | FT_NOSPAWN),
+};
+ENTITYFIELDS_END(CTurretBrain)
+
+bool			CTurretBrain::ParseField (const char *Key, const char *Value)
+{
+	if (CheckFields<CTurretBrain> (this, Key, Value))
+		return true;
+
+	// Couldn't find it here
+	return (IMapEntity::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value));
+};
+
+void CTurretBrain::SaveFields (CFile &File)
+{
+	SaveEntityFields <CTurretBrain> (this, File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
+}
+
+void CTurretBrain::LoadFields (CFile &File)
+{
+	LoadEntityFields <CTurretBrain> (this, File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
+}
+
+LINK_CLASSNAME_TO_CLASS ("turret_invisible_brain", CTurretBrain);
+
+#if 0
+
+#endif
+
 #endif
