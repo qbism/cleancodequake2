@@ -314,7 +314,7 @@ bool CAmmoWeapon::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 
 void CAmmoWeapon::Use (CPlayerEntity *Player)
 {
-	if (!(Flags & ITEMFLAG_WEAPON))
+/*	if (!(Flags & ITEMFLAG_WEAPON))
 		return;
 
 	// see if we're already using it
@@ -328,7 +328,48 @@ void CAmmoWeapon::Use (CPlayerEntity *Player)
 	}
 
 	// change to this weapon when down
-	Player->Client.NewWeapon = Weapon;
+	Player->Client.NewWeapon = Weapon;*/
+	CAmmoWeapon *Wanted = this;
+	bool UsingItOrChain = !Player->Client.Persistent.Inventory.Has(Wanted);
+
+	while (!UsingItOrChain)
+	{
+		Wanted = dynamic_cast<CAmmoWeapon*>(Wanted->Weapon->GetNextWeapon()->Item);
+
+		if (Player->Client.Persistent.Weapon == Wanted->Weapon)
+		{
+			UsingItOrChain = true;
+			break;
+		}
+
+		if (Wanted->Weapon == Weapon)
+			break;
+	};
+
+	// see if we're already using it
+	if (UsingItOrChain)
+	{
+		if (Wanted->Weapon->GetNextWeapon() == Wanted->Weapon && Wanted->Weapon->GetPrevWeapon() == Wanted->Weapon)
+			return;
+		else
+		{
+			while (true)
+			{
+				Wanted = dynamic_cast<CAmmoWeapon*>(Wanted->Weapon->GetNextWeapon()->Item);
+
+				if (Wanted->Weapon == Weapon)
+					break; // nothing
+
+				if (!Player->Client.Persistent.Inventory.Has(Wanted))
+					continue;
+
+				break;
+			};
+		}
+	}
+
+	// change to this weapon when down
+	Player->Client.NewWeapon = Wanted->Weapon;
 }
 
 void CAmmoWeapon::Drop (CPlayerEntity *Player)

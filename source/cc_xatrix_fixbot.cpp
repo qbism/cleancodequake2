@@ -247,48 +247,6 @@ CFrame FixbotFramesStand2 [] =
 };
 CAnim FixbotMoveStand2 (FRAME_ambient_01, FRAME_ambient_19, FixbotFramesStand2);
 
-#if 0
-/*
-	will need the pickup offset for the front pincers
-	object will need to stop forward of the object 
-	and take the object with it ( this may require a variant of liftoff and landing )
-*/
-CFrame fixbot_frames_pickup [] =
-{
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, NULL
-	
-};
-CAnim fixbot_move_pickup = { FRAME_pickup_01, FRAME_pickup_27, fixbot_frames_pickup, NULL};
-#endif
-
 /*
 	generic frame to move bot
 */

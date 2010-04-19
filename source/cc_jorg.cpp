@@ -167,18 +167,6 @@ CAnim	JorgMoveRun (FRAME_walk06, FRAME_walk19, JorgFramesRun);
 // walk
 //
 
-#if 0
-CFrame JorgFramesStartWalk [] =
-{
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	6),
-	CFrame (&CMonster::AI_Walk,	7),
-	CFrame (&CMonster::AI_Walk,	9),
-	CFrame (&CMonster::AI_Walk,	15)
-};
-CAnim JorgMoveStartWalk (FRAME_walk01, FRAME_walk05, JorgFramesStartWalk);
-#endif
-
 CFrame JorgFramesWalk [] =
 {
 	CFrame (&CMonster::AI_Walk, 17),
@@ -197,19 +185,6 @@ CFrame JorgFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 9)
 };
 CAnim	JorgMoveWalk (FRAME_walk06, FRAME_walk19, JorgFramesWalk);
-
-#if 0
-CFrame jorg_frames_end_walk [] =
-{
-	CFrame (&CMonster::AI_Walk,	11),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	8),
-	CFrame (&CMonster::AI_Walk,	-8,	NULL
-};
-CAnim jorg_move_end_walk = {FRAME_walk20, FRAME_walk25, jorg_frames_end_walk, NULL};
-#endif
 
 void CJorg::Walk ()
 {

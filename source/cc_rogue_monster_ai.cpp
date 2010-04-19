@@ -1481,71 +1481,6 @@ void CMonster::AI_Run(float Dist)
 	if (Entity->GetMaxs().Z != BaseHeight)
 		DuckUp ();
 
-#if 0
-	// if we're currently looking for a hint path
-	if (AIFlags & AI_HINT_PATH)
-	{
-		IBaseEntity *realEnemy;
-		// determine direction to our destination hintpath.
-		// FIXME - is this needed EVERY time? I was having trouble with them
-		// sometimes not going after it, and this fixed it.
-		MoveToGoal (Dist);
-		if(!Entity->GetInUse())
-			return;			// PGM - g_touchtrigger free problem
-
-		// first off, make sure we're looking for the player, not a noise he made
-		if (Entity->Enemy)
-		{
-			if (Entity->Enemy->GetInUse())
-			{
-				if (!(Entity->Enemy->EntityFlags & ENT_NOISE))
-					realEnemy = Entity->Enemy;
-				else if (Entity->Enemy->GetOwner())
-					realEnemy = Entity->Enemy->GetOwner();
-				else // uh oh, can't figure out enemy, bail
-				{
-					Entity->Enemy = NULL;
-					hintpath_stop ();
-					return;
-				}
-			}
-			else
-			{
-				Entity->Enemy = NULL;
-				hintpath_stop ();
-				return;
-			}
-		}
-		else
-		{
-			hintpath_stop ();
-			return;
-		}
-
-		if (CvarList[CV_COOP].Boolean())
-		{
-			// if we're in coop, check my real enemy first .. if I SEE him, set gotcha to true
-			if (Entity->Enemy && IsVisible(Entity, realEnemy))
-				gotcha = true;
-			else // otherwise, let FindTarget bump us out of hint paths, if appropriate
-				FindTarget();
-		}
-		else
-		{
-			if (Entity->Enemy && IsVisible(Entity, realEnemy))
-				gotcha = true;
-		}
-		
-		// if we see the player, stop following hintpaths.
-		if (gotcha)
-		{
-			// disconnect from hintpaths and start looking normally for players.
-			hintpath_stop ();
-		}
-		return;
-	}
-#endif
-
 	if ((AIFlags & AI_SOUND_TARGET) && (Entity->Enemy->EntityFlags & ENT_NOISE))
 	{
 		if ((!Entity->Enemy) || ((Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() < 64))
@@ -1638,24 +1573,8 @@ void CMonster::AI_Run(float Dist)
 		return;
 	}
 
-#if 0
-	// if we've been looking (unsuccessfully) for the player for 10 seconds
-	// PMM - reduced to 5, makes them much nastier
-	if((TrailTime + 50) <= Level.Frame)
-	{
-		// and we haven't checked for valid hint paths in the last 10 seconds
-		if((LastHintTime + 100) <= Level.Frame)
-		{
-			// check for hint_paths.
-			LastHintTime = Level.Frame;
-			if(monsterlost_checkhint())
-				return;
-		}
-	}
-#endif
-
 	// coop will change to another enemy if visible
-	if (CvarList[CV_COOP].Boolean())
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
 		// FIXME: insane guys get mad with this, which causes crashes!
 		if (FindTarget ())

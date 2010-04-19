@@ -41,7 +41,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // The launcher
 CDisruptor::CDisruptor() :
-CWeapon(12, 0, "models/weapons/v_dist/tris.md2", 0, 4, 5, 9,
+CWeapon(10, 1, "models/weapons/v_dist/tris.md2", 0, 4, 5, 9,
 		10, 29, 30, 34)
 {
 }
@@ -71,7 +71,7 @@ bool CDisruptor::CanStopFidgetting (CPlayerEntity *Player)
 void CDisruptor::Fire (CPlayerEntity *Player)
 {
 	vec3f		offset (24, 8, Player->ViewHeight-8), forward, right, start;
-	const int	Damage = CalcQuadVal(CvarList[CV_DEATHMATCH].Boolean() ? 30 : 45);
+	const int	Damage = CalcQuadVal((Game.GameMode & GAME_DEATHMATCH) ? 30 : 45);
 
 	FireAnimation (Player);
 

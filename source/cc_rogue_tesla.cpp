@@ -198,7 +198,7 @@ void CTesla::Active ()
 			continue;
 
 		// don't hit clients in single-player or coop
-		if ((Hit->EntityFlags & ENT_PLAYER) && !CvarList[CV_DEATHMATCH].Boolean())
+		if ((Hit->EntityFlags & ENT_PLAYER) && !(Game.GameMode & GAME_DEATHMATCH))
 			continue;
 	
 		CTrace tr (start, Hit->State.GetOrigin(), this, CONTENTS_MASK_SHOT);
@@ -235,7 +235,7 @@ void CTesla::DoneActivate ()
 	}
 
 	// only check for spawn points in deathmatch
-	if (CvarList[CV_DEATHMATCH].Boolean())
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		IBaseEntity *Search = NULL;
 		while ((Search = FindRadius<ENT_BASE> (Search, State.GetOrigin(), 1.5 * TESLA_DAMAGE_RADIUS)) != NULL)
@@ -260,7 +260,7 @@ void CTesla::DoneActivate ()
 
 	State.GetAngles().Clear();
 	// clear the owner if in deathmatch
-	if (CvarList[CV_DEATHMATCH].Boolean())
+	if (Game.GameMode & GAME_DEATHMATCH)
 		SetOwner (NULL);
 
 	ThinkType = TESLATHINK_ACTIVE;
@@ -365,7 +365,7 @@ void CTesla::Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int Damage
 
 	Tesla->Touchable = true;
 
-	Tesla->Health = (CvarList[CV_DEATHMATCH].Boolean()) ? 20 : 30;
+	Tesla->Health = (Game.GameMode & GAME_DEATHMATCH) ? 20 : 30;
 	Tesla->CanTakeDamage = true;
 	Tesla->Damage = TESLA_DAMAGE*DamageMultiplier;
 	Tesla->ClassName = "tesla";
@@ -422,7 +422,7 @@ void CTeslaWeapon::FireGrenade (CPlayerEntity *Player, bool inHand)
 	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
-	CTesla::Spawn (Player, start, forward, damageMultiplier, speed);
+	CTesla::Spawn (Player, start, forward, DamageMultiplier, speed);
 
 	Player->Client.Grenade.Time = Level.Frame + ((((
 #if CLEANCTF_ENABLED

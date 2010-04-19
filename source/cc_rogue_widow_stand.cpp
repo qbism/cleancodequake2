@@ -1120,7 +1120,7 @@ void CWidowStand::RespondPowerup (CPlayerEntity *other)
 
 void CWidowStand::Powerups ()
 {
-	if (!CvarList[CV_COOP].Boolean())
+	if (!(Game.GameMode & GAME_COOPERATIVE))
 		RespondPowerup (entity_cast<CPlayerEntity>(Entity->Enemy));
 	else
 	{

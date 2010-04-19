@@ -353,45 +353,6 @@ CFrame ParasiteFramesDrain [] =
 };
 CAnim ParasiteMoveDrain (FRAME_drain01, FRAME_drain18, ParasiteFramesDrain, &CMonster::Run);
 
-#if 0
-CFrame ParasiteFramesBreak [] =
-{
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -18),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 9),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -18),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 8),
-	CFrame (&CMonster::AI_Charge, 9),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -18),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),		// airborne
-	CFrame (&CMonster::AI_Charge, 0),		// airborne
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 11),		
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -5),
-	CFrame (&CMonster::AI_Charge, 1,	NULL
-};
-mmove_t parasite_move_break = {FRAME_break01, FRAME_break32, parasite_frames_break, parasite_start_run};
-#endif
-
 /*
 === 
 Break Stuff Ends

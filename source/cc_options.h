@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						GAME_ROGUE
+#define CC_GAME_MODE						(GAME_ROGUE)
 #endif
 
 // Global macros
@@ -189,7 +189,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define XATRIX_VIRTUAL
 #endif
 
-#if CC_GAME_MODE == GAME_ORIGINAL_QUAKE2
+#if (CC_GAME_MODE) == GAME_ORIGINAL_QUAKE2
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -199,7 +199,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
 #else
-#if (CC_GAME_MODE & GAME_ROGUE) && (CC_GAME_MODE & GAME_XATRIX)
+#if ((CC_GAME_MODE) & GAME_ROGUE) && ((CC_GAME_MODE) & GAME_XATRIX)
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -212,7 +212,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define XATRIX_FEATURES 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
-#elif (CC_GAME_MODE & GAME_ROGUE)
+#elif ((CC_GAME_MODE) & GAME_ROGUE)
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -223,7 +223,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROGUE_FEATURES 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
-#elif (CC_GAME_MODE & GAME_XATRIX)
+#elif ((CC_GAME_MODE) & GAME_XATRIX)
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH

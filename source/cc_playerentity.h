@@ -630,7 +630,7 @@ public:
 	void			PutInServer ();
 	void			InitPersistent ();
 	void			InitItemMaxValues ();
-	void			UserinfoChanged (char *userinfo);
+	void			UserinfoChanged (const char *userinfo);
 	void			FetchEntData ();
 
 	// EndServerFrame-related functions

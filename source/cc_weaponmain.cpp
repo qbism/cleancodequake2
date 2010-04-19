@@ -46,6 +46,27 @@ TWeaponListType &WeaponList ()
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
 typedef std::multimap<TWeaponMultiMapPairType, sint8> TWeaponMultiMapType;
 
+inline void ChainWeapons (std::vector<CWeapon*> &Weapons)
+{
+	if (Weapons.size() == 1)
+		Weapons[0]->PrevWeapon = Weapons[0]->NextWeapon = Weapons[0];
+	else
+	{
+		for (size_t i = 0; i < Weapons.size(); ++i)
+		{
+			if (i < Weapons.size()-1)
+				Weapons[i]->NextWeapon = Weapons[i+1];
+			else
+				Weapons[i]->NextWeapon = Weapons[0];
+
+			if (i > 0)
+				Weapons[i]->PrevWeapon = Weapons[i-1];
+			else
+				Weapons[i]->PrevWeapon = Weapons[Weapons.size()-1];
+		}
+	}
+};
+
 void AddWeapons (CItemList *List)
 {
 	// Add them in player-specified order
@@ -57,6 +78,32 @@ void AddWeapons (CItemList *List)
 
 	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
 		WeaponList()[(*it).second]->AddWeaponToItemList (List);
+
+	std::vector<CWeapon*> WeaponOrder;
+
+	sint32 lastIndex = -1;
+	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
+	{
+		CWeapon *Weap = WeaponList()[(*it).second];
+
+		if (lastIndex == -1 || ((*it).first.first == lastIndex))
+		{
+			WeaponOrder.push_back (Weap);
+			lastIndex = (*it).first.first;
+
+			if (it != --Order.end())
+				continue;
+		}
+
+		ChainWeapons (WeaponOrder);
+
+		WeaponOrder.clear();
+		WeaponOrder.push_back (Weap);
+		lastIndex = (*it).first.first;
+
+		if (it == --Order.end())
+			ChainWeapons (WeaponOrder);
+	}
 }
 
 void AddWeaponsToListLocations (CItemList *List)
@@ -366,15 +413,15 @@ void CWeapon::Think (CPlayerEntity *Player)
 	isQuad = (Player->Client.Timers.QuadDamage > Level.Frame);
 
 	if (isQuad)
-		damageMultiplier = 4;
+		DamageMultiplier = 4;
 	else
-		damageMultiplier = 1;
+		DamageMultiplier = 1;
 
 #if ROGUE_FEATURES
 	isDouble = (Player->Client.Timers.Double > Level.Frame);
 
-	if (isDouble && ((damageMultiplier == 4 && !DeathmatchFlags.dfNoStackDouble.IsEnabled()) || damageMultiplier == 1))
-		damageMultiplier *= 2;
+	if (isDouble && ((DamageMultiplier == 4 && !DeathmatchFlags.dfNoStackDouble.IsEnabled()) || DamageMultiplier == 1))
+		DamageMultiplier *= 2;
 #endif
 
 #if XATRIX_FEATURES
@@ -595,15 +642,52 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 
 void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 {
-	if (!Player->Client.Persistent.Inventory.Has(Wanted))
+	bool UsingItOrChain = !Player->Client.Persistent.Inventory.Has(Wanted);
+
+	while (!UsingItOrChain)
 	{
-		Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
-		return;
-	}
+		Wanted = Wanted->Weapon->GetNextWeapon()->Item;
+
+		if (Player->Client.Persistent.Weapon == Wanted->Weapon)
+		{
+			UsingItOrChain = true;
+			break;
+		}
+
+		if (Wanted->Weapon == this)
+			break;
+	};
 
 	// see if we're already using it
-	if (Player->Client.Persistent.Weapon == this)
-		return;
+	if (UsingItOrChain)
+	{
+		if (GetNextWeapon() == this && GetPrevWeapon() == this)
+			return;
+		else
+		{
+			while (true)
+			{
+				Wanted = Wanted->Weapon->GetNextWeapon()->Item;
+
+				if (Wanted->Weapon == this)
+					break; // nothing
+
+				if (!Player->Client.Persistent.Inventory.Has(Wanted))
+					continue;
+
+				if (Wanted->Ammo && !CvarList[CV_SELECT_EMPTY].Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
+				{
+					if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
+						continue;
+
+					if (Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
+						continue;
+				}
+
+				break;
+			};
+		}
+	}
 
 	if (Wanted->Ammo && !CvarList[CV_SELECT_EMPTY].Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
 	{
@@ -621,7 +705,7 @@ void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 	}
 
 	// change to this weapon when down
-	Player->Client.NewWeapon = this;
+	Player->Client.NewWeapon = Wanted->Weapon;
 }
 
 void CWeapon::FireAnimation (CPlayerEntity *Player)

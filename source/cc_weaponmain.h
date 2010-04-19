@@ -36,7 +36,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CWeapon
 {
-	friend void InvalidateItemMedia ();
+	friend void		InvalidateItemMedia ();
+	friend void		ChainWeapons (std::vector<CWeapon*> &Weapons);
+	MediaIndex		WeaponSoundIndex;
+	MediaIndex		WeaponModelIndex;
+	CWeapon			*NextWeapon, *PrevWeapon; // Chained weapons
 
 protected:
 	// Frames
@@ -59,20 +63,28 @@ public:
 #endif
 		;
 
-	uint8		damageMultiplier;
+	uint8						DamageMultiplier;
+	CWeaponItem					*Item; // The item that is linked to this weapon.
+	const char					*WeaponSound;
+	const char					*WeaponModelString; // Temporary
+	MediaIndex					vwepIndex;
+	std::pair <sint8, sint8>	ListOrder;
+
+	inline CWeapon *GetNextWeapon ()
+	{
+		return NextWeapon;
+	};
+
+	inline CWeapon *GetPrevWeapon ()
+	{
+		return PrevWeapon;
+	};
 
 	inline int CalcQuadVal (int val)
 	{
-		return (val * damageMultiplier);
+		return (val * DamageMultiplier);
 	};
 
-	CWeaponItem		*Item; // The item that is linked to this weapon.
-
-	const char			*WeaponSound;
-private:
-	MediaIndex		WeaponSoundIndex;
-
-public:
 	inline MediaIndex		GetWeaponSound ()
 	{
 		return (WeaponSound) ?
@@ -80,20 +92,12 @@ public:
 			: 0;
 	};
 
-	const char			*WeaponModelString; // Temporary
-private:
-	MediaIndex		WeaponModelIndex;
-
-public:
 	inline MediaIndex		GetWeaponModel ()
 	{
 		return (WeaponModelString) ?
 			(WeaponModelIndex) ? WeaponModelIndex : (WeaponModelIndex = ModelIndex(WeaponModelString))
 			: 0;
 	};
-
-	MediaIndex					vwepIndex;
-	std::pair <sint8, sint8>	ListOrder;
 
 	CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, const char *WeaponSound = NULL);
@@ -139,6 +143,8 @@ public:
 	};
 
 	virtual void Use (CWeaponItem *Wanted, CPlayerEntity *Player);
+
+
 };
 
 #define WEAPON_CLASS_DEFS(x) \

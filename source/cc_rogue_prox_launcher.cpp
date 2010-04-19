@@ -232,7 +232,7 @@ public:
 					(
 						(((search->EntityFlags & ENT_MONSTER) || (search->EntityFlags & ENT_PLAYER)) && (entity_cast<IHurtableEntity>(search)->Health > 0))	|| 
 						(
-							(CvarList[CV_DEATHMATCH].Boolean()) && 
+							(Game.GameMode & GAME_DEATHMATCH) && 
 							(
 							(!strcmp(search->ClassName.c_str(), "info_player_deathmatch")) ||
 							(!strcmp(search->ClassName.c_str(), "info_player_start")) ||
@@ -557,7 +557,7 @@ void CProxLauncher::Fire (CPlayerEntity *Player)
 	Player->Client.KickOrigin = forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CProx::Spawn (Player, start, forward, damageMultiplier, 600);
+	CProx::Spawn (Player, start, forward, DamageMultiplier, 600);
 
 	Muzzle (Player, MZ_GRENADE);
 	AttackSound (Player);

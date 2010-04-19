@@ -522,7 +522,7 @@ void CTurretDriver::TurretLink ()
 
 void CTurretDriver::Spawn ()
 {
-	if (CvarList[CV_DEATHMATCH].Integer())
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		Entity->Free ();
 		return;

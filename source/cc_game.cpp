@@ -429,7 +429,7 @@ void SetupGamemode ()
 			else
 			{
 				CvarList[CV_COOP].Set (0, false);
-				DebugPrintf		("CleanCode Warning: Both deathmatch and coop are 1; forcing to CvarList[CV_DEATHMATCH].\n"
+				DebugPrintf		("CleanCode Warning: Both deathmatch and coop are 1; forcing to deathmatch.\n"
 								 "Did you know you can make one take priority if you intend to only set one?\n"
 								 "If deathmatch is 1 and you want to switch to coop, just type \"coop 2\" and change maps!\n");
 				// Let it fall through
@@ -477,46 +477,15 @@ void G_Register ()
 	SvCmd_Register ();
 }
 
-#ifdef WIN32
-	#ifdef _FRONTEND
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "Win32 FrontEnd Debug"
-		#else
-			#define CONFIGURATIONSTRING "Win32 FrontEnd Release"
-	#endif
-	#else
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "Win32 Debug"
-		#else
-			#define CONFIGURATIONSTRING "Win32 Release"
-		#endif
-	#endif
-#else
-	#ifdef _FRONTEND
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "FrontEnd Debug"
-		#else
-			#define CONFIGURATIONSTRING "FrontEnd Release"
-		#endif
-	#else
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "Debug"
-		#else
-			#define CONFIGURATIONSTRING "Release"
-		#endif
-	#endif
-#endif
-
 std::string ConfigTimeString ()
 {
-	return std::string(TimeStamp()) + " (running on " + CPUSTRING + " " + CONFIGURATIONSTRING + ")";
+	return std::string(TimeStamp()) + " (running on " + COMBINED_BUILD_STRING + ")";
 }
 
 void CGameAPI::Init ()
 {
 	CTimer LoadTimer;
 
-	//Mem_Init ();
 	ServerPrintf ("==== InitGame ====\nRunning CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s\nInitializing Game...\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 
 	seedMT (time(NULL));
@@ -554,8 +523,6 @@ void CGameAPI::Init ()
 	Game.CheatsEnabled = (CvarList[CV_CHEATS].Integer()) ? true : false;
 
 	Bans.LoadFromFile ();
-
-//	Mem_Register ();
 
 #if 0
 	LoadModules ();

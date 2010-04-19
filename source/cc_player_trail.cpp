@@ -63,7 +63,7 @@ inline int PrevMarker (int marker)
 
 void PlayerTrail_Init ()
 {
-	if (CvarList[CV_DEATHMATCH].Boolean())
+	if (Game.GameMode & GAME_DEATHMATCH)
 		return;
 
 	trail_head = 0;

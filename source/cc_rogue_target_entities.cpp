@@ -458,7 +458,7 @@ public:
 
 	void Spawn ()
 	{
-		if (CvarList[CV_DEATHMATCH].Boolean())
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			// auto-remove for deathmatch
 			Free ();
@@ -525,7 +525,7 @@ public:
 
 	void Spawn ()
 	{
-		if (CvarList[CV_DEATHMATCH].Boolean())
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			// auto-remove for deathmatch
 			Free ();

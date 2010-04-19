@@ -280,3 +280,19 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 #define MSVS_VERSION			VS_UNKNOWN
 #define MSVS_VERSION_STRING		VS_UNKNOWN_STR
 #endif
+
+#ifdef _FRONTEND
+	#ifdef _DEBUG
+		#define CONFIGURATIONSTRING "FrontEnd Debug"
+	#else
+		#define CONFIGURATIONSTRING "Win32 FrontEnd Release"
+	#endif
+#else
+	#ifdef _DEBUG
+		#define CONFIGURATIONSTRING "Debug"
+	#else
+		#define CONFIGURATIONSTRING "Release"
+	#endif
+#endif
+
+#define COMBINED_BUILD_STRING BUILDSTRING" "CPUSTRING" "CONFIGURATIONSTRING

@@ -73,7 +73,7 @@ void CHeatBeamWeapon::Fire (CPlayerEntity *Player)
 {
 	vec3f offset (7, 2, Player->ViewHeight-3);
 	const sint32		damage = CalcQuadVal(15),
-						kick = CalcQuadVal((CvarList[CV_DEATHMATCH].Boolean() ? 75 : 30));
+						kick = CalcQuadVal((Game.GameMode & GAME_DEATHMATCH) ? 75 : 30);
 
 	Player->Client.PlayerState.GetGunIndex() = ModelIndex ("models/weapons/v_beamer2/tris.md2");
 

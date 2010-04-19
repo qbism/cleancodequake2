@@ -165,63 +165,6 @@ CFrame BrainFramesWalk1 [] =
 };
 CAnim BrainMoveWalk1 (FRAME_walk101, FRAME_walk111, BrainFramesWalk1);
 
-// walk2 is FUBAR, do not use
-#if 0
-void brain_walk2_cycle (edict_t *self)
-{
-	if (frand() > 0.1)
-		self->monsterinfo.nextframe = FRAME_walk220;
-}
-
-CFrame brain_frames_walk2 [] =
-{
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	-2),
-	CFrame (&CMonster::AI_Walk,	-4),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	12),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	0),
-
-	CFrame (&CMonster::AI_Walk,	-2),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	10),		// Cycle Start
-
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	7),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	0),
-
-	CFrame (&CMonster::AI_Walk,	4,	brain_walk2_cycle,
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	-8),		
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	-5,	NULL
-};
-CAnim brain_move_walk2 = {FRAME_walk201, FRAME_walk240, brain_frames_walk2, NULL};
-#endif
-
 void CBrain::Walk ()
 {
 	//CurrentMove = (frand() <= 0.5) ? &BrainMoveWalk1 : &BrainMoveWalk2;

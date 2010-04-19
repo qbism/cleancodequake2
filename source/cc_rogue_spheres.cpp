@@ -562,35 +562,6 @@ CRogueHunterSphere *CRogueHunterSphere::Create (CBaseItem *Item, IBaseEntity *Ow
 
 IMPLEMENT_SAVE_SOURCE(CRogueHunterSphere);
 
-#if 0
-
-void body_think (edict_t *self)
-{
-	float r;
-
-	if(abs(self->ideal_yaw - anglemod(self->s.angles[YAW])) < 2)
-	{
-		if(self->timestamp < level.time)
-		{
-			r = random();
-			if(r < 0.10)
-			{
-				self->ideal_yaw = random() * 350.0;
-				self->timestamp = level.time + 1;
-			}
-		}
-	}
-	else
-		M_ChangeYaw(self);
-
-	self->s.frame ++;
-	if (self->s.frame > FRAME_stand40)
-		self->s.frame = FRAME_stand01;
-
-	self->nextthink = level.time + 0.1;
-}
-#endif
-
 #include "m_player.h"
 
 void CDoppleGangerBody::Think ()

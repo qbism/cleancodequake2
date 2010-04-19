@@ -345,7 +345,7 @@ public:
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 			
 			if (Player->Client.Persistent.Weapon)
-				DamModifier = Player->Client.Persistent.Weapon->damageMultiplier;
+				DamModifier = Player->Client.Persistent.Weapon->DamageMultiplier;
 		
 			Nuke->ThrowerPlayer = Player;
 		}
@@ -400,12 +400,12 @@ bool	CAMBomb::Pickup (CItemEntity *Item, CPlayerEntity *Other)
 	if (quantity >= 1)
 		return false;
 
-	if ((CvarList[CV_COOP].Boolean()) && (Flags & ITEMFLAG_STAY_COOP) && (quantity > 0))
+	if ((Game.GameMode & GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP) && (quantity > 0))
 		return false;
 
 	Other->Client.Persistent.Inventory += this;
 
-	if (CvarList[CV_DEATHMATCH].Boolean())
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		if (!(Item->SpawnFlags & DROPPED_ITEM) )
 			SetRespawn (Item, 300);

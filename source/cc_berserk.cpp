@@ -214,61 +214,10 @@ CFrame BerserkFramesAttackClub [] =
 };
 CAnim BerserkMoveAttackClub (FRAME_att_c9, FRAME_att_c20, BerserkFramesAttackClub, &CMonster::Run);
 
-#if 0
-void berserk_strike (edict_t *self)
-{
-	//FIXME play impact sound
-}
-
-
-mframe_t berserk_frames_attack_strike [] =
-{
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, berserk_swing,
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, berserk_strike,
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 9.7f),
-	CFrame (&CMonster::AI_Move, 13.6f, NULL
-};
-	
-mmove_t berserk_move_attack_strike = {FRAME_att_c21, FRAME_att_c34, berserk_frames_attack_strike, berserk_run};
-#endif
-
-
 void CBerserker::Melee ()
 {
 	CurrentMove = (!irandom(2)) ? &BerserkMoveAttackSpike : &BerserkMoveAttackClub;
 }
-
-
-/*
-void() 	berserk_atke1	=[	$r_attb1,	berserk_atke2	] {ai_run(9);};
-void() 	berserk_atke2	=[	$r_attb2,	berserk_atke3	] {ai_run(6);};
-void() 	berserk_atke3	=[	$r_attb3,	berserk_atke4	] {ai_run(18.4);};
-void() 	berserk_atke4	=[	$r_attb4,	berserk_atke5	] {ai_run(25);};
-void() 	berserk_atke5	=[	$r_attb5,	berserk_atke6	] {ai_run(14);};
-void() 	berserk_atke6	=[	$r_attb6,	berserk_atke7	] {ai_run(20);};
-void() 	berserk_atke7	=[	$r_attb7,	berserk_atke8	] {ai_run(8.5);};
-void() 	berserk_atke8	=[	$r_attb8,	berserk_atke9	] {ai_run(3);};
-void() 	berserk_atke9	=[	$r_attb9,	berserk_atke10	] {ai_run(17.5);};
-void() 	berserk_atke10	=[	$r_attb10,	berserk_atke11	] {ai_run(17);};
-void() 	berserk_atke11	=[	$r_attb11,	berserk_atke12	] {ai_run(9);};
-void() 	berserk_atke12	=[	$r_attb12,	berserk_atke13	] {ai_run(25);};
-void() 	berserk_atke13	=[	$r_attb13,	berserk_atke14	] {ai_run(3.7);};
-void() 	berserk_atke14	=[	$r_attb14,	berserk_atke15	] {ai_run(2.6);};
-void() 	berserk_atke15	=[	$r_attb15,	berserk_atke16	] {ai_run(19);};
-void() 	berserk_atke16	=[	$r_attb16,	berserk_atke17	] {ai_run(25);};
-void() 	berserk_atke17	=[	$r_attb17,	berserk_atke18	] {ai_run(19.6);};
-void() 	berserk_atke18	=[	$r_attb18,	berserk_run1	] {ai_run(7.8);};
-*/
 
 CFrame BerserkFramesPain1 [] =
 {

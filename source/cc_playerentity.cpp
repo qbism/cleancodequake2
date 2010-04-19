@@ -394,7 +394,7 @@ void CPlayerEntity::BeginServerFrame ()
 	}
 
 	// add player trail so monsters can follow
-	if (!CvarList[CV_DEATHMATCH].Boolean() && !IsVisible (State.GetOrigin() + vec3f(0, 0, ViewHeight), PlayerTrail_LastSpot()->Origin, this))
+	if (!(Game.GameMode & GAME_DEATHMATCH) && !IsVisible (State.GetOrigin() + vec3f(0, 0, ViewHeight), PlayerTrail_LastSpot()->Origin, this))
 		PlayerTrail_Add (State.GetOldOrigin());
 
 	Client.LatchedButtons = 0;
@@ -566,7 +566,12 @@ void CPlayerEntity::PutInServer ()
 
 	Client.Persistent = saved;
 	if (Client.Persistent.Health <= 0)
+	{
 		InitPersistent();
+	
+		// Paril, this fixes occasions where a demo/cin is played first.
+		UserinfoChanged (saved.UserInfo.c_str());
+	}
 	Client.Respawn = Respawn;
 	Client.Persistent.State = SVCS_SPAWNED;
 
@@ -754,7 +759,7 @@ The game can override any of the settings in place
 (forcing skins or names, etc) before copying it off.
 ============
 */
-void CPlayerEntity::UserinfoChanged (char *userinfo)
+void CPlayerEntity::UserinfoChanged (const char *userinfo)
 {
 	std::string UserInfo = userinfo;
 

@@ -91,50 +91,6 @@ void CRailgun::Fire (CPlayerEntity *Player)
 	DepleteAmmo(Player, 1);
 }
 
-#if XATRIX_FEATURES
-#include "cc_xatrix_phalanx.h"
-
-void CRailgun::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
-{
-	if (!Player->Client.Persistent.Inventory.Has(Wanted))
-	{
-		// Do we have an ion ripper?
-		if (Player->Client.Persistent.Inventory.Has(CPhalanx::Weapon.Item))
-			CPhalanx::Weapon.Use (Wanted, Player); // Use that.
-		else
-			Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
-		return;
-	}
-
-	// see if we're already using it
-	if (Player->Client.Persistent.Weapon == this)
-	{
-		// Do we have an ion ripper?
-		if (Player->Client.Persistent.Inventory.Has(CPhalanx::Weapon.Item))
-			CPhalanx::Weapon.Use (Wanted, Player); // Use that.
-		return;
-	}
-
-	if (Wanted->Ammo && !CvarList[CV_SELECT_EMPTY].Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
-	{
-		if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
-		{
-			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
-			return;
-		}
-
-		if (Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
-		{
-			Player->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
-			return;
-		}
-	}
-
-	// change to this weapon when down
-	Player->Client.NewWeapon = this;
-}
-#endif
-
 WEAPON_DEFS (CRailgun);
 
 LINK_ITEM_TO_CLASS (weapon_railgun, CItemEntity);

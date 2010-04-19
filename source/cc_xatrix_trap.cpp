@@ -92,8 +92,8 @@ CFoodCube::CFoodCube () :
 
 void CFoodCube::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
-	Other->Health += Player->AmmoCount;
-	Player->PlaySound (CHAN_ITEM, GetPickupSound());
+	Other->Health += Item->AmmoCount;
+	Item->PlaySound (CHAN_ITEM, GetPickupSound());
 };
 
 void CTrapProjectile::Think ()

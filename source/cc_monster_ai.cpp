@@ -891,7 +891,7 @@ void CMonster::AI_Run(float Dist)
 	}
 
 	// coop will change to another enemy if visible
-	if (CvarList[CV_COOP].Boolean())
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
 		if (FindTarget ())
 			return;

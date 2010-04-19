@@ -117,50 +117,6 @@ void CHyperBlaster::Fire (CPlayerEntity *Player)
 	}
 }
 
-#if XATRIX_FEATURES
-#include "cc_xatrix_ionripper.h"
-
-void CHyperBlaster::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
-{
-	if (!Player->Client.Persistent.Inventory.Has(Wanted))
-	{
-		// Do we have an ion ripper?
-		if (Player->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
-			CIonRipper::Weapon.Use (Wanted, Player); // Use that.
-		else
-			Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", Wanted->Name);
-		return;
-	}
-
-	// see if we're already using it
-	if (Player->Client.Persistent.Weapon == this)
-	{
-		// Do we have an ion ripper?
-		if (Player->Client.Persistent.Inventory.Has(CIonRipper::Weapon.Item))
-			CIonRipper::Weapon.Use (Wanted, Player); // Use that.
-		return;
-	}
-
-	if (Wanted->Ammo && !CvarList[CV_SELECT_EMPTY].Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))
-	{
-		if (!Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()))
-		{
-			Player->PrintToClient (PRINT_HIGH, "No %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
-			return;
-		}
-
-		if (Player->Client.Persistent.Inventory.Has(Wanted->Ammo->GetIndex()) < Wanted->Amount)
-		{
-			Player->PrintToClient (PRINT_HIGH, "Not enough %s for %s.\n", Wanted->Ammo->Name, Wanted->Name);
-			return;
-		}
-	}
-
-	// change to this weapon when down
-	Player->Client.NewWeapon = this;
-}
-#endif
-
 WEAPON_DEFS (CHyperBlaster);
 
 LINK_ITEM_TO_CLASS (weapon_hyperblaster, CItemEntity);

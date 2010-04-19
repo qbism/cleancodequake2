@@ -40,7 +40,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_tent.h"
 
 CChainfist::CChainfist() :
-CWeapon(11, 0, "models/weapons/v_chainf/tris.md2", 0, 3, 4, 32,
+CWeapon(0, 1, "models/weapons/v_chainf/tris.md2", 0, 4, 5, 32,
 		33, 57, 58, 60)
 {
 }
@@ -82,7 +82,7 @@ void CChainfist::Smoke (CPlayerEntity *Player)
 void CChainfist::Fire (CPlayerEntity *Player)
 {
 	vec3f			offset (0, 8, Player->ViewHeight - 4), forward, right, start;
-	const sint32	damage = CalcQuadVal((CvarList[CV_DEATHMATCH].Boolean()) ? 30 : 15);
+	const sint32	damage = CalcQuadVal((Game.GameMode & GAME_DEATHMATCH) ? 30 : 15);
 
 	FireAnimation (Player);
 
@@ -171,8 +171,7 @@ void CChainfist::WeaponGeneric (CPlayerEntity *Player)
 			Player->Client.PlayerState.GetGunFrame() = 14;
 		else if (Chance < 0.66)
 			Player->Client.PlayerState.GetGunFrame() = 24;
-	}
-}
+	}}
 
 WEAPON_DEFS (CChainfist);
 

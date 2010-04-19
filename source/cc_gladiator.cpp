@@ -167,27 +167,7 @@ void CGladiator::FireRail ()
 
 void CGladiator::StorePosition ()
 {
-#if 0
-	switch (Entity->State.GetFrame())
-	{
-	case FRAME_attack1:
-		if (CvarList[CV_SKILL].Integer() == 1)
-			SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
-		break;
-	case FRAME_attack2:
-		if (CvarList[CV_SKILL].Integer() == 2)
-			SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
-		break;
-	case FRAME_attack3:
-		if (CvarList[CV_SKILL].Integer() == 3)
-			SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
-		break;
-	default:
-		break;
-	}
-#else
 	SavedFirePosition = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
-#endif
 }
 
 CFrame GladiatorFramesAttackGun [] =
