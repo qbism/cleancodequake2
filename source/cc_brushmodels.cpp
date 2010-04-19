@@ -2872,7 +2872,7 @@ void CRotatingBrush::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 #if ROGUE_FEATURES
 void CRotatingBrush::Accelerate ()
 {
-	float	current_speed = AngularVelocity.Length();
+	float	current_speed = AngularVelocity.Length() * 10;
 
 	if (current_speed >= (Speed - Accel))		// done
 	{

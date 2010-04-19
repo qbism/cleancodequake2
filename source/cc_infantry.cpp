@@ -608,7 +608,13 @@ CAnim InfantryMoveAttack2 (FRAME_attak201, FRAME_attak208, InfantryFramesAttack2
 
 void CInfantry::Attack ()
 {
-	PauseTime = Level.Frame + ((randomMT() & 15) + 11);
+	PauseTime = Level.Frame + ((randomMT() & 15) + 
+#if ROGUE_FEATURES
+		1
+#else
+		11
+#endif
+		);
 	CurrentMove = &InfantryMoveAttack1;
 }
 
