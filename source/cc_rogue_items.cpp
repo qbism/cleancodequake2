@@ -47,12 +47,12 @@ CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 {
 };
 
-void CDoubleDamage::DoPickup (CItemEntity *Player, CPlayerEntity *Other)
+void CDoubleDamage::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 600);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
 
 		if (DeathmatchFlags.dfInstantItems.IsEnabled())
 			Use (Other);
@@ -78,12 +78,12 @@ CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 {
 };
 
-void CIRGoggles::DoPickup (CItemEntity *Player, CPlayerEntity *Other)
+void CIRGoggles::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 600);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
 
 		if (DeathmatchFlags.dfInstantItems.IsEnabled())
 			Use (Other);
@@ -438,6 +438,103 @@ void	CAMBomb::Drop (CPlayerEntity *Player)
 	Player->Client.Persistent.Inventory.Remove (this, count);
 }
 
+#include "cc_rogue_monster_spawning.h"
+
+class CDoppleGangerItem : public CBasePowerUp
+{
+public:
+	CDoppleGangerItem (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
+	  CBasePowerUp(Classname, WorldModel, EF_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE)
+	  {
+	  };
+
+	void DoPickup (CItemEntity *Item, CPlayerEntity *Other)
+	{
+		if (!(Game.GameMode & GAME_DEATHMATCH))		// item is DM only
+			return;
+
+		if (Other->Client.Persistent.Inventory.Has(this) >= 1)		// FIXME - apply max to dopplegangers
+			return;
+
+		Other->Client.Persistent.Inventory += this;
+
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 900);
+
+		return;
+	};
+
+	void Use (CPlayerEntity *Player)
+	{
+		vec3f forward;
+		vec3f(0, Player->Client.ViewAngle.Y, 0).ToVectors (&forward, NULL, NULL);
+
+		vec3f createPt = Player->State.GetOrigin().MultiplyAngles (48, forward);
+
+		vec3f spawnPt;
+		if (!FindSpawnPoint(createPt, Player->GetMins(), Player->GetMaxs(), spawnPt, 32))
+			return;
+
+		if (!CheckGroundSpawnPoint(spawnPt, Player->GetMins(), Player->GetMaxs(), 64, -1))
+			return;
+
+		Player->Client.Persistent.Inventory -= this;
+		Player->Client.Persistent.Inventory.ValidateSelectedItem ();
+
+		CSpawnGrow::Spawn (spawnPt, 0);
+		CDoppleGanger::Spawn (Player, spawnPt, forward);
+	};
+};
+
+template <class TSphereType, FrameNumber_t RespawnTime>
+class CSphereItem : public CBasePowerUp
+{
+public:
+	CSphereItem (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
+	  CBasePowerUp (Classname, WorldModel, EF_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_POWERUP|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE)
+	{
+	};
+
+	void DoPickup (CItemEntity *Item, CPlayerEntity *Other)
+	{
+		if (Other->Client.OwnedSphere)
+			return;
+
+		int quantity = Other->Client.Persistent.Inventory.Has(this);
+		if ((CvarList[CV_SKILL].Integer() == 1 && quantity >= 2) || (CvarList[CV_SKILL].Integer() >= 2 && quantity >= 1))
+			return;
+
+		if ((Game.GameMode & GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP) && (quantity > 0))
+			return;
+
+		Other->Client.Persistent.Inventory += this;
+
+		if (Game.GameMode & GAME_DEATHMATCH)
+		{
+			if (!(Item->SpawnFlags & DROPPED_ITEM) )
+				SetRespawn (Item, RespawnTime);
+			if (DeathmatchFlags.dfInstantItems.IsEnabled())
+				Use (Other);
+		}
+
+		return;
+	};
+
+	void Use (CPlayerEntity *Player)
+	{
+		if (Player->Client.OwnedSphere)
+		{
+			Player->PrintToClient (PRINT_HIGH, "Only one sphere at a time!\n");
+			return;
+		}
+
+		Player->Client.Persistent.Inventory -= this;
+		Player->Client.Persistent.Inventory.ValidateSelectedItem ();
+
+		TSphereType::Create (this, Player, 0);
+	};
+};
+
 LINK_ITEM_TO_CLASS (item_double, CItemEntity);
 LINK_ITEM_TO_CLASS (item_ir_goggles, CItemEntity);
 
@@ -449,6 +546,11 @@ LINK_ITEM_TO_CLASS (ammo_tesla, CItemEntity);
 
 LINK_ITEM_TO_CLASS (key_nuke_container, CItemEntity);
 LINK_ITEM_TO_CLASS (key_nuke, CItemEntity);
+
+LINK_ITEM_TO_CLASS (item_sphere_vengeance, CItemEntity);
+LINK_ITEM_TO_CLASS (item_sphere_hunter, CItemEntity);
+LINK_ITEM_TO_CLASS (item_sphere_defender, CItemEntity);
+LINK_ITEM_TO_CLASS (item_doppleganger, CItemEntity);
 
 void AddRogueItemsToList ()
 {
@@ -465,6 +567,11 @@ void AddRogueItemsToList ()
 
 	QNew (TAG_GENERIC) CKey("key_nuke_container", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_contain", "Antimatter Pod", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 	QNew (TAG_GENERIC) CKey("key_nuke", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_nuke", "Antimatter Bomb", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+
+	QNew (TAG_GENERIC) CSphereItem<CRogueVengeanceSphere, 600> ("item_sphere_vengeance", "models/items/vengnce/tris.md2", "p_vengeance", "Vengeance Sphere");
+	QNew (TAG_GENERIC) CSphereItem<CRogueHunterSphere, 1200> ("item_sphere_hunter", "models/items/hunter/tris.md2", "p_hunter", "Hunter Sphere");
+	QNew (TAG_GENERIC) CSphereItem<CRogueDefenderSphere, 600> ("item_sphere_defender", "models/items/defender/tris.md2", "p_defender", "Defender Sphere");
+	QNew (TAG_GENERIC) CDoppleGangerItem ("item_doppleganger", "models/items/dopple/tris.md2", "p_doppleganger", "Doppleganger");
 }
 
 #endif

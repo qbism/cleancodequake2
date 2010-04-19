@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CPlayerCommand::Run (CPlayerEntity *Player)
 {
-	if ((Flags & CMD_CHEAT) && !Game.CheatsEnabled && (Game.GameMode != GAME_SINGLEPLAYER))
+	if ((Flags & CMD_CHEAT) && !Game.CheatsEnabled && !(Game.GameMode & GAME_SINGLEPLAYER))
 	{
 		Player->PrintToClient (PRINT_HIGH, "Cheats must be enabled to use this command.\n");
 		return;

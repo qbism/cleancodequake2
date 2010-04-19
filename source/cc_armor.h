@@ -48,7 +48,7 @@ public:
 			   const char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
 			   float energyProtection);
 
-	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);
 	void	Drop (CPlayerEntity *Player);
 

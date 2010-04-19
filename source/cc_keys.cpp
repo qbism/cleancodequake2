@@ -58,9 +58,9 @@ CKey(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 };
 
 
-bool CKey::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
+bool CKey::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
 		if (Other->Client.Persistent.Inventory.Has(this))
 			return false;
@@ -71,14 +71,14 @@ bool CKey::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 	return true;
 }
 
-bool CPowerCube::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
+bool CPowerCube::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
-		if (Other->Client.Persistent.PowerCubeCount & ((Player->SpawnFlags & 0x0000ff00)>> 8))
+		if (Other->Client.Persistent.PowerCubeCount & ((Item->SpawnFlags & 0x0000ff00)>> 8))
 			return false;
 		Other->Client.Persistent.Inventory += this;
-		Other->Client.Persistent.PowerCubeCount |= ((Player->SpawnFlags & 0x0000ff00) >> 8);
+		Other->Client.Persistent.PowerCubeCount |= ((Item->SpawnFlags & 0x0000ff00) >> 8);
 		return true;
 	}
 	Other->Client.Persistent.Inventory += this;
@@ -102,7 +102,7 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if (Game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode & GAME_COOPERATIVE)
 		{
 			SpawnFlags |= (1 << (8 + Level.PowerCubeCount));
 			Level.PowerCubeCount++;

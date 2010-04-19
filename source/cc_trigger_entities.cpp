@@ -1069,7 +1069,7 @@ public:
 		}
 
 		Player->PlaySound (CHAN_AUTO, SoundIndex ("misc/keyuse.wav"));
-		if (Game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode & GAME_COOPERATIVE)
 		{
 			if (Item == NItems::PowerCube)
 			{

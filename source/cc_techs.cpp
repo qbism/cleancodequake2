@@ -57,7 +57,7 @@ TechType(TechType)
 /*------------------------------------------------------------------------*/
 
 
-bool CTech::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
+bool CTech::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Other->Client.Persistent.Tech)
 	{

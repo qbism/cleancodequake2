@@ -869,7 +869,7 @@ bool				IMapEntity::CheckValidity ()
 			}
 			else
 			{
-				if ( /* ((Game.GameMode == GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
+				if ( /* ((Game.GameMode & GAME_COOPERATIVE) && (SpawnFlags & SPAWNFLAG_NOT_COOP)) || */
 					((CvarList[CV_SKILL].Integer() == 0) && (SpawnFlags & SPAWNFLAG_NOT_EASY)) ||
 					((CvarList[CV_SKILL].Integer() == 1) && (SpawnFlags & SPAWNFLAG_NOT_MEDIUM)) ||
 					((CvarList[CV_SKILL].Integer() >= 2) && (SpawnFlags & SPAWNFLAG_NOT_HARD))

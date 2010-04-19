@@ -435,7 +435,7 @@ void CWidowStand::DoSpawn ()
 			ent->Monster->AIFlags |= AI_SPAWNED_WIDOW|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
 
 			IBaseEntity *designated_enemy = Entity->Enemy;
-			if (Game.GameMode == GAME_COOPERATIVE)
+			if (Game.GameMode & GAME_COOPERATIVE)
 			{
 				designated_enemy = PickCoopTarget(ent);
 				if (designated_enemy)
@@ -1302,7 +1302,7 @@ void CWidowStand::CalcSlots ()
 			MonsterSlots = 3;
 			break;
 	}
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 		MonsterSlots = Min<> (6, MonsterSlots + ((CvarList[CV_SKILL].Integer())*(CountPlayers()-1)));
 }
 
@@ -1323,7 +1323,7 @@ void CWidowStand::Spawn ()
 	Entity->GetMaxs().Set (40, 40, 144);
 
 	Entity->Health = 2000 + 1000*(CvarList[CV_SKILL].Integer());
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 		Entity->Health += 500*(CvarList[CV_SKILL].Integer());
 
 	Entity->GibHealth = -5000;

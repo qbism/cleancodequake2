@@ -579,7 +579,7 @@ void CPlatForm2::HitTop ()
 			NextThink = Level.Frame + 50;
 		}
 
-		if (Game.GameMode == GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 			LastMoveTime = Level.Frame - 10;
 		else
 			LastMoveTime = Level.Frame - 20;
@@ -619,7 +619,7 @@ void CPlatForm2::HitBottom ()
 			NextThink = Level.Frame + 50;
 		}
 
-		if (Game.GameMode == GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 			LastMoveTime = Level.Frame - 10;
 		else
 			LastMoveTime = Level.Frame - 20;
@@ -756,7 +756,7 @@ void CPlatForm2::Operate (IBaseEntity *Other)
 
 	PlatFlags = PLAT2_MOVING;
 
-	FrameNumber_t pauseTime = (Game.GameMode == GAME_DEATHMATCH) ? 3 : 5;
+	FrameNumber_t pauseTime = (Game.GameMode & GAME_DEATHMATCH) ? 3 : 5;
 
 	if (MoveState != otherState)
 	{
@@ -875,7 +875,7 @@ void CPlatForm2::Spawn ()
 	if (!Lip)
 		Lip = 8;
 
-	if (Game.GameMode == GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		Speed *= 2;
 		Accel *= 2;

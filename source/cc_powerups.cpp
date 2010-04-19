@@ -42,24 +42,24 @@ PowerupFlags(PowerupFlags)
 };
 
 // Powerups!
-bool CBasePowerUp::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
+bool CBasePowerUp::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (PowerupFlags & POWERFLAG_STORE)
 	{
 		if (Other->Client.Persistent.Inventory.Has(this) > 0 &&
 			(!(PowerupFlags & POWERFLAG_STACK) ||
-			(PowerupFlags & (POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP) && (Game.GameMode == GAME_COOPERATIVE)) ||
-			(Game.GameMode == GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP)))
+			(PowerupFlags & (POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP) && (Game.GameMode & GAME_COOPERATIVE)) ||
+			(Game.GameMode & GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP)))
 			return false;
 
 		Other->Client.Persistent.Inventory += this;
 	}
 
-	DoPickup (Player, Other);
+	DoPickup (Item, Other);
 	return true;
 }
 
-void CBasePowerUp::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CBasePowerUp::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 }
 
@@ -223,9 +223,9 @@ public:
 
 
 // Seperate powerup classes
-void CMegaHealth::DoPickup (CItemEntity *Player, CPlayerEntity *Other)
+void CMegaHealth::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
-	CMegaHealthEntity *MegaHealth = entity_cast<CMegaHealthEntity>(Player);
+	CMegaHealthEntity *MegaHealth = entity_cast<CMegaHealthEntity>(Item);
 
 	if ((!DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
@@ -248,11 +248,11 @@ void CMegaHealth::DoPickup (CItemEntity *Player, CPlayerEntity *Other)
 	}
 #if CLEANCTF_ENABLED
 	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
-		MegaHealth->LinkedItem->SetRespawn (Player, 300);
+		MegaHealth->LinkedItem->SetRespawn (Item, 300);
 #endif
 }
 
-void CBackPack::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CBackPack::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	// Increase their max ammo, if applicable
 	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
@@ -269,20 +269,20 @@ void CBackPack::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
 	NItems::Slugs->AddAmmo (Other, NItems::Slugs->Quantity);
 	NItems::Rockets->AddAmmo (Other, NItems::Rockets->Quantity);
 
-	if (!(Player->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (Player, 1800);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 1800);
 }
 
 static sint32	quad_drop_timeout_hack;
 
-void CQuadDamage::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CQuadDamage::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 600);
-		if (Player->SpawnFlags & DROPPED_PLAYER_ITEM)
-			quad_drop_timeout_hack = (Player->NextThink - Level.Frame);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (Item->SpawnFlags & DROPPED_PLAYER_ITEM)
+			quad_drop_timeout_hack = (Item->NextThink - Level.Frame);
 
 		if (DeathmatchFlags.dfInstantItems.IsEnabled())
 			Use (Other);
@@ -309,13 +309,13 @@ void CQuadDamage::Use (CPlayerEntity *Player)
 	Player->PlaySound (CHAN_ITEM, SoundIndex("items/damage.wav"));
 }
 
-void CInvulnerability::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CInvulnerability::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (Game.GameMode == GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 300);
-		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Player->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 300);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (Other);
 	}
 }
@@ -332,13 +332,13 @@ void CInvulnerability::Use (CPlayerEntity *Player)
 	Player->PlaySound (CHAN_ITEM, SoundIndex("items/protect.wav"));
 }
 
-void CSilencer::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CSilencer::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 300);
-		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Player->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 300);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (Other);
 	}
 }
@@ -349,13 +349,13 @@ void CSilencer::Use (CPlayerEntity *Player)
 	Player->Client.Timers.SilencerShots += 30;
 }
 
-void CRebreather::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CRebreather::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 600);
-		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Player->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (Other);
 	}
 }
@@ -370,13 +370,13 @@ void CRebreather::Use (CPlayerEntity *Player)
 		Player->Client.Timers.Rebreather = Level.Frame + 300;
 }
 
-void CEnvironmentSuit::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CEnvironmentSuit::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 600);
-		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Player->SpawnFlags & DROPPED_PLAYER_ITEM))
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
 			Use (Other);
 	}
 }
@@ -391,7 +391,7 @@ void CEnvironmentSuit::Use (CPlayerEntity *Player)
 		Player->Client.Timers.EnvironmentSuit = Level.Frame + 300;
 }
 
-void CBandolier::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CBandolier::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	// Increase their max ammo, if applicable
 	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
@@ -404,11 +404,11 @@ void CBandolier::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
 	NItems::Bullets->AddAmmo (Other, NItems::Bullets->Quantity);
 	NItems::Shells->AddAmmo (Other, NItems::Shells->Quantity);
 
-	if (!(Player->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (Player, 600);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 600);
 }
 
-void CAdrenaline::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CAdrenaline::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (!(Game.GameMode & GAME_DEATHMATCH))
 		Other->MaxHealth += 1;
@@ -416,24 +416,24 @@ void CAdrenaline::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
 	if (Other->Health < Other->MaxHealth)
 		Other->Health = Other->MaxHealth;
 
-	if (!(Player->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (Player, 600);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 600);
 }
 
-void CAncientHead::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CAncientHead::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	Other->MaxHealth += 2;
 
-	if (!(Player->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (Player, 600);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 600);
 }
 
-void CPowerShield::DoPickup (class CItemEntity *Player, CPlayerEntity *Other)
+void CPowerShield::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (Player, 600);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
 
 		// auto-use for DM only if we didn't already have one
 		if (!Other->Client.Persistent.Inventory.Has(this))

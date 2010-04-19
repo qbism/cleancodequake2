@@ -34,6 +34,94 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_ROGUE_SPHERES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_ROGUE_SPHERES_H
 
+class CDoppleGangerBody : public IThinkableEntity
+{
+public:
+	float			IdealYaw;
+	FrameNumber_t	TurnTime;
+
+	CDoppleGangerBody () :
+	  IThinkableEntity ()
+	  {
+	  };
+
+	CDoppleGangerBody (sint32 Index) :
+	  IBaseEntity (Index),
+	  IThinkableEntity (Index)
+	  {
+	  };
+
+	void SaveFields (CFile &File)
+	{
+		File.Write<float> (IdealYaw);
+		File.Write<FrameNumber_t> (TurnTime);
+		IThinkableEntity::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		IdealYaw = File.Read<float> ();
+		TurnTime = File.Read<FrameNumber_t> ();
+		IThinkableEntity::LoadFields (File);
+	};
+
+	IMPLEMENT_SAVE_HEADER (CDoppleGangerBody);
+
+	void Think ();
+};
+
+class CDoppleGanger : public IHurtableEntity, public IThinkableEntity, public ITossProjectile
+{
+public:
+	CPlayerEntity		*PlayerOwner;
+	CDoppleGangerBody	*Body;
+
+	CDoppleGanger () :
+	  IHurtableEntity (),
+	  IThinkableEntity (),
+	  ITossProjectile ()
+	  {
+	  };
+
+	CDoppleGanger (sint32 Index) :
+	  IBaseEntity (Index),
+	  IHurtableEntity (Index),
+	  IThinkableEntity (Index),
+	  ITossProjectile (Index)
+	  {
+	  };
+
+	virtual void SaveFields (CFile &File)
+	{
+		WriteEntity (File, PlayerOwner);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITossProjectile::SaveFields (File);
+	}
+
+	virtual void LoadFields (CFile &File)
+	{
+		PlayerOwner = ReadEntity<CPlayerEntity> (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITossProjectile::LoadFields (File);
+	}
+
+	IMPLEMENT_SAVE_HEADER(CDoppleGanger);
+
+	bool Run ()
+	{
+		return ITossProjectile::Run ();
+	};
+
+	void			Think ();
+
+	void			Pain (IBaseEntity *Other, sint32 Damage);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+
+	static void		Spawn (CPlayerEntity *Owner, vec3f Start, vec3f AimDir);
+};
+
 CC_ENUM (uint8, ESphereType)
 {
 	SPHERE_DEFENDER,
@@ -55,6 +143,7 @@ public:
 	CPlayerEntity		*OwnedPlayer;
 	IHurtableEntity		*SphereEnemy;
 	vec3f				SavedGoal;
+	CBaseItem			*Item;
 
 	CRogueBaseSphere () :
 	  IHurtableEntity(),
@@ -95,7 +184,7 @@ public:
 	void			Chase (bool stupidChase);
 
 	template <class TType>
-	static TType	*CreateBaseSphere (IBaseEntity *Owner, ESphereType Type, ESphereFlags Flags)
+	static TType	*CreateBaseSphere (CBaseItem *Item, IBaseEntity *Owner, ESphereType Type, ESphereFlags Flags)
 	{
 		TType *Sphere = QNewEntityOf TType;
 
@@ -104,9 +193,13 @@ public:
 		Sphere->GetSolid() = SOLID_BBOX;
 		Sphere->GetClipmask() = CONTENTS_MASK_SHOT;
 		Sphere->State.GetRenderEffects() = RF_FULLBRIGHT | RF_IR_VISIBLE;
+		Sphere->Item = Item;
 
 		if (Flags & SPHERE_DOPPLEGANGER)
-			Sphere->Team.Master = Owner->Team.Master;
+		{
+			Sphere->Team.Master = entity_cast<CDoppleGanger>(Owner)->PlayerOwner;
+			Sphere->SetOwner (Sphere->Team.Master);
+		}
 		else
 		{
 			Sphere->SetOwner (Owner);
@@ -166,7 +259,7 @@ public:
 
 	void			Shoot (IHurtableEntity *At);
 
-	static void		Create (IBaseEntity *Owner, ESphereFlags Flags);
+	static CRogueDefenderSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 class CRogueHunterSphere : public CRogueBaseSphere
@@ -200,7 +293,7 @@ public:
 	void			Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
 	void			ChangeYaw (float IdealYaw);
-	static void		Create (IBaseEntity *Owner, ESphereFlags Flags);
+	static CRogueHunterSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 class CRogueVengeanceSphere : public CRogueBaseSphere
@@ -233,7 +326,7 @@ public:
 	void			Think ();
 	void			Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 
-	static void		Create (IBaseEntity *Owner, ESphereFlags Flags);
+	static CRogueVengeanceSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 #else

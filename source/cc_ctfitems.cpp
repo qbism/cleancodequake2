@@ -55,11 +55,11 @@ void	CFlag::Use (CPlayerEntity *Player)
 {
 }
 
-bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
+bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (team == Other->Client.Respawn.CTF.Team)
 	{
-		if (!(Player->SpawnFlags & DROPPED_ITEM))
+		if (!(Item->SpawnFlags & DROPPED_ITEM))
 		{
 			// If we have the flag, but the flag isn't this, then we have another flag.
 			if (Other->Client.Persistent.Flag && (Other->Client.Persistent.Flag != this))
@@ -84,7 +84,7 @@ bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 				else
 					ctfgame.team2++;
 
-				Player->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagcap.wav"), 255, ATTN_NONE);
+				Item->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagcap.wav"), 255, ATTN_NONE);
 
 				// other gets another 10 frag bonus
 				Other->Client.Respawn.Score += CTF_CAPTURE_BONUS;
@@ -129,13 +129,13 @@ bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 			Other->Client.Persistent.Name.c_str(), CTFTeamName(team));
 		Other->Client.Respawn.Score += CTF_RECOVERY_BONUS;
 		Other->Client.Respawn.CTF.LastReturnedFlag = Level.Frame;
-		Player->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
+		Item->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
 
 		//CTFResetFlag will remove this entity!  We must return false
 		CTFResetFlag(team);
 
 		// Ping the transponder; tell it we moved back to base.
-		CFlagEntity *Flag = entity_cast<CFlagEntity>(Player);
+		CFlagEntity *Flag = entity_cast<CFlagEntity>(Item);
 		Flag->Transponder->Flag = Flag->Transponder->Base;
 		Flag->Transponder->Location = CFlagTransponder::FLAG_AT_BASE;
 		return false;
@@ -146,7 +146,7 @@ bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 		Other->Client.Persistent.Name.c_str(), CTFTeamName(team));
 	Other->Client.Respawn.Score += CTF_FLAG_BONUS;
 
-	CFlagEntity *Flag = entity_cast<CFlagEntity>(Player);
+	CFlagEntity *Flag = entity_cast<CFlagEntity>(Item);
 	Flag->Transponder->Location = CFlagTransponder::FLAG_TAKEN;
 	Flag->Transponder->Flag = NULL;
 	Flag->Transponder->Holder = Other;
@@ -158,11 +158,11 @@ bool CFlag::Pickup(CItemEntity *Player, CPlayerEntity *Other)
 	// pick up the flag
 	// if it's not a dropped flag, we just make is disappear
 	// if it's dropped, it will be removed by the pickup caller
-	if (!(Player->SpawnFlags & DROPPED_ITEM))
+	if (!(Item->SpawnFlags & DROPPED_ITEM))
 	{
-		Player->Flags |= FL_RESPAWN;
-		Player->GetSvFlags() |= SVF_NOCLIENT;
-		Player->GetSolid() = SOLID_NOT;
+		Item->Flags |= FL_RESPAWN;
+		Item->GetSvFlags() |= SVF_NOCLIENT;
+		Item->GetSolid() = SOLID_NOT;
 	}
 	return true;
 }

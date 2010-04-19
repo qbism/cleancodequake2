@@ -402,7 +402,7 @@ void CPlayerEntity::BeginServerFrame ()
 
 void CPlayerEntity::Respawn ()
 {
-	if (Game.GameMode != GAME_SINGLEPLAYER)
+	if (!(Game.GameMode & GAME_SINGLEPLAYER))
 	{
 		// Spectator's don't leave bodies
 		if (!NoClip)
@@ -888,7 +888,7 @@ void CPlayerEntity::FetchEntData ()
 	Health = Client.Persistent.Health;
 	MaxHealth = Client.Persistent.MaxHealth;
 	Flags |= Client.Persistent.SavedFlags;
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 		Client.Respawn.Score = Client.Persistent.Score;
 }
 
@@ -2424,19 +2424,7 @@ void CPlayerEntity::SetStats ()
 #if ROGUE_FEATURES
 		else if (Client.OwnedSphere)
 		{
-			switch (Client.OwnedSphere->SphereType)
-			{
-			case SPHERE_DEFENDER:
-				Client.PlayerState.GetStat (STAT_TIMER_ICON) = ImageIndex ("p_defender");
-				break;
-			case SPHERE_HUNTER:
-				Client.PlayerState.GetStat (STAT_TIMER_ICON) = ImageIndex ("p_hunter");
-				break;
-			case SPHERE_VENGEANCE:
-				Client.PlayerState.GetStat (STAT_TIMER_ICON) = ImageIndex ("p_vengeance");
-				break;
-			}
-
+			Client.PlayerState.GetStat (STAT_TIMER_ICON) = Client.OwnedSphere->Item->GetIconIndex();
 			Client.PlayerState.GetStat (STAT_TIMER) = (Client.OwnedSphere->Wait - Level.Frame) / 10;
 		}
 		else if (Client.Timers.IR > Level.Frame)
@@ -2720,7 +2708,7 @@ void CPlayerEntity::CTFAssignGhost()
 
 void CPlayerEntity::MoveToIntermission ()
 {
-	if (Game.GameMode != GAME_SINGLEPLAYER)
+	if (!(Game.GameMode & GAME_SINGLEPLAYER))
 		Client.LayoutFlags |= LF_SHOWSCORES;
 
 	State.GetOrigin() = Level.IntermissionOrigin;
@@ -2762,7 +2750,7 @@ void CPlayerEntity::MoveToIntermission ()
 
 	// add the layout
 	Enemy = NULL;
-	if (Game.GameMode != GAME_SINGLEPLAYER)
+	if (!(Game.GameMode & GAME_SINGLEPLAYER))
 		DeathmatchScoreboardMessage (true);
 }
 
@@ -3375,7 +3363,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		// this is kind of ugly, but it's how we want to handle keys in coop
 		for (sint32 n = 0; n < GetNumItems(); n++)
 		{
-			if ((Game.GameMode == GAME_COOPERATIVE) && (GetItemByIndex(n)->Flags & ITEMFLAG_KEY))
+			if ((Game.GameMode & GAME_COOPERATIVE) && (GetItemByIndex(n)->Flags & ITEMFLAG_KEY))
 				Client.Respawn.CoopRespawn.Inventory.Set(n, Client.Persistent.Inventory.Has(n));
 			Client.Persistent.Inventory.Set(n, 0);
 		}

@@ -712,7 +712,7 @@ public:
 			NULL
 		};
 
-		if (Game.GameMode != GAME_COOPERATIVE)
+		if (!(Game.GameMode & GAME_COOPERATIVE))
 		{
 			Free ();
 			return;
@@ -877,7 +877,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if ((Game.GameMode == GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
+		if ((Game.GameMode & GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
 			// invoke one of our gross, ugly, disgusting hacks
 			NextThink = Level.Frame + FRAMETIME;
 

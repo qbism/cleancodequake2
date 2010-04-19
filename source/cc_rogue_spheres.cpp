@@ -55,6 +55,8 @@ void CRogueBaseSphere::SaveFields (CFile &File)
 	File.Write<sint32> ((OwnedPlayer) ? OwnedPlayer->State.GetNumber() : -1);
 	File.Write<sint32> ((SphereEnemy) ? SphereEnemy->State.GetNumber() : -1);
 	File.Write<vec3f> (SavedGoal);
+
+	File.Write<sint32> ((Item) ? (Item->GetIndex()) : -1);
 }
 
 void CRogueBaseSphere::LoadFields (CFile &File)
@@ -75,6 +77,9 @@ void CRogueBaseSphere::LoadFields (CFile &File)
 	SphereEnemy = (Index == -1) ? NULL : entity_cast<IHurtableEntity>(Game.Entities[Index].Entity);
 
 	SavedGoal = File.Read<vec3f> ();
+
+	Index = File.Read<sint32> ();
+	Item = (Index == -1) ? NULL : GetItemByIndex(Index);
 }
 
 void CRogueBaseSphere::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
@@ -290,14 +295,16 @@ void CRogueDefenderSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-void CRogueDefenderSphere::Create (IBaseEntity *Owner, ESphereFlags Flags)
+CRogueDefenderSphere *CRogueDefenderSphere::Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
 {
-	CRogueDefenderSphere *Sphere = CreateBaseSphere<CRogueDefenderSphere> (Owner, SPHERE_DEFENDER, Flags);
+	CRogueDefenderSphere *Sphere = CreateBaseSphere<CRogueDefenderSphere> (Item, Owner, SPHERE_DEFENDER, Flags);
 
 	Sphere->State.GetModelIndex() = ModelIndex("models/items/defender/tris.md2");
 	Sphere->State.GetModelIndex(2) = ModelIndex("models/items/shell/tris.md2");
 	Sphere->State.GetSound() = SoundIndex ("spheres/d_idle.wav");
 	Sphere->Wait = Level.Frame + DEFENDER_LIFESPAN;
+
+	return Sphere;
 }
 
 IMPLEMENT_SAVE_SOURCE(CRogueDefenderSphere);
@@ -355,15 +362,17 @@ void CRogueVengeanceSphere::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurf
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
 
-void CRogueVengeanceSphere::Create (IBaseEntity *Owner, ESphereFlags Flags)
+CRogueVengeanceSphere *CRogueVengeanceSphere::Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
 {
-	CRogueVengeanceSphere *Sphere = CreateBaseSphere<CRogueVengeanceSphere> (Owner, SPHERE_VENGEANCE, Flags);
+	CRogueVengeanceSphere *Sphere = CreateBaseSphere<CRogueVengeanceSphere> (Item, Owner, SPHERE_VENGEANCE, Flags);
 
 	Sphere->State.GetModelIndex() = ModelIndex("models/items/vengnce/tris.md2");
 	Sphere->State.GetSound() = SoundIndex ("spheres/v_idle.wav");
 	Sphere->Wait = Level.Frame + VENGEANCE_LIFESPAN;
 	Sphere->Touchable = false;
 	Sphere->AngularVelocity.Set (30, 30, 0);
+
+	return Sphere;
 }
 
 IMPLEMENT_SAVE_SOURCE(CRogueVengeanceSphere);
@@ -539,16 +548,166 @@ void CRogueHunterSphere::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
 
-void CRogueHunterSphere::Create (IBaseEntity *Owner, ESphereFlags Flags)
+CRogueHunterSphere *CRogueHunterSphere::Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
 {
-	CRogueHunterSphere *Sphere = CreateBaseSphere<CRogueHunterSphere> (Owner, SPHERE_VENGEANCE, Flags);
+	CRogueHunterSphere *Sphere = CreateBaseSphere<CRogueHunterSphere> (Item, Owner, SPHERE_VENGEANCE, Flags);
 
 	Sphere->State.GetModelIndex() = ModelIndex("models/items/hunter/tris.md2");
 	Sphere->State.GetSound() = SoundIndex ("spheres/h_idle.wav");
 	Sphere->Wait = Level.Frame + HUNTER_LIFESPAN;
 	Sphere->Touchable = false;
+
+	return Sphere;
 }
 
 IMPLEMENT_SAVE_SOURCE(CRogueHunterSphere);
+
+#if 0
+
+void body_think (edict_t *self)
+{
+	float r;
+
+	if(abs(self->ideal_yaw - anglemod(self->s.angles[YAW])) < 2)
+	{
+		if(self->timestamp < level.time)
+		{
+			r = random();
+			if(r < 0.10)
+			{
+				self->ideal_yaw = random() * 350.0;
+				self->timestamp = level.time + 1;
+			}
+		}
+	}
+	else
+		M_ChangeYaw(self);
+
+	self->s.frame ++;
+	if (self->s.frame > FRAME_stand40)
+		self->s.frame = FRAME_stand01;
+
+	self->nextthink = level.time + 0.1;
+}
+#endif
+
+#include "m_player.h"
+
+void CDoppleGangerBody::Think ()
+{
+	if (Q_fabs(IdealYaw - AngleModf(State.GetAngles().Y)) < 2)
+	{
+		if (TurnTime < Level.Frame)
+		{
+			if (frand() < 0.10f)
+			{
+				IdealYaw = frand() * 360.0;
+				TurnTime = Level.Frame + 10;
+			}
+		}
+	}
+	else
+	{
+		float current = AngleModf (State.GetAngles().Y);
+
+		if (current != IdealYaw)
+		{
+			float move = IdealYaw - current;
+			if (IdealYaw > current)
+			{
+				if (move >= 180)
+					move = move - 360;
+			}
+			else
+			{
+				if (move <= -180)
+					move = move + 360;
+			}
+			if (move > 0)
+			{
+				if (move > 30)
+					move = 30;
+			}
+			else
+			{
+				if (move < -30)
+					move = -30;
+			}
+	
+			State.GetAngles().Y = AngleModf(current+move);
+		}
+	}
+
+	if ((++State.GetFrame()) > FRAME_stand40)
+		State.GetFrame() = FRAME_stand01;
+
+	NextThink = Level.Frame + FRAMETIME;
+}
+
+IMPLEMENT_SAVE_SOURCE (CDoppleGangerBody);
+
+void CDoppleGanger::Think ()
+{
+	Body->BecomeExplosion (false);
+	BecomeExplosion (false);
+}
+
+void CDoppleGanger::Pain (IBaseEntity *Other, sint32 Damage)
+{
+	Enemy = Other;
+}
+
+void CDoppleGanger::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+{
+	if (Enemy && (Enemy != PlayerOwner))
+	{
+		if ((Enemy->State.GetOrigin() - State.GetOrigin()).Length() > 768)
+			CRogueHunterSphere::Create (NULL, this, SPHERE_DOPPLEGANGER)->Pain (Attacker, 0);
+		else
+			CRogueVengeanceSphere::Create (NULL, this, SPHERE_DOPPLEGANGER)->Pain (Attacker, 0);
+	}
+
+	Body->BecomeExplosion (false);
+	BecomeExplosion (false);
+}
+
+void CDoppleGanger::Spawn (CPlayerEntity *Owner, vec3f Start, vec3f AimDir)
+{
+	vec3f		dir = AimDir.ToAngles();
+
+	CDoppleGanger *base = QNewEntityOf CDoppleGanger;
+	base->State.GetOrigin() = Start;
+	base->State.GetAngles() = dir;
+	base->Velocity.Clear ();
+	base->AngularVelocity.Clear();
+	base->PhysicsType = PHYSICS_TOSS;
+	base->GetSolid() = SOLID_BBOX;
+	base->State.GetRenderEffects() |= RF_IR_VISIBLE;
+	base->State.GetAngles().X = 0;
+	base->GetMins().Set (-16, -16, -24);
+	base->GetMaxs().Set (16, 16, 32);
+	base->State.GetModelIndex() = 0;
+	base->PlayerOwner = Owner;
+	base->CanTakeDamage = true;
+	base->Health = 30;
+	base->NextThink = Level.Frame + 300;
+	base->Link ();
+
+	base->Body = QNewEntityOf CDoppleGangerBody;
+	base->Body->State.GetAngles() = Owner->State.GetAngles();
+	base->Body->State.GetAngles().X = 0;
+	base->Body->State.GetEffects() = Owner->State.GetEffects();
+	base->Body->State.GetFrame() = Owner->State.GetFrame();
+	base->Body->State.GetModelIndex() = Owner->State.GetModelIndex();
+	base->Body->State.GetRenderEffects() = Owner->State.GetRenderEffects();
+	base->Body->State.GetSkinNum() = Owner->State.GetSkinNum();
+	base->Body->State.GetSound() = 0;
+	base->Body->State.GetEvent() = 0;
+	base->Body->State.GetOrigin() = Owner->State.GetOldOrigin() = Start + vec3f(0, 0, 8);
+	base->Body->NextThink = Level.Frame + FRAMETIME;
+	base->Body->Link ();
+}
+
+IMPLEMENT_SAVE_SOURCE(CDoppleGanger);
 
 #endif

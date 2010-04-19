@@ -90,7 +90,7 @@ CFoodCube::CFoodCube () :
 {
 };
 
-void CFoodCube::DoPickup (CItemEntity *Player, CPlayerEntity *Other)
+void CFoodCube::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
 	Other->Health += Player->AmmoCount;
 	Player->PlaySound (CHAN_ITEM, GetPickupSound());

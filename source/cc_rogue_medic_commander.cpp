@@ -321,7 +321,7 @@ void CMedicCommander::FinishSpawn ()
 		else
 			designated_enemy = Entity->Enemy;
 
-		if (Game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode & GAME_COOPERATIVE)
 		{
 			designated_enemy = PickCoopTarget(Entity);
 			if (designated_enemy)

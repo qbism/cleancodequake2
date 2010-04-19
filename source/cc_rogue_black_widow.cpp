@@ -170,7 +170,7 @@ void CBlackWidow::SpawnCheck ()
 			ent->Monster->AIFlags |= AI_SPAWNED_WIDOW|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
 
 			IBaseEntity *designated_enemy = Entity->Enemy;
-			if (Game.GameMode == GAME_COOPERATIVE)
+			if (Game.GameMode & GAME_COOPERATIVE)
 			{
 				designated_enemy = PickCoopTarget(ent);
 				if (designated_enemy)
@@ -962,7 +962,7 @@ void CBlackWidow::Spawn ()
 	Entity->GetMaxs().Set (70, 70, 144);
 
 	Entity->Health = 2000 + 800 + 1000*(CvarList[CV_SKILL].Integer());
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 		Entity->Health += 500*(CvarList[CV_SKILL].Integer());
 
 	Entity->GibHealth = -900;
@@ -1158,7 +1158,7 @@ void ThrowSmallStuff (IBaseEntity *Entity, vec3f point)
 
 void ThrowMoreStuff (IBaseEntity *Entity, vec3f point)
 {
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
 		ThrowSmallStuff (Entity, point);
 		return;

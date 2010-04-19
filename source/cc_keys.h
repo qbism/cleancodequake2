@@ -42,7 +42,7 @@ public:
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache);
 
-	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);
 	void	Drop (CPlayerEntity *Player);
 };
@@ -54,7 +54,7 @@ public:
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache);
 
-	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
 
 void AddKeysToList ();

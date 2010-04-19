@@ -46,7 +46,7 @@ public:
 
 	CItemEntity *DropItem (IBaseEntity *Entity);
 
-	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Drop (CPlayerEntity *Player);
 	void	Use (CPlayerEntity *Player);
 };

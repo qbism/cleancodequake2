@@ -564,7 +564,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 
 	if (strstr(Level.ChangeMap, "*"))
 	{
-		if (Game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode & GAME_COOPERATIVE)
 		{
 			for (sint32 i = 0; i < Game.MaxClients; i++)
 			{
@@ -655,7 +655,7 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	if (Level.IntermissionTime)
 		return;		// already activated
 
-	if (Game.GameMode == GAME_SINGLEPLAYER)
+	if (Game.GameMode & GAME_SINGLEPLAYER)
 	{
 		if (entity_cast<CPlayerEntity>(Game.Entities[1].Entity)->Health <= 0)
 			return;

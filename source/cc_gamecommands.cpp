@@ -458,7 +458,7 @@ void Cmd_Score_f (CPlayerEntity *Player)
 		return;
 	}
 
-	if (Game.GameMode == GAME_SINGLEPLAYER)
+	if (Game.GameMode & GAME_SINGLEPLAYER)
 		return;
 
 	if (Player->Client.LayoutFlags & LF_SHOWSCORES)

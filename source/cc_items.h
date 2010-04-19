@@ -111,7 +111,7 @@ public:
 	const char		*Precache;
 
 	// \brief	Attempts to pickup the item. 
-	virtual	bool	Pickup (class CItemEntity *Player, CPlayerEntity *Other) = 0;
+	virtual	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other) = 0;
 
 	// Attempts to uses the item. 
 	virtual	void	Use (CPlayerEntity *Player) = 0;

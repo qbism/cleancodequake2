@@ -300,7 +300,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY) && !(Monster->Monster->AIFlags & AI_DO_NOT_COUNT))
 		{
 			Level.Monsters.Killed++;
-			if ((Game.GameMode == GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
 				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 		}
 	}
@@ -310,7 +310,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY))
 		{
 			Level.Monsters.Killed++;
-			if ((Game.GameMode == GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
 				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
@@ -366,7 +366,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	// friendly fire avoidance
 	// if enabled you can't hurt teammates (but you can hurt yourself)
 	// knockback still occurs
-	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()) || Game.GameMode == GAME_COOPERATIVE))
+	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()) || Game.GameMode & GAME_COOPERATIVE))
 	{
 		if ((EntityFlags & ENT_PLAYER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 		{

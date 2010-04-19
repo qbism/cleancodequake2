@@ -46,7 +46,7 @@ CPlayerEntity *PickCoopTarget (IBaseEntity *Entity)
 	static std::vector<CPlayerEntity*> targets;
 
 	// if we're not in coop, this is a noop
-	if (Game.GameMode != GAME_COOPERATIVE)
+	if (!(Game.GameMode & GAME_COOPERATIVE))
 		return NULL;
 
 	targets.clear ();
@@ -75,7 +75,7 @@ int CountPlayers ()
 	int		count = 0;
 
 	// if we're not in coop, this is a noop
-	if (Game.GameMode != GAME_COOPERATIVE)
+	if (!(Game.GameMode & GAME_COOPERATIVE))
 		return 1;
 
 	for (int player = 1; player <= Game.MaxClients; player++)

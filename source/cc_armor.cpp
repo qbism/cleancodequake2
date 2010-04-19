@@ -46,7 +46,7 @@ energyProtection(energyProtection)
 {
 };
 
-bool CArmor::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
+bool CArmor::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (normalProtection == -1)
 	{
@@ -103,8 +103,8 @@ bool CArmor::Pickup (class CItemEntity *Player, CPlayerEntity *Other)
 		Other->Client.Persistent.Inventory.Set(this, baseCount);
 	}
 
-	if (!(Player->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (Player, 200);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 200);
 
 	return true;
 }

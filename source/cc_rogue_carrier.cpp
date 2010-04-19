@@ -75,7 +75,7 @@ void CCarrier::CoopCheck ()
 	targets.clear();
 
 	// if we're not in coop, this is a noop
-	if (Game.GameMode != GAME_COOPERATIVE)
+	if (!(Game.GameMode & GAME_COOPERATIVE))
 		return;
 	// if we are, and we have recently fired, bail
 	if (RefireWait > Level.Frame)
@@ -1008,7 +1008,7 @@ void CCarrier::Spawn ()
 	Entity->Health = Max<> (2000, 2000 + 1000*((CvarList[CV_SKILL].Integer())-1));
 
 	// add health in coop (500 * skill)
-	if (Game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 		Entity->Health += 500*(CvarList[CV_SKILL].Integer());	
 
 	Entity->GibHealth = -200;
