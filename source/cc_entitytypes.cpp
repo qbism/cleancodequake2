@@ -1473,6 +1473,8 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 	return true;
 }
 
+#include "cc_brushmodels.h"
+
 bool IPushPhysics::Run ()
 {
 	vec3f					move, amove;
@@ -1499,8 +1501,8 @@ bool IPushPhysics::Run ()
 			// object is moving
 			if (part->EntityFlags & ENT_PHYSICS)
 			{
-				move = Phys->Velocity;
-				amove = Phys->AngularVelocity;
+				move = Phys->Velocity * 0.1f;
+				amove = Phys->AngularVelocity * 0.1f;
 			}
 			else
 				move = amove = vec3fOrigin;
@@ -1540,6 +1542,23 @@ bool IPushPhysics::Run ()
 			{
 				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(part);
 				Thinkable->RunThink ();
+			}
+		}
+		
+		// Paril: Train movewith
+		if ((EntityFlags & ENT_BRUSHMODEL) && (entity_cast<IBrushModel>(this)->BrushType & BRUSH_TRAIN))
+		{
+			if (Team.HasTeam)
+			{
+				for (IBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
+					// Move the object by our velocity
+				{
+					if (!(e->EntityFlags & ENT_BRUSHMODEL))
+					{
+						e->State.GetOrigin() += Velocity;
+						e->Link ();
+					}
+				}
 			}
 		}
 	}

@@ -318,7 +318,7 @@ void CMiscViper::Spawn ()
 	NextThink = Level.Frame + FRAMETIME;
 	ThinkType = TRAINTHINK_FIND;
 	GetSvFlags() |= SVF_NOCLIENT;
-	Accel = Decel = Speed;
+	MoveSpeed = MoveAccel = MoveDecel = Speed;
 
 	Link ();
 };

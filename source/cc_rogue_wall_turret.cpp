@@ -120,6 +120,11 @@ CC_ENUM (uint8, ETurretSpawnflags)
 	SPAWN_WALL_UNIT			= BIT(7),
 };
 
+void CWallTurret::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+{
+	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
+}
+
 CWallTurret::CWallTurret (uint32 ID) :
 CMonster(ID)
 {

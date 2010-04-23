@@ -368,6 +368,12 @@ void CAmmoWeapon::Use (CPlayerEntity *Player)
 		}
 	}
 
+	if (!Player->Client.Persistent.Inventory.Has(Wanted))
+	{
+		Player->PrintToClient (PRINT_HIGH, "Out of Item: %s.\n", Name);
+		return;
+	}
+
 	// change to this weapon when down
 	Player->Client.NewWeapon = Wanted->Weapon;
 }

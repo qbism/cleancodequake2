@@ -106,7 +106,7 @@ public:
 	sint32		MoveState;
 	vec3f		Dir;
 	float		CurrentSpeed;
-	float		MoveSpeed;
+	float		MoveSpeed, MoveAccel, MoveDecel;
 	float		NextSpeed;
 	float		RemainingDistance;
 	float		DecelDistance;

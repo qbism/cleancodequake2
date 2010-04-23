@@ -125,6 +125,8 @@ ENTITYFIELDS_BEGIN(IBrushModel)
 	CEntityField ("Dir", EntityMemberOffset(IBrushModel,Dir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("CurrentSpeed", EntityMemberOffset(IBrushModel,CurrentSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("MoveSpeed", EntityMemberOffset(IBrushModel,MoveSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveAccel", EntityMemberOffset(IBrushModel,MoveAccel), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("MoveDecel", EntityMemberOffset(IBrushModel,MoveDecel), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("NextSpeed", EntityMemberOffset(IBrushModel,NextSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("RemainingDistance", EntityMemberOffset(IBrushModel,RemainingDistance), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("DecelDistance", EntityMemberOffset(IBrushModel,DecelDistance), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
@@ -184,7 +186,7 @@ void IBrushModel::MoveFinal ()
 		return;
 	}
 
-	Velocity = Dir * RemainingDistance;
+	Velocity = Dir * (RemainingDistance / 0.1f);
 
 	ThinkType = BRUSHTHINK_MOVEDONE;
 	NextThink = Level.Frame + FRAMETIME;
@@ -192,16 +194,16 @@ void IBrushModel::MoveFinal ()
 
 void IBrushModel::MoveBegin ()
 {
-	if ((Speed * 0.1f) >= RemainingDistance)
+	if ((MoveSpeed * 0.1f) >= RemainingDistance)
 	{
 		MoveFinal ();
 		return;
 	}
-	Velocity = (Dir * Speed) / 10;
 
-	float frames = floor((RemainingDistance / Speed) / 0.1f);
-	RemainingDistance -= (frames * Speed / 10);
-	NextThink = Level.Frame + frames;
+	Velocity = Dir * MoveSpeed;
+	float frames = floor((RemainingDistance / MoveSpeed) / 0.1f);
+	RemainingDistance -= (frames * MoveSpeed * 0.1f);
+	NextThink = Level.Frame + (frames);
 	ThinkType = BRUSHTHINK_MOVEFINAL;
 }
 
@@ -212,7 +214,7 @@ void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 	RemainingDistance = Dir.Normalize();
 	this->EndFunc = EndFunc;
 
-	if (Speed == Accel && Speed == Decel)
+	if (MoveSpeed == MoveAccel && Speed == MoveDecel)
 	{
 		if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 			MoveBegin ();
@@ -252,7 +254,7 @@ void IBrushModel::AngleMoveFinal ()
 		return;
 	}
 
-	AngularVelocity = move;
+	AngularVelocity = (move * (1.0f / 0.1f));
 
 	ThinkType = BRUSHTHINK_AMOVEDONE;
 	NextThink = Level.Frame + FRAMETIME;
@@ -276,7 +278,7 @@ void IBrushModel::AngleMoveBegin ()
 	float len = destdelta.Length();
 	
 	// divide by speed to get time to reach dest
-	float traveltime = len / Speed;
+	float traveltime = len / MoveSpeed;
 
 	if (traveltime < 0.1f)
 	{
@@ -287,14 +289,14 @@ void IBrushModel::AngleMoveBegin ()
 	float frames = floor(traveltime / 0.1f);
 
 	// scale the destdelta vector by the time spent traveling to get velocity
-	AngularVelocity = destdelta * 1.0 / (traveltime * 10);
+	AngularVelocity = destdelta * (1.0f / traveltime);
 
 #if ROGUE_FEATURES
 	// if we're done accelerating, act as a normal rotation
 	if (MoveSpeed >= Speed)
 	{
 		// set nextthink to trigger a think when dest is reached
-		NextThink = Level.Frame + frames;
+		NextThink = Level.Frame + (frames * 0.1f);
 		ThinkType = BRUSHTHINK_AMOVEFINAL;
 	}
 	else
@@ -304,21 +306,22 @@ void IBrushModel::AngleMoveBegin ()
 	}
 #else
 	// set nextthink to trigger a think when dest is reached
-	NextThink = Level.Frame + frames;
+	NextThink = Level.Frame + (frames * 0.1f);
 	ThinkType = BRUSHTHINK_AMOVEFINAL;
 #endif
 }
 
 void IBrushModel::AngleMoveCalc (uint32 EndFunc)
 {
+	AngularVelocity.Clear ();
+	this->EndFunc = EndFunc;
+
 #if ROGUE_FEATURES
 	// if we're supposed to accelerate, this will tell anglemove_begin to do so
 	if (Accel != Speed)
 		MoveSpeed = 0;
 #endif
 
-	AngularVelocity.Clear ();
-	this->EndFunc = EndFunc;
 	if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 		AngleMoveBegin ();
 	else
@@ -356,9 +359,9 @@ void IBrushModel::CalcAcceleratedMove()
 	{
 		float	f;
 
-		f = (Accel + Decel) / (Accel * Decel);
+		f = (MoveAccel + MoveDecel) / (MoveAccel * MoveDecel);
 		MoveSpeed = (-2 + sqrtf(4 - 4 * f * (-2 * RemainingDistance))) / (2 * f);
-		decel_dist = AccelerationDistance (MoveSpeed, Decel);
+		decel_dist = AccelerationDistance (MoveSpeed, MoveDecel);
 	}
 
 	DecelDistance = decel_dist;
@@ -377,8 +380,8 @@ void IBrushModel::Accelerate ()
 				NextSpeed = 0;
 				return;
 			}
-			if (CurrentSpeed > Decel)
-				CurrentSpeed -= Decel;
+			if (CurrentSpeed > MoveDecel)
+				CurrentSpeed -= MoveDecel;
 		}
 		return;
 	}
@@ -395,12 +398,12 @@ void IBrushModel::Accelerate ()
 			p2_distance = MoveSpeed * (1.0 - (p1_distance / MoveSpeed));
 			distance = p1_distance + p2_distance;
 			CurrentSpeed = MoveSpeed;
-			NextSpeed = MoveSpeed - Decel * (p2_distance / distance);
+			NextSpeed = MoveSpeed - MoveDecel * (p2_distance / distance);
 			return;
 		}
 
 	// are we accelerating?
-	if (CurrentSpeed < Speed)
+	if (CurrentSpeed < MoveSpeed)
 	{
 		float	old_speed;
 		float	p1_distance;
@@ -411,9 +414,9 @@ void IBrushModel::Accelerate ()
 		old_speed = CurrentSpeed;
 
 		// figure simple acceleration up to move_speed
-		CurrentSpeed += Accel;
-		if (CurrentSpeed > Speed)
-			CurrentSpeed = Speed;
+		CurrentSpeed += MoveAccel;
+		if (CurrentSpeed > MoveSpeed)
+			CurrentSpeed = MoveSpeed;
 
 		// are we accelerating throughout this entire move?
 		if ((RemainingDistance - CurrentSpeed) >= DecelDistance)
@@ -427,7 +430,7 @@ void IBrushModel::Accelerate ()
 		p2_distance = MoveSpeed * (1.0 - (p1_distance / p1_speed));
 		distance = p1_distance + p2_distance;
 		CurrentSpeed = (p1_speed * (p1_distance / distance)) + (MoveSpeed * (p2_distance / distance));
-		NextSpeed = MoveSpeed - Decel * (p2_distance / distance);
+		NextSpeed = MoveSpeed - MoveDecel * (p2_distance / distance);
 		return;
 	}
 
@@ -439,6 +442,8 @@ void IBrushModel::ThinkAccelMove ()
 {
 	RemainingDistance -= CurrentSpeed;
 
+	// FIXME: this if was commented in Rogue to fix the sinking pod and
+	// some other issues, but this breaks acceleration.
 	if (CurrentSpeed == 0)		// starting or blocked
 		CalcAcceleratedMove();
 
@@ -451,7 +456,7 @@ void IBrushModel::ThinkAccelMove ()
 		return;
 	}
 
-	Velocity = Dir * CurrentSpeed;
+	Velocity = Dir * (CurrentSpeed * 10);
 	NextThink = Level.Frame + FRAMETIME;
 	ThinkType = BRUSHTHINK_MOVEACCEL;
 }
@@ -733,6 +738,9 @@ void CPlatForm::Spawn ()
 		MoveState = STATE_BOTTOM;
 	}
 
+	MoveSpeed = Speed;
+	MoveAccel = Accel;
+	MoveDecel = Decel;
 	StartOrigin = Positions[0];
 	StartAngles = State.GetAngles ();
 	EndAngles = State.GetAngles ();
@@ -1195,22 +1203,22 @@ void CDoor::CalcMoveSpeed ()
 			min = dist;
 	}
 
-	float time = min / Speed;
+	float time = min / MoveSpeed;
 
 	// adjust speeds so they will all complete at the same time
 	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
 		float newspeed = Q_fabs(Door->Distance) / time;
-		float ratio = newspeed / Door->Speed;
-		if (Door->Accel == Door->Speed)
-			Door->Accel = newspeed;
+		float ratio = newspeed / Door->MoveSpeed;
+		if (Door->MoveAccel == Door->MoveSpeed)
+			Door->MoveAccel = newspeed;
 		else
-			Door->Accel *= ratio;
-		if (Door->Decel == Door->Speed)
-			Door->Decel = newspeed;
+			Door->MoveAccel *= ratio;
+		if (Door->MoveDecel == Door->MoveSpeed)
+			Door->MoveDecel = newspeed;
 		else
-			Door->Decel *= ratio;
-		Door->Speed = newspeed;
+			Door->MoveDecel *= ratio;
+		Door->MoveSpeed = newspeed;
 	}
 }
 
@@ -1387,9 +1395,9 @@ void CDoor::Spawn ()
 		Damage = 2;
 
 	// calculate second position
-	Positions[0] = State.GetOrigin ();
-
-	Distance = Q_fabs(MoveDir.X) * GetSize().X + Q_fabs(MoveDir.Y) * GetSize().Y + Q_fabs(MoveDir.Z) * GetSize().Z - Lip;
+	Positions[0] = State.GetOrigin();
+	vec3f absMoveDir = MoveDir.GetAbs();
+	Distance = absMoveDir.X * GetSize().X + absMoveDir.Y * GetSize().Y + absMoveDir.Z * GetSize().Z - Lip;
 	Positions[1] = Positions[0].MultiplyAngles (Distance, MoveDir);
 
 	// if it starts open, switch the positions
@@ -1397,7 +1405,7 @@ void CDoor::Spawn ()
 	{
 		State.GetOrigin() = Positions[1];
 		Positions[1] = Positions[0];
-		Positions[0] = State.GetOrigin ();
+		Positions[0] = State.GetOrigin();
 	}
 
 	MoveState = STATE_BOTTOM;
@@ -1414,6 +1422,9 @@ void CDoor::Spawn ()
 		Touchable = true;
 	}
 	
+	MoveSpeed = Speed;
+	MoveAccel = Accel;
+	MoveDecel = Decel;
 	StartOrigin = Positions[0];
 	StartAngles = State.GetAngles ();
 	EndOrigin = Positions[1];
@@ -1550,11 +1561,11 @@ void CRotatingDoor::Spawn ()
 	// set the axis of rotation
 	MoveDir.Clear ();
 	if (SpawnFlags & DOOR_X_AXIS)
-		MoveDir.Z = 0.1f;
+		MoveDir.Z = 1.0f;
 	else if (SpawnFlags & DOOR_Y_AXIS)
-		MoveDir.X = 0.1f;
+		MoveDir.X = 1.0f;
 	else // Z_AXIS
-		MoveDir.Y = 0.1f;
+		MoveDir.Y = 1.0f;
 
 	// check for reverse rotation
 	if (SpawnFlags & DOOR_REVERSE)
@@ -1592,9 +1603,6 @@ void CRotatingDoor::Spawn ()
 		SoundEnd = SoundIndex  ("doors/dr1_end.wav");
 	}
 
-	Positions[0] *= 10;
-	Positions[1] *= 10;
-
 	// if it starts open, switch the positions
 	if (SpawnFlags & DOOR_START_OPEN)
 	{
@@ -1619,6 +1627,9 @@ void CRotatingDoor::Spawn ()
 		Touchable = false;
 
 	MoveState = STATE_BOTTOM;
+	MoveSpeed = Speed;
+	MoveAccel = Accel;
+	MoveDecel = Decel;
 	StartOrigin = State.GetOrigin ();
 	EndOrigin = State.GetOrigin ();
 	StartAngles = Positions[0];
@@ -1889,9 +1900,9 @@ void CDoorSecret::Spawn ()
 	if (!Wait)
 		Wait = 50;
 
-	Accel =
-	Decel =
-	Speed = 50;
+	MoveAccel =
+	MoveDecel =
+	MoveSpeed = 50;
 
 	// calculate positions
 	vec3f	forward, right, up;
@@ -2101,6 +2112,9 @@ void CButton::Spawn ()
 
 	MoveState = STATE_BOTTOM;
 
+	MoveSpeed = Speed;
+	MoveAccel = Accel;
+	MoveDecel = Decel;
 	StartOrigin = Positions[0];
 	StartAngles = State.GetAngles ();
 	EndOrigin = Positions[1];
@@ -2270,18 +2284,18 @@ void CTrainBase::Next ()
 #if ROGUE_FEATURES
 	if (TargetEntity->Speed)
 	{
-		MoveSpeed = TargetEntity->Speed;
-		Speed = MoveSpeed;
+		Speed = TargetEntity->Speed;
+		MoveSpeed = Speed;
 
 		if (TargetEntity->Accel)
-			Accel = TargetEntity->Accel;
+			MoveAccel = TargetEntity->Accel;
 		else
-			Accel = Speed;
+			MoveAccel = Speed;
 		
 		if (TargetEntity->Decel)
-			Decel = TargetEntity->Decel;
+			MoveDecel = TargetEntity->Decel;
 		else
-			Decel = Speed;
+			MoveDecel = Speed;
 		
 		CurrentSpeed = 0;
 	}
@@ -2307,7 +2321,7 @@ void CTrainBase::Next ()
 #if ROGUE_FEATURES
 	if (Team.HasTeam)
 	{
-		vec3f dir = EndOrigin - State.GetOrigin();
+		vec3f dir = (TargetEntity->State.GetOrigin() - GetMins()) - State.GetOrigin();
 
 		for (IBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
 		{
@@ -2316,20 +2330,16 @@ void CTrainBase::Next ()
 				IBrushModel *Brush = entity_cast<IBrushModel>(e);
 			
 				vec3f dst = dir + Brush->State.GetOrigin();
-				Brush->StartOrigin = Brush->State.GetOrigin();
+				Brush->StartOrigin = e->State.GetOrigin();
 				Brush->EndOrigin = dst;
 
 				Brush->MoveState = STATE_TOP;
-				Brush->MoveSpeed = MoveSpeed;
 				Brush->Speed = Speed;
-				Brush->Accel = Accel;
-				Brush->Decel = Decel;
+				Brush->MoveSpeed = MoveSpeed;
+				Brush->MoveAccel = MoveAccel;
+				Brush->MoveDecel = MoveDecel;
 				Brush->PhysicsType = PHYSICS_PUSH;
 				Brush->MoveCalc (dst, TRAINENDFUNC_NONE);
-			}
-			else
-			{
-			//	e->State.GetOrigin() = EndOrigin; 
 			}
 		}
 	}
@@ -2487,7 +2497,7 @@ void CTrain::Spawn ()
 	if (!Speed)
 		Speed = 100;
 
-	Accel = Decel = Speed;
+	MoveAccel = MoveDecel = MoveSpeed = Speed;
 
 	Link ();
 
@@ -2876,7 +2886,7 @@ void CRotatingBrush::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 #if ROGUE_FEATURES
 void CRotatingBrush::Accelerate ()
 {
-	float	current_speed = AngularVelocity.Length() * 10;
+	float	current_speed = AngularVelocity.Length();
 
 	if (current_speed >= (Speed - Accel))		// done
 	{
@@ -2954,7 +2964,7 @@ void CRotatingBrush::Use (IBaseEntity *Other, IBaseEntity *Activator)
 			Accelerate ();
 		else
 		{
-			AngularVelocity = MoveDir * MoveSpeed;
+			AngularVelocity = MoveDir * Speed;
 			UseTargets (this, Message);
 		}
 
@@ -2979,11 +2989,11 @@ void CRotatingBrush::Spawn ()
 	// set the axis of rotation
 	MoveDir.Clear ();
 	if (SpawnFlags & ROTATING_X_AXIS)
-		MoveDir.Z = 0.1f;
+		MoveDir.Z = 1.0f;
 	else if (SpawnFlags & ROTATING_Y_AXIS)
-		MoveDir.X = 0.1f;
+		MoveDir.X = 1.0f;
 	else // Z_AXIS
-		MoveDir.Y = 0.1f;
+		MoveDir.Y = 1.0f;
 
 	// check for reverse rotation
 	if (SpawnFlags & ROTATING_REVERSE)

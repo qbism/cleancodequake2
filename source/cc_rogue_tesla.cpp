@@ -113,6 +113,13 @@ bool CTesla::Run ()
 	return IBounceProjectile::Run();
 }
 
+//TE_ELECTRIC_SPARKS
+
+void CTesla::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+{
+	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
+}
+
 void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	Remove ();

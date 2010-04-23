@@ -729,9 +729,8 @@ void Cmd_Give_f (CPlayerEntity *Player)
 	}
 	else
 	{
-		CItemEntity *it_ent = QNewEntityOf CItemEntity();
-		it_ent->ClassName = it->Classname;
-		it_ent->Spawn(it);
+		CItemEntity *it_ent = entity_cast<CItemEntity>(CreateEntityFromClassname(it->Classname));
+		it_ent->Spawn (it);
 		it_ent->Touch (Player, NULL, NULL);
 		if (it_ent->GetInUse())
 			it_ent->Free ();

@@ -227,7 +227,7 @@ void CTurretBreach::Think ()
 		if (delta.Y < -1 * Speed * 0.1f)
 			delta.Y = -1 * Speed * 0.1f;
 
-		AngularVelocity = delta;
+		AngularVelocity = delta * 1.0/0.1f;
 		NextThink = Level.Frame + FRAMETIME;
 
 		CAvelocityForEachTeamChainCallback (AngularVelocity.Y).Query (this);
@@ -256,15 +256,15 @@ void CTurretBreach::Think ()
 
 			dir = target - TheDriver->State.GetOrigin();
 
-			TheDriver->Velocity.X = dir.X * 1.0 / 1;
-			TheDriver->Velocity.Y = dir.Y * 1.0 / 1;
+			TheDriver->Velocity.X = dir.X * 1.0 / 0.1f;
+			TheDriver->Velocity.Y = dir.Y * 1.0 / 0.1f;
 
 			// z
 			angle = State.GetAngles().X * (M_PI*2 / 360);
 			target_z = SnapToEights(State.GetOrigin().Z + Driver->MoveOrigin.X * tan(angle) + Driver->MoveOrigin.Z);
 
 			diff = target_z - TheDriver->State.GetOrigin().Z;
-			TheDriver->Velocity.Z = diff * 1.0 / 1;
+			TheDriver->Velocity.Z = diff * 1.0 / 0.1f;
 		}
 
 		if (ShouldFire)
