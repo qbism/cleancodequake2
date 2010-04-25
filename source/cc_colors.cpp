@@ -323,5 +323,5 @@ EColors IndexFromRGBA (colorb color)
 
 EColors IndexFromRGB (colorb color)
 {
-	return IndexFromRGBA (colorb(color.R, color.G, color.B, 0));
+	return IndexFromRGBA (colorb(color.R, color.G, color.B, 255));
 };

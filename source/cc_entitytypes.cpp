@@ -1788,7 +1788,11 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
 
 				if (Used->Usable)
+				{
+					Level.CurrentEntity = Used;
 					Used->Use (this, Activator);
+					Level.CurrentEntity = this;
+				}
 			}
 
 			if (!GetInUse())

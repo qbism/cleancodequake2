@@ -918,6 +918,8 @@ void CPlatForm2::Spawn ()
 	Link ();
 
 	MoveSpeed = Speed;
+	MoveAccel = Accel;
+	MoveDecel = Decel;
 	StartOrigin = Positions[0];
 	StartAngles = State.GetAngles();
 	EndOrigin = Positions[1];
