@@ -80,6 +80,8 @@ public:
 	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	virtual void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 class CTankCommander : public CTank
@@ -88,6 +90,8 @@ public:
 	CTankCommander (uint32 ID);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

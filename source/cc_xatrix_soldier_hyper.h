@@ -45,6 +45,8 @@ public:
 	void HyperRefire2 ();
 	void FireGun (sint32 FlashNumber);
 	void SpawnSoldier ();
+	
+	MONSTER_ID_HEADER
 };
 
 class CBlueBlasterProjectile : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity

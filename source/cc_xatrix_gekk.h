@@ -131,6 +131,8 @@ public:
 	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 class CLoogie : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity

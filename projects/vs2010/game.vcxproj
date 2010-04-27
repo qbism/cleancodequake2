@@ -425,6 +425,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_timer.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
     <ClCompile Include="..\..\source\cc_tent.cpp" />
+    <ClCompile Include="..\..\source\cc_userinfo.cpp" />
     <ClCompile Include="..\..\source\cc_version.cpp" />
     <ClCompile Include="..\..\source\cc_write.cpp" />
     <ClCompile Include="..\..\source\cc_sbar.cpp" />
@@ -574,6 +575,7 @@ echo Done!
     <ClInclude Include="..\..\source\cc_timer.h" />
     <ClInclude Include="..\..\source\cc_trace.h" />
     <ClInclude Include="..\..\source\cc_tent.h" />
+    <ClInclude Include="..\..\source\cc_userinfo.h" />
     <ClInclude Include="..\..\source\cc_version.h" />
     <ClInclude Include="..\..\source\cc_write.h" />
     <ClInclude Include="..\..\source\cc_sbar.h" />

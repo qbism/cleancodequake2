@@ -60,4 +60,6 @@ public:
 	void FinishSpawn ();
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };

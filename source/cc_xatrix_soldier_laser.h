@@ -56,6 +56,8 @@ public:
 	void Attack ();
 	void FireGun (sint32 FlashNumber);
 	void SpawnSoldier ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

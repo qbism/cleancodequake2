@@ -40,6 +40,8 @@ public:
 	CBoss5 (uint32 ID);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

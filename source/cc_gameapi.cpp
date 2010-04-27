@@ -111,7 +111,10 @@ _CC_ENABLE_DEPRECATION
 
 bool CGameAPI::ClientConnect (CPlayerEntity *Player, char *userinfo)
 {
-	return Player->Connect (userinfo);
+	CUserInfo UserInfo (userinfo);
+	bool CanConnect = Player->Connect(userinfo, UserInfo);
+	Q_snprintfz (userinfo, MAX_INFO_STRING, "%s", ((std::string)UserInfo).c_str());
+	return CanConnect;
 }
 
 void CGameAPI::ClientBegin (CPlayerEntity *Player)

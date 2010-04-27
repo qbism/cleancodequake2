@@ -230,8 +230,7 @@ inline char *Q_strlwr(char *s)
 
 inline std::string Q_strlwr (std::string s)
 {
-	for (size_t i = 0; i < s.size(); i++)
-		s[i] = Q_tolower(s[i]);
+	std::transform (s.begin(), s.end(), s.begin(), std::tolower);
 	return s;
 }
 
@@ -257,8 +256,7 @@ inline char *Q_strupr(char *s)
 
 inline std::string Q_strupr (std::string s)
 {
-	for (size_t i = 0; i < s.size(); i++)
-		s[i] = Q_toupper(s[i]);
+	std::transform (s.begin(), s.end(), s.begin(), std::toupper);
 	return s;
 }
 
@@ -277,10 +275,10 @@ std::string	Q_VarArgs (const char *format, ...);
 #define MAX_INFO_VALUE		64
 #define MAX_INFO_STRING		512
 
-std::string	Info_ValueForKey (std::string &s, std::string key);
+std::string		Info_ValueForKey (std::string &s, std::string key);
 void			Info_RemoveKey (std::string &s, std::string key);
 void			Info_SetValueForKey (std::string &s, std::string key, std::string value);
-bool			Info_Validate (std::string &s);
+bool			Info_Validate (const std::string &s);
 
 /*
 ==============================================================================

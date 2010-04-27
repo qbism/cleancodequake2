@@ -564,6 +564,12 @@ bool CMonster::IsBadAhead (CBadArea *bad, vec3f move)
 	return false;
 }
 
+#include "cc_rogue_carrier.h"
+#include "cc_icarus.h"
+#include "cc_rogue_daedalus.h"
+#include "cc_rogue_widow_stand.h"
+#include "cc_rogue_black_widow.h"
+
 bool CMonster::MoveStep (vec3f move, bool ReLink)
 {
 	CBadArea *current_bad = NULL;
@@ -620,7 +626,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 					// we want the carrier to stay a certain distance off the ground, to help prevent him
 					// from shooting his fliers, who spawn in below him
 					//
-					float minHeight = (!strcmp(Entity->ClassName.c_str(), "monster_carrier")) ? 104 : 40;
+					float minHeight = (MonsterID == CCarrier::ID) ? 104 : 40;
 
 					if (dz > minHeight)
 						newOrg.Z -= 8;
@@ -933,7 +939,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 		float delta = Entity->State.GetAngles().Y - IdealYaw;
 
-		if (strncmp(Entity->ClassName.c_str(), "monster_widow", 13))
+		if (MonsterID == CWidowStand::ID || MonsterID == CBlackWidow::ID)
 		{
 			if (delta > 45 && delta < 315)
 				// not turned far enough, so don't take the step
@@ -1073,7 +1079,7 @@ bool CMonster::CheckAttack ()
 	if (Entity->Flags & FL_FLY)
 	{
 		// originally, just 0.3
-		float strafe_chance = (!(strcmp(Entity->ClassName.c_str(), "monster_daedalus"))) ? 0.8f : 0.6f;
+		float strafe_chance = (MonsterID == CDaedalus::ID) ? 0.8f : 0.6f;
 
 		// if enemy is tesla, never strafe
 		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))

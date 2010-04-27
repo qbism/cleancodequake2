@@ -99,6 +99,8 @@ public:
 	void Spawn ();
 	static void Precache ();
 	static void Toss (IBaseEntity *Spawner);
+	
+	MONSTER_ID_HEADER
 };
 
 class CMakronJumpTimer : public virtual IBaseEntity, public IThinkableEntity

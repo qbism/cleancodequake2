@@ -42,6 +42,8 @@ public:
 	void Spawn ();
 	void FirePhalanx ();
 	void Attack ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

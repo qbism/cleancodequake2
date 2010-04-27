@@ -113,6 +113,8 @@ public:
 	void TurretThink ();
 	void TurretLink ();
 	void Spawn ();
+
+	MONSTER_ID_HEADER
 };
 
 void AnglesNormalize(vec3f &vec);

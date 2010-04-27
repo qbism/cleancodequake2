@@ -47,8 +47,7 @@ Offset(Offset),
 FieldType(FieldType),
 StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN))
 {
-	std::transform(this->Name.begin(), this->Name.end(), this->Name.begin(),
-		(sint32(*)(sint32)) std::tolower);
+	std::transform(this->Name.begin(), this->Name.end(), this->Name.begin(), std::tolower);
 };
 
 CEntityState::CEntityState () :

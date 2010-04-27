@@ -102,6 +102,8 @@ public:
 	virtual
 #endif
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

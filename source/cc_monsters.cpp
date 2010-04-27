@@ -639,6 +639,10 @@ bool CMonster::CloseEnough (IBaseEntity *Goal, float Dist)
 	return true;
 }
 
+#if ROGUE_FEATURES
+#include "cc_rogue_stalker.h"
+#endif
+
 void CMonster::WalkMonsterStartGo ()
 {
 	if (!(Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN) && Level.Frame < 10)
@@ -656,8 +660,7 @@ void CMonster::WalkMonsterStartGo ()
 		YawSpeed = 20;
 
 #if ROGUE_FEATURES
-	// FIXME: move to stalker.cpp
-	if (!(strcmp(Entity->ClassName.c_str(), "monster_stalker")))
+	if (MonsterID == CStalker::ID)
 		Entity->ViewHeight = 15;
 	else
 #endif

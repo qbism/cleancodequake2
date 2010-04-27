@@ -96,6 +96,8 @@ void CFoodCube::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 	Item->PlaySound (CHAN_ITEM, GetPickupSound());
 };
 
+#include "cc_xatrix_gekk.h"
+
 void CTrapProjectile::Think ()
 {
 	if (DoFree)
@@ -141,7 +143,7 @@ void CTrapProjectile::Think ()
 					best->GetMins().Clear();
 					best->GetMaxs().Clear();
 
-					if ((Enemy->EntityFlags & ENT_MONSTER) && (Enemy->ClassName == "monster_gekk"))
+					if ((Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(Enemy)->Monster->MonsterID == CGekk::ID))
 					{
 						best->State.GetModelIndex() = ModelIndex ("models/objects/gekkgib/torso/tris.md2");	
 						best->State.GetEffects() |= EF_GREENGIB;

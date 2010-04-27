@@ -602,6 +602,11 @@ bool CMonster::CheckAttack ()
 	return false;
 }
 
+#include "cc_tank.h"
+#include "cc_supertank.h"
+#include "cc_makron.h"
+#include "cc_jorg.h"
+
 void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {
 	if (!(Attacker->EntityFlags & ENT_PLAYER) && !(Attacker->EntityFlags & ENT_MONSTER))
@@ -645,14 +650,16 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 		return;
 	}
 
+	CMonsterEntity *AttackerMonster = (Attacker->EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(Attacker) : NULL;
+
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
 	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (Attacker->Flags & (FL_FLY|FL_SWIM))) &&
-		 (strcmp (Entity->ClassName.c_str(), Attacker->ClassName.c_str()) != 0) &&
-		 (strcmp(Attacker->ClassName.c_str(), "monster_tank") != 0) &&
-		 (strcmp(Attacker->ClassName.c_str(), "monster_supertank") != 0) &&
-		 (strcmp(Attacker->ClassName.c_str(), "monster_makron") != 0) &&
-		 (strcmp(Attacker->ClassName.c_str(), "monster_jorg") != 0) )
+			(MonsterID != AttackerMonster->MonsterID) &&
+			(AttackerMonster->Monster->MonsterID != CTank::ID) &&
+			(AttackerMonster->Monster->MonsterID != CSuperTank::ID) &&
+			(AttackerMonster->Monster->MonsterID != CMakron::ID) &&
+			(AttackerMonster->Monster->MonsterID != CJorg::ID))
 	{
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;

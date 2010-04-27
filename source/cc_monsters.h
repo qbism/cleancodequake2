@@ -509,6 +509,7 @@ public:
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
 	uint32 LINK_RESOLVE_CLASSNAME(DLLClassName, _ID) = LastID++; \
+	const uint32 DLLClassName::ID = LINK_RESOLVE_CLASSNAME(DLLClassName, _ID); \
 	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
 		CMonsterEntity *newClass = QNewEntityOf CMonsterEntity(Index); \
@@ -532,6 +533,9 @@ extern uint32 LastID;
 		return QNewEntityOf DLLClassName(ID); \
 	} \
 	CMonsterTableIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _ResolveIndex) (mapClassName, LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver));
+
+#define MONSTER_ID_HEADER \
+	static const uint32 ID;
 
 #include "cc_player_trail.h"
 

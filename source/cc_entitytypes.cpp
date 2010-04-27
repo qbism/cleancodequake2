@@ -79,7 +79,7 @@ void			IHurtableEntity::LoadFields (CFile &File)
 
 std::string ClientTeam (CPlayerEntity *Player)
 {
-	std::string val = Q_strlwr(Info_ValueForKey (Player->Client.Persistent.UserInfo, "skin"));
+	std::string val = Q_strlwr(Player->Client.Persistent.UserInfo.GetValueFromKey("skin"));
 
 	size_t slash = val.find_first_of('/');
 	if (slash == std::string::npos)
@@ -244,6 +244,14 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	return Saved;
 }
 
+#if ROGUE_FEATURES
+#include "cc_rogue_carrier.h"
+#include "cc_medic.h"
+#include "cc_rogue_medic_commander.h"
+#include "cc_rogue_widow_stand.h"
+#include "cc_rogue_black_widow.h"
+#endif
+
 void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
 	if (Health < -999)
@@ -273,7 +281,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		if (Monster->Monster->AIFlags & AI_SPAWNED_CARRIER)
 		{
 			if (Monster->Monster->Commander && Monster->Monster->Commander->GetInUse() && 
-				!strcmp(Monster->Monster->Commander->ClassName.c_str(), "monster_carrier"))
+				Monster->Monster->MonsterID == CCarrier::ID)
 				Monster->Monster->Commander->Monster->MonsterSlots++;
 		}
 
@@ -281,7 +289,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		{
 			if (Monster->Monster->Commander)
 			{
-				if (Monster->Monster->Commander->GetInUse() && !strcmp(Monster->Monster->Commander->ClassName.c_str(), "monster_medic_commander"))
+				if (Monster->Monster->Commander->GetInUse() && Monster->Monster->MonsterID == CMedicCommander::ID)
 					Monster->Monster->Commander->Monster->MonsterSlots++;
 			}
 		}
@@ -290,7 +298,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		{
 			// need to check this because we can have variable numbers of coop players
 			if (Monster->Monster->Commander && Monster->Monster->Commander->GetInUse() && 
-				!strncmp(Monster->Monster->Commander->ClassName.c_str(), "monster_widow", 13))
+				(Monster->Monster->MonsterID == CWidowStand::ID || Monster->Monster->MonsterID == CBlackWidow::ID))
 			{
 				if (Monster->Monster->Commander->Monster->MonsterUsed > 0)
 					Monster->Monster->Commander->Monster->MonsterUsed--;
@@ -315,7 +323,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 			// medics won't heal monsters that they kill themselves
 
 #if !ROGUE_FEATURES
-			if (strcmp(Attacker->ClassName.c_str(), "monster_medic") == 0)
+			if ((Attacker->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
 				SetOwner (Attacker);
 #endif
 		}

@@ -92,6 +92,8 @@ CC_ENUM (uint8, EClientState)
 void LoadWeapon (CFile &File, CWeapon **Weapon);
 void SaveWeapon (CFile &File, CWeapon *Weapon);
 
+#include "cc_userinfo.h"
+
 // client data that stays across multiple level loads
 class CPersistentData
 {
@@ -101,7 +103,7 @@ public:
 
 	void Save (CFile &File)
 	{
-		File.Write (UserInfo);
+		UserInfo.Save (File);
 		File.Write (Name);
 
 		File.Write<IPAddress> (IP);
@@ -129,7 +131,7 @@ public:
 
 	void Load (CFile &File)
 	{
-		UserInfo = File.ReadCCString ();
+		UserInfo.Load (File);
 		Name = File.ReadCCString ();
 
 		IP = File.Read<IPAddress> ();
@@ -158,8 +160,8 @@ public:
 		ViewBlend = File.Read<colorf> ();
 	}
 
-	std::string	UserInfo;
-	std::string	Name;
+	CUserInfo		UserInfo;
+	std::string		Name;
 	IPAddress		IP;
 	sint32			Hand;
 
@@ -195,7 +197,7 @@ public:
 
 	void Clear ()
 	{
-		UserInfo.clear();
+		UserInfo.Clear();
 		Name.clear();
 		Mem_Zero (&IP, sizeof(IP));
 		Hand = 0;
@@ -621,7 +623,7 @@ public:
 
 	void			BeginDeathmatch ();
 	void			Begin ();
-	bool			Connect (char *userinfo);
+	bool			Connect (const char *userinfo, CUserInfo &UserInfo);
 	void			Disconnect ();
 	void			Obituary (IBaseEntity *Attacker);
 
@@ -630,7 +632,7 @@ public:
 	void			PutInServer ();
 	void			InitPersistent ();
 	void			InitItemMaxValues ();
-	void			UserinfoChanged (const char *userinfo);
+	void			UserinfoChanged (std::string userinfo);
 	void			FetchEntData ();
 
 	// EndServerFrame-related functions
@@ -680,7 +682,7 @@ public:
 	void			CTFDeadDropFlag ();
 	class CSpotBase	*SelectCTFSpawnPoint ();
 	void			CTFAssignTeam ();
-	void			CTFAssignSkin (std::string &s);
+	void			CTFAssignSkin (CUserInfo &s);
 	bool			CTFStart ();
 #endif
 

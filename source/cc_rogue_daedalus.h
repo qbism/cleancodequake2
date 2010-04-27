@@ -41,6 +41,8 @@ public:
 
 	void FireBlaster ();
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

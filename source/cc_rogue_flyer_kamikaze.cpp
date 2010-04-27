@@ -57,6 +57,8 @@ void CFlyerKamikaze::Pain (IBaseEntity *Other, sint32 Damage)
 	// We don't feel pain
 };
 
+#include "cc_rogue_carrier.h"
+
 bool CFlyerKamikaze::Blocked (float Dist)
 {
 	KamikazeCheck();
@@ -65,7 +67,7 @@ bool CFlyerKamikaze::Blocked (float Dist)
 	if (Entity->GetInUse())
 	{
 		if (Commander && Commander->GetInUse() && 
-			Commander->ClassName == "monster_carrier")
+			Commander->Monster->MonsterID == CCarrier::ID)
 			Commander->Monster->MonsterSlots++;
 
 		CRocketExplosion(CTempEntFlags (CAST_MULTI, CASTFLAG_PHS, Entity->State.GetOrigin()), Entity->State.GetOrigin().MultiplyAngles (0.02f, Entity->Velocity)).Send();
@@ -78,7 +80,7 @@ bool CFlyerKamikaze::Blocked (float Dist)
 void CFlyerKamikaze::KamikazeExplode ()
 {
 	if (Commander && Commander->GetInUse() && 
-		Commander->ClassName == "monster_carrier")
+		Commander->Monster->MonsterID == CCarrier::ID)
 		Commander->Monster->MonsterSlots++;
 
 	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE))

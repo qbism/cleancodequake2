@@ -42,8 +42,7 @@ Searches the string for the given key and returns the associated value, or an em
 
 std::string Info_ValueForKey (std::string &s, std::string key)
 {
-	std::transform(key.begin(), key.end(), key.begin(),
-		(sint32(*)(sint32)) std::tolower);
+	std::transform(key.begin(), key.end(), key.begin(), std::tolower);
 
 	size_t	curIndex = 0;
 
@@ -122,7 +121,6 @@ void Info_RemoveKey (std::string &s, std::string key)
 
 		if (key == pkey)
 		{
-			//Q_strncpyz (start, s, MAX_INFO_KEY);	// Remove this part
 			s.erase (start, (start - curIndex));
 			return;
 		}
@@ -141,7 +139,7 @@ Some characters are illegal in info strings because they
 can mess up the server's parsing
 ==================
 */
-bool Info_Validate (std::string &s)
+bool Info_Validate (const std::string &s)
 {
 	return (s.find ('\"') || s.find (';'));
 }

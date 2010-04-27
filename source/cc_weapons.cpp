@@ -127,7 +127,7 @@ CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 #ifndef NO_AUTOSWITCH
 bool CheckAutoSwitch (CPlayerEntity *Other)
 {
-	sint32 val = atoi(Info_ValueForKey (Other->Client.Persistent.UserInfo, "cc_autoswitch").c_str());
+	sint32 val = atoi(Other->Client.Persistent.UserInfo.GetValueFromKey ("cc_autoswitch").c_str());
 	return (val == 1);
 }
 #endif

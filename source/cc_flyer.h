@@ -87,6 +87,8 @@ public:
 	ROGUE_VIRTUAL void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

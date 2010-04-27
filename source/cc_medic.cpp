@@ -63,6 +63,8 @@ void CMedic::CleanupHeal (bool ChangeFrame)
 		NextFrame = FRAME_attack52;
 }
 
+#include "cc_rogue_medic_commander.h"
+
 void CMedic::AbortHeal (bool Gib, bool Mark)
 {
 	static vec3f	PainNormal (0, 0, 1);
@@ -76,7 +78,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
 		// if the first badMedic slot is filled by a medic, skip it and use the second one
 		if ((Enemy->Monster->BadMedic1) && (Enemy->Monster->BadMedic1->GetInUse())
-			&& (!strncmp(Enemy->Monster->BadMedic1->ClassName.c_str(), "monster_medic", 13)) )
+			&& (Enemy->Monster->MonsterID == CMedic::ID || Enemy->Monster->MonsterID == CMedicCommander::ID))
 			Enemy->Monster->BadMedic2 = Entity;
 		else
 			Enemy->Monster->BadMedic1 = Entity;

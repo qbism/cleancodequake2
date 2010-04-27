@@ -51,6 +51,8 @@ public:
 	
 	void KamikazeExplode ();
 	void KamikazeCheck ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

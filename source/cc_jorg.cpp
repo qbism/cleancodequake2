@@ -685,11 +685,7 @@ bool CJorg::CheckAttack ()
 	if (Entity->Flags & FL_FLY)
 	{
 		// originally, just 0.3
-		float strafe_chance;
-		if (!(strcmp(Entity->ClassName.c_str(), "monster_daedalus")))
-			strafe_chance = 0.8f;
-		else
-			strafe_chance = 0.6f;
+		float strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
 		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))

@@ -87,6 +87,8 @@ public:
 	virtual void Pain (IBaseEntity *Other, sint32 Damage);
 
 	virtual void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else
