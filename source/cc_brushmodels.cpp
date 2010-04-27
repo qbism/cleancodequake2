@@ -3675,7 +3675,7 @@ void CFuncExplosive::Spawn ()
 #if ROGUE_FEATURES
 	else if (SpawnFlags & 8)
 	{
-		GetSolid() = SOLID_NOT;
+		GetSolid() = SOLID_BSP;
 		if (TargetName)
 			UseType = FUNCEXPLOSIVE_USE_ACTIVATE;
 	}

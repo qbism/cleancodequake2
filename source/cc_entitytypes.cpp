@@ -1563,7 +1563,7 @@ bool IPushPhysics::Run ()
 				{
 					if (!(e->EntityFlags & ENT_BRUSHMODEL))
 					{
-						e->State.GetOrigin() += Velocity;
+						e->State.GetOrigin() += Velocity * 0.1f;
 						e->Link ();
 					}
 				}

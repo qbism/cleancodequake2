@@ -159,6 +159,11 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 
 void Cmd_Test_f (CPlayerEntity *Player)
 {
+	if (ArgCount() < 3)
+		return;
+	
+	Player->State.GetOrigin().Set (ArgGetf(0), ArgGetf(1), ArgGetf(2));
+	Player->Link ();
 }
 
 void Cmd_Two_t (CPlayerEntity *Player)

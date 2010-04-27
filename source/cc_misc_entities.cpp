@@ -1080,10 +1080,10 @@ public:
 
 		CMiscViper *viper = CC_FindByClassName<CMiscViper, ENT_BASE> (NULL, "misc_viper");
 
-		Velocity = viper->Dir * viper->Speed;
+		Velocity = viper->Dir * viper->MoveSpeed;
 
 		TimeStamp = Level.Frame;
-		MoveDir = viper->Dir;
+		MoveDir = viper->MoveDir;
 	};
 
 

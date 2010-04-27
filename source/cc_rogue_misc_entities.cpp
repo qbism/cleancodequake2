@@ -1089,6 +1089,13 @@ public:
 				Enemy = NULL;
 		}
 
+		if (!Enemy)
+		{
+			NextThink = 0;
+			TargetedBreach = NULL;
+			return;
+		}
+
 		vec3f endpos = (Enemy->GetAbsMax() + Enemy->GetAbsMin()) * 0.5f;
 			
 		CTrace trace (TargetedBreach->State.GetOrigin(), endpos, TargetedBreach, CONTENTS_MASK_SHOT);
