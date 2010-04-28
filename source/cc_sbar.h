@@ -51,7 +51,13 @@ public:
 	void AddVirtualPoint_X (sint32 x);
 	void AddPoint_X (sint32 x, bool inverted);
 	void AddPoint_Y (sint32 y, bool inverted);
-	void AddString (const char *string, bool highBi, bool center);
+	void AddString (const char *string, bool highBit, bool center);
+
+	inline void AddString (const std::string str, bool highBit, bool center)
+	{
+		AddString (str.c_str(), highBit, center);
+	}
+
 	void AddStatString (sint32 statIndex);
 	void AddPic (const char *pic);
 	void AddPicStat (sint32 statIndex);

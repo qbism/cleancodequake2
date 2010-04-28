@@ -84,7 +84,7 @@ public:
 
 	virtual void *NewOfMe (const char *Name, TFunctor Func, ECmdTypeFlags Flags) = 0;
 
-	virtual CCommand &AddSubCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags)
+	virtual CCommand &AddSubCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags = 0)
 	{
 		CCommand *NewCommand = (CCommand*)NewOfMe (Name, Func, Flags);
 
@@ -166,7 +166,7 @@ public:
 		return QNew (TAG_GAME) CPlayerCommand (Name, Func, Flags);
 	}
 
-	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
+	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
 	{
 		return static_cast<CPlayerCommand&>(CCommand<TPlayerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
 	};

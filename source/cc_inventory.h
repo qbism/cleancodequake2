@@ -102,23 +102,23 @@ public:
 	};
 };
 
-void Cmd_Use_f (CPlayerEntity *Player);
-void Cmd_UseList_f (CPlayerEntity *Player);
-void Cmd_Drop_f (CPlayerEntity *Player);
-void Cmd_Inven_f (CPlayerEntity *Player);
-void Cmd_InvUse_f (CPlayerEntity *Player);
-void Cmd_WeapPrev_f (CPlayerEntity *Player);
-void Cmd_WeapNext_f (CPlayerEntity *Player);
-void Cmd_WeapLast_f (CPlayerEntity *Player);
-void Cmd_InvDrop_f (CPlayerEntity *Player);
-void Cmd_SelectNextItem_f (CPlayerEntity *Player);
-void Cmd_SelectPrevItem_f (CPlayerEntity *Player);
-void Cmd_SelectNextWeapon_f (CPlayerEntity *Player);
-void Cmd_SelectPrevWeapon_f (CPlayerEntity *Player);
-void Cmd_SelectNextPowerup_f (CPlayerEntity *Player);
-void Cmd_SelectPrevPowerup_f (CPlayerEntity *Player);
+void Cmd_Use (CPlayerEntity *Player);
+void Cmd_UseList (CPlayerEntity *Player);
+void Cmd_Drop (CPlayerEntity *Player);
+void Cmd_Inven (CPlayerEntity *Player);
+void Cmd_InvUse (CPlayerEntity *Player);
+void Cmd_WeapPrev (CPlayerEntity *Player);
+void Cmd_WeapNext (CPlayerEntity *Player);
+void Cmd_WeapLast (CPlayerEntity *Player);
+void Cmd_InvDrop (CPlayerEntity *Player);
+void Cmd_SelectNextItem (CPlayerEntity *Player);
+void Cmd_SelectPrevItem (CPlayerEntity *Player);
+void Cmd_SelectNextWeapon (CPlayerEntity *Player);
+void Cmd_SelectPrevWeapon (CPlayerEntity *Player);
+void Cmd_SelectNextPowerup (CPlayerEntity *Player);
+void Cmd_SelectPrevPowerup (CPlayerEntity *Player);
+void Cmd_Spawn (CPlayerEntity *Player);
 void Cmd_Give (CPlayerEntity *Player);
-void Cmd_Give_f (CPlayerEntity *Player);
 
 #else
 FILE_WARNING

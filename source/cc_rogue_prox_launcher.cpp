@@ -223,6 +223,8 @@ public:
 			{
 				if (search->ClassName.empty())			// tag token and other weird shit
 					continue;
+				if (search->Flags & FL_MECHANICAL)
+					continue;
 
 				// if it's a monster or player with health > 0
 				// or it's a player start point
@@ -381,6 +383,7 @@ public:
 		ProxField->SetOwner (this);
 		ProxField->ClassName = "prox_field";
 		ProxField->Prox = this;
+		ProxField->Flags = FL_MECHANICAL;
 		ProxField->Link ();
 
 		Velocity.Clear ();
@@ -499,6 +502,9 @@ void CProxField::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf
 		return;
 
 	if (Prox->ThinkType != CProx::PROXTHINK_SEEK) // we're set to blow!
+		return;
+
+	if (Other->Flags & FL_MECHANICAL)
 		return;
 
 	if (Prox->Field == this)

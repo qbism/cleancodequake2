@@ -157,7 +157,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
-void Cmd_Test_f (CPlayerEntity *Player)
+void Cmd_Test (CPlayerEntity *Player)
 {
 	if (ArgCount() < 3)
 		return;
@@ -166,7 +166,7 @@ void Cmd_Test_f (CPlayerEntity *Player)
 	Player->Link ();
 }
 
-void Cmd_Two_t (CPlayerEntity *Player)
+void Cmd_Two (CPlayerEntity *Player)
 {
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
@@ -181,20 +181,20 @@ void Cmd_Two_t (CPlayerEntity *Player)
 	}
 }
 
-void Cmd_Three_t (CPlayerEntity *Player)
+void Cmd_Three (CPlayerEntity *Player)
 {
 	ServerPrintf ("Three\n");
 }
 
-void Cmd_Four_t (CPlayerEntity *Player)
+void Cmd_Four (CPlayerEntity *Player)
 {
 	ServerPrintf ("Four\n");
 }
 
 void AddTestDebugCommands ()
 {
-	Cmd_AddCommand ("test",					Cmd_Test_f)
-		.AddSubCommand ("two",				Cmd_Two_t, 0)
-			.AddSubCommand ("three",		Cmd_Three_t, 0).GoUp().GoUp()
-		.AddSubCommand ("four",				Cmd_Four_t, 0);
+	Cmd_AddCommand ("test",					Cmd_Test)
+		.AddSubCommand ("two",				Cmd_Two)
+			.AddSubCommand ("three",		Cmd_Three).GoUp().GoUp()
+		.AddSubCommand ("four",				Cmd_Four);
 }

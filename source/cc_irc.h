@@ -104,15 +104,15 @@ public:
 	void SendMessage (std::string Msg);
 };
 
-void Cmd_Irc_t (CPlayerEntity *Player);
-void Cmd_Irc_Connect_t (CPlayerEntity *Player);
-void Cmd_Irc_Join_t (CPlayerEntity *Player);
-void Cmd_Irc_Say_t (CPlayerEntity *Player);
-void Cmd_Irc_Disconnect_t (CPlayerEntity *Player);
-void Cmd_Irc_Leave_t (CPlayerEntity *Player);
-void Cmd_Irc_List_t (CPlayerEntity *Player);
+void Cmd_Irc (CPlayerEntity *Player);
+void Cmd_Irc_Connect (CPlayerEntity *Player);
+void Cmd_Irc_Join (CPlayerEntity *Player);
+void Cmd_Irc_Say (CPlayerEntity *Player);
+void Cmd_Irc_Disconnect (CPlayerEntity *Player);
+void Cmd_Irc_Leave (CPlayerEntity *Player);
+void Cmd_Irc_List (CPlayerEntity *Player);
 
-void SvCmd_Irc_ConnectTo_t ();
+void SvCmd_Irc_ConnectTo ();
 void UpdateIRCServers ();
 
 #endif

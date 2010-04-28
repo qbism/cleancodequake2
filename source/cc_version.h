@@ -69,8 +69,8 @@ void InitVersion ();
 
 #endif
 
-void Cmd_CCVersion_t (CPlayerEntity *Player);
-void SvCmd_CCVersion_t ();
+void Cmd_CCVersion (CPlayerEntity *Player);
+void SvCmd_CCVersion ();
 
 #else
 FILE_WARNING

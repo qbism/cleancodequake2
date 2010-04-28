@@ -3291,7 +3291,7 @@ void CPlayerEntity::TossHead (sint32 Damage)
 }
 
 EMeansOfDeath meansOfDeath;
-void Cmd_Help_f (CPlayerEntity *Player);
+void Cmd_Help (CPlayerEntity *Player);
 
 void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
@@ -3354,7 +3354,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 			DeadDropTech();
 
 		if (Game.GameMode & GAME_DEATHMATCH)
-			Cmd_Help_f (this);		// show scores
+			Cmd_Help (this);		// show scores
 
 		// clear inventory
 		// this is kind of ugly, but it's how we want to handle keys in coop
@@ -3400,20 +3400,16 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 
 	if (Health < -40)
 	{
-#if ROGUE_FEATURES
 		// don't toss gibs if we got vaped by the nuke
 		if (!(Flags & FL_NOGIB))
 		{
-#endif
 			// gib
 			PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
 			for (sint32 n = 0; n < 4; n++)
 				CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 			TossHead (Damage);
-#if ROGUE_FEATURES
 		}
 		Flags &= ~FL_NOGIB;
-#endif
 
 		CanTakeDamage = false;
 //ZOID
@@ -3473,6 +3469,19 @@ void CPlayerEntity::PrintToClient (EGamePrintLevel printLevel, const char *fmt, 
 
 	ClientPrintf (gameEntity, printLevel, "%s", text);
 };
+
+inline const char *GetChaseMode (uint8 mode)
+{
+	switch (mode)
+	{
+	case 0:
+		return "Tight Chase";
+	case 1:
+		return "Freeform Chase";
+	default:
+		return "FPS Chase";
+	};
+}
 
 void CPlayerEntity::UpdateChaseCam()
 {
@@ -3645,8 +3654,7 @@ void CPlayerEntity::UpdateChaseCam()
 		!(Level.Frame & 31)) || (Client.LayoutFlags & LF_UPDATECHASE))
 	{
 		CStatusBar Chasing;
-		char temp[128];
-		Q_snprintfz (temp, sizeof(temp), "Chasing %s\n%s", targ->Client.Persistent.Name.c_str(), (Client.Chase.Mode == 0) ? "Tight Chase" : ((Client.Chase.Mode == 1) ? "Freeform Chase" : "FPS Chase"));
+		std::string temp = "Chasing " + targ->Client.Persistent.Name + "\n" + GetChaseMode(Client.Chase.Mode);
 
 		Chasing.AddVirtualPoint_X (0);
 		Chasing.AddVirtualPoint_Y (-68);
@@ -3673,7 +3681,8 @@ void CPlayerEntity::ChaseNext()
 
 	sint32 i = Client.Chase.Target->State.GetNumber();
 	CPlayerEntity *e;
-	do {
+	do
+	{
 		i++;
 		if (i > Game.MaxClients)
 			i = 1;
@@ -3698,7 +3707,8 @@ void CPlayerEntity::ChasePrev()
 
 	sint32 i = Client.Chase.Target->State.GetNumber();
 	CPlayerEntity *e;
-	do {
+	do
+	{
 		i--;
 		if (i < 1)
 			i = Game.MaxClients;

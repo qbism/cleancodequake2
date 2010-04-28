@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "m_player.h"
 #include "cc_ban.h"
+#include "cc_menu.h"
 #include "cc_version.h"
 
 /*
@@ -45,7 +46,7 @@ Sets client to godmode
 argv(0) god
 ==================
 */
-void Cmd_God_f (CPlayerEntity *Player)
+void Cmd_God (CPlayerEntity *Player)
 {
 	Player->Flags ^= FL_GODMODE;
 	Player->PrintToClient (PRINT_HIGH, "God mode %s\n", (!(Player->Flags & FL_GODMODE)) ? "off" : "on");
@@ -61,7 +62,7 @@ Sets client to notarget
 argv(0) notarget
 ==================
 */
-void Cmd_Notarget_f (CPlayerEntity *Player)
+void Cmd_Notarget (CPlayerEntity *Player)
 {
 	Player->Flags ^= FL_NOTARGET;
 	Player->PrintToClient (PRINT_HIGH, "Notarget %s\n", (!(Player->Flags & FL_NOTARGET)) ? "off" : "on");
@@ -75,7 +76,7 @@ Cmd_Noclip_f
 argv(0) noclip
 ==================
 */
-void Cmd_Noclip_f (CPlayerEntity *Player)
+void Cmd_Noclip (CPlayerEntity *Player)
 {
 	Player->NoClip = !Player->NoClip;
 	Player->PrintToClient (PRINT_HIGH, "Noclip %s\n", Player->NoClip ? "on" : "off");
@@ -86,7 +87,7 @@ void Cmd_Noclip_f (CPlayerEntity *Player)
 Cmd_Kill_f
 =================
 */
-void Cmd_Kill_f (CPlayerEntity *Player)
+void Cmd_Kill (CPlayerEntity *Player)
 {
 //ZOID
 	if (Player->GetSolid() == SOLID_NOT)
@@ -119,7 +120,7 @@ void Cmd_Kill_f (CPlayerEntity *Player)
 Cmd_PutAway_f
 =================
 */
-void Cmd_PutAway_f (CPlayerEntity *Player)
+void Cmd_PutAway (CPlayerEntity *Player)
 {
 	Player->Client.LayoutFlags &= ~LF_SCREEN_MASK;
 
@@ -165,7 +166,7 @@ public:
 Cmd_Players_f
 =================
 */
-void Cmd_Players_f (CPlayerEntity *Player)
+void Cmd_Players (CPlayerEntity *Player)
 {
 	sint32		count = 0;
 	char	Small[MAX_INFO_KEY];
@@ -204,7 +205,7 @@ void Cmd_Players_f (CPlayerEntity *Player)
 Cmd_Wave_f
 =================
 */
-void Cmd_Wave_f (CPlayerEntity *Player)
+void Cmd_Wave (CPlayerEntity *Player)
 {
 	// can't wave when ducked
 	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
@@ -213,7 +214,7 @@ void Cmd_Wave_f (CPlayerEntity *Player)
 	if (Player->Client.Anim.Priority > ANIM_WAVE)
 		return;
 
-	struct waveAnimations_t
+	struct SWaveAnimations
 	{
 		const char	*Name;
 		uint16		StartFrame, EndFrame;
@@ -225,6 +226,7 @@ void Cmd_Wave_f (CPlayerEntity *Player)
 		{ "wave", FRAME_wave01 - 1, FRAME_wave11 },
 		NULL
 	};
+
 	static const uint32 lastIndex = ArrayCount(WaveAnims) - 1;
 	uint8 WaveIndex = (ArgCount() > 1) ? 
 		(ArgGeti(1) >= lastIndex) ? lastIndex-1 : ArgGeti(1)
@@ -243,7 +245,7 @@ Cmd_Say_f
 */
 #define MAX_TALK_STRING 100
 
-bool CheckFlood(CPlayerEntity *Player)
+bool CheckFlood (CPlayerEntity *Player)
 {
 	if (CvarList[CV_FLOOD_MSGS].Integer())
 	{
@@ -289,7 +291,7 @@ public:
 	}
 };
 
-void Cmd_Say_f (CPlayerEntity *Player, bool team, bool arg0)
+void Cmd_Say (CPlayerEntity *Player, bool team, bool arg0)
 {
 	//char	text[MAX_TALK_STRING];
 	static std::string text;
@@ -417,7 +419,7 @@ public:
 	}
 };
 
-void Cmd_PlayerList_f(CPlayerEntity *Player)
+void Cmd_PlayerList (CPlayerEntity *Player)
 {
 	char text[MAX_COMPRINT/4];
 
@@ -432,14 +434,14 @@ void Cmd_PlayerList_f(CPlayerEntity *Player)
 		Player->PrintToClient (PRINT_HIGH, "%s", text);
 }
 
-void GCmd_Say_f (CPlayerEntity *Player)
+void GCmd_Say (CPlayerEntity *Player)
 {
-	Cmd_Say_f (Player, false, false);
+	Cmd_Say (Player, false, false);
 }
 
-void GCmd_SayTeam_f (CPlayerEntity *Player)
+void GCmd_SayTeam (CPlayerEntity *Player)
 {
-	Cmd_Say_f (Player, true, false);
+	Cmd_Say (Player, true, false);
 }
 
 /*
@@ -449,7 +451,7 @@ Cmd_Score_f
 Display the scoreboard
 ==================
 */
-void Cmd_Score_f (CPlayerEntity *Player)
+void Cmd_Score (CPlayerEntity *Player)
 {
 	Player->Client.LayoutFlags &= ~(LF_SHOWINVENTORY | LF_SHOWHELP);
 	if (Player->Client.Respawn.MenuState.InMenu)
@@ -479,7 +481,7 @@ Cmd_Help_f
 Display the current help message
 ==================
 */
-void Cmd_Help_f (CPlayerEntity *Player)
+void Cmd_Help (CPlayerEntity *Player)
 {
 	if (Level.IntermissionTime)
 		return;
@@ -487,7 +489,7 @@ void Cmd_Help_f (CPlayerEntity *Player)
 	// this is for backwards compatability
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		Cmd_Score_f (Player);
+		Cmd_Score (Player);
 		return;
 	}
 
@@ -510,66 +512,64 @@ void Cmd_Help_f (CPlayerEntity *Player)
 }
 
 void GCTFSay_Team (CPlayerEntity *Player);
-void Cmd_MenuLeft_t (CPlayerEntity *Player);
-void Cmd_MenuRight_t (CPlayerEntity *Player);
 
 void Cmd_Register ()
 {
 	// These commands are generic, and can be executed any time
 	// during play, even during intermission and by spectators.
-	Cmd_AddCommand ("players",				Cmd_Players_f,			CMD_SPECTATOR);
-	Cmd_AddCommand ("say",					GCmd_Say_f,				CMD_SPECTATOR);
-	Cmd_AddCommand ("Score",				Cmd_Score_f,			CMD_SPECTATOR);
-	Cmd_AddCommand ("help",					Cmd_Help_f,				CMD_SPECTATOR);
-	Cmd_AddCommand ("putaway",				Cmd_PutAway_f,			CMD_SPECTATOR);
+	Cmd_AddCommand ("players",				Cmd_Players,			CMD_SPECTATOR);
+	Cmd_AddCommand ("say",					GCmd_Say,				CMD_SPECTATOR);
+	Cmd_AddCommand ("Score",				Cmd_Score,				CMD_SPECTATOR);
+	Cmd_AddCommand ("help",					Cmd_Help,				CMD_SPECTATOR);
+	Cmd_AddCommand ("putaway",				Cmd_PutAway,			CMD_SPECTATOR);
 	Cmd_AddCommand ("playerlist",			
 #if CLEANCTF_ENABLED
 		CTFPlayerList,		
 #else
-		Cmd_PlayerList_f,		
+		Cmd_PlayerList,		
 #endif
 		CMD_SPECTATOR);
 
 	// These commands are also generic, but can only be executed
 	// by in-game players during the game
-	Cmd_AddCommand ("kill",					Cmd_Kill_f);
-	Cmd_AddCommand ("wave",					Cmd_Wave_f);
+	Cmd_AddCommand ("kill",					Cmd_Kill);
+	Cmd_AddCommand ("wave",					Cmd_Wave);
 
-	Cmd_AddCommand ("use",					Cmd_Use_f);
-	Cmd_AddCommand ("uselist",				Cmd_UseList_f); // Paril
-	Cmd_AddCommand ("drop",					Cmd_Drop_f);
-	Cmd_AddCommand ("inven",				Cmd_Inven_f);
-	Cmd_AddCommand ("invuse",				Cmd_InvUse_f);
-	Cmd_AddCommand ("invdrop",				Cmd_InvDrop_f);
-	Cmd_AddCommand ("weapprev",				Cmd_WeapPrev_f);
-	Cmd_AddCommand ("weapnext",				Cmd_WeapNext_f);
-	Cmd_AddCommand ("weaplast",				Cmd_WeapLast_f);
-	Cmd_AddCommand ("invnext",				Cmd_SelectNextItem_f);
-	Cmd_AddCommand ("invprev",				Cmd_SelectPrevItem_f);
-	Cmd_AddCommand ("invnextw",				Cmd_SelectNextWeapon_f);
-	Cmd_AddCommand ("invprevw",				Cmd_SelectPrevWeapon_f);
-	Cmd_AddCommand ("invnextp",				Cmd_SelectNextPowerup_f);
-	Cmd_AddCommand ("invprevp",				Cmd_SelectPrevPowerup_f);
+	Cmd_AddCommand ("use",					Cmd_Use);
+	Cmd_AddCommand ("uselist",				Cmd_UseList);
+	Cmd_AddCommand ("drop",					Cmd_Drop);
+	Cmd_AddCommand ("inven",				Cmd_Inven);
+	Cmd_AddCommand ("invuse",				Cmd_InvUse);
+	Cmd_AddCommand ("invdrop",				Cmd_InvDrop);
+	Cmd_AddCommand ("weapprev",				Cmd_WeapPrev);
+	Cmd_AddCommand ("weapnext",				Cmd_WeapNext);
+	Cmd_AddCommand ("weaplast",				Cmd_WeapLast);
+	Cmd_AddCommand ("invnext",				Cmd_SelectNextItem);
+	Cmd_AddCommand ("invprev",				Cmd_SelectPrevItem);
+	Cmd_AddCommand ("invnextw",				Cmd_SelectNextWeapon);
+	Cmd_AddCommand ("invprevw",				Cmd_SelectPrevWeapon);
+	Cmd_AddCommand ("invnextp",				Cmd_SelectNextPowerup);
+	Cmd_AddCommand ("invprevp",				Cmd_SelectPrevPowerup);
 #if _DEBUG
 	AddTestDebugCommands ();
 #endif
 
 	// And last but certainly not least..
-	Cmd_AddCommand ("god",					Cmd_God_f,				CMD_CHEAT);
-	Cmd_AddCommand ("notarget",				Cmd_Notarget_f,			CMD_CHEAT);
-	Cmd_AddCommand ("noclip",				Cmd_Noclip_f,			CMD_CHEAT);
-	Cmd_AddCommand ("give",					Cmd_Give_f,				CMD_CHEAT);
+	Cmd_AddCommand ("god",					Cmd_God,				CMD_CHEAT);
+	Cmd_AddCommand ("notarget",				Cmd_Notarget,			CMD_CHEAT);
+	Cmd_AddCommand ("noclip",				Cmd_Noclip,				CMD_CHEAT);
+	Cmd_AddCommand ("give",					Cmd_Give,				CMD_CHEAT);
 	Cmd_AddCommand ("spawn",				Cmd_Give,				CMD_CHEAT);
 	
 	// CleanMenu commands
-	Cmd_AddCommand ("menu_left",			Cmd_MenuLeft_t,			CMD_SPECTATOR);
-	Cmd_AddCommand ("menu_right",			Cmd_MenuRight_t,		CMD_SPECTATOR);
-	Cmd_AddCommand ("cc_version",			Cmd_CCVersion_t,		CMD_SPECTATOR);
+	Cmd_AddCommand ("menu_left",			Cmd_MenuLeft,			CMD_SPECTATOR);
+	Cmd_AddCommand ("menu_right",			Cmd_MenuRight,			CMD_SPECTATOR);
+	Cmd_AddCommand ("cc_version",			Cmd_CCVersion,			CMD_SPECTATOR);
 
 #if CLEANCTF_ENABLED
 	Cmd_AddCommand ("say_team",				GCTFSay_Team,			CMD_SPECTATOR);
-	Cmd_AddCommand ("team",					CTFTeam_f);
-	Cmd_AddCommand ("id",					CTFID_f);
+	Cmd_AddCommand ("team",					CTFTeam);
+	Cmd_AddCommand ("id",					CTFID);
 	Cmd_AddCommand ("yes",					CTFVoteYes);
 	Cmd_AddCommand ("no",					CTFVoteNo);
 	Cmd_AddCommand ("ready",				CTFReady);
@@ -583,13 +583,13 @@ void Cmd_Register ()
 #endif
 
 #if CLEANCODE_IRC
-	Cmd_AddCommand ("irc",					Cmd_Irc_t)
-		.AddSubCommand ("connect",			Cmd_Irc_Connect_t,		0).GoUp()
-		.AddSubCommand ("join",				Cmd_Irc_Join_t,			0).GoUp()
-		.AddSubCommand ("say",				Cmd_Irc_Say_t,			0).GoUp()
-		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect_t,	0).GoUp()
-		.AddSubCommand ("leave",			Cmd_Irc_Leave_t,		0).GoUp()
-		.AddSubCommand ("list",				Cmd_Irc_List_t,			0);
+	Cmd_AddCommand ("irc",					Cmd_Irc)
+		.AddSubCommand ("connect",			Cmd_Irc_Connect).GoUp()
+		.AddSubCommand ("join",				Cmd_Irc_Join).GoUp()
+		.AddSubCommand ("say",				Cmd_Irc_Say).GoUp()
+		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect).GoUp()
+		.AddSubCommand ("leave",			Cmd_Irc_Leave).GoUp()
+		.AddSubCommand ("list",				Cmd_Irc_List);
 #endif
 }
 

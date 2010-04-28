@@ -230,7 +230,7 @@ Cmd_Use_f
 Use an inventory item
 ==================
 */
-void Cmd_Use_f (CPlayerEntity *Player)
+void Cmd_Use (CPlayerEntity *Player)
 {
 	std::string s = ArgGetConcatenatedString();
 	CBaseItem *Item = FindItem(s.c_str());
@@ -269,7 +269,7 @@ Tries to use the items in the list from left to right, stopping
 when one gets used
 ==================
 */
-void Cmd_UseList_f (CPlayerEntity *Player)
+void Cmd_UseList (CPlayerEntity *Player)
 {
 	for (sint32 i = 1; i < ArgCount(); i++)
 	{
@@ -318,7 +318,7 @@ Cmd_Drop_f
 Drop an inventory item
 ==================
 */
-void Cmd_Drop_f (CPlayerEntity *Player)
+void Cmd_Drop (CPlayerEntity *Player)
 {
 	std::string s = ArgGetConcatenatedString();
 
@@ -364,7 +364,7 @@ void Cmd_Drop_f (CPlayerEntity *Player)
 Cmd_Inven_f
 =================
 */
-void Cmd_Inven_f (CPlayerEntity *Player)
+void Cmd_Inven (CPlayerEntity *Player)
 {
 	if (Level.IntermissionTime)
 		return;
@@ -393,7 +393,7 @@ void Cmd_Inven_f (CPlayerEntity *Player)
 Cmd_InvUse_f
 =================
 */
-void Cmd_InvUse_f (CPlayerEntity *Player)
+void Cmd_InvUse (CPlayerEntity *Player)
 {
 	if (Player->Client.Respawn.MenuState.InMenu)
 	{
@@ -426,7 +426,7 @@ void Cmd_InvUse_f (CPlayerEntity *Player)
 Cmd_WeapPrev_f
 =================
 */
-void Cmd_WeapPrev_f (CPlayerEntity *Player)
+void Cmd_WeapPrev (CPlayerEntity *Player)
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
@@ -457,7 +457,7 @@ void Cmd_WeapPrev_f (CPlayerEntity *Player)
 Cmd_WeapNext_f
 =================
 */
-void Cmd_WeapNext_f (CPlayerEntity *Player)
+void Cmd_WeapNext (CPlayerEntity *Player)
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
@@ -488,7 +488,7 @@ void Cmd_WeapNext_f (CPlayerEntity *Player)
 Cmd_WeapLast_f
 =================
 */
-void Cmd_WeapLast_f (CPlayerEntity *Player)
+void Cmd_WeapLast (CPlayerEntity *Player)
 {
 	if (!Player->Client.Persistent.Weapon || !Player->Client.Persistent.LastWeapon)
 		return;
@@ -507,7 +507,7 @@ void Cmd_WeapLast_f (CPlayerEntity *Player)
 Cmd_InvDrop_f
 =================
 */
-void Cmd_InvDrop_f (CPlayerEntity *Player)
+void Cmd_InvDrop (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -530,7 +530,7 @@ void Cmd_InvDrop_f (CPlayerEntity *Player)
 	Player->Client.Persistent.Inventory.ValidateSelectedItem();
 }
 
-void Cmd_SelectNextItem_f (CPlayerEntity *Player)
+void Cmd_SelectNextItem (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -549,7 +549,7 @@ void Cmd_SelectNextItem_f (CPlayerEntity *Player)
 
 	Player->Client.Persistent.Inventory.SelectNextItem (-1);
 }
-void Cmd_SelectPrevItem_f (CPlayerEntity *Player)
+void Cmd_SelectPrevItem (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -568,28 +568,28 @@ void Cmd_SelectPrevItem_f (CPlayerEntity *Player)
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (-1);
 }
-void Cmd_SelectNextWeapon_f (CPlayerEntity *Player)
+void Cmd_SelectNextWeapon (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_WEAPON);
 }
-void Cmd_SelectPrevWeapon_f (CPlayerEntity *Player)
+void Cmd_SelectPrevWeapon (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (ITEMFLAG_WEAPON);
 }
-void Cmd_SelectNextPowerup_f (CPlayerEntity *Player)
+void Cmd_SelectNextPowerup (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_POWERUP);
 }
-void Cmd_SelectPrevPowerup_f (CPlayerEntity *Player)
+void Cmd_SelectPrevPowerup (CPlayerEntity *Player)
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -605,7 +605,7 @@ Give items to a client
 Old-style "give"
 ==================
 */
-void Cmd_Give_f (CPlayerEntity *Player)
+void Cmd_Give (CPlayerEntity *Player)
 {
 	CBaseItem *it;
 
@@ -729,11 +729,12 @@ void Cmd_Give_f (CPlayerEntity *Player)
 	}
 	else
 	{
-		CItemEntity *it_ent = entity_cast<CItemEntity>(CreateEntityFromClassname(it->Classname));
+		/*CItemEntity *it_ent = entity_cast<CItemEntity>(CreateEntityFromClassname(it->Classname));
 		it_ent->Spawn (it);
 		it_ent->Touch (Player, NULL, NULL);
 		if (it_ent->GetInUse())
-			it_ent->Free ();
+			it_ent->Free ();*/
+		Cmd_Spawn (Player);
 	}
 }
 
@@ -741,12 +742,12 @@ void Cmd_Give_f (CPlayerEntity *Player)
 // This is a different style of "give".
 // Allows you to spawn the item instead of giving it.
 // Also, you can spawn monsters and other goodies from here.
-void Cmd_Give (CPlayerEntity *Player)
+void Cmd_Spawn (CPlayerEntity *Player)
 {
 	// Handle give all from old give.
 	if (Q_stricmp (ArgGets(1).c_str(), "all") == 0)
 	{
-		Cmd_Give_f (Player);
+		Cmd_Give (Player);
 		return;
 	}
 

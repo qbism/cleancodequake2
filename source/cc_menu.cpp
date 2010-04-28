@@ -291,7 +291,7 @@ void CMenuState::Select ()
 		CloseMenu ();
 }
 
-void Cmd_MenuLeft_t (CPlayerEntity *Player)
+void Cmd_MenuLeft (CPlayerEntity *Player)
 {
 	if (!Player->Client.Respawn.MenuState.InMenu)
 		return;
@@ -305,7 +305,7 @@ void Cmd_MenuLeft_t (CPlayerEntity *Player)
 	Player->Client.Respawn.MenuState.Key = CMenuState::KEY_NONE;
 }
 
-void Cmd_MenuRight_t (CPlayerEntity *Player)
+void Cmd_MenuRight (CPlayerEntity *Player)
 {
 	if (!Player->Client.Respawn.MenuState.InMenu)
 		return;

@@ -124,6 +124,7 @@ ENTITYFIELDS_BEGIN(IBrushModel)
 	CEntityField ("MoveState", EntityMemberOffset(IBrushModel,MoveState), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("Dir", EntityMemberOffset(IBrushModel,Dir), FT_VECTOR | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("CurrentSpeed", EntityMemberOffset(IBrushModel,CurrentSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("AccelMoveSpeed", EntityMemberOffset(IBrushModel,AccelMoveSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("MoveSpeed", EntityMemberOffset(IBrushModel,MoveSpeed), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("MoveAccel", EntityMemberOffset(IBrushModel,MoveAccel), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("MoveDecel", EntityMemberOffset(IBrushModel,MoveDecel), FT_FLOAT | FT_NOSPAWN | FT_SAVABLE),
@@ -214,7 +215,7 @@ void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 	RemainingDistance = Dir.Normalize();
 	this->EndFunc = EndFunc;
 
-	if (MoveSpeed == MoveAccel && Speed == MoveDecel)
+	if (MoveSpeed == MoveAccel && MoveSpeed == MoveDecel)
 	{
 		if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
 			MoveBegin ();
@@ -296,7 +297,7 @@ void IBrushModel::AngleMoveBegin ()
 	if (MoveSpeed >= Speed)
 	{
 		// set nextthink to trigger a think when dest is reached
-		NextThink = Level.Frame + (frames * 0.1f);
+		NextThink = Level.Frame + frames;
 		ThinkType = BRUSHTHINK_AMOVEFINAL;
 	}
 	else
@@ -306,7 +307,7 @@ void IBrushModel::AngleMoveBegin ()
 	}
 #else
 	// set nextthink to trigger a think when dest is reached
-	NextThink = Level.Frame + (frames * 0.1f);
+	NextThink = Level.Frame + frames;
 	ThinkType = BRUSHTHINK_AMOVEFINAL;
 #endif
 }
@@ -344,24 +345,24 @@ void IBrushModel::CalcAcceleratedMove()
 	float	accel_dist;
 	float	decel_dist;
 
-	MoveSpeed = Speed;
+	AccelMoveSpeed = MoveSpeed;
 
-	if (RemainingDistance < Accel)
+	if (RemainingDistance < MoveAccel)
 	{
 		CurrentSpeed = RemainingDistance;
 		return;
 	}
 
-	accel_dist = AccelerationDistance (Speed, Accel);
-	decel_dist = AccelerationDistance (Speed, Decel);
+	accel_dist = AccelerationDistance (MoveSpeed, MoveAccel);
+	decel_dist = AccelerationDistance (MoveSpeed, MoveDecel);
 
 	if ((RemainingDistance - accel_dist - decel_dist) < 0)
 	{
 		float	f;
 
 		f = (MoveAccel + MoveDecel) / (MoveAccel * MoveDecel);
-		MoveSpeed = (-2 + sqrtf(4 - 4 * f * (-2 * RemainingDistance))) / (2 * f);
-		decel_dist = AccelerationDistance (MoveSpeed, MoveDecel);
+		AccelMoveSpeed = (-2 + sqrt(4 - 4 * f * (-2 * RemainingDistance))) / (2 * f);
+		decel_dist = AccelerationDistance (AccelMoveSpeed, MoveDecel);
 	}
 
 	DecelDistance = decel_dist;
@@ -387,7 +388,7 @@ void IBrushModel::Accelerate ()
 	}
 
 	// are we at full speed and need to start decelerating during this move?
-	if (CurrentSpeed == MoveSpeed)
+	if (CurrentSpeed == AccelMoveSpeed)
 		if ((RemainingDistance - CurrentSpeed) < DecelDistance)
 		{
 			float	p1_distance;
@@ -395,10 +396,10 @@ void IBrushModel::Accelerate ()
 			float	distance;
 
 			p1_distance = RemainingDistance - DecelDistance;
-			p2_distance = MoveSpeed * (1.0 - (p1_distance / MoveSpeed));
+			p2_distance = AccelMoveSpeed * (1.0 - (p1_distance / AccelMoveSpeed));
 			distance = p1_distance + p2_distance;
-			CurrentSpeed = MoveSpeed;
-			NextSpeed = MoveSpeed - MoveDecel * (p2_distance / distance);
+			CurrentSpeed = AccelMoveSpeed;
+			NextSpeed = AccelMoveSpeed - MoveDecel * (p2_distance / distance);
 			return;
 		}
 
@@ -426,11 +427,11 @@ void IBrushModel::Accelerate ()
 		// and cross over the decel_distance; figure the average speed for the
 		// entire move
 		p1_distance = RemainingDistance - DecelDistance;
-		p1_speed = (old_speed + MoveSpeed) / 2.0;
-		p2_distance = MoveSpeed * (1.0 - (p1_distance / p1_speed));
+		p1_speed = (old_speed + AccelMoveSpeed) / 2.0;
+		p2_distance = AccelMoveSpeed * (1.0 - (p1_distance / p1_speed));
 		distance = p1_distance + p2_distance;
-		CurrentSpeed = (p1_speed * (p1_distance / distance)) + (MoveSpeed * (p2_distance / distance));
-		NextSpeed = MoveSpeed - MoveDecel * (p2_distance / distance);
+		CurrentSpeed = (p1_speed * (p1_distance / distance)) + (AccelMoveSpeed * (p2_distance / distance));
+		NextSpeed = AccelMoveSpeed - MoveDecel * (p2_distance / distance);
 		return;
 	}
 

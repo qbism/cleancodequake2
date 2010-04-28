@@ -209,8 +209,8 @@ inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 
 
 void CTFCalcScores();
-void CTFTeam_f (CPlayerEntity *Player);
-void CTFID_f (CPlayerEntity *Player);
+void CTFTeam (CPlayerEntity *Player);
+void CTFID (CPlayerEntity *Player);
 void CTFSay_Team(CPlayerEntity *who, char *msg);
 void CTFResetFlag(ETeamIndex Team);
 void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *Attacker);

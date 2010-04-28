@@ -192,7 +192,7 @@ public:
 	};
 };
 
-void SvCmd_EntList_f ()
+void SvCmd_EntList ()
 {
 	std::string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
 	CServerEntityList tmp;
@@ -231,7 +231,7 @@ void SvCmd_EntList_f ()
 }
 
 extern char *gEntString;
-void SvCmd_Dump_f ()
+void SvCmd_Dump ()
 {
 	CFile File ((std::string("/maps/ents/") + Level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
 
@@ -242,17 +242,17 @@ void SvCmd_Dump_f ()
 }
 
 bool requestedBreak = false;
-void SvCmd_Break_f ()
+void SvCmd_Break ()
 {
 	requestedBreak = true;
 }
 
-void SvCmd_IndexList_f ();
+void SvCmd_IndexList ();
 
 #include "cc_ban.h"
 IPAddress CopyIP (const char *val);
 
-void SvCmd_Ban_t ()
+void SvCmd_Ban ()
 {
 	const std::string str = Q_strlwr(ArgGets(2));
 
@@ -359,22 +359,22 @@ void SvCmd_Ban_t ()
 		, str.c_str(), BAN_SQUELCH, BAN_SPECTATOR, BAN_ENTER);
 }
 
-void SvCmd_Test_t ()
+void SvCmd_Test ()
 {
 }
 
 void SvCmd_Register ()
 {
-	SvCmd_AddCommand ("entlist",				SvCmd_EntList_f);
-	SvCmd_AddCommand ("indexlist",				SvCmd_IndexList_f);
-	SvCmd_AddCommand ("dump",					SvCmd_Dump_f);
-	SvCmd_AddCommand ("break",					SvCmd_Break_f);
-	SvCmd_AddCommand ("cc_version",				SvCmd_CCVersion_t);
-	SvCmd_AddCommand ("ban",					SvCmd_Ban_t);
-	SvCmd_AddCommand ("test",					SvCmd_Test_t);
+	SvCmd_AddCommand ("entlist",				SvCmd_EntList);
+	SvCmd_AddCommand ("indexlist",				SvCmd_IndexList);
+	SvCmd_AddCommand ("dump",					SvCmd_Dump);
+	SvCmd_AddCommand ("break",					SvCmd_Break);
+	SvCmd_AddCommand ("cc_version",				SvCmd_CCVersion);
+	SvCmd_AddCommand ("ban",					SvCmd_Ban);
+	SvCmd_AddCommand ("test",					SvCmd_Test);
 
 #if CLEANCODE_IRC
-	SvCmd_AddCommand ("irc",					SvCmd_Irc_ConnectTo_t);
+	SvCmd_AddCommand ("irc",					SvCmd_Irc_ConnectTo);
 #endif
 }
 

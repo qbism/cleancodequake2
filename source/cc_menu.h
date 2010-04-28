@@ -71,8 +71,8 @@ public:
 	void						AddItem (CMenuItem *Item);
 };
 
-void Cmd_MenuLeft_t (CPlayerEntity *Player);
-void Cmd_MenuRight_t (CPlayerEntity *Player);
+void Cmd_MenuLeft (CPlayerEntity *Player);
+void Cmd_MenuRight (CPlayerEntity *Player);
 
 // Controls
 #include "cc_controls.h"

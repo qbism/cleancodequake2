@@ -378,7 +378,7 @@ void CTFCalcScores()
 	}
 }
 
-void CTFID_f (CPlayerEntity *Player)
+void CTFID (CPlayerEntity *Player)
 {
 	Player->Client.Respawn.CTF.IDState = !Player->Client.Respawn.CTF.IDState;
 	Player->PrintToClient (PRINT_HIGH, "%s player identification display\n", (Player->Client.Respawn.CTF.IDState) ? "Activating" : "Deactivating");
@@ -386,7 +386,7 @@ void CTFID_f (CPlayerEntity *Player)
 
 /*------------------------------------------------------------------------*/
 
-void CTFTeam_f (CPlayerEntity *Player)
+void CTFTeam (CPlayerEntity *Player)
 {
 	sint32 desired_team;
 
@@ -1481,12 +1481,12 @@ void CTFStats(CPlayerEntity *Player)
 	Player->PrintToClient (PRINT_HIGH, "%s", text);
 }
 
-void Cmd_PlayerList_f (CPlayerEntity *Player);
-void CTFPlayerList(CPlayerEntity *Player)
+void Cmd_PlayerList (CPlayerEntity *Player);
+void CTFPlayerList (CPlayerEntity *Player)
 {
 	if (!(Game.GameMode & GAME_CTF))
 	{
-		Cmd_PlayerList_f (Player);
+		Cmd_PlayerList (Player);
 		return;
 	}
 

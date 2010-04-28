@@ -439,17 +439,11 @@ void CIRCClient::SendMessage (std::string Msg)
 	IRCServerList[Player->Client.Respawn.IRC.ConnectedTo-1]->SendMessage (Player, Msg);
 };
 
-void Cmd_Irc_t (CPlayerEntity *Player)
+void Cmd_Irc (CPlayerEntity *Player)
 {
-	Player->Client.Respawn.IRC.SendMessage ("Test1");
-	Player->Client.Respawn.IRC.SendMessage ("Test2");
-	Player->Client.Respawn.IRC.SendMessage ("Test3");
-	Player->Client.Respawn.IRC.SendMessage ("Test4");
-	Player->Client.Respawn.IRC.SendMessage ("Test5");
-	Player->Client.Respawn.IRC.SendMessage ("Test6");
 }
 
-void Cmd_Irc_Connect_t (CPlayerEntity *Player)
+void Cmd_Irc_Connect (CPlayerEntity *Player)
 {
 	// irc connect n nick
 	if (ArgCount() < 3)
@@ -481,7 +475,7 @@ void Cmd_Irc_Connect_t (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.Connect (ServerIndex);
 };
 
-void Cmd_Irc_Join_t (CPlayerEntity *Player)
+void Cmd_Irc_Join (CPlayerEntity *Player)
 {
 	// irc join channel
 	if (ArgCount() < 3)
@@ -490,12 +484,12 @@ void Cmd_Irc_Join_t (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.JoinChannel (ArgGets(2));
 };
 
-void Cmd_Irc_List_t (CPlayerEntity *Player)
+void Cmd_Irc_List (CPlayerEntity *Player)
 {
 	Player->Client.Respawn.IRC.List ();
 };
 
-void Cmd_Irc_Say_t (CPlayerEntity *Player)
+void Cmd_Irc_Say (CPlayerEntity *Player)
 {
 	// irc say "xxx"
 	if (ArgCount() < 3)
@@ -504,7 +498,7 @@ void Cmd_Irc_Say_t (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.SendMessage (ArgGets(2));
 };
 
-void Cmd_Irc_Disconnect_t (CPlayerEntity *Player)
+void Cmd_Irc_Disconnect (CPlayerEntity *Player)
 {
 	// irc disconnect
 	if (ArgCount() < 2)
@@ -513,12 +507,12 @@ void Cmd_Irc_Disconnect_t (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.Disconnect ();
 };
 
-void Cmd_Irc_Leave_t (CPlayerEntity *Player)
+void Cmd_Irc_Leave (CPlayerEntity *Player)
 {
 	Player->Client.Respawn.IRC.LeaveChannel ();
 };
 
-void SvCmd_Irc_ConnectTo_t ()
+void SvCmd_Irc_ConnectTo ()
 {
 	// sv irc connect server port
 	if (ArgCount() < 4)
@@ -537,7 +531,7 @@ void SvCmd_Irc_ConnectTo_t ()
 	}
 };
 
-void SvCmd_Irc_Disconnect_t ()
+void SvCmd_Irc_Disconnect ()
 {
 	// sv irc disconnect server
 	if (ArgCount() < 3)
