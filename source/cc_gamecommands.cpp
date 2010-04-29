@@ -39,125 +39,126 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 /*
 ==================
-Cmd_God_f
-
 Sets client to godmode
-
-argv(0) god
 ==================
 */
-void Cmd_God (CPlayerEntity *Player)
+class CGodCommand : public CGameCommandFunctor
 {
-	Player->Flags ^= FL_GODMODE;
-	Player->PrintToClient (PRINT_HIGH, "God mode %s\n", (!(Player->Flags & FL_GODMODE)) ? "off" : "on");
-}
+public:
+	void operator () ()
+	{
+		Player->Flags ^= FL_GODMODE;
+		Player->PrintToClient (PRINT_HIGH, "God mode %s\n", (!(Player->Flags & FL_GODMODE)) ? "off" : "on");
+	}
+};
 
 
 /*
 ==================
-Cmd_Notarget_f
-
 Sets client to notarget
-
-argv(0) notarget
 ==================
 */
-void Cmd_Notarget (CPlayerEntity *Player)
+class CNoTargetCommand : public CGameCommandFunctor
 {
-	Player->Flags ^= FL_NOTARGET;
-	Player->PrintToClient (PRINT_HIGH, "Notarget %s\n", (!(Player->Flags & FL_NOTARGET)) ? "off" : "on");
-}
-
+public:
+	void operator () ()
+	{
+		Player->Flags ^= FL_NOTARGET;
+		Player->PrintToClient (PRINT_HIGH, "Notarget %s\n", (!(Player->Flags & FL_NOTARGET)) ? "off" : "on");
+	}
+};
 
 /*
 ==================
-Cmd_Noclip_f
-
-argv(0) noclip
 ==================
 */
-void Cmd_Noclip (CPlayerEntity *Player)
+class CNoClipCommand : public CGameCommandFunctor
 {
-	Player->NoClip = !Player->NoClip;
-	Player->PrintToClient (PRINT_HIGH, "Noclip %s\n", Player->NoClip ? "on" : "off");
-}
+public:
+	void operator () ()
+	{
+		Player->NoClip = !Player->NoClip;
+		Player->PrintToClient (PRINT_HIGH, "Noclip %s\n", Player->NoClip ? "on" : "off");
+	};
+};
 
 /*
 =================
 Cmd_Kill_f
 =================
 */
-void Cmd_Kill (CPlayerEntity *Player)
+class CKillCommand : public CGameCommandFunctor
 {
-//ZOID
-	if (Player->GetSolid() == SOLID_NOT)
-		return;
-//ZOID
-
-	if((Level.Frame - Player->Client.Timers.RespawnTime) < 50)
-		return;
-
-#if ROGUE_FEATURES
-	// make sure no trackers are still hurting us.
-	if (Player->Client.Timers.Tracker)
-		Player->RemoveAttackingPainDaemons ();
-
-	if (Player->Client.OwnedSphere)
+public:
+	void operator () ()
 	{
-		Player->Client.OwnedSphere->Free ();
-		Player->Client.OwnedSphere = NULL;
-	}
-#endif
+		if (Player->GetSolid() == SOLID_NOT)
+			return;
 
-	Player->Flags &= ~FL_GODMODE;
-	Player->Health = 0;
-	meansOfDeath = MOD_SUICIDE;
-	Player->Die (Player, Player, 100000, vec3fOrigin);
-}
+		if ((Level.Frame - Player->Client.Timers.RespawnTime) < 50)
+			return;
+
+	#if ROGUE_FEATURES
+		// make sure no trackers are still hurting us.
+		if (Player->Client.Timers.Tracker)
+			Player->RemoveAttackingPainDaemons ();
+
+		if (Player->Client.OwnedSphere)
+		{
+			Player->Client.OwnedSphere->Free ();
+			Player->Client.OwnedSphere = NULL;
+		}
+	#endif
+
+		Player->Flags &= ~FL_GODMODE;
+		Player->Health = 0;
+		meansOfDeath = MOD_SUICIDE;
+		Player->Die (Player, Player, 100000, vec3fOrigin);
+	};
+};
 
 /*
 =================
 Cmd_PutAway_f
 =================
 */
-void Cmd_PutAway (CPlayerEntity *Player)
+class CPutAwayCommand : public CGameCommandFunctor
 {
+public:
+	void operator () ()
+	{
 	Player->Client.LayoutFlags &= ~LF_SCREEN_MASK;
 
 	if (Player->Client.Respawn.MenuState.InMenu)
 		Player->Client.Respawn.MenuState.CloseMenu ();
 
 	Player->Client.LayoutFlags |= LF_UPDATECHASE;
-}
+	};
+};
 
-
-sint32 PlayerSort (void const *a, void const *b)
+bool PlayerSort (int &a, int &b)
 {
-	sint32 anum = Game.Clients[*(sint32 *)a].playerState.stats[STAT_FRAGS];
-	sint32 bnum = Game.Clients[*(sint32 *)b].playerState.stats[STAT_FRAGS];
+	sint32 anum = Game.Clients[a].playerState.stats[STAT_FRAGS];
+	sint32 bnum = Game.Clients[b].playerState.stats[STAT_FRAGS];
 
-	if (anum < bnum)
-		return -1;
-	if (anum > bnum)
-		return 1;
-	return 0;
+	return (anum > bnum);
 }
 
 class CPlayerListCountCallback : public CForEachPlayerCallback
 {
 public:
-	sint32		*index;
-	sint32		*count;
+	std::vector<int>	&index;
 
-	CPlayerListCountCallback (sint32 *index, sint32 *count) :
-	index(index),
-	count(count)
+	CPlayerListCountCallback (std::vector<int> &index) :
+	index(index)
 	{
 	};
 
+	CPlayerListCountCallback &operator = (CPlayerListCountCallback &) {return *this;}
+
 	void Callback (CPlayerEntity *Player)
 	{
-		index[(*count)++] = Index;
+		index.push_back (Index);
 	}
 };
 
@@ -166,77 +167,86 @@ public:
 Cmd_Players_f
 =================
 */
-void Cmd_Players (CPlayerEntity *Player)
+class CPlayersCommand : public CGameCommandFunctor
 {
-	sint32		count = 0;
-	char	Small[MAX_INFO_KEY];
-	char	Large[MAX_INFO_STRING];
-	sint32		*index = QNew (TAG_GAME) sint32[Game.MaxClients];
-
-	CPlayerListCountCallback (index, &count).Query ();
-
-	// sort by frags
-	qsort (index, count, sizeof(index[0]), PlayerSort);
-
-	// print information
-	Large[0] = Small[0] = 0;
-
-	for (sint32 i = 0; i < count; i++)
+public:
+	void operator () ()
 	{
-		CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
-		Q_snprintfz (Small, sizeof(Small), "%3i %s\n",
-			LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
-			LoopPlayer->Client.Persistent.Name.c_str());
-		if (strlen (Small) + strlen(Large) > sizeof(Large) - 100 )
-		{	// can't print all of them in one packet
-			Q_strcatz (Large, "...\n", MAX_INFO_STRING);
-			break;
+		sint32		count = 0;
+		std::vector<int> index;
+
+		CPlayerListCountCallback (index).Query ();
+
+		// sort by frags
+		std::sort (index.begin(), index.end(), PlayerSort);
+
+		// print information
+		std::string Large;
+
+		for (sint32 i = 0; i < count; i++)
+		{
+			CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
+			std::string Small;
+
+			FormatString (Small, "%3i %s\n",
+				LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
+				LoopPlayer->Client.Persistent.Name.c_str());
+
+			if (Small.size() > (MAX_INFO_KEY + MAX_INFO_VALUE))
+			{
+				// can't print all of them in one packet
+				Large += "...\n";
+				break;
+			}
+			
+			Large += Small;
 		}
-		Q_strcatz (Large, Small, MAX_INFO_STRING);
+
+		Player->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large, count);
 	}
-
-	Player->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large, count);
-
-	QDelete[] index;
-}
+};
 
 /*
 =================
 Cmd_Wave_f
 =================
 */
-void Cmd_Wave (CPlayerEntity *Player)
+class CWaveCommand : public CGameCommandFunctor
 {
-	// can't wave when ducked
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
-		return;
-
-	if (Player->Client.Anim.Priority > ANIM_WAVE)
-		return;
-
-	struct SWaveAnimations
+public:
+	void operator () ()
 	{
-		const char	*Name;
-		uint16		StartFrame, EndFrame;
-	} WaveAnims [] =
-	{
-		{ "flipoff", FRAME_flip01 - 1, FRAME_flip12 },
-		{ "salute", FRAME_salute01 - 1, FRAME_salute11 },
-		{ "taunt", FRAME_taunt01 - 1, FRAME_taunt17 },
-		{ "wave", FRAME_wave01 - 1, FRAME_wave11 },
-		NULL
+		// can't wave when ducked
+		if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+			return;
+
+		if (Player->Client.Anim.Priority > ANIM_WAVE)
+			return;
+
+		struct SWaveAnimations
+		{
+			const char	*Name;
+			uint16		StartFrame, EndFrame;
+		} WaveAnims [] =
+		{
+			{ "flipoff", FRAME_flip01 - 1, FRAME_flip12 },
+			{ "salute", FRAME_salute01 - 1, FRAME_salute11 },
+			{ "taunt", FRAME_taunt01 - 1, FRAME_taunt17 },
+			{ "wave", FRAME_wave01 - 1, FRAME_wave11 },
+			NULL
+		};
+
+		static const uint32 lastIndex = ArrayCount(WaveAnims) - 1;
+		uint8 WaveIndex = (ArgCount() > 1) ? 
+			(ArgGeti(1) >= lastIndex) ? lastIndex-1 : ArgGeti(1)
+			: 0;
+
+		Player->PrintToClient (PRINT_HIGH, "%s\n", WaveAnims[WaveIndex].Name);
+		Player->State.GetFrame() = WaveAnims[WaveIndex].StartFrame;
+		Player->Client.Anim.EndFrame = WaveAnims[WaveIndex].EndFrame;
+		Player->Client.Anim.Priority = ANIM_WAVE;
 	};
-
-	static const uint32 lastIndex = ArrayCount(WaveAnims) - 1;
-	uint8 WaveIndex = (ArgCount() > 1) ? 
-		(ArgGeti(1) >= lastIndex) ? lastIndex-1 : ArgGeti(1)
-		: 0;
-
-	Player->PrintToClient (PRINT_HIGH, "%s\n", WaveAnims[WaveIndex].Name);
-	Player->State.GetFrame() = WaveAnims[WaveIndex].StartFrame;
-	Player->Client.Anim.EndFrame = WaveAnims[WaveIndex].EndFrame;
-	Player->Client.Anim.Priority = ANIM_WAVE;
-}
+};
 
 /*
 ==================
@@ -244,34 +254,6 @@ Cmd_Say_f
 ==================
 */
 #define MAX_TALK_STRING 100
-
-bool CheckFlood (CPlayerEntity *Player)
-{
-	if (CvarList[CV_FLOOD_MSGS].Integer())
-	{
-		if (Level.Frame < Player->Client.Flood.LockTill)
-		{
-			Player->PrintToClient (PRINT_HIGH, "You can't talk for %d more seconds\n",
-				(sint32)((Player->Client.Flood.LockTill - Level.Frame)/10));
-			return true;
-		}
-		sint32 i = Player->Client.Flood.WhenHead - CvarList[CV_FLOOD_MSGS].Integer() + 1;
-		if (i < 0)
-			i = (sizeof(Player->Client.Flood.When)/sizeof(Player->Client.Flood.When[0])) + i;
-		if (Player->Client.Flood.When[i] && 
-			((Level.Frame - Player->Client.Flood.When[i])/10) < CvarList[CV_FLOOD_PER_SECOND].Integer())
-		{
-			Player->Client.Flood.LockTill = Level.Frame + (CvarList[CV_FLOOD_DELAY].Float() * 10);
-			Player->PrintToClient (PRINT_CHAT, "Flood protection:  You can't talk for %d seconds.\n",
-				CvarList[CV_FLOOD_DELAY].Integer());
-			return true;
-		}
-		Player->Client.Flood.WhenHead = (Player->Client.Flood.WhenHead + 1) %
-			(sizeof(Player->Client.Flood.When)/sizeof(Player->Client.Flood.When[0]));
-		Player->Client.Flood.When[Player->Client.Flood.WhenHead] = Level.Frame;
-	}
-	return false;
-}
 
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
@@ -291,72 +273,95 @@ public:
 	}
 };
 
-void Cmd_Say (CPlayerEntity *Player, bool team, bool arg0)
+class CCmdSayCommandBase : public CGameCommandFunctor
 {
-	//char	text[MAX_TALK_STRING];
-	static std::string text;
-
-	if (ArgCount () < 2 && !arg0)
-		return;
-
-	if (Bans.IsSquelched(Player->Client.Persistent.IP) || Bans.IsSquelched(Player->Client.Persistent.Name.c_str()))
+public:
+	void operator () (bool team, bool arg0)
 	{
-		Player->PrintToClient (PRINT_HIGH, "You are squelched and may not talk.\n");
-		return;
-	}
+		static std::string text;
 
-	if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
-		team = false;
+		if (ArgCount () < 2 && !arg0)
+			return;
 
-	text = (team) ? ("(" + Player->Client.Persistent.Name + "): ") : (Player->Client.Persistent.Name + ": ");
-
-	if (arg0)
-		text += ArgGets(0) + " " + ArgGetConcatenatedString();
-	else
-	{
-		std::string p = ArgGetConcatenatedString();
-
-		if (p[0] == '"')
+		if (Bans.IsSquelched(Player->Client.Persistent.IP) || Bans.IsSquelched(Player->Client.Persistent.Name.c_str()))
 		{
-			p.erase (0, 1);
-			p.erase (p.end()-1);
-		}
-
-#if CLEANCODE_IRC
-		if (!p.empty() && p[0] == '!' && Player->Client.Respawn.IRC.Connected())
-		{
-			Player->Client.Respawn.IRC.SendMessage (p.substr (1));
+			Player->PrintToClient (PRINT_HIGH, "You are squelched and may not talk.\n");
 			return;
 		}
-#endif
 
-		text += p;
+		if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
+			team = false;
+
+		text = (team) ? ("(" + Player->Client.Persistent.Name + "): ") : (Player->Client.Persistent.Name + ": ");
+
+		if (arg0)
+			text += ArgGets(0) + " " + ArgGetConcatenatedString();
+		else
+		{
+			std::string p = ArgGetConcatenatedString();
+
+			if (p[0] == '"')
+			{
+				p.erase (0, 1);
+				p.erase (p.end()-1);
+			}
+
+	#if CLEANCODE_IRC
+			if (!p.empty() && p[0] == '!' && Player->Client.Respawn.IRC.Connected())
+			{
+				Player->Client.Respawn.IRC.SendMessage (p.substr (1));
+				return;
+			}
+	#endif
+
+			text += p;
+		}
+
+		// don't let text be too long for malicious reasons
+		if (text.length() >= MAX_TALK_STRING-1)
+			text.erase (MAX_TALK_STRING-1);
+
+		text += "\n";
+
+		if (Player->CheckFlood())
+			return;
+
+		if (CvarList[CV_DEDICATED].Integer())
+			ServerPrintf ("%s", text.c_str());
+
+		CSayPlayerCallback (text).Query ();
 	}
 
-	// don't let text be too long for malicious reasons
-	if (text.length() >= MAX_TALK_STRING-1)
-		text.erase (MAX_TALK_STRING-1);
+	virtual void operator () () = 0;
+};
 
-	text += "\n";
+class CCmdSayCommand : public CCmdSayCommandBase
+{
+public:
+	void operator () ()
+	{
+		CCmdSayCommandBase::operator() (false, false);
+	};
+};
 
-	if (CheckFlood(Player))
-		return;
-
-	if (CvarList[CV_DEDICATED].Integer())
-		ServerPrintf ("%s", text.c_str());
-
-	CSayPlayerCallback (text).Query ();
-}
+class CCmdSayTeamCommand : public CCmdSayCommandBase
+{
+public:
+	void operator () ()
+	{
+		CCmdSayCommandBase::operator() (true, false);
+	};
+};
 
 class CPlayerListCallback : public CForEachPlayerCallback
 {
 public:
-	char			*Text;
+	std::string		&Text;
 	size_t			SizeOf;
 	CPlayerEntity	*Ent;
 	bool			Spectator;
 
-	CPlayerListCallback (char *Text, size_t SizeOf, CPlayerEntity *Ent) :
+	CPlayerListCallback (std::string &Text, size_t SizeOf, CPlayerEntity *Ent) :
 	Text(Text),
 	SizeOf(SizeOf),
 	Ent(Ent),
@@ -364,30 +369,33 @@ public:
 	{
 	};
 
+	CPlayerListCallback& operator = (CPlayerListCallback &) {return *this;}
+
 	bool DoCallback (CPlayerEntity *Player)
 	{
-		char tempString[160];
+		static std::string tempString;
+		tempString.clear();
 
 		if (!Spectator)
-			Q_snprintfz(tempString, sizeof(tempString), " - %02d:%02d %4d %3d %s\n",
+			FormatString(tempString, " - %02d:%02d %4d %3d %s\n",
 				(Level.Frame - Player->Client.Respawn.EnterFrame) / 600,
 				((Level.Frame - Player->Client.Respawn.EnterFrame) % 600)/10,
 				Player->Client.GetPing(),
 				Player->Client.Respawn.Score,
 				Player->Client.Persistent.Name.c_str());
 		else
-			Q_snprintfz(tempString, sizeof(tempString), " - %s%s\n",
+			FormatString(tempString, " - %s%s\n",
 				Player->Client.Persistent.Name.c_str(),
 				Player->Client.Respawn.Spectator ? " (Spectator)" : "");
 
-		if (strlen(Text) + strlen(tempString) > SizeOf - 50)
+		if (Text.size() + tempString.size() > SizeOf - 50)
 		{
-			Q_snprintfz (Text+strlen(Text), SizeOf, "And more...\n");
-			Ent->PrintToClient (PRINT_HIGH, "%s", Text);
+			Text += "And more...\n";
+			Ent->PrintToClient (PRINT_HIGH, "%s", Text.c_str());
 			return true;
 		}
 
-		Q_strcatz(Text, tempString, SizeOf);
+		Text += tempString;
 		return false;
 	}
 
@@ -419,177 +427,128 @@ public:
 	}
 };
 
-void Cmd_PlayerList (CPlayerEntity *Player)
+void CPlayerListCommand::operator () ()
 {
-	char text[MAX_COMPRINT/4];
-
+	static std::string text;
+	text.clear();
+		
 	// connect time, ping, Score, name
-	*text = 0;
-
-	Q_snprintfz (text, sizeof(text), "Spawned:\n");
+	text = "Spawned:\n";
 	CPlayerListCallback(text, sizeof(text), Player).DoQuery (false);
 
-	Q_strcatz (text, "Connecting:\n", sizeof(text));
+	text = "Connecting:\n";
 	if (!CPlayerListCallback(text, sizeof(text), Player).DoQuery (true))
-		Player->PrintToClient (PRINT_HIGH, "%s", text);
-}
-
-void GCmd_Say (CPlayerEntity *Player)
-{
-	Cmd_Say (Player, false, false);
-}
-
-void GCmd_SayTeam (CPlayerEntity *Player)
-{
-	Cmd_Say (Player, true, false);
-}
+		Player->PrintToClient (PRINT_HIGH, "%s", text.c_str());
+};
 
 /*
 ==================
-Cmd_Score_f
-
 Display the scoreboard
 ==================
 */
-void Cmd_Score (CPlayerEntity *Player)
+class CScoreCommand : public CGameCommandFunctor
 {
-	Player->Client.LayoutFlags &= ~(LF_SHOWINVENTORY | LF_SHOWHELP);
-	if (Player->Client.Respawn.MenuState.InMenu)
+public:
+	void operator () ()
 	{
-		Player->Client.Respawn.MenuState.CloseMenu();
-		return;
+		Player->ShowScores();
 	}
+};
 
-	if (Game.GameMode & GAME_SINGLEPLAYER)
-		return;
-
-	if (Player->Client.LayoutFlags & LF_SHOWSCORES)
-	{
-		Player->Client.LayoutFlags &= ~LF_SHOWSCORES;
-		Player->Client.LayoutFlags |= LF_UPDATECHASE;
-		return;
-	}
-
-	Player->Client.LayoutFlags |= LF_SHOWSCORES;
-	Player->DeathmatchScoreboardMessage (true);
-}
 
 /*
 ==================
-Cmd_Help_f
-
 Display the current help message
 ==================
 */
-void Cmd_Help (CPlayerEntity *Player)
+class CHelpCommand : public CGameCommandFunctor
 {
-	if (Level.IntermissionTime)
-		return;
-
-	// this is for backwards compatability
-	if (Game.GameMode & GAME_DEATHMATCH)
+public:
+	void operator () ()
 	{
-		Cmd_Score (Player);
-		return;
-	}
-
-	Player->Client.LayoutFlags &= ~(LF_SHOWSCORES | LF_SHOWINVENTORY);
-	if (Player->Client.Respawn.MenuState.InMenu)
-	{
-		Player->Client.Respawn.MenuState.CloseMenu();
-		return;
-	}
-
-	if ((Player->Client.LayoutFlags & LF_SHOWHELP) && (Player->Client.Persistent.GameHelpChanged == Game.HelpChanged))
-	{
-		Player->Client.LayoutFlags &= ~LF_SHOWHELP;
-		return;
-	}
-
-	Player->Client.LayoutFlags |= LF_SHOWHELP;
-	Player->Client.Persistent.HelpChanged = 0;
-	HelpComputer (Player);
-}
-
-void GCTFSay_Team (CPlayerEntity *Player);
+		Player->ShowHelp();
+	};
+};
 
 void Cmd_Register ()
 {
 	// These commands are generic, and can be executed any time
 	// during play, even during intermission and by spectators.
-	Cmd_AddCommand ("players",				Cmd_Players,			CMD_SPECTATOR);
-	Cmd_AddCommand ("say",					GCmd_Say,				CMD_SPECTATOR);
-	Cmd_AddCommand ("Score",				Cmd_Score,				CMD_SPECTATOR);
-	Cmd_AddCommand ("help",					Cmd_Help,				CMD_SPECTATOR);
-	Cmd_AddCommand ("putaway",				Cmd_PutAway,			CMD_SPECTATOR);
-	Cmd_AddCommand ("playerlist",			
+	Cmd_AddCommand<CPlayersCommand> ("players",			CMD_SPECTATOR);
+	Cmd_AddCommand<CCmdSayCommand> ("say",				CMD_SPECTATOR);
+	Cmd_AddCommand<CScoreCommand> ("score",				CMD_SPECTATOR);
+	Cmd_AddCommand<CHelpCommand> ("help",				CMD_SPECTATOR);
+	Cmd_AddCommand<CPutAwayCommand> ("putaway",			CMD_SPECTATOR);
+	Cmd_AddCommand
 #if CLEANCTF_ENABLED
-		CTFPlayerList,		
+		<CCTFPlayerListCommand>		
 #else
-		Cmd_PlayerList,		
+		<CPlayerListCommand>	
 #endif
-		CMD_SPECTATOR);
+			("playerlist",			CMD_SPECTATOR);
 
 	// These commands are also generic, but can only be executed
 	// by in-game players during the game
-	Cmd_AddCommand ("kill",					Cmd_Kill);
-	Cmd_AddCommand ("wave",					Cmd_Wave);
+	Cmd_AddCommand<CKillCommand> ("kill");
+	Cmd_AddCommand<CWaveCommand> ("wave");
 
-	Cmd_AddCommand ("use",					Cmd_Use);
-	Cmd_AddCommand ("uselist",				Cmd_UseList);
-	Cmd_AddCommand ("drop",					Cmd_Drop);
-	Cmd_AddCommand ("inven",				Cmd_Inven);
-	Cmd_AddCommand ("invuse",				Cmd_InvUse);
-	Cmd_AddCommand ("invdrop",				Cmd_InvDrop);
-	Cmd_AddCommand ("weapprev",				Cmd_WeapPrev);
-	Cmd_AddCommand ("weapnext",				Cmd_WeapNext);
-	Cmd_AddCommand ("weaplast",				Cmd_WeapLast);
-	Cmd_AddCommand ("invnext",				Cmd_SelectNextItem);
-	Cmd_AddCommand ("invprev",				Cmd_SelectPrevItem);
-	Cmd_AddCommand ("invnextw",				Cmd_SelectNextWeapon);
-	Cmd_AddCommand ("invprevw",				Cmd_SelectPrevWeapon);
-	Cmd_AddCommand ("invnextp",				Cmd_SelectNextPowerup);
-	Cmd_AddCommand ("invprevp",				Cmd_SelectPrevPowerup);
+	Cmd_AddCommand<CUseCommand> ("use");
+	Cmd_AddCommand<CUseListCommand> ("uselist");
+	Cmd_AddCommand<CDropCommand> ("drop");
+	Cmd_AddCommand<CInventoryCommand> ("inven");
+	Cmd_AddCommand<CInvUseCommand> ("invuse");
+	Cmd_AddCommand<CInvDropCommand> ("invdrop");
+	Cmd_AddCommand<CWeapPrevCommand> ("weapprev");
+	Cmd_AddCommand<CWeapNextCommand> ("weapnext");
+	Cmd_AddCommand<CWeapLastCommand> ("weaplast");
+	Cmd_AddCommand<CInvNextCommand> ("invnext");
+	Cmd_AddCommand<CInvPrevCommand> ("invprev");
+	Cmd_AddCommand<CInvNextWCommand> ("invnextw");
+	Cmd_AddCommand<CInvPrevWCommand> ("invprevw");
+	Cmd_AddCommand<CInvNextPCommand> ("invnextp");
+	Cmd_AddCommand<CInvPrevPCommand> ("invprevp");
 #if _DEBUG
 	AddTestDebugCommands ();
 #endif
 
 	// And last but certainly not least..
-	Cmd_AddCommand ("god",					Cmd_God,				CMD_CHEAT);
-	Cmd_AddCommand ("notarget",				Cmd_Notarget,			CMD_CHEAT);
-	Cmd_AddCommand ("noclip",				Cmd_Noclip,				CMD_CHEAT);
-	Cmd_AddCommand ("give",					Cmd_Give,				CMD_CHEAT);
-	Cmd_AddCommand ("spawn",				Cmd_Give,				CMD_CHEAT);
+	Cmd_AddCommand<CGodCommand> ("god",				CMD_CHEAT);
+	Cmd_AddCommand<CNoTargetCommand> ("notarget",			CMD_CHEAT);
+	Cmd_AddCommand<CNoClipCommand> ("noclip",				CMD_CHEAT);
+	Cmd_AddCommand<CGiveCommand> ("give",				CMD_CHEAT);
+	Cmd_AddCommand<CSpawnCommand> ("spawn",				CMD_CHEAT);
 	
 	// CleanMenu commands
-	Cmd_AddCommand ("menu_left",			Cmd_MenuLeft,			CMD_SPECTATOR);
-	Cmd_AddCommand ("menu_right",			Cmd_MenuRight,			CMD_SPECTATOR);
-	Cmd_AddCommand ("cc_version",			Cmd_CCVersion,			CMD_SPECTATOR);
+	Cmd_AddCommand<CMenuLeftCommand> ("menu_left",			CMD_SPECTATOR);
+	Cmd_AddCommand<CMenuRightCommand> ("menu_right",			CMD_SPECTATOR);
+	Cmd_AddCommand<CVersionCommand> ("cc_version",			CMD_SPECTATOR);
 
 #if CLEANCTF_ENABLED
-	Cmd_AddCommand ("say_team",				GCTFSay_Team,			CMD_SPECTATOR);
-	Cmd_AddCommand ("team",					CTFTeam);
-	Cmd_AddCommand ("id",					CTFID);
-	Cmd_AddCommand ("yes",					CTFVoteYes);
-	Cmd_AddCommand ("no",					CTFVoteNo);
-	Cmd_AddCommand ("ready",				CTFReady);
-	Cmd_AddCommand ("notready",				CTFNotReady);
-	Cmd_AddCommand ("ghost",				CTFGhost);
-	Cmd_AddCommand ("admin",				CTFAdmin);
-	Cmd_AddCommand ("stats",				CTFStats);
-	Cmd_AddCommand ("warp",					CTFWarp);
-	Cmd_AddCommand ("boot",					CTFBoot);
-	Cmd_AddCommand ("observer",				CTFObserver);
+	Cmd_AddCommand<CCTFSayTeamCommand> ("say_team");
+	Cmd_AddCommand<CCTFTeamCommand> ("team");
+	Cmd_AddCommand<CCTFIDCommand> ("id");
+	Cmd_AddCommand<CCTFVoteYesCommand> ("yes");
+	Cmd_AddCommand<CCTFVoteNoCommand> ("no");
+	Cmd_AddCommand<CCTFReadyCommand> ("ready");
+	Cmd_AddCommand<CCTFNotReadyCommand> ("notready");
+	Cmd_AddCommand<CCTFGhostCommand> ("ghost");
+	Cmd_AddCommand<CCTFAdminCommand> ("admin");
+	Cmd_AddCommand<CCTFStatsCommand> ("stats");
+	Cmd_AddCommand<CCTFWarpCommand> ("warp");
+	Cmd_AddCommand<CCTFBootCommand> ("boot");
+	Cmd_AddCommand<CCTFObserverCommand> ("observer");
+#else
+	Cmd_AddCommand<CCmdSayTeamCommand> ("say_team");
 #endif
 
 #if CLEANCODE_IRC
-	Cmd_AddCommand ("irc",					Cmd_Irc)
-		.AddSubCommand ("connect",			Cmd_Irc_Connect).GoUp()
-		.AddSubCommand ("join",				Cmd_Irc_Join).GoUp()
-		.AddSubCommand ("say",				Cmd_Irc_Say).GoUp()
-		.AddSubCommand ("disconnect",		Cmd_Irc_Disconnect).GoUp()
-		.AddSubCommand ("leave",			Cmd_Irc_Leave).GoUp()
-		.AddSubCommand ("list",				Cmd_Irc_List);
+	Cmd_AddCommand<CIRCCommand> ("irc")
+		.AddSubCommand<CIRCCommand::CIRCConnectCommand> ("connect").GoUp()
+		.AddSubCommand<CIRCCommand::CIRCJoinCommand> ("join").GoUp()
+		.AddSubCommand<CIRCCommand::CIRCSayCommand> ("say").GoUp()
+		.AddSubCommand<CIRCCommand::CIRCDisconnectCommand> ("disconnect").GoUp()
+		.AddSubCommand<CIRCCommand::CIRCLeaveCommand> ("leave").GoUp()
+		.AddSubCommand<CIRCCommand::CIRCListCommand> ("list");
 #endif
 }
 
@@ -604,4 +563,3 @@ void CGameAPI::ClientCommand (CPlayerEntity *Player)
 	Cmd_RunCommand (ArgGets(0).c_str(), Player);
 	EndArg ();
 }
-

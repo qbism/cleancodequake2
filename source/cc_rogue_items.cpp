@@ -543,6 +543,7 @@ LINK_ITEM_TO_CLASS (ammo_nuke, CItemEntity);
 LINK_ITEM_TO_CLASS (ammo_flechettes, CItemEntity);
 LINK_EXISTING_ITEM_TO_NEW_CLASS (ammo_nails, "ammo_flechettes", CItemEntity);
 LINK_ITEM_TO_CLASS (ammo_tesla, CItemEntity);
+LINK_ITEM_TO_CLASS (ammo_disruptor, CItemEntity);
 
 LINK_ITEM_TO_CLASS (key_nuke_container, CItemEntity);
 LINK_ITEM_TO_CLASS (key_nuke, CItemEntity);

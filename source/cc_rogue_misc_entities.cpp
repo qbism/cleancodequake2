@@ -1211,8 +1211,84 @@ void CTurretBrain::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("turret_invisible_brain", CTurretBrain);
 
-#if 0
+// ***************************
+// TRIGGER_DISGUISE
+// ***************************
 
-#endif
+/*QUAKED trigger_disguise (.5 .5 .5) ? TOGGLE START_ON REMOVE
+Anything passing through this trigger when it is active will
+be marked as disguised.
+
+TOGGLE - field is turned off and on when used.
+START_ON - field is active when spawned.
+REMOVE - field removes the disguise
+*/
+
+CC_ENUM (uint8, ETriggerDisguiseSpawnflags)
+{
+	DISGUISE_TOGGLE,
+	DISGUISE_START_ON,
+	DISGUISE_REMOVE
+};
+
+#include "cc_trigger_entities.h"
+
+class CTriggerDisguise : public CTriggerBase
+{
+public:
+	CTriggerDisguise () :
+	  CTriggerBase ()
+	  {
+	  };
+
+	CTriggerDisguise (sint32 Index) :
+	  IBaseEntity (Index),
+	  CTriggerBase (Index)
+	  {
+	  };
+
+	void SaveFields (CFile &File)
+	{
+		CTriggerBase::SaveFields (File);
+	}
+
+	void LoadFields (CFile &File)
+	{
+		CTriggerBase::LoadFields (File);
+	}
+
+	IMPLEMENT_SAVE_HEADER(CTriggerDisguise);
+
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	{
+		GetSolid() = (GetSolid() == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT;
+		Link ();
+	}
+
+	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	{
+		if (Other->EntityFlags & ENT_PLAYER)
+		{
+			if (SpawnFlags & DISGUISE_REMOVE)
+				Other->Flags &= ~FL_DISGUISED;
+			else
+				Other->Flags |= FL_DISGUISED;
+		}
+	}
+
+	void Spawn ()
+	{
+		GetSolid() = (SpawnFlags & DISGUISE_START_ON) ? SOLID_TRIGGER : SOLID_NOT;
+
+		Touchable = Usable = true;
+		PhysicsType = PHYSICS_NONE;
+		GetSvFlags() = SVF_NOCLIENT;
+
+		SetBrushModel ();
+		Link ();
+	}
+};
+
+LINK_CLASSNAME_TO_CLASS ("trigger_disguise", CTriggerDisguise);
 
 #endif

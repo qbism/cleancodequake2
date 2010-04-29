@@ -37,6 +37,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void Cmd_Register ();
 void CC_ClientCommand (CPlayerEntity *Player);
 
+class CPlayerListCommand : public CGameCommandFunctor
+{
+public:
+	virtual void operator () ();
+};
+
+
 #else
 FILE_WARNING
 #endif

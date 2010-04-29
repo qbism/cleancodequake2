@@ -77,6 +77,12 @@ const char *StringFromImageIndex (MediaIndex Index);
 void ClearList ();
 void ListConfigstrings ();
 
+class CServerCmdIndexList : public CCommandFunctor
+{
+public:
+	void operator () ();
+};
+
 #else
 FILE_WARNING
 #endif

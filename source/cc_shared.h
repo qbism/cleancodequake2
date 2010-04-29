@@ -61,10 +61,11 @@ typedef sint32	FrameNumber_t;
 #include "cc_print.h"
 #include "cc_filesystem.h"
 #include "cc_platform.h"
+#include "cc_arg.h"
+#include "cc_cmds.h"
 #include "cc_indexing.h"
 #include "cc_media.h"
 #include "cc_dmflags.h"
-#include "cc_arg.h"
 #include "cc_write.h"
 #include "cc_cvar.h"
 #include "cc_parse.h"
@@ -88,7 +89,6 @@ typedef sint32	FrameNumber_t;
 #include "cc_baseentity.h"
 #include "cc_trace.h"
 #include "cc_monsters.h"
-#include "cc_cmds.h"
 #include "cc_modules.h"
 
 // Classes that require classes from the above includes

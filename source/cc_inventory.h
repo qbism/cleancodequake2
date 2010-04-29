@@ -102,23 +102,107 @@ public:
 	};
 };
 
-void Cmd_Use (CPlayerEntity *Player);
-void Cmd_UseList (CPlayerEntity *Player);
-void Cmd_Drop (CPlayerEntity *Player);
-void Cmd_Inven (CPlayerEntity *Player);
-void Cmd_InvUse (CPlayerEntity *Player);
-void Cmd_WeapPrev (CPlayerEntity *Player);
-void Cmd_WeapNext (CPlayerEntity *Player);
-void Cmd_WeapLast (CPlayerEntity *Player);
-void Cmd_InvDrop (CPlayerEntity *Player);
-void Cmd_SelectNextItem (CPlayerEntity *Player);
-void Cmd_SelectPrevItem (CPlayerEntity *Player);
-void Cmd_SelectNextWeapon (CPlayerEntity *Player);
-void Cmd_SelectPrevWeapon (CPlayerEntity *Player);
-void Cmd_SelectNextPowerup (CPlayerEntity *Player);
-void Cmd_SelectPrevPowerup (CPlayerEntity *Player);
-void Cmd_Spawn (CPlayerEntity *Player);
-void Cmd_Give (CPlayerEntity *Player);
+class CUseCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CUseListCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CDropCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInventoryCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvUseCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvDropCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CWeapPrevCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CWeapNextCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CWeapLastCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvNextCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvPrevCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvNextWCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvPrevWCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvNextPCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvPrevPCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CGiveCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CSpawnCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
 
 #else
 FILE_WARNING

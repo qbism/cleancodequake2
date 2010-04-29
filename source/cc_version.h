@@ -69,8 +69,17 @@ void InitVersion ();
 
 #endif
 
-void Cmd_CCVersion (CPlayerEntity *Player);
-void SvCmd_CCVersion ();
+class CVersionCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CServerVersionCommand : public CCommandFunctor
+{
+public:
+	void operator () ();
+};
 
 #else
 FILE_WARNING

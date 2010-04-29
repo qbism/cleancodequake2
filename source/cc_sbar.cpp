@@ -313,7 +313,7 @@ HelpComputer
 Draw help computer.
 ==================
 */
-void HelpComputer (CPlayerEntity *Player)
+void CPlayerEntity::HelpComputer ()
 {
 	CStatusBar Scoreboard;
 	static const char	*sk = NULL;
@@ -369,6 +369,6 @@ void HelpComputer (CPlayerEntity *Player)
 
 	Scoreboard.AddString (tempBuffer, true);
 
-	Scoreboard.SendMsg (Player, true);
+	Scoreboard.SendMsg (this, true);
 }
 

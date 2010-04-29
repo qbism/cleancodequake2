@@ -43,11 +43,11 @@ void CPlayerCommand::Run (CPlayerEntity *Player)
 	if (!(Flags & CMD_SPECTATOR) && (Player->Client.Respawn.Spectator || Player->Client.Chase.Target))	
 		return;
 
-	Func (Player);
+	(*Func) ();
 };
 
-typedef CCommand<TPlayerCommandFunctorType>::TCommandListType TPlayerCommandListType;
-typedef CCommand<TPlayerCommandFunctorType>::THashedCommandListType THashedPlayerCommandListType;
+typedef CCommand::TCommandListType TPlayerCommandListType;
+typedef CCommand::THashedCommandListType THashedPlayerCommandListType;
 
 TPlayerCommandListType &CommandList ()
 {
@@ -62,17 +62,17 @@ THashedPlayerCommandListType &CommandHashList ()
 
 CPlayerCommand *Cmd_FindCommand (const char *commandName)
 {
-	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, THashedPlayerCommandListType::iterator> (commandName, CommandList(), CommandHashList());
+	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, THashedPlayerCommandListType::iterator, 1> (commandName, CommandList(), CommandHashList());
 }
 
-CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags)
+CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFunctor *Functor, ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
 	if (_CC_ASSERT_EXPR (!Cmd_FindCommand(commandName), "Tried to re-add a command, fatal error"))
 		return *static_cast<CPlayerCommand*>(CommandList()[0]);
 
 	// We can add it!
-	CommandList().push_back (QNew (TAG_GAME) CPlayerCommand (commandName, Func, Flags));
+	CommandList().push_back (QNew (TAG_GAME) CPlayerCommand (commandName, Functor, Flags));
 
 	// Link it in the hash tree
 	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));
@@ -93,30 +93,12 @@ void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player)
 	static CPlayerCommand *Command;
 
 	if ((Command = Cmd_FindCommand(commandName)) != NULL)
+	{
+		static_cast<CGameCommandFunctor*>(Command->Func)->Player = Player;
 		Command->Run(Player);
+	}
 	else
 		Player->PrintToClient (PRINT_HIGH, "Unknown command \"%s\"\n", commandName);
-}
-
-#include <sstream>
-static std::stringstream printBuffer;
-
-void PrintSpaces (uint32 &num)
-{
-	printBuffer << std::string (num, ' ');
-}
-
-void RecursiveCommandPrint (CPlayerCommand *Cmd, uint32 &depth)
-{
-	// Print this command
-	PrintSpaces (depth);
-	printBuffer << Cmd->Name << "\n";
-
-	// Print each sub-command
-	depth++;
-	for (uint32 i = 0; i < Cmd->SubCommands.List.size(); i++)
-		RecursiveCommandPrint (static_cast<CPlayerCommand*>(Cmd->SubCommands.List[i]), depth);
-	depth--;
 }
 
 void SearchForRandomMonster (CMonsterEntity *Entity)
@@ -157,44 +139,41 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
-void Cmd_Test (CPlayerEntity *Player)
+class CTestCommand : public CGameCommandFunctor
 {
-	if (ArgCount() < 3)
-		return;
-	
-	Player->State.GetOrigin().Set (ArgGetf(0), ArgGetf(1), ArgGetf(2));
-	Player->Link ();
-}
-
-void Cmd_Two (CPlayerEntity *Player)
-{
-	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
+public:
+	void operator () ()
 	{
-		if (!(*it)->Entity || !((*it)->Entity->EntityFlags & ENT_MONSTER))
-			continue;
+		if (ArgCount() < 3)
+			return;
+	
+		Player->State.GetOrigin().Set (GetNextArgf(), GetNextArgf(), GetNextArgf());
+		Player->Link ();
+	};
 
-		CMonsterEntity *Monster = entity_cast<CMonsterEntity>((*it)->Entity);
-		if (Monster->Health <= 0)
-			continue;
+	// Subcommands
+	class CTestCommandTwo : public CGameCommandFunctor
+	{
+	public:
+		void operator () ()
+		{
+			for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
+			{
+				if (!(*it)->Entity || !((*it)->Entity->EntityFlags & ENT_MONSTER))
+					continue;
 
-		SearchForRandomMonster (Monster);
-	}
-}
+				CMonsterEntity *Monster = entity_cast<CMonsterEntity>((*it)->Entity);
+				if (Monster->Health <= 0)
+					continue;
 
-void Cmd_Three (CPlayerEntity *Player)
-{
-	ServerPrintf ("Three\n");
-}
-
-void Cmd_Four (CPlayerEntity *Player)
-{
-	ServerPrintf ("Four\n");
-}
+				SearchForRandomMonster (Monster);
+			}
+		};
+	};
+};
 
 void AddTestDebugCommands ()
 {
-	Cmd_AddCommand ("test",					Cmd_Test)
-		.AddSubCommand ("two",				Cmd_Two)
-			.AddSubCommand ("three",		Cmd_Three).GoUp().GoUp()
-		.AddSubCommand ("four",				Cmd_Four);
+	Cmd_AddCommand<CTestCommand> ("test")
+		.AddSubCommand<CTestCommand::CTestCommandTwo> ("two");
 }

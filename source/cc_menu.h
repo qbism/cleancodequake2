@@ -71,8 +71,17 @@ public:
 	void						AddItem (CMenuItem *Item);
 };
 
-void Cmd_MenuLeft (CPlayerEntity *Player);
-void Cmd_MenuRight (CPlayerEntity *Player);
+class CMenuLeftCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CMenuRightCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
 
 // Controls
 #include "cc_controls.h"

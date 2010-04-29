@@ -524,7 +524,7 @@ public:
 	};
 };
 
-void CTFAdmin(CPlayerEntity *Player)
+void CCTFAdminCommand::operator () ()
 {
 	char text[1024];
 

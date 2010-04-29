@@ -1057,7 +1057,7 @@ void CDoor::SmartWaterGoUp ()
 		MoveSpeed = Speed;
 
 	Dir.Set (0, 0, 1);	
-	Velocity = Dir * (MoveSpeed * 0.1f);
+	Velocity = Dir * MoveSpeed;
 	RemainingDistance = distance;
 
 	if (MoveState != STATE_UP)
@@ -1748,6 +1748,9 @@ void CMovableWater::Spawn ()
 
 	if (Wait == -1)
 		SpawnFlags |= DOOR_TOGGLE;
+
+	// Necessary evil
+	ClassName = "func_door";
 
 	Link ();
 };

@@ -104,15 +104,54 @@ public:
 	void SendMessage (std::string Msg);
 };
 
-void Cmd_Irc (CPlayerEntity *Player);
-void Cmd_Irc_Connect (CPlayerEntity *Player);
-void Cmd_Irc_Join (CPlayerEntity *Player);
-void Cmd_Irc_Say (CPlayerEntity *Player);
-void Cmd_Irc_Disconnect (CPlayerEntity *Player);
-void Cmd_Irc_Leave (CPlayerEntity *Player);
-void Cmd_Irc_List (CPlayerEntity *Player);
+class CIRCCommand : public CGameCommandFunctor
+{
+public:
+	void operator () () {};
 
-void SvCmd_Irc_ConnectTo ();
+	class CIRCConnectCommand : public CGameCommandFunctor
+	{
+	public:
+		void operator () ();
+	};
+
+	class CIRCJoinCommand : public CGameCommandFunctor
+	{
+	public:
+		void operator () ();
+	};
+
+	class CIRCSayCommand : public CGameCommandFunctor
+	{
+	public:
+		void operator () ();
+	};
+
+	class CIRCDisconnectCommand : public CGameCommandFunctor
+	{
+	public:
+		void operator () ();
+	};
+
+	class CIRCLeaveCommand : public CGameCommandFunctor
+	{
+	public:
+		void operator () ();
+	};
+
+	class CIRCListCommand : public CGameCommandFunctor
+	{
+	public:
+		void operator () ();
+	};
+};
+
+class CSvIRCConnectToCommand : public CCommandFunctor
+{
+public:
+	void operator () ();
+};
+
 void UpdateIRCServers ();
 
 #endif

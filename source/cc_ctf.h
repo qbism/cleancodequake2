@@ -209,34 +209,103 @@ inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 
 
 void CTFCalcScores();
-void CTFTeam (CPlayerEntity *Player);
-void CTFID (CPlayerEntity *Player);
-void CTFSay_Team(CPlayerEntity *who, char *msg);
 void CTFResetFlag(ETeamIndex Team);
 void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *Attacker);
 void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *Attacker);
-
-//TECH
 void CTFOpenJoinMenu(CPlayerEntity *Player);
-void CTFVoteYes(CPlayerEntity *Player);
-void CTFVoteNo(CPlayerEntity *Player);
-void CTFReady(CPlayerEntity *Player);
-void CTFNotReady(CPlayerEntity *Player);
 bool CTFNextMap();
 bool CTFMatchSetup();
 bool CTFMatchOn();
-void CTFGhost(CPlayerEntity *Player);
-void CTFAdmin(CPlayerEntity *Player);
 bool CTFInMatch();
-void CTFStats(CPlayerEntity *Player);
-void CTFWarp(CPlayerEntity *Player);
-void CTFBoot(CPlayerEntity *Player);
-void CTFPlayerList(CPlayerEntity *Player);
+void CTFSay_Team(CPlayerEntity *who, char *msg);
+
+//TECH
+class CCTFSayTeamCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFTeamCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFIDCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFVoteYesCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFVoteNoCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFReadyCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFNotReadyCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFGhostCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFAdminCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFStatsCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFWarpCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CCTFBootCommand : public CPlayerListCommand
+{
+public:
+	void operator () ();
+};
+
+class CCTFObserverCommand : public CPlayerListCommand
+{
+public:
+	void operator () ();
+};
+
+class CCTFPlayerListCommand : public CPlayerListCommand
+{
+public:
+	void operator () ();
+};
 
 bool CTFCheckRules();
 void CreateCTFStatusbar ();
-
-void CTFObserver(CPlayerEntity *Player);
 
 extern CCTFGameLocals ctfgame;
 

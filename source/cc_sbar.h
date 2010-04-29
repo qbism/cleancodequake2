@@ -73,8 +73,6 @@ public:
 	size_t	Length ();
 };
 
-void HelpComputer (CPlayerEntity *Player);
-
 #else
 FILE_WARNING
 #endif

@@ -53,12 +53,6 @@ void CBadArea::Run ()
 		Remove = true;
 		Owner = NULL;
 	}
-
-	if ((Level.Frame % 10) == 0)
-	{
-		CDebugTrail (Origin - vec3f(0, Mins.Y, 0), Origin + vec3f(0, Mins.Y, 0)).Send();
-		CDebugTrail (Origin - vec3f(Mins.X, 0, 0), Origin + vec3f(Mins.X, 0, 0)).Send();
-	}
 }
 
 std::vector<CBadArea*> BadAreas;

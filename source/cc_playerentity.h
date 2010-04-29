@@ -218,7 +218,7 @@ public:
 		GameHelpChanged = 0;
 		HelpChanged = 0;
 		Spectator = false;
-		ViewBlend.Set (0,0,0,0);
+		ViewBlend.Set (0, 0, 0, 0);
 
 		Mem_Zero (&MaxAmmoValues, sizeof(MaxAmmoValues));
 	}
@@ -670,6 +670,10 @@ public:
 	void			DeathmatchScoreboardMessage (bool reliable);
 	void			EndServerFrame ();
 	void			LookAtKiller (IBaseEntity *Inflictor, IBaseEntity *Attacker);
+	void			ShowScores ();
+	void			ShowHelp ();
+	void			HelpComputer ();
+	bool			CheckFlood ();
 
 	void			InitResp ();
 	static void		SaveClientData ();
@@ -677,6 +681,9 @@ public:
 	static void		RestoreClientData ();
 	void			SelectSpawnPoint (vec3f &origin, vec3f &angles);
 	class CSpotBase	*SelectCoopSpawnPoint ();
+#if ROGUE_FEATURES
+	class CSpotBase	*SelectLavaCoopSpawnPoint ();
+#endif
 
 #if CLEANCTF_ENABLED
 	void			CTFDeadDropFlag ();

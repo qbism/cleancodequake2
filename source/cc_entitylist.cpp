@@ -135,8 +135,8 @@ _CC_ENABLE_DEPRECATION
 	}
 
 	// Link in the classname
-	MapEntity->ClassName = Mem_TagStrDup (Level.ClassName.c_str(), TAG_LEVEL);
-
+	if (MapEntity->ClassName.empty())
+		MapEntity->ClassName = Level.ClassName;
 	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_EASY)

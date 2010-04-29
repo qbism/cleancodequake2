@@ -737,8 +737,156 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("info_player_coop", CPlayerCoop);
 
+#if ROGUE_FEATURES
+/*QUAKED info_player_coop_lava (1 0 1) (-16 -16 -24) (16 16 32)
+potential spawning position for coop games on rmine2 where lava level
+needs to be checked
+*/
+class CPlayerCoopLava : public CSpotBase, public IThinkableEntity
+{
+public:
+	typedef std::vector<CPlayerCoopLava*> TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
+	CPlayerCoopLava () :
+		IBaseEntity (),
+		IThinkableEntity(),
+		CSpotBase ()
+		{
+		};
+
+	CPlayerCoopLava (sint32 Index) :
+		IBaseEntity (Index),
+		IThinkableEntity(),
+		CSpotBase (Index)
+		{
+		};
+
+	IMPLEMENT_SAVE_HEADER(CPlayerCoopLava)
+
+	void SaveFields (CFile &File)
+	{
+		IThinkableEntity::SaveFields (File);
+		CSpotBase::SaveFields (File);
+	};
+
+	void LoadFields (CFile &File)
+	{
+		IThinkableEntity::LoadFields (File);
+		CSpotBase::LoadFields (File);
+		SpawnPoints().push_back (this);
+	};
+
+	bool ParseField (const char *Key, const char *Value)
+	{
+		return (CSpotBase::ParseField (Key, Value));
+	};
+
+	void Think () {};
+
+	void Spawn ()
+	{
+		if (!(Game.GameMode & GAME_COOPERATIVE))
+		{
+			Free ();
+			return;
+		}
+
+		SpawnPoints().push_back (this);
+	};
+};
+
+LINK_CLASSNAME_TO_CLASS ("info_player_coop_lava", CPlayerCoopLava);
+
+//===============
+//ROGUE
+CSpotBase *CPlayerEntity::SelectLavaCoopSpawnPoint ()
+{
+	// first, find the highest lava
+	// remember that some will stop moving when they've filled their
+	// areas...
+	IBaseEntity *lava = NULL, *highestlava = NULL;
+	float lavatop = -999999;
+	while (1)
+	{
+		lava = CC_FindByClassName<IBaseEntity, ENT_BRUSHMODEL> (lava, "func_door");
+
+		if (!lava)
+			break;
+		
+		if ((lava->SpawnFlags & 2) && (PointContents((lava->GetAbsMax() - lava->GetAbsMin()) * 0.5f) & CONTENTS_MASK_WATER))
+		{
+			if (lava->GetAbsMax().Z > lavatop)
+			{
+				lavatop = lava->GetAbsMax().Z;
+				highestlava = lava;
+			}
+		}
+	}
+
+	// if we didn't find ANY lava, then return NULL
+	if (!highestlava)
+		return NULL;
+
+	// find the top of the lava and include a small margin of error (plus bbox size)
+	lavatop = highestlava->GetAbsMax().Z + 64;
+
+	// find all the lava spawn points and store them in spawnPoints[]
+	CPlayerCoopLava *spot = NULL;
+
+	if (!CPlayerCoopLava::SpawnPoints().size())
+		return NULL;
+
+	// walk up the sorted list and return the lowest, open, non-lava spawn point
+	spot = NULL;
+	float lowest = 999999;
+	CPlayerCoopLava *pointWithLeastLava = NULL;
+	for (size_t index = 0; index < CPlayerCoopLava::SpawnPoints().size(); index++)
+	{
+		CPlayerCoopLava *point = CPlayerCoopLava::SpawnPoints()[index];
+
+		if (point->State.GetOrigin().Z < lavatop)
+			continue;
+
+		if (PlayersRangeFromSpot(point) > 32)
+		{
+			if (point->State.GetOrigin().Z < lowest)
+			{
+				// save the last point
+				pointWithLeastLava = point;
+				lowest = point->State.GetOrigin().Z;
+			}
+		}
+	}
+
+	// FIXME - better solution????
+	// well, we may telefrag someone, but oh well...
+	if (pointWithLeastLava)
+		return pointWithLeastLava;
+
+	return NULL;
+}
+//ROGUE
+//===============
+
+#endif
+
 CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 {
+#if ROGUE_FEATURES
+	if (Level.ServerLevelName == "rmine2")
+		return SelectLavaCoopSpawnPoint ();
+#endif
+
 	sint32 index = State.GetNumber()-1;
 
 	// player 0 starts in normal player spawn point
@@ -1083,6 +1231,9 @@ void ClearSpawnPoints ()
 #if CLEANCTF_ENABLED
 	CPlayerTeam1::ClearSpawnPoints ();
 	CPlayerTeam2::ClearSpawnPoints ();
+#endif
+#if ROGUE_FEATURES
+	CPlayerCoopLava::ClearSpawnPoints ();
 #endif
 }
 

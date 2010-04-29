@@ -43,27 +43,57 @@ CC_ENUM (uint32, ECmdTypeFlags)
 	CMD_CHEAT		= 2
 };
 
-template <typename TFunctor>
+class CCommandFunctor
+{
+	// FirstArg = first argument matched (in subcommands, will always be the main command arg index)
+	// ThisArg = argument matched to this functor
+	// CurArg = argument, starting at CurArg, that can be changed with the functions below
+	uint32		FirstArg, ThisArg, CurArg;
+
+public:
+	inline std::string GetFirstArgs () { return ArgGets(FirstArg); }
+	inline int GetFirstArgi () { return ArgGeti(FirstArg); }
+	inline float GetFirstArgf () { return ArgGetf(FirstArg); }
+
+	inline std::string GetThisArgs () { return ArgGets(ThisArg); }
+	inline int GetThisArgi () { return ArgGeti(ThisArg); }
+	inline float GetThisArgf () { return ArgGetf(ThisArg); }
+
+	inline std::string GetNextArgs () { return ArgGets(++CurArg); }
+	inline int GetNextArgi () { return ArgGeti(++CurArg); }
+	inline float GetNextArgf () { return ArgGetf(++CurArg); }
+
+	virtual void operator() () = 0;
+	void SetPos (uint32 First, uint32 This, uint32 Cur) { FirstArg = First; ThisArg = This; CurArg = Cur; };
+};
+
+class CGameCommandFunctor : public CCommandFunctor
+{
+public:
+	CPlayerEntity	*Player;
+
+	virtual void operator() () = 0;
+};
+
 class CCommand
 {
 public:
-	typedef std::vector<CCommand<TFunctor>*> TCommandListType;
+	typedef std::vector<CCommand*> TCommandListType;
 	typedef std::multimap<size_t, size_t> THashedCommandListType;
 
 	struct SubCommands_t
 	{
-		CCommand<TFunctor>			*Owner; // Pointer to the command that owns us
+		CCommand				*Owner; // Pointer to the command that owns us
 
 		TCommandListType			List;
 		THashedCommandListType		HashedList;
-	};
-
+	}
+							SubCommands;
 	char					*Name;
 	ECmdTypeFlags			Flags;
-	TFunctor				Func;
-	SubCommands_t			SubCommands;
+	CCommandFunctor			*Func;
 
-	CCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags) :
+	CCommand (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags) :
 	  Name(Mem_StrDup(Name)),
 	  Func(Func),
 	  Flags(Flags)
@@ -73,6 +103,7 @@ public:
 	virtual ~CCommand ()
 	{
 		QDelete[] Name;
+		QDelete Func;
 	};
 
 	CCommand &GoUp ()
@@ -82,11 +113,13 @@ public:
 		return *SubCommands.Owner;
 	};
 
-	virtual void *NewOfMe (const char *Name, TFunctor Func, ECmdTypeFlags Flags) = 0;
+	virtual void *NewOfMe (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags) = 0;
 
-	virtual CCommand &AddSubCommand (const char *Name, TFunctor Func, ECmdTypeFlags Flags = 0)
+	template <class TType>
+	CCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
-		CCommand *NewCommand = (CCommand*)NewOfMe (Name, Func, Flags);
+		TType *Functor = QNew (TAG_GAME) TType;
+		CCommand *NewCommand = (CCommand*)NewOfMe (Name, Functor, Flags);
 
 		// We can add it!
 		SubCommands.List.push_back (NewCommand);
@@ -120,7 +153,7 @@ inline TReturnValue *RecurseSubCommands (uint32 &depth, TReturnValue *Cmd)
 	return NULL;
 }
 
-template <class TReturnValue, class TListType, class THashListType, class TItType>
+template <class TReturnValue, class TListType, class THashListType, class TItType, uint32 startDepth>
 inline TReturnValue *FindCommand (const char *commandName, TListType &List, THashListType &HashList)
 {
 	uint32 hash = Com_HashGeneric(commandName, MAX_CMD_HASH);
@@ -134,24 +167,30 @@ inline TReturnValue *FindCommand (const char *commandName, TListType &List, THas
 			{
 				for (uint32 i = 0; i < List.at((*it).second)->SubCommands.List.size(); i++)
 				{
-					uint32 depth = 1;
+					uint32 depth = startDepth;
 					TReturnValue *Found = static_cast<TReturnValue*>(RecurseSubCommands (depth, List.at((*it).second)->SubCommands.List[i]));
 					if (Found)
+					{
+						if (Found->Func)
+							Found->Func->SetPos (1, depth, depth);
 						return Found;
+					}
 				}
 			}
+
+			if (Command->Func)
+				Command->Func->SetPos (1, 1, 1);
 			return Command;
 		}
 	}
 	return NULL;
 }
 
-typedef void (*TPlayerCommandFunctorType) (CPlayerEntity*);
-class CPlayerCommand : public CCommand<TPlayerCommandFunctorType>
+class CPlayerCommand : public CCommand
 {
 public:
-	CPlayerCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags) :
-	  CCommand<TPlayerCommandFunctorType> (Name, Func, Flags)
+	CPlayerCommand (const char *Name, CGameCommandFunctor *Func, ECmdTypeFlags Flags) :
+	  CCommand (Name, Func, Flags)
 	  {
 	  };
 
@@ -161,23 +200,33 @@ public:
 
 	void Run (CPlayerEntity *Player);
 
-	void *NewOfMe (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags)
+	void *NewOfMe (const char *Name, CCommandFunctor *RealFunc, ECmdTypeFlags Flags)
 	{
-		return QNew (TAG_GAME) CPlayerCommand (Name, Func, Flags);
+		return QNew (TAG_GAME) CPlayerCommand (Name, static_cast<CGameCommandFunctor*>(RealFunc), Flags);
 	}
 
-	CPlayerCommand &AddSubCommand (const char *Name, TPlayerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
+	template <class TType>
+	CPlayerCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
-		return static_cast<CPlayerCommand&>(CCommand<TPlayerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
+		return static_cast<CPlayerCommand&>(CCommand::AddSubCommand<TType> (Name, Flags));
 	};
 };
 
 void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player);
 void Cmd_RemoveCommands ();
 
-CPlayerCommand &Cmd_AddCommand (const char *commandName, void (*Func) (CPlayerEntity *Player), ECmdTypeFlags Flags = 0);
+CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFunctor *Functor, ECmdTypeFlags Flags = 0);
+
+template <class TFunctor>
+CPlayerCommand &Cmd_AddCommand (const char *commandName, ECmdTypeFlags Flags = 0)
+{
+	TFunctor *Functor = QNew (TAG_GAME) TFunctor;
+	return Cmd_AddCommand_Internal (commandName, Functor, Flags);
+}
 
 void AddTestDebugCommands ();
+
+#include "cc_gamecommands.h"
 
 #else
 FILE_WARNING

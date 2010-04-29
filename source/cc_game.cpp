@@ -35,7 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_ban.h"
 #include "cc_target_entities.h"
 #include "cc_bodyqueue.h"
-#include "cc_gamecommands.h"
 #include "cc_servercommands.h"
 #include "cc_version.h"
 
@@ -314,20 +313,8 @@ void ProcessEntity (edict_t *ent)
 
 bool RemoveEntity (edict_t *ent);
 
-extern bool requestedBreak;
-
 void CGameAPI::RunFrame ()
 {
-	if (requestedBreak)
-	{
-		requestedBreak = false;
-#if defined(WIN32)
-		_CrtDbgBreak();
-#else
-		assert(0);
-#endif
-	}
-
 #if !NO_VERSION_CHECKING
 	CheckVersionReturnance ();
 #endif

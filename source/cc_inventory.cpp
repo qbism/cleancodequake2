@@ -230,7 +230,7 @@ Cmd_Use_f
 Use an inventory item
 ==================
 */
-void Cmd_Use (CPlayerEntity *Player)
+void CUseCommand::operator () ()
 {
 	std::string s = ArgGetConcatenatedString();
 	CBaseItem *Item = FindItem(s.c_str());
@@ -269,7 +269,7 @@ Tries to use the items in the list from left to right, stopping
 when one gets used
 ==================
 */
-void Cmd_UseList (CPlayerEntity *Player)
+void CUseListCommand::operator () ()
 {
 	for (sint32 i = 1; i < ArgCount(); i++)
 	{
@@ -318,7 +318,7 @@ Cmd_Drop_f
 Drop an inventory item
 ==================
 */
-void Cmd_Drop (CPlayerEntity *Player)
+void CDropCommand::operator () ()
 {
 	std::string s = ArgGetConcatenatedString();
 
@@ -364,7 +364,7 @@ void Cmd_Drop (CPlayerEntity *Player)
 Cmd_Inven_f
 =================
 */
-void Cmd_Inven (CPlayerEntity *Player)
+void CInventoryCommand::operator () ()
 {
 	if (Level.IntermissionTime)
 		return;
@@ -393,7 +393,7 @@ void Cmd_Inven (CPlayerEntity *Player)
 Cmd_InvUse_f
 =================
 */
-void Cmd_InvUse (CPlayerEntity *Player)
+void CInvUseCommand::operator () ()
 {
 	if (Player->Client.Respawn.MenuState.InMenu)
 	{
@@ -426,7 +426,7 @@ void Cmd_InvUse (CPlayerEntity *Player)
 Cmd_WeapPrev_f
 =================
 */
-void Cmd_WeapPrev (CPlayerEntity *Player)
+void CWeapPrevCommand::operator () ()
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
@@ -457,7 +457,7 @@ void Cmd_WeapPrev (CPlayerEntity *Player)
 Cmd_WeapNext_f
 =================
 */
-void Cmd_WeapNext (CPlayerEntity *Player)
+void CWeapNextCommand::operator () ()
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
@@ -488,7 +488,7 @@ void Cmd_WeapNext (CPlayerEntity *Player)
 Cmd_WeapLast_f
 =================
 */
-void Cmd_WeapLast (CPlayerEntity *Player)
+void CWeapLastCommand::operator () ()
 {
 	if (!Player->Client.Persistent.Weapon || !Player->Client.Persistent.LastWeapon)
 		return;
@@ -507,7 +507,7 @@ void Cmd_WeapLast (CPlayerEntity *Player)
 Cmd_InvDrop_f
 =================
 */
-void Cmd_InvDrop (CPlayerEntity *Player)
+void CInvDropCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -530,7 +530,7 @@ void Cmd_InvDrop (CPlayerEntity *Player)
 	Player->Client.Persistent.Inventory.ValidateSelectedItem();
 }
 
-void Cmd_SelectNextItem (CPlayerEntity *Player)
+void CInvNextCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -549,7 +549,7 @@ void Cmd_SelectNextItem (CPlayerEntity *Player)
 
 	Player->Client.Persistent.Inventory.SelectNextItem (-1);
 }
-void Cmd_SelectPrevItem (CPlayerEntity *Player)
+void CInvPrevCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -568,28 +568,28 @@ void Cmd_SelectPrevItem (CPlayerEntity *Player)
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (-1);
 }
-void Cmd_SelectNextWeapon (CPlayerEntity *Player)
+void CInvNextWCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_WEAPON);
 }
-void Cmd_SelectPrevWeapon (CPlayerEntity *Player)
+void CInvPrevWCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (ITEMFLAG_WEAPON);
 }
-void Cmd_SelectNextPowerup (CPlayerEntity *Player)
+void CInvNextPCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_POWERUP);
 }
-void Cmd_SelectPrevPowerup (CPlayerEntity *Player)
+void CInvPrevPCommand::operator () ()
 {
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
@@ -605,6 +605,8 @@ Give items to a client
 Old-style "give"
 ==================
 */
+void Cmd_Spawn (CPlayerEntity *Player);
+
 void Cmd_Give (CPlayerEntity *Player)
 {
 	CBaseItem *it;
@@ -738,6 +740,11 @@ void Cmd_Give (CPlayerEntity *Player)
 	}
 }
 
+void CGiveCommand::operator () ()
+{
+	Cmd_Give (Player);
+}
+
 // Paril
 // This is a different style of "give".
 // Allows you to spawn the item instead of giving it.
@@ -773,3 +780,7 @@ void Cmd_Spawn (CPlayerEntity *Player)
 	}
 }
 
+void CSpawnCommand::operator () ()
+{
+	Cmd_Spawn (Player);
+}

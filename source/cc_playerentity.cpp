@@ -3291,7 +3291,6 @@ void CPlayerEntity::TossHead (sint32 Damage)
 }
 
 EMeansOfDeath meansOfDeath;
-void Cmd_Help (CPlayerEntity *Player);
 
 void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
 {
@@ -3354,7 +3353,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 			DeadDropTech();
 
 		if (Game.GameMode & GAME_DEATHMATCH)
-			Cmd_Help (this);		// show scores
+			ShowHelp ();		// show scores
 
 		// clear inventory
 		// this is kind of ugly, but it's how we want to handle keys in coop
@@ -4510,3 +4509,84 @@ void CPlayerEntity::RemoveAttackingPainDaemons ()
 	Client.Timers.Tracker = 0;
 }
 #endif
+
+void CPlayerEntity::ShowScores ()
+{
+	Client.LayoutFlags &= ~(LF_SHOWINVENTORY | LF_SHOWHELP);
+	if (Client.Respawn.MenuState.InMenu)
+	{
+		Client.Respawn.MenuState.CloseMenu();
+		return;
+	}
+
+	if (Game.GameMode & GAME_SINGLEPLAYER)
+		return;
+
+	if (Client.LayoutFlags & LF_SHOWSCORES)
+	{
+		Client.LayoutFlags &= ~LF_SHOWSCORES;
+		Client.LayoutFlags |= LF_UPDATECHASE;
+		return;
+	}
+
+	Client.LayoutFlags |= LF_SHOWSCORES;
+	DeathmatchScoreboardMessage (true);
+}
+
+void CPlayerEntity::ShowHelp ()
+{
+	if (Level.IntermissionTime)
+		return;
+
+	// this is for backwards compatability
+	if (Game.GameMode & GAME_DEATHMATCH)
+	{
+		ShowScores ();
+		return;
+	}
+
+	Client.LayoutFlags &= ~(LF_SHOWSCORES | LF_SHOWINVENTORY);
+	if (Client.Respawn.MenuState.InMenu)
+	{
+		Client.Respawn.MenuState.CloseMenu();
+		return;
+	}
+
+	if ((Client.LayoutFlags & LF_SHOWHELP) && (Client.Persistent.GameHelpChanged == Game.HelpChanged))
+	{
+		Client.LayoutFlags &= ~LF_SHOWHELP;
+		return;
+	}
+
+	Client.LayoutFlags |= LF_SHOWHELP;
+	Client.Persistent.HelpChanged = 0;
+	HelpComputer ();
+}
+
+bool CPlayerEntity::CheckFlood ()
+{
+	if (CvarList[CV_FLOOD_MSGS].Integer())
+	{
+		if (Level.Frame < Client.Flood.LockTill)
+		{
+			PrintToClient (PRINT_HIGH, "You can't talk for %d more seconds\n",
+				(sint32)((Client.Flood.LockTill - Level.Frame)/10));
+			return true;
+		}
+		sint32 i = Client.Flood.WhenHead - CvarList[CV_FLOOD_MSGS].Integer() + 1;
+		if (i < 0)
+			i = (sizeof(Client.Flood.When)/sizeof(Client.Flood.When[0])) + i;
+		if (Client.Flood.When[i] && 
+			((Level.Frame - Client.Flood.When[i])/10) < CvarList[CV_FLOOD_PER_SECOND].Integer())
+		{
+			Client.Flood.LockTill = Level.Frame + (CvarList[CV_FLOOD_DELAY].Float() * 10);
+			PrintToClient (PRINT_CHAT, "Flood protection:  You can't talk for %d seconds.\n",
+				CvarList[CV_FLOOD_DELAY].Integer());
+			return true;
+		}
+		Client.Flood.WhenHead = (Client.Flood.WhenHead + 1) %
+			(sizeof(Client.Flood.When)/sizeof(Client.Flood.When[0]));
+		Client.Flood.When[Client.Flood.WhenHead] = Level.Frame;
+	}
+	return false;
+}

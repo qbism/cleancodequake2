@@ -439,11 +439,7 @@ void CIRCClient::SendMessage (std::string Msg)
 	IRCServerList[Player->Client.Respawn.IRC.ConnectedTo-1]->SendMessage (Player, Msg);
 };
 
-void Cmd_Irc (CPlayerEntity *Player)
-{
-}
-
-void Cmd_Irc_Connect (CPlayerEntity *Player)
+void CIRCCommand::CIRCConnectCommand::operator () ()
 {
 	// irc connect n nick
 	if (ArgCount() < 3)
@@ -475,7 +471,7 @@ void Cmd_Irc_Connect (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.Connect (ServerIndex);
 };
 
-void Cmd_Irc_Join (CPlayerEntity *Player)
+void CIRCCommand::CIRCJoinCommand::operator () ()
 {
 	// irc join channel
 	if (ArgCount() < 3)
@@ -484,12 +480,12 @@ void Cmd_Irc_Join (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.JoinChannel (ArgGets(2));
 };
 
-void Cmd_Irc_List (CPlayerEntity *Player)
+void CIRCCommand::CIRCListCommand::operator () ()
 {
 	Player->Client.Respawn.IRC.List ();
 };
 
-void Cmd_Irc_Say (CPlayerEntity *Player)
+void CIRCCommand::CIRCSayCommand::operator () ()
 {
 	// irc say "xxx"
 	if (ArgCount() < 3)
@@ -498,7 +494,7 @@ void Cmd_Irc_Say (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.SendMessage (ArgGets(2));
 };
 
-void Cmd_Irc_Disconnect (CPlayerEntity *Player)
+void CIRCCommand::CIRCDisconnectCommand::operator () ()
 {
 	// irc disconnect
 	if (ArgCount() < 2)
@@ -507,12 +503,12 @@ void Cmd_Irc_Disconnect (CPlayerEntity *Player)
 	Player->Client.Respawn.IRC.Disconnect ();
 };
 
-void Cmd_Irc_Leave (CPlayerEntity *Player)
+void CIRCCommand::CIRCLeaveCommand::operator () ()
 {
 	Player->Client.Respawn.IRC.LeaveChannel ();
 };
 
-void SvCmd_Irc_ConnectTo ()
+void CSvIRCConnectToCommand::operator () ()
 {
 	// sv irc connect server port
 	if (ArgCount() < 4)

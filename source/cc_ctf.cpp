@@ -378,7 +378,7 @@ void CTFCalcScores()
 	}
 }
 
-void CTFID (CPlayerEntity *Player)
+void CCTFIDCommand::operator () ()
 {
 	Player->Client.Respawn.CTF.IDState = !Player->Client.Respawn.CTF.IDState;
 	Player->PrintToClient (PRINT_HIGH, "%s player identification display\n", (Player->Client.Respawn.CTF.IDState) ? "Activating" : "Deactivating");
@@ -386,7 +386,7 @@ void CTFID (CPlayerEntity *Player)
 
 /*------------------------------------------------------------------------*/
 
-void CTFTeam (CPlayerEntity *Player)
+void CCTFTeamCommand::operator () ()
 {
 	sint32 desired_team;
 
@@ -721,7 +721,7 @@ void CTFSay_Team(CPlayerEntity *who, std::string msg)
 {
 	static std::stringstream OutMessage;
 	
-	if (CheckFlood(who))
+	if (who->CheckFlood())
 		return;
 
 	OutMessage.str("");
@@ -778,7 +778,7 @@ void CTFSay_Team(CPlayerEntity *who, std::string msg)
 	}
 }
 
-void GCTFSay_Team (CPlayerEntity *Player)
+void CCTFSayTeamCommand::operator () ()
 {
 	CTFSay_Team (Player, ArgGetConcatenatedString());
 }
@@ -1093,7 +1093,7 @@ void CTFWinElection()
 	ctfgame.election = ELECT_NONE;
 }
 
-void CTFVoteYes(CPlayerEntity *Player)
+void CCTFVoteYesCommand::operator () ()
 {
 	if (ctfgame.election == ELECT_NONE)
 	{
@@ -1125,7 +1125,7 @@ void CTFVoteYes(CPlayerEntity *Player)
 		(sint32)((ctfgame.electtime - Level.Frame)/10));
 }
 
-void CTFVoteNo(CPlayerEntity *Player)
+void CCTFVoteNoCommand::operator () ()
 {
 	if (ctfgame.election == ELECT_NONE)
 	{
@@ -1150,7 +1150,7 @@ void CTFVoteNo(CPlayerEntity *Player)
 		(sint32)((ctfgame.electtime - Level.Frame)/10));
 }
 
-void CTFReady(CPlayerEntity *Player)
+void CCTFReadyCommand::operator () ()
 {
 	if (Player->Client.Respawn.CTF.Team == CTF_NOTEAM)
 	{
@@ -1196,7 +1196,7 @@ void CTFReady(CPlayerEntity *Player)
 	}
 }
 
-void CTFNotReady(CPlayerEntity *Player)
+void CCTFNotReadyCommand::operator () ()
 {
 	if (Player->Client.Respawn.CTF.Team == CTF_NOTEAM)
 	{
@@ -1227,7 +1227,7 @@ void CTFNotReady(CPlayerEntity *Player)
 	}
 }
 
-void CTFGhost(CPlayerEntity *Player)
+void CCTFGhostCommand::operator () ()
 {
 	if (ArgCount() < 2)
 	{
@@ -1287,7 +1287,7 @@ bool CTFMatchOn()
 
 /*-----------------------------------------------------------------------*/
 
-void CTFObserver(CPlayerEntity *Player)
+void CCTFObserverCommand::operator () ()
 {
 	// start as 'observer'
 	if (Player->NoClip)
@@ -1415,7 +1415,7 @@ bool CTFCheckRules()
 
 /*----------------------------------------------------------------*/
 
-void CTFStats(CPlayerEntity *Player)
+void CCTFStatsCommand::operator () ()
 {
 	static char tempStr[80];
 	static char text[1400];
@@ -1481,12 +1481,11 @@ void CTFStats(CPlayerEntity *Player)
 	Player->PrintToClient (PRINT_HIGH, "%s", text);
 }
 
-void Cmd_PlayerList (CPlayerEntity *Player);
-void CTFPlayerList (CPlayerEntity *Player)
+void CCTFPlayerListCommand::operator () ()
 {
 	if (!(Game.GameMode & GAME_CTF))
 	{
-		Cmd_PlayerList (Player);
+		CPlayerListCommand::operator () ();
 		return;
 	}
 
@@ -1541,7 +1540,7 @@ void CTFPlayerList (CPlayerEntity *Player)
 }
 
 
-void CTFWarp(CPlayerEntity *Player)
+void CCTFWarpCommand::operator () ()
 {
 	static char text[1024];
 	static char *mlist;
@@ -1588,7 +1587,7 @@ void CTFWarp(CPlayerEntity *Player)
 		Q_strncpyz(ctfgame.elevel, ArgGets(1).c_str(), sizeof(ctfgame.elevel) - 1);
 }
 
-void CTFBoot(CPlayerEntity *Player)
+void CCTFBootCommand::operator () ()
 {
 	sint32 i;
 	static char text[80];

@@ -37,12 +37,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void SvCmd_Register ();
 void SvCmd_RemoveCommands ();
 
-typedef void (*TServerCommandFunctorType) ();
-class CServerCommand : public CCommand <TServerCommandFunctorType>
+class CServerCommand : public CCommand
 {
 public:
-	CServerCommand (const char *Name, TServerCommandFunctorType Func) :
-	  CCommand<TServerCommandFunctorType> (Name, Func, 0)
+	CServerCommand (const char *Name, CCommandFunctor *Func) :
+	  CCommand (Name, Func, 0)
 	  {
 	  };
 
@@ -50,20 +49,24 @@ public:
 	{
 	};
 
-	void *NewOfMe (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags)
+	void *NewOfMe (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags)
 	{
 		return QNew (TAG_GENERIC) CServerCommand (Name, Func);
 	}
 
-	void Run ()
+	template <class TFunctor>
+	CServerCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
-		Func ();
+		return static_cast<CServerCommand&>(CCommand::AddSubCommand<TFunctor> (Name, Flags));
 	};
+};
 
-	CServerCommand &AddSubCommand (const char *Name, TServerCommandFunctorType Func, ECmdTypeFlags Flags = 0)
-	{
-		return static_cast<CServerCommand&>(CCommand<TServerCommandFunctorType>::AddSubCommand(Name, Func, Flags));
-	};
+CServerCommand &SvCmd_AddCommand_Internal (const char *commandName, CCommandFunctor *Functor);
+template <class TFunctor>
+CServerCommand &SvCmd_AddCommand (const char *commandName)
+{
+	TFunctor *Func = QNew (TAG_GAME) TFunctor;
+	return SvCmd_AddCommand_Internal (commandName, Func);
 };
 
 #else
