@@ -3776,6 +3776,19 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 	if (Flags & FL_NOTARGET)
 		return;
 
+#if ROGUE_FEATURES
+	if (Flags & FL_DISGUISED)
+	{
+		if (type == PNOISE_WEAPON)
+		{
+			Level.DisguiseViolator = this;
+			Level.DisguiseViolationFrametime = Level.Frame + 5;
+		}
+		else
+			return;
+	}
+#endif
+
 	if (!Client.mynoise)
 	{
 		CPlayerNoise *noise = QNewEntityOf CPlayerNoise;
