@@ -1714,9 +1714,6 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 		t->User = Activator;
 
 		// Does this EVER happen? It needs to be called with an Activator...
-		if (!Activator)
-			DebugPrintf ("DelayedUse with no Activator\n");
-
 		t->Message = Message;
 		t->Target = Target;
 		t->KillTarget = KillTarget;

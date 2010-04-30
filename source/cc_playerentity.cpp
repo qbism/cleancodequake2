@@ -3993,7 +3993,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 	// Paril: Fix for an engine bug that causes
 	// players to be kicked for the same IP but
 	// takes over an existing spot.
-	bool SameConnection = (GetInUse() && (Q_strlwr(Client.Persistent.UserInfo).compare(Q_strlwr(userinfo))));
+	bool SameConnection = (GetInUse() && ((Game.GameMode & GAME_DEATHMATCH) && Q_strlwr(Client.Persistent.UserInfo).compare(Q_strlwr(userinfo))));
 
 	if (!GetInUse() || SameConnection)
 	{

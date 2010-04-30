@@ -118,7 +118,7 @@ public:
 	template <class TType>
 	CCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
-		TType *Functor = QNew (TAG_GAME) TType;
+		TType *Functor = QNew (TAG_GENERIC) TType;
 		CCommand *NewCommand = (CCommand*)NewOfMe (Name, Functor, Flags);
 
 		// We can add it!
@@ -202,7 +202,7 @@ public:
 
 	void *NewOfMe (const char *Name, CCommandFunctor *RealFunc, ECmdTypeFlags Flags)
 	{
-		return QNew (TAG_GAME) CPlayerCommand (Name, static_cast<CGameCommandFunctor*>(RealFunc), Flags);
+		return QNew (TAG_GENERIC) CPlayerCommand (Name, static_cast<CGameCommandFunctor*>(RealFunc), Flags);
 	}
 
 	template <class TType>
@@ -220,7 +220,7 @@ CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFu
 template <class TFunctor>
 CPlayerCommand &Cmd_AddCommand (const char *commandName, ECmdTypeFlags Flags = 0)
 {
-	TFunctor *Functor = QNew (TAG_GAME) TFunctor;
+	TFunctor *Functor = QNew (TAG_GENERIC) TFunctor;
 	return Cmd_AddCommand_Internal (commandName, Functor, Flags);
 }
 

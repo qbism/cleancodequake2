@@ -65,7 +65,7 @@ CServerCommand &SvCmd_AddCommand_Internal (const char *commandName, CCommandFunc
 template <class TFunctor>
 CServerCommand &SvCmd_AddCommand (const char *commandName)
 {
-	TFunctor *Func = QNew (TAG_GAME) TFunctor;
+	TFunctor *Func = QNew (TAG_GENERIC) TFunctor;
 	return SvCmd_AddCommand_Internal (commandName, Func);
 };
 

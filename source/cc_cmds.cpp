@@ -72,7 +72,7 @@ CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFu
 		return *static_cast<CPlayerCommand*>(CommandList()[0]);
 
 	// We can add it!
-	CommandList().push_back (QNew (TAG_GAME) CPlayerCommand (commandName, Functor, Flags));
+	CommandList().push_back (QNew (TAG_GENERIC) CPlayerCommand (commandName, Functor, Flags));
 
 	// Link it in the hash tree
 	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));
@@ -157,7 +157,7 @@ public:
 	public:
 		void operator () ()
 		{
-			for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
+			/*for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 			{
 				if (!(*it)->Entity || !((*it)->Entity->EntityFlags & ENT_MONSTER))
 					continue;
@@ -167,7 +167,10 @@ public:
 					continue;
 
 				SearchForRandomMonster (Monster);
-			}
+			}*/
+			byte *testmem = new byte;
+			testmem[1] = 255;
+			QDelete testmem;
 		};
 	};
 };

@@ -105,7 +105,7 @@ public:
 	void Save (CFile &File)
 	{
 		std::string Str = *this;
-		File.Write<std::string> (Str);
+		File.Write (Str);
 	};
 
 	void Load (CFile &File)

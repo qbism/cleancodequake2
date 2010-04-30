@@ -26,54 +26,54 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _CC_DISABLE_DEPRECATION
 
-#define MAGIC_NUMBER (('E'<<24)+('N'<<16)+('E'<<8)+'G')
+#define HEADER_MAGIC_CONSTANT (('E'<<24)+('N'<<16)+('E'<<8)+'G')
+
+struct MemSentinel
+{
+	uint32				Magic;
+	void				*Header;
+
+	bool Check (void *CheckHeader)
+	{
+		return (Magic == HEADER_MAGIC_CONSTANT && Header == CheckHeader);
+	};
+};
 
 struct MemHeader
 {
-	void		*Address;
-	uint32		Magic;
-	sint32		TagNum;
-	size_t		Size, RealSize;
+	MemSentinel			SentinelHeader;
+	void				*Address;
+	sint32				TagNum;
+	size_t				Size, RealSize;
+
+	bool Check ()
+	{
+		return (SentinelHeader.Check(this) && ((MemSentinel*)(((byte*)this) + RealSize - sizeof(MemSentinel)))->Check(this));
+	};
 };
 
 static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 {
-/*	void *Mem = (TagNum == TAG_GENERIC) ? malloc(Size + sizeof(int)) : gi.TagMalloc(Size + sizeof(int), TagNum);
-
-	Mem_Zero (Mem, Size + sizeof(int));
-
-	// Set the first byte to 255 if we're Generic memory, otherwise 0.
-	*(int*)Mem = (TagNum == TAG_GENERIC) ? MAGIC_NUMBER : 0;
-
-	return (void*)((uint8*)Mem + sizeof(int));*/
-	size_t RealSize = Size + sizeof(MemHeader);
+	size_t RealSize = Size + sizeof(MemHeader) + sizeof(MemSentinel);
 	MemHeader *Mem = (TagNum == TAG_GENERIC) ? (MemHeader*)malloc(RealSize) : (MemHeader*)gi.TagMalloc(RealSize, TagNum);
+	MemSentinel *Footer = (MemSentinel*)(((byte*)Mem) + RealSize - sizeof(MemSentinel));
 
-	Mem_Zero (Mem, RealSize);
-
-	Mem->Magic = MAGIC_NUMBER;
+	Mem->SentinelHeader.Header = Footer->Header = Mem;
 	Mem->TagNum = TagNum;
 	Mem->Size = Size;
+	Footer->Magic = Mem->SentinelHeader.Magic = HEADER_MAGIC_CONSTANT;
 	Mem->RealSize = RealSize;
-	Mem->Address = ((void*)(Mem + 1));
+	Mem->Address = (((byte*)Mem) + sizeof(MemHeader));
+	Mem_Zero (Mem->Address, Size);
 
 	return Mem->Address;
 }
 
 static void Mem_TagFree (void *Pointer)
 {
-/*	if (Pointer == NULL)
-		return;
+	MemHeader *Header = (MemHeader*)(((byte*)Pointer) - sizeof(MemHeader));
 
-	uint8 *realMem = (uint8*)Pointer - sizeof(int);
-	
-	if (*(int*)realMem == MAGIC_NUMBER)
-		free (realMem);
-	else
-		gi.TagFree (realMem);*/
-	MemHeader *Header = (((MemHeader*)Pointer)-1);
-
-	if (Header->Magic != MAGIC_NUMBER)
+	if (!Header->Check())
 		assert (0);
 
 	if (Header->TagNum == TAG_GENERIC)

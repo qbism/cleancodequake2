@@ -125,8 +125,8 @@ class CServerCmdEntList : public CCommandFunctor
 		CServerEntityList () :
 			NumInList (0)
 		{
-			List = QNew (TAG_GAME) SServerEntityListIndex*[MAX_CS_EDICTS];
-			HashedList = QNew (TAG_GAME) SServerEntityListIndex*[MAX_CS_EDICTS];
+			List = QNew (TAG_GENERIC) SServerEntityListIndex*[MAX_CS_EDICTS];
+			HashedList = QNew (TAG_GENERIC) SServerEntityListIndex*[MAX_CS_EDICTS];
 			Mem_Zero (List, sizeof(List));
 			Mem_Zero (HashedList, sizeof(HashedList));
 		};
@@ -153,7 +153,7 @@ class CServerCmdEntList : public CCommandFunctor
 
 		SServerEntityListIndex *AddToList (const char *className)
 		{
-			SServerEntityListIndex *Ind = QNew (TAG_GAME) SServerEntityListIndex(className);
+			SServerEntityListIndex *Ind = QNew (TAG_GENERIC) SServerEntityListIndex(className);
 			List[NumInList] = Ind;
 			List[NumInList]->hashNext = HashedList[List[NumInList]->hashValue];
 			HashedList[List[NumInList]->hashValue] = List[NumInList];
