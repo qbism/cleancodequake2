@@ -18,33 +18,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 //
-// m_angles.c
+// mathlib.cpp
+// Required initialization of MathLib.h and included files
 //
 
-#include "../source/cc_options.h"
-#include "shared.h"
+#include "../source/cc_local.h"
 
-/*
-===============
-AngleModf
-===============
-*/
-float AngleModf (float a)
+vec2f vec2fOrigin (0, 0);
+vec3f vec3fOrigin (0, 0, 0);
+
+void vec3f::ProjectOnPlane (const vec3f &point, const vec3f &normal)
 {
-	return (360.0f/65536.0f) * ((sint32)(a*(65536.0f/360.0f)) & 65535);
-}
-
-/*
-===============
-LerpAngle
-===============
-*/
-float LerpAngle (float a2, float a1, float frac)
-{
-	if (a1 - a2 > 180)
-		a1 -= 360;
-	if (a1 - a2 < -180)
-		a1 += 360;
-
-	return a2 + frac * (a1 - a2);
-}
+	const float invDenom = 1.0f / (normal | normal);
+	const float dot = (normal | point) * invDenom;
+	*this = point - dot * (normal * invDenom);
+};

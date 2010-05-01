@@ -82,6 +82,37 @@ public:
 	 */
 	inline void Set(const colorf &Other) { R = Other.R; G = Other.G; B = Other.B; A = Other.A; }
 	inline void Set(const float InR, const float InG, const float InB, const float InA) { R = InR; G = InG; B = InB; A = InA; }
+	
+	colorf GetNormalized (float &norm)
+	{
+		colorf out;
+		float f = Max<>(Max<>(R, G), B);
+
+		if (f > 1.0f)
+		{
+			f = 1.0f / f;
+			out.R = R * f;
+			out.G = G * f;
+			out.B = B * f;
+			out.A = A; // fixme?
+		}
+		else
+			out = *this;
+
+		norm = f;
+		return out;
+	};
+
+	inline colorf GetNormalized ()
+	{
+		float t;
+		return GetNormalized(t);
+	};
+
+	inline void Normalize ()
+	{
+		*this = GetNormalized();
+	};
 };
 
 /*
@@ -162,6 +193,37 @@ public:
 			((R - Other.B) * (B - Other.B)) +
 			((R - Other.A) * (A - Other.A));
 	}
+
+	colorb GetNormalized (float &norm)
+	{
+		colorb out;
+		float f = Max<>(Max<>(R, G), B);
+
+		if (f > 1.0f)
+		{
+			f = 1.0f / f;
+			out.R = FloatToByte(R * f);
+			out.G = FloatToByte(G * f);
+			out.B = FloatToByte(B * f);
+			out.A = FloatToByte(A); // fixme?
+		}
+		else
+			out = *this;
+
+		norm = f;
+		return out;
+	};
+
+	inline colorb GetNormalized ()
+	{
+		float t;
+		return GetNormalized(t);
+	};
+
+	inline void Normalize ()
+	{
+		*this = GetNormalized();
+	};
 };
 
 inline colorf::colorf(const colorb &Other)

@@ -564,6 +564,84 @@ public:
 
 		return vec3f (-pitch, yaw, 0);
 	}
+
+	// "this" is forward
+	void MakeNormalVectors (vec3f &right, vec3f &up) const
+	{
+		// This rotate and negate guarantees a vector not colinear with the original
+		right = vec3f(Z, -X, Y).MultiplyAngles (-(right | *this), *this).GetNormalized();
+		up = right ^ *this;
+	};
+
+	void ProjectOnPlane (const vec3f &point, const vec3f &normal);
+
+	/*
+	===============
+	PerpendicularVector
+	Assumes "src" is normalized
+	===============
+	*/
+	void PerpendicularVector(vec3f &dst) const
+	{
+		uint8	pos = 5;
+		float	minElem = 1.0f;
+		vec3f	tempVec;
+
+		// Find the smallest magnitude axially aligned vector
+		for (uint8 i = 0; i < 3; ++i)
+		{
+			if (Q_fabs(*this[i]) < minElem)
+			{
+				pos = i;
+				minElem = Q_fabs(*this[i]);
+			}
+		}
+
+		CC_ASSERT_EXPR(pos != 5, "Couldn't find smallest magnitude");
+
+		if (pos < 3)
+			tempVec[pos] = 1.0f;
+
+		// Project the point onto the plane defined by src
+		dst.ProjectOnPlane(tempVec, *this);
+
+		// Normalize the result
+		dst.Normalize();
+	};
+
+	/*
+	===============
+	RotatePointAroundVector
+	===============
+	*/
+	void RotateAroundVector(vec3f &dest, const vec3f &dir, const float degrees) const
+	{
+		float c, s;
+		Q_SinCosf(DEG2RAD(degrees), &s, &c);
+
+		vec3f vr, vu;
+		dir.MakeNormalVectors (vr, vu);
+
+		float t0, t1;
+		t0 = vr.X * c + vu.X * -s;
+		t1 = vr.X * s + vu.X *  c;
+		dest.X = (t0 * vr.X + t1 * vu.X + dir.X * dir.X) * X
+				+ (t0 * vr.Y + t1 * vu.Y + dir.X * dir.Y) * Y
+				+ (t0 * vr.Z + t1 * vu.Z + dir.X * dir.Z) * Z;
+
+		t0 = vr.Y * c + vu.Y * -s;
+		t1 = vr.Y * s + vu.Y *  c;
+		dest.Y = (t0 * vr.X + t1 * vu.X + dir.Y * dir.X) * X
+				+ (t0 * vr.Y + t1 * vu.Y + dir.Y * dir.Y) * Y
+				+ (t0 * vr.Z + t1 * vu.Z + dir.Y * dir.Z) * Z;
+
+		t0 = vr.Z * c + vu.Z * -s;
+		t1 = vr.Z * s + vu.Z *  c;
+		dest.Z = (t0 * vr.X + t1 * vu.X + dir.Z * dir.X) * X
+				+ (t0 * vr.Y + t1 * vu.Y + dir.Z * dir.Y) * Y
+				+ (t0 * vr.Z + t1 * vu.Z + dir.Z * dir.Z) * Z;
+	}
+
 };
 
 // Global vector operations

@@ -84,16 +84,49 @@ inline float BYTE2ANGLE (uint8 x)
 
 // ===========================================================================
 
-uint8		FloatToByte(float x);
+inline uint8		FloatToByte(float x)
+{
+	union
+	{
+		float			f;
+		uint32			i;
+	} f2i;
 
-float		ColorNormalizef(const float *in, float *out);
-float		ColorNormalizeb(const float *in, uint8 *out);
+	// Shift float to have 8bit fraction at base of number
+	f2i.f = x + 32768.0f;
+	f2i.i &= 0x7FFFFF;
+
+	// Then read as integer and kill float bits...
+	return (uint8)Min<sint32>(f2i.i, 255);
+}
 
 // ===========================================================================
 
 #ifdef id386
-long	Q_ftol (float f);
-float	Q_FastSqrt (float value);
+inline __declspec_naked long Q_ftol(float f)
+{
+	static sint32	tmp;
+	__asm {
+		fld dword ptr [esp+4]
+		fistp tmp
+		mov eax, tmp
+		ret
+	}
+}
+
+inline float	Q_FastSqrt (float value)
+{
+	float result = 0;
+	__asm {
+		mov eax, value
+		sub eax, 0x3f800000
+		sar eax, 1
+		add eax, 0x3f800000
+		mov result, eax
+	}
+	return result;
+}
+
 #else // id386
 inline long Q_ftol (float f) { return ((long)f); }
 inline float Q_FastSqrt (float value) { return sqrt(value); }
@@ -124,9 +157,34 @@ inline void Q_SinCosf(const float X, float *Sin, float *Cos)
 #endif
 }
 
-float	Q_RSqrtf (float number);
-double	Q_RSqrtd (double number);
-sint32		Q_log2 (sint32 val);
+// FIXME: template?
+inline float	Q_RSqrtf (float number)
+{
+	if (number == 0.0f)
+		return 0.0f;
+
+	float	y;
+	*((sint32 *)&y) = 0x5f3759df - ((* (sint32 *) &number) >> 1);
+	return y * (1.5f - (number * 0.5f * y * y));
+}
+
+inline double	Q_RSqrtd (double number)
+{
+	if (number == 0.0)
+		return 0.0;
+
+	double	y;
+	*((sint32 *)&y) = 0x5f3759df - ((* (sint32 *) &number) >> 1);
+	return y * (1.5f - (number * 0.5 * y * y));
+}
+
+inline sint32		Q_log2 (sint32 val)
+{
+	sint32 answer = 0;
+	while(val >>= 1)
+		answer++;
+	return answer;
+}
 
 template<typename TType>
 inline TType Q_NearestPow(const TType &Value, const bool bRoundDown)
@@ -142,29 +200,23 @@ inline TType Q_NearestPow(const TType &Value, const bool bRoundDown)
 
 // ===========================================================================
 
-void		MakeNormalVectorsf (const vec3f &forward, vec3f &right, vec3f &up);
-void		PerpendicularVector (const vec3f &src, vec3f &dst);
-void		RotatePointAroundVector(vec3f &dest, const vec3f &dir, const vec3f &point, const float degrees);
-
 //
 // m_angles.c
 //
-float		AngleModf (float a);
-float		LerpAngle (float a1, float a2, float frac);
+inline float		AngleModf (float a)
+{
+	return (360.0f/65536.0f) * ((sint32)(a*(65536.0f/360.0f)) & 65535);
+}
 
-//
-// m_bounds.c
-//
+inline float		LerpAngle (float a1, float a2, float frac)
+{
+	if (a1 - a2 > 180)
+		a1 -= 360;
+	if (a1 - a2 < -180)
+		a1 += 360;
 
-void		AddPointToBounds (vec3f v, vec3f &mins, vec3f &maxs);
-bool		BoundsAndSphereIntersect (const vec3f &mins, const vec3f &maxs, const vec3f &centre, float radius);
-bool		BoundsIntersect (const vec3f &mins1, const vec3f &maxs1, const vec3f &mins2, const vec3f &maxs2);
-void		ClearBounds (vec3f &mins, vec3f &maxs);
-void		MinMins (const vec3f &a, const vec3f &b, vec3f &out);
-void		MaxMaxs (const vec3f &a, const vec3f &b, vec3f &out);
-float		RadiusFromBounds (const vec3f &mins, const vec3f &maxs);
-
-// ===========================================================================
+	return a2 + frac * (a1 - a2);
+}
 
 #include "Vector.h"
 
@@ -173,9 +225,66 @@ extern vec3f vec3fOrigin;
 
 // ===========================================================================
 
-#define NUMVERTEXNORMALS	162
-extern vec3f	m_byteDirs[NUMVERTEXNORMALS];
+//
+// m_bounds.c
+//
 
-uint8		DirToByte(const vec3f &dirVec);
-void		ByteToDir(const uint8 dirByte, vec3f &dirVec);
+class CBounds
+{
+	vec3f mins, maxs;
+public:
 
+	CBounds (vec3f mins, vec3f maxs) :
+	  mins (mins),
+	  maxs (maxs)
+	  {
+	  };
+
+	CBounds ()
+	{
+		Clear ();
+	};
+
+	void AddPoint (vec3f v)
+	{
+		// X Vector
+		if (v.X < mins.X)
+			mins.X = v.X;
+		if (v.X > maxs.X)
+			maxs.X = v.X;
+
+		// Y Vector
+		if (v.Y < mins.Y)
+			mins.Y = v.Y;
+		if (v.Y > maxs.Y)
+			maxs.Y = v.Y;
+
+		// Z Vector
+		if (v.Z < mins.Z)
+			mins.Z = v.Z;
+		if (v.Z > maxs.Z)
+			maxs.Z = v.Z;
+	};
+
+	// Sphere intersect
+	bool Intersects (const vec3f &centre, float radius)
+	{
+		return (mins <= (centre+radius) && maxs >= (centre+radius));
+	};
+
+	// Intersects other bounds
+	bool Intersects (const CBounds &right)
+	{
+		return (mins <= right.mins && maxs >= right.maxs);
+	};
+
+	void Clear ()
+	{
+		mins = maxs = 999999;
+	};
+
+	float		RadiusFromBounds ()
+	{
+		return (mins.GetAbs() > maxs.GetAbs() ? mins.GetAbs() : maxs.GetAbs()).Length();
+	};
+};

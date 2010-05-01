@@ -148,12 +148,12 @@ public:
 
 		vec3f point = State.GetOrigin().MultiplyAngles (Speed * 0.5f, MoveDir);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 		if (Wait > 100)
 			CSteam(State.GetOrigin(), MoveDir, Count, Color & 0xFF, Speed, nextid, Wait).Send();
 		else
 			CSteam(State.GetOrigin(), MoveDir, Count, Color & 0xFF, Speed, -1).Send();
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 	};
 
 	void Spawn ()

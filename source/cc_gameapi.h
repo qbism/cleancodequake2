@@ -50,28 +50,28 @@ struct gameImport_t
 {
 	// special messages
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (BroadcastPrintf)
+	CC_INSECURE_DEPRECATE (BroadcastPrintf)
 #endif
 	void	(*bprintf) (EGamePrintLevel printlevel, char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ServerPrintf or DebugPrintf)
+	CC_INSECURE_DEPRECATE (ServerPrintf or DebugPrintf)
 #endif
 	void	(*dprintf) (char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ClientPrintf)
+	CC_INSECURE_DEPRECATE (ClientPrintf)
 #endif
 	void	(*cprintf) (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (CenterPrintf)
+	CC_INSECURE_DEPRECATE (CenterPrintf)
 #endif
 	void	(*centerprintf) (edict_t *ent, char *fmt, ...);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (PlaySoundFrom or IBaseEntity->PlaySound)
+	CC_INSECURE_DEPRECATE (PlaySoundFrom or IBaseEntity->PlaySound)
 #endif
 	void	(*sound) (edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (PlaySoundAt or IBaseEntity->PlayPositionedSound)
+	CC_INSECURE_DEPRECATE (PlaySoundAt or IBaseEntity->PlayPositionedSound)
 #endif
 	void	(*positioned_sound) (vec3_t origin, edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 
@@ -80,49 +80,49 @@ struct gameImport_t
 	// All of the current configstrings are sent to clients when
 	// they connect, and changes are sent to all connected clients.
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ConfigString)
+	CC_INSECURE_DEPRECATE (ConfigString)
 #endif
 	void	(*configstring) (sint32 num, char *string);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (GameError)
+	CC_INSECURE_DEPRECATE (GameError)
 #endif
 	void	(*error) (char *fmt, ...);
 
 	// the *index functions create configstrings and some internal server state
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ModelIndex)
+	CC_INSECURE_DEPRECATE (ModelIndex)
 #endif
 	sint32		(*modelindex) (char *name);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (SoundIndex)
+	CC_INSECURE_DEPRECATE (SoundIndex)
 #endif
 	sint32		(*soundindex) (char *name);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ImageIndex)
+	CC_INSECURE_DEPRECATE (ImageIndex)
 #endif
 	sint32		(*imageindex) (char *name);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (SetModel)
+	CC_INSECURE_DEPRECATE (SetModel)
 #endif
 	void	(*setmodel) (edict_t *ent, char *name);
 
 	// collision detection
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (class CTrace)
+	CC_INSECURE_DEPRECATE (class CTrace)
 #endif
 	cmTrace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, sint32 contentMask);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (PointContents)
+	CC_INSECURE_DEPRECATE (PointContents)
 #endif
 	sint32			(*pointcontents) (vec3_t point);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (InArea)
+	CC_INSECURE_DEPRECATE (InArea)
 #endif
 	BOOL		(*inPVS) (vec3_t p1, vec3_t p2);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (InArea)
+	CC_INSECURE_DEPRECATE (InArea)
 #endif
 	BOOL		(*inPHS) (vec3_t p1, vec3_t p2);
 	void		(*SetAreaPortalState) (sint32 portalNum, BOOL open);
@@ -132,19 +132,19 @@ struct gameImport_t
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE ((IBaseEntity)->Link)
+	CC_INSECURE_DEPRECATE ((IBaseEntity)->Link)
 #endif
 		void	(*linkentity) (edict_t *ent);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE ((IBaseEntity)->Unlink)
+	CC_INSECURE_DEPRECATE ((IBaseEntity)->Unlink)
 #endif
 	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (BoxEdicts)
+	CC_INSECURE_DEPRECATE (BoxEdicts)
 #endif
 	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	sint32 maxCount, sint32 areaType);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (SV_Pmove)
+	CC_INSECURE_DEPRECATE (SV_Pmove)
 #endif
 	void	(*Pmove) (
 	pMove_t *pMove
@@ -152,103 +152,103 @@ struct gameImport_t
 
 	// network messaging
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (Cast)
+	CC_INSECURE_DEPRECATE (Cast)
 #endif
 	void	(*multicast) (vec3_t origin, EMultiCast to);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (Cast)
+	CC_INSECURE_DEPRECATE (Cast)
 #endif
 	void	(*unicast) (edict_t *ent, BOOL reliable);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteChar)
+	CC_INSECURE_DEPRECATE (WriteChar)
 #endif
 	void	(*WriteChar) (sint32 c);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteByte)
+	CC_INSECURE_DEPRECATE (WriteByte)
 #endif
 	void	(*WriteByte) (sint32 c);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteShort)
+	CC_INSECURE_DEPRECATE (WriteShort)
 #endif
 	void	(*WriteShort) (sint32 c);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteLong)
+	CC_INSECURE_DEPRECATE (WriteLong)
 #endif
 	void	(*WriteLong) (sint32 c);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteFloat)
+	CC_INSECURE_DEPRECATE (WriteFloat)
 #endif
 	void	(*WriteFloat) (float f);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteString)
+	CC_INSECURE_DEPRECATE (WriteString)
 #endif
 	void	(*WriteString) (char *s);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WritePosition)
+	CC_INSECURE_DEPRECATE (WritePosition)
 #endif
 	void	(*WritePosition) (vec3_t pos);	// some fractional bits
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteDir)
+	CC_INSECURE_DEPRECATE (WriteDir)
 #endif
 	void	(*WriteDir) (vec3_t pos);		// single uint8 encoded, very coarse
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (WriteAngle)
+	CC_INSECURE_DEPRECATE (WriteAngle)
 #endif
 	void	(*WriteAngle) (float f);
 
 	// managed memory allocation
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (QNew)
+	CC_INSECURE_DEPRECATE (QNew)
 #endif
 	void	*(*TagMalloc) (sint32 size, sint32 tag);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (QDelete)
+	CC_INSECURE_DEPRECATE (QDelete)
 #endif
 	void	(*TagFree) (void *block);
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (Mem_FreeTag)
+	CC_INSECURE_DEPRECATE (Mem_FreeTag)
 #endif
 	void	(*FreeTags) (sint32 tag);
 
 	// console variable interaction
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (class CCvar)
+	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
 	cVar_t	*(*cvar) (char *varName, char *value, sint32 flags);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (class CCvar)
+	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
 	cVar_t	*(*cvar_set) (char *varName, char *value);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (class CCvar)
+	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
 	cVar_t	*(*cvar_forceset) (char *varName, char *value);
 
 	// ClientCommand and ServerCommand parameter access
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ArgCount)
+	CC_INSECURE_DEPRECATE (ArgCount)
 #endif
 	sint32		(*argc) ();
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ArgGets/ArgGeti/ArgGetf)
+	CC_INSECURE_DEPRECATE (ArgGets/ArgGeti/ArgGetf)
 #endif
 	char	*(*argv) (sint32 n);
 
 #if !USE_EXTENDED_GAME_IMPORTS
-	_CC_INSECURE_DEPRECATE (ArgGetConcatenatedString)
+	CC_INSECURE_DEPRECATE (ArgGetConcatenatedString)
 #endif
 	char	*(*args) ();	// concatenation of all argv >= 1
 
@@ -331,7 +331,7 @@ TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers);
 void ConfigString (sint32 configStringIndex, const char *configStringValue, ...);
 void GameError (const char *fmt, ...);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 
 // Hearable false = PVS, otherwise PHS
 inline bool InArea (bool Hearable, vec3f &p1, vec3f &p2)
@@ -344,7 +344,7 @@ inline bool InArea (bool Hearable, vec3f &p1, vec3f &p2)
 inline bool InHearableArea (vec3f &p1, vec3f &p2) { return InArea (true, p1, p2); }
 inline bool InVisibleArea (vec3f &p1, vec3f &p2) { return InArea (false, p1, p2); }
 
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 #else
 FILE_WARNING

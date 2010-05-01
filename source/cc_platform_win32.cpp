@@ -100,6 +100,26 @@ void Sys_FindClose ()
 	sys_findHandle = INVALID_HANDLE_VALUE;
 }
 
+/*
+============
+Com_FilePath
+
+Returns the path up to, but not including the last /
+============
+*/
+void Com_FilePath(char *path, char *out, size_t size)
+{
+	if (size)
+	{
+		char *s = path + strlen(path) - 1;
+		while (s != path && *s != '/')
+			s--;
+
+		Q_strncpyz(out, path, size);
+		if (s-path < (sint32)size) // FIXME
+			out[s-path] = '\0';
+	}
+}
 
 /*
 ================

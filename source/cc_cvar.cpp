@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 
 CCvar::CCvar () :
 	cVar(NULL),
@@ -171,7 +171,7 @@ bool CCvar::Modified ()
 	return modified;
 }
 
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 CCvar	CvarList[CV_TOTAL_CVARS];
 

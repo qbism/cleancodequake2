@@ -91,7 +91,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	// Check.
 	// LoadFields will actually re-load the monster's ID, so here we need to make sure
 	// they still are the same.
-	_CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || Q_stricmp(Entity->Monster->MonsterName.c_str(), LoadedName)), "Loaded monster differs in ID or Name\n");
+	CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || Q_stricmp(Entity->Monster->MonsterName.c_str(), LoadedName)), "Loaded monster differs in ID or Name\n");
 
 	Entity->Monster->Entity = Entity;
 }
@@ -349,7 +349,7 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 void			CMonsterEntity::SaveFields (CFile &File)
 {
 	// Write the monster's name first - this is used for checking later
-	if (_CC_ASSERT_EXPR (!(!Monster || Monster->MonsterName.empty()), "Monster with no monster or name!\n"))
+	if (CC_ASSERT_EXPR (!(!Monster || Monster->MonsterName.empty()), "Monster with no monster or name!\n"))
 		return;
 
 	File.Write (Monster->MonsterName);

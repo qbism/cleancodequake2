@@ -112,7 +112,7 @@ int CountPlayers ()
 //
 CMonsterEntity *CreateMonster(vec3f origin, vec3f angles, const char *classname)
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
 
 	Level.ClassName = classname;
@@ -129,7 +129,7 @@ _CC_DISABLE_DEPRECATION
 	if (ent->inUse && ent->Entity && !ent->Entity->Freed)
 		return Mon;
 	return NULL;
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 
 // FindSpawnPoint

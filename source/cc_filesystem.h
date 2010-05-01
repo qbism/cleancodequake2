@@ -304,7 +304,7 @@ public:
 	{
 		const char *openMode = CFile::OpenModeFromEnum(Mode);
 
-		if (_CC_ASSERT_EXPR (strcmp(openMode,"ERR"), "Invalid file mode passed"))
+		if (CC_ASSERT_EXPR (strcmp(openMode,"ERR"), "Invalid file mode passed"))
 			return;
 
 		// Open up the file.
@@ -408,7 +408,7 @@ public:
 		if (!Handle)
 			return;
 
-		_CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_WRITE), "Tried to write on a read\n");
+		CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_WRITE), "Tried to write on a read\n");
 
 		if (IS_REGULAR(Handle))
 			fwrite (buffer, size, 1, Handle->file.reg);
@@ -459,7 +459,7 @@ public:
 		if (!Handle)
 			return;
 
-		_CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_READ), "Tried to read on a write\n");
+		CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_READ), "Tried to read on a write\n");
 
 		if (IS_REGULAR(Handle))
 			fread (buffer, size, 1, Handle->file.reg);

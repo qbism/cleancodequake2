@@ -44,9 +44,9 @@ Sends text across to be displayed if the level passes
 */
 static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
-	va_list		argptr;
-	static char	string[MAX_COMPRINT];
-	CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
+	va_list			argptr;
+	static char		string[MAX_COMPRINT];
+	CPlayerEntity	*Player = entity_cast<CPlayerEntity>(ent->Entity);
 
 	if (printLevel < Player->Client.Respawn.MessageLevel)
 		return;
@@ -101,9 +101,9 @@ void DeveloperPrintf (const char *fmt, ...)
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	CC_OutputDebugString (text);
 }
@@ -119,9 +119,9 @@ void DebugPrintf (const char *fmt, ...)
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	CC_OutputDebugString (text);
 #endif
@@ -136,9 +136,9 @@ void ServerPrintf (const char *fmt, ...)
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	CC_OutputDebugString (text);
 }

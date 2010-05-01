@@ -65,9 +65,9 @@ public:
 			QDelete Game.Entities[number].Entity;
 			Junk = QNewEntityOf JunkClassType(number);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 			G_InitEdict (&Game.Entities[number]);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 			Game.Entities[number].Entity = Junk;
 		}
@@ -75,9 +75,9 @@ _CC_ENABLE_DEPRECATION
 		{
 			Junk = QNewEntityOf JunkClassType(number);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 			G_InitEdict (&Game.Entities[number]);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 			Game.Entities[number].Entity = Junk;
 		}

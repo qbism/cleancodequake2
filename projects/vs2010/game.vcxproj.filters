@@ -139,9 +139,6 @@
     <Filter Include="Shared">
       <UniqueIdentifier>{b975fc01-4af2-4f70-bc20-898540ad552b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shared\MathLib">
-      <UniqueIdentifier>{61be54fe-f8a3-412a-aa7b-a2e4104d1545}</UniqueIdentifier>
-    </Filter>
     <Filter Include="CleanCode Files\IRC">
       <UniqueIdentifier>{f334cc69-d14e-4500-98f8-54f8bd6453e3}</UniqueIdentifier>
     </Filter>
@@ -150,34 +147,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\byteswap.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ColorVec.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\infostrings.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\mathlib.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\mersennetwister.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\m_angles.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\m_bounds.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\m_plane.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\shared.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\string.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_arg.cpp">
@@ -606,21 +576,24 @@
     <ClCompile Include="..\..\source\cc_userinfo.cpp">
       <Filter>CleanCode Files\Userinfo</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\MathLib.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\Random.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ByteSwap.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\String.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\MathLib\MathLib.h">
-      <Filter>Shared\MathLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\MathLib\Vector.h">
-      <Filter>Shared\MathLib</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Platform.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\shared.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Templates\Templates.h">
@@ -1114,6 +1087,15 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_userinfo.h">
       <Filter>CleanCode Files\Userinfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\MathLib\MathLib.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\MathLib\Vector.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Shared.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

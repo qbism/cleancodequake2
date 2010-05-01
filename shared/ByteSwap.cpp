@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // byteswap.c
 //
 
-#include "../source/cc_options.h"
-#include "shared.h"
+#include "../source/cc_local.h"
 
 float (*LittleFloat) (float f);
 sint32 (*LittleLong) (sint32 l);

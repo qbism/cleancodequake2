@@ -69,7 +69,7 @@ void CStatusBar::AddToBarBuffer (const char *fmt, ...)
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-	_CC_ASSERT_EXPR (!(Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1), "Statusbar overflowed");
+	CC_ASSERT_EXPR (!(Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1), "Statusbar overflowed");
 
 	Bar += text;
 }
@@ -146,13 +146,13 @@ void CStatusBar::AddArmorNum ()
 
 void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping, sint32 time)
 {
-	_CC_ASSERT_EXPR (!(cNum >= Game.MaxClients || cNum < 0), "Client number out of bounds");
+	CC_ASSERT_EXPR (!(cNum >= Game.MaxClients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("client %i %i %i %i %i %i ", x, y, cNum, Score, ping, time);
 }
 
 void CStatusBar::AddClientBlock (sint32 x, sint32 y, sint32 cNum, sint32 Score, sint32 ping)
 {
-	_CC_ASSERT_EXPR (!(cNum >= Game.MaxClients || cNum < 0), "Client number out of bounds");
+	CC_ASSERT_EXPR (!(cNum >= Game.MaxClients || cNum < 0), "Client number out of bounds");
 	AddToBarBuffer ("ctf %i %i %i %i %i %i ", x, y, cNum, Score, ping);
 }
 

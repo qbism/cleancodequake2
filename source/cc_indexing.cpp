@@ -105,7 +105,7 @@ const char *StringFromImageIndex (MediaIndex Index)
 	return (*ImageList.ListMap.find(Index)).second->Name.c_str();
 }
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 
 MediaIndex ModelIndex (const char *String, ...)
 {
@@ -249,5 +249,5 @@ void CServerCmdIndexList::operator () ()
 	ServerPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);
 }
 
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 

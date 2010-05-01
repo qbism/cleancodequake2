@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // ColorVec.cpp
 //
 
-#include "../source/cc_options.h"
-#include "shared.h"
+#include "../source/cc_local.h"
 
 const colorf	Q_FColorBlack(0, 0, 0, 1);
 const colorf	Q_FColorRed(1, 0, 0, 1);

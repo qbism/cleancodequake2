@@ -267,7 +267,7 @@ void CItemEntity::Spawn (CBaseItem *item)
 {
 	LinkedItem = item;
 
-	if (_CC_ASSERT_EXPR (item != NULL, "Item without an item!"))
+	if (CC_ASSERT_EXPR (item != NULL, "Item without an item!"))
 	{
 		Free ();
 		return;

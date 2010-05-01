@@ -225,7 +225,7 @@ inline TType *entity_cast (IBaseEntity *Entity)
 		return NULL;
 
 	TType *Casted = dynamic_cast<TType*> (Entity);
-	_CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
+	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
 
 	return Casted;
 }
@@ -427,7 +427,7 @@ public:
 			{
 				vec3f v;
 				//if (sscanf (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z) == EOF)
-				//	_CC_ASSERT_EXPR (0, "sscanf failed")
+				//	CC_ASSERT_EXPR (0, "sscanf failed")
 
 				std::istringstream strm (Value);
 				strm >> v.X >> v.Y >> v.Z;

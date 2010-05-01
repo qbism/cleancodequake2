@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_LOCAL_H
 
 #include "cc_options.h"
-#include "../shared/shared.h"
+#include "../shared/Shared.h"
 
 // Paril, CleanCode Quake2
 #include "cc_shared.h"
@@ -339,13 +339,13 @@ inline IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bo
 	return FindRadius (From, org, Radius, EntityFlags, CheckNonSolid);
 }
 
-_CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
+CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
 edict_t	*G_Spawn ();
 
-_CC_INSECURE_DEPRECATE (Function not needed)
+CC_INSECURE_DEPRECATE (Function not needed)
 void	G_InitEdict (edict_t *e);
 
-_CC_INSECURE_DEPRECATE (Entity->Free)
+CC_INSECURE_DEPRECATE (Entity->Free)
 void	G_FreeEdict (edict_t *e);
 
 void	ED_CallSpawn (edict_t *ent);
@@ -634,7 +634,7 @@ extern	CLevelLocals	Level;
 
 inline IBaseEntity *CreateEntityFromClassname (const char *classname)
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
 
 	Level.ClassName = classname;
@@ -643,7 +643,7 @@ _CC_DISABLE_DEPRECATION
 	if (ent->inUse && ent->Entity && !ent->Entity->Freed)
 		return ent->Entity;
 	return NULL;
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 
 #include "cc_utils.h"

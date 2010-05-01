@@ -99,7 +99,7 @@ sint32		&CEntityState::GetModelIndex	(uint8 index)
 	case 4:
 		return state->modelIndex4;
 	default:
-		_CC_ASSERT_EXPR(0, "index for GetModelIndex is out of bounds");
+		CC_ASSERT_EXPR(0, "index for GetModelIndex is out of bounds");
 		return state->modelIndex;
 	}
 }
@@ -263,9 +263,9 @@ edict_t *G_Spawn ()
 		return NULL;
 	}
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	if (GameAPI.GetNumEdicts() < e->state.number + 1)
 		GameAPI.GetNumEdicts() = e->state.number + 1;
@@ -282,9 +282,9 @@ Marks the edict as free
 */
 void G_FreeEdict (edict_t *ed)
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.unlinkentity (ed);		// unlink from world
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	// Paril, hack
 	IBaseEntity *Entity = ed->Entity;
@@ -349,9 +349,9 @@ void			RunPrivateEntities ()
 // Creating a new entity via constructor.
 IBaseEntity::IBaseEntity ()
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gameEntity = G_Spawn ();
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 	gameEntity->Entity = this;
 	ClassName = "noclass";
 
@@ -392,10 +392,10 @@ IBaseEntity::~IBaseEntity ()
 		{
 			gameEntity->Entity = NULL;
 
-	_CC_DISABLE_DEPRECATION
+	CC_DISABLE_DEPRECATION
 			if (!Freed && !(EntityFlags & ENT_JUNK))
 				G_FreeEdict (gameEntity); // "delete" the entity
-	_CC_ENABLE_DEPRECATION
+	CC_ENABLE_DEPRECATION
 		}
 		else
 		{
@@ -549,7 +549,7 @@ bool			&IBaseEntity::GetInUse ()
 	return (bool&)gameEntity->inUse;
 }
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 void			IBaseEntity::Link ()
 {
 	gi.linkentity (gameEntity);
@@ -559,7 +559,7 @@ void			IBaseEntity::Unlink ()
 {
 	gi.unlinkentity (gameEntity);
 }
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 void			IBaseEntity::Free ()
 {

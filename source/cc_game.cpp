@@ -358,7 +358,7 @@ void CGameAPI::RunFrame ()
 	std::for_each (Level.Entities.Closed.begin(), Level.Entities.Closed.end(), ProcessEntity);
 	Level.Entities.Closed.remove_if (RemoveEntity);
 #ifdef _DEBUG
-	_CC_ASSERT_EXPR ((Level.Entities.Closed.size() + Level.Entities.Open.size()) == GameAPI.GetMaxEdicts(), "Entities don't equal max!");
+	CC_ASSERT_EXPR ((Level.Entities.Closed.size() + Level.Entities.Open.size()) == GameAPI.GetMaxEdicts(), "Entities don't equal max!");
 #endif
 
 	RunPrivateEntities ();

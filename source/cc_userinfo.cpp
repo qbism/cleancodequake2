@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CUserInfo::ParseUserInfo (const std::string &Str)
 {
-	if (!Info_Validate(Str))
+	if (!Validate(Str))
 		return;
 
 	size_t curIndex = 0;

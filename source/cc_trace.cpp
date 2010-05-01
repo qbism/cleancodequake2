@@ -51,7 +51,7 @@ CTrace::CTrace ()
 {
 }
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 
 CTrace::CTrace (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask)
 {
@@ -89,5 +89,5 @@ void CTrace::operator () (vec3f start, vec3f end, sint32 contentMask)
 	Copy(temp);
 }
 
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 

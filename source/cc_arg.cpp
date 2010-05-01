@@ -55,7 +55,7 @@ void SetupArg ()
 // Called at the beginning of an arg session
 void InitArg ()
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	if (numArgv)
 	{
 		DebugPrintf ("CleanCode Warning: InitArg() called before previous arg session completed!\n");
@@ -75,7 +75,7 @@ _CC_DISABLE_DEPRECATION
 		argvFloatArray.push_back (atof (argvStringArray[i].c_str()));
 		argvIntegerArray.push_back ((sint32)argvFloatArray[i]);
 	}
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 
 // Called at the end of an arg session
@@ -105,7 +105,7 @@ std::string ArgGets (uint32 Index)
 
 sint32 ArgGeti (uint32 Index)
 {
-	if (_CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGeti(n) index out of bounds"))
+	if (CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGeti(n) index out of bounds"))
 		return 0;
 
 	return argvIntegerArray[Index];
@@ -113,7 +113,7 @@ sint32 ArgGeti (uint32 Index)
 
 float ArgGetf (uint32 Index)
 {
-	if (_CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGetf(n) index out of bounds"))
+	if (CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGetf(n) index out of bounds"))
 		return 0;
 
 	return argvFloatArray[Index];

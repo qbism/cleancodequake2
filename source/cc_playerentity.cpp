@@ -127,7 +127,7 @@ ERenderDefFlags	&CPlayerState::GetRdFlags ()
 
 sint16			&CPlayerState::GetStat (uint8 index)
 {
-	if (_CC_ASSERT_EXPR (!(index < 0 || index > 32), "GetStat() index out of bounds"))
+	if (CC_ASSERT_EXPR (!(index < 0 || index > 32), "GetStat() index out of bounds"))
 		return playerState->stats[0];
 
 	return playerState->stats[index];
@@ -756,11 +756,13 @@ The game can override any of the settings in place
 */
 void CPlayerEntity::UserinfoChanged (std::string userinfo)
 {
-	CUserInfo UserInfo(userinfo);
+	CUserInfo UserInfo;
 
 	// check for malformed or illegal info strings
-	if (!Info_Validate(UserInfo))
+	if (!CUserInfo::Validate (userinfo))
 		UserInfo.Update ("\\name\\badinfo\\skin\\male/grunt");
+	else
+		UserInfo.Update (userinfo);
 
 	// set name
 	Client.Persistent.Name = UserInfo.GetValueFromKey ("name");
@@ -800,7 +802,6 @@ void CPlayerEntity::UserinfoChanged (std::string userinfo)
 
 	// IP
 	// Paril: removed. could be changed any time in-game!
-	//s = Info_ValueForKey (userinfo, "ip");
 
 	// Gender
 	s = UserInfo.GetValueFromKey ("gender");
@@ -2887,9 +2888,9 @@ CPlayerEntity	*pm_passent;
 // pmove doesn't need to know about passent and contentmask
 cmTrace_t	PM_trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	return gi.trace(start, mins, maxs, end, pm_passent->gameEntity, (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 #endif
 
@@ -3831,9 +3832,9 @@ void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
 
 void CPlayerEntity::BeginDeathmatch ()
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	G_InitEdict (gameEntity);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	InitResp();
 
@@ -3882,9 +3883,9 @@ void CPlayerEntity::Begin ()
 		// except for the persistant data that was initialized at
 		// ClientConnect() time
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 		G_InitEdict (gameEntity);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 		ClassName = "player";
 		InitResp ();
@@ -3921,7 +3922,7 @@ IPAddress CopyIP (const char *val)
 
 	IPAddress Adr;
 
-	_CC_ASSERT_EXPR (!(str.length() > sizeof(Adr.str)), "IP copied is longer than sizeof(Adr.str)");
+	CC_ASSERT_EXPR (!(str.length() > sizeof(Adr.str)), "IP copied is longer than sizeof(Adr.str)");
 	Q_snprintfz (Adr.str, sizeof(Adr.str), "%s", str.c_str());
 
 	return Adr;

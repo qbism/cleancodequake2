@@ -43,25 +43,13 @@
 // It would be nice to CC: <Cokus@math.washington.edu> when you write.
 //
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include "Platform.h"
+#include "../source/cc_local.h"
 
 //
 // uint32 must be an unsigned integer type capable of holding at least 32
 // bits; exactly 32 should be fastest, but 64 is better on an Alpha with
 // GCC at -O3 optimization so try your options and see what's best for you
 //
-
-// FIXME: Get these from shared.h somehow. Maybe break shared.h up such that we can just grab the typedef info.
-#ifdef WIN32
-typedef unsigned __int32 uint32;
-typedef signed __int32 sint32;
-#else
-typedef uint32_t uint32;
-typedef int32_t sint32;
-#endif
 
 #define W				(sizeof(uint32) * 8)  //
 #define R				(31)				  //
@@ -102,83 +90,83 @@ static sint32      left = -1;      // can *next++ this many times before reloadi
 
 
 void seedMT(uint32 seed)
- {
-    //
-    // We initialize state[0..(N-1)] via the generator
-    //
-    //   x_new = (69069 * x_old) mod 2^32
-    //
-    // from Line 15 of Table 1, p. 106, Sec. 3.3.4 of Knuth's
-    // _The Art of Computer Programming_, Volume 2, 3rd ed.
-    //
-    // Notes (SJC): I do not know what the initial state requirements
-    // of the Mersenne Twister are, but it seems this seeding generator
-    // could be better.  It achieves the maximum period for its modulus
-    // (2^30) iff x_initial is odd (p. 20-21, Sec. 3.2.1.2, Knuth); if
-    // x_initial can be even, you have sequences like 0, 0, 0, ...;
-    // 2^31, 2^31, 2^31, ...; 2^30, 2^30, 2^30, ...; 2^29, 2^29 + 2^31,
-    // 2^29, 2^29 + 2^31, ..., etc. so I force seed to be odd below.
-    //
-    // Even if x_initial is odd, if x_initial is 1 mod 4 then
-    //
-    //   the          lowest bit of x is always 1,
-    //   the  next-to-lowest bit of x is always 0,
-    //   the 2nd-from-lowest bit of x alternates      ... 0 1 0 1 0 1 0 1 ... ,
-    //   the 3rd-from-lowest bit of x 4-cycles        ... 0 1 1 0 0 1 1 0 ... ,
-    //   the 4th-from-lowest bit of x has the 8-cycle ... 0 0 0 1 1 1 1 0 ... ,
-    //    ...
-    //
-    // and if x_initial is 3 mod 4 then
-    //
-    //   the          lowest bit of x is always 1,
-    //   the  next-to-lowest bit of x is always 1,
-    //   the 2nd-from-lowest bit of x alternates      ... 0 1 0 1 0 1 0 1 ... ,
-    //   the 3rd-from-lowest bit of x 4-cycles        ... 0 0 1 1 0 0 1 1 ... ,
-    //   the 4th-from-lowest bit of x has the 8-cycle ... 0 0 1 1 1 1 0 0 ... ,
-    //    ...
-    //
-    // The generator's potency (min. s>=0 with (69069-1)^s = 0 mod 2^32) is
-    // 16, which seems to be alright by p. 25, Sec. 3.2.1.3 of Knuth.  It
-    // also does well in the dimension 2..5 spectral tests, but it could be
-    // better in dimension 6 (Line 15, Table 1, p. 106, Sec. 3.3.4, Knuth).
-    //
-    // Note that the random number user does not see the values generated
-    // here directly since reloadMT() will always munge them first, so maybe
-    // none of all of this matters.  In fact, the seed values made here could
-    // even be extra-special desirable if the Mersenne Twister theory says
-    // so-- that's why the only change I made is to restrict to odd seeds.
-    //
+{
+	//
+	// We initialize state[0..(N-1)] via the generator
+	//
+	//   x_new = (69069 * x_old) mod 2^32
+	//
+	// from Line 15 of Table 1, p. 106, Sec. 3.3.4 of Knuth's
+	// _The Art of Computer Programming_, Volume 2, 3rd ed.
+	//
+	// Notes (SJC): I do not know what the initial state requirements
+	// of the Mersenne Twister are, but it seems this seeding generator
+	// could be better.  It achieves the maximum period for its modulus
+	// (2^30) iff x_initial is odd (p. 20-21, Sec. 3.2.1.2, Knuth); if
+	// x_initial can be even, you have sequences like 0, 0, 0, ...;
+	// 2^31, 2^31, 2^31, ...; 2^30, 2^30, 2^30, ...; 2^29, 2^29 + 2^31,
+	// 2^29, 2^29 + 2^31, ..., etc. so I force seed to be odd below.
+	//
+	// Even if x_initial is odd, if x_initial is 1 mod 4 then
+	//
+	//   the          lowest bit of x is always 1,
+	//   the  next-to-lowest bit of x is always 0,
+	//   the 2nd-from-lowest bit of x alternates      ... 0 1 0 1 0 1 0 1 ... ,
+	//   the 3rd-from-lowest bit of x 4-cycles        ... 0 1 1 0 0 1 1 0 ... ,
+	//   the 4th-from-lowest bit of x has the 8-cycle ... 0 0 0 1 1 1 1 0 ... ,
+	//    ...
+	//
+	// and if x_initial is 3 mod 4 then
+	//
+	//   the          lowest bit of x is always 1,
+	//   the  next-to-lowest bit of x is always 1,
+	//   the 2nd-from-lowest bit of x alternates      ... 0 1 0 1 0 1 0 1 ... ,
+	//   the 3rd-from-lowest bit of x 4-cycles        ... 0 0 1 1 0 0 1 1 ... ,
+	//   the 4th-from-lowest bit of x has the 8-cycle ... 0 0 1 1 1 1 0 0 ... ,
+	//    ...
+	//
+	// The generator's potency (min. s>=0 with (69069-1)^s = 0 mod 2^32) is
+	// 16, which seems to be alright by p. 25, Sec. 3.2.1.3 of Knuth.  It
+	// also does well in the dimension 2..5 spectral tests, but it could be
+	// better in dimension 6 (Line 15, Table 1, p. 106, Sec. 3.3.4, Knuth).
+	//
+	// Note that the random number user does not see the values generated
+	// here directly since reloadMT() will always munge them first, so maybe
+	// none of all of this matters.  In fact, the seed values made here could
+	// even be extra-special desirable if the Mersenne Twister theory says
+	// so-- that's why the only change I made is to restrict to odd seeds.
+	//
 
-    register uint32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
-    register sint32    j;
+	register uint32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
+	register sint32    j;
 
-    for (left = 0, *s++ = x, j = N; --j;
-        *s++ = (x*=69069U) & 0xFFFFFFFFU);
- }
+	for (left = 0, *s++ = x, j = N; --j;
+		*s++ = (x*=69069U) & 0xFFFFFFFFU);
+}
 
 
 static uint32 reloadMT()
- {
-    register uint32 *p0=state, *p2=state+2, *pM=state+M, s0, s1;
-    register sint32    j;
+{
+	register uint32 *p0=state, *p2=state+2, *pM=state+M, s0, s1;
+	register sint32    j;
 
-    if(left < -1)
-        seedMT(4357U);
+	if(left < -1)
+		seedMT(4357U);
 
-    left=N-1, next=state+1;
+	left=N-1, next=state+1;
 
-    for (s0 = state[0], s1 = state[1], j = N-M+1; --j; s0 = s1, s1 = *p2++)
-        *p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+	for (s0 = state[0], s1 = state[1], j = N-M+1; --j; s0 = s1, s1 = *p2++)
+		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
 
-    for(pM = state, j = M; --j; s0 = s1, s1 = *p2++)
-        *p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+	for(pM = state, j = M; --j; s0 = s1, s1 = *p2++)
+		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
 
-    s1=state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
-    s1 ^= (s1 >> U);
-    s1 ^= (s1 <<  S) & B;
-    s1 ^= (s1 << T) & C;
-    return(s1 ^ (s1 >> L));
- }
+	s1=state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+	s1 ^= (s1 >> U);
+	s1 ^= (s1 <<  S) & B;
+	s1 ^= (s1 << T) & C;
+	return(s1 ^ (s1 >> L));
+}
 
 
 uint32 randomMT()

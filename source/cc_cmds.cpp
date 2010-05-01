@@ -68,7 +68,7 @@ CPlayerCommand *Cmd_FindCommand (const char *commandName)
 CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFunctor *Functor, ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
-	if (_CC_ASSERT_EXPR (!Cmd_FindCommand(commandName), "Tried to re-add a command, fatal error"))
+	if (CC_ASSERT_EXPR (!Cmd_FindCommand(commandName), "Tried to re-add a command, fatal error"))
 		return *static_cast<CPlayerCommand*>(CommandList()[0]);
 
 	// We can add it!

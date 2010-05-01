@@ -163,30 +163,6 @@ inline sint32 icrandom (const sint32 h)
 /*
 ==============================================================================
 
-	PARSING
- 
-==============================================================================
-*/
-
-#define MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
-#define MAX_STRING_TOKENS	256		// max tokens resulting from Cmd_TokenizeString
-#define MAX_TOKEN_CHARS		512		// max length of an individual token
-
-char		*Com_Parse (char **dataPtr);
-void		Com_DefaultExtension (char *path, char *extension, size_t size);
-void		Com_FileBase (char *in, char *out);
-void		Com_FileExtension (char *path, char *out, size_t size);
-void		Com_FilePath (char *path, char *out, size_t size);
-void		Com_NormalizePath (char *Dest, const size_t DestSize, const char *Source);
-char		*Com_SkipPath (char *pathname);
-void		Com_SkipRestOfLine (char **dataPtr);
-char		*Com_SkipWhiteSpace (char *dataPtr, bool *hasNewLines);
-void		Com_StripExtension (char *dest, size_t size, const char *src);
-void		Com_StripPadding (char *in, char *dest);
-
-/*
-==============================================================================
-
 	STRING RELATED FUNCTIONS
 
 ==============================================================================
@@ -197,7 +173,22 @@ void	Q_strcatz(char *dst, const char *src, size_t dstSize);
 size_t	Q_strncpyz(char *dest, const char *src, size_t size);
 
 #if defined(id386) && ((!defined(MSVS_VERSION) && defined(CC_STDC_CONFORMANCE)) || !defined(CC_STDC_CONFORMANCE))
-sint32 __cdecl Q_tolower (sint32 c);
+// By R1CH
+inline __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
+{
+	__asm {
+			mov eax, [esp+4]		;get character
+			cmp	eax, 5Ah
+			ja  short finish1
+
+			cmp	eax, 41h
+			jb  short finish1
+
+			or  eax, 00100000b		;to lower (-32)
+		finish1:
+			ret	
+	}
+}
 #else // id386
 inline sint32 Q_tolower(sint32 chr)
 {
@@ -234,7 +225,6 @@ inline std::string Q_strlwr (std::string s)
 	return s;
 }
 
-
 /*
 ===============
 Q_strupr
@@ -260,9 +250,15 @@ inline std::string Q_strupr (std::string s)
 	return s;
 }
 
-sint32		Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase);
-std::string	Q_VarArgs (const char *format, ...);
-
+inline sint32 Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase)
+{
+	switch (*filter) {
+	case '\0':	return !*string;
+	case '*':	return Q_WildcardMatch (filter + 1, string, ignoreCase) || (*string && Q_WildcardMatch (filter, string + 1, ignoreCase));
+	case '?':	return *string && Q_WildcardMatch (filter + 1, string + 1, ignoreCase);
+	default:	return (*filter == *string || (ignoreCase && Q_toupper (*filter) == Q_toupper (*string))) && Q_WildcardMatch (filter + 1, string + 1, ignoreCase);
+	}
+}
 /*
 ==============================================================================
 
@@ -551,33 +547,6 @@ struct plane_t
 	float			dist;
 	uint8			type;			// for fast side tests
 	uint8			signBits;		// signx + (signy<<1) + (signz<<1)
-};
-
-//
-// m_plane.c
-//
-sint32 BoxOnPlaneSide(const vec3f &mins, const vec3f &maxs, const plane_t *plane);
-EPlaneInfo PlaneTypeForNormal(const vec3f &normal);
-void CategorizePlane(plane_t *plane);
-void PlaneFromPoints(const vec3f verts[3], plane_t *plane);
-bool ComparePlanes(const vec3f &p1normal, const float p1dist, const vec3f &p2normal, const float p2dist);
-void SnapVector(vec3f &normal);
-void ProjectPointOnPlane(vec3f &dst, const vec3f &point, const vec3f &normal);
-sint32 SignbitsForPlane(const plane_t *out);
-
-inline float PlaneDiff (vec3f &point, plane_t *plane)
-{
-	return ((plane->type < 3 ? point[plane->type] : (point | plane->normal)) - plane->dist);
-}
-
-inline sint32 Box_On_Plane_Side (const vec3f &mins, const vec3f &maxs, const plane_t *p)
-{
-	return ((p->type < 3) ?
-		(p->dist <= mins[p->type]) ?
-			1 : ((p->dist >= maxs[p->type])
-				?
-				2 : 3)
-				: BoxOnPlaneSide(mins, maxs, p));
 };
 
 /*

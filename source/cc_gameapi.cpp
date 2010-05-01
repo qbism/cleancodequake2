@@ -39,18 +39,18 @@ gameImport_t	gi;
 
 EBrushContents PointContents (vec3f start)
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	return gi.pointcontents(start);
-_CC_ENABLE_DEPRECATION};
+CC_ENABLE_DEPRECATION};
 
 TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers)
 {
 	static edict_t *list[MAX_CS_EDICTS];
 	Mem_Zero (list, sizeof(list));
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	int count = gi.BoxEdicts (mins, maxs, list, MAX_CS_EDICTS, (triggers) ? AREA_TRIGGERS : AREA_SOLID);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	TBoxEdictsEntityList Ents;
 	for (int i = 0; i < count; ++i)
@@ -80,9 +80,9 @@ void ConfigString (sint32 configStringIndex, const char *configStringValue, ...)
 	}
 	else
 	{*/
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 		gi.configstring (configStringIndex, string);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 	//}
 }
 
@@ -97,9 +97,9 @@ void GameError (const char *fmt, ...)
 
 	CC_ReportGameError (text);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.error (text);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 
 //

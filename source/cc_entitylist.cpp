@@ -118,9 +118,9 @@ void ED_CallSpawn (edict_t *ent)
 	{
 		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", Level.ClassName.c_str());
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 		G_FreeEdict (ent);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 		return;
 	}
 
@@ -487,9 +487,9 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 			if (token[0] != '{')
 				GameError ("ED_LoadFromFile: found %s when expecting {", token);
 
-	_CC_DISABLE_DEPRECATION
+	CC_DISABLE_DEPRECATION
 			edict_t *ent = (!SpawnedWorld) ? Game.Entities : G_Spawn();
-	_CC_ENABLE_DEPRECATION
+	CC_ENABLE_DEPRECATION
 			SpawnedWorld = true;
 
 			ED_ParseEdict (EntityParser, ent);
@@ -506,7 +506,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 			if (!ent->inUse)
 			{
 				Level.Inhibit++;
-				_CC_ASSERT_EXPR (!(ent->Entity && !ent->Entity->Freed), "Entity not inuse but freed!");
+				CC_ASSERT_EXPR (!(ent->Entity && !ent->Entity->Freed), "Entity not inuse but freed!");
 			}
 		}
 

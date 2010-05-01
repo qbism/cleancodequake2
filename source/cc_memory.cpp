@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "cc_local.h"
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 
 #define HEADER_MAGIC_CONSTANT (('E'<<24)+('N'<<16)+('E'<<8)+'G')
 
@@ -86,7 +86,7 @@ void Mem_FreeTag (const sint32 TagNum)
 {
 	gi.FreeTags (TagNum);
 }
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 #ifdef WIN32
 #pragma warning(disable : 4290)
@@ -106,7 +106,7 @@ void operator delete(void *Pointer, const sint32 TagNum)
 {
 	if (Pointer == NULL)
 	{
-		_CC_ASSERT_EXPR (0, "Attempted to free NULL");
+		CC_ASSERT_EXPR (0, "Attempted to free NULL");
 		return;
 	}
 
@@ -118,7 +118,7 @@ void operator delete[](void *Pointer, const sint32 TagNum)
 {
 	if (Pointer == NULL)
 	{
-		_CC_ASSERT_EXPR (0, "Attempted to free NULL");
+		CC_ASSERT_EXPR (0, "Attempted to free NULL");
 		return;
 	}
 

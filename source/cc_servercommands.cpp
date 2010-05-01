@@ -58,7 +58,7 @@ CServerCommand *SvCmd_FindCommand (const char *commandName)
 CServerCommand &SvCmd_AddCommand_Internal (const char *commandName, CCommandFunctor *Functor)
 {
 	// Make sure the function doesn't already exist
-	if (_CC_ASSERT_EXPR (!SvCmd_FindCommand(commandName), "Attempted to re-add a command to the list!\n"))
+	if (CC_ASSERT_EXPR (!SvCmd_FindCommand(commandName), "Attempted to re-add a command to the list!\n"))
 		return *static_cast<CServerCommand*>(ServerCommandList()[0]);
 
 	// We can add it!

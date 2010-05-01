@@ -65,7 +65,7 @@ template <> inline const char *PS_DataName <bool> () { return "<bool>"; }
 template <typename TType>
 inline bool PS_VerifyVec (const char *token, void *target)
 {
-	_CC_ASSERT_EXPR (0, "PS_VerifyVec called without type specialization");
+	CC_ASSERT_EXPR (0, "PS_VerifyVec called without type specialization");
 	return false;
 }
 

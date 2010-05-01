@@ -60,26 +60,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Define this if you don't want old function calls to warn you about deprecation.
 // THIS IS AT YOUR OWN RISK! CLEANCODE HAS PERFECTLY FUNCTIONAL ALTERNATIVES.
-#ifndef _NO_DEPRECATING_OLD_FUNCTIONS
-#define _NO_DEPRECATING_OLD_FUNCTIONS		0
+#ifndef NO_DEPRECATING_OLD_FUNCTIONS
+#define NO_DEPRECATING_OLD_FUNCTIONS		0
 #endif
 
-#if !defined(WIN32) || _NO_DEPRECATING_OLD_FUNCTIONS
-	#define _CC_INSECURE_DEPRECATE(_Replacement)
+#if !defined(WIN32) || NO_DEPRECATING_OLD_FUNCTIONS
+	#define CC_INSECURE_DEPRECATE(_Replacement)
 #else
-	#define _CC_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT("CleanCode has a better replacement for this function. Consider using " #_Replacement " instead.\nTo disable deprecation, use _NO_DEPRECATING_OLD_FUNCTIONS in cc_options.h.")
+	#define CC_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT("CleanCode has a better replacement for this function. Consider using " #_Replacement " instead.\nTo disable deprecation, use NO_DEPRECATING_OLD_FUNCTIONS in cc_options.h.")
 #endif
 
 // This is a simple macro to disable deprecation for everything inside the macro.
 // This is only used internally; using this in your code could cause big problems.
-#if defined(WIN32) && !_NO_DEPRECATING_OLD_FUNCTIONS
-	#define _CC_DISABLE_DEPRECATION		__pragma(warning(push)) \
+#if defined(WIN32) && !NO_DEPRECATING_OLD_FUNCTIONS
+	#define CC_DISABLE_DEPRECATION		__pragma(warning(push)) \
 										__pragma(warning(disable:4996))
 
-	#define _CC_ENABLE_DEPRECATION		__pragma(warning(pop))
+	#define CC_ENABLE_DEPRECATION		__pragma(warning(pop))
 #else
-	#define _CC_DISABLE_DEPRECATION
-	#define _CC_ENABLE_DEPRECATION
+	#define CC_DISABLE_DEPRECATION
+	#define CC_ENABLE_DEPRECATION
 #endif
 
 // Don't touch this
@@ -118,7 +118,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // therefore not required to be repeated in msg. Arguments
 // will cause this function to fail (obviously)
 // see cc_utils.cpp
-#define _CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
+#define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
 
 // Define this if you want to use include guards.
 #ifndef INCLUDE_GUARDS

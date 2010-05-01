@@ -308,7 +308,7 @@ public:
 				CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				FormatString (JoinRed->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
+				JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 			}
 			else if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "blue") == 0)
 			{
@@ -316,19 +316,19 @@ public:
 				CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				FormatString (JoinBlue->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
+				JoinBlue->LabelString = FormatString ("Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
 			}
 			else
 			{
 				CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				FormatString (JoinRed->LabelString, "Join %s Team     (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
+				JoinRed->LabelString = FormatString ("Join %s Team     (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 
 				CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				FormatString (JoinBlue->LabelString, "Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
+				JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
 			}
 		}
 		else
@@ -336,12 +336,12 @@ public:
 			CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 			JoinRed->Enabled = true;
 			JoinRed->Align = LA_LEFT;
-			FormatString (JoinRed->LabelString, "Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
+			JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
 
 			CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 			JoinBlue->Enabled = true;
 			JoinBlue->Align = LA_LEFT;
-			FormatString (JoinBlue->LabelString, "Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
+			JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
 		}
 
 		y += 24;

@@ -143,7 +143,7 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	{
 		CBaseItem *Item = GetItemByIndex(Index);
 
-		if (!_CC_ASSERT_EXPR (Item, "Loaded weapon with no weapon!"))
+		if (!CC_ASSERT_EXPR (Item, "Loaded weapon with no weapon!"))
 		{
 			CWeaponItem *WItem = dynamic_cast<CWeaponItem*>(Item);
 			*Weapon = WItem->Weapon;

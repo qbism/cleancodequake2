@@ -41,7 +41,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <map>
 #include <algorithm>
 
-inline void FormatString (std::string &str, const char *fmt, ...)
+inline std::string FormatString (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[2048];
@@ -50,7 +50,7 @@ inline void FormatString (std::string &str, const char *fmt, ...)
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-	str.assign (text);
+	return std::string(text);
 };
 
 #else

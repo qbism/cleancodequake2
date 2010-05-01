@@ -168,9 +168,9 @@ void IBrushModel::SetBrushModel ()
 		return;
 	}
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.setmodel (gameEntity, Model);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 
 void IBrushModel::MoveDone ()
@@ -1225,29 +1225,26 @@ void CDoor::CalcMoveSpeed ()
 
 void CDoor::SpawnDoorTrigger ()
 {
-	vec3f		mins, maxs;
-
 	if (Flags & FL_TEAMSLAVE)
 		return;		// only the team leader spawns a trigger
 
-	mins = GetAbsMin ();
-	maxs = GetAbsMax ();
+	CBounds Bounds (GetAbsMin (), GetAbsMax ());
 
 	for (IBaseEntity *Other = Team.Chain; Other; Other = Other->Team.Chain)
 	{
-		AddPointToBounds (Other->GetAbsMin(), mins, maxs);
-		AddPointToBounds (Other->GetAbsMax(), mins, maxs);
+		Bounds.AddPoint (Other->GetAbsMin());
+		Bounds.AddPoint (Other->GetAbsMax());
 	}
 
 	// expand 
-	mins.X -= 60;
-	mins.Y -= 60;
-	maxs.X += 60;
-	maxs.Y += 60;
+	Bounds.GetMins().X -= 60;
+	Bounds.GetMins().Y -= 60;
+	Bounds.GetMaxs().X += 60;
+	Bounds.GetMaxs().Y += 60;
 
 	CDoorTrigger *Trigger = QNewEntityOf CDoorTrigger();
-	Trigger->GetMins() = mins;
-	Trigger->GetMaxs() = maxs;
+	Trigger->GetMins() = Bounds.GetMins();
+	Trigger->GetMaxs() = Bounds.GetMaxs();
 	Trigger->SetOwner (this);
 	Trigger->Touchable = true;
 	Trigger->GetSolid() = SOLID_TRIGGER;

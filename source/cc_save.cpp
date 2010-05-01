@@ -54,7 +54,7 @@ void WriteMagic (CFile &File)
 
 void ReadMagic (CFile &File)
 {
-	_CC_ASSERT_EXPR ((File.Read<uint32> () == MAGIC_NUMBER), "Magic number mismatch");
+	CC_ASSERT_EXPR ((File.Read<uint32> () == MAGIC_NUMBER), "Magic number mismatch");
 }
 
 // Writes the magic number
@@ -99,7 +99,7 @@ IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 			return TableIndex->FuncPtr(index);
 	}
 
-	_CC_ASSERT_EXPR (0, "Couldn't find entity");
+	CC_ASSERT_EXPR (0, "Couldn't find entity");
 	return NULL;
 };
 
@@ -162,7 +162,7 @@ void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
 	if (len > 1)
 	{
 		if (!str)
-			_CC_ASSERT_EXPR (0, "How'd this happen?");
+			CC_ASSERT_EXPR (0, "How'd this happen?");
 		else
 			File.WriteArray (str, len);
 	}

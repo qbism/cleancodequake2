@@ -186,9 +186,7 @@ public:
 		for (sint32 i = 0; i < count; i++)
 		{
 			CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
-			std::string Small;
-
-			FormatString (Small, "%3i %s\n",
+			std::string Small = FormatString ("%3i %s\n",
 				LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
 				LoopPlayer->Client.Persistent.Name.c_str());
 
@@ -377,14 +375,14 @@ public:
 		tempString.clear();
 
 		if (!Spectator)
-			FormatString(tempString, " - %02d:%02d %4d %3d %s\n",
+			tempString = FormatString(" - %02d:%02d %4d %3d %s\n",
 				(Level.Frame - Player->Client.Respawn.EnterFrame) / 600,
 				((Level.Frame - Player->Client.Respawn.EnterFrame) % 600)/10,
 				Player->Client.GetPing(),
 				Player->Client.Respawn.Score,
 				Player->Client.Persistent.Name.c_str());
 		else
-			FormatString(tempString, " - %s%s\n",
+			tempString = FormatString(" - %s%s\n",
 				Player->Client.Persistent.Name.c_str(),
 				Player->Client.Respawn.Spectator ? " (Spectator)" : "");
 

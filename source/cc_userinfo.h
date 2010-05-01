@@ -77,6 +77,11 @@ public:
 		return (Info.find(Str) != Info.end());
 	};
 
+	inline static bool Validate (const std::string &Str)
+	{
+		return (Str.find ('\"') || Str.find (';'));
+	};
+
 	inline std::string GetValueFromKey (const std::string Str)
 	{
 		TUserInfoMap::iterator it = Info.find(Str);
