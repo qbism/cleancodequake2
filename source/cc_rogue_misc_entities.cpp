@@ -544,7 +544,7 @@ void CPlatForm2::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		InsideTrigger->GetMaxs().X += 10;
 		InsideTrigger->GetMaxs().Y += 10;
 		InsideTrigger->GetMins().X -= 10;
-		InsideTrigger->GetMins().X -=10;
+		InsideTrigger->GetMins().Y -=10;
 
 		InsideTrigger->Link ();
 	
@@ -1089,7 +1089,7 @@ public:
 				Enemy = NULL;
 		}
 
-		if (!Enemy)
+		if (!Enemy || !TargetedBreach->GetInUse() || TargetedBreach->Freed)
 		{
 			NextThink = 0;
 			TargetedBreach = NULL;

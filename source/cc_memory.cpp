@@ -55,7 +55,7 @@ struct MemHeader
 static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 {
 	size_t RealSize = Size + sizeof(MemHeader) + sizeof(MemSentinel);
-	MemHeader *Mem = (TagNum == TAG_GENERIC) ? (MemHeader*)malloc(RealSize) : (MemHeader*)gi.TagMalloc(RealSize, TagNum);
+	MemHeader *Mem = (MemHeader*)((TagNum == TAG_GENERIC) ? malloc(RealSize) : gi.TagMalloc(RealSize, TagNum));
 	MemSentinel *Footer = (MemSentinel*)(((byte*)Mem) + RealSize - sizeof(MemSentinel));
 
 	Mem->SentinelHeader.Header = Footer->Header = Mem;

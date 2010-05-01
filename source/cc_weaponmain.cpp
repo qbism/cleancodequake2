@@ -661,9 +661,7 @@ void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 	// see if we're already using it
 	if (UsingItOrChain)
 	{
-		if (GetNextWeapon() == this && GetPrevWeapon() == this)
-			return;
-		else
+		if (!(GetNextWeapon() == this && GetPrevWeapon() == this))
 		{
 			while (true)
 			{
@@ -687,6 +685,15 @@ void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 				break;
 			};
 		}
+	}
+
+	if (Player->Client.Persistent.Weapon == Wanted->Weapon)
+		return;
+
+	if (!Player->Client.Persistent.Inventory.Has(Wanted))
+	{
+		Player->PrintToClient (PRINT_HIGH, "Out of Item: %s.\n", Wanted->Name);
+		return;
 	}
 
 	if (Wanted->Ammo && !CvarList[CV_SELECT_EMPTY].Integer() && !(Wanted->Flags & ITEMFLAG_AMMO))

@@ -605,13 +605,28 @@ Give items to a client
 Old-style "give"
 ==================
 */
-void Cmd_Spawn (CPlayerEntity *Player);
+
+inline IBaseEntity *SpawnEntityAtPlace (std::string ClassName, vec3f Origin, vec3f Angles)
+{
+	IBaseEntity *Spawned = CreateEntityFromClassname(ClassName.c_str());
+	if (Spawned && Spawned->GetInUse())
+	{
+		Spawned->State.GetOrigin() = Origin;
+		Spawned->State.GetAngles() = Angles;
+
+		Spawned->Link ();
+		
+		return Spawned;
+	}
+
+	return NULL;
+}
 
 void Cmd_Give (CPlayerEntity *Player)
 {
 	CBaseItem *it;
 
-	std::string name = ArgGets(1);
+	std::string name = ArgGetConcatenatedString();
 	bool give_all = (Q_stricmp (name.c_str(), "all") == 0);
 
 	if (give_all || Q_stricmp (name.c_str(), "health") == 0)
@@ -736,7 +751,11 @@ void Cmd_Give (CPlayerEntity *Player)
 		it_ent->Touch (Player, NULL, NULL);
 		if (it_ent->GetInUse())
 			it_ent->Free ();*/
-		Cmd_Spawn (Player);
+		//Cmd_Spawn (Player);
+		ITouchableEntity *ItemEntity = entity_cast<ITouchableEntity>(SpawnEntityAtPlace (it->Classname, Player->State.GetOrigin(), Player->State.GetAngles()));
+		ItemEntity->Touch (Player, NULL, NULL);
+		if (ItemEntity->GetInUse())
+			ItemEntity->Free ();
 	}
 }
 
@@ -770,14 +789,7 @@ void Cmd_Spawn (CPlayerEntity *Player)
 	if (PointContents(Origin) & CONTENTS_SOLID)
 		return;
 
-	IBaseEntity *Spawned = CreateEntityFromClassname(ArgGetConcatenatedString().c_str());
-	if (Spawned && Spawned->GetInUse())
-	{
-		Spawned->State.GetOrigin() = Origin;
-		Spawned->State.GetAngles() = Angles;
-
-		Spawned->Link ();
-	}
+	SpawnEntityAtPlace (ArgGetConcatenatedString(), Origin, Angles);
 }
 
 void CSpawnCommand::operator () ()
