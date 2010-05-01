@@ -213,7 +213,7 @@ void CWallTurret::Fire ()
 {
 	Aim ();
 
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
+	if (!HasValidEnemy())
 		return;
 
 	vec3f dir = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).GetNormalized();
@@ -312,7 +312,7 @@ void CWallTurret::FireBlind ()
 {
 	Aim ();
 
-	if (!Entity->Enemy|| !Entity->Enemy->GetInUse())
+	if (!HasValidEnemy())
 		return;
 
 	vec3f dir = (BlindFireTarget - Entity->State.GetOrigin()).GetNormalized();

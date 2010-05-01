@@ -59,6 +59,9 @@ CMedic(ID)
 
 void CMedicCommander::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start;
 	vec3f	forward, right;
 	vec3f	end;

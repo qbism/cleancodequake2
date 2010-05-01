@@ -309,7 +309,7 @@ void CTank::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CTank::Blaster ()
 {
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
 
 	vec3f	forward, right, start, end, dir;
@@ -345,6 +345,9 @@ void CTank::Strike ()
 
 void CTank::Rocket ()
 {
+	if (!HasValidEnemy())
+		return;
+
 #if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	sint32		flash_number, rocketSpeed;
@@ -397,7 +400,8 @@ void CTank::Rocket ()
 
 	if (!blindfire && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+		if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+			vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -469,6 +473,9 @@ void CTank::Rocket ()
 
 void CTank::MachineGun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	dir, start, forward, right;
 	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak406);
 

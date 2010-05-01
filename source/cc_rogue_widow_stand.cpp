@@ -335,7 +335,7 @@ int CWidowStand::Torso ()
 
 void CWidowStand::FireBlaster ()
 {
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
 
 	ShotsFired++;
@@ -625,12 +625,13 @@ CAnim WidowMoveAttackRailL (FRAME_firec01, FRAME_firec09, WidowFramesAttackRailL
 
 void CWidowStand::FireRail ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-
 	EMuzzleFlash flash = (CurrentMove == &WidowMoveAttackRailL) ? MZ2_WIDOW_RAIL_LEFT : (CurrentMove == &WidowMoveAttackRailR) ? MZ2_WIDOW_RAIL_RIGHT : MZ2_WIDOW_RAIL;
-
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash], forward, right, start);
 
 	// calc direction to where we targeted

@@ -746,12 +746,6 @@ void Cmd_Give (CPlayerEntity *Player)
 	}
 	else
 	{
-		/*CItemEntity *it_ent = entity_cast<CItemEntity>(CreateEntityFromClassname(it->Classname));
-		it_ent->Spawn (it);
-		it_ent->Touch (Player, NULL, NULL);
-		if (it_ent->GetInUse())
-			it_ent->Free ();*/
-		//Cmd_Spawn (Player);
 		ITouchableEntity *ItemEntity = entity_cast<ITouchableEntity>(SpawnEntityAtPlace (it->Classname, Player->State.GetOrigin(), Player->State.GetAngles()));
 		ItemEntity->Touch (Player, NULL, NULL);
 		if (ItemEntity->GetInUse())

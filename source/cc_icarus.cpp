@@ -453,6 +453,9 @@ void CIcarus::ReAttack ()
 
 void CIcarus::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, end, dir;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);

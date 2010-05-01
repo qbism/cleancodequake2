@@ -122,7 +122,7 @@ void CCarrier::Grenade ()
 {
 	CoopCheck ();
 
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
 
 	float direction = (frand() < 0.5f) ? -1 : 1;
@@ -194,10 +194,10 @@ void CCarrier::PredictiveRocket  ()
 
 void CCarrier::Rocket ()
 {
-	vec3f	forward, right, start, dir, vec;
-
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
+
+	vec3f	forward, right, start, dir, vec;
 
 	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && frand() < 0.5f)
 	{
@@ -234,6 +234,9 @@ void CCarrier::Rocket ()
 
 void CCarrier::FireBulletRight ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	// if we're in manual steering mode, it means we're leaning down .. use the lower shot
 	EMuzzleFlash flashnum = (AIFlags & AI_MANUAL_STEERING) ? MZ2_CARRIER_MACHINEGUN_R2 : MZ2_CARRIER_MACHINEGUN_R1;
 
@@ -249,6 +252,9 @@ void CCarrier::FireBulletRight ()
 
 void CCarrier::FireBulletLeft ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	// if we're in manual steering mode, it means we're leaning down .. use the lower shot
 	EMuzzleFlash flashnum = (AIFlags & AI_MANUAL_STEERING) ? MZ2_CARRIER_MACHINEGUN_L2 : MZ2_CARRIER_MACHINEGUN_L1;
 
@@ -542,6 +548,9 @@ CAnim CarrierMoveAttackRocket (FRAME_fireb01, FRAME_fireb01, CarrierFramesAttack
 void CCarrier::Rail ()
 {
 	CoopCheck ();
+
+	if (!HasValidEnemy())
+		return;
 
 	vec3f forward, right, start;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);

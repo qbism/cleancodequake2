@@ -279,6 +279,9 @@ CAnim SuperTankMoveAttack4 (FRAME_attak4_1, FRAME_attak4_6, SuperTankFramesAttac
 
 void CSuperTank::Grenade ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right;
 	vec3f offset (32.0f, 37.0f, 50.0f);
 
@@ -418,6 +421,9 @@ void CSuperTank::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CSuperTank::Rocket ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, start;
 	int		FlashNumber;
 
@@ -442,6 +448,9 @@ void CSuperTank::Rocket ()
 
 void CSuperTank::MachineGun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f start, forward, right,
 			dir (0, Entity->State.GetAngles().Y, 0);
 	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak1_1);

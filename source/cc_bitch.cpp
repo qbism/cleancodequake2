@@ -536,6 +536,9 @@ void CMaiden::Slash ()
 
 void CMaiden::Rocket ()
 {
+	if (!HasValidEnemy())
+		return;
+
 #if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;

@@ -91,25 +91,6 @@ public:
 		return Entity->GravityVector[2] > 0 ? 1 : 0;
 	}
 
-	// FIXME: this may be only used for stalker, but I should
-	// do this for every monster
-	inline bool HasValidEnemy ()
-	{
-		if (!Entity->Enemy)
-			return false;
-
-		if (!Entity->Enemy->GetInUse())
-			return false;
-
-		if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
-			return false;
-
-		if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health < 1)
-			return false;
-
-		return true;
-	}
-
 	void Dead ();
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	void Pain (IBaseEntity *Other, sint32 Damage);

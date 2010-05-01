@@ -18,6 +18,7 @@ Present
 - Noticed an odd bug where a grenade had an owner on spawn, but when it reached Explode (on a Flyer), GetOwner() returned NULL..
 - Still memory corruptions at some points (buffer overflow probably - happened in the explode-all-wall-nodes map in rogue directly after saving before turning off third pump)
 - DelayedUse causes problems it seems; have to look into this
+- I think freed entities are being loaded before their time is up to get deleted..
 
 Rogue
 - PUSH_SILENT flag for CTriggerPush (seems my PushInDirection implementation didn't think of this)

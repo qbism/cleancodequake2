@@ -156,6 +156,9 @@ void CGladiator::Melee ()
 
 void CGladiator::FireRail ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);

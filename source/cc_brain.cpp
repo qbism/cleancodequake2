@@ -614,6 +614,9 @@ const vec3f brain_leye [11] =
 // each frame of the run cycle
 void CBrain::LaserBeamFire ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f forward, right, up;
 
 	// RAFAEL

@@ -54,6 +54,9 @@ void CFloater::Idle ()
 
 void CFloater::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, end, dir;
 	sint32		effect = 0;
 

@@ -262,7 +262,7 @@ void CFlyer::Fire (sint32 FlashNumber)
 	vec3f	start, forward, right, end, dir;
 	sint32 effect;
 
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
 
 	if ((Entity->State.GetFrame() == FRAME_attak204) || (Entity->State.GetFrame() == FRAME_attak207) || (Entity->State.GetFrame() == FRAME_attak210))

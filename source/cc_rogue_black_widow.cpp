@@ -87,7 +87,7 @@ void CBlackWidow::Search ()
 
 void CBlackWidow::FireBeam ()
 {
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if (!HasValidEnemy())
 		return;
 
 	vec3f forward, right;
@@ -277,6 +277,9 @@ CAnim Widow2MoveAttackPostBeam (FRAME_fireb06, FRAME_fireb07, widow2_frames_atta
 
 void CBlackWidow::FireDisrupt ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f forward, right, start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);

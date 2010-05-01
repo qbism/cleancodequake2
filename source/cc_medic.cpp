@@ -419,6 +419,9 @@ void CMedic::Pain(IBaseEntity *Other, sint32 Damage)
 
 void CMedic::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start;
 	vec3f	forward, right;
 	vec3f	end;

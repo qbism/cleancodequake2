@@ -49,6 +49,9 @@ void CBoss2::Search ()
 
 void CBoss2::FireRocket ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right;
 	vec3f	start;
 
@@ -91,6 +94,9 @@ void CBoss2::FireRocket ()
 
 void CBoss2::FireBulletRight ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, target;
 	vec3f	start;
 
@@ -110,6 +116,9 @@ void CBoss2::FireBulletRight ()
 
 void CBoss2::FireBulletLeft ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, target;
 	vec3f	start;
 

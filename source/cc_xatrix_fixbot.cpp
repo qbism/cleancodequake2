@@ -423,6 +423,13 @@ bool CFixbot::CheckTelefrag ()
 
 void CFixbot::FireLaser ()
 {
+	if (!HasValidEnemy())
+	{
+		CurrentMove = &FixbotMoveStand;
+		AIFlags &= ~AI_MEDIC;
+		return;
+	}
+
 	vec3f forward, tempang, start, dir, angles, end;
 
 	CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
@@ -635,6 +642,9 @@ void CFixbot::FireWelder ()
 
 void CFixbot::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, up, end, dir;
 
 	if (!IsVisible(Entity, Entity->Enemy))

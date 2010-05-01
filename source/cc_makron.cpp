@@ -440,6 +440,9 @@ CAnim MakronMoveSight (FRAME_active01, FRAME_active13, MakronFramesSight, &CMons
 
 void CMakron::FireBFG ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right;
 	vec3f	start;
 
@@ -496,9 +499,11 @@ CFrame MakronFramesAttack4[]=
 };
 CAnim MakronMoveAttack4 (FRAME_attak401, FRAME_attak426, MakronFramesAttack4, &CMonster::Run);
 
-// FIXME: This is all wrong. He's not firing at the proper angles.
 void CMakron::FireHyperblaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	dir;
 	vec3f	start;
 	vec3f	forward, right;
@@ -548,9 +553,11 @@ void CMakron::SavePosition ()
 	SavedLoc = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 };
 
-// FIXME: He's not firing from the proper Z
 void CMakron::FireRailgun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start;
 	vec3f	dir;
 	vec3f	forward, right;

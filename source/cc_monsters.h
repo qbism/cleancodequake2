@@ -448,6 +448,16 @@ public:
 	virtual void		Spawn () = 0;
 	virtual void		Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
 	virtual void		Pain(IBaseEntity *Other, sint32 Damage) = 0;
+
+	inline bool HasValidEnemy ()
+	{
+		if (!Entity->Enemy)
+			return false;
+		if (!Entity->Enemy->GetInUse() || Entity->Enemy->Freed)
+			return false;
+
+		return true;
+	}
 };
 
 #if XATRIX_FEATURES

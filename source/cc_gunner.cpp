@@ -482,7 +482,7 @@ bool CGunner::GrenadeCheck()
 
 void CGunner::Fire ()
 {
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
 
 	vec3f	start, forward, right, target, aim;
@@ -493,17 +493,19 @@ void CGunner::Fire ()
 
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
-	target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+		target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
 	target.Z += Entity->Enemy->ViewHeight;
 
-	aim = target - start;
-	aim.NormalizeFast ();
-
+	aim = (target - start).GetNormalizedFast();
 	MonsterFireBullet (start, aim, 3, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
 }
 
 void CGunner::Grenade ()
 {
+	if (!HasValidEnemy())
+		return;
+
 #if !ROGUE_FEATURES
 	vec3f	start, forward, right;
 	sint32		flash_number;

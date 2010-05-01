@@ -439,6 +439,9 @@ void CJorg::DoChainguns()
 
 void CJorg::FireBFG ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right;
 	vec3f	start;
 	vec3f	dir;
@@ -454,6 +457,9 @@ void CJorg::FireBFG ()
 
 void CJorg::FireBullet ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, target;
 	vec3f	start;
 
