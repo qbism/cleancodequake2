@@ -46,7 +46,7 @@ bool AssertExpression (const bool expr, const char *msg);
 #include "../source/cc_memory.h"
 #include "../source/cc_stl.h"
 #include "Templates/Templates.h"
-#include "MathLib/MathLib.h"
+#include "MathLib.h"
 #include "ColorVec.h"
 
 /*

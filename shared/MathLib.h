@@ -287,4 +287,7 @@ public:
 	{
 		return (mins.GetAbs() > maxs.GetAbs() ? mins.GetAbs() : maxs.GetAbs()).Length();
 	};
+
+	vec3f &GetMins() { return mins; };
+	vec3f &GetMaxs() { return maxs; };
 };
