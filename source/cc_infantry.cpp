@@ -615,7 +615,7 @@ void CInfantry::Attack ()
 {
 	PauseTime = Level.Frame + ((randomMT() & 15) + 
 #if ROGUE_FEATURES
-		1
+		5
 #else
 		11
 #endif
