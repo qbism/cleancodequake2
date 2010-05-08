@@ -761,7 +761,7 @@ inline CFile &operator<< (CFile &Stream, std::string &val)
 
 inline CFile &operator>> (CFile &Stream, std::string &val)
 {
-	val = Stream.Read<std::string> ();
+	val = Stream.ReadCCString ();
 	return Stream;
 };
 

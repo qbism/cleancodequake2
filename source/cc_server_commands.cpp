@@ -32,9 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_exceptionhandler.h"
+#include "cc_exception_handler.h"
 #include "cc_version.h"
-#include "cc_servercommands.h"
+#include "cc_server_commands.h"
 
 typedef CCommand::TCommandListType TServerCommandListType;
 typedef CCommand::THashedCommandListType THashedServerCommandListType;

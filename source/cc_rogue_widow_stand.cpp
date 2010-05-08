@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_rogue_widow_stand.h"
 #include "cc_rogue_monster_spawning.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 #include "m_widow.h"
 #include "cc_rogue_black_widow.h"
 

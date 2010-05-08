@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if XATRIX_FEATURES
 #include "cc_xatrix_gekk.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 CLoogie::CLoogie () :
   IFlyMissileProjectile(),
@@ -134,7 +134,7 @@ CMonster (ID)
 // CHECKATTACK
 //
 
-void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
 {
 	CBlood(point, normal, BT_GREEN_BLOOD).Send();
 }

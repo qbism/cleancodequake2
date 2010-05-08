@@ -536,7 +536,7 @@ static bool BrainTongueAttackCheck (vec3f &start, vec3f &end)
 	return true;
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CBrain::TongueAttack ()
 {

@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "m_player.h"
 
 typedef std::vector<CWeapon*> TWeaponListType;
@@ -377,7 +377,7 @@ void CWeapon::OutOfAmmo (CPlayerEntity *Player)
 	}
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CWeapon::Muzzle (CPlayerEntity *Player, sint32 muzzleNum)
 {

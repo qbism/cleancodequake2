@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if ROGUE_FEATURES
 #include "cc_flyer.h"
 #include "cc_rogue_flyer_kamikaze.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 #include "m_flyer.h"
 
 CFlyerKamikaze::CFlyerKamikaze (uint32 ID) :

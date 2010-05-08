@@ -59,10 +59,10 @@ typedef sint32	FrameNumber_t;
 
 // Stand-alone classes
 #include "cc_print.h"
-#include "cc_filesystem.h"
+#include "cc_file_system.h"
 #include "cc_platform.h"
 #include "cc_arg.h"
-#include "cc_cmds.h"
+#include "cc_commands.h"
 #include "cc_indexing.h"
 #include "cc_media.h"
 #include "cc_dmflags.h"
@@ -80,13 +80,13 @@ typedef sint32	FrameNumber_t;
 // Main class files
 #include "cc_items.h"
 #include "cc_inventory.h"
-#include "cc_sbar.h"
-#include "cc_mapprint.h"
+#include "cc_status_bar.h"
+#include "cc_map_print.h"
 #if CLEANCTF_ENABLED
 #include "cc_ctf.h"
 #endif
-#include "cc_gameapi.h"
-#include "cc_baseentity.h"
+#include "cc_game_api.h"
+#include "cc_base_entity.h"
 #include "cc_trace.h"
 #include "cc_monsters.h"
 #include "cc_modules.h"
@@ -94,10 +94,10 @@ typedef sint32	FrameNumber_t;
 // Classes that require classes from the above includes
 #include "cc_sound.h"
 #if CLEANCTF_ENABLED
-#include "cc_ctfadmin.h"
-#include "cc_ctfmenu.h"
+#include "cc_ctf_admin.h"
+#include "cc_ctf_menu.h"
 #endif
-#include "cc_entitylist.h"
+#include "cc_entity_list.h"
 
 #else
 FILE_WARNING

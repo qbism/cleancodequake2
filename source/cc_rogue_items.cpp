@@ -36,8 +36,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if ROGUE_FEATURES
 
 #include "cc_target_entities.h"
-#include "cc_tent.h"
-#include "cc_weaponmain.h"
+#include "cc_temporary_entities.h"
+#include "cc_weapon_main.h"
 #include "cc_rogue_tesla.h"
 
 CDoubleDamage::CDoubleDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,

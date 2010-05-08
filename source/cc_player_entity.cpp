@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_player.h"
 #include "cc_menu.h"
 #include "cc_ban.h"
-#include "cc_bodyqueue.h"
-#include "cc_weaponmain.h"
+#include "cc_body_queue.h"
+#include "cc_weapon_main.h"
 
 #if !USE_EXTENDED_GAME_IMPORTS
 #include "cc_pmove.h"
@@ -425,7 +425,7 @@ void CPlayerEntity::Respawn ()
 	gi.AddCommandString ("menu_loadgame\n");
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 /* 
  * only called when Persistent.Spectator changes
@@ -4490,7 +4490,12 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 	}
 }
 
-void CPlayerEntity::PushInDirection (vec3f vel)
+#if ROGUE_FEATURES
+#include "cc_brush_models.h"
+#include "cc_trigger_entities.h"
+#endif
+
+void CPlayerEntity::PushInDirection (vec3f vel, uint32 flags)
 {
 	if (Health > 0)
 	{
@@ -4498,7 +4503,11 @@ void CPlayerEntity::PushInDirection (vec3f vel)
 
 		// don't take falling damage immediately from this
 		Client.OldVelocity = Velocity;
-		if (FlySoundDebounceTime < Level.Frame)
+		if (
+#if ROGUE_FEATURES
+			(!(flags & PUSH_SILENT)) &&
+#endif
+			FlySoundDebounceTime < Level.Frame)
 		{
 			FlySoundDebounceTime = Level.Frame + 15;
 			PlaySound (CHAN_AUTO, GameMedia.FlySound());

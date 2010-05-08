@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if XATRIX_FEATURES
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 /*QUAKED rotating_light (0 .5 .8) (-8 -8 -8) (8 8 8) START_OFF ALARM
 "health"	if set, the light may be killed.
@@ -176,7 +176,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("rotating_light", CRotatingLight);
 
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 
 /*QUAKED misc_crashviper (1 .5 0) (-176 -120 -24) (176 120 72) 
 This is a large viper about to crash

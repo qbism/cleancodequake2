@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "cc_rogue_disruptor.h"
 #include "cc_rogue_weaponry.h"
 

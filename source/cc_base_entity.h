@@ -784,11 +784,11 @@ inline TType *ReadEntity (CFile &File)
 }
 
 // Base classes
-#include "cc_entitytypes.h"
+#include "cc_entity_types.h"
 
 // Derivitives
-#include "cc_playerentity.h"
-#include "cc_weaponentities.h"
+#include "cc_player_entity.h"
+#include "cc_weapon_entities.h"
 
 // An entity that can be seen via a map.
 // Just to bypass the damn abstractness I did.
@@ -818,7 +818,7 @@ public:
 	virtual void LoadFields (CFile &File);
 };
 
-#include "cc_itementity.h"
+#include "cc_item_entity.h"
 #include "cc_junk_entities.h"
 
 #if ROGUE_FEATURES

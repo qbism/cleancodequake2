@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_exceptionhandler.h"
+#include "cc_exception_handler.h"
 
 bool ReadingGame = false;
 CClient **SaveClientData;
@@ -550,7 +550,7 @@ void CGameAPI::WriteLevel (char *filename)
 void InitEntityLists ();
 void InitEntities ();
 
-#include "cc_bodyqueue.h"
+#include "cc_body_queue.h"
 
 char	ReadConfigSt[MAX_CFGSTRINGS][MAX_CFGSTRLEN];
 void ReadConfigStrings (char *filename)

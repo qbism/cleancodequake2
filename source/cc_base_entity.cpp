@@ -213,7 +213,7 @@ void RemoveEntityFromList (edict_t *ent)
 	Level.Entities.Open.push_front (ent);
 }
 
-#include "cc_bodyqueue.h"
+#include "cc_body_queue.h"
 
 bool RemoveEntity (edict_t *ent)
 {
@@ -757,7 +757,7 @@ IMapEntity::~IMapEntity ()
 {
 };
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void IBaseEntity::BecomeExplosion (bool grenade)
 {

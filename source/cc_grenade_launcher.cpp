@@ -32,73 +32,71 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "m_player.h"
 
-CRocketLauncher::CRocketLauncher() :
-CWeapon(7, 0, "models/weapons/v_rocket/tris.md2", 0, 4, 5, 12,
-		13, 50, 51, 54)
+CGrenadeLauncher::CGrenadeLauncher() :
+CWeapon(5, 0, "models/weapons/v_launch/tris.md2", 0, 5, 6, 16,
+		17, 59, 60, 64)
 {
 }
 
-bool CRocketLauncher::CanFire (CPlayerEntity *Player)
+bool CGrenadeLauncher::CanFire (CPlayerEntity *Player)
 {
 	switch (Player->Client.PlayerState.GetGunFrame())
 	{
-	case 5:
+	case 6:
 		return true;
 	}
 	return false;
 }
 
-bool CRocketLauncher::CanStopFidgetting (CPlayerEntity *Player)
+bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *Player)
 {
 	switch (Player->Client.PlayerState.GetGunFrame())
 	{
-	case 25:
-	case 33:
-	case 42:
-	case 50:
+	case 34:
+	case 51:
+	case 59:
 		return true;
 	}
 	return false;
 }
 
-void CRocketLauncher::Fire (CPlayerEntity *Player)
+void CGrenadeLauncher::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, Player->ViewHeight-8), start, forward, right;
-	const sint32	damage = CalcQuadVal(100 + (sint32)(frand() * 20.0)),
-					radius_damage = CalcQuadVal(120);
-	const float		damage_radius = 120;
+	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
+	const sint32	damage = CalcQuadVal(120);
+	const float	radius = 160;
+
+	FireAnimation (Player);
 
 	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->P_ProjectSource (offset, forward, right, start);
 
 	Player->Client.KickOrigin = forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	Player->P_ProjectSource (offset, forward, right, start);
-	CRocket::Spawn (Player, start, forward, damage, 650, damage_radius, radius_damage);
+	CGrenade::Spawn (Player, start, forward, damage, 600, 25, radius);
 
-	// send muzzle flash
-	Muzzle (Player, MZ_ROCKET);
+	Muzzle (Player, MZ_GRENADE);
 	AttackSound (Player);
 
 	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
-	FireAnimation (Player);
 	DepleteAmmo(Player, 1);
 
 	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-WEAPON_DEFS (CRocketLauncher);
+WEAPON_DEFS (CGrenadeLauncher);
 
-LINK_ITEM_TO_CLASS (weapon_rocketlauncher, CItemEntity);
+LINK_ITEM_TO_CLASS (weapon_grenadelauncher, CItemEntity);
 
-void CRocketLauncher::CreateItem (CItemList *List)
+void CGrenadeLauncher::CreateItem (CItemList *List)
 {
-	NItems::RocketLauncher = QNew (TAG_GENERIC) CWeaponItem
-		("weapon_rocketlauncher", "models/weapons/g_rocket/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_rlauncher", "Rocket Launcher",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
-		&Weapon, NItems::Rockets, 1, "#w_rlauncher.md2");
+	NItems::GrenadeLauncher = QNew (TAG_GENERIC) CWeaponItem
+		("weapon_grenadelauncher", "models/weapons/g_launch/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_glauncher", "Grenade Launcher",
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
+		NItems::Grenades, 1, "#w_glauncher.md2");
 };
 

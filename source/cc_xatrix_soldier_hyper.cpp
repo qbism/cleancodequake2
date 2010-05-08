@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if XATRIX_FEATURES
 #include "cc_soldier_base.h"
 #include "cc_xatrix_soldier_hyper.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 CBlueBlasterProjectile::CBlueBlasterProjectile () :
   IFlyMissileProjectile(),

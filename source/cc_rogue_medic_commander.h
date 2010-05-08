@@ -31,6 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
+#if ROGUE_FEATURES
 class CMedicCommander : public CMedic
 {
 public:
@@ -63,3 +64,4 @@ public:
 	
 	MONSTER_ID_HEADER
 };
+#endif

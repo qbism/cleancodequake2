@@ -34,8 +34,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_ban.h"
 #include "cc_target_entities.h"
-#include "cc_bodyqueue.h"
-#include "cc_servercommands.h"
+#include "cc_body_queue.h"
+#include "cc_server_commands.h"
 #include "cc_version.h"
 
 CGameLocals		Game;
@@ -296,6 +296,9 @@ void ProcessEntity (edict_t *ent)
 		// Entity fixes
 		if (Entity->Enemy && Entity->Enemy->Freed)
 			Entity->Enemy = NULL;
+
+		if (Entity->EntityFlags & ENT_MONSTER)
+			entity_cast<CMonsterEntity>(Entity)->Monster->FixInvalidEntities ();
 
 		// Were we freed?
 		// This has to be processed after thinking and running, because

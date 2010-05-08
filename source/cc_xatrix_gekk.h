@@ -128,7 +128,7 @@ public:
 	void Dead ();
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	void Pain (IBaseEntity *Other, sint32 Damage);
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
 
 	void Spawn ();
 	

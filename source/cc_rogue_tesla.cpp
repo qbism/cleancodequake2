@@ -35,10 +35,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "cc_rogue_tesla.h"
 #include "cc_rogue_weaponry.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 #include "m_player.h"
 
 // Tesla itself
@@ -115,7 +115,7 @@ bool CTesla::Run ()
 
 //TE_ELECTRIC_SPARKS
 
-void CTesla::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void CTesla::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
 {
 	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
 }

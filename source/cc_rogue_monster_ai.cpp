@@ -41,7 +41,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Monster "Bad" Areas
 // 
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CBadArea::Run ()
 {

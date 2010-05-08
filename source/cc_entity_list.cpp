@@ -232,9 +232,10 @@ All but the last will have the teamchain field set to the next one
 ================
 */
 
+#include "cc_brush_models.h"
+
 #if ROGUE_FEATURES
 // From Rogue, seems to fix trains (moves them to master I think)
-#include "cc_brushmodels.h"
 
 void G_FixTeams ()
 {
@@ -368,7 +369,7 @@ void G_FindTeams ()
 
 
 
-#include "cc_exceptionhandler.h"
+#include "cc_exception_handler.h"
 
 void InitPlayers ()
 {

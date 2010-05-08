@@ -289,7 +289,7 @@ void InitItemMedia ()
 {
 }
 
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 
 // This is a required function that will
 // go through each item and invalidate any variables that we used.

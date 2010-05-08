@@ -133,7 +133,7 @@ public:
 	IMPLEMENT_SAVE_STRUCTURE (DLLItemName,DLLClassName)
 
 #if CLEANCTF_ENABLED
-#include "cc_ctfitementities.h"
+#include "cc_ctf_item_entities.h"
 #endif
 
 #else

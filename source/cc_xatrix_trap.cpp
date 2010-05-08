@@ -34,10 +34,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if XATRIX_FEATURES
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "m_player.h"
 #include "cc_xatrix_trap.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 /*
 =================

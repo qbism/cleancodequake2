@@ -479,7 +479,7 @@ void CFloater::Wham ()
 	CMeleeWeapon::Fire (Entity, aim, 5 + irandom(6), -50);
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CFloater::Zap ()
 {

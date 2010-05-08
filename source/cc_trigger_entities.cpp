@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 #include "cc_trigger_entities.h"
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
@@ -539,12 +539,6 @@ void			CTriggerCounter::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("trigger_counter", CTriggerCounter);
 
-#define PUSH_ONCE		1
-#if ROGUE_FEATURES
-#define PUSH_START_OFF	2
-#define PUSH_SILENT		4
-#endif
-
 /*QUAKED trigger_push (.5 .5 .5) ? PUSH_ONCE
 Pushes the player
 "speed"		defaults to 1000
@@ -593,7 +587,7 @@ public:
 		else
 		{
 			if (Other->EntityFlags & ENT_PHYSICS)
-				entity_cast<IPhysicsEntity>(Other)->PushInDirection (vel);
+				entity_cast<IPhysicsEntity>(Other)->PushInDirection (vel, SpawnFlags);
 
 			if (SpawnFlags & PUSH_ONCE)
 				Free ();

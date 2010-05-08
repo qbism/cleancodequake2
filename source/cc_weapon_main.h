@@ -166,19 +166,19 @@ public:
 
 #include "cc_blaster.h"
 #include "cc_shotgun.h"
-#include "cc_supershotgun.h"
+#include "cc_super_shotgun.h"
 #include "cc_machinegun.h"
 #include "cc_chaingun.h"
 #include "cc_handgrenade.h"
-#include "cc_grenadelauncher.h"
-#include "cc_rocketlauncher.h"
+#include "cc_grenade_launcher.h"
+#include "cc_rocket_launcher.h"
 #include "cc_hyperblaster.h"
 #include "cc_railgun.h"
 #include "cc_bfg.h"
 #if CLEANCTF_ENABLED
-#include "cc_grapple.h"
+#include "cc_ctf_weapon_grapple.h"
 #endif
-#include "cc_debugweapons.h"
+#include "cc_debug_weapons.h"
 
 #else
 FILE_WARNING

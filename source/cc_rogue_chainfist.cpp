@@ -35,9 +35,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "cc_rogue_chainfist.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 CChainfist::CChainfist() :
 CWeapon(0, 1, "models/weapons/v_chainf/tris.md2", 0, 4, 5, 32,

@@ -32,9 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_infoentities.h"
-#include "cc_weaponmain.h"
-#include "cc_brushmodels.h"
+#include "cc_info_entities.h"
+#include "cc_weapon_main.h"
+#include "cc_brush_models.h"
 
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 Point teleporters at these.

@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 
 #pragma region Brush_Model
 void IBrushModel::Think ()
@@ -1737,6 +1737,9 @@ void CMovableWater::Spawn ()
 	if (!Speed)
 		Speed = 25;
 	Accel = Decel = Speed;
+	MoveSpeed = Speed;
+	MoveAccel = Accel;
+	MoveDecel = Decel;
 
 	if (!Wait)
 		Wait = -1;
@@ -2129,7 +2132,7 @@ LINK_CLASSNAME_TO_CLASS ("func_button", CButton);
 
 #pragma region Train
 
-#include "cc_infoentities.h"
+#include "cc_info_entities.h"
 
 /*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS
 Trains are moving platforms that players can ride.
@@ -2600,7 +2603,7 @@ LINK_CLASSNAME_TO_CLASS ("trigger_elevator", CTriggerElevator);
 #pragma endregion Train
 
 #pragma region World
-#include "cc_bodyqueue.h"
+#include "cc_body_queue.h"
 
 CWorldEntity::CWorldEntity () : 
 IBaseEntity(),
@@ -3530,8 +3533,8 @@ void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 
 
 	CanTakeDamage = false;
 
-	if (Damage)
-		SplashDamage (Attacker, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+	if (this->Damage)
+		SplashDamage (Attacker, this->Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
 	Velocity = State.GetOrigin() - Inflictor->State.GetOrigin();
 	Velocity.Normalize ();
@@ -3586,7 +3589,7 @@ void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 
 
 	UseTargets (Attacker, Message);
 
-	if (Damage)
+	if (this->Damage)
 		BecomeExplosion (true);
 	else
 		Free ();

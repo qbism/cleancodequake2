@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
-#include "cc_tent.h"
+#include "cc_weapon_main.h"
+#include "cc_temporary_entities.h"
 
 void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 {
@@ -162,7 +162,7 @@ void CGrenade::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	Explode ();
 }
 
-void CGrenade::PushInDirection (vec3f vel)
+void CGrenade::PushInDirection (vec3f vel, uint32 flags)
 {
 	Velocity = vel;
 }

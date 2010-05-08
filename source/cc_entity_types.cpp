@@ -153,7 +153,7 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 	return false;
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
 {
@@ -244,9 +244,9 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	return Saved;
 }
 
+#include "cc_medic.h"
 #if ROGUE_FEATURES
 #include "cc_rogue_carrier.h"
-#include "cc_medic.h"
 #include "cc_rogue_medic_commander.h"
 #include "cc_rogue_widow_stand.h"
 #include "cc_rogue_black_widow.h"
@@ -342,10 +342,17 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, point);
 }
 
-void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
+	{
+#if ROGUE_FEATURES
+		if (mod == MOD_CHAINFIST)
+			CBlood(point, normal, BT_MORE_BLOOD).Send();
+		else
+#endif
 		CBlood(point, normal).Send();
+	}
 	else
 		CSparks(point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 }
@@ -568,7 +575,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 // do the damage
 	if (take)
 	{
-		DamageEffect (dir, point, normal, take, dflags);
+		DamageEffect (dir, point, normal, take, dflags, mod);
 
 #if CLEANCTF_ENABLED
 		if (!CTFMatchSetup())
@@ -595,12 +602,9 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		Monster->ReactToDamage (Attacker, Inflictor);
 		if (!(Monster->AIFlags & AI_DUCKED) && take)
 		{
-			if (LastPelletShot)
-			{
-				Pain (Attacker, take);
-				if (CvarList[CV_SKILL].Integer() == 3)
-					Monster->PainDebounceTime = Level.Frame + 50;
-			}
+			Pain (Attacker, take);
+			if (CvarList[CV_SKILL].Integer() == 3)
+				Monster->PainDebounceTime = Level.Frame + 50;
 		}
 	}
 	else if (((EntityFlags & ENT_PLAYER) && take
@@ -780,7 +784,7 @@ void IPhysicsEntity::Impact (CTrace *trace)
 	}
 }
 
-void IPhysicsEntity::PushInDirection (vec3f vel)
+void IPhysicsEntity::PushInDirection (vec3f vel, uint32 flags)
 {
 	if ((EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(this)->Health > 0))
 		Velocity = vel;
@@ -1481,7 +1485,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 	return true;
 }
 
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 
 bool IPushPhysics::Run ()
 {
@@ -1794,9 +1798,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 
 				if (Used->Usable)
 				{
-					Level.CurrentEntity = Used;
 					Used->Use (this, Activator);
-					Level.CurrentEntity = this;
 				}
 			}
 

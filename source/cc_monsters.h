@@ -202,7 +202,7 @@ public:
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
 	bool			Blocked (float Dist);
 
-	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
 
 	bool			Run ();
 	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
@@ -341,7 +341,7 @@ public:
 	virtual void		ReactToDamage	(IBaseEntity *Attacker, IBaseEntity *Inflictor);
 
 	virtual void		MonsterThink	();
-	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
 
 	virtual bool		Blocked (float Dist) {return false;}
 

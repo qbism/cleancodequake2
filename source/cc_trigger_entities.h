@@ -93,3 +93,12 @@ public:
 		return IMapEntity::CheckValidity();
 	};
 };
+
+CC_ENUM (uint8, ETriggerPushSpawnflags)
+{
+	PUSH_ONCE		= BIT(0),
+#if ROGUE_FEATURES
+	PUSH_START_OFF	= BIT(1),
+	PUSH_SILENT		= BIT(2)
+#endif
+};

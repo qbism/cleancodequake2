@@ -598,7 +598,7 @@ static vec3f	MedicCableOffsets[] =
 	vec3f(32.7f, -19.7f, 10.4f)
 };
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CMedic::CableAttack ()
 {

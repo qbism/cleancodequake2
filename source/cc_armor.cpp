@@ -118,7 +118,7 @@ void CArmor::Drop (CPlayerEntity *Player)
 {
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
 {

@@ -198,6 +198,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_HIT_MONSTERSOLID 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
+#undef XATRIX_FEATURES
+#define XATRIX_FEATURES 0
+#undef ROGUE_FEATURES
+#define ROGUE_FEATURES 0
 #else
 #if ((CC_GAME_MODE) & GAME_ROGUE) && ((CC_GAME_MODE) & GAME_XATRIX)
 #undef MONSTER_SPECIFIC_FLAGS

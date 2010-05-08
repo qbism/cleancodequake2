@@ -60,7 +60,7 @@ public:
 
 	// An "extension" of sorts to TakeDamage
 	// which handles the effects when we are hurt
-	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
 
 	// Takes damage.
 	// For this, "this" is target. Use this if the
@@ -219,7 +219,7 @@ public:
 	class CTrace	PushEntity (vec3f &push);
 	void			AddGravity ();
 	void			Impact (CTrace *trace);
-	virtual void	PushInDirection (vec3f vel);
+	virtual void	PushInDirection (vec3f vel, uint32 flags);
 };
 
 // "Bouncy" projectile

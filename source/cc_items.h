@@ -141,7 +141,7 @@ public:
 #include "cc_powerups.h"
 
 #if CLEANCTF_ENABLED
-#include "cc_ctfitems.h"
+#include "cc_ctf_items.h"
 #endif
 #include "cc_techs.h"
 #if XATRIX_FEATURES

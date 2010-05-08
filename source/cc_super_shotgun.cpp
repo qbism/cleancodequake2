@@ -27,76 +27,85 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_grenadelauncher.cpp
-// Grenade Launcher
+// cc_shotgun.cpp
+// Shotgun
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "m_player.h"
 
-CGrenadeLauncher::CGrenadeLauncher() :
-CWeapon(5, 0, "models/weapons/v_launch/tris.md2", 0, 5, 6, 16,
-		17, 59, 60, 64)
+CSuperShotgun::CSuperShotgun() :
+CWeapon(2, 0, "models/weapons/v_shotg2/tris.md2", 0, 6, 7, 17,
+		18, 57, 58, 61)
 {
 }
 
-bool CGrenadeLauncher::CanFire (CPlayerEntity *Player)
+bool CSuperShotgun::CanFire (CPlayerEntity *Player)
 {
 	switch (Player->Client.PlayerState.GetGunFrame())
 	{
-	case 6:
+	case 7:
 		return true;
 	}
 	return false;
 }
 
-bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *Player)
+bool CSuperShotgun::CanStopFidgetting (CPlayerEntity *Player)
 {
 	switch (Player->Client.PlayerState.GetGunFrame())
 	{
-	case 34:
-	case 51:
-	case 59:
+	case 29:
+	case 42:
+	case 57:
 		return true;
 	}
 	return false;
 }
 
-void CGrenadeLauncher::Fire (CPlayerEntity *Player)
+void CSuperShotgun::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
-	const sint32	damage = CalcQuadVal(120);
-	const float	radius = 160;
-
-	FireAnimation (Player);
+	vec3f		start, forward, right, offset (0, 8, Player->ViewHeight-8);
+	const sint32	damage = CalcQuadVal(6),
+					kick = CalcQuadVal(12);
 
 	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
 
 	Player->Client.KickOrigin = forward * -2;
-	Player->Client.KickAngles.X = -1;
+	Player->Client.KickAngles.X = -2;
 
-	CGrenade::Spawn (Player, start, forward, damage, 600, 25, radius);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	Muzzle (Player, MZ_GRENADE);
+	vec3f v = Player->Client.ViewAngle;
+	v.Y -= 5;
+	v.ToVectors (&forward, NULL, NULL);
+	CShotgunPellets::Fire (Player, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
+
+	v.Y += 10;
+	v.ToVectors (&forward, NULL, NULL);
+	CShotgunPellets::Fire (Player, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
+
+	// send muzzle flash
+	Muzzle (Player, MZ_SSHOTGUN);
+	FireAnimation (Player);
+
 	AttackSound (Player);
 
-	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
-	DepleteAmmo(Player, 1);
-
 	Player->Client.PlayerState.GetGunFrame()++;
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+
+	DepleteAmmo(Player, 2);
 }
 
-WEAPON_DEFS (CGrenadeLauncher);
+WEAPON_DEFS (CSuperShotgun);
 
-LINK_ITEM_TO_CLASS (weapon_grenadelauncher, CItemEntity);
+LINK_ITEM_TO_CLASS (weapon_supershotgun, CItemEntity);
 
-void CGrenadeLauncher::CreateItem (CItemList *List)
+void CSuperShotgun::CreateItem (CItemList *List)
 {
-	NItems::GrenadeLauncher = QNew (TAG_GENERIC) CWeaponItem
-		("weapon_grenadelauncher", "models/weapons/g_launch/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_glauncher", "Grenade Launcher",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
-		NItems::Grenades, 1, "#w_glauncher.md2");
+	NItems::SuperShotgun = QNew (TAG_GENERIC) CWeaponItem
+		("weapon_supershotgun", "models/weapons/g_shotg2/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_sshotgun",
+		"Super Shotgun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
+		&Weapon, NItems::Shells, 2, "#w_sshotgun.md2");
 };
 

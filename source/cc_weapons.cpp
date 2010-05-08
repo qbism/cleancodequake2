@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 
 CWeaponItem::CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
@@ -349,9 +349,7 @@ void CAmmoWeapon::Use (CPlayerEntity *Player)
 	// see if we're already using it
 	if (UsingItOrChain)
 	{
-		if (Wanted->Weapon->GetNextWeapon() == Wanted->Weapon && Wanted->Weapon->GetPrevWeapon() == Wanted->Weapon)
-			return;
-		else
+		if (!(Wanted->Weapon->GetNextWeapon() == Wanted->Weapon && Wanted->Weapon->GetPrevWeapon() == Wanted->Weapon))
 		{
 			while (true)
 			{

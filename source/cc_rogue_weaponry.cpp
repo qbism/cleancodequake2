@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if ROGUE_FEATURES
 
 #include "cc_rogue_weaponry.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
 {

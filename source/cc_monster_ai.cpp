@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if !ROGUE_FEATURES
 
-#include "cc_brushmodels.h"
-#include "cc_tent.h"
+#include "cc_brush_models.h"
+#include "cc_temporary_entities.h"
 
 void CMonster::HuntTarget()
 {
@@ -655,7 +655,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
 	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (Attacker->Flags & (FL_FLY|FL_SWIM))) &&
-			(MonsterID != AttackerMonster->MonsterID) &&
+			(MonsterID != AttackerMonster->Monster->MonsterID) &&
 			(AttackerMonster->Monster->MonsterID != CTank::ID) &&
 			(AttackerMonster->Monster->MonsterID != CSuperTank::ID) &&
 			(AttackerMonster->Monster->MonsterID != CMakron::ID) &&
@@ -758,7 +758,7 @@ bool CMonster::AI_CheckAttack()
 
 // see if the enemy is dead
 	bool hesDeadJim = false;
-	IHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Entity->Enemy) : NULL;
+	IHurtableEntity *HurtableEnemy = (Entity->Enemy && Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Entity->Enemy) : NULL;
 
 	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
 		hesDeadJim = true;

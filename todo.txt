@@ -5,34 +5,12 @@ Present
 - Make a unified CMeleeWeapon class...
 - Unified CWeaponThrowable class for Grenade, Trap and Tesla
 - Monsters and some other entities will still attempt to access an entity that was recently freed.
-  Things like smart pointers MIGHT be a fix here.. a fix that will be very tough to implement all
-  over the place. I've added a few pieces of code that fix up entities in monsters (the biggest
-  problem), but they still exist in some places. The problem stems from the fact that edict_t's never
-  go away, but all IBaseEntity-inherited entities get freed. Since all entities are stored as IBaseEntity (or
-  a sub-class) after they get freed their pointers become invalid. I implemented fix #1, which was to make freed
-  entities stay for about 3 frames before getting deleted, which fixed a few entities that already had checks
-  for GetInUse() or Freed, but some just assume the entity is still there (or use checks like if (Entity) which is
-  true even if it's freed). Fix #2 could be to implement a (safe) operator bool() so that if (Entity) when Entity->Freed == true
-  will return NULL or something, but this will still cause a problem because after the entity is freed going if (Entity) will cause
-  an access violation.
+  - Possibly use a virtual member function called FixInvalidEntities? doing this for monsters
 - Noticed an odd bug where a grenade had an owner on spawn, but when it reached Explode (on a Flyer), GetOwner() returned NULL..
-- Still memory corruptions at some points (buffer overflow probably - happened in the explode-all-wall-nodes map in rogue directly after saving before turning off third pump)
 - DelayedUse causes problems it seems; have to look into this
 - I think freed entities are being loaded before their time is up to get deleted..
 
 Rogue
-- PUSH_SILENT flag for CTriggerPush (seems my PushInDirection implementation didn't think of this)
-- Being able to use one weapon switch for multiple guns. Few viable methods:
-  1) Use weapon sort order (major for the gun "list", minor for the ordering)
-  2) NextWeapon() and PrevWeapon() functions in CWeapon
-  3) Mix both (discover weapon list via sort order, store in the weapons, use Next and Prev to get the weapons)
-3 is my favorite option over using just one of the two first ones.
-- BT_MORE_BLOOD for MOD_CHAINFIST (overlooked means of death in DamageEffect)
-- func_trains in Rogue have the ability to have "move with" objects that try to
-  set them to MOVETYPE_PUSH. This doesn't work properly in CleanCode due to the object requiring
-  inheritance of IPushPhysics which not everything has (speakers, for example). For now,
-  this should not cause any problems, but I'm just hoping they didn't use it to attach
-  info_notnulls or anything to.
 - Have chaingun + etf rifle + flechettes + 0 bullets, can't switch to etf with 5
 
 Future versions

@@ -37,8 +37,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "m_turret.h"
 #include "cc_rogue_wall_turret.h"
-#include "cc_brushmodels.h"
-#include "cc_tent.h"
+#include "cc_brush_models.h"
+#include "cc_temporary_entities.h"
 
 class CWallTurretBase : public IBrushModel
 {
@@ -120,7 +120,7 @@ CC_ENUM (uint8, ETurretSpawnflags)
 	SPAWN_WALL_UNIT			= BIT(7),
 };
 
-void CWallTurret::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void CWallTurret::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
 {
 	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
 }

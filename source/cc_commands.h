@@ -226,7 +226,7 @@ CPlayerCommand &Cmd_AddCommand (const char *commandName, ECmdTypeFlags Flags = 0
 
 void AddTestDebugCommands ();
 
-#include "cc_gamecommands.h"
+#include "cc_game_commands.h"
 
 #else
 FILE_WARNING

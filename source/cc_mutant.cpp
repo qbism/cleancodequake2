@@ -423,7 +423,7 @@ bool CMutant::CheckMelee ()
 	return false;
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 bool CMutant::CheckJump ()
 {

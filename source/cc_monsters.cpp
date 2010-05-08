@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_brushmodels.h"
-#include "cc_tent.h"
+#include "cc_brush_models.h"
+#include "cc_temporary_entities.h"
 
 /*
 ===============================
@@ -486,13 +486,18 @@ bool CMonsterEntity::Run ()
 	};
 }
 
-void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
 {
-	Monster->DamageEffect (dir, point, normal, damage, dflags);
+	Monster->DamageEffect (dir, point, normal, damage, dflags, mod);
 }
 
-void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
 {
+#if ROGUE_FEATURES
+	if (mod == MOD_CHAINFIST)
+		CBlood(point, normal, BT_MORE_BLOOD).Send();
+	else
+#endif
 	CBlood(point, normal).Send();
 }
 
@@ -1037,7 +1042,7 @@ void CMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, in
 #endif
 
 #if XATRIX_FEATURES
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "cc_xatrix_ionripper.h"
 #include "cc_soldier_base.h"
 #include "cc_xatrix_soldier_hyper.h"
@@ -1297,12 +1302,16 @@ void CMonster::FixInvalidEntities ()
 			Entity->Enemy = NULL;
 	}
 
+#if ROGUE_FEATURES
 	if (Commander && (Commander->Freed || !Commander->GetInUse()))
 		Commander = NULL;
+#endif
 }
 
 void CMonster::MonsterThink ()
 {
+	FixInvalidEntities ();
+
 	Entity->NextThink = Level.Frame + FRAMETIME;
 	MoveFrame ();
 	if (Entity->GetLinkCount() != LinkCount)
@@ -1313,9 +1322,6 @@ void CMonster::MonsterThink ()
 	CatagorizePosition ();
 	WorldEffects ();
 	SetEffects ();
-
-	// Paril: Fix up invalid entities
-	FixInvalidEntities ();
 }
 
 void CMonster::MoveFrame ()
