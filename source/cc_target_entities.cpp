@@ -181,6 +181,9 @@ public:
 
 	bool Run ()
 	{
+		if (User && User->Freed)
+			User = NULL;
+
 		return IBaseEntity::Run();
 	};
 

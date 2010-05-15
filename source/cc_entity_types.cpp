@@ -97,6 +97,8 @@ std::string ClientTeam (CPlayerEntity *Player)
 
 bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 {
+	if (Game.GameMode & GAME_COOPERATIVE)
+		return true;
 	if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
 		return false;
 

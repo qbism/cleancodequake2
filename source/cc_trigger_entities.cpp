@@ -473,7 +473,7 @@ public:
 		bool IsClient = true;
 		if (Count == 0)
 			return;
-		if (!(Activator->EntityFlags & ENT_PLAYER))
+		if (Activator && !(Activator->EntityFlags & ENT_PLAYER))
 			IsClient = false;
 		
 		CPlayerEntity *Player = (IsClient) ? entity_cast<CPlayerEntity>(Activator) : NULL;

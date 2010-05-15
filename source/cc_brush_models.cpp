@@ -1989,6 +1989,9 @@ ITouchableEntity(Index)
 
 bool CButton::Run ()
 {
+	if (User && (User->Freed))
+		User = NULL;
+
 	return IBrushModel::Run ();
 };
 
@@ -2017,7 +2020,6 @@ void CButton::DoEndFunc ()
 			NextThink = Level.Frame + Wait;
 			ThinkType = BUTTONTHINK_RETURN;
 		}
-		User = NULL;
 		break;
 	};
 }

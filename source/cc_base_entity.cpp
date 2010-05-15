@@ -215,6 +215,7 @@ void RemoveEntityFromList (edict_t *ent)
 
 #include "cc_body_queue.h"
 
+extern bool ForceRemoval;
 bool RemoveEntity (edict_t *ent)
 {
 	if (!ent || ent->state.number <= (Game.MaxClients + BODY_QUEUE_SIZE))
@@ -222,7 +223,7 @@ bool RemoveEntity (edict_t *ent)
 
 	if (!ent->Entity || ent->AwaitingRemoval)
 	{
-		if (!ent->RemovalFrames)
+		if (ForceRemoval || !ent->RemovalFrames)
 		{
 			ent->AwaitingRemoval = false;
 

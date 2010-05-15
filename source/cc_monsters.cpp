@@ -919,7 +919,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		// we have a one frame delay here so we don't telefrag the guy who activated us
 		Monster->Think = &CMonster::MonsterTriggeredSpawn;
 		NextThink = Level.Frame + FRAMETIME;
-		if (Activator->EntityFlags & ENT_PLAYER)
+		if (Activator && (Activator->EntityFlags & ENT_PLAYER))
 			Enemy = Activator;
 		UseState = MONSTERENTITY_THINK_USE;
 		break;

@@ -532,13 +532,14 @@ void CPlayerEntity::PutInServer ()
 
 	index = State.GetNumber()-1;
 
+	CUserInfo UserInfo = Client.Persistent.UserInfo;
 	switch (Game.GameMode)
 	{
 	// deathmatch wipes most client data every spawn
 	default:
 			Respawn = Client.Respawn;
 			InitPersistent ();
-			UserinfoChanged (Client.Persistent.UserInfo);
+			UserinfoChanged (UserInfo);
 		break;
 	case GAME_COOPERATIVE:
 			Respawn = Client.Respawn;
@@ -546,7 +547,7 @@ void CPlayerEntity::PutInServer ()
 			Respawn.CoopRespawn.GameHelpChanged = Client.Persistent.GameHelpChanged;
 			Respawn.CoopRespawn.HelpChanged = Client.Persistent.HelpChanged;
 			Client.Persistent = Respawn.CoopRespawn;
-			UserinfoChanged (Client.Persistent.UserInfo);
+			UserinfoChanged (UserInfo);
 			if (Respawn.Score > Client.Persistent.Score)
 				Client.Persistent.Score = Respawn.Score;
 		break;
@@ -565,7 +566,8 @@ void CPlayerEntity::PutInServer ()
 		InitPersistent();
 	
 		// Paril, this fixes occasions where a demo/cin is played first.
-		UserinfoChanged (saved.UserInfo);
+		if (Game.GameMode & GAME_COOPERATIVE)
+			UserinfoChanged (saved.UserInfo);
 	}
 	Client.Respawn = Respawn;
 	Client.Persistent.State = SVCS_SPAWNED;
