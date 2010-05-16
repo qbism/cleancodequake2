@@ -512,9 +512,6 @@ void SaveBodyQueue (CFile &File);
 void LoadJunk (CFile &File);
 void SaveJunk (CFile &File);
 
-extern bool RemoveEntity (edict_t *Entity);
-bool ForceRemoval = false;
-
 void CGameAPI::WriteLevel (char *filename)
 {
 	DebugPrintf ("Writing level to %s...\n", filename);
@@ -525,11 +522,6 @@ void CGameAPI::WriteLevel (char *filename)
 		GameError ("Couldn't open %s", filename);
 		return;
 	}
-
-	// Remove entities that are freed
-	ForceRemoval = true;
-	Level.Entities.Closed.remove_if (RemoveEntity);
-	ForceRemoval = false;
 
 	// write out edict size for checking
 	File.Write<size_t> (sizeof(edict_t));

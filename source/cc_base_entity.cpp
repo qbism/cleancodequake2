@@ -215,7 +215,6 @@ void RemoveEntityFromList (edict_t *ent)
 
 #include "cc_body_queue.h"
 
-extern bool ForceRemoval;
 bool RemoveEntity (edict_t *ent)
 {
 	if (!ent || ent->state.number <= (Game.MaxClients + BODY_QUEUE_SIZE))
@@ -223,7 +222,7 @@ bool RemoveEntity (edict_t *ent)
 
 	if (!ent->Entity || ent->AwaitingRemoval)
 	{
-		if (ForceRemoval || !ent->RemovalFrames)
+		if (!ent->RemovalFrames)
 		{
 			ent->AwaitingRemoval = false;
 
@@ -292,10 +291,7 @@ CC_ENABLE_DEPRECATION
 
 	Mem_Zero (ed, sizeof(*ed));
 	if (Entity)
-	{
 		ed->Entity = Entity;
-		Entity->ClassName = "freed";
-	}
 	ed->freetime = Level.Frame;
 	ed->inUse = false;
 	ed->state.number = ed - Game.Entities;
@@ -570,7 +566,6 @@ void			IBaseEntity::Free ()
 
 		Mem_Zero (gameEntity, sizeof(*gameEntity));
 		gameEntity->Entity = this;
-		ClassName = "freed";
 		gameEntity->freetime = Level.Frame;
 		GetInUse() = false;
 		gameEntity->state.number = gameEntity - Game.Entities;
