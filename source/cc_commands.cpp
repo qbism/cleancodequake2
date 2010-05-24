@@ -157,7 +157,7 @@ public:
 	public:
 		void operator () ()
 		{
-			/*for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
+			for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 			{
 				if (!(*it)->Entity || !((*it)->Entity->EntityFlags & ENT_MONSTER))
 					continue;
@@ -167,10 +167,7 @@ public:
 					continue;
 
 				SearchForRandomMonster (Monster);
-			}*/
-			byte *testmem = new byte;
-			testmem[1] = 255;
-			QDelete testmem;
+			}
 		};
 	};
 };

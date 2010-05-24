@@ -56,7 +56,7 @@
     New DataType("Frame/Time", "FrameNumber_t", "0", "FT_FRAMENUMBER"), _
     New DataType("Item", "CBaseItem", "NULL", "FT_ITEM", True), _
     New DataType("Entity", "IBaseEntity", "NULL", "FT_ENTITY", True), _
-    New DataType("Float to Byte", "byte", "0", "FT_FLOAT_TO_BYTE"), _
+    New DataType("Float to Byte", "uint8", "0", "FT_FLOAT_TO_BYTE"), _
     New DataType("CCString", "std::cc_string", "", "FT_CC_STRING") _
     }
 

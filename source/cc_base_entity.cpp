@@ -42,12 +42,11 @@ IBaseEntity *GetGameEntity (sint32 Index)
 }
 
 CEntityField::CEntityField (const char *Name, size_t Offset, EFieldType FieldType) :
-Name(Name),
+Name(Q_strlwr(Name)),
 Offset(Offset),
 FieldType(FieldType),
 StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN))
 {
-	std::transform(this->Name.begin(), this->Name.end(), this->Name.begin(), std::tolower);
 };
 
 CEntityState::CEntityState () :

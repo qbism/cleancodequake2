@@ -527,7 +527,6 @@ void CGameAPI::WriteLevel (char *filename)
 	File.Write<size_t> (sizeof(edict_t));
 
 	// write out a function pointer for checking
-	//byte *base = (byte *)ReadClient;
 	File.Write<size_t> (reinterpret_cast<size_t>(ReadClient));
 
 	// write out level_locals_t
@@ -640,8 +639,6 @@ void CGameAPI::ReadLevel (char *filename)
 	}
 
 	// check function pointer base address
-	//byte *base;
-	//File.Read (&base, sizeof(base));
 
 #ifdef WIN32
 	if (File.Read<size_t> () != reinterpret_cast<size_t>(ReadClient))
