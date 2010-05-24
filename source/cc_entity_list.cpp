@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#define MAX_CLASSNAME_CLASSES 1024
+const int MAX_CLASSNAME_CLASSES = 1024;
 
 typedef std::multimap<size_t, size_t> THashedEntityListType;
 typedef std::vector<CClassnameToClassIndex*> TEntityListType;
@@ -85,7 +85,7 @@ IBaseEntity *CEntityList::Resolve (edict_t *ent)
 	{
 		CClassnameToClassIndex *Table = EntityList.at((*it).second);
 		if (Q_stricmp (Table->Classname, Level.ClassName.c_str()) == 0)
-			return Table->Spawn(ent->state.number);
+			return Table->Spawn(ent->server.state.number);
 	}
 
 	return NULL;
@@ -130,7 +130,7 @@ CC_ENABLE_DEPRECATION
 		// We're done then
 		MapEntity->gameEntity->Entity = NULL;
 		QDelete MapEntity;
-		ent->inUse = false;
+		ent->server.inUse = false;
 		return;
 	}
 
@@ -504,7 +504,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 			Level.EntityNumber++;
 
-			if (!ent->inUse)
+			if (!ent->server.inUse)
 			{
 				Level.Inhibit++;
 				CC_ASSERT_EXPR (!(ent->Entity && !ent->Entity->Freed), "Entity not inuse but freed!");

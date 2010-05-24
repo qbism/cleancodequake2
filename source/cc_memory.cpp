@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 CC_DISABLE_DEPRECATION
 
-#define HEADER_MAGIC_CONSTANT (('E'<<24)+('N'<<16)+('E'<<8)+'G')
+const uint32 HEADER_MAGIC_CONSTANT = (('E'<<24)+('N'<<16)+('E'<<8)+'G');
 
 struct MemSentinel
 {

@@ -51,9 +51,8 @@ CWidowStand (ID)
 // timestamp used to prevent rapid fire of melee attack
 
 
-#define	NUM_STALKERS_SPAWNED		6		// max # of stalkers she can spawn
-
-#define	DISRUPT_TIME					30
+const int NUM_STALKERS_SPAWNED		= 6;		// max # of stalkers she can spawn
+const int DISRUPT_TIME				= 30;
 
 // sqrt(64*64*2) + sqrt(28*28*2) => 130.1
 static vec3f spawnpoints[] = {

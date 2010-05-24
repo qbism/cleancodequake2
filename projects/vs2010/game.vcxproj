@@ -636,6 +636,9 @@ echo Done!
     <ClInclude Include="..\..\source\cc_mutant.h" />
     <ClInclude Include="..\..\source\cc_parasite.h" />
     <ClInclude Include="..\..\source\cc_tank.h" />
+    <ClInclude Include="..\..\source\m_turret.h" />
+    <ClInclude Include="..\..\source\m_widow.h" />
+    <ClInclude Include="..\..\source\m_widow2.h" />
     <CustomBuild Include="..\..\source\cc_boss2.h" />
     <ClInclude Include="..\..\source\cc_jorg.h" />
     <ClInclude Include="..\..\source\cc_makron.h" />
@@ -674,12 +677,12 @@ echo Done!
     <ClInclude Include="..\..\source\cc_xatrix_soldier_ripper.h" />
     <ClInclude Include="..\..\source\cc_xatrix_supertank_boss5.h" />
     <ClInclude Include="..\..\source\cc_xatrix_trap.h" />
-    <ClInclude Include="..\..\source\m_actor.h" />
     <ClInclude Include="..\..\source\m_berserk.h" />
     <ClInclude Include="..\..\source\m_boss2.h" />
     <ClInclude Include="..\..\source\m_boss31.h" />
     <ClInclude Include="..\..\source\m_boss32.h" />
     <ClInclude Include="..\..\source\m_brain.h" />
+    <ClInclude Include="..\..\source\m_carrier.h" />
     <ClInclude Include="..\..\source\m_chick.h" />
     <ClInclude Include="..\..\source\m_flipper.h" />
     <ClInclude Include="..\..\source\m_float.h" />
@@ -693,8 +696,8 @@ echo Done!
     <ClInclude Include="..\..\source\m_mutant.h" />
     <ClInclude Include="..\..\source\m_parasite.h" />
     <ClInclude Include="..\..\source\m_player.h" />
-    <ClInclude Include="..\..\source\m_rider.h" />
     <ClInclude Include="..\..\source\m_soldier.h" />
+    <ClInclude Include="..\..\source\m_stalker.h" />
     <ClInclude Include="..\..\source\m_supertank.h" />
     <ClInclude Include="..\..\source\m_tank.h" />
   </ItemGroup>

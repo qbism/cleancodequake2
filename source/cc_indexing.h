@@ -43,7 +43,7 @@ public:
 	std::string	Name;
 };
 
-#define MAX_INDEXES 256
+const int MAX_INDEXES = 256;
 
 typedef std::multimap<size_t, size_t> THashedMediaIndexListType;
 typedef std::map<uint8, CIndex*, std::less<uint8> > TMediaIndexToPtrList;

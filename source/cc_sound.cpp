@@ -59,7 +59,7 @@ If origin is NULL, the origin is determined from the entity origin
 or the midpoint of the entity box for bmodels.
 ==================
 */
-#define 	SOUND_FULLVOLUME	80
+const int 	SOUND_FULLVOLUME	= 80;
 
 // sound communication
 // a sound without an ent or pos will be a local only sound
@@ -72,8 +72,8 @@ enum
 	SND_OFFSET			= BIT(4)	// a uint8, msec offset from frame start
 };
 
-#define DEFAULT_SOUND_PACKET_VOLUME			255
-#define DEFAULT_SOUND_PACKET_ATTENUATION	1.0
+const byte DEFAULT_SOUND_PACKET_VOLUME			= 255;
+const float DEFAULT_SOUND_PACKET_ATTENUATION	= 1.0;
 
 static void SV_StartSound (vec3f origin, IBaseEntity *Entity, EEntSndChannel channel, MediaIndex soundIndex, uint8 vol, EAttenuation attenuation, uint8 timeOffset, bool Positioned)
 {

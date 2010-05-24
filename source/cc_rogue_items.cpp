@@ -103,12 +103,12 @@ void CIRGoggles::Use (CPlayerEntity *Player)
 }
 
 // Nuke
-#define	NUKE_DELAY			40
-#define NUKE_TIME_TO_LIVE	60
-#define NUKE_RADIUS			512
-#define NUKE_DAMAGE			400
-#define	NUKE_QUAKE_TIME		30
-#define NUKE_QUAKE_STRENGTH	100
+const int NUKE_DELAY			= 40;
+const int NUKE_TIME_TO_LIVE		= 60;
+const int NUKE_RADIUS			= 512;
+const int NUKE_DAMAGE			= 400;
+const int NUKE_QUAKE_TIME		= 30;
+const int NUKE_QUAKE_STRENGTH	= 100;
 
 class CNukeEntity : public IBounceProjectile, public IThinkableEntity, public ITouchableEntity, public IHurtableEntity
 {

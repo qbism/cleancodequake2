@@ -35,10 +35,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_insane.h"
 #include "cc_insane.h"
 
-#define INSANE_CRAWL		4
-#define INSANE_CRUCIFIED	8
-#define INSANE_STAND_GROUND	16
-#define INSANE_ALWAYS_STAND	32
+CC_ENUM (uint8, EInsaneSpawnflags)
+{
+	INSANE_CRAWL		= BIT(2),
+	INSANE_CRUCIFIED	= BIT(3),
+	INSANE_STAND_GROUND = BIT(4),
+	INSANE_ALWAYS_STAND = BIT(5)
+};
 
 CInsane::CInsane (uint32 ID) :
 CMonster (ID)

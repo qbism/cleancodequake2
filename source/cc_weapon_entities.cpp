@@ -53,7 +53,7 @@ void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 		if (Monster->Enemy != self)
 			Monster->Enemy = self;
 
-		float eta = ((tr.EndPos - start).LengthFast() - tr.ent->maxs[0]) / speed;
+		float eta = ((tr.EndPos - start).LengthFast() - tr.Ent->GetMaxs().X) / speed;
 
 		Monster->Monster->Dodge (self, eta
 #if ROGUE_FEATURES
@@ -227,7 +227,10 @@ CBlasterProjectile
 ================
 */
 
-#define HYPER_FLAG		1
+CC_ENUM (uint8, EBlasterFlags)
+{
+	HYPER_FLAG		= BIT(0)
+};
 
 CBlasterProjectile::CBlasterProjectile () :
   IFlyMissileProjectile(),

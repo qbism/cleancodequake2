@@ -33,8 +33,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#define MAX_ARG_CONCAT	256
-#define MAX_ARG		64
+const int MAX_ARG_CONCAT	= 256;
+const int MAX_ARG			= 64;
 
 uint8							numArgv;
 std::string						argvConcatString;

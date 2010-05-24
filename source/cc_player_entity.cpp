@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_body_queue.h"
 #include "cc_weapon_main.h"
 
-#if !USE_EXTENDED_GAME_IMPORTS
+#if 0
 #include "cc_pmove.h"
 #endif
 
@@ -850,10 +850,10 @@ void CPlayerEntity::CTFAssignSkin (CUserInfo &s)
 	switch (Client.Respawn.CTF.Team)
 	{
 	case CTF_TEAM1:
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM1_SKIN).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM1_SKIN()).c_str());
 		break;
 	case CTF_TEAM2:
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM2_SKIN).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM2_SKIN()).c_str());
 		break;
 	default:
 		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + (std::string)s).c_str());
@@ -2884,11 +2884,11 @@ void CPlayerEntity::TossClientWeapon ()
 #endif
 }
 
-#if USE_EXTENDED_GAME_IMPORTS
+#if 1
 CPlayerEntity	*pm_passent;
 
 // pmove doesn't need to know about passent and contentmask
-cmTrace_t	PM_trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
+cmTrace_t	PM_trace (vec3f start, vec3f mins, vec3f maxs, vec3f end)
 {
 CC_DISABLE_DEPRECATION
 	return gi.trace(start, mins, maxs, end, pm_passent->gameEntity, (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
@@ -2898,7 +2898,7 @@ CC_ENABLE_DEPRECATION
 
 void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 {
-#if USE_EXTENDED_GAME_IMPORTS
+#if 1
 	pMove_t		pm;
 #else
 	pMoveNew_t	pm;
@@ -2916,7 +2916,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 		return;
 	}
 
-#if USE_EXTENDED_GAME_IMPORTS
+#if 1
 	pm_passent = this;
 #endif
 
@@ -2991,13 +2991,13 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	pm.cmd = *ucmd;
 
-#if USE_EXTENDED_GAME_IMPORTS
+#if 1
 	pm.trace = PM_trace;
-	pm.pointContents = gi.pointcontents;
+	pm.pointContents = PointContents;
 #endif
 
 	// perform a pmove
-#if USE_EXTENDED_GAME_IMPORTS
+#if 1
 	gi.Pmove (&pm);
 #else
 	SV_Pmove (this, &pm, CvarList[CV_AIRACCELERATE].Float());
@@ -3257,7 +3257,7 @@ void CPlayerEntity::RestoreClientData ()
 		Player->Flags = SavedClients[i].SavedFlags;
 		if (Game.GameMode & GAME_COOPERATIVE)
 			Player->Client.Respawn.Score = SavedClients[i].Score;
-		Game.Entities[i+1].client = Game.Clients + i;
+		Game.Entities[i+1].server.client = Game.Clients + i;
 	}
 
 	QDelete[] SavedClients;
@@ -3762,7 +3762,7 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
 }
 
-void CPlayerEntity::PlayerNoiseAt (vec3f Where, sint32 type)
+void CPlayerEntity::PlayerNoiseAt (vec3f Where, ENoiseType type)
 {
 	if (type == PNOISE_WEAPON)
 	{
@@ -3857,7 +3857,7 @@ CC_ENABLE_DEPRECATION
 
 void CPlayerEntity::Begin ()
 {
-	gameEntity->client = Game.Clients + (State.GetNumber()-1);
+	gameEntity->server.client = Game.Clients + (State.GetNumber()-1);
 
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
@@ -3989,7 +3989,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 
 	// they can connect
-	gameEntity->client = Game.Clients + (State.GetNumber()-1);
+	gameEntity->server.client = Game.Clients + (State.GetNumber()-1);
 
 	// if there is already a body waiting for us (a loadgame), just
 	// take it, otherwise spawn one from scratch
@@ -4037,7 +4037,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 void CPlayerEntity::Disconnect ()
 {
-	if (!gameEntity->client)
+	if (!gameEntity->server.client)
 		return;
 
 	Client.Persistent.State = SVCS_FREE;
@@ -4497,7 +4497,7 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 #include "cc_trigger_entities.h"
 #endif
 
-void CPlayerEntity::PushInDirection (vec3f vel, uint32 flags)
+void CPlayerEntity::PushInDirection (vec3f vel, ESpawnflags flags)
 {
 	if (Health > 0)
 	{

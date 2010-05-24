@@ -150,7 +150,7 @@ CBadArea *CMonster::CheckForBadArea ()
 	return NULL;
 }
 
-#define TESLA_DAMAGE_RADIUS		128
+const int TESLA_DAMAGE_RADIUS		= 128;
 
 bool CMonster::MarkTeslaArea (CTesla *Tesla)
 {
@@ -1734,7 +1734,7 @@ void CMonster::AI_Run_Missile()
 	}
 }
 
-#define	MAX_SIDESTEP	8.0f
+const float	MAX_SIDESTEP	= 8.0f;
 
 void CMonster::AI_Run_Slide(float Dist)
 {	

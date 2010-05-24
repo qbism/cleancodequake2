@@ -50,9 +50,12 @@ Looped sounds are always atten 3 / vol 1, and the use function toggles it on/off
 Multiple identical looping sounds will just increase volume without any speed cost
 */
 
-#define SPEAKER_LOOPED_ON		1
-#define SPEAKER_LOOPED_OFF		2
-#define SPEAKER_RELIABLE		4
+CC_ENUM (uint8, ETargetSpeakerSpawnflags)
+{
+	SPEAKER_LOOPED_ON		= BIT(0),
+	SPEAKER_LOOPED_OFF		= BIT(1),
+	SPEAKER_RELIABLE		= BIT(2)
+};
 
 class CTargetSpeaker : public IMapEntity, public IUsableEntity
 {
@@ -1082,8 +1085,11 @@ dmg		default is 15
 speed	default is 1000
 */
 
-#define BLASTER_NO_TRAIL		1
-#define BLASTER_NO_EFFECTS		2
+CC_ENUM (uint8, ETargetBlasterSpawnflags)
+{
+	BLASTER_NO_TRAIL		= BIT(0),
+	BLASTER_NO_EFFECTS		= BIT(1)
+};
 
 class CTargetBlaster : public IMapEntity, public IUsableEntity
 {
@@ -1393,7 +1399,10 @@ LINK_CLASSNAME_TO_CLASS ("target_laser", CTargetLaser);
 When fired, the "message" key becomes the current personal computer string, and the message light will be set on all clients status bars.
 */
 
-#define HELP_FIRST_MESSAGE	1
+CC_ENUM (uint8, ETargetHelpSpawnflags)
+{
+	HELP_FIRST_MESSAGE	= BIT(0)
+};
 
 class CTargetHelp : public IMapEntity, public IUsableEntity
 {
@@ -1471,7 +1480,10 @@ All players and monsters are affected.
 */
 
 #if ROGUE_FEATURES
-#define EARTHQUAKE_SILENT 1
+CC_ENUM (uint8, EEarthquakeSpawnflags)
+{
+	EARTHQUAKE_SILENT = BIT(0)
+};
 #endif
 
 void CEarthQuakeShakePlayers::Callback (CPlayerEntity *Player)

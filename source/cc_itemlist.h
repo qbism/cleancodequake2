@@ -36,12 +36,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_ITEMLIST_H
 
 // Just to conform to the configstrings
-#define MAX_ITEMS		256
-#define MAX_ITEMS_HASH	(MAX_ITEMS/2)
+const int MAX_ITEMS			= 256;
+const int MAX_ITEMS_HASH	= (MAX_ITEMS/2);
 
 typedef std::pair<size_t, size_t> THashedItemListPairType;
 typedef std::multimap<size_t, size_t> THashedItemListType;
 typedef std::vector<CBaseItem*> TItemListType;
+
 // Generic itemlist.
 class CItemList
 {
@@ -67,6 +68,8 @@ public:
 	THashedItemListType		HashedClassnameItemList;
 	THashedItemListType		HashedNameItemList;
 };
+
+extern CItemList *ItemList;
 
 void InitItemlist ();
 CBaseItem *FindItemByClassname (const char *name);

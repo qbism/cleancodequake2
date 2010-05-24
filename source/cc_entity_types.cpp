@@ -157,7 +157,7 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 
 #include "cc_temporary_entities.h"
 
-sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
+sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, EDamageFlags dflags)
 {
 	if (!Damage)
 		return 0;
@@ -344,7 +344,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, point);
 }
 
-void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
+void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
 	{
@@ -362,7 +362,7 @@ void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sin
 bool LastPelletShot = true;
 void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 								vec3f dir, vec3f point, vec3f normal, sint32 Damage,
-								sint32 knockback, sint32 dflags, EMeansOfDeath mod)
+								sint32 knockback, EDamageFlags dflags, EMeansOfDeath mod)
 {
 	if (CvarList[CV_MAP_DEBUG].Boolean())
 		return;
@@ -632,7 +632,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 void IHurtableEntity::TakeDamage (IBaseEntity *targ, IBaseEntity *Inflictor,
 								IBaseEntity *Attacker, vec3f dir, vec3f point,
 								vec3f normal, sint32 Damage, sint32 knockback,
-								sint32 dflags, EMeansOfDeath mod)
+								EDamageFlags dflags, EMeansOfDeath mod)
 {
 	if ((targ->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(targ)->CanTakeDamage)
 		(entity_cast<IHurtableEntity>(targ))->TakeDamage (Inflictor, Attacker, dir, point, normal, Damage, knockback, dflags, mod);
@@ -813,7 +813,30 @@ IBounceProjectile::IBounceProjectile (sint32 Index) :
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
-sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce);
+  /*
+==================
+ClipVelocity
+
+Slide off of the impacting object
+==================
+*/
+const float STOP_EPSILON    = 0.1f;
+
+vec3f ClipVelocity (vec3f &in, vec3f &normal, float overbounce)
+{
+	float backoff = (in | normal) * overbounce;
+
+	vec3f out;
+	for (sint32 i = 0; i < 3; i++)
+	{
+		float change = normal[i]*backoff;
+		out[i] = in[i] - change;
+		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
+			out[i] = 0;
+	}
+	return out;
+}
+
 bool IBounceProjectile::Run ()
 {
 	CTrace	trace;
@@ -854,7 +877,7 @@ bool IBounceProjectile::Run ()
 
 	if (trace.fraction < 1)
 	{
-		ClipVelocity (Velocity, trace.plane.normal, Velocity, backOff);
+		Velocity = ClipVelocity (Velocity, trace.plane.normal, backOff);
 
 		if (AimInVelocityDirection)
 			State.GetAngles() = Velocity.ToAngles();
@@ -990,9 +1013,9 @@ void IStepPhysics::CheckGround ()
 	}
 }
 
-#define SV_STOPSPEED		100
-#define SV_FRICTION			6
-#define SV_WATERFRICTION	1
+const float SV_STOPSPEED		= 100.0f;
+const float SV_FRICTION			= 6.0f;
+const float SV_WATERFRICTION	= 1.0f;
 
 void IStepPhysics::AddRotationalFriction ()
 {
@@ -1016,20 +1039,19 @@ void IStepPhysics::AddRotationalFriction ()
 	}
 }
 
-#define MAX_CLIP_PLANES	5
+const int MAX_CLIP_PLANES	= 5;
 sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 {
-	edict_t		*hit;
-	sint32			i, j, blocked = 0, numplanes = 0, numbumps = 4;
-	vec3f		planes[MAX_CLIP_PLANES], dir, primal_velocity, original_velocity, new_velocity, end;
-	float		d, time_left = time;
+	sint32		i, j, blocked = 0, numplanes = 0, numbumps = 4;
+	vec3f		planes[MAX_CLIP_PLANES];
 	
-	original_velocity = primal_velocity = Velocity;
+	float		time_left = time;
+	vec3f original_velocity = Velocity, primal_velocity = Velocity;
 	GroundEntity = NULL;
 
 	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
-		end = State.GetOrigin () + time_left * Velocity;
+		vec3f end = State.GetOrigin () + time_left * Velocity;
 
 		CTrace trace (State.GetOrigin (), GetMins(), GetMaxs(), end, this, mask);
 
@@ -1051,14 +1073,14 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 		if (trace.fraction == 1)
 			 break;		// moved the entire distance
 
-		hit = trace.ent;
+		IBaseEntity *hit = trace.Ent;
 
 		if (trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1;		// floor
-			if ( hit->solid == SOLID_BSP)
+			if (hit->GetSolid() == SOLID_BSP)
 			{
-				GroundEntity = hit->Entity;
+				GroundEntity = hit;
 				GroundEntityLinkCount = GroundEntity->GetLinkCount();
 			}
 		}
@@ -1087,9 +1109,10 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 //
 // modify original_velocity so it parallels all of the clip planes
 //
+		vec3f new_velocity;
 		for (i = 0; i < numplanes; i++)
 		{
-			ClipVelocity (original_velocity, planes[i], new_velocity, 1);
+			new_velocity = ClipVelocity (original_velocity, planes[i], 1);
 
 			for (j = 0; j < numplanes; j++)
 			{
@@ -1105,10 +1128,8 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 		}
 		
 		if (i != numplanes)
-		{
 			// go along this plane
 			Velocity = new_velocity;
-		}
 		else
 		{
 			// go along the crease
@@ -1117,9 +1138,9 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 				Velocity.Clear ();
 				return 7;
 			}
-			dir = planes[0] ^ planes[1];
-			d = dir | Velocity;
-			Velocity = dir * d;
+
+			vec3f dir = planes[0] ^ planes[1];
+			Velocity = dir * (dir | Velocity);
 		}
 
 //
@@ -1300,37 +1321,6 @@ SV_TestEntityPosition
 inline IBaseEntity *SV_TestEntityPosition (IBaseEntity *Entity)
 {
 	return (CTrace(Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), Entity->State.GetOrigin(), Entity, (Entity->GetClipmask()) ? Entity->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
-}
-
-/*
-==================
-ClipVelocity
-
-Slide off of the impacting object
-returns the blocked flags (1 = floor, 2 = step / wall)
-==================
-*/
-#define STOP_EPSILON    0.1
-
-sint32 ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
-{
-	sint32 blocked = 0;
-	if (normal[2] > 0)
-		blocked |= 1;           // floor
-	if (!normal[2])
-		blocked |= 2;           // step
-
-	float backoff = (in | normal) * overbounce;
-
-	for (sint32 i = 0; i < 3; i++)
-	{
-		float change = normal[i]*backoff;
-		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-			out[i] = 0;
-	}
-
-	return blocked;
 }
 
 typedef std::vector<CPushed> TPushedList;

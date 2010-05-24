@@ -139,6 +139,8 @@ void CheckNewVersion ()
 	}
 }
 
+const int READ_BYTES_SIZE = 16;
+
 long WINAPI CheckNewVersionThread (long lParam)
 #else
 void CheckNewVersion ()
@@ -158,7 +160,6 @@ void CheckNewVersion ()
 			// Start writing the file
 			char *currentReceivePos = receiveBuffer;
 			DWORD numBytesRead = 0;
-#define READ_BYTES_SIZE 16
 
 			while (true)
 			{

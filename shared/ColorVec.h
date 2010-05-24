@@ -237,7 +237,7 @@ inline colorf::colorf(const colorb &Other)
 ==============================================================================
 */
 
-#define NUM_COLOR_TABLE_COLORS 9
+const int NUM_COLOR_TABLE_COLORS = 9;
 
 extern const colorf	Q_FColorBlack;
 extern const colorf	Q_FColorRed;

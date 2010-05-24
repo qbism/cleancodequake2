@@ -45,7 +45,7 @@ the player has been recently.  It is used by monsters for pursuit.
 */
 
 
-#define TRAIL_LENGTH	24
+const int TRAIL_LENGTH	= 24;
 
 static CPlayerMarker	trail[TRAIL_LENGTH];
 static int				trail_head;

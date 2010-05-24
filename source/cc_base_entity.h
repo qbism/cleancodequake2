@@ -37,19 +37,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CEntityState
 {
 private:
-	entityStateOld_t	*state;
+	entityState_t			*state;
 
 public:
-	CEntityState			(entityStateOld_t *state);
+	CEntityState			(entityState_t *state);
 	CEntityState			();
 
-	void Initialize (entityStateOld_t *state);
+	void Initialize (entityState_t *state);
 
 	sint32		&GetNumber		();
 
-	vec3f	&GetOrigin		();
-	vec3f	&GetAngles		();
-	vec3f	&GetOldOrigin	();
+	vec3f		&GetOrigin		();
+	vec3f		&GetAngles		();
+	vec3f		&GetOldOrigin	();
 
 	// Can be 1, 2, 3, or 4
 	sint32		&GetModelIndex	(uint8 index = 1);
@@ -87,6 +87,21 @@ CC_ENUM (uint32, EEdictFlags)
 	FL_SAM_RAIMI		= BIT(15),
 	FL_DISGUISED		= BIT(16),
 #endif
+};
+
+// Spawnflags
+// 6 bits reserved for editor flags
+// 8 bits used as power cube id bits for coop games
+
+// edict->spawnflags
+// these are set with checkboxes on each entity in the map editor
+CC_ENUM (uint32, ESpawnflags)
+{
+	SPAWNFLAG_NOT_EASY			= BIT(8),
+	SPAWNFLAG_NOT_MEDIUM		= BIT(9),
+	SPAWNFLAG_NOT_HARD			= BIT(10),
+	SPAWNFLAG_NOT_DEATHMATCH	= BIT(11),
+	SPAWNFLAG_NOT_COOP			= BIT(12)
 };
 
 // IBaseEntity is abstract.
@@ -199,7 +214,7 @@ public:
 };
 
 // EntityFlags values
-enum
+CC_ENUM (uint16, EEntityFlags)
 {
 	ENT_BASE		=	BIT(0), // Can be casted to IBaseEntity
 	ENT_HURTABLE	=	BIT(1), // Can be casted to IHurtableEntity
@@ -781,6 +796,34 @@ inline TType *ReadEntity (CFile &File)
 	if (Index != -1)
 		return entity_cast<TType>(GetGameEntity(Index));
 	return NULL;
+}
+
+// Utility functions
+CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
+edict_t	*G_Spawn ();
+
+CC_INSECURE_DEPRECATE (Function not needed)
+void	G_InitEdict (edict_t *e);
+
+CC_INSECURE_DEPRECATE (Entity->Free)
+void	G_FreeEdict (edict_t *e);
+
+void	ED_CallSpawn (edict_t *ent);
+
+extern IBaseEntity *World;
+
+inline IBaseEntity *CreateEntityFromClassname (const char *classname)
+{
+CC_DISABLE_DEPRECATION
+	edict_t *ent = G_Spawn ();
+
+	Level.ClassName = classname;
+	ED_CallSpawn (ent);
+
+	if (ent->Entity && ent->Entity->GetInUse() && !ent->Entity->Freed)
+		return ent->Entity;
+	return NULL;
+CC_ENABLE_DEPRECATION
 }
 
 // Base classes

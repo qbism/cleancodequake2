@@ -387,7 +387,7 @@ void ClientCommand (edict_t *ent)
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
-	if (!ent->client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
+	if (!ent->server.client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
 		return;		// not fully in game yet
 
 	GameAPI.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));

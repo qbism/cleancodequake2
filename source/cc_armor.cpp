@@ -120,7 +120,7 @@ void CArmor::Drop (CPlayerEntity *Player)
 
 #include "cc_temporary_entities.h"
 
-sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags)
+sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 Damage, EDamageFlags dflags)
 {
 	if (!Damage || dflags & (DAMAGE_NO_ARMOR | DAMAGE_NO_REG_ARMOR))
 		return 0;

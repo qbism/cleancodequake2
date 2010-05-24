@@ -41,8 +41,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_widow.h"
 #include "cc_rogue_black_widow.h"
 
-#define	MAX_LEGSFRAME	23
-#define	LEG_WAIT_TIME	10
+const int MAX_LEGSFRAME	= 23;
+const int LEG_WAIT_TIME	= 10;
 
 class CWidowLegs : public IThinkableEntity
 {
@@ -171,12 +171,12 @@ CMonster(ID)
 	MonsterName = "Black Widow";
 };
 
-#define	NUM_STALKERS_SPAWNED		6		// max # of stalkers she can spawn
+const int NUM_STALKERS_SPAWNED		= 6;		// max # of stalkers she can spawn
 
-#define	RAIL_TIME					30
-#define	BLASTER_TIME				20
-#define	BLASTER2_DAMAGE				10
-#define	WIDOW_RAIL_DAMAGE			50
+const int RAIL_TIME					= 30;
+const int BLASTER_TIME				= 20;
+const int BLASTER2_DAMAGE			= 10;
+const int WIDOW_RAIL_DAMAGE			= 50;
 
 vec3f spawnpoints[] = {
 	vec3f(30,  100, 16),
@@ -331,7 +331,7 @@ int CWidowStand::Torso ()
 	return 0;
 }
 
-#define	VARIANCE 15.0
+const float	VARIANCE = 15.0f;
 
 void CWidowStand::FireBlaster ()
 {

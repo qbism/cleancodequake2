@@ -520,10 +520,10 @@ CDisruptorTracker
 ================
 */
 
-#define TRACKER_DAMAGE_FLAGS	(DAMAGE_NO_POWER_ARMOR | DAMAGE_ENERGY | DAMAGE_NO_KNOCKBACK)
-#define TRACKER_IMPACT_FLAGS	(DAMAGE_NO_POWER_ARMOR | DAMAGE_ENERGY)
+const EDamageFlags TRACKER_DAMAGE_FLAGS	= (DAMAGE_NO_POWER_ARMOR | DAMAGE_ENERGY | DAMAGE_NO_KNOCKBACK);
+const EDamageFlags TRACKER_IMPACT_FLAGS	= (DAMAGE_NO_POWER_ARMOR | DAMAGE_ENERGY);
 
-#define TRACKER_DAMAGE_TIME		5
+const int TRACKER_DAMAGE_TIME		= 5;
 
 // FIXME: make private!!!
 class CDisruptorPainDaemon : public IThinkableEntity
@@ -780,7 +780,10 @@ bool CDisruptorTracker::Run ()
 	return IFlyMissileProjectile::Run();
 }
 
-#define HYPER_FLAG		1
+CC_ENUM (uint8, EGreenBlasterFlags)
+{
+	HYPER_FLAG		= BIT(0)
+};
 
 CGreenBlasterProjectile::CGreenBlasterProjectile () :
   IFlyMissileProjectile(),

@@ -38,7 +38,7 @@ void BodyQueue_Init (sint32 reserve);
 void ShutdownBodyQueue ();
 void CopyToBodyQueue (CPlayerEntity *Player);
 
-#define BODY_QUEUE_SIZE	8
+const int BODY_QUEUE_SIZE	= 8;
 
 
 #else

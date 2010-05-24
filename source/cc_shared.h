@@ -58,6 +58,7 @@ typedef sint32	FrameNumber_t;
 #define TO_STRING(x) TO_STRING2(x)
 
 // Stand-alone classes
+#include "cc_hash.h"
 #include "cc_print.h"
 #include "cc_file_system.h"
 #include "cc_platform.h"
@@ -69,7 +70,6 @@ typedef sint32	FrameNumber_t;
 #include "cc_write.h"
 #include "cc_cvar.h"
 #include "cc_parse.h"
-#include "cc_hash.h"
 #define BAN_BASIC_INFO
 #include "cc_ban.h"
 #undef BAN_BASIC_INFO
@@ -78,6 +78,8 @@ typedef sint32	FrameNumber_t;
 #include "cc_irc.h"
 
 // Main class files
+#include "cc_game_api.h"
+#include "cc_game.h"
 #include "cc_items.h"
 #include "cc_inventory.h"
 #include "cc_status_bar.h"
@@ -85,11 +87,11 @@ typedef sint32	FrameNumber_t;
 #if CLEANCTF_ENABLED
 #include "cc_ctf.h"
 #endif
-#include "cc_game_api.h"
 #include "cc_base_entity.h"
 #include "cc_trace.h"
 #include "cc_monsters.h"
 #include "cc_modules.h"
+#include "cc_utils.h"
 
 // Classes that require classes from the above includes
 #include "cc_sound.h"

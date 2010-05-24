@@ -42,7 +42,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 =============================================================================
 */
 
-#define NUMVERTEXNORMALS	162
+const int NUMVERTEXNORMALS	= 162;
 
 vec3f m_byteDirs[NUMVERTEXNORMALS] = {
 	vec3f(-0.525731f,	0.000000f,	0.850651f),		vec3f(-0.442863f,	0.238856f,	0.864188f),		vec3f(-0.295242f,	0.000000f,	0.955423f),

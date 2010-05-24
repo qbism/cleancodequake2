@@ -21,12 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if !defined(CC_GUARD_CTF_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CTF_H
 
-#define CTF_VERSION			1.09b
-#define CTF_VSTRING2(x) #x
-#define CTF_VSTRING(x) CTF_VSTRING2(x)
-#define CTF_STRING_VERSION  CTF_VSTRING(CTF_VERSION)
+inline const char *CTF_VERSION() { return "1.09b"; }
 
-#define CONFIG_CTF_MATCH (CS_MAXCLIENTS-1)
+const int CONFIG_CTF_MATCH  = (CS_MAXCLIENTS-1);
 
 CC_ENUM (sint8, ETeamIndex)
 {
@@ -137,33 +134,33 @@ public:
 	}
 };
 
-#define CTF_TEAM1_SKIN "ctf_r"
-#define CTF_TEAM2_SKIN "ctf_b"
+inline const char *CTF_TEAM1_SKIN() { return "ctf_r"; }
+inline const char *CTF_TEAM2_SKIN() { return "ctf_b"; }
 
-#define CTF_CAPTURE_BONUS		15	// what you get for capture
-#define CTF_TEAM_BONUS			10	// what your team gets for capture
-#define CTF_RECOVERY_BONUS		1	// what you get for recovery
-#define CTF_FLAG_BONUS			0	// what you get for picking up enemy flag
-#define CTF_FRAG_CARRIER_BONUS	2	// what you get for fragging enemy flag carrier
-#define CTF_FLAG_RETURN_TIME	400	// seconds until auto return
+const int CTF_CAPTURE_BONUS						= 15;	// what you get for capture
+const int CTF_TEAM_BONUS						= 10;	// what your team gets for capture
+const int CTF_RECOVERY_BONUS					= 1;	// what you get for recovery
+const int CTF_FLAG_BONUS						= 0;	// what you get for picking up enemy flag
+const int CTF_FRAG_CARRIER_BONUS				= 2;	// what you get for fragging enemy flag carrier
+const int CTF_FLAG_RETURN_TIME					= 400;	// seconds until auto return
 
-#define CTF_CARRIER_DANGER_PROTECT_BONUS	2	// bonus for fraggin someone who has recently hurt your flag carrier
-#define CTF_CARRIER_PROTECT_BONUS			1	// bonus for fraggin someone while either you or your target are near your flag carrier
-#define CTF_FLAG_DEFENSE_BONUS				1	// bonus for fraggin someone while either you or your target are near your flag
-#define CTF_RETURN_FLAG_ASSIST_BONUS		1	// awarded for returning a flag that causes a capture to happen almost immediately
-#define CTF_FRAG_CARRIER_ASSIST_BONUS		2	// award for fragging a flag carrier if a capture happens almost immediately
+const int CTF_CARRIER_DANGER_PROTECT_BONUS		= 2;	// bonus for fraggin someone who has recently hurt your flag carrier
+const int CTF_CARRIER_PROTECT_BONUS				= 1;	// bonus for fraggin someone while either you or your target are near your flag carrier
+const int CTF_FLAG_DEFENSE_BONUS				= 1;	// bonus for fraggin someone while either you or your target are near your flag
+const int CTF_RETURN_FLAG_ASSIST_BONUS			= 1;	// awarded for returning a flag that causes a capture to happen almost immediately
+const int CTF_FRAG_CARRIER_ASSIST_BONUS			= 2;	// award for fragging a flag carrier if a capture happens almost immediately
 
-#define CTF_TARGET_PROTECT_RADIUS			400	// the radius around an object being defended where a target will be worth extra frags
-#define CTF_ATTACKER_PROTECT_RADIUS			400	// the radius around an object being defended where an Attacker will get extra frags when making kills
+const int CTF_TARGET_PROTECT_RADIUS				= 400;	// the radius around an object being defended where a target will be worth extra frags
+const int CTF_ATTACKER_PROTECT_RADIUS			= 400;	// the radius around an object being defended where an Attacker will get extra frags when making kills
 
-#define CTF_CARRIER_DANGER_PROTECT_TIMEOUT	80
-#define CTF_FRAG_CARRIER_ASSIST_TIMEOUT		100
-#define CTF_RETURN_FLAG_ASSIST_TIMEOUT		100
+const int CTF_CARRIER_DANGER_PROTECT_TIMEOUT	= 80;
+const int CTF_FRAG_CARRIER_ASSIST_TIMEOUT		= 100;
+const int CTF_RETURN_FLAG_ASSIST_TIMEOUT		= 100;
 
-#define CTF_AUTO_FLAG_RETURN_TIMEOUT		300	// number of seconds before dropped flag auto-returns
+const int CTF_AUTO_FLAG_RETURN_TIMEOUT			= 300;	// number of seconds before dropped flag auto-returns
 
-#define CTF_GRAPPLE_SPEED					650 // speed of grapple in flight
-#define CTF_GRAPPLE_PULL_SPEED				650	// speed player is pulled at
+const int CTF_GRAPPLE_SPEED						= 650; // speed of grapple in flight
+const int CTF_GRAPPLE_PULL_SPEED				= 650;	// speed player is pulled at
 
 void CTFInit();
 void CTFSpawn();

@@ -243,7 +243,7 @@ public:
 	IMPLEMENT_SAVE_HEADER(CTesla);
 
 	bool Run ();
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
+	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	void Remove ();

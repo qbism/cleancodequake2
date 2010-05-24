@@ -55,9 +55,7 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 
 	for ( ; gameEnt < &Game.Entities[GameAPI.GetNumEdicts()]; gameEnt++)
 	{
-		if (!gameEnt->inUse)
-			continue;
-		if (!gameEnt->Entity)
+		if (!gameEnt->Entity || !gameEnt->Entity->GetInUse())
 			continue;
 		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
 			continue;
@@ -101,9 +99,7 @@ TEntityType *CC_FindByClassName (IBaseEntity *From, const char *Match)
 
 	for ( ; gameEnt < &Game.Entities[GameAPI.GetNumEdicts()]; gameEnt++)
 	{
-		if (!gameEnt->inUse)
-			continue;
-		if (!gameEnt->Entity)
+		if (!gameEnt->Entity || !gameEnt->Entity->GetInUse())
 			continue;
 		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
 			continue;
@@ -187,6 +183,24 @@ bool IsInBack (IBaseEntity *self, IBaseEntity *Other);
 bool IsBelow (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (vec3f left, vec3f right, IBaseEntity *self);
+
+extern vec3f upOrigin;
+void	G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up = upOrigin);
+
+// Changed to sint32, rarely used as a float..
+IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid);
+
+template <class ReturnType, uint32 EntityFlags>
+ReturnType *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
+{
+	return entity_cast<ReturnType>(FindRadius (From, org, Radius, EntityFlags, CheckNonSolid));
+}
+
+template <uint32 EntityFlags>
+inline IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
+{
+	return FindRadius (From, org, Radius, EntityFlags, CheckNonSolid);
+}
 
 #else
 FILE_WARNING

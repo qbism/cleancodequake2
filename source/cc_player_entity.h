@@ -94,6 +94,14 @@ void SaveWeapon (CFile &File, CWeapon *Weapon);
 
 #include "cc_userinfo.h"
 
+// handedness values
+CC_ENUM (uint8, EHandedness)
+{
+	RIGHT_HANDED,
+	LEFT_HANDED,
+	CENTER_HANDED
+};
+
 // client data that stays across multiple level loads
 class CPersistentData
 {
@@ -163,7 +171,7 @@ public:
 	CUserInfo		UserInfo;
 	std::string		Name;
 	IPAddress		IP;
-	sint32			Hand;
+	EHandedness		Hand;
 
 	EClientState 	State;			// a loadgame will leave valid entities that
 									// just don't have a connection yet
@@ -428,6 +436,10 @@ CC_ENUM (uint8, EAnimPriority)
 	ANIM_REVERSE
 };
 
+// view pitching times
+const int	DAMAGE_TIME		= 5;
+const int	FALL_TIME		= 3;
+
 class CClient
 {
 public:
@@ -560,6 +572,14 @@ public:
 
 	sint32			&GetPing ();
 	void			Clear ();
+};
+
+// noise types for PlayerNoise
+CC_ENUM (uint8, ENoiseType)
+{
+	PNOISE_SELF,
+	PNOISE_WEAPON,
+	PNOISE_IMPACT
 };
 
 // Players don't think or have (game) controlled physics.
@@ -706,9 +726,9 @@ public:
 	void			TossHead (sint32 Damage);
 
 	void			P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result);
-	void			PlayerNoiseAt (vec3f Where, sint32 type);
+	void			PlayerNoiseAt (vec3f Where, ENoiseType type);
 
-	void			PushInDirection (vec3f vel, uint32 flags);
+	void			PushInDirection (vec3f vel, ESpawnflags flags);
 
 #if ROGUE_FEATURES
 	void			RemoveAttackingPainDaemons ();

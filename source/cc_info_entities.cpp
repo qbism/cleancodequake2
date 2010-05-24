@@ -1306,7 +1306,10 @@ Pathtarget: gets used when an entity that has
 	this path_corner targeted touches it
 */
 
-#define CORNER_TELEPORT		1
+CC_ENUM (uint8, EPathCornerSpawnflags)
+{
+	CORNER_TELEPORT		= BIT(0)
+};
 
 CPathCorner::CPathCorner () :
   IBaseEntity(),
@@ -1624,7 +1627,10 @@ If targeted, will toggle between on and off.
 Default _cone value is 10 (used to set size of light for spotlights)
 */
 
-#define START_OFF	1
+CC_ENUM (uint8, ELightSpawnflags)
+{
+	START_OFF	= BIT(0)
+};
 
 class CLight : public IMapEntity, public IUsableEntity
 {
@@ -1710,7 +1716,10 @@ speed		How many seconds the ramping will take
 message		two letters; starting lightlevel and ending lightlevel
 */
 
-#define LIGHTRAMP_TOGGLE	1
+CC_ENUM (uint8, ETargetLightrampSpawnflags)
+{
+	LIGHTRAMP_TOGGLE	= BIT(0)
+};
 
 class CTargetLightRamp : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {

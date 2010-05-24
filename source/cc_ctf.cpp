@@ -461,7 +461,7 @@ SAY_TEAM
 ======================================================================
 */
 
-#define HASHSIZE_CLASSNAMES 256
+const int HASHSIZE_CLASSNAMES = 256;
 
 // This array is in 'importance order', it indicates what items are
 // more important when reporting their names.
@@ -788,7 +788,10 @@ void CCTFSayTeamCommand::operator () ()
 The origin is the bottom of the banner.
 The banner is 248 tall.
 */
-#define SPAWNFLAG_BLUE 1
+CC_ENUM (uint8, ECTFBannerSpawnflags)
+{
+	SPAWNFLAG_BLUE = BIT(0)
+};
 
 class CMiscCTFBanner : public IMapEntity, public IThinkableEntity
 {

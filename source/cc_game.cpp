@@ -38,6 +38,101 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_server_commands.h"
 #include "cc_version.h"
 
+void CLevelLocals::CEntityList::Save (CFile &File)
+{
+	File.Write<size_t> (Open.size());
+	for (TEntitiesContainer::iterator it = Open.begin(); it != Open.end(); ++it)
+		// Poop.
+		// Entities can't be guarenteed a number till
+		// they spawn the first time!
+		File.Write<sint32> ((*it) - Game.Entities);
+
+	File.Write<size_t> (Closed.size());
+	for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
+		File.Write<sint32> ((*it)->server.state.number);
+};
+
+void CLevelLocals::CEntityList::Load (CFile &File)
+{
+	size_t size = File.Read<size_t> ();
+
+	Open.clear ();
+	for (size_t i = 0; i < size; i++)
+		Open.push_back (&Game.Entities[File.Read<sint32> ()]);
+
+	size = File.Read<size_t> ();
+
+	Closed.clear ();
+	for (size_t i = 0; i < size; i++)
+		Closed.push_back (&Game.Entities[File.Read<sint32> ()]);
+};
+
+void CLevelLocals::Save (CFile &File)
+{
+	File.Write<FrameNumber_t> (Frame);
+
+	File.Write (FullLevelName);
+	File.Write (ServerLevelName);
+	File.Write (NextMap);
+	File.Write (ForceMap);
+
+	File.Write<FrameNumber_t> (IntermissionTime);
+	File.Write<bool> (ExitIntermission);
+	File.Write<vec3f> (IntermissionOrigin);
+	File.Write<vec3f> (IntermissionAngles);
+
+	File.Write<sint32> ((SightClient) ? SightClient->State.GetNumber() : -1);
+	File.Write<GoalList_t> (Secrets);
+	File.Write<GoalList_t> (Goals);
+	File.Write<MonsterCount_t> (Monsters);
+	File.Write<uint8> (PowerCubeCount);
+	File.Write<uint32> (Inhibit);
+	File.Write<uint32> (EntityNumber);
+
+#if ROGUE_FEATURES
+	File.Write<FrameNumber_t> (DisguiseViolationFrametime);
+	File.Write<sint32> ((DisguiseViolator) ? DisguiseViolator->State.GetNumber() : -1);
+#endif
+
+	Entities.Save (File);
+};
+
+void CLevelLocals::Load (CFile &File)
+{
+	Frame = File.Read<FrameNumber_t> ();
+
+	FullLevelName = File.ReadCCString ();
+	ServerLevelName = File.ReadCCString ();
+	NextMap = File.ReadCCString ();
+	ForceMap = File.ReadCCString ();
+
+	IntermissionTime = File.Read<FrameNumber_t> ();
+	ExitIntermission = File.Read<bool> ();
+	IntermissionOrigin = File.Read<vec3f> ();
+	IntermissionAngles = File.Read<vec3f> ();
+
+	sint32 Index = File.Read<sint32> ();
+	if (Index != -1)
+		SightClient = entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
+
+	Secrets = File.Read<GoalList_t> ();
+	Goals = File.Read<GoalList_t> ();
+	Monsters = File.Read<MonsterCount_t> ();
+	PowerCubeCount = File.Read<uint8> ();
+	Inhibit = File.Read<uint32> ();
+	EntityNumber = File.Read<uint32> ();
+
+#if ROGUE_FEATURES
+	DisguiseViolationFrametime = File.Read<FrameNumber_t> ();
+
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		DisguiseViolator = Game.Entities[Index].Entity;
+#endif
+
+	Entities.Load (File);
+};
+
 CGameLocals		Game;
 CLevelLocals	Level;
 
@@ -253,9 +348,9 @@ void			RunPrivateEntities ();
 
 void ProcessEntity (edict_t *ent)
 {
-	if (!ent->inUse)
+	if (!ent->server.inUse)
 	{
-		if (ent->state.number > (Game.MaxClients + BODY_QUEUE_SIZE))
+		if (ent->server.state.number > (Game.MaxClients + BODY_QUEUE_SIZE))
 		{
 			if (!ent->AwaitingRemoval)
 			{

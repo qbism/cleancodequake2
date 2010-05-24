@@ -34,13 +34,37 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_GAMEAPI_H) || !INCLUDE_GUARDS
 #define CC_GUARD_GAMEAPI_H
 
-// define GAME_INCLUDE so that cc_game.h does not define the
-// short, server-visible gclient_t and edict_t structures,
-// because we define the full size ones in this file
-#define GAME_INCLUDE
-#include "cc_game.h"
+// the "gameversion" client command will print this plus compile date
+#if !defined(GAMENAME)
+	#if (CC_GAME_MODE == GAME_ROGUE)
+		#define GAMENAME	"rogue"
+	#elif (CC_GAME_MODE == GAME_XATRIX)
+		#define GAMENAME	"xatrix"
+	#elif (CC_GAME_MODE == GAME_ORIGINAL_QUAKE2)
+		#define GAMENAME	"baseq2"
+	#endif
+#endif
 
-#define GAME_APIVERSION		3
+// Game-defined entity structure
+struct edict_t
+{
+	edictServer_t		server;
+
+	//
+	// only used locally in game, not by server
+	//
+
+	FrameNumber_t		freetime;			// sv.time when the object was freed
+	bool				AwaitingRemoval;
+	// Paril: trying something new. Instead of removing the entity the frame AFTER it was removed,
+	// remove it four frames after. This should be enough time for other entities to realize the entity is gone.
+	uint8				RemovalFrames;
+	
+	// Paril
+	IBaseEntity			*Entity;
+};
+
+const int GAME_APIVERSION		= 3;
 
 //
 // functions provided by the main engine
@@ -143,9 +167,7 @@ struct gameImport_t
 	CC_INSECURE_DEPRECATE (BoxEdicts)
 #endif
 	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	sint32 maxCount, sint32 areaType);
-#if !USE_EXTENDED_GAME_IMPORTS
-	CC_INSECURE_DEPRECATE (SV_Pmove)
-#endif
+
 	void	(*Pmove) (
 	pMove_t *pMove
 	);		// player movement code common with client prediction
@@ -259,9 +281,7 @@ struct gameImport_t
 	void	(*DebugGraph) (float value, sint32 color);
 };
 
-#ifdef GAME_INCLUDE
 extern	gameImport_t	gi;
-#endif
 
 // C++ wrapper
 class CGameAPI

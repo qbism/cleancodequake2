@@ -51,21 +51,41 @@
 // GCC at -O3 optimization so try your options and see what's best for you
 //
 
-#define W				(sizeof(uint32) * 8)  //
-#define R				(31)				  //
-#define U				(11)				  //
-#define S				(7)					  //
-#define B				(0x9D2C5680U)		  // 
-#define N				(624)                 // length of state vector
-#define M				(397)                 // a period parameter
-#define C				(0xEFC60000U)		  //
-#define K				(0x9908B0DFU)         // a magic constant
-#define	T				(15)				  //
-#define L				(18)				  //
-#define hiBit(u)		((u) & 0x80000000U)   // mask all but highest   bit of u
-#define loBit(u)		((u) & 0x00000001U)   // mask all but lowest    bit of u
-#define loBits(u)		((u) & 0x7FFFFFFFU)   // mask     the highest   bit of u
-#define mixBits(u, v)	(hiBit(u)|loBits(v))  // move hi bit of u to hi bit of v
+const size_t W			= sizeof(uint32) * 8;  //
+const int R				= 31;				  //
+const int U				= 11;				  //
+const int S				= 7;					  //
+const uint32 B			= 0x9D2C5680U;		  // 
+const int N				= 624;                 // length of state vector
+const int M				= 397;                 // a period parameter
+const uint32 C			= 0xEFC60000U;		  //
+const uint32 K			= 0x9908B0DFU;         // a magic constant
+const int T				= 15;				  //
+const int L				= 18;				  //
+
+// mask all but highest   bit of u. 
+inline uint32 hiBit(uint32 u)
+{
+	return (u & 0x80000000U);
+}
+
+// mask all but lowest    bit of u
+inline uint32 loBit(uint32 u)
+{
+	return (u & 0x00000001U);
+}
+
+// mask     the highest   bit of u
+inline uint32 loBits(uint32 u)
+{
+	return (u & 0x7FFFFFFFU);
+}
+
+// move hi bit of u to hi bit of v
+inline uint32 mixBits(uint32 u, uint32 v)
+{
+	return (hiBit(u) |loBits(v));
+}
 
 #if defined(HAS__CPP0x)
 

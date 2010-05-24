@@ -34,6 +34,77 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ENTITYTYPES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ENTITYTYPES_H
 
+// means of death
+CC_ENUM (uint32, EMeansOfDeath)
+{
+	MOD_UNKNOWN,
+	MOD_BLASTER,
+	MOD_SHOTGUN,
+	MOD_SSHOTGUN,
+	MOD_MACHINEGUN,
+	MOD_CHAINGUN,
+	MOD_GRENADE,
+	MOD_G_SPLASH,
+	MOD_ROCKET,
+	MOD_R_SPLASH,
+	MOD_HYPERBLASTER,
+	MOD_RAILGUN,
+	MOD_BFG_LASER,
+	MOD_BFG_BLAST,
+	MOD_BFG_EFFECT,
+	MOD_HANDGRENADE,
+	MOD_HG_SPLASH,
+	MOD_WATER,
+	MOD_SLIME,
+	MOD_LAVA,
+	MOD_CRUSH,
+	MOD_TELEFRAG,
+	MOD_FALLING,
+	MOD_SUICIDE,
+	MOD_HELD_GRENADE,
+	MOD_EXPLOSIVE,
+	MOD_BARREL,
+	MOD_BOMB,
+	MOD_EXIT,
+	MOD_SPLASH,
+	MOD_TARGET_LASER,
+	MOD_TRIGGER_HURT,
+	MOD_HIT,
+	MOD_TARGET_BLASTER,
+
+#if CLEANCTF_ENABLED
+	MOD_GRAPPLE,
+#endif
+
+#if XATRIX_FEATURES
+	MOD_RIPPER,
+	MOD_TRAP,
+#endif
+
+#if ROGUE_FEATURES
+	MOD_CHAINFIST,
+	MOD_DISINTEGRATOR,
+	MOD_ETF_RIFLE,
+	MOD_BLASTER2,
+	MOD_HEATBEAM,
+	MOD_TESLA,
+	MOD_PROX,
+	MOD_NUKE,
+	MOD_VENGEANCE_SPHERE,
+	MOD_HUNTER_SPHERE,
+	MOD_DEFENDER_SPHERE,
+	MOD_TRACKER,
+	MOD_DOPPLE_EXPLODE,
+	MOD_DOPPLE_VENGEANCE,
+	MOD_DOPPLE_HUNTER,
+#endif
+
+	MOD_FRIENDLY_FIRE		=	512
+};
+
+// this is a global meansOfDeath for storage across different functions
+extern	EMeansOfDeath	meansOfDeath;
+
 // "Hurtable" entity
 class IHurtableEntity : public virtual IBaseEntity
 {
@@ -55,12 +126,12 @@ public:
 
 	virtual bool CanDamage (IBaseEntity *Inflictor);
 	virtual bool CheckTeamDamage (IBaseEntity *Attacker);
-	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, sint32 dflags);
+	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, EDamageFlags dflags);
 	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
 	// An "extension" of sorts to TakeDamage
 	// which handles the effects when we are hurt
-	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
+	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
 
 	// Takes damage.
 	// For this, "this" is target. Use this if the
@@ -68,7 +139,7 @@ public:
 	// without question.
 	virtual void TakeDamage (	IBaseEntity *Inflictor, IBaseEntity *Attacker,
 							vec3f dir, vec3f point, vec3f normal, sint32 Damage,
-							sint32 knockback, sint32 dflags, EMeansOfDeath mod);
+							sint32 knockback, EDamageFlags dflags, EMeansOfDeath mod);
 	
 	// This is a convenient static version.
 	// This will cast targ to IHurtableEntity
@@ -77,7 +148,7 @@ public:
 	static void TakeDamage (	IBaseEntity *targ, IBaseEntity *Inflictor,
 							IBaseEntity *Attacker, vec3f dir, vec3f point,
 							vec3f normal, sint32 Damage, sint32 knockback,
-							sint32 dflags, EMeansOfDeath mod);
+							EDamageFlags dflags, EMeansOfDeath mod);
 };
 
 class IBlockableEntity : public virtual IBaseEntity

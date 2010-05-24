@@ -659,9 +659,6 @@
     <ClInclude Include="..\..\source\cc_func_entities.h">
       <Filter>CleanCode Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\cc_game.h">
-      <Filter>CleanCode Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\cc_gladiator.h">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
@@ -866,9 +863,6 @@
     <ClInclude Include="..\..\source\cc_xatrix_trap.h">
       <Filter>CleanCode Files\Mission Packs\Xatrix %28The Reckoning%29</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\m_actor.h">
-      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\m_berserk.h">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
@@ -921,9 +915,6 @@
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_player.h">
-      <Filter>CleanCode Files\Monsters\Monster Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\m_rider.h">
       <Filter>CleanCode Files\Monsters\Monster Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\m_soldier.h">
@@ -1096,6 +1087,24 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_map_print.h">
       <Filter>CleanCode Files\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\m_carrier.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\m_stalker.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\m_turret.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\m_widow.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\m_widow2.h">
+      <Filter>CleanCode Files\Mission Packs\Rogue %28Ground Zero%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_game.h">
+      <Filter>CleanCode Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

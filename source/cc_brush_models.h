@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_BRUSHMODELS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_BRUSHMODELS_H
 
-enum
+CC_ENUM (uint8, EBrushThinkType)
 {
 	BRUSHTHINK_NONE,
 
@@ -67,6 +67,14 @@ CC_ENUM (uint32, EBrushType)
 	BRUSH_WALL			= BIT(10),
 	BRUSH_OBJECT		= BIT(11),
 	BRUSH_EXPLOSIVE		= BIT(12),
+};
+
+CC_ENUM (uint8, EMoveState)
+{
+	STATE_TOP,
+	STATE_BOTTOM,
+	STATE_UP,
+	STATE_DOWN
 };
 
 // Contains code common to brush models
@@ -103,7 +111,7 @@ public:
 	sint32		Lip;
 
 	// state data
-	sint32		MoveState;
+	EMoveState	MoveState;
 	vec3f		Dir;
 	float		CurrentSpeed;
 	float		AccelMoveSpeed, MoveSpeed, MoveAccel, MoveDecel;
@@ -112,7 +120,7 @@ public:
 	float		DecelDistance;
 	uint8		EndFunc;
 
-	uint8		ThinkType;
+	EBrushThinkType		ThinkType;
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(IBrushModel)

@@ -64,12 +64,13 @@ public:
 	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
-#define PROX_TIME_TO_LIVE	450		// 450, 300, 150, 100
-#define PROX_TIME_DELAY		5
-#define PROX_BOUND_SIZE		96
-#define PROX_DAMAGE_RADIUS	192
-#define PROX_HEALTH			20
-#define	PROX_DAMAGE			90
+const int PROX_TIME_TO_LIVE		= 450;		// 450, 300, 150, 100
+const int PROX_TIME_DELAY		= 5;
+const int PROX_BOUND_SIZE		= 96;
+const int PROX_DAMAGE_RADIUS	= 192;
+const int PROX_HEALTH			= 20;
+const int PROX_DAMAGE			= 90;
+const float STOP_EPSILON		= 0.1f;
 
 class CProx : public IBounceProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
@@ -315,9 +316,6 @@ public:
 				Explode ();
 			return;
 		}
-
-#define STOP_EPSILON	0.1
-
 		else if (Other != World)
 		{
 			bool StickOK = false;

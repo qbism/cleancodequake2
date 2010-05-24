@@ -75,20 +75,23 @@ public:
 	// true means it's modifying "take".
 	// Defending is if the Left is defending the Right's shot.
 	// Rest are self explanatory.
-	virtual void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	virtual void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, EDamageFlags &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	) {};
 };
 
-#define CTFTECH_RESISTANCE_NUMBER	1
-#define CTFTECH_STRENGTH_NUMBER		2
-#define CTFTECH_HASTE_NUMBER		3
-#define CTFTECH_REGEN_NUMBER		4
+CC_ENUM (uint8, ECTFTechIndexes)
+{
+	CTFTECH_RESISTANCE_NUMBER = 1,
+	CTFTECH_STRENGTH_NUMBER,
+	CTFTECH_HASTE_NUMBER,
+	CTFTECH_REGEN_NUMBER,
 
 #if AMMO_REGEN_TECH
-#define CTFTECH_AMMOREGEN_NUMBER	5
+	CTFTECH_AMMOREGEN_NUMBER,
 #endif
+};
 
-#define CTF_TECH_TIMEOUT					600  // seconds before techs spawn again
+const FrameNumber_t CTF_TECH_TIMEOUT			= 600;  // seconds before techs spawn again
 
 void SetupTechSpawn ();
 void AddTechsToList ();

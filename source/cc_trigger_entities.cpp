@@ -93,12 +93,15 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 
-#define TRIGGER_MONSTER		1
-#define TRIGGER_NOT_PLAYER	2
-#define TRIGGER_TRIGGERED	4
+CC_ENUM (uint8, ETriggerSpawnflags)
+{
+	TRIGGER_MONSTER		= BIT(0),
+	TRIGGER_NOT_PLAYER	= BIT(1),
+	TRIGGER_TRIGGERED	= BIT(2),
 #if ROGUE_FEATURES
-#define TRIGGER_TOGGLE		8
+	TRIGGER_TOGGLE		= BIT(3),
 #endif
+};
 
 CTriggerBase::CTriggerBase () :
   IBaseEntity (),
@@ -442,7 +445,10 @@ If nomessage is not set, t will print "1 more.. " etc when triggered and "sequen
 After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
 */
 
-#define COUNTER_NO_MESSAGE	1
+CC_ENUM (uint8, ETriggerCounterSpawnflags)
+{
+	COUNTER_NO_MESSAGE	= BIT(0)
+};
 
 class CTriggerCounter : public CTriggerMultiple
 {
@@ -688,11 +694,14 @@ NO_PROTECTION	*nothing* stops the damage
 
 */
 
-#define HURT_START_OFF		1
-#define HURT_TOGGLE			2
-#define HURT_SILENT			4
-#define HURT_NO_PROTECTION	8
-#define HURT_SLOW			16
+CC_ENUM (uint8, ETriggerHurtSpawnflags)
+{
+	HURT_START_OFF		= BIT(0),
+	HURT_TOGGLE			= BIT(1),
+	HURT_SILENT			= BIT(2),
+	HURT_NO_PROTECTION	= BIT(3),
+	HURT_SLOW			= BIT(4)
+};
 
 class CTriggerHurt : public CTriggerMultiple
 {
@@ -899,8 +908,11 @@ the value of "gravity".  1.0 is standard
 gravity for the Level.
 */
 #if ROGUE_FEATURES
-#define GRAVITY_TOGGLE		1
-#define GRAVITY_START_OFF	2
+CC_ENUM (uint8, ETriggerGravityFlags)
+{
+	GRAVITY_TOGGLE		= BIT(0),
+	GRAVITY_START_OFF	= BIT(1)
+}
 #endif
 
 class CTriggerGravity : public CTriggerMultiple

@@ -35,6 +35,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ITEMENTITY_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ITEMENTITY_H
 
+// item spawnflags
+CC_ENUM (uint32, EItemSpawnflags)
+{
+	ITEM_TRIGGER_SPAWN			= BIT(0),
+	ITEM_NO_TOUCH				= BIT(1),
+
+	DROPPED_ITEM				= BIT(16),
+	DROPPED_PLAYER_ITEM			= BIT(17),
+	ITEM_TARGETS_USED			= BIT(18)
+};
+
 // The item entity class
 CC_ENUM (uint8, EItemThinkState)
 {

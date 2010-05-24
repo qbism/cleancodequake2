@@ -35,15 +35,18 @@ CC_ENUM (uint8, ESeekOrigin)
 typedef long int filePos_t;
 
 // directory searching
-#define SFF_ARCH	0x01
-#define SFF_HIDDEN	0x02
-#define SFF_RDONLY	0x04
-#define SFF_SUBDIR	0x08
-#define SFF_SYSTEM	0x10
+CC_ENUM (uint8, EDirSearchType)
+{
+	SFF_ARCH	= BIT(0),
+	SFF_HIDDEN	= BIT(1),
+	SFF_RDONLY	= BIT(2),
+	SFF_SUBDIR	= BIT(3),
+	SFF_SYSTEM	= BIT(4)
+};
 
-#define FS_MAX_FINDFILES 512
-#define MAX_PATHNAME 128
-#define FS_MAX_FILE_INDICES 256
+const int FS_MAX_FINDFILES		= 512;
+const int MAX_PATHNAME			= 128;
+const int FS_MAX_FILE_INDICES	= 256;
 
 #ifdef WIN32
 #if !defined(CC_STDC_CONFORMANCE)
@@ -75,9 +78,6 @@ CC_ENUM (uint8, EFileType)
 	FILE_REGULAR,		// Regular file
 	FILE_GZ,			// gz-compressed file
 };
-
-#define IS_REGULAR(h)		((h->fileType) == FILE_REGULAR)
-#define IS_GZ(h)			((h->fileType) == FILE_GZ)
 
 // Path management.
 // This may seem empty. It will be filled more once
@@ -124,6 +124,9 @@ public:
 	{
 		Clear ();
 	};
+
+	inline bool IsRegular() { return fileType == FILE_REGULAR; };
+	inline bool IsGz() { return fileType == FILE_GZ; };
 
 	void Clear ()
 	{
@@ -374,7 +377,7 @@ public:
 		if (!Handle)
 			return;
 
-		if (IS_REGULAR(Handle))
+		if (Handle->IsRegular())
 			fclose(Handle->file.reg);
 		else
 			gzclose(Handle->file.gz);
@@ -389,7 +392,7 @@ public:
 		if (!Handle)
 			return true;
 
-		if (IS_REGULAR(Handle))
+		if (Handle->IsRegular())
 			return !!feof(Handle->file.reg);
 		return !!gzeof(Handle->file.gz);
 	};
@@ -410,7 +413,7 @@ public:
 
 		CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_WRITE), "Tried to write on a read\n");
 
-		if (IS_REGULAR(Handle))
+		if (Handle->IsRegular())
 			fwrite (buffer, size, 1, Handle->file.reg);
 		else
 			gzwrite (Handle->file.gz, buffer, size);
@@ -461,7 +464,7 @@ public:
 
 		CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_READ), "Tried to read on a write\n");
 
-		if (IS_REGULAR(Handle))
+		if (Handle->IsRegular())
 			fread (buffer, size, 1, Handle->file.reg);
 		else
 			gzread (Handle->file.gz, buffer, size);
@@ -565,7 +568,7 @@ public:
 		if (!Handle)
 			return;
 
-		if (IS_REGULAR(Handle))
+		if (Handle->IsRegular())
 			fseek (Handle->file.reg, seekOffset, seekOrigin);
 		else
 			gzseek (Handle->file.gz, seekOffset, seekOrigin);
@@ -608,7 +611,7 @@ public:
 		if (!Handle)
 			return -1;
 
-		if (IS_REGULAR(Handle))
+		if (Handle->IsRegular())
 			return ftell(Handle->file.reg);
 		else
 			return gztell(Handle->file.gz);
@@ -839,7 +842,7 @@ public:
 // Finds files in "Path" (optionally "Recurse"ing) that match the filter "Filter" and are of type "Extention".
 // If "AddDir" is true, it returns the stripped names, and not the full name for opening.
 // Filter and Extension can contain * for wildcards.
-#define MAX_FINDFILES_PATH	256
+const int MAX_FINDFILES_PATH	= 256;
 class CFindFiles
 {
 public:

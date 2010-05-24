@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#if !USE_EXTENDED_GAME_IMPORTS
+#if 0
 
 // all of the locals will be zeroed before each pmove, just to make damn sure
 // we don't have any differences when running on client or server
@@ -64,19 +64,18 @@ static pMoveLocal_t	pml;
 
 static float	pmAirAcceleration = 0;
 
-#define STEPSIZE			18
-#define MIN_STEP_NORMAL		0.7f		// can't step up onto very steep slopes
-#define MAX_CLIP_PLANES		5
+const float MIN_STEP_NORMAL		= 0.7f;		// can't step up onto very steep slopes
+const int MAX_CLIP_PLANES		= 5;
 
 // movement parameters
-#define SV_PM_STOPSPEED			100.0f
-#define SV_PM_MAXSPEED			300.0f
-#define SV_PM_DUCKSPEED			100.0f
-#define SV_PM_ACCELERATE		10.0f
-#define SV_PM_WATERACCELERATE	10.0f
-#define SV_PM_FRICTION			6.0f
-#define SV_PM_WATERFRICTION		1.0f
-#define SV_PM_WATERSPEED		400.0f
+const float SV_PM_STOPSPEED			= 100.0f;
+const float SV_PM_MAXSPEED			= 300.0f;
+const float SV_PM_DUCKSPEED			= 100.0f;
+const float SV_PM_ACCELERATE		= 10.0f;
+const float SV_PM_WATERACCELERATE	= 10.0f;
+const float SV_PM_FRICTION			= 6.0f;
+const float SV_PM_WATERFRICTION		= 1.0f;
+const float SV_PM_WATERSPEED		= 400.0f;
 
 /*
 ==================

@@ -50,7 +50,10 @@ so, the basic time between firing is a random time between
 These can used but not touched.
 */
 
-#define TIMER_START_ON		1
+CC_ENUM (uint8, ETimerSpawnflags)
+{
+	TIMER_START_ON		= BIT(0)
+};
 
 CFuncTimer::CFuncTimer () :
 	IBaseEntity (),
@@ -320,12 +323,13 @@ If START_OFF, this entity must be used before it starts
 			2 "xx:xx:xx"
 */
 
-#define CLOCK_TIMER_UP		1
-#define CLOCK_TIMER_DOWN	2
-#define CLOCK_START_OFF		4
-#define CLOCK_MULTI_USE		8
-
-#define CLOCK_MESSAGE_SIZE	16
+CC_ENUM (uint8, EClockSpawnflags)
+{
+	CLOCK_TIMER_UP		= BIT(0),
+	CLOCK_TIMER_DOWN	= BIT(1),
+	CLOCK_START_OFF		= BIT(2),
+	CLOCK_MULTI_USE		= BIT(3)
+};
 
 CFuncClock::CFuncClock () :
 	IBaseEntity (),
@@ -422,27 +426,23 @@ void CFuncClock::Reset ()
 
 void CFuncClock::FormatCountdown ()
 {
-	char tempBuffer[CLOCK_MESSAGE_SIZE];
 	switch (Style)
 	{
 	case 0:
 	default:
-		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i", Seconds);
-		Message = tempBuffer;
+		Message = FormatString ("%2i", Seconds);
 		break;
 	case 1:
-		Q_snprintfz(tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i", Seconds / 60, Seconds % 60);
-		if (tempBuffer[3] == ' ')
-			tempBuffer[3] = '0';
-		Message = tempBuffer;
+		Message = FormatString("%2i:%2i", Seconds / 60, Seconds % 60);
+		if (Message[3] == ' ')
+			Message[3] = '0';
 		break;
 	case 2:
-		Q_snprintfz(tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
-		if (tempBuffer[3] == ' ')
-			tempBuffer[3] = '0';
-		if (tempBuffer[6] == ' ')
-			tempBuffer[6] = '0';
-		Message = tempBuffer;
+		Message = FormatString ("%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
+		if (Message[3] == ' ')
+			Message[3] = '0';
+		if (Message[6] == ' ')
+			Message[6] = '0';
 		break;
 	};
 }
@@ -470,16 +470,14 @@ void CFuncClock::Think ()
 	{
 		struct tm	*ltime;
 		time_t		gmtime;
-		char tempBuffer[CLOCK_MESSAGE_SIZE];
 
 		time(&gmtime);
 		ltime = localtime (&gmtime);
-		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", ltime->tm_hour, ltime->tm_min, ltime->tm_sec);
-		if (tempBuffer[3] == ' ')
-			tempBuffer[3] = '0';
-		if (tempBuffer[6] == ' ')
-			tempBuffer[6] = '0';
-		Message = tempBuffer;
+		Message = FormatString ("%2i:%2i:%2i", ltime->tm_hour, ltime->tm_min, ltime->tm_sec);
+		if (Message[3] == ' ')
+			Message[3] = '0';
+		if (Message[6] == ' ')
+			Message[6] = '0';
 	}
 
 	String->Message = Message;

@@ -363,7 +363,7 @@ BYTE	gzBuff[0xFFFF];
 
 #pragma comment(lib, "User32.lib")
 
-#define BUFSIZE 256
+const int BUFSIZE = 256;
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);

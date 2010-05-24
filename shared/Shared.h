@@ -57,16 +57,16 @@ bool AssertExpression (const bool expr, const char *msg);
 =============================================================================
 */
 
-#define ORIGINAL_PROTOCOL_VERSION		34
+const int ORIGINAL_PROTOCOL_VERSION			= 34;
 
-#define ENHANCED_PROTOCOL_VERSION		35
-#define ENHANCED_COMPATIBILITY_NUMBER	1905
+const int ENHANCED_PROTOCOL_VERSION			= 35;
+const int ENHANCED_COMPATIBILITY_NUMBER		= 1905;
 
-#define MINOR_VERSION_R1Q2_BASE			1903
-#define MINOR_VERSION_R1Q2_UCMD_UPDATES	1904
-#define	MINOR_VERSION_R1Q2_32BIT_SOLID	1905
+const int MINOR_VERSION_R1Q2_BASE			= 1903;
+const int MINOR_VERSION_R1Q2_UCMD_UPDATES	= 1904;
+const int MINOR_VERSION_R1Q2_32BIT_SOLID	= 1905;
 
-#define FRAMETIME		1
+const int  FRAMETIME		= 1;
 
 //
 // server to client
@@ -221,7 +221,7 @@ inline char *Q_strlwr(char *s)
 
 inline std::string Q_strlwr (std::string s)
 {
-	std::transform (s.begin(), s.end(), s.begin(), std::tolower);
+	std::transform (s.begin(), s.end(), s.begin(), tolower);
 	return s;
 }
 
@@ -246,7 +246,7 @@ inline char *Q_strupr(char *s)
 
 inline std::string Q_strupr (std::string s)
 {
-	std::transform (s.begin(), s.end(), s.begin(), std::toupper);
+	std::transform (s.begin(), s.end(), s.begin(), toupper);
 	return s;
 }
 
@@ -267,9 +267,9 @@ inline sint32 Q_WildcardMatch (const char *filter, const char *string, sint32 ig
 ==============================================================================
 */
 
-#define MAX_INFO_KEY		64
-#define MAX_INFO_VALUE		64
-#define MAX_INFO_STRING		512
+const int MAX_INFO_KEY			= 64;
+const int MAX_INFO_VALUE		= 64;
+const int MAX_INFO_STRING		= 512;
 
 std::string		Info_ValueForKey (std::string &s, std::string key);
 void			Info_RemoveKey (std::string &s, std::string key);
@@ -301,24 +301,14 @@ void		Swap_Init ();
 ==============================================================================
 */
 
-#define MAX_QEXT			16		// max length of a quake game pathname extension
-#define MAX_QPATH			64		// max length of a quake game pathname
-#define MAX_OSPATH			128		// max length of a filesystem pathname
-
-// directory searching
-CC_ENUM (uint16, ESearchFileFlags)
-{
-	SFF_ARCH		= BIT(0),
-	SFF_HIDDEN		= BIT(1),
-	SFF_RDONLY		= BIT(2),
-	SFF_SUBDIR		= BIT(3),
-	SFF_SYSTEM		= BIT(4)
-};
+const int MAX_QEXT				= 16;		// max length of a quake game pathname extension
+const int MAX_QPATH				= 64;		// max length of a quake game pathname
+const int MAX_OSPATH			= 128;		// max length of a filesystem pathname
 
 //
 // this is only here so the functions in shared/ can link
 //
-#define MAX_COMPRINT 4096
+const int MAX_COMPRINT = 4096;
 
 // Com_Printf
 CC_ENUM (uint16, EComPrint)
@@ -660,32 +650,8 @@ struct userCmd_t
 	uint8		lightLevel;		// light level the player is standing on
 };
 
-#define MAXTOUCH	32
+const int MAXTOUCH	= 32;
 
-struct pMoveNew_t
-{
-	// state (in / out)
-	pMoveState_t	state;
-
-	// command (in)
-	userCmd_t		cmd;
-	BOOL			snapInitial;	// if s has been changed outside pmove
-
-	// results (out)
-	sint32				numTouch;
-	struct edict_t	*touchEnts[MAXTOUCH];
-
-	vec3f			viewAngles;			// clamped
-	float			viewHeight;
-
-	vec3f			mins, maxs;			// bounding box size
-
-	struct edict_t	*groundEntity;
-	EBrushContents	waterType;
-	EWaterLevel		waterLevel;
-};
-
-#if USE_EXTENDED_GAME_IMPORTS
 struct pMove_t
 {
 	// state (in / out)
@@ -696,25 +662,22 @@ struct pMove_t
 	BOOL			snapInitial;	// if s has been changed outside pmove
 
 	// results (out)
-	sint32				numTouch;
-	struct edict_t	*touchEnts[MAXTOUCH];
+	sint32			numTouch;
+	edict_t			*touchEnts[MAXTOUCH];
 
-	vec3_t			viewAngles;			// clamped
+	vec3f			viewAngles;			// clamped
 	float			viewHeight;
 
-	vec3_t			mins, maxs;			// bounding box size
+	vec3f			mins, maxs;			// bounding box size
 
-	struct edict_t	*groundEntity;
+	edict_t				*groundEntity;
 	sint32				waterType;
 	sint32				waterLevel;
 
 	// callbacks to test the world
-	cmTrace_t		(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
-	sint32				(*pointContents) (vec3_t point);
+	cmTrace_t		(*trace) (vec3f start, vec3f mins, vec3f maxs, vec3f end);
+	EBrushContents	(*pointContents) (vec3f point);
 };
-#else
-typedef pMoveNew_t pMove_t;
-#endif
 
 /*
 ==============================================================================
@@ -1547,17 +1510,17 @@ CC_ENUM (sint32, EDeathmatchFlags)
 */
 
 // per-level limits
-#define MAX_CS_CLIENTS		256		// absolute limit
-#define MAX_CS_EDICTS		1024	// must change protocol to increase more
-#define MAX_CS_LIGHTSTYLES	256
-#define MAX_CS_MODELS		256		// these are sent over the net as bytes
-#define MAX_CS_SOUNDS		256		// so they cannot be blindly increased
-#define MAX_CS_IMAGES		256
-#define MAX_CS_ITEMS		256
-#define MAX_CS_GENERAL		(MAX_CS_CLIENTS*2)	// general config strings
+const int MAX_CS_CLIENTS		= 256;		// absolute limit
+const int MAX_CS_EDICTS			= 1024;	// must change protocol to increase more
+const int MAX_CS_LIGHTSTYLES	= 256;
+const int MAX_CS_MODELS			= 256;		// these are sent over the net as bytes
+const int MAX_CS_SOUNDS			= 256;		// so they cannot be blindly increased
+const int MAX_CS_IMAGES			= 256;
+const int MAX_CS_ITEMS			= 256;
+const int MAX_CS_GENERAL		= (MAX_CS_CLIENTS*2);	// general config strings
 
-#define Q2BSP_MAX_AREAS		256
-#define MAX_AREA_BITS		(Q2BSP_MAX_AREAS/8)
+const int Q2BSP_MAX_AREAS		= 256;
+const int MAX_AREA_BITS			= (Q2BSP_MAX_AREAS/8);
 
 // config strings are a general means of communication from the server to all
 // connected clients. Each config string can be at most MAX_CFGSTRLEN characters.
@@ -1615,7 +1578,7 @@ CC_ENUM (sint32, EEventEffect)
 	EV_OTHER_TELEPORT
 };
 
-struct entityStateOld_t
+struct entityState_t
 {
 	sint32				number;		// edict index
 
@@ -1727,6 +1690,86 @@ struct playerState_t
 	ERenderDefFlags	rdFlags;			// refdef flags
 
 	EStatIndex		stats[MAX_STATS];	// fast status bar updates
+};
+
+/*
+==============================================================================
+
+	ENTITY
+
+==============================================================================
+*/
+
+// edict->svFlags
+
+CC_ENUM (sint32, EServerFlags)
+{
+	SVF_NOCLIENT			= BIT(0), // don't send entity to clients, even if it has effects
+	SVF_DEADMONSTER			= BIT(1), // treat as CONTENTS_DEADMONSTER for collision
+	SVF_MONSTER				= BIT(2), // treat as CONTENTS_MONSTER for collision
+
+// ZOID
+// entity is simple projectile, used for network optimization
+// if an entity is projectile, the model index/x/y/z/pitch/yaw are sent, encoded into
+// seven (or eight) bytes.  This is to speed up projectiles.  Currently, only the
+// hyperblaster makes use of this.  use for items that are moving with a constant
+// velocity that don't change direction or model
+	SVF_PROJECTILE			= BIT(3)
+// ZOID
+};
+
+// edict->solid values
+CC_ENUM (sint32, ESolidType)
+{
+	SOLID_NOT,			// no interaction with other objects
+	SOLID_TRIGGER,		// only touch when inside, after moving
+	SOLID_BBOX,			// touch on edge
+	SOLID_BSP			// bsp clip, touch on edge
+};
+
+// ==========================================================================
+
+// link_t is only used for entity area links now
+struct link_t
+{
+	link_t	*prev, *next;
+};
+
+const int MAX_ENT_CLUSTERS	= 16;
+
+struct gclient_t
+{
+	// known to server
+	playerState_t		playerState;				// communicated by server to clients
+	sint32				ping;
+};
+
+struct edictServer_t
+{
+	entityState_t		state;
+	gclient_t				*client;	// NULL if not a player
+										// the server expects the first part
+										// of gclient_s to be a player_state_t
+										// but the rest of it is opaque
+	BOOL					inUse;
+	sint32					linkCount;
+
+	// FIXME: move these fields to a server private sv_entity_t
+	link_t					area;		// linked to a division node or leaf
+	
+	sint32					numClusters;	// if -1, use headnode instead
+	sint32					clusterNums[MAX_ENT_CLUSTERS];
+	sint32					headNode;		// unused if numClusters != -1
+	sint32					areaNum, areaNum2;
+
+	//================================
+
+	EServerFlags			svFlags;			// SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc
+	vec3f					mins, maxs;
+	vec3f					absMin, absMax, size;
+	ESolidType				solid;
+	EBrushContents			clipMask;
+	struct edict_t			*owner;
 };
 
 // CleanCode Stuff

@@ -28,101 +28,265 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_game.h
-// Contains actual game code; the code needed to make Q2 go anywhere.
-// Also the API.
+// 
 //
 
-#if !defined(CC_GUARD_GAME_H) || !INCLUDE_GUARDS
-#define CC_GUARD_GAME_H
+#if !defined(CC_GUARD_CC_GAME_H) || !INCLUDE_GUARDS
+#define CC_GUARD_CC_GAME_H
 
-// edict->svFlags
-
-CC_ENUM (sint32, EServerFlags)
+//
+// this structure is left intact through an entire game
+// it should be initialized at dll load time, and read/written to
+// the server.ssv file for savegames
+//
+CC_ENUM (uint16, EGameMode)
 {
-	SVF_NOCLIENT			= BIT(0), // don't send entity to clients, even if it has effects
-	SVF_DEADMONSTER			= BIT(1), // treat as CONTENTS_DEADMONSTER for collision
-	SVF_MONSTER				= BIT(2), // treat as CONTENTS_MONSTER for collision
+	GAME_SINGLEPLAYER		=	BIT(0),
+	GAME_DEATHMATCH			=	BIT(1),
+	GAME_COOPERATIVE		=	BIT(2),
 
-// ZOID
-// entity is simple projectile, used for network optimization
-// if an entity is projectile, the model index/x/y/z/pitch/yaw are sent, encoded into
-// seven (or eight) bytes.  This is to speed up projectiles.  Currently, only the
-// hyperblaster makes use of this.  use for items that are moving with a constant
-// velocity that don't change direction or model
-	SVF_PROJECTILE			= BIT(3)
-// ZOID
+#if CLEANCTF_ENABLED
+	GAME_CTF				=	BIT(3)
+#endif
 };
 
-// edict->solid values
-CC_ENUM (sint32, ESolidType)
+// Paril: Increased to uint16. There seems to be a bit of trouble
+// with TRIGGER_MASK overflowing (Linux-only?)
+CC_ENUM (uint16, ECrossLevelTriggerFlags)
 {
-	SOLID_NOT,			// no interaction with other objects
-	SOLID_TRIGGER,		// only touch when inside, after moving
-	SOLID_BBOX,			// touch on edge
-	SOLID_BSP			// bsp clip, touch on edge
+	SFL_CROSS_TRIGGER_1		= BIT(0),
+	SFL_CROSS_TRIGGER_2		= BIT(1),
+	SFL_CROSS_TRIGGER_3		= BIT(2),
+	SFL_CROSS_TRIGGER_4		= BIT(3),
+	SFL_CROSS_TRIGGER_5		= BIT(4),
+	SFL_CROSS_TRIGGER_6		= BIT(5),
+	SFL_CROSS_TRIGGER_7		= BIT(6),
+	SFL_CROSS_TRIGGER_8		= BIT(7),
+	SFL_CROSS_TRIGGER_MASK	= 255
 };
 
-// ==========================================================================
-
-// link_t is only used for entity area links now
-struct link_t
+class CGameLocals
 {
-	link_t	*prev, *next;
+public:
+	CGameLocals () :
+	  HelpChanged (0),
+	  Clients (NULL),
+	  MaxClients (0),
+	  MaxSpectators (0),
+	  MaxEntities (0),
+	  CheatsEnabled (false),
+	  GameMode (0),
+	  ServerFlags (0),
+	  AutoSaved (false),
+	  HelpMessages (),
+	  SpawnPoint ()
+	  {
+	  };
+
+	void Save (CFile &File)
+	{
+		File.Write (HelpMessages[0]);
+		File.Write (HelpMessages[1]);
+		File.Write (SpawnPoint);
+		File.Write<uint8> (HelpChanged);
+		File.Write<uint8> (MaxClients);
+		File.Write<uint8> (MaxSpectators);
+		File.Write<sint32> (MaxEntities);
+		File.Write<bool> (CheatsEnabled);
+		File.Write<EGameMode> (GameMode);
+		File.Write<ECrossLevelTriggerFlags> (ServerFlags);
+		File.Write<bool> (AutoSaved);
+	}
+
+	void Load (CFile &File)
+	{
+		HelpMessages[0] = File.ReadCCString ();
+		HelpMessages[1] = File.ReadCCString ();
+		SpawnPoint = File.ReadCCString ();
+		HelpChanged = File.Read<uint8> ();
+		MaxClients = File.Read<uint8> ();
+		MaxSpectators = File.Read<uint8> ();
+		MaxEntities = File.Read<sint32> ();
+		CheatsEnabled = File.Read<bool> ();
+		GameMode = File.Read<EGameMode> ();
+		ServerFlags = File.Read<ECrossLevelTriggerFlags> ();
+		AutoSaved = File.Read<bool> ();
+	}
+
+	std::string			HelpMessages[2];
+	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
+								// and increment only if 1, 2, or 3
+
+	gclient_t				*Clients;		// [maxclients]
+	edict_t					*Entities;
+
+	// can't store spawnpoint in level, because
+	// it would get overwritten by the savegame restore
+	std::string			SpawnPoint;	// needed for coop respawns
+
+	// store latched cvars here that we want to get at often
+	uint8					MaxClients;
+	uint8					MaxSpectators;
+	sint32					MaxEntities;
+	bool					CheatsEnabled;
+	EGameMode				GameMode; // Game mode
+
+	// cross level triggers
+	ECrossLevelTriggerFlags	ServerFlags;
+	bool					AutoSaved;
+
+	bool					R1Protocol;
 };
 
-#define MAX_ENT_CLUSTERS	16
+extern	CGameLocals		Game;
 
-#ifndef GAME_INCLUDE
+//
+// this structure is cleared as each map is entered
+// it is read/written to the Level.sav file for savegames
+//
 
-struct gclient_t
+struct GoalList_t
 {
-	playerState_t		playerState;		// communicated by server to clients
-	sint32					ping;
-	// the game dll can add anything it wants after
-	// this point in the structure
+	uint8		Total;
+	uint8		Found;
 };
 
-struct edict_t
+class CKeyValuePair
 {
-	entityStateOld_t	s;
-	gclient_t			*client;	// NULL if not a player
-									// the server expects the first part
-									// of gclient_s to be a player_state_t
-									// but the rest of it is opaque
-	BOOL				inUse;
-	sint32					linkCount;
+public:
+	char	*Key;
+	char	*Value;
 
-	// FIXME: move these fields to a server private sv_entity_t
-	link_t				area;				// linked to a division node or leaf
-	
-	sint32					numClusters;		// if -1, use headnode instead
-	sint32					clusterNums[MAX_ENT_CLUSTERS];
-	sint32					headNode;			// unused if numClusters != -1
-	sint32					areaNum, areaNum2;
+	CKeyValuePair (const char *Key, const char *Value) :
+	Key((Key) ? Q_strlwr(Mem_TagStrDup(Key, TAG_LEVEL)) : NULL),
+	Value((Key) ? Mem_TagStrDup(Value, TAG_LEVEL) : NULL)
+	{
+	};
 
-	//================================
-
-	EServerFlags		svFlags;			// SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc
-	vec3_t				mins, maxs;
-	vec3_t				absMin, absMax, size;
-	ESolidType			solid;
-	EBrushContents		clipMask;
-	edict_t				*owner;
-
-	// the game dll can add anything it wants after
-	// this point in the structure
+	~CKeyValuePair ()
+	{
+		if (Key)
+			QDelete Key;
+		if (Value)
+			QDelete Value;
+	};
 };
 
-#else		// GAME_INCLUDE
+typedef std::list<CKeyValuePair*> TKeyValuePairContainer;
+typedef std::list<edict_t*> TEntitiesContainer;
 
-struct edict_t;
-struct gclient_t;
+class CLevelLocals
+{
+public:
+	void Clear ()
+	{
+		Frame = 0;
+		FullLevelName.clear ();
+		ServerLevelName.clear ();
+		NextMap.clear ();
+		ForceMap.clear ();
+		IntermissionTime = 0;
+		ChangeMap = NULL;
+		ExitIntermission = ExitIntermissionOnNextFrame = false;
+		IntermissionOrigin.Clear ();
+		IntermissionAngles.Clear ();
+		SightClient = NULL;
+		SightEntity = NULL;
+		SightEntityFrame = 0;
+		SoundEntity = NULL;
+		SoundEntityFrame = 0;
+		SoundEntity2 = NULL;
+		SoundEntity2Frame = 0;
+		CurrentEntity = NULL;
+		PowerCubeCount = 0;
+		Inhibit = 0;
+		EntityNumber = 0;
+		ClassName.clear ();
+		ParseData.clear ();
+		Demo = false;
 
-#endif		// GAME_INCLUDE
+		for (TKeyValuePairContainer::iterator it = ParseData.begin(); it != ParseData.end(); ++it)
+			QDelete (*it);
+		ParseData.clear();
 
-// ==========================================================================
+		Secrets.Found = Secrets.Total = 0;
+		Goals.Found = Goals.Total = 0;
+		Monsters.Killed = Monsters.Total = 0;
+		Entities.Open.clear ();
+		Entities.Closed.clear ();
+	};
+
+	CLevelLocals ()
+	{
+		Clear ();
+	};
+
+	void Save (CFile &File);
+	void Load (CFile &File);
+
+	FrameNumber_t	Frame;
+
+	std::string	FullLevelName;		// the descriptive name (Outer Base, etc)
+	std::string	ServerLevelName;		// the server name (base1, etc)
+	std::string	NextMap;		// go here when fraglimit is hit
+	std::string	ForceMap;		// go here
+
+	// intermission state
+	FrameNumber_t		IntermissionTime;		// time the intermission was started
+	char		*ChangeMap;
+	bool		ExitIntermission;
+	bool		ExitIntermissionOnNextFrame;
+	vec3f		IntermissionOrigin;
+	vec3f		IntermissionAngles;
+
+	CPlayerEntity		*SightClient;	// changed once each frame for coop games
+
+	IBaseEntity	*SightEntity;
+	FrameNumber_t	SightEntityFrame;
+	IBaseEntity	*SoundEntity;
+	FrameNumber_t	SoundEntityFrame;
+	IBaseEntity	*SoundEntity2;
+	FrameNumber_t	SoundEntity2Frame;
+
+	GoalList_t	Secrets;
+	GoalList_t	Goals;
+
+	struct MonsterCount_t
+	{
+		uint16		Total;
+		uint16		Killed;
+	} Monsters;
+
+	IBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
+
+	uint8		PowerCubeCount;		// ugly necessity for coop
+	uint32		Inhibit;
+	uint32		EntityNumber;
+
+	std::string			ClassName;
+	TKeyValuePairContainer	ParseData;
+
+	// Entity list
+	class CEntityList
+	{
+	public:
+		TEntitiesContainer		Open, Closed;
+
+		void Save (CFile &File);
+		void Load (CFile &File);
+
+	} Entities;
+
+	bool		Demo;
+
+#if ROGUE_FEATURES
+	IBaseEntity			*DisguiseViolator;
+	FrameNumber_t		DisguiseViolationFrametime;
+#endif
+};
+
+extern	CLevelLocals	Level;
 
 #else
 FILE_WARNING
 #endif
-

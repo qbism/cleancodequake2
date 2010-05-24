@@ -560,7 +560,7 @@ void CStalker::Melee ()
 // POUNCE
 // ******************
 
-#define FAUX_GRAVITY	800.0
+const float FAUX_GRAVITY	= 800.0f;
 
 // ====================
 // ====================
@@ -919,7 +919,7 @@ Spider Monster
 
   ONROOF - Monster starts sticking to the roof.
 */
-#define STALKER_ON_ROOF 8
+const int STALKER_ON_ROOF = 8;
 
 void CStalker::Spawn ()
 {

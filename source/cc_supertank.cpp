@@ -119,7 +119,7 @@ CFrame SuperTankFramesStand []=
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim SuperTankMoveStand (FRAME_stand_1, FRAME_stand_60, SuperTankFramesStand);
+CAnim SuperTankMoveStand (FRAME_stand1, FRAME_stand60, SuperTankFramesStand);
 	
 void CSuperTank::Stand ()
 {
@@ -147,7 +147,7 @@ CFrame SuperTankFramesRun [] =
 	CFrame (&CMonster::AI_Run, 12),
 	CFrame (&CMonster::AI_Run, 12)
 };
-CAnim SuperTankMoveRun (FRAME_forwrd_1, FRAME_forwrd_18, SuperTankFramesRun);
+CAnim SuperTankMoveRun (FRAME_forwrd1, FRAME_forwrd18, SuperTankFramesRun);
 
 //
 // walk
@@ -174,7 +174,7 @@ CFrame SuperTankFramesForward [] =
 	CFrame (&CMonster::AI_Walk, 4),
 	CFrame (&CMonster::AI_Walk, 4)
 };
-CAnim SuperTankMoveForward (FRAME_forwrd_1, FRAME_forwrd_18, SuperTankFramesForward);
+CAnim SuperTankMoveForward (FRAME_forwrd1, FRAME_forwrd18, SuperTankFramesForward);
 
 void CSuperTank::Walk ()
 {
@@ -193,7 +193,7 @@ CFrame SuperTankFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain3 (FRAME_pain3_9, FRAME_pain3_12, SuperTankFramesPain3, &CMonster::Run);
+CAnim SuperTankMovePain3 (FRAME_painc9, FRAME_painc12, SuperTankFramesPain3, &CMonster::Run);
 
 CFrame SuperTankFramesPain2 [] =
 {
@@ -202,7 +202,7 @@ CFrame SuperTankFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain2 (FRAME_pain2_5, FRAME_pain2_8, SuperTankFramesPain2, &CMonster::Run);
+CAnim SuperTankMovePain2 (FRAME_painb5, FRAME_painb8, SuperTankFramesPain2, &CMonster::Run);
 
 CFrame SuperTankFramesPain1 [] =
 {
@@ -211,7 +211,7 @@ CFrame SuperTankFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain1 (FRAME_pain1_1, FRAME_pain1_4, SuperTankFramesPain1, &CMonster::Run);
+CAnim SuperTankMovePain1 (FRAME_paina1, FRAME_paina4, SuperTankFramesPain1, &CMonster::Run);
 
 CFrame SuperTankFramesDeath1 [] =
 {
@@ -240,30 +240,7 @@ CFrame SuperTankFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0, &CMonster::BossExplode)
 };
-CAnim SuperTankMoveDeath (FRAME_death_1, FRAME_death_24, SuperTankFramesDeath1, ConvertDerivedFunction(&CSuperTank::Dead));
-
-/*mframe_t supertank_frames_backward[] =
-{
-	CFrame (&CMonster::AI_Walk, 0,	Sounds[SOUND_TREAD],
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0,	NULL
-};
-mmove_t	supertank_move_backward = {FRAME_backwd_1, FRAME_backwd_18, supertank_frames_backward, NULL};*/
+CAnim SuperTankMoveDeath (FRAME_death1, FRAME_death24, SuperTankFramesDeath1, ConvertDerivedFunction(&CSuperTank::Dead));
 
 #if (MONSTER_SPECIFIC_FLAGS & SUPERTANK_USES_GRENADES)
 CFrame SuperTankFramesAttack4[] =
@@ -275,7 +252,7 @@ CFrame SuperTankFramesAttack4[] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMoveAttack4 (FRAME_attak4_1, FRAME_attak4_6, SuperTankFramesAttack4, &CMonster::Run);
+CAnim SuperTankMoveAttack4 (FRAME_attakd1, FRAME_attakd6, SuperTankFramesAttack4, &CMonster::Run);
 
 void CSuperTank::Grenade ()
 {
@@ -307,14 +284,14 @@ void CSuperTank::Grenade ()
 
 CFrame SuperTankFramesAttack2[]=
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
 	CFrame (&CMonster::AI_Charge,		0),
 	CFrame (&CMonster::AI_Charge,		0),
 	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
@@ -335,7 +312,7 @@ CFrame SuperTankFramesAttack2[]=
 	CFrame (&CMonster::AI_Charge,		0),
 	CFrame (&CMonster::AI_Charge,		0)
 };
-CAnim SuperTankMoveAttack2 (FRAME_attak2_1, FRAME_attak2_27, SuperTankFramesAttack2, &CMonster::Run);
+CAnim SuperTankMoveAttack2 (FRAME_attakb1, FRAME_attakb27, SuperTankFramesAttack2, &CMonster::Run);
 
 CFrame SuperTankFramesAttack1[]=
 {
@@ -346,7 +323,7 @@ CFrame SuperTankFramesAttack1[]=
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
 };
-CAnim SuperTankMoveAttack1 (FRAME_attak1_1, FRAME_attak1_6, SuperTankFramesAttack1, ConvertDerivedFunction(&CSuperTank::ReAttack1));
+CAnim SuperTankMoveAttack1 (FRAME_attaka1, FRAME_attaka6, SuperTankFramesAttack1, ConvertDerivedFunction(&CSuperTank::ReAttack1));
 
 CFrame SuperTankFramesEndAttack1[]=
 {
@@ -365,7 +342,7 @@ CFrame SuperTankFramesEndAttack1[]=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMoveEndAttack1 (FRAME_attak1_7, FRAME_attak1_20, SuperTankFramesEndAttack1, &CMonster::Run);
+CAnim SuperTankMoveEndAttack1 (FRAME_attaka7, FRAME_attaka20, SuperTankFramesEndAttack1, &CMonster::Run);
 
 void CSuperTank::ReAttack1 ()
 {
@@ -388,7 +365,7 @@ void CSuperTank::Pain (IBaseEntity *Other, sint32 Damage)
 		return;
 
 	// Don't go into pain if he's firing his rockets
-	if (CvarList[CV_SKILL].Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attak2_1) && (Entity->State.GetFrame() <= FRAME_attak2_14) )
+	if (CvarList[CV_SKILL].Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attakb1) && (Entity->State.GetFrame() <= FRAME_attakb14) )
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
@@ -429,10 +406,10 @@ void CSuperTank::Rocket ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak2_8:
+	case FRAME_attakb8:
 		FlashNumber = MZ2_SUPERTANK_ROCKET_1;
 		break;
-	case FRAME_attak2_11:
+	case FRAME_attakb11:
 		FlashNumber = MZ2_SUPERTANK_ROCKET_2;
 		break;
 	default:
@@ -453,7 +430,7 @@ void CSuperTank::MachineGun ()
 
 	vec3f start, forward, right,
 			dir (0, Entity->State.GetAngles().Y, 0);
-	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak1_1);
+	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attaka1);
 
 	dir.ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
@@ -555,7 +532,10 @@ void CSuperTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dama
 */
 
 #if XATRIX_FEATURES
-#define SPAWNFLAG_SUPERTANK_POWER_SHIELD		8
+CC_ENUM (uint8, ESupertankSpawnflags)
+{
+	SPAWNFLAG_SUPERTANK_POWER_SHIELD		= BIT(4)
+};
 #endif
 
 void CSuperTank::Spawn ()

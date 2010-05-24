@@ -202,7 +202,7 @@ public:
 	bool Run ();
 };
 
-#define HITSCANSTEP 100
+const int HITSCANSTEP = 100;
 
 class CHitScan
 {

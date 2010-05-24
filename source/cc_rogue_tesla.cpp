@@ -43,13 +43,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Tesla itself
 
-#define TESLA_TIME_TO_LIVE				300
-#define TESLA_DAMAGE_RADIUS				128
-#define TESLA_DAMAGE					3
-#define TESLA_KNOCKBACK					8
-#define	TESLA_ACTIVATE_TIME				30
-#define TESLA_EXPLOSION_DAMAGE_MULT		50		// this is the amount the damage is multiplied by for underwater explosions
-#define	TESLA_EXPLOSION_RADIUS			200
+const int TESLA_TIME_TO_LIVE			= 300;
+const int TESLA_DAMAGE_RADIUS			= 128;
+const int TESLA_DAMAGE					= 3;
+const int TESLA_KNOCKBACK				= 8;
+const int TESLA_ACTIVATE_TIME			= 30;
+const int TESLA_EXPLOSION_DAMAGE_MULT	= 50;		// this is the amount the damage is multiplied by for underwater explosions
+const int TESLA_EXPLOSION_RADIUS		= 200;
 
 CTesla::CTesla () :
   IBounceProjectile (),
@@ -115,7 +115,7 @@ bool CTesla::Run ()
 
 //TE_ELECTRIC_SPARKS
 
-void CTesla::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
+void CTesla::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
 {
 	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
 }
@@ -401,9 +401,9 @@ bool CTeslaWeapon::CanStopFidgetting (CPlayerEntity *Player)
 	return false;
 }
 
-#define GRENADE_TIMER		30
-#define GRENADE_MINSPEED	400
-#define GRENADE_MAXSPEED	800
+const int GRENADE_TIMER		= 30;
+const int GRENADE_MINSPEED	= 400;
+const int GRENADE_MAXSPEED	= 800;
 
 void CTeslaWeapon::Hold (CPlayerEntity *Player)
 {

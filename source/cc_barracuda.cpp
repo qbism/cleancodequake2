@@ -53,7 +53,7 @@ void CBarracudaShark::Stand ()
 	CurrentMove = &FlipperMoveStand;
 }
 
-#define FLIPPER_RUN_SPEED	24
+const int FLIPPER_RUN_SPEED	= 24;
 
 CFrame FlipperFramesRun [] =
 {

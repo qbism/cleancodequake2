@@ -40,6 +40,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 Large exploding box.  You can override its mass (100),
 health (80), and dmg (150).
 */
+const int BARREL_STEPSIZE = 8;
 class CMiscExploBox : public IMapEntity, public IStepPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity
 {
 	bool		Dropped;
@@ -80,7 +81,6 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMiscExploBox)
 
-#define BARREL_STEPSIZE 8
 	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	{
 		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
@@ -772,12 +772,15 @@ LINK_CLASSNAME_TO_CLASS ("monster_commander_body", CCommanderBody);
 This is the dead player model. Comes in 6 exciting different poses!
 */
 
-#define DEADSOLDIER_ON_BACK			1
-#define DEADSOLDIER_ON_STOMACH		2
-#define DEADSOLDIER_BACK_DECAP		4
-#define DEADSOLDIER_FETAL_POS		8
-#define DEADSOLDIER_SIT_DECAP		16
-#define DEADSOLDIER_IMPALED			32
+CC_ENUM (uint8, EMiscDeadSoldierSpawnflags)
+{
+	DEADSOLDIER_ON_BACK			= BIT(0),
+	DEADSOLDIER_ON_STOMACH		= BIT(1),
+	DEADSOLDIER_BACK_DECAP		= BIT(2),
+	DEADSOLDIER_FETAL_POS		= BIT(3),
+	DEADSOLDIER_SIT_DECAP		= BIT(4),
+	DEADSOLDIER_IMPALED			= BIT(5)
+};
 
 vec3f VelocityForDamage (sint32 Damage);
 
@@ -839,7 +842,7 @@ public:
 		};
 	};
 
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
+	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
 	{
 		CBlood(point, normal).Send();
 	}

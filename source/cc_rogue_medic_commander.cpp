@@ -423,9 +423,9 @@ void CMedicCommander::Attack ()
 	}
 }
 
-#define	MEDIC_MIN_DISTANCE			32
-#define MEDIC_MAX_HEAL_DISTANCE		400
-#define	MEDIC_TRY_TIME				100
+const int MEDIC_MIN_DISTANCE			= 32;
+const int MEDIC_MAX_HEAL_DISTANCE		= 400;
+const int MEDIC_TRY_TIME				= 100;
 
 bool CMedicCommander::CheckAttack ()
 {

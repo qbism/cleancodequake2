@@ -147,7 +147,7 @@ void CGibEntity::Think ()
 	Die ();
 }
 
-void CGibEntity::Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects)
+void CGibEntity::Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, EGibType type, EEntityStateEffects effects)
 {
 	CGibEntity *Junk = JunkList->GetFreeJunk<CGibEntity>();
 

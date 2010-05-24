@@ -319,7 +319,7 @@ CMonsterEntity *CreateFlyMonster (vec3f origin, vec3f angles, vec3f mins, vec3f 
 // are bad things down there or not
 //
 // this is from m_move.c
-#define	STEPSIZE	18
+const int STEPSIZE	= 18;
 
 CMonsterEntity *CreateGroundMonster (vec3f origin, vec3f angles, vec3f entMins, vec3f entMaxs, const char *classname, int height)
 {
@@ -349,7 +349,7 @@ CMonsterEntity *CreateGroundMonster (vec3f origin, vec3f angles, vec3f entMins, 
 // SPAWNGROW stuff
 // ****************************
 
-#define SPAWNGROW_LIFESPAN		3
+const int SPAWNGROW_LIFESPAN		= 3;
 
 CSpawnGrow::CSpawnGrow () :
 	IThinkableEntity ()

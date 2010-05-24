@@ -33,8 +33,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CMDS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CMDS_H
 
-#define MAX_COMMANDS 128
-#define MAX_CMD_HASH (MAX_COMMANDS/4)
+const int MAX_COMMANDS = 128;
+const int MAX_CMD_HASH = (MAX_COMMANDS/4);
 
 CC_ENUM (uint32, ECmdTypeFlags)
 {

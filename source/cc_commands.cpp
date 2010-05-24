@@ -108,7 +108,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	{
 		edict_t *ent = (*it);
 
-		if (!ent->inUse || !ent->Entity)
+		if (!ent->Entity || !ent->Entity->GetInUse())
 			continue;
 		if (!(ent->Entity->EntityFlags & ENT_MONSTER))
 			continue;

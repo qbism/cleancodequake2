@@ -148,6 +148,15 @@ CC_ENUM (uint8, EWeaponVwepIndices)
 	WEAP_MAX
 };
 
+// some weapon value constants
+const int DEFAULT_BULLET_HSPREAD			= 300;
+const int DEFAULT_BULLET_VSPREAD			= 500;
+const int DEFAULT_SHOTGUN_HSPREAD			= 1000;
+const int DEFAULT_SHOTGUN_VSPREAD			= 500;
+const int DEFAULT_DEATHMATCH_SHOTGUN_COUNT	= 12;
+const int DEFAULT_SHOTGUN_COUNT				= 12;
+const int DEFAULT_SSHOTGUN_COUNT			= 20;
+
 #else
 FILE_WARNING
 #endif

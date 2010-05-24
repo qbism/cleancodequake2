@@ -251,7 +251,7 @@ public:
 Cmd_Say_f
 ==================
 */
-#define MAX_TALK_STRING 100
+const int MAX_TALK_STRING = 100;
 
 class CSayPlayerCallback : public CForEachPlayerCallback
 {

@@ -89,7 +89,7 @@ public:
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, EDamageFlags &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (!Calculated)
@@ -112,7 +112,7 @@ public:
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, EDamageFlags &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (Calculated || (Left == Right))
@@ -166,13 +166,13 @@ public:
 
 #if AMMO_REGEN_TECH
 
-#define SHELL_REGEN_COUNT	3
-#define BULLET_REGEN_COUNT	6
-#define GRENADE_REGEN_COUNT	2
-#define CELL_REGEN_COUNT	3
-#define ROCKET_REGEN_COUNT	2
-#define SLUG_REGEN_COUNT	1
-#define AMMO_REGEN_TIME		17
+const int SHELL_REGEN_COUNT		= 3;
+const int BULLET_REGEN_COUNT	= 6;
+const int GRENADE_REGEN_COUNT	= 2;
+const int CELL_REGEN_COUNT		= 3;
+const int ROCKET_REGEN_COUNT	= 2;
+const int SLUG_REGEN_COUNT		= 1;
+const int AMMO_REGEN_TIME		= 17;
 
 class CAmmoRegenTech : public CTech
 {

@@ -35,9 +35,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_medic.h"
 #include "m_medic.h"
 
-#define	MEDIC_MIN_DISTANCE			32
-#define MEDIC_MAX_HEAL_DISTANCE		400
-#define	MEDIC_TRY_TIME				100
+const int MEDIC_MIN_DISTANCE			= 32;
+const int MEDIC_MAX_HEAL_DISTANCE		= 400;
+const int	MEDIC_TRY_TIME				= 100;
 
 CMedic::CMedic (uint32 ID) :
 CMonster(ID)

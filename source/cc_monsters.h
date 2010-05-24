@@ -139,7 +139,7 @@ CC_ENUM (uint8, EAttackState)
 #endif
 };
 
-#define MELEE_DISTANCE	80
+const int MELEE_DISTANCE	= 80;
 
 //range
 CC_ENUM (uint8, ERangeType)
@@ -166,7 +166,7 @@ CC_ENUM (uint8, EMonsterSpawnflags)
 	MONSTER_DONT_COUNT		=	BIT(3),
 };
 
-#define STEPSIZE	18
+const int STEPSIZE	= 18;
 
 class CMonsterEntity : public IMapEntity, public IStepPhysics, public ITossProjectile, public IPushPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity, public IUsableEntity
 {
@@ -202,7 +202,7 @@ public:
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
 	bool			Blocked (float Dist);
 
-	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
+	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
 
 	bool			Run ();
 	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
@@ -341,7 +341,7 @@ public:
 	virtual void		ReactToDamage	(IBaseEntity *Attacker, IBaseEntity *Inflictor);
 
 	virtual void		MonsterThink	();
-	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod);
+	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
 
 	virtual bool		Blocked (float Dist) {return false;}
 
@@ -497,7 +497,7 @@ public:
 };
 #endif
 
-#define DI_NODIR	-1
+const int DI_NODIR	= -1;
 
 class CMonsterTableIndex
 {

@@ -99,7 +99,6 @@ class CServerCmdEntList : public CCommandFunctor
 	{
 		const char	*className;
 		uint32		Num;
-		bool		Old;
 		std::vector<SServerEntityListEntity> List;
 
 		SServerEntityListIndex			*hashNext;
@@ -109,7 +108,6 @@ class CServerCmdEntList : public CCommandFunctor
 			className(name),
 			hashValue (Com_HashGeneric(className, MAX_CS_EDICTS)),
 			Num (0),
-			Old (true),
 			List()
 		{
 		};
@@ -166,29 +164,22 @@ class CServerCmdEntList : public CCommandFunctor
 		{
 			for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 			{
-				edict_t *e = (*it);
-				if (!e->inUse)
+				IBaseEntity *e = (*it)->Entity;
+
+				if (!e || !e->GetInUse())
+					continue;
+				if (!Q_WildcardMatch (WildCard, e->ClassName.c_str(), true))
 					continue;
 
-				if (!Q_WildcardMatch (WildCard, e->Entity->ClassName.c_str(), true))
-					continue;
-
-				SServerEntityListIndex *Index = Exists(e->Entity->ClassName.c_str());
+				SServerEntityListIndex *Index = Exists(e->ClassName.c_str());
 
 				if (!Index)
-					Index = AddToList (e->Entity->ClassName.c_str());
+					Index = AddToList (e->ClassName.c_str());
 
-				if (e->Entity)
-				{
-					Index->Old = false;
+				vec3f Origin = (e->State.GetOrigin() == vec3fOrigin && (e->GetSolid() == SOLID_BSP)) ? e->GetAbsMin() : e->State.GetOrigin();
 
-					vec3f Origin = (e->Entity->State.GetOrigin() == vec3fOrigin && (e->Entity->GetSolid() == SOLID_BSP)) ? e->Entity->GetAbsMin() : e->Entity->State.GetOrigin();
-
-					SServerEntityListEntity index = {Origin};
-					Index->List.push_back (index);
-				}
-				else
-					Index->Old = true;
+				SServerEntityListEntity index = {Origin};
+				Index->List.push_back (index);
 
 				Index->Num++;
 			}
@@ -203,15 +194,15 @@ public:
 		tmp.Search (WildCard.c_str());
 
 		ServerPrintf ("Entity Stats\n"
-				"      old        amount       origin             classname\n"
-				"----  ---        ------       ----------------   --------------------\n");
+				"             amount       origin             classname\n"
+				"----         ------       ----------------   --------------------\n");
 
-		uint32 oldCount = 0, newCount = 0;
+		sint32 newCount = 0;
 		for (uint32 i = 0; i < tmp.NumInList; i++)
 		{
 			ServerPrintf (
-				"#%3u  %s         %5u                          %s\n",
-				i, (tmp.List[i]->Old) ? "Yes" : "No ", tmp.List[i]->Num, tmp.List[i]->className);
+				"#%3u          %5u                          %s\n",
+				i, tmp.List[i]->Num, tmp.List[i]->className);
 
 			for (size_t z = 0; z < tmp.List[i]->List.size(); z++)
 			{
@@ -222,16 +213,12 @@ public:
 				z+1, ent.Origin.X, ent.Origin.Y, ent.Origin.Z);
 			}
 
-			if (tmp.List[i]->Old)
-				oldCount += tmp.List[i]->Num;
-			else
-				newCount += tmp.List[i]->Num;
+			newCount += tmp.List[i]->Num;
 		}
 
-		ServerPrintf (	"----  ---        ------       --------------------------\n"
-						"Tally Old:       %5u          %5.0f%%\n"
-						"Tally New:       %5u          %5.0f%%\n",					
-		oldCount, (!oldCount) ? 0 : (float)oldCount / ((float)(oldCount + newCount)) * 100, newCount, (!newCount) ? 0 : (float)newCount / ((float)(oldCount + newCount)) * 100);
+		ServerPrintf (	"----         ------       --------------------------\n"
+						"Tally:       %5u          \n",					
+		newCount);
 	}
 };
 

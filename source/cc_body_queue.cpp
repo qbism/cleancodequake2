@@ -231,11 +231,11 @@ void SaveBodyQueue (CFile &File)
 
 	File.Write<size_t> (BodyQueue->ClosedList.size());
 	for (TBodyQueueList::iterator it = BodyQueue->ClosedList.begin(); it != BodyQueue->ClosedList.end(); ++it)
-		File.Write<sint32> ((*it)->gameEntity->state.number);
+		File.Write<sint32> ((*it)->State.GetNumber());
 
 	File.Write<size_t> (BodyQueue->OpenList.size());
 	for (TBodyQueueList::iterator it = BodyQueue->OpenList.begin(); it != BodyQueue->OpenList.end(); ++it)
-		File.Write<sint32> ((*it)->gameEntity->state.number);
+		File.Write<sint32> ((*it)->State.GetNumber());
 }
 
 // Loads the bodyqueue numbers into allocationzzz

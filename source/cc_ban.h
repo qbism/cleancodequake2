@@ -33,8 +33,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #ifdef BAN_BASIC_INFO
 #ifndef MAX_IP_BLOCK_LEN
-#define MAX_IP_BLOCK_LEN 3
-#define MAX_IP_LEN (MAX_IP_BLOCK_LEN * 4 + 3)
+const int MAX_IP_BLOCK_LEN = 3;
+const int MAX_IP_LEN = (MAX_IP_BLOCK_LEN * 4 + 3);
 
 struct IPAddress
 {

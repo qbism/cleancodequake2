@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_JUNK_ENTITIES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_JUNK_ENTITIES_H
 
-#define MAX_JUNK 30
+const int MAX_JUNK = 30;
 
 typedef std::list<sint32> TJunkList;
 class CJunkList
@@ -157,6 +157,13 @@ public:
 	void Die (); // CALL THIS WHEN A JUNK IS FREED INSTEAD OF FREE()!
 };
 
+//gib types
+CC_ENUM (uint8, EGibType)
+{
+	GIB_ORGANIC,
+	GIB_METALLIC
+};
+
 class CGibEntity : public IJunkEntity, public ITossProjectile, public IThinkableEntity
 {
 public:
@@ -182,7 +189,7 @@ public:
 	void Think ();
 
 	bool Run ();
-	static void Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
+	static void Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, EGibType type, EEntityStateEffects effects = EF_GIB);
 };
 
 void Init_Junk();

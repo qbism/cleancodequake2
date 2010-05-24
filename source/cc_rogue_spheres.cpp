@@ -37,10 +37,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_rogue_weaponry.h"
 
-#define DEFENDER_LIFESPAN	300
-#define HUNTER_LIFESPAN		300
-#define VENGEANCE_LIFESPAN	300
-#define MINIMUM_FLY_TIME	150
+const int DEFENDER_LIFESPAN		= 300;
+const int HUNTER_LIFESPAN		= 300;
+const int VENGEANCE_LIFESPAN	= 300;
+const int MINIMUM_FLY_TIME		= 150;
 
 void CRogueBaseSphere::SaveFields (CFile &File)
 {

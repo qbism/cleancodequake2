@@ -40,11 +40,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_carrier.h"
 #include "cc_rogue_monster_spawning.h"
 
-#define	CARRIER_ROCKET_TIME		20		// number of seconds between rocket shots
-#define CARRIER_ROCKET_SPEED	750
-#define	NUM_FLYERS_SPAWNED		6		// max # of flyers he can spawn
+const int CARRIER_ROCKET_TIME		= 20;		// number of seconds between rocket shots
+const int CARRIER_ROCKET_SPEED		= 750;
+const int NUM_FLYERS_SPAWNED		= 6;		// max # of flyers he can spawn
 
-#define	RAIL_FIRE_TIME			30
+const int RAIL_FIRE_TIME			= 30;
 
 vec3f flyer_mins (-16, -16, -24);
 vec3f flyer_maxs (16, 16, 16);

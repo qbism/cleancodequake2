@@ -303,7 +303,11 @@ void CTrapProjectile::Think ()
 	}
 }
 
-#define TRAP_RADIUS_DAMAGE 165
+const int TRAP_RADIUS_DAMAGE	= 165;
+const int TRAP_TIMER			= 50;
+const int TRAP_MINSPEED			= 300;
+const int TRAP_MAXSPEED			= 700;
+
 void CTrapProjectile::Explode ()
 {
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
@@ -394,11 +398,6 @@ bool CTrap::CanStopFidgetting (CPlayerEntity *Player)
 	}
 	return false;
 }
-
-
-#define TRAP_TIMER			50
-#define TRAP_MINSPEED		300
-#define TRAP_MAXSPEED		700
 
 void CTrap::Hold (CPlayerEntity *Player)
 {

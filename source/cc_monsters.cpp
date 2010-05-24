@@ -486,12 +486,12 @@ bool CMonsterEntity::Run ()
 	};
 }
 
-void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
+void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
 {
 	Monster->DamageEffect (dir, point, normal, damage, dflags, mod);
 }
 
-void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags, EMeansOfDeath &mod)
+void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
 {
 #if ROGUE_FEATURES
 	if (mod == MOD_CHAINFIST)

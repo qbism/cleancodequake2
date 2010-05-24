@@ -44,9 +44,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // note to self
 // the lights will take damage from explosions
 // this could leave a player in total darkness very bad
- 
-#define ROTATING_LIGHT_START_OFF	1
-#define ROTATING_LIGHT_ALARM		2
+
+CC_ENUM (uint8, ERotatingLightSpawnflags)
+{
+	ROTATING_LIGHT_START_OFF	= BIT(0),
+	ROTATING_LIGHT_ALARM		= BIT(1)
+}
 
 class CRotatingLight : public IMapEntity, public IHurtableEntity, public IThinkableEntity, public IUsableEntity
 {

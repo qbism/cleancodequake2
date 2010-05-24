@@ -40,12 +40,12 @@ CClient **SaveClientData;
 #define SAVE_USE_GZ
 
 #ifdef SAVE_USE_GZ
-#define SAVE_GZ_FLAGS FILEMODE_GZ | FILEMODE_COMPRESS_HIGH
+const int SAVE_GZ_FLAGS = (FILEMODE_GZ | FILEMODE_COMPRESS_HIGH);
 #else
-#define SAVE_GZ_FLAGS 0
+const int SAVE_GZ_FLAGS = 0;
 #endif
 
-#define MAGIC_NUMBER 0xf2843dfa
+const uint32 MAGIC_NUMBER = 0xf2843dfa;
 
 void WriteMagic (CFile &File)
 {
@@ -65,7 +65,7 @@ void ReadMagic (CFile &File)
 
 typedef std::multimap<size_t, size_t> THashedEntityTableList;
 typedef std::vector<CEntityTableIndex*> TEntityTableList;
-#define MAX_ENTITY_TABLE_HASH 256
+const int MAX_ENTITY_TABLE_HASH = 256;
 
 TEntityTableList &EntityTable ()
 {
@@ -106,7 +106,7 @@ IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 extern bool ShuttingDownEntities;
 bool RemoveAll (const edict_t *it)
 {
-	if (it && it->Entity && it->Entity->gameEntity && (it->state.number <= Game.MaxClients || it->inUse))
+	if (it && it->Entity && it->Entity->gameEntity && (it->server.state.number <= Game.MaxClients || it->server.inUse))
 		QDelete it->Entity;
 	return true;
 }
@@ -258,9 +258,9 @@ void WriteEntities (CFile &File)
 		if (!ent->Entity || !ent->Entity->Savable())
 			continue;
 
-		File.Write<sint32> (ent->state.number);
-
 		IBaseEntity *Entity = ent->Entity;
+
+		File.Write<sint32> (Entity->State.GetNumber());
 		WriteEntireEntity (File, Entity);
 	}
 	File.Write<sint32> (-1);
@@ -306,7 +306,7 @@ void ReadRealEntity (CFile &File, sint32 number)
 	edict_t temp (*ent);
 
 	// Null out pointers
-	ent->owner = NULL;
+	ent->server.owner = NULL;
 
 	// Restore entity
 	ent->Entity = RestoreEntity;
@@ -315,14 +315,14 @@ void ReadRealEntity (CFile &File, sint32 number)
 	if (number > Game.MaxClients)
 	{
 		sint32 OwnerNumber = File.Read<sint32> ();
-		ent->owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
+		ent->server.owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
 	}
 
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex2, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex3, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex4, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.sound, INDEX_SOUND);
+	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex2, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex3, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex4, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.state.sound, INDEX_SOUND);
 
 	// Read entity stuff
 	if (number > Game.MaxClients)
@@ -336,9 +336,9 @@ void ReadRealEntity (CFile &File, sint32 number)
 		// Revision:
 		// This will actually change some base members..
 		// Restore them all here!
-		edict_t *oldOwner = ent->owner;
+		edict_t *oldOwner = ent->server.owner;
 		memcpy (ent, &temp, sizeof(edict_t));
-		ent->owner = oldOwner;
+		ent->server.owner = oldOwner;
 
 		ent->Entity = Entity;
 	}
@@ -400,7 +400,7 @@ void ReadClients (CFile &File)
 	SaveClientData = QNew (TAG_GENERIC) CClient*[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].client);
+		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].server.client);
 		ReadClient (File, i);
 	}
 }
@@ -494,7 +494,7 @@ void CGameAPI::ReadGame (char *filename)
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
 		edict_t *ent = &Game.Entities[i+1];
-		ent->client = Game.Clients + i;
+		ent->server.client = Game.Clients + i;
 	}
 
 	ReadClients (File);
@@ -581,7 +581,7 @@ void SetClientFields ()
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
 			Player->Client = *SaveClientData[i];
-			Player->Client.RepositionClient (Game.Entities[i+1].client);
+			Player->Client.RepositionClient (Game.Entities[i+1].server.client);
 			QDelete SaveClientData[i];
 		}
 		QDelete[] SaveClientData;
@@ -671,10 +671,10 @@ void CGameAPI::ReadLevel (char *filename)
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
 		edict_t *ent = &Game.Entities[i+1];
-		ent->client = Game.Clients + i;
+		ent->server.client = Game.Clients + i;
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
-		Player->Client.RepositionClient (ent->client);
+		Player->Client.RepositionClient (ent->server.client);
 		Player->Client.Persistent.State = SVCS_FREE;
 	}
 

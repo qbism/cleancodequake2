@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ENTITYLIST_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ENTITYLIST_H
 
-#define MAX_CLASSNAME_CLASSES_HASH 256
+const int MAX_CLASSNAME_CLASSES_HASH = 256;
 
 class CClassnameToClassIndex
 {
