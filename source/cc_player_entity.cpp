@@ -2888,7 +2888,7 @@ void CPlayerEntity::TossClientWeapon ()
 CPlayerEntity	*pm_passent;
 
 // pmove doesn't need to know about passent and contentmask
-cmTrace_t	PM_trace (vec3f start, vec3f mins, vec3f maxs, vec3f end)
+cmTrace_t	PM_trace (float *start, float *mins, float *maxs, float *end)
 {
 CC_DISABLE_DEPRECATION
 	return gi.trace(start, mins, maxs, end, pm_passent->gameEntity, (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
@@ -2993,7 +2993,9 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 #if 1
 	pm.trace = PM_trace;
-	pm.pointContents = PointContents;
+CC_DISABLE_DEPRECATION
+	pm.pointContents = gi.pointcontents;
+CC_ENABLE_DEPRECATION
 #endif
 
 	// perform a pmove

@@ -675,8 +675,8 @@ struct pMove_t
 	sint32				waterLevel;
 
 	// callbacks to test the world
-	cmTrace_t		(*trace) (vec3f start, vec3f mins, vec3f maxs, vec3f end);
-	EBrushContents	(*pointContents) (vec3f point);
+	cmTrace_t		(*trace) (float *start, float *mins, float *maxs, float *end);
+	EBrushContents	(*pointContents) (float *point);
 };
 
 /*
