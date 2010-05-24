@@ -136,7 +136,7 @@ public:
 	};
 };
 
-bool PlayerSort (int &a, int &b)
+bool PlayerSort (const int a, const int b)
 {
 	sint32 anum = Game.Clients[a].playerState.stats[STAT_FRAGS];
 	sint32 bnum = Game.Clients[b].playerState.stats[STAT_FRAGS];
