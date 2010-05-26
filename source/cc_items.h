@@ -34,7 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ITEMS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ITEMS_H
 
-CC_ENUM (sint32, EItemFlags)
+/**
+\typedef	uint32 EItemFlags
+
+\brief	Defines an alias representing item flags.
+**/
+typedef sint32 EItemFlags;
+
+/**
+\enum	
+
+\brief	Values that represent item flags. 
+**/
+enum
 {
 	ITEMFLAG_NONE				= 0,
 	ITEMFLAG_WEAPON				= BIT(0),

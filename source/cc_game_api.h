@@ -322,14 +322,38 @@ public:
 
 extern GAME_CLASS	GameAPI;
 
-CC_ENUM (uint8, ECastType)
+/**
+\typedef	uint8 ECastType
+
+\brief	Defines an alias representing type of a cast.
+**/
+typedef uint8 ECastType;
+
+/**
+\enum	
+
+\brief	Values that represent the types of a cast. 
+**/
+enum
 {
 	// Cast type
 	CAST_MULTI,
 	CAST_UNI
 };
 
-CC_ENUM (uint8, ECastFlags)
+/**
+\typedef	uint8 ECastFlags
+
+\brief	Defines an alias representing the cast flags.
+**/
+typedef uint8 ECastFlags;
+
+/**
+\enum	
+
+\brief	Values that represent cast flags. 
+**/
+enum
 {
 	// Paril: whoops...
 	CASTFLAG_NONE = 0,

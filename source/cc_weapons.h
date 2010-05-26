@@ -61,7 +61,19 @@ public:
 class CAmmo : public virtual CBaseItem
 {
 public:
-	CC_ENUM (uint8, EAmmoTag)
+	/**
+	\typedef	uint8 EAmmoTag
+	
+	\brief	Defines an alias representing ammo tags.
+	**/
+	typedef uint8 EAmmoTag;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent ammo tags. 
+	**/
+	enum
 	{
 		AMMOTAG_SHELLS,
 		AMMOTAG_BULLETS,
@@ -127,7 +139,19 @@ extern sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX];
 void AddAmmoToList();
 void DoWeaponVweps();
 
-CC_ENUM (uint8, EWeaponVwepIndices)
+/**
+\typedef	uint8 EWeaponVwepIndices
+
+\brief	Defines an alias representing the weapon vwep indices.
+**/
+typedef uint8 EWeaponVwepIndices;
+
+/**
+\enum	
+
+\brief	Values that represent visible weapon indexes. 
+**/
+enum
 {
 	WEAP_NONE,
 	WEAP_BLASTER,

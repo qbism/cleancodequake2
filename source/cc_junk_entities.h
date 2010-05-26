@@ -157,8 +157,19 @@ public:
 	void Die (); // CALL THIS WHEN A JUNK IS FREED INSTEAD OF FREE()!
 };
 
-//gib types
-CC_ENUM (uint8, EGibType)
+/**
+\typedef	uint8 EGibType
+
+\brief	Defines an alias representing the type of a gib.
+**/
+typedef uint8 EGibType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of a gib. 
+**/
+enum
 {
 	GIB_ORGANIC,
 	GIB_METALLIC

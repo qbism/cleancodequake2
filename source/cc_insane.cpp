@@ -35,7 +35,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_insane.h"
 #include "cc_insane.h"
 
-CC_ENUM (uint8, EInsaneSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CInsane. 
+**/
+enum
 {
 	INSANE_CRAWL		= BIT(2),
 	INSANE_CRUCIFIED	= BIT(3),

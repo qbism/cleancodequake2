@@ -272,10 +272,6 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 #define CC_STDC_CONFORMANCE
 #endif
 
-#define CC_ENUM(type,name) \
-	typedef type name; \
-	enum
-
 #ifndef MSVS_VERSION
 #define MSVS_VERSION			VS_UNKNOWN
 #define MSVS_VERSION_STRING		VS_UNKNOWN_STR

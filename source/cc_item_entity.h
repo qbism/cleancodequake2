@@ -36,7 +36,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_ITEMENTITY_H
 
 // item spawnflags
-CC_ENUM (uint32, EItemSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CItemEntity. 
+**/
+enum
 {
 	ITEM_TRIGGER_SPAWN			= BIT(0),
 	ITEM_NO_TOUCH				= BIT(1),
@@ -46,8 +51,20 @@ CC_ENUM (uint32, EItemSpawnflags)
 	ITEM_TARGETS_USED			= BIT(18)
 };
 
-// The item entity class
-CC_ENUM (uint8, EItemThinkState)
+/**
+\typedef	uint8 EItemThinkState
+
+\brief	Defines an alias representing think state of an item.
+**/
+typedef uint8 EItemThinkState;
+
+/**
+\enum	
+
+\brief	Values that represent item think states.
+		Everything from ITS_NONE to ITS_CUSTOM is reserved.
+**/
+enum
 {
 	ITS_NONE,
 	ITS_DROPTOFLOOR,

@@ -85,7 +85,7 @@ public:
 	MONSTER_ID_HEADER
 };
 
-CC_ENUM (uint16, EFixbotFrames)
+enum
 {
 	FRAME_charging_01,
 	FRAME_charging_02,

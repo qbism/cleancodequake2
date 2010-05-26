@@ -38,7 +38,26 @@ class CBody : public IHurtableEntity, public ITossProjectile, public IThinkableE
 public:
 	class CBodyQueue *BodyQueueList; // Queue the body belongs to
 
+	/**
+	\fn	CBody ()
+	
+	\brief	Default constructor.
+	
+	\author	Paril
+	\date	25/05/2010
+	**/
 	CBody ();
+
+	/**
+	\fn	CBody (sint32 Index)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Index	Zero-based index of the entity in the entity list. 
+	**/
 	CBody (sint32 Index);
 
 	IMPLEMENT_SAVE_HEADER(CBody)
@@ -56,16 +75,58 @@ public:
 	};
 	void			LoadFields (CFile &File);
 
+	/**
+	\fn	void TossHead (sint32 Damage)
+	
+	\brief	Turns this body into a head and throws it by a velocity derived from 'Damage'
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Damage	The damage dealt to the body.
+	**/
 	void TossHead (sint32 Damage);
 
-	void Pain (IBaseEntity *Other, sint32 Damage);
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	/**
+	\fn	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
+	
+	\brief	Death handler. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	Inflictor	If non-null, the inflictor. 
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Damage				The damage. 
+	\param [in,out]	Point		The point of impact. 
+	**/
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
-	void Think	(); // Only done if we're a head
+	/**
+	\fn	void Think ()
+	
+	\brief	Think handler. Only done if we're a head. 
+	**/
+	void Think	();
 
+	/**
+	\fn	bool Run ()
+	
+	\brief	Runs this object.
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
 	bool Run ();
 };
 
+/**
+\fn	CBody::CBody ()
+	
+\brief	Default constructor.
+	
+\author	Paril
+\date	25/05/2010
+**/
 CBody::CBody () :
 IBaseEntity(),
 IHurtableEntity(),
@@ -73,6 +134,16 @@ BodyQueueList(NULL)
 {
 };
 
+/**
+\fn	CBody::CBody (sint32 Index)
+	
+\brief	Constructor. 
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	Index	Zero-based index of the entity in the entity list. 
+**/
 CBody::CBody (sint32 Index) :
 IBaseEntity(Index),
 IHurtableEntity(Index),
@@ -82,16 +153,28 @@ BodyQueueList(NULL)
 
 IMPLEMENT_SAVE_SOURCE (CBody)
 
+/**
+\fn	bool CBody::Run ()
+	
+\brief	Runs this object.
+	
+\return	true if it succeeds, false if it fails. 
+**/
 bool CBody::Run ()
 {
 	return (GetSvFlags() & SVF_NOCLIENT) ? false : ITossProjectile::Run();
 }
 
-void CBody::Pain (IBaseEntity *Other, sint32 Damage)
-{
-}
-
-vec3f VelocityForDamage (sint32 Damage);
+/**
+\fn	void CBody::TossHead (sint32 Damage)
+	
+\brief	Turns this body into a head and throws it by a velocity derived from 'Damage'
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	Damage	The damage dealt to the body.
+**/
 void CBody::TossHead (sint32 Damage)
 {
 	if (irandom(2))
@@ -123,7 +206,13 @@ void CBody::TossHead (sint32 Damage)
 	Link ();
 }
 
+/**
+\typedef	std::list<CBody*> TBodyQueueList
+
+\brief	Defines an alias representing list of body queues.
+**/
 typedef std::list<CBody*> TBodyQueueList;
+
 class CBodyQueue
 {
 public:
@@ -131,12 +220,37 @@ public:
 	TBodyQueueList ClosedList; // A list of entity numbers that are currently being used, in order of accessed.
 	// If OpenList is empty, pop the first one off of ClosedList.
 
-	// Creates the body queue
+	/**
+	\fn	CBodyQueue::CBodyQueue (sint32 MaxSize)
+
+	\brief	Constructor.
+
+	\author	Paril
+	\date	25/05/2010
+
+	\param	MaxSize Size of the body queue. 
+	**/
 	CBodyQueue (sint32 MaxSize);
 
+	/**
+	\fn	CBody *GrabFreeBody ()
+	
+	\brief	Grab free body.
+	
+	\return	Pointer to a CBody entity. This function will only fail if the bodyqueue's size is 0, which should never happen. 
+	**/
 	CBody *GrabFreeBody ();
 
-	// Grabs a free body and uses it
+	/**
+	\fn	void CopyBodyToQueue (CPlayerEntity *Player)
+
+	\brief	Creates the actual body entity and copies 'Player''s data into it. 
+
+	\author	Paril
+	\date	25/05/2010
+
+	\param [in,out]	Player	The player that needs a body. 
+	**/
 	void CopyBodyToQueue (CPlayerEntity *Player);
 };
 
@@ -151,6 +265,11 @@ void	CBody::LoadFields (CFile &File)
 	ITossProjectile::LoadFields (File);
 };
 
+/**
+\fn	void CBody::Think ()
+	
+\brief	Think handler. Only done if we're a head. 
+**/
 void CBody::Think ()
 {
 	// Take us out of the closed list
@@ -164,7 +283,20 @@ void CBody::Think ()
 	GetSvFlags() = SVF_NOCLIENT;
 }
 
-void CBody::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+/**
+\fn	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
+	
+\brief	Death handler. 
+	
+\author	Paril
+\date	25/05/2010
+	
+\param [in,out]	Inflictor	If non-null, the inflictor. 
+\param [in,out]	Attacker	If non-null, the attacker. 
+\param	Damage				The damage. 
+\param [in,out]	Point		The point of impact. 
+**/
+void CBody::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Health < -40)
 	{
@@ -177,6 +309,13 @@ void CBody::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, v
 	}
 }
 
+/**
+\fn	CBody *CBodyQueue::GrabFreeBody ()
+	
+\brief	Grab free body.
+	
+\return	Pointer to a CBody entity. This function will only fail if the bodyqueue's size is 0, which should never happen. 
+**/
 CBody *CBodyQueue::GrabFreeBody ()
 {
 	// If there's anything in the open List..
@@ -202,6 +341,16 @@ CBody *CBodyQueue::GrabFreeBody ()
 	return Body;
 }
 
+/**
+\fn	CBodyQueue::CBodyQueue (sint32 MaxSize)
+
+\brief	Constructor.
+
+\author	Paril
+\date	25/05/2010
+
+\param	MaxSize Size of the body queue. 
+**/
 CBodyQueue::CBodyQueue (sint32 MaxSize)
 {
 	// Add MaxSize entities to the body queue (reserved entities)
@@ -218,12 +367,31 @@ CBodyQueue::CBodyQueue (sint32 MaxSize)
 	}
 };
 
-void BodyQueue_Init (sint32 reserve)
+/**
+\fn	void BodyQueue_Init (sint32 Reserve)
+
+\brief	Initialize the body queue reserving 'Reserve' bodies. 
+
+\author	Paril
+\date	25/05/2010
+
+\param	Reserve	The amount of bodies to reserve. 
+**/
+void BodyQueue_Init (sint32 Reserve)
 {
-	BodyQueue = QNew (TAG_LEVEL) CBodyQueue (reserve);
+	BodyQueue = QNew (TAG_LEVEL) CBodyQueue (Reserve);
 }
 
-// Saves currently allocated body numbers
+/**
+\fn	void SaveBodyQueue (CFile &File)
+
+\brief	Saves currently allocated body numbers 
+
+\author	Paril
+\date	25/05/2010
+
+\param [in,out]	File	The file. 
+**/
 void SaveBodyQueue (CFile &File)
 {
 	if (!BodyQueue)
@@ -238,7 +406,16 @@ void SaveBodyQueue (CFile &File)
 		File.Write<sint32> ((*it)->State.GetNumber());
 }
 
-// Loads the bodyqueue numbers into allocationzzz
+/**
+\fn	void LoadBodyQueue (CFile &File)
+
+\brief	Loads the bodyqueue numbers into allocation 
+
+\author	Paril
+\date	25/05/2010
+
+\param [in,out]	File	The file. 
+**/
 void LoadBodyQueue (CFile &File)
 {
 	if (!BodyQueue)
@@ -253,6 +430,14 @@ void LoadBodyQueue (CFile &File)
 		BodyQueue->OpenList.push_back (entity_cast<CBody>(Game.Entities[File.Read <sint32> ()].Entity));
 }
 
+/**
+\fn	void ShutdownBodyQueue ()
+
+\brief	Shutdown the body queue. Frees related entities and clears state. 
+
+\author	Paril
+\date	25/05/2010
+**/
 void ShutdownBodyQueue ()
 {
 	if (BodyQueue)
@@ -260,11 +445,26 @@ void ShutdownBodyQueue ()
 	BodyQueue = NULL;
 }
 
-void CopyToBodyQueue (CPlayerEntity *Player)
+/**
+\fn	void CPlayerEntity::CopyToBodyQueue ()
+
+\brief	Copies player to body queue.
+**/
+void CPlayerEntity::CopyToBodyQueue ()
 {
-	BodyQueue->CopyBodyToQueue (Player);
+	BodyQueue->CopyBodyToQueue (this);
 }
 
+/**
+\fn	void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
+
+\brief	Creates the actual body entity and copies 'Player''s data into it. 
+
+\author	Paril
+\date	25/05/2010
+
+\param [in,out]	Player	The player that needs a body. 
+**/
 void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
 {
 	// Grab a free body

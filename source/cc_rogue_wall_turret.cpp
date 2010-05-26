@@ -109,7 +109,12 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CWallTurretBase);
 
-CC_ENUM (uint8, ETurretSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CWallTurret. 
+**/
+enum
 {
 	SPAWN_BLASTER			= BIT(3),
 	SPAWN_MACHINEGUN		= BIT(4),

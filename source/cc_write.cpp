@@ -175,7 +175,19 @@ void _WriteString (const char *val)
 	gi.WriteString ((char*)val);
 }
 
-CC_ENUM (uint8, EWriteType)
+/**
+\typedef	uint8 EWriteType
+
+\brief	Defines an alias representing type of data to write.
+**/
+typedef uint8 EWriteType;
+
+/**
+\enum	
+
+\brief	Values that represent the types of data that can be written. 
+**/
+enum
 {
 	WT_CHAR,
 	WT_BYTE,

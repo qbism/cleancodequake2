@@ -839,7 +839,12 @@ NOMONSTER	monsters will not trigger this door
 4)	heavy
 */
 
-CC_ENUM (uint16, EDoorSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CDoor. 
+**/
+enum
 {
 	DOOR_START_OPEN			= BIT(0),
 	DOOR_REVERSE			= BIT(1),
@@ -1489,7 +1494,12 @@ REVERSE will cause the door to rotate in the opposite direction.
 4)	heavy
 */
 
-CC_ENUM(uint8, ERotatingDoorSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CDoorRotating. 
+**/
+enum
 {
 	DOOR_X_AXIS		= BIT(6),
 	DOOR_Y_AXIS		= BIT(7),
@@ -1772,7 +1782,12 @@ always_shoot	door is shootebale even if targeted
 "wait"		how long to hold in the open position (default 5, -1 means hold)
 */
 
-CC_ENUM (uint8, EDoorSecretSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CDoorSecret. 
+**/
+enum
 {
 	SECRET_ALWAYS_SHOOT		= BIT(0),
 	SECRET_1ST_LEFT			= BIT(1),
@@ -2147,7 +2162,12 @@ noise	looping sound to play when the train is in motion
 
 */
 
-CC_ENUM (uint8, ETrainSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to trains. 
+**/
+enum
 {
 	TRAIN_START_ON		= BIT(0),
 	TRAIN_TOGGLE		= BIT(1),
@@ -2831,7 +2851,12 @@ REVERSE will cause the it to rotate in the opposite direction.
 STOP mean it will stop moving instead of pushing entities
 */
 
-CC_ENUM (uint8, ERotatingSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CRotatingBrush. 
+**/
+enum
 {
 	ROTATING_START_ON		= BIT(0),
 	ROTATING_REVERSE		= BIT(1),
@@ -3051,7 +3076,12 @@ The brush should be have a surface with at least one current content enabled.
 speed	default 100
 */
 
-CC_ENUM (uint8, EConveyorSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CConveyor. 
+**/
+enum
 {
 	CONVEYOR_START_ON	= BIT(0),
 	CONVEYOR_TOGGLE		= BIT(1),
@@ -3231,7 +3261,12 @@ START_ON		only valid for TRIGGER_SPAWN walls
 				the wall will initially be present
 */
 
-CC_ENUM (uint8, EWallSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncWall. 
+**/
+enum
 {
 	WALL_TRIGGER_SPAWN		= BIT(0),
 	WALL_TOGGLE				= BIT(1),
@@ -3335,7 +3370,12 @@ LINK_CLASSNAME_TO_CLASS ("func_wall", CFuncWall);
 This is solid bmodel that will fall if it's support it removed.
 */
 
-CC_ENUM (uint8, EObjectSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncObject. 
+**/
+enum
 {
 	OBJECT_TRIGGER_SPAWN	= BIT(0),
 	OBJECT_ANIMATED			= BIT(1),
@@ -3458,7 +3498,12 @@ it explodes.  You get one large chunk per 100 of mass (up to 8) and
 one small chunk per 25 of mass (up to 16).  So 800 gives the most
 */
 
-CC_ENUM (uint8, EExplosiveSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncExplosive. 
+**/
+enum
 {
 	EXPLOSIVE_TRIGGER_SPAWN	= BIT(0),
 	EXPLOSIVE_ANIMATED		= BIT(1),

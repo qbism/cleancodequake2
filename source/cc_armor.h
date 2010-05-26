@@ -34,8 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ARMOR_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ARMOR_H
 
-// damage flags
-CC_ENUM (uint16, EDamageFlags)
+/**
+\typedef	uint16 EDamageFlags
+
+\brief	Defines an alias representing the damage flags.
+**/
+typedef uint16 EDamageFlags;
+
+/**
+\enum	
+
+\brief	Values that represent damage flags. 
+**/
+enum
 {
 	DAMAGE_RADIUS				= BIT(0), // Indirect damage
 	DAMAGE_NO_ARMOR				= BIT(1), // Goes through armor

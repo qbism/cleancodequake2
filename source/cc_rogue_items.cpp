@@ -113,7 +113,19 @@ const int NUKE_QUAKE_STRENGTH	= 100;
 class CNukeEntity : public IBounceProjectile, public IThinkableEntity, public ITouchableEntity, public IHurtableEntity
 {
 public:
-	CC_ENUM (uint8, ENukeThinkType)
+	/**
+	\typedef	uint8 ENukeThinkType
+	
+	\brief	Defines an alias representing think state of the nuke.
+	**/
+	typedef uint8 ENukeThinkType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent the think state of the nuke. 
+	**/
+	enum
 	{
 		NUKETHINK_NONE,
 		NUKETHINK_QUAKE,

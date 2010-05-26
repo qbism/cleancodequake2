@@ -34,12 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_GAME_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_GAME_H
 
-//
-// this structure is left intact through an entire game
-// it should be initialized at dll load time, and read/written to
-// the server.ssv file for savegames
-//
-CC_ENUM (uint16, EGameMode)
+/**
+\typedef	uint8 EGameMode
+
+\brief	Defines an alias representing the game mode.
+**/
+typedef uint8 EGameMode;
+
+/**
+\enum	
+
+\brief	Values that represent game modes. 
+**/
+enum
 {
 	GAME_SINGLEPLAYER		=	BIT(0),
 	GAME_DEATHMATCH			=	BIT(1),
@@ -50,9 +57,19 @@ CC_ENUM (uint16, EGameMode)
 #endif
 };
 
-// Paril: Increased to uint16. There seems to be a bit of trouble
-// with TRIGGER_MASK overflowing (Linux-only?)
-CC_ENUM (uint16, ECrossLevelTriggerFlags)
+/**
+\typedef	uint16 ECrossLevelTriggerFlags
+
+\brief	Defines an alias representing the cross level trigger flags.
+**/
+typedef uint16 ECrossLevelTriggerFlags;
+
+/**
+\enum	
+
+\brief	Values that represent cross-level trigger flags. 
+**/
+enum
 {
 	SFL_CROSS_TRIGGER_1		= BIT(0),
 	SFL_CROSS_TRIGGER_2		= BIT(1),
@@ -65,6 +82,11 @@ CC_ENUM (uint16, ECrossLevelTriggerFlags)
 	SFL_CROSS_TRIGGER_MASK	= 255
 };
 
+//
+// this structure is left intact through an entire game
+// it should be initialized at dll load time, and read/written to
+// the server.ssv file for savegames
+//
 class CGameLocals
 {
 public:

@@ -35,89 +35,157 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CFileHandleList *CFile::IndexList;
 
-fs_pathListType fs_pathList;
+TPathListType PathList;
 
-// Adds a path to the path list
+/**
+\fn	void FS_AddPath (const char *pathName)
+
+\brief	Adds path 'pathName' to the list of paths. 
+
+\author	Paril
+\date	25/05/2010
+
+\param	pathName	Path name. 
+**/
 void FS_AddPath (const char *pathName)
 {
-	fs_pathIndex *path = QNew (TAG_GENERIC) fs_pathIndex;
-	strncpy (path->pathName, pathName, sizeof(path->pathName));
-	fs_pathList.push_back (path);
+	CPathIndex *path = QNew (TAG_GENERIC) CPathIndex (pathName);
+	PathList.push_back (path);
 }
 
-// Removes a path from the list
+/**
+\fn	void FS_RemovePath (const char *pathName)
+
+\brief	Removes path 'pathName' from the list of paths.
+
+\author	Paril
+\date	25/05/2010
+
+\param	pathName	Path name.
+**/
 void FS_RemovePath (const char *pathName)
 {
-	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
+	for (TPathListType::iterator it = PathList.begin(); it < PathList.end(); ++it)
 	{
-		if (strcmp(pathName, (*it)->pathName) == 0)
+		if ((*it)->pathName == pathName)
 		{
 			delete (*it);
-			fs_pathList.erase (it);
+			PathList.erase (it);
 			return;
 		}
 	}
 }
 
-// Re-orders this path to be at the first position.
-// If it doesn't exist, it adds it.
+/**
+\fn	void FS_ReorderPath (const char *pathName)
+
+\brief	Re-orders path 'pathName' to the front of the list of paths
+
+\author	Paril
+\date	25/05/2010
+
+\param	pathName	Path name. 
+**/
 void FS_ReorderPath (const char *pathName)
 {
-	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
+	for (TPathListType::iterator it = PathList.begin(); it < PathList.end(); ++it)
 	{
-		if (strcmp(pathName, (*it)->pathName) == 0)
+		if ((*it)->pathName == pathName)
 		{
-			fs_pathIndex *Path = (*it);
+			CPathIndex *Path = (*it);
 
-			fs_pathList.erase (it);
-			fs_pathList.insert (fs_pathList.begin(), Path);
+			PathList.erase (it);
+			PathList.insert (PathList.begin(), Path);
 			return;
 		}
 	}
 
-	fs_pathIndex *Path = QNew (TAG_GENERIC) fs_pathIndex;
-	strncpy (Path->pathName, pathName, sizeof(Path->pathName));
-
-	fs_pathList.insert (fs_pathList.begin(), Path);
+	CPathIndex *Path = QNew (TAG_GENERIC) CPathIndex (pathName);
+	PathList.insert (PathList.begin(), Path);
 }
 
+/**
+\fn	THandleIndexListType::iterator CFileHandleList::Create ()
+	
+\brief	Creates a new key and increases allocated handles.
+		Returns the new key.
+	
+\return	Iterator to the new key. 
+**/
 THandleIndexListType::iterator CFileHandleList::Create ()
 {
-	fileHandle_t CreatedKey = numHandlesAllocated++;
-	OpenList[CreatedKey] = fileHandleIndex_t(CreatedKey);
+	FileHandle CreatedKey = numHandlesAllocated++;
+	OpenList[CreatedKey] = CFileHandleIndex(CreatedKey);
 	return OpenList.find(CreatedKey);
 };
 
-// Moves "it" from OpenList to ClosedList
+/**
+\fn	THandleIndexListType::iterator CFileHandleList::MoveToClosed (THandleIndexListType::iterator it)
+	
+\brief	Moves the handle of iterator 'it' to the Closed list and returns the new iterator
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	it	The iterator index that needs to be moved to the closed list. 
+	
+\return	The iterator of the moved key. 
+**/
 THandleIndexListType::iterator CFileHandleList::MoveToClosed (THandleIndexListType::iterator it)
 {
-	fileHandle_t Key = (*it).first;
+	FileHandle Key = (*it).first;
 	ClosedList[Key] = (*it).second;
 	OpenList.erase (it);
 	return ClosedList.find(Key);
 };
 
-// Moves "it" from ClosedList to OpenList
+/**
+\fn	THandleIndexListType::iterator CFileHandleList::MoveToOpen (THandleIndexListType::iterator it)
+	
+\brief	Moves the handle of iterator 'it' to the Open list and returns the new iterator
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	it	The iterator index that needs to be moved to the open list.
+	
+\return	The iterator of the moved key. 
+**/
 THandleIndexListType::iterator CFileHandleList::MoveToOpen (THandleIndexListType::iterator it)
 {
 	(*it).second.Clear ();
 
-	fileHandle_t Key = (*it).first;
+	FileHandle Key = (*it).first;
 	OpenList[Key] = (*it).second;
 	ClosedList.erase (it);
 	return OpenList.find(Key);
 };
 
-// allocated = number of handles to create automatically.
+/**
+\fn	CFileHandleList::CFileHandleList (sint32 allocated = 0)
+	
+\brief	Constructor. 
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	allocated	Number of handles to create automatically. 
+**/
 CFileHandleList::CFileHandleList (sint32 allocated) :
 	numHandlesAllocated (0)
 {
-	for (fileHandle_t i = 0; i < allocated; i++)
+	for (FileHandle i = 0; i < allocated; i++)
 		Create ();
 };
 
-// Returns either a free key in Open or
-// creates a new key and returns it.
+/**
+\fn	THandleIndexListType::iterator CFileHandleList::GetFreeHandle ()
+	
+\brief	Gets a free handle. 
+	
+\return	Returns either a free key in Open or
+		creates a new key and returns it.
+**/
 THandleIndexListType::iterator CFileHandleList::GetFreeHandle ()
 {
 	if (!OpenList.empty())
@@ -128,20 +196,52 @@ THandleIndexListType::iterator CFileHandleList::GetFreeHandle ()
 		return MoveToClosed(Create ());
 };
 
-// Gets the fileHandleIndex_t of a handle in-use
-fileHandleIndex_t *CFileHandleList::GetHandle (fileHandle_t Key)
+/**
+\fn	CFileHandleIndex *CFileHandleList::GetHandle (FileHandle Key)
+	
+\brief	Gets the CFileHandleIndex of a FileHandle 
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	Key	The key. 
+	
+\return	null if it fails, else the handle. 
+**/
+CFileHandleIndex *CFileHandleList::GetHandle (FileHandle Key)
 {
 	return &(*ClosedList.find(Key)).second;
 };
 
-// Pushes a key back into the Open list
-// Use this when you're done with a key
-void CFileHandleList::PushFreeHandle (fileHandle_t Key)
+/**
+\fn	void CFileHandleList::PushFreeHandle (FileHandle Handle)
+	
+\brief	Pushes a key back into the Open list.
+		Use this when you're done with a key
+	
+\author	Paril
+\date	25/05/2010
+	
+\param	Handle	The handle. 
+**/
+void CFileHandleList::PushFreeHandle (FileHandle Handle)
 {
-	MoveToOpen (ClosedList.find(Key));
+	MoveToOpen (ClosedList.find(Handle));
 };
 
-fileHandle_t CFileHandleList::FS_GetFreeHandle (fileHandleIndex_t **handle)
+/**
+\fn	FileHandle CFileHandleList::FS_GetFreeHandle (CFileHandleIndex **handle)
+	
+\brief	Grabs a free handle 
+	
+\author	Paril
+\date	25/05/2010
+	
+\param [in,out]	handle	If non-null, the handle. 
+	
+\return	. 
+**/
+FileHandle CFileHandleList::FS_GetFreeHandle (CFileHandleIndex **handle)
 {
 	THandleIndexListType::iterator it = CFile::IndexList->GetFreeHandle();
 
@@ -149,9 +249,21 @@ fileHandle_t CFileHandleList::FS_GetFreeHandle (fileHandleIndex_t **handle)
 	return (*it).first + 1;
 }
 
-fileHandleIndex_t *CFileHandleList::FS_GetHandle (fileHandle_t &fileNum)
+/**
+\fn	CFileHandleIndex *CFileHandleList::FS_GetHandle (FileHandle &fileNum)
+	
+\brief	Returns the handle pointer for handle "fileNum"
+	
+\author	Paril
+\date	25/05/2010
+	
+\param [in,out]	fileNum	The file number. 
+	
+\return	null if it fails, else the handle. 
+**/
+CFileHandleIndex *CFileHandleList::FS_GetHandle (FileHandle &fileNum)
 {
-	fileHandleIndex_t *hIndex;
+	CFileHandleIndex *hIndex;
 
 	if (fileNum < 0 || fileNum > FS_MAX_FILE_INDICES)
 		CFile::OutputError ("FS_GetHandle: invalid file number");
@@ -163,6 +275,16 @@ fileHandleIndex_t *CFileHandleList::FS_GetHandle (fileHandle_t &fileNum)
 	return hIndex;
 }
 
+/**
+\fn	void CFindFiles::FindFiles (CFindFilesCallback *Callback)
+	
+\brief	Does the actual finding.
+	
+\author	Paril
+\date	25/05/2010
+	
+\param [in,out]	Callback	If non-null, the callback to call for each file. 
+**/
 void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 {
 	if (Filter.empty())
@@ -171,13 +293,13 @@ void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 		Extension = "*";
 
 	// Search through the path, one element at a time
-	for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
+	for (TPathListType::iterator it = PathList.begin(); it < PathList.end(); ++it)
 	{
-		fs_pathIndex *search = (*it);
+		CPathIndex *search = (*it);
 
 		// Directory tree
 		char dir[MAX_PATHNAME];
-		snprintf(dir, sizeof(dir), "%s/%s", search->pathName, Path.c_str());
+		snprintf(dir, sizeof(dir), "%s/%s", search->pathName.c_str(), Path.c_str());
 
 		TFindFilesType dirFiles;
 
@@ -195,12 +317,12 @@ void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 			// Match filter
 			if (Filter.c_str())
 			{
-				if (!Q_WildcardMatch(Filter.c_str(), dirFiles[i].c_str()+strlen(search->pathName)+1, 1))
+				if (!Q_WildcardMatch(Filter.c_str(), dirFiles[i].c_str()+search->pathName.length()+1, 1))
 					continue;
 			}
 
 			// Found something
-			const char *name = dirFiles[i].c_str() + strlen(search->pathName) + 1;
+			const char *name = dirFiles[i].c_str() + search->pathName.length() + 1;
 
 			// Ignore duplicates
 			bool bFound = false;
@@ -222,6 +344,16 @@ void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 	}
 };
 
+/**
+\fn	void FS_Init (sint32 maxHandles)
+
+\brief	Initializes the file system.
+
+\author	Paril
+\date	25/05/2010
+
+\param	maxHandles	The maximum handles. 
+**/
 void FS_Init (sint32 maxHandles)
 {
 	CFile::IndexList = QNew(TAG_GENERIC) CFileHandleList (maxHandles);

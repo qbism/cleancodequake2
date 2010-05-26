@@ -3,39 +3,85 @@
 #include <ctype.h>
 #endif
 
-// Note to self: when naming variables, name them correctly.
-typedef sint32 fileHandle_t;
+/**
+\typedef	sint32 FileHandle
 
-CC_ENUM (uint32, EFileOpMode)
+\brief	Defines an alias representing a file handle (internal).
+**/
+typedef sint32 FileHandle;
+
+/**
+\typedef	uint16 EFileOpMode
+
+\brief	Defines an alias representing the file operation mode.
+**/
+typedef uint16 EFileOpMode;
+
+/**
+\enum	
+
+\brief	Values that represent file operation modes. 
+**/
+enum
 {
 	FILEMODE_NONE			=	0, // Internally only
 
-	FILEMODE_READ			=	1, // Open a file for reading
-	FILEMODE_WRITE			=	2, // Open a file for writing (can be mixed with the reading)
-	FILEMODE_APPEND			=	4, // Open a file for appending (cannot be mixed)
+	FILEMODE_READ			=	BIT(0), // Open a file for reading
+	FILEMODE_WRITE			=	BIT(1), // Open a file for writing (can be mixed with the reading)
+	FILEMODE_APPEND			=	BIT(2), // Open a file for appending (cannot be mixed)
 
-	FILEMODE_CREATE			=	8, // Will create the file if it doesn't exist
-	FILEMODE_ASCII			=	16, // Open the file in ascii mode
+	FILEMODE_CREATE			=	BIT(3), // Will create the file if it doesn't exist
+	FILEMODE_ASCII			=	BIT(4), // Open the file in ascii mode
 
 	// GZ-related
-	FILEMODE_GZ				=	32, // load with gz (de)compression
-	FILEMODE_COMPRESS_NONE	=	64, // compression level 0
-	FILEMODE_COMPRESS_LOW	=	128, // compression level 2
-	FILEMODE_COMPRESS_MED	=	256, // compression level 5
-	FILEMODE_COMPRESS_HIGH	=	512, // compression level 9
+	FILEMODE_GZ				=	BIT(5), // load with gz (de)compression
+	FILEMODE_COMPRESS_NONE	=	BIT(6), // compression level 0
+	FILEMODE_COMPRESS_LOW	=	BIT(7), // compression level 2
+	FILEMODE_COMPRESS_MED	=	BIT(8), // compression level 5
+	FILEMODE_COMPRESS_HIGH	=	BIT(9), // compression level 9
 };
 
-CC_ENUM (uint8, ESeekOrigin)
+/**
+\typedef	uint8 ESeekOrigin
+
+\brief	Defines an alias representing the seek origin.
+**/
+typedef uint8 ESeekOrigin;
+
+/**
+\enum	
+
+\brief	Values that represent seek origins (same as the C ones). 
+**/
+enum
 {
 	SEEKORIGIN_CUR = SEEK_CUR,
 	SEEKORIGIN_SET = SEEK_SET,
 	SEEKORIGIN_END = SEEK_END
 };
 
-typedef long int filePos_t;
+/**
+\typedef	long int filePos_t
+
+\brief	Defines an alias representing a file position.
+**/
+typedef long int FilePos;
 
 // directory searching
-CC_ENUM (uint8, EDirSearchType)
+
+/**
+\typedef	uint8 EDirSearchType
+
+\brief	Defines an alias representing flags for directory searching.
+**/
+typedef uint8 EDirSearchType;
+
+/**
+\enum	
+
+\brief	Values that represent flags for directory searching. 
+**/
+enum
 {
 	SFF_ARCH	= BIT(0),
 	SFF_HIDDEN	= BIT(1),
@@ -44,9 +90,8 @@ CC_ENUM (uint8, EDirSearchType)
 	SFF_SYSTEM	= BIT(4)
 };
 
-const int FS_MAX_FINDFILES		= 512;
-const int MAX_PATHNAME			= 128;
-const int FS_MAX_FILE_INDICES	= 256;
+const int MAX_PATHNAME			= 128;	// Maximum path length
+const int FS_MAX_FILE_INDICES	= 256;	// The max number of file indexes that can be loaded at one time
 
 #ifdef WIN32
 #if !defined(CC_STDC_CONFORMANCE)
@@ -73,61 +118,195 @@ const int FS_MAX_FILE_INDICES	= 256;
 void FS_Error (const char *errorMsg);
 #endif
 
-CC_ENUM (uint8, EFileType)
+/**
+\typedef	uint8 EFileType
+
+\brief	Defines an alias representing type of a file.
+**/
+typedef uint8 EFileType;
+
+/**
+\enum	
+
+\brief	Values that represent the types of files available to the file system.
+		Currently only regular OS FILE handles and GZip file handles.
+**/
+enum
 {
 	FILE_REGULAR,		// Regular file
 	FILE_GZ,			// gz-compressed file
 };
 
-// Path management.
-// This may seem empty. It will be filled more once
-// zip loading is in.
-class fs_pathIndex
+/**
+\class	CPathIndex
+
+\brief	A single path index. 
+
+\author	Paril
+\date	25/05/2010
+
+\todo	Is this class even required?
+**/
+class CPathIndex
 {
 public:
-	char		pathName[MAX_PATHNAME];
+	std::string		pathName;	// Full path name
 
-	fs_pathIndex ()
-	{
-		pathName[0] = 0;
-	};
+	/**
+	\fn	CPathIndex ()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	**/
+	CPathIndex () {}
+
+	/**
+	\fn	CPathIndex (std::string pathName)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	pathName	Full path name
+	**/
+	CPathIndex (std::string pathName) :
+	  pathName(pathName)
+	  {
+	  };
 };
-typedef std::vector<fs_pathIndex*> fs_pathListType;
-extern fs_pathListType fs_pathList;
 
+/**
+\typedef	std::vector<CPathIndex*> TPathListType
+
+\brief	Defines an alias representing type of the path list.
+**/
+typedef std::vector<CPathIndex*> TPathListType;
+extern TPathListType PathList;	// List of paths, implemented in cc_file_system.cpp
+
+/**
+\fn	void FS_Init (sint32 maxHandles)
+
+\brief	Initializes the file system.
+
+\author	Paril
+\date	25/05/2010
+
+\param	maxHandles	The maximum handles. 
+**/
 void FS_Init (sint32 maxHandles);
 
+/**
+\fn	void FS_RemovePath (const char *pathName)
+
+\brief	Removes path 'pathName' from the list of paths.
+
+\author	Paril
+\date	25/05/2010
+
+\param	pathName	Path name.
+**/
 void FS_RemovePath (const char *pathName);
+
+/**
+\fn	void FS_AddPath (const char *pathName)
+
+\brief	Adds path 'pathName' to the list of paths. 
+
+\author	Paril
+\date	25/05/2010
+
+\param	pathName	Path name. 
+**/
 void FS_AddPath (const char *pathName);
+
+/**
+\fn	void FS_ReorderPath (const char *pathName)
+
+\brief	Re-orders path 'pathName' to the front of the list of paths
+
+\author	Paril
+\date	25/05/2010
+
+\param	pathName	Path name. 
+**/
 void FS_ReorderPath (const char *pathName);
 
-class fileHandleIndex_t
+/**
+\class	CFileHandleIndex
+
+\brief	A single file handle index.
+
+\author	Paril
+\date	25/05/2010
+**/
+class CFileHandleIndex
 {
 public:
-	fileHandle_t			handleIndex;
-	std::string				name;
+	FileHandle				handleIndex;	// Zero-based index of the handle
+	std::string				name;	// The name (usually full file name)
 
-	bool					inUse;
-	EFileType				fileType;
-	EFileOpMode				openMode;
+	bool					inUse;	// True if this handle is currently loaded
+	EFileType				fileType;	// Type of the file
+	EFileOpMode				openMode;	// The operation mode
 
 	union
 	{
 		FILE					*reg;
 		gzFile					gz;
-	} file;
+	} file;	// Union of the file type
 
-	fileHandleIndex_t() { }
+	/**
+	\fn	CFileHandleIndex()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	**/
+	CFileHandleIndex() { }
 
-	fileHandleIndex_t(fileHandle_t &handleIndex) :
+	/**
+	\fn	CFileHandleIndex(FileHandle &handleIndex)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	handleIndex	Zero-based index of a file handle. 
+	**/
+	CFileHandleIndex(FileHandle &handleIndex) :
 	  handleIndex(handleIndex)
 	{
 		Clear ();
 	};
 
+	/**
+	\fn	inline bool IsRegular()
+	
+	\brief	Query if this file is a regular C file.
+	
+	\return	true if regular, false if not. 
+	**/
 	inline bool IsRegular() { return fileType == FILE_REGULAR; };
+
+	/**
+	\fn	inline bool IsGz()
+	
+	\brief	Query if this file is a GZip file. 
+	
+	\return	true if gz, false if not. 
+	**/
 	inline bool IsGz() { return fileType == FILE_GZ; };
 
+	/**
+	\fn	void Clear ()
+	
+	\brief	Clears this file handle to its blank/initial state. 
+	**/
 	void Clear ()
 	{
 		name.clear();
@@ -136,60 +315,175 @@ public:
 		file.reg = NULL;
 	};
 };
-typedef std::map<fileHandle_t, fileHandleIndex_t> THandleIndexListType;
 
+/**
+\typedef	std::map<FileHandle, CFileHandleIndex> THandleIndexListType
+
+\brief	Defines an alias representing type of the handle index list.
+**/
+typedef std::map<FileHandle, CFileHandleIndex> THandleIndexListType;
+
+/**
+\class	CFileHandleList
+
+\brief	List of file handles.
+
+\author	Paril
+\date	25/05/2010
+**/
 class CFileHandleList
 {
-	fileHandle_t numHandlesAllocated;
+	FileHandle numHandlesAllocated;	// Number of handles allocated
 
-	// OpenList = allocated free keys
-	// ClosedList = used keys
-	THandleIndexListType OpenList, ClosedList;
+	THandleIndexListType	OpenList,	// allocated free keys
+							ClosedList;	// used keys
 
-	// Private members
-
-	// Creates a new key and increases allocated handles.
-	// Returns the new key.
+	/**
+	\fn	THandleIndexListType::iterator Create ()
+	
+	\brief	Creates a new key and increases allocated handles.
+			Returns the new key.
+	
+	\return	Iterator to the new key. 
+	**/
 	THandleIndexListType::iterator Create ();
 
-	// Moves "it" from OpenList to ClosedList
+	/**
+	\fn	THandleIndexListType::iterator MoveToClosed (THandleIndexListType::iterator it)
+	
+	\brief	Moves the handle of iterator 'it' to the Closed list and returns the new iterator
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	it	The iterator index that needs to be moved to the closed list. 
+	
+	\return	The iterator of the moved key. 
+	**/
 	THandleIndexListType::iterator MoveToClosed (THandleIndexListType::iterator it);
 
-	// Moves "it" from ClosedList to OpenList
+	/**
+	\fn	THandleIndexListType::iterator MoveToOpen (THandleIndexListType::iterator it)
+	
+	\brief	Moves the handle of iterator 'it' to the Open list and returns the new iterator
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	it	The iterator index that needs to be moved to the open list.
+	
+	\return	The iterator of the moved key. 
+	**/
 	THandleIndexListType::iterator MoveToOpen (THandleIndexListType::iterator it);
 
-public: // Interface
+public:
 
-	// allocated = number of handles to create automatically.
+	/**
+	\fn	CFileHandleList (sint32 allocated = 0)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	allocated	Number of handles to create automatically. 
+	**/
 	CFileHandleList (sint32 allocated = 0);
 
-	// Returns either a free key in Open or
-	// creates a new key and returns it.
+	/**
+	\fn	THandleIndexListType::iterator GetFreeHandle ()
+	
+	\brief	Gets a free handle. 
+	
+	\return	Returns either a free key in Open or
+			creates a new key and returns it.
+	**/
 	THandleIndexListType::iterator GetFreeHandle ();
 
-	// Gets the fileHandleIndex_t of a handle in-use
-	fileHandleIndex_t *GetHandle (fileHandle_t Key);
+	/**
+	\fn	CFileHandleIndex *GetHandle (FileHandle Key)
+	
+	\brief	Gets the CFileHandleIndex of a FileHandle 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Key	The key. 
+	
+	\return	null if it fails, else the handle. 
+	**/
+	CFileHandleIndex *GetHandle (FileHandle Key);
 
-	// Pushes a key back into the Open list
-	// Use this when you're done with a key
-	void PushFreeHandle (fileHandle_t Key);
+	/**
+	\fn	void PushFreeHandle (FileHandle Handle)
+	
+	\brief	Pushes a key back into the Open list.
+			Use this when you're done with a key
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Handle	The handle. 
+	**/
+	void PushFreeHandle (FileHandle Handle);
 
-	// Grabs a free handle
-	static fileHandle_t FS_GetFreeHandle (fileHandleIndex_t **handle);
+	/**
+	\fn	static FileHandle FS_GetFreeHandle (CFileHandleIndex **handle)
+	
+	\brief	Grabs a free handle 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	handle	If non-null, the handle. 
+	
+	\return	. 
+	**/
+	static FileHandle FS_GetFreeHandle (CFileHandleIndex **handle);
 
-	// Returns the handle pointer for handle "fileNum"
-	static fileHandleIndex_t *FS_GetHandle (fileHandle_t &fileNum);
+	/**
+	\fn	static CFileHandleIndex *FS_GetHandle (FileHandle &fileNum)
+	
+	\brief	Returns the handle pointer for handle "fileNum"
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	fileNum	The file number. 
+	
+	\return	null if it fails, else the handle. 
+	**/
+	static CFileHandleIndex *FS_GetHandle (FileHandle &fileNum);
 };
 
-// A wrapper class for reading/writing to files.
+/**
+\class	CFile
+
+\brief	A wrapper class for handling file streams. 
+
+\author	Paril
+\date	25/05/2010
+**/
 class CFile
 {
 	friend class CFileHandleList;
 	friend void FS_Init (sint32 maxHandles);
-	static class CFileHandleList *IndexList;
+	static class CFileHandleList *IndexList; // list of indexes; held statically here
 
-	fileHandleIndex_t	*Handle;
+	CFileHandleIndex	*Handle;	// The handle
 
+	/**
+	\fn	static void OutputError (const char *errorMsg)
+	
+	\brief	Output error. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	errorMsg	Message describing the error.
+
+	\todo	actually use this function more
+	**/
 	// Error management
 	static void OutputError (const char *errorMsg)
 	{
@@ -204,8 +498,20 @@ class CFile
 		ServerPrintf ("%s\n", errorMsg);
 	}
 
-	// Always returns in same order:
-	// [r/a][w][b][+][c]
+	/**
+	\fn	static const char *OpenModeFromEnum (EFileOpMode Mode)
+	
+	\brief	Returns a file mode from an EFileOpMode enum.
+			Always returns in same order:
+			[r/a][w][b][+][c]
+
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Mode	The mode. 
+	
+	\return	"ERR" if it fails, else a file mode string. 
+	**/
 	static const char *OpenModeFromEnum (EFileOpMode Mode)
 	{
 		static char mode[5];
@@ -288,12 +594,32 @@ class CFile
 	}
 
 public:
+	/**
+	\fn	CFile (const char *fileName, EFileOpMode Mode)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	fileName	Filename of the file. 
+	\param	Mode		The file operation mode. 
+	**/
 	CFile (const char *fileName, EFileOpMode Mode) :
 	  Handle (0)
 	{
 		Open (fileName, Mode);
 	};
 
+	/**
+	\fn	virtual ~CFile ()
+	
+	\brief	Destructor.
+			Frees the file if it is valid.
+	
+	\author	Paril
+	\date	25/05/2010
+	**/
 	virtual ~CFile ()
 	{
 		if (!Handle)
@@ -302,7 +628,17 @@ public:
 		Close ();
 	};
 
-	// Opens a file.
+	/**
+	\fn	void Open (const char *fileName, EFileOpMode Mode)
+	
+	\brief	Opens the given file. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	fileName	Filename of the file. 
+	\param	Mode		The file operation mode. 
+	**/
 	void Open (const char *fileName, EFileOpMode Mode)
 	{
 		const char *openMode = CFile::OpenModeFromEnum(Mode);
@@ -314,12 +650,12 @@ public:
 		void *fp = NULL;
 
 		// Search each of the search paths
-		for (fs_pathListType::iterator it = fs_pathList.begin(); it < fs_pathList.end(); ++it)
+		for (TPathListType::iterator it = PathList.begin(); it < PathList.end(); ++it)
 		{
 			char newFileName[MAX_PATHNAME];
-			fs_pathIndex *Index = (*it);
+			CPathIndex *Index = (*it);
 
-			char slashCheck = Index->pathName[strlen(Index->pathName)-1];
+			char slashCheck = Index->pathName[Index->pathName.length()-1];
 			if (slashCheck != '\\' && slashCheck != '/')
 				snprintf (newFileName, sizeof(newFileName)-1, "%s/%s", Index->pathName, fileName);
 			else
@@ -372,6 +708,11 @@ public:
 		}
 	};
 
+	/**
+	\fn	void Close ()
+	
+	\brief	Closes file. 
+	**/
 	void Close ()
 	{
 		if (!Handle)
@@ -387,6 +728,13 @@ public:
 		Handle = NULL;
 	};
 
+	/**
+	\fn	bool EndOfFile ()
+	
+	\brief	Queries if this file has reached EOF. 
+	
+	\return	true if EOF, else false. 
+	**/
 	bool EndOfFile ()
 	{
 		if (!Handle)
@@ -397,6 +745,18 @@ public:
 		return !!gzeof(Handle->file.gz);
 	};
 
+	/**
+	\fn	static bool Exists (const char *fileName)
+	
+	\brief	Query if a file exists.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	fileName	Filename of the file. 
+	
+	\return	true if file exists, false if it does not. 
+	**/
 	static bool Exists (const char *fileName)
 	{
 		CFile File (fileName, FILEMODE_READ);
@@ -406,6 +766,17 @@ public:
 		return true;
 	};
 
+	/**
+	\fn	void Write (const void *buffer, size_t size)
+	
+	\brief	Writes 'size' bytes from 'buffer' to this file
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	buffer	The buffer. 
+	\param	size	The size. 
+	**/
 	void Write (const void *buffer, size_t size)
 	{
 		if (!Handle)
@@ -419,18 +790,48 @@ public:
 			gzwrite (Handle->file.gz, buffer, size);
 	};
 
+	/**
+	\fn	template <typename TType> void Write (const void *buffer)
+	
+	\brief	Specialization for const void*
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	buffer	The buffer. 
+	**/
 	template <typename TType>
 	void Write (const void *buffer)
 	{
 		Write (buffer, sizeof(TType));
 	};
 
+	/**
+	\fn	template <typename TType> void Write (const TType &Ref)
+	
+	\brief	Writes a primitive data type to the file.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Ref	The reference to the primitive data type. 
+	**/
 	template <typename TType>
 	void Write (const TType &Ref)
 	{
 		Write (&Ref, sizeof(TType));
 	};
 
+	/**
+	\fn	void Write (const std::string &Ref)
+	
+	\brief	Writes an std::string to the file
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Ref	The string. 
+	**/
 	void Write (const std::string &Ref)
 	{
 		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
@@ -441,6 +842,16 @@ public:
 			Write (Ref.c_str(), Length);
 	};
 
+	/**
+	\fn	void WriteString (const char *Str)
+	
+	\brief	Writes a C string to the file.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Str	The string. 
+	**/
 	void WriteString (const char *Str)
 	{
 		sint32 Length = (Str) ? strlen(Str) + 1 : -1;
@@ -451,12 +862,34 @@ public:
 			Write (Str, Length);
 	};
 
+	/**
+	\fn	template <typename TType> void WriteArray (TType *Array, size_t Length)
+	
+	\brief	Writes an array of 'TType' to the file.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	Array	The array. 
+	\param	Length			The length. 
+	**/
 	template <typename TType>
 	void WriteArray (TType *Array, size_t Length)
 	{
 		Write (Array, sizeof(TType) * Length);
 	};
 
+	/**
+	\fn	void Read (void *buffer, size_t size)
+	
+	\brief	Reads 'size' bytes into 'buffer'
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	buffer	If non-null, the buffer. 
+	\param	size			The size. 
+	**/
 	void Read (void *buffer, size_t size)
 	{
 		if (!Handle)
@@ -470,12 +903,32 @@ public:
 			gzread (Handle->file.gz, buffer, size);
 	};
 
+	/**
+	\fn	template <typename TType> void Read (void *buffer)
+	
+	\brief	Specialization for void*
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	buffer	If non-null, the void * to read. 
+	**/
 	template <typename TType>
 	void Read (void *buffer)
 	{
 		Read (buffer, sizeof(TType));
 	};
 
+	/**
+	\fn	template <typename TType> TType Read ()
+	
+	\brief	Reads a primitive data type, and returns it.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\return	. 
+	**/
 	template <typename TType>
 	TType Read ()
 	{
@@ -486,6 +939,20 @@ public:
 		return Val;
 	};
 
+	/**
+	\fn	char *ReadString (sint32 Tag = TAG_GENERIC)
+	
+	\brief	Reads a C string from a file (optionally allocated using a different memory tag)
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	Tag	The memory tag to allocate the string memory under. 
+	
+	\return	null if it fails, else the string. 
+
+	\todo get rid of this function
+	**/
 	char *ReadString (sint32 Tag = TAG_GENERIC)
 	{
 		if (!Handle)
@@ -503,6 +970,13 @@ public:
 		return tempBuffer;
 	};
 
+	/**
+	\fn	std::string ReadCCString ()
+	
+	\brief	Reads a dynamic std::string from a file.
+	
+	\return	The std::string. 
+	**/
 	std::string ReadCCString ()
 	{
 		if (!Handle)
@@ -518,6 +992,13 @@ public:
 		return str;
 	};
 
+	/**
+	\fn	std::string ReadLine ()
+	
+	\brief	Reads an entire line from the file
+	
+	\return	The line. 
+	**/
 	std::string ReadLine ()
 	{
 		if (!Handle)
@@ -538,6 +1019,17 @@ public:
 		return tempStr;
 	};
 
+	/**
+	\fn	void ReadLine (char *buf, size_t maxSize)
+	
+	\brief	Reads an entire line from a file with the max size 'maxSize' into 'buf'
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	buf	If non-null, the buffer. 
+	\param	maxSize		Size of the maximum. 
+	**/
 	void ReadLine (char *buf, size_t maxSize)
 	{
 		if (!Handle)
@@ -549,6 +1041,17 @@ public:
 		buf[maxSize-1] = 0;
 	};
 
+	/**
+	\fn	template <typename TType> void ReadArray (TType *Array, size_t Length)
+	
+	\brief	Reads an array of 'Length' 'TType's and stores it in 'Array'
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	Array	If non-null, the array. 
+	\param	Length			The length. 
+	**/
 	template <typename TType>
 	void ReadArray (TType *Array, size_t Length)
 	{
@@ -563,6 +1066,17 @@ public:
 		Read (Array, sizeof(TType) * Length);
 	};
 
+	/**
+	\fn	void Seek (const ESeekOrigin seekOrigin, const size_t seekOffset)
+	
+	\brief	Moves the file position. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	seekOrigin	The seek origin. 
+	\param	seekOffset	The seek offset. 
+	**/
 	void Seek (const ESeekOrigin seekOrigin, const size_t seekOffset)
 	{
 		if (!Handle)
@@ -574,8 +1088,16 @@ public:
 			gzseek (Handle->file.gz, seekOffset, seekOrigin);
 	};
 
-	// There's like three of these Print wrappers nesting..
-	// Somewhere someone must die.
+	/**
+	\fn	void Print (const char *fmt, ...)
+	
+	\brief	Prints to a file. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	fmt	Describes the format to use. 
+	**/
 	void Print (const char *fmt, ...)
 	{
 		if (!Handle)
@@ -592,12 +1114,19 @@ public:
 		Write (text, strlen(text));
 	};
 
+	/**
+	\fn	inline size_t Length ()
+	
+	\brief	Returns the length of the entire file. 
+	
+	\return	Length of the file. 
+	**/
 	inline size_t Length ()
 	{
 		if (!Handle)
 			return 0;
 
-		filePos_t currentPos = Tell();
+		FilePos currentPos = Tell();
 
 		Seek (SEEKORIGIN_END, 0);
 		size_t len = Tell();
@@ -606,7 +1135,14 @@ public:
 		return len;
 	};
 
-	inline filePos_t Tell ()
+	/**
+	\fn	inline FilePos Tell ()
+	
+	\brief	Queries the file position of this stream. 
+	
+	\return	Returns current position of the file. 
+	**/
+	inline FilePos Tell ()
 	{
 		if (!Handle)
 			return -1;
@@ -617,6 +1153,14 @@ public:
 			return gztell(Handle->file.gz);
 	};
 
+	/**
+	\fn	inline bool Valid ()
+	
+	\brief	Checks if the file is valid.
+			An invalid file is not loaded.
+	
+	\return	true if it is valid, false if it is not. 
+	**/
 	inline bool Valid ()
 	{
 		return (Handle != NULL);
@@ -768,13 +1312,31 @@ inline CFile &operator>> (CFile &Stream, std::string &val)
 	return Stream;
 };
 
-// A wrapper for FS_LoadFile
+/**
+\class	CFileBuffer
+
+\brief	A class that holds a file buffer.
+
+\author	Paril
+\date	25/05/2010
+**/
 class CFileBuffer
 {
-	uint8 *Buffer;
-	size_t BufSize;
+	uint8 *Buffer;	// The buffer
+	size_t BufSize;	// Size of the buffer
 
 public:
+	/**
+	\fn	CFileBuffer (const char *FileName, bool Terminate)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	FileName	Filename of the file. 
+	\param	Terminate	True if the string should be terminated. 
+	**/
 	CFileBuffer (const char *FileName, bool Terminate) :
 	  Buffer(NULL),
 	  BufSize(0)
@@ -782,11 +1344,31 @@ public:
 		Open (FileName, Terminate);
 	};
 
+	/**
+	\fn	~CFileBuffer ()
+	
+	\brief	Destructor. 
+			Frees the buffer if it is still there.
+	
+	\author	Paril
+	\date	25/05/2010
+	**/
 	~CFileBuffer ()
 	{
 		Close ();
 	};
 
+	/**
+	\fn	void Open (const char *FileName, bool Terminate)
+	
+	\brief	Opens a file buffer, optionally null-terminating it.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param	FileName	Filename of the file. 
+	\param	Terminate	True if the string should be terminated. 
+	**/
 	void Open (const char *FileName, bool Terminate)
 	{
 		CFile File (FileName, FILEMODE_READ);
@@ -807,52 +1389,118 @@ public:
 		BufSize = len + termLen;
 	};
 
+	/**
+	\fn	void Close ()
+	
+	\brief	Closes the file buffer. 
+	**/
 	void Close ()
 	{
 		if (Valid())
 			QDelete[] Buffer;
 	};
 
+	/**
+	\fn	template <typename type> inline type *GetBuffer ()
+	
+	\brief	Gets the buffer.
+	
+	\return	null if it fails, else the buffer. 
+	**/
 	template <typename type>
 	inline type *GetBuffer ()
 	{
 		return (type*)Buffer;
 	};
 
+	/**
+	\fn	inline size_t GetLength ()
+	
+	\brief	Gets the length of the buffer. 
+	
+	\return	The length. 
+	**/
 	inline size_t GetLength ()
 	{
 		return BufSize;
 	};
 
+	/**
+	\fn	inline bool Valid ()
+	
+	\brief	Checks if buffer is valid.
+			You can do this to check if the file loaded or not.
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
 	inline bool Valid ()
 	{
 		return (Buffer != NULL);
 	};
 };
 
+/**
+\typedef	std::vector<std::string> TFindFilesType
+
+\brief	Defines an alias representing the list used by CFindFiles.
+**/
 typedef std::vector<std::string> TFindFilesType;
 
-// A wrapper for FS_FindFiles
+/**
+\class	CFindFilesCallback
+
+\brief	Callback for CFindFiles.
+	
+\ref Utilities "File System - Find Files"
+
+\author	Paril
+\date	25/05/2010
+**/
 class CFindFilesCallback
 {
 public:
+	/**
+	\fn	virtual void Query (std::string &fileName)
+	
+	\brief	Query function; must be overriden to do anything.
+			This is called for every file that is found.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	fileName	Filename of the file. 
+	**/
 	virtual void Query (std::string &fileName) {};
 };
 
-// Finds files in "Path" (optionally "Recurse"ing) that match the filter "Filter" and are of type "Extention".
-// If "AddDir" is true, it returns the stripped names, and not the full name for opening.
-// Filter and Extension can contain * for wildcards.
-const int MAX_FINDFILES_PATH	= 256;
+/**
+\class	CFindFiles
+
+\brief	A class used to find files and store them in a list (or optionally use a callback class).
+
+\ref Utilities "File System - Find Files"
+
+\author	Paril
+\date	25/05/2010
+**/
 class CFindFiles
 {
 public:
-	std::string		Path;
-	std::string		Filter;
-	std::string		Extension;
-	bool			AddDir;
-	bool			Recurse;
-	TFindFilesType	Files;
+	std::string		Path;	// Path to find in
+	std::string		Filter;	// The filter
+	std::string		Extension;	// The extension
+	bool			AddDir;	// true to add the full path to the found files
+	bool			Recurse;	// true to process recursively, false to process locally to Path only
+	TFindFilesType	Files;	// The files that were found
 
+	/**
+	\fn	CFindFiles ()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	**/
 	CFindFiles () :
 		Path(),
 		Filter(),
@@ -863,6 +1511,21 @@ public:
 		{
 		};
 
+	/**
+	\fn	CFindFiles (char *Path, char *Filter, char *Extension, bool AddDir = true,
+		bool Recurse = false)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	Path		If non-null, the path to start finding in. 
+	\param [in,out]	Filter		If non-null, the filter. 
+	\param [in,out]	Extension	If non-null, the extension. 
+	\param	AddDir				true to add the full path to the found files. 
+	\param	Recurse				true to process recursively, false to process locally to Path only. 
+	**/
 	CFindFiles (char *Path, char *Filter, char *Extension, bool AddDir = true, bool Recurse = false) :
 		Path(Path),
 		Filter(Filter),
@@ -874,6 +1537,22 @@ public:
 			FindFiles (NULL);
 		};
 
+	/**
+	\fn	CFindFiles (CFindFilesCallback *CallBack, char *Path, char *Filter, char *Extension,
+		bool AddDir = true, bool Recurse = false)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	CallBack	If non-null, pointer to callback to use with the files. 
+	\param [in,out]	Path		If non-null, the path to start finding in. 
+	\param [in,out]	Filter		If non-null, the filter. 
+	\param [in,out]	Extension	If non-null, the extension. 
+	\param	AddDir				true to add the full path to the found files. 
+	\param	Recurse				true to process recursively, false to process locally to Path only. 
+	**/
 	CFindFiles (CFindFilesCallback *CallBack, char *Path, char *Filter, char *Extension, bool AddDir = true, bool Recurse = false) :
 		Path(Path),
 		Filter(Filter),
@@ -885,6 +1564,22 @@ public:
 			FindFiles (CallBack);
 		};
 
+	/**
+	\fn	CFindFiles (CFindFilesCallback &CallBack, char *Path, char *Filter, char *Extension,
+		bool AddDir = true, bool Recurse = false)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	CallBack	Reference to callback to use with the files. 
+	\param [in,out]	Path		If non-null, the path to start finding in. 
+	\param [in,out]	Filter		If non-null, the filter. 
+	\param [in,out]	Extension	If non-null, the extension. 
+	\param	AddDir				true to add the full path to the found files. 
+	\param	Recurse				true to process recursively, false to process locally to Path only. 
+	**/
 	CFindFiles (CFindFilesCallback &CallBack, char *Path, char *Filter, char *Extension, bool AddDir = true, bool Recurse = false) :
 		Path(Path),
 		Filter(Filter),
@@ -896,9 +1591,15 @@ public:
 			FindFiles (&CallBack);
 		};
 
-	~CFindFiles ()
-	{
-	};
-
+	/**
+	\fn	void FindFiles (CFindFilesCallback *Callback)
+	
+	\brief	Does the actual finding.
+	
+	\author	Paril
+	\date	25/05/2010
+	
+	\param [in,out]	Callback	If non-null, the callback to call for each file. 
+	**/
 	void FindFiles (CFindFilesCallback *Callback);
 };

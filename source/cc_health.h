@@ -34,8 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_HEALTH_H) || !INCLUDE_GUARDS
 #define CC_GUARD_HEALTH_H
 
-// Class for health.
-CC_ENUM (uint8, EHealthFlags)
+/**
+\typedef	uint8 EHealthFlags
+
+\brief	Defines an alias representing flags for health boxes.
+**/
+typedef uint8 EHealthFlags;
+
+/**
+\enum	
+
+\brief	Values that represent flags for health boxes. 
+**/
+enum
 {
 	HEALTHFLAG_NONE,
 

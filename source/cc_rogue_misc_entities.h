@@ -34,6 +34,51 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_ROGUE_MISC_ENTITIES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_ROGUE_MISC_ENTITIES_H
 
+#if ROGUE_FEATURES
+
+class CPlatForm2 : public CPlatForm
+{
+public:
+	/**
+	\enum	
+
+	\brief	Values that represent spawnflags pertaining to CPlatForm2. 
+	**/
+	enum
+	{
+		PLAT2_CALLED	= BIT(0),
+		PLAT2_MOVING	= BIT(1),
+		PLAT2_WAITING	= BIT(2)
+	};
+
+	bool			RequiresActivation;
+	FrameNumber_t	LastMoveTime;
+	EPlat2Flags		PlatFlags;
+	class CBadArea	*BadArea;
+
+	CPlatForm2();
+	CPlatForm2(sint32 Index);
+
+	void Blocked (IBaseEntity *Other);
+	void Use (IBaseEntity *Other, IBaseEntity *Activator);
+	void HitTop ();
+	void HitBottom ();
+
+	ENTITYFIELDS_SAVABLE(CPlatForm2)
+
+	void DoEndFunc ();
+	void GoDown ();
+	void GoUp ();
+	void Operate (IBaseEntity *Other);
+	void Think ();
+	void SpawnDangerArea ();
+	void KillDangerArea ();
+
+	CPlatFormInsideTrigger *SpawnInsideTrigger ();
+	void Spawn ();
+};
+
+#endif
 
 #else
 FILE_WARNING

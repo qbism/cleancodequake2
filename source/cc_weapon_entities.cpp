@@ -227,7 +227,12 @@ CBlasterProjectile
 ================
 */
 
-CC_ENUM (uint8, EBlasterFlags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CBlasterProjectile. 
+**/
+enum
 {
 	HYPER_FLAG		= BIT(0)
 };

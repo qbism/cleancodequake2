@@ -1,4 +1,4 @@
-CC_ENUM (uint16, EStalkerFrames)
+enum
 {
 	FRAME_idle01,
 	FRAME_idle02,

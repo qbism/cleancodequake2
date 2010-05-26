@@ -788,7 +788,7 @@ void CCTFSayTeamCommand::operator () ()
 The origin is the bottom of the banner.
 The banner is 248 tall.
 */
-CC_ENUM (uint8, ECTFBannerSpawnflags)
+enum
 {
 	SPAWNFLAG_BLUE = BIT(0)
 };

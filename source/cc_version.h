@@ -34,22 +34,57 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_VERSION_H) || !INCLUDE_GUARDS
 #define CC_GUARD_VERSION_H
 
+/**
+\def	CLEANCODE_VERSION_PREFIX
+
+\brief	Cleancode version prefix string.
+
+\remarks	Paril, 25/05/2010. 
+**/
 #define CLEANCODE_VERSION_PREFIX	"pr"
-const int CLEANCODE_VERSION_MAJOR_N		= 1;			// x
-const int CLEANCODE_VERSION_MINOR_N		= 0;			// xxxx
-const int CLEANCODE_VERSION_BUILD_N		= 357;			// xxxx
+const int CLEANCODE_VERSION_MAJOR_N		= 1;			// x		The version major number
+const int CLEANCODE_VERSION_MINOR_N		= 0;			// xxxx		The version minor number
+const int CLEANCODE_VERSION_BUILD_N		= 357;			// xxxx		The version build number
 
 #define CLEANCODE_VERSION_PRINT			"\"%s.%u.%04u.%05u\""
 #define CLEANCODE_VERSION_PRINT_ARGS	CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N
 
 #if !NO_VERSION_CHECKING
-CC_ENUM (uint8, EVersionComparison)
+/**
+\typedef	uint8 EVersionComparison
+
+\brief	Defines an alias representing the version comparison return value.
+**/
+typedef uint8 EVersionComparison;
+
+/**
+\enum	
+
+\brief	Values that represent version comparisons. 
+**/
+enum
 {
 	VERSION_SAME,
 	VERSION_OLDER,
 	VERSION_NEWER,
 };
 
+/**
+\fn	inline EVersionComparison CompareVersion (const char *Prefix, uint8 Major, uint16 Minor,
+	uint32 Build)
+
+\brief	Compare the version Prefix+Major+Minor+Build to CLEANCODE_VERSION_* version
+
+\author	Paril
+\date	25/05/2010
+
+\param	Prefix	The prefix. 
+\param	Major	The major version. 
+\param	Minor	The minor version. 
+\param	Build	The build version. 
+
+\return	An EVersionComparison describing the version comparison. 
+**/
 inline EVersionComparison CompareVersion (const char *Prefix, uint8 Major, uint16 Minor, uint32 Build)
 {
 	if (!strcmp (Prefix, CLEANCODE_VERSION_PREFIX) &&
@@ -65,6 +100,15 @@ inline EVersionComparison CompareVersion (const char *Prefix, uint8 Major, uint1
 	else
 		return VERSION_OLDER;
 }
+
+/**
+\fn	void InitVersion ()
+
+\brief	Initialises the version system. 
+
+\author	Paril
+\date	25/05/2010
+**/
 void InitVersion ();
 
 #endif

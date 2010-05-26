@@ -122,14 +122,38 @@ public:
 	static void		Spawn (CPlayerEntity *Owner, vec3f Start, vec3f AimDir);
 };
 
-CC_ENUM (uint8, ESphereType)
+/**
+\typedef	uint8 ESphereType
+
+\brief	Defines an alias representing type of sphere.
+**/
+typedef uint8 ESphereType;
+
+/**
+\enum	
+
+\brief	Values that represent the types of spheres. 
+**/
+enum
 {
 	SPHERE_DEFENDER,
 	SPHERE_HUNTER,
 	SPHERE_VENGEANCE
 };
 
-CC_ENUM (uint8, ESphereFlags)
+/**
+\typedef	uint8 ESphereFlags
+
+\brief	Defines an alias representing the sphere flags.
+**/
+typedef uint8 ESphereFlags;
+
+/**
+\enum	
+
+\brief	Values that represent the sphere flags. 
+**/
+enum
 {
 	SPHERE_DOPPLEGANGER		= BIT(0),
 };

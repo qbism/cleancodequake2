@@ -34,7 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_MAPPRINT_H) || !INCLUDE_GUARDS
 #define CC_GUARD_MAPPRINT_H
 
-CC_ENUM (uint8, EMapPrintType)
+/**
+\typedef	uint8 EMapPrintType
+
+\brief	Defines an alias representing type of print.
+**/
+typedef uint8 EMapPrintType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of print. 
+**/
+enum
 {
 	MAPPRINT_WARNING,
 	MAPPRINT_ERROR,

@@ -218,7 +218,19 @@ public:
 class CTesla : public IBounceProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
 public:
-	CC_ENUM (uint8, ETeslaThinkType)
+	/**
+	\typedef	uint8 ETeslaThinkType
+	
+	\brief	Defines an alias representing think type of a Tesla.
+	**/
+	typedef uint8 ETeslaThinkType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent the think type of a Tesla. 
+	**/
+	enum
 	{
 		TESLATHINK_NONE,
 

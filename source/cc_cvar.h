@@ -72,7 +72,19 @@ public:
 	bool Modified ();
 };
 
-CC_ENUM (uint16, ECvars)
+/**
+\typedef	uint32 ECvars
+
+\brief	Defines an alias representing the list of cvars.
+**/
+typedef uint32 ECvars;
+
+/**
+\enum	
+
+\brief	Values that represent the list of cvars. 
+**/
+enum
 {
 	CV_DEATHMATCH,
 	CV_COOP,

@@ -29,17 +29,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ==============================================================================
 */
 
-// PS_Parse* flags
-CC_ENUM (uint8, EParseFlags)
+/**
+\typedef	uint8 EParseFlags
+
+\brief	Defines an alias representing parse flags.
+**/
+typedef uint8 EParseFlags;
+
+/**
+\enum	
+
+\brief	Values that represent parse flags. 
+**/
+enum
 {
-	PSF_ALLOW_NEWLINES		= 1,	// Allow token parsing to go onto the next line
-	PSF_CONVERT_NEWLINE		= 2,	// Convert newline characters in quoted tokens to their escape character
-	PSF_TO_LOWER			= 4,	// Lower-case the token before returning
-	PSF_WARNINGS_AS_ERRORS	= 8,	// Treat all warnings as errors
+	PSF_ALLOW_NEWLINES		= BIT(0),	// Allow token parsing to go onto the next line
+	PSF_CONVERT_NEWLINE		= BIT(1),	// Convert newline characters in quoted tokens to their escape character
+	PSF_TO_LOWER			= BIT(2),	// Lower-case the token before returning
+	PSF_WARNINGS_AS_ERRORS	= BIT(3),	// Treat all warnings as errors
 };
 
-// Session Properties
-CC_ENUM (uint8, ESessionProperties)
+/**
+\typedef	uint8 ESessionProperties
+
+\brief	Defines an alias representing parse session properties.
+**/
+typedef uint8 ESessionProperties;
+
+/**
+\enum	
+
+\brief	Values that represent parse session properties. 
+**/
+enum
 {
 	PSP_COMMENT_BLOCK	= 1,		// Treat "/*" "*/" as block-comment marker
 	PSP_COMMENT_LINE	= 2,		// Treat "//" as a line-comment marker

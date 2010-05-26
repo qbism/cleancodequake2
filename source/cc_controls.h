@@ -37,12 +37,36 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <sstream>
 #include "cc_conchars.h"
 
-CC_ENUM (uint8, ELabelFlags)
+/**
+\typedef	uint8 ELabelFlags
+
+\brief	Defines an alias representing the label flags.
+**/
+typedef uint8 ELabelFlags;
+
+/**
+\enum	
+
+\brief	Values that represent label flags. 
+**/
+enum
 {
 	LF_GREEN			=	1,
 };
 
-CC_ENUM (uint8, ELabelAlign)
+/**
+\typedef	uint8 ELabelAlign
+
+\brief	Defines an alias representing label text alignment.
+**/
+typedef uint8 ELabelAlign;
+
+/**
+\enum	
+
+\brief	Values that represent label text alignment. 
+**/
+enum
 {
 	LA_LEFT,
 	LA_CENTER,
@@ -123,7 +147,19 @@ public:
 	virtual void	Update (CPlayerEntity *Player);
 };
 
-CC_ENUM (uint8, ESliderTextPosition)
+/**
+\typedef	uint8 ESliderTextPosition
+
+\brief	Defines an alias representing the slider text position.
+**/
+typedef uint8 ESliderTextPosition;
+
+/**
+\enum	
+
+\brief	Values that represent the slider text position. 
+**/
+enum
 {
 	STP_RIGHT,
 	STP_TOP,

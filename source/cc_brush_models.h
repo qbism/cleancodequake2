@@ -34,7 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_BRUSHMODELS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_BRUSHMODELS_H
 
-CC_ENUM (uint8, EBrushThinkType)
+/**
+\typedef	uint8 EBrushThinkType
+
+\brief	Defines an alias representing an index of the current think state of a brush entity.
+**/
+typedef uint8 EBrushThinkType;
+
+/**
+\enum	
+
+\brief	Values that represent the base think states for brushes. 
+**/
+enum
 {
 	BRUSHTHINK_NONE,
 
@@ -51,7 +63,19 @@ CC_ENUM (uint8, EBrushThinkType)
 	BRUSHTHINK_CUSTOM_START,
 };
 
-CC_ENUM (uint32, EBrushType)
+/**
+\typedef	uint32 EBrushType
+
+\brief	Defines an alias representing what types of brush model an entity can be converted to.
+**/
+typedef uint32 EBrushType;
+
+/**
+\enum	
+
+\brief	Values that represent brush model types. 
+**/
+enum
 {
 	BRUSH_BASE			= BIT(0),
 
@@ -69,7 +93,19 @@ CC_ENUM (uint32, EBrushType)
 	BRUSH_EXPLOSIVE		= BIT(12),
 };
 
-CC_ENUM (uint8, EMoveState)
+/**
+\typedef	uint8 EMoveState
+
+\brief	Defines an alias representing current movement state.
+**/
+typedef uint8 EMoveState;
+
+/**
+\enum	
+
+\brief	Values that represent current movement state. 
+**/
+enum
 {
 	STATE_TOP,
 	STATE_BOTTOM,
@@ -195,7 +231,12 @@ public:
 	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
-CC_ENUM (uint8, EPlatformSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CPlatForm. 
+**/
+enum
 {
 	PLAT_LOW_TRIGGER	= BIT(0),
 };
@@ -239,46 +280,6 @@ public:
 	virtual void Spawn ();
 };
 
-#if ROGUE_FEATURES
-
-class CPlatForm2 : public CPlatForm
-{
-public:
-	CC_ENUM (uint8, EPlat2Flags)
-	{
-		PLAT2_CALLED	= BIT(0),
-		PLAT2_MOVING	= BIT(1),
-		PLAT2_WAITING	= BIT(2)
-	};
-
-	bool			RequiresActivation;
-	FrameNumber_t	LastMoveTime;
-	EPlat2Flags		PlatFlags;
-	class CBadArea	*BadArea;
-
-	CPlatForm2();
-	CPlatForm2(sint32 Index);
-
-	void Blocked (IBaseEntity *Other);
-	void Use (IBaseEntity *Other, IBaseEntity *Activator);
-	void HitTop ();
-	void HitBottom ();
-
-	ENTITYFIELDS_SAVABLE(CPlatForm2)
-
-	void DoEndFunc ();
-	void GoDown ();
-	void GoUp ();
-	void Operate (IBaseEntity *Other);
-	void Think ();
-	void SpawnDangerArea ();
-	void KillDangerArea ();
-
-	CPlatFormInsideTrigger *SpawnInsideTrigger ();
-	void Spawn ();
-};
-#endif
-
 class CDoorTrigger : public ITouchableEntity
 {
 public:
@@ -297,12 +298,25 @@ class CDoor : public IMapEntity, public IBrushModel, public IHurtableEntity, pub
 {
 public:
 #if ROGUE_FEATURES
-	CC_ENUM (uint8, EDoorUse)
+	/**
+	\typedef	uint8 EDoorUse
+	
+	\brief	Defines an alias representing the door use state.
+	**/
+	typedef uint8 EDoorUse;
+	
+	/**
+	\enum	
+	
+	\brief	Values that represent a door's use state. 
+	**/
+	enum
 	{
 		DOORUSE_NONE,
 		DOORUSE_NORMAL,
 		DOORUSE_ACTIVATE
 	};
+
 	EDoorUse	UseType;
 #endif
 
@@ -643,7 +657,12 @@ public:
 	}
 
 #if ROGUE_FEATURES
-	CC_ENUM (uint8, ERotatingBrushThinkType)
+	/**
+	\enum	
+	
+	\brief	Values that represent a CRotatingBrush' think state. 
+	**/
+	enum
 	{
 		ROTATINGTHINK_ACCEL,
 		ROTATINGTHINK_DECEL
@@ -768,7 +787,19 @@ public:
 class CFuncExplosive : public IMapEntity, public IBrushModel, public IUsableEntity, public IHurtableEntity
 {
 public:
-	CC_ENUM (uint8, EFuncExplosiveUseType)
+	/**
+	\typedef	uint8 EFuncExplosiveUseType
+	
+	\brief	Defines an alias representing a CFuncExplosive's use state.
+	**/
+	typedef uint8 EFuncExplosiveUseType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent a CFuncExplosive's use state. 
+	**/
+	enum
 	{
 		FUNCEXPLOSIVE_USE_NONE,
 		FUNCEXPLOSIVE_USE_SPAWN,

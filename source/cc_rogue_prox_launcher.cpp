@@ -75,7 +75,19 @@ const float STOP_EPSILON		= 0.1f;
 class CProx : public IBounceProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
 public:
-	CC_ENUM (uint8, EProxThinkType)
+	/**
+	\typedef	uint8 EProxThinkType
+	
+	\brief	Defines an alias representing think state of the proximity mine.
+	**/
+	typedef uint8 EProxThinkType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent the think state of a prox mine. 
+	**/
+	enum
 	{
 		PROXTHINK_NONE,
 

@@ -72,7 +72,19 @@ public:
 	};
 };
 
-CC_ENUM (uint32, EMonsterAIFlags)
+/**
+\typedef	uint32 EMonsterAIFlags
+
+\brief	Defines an alias representing the monster AI flags .
+**/
+typedef uint32 EMonsterAIFlags;
+
+/**
+\enum	
+
+\brief	Values that represent monster AI flags. 
+**/
+enum
 {
 	//monster ai flags
 	AI_STAND_GROUND			= BIT(0),
@@ -112,7 +124,19 @@ CC_ENUM (uint32, EMonsterAIFlags)
 #endif
 };
 
-CC_ENUM (uint32, EMonsterFlags)
+/**
+\typedef	uint32 EMonsterFlags
+
+\brief	Defines an alias representing monster flags.
+**/
+typedef uint32 EMonsterFlags;
+
+/**
+\enum	
+
+\brief	Values that represent monster flags. 
+**/
+enum
 {
 	MF_HAS_MELEE			= BIT(0),
 	MF_HAS_IDLE				= BIT(1),
@@ -127,8 +151,19 @@ CC_ENUM (uint32, EMonsterFlags)
 #endif
 };
 
-//monster attack state
-CC_ENUM (uint8, EAttackState)
+/**
+\typedef	uint8 EAttackState
+
+\brief	Defines an alias representing a monster's attack state.
+**/
+typedef uint8 EAttackState;
+
+/**
+\enum	
+
+\brief	Values that represent a monster's attack state. 
+**/
+enum
 {
 	AS_STRAIGHT,
 	AS_SLIDING,
@@ -139,10 +174,21 @@ CC_ENUM (uint8, EAttackState)
 #endif
 };
 
-const int MELEE_DISTANCE	= 80;
+const int MELEE_DISTANCE	= 80;	// Default melee distance
 
-//range
-CC_ENUM (uint8, ERangeType)
+/**
+\typedef	uint8 ERangeType
+
+\brief	Defines an alias representing range.
+**/
+typedef uint8 ERangeType;
+
+/**
+\enum	
+
+\brief	Values that represent range. 
+**/
+enum
 {
 	RANGE_MELEE,
 	RANGE_NEAR,
@@ -150,6 +196,11 @@ CC_ENUM (uint8, ERangeType)
 	RANGE_FAR
 };
 
+/**
+\enum	
+
+\brief	Values that represent monster think states.
+**/
 enum
 {
 	MONSTERENTITY_THINK_NONE,
@@ -158,7 +209,12 @@ enum
 	MONSTERENTITY_THINK_CUSTOM
 };
 
-CC_ENUM (uint8, EMonsterSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CMonsterEntity. 
+**/
+enum
 {
 	MONSTER_AMBUSH			= 	BIT(0),
 	MONSTER_TRIGGER_SPAWN	=	BIT(1),
@@ -292,7 +348,7 @@ public:
 	void LoadFields (CFile &File);
 
 #define MONSTER_SOUND_ENUM(first,...) \
-	CC_ENUM(uint8, EMyMonsterSoundEnum) \
+	enum \
 	{ \
 		first, \
 		__VA_ARGS__ \

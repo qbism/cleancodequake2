@@ -422,8 +422,6 @@ void CMonsterEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	Monster->Touch (Other, plane, surf);
 }
 
-vec3f VelocityForDamage (sint32 Damage);
-
 void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects)
 {
 	float	vscale;

@@ -391,7 +391,19 @@ public:
 	};
 };
 
-CC_ENUM (uint8, EBloodType)
+/**
+\typedef	uint8 EBloodType
+
+\brief	Defines an alias representing type of blood temporary entity.
+**/
+typedef uint8 EBloodType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of blood temporary entities. 
+**/
+enum
 {
 	BT_BLOOD = TE_BLOOD,
 	BT_MORE_BLOOD = TE_MOREBLOOD,
@@ -426,7 +438,19 @@ public:
 	};
 };
 
-CC_ENUM (uint8, EBlasterType)
+/**
+\typedef	uint8 EBlasterType
+
+\brief	Defines an alias representing type of blaster explosion.
+**/
+typedef uint8 EBlasterType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of blaster explosion. 
+**/
+enum
 {
 	BL_BLASTER = TE_BLASTER,
 	BL_BLUE_HYPERBLASTER = TE_BLUEHYPERBLASTER,
@@ -462,7 +486,19 @@ public:
 	};
 };
 
-CC_ENUM (uint8, ESplashType)
+/**
+\typedef	uint8 ESplashType
+
+\brief	Defines an alias representing type of splash particles.
+**/
+typedef uint8 ESplashType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of splash particles. 
+**/
+enum
 {
 	SPT_UNKNOWN,
 	SPT_SPARKS,
@@ -510,7 +546,19 @@ public:
 	};
 };
 
-CC_ENUM (uint8, ESparkType)
+/**
+\typedef	uint8 ESparkType
+
+\brief	Defines an alias representing type of sparks.
+**/
+typedef uint8 ESparkType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of sparks. 
+**/
+enum
 {
 	ST_SPARKS = TE_SPARKS,
 	ST_BULLET_SPARKS = TE_BULLET_SPARKS,

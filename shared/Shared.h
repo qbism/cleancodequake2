@@ -66,13 +66,23 @@ const int MINOR_VERSION_R1Q2_BASE			= 1903;
 const int MINOR_VERSION_R1Q2_UCMD_UPDATES	= 1904;
 const int MINOR_VERSION_R1Q2_32BIT_SOLID	= 1905;
 
-const int  FRAMETIME		= 1;
+const int  FRAMETIME		= 1;	// 1 frame = .1 seconds
 
-//
-// server to client
-// note: ONLY add things to the bottom, to keep Quake2 compatibility
-//
-CC_ENUM (uint8, ESVCType)
+/**
+\typedef	uint8 ESVCType
+
+\brief	Defines an alias representing type of server communication operations.
+**/
+typedef uint8 ESVCType;
+
+/**
+\enum	
+
+\brief	Values that represent game to server/client communication operations.
+
+\note	ONLY add things to the bottom, to keep Quake2 compatibility
+**/
+enum
 {
 	SVC_BAD,
 
@@ -110,10 +120,22 @@ CC_ENUM (uint8, ESVCType)
 	SVC_MAX
 };
 
+/**
+\typedef	uint8 EGamePrintLevel
+
+\brief	Defines an alias representing the game print levels.
+**/
 //
 // game print flags
 //
-CC_ENUM (uint8, EGamePrintLevel)
+typedef uint8 EGamePrintLevel;
+
+/**
+\enum	
+
+\brief	Values that represent game print levels. 
+**/
+enum
 {
 	PRINT_LOW,				// pickup messages
 	PRINT_MEDIUM,			// death messages
@@ -122,10 +144,19 @@ CC_ENUM (uint8, EGamePrintLevel)
 	PRINT_CENTER			// center print messages (Paril)
 };
 
-//
-// destination class for gi.multicast()
-//
-CC_ENUM (uint8, EMultiCast)
+/**
+\typedef	uint8 EMultiCast
+
+\brief	Defines an alias representing the multicast destination types.
+**/
+typedef uint8 EMultiCast;
+
+/**
+\enum	
+
+\brief	Values that represent the destination types for multicasts.
+**/
+enum
 {
 	MULTICAST_ALL,
 	MULTICAST_PHS,
@@ -305,13 +336,21 @@ const int MAX_QEXT				= 16;		// max length of a quake game pathname extension
 const int MAX_QPATH				= 64;		// max length of a quake game pathname
 const int MAX_OSPATH			= 128;		// max length of a filesystem pathname
 
-//
-// this is only here so the functions in shared/ can link
-//
-const int MAX_COMPRINT = 4096;
+const int MAX_COMPRINT = 4096;	// The maximum value of a single console line print
 
-// Com_Printf
-CC_ENUM (uint16, EComPrint)
+/**
+\typedef	uint8 EComPrint
+
+\brief	Defines an alias representing print types.
+**/
+typedef uint8 EComPrint;
+
+/**
+\enum	
+
+\brief	Values that represent print types. 
+**/
+enum
 {
 	PRNT_WARNING			= BIT(0),
 	PRNT_ERROR				= BIT(1),
@@ -319,25 +358,23 @@ CC_ENUM (uint16, EComPrint)
 	PRNT_CHATHUD			= BIT(3)
 };
 
-// Com_Error
-CC_ENUM (uint8, EComErrorType)
+/**
+\typedef	uint8 EComErrorType
+
+\brief	Defines an alias representing type of error .
+**/
+typedef uint8 EComErrorType;
+
+/**
+\enum	
+
+\brief	Values that represent error types. 
+**/
+enum
 {
 	ERR_FATAL,				// exit the entire game with a popup window
 	ERR_DROP,				// print to console and disconnect from game
 	ERR_DISCONNECT			// don't kill server
-};
-
-//
-// styles for R_DrawString/Char
-//
-enum
-{
-	FS_ALIGN_CENTER			= BIT(0),
-	FS_ALIGN_RIGHT			= BIT(1),
-	FS_ITALIC				= BIT(2),
-	FS_SECONDARY			= BIT(3),
-	FS_SHADOW				= BIT(4),
-	FS_SQUARE				= BIT(5),	// Force the width/height to the character width/height value that's largest
 };
 
 /*
@@ -350,7 +387,19 @@ enum
 ==============================================================================
 */
 
-CC_ENUM (uint16, ECvarFlags)
+/**
+\typedef	uint16 ECvarFlags
+
+\brief	Defines an alias representing cvar flags.
+**/
+typedef uint16 ECvarFlags;
+
+/**
+\enum	
+
+\brief	Values that represent cvar flags. 
+**/
+enum
 {
 	CVAR_ARCHIVE		= BIT(0),	// saved to config
 	CVAR_USERINFO		= BIT(1),	// added to userinfo  when changed
@@ -377,10 +426,20 @@ struct cVar_t
 ==============================================================================
 */
 
-//
-// lower bits are stronger, and will eat weaker brushes completely
-//
-CC_ENUM (sint32, EBrushContents)
+/**
+\typedef	sint32 EBrushContents
+
+\brief	Defines an alias representing BSP brush contents.
+**/
+typedef sint32 EBrushContents;
+
+/**
+\enum	
+
+\brief	Values that represent brush contents. 
+		lower bits are stronger, and will eat weaker brushes completely
+**/
+enum
 {
 	CONTENTS_SOLID			= BIT(0),		// an eye is never valid in a solid
 	CONTENTS_WINDOW			= BIT(1),		// translucent, but not watery
@@ -452,7 +511,19 @@ CC_ENUM (sint32, EBrushContents)
 	CONTENTS_MASK_CURRENT		= (CONTENTS_CURRENT_0|CONTENTS_CURRENT_90|CONTENTS_CURRENT_180|CONTENTS_CURRENT_270|CONTENTS_CURRENT_UP|CONTENTS_CURRENT_DOWN),
 };
 
-CC_ENUM (uint8, EWaterLevel)
+/**
+\typedef	uint8 EWaterLevel
+
+\brief	Defines an alias representing a position's water level .
+**/
+typedef uint8 EWaterLevel;
+
+/**
+\enum	
+
+\brief	Values that represent water levels. 
+**/
+enum
 {
 	WATER_NONE,
 	WATER_FEET,
@@ -460,7 +531,19 @@ CC_ENUM (uint8, EWaterLevel)
 	WATER_UNDER
 };
 
-CC_ENUM (sint32, ESurfaceFlags)
+/**
+\typedef	sint32 ESurfaceFlags
+
+\brief	Defines an alias representing plane surface flags.
+**/
+typedef sint32 ESurfaceFlags;
+
+/**
+\enum	
+
+\brief	Values that represent plane surface flags. 
+**/
+enum
 {
 	SURF_TEXINFO_LIGHT		= BIT(0),		// value will hold the light strength
 	SURF_TEXINFO_SLICK		= BIT(1),		// affects game physics
@@ -475,40 +558,6 @@ CC_ENUM (sint32, ESurfaceFlags)
 	SURF_TEXINFO_SKIP		= BIT(9),	// only the compiler uses them
 };
 
-CC_ENUM (uint32, EQ3SurfaceFlags)
-{
-	// Q3BSP
-	SHREF_NODAMAGE			= BIT(0),		// never give falling damage
-	SHREF_SLICK				= BIT(1),		// effects game physics
-	SHREF_SKY				= BIT(2),		// lighting from environment map
-	SHREF_LADDER			= BIT(3),
-	SHREF_NOIMPACT			= BIT(4),	// don't make missile explosions
-	SHREF_NOMARKS			= BIT(5),	// don't leave missile marks
-	SHREF_FLESH				= BIT(6),	// make flesh sounds and effects
-	SHREF_NODRAW			= BIT(7),	// don't generate a drawsurface at all
-	SHREF_HINT				= BIT(8),	// make a primary bsp splitter
-	SHREF_SKIP				= BIT(9),	// completely ignore, allowing non-closed brushes
-	SHREF_NOLIGHTMAP		= BIT(10),	// surface doesn't need a lightmap
-	SHREF_POINTLIGHT		= BIT(11),	// generate lighting info at vertexes
-	SHREF_METALSTEPS		= BIT(12),	// clanking footsteps
-	SHREF_NOSTEPS			= BIT(13),	// no footstep sounds
-	SHREF_NONSOLID			= BIT(14),	// don't collide against curves with this set
-	SHREF_LIGHTFILTER		= BIT(15),	// act as a light filter during q3map -light
-	SHREF_ALPHASHADOW		= BIT(16),	// do per-pixel light shadow casting in q3map
-	SHREF_NODLIGHT			= BIT(17),	// never add dynamic lights
-	SHREF_DUST				= BIT(18), // leave a dust trail when walking on this surface
-	// !Q3BSP
-};
-
-//
-// gi.BoxEdicts() can return a list of either solid or trigger entities
-//
-CC_ENUM (uint8, EAreaType)
-{
-	AREA_SOLID	= 1,
-	AREA_TRIGGERS
-};
-
 /*
 ==============================================================================
 
@@ -516,20 +565,6 @@ CC_ENUM (uint8, EAreaType)
 
 ==============================================================================
 */
-
-CC_ENUM (uint8, EPlaneInfo)
-{
-	// Axial planes
-	PLANE_X,
-	PLANE_Y,
-	PLANE_Z,
-
-	// Non-axial, snapped to the nearest
-	PLANE_NON_AXIAL,
-	PLANE_ANYX = 3,
-	PLANE_ANYY,
-	PLANE_ANYZ
-};
 
 struct plane_t
 {
@@ -617,10 +652,19 @@ struct pMoveState_t
 										// changed by spawns, rotating objects, and teleporters
 };
 
-//
-// button bits
-//
-CC_ENUM (uint8, EButtons)
+/**
+\typedef	uint8 EButtons
+
+\brief	Defines an alias representing the button bits.
+**/
+typedef uint8 EButtons;
+
+/**
+\enum	
+
+\brief	Values that represent button bits. 
+**/
+enum
 {
 	BUTTON_ATTACK			= BIT(0),
 	BUTTON_USE				= BIT(1),
@@ -687,11 +731,21 @@ struct pMove_t
 ==============================================================================
 */
 
-// entityState_t->effects
-// Effects are things handled on the client side (lights, particles, frame
-// animations) that happen constantly on the given entity. An entity that has
-// effects will be sent to the client even if it has a zero index model.
-CC_ENUM (uint32, EEntityStateEffects)
+/**
+\typedef	uint32 EEntityStateEffects
+
+\brief	Defines an alias representing the entity state effects.
+**/
+typedef uint32 EEntityStateEffects;
+
+/**
+\enum	
+
+\brief	Values that represent entity state effects. 
+		Effects are things handled on the client side (lights, particles, frame
+		animations) that happen constantly on the given entity.
+**/
+enum
 {
 	EF_ROTATE			= BIT(0),		// rotate (bonus items)
 	EF_GIB				= BIT(1),		// leave a trail
@@ -748,8 +802,19 @@ CC_ENUM (uint32, EEntityStateEffects)
 ==============================================================================
 */
 
-// entityState_t->renderfx flags
-CC_ENUM (sint32, EEntityStateRenderEffects)
+/**
+\typedef	sint32 EEntityStateRenderEffects
+
+\brief	Defines an alias representing the entity state render effects.
+**/
+typedef sint32 EEntityStateRenderEffects;
+
+/**
+\enum	
+
+\brief	Values that represent entity state render effects. 
+**/
+enum
 {
 	RF_MINLIGHT			= BIT(0),		// allways have some light (viewmodel)
 	RF_VIEWERMODEL		= BIT(1),		// don't draw through eyes, only mirrors
@@ -806,8 +871,19 @@ CC_ENUM (sint32, EEntityStateRenderEffects)
 ==============================================================================
 */
 
-// muzzle flashes / player effects
-CC_ENUM (uint8, EMuzzleFlash)
+/**
+\typedef	uint8 EMuzzleFlash
+
+\brief	Defines an alias representing the muzzle flash types.
+**/
+typedef uint8 EMuzzleFlash;
+
+/**
+\enum	
+
+\brief	Values that represent muzzle flash types of both players and monsters. 
+**/
+enum
 {
 	MZ_BLASTER,
 	MZ_MACHINEGUN,
@@ -1335,9 +1411,21 @@ const vec3f MonsterFlashOffsets [] = {
 ==============================================================================
 */
 
-// Temp entity events are for things that happen at a location seperate from
-// any existing entity. Temporary entity messages are explicitly constructed
-// and broadcast.
+/**
+\typedef	uint8 ETempEntityType
+
+\brief	Defines an alias representing types of temp entities.
+**/
+typedef uint8 ETempEntityType;
+
+/**
+\enum	
+
+\brief	Values that represent temporary entity indexes. 
+		Temp entity events are for things that happen at a location seperate from
+		any existing entity. Temporary entity messages are explicitly constructed
+		and broadcast.
+**/
 enum
 {
 	TE_GUNSHOT,
@@ -1401,7 +1489,18 @@ enum
 	//ROGUE
 };
 
-// TE_SPLASH effects
+/**
+\typedef	uint8 ESplashTypes
+
+\brief	Defines an alias representing the types of particle splashes.
+**/
+typedef uint8 ESplashTypes;
+
+/**
+\enum	
+
+\brief	Values that represent particle splashes. 
+**/
 enum
 {
 	SPLASH_UNKNOWN,
@@ -1421,13 +1520,23 @@ enum
 ==============================================================================
 */
 
+/**
+\typedef	uint8 ESoundChannel
+
+\brief	Defines an alias representing a sound channel channel.
+**/
+typedef uint8 ESoundChannel;
+
+/**
+\enum	
+
+\brief	Values that represent sound channels and flags. 
+		Channel 0 never willingly overrides.
+		Other channels (1-7) allways override
+		a playing sound on that channel
 //
-// sound channels
-// channel 0 never willingly overrides.
-// Other channels (1-7) allways override
-// a playing sound on that channel
-//
-CC_ENUM (uint8, EEntSndChannel)
+**/
+enum
 {
 	CHAN_AUTO,
 	CHAN_WEAPON,
@@ -1442,10 +1551,19 @@ CC_ENUM (uint8, EEntSndChannel)
 	CHAN_RELIABLE		= 16	// send by reliable message, not datagram
 };
 
-//
-// sound attenuation values
-//
-CC_ENUM (uint8, EAttenuation)
+/**
+\typedef	uint8 EAttenuation
+
+\brief	Defines an alias representing the attenuation of a sound.
+**/
+typedef uint8 EAttenuation;
+
+/**
+\enum	
+
+\brief	Values that represent attenuation. 
+**/
+enum
 {
 	ATTN_NONE,				// full volume the entire level
 	ATTN_NORM,
@@ -1461,8 +1579,19 @@ CC_ENUM (uint8, EAttenuation)
 ==============================================================================
 */
 
-// DeathmatchFlags->floatVal flags
-CC_ENUM (sint32, EDeathmatchFlags)
+/**
+\typedef	sint32 EDeathmatchFlags
+
+\brief	Defines an alias representing the deathmatch flags.
+**/
+typedef sint32 EDeathmatchFlags;
+
+/**
+\enum	
+
+\brief	Values that represent deathmatch flags. 
+**/
+enum
 {
 	DF_NO_HEALTH		= BIT(0),
 	DF_NO_ITEMS			= BIT(1),
@@ -1522,9 +1651,21 @@ const int MAX_CS_GENERAL		= (MAX_CS_CLIENTS*2);	// general config strings
 const int Q2BSP_MAX_AREAS		= 256;
 const int MAX_AREA_BITS			= (Q2BSP_MAX_AREAS/8);
 
-// config strings are a general means of communication from the server to all
-// connected clients. Each config string can be at most MAX_CFGSTRLEN characters.
-CC_ENUM (sint32, EConfigStringIndexes)
+/**
+\typedef	sint32 EConfigStringIndexes
+
+\brief	Defines an alias representing the configuration string indexes.
+**/
+typedef sint32 EConfigStringIndexes;
+
+/**
+\enum	
+
+\brief	Values that represent config string indexes and amounts. 
+		Config strings are a general means of communication from the server to all
+		connected clients. Each config string can be at most MAX_CFGSTRLEN characters.
+**/
+enum
 {
 	// START DO NOT TOUCH
 	CS_NAME,
@@ -1562,11 +1703,22 @@ CC_ENUM (sint32, EConfigStringIndexes)
 ==============================================================================
 */
 
-// entityState_t->event values
-// ertity events are for effects that take place reletive to an existing
-// entities origin.  Very network efficient. All muzzle flashes really should
-// be converted to events...
-CC_ENUM (sint32, EEventEffect)
+/**
+\typedef	sint32 EEventEffect
+
+\brief	Defines an alias representing entity events.
+		ertity events are for effects that take place reletive to an existing
+		entities origin.  Very network efficient. All muzzle flashes really should
+		be converted to events...
+**/
+typedef sint32 EEventEffect;
+
+/**
+\enum	
+
+\brief	Values that represent entity events. 
+**/
+enum
 {
 	EV_NONE,
 	EV_ITEM_RESPAWN,
@@ -1614,8 +1766,19 @@ struct entityState_t
 ==============================================================================
 */
 
-// playerState->stats[] indexes
-CC_ENUM (sint16, EStatIndex)
+/**
+\typedef	sint16 EStatIndex
+
+\brief	Defines an alias representing zero-based index of a stat.
+**/
+typedef sint16 EStatIndex;
+
+/**
+\enum	
+
+\brief	Values that represent stat indexes. 
+**/
+enum
 {
 	STAT_HEALTH_ICON,
 	STAT_HEALTH,
@@ -1655,8 +1818,19 @@ CC_ENUM (sint16, EStatIndex)
 	MAX_STATS				= 32
 };
 
-// playerState_t->rdFlags
-CC_ENUM (sint32, ERenderDefFlags)
+/**
+\typedef	sint32 ERenderDefFlags
+
+\brief	Defines an alias representing renderDef flags .
+**/
+typedef sint32 ERenderDefFlags;
+
+/**
+\enum	
+
+\brief	Values that represent renderDef flags. 
+**/
+enum
 {
 	RDF_UNDERWATER		= BIT(0),		// warp the screen as apropriate
 	RDF_NOWORLDMODEL	= BIT(1),		// used for player configuration screen
@@ -1700,9 +1874,19 @@ struct playerState_t
 ==============================================================================
 */
 
-// edict->svFlags
+/**
+\typedef	sint32 EServerFlags
 
-CC_ENUM (sint32, EServerFlags)
+\brief	Defines an alias representing entity server flags. 
+**/
+typedef sint32 EServerFlags;
+
+/**
+\enum	
+
+\brief	Values that represent entity server flags. 
+**/
+enum
 {
 	SVF_NOCLIENT			= BIT(0), // don't send entity to clients, even if it has effects
 	SVF_DEADMONSTER			= BIT(1), // treat as CONTENTS_DEADMONSTER for collision
@@ -1718,8 +1902,19 @@ CC_ENUM (sint32, EServerFlags)
 // ZOID
 };
 
-// edict->solid values
-CC_ENUM (sint32, ESolidType)
+/**
+\typedef	sint32 ESolidType
+
+\brief	Defines an alias representing solidity of an entity.
+**/
+typedef sint32 ESolidType;
+
+/**
+\enum	
+
+\brief	Values that represent the solidity of an entity. 
+**/
+enum
 {
 	SOLID_NOT,			// no interaction with other objects
 	SOLID_TRIGGER,		// only touch when inside, after moving

@@ -172,7 +172,7 @@ public:
 	bool Run ();
 };
 
-CC_ENUM (uint16, EGekkFrames)
+enum
 {
 	FRAME_stand_01,
 	FRAME_stand_02,

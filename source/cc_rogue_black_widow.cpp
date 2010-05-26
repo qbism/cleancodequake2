@@ -1023,11 +1023,9 @@ LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_widow2", CBlackWidow);
 // Death sequence stuff
 //
 
-void WidowVelocityForDamage (int damage, vec3_t v)
+vec3f WidowVelocityForDamage (int damage)
 {
-	v[0] = damage * crand();
-	v[1] = damage * crand();
-	v[2] = damage * crand() + 200.0;
+	return vec3f (damage * crand(), damage * crand(), damage * crand() + 200.0f);
 }
 
 void CWidowGib::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
@@ -1107,8 +1105,7 @@ void CWidowGib::Spawn (IBaseEntity *self, MediaIndex GibIndex, int damage, EGibT
 		velocityScale = 0.5;
 	}
 
-	vec3f vd;
-	WidowVelocityForDamage (damage, vd);
+	vec3f vd = WidowVelocityForDamage (damage);
 	gib->Velocity = ((self->EntityFlags & ENT_PHYSICS) ? entity_cast<IPhysicsEntity>(self)->Velocity : vec3fOrigin) .MultiplyAngles (velocityScale, vd);
 	gib->ClipGibVelocity ();
 

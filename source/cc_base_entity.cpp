@@ -410,7 +410,7 @@ IBaseEntity::~IBaseEntity ()
 void IBaseEntity::WriteBaseEntity (CFile &File)
 {
 	File.Write<bool> (Freed);
-	File.Write<uint32> (EntityFlags);
+	File.Write<EEntityFlags> (EntityFlags);
 	File.Write<EEdictFlags> (Flags);
 
 	File.Write (ClassName);
@@ -584,7 +584,7 @@ void			IBaseEntity::Free ()
 	Freed = true;
 }
 
-void	IBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void	IBaseEntity::PlaySound (ESoundChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
 	{
@@ -597,7 +597,7 @@ void	IBaseEntity::PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint
 	PlaySoundFrom (this, channel, soundIndex, volume, attenuation, timeOfs);
 };
 
-void	IBaseEntity::PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+void	IBaseEntity::PlayPositionedSound (vec3f origin, ESoundChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
 {
 	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
 	{

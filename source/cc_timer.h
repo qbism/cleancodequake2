@@ -79,7 +79,19 @@ public:
 
 void AddTimer (CGameTimer *Timer, sint32 Key);
 
-CC_ENUM (sint32, ETimerKeys)
+/**
+\typedef	sint32 ETimerKeys
+
+\brief	Defines an alias representing the timer keys.
+**/
+typedef sint32 ETimerKeys;
+
+/**
+\enum	
+
+\brief	Values that represent timer keys. 
+**/
+enum
 {
 	TIMER_NONE = -1,
 	

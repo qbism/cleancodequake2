@@ -25,7 +25,19 @@ inline const char *CTF_VERSION() { return "1.09b"; }
 
 const int CONFIG_CTF_MATCH  = (CS_MAXCLIENTS-1);
 
-CC_ENUM (sint8, ETeamIndex)
+/**
+\typedef	sint8 ETeamIndex
+
+\brief	Defines an alias representing index of a team.
+**/
+typedef sint8 ETeamIndex;
+
+/**
+\enum	
+
+\brief	Values that represent teams. 
+**/
+enum
 {
 	CTF_NOTEAM,
 	CTF_TEAM1,
@@ -36,7 +48,19 @@ CC_ENUM (sint8, ETeamIndex)
 	CTF_BLUE = CTF_TEAM2,
 };
 
-CC_ENUM (uint8, EGrappleState)
+/**
+\typedef	uint8 EGrappleState
+
+\brief	Defines an alias representing state of the grappling hook.
+**/
+typedef uint8 EGrappleState;
+
+/**
+\enum	
+
+\brief	Values that represent the state of a grappling hook. 
+**/
+enum
 {
 	CTF_GRAPPLE_STATE_FLY,
 	CTF_GRAPPLE_STATE_PULL,
@@ -63,7 +87,19 @@ public:
 	CPlayerEntity *Player;
 };
 
-CC_ENUM (uint8, EMatchState)
+/**
+\typedef	uint8 EMatchState
+
+\brief	Defines an alias representing the state of a competition match.
+**/
+typedef uint8 EMatchState;
+
+/**
+\enum	
+
+\brief	Values that represent the state of a competition match. 
+**/
+enum
 {
 	MATCH_NONE,
 	MATCH_SETUP,
@@ -72,7 +108,19 @@ CC_ENUM (uint8, EMatchState)
 	MATCH_POST
 };
 
-CC_ENUM (uint8, EElectState)
+/**
+\typedef	uint8 EElectState
+
+\brief	Defines an alias representing state of an election.
+**/
+typedef uint8 EElectState;
+
+/**
+\enum	
+
+\brief	Values that represent the state of an election. 
+**/
+enum
 {
 	ELECT_NONE,
 	ELECT_MATCH,

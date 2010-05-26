@@ -780,7 +780,7 @@ bool CDisruptorTracker::Run ()
 	return IFlyMissileProjectile::Run();
 }
 
-CC_ENUM (uint8, EGreenBlasterFlags)
+enum
 {
 	HYPER_FLAG		= BIT(0)
 };

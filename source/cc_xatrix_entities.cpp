@@ -45,7 +45,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // the lights will take damage from explosions
 // this could leave a player in total darkness very bad
 
-CC_ENUM (uint8, ERotatingLightSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CRotatingLight. 
+**/
+enum
 {
 	ROTATING_LIGHT_START_OFF	= BIT(0),
 	ROTATING_LIGHT_ALARM		= BIT(1)
@@ -605,7 +610,19 @@ The default delay is 1 second
 class CFuncObjectRepair : public IMapEntity, public IThinkableEntity, public IHurtableEntity, public IUsableEntity
 {
 public:
-	CC_ENUM (uint8, ERepairThinkType)
+	/**
+	\typedef	uint8 ERepairThinkType
+	
+	\brief	Defines an alias representing think type of a CFuncObjectRepair.
+	**/
+	typedef uint8 ERepairThinkType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent think types for CFuncObjectRepair. 
+	**/
+	enum
 	{
 		THINK_NONE,
 		THINK_SPARKS,

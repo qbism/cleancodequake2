@@ -26,9 +26,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <exception>
 
-// memory tags to allow dynamic memory to be cleaned up
-// moved from cc_local.h
-CC_ENUM(sint16, EMemoryTags)
+/**
+\typedef	sint16 EMemoryTags
+
+\brief	Defines an alias representing the memory tags.
+**/
+typedef sint16 EMemoryTags;
+
+/**
+\enum	
+
+\brief	Values that represent memory tags. 
+**/
+enum
 {
 	TAG_GENERIC = -1,
 	TAG_GAME	= 765,

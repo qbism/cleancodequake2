@@ -69,7 +69,19 @@ public:
 #define IMPLEMENT_SAVE_HEADER(DLLClassName) \
 	virtual const char *SAVE_GetName () { return TO_STRING(DLLClassName); };
 
-CC_ENUM (uint8, EIndexType)
+/**
+\typedef	uint8 EIndexType
+
+\brief	Defines an alias representing type of the index.
+**/
+typedef uint8 EIndexType;
+
+/**
+\enum	
+
+\brief	Values that represent the types of indexes. 
+**/
+enum
 {
 	INDEX_MODEL,
 	INDEX_SOUND,

@@ -74,15 +74,38 @@ public:
 	void			Clear ();
 };
 
-CC_ENUM (uint8, EGender)
+/**
+\typedef	uint8 EGender
+
+\brief	Defines an alias representing a gender.
+**/
+typedef uint8 EGender;
+
+/**
+\enum	
+
+\brief	Values that represent a gender. 
+**/
+enum
 {
 	GENDER_MALE,
 	GENDER_FEMALE,
 	GENDER_NEUTRAL
 };
 
-// svClient->state options
-CC_ENUM (uint8, EClientState)
+/**
+\typedef	uint8 EClientState
+
+\brief	Defines an alias representing state of a client's connection.
+**/
+typedef uint8 EClientState;
+
+/**
+\enum	
+
+\brief	Values that represent the state of a client's connection. 
+**/
+enum
 {
 	SVCS_FREE,		// can be reused for a new connection
 	SVCS_CONNECTED,	// has been assigned to a svClient_t, but not in game yet
@@ -94,8 +117,19 @@ void SaveWeapon (CFile &File, CWeapon *Weapon);
 
 #include "cc_userinfo.h"
 
-// handedness values
-CC_ENUM (uint8, EHandedness)
+/**
+\typedef	uint8 EHandedness
+
+\brief	Defines an alias representing the handedness of a player.
+**/
+typedef uint8 EHandedness;
+
+/**
+\enum	
+
+\brief	Values that represent the handedness of a player. 
+**/
+enum
 {
 	RIGHT_HANDED,
 	LEFT_HANDED,
@@ -236,7 +270,19 @@ public:
 class CMenuState
 {
 public:
-	CC_ENUM (uint8, EMenuKeys)
+	/**
+	\typedef	uint8 EMenuKeys
+	
+	\brief	Defines an alias representing a menu key.
+	**/
+	typedef uint8 EMenuKeys;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent menu keys. 
+	**/
+	enum
 	{
 		KEY_NONE,
 		KEY_LEFT,
@@ -356,7 +402,19 @@ public:
 	}
 };
 
-CC_ENUM (uint8, ELayoutFlags)
+/**
+\typedef	uint8 ELayoutFlags
+
+\brief	Defines an alias representing the layout flags.
+**/
+typedef uint8 ELayoutFlags;
+
+/**
+\enum	
+
+\brief	Values that represent flags for a client's layout system. 
+**/
+enum
 {
 	LF_SHOWSCORES		= BIT(0),
 	LF_SHOWINVENTORY	= BIT(1),
@@ -366,9 +424,19 @@ CC_ENUM (uint8, ELayoutFlags)
 	LF_SCREEN_MASK		= (LF_SHOWSCORES | LF_SHOWINVENTORY | LF_SHOWHELP),
 };
 
-// sint16 should suffice here.
-// Not unsigned because healing shots can affect screen too.
-CC_ENUM (sint16, EDamageType)
+/**
+\typedef	sint16 EDamageType
+
+\brief	Defines an alias representing the type of damage dealt to a player.
+**/
+typedef uint8 EDamageType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of damage dealt to a player. 
+**/
+enum
 {
 	DT_ARMOR,			// damage absorbed by armor
 	DT_POWERARMOR,		// damage absorbed by power armor
@@ -378,7 +446,20 @@ CC_ENUM (sint16, EDamageType)
 	DT_MAX
 };
 
-CC_ENUM (uint8, EWeaponState)
+/**
+\typedef	uint8 EWeaponState
+
+\brief	Defines an alias representing state of a weapon.
+**/
+typedef uint8 EWeaponState;
+
+/**
+\enum	
+
+\brief	Values that represent the state of a weapon.
+		This could be used for animations and such.
+**/
+enum
 {
 	WS_ACTIVATING,
 	WS_IDLE,
@@ -386,8 +467,19 @@ CC_ENUM (uint8, EWeaponState)
 	WS_DEACTIVATING
 };
 
-// power armor types
-CC_ENUM (uint8, EPowerArmorType)
+/**
+\typedef	uint8 EPowerArmorType
+
+\brief	Defines an alias representing the type of power armor worn.
+**/
+typedef uint8 EPowerArmorType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of power armor worn.
+**/
+enum
 {
 	POWER_ARMOR_NONE,
 	POWER_ARMOR_SCREEN,
@@ -424,8 +516,19 @@ public:
 	IMPLEMENT_SAVE_HEADER(CPlayerNoise);
 };
 
-// client_t->Anim.Priority
-CC_ENUM (uint8, EAnimPriority)
+/**
+\typedef	uint8 EAnimPriority
+
+\brief	Defines an alias representing the animation types.
+**/
+typedef uint8 EAnimPriority;
+
+/**
+\enum	
+
+\brief	Values that represent animation types. 
+**/
+enum
 {
 	ANIM_BASIC,
 	ANIM_WAVE,
@@ -474,7 +577,7 @@ public:
 	ELayoutFlags	LayoutFlags;
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
-	EDamageType		DamageValues[DT_MAX];
+	sint32			DamageValues[DT_MAX];
 	EButtons		Buttons;
 	EButtons		LatchedButtons;
 	CWeapon			*NewWeapon;
@@ -574,8 +677,19 @@ public:
 	void			Clear ();
 };
 
-// noise types for PlayerNoise
-CC_ENUM (uint8, ENoiseType)
+/**
+\typedef	uint8 ENoiseType
+
+\brief	Defines an alias representing type of a player noise.
+**/
+typedef uint8 ENoiseType;
+
+/**
+\enum	
+
+\brief	Values that represent a type of player noise. 
+**/
+enum
 {
 	PNOISE_SELF,
 	PNOISE_WEAPON,
@@ -648,6 +762,7 @@ public:
 	void			Obituary (IBaseEntity *Attacker);
 
 	void			SpectatorRespawn ();
+	void			CopyToBodyQueue ();
 	void			Respawn ();
 	void			PutInServer ();
 	void			InitPersistent ();

@@ -772,7 +772,12 @@ LINK_CLASSNAME_TO_CLASS ("monster_commander_body", CCommanderBody);
 This is the dead player model. Comes in 6 exciting different poses!
 */
 
-CC_ENUM (uint8, EMiscDeadSoldierSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CMiscDeadSoldier. 
+**/
+enum
 {
 	DEADSOLDIER_ON_BACK			= BIT(0),
 	DEADSOLDIER_ON_STOMACH		= BIT(1),
@@ -781,8 +786,6 @@ CC_ENUM (uint8, EMiscDeadSoldierSpawnflags)
 	DEADSOLDIER_SIT_DECAP		= BIT(4),
 	DEADSOLDIER_IMPALED			= BIT(5)
 };
-
-vec3f VelocityForDamage (sint32 Damage);
 
 class CMiscDeadSoldier : public IMapEntity, public IHurtableEntity, public IThinkableEntity, public ITossProjectile
 {

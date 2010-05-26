@@ -53,7 +53,12 @@ public:
 CTargetChangeLevel *CreateTargetChangeLevel(const char *map);
 void BeginIntermission (CTargetChangeLevel *targ);
 
-CC_ENUM (uint8, ELaserSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTargetLaser. 
+**/
+enum
 {
 	LASER_START_ON		= BIT(0),
 	LASER_RED			= BIT(1),

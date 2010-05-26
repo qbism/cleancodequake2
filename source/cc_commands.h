@@ -36,9 +36,22 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 const int MAX_COMMANDS = 128;
 const int MAX_CMD_HASH = (MAX_COMMANDS/4);
 
-CC_ENUM (uint32, ECmdTypeFlags)
+/**
+\typedef	uint8 ECmdTypeFlags
+
+\brief	Defines an alias representing the command type flags.
+**/
+typedef uint8 ECmdTypeFlags;
+
+/**
+\enum	
+
+\brief	Values that represent flags for commands. 
+**/
+enum
 {
 	CMD_NORMAL		= 0, // Doesn't do anything at all, just here for show.
+
 	CMD_SPECTATOR	= 1,
 	CMD_CHEAT		= 2
 };

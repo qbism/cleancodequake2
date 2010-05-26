@@ -93,7 +93,12 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("trigger_always", CTriggerAlways);
 
-CC_ENUM (uint8, ETriggerSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTrigger*. 
+**/
+enum
 {
 	TRIGGER_MONSTER		= BIT(0),
 	TRIGGER_NOT_PLAYER	= BIT(1),
@@ -445,7 +450,12 @@ If nomessage is not set, t will print "1 more.. " etc when triggered and "sequen
 After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
 */
 
-CC_ENUM (uint8, ETriggerCounterSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerCounter. 
+**/
+enum
 {
 	COUNTER_NO_MESSAGE	= BIT(0)
 };
@@ -694,7 +704,12 @@ NO_PROTECTION	*nothing* stops the damage
 
 */
 
-CC_ENUM (uint8, ETriggerHurtSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerHurt. 
+**/
+enum
 {
 	HURT_START_OFF		= BIT(0),
 	HURT_TOGGLE			= BIT(1),
@@ -908,7 +923,12 @@ the value of "gravity".  1.0 is standard
 gravity for the Level.
 */
 #if ROGUE_FEATURES
-CC_ENUM (uint8, ETriggerGravityFlags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerGravity. 
+**/
+enum
 {
 	GRAVITY_TOGGLE		= BIT(0),
 	GRAVITY_START_OFF	= BIT(1)

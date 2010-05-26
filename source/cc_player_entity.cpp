@@ -169,7 +169,7 @@ void CClient::Write (CFile &File)
 	File.Write<float> (KillerYaw);
 	File.Write<pMoveState_t> (OldPMove);
 	File.Write<ELayoutFlags> (LayoutFlags);
-	File.WriteArray<EDamageType> (DamageValues, DT_MAX);
+	File.WriteArray<sint32> (DamageValues, DT_MAX);
 	File.Write<EButtons> (Buttons);
 	File.Write<EButtons> (LatchedButtons);
 	File.Write<EWeaponState> (WeaponState);
@@ -210,7 +210,7 @@ void CClient::Load (CFile &File)
 	KillerYaw = File.Read<float> ();
 	OldPMove = File.Read<pMoveState_t> ();
 	LayoutFlags = File.Read<ELayoutFlags> ();
-	File.ReadArray<EDamageType> (DamageValues, DT_MAX);
+	File.ReadArray<sint32> (DamageValues, DT_MAX);
 	Buttons = File.Read<EButtons> ();
 	LatchedButtons = File.Read<EButtons> ();
 	WeaponState = File.Read<EWeaponState> ();
@@ -406,7 +406,7 @@ void CPlayerEntity::Respawn ()
 	{
 		// Spectator's don't leave bodies
 		if (!NoClip)
-			CopyToBodyQueue (this);
+			CopyToBodyQueue ();
 		GetSvFlags() &= ~SVF_NOCLIENT;
 		PutInServer ();
 
@@ -3266,7 +3266,6 @@ void CPlayerEntity::RestoreClientData ()
 	SavedClients = NULL;
 }
 
-vec3f VelocityForDamage (sint32 Damage);
 void CPlayerEntity::TossHead (sint32 Damage)
 {
 	if (irandom(2))

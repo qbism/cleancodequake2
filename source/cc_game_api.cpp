@@ -41,7 +41,19 @@ EBrushContents PointContents (vec3f start)
 {
 CC_DISABLE_DEPRECATION
 	return gi.pointcontents(start);
-CC_ENABLE_DEPRECATION};
+CC_ENABLE_DEPRECATION
+}
+
+/**
+\enum	
+
+\brief	Values that represent area types (for BoxEdicts). 
+**/
+enum
+{
+	AREA_SOLID	= 1,
+	AREA_TRIGGERS
+};
 
 TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers)
 {

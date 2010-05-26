@@ -51,7 +51,19 @@ public:
 		SOUND_MAX
 	);
 
-	CC_ENUM (uint8, ESoldierAIType)
+	/**
+	\typedef	uint8 ESoldierAIType
+	
+	\brief	Defines an alias representing soldier AI weapon types.
+	**/
+	typedef uint8 ESoldierAIType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent soldier AI weapon types. 
+	**/
+	enum
 	{
 		AI_BLASTER,			// Regular firing, run-fire
 		AI_MACHINEGUN,		// Special fire frame, no running

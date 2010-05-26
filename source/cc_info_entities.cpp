@@ -321,7 +321,12 @@ IMPLEMENT_SAVE_SOURCE(CNoiseMaker)
 
 #if ROGUE_FEATURES
 
-CC_ENUM (uint8, ETriggerTeleporterSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerTeleport. 
+**/
+enum
 {
 	TELEPORT_PLAYER_ONLY	=	BIT(0),
 	TELEPORT_SILENT			=	BIT(1),
@@ -1306,7 +1311,12 @@ Pathtarget: gets used when an entity that has
 	this path_corner targeted touches it
 */
 
-CC_ENUM (uint8, EPathCornerSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CPathCorner. 
+**/
+enum
 {
 	CORNER_TELEPORT		= BIT(0)
 };
@@ -1627,7 +1637,12 @@ If targeted, will toggle between on and off.
 Default _cone value is 10 (used to set size of light for spotlights)
 */
 
-CC_ENUM (uint8, ELightSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CLight. 
+**/
+enum
 {
 	START_OFF	= BIT(0)
 };
@@ -1716,7 +1731,12 @@ speed		How many seconds the ramping will take
 message		two letters; starting lightlevel and ending lightlevel
 */
 
-CC_ENUM (uint8, ETargetLightrampSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTargetLightRamp. 
+**/
+enum
 {
 	LIGHTRAMP_TOGGLE	= BIT(0)
 };

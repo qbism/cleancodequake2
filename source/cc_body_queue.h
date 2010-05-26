@@ -34,12 +34,29 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_BODYQUEUE_H) || !INCLUDE_GUARDS
 #define CC_GUARD_BODYQUEUE_H
 
-void BodyQueue_Init (sint32 reserve);
+/**
+\fn	void BodyQueue_Init (sint32 Reserve)
+
+\brief	Initialize the body queue reserving 'Reserve' bodies. 
+
+\author	Paril
+\date	25/05/2010
+
+\param	Reserve	The amount of bodies to reserve. 
+**/
+void BodyQueue_Init (sint32 Reserve);
+
+/**
+\fn	void ShutdownBodyQueue ()
+
+\brief	Shutdown the body queue. Frees related entities and clears state. 
+
+\author	Paril
+\date	25/05/2010
+**/
 void ShutdownBodyQueue ();
-void CopyToBodyQueue (CPlayerEntity *Player);
 
-const int BODY_QUEUE_SIZE	= 8;
-
+const int BODY_QUEUE_SIZE	= 8;	// Size of the body queue
 
 #else
 FILE_WARNING

@@ -125,10 +125,6 @@ IMPLEMENT_SAVE_SOURCE(CGibEntity)
 Misc functions
 =================
 */
-vec3f VelocityForDamage (sint32 Damage)
-{
-	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (Damage < 50) ? 0.7f : 1.2f;
-}
 
 void CGibEntity::ClipGibVelocity ()
 {

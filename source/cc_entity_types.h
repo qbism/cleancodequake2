@@ -34,8 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ENTITYTYPES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ENTITYTYPES_H
 
-// means of death
-CC_ENUM (uint32, EMeansOfDeath)
+/**
+\typedef	uint32 EMeansOfDeath
+
+\brief	Defines an alias representing a means of death.
+**/
+typedef uint32 EMeansOfDeath;
+
+/**
+\enum	
+
+\brief	Values that represent a means of death. 
+**/
+enum
 {
 	MOD_UNKNOWN,
 	MOD_BLASTER,
@@ -213,7 +224,19 @@ public:
 	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
 };
 
-CC_ENUM (uint8, EPhysicsType)
+/**
+\typedef	uint8 EPhysicsType
+
+\brief	Defines an alias representing type of physics this entity is currently using.
+**/
+typedef uint8 EPhysicsType;
+
+/**
+\enum	
+
+\brief	Values that represent physics types. 
+**/
+enum
 {
 	PHYSICS_NONE,
 
@@ -228,7 +251,20 @@ CC_ENUM (uint8, EPhysicsType)
 	PHYSICS_BOUNCE
 };
 
-CC_ENUM (uint32, EPhysicsFlags)
+/**
+\typedef	uint32 EPhysicsFlags
+
+\brief	Defines an alias representing physics flags.
+**/
+typedef uint32 EPhysicsFlags;
+
+/**
+\enum	
+
+\brief	Values that represent physics flags; extra features that physics objects may have.
+		Note that these cannot be set directly. You must inherit the proper classes.
+**/
+enum
 {
 	// Class flags
 	PHYSICFLAG_BUOYANCY			=	BIT(0), // Has IBuoyancyPhysics

@@ -36,7 +36,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 
-CC_ENUM (uint8, ETurretMoveEnum)
+/**
+\typedef	uint8 ETurretThinkState
+
+\brief	Defines an alias representing the turret think state.
+**/
+typedef uint8 ETurretThinkState;
+
+/**
+\enum	
+
+\brief	Values that represent the turret think states. 
+**/
+enum
 {
 	TURRETTHINK_MOVEDONE,
 	TURRETTHINK_MOVEFINAL,
@@ -50,9 +62,9 @@ public:
 	vec3f		Offset;
 
 	// Move stuff
-	vec3f			Dir;
-	float			RemainingDistance;
-	ETurretMoveEnum	ThinkType;
+	vec3f				Dir;
+	float				RemainingDistance;
+	ETurretThinkState	ThinkType;
 
 	CWallTurret (uint32 ID);
 

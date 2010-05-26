@@ -50,7 +50,12 @@ so, the basic time between firing is a random time between
 These can used but not touched.
 */
 
-CC_ENUM (uint8, ETimerSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncTimer. 
+**/
+enum
 {
 	TIMER_START_ON		= BIT(0)
 };
@@ -323,7 +328,12 @@ If START_OFF, this entity must be used before it starts
 			2 "xx:xx:xx"
 */
 
-CC_ENUM (uint8, EClockSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncClock. 
+**/
+enum
 {
 	CLOCK_TIMER_UP		= BIT(0),
 	CLOCK_TIMER_DOWN	= BIT(1),

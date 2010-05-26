@@ -532,7 +532,12 @@ void CSuperTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dama
 */
 
 #if XATRIX_FEATURES
-CC_ENUM (uint8, ESupertankSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CSuperTank. 
+**/
+enum
 {
 	SPAWNFLAG_SUPERTANK_POWER_SHIELD		= BIT(4)
 };

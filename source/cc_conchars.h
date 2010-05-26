@@ -34,9 +34,21 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CONCHARS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CONCHARS_H
 
-const int	CFLAG_SECONDARY		= 128;
+const int	CFLAG_SECONDARY		= 128;	// Flag if the char is green/secondary
 
-CC_ENUM (uint8, EConChars)
+/**
+\typedef	uint8 EConChars
+
+\brief	Defines an alias representing the ASCII console character representation in Quake 2.
+**/
+typedef uint8 EConChars;
+
+/**
+\enum	
+
+\brief	Values that represent secret ASCII characters in the Q2 charset. 
+**/
+enum
 {
 	CCHAR_DOT1,
 	CCHAR_CONTAINER1_UPPERLEFT,

@@ -64,8 +64,21 @@ public:
 	EEventEffect	&GetEvent			();
 };
 
-// FIXME: merge some of these flags elsewhere?
-CC_ENUM (uint32, EEdictFlags)
+/**
+\typedef	uint32 EEdictFlags
+
+\brief	Defines an alias representing entity flags.
+**/
+typedef uint32 EEdictFlags;
+
+/**
+\enum	
+
+\brief	Values that represent entity flags. 
+
+\todo merge some of these flags elsewhere
+**/
+enum
 {
 	FL_FLY				= BIT(0),
 	FL_SWIM				= BIT(1),
@@ -89,13 +102,22 @@ CC_ENUM (uint32, EEdictFlags)
 #endif
 };
 
-// Spawnflags
-// 6 bits reserved for editor flags
-// 8 bits used as power cube id bits for coop games
+/**
+\typedef	uint32 ESpawnflags
 
-// edict->spawnflags
-// these are set with checkboxes on each entity in the map editor
-CC_ENUM (uint32, ESpawnflags)
+\brief	Defines an alias representing spawnflags.
+		6 bits are reserved for editor flags.
+		8 bits are used as power cube ID bits for coop
+**/
+
+typedef uint32 ESpawnflags;
+
+/**
+\enum	
+
+\brief	Values that represent base spawnflags that work for every entity. 
+**/
+enum
 {
 	SPAWNFLAG_NOT_EASY			= BIT(8),
 	SPAWNFLAG_NOT_MEDIUM		= BIT(9),
@@ -181,8 +203,8 @@ public:
 
 	// Sound functions
 	bool			PlayedSounds[CHAN_MAX-1];
-	void			PlaySound (EEntSndChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
-	void			PlayPositionedSound (vec3f origin, EEntSndChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
+	void			PlaySound (ESoundChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
+	void			PlayPositionedSound (vec3f origin, ESoundChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
 
 	virtual void	BecomeExplosion (bool grenade);
 
@@ -213,8 +235,19 @@ public:
 	virtual const char *SAVE_GetName () = 0;
 };
 
-// EntityFlags values
-CC_ENUM (uint16, EEntityFlags)
+/**
+\typedef	uint32 EEntityFlags
+
+\brief	Defines an alias representing entity flags.
+**/
+typedef uint32 EEntityFlags;
+
+/**
+\enum	
+
+\brief	Values that represent what base classes this entity has inherited. 
+**/
+enum
 {
 	ENT_BASE		=	BIT(0), // Can be casted to IBaseEntity
 	ENT_HURTABLE	=	BIT(1), // Can be casted to IHurtableEntity
@@ -360,7 +393,19 @@ inline uint32 atou (const char *Str)
 
 #define QNewEntityOf QNew (TAG_ENTITY) 
 
-CC_ENUM (uint32, EFieldType)
+/**
+\typedef	uint32 EFieldType
+
+\brief	Defines an alias representing type of a save/load field.
+**/
+typedef uint32 EFieldType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of a save/load field. Also contains flags.
+**/
+enum
 {
 	FT_BOOL,			// Stores value as bool, but takes any number (non 0 = true)
 	FT_CHAR,			// Stores value as sint8
@@ -381,7 +426,7 @@ CC_ENUM (uint32, EFieldType)
 	FT_ITEM,			// Stores value as CBaseItem (finds the item and stores it in the ptr)
 	FT_ENTITY,			// Saved as an index to an entity
 	FT_FLOAT_TO_BYTE,	// Accepted float input, stores as uint8 (0-255)
-	FT_STRING,		// String, dynamic.
+	FT_STRING,			// String, dynamic.
 
 	// Flags
 	FT_GAME_ENTITY	=	BIT(10),		// Stored in gameEntity instead of TClass

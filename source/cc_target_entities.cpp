@@ -50,7 +50,12 @@ Looped sounds are always atten 3 / vol 1, and the use function toggles it on/off
 Multiple identical looping sounds will just increase volume without any speed cost
 */
 
-CC_ENUM (uint8, ETargetSpeakerSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTargetSpeaker. 
+**/
+enum
 {
 	SPEAKER_LOOPED_ON		= BIT(0),
 	SPEAKER_LOOPED_OFF		= BIT(1),
@@ -1085,7 +1090,12 @@ dmg		default is 15
 speed	default is 1000
 */
 
-CC_ENUM (uint8, ETargetBlasterSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTargetBlaster. 
+**/
+enum
 {
 	BLASTER_NO_TRAIL		= BIT(0),
 	BLASTER_NO_EFFECTS		= BIT(1)
@@ -1399,7 +1409,12 @@ LINK_CLASSNAME_TO_CLASS ("target_laser", CTargetLaser);
 When fired, the "message" key becomes the current personal computer string, and the message light will be set on all clients status bars.
 */
 
-CC_ENUM (uint8, ETargetHelpSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTargetHelp. 
+**/
+enum
 {
 	HELP_FIRST_MESSAGE	= BIT(0)
 };
@@ -1480,7 +1495,12 @@ All players and monsters are affected.
 */
 
 #if ROGUE_FEATURES
-CC_ENUM (uint8, EEarthquakeSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTargetEarthquake. 
+**/
+enum
 {
 	EARTHQUAKE_SILENT = BIT(0)
 };

@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-CC_ENUM (uint16, EMedicFrames)
+enum
 {
 	FRAME_walk1,
 	FRAME_walk2,

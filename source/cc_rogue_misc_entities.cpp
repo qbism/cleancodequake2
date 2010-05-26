@@ -34,6 +34,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if ROGUE_FEATURES
+#include "cc_brush_models.h"
+#include "cc_rogue_misc_entities.h"
+
 class CMiscNukeCore : public IMapEntity, public IUsableEntity
 {
 public:
@@ -99,7 +102,12 @@ wait = # of seconds before coming back (5 default)
 dmg  = damage to inflict when blocked (2 default)
 */
 
-CC_ENUM (uint8, EDoorSecretSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CDoorSecret2. 
+**/
+enum
 {
 	SEC_OPEN_ONCE				= BIT(0),
 	SEC_1ST_LEFT				= BIT(1),
@@ -311,7 +319,12 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("func_door_secret2", CDoorSecret2);
 
-CC_ENUM (uint8, EForceWallSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncForceWall. 
+**/
+enum
 {
 	FWALL_START_ON		=		BIT(0),
 };
@@ -483,7 +496,12 @@ LINK_CLASSNAME_TO_CLASS ("info_teleport_destination", CInfoTeleportDestination);
 
 #include "cc_rogue_weaponry.h"
 
-CC_ENUM (uint8, EPlatformSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CPlatForm2. 
+**/
+enum
 {
 	PLAT2_TOGGLE			= BIT(1),
 	PLAT2_TOP				= BIT(2),
@@ -973,7 +991,26 @@ before firing to acquire the target.
 class CTurretBrain : public IMapEntity, public IUsableEntity, public IThinkableEntity
 {
 public:
-	CC_ENUM (uint8, ETurretBrainThinkAndUseTypes)
+	/**
+	\typedef	uint8 ETurretBrainUseType
+	
+	\brief	Defines an alias representing use state of the turret brain.
+	**/
+	typedef uint8 ETurretBrainUseType;
+
+	/**
+	\typedef	uint8 ETurretBrainThinkType
+	
+	\brief	Defines an alias representing think state of the turret brain.
+	**/
+	typedef uint8 ETurretBrainThinkType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent the think/use states of the turret brain.
+	**/
+	enum
 	{
 		BRAINTHINK_NONE = 0,
 		BRAINTHINK_LINK,
@@ -984,8 +1021,8 @@ public:
 		BRAINUSE_DEACTIVATE
 	};
 
-	ETurretBrainThinkAndUseTypes	ThinkType;
-	ETurretBrainThinkAndUseTypes	UseType;
+	ETurretBrainThinkType			ThinkType;
+	ETurretBrainUseType				UseType;
 	FrameNumber_t					Delay;
 	CTurretBreach					*TargetedBreach;
 	vec3f							MoveOrigin;
@@ -1224,7 +1261,12 @@ START_ON - field is active when spawned.
 REMOVE - field removes the disguise
 */
 
-CC_ENUM (uint8, ETriggerDisguiseSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerDisguise. 
+**/
+enum
 {
 	DISGUISE_TOGGLE,
 	DISGUISE_START_ON,

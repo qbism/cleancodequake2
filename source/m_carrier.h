@@ -1,4 +1,4 @@
-CC_ENUM (uint16, ECarrierFrames)
+enum
 {
 	FRAME_search01,
 	FRAME_search02,

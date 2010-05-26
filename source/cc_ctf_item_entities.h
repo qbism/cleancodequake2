@@ -45,7 +45,19 @@ class CFlagTransponder
 public:
 	CFlagTransponder (const ETeamIndex Team, CFlagEntity *Flag);
 
-	CC_ENUM (uint8, EFlagLocation)
+	/**
+	\typedef	uint8 EFlagLocation
+	
+	\brief	Defines an alias representing a flag's location.
+	**/
+	typedef uint8 EFlagLocation;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent a flag's location. 
+	**/
+	enum
 	{
 		FLAG_UNKNOWN,
 		FLAG_AT_BASE,

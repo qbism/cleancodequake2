@@ -34,9 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_POWERUPS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_POWERUPS_H
 
-// Class for powerups.
-// Powerups are funny because they are
-CC_ENUM (uint8, EPowerupFlags)
+/**
+\typedef	uint8 EPowerupFlags
+
+\brief	Defines an alias representing powerup flags.
+**/
+typedef uint8 EPowerupFlags;
+
+/**
+\enum	
+
+\brief	Values that represent powerup flags. 
+**/
+enum
 {
 	POWERFLAG_STORE			=	BIT(0),
 	POWERFLAG_STACK			=	BIT(1),

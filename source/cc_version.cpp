@@ -450,6 +450,14 @@ void CheckNewVersion ()
 }
 #endif
 
+/**
+\fn	void InitVersion ()
+
+\brief	Initialises the version system. 
+
+\author	Paril
+\date	25/05/2010
+**/
 void InitVersion ()
 {
 #if (VERSION_CHECKING != VC_NONE)

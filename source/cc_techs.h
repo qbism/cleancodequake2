@@ -39,14 +39,27 @@ class CTech : public CBaseItem
 	uint32		TechNumber;
 
 public:
-	CC_ENUM (uint8, ETechType)
+
+	/**
+	\typedef	uint8 ETechType
+	
+	\brief	Defines an alias representing the type of a tech.
+	**/
+	typedef uint8 ETechType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent the types of a tech. 
+	**/
+	enum
 	{
 		TECH_PASSIVE,			// Tech's effect requires time; happens in ClientEndServerFrame
 		TECH_AGGRESSIVE,		// Tech's effect will have a direct effect on any damage going in or out of the player.
 		TECH_CUSTOM				// Tech's effect is hardcoded
 	};
 
-	ETechType	TechType;
+	ETechType	TechType;	// Type of tech
 
 	CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
@@ -79,7 +92,20 @@ public:
 										EMeansOfDeath &Mod, bool Defending	) {};
 };
 
-CC_ENUM (uint8, ECTFTechIndexes)
+/**
+\typedef	uint8 ECTFTechIndexes
+
+\brief	Defines an alias representing the CTF tech indexes.
+**/
+typedef uint8 ECTFTechIndexes;
+
+/**
+\enum	
+
+\brief	List of tech numbers.
+		Add to the end of the list to add a new tech.
+**/
+enum
 {
 	CTFTECH_RESISTANCE_NUMBER = 1,
 	CTFTECH_STRENGTH_NUMBER,

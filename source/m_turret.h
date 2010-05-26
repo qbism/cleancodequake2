@@ -1,6 +1,4 @@
-// G:\quake2\xpack\models/monsters/turret
-
-CC_ENUM (uint16, ETurretFrames)
+enum
 {
 	FRAME_stand01,
 	FRAME_stand02,

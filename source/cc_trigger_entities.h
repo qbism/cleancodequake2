@@ -94,7 +94,12 @@ public:
 	};
 };
 
-CC_ENUM (uint8, ETriggerPushSpawnflags)
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerPush. 
+**/
+enum
 {
 	PUSH_ONCE		= BIT(0),
 #if ROGUE_FEATURES

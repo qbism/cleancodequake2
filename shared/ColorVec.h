@@ -46,7 +46,7 @@ public:
 
 	inline colorf(const class colorb &Other);
 
-	inline colorf(const float InR, const float InG, const float InB, const float InA)
+	inline colorf(const float InR, const float InG, const float InB, const float InA = 1.0f)
 		: R(InR), G(InG), B(InB), A(InA) {}
 
 	/**
@@ -140,7 +140,7 @@ public:
 	inline colorb(const colorb &Other)
 		: R(Other.R), G(Other.G), B(Other.B), A(Other.A) {}
 
-	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA)
+	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA = 255)
 		: R(InR), G(InG), B(InB), A(InA) {}
 
 	inline colorb(const colorf &Other)

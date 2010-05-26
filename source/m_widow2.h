@@ -1,4 +1,4 @@
-CC_ENUM (uint16, EWidowFrames)
+enum
 {
 	FRAME_blackwidow3,
 	FRAME_walk01,

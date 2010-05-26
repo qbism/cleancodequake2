@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-CC_ENUM (uint16, ETankFrames)
+enum
 {
 	FRAME_stand01,
 	FRAME_stand02,

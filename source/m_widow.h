@@ -1,4 +1,4 @@
-CC_ENUM (uint16, EWidowFrames)
+enum
 {
 	FRAME_idle01,
 	FRAME_idle02,
