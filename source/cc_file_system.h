@@ -652,21 +652,20 @@ public:
 		// Search each of the search paths
 		for (TPathListType::iterator it = PathList.begin(); it < PathList.end(); ++it)
 		{
-			char newFileName[MAX_PATHNAME];
+			std::string newFileName;
 			CPathIndex *Index = (*it);
 
 			char slashCheck = Index->pathName[Index->pathName.length()-1];
 			if (slashCheck != '\\' && slashCheck != '/')
-				snprintf (newFileName, sizeof(newFileName)-1, "%s/%s", Index->pathName, fileName);
+				newFileName = Index->pathName + "/" + fileName;
 			else
-				snprintf (newFileName, sizeof(newFileName)-1, "%s%s", Index->pathName, fileName);
-			newFileName[sizeof(newFileName)-1] = 0;
+				newFileName = Index->pathName + fileName;
 
 			// Try opening it
 			if (Mode & FILEMODE_GZ)
-				fp = gzopen(newFileName, openMode);
+				fp = gzopen(newFileName.c_str(), openMode);
 			else
-				fp = fopen(newFileName, openMode);
+				fp = fopen(newFileName.c_str(), openMode);
 
 			if (fp != NULL)
 				break; // We got it

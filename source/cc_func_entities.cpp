@@ -82,11 +82,22 @@ CFuncTimer::CFuncTimer (sint32 Index) :
 	{
 	};
 
+bool ValidateWait (IBaseEntity *Entity, uint8 *ClassOffset, const char *Value, void *ExtraData)
+{
+	if (atof(Value) == -1)
+	{
+		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "A wait of -1 is invalid\n");
+		return false;
+	}
+
+	return true;
+}
+
 ENTITYFIELDS_BEGIN(CFuncTimer)
 {
-	CEntityField ("random", EntityMemberOffset(CFuncTimer,Random), FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("pausetime", EntityMemberOffset(CFuncTimer,PauseTime), FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("wait", EntityMemberOffset(CFuncTimer,Wait), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("random",		EntityMemberOffset(CFuncTimer,Random),		FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("pausetime",	EntityMemberOffset(CFuncTimer,PauseTime),	FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("wait",		EntityMemberOffset(CFuncTimer,Wait),		FT_FRAMENUMBER | FT_SAVABLE,	ValidateWait),
 };
 ENTITYFIELDS_END(CFuncTimer)
 

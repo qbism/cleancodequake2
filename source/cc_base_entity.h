@@ -440,14 +440,19 @@ enum
 // Forward declaration, defined in cc_utils.
 IBaseEntity *LoadEntity (uint32 Index);
 
+typedef bool (*TValidateFieldFunction) (IBaseEntity *Entity, uint8 *ClassOffset, const char *Value, void *ExtraData);
+
+#define FIELD_IS_VALID(d) ((!ValidateField) || ValidateField(Entity, ClassOffset, Value, d))
+
 class CEntityField
 {
 public:
-	std::string	Name;
-	size_t			Offset;
-	EFieldType		FieldType, StrippedFields;
+	std::string				Name;
+	size_t					Offset;
+	EFieldType				FieldType, StrippedFields;
+	TValidateFieldFunction	ValidateField;
 
-	CEntityField (const char *Name, size_t Offset, EFieldType FieldType);
+	CEntityField (const char *Name, size_t Offset, EFieldType FieldType, TValidateFieldFunction ValidateField = NULL);
 
 	template <class TClass>
 	void Create (TClass *Entity, const char *Value) const
@@ -457,54 +462,66 @@ public:
 		switch (StrippedFields)
 		{
 		case FT_BOOL:
-			OFS_TO_TYPE(bool) = (atoi(Value) != 0);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(bool) = (atoi(Value) != 0);
 			break;
 		case FT_CHAR:
-			OFS_TO_TYPE(sint8) = Clamp<sint32>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(sint8) = Clamp<sint32>(atoi(Value), SCHAR_MIN, SCHAR_MAX);
 			break;
 		case FT_BYTE:
-			OFS_TO_TYPE(uint8) = Clamp<uint32>(atou(Value), 0, UCHAR_MAX);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(uint8) = Clamp<uint32>(atou(Value), 0, UCHAR_MAX);
 			break;
 		case FT_SHORT:
-			OFS_TO_TYPE(sint16) = Clamp<sint32>(atoi(Value), SHRT_MIN, SHRT_MAX);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(sint16) = Clamp<sint32>(atoi(Value), SHRT_MIN, SHRT_MAX);
 			break;
 		case FT_USHORT:
-			OFS_TO_TYPE(uint16) = Clamp<uint32>(atoi(Value), 0, USHRT_MAX);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(uint16) = Clamp<uint32>(atoi(Value), 0, USHRT_MAX);
 			break;
 		case FT_INT:
-			OFS_TO_TYPE(sint32) = atoi(Value);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(sint32) = atoi(Value);
 			break;
 		case FT_UINT:
-			OFS_TO_TYPE(uint32) = atou(Value);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(uint32) = atou(Value);
 			break;
 		case FT_FLOAT:
-			OFS_TO_TYPE(float) = atof(Value);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(float) = atof(Value);
 			break;
 		case FT_FLOAT_TO_BYTE:
-			OFS_TO_TYPE(uint8) = (uint8)Clamp<sint32> ((sint32)(atof(Value) * 255), 0, 255);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(uint8) = (uint8)Clamp<sint32> ((sint32)(atof(Value) * 255), 0, 255);
 			break;
 		case FT_VECTOR:
 			{
 				vec3f v;
-				//if (sscanf (Value, VECTOR_STRING, &v.X, &v.Y, &v.Z) == EOF)
-				//	CC_ASSERT_EXPR (0, "sscanf failed")
 
 				std::istringstream strm (Value);
 				strm >> v.X >> v.Y >> v.Z;
 
-				OFS_TO_TYPE(vec3f) = v;
+				if (FIELD_IS_VALID(&v))
+					OFS_TO_TYPE(vec3f) = v;
 			}
 			break;
 		case FT_YAWANGLE:
-			OFS_TO_TYPE(vec3f).Set (0, atof(Value), 0);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(vec3f).Set (0, atof(Value), 0);
 			break;
 		case FT_IGNORE:
 			break;
 		case FT_LEVEL_STRING:
-			if (strlen(Value))
-				OFS_TO_TYPE(char*) = CopyStr(Value, TAG_LEVEL);
-			else
-				OFS_TO_TYPE(char*) = NULL;
+			if (FIELD_IS_VALID(NULL))
+			{
+				if (strlen(Value))
+					OFS_TO_TYPE(char*) = CopyStr(Value, TAG_LEVEL);
+				else
+					OFS_TO_TYPE(char*) = NULL;
+			}
 			break;
 		case FT_SOUND_INDEX:
 			{
@@ -512,19 +529,24 @@ public:
 				if (temp.find (".wav") == std::string::npos)
 					temp.append (".wav");
 
-				OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.c_str());
+				if (FIELD_IS_VALID(NULL))
+					OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.c_str());
 			}
 			break;
 		case FT_IMAGE_INDEX:
-			OFS_TO_TYPE(MediaIndex) = ImageIndex (Value);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(MediaIndex) = ImageIndex (Value);
 			break;
 		case FT_MODEL_INDEX:
-			OFS_TO_TYPE(MediaIndex) = ModelIndex (Value);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(MediaIndex) = ModelIndex (Value);
 			break;
 		case FT_FRAMENUMBER:
 			{
 				float Val = atof (Value);
-				OFS_TO_TYPE(FrameNumber_t) = (Val != -1) ? (Val * 10) : -1;
+
+				if (FIELD_IS_VALID(NULL))
+					OFS_TO_TYPE(FrameNumber_t) = (Val != -1) ? (Val * 10) : -1;
 			}
 			break;
 		case FT_ITEM:
@@ -540,11 +562,13 @@ public:
 					break;
 				}
 
-				OFS_TO_TYPE(CBaseItem *) = Item;
+				if (FIELD_IS_VALID(NULL))
+					OFS_TO_TYPE(CBaseItem *) = Item;
 			}
 			break;
 		case FT_STRING:
-			OFS_TO_TYPE(std::string) = CopyStr(Value);
+			if (FIELD_IS_VALID(NULL))
+				OFS_TO_TYPE(std::string) = CopyStr(Value);
 			break;
 		};
 	};

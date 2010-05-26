@@ -41,11 +41,12 @@ IBaseEntity *GetGameEntity (sint32 Index)
 	return Game.Entities[Index].Entity;
 }
 
-CEntityField::CEntityField (const char *Name, size_t Offset, EFieldType FieldType) :
+CEntityField::CEntityField (const char *Name, size_t Offset, EFieldType FieldType, TValidateFieldFunction ValidateField) :
 Name(Q_strlwr(Name)),
 Offset(Offset),
 FieldType(FieldType),
-StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN))
+StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN)),
+ValidateField(ValidateField)
 {
 };
 
