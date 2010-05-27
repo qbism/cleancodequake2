@@ -152,7 +152,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CDoorSecret2)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (!(Other->EntityFlags & ENT_PLAYER))
 			return;
@@ -774,7 +774,7 @@ void CPlatForm2::Operate (IBaseEntity *Other)
 
 	PlatFlags = PLAT2_MOVING;
 
-	FrameNumber_t pauseTime = (Game.GameMode & GAME_DEATHMATCH) ? 3 : 5;
+	FrameNumber pauseTime = (Game.GameMode & GAME_DEATHMATCH) ? 3 : 5;
 
 	if (MoveState != otherState)
 	{
@@ -809,7 +809,7 @@ CPlatFormInsideTrigger(Index)
 
 IMPLEMENT_SAVE_SOURCE (CPlatForm2InsideTrigger)
 
-void CPlatForm2InsideTrigger::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPlatForm2InsideTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
@@ -951,7 +951,7 @@ void CPlatForm2::Spawn ()
 void			CPlatForm2::SaveFields (CFile &File)
 {
 	File.Write<bool> (RequiresActivation);
-	File.Write<FrameNumber_t> (LastMoveTime);
+	File.Write<FrameNumber> (LastMoveTime);
 	File.Write<EPlat2Flags> (PlatFlags);
 	SaveBadArea (File, BadArea);
 	CPlatForm::SaveFields (File);
@@ -960,7 +960,7 @@ void			CPlatForm2::SaveFields (CFile &File)
 void			CPlatForm2::LoadFields (CFile &File)
 {
 	RequiresActivation = File.Read<bool> ();
-	LastMoveTime = File.Read<FrameNumber_t> ();
+	LastMoveTime = File.Read<FrameNumber> ();
 	PlatFlags = File.Read<EPlat2Flags> ();
 	BadArea = LoadBadArea (File);
 	CPlatForm::LoadFields (File);
@@ -1023,11 +1023,11 @@ public:
 
 	ETurretBrainThinkType			ThinkType;
 	ETurretBrainUseType				UseType;
-	FrameNumber_t					Delay;
+	FrameNumber					Delay;
 	CTurretBreach					*TargetedBreach;
 	vec3f							MoveOrigin;
-	FrameNumber_t					AttackFinished;
-	FrameNumber_t					TrailTime;
+	FrameNumber					AttackFinished;
+	FrameNumber					TrailTime;
 	bool							LostSight;
 
 	CTurretBrain () :
@@ -1159,7 +1159,7 @@ public:
 		if (Level.Frame < AttackFinished)
 			return;
 
-		FrameNumber_t reaction_time;
+		FrameNumber reaction_time;
 		if (Delay)
 			reaction_time = Delay;
 		else
@@ -1307,7 +1307,7 @@ public:
 		Link ();
 	}
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (Other->EntityFlags & ENT_PLAYER)
 		{

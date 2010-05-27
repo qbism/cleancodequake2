@@ -85,7 +85,7 @@ IBaseEntity *CEntityList::Resolve (edict_t *ent)
 	{
 		CClassnameToClassIndex *Table = EntityList.at((*it).second);
 		if (Q_stricmp (Table->Classname, Level.ClassName.c_str()) == 0)
-			return Table->Spawn(ent->server.state.number);
+			return Table->Spawn(ent->server.State.Number);
 	}
 
 	return NULL;
@@ -130,7 +130,7 @@ CC_ENABLE_DEPRECATION
 		// We're done then
 		MapEntity->gameEntity->Entity = NULL;
 		QDelete MapEntity;
-		ent->server.inUse = false;
+		ent->server.InUse = false;
 		return;
 	}
 
@@ -504,7 +504,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 			Level.EntityNumber++;
 
-			if (!ent->server.inUse)
+			if (!ent->server.InUse)
 			{
 				Level.Inhibit++;
 				CC_ASSERT_EXPR (!(ent->Entity && !ent->Entity->Freed), "Entity not inuse but freed!");

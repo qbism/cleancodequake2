@@ -38,7 +38,7 @@ class CCarrier : public CMonster
 {
 public:
 	float			OriginalYawSpeed;
-	FrameNumber_t	RefireWait, FrameCalc;
+	FrameNumber	RefireWait, FrameCalc;
 	vec3f			RailFireSpot;
 
 	MONSTER_SOUND_ENUM

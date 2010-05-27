@@ -70,7 +70,7 @@ public:
 		ITouchableEntity::LoadFields (File);
 	}
 
-	void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static void Spawn (IBaseEntity *self, MediaIndex GibIndex, int damage, EGibType type, vec3f startpos, bool sized, MediaIndex hitsound, bool fade);
 };
@@ -84,7 +84,7 @@ void ThrowMoreStuff (IBaseEntity *Entity, vec3f point);
 class CBlackWidow : public CWidowStand
 {
 public:
-	FrameNumber_t		MeleeDebounceTime;
+	FrameNumber		MeleeDebounceTime;
 	vec3f				BeamPos[2];
 
 	MONSTER_SOUND_ENUM
@@ -103,13 +103,13 @@ public:
 
 	void SaveMonsterFields (CFile &File)
 	{
-		File.Write<FrameNumber_t> (MeleeDebounceTime);
+		File.Write<FrameNumber> (MeleeDebounceTime);
 		SAVE_MONSTER_SOUNDS
 	}
 
 	void LoadMonsterFields (CFile &File)
 	{
-		MeleeDebounceTime = File.Read<FrameNumber_t>();
+		MeleeDebounceTime = File.Read<FrameNumber>();
 		LOAD_MONSTER_SOUNDS
 	}
 

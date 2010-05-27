@@ -52,7 +52,7 @@ public:
 	};
 
 	bool			RequiresActivation;
-	FrameNumber_t	LastMoveTime;
+	FrameNumber	LastMoveTime;
 	EPlat2Flags		PlatFlags;
 	class CBadArea	*BadArea;
 

@@ -366,14 +366,14 @@ void CSpawnGrow::SaveFields (CFile &File)
 {
 	IThinkableEntity::SaveFields (File);
 
-	File.Write<FrameNumber_t> (Wait);
+	File.Write<FrameNumber> (Wait);
 }
 
 void CSpawnGrow::LoadFields (CFile &File)
 {
 	IThinkableEntity::LoadFields (File);
 
-	Wait = File.Read<FrameNumber_t> ();
+	Wait = File.Read<FrameNumber> ();
 }
 
 void CSpawnGrow::Think ()
@@ -410,7 +410,7 @@ void CSpawnGrow::Spawn (vec3f Origin, sint8 Size)
 	Grow->State.GetRenderEffects() = RF_IR_VISIBLE;
 	Grow->ClassName = "spawngro";
 
-	FrameNumber_t lifespan;
+	FrameNumber lifespan;
 	if (Size <= 1)
 	{
 		lifespan = SPAWNGROW_LIFESPAN;

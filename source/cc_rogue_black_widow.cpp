@@ -1028,7 +1028,7 @@ vec3f WidowVelocityForDamage (int damage)
 	return vec3f (damage * crand(), damage * crand(), damage * crand() + 200.0f);
 }
 
-void CWidowGib::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CWidowGib::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	GetSolid() = SOLID_NOT;
 	Touchable = false;

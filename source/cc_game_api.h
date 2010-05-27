@@ -48,13 +48,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Game-defined entity structure
 struct edict_t
 {
-	edictServer_t		server;
+	SServerEntity		server;
 
 	//
 	// only used locally in game, not by server
 	//
 
-	FrameNumber_t		freetime;			// sv.time when the object was freed
+	FrameNumber		freetime;			// sv.time when the object was freed
 	bool				AwaitingRemoval;
 	// Paril: trying something new. Instead of removing the entity the frame AFTER it was removed,
 	// remove it four frames after. This should be enough time for other entities to realize the entity is gone.
@@ -136,7 +136,7 @@ struct gameImport_t
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CTrace)
 #endif
-	cmTrace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, sint32 contentMask);
+	STrace	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, sint32 contentMask);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (PointContents)
 #endif
@@ -169,7 +169,7 @@ struct gameImport_t
 	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	sint32 maxCount, sint32 areaType);
 
 	void	(*Pmove) (
-	pMove_t *pMove
+	SPMove *pMove
 	);		// player movement code common with client prediction
 
 	// network messaging
@@ -246,17 +246,17 @@ struct gameImport_t
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	cVar_t	*(*cvar) (char *varName, char *value, sint32 flags);
+	SCVar	*(*cvar) (char *varName, char *value, sint32 flags);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	cVar_t	*(*cvar_set) (char *varName, char *value);
+	SCVar	*(*cvar_set) (char *varName, char *value);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	cVar_t	*(*cvar_forceset) (char *varName, char *value);
+	SCVar	*(*cvar_forceset) (char *varName, char *value);
 
 	// ClientCommand and ServerCommand parameter access
 #if !USE_EXTENDED_GAME_IMPORTS
@@ -305,7 +305,7 @@ public:
 	virtual void ClientUserinfoChanged (CPlayerEntity *Player, char *userinfo);
 	virtual void ClientDisconnect (CPlayerEntity *Player);
 	virtual void ClientCommand (CPlayerEntity *Player);
-	virtual void ClientThink (CPlayerEntity *Player, userCmd_t *cmd);
+	virtual void ClientThink (CPlayerEntity *Player, SUserCmd *cmd);
 
 	virtual void RunFrame ();
 

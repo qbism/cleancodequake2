@@ -112,7 +112,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CTeleporterTrigger)
 
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (!Dest)
 			return;
@@ -139,8 +139,8 @@ public:
 			entity_cast<IPhysicsEntity>(Other)->Velocity.Clear ();
 		if (Player)
 		{
-			Player->Client.PlayerState.GetPMove()->pmTime = 160>>3;		// hold time
-			Player->Client.PlayerState.GetPMove()->pmFlags |= PMF_TIME_TELEPORT;
+			Player->Client.PlayerState.GetPMove()->PMoveTime = 160>>3;		// hold time
+			Player->Client.PlayerState.GetPMove()->PMoveFlags |= PMF_TIME_TELEPORT;
 		}
 
 		// draw the teleport splash at source and on the player
@@ -150,7 +150,7 @@ public:
 		if (Player)
 		{
 			for (sint32 i = 0; i < 3; i++)
-				Player->Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Dest->State.GetAngles()[i] - Player->Client.Respawn.CmdAngles[i]);
+				Player->Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(Dest->State.GetAngles()[i] - Player->Client.Respawn.CmdAngles[i]);
 		}
 
 		Other->State.GetAngles().Clear ();
@@ -372,7 +372,7 @@ public:
 		CTeleporterTrigger::LoadFields (File);
 	}
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (Enabled)
 			return;
@@ -1344,7 +1344,7 @@ void CPathCorner::Think ()
 		NextTargets = CC_GetTargets (Target);
 }
 
-void CPathCorner::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_MONSTER))
 		return;
@@ -1481,7 +1481,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CPathCombat);
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		CMonsterEntity *Monster = NULL;
 		if (Other->EntityFlags & ENT_MONSTER)
@@ -1745,7 +1745,7 @@ class CTargetLightRamp : public IMapEntity, public IThinkableEntity, public IUsa
 {
 public:
 	sint32			RampMessage[3];
-	FrameNumber_t	TimeStamp;
+	FrameNumber	TimeStamp;
 	CLight			*Light;
 	float			Speed;
 	uint8			Style;

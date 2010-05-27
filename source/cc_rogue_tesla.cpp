@@ -83,7 +83,7 @@ void CTesla::SaveFields (CFile &File)
 
 	File.Write<bool> (DoExplosion);
 	File.Write<int> (Damage);
-	File.Write<FrameNumber_t> (RemoveTime);
+	File.Write<FrameNumber> (RemoveTime);
 
 	SaveBadArea (File, BadArea);
 };
@@ -103,7 +103,7 @@ void CTesla::LoadFields (CFile &File)
 
 	DoExplosion = File.Read<bool>();
 	Damage = File.Read<int>();
-	RemoveTime = File.Read<FrameNumber_t>();
+	RemoveTime = File.Read<FrameNumber>();
 
 	BadArea = LoadBadArea (File);
 };
@@ -315,7 +315,7 @@ void CTesla::Activate ()
 	}
 }
 
-void CTesla::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CTesla::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (plane->normal)
 	{
@@ -425,7 +425,7 @@ void CTeslaWeapon::FireGrenade (CPlayerEntity *Player, bool inHand)
 	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 	Player->P_ProjectSource (offset, forward, right, start);
 
-	FrameNumber_t timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
+	FrameNumber timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
 	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.

@@ -19,12 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // MathLib.h
 
-// ===========================================================================
-
-class  vec3f; // forward declaration
-
-// ===========================================================================
-
 #ifndef M_PI
 # define M_PI			3.14159265358979323846f		// matches value in gcc v2 math.h
 #endif
@@ -220,7 +214,6 @@ inline float		LerpAngle (float a1, float a2, float frac)
 
 #include "Vector.h"
 
-extern vec2f vec2fOrigin;
 extern vec3f vec3fOrigin;
 
 // ===========================================================================

@@ -92,11 +92,32 @@ inline uint32 mixBits(uint32 u, uint32 v)
 #include <random>
 std::tr1::mt19937 twister;
 
+/**
+\fn	void seedMT (uint32 seed)
+
+\brief	Seed the mersenne twister random number generator.
+		Replacement for srand()
+
+\author	Paril
+\date	26/05/2010
+
+\param	seed	The seed. 
+**/
 void seedMT (uint32 seed)
 {
 	twister.seed ((unsigned long)seed);
 }
 
+/**
+\fn	uint32 randomMT ()
+
+\brief	Get random number. Replacement for rand()
+
+\author	Paril
+\date	26/05/2010
+
+\return	. 
+**/
 uint32 randomMT ()
 {
 	return twister();
@@ -108,7 +129,17 @@ static uint32   state[N+1];     // state vector + 1 extra to not violate ANSI C
 static uint32   *next;          // next random value is computed from here
 static sint32      left = -1;      // can *next++ this many times before reloading
 
+/**
+\fn	void seedMT (uint32 seed)
 
+\brief	Seed the mersenne twister random number generator.
+		Replacement for srand()
+
+\author	Paril
+\date	26/05/2010
+
+\param	seed	The seed. 
+**/
 void seedMT(uint32 seed)
 {
 	//
@@ -164,7 +195,6 @@ void seedMT(uint32 seed)
 		*s++ = (x*=69069U) & 0xFFFFFFFFU);
 }
 
-
 static uint32 reloadMT()
 {
 	register uint32 *p0=state, *p2=state+2, *pM=state+M, s0, s1;
@@ -188,7 +218,16 @@ static uint32 reloadMT()
 	return(s1 ^ (s1 >> L));
 }
 
+/**
+\fn	uint32 randomMT ()
 
+\brief	Get random number. Replacement for rand()
+
+\author	Paril
+\date	26/05/2010
+
+\return	. 
+**/
 uint32 randomMT()
 {
 	uint32 y;

@@ -94,7 +94,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *Player, bool inHand)
 	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 	Player->P_ProjectSource (offset, forward, right, start);
 
-	FrameNumber_t timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
+	FrameNumber timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
 	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
@@ -116,7 +116,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *Player, bool inHand)
 
 	AttackSound (Player);
 
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->Client.Anim.Priority = ANIM_ATTACK;
 		Player->State.GetFrame() = FRAME_crattak1 - 1;

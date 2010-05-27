@@ -106,7 +106,7 @@ IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 extern bool ShuttingDownEntities;
 bool RemoveAll (const edict_t *it)
 {
-	if (it && it->Entity && it->Entity->gameEntity && (it->server.state.number <= Game.MaxClients || it->server.inUse))
+	if (it && it->Entity && it->Entity->gameEntity && (it->server.State.Number <= Game.MaxClients || it->server.InUse))
 		QDelete it->Entity;
 	return true;
 }
@@ -276,7 +276,7 @@ void WriteEntities (CFile &File)
 	WRITE_MAGIC
 }
 
-// Writes out gclient_t
+// Writes out SServerClient
 void WriteClient (CFile &File, CPlayerEntity *Player)
 {
 	Player->Client.WriteClientStructure (File);
@@ -306,7 +306,7 @@ void ReadRealEntity (CFile &File, sint32 number)
 	edict_t temp (*ent);
 
 	// Null out pointers
-	ent->server.owner = NULL;
+	ent->server.Owner = NULL;
 
 	// Restore entity
 	ent->Entity = RestoreEntity;
@@ -315,14 +315,14 @@ void ReadRealEntity (CFile &File, sint32 number)
 	if (number > Game.MaxClients)
 	{
 		sint32 OwnerNumber = File.Read<sint32> ();
-		ent->server.owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
+		ent->server.Owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
 	}
 
-	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex2, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex3, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.state.modelIndex4, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.state.sound, INDEX_SOUND);
+	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex2, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex3, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex4, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->server.State.Sound, INDEX_SOUND);
 
 	// Read entity stuff
 	if (number > Game.MaxClients)
@@ -336,9 +336,9 @@ void ReadRealEntity (CFile &File, sint32 number)
 		// Revision:
 		// This will actually change some base members..
 		// Restore them all here!
-		edict_t *oldOwner = ent->server.owner;
+		edict_t *oldOwner = ent->server.Owner;
 		memcpy (ent, &temp, sizeof(edict_t));
-		ent->server.owner = oldOwner;
+		ent->server.Owner = oldOwner;
 
 		ent->Entity = Entity;
 	}
@@ -400,7 +400,7 @@ void ReadClients (CFile &File)
 	SaveClientData = QNew (TAG_GENERIC) CClient*[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].server.client);
+		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].server.Client);
 		ReadClient (File, i);
 	}
 }
@@ -490,11 +490,11 @@ void CGameAPI::ReadGame (char *filename)
 	GameAPI.GetEntities() = Game.Entities;
 	ReadGameLocals (File);
 
-	Game.Clients = QNew (TAG_GAME) gclient_t[Game.MaxClients];
+	Game.Clients = QNew (TAG_GAME) SServerClient[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
 		edict_t *ent = &Game.Entities[i+1];
-		ent->server.client = Game.Clients + i;
+		ent->server.Client = Game.Clients + i;
 	}
 
 	ReadClients (File);
@@ -580,7 +580,7 @@ void SetClientFields ()
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
 			Player->Client = *SaveClientData[i];
-			Player->Client.RepositionClient (Game.Entities[i+1].server.client);
+			Player->Client.RepositionClient (Game.Entities[i+1].server.Client);
 			QDelete SaveClientData[i];
 		}
 		QDelete[] SaveClientData;
@@ -668,10 +668,10 @@ void CGameAPI::ReadLevel (char *filename)
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
 		edict_t *ent = &Game.Entities[i+1];
-		ent->server.client = Game.Clients + i;
+		ent->server.Client = Game.Clients + i;
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
-		Player->Client.RepositionClient (ent->server.client);
+		Player->Client.RepositionClient (ent->server.Client);
 		Player->Client.Persistent.State = SVCS_FREE;
 	}
 

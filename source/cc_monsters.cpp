@@ -105,11 +105,11 @@ void CMonster::SaveFields (CFile &File)
 #if ROGUE_FEATURES
 	File.Write<bool> (BlindFire);
 	File.Write<float> (BaseHeight);
-	File.Write<FrameNumber_t> (NextDuckTime);
-	File.Write<FrameNumber_t> (DuckWaitTime);
-	File.Write<FrameNumber_t> (BlindFireDelay);
+	File.Write<FrameNumber> (NextDuckTime);
+	File.Write<FrameNumber> (DuckWaitTime);
+	File.Write<FrameNumber> (BlindFireDelay);
 	File.Write<sint32> ((LastPlayerEnemy) ? LastPlayerEnemy->State.GetNumber() : -1);
-	File.Write<FrameNumber_t> (NextDuckTime);
+	File.Write<FrameNumber> (NextDuckTime);
 	File.Write<vec3f> (BlindFireTarget);
 	File.Write<sint32> ((BadMedic1) ? BadMedic1->State.GetNumber() : -1);
 	File.Write<sint32> ((BadMedic2) ? BadMedic2->State.GetNumber() : -1);
@@ -117,9 +117,9 @@ void CMonster::SaveFields (CFile &File)
 #endif
 	File.Write<sint32> (NextFrame);
 	File.Write<float> (Scale);
-	File.Write<FrameNumber_t> (PauseTime);
-	File.Write<FrameNumber_t> (AttackFinished);
-	File.Write<FrameNumber_t> (SearchTime);
+	File.Write<FrameNumber> (PauseTime);
+	File.Write<FrameNumber> (AttackFinished);
+	File.Write<FrameNumber> (SearchTime);
 	File.Write<vec3f> (LastSighting);
 	File.Write<vec3f> (SavedGoal);
 	File.Write<sint32> (AttackState);
@@ -137,7 +137,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<CAnim*> (CurrentMove);
 	File.Write<uint32> (MonsterFlags);
 	File.Write (MonsterName);
-	File.Write<FrameNumber_t> (PainDebounceTime);
+	File.Write<FrameNumber> (PainDebounceTime);
 
 	File.Write <void (CMonster::*) ()> (Think);
 
@@ -145,9 +145,9 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<uint8> (MonsterSlots);
 	File.Write<uint8> (MonsterUsed);
 	File.Write<sint32> ((Commander && Commander->gameEntity) ? Commander->State.GetNumber() : -1);
-	File.Write<FrameNumber_t> (QuadFramenum);
-	File.Write<FrameNumber_t> (InvincibleFramenum);
-	File.Write<FrameNumber_t> (DoubleFramenum);
+	File.Write<FrameNumber> (QuadFramenum);
+	File.Write<FrameNumber> (InvincibleFramenum);
+	File.Write<FrameNumber> (DoubleFramenum);
 	SaveBadArea (File, BadArea);
 #endif
 
@@ -163,14 +163,14 @@ void CMonster::LoadFields (CFile &File)
 #if ROGUE_FEATURES
 	BlindFire = File.Read<bool> ();
 	BaseHeight = File.Read<float> ();
-	NextDuckTime = File.Read<FrameNumber_t> ();
-	DuckWaitTime = File.Read<FrameNumber_t> ();
-	BlindFireDelay = File.Read<FrameNumber_t> ();
+	NextDuckTime = File.Read<FrameNumber> ();
+	DuckWaitTime = File.Read<FrameNumber> ();
+	BlindFireDelay = File.Read<FrameNumber> ();
 	sint32 Index = File.Read<sint32> ();
 	if (Index != -1)
 		LastPlayerEnemy = entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
 
-	NextDuckTime = File.Read<FrameNumber_t> ();
+	NextDuckTime = File.Read<FrameNumber> ();
 	BlindFireTarget = File.Read<vec3f> ();
 	Index = File.Read<sint32> ();
 	if (Index != -1)
@@ -186,9 +186,9 @@ void CMonster::LoadFields (CFile &File)
 #endif
 	NextFrame = File.Read<sint32> ();
 	Scale = File.Read<float> ();
-	PauseTime = File.Read<FrameNumber_t> ();
-	AttackFinished = File.Read<FrameNumber_t> ();
-	SearchTime = File.Read<FrameNumber_t> ();
+	PauseTime = File.Read<FrameNumber> ();
+	AttackFinished = File.Read<FrameNumber> ();
+	SearchTime = File.Read<FrameNumber> ();
 	LastSighting = File.Read<vec3f> ();
 	SavedGoal = File.Read<vec3f> ();
 	AttackState = File.Read<sint32> ();
@@ -206,7 +206,7 @@ void CMonster::LoadFields (CFile &File)
 	CurrentMove = File.Read<CAnim*> ();
 	MonsterFlags = File.Read<uint32> ();
 	MonsterName = File.ReadCCString ();
-	PainDebounceTime = File.Read<FrameNumber_t> ();
+	PainDebounceTime = File.Read<FrameNumber> ();
 
 	Think = File.Read <void (CMonster::*) ()> ();
 
@@ -218,9 +218,9 @@ void CMonster::LoadFields (CFile &File)
 	if (Index != -1)
 		Commander = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 
-	QuadFramenum = File.Read<FrameNumber_t> ();
-	InvincibleFramenum = File.Read<FrameNumber_t> ();
-	DoubleFramenum = File.Read<FrameNumber_t> ();
+	QuadFramenum = File.Read<FrameNumber> ();
+	InvincibleFramenum = File.Read<FrameNumber> ();
+	DoubleFramenum = File.Read<FrameNumber> ();
 	BadArea = LoadBadArea (File);
 #endif
 
@@ -417,7 +417,7 @@ void CMonsterEntity::Pain (IBaseEntity *Other, sint32 Damage)
 	Monster->Pain (Other, Damage);
 }
 
-void CMonsterEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CMonsterEntity::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	Monster->Touch (Other, plane, surf);
 }
@@ -1459,21 +1459,21 @@ void CMonster::SetEffects()
 #if ROGUE_FEATURES
 	if (QuadFramenum > Level.Frame)
 	{
-		FrameNumber_t remaining = QuadFramenum - Level.Frame;
+		FrameNumber remaining = QuadFramenum - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			Entity->State.GetEffects() |= EF_QUAD;
 	}
 
 	if (DoubleFramenum > Level.Frame)
 	{
-		FrameNumber_t remaining = DoubleFramenum - Level.Frame;
+		FrameNumber remaining = DoubleFramenum - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			Entity->State.GetEffects() |= EF_DOUBLE;
 	}
 
 	if (InvincibleFramenum > Level.Frame)
 	{
-		FrameNumber_t remaining = InvincibleFramenum - Level.Frame;
+		FrameNumber remaining = InvincibleFramenum - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
 			Entity->State.GetEffects() |= EF_PENT;
 	}
@@ -1617,7 +1617,7 @@ void CMonster::CheckGround()
 	// check steepness
 	if (Entity->GravityVector.Z < 0)		// normal gravity
 	{
-		if (trace.plane.normal.Z < 0.7 && !trace.startSolid)
+		if (trace.plane.Normal.Z < 0.7f && !trace.startSolid)
 		{
 			Entity->GroundEntity = NULL;
 			return;
@@ -1625,7 +1625,7 @@ void CMonster::CheckGround()
 	}
 	else								// inverted gravity
 	{
-		if (trace.plane.normal.Z > -0.7 && !trace.startSolid)
+		if (trace.plane.Normal.Z > -0.7f && !trace.startSolid)
 		{
 			Entity->GroundEntity = NULL;
 			return;

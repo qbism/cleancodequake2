@@ -325,7 +325,7 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	Player->Client.Persistent.Weapon->InitWeapon(Player);
 
 	Player->Client.Anim.Priority = ANIM_PAIN;
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->State.GetFrame() = FRAME_crpain1;
 		Player->Client.Anim.EndFrame = FRAME_crpain4;
@@ -719,7 +719,7 @@ void CWeapon::FireAnimation (CPlayerEntity *Player)
 {
 	// start the animation
 	Player->Client.Anim.Priority = ANIM_ATTACK;
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->State.GetFrame() = FRAME_crattak1 - 1;
 		Player->Client.Anim.EndFrame = FRAME_crattak9;

@@ -225,7 +225,7 @@ public:
 	{
 	};
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (((Other == GetOwner()) && (NextThink - Level.Frame > CTF_AUTO_FLAG_RETURN_TIMEOUT-20)))
 			return;

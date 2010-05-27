@@ -51,7 +51,7 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 		CTrace tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SOLID|CONTENTS_MASK_WATER);
 
 		if (tr.fraction < 1 && tr.surface)
-			ConfigString (CS_POINTING_SURFACE, tr.surface->name, Player);
+			ConfigString (CS_POINTING_SURFACE, tr.surface->Name, Player);
 
 		tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
 
@@ -60,10 +60,7 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 			if (!tr.surface)
 				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Ent->ClassName.c_str()), Player);
 			else
-			{
-				std::string temp = tr.Ent->ClassName + std::string(" (") + std::string(tr.surface->name) + std::string(")");
-				ConfigString (CS_POINTING_SURFACE-1, temp.c_str(), Player);
-			}
+				ConfigString (CS_POINTING_SURFACE-1, (tr.Ent->ClassName + " (" + tr.surface->Name + ")").c_str(), Player);
 		}
 	}
 

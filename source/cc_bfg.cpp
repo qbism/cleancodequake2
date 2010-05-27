@@ -108,7 +108,8 @@ void CBFG::FireBFG (CPlayerEntity *Player)
 	Player->Client.KickOrigin = forward * -2;
 
 	// make a big pitch kick with an inverse fall
-	Player->Client.ViewDamage.Set (-40, crand()*8);
+	Player->Client.ViewDamage[0] = -40;
+	Player->Client.ViewDamage[1] = crand()*8;
 	Player->Client.ViewDamageTime = Level.Frame + DAMAGE_TIME;
 
 	Player->P_ProjectSource (offset, forward, right, start);

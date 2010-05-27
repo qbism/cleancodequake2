@@ -38,7 +38,7 @@ class CWidowStand : public CMonster
 {
 public:
 	uint8			WidowDamageMultiplier;
-	FrameNumber_t	RailDebounceTime, BlasterDebounceTime;
+	FrameNumber	RailDebounceTime, BlasterDebounceTime;
 	uint8			FireCount;
 	vec3f			RailPos;
 	uint32			ShotsFired;
@@ -62,8 +62,8 @@ public:
 	virtual void SaveMonsterFields (CFile &File)
 	{
 		File.Write<uint8> (WidowDamageMultiplier);
-		File.Write<FrameNumber_t> (RailDebounceTime);
-		File.Write<FrameNumber_t> (BlasterDebounceTime);
+		File.Write<FrameNumber> (RailDebounceTime);
+		File.Write<FrameNumber> (BlasterDebounceTime);
 		File.Write<uint8> (FireCount);
 		File.Write<vec3f> (RailPos);
 		File.Write<uint8> (ShotsFired);
@@ -73,8 +73,8 @@ public:
 	virtual void LoadMonsterFields (CFile &File)
 	{
 		WidowDamageMultiplier = File.Read<uint8> ();
-		RailDebounceTime = File.Read<FrameNumber_t> ();
-		BlasterDebounceTime = File.Read<FrameNumber_t> ();
+		RailDebounceTime = File.Read<FrameNumber> ();
+		BlasterDebounceTime = File.Read<FrameNumber> ();
 		FireCount = File.Read<uint8> ();
 		RailPos = File.Read<vec3f> ();
 		ShotsFired = File.Read<uint8> ();
@@ -95,9 +95,9 @@ public:
 	void Powerups ();
 	void RespondPowerup (CPlayerEntity *other);
 	void PowerArmor ();
-	void Pent (FrameNumber_t frametime);
-	void Quad (FrameNumber_t frametime);
-	void Double (FrameNumber_t frametime);
+	void Pent (FrameNumber frametime);
+	void Quad (FrameNumber frametime);
+	void Double (FrameNumber frametime);
 	void ReAttackBlaster ();
 	void AttackBlaster ();
 	void FireBlaster ();
@@ -118,7 +118,7 @@ public:
 	void StepShoot ();
 	void Step ();
 	void DoSpawn ();
-	FrameNumber_t Torso ();
+	FrameNumber Torso ();
 
 	virtual void Dead ();
 	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);

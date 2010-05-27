@@ -235,7 +235,7 @@ public:
 	{
 	};
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (AvoidOwner && (Other == GetOwner()))
 			return;

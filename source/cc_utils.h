@@ -204,7 +204,7 @@ inline IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bo
 
 inline vec3f VelocityForDamage (sint32 Damage)
 {
-	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (Damage < 50) ? 0.7f : 1.2f;
+	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * ((Damage < 50) ? 0.7f : 1.2f);
 }
 
 #else

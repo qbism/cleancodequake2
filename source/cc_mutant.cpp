@@ -305,7 +305,7 @@ void CMutant::Melee ()
 // ATTACK
 //
 
-void CMutant::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CMutant::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Jumping)
 		return;

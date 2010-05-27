@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CIcarus : public CMonster
 {
 public:
-	FrameNumber_t		TimeStamp;
+	FrameNumber		TimeStamp;
 
 	MONSTER_SOUND_ENUM
 	(
@@ -57,12 +57,12 @@ public:
 	void SaveMonsterFields (CFile &File)
 	{
 		SAVE_MONSTER_SOUNDS
-		File.Write<FrameNumber_t> (TimeStamp);
+		File.Write<FrameNumber> (TimeStamp);
 	}
 	void LoadMonsterFields (CFile &File)
 	{
 		LOAD_MONSTER_SOUNDS
-		TimeStamp = File.Read<FrameNumber_t> ();
+		TimeStamp = File.Read<FrameNumber> ();
 	}
 
 	void ReAttack ();

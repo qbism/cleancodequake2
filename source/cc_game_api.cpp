@@ -120,6 +120,8 @@ CC_ENABLE_DEPRECATION
 //
 //
 
+const int MAX_INFO_STRING = 512;
+
 bool CGameAPI::ClientConnect (CPlayerEntity *Player, char *userinfo)
 {
 	CUserInfo UserInfo (userinfo);
@@ -143,7 +145,7 @@ void CGameAPI::ClientDisconnect (CPlayerEntity *Player)
 	Player->Disconnect ();
 }
 
-void CGameAPI::ClientThink (CPlayerEntity *Player, userCmd_t *cmd)
+void CGameAPI::ClientThink (CPlayerEntity *Player, SUserCmd *cmd)
 {
 	Player->ClientThink (cmd);
 }
@@ -289,7 +291,7 @@ This will be called once for each client frame, which will
 usually be a couple times for each server frame.
 ==============
 */
-void ClientThink (edict_t *ent, userCmd_t *ucmd)
+void ClientThink (edict_t *ent, SUserCmd *ucmd)
 {
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -399,7 +401,7 @@ void ClientCommand (edict_t *ent)
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
-	if (!ent->server.client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
+	if (!ent->server.Client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
 		return;		// not fully in game yet
 
 	GameAPI.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
@@ -542,7 +544,7 @@ struct gameExport_t
 	void		(*ClientUserinfoChanged) (edict_t *ent, char *userInfo);
 	void		(*ClientDisconnect) (edict_t *ent);
 	void		(*ClientCommand) (edict_t *ent);
-	void		(*ClientThink) (edict_t *ent, userCmd_t *cmd);
+	void		(*ClientThink) (edict_t *ent, SUserCmd *cmd);
 
 	void		(*RunFrame) ();
 
@@ -614,8 +616,6 @@ extern "C"
 	gameExport_t *GetGameAPI (gameImport_t *import)
 	{
 		gi = *import;
-		
-		Swap_Init ();
 		return &globals;
 	}
 }

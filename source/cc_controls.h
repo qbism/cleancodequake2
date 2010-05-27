@@ -169,6 +169,8 @@ enum
 	STP_CUSTOM // Allows programmer to shove the text where ever he wants
 };
 
+const int MAX_SLIDER_WIDTH = 64;
+
 template <typename TType>
 class CMenu_Slider : public CMenuItem
 {
@@ -191,8 +193,8 @@ public:
 
 	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState)
 	{
-		if (Width > (MAX_INFO_KEY*2)-3)
-			Width = (MAX_INFO_KEY*2)-3;
+		if (Width > MAX_SLIDER_WIDTH-3)
+			Width = MAX_SLIDER_WIDTH-3;
 
 		sint32 drawX = x;
 
@@ -210,7 +212,7 @@ public:
 		DrawState->AddVirtualPoint_X (drawX);
 		DrawState->AddVirtualPoint_Y (y + 120);
 
-		char Buffer[MAX_INFO_KEY*2];
+		char Buffer[MAX_SLIDER_WIDTH];
 		Buffer[0] = CCHAR_DOWNLOADBAR_LEFT;
 
 		// Which number is closest to the value?

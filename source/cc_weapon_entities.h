@@ -66,13 +66,13 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 	void PushInDirection (vec3f vel, uint32 flags);
 
 	void Explode ();
 
 	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f aimdir,
-						sint32 Damage, sint32 speed, FrameNumber_t timer, float damage_radius, bool handNade = false, bool held = false);
+						sint32 Damage, sint32 speed, FrameNumber timer, float damage_radius, bool handNade = false, bool held = false);
 
 	bool Run ();
 };
@@ -106,7 +106,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, sint32 effect, bool isHyper);
@@ -148,7 +148,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static CRocket *Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage);
@@ -162,7 +162,7 @@ public:
 	bool			Exploded;
 	sint32			Damage;
 	float			DamageRadius;
-	FrameNumber_t	FreeTime;
+	FrameNumber	FreeTime;
 
 	CBFGBolt ();
 	CBFGBolt (sint32 Index);
@@ -174,7 +174,7 @@ public:
 		File.Write<bool> (Exploded);
 		File.Write<sint32> (Damage);
 		File.Write<float> (DamageRadius);
-		File.Write<FrameNumber_t> (FreeTime);
+		File.Write<FrameNumber> (FreeTime);
 
 		IThinkableEntity::SaveFields (File);
 		ITouchableEntity::SaveFields (File);
@@ -186,7 +186,7 @@ public:
 		Exploded = File.Read<bool> ();
 		Damage = File.Read<sint32> ();
 		DamageRadius = File.Read<float> ();
-		FreeTime = File.Read<FrameNumber_t> ();
+		FreeTime = File.Read<FrameNumber> ();
 
 		IThinkableEntity::LoadFields (File);
 		ITouchableEntity::LoadFields (File);
@@ -194,7 +194,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, float damage_radius);
@@ -310,7 +310,7 @@ public:
 	void GrapplePull ();
 	void GrappleDrawCable ();
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 	bool Run ();
 
 	static void Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint32 Damage, sint32 speed);

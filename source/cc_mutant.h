@@ -86,7 +86,7 @@ public:
 	bool CheckMelee ();
 	bool CheckJump ();
 	
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void Attack ();
 	void Melee ();

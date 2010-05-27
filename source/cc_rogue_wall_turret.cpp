@@ -846,7 +846,7 @@ bool CWallTurret::CheckAttack ()
 	}
 
 	float chance = 0.50f;
-	FrameNumber_t nexttime = (8 - ((0.1f * CvarList[CV_SKILL].Float()) * 10));
+	FrameNumber nexttime = (8 - ((0.1f * CvarList[CV_SKILL].Float()) * 10));
 	
 	if (Entity->SpawnFlags & SPAWN_ROCKET)
 	{

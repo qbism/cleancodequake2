@@ -44,7 +44,7 @@ public:
 	};
 	uint32			ThinkType;
 	vec3f			MoveDir;
-	FrameNumber_t	Wait;
+	FrameNumber	Wait;
 	uint8			Sounds;
 
 	CTriggerBase ();
@@ -56,7 +56,7 @@ public:
 	bool Run ();
 
 	virtual void Think ();
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 

@@ -132,7 +132,7 @@ public:
 	virtual	void	Drop (CPlayerEntity *Player) = 0;
 	virtual class CItemEntity	*DropItem (IBaseEntity *Entity);
 
-	virtual void	SetRespawn (class CItemEntity *Item, FrameNumber_t delay);
+	virtual void	SetRespawn (class CItemEntity *Item, FrameNumber delay);
 
 	inline sint32		GetIndex ()
 	{

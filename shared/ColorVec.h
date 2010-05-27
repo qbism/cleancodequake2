@@ -19,55 +19,147 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // ColorVec.h
 
-/*
-==============================================================================
+/**
+\class	colorBase
 
-	colorf
- 
-==============================================================================
-*/
+\brief	Color base class. 
 
-class colorf
+\author	Paril
+\date	27/05/2010
+**/
+template <typename TType>
+class colorBase
 {
 public:
 	/**
 	 * Data
 	 */
-	float R, G, B, A;
+	TType R, G, B, A;
 
 	/**
 	 * Constructors
 	 */
-	colorf() 
-		: R(0), G(0), B(0), A(0){}
-
-	inline colorf(const colorf &Other)
-		: R(Other.R), G(Other.G), B(Other.B), A(Other.A) {}
-
-	inline colorf(const class colorb &Other);
-
-	inline colorf(const float InR, const float InG, const float InB, const float InA = 1.0f)
-		: R(InR), G(InG), B(InB), A(InA) {}
 
 	/**
-	 * Destructors
-	 */
-	~colorf() {}
+	\fn	colorBase()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	27/05/2010
+	**/
+	colorBase() :
+	  R(0),
+	  G(0),
+	  B(0),
+	  A(0)
+	  {
+	  }
+
+	/**
+	\fn	inline colorBase(const TType InR, const TType InG, const TType InB, const TType InA)
+	
+	\brief	Constructor. Initializes a color with four separate color values.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	InR	The in r. 
+	\param	InG	The in g. 
+	\param	InB	The in b. 
+	\param	InA	The in a. 
+	**/
+	inline colorBase(const TType InR, const TType InG, const TType InB, const TType InA) :
+	  R(InR),
+	  G(InG),
+	  B(InB),
+	  A(InA)
+	{
+	}
 
 	/**
 	 * Operators
 	 */
-	inline bool operator !=(const colorf &Other) { return (R != Other.R || G != Other.G || B != Other.B || A != Other.A); }
 
-	inline bool operator ==(const colorf &Other) { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
+	/**
+	\fn	inline bool operator!= (const colorBase &Other)
+	
+	\brief	Inequality operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	
+	\return	true if the parameters are not considered equivalent. 
+	**/
+	inline bool operator != (const colorBase &Other)
+	{
+		return (R != Other.R || G != Other.G || B != Other.B || A != Other.A);
+	}
 
-	inline const float &operator [](const sint32 Index) const { return (&R)[Index]; }
-	inline float &operator [](const sint32 Index) { return (&R)[Index]; }
+	/**
+	\fn	inline bool operator== (const colorBase &Other)
+	
+	\brief	Equality operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	
+	\return	true if the parameters are considered equivalent. 
+	**/
+	inline bool operator == (const colorBase &Other)
+	{
+		return (R == Other.R && G == Other.G && B == Other.B && A == Other.A);
+	}
 
-	inline operator float *() { return (&R); }
-	inline operator const float *() const { return (&R); }
+	/**
+	\fn	inline TType &operator[] (const sint32 Index)
+	
+	\brief	[] casting operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Index	Zero-based index of color. 
+	
+	\return	R if Index is 0, G if 1, B if 2, A if 3. 
+	**/
+	inline TType &operator [] (const sint32 Index)
+	{
+		return (&R)[Index];
+	}
 
-	inline colorf &operator =(const colorf &Other)
+	/**
+	\fn	inline operator TType * ()
+	
+	\brief	Pointer operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+
+	\return	Pointer to R.
+	**/
+	inline operator TType * ()
+	{
+		return (&R);
+	}
+
+	/**
+	\fn	inline colorBase &operator= (const colorBase &Other)
+	
+	\brief	Copy operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other color. 
+	
+	\return	A reference to this color. 
+	**/
+	inline colorBase &operator = (const colorBase &Other)
 	{
 		R = Other.R;
 		G = Other.G;
@@ -80,20 +172,90 @@ public:
 	/**
 	 * Functions
 	 */
-	inline void Set(const colorf &Other) { R = Other.R; G = Other.G; B = Other.B; A = Other.A; }
-	inline void Set(const float InR, const float InG, const float InB, const float InA) { R = InR; G = InG; B = InB; A = InA; }
+
+	/**
+	\fn	inline void Set (const colorBase &Other)
 	
-	colorf GetNormalized (float &norm)
+	\brief	Sets. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	**/
+	inline void Set (const colorBase &Other)
 	{
-		colorf out;
+		R = Other.R;
+		G = Other.G;
+		B = Other.B;
+		A = Other.A;
+	}
+
+	/**
+	\fn	inline void Set (const TType InR, const TType InG, const TType InB, const TType InA)
+	
+	\brief	Sets this color to InR, InG, InB, InA
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	InR	The in r. 
+	\param	InG	The in g. 
+	\param	InB	The in b. 
+	\param	InA	The in a. 
+	**/
+	inline void Set (const TType InR, const TType InG, const TType InB, const TType InA)
+	{
+		R = InR;
+		G = InG;
+		B = InB;
+		A = InA;
+	}
+
+	/**
+	\fn	inline float DistanceFrom (colorBase &Other)
+	
+	\brief	The color's distance to another color.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param [in,out]	Other	The other. 
+	
+	\return	. 
+	**/
+	inline float DistanceFrom (colorBase &Other)
+	{
+		return 
+			((R - Other.R) * (R - Other.R)) +
+			((R - Other.G) * (G - Other.G)) +
+			((R - Other.B) * (B - Other.B)) +
+			((R - Other.A) * (A - Other.A));
+	}
+	
+	/**
+	\fn	colorBase GetNormalized (float &norm)
+	
+	\brief	Normalizes the color and returns the normalized value.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param [in,out]	norm	The normalize value to be stored. 
+	
+	\return	The normalized. 
+	**/
+	colorBase GetNormalized (float &norm)
+	{
+		colorBase out;
 		float f = Max<>(Max<>(R, G), B);
 
 		if (f > 1.0f)
 		{
 			f = 1.0f / f;
-			out.R = R * f;
-			out.G = G * f;
-			out.B = B * f;
+			out.R = ((float)R) * f;
+			out.G = ((float)G) * f;
+			out.B = ((float)B) * f;
 			out.A = A; // fixme?
 		}
 		else
@@ -103,16 +265,134 @@ public:
 		return out;
 	};
 
-	inline colorf GetNormalized ()
+	/**
+	\fn	inline colorBase GetNormalized ()
+	
+	\brief	Gets the normalized color.
+	
+	\return	The normalized. 
+	**/
+	inline colorBase GetNormalized ()
 	{
 		float t;
 		return GetNormalized(t);
 	};
 
+	/**
+	\fn	inline void Normalize ()
+	
+	\brief	Normalizes this color.
+	**/
 	inline void Normalize ()
 	{
 		*this = GetNormalized();
 	};
+};
+
+/*
+==============================================================================
+
+	colorf
+ 
+==============================================================================
+*/
+
+/**
+\class	colorf
+
+\brief	Float color. 
+
+\author	Paril
+\date	27/05/2010
+**/
+class colorf : public colorBase<float>
+{
+public:
+	/**
+	 * Constructors
+	 */
+
+	/**
+	\fn	colorf()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	27/05/2010
+	**/
+	colorf() : 
+	  colorBase()
+	  {
+	  }
+
+	/**
+	\fn	inline colorf(const colorf &Other)
+	
+	\brief	Copy constructor. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	**/
+	inline colorf(const colorf &Other) : 
+	  colorBase(Other.R, Other.G, Other.B, Other.A)
+	  {
+	  }
+
+	/**
+	\fn	inline colorf(const colorb &Other)
+  
+	\brief	Constructor. 
+			Construct a colorf from a colorb.
+  
+	\author	Paril
+	\date	27/05/2010
+  
+	\param	Other	The other. 
+	**/
+	inline colorf(const class colorb &Other);
+
+	/**
+	\fn	inline colorf(const float InR, const float InG, const float InB, const float InA = 1.0f)
+  
+	\brief	Constructor. 
+			Construct a colorf from four color values.
+  
+	\author	Paril
+	\date	27/05/2010  
+	
+	\param	InR	The in R value. 
+	\param	InG	The in G value. 
+	\param	InB	The in B value. 
+	\param	InA	The in A value. 
+	**/
+	inline colorf(const float InR, const float InG, const float InB, const float InA = 1.0f) :
+	  colorBase(InR, InG, InB, InA)
+	  {
+	  }
+
+	/**
+	\fn	inline colorf &operator= (const colorf &Other)
+	
+	\brief	Copy operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	
+	\return	Reference to this color.
+	**/
+	inline colorf &operator = (const colorf &Other)
+	{
+		R = Other.R;
+		G = Other.G;
+		B = Other.B;
+		A = Other.A;
+
+		return *this;
+	}
 };
 
 /*
@@ -123,194 +403,122 @@ public:
 ==============================================================================
 */
 
-class colorb
+/**
+\class	colorb
+
+\brief	Byte color. 
+
+\author	Paril
+\date	27/05/2010
+**/
+class colorb : public colorBase<uint8>
 {
 public:
 	/**
-	 * Data
-	 */
-	uint8 R, G, B, A;
-
-	/**
 	 * Constructors
 	 */
-	colorb() 
-		: R(0), G(0), B(0), A(0) {}
-
-	inline colorb(const colorb &Other)
-		: R(Other.R), G(Other.G), B(Other.B), A(Other.A) {}
-
-	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA = 255)
-		: R(InR), G(InG), B(InB), A(InA) {}
-
-	inline colorb(const colorf &Other)
-		: R(FloatToByte(Other.R))
-		, G(FloatToByte(Other.G))
-		, B(FloatToByte(Other.B))
-		, A(FloatToByte(Other.A)) {}
 
 	/**
-	 * Destructors
-	 */
-	~colorb() {}
+	\fn	colorb()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	27/05/2010
+	**/
+	colorb() :
+	  colorBase()
+	  {
+	  }
 
 	/**
-	 * Operators
-	 */
-	inline bool operator !=(const colorb &Other) { return (R != Other.R || G != Other.G || B != Other.B || A != Other.A); }
+	\fn	inline colorb(const colorb &Other)
+	
+	\brief	Copy constructor. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	**/
+	inline colorb(const colorb &Other) :
+	  colorBase(Other.R, Other.G, Other.B, Other.A)
+	  {
+	  }
 
-	inline bool operator ==(const colorb &Other) { return (R == Other.R && G == Other.G && B == Other.B && A == Other.A); }
+	/**
+	\fn	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA = 255)
+	
+	\brief	Constructor.
+			Construct a colorb from four color values.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	InR	The in R value. 
+	\param	InG	The in G value. 
+	\param	InB	The in B value. 
+	\param	InA	The in A value. 
+	**/
+	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA = 255) :
+	  colorBase(InR, InG, InB, InA)
+	  {
+	  }
 
-	inline const uint8 &operator [](const sint32 Index) const { return (&R)[Index]; }
-	inline uint8 &operator [](const sint32 Index) { return (&R)[Index]; }
+	/**
+	\fn	inline colorb(const colorf &Other)
+	
+	\brief	Constructor. 
+			Construct a colorb from a colorf.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other color. 
+	**/
+	inline colorb(const colorf &Other) : 
+	  colorBase(FloatToByte(Other.R), FloatToByte(Other.G), FloatToByte(Other.B), FloatToByte(Other.A))
+	  {
+	  }
 
-	inline operator uint8 *() { return (&R); }
-	inline operator const uint8 *() const { return (&R); }
-
-	inline colorb &operator =(const colorb &Other)
+	/**
+	\fn	inline colorb &operator= (const colorb &Other)
+	
+	\brief	Copy operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Other	The other. 
+	
+	\return	Reference to this color.
+	**/
+	inline colorb &operator = (const colorb &Other)
 	{
-		*(sint32 *)&R = *(sint32 *)&Other.R;
+		R = Other.R;
+		G = Other.G;
+		B = Other.B;
+		A = Other.A;
+
 		return *this;
 	}
-
-	// GLbyte isn't unsigned
-	inline operator signed char *() { return (signed char*)(&R); }
-	inline operator const signed char *() const { return (signed char*)(&R); }
-
-	/**
-	 * Functions
-	 */
-	inline void Set(const colorb &Other) { R = Other.R; G = Other.G; B = Other.B; A = Other.A; }
-	inline void Set(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA) { R = InR; G = InG; B = InB; A = InA; }
-
-	inline void Set(const colorf &Other) { R = FloatToByte(Other.R); G = FloatToByte(Other.G); B = FloatToByte(Other.B); A = FloatToByte(Other.A); }
-
-	inline float DistanceFrom (colorb &Other)
-	{
-		return 
-			((R - Other.R) * (R - Other.R)) +
-			((R - Other.G) * (G - Other.G)) +
-			((R - Other.B) * (B - Other.B)) +
-			((R - Other.A) * (A - Other.A));
-	}
-
-	colorb GetNormalized (float &norm)
-	{
-		colorb out;
-		float f = Max<>(Max<>(R, G), B);
-
-		if (f > 1.0f)
-		{
-			f = 1.0f / f;
-			out.R = FloatToByte(R * f);
-			out.G = FloatToByte(G * f);
-			out.B = FloatToByte(B * f);
-			out.A = FloatToByte(A); // fixme?
-		}
-		else
-			out = *this;
-
-		norm = f;
-		return out;
-	};
-
-	inline colorb GetNormalized ()
-	{
-		float t;
-		return GetNormalized(t);
-	};
-
-	inline void Normalize ()
-	{
-		*this = GetNormalized();
-	};
 };
 
-inline colorf::colorf(const colorb &Other)
-	: R(Other.R / 255), G(Other.G / 255), B(Other.B / 255), A(Other.A / 255) {}
-
-/*
-==============================================================================
-
-	COLOR STRING HANDLING
- 
-==============================================================================
-*/
-
-const int NUM_COLOR_TABLE_COLORS = 9;
-
-extern const colorf	Q_FColorBlack;
-extern const colorf	Q_FColorRed;
-extern const colorf	Q_FColorGreen;
-extern const colorf	Q_FColorYellow;
-extern const colorf	Q_FColorBlue;
-extern const colorf	Q_FColorCyan;
-extern const colorf	Q_FColorMagenta;
-extern const colorf	Q_FColorWhite;
-
-extern const colorf	Q_FColorLtGrey;
-extern const colorf	Q_FColorMdGrey;
-extern const colorf	Q_FColorDkGrey;
-
-extern const colorf	Q_FStrColorTable[NUM_COLOR_TABLE_COLORS];
-
-extern const colorb	Q_BColorBlack;
-extern const colorb	Q_BColorRed;
-extern const colorb	Q_BColorGreen;
-extern const colorb	Q_BColorYellow;
-extern const colorb	Q_BColorBlue;
-extern const colorb	Q_BColorCyan;
-extern const colorb	Q_BColorMagenta;
-extern const colorb	Q_BColorWhite;
-
-extern const colorb	Q_BColorLtGrey;
-extern const colorb	Q_BColorMdGrey;
-extern const colorb	Q_BColorDkGrey;
-
-extern const colorb	Q_BStrColorTable[NUM_COLOR_TABLE_COLORS];
-
-#define COLOR_ESCAPE	'^'
-
-#define COLOR_BLACK		'0'
-#define COLOR_RED		'1'
-#define COLOR_GREEN		'2'
-#define COLOR_YELLOW	'3'
-#define COLOR_BLUE		'4'
-#define COLOR_CYAN		'5'
-#define COLOR_MAGENTA	'6'
-#define COLOR_WHITE		'7'
-#define COLOR_GREY		'8'
-
-#define STYLE_ITALIC	'I'
-#define STYLE_RETURN	'R'
-#define STYLE_SHADOW	'S'
-
-#define S_COLOR_ESCAPE	"^"
-
-#define S_COLOR_BLACK	"^0"
-#define S_COLOR_RED		"^1"
-#define S_COLOR_GREEN	"^2"
-#define S_COLOR_YELLOW	"^3"
-#define S_COLOR_BLUE	"^4"
-#define S_COLOR_CYAN	"^5"
-#define S_COLOR_MAGENTA	"^6"
-#define S_COLOR_WHITE	"^7"
-#define S_COLOR_GREY	"^8"
-
-#define S_STYLE_ITALIC	"^I"
-#define S_STYLE_RETURN	"^R"
-#define S_STYLE_SHADOW	"^S"
-
-inline sint32 Q_StrColorIndex (char c)
-{
-	return (((c & 127) - '0') % NUM_COLOR_TABLE_COLORS);
-}
-
-bool		Q_IsColorString (const char *p);
-sint32			Q_ColorCharCount (const char *s, sint32 endPos);
-sint32			Q_ColorCharOffset (const char *s, sint32 charCount);
-sint32			Q_ColorStrLastColor (char *s, sint32 byteOfs);
-sint32			Q_ColorStrLastStyle (char *s, sint32 byteOfs);
+/**
+\fn	inline colorf::colorf(const colorb &Other)
+  
+\brief	Constructor. 
+		Construct a colorf from a colorb.
+  
+\author	Paril
+\date	27/05/2010
+  
+\param	Other	The other. 
+**/
+inline colorf::colorf(const colorb &Other) :
+  colorBase(((float)Other.R) / 255, ((float)Other.G) / 255, ((float)Other.B) / 255, ((float)Other.A) / 255)
+  {
+  }
 
 inline uint8 HexColor_GetR (sint32 rgba)
 {

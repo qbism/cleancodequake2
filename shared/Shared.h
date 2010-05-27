@@ -166,26 +166,92 @@ enum
 	MULTICAST_PVS_R
 };
 
-// ===========================================================================
+/*
+==============================================================================
 
+	RANDOM NUMBERS
+
+==============================================================================
+*/
+
+/**
+\fn	void seedMT (uint32 seed)
+
+\brief	Seed the mersenne twister random number generator.
+		Replacement for srand()
+
+\author	Paril
+\date	26/05/2010
+
+\param	seed	The seed. 
+**/
 void	seedMT (uint32 seed);
+
+/**
+\fn	uint32 randomMT ()
+
+\brief	Get random number. Replacement for rand()
+
+\author	Paril
+\date	26/05/2010
+
+\return	. 
+**/
 uint32	randomMT ();
 
+/**
+\fn	inline float frand ()
+
+\brief	Get a random positive number.
+
+\return	A random number between 0 and 1. 
+**/
 inline float frand ()
 {
 	return randomMT() * 0.00000000023283064365386962890625f;
 }
 
+/**
+\fn	inline float crand ()
+
+\brief	Get a random positive or negative number.
+
+\return	A random number between -1 and 1. 
+**/
 inline float crand ()
 {
 	return ((sint32)randomMT() - 0x7FFFFFFF) * 0.000000000465661287307739257812f;
 }
 
+/**
+\fn	inline sint32 irandom (const sint32 h)
+
+\brief	Returns a random integer from 0 to 'h'
+
+\author	Paril
+\date	26/05/2010
+
+\param	h	The maximum number to get from randomization. Note that it is really from 0 to h-1
+
+\return	Random integer from 0 to h. 
+**/
 inline sint32 irandom (const sint32 h)
 {
 	return (sint32)(frand() * h);
 }
 
+/**
+\fn	inline sint32 icrandom (const sint32 h)
+
+\brief	Gets a random integer from -h to h
+
+\author	Paril
+\date	26/05/2010
+
+\param	h	The maximum number to get from randomization. Note that it is really from -(h-1) to h-1
+
+\return	Random integer from -h to h. 
+**/
 inline sint32 icrandom (const sint32 h)
 {
 	return (sint32)(crand() * h);
@@ -194,17 +260,66 @@ inline sint32 icrandom (const sint32 h)
 /*
 ==============================================================================
 
-	STRING RELATED FUNCTIONS
+	STRING ROUTINES
 
 ==============================================================================
 */
 
+/**
+\fn	void Q_snprintfz(char *dest, size_t size, const char *fmt, ...)
+
+\brief	Replacement for snprintf. Fills 'dest' up to 'size' with the format 'fmt'. 
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dest	If non-null, destination for the string. 
+\param	size			The size. 
+\param	fmt				Describes the format to use. 
+**/
 void	Q_snprintfz(char *dest, size_t size, const char *fmt, ...);
+
+/**
+\fn	void Q_strcatz(char *dst, const char *src, size_t dstSize)
+
+\brief	Replacement for strcat. Concatenates 'src' into 'dst' up to 'dstSize' bytes.
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dst	If non-null, destination for the string. 
+\param	src			Source for the string. 
+\param	dstSize		Size of the destination. 
+**/
 void	Q_strcatz(char *dst, const char *src, size_t dstSize);
+
+/**
+\fn	size_t Q_strncpyz(char *dest, const char *src, size_t size)
+
+\brief	Replacement for strncpy. Copies 'src' into 'dest' up to 'size' bytes
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dest	If non-null, destination for the string to be copied into. 
+\param	src				Source for the string. 
+\param	size			The size. 
+
+\return	. 
+**/
 size_t	Q_strncpyz(char *dest, const char *src, size_t size);
 
 #if defined(id386) && ((!defined(MSVS_VERSION) && defined(CC_STDC_CONFORMANCE)) || !defined(CC_STDC_CONFORMANCE))
-// By R1CH
+/**
+\fn	inline __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
+
+\brief	Faster replacement for tolower.
+
+\author	R1CH
+\date	???
+
+\param		The character. 
+**/
 inline __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
 {
 	__asm {
@@ -231,11 +346,18 @@ inline sint32 Q_toupper(sint32 chr)
 	return toupper(chr);
 }
 
-/*
-===============
-Q_strlwr
-===============
-*/
+/**
+\fn	inline char *Q_strlwr(char *s)
+
+\brief	String lower. Tolower's the entire string.
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	s	If non-null, the string to make lower. 
+
+\return	null if it fails, else the string. 
+**/
 inline char *Q_strlwr(char *s)
 {
 	char *p;
@@ -250,17 +372,36 @@ inline char *Q_strlwr(char *s)
 	return NULL;
 }
 
+/**
+\fn	inline std::string Q_strlwr (std::string s)
+
+\brief	String lower. Tolower's the entire string. Does not modify 's'.
+
+\author	Paril
+\date	26/05/2010
+
+\param	s	The string to make lowercase. 
+
+\return	's', tolower'ed. 
+**/
 inline std::string Q_strlwr (std::string s)
 {
 	std::transform (s.begin(), s.end(), s.begin(), tolower);
 	return s;
 }
 
-/*
-===============
-Q_strupr
-===============
-*/
+/**
+\fn	inline char *Q_strupr(char *s)
+
+\brief	Makes a string uppercase. 
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	s	If non-null, the string to be upper'ed. 
+
+\return	null if it fails, else 's'. 
+**/
 inline char *Q_strupr(char *s)
 {
 	char *p;
@@ -275,54 +416,52 @@ inline char *Q_strupr(char *s)
 	return NULL;
 }
 
+/**
+\fn	inline std::string Q_strupr (std::string s)
+
+\brief	Makes a string uppercase and returns the new string. Does not modify 's'.
+
+\author	Paril
+\date	26/05/2010
+
+\param	s	The string to be uppercase'd. 
+
+\return	The new string. 
+**/
 inline std::string Q_strupr (std::string s)
 {
 	std::transform (s.begin(), s.end(), s.begin(), toupper);
 	return s;
 }
 
-inline sint32 Q_WildcardMatch (const char *filter, const char *string, sint32 ignoreCase)
+/**
+\fn	inline sint32 Q_WildcardMatch (const char *filter, const char *string, bool ignoreCase)
+
+\brief	Performs a wildcard match.
+
+\author	Paril
+\date	26/05/2010
+
+\param	filter		The filter to use. 
+\param	string		The string. 
+\param	ignoreCase	true if casing should be ignored. 
+
+\return	True if the match succeeded, otherwise false. 
+**/
+inline bool Q_WildcardMatch (const char *filter, const char *string, bool ignoreCase)
 {
-	switch (*filter) {
-	case '\0':	return !*string;
-	case '*':	return Q_WildcardMatch (filter + 1, string, ignoreCase) || (*string && Q_WildcardMatch (filter, string + 1, ignoreCase));
-	case '?':	return *string && Q_WildcardMatch (filter + 1, string + 1, ignoreCase);
-	default:	return (*filter == *string || (ignoreCase && Q_toupper (*filter) == Q_toupper (*string))) && Q_WildcardMatch (filter + 1, string + 1, ignoreCase);
+	switch (*filter)
+	{
+	case '\0':
+		return !*string;
+	case '*':
+		return Q_WildcardMatch (filter + 1, string, ignoreCase) || (*string && Q_WildcardMatch (filter, string + 1, ignoreCase));
+	case '?':
+		return *string && Q_WildcardMatch (filter + 1, string + 1, ignoreCase);
+	default:
+		return (*filter == *string || (ignoreCase && Q_toupper (*filter) == Q_toupper (*string))) && Q_WildcardMatch (filter + 1, string + 1, ignoreCase);
 	}
 }
-/*
-==============================================================================
-
-	INFO STRINGS
-
-==============================================================================
-*/
-
-const int MAX_INFO_KEY			= 64;
-const int MAX_INFO_VALUE		= 64;
-const int MAX_INFO_STRING		= 512;
-
-std::string		Info_ValueForKey (std::string &s, std::string key);
-void			Info_RemoveKey (std::string &s, std::string key);
-void			Info_SetValueForKey (std::string &s, std::string key, std::string value);
-bool			Info_Validate (const std::string &s);
-
-/*
-==============================================================================
-
-	BYTE ORDER FUNCTIONS
- 
-==============================================================================
-*/
-
-extern float (*LittleFloat) (float f);
-extern sint32 (*LittleLong) (sint32 l);
-extern sint16 (*LittleShort) (sint16 s);
-extern float (*BigFloat) (float f);
-extern sint32 (*BigLong) (sint32 l);
-extern sint16 (*BigShort) (sint16 s);
-
-void		Swap_Init ();
 
 /*
 ==============================================================================
@@ -408,14 +547,23 @@ enum
 	CVAR_LATCH_SERVER	= BIT(4)	// delay changes until server restart
 };
 
-struct cVar_t
+/**
+\struct	SCVar
+
+\brief	Console variable structure.
+		Internal only; use CCvar
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SCVar
 {
-	char			*name;
-	char			*string;
-	char			*latchedString;	// for CVAR_LATCH vars
-	sint32			flags;
-	BOOL			modified;		// set each time the cvar is changed
-	float			floatVal;
+	char			*Name;
+	char			*String;
+	char			*LatchedString;	// for CVAR_LATCH vars
+	sint32			Flags;
+	BOOL			Modified;		// set each time the cvar is changed
+	float			FloatVal;
 };
 
 /*
@@ -566,12 +714,20 @@ enum
 ==============================================================================
 */
 
-struct plane_t
+/**
+\struct	SBSPPlane
+
+\brief	A BSP plane, got from tracing.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SBSPPlane
 {
-	vec3f			normal;
-	float			dist;
-	uint8			type;			// for fast side tests
-	uint8			signBits;		// signx + (signy<<1) + (signz<<1)
+	vec3f			Normal;		// The normal of this plane
+	float			Dist;		// The distance of the plane normal
+	uint8			Type;		// for fast side tests
+	uint8			SignBits;	// signx + (signy<<1) + (signz<<1)
 };
 
 /*
@@ -582,24 +738,40 @@ struct plane_t
 ==============================================================================
 */
 
-struct cmBspSurface_t
+/**
+\struct	SBSPSurface
+
+\brief	BSP surface. Gotten from a trace.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SBSPSurface
 {
-	char			name[16];
-	ESurfaceFlags	flags;
-	sint32			value;
+	char			Name[16];	// The name of the texture
+	ESurfaceFlags	Flags;		// The surface flags
+	sint32			Value;		// ????
 };
 
-// A trace is returned when a box is swept through the world
-struct cmTrace_t
+/**
+\struct	STrace
+
+\brief	A trace is returned when a box is swept through the world.
+		Internal structure; use CTrace
+
+\author	Paril
+\date	26/05/2010
+**/
+struct STrace
 {
-	BOOL			allSolid;	// if true, plane is not valid
-	BOOL			startSolid;	// if true, the initial point was in a solid area
-	float			fraction;	// time completed, 1.0 = didn't hit anything
-	vec3f			endPos;		// final position
-	plane_t			plane;		// surface normal at impact
-	cmBspSurface_t	*surface;	// surface hit
-	sint32			contents;	// contents on other side of surface hit
-	struct edict_t	*ent;		// not set by CM_*() functions
+	BOOL			AllSolid;	// if true, plane is not valid
+	BOOL			StartSolid;	// if true, the initial point was in a solid area
+	float			Fraction;	// time completed, 1.0 = didn't hit anything
+	vec3f			EndPos;		// final position
+	SBSPPlane		Plane;		// surface normal at impact
+	SBSPSurface		*Surface;	// surface hit
+	sint32			Contents;	// contents on other side of surface hit
+	struct edict_t	*Entity;	// not set by CM_*() functions
 };
 
 /*
@@ -610,7 +782,18 @@ struct cmTrace_t
 ==============================================================================
 */
 
-// pMoveState_t is the information necessary for client side movement prediction
+/**
+\typedef	sint32 EPMoveType
+
+\brief	Defines an alias representing type of move the player is doing.
+**/
+typedef sint32 EPMoveType;
+
+/**
+\enum	
+
+\brief	Values that represent types of player movements. 
+**/
 enum
 {
 	// can accelerate and turn
@@ -622,7 +805,18 @@ enum
 	PMT_FREEZE
 };
 
-// pmove->pmFlags
+/**
+\typedef	uint8 EPMoveFlags
+
+\brief	Defines an alias representing the player move flags .
+**/
+typedef uint8 EPMoveFlags;
+
+/**
+\enum	
+
+\brief	Values that represent player move flags. 
+**/
 enum
 {
 	PMF_DUCKED			= BIT(0),
@@ -634,21 +828,29 @@ enum
 	PMF_NO_PREDICTION	= BIT(6)	// temporarily disables prediction (used for grappling hook)
 };
 
-// this structure needs to be communicated bit-accurate
-// from the server to the client to guarantee that
-// prediction stays in sync, so no floats are used.
-// if any part of the game code modifies this struct, it
-// will result in a prediction error of some degree.
-struct pMoveState_t
-{
-	sint32				pmType;
+/**
+\struct	SPMoveState
 
-	vec3Base<sint16>	origin;			// 12.3
-	vec3Base<sint16>	velocity;		// 12.3
-	uint8				pmFlags;		// ducked, jump_held, etc
-	uint8				pmTime;			// each unit = 8 ms
-	sint16				gravity;
-	vec3Base<sint16>	deltaAngles;	// add to command angles to get view direction
+\brief	SPMoveState is the information necessary for client side movement prediction
+		This structure needs to be communicated bit-accurate
+		from the server to the client to guarantee that
+		prediction stays in sync, so no floats are used.
+		if any part of the game code modifies this struct, it
+		will result in a prediction error of some degree.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SPMoveState
+{
+	EPMoveType			PMoveType;		// PMove type
+
+	vec3Base<sint16>	Origin;			// 12.3
+	vec3Base<sint16>	Velocity;		// 12.3
+	EPMoveFlags			PMoveFlags;		// ducked, jump_held, etc
+	uint8				PMoveTime;		// each unit = 8 ms
+	sint16				Gravity;		// Gravity
+	vec3Base<sint16>	DeltaAngles;	// add to command angles to get view direction
 										// changed by spawns, rotating objects, and teleporters
 };
 
@@ -672,55 +874,73 @@ enum
 	BUTTON_ANY				= BIT(7)			// any key whatsoever
 };
 
-// userCmd_t is sent to the server each client frame
-struct userCmd_t
+/**
+\struct	SUserCmd
+
+\brief	Sent to the server each client frame.
+		Contains some data, mostly for PMove, about movement
+		and buttons.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SUserCmd
 {
-	uint8		msec;
-	EButtons	buttons;
+	uint8				MSec;
+	EButtons			Buttons;
 
-	sint16		angles[3];
+	vec3Base<sint16>	Angles;
 
-	sint16		forwardMove;
-	sint16		sideMove;
-	sint16		upMove;
+	sint16				ForwardMove;
+	sint16				SideMove;
+	sint16				UpMove;
 
-	uint8		impulse;		// remove?
+	uint8				Impulse;		// remove?
 
 	// Paril notes:
 	// lightLevel cannot be used to accurately check light under player.
 	// lightLevel is stored as a uint8, yet is modulate-dependant; for example,
-	// a light of value 127 will only show as 127 on gl_modulate 1. Above that,
+	// a light of value 164 will only show as 164 on gl_modulate 1. Above that,
 	// it will multiply by the modulate value, making this unreliable.
-	uint8		lightLevel;		// light level the player is standing on
+	uint8				LightLevel;		// light level the player is standing on
 };
 
-const int MAXTOUCH	= 32;
+const int MAXTOUCH	= 32;	// The maximum touches that can occur in a pmove frame
 
-struct pMove_t
+/**
+\struct	SPMove
+
+\brief	Player Movement structure.
+		Internal only, used by the player functions.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SPMove
 {
 	// state (in / out)
-	pMoveState_t	state;
+	SPMoveState		State;
 
 	// command (in)
-	userCmd_t		cmd;
-	BOOL			snapInitial;	// if s has been changed outside pmove
+	SUserCmd		Command;
+	BOOL			SnapInitial;	// if s has been changed outside pmove
 
 	// results (out)
-	sint32			numTouch;
-	edict_t			*touchEnts[MAXTOUCH];
+	sint32			NumTouch;
+	edict_t			*TouchEnts[MAXTOUCH];
 
-	vec3f			viewAngles;			// clamped
-	float			viewHeight;
+	vec3f			ViewAngles;			// clamped
+	float			ViewHeight;
 
-	vec3f			mins, maxs;			// bounding box size
+	vec3f			Mins, Maxs;			// bounding box size
 
-	edict_t				*groundEntity;
-	sint32				waterType;
-	sint32				waterLevel;
+	edict_t			*GroundEntity;
+	sint32			WaterType;
+	sint32			WaterLevel;
 
 	// callbacks to test the world
-	cmTrace_t		(*trace) (float *start, float *mins, float *maxs, float *end);
-	EBrushContents	(*pointContents) (float *point);
+	STrace			(*Trace) (float *Start, float *Mins, float *Maxs, float *End);
+	EBrushContents	(*PointContents) (float *Point);
 };
 
 /*
@@ -749,6 +969,7 @@ enum
 {
 	EF_ROTATE			= BIT(0),		// rotate (bonus items)
 	EF_GIB				= BIT(1),		// leave a trail
+	// EMPTY			= BIT(2),
 	EF_BLASTER			= BIT(3),		// redlight + trail
 	EF_ROCKET			= BIT(4),		// redlight + trail
 	EF_GRENADE			= BIT(5),
@@ -841,26 +1062,26 @@ enum
 	RF_SHELLMASK		= (RF_SHELL_HALF_DAM|RF_SHELL_DOUBLE|RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_BLUE),
 
 	// Paril: Extra mixed effects
-	RF_SHELL_MIX_YELLOW = (RF_SHELL_RED|RF_SHELL_GREEN),
-	RF_SHELL_MIX_WHITE = (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_BLUE),
-	RF_SHELL_MIX_YELLOW2 = (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_DOUBLE),
-	RF_SHELL_MIX_YELLOW3 = (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_PURPLE = (RF_SHELL_RED|RF_SHELL_BLUE),
-	RF_SHELL_MIX_LIGHT_PURPLE = (RF_SHELL_RED|RF_SHELL_BLUE|RF_SHELL_DOUBLE),
-	RF_SHELL_MIX_MID_PURPLE = (RF_SHELL_RED|RF_SHELL_BLUE|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_YELLOW4 = (RF_SHELL_RED|RF_SHELL_DOUBLE),
-	RF_SHELL_MIX_PINKY_YELLOW = (RF_SHELL_RED|RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_PEACH = (RF_SHELL_RED|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_CYAN = (RF_SHELL_GREEN|RF_SHELL_BLUE),
-	RF_SHELL_MIX_LIGHT_WHITE = (RF_SHELL_GREEN|RF_SHELL_BLUE|RF_SHELL_DOUBLE),
-	RF_SHELL_MIX_LIGHT_CYAN = (RF_SHELL_GREEN|RF_SHELL_BLUE|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_YELLOWGREEN = (RF_SHELL_GREEN|RF_SHELL_DOUBLE),
-	RF_SHELL_MIX_YELLOW5 = (RF_SHELL_GREEN|RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_LIGHTGREEN = (RF_SHELL_GREEN|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_LIGHTER_PURPLE = (RF_SHELL_BLUE|RF_SHELL_DOUBLE),
-	RF_SHELL_MIX_LIGHTER_PURPLE2 = (RF_SHELL_BLUE|RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_LIGHT_BLUE = (RF_SHELL_BLUE|RF_SHELL_HALF_DAM),
-	RF_SHELL_MIX_GOLD = (RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_YELLOW				= (RF_SHELL_RED|RF_SHELL_GREEN),
+	RF_SHELL_MIX_WHITE				= (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_BLUE),
+	RF_SHELL_MIX_YELLOW2			= (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_DOUBLE),
+	RF_SHELL_MIX_YELLOW3			= (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_PURPLE				= (RF_SHELL_RED|RF_SHELL_BLUE),
+	RF_SHELL_MIX_LIGHT_PURPLE		= (RF_SHELL_RED|RF_SHELL_BLUE|RF_SHELL_DOUBLE),
+	RF_SHELL_MIX_MID_PURPLE			= (RF_SHELL_RED|RF_SHELL_BLUE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_YELLOW4			= (RF_SHELL_RED|RF_SHELL_DOUBLE),
+	RF_SHELL_MIX_PINKY_YELLOW		= (RF_SHELL_RED|RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_PEACH				= (RF_SHELL_RED|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_CYAN				= (RF_SHELL_GREEN|RF_SHELL_BLUE),
+	RF_SHELL_MIX_LIGHT_WHITE		= (RF_SHELL_GREEN|RF_SHELL_BLUE|RF_SHELL_DOUBLE),
+	RF_SHELL_MIX_LIGHT_CYAN			= (RF_SHELL_GREEN|RF_SHELL_BLUE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_YELLOWGREEN		= (RF_SHELL_GREEN|RF_SHELL_DOUBLE),
+	RF_SHELL_MIX_YELLOW5			= (RF_SHELL_GREEN|RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_LIGHTGREEN			= (RF_SHELL_GREEN|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_LIGHTER_PURPLE		= (RF_SHELL_BLUE|RF_SHELL_DOUBLE),
+	RF_SHELL_MIX_LIGHTER_PURPLE2	= (RF_SHELL_BLUE|RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_LIGHT_BLUE			= (RF_SHELL_BLUE|RF_SHELL_HALF_DAM),
+	RF_SHELL_MIX_GOLD				= (RF_SHELL_DOUBLE|RF_SHELL_HALF_DAM),
 };
 
 /*
@@ -1640,7 +1861,7 @@ enum
 
 // per-level limits
 const int MAX_CS_CLIENTS		= 256;		// absolute limit
-const int MAX_CS_EDICTS			= 1024;	// must change protocol to increase more
+const int MAX_CS_EDICTS			= 1024;		// must change protocol to increase more
 const int MAX_CS_LIGHTSTYLES	= 256;
 const int MAX_CS_MODELS			= 256;		// these are sent over the net as bytes
 const int MAX_CS_SOUNDS			= 256;		// so they cannot be blindly increased
@@ -1730,32 +1951,44 @@ enum
 	EV_OTHER_TELEPORT
 };
 
-struct entityState_t
-{
-	sint32				number;		// edict index
+/**
+\struct	SEntityState
 
-	vec3f			origin;		// entity origin or RF_BEAM start origin
-	vec3f			angles;
-	vec3f			oldOrigin;	// for interpolation or RF_BEAM end origin
+\brief	Entity state structure.
+		Defines the state of an entity.
+		Must be the first part of the server entity structure.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SEntityState
+{
+	sint32						Number;		// edict index
+
+	vec3f						Origin;		// entity origin or RF_BEAM start origin
+	vec3f						Angles;
+	vec3f						OldOrigin;	// for interpolation or RF_BEAM end origin
 
 	// weapons, CTF flags, etc
-	sint32				modelIndex;
-	sint32				modelIndex2;
-	sint32				modelIndex3;
-	sint32				modelIndex4;
+	sint32						ModelIndex;
+	sint32						ModelIndex2;
+	sint32						ModelIndex3;
+	sint32						ModelIndex4;
 
-	sint32				frame;		// also RF_BEAM's size
-	sint32				skinNum;	// also RF_BEAM color index
+	sint32						Frame;		// also RF_BEAM's size
+	sint32						SkinNum;	// also RF_BEAM color index
 
-	EEntityStateEffects			effects;	// PGM - we're filling it, so it needs to be uint32
-	EEntityStateRenderEffects	renderFx;
-	sint32				solid;		// for client side prediction, 8*(bits 0-4) is x/y radius
-								// 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
-								// gi.linkentity sets this properly
-	sint32				sound;		// for looping sounds, to guarantee shutoff
-	EEventEffect	event;		// impulse events -- muzzle flashes, footsteps, etc
-								// events only go out for a single frame, they
-								// are automatically cleared each frame
+	EEntityStateEffects			Effects;	// PGM - we're filling it, so it needs to be uint32
+	EEntityStateRenderEffects	RenderFx;
+	sint32						Solid;		// for client side prediction, 8*(bits 0-4) is x/y radius
+											// 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
+											// gi.linkentity sets this properly
+
+	sint32						Sound;		// for looping sounds, to guarantee shutoff
+
+	EEventEffect				Event;		// impulse events -- muzzle flashes, footsteps, etc
+											// events only go out for a single frame, they
+											// are automatically cleared each frame
 };
 
 /*
@@ -1840,30 +2073,37 @@ enum
 	RDF_OLDAREABITS		= BIT(4),
 };
 
-// playerState_t is the information needed in addition to pMoveState_t to
-// rendered a view.  There will only be 10 playerState_t sent each second, but
-// the number of pMoveState_t changes will be reletive to client frame rates
-struct playerState_t
+/**
+\struct	SPlayerState
+
+\brief	The information needed in addition to SPMoveState to
+		rendered a view.  There will only be 10 SPlayerState sent each second, but
+		the number of SPMoveState changes will be reletive to client frame rates
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SPlayerState
 {
-	pMoveState_t	pMove;				// for prediction
+	SPMoveState		PMove;				// for prediction
 
 	// these fields do not need to be communicated bit-precise
-	vec3f			viewAngles;			// for fixed views
-	vec3f			viewOffset;			// add to pmovestate->origin
-	vec3f			kickAngles;			// add to view direction to get render angles
+	vec3f			ViewAngles;			// for fixed views
+	vec3f			ViewOffset;			// add to pmovestate->origin
+	vec3f			KickAngles;			// add to view direction to get render angles
 										// set by weapon kicks, pain effects, etc
-	vec3f			gunAngles;
-	vec3f			gunOffset;
-	sint32				gunIndex;
-	sint32				gunFrame;
+	vec3f			GunAngles;
+	vec3f			GunOffset;
+	sint32			GunIndex;
+	sint32			GunFrame;
 
 	colorf			ViewBlend;		// rgba full screen effect
 	
-	float			fov;				// horizontal field of view
+	float			Fov;				// horizontal field of view
 
-	ERenderDefFlags	rdFlags;			// refdef flags
+	ERenderDefFlags	RenderDefFlags;			// refdef flags
 
-	EStatIndex		stats[MAX_STATS];	// fast status bar updates
+	EStatIndex		Stats[MAX_STATS];	// fast status bar updates
 };
 
 /*
@@ -1922,49 +2162,74 @@ enum
 	SOLID_BSP			// bsp clip, touch on edge
 };
 
-// ==========================================================================
+/**
+\struct	SAreaLink
 
-// link_t is only used for entity area links now
-struct link_t
+\brief	Entity area links.
+		Defines what area an entity is linked in.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SAreaLink
 {
-	link_t	*prev, *next;
+	SAreaLink	*Prev, *Next;
 };
 
-const int MAX_ENT_CLUSTERS	= 16;
+const int MAX_ENT_CLUSTERS	= 16;	// The maximum entity clusters
 
-struct gclient_t
+/**
+\struct	SServerClient
+
+\brief	The server client structure.
+		Internal only, do not modify.
+		Must be in this order.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SServerClient
 {
-	// known to server
-	playerState_t		playerState;				// communicated by server to clients
-	sint32				ping;
+	SPlayerState		PlayerState;				// communicated by server to clients
+	sint32				Ping;
 };
 
-struct edictServer_t
+/**
+\struct	SServerEntity
+
+\brief	Server entity structure.
+		Internal only, do not modify.
+		Must be in this order.
+
+\author	Paril
+\date	26/05/2010
+**/
+struct SServerEntity
 {
-	entityState_t		state;
-	gclient_t				*client;	// NULL if not a player
+	SEntityState		State;
+	SServerClient		*Client;	// NULL if not a player
 										// the server expects the first part
 										// of gclient_s to be a player_state_t
 										// but the rest of it is opaque
-	BOOL					inUse;
-	sint32					linkCount;
+	BOOL				InUse;
+	sint32				LinkCount;
 
 	// FIXME: move these fields to a server private sv_entity_t
-	link_t					area;		// linked to a division node or leaf
+	SAreaLink			Area;		// linked to a division node or leaf
 	
-	sint32					numClusters;	// if -1, use headnode instead
-	sint32					clusterNums[MAX_ENT_CLUSTERS];
-	sint32					headNode;		// unused if numClusters != -1
-	sint32					areaNum, areaNum2;
+	sint32				NumClusters;	// if -1, use headnode instead
+	sint32				ClusterNums[MAX_ENT_CLUSTERS];
+	sint32				HeadNode;		// unused if numClusters != -1
+	sint32				AreaNum, AreaNum2;
 
 	//================================
 
-	EServerFlags			svFlags;			// SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc
-	vec3f					mins, maxs;
-	vec3f					absMin, absMax, size;
-	ESolidType				solid;
-	EBrushContents			clipMask;
-	struct edict_t			*owner;
+	EServerFlags		ServerFlags;			// SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc
+	vec3f				Mins, Maxs;
+	vec3f				AbsMin, AbsMax, Size;
+	ESolidType			Solid;
+	EBrushContents		ClipMask;
+	struct edict_t		*Owner;
 };
 
 // CleanCode Stuff

@@ -55,34 +55,34 @@ state(NULL)
 {
 };
 
-CEntityState::CEntityState (entityState_t *state) :
+CEntityState::CEntityState (SEntityState *state) :
 state(state)
 {
 };
 
-void		CEntityState::Initialize (entityState_t *state)
+void		CEntityState::Initialize (SEntityState *state)
 {
 	this->state = state;
 };
 
 sint32		&CEntityState::GetNumber		()
 {
-	return state->number;
+	return state->Number;
 }
 
 vec3f	&CEntityState::GetOrigin		()
 {
-	return state->origin;
+	return state->Origin;
 }
 
 vec3f	&CEntityState::GetAngles		()
 {
-	return state->angles;
+	return state->Angles;
 }
 
 vec3f	&CEntityState::GetOldOrigin	()
 {
-	return state->oldOrigin;
+	return state->OldOrigin;
 }
 
 // Can be 1, 2, 3, or 4
@@ -91,54 +91,54 @@ sint32		&CEntityState::GetModelIndex	(uint8 index)
 	switch (index)
 	{
 	case 1:
-		return state->modelIndex;
+		return state->ModelIndex;
 	case 2:
-		return state->modelIndex2;
+		return state->ModelIndex2;
 	case 3:
-		return state->modelIndex3;
+		return state->ModelIndex3;
 	case 4:
-		return state->modelIndex4;
+		return state->ModelIndex4;
 	default:
 		CC_ASSERT_EXPR(0, "index for GetModelIndex is out of bounds");
-		return state->modelIndex;
+		return state->ModelIndex;
 	}
 }
 
 sint32		&CEntityState::GetFrame		()
 {
-	return state->frame;
+	return state->Frame;
 }
 
 sint32	&CEntityState::GetSkinNum		()
 {
-	return state->skinNum;
+	return state->SkinNum;
 }
 
 EEntityStateEffects	&CEntityState::GetEffects		()
 {
-	return state->effects;
+	return state->Effects;
 }
 
 EEntityStateRenderEffects		&CEntityState::GetRenderEffects	()
 {
-	return state->renderFx;
+	return state->RenderFx;
 }
 
 MediaIndex	&CEntityState::GetSound		()
 {
-	return (MediaIndex&)state->sound;
+	return (MediaIndex&)state->Sound;
 }
 
 EEventEffect	&CEntityState::GetEvent			()
 {
-	return state->event;
+	return state->Event;
 }
 
 void G_InitEdict (edict_t *e)
 {
-	e->server.inUse = true;
-	memset (&e->server.state, 0, sizeof(e->server.state));
-	e->server.state.number = e - Game.Entities;
+	e->server.InUse = true;
+	memset (&e->server.State, 0, sizeof(e->server.State));
+	e->server.State.Number = e - Game.Entities;
 }
 
 template <typename TCont, typename TType>
@@ -179,7 +179,7 @@ edict_t *GetEntityFromList ()
 
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (!check->server.inUse && (check->freetime < 20 || Level.Frame - check->freetime > 5))
+		if (!check->server.InUse && (check->freetime < 20 || Level.Frame - check->freetime > 5))
 		{
 			ent = check;
 			break;
@@ -217,7 +217,7 @@ void RemoveEntityFromList (edict_t *ent)
 
 bool RemoveEntity (edict_t *ent)
 {
-	if (!ent || ent->server.state.number <= (Game.MaxClients + BODY_QUEUE_SIZE))
+	if (!ent || ent->server.State.Number <= (Game.MaxClients + BODY_QUEUE_SIZE))
 		return false;
 
 	if (!ent->Entity || ent->AwaitingRemoval)
@@ -267,8 +267,8 @@ CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
 CC_ENABLE_DEPRECATION
 
-	if (GameAPI.GetNumEdicts() < e->server.state.number + 1)
-		GameAPI.GetNumEdicts() = e->server.state.number + 1;
+	if (GameAPI.GetNumEdicts() < e->server.State.Number + 1)
+		GameAPI.GetNumEdicts() = e->server.State.Number + 1;
 
 	return e;
 }
@@ -293,8 +293,8 @@ CC_ENABLE_DEPRECATION
 	if (Entity)
 		ed->Entity = Entity;
 	ed->freetime = Level.Frame;
-	ed->server.inUse = false;
-	ed->server.state.number = ed - Game.Entities;
+	ed->server.InUse = false;
+	ed->server.State.Number = ed - Game.Entities;
 
 	if (!ed->AwaitingRemoval)
 	{
@@ -355,7 +355,7 @@ CC_ENABLE_DEPRECATION
 	Freed = false;
 	EntityFlags |= ENT_BASE;
 
-	State.Initialize (&gameEntity->server.state);
+	State.Initialize (&gameEntity->server.State);
 };
 
 IBaseEntity::IBaseEntity (sint32 Index)
@@ -372,11 +372,11 @@ IBaseEntity::IBaseEntity (sint32 Index)
 	{
 		gameEntity = &Game.Entities[Index];
 		gameEntity->Entity = this;
-		gameEntity->server.state.number = Index;
+		gameEntity->server.State.Number = Index;
 
 		Freed = false;
 		EntityFlags |= ENT_BASE;
-		State.Initialize (&gameEntity->server.state);
+		State.Initialize (&gameEntity->server.State);
 	}
 }
 
@@ -470,80 +470,80 @@ void IBaseEntity::ReadBaseEntity (CFile &File)
 // Funtions below are to link the private gameEntity together
 IBaseEntity		*IBaseEntity::GetOwner	()
 {
-	return (gameEntity->server.owner) ? gameEntity->server.owner->Entity : NULL;
+	return (gameEntity->server.Owner) ? gameEntity->server.Owner->Entity : NULL;
 }
 void			IBaseEntity::SetOwner	(IBaseEntity *Entity)
 {
 	if (!Entity || !Entity->gameEntity)
 	{
-		gameEntity->server.owner = NULL;
+		gameEntity->server.Owner = NULL;
 		return;
 	}
 
-	gameEntity->server.owner = Entity->gameEntity;
+	gameEntity->server.Owner = Entity->gameEntity;
 }
 
 EBrushContents	&IBaseEntity::GetClipmask	()
 {
-	return gameEntity->server.clipMask;
+	return gameEntity->server.ClipMask;
 }
 
 ESolidType		&IBaseEntity::GetSolid ()
 {
-	return gameEntity->server.solid;
+	return gameEntity->server.Solid;
 }
 
 // Unless, of course, you use the vec3f class :D
 vec3f			&IBaseEntity::GetMins ()
 {
-	return gameEntity->server.mins;
+	return gameEntity->server.Mins;
 }
 vec3f			&IBaseEntity::GetMaxs ()
 {
 
-	return gameEntity->server.maxs;
+	return gameEntity->server.Maxs;
 }
 
 vec3f			&IBaseEntity::GetAbsMin ()
 {
-	return gameEntity->server.absMin;
+	return gameEntity->server.AbsMin;
 }
 vec3f			&IBaseEntity::GetAbsMax ()
 {
-	return gameEntity->server.absMax;
+	return gameEntity->server.AbsMax;
 }
 vec3f			&IBaseEntity::GetSize ()
 {
-	return gameEntity->server.size;
+	return gameEntity->server.Size;
 }
 
 EServerFlags	&IBaseEntity::GetSvFlags ()
 {
-	return gameEntity->server.svFlags;
+	return gameEntity->server.ServerFlags;
 }
 
 sint32				IBaseEntity::GetAreaNum (bool second)
 {
-	return ((second) ? gameEntity->server.areaNum2 : gameEntity->server.areaNum);
+	return ((second) ? gameEntity->server.AreaNum2 : gameEntity->server.AreaNum);
 }
 
-link_t			*IBaseEntity::GetArea ()
+SAreaLink			*IBaseEntity::GetArea ()
 {
-	return &gameEntity->server.area;
+	return &gameEntity->server.Area;
 }
 void			IBaseEntity::ClearArea ()
 {
-	Mem_Zero (&gameEntity->server.area, sizeof(gameEntity->server.area));
+	Mem_Zero (&gameEntity->server.Area, sizeof(gameEntity->server.Area));
 }
 
 sint32				IBaseEntity::GetLinkCount ()
 {
-	return gameEntity->server.linkCount;
+	return gameEntity->server.LinkCount;
 }
 
 bool			&IBaseEntity::GetInUse ()
 {
-	return (bool&)gameEntity->server.inUse;
+	return (bool&)gameEntity->server.InUse;
 }
 
 CC_DISABLE_DEPRECATION
@@ -568,7 +568,7 @@ void			IBaseEntity::Free ()
 		gameEntity->Entity = this;
 		gameEntity->freetime = Level.Frame;
 		GetInUse() = false;
-		gameEntity->server.state.number = gameEntity - Game.Entities;
+		gameEntity->server.State.Number = gameEntity - Game.Entities;
 
 		if (!(EntityFlags & ENT_JUNK))
 		{
@@ -779,9 +779,9 @@ void IBaseEntity::StuffText (const char *text)
 ENTITYFIELDS_BEGIN(IMapEntity)
 {
 	CEntityField ("spawnflags",		EntityMemberOffset(IBaseEntity,SpawnFlags),		FT_UINT | FT_SAVABLE),
-	CEntityField ("origin",			GameEntityMemberOffset(server.state.origin),			FT_VECTOR | FT_GAME_ENTITY),
-	CEntityField ("angles",			GameEntityMemberOffset(server.state.angles),			FT_VECTOR | FT_GAME_ENTITY),
-	CEntityField ("angle",			GameEntityMemberOffset(server.state.angles),			FT_YAWANGLE | FT_GAME_ENTITY),
+	CEntityField ("origin",			GameEntityMemberOffset(server.State.Origin),			FT_VECTOR | FT_GAME_ENTITY),
+	CEntityField ("angles",			GameEntityMemberOffset(server.State.Angles),			FT_VECTOR | FT_GAME_ENTITY),
+	CEntityField ("angle",			GameEntityMemberOffset(server.State.Angles),			FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
 	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.String),	FT_LEVEL_STRING),
 };

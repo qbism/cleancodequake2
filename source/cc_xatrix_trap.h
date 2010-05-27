@@ -59,10 +59,10 @@ public:
 class CTrapProjectile : public IBounceProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
-	FrameNumber_t		TimeStamp;
+	FrameNumber		TimeStamp;
 	int					Damage;
 	int					Wait;
-	FrameNumber_t		Delay;
+	FrameNumber		Delay;
 	bool				DoFree;
 	IBaseEntity			*TrapEntities[3];
 
@@ -73,10 +73,10 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write<FrameNumber_t> (TimeStamp);
+		File.Write<FrameNumber> (TimeStamp);
 		File.Write<int> (Damage);
 		File.Write<int> (Wait);
-		File.Write<FrameNumber_t> (Delay);
+		File.Write<FrameNumber> (Delay);
 		File.Write<bool> (DoFree);
 
 		IThinkableEntity::SaveFields (File);
@@ -86,10 +86,10 @@ public:
 
 	void LoadFields (CFile &File)
 	{
-		TimeStamp = File.Read<FrameNumber_t> ();
+		TimeStamp = File.Read<FrameNumber> ();
 		Damage = File.Read<int> ();
 		Wait = File.Read<int> ();
-		Delay = File.Read<FrameNumber_t> ();
+		Delay = File.Read<FrameNumber> ();
 		DoFree = File.Read<bool> ();
 
 		IThinkableEntity::LoadFields (File);
@@ -98,7 +98,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void Explode ();
 

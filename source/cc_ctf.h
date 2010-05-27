@@ -139,7 +139,7 @@ public:
 
 	sint32 team1, team2;
 	sint32 total1, total2; // these are only set when going into intermission!
-	FrameNumber_t last_flag_capture;
+	FrameNumber last_flag_capture;
 	sint32 last_capture_team;
 
 	EMatchState match;		// match state
@@ -151,7 +151,7 @@ public:
 	char elevel[32];	// for map election, target level
 	sint32 evotes;			// votes so far
 	sint32 needvotes;		// votes needed
-	FrameNumber_t electtime;	// remaining time until election times out
+	FrameNumber electtime;	// remaining time until election times out
 	char emsg[256];		// election name
 
 	TGhostMapType Ghosts; // ghost codes

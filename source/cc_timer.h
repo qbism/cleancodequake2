@@ -38,10 +38,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CGameTimer
 {
 public:
-	FrameNumber_t		EndTime;
+	FrameNumber		EndTime;
 	sint32				Key;
 
-	CGameTimer (FrameNumber_t EndTime, sint32 Key) :
+	CGameTimer (FrameNumber EndTime, sint32 Key) :
 	EndTime (EndTime),
 	Key (Key)
 	{
@@ -99,7 +99,7 @@ enum
 };
 
 template <typename TType>
-void CreateTimer (FrameNumber_t	EndTime, sint32 Key = TIMER_NONE)
+void CreateTimer (FrameNumber	EndTime, sint32 Key = TIMER_NONE)
 {
 	AddTimer (QNew (TAG_LEVEL) TType (EndTime, Key), Key);
 }

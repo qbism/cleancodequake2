@@ -75,8 +75,6 @@ gameExport_t *GetGameAPI (gameImport_t *import)
 {
 	gi = *import;
 
-	Swap_Init ();
-
 	if (!Sys_GetGameAPI())
 		return NULL;
 

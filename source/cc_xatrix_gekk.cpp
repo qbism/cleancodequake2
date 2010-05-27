@@ -59,7 +59,7 @@ void CLoogie::Think ()
 	Free();
 }
 
-void CLoogie::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CLoogie::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -797,7 +797,7 @@ void CGekk::Melee ()
 // ATTACK
 //
 
-void CGekk::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CGekk::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Jumping)
 		return;

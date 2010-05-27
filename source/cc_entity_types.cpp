@@ -653,13 +653,13 @@ IBaseEntity(Index)
 void IThinkableEntity::SaveFields (CFile &File)
 {
 	// Save NextThink
-	File.Write<FrameNumber_t> (NextThink);
+	File.Write<FrameNumber> (NextThink);
 };
 
 void IThinkableEntity::LoadFields (CFile &File)
 {
 	// Load NextThink
-	NextThink = File.Read<FrameNumber_t> ();
+	NextThink = File.Read<FrameNumber> ();
 };
 
 void IThinkableEntity::RunThink ()
@@ -693,7 +693,7 @@ void ITouchableEntity::LoadFields (CFile &File)
 	Touchable = File.Read<bool> ();
 };
 
-void ITouchableEntity::Touch(IBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void ITouchableEntity::Touch(IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf)
 {
 }
 
@@ -877,13 +877,13 @@ bool IBounceProjectile::Run ()
 
 	if (trace.fraction < 1)
 	{
-		Velocity = ClipVelocity (Velocity, trace.plane.normal, backOff);
+		Velocity = ClipVelocity (Velocity, trace.plane.Normal, backOff);
 
 		if (AimInVelocityDirection)
 			State.GetAngles() = Velocity.ToAngles();
 
 		// stop if on ground
-		if (trace.plane.normal[2] > 0.7 && StopOnEqualPlane)
+		if (trace.plane.Normal.Z > 0.7 && StopOnEqualPlane)
 		{		
 			if (Velocity.Z < 60)
 			{
@@ -998,7 +998,7 @@ void IStepPhysics::CheckGround ()
 	CTrace trace (State.GetOrigin(), GetMins(), GetMaxs(), point, this, CONTENTS_MASK_MONSTERSOLID);
 
 	// check steepness
-	if ( trace.plane.normal[2] < 0.7 && !trace.startSolid)
+	if (trace.plane.Normal.Z < 0.7 && !trace.startSolid)
 	{
 		GroundEntity = NULL;
 		return;
@@ -1075,7 +1075,7 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 
 		IBaseEntity *hit = trace.Ent;
 
-		if (trace.plane.normal[2] > 0.7)
+		if (trace.plane.Normal.Z > 0.7f)
 		{
 			blocked |= 1;		// floor
 			if (hit->GetSolid() == SOLID_BSP)
@@ -1084,7 +1084,7 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 				GroundEntityLinkCount = GroundEntity->GetLinkCount();
 			}
 		}
-		if (!trace.plane.normal[2])
+		if (!trace.plane.Normal.Z)
 			blocked |= 2;		// step
 
 //
@@ -1104,7 +1104,7 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 			return 3;
 		}
 
-		planes[numplanes++] = trace.plane.normal;
+		planes[numplanes++] = trace.plane.Normal;
 
 //
 // modify original_velocity so it parallels all of the clip planes
@@ -1344,9 +1344,10 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 	(-amove).ToVectors (&forward, &right, &up);
 
 	// save the pusher's original position
-	Pushed.push_back (CPushed (Entity,
-	(Entity->EntityFlags & ENT_PLAYER) ? (entity_cast<CPlayerEntity>(Entity))->Client.PlayerState.GetPMove()->deltaAngles[YAW] : 0,
-	Entity->State.GetOrigin(), Entity->State.GetAngles()));
+	Pushed.push_back (CPushed	(Entity,
+								(Entity->EntityFlags & ENT_PLAYER) ? (entity_cast<CPlayerEntity>(Entity))->Client.PlayerState.GetPMove()->DeltaAngles[YAW] : 0,
+								Entity->State.GetOrigin(), Entity->State.GetAngles()
+								));
 
 	// move the pusher to it's final position
 	Entity->State.GetOrigin() += move;
@@ -1376,7 +1377,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 		if ((Check->EntityFlags & ENT_PLAYER) && (entity_cast<CPlayerEntity>(Check)->NoClip))
 			continue;
 
-		if (!Check->GetArea()->prev)
+		if (!Check->GetArea()->Prev)
 			continue;               // not linked in anywhere
 
 		// if the entity is standing on the pusher, it will definitely be moved
@@ -1407,10 +1408,10 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 			if (Check->EntityFlags & ENT_PLAYER)
 			{
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Check);
-				Player->Client.PlayerState.GetPMove()->deltaAngles[YAW] += amove[YAW];
+				Player->Client.PlayerState.GetPMove()->DeltaAngles[YAW] += amove[YAW];
 
 				//r1: dead-body-on-lift / other random view distortion fix
-				PushedEntity.DeltaYaw = Player->Client.PlayerState.GetPMove()->deltaAngles[YAW];
+				PushedEntity.DeltaYaw = Player->Client.PlayerState.GetPMove()->DeltaAngles[YAW];
 			}
 			else
 				Check->State.GetAngles().Y += amove.Y;
@@ -1460,7 +1461,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 			PushedEntity.Entity->State.GetOrigin() = PushedEntity.Origin;
 			PushedEntity.Entity->State.GetAngles() = PushedEntity.Angles;
 			if (PushedEntity.Entity->EntityFlags & ENT_PLAYER)
-				(entity_cast<CPlayerEntity>(PushedEntity.Entity))->Client.PlayerState.GetPMove()->deltaAngles[YAW] = PushedEntity.DeltaYaw;
+				(entity_cast<CPlayerEntity>(PushedEntity.Entity))->Client.PlayerState.GetPMove()->DeltaAngles[YAW] = PushedEntity.DeltaYaw;
 			PushedEntity.Entity->Link ();
 		}
 

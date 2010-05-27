@@ -115,7 +115,7 @@ void CHeatRocket::Think ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CHeatRocket::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CHeatRocket::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;

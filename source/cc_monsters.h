@@ -229,10 +229,10 @@ class CMonsterEntity : public IMapEntity, public IStepPhysics, public ITossProje
 public:
 	bool			IsHead;
 	uint8			UseState;
-	FrameNumber_t	AirFinished;
-	FrameNumber_t	DamageDebounceTime;
-	FrameNumber_t	BonusDamageTime;
-	FrameNumber_t	ShowHostile;
+	FrameNumber	AirFinished;
+	FrameNumber	DamageDebounceTime;
+	FrameNumber	BonusDamageTime;
+	FrameNumber	ShowHostile;
 	IBaseEntity		*OldEnemy;
 	IBaseEntity		*GoalEntity;
 	IBaseEntity		*MoveTarget;
@@ -254,7 +254,7 @@ public:
 	void			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
-	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf); // Empty
+	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf); // Empty
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
 	bool			Blocked (float Dist);
 
@@ -288,9 +288,9 @@ public:
 	bool				BlindFire;		// will the monster blindfire?
 
 	float				BaseHeight;
-	FrameNumber_t		NextDuckTime;
-	FrameNumber_t		DuckWaitTime;
-	FrameNumber_t		BlindFireDelay;
+	FrameNumber		NextDuckTime;
+	FrameNumber		DuckWaitTime;
+	FrameNumber		BlindFireDelay;
 	CPlayerEntity		*LastPlayerEnemy;
 	vec3f				BlindFireTarget;
 	CMonsterEntity		*BadMedic1, *BadMedic2;	// these medics have declared this monster "unhealable"
@@ -303,9 +303,9 @@ public:
 	uint8			MonsterUsed;
 	CMonsterEntity	*Commander;
 	// powerup timers, used by widow, our friend
-	FrameNumber_t	QuadFramenum;
-	FrameNumber_t	InvincibleFramenum;
-	FrameNumber_t	DoubleFramenum;
+	FrameNumber	QuadFramenum;
+	FrameNumber	InvincibleFramenum;
+	FrameNumber	DoubleFramenum;
 	class CBadArea	*BadArea;
 
 	// this is for the count of monsters
@@ -314,11 +314,11 @@ public:
 
 	sint32				NextFrame;
 	float				Scale;
-	FrameNumber_t		PauseTime;
-	FrameNumber_t		AttackFinished;
+	FrameNumber		PauseTime;
+	FrameNumber		AttackFinished;
 	
-	FrameNumber_t		SearchTime;
-	FrameNumber_t		TrailTime;
+	FrameNumber		SearchTime;
+	FrameNumber		TrailTime;
 	vec3f				LastSighting;
 	vec3f				SavedGoal;
 	sint32				AttackState;
@@ -340,7 +340,7 @@ public:
 	uint32				MonsterFlags;
 	std::string			MonsterName;
 
-	FrameNumber_t		PainDebounceTime;
+	FrameNumber		PainDebounceTime;
 
 	CMonster(uint32 ID);
 
@@ -376,7 +376,7 @@ public:
 	virtual void SaveMonsterFields (CFile &File) {};
 	virtual void LoadMonsterFields (CFile &File) {};
 
-	virtual void		Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
+	virtual void		Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf) {}; // Empty
 
 	// Virtual functions
 	virtual void		Stand			();

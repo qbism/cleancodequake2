@@ -36,16 +36,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CTrace
 {
-	void Copy (cmTrace_t tr);
+	void Copy (STrace tr);
 
 public:
 	float				fraction;
 	edict_t				*ent;
-	plane_t				plane;
+	SBSPPlane				plane;
 	bool				allSolid;
 	bool				startSolid;
 	vec3f				EndPos;
-	cmBspSurface_t		*surface;
+	SBSPSurface		*surface;
 	sint32					contents;
 
 	// For vec3f

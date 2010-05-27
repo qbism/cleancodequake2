@@ -127,9 +127,9 @@ public:
 	sint32		Damage;
 	uint8		Sounds;
 
-	FrameNumber_t		Wait;
+	FrameNumber		Wait;
 
-	FrameNumber_t		TouchDebounce;
+	FrameNumber		TouchDebounce;
 
 	// fixed data
 	vec3f		StartOrigin;
@@ -217,7 +217,7 @@ public:
 
 	ENTITYFIELDS_SAVABLE(CPlatFormInsideTrigger)
 
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
 class CPlatForm2InsideTrigger : public CPlatFormInsideTrigger
@@ -228,7 +228,7 @@ public:
 
 	ENTITYFIELDS_INHERIT(CPlatForm2InsideTrigger)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
 /**
@@ -283,14 +283,14 @@ public:
 class CDoorTrigger : public ITouchableEntity
 {
 public:
-	FrameNumber_t		TouchDebounce;
+	FrameNumber		TouchDebounce;
 
 	CDoorTrigger ();
 	CDoorTrigger (sint32 Index);
 
 	ENTITYFIELDS_SAVABLE(CDoorTrigger)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
 // Base door class
@@ -385,7 +385,7 @@ public:
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	virtual void Pain (IBaseEntity *Other, sint32 Damage);
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	// Thinks
 	void SpawnDoorTrigger ();
@@ -503,7 +503,7 @@ public:
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 	virtual void Pain (IBaseEntity *Other, sint32 Damage);
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	virtual void Spawn ();
 };
@@ -633,7 +633,7 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	void Blocked (IBaseEntity *Other);
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
@@ -755,7 +755,7 @@ public:
 
 	void Think ();
 	void Use (IBaseEntity *Other, IBaseEntity *Activator);
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{

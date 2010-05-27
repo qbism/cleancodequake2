@@ -641,7 +641,7 @@ void CPlatFormInsideTrigger::LoadFields (CFile &File)
 
 IMPLEMENT_SAVE_SOURCE (CPlatFormInsideTrigger)
 
-void CPlatFormInsideTrigger::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPlatFormInsideTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
@@ -1167,17 +1167,17 @@ IMPLEMENT_SAVE_SOURCE (CDoorTrigger)
 
 void CDoorTrigger::SaveFields (CFile &File)
 {
-	File.Write<FrameNumber_t> (TouchDebounce);
+	File.Write<FrameNumber> (TouchDebounce);
 	ITouchableEntity::SaveFields (File);
 };
 
 void CDoorTrigger::LoadFields (CFile &File)
 {
-	TouchDebounce = File.Read<FrameNumber_t> ();
+	TouchDebounce = File.Read<FrameNumber> ();
 	ITouchableEntity::LoadFields (File);
 };
 
-void CDoorTrigger::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CDoorTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
@@ -1315,7 +1315,7 @@ void CDoor::Pain (IBaseEntity *Other, sint32 Damage)
 {
 }
 
-void CDoor::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CDoor::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
@@ -2073,7 +2073,7 @@ void CButton::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	Fire ();
 }
 
-void CButton::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CButton::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_PLAYER))
 		return;
@@ -2908,7 +2908,7 @@ void CRotatingBrush::Blocked (IBaseEntity *Other)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CRotatingBrush::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRotatingBrush::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if ((AngularVelocity != vec3fOrigin) && ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
@@ -3415,12 +3415,12 @@ bool CFuncObject::Run ()
 	};
 };
 
-void CFuncObject::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CFuncObject::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	// only squash thing we fall on top of
 	if (!plane)
 		return;
-	if (plane->normal[2] < 1.0)
+	if (plane->Normal.Z < 1.0)
 		return;
 	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;

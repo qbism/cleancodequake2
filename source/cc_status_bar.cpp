@@ -94,7 +94,7 @@ void CStatusBar::AddPoint_Y (sint32 y, bool inverted = false)
 	AddToBarBuffer ("y%c %i ", inverted ? 'b' : 't', y);
 }
 
-void CStatusBar::AddString (const char *string, bool highBit = false, bool center = false)
+void CStatusBar::AddString (const char *string, bool highBit, bool center)
 {
 	AddToBarBuffer ("%sstring%s \"%s\" ", center ? "c" : "", highBit ? "2" : "", string);
 }
@@ -362,12 +362,9 @@ void CPlayerEntity::HelpComputer ()
 
 	Scoreboard.AddVirtualPoint_Y (172);
 
-	char tempBuffer[MAX_INFO_KEY];
-	Q_snprintfz (tempBuffer, sizeof(tempBuffer), "%3i/%3i     %i/%i       %i/%i", Level.Monsters.Killed, Level.Monsters.Total, 
+	Scoreboard.AddString (FormatString("%3i/%3i     %i/%i       %i/%i", Level.Monsters.Killed, Level.Monsters.Total, 
 		Level.Goals.Found, Level.Goals.Total,
-		Level.Secrets.Found, Level.Secrets.Total);
-
-	Scoreboard.AddString (tempBuffer, true);
+		Level.Secrets.Found, Level.Secrets.Total), true, false);
 
 	Scoreboard.SendMsg (this, true);
 }

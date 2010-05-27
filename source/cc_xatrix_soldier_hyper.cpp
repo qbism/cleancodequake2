@@ -60,7 +60,7 @@ void CBlueBlasterProjectile::Think ()
 	Free();
 }
 
-void CBlueBlasterProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CBlueBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;

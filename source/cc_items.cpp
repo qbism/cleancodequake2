@@ -59,7 +59,7 @@ Index(-1)
 };
 
 // Sets a respawn time on the item and makes it invisible. 
-void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber_t delay)
+void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber delay)
 {
 	Item->Flags |= FL_RESPAWN;
 	Item->GetSvFlags() |= SVF_NOCLIENT;
@@ -87,7 +87,7 @@ public:
 		AvoidOwner = true;
 	};
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (AvoidOwner && (Other == GetOwner()))
 			return;

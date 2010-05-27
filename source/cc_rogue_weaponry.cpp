@@ -449,7 +449,7 @@ void CFlechette::Think ()
 	Free();
 }
 
-void CFlechette::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CFlechette::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -530,7 +530,7 @@ class CDisruptorPainDaemon : public IThinkableEntity
 {
 public:
 	sint32			Damage;
-	FrameNumber_t	LifeTime;
+	FrameNumber	LifeTime;
 
 	CDisruptorPainDaemon() :
 	  IThinkableEntity ()
@@ -546,7 +546,7 @@ public:
 	void SaveFields (CFile &File)
 	{
 		File.Write<sint32> (Damage);
-		File.Write<FrameNumber_t> (LifeTime);
+		File.Write<FrameNumber> (LifeTime);
 
 		IThinkableEntity::SaveFields (File);
 	}
@@ -554,7 +554,7 @@ public:
 	void LoadFields (CFile &File)
 	{
 		Damage = File.Read<sint32>();
-		LifeTime = File.Read<FrameNumber_t>();
+		LifeTime = File.Read<FrameNumber>();
 
 		IThinkableEntity::LoadFields (File);
 	}
@@ -680,7 +680,7 @@ void CDisruptorTracker::Think ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CDisruptorTracker::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;
@@ -722,7 +722,7 @@ void CDisruptorTracker::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_
 	Explode (plane);
 }
 
-void CDisruptorTracker::Explode (plane_t *plane)
+void CDisruptorTracker::Explode (SBSPPlane *plane)
 {
 	CTrackerExplosion(State.GetOrigin()).Send();
 	Free ();
@@ -807,7 +807,7 @@ void CGreenBlasterProjectile::Think ()
 	Free();
 }
 
-void CGreenBlasterProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CGreenBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;

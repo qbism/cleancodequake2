@@ -53,56 +53,56 @@ CPersistentData::~CPersistentData()
 {
 }
 
-CPlayerState::CPlayerState (playerState_t *playerState) :
+CPlayerState::CPlayerState (SPlayerState *playerState) :
 playerState(playerState)
 {
 };
 
-void			CPlayerState::Initialize (playerState_t *playerState)
+void			CPlayerState::Initialize (SPlayerState *playerState)
 {
 	this->playerState = playerState;
 };
 
-pMoveState_t	*CPlayerState::GetPMove ()
+SPMoveState	*CPlayerState::GetPMove ()
 {
-	return &playerState->pMove;
+	return &playerState->PMove;
 } // Direct pointer
-void			CPlayerState::SetPMove (pMoveState_t *newState)
+void			CPlayerState::SetPMove (SPMoveState *newState)
 {
-	memcpy (&playerState->pMove, newState, sizeof(pMoveState_t));
+	memcpy (&playerState->PMove, newState, sizeof(SPMoveState));
 }
 
 // Unless, of course, you use the vec3f class :D
 vec3f			&CPlayerState::GetViewAngles ()
 {
-	return playerState->viewAngles;
+	return playerState->ViewAngles;
 }
 vec3f			&CPlayerState::GetViewOffset ()
 {
-	return playerState->viewOffset;
+	return playerState->ViewOffset;
 }
 
 vec3f			&CPlayerState::GetGunAngles ()
 {
-	return playerState->gunAngles;
+	return playerState->GunAngles;
 }
 vec3f			&CPlayerState::GetGunOffset ()
 {
-	return playerState->gunOffset;
+	return playerState->GunOffset;
 }
 vec3f			&CPlayerState::GetKickAngles ()
 {
-	return playerState->kickAngles;
+	return playerState->KickAngles;
 }
 
 MediaIndex		&CPlayerState::GetGunIndex ()
 {
-	return (MediaIndex&)playerState->gunIndex;
+	return (MediaIndex&)playerState->GunIndex;
 }
 
 sint32		&CPlayerState::GetGunFrame ()
 {
-	return playerState->gunFrame;
+	return playerState->GunFrame;
 }
 
 colorf			&CPlayerState::GetViewBlend ()
@@ -117,30 +117,30 @@ colorb			CPlayerState::GetViewBlendB ()
 
 float			&CPlayerState::GetFov ()
 {
-	return playerState->fov;
+	return playerState->Fov;
 }
 
 ERenderDefFlags	&CPlayerState::GetRdFlags ()
 {
-	return playerState->rdFlags;
+	return playerState->RenderDefFlags;
 }
 
 sint16			&CPlayerState::GetStat (uint8 index)
 {
 	if (CC_ASSERT_EXPR (!(index < 0 || index > 32), "GetStat() index out of bounds"))
-		return playerState->stats[0];
+		return playerState->Stats[0];
 
-	return playerState->stats[index];
+	return playerState->Stats[index];
 }
 
 void CPlayerState::CopyStats (EStatIndex *Stats)
 {
-	memcpy (playerState->stats, Stats, sizeof(playerState->stats));
+	memcpy (playerState->Stats, Stats, sizeof(playerState->Stats));
 }
 
 EStatIndex *CPlayerState::GetStats ()
 {
-	return playerState->stats;
+	return playerState->Stats;
 }
 
 void			CPlayerState::Clear ()
@@ -148,9 +148,9 @@ void			CPlayerState::Clear ()
 	Mem_Zero (playerState, sizeof(&playerState));
 }
 
-CClient::CClient (gclient_t *client) :
+CClient::CClient (SServerClient *client) :
 client(client),
-PlayerState(&client->playerState)
+PlayerState(&client->PlayerState)
 {
 	Clear ();
 };
@@ -164,16 +164,17 @@ void CClient::Write (CFile &File)
 	File.Write<colorf> (DamageBlend);
 	File.Write<vec3f> (OldViewAngles);
 	File.Write<vec3f> (OldVelocity);
-	File.Write<vec2f> (ViewDamage);
-	File.Write<FrameNumber_t> (ViewDamageTime);
+	File.Write<float> (ViewDamage[0]);
+	File.Write<float> (ViewDamage[1]);
+	File.Write<FrameNumber> (ViewDamageTime);
 	File.Write<float> (KillerYaw);
-	File.Write<pMoveState_t> (OldPMove);
+	File.Write<SPMoveState> (OldPMove);
 	File.Write<ELayoutFlags> (LayoutFlags);
 	File.WriteArray<sint32> (DamageValues, DT_MAX);
 	File.Write<EButtons> (Buttons);
 	File.Write<EButtons> (LatchedButtons);
 	File.Write<EWeaponState> (WeaponState);
-	File.Write<FrameNumber_t> (FallTime);
+	File.Write<FrameNumber> (FallTime);
 	File.Write<float> (FallValue);
 	File.Write<float> (BonusAlpha);
 	File.Write<float> (BobTime);
@@ -205,16 +206,17 @@ void CClient::Load (CFile &File)
 	DamageBlend = File.Read<colorf> ();
 	OldViewAngles = File.Read<vec3f> ();
 	OldVelocity = File.Read<vec3f> ();
-	ViewDamage = File.Read<vec2f> ();
-	ViewDamageTime = File.Read<FrameNumber_t> ();
+	ViewDamage[0] = File.Read<float> ();
+	ViewDamage[1] = File.Read<float> ();
+	ViewDamageTime = File.Read<FrameNumber> ();
 	KillerYaw = File.Read<float> ();
-	OldPMove = File.Read<pMoveState_t> ();
+	OldPMove = File.Read<SPMoveState> ();
 	LayoutFlags = File.Read<ELayoutFlags> ();
 	File.ReadArray<sint32> (DamageValues, DT_MAX);
 	Buttons = File.Read<EButtons> ();
 	LatchedButtons = File.Read<EButtons> ();
 	WeaponState = File.Read<EWeaponState> ();
-	FallTime = File.Read<FrameNumber_t> ();
+	FallTime = File.Read<FrameNumber> ();
 	FallValue = File.Read<float> ();
 	BonusAlpha = File.Read<float> ();
 	BobTime = File.Read<float> ();
@@ -246,19 +248,19 @@ void CClient::WriteClientStructure (CFile &File)
 
 void CClient::ReadClientStructure (CFile &File, sint32 index)
 {
-	gclient_t *ptr = &Game.Clients[index];
+	SServerClient *ptr = &Game.Clients[index];
 	File.Read (ptr, sizeof(*ptr));
 }
 
-void CClient::RepositionClient (gclient_t *client)
+void CClient::RepositionClient (SServerClient *client)
 {
 	this->client = client;
-	PlayerState.playerState = &client->playerState;
+	PlayerState.playerState = &client->PlayerState;
 }
 
 sint32 &CClient::GetPing ()
 {
-	return client->ping;
+	return client->Ping;
 }
 
 extern bool ReadingGame;
@@ -268,7 +270,7 @@ void CClient::Clear ()
 	{
 		Mem_Zero (client, sizeof(*client));
 
-		PlayerState.Initialize (&client->playerState);
+		PlayerState.Initialize (&client->PlayerState);
 		KickAngles.Clear ();
 		KickOrigin.Clear ();
 		ViewAngle.Clear ();
@@ -278,7 +280,7 @@ void CClient::Clear ()
 		mynoise2 = NULL;
 		OldViewAngles.Clear ();
 		OldVelocity.Clear ();
-		ViewDamage.Clear ();
+		ViewDamage[0] = ViewDamage[1] = 0;
 		ViewDamageTime = 0;
 		KillerYaw = 0;
 		Persistent.Clear ();
@@ -414,8 +416,8 @@ void CPlayerEntity::Respawn ()
 		State.GetEvent() = EV_PLAYER_TELEPORT;
 
 		// hold in place briefly
-		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
-		Client.PlayerState.GetPMove()->pmTime = 14;
+		Client.PlayerState.GetPMove()->PMoveFlags = PMF_TIME_TELEPORT;
+		Client.PlayerState.GetPMove()->PMoveTime = 14;
 
 		Client.Timers.RespawnTime = Level.Frame;
 		return;
@@ -495,8 +497,8 @@ void CPlayerEntity::SpectatorRespawn ()
 		CMuzzleFlash(State.GetOrigin(), State.GetNumber(), MZ_LOGIN).Send();
 
 		// hold in place briefly
-		Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
-		Client.PlayerState.GetPMove()->pmTime = 14;
+		Client.PlayerState.GetPMove()->PMoveFlags = PMF_TIME_TELEPORT;
+		Client.PlayerState.GetPMove()->PMoveTime = 14;
 	}
 
 	Client.Timers.RespawnTime = Level.Frame;
@@ -610,11 +612,10 @@ void CPlayerEntity::PutInServer ()
 	// clear playerstate values
 	Client.PlayerState.Clear ();
 
-	Client.PlayerState.GetPMove()->origin[0] = spawn_origin.X*8;
-	Client.PlayerState.GetPMove()->origin[1] = spawn_origin.Y*8;
-	Client.PlayerState.GetPMove()->origin[2] = spawn_origin.Z*8;
+	Client.PlayerState.GetPMove()->Origin = (spawn_origin * 8).Convert<sint16>();
+
 //ZOID
-	Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
+	Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_NO_PREDICTION;
 //ZOID
 
 	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfFixedFov.IsEnabled())
@@ -646,7 +647,7 @@ void CPlayerEntity::PutInServer ()
 
 	// set the delta angle
 	for (i = 0; i < 3; i++)
-		Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(spawn_angles[i] - Client.Respawn.CmdAngles[i]);
+		Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(spawn_angles[i] - Client.Respawn.CmdAngles[i]);
 
 	State.GetAngles().Set (0, spawn_angles[YAW], 0);
 	Client.PlayerState.GetViewAngles() = State.GetAngles();
@@ -944,7 +945,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	if (Client.Anim.Priority < ANIM_PAIN && State.GetModelIndex() == 255)
 	{
 		Client.Anim.Priority = ANIM_PAIN;
-		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+		if (Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 		{
 			State.GetFrame() = FRAME_crpain1 - 1;
 			Client.Anim.EndFrame = FRAME_crpain4;
@@ -1023,8 +1024,8 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 
 		vec3f v = (Client.DamageFrom - State.GetOrigin ()).GetNormalized();
 		
-		Client.ViewDamage.Y = Kick * (v | right) * 0.3f;
-		Client.ViewDamage.X = Kick * -(v | forward) * 0.3f;
+		Client.ViewDamage[1] = Kick * (v | right) * 0.3f;
+		Client.ViewDamage[0] = Kick * -(v | forward) * 0.3f;
 		Client.ViewDamageTime = Level.Frame + DAMAGE_TIME;
 	}
 
@@ -1061,10 +1062,10 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 		if (ratio < 0)
 		{
 			ratio = 0;
-			Client.ViewDamage.Clear ();
+			Client.ViewDamage[0] = Client.ViewDamage[1] = 0;
 		}
-		angles.X += ratio * Client.ViewDamage.X;
-		angles.Z += ratio * Client.ViewDamage.Y;
+		angles.X += ratio * Client.ViewDamage[0];
+		angles.Z += ratio * Client.ViewDamage[1];
 
 		// add pitch based on fall kick
 		ratio = (float)(Client.FallTime - Level.Frame) / FALL_TIME;
@@ -1082,11 +1083,11 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 		// add angles based on bob
 
 		delta = bobfracsin * CvarList[CV_BOB_PITCH].Float() * xyspeed;
-		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+		if (Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 			delta *= 6;		// crouching
 		angles.X += delta;
 		delta = bobfracsin * CvarList[CV_BOB_ROLL].Float() * xyspeed;
-		if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+		if (Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 			delta *= 6;		// crouching
 		if (bobcycle & 1)
 			delta = -delta;
@@ -1758,7 +1759,7 @@ G_SetClientFrame
 */
 inline void CPlayerEntity::SetClientFrame (float xyspeed)
 {
-	bool		duck = (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED);
+	bool		duck = (Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED);
 	bool		run = !!(xyspeed);
 	bool		isNewAnim = false;
 
@@ -1883,9 +1884,10 @@ void CPlayerEntity::EndServerFrame ()
 	//
 	for (i = 0; i < 3; i++)
 	{
-		Client.PlayerState.GetPMove()->origin[i] = State.GetOrigin()[i]*8.0;
-		Client.PlayerState.GetPMove()->velocity[i] = Velocity[i]*8.0;
 	}
+
+	Client.PlayerState.GetPMove()->Origin = (State.GetOrigin() * 8).Convert<sint16>();
+	Client.PlayerState.GetPMove()->Velocity = (Velocity * 8).Convert<sint16>();
 
 	//
 	// If the end of unit layout is displayed, don't give
@@ -1922,7 +1924,7 @@ void CPlayerEntity::EndServerFrame ()
 	//
 	float xyspeed = sqrtf(Velocity.X*Velocity.X + Velocity.Y*Velocity.Y);
 
-	if (xyspeed < 5 || Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (xyspeed < 5 || Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		bobmove = 0;
 		Client.BobTime = 0;	// start at beginning of cycle again
@@ -1940,7 +1942,7 @@ void CPlayerEntity::EndServerFrame ()
 	
 	BobTime = (Client.BobTime += bobmove);
 
-	if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 		BobTime *= 4;
 
 	bobcycle = (sint32)BobTime;
@@ -2713,11 +2715,9 @@ void CPlayerEntity::MoveToIntermission ()
 
 	State.GetOrigin() = Level.IntermissionOrigin;
 
-	Client.PlayerState.GetPMove()->origin[0] = Level.IntermissionOrigin.X*8;
-	Client.PlayerState.GetPMove()->origin[1] = Level.IntermissionOrigin.Y*8;
-	Client.PlayerState.GetPMove()->origin[2] = Level.IntermissionOrigin.Z*8;
+	Client.PlayerState.GetPMove()->Origin = (Level.IntermissionOrigin * 8).Convert<sint16>();
 	Client.PlayerState.GetViewAngles() = Level.IntermissionAngles;
-	Client.PlayerState.GetPMove()->pmType = PMT_FREEZE;
+	Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 	Client.PlayerState.GetGunIndex () = 0;
 
 	Client.PlayerState.GetViewBlend ().A = 0;
@@ -2888,7 +2888,7 @@ void CPlayerEntity::TossClientWeapon ()
 CPlayerEntity	*pm_passent;
 
 // pmove doesn't need to know about passent and contentmask
-cmTrace_t	PM_trace (float *start, float *mins, float *maxs, float *end)
+STrace	PM_trace (float *start, float *mins, float *maxs, float *end)
 {
 CC_DISABLE_DEPRECATION
 	return gi.trace(start, mins, maxs, end, pm_passent->gameEntity, (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
@@ -2896,10 +2896,10 @@ CC_ENABLE_DEPRECATION
 }
 #endif
 
-void CPlayerEntity::ClientThink (userCmd_t *ucmd)
+void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 {
 #if 1
-	pMove_t		pm;
+	SPMove		pm;
 #else
 	pMoveNew_t	pm;
 #endif
@@ -2908,10 +2908,9 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 
 	if (Level.IntermissionTime)
 	{
-		Client.PlayerState.GetPMove()->pmType = PMT_FREEZE;
+		Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 		// can exit intermission after five seconds
-		if (Level.Frame > Level.IntermissionTime + 50 
-			&& (ucmd->buttons & BUTTON_ANY) )
+		if ((Level.Frame > Level.IntermissionTime + 50) && (ucmd->Buttons & BUTTON_ANY))
 			Level.ExitIntermission = true;
 		return;
 	}
@@ -2923,13 +2922,13 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 //ZOID
 	static sint32 oldbuttons;
 	oldbuttons = Client.Buttons;
-	Client.Buttons = ucmd->buttons;
+	Client.Buttons = ucmd->Buttons;
 	Client.LatchedButtons |= Client.Buttons & ~oldbuttons;
 
 	if (Client.Chase.Target)
 	{
 		for (sint32 i = 0; i < 3; i++)
-			Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
+			Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->Angles[i]);
 
 		if (Client.LatchedButtons & BUTTON_ATTACK)
 		{
@@ -2940,18 +2939,18 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 			Client.LatchedButtons &= ~BUTTON_ATTACK;
 		}
 
-		if (ucmd->upMove >= 10)
+		if (ucmd->UpMove >= 10)
 		{
-			if (!(Client.PlayerState.GetPMove()->pmFlags & PMF_JUMP_HELD))
+			if (!(Client.PlayerState.GetPMove()->PMoveFlags & PMF_JUMP_HELD))
 			{
-				Client.PlayerState.GetPMove()->pmFlags |= PMF_JUMP_HELD;
+				Client.PlayerState.GetPMove()->PMoveFlags |= PMF_JUMP_HELD;
 
 				Client.LatchedButtons = 0;
 
 				if (Client.Chase.Target)
 				{
 					Client.Chase.Target = NULL;
-					Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
+					Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_NO_PREDICTION;
 					Client.PlayerState.GetGunIndex () = 0;
 					Client.PlayerState.GetGunFrame() = 0;
 				}
@@ -2960,7 +2959,7 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 			}
 		}
 		else
-			Client.PlayerState.GetPMove()->pmFlags &= ~PMF_JUMP_HELD;
+			Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_JUMP_HELD;
 		return;
 	}
 //ZOID
@@ -2969,32 +2968,29 @@ void CPlayerEntity::ClientThink (userCmd_t *ucmd)
 	Mem_Zero (&pm, sizeof(pm));
 
 	if (NoClip)
-		Client.PlayerState.GetPMove()->pmType = PMT_SPECTATOR;
+		Client.PlayerState.GetPMove()->PMoveType = PMT_SPECTATOR;
 	else if (State.GetModelIndex() != 255)
-		Client.PlayerState.GetPMove()->pmType = PMT_GIB;
+		Client.PlayerState.GetPMove()->PMoveType = PMT_GIB;
 	else if (DeadFlag)
-		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
+		Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 	else
-		Client.PlayerState.GetPMove()->pmType = PMT_NORMAL;
+		Client.PlayerState.GetPMove()->PMoveType = PMT_NORMAL;
 
-	Client.PlayerState.GetPMove()->gravity = CvarList[CV_GRAVITY].Float() * GravityMultiplier;
-	pm.state = *Client.PlayerState.GetPMove();
+	Client.PlayerState.GetPMove()->Gravity = CvarList[CV_GRAVITY].Float() * GravityMultiplier;
+	pm.State = *Client.PlayerState.GetPMove();
 
-	for (sint32 i = 0; i < 3; i++)
-	{
-		pm.state.origin[i] = State.GetOrigin()[i]*8;
-		pm.state.velocity[i] = Velocity[i]*8;
-	}
+	pm.State.Origin = (State.GetOrigin() * 8).Convert<sint16>();
+	pm.State.Velocity = (Velocity * 8).Convert<sint16>();
 
-	if (memcmp (&Client.OldPMove, &pm.state, sizeof(pm.state)))
-		pm.snapInitial = true;
+	if (memcmp (&Client.OldPMove, &pm.State, sizeof(pm.State)))
+	pm.SnapInitial = true;
 
-	pm.cmd = *ucmd;
+	pm.Command = *ucmd;
 
 #if 1
-	pm.trace = PM_trace;
+	pm.Trace = PM_trace;
 CC_DISABLE_DEPRECATION
-	pm.pointContents = gi.pointcontents;
+	pm.PointContents = gi.pointcontents;
 CC_ENABLE_DEPRECATION
 #endif
 
@@ -3006,35 +3002,33 @@ CC_ENABLE_DEPRECATION
 #endif
 
 	// save results of pmove
-	Client.PlayerState.SetPMove (&pm.state);
-	Client.OldPMove = pm.state;
+	Client.PlayerState.SetPMove (&pm.State);
+	Client.OldPMove = pm.State;
 
-	State.GetOrigin().Set (pm.state.origin[0]*0.125, pm.state.origin[1]*0.125, pm.state.origin[2]*0.125);
-	for (sint32 i = 0; i < 3; i++)
-		Velocity[i] = pm.state.velocity[i]*0.125;
+	State.GetOrigin() = pm.State.Origin.ConvertDerived<vec3f>() * 0.125f;
+	Velocity = pm.State.Velocity.ConvertDerived<vec3f>() * 0.125f;
 
-	GetMins() = pm.mins;
-	GetMaxs() = pm.maxs;
+	GetMins() = pm.Mins;
+	GetMaxs() = pm.Maxs;
 
-	for (sint32 i = 0; i < 3; i++)
-	Client.Respawn.CmdAngles[i] = SHORT2ANGLE(ucmd->angles[i]);
+	Client.Respawn.CmdAngles.Set (SHORT2ANGLE(ucmd->Angles.X), SHORT2ANGLE(ucmd->Angles.Y), SHORT2ANGLE(ucmd->Angles.Z));
 
-	if (GroundEntity && !pm.groundEntity && Velocity[2] > 0 && (pm.cmd.upMove >= 10) && (pm.waterLevel == WATER_NONE))
+	if (GroundEntity && !pm.GroundEntity && Velocity[2] > 0 && (pm.Command.UpMove >= 10) && (pm.WaterLevel == WATER_NONE))
 	{
 		PlaySound (CHAN_VOICE, GameMedia.Player.Jump);
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 	}
 
-	ViewHeight = pm.viewHeight;
+	ViewHeight = pm.ViewHeight;
 
 #if ROGUE_FEATURES
 		if (Flags & FL_SAM_RAIMI)
 			ViewHeight = 8;
 #endif
 
-	WaterInfo.Level = pm.waterLevel;
-	WaterInfo.Type = pm.waterType;
-	GroundEntity = (pm.groundEntity) ? pm.groundEntity->Entity : NULL;
+	WaterInfo.Level = pm.WaterLevel;
+	WaterInfo.Type = pm.WaterType;
+	GroundEntity = (pm.GroundEntity) ? pm.GroundEntity->Entity : NULL;
 	if (GroundEntity)
 		GroundEntityLinkCount = GroundEntity->GetLinkCount();
 
@@ -3042,8 +3036,8 @@ CC_ENABLE_DEPRECATION
 		Client.PlayerState.GetViewAngles().Set (-15, Client.KillerYaw, 40);
 	else
 	{
-		Client.ViewAngle.Set (pm.viewAngles);
-		Client.PlayerState.GetViewAngles().Set (pm.viewAngles);
+		Client.ViewAngle.Set (pm.ViewAngles);
+		Client.PlayerState.GetViewAngles().Set (pm.ViewAngles);
 	}
 
 #if CLEANCTF_ENABLED
@@ -3062,9 +3056,10 @@ CC_ENABLE_DEPRECATION
 	// touch other objects
 	if (!CvarList[CV_MAP_DEBUG].Boolean())
 	{
-		for (sint32 i = 0; i < pm.numTouch; i++)
+		for (sint32 i = 0; i < pm.NumTouch; i++)
 		{
-			edict_t *Other = pm.touchEnts[i];
+			edict_t *Other = pm.TouchEnts[i];
+
 			if (Other->Entity)
 			{
 				if ((Other->Entity->EntityFlags & ENT_TOUCHABLE) && Other->Entity->GetInUse())
@@ -3081,7 +3076,7 @@ CC_ENABLE_DEPRECATION
 
 	// save light level the player is standing on for
 	// monster sighting AI
-	// Paril: Removed. See definition of userCmd_t::lightlevel for more info.
+	// Paril: Removed. See definition of SUserCmd::lightlevel for more info.
 
 	if (Client.Respawn.Spectator
 #if CLEANCTF_ENABLED
@@ -3097,25 +3092,25 @@ CC_ENABLE_DEPRECATION
 				GetChaseTarget();
 		}
 
-		if (ucmd->upMove >= 10)
+		if (ucmd->UpMove >= 10)
 		{
-			if (!(Client.PlayerState.GetPMove()->pmFlags & PMF_JUMP_HELD))
+			if (!(Client.PlayerState.GetPMove()->PMoveFlags & PMF_JUMP_HELD))
 			{
-				Client.PlayerState.GetPMove()->pmFlags |= PMF_JUMP_HELD;
+				Client.PlayerState.GetPMove()->PMoveFlags |= PMF_JUMP_HELD;
 
 				Client.LatchedButtons = 0;
 
 				if (Client.Chase.Target)
 				{
 					Client.Chase.Target = NULL;
-					Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
+					Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_NO_PREDICTION;
 				}
 				else
 					GetChaseTarget();
 			}
 		}
 		else
-			Client.PlayerState.GetPMove()->pmFlags &= ~PMF_JUMP_HELD;
+			Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_JUMP_HELD;
 	}
 
 	// update chase cam if being followed
@@ -3259,7 +3254,7 @@ void CPlayerEntity::RestoreClientData ()
 		Player->Flags = SavedClients[i].SavedFlags;
 		if (Game.GameMode & GAME_COOPERATIVE)
 			Player->Client.Respawn.Score = SavedClients[i].Score;
-		Game.Entities[i+1].server.client = Game.Clients + i;
+		Game.Entities[i+1].server.Client = Game.Clients + i;
 	}
 
 	QDelete[] SavedClients;
@@ -3316,7 +3311,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	{
 		Client.Timers.RespawnTime = Level.Frame + 10;
 		LookAtKiller (Inflictor, Attacker);
-		Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
+		Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 		Obituary (Attacker);
 
 #if CLEANCTF_ENABLED
@@ -3429,7 +3424,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 			i = (i+1)%3;
 			// start a death animation
 			Client.Anim.Priority = ANIM_DEATH;
-			if (Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+			if (Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 			{
 				State.GetFrame() = FRAME_crdeath1 - 1;
 				Client.Anim.EndFrame = FRAME_crdeath5;
@@ -3500,7 +3495,7 @@ void CPlayerEntity::UpdateChaseCam()
 		if (Client.Chase.Target == old)
 		{
 			Client.Chase.Target = NULL;
-			Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
+			Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_NO_PREDICTION;
 			return;
 		}
 	}
@@ -3547,14 +3542,14 @@ void CPlayerEntity::UpdateChaseCam()
 				goal = trace.EndPos + vec3f(0, 0, 6);
 
 			if (targ->DeadFlag)
-				Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
+				Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 			else
-				Client.PlayerState.GetPMove()->pmType = PMT_FREEZE;
+				Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 
 			State.GetOrigin() = goal;
 
 			for (sint32 i = 0; i < 3; i++)
-				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
+				Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			if (targ->DeadFlag)
 				Client.PlayerState.GetViewAngles().Set (-15, targ->Client.KillerYaw, 40);
@@ -3603,14 +3598,14 @@ void CPlayerEntity::UpdateChaseCam()
 				goal = trace.EndPos + vec3f(0, 0, 6);
 
 			if (targ->DeadFlag)
-				Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
+				Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 			else
-				Client.PlayerState.GetPMove()->pmType = PMT_FREEZE;
+				Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 
 			State.GetOrigin() = goal;
 
 			for (sint32 i = 0; i < 3; i++)
-				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
+				Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			Client.PlayerState.GetViewAngles() = Client.Respawn.CmdAngles;
 		}
@@ -3634,7 +3629,7 @@ void CPlayerEntity::UpdateChaseCam()
 			Client.PlayerState.GetGunOffset() = targ->Client.PlayerState.GetGunOffset();
 
 			for (sint32 i = 0; i < 3; i++)
-				Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
+				Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
 			if (targ->DeadFlag)
 				Client.PlayerState.GetViewAngles().Set (-15, targ->Client.KillerYaw, 40);
@@ -3649,7 +3644,7 @@ void CPlayerEntity::UpdateChaseCam()
 	};
 
 	ViewHeight = 0;
-	Client.PlayerState.GetPMove()->pmFlags |= PMF_NO_PREDICTION;
+	Client.PlayerState.GetPMove()->PMoveFlags |= PMF_NO_PREDICTION;
 	Link ();
 
 	if ((!(Client.LayoutFlags & LF_SHOWSCORES) && !Client.Respawn.MenuState.InMenu &&
@@ -3858,7 +3853,7 @@ CC_ENABLE_DEPRECATION
 
 void CPlayerEntity::Begin ()
 {
-	gameEntity->server.client = Game.Clients + (State.GetNumber()-1);
+	gameEntity->server.Client = Game.Clients + (State.GetNumber()-1);
 
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
@@ -3875,7 +3870,7 @@ void CPlayerEntity::Begin ()
 		// state when the game is saved, so we need to compensate
 		// with deltaangles
 		for (sint32 i = 0; i < 3; i++)
-			Client.PlayerState.GetPMove()->deltaAngles[i] = ANGLE2SHORT(Client.PlayerState.GetViewAngles()[i]);
+			Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(Client.PlayerState.GetViewAngles()[i]);
 
 		// also re-build the weapon model
 		Client.PlayerState.GetGunIndex() = Client.Persistent.Weapon->GetWeaponModel();
@@ -3990,7 +3985,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 
 	// they can connect
-	gameEntity->server.client = Game.Clients + (State.GetNumber()-1);
+	gameEntity->server.Client = Game.Clients + (State.GetNumber()-1);
 
 	// if there is already a body waiting for us (a loadgame), just
 	// take it, otherwise spawn one from scratch
@@ -4038,7 +4033,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 void CPlayerEntity::Disconnect ()
 {
-	if (!gameEntity->server.client)
+	if (!gameEntity->server.Client)
 		return;
 
 	Client.Persistent.State = SVCS_FREE;

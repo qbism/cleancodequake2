@@ -53,7 +53,7 @@
     New DataType("Sound index", "MediaIndex", "0", "FT_SOUND_INDEX"), _
     New DataType("Image index", "MediaIndex", "0", "FT_IMAGE_INDEX"), _
     New DataType("Model index", "MediaIndex", "0", "FT_MODEL_INDEX"), _
-    New DataType("Frame/Time", "FrameNumber_t", "0", "FT_FRAMENUMBER"), _
+    New DataType("Frame/Time", "FrameNumber", "0", "FT_FRAMENUMBER"), _
     New DataType("Item", "CBaseItem", "NULL", "FT_ITEM", True), _
     New DataType("Entity", "IBaseEntity", "NULL", "FT_ENTITY", True), _
     New DataType("Float to Byte", "uint8", "0", "FT_FLOAT_TO_BYTE"), _
@@ -308,12 +308,12 @@
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity collides\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Touch (IBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);\n"
+                    WrittenClass = WrittenClass + "\tvoid Touch (IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf);\n"
                 Else
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity collides\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Touch (IBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)\n\t{\n\t};\n"
+                    WrittenClass = WrittenClass + "\tvoid Touch (IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 5 Then
                 If (ClassCode <> True) Then
@@ -405,7 +405,7 @@
                     End If
                 ElseIf Num = 4 Then
                     WroteSomething = True
-                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Touch (IBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)\n{\n};\n"
+                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Touch (IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf)\n{\n};\n"
                 ElseIf Num = 5 Then
                     WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Use (IBaseEntity *other, IBaseEntity *activator)\n{\n};\n"
                     WroteSomething = True

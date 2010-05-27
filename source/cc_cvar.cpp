@@ -69,8 +69,8 @@ CCvar::CCvar (const char *cvarName, float defaultValue, ECvarFlags flags) :
 
 void CCvar::Update()
 {
-	mainValue = cVar->string;
-	floatVal = cVar->floatVal;
+	mainValue = cVar->String;
+	floatVal = cVar->FloatVal;
 	intVal = floatVal;
 }
 
@@ -78,8 +78,8 @@ void CCvar::Register(const char *cvarName, const char *defaultValue, ECvarFlags 
 {
 	cVar = gi.cvar ((char*)cvarName, (char*)defaultValue, flags);
 
-	mainValue = cVar->string;
-	floatVal = cVar->floatVal;
+	mainValue = cVar->String;
+	floatVal = cVar->FloatVal;
 	intVal = floatVal;
 }
 
@@ -92,8 +92,8 @@ void CCvar::Register(const char *cvarName, float defaultValue, ECvarFlags flags)
 
 	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
 
-	mainValue = cVar->string;
-	floatVal = cVar->floatVal;
+	mainValue = cVar->String;
+	floatVal = cVar->FloatVal;
 	intVal = floatVal;
 }
 
@@ -104,17 +104,17 @@ void CCvar::Register(const char *cvarName, sint32 defaultValue, ECvarFlags flags
 
 	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
 
-	mainValue = cVar->string;
-	floatVal = cVar->floatVal;
+	mainValue = cVar->String;
+	floatVal = cVar->FloatVal;
 	intVal = floatVal;
 }
 
 void CCvar::Set (const char *value, bool Force)
 {
 	if (!Force)
-		cVar = gi.cvar_set (cVar->name, (char*)value);
+		cVar = gi.cvar_set (cVar->Name, (char*)value);
 	else
-		cVar = gi.cvar_forceset (cVar->name, (char*)value);
+		cVar = gi.cvar_forceset (cVar->Name, (char*)value);
 }
 
 void CCvar::Set (float value, bool Force)
@@ -123,9 +123,9 @@ void CCvar::Set (float value, bool Force)
 	str << value;
 
 	if (!Force)
-		cVar = gi.cvar_set (cVar->name, (char*)str.str().c_str());
+		cVar = gi.cvar_set (cVar->Name, (char*)str.str().c_str());
 	else
-		cVar = gi.cvar_forceset (cVar->name, (char*)str.str().c_str());
+		cVar = gi.cvar_forceset (cVar->Name, (char*)str.str().c_str());
 }
 
 void CCvar::Set (sint32 value, bool Force)
@@ -134,9 +134,9 @@ void CCvar::Set (sint32 value, bool Force)
 	str << value;
 
 	if (!Force)
-		cVar = gi.cvar_set (cVar->name, (char*)str.str().c_str());
+		cVar = gi.cvar_set (cVar->Name, (char*)str.str().c_str());
 	else
-		cVar = gi.cvar_forceset (cVar->name, (char*)str.str().c_str());
+		cVar = gi.cvar_forceset (cVar->Name, (char*)str.str().c_str());
 }
 
 float CCvar::Float ()
@@ -165,9 +165,9 @@ bool CCvar::Boolean (bool MustBeOne)
 
 bool CCvar::Modified ()
 {
-	bool modified = (cVar->modified == 1);
+	bool modified = (cVar->Modified == 1);
 
-	cVar->modified = 0;
+	cVar->Modified = 0;
 	return modified;
 }
 

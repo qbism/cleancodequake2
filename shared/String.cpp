@@ -31,11 +31,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ============================================================================
 */
 
-/*
-===============
-Q_snprintfz
-===============
-*/
+/**
+\fn	void Q_snprintfz(char *dest, size_t size, const char *fmt, ...)
+
+\brief	Replacement for snprintf. Fills 'dest' up to 'size' with the format 'fmt'. 
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dest	If non-null, destination for the string. 
+\param	size			The size. 
+\param	fmt				Describes the format to use. 
+**/
 void Q_snprintfz (char *dest, size_t size, const char *fmt, ...)
 {
 	if (size) {
@@ -49,11 +56,18 @@ void Q_snprintfz (char *dest, size_t size, const char *fmt, ...)
 	}
 }
 
-/*
-===============
-Q_strcatz
-===============
-*/
+/**
+\fn	void Q_strcatz(char *dst, const char *src, size_t dstSize)
+
+\brief	Replacement for strcat. Concatenates 'src' into 'dst' up to 'dstSize' bytes.
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dst	If non-null, destination for the string. 
+\param	src			Source for the string. 
+\param	dstSize		Size of the destination. 
+**/
 void Q_strcatz (char *dst, const char *src, size_t dstSize)
 {
 	size_t len = strlen (dst);
@@ -66,12 +80,20 @@ void Q_strcatz (char *dst, const char *src, size_t dstSize)
 	Q_strncpyz (dst + len, src, dstSize - len);
 }
 
+/**
+\fn	size_t Q_strncpyz(char *dest, const char *src, size_t size)
 
-/*
-===============
-Q_strncpyz
-===============
-*/
+\brief	Replacement for strncpy. Copies 'src' into 'dest' up to 'size' bytes
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dest	If non-null, destination for the string to be copied into. 
+\param	src				Source for the string. 
+\param	size			The size. 
+
+\return	. 
+**/
 size_t Q_strncpyz(char *dest, const char *src, size_t size)
 {
 	if (size)

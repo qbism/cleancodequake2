@@ -50,7 +50,7 @@ struct pMoveLocal_t
 	vec3f			forward, right, up;
 	float			frameTime;
 
-	cmBspSurface_t	*groundSurface;
+	SBSPSurface	*groundSurface;
 	sint32			groundContents;
 
 	vec3Base<sint16>previousOrigin;

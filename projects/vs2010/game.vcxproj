@@ -372,8 +372,6 @@ echo Done!
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\ByteSwap.cpp" />
-    <ClCompile Include="..\..\shared\ColorVec.cpp" />
     <ClCompile Include="..\..\shared\MathLib.cpp" />
     <ClCompile Include="..\..\shared\Random.cpp" />
     <ClCompile Include="..\..\shared\String.cpp" />
@@ -528,12 +526,12 @@ echo Done!
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h" />
+    <ClInclude Include="..\..\shared\MathLib.h" />
     <ClInclude Include="..\..\shared\Platform.h" />
-    <ClInclude Include="..\..\shared\MathLib\MathLib.h" />
-    <ClInclude Include="..\..\shared\MathLib\Vector.h" />
     <ClInclude Include="..\..\shared\Shared.h" />
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
+    <ClInclude Include="..\..\shared\Vector.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />

@@ -52,7 +52,7 @@ inline const char *TimeStamp()
 class IBaseEntity;
 class CPlayerEntity;
 
-typedef sint32	FrameNumber_t;
+typedef sint32	FrameNumber;
 
 #define TO_STRING2(x) #x
 #define TO_STRING(x) TO_STRING2(x)

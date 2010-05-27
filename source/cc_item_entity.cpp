@@ -62,7 +62,7 @@ void CItemEntity::Spawn ()
 {
 } // Just to fill IMapEntity
 
-void CItemEntity::Touch(IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CItemEntity::Touch(IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Other)
 		return;

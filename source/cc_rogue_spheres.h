@@ -38,7 +38,7 @@ class CDoppleGangerBody : public IThinkableEntity
 {
 public:
 	float			IdealYaw;
-	FrameNumber_t	TurnTime;
+	FrameNumber	TurnTime;
 
 	CDoppleGangerBody () :
 	  IThinkableEntity ()
@@ -54,14 +54,14 @@ public:
 	void SaveFields (CFile &File)
 	{
 		File.Write<float> (IdealYaw);
-		File.Write<FrameNumber_t> (TurnTime);
+		File.Write<FrameNumber> (TurnTime);
 		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
 		IdealYaw = File.Read<float> ();
-		TurnTime = File.Read<FrameNumber_t> ();
+		TurnTime = File.Read<FrameNumber> ();
 		IThinkableEntity::LoadFields (File);
 	};
 
@@ -161,7 +161,7 @@ enum
 class CRogueBaseSphere : public IFlyMissileProjectile, public IHurtableEntity, public ITouchableEntity, public IThinkableEntity
 {
 public:
-	FrameNumber_t		Wait;
+	FrameNumber		Wait;
 	ESphereType			SphereType;
 	ESphereFlags		SphereFlags;
 	CPlayerEntity		*OwnedPlayer;
@@ -198,11 +198,11 @@ public:
 	virtual void 	Pain (IBaseEntity *Other, sint32 Damage) = 0;
 	virtual void 	Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
 
-	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf) {};
+	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf) {};
 
 	virtual void	Think () = 0;
 
-	void			BaseTouch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod);
+	void			BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf, EMeansOfDeath Mod);
 	void			Explode ();
 	void			Fly ();
 	void			Chase (bool stupidChase);
@@ -249,7 +249,7 @@ public:
 class CRogueDefenderSphere : public CRogueBaseSphere
 {
 public:
-	FrameNumber_t		AttackFinished;
+	FrameNumber		AttackFinished;
 
 	CRogueDefenderSphere () :
 	  CRogueBaseSphere ()
@@ -266,14 +266,14 @@ public:
 	{
 		CRogueBaseSphere::SaveFields (File);
 
-		File.Write<FrameNumber_t> (AttackFinished);
+		File.Write<FrameNumber> (AttackFinished);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
 		CRogueBaseSphere::LoadFields (File);
 
-		AttackFinished = File.Read<FrameNumber_t> ();
+		AttackFinished = File.Read<FrameNumber> ();
 	}
 
 	IMPLEMENT_SAVE_HEADER(CRogueDefenderSphere);
@@ -314,7 +314,7 @@ public:
 
 	void 			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Think ();
-	void			Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void			Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void			ChangeYaw (float IdealYaw);
 	static CRogueHunterSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
@@ -348,7 +348,7 @@ public:
 
 	void 			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Think ();
-	void			Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void			Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static CRogueVengeanceSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };

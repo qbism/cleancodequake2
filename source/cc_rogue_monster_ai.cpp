@@ -101,7 +101,7 @@ void RunBadAreas ()
 	BadAreas.erase(std::remove_if(BadAreas.begin(), BadAreas.end(), RemoveBadArea), BadAreas.end());
 }
 
-CBadArea::CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, IBaseEntity *Owner) :
+CBadArea::CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber Lifespan, IBaseEntity *Owner) :
   AbsMin (AbsMin),
   AbsMax (AbsMax),
   Lifespan (Lifespan),

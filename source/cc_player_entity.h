@@ -38,15 +38,15 @@ class CPlayerState
 {
 	friend class CClient;
 protected:
-	playerState_t	*playerState; // Private so no one mucks with it if they shouldn't
+	SPlayerState	*playerState; // Private so no one mucks with it if they shouldn't
 
 public:
-	CPlayerState (playerState_t *playerState);
+	CPlayerState (SPlayerState *playerState);
 
-	void			Initialize (playerState_t *playerState);
+	void			Initialize (SPlayerState *playerState);
 	
-	pMoveState_t	*GetPMove (); // Direct pointer
-	void			SetPMove (pMoveState_t *newState);
+	SPMoveState	*GetPMove (); // Direct pointer
+	void			SetPMove (SPMoveState *newState);
 
 	// Unless, of course, you use the vec3f class :D
 	vec3f			&GetViewAngles ();
@@ -331,7 +331,7 @@ public:
 	void Save (CFile &File)
 	{
 		CoopRespawn.Save (File);
-		File.Write<FrameNumber_t> (EnterFrame);
+		File.Write<FrameNumber> (EnterFrame);
 		File.Write<sint32> (Score);
 		File.Write<vec3f> (CmdAngles);
 		File.Write<bool> (Spectator);
@@ -342,7 +342,7 @@ public:
 	void Load (CFile &File)
 	{
 		CoopRespawn.Load (File);
-		EnterFrame = File.Read<FrameNumber_t> ();
+		EnterFrame = File.Read<FrameNumber> ();
 		Score = File.Read<sint32> ();
 		CmdAngles = File.Read<vec3f> ();
 		Spectator = File.Read<bool> ();
@@ -351,7 +351,7 @@ public:
 	}
 
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
-	FrameNumber_t		EnterFrame;		// Level.Frame the client entered the game
+	FrameNumber		EnterFrame;		// Level.Frame the client entered the game
 	sint32				Score;			// frags, etc
 	vec3f				CmdAngles;		// angles sent over in the last command
 
@@ -370,7 +370,7 @@ public:
 	{
 		ETeamIndex		Team;					// CTF team
 		sint16			State;
-		FrameNumber_t	LastHurtCarrier,
+		FrameNumber	LastHurtCarrier,
 						LastReturnedFlag,
 						FlagSince,
 						LastFraggedCarrier;
@@ -489,7 +489,7 @@ enum
 class CPlayerNoise : public virtual IBaseEntity
 {
 public:
-	FrameNumber_t	Time;
+	FrameNumber	Time;
 
 	CPlayerNoise () :
 	  IBaseEntity ()
@@ -505,12 +505,12 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write<FrameNumber_t> (Time);
+		File.Write<FrameNumber> (Time);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		Time = File.Read<FrameNumber_t> ();
+		Time = File.Read<FrameNumber> ();
 	}
 
 	IMPLEMENT_SAVE_HEADER(CPlayerNoise);
@@ -551,10 +551,10 @@ public:
 
 	void WriteClientStructure (CFile &File);
 	static void ReadClientStructure (CFile &File, sint32 index);
-	void RepositionClient (gclient_t *client);
+	void RepositionClient (SServerClient *client);
 
 protected:
-	gclient_t		*client; // Private so no one messes it up!
+	SServerClient		*client; // Private so no one messes it up!
 
 public:
 	CPlayerState	PlayerState;
@@ -570,10 +570,10 @@ public:
 	IBaseEntity		*mynoise2;
 	vec3f			OldViewAngles;
 	vec3f			OldVelocity;
-	vec2f			ViewDamage;
-	FrameNumber_t	ViewDamageTime;
+	float			ViewDamage[2];
+	FrameNumber	ViewDamageTime;
 	float			KillerYaw;			// when dead, look at killer
-	pMoveState_t	OldPMove;	// for detecting out-of-pmove changes
+	SPMoveState	OldPMove;	// for detecting out-of-pmove changes
 	ELayoutFlags	LayoutFlags;
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
@@ -582,7 +582,7 @@ public:
 	EButtons		LatchedButtons;
 	CWeapon			*NewWeapon;
 	EWeaponState	WeaponState;
-	FrameNumber_t	FallTime;
+	FrameNumber	FallTime;
 	float			FallValue;		// for view drop on fall
 	float			BonusAlpha;
 	float			BobTime;			// so off-ground doesn't change it
@@ -605,7 +605,7 @@ public:
 	// powerup timers
 	struct client_Timers_t
 	{
-		FrameNumber_t		QuadDamage,
+		FrameNumber		QuadDamage,
 							Invincibility,
 							Rebreather,
 							EnvironmentSuit
@@ -626,21 +626,21 @@ public:
 		uint8				MachinegunShots;	// for weapon raising
 		bool				BreatherSound;
 
-		FrameNumber_t		PickupMessageTime;
-		FrameNumber_t		RespawnTime;		// can respawn when time > this
+		FrameNumber		PickupMessageTime;
+		FrameNumber		RespawnTime;		// can respawn when time > this
 	} Timers;
 
 	struct client_Grenade_Data_t
 	{
 		bool			BlewUp;
 		bool			Thrown;
-		FrameNumber_t	Time;
+		FrameNumber	Time;
 	} Grenade;
 
 	struct client_Flood_t
 	{
-		FrameNumber_t	LockTill; // locked from talking
-		FrameNumber_t	When[10]; // when messages were said
+		FrameNumber	LockTill; // locked from talking
+		FrameNumber	When[10]; // when messages were said
 		uint8			WhenHead; // head pointer for when said
 	} Flood;
 
@@ -656,7 +656,7 @@ public:
 	{
 		class CGrappleEntity		*Entity;
 		EGrappleState				State;
-		FrameNumber_t				ReleaseTime;
+		FrameNumber				ReleaseTime;
 	} Grapple;
 //ZOID
 #endif
@@ -664,14 +664,14 @@ public:
 	struct client_Tech_t
 	{
 		// Tech-specific fields
-		FrameNumber_t	RegenTime;
+		FrameNumber	RegenTime;
 
 		// Global fields
-		FrameNumber_t	SoundTime;
-		FrameNumber_t	LastTechMessage;
+		FrameNumber	SoundTime;
+		FrameNumber	LastTechMessage;
 	} Tech;
 
-	CClient (gclient_t *client);
+	CClient (SServerClient *client);
 
 	sint32			&GetPing ();
 	void			Clear ();
@@ -704,12 +704,12 @@ public:
 	CClient					Client;
 	bool					NoClip;
 	bool					TossPhysics;
-	FrameNumber_t			FlySoundDebounceTime;
-	FrameNumber_t			DamageDebounceTime;
-	FrameNumber_t			AirFinished;
-	FrameNumber_t			NextDrownTime;
+	FrameNumber			FlySoundDebounceTime;
+	FrameNumber			DamageDebounceTime;
+	FrameNumber			AirFinished;
+	FrameNumber			NextDrownTime;
 	sint32					NextDrownDamage;
-	FrameNumber_t			PainDebounceTime;
+	FrameNumber			PainDebounceTime;
 
 	CPlayerEntity (sint32 Index);
 	~CPlayerEntity ();
@@ -722,12 +722,12 @@ public:
 		// Write the player data first
 		File.Write<bool> (NoClip);
 		File.Write<bool> (TossPhysics);
-		File.Write<FrameNumber_t> (FlySoundDebounceTime);
-		File.Write<FrameNumber_t> (DamageDebounceTime);
-		File.Write<FrameNumber_t> (AirFinished);
-		File.Write<FrameNumber_t> (NextDrownTime);
+		File.Write<FrameNumber> (FlySoundDebounceTime);
+		File.Write<FrameNumber> (DamageDebounceTime);
+		File.Write<FrameNumber> (AirFinished);
+		File.Write<FrameNumber> (NextDrownTime);
 		File.Write<sint32> (NextDrownDamage);
-		File.Write<FrameNumber_t> (PainDebounceTime);
+		File.Write<FrameNumber> (PainDebounceTime);
 
 		// Write client data
 		//Client.Write (File);
@@ -741,12 +741,12 @@ public:
 		// Read the player data first
 		NoClip = File.Read<bool> ();
 		TossPhysics = File.Read<bool> ();
-		FlySoundDebounceTime = File.Read<FrameNumber_t> ();
-		DamageDebounceTime = File.Read<FrameNumber_t> ();
-		AirFinished = File.Read<FrameNumber_t> ();
-		NextDrownTime = File.Read<FrameNumber_t> ();
+		FlySoundDebounceTime = File.Read<FrameNumber> ();
+		DamageDebounceTime = File.Read<FrameNumber> ();
+		AirFinished = File.Read<FrameNumber> ();
+		NextDrownTime = File.Read<FrameNumber> ();
 		NextDrownDamage = File.Read<sint32> ();
-		PainDebounceTime = File.Read<FrameNumber_t> ();
+		PainDebounceTime = File.Read<FrameNumber> ();
 
 		// Read client data
 		//Client.Load (File);
@@ -800,7 +800,7 @@ public:
 	void			DeadDropTech ();
 	void			TossClientWeapon ();
 	void			MoveToIntermission ();
-	void			ClientThink (userCmd_t *ucmd);
+	void			ClientThink (SUserCmd *ucmd);
 
 	void			DeathmatchScoreboardMessage (bool reliable);
 	void			EndServerFrame ();

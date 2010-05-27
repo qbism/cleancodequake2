@@ -49,7 +49,7 @@ void CRogueBaseSphere::SaveFields (CFile &File)
 	ITouchableEntity::SaveFields (File);
 	IThinkableEntity::SaveFields (File);
 
-	File.Write<FrameNumber_t> (Wait);
+	File.Write<FrameNumber> (Wait);
 	File.Write<ESphereType> (SphereType);
 	File.Write<ESphereFlags> (Flags);
 	File.Write<sint32> ((OwnedPlayer) ? OwnedPlayer->State.GetNumber() : -1);
@@ -66,7 +66,7 @@ void CRogueBaseSphere::LoadFields (CFile &File)
 	ITouchableEntity::LoadFields (File);
 	IThinkableEntity::LoadFields (File);
 
-	Wait = File.Read<FrameNumber_t> ();
+	Wait = File.Read<FrameNumber> ();
 	SphereType = File.Read<ESphereType> ();
 	Flags = File.Read<ESphereFlags> ();
 
@@ -187,7 +187,7 @@ void CRogueBaseSphere::Chase (bool stupidChase)
 	}
 }
 
-void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf, EMeansOfDeath Mod)
+void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf, EMeansOfDeath Mod)
 {
 	if (SphereFlags & SPHERE_DOPPLEGANGER)
 	{
@@ -357,7 +357,7 @@ void CRogueVengeanceSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-void CRogueVengeanceSphere::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRogueVengeanceSphere::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
@@ -543,7 +543,7 @@ void CRogueHunterSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-void CRogueHunterSphere::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRogueHunterSphere::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }

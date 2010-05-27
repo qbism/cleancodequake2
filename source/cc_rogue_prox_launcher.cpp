@@ -61,7 +61,7 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CProxField);
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
 const int PROX_TIME_TO_LIVE		= 450;		// 450, 300, 150, 100
@@ -100,7 +100,7 @@ public:
 	CProxField			*Field;
 	CPlayerEntity		*Firer;
 	int					Damage;
-	FrameNumber_t		Wait;
+	FrameNumber		Wait;
 	
 	CProx () :
 	  IBounceProjectile (),
@@ -130,7 +130,7 @@ public:
 		File.Write<sint32> ((Field != NULL && Field->GetInUse()) ? Field->State.GetNumber() : -1);
 		File.Write<sint32> ((Firer != NULL && Firer->GetInUse()) ? Firer->State.GetNumber() : -1);
 		File.Write<int> (Damage);
-		File.Write<FrameNumber_t> (Wait);
+		File.Write<FrameNumber> (Wait);
 	};
 
 	void LoadFields (CFile &File)
@@ -151,7 +151,7 @@ public:
 			Firer = entity_cast<CPlayerEntity>(Game.Entities[index].Entity);
 
 		Damage = File.Read<int> ();
-		Wait = File.Read<FrameNumber_t> ();
+		Wait = File.Read<FrameNumber> ();
 	};
 
 	IMPLEMENT_SAVE_HEADER(CProx);
@@ -303,7 +303,7 @@ public:
 		}
 	}
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (surf && (surf->flags & SURF_TEXINFO_SKY))
 		{
@@ -502,7 +502,7 @@ void CProxField::LoadFields (CFile &File)
 		Prox = entity_cast<CProx>(Game.Entities[index].Entity);
 };
 
-void CProxField::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CProxField::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;

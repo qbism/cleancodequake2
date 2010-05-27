@@ -133,12 +133,12 @@ void CGrenade::Explode ()
 	Free (); // "delete" the entity
 }
 
-void CGrenade::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CGrenade::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -172,7 +172,7 @@ void CGrenade::Think ()
 	Explode();
 }
 
-void CGrenade::Spawn (IBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, FrameNumber_t timer, float damage_radius, bool handNade, bool held)
+void CGrenade::Spawn (IBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, FrameNumber timer, float damage_radius, bool handNade, bool held)
 {
 	CGrenade	*Grenade = QNewEntityOf CGrenade();
 	vec3f		forward, right, up;
@@ -259,12 +259,12 @@ void CBlasterProjectile::Think ()
 	Free();
 }
 
-void CBlasterProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -274,9 +274,9 @@ void CBlasterProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & HYPER_FLAG) ? MOD_HYPERBLASTER : MOD_BLASTER);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & HYPER_FLAG) ? MOD_HYPERBLASTER : MOD_BLASTER);
 	else
-		CBlasterSplash(State.GetOrigin(), plane ? plane->normal : vec3fOrigin).Send();
+		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin).Send();
 
 	Free (); // "delete" the entity
 }
@@ -350,12 +350,12 @@ void CRocket::Think ()
 	Free (); // "delete" the entity
 }
 
-void CRocket::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CRocket::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free ();
 		return;
@@ -365,7 +365,7 @@ void CRocket::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->Normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
@@ -521,7 +521,7 @@ void CBFGBolt::Think ()
 				//if (!(tr.ent->svFlags & SVF_MONSTER) && (!tr.ent->client))
 				if (!(tr.Ent->EntityFlags & ENT_MONSTER) && !(tr.Ent->EntityFlags & ENT_PLAYER))
 				{
-					CSparks (tr.EndPos, tr.plane.normal, ST_LASER_SPARKS, State.GetSkinNum(), 4).Send();
+					CSparks (tr.EndPos, tr.plane.Normal, ST_LASER_SPARKS, State.GetSkinNum(), 4).Send();
 					break;
 				}
 
@@ -536,7 +536,7 @@ void CBFGBolt::Think ()
 	}
 }
 
-void CBFGBolt::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CBFGBolt::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Exploded)
 		return;
@@ -544,7 +544,7 @@ void CBFGBolt::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free();
 		return;
@@ -555,7 +555,7 @@ void CBFGBolt::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
 
 	// core explosion - prevents firing it into the wall/floor
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin, 200, 0, 0, MOD_BFG_BLAST);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, 200, 0, 0, MOD_BFG_BLAST);
 	SplashDamage(GetOwner(), 200, Other, 100, MOD_BFG_BLAST);
 
 	PlaySound (CHAN_VOICE, SoundIndex ("weapons/bfg__x1b.wav"));
@@ -726,7 +726,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			if (Trace.startSolid)
 			{
 				vec3f origin = Target->State.GetOrigin();
-				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.normal))
+				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.Normal))
 				{
 					DoEffect (origin, lastDrawFrom, DrawIsWater);
 					break; // We wanted to stop
@@ -755,7 +755,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				continue;
 			}
 
-			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.normal))
+			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.Normal))
 				break; // We wanted to stop
 
 			// Set up the start from where we are now
@@ -834,7 +834,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		}
 		// If we hit non-transparent water
 		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && !(Trace.surface->flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+			(Trace.surface && !(Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// Copy up our point for the effect
 			lastWaterEnd = Trace.EndPos;
@@ -896,7 +896,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		}
 		// Transparent water
 		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && (Trace.surface->flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+			(Trace.surface && (Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// This won't count as "water" since we can see through it.
 			// It has the same PVS, meaning we don't need to
@@ -1006,8 +1006,8 @@ bool CBullet::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &d
 
 void CBullet::DoSolidHit	(CTrace *Trace)
 {
-	if (!(Trace->surface->flags & SURF_TEXINFO_SKY))
-		CGunshotRicochet(Trace->EndPos, Trace->plane.normal).Send();
+	if (!(Trace->surface->Flags & SURF_TEXINFO_SKY))
+		CGunshotRicochet(Trace->EndPos, Trace->plane.Normal).Send();
 }
 
 bool CBullet::ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end)
@@ -1030,7 +1030,7 @@ void CBullet::DoWaterHit	(CTrace *Trace)
 	ESplashType Color;
 	if (Trace->contents & CONTENTS_WATER)
 	{
-		if (strcmp(Trace->surface->name, "*brwater") == 0)
+		if (strcmp(Trace->surface->Name, "*brwater") == 0)
 			Color = SPT_MUD;
 		else
 			Color = SPT_WATER;
@@ -1042,7 +1042,7 @@ void CBullet::DoWaterHit	(CTrace *Trace)
 	else
 		return;
 
-	CSplash(Trace->EndPos, Trace->plane.normal, Color).Send();
+	CSplash(Trace->EndPos, Trace->plane.Normal, Color).Send();
 }
 
 void CBullet::Fire(IBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod)
@@ -1058,8 +1058,8 @@ void CBullet::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 
 void CShotgunPellets::DoSolidHit	(CTrace *Trace)
 {
-	if (!(Trace->surface->flags & SURF_TEXINFO_SKY))
-		CShotgunRicochet(Trace->EndPos, Trace->plane.normal).Send();
+	if (!(Trace->surface->Flags & SURF_TEXINFO_SKY))
+		CShotgunRicochet(Trace->EndPos, Trace->plane.Normal).Send();
 }
 
 extern bool LastPelletShot;
@@ -1173,7 +1173,7 @@ void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, in
 					(DAMAGE_NO_KNOCKBACK), Mod);
 	}
 	else
-		CGunshotRicochet (tr.EndPos, tr.plane.normal).Send();
+		CGunshotRicochet (tr.EndPos, tr.plane.Normal).Send();
 }
 
 #if CLEANCTF_ENABLED
@@ -1277,7 +1277,7 @@ void CGrappleEntity::GrapplePull()
 		if ((Player->Client.Grapple.State == CTF_GRAPPLE_STATE_PULL) &&
 			vlen < 64)
 		{
-			Player->Client.PlayerState.GetPMove()->pmFlags |= PMF_NO_PREDICTION;
+			Player->Client.PlayerState.GetPMove()->PMoveFlags |= PMF_NO_PREDICTION;
 			Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhang.wav"), volume);
 			Player->Client.Grapple.State = CTF_GRAPPLE_STATE_HANG;
 		}
@@ -1294,7 +1294,7 @@ void CGrappleEntity::ResetGrapple ()
 	Player->Client.Grapple.Entity = NULL;
 	Player->Client.Grapple.ReleaseTime = Level.Frame;
 	Player->Client.Grapple.State = CTF_GRAPPLE_STATE_HANG+1; // we're firing, not on hook
-	Player->Client.PlayerState.GetPMove()->pmFlags &= ~PMF_NO_PREDICTION;
+	Player->Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_NO_PREDICTION;
 	Free ();
 };
 
@@ -1329,7 +1329,7 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint
 	}
 };
 
-void CGrappleEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CGrappleEntity::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == Player)
 		return;
@@ -1337,7 +1337,7 @@ void CGrappleEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	if (Player->Client.Grapple.State != CTF_GRAPPLE_STATE_FLY)
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		ResetGrapple();
 		return;
@@ -1348,7 +1348,7 @@ void CGrappleEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 	{
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (Other, this, Player, Velocity, State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin, Damage, 1, 0, MOD_GRAPPLE);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (Other, this, Player, Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, Damage, 1, 0, MOD_GRAPPLE);
 		ResetGrapple();
 		return;
 	}
@@ -1362,7 +1362,7 @@ void CGrappleEntity::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *
 	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grpull.wav"), volume);
 	PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhit.wav"), volume);
 	
-	CSparks(State.GetOrigin(), (!plane) ? vec3fOrigin : plane->normal).Send();
+	CSparks(State.GetOrigin(), (!plane) ? vec3fOrigin : plane->Normal).Send();
 };
 
 bool CGrappleEntity::Run ()

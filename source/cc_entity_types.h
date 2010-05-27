@@ -179,7 +179,7 @@ public:
 	char				*KillTarget;
 	char				*PathTarget;
 	IBaseEntity			*User;
-	FrameNumber_t		Delay;
+	FrameNumber		Delay;
 	MediaIndex			NoiseIndex;
 	bool				Usable;
 
@@ -198,7 +198,7 @@ public:
 class IThinkableEntity : public virtual IBaseEntity
 {
 public:
-	FrameNumber_t		NextThink;
+	FrameNumber		NextThink;
 
 	IThinkableEntity ();
 	IThinkableEntity (sint32 index);
@@ -221,7 +221,7 @@ public:
 	ITouchableEntity ();
 	ITouchableEntity (sint32 index);
 
-	virtual void	Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
 /**

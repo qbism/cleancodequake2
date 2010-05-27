@@ -148,7 +148,7 @@ void CTriggerBase::Think ()
 	};
 };
 
-void CTriggerBase::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CTriggerBase::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Touchable)
 		return;
@@ -480,7 +480,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerCounter)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 	};
 
@@ -584,7 +584,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerPush)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		vec3f vel = MoveDir * Speed;
 
@@ -721,7 +721,7 @@ enum
 class CTriggerHurt : public CTriggerMultiple
 {
 public:
-	FrameNumber_t		NextHurt;
+	FrameNumber		NextHurt;
 	sint32					Damage;
 
 	CTriggerHurt () :
@@ -743,7 +743,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerHurt)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (!((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
 			return;
@@ -846,7 +846,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerMonsterJump)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 	};
 
@@ -957,7 +957,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTriggerGravity)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (Other->EntityFlags & ENT_PHYSICS)
 			entity_cast<IPhysicsEntity>(Other)->GravityMultiplier = Gravity;
@@ -1040,7 +1040,7 @@ class CTriggerKey : public IMapEntity, public IUsableEntity
 {
 public:
 	CBaseItem			*Item;
-	FrameNumber_t		TouchDebounce;
+	FrameNumber		TouchDebounce;
 
 	CTriggerKey () :
 	  IBaseEntity (),

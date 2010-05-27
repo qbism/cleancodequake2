@@ -139,7 +139,7 @@ public:
 	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
-	gclient_t				*Clients;		// [maxclients]
+	SServerClient				*Clients;		// [maxclients]
 	edict_t					*Entities;
 
 	// can't store spawnpoint in level, because
@@ -246,7 +246,7 @@ public:
 	void Save (CFile &File);
 	void Load (CFile &File);
 
-	FrameNumber_t	Frame;
+	FrameNumber	Frame;
 
 	std::string	FullLevelName;		// the descriptive name (Outer Base, etc)
 	std::string	ServerLevelName;		// the server name (base1, etc)
@@ -254,7 +254,7 @@ public:
 	std::string	ForceMap;		// go here
 
 	// intermission state
-	FrameNumber_t		IntermissionTime;		// time the intermission was started
+	FrameNumber		IntermissionTime;		// time the intermission was started
 	char		*ChangeMap;
 	bool		ExitIntermission;
 	bool		ExitIntermissionOnNextFrame;
@@ -264,11 +264,11 @@ public:
 	CPlayerEntity		*SightClient;	// changed once each frame for coop games
 
 	IBaseEntity	*SightEntity;
-	FrameNumber_t	SightEntityFrame;
+	FrameNumber	SightEntityFrame;
 	IBaseEntity	*SoundEntity;
-	FrameNumber_t	SoundEntityFrame;
+	FrameNumber	SoundEntityFrame;
 	IBaseEntity	*SoundEntity2;
-	FrameNumber_t	SoundEntity2Frame;
+	FrameNumber	SoundEntity2Frame;
 
 	GoalList_t	Secrets;
 	GoalList_t	Goals;
@@ -303,7 +303,7 @@ public:
 
 #if ROGUE_FEATURES
 	IBaseEntity			*DisguiseViolator;
-	FrameNumber_t		DisguiseViolationFrametime;
+	FrameNumber		DisguiseViolationFrametime;
 #endif
 };
 

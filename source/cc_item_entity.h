@@ -97,7 +97,7 @@ public:
 	CItemEntity *GetRandomTeamMember (CItemEntity *Master);
 
 	virtual void Think ();
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 

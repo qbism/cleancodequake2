@@ -62,7 +62,7 @@ CTrapProjectile::CTrapProjectile (sint32 Index) :
 
 IMPLEMENT_SAVE_SOURCE(CTrapProjectile)
 
-void CTrapProjectile::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CTrapProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 }
 

@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CMedic : public CMonster
 {
 public:
-	FrameNumber_t	MedicTryTime;
+	FrameNumber	MedicTryTime;
 	uint8			MedicTries;
 
 	MONSTER_SOUND_ENUM
@@ -61,13 +61,13 @@ public:
 	ROGUE_VIRTUAL void SaveMonsterFields (CFile &File)
 	{
 		SAVE_MONSTER_SOUNDS
-		File.Write<FrameNumber_t> (MedicTryTime);
+		File.Write<FrameNumber> (MedicTryTime);
 		File.Write<uint8> (MedicTries);
 	}
 	ROGUE_VIRTUAL void LoadMonsterFields (CFile &File)
 	{
 		LOAD_MONSTER_SOUNDS
-		MedicTryTime = File.Read<FrameNumber_t> ();
+		MedicTryTime = File.Read<FrameNumber> ();
 		MedicTries = File.Read<uint8> ();
 	}
 

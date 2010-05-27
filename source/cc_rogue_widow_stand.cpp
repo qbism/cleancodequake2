@@ -47,7 +47,7 @@ const int LEG_WAIT_TIME	= 10;
 class CWidowLegs : public IThinkableEntity
 {
 public:
-	FrameNumber_t		BoomTime;
+	FrameNumber		BoomTime;
 	bool				Exploded;
 
 	CWidowLegs() :
@@ -65,14 +65,14 @@ public:
 	
 	void SaveFields (CFile &File)
 	{
-		File.Write<FrameNumber_t> (BoomTime);
+		File.Write<FrameNumber> (BoomTime);
 		File.Write<bool> (Exploded);
 		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		BoomTime = File.Read<FrameNumber_t> ();
+		BoomTime = File.Read<FrameNumber> ();
 		Exploded = File.Read<bool> ();
 		IThinkableEntity::LoadFields (File);
 	}
@@ -1041,19 +1041,19 @@ void CWidowStand::Melee ()
 	CurrentMove = &WidowMoveAttackKick;
 }
 
-void CWidowStand::Quad (FrameNumber_t framenum)
+void CWidowStand::Quad (FrameNumber framenum)
 {
 	QuadFramenum = framenum;
 	WidowDamageMultiplier = 4;
 }
 
-void CWidowStand::Double (FrameNumber_t framenum)
+void CWidowStand::Double (FrameNumber framenum)
 {
 	DoubleFramenum = framenum;
 	WidowDamageMultiplier = 2;
 }
 
-void CWidowStand::Pent (FrameNumber_t framenum)
+void CWidowStand::Pent (FrameNumber framenum)
 {
 	InvincibleFramenum = framenum;
 }

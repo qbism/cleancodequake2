@@ -49,7 +49,7 @@ void CLevelLocals::CEntityList::Save (CFile &File)
 
 	File.Write<size_t> (Closed.size());
 	for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
-		File.Write<sint32> ((*it)->server.state.number);
+		File.Write<sint32> ((*it)->server.State.Number);
 };
 
 void CLevelLocals::CEntityList::Load (CFile &File)
@@ -69,14 +69,14 @@ void CLevelLocals::CEntityList::Load (CFile &File)
 
 void CLevelLocals::Save (CFile &File)
 {
-	File.Write<FrameNumber_t> (Frame);
+	File.Write<FrameNumber> (Frame);
 
 	File.Write (FullLevelName);
 	File.Write (ServerLevelName);
 	File.Write (NextMap);
 	File.Write (ForceMap);
 
-	File.Write<FrameNumber_t> (IntermissionTime);
+	File.Write<FrameNumber> (IntermissionTime);
 	File.Write<bool> (ExitIntermission);
 	File.Write<vec3f> (IntermissionOrigin);
 	File.Write<vec3f> (IntermissionAngles);
@@ -90,7 +90,7 @@ void CLevelLocals::Save (CFile &File)
 	File.Write<uint32> (EntityNumber);
 
 #if ROGUE_FEATURES
-	File.Write<FrameNumber_t> (DisguiseViolationFrametime);
+	File.Write<FrameNumber> (DisguiseViolationFrametime);
 	File.Write<sint32> ((DisguiseViolator) ? DisguiseViolator->State.GetNumber() : -1);
 #endif
 
@@ -99,14 +99,14 @@ void CLevelLocals::Save (CFile &File)
 
 void CLevelLocals::Load (CFile &File)
 {
-	Frame = File.Read<FrameNumber_t> ();
+	Frame = File.Read<FrameNumber> ();
 
 	FullLevelName = File.ReadCCString ();
 	ServerLevelName = File.ReadCCString ();
 	NextMap = File.ReadCCString ();
 	ForceMap = File.ReadCCString ();
 
-	IntermissionTime = File.Read<FrameNumber_t> ();
+	IntermissionTime = File.Read<FrameNumber> ();
 	ExitIntermission = File.Read<bool> ();
 	IntermissionOrigin = File.Read<vec3f> ();
 	IntermissionAngles = File.Read<vec3f> ();
@@ -123,7 +123,7 @@ void CLevelLocals::Load (CFile &File)
 	EntityNumber = File.Read<uint32> ();
 
 #if ROGUE_FEATURES
-	DisguiseViolationFrametime = File.Read<FrameNumber_t> ();
+	DisguiseViolationFrametime = File.Read<FrameNumber> ();
 
 	Index = File.Read<sint32> ();
 	if (Index != -1)
@@ -348,9 +348,9 @@ void			RunPrivateEntities ();
 
 void ProcessEntity (edict_t *ent)
 {
-	if (!ent->server.inUse)
+	if (!ent->server.InUse)
 	{
-		if (ent->server.state.number > (Game.MaxClients + BODY_QUEUE_SIZE))
+		if (ent->server.State.Number > (Game.MaxClients + BODY_QUEUE_SIZE))
 		{
 			if (!ent->AwaitingRemoval)
 			{
@@ -421,7 +421,7 @@ void CGameAPI::RunFrame ()
 	{
 		Level.Frame ++;
 		// Run the players only
-		// build the playerstate_t structures for all players
+		// build the SPlayerState structures for all players
 		ClientEndServerFrames ();
 		return;
 	}
@@ -468,7 +468,7 @@ void CGameAPI::RunFrame ()
 	// see if needpass needs updated
 	CheckNeedPass ();
 
-	// build the playerstate_t structures for all players
+	// build the SPlayerState structures for all players
 	ClientEndServerFrames ();
 
 	if (CvarList[CV_DMFLAGS].Modified())
@@ -600,7 +600,7 @@ void CGameAPI::Init ()
 
 	// initialize all clients for this game
 	Game.MaxClients = CvarList[CV_MAXCLIENTS].Integer();
-	Game.Clients = QNew (TAG_GAME) gclient_t[Game.MaxClients];
+	Game.Clients = QNew (TAG_GAME) SServerClient[Game.MaxClients];
 	GameAPI.GetNumEdicts() = Game.MaxClients + 1;
 
 	// Vars

@@ -63,7 +63,7 @@ void CIonRipperBoomerang::Think ()
 	Free();
 }
 
-void CIonRipperBoomerang::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CIonRipperBoomerang::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;

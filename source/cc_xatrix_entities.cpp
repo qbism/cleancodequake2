@@ -536,8 +536,8 @@ Mal's laser
 class CTargetMalLaser : public CTargetLaser
 {
 public:
-	FrameNumber_t		Wait;
-	FrameNumber_t		Delay;
+	FrameNumber		Wait;
+	FrameNumber		Delay;
 
 	CTargetMalLaser () :
 	  CTargetLaser ()
@@ -630,7 +630,7 @@ public:
 		THINK_FX
 	};
 
-	FrameNumber_t		Delay;
+	FrameNumber		Delay;
 	ERepairThinkType	ThinkType;
 
 	CFuncObjectRepair () :

@@ -38,7 +38,7 @@ class CPathCorner : public IMapEntity, public IThinkableEntity, public ITouchabl
 {
 public:
 	TTargetList		NextTargets;
-	FrameNumber_t	Wait;
+	FrameNumber	Wait;
 #if ROGUE_FEATURES
 	float			Accel, Decel, Speed;
 #endif
@@ -50,7 +50,7 @@ public:
 	ENTITYFIELDS_SAVABLE(CPathCorner)
 
 	virtual void Think ();
-	virtual void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 	virtual void Spawn ();
 };
 

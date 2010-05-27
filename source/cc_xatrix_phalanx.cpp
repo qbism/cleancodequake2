@@ -61,7 +61,7 @@ void CPhalanxPlasma::Think ()
 	Free (); // "delete" the entity
 }
 
-void CPhalanxPlasma::Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+void CPhalanxPlasma::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (Other == GetOwner())
 		return;

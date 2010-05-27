@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CFuncTimer : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
-	FrameNumber_t	Wait, Random, PauseTime;
+	FrameNumber	Wait, Random, PauseTime;
 
 	CFuncTimer ();
 	CFuncTimer (sint32 Index);
@@ -97,7 +97,7 @@ class CFuncClock : public IMapEntity, public IUsableEntity, public IThinkableEnt
 {
 public:
 	char			*CountTarget;
-	FrameNumber_t	Wait;
+	FrameNumber	Wait;
 	uint8			Style;
 	sint32			Seconds;
 	sint32			Count;

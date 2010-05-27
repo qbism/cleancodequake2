@@ -126,7 +126,7 @@ void CCarrier::Grenade ()
 		return;
 
 	float direction = (frand() < 0.5f) ? -1 : 1;
-	FrameNumber_t mytime = ((Level.Frame - FrameCalc) / 4);
+	FrameNumber mytime = ((Level.Frame - FrameCalc) / 4);
 
 	float spreadR = 0, spreadU = 0;
 	switch (mytime)
@@ -289,7 +289,7 @@ void CCarrier::SpawnMonsters ()
 	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
 
 	// the +0.1 is because level.time is sometimes a little low
-	FrameNumber_t mytime = ((Level.Frame + 1 - FrameCalc) / 5);
+	FrameNumber mytime = ((Level.Frame + 1 - FrameCalc) / 5);
 
 	vec3f spawnpoint;
 	if (FindSpawnPoint (startpoint, flyer_mins, flyer_maxs, spawnpoint, 32))
@@ -403,7 +403,7 @@ void CCarrier::StartSpawn ()
 	if (!Entity->Enemy)
 		return;
 
-	FrameNumber_t mytime = ((Level.Frame - FrameCalc) / 5);	
+	FrameNumber mytime = ((Level.Frame - FrameCalc) / 5);	
 	float enemy_yaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
 	// note that the offsets are based on a forward of 105 from the end angle

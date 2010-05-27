@@ -22,238 +22,142 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 /*
 ==============================================================================
 
-	vec2Base
- 
-==============================================================================
-*/
-
-template<typename TType>
-class  vec2Base
-{
-public:
-	/**
-	 * Data
-	 */
-	TType X, Y;
-
-	/**
-	 * Constructors
-	 */
-	vec2Base()
-	: X(0), Y(0) {}
-
-	inline vec2Base(const vec2Base &Vec)
-	: X(Vec[0]), Y(Vec[1]) {}
-
-	inline vec2Base(const TType Value)
-	: X(Value), Y(Value) {}
-
-	inline vec2Base(const TType Values[2])
-	: X(Values[0]), Y(Values[1]) {}
-
-	inline vec2Base(const TType InX, const TType InY)
-	: X(InX), Y(InY) {}
-
-	/**
-	 * Destructors
-	 */
-	~vec2Base() {}
-
-	/**
-	 * Operators
-	 */
-	inline bool operator !=(const vec2Base &Vec) { return (X != Vec[0] || Y != Vec[1]); }
-
-	inline bool operator ==(const vec2Base &Vec) { return (X == Vec[0] && Y == Vec[1]); }
-
-	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
-	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
-
-	inline operator TType *() { return (&X); }
-	inline operator const TType *() const { return (&X); }
-
-	/**
-	 * Functions
-	 */
-	inline bool Compare(const vec2Base &Vec) const { return (X == Vec[0] && Y == Vec[1]); }
-
-	inline void Copy(const vec2Base &Vec) { X = Vec[0]; Y = Vec[1]; }
-
-	inline void Invert() { X = -X; Y = -Y; }
-	inline vec2Base GetInverted() const { return vec2Base(-X, -Y); }
-
-	inline bool IsZero() const { return (X == 0 && Y == 0); }
-
-	inline void Set(const TType Number) { X = Number; Y = Number; }
-	inline void Set(const TType InX, const TType InY) { X = InX; Y = InY; }
-	inline void Set(const vec2Base &Vec) { X = Vec[0]; Y = Vec[1]; }
-};
-
-/*
-==============================================================================
-
-	vec2f
- 
-==============================================================================
-*/
-
-class  vec2f : public vec2Base<float>
-{
-public:
-	/**
-	 * Constructors
-	 */
-	vec2f() {}
-	inline vec2f(const vec2f &Vec) : vec2Base<float>(Vec) {}
-	inline vec2f(const float Value) : vec2Base<float>(Value) {}
-	inline vec2f(const float Values[2]) : vec2Base<float>(Values) {}
-	inline vec2f(const float InX, const float InY) : vec2Base<float>(InX, InY) {}
-
-	/**
-	 * Operators
-	 */
-	inline vec2f operator *(const vec2f &Vec) const { return vec2f(X*Vec[0], Y*Vec[1]); }
-	inline vec2f operator *(const float Scale) const { return vec2f(X*Scale, Y*Scale); }
-
-	inline vec2f &operator *=(const vec2f &Vec)
-	{
-		X *= Vec[0];
-		Y *= Vec[1];
-
-		return *this;
-	}
-	inline vec2f &operator *=(const float Scale)
-	{
-		X *= Scale;
-		Y *= Scale;
-
-		return *this;
-	}
-
-	inline vec2f operator +(const vec2f &Vec) const { return vec2f(X+Vec[0], Y+Vec[1]); }
-	inline vec2f &operator +=(const vec2f &Vec)
-	{
-		X += Vec[0];
-		Y += Vec[1];
-
-		return *this;
-	}
-
-	inline vec2f operator -(const vec2f &Vec) const { return vec2f(X-Vec[0], Y-Vec[1]); }
-	inline vec2f &operator -=(const vec2f &Vec)
-	{
-		X -= Vec[0];
-		Y -= Vec[1];
-
-		return *this;
-	}
-
-	inline vec2f operator /(const vec2f &Vec) const { return vec2f(X/Vec[0], Y/Vec[1]); }
-	inline vec2f operator /(const float Number) const
-	{
-		const float InvNumber = 1.0f / Number;
-		return vec2f(X*InvNumber, Y*InvNumber);
-	}
-
-	inline vec2f &operator /=(const vec2f &Vec)
-	{
-		X /= Vec[0];
-		Y /= Vec[1];
-
-		return *this;
-	}
-	inline vec2f &operator /=(const float Number)
-	{
-		const float InvNumber = 1.0f / Number;
-
-		X *= InvNumber;
-		Y *= InvNumber;
-
-		return *this;
-	}
-
-	inline bool operator <(const vec2f &Vec) { return (X < Vec[0] && Y < Vec[1]); }
-
-	inline vec2f &operator =(const vec2f &Vec)
-	{
-		X = Vec[0];
-		Y = Vec[1];
-
-		return *this;
-	}
-
-	inline bool operator >(const vec2f &Vec) { return (X > Vec[0] && Y > Vec[1]); }
-
-	/**
-	 * Functions
-	 */
-	inline void Clear() { *(sint32*)&X = 0; *(sint32*)&Y = 0; }
-
-	bool Compare(const vec2f &Vec, const float Epsilon) const
-	{
-		if (Q_fabs(X-Vec[0]) > Epsilon)
-			return false;
-		if (Q_fabs(Y-Vec[1]) > Epsilon)
-			return false;
-		return true;
-	}
-
-	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon); }
-
-	inline void Scale(const float Scale) { X *= Scale; Y *= Scale; }
-	inline void Scale(const vec2f &Vec) { X *= Vec[0]; Y *= Vec[1]; }
-};
-
-/*
-==============================================================================
-
 	vec3Base
  
 ==============================================================================
 */
 
+/**
+\class	vec3Base
+
+\brief	3d vector base class.
+		TType is the type stored as values of X, Y and Z.
+
+\author	Paril
+\date	27/05/2010
+**/
 template<typename TType>
-class  vec3Base
+class vec3Base
 {
 public:
 	/**
 	 * Data
 	 */
-	TType X, Y, Z;
+	TType			X, Y, Z;
 
 	/**
 	 * Constructors
 	 */
-	vec3Base()
-	: X(0), Y(0), Z(0) {}
-
-	inline vec3Base(const vec3Base &Vec)
-	: X(Vec[0]), Y(Vec[1]), Z(Vec[2]){}
-
-	inline vec3Base(const TType Value)
-	: X(Value), Y(Value), Z(Value) {}
-
-	inline vec3Base(const TType Values[3])
-	: X(Values[0]), Y(Values[1]), Z(Values[2]) {}
-
-	inline vec3Base(const TType InX, const TType InY, const TType InZ)
-	: X(InX), Y(InY), Z(InZ) {}
+	vec3Base () :
+	  X(0), 
+	  Y(0),
+	  Z(0)
+	  {
+	  };
 
 	/**
-	 * Destructors
-	 */
-	~vec3Base() {}
+	\fn	inline vec3Base (const vec3Base &Vec)
+	
+	\brief	Copy constructor.
+			Construct this vector from another vector.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The source vector. 
+	**/
+	inline vec3Base (const vec3Base &Vec) :
+	  X(Vec[0]),
+	  Y(Vec[1]),
+	  Z(Vec[2])
+	  {
+	  };
 
-	// Convert to another vec3Base type
+	/**
+	\fn	inline vec3Base(const TType Value)
+	
+	\brief	Constructor.
+			Initializes this vector with all one value.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Value	The value to set X, Y and Z to. 
+	**/
+	inline vec3Base(const TType Value) :
+	  X(Value),
+	  Y(Value),
+	  Z(Value)
+	  {
+	  };
+
+	/**
+	\fn	inline vec3Base(const TType Values[3])
+	
+	\brief	Constructor.
+			Initializes this vector with an array of three TTypes.
+			Also accepts pointers.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Values	The value array.
+	**/
+	inline vec3Base(const TType Values[3]) :
+	  X(Values[0]),
+	  Y(Values[1]),
+	  Z(Values[2])
+	  {
+	  };
+
+	/**
+	\fn	inline vec3Base(const TType InX, const TType InY, const TType InZ)
+	
+	\brief	Constructor.
+			Sets the X, Y and Z values to 'InX', 'InY' and 'InZ'.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	InX	The wanted x coordinate. 
+	\param	InY	The wanted y coordinate. 
+	\param	InZ	The wanted z coordinate. 
+	**/
+	inline vec3Base(const TType InX, const TType InY, const TType InZ) :
+	  X(InX),
+	  Y(InY),
+	  Z(InZ)
+	  {
+	  };
+
+	/**
+	\fn	template <typename TNewType> vec3Base<TNewType> Convert () const
+	
+	\brief	Converts this vector to another base type. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\return	The new vector.
+	**/
 	template <typename TNewType>
-	vec3Base<TNewType> Convert ()
+	vec3Base<TNewType> Convert () const
 	{
 		return vec3Base<TNewType> (X, Y, Z);
 	}
 
-	// Convert to another type based off vec3Base
+	/**
+	\fn	template <typename TNewType> TNewType ConvertDerived () const
+	
+	\brief	Convert this vector to a derived type. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\return	The new vector. 
+	**/
 	template <typename TNewType>
-	TNewType ConvertDerived ()
+	TNewType ConvertDerived () const
 	{
 		return TNewType (X, Y, Z);
 	}
@@ -261,68 +165,155 @@ public:
 	/**
 	 * Operators
 	 */
-	inline bool operator !=(const vec3Base &Vec) { return (X != Vec[0] || Y != Vec[1] || Z != Vec[2]); }
-
-	inline bool operator ==(const vec3Base &Vec) { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
-
-	inline const TType &operator [](const sint32 Index) const { return (&X)[Index]; }
-	inline TType &operator [](const sint32 Index) { return (&X)[Index]; }
-
-	inline operator TType *() { return (&X); }
-	inline operator const TType *() const { return (&X); }
+	/**
+	\fn	inline bool operator!= (const vec3Base &Vec) const
+	
+	\brief	Inequality operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector. 
+	
+	\return	true if the parameters are not considered equivalent. 
+	**/
+	inline bool operator != (const vec3Base &Vec) const
+	{
+		return (X != Vec[0] || Y != Vec[1] || Z != Vec[2]);
+	}
 
 	/**
-	 * Functions
-	 */
-	inline bool Compare(const vec3Base &Vec) const { return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]); }
+	\fn	inline bool operator== (const vec3Base &Vec) const
+	
+	\brief	Equality operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector. 
+	
+	\return	true if the parameters are considered equivalent. 
+	**/
+	inline bool operator == (const vec3Base &Vec) const
+	{
+		return (X == Vec[0] && Y == Vec[1] && Z == Vec[2]);
+	}
 
-	inline void Copy(const vec3Base &Vec) { X = Vec[0]; Y = Vec[1]; Z = Vec[2]; }
-
-	inline void Invert() { X = -X; Y = -Y; Z = -Z; }
-	inline vec3Base GetInverted() const { return vec3Base(-X, -Y, -Z); }
-
-	inline bool IsZero() const { return (X == 0 && Y == 0 && Z == 0); }
-
-	inline void Set(const TType Number) { X = Number; Y = Number; Z = Number; }
-	inline void Set(const TType InX, const TType InY, const TType InZ) { X = InX; Y = InY; Z = InZ; }
-	inline void Set(const vec3Base &Vec) { X = Vec[0]; Y = Vec[1]; Z = Vec[2]; }
-};
-
-/*
-==============================================================================
-
-	vec3f
- 
-==============================================================================
-*/
-
-class  vec3f : public vec3Base<float>
-{
-public:
 	/**
-	 * Constructors
-	 */
-	vec3f() {}
-	inline vec3f(const vec3f &Vec) : vec3Base<float>(Vec) {}
-	inline vec3f(const float Value) : vec3Base<float>(Value) {}
-	inline vec3f(const float Values[3]) : vec3Base<float>(Values) {}
-	inline vec3f(const float InX, const float InY, const float InZ) : vec3Base<float>(InX, InY, InZ) {}
+	\fn	inline TType &operator[] (const sint32 Index) const
+	
+	\brief	[] casting operator. 
+			For old-style operations and looping.
+			0 is X, 1 is Y and 2 is Z.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Index	Zero-based index of the vector. 
+	
+	\return	TType of the index wanted. 
+	**/
+	inline TType &operator [] (const sint32 Index)
+	{
+		return (&X)[Index];
+	}
+
+	/**
+	\fn	inline operator TType *() const
+	
+	\brief	Pointer conversion. 
+	
+	\author	Paril
+	\date	27/05/2010
+	**/
+	inline operator TType *()
+	{
+		return (&X);
+	}
+
+	/**
+	\fn	inline operator const TType *() const
+	
+	\brief	Const pointer conversion.
+	
+	\return	. 
+	**/
+	inline operator const TType *() const
+	{
+		return (&X);
+	}
 
 	/**
 	 * Operators
 	 */
-	inline vec3f operator *(const vec3f &Vec) const { return vec3f(X*Vec[0], Y*Vec[1], Z*Vec[2]); }
-	inline vec3f operator *(const float Scale) const { return vec3f(X*Scale, Y*Scale, Z*Scale); }
-
-	inline vec3f &operator *=(const vec3f &Vec)
+	/**
+	\fn	inline vec3Base operator* (const vec3Base &Vec) const
+	
+	\brief	Muliplication operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to multiply this vector by. 
+	
+	\return	The new vector. 
+	**/
+	inline vec3Base operator * (const vec3Base &Vec) const
 	{
-		X *= Vec[0];
-		Y *= Vec[1];
-		Z *= Vec[2];
+		return vec3Base(X * Vec.X, Y * Vec.Y, Z * Vec.Z);
+	}
+
+	/**
+	\fn	inline vec3Base operator* (const TType Scale) const
+	
+	\brief	Muliplication operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Scale	The scale to scale this vector by. 
+	
+	\return	This vector, scaled by 'Scale'
+	**/
+	inline vec3Base operator * (const TType Scale) const
+	{
+		return vec3Base(X * Scale, Y * Scale, Z * Scale);
+	}
+
+	/**
+	\fn	inline vec3Base &operator*= (const vec3Base &Vec)
+	
+	\brief	Assignment by muliplication operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to multiply by. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator *= (const vec3Base &Vec)
+	{
+		X *= Vec.X;
+		Y *= Vec.Y;
+		Z *= Vec.Z;
 
 		return *this;
 	}
-	inline vec3f &operator *=(const float Scale)
+
+	/**
+	\fn	inline vec3Base &operator*= (const TType Scale)
+	
+	\brief	Assignment by muliplication operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Scale	The scale to multiply by. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator *= (const TType Scale)
 	{
 		X *= Scale;
 		Y *= Scale;
@@ -331,44 +322,153 @@ public:
 		return *this;
 	}
 
-	inline vec3f operator +(const vec3f &Vec) const { return vec3f(X+Vec[0], Y+Vec[1], Z+Vec[2]); }
-	inline vec3f &operator +=(const vec3f &Vec)
+	/**
+	\fn	inline vec3Base operator+ (const vec3Base &Vec) const
+	
+	\brief	Addition operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to add to this vector. 
+	
+	\return	The result of the operation. 
+	**/
+	inline vec3Base operator + (const vec3Base &Vec) const
 	{
-		X += Vec[0];
-		Y += Vec[1];
-		Z += Vec[2];
+		return vec3Base(X + Vec.X, Y + Vec.Y, Z + Vec.Z);
+	}
+
+	/**
+	\fn	inline vec3Base &operator+= (const vec3Base &Vec)
+	
+	\brief	Assignment by addition operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to add to this vector. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator += (const vec3Base &Vec)
+	{
+		X += Vec.X;
+		Y += Vec.Y;
+		Z += Vec.Z;
 
 		return *this;
 	}
 
-	inline vec3f operator -(const vec3f &Vec) const { return vec3f(X-Vec[0], Y-Vec[1], Z-Vec[2]); }
-	inline vec3f &operator -=(const vec3f &Vec)
+	/**
+	\fn	inline vec3Base operator- (const vec3Base &Vec) const
+	
+	\brief	Negation operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to subtract from this vector. 
+	
+	\return	The result of the operation. 
+	**/
+	inline vec3Base operator - (const vec3Base &Vec) const
 	{
-		X -= Vec[0];
-		Y -= Vec[1];
-		Z -= Vec[2];
+		return vec3Base(X - Vec.X, Y - Vec.Y, Z - Vec.Z);
+	}
+
+	/**
+	\fn	inline vec3Base &operator-= (const vec3Base &Vec)
+	
+	\brief	Assignment by subtraction operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to subtract from this vector. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator -= (const vec3Base &Vec)
+	{
+		X -= Vec.X;
+		Y -= Vec.Y;
+		Z -= Vec.Z;
 
 		return *this;
 	}
 
-	inline vec3f operator /(const vec3f &Vec) const { return vec3f(X/Vec[0], Y/Vec[1], Z/Vec[2]); }
-	inline vec3f operator /(const float Number) const
+	/**
+	\fn	inline vec3Base operator/ (const vec3Base &Vec) const
+	
+	\brief	Division operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to multiply this vector by. 
+	
+	\return	The result of the operation. 
+	**/
+	inline vec3Base operator / (const vec3Base &Vec) const
 	{
-		const float InvNumber = 1.0f / Number;
-		return vec3f(X*InvNumber, Y*InvNumber, Z*InvNumber);
+		return vec3Base(X / Vec.X, Y / Vec.Y, Z / Vec.Z);
 	}
 
-	inline vec3f &operator /=(const vec3f &Vec)
+	/**
+	\fn	inline vec3Base operator/ (const TType Number) const
+	
+	\brief	Division operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Number	Value to divide by. 
+	
+	\return	The result of the operation. 
+	**/
+	inline vec3Base operator / (const TType Number) const
 	{
-		X /= Vec[0];
-		Y /= Vec[1];
-		Z /= Vec[2];
+		const TType InvNumber = 1.0f / (float)Number;
+		return vec3Base(X * InvNumber, Y * InvNumber, Z * InvNumber);
+	}
+
+	/**
+	\fn	inline vec3Base &operator/= (const vec3Base &Vec)
+	
+	\brief	Assignment by division operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to divide this vector by. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator /= (const vec3Base &Vec)
+	{
+		X /= Vec.X;
+		Y /= Vec.Y;
+		Z /= Vec.Z;
 
 		return *this;
 	}
-	inline vec3f &operator /=(const float Number)
+
+	/**
+	\fn	inline vec3Base &operator/= (const TType Number)
+	
+	\brief	Assignment by division operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Number	Number to divide this vector by. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator /= (const TType Number)
 	{
-		const float InvNumber = 1.0f / Number;
+		const float InvNumber = 1.0f / (float)Number;
 
 		X *= InvNumber;
 		Y *= InvNumber;
@@ -377,118 +477,628 @@ public:
 		return *this;
 	}
 
-	inline bool operator <(const vec3f &Vec) const { return (X < Vec[0] && Y < Vec[1] && Z < Vec[2]); }
-	inline bool operator <(const float Number) const { return (X < Number && Y < Number && Z < Number); }
-
-	inline vec3f &operator =(const vec3f &Vec)
+	/**
+	\fn	inline bool operator < (const vec3Base &Vec) const
+	
+	\brief	Less than operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	Vector to compare this vector to 
+	
+	\return	True if this vector's values are less than 'Vec'. 
+	**/
+	inline bool operator < (const vec3Base &Vec) const
 	{
-		X = Vec[0];
-		Y = Vec[1];
-		Z = Vec[2];
+		return (X < Vec.X && Y < Vec.Y && Z < Vec.Z);
+	}
+
+	/**
+	\fn	inline bool operator < (const TType Number) const
+	
+	\brief	Less than operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Number	Number to compare this vector to 
+	
+	\return	True if this vector's values are less than 'Number'. 
+	**/
+	inline bool operator < (const TType Number) const
+	{
+		return (X < Number && Y < Number && Z < Number);
+	}
+
+	/**
+	\fn	inline vec3Base &operator= (const vec3Base &Vec)
+	
+	\brief	Copy operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector that this vector will be set to. 
+	
+	\return	A reference of this object. 
+	**/
+	inline vec3Base &operator = (const vec3Base &Vec)
+	{
+		X = Vec.X;
+		Y = Vec.Y;
+		Z = Vec.Z;
 
 		return *this;
 	}
 
-	inline bool operator >(const vec3f &Vec) const { return (X > Vec[0] && Y > Vec[1] && Z > Vec[2]); }
-	inline bool operator >(const float Number) const { return (X > Number && Y > Number && Z > Number); }
+	/**
+	\fn	inline bool operator > (const vec3Base &Vec) const
+	
+	\brief	Less than operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	Vector to compare this vector to 
+	
+	\return	True if this vector's values are greater than than 'Vec'. 
+	**/
+	inline bool operator > (const vec3Base &Vec) const
+	{
+		return (X > Vec.X && Y > Vec.Y && Z > Vec.Z);
+	}
+	
+	/**
+	\fn	inline bool operator > (const TType Number) const
+	
+	\brief	Less than operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Number	Number to compare this vector to 
+	
+	\return	True if this vector's values are less than 'Number'. 
+	**/
+	inline bool operator > (const TType Number) const
+	{
+		return (X > Number && Y > Number && Z > Number);
+	}
 
-	inline vec3f operator ^(const vec3f &Vec) const { return Cross(Vec); }
-	inline float operator |(const vec3f &Vec) const { return Dot(Vec); }
+	/**
+	\fn	inline bool operator <= (const vec3Base &Vec) const
+	
+	\brief	Less than or equals operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	Vector to compare this vector to 
+	
+	\return	True if this vector's values are less than or equal to 'Vec'. 
+	**/
+	inline bool operator <= (const vec3Base &Vec) const
+	{
+		return (*this < Vec || *this == Vec);
+	}
 
-	// Paril, unary operators
-	inline vec3f operator - () const { return vec3f(-X, -Y, -Z); }
+	/**
+	\fn	inline bool operator >= (const vec3Base &Vec) const
+	
+	\brief	Greater than or equals operator. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	Vector to compare this vector to 
+	
+	\return	True if this vector's values are greater than or equal to 'Vec'. 
+	**/
+	inline bool operator >= (const vec3Base &Vec) const
+	{
+		return (*this > Vec || *this == Vec);
+	}
+
+	/**
+	\fn	inline vec3Base operator^ (const vec3Base &Vec) const
+	
+	\brief	Bitwise 'exclusive or' operator.
+			Used for cross-product.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to calculate cross product with. 
+	
+	\return	The result of the operation. 
+	**/
+	inline vec3Base operator ^ (const vec3Base &Vec) const
+	{
+		return Cross (Vec);
+	}
+
+	/**
+	\fn	inline float operator| (const vec3Base &Vec) const
+	
+	\brief	Bitwise 'or' operator.
+			Used for dot-product.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The second vector in dot product operation. 
+	
+	\return	The result of the operation. 
+	**/
+	inline float operator | (const vec3Base &Vec) const
+	{
+		return Dot (Vec);
+	}
+
+	/**
+	\fn	inline vec3Base operator- () const
+	
+	\brief	Inversion operator.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\return	The negative of this vector.. 
+	**/
+	inline vec3Base operator - () const
+	{
+		return vec3Base(-X, -Y, -Z);
+	}
 
 	/**
 	 * Functions
 	 */
-	inline void Clear() { *(sint32 *)&X = 0; *(sint32 *)&Y = 0; *(sint32 *)&Z = 0; }
-	
-	inline void Abs() { X = Q_fabs(X); Y = Q_fabs(Y); Z = Q_fabs(Z); }
-	inline vec3f GetAbs() const { return vec3f(Q_fabs(X), Q_fabs(Y), Q_fabs(Z)); }
 
-	bool Compare(const vec3f &Vec, const float Epsilon) const
+	/**
+	\fn	inline void Clear()
+	
+	\brief	Clears this object to its blank/initial state. 
+	**/
+	inline void Clear()
 	{
-		if (Q_fabs(X-Vec[0]) > Epsilon)
-			return false;
-		if (Q_fabs(Y-Vec[1]) > Epsilon)
-			return false;
-		if (Q_fabs(Z-Vec[2]) > Epsilon)
+		X = Y = Z = 0;
+	}
+
+	/**
+	\fn	inline bool Compare (const vec3Base &Vec) const
+	
+	\brief	Compares this const vec3Base & object to another.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The constant vector to compare to this object. 
+	
+	\return	True if they are equal, false if they are not. 
+	**/
+	inline bool Compare (const vec3Base &Vec) const
+	{
+		return (X == Vec.X && Y == Vec.Y && Z == Vec.Z);
+	}
+
+	/**
+	\fn	inline void Copy (const vec3Base &Vec)
+	
+	\brief	Copies the given Vec to this one.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector. 
+	**/
+	inline void Copy (const vec3Base &Vec)
+	{
+		Set (Vec);
+	}
+
+	/**
+	\fn	inline void Invert ()
+	
+	\brief	Inverts this object. 
+	**/
+	inline void Invert ()
+	{
+		X = -X;
+		Y = -Y;
+		Z = -Z;
+	}
+
+	/**
+	\fn	inline vec3Base GetInverted () const
+	
+	\brief	Gets the inverted vector.
+	
+	\return	The inverted vector. 
+	**/
+	inline vec3Base GetInverted () const
+	{
+		return vec3Base(-X, -Y, -Z);
+	}
+
+	/**
+	\fn	inline bool IsZero () const
+	
+	\brief	Query if this object is zero. 
+	
+	\return	true if zero, false if not. 
+	**/
+	inline bool IsZero () const
+	{
+		return (X == 0 && Y == 0 && Z == 0);
+	}
+
+	/**
+	\fn	inline void Set (const TType Number)
+	
+	\brief	Sets the vector's values to 'Number'
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Number	Number to set vector's values to. 
+	**/
+	inline void Set (const TType Number)
+	{
+		X = Y = Z = Number;
+	}
+
+	/**
+	\fn	inline void Set (const TType InX, const TType InY, const TType InZ)
+	
+	\brief	Sets the vector's values to 'InX', 'InY', and 'InZ'
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	InX	The x coordinate. 
+	\param	InY	The y coordinate. 
+	\param	InZ	The z coordinate. 
+	**/
+	inline void Set (const TType InX, const TType InY, const TType InZ)
+	{
+		X = InX;
+		Y = InY;
+		Z = InZ;
+	}
+
+	/**
+	\fn	inline void Set (const vec3Base &Vec)
+	
+	\brief	Sets this vector to the values of 'Vec'. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The source vector. 
+	**/
+	inline void Set (const vec3Base &Vec)
+	{
+		X = Vec[0];
+		Y = Vec[1];
+		Z = Vec[2];
+	}
+
+	/**
+	\fn	bool Compare(const vec3Base &Vec, const TType Epsilon) const
+	
+	\brief	Compares two vectors using an Epsilon, for floating point values.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec		Constant vector 3 base & to be compared. 
+	\param	Epsilon	Constant t type to be compared. 
+	
+	\return	True if the vectors are the same (using an epsilon), otherwise false.
+	**/
+	bool Compare(const vec3Base &Vec, const TType Epsilon) const
+	{
+		if (Q_fabs(X - Vec[0]) > Epsilon ||
+			Q_fabs(Y - Vec[1]) > Epsilon ||
+			Q_fabs(Z - Vec[2]) > Epsilon)
 			return false;
 		return true;
 	}
 
-	bool Inside (const vec3f Min, const vec3f Max) const
+	/**
+	\fn	bool Inside (const vec3Base Min, const vec3Base Max) const
+	
+	\brief	Queries if this vector is inside the bounds of 'Min' and 'Max'
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Min	The min bounds. 
+	\param	Max	The max bounds. 
+	
+	\return	true if they are inside, false if it fails. 
+	**/
+	bool Inside (const vec3Base Min, const vec3Base Max) const
 	{
 		return ((*this > Min) && (*this < Max));
 	}
 
-	inline vec3f Cross(const vec3f &Vec) const { return vec3f(Y*Vec[2] - Z*Vec[1], Z*Vec[0] - X*Vec[2], X*Vec[1] - Y*Vec[0]); }
+	/**
+	\fn	inline float Dot (const vec3Base &Vec) const
+	
+	\brief	Calculates the dot product of this vector and 'Vec'
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The second vector. 
+	
+	\return	The dot product. 
+	**/
+	inline float Dot (const vec3Base &Vec) const
+	{
+		return X * Vec.X + Y * Vec.Y + Z * Vec.Z;
+	}
 
-	inline float Dist(const vec3f &Vec) const { return sqrtf((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
-	inline float DistFast(const vec3f &Vec) const { return Q_FastSqrt((X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2])); }
-	inline float DistSq(const vec3f &Vec) const { return (X-Vec[0])*(X-Vec[0])+(Y-Vec[1])*(Y-Vec[1])+(Z-Vec[2])*(Z-Vec[2]); }
+	/**
+	\fn	inline vec3Base Cross (const vec3Base &Vec) const
+	
+	\brief	Calculates the cross product of this vector and Vec. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The second vector. 
+	
+	\return	The cross product. 
+	**/
+	inline vec3Base Cross (const vec3Base &Vec) const
+	{
+		return vec3Base(Y * Vec.Z - Z * Vec.Y, Z * Vec.X - X * Vec.Z, X * Vec.Y - Y * Vec.X);
+	}
 
-	inline float Dot(const vec3f &Vec) const { return X*Vec.X + Y*Vec.Y + Z*Vec.Z; }
+	/**
+	\fn	inline float Dist (const vec3Base &Vec) const
+	
+	\brief	Gets the distance between this vector and 'Vec'.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to calculate the distance to. 
+	
+	\return	The distance between this vector and 'Vec'. 
+	**/
+	inline float Dist (const vec3Base &Vec) const
+	{
+		return sqrtf ((X - Vec.X) * (X - Vec.X) + (Y - Vec.Y) * (Y - Vec.Y) + (Z - Vec.Z) * (Z - Vec.Z));
+	}
 
-	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) const { return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon); }
+	/**
+	\fn	inline float DistFast (const vec3Base &Vec) const
+	
+	\brief	Gets the distance (fast) between this vector and 'Vec'.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to calculate the distance to. 
+	
+	\return	The distance between this vector and 'Vec'. 
+	**/
+	inline float DistFast (const vec3Base &Vec) const
+	{
+		return Q_FastSqrt ((X - Vec.X) * (X - Vec.X) + (Y - Vec.Y) * (Y - Vec.Y) + (Z - Vec.Z) * (Z - Vec.Z));
+	}
 
-	inline float Length() const { return sqrtf(X*X + Y*Y + Z*Z); }
-	inline float LengthFast() const { return Q_FastSqrt(X*X + Y*Y + Z*Z); }
-	inline float LengthSq() const { return X*X + Y*Y + Z*Z; }
+	/**
+	\fn	inline float DistSq (const vec3Base &Vec) const
+	
+	\brief	Gets the squared distance between this vector and 'Vec'.
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Vec	The vector to calculate the distance to. 
+	
+	\return	The squared distance between this vector and 'Vec'. 
+	**/
+	inline float DistSq (const vec3Base &Vec) const
+	{
+		return (X - Vec.X) * (X - Vec.X) + (Y - Vec.Y) * (Y - Vec.Y) + (Z - Vec.Z) * (Z - Vec.Z);
+	}
 
+	/**
+	\fn	inline float Length() const
+	
+	\brief	Gets the length of this vector.
+	
+	\return	The length of this vector. 
+	**/
+	inline float Length() const
+	{
+		return sqrtf (X * X + Y * Y + Z * Z);
+	}
+	
+	/**
+	\fn	inline float LengthFast() const
+	
+	\brief	Gets the length (fast) of this vector.
+	
+	\return	The length (fast) of this vector. 
+	**/
+	inline float LengthFast() const
+	{
+		return Q_FastSqrt (X * X + Y * Y + Z * Z);
+	}
+	
+	/**
+	\fn	inline float LengthSq() const
+	
+	\brief	Gets the squared length of this vector.
+	
+	\return	The squared length of this vector. 
+	**/
+	inline float LengthSq() const
+	{
+		return X * X + Y * Y + Z * Z;
+	}
+
+	/**
+	\fn	inline void Abs()
+	
+	\brief	Sets this vector to it's absolute value. 
+	**/
+	inline void Abs()
+	{
+		X = Q_fabs(X);
+		Y = Q_fabs(Y);
+		Z = Q_fabs(Z);
+	}
+	
+	/**
+	\fn	inline vec3Base GetAbs() const
+	
+	\brief	Returns the absolute value of this vector.
+	
+	\return	The abs. 
+	**/
+	inline vec3Base GetAbs() const
+	{
+		return vec3Base(Q_fabs(X), Q_fabs(Y), Q_fabs(Z));
+	}
+
+	/**
+	\fn	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) const
+	
+	\brief	Query if this vector is nearly zero (using 'Epsilon).
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Epsilon	The epsilon. 
+	
+	\return	true if nearly zero, false if not. 
+	**/
+	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) const
+	{
+		return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon);
+	}
+
+	/**
+	\fn	float Normalize()
+	
+	\brief	Normalizes this vector.
+	
+	\return	The length of this vector. 
+	**/
 	float Normalize()
 	{
 		float Len = Length();
 
 		if (Len)
-			Scale(1.0f / Len);
+			*this *= (1.0f / Len);
 		else
 			Clear();
 
 		return Len;
 	}
+
+	/**
+	\fn	float NormalizeFast()
+	
+	\brief	Normalize this vector (fast). 
+	
+	\return	The length of this vector. 
+	**/
 	float NormalizeFast()
 	{
 		float Len = Q_RSqrtf(Dot(*this));
-		Scale (Len);
+		*this *= Len;
 		return (Len) ? (1.0f / Len) : 0;
 	}
 
-	inline vec3f const GetNormalized ()
+	/**
+	\fn	inline vec3Base const GetNormalized ()
+	
+	\brief	Gets the normalized vector. 
+	
+	\return	The normalized vector. 
+	**/
+	inline vec3Base const GetNormalized ()
 	{
-		vec3f val (*this);
+		vec3Base val (*this);
 		val.Normalize ();
 		return val;
 	}
 
-	inline vec3f const GetNormalizedFast ()
+	/**
+	\fn	inline vec3Base const GetNormalized (float &length)
+	
+	\brief	Gets the normalized vector and fills 'length' with the length
+			of the vector. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param [in,out]	length	The length. 
+	
+	\return	The normalized vector. 
+	**/
+	inline vec3Base const GetNormalized (float &length)
 	{
-		vec3f val (*this);
-		val.NormalizeFast ();
-		return val;
-	}
-
-	inline vec3f const GetNormalized (float &length)
-	{
-		vec3f val (*this);
+		vec3Base val (*this);
 		length = val.Normalize ();
 		return val;
 	}
 
-	inline vec3f const GetNormalizedFast (float &length)
+	/**
+	\fn	inline vec3Base const GetNormalizedFast ()
+	
+	\brief	Gets the normalized vector (fast). 
+	
+	\return	The normalized vector. 
+	**/
+	inline vec3Base const GetNormalizedFast ()
 	{
-		vec3f val (*this);
+		vec3Base val (*this);
+		val.NormalizeFast ();
+		return val;
+	}
+
+	/**
+	\fn	inline vec3Base const GetNormalizedFast (float &length)
+	
+	\brief	Gets a normalized vector (fast) with length storage. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param [in,out]	length	The length. 
+	
+	\return	The normalized vector. 
+	**/
+	inline vec3Base const GetNormalizedFast (float &length)
+	{
+		vec3Base val (*this);
 		length = val.NormalizeFast ();
 		return val;
 	}
 
+	/**
+	\fn	float ToYaw () const
+	
+	\brief	Converts this vector to yaw. 
+	
+	\return	This vector expressed as yaw. 
+	**/
 	float ToYaw () const
 	{
-		float	yaw;
+		float	yaw = 0;
 
 		if (X == 0)
 		{
-			yaw = 0;
 			if (Y > 0)
 				yaw = 90;
 			else if (Y < 0)
@@ -504,10 +1114,19 @@ public:
 		return yaw;
 	}
 
-	inline void Scale(const float Scale) { X *= Scale; Y *= Scale; Z *= Scale; }
-	inline void Scale(const vec3f &Vec) { X *= Vec[0]; Y *= Vec[1]; Z *= Vec[2]; }
-
-	void ToVectors (vec3f *forward, vec3f *right, vec3f *up) const
+	/**
+	\fn	void ToVectors (vec3Base *forward, vec3Base *right, vec3Base *up) const
+	
+	\brief	Converts this angle to three separate vectors. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param [in,out]	forward	If non-null, the forward vector address. 
+	\param [in,out]	right	If non-null, the right vector addres. 
+	\param [in,out]	up		If non-null, the up vector address. 
+	**/
+	void ToVectors (vec3Base *forward, vec3Base *right, vec3Base *up) const
 	{
 		float sr, sp, sy, cr, cp, cy;
 		Q_SinCosf(DEG2RAD (X), &sp, &cp);
@@ -526,29 +1145,46 @@ public:
 						cr * cp);
 	};
 
-	inline vec3f MultiplyAngles (const float scale, const vec3f &b) const
+	/**
+	\fn	inline vec3Base MultiplyAngles (const float scale, const vec3Base &b) const
+	
+	\brief	Projects this vector in 'b' direction by 'scale' inits. 
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	scale	The scale. 
+	\param	b		The direction. 
+	
+	\return	. 
+	**/
+	inline vec3Base MultiplyAngles (const float scale, const vec3Base &b) const
 	{
-		return vec3f(	X + b.X * scale,
+		return vec3Base(	X + b.X * scale,
 						Y + b.Y * scale,
 						Z + b.Z * scale);
 	}
 
-	vec3f ToAngles () const
+	/**
+	\fn	vec3Base ToAngles () const
+	
+	\brief	Converts this vector to angles. 
+	
+	\return	This vector as euler angles. 
+	**/
+	vec3Base ToAngles () const
 	{
-		float	yaw, pitch;
+		float	yaw = 0, pitch = 270;
 		
 		if (Y == 0 && X == 0)
 		{
-			yaw = 0;
 			if (Z > 0)
 				pitch = 90;
-			else
-				pitch = 270;
 		}
 		else
 		{
 			if (X)
-				yaw = atan2f(Y, X) * (180.0f / M_PI);
+				yaw = atan2f (Y, X) * (180.0f / M_PI);
 			else if (Y > 0)
 				yaw = 90;
 			else
@@ -557,95 +1193,58 @@ public:
 			if (yaw < 0)
 				yaw += 360;
 
-			pitch = atan2f(Z, sqrtf(X * X + Y * Y)) * (180.0f / M_PI);
+			pitch = atan2f (Z, sqrtf (X * X + Y * Y)) * (180.0f / M_PI);
 			if (pitch < 0)
 				pitch += 360;
 		}
 
-		return vec3f (-pitch, yaw, 0);
+		return vec3Base (-pitch, yaw, 0);
 	}
-
-	// "this" is forward
-	void MakeNormalVectors (vec3f &right, vec3f &up) const
-	{
-		// This rotate and negate guarantees a vector not colinear with the original
-		right = vec3f(Z, -X, Y).MultiplyAngles (-(right | *this), *this).GetNormalized();
-		up = right ^ *this;
-	};
-
-	void ProjectOnPlane (const vec3f &point, const vec3f &normal);
-
-	/*
-	===============
-	PerpendicularVector
-	Assumes "src" is normalized
-	===============
-	*/
-	void PerpendicularVector(vec3f &dst) const
-	{
-		uint8	pos = 5;
-		float	minElem = 1.0f;
-		vec3f	tempVec;
-
-		// Find the smallest magnitude axially aligned vector
-		for (uint8 i = 0; i < 3; ++i)
-		{
-			if (Q_fabs(*this[i]) < minElem)
-			{
-				pos = i;
-				minElem = Q_fabs(*this[i]);
-			}
-		}
-
-		CC_ASSERT_EXPR(pos != 5, "Couldn't find smallest magnitude");
-
-		if (pos < 3)
-			tempVec[pos] = 1.0f;
-
-		// Project the point onto the plane defined by src
-		dst.ProjectOnPlane(tempVec, *this);
-
-		// Normalize the result
-		dst.Normalize();
-	};
-
-	/*
-	===============
-	RotatePointAroundVector
-	===============
-	*/
-	void RotateAroundVector(vec3f &dest, const vec3f &dir, const float degrees) const
-	{
-		float c, s;
-		Q_SinCosf(DEG2RAD(degrees), &s, &c);
-
-		vec3f vr, vu;
-		dir.MakeNormalVectors (vr, vu);
-
-		float t0, t1;
-		t0 = vr.X * c + vu.X * -s;
-		t1 = vr.X * s + vu.X *  c;
-		dest.X = (t0 * vr.X + t1 * vu.X + dir.X * dir.X) * X
-				+ (t0 * vr.Y + t1 * vu.Y + dir.X * dir.Y) * Y
-				+ (t0 * vr.Z + t1 * vu.Z + dir.X * dir.Z) * Z;
-
-		t0 = vr.Y * c + vu.Y * -s;
-		t1 = vr.Y * s + vu.Y *  c;
-		dest.Y = (t0 * vr.X + t1 * vu.X + dir.Y * dir.X) * X
-				+ (t0 * vr.Y + t1 * vu.Y + dir.Y * dir.Y) * Y
-				+ (t0 * vr.Z + t1 * vu.Z + dir.Y * dir.Z) * Z;
-
-		t0 = vr.Z * c + vu.Z * -s;
-		t1 = vr.Z * s + vu.Z *  c;
-		dest.Z = (t0 * vr.X + t1 * vu.X + dir.Z * dir.X) * X
-				+ (t0 * vr.Y + t1 * vu.Y + dir.Z * dir.Y) * Y
-				+ (t0 * vr.Z + t1 * vu.Z + dir.Z * dir.Z) * Z;
-	}
-
 };
 
-// Global vector operations
+/*
+==============================================================================
+
+	vec3f
+ 
+==============================================================================
+*/
+
+/**
+\typedef	vec3Base<float> vec3f
+
+\brief	Defines an alias representing a 3d float vector.
+**/
+typedef vec3Base<float> vec3f;
+
+/**
+\fn	inline vec3f operator* (const float &l, const vec3f &r)
+
+\brief	Muliplication operator. 
+
+\author	Paril
+\date	27/05/2010
+
+\param	l	The scale value. 
+\param	r	The vector to be scaled. 
+
+\return	The result of the operation. 
+**/
 inline vec3f operator * (const float &l, const vec3f &r)
 {
 	return (r * l);
 };
+
+/**
+\page Utilities
+\section Vectors
+
+CleanCode includes several classes to replace
+the original methods in Quake II. One of them is vectors.
+The vec3f class is included as a replacement for the original
+C-style method of using vectors.
+
+vec3f is much easier to use than original vectors; operators
+such as +, / and * work on them, and there are functions included
+all to replace the originals.
+**/

@@ -66,7 +66,7 @@ bool CMachinegun::CanStopFidgetting (CPlayerEntity *Player)
 void CMachinegun::FireAnimation (CPlayerEntity *Player)
 {
 	Player->Client.Anim.Priority = ANIM_ATTACK;
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->State.GetFrame() = (FRAME_crattak1 - (sint32) (frand()+0.25));
 		Player->Client.Anim.EndFrame = FRAME_crattak9;

@@ -89,7 +89,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static void Spawn	(IBaseEntity *Spawner, vec3f Start, vec3f Dir,
 						sint32 Damage, sint32 Kick, sint32 Speed);
@@ -132,9 +132,9 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
-	void Explode (plane_t *plane);
+	void Explode (SBSPPlane *plane);
 
 	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, IBaseEntity *enemy);
@@ -171,7 +171,7 @@ public:
 	}
 
 	void Think ();
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 						sint32 Damage, sint32 speed, sint32 effect);
@@ -184,10 +184,10 @@ class CBadArea
 public:
 	vec3f			AbsMin, AbsMax, Origin, Mins, Maxs;
 	IBaseEntity		*Owner;
-	FrameNumber_t	Lifespan;
+	FrameNumber	Lifespan;
 	bool			Remove;
 
-	CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber_t Lifespan, IBaseEntity *Owner);
+	CBadArea (vec3f AbsMin, vec3f AbsMax, FrameNumber Lifespan, IBaseEntity *Owner);
 	CBadArea () : Remove(false) { };
 
 	void Save (CFile &File)
@@ -198,7 +198,7 @@ public:
 		File.Write<vec3f> (Mins);
 		File.Write<vec3f> (Maxs);
 		WriteEntity (File, Owner);
-		File.Write<FrameNumber_t> (Lifespan);
+		File.Write<FrameNumber> (Lifespan);
 	}
 
 	CBadArea (CFile &File)
@@ -209,7 +209,7 @@ public:
 		Mins = File.Read<vec3f> ();
 		Maxs = File.Read<vec3f> ();
 		Owner = ReadEntity (File);
-		Lifespan = File.Read<FrameNumber_t> ();
+		Lifespan = File.Read<FrameNumber> ();
 	}
 
 	void Run ();
@@ -243,7 +243,7 @@ public:
 	CPlayerEntity		*Firer;
 	bool				DoExplosion;
 	int					Damage;
-	FrameNumber_t		RemoveTime;
+	FrameNumber		RemoveTime;
 	CBadArea			*BadArea;
 
 	CTesla ();
@@ -266,7 +266,7 @@ public:
 	void DoneActivate ();
 	void Activate ();
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void Think ();
 

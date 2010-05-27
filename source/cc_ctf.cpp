@@ -434,8 +434,8 @@ void CCTFTeamCommand::operator () ()
 		// add a teleportation effect
 		Player->State.GetEvent() = EV_PLAYER_TELEPORT;
 		// hold in place briefly
-		Player->Client.PlayerState.GetPMove()->pmFlags = PMF_TIME_TELEPORT;
-		Player->Client.PlayerState.GetPMove()->pmTime = 14;
+		Player->Client.PlayerState.GetPMove()->PMoveFlags = PMF_TIME_TELEPORT;
+		Player->Client.PlayerState.GetPMove()->PMoveTime = 14;
 		BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
 			Player->Client.Persistent.Name.c_str(), CTFTeamName(desired_team));
 		return;
@@ -1018,7 +1018,7 @@ void CTFStartMatch()
 			Player->Flags &= ~FL_GODMODE;
 
 			Player->Client.Timers.RespawnTime = Level.Frame + 10 + irandom(3);
-			Player->Client.PlayerState.GetPMove()->pmType = PMT_DEAD;
+			Player->Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 			Player->Client.Anim.Priority = ANIM_DEATH;
 			Player->State.GetFrame() = FRAME_death308 - 1;
 			Player->Client.Anim.EndFrame = FRAME_death308;

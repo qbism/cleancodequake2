@@ -35,7 +35,7 @@ class CPlayerMarker
 {
 public:
 	vec3f			Origin, Angles;
-	FrameNumber_t	Timestamp;
+	FrameNumber	Timestamp;
 	CPlayerEntity	*Owner;
 
 	CPlayerMarker () {};

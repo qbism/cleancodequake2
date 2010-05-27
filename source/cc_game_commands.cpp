@@ -136,12 +136,22 @@ public:
 	};
 };
 
+/**
+\fn	bool PlayerSort (const int a, const int b)
+
+\brief	Player sort. 
+
+\author	Paril
+\date	26/05/2010
+
+\param	a	a. 
+\param	b	The. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 bool PlayerSort (const int a, const int b)
 {
-	sint32 anum = Game.Clients[a].playerState.stats[STAT_FRAGS];
-	sint32 bnum = Game.Clients[b].playerState.stats[STAT_FRAGS];
-
-	return (anum > bnum);
+	return (Game.Clients[a].PlayerState.Stats[STAT_FRAGS] > Game.Clients[b].PlayerState.Stats[STAT_FRAGS]);
 }
 
 class CPlayerListCountCallback : public CForEachPlayerCallback
@@ -190,7 +200,7 @@ public:
 				LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
 				LoopPlayer->Client.Persistent.Name.c_str());
 
-			if (Small.size() > (MAX_INFO_KEY + MAX_INFO_VALUE))
+			if (Small.size() > 128)
 			{
 				// can't print all of them in one packet
 				Large += "...\n";
@@ -215,7 +225,7 @@ public:
 	void operator () ()
 	{
 		// can't wave when ducked
-		if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+		if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 			return;
 
 		if (Player->Client.Anim.Priority > ANIM_WAVE)

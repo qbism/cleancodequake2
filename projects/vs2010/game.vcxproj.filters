@@ -147,9 +147,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\ColorVec.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\cc_arg.cpp">
       <Filter>CleanCode Files\Game API\Arg</Filter>
     </ClCompile>
@@ -496,9 +493,6 @@
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\Random.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ByteSwap.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\String.cpp">
@@ -995,12 +989,6 @@
     <ClInclude Include="..\..\source\cc_userinfo.h">
       <Filter>CleanCode Files\Userinfo</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\MathLib\MathLib.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\MathLib\Vector.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Shared.h">
       <Filter>Shared</Filter>
     </ClInclude>
@@ -1105,6 +1093,12 @@
     </ClInclude>
     <ClInclude Include="..\..\source\cc_game.h">
       <Filter>CleanCode Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\MathLib.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Vector.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -133,7 +133,7 @@ public:
 	};
 
 	ENukeThinkType		ThinkType;
-	FrameNumber_t		LastQuakeTime, QuakeTime, Wait;
+	FrameNumber		LastQuakeTime, QuakeTime, Wait;
 	MediaIndex			NoiseIndex;
 	CPlayerEntity		*ThrowerPlayer;
 	IBaseEntity			*Thrower;
@@ -164,9 +164,9 @@ public:
 		IHurtableEntity::SaveFields (File);
 
 		File.Write<ENukeThinkType> (ThinkType);
-		File.Write<FrameNumber_t> (LastQuakeTime);
-		File.Write<FrameNumber_t> (QuakeTime);
-		File.Write<FrameNumber_t> (Wait);
+		File.Write<FrameNumber> (LastQuakeTime);
+		File.Write<FrameNumber> (QuakeTime);
+		File.Write<FrameNumber> (Wait);
 		File.Write<MediaIndex> (NoiseIndex);
 		File.Write<sint32> ((ThrowerPlayer != NULL && ThrowerPlayer->GetInUse()) ? ThrowerPlayer->State.GetNumber() : -1);
 		File.Write<sint32> ((Thrower != NULL && Thrower->GetInUse()) ? Thrower->State.GetNumber() : -1);
@@ -184,9 +184,9 @@ public:
 		ThinkType = File.Read<ENukeThinkType> ();
 
 		ThinkType = File.Read<ENukeThinkType> ();
-		LastQuakeTime = File.Read<FrameNumber_t> ();
-		QuakeTime = File.Read<FrameNumber_t> ();
-		Wait = File.Read<FrameNumber_t> ();
+		LastQuakeTime = File.Read<FrameNumber> ();
+		QuakeTime = File.Read<FrameNumber> ();
+		Wait = File.Read<FrameNumber> ();
 		NoiseIndex = File.Read<MediaIndex> ();
 
 		sint32 index = File.Read<sint32>();
@@ -337,7 +337,7 @@ public:
 		};
 	}
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		PlaySound (CHAN_VOICE, SoundIndex (frand() > 0.5f ? "weapons/hgrenb1a.wav" : "weapons/hgrenb2a.wav"));
 	}
@@ -498,7 +498,7 @@ public:
 	};
 };
 
-template <class TSphereType, FrameNumber_t RespawnTime>
+template <class TSphereType, FrameNumber RespawnTime>
 class CSphereItem : public CBasePowerUp
 {
 public:

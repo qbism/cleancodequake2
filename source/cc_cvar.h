@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // this is just to make sure, because engines that don't might cause problems
 class CCvar
 {
-	cVar_t			*cVar;
+	SCVar			*cVar;
 
 	char			*mainValue;
 	float			floatVal;

@@ -573,6 +573,7 @@ bool CBanList::IsBanned (const char *Name)
 /**
 \page Ban Files
 Ban list looks as follows:
+<code>
 // Comments are ignored.
 // First token needs to be either ip or name, followed by the IP address
 // or name of the offender, respectively.
@@ -580,5 +581,6 @@ Ban list looks as follows:
 // Unknown flags are stored, but ignored by older versions.
 name Paril 1
 ip 252.6.10.6 5
+</code>
 **/
 

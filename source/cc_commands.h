@@ -28,8 +28,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_cmds.h
-// Contains a class and functions to register/remove commands parsed by ClientCommand.
+// Base class for commands
 //
+
 #if !defined(CC_GUARD_CMDS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CMDS_H
 
@@ -58,10 +59,9 @@ enum
 
 class CCommandFunctor
 {
-	// FirstArg = first argument matched (in subcommands, will always be the main command arg index)
-	// ThisArg = argument matched to this functor
-	// CurArg = argument, starting at CurArg, that can be changed with the functions below
-	uint32		FirstArg, ThisArg, CurArg;
+	uint32		FirstArg, // first argument matched (in subcommands, will always be the main command arg index)
+				ThisArg, // argument matched to this functor
+				CurArg; // rgument, starting at CurArg, that can be changed with the functions below
 
 public:
 	inline std::string GetFirstArgs () { return ArgGets(FirstArg); }

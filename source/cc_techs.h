@@ -117,7 +117,7 @@ enum
 #endif
 };
 
-const FrameNumber_t CTF_TECH_TIMEOUT			= 600;  // seconds before techs spawn again
+const FrameNumber CTF_TECH_TIMEOUT			= 600;  // seconds before techs spawn again
 
 void SetupTechSpawn ();
 void AddTechsToList ();

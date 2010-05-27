@@ -81,7 +81,7 @@ public:
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMiscExploBox)
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
 			return;
@@ -998,7 +998,7 @@ class CMiscViperBomb : public IMapEntity, public IThinkableEntity, public ITouch
 {
 public:
 	bool			PreThinkable;
-	FrameNumber_t	TimeStamp;
+	FrameNumber	TimeStamp;
 	vec3f			MoveDir;
 	sint32			Damage;
 
@@ -1059,7 +1059,7 @@ public:
 		State.GetAngles() = angles;
 	};
 
-	void Touch (IBaseEntity *Other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		UseTargets (User, Message);
 

@@ -37,13 +37,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CEntityState
 {
 private:
-	entityState_t			*state;
+	SEntityState			*state;
 
 public:
-	CEntityState			(entityState_t *state);
+	CEntityState			(SEntityState *state);
 	CEntityState			();
 
-	void Initialize (entityState_t *state);
+	void Initialize (SEntityState *state);
 
 	sint32		&GetNumber		();
 
@@ -189,7 +189,7 @@ public:
 	// Not a reference; don't let people change it.
 	sint32			GetAreaNum (bool second = false);
 
-	link_t			*GetArea ();
+	SAreaLink			*GetArea ();
 	void			ClearArea ();
 
 	sint32			GetLinkCount ();
@@ -546,7 +546,7 @@ public:
 				float Val = atof (Value);
 
 				if (FIELD_IS_VALID(NULL))
-					OFS_TO_TYPE(FrameNumber_t) = (Val != -1) ? (Val * 10) : -1;
+					OFS_TO_TYPE(FrameNumber) = (Val != -1) ? (Val * 10) : -1;
 			}
 			break;
 		case FT_ITEM:
@@ -635,7 +635,7 @@ public:
 				File.Write<sint32> (-1);
 			break;
 		case FT_FRAMENUMBER:
-			File.Write<FrameNumber_t> (OFS_TO_TYPE(FrameNumber_t));
+			File.Write<FrameNumber> (OFS_TO_TYPE(FrameNumber));
 			break;
 		case FT_ITEM:
 			{
@@ -732,7 +732,7 @@ public:
 			}
 			break;
 		case FT_FRAMENUMBER:
-			OFS_TO_TYPE(FrameNumber_t) = File.Read<FrameNumber_t> ();
+			OFS_TO_TYPE(FrameNumber) = File.Read<FrameNumber> ();
 			break;
 		case FT_ITEM:
 			{

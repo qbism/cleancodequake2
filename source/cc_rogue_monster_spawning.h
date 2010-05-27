@@ -63,7 +63,7 @@ int CountPlayers ();
 class CSpawnGrow : public IThinkableEntity
 {
 public:
-	FrameNumber_t		Wait;
+	FrameNumber		Wait;
 
 	CSpawnGrow ();
 	CSpawnGrow (sint32 Index);

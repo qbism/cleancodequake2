@@ -202,7 +202,7 @@ public:
 		if (Damage)
 			SplashDamage (User, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
-		FrameNumber_t save = Delay;
+		FrameNumber save = Delay;
 		Delay = 0;
 		UseTargets (User, Message);
 		Delay = save;
@@ -1268,7 +1268,7 @@ void CTargetLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				CSparks(tr.EndPos, tr.plane.normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
+				CSparks(tr.EndPos, tr.plane.Normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
 			}
 			break;
 		}
@@ -1520,10 +1520,10 @@ void CEarthQuakeShakePlayers::Callback (CPlayerEntity *Player)
 class CTargetEarthquake : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
-	FrameNumber_t		LastShakeTime;
-	FrameNumber_t		TimeStamp;
+	FrameNumber		LastShakeTime;
+	FrameNumber		TimeStamp;
 	float				Speed;
-	FrameNumber_t		Duration;
+	FrameNumber		Duration;
 
 	CTargetEarthquake () :
 	  IBaseEntity (),

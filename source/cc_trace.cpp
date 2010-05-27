@@ -33,16 +33,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-void CTrace::Copy (cmTrace_t tr)
+void CTrace::Copy (STrace tr)
 {
-	fraction = tr.fraction;
-	ent = tr.ent;
-	plane = tr.plane;
-	allSolid = (tr.allSolid != 0);
-	startSolid = (tr.startSolid != 0);
-	EndPos = tr.endPos;
-	surface = tr.surface;
-	contents = tr.contents;
+	fraction = tr.Fraction;
+	ent = tr.Entity;
+	plane = tr.Plane;
+	allSolid = (tr.AllSolid != 0);
+	startSolid = (tr.StartSolid != 0);
+	EndPos = tr.EndPos;
+	surface = tr.Surface;
+	contents = tr.Contents;
 
 	Ent = ent->Entity;
 };
@@ -55,37 +55,37 @@ CC_DISABLE_DEPRECATION
 
 CTrace::CTrace (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask)
 {
-	cmTrace_t temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
+	STrace temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
 CTrace::CTrace (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask)
 {
-	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
+	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
 CTrace::CTrace (vec3f start, vec3f end, sint32 contentMask)
 {
-	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
+	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
 	Copy(temp);
 }
 
 void CTrace::operator () (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask)
 {
-	cmTrace_t temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
+	STrace temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
 void CTrace::operator () (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask)
 {
-	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
+	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->gameEntity : NULL, contentMask);
 	Copy(temp);
 };
 
 void CTrace::operator () (vec3f start, vec3f end, sint32 contentMask)
 {
-	cmTrace_t temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
+	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
 	Copy(temp);
 }
 
