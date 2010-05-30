@@ -1,14 +1,12 @@
 ## This makefile is *only* for the linux version.
 ## Not tested with any other OS.
-IDIR =-I../include -I../sircl/include
+IDIR =-Iinclude -Isircl/include
 CC=g++
 CFLAGS=-m32 -O2 -fno-strict-aliasing -ffloat-store -pipe -w
 SCFLAGS=-fPIC
 GAYFLAGS=-shared
-LIBS = -L../lib -static -lz -ldl
+LIBS = -Llib -static -lz -ldl
 STUFF = \
-    shared/ByteSwap.cpp \
-    shared/ColorVec.cpp \
     shared/MathLib.cpp \
     shared/Random.cpp \
     shared/String.cpp \
