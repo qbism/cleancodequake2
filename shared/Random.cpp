@@ -51,17 +51,17 @@
 // GCC at -O3 optimization so try your options and see what's best for you
 //
 
-const size_t W			= sizeof(uint32) * 8;  //
-const int R				= 31;				  //
-const int U				= 11;				  //
-const int S				= 7;					  //
-const uint32 B			= 0x9D2C5680U;		  // 
-const int N				= 624;                 // length of state vector
-const int M				= 397;                 // a period parameter
-const uint32 C			= 0xEFC60000U;		  //
-const uint32 K			= 0x9908B0DFU;         // a magic constant
-const int T				= 15;				  //
-const int L				= 18;				  //
+const size_t MT_W			= sizeof(uint32) * 8;  //
+const int MT_R				= 31;				  //
+const int MT_U				= 11;				  //
+const int MT_S				= 7;					  //
+const uint32 MT_B			= 0x9D2C5680U;		  // 
+const int MT_N				= 624;                 // length of state vector
+const int MT_M				= 397;                 // a period parameter
+const uint32 MT_C			= 0xEFC60000U;		  //
+const uint32 MT_K			= 0x9908B0DFU;         // a magic constant
+const int MT_T				= 15;				  //
+const int MT_L				= 18;				  //
 
 // mask all but highest   bit of u. 
 inline uint32 hiBit(uint32 u)
@@ -127,7 +127,7 @@ uint32 randomMT ()
 
 static uint32   state[N+1];     // state vector + 1 extra to not violate ANSI C
 static uint32   *next;          // next random value is computed from here
-static sint32      left = -1;      // can *next++ this many times before reloading
+static sint32   left = -1;      // can *next++ this many times before reloading
 
 /**
 \fn	void seedMT (uint32 seed)
@@ -191,7 +191,7 @@ void seedMT(uint32 seed)
 	register uint32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
 	register sint32    j;
 
-	for (left = 0, *s++ = x, j = N; --j;
+	for (left = 0, *s++ = x, j = MT_N; --j;
 		*s++ = (x*=69069U) & 0xFFFFFFFFU);
 }
 
@@ -203,19 +203,19 @@ static uint32 reloadMT()
 	if(left < -1)
 		seedMT(4357U);
 
-	left=N-1, next=state+1;
+	left=MT_N-1, next=state+1;
 
-	for (s0 = state[0], s1 = state[1], j = N-M+1; --j; s0 = s1, s1 = *p2++)
-		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+	for (s0 = state[0], s1 = state[1], j = MT_N-MT_M+1; --j; s0 = s1, s1 = *p2++)
+		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? MT_K : 0U);
 
-	for(pM = state, j = M; --j; s0 = s1, s1 = *p2++)
-		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+	for(pM = state, j = MT_M; --j; s0 = s1, s1 = *p2++)
+		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? MT_K : 0U);
 
-	s1=state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
-	s1 ^= (s1 >> U);
-	s1 ^= (s1 <<  S) & B;
-	s1 ^= (s1 << T) & C;
-	return(s1 ^ (s1 >> L));
+	s1=state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? MT_K : 0U);
+	s1 ^= (s1 >> MT_U);
+	s1 ^= (s1 << MT_S) & MT_B;
+	s1 ^= (s1 << MT_T) & MT_C;
+	return(s1 ^ (s1 >> MT_L));
 }
 
 /**
@@ -236,11 +236,11 @@ uint32 randomMT()
 		return(reloadMT());
 
 	y  = *next++;
-	y ^= (y >> U);
-	y ^= (y <<  S) & B;
-	y ^= (y << T) & C;
+	y ^= (y >> MT_U);
+	y ^= (y << MT_S) & MT_B;
+	y ^= (y << MT_T) & MT_C;
 
-	return (y = y ^ (y >> L));
+	return (y = y ^ (y >>MT_ L));
 }
 #endif
 

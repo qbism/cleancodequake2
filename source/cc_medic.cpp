@@ -608,7 +608,7 @@ void CMedic::CableAttack ()
 	float	distance;
 
 #if !ROGUE_FEATURES
-	if (!Entity->Enemy->gameEntity || !Entity->Enemy->GetInUse())
+	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
 		return;
 #else
 	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()) || (Entity->Enemy->State.GetEffects() & EF_GIB))
@@ -799,7 +799,7 @@ void CMedic::HookRetract ()
 {
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_RETRACT]);
 #if !ROGUE_FEATURES
-	if (Entity->Enemy && Entity->Enemy->gameEntity && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
 		(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
 		

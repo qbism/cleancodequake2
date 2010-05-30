@@ -34,6 +34,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_GRAPPLE_H) || !INCLUDE_GUARDS
 #define CC_GUARD_GRAPPLE_H
 
+/**
+\class	CGrapple
+
+\brief	Grapple weapon.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CGrapple : public CWeapon
 {
 public:

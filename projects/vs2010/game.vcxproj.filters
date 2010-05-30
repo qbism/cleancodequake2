@@ -1016,16 +1016,10 @@
     <ClInclude Include="..\..\source\cc_weapon_entities.h">
       <Filter>CleanCode Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\cc_ctf_admin.h">
-      <Filter>CleanCode Files\CTF Addon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\cc_ctf_item_entities.h">
       <Filter>CleanCode Files\CTF Addon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_ctf_items.h">
-      <Filter>CleanCode Files\CTF Addon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\cc_ctf_menu.h">
       <Filter>CleanCode Files\CTF Addon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_ctf_weapon_grapple.h">

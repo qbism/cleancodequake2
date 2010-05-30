@@ -35,6 +35,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_CTFITEMS_H
 
 #if CLEANCTF_ENABLED
+
+/**
+\class	CFlag
+
+\brief	Flag item.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CFlag : public CBaseItem
 {
 public:
@@ -50,9 +59,19 @@ public:
 	void	Drop (CPlayerEntity *Player);
 	void	Use (CPlayerEntity *Player);
 };
+
+/**
+\fn	void AddFlagsToList ()
+
+\brief	Adds CTF flags to the item list.
+
+\author	Paril
+\date	29/05/2010
+**/
+void AddFlagsToList ();
+
 #endif
 
-void AddFlagsToList ();
 
 #else
 FILE_WARNING

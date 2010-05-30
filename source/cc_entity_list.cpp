@@ -96,13 +96,17 @@ IBaseEntity *ResolveMapEntity (edict_t *ent)
 	return EntityList().Resolve (ent);
 };
 
-/*
-===============
-ED_CallSpawn
+/**
+\fn	void ED_CallSpawn (edict_t *ent)
 
-Finds the spawn function for the entity and calls it
-===============
-*/
+\brief	Calls the spawn function for a given entity.
+		Internal.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ent	If non-null, the entity. 
+**/
 void ED_CallSpawn (edict_t *ent)
 {
 	if (Level.ClassName.empty())
@@ -128,7 +132,7 @@ CC_ENABLE_DEPRECATION
 	if (MapEntity->Freed)
 	{
 		// We're done then
-		MapEntity->gameEntity->Entity = NULL;
+		MapEntity->GetGameEntity()->Entity = NULL;
 		QDelete MapEntity;
 		ent->server.InUse = false;
 		return;
@@ -137,6 +141,7 @@ CC_ENABLE_DEPRECATION
 	// Link in the classname
 	if (MapEntity->ClassName.empty())
 		MapEntity->ClassName = Level.ClassName;
+
 	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
 		if (MapEntity->SpawnFlags & SPAWNFLAG_NOT_EASY)
@@ -367,12 +372,16 @@ void G_FindTeams ()
 	}
 }
 
-
-
 #include "cc_exception_handler.h"
 
-void InitPlayers ()
+void InitEntities ()
 {
+	// Set up the world
+	edict_t *theWorld = &Game.Entities[0];
+
+	if (!theWorld->Entity)
+		theWorld->Entity = QNewEntityOf CWorldEntity(0);
+
 	// Set up the client entities
 	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
@@ -381,16 +390,6 @@ void InitPlayers ()
 		if (!ent->Entity)
 			ent->Entity = QNewEntityOf CPlayerEntity(i);
 	}
-}
-
-void InitEntities ()
-{
-	// Set up the world
-	edict_t *theWorld = &Game.Entities[0];
-	if (!theWorld->Entity)
-		theWorld->Entity = QNewEntityOf CWorldEntity(0);
-
-	InitPlayers();
 }
 
 char *gEntString;
@@ -406,7 +405,6 @@ parsing textual entity definitions out of an ent file.
 
 void ShutdownBodyQueue ();
 void InitVersion ();
-void InitEntityLists ();
 void DeallocateEntities ();
 void SetClientFields ();
 
@@ -516,10 +514,6 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		G_FindTeams ();
 
 		SetupTechSpawn();
-
-	#if CLEANCTF_ENABLED
-		CTFSpawn();
-	#endif
 
 #if ROGUE_FEATURES
 		InitBadAreas ();

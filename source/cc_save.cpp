@@ -106,7 +106,7 @@ IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 extern bool ShuttingDownEntities;
 bool RemoveAll (const edict_t *it)
 {
-	if (it && it->Entity && it->Entity->gameEntity && (it->server.State.Number <= Game.MaxClients || it->server.InUse))
+	if (it && it->Entity && it->Entity->GetGameEntity() && (it->server.State.Number <= Game.MaxClients || it->server.InUse))
 		QDelete it->Entity;
 	return true;
 }
@@ -204,7 +204,7 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 {
 	// Write the edict_t info first
-	File.Write<edict_t> (*Entity->gameEntity);
+	File.Write<edict_t> (*Entity->GetGameEntity());
 
 	// Write special data
 	if (Entity->State.GetNumber() > Game.MaxClients)
@@ -545,9 +545,6 @@ void CGameAPI::WriteLevel (char *filename)
 
 	WRITE_MAGIC
 }
-
-void InitEntityLists ();
-void InitEntities ();
 
 #include "cc_body_queue.h"
 

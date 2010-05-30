@@ -224,12 +224,8 @@ static cvarDefaultValue_s CvarDefaults[] =
 #if CLEANCTF_ENABLED
 	{ CV_CTF,					"ctf",					"0",			CVAR_LATCH_SERVER | CVAR_SERVERINFO		},
 	{ CV_CTF_FORCEJOIN,			"ctf_forcejoin",		"",				0										},
-	{ CV_COMPETITION,			"competition",			"0",			CVAR_SERVERINFO							},
 	{ CV_MATCH_LOCK,			"matchlock",			"1",			CVAR_SERVERINFO							},
 	{ CV_ELECT_PERCENTAGE,		"electpercentage",		"66",			0										},
-	{ CV_MATCH_TIME,			"matchtime",			"20",			CVAR_SERVERINFO							},
-	{ CV_MATCH_SETUP_TIME,		"matchsetuptime",		"10",			0										},
-	{ CV_MATCH_START_TIME,		"matchstarttime",		"20",			0										},
 	{ CV_ADMIN_PASSWORD,		"admin_password",		"",				0										},
 	{ CV_WARP_LIST,				"warp_list",			"q2ctf1 q2ctf2 q2ctf3 q2ctf4 q2ctf5",	0				},
 	{ CV_CAPTURE_LIMIT,			"capturelimit",			"0",			CVAR_SERVERINFO							},

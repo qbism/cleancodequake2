@@ -39,43 +39,27 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 typedef CCommand::TCommandListType TServerCommandListType;
 typedef CCommand::THashedCommandListType THashedServerCommandListType;
 
-TServerCommandListType &ServerCommandList ()
-{
-	static TServerCommandListType ServerCommandListV;
-	return ServerCommandListV;
-};
-THashedServerCommandListType &ServerCommandHashList ()
-{
-	static THashedServerCommandListType ServerCommandHashListV;
-	return ServerCommandHashListV;
-};
+TServerCommandListType ServerCommandList;
+THashedServerCommandListType ServerCommandHashList;
 
 CServerCommand *SvCmd_FindCommand (const char *commandName)
 {
-	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType, THashedServerCommandListType::iterator, 2> (commandName, ServerCommandList(), ServerCommandHashList());
+	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType, THashedServerCommandListType::iterator, 2> (commandName, ServerCommandList, ServerCommandHashList);
 }
 
 CServerCommand &SvCmd_AddCommand_Internal (const char *commandName, CCommandFunctor *Functor)
 {
 	// Make sure the function doesn't already exist
 	if (CC_ASSERT_EXPR (!SvCmd_FindCommand(commandName), "Attempted to re-add a command to the list!\n"))
-		return *static_cast<CServerCommand*>(ServerCommandList()[0]);
+		return *static_cast<CServerCommand*>(ServerCommandList[0]);
 
 	// We can add it!
-	ServerCommandList().push_back (QNew (TAG_GENERIC) CServerCommand (commandName, Functor));
+	ServerCommandList.push_back (QNew (TAG_GENERIC) CServerCommand (commandName, Functor));
 
 	// Link it in the hash tree
-	ServerCommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList().size()-1));
+	ServerCommandHashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), ServerCommandList.size()-1));
 
-	return *static_cast<CServerCommand*>(ServerCommandList()[ServerCommandList().size()-1]);
-}
-
-void SvCmd_RemoveCommands ()
-{
-	// Remove all commands
-	for (uint32 i = 0; i < ServerCommandList().size(); i++)
-		QDelete ServerCommandList().at(i);
-	ServerCommandList().clear ();
+	return *static_cast<CServerCommand*>(ServerCommandList[ServerCommandList.size()-1]);
 }
 
 void SvCmd_RunCommand (const char *commandName)
@@ -85,7 +69,7 @@ void SvCmd_RunCommand (const char *commandName)
 	if ((Command = SvCmd_FindCommand(commandName)) != NULL)
 		(*Command->Func) ();
 	else
-		ServerPrintf ( "Unknown server command \"%s\"\n", commandName);
+		ServerPrintf ("Unknown server command \"%s\"\n", commandName);
 }
 
 class CServerCmdEntList : public CCommandFunctor

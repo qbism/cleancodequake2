@@ -363,8 +363,8 @@ enum
 	CASTFLAG_RELIABLE = 8
 };
 
-void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, IBaseEntity *Ent, bool SuppliedOrigin);
-void Cast (ECastFlags castFlags, IBaseEntity *Ent);
+void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CPlayerEntity *Ent, bool SuppliedOrigin);
+void Cast (ECastFlags castFlags, CPlayerEntity *Ent);
 void Cast (ECastFlags castFlags, vec3f &Origin);
 
 EBrushContents PointContents (vec3f start);

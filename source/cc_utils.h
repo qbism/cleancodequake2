@@ -49,7 +49,7 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 		gameEnt = Game.Entities;
 	else
 	{
-		gameEnt = From->gameEntity;
+		gameEnt = From->GetGameEntity();
 		gameEnt++;
 	}
 
@@ -93,7 +93,7 @@ TEntityType *CC_FindByClassName (IBaseEntity *From, const char *Match)
 		gameEnt = Game.Entities;
 	else
 	{
-		gameEnt = From->gameEntity;
+		gameEnt = From->GetGameEntity();
 		gameEnt++;
 	}
 

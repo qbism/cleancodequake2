@@ -1058,7 +1058,7 @@ public:
 		{
 			TType *TArray = QNew (TAG_GENERIC) TType[Length];
 			Read (TArray, sizeof(TType) * Length);
-			QDelete TArray;
+			QDelete[] TArray;
 			return;
 		}
 

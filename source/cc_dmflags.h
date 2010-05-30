@@ -34,12 +34,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_DMFLAGS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_DMFLAGS_H
 
+/**
+\class	CDeathmatchFlags
+
+\brief	Deathmatch flags handling class.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CDeathmatchFlags
 {
+	/**
+	\class	CDeathmatchFlag
+	
+	\brief	A single deathmatch flag.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	class CDeathmatchFlag
 	{
-		bool					Enabled;
-		const EDeathmatchFlags	Flag;
+		bool					Enabled;	// true if this flag is enabled
+		const EDeathmatchFlags	Flag;		// The flag itself
 
 	public:
 		CDeathmatchFlag (EDeathmatchFlags Flag) :
@@ -50,11 +66,28 @@ class CDeathmatchFlags
 
 		CDeathmatchFlag &operator= (CDeathmatchFlag&) { return *this; }
 
+		/**
+		\fn	inline bool IsEnabled ()
+		
+		\brief	Query if this dmflag is enabled. 
+		
+		\return	true if enabled, false if not. 
+		**/
 		inline bool IsEnabled ()
 		{
 			return Enabled;
 		};
 
+		/**
+		\fn	void Check (EDeathmatchFlags WantedFlags)
+		
+		\brief	Updates the dmflag enabled value.
+		
+		\author	Paril
+		\date	29/05/2010
+		
+		\param	WantedFlags	The wanted flags. 
+		**/
 		void Check (EDeathmatchFlags WantedFlags)
 		{
 			Enabled = !!(WantedFlags & Flag);
@@ -95,7 +128,27 @@ public:
 
 						dfDmTechs;
 
+	/**
+	\fn	CDeathmatchFlags()
+	
+	\brief	Default constructor.
+			Initializes all dmflags to their default values.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	CDeathmatchFlags();
+
+	/**
+	\fn	void UpdateFlags (EDeathmatchFlags wantedFlags)
+	
+	\brief	Updates the flags described by wantedFlags.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	wantedFlags	The wanted flags. 
+	**/
 	void UpdateFlags (EDeathmatchFlags wantedFlags);
 };
 

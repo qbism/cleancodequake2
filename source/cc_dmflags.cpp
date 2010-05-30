@@ -33,8 +33,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CDeathmatchFlags DeathmatchFlags;
+CDeathmatchFlags DeathmatchFlags;	// dmflags
 
+/**
+\fn	CDeathmatchFlags::CDeathmatchFlags()
+
+\brief	Default constructor.
+		Initializes all dmflags to their default values.
+
+\author	Paril
+\date	29/05/2010
+**/
 CDeathmatchFlags::CDeathmatchFlags() :
   dfNoHealth (DF_NO_HEALTH),
   dfNoItems (DF_NO_ITEMS),
@@ -66,6 +75,16 @@ CDeathmatchFlags::CDeathmatchFlags() :
 {
 };
 
+/**
+\fn	void CDeathmatchFlags::UpdateFlags (EDeathmatchFlags wantedFlags)
+	
+\brief	Updates the flags described by wantedFlags.
+	
+\author	Paril
+\date	29/05/2010
+	
+\param	wantedFlags	The wanted flags. 
+**/
 void CDeathmatchFlags::UpdateFlags (EDeathmatchFlags wantedFlags)
 {
 	dfNoHealth.Check (wantedFlags);

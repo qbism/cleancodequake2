@@ -113,50 +113,62 @@ enum
 	STATE_DOWN
 };
 
-// Contains code common to brush models
+/**
+\class	IBrushModel
+
+\brief	Brush model entity interface.
+		See "Entity Types - Brush Model"
+
+\author	Paril
+\date	30/05/2010
+**/
 class IBrushModel : public virtual IBaseEntity, public IThinkableEntity, public IStopPhysics
 {
 public:
-	EBrushType	BrushType;
+	EBrushType			BrushType;			// Type of brush model
 
-	char		*Model;
-	float		Accel;
-	float		Speed;
-	float		Decel;
-	sint32		Distance;
-	sint32		Damage;
-	uint8		Sounds;
+	char				*Model;				// The inline brush model
+	float				Accel;				// Given acceleration
+	float				Speed;				// Given speed
+	float				Decel;				// Given deceleration
+	sint32				Distance;			// Distance to target
+	sint32				Damage;				// Squish damage
+	uint8				Sounds;				// Sounds variable.
 
-	FrameNumber		Wait;
+	FrameNumber			Wait;				// Wait
 
-	FrameNumber		TouchDebounce;
+	FrameNumber			TouchDebounce;		// Touch debounce time
 
 	// fixed data
-	vec3f		StartOrigin;
-	vec3f		StartAngles;
-	vec3f		EndOrigin;
-	vec3f		EndAngles;
+	vec3f				StartOrigin;		// The move start origin
+	vec3f				StartAngles;		// The move start angles
+	vec3f				EndOrigin;			// The move end origin
+	vec3f				EndAngles;			// The move end angles
 
-	MediaIndex	SoundStart;
-	MediaIndex	SoundMiddle;
-	MediaIndex	SoundEnd;
-	vec3f		MoveDir;
-	vec3f		Positions[2];
-	vec3f		MoveOrigin, MoveAngles;
+	MediaIndex			SoundStart;			// The start sound
+	MediaIndex			SoundMiddle;		// The middle sound
+	MediaIndex			SoundEnd;			// The end sound
+	vec3f				MoveDir;			// The move dir
+	vec3f				Positions[2];		// Positions
+	vec3f				MoveOrigin,			// Move origin
+						MoveAngles;			// Move angles
 
-	sint32		Lip;
+	sint32				Lip;				// Movement lip in units
 
 	// state data
-	EMoveState	MoveState;
-	vec3f		Dir;
-	float		CurrentSpeed;
-	float		AccelMoveSpeed, MoveSpeed, MoveAccel, MoveDecel;
-	float		NextSpeed;
-	float		RemainingDistance;
-	float		DecelDistance;
-	uint8		EndFunc;
+	EMoveState			MoveState;			// Move state
+	vec3f				Dir;				// The direction
+	float				CurrentSpeed;		// The current speed
+	float				AccelMoveSpeed,		// Acceleration move speed
+						MoveSpeed,			// Current move speed
+						MoveAccel,			// Current move acceleration
+						MoveDecel;			// Current move deceleration
+	float				NextSpeed;			// Next move speed
+	float				RemainingDistance;	// The remaining distance
+	float				DecelDistance;		// The decel distance
+	uint8				EndFunc;			// The endfunc
 
-	EBrushThinkType		ThinkType;
+	EBrushThinkType		ThinkType;			// Thinktype
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(IBrushModel)
@@ -164,8 +176,18 @@ public:
 	IBrushModel ();
 	IBrushModel (sint32 Index);
 
+	/**
+	\fn	void SetBrushModel ()
+	
+	\brief	Sets the brush model.
+	**/
 	void SetBrushModel ();
 
+	/**
+	\fn	inline void SetMoveDir ()
+	
+	\brief	Sets the move dir from angles, then clears angles.
+	**/
 	inline void SetMoveDir ()
 	{
 		if (State.GetAngles().Y == -1)
@@ -178,22 +200,97 @@ public:
 		State.GetAngles().Clear ();
 	}
 
+	/**
+	\fn	virtual void DoEndFunc ()
+	
+	\brief	The endfunc operation. This is called when a move is finished. EndFunc is set to the
+			current EndFunc index; in this function you execute functions based on the EndFunc. 
+	**/
+	virtual void	DoEndFunc ()
+	{
+	};
 
-	virtual void	DoEndFunc () {};
-
-	// Origin/velocity
+	/**
+	\fn	void MoveDone ()
+	
+	\brief	Called when a move is done.
+	**/
 	void MoveDone ();
-	void MoveFinal ();
-	void MoveBegin ();
-	void MoveCalc (vec3f &dest, uint32 EndFunc);
 
-	// Angle/avelocity
+	/**
+	\fn	void MoveFinal ()
+	
+	\brief	Called when a move reaches it's final destination. 
+	**/
+	void MoveFinal ();
+
+	/**
+	\fn	void MoveBegin ()
+	
+	\brief	Called to begin a move. 
+	**/
+	void MoveBegin ();
+
+	/**
+	\fn	void MoveCalc (vec3f &Dest, uint32 EndFunc)
+	
+	\brief	Call to calculate a move to 'dest'. DoEndFunc will be executed at the end, with the
+			EndFunc set to 'EndFunc'. 
+	
+	\author	Paril
+	\date	30/05/2010
+	
+	\param [in,out]	dest	Destination for the. 
+	\param	EndFunc			The end func. 
+	**/
+	void MoveCalc (vec3f &Dest, uint32 EndFunc);
+
+	/**
+	\fn	void AngleMoveDone ()
+	
+	\brief	Called when an angular move is done. 
+	**/
 	void AngleMoveDone ();
+
+	/**
+	\fn	void AngleMoveFinal ()
+	
+	\brief	Called when an angular move has reached it's final destination. 
+	**/
 	void AngleMoveFinal ();
+
+	/**
+	\fn	void AngleMoveBegin ()
+	
+	\brief	Called to start an angular move. 
+	**/
 	void AngleMoveBegin ();
+
+	/**
+	\fn	void AngleMoveCalc (uint32 EndFunc)
+	
+	\brief	Called to calculate an angle movement. EndFunc is set to 'EndFunc'. 
+	
+	\author	Paril
+	\date	30/05/2010
+	
+	\param	EndFunc	The end func. 
+	**/
 	void AngleMoveCalc (uint32 EndFunc);
 
-	// Accel
+	/**
+	\fn	inline float AccelerationDistance (const float target, const float rate)
+	
+	\brief	Calculates acceleration distance based on target and rate. 
+	
+	\author	Paril
+	\date	30/05/2010
+	
+	\param	target	Target accel/decel. 
+	\param	rate	The rate. 
+	
+	\return	Acceleration distance in units. 
+	**/
 	inline float AccelerationDistance (const float target, const float rate)
 	{
 		return (target * ((target / rate) + 1) / 2);

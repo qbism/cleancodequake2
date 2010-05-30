@@ -36,6 +36,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if CLEANCTF_ENABLED
 
+/**
+\class	CCTFCreditsMenu
+
+\brief	CTF credits menu.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFCreditsMenu : public CMenu
 {
 public:
@@ -104,6 +112,16 @@ public:
 	};
 };
 
+/**
+\fn	void CTFOpenCreditsMenu(CPlayerEntity *Player)
+
+\brief	Opens the credits menu.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Player	If non-null, the player. 
+**/
 void CTFOpenCreditsMenu(CPlayerEntity *Player)
 {
 	if (Player->Client.Respawn.MenuState.InMenu)
@@ -115,6 +133,14 @@ void CTFOpenCreditsMenu(CPlayerEntity *Player)
 	Player->Client.Respawn.MenuState.CurrentMenu->Draw (true);
 }
 
+/**
+\class	CCTFMainMenu
+
+\brief	The CTF main menu. 
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFMainMenu : public CMenu
 {
 public:
@@ -142,15 +168,6 @@ public:
 			Player->Client.Respawn.CTF.State = 0;
 			Player->CTFAssignSkin(Player->Client.Persistent.UserInfo);
 
-			// assign a ghost if we are in match mode
-			if (ctfgame.match == MATCH_GAME)
-			{
-				if (Player->Client.Respawn.CTF.Ghost)
-					ctfgame.Ghosts.erase (Player->Client.Respawn.CTF.Ghost->Code);
-				Player->Client.Respawn.CTF.Ghost = NULL;
-				Player->CTFAssignGhost();
-			}
-
 			Player->PutInServer ();
 			// add a teleportation effect
 			Player->State.GetEvent() = EV_PLAYER_TELEPORT;
@@ -160,14 +177,6 @@ public:
 			BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
 				Player->Client.Persistent.Name.c_str(), CTFTeamName(team));
 
-			if (ctfgame.match == MATCH_SETUP)
-			{
-				Player->PrintToClient	(PRINT_CENTER, 
-									"***********************\n"
-									"Type \"ready\" in console\n"
-									"to ready up.\n"
-									"***********************");
-			}
 			return true;
 		};
 	};
@@ -258,49 +267,10 @@ public:
 		LevelName->Flags = LF_GREEN;
 		LevelName->LabelString = Level.FullLevelName;
 
-		y += 8;
-		CMenu_Label *MatchProgress;
-		switch (ctfgame.match)
-		{
-		case MATCH_NONE :
-			break;
-
-		case MATCH_SETUP :
-			MatchProgress = QNew (TAG_LEVEL) CMenu_Label(this, x, y);
-			MatchProgress->Enabled = false;
-			MatchProgress->Align = LA_CENTER;
-			MatchProgress->Flags = LF_GREEN;
-			MatchProgress->LabelString = "MATCH SETUP IN PROGRESS";
-			break;
-
-		case MATCH_PREGAME :
-			MatchProgress = QNew (TAG_LEVEL) CMenu_Label(this, x, y);
-			MatchProgress->Enabled = false;
-			MatchProgress->Align = LA_CENTER;
-			MatchProgress->Flags = LF_GREEN;
-			MatchProgress->LabelString = "MATCH STARTING";
-			break;
-
-		case MATCH_GAME :
-			MatchProgress = QNew (TAG_LEVEL) CMenu_Label(this, x, y);
-			MatchProgress->Enabled = false;
-			MatchProgress->Align = LA_CENTER;
-			MatchProgress->Flags = LF_GREEN;
-			MatchProgress->LabelString = "MATCH IN PROGRESS";
-			break;
-		}
-
-		y += 8 * 3;
+		y += 8 * 4;
 		x = -98;
 
-		if (ctfgame.match >= MATCH_PREGAME && CvarList[CV_MATCH_LOCK].Integer())
-		{
-			CMenu_Label *LockedMsg = QNew (TAG_LEVEL) CMenu_Label(this, x, y);
-			LockedMsg->Enabled = false;
-			LockedMsg->Align = LA_LEFT;
-			LockedMsg->LabelString = "MATCH IS LOCKED\n(entry is not permitted)";
-		}
-		else if (CvarList[CV_CTF_FORCEJOIN].String() && *CvarList[CV_CTF_FORCEJOIN].String())
+		if (CvarList[CV_CTF_FORCEJOIN].String() && *CvarList[CV_CTF_FORCEJOIN].String())
 		{
 			if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "red") == 0)
 			{
@@ -308,7 +278,7 @@ public:
 				CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
+				JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", "Red", num1);
 			}
 			else if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "blue") == 0)
 			{
@@ -316,19 +286,19 @@ public:
 				CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				JoinBlue->LabelString = FormatString ("Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
+				JoinBlue->LabelString = FormatString ("Join %s Team    (%d players)", "Blue", num2);
 			}
 			else
 			{
 				CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				JoinRed->LabelString = FormatString ("Join %s Team     (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
+				JoinRed->LabelString = FormatString ("Join %s Team     (%d players)", "Red", num1);
 
 				CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
+				JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", "Blue", num2);
 			}
 		}
 		else
@@ -336,12 +306,12 @@ public:
 			CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 			JoinRed->Enabled = true;
 			JoinRed->Align = LA_LEFT;
-			JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Red MATCH" : "Red", num1);
+			JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", "Red", num1);
 
 			CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 			JoinBlue->Enabled = true;
 			JoinBlue->Align = LA_LEFT;
-			JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", (ctfgame.match >= MATCH_PREGAME) ? "Blue MATCH" : "Blue", num2);
+			JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", "Blue", num2);
 		}
 
 		y += 24;
@@ -372,6 +342,16 @@ public:
 	};
 };
 
+/**
+\fn	void CTFOpenJoinMenu(CPlayerEntity *Player)
+
+\brief	Open join team menu.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Player	If non-null, the player. 
+**/
 void CTFOpenJoinMenu(CPlayerEntity *Player)
 {
 	if (Player->Client.Respawn.MenuState.InMenu)

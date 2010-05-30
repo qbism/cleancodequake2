@@ -127,7 +127,7 @@ extern int irc_connect(irc_server *server );
 * @param quit_msg quit message.
 *
 */
-extern void irc_disconnect(irc_server *server, char *quit_msg );
+extern void irc_disconnect(irc_server *server, const char *quit_msg );
 
 /**
 *

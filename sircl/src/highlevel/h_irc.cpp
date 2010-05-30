@@ -80,7 +80,7 @@ int irc_receive (irc_server *server, int timeout)
 
 }
 
-void irc_disconnect (irc_server *server, char *msg)
+void irc_disconnect (irc_server *server, const char *msg)
 {
 	_clear_msg (server);
 

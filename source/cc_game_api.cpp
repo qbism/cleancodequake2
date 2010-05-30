@@ -610,7 +610,6 @@ sint32 &CGameAPI::GetMaxEdicts()
 	return globals.maxEdicts;
 };
 
-
 extern "C"
 {
 	gameExport_t *GetGameAPI (gameImport_t *import)

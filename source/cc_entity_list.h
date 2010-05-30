@@ -79,6 +79,8 @@ IBaseEntity *ResolveMapEntity (edict_t *ent);
 	(LINK_RESOLVE_CLASSNAME(DLLClassID, _Spawn), mapClassName); \
 	IMPLEMENT_SAVE_STRUCTURE (DLLClassID,DLLClassName)
 
+void InitEntities ();
+
 #else
 FILE_WARNING
 #endif

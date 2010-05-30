@@ -9,9 +9,7 @@ Present
 - Noticed an odd bug where a grenade had an owner on spawn, but when it reached Explode (on a Flyer), GetOwner() returned NULL..
 - DelayedUse causes problems it seems; have to look into this
 - I think freed entities are being loaded before their time is up to get deleted..
-
-Rogue
-- Have chaingun + etf rifle + flechettes + 0 bullets, can't switch to etf with 5
+- Make SIRCL C++
 
 Future versions
 - A scripting system to replace entities like func_timer, etc.

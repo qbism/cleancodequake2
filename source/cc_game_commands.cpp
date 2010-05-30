@@ -37,11 +37,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_menu.h"
 #include "cc_version.h"
 
-/*
-==================
-Sets client to godmode
-==================
-*/
+/**
+\class	CGodCommand
+
+\brief	God command functor.
+		Toggles godmode.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CGodCommand : public CGameCommandFunctor
 {
 public:
@@ -52,12 +56,15 @@ public:
 	}
 };
 
+/**
+\class	CNoTargetCommand
 
-/*
-==================
-Sets client to notarget
-==================
-*/
+\brief	Notarget command functor.
+		Toggles notarget.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CNoTargetCommand : public CGameCommandFunctor
 {
 public:
@@ -68,10 +75,15 @@ public:
 	}
 };
 
-/*
-==================
-==================
-*/
+/**
+\class	CNoClipCommand
+
+\brief	Noclip command functor.
+		Toggles noclip.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CNoClipCommand : public CGameCommandFunctor
 {
 public:
@@ -82,11 +94,15 @@ public:
 	};
 };
 
-/*
-=================
-Cmd_Kill_f
-=================
-*/
+/**
+\class	CKillCommand
+
+\brief	Kill command functor.
+		Kills self.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CKillCommand : public CGameCommandFunctor
 {
 public:
@@ -117,22 +133,26 @@ public:
 	};
 };
 
-/*
-=================
-Cmd_PutAway_f
-=================
-*/
+/**
+\class	CPutAwayCommand
+
+\brief	Putaway command functor.
+		Only called by server; closes menus.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CPutAwayCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ()
 	{
-	Player->Client.LayoutFlags &= ~LF_SCREEN_MASK;
+		Player->Client.LayoutFlags &= ~LF_SCREEN_MASK;
 
-	if (Player->Client.Respawn.MenuState.InMenu)
-		Player->Client.Respawn.MenuState.CloseMenu ();
+		if (Player->Client.Respawn.MenuState.InMenu)
+			Player->Client.Respawn.MenuState.CloseMenu ();
 
-	Player->Client.LayoutFlags |= LF_UPDATECHASE;
+		Player->Client.LayoutFlags |= LF_UPDATECHASE;
 	};
 };
 
@@ -144,8 +164,8 @@ public:
 \author	Paril
 \date	26/05/2010
 
-\param	a	a. 
-\param	b	The. 
+\param	a	First integer. 
+\param	b	Second integer. 
 
 \return	true if it succeeds, false if it fails. 
 **/
@@ -154,6 +174,15 @@ bool PlayerSort (const int a, const int b)
 	return (Game.Clients[a].PlayerState.Stats[STAT_FRAGS] > Game.Clients[b].PlayerState.Stats[STAT_FRAGS]);
 }
 
+/**
+\class	CPlayerListCountCallback
+
+\brief	Player list count callback.
+		Pushes back all player indexes into a vector.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CPlayerListCountCallback : public CForEachPlayerCallback
 {
 public:
@@ -172,11 +201,15 @@ public:
 	}
 };
 
-/*
-=================
-Cmd_Players_f
-=================
-*/
+/**
+\class	CPlayersCommand
+
+\brief	Players command functor.
+		Lists players and frags.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CPlayersCommand : public CGameCommandFunctor
 {
 public:
@@ -214,11 +247,15 @@ public:
 	}
 };
 
-/*
-=================
-Cmd_Wave_f
-=================
-*/
+/**
+\class	CWaveCommand
+
+\brief	Wave command functor.
+		Performs an animation.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CWaveCommand : public CGameCommandFunctor
 {
 public:
@@ -263,6 +300,15 @@ Cmd_Say_f
 */
 const int MAX_TALK_STRING = 100;
 
+/**
+\class	CSayPlayerCallback
+
+\brief	Say player callback.
+		Prints the text to each player.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
@@ -281,6 +327,16 @@ public:
 	}
 };
 
+/**
+\class	CCmdSayCommandBase
+
+\brief	Say command base.
+		Prints typed text to players.
+		Just provides the team,arg0 function.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCmdSayCommandBase : public CGameCommandFunctor
 {
 public:
@@ -343,6 +399,15 @@ public:
 	virtual void operator () () = 0;
 };
 
+/**
+\class	CCmdSayCommand
+
+\brief	Say command.
+		Performs the say action.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCmdSayCommand : public CCmdSayCommandBase
 {
 public:
@@ -352,6 +417,15 @@ public:
 	};
 };
 
+/**
+\class	CCmdSayTeamCommand
+
+\brief	Say team command.
+		Performs the say team action.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCmdSayTeamCommand : public CCmdSayCommandBase
 {
 public:
@@ -361,6 +435,16 @@ public:
 	};
 };
 
+/**
+\class	CPlayerListCallback
+
+\brief	Player list callback.
+		Puts together a text string to store
+		player data on every player.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CPlayerListCallback : public CForEachPlayerCallback
 {
 public:
@@ -435,6 +519,15 @@ public:
 	}
 };
 
+/**
+\fn	void CPlayerListCommand::operator() ()
+
+\brief	Player list command functor.
+		Does the actual printing.
+
+\author	Paril
+\date	29/05/2010
+**/
 void CPlayerListCommand::operator () ()
 {
 	static std::string text;
@@ -449,11 +542,15 @@ void CPlayerListCommand::operator () ()
 		Player->PrintToClient (PRINT_HIGH, "%s", text.c_str());
 };
 
-/*
-==================
-Display the scoreboard
-==================
-*/
+/**
+\class	CScoreCommand
+
+\brief	Score command functor.
+		Displays scoreboard.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CScoreCommand : public CGameCommandFunctor
 {
 public:
@@ -463,12 +560,15 @@ public:
 	}
 };
 
+/**
+\class	CHelpCommand
 
-/*
-==================
-Display the current help message
-==================
-*/
+\brief	Help command functor.
+		Displays the help computer.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CHelpCommand : public CGameCommandFunctor
 {
 public:
@@ -478,6 +578,14 @@ public:
 	};
 };
 
+/**
+\fn	void Cmd_Register ()
+
+\brief	Registers all game commands.
+
+\author	Paril
+\date	29/05/2010
+**/
 void Cmd_Register ()
 {
 	// These commands are generic, and can be executed any time
@@ -537,11 +645,7 @@ void Cmd_Register ()
 	Cmd_AddCommand<CCTFIDCommand> ("id");
 	Cmd_AddCommand<CCTFVoteYesCommand> ("yes");
 	Cmd_AddCommand<CCTFVoteNoCommand> ("no");
-	Cmd_AddCommand<CCTFReadyCommand> ("ready");
-	Cmd_AddCommand<CCTFNotReadyCommand> ("notready");
-	Cmd_AddCommand<CCTFGhostCommand> ("ghost");
 	Cmd_AddCommand<CCTFAdminCommand> ("admin");
-	Cmd_AddCommand<CCTFStatsCommand> ("stats");
 	Cmd_AddCommand<CCTFWarpCommand> ("warp");
 	Cmd_AddCommand<CCTFBootCommand> ("boot");
 	Cmd_AddCommand<CCTFObserverCommand> ("observer");

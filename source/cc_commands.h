@@ -57,6 +57,16 @@ enum
 	CMD_CHEAT		= 2
 };
 
+/**
+\class	CCommandFunctor
+
+\brief	Command functor.
+		This is the class that you should inherit commands from.
+		See "Usage - Commands"
+
+\author	Paril
+\date	28/05/2010
+**/
 class CCommandFunctor
 {
 	uint32		FirstArg, // first argument matched (in subcommands, will always be the main command arg index)
@@ -64,48 +74,194 @@ class CCommandFunctor
 				CurArg; // rgument, starting at CurArg, that can be changed with the functions below
 
 public:
+	/**
+	\fn	inline std::string GetFirstArgs ()
+	
+	\brief	Gets the first argument that this command was called with.
+	
+	\return	The first argument (string). 
+	**/
 	inline std::string GetFirstArgs () { return ArgGets(FirstArg); }
+
+	/**
+	\fn	inline int GetFirstArgi ()
+	
+	\brief	Gets the first argument that this command was called with.
+	
+	\return	The first argument (integer). 
+	**/
 	inline int GetFirstArgi () { return ArgGeti(FirstArg); }
+
+	/**
+	\fn	inline float GetFirstArgf ()
+	
+	\brief	Gets the first argument that this command was called with.
+	
+	\return	The first argument (float). 
+	**/
 	inline float GetFirstArgf () { return ArgGetf(FirstArg); }
 
+	/**
+	\fn	inline std::string GetThisArgs ()
+	
+	\brief	Gets the argument that matched to this function.
+	
+	\return	The matched argument (string). 
+	**/
 	inline std::string GetThisArgs () { return ArgGets(ThisArg); }
+
+	/**
+	\fn	inline int GetThisArgi ()
+	
+	\brief	Gets the argument that matched to this function.
+	
+	\return	The matched argument (integer). 
+	**/
 	inline int GetThisArgi () { return ArgGeti(ThisArg); }
+
+	/**
+	\fn	inline float GetThisArgf ()
+	
+	\brief	Gets the argument that matched to this function.
+	
+	\return	The matched argument (float). 
+	**/
 	inline float GetThisArgf () { return ArgGetf(ThisArg); }
 
+	/**
+	\fn	inline std::string GetNextArgs ()
+	
+	\brief	Gets the next argument. 
+	
+	\return	The next argument (string). 
+	**/
 	inline std::string GetNextArgs () { return ArgGets(++CurArg); }
+
+	/**
+	\fn	inline int GetNextArgi ()
+	
+	\brief	Gets the next argument. 
+	
+	\return	The next argument (integer). 
+	**/
 	inline int GetNextArgi () { return ArgGeti(++CurArg); }
+
+	/**
+	\fn	inline float GetNextArgf ()
+	
+	\brief	Gets the next argument. 
+	
+	\return	The next argument (float). 
+	**/
 	inline float GetNextArgf () { return ArgGetf(++CurArg); }
 
+	/**
+	\fn	virtual void operator() () = 0
+	
+	\brief	The function operator. Must be overridden to do the task.
+	
+	\author	Paril
+	\date	28/05/2010
+	**/
 	virtual void operator() () = 0;
+
+	/**
+	\fn	void SetPos (uint32 First, uint32 This, uint32 Cur)
+	
+	\brief	Internal function to set the argument positions. 
+	
+	\author	Paril
+	\date	28/05/2010
+	
+	\param	First	The first argument index. 
+	\param	This	Matched argument index. 
+	\param	Cur		The current argument. 
+	**/
 	void SetPos (uint32 First, uint32 This, uint32 Cur) { FirstArg = First; ThisArg = This; CurArg = Cur; };
 };
 
+/**
+\class	CGameCommandFunctor
+
+\brief	Game command functor.
+		This is the base class for game commands.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CGameCommandFunctor : public CCommandFunctor
 {
 public:
-	CPlayerEntity	*Player;
+	CPlayerEntity	*Player;	// The player calling this function
 
+	/**
+	\fn	virtual void operator() () = 0
+	
+	\brief	The function operator. Must be overridden to do the task.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	virtual void operator() () = 0;
 };
 
+/**
+\class	CCommand
+
+\brief	Internal command class.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCommand
 {
 public:
+	/**
+	\typedef	std::vector<CCommand*> TCommandListType
+	
+	\brief	Defines an alias representing type of the command list.
+	**/
 	typedef std::vector<CCommand*> TCommandListType;
+
+	/**
+	\typedef	std::multimap<size_t, size_t> THashedCommandListType
+	
+	\brief	Defines an alias representing type of the hashed command list.
+	**/
 	typedef std::multimap<size_t, size_t> THashedCommandListType;
 
-	struct SubCommands_t
+	/**
+	\struct	SSubCommands
+	
+	\brief	Subcommands structure. 
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
+	struct SSubCommands
 	{
-		CCommand				*Owner; // Pointer to the command that owns us
+		CCommand					*Owner; // Pointer to the command that owns us
 
 		TCommandListType			List;
 		THashedCommandListType		HashedList;
 	}
 							SubCommands;
-	char					*Name;
-	ECmdTypeFlags			Flags;
-	CCommandFunctor			*Func;
+	char					*Name;	// The name of the command
+	ECmdTypeFlags			Flags;	// Command flags
+	CCommandFunctor			*Func;	// The functor
 
+	/**
+	\fn	CCommand (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags)
+	
+	\brief	Constructor.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name			The name of the command.
+	\param [in,out]	Func	The functor to execute for this command. 
+	\param	Flags			The flags. 
+	**/
 	CCommand (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags) :
 	  Name(Mem_StrDup(Name)),
 	  Func(Func),
@@ -113,12 +269,28 @@ public:
 	  {
 	  };
 	
+	/**
+	\fn	virtual ~CCommand ()
+	
+	\brief	Destructor.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	virtual ~CCommand ()
 	{
 		QDelete[] Name;
 		QDelete Func;
 	};
 
+	/**
+	\fn	CCommand &GoUp ()
+	
+	\brief	Go up in the hierarchy of commands.
+			Used for subcommands.
+	
+	\return	If no owner, this, otherwise owner. 
+	**/
 	CCommand &GoUp ()
 	{
 		if (!SubCommands.Owner)
@@ -128,6 +300,20 @@ public:
 
 	virtual void *NewOfMe (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags) = 0;
 
+	/**
+	\fn	template <class TType> CCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
+	
+	\brief	Adds a subcommand with 'Name' and 'Flags'.
+			The functor is described with 'TType'.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name	The name of the subcommand. 
+	\param	Flags	The flags of the subcommand. 
+	
+	\return	The subcommand. 
+	**/
 	template <class TType>
 	CCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
@@ -199,18 +385,45 @@ inline TReturnValue *FindCommand (const char *commandName, TListType &List, THas
 	return NULL;
 }
 
+/**
+\class	CPlayerCommand
+
+\brief	Player command.
+		Internal class for game commands.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CPlayerCommand : public CCommand
 {
 public:
+	/**
+	\fn	CPlayerCommand (const char *Name, CGameCommandFunctor *Func, ECmdTypeFlags Flags)
+	
+	\brief	Constructor.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name			The name. 
+	\param [in,out]	Func	If non-null, the functor. 
+	\param	Flags			The flags. 
+	**/
 	CPlayerCommand (const char *Name, CGameCommandFunctor *Func, ECmdTypeFlags Flags) :
 	  CCommand (Name, Func, Flags)
 	  {
 	  };
 
-	~CPlayerCommand ()
-	{
-	};
-
+	/**
+	\fn	void Run (CPlayerEntity *Player)
+	
+	\brief	Runs a command.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Player	If non-null, the player. 
+	**/
 	void Run (CPlayerEntity *Player);
 
 	void *NewOfMe (const char *Name, CCommandFunctor *RealFunc, ECmdTypeFlags Flags)
@@ -218,6 +431,21 @@ public:
 		return QNew (TAG_GENERIC) CPlayerCommand (Name, static_cast<CGameCommandFunctor*>(RealFunc), Flags);
 	}
 
+	/**
+	\fn	template <class TType> CPlayerCommand &AddSubCommand (const char *Name,
+		ECmdTypeFlags Flags = 0)
+	
+	\brief	Adds a subcommand with 'Name' and 'Flags'.
+			The functor is described with 'TType'.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name	The name of the subcommand. 
+	\param	Flags	The flags of the subcommand. 
+	
+	\return	The subcommand. 
+	**/
 	template <class TType>
 	CPlayerCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
@@ -225,11 +453,36 @@ public:
 	};
 };
 
+/**
+\fn	void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player)
+
+\brief	Run command.
+		Called by game API.
+
+\author	Paril
+\date	29/05/2010
+
+\param	commandName		Name of the command. 
+\param [in,out]	Player	If non-null, the player. 
+**/
 void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player);
-void Cmd_RemoveCommands ();
 
 CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFunctor *Functor, ECmdTypeFlags Flags = 0);
 
+/**
+\fn	template <class TFunctor> CPlayerCommand &Cmd_AddCommand (const char *commandName,
+	ECmdTypeFlags Flags = 0)
+
+\brief	Adds a game command to the list.
+
+\author	Paril
+\date	29/05/2010
+
+\param	commandName	Name of the command. 
+\param	Flags		The flags. 
+
+\return	The command. 
+**/
 template <class TFunctor>
 CPlayerCommand &Cmd_AddCommand (const char *commandName, ECmdTypeFlags Flags = 0)
 {
@@ -237,6 +490,14 @@ CPlayerCommand &Cmd_AddCommand (const char *commandName, ECmdTypeFlags Flags = 0
 	return Cmd_AddCommand_Internal (commandName, Functor, Flags);
 }
 
+/**
+\fn	void AddTestDebugCommands ()
+
+\brief	Adds test debug commands
+
+\author	Paril
+\date	29/05/2010
+**/
 void AddTestDebugCommands ();
 
 #include "cc_game_commands.h"

@@ -35,26 +35,21 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if CLEANCTF_ENABLED
 typedef std::map <ETeamIndex, CFlagTransponder*> TTransponderListType;
-
-inline TTransponderListType &Transponders ()
-{
-	static TTransponderListType Transponders_;
-	return Transponders_;
-};
+TTransponderListType Transponders;
 
 void ClearTransponders ()
 {
-	for (TTransponderListType::iterator it = Transponders().begin(); it != Transponders().end(); ++it)
+	for (TTransponderListType::iterator it = Transponders.begin(); it != Transponders.end(); ++it)
 		QDelete (*it).second;
-	Transponders().clear ();
+	Transponders.clear ();
 }
 
 CFlagTransponder *FindTransponder (ETeamIndex Team)
 {
-	if (Transponders().find(Team) == Transponders().end())
+	if (Transponders.find(Team) == Transponders.end())
 		return NULL;
 
-	return (*Transponders().find(Team)).second;
+	return (*Transponders.find(Team)).second;
 }
 
 CFlagTransponder::CFlagTransponder (const ETeamIndex Team, class CFlagEntity *Flag) :
@@ -64,12 +59,12 @@ CFlagTransponder::CFlagTransponder (const ETeamIndex Team, class CFlagEntity *Fl
   Holder(NULL),
   Location(FLAG_AT_BASE)
 {
-	Transponders()[Team] = this;
+	Transponders[Team] = this;
 };
 
 void PrintTransponders ()
 {
-	for (TTransponderListType::iterator it = Transponders().begin(); it != Transponders().end(); ++it)
+	for (TTransponderListType::iterator it = Transponders.begin(); it != Transponders.end(); ++it)
 	{
 		CFlagTransponder *Transponder = (*it).second;
 		DebugPrintf ("Transponder for team %i:\n  Location: %i\n  Base: %i\n  Flag: %i\n  Holder: %i\n",

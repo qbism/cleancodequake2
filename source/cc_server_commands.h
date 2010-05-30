@@ -34,26 +34,64 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_SERVERCOMMANDS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_SERVERCOMMANDS_H
 
-void SvCmd_Register ();
-void SvCmd_RemoveCommands ();
+/**
+\fn	void SvCmd_Register ()
 
+\brief	Register server commands.
+
+\author	Paril
+\date	29/05/2010
+**/
+void SvCmd_Register ();
+
+/**
+\class	CServerCommand
+
+\brief	Server command class.
+		Class for the "sv xxxx" commands.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CServerCommand : public CCommand
 {
 public:
+	/**
+	\fn	CServerCommand (const char *Name, CCommandFunctor *Func)
+	
+	\brief	Constructor.
+			Construct a server command from a 'Name' and a 'Func'
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name			The name. 
+	\param [in,out]	Func	If non-null, the func. 
+	**/
 	CServerCommand (const char *Name, CCommandFunctor *Func) :
 	  CCommand (Name, Func, 0)
 	  {
 	  };
-
-	~CServerCommand ()
-	{
-	};
 
 	void *NewOfMe (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags)
 	{
 		return QNew (TAG_GENERIC) CServerCommand (Name, Func);
 	}
 
+	/**
+	\fn	template <class TFunctor> CServerCommand &AddSubCommand (const char *Name,
+		ECmdTypeFlags Flags = 0)
+	
+	\brief	Adds a subcommand to this command with name 'Name' and flags 'Flags'.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name	The name. 
+	\param	Flags	The flags. 
+	
+	\return	The command. 
+	**/
 	template <class TFunctor>
 	CServerCommand &AddSubCommand (const char *Name, ECmdTypeFlags Flags = 0)
 	{
@@ -62,6 +100,19 @@ public:
 };
 
 CServerCommand &SvCmd_AddCommand_Internal (const char *commandName, CCommandFunctor *Functor);
+
+/**
+\fn	template <class TFunctor> CServerCommand &SvCmd_AddCommand (const char *commandName)
+
+\brief	Adds a server command with functor 'TFunctor'.
+
+\author	Paril
+\date	29/05/2010
+
+\param	commandName	Name of the command. 
+
+\return	. 
+**/
 template <class TFunctor>
 CServerCommand &SvCmd_AddCommand (const char *commandName)
 {

@@ -36,6 +36,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <cctype>
 #include <algorithm>
 
+/**
+\fn	IBaseEntity *GetGameEntity (sint32 Index)
+
+\brief	Gets the game entity for index 'Index'.
+		Required magic.
+
+\author	Paril
+\date	29/05/2010
+
+\param	Index	Zero-based index of the entity. 
+
+\return	null if it fails, else the game entity. 
+**/
 IBaseEntity *GetGameEntity (sint32 Index)
 {
 	return Game.Entities[Index].Entity;
@@ -65,27 +78,67 @@ void		CEntityState::Initialize (SEntityState *state)
 	this->state = state;
 };
 
+/**
+\fn	sint32 &CEntityState::GetNumber ()
+
+	\brief	Gets the entity's number.
+
+\return	The number. 
+**/
 sint32		&CEntityState::GetNumber		()
 {
 	return state->Number;
 }
 
+/**
+\fn	vec3f &CEntityState::GetOrigin ()
+
+	\brief	Gets the entity's origin. 
+
+\return	The origin. 
+**/
 vec3f	&CEntityState::GetOrigin		()
 {
 	return state->Origin;
 }
 
+/**
+\fn	vec3f &CEntityState::GetAngles ()
+
+\brief	Gets the entity's angles. 
+
+\return	The angles. 
+**/
 vec3f	&CEntityState::GetAngles		()
 {
 	return state->Angles;
 }
 
+/**
+\fn	vec3f &CEntityState::GetOldOrigin ()
+
+\brief	Gets the entity's old origin. 
+
+\return	The old origin. 
+**/
 vec3f	&CEntityState::GetOldOrigin	()
 {
 	return state->OldOrigin;
 }
 
-// Can be 1, 2, 3, or 4
+/**
+\fn	sint32 &CEntityState::GetModelIndex (uint8 index)
+
+\brief	Gets a model index. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	index	One-based index.
+				Defaults to 1; 2 is modelIndex2, etc.
+
+\return	The model index. 
+**/
 sint32		&CEntityState::GetModelIndex	(uint8 index)
 {
 	switch (index)
@@ -104,36 +157,91 @@ sint32		&CEntityState::GetModelIndex	(uint8 index)
 	}
 }
 
+/**
+\fn	sint32 &CEntityState::GetFrame ()
+
+\brief	Gets the entity's animation frame. 
+
+\return	The frame. 
+**/
 sint32		&CEntityState::GetFrame		()
 {
 	return state->Frame;
 }
 
+/**
+\fn	sint32 &CEntityState::GetSkinNum ()
+
+\brief	Gets the entity's skin number. 
+
+\return	The skin number. 
+**/
 sint32	&CEntityState::GetSkinNum		()
 {
 	return state->SkinNum;
 }
 
+/**
+\fn	EEntityStateEffects &CEntityState::GetEffects ()
+
+\brief	Gets the entity's effects. 
+
+\return	The effects. 
+**/
 EEntityStateEffects	&CEntityState::GetEffects		()
 {
 	return state->Effects;
 }
 
+/**
+\fn	EEntityStateRenderEffects &CEntityState::GetRenderEffects ()
+
+\brief	Gets the entity's render effects. 
+
+\return	The render effects. 
+**/
 EEntityStateRenderEffects		&CEntityState::GetRenderEffects	()
 {
 	return state->RenderFx;
 }
 
+/**
+\fn	MediaIndex &CEntityState::GetSound ()
+
+\brief	Gets the entity's sound. 
+
+\return	The sound. 
+**/
 MediaIndex	&CEntityState::GetSound		()
 {
 	return (MediaIndex&)state->Sound;
 }
 
+/**
+\fn	EEventEffect &CEntityState::GetEvent ()
+
+\brief	Gets the entity's event. 
+
+\return	The event. 
+**/
 EEventEffect	&CEntityState::GetEvent			()
 {
 	return state->Event;
 }
 
+/**
+\fn	void G_InitEdict (edict_t *e)
+
+\brief	Initialize entity.
+
+\deprecated	Deprecated. Do not use.
+			Function is not required (only internally)
+
+\author	Paril
+\date	29/05/2010
+
+\param	e	Entity to initialize. 
+**/
 void G_InitEdict (edict_t *e)
 {
 	e->server.InUse = true;
@@ -150,6 +258,11 @@ void listfill (TCont &List, TType Data, size_t numElements)
 		List.push_back (&Data[i]);
 }
 
+/**
+\fn	void InitEntityLists ()
+
+\brief	Initialises the entity lists.
+**/
 void InitEntityLists ()
 {
 	listfill <TEntitiesContainer, edict_t*> (Level.Entities.Open, Game.Entities, Game.MaxEntities);
@@ -163,17 +276,24 @@ void InitEntityLists ()
 	}
 }
 
-// Removes a free entity from Open, pushes into Closed.
-edict_t *GetEntityFromList ()
+/**
+\fn	edict_t *CLevelLocals::CEntityList::GetEntityFromList ()
+
+\brief	Gets a free entity from Open, pushes into Closed.
+		Internal function.
+
+\return	null if it fails, else the entity from list. 
+**/
+edict_t *CLevelLocals::CEntityList::GetEntityFromList ()
 {
-	if (Level.Entities.Open.empty())
+	if (Open.empty())
 		return NULL;
 
 	// Take entity off of list, obeying freetime
 	edict_t *ent = NULL;
 
 	TEntitiesContainer::iterator it;
-	for (it = Level.Entities.Open.begin(); it != Level.Entities.Open.end(); ++it)
+	for (it = Open.begin(); it != Open.end(); ++it)
 	{
 		edict_t *check = (*it);
 
@@ -189,73 +309,66 @@ edict_t *GetEntityFromList ()
 	if (ent == NULL)
 		return NULL;
 
-	Level.Entities.Open.erase (it);
+	Open.erase (it);
 	
 	// Put into closed
-	Level.Entities.Closed.push_back (ent);
+	Closed.push_back (ent);
 	return ent; // Give it to us
 }
 
-// Removes from Open, puts into end of Closed.
-void RemoveEntityFromOpen (edict_t *ent)
+/**
+\fn	void CLevelLocals::CEntityList::RemoveEntityFromOpen (edict_t *ent)
+
+\brief	Removes the entity 'ent' from Open and pushes into Closed. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ent	If non-null, the entity. 
+**/
+void CLevelLocals::CEntityList::RemoveEntityFromOpen (edict_t *ent)
 {
-	Level.Entities.Open.remove (ent);
-	Level.Entities.Closed.push_back (ent);
+	Open.remove (ent);
+	Closed.push_back (ent);
 }
 
-// Removes entity from Closed, pushes into front of into Open
-void RemoveEntityFromList (edict_t *ent)
+/**
+\fn	void CLevelLocals::CEntityList::RemoveEntityFromList (edict_t *ent)
+
+\brief	Removes the entity 'ent' from Closed, pushes into front of Open. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ent	If non-null, the entity. 
+**/
+void CLevelLocals::CEntityList::RemoveEntityFromList (edict_t *ent)
 {
 	// Take entity out of list
-	Level.Entities.Closed.remove (ent);
+	Closed.remove (ent);
 
 	// Push into Open
-	Level.Entities.Open.push_front (ent);
+	Open.push_front (ent);
 }
 
 #include "cc_body_queue.h"
 
-bool RemoveEntity (edict_t *ent)
-{
-	if (!ent || ent->server.State.Number <= (Game.MaxClients + BODY_QUEUE_SIZE))
-		return false;
+/**
+\fn	edict_t *G_Spawn ()
 
-	if (!ent->Entity || ent->AwaitingRemoval)
-	{
-		if (!ent->RemovalFrames)
-		{
-			ent->AwaitingRemoval = false;
+\deprecated	Use CreateEntityFromClassname instead.
 
-			QDelete ent->Entity;
-			ent->Entity = NULL;
+\brief	Either finds a free edict, or allocates a new one.
+		Try to avoid reusing an entity that was recently freed, because it
+		can cause the client to think the entity morphed into something else
+		instead of being removed and recreated, which can cause interpolated
+		angles and bad trails.
 
-			// Push into Open
-			Level.Entities.Open.push_front (ent);
-			return true;
-		}
-
-		ent->RemovalFrames--;
-	}
-	else if (ent->Entity->GroundEntity && ent->Entity->GroundEntity->Freed)
-		ent->Entity->GroundEntity = NULL;
-
-	return false;
-}
-
-/*
-=================
-G_Spawn
-
-Either finds a free edict, or allocates a new one.
-Try to avoid reusing an entity that was recently freed, because it
-can cause the client to think the entity morphed into something else
-instead of being removed and recreated, which can cause interpolated
-angles and bad trails.
-=================
-*/
+\return	null if it fails, else. 
+**/
 edict_t *G_Spawn ()
 {
-	edict_t *e = GetEntityFromList ();
+	edict_t *e = Level.Entities.GetEntityFromList ();
 	
 	if (e == NULL)
 	{
@@ -273,13 +386,18 @@ CC_ENABLE_DEPRECATION
 	return e;
 }
 
-/*
-=================
-G_FreeEdict
+/**
+\fn	void G_FreeEdict (edict_t *ed)
 
-Marks the edict as free
-=================
-*/
+\deprecated	Use IBaseEntity::Free instead.
+
+\brief	Marks the entity as freed. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ed	If non-null, the entity. 
+**/
 void G_FreeEdict (edict_t *ed)
 {
 CC_DISABLE_DEPRECATION
@@ -306,14 +424,25 @@ CC_ENABLE_DEPRECATION
 typedef std::vector <IBaseEntity*> TPrivateEntitiesContainer;
 TPrivateEntitiesContainer PrivateEntities;
 
+/**
+\fn	void InitPrivateEntities ()
+
+\brief	Initialises the private entities list. 
+**/
 void InitPrivateEntities ()
 {
 	PrivateEntities.clear ();
 }
 
+/**
+\fn	void RunPrivateEntities ()
+
+\brief	Runs all private entities.
+**/
 void			RunPrivateEntities ()
 {
 	TPrivateEntitiesContainer::iterator it = PrivateEntities.begin();
+
 	while (it != PrivateEntities.end())
 	{
 		IBaseEntity *Entity = (*it);
@@ -343,7 +472,14 @@ void			RunPrivateEntities ()
 	}
 };
 
-// Creating a new entity via constructor.
+/**
+\fn	IBaseEntity::IBaseEntity ()
+
+\brief	Default constructor. Creates a new entity from a free entity. 
+
+\author	Paril
+\date	29/05/2010
+**/
 IBaseEntity::IBaseEntity ()
 {
 CC_DISABLE_DEPRECATION
@@ -358,6 +494,20 @@ CC_ENABLE_DEPRECATION
 	State.Initialize (&gameEntity->server.State);
 };
 
+/**
+\fn	IBaseEntity::IBaseEntity (sint32 Index)
+
+\brief	Constructor. This constructor initializes an entity using a specific entity index.
+		
+		\attention	If writing a new entity class, you NEED (and this is 100% REQUIRED)
+		to call this constructor, even if IBaseEntity isn't a direct base class. This is due to a
+		C++98 limitation. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	Index	Zero-based index of the. 
+**/
 IBaseEntity::IBaseEntity (sint32 Index)
 {
 	if (Index < 0)
@@ -381,6 +531,14 @@ IBaseEntity::IBaseEntity (sint32 Index)
 }
 
 bool ShuttingDownEntities = false;
+/**
+\fn	IBaseEntity::~IBaseEntity ()
+
+\brief	Destructor. 
+
+\author	Paril
+\date	29/05/2010
+**/
 IBaseEntity::~IBaseEntity ()
 {
 	if (!ShuttingDownEntities)
@@ -408,6 +566,16 @@ IBaseEntity::~IBaseEntity ()
 	}
 };
 
+/**
+\fn	void IBaseEntity::WriteBaseEntity (CFile &File)
+
+\brief	Writes this entity's base members to a file. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	File	The file. 
+**/
 void IBaseEntity::WriteBaseEntity (CFile &File)
 {
 	File.Write<bool> (Freed);
@@ -434,6 +602,16 @@ void IBaseEntity::WriteBaseEntity (CFile &File)
 	File.Write<sint32> (ViewHeight);
 }
 
+/**
+\fn	void IBaseEntity::ReadBaseEntity (CFile &File)
+
+\brief	Reads this entity's base members from a file. 
+
+\author	Paril. 
+\date	29/05/2010. 
+
+\param [in,out]	File	The file. 
+**/
 void IBaseEntity::ReadBaseEntity (CFile &File)
 {
 	Freed = File.Read<bool> ();
@@ -467,11 +645,31 @@ void IBaseEntity::ReadBaseEntity (CFile &File)
 	ViewHeight = File.Read<sint32> ();
 }
 
-// Funtions below are to link the private gameEntity together
+/**
+\fn	IBaseEntity *IBaseEntity::GetOwner ()
+
+\brief	Gets the owner of this entity.
+See "Entities - Owners" for details. 
+
+\return	null if it fails, else the entity. 
+**/
 IBaseEntity		*IBaseEntity::GetOwner	()
 {
 	return (gameEntity->server.Owner) ? gameEntity->server.Owner->Entity : NULL;
 }
+
+/**
+\fn	void IBaseEntity::SetOwner (IBaseEntity *Entity)
+	
+\brief	Sets the owner of this entity.
+		See "Entities - Owners" for details.
+	
+\author	Paril
+\date	29/05/2010
+	
+\param [in,out]	Entity	If non-null, the new owner.
+						If null, owner is set to nothing.
+**/
 void			IBaseEntity::SetOwner	(IBaseEntity *Entity)
 {
 	if (!Entity || !Entity->gameEntity)
@@ -483,81 +681,195 @@ void			IBaseEntity::SetOwner	(IBaseEntity *Entity)
 	gameEntity->server.Owner = Entity->gameEntity;
 }
 
+/**
+\fn	EBrushContents &IBaseEntity::GetClipmask ()
+
+\brief	Gets the clipmask of this entity. 
+
+\return	The clipmask. 
+**/
 EBrushContents	&IBaseEntity::GetClipmask	()
 {
 	return gameEntity->server.ClipMask;
 }
 
+/**
+\fn	ESolidType &IBaseEntity::GetSolid ()
+
+\brief	Gets the solidity of this entity. 
+
+\return	The solidity. 
+**/
 ESolidType		&IBaseEntity::GetSolid ()
 {
 	return gameEntity->server.Solid;
 }
 
-// Unless, of course, you use the vec3f class :D
+/**
+\fn	vec3f &IBaseEntity::GetMins ()
+
+\brief	Gets the min bounds of this entity. 
+
+\return	The mins. 
+**/
 vec3f			&IBaseEntity::GetMins ()
 {
 	return gameEntity->server.Mins;
 }
+
+/**
+\fn	vec3f &IBaseEntity::GetMaxs ()
+
+\brief	Gets the max bounds of this entity. 
+
+\return	The maxs. 
+**/
 vec3f			&IBaseEntity::GetMaxs ()
 {
 
 	return gameEntity->server.Maxs;
 }
 
+/**
+\fn	vec3f &IBaseEntity::GetAbsMin ()
+
+\brief	Gets the absolute mins of this entity. 
+
+\return	The absolute mins (essentially origin + mins). 
+**/
 vec3f			&IBaseEntity::GetAbsMin ()
 {
 	return gameEntity->server.AbsMin;
 }
+
+/**
+\fn	vec3f &IBaseEntity::GetAbsMax ()
+
+\brief	Gets the absolute maxs of this entity. 
+
+\return	The absolute maxs (essentially origin + maxs). 
+**/
 vec3f			&IBaseEntity::GetAbsMax ()
 {
 	return gameEntity->server.AbsMax;
 }
+
+/**
+\fn	vec3f &IBaseEntity::GetSize ()
+
+\brief	Gets the size of this entity. 
+
+\return	The size. 
+**/
 vec3f			&IBaseEntity::GetSize ()
 {
 	return gameEntity->server.Size;
 }
 
+/**
+\fn	EServerFlags &IBaseEntity::GetSvFlags ()
+
+\brief	Gets the server flags of this entity. 
+
+\return	The server flags. 
+**/
 EServerFlags	&IBaseEntity::GetSvFlags ()
 {
 	return gameEntity->server.ServerFlags;
 }
 
+/**
+\fn	sint32 IBaseEntity::GetAreaNum (bool second)
+
+\brief	Gets this entity's area number. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	second	true if you want areaNum2. 
+
+\return	areaNum2 if second, otherwise areaNum. 
+**/
 sint32				IBaseEntity::GetAreaNum (bool second)
 {
 	return ((second) ? gameEntity->server.AreaNum2 : gameEntity->server.AreaNum);
 }
 
+/**
+\fn	SAreaLink *IBaseEntity::GetArea ()
+
+\brief	Gets this entity's area pointer. 
+
+\return	null if it fails, else the area. 
+**/
 SAreaLink			*IBaseEntity::GetArea ()
 {
 	return &gameEntity->server.Area;
 }
+
+/**
+\fn	void IBaseEntity::ClearArea ()
+
+\brief	Clears this entity's area. 
+**/
 void			IBaseEntity::ClearArea ()
 {
 	Mem_Zero (&gameEntity->server.Area, sizeof(gameEntity->server.Area));
 }
 
+/**
+\fn	sint32 IBaseEntity::GetLinkCount ()
+
+\brief	Gets this entity's link count. 
+
+\return	The link count. 
+**/
 sint32				IBaseEntity::GetLinkCount ()
 {
 	return gameEntity->server.LinkCount;
 }
 
+/**
+\fn	bool &IBaseEntity::GetInUse ()
+
+\brief	Gets the usage state of this entity. 
+
+\return	True if in-use, false if not. 
+**/
 bool			&IBaseEntity::GetInUse ()
 {
 	return (bool&)gameEntity->server.InUse;
 }
 
 CC_DISABLE_DEPRECATION
+/**
+\fn	void IBaseEntity::Link ()
+
+\brief	Links this entity to the world.
+		See "Entities - Linking". 
+**/
 void			IBaseEntity::Link ()
 {
 	gi.linkentity (gameEntity);
 }
 
+/**
+\fn	void IBaseEntity::Unlink ()
+	
+\brief	Unlinks this entity from the world.
+		See "Entities - Linking"
+**/
 void			IBaseEntity::Unlink ()
 {
 	gi.unlinkentity (gameEntity);
 }
 CC_ENABLE_DEPRECATION
 
+/**
+\fn	void IBaseEntity::Free ()
+
+\brief	Frees this entity. 
+**/
 void			IBaseEntity::Free ()
 {
 	if (gameEntity)
@@ -573,7 +885,7 @@ void			IBaseEntity::Free ()
 		if (!(EntityFlags & ENT_JUNK))
 		{
 			if (Level.Frame == 0)
-				RemoveEntityFromList (gameEntity);
+				Level.Entities.RemoveEntityFromList (gameEntity);
 			else if (!gameEntity->AwaitingRemoval)
 			{
 				gameEntity->AwaitingRemoval = true;
@@ -585,32 +897,70 @@ void			IBaseEntity::Free ()
 	Freed = true;
 }
 
-void	IBaseEntity::PlaySound (ESoundChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+/**
+\fn	void IBaseEntity::PlaySound (ESoundChannel Channel, MediaIndex Sound, uint8 Volume,
+	EAttenuation Attenuation, uint8 TimeOfs)
+
+\brief	Plays a sound 'soundIndex' on channel 'channel' with volume 'volume', attenuation
+		'attenuation' and time offset 'timeOfs'. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	Channel		The channel. 
+\param	Sound		The sound. 
+\param	Volume		The volume. 
+\param	Attenuation	The attenuation. 
+\param	TimeOfs		The time ofs. 
+**/
+void	IBaseEntity::PlaySound (ESoundChannel Channel, MediaIndex Sound, uint8 Volume, EAttenuation Attenuation, uint8 TimeOfs)
 {
-	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
+	if ((Channel != CHAN_AUTO) && (Channel < CHAN_MAX))
 	{
-		if (PlayedSounds[channel-1])
+		if (PlayedSounds[Channel-1])
 			return;
 		else
-			PlayedSounds[channel-1] = true;
+			PlayedSounds[Channel-1] = true;
 	}
 
-	PlaySoundFrom (this, channel, soundIndex, volume, attenuation, timeOfs);
+	PlaySoundFrom (this, Channel, Sound, Volume, Attenuation, TimeOfs);
 };
 
-void	IBaseEntity::PlayPositionedSound (vec3f origin, ESoundChannel channel, MediaIndex soundIndex, uint8 volume, EAttenuation attenuation, uint8 timeOfs)
+/**
+\fn	void IBaseEntity::PlayPositionedSound (vec3f Origin, ESoundChannel Channel, MediaIndex Sound,
+	uint8 Volume, EAttenuation Attenuation, uint8 TimeOfs)
+
+\brief	Plays a positioned sound 'soundIndex' at position 'Origin' on channel 'channel' with
+		volume 'volume', attenuation 'attenuation' and time offset 'timeOfs'. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	Origin		The origin. 
+\param	Channel		The channel. 
+\param	Sound		Sound index of the sound. 
+\param	Volume		The volume. 
+\param	Attenuation	The attenuation. 
+\param	TimeOfs		The time offset. 
+**/
+void	IBaseEntity::PlayPositionedSound (vec3f Origin, ESoundChannel Channel, MediaIndex Sound, uint8 Volume, EAttenuation Attenuation, uint8 TimeOfs)
 {
-	if ((channel != CHAN_AUTO) && (channel < CHAN_MAX))
+	if ((Channel != CHAN_AUTO) && (Channel < CHAN_MAX))
 	{
-		if (PlayedSounds[channel-1])
+		if (PlayedSounds[Channel-1])
 			return;
 		else
-			PlayedSounds[channel-1] = true;
+			PlayedSounds[Channel-1] = true;
 	}
 
-	PlaySoundAt (origin, this, channel, soundIndex, volume, attenuation, timeOfs);
+	PlaySoundAt (Origin, this, Channel, Sound, Volume, Attenuation, TimeOfs);
 };
 
+/**
+\fn	void IBaseEntity::KillBox ()
+
+\brief	Creates a killbox around this player, instantly gibbing anything inside of it. 
+**/
 void	IBaseEntity::KillBox ()
 {
 	while (1)
@@ -631,37 +981,97 @@ void	IBaseEntity::KillBox ()
 	}
 };
 
-void IBaseEntity::SplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod)
+/**
+\fn	void IBaseEntity::SplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore,
+	float Radius, EMeansOfDeath MeansOfDeath)
+
+\brief	Performs splash damage around this entity. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Attacker	If non-null, the attacker. 
+\param	Damage				The damage. 
+\param [in,out]	Ignore		If non-null, the entity to ignore. 
+\param	Radius				The radius. 
+\param	MeansOfDeath		The means of death.  
+**/
+void IBaseEntity::SplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore, float Radius, EMeansOfDeath MeansOfDeath)
 {
 	IHurtableEntity	*Entity = NULL;
 
-	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
+	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), Radius)) != NULL)
 	{
-		if (Entity == ignore)
+		if (Entity == Ignore)
 			continue;
 		if (!Entity->CanTakeDamage)
 			continue;
 
-		float points = damage - 0.5 * (State.GetOrigin() - Entity->State.GetOrigin().MultiplyAngles (0.5f, Entity->GetMins() + Entity->GetMaxs())).Length();
+		float points = Damage - 0.5 * (State.GetOrigin() - Entity->State.GetOrigin().MultiplyAngles (0.5f, Entity->GetMins() + Entity->GetMaxs())).Length();
 
 		if (Entity == Attacker)
 			points *= 0.5;
 		if ((points > 0) && Entity->CanDamage (this))
-			Entity->TakeDamage (this, Attacker, Entity->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, mod);
+			Entity->TakeDamage (this, Attacker, Entity->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, MeansOfDeath);
 	}
+}
+
+static inline void BuildBoxPoints(vec3f p[8], vec3f &org, vec3f &mins, vec3f &maxs)
+{
+	p[0] = org + mins;
+	p[1] = p[0] - vec3f(mins.X, 0, 0);
+	p[2] = p[0] - vec3f(0, mins.Y, 0);
+	p[3] = p[0] - vec3f(mins.X, mins.Y, 0);
+
+	p[4] = org + maxs;
+	p[5] = p[4] - vec3f(maxs.X, 0, 0);
+	p[6] = p[0] - vec3f(0, maxs.Y, 0);
+	p[7] = p[0] - vec3f(maxs.X, maxs.Y, 0);
+}
+
+/**
+\fn	bool IBaseEntity::CanSee (IBaseEntity *Other)
+
+\brief	Queries if we can see 'Other'. This is an entire bbox trace check, not just visibility. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Other	If non-null, the other. 
+
+\return	true if it succeeds, false if it fails. 
+**/
+bool IBaseEntity::CanSee (IBaseEntity *Other)
+{
+	// bmodels need special checking because their origin is 0,0,0
+	if ((EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH)
+		return false; // bmodels not supported
+
+	vec3f	targpoints[8];
+	BuildBoxPoints(targpoints, State.GetOrigin(), GetMins(), GetMaxs());
+	
+	vec3f viewpoint = Other->State.GetOrigin() + vec3f(0,0,Other->ViewHeight);
+	for (uint8 i = 0; i < 8; i++)
+	{
+		CTrace trace (viewpoint, targpoints[i], Other, CONTENTS_MASK_SOLID);
+		if (trace.fraction == 1.0)
+			return true;
+	}
+
+	return false;
 }
 
 #if ROGUE_FEATURES
 
-/*
-============
-NukeSplashDamage
+/**
+\class	CNukePlayerCallBack
 
-Like SplashDamage, but ignores walls (skips CanDamage check, among others)
-// up to KILLZONE radius, do 10,000 points
-// after that, do damage linearly out to KILLZONE2 radius
-============
-*/
+\brief	Nuke callback.
+		Sets a player's nuke timer based off distance to nuke.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CNukePlayerCallBack : public CForEachPlayerCallback
 {
 public:
@@ -686,7 +1096,23 @@ public:
 	}
 };
 
-void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod)
+/**
+\fn	void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore,
+	float Radius, EMeansOfDeath MeansOfDeath)
+
+\brief	Performs nuke splash damage around this entity. Nuke damage ignores walls and makes
+		entities not gib (vaporize). 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Attacker	If non-null, the attacker. 
+\param	Damage				The damage. 
+\param [in,out]	Ignore		If non-null, the ignore. 
+\param	Radius				The radius. 
+\param	MeansOfDeath		The means of death. 
+**/
+void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore, float Radius, EMeansOfDeath MeansOfDeath)
 {
 	float	points;
 	IHurtableEntity	*Entity = NULL;
@@ -694,13 +1120,13 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEn
 	vec3f	dir;
 	float	len;
 
-	float killzone = radius;
-	float killzone2 = radius*2.0;
+	float killzone = Radius;
+	float killzone2 = Radius*2.0;
 
-	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), radius)) != NULL)
+	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), Radius)) != NULL)
 	{
 // ignore nobody
-		if (Entity == ignore)
+		if (Entity == Ignore)
 			continue;
 		if (!Entity->CanTakeDamage)
 			continue;
@@ -729,7 +1155,7 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEn
 			if (Entity->EntityFlags & ENT_PLAYER)
 				(entity_cast<CPlayerEntity>(Entity))->Client.Timers.Nuke = Level.Frame + 20;
 			dir = Entity->State.GetOrigin() - State.GetOrigin();
-			Entity->TakeDamage (this, Attacker, dir, State.GetOrigin(), vec3fOrigin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+			Entity->TakeDamage (this, Attacker, dir, State.GetOrigin(), vec3fOrigin, (int)points, (int)points, DAMAGE_RADIUS, MeansOfDeath);
 		}
 	}
 
@@ -737,44 +1163,56 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEn
 }
 #endif
 
-IMapEntity::IMapEntity () : 
-IBaseEntity()
-{
-	EntityFlags |= ENT_MAP;
-};
-
-IMapEntity::IMapEntity (sint32 Index) : 
-IBaseEntity(Index)
-{
-	EntityFlags |= ENT_MAP;
-};
-
-IMapEntity::~IMapEntity ()
-{
-};
-
 #include "cc_temporary_entities.h"
 
-void IBaseEntity::BecomeExplosion (bool grenade)
+/**
+\fn	void IBaseEntity::BecomeExplosion (bool Grenade)
+
+\brief	Visually 'turns' the entity into an explosion and frees it. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	Grenade	true if grenade explosion, false if rocket. 
+**/
+void IBaseEntity::BecomeExplosion (bool Grenade)
 {
-	if (grenade)
+	if (Grenade)
 		CGrenadeExplosion (State.GetOrigin()).Send();
 	else
 		CRocketExplosion (State.GetOrigin()).Send();
 	Free ();
 }
 
-void IBaseEntity::CastTo (ECastFlags CastFlags)
-{
-	Cast (CastFlags, this);
-}
+/**
+\fn	IMapEntity::IMapEntity ()
 
-void IBaseEntity::StuffText (const char *text)
+\brief	Default constructor. 
+
+\author	Paril
+\date	29/05/2010
+**/
+IMapEntity::IMapEntity () : 
+IBaseEntity()
 {
-   	WriteByte (SVC_STUFFTEXT);	        
-	WriteString (text);
-    CastTo (CASTFLAG_RELIABLE);	
-}
+	EntityFlags |= ENT_MAP;
+};
+
+/**
+\fn	IMapEntity::IMapEntity (sint32 Index)
+
+\brief	Entity constructor. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	Index	Zero-based index of the entity. 
+**/
+IMapEntity::IMapEntity (sint32 Index) : 
+IBaseEntity(Index)
+{
+	EntityFlags |= ENT_MAP;
+};
 
 ENTITYFIELDS_BEGIN(IMapEntity)
 {
@@ -793,6 +1231,18 @@ const CEntityField IMapEntity::FieldsForParsing_Map[] =
 };
 const size_t IMapEntity::FieldsForParsingSize_Map = ArrayCount(IMapEntity::FieldsForParsing_Map);
 
+/**
+\fn	bool IMapEntity::ParseField (const char *Key, const char *Value)
+
+\brief	Parse a single field from an entity. See "Entities - Saving/Loading". 
+\author	Paril. 
+\date	29/05/2010. 
+
+\param	Key		The key. 
+\param	Value	The value. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 bool			IMapEntity::ParseField (const char *Key, const char *Value)
 {
 	if (CheckFields<IMapEntity, IBaseEntity> (this, Key, Value))
@@ -847,6 +1297,14 @@ void IMapEntity::LoadFields (CFile &File)
 	}
 };
 
+/**
+\fn	bool IMapEntity::CheckValidity ()
+
+\brief	Checks the validity of this entity. An entity that was invalid will not spawn, and will
+		be subsequently freed. 
+
+\return	true if valid, false if not. 
+**/
 bool				IMapEntity::CheckValidity ()
 {
 	// Remove things (except the world) from different skill levels or deathmatch
@@ -881,6 +1339,12 @@ bool				IMapEntity::CheckValidity ()
 	return true;
 };
 
+/**
+\fn	void IMapEntity::ParseFields ()
+
+\brief	Parse the fields from an entity.
+		See "Entities - Saving/Loading". 
+**/
 void IMapEntity::ParseFields ()
 {
 	if (!Level.ParseData.size())
@@ -901,7 +1365,7 @@ void IMapEntity::ParseFields ()
 	// and report ones that are still there.
 	if (Level.ParseData.size())
 	{
-		for (TKeyValuePairContainer::iterator it = Level.ParseData.begin(); it != Level.ParseData.end(); ++it)
+		for (it = Level.ParseData.begin(); it != Level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);

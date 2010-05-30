@@ -578,11 +578,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (take)
 	{
 		DamageEffect (dir, point, normal, take, dflags, mod);
-
-#if CLEANCTF_ENABLED
-		if (!CTFMatchSetup())
-#endif
-			Health -= take;
+		Health -= take;
 	}
 
 #if ROGUE_FEATURES
@@ -609,11 +605,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 				Monster->PainDebounceTime = Level.Frame + 50;
 		}
 	}
-	else if (((EntityFlags & ENT_PLAYER) && take
-#if CLEANCTF_ENABLED
-		&& !CTFMatchSetup()
-#endif
-		) || take)
+	else if (((EntityFlags & ENT_PLAYER) && take) || take)
 		Pain (Attacker, take);
 
 	// add to the damage inflicted on a player this frame

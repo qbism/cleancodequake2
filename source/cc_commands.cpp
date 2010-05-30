@@ -33,6 +33,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+/**
+\fn	void CPlayerCommand::Run (CPlayerEntity *Player)
+	
+\brief	Runs a command.
+	
+\author	Paril
+\date	29/05/2010
+	
+\param [in,out]	Player	If non-null, the player. 
+**/
 void CPlayerCommand::Run (CPlayerEntity *Player)
 {
 	if ((Flags & CMD_CHEAT) && !Game.CheatsEnabled && !(Game.GameMode & GAME_SINGLEPLAYER))
@@ -49,45 +59,41 @@ void CPlayerCommand::Run (CPlayerEntity *Player)
 typedef CCommand::TCommandListType TPlayerCommandListType;
 typedef CCommand::THashedCommandListType THashedPlayerCommandListType;
 
-TPlayerCommandListType &CommandList ()
-{
-	static TPlayerCommandListType CommandListV;
-	return CommandListV;
-};
-THashedPlayerCommandListType &CommandHashList ()
-{
-	static THashedPlayerCommandListType CommandHashListV;
-	return CommandHashListV;
-};
+TPlayerCommandListType CommandList;
+THashedPlayerCommandListType CommandHashList;
 
 CPlayerCommand *Cmd_FindCommand (const char *commandName)
 {
-	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, THashedPlayerCommandListType::iterator, 1> (commandName, CommandList(), CommandHashList());
+	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, THashedPlayerCommandListType::iterator, 1> (commandName, CommandList, CommandHashList);
 }
 
 CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFunctor *Functor, ECmdTypeFlags Flags)
 {
 	// Make sure the function doesn't already exist
 	if (CC_ASSERT_EXPR (!Cmd_FindCommand(commandName), "Tried to re-add a command, fatal error"))
-		return *static_cast<CPlayerCommand*>(CommandList()[0]);
+		return *static_cast<CPlayerCommand*>(CommandList[0]);
 
 	// We can add it!
-	CommandList().push_back (QNew (TAG_GENERIC) CPlayerCommand (commandName, Functor, Flags));
+	CommandList.push_back (QNew (TAG_GENERIC) CPlayerCommand (commandName, Functor, Flags));
 
 	// Link it in the hash tree
-	CommandHashList().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList().size()-1));
+	CommandHashList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (commandName, MAX_CMD_HASH), CommandList.size()-1));
 
-	return *static_cast<CPlayerCommand*>(CommandList()[CommandList().size()-1]);
+	return *static_cast<CPlayerCommand*>(CommandList[CommandList.size()-1]);
 }
 
-void Cmd_RemoveCommands ()
-{
-	// Remove all commands
-	for (uint32 i = 0; i < CommandList().size(); i++)
-		QDelete CommandList().at(i);
-	CommandList().clear ();
-}
+/**
+\fn	void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player)
 
+\brief	Run command.
+		Called by game API.
+
+\author	Paril
+\date	29/05/2010
+
+\param	commandName		Name of the command. 
+\param [in,out]	Player	If non-null, the player. 
+**/
 void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player)
 {
 	static CPlayerCommand *Command;
@@ -172,6 +178,14 @@ public:
 	};
 };
 
+/**
+\fn	void AddTestDebugCommands ()
+
+\brief	Adds test debug commands
+
+\author	Paril
+\date	29/05/2010
+**/
 void AddTestDebugCommands ()
 {
 	Cmd_AddCommand<CTestCommand> ("test")

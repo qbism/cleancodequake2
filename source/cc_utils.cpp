@@ -43,7 +43,7 @@ void G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &fo
 
 IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
 {
-	for (edict_t *from = (!From) ? Game.Entities : (From->gameEntity + 1); from < &Game.Entities[GameAPI.GetNumEdicts()]; from++)
+	for (edict_t *from = (!From) ? Game.Entities : (From->GetGameEntity() + 1); from < &Game.Entities[GameAPI.GetNumEdicts()]; from++)
 	{
 		if (!from->Entity)
 			continue;

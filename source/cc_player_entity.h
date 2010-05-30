@@ -366,20 +366,18 @@ public:
 
 #if CLEANCTF_ENABLED
 //ZOID
-	struct respawn_CTF_t
+	struct SCTFData_t
 	{
 		ETeamIndex		Team;					// CTF team
-		sint16			State;
-		FrameNumber	LastHurtCarrier,
+		uint8			State;
+		FrameNumber		LastHurtCarrier,
 						LastReturnedFlag,
 						FlagSince,
 						LastFraggedCarrier;
 
 		bool			IDState;
 		bool			Voted;					// for elections
-		bool			Ready;
 		bool			Admin;
-		CCTFGhost		*Ghost;					// for ghost codes
 	} CTF;
 
 //ZOID
@@ -789,7 +787,6 @@ public:
 	void			SetCTFStats ();
 	void			CTFSetIDView ();
 	void			CTFScoreboardMessage (bool reliable);
-	void			CTFAssignGhost ();
 #endif
 
 	bool			ApplyStrengthSound();
@@ -848,6 +845,32 @@ public:
 #if ROGUE_FEATURES
 	void			RemoveAttackingPainDaemons ();
 #endif
+
+	/**
+	\fn	void CastTo (ECastFlags castFlags)
+	
+	\brief	Perform a cast to this entity.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	CastFlags	The cast flags. 
+	**/
+	void			CastTo (ECastFlags castFlags);
+
+	/**
+	\fn	void StuffText (const char *text)
+
+	\attention	Be careful with this function - do not abuse it.
+	
+	\brief	Stuff text to player's command buffer. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	text	The text. 
+	**/
+	void			StuffText (const char *text);
 
 	IMPLEMENT_SAVE_HEADER(CPlayerEntity)
 };

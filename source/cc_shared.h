@@ -95,10 +95,6 @@ typedef sint32	FrameNumber;
 
 // Classes that require classes from the above includes
 #include "cc_sound.h"
-#if CLEANCTF_ENABLED
-#include "cc_ctf_admin.h"
-#include "cc_ctf_menu.h"
-#endif
 #include "cc_entity_list.h"
 
 #else

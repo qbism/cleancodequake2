@@ -271,12 +271,12 @@ public:
 
 std::vector <CWriteIndex*> WriteQueue;
 
-void SendQueue (edict_t *To, bool Reliable)
+void SendQueue (CPlayerEntity *To, bool Reliable)
 {
 	for (size_t i = 0; i < WriteQueue.size(); i++)
 		WriteQueue[i]->Write ();
 
-	gi.unicast (To, (Reliable) ? 1 : 0);
+	gi.unicast (To->GetGameEntity(), (Reliable) ? 1 : 0);
 }
 
 void Clear ()
@@ -287,7 +287,7 @@ void Clear ()
 }
 
 // vec3f overloads
-void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, IBaseEntity *Ent, bool SuppliedOrigin)
+void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CPlayerEntity *Ent, bool SuppliedOrigin)
 {
 	// Sanity checks
 	if (castType == CAST_MULTI && Ent)
@@ -305,10 +305,6 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, IBaseEntity 
 		return;
 	}
 
-	CPlayerEntity *Entity = NULL;
-	if (Ent)
-		Entity = entity_cast<CPlayerEntity>(Ent);
-
 	// Sends to all entities
 	switch (castType)
 	{
@@ -325,17 +321,17 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, IBaseEntity 
 			if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Player->State.GetOrigin()))
 				continue;
 
-			SendQueue (Player->gameEntity, (castFlags & CASTFLAG_RELIABLE) ? true : false);
+			SendQueue (Player, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		}
 		break;
 	// Send to one entity
 	case CAST_UNI:
-		if ((castFlags & CASTFLAG_PVS) && !InVisibleArea(Origin, Entity->State.GetOrigin()))
+		if ((castFlags & CASTFLAG_PVS) && !InVisibleArea(Origin, Ent->State.GetOrigin()))
 			break;
-		if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Entity->State.GetOrigin()))
+		if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Ent->State.GetOrigin()))
 			break;
 
-		SendQueue (Ent->gameEntity, (castFlags & CASTFLAG_RELIABLE) ? true : false);
+		SendQueue (Ent, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		break;
 	}
 
@@ -345,7 +341,7 @@ void Cast (ECastFlags castFlags, vec3f &Origin)
 {
 	Cast (CAST_MULTI, castFlags, Origin, NULL, true);
 }
-void Cast (ECastFlags castFlags, IBaseEntity *Ent)
+void Cast (ECastFlags castFlags, CPlayerEntity *Ent)
 {
 	Cast (CAST_UNI, castFlags, vec3fOrigin, Ent, false);
 }

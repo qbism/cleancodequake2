@@ -656,10 +656,8 @@ echo Done!
     <ClInclude Include="..\..\source\cc_file_system.h" />
     <ClInclude Include="..\..\source\cc_body_queue.h" />
     <ClInclude Include="..\..\source\cc_ctf.h" />
-    <ClInclude Include="..\..\source\cc_ctf_admin.h" />
     <ClInclude Include="..\..\source\cc_ctf_item_entities.h" />
     <ClInclude Include="..\..\source\cc_ctf_items.h" />
-    <ClInclude Include="..\..\source\cc_ctf_menu.h" />
     <ClInclude Include="..\..\source\cc_ctf_weapon_grapple.h" />
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />

@@ -301,7 +301,7 @@ void DetermineBBox (const char *classname, vec3f &mins, vec3f &maxs)
 	maxs = Mon->GetMaxs();
 
 	Mon->Free ();
-	Mon->gameEntity->RemovalFrames = 0;
+	Mon->GetGameEntity()->RemovalFrames = 0;
 }
 
 CMonsterEntity *CreateFlyMonster (vec3f origin, vec3f angles, vec3f mins, vec3f maxs, char *classname)

@@ -35,21 +35,29 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_menu.h"
 
 #if CLEANCTF_ENABLED
-bool CTFBeginElection(CPlayerEntity *Player, EElectState type, char *msg);
-void CTFResetAllPlayers();
+/**
+\fn	bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, std::string Message)
+
+\brief	Begin an election. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Player	If non-null, the player. 
+\param	Type			The type. 
+\param	Message			The message. 
+
+\return	true if it succeeds, false if it fails. 
+**/
+bool CTFBeginElection(CPlayerEntity *Player, EElectState type, std::string msg);
 
 class CCTFSettingsMenu : public CMenu
 {
 public:
-	CMenu_Slider<sint32>	*MatchStartLength;
-	CMenu_Slider<float>	*MatchLength,
-						*MatchSetupLength;
-
 	CMenu_Spin			*WeaponsStaySpin,
 						*InstantItemsSpin,
 						*QuadDropSpin,
-						*InstantWeaponsSpin,
-						*MatchLockSpin;
+						*InstantWeaponsSpin;
 
 	class CCloseLabel : public CMenu_Label
 	{
@@ -78,43 +86,6 @@ public:
 
 		bool Select (CPlayerEntity *Player)
 		{
-			if (MyMenu->MatchLength->Value != CvarList[CV_MATCH_TIME].Float())
-			{
-				BroadcastPrintf (PRINT_HIGH, "%s changed the match length to %d minutes.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->MatchLength->Value);
-
-				if (ctfgame.match == MATCH_GAME)
-					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - CvarList[CV_MATCH_TIME].Float()*600) + MyMenu->MatchLength->Value*600;
-
-				CvarList[CV_MATCH_TIME].Set (MyMenu->MatchLength->Value);
-			}
-
-			if (MyMenu->MatchSetupLength->Value != CvarList[CV_MATCH_SETUP_TIME].Float())
-			{
-				BroadcastPrintf (PRINT_HIGH, "%s changed the match setup time to %d minutes.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->MatchSetupLength->Value);
-
-				if (ctfgame.match == MATCH_SETUP)
-					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - CvarList[CV_MATCH_SETUP_TIME].Float()*60) + MyMenu->MatchSetupLength->Value*60;
-
-
-				CvarList[CV_MATCH_SETUP_TIME].Set (MyMenu->MatchSetupLength->Value);
-			}
-
-			if (MyMenu->MatchStartLength->Value != CvarList[CV_MATCH_START_TIME].Integer())
-			{
-				BroadcastPrintf(PRINT_HIGH, "%s changed the match start time to %d seconds.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->MatchStartLength->Value);
-
-				if (ctfgame.match == MATCH_PREGAME)
-					// in the middle of a match, change it on the fly
-					ctfgame.matchtime = (ctfgame.matchtime - (CvarList[CV_MATCH_START_TIME].Integer()*10)) + (MyMenu->MatchStartLength->Value*10);
-
-				CvarList[CV_MATCH_START_TIME].Set (MyMenu->MatchStartLength->Value);
-			}
-
 			sint32 i = CvarList[CV_DMFLAGS].Integer();
 			if (!!MyMenu->WeaponsStaySpin->Index != DeathmatchFlags.dfWeaponsStay.IsEnabled())
 			{
@@ -159,14 +130,6 @@ public:
 				CvarList[CV_INSTANT_WEAPONS].Set (MyMenu->InstantWeaponsSpin->Index);
 			}
 
-			if (!!MyMenu->MatchLockSpin->Index != CvarList[CV_MATCH_LOCK].Boolean())
-			{
-				BroadcastPrintf(PRINT_HIGH, "%s turned %s match lock.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->MatchLockSpin->Index ? "on" : "off");
-
-				CvarList[CV_MATCH_LOCK].Set (MyMenu->MatchLockSpin->Index);
-			}
-
 			return true;
 		};
 	};
@@ -176,8 +139,7 @@ public:
 	  WeaponsStaySpin (NULL),
 	  InstantItemsSpin (NULL),
 	  QuadDropSpin (NULL),
-	  InstantWeaponsSpin (NULL),
-	  MatchLockSpin (NULL)
+	  InstantWeaponsSpin (NULL)
 	  {
 	  };
 
@@ -208,42 +170,6 @@ public:
 		y += 8 * 3;
 
 		x += (8 * 16);
-		MatchLength = QNew (TAG_LEVEL) CMenu_Slider<float> (this, x, y);
-		MatchLength->Align = LA_LEFT;
-		MatchLength->AppendText = " min";
-		MatchLength->Min = 0.5f;
-		MatchLength->Max = 60.0f;
-		MatchLength->Step = 0.5f;
-		MatchLength->Width = 6;
-		MatchLength->Value = CvarList[CV_MATCH_LOCK].Float();
-		MatchLength->Enabled = true;
-		MatchLength->x += 8 * 2;
-
-		y += 8;
-		MatchSetupLength = QNew (TAG_LEVEL) CMenu_Slider<float> (this, x, y);
-		MatchSetupLength->Align = LA_LEFT;
-		MatchSetupLength->AppendText = " min";
-		MatchSetupLength->Min = 0.5f;
-		MatchSetupLength->Max = 60.0f;
-		MatchSetupLength->Step = 0.5f;
-		MatchSetupLength->Width = 6;
-		MatchSetupLength->Value = CvarList[CV_MATCH_SETUP_TIME].Float();
-		MatchSetupLength->Enabled = true;
-		MatchSetupLength->x += 8 * 2;
-
-		y += 8;
-		MatchStartLength = QNew (TAG_LEVEL) CMenu_Slider<sint32> (this, x, y);
-		MatchStartLength->Align = LA_LEFT;
-		MatchStartLength->AppendText = " sec";
-		MatchStartLength->Min = 0;
-		MatchStartLength->Max = 60.0f;
-		MatchStartLength->Step = 1;
-		MatchStartLength->Width = 6;
-		MatchStartLength->Value = CvarList[CV_MATCH_START_TIME].Integer();
-		MatchStartLength->Enabled = true;
-		MatchStartLength->x += 8 * 2;
-
-		y += 8;
 		WeaponsStaySpin = QNew (TAG_LEVEL) CMenu_Spin (this, x, y, &YesNoValues[0]);
 		WeaponsStaySpin->Index = DeathmatchFlags.dfWeaponsStay.IsEnabled();
 		WeaponsStaySpin->x += (8 * 4);
@@ -267,33 +193,8 @@ public:
 		InstantWeaponsSpin->x += (8 * 4);
 		InstantWeaponsSpin->Align = LA_LEFT;
 
-		y += 8;
-		MatchLockSpin = QNew (TAG_LEVEL) CMenu_Spin (this, x, y, &YesNoValues[0]);
-		MatchLockSpin->Index = CvarList[CV_MATCH_LOCK].Boolean();
-		MatchLockSpin->x += (8 * 4);
-		MatchLockSpin->Align = LA_LEFT;
-
 		x = -98;
 		y = -76 + 8 * 3; // Top
-
-		CMenu_Label *MatchLengthLabel = QNew (TAG_LEVEL) CMenu_Label (this, x, y);
-		MatchLengthLabel->Enabled = false;
-		MatchLengthLabel->LabelString = "Match Len";
-		MatchLengthLabel->Flags = LF_GREEN;
-
-		y += 8;
-		CMenu_Label *MatchSetupLengthLabel = QNew (TAG_LEVEL) CMenu_Label (this, x, y);
-		MatchSetupLengthLabel->Enabled = false;
-		MatchSetupLengthLabel->LabelString = "Match Setup Len";
-		MatchSetupLengthLabel->Flags = LF_GREEN;
-
-		y += 8;
-		CMenu_Label *MatchStartLengthLabel = QNew (TAG_LEVEL) CMenu_Label (this, x, y);
-		MatchStartLengthLabel->Enabled = false;
-		MatchStartLengthLabel->LabelString = "Match Start Len";
-		MatchStartLengthLabel->Flags = LF_GREEN;
-
-		y += 8;
 		CMenu_Label *WeaponsStayLabel = QNew (TAG_LEVEL) CMenu_Label (this, x, y);
 		WeaponsStayLabel->Enabled = false;
 		WeaponsStayLabel->LabelString = "Weapons Stay";
@@ -316,12 +217,6 @@ public:
 		InstantWeaponsLabel->Enabled = false;
 		InstantWeaponsLabel->LabelString = "Instant Weapons";
 		InstantWeaponsLabel->Flags = LF_GREEN;
-
-		y += 8;
-		CMenu_Label *MatchLockLabel = QNew (TAG_LEVEL) CMenu_Label (this, x, y);
-		MatchLockLabel->Enabled = false;
-		MatchLockLabel->LabelString = "Match Lock";
-		MatchLockLabel->Flags = LF_GREEN;
 
 		y += 16;
 		CApplyLabel *ApplyLabel = QNew (TAG_LEVEL) CApplyLabel (this, x, y);
@@ -369,56 +264,6 @@ public:
 	  CMenu (Player)
 	  {
 	  };
-	  
-	class CMatchSetLabel : public CMenu_Label
-	{
-	public:
-		CMatchSetLabel(CCTFAdminMenu *Menu, sint32 x, sint32 y) :
-		CMenu_Label(Menu, x, y)
-		{
-		};
-
-		bool Select (CPlayerEntity *Player)
-		{
-			switch (ctfgame.match)
-			{
-			case MATCH_SETUP:
-				BroadcastPrintf (PRINT_CHAT, "Match has been forced to start.\n");
-				ctfgame.match = MATCH_PREGAME;
-				ctfgame.matchtime = Level.Frame + (CvarList[CV_MATCH_START_TIME].Float() * 10);
-				break;
-			case MATCH_GAME:
-				BroadcastPrintf(PRINT_CHAT, "Match has been forced to terminate.\n");
-				ctfgame.match = MATCH_SETUP;
-				ctfgame.matchtime = Level.Frame + (CvarList[CV_MATCH_SETUP_TIME].Float() * 60);
-				CTFResetAllPlayers();
-				break;
-			}
-			return true;
-		};
-	};
-	  
-	class CMatchModeLabel : public CMenu_Label
-	{
-	public:
-		CMatchModeLabel(CCTFAdminMenu *Menu, sint32 x, sint32 y) :
-		CMenu_Label(Menu, x, y)
-		{
-		};
-
-		bool Select (CPlayerEntity *Player)
-		{
-			if (ctfgame.match != MATCH_SETUP)
-			{
-				if (CvarList[CV_COMPETITION].Integer() < 3)
-					CvarList[CV_COMPETITION].Set (2);
-				ctfgame.match = MATCH_SETUP;
-				CTFResetAllPlayers();
-			}
-
-			return true;
-		};
-	};
 
 	class CCloseLabel : public CMenu_Label
 	{
@@ -475,33 +320,6 @@ public:
 		SettingsLabel->Align = LA_LEFT;
 		SettingsLabel->LabelString = "Settings";
 
-		y += 8;
-
-		if (CvarList[CV_COMPETITION].Integer())
-		{
-			CMenu_Label *MatchLabel;
-
-			switch (ctfgame.match)
-			{
-			case MATCH_SETUP:
-				MatchLabel = QNew (TAG_LEVEL) CMatchSetLabel(this, x, y);
-				MatchLabel->LabelString = "Force match start";
-				break;
-			case MATCH_GAME:
-				MatchLabel = QNew (TAG_LEVEL) CMatchSetLabel(this, x, y);
-				MatchLabel->LabelString = "Cancel match";
-				break;
-			case MATCH_NONE:
-			default:
-				MatchLabel = QNew (TAG_LEVEL) CMatchModeLabel(this, x, y);
-				MatchLabel->LabelString = "Switch to match mode";
-				break;
-			};
-
-			MatchLabel->Enabled = true;
-			MatchLabel->Align = LA_LEFT;
-		}
-
 		y += 8 * 2;
 		CCloseLabel *CloseLabel = QNew (TAG_LEVEL) CCloseLabel(this, x, y);
 		CloseLabel->Enabled = true;
@@ -526,8 +344,6 @@ public:
 
 void CCTFAdminCommand::operator () ()
 {
-	char text[1024];
-
 	if (ArgCount() > 1 && CvarList[CV_ADMIN_PASSWORD].String() && *CvarList[CV_ADMIN_PASSWORD].String() &&
 		!Player->Client.Respawn.CTF.Admin && strcmp(CvarList[CV_ADMIN_PASSWORD].String(), ArgGets(1).c_str()) == 0)
 	{
@@ -540,9 +356,7 @@ void CCTFAdminCommand::operator () ()
 
 	if (!Player->Client.Respawn.CTF.Admin)
 	{
-		Q_snprintfz(text, sizeof(text), "%s has requested admin rights.",
-			Player->Client.Persistent.Name.c_str());
-		CTFBeginElection(Player, ELECT_ADMIN, text);
+		CTFBeginElection(Player, ELECT_ADMIN, Player->Client.Persistent.Name + " has requested admin rights.");
 		return;
 	}
 

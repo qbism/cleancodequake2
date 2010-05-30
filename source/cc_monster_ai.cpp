@@ -978,8 +978,8 @@ void CMonster::AI_Run(float Dist)
 
 		if (tr.fraction < 1)
 		{
-			vec3f v = LastSighting - Entity->State.GetOrigin();
-			float d1 = v.Length();
+			v = LastSighting - Entity->State.GetOrigin();
+			d1 = v.Length();
 			float center = tr.fraction;
 			float d2 = d1 * ((center+1)/2);
 			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();

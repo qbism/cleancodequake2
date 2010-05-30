@@ -34,34 +34,131 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_BASEENTITY_H) || !INCLUDE_GUARDS
 #define CC_GUARD_BASEENTITY_H
 
+/**
+\class	CEntityState
+
+\brief	Entity state class.
+		Holds an SEntityState and provides functions
+		to interface it.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CEntityState
 {
 private:
-	SEntityState			*state;
+	SEntityState			*state;	// The entity state pointer
 
 public:
 	CEntityState			(SEntityState *state);
 	CEntityState			();
 
-	void Initialize (SEntityState *state);
+	void		Initialize (SEntityState *state);
 
+	/**
+	\fn	sint32 &GetNumber ()
+	
+	\brief	Gets the entity's number.
+	
+	\return	The entity number. 
+	**/
 	sint32		&GetNumber		();
 
+	/**
+	\fn	vec3f &GetOrigin ()
+	
+	\brief	Gets the entity's origin. 
+	
+	\return	The origin. 
+	**/
 	vec3f		&GetOrigin		();
+
+	/**
+	\fn	vec3f &GetAngles ()
+	
+	\brief	Gets the entity's angles. 
+	
+	\return	The angles. 
+	**/
 	vec3f		&GetAngles		();
+
+	/**
+	\fn	vec3f &GetOldOrigin ()
+	
+	\brief	Gets the entity's old origin. 
+	
+	\return	The old origin. 
+	**/
 	vec3f		&GetOldOrigin	();
 
-	// Can be 1, 2, 3, or 4
+	/**
+	\fn	sint32 &GetModelIndex (uint8 index = 1)
+	
+	\brief	Gets a modelindex. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	index	One-based index.
+					Defaults to 1; 2 is modelIndex2, etc.
+	
+	\return	The modelindex. 
+	**/
 	sint32		&GetModelIndex	(uint8 index = 1);
 
+	/**
+	\fn	sint32 &GetFrame ()
+	
+	\brief	Gets the entity's animation frame. 
+	
+	\return	The frame. 
+	**/
 	sint32		&GetFrame		();
+
+	/**
+	\fn	sint32 &GetSkinNum ()
+	
+	\brief	Gets the entity's skin number. 
+	
+	\return	The skin number. 
+	**/
 	sint32		&GetSkinNum		();
 
+	/**
+	\fn	EEntityStateEffects &GetEffects ()
+	
+	\brief	Gets the entity's effects. 
+	
+	\return	The effects. 
+	**/
 	EEntityStateEffects			&GetEffects		();
+
+	/**
+	\fn	EEntityStateRenderEffects &GetRenderEffects ()
+	
+	\brief	Gets the entity's render effects. 
+	
+	\return	The render effects. 
+	**/
 	EEntityStateRenderEffects	&GetRenderEffects	();
 
+	/**
+	\fn	MediaIndex &GetSound ()
+	
+	\brief	Gets the entity's sound. 
+	
+	\return	The sound. 
+	**/
 	MediaIndex		&GetSound		();
-	EEventEffect	&GetEvent			();
+
+	/**
+	\fn	EEventEffect &GetEvent ()
+	
+	\brief	Gets the entity's event. 
+	
+	\return	The event. 
+	**/
+	EEventEffect	&GetEvent		();
 };
 
 /**
@@ -130,108 +227,457 @@ enum
 // A base entity can't do anything
 class IBaseEntity
 {
-//private:
-public: // Kept public for now because there are lots of functions that require edict_t
+protected:
 	edict_t			*gameEntity;	// The "game entity" this is linked with.
 									// Kept private to make sure no mistakes are made.
 public:
-	bool			Freed;
-	uint32			EntityFlags;
-	CEntityState	State;
-	EEdictFlags		Flags;
-	std::string	ClassName;
+	bool			Freed;			// true if freed
+	uint32			EntityFlags;	// The entity type flags
+	CEntityState	State;			// The entity state
+	EEdictFlags		Flags;			// The entity flags
+	std::string		ClassName;		// classname of this entity
 
-	struct entityTeam_t
+	/**
+	\struct	SEntityTeam
+	
+	\brief	Entity team structure.
+			Contains team data.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
+	struct SEntityTeam
 	{
-		char			*String;
+		char			*String;	// Team string. Only valid during spawn frame.
 
-		bool			HasTeam;
-		IBaseEntity		*Chain;
-		IBaseEntity		*Master;
+		bool			HasTeam;	// true if has team
+		IBaseEntity		*Chain;		// Team chain
+		IBaseEntity		*Master;	// Team master
 	} Team;
 
-	IBaseEntity		*GroundEntity;
-	sint32			GroundEntityLinkCount;
-	uint32			SpawnFlags;
-	IBaseEntity		*Enemy;
-	sint32			ViewHeight;
+	IBaseEntity		*GroundEntity;			// The ground entity
+	sint32			GroundEntityLinkCount;	// Number of ground entity links
+	uint32			SpawnFlags;				// Entity spawnflags
+	IBaseEntity		*Enemy;					// Entity's enemy
+	sint32			ViewHeight;				// Entity's Viewheight
 
-	void WriteBaseEntity (CFile &File);
-	void ReadBaseEntity (CFile &File);
-
+	/**
+	\fn	IBaseEntity ()
+	
+	\brief	Default constructor. Creates a new entity from a free entity. 
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	IBaseEntity ();
+
+	/**
+	\fn	IBaseEntity (sint32 Index)
+	
+	\brief	Constructor. This constructor initializes an entity using a specific entity index.
+			
+			\attention	If writing a new entity class, you NEED (and this is 100% REQUIRED)
+				to call this constructor, even if IBaseEntity isn't a direct base class. This is due to
+				a C++98 limitation. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Index	Zero-based index of the. 
+	**/
 	IBaseEntity (sint32 Index);
+
+	/**
+	\fn	virtual ~IBaseEntity ()
+	
+	\brief	Destructor.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	virtual ~IBaseEntity ();
 
-	virtual	bool	Run () {return true;}; // Runs the entity
+	/**
+	\fn	inline edict_t *GetGameEntity ()
+	
+	\brief	Gets the game entity.
+	
+	\return	null if it fails, else the game entity. 
+	**/
+	inline edict_t *GetGameEntity ()
+	{
+		return gameEntity;
+	}
 
-	// Funtions below are to link the private gameEntity together
+	/**
+	\fn	void WriteBaseEntity (CFile &File)
+	
+	\brief	Writes this entity's base members to a file.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	File	The file. 
+	**/
+	void WriteBaseEntity (CFile &File);
+
+	/**
+	\fn	void ReadBaseEntity (CFile &File)
+	
+	\brief	Reads this entity's base members from a file. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	File	The file. 
+	**/
+	void ReadBaseEntity (CFile &File);
+
+	/**
+	\fn	virtual bool Run ()
+	
+	\brief	Runs this entity.
+			See "Entities - Run Function" for more information.
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
+	virtual	bool	Run ()
+	{
+		return true;
+	};
+
+	/**
+	\fn	IBaseEntity *GetOwner ()
+	
+	\brief	Gets the owner of this entity.
+			See "Entities - Owners" for details.
+	
+	\return	null if it fails, else the entity. 
+	**/
 	IBaseEntity		*GetOwner	();
+
+	/**
+	\fn	void SetOwner (IBaseEntity *Entity)
+	
+	\brief	Sets the owner of this entity.
+			See "Entities - Owners" for details.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Entity	If non-null, the new owner.
+							If null, owner is set to nothing.
+	**/
 	void			SetOwner	(IBaseEntity *Entity);
 
+	/**
+	\fn	EBrushContents &GetClipmask ()
+	
+	\brief	Gets the clipmask of this entity.
+	
+	\return	The clipmask. 
+	**/
 	EBrushContents	&GetClipmask	();
+
+	/**
+	\fn	ESolidType &GetSolid ()
+	
+	\brief	Gets the solidity of this entity.
+	
+	\return	The solidity. 
+	**/
 	ESolidType		&GetSolid ();
 
-	// Unless, of course, you use the vec3f class :D
+	/**
+	\fn	vec3f &GetMins ()
+	
+	\brief	Gets the min bounds of this entity. 
+	
+	\return	The mins. 
+	**/
 	vec3f			&GetMins ();
+
+	/**
+	\fn	vec3f &GetMaxs ()
+	
+	\brief	Gets the max bounds of this entity. 
+	
+	\return	The maxs. 
+	**/
 	vec3f			&GetMaxs ();
 
+	/**
+	\fn	vec3f &GetAbsMin ()
+	
+	\brief	Gets the absolute mins of this entity. 
+	
+	\return	The absolute mins (essentially origin + mins). 
+	**/
 	vec3f			&GetAbsMin ();
+
+	/**
+	\fn	vec3f &GetAbsMax ()
+	
+	\brief	Gets the absolute maxs of this entity. 
+	
+	\return	The absolute maxs (essentially origin + maxs). 
+	**/
 	vec3f			&GetAbsMax ();
+
+	/**
+	\fn	vec3f &GetSize ()
+	
+	\brief	Gets the size of this entity. 
+	
+	\return	The size. 
+	**/
 	vec3f			&GetSize ();
 
+	/**
+	\fn	EServerFlags &GetSvFlags ()
+	
+	\brief	Gets the server flags of this entity. 
+	
+	\return	The server flags. 
+	**/
 	EServerFlags	&GetSvFlags ();
 
-	sint32			GetNumClusters ();
-	sint32			*GetClusterNums ();
-	sint32			GetHeadNode ();
-
-	// Not a reference; don't let people change it.
+	/**
+	\fn	sint32 GetAreaNum (bool second = false)
+	
+	\brief	Gets this entity's area number. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	second	true if you want areaNum2. 
+	
+	\return	areaNum2 if second, otherwise areaNum. 
+	**/
 	sint32			GetAreaNum (bool second = false);
 
-	SAreaLink			*GetArea ();
+	/**
+	\fn	SAreaLink *GetArea ()
+	
+	\brief	Gets this entity's area pointer.
+	
+	\return	null if it fails, else the area. 
+	**/
+	SAreaLink		*GetArea ();
+
+	/**
+	\fn	void ClearArea ()
+	
+	\brief	Clears this entity's area. 
+	**/
 	void			ClearArea ();
 
+	/**
+	\fn	sint32 GetLinkCount ()
+	
+	\brief	Gets this entity's link count. 
+	
+	\return	The link count. 
+	**/
 	sint32			GetLinkCount ();
 
+	/**
+	\fn	virtual bool &GetInUse ()
+	
+	\brief	Gets the usage state of this entity.
+	
+	\return	True if in-use, false if not.
+	**/
 	virtual bool	&GetInUse ();
 
+	/**
+	\fn	void Link ()
+	
+	\brief	Links this entity to the world.
+			See "Entities - Linking"
+	**/
 	void			Link ();
+
+	/**
+	\fn	void Unlink ()
+	
+	\brief	Unlinks this entity from the world.
+			See "Entities - Linking"
+	**/
 	void			Unlink ();
 
+	/**
+	\fn	virtual void Free ()
+	
+	\brief	Frees this entity.
+	**/
 	virtual void	Free ();
 
 	// Sound functions
-	bool			PlayedSounds[CHAN_MAX-1];
-	void			PlaySound (ESoundChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
-	void			PlayPositionedSound (vec3f origin, ESoundChannel channel, MediaIndex soundIndex, uint8 volume = 255, EAttenuation attenuation = ATTN_NORM, uint8 timeOfs = 0);
+	bool			PlayedSounds[CHAN_MAX-1];	// played sound channels
 
-	virtual void	BecomeExplosion (bool grenade);
+	/**
+	\fn	void PlaySound (ESoundChannel Channel, MediaIndex Sound, uint8 Volume = 255,
+		EAttenuation Attenuation = ATTN_NORM, uint8 TimeOfs = 0)
+	
+	\brief	Plays a sound 'soundIndex' on channel 'channel' with volume 'volume', attenuation
+			'attenuation' and time offset 'timeOfs'. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Channel		The channel. 
+	\param	Sound		The sound. 
+	\param	Volume		The volume. 
+	\param	Attenuation	The attenuation. 
+	\param	TimeOfs		The time ofs. 
+	**/
+	void			PlaySound (ESoundChannel Channel, MediaIndex Sound, uint8 Volume = 255, EAttenuation Attenuation = ATTN_NORM, uint8 TimeOfs = 0);
 
-	void			CastTo (ECastFlags castFlags);
-	void			StuffText (const char *text);
+	/**
+	\fn	void PlayPositionedSound (vec3f Origin, ESoundChannel Channel, MediaIndex Sound,
+		uint8 Volume = 255, EAttenuation Attenuation = ATTN_NORM, uint8 TimeOfs = 0)
+	
+	\brief	Plays a positioned sound 'soundIndex' at position 'Origin' on channel 'channel' with
+			volume 'volume', attenuation 'attenuation' and time offset 'timeOfs'. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Origin		The origin. 
+	\param	Channel		The channel. 
+	\param	Sound		The sound. 
+	\param	Volume		The volume. 
+	\param	Attenuation	The attenuation. 
+	\param	TimeOfs		The time offset. 
+	**/
+	void			PlayPositionedSound (vec3f Origin, ESoundChannel Channel, MediaIndex Sound, uint8 Volume = 255, EAttenuation Attenuation = ATTN_NORM, uint8 TimeOfs = 0);
 
+	/**
+	\fn	virtual void BecomeExplosion (bool Grenade)
+	
+	\brief	Visually 'turns' the entity into an explosion and frees it.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Grenade	true if grenade explosion, false if rocket. 
+	**/
+	virtual void	BecomeExplosion (bool Grenade);
+
+	/**
+	\fn	void KillBox ()
+	
+	\brief	Creates a killbox around this player, instantly
+			gibbing anything inside of it.
+	**/
 	void			KillBox ();
-	void			SplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod);
+
+	/**
+	\fn	void SplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore, float Radius,
+		EMeansOfDeath MeansOfDeath)
+	
+	\brief	Performs splash damage around this entity. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Damage				The damage. 
+	\param [in,out]	Ignore		If non-null, the entity to ignore. 
+	\param	Radius				The radius. 
+	\param	MeansOfDeath		The means of death.  
+	**/
+	void			SplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore, float Radius, EMeansOfDeath MeansOfDeath);
+
 #if ROGUE_FEATURES
-	void			NukeSplashDamage (IBaseEntity *Attacker, float damage, IBaseEntity *ignore, float radius, EMeansOfDeath mod);
+	/**
+	\fn	void NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore, float Radius,
+		EMeansOfDeath MeansOfDeath)
+	
+	\brief	Performs nuke splash damage around this entity.
+			Nuke damage ignores walls and makes entities not gib (vaporize).
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Damage				The damage. 
+	\param [in,out]	Ignore		If non-null, the ignore. 
+	\param	Radius				The radius. 
+	\param	MeansOfDeath		The means of death. 
+	**/
+	void			NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity *Ignore, float Radius, EMeansOfDeath MeansOfDeath);
 #endif
 
-	// Save functions
-	// By default, all entities are savable.
+	/**
+	\fn	bool CanSee (IBaseEntity *Other)
+	
+	\brief	Queries if we can see 'Other'.
+			This is an entire bbox trace check, not just
+			visibility.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Other	If non-null, the other. 
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
+	bool CanSee		(IBaseEntity *Other);
+
+	/**
+	\fn	virtual inline bool Savable ()
+	
+	\brief	Queries if this entity is savable.
+			See "Entities - Saving/Loading"
+	
+	\return	true if it is, false if it is not. 
+	**/
 	virtual inline bool Savable ()
 	{
 		return true;
 	};
 
+	/**
+	\fn	virtual void SaveFields (CFile &File)
+	
+	\brief	Saves custom entity fields.
+			See "Entities - Saving/Loading"
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	File	The file. 
+	**/
 	virtual void SaveFields (CFile &File)
 	{
 	};
 
+	/**
+	\fn	virtual void LoadFields (CFile &File)
+	
+	\brief	Loads custom entity fields. 
+			See "Entities - Saving/Loading"
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	File	The file. 
+	**/
 	virtual void LoadFields (CFile &File)
 	{
 	};
 
+	/**
+	\fn	virtual const char *SAVE_GetName () = 0
+	
+	\brief	Gets the save name of this entity.
+			Replaced by macros in other entities.
+			See "Entities - Saving/Loading"
+	
+	\return	null if it fails, else. 
+	**/
 	virtual const char *SAVE_GetName () = 0;
 };
 
@@ -266,6 +712,18 @@ enum
 	ENT_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
 };
 
+/**
+\fn	template <class TType> inline TType *entity_cast (IBaseEntity *Entity)
+
+\brief	Casts entity types from one type to another.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Entity	If non-null, the entity. 
+
+\return	null if it fails, else the entity casted to another type. 
+**/
 template <class TType>
 inline TType *entity_cast (IBaseEntity *Entity)
 {
@@ -278,13 +736,40 @@ inline TType *entity_cast (IBaseEntity *Entity)
 	return Casted;
 }
 
+/**
+\fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
+
+\brief	Template specialization for IBaseEntity casts.
+
+\author	Paril
+\date	29/05/2010
+
+\typeparam	IBaseEntity	Base entity specialization. 
+\param [in,out]	Entity	If non-null, the entity. 
+
+\return	null if it fails, else. 
+**/
 template <>
 inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 {
 	return Entity; // Implicit cast already done
 }
 
-inline char *CopyStr (const char *In, const sint16 Tag)
+/**
+\fn	inline char *CopyStr (const char *In, const sint16 Tag)
+
+\brief	Copies string 'In' under memory tag 'Tag' and returns it.
+		Processes newlines as well.
+
+\author	Paril
+\date	29/05/2010
+
+\param	In	The string. 
+\param	Tag	The tag. 
+
+\return	null if it fails, else. 
+**/
+inline char *CopyStr (const char *In, const EMemoryTag Tag)
 {
 	std::string newString (In);
 	
@@ -306,6 +791,19 @@ inline char *CopyStr (const char *In, const sint16 Tag)
 	return Mem_TagStrDup (newString.c_str(), Tag);
 }
 
+/**
+\fn	inline std::string CopyStr (const char *In)
+
+\brief	Copies string 'In' and returns an std::string copy.
+		Processes newlines as well.
+
+\author	Paril
+\date	29/05/2010
+
+\param	In	The in. 
+
+\return	The new string. 
+**/
 inline std::string CopyStr (const char *In)
 {
 	std::string newString (In);
@@ -328,14 +826,56 @@ inline std::string CopyStr (const char *In)
 	return newString;
 }
 
+/**
+\fn	inline uint32 atou (const char *Str)
+
+\brief	Converts a string to an unsigned integer.
+
+\author	Paril
+\date	29/05/2010
+
+\param	Str	The string. 
+
+\return	Unsigned integral value described by string. 
+**/
 inline uint32 atou (const char *Str)
 {
 	return (uint32)atol(Str);
 }
 
+/**
+\def	EntityMemberOffset(y,x) offsetof(y,x)
+
+\brief	Gets the byte offset of member 'x' in class 'y'
+
+\remarks	Paril, 29/05/2010. 
+
+\param	y	Class name. 
+\param	x	Member name. 
+**/
 #define EntityMemberOffset(y,x) offsetof(y,x)
-#define GameEntityMemberOffset(x) offsetof(edict_t,x)
-#define SpawnTempMemberOffset(x) offsetof(spawn_temp_t,x)
+
+/**
+\def	GameEntityMemberOffset(x) offsetof(edict_t,x)
+
+\brief	Gets the byte offset of member 'x' in edict_t
+
+\remarks	Paril, 29/05/2010. 
+
+\param	x	Member name. 
+**/
+#define GameEntityMemberOffset(x) EntityMemberOffset(edict_t,x)
+
+/**
+\def	SpawnTempMemberOffset(x) offsetof(spawn_temp_t,x)
+
+\brief	Gets the byte offset of member 'x' in spawn_temp_t 
+
+\remarks	Paril, 29/05/2010. 
+
+\param	x	Member name. 
+**/
+#define SpawnTempMemberOffset(x) EntityMemberOffset(spawn_temp_t,x)
 
 // Convenience macros
 // CAREFUL WITH THESE!
@@ -371,6 +911,7 @@ inline uint32 atou (const char *Str)
 	{ \
 	};\
 	const char *SAVE_GetName () { return NULL; }
+
 #define ENTITYFIELDS_SAVABLE(x) \
 	void SaveFields (CFile &File); \
 	void LoadFields (CFile &File); \
@@ -391,6 +932,13 @@ inline uint32 atou (const char *Str)
 	virtual void LoadFields (CFile &File); \
 	virtual const char *SAVE_GetName () { return TO_STRING(x); }
 
+/**
+\def	QNewEntityOf
+
+\brief	New entity of
+
+\remarks	Paril, 29/05/2010. 
+**/
 #define QNewEntityOf QNew (TAG_ENTITY) 
 
 /**
@@ -434,30 +982,78 @@ enum
 	FT_NOSPAWN		=	BIT(12),		// Field cannot be used as a spawn field
 };
 
-#define OFS_TO_TYPE_(x,y) (*((x*)(y)))
-#define OFS_TO_TYPE(x) OFS_TO_TYPE_(x,ClassOffset)
+/**
+\def	OFS_TO_TYPE(x) (*((x*)(ClassOffset)))
+
+\brief	Converts the pointer to a member of a class to another type.
+
+\remarks	Paril, 29/05/2010. 
+
+\param	x	Pointer to member of a class. 
+**/
+#define OFS_TO_TYPE(x) (*((x*)(ClassOffset)))
 
 // Forward declaration, defined in cc_utils.
 IBaseEntity *LoadEntity (uint32 Index);
 
+/**
+\typedef	bool (*TValidateFieldFunction) (IBaseEntity *Entity, uint8 *ClassOffset,
+			const char *Value, void *ExtraData)
+
+\brief	Defines an alias representing information describing a field validation function.
+**/
 typedef bool (*TValidateFieldFunction) (IBaseEntity *Entity, uint8 *ClassOffset, const char *Value, void *ExtraData);
 
 #define FIELD_IS_VALID(d) ((!ValidateField) || ValidateField(Entity, ClassOffset, Value, d))
 
+/**
+\class	CEntityField
+
+\brief	A single entity field.
+		See "Entities - Fields" for more info.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CEntityField
 {
 public:
-	std::string				Name;
-	size_t					Offset;
-	EFieldType				FieldType, StrippedFields;
-	TValidateFieldFunction	ValidateField;
+	std::string				Name;						// The field name
+	size_t					Offset;						// The offset offset
+	EFieldType				FieldType, StrippedFields;	// The field type & stripped fields
+	TValidateFieldFunction	ValidateField;				// The field validation function
 
+	/**
+	\fn	CEntityField (const char *Name, size_t Offset, EFieldType FieldType,
+		TValidateFieldFunction ValidateField = NULL)
+	
+	\brief	Constructor.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Name			The name. 
+	\param	Offset			The offset. 
+	\param	FieldType		Type of the field. 
+	\param	ValidateField	The field validation function. 
+	**/
 	CEntityField (const char *Name, size_t Offset, EFieldType FieldType, TValidateFieldFunction ValidateField = NULL);
 
+	/**
+	\fn	template <class TClass> void Create (TClass *Entity, const char *Value) const
+	
+	\brief	Fills this field in 'Entity' with the data stored in 'Value'.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Entity	If non-null, the entity. 
+	\param	Value			The value. 
+	**/
 	template <class TClass>
 	void Create (TClass *Entity, const char *Value) const
 	{
-		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->gameEntity : (uint8*)Entity) + Offset;
+		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->GetGameEntity() : (uint8*)Entity) + Offset;
 
 		switch (StrippedFields)
 		{
@@ -573,10 +1169,21 @@ public:
 		};
 	};
 
+	/**
+	\fn	template <class TClass> void Save (TClass *Entity, CFile &File) const
+	
+	\brief	Saves a field to a file.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Entity	If non-null, the entity. 
+	\param [in,out]	File	The file. 
+	**/
 	template <class TClass>
 	void Save (TClass *Entity, CFile &File) const
 	{
-		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->gameEntity : (uint8*)Entity) + Offset;
+		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->GetGameEntity() : (uint8*)Entity) + Offset;
 
 		switch (StrippedFields)
 		{
@@ -648,7 +1255,7 @@ public:
 			break;
 		case FT_ENTITY:
 			{
-				sint32 Index = (OFS_TO_TYPE(IBaseEntity*) && OFS_TO_TYPE(IBaseEntity*)->gameEntity) ? OFS_TO_TYPE(IBaseEntity*)->State.GetNumber() : -1;
+				sint32 Index = (OFS_TO_TYPE(IBaseEntity*) && OFS_TO_TYPE(IBaseEntity*)->GetGameEntity()) ? OFS_TO_TYPE(IBaseEntity*)->State.GetNumber() : -1;
 				File.Write<sint32> (Index);
 			}
 			break;
@@ -658,10 +1265,21 @@ public:
 		};
 	};
 
+	/**
+	\fn	template <class TClass> void Load (TClass *Entity, CFile &File) const
+	
+	\brief	Loads a field from a file.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param [in,out]	Entity	If non-null, the entity. 
+	\param [in,out]	File	The file. 
+	**/
 	template <class TClass>
 	void Load (TClass *Entity, CFile &File) const
 	{
-		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->gameEntity : (uint8*)Entity) + Offset;
+		uint8 *ClassOffset = ((FieldType & FT_GAME_ENTITY) ? (uint8*)Entity->GetGameEntity() : (uint8*)Entity) + Offset;
 
 		switch (StrippedFields)
 		{
@@ -753,6 +1371,22 @@ public:
 	};
 };
 
+/**
+\fn	template <class TClass, class TPassClass> bool CheckFields (TClass *Me, const char *Key,
+	const char *Value)
+
+\brief	Template function that goes through each field in a class, looks for the field 'Key' and
+		fills it in with 'Value'. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Me	If non-null, me. 
+\param	Key			The key. 
+\param	Value		The value. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 template <class TClass, class TPassClass>
 bool CheckFields (TClass *Me, const char *Key, const char *Value)
 {
@@ -776,29 +1410,39 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 	return false;
 };
 
+/**
+\fn	template <class TClass> bool CheckFields (TClass *Me, const char *Key, const char *Value)
+
+\brief	Template function that goes through each field in a class, looks for the field 'Key' and
+		fills it in with 'Value'. 
+		This version is used for non-special classes.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Me	If non-null, me. 
+\param	Key			The key. 
+\param	Value		The value. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 template <class TClass>
 bool CheckFields (TClass *Me, const char *Key, const char *Value)
 {
-	for (size_t i = 0; i < TClass::FieldsForParsingSize; i++)
-	{
-#if (MSVS_VERSION >= VS_9)
-#pragma warning (suppress : 6385 6386)
-#endif
-		if (TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN)
-			break; // if we reach a NOSPAWN we can stop
-
-		if (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0)
-		{
-#if (MSVS_VERSION >= VS_9)
-#pragma warning (suppress : 6385 6386)
-#endif
-			TClass::FieldsForParsing[i]. template Create<TClass> (Me, Value);
-			return true;
-		}
-	}
-	return false;
+	return CheckFields<TClass, TClass> (Me, Key, Value);
 };
 
+/**
+\fn	template <class TClass> void SaveEntityFields (TClass *Me, CFile &File)
+
+\brief	Saves all entity fields of TClass to File.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Me		If non-null, me. 
+\param [in,out]	File	The file. 
+**/
 template <class TClass>
 void SaveEntityFields (TClass *Me, CFile &File)
 {
@@ -817,6 +1461,17 @@ void SaveEntityFields (TClass *Me, CFile &File)
 	}
 };
 
+/**
+\fn	template <class TClass> void LoadEntityFields (TClass *Me, CFile &File)
+
+\brief	Loads all entity fields for TClass from File.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Me		If non-null, me. 
+\param [in,out]	File	The file. 
+**/
 template <class TClass>
 void LoadEntityFields (TClass *Me, CFile &File)
 {
@@ -835,19 +1490,62 @@ void LoadEntityFields (TClass *Me, CFile &File)
 	}
 };
 
+/**
+\fn	template <class TClass> size_t FieldSize ()
+
+\brief	Returns the size of the fields of an entity.
+
+\return	. 
+**/
 template <class TClass>
 size_t FieldSize ()
 {
 	return ArrayCount(TClass::FieldsForParsing);
 }
 
-// File system aid
+/**
+\fn	IBaseEntity *GetGameEntity (sint32 Index)
+
+\brief	Gets the game entity for index 'Index'.
+		Required magic.
+
+\author	Paril
+\date	29/05/2010
+
+\param	Index	Zero-based index of the entity. 
+
+\return	null if it fails, else the game entity. 
+**/
 IBaseEntity *GetGameEntity (sint32 Index);
+
+/**
+\fn	inline void WriteEntity (CFile &File, IBaseEntity *Entity)
+
+\brief	Writes entity 'Entity''s index to file 'File'.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	File	The file. 
+\param [in,out]	Entity	If non-null, the entity. 
+**/
 inline void WriteEntity (CFile &File, IBaseEntity *Entity)
 {
 	File.Write<sint32> ((Entity && Entity->GetInUse()) ? Entity->State.GetNumber() : -1);
 }
 
+/**
+\fn	inline IBaseEntity *ReadEntity (CFile &File)
+
+\brief	Reads an entity's index from file, and returns the entity if it exists. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	File	The file. 
+
+\return	null if it fails, else the entity. 
+**/
 inline IBaseEntity *ReadEntity (CFile &File)
 {
 	sint32 Index = File.Read<sint32> ();
@@ -857,6 +1555,18 @@ inline IBaseEntity *ReadEntity (CFile &File)
 	return NULL;
 }
 
+/**
+\fn	template <class TType> inline TType *ReadEntity (CFile &File)
+
+\brief	Reads an entity's index from file, and returns the entity if it exists. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	File	The file. 
+
+\return	null if it fails, else the entity. 
+**/
 template <class TType>
 inline TType *ReadEntity (CFile &File)
 {
@@ -867,20 +1577,87 @@ inline TType *ReadEntity (CFile &File)
 	return NULL;
 }
 
-// Utility functions
+/**
+\fn	void InitEntityLists ()
+
+\brief	Initialises the entity lists.
+**/
+void InitEntityLists ();
+
+/**
+\fn	edict_t *G_Spawn ()
+
+\deprecated	Use CreateEntityFromClassname instead.
+
+\brief	Either finds a free edict, or allocates a new one.
+		Try to avoid reusing an entity that was recently freed, because it
+		can cause the client to think the entity morphed into something else
+		instead of being removed and recreated, which can cause interpolated
+		angles and bad trails.
+
+\return	null if it fails, else. 
+**/
 CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
 edict_t	*G_Spawn ();
 
+/**
+\fn	void G_InitEdict (edict_t *e)
+
+\brief	Initialize entity.
+
+\deprecated	Deprecated. Do not use.
+			Function is not required (only internally)
+
+\author	Paril
+\date	29/05/2010
+
+\param	e	Entity to initialize. 
+**/
 CC_INSECURE_DEPRECATE (Function not needed)
 void	G_InitEdict (edict_t *e);
 
+/**
+\fn	void G_FreeEdict (edict_t *ed)
+
+\deprecated	Use IBaseEntity::Free instead.
+
+\brief	Marks the entity as freed. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ed	If non-null, the entity. 
+**/
 CC_INSECURE_DEPRECATE (Entity->Free)
 void	G_FreeEdict (edict_t *e);
 
+/**
+\fn	void ED_CallSpawn (edict_t *ent)
+
+\brief	Calls the spawn function for a given entity.
+		Internal.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ent	If non-null, the entity. 
+**/
 void	ED_CallSpawn (edict_t *ent);
 
-extern IBaseEntity *World;
+extern IBaseEntity *World;	// The world entity
 
+/**
+\fn	inline IBaseEntity *CreateEntityFromClassname (const char *classname)
+
+\brief	Creates an entity from a classname.
+
+\author	Paril
+\date	29/05/2010
+
+\param	classname	The classname. 
+
+\return	null if it fails, else the created entity. 
+**/
 inline IBaseEntity *CreateEntityFromClassname (const char *classname)
 {
 CC_DISABLE_DEPRECATION
@@ -902,18 +1679,61 @@ CC_ENABLE_DEPRECATION
 #include "cc_player_entity.h"
 #include "cc_weapon_entities.h"
 
-// An entity that can be seen via a map.
-// Just to bypass the damn abstractness I did.
+/**
+\class	IMapEntity
+
+\brief	The map entity class. This contains common functions and fields that any entity that
+		wants to be allowed to spawn in a map requires. 
+
+\author	Paril
+\date	29/05/2010
+**/
 class IMapEntity : public virtual IBaseEntity
 {
 public:
-	char		*Classname;
-	char		*TargetName;
+	char		*Classname;	// The classname
+	char		*TargetName;	// Target's name
 
+	/**
+	\fn	IMapEntity ()
+	
+	\brief	Default constructor. 
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
 	IMapEntity ();
-	IMapEntity (sint32 Index);
-	virtual ~IMapEntity ();
 
+	/**
+	\fn	IMapEntity (sint32 Index)
+	
+	\brief	Entity constructor. 
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Index	Zero-based index of the entity. 
+	**/
+	IMapEntity (sint32 Index);
+
+	/**
+	\fn	virtual ~IMapEntity ()
+	
+	\brief	Destructor.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
+	virtual ~IMapEntity ()
+	{
+	};
+
+	/**
+	\fn	virtual void Spawn() = 0
+	
+	\brief	Spawn function.
+			Every map class must have this.
+	**/
 	virtual void Spawn() = 0;
 
 	static const class CEntityField FieldsForParsing[];
@@ -922,8 +1742,38 @@ public:
 	static const class CEntityField FieldsForParsing_Map[];
 	static const size_t FieldsForParsingSize_Map;
 
+	/**
+	\fn	virtual bool ParseField (const char *Key, const char *Value)
+	
+	\brief	Parse a single field from an entity.
+			See "Entities - Saving/Loading"
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	Key		The key. 
+	\param	Value	The value. 
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
 	virtual bool			ParseField (const char *Key, const char *Value);
+
+	/**
+	\fn	void ParseFields ()
+	
+	\brief	Parse the fields from an entity.
+			See "Entities - Saving/Loading"		
+	**/
 	void					ParseFields ();
+
+	/**
+	\fn	virtual bool CheckValidity ()
+	
+	\brief	Checks the validity of this entity. An entity that was invalid will not spawn, and will
+			be subsequently freed. 
+	
+	\return	true if valid, false if not. 
+	**/
 	virtual bool			CheckValidity ();
 
 	virtual void SaveFields (CFile &File);

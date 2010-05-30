@@ -113,7 +113,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<vec3f> (BlindFireTarget);
 	File.Write<sint32> ((BadMedic1) ? BadMedic1->State.GetNumber() : -1);
 	File.Write<sint32> ((BadMedic2) ? BadMedic2->State.GetNumber() : -1);
-	File.Write<sint32> ((Healer && Healer->gameEntity) ? Healer->State.GetNumber() : -1);
+	File.Write<sint32> ((Healer) ? Healer->State.GetNumber() : -1);
 #endif
 	File.Write<sint32> (NextFrame);
 	File.Write<float> (Scale);
@@ -144,7 +144,7 @@ void CMonster::SaveFields (CFile &File)
 #if ROGUE_FEATURES
 	File.Write<uint8> (MonsterSlots);
 	File.Write<uint8> (MonsterUsed);
-	File.Write<sint32> ((Commander && Commander->gameEntity) ? Commander->State.GetNumber() : -1);
+	File.Write<sint32> ((Commander) ? Commander->State.GetNumber() : -1);
 	File.Write<FrameNumber> (QuadFramenum);
 	File.Write<FrameNumber> (InvincibleFramenum);
 	File.Write<FrameNumber> (DoubleFramenum);
@@ -1482,9 +1482,6 @@ void CMonster::SetEffects()
 
 void CMonster::WorldEffects()
 {
-	if (!Entity->gameEntity)
-		return;
-
 	vec3f origin = Entity->State.GetOrigin();
 
 	if (Entity->Health > 0)

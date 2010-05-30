@@ -297,6 +297,39 @@ public:
 		void Save (CFile &File);
 		void Load (CFile &File);
 
+		/**
+		\fn	edict_t *GetEntityFromList ()
+		
+		\brief	Gets a free entity from Open, pushes into Closed.
+				Internal function.
+		
+		\return	null if it fails, else the entity from list. 
+		**/
+		edict_t		*GetEntityFromList ();
+
+		/**
+		\fn	void RemoveEntityFromOpen (edict_t *ent)
+		
+		\brief	Removes the entity 'ent' from Open and pushes into Closed. 
+		
+		\author	Paril
+		\date	29/05/2010
+		
+		\param [in,out]	ent	If non-null, the entity. 
+		**/
+		void		RemoveEntityFromOpen (edict_t *ent);
+
+		/**
+		\fn	void RemoveEntityFromList (edict_t *ent)
+		
+		\brief	Removes the entity 'ent' from Closed, pushes into front of Open. 
+		
+		\author	Paril
+		\date	29/05/2010
+		
+		\param [in,out]	ent	If non-null, the entity. 
+		**/
+		void		RemoveEntityFromList (edict_t *ent);
 	} Entities;
 
 	bool		Demo;

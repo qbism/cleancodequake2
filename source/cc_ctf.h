@@ -21,9 +21,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if !defined(CC_GUARD_CTF_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CTF_H
 
-inline const char *CTF_VERSION() { return "1.09b"; }
+/**
+\fn	inline const char *CTF_VERSION()
 
-const int CONFIG_CTF_MATCH  = (CS_MAXCLIENTS-1);
+\brief	The CTF base version.
+
+\return	Current CTF version. 
+**/
+inline const char *CTF_VERSION() { return "1.09b"; }
 
 /**
 \typedef	sint8 ETeamIndex
@@ -40,9 +45,12 @@ typedef sint8 ETeamIndex;
 enum
 {
 	CTF_NOTEAM,
+
 	CTF_TEAM1,
 	CTF_TEAM2,
-	CTF_TEAMNUM,
+
+	CTF_TEAMNUM, // DO NOT USE, use CTF_NUM_TEAMS
+	CTF_NUM_TEAMS = CTF_TEAMNUM - 1,
 
 	CTF_RED = CTF_TEAM1,
 	CTF_BLUE = CTF_TEAM2,
@@ -67,47 +75,6 @@ enum
 	CTF_GRAPPLE_STATE_HANG
 };
 
-class CCTFGhost
-{
-public:
-	uint32	Code;
-
-	std::string name;
-	sint32 number;
-
-	// stats
-	sint32 deaths;
-	sint32 kills;
-	sint32 caps;
-	sint32 basedef;
-	sint32 carrierdef;
-
-	sint32 team; // team
-	sint32 Score; // frags at time of disconnect
-	CPlayerEntity *Player;
-};
-
-/**
-\typedef	uint8 EMatchState
-
-\brief	Defines an alias representing the state of a competition match.
-**/
-typedef uint8 EMatchState;
-
-/**
-\enum	
-
-\brief	Values that represent the state of a competition match. 
-**/
-enum
-{
-	MATCH_NONE,
-	MATCH_SETUP,
-	MATCH_PREGAME,
-	MATCH_GAME,
-	MATCH_POST
-};
-
 /**
 \typedef	uint8 EElectState
 
@@ -123,67 +90,54 @@ typedef uint8 EElectState;
 enum
 {
 	ELECT_NONE,
-	ELECT_MATCH,
 	ELECT_ADMIN,
 	ELECT_MAP
 };
 
-typedef std::map<uint32, CCTFGhost*> TGhostMapType;
+/**
+\class	CCTFGameLocals
+
+\brief	CTF game data.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFGameLocals
 {
 public:
 	CCTFGameLocals ()
-	  {
-		  Clear ();
-	  }
+	{
+		Clear ();
+	}
 
-	sint32 team1, team2;
-	sint32 total1, total2; // these are only set when going into intermission!
-	FrameNumber last_flag_capture;
-	sint32 last_capture_team;
+	sint32			Captures[CTF_NUM_TEAMS];
+	sint32			TotalScore[CTF_NUM_TEAMS];		// these are only set when going into intermission!
+	FrameNumber		LastFlagCaptureTime;
+	ETeamIndex		LastCaptureTeam;
 
-	EMatchState match;		// match state
-	float matchtime;	// time for match start/end (depends on state)
-	sint32 lasttime;		// last time update
-
-	EElectState election;	// election type
-	CPlayerEntity *etarget;	// for CTF.Admin election, who's being elected
-	char elevel[32];	// for map election, target level
-	sint32 evotes;			// votes so far
-	sint32 needvotes;		// votes needed
-	FrameNumber electtime;	// remaining time until election times out
-	char emsg[256];		// election name
-
-	TGhostMapType Ghosts; // ghost codes
+	EElectState		Election;			// election type
+	CPlayerEntity	*ElectionTarget;	// for CTF.Admin election, who's being elected
+	std::string		ElectionLevel;		// for map election, target level
+	uint8			ElectionVotes;		// votes so far
+	uint8			ElectionNeedVotes;	// votes needed
+	FrameNumber		ElectionTimeEnd;	// remaining time until election times out
+	std::string		ElectionMessage;	// election name
 
 	void Clear ()
 	{
-		team1 = 0;
-		team2 = 0;
-		total1 = 0;
-		total2 = 0;
-		last_flag_capture = 0;
-		last_capture_team = 0;
-		match = 0;
-		matchtime = 0;
-		lasttime = 0;
-		election = 0;
-		etarget = NULL;
-		evotes = 0;
-		needvotes = 0;
-		electtime = 0;
-
-		for (TGhostMapType::iterator it = Ghosts.begin(); it != Ghosts.end(); ++it)
-			QDelete (*it).second;
-		Ghosts.clear();
-
-		Mem_Zero (&elevel, sizeof(elevel));
-		Mem_Zero (&emsg, sizeof(emsg));
+		Captures[0] = Captures[1] = 0;
+		TotalScore[0] = TotalScore[1] = 0;
+		LastFlagCaptureTime = 0;
+		LastCaptureTeam = 0;
+		Election = 0;
+		ElectionTarget = NULL;
+		ElectionLevel.clear();
+		ElectionVotes = 0;
+		ElectionNeedVotes = 0;
+		ElectionTimeEnd = 0;
+		ElectionMessage.clear();
 	}
 };
-
-inline const char *CTF_TEAM1_SKIN() { return "ctf_r"; }
-inline const char *CTF_TEAM2_SKIN() { return "ctf_b"; }
 
 const int CTF_CAPTURE_BONUS						= 15;	// what you get for capture
 const int CTF_TEAM_BONUS						= 10;	// what your team gets for capture
@@ -210,9 +164,43 @@ const int CTF_AUTO_FLAG_RETURN_TIMEOUT			= 300;	// number of seconds before drop
 const int CTF_GRAPPLE_SPEED						= 650; // speed of grapple in flight
 const int CTF_GRAPPLE_PULL_SPEED				= 650;	// speed player is pulled at
 
-void CTFInit();
-void CTFSpawn();
+/**
+\fn	inline const char *CTFTeamSkin(ETeamIndex team)
 
+\brief	Get CTF skin per team index.
+
+\author	Paril
+\date	29/05/2010
+
+\param	team	The team index. 
+
+\return	Team 1's skin if it fails, otherwise the proper skin. 
+**/
+inline const char *CTFTeamSkin(ETeamIndex team)
+{
+	switch (team)
+	{
+	case CTF_TEAM1:
+		return "ctf_r";
+	case CTF_TEAM2:
+		return "ctf_b";
+	default:
+		return "ctf_r";
+	}
+}
+
+/**
+\fn	inline const char *CTFTeamName(ETeamIndex team)
+
+\brief	Get CTF team name based on team index.
+
+\author	Paril
+\date	29/05/2010
+
+\param	team	The team. 
+
+\return	UNKNOWN if it fails, otherwise team name. 
+**/
 inline const char *CTFTeamName(ETeamIndex team)
 {
 	switch (team)
@@ -226,19 +214,18 @@ inline const char *CTFTeamName(ETeamIndex team)
 	}
 }
 
-inline const char *CTFOtherTeamName(ETeamIndex team)
-{
-	switch (team)
-	{
-	case CTF_TEAM1:
-		return "BLUE";
-	case CTF_TEAM2:
-		return "RED";
-	default:
-		return "UNKNOWN";
-	}
-}
+/**
+\fn	inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 
+\brief	Gets CTF 'other' team index, opposite team of current.
+
+\author	Paril
+\date	29/05/2010
+
+\param	team	The team. 
+
+\return	-1 if it fails, otherwise proper team index. 
+**/
 inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 {
 	switch (team)
@@ -252,104 +239,308 @@ inline ETeamIndex CTFOtherTeam(ETeamIndex team)
 	}
 }
 
+/**
+\fn	inline const char *CTFOtherTeamName(ETeamIndex team)
 
-void CTFCalcScores();
-void CTFResetFlag(ETeamIndex Team);
-void CTFFragBonuses(CPlayerEntity *targ, CPlayerEntity *Attacker);
-void CTFCheckHurtCarrier(CPlayerEntity *targ, CPlayerEntity *Attacker);
+\brief	Gets CTF 'other' team name, opposite team of current.
+
+\author	Paril
+\date	29/05/2010
+
+\param	team	The team. 
+
+\return	UNKNOWN if it fails, otherwise team opposite.
+**/
+inline const char *CTFOtherTeamName(ETeamIndex team)
+{
+	return CTFTeamName(CTFOtherTeam(team));
+}
+
+/**
+\fn	void CTFCalcScores ()
+
+\brief	Tally's up all of the captures.
+		Called when entering intermission.
+
+\author	Paril
+\date	29/05/2010
+**/
+void CTFCalcScores ();
+
+/**
+\fn	void CTFResetFlag (ETeamIndex Team)
+
+\brief	Resets a team's flag back to the base.
+
+\author	Paril
+\date	29/05/2010
+
+\param	Team	The team. 
+**/
+void CTFResetFlag (ETeamIndex Team);
+
+/**
+\fn	void CTFResetFlags()
+
+\brief	Resets every team's flags. 
+
+\author	Paril
+\date	29/05/2010
+**/
+void CTFResetFlags();
+
+/**
+\fn	void CTFFragBonuses (CPlayerEntity *Target, CPlayerEntity *Attacker)
+
+\brief	Calculate the bonuses for flag defense, flag carrier defense, etc. Note that bonuses are
+		not cumaltive.  You get one, they are in importance order. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Target		If non-null, the target. 
+\param [in,out]	Attacker	If non-null, the attacker. 
+**/
+void CTFFragBonuses (CPlayerEntity *Target, CPlayerEntity *Attacker);
+
+/**
+\fn	void CTFCheckHurtCarrier(CPlayerEntity *Target, CPlayerEntity *Attacker)
+
+\brief	Check if the carrier was hurt.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Target		If non-null, the target. 
+\param [in,out]	Attacker	If non-null, the attacker. 
+**/
+void CTFCheckHurtCarrier(CPlayerEntity *Target, CPlayerEntity *Attacker);
+
+/**
+\fn	void CTFOpenJoinMenu(CPlayerEntity *Player)
+
+\brief	Open join team menu.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Player	If non-null, the player. 
+**/
 void CTFOpenJoinMenu(CPlayerEntity *Player);
-bool CTFNextMap();
-bool CTFMatchSetup();
-bool CTFMatchOn();
-bool CTFInMatch();
-void CTFSay_Team(CPlayerEntity *who, char *msg);
 
-//TECH
+/**
+\class	CCTFSayTeamCommand
+
+\brief	CTF say team command. 
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFSayTeamCommand : public CGameCommandFunctor
 {
+	std::stringstream OutMessage;
+
 public:
+	/**
+	\fn	void FormatLocation ()
+
+	\brief	Formats location string.
+			Pushes what objects you are near.
+	**/
+	void FormatLocation();
+
+	/**
+	\fn	void FormatArmor ()
+
+	\brief	Formats armor string.
+			Pushes current armor values and types.
+	**/
+	void FormatArmor();
+
+	/**
+	\fn	void FormatHealth ()
+
+	\brief	Formats health string.
+			Pushes your health value.
+	**/
+	void FormatHealth();
+
+	/**
+	\fn	void FormatTech ()
+
+	\brief	Formats tech string.
+			Pushes which tech you currently have equipped.
+	**/
+	void FormatTech();
+
+	/**
+	\fn	void FormatWeapon ()
+
+	\brief	Formats weapon string.
+			Pushes your current weapon.
+	**/
+	void FormatWeapon();
+
+	/**
+	\fn	void FormatSight ()
+
+	\brief	Formats the sight string.
+			Pushes which players are visible to you.
+	**/
+	void FormatSight();
+
 	void operator () ();
 };
 
+/**
+\class	CCTFTeamCommand
+
+\brief	CTF team command.
+		Check or switch teams.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFTeamCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ();
 };
 
+/**
+\class	CCTFIDCommand
+
+\brief	CTF ID command.
+		Toggles target identification.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFIDCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ();
 };
 
+/**
+\class	CCTFVoteYesCommand
+
+\brief	CTF vote yes command.
+		Votes yes for elections.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFVoteYesCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ();
 };
 
+/**
+\class	CCTFVoteNoCommand
+
+\brief	CTF vote no command.
+		Votes no for elections.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFVoteNoCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ();
 };
 
-class CCTFReadyCommand : public CGameCommandFunctor
-{
-public:
-	void operator () ();
-};
+/**
+\class	CCTFAdminCommand
 
-class CCTFNotReadyCommand : public CGameCommandFunctor
-{
-public:
-	void operator () ();
-};
+\brief	CTF admin command.
+		Allows you to become admin and do admin stuff.
 
-class CCTFGhostCommand : public CGameCommandFunctor
-{
-public:
-	void operator () ();
-};
-
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFAdminCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ();
 };
 
-class CCTFStatsCommand : public CGameCommandFunctor
-{
-public:
-	void operator () ();
-};
+/**
+\class	CCTFWarpCommand
 
+\brief	CTF warp command.
+		Vote to warp to another level.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFWarpCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ();
 };
 
+/**
+\class	CCTFBootCommand
+
+\brief	CTF boot command.
+		Vote to kick someone.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFBootCommand : public CPlayerListCommand
 {
 public:
 	void operator () ();
 };
 
+/**
+\class	CCTFObserverCommand
+
+\brief	CTF observer command.
+		Move to observer mode. 
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFObserverCommand : public CPlayerListCommand
 {
 public:
 	void operator () ();
 };
 
+/**
+\class	CCTFPlayerListCommand
+
+\brief	CTF player list command.
+		Advanced playerlist command for CTF.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CCTFPlayerListCommand : public CPlayerListCommand
 {
 public:
 	void operator () ();
 };
 
+/**
+\fn	bool CTFCheckRules()
+
+\brief	Check CTF rules.
+
+\return	true if level is finished, otherwise false. 
+**/
 bool CTFCheckRules();
+
+/**
+\fn	void CreateCTFStatusbar ()
+
+\brief	Creates the CTF statusbar.
+**/
 void CreateCTFStatusbar ();
 
 extern CCTFGameLocals ctfgame;

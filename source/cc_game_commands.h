@@ -34,9 +34,24 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_GAMECOMMANDS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_GAMECOMMANDS_H
 
-void Cmd_Register ();
-void CC_ClientCommand (CPlayerEntity *Player);
+/**
+\fn	void Cmd_Register ()
 
+\brief	Registers all game commands.
+
+\author	Paril
+\date	29/05/2010
+**/
+void Cmd_Register ();
+
+/**
+\class	CPlayerListCommand
+
+\brief	The player list functor.
+
+\author	Paril
+\date	29/05/2010
+**/
 class CPlayerListCommand : public CGameCommandFunctor
 {
 public:

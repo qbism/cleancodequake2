@@ -321,7 +321,7 @@ public:
 	\date	27/05/2010
 	**/
 	colorf() : 
-	  colorBase()
+	  colorBase<float>()
 	  {
 	  }
 
@@ -336,7 +336,7 @@ public:
 	\param	Other	The other. 
 	**/
 	inline colorf(const colorf &Other) : 
-	  colorBase(Other.R, Other.G, Other.B, Other.A)
+	  colorBase<float>(Other.R, Other.G, Other.B, Other.A)
 	  {
 	  }
 
@@ -368,7 +368,7 @@ public:
 	\param	InA	The in A value. 
 	**/
 	inline colorf(const float InR, const float InG, const float InB, const float InA = 1.0f) :
-	  colorBase(InR, InG, InB, InA)
+	  colorBase<float>(InR, InG, InB, InA)
 	  {
 	  }
 
@@ -427,7 +427,7 @@ public:
 	\date	27/05/2010
 	**/
 	colorb() :
-	  colorBase()
+	  colorBase<uint8>()
 	  {
 	  }
 
@@ -442,7 +442,7 @@ public:
 	\param	Other	The other. 
 	**/
 	inline colorb(const colorb &Other) :
-	  colorBase(Other.R, Other.G, Other.B, Other.A)
+	  colorBase<uint8>(Other.R, Other.G, Other.B, Other.A)
 	  {
 	  }
 
@@ -461,7 +461,7 @@ public:
 	\param	InA	The in A value. 
 	**/
 	inline colorb(const uint8 InR, const uint8 InG, const uint8 InB, const uint8 InA = 255) :
-	  colorBase(InR, InG, InB, InA)
+	  colorBase<uint8>(InR, InG, InB, InA)
 	  {
 	  }
 
@@ -477,7 +477,7 @@ public:
 	\param	Other	The other color. 
 	**/
 	inline colorb(const colorf &Other) : 
-	  colorBase(FloatToByte(Other.R), FloatToByte(Other.G), FloatToByte(Other.B), FloatToByte(Other.A))
+	  colorBase<uint8>(FloatToByte(Other.R), FloatToByte(Other.G), FloatToByte(Other.B), FloatToByte(Other.A))
 	  {
 	  }
 
@@ -516,7 +516,7 @@ public:
 \param	Other	The other. 
 **/
 inline colorf::colorf(const colorb &Other) :
-  colorBase(((float)Other.R) / 255, ((float)Other.G) / 255, ((float)Other.B) / 255, ((float)Other.A) / 255)
+  colorBase<float>(((float)Other.R) / 255, ((float)Other.G) / 255, ((float)Other.B) / 255, ((float)Other.A) / 255)
   {
   }
 

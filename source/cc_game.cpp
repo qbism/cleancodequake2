@@ -226,8 +226,6 @@ void CheckDMRules ()
 		EndDMLevel ();
 		return;
 	}
-	if (CTFInMatch())
-		return; // no checking in match mode
 //ZOID
 #endif
 
@@ -266,11 +264,6 @@ ExitLevel
 */
 void ExitLevel ()
 {
-#if CLEANCTF_ENABLED
-	if (CTFNextMap())
-		return;
-#endif
-
 	gi.AddCommandString ((char*)(std::string("gamemap \"") + Level.ChangeMap + "\"\n").c_str());
 	Level.ChangeMap = NULL;
 	Level.ExitIntermission = false;
@@ -340,6 +333,11 @@ Advances the world by 0.1 seconds
 ================
 */
 
+/**
+\fn	void RunPrivateEntities ()
+
+\brief	Runs all private entities.
+**/
 void			RunPrivateEntities ();
 
 #if defined(WIN32)
@@ -371,7 +369,7 @@ void ProcessEntity (edict_t *ent)
 		Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
 
 		// if the ground entity moved, make sure we are still on it
-		if ((Entity->GroundEntity) && ((!Entity->GroundEntity->gameEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount)))
+		if ((Entity->GroundEntity) && ((!Entity->GroundEntity->GetGameEntity()) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount)))
 		{
 			Entity->GroundEntity = NULL;
 			if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
@@ -409,8 +407,44 @@ void ProcessEntity (edict_t *ent)
 	}
 }
 
-bool RemoveEntity (edict_t *ent);
+/**
+\fn	bool RemoveEntity (edict_t *ent)
 
+\brief	remove_if callback. Removes the entity 'ent' from the list if it needs to be removed. 
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ent	If non-null, the entity. 
+
+\return	true if removed, false if not. 
+**/
+bool RemoveEntity (edict_t *ent)
+{
+	if (!ent || ent->server.State.Number <= (Game.MaxClients + BODY_QUEUE_SIZE))
+		return false;
+
+	if (!ent->Entity || ent->AwaitingRemoval)
+	{
+		if (!ent->RemovalFrames)
+		{
+			ent->AwaitingRemoval = false;
+
+			QDelete ent->Entity;
+			ent->Entity = NULL;
+
+			// Push into Open
+			Level.Entities.Open.push_front (ent);
+			return true;
+		}
+
+		ent->RemovalFrames--;
+	}
+	else if (ent->Entity->GroundEntity && ent->Entity->GroundEntity->Freed)
+		ent->Entity->GroundEntity = NULL;
+
+	return false;
+}
 void CGameAPI::RunFrame ()
 {
 #if !NO_VERSION_CHECKING

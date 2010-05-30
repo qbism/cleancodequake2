@@ -381,12 +381,8 @@ void CPlayerEntity::BeginServerFrame ()
 			else
 				buttonMask = -1;
 
-			if ( ( Client.LatchedButtons & buttonMask ) ||
-				((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfForceRespawn.IsEnabled() ) 
-#if CLEANCTF_ENABLED
-				|| CTFMatchOn()
-#endif
-				)
+			if ((Client.LatchedButtons & buttonMask) ||
+				((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfForceRespawn.IsEnabled() ) )
 			{
 				Respawn();
 				Client.LatchedButtons = 0;
@@ -851,10 +847,8 @@ void CPlayerEntity::CTFAssignSkin (CUserInfo &s)
 	switch (Client.Respawn.CTF.Team)
 	{
 	case CTF_TEAM1:
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM1_SKIN()).c_str());
-		break;
 	case CTF_TEAM2:
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTF_TEAM2_SKIN()).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTFTeamSkin(Client.Respawn.CTF.Team)).c_str());
 		break;
 	default:
 		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + (std::string)s).c_str());
@@ -867,7 +861,7 @@ bool CPlayerEntity::CTFStart ()
 	if (Client.Respawn.CTF.Team != CTF_NOTEAM)
 		return false;
 
-	if ((!DeathmatchFlags.dfCtfForceJoin.IsEnabled() || ctfgame.match >= MATCH_SETUP))
+	if (!DeathmatchFlags.dfCtfForceJoin.IsEnabled())
 	{
 		// start as 'observer'
 		Client.Respawn.CTF.Team = CTF_NOTEAM;
@@ -2520,16 +2514,6 @@ void CPlayerEntity::SetSpectatorStats ()
 #if CLEANCTF_ENABLED
 void CPlayerEntity::SetCTFStats()
 {
-	Client.PlayerState.GetStat (STAT_CTF_MATCH) = (ctfgame.match > MATCH_NONE) ? CONFIG_CTF_MATCH : 0;
-
-	//ghosting
-	if (Client.Respawn.CTF.Ghost)
-	{
-		Client.Respawn.CTF.Ghost->Score = Client.Respawn.Score;
-		Client.Respawn.CTF.Ghost->name = Client.Persistent.Name;
-		Client.Respawn.CTF.Ghost->number = State.GetNumber();
-	}
-
 	// logo headers for the frag display
 	Client.PlayerState.GetStat (STAT_CTF_TEAM1_HEADER) = ImageIndex ("ctfsb1");
 	Client.PlayerState.GetStat (STAT_CTF_TEAM2_HEADER) = ImageIndex ("ctfsb2");
@@ -2539,13 +2523,13 @@ void CPlayerEntity::SetCTFStats()
 	{
 		// blink 1/8th second
 		// note that ctfgame.total[12] is set when we go to intermission
-		if (ctfgame.team1 > ctfgame.team2)
+		if (ctfgame.Captures[CTF_TEAM1] > ctfgame.Captures[CTF_TEAM2])
 			Client.PlayerState.GetStat (STAT_CTF_TEAM1_HEADER) = 0;
-		else if (ctfgame.team2 > ctfgame.team1)
+		else if (ctfgame.Captures[CTF_TEAM2] > ctfgame.Captures[CTF_TEAM1])
 			Client.PlayerState.GetStat (STAT_CTF_TEAM2_HEADER) = 0;
-		else if (ctfgame.total1 > ctfgame.total2) // frag tie breaker
+		else if (ctfgame.TotalScore[CTF_TEAM1] > ctfgame.TotalScore[CTF_TEAM2]) // frag tie breaker
 			Client.PlayerState.GetStat (STAT_CTF_TEAM1_HEADER) = 0;
-		else if (ctfgame.total2 > ctfgame.total1) 
+		else if (ctfgame.TotalScore[CTF_TEAM2] > ctfgame.TotalScore[CTF_TEAM1]) 
 			Client.PlayerState.GetStat (STAT_CTF_TEAM2_HEADER) = 0;
 		else
 		{
@@ -2601,9 +2585,9 @@ void CPlayerEntity::SetCTFStats()
 		};
 	}
 
-	if (ctfgame.last_flag_capture && Level.Frame - ctfgame.last_flag_capture < 50)
+	if (ctfgame.LastFlagCaptureTime && Level.Frame - ctfgame.LastFlagCaptureTime < 50)
 	{
-		if (ctfgame.last_capture_team == CTF_TEAM1)
+		if (ctfgame.LastCaptureTeam == CTF_TEAM1)
 		{
 			if (!(Level.Frame & 8))
 				Client.PlayerState.GetStat (STAT_CTF_TEAM1_PIC) = 0;
@@ -2615,8 +2599,8 @@ void CPlayerEntity::SetCTFStats()
 		}
 	}
 
-	Client.PlayerState.GetStat (STAT_CTF_TEAM1_CAPS) = ctfgame.team1;
-	Client.PlayerState.GetStat (STAT_CTF_TEAM2_CAPS) = ctfgame.team2;
+	Client.PlayerState.GetStat (STAT_CTF_TEAM1_CAPS) = ctfgame.Captures[CTF_TEAM1];
+	Client.PlayerState.GetStat (STAT_CTF_TEAM2_CAPS) = ctfgame.Captures[CTF_TEAM2];
 
 	Client.PlayerState.GetStat (STAT_CTF_FLAG_PIC) = 0;
 	if (Client.Respawn.CTF.Team == CTF_TEAM1 &&
@@ -2642,7 +2626,6 @@ void CPlayerEntity::SetCTFStats()
 		CTFSetIDView();
 }
 
-bool loc_CanSee (IBaseEntity *targ, IBaseEntity *Inflictor);
 void CPlayerEntity::CTFSetIDView()
 {
 	Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = 0;
@@ -2669,7 +2652,7 @@ void CPlayerEntity::CTFSetIDView()
 			continue;
 
 		float d = forward | (who->State.GetOrigin() - State.GetOrigin()).GetNormalizedFast ();
-		if (d > bd && loc_CanSee(this, who))
+		if (d > bd && CanSee(who))
 		{
 			bd = d;
 			best = who;
@@ -2677,34 +2660,6 @@ void CPlayerEntity::CTFSetIDView()
 	}
 	if (bd > 0.90)
 		Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = CS_PLAYERSKINS + (best->State.GetNumber() - 1);
-}
-
-void CPlayerEntity::CTFAssignGhost()
-{
-	CCTFGhost *Ghost = QNew (TAG_LEVEL) CCTFGhost;
-
-	Ghost->team = Client.Respawn.CTF.Team;
-	Ghost->Score = 0;
-
-	// Find a key for the ghost
-	sint32 code;
-	while (true)
-	{
-		code = 10000 + (irandom(90000));
-
-		if (ctfgame.Ghosts.find(code) == ctfgame.Ghosts.end())
-			break;
-	}
-
-	ctfgame.Ghosts[code] = Ghost;
-
-	Ghost->Player = this;
-	Ghost->Code = code;
-	Ghost->name = Client.Persistent.Name;
-	Client.Respawn.CTF.Ghost = Ghost;
-	PrintToClient (PRINT_CHAT, "Your ghost code is **** %d ****\n", code);
-	PrintToClient (PRINT_HIGH, "If you lose connection, you can rejoin with your Score "
-		"intact by typing \"ghost %d\".\n", code);
 }
 #endif
 
@@ -2891,7 +2846,7 @@ CPlayerEntity	*pm_passent;
 STrace	PM_trace (float *start, float *mins, float *maxs, float *end)
 {
 CC_DISABLE_DEPRECATION
-	return gi.trace(start, mins, maxs, end, pm_passent->gameEntity, (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	return gi.trace(start, mins, maxs, end, pm_passent->GetGameEntity(), (pm_passent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 CC_ENABLE_DEPRECATION
 }
 #endif
@@ -4610,4 +4565,38 @@ bool CPlayerEntity::CheckFlood ()
 		Client.Flood.When[Client.Flood.WhenHead] = Level.Frame;
 	}
 	return false;
+}
+
+/**
+\fn	void CPlayerEntity::CastTo (ECastFlags CastFlags)
+
+\brief	Perform a cast to this player. 
+
+\author	Paril
+\date	29/05/2010
+
+\param	CastFlags	The cast flags. 
+**/
+void CPlayerEntity::CastTo (ECastFlags CastFlags)
+{
+	Cast (CastFlags, this);
+}
+
+/**
+\fn	void CPlayerEntity::StuffText (const char *text)
+
+\attention	Be careful with this function - do not abuse it.
+	
+\brief	Stuff text to player's command buffer. 
+	
+\author	Paril
+\date	29/05/2010
+	
+\param	text	The text. 
+**/
+void CPlayerEntity::StuffText (const char *text)
+{
+   	WriteByte (SVC_STUFFTEXT);	        
+	WriteString (text);
+    CastTo (CASTFLAG_RELIABLE);	
 }

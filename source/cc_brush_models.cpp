@@ -2717,6 +2717,12 @@ void SetupLights ()
 }
 
 IBaseEntity *World;
+
+/**
+\fn	void InitPrivateEntities ()
+
+\brief	Initialises the private entities list. 
+**/
 void InitPrivateEntities ();
 
 void CWorldEntity::Spawn ()

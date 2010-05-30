@@ -36,8 +36,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if CLEANCTF_ENABLED
 
-void CTFResetFlags();
-
 CFlag::CFlag (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache, sint32 team) :
@@ -76,20 +74,15 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 				Other->Client.Persistent.Inventory.Set(Other->Client.Persistent.Flag, 0);
 				Other->Client.Persistent.Flag = NULL;
 
-				ctfgame.last_flag_capture = Level.Frame;
-				ctfgame.last_capture_team = team;
+				ctfgame.LastFlagCaptureTime = Level.Frame;
+				ctfgame.LastCaptureTeam = team;
 
-				if (team == CTF_TEAM1)
-					ctfgame.team1++;
-				else
-					ctfgame.team2++;
+				ctfgame.Captures[team]++;
 
 				Item->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagcap.wav"), 255, ATTN_NONE);
 
 				// other gets another 10 frag bonus
 				Other->Client.Respawn.Score += CTF_CAPTURE_BONUS;
-				if (Other->Client.Respawn.CTF.Ghost)
-					Other->Client.Respawn.CTF.Ghost->caps++;
 
 				// Ok, let's do the player loop, hand out the bonuses
 				for (sint32 i = 1; i <= Game.MaxClients; i++)
@@ -167,6 +160,14 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 	return true;
 }
 
+/**
+\fn	void AddFlagsToList ()
+
+\brief	Adds CTF flags to the item list.
+
+\author	Paril
+\date	29/05/2010
+**/
 void AddFlagsToList ()
 {
 	NItems::RedFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team1", "players/male/flag1.md2", EF_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
