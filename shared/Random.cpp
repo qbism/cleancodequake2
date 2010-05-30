@@ -51,19 +51,19 @@
 // GCC at -O3 optimization so try your options and see what's best for you
 //
 
-const size_t MT_W			= sizeof(uint32) * 8;  //
-const int MT_R				= 31;				  //
-const int MT_U				= 11;				  //
-const int MT_S				= 7;					  //
-const uint32 MT_B			= 0x9D2C5680U;		  // 
+const size_t MT_W			= sizeof(uint32) * 8;
+const int MT_R				= 31;
+const int MT_U				= 11;
+const int MT_S				= 7;
+const uint32 MT_B			= 0x9D2C5680U;
 const int MT_N				= 624;                 // length of state vector
 const int MT_M				= 397;                 // a period parameter
-const uint32 MT_C			= 0xEFC60000U;		  //
+const uint32 MT_C			= 0xEFC60000U;
 const uint32 MT_K			= 0x9908B0DFU;         // a magic constant
-const int MT_T				= 15;				  //
-const int MT_L				= 18;				  //
+const int MT_T				= 15;
+const int MT_L				= 18;
 
-// mask all but highest   bit of u. 
+// mask all but highest   bit of u.
 inline uint32 hiBit(uint32 u)
 {
 	return (u & 0x80000000U);
@@ -125,7 +125,7 @@ uint32 randomMT ()
 
 #else
 
-static uint32   state[N+1];     // state vector + 1 extra to not violate ANSI C
+static uint32   state[MT_N+1];  // state vector + 1 extra to not violate ANSI C
 static uint32   *next;          // next random value is computed from here
 static sint32   left = -1;      // can *next++ this many times before reloading
 
@@ -197,7 +197,7 @@ void seedMT(uint32 seed)
 
 static uint32 reloadMT()
 {
-	register uint32 *p0=state, *p2=state+2, *pM=state+M, s0, s1;
+	register uint32 *p0=state, *p2=state+2, *pM=state+MT_M, s0, s1;
 	register sint32    j;
 
 	if(left < -1)
@@ -240,7 +240,7 @@ uint32 randomMT()
 	y ^= (y << MT_S) & MT_B;
 	y ^= (y << MT_T) & MT_C;
 
-	return (y = y ^ (y >>MT_ L));
+	return (y = y ^ (y >> MT_L));
 }
 #endif
 
