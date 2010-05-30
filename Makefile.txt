@@ -1,0 +1,6 @@
+The makefile should output a gamei386.so in the same directory
+as the Makefile, leaving behind no temporary/intermediate files.
+Also, given that Paril and I haven't been both maintaining the SVN
+at the same time, there will probably be times when the Makefile is
+not up to date with the repo. Let us know and this will be fixed. 
+Once we get a rhythm, things should get smoother.
