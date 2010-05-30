@@ -1,12 +1,12 @@
-## This makefile is *only* for the linux version.
+## This makefile is *only* for the Linux version.
 ## Not tested with any other OS.
-IDIR =-Iinclude -Isircl/include
+GAMELIB=gamei386.so
+IDIR=-Iinclude -Isircl/include
 CC=g++
-CFLAGS=-m32 -O2 -fno-strict-aliasing -ffloat-store -pipe -w
-SCFLAGS=-fPIC
-GAYFLAGS=-shared
-LIBS = -Llib -static -lz -ldl
-STUFF = \
+CFLAGS=-m32 -O2 -fno-strict-aliasing -ffloat-store -pipe -w -fPIC
+LDFLAGS=-shared -s
+LIBS=-Llib -static -lz -ldl
+SRC = \
     shared/MathLib.cpp \
     shared/Random.cpp \
     shared/String.cpp \
@@ -154,10 +154,28 @@ STUFF = \
     source/cc_xatrix_soldier_ripper.cpp \
     source/cc_xatrix_supertank_boss5.cpp \
     source/cc_xatrix_trap.cpp
+OBJS=$(SRC:.cpp=.o)
+DEPS=$(SRC:.cpp=.d)
 
-%.o : %.cpp
-	$(CC) -g $(CFLAGS) $(SCFLAGS) -o $@ -c $<
+.PHONY: all clean
 
-gamei386.so: $(STUFF)
-	$(CC) -g -o $@ $^ $(CFLAGS) $(GAYFLAGS) $(IDIR) $(LIBS)
+all: $(GAMELIB)
 
+clean:
+	@echo "removing *.o, *.d, and $(GAMELIB)"
+	@rm -f $(OBJS) $(DEPS) $(GAMELIB)
+
+$(GAMELIB): $(OBJS)
+	@echo "building $@"
+	@$(CC) -o $@ $(LDFLAGS) $(LIBS) $^
+
+%.o: %.cpp
+	@echo "compiling $<"
+	@$(CC) -c -MD -o $@ $(CFLAGS) $(IDIR) $<
+
+%.d: %.cpp
+## Do nothing since %.d will be generated at compile-time (-MD option)
+
+ifneq ($(MAKECMDGOALS),clean)
+-include $(DEPS)
+endif
