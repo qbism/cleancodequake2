@@ -433,18 +433,19 @@ void CWeapPrevCommand::operator () ()
 	if (Player->Health <= 0 || Player->DeadFlag)	
 		return;
 
+	sint32 numItems = GetNumItems();
 	sint32 selectedWeaponIndex = Player->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (uint8 i = 1; i <= GetNumItems(); i++)
+	for (uint8 i = 1; i <= numItems; i++)
 	{
-		sint32 index = (selectedWeaponIndex + MAX_ITEMS - i) % MAX_ITEMS;
+		sint32 index = (selectedWeaponIndex + numItems - i) % numItems;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
 		if (!(Item->Flags & ITEMFLAG_USABLE))
 			continue;
-		if (! (Item->Flags & ITEMFLAG_WEAPON) )
+		if (!(Item->Flags & ITEMFLAG_WEAPON))
 			continue;
 		Item->Use (Player);
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon->Item == Item)
@@ -464,18 +465,19 @@ void CWeapNextCommand::operator () ()
 	if (Player->Health <= 0 || Player->DeadFlag)
 		return;
 
+	sint32 numItems = GetNumItems();
 	sint32 selectedWeaponIndex = Player->Client.Persistent.Weapon->Item->GetIndex();
 
 	// scan  for the next valid one
-	for (uint8 i = 1; i <= GetNumItems(); i++)
+	for (uint8 i = 1; i <= numItems; i++)
 	{
-		sint32 index = (selectedWeaponIndex + i) % MAX_ITEMS;
+		sint32 index = (selectedWeaponIndex + i) % numItems;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
 		CBaseItem *Item = GetItemByIndex(index);
 		if (!(Item->Flags & ITEMFLAG_USABLE))
 			continue;
-		if (! (Item->Flags & ITEMFLAG_WEAPON) )
+		if (!(Item->Flags & ITEMFLAG_WEAPON))
 			continue;
 		Item->Use (Player);
 		if (Player->Client.NewWeapon && Player->Client.NewWeapon->Item == Item)
@@ -497,7 +499,7 @@ void CWeapLastCommand::operator () ()
 		return;
 	if (!(Player->Client.Persistent.LastWeapon->Item->Flags & ITEMFLAG_USABLE))
 		return;
-	if (! (Player->Client.Persistent.LastWeapon->Item->Flags & ITEMFLAG_WEAPON) )
+	if (!(Player->Client.Persistent.LastWeapon->Item->Flags & ITEMFLAG_WEAPON))
 		return;
 	Player->Client.Persistent.LastWeapon->Item->Use (Player);
 }
@@ -523,7 +525,7 @@ void CInvDropCommand::operator () ()
 	CBaseItem *Item = GetItemByIndex(Player->Client.Persistent.Inventory.SelectedItem);
 	if (!(Item->Flags & ITEMFLAG_DROPPABLE))
 	{
-		Player->PrintToClient (PRINT_HIGH, "Item is not dropable.\n");
+		Player->PrintToClient (PRINT_HIGH, "Item cannot be dropped.\n");
 		return;
 	}
 	Item->Drop (Player);
