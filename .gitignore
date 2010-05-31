@@ -2,5 +2,5 @@
 # Similar to svn:ignore property of Subversion
 *.o
 *.d
-gamei386.so
+game*.so
 

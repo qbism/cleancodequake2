@@ -1,11 +1,19 @@
 ## This makefile is *only* for the Linux version.
 ## Not tested with any other OS.
-GAMELIB=gamei386.so
-IDIR=-Iinclude -Isircl/include
+##
+## TODO: Cross-compiling capabilities (e.g. gamei386.so on x86_64 machine)
+
+CPU:=$(shell uname -m | sed 's/i[3-9]86/i386/')
+GAMELIB=game$(CPU).so
+
 CC=g++
-CFLAGS=-m32 -O2 -fno-strict-aliasing -ffloat-store -pipe -w -fPIC
-LDFLAGS=-shared -s
-LIBS=-Llib -static -lz -ldl
+CCFLAGS=-O2 -c -MMD -fPIC -fno-strict-aliasing -pipe -w
+IDIR=-Iinclude -Isircl/include
+
+LD=g++
+LDFLAGS=-O2 -shared -s
+LIBS=-lz
+
 SRC = \
     shared/MathLib.cpp \
     shared/Random.cpp \
@@ -157,25 +165,21 @@ SRC = \
 OBJS=$(SRC:.cpp=.o)
 DEPS=$(SRC:.cpp=.d)
 
-.PHONY: all clean
+.PHONY: default clean
 
-all: $(GAMELIB)
+default: $(GAMELIB)
 
 clean:
-	@echo "removing *.o, *.d, and $(GAMELIB)"
-	@rm -f $(OBJS) $(DEPS) $(GAMELIB)
+	@echo "[RM] $(GAMELIB) *.o *.d"
+	@rm -f $(GAMELIB) $(OBJS) $(DEPS)
 
 $(GAMELIB): $(OBJS)
-	@echo "building $@"
-	@$(CC) -o $@ $(LDFLAGS) $(LIBS) $^
+	@echo "[LD] $@"
+	@$(LD) -o $@ $(LDFLAGS) $(LIBS) $^
 
 %.o: %.cpp
-	@echo "compiling $<"
-	@$(CC) -c -MD -o $@ $(CFLAGS) $(IDIR) $<
+	@echo "[CC] $@"
+	@$(CC) -o $@ $(CCFLAGS) $(IDIR) $<
 
-%.d: %.cpp
-## Do nothing since %.d will be generated at compile-time (-MD option)
-
-ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPS)
-endif
+
