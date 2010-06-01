@@ -10,9 +10,12 @@
 ########################################################################
 
 ################
-# REVISION 414 #
+# REVISION 425 #
 ################
 
 source/cc_game_commands.cpp: In member function ‘virtual void CPlayersCommand::operator()()’:
 source/cc_game_commands.cpp:246:70: error: cannot pass objects of non-trivially-copyable type ‘struct std::string’ through ‘...’
 
+###########################
+# STATUS: Does not build. #
+###########################
