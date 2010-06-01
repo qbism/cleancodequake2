@@ -1,4 +1,4 @@
-#  The makefile should output a gamei386.so in the same directory
+﻿#  The makefile should output a gamei386.so in the same directory
 #  as the Makefile. Also, given that Paril and I haven't been both
 #  maintaining the SVN at the same time, there will probably be times
 #  when the Makefile is not up to date with the repo. Let us know and
@@ -12,10 +12,3 @@
 ################
 # REVISION 425 #
 ################
-
-source/cc_game_commands.cpp: In member function ‘virtual void CPlayersCommand::operator()()’:
-source/cc_game_commands.cpp:246:70: error: cannot pass objects of non-trivially-copyable type ‘struct std::string’ through ‘...’
-
-###########################
-# STATUS: Does not build. #
-###########################

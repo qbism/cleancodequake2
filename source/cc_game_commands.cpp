@@ -243,7 +243,7 @@ public:
 			Large += Small;
 		}
 
-		Player->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large, count);
+		Player->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large.c_str(), count);
 	}
 };
 
