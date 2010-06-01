@@ -848,10 +848,12 @@ void CPlayerEntity::CTFAssignSkin (CUserInfo &s)
 	{
 	case CTF_TEAM1:
 	case CTF_TEAM2:
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + t + CTFTeamSkin(Client.Respawn.CTF.Team)).c_str());
+		// Paril, Issue 5 part 1 fix
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + '\\' + t + CTFTeamSkin(Client.Respawn.CTF.Team)).c_str());
 		break;
 	default:
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + (std::string)s).c_str());
+		// Paril, Issue 5 part 1 fix
+		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + '\\' + s.GetValueFromKey ("skin")).c_str());
 		break;
 	}
 }
@@ -4063,7 +4065,8 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 
 	if (Attacker == this)
 	{
-		switch (meansOfDeath)
+		// Paril, Issue 3 fix
+		switch (meansOfDeath & ~MOD_FRIENDLY_FIRE)
 		{
 		case MOD_HELD_GRENADE:
 			message = "tried to put the pin back in";
@@ -4158,7 +4161,8 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 		CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
 		bool endsInS = (PlayerAttacker->Client.Persistent.Name[PlayerAttacker->Client.Persistent.Name.size()-1] == 's');
 
-		switch (meansOfDeath)
+		// Paril, Issue 3 fix
+		switch (meansOfDeath & ~MOD_FRIENDLY_FIRE)
 		{
 		case MOD_BLASTER:
 			message = "was blasted by";
@@ -4316,7 +4320,8 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 	}
 	else if (Attacker && (Attacker->EntityFlags & ENT_MONSTER))
 	{
-		switch (meansOfDeath)
+		// Paril, Issue 3 fix
+		switch (meansOfDeath & ~MOD_FRIENDLY_FIRE)
 		{
 		case MOD_BLASTER:
 			message = "was blasted by";
@@ -4394,7 +4399,8 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 	}
 	else
 	{
-		switch (meansOfDeath)
+		// Paril, Issue 3 fix
+		switch (meansOfDeath & ~MOD_FRIENDLY_FIRE)
 		{
 		case MOD_SUICIDE:
 			message = "suicides";

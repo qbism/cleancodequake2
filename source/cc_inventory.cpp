@@ -749,9 +749,16 @@ void Cmd_Give (CPlayerEntity *Player)
 	else
 	{
 		ITouchableEntity *ItemEntity = entity_cast<ITouchableEntity>(SpawnEntityAtPlace (it->Classname, Player->State.GetOrigin(), Player->State.GetAngles()));
-		ItemEntity->Touch (Player, NULL, NULL);
-		if (ItemEntity->GetInUse())
-			ItemEntity->Free ();
+		
+		// Paril, Fix for Issue 4
+		if (ItemEntity)
+		{
+			ItemEntity->Touch (Player, NULL, NULL);
+			if (ItemEntity->GetInUse())
+				ItemEntity->Free ();
+		}
+		else
+			Player->PrintToClient (PRINT_HIGH, "This item is not physically spawnable.\n");
 	}
 }
 

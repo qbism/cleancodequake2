@@ -1787,44 +1787,161 @@ public:
 #include "cc_rogue_spheres.h"
 #endif
 
-// TESTING
-// Do not touch
+/**
+\class	entity_ptr
+
+\brief	Entity pointer.
+		Testing a theory.
+
+\author	Paril
+\date	01/06/2010
+**/
 template <class TType>
 class entity_ptr
 {
-	TType	*Entity;
-	edict_t	*ent;
+	TType		*GameEntity;	// The CleanCode entity
+	edict_t		*ServerEntity;	// The server entity
 
 public:
-	entity_ptr(TType *Entity) :
-	  Entity(Entity),
-	  ent(Entity->GetGameEntity())
+	/**
+	\fn	entity_ptr()
+	
+	\brief	Default constructor.
+	
+	\author	Paril
+	\date	01/06/2010
+	**/
+	entity_ptr() :
+	  GameEntity(NULL),
+	  ServerEntity(NULL)
+	  {
+	  }
+
+	/**
+	\fn	entity_ptr(TType *GameEntity)
+	
+	\brief	Constructor. Constructs an entity_ptr from a game entity. 
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\param [in,out]	GameEntity	If non-null, the game entity. 
+	**/
+	entity_ptr(TType *GameEntity) :
+	  GameEntity(GameEntity),
+	  ServerEntity(GameEntity->GetGameEntity())
 	  {
 	  };
 
-	TType *GetEntity ()
+	/**
+	\fn	entity_ptr(edict_t *ServerEntity)
+	
+	\brief	Constructor. Constructs an entity_ptr from a server entity.
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\param [in,out]	ServerEntity	If non-null, the server entity. 
+	**/
+	entity_ptr(edict_t *ServerEntity) :
+	  ServerEntity(ServerEntity),
+	  GameEntity(entity_cast<TType>(ServerEntity->Entity))
+	  {
+	  }
+
+	/**
+	\fn	void Clear ()
+	
+	\brief	Clears this object to its blank/initial state.
+	**/
+	void Clear ()
 	{
-		return Entity;
+		GameEntity = NULL;
+		ServerEntity = NULL;
 	}
 
-	edict_t *GetGameEntity ()
+	/**
+	\fn	entity_ptr operator= (int)
+	
+	\brief	Empty operator, for conversion to NULL.
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\param		The. 
+	
+	\return	This object. 
+	**/
+	entity_ptr operator = (int)
 	{
-		return ent;
+		Clear ();
+		return *this;
 	}
 
+	/**
+	\fn	TType *operator* ()
+	
+	\brief	Dereference operator. Dereferencing an entity_ptr yields the game entity. 
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\return	The game entity.
+	**/
+	TType *operator * ()
+	{
+		return GameEntity;
+	}
+
+	/**
+	\fn	TType *GetGameEntity ()
+	
+	\brief	Gets the game entity. 
+	
+	\return	null if it fails, else the game entity. 
+	**/
+	TType *GetGameEntity ()
+	{
+		return GameEntity;
+	}
+
+	/**
+	\fn	edict_t *GetServerEntity ()
+	
+	\brief	Gets the server entity. 
+	
+	\return	null if it fails, else the server entity. 
+	**/
+	edict_t *GetServerEntity ()
+	{
+		return ServerEntity;
+	}
+
+	/**
+	\fn	bool IsValid ()
+	
+	\brief	Query if this entity pointer is valid. 
+	
+	\return	true if valid, false if not. 
+	**/
 	bool IsValid ()
 	{
-		return (ent && ent->server.InUse && !ent->freetime && Entity && !Entity->Freed);
+		return (ServerEntity && ServerEntity->server.InUse && !ServerEntity->freetime && GameEntity && !GameEntity->Freed);
 	}
 
-	operator bool ()
-	{
-		return IsValid();
-	}
-
+	/**
+	\fn	TType *operator-> ()
+	
+	\brief	Member access operator.
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\return	Game entity pointer for member access.
+	**/
 	TType *operator-> ()
 	{
-		return Entity;
+		return GameEntity;
 	}
 };
 
