@@ -14,5 +14,5 @@
 ################
 
 source/cc_game_commands.cpp: In member function ‘virtual void CPlayersCommand::operator()()’:
-source/cc_game_commands.cpp:213:70: error: cannot pass objects of non-trivially-copyable type ‘struct std::string’ through ‘...’
+source/cc_game_commands.cpp:246:70: error: cannot pass objects of non-trivially-copyable type ‘struct std::string’ through ‘...’
 
