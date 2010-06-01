@@ -296,14 +296,40 @@ public:
 		return (target * ((target / rate) + 1) / 2);
 	}
 
+	/**
+	\fn	void CalcAcceleratedMove()
+	
+	\brief	Calculates a move that has acceleration.
+	**/
 	void CalcAcceleratedMove();
+
+	/**
+	\fn	void Accelerate ()
+	
+	\brief	Accelerates. 
+	**/
 	void Accelerate ();
+
+	/**
+	\fn	void ThinkAccelMove ()
+	
+	\brief	Acceleration move thinking routine.The team has completed a frame of movement, so change
+			the speed for the next frame. 
+	**/
 	void ThinkAccelMove ();
 
 	virtual void Think ();
 	bool Run ();
 };
 
+/**
+\class	CPlatFormInsideTrigger
+
+\brief	A PlatForm's inside trigger. See "Quake II Entities - Platforms" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CPlatFormInsideTrigger : public ITouchableEntity
 {
 public:
@@ -317,6 +343,14 @@ public:
 	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
+/**
+\class	CPlatForm2InsideTrigger
+
+\brief	A PlatForm2's inside trigger. Specific to Rogue. See "Quake II Entities - Platforms" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CPlatForm2InsideTrigger : public CPlatFormInsideTrigger
 {
 public:
@@ -338,6 +372,15 @@ enum
 	PLAT_LOW_TRIGGER	= BIT(0),
 };
 
+/**
+\class	CPlatForm
+
+\brief	A platform. This entity is mapped to the classname func_plat.
+		See "Quake II Entities - Platforms" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CPlatForm : public IMapEntity, public IBrushModel, public IBlockableEntity, public IUsableEntity
 {
 public:
@@ -356,7 +399,19 @@ public:
 	bool Run ();
 	virtual void Blocked (IBaseEntity *Other);
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
+
+	/**
+	\fn	virtual void HitTop ()
+	
+	\brief	Called when the platform hits the top of it's move. 
+	**/
 	virtual void HitTop ();
+
+	/**
+	\fn	virtual void HitBottom ()
+	
+	\brief	Called when the platform hits the bottom of it's move. 
+	**/
 	virtual void HitBottom ();
 
 	ENTITYFIELD_DEFS
@@ -369,14 +424,41 @@ public:
 	};
 
 	virtual void DoEndFunc ();
+
+	/**
+	\fn	virtual void GoDown ()
+	
+	\brief	Causes the platform to go down. 
+	**/
 	virtual void GoDown ();
+
+	/**
+	\fn	virtual void GoUp ()
+	
+	\brief	Causes the platform to go up. 
+	**/
 	virtual void GoUp ();
+
 	virtual void Think ();
 
+	/**
+	\fn	void SpawnInsideTrigger ()
+	
+	\brief	Spawns the inside trigger.
+	**/
 	void SpawnInsideTrigger ();
+
 	virtual void Spawn ();
 };
 
+/**
+\class	CDoorTrigger
+
+\brief	Door trigger. See "Quake II Entities - Doors" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CDoorTrigger : public ITouchableEntity
 {
 public:
@@ -390,7 +472,14 @@ public:
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 };
 
-// Base door class
+/**
+\class	CDoor
+
+\brief	Base class for doors. See "Quake II Entities - Doors" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CDoor : public IMapEntity, public IBrushModel, public IHurtableEntity, public IBlockableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
@@ -434,7 +523,18 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CDoor)
 
+	/**
+	\fn	void UseAreaPortals (bool isOpen);
+	
+	\brief	Opens or closes area portals.
+	
+	\author	Paril
+	\date	30/05/2010
+	
+	\param	isOpen		True if area portals are to be opened. 
+	**/
 	void UseAreaPortals (bool isOpen);
+
 	bool Run ();
 
 	virtual bool			ParseField (const char *Key, const char *Value)
@@ -466,10 +566,39 @@ public:
 		DOORENDFUNC_HITTOP
 	};
 
+	/**
+	\fn	virtual void HitTop ()
+	
+	\brief	Called when a door hits the top of it's movement.
+	**/
 	virtual void HitTop ();
+
+	/**
+	\fn	virtual void HitBottom ()
+	
+	\brief	Called when a door hits the bottom of it's movement. 
+	**/
 	virtual void HitBottom ();
+
+	/**
+	\fn	virtual void GoDown ()
+	
+	\brief	Called to make the door go down. 
+	**/
 	virtual void GoDown ();
+
+	/**
+	\fn	virtual void GoUp (IBaseEntity *Activator)
+	
+	\brief	Called to make the door go up. 
+	
+	\author	Paril
+	\date	30/05/2010
+	
+	\param [in,out]	Activator	If non-null, the activator. 
+	**/
 	virtual void GoUp (IBaseEntity *Activator);
+
 	virtual void DoEndFunc ();
 	virtual void Think ();
 
@@ -484,13 +613,31 @@ public:
 	virtual void Pain (IBaseEntity *Other, sint32 Damage);
 	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
-	// Thinks
+	/**
+	\fn	void SpawnDoorTrigger ()
+	
+	\brief	Spawns the door trigger. 
+	**/
 	void SpawnDoorTrigger ();
+
+	/**
+	\fn	void CalcMoveSpeed ()
+	
+	\brief	Calculates movement speed. 
+	**/
 	void CalcMoveSpeed ();
 
 	virtual void Spawn ();
 };
 
+/**
+\class	CRotatingDoor
+
+\brief	Rotating door. See "Quake II Entities - Doors" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CRotatingDoor : public CDoor
 {
 public:
@@ -505,6 +652,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CMovableWater
+
+\brief	Movable water. See "Quake II Entities - Doors" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CMovableWater : public CDoor
 {
 public:
@@ -516,6 +671,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CDoorSecret
+
+\brief	Door secret. See "Quake II Entities - Doors" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CDoorSecret : public CDoor
 {
 public:
@@ -549,6 +712,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CButton
+
+\brief	Button. See "Quake II Entities - Buttons" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CButton : public IMapEntity, public IBrushModel, public IHurtableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
@@ -595,6 +766,12 @@ public:
 
 	virtual void DoEndFunc ();
 	virtual void Think ();
+
+	/**
+	\fn	virtual void Fire ()
+	
+	\brief	Fires this button's targets. 
+	**/
 	virtual void Fire ();
 
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
@@ -605,6 +782,14 @@ public:
 	virtual void Spawn ();
 };
 
+/**
+\class	CTrainBase
+
+\brief	Train base. See "Quake II Entities - Trains" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CTrainBase : public IMapEntity, public IBrushModel, public IBlockableEntity, public IUsableEntity
 {
 public:
@@ -632,9 +817,33 @@ public:
 		TRAINENDFUNC_WAIT,
 	};
 
+	/**
+	\fn	void TrainWait ()
+	
+	\brief	Called when the train has done it's move. Waits if the path requires so, and selects the
+			next target. 
+	**/
 	void TrainWait ();
+
+	/**
+	\fn	void Next ()
+	
+	\brief	Pick next target and resumes course. 
+	**/
 	void Next ();
+
+	/**
+	\fn	void Resume ()
+	
+	\brief	Resumes this train's course. 
+	**/
 	void Resume ();
+
+	/**
+	\fn	void Find ()
+	
+	\brief	Finds targets and starts it's journey. 
+	**/
 	void Find ();
 
 	virtual void DoEndFunc ();
@@ -646,6 +855,14 @@ public:
 	virtual void Spawn ();
 };
 
+/**
+\class	CTrain
+
+\brief	Train, mapped to func_train. See "Quake II Entities - Trains" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CTrain : public CTrainBase
 {
 public:
@@ -657,10 +874,18 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CTriggerElevator
+
+\brief	Elevator trigger. See "Quake II Entities - Trains" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CTriggerElevator : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
-	CTrain			*MoveTarget;
+	CTrain			*MoveTarget;	// The train to be moved
 
 	CTriggerElevator ();
 	CTriggerElevator (sint32 Index);
@@ -697,6 +922,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CWorldEntity
+
+\brief	World entity.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CWorldEntity : public IMapEntity, public IBrushModel
 {
 public:
@@ -718,6 +951,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CRotatingBrush
+
+\brief	Rotating brush. See "Quake II Entities - Others" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CRotatingBrush : public IMapEntity, public IBrushModel, public IUsableEntity, public IBlockableEntity, public ITouchableEntity
 {
 public:
@@ -765,8 +1006,20 @@ public:
 		ROTATINGTHINK_DECEL
 	};
 
+	/**
+	\fn	void Accelerate ()
+	
+	\brief	Accelerates this brushes rotating velocity. 
+	**/
 	void Accelerate ();
+
+	/**
+	\fn	void Decelerate ()
+	
+	\brief	Decelerates this brushes rotating velocity. 
+	**/
 	void Decelerate ();
+
 	void Think ();
 #endif
 
@@ -774,6 +1027,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CConveyor
+
+\brief	Conveyor belt. See "Quake II Entities - Others" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CConveyor : public IMapEntity, public IBrushModel, public IUsableEntity
 {
 public:
@@ -791,6 +1052,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CAreaPortal
+
+\brief	An area portal. See "Quake II Entities - Area Portal" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CAreaPortal : public IMapEntity, public IUsableEntity
 {
 public:
@@ -809,6 +1078,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CFuncWall
+
+\brief	Func wall. See "Quake II Entities - Others" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CFuncWall : public IMapEntity, public IBrushModel, public IUsableEntity
 {
 public:
@@ -842,6 +1119,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CFuncObject
+
+\brief	A func_object. See "Quake II Entities - Others" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CFuncObject : public IMapEntity, public IBrushModel, public ITossProjectile, public ITouchableEntity, public IUsableEntity
 {
 public:
@@ -881,6 +1166,15 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CFuncExplosive
+
+\brief	Func explosive. Solid brush that can be shot at. See "Quake II Entities - Explosive" for
+		more information. 
+
+\author	Paril
+\date	30/05/2010
+**/
 class CFuncExplosive : public IMapEntity, public IBrushModel, public IUsableEntity, public IHurtableEntity
 {
 public:
@@ -906,8 +1200,8 @@ public:
 #endif
 	};
 
-	EFuncExplosiveUseType	UseType;
-	sint32					Explosivity;
+	EFuncExplosiveUseType	UseType;		// Use state
+	sint32					Explosivity;	// The explosivity of the brush
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CFuncExplosive)
@@ -915,10 +1209,26 @@ public:
 	CFuncExplosive ();
 	CFuncExplosive (sint32 Index);
 
+	/**
+	\fn	void DoSpawn ()
+	
+	\brief	Called to make a func_explosive solid. 
+	**/
 	void DoSpawn ();
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 #if ROGUE_FEATURES
+	/**
+	\fn	void Activate (IBaseEntity *Other, IBaseEntity *Activator)
+	
+	\brief	Activates this func_explosive. 
+	
+	\author	Paril
+	\date	30/05/2010
+	
+	\param [in,out]	Other		If non-null, the other. 
+	\param [in,out]	Activator	If non-null, the activator. 
+	**/
 	void Activate (IBaseEntity *Other, IBaseEntity *Activator);
 #endif
 	void Pain (IBaseEntity *Other, sint32 Damage);
@@ -928,6 +1238,14 @@ public:
 	void Spawn ();
 };
 
+/**
+\class	CKillbox
+
+\brief	Killbox. See "Quake II Entities - Others" for more information.
+
+\author	Paril
+\date	30/05/2010
+**/
 class CKillbox : public IMapEntity, public IUsableEntity, public IBrushModel
 {
 public:

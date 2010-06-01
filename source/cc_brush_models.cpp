@@ -159,6 +159,11 @@ void			IBrushModel::LoadFields (CFile &File)
 	IPushPhysics::LoadFields (File);
 };
 
+/**
+\fn	void IBrushModel::SetBrushModel ()
+
+\brief	Sets the brush model. 
+**/
 void IBrushModel::SetBrushModel ()
 {
 	if (!Model || Model[0] != '*')
@@ -173,12 +178,22 @@ CC_DISABLE_DEPRECATION
 CC_ENABLE_DEPRECATION
 }
 
+/**
+\fn	void IBrushModel::MoveDone ()
+
+\brief	Called when a move is done. 
+**/
 void IBrushModel::MoveDone ()
 {
 	Velocity.Clear ();
 	DoEndFunc ();
 }
 
+/**
+\fn	void IBrushModel::MoveFinal ()
+
+\brief	Called when a move reaches it's final destination. 
+**/
 void IBrushModel::MoveFinal ()
 {
 	if (RemainingDistance == 0)
@@ -193,6 +208,11 @@ void IBrushModel::MoveFinal ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
+/**
+\fn	void IBrushModel::MoveBegin ()
+
+\brief	Called to begin a move. 
+**/
 void IBrushModel::MoveBegin ()
 {
 	if ((MoveSpeed * 0.1f) >= RemainingDistance)
@@ -208,6 +228,18 @@ void IBrushModel::MoveBegin ()
 	ThinkType = BRUSHTHINK_MOVEFINAL;
 }
 
+/**
+\fn	void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
+
+\brief	Call to calculate a move to 'dest'. DoEndFunc will be executed at the end, with the
+		EndFunc set to 'EndFunc'. 
+
+\author	Paril
+\date	30/05/2010
+
+\param [in,out]	dest	Destination for the. 
+\param	EndFunc			The end func. 
+**/
 void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 {
 	Velocity.Clear ();
@@ -239,12 +271,22 @@ void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 // Support routines for angular movement (changes in angle using avelocity)
 //
 
+/**
+\fn	void IBrushModel::AngleMoveDone ()
+
+\brief	Called when an angular move is done. 
+**/
 void IBrushModel::AngleMoveDone ()
 {
 	AngularVelocity.Clear ();
 	DoEndFunc ();
 }
 
+/**
+\fn	void IBrushModel::AngleMoveFinal ()
+
+\brief	Called when an angular move has reached it's final destination. 
+**/
 void IBrushModel::AngleMoveFinal ()
 {
 	vec3f move = ((MoveState == STATE_UP) ? EndAngles : StartAngles) - State.GetAngles();
@@ -261,6 +303,11 @@ void IBrushModel::AngleMoveFinal ()
 	NextThink = Level.Frame + FRAMETIME;
 }
 
+/**
+\fn	void IBrushModel::AngleMoveBegin ()
+
+\brief	Called to start an angular move. 
+**/
 void IBrushModel::AngleMoveBegin ()
 {
 #if ROGUE_FEATURES
@@ -312,6 +359,16 @@ void IBrushModel::AngleMoveBegin ()
 #endif
 }
 
+/**
+\fn	void IBrushModel::AngleMoveCalc (uint32 EndFunc)
+
+\brief	Called to calculate an angle movement. EndFunc is set to 'EndFunc'. 
+
+\author	Paril
+\date	30/05/2010
+
+\param	EndFunc	The end func. 
+**/
 void IBrushModel::AngleMoveCalc (uint32 EndFunc)
 {
 	AngularVelocity.Clear ();
@@ -332,14 +389,11 @@ void IBrushModel::AngleMoveCalc (uint32 EndFunc)
 	}
 }
 
-/*
-==============
-Think_AccelMove
+/**
+\fn	void IBrushModel::CalcAcceleratedMove()
 
-The team has completed a frame of movement, so
-change the speed for the next frame
-==============
-*/
+\brief	Calculates a move that has acceleration. 
+**/
 void IBrushModel::CalcAcceleratedMove()
 {
 	float	accel_dist;
@@ -368,6 +422,11 @@ void IBrushModel::CalcAcceleratedMove()
 	DecelDistance = decel_dist;
 };
 
+/**
+\fn	void IBrushModel::Accelerate ()
+
+\brief	Accelerates. 
+**/
 void IBrushModel::Accelerate ()
 {
 	// are we decelerating?
@@ -439,6 +498,12 @@ void IBrushModel::Accelerate ()
 	return;
 };
 
+/**
+\fn	void IBrushModel::ThinkAccelMove ()
+
+\brief	Acceleration move thinking routine.The team has completed a frame of movement, so change
+		the speed for the next frame. 
+**/
 void IBrushModel::ThinkAccelMove ()
 {
 	RemainingDistance -= CurrentSpeed;

@@ -150,6 +150,13 @@ class CTestCommand : public CGameCommandFunctor
 public:
 	void operator () ()
 	{
+		entity_ptr<IBaseEntity> pt = World;
+
+		if (pt)
+		{
+			pt.GetEntity();
+		}
+
 		if (ArgCount() < 3)
 			return;
 	

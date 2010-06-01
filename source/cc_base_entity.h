@@ -1787,6 +1787,47 @@ public:
 #include "cc_rogue_spheres.h"
 #endif
 
+// TESTING
+// Do not touch
+template <class TType>
+class entity_ptr
+{
+	TType	*Entity;
+	edict_t	*ent;
+
+public:
+	entity_ptr(TType *Entity) :
+	  Entity(Entity),
+	  ent(Entity->GetGameEntity())
+	  {
+	  };
+
+	TType *GetEntity ()
+	{
+		return Entity;
+	}
+
+	edict_t *GetGameEntity ()
+	{
+		return ent;
+	}
+
+	bool IsValid ()
+	{
+		return (ent && ent->server.InUse && !ent->freetime && Entity && !Entity->Freed);
+	}
+
+	operator bool ()
+	{
+		return IsValid();
+	}
+
+	TType *operator-> ()
+	{
+		return Entity;
+	}
+};
+
 #else
 FILE_WARNING
 #endif
