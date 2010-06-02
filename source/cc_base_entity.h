@@ -1790,7 +1790,7 @@ public:
 class CEntityPtrLinkList
 {
 public:
-	typedef std::map<IBaseEntity*, std::list<void*>> TEntityPtrUsageList;
+	typedef std::map<IBaseEntity*, std::list<void*> > TEntityPtrUsageList;
 	TEntityPtrUsageList List;
 
 	void AddEntity (IBaseEntity *Entity, void *Ptr)
