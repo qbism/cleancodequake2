@@ -1787,6 +1787,45 @@ public:
 #include "cc_rogue_spheres.h"
 #endif
 
+class CEntityPtrLinkList
+{
+public:
+	typedef std::map<IBaseEntity*, std::list<void*>> TEntityPtrUsageList;
+	TEntityPtrUsageList List;
+
+	void AddEntity (IBaseEntity *Entity, void *Ptr)
+	{
+		TEntityPtrUsageList::iterator it = List.find(Entity);
+
+		if (it != List.end())
+			(*it).second.push_back (Ptr);
+		else
+		{
+			std::list<void*> PtrList;
+			PtrList.push_back(Ptr);
+
+			List[Entity] = PtrList;
+		}
+	}
+
+	void RemoveEntity (IBaseEntity *Entity, void *Ptr)
+	{
+		TEntityPtrUsageList::iterator it = List.find(Entity);
+
+		if (it == List.end())
+			CC_ASSERT_EXPR(0, "Wtf?");
+		else
+		{
+			(*it).second.remove (Ptr);
+
+			if (!(*it).second.size())
+				List.erase (Entity);
+		}
+	}
+};
+	
+CEntityPtrLinkList &UsageList ();
+
 /**
 \class	entity_ptr
 
@@ -1817,6 +1856,12 @@ public:
 	  {
 	  }
 
+	~entity_ptr()
+	{
+		if (GameEntity)
+			UsageList().RemoveEntity(GameEntity, this);
+	}
+
 	/**
 	\fn	entity_ptr(TType *GameEntity)
 	
@@ -1831,6 +1876,7 @@ public:
 	  GameEntity(GameEntity),
 	  ServerEntity(GameEntity->GetGameEntity())
 	  {
+		  UsageList().AddEntity (GameEntity, this);
 	  };
 
 	/**
@@ -1847,7 +1893,32 @@ public:
 	  ServerEntity(ServerEntity),
 	  GameEntity(entity_cast<TType>(ServerEntity->Entity))
 	  {
+		  UsageList().AddEntity (GameEntity, this);
 	  }
+
+	entity_ptr &operator= (TType *NewGameEntity)
+	{
+		if (GameEntity)
+			UsageList().RemoveEntity (GameEntity, this);
+
+		GameEntity = NewGameEntity;
+		ServerEntity = NewGameEntity->GetGameEntity();
+		UsageList().AddEntity (GameEntity, this);
+
+		return *this;
+	}
+
+	entity_ptr &operator= (edict_t *NewServerEntity)
+	{
+		if (GameEntity)
+			UsageList().RemoveEntity (GameEntity, this);
+
+		ServerEntity = NewServerEntity;
+		GameEntity = entity_cast<TType>(ServerEntity->Entity);
+		UsageList().AddEntity (GameEntity, this);
+
+		return *this;
+	}
 
 	/**
 	\fn	void Clear ()
@@ -1856,6 +1927,7 @@ public:
 	**/
 	void Clear ()
 	{
+		UsageList().RemoveEntity (GameEntity);
 		GameEntity = NULL;
 		ServerEntity = NULL;
 	}

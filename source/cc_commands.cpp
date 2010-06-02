@@ -145,11 +145,36 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
+class CTestEntityLol : public IBaseEntity
+{
+public:
+	CTestEntityLol () :
+	  IBaseEntity ()
+	  {
+	  };
+
+	CTestEntityLol (sint32 Index) :
+	  IBaseEntity (Index)
+	  {
+	  };
+
+	IMPLEMENT_SAVE_HEADER("CTestEntityLol");
+};
+
 class CTestCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ()
 	{
+		CTestEntityLol *Mnn = QNewEntityOf CTestEntityLol;
+		CTestEntityLol *Mnn2 = QNewEntityOf CTestEntityLol;
+		entity_ptr<CTestEntityLol> testPtr1 = Mnn;
+		entity_ptr<CTestEntityLol> testPtr2 = Mnn;
+		entity_ptr<CTestEntityLol> testPtr3 = Mnn;
+		testPtr3 = Mnn2;
+
+		Mnn->Free();
+
 		if (ArgCount() < 3)
 			return;
 	

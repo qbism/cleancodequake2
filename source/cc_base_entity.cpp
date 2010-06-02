@@ -33,6 +33,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+CEntityPtrLinkList &UsageList ()
+{
+	static CEntityPtrLinkList _L;
+	return _L;
+}
+
+void FixAllEntityPtrs (IBaseEntity *Entity)
+{
+	if (UsageList().List.find(Entity) == UsageList().List.end())
+		return;
+
+	std::list<void*> &v = (*UsageList().List.find(Entity)).second;
+	
+	for (std::list<void*>::iterator it = v.begin(); it != v.end(); ++it)
+	{
+		void *tehPtr = (*it);
+		Mem_Zero (tehPtr, sizeof(entity_ptr<IBaseEntity>));
+	}
+
+	UsageList().List.erase(Entity);
+}
+
 #include <cctype>
 #include <algorithm>
 
@@ -894,6 +916,7 @@ void			IBaseEntity::Free ()
 		}
 	}
 
+	FixAllEntityPtrs (this);
 	Freed = true;
 }
 
