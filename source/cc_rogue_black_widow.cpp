@@ -406,12 +406,12 @@ void CBlackWidow::Tongue ()
 	CFleshCable (CTempEntFlags(CAST_MULTI, CASTFLAG_PVS, Entity->State.GetOrigin()), start, end, Entity->State.GetNumber()).Send();
 
 	dir = start - end;
-	entity_cast<IHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 2, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+	entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 2, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 }
 
 void CBlackWidow::TonguePull ()
 {
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 	{
 		Run ();
 		return;
@@ -437,11 +437,11 @@ void CBlackWidow::TonguePull ()
 	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
 	{
 		vec.Normalize();
-		entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity.MultiplyAngles (1000, vec);
+		entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity.MultiplyAngles (1000, vec);
 	}
 	else
 	{
-		CMonsterEntity *Mon = entity_cast<CMonsterEntity>(Entity->Enemy);
+		CMonsterEntity *Mon = entity_cast<CMonsterEntity>(*Entity->Enemy);
 
 		Mon->Monster->IdealYaw = vec.ToYaw();	
 		Mon->Monster->ChangeYaw ();
@@ -451,7 +451,7 @@ void CBlackWidow::TonguePull ()
 
 void CBlackWidow::Crunch ()
 {
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 	{
 		Run ();
 		return;
@@ -646,7 +646,7 @@ void CBlackWidow::Attack ()
 		AIFlags &= ~AI_BLOCKED;
 	}
 	
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		return;
 
 	if (BadArea)
@@ -848,7 +848,7 @@ void CBlackWidow::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 
 bool CBlackWidow::CheckAttack ()
 {
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		return false;
 
 	Powerups ();
@@ -860,7 +860,7 @@ bool CBlackWidow::CheckAttack ()
 		return true;
 	}
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight),
@@ -886,7 +886,7 @@ bool CBlackWidow::CheckAttack ()
 	
 	EnemyInfront = IsInFront(Entity, Entity->Enemy);
 
-	ERangeType enemy_range = Range(Entity, Entity->Enemy);
+	ERangeType enemy_range = Range(Entity, *Entity->Enemy);
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
 	// melee attack

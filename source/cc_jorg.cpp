@@ -415,7 +415,7 @@ CAnim JorgMoveEndAttack1 (FRAME_attak115, FRAME_attak118, JorgFramesEndAttack1, 
 
 void CJorg::ReAttack1()
 {
-	if (IsVisible(Entity, Entity->Enemy))
+	if (IsVisible(Entity, *Entity->Enemy))
 	{
 		if (frand() < 0.9)
 			CurrentMove = &JorgMoveAttack1;
@@ -466,7 +466,7 @@ void CJorg::FireBullet ()
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_MACHINEGUN_R1], forward, right, start);
 
-	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target[2] += Entity->Enemy->ViewHeight;
 	forward = (target - start);
 	forward.Normalize();
@@ -476,7 +476,7 @@ void CJorg::FireBullet ()
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_MACHINEGUN_L1], forward, right, start);
 
-	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target[2] += Entity->Enemy->ViewHeight;
 	forward = (target - start);
 	forward.Normalize();
@@ -504,7 +504,7 @@ bool CJorg::CheckAttack ()
 #if !ROGUE_FEATURES
 	float	chance;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -587,7 +587,7 @@ bool CJorg::CheckAttack ()
 #else
 	float	chance;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 		// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin ();

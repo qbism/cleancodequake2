@@ -332,9 +332,6 @@ ENTITYFIELDS_BEGIN(CMonsterEntity)
 	CEntityField ("DamageDebounceTime",	EntityMemberOffset(CMonsterEntity,DamageDebounceTime),	FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("BonusDamageTime",	EntityMemberOffset(CMonsterEntity,BonusDamageTime),		FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("ShowHostile",		EntityMemberOffset(CMonsterEntity,ShowHostile),			FT_FRAMENUMBER | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("OldEnemy",			EntityMemberOffset(CMonsterEntity,OldEnemy),			FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("GoalEntity",			EntityMemberOffset(CMonsterEntity,GoalEntity),			FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("MoveTarget",			EntityMemberOffset(CMonsterEntity,MoveTarget),			FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMonsterEntity)
 
@@ -357,6 +354,10 @@ void			CMonsterEntity::SaveFields (CFile &File)
 	// Write ID
 	File.Write<uint32> (Monster->MonsterID);
 
+	OldEnemy.Write(File);
+	GoalEntity.Write(File);
+	MoveTarget.Write(File);
+
 	SaveEntityFields <CMonsterEntity> (this, File);
 	IMapEntity::SaveFields (File);
 	IUsableEntity::SaveFields (File);
@@ -374,6 +375,10 @@ void			CMonsterEntity::LoadFields (CFile &File)
 	// Load in the monster name
 	char *tempBuffer = File.ReadString ();
 	uint32 tempId = File.Read<uint32> ();
+
+	OldEnemy = entity_ptr<IBaseEntity>::Read(File);
+	GoalEntity = entity_ptr<IBaseEntity>::Read(File);
+	MoveTarget = entity_ptr<IBaseEntity>::Read(File);
 
 	// Let the rest of the entity load first
 	LoadEntityFields <CMonsterEntity> (this, File);
@@ -622,7 +627,7 @@ bool CMonster::CheckBottom ()
 
 bool CMonster::WalkMove (float Yaw, float Dist)
 {	
-	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
+	if (!Entity->GroundEntity.IsValid() && !(Entity->Flags & (FL_FLY|FL_SWIM)))
 		return false;
 
 	Yaw = Yaw*M_PI*2 / 360;
@@ -652,7 +657,7 @@ void CMonster::WalkMonsterStartGo ()
 	{
 		DropToFloor ();
 
-		if (Entity->GroundEntity)
+		if (Entity->GroundEntity.IsValid())
 		{
 			if (!WalkMove (0, 0))
 				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "In solid\n");
@@ -767,7 +772,7 @@ void CMonster::MonsterStartGo ()
 
 		if (Target)
 			Entity->GoalEntity = Entity->MoveTarget = Target;
-		if (!Entity->MoveTarget)
+		if (!Entity->MoveTarget.IsValid())
 		{
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Can't find target\n");
 			Entity->Target = NULL;
@@ -894,7 +899,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		Monster->Use (Other, Activator);
 		break;
 	case MONSTERENTITY_THINK_USE:
-		if (Enemy)
+		if (Enemy.IsValid())
 			return;
 		if (Health <= 0)
 			return;
@@ -937,7 +942,7 @@ void CMonster::MonsterTriggeredSpawn ()
 
 	MonsterStartGo ();
 
-	if (Entity->Enemy && !(Entity->SpawnFlags & MONSTER_AMBUSH) && !(Entity->Enemy->Flags & FL_NOTARGET))
+	if (Entity->Enemy.IsValid() && !(Entity->SpawnFlags & MONSTER_AMBUSH) && !(Entity->Enemy->Flags & FL_NOTARGET))
 #if ROGUE_FEATURES
 	{
 		if (!(Entity->Enemy->Flags & FL_DISGUISED))		// PGM
@@ -1273,37 +1278,11 @@ void CMonster::MonsterDeathUse ()
 	if (!Entity->Target)
 		return;
 
-	Entity->UseTargets (Entity->Enemy, Entity->Message);
+	Entity->UseTargets (*Entity->Enemy, Entity->Message);
 }
 
 void CMonster::FixInvalidEntities ()
 {
-	if (Entity->OldEnemy && (Entity->OldEnemy->Freed || !Entity->OldEnemy->GetInUse()))
-		Entity->OldEnemy = NULL;
-	if (Entity->GoalEntity && (Entity->GoalEntity->Freed || !Entity->GoalEntity->GetInUse()))
-		Entity->GoalEntity = NULL;
-	if (Entity->Enemy && (Entity->Enemy->Freed || !Entity->Enemy->GetInUse()))
-	{
-		if (Entity->OldEnemy)
-		{
-			Entity->Enemy = Entity->OldEnemy;
-		
-			if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE))
-			{
-				AIFlags |= AI_SOUND_TARGET;
-				Entity->GoalEntity = Entity->Enemy;
-			}
-
-			FoundTarget ();
-		}
-		else
-			Entity->Enemy = NULL;
-	}
-
-#if ROGUE_FEATURES
-	if (Commander && (Commander->Freed || !Commander->GetInUse()))
-		Commander = NULL;
-#endif
 }
 
 void CMonster::MonsterThink ()

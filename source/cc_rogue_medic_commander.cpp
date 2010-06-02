@@ -392,7 +392,7 @@ void CMedicCommander::Attack ()
 {
 	DoneDodge ();
 
-	EnemyRange = Range(Entity, Entity->Enemy);
+	EnemyRange = Range(Entity, *Entity->Enemy);
 
 	// signal from checkattack to spawn
 	if (AIFlags & AI_BLOCKED)
@@ -432,7 +432,7 @@ bool CMedicCommander::CheckAttack ()
 	if (AIFlags & AI_MEDIC)
 	{
 		// if our target went away
-		if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+		if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 		{
 			AbortHeal (false, false);
 			return false;
@@ -458,7 +458,7 @@ bool CMedicCommander::CheckAttack ()
 		}
 	}
 
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && !IsVisible (Entity, Entity->Enemy) && (MonsterSlots > 2))
+	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && !IsVisible (Entity, *Entity->Enemy) && (MonsterSlots > 2))
 	{
 		AttackState = AS_BLIND;
 		return true;

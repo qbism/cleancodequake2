@@ -43,8 +43,8 @@ health (80), and dmg (150).
 const int BARREL_STEPSIZE = 8;
 class CMiscExploBox : public IMapEntity, public IStepPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity
 {
-	bool		Dropped;
-	IBaseEntity	*Shooter;
+	bool					Dropped;
+	entity_ptr<IBaseEntity>	Shooter;
 
 public:
 	sint32			Explosivity;
@@ -59,7 +59,6 @@ public:
 	ITouchableEntity (),
 	IStepPhysics(),
 	Explosivity(0),
-	Shooter(NULL),
 	Damage(0)
 	{
 	};
@@ -73,7 +72,6 @@ public:
 	ITouchableEntity (Index),
 	IStepPhysics(Index),
 	Explosivity(0),
-	Shooter(NULL),
 	Damage(0)
 	{
 	};
@@ -83,7 +81,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
+		if ((!Other->GroundEntity.IsValid()) || (Other->GroundEntity == this))
 			return;
 		if (!(Other->EntityFlags & ENT_PHYSICS))
 			return;
@@ -151,7 +149,7 @@ public:
 			Link();
 			return;
 		}
-		SplashDamage (Shooter, Damage, NULL, Damage+40, MOD_BARREL);
+		SplashDamage (*Shooter, Damage, NULL, Damage+40, MOD_BARREL);
 
 		CGrenadeExplosion (State.GetOrigin ()).Send();
 		Free ();
@@ -211,7 +209,6 @@ ENTITYFIELDS_BEGIN(CMiscExploBox)
 	CEntityField ("dmg", EntityMemberOffset(CMiscExploBox,Damage), FT_INT | FT_SAVABLE),
 
 	CEntityField ("Dropped", EntityMemberOffset(CMiscExploBox,Dropped), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("Shooter", EntityMemberOffset(CMiscExploBox,Shooter), FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMiscExploBox)
 
@@ -225,6 +222,7 @@ bool			CMiscExploBox::ParseField (const char *Key, const char *Value)
 
 void		CMiscExploBox::SaveFields (CFile &File)
 {
+	Shooter.Write(File);
 	SaveEntityFields <CMiscExploBox> (this, File);
 	IMapEntity::SaveFields (File);
 	IHurtableEntity::SaveFields (File);
@@ -234,6 +232,7 @@ void		CMiscExploBox::SaveFields (CFile &File)
 
 void		CMiscExploBox::LoadFields (CFile &File)
 {
+	Shooter = entity_ptr<IBaseEntity>::Read(File);
 	LoadEntityFields <CMiscExploBox> (this, File);
 	IMapEntity::LoadFields (File);
 	IHurtableEntity::LoadFields (File);

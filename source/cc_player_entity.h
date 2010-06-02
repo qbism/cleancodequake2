@@ -603,7 +603,7 @@ public:
 	// powerup timers
 	struct client_Timers_t
 	{
-		FrameNumber		QuadDamage,
+		FrameNumber			QuadDamage,
 							Invincibility,
 							Rebreather,
 							EnvironmentSuit
@@ -613,19 +613,19 @@ public:
 
 #if ROGUE_FEATURES
 						, Double,
-						IR,
-						Nuke,
-						Tracker
+							IR,
+							Nuke,
+							Tracker
 #endif
-						;
+							;
 
 		sint16				SilencerShots;
 
 		uint8				MachinegunShots;	// for weapon raising
 		bool				BreatherSound;
 
-		FrameNumber		PickupMessageTime;
-		FrameNumber		RespawnTime;		// can respawn when time > this
+		FrameNumber			PickupMessageTime;
+		FrameNumber			RespawnTime;		// can respawn when time > this
 	} Timers;
 
 	struct client_Grenade_Data_t
@@ -637,8 +637,8 @@ public:
 
 	struct client_Flood_t
 	{
-		FrameNumber	LockTill; // locked from talking
-		FrameNumber	When[10]; // when messages were said
+		FrameNumber		LockTill; // locked from talking
+		FrameNumber		When[10]; // when messages were said
 		uint8			WhenHead; // head pointer for when said
 	} Flood;
 
@@ -652,8 +652,8 @@ public:
 //ZOID
 	struct client_CTF_Grapple_t
 	{
-		class CGrappleEntity		*Entity;
-		EGrappleState				State;
+		class CGrappleEntity	*Entity;
+		EGrappleState			State;
 		FrameNumber				ReleaseTime;
 	} Grapple;
 //ZOID
@@ -702,12 +702,12 @@ public:
 	CClient					Client;
 	bool					NoClip;
 	bool					TossPhysics;
-	FrameNumber			FlySoundDebounceTime;
-	FrameNumber			DamageDebounceTime;
-	FrameNumber			AirFinished;
-	FrameNumber			NextDrownTime;
+	FrameNumber				FlySoundDebounceTime;
+	FrameNumber				DamageDebounceTime;
+	FrameNumber				AirFinished;
+	FrameNumber				NextDrownTime;
 	sint32					NextDrownDamage;
-	FrameNumber			PainDebounceTime;
+	FrameNumber				PainDebounceTime;
 
 	CPlayerEntity (sint32 Index);
 	~CPlayerEntity ();

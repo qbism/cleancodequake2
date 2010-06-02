@@ -38,7 +38,7 @@ class CPathCorner : public IMapEntity, public IThinkableEntity, public ITouchabl
 {
 public:
 	TTargetList		NextTargets;
-	FrameNumber	Wait;
+	FrameNumber		Wait;
 #if ROGUE_FEATURES
 	float			Accel, Decel, Speed;
 #endif

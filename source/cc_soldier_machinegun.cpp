@@ -73,7 +73,7 @@ void CSoldierMachinegun::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			IBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);

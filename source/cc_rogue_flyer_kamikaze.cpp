@@ -84,7 +84,7 @@ void CFlyerKamikaze::KamikazeExplode ()
 		Commander->Monster->MonsterSlots++;
 
 	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE))
-		entity_cast<IHurtableEntity>(Entity->Enemy)->TakeDamage (	Entity, Entity, Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin(),
+		entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (	Entity, Entity, Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin(),
 																	Entity->State.GetOrigin(), vec3fOrigin, 50, 50, DAMAGE_RADIUS, MOD_UNKNOWN);
 
 	Die (NULL, NULL, 0, vec3fOrigin);
@@ -96,7 +96,7 @@ void CFlyerKamikaze::KamikazeCheck ()
 	if (!Entity->GetInUse())
 		return;
 
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 	{
 		KamikazeExplode ();
 		return;

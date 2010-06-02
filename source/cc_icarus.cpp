@@ -437,7 +437,7 @@ CAnim HoverMoveEndAttack2 (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack2
 
 void CIcarus::ReAttack ()
 {
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.6)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.6)
 	{
 #if ROGUE_FEATURES
 		CurrentMove = (AttackState == AS_SLIDING) ? &HoverMoveAttack2 : &HoverMoveAttack1;
@@ -573,7 +573,7 @@ void CIcarus::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CIcarus::DeadThink ()
 {
-	if (!Entity->GroundEntity && Level.Frame < TimeStamp)
+	if (!Entity->GroundEntity.IsValid() && Level.Frame < TimeStamp)
 	{
 		Entity->NextThink = Level.Frame + FRAMETIME;
 		return;

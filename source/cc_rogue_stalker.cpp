@@ -465,7 +465,7 @@ void CStalker::ShootAttack ()
 
 	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && frand() < (0.20f + 0.1f * CvarList[CV_SKILL].Float()))
 	{
-		end = Entity->Enemy->State.GetOldOrigin().MultiplyAngles (dir.Length() / 1000, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+		end = Entity->Enemy->State.GetOldOrigin().MultiplyAngles (dir.Length() / 1000, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = end - start;
 	}	
 	else
@@ -835,7 +835,7 @@ void CStalker::Dodge (IBaseEntity *Attacker, float eta
 	if (!Entity->GroundEntity || Entity->Health <= 0)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 	{
 		Entity->Enemy = Attacker;
 		FoundTarget ();

@@ -1230,7 +1230,7 @@ void CTargetLaser::Think ()
 	vec3f	end;
 	const uint8 Count = (MakeEffect) ? 8 : 4;
 
-	if (Enemy)
+	if (Enemy.IsValid())
 	{
 		vec3f last_movedir = MoveDir;
 		vec3f point = Enemy->GetAbsMin().MultiplyAngles (0.5f, Enemy->GetSize());
@@ -1325,7 +1325,7 @@ void CTargetLaser::Start ()
 	else if (SpawnFlags & LASER_ORANGE)
 		State.GetSkinNum() = Color_RGBAToHex (NSColor::HarvestGold, NSColor::RobRoy, NSColor::TulipTree, NSColor::FireBush);
 
-	if (!Enemy)
+	if (!Enemy.IsValid())
 	{
 		if (Target)
 		{
@@ -1503,7 +1503,7 @@ enum
 
 void CEarthQuakeShakePlayers::Callback (CPlayerEntity *Player)
 {
-	if (!Player->GroundEntity)
+	if (!Player->GroundEntity.IsValid())
 		return;
 
 	Player->GroundEntity = NULL;

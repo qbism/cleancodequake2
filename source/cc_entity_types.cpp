@@ -425,8 +425,8 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
 		if ((Health > 0) &&
-			(!Enemy && (Monster->BonusDamageTime <= Level.Frame)) ||
-			(Enemy && (Monster->BonusDamageTime == Level.Frame)))
+			(!Enemy.IsValid() && (Monster->BonusDamageTime <= Level.Frame)) ||
+			(Enemy.IsValid() && (Monster->BonusDamageTime == Level.Frame)))
 		{
 			Monster->BonusDamageTime = Level.Frame;
 			Damage *= 2;
@@ -844,11 +844,11 @@ bool IBounceProjectile::Run ()
 		GroundEntity = NULL;
 
 // check for the groundentity going away
-	if (GroundEntity && !GroundEntity->GetInUse())
+	if (!GroundEntity.IsValid())
 		GroundEntity = NULL;
 
 // if onground, return without moving
-	if (GroundEntity && GravityMultiplier > 0.0)
+	if (GroundEntity.IsValid() && GravityMultiplier > 0.0)
 		return false;
 
 	old_origin = State.GetOrigin();
@@ -1160,12 +1160,12 @@ bool IStepPhysics::Run ()
 		return false;
 
 	// airborn monsters should always check for ground
-	if (!GroundEntity && (EntityFlags & ENT_MONSTER))
+	if (!GroundEntity.IsValid() && (EntityFlags & ENT_MONSTER))
 		(entity_cast<CMonsterEntity>(this))->Monster->CheckGround ();
 	else if (!(EntityFlags & ENT_MONSTER))
 		CheckGround (); // Specific non-monster checkground
 
-	bool wasonground = (GroundEntity) ? true : false;
+	bool wasonground = GroundEntity.IsValid();
 		
 	if (AngularVelocity != vec3fOrigin)
 		AddRotationalFriction ();
@@ -1245,7 +1245,7 @@ bool IStepPhysics::Run ()
 		if (!GetInUse())
 			return false;
 
-		if (GroundEntity && !wasonground && hitsound)
+		if (GroundEntity.IsValid() && !wasonground && hitsound)
 			PlaySound (CHAN_AUTO, SoundIndex("world/land.wav"));
 	}
 
@@ -1622,7 +1622,6 @@ ENTITYFIELDS_BEGIN(IUsableEntity)
 	CEntityField ("pathtarget", EntityMemberOffset(IUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
 
 	CEntityField ("Usable", 	EntityMemberOffset(IUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("User", 		EntityMemberOffset(IUsableEntity,User),				FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(IUsableEntity)
 
@@ -1637,11 +1636,13 @@ bool			IUsableEntity::ParseField (const char *Key, const char *Value)
 
 void			IUsableEntity::SaveFields (CFile &File)
 {
+	User.Write(File);
 	SaveEntityFields <IUsableEntity> (this, File);
 };
 
 void			IUsableEntity::LoadFields (CFile &File)
 {
+	User = entity_ptr<IBaseEntity>::Read(File);
 	LoadEntityFields <IUsableEntity> (this, File);
 };
 

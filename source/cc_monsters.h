@@ -229,13 +229,13 @@ class CMonsterEntity : public IMapEntity, public IStepPhysics, public ITossProje
 public:
 	bool			IsHead;
 	uint8			UseState;
-	FrameNumber	AirFinished;
-	FrameNumber	DamageDebounceTime;
-	FrameNumber	BonusDamageTime;
-	FrameNumber	ShowHostile;
-	IBaseEntity		*OldEnemy;
-	IBaseEntity		*GoalEntity;
-	IBaseEntity		*MoveTarget;
+	FrameNumber		AirFinished;
+	FrameNumber		DamageDebounceTime;
+	FrameNumber		BonusDamageTime;
+	FrameNumber		ShowHostile;
+	entity_ptr<IBaseEntity>		OldEnemy;
+	entity_ptr<IBaseEntity>		GoalEntity;
+	entity_ptr<IBaseEntity>		MoveTarget;
 	class CMonster	*Monster;
 	char			*DeathTarget;
 	char			*CombatTarget;
@@ -507,12 +507,7 @@ public:
 
 	inline bool HasValidEnemy ()
 	{
-		if (!Entity->Enemy)
-			return false;
-		if (!Entity->Enemy->GetInUse() || Entity->Enemy->Freed)
-			return false;
-
-		return true;
+		return Entity->Enemy.IsValid();
 	}
 };
 

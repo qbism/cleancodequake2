@@ -512,7 +512,7 @@ void CMakron::FireHyperblaster ()
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
-	if (Entity->Enemy)
+	if (Entity->Enemy.IsValid())
 		dir.X = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight) - start).ToAngles().X;
 	else
 		dir.X = 0;
@@ -707,7 +707,7 @@ bool CMakron::CheckAttack ()
 #if !ROGUE_FEATURES
 	float	chance;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -790,7 +790,7 @@ bool CMakron::CheckAttack ()
 #else
 	float	chance;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight);

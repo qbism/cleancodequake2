@@ -141,7 +141,7 @@ void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damag
 
 bool CGekk::CheckMelee ()
 {
-	if (!Entity->Enemy || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
@@ -182,7 +182,7 @@ bool CGekk::CheckJumpClose ()
 
 bool CGekk::CheckAttack ()
 {
-	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())
@@ -379,7 +379,7 @@ void CGekk::SwimLoop ()
 
 void CGekk::Swim ()
 {
-	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<IPhysicsEntity>(Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
+	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<IPhysicsEntity>(*Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
 		WaterToLand ();
 	else
 		CurrentMove = &GekkMoveSwimStart;
@@ -597,7 +597,7 @@ void CGekk::Loogie ()
 	vec3f dir;
 	static const vec3f fireOffset (-18, -0.8f, 24);
 
-	if (!Entity->Enemy || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
@@ -632,7 +632,7 @@ void CGekk::ReFireLoogie ()
 		return;
 	}
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health >= 0 && frand() > 0.7 && (Range(Entity, Entity->Enemy) == RANGE_NEAR))
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health >= 0 && frand() > 0.7 && (Range(Entity, *Entity->Enemy) == RANGE_NEAR))
 		CurrentMove = &GekkMoveSpit;
 }
 
@@ -671,7 +671,7 @@ CAnim GekkMoveAttack2 (FRAME_clawatk5_01, FRAME_clawatk5_09, GekkFramesAttack2, 
 
 void CGekk::CheckMeleeRefire ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (frand() < (CvarList[CV_SKILL].Integer() * 0.1))
@@ -1332,7 +1332,7 @@ void CGekk::
 		return;
 
 #if !ROGUE_FEATURES
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		Entity->Enemy = Attacker;
 #endif
 

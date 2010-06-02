@@ -58,7 +58,7 @@ bool CMonster::FindTarget()
 {
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && !Entity->GoalEntity->ClassName.empty())
+		if (Entity->GoalEntity.IsValid() && !Entity->GoalEntity->ClassName.empty())
 		{
 			if (strcmp(Entity->GoalEntity->ClassName.c_str(), "target_actor") == 0)
 				return false;
@@ -94,7 +94,7 @@ bool CMonster::FindTarget()
 		client = Level.SoundEntity;
 		heardit = true;
 	}
-	else if (!(Entity->Enemy) && (Level.SoundEntity2Frame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
+	else if (!Entity->Enemy.IsValid() && (Level.SoundEntity2Frame >= (Level.Frame - 1)) && !(Entity->SpawnFlags & MONSTER_AMBUSH) )
 	{
 		client = Level.SoundEntity2;
 		heardit = true;
@@ -121,7 +121,7 @@ bool CMonster::FindTarget()
 	}
 	else if (client->EntityFlags & ENT_MONSTER)
 	{
-		if (!client->Enemy)
+		if (!client->Enemy.IsValid())
 			return false;
 		if (client->Enemy->Flags & FL_NOTARGET)
 			return false;
@@ -219,20 +219,18 @@ bool CMonster::FindTarget()
 
 void CMonster::MoveToGoal (float Dist)
 {	
-	IBaseEntity *Goal = Entity->GoalEntity;
-
-	if (!Entity->GoalEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
+	if (!Entity->GoalEntity.IsValid() && !(Entity->Flags & (FL_FLY|FL_SWIM)))
 		return;
 
 // if the next step hits the enemy, return immediately
-	if (Entity->Enemy && CloseEnough (Entity->Enemy, Dist) )
+	if (Entity->Enemy.IsValid() && CloseEnough (*Entity->Enemy, Dist) )
 		return;
 
 // bump around...
 	if ((randomMT() & 3) == 1 || !StepDirection (IdealYaw, Dist))
 	{
 		if (Entity->GetInUse())
-			NewChaseDir (Goal, Dist);
+			NewChaseDir (*Entity->GoalEntity, Dist);
 	}
 }
 
@@ -249,9 +247,9 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 		{
 			newOrg = Entity->State.GetOrigin() + move;
 
-			if (i == 0 && Entity->Enemy)
+			if (i == 0 && Entity->Enemy.IsValid())
 			{
-				if (!Entity->GoalEntity)
+				if (!Entity->GoalEntity.IsValid())
 					Entity->GoalEntity = Entity->Enemy;
 
 				float dz = Entity->State.GetOrigin().Z - Entity->GoalEntity->State.GetOldOrigin().Z;
@@ -310,7 +308,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				return true;
 			}
 			
-			if (!Entity->Enemy)
+			if (!Entity->Enemy.IsValid())
 				break;
 		}
 		
@@ -517,7 +515,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 bool CMonster::CheckAttack ()
 {
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -632,9 +630,9 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 
 		// this can only happen in coop (both new and old enemies are clients)
 		// only switch if can't see the current enemy
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 		{
-			if (IsVisible (Entity, Entity->Enemy))
+			if (IsVisible (Entity, *Entity->Enemy))
 			{
 				Entity->OldEnemy = Attacker;
 				return;
@@ -661,7 +659,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 			(AttackerMonster->Monster->MonsterID != CMakron::ID) &&
 			(AttackerMonster->Monster->MonsterID != CJorg::ID))
 	{
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
 
 		Entity->Enemy = Attacker;
@@ -672,7 +670,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// if they *meant* to shoot us, then shoot back
 	else if (Attacker->Enemy == Entity)
 	{
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
 		
 		Entity->Enemy = Attacker;
@@ -681,9 +679,9 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 			FoundTarget ();
 	}
 	// otherwise get mad at whoever they are mad at (help our buddy) unless it is us!
-	else if (Attacker->Enemy && Attacker->Enemy != Entity)
+	else if (Attacker->Enemy.IsValid() && Attacker->Enemy != Entity)
 	{
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
 
 		Entity->Enemy = Attacker->Enemy;
@@ -725,18 +723,18 @@ void CMonster::AI_Charge(float Dist)
 bool CMonster::AI_CheckAttack()
 {
 // this causes monsters to run blindly to the combat point w/o firing
-	if (Entity->GoalEntity)
+	if (Entity->GoalEntity.IsValid())
 	{
 		if (AIFlags & AI_COMBAT_POINT)
 			return false;
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-			if ((Entity->Enemy->EntityFlags & ENT_NOISE) && (Level.Frame - (entity_cast<CPlayerNoise>(Entity->Enemy)->Time)) > 50)
+			if ((Entity->Enemy->EntityFlags & ENT_NOISE) && (Level.Frame - (entity_cast<CPlayerNoise>(*Entity->Enemy)->Time)) > 50)
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
-					if (Entity->MoveTarget)
+					if (Entity->MoveTarget.IsValid())
 						Entity->GoalEntity = Entity->MoveTarget;
 					else
 						Entity->GoalEntity = NULL;
@@ -758,9 +756,9 @@ bool CMonster::AI_CheckAttack()
 
 // see if the enemy is dead
 	bool hesDeadJim = false;
-	IHurtableEntity *HurtableEnemy = (Entity->Enemy && Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Entity->Enemy) : NULL;
+	IHurtableEntity *HurtableEnemy = (Entity->Enemy.IsValid() && Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(*Entity->Enemy) : NULL;
 
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 		hesDeadJim = true;
 	else if (AIFlags & AI_MEDIC)
 	{
@@ -789,7 +787,7 @@ bool CMonster::AI_CheckAttack()
 		Entity->Enemy = NULL;
 
 	// FIXME: look all around for other targets
-		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Entity->OldEnemy)->Health > 0))
+		if (Entity->OldEnemy.IsValid() && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->OldEnemy)->Health > 0))
 		{
 			Entity->Enemy = Entity->OldEnemy;
 			Entity->OldEnemy = NULL;
@@ -797,7 +795,7 @@ bool CMonster::AI_CheckAttack()
 		}
 		else
 		{
-			if (Entity->MoveTarget)
+			if (Entity->MoveTarget.IsValid())
 			{
 				Entity->GoalEntity = Entity->MoveTarget;
 				Walk ();
@@ -818,15 +816,15 @@ bool CMonster::AI_CheckAttack()
 	Entity->ShowHostile = Level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
-	EnemyVis = IsVisible(Entity, Entity->Enemy);
+	EnemyVis = IsVisible(Entity, *Entity->Enemy);
 	if (EnemyVis)
 	{
 		SearchTime = Level.Frame + 50;
 		LastSighting = Entity->Enemy->State.GetOrigin();
 	}
 
-	EnemyInfront = IsInFront (Entity, Entity->Enemy);
-	EnemyRange = Range (Entity, Entity->Enemy);
+	EnemyInfront = IsInFront (Entity, *Entity->Enemy);
+	EnemyRange = Range (Entity, *Entity->Enemy);
 	EnemyYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
 
@@ -1083,7 +1081,7 @@ void CMonster::AI_Stand (float Dist)
 
 	if (AIFlags & AI_STAND_GROUND)
 	{
-		if (Entity->Enemy)
+		if (Entity->Enemy.IsValid())
 		{
 			IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 			if (Entity->State.GetAngles().Y != IdealYaw && (AIFlags & AI_TEMP_STAND_GROUND))
@@ -1142,7 +1140,7 @@ void CMonster::FoundTarget ()
 
 	Entity->GoalEntity = Entity->MoveTarget = CC_PickTarget (Entity->CombatTarget);
 
-	if (!Entity->MoveTarget)
+	if (!Entity->MoveTarget.IsValid())
 	{
 		Entity->GoalEntity = Entity->MoveTarget = Entity->Enemy;
 		HuntTarget ();
@@ -1155,7 +1153,7 @@ void CMonster::FoundTarget ()
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<IMapEntity>(Entity->MoveTarget)->TargetName = NULL;
+	entity_cast<IMapEntity>(*Entity->MoveTarget)->TargetName = NULL;
 	PauseTime = 0;
 
 	// run for it

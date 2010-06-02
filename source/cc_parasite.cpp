@@ -325,9 +325,8 @@ void CParasite::DrainAttack ()
 
 	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 
-	vec3f dir = start - end;
-	if (Entity->Enemy)
-		entity_cast<IHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, Damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+	if (Entity->Enemy.IsValid())
+		entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, start - end, Entity->Enemy->State.GetOrigin(), vec3fOrigin, Damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 }
 
 CFrame ParasiteFramesDrain [] =

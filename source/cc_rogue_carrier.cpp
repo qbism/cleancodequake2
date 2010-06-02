@@ -244,7 +244,7 @@ void CCarrier::FireBulletRight ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
-	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
+	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
 	forward = (target - start).GetNormalized();
 
 	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD*3, DEFAULT_BULLET_VSPREAD, flashnum);
@@ -262,7 +262,7 @@ void CCarrier::FireBulletLeft ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
-	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
+	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
 	forward = (target - start).GetNormalized();
 
 	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD*3, DEFAULT_BULLET_VSPREAD, flashnum);
@@ -316,7 +316,7 @@ void CCarrier::SpawnMonsters ()
 		ent->Monster->AIFlags |= AI_SPAWNED_CARRIER|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
 		ent->Monster->Commander = Entity;
 
-		if ((Entity->Enemy->GetInUse()) && (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0))
+		if ((Entity->Enemy->GetInUse()) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
 		{
 			ent->Enemy = Entity->Enemy;
 			ent->Monster->FoundTarget ();
@@ -400,7 +400,7 @@ void CCarrier::StartSpawn ()
 	if (!OriginalYawSpeed)
 		OriginalYawSpeed = YawSpeed;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		return;
 
 	FrameNumber mytime = ((Level.Frame - FrameCalc) / 5);	
@@ -675,7 +675,7 @@ void CCarrier::Attack ()
 {	
 	AIFlags &= ~AI_HOLD_FRAME;
 
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 		return;
 
 	bool EnemyInback = IsInBack(Entity, Entity->Enemy);
@@ -903,7 +903,7 @@ void CCarrier::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage
 
 bool CCarrier::CheckAttack ()
 {
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight),

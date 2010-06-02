@@ -369,7 +369,7 @@ void ProcessEntity (edict_t *ent)
 		Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
 
 		// if the ground entity moved, make sure we are still on it
-		if ((Entity->GroundEntity) && ((!Entity->GroundEntity->GetGameEntity()) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount)))
+		if ((!Entity->GroundEntity.IsValid()) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount))
 		{
 			Entity->GroundEntity = NULL;
 			if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
@@ -385,13 +385,6 @@ void ProcessEntity (edict_t *ent)
 
 		if (Thinkable)
 			Thinkable->RunThink ();
-
-		// Entity fixes
-		if (Entity->Enemy && Entity->Enemy->Freed)
-			Entity->Enemy = NULL;
-
-		if (Entity->EntityFlags & ENT_MONSTER)
-			entity_cast<CMonsterEntity>(Entity)->Monster->FixInvalidEntities ();
 
 		// Were we freed?
 		// This has to be processed after thinking and running, because
@@ -440,8 +433,6 @@ bool RemoveEntity (edict_t *ent)
 
 		ent->RemovalFrames--;
 	}
-	else if (ent->Entity->GroundEntity && ent->Entity->GroundEntity->Freed)
-		ent->Entity->GroundEntity = NULL;
 
 	return false;
 }

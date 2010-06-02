@@ -223,6 +223,344 @@ enum
 	SPAWNFLAG_NOT_COOP			= BIT(12)
 };
 
+class CEntityPtrLinkList
+{
+public:
+	typedef std::map<IBaseEntity*, std::list<void*> > TEntityPtrUsageList;
+	TEntityPtrUsageList List;
+
+	void AddEntity (IBaseEntity *Entity, void *Ptr)
+	{
+		TEntityPtrUsageList::iterator it = List.find(Entity);
+
+		if (it != List.end())
+			(*it).second.push_back (Ptr);
+		else
+		{
+			std::list<void*> PtrList;
+			PtrList.push_back(Ptr);
+
+			List[Entity] = PtrList;
+		}
+	}
+
+	void RemoveEntity (IBaseEntity *Entity, void *Ptr)
+	{
+		TEntityPtrUsageList::iterator it = List.find(Entity);
+
+		if (it == List.end())
+			CC_ASSERT_EXPR(0, "Wtf?");
+		else
+		{
+			(*it).second.remove (Ptr);
+
+			if (!(*it).second.size())
+				List.erase (Entity);
+		}
+	}
+};
+	
+CEntityPtrLinkList &UsageList ();
+
+/**
+\class	entity_ptr
+
+\brief	Entity pointer.
+		Testing a theory.
+
+\author	Paril
+\date	01/06/2010
+**/
+template <class TType>
+class entity_ptr
+{
+	TType		*GameEntity;	// The CleanCode entity
+	edict_t		*ServerEntity;	// The server entity
+
+public:
+	/**
+	\fn	entity_ptr()
+	
+	\brief	Default constructor.
+	
+	\author	Paril
+	\date	01/06/2010
+	**/
+	entity_ptr() :
+	  GameEntity(NULL),
+	  ServerEntity(NULL)
+	  {
+		  DebugPrintf ("entity_ptr()\n");
+	  }
+
+	~entity_ptr()
+	{
+		DebugPrintf ("~entity_ptr()\n");
+		if (GameEntity)
+			UsageList().RemoveEntity(GameEntity, this);
+	}
+
+	/**
+	\fn	entity_ptr(TType *GameEntity)
+	
+	\brief	Constructor. Constructs an entity_ptr from a game entity. 
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\param [in,out]	GameEntity	If non-null, the game entity. 
+	**/
+	entity_ptr(TType *GameEntity) :
+	  GameEntity(GameEntity)
+	  {
+		  DebugPrintf ("entity_ptr(TType *GameEntity)\n");
+
+		  if (GameEntity)
+		  {
+			  ServerEntity = GameEntity->GetGameEntity();
+			  UsageList().AddEntity (GameEntity, this);
+		  }
+	  };
+
+	entity_ptr(const entity_ptr &Ptr)
+	{
+		DebugPrintf ("entity_ptr(entity_ptr &Ptr)\n");
+		GameEntity = Ptr.GameEntity;
+		ServerEntity = Ptr.ServerEntity;
+
+		if (GameEntity)
+			UsageList().AddEntity (GameEntity, this);
+	}
+
+	/**
+	\fn	entity_ptr(edict_t *ServerEntity)
+	
+	\brief	Constructor. Constructs an entity_ptr from a server entity.
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\param [in,out]	ServerEntity	If non-null, the server entity. 
+	**/
+	entity_ptr(edict_t *ServerEntity) :
+	  ServerEntity(ServerEntity)
+	  {
+		  DebugPrintf ("entity_ptr(edict_t *ServerEntity)\n");
+		  if (ServerEntity)
+		  {
+			  GameEntity = entity_cast<TType>(ServerEntity->Entity);
+
+			  if (GameEntity)
+				  UsageList().AddEntity (GameEntity, this);
+		  }
+	  }
+
+	entity_ptr &operator= (TType *NewGameEntity)
+	{
+		DebugPrintf ("entity_ptr &operator= (TType *NewGameEntity)\n");
+		if (GameEntity)
+			UsageList().RemoveEntity (GameEntity, this);
+
+		GameEntity = NewGameEntity;
+		if (GameEntity)
+		{
+			ServerEntity = NewGameEntity->GetGameEntity();
+			UsageList().AddEntity (GameEntity, this);
+		}
+		else
+			ServerEntity = NULL;
+
+		return *this;
+	}
+
+	entity_ptr &operator= (edict_t *NewServerEntity)
+	{
+		DebugPrintf ("entity_ptr &operator= (edict_t *NewServerEntity)\n");
+		if (GameEntity)
+			UsageList().RemoveEntity (GameEntity, this);
+
+		ServerEntity = NewServerEntity;
+		if (ServerEntity)
+		{
+			GameEntity = entity_cast<TType>(ServerEntity->Entity);
+			UsageList().AddEntity (GameEntity, this);
+		}
+		else
+			GameEntity = NULL;
+
+		return *this;
+	}
+
+	entity_ptr &operator= (const entity_ptr &Ptr)
+	{
+		DebugPrintf ("entity_ptr &operator= (entity_ptr &Ptr)\n");
+		if (GameEntity)
+			UsageList().RemoveEntity (GameEntity, this);
+
+		ServerEntity = Ptr.ServerEntity;
+		GameEntity = Ptr.GameEntity;
+		if (GameEntity)
+			  UsageList().AddEntity (GameEntity, this);
+
+		return *this;
+	}
+	
+	bool operator== (const IBaseEntity *Right) const
+	{
+		return (IsValid() && (GameEntity == Right));
+	}
+
+	bool operator!= (const IBaseEntity *Right) const
+	{
+		return !(*this == Right);
+	}
+
+	bool operator== (const entity_ptr &Right) const
+	{
+		return ((!Right.IsValid() && !IsValid()) || (Right.GetGameEntity() == GetGameEntity()));
+	}
+
+	bool operator!= (const entity_ptr &Right) const
+	{
+		return !((!Right.IsValid() && !IsValid()) || (Right.GetGameEntity() == GetGameEntity()));
+	}
+
+	/**
+	\fn	void Clear ()
+	
+	\brief	Clears this object to its blank/initial state.
+	**/
+	void Clear ()
+	{
+		DebugPrintf ("Clear ()\n");
+		UsageList().RemoveEntity (GameEntity, this);
+		GameEntity = NULL;
+		ServerEntity = NULL;
+	}
+
+	/**
+	\fn	entity_ptr operator= (int)
+	
+	\brief	Empty operator, for conversion to NULL.
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\param		The. 
+	
+	\return	This object. 
+	**/
+	entity_ptr operator = (int)
+	{
+		DebugPrintf ("operator = (int)\n");
+		if (GameEntity)
+			Clear ();
+		return *this;
+	}
+
+	/**
+	\fn	TType *operator* ()
+	
+	\brief	Dereference operator. Dereferencing an entity_ptr yields the game entity. 
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\return	The game entity.
+	**/
+	TType *operator * () const
+	{
+		DebugPrintf ("operator * ()\n");
+		return GameEntity;
+	}
+
+	/**
+	\fn	TType *GetGameEntity ()
+	
+	\brief	Gets the game entity. 
+	
+	\return	null if it fails, else the game entity. 
+	**/
+	TType *GetGameEntity () const
+	{
+		DebugPrintf ("GetGameEntity ()\n");
+		return GameEntity;
+	}
+
+	/**
+	\fn	edict_t *GetServerEntity ()
+	
+	\brief	Gets the server entity. 
+	
+	\return	null if it fails, else the server entity. 
+	**/
+	edict_t *GetServerEntity () const
+	{
+		DebugPrintf ("GetServerEntity ()\n");
+		return ServerEntity;
+	}
+
+	/**
+	\fn	bool IsValid ()
+	
+	\brief	Query if this entity pointer is valid. 
+	
+	\return	true if valid, false if not. 
+	**/
+	bool IsValid () const
+	{
+		DebugPrintf ("IsValid ()\n");
+		return (ServerEntity && ServerEntity->server.InUse && !ServerEntity->freetime && GameEntity && !GameEntity->Freed);
+	}
+
+	/**
+	\fn	TType *operator-> ()
+	
+	\brief	Member access operator.
+	
+	\author	Paril
+	\date	01/06/2010
+	
+	\return	Game entity pointer for member access.
+	**/
+	TType *operator-> ()
+	{
+		DebugPrintf ("operator-> ()\n");
+		return GameEntity;
+	}
+
+	void Write (CFile &File) const
+	{
+		sint32 EntityNumber = -1;
+		if (IsValid())
+			EntityNumber = GameEntity->State.GetNumber();
+		File.Write<sint32>(EntityNumber);
+	}
+
+	static entity_ptr Read (CFile &File)
+	{
+		sint32 EntityNumber = File.Read<sint32> ();
+		entity_ptr Ptr;
+		
+		if (EntityNumber != -1)
+			Ptr = entity_ptr(Game.Entities[EntityNumber].Entity);
+		return Ptr;
+	}
+};
+
+template <class TType>
+static bool operator== (const IBaseEntity *Left, const entity_ptr<TType> &Right)
+{
+	return (Right.IsValid() && (*Right == Left));
+}
+
+template <class TType>
+static bool operator!= (const IBaseEntity *Left, const entity_ptr<TType> &Right)
+{
+	return !(Right.IsValid() && (*Right == Left));
+}
+
+
 // IBaseEntity is abstract.
 // A base entity can't do anything
 class IBaseEntity
@@ -255,10 +593,10 @@ public:
 		IBaseEntity		*Master;	// Team master
 	} Team;
 
-	IBaseEntity		*GroundEntity;			// The ground entity
+	entity_ptr<IBaseEntity>		GroundEntity;			// The ground entity
 	sint32			GroundEntityLinkCount;	// Number of ground entity links
 	uint32			SpawnFlags;				// Entity spawnflags
-	IBaseEntity		*Enemy;					// Entity's enemy
+	entity_ptr<IBaseEntity>		Enemy;					// Entity's enemy
 	sint32			ViewHeight;				// Entity's Viewheight
 
 	/**
@@ -1671,249 +2009,6 @@ CC_DISABLE_DEPRECATION
 	return NULL;
 CC_ENABLE_DEPRECATION
 }
-
-class CEntityPtrLinkList
-{
-public:
-	typedef std::map<IBaseEntity*, std::list<void*> > TEntityPtrUsageList;
-	TEntityPtrUsageList List;
-
-	void AddEntity (IBaseEntity *Entity, void *Ptr)
-	{
-		TEntityPtrUsageList::iterator it = List.find(Entity);
-
-		if (it != List.end())
-			(*it).second.push_back (Ptr);
-		else
-		{
-			std::list<void*> PtrList;
-			PtrList.push_back(Ptr);
-
-			List[Entity] = PtrList;
-		}
-	}
-
-	void RemoveEntity (IBaseEntity *Entity, void *Ptr)
-	{
-		TEntityPtrUsageList::iterator it = List.find(Entity);
-
-		if (it == List.end())
-			CC_ASSERT_EXPR(0, "Wtf?");
-		else
-		{
-			(*it).second.remove (Ptr);
-
-			if (!(*it).second.size())
-				List.erase (Entity);
-		}
-	}
-};
-	
-CEntityPtrLinkList &UsageList ();
-
-/**
-\class	entity_ptr
-
-\brief	Entity pointer.
-		Testing a theory.
-
-\author	Paril
-\date	01/06/2010
-**/
-template <class TType>
-class entity_ptr
-{
-	TType		*GameEntity;	// The CleanCode entity
-	edict_t		*ServerEntity;	// The server entity
-
-public:
-	/**
-	\fn	entity_ptr()
-	
-	\brief	Default constructor.
-	
-	\author	Paril
-	\date	01/06/2010
-	**/
-	entity_ptr() :
-	  GameEntity(NULL),
-	  ServerEntity(NULL)
-	  {
-		  DebugPrintf ("entity_ptr()\n");
-	  }
-
-	~entity_ptr()
-	{
-		DebugPrintf ("~entity_ptr()\n");
-		if (GameEntity)
-			UsageList().RemoveEntity(GameEntity, this);
-	}
-
-	/**
-	\fn	entity_ptr(TType *GameEntity)
-	
-	\brief	Constructor. Constructs an entity_ptr from a game entity. 
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\param [in,out]	GameEntity	If non-null, the game entity. 
-	**/
-	entity_ptr(TType *GameEntity) :
-	  GameEntity(GameEntity),
-	  ServerEntity(GameEntity->GetGameEntity())
-	  {
-		  DebugPrintf ("entity_ptr(TType *GameEntity)\n");
-		  UsageList().AddEntity (GameEntity, this);
-	  };
-
-	/**
-	\fn	entity_ptr(edict_t *ServerEntity)
-	
-	\brief	Constructor. Constructs an entity_ptr from a server entity.
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\param [in,out]	ServerEntity	If non-null, the server entity. 
-	**/
-	entity_ptr(edict_t *ServerEntity) :
-	  ServerEntity(ServerEntity),
-	  GameEntity(entity_cast<TType>(ServerEntity->Entity))
-	  {
-		  DebugPrintf ("entity_ptr(edict_t *ServerEntity)\n");
-		  UsageList().AddEntity (GameEntity, this);
-	  }
-
-	entity_ptr &operator= (TType *NewGameEntity)
-	{
-		DebugPrintf ("entity_ptr &operator= (TType *NewGameEntity)\n");
-		if (GameEntity)
-			UsageList().RemoveEntity (GameEntity, this);
-
-		GameEntity = NewGameEntity;
-		ServerEntity = NewGameEntity->GetGameEntity();
-		UsageList().AddEntity (GameEntity, this);
-
-		return *this;
-	}
-
-	entity_ptr &operator= (edict_t *NewServerEntity)
-	{
-		DebugPrintf ("entity_ptr &operator= (edict_t *NewServerEntity)\n");
-		if (GameEntity)
-			UsageList().RemoveEntity (GameEntity, this);
-
-		ServerEntity = NewServerEntity;
-		GameEntity = entity_cast<TType>(ServerEntity->Entity);
-		UsageList().AddEntity (GameEntity, this);
-
-		return *this;
-	}
-
-	/**
-	\fn	void Clear ()
-	
-	\brief	Clears this object to its blank/initial state.
-	**/
-	void Clear ()
-	{
-		DebugPrintf ("Clear ()\n");
-		UsageList().RemoveEntity (GameEntity, this);
-		GameEntity = NULL;
-		ServerEntity = NULL;
-	}
-
-	/**
-	\fn	entity_ptr operator= (int)
-	
-	\brief	Empty operator, for conversion to NULL.
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\param		The. 
-	
-	\return	This object. 
-	**/
-	entity_ptr operator = (int)
-	{
-		DebugPrintf ("operator = (int)\n");
-		Clear ();
-		return *this;
-	}
-
-	/**
-	\fn	TType *operator* ()
-	
-	\brief	Dereference operator. Dereferencing an entity_ptr yields the game entity. 
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\return	The game entity.
-	**/
-	TType *operator * ()
-	{
-		DebugPrintf ("operator * ()\n");
-		return GameEntity;
-	}
-
-	/**
-	\fn	TType *GetGameEntity ()
-	
-	\brief	Gets the game entity. 
-	
-	\return	null if it fails, else the game entity. 
-	**/
-	TType *GetGameEntity ()
-	{
-		DebugPrintf ("GetGameEntity ()\n");
-		return GameEntity;
-	}
-
-	/**
-	\fn	edict_t *GetServerEntity ()
-	
-	\brief	Gets the server entity. 
-	
-	\return	null if it fails, else the server entity. 
-	**/
-	edict_t *GetServerEntity ()
-	{
-		DebugPrintf ("GetServerEntity ()\n");
-		return ServerEntity;
-	}
-
-	/**
-	\fn	bool IsValid ()
-	
-	\brief	Query if this entity pointer is valid. 
-	
-	\return	true if valid, false if not. 
-	**/
-	bool IsValid ()
-	{
-		DebugPrintf ("IsValid ()\n");
-		return (ServerEntity && ServerEntity->server.InUse && !ServerEntity->freetime && GameEntity && !GameEntity->Freed);
-	}
-
-	/**
-	\fn	TType *operator-> ()
-	
-	\brief	Member access operator.
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\return	Game entity pointer for member access.
-	**/
-	TType *operator-> ()
-	{
-		DebugPrintf ("operator-> ()\n");
-		return GameEntity;
-	}
-};
 
 // Base classes
 #include "cc_entity_types.h"

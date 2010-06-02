@@ -379,7 +379,7 @@ void CFlyer::Melee ()
 
 void CFlyer::CheckMelee ()
 {
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = (frand() <= 0.8) ? &FlyerMoveLoopMelee : &FlyerMoveEndMelee;
 	else
 		CurrentMove = &FlyerMoveEndMelee;

@@ -105,7 +105,7 @@ void CBoss2::FireBulletRight ()
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
-		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
 	forward = target - start;
@@ -127,7 +127,7 @@ void CBoss2::FireBulletLeft ()
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
-		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
 	forward = target - start;
@@ -432,7 +432,7 @@ void CBoss2::AttackMg ()
 
 void CBoss2::ReAttackMg ()
 {
-	CurrentMove = (IsInFront(Entity, Entity->Enemy)) ?
+	CurrentMove = (IsInFront(Entity, *Entity->Enemy)) ?
 		((frand() <= 0.7) ? &Boss2MoveAttackMg : &Boss2MoveAttackPostMg) : &Boss2MoveAttackPostMg;
 }
 
@@ -478,7 +478,7 @@ bool CBoss2::CheckAttack ()
 	ERangeType		enemy_range;
 	float	enemy_yaw;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -493,8 +493,8 @@ bool CBoss2::CheckAttack ()
 			return false;
 	}
 	
-	enemy_infront = IsInFront(Entity, Entity->Enemy);
-	enemy_range = Range(Entity, Entity->Enemy);
+	enemy_infront = IsInFront(Entity, *Entity->Enemy);
+	enemy_range = Range(Entity, *Entity->Enemy);
 	temp = Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin();
 	enemy_yaw = temp.ToYaw();
 

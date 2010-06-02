@@ -859,7 +859,7 @@ void CWidowStand::Attack ()
 		AIFlags &= ~AI_TARGET_ANGER;
 	}
 
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 		return;
 
 	if (BadArea)
@@ -1122,7 +1122,7 @@ void CWidowStand::RespondPowerup (CPlayerEntity *other)
 void CWidowStand::Powerups ()
 {
 	if (!(Game.GameMode & GAME_COOPERATIVE))
-		RespondPowerup (entity_cast<CPlayerEntity>(Entity->Enemy));
+		RespondPowerup (entity_cast<CPlayerEntity>(*Entity->Enemy));
 	else
 	{
 		bool FoundPent = false, FoundQuad = false, FoundDouble = false;
@@ -1157,7 +1157,7 @@ void CWidowStand::Powerups ()
 
 bool CWidowStand::CheckAttack ()
 {
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		return false;
 
 	Powerups ();
@@ -1189,7 +1189,7 @@ bool CWidowStand::CheckAttack ()
 		return true;
 	}
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight),
@@ -1215,7 +1215,7 @@ bool CWidowStand::CheckAttack ()
 	
 	EnemyInfront = IsInFront(Entity, Entity->Enemy);
 
-	EnemyRange = Range(Entity, Entity->Enemy);
+	EnemyRange = Range(Entity, *Entity->Enemy);
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
 	float real_enemy_range = RangeFrom(Entity->State.GetOrigin(), Entity->Enemy->State.GetOrigin());

@@ -318,7 +318,7 @@ void CBrain::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25f)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		Entity->Enemy = Attacker;
 
 	PauseTime = Level.Frame + ((eta + 0.5) * 10);
@@ -570,11 +570,11 @@ void CBrain::TongueAttack ()
 	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 
 	vec3f dir = start - end;
-	entity_cast<IHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+	entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 
 	// pull the enemy in
 	Entity->Enemy->State.GetOrigin().Z += 1;
-	entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity = f * -1200;;
+	entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity = f * -1200;;
 }
 
 // Brian right eye center
@@ -659,7 +659,7 @@ void CBrain::LaserBeamFire ()
 
 void CBrain::LaserBeamRefire ()
 {
-	if (frand() < 0.5 && IsVisible (Entity, Entity->Enemy) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (frand() < 0.5 && IsVisible (Entity, *Entity->Enemy) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 		Entity->State.GetFrame() = FRAME_walk101;
 }
 

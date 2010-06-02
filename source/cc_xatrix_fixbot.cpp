@@ -432,7 +432,7 @@ void CFixbot::FireLaser ()
 
 	vec3f forward, tempang, start, dir, angles, end;
 
-	CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
+	CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 
 	// critter dun got blown up while bein' fixed
 	if (Enemy->Health <= Enemy->GibHealth)
@@ -624,7 +624,7 @@ void CFixbot::FireWelder ()
 {
 	vec3f	start, forward, right, up;
 	
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		return;
 
 	static const vec3f vec (24, -0.8f, -10);

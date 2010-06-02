@@ -53,7 +53,7 @@ void CSoldierShotgun::Attack ()
 
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
-		(Range(Entity, Entity->Enemy) == RANGE_MID) && 
+		(Range(Entity, *Entity->Enemy) == RANGE_MID) && 
 		(r < (CvarList[CV_SKILL].Integer()*0.05))) // Very low chance for shotty soldier
 		CurrentMove = &SoldierMoveAttack6;
 	else
@@ -86,7 +86,7 @@ void CSoldierShotgun::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			IBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);

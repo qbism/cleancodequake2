@@ -272,6 +272,9 @@ EEventEffect	&CEntityState::GetEvent			()
 void G_InitEdict (edict_t *e)
 {
 	e->server.InUse = true;
+	e->freetime = 0;
+	e->AwaitingRemoval = false;
+	e->RemovalFrames = 0;
 	memset (&e->server.State, 0, sizeof(e->server.State));
 	e->server.State.Number = e - Game.Entities;
 }
@@ -619,12 +622,12 @@ void IBaseEntity::WriteBaseEntity (CFile &File)
 		File.Write<sint32> ((Team.Master && Team.Master->gameEntity) ? Team.Master->State.GetNumber() : -1);
 	}
 
-	File.Write<sint32> ((GroundEntity) ? GroundEntity->State.GetNumber() : -1);
+	GroundEntity.Write (File);
 
 	File.Write<sint32> (GroundEntityLinkCount);
 	File.Write<uint32> (SpawnFlags);
 
-	File.Write<sint32> ((Enemy && Enemy->gameEntity) ? Enemy->State.GetNumber() : -1);
+	Enemy.Write (File);
 
 	File.Write<sint32> (ViewHeight);
 }
@@ -660,14 +663,12 @@ void IBaseEntity::ReadBaseEntity (CFile &File)
 			Team.Master = Game.Entities[MasterNumber].Entity;
 	}
 
-	sint32 GroundEntityNumber = File.Read<sint32> ();
-	GroundEntity = (GroundEntityNumber == -1) ? NULL : Game.Entities[GroundEntityNumber].Entity;
+	GroundEntity = entity_ptr<IBaseEntity>::Read(File);
 
 	GroundEntityLinkCount = File.Read<sint32> ();
 	SpawnFlags = File.Read<uint32> ();
 
-	sint32 EnemyNumber = File.Read<sint32> ();
-	Enemy = (EnemyNumber == -1) ? NULL : Game.Entities[EnemyNumber].Entity;
+	Enemy = entity_ptr<IBaseEntity>::Read(File);
 
 	ViewHeight = File.Read<sint32> ();
 }

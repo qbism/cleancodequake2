@@ -1354,7 +1354,7 @@ void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 	if (Monster->MoveTarget != this)
 		return;
 	
-	if (Monster->Enemy)
+	if (Monster->Enemy.IsValid())
 		return;
 
 	if (PathTarget)
@@ -1383,7 +1383,7 @@ void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 	}
 	else
 	{
-		if (!Monster->MoveTarget)
+		if (!Monster->MoveTarget.IsValid())
 		{
 			Monster->Monster->PauseTime = Level.Frame + 100000000;
 			Monster->Monster->Stand ();
@@ -1487,7 +1487,7 @@ public:
 		if (Other->EntityFlags & ENT_MONSTER)
 			Monster = entity_cast<CMonsterEntity>(Other);
 
-		if (Monster && (!Monster->MoveTarget || Monster->MoveTarget != this))
+		if (Monster && (!Monster->MoveTarget.IsValid() || Monster->MoveTarget != this))
 			return;
 
 		if (Target)
@@ -1501,7 +1501,7 @@ public:
 					Monster->GoalEntity = Monster->MoveTarget = CC_PickTarget(Usable->Target);
 			}
 
-			if (Monster && !Monster->GoalEntity)
+			if (Monster && !Monster->GoalEntity.IsValid())
 			{
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target %s does not exist\n", Target);
 				Monster->MoveTarget = this;
@@ -1534,11 +1534,11 @@ public:
 
 			char *savetarget = Target;
 			Target = PathTarget;
-			if (Other->Enemy && (Other->Enemy->EntityFlags & ENT_PLAYER))
-				Activator = Other->Enemy;
+			if (Other->Enemy.IsValid() && (Other->Enemy->EntityFlags & ENT_PLAYER))
+				Activator = *Other->Enemy;
 			else if ((Monster) &&
-				(Monster->OldEnemy) && (Monster->OldEnemy->EntityFlags & ENT_PLAYER))
-				Activator = Monster->OldEnemy;
+				(Monster->OldEnemy.IsValid()) && (Monster->OldEnemy->EntityFlags & ENT_PLAYER))
+				Activator = *Monster->OldEnemy;
 			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<IUsableEntity>(Other)->User.IsValid()) && ((*entity_cast<IUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
 				Activator = (*entity_cast<IUsableEntity>(Other)->User);
 			else

@@ -44,7 +44,7 @@ public:
 	};
 	uint32			ThinkType;
 	vec3f			MoveDir;
-	FrameNumber	Wait;
+	FrameNumber		Wait;
 	uint8			Sounds;
 
 	CTriggerBase ();
@@ -60,7 +60,7 @@ public:
 
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
-	void Init ();
+	void		Init ();
 
 	virtual bool CheckValidity ()
 	{
@@ -70,7 +70,7 @@ public:
 	// the trigger was just activated
 	// ent->Activator should be set to the Activator so it can be held through a delay
 	// so wait for the delay time before firing
-	void Trigger ();
+	void		Trigger ();
 
 	virtual void Spawn () = 0;
 };
@@ -78,7 +78,7 @@ public:
 class CTriggerMultiple : public CTriggerBase
 {
 public:
-	bool ActivateUse;
+	bool		ActivateUse;
 
 	CTriggerMultiple ();
 	CTriggerMultiple (sint32 Index);

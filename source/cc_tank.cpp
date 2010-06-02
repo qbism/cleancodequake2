@@ -198,7 +198,7 @@ CAnim TankMoveStopRun (FRAME_walk21, FRAME_walk25, TankFramesStopRun, ConvertDer
 
 void CTank::Run ()
 {
-	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+	if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 		AIFlags |= AI_BRUTAL;
 	else
 		AIFlags &= ~AI_BRUTAL;
@@ -401,7 +401,7 @@ void CTank::Rocket ()
 	if (!blindfire && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
 		if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
-			vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+			vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -482,7 +482,7 @@ void CTank::MachineGun ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
-	if (Entity->Enemy)
+	if (Entity->Enemy.IsValid())
 	{
 		vec3f vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;
@@ -549,7 +549,7 @@ CAnim TankMoveAttackPostBlast (FRAME_attak117, FRAME_attak122, TankFramesAttackP
 
 void CTank::ReAttackBlaster ()
 {
-	if (CvarList[CV_SKILL].Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
+	if (CvarList[CV_SKILL].Integer() >= 2 && IsVisible (Entity, *Entity->Enemy) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && frand() <= 0.6)
 	{
 		CurrentMove = &TankMoveReAttackBlast;
 		return;
@@ -726,7 +726,7 @@ void CTank::ReFireRocket ()
 #endif
 
 	// Only on hard or nightmare
-	if ( CvarList[CV_SKILL].Integer() >= 2 && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
+	if (CvarList[CV_SKILL].Integer() >= 2 && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible(Entity, *Entity->Enemy) && frand() <= 0.4)
 	{
 		CurrentMove = &TankMoveAttackFireRocket;
 		return;
@@ -741,10 +741,10 @@ void CTank::DoAttackRocket ()
 
 void CTank::Attack ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
+	if (!Entity->Enemy.IsValid())
 		return;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health < 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health < 0)
 	{
 		CurrentMove = &TankMoveAttackStrike;
 		AIFlags &= ~AI_BRUTAL;

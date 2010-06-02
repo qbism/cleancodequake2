@@ -863,7 +863,7 @@ public:
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Other);
 		Monster->Velocity = MoveDir * Speed;
 		
-		if (!Monster->GroundEntity)
+		if (!Monster->GroundEntity.IsValid())
 			return;
 		
 		Monster->GroundEntity = NULL;

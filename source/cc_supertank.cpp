@@ -346,7 +346,7 @@ CAnim SuperTankMoveEndAttack1 (FRAME_attaka7, FRAME_attaka20, SuperTankFramesEnd
 
 void CSuperTank::ReAttack1 ()
 {
-	if (IsVisible(Entity, Entity->Enemy))
+	if (IsVisible(Entity, *Entity->Enemy))
 		CurrentMove = (frand() < 0.9) ? &SuperTankMoveAttack1 : &SuperTankMoveEndAttack1;
 	else
 		CurrentMove = &SuperTankMoveEndAttack1;
@@ -435,7 +435,7 @@ void CSuperTank::MachineGun ()
 	dir.ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 
-	if (Entity->Enemy)
+	if (Entity->Enemy.IsValid())
 	{
 		vec3f vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;

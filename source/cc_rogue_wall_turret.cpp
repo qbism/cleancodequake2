@@ -291,7 +291,7 @@ void CWallTurret::Fire ()
 
 			// lead the target....
 			if (chance < 0.8f)
-				dir = (end.MultiplyAngles(dir.Length() / 1000, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity) - start);
+				dir = (end.MultiplyAngles(dir.Length() / 1000, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity) - start);
 		}
 
 		//dir.Normalize ();
@@ -787,7 +787,7 @@ bool CWallTurret::CheckAttack ()
 	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
 		return false;
 
-	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight);

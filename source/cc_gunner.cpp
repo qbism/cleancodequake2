@@ -428,7 +428,7 @@ void CGunner::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &GunnerMoveDuck;
@@ -443,7 +443,7 @@ void CGunner::OpenGun ()
 #if ROGUE_FEATURES
 bool CGunner::GrenadeCheck()
 {
-	if(!Entity->Enemy)
+	if(!Entity->Enemy.IsValid())
 		return false;
 
 	vec3f		start, forward, right, target, dir;
@@ -494,7 +494,7 @@ void CGunner::Fire ()
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
-		target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+		target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target.Z += Entity->Enemy->ViewHeight;
 
 	aim = (target - start).GetNormalizedFast();
@@ -690,7 +690,7 @@ CAnim GunnerMoveAttackGrenade (FRAME_attak101, FRAME_attak121, GunnerFramesAttac
 void CGunner::Attack()
 {
 #if !ROGUE_FEATURES
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = &GunnerMoveAttackChain;
 	else
 		CurrentMove = (frand() <= 0.5) ? &GunnerMoveAttackGrenade : &GunnerMoveAttackChain;
@@ -744,7 +744,7 @@ void CGunner::FireChain ()
 
 void CGunner::ReFireChain ()
 {
-	if (Entity->Enemy && entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.5)
+	if (Entity->Enemy.IsValid() && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.5)
 	{
 		CurrentMove = &GunnerMoveFireChain;
 		return;

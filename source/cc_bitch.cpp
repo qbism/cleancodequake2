@@ -520,7 +520,7 @@ void CMaiden::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &ChickMoveDuck;
@@ -573,7 +573,7 @@ void CMaiden::Rocket ()
 	// 20, 35, 50, 65 chance of leading
 	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(Entity->Enemy)->Velocity);
+		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -646,10 +646,10 @@ void CMaiden::ReRocket()
 		AIFlags &= ~AI_MANUAL_STEERING;
 	else
 #endif
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
-		if (Range (Entity, Entity->Enemy) > RANGE_MELEE &&
-			IsVisible (Entity, Entity->Enemy) &&
+		if (Range (Entity, *Entity->Enemy) > RANGE_MELEE &&
+			IsVisible (Entity, *Entity->Enemy) &&
 			(frand() <= (0.6 + (0.05*CvarList[CV_SKILL].Float()))))
 		{
 			CurrentMove = &ChickMoveAttack1;
@@ -689,7 +689,7 @@ CAnim ChickMoveEndSlash (FRAME_attak213, FRAME_attak216, ChickFramesEndSlash, Co
 
 void CMaiden::ReSlash()
 {
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health > 0 && (Range (Entity, Entity->Enemy) == RANGE_MELEE) && (frand() <= 0.9))
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && (Range (Entity, *Entity->Enemy) == RANGE_MELEE) && (frand() <= 0.9))
 		CurrentMove = &ChickMoveSlash;
 	else
 		CurrentMove = &ChickMoveEndSlash;

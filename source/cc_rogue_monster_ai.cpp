@@ -179,13 +179,13 @@ void CMonster::TargetTesla (CTesla *tesla)
 	if (AIFlags & AI_MEDIC)
 	{
 		if (Entity->Enemy)
-			entity_cast<CMonsterEntity>(Entity->Enemy)->Monster->CleanupHealTarget();
+			entity_cast<CMonsterEntity>(*Entity->Enemy)->Monster->CleanupHealTarget();
 		AIFlags &= ~AI_MEDIC;
 	}
 
 	// store the player enemy in case we lose track of him.
 	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
-		LastPlayerEnemy = entity_cast<CPlayerEntity>(Entity->Enemy);
+		LastPlayerEnemy = entity_cast<CPlayerEntity>(*Entity->Enemy);
 
 	if (Entity->Enemy != tesla)
 	{
@@ -222,7 +222,7 @@ void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 	if ((!ducker) && (!dodger))
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 	{
 		Entity->Enemy = Attacker;
 		FoundTarget ();
@@ -682,7 +682,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				}
 			}
 			
-			if (!Entity->Enemy)
+			if (!Entity->Enemy.IsValid())
 				break;
 		}
 		
@@ -954,7 +954,7 @@ bool CMonster::CheckAttack ()
 {
 	if (Entity->Enemy)
 	{
-		if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+		if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 			return false;
 
 	// see if any entities are in the way of the shot
@@ -1148,7 +1148,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 
 		// remove the medic flag
 		AIFlags &= ~AI_MEDIC;
-		entity_cast<CMonsterEntity>(Entity->Enemy)->Monster->CleanupHealTarget ();
+		entity_cast<CMonsterEntity>(*Entity->Enemy)->Monster->CleanupHealTarget ();
 	}
 
 	// we now know that we are not both good guys
@@ -1298,7 +1298,7 @@ bool CMonster::AI_CheckAttack()
 {
 	bool	retval;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		return false;
 
 // this causes monsters to run blindly to the combat point w/o firing
@@ -1309,7 +1309,7 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-			if ((Entity->Enemy->EntityFlags & ENT_NOISE) && (Level.Frame - entity_cast<CPlayerNoise>(Entity->Enemy)->Time) > 50)
+			if ((Entity->Enemy->EntityFlags & ENT_NOISE) && (Level.Frame - entity_cast<CPlayerNoise>(*Entity->Enemy)->Time) > 50)
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
@@ -1335,9 +1335,9 @@ bool CMonster::AI_CheckAttack()
 
 // see if the enemy is dead
 	bool hesDeadJim = false;
-	IHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Entity->Enemy) : NULL;
+	IHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(*Entity->Enemy) : NULL;
 
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
 		hesDeadJim = true;
 	else if (AIFlags & AI_MEDIC)
 	{
@@ -1405,7 +1405,7 @@ bool CMonster::AI_CheckAttack()
 	Entity->ShowHostile = Level.Frame + 10;		// wake up other monsters
 
 // check knowledge of enemy
-	EnemyVis = IsVisible (Entity, Entity->Enemy);
+	EnemyVis = IsVisible (Entity, *Entity->Enemy);
 	if (EnemyVis)
 	{
 		SearchTime = Level.Frame + 50;
@@ -1418,7 +1418,7 @@ bool CMonster::AI_CheckAttack()
 	}
 
 	EnemyInfront = IsInFront(Entity, Entity->Enemy);
-	EnemyRange = Range(Entity, Entity->Enemy);
+	EnemyRange = Range(Entity, *Entity->Enemy);
 	EnemyYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
 
@@ -1483,7 +1483,7 @@ void CMonster::AI_Run(float Dist)
 
 	if ((AIFlags & AI_SOUND_TARGET) && (Entity->Enemy->EntityFlags & ENT_NOISE))
 	{
-		if ((!Entity->Enemy) || ((Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() < 64))
+		if ((!Entity->Enemy.IsValid()) || ((Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() < 64))
 		// pmm
 		{
 			AIFlags |= (AI_STAND_GROUND | AI_TEMP_STAND_GROUND);

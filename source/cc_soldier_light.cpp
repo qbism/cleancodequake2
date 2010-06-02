@@ -86,7 +86,7 @@ void CSoldierLight::Attack ()
 
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
-		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
+		(Range(Entity, *Entity->Enemy) >= RANGE_NEAR) && 
 		(r < (CvarList[CV_SKILL].Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
@@ -119,7 +119,7 @@ void CSoldierLight::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			IBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);

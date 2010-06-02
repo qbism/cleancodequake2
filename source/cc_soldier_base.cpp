@@ -400,13 +400,13 @@ void CSoldierBase::Attack1_Refire1 ()
 	if (SoldierAI != AI_BLASTER)
 		return;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
 		return;
 
-	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if (((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak102;
 	else
 		NextFrame = FRAME_attak110;
@@ -417,13 +417,13 @@ void CSoldierBase::Attack1_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
 		return;
 
-	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak102;
 }
 
@@ -456,13 +456,13 @@ void CSoldierBase::Attack2_Refire1 ()
 	if (SoldierAI != AI_BLASTER)
 		return;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
 		return;
 
-	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak204;
 	else
 		NextFrame = FRAME_attak216;
@@ -473,13 +473,13 @@ void CSoldierBase::Attack2_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
 		return;
 
-	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, Entity->Enemy) == RANGE_MELEE) )
+	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
 		NextFrame = FRAME_attak204;
 }
 
@@ -589,10 +589,10 @@ void CSoldierBase::Attack6_Refire ()
 	StopCharge ();
 #endif
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
-	if (Range(Entity, Entity->Enemy) < RANGE_NEAR)
+	if (Range(Entity, *Entity->Enemy) < RANGE_NEAR)
 		return;
 
 	if (!EnemyVis)
@@ -612,10 +612,10 @@ void CSoldierBase::Attack6_RefireBlaster ()
 	DoneDodge ();
 	StopCharge ();
 
-	if (entity_cast<IHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
-	if (Range(Entity, Entity->Enemy) < RANGE_NEAR)
+	if (Range(Entity, *Entity->Enemy) < RANGE_NEAR)
 		return;
 
 	if (!EnemyVis)
@@ -684,7 +684,7 @@ void CSoldierBase::Sight ()
 {
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SIGHT1] : Sounds[SOUND_SIGHT2]);
 
-	if ((CvarList[CV_SKILL].Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, Entity->Enemy) >= RANGE_NEAR))
+	if ((CvarList[CV_SKILL].Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, *Entity->Enemy) >= RANGE_NEAR))
 	{
 		// Only do run-shoot off the bat if we're not a shotgun soldier (too cheap)
 		if ((frand() > 0.75) && (SoldierAI == AI_BLASTER))
@@ -720,7 +720,7 @@ void CSoldierBase::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy.IsValid())
 		Entity->Enemy = Attacker;
 
 	PauseTime = Level.Frame + ((eta + 0.3) * 10);
