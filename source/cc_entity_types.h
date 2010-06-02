@@ -174,14 +174,14 @@ public:
 class IUsableEntity : public virtual IBaseEntity
 {
 public:
-	std::string		Message;
-	char				*Target;
-	char				*KillTarget;
-	char				*PathTarget;
-	IBaseEntity			*User;
-	FrameNumber		Delay;
-	MediaIndex			NoiseIndex;
-	bool				Usable;
+	std::string					Message;
+	char						*Target;
+	char						*KillTarget;
+	char						*PathTarget;
+	entity_ptr<IBaseEntity>		User;
+	FrameNumber					Delay;
+	MediaIndex					NoiseIndex;
+	bool						Usable;
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(IUsableEntity)
@@ -198,7 +198,7 @@ public:
 class IThinkableEntity : public virtual IBaseEntity
 {
 public:
-	FrameNumber		NextThink;
+	FrameNumber			NextThink;
 
 	IThinkableEntity ();
 	IThinkableEntity (sint32 index);
@@ -214,7 +214,7 @@ public:
 class ITouchableEntity : public virtual IBaseEntity
 {
 public:
-	bool Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
+	bool				Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
 
 	ENTITYFIELDS_SAVABLE(ITouchableEntity)
 

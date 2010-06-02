@@ -189,9 +189,6 @@ public:
 
 	bool Run ()
 	{
-		if (User && User->Freed)
-			User = NULL;
-
 		return IBaseEntity::Run();
 	};
 
@@ -200,11 +197,11 @@ public:
 		CRocketExplosion (State.GetOrigin()).Send();
 
 		if (Damage)
-			SplashDamage (User, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
+			SplashDamage (*User, Damage, NULL, Damage+40, MOD_EXPLOSIVE);
 
 		FrameNumber save = Delay;
 		Delay = 0;
-		UseTargets (User, Message);
+		UseTargets (*User, Message);
 		Delay = save;
 
 		User = NULL;
@@ -1260,7 +1257,7 @@ void CTargetLaser::Think ()
 		IBaseEntity *Entity = tr.ent->Entity;
 		// hurt it if we can
 		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
-			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, User, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
+			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, *User, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done
 		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
@@ -1295,8 +1292,6 @@ void CTargetLaser::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CTargetLaser::On ()
 {
-	if (!User)
-		User = this;
 	SpawnFlags |= LASER_START_ON;
 	MakeEffect = true;
 	GetSvFlags() &= ~SVF_NOCLIENT;

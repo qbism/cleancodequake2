@@ -3272,7 +3272,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		Obituary (Attacker);
 
 #if CLEANCTF_ENABLED
-		if (Attacker->EntityFlags & ENT_PLAYER)
+		if (Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 		{
 			CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
 //ZOID

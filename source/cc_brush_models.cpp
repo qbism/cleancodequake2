@@ -1354,7 +1354,7 @@ void CDoor::Blocked (IBaseEntity *Other)
 		if (MoveState == STATE_DOWN)
 		{
 			for (IBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
-				(entity_cast<CDoor>(Entity))->GoUp ((User) ? User : NULL);
+				(entity_cast<CDoor>(Entity))->GoUp (*User);
 		}
 		else
 		{
@@ -2069,9 +2069,6 @@ ITouchableEntity(Index)
 
 bool CButton::Run ()
 {
-	if (User && (User->Freed))
-		User = NULL;
-
 	return IBrushModel::Run ();
 };
 
@@ -2093,7 +2090,7 @@ void CButton::DoEndFunc ()
 		State.GetEffects() &= ~EF_ANIM01;
 		State.GetEffects() |= EF_ANIM23;
 
-		UseTargets (User, Message);
+		UseTargets (*User, Message);
 		State.GetFrame() = 1;
 		if (Wait >= 0)
 		{
@@ -2296,7 +2293,7 @@ void CTrainBase::TrainWait ()
 	{
 		char	*savetarget = TargetEntity->Target;
 		TargetEntity->Target = TargetEntity->PathTarget;
-		TargetEntity->UseTargets (User, Message);
+		TargetEntity->UseTargets (*User, Message);
 		TargetEntity->Target = savetarget;
 
 		// make sure we didn't get killed by a killtarget

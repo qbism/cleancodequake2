@@ -1061,7 +1061,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		UseTargets (User, Message);
+		UseTargets (*User, Message);
 
 		State.GetOrigin().Z = GetAbsMin().Z + 1;
 		SplashDamage (this, Damage, NULL, Damage+40, MOD_BOMB);

@@ -213,7 +213,7 @@ void CTriggerBase::Trigger ()
 	if (NextThink)
 		return;		// already been triggered
 
-	UseTargets (User, Message);
+	UseTargets (*User, Message);
 
 	if (Wait > 0)	
 	{

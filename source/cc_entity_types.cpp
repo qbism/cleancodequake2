@@ -320,12 +320,12 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY))
 		{
 			Level.Monsters.Killed++;
-			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+			if ((Game.GameMode & GAME_COOPERATIVE) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
 #if !ROGUE_FEATURES
-			if ((Attacker->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
+			if (Attacker && (Attacker->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
 				SetOwner (Attacker);
 #endif
 		}
@@ -1680,7 +1680,7 @@ public:
 
 	void Think ()
 	{
-		UseTargets (User, Message);
+		UseTargets (*User, Message);
 		Free ();
 	}
 };

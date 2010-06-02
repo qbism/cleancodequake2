@@ -1539,8 +1539,8 @@ public:
 			else if ((Monster) &&
 				(Monster->OldEnemy) && (Monster->OldEnemy->EntityFlags & ENT_PLAYER))
 				Activator = Monster->OldEnemy;
-			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<IUsableEntity>(Other)->User) && ((entity_cast<IUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
-				Activator = (entity_cast<IUsableEntity>(Other)->User);
+			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<IUsableEntity>(Other)->User.IsValid()) && ((*entity_cast<IUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
+				Activator = (*entity_cast<IUsableEntity>(Other)->User);
 			else
 				Activator = Other;
 			UseTargets (Activator, Message);

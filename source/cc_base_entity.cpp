@@ -45,12 +45,17 @@ void FixAllEntityPtrs (IBaseEntity *Entity)
 		return;
 
 	std::list<void*> &v = (*UsageList().List.find(Entity)).second;
+	size_t numEnts = 0;
 	
 	for (std::list<void*>::iterator it = v.begin(); it != v.end(); ++it)
 	{
 		void *tehPtr = (*it);
 		Mem_Zero (tehPtr, sizeof(entity_ptr<IBaseEntity>));
+		numEnts++;
 	}
+
+	if (numEnts)
+		DebugPrintf ("dislocated %u entity_ptrs\n", numEnts);
 
 	UsageList().List.erase(Entity);
 }

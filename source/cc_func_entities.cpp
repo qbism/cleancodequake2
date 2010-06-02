@@ -128,7 +128,7 @@ void			CFuncTimer::LoadFields (CFile &File)
 
 void CFuncTimer::Think ()
 {
-	UseTargets (User, Message);
+	UseTargets (*User, Message);
 	NextThink = Level.Frame + (Wait + (irandom(Random)));
 }
 
@@ -513,7 +513,7 @@ void CFuncClock::Think ()
 			std::string savemessage = Message;
 			Target = CountTarget;
 			Message.clear();
-			UseTargets (User, Message);
+			UseTargets (*User, Message);
 			Target = savetarget;
 			Message = savemessage;
 		}
@@ -538,7 +538,7 @@ void CFuncClock::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	if (!(SpawnFlags & CLOCK_MULTI_USE))
 		Usable = false;
 	
-	if (User)
+	if (User.IsValid())
 		return;
 
 	User = Activator;
