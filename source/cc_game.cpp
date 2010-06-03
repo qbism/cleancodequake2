@@ -371,7 +371,7 @@ void ProcessEntity (edict_t *ent)
 		// if the ground entity moved, make sure we are still on it
 		if ((!Entity->GroundEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount))
 		{
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 			if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
 				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 		}

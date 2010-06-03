@@ -866,7 +866,7 @@ public:
 		if (!Monster->GroundEntity)
 			return;
 		
-		Monster->GroundEntity = NULL;
+		Monster->GroundEntity = nullentity;
 		Monster->Velocity.Z = MoveDir.Z;
 	};
 

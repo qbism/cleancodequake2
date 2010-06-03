@@ -574,7 +574,7 @@ void CPlayerEntity::PutInServer ()
 	FetchEntData ();
 
 	// clear entity values
-	GroundEntity = NULL;
+	GroundEntity = nullentity;
 	CanTakeDamage = true;
 	NoClip = false;
 	TossPhysics = false;
@@ -2706,7 +2706,7 @@ void CPlayerEntity::MoveToIntermission ()
 	GetSolid() = SOLID_NOT;
 
 	// add the layout
-	Enemy = NULL;
+	Enemy = nullentity;
 	if (!(Game.GameMode & GAME_SINGLEPLAYER))
 		DeathmatchScoreboardMessage (true);
 }

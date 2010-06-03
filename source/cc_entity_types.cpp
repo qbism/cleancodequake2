@@ -841,11 +841,11 @@ bool IBounceProjectile::Run ()
 		return false;
 
 	if (Velocity.Z > 0)
-		GroundEntity = NULL;
+		GroundEntity = nullentity;
 
 // check for the groundentity going away
 	if (!GroundEntity)
-		GroundEntity = NULL;
+		GroundEntity = nullentity;
 
 // if onground, return without moving
 	if (GroundEntity && GravityMultiplier > 0.0)
@@ -979,7 +979,7 @@ void IStepPhysics::CheckGround ()
 {
 	if (Velocity.Z > 100)
 	{
-		GroundEntity = NULL;
+		GroundEntity = nullentity;
 		return;
 	}
 
@@ -992,7 +992,7 @@ void IStepPhysics::CheckGround ()
 	// check steepness
 	if (trace.plane.Normal.Z < 0.7 && !trace.startSolid)
 	{
-		GroundEntity = NULL;
+		GroundEntity = nullentity;
 		return;
 	}
 
@@ -1036,10 +1036,10 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 {
 	sint32		i, j, blocked = 0, numplanes = 0, numbumps = 4;
 	vec3f		planes[MAX_CLIP_PLANES];
-	
 	float		time_left = time;
 	vec3f original_velocity = Velocity, primal_velocity = Velocity;
-	GroundEntity = NULL;
+
+	GroundEntity = nullentity;
 
 	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
@@ -1420,7 +1420,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 
 			// may have pushed them off an edge
 			if (Check->GroundEntity != Entity)
-				Check->GroundEntity = NULL;
+				Check->GroundEntity = nullentity;
 
 			if (!SV_TestEntityPosition (Check))
 			{       // pushed ok

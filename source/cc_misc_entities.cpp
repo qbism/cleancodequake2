@@ -120,7 +120,7 @@ public:
 		GroundEntityLinkCount = trace.Ent->GetLinkCount();
 
 		if (trace.fraction == 1.0)
-			GroundEntity = NULL;
+			GroundEntity = nullentity;
 
 	// the move is ok
 		Link ();
@@ -1042,7 +1042,7 @@ public:
 	};
 	void PreThink ()
 	{
-		GroundEntity = NULL;
+		GroundEntity = nullentity;
 
 		float diff = TimeStamp - Level.Frame;
 		if (diff < -1.0)
@@ -1066,7 +1066,7 @@ public:
 		SplashDamage (this, Damage, NULL, Damage+40, MOD_BOMB);
 		BecomeExplosion (true);
 
-		User = NULL;
+		User = nullentity;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)

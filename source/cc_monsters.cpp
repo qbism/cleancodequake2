@@ -787,7 +787,7 @@ void CMonster::MonsterStartGo ()
 		}
 		else
 		{
-			Entity->GoalEntity = Entity->MoveTarget = NULL;
+			Entity->GoalEntity = Entity->MoveTarget = nullentity;
 			PauseTime = 100000000;
 			Stand ();
 		}
@@ -954,7 +954,7 @@ void CMonster::MonsterTriggeredSpawn ()
 		FoundTarget ();
 #endif
 	else
-		Entity->Enemy = NULL;
+		Entity->Enemy = nullentity;
 }
 
 void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
@@ -1582,7 +1582,7 @@ void CMonster::CheckGround()
 
 	if ((Entity->Velocity.Z * Entity->GravityVector.Z) < -100)
 	{
-		Entity->GroundEntity = NULL;
+		Entity->GroundEntity = nullentity;
 		return;
 	}
 
@@ -1595,7 +1595,7 @@ void CMonster::CheckGround()
 	{
 		if (trace.plane.Normal.Z < 0.7f && !trace.startSolid)
 		{
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 			return;
 		}
 	}
@@ -1603,7 +1603,7 @@ void CMonster::CheckGround()
 	{
 		if (trace.plane.Normal.Z > -0.7f && !trace.startSolid)
 		{
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 			return;
 		}
 	}

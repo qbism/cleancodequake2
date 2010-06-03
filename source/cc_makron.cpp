@@ -1019,7 +1019,7 @@ void CMakronJumpTimer::Think ()
 	vec3f vel = vec3fOrigin.MultiplyAngles (400, vec);
 	newClass->Velocity = vel;
 	newClass->Velocity.Z = 200;
-	newClass->GroundEntity = NULL;
+	newClass->GroundEntity = nullentity;
 	newClass->Link ();
 
 	Free ();

@@ -357,6 +357,11 @@ inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 	return Entity; // Implicit cast already done
 }
 
+struct nullentity_t
+{
+};
+
+extern nullentity_t nullentity;
 
 /**
 \class	entity_ptr
@@ -552,9 +557,9 @@ public:
 	
 	\return	This object. 
 	**/
-	entity_ptr operator = (long)
+	entity_ptr operator = (nullentity_t)
 	{
-		DebugPrintf ("operator = (long)\n");
+		DebugPrintf ("operator = (nullentity_t)\n");
 		if (GameEntity)
 			Clear ();
 		return *this;

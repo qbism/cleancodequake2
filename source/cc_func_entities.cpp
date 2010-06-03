@@ -432,7 +432,7 @@ void		CFuncClock::LoadFields (CFile &File)
 
 void CFuncClock::Reset ()
 {
-	User = NULL;
+	User = nullentity;
 	if (SpawnFlags & CLOCK_TIMER_UP)
 	{
 		Seconds = 0;

@@ -204,7 +204,7 @@ public:
 		UseTargets (*User, Message);
 		Delay = save;
 
-		User = NULL;
+		User = nullentity;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
@@ -1302,7 +1302,7 @@ void CTargetLaser::Off ()
 	SpawnFlags &= ~LASER_START_ON;
 	GetSvFlags() |= SVF_NOCLIENT;
 	NextThink = 0;
-	User = NULL;
+	User = nullentity;
 };
 void CTargetLaser::Start ()
 {
@@ -1506,7 +1506,7 @@ void CEarthQuakeShakePlayers::Callback (CPlayerEntity *Player)
 	if (!Player->GroundEntity)
 		return;
 
-	Player->GroundEntity = NULL;
+	Player->GroundEntity = nullentity;
 	Player->Velocity.X += crand()* 150;
 	Player->Velocity.Y += crand()* 150;
 	Player->Velocity.Z = Speed * (100.0 / Player->Mass);

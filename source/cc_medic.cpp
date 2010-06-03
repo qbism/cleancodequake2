@@ -705,7 +705,7 @@ void CMedic::CableAttack ()
 		Monster->NextThink = Level.Frame;
 		Monster->Think ();
 		Monster->Monster->AIFlags &= ~AI_RESURRECTING;
-		Monster->Enemy = NULL;
+		Monster->Enemy = nullentity;
 		// Paril, fix skinnum
 		if (Monster->State.GetSkinNum() & 1)
 			Monster->State.GetSkinNum() -= 1;

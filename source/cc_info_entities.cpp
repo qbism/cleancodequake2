@@ -1522,7 +1522,7 @@ public:
 		if (Monster && (Monster->MoveTarget == this))
 		{
 			Monster->Target = NULL;
-			Monster->MoveTarget = NULL;
+			Monster->MoveTarget = nullentity;
 			Monster->GoalEntity = Monster->Enemy;
 
 			Monster->Monster->AIFlags &= ~AI_COMBAT_POINT;

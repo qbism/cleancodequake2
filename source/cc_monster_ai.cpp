@@ -170,7 +170,7 @@ bool CMonster::FindTarget()
 
 				if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
 				{
-					Entity->Enemy = NULL;
+					Entity->Enemy = nullentity;
 					return false;
 				}
 			}
@@ -356,7 +356,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				G_TouchTriggers (Entity);
 			}
 
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 			return true;
 		}
 	
@@ -737,7 +737,7 @@ bool CMonster::AI_CheckAttack()
 					if (Entity->MoveTarget)
 						Entity->GoalEntity = Entity->MoveTarget;
 					else
-						Entity->GoalEntity = NULL;
+						Entity->GoalEntity = nullentity;
 				}
 
 				AIFlags &= ~AI_SOUND_TARGET;
@@ -784,13 +784,13 @@ bool CMonster::AI_CheckAttack()
 
 	if (hesDeadJim)
 	{
-		Entity->Enemy = NULL;
+		Entity->Enemy = nullentity;
 
 	// FIXME: look all around for other targets
 		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->OldEnemy)->Health > 0))
 		{
 			Entity->Enemy = Entity->OldEnemy;
-			Entity->OldEnemy = NULL;
+			Entity->OldEnemy = nullentity;
 			HuntTarget ();
 		}
 		else

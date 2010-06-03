@@ -1138,7 +1138,7 @@ bool CMeleeWeapon::Fire(IBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 		v.Normalize ();
 		PhysEnemy->Velocity = v.MultiplyAngles (kick, v);
 		if (PhysEnemy->Velocity.Z > 0)
-			PhysEnemy->GroundEntity = NULL;
+			PhysEnemy->GroundEntity = nullentity;
 	}
 	return true;
 }

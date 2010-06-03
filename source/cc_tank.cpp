@@ -559,7 +559,7 @@ void CTank::ReAttackBlaster ()
 
 void CTank::PostStrike ()
 {
-	Entity->Enemy = NULL;
+	Entity->Enemy = nullentity;
 	Run ();
 }
 

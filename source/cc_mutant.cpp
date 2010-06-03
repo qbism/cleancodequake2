@@ -369,7 +369,7 @@ void CMutant::JumpTakeOff ()
 #endif
 
 	Entity->State.GetOrigin().Z += 1;
-	Entity->GroundEntity = NULL;
+	Entity->GroundEntity = nullentity;
 	AIFlags |= AI_DUCKED;
 	AttackFinished = Level.Frame + 30;
 	Jumping = true;
