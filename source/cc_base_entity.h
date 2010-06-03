@@ -263,6 +263,51 @@ public:
 CEntityPtrLinkList &UsageList ();
 
 /**
+\fn	template <class TType> inline TType *entity_cast (IBaseEntity *Entity)
+
+\brief	Casts entity types from one type to another.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Entity	If non-null, the entity. 
+
+\return	null if it fails, else the entity casted to another type. 
+**/
+template <class TType>
+inline TType *entity_cast (IBaseEntity *Entity)
+{
+	if (Entity == NULL)
+		return NULL;
+
+	TType *Casted = dynamic_cast<TType*> (Entity);
+	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
+
+	return Casted;
+}
+
+/**
+\fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
+
+\brief	Template specialization for IBaseEntity casts.
+
+\author	Paril
+\date	29/05/2010
+
+\typeparam	IBaseEntity	Base entity specialization. 
+\param [in,out]	Entity	If non-null, the entity. 
+
+
+\return	null if it fails, else. 
+**/
+template <>
+inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
+{
+	return Entity; // Implicit cast already done
+}
+
+
+/**
 \class	entity_ptr
 
 \brief	Entity pointer.
@@ -439,7 +484,7 @@ public:
 	}
 
 	/**
-	\fn	entity_ptr operator= (int)
+	\fn	entity_ptr operator= (long)
 	
 	\brief	Empty operator, for conversion to NULL.
 	
@@ -450,9 +495,9 @@ public:
 	
 	\return	This object. 
 	**/
-	entity_ptr operator = (int)
+	entity_ptr operator = (long)
 	{
-		DebugPrintf ("operator = (int)\n");
+		DebugPrintf ("operator = (long)\n");
 		if (GameEntity)
 			Clear ();
 		return *this;
@@ -1050,48 +1095,6 @@ enum
 	ENT_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
 };
 
-/**
-\fn	template <class TType> inline TType *entity_cast (IBaseEntity *Entity)
-
-\brief	Casts entity types from one type to another.
-
-\author	Paril
-\date	29/05/2010
-
-\param [in,out]	Entity	If non-null, the entity. 
-
-\return	null if it fails, else the entity casted to another type. 
-**/
-template <class TType>
-inline TType *entity_cast (IBaseEntity *Entity)
-{
-	if (Entity == NULL)
-		return NULL;
-
-	TType *Casted = dynamic_cast<TType*> (Entity);
-	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
-
-	return Casted;
-}
-
-/**
-\fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
-
-\brief	Template specialization for IBaseEntity casts.
-
-\author	Paril
-\date	29/05/2010
-
-\typeparam	IBaseEntity	Base entity specialization. 
-\param [in,out]	Entity	If non-null, the entity. 
-
-\return	null if it fails, else. 
-**/
-template <>
-inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
-{
-	return Entity; // Implicit cast already done
-}
 
 /**
 \fn	inline char *CopyStr (const char *In, const sint16 Tag)
