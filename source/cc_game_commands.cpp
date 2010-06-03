@@ -588,6 +588,8 @@ public:
 **/
 void Cmd_Register ()
 {
+	Cmd_Game_RemoveAll ();
+
 	// These commands are generic, and can be executed any time
 	// during play, even during intermission and by spectators.
 	Cmd_AddCommand<CPlayersCommand> ("players",			CMD_SPECTATOR);

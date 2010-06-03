@@ -469,6 +469,8 @@ void Cmd_RunCommand (const char *commandName, CPlayerEntity *Player);
 
 CPlayerCommand &Cmd_AddCommand_Internal (const char *commandName, CGameCommandFunctor *Functor, ECmdTypeFlags Flags = 0);
 
+void Cmd_Game_RemoveAll ();
+
 /**
 \fn	template <class TFunctor> CPlayerCommand &Cmd_AddCommand (const char *commandName,
 	ECmdTypeFlags Flags = 0)

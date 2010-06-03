@@ -42,6 +42,24 @@ typedef CCommand::THashedCommandListType THashedServerCommandListType;
 TServerCommandListType ServerCommandList;
 THashedServerCommandListType ServerCommandHashList;
 
+static void Cmd_Server_DeleteAndRecurse (CCommand *Cmd)
+{
+	for (size_t z = 0; z < Cmd->SubCommands.List.size(); ++z)
+	{
+		Cmd_Server_DeleteAndRecurse (Cmd->SubCommands.List[z]);
+		QDelete Cmd->SubCommands.List[z];
+	}
+}
+
+void Cmd_Server_RemoveAll ()
+{
+	for (size_t i = 0; i < ServerCommandList.size(); ++i)
+		Cmd_Server_DeleteAndRecurse(ServerCommandList[i]);
+
+	ServerCommandList.clear();
+	ServerCommandHashList.clear();
+}
+
 CServerCommand *SvCmd_FindCommand (const char *commandName)
 {
 	return FindCommand <CServerCommand, TServerCommandListType, THashedServerCommandListType, THashedServerCommandListType::iterator, 2> (commandName, ServerCommandList, ServerCommandHashList);
@@ -376,6 +394,8 @@ public:
 
 void SvCmd_Register ()
 {
+	Cmd_Server_RemoveAll();
+
 	SvCmd_AddCommand<CServerCmdTest> ("test");
 	SvCmd_AddCommand<CServerCmdEntList> ("entlist");
 	SvCmd_AddCommand<CServerCmdIndexList> ("indexlist");

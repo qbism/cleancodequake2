@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define VS_71_STR		"Visual Studio .NET 2003" // 7.1
 #define VS_8_STR		"Visual Studio 2005"
 #define VS_9_STR		"Visual Studio 2008"
-#define VS_10_STR		"Visual Studio 2010 BETA"
+#define VS_10_STR		"Visual Studio 2010"
 
 #ifdef WIN32
 

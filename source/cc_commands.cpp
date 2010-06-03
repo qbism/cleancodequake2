@@ -62,6 +62,24 @@ typedef CCommand::THashedCommandListType THashedPlayerCommandListType;
 TPlayerCommandListType CommandList;
 THashedPlayerCommandListType CommandHashList;
 
+static void Cmd_Game_DeleteAndRecurse (CCommand *Cmd)
+{
+	for (size_t z = 0; z < Cmd->SubCommands.List.size(); ++z)
+	{
+		Cmd_Game_DeleteAndRecurse (Cmd->SubCommands.List[z]);
+		QDelete Cmd->SubCommands.List[z];
+	}
+}
+
+void Cmd_Game_RemoveAll ()
+{
+	for (size_t i = 0; i < CommandList.size(); ++i)
+		Cmd_Game_DeleteAndRecurse(CommandList[i]);
+
+	CommandList.clear();
+	CommandHashList.clear();
+}
+
 CPlayerCommand *Cmd_FindCommand (const char *commandName)
 {
 	return FindCommand <CPlayerCommand, TPlayerCommandListType, THashedPlayerCommandListType, THashedPlayerCommandListType::iterator, 1> (commandName, CommandList, CommandHashList);
