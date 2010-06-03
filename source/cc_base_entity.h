@@ -223,6 +223,57 @@ enum
 	SPAWNFLAG_NOT_COOP			= BIT(12)
 };
 
+class safe_bool_base
+{
+protected:
+	typedef void (safe_bool_base::*bool_type)() const;
+	void this_type_does_not_support_comparisons() const {}
+
+	safe_bool_base() {}
+	safe_bool_base(const safe_bool_base&) {}
+	safe_bool_base& operator=(const safe_bool_base&) {return *this;}
+	~safe_bool_base() {}
+};
+
+template <typename T=void> class safe_bool : public safe_bool_base
+{
+public:
+	operator bool_type() const
+	{
+		return (static_cast<const T*>(this))->boolean_test()
+			? &safe_bool::this_type_does_not_support_comparisons : 0;
+	}
+protected:
+	~safe_bool() {}
+};
+
+template<> class safe_bool<void> : public safe_bool_base
+{
+public:
+	operator bool_type() const
+	{
+		return boolean_test()==true ? 
+			&safe_bool::this_type_does_not_support_comparisons : 0;
+	}
+protected:
+	virtual bool boolean_test() const=0;
+	virtual ~safe_bool() {}
+};
+
+template <typename T, typename U> 
+void operator==(const safe_bool<T>& lhs,const safe_bool<U>& rhs)
+{
+	lhs.this_type_does_not_support_comparisons();	
+	return false;
+}
+
+template <typename T,typename U> 
+void operator!=(const safe_bool<T>& lhs,const safe_bool<U>& rhs)
+{
+	lhs.this_type_does_not_support_comparisons();
+	return false;	
+}
+
 class CEntityPtrLinkList
 {
 public:
@@ -317,7 +368,7 @@ inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 \date	01/06/2010
 **/
 template <class TType>
-class entity_ptr
+class entity_ptr : public safe_bool<entity_ptr<TType> >
 {
 	TType		*GameEntity;	// The CleanCode entity
 	edict_t		*ServerEntity;	// The server entity
@@ -469,6 +520,12 @@ public:
 	{
 		return !((!Right.IsValid() && !IsValid()) || (Right.GetGameEntity() == GetGameEntity()));
 	}
+
+	bool boolean_test() const
+	{
+		return IsValid();
+	}
+
 
 	/**
 	\fn	void Clear ()

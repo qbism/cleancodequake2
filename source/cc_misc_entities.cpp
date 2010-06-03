@@ -81,7 +81,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if ((!Other->GroundEntity.IsValid()) || (Other->GroundEntity == this))
+		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
 			return;
 		if (!(Other->EntityFlags & ENT_PHYSICS))
 			return;

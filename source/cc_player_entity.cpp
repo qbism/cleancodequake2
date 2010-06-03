@@ -1394,11 +1394,11 @@ inline void CPlayerEntity::FallingDamage ()
 #endif
 	float	delta;
 
-	if ((Client.OldVelocity.Z < 0) && (Velocity.Z > Client.OldVelocity.Z) && (!GroundEntity.IsValid()))
+	if ((Client.OldVelocity.Z < 0) && (Velocity.Z > Client.OldVelocity.Z) && (!GroundEntity))
 		delta = Client.OldVelocity.Z;
 	else
 	{
-		if (!GroundEntity.IsValid())
+		if (!GroundEntity)
 			return;
 		delta = Velocity.Z - Client.OldVelocity.Z;
 	}
@@ -1711,7 +1711,7 @@ inline void CPlayerEntity::SetClientEvent (float xyspeed)
 	if (State.GetEvent())
 		return;
 
-	if (GroundEntity.IsValid() && xyspeed > 225)
+	if (GroundEntity && xyspeed > 225)
 	{
 		if ((sint32)(Client.BobTime+bobmove) != bobcycle )
 			State.GetEvent() = EV_FOOTSTEP;
@@ -1765,7 +1765,7 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 	// check for stand/duck and stop/go transitions
 	if ((duck != Client.Anim.Duck && Client.Anim.Priority < ANIM_DEATH) ||
 		(run != Client.Anim.Run && Client.Anim.Priority == ANIM_BASIC) ||
-		(!GroundEntity.IsValid() && Client.Anim.Priority <= ANIM_WAVE))
+		(!GroundEntity && Client.Anim.Priority <= ANIM_WAVE))
 		isNewAnim = true;
 
 	if (!isNewAnim)
@@ -1789,7 +1789,7 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 			return;		// stay there
 		if (Client.Anim.Priority == ANIM_JUMP)
 		{
-			if (!GroundEntity.IsValid())
+			if (!GroundEntity)
 				return;		// stay there
 			Client.Anim.Priority = ANIM_WAVE;
 
@@ -1804,7 +1804,7 @@ inline void CPlayerEntity::SetClientFrame (float xyspeed)
 	Client.Anim.Duck = duck;
 	Client.Anim.Run = run;
 
-	if (!GroundEntity.IsValid())
+	if (!GroundEntity)
 	{
 #if CLEANCTF_ENABLED
 //ZOID: if on grapple, don't go into jump frame, go into standing
@@ -1925,7 +1925,7 @@ void CPlayerEntity::EndServerFrame ()
 		bobmove = 0;
 		Client.BobTime = 0;	// start at beginning of cycle again
 	}
-	else if (GroundEntity.IsValid())
+	else if (GroundEntity)
 	{
 		// so bobbing only cycles when on ground
 		if (xyspeed > 210)
@@ -2240,7 +2240,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 	static sint32			sorted[MAX_CS_CLIENTS];
 	static sint32			sortedscores[MAX_CS_CLIENTS];
 	sint32					Score, total;
-	CPlayerEntity			*Killer = (Enemy.IsValid() && (Enemy->EntityFlags & ENT_PLAYER)) ? entity_cast<CPlayerEntity>(*Enemy) : NULL;
+	CPlayerEntity			*Killer = (Enemy && (Enemy->EntityFlags & ENT_PLAYER)) ? entity_cast<CPlayerEntity>(*Enemy) : NULL;
 
 	// sort the clients by Score
 	total = 0;
@@ -2970,7 +2970,7 @@ CC_ENABLE_DEPRECATION
 
 	Client.Respawn.CmdAngles.Set (SHORT2ANGLE(ucmd->Angles.X), SHORT2ANGLE(ucmd->Angles.Y), SHORT2ANGLE(ucmd->Angles.Z));
 
-	if (GroundEntity.IsValid() && !pm.GroundEntity && Velocity[2] > 0 && (pm.Command.UpMove >= 10) && (pm.WaterLevel == WATER_NONE))
+	if (GroundEntity && !pm.GroundEntity && Velocity[2] > 0 && (pm.Command.UpMove >= 10) && (pm.WaterLevel == WATER_NONE))
 	{
 		PlaySound (CHAN_VOICE, GameMedia.Player.Jump);
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
@@ -2987,7 +2987,7 @@ CC_ENABLE_DEPRECATION
 	WaterInfo.Type = pm.WaterType;
 	GroundEntity = (pm.GroundEntity) ? pm.GroundEntity->Entity : NULL;
 
-	if (GroundEntity.IsValid())
+	if (GroundEntity)
 		GroundEntityLinkCount = GroundEntity->GetLinkCount();
 
 	if (DeadFlag)
@@ -3481,7 +3481,7 @@ void CPlayerEntity::UpdateChaseCam()
 			if(o.Z < targ->State.GetOrigin().Z + 20)
 				o.Z = targ->State.GetOrigin().Z + 20;
 
-			if (!targ->GroundEntity.IsValid())
+			if (!targ->GroundEntity)
 				o.Z += 16;
 
 			CTrace trace (ownerv, o, targ, CONTENTS_MASK_SOLID);
@@ -3535,7 +3535,7 @@ void CPlayerEntity::UpdateChaseCam()
 			forward.NormalizeFast ();
 			vec3f o = ownerv.MultiplyAngles (-150, forward);
 
-			if (!targ->GroundEntity.IsValid())
+			if (!targ->GroundEntity)
 				o.Z += 16;
 
 			CTrace trace(ownerv, o, targ, CONTENTS_MASK_SOLID);

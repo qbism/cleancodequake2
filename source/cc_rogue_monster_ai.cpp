@@ -222,7 +222,7 @@ void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 	if ((!ducker) && (!dodger))
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 	{
 		Entity->Enemy = Attacker;
 		FoundTarget ();
@@ -682,7 +682,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				}
 			}
 			
-			if (!Entity->Enemy.IsValid())
+			if (!Entity->Enemy)
 				break;
 		}
 		
@@ -1298,7 +1298,7 @@ bool CMonster::AI_CheckAttack()
 {
 	bool	retval;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return false;
 
 // this causes monsters to run blindly to the combat point w/o firing
@@ -1337,7 +1337,7 @@ bool CMonster::AI_CheckAttack()
 	bool hesDeadJim = false;
 	IHurtableEntity *HurtableEnemy = (Entity->Enemy->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(*Entity->Enemy) : NULL;
 
-	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+	if (!Entity->Enemy)
 		hesDeadJim = true;
 	else if (AIFlags & AI_MEDIC)
 	{
@@ -1483,7 +1483,7 @@ void CMonster::AI_Run(float Dist)
 
 	if ((AIFlags & AI_SOUND_TARGET) && (Entity->Enemy->EntityFlags & ENT_NOISE))
 	{
-		if ((!Entity->Enemy.IsValid()) || ((Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() < 64))
+		if ((!Entity->Enemy) || ((Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() < 64))
 		// pmm
 		{
 			AIFlags |= (AI_STAND_GROUND | AI_TEMP_STAND_GROUND);

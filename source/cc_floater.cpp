@@ -493,7 +493,7 @@ void CFloater::Zap ()
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_ATTACK2]);
 	CSplash(origin, vec3fOrigin, SPT_SPARKS, 32).Send();
 
-	if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_HURTABLE))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE))
 		entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, vec3fOrigin,
 		Entity->Enemy->State.GetOrigin(), vec3fOrigin, 5 + irandom(6), -10, DAMAGE_ENERGY, MOD_UNKNOWN);
 }

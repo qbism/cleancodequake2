@@ -720,7 +720,7 @@ void CSoldierBase::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 
 	PauseTime = Level.Frame + ((eta + 0.3) * 10);

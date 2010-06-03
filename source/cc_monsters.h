@@ -507,7 +507,7 @@ public:
 
 	inline bool HasValidEnemy ()
 	{
-		return Entity->Enemy.IsValid();
+		return Entity->Enemy;
 	}
 };
 

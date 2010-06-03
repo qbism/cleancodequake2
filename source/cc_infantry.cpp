@@ -271,7 +271,7 @@ void CInfantry::MachineGun ()
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
-		if (Entity->Enemy.IsValid())
+		if (Entity->Enemy)
 		{
 			vec3f target = Entity->Enemy->State.GetOrigin();
 			if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
@@ -481,7 +481,7 @@ void CInfantry::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &InfantryMoveDuck;

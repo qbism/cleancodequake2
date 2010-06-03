@@ -439,10 +439,10 @@ void CTurretDriver::TurretThink ()
 {
 	Entity->NextThink = Level.Frame + FRAMETIME;
 
-	if (Entity->Enemy.IsValid() && (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || (!Entity->Enemy.IsValid() || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)))
+	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)))
 		Entity->Enemy = NULL;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 	{
 		if (!FindTarget ())
 			return;
@@ -466,7 +466,7 @@ void CTurretDriver::TurretThink ()
 		}
 	}
 
-	if (Entity->Enemy.IsValid())
+	if (Entity->Enemy)
 	{
 		// let the turret know where we want it to aim
 		vec3f dir = (Entity->Enemy->State.GetOrigin() +

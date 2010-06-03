@@ -198,7 +198,7 @@ CAnim TankMoveStopRun (FRAME_walk21, FRAME_walk25, TankFramesStopRun, ConvertDer
 
 void CTank::Run ()
 {
-	if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 		AIFlags |= AI_BRUTAL;
 	else
 		AIFlags &= ~AI_BRUTAL;
@@ -482,7 +482,7 @@ void CTank::MachineGun ()
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
-	if (Entity->Enemy.IsValid())
+	if (Entity->Enemy)
 	{
 		vec3f vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;
@@ -741,7 +741,7 @@ void CTank::DoAttackRocket ()
 
 void CTank::Attack ()
 {
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return;
 
 	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health < 0)

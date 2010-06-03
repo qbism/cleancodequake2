@@ -411,7 +411,7 @@ void CBlackWidow::Tongue ()
 
 void CBlackWidow::TonguePull ()
 {
-	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+	if (!Entity->Enemy)
 	{
 		Run ();
 		return;
@@ -451,7 +451,7 @@ void CBlackWidow::TonguePull ()
 
 void CBlackWidow::Crunch ()
 {
-	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+	if (!Entity->Enemy)
 	{
 		Run ();
 		return;
@@ -646,7 +646,7 @@ void CBlackWidow::Attack ()
 		AIFlags &= ~AI_BLOCKED;
 	}
 	
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return;
 
 	if (BadArea)
@@ -848,7 +848,7 @@ void CBlackWidow::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 
 bool CBlackWidow::CheckAttack ()
 {
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return false;
 
 	Powerups ();

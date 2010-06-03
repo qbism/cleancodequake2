@@ -400,7 +400,7 @@ void CCarrier::StartSpawn ()
 	if (!OriginalYawSpeed)
 		OriginalYawSpeed = YawSpeed;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return;
 
 	FrameNumber mytime = ((Level.Frame - FrameCalc) / 5);	
@@ -675,7 +675,7 @@ void CCarrier::Attack ()
 {	
 	AIFlags &= ~AI_HOLD_FRAME;
 
-	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+	if (!Entity->Enemy)
 		return;
 
 	bool EnemyInback = IsInBack(Entity, Entity->Enemy);

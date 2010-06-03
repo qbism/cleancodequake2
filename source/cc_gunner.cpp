@@ -428,7 +428,7 @@ void CGunner::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &GunnerMoveDuck;
@@ -443,7 +443,7 @@ void CGunner::OpenGun ()
 #if ROGUE_FEATURES
 bool CGunner::GrenadeCheck()
 {
-	if(!Entity->Enemy.IsValid())
+	if(!Entity->Enemy)
 		return false;
 
 	vec3f		start, forward, right, target, dir;
@@ -744,7 +744,7 @@ void CGunner::FireChain ()
 
 void CGunner::ReFireChain ()
 {
-	if (Entity->Enemy.IsValid() && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.5)
+	if (Entity->Enemy && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.5)
 	{
 		CurrentMove = &GunnerMoveFireChain;
 		return;

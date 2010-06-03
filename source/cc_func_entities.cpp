@@ -538,7 +538,7 @@ void CFuncClock::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	if (!(SpawnFlags & CLOCK_MULTI_USE))
 		Usable = false;
 	
-	if (User.IsValid())
+	if (User)
 		return;
 
 	User = Activator;

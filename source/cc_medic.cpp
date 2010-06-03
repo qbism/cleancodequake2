@@ -173,7 +173,7 @@ void CMedic::Search ()
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SEARCH], 255, ATTN_IDLE);
 
-	if (!Entity->OldEnemy.IsValid())
+	if (!Entity->OldEnemy)
 	{
 		CMonsterEntity *Found = FindDeadMonster();
 		if (Found)
@@ -608,10 +608,10 @@ void CMedic::CableAttack ()
 	float	distance;
 
 #if !ROGUE_FEATURES
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return;
 #else
-	if ((!Entity->Enemy.IsValid()) || (Entity->Enemy->State.GetEffects() & EF_GIB))
+	if ((!Entity->Enemy) || (Entity->Enemy->State.GetEffects() & EF_GIB))
 	{
 		AbortHeal (false, false);
 		return;
@@ -715,7 +715,7 @@ void CMedic::CableAttack ()
 		Monster->GetSolid() = SOLID_BBOX;
 		Monster->Link ();
 
-		if (Entity->OldEnemy.IsValid() && (Entity->OldEnemy->EntityFlags & ENT_PLAYER))
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_PLAYER))
 		{
 			Monster->Enemy = Entity->OldEnemy;
 			Monster->Monster->FoundTarget ();
@@ -799,7 +799,7 @@ void CMedic::HookRetract ()
 {
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_RETRACT]);
 #if !ROGUE_FEATURES
-	if (Entity->Enemy.IsValid() && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
 #endif
 }
@@ -886,7 +886,7 @@ bool CMedic::CheckAttack ()
 			AIFlags &= ~AI_MEDIC;
 #else
 		// if our target went away
-		if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+		if (!Entity->Enemy)
 		{
 			AbortHeal (false, false);
 			return false;
@@ -997,7 +997,7 @@ void CMedic::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &MedicMoveDuck;

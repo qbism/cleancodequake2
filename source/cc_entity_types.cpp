@@ -425,8 +425,8 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
 		if ((Health > 0) &&
-			(!Enemy.IsValid() && (Monster->BonusDamageTime <= Level.Frame)) ||
-			(Enemy.IsValid() && (Monster->BonusDamageTime == Level.Frame)))
+			(!Enemy && (Monster->BonusDamageTime <= Level.Frame)) ||
+			(Enemy && (Monster->BonusDamageTime == Level.Frame)))
 		{
 			Monster->BonusDamageTime = Level.Frame;
 			Damage *= 2;
@@ -844,11 +844,11 @@ bool IBounceProjectile::Run ()
 		GroundEntity = NULL;
 
 // check for the groundentity going away
-	if (!GroundEntity.IsValid())
+	if (!GroundEntity)
 		GroundEntity = NULL;
 
 // if onground, return without moving
-	if (GroundEntity.IsValid() && GravityMultiplier > 0.0)
+	if (GroundEntity && GravityMultiplier > 0.0)
 		return false;
 
 	old_origin = State.GetOrigin();
@@ -1160,12 +1160,12 @@ bool IStepPhysics::Run ()
 		return false;
 
 	// airborn monsters should always check for ground
-	if (!GroundEntity.IsValid() && (EntityFlags & ENT_MONSTER))
+	if (!GroundEntity && (EntityFlags & ENT_MONSTER))
 		(entity_cast<CMonsterEntity>(this))->Monster->CheckGround ();
 	else if (!(EntityFlags & ENT_MONSTER))
 		CheckGround (); // Specific non-monster checkground
 
-	bool wasonground = GroundEntity.IsValid();
+	bool wasonground = GroundEntity;
 		
 	if (AngularVelocity != vec3fOrigin)
 		AddRotationalFriction ();
@@ -1245,7 +1245,7 @@ bool IStepPhysics::Run ()
 		if (!GetInUse())
 			return false;
 
-		if (GroundEntity.IsValid() && !wasonground && hitsound)
+		if (GroundEntity && !wasonground && hitsound)
 			PlaySound (CHAN_AUTO, SoundIndex("world/land.wav"));
 	}
 

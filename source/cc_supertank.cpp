@@ -435,7 +435,7 @@ void CSuperTank::MachineGun ()
 	dir.ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 
-	if (Entity->Enemy.IsValid())
+	if (Entity->Enemy)
 	{
 		vec3f vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;

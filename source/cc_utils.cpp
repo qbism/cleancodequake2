@@ -300,6 +300,9 @@ bool AssertExpression (const bool expr, const char *msg)
 #if ALLOW_ASSERTS
 	if (!expr)
 	{
+		// Print it to the console
+		DebugPrintf ("Assertion failed: %s\n", msg);
+
 		// On Win32, open up the Crt debug report thingy
 #if defined(WIN32)
 #if defined(_DEBUG)
@@ -313,9 +316,6 @@ bool AssertExpression (const bool expr, const char *msg)
 		// Check msg for more information.
 		assert (0);
 #endif
-		// Print it to the console
-		DebugPrintf ("Assertion failed: %s\n", msg);
-
 		return true;
 	}
 #endif

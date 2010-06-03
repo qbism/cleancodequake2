@@ -1332,7 +1332,7 @@ void CGekk::
 		return;
 
 #if !ROGUE_FEATURES
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 #endif
 

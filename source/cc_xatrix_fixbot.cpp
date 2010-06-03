@@ -624,7 +624,7 @@ void CFixbot::FireWelder ()
 {
 	vec3f	start, forward, right, up;
 	
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return;
 
 	static const vec3f vec (24, -0.8f, -10);

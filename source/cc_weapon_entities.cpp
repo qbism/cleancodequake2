@@ -100,7 +100,7 @@ void CGrenade::Explode ()
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	//FIXME: if we are onground then raise our Z just a bit since we are a point?
-	if (Enemy.IsValid())
+	if (Enemy)
 	{
 		IHurtableEntity *HurtEnemy = entity_cast<IHurtableEntity>(*Enemy);
 
@@ -125,7 +125,7 @@ void CGrenade::Explode ()
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	
-	if (GroundEntity.IsValid())
+	if (GroundEntity)
 		CGrenadeExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, State.GetOrigin()), origin, !!WaterInfo.Level).Send();
 	else
 		CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, State.GetOrigin()), origin, !!WaterInfo.Level).Send();
@@ -1224,7 +1224,7 @@ void CGrappleEntity::GrapplePull()
 		return;
 	}
 
-	if (Enemy.IsValid())
+	if (Enemy)
 	{
 		if (Enemy->GetSolid() == SOLID_NOT)
 		{
@@ -1240,7 +1240,7 @@ void CGrappleEntity::GrapplePull()
 		else if (Enemy->EntityFlags & ENT_PHYSICS)
 			Velocity = entity_cast<IPhysicsEntity>(*Enemy)->Velocity;
 
-		if (Enemy.IsValid() && ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage))
+		if (Enemy && ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage))
 		{
 			IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(*Enemy);
 			if (!Hurt->CheckTeamDamage (Player))
@@ -1249,7 +1249,7 @@ void CGrappleEntity::GrapplePull()
 				PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhurt.wav"), volume);
 			}
 		}
-		if (Enemy.IsValid() && (Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->DeadFlag)
+		if (Enemy && (Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->DeadFlag)
 		{ // he died
 			ResetGrapple();
 			return;

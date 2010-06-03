@@ -859,7 +859,7 @@ void CWidowStand::Attack ()
 		AIFlags &= ~AI_TARGET_ANGER;
 	}
 
-	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+	if (!Entity->Enemy)
 		return;
 
 	if (BadArea)
@@ -1157,7 +1157,7 @@ void CWidowStand::Powerups ()
 
 bool CWidowStand::CheckAttack ()
 {
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		return false;
 
 	Powerups ();

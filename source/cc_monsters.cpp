@@ -627,7 +627,7 @@ bool CMonster::CheckBottom ()
 
 bool CMonster::WalkMove (float Yaw, float Dist)
 {	
-	if (!Entity->GroundEntity.IsValid() && !(Entity->Flags & (FL_FLY|FL_SWIM)))
+	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
 		return false;
 
 	Yaw = Yaw*M_PI*2 / 360;
@@ -657,7 +657,7 @@ void CMonster::WalkMonsterStartGo ()
 	{
 		DropToFloor ();
 
-		if (Entity->GroundEntity.IsValid())
+		if (Entity->GroundEntity)
 		{
 			if (!WalkMove (0, 0))
 				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "In solid\n");
@@ -772,7 +772,7 @@ void CMonster::MonsterStartGo ()
 
 		if (Target)
 			Entity->GoalEntity = Entity->MoveTarget = Target;
-		if (!Entity->MoveTarget.IsValid())
+		if (!Entity->MoveTarget)
 		{
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Can't find target\n");
 			Entity->Target = NULL;
@@ -899,7 +899,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		Monster->Use (Other, Activator);
 		break;
 	case MONSTERENTITY_THINK_USE:
-		if (Enemy.IsValid())
+		if (Enemy)
 			return;
 		if (Health <= 0)
 			return;
@@ -942,7 +942,7 @@ void CMonster::MonsterTriggeredSpawn ()
 
 	MonsterStartGo ();
 
-	if (Entity->Enemy.IsValid() && !(Entity->SpawnFlags & MONSTER_AMBUSH) && !(Entity->Enemy->Flags & FL_NOTARGET))
+	if (Entity->Enemy && !(Entity->SpawnFlags & MONSTER_AMBUSH) && !(Entity->Enemy->Flags & FL_NOTARGET))
 #if ROGUE_FEATURES
 	{
 		if (!(Entity->Enemy->Flags & FL_DISGUISED))		// PGM

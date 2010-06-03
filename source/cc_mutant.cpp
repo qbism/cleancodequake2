@@ -272,7 +272,7 @@ void CMutant::HitRight ()
 
 void CMutant::CheckRefire ()
 {
-	if (!Entity->Enemy.IsValid() || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	// Paril, this was kinda dumb because he would keep refiring on nightmare
@@ -329,7 +329,7 @@ void CMutant::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 
 	if (!CheckBottom ())
 	{
-		if (Entity->GroundEntity.IsValid())
+		if (Entity->GroundEntity)
 		{
 			NextFrame = FRAME_attack02;
 			Jumping = false;
@@ -378,7 +378,7 @@ void CMutant::JumpTakeOff ()
 
 void CMutant::CheckLanding ()
 {
-	if (Entity->GroundEntity.IsValid())
+	if (Entity->GroundEntity)
 	{
 		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_THUD]);
 		AttackFinished = 0;
@@ -519,7 +519,7 @@ bool CMutant::CheckJump ()
 
 bool CMutant::CheckAttack ()
 {
-	if (!Entity->Enemy.IsValid() || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())

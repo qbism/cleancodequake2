@@ -96,7 +96,7 @@ void CFlyerKamikaze::KamikazeCheck ()
 	if (!Entity->GetInUse())
 		return;
 
-	if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+	if (!Entity->Enemy)
 	{
 		KamikazeExplode ();
 		return;

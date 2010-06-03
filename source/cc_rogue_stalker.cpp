@@ -835,7 +835,7 @@ void CStalker::Dodge (IBaseEntity *Attacker, float eta
 	if (!Entity->GroundEntity || Entity->Health <= 0)
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 	{
 		Entity->Enemy = Attacker;
 		FoundTarget ();

@@ -573,7 +573,7 @@ void CIcarus::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CIcarus::DeadThink ()
 {
-	if (!Entity->GroundEntity.IsValid() && Level.Frame < TimeStamp)
+	if (!Entity->GroundEntity && Level.Frame < TimeStamp)
 	{
 		Entity->NextThink = Level.Frame + FRAMETIME;
 		return;

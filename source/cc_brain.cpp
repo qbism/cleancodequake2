@@ -318,7 +318,7 @@ void CBrain::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25f)
 		return;
 
-	if (!Entity->Enemy.IsValid())
+	if (!Entity->Enemy)
 		Entity->Enemy = Attacker;
 
 	PauseTime = Level.Frame + ((eta + 0.5) * 10);

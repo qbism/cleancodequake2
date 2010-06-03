@@ -512,7 +512,7 @@ void CMakron::FireHyperblaster ()
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
-	if (Entity->Enemy.IsValid())
+	if (Entity->Enemy)
 		dir.X = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight) - start).ToAngles().X;
 	else
 		dir.X = 0;

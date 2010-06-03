@@ -432,7 +432,7 @@ bool CMedicCommander::CheckAttack ()
 	if (AIFlags & AI_MEDIC)
 	{
 		// if our target went away
-		if ((!Entity->Enemy.IsValid()) || (!Entity->Enemy->GetInUse()))
+		if (!Entity->Enemy)
 		{
 			AbortHeal (false, false);
 			return false;

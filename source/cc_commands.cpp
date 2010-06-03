@@ -171,7 +171,13 @@ public:
 		entity_ptr<CTestEntityLol> testPtr1 = Mnn;
 		entity_ptr<CTestEntityLol> testPtr2 = Mnn;
 		entity_ptr<CTestEntityLol> testPtr3 = Mnn;
-		testPtr3 = Mnn2;
+
+		if (testPtr3 && testPtr1 == testPtr3)
+		{
+			testPtr3 = Mnn2;
+			if (testPtr1 == testPtr3)
+				testPtr3 = testPtr2;
+		}
 
 		Mnn->Free();
 
