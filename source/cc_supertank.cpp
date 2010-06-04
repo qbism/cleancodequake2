@@ -262,7 +262,7 @@ void CSuperTank::Grenade ()
 	vec3f	start, forward, right;
 	vec3f offset (32.0f, 37.0f, 50.0f);
 
-	if (Entity->State.GetFrame() == FRAME_attak4_4)
+	if (Entity->State.GetFrame() == FRAME_attakd4)
 		offset.Y = -offset.Y;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);

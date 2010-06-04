@@ -932,7 +932,7 @@ enum
 {
 	GRAVITY_TOGGLE		= BIT(0),
 	GRAVITY_START_OFF	= BIT(1)
-}
+};
 #endif
 
 class CTriggerGravity : public CTriggerMultiple

@@ -268,7 +268,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		if (Monster->Monster->AIFlags & AI_MEDIC)
 		{
 			if (Monster->Enemy && (Monster->Enemy->EntityFlags & ENT_MONSTER))  // god, I hope so
-				entity_cast<CMonsterEntity>(Monster->Enemy)->Monster->CleanupHealTarget ();
+				entity_cast<CMonsterEntity>(*Monster->Enemy)->Monster->CleanupHealTarget ();
 
 			// clean up self
 			Monster->Monster->AIFlags &= ~AI_MEDIC;

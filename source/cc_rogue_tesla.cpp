@@ -137,7 +137,7 @@ void CTesla::Remove ()
 {
 	CanTakeDamage = false;
 	SetOwner (Firer);	// Going away, set the owner correctly.
-	Enemy = NULL;
+	Enemy = nullentity;
 
 	// play quad sound if quadded and an underwater explosion
 	if (DoExplosion && (Damage > (TESLA_DAMAGE * TESLA_EXPLOSION_DAMAGE_MULT)))
@@ -151,7 +151,7 @@ void CTesla::Explode ()
 	//if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 	//	entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	SplashDamage(GetOwner(), Damage, (Enemy) ? Enemy : NULL, (DoExplosion) ? TESLA_DAMAGE_RADIUS : 0, MOD_G_SPLASH);
+	SplashDamage(GetOwner(), Damage, *Enemy, (DoExplosion) ? TESLA_DAMAGE_RADIUS : 0, MOD_G_SPLASH);
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	
@@ -219,10 +219,10 @@ void CTesla::Active ()
 
 			// PGM - don't do knockback to walking monsters
 			if (Hit->Flags & (FL_FLY|FL_SWIM))
-				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.normal,
+				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.Normal,
 					Damage, 0, 0, MOD_TESLA);
 			else
-				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.normal,
+				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.Normal,
 					Damage, TESLA_KNOCKBACK, 0, MOD_TESLA);
 
 			CLightning(tr.EndPos, start, State.GetNumber(), Hit->State.GetNumber()).Send();
@@ -317,9 +317,9 @@ void CTesla::Activate ()
 
 void CTesla::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (plane->normal)
+	if (plane->Normal)
 	{
-		if (PointContents(State.GetOrigin().MultiplyAngles (-20.0f, plane->normal)) & (CONTENTS_SLIME|CONTENTS_LAVA))
+		if (PointContents(State.GetOrigin().MultiplyAngles (-20.0f, plane->Normal)) & (CONTENTS_SLIME|CONTENTS_LAVA))
 		{
 			Blow ();
 			return;
@@ -447,7 +447,7 @@ void CTeslaWeapon::FireGrenade (CPlayerEntity *Player, bool inHand)
 
 	AttackSound (Player);
 
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->Client.Anim.Priority = ANIM_ATTACK;
 		Player->State.GetFrame() = FRAME_crattak1 - 1;

@@ -462,7 +462,7 @@ bool CMonster::FindTarget()
 				Entity->Enemy = Entity->Enemy->Enemy;
 				if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
 				{
-					Entity->Enemy = NULL;
+					Entity->Enemy = nullentity;
 					return false;
 				}
 			}
@@ -514,13 +514,13 @@ bool CMonster::FindTarget()
 
 void CMonster::MoveToGoal (float Dist)
 {	
-	IBaseEntity *goal = Entity->GoalEntity;
+	IBaseEntity *goal = *Entity->GoalEntity;
 
 	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
 		return;
 
 // if the next step hits the enemy, return immediately
-	if (Entity->Enemy && CloseEnough (Entity->Enemy, Dist) )
+	if (Entity->Enemy && CloseEnough (*Entity->Enemy, Dist) )
 		return;
 
 // bump around...
@@ -734,7 +734,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				G_TouchTriggers (Entity);
 			}
 
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 			return true;
 		}
 	
@@ -765,7 +765,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 					}
 					else if ((Entity->Enemy) && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 					{
-						if (!IsVisible(Entity, Entity->Enemy))
+						if (!IsVisible(Entity, *Entity->Enemy))
 						{
 							TargetTesla (entity_cast<CTesla>(new_bad->Owner));
 							AIFlags |= AI_BLOCKED;
@@ -969,7 +969,7 @@ bool CMonster::CheckAttack ()
 			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.Ent->EntityFlags & ENT_MONSTER) && (!IsVisible(Entity, Entity->Enemy))))
+				if ((!(tr.Ent->EntityFlags & ENT_MONSTER) && (!IsVisible(Entity, *Entity->Enemy))))
 				{
 					if (BlindFire && (BlindFireDelay <= 20.0))
 					{
@@ -1162,7 +1162,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 		// only switch if can't see the current enemy
 		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
 		{
-			if (IsVisible(Entity, Entity->Enemy))
+			if (IsVisible(Entity, *Entity->Enemy))
 			{
 				Entity->OldEnemy = Attacker;
 				return;
@@ -1256,7 +1256,7 @@ void CMonster::AI_Charge(float Dist)
 	if(!Entity->Enemy || !Entity->Enemy->GetInUse())		//PGM
 		return;									//PGM
 
-	if (IsVisible(Entity, Entity->Enemy))
+	if (IsVisible(Entity, *Entity->Enemy))
 		BlindFireTarget = Entity->Enemy->State.GetOrigin();
 
 	if (!(AIFlags & AI_MANUAL_STEERING))
@@ -1316,7 +1316,7 @@ bool CMonster::AI_CheckAttack()
 					if (Entity->MoveTarget)
 						Entity->GoalEntity = Entity->MoveTarget;
 					else
-						Entity->GoalEntity = NULL;
+						Entity->GoalEntity = nullentity;
 				}
 				
 				AIFlags &= ~AI_SOUND_TARGET;
@@ -1364,12 +1364,12 @@ bool CMonster::AI_CheckAttack()
 	if (hesDeadJim)
 	{
 		AIFlags &= ~AI_MEDIC;
-		Entity->Enemy = NULL;
+		Entity->Enemy = nullentity;
 
-		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity->OldEnemy)->Health > 0)
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->OldEnemy)->Health > 0)
 		{
 			Entity->Enemy = Entity->OldEnemy;
-			Entity->OldEnemy = NULL;
+			Entity->OldEnemy = nullentity;
 			HuntTarget ();
 		}
 
@@ -1377,7 +1377,7 @@ bool CMonster::AI_CheckAttack()
 		else if (LastPlayerEnemy && LastPlayerEnemy->Health > 0)
 		{
 			Entity->Enemy = LastPlayerEnemy;
-			Entity->OldEnemy = NULL;
+			Entity->OldEnemy = nullentity;
 			LastPlayerEnemy = NULL;
 			HuntTarget ();
 		}
@@ -1417,7 +1417,7 @@ bool CMonster::AI_CheckAttack()
 		BlindFireDelay = 0;
 	}
 
-	EnemyInfront = IsInFront(Entity, Entity->Enemy);
+	EnemyInfront = IsInFront(Entity, *Entity->Enemy);
 	EnemyRange = Range(Entity, *Entity->Enemy);
 	EnemyYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
@@ -1488,7 +1488,7 @@ void CMonster::AI_Run(float Dist)
 		{
 			AIFlags |= (AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
 			Stand ();
-			Entity->Enemy = NULL;
+			Entity->Enemy = nullentity;
 			return;
 		}
 
@@ -1801,7 +1801,7 @@ void CMonster::AI_Stand (float Dist)
 			retval = AI_CheckAttack ();
 
 			// record sightings of player
-			if ((Entity->Enemy) && (Entity->Enemy->GetInUse()) && (IsVisible(Entity, Entity->Enemy)))
+			if ((Entity->Enemy) && (Entity->Enemy->GetInUse()) && (IsVisible(Entity, *Entity->Enemy)))
 			{
 				AIFlags &= ~AI_LOST_SIGHT;
 				LastSighting = BlindFireTarget = Entity->Enemy->State.GetOrigin();
@@ -1882,7 +1882,7 @@ void CMonster::FoundTarget ()
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<IMapEntity>(Entity->MoveTarget)->ClassName.clear();
+	entity_cast<IMapEntity>(*Entity->MoveTarget)->ClassName.clear();
 	PauseTime = 0;
 
 	// run for it

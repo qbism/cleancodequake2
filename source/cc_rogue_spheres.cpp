@@ -208,7 +208,7 @@ void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurf
 			return;
 	}
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free ();
 		return;
@@ -216,7 +216,7 @@ void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurf
 
 	if (Other->EntityFlags & ENT_HURTABLE)
 	{
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->normal,
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->Normal,
 			10000, 1, DAMAGE_DESTROY_ARMOR, Mod);
 	}
 	else

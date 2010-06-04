@@ -116,8 +116,8 @@ CC_DISABLE_DEPRECATION
 	edict_t *ent = G_Spawn ();
 
 	Level.ClassName = classname;
-	ent->state.origin = origin;
-	ent->state.angles = angles;
+	ent->server.State.Origin = origin;
+	ent->server.State.Angles = angles;
 	ED_CallSpawn (ent);
 
 	CMonsterEntity *Mon = entity_cast<CMonsterEntity>(ent->Entity);
@@ -126,7 +126,7 @@ CC_DISABLE_DEPRECATION
 	Mon->State.GetRenderEffects() |= RF_IR_VISIBLE;
 	Mon->GravityVector.Set (0, 0, -1);
 
-	if (ent->inUse && ent->Entity && !ent->Entity->Freed)
+	if (ent->server.InUse && ent->Entity && !ent->Entity->Freed)
 		return Mon;
 	return NULL;
 CC_ENABLE_DEPRECATION
@@ -319,7 +319,6 @@ CMonsterEntity *CreateFlyMonster (vec3f origin, vec3f angles, vec3f mins, vec3f 
 // are bad things down there or not
 //
 // this is from m_move.c
-const int STEPSIZE	= 18;
 
 CMonsterEntity *CreateGroundMonster (vec3f origin, vec3f angles, vec3f entMins, vec3f entMaxs, const char *classname, int height)
 {

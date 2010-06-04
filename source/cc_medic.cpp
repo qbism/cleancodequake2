@@ -98,7 +98,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 	if ((Entity->OldEnemy) && (Entity->OldEnemy->GetInUse()))
 		Entity->Enemy = Entity->OldEnemy;
 	else
-		Entity->Enemy = NULL;
+		Entity->Enemy = nullentity;
 
 	MedicTries = 0;
 }
@@ -723,7 +723,7 @@ void CMedic::CableAttack ()
 #else
 		{
 			vec3f maxs = Entity->Enemy->GetMaxs() + vec3f(0, 0, 48);
-			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), Entity->Enemy, CONTENTS_MASK_MONSTERSOLID);
+			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), *Entity->Enemy, CONTENTS_MASK_MONSTERSOLID);
 		}
 
 		if (tr.startSolid || tr.allSolid)
@@ -743,7 +743,7 @@ void CMedic::CableAttack ()
 			Monster->NextThink = Level.Frame;
 			Monster->Think ();
 			Monster->Monster->AIFlags &= ~AI_RESURRECTING;
-			Monster->Enemy = NULL;
+			Monster->Enemy = nullentity;
 
 			// Paril, fix skinnum
 			Monster->State.GetSkinNum() &= ~1;
@@ -760,15 +760,15 @@ void CMedic::CableAttack ()
 			}
 			else
 			{
-				Entity->Enemy->Enemy = NULL;
+				Entity->Enemy->Enemy = nullentity;
 				if (!entity_cast<CMonsterEntity>(*Entity->Enemy)->Monster->FindTarget ())
 				{
 					// no valid enemy, so stop acting
 					Monster->Monster->PauseTime = Level.Frame + 100000000;
 					Monster->Monster->Stand ();
 				}
-				Entity->Enemy = NULL;
-				Entity->OldEnemy = NULL;
+				Entity->Enemy = nullentity;
+				Entity->OldEnemy = nullentity;
 				if (!FindTarget ())
 				{
 					// no valid enemy, so stop acting

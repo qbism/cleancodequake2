@@ -1177,7 +1177,7 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEn
 			points = 10000;
 		}
 		else if (len <= killzone2)
-			points = (damage/killzone)*(killzone2 - len);
+			points = (Damage/killzone)*(killzone2 - len);
 		else
 			points = 0;
 

@@ -107,7 +107,7 @@ void CCarrier::CoopCheck ()
 	RefireWait = Level.Frame + CARRIER_ROCKET_TIME;
 
 	// save off the real enemy
-	IBaseEntity *OldEnemy = Entity->Enemy;
+	IBaseEntity *OldEnemy = *Entity->Enemy;
 	// set the new guy as temporary enemy
 	Entity->Enemy = targets[target];
 	Rocket ();
@@ -173,22 +173,22 @@ void CCarrier::PredictiveRocket  ()
 
 //1
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], forward, right, start);
-	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.3f, &dir, NULL);
+	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.3f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_1);
 
 //2
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], forward, right, start);
-	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.15f, &dir, NULL);
+	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.15f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_2);
 
 //3
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], forward, right, start);
-	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0, &dir, NULL);
+	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_3);
 
 //4
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], forward, right, start);
-	PredictAim (Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0.15f, &dir, NULL);
+	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0.15f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_4);
 }	
 
@@ -678,9 +678,9 @@ void CCarrier::Attack ()
 	if (!Entity->Enemy)
 		return;
 
-	bool EnemyInback = IsInBack(Entity, Entity->Enemy);
-	EnemyInfront = IsInFront (Entity, Entity->Enemy);
-	bool EnemyBelow = IsBelow (Entity, Entity->Enemy);
+	bool EnemyInback = IsInBack(Entity, *Entity->Enemy);
+	EnemyInfront = IsInFront (Entity, *Entity->Enemy);
+	bool EnemyBelow = IsBelow (Entity, *Entity->Enemy);
 
 	if (BadArea)
 	{
@@ -801,7 +801,7 @@ void CCarrier::ReAttackMachinegun ()
 {
 	CoopCheck();
 
-	if (IsInFront(Entity, Entity->Enemy))
+	if (IsInFront(Entity, *Entity->Enemy))
 	{
 		if (frand() <= 0.5)
 		{
@@ -830,7 +830,7 @@ void CCarrier::ReAttackGrenade ()
 {
 	CoopCheck ();
 
-	if (IsInFront(Entity, Entity->Enemy) && (FrameCalc + 13) > Level.Frame) // four grenades
+	if (IsInFront(Entity, *Entity->Enemy) && (FrameCalc + 13) > Level.Frame) // four grenades
 	{
 		CurrentMove = &CarrierMoveAttackGrenade;
 		return;
@@ -927,11 +927,11 @@ bool CCarrier::CheckAttack ()
 		}
 	}
 	
-	EnemyInfront = IsInFront(Entity, Entity->Enemy);
-	bool EnemyInback = IsInBack(Entity, Entity->Enemy);
-	bool EnemyBelow = IsBelow (Entity, Entity->Enemy);
+	EnemyInfront = IsInFront(Entity, *Entity->Enemy);
+	bool EnemyInback = IsInBack(Entity, *Entity->Enemy);
+	bool EnemyBelow = IsBelow (Entity, *Entity->Enemy);
 
-	EnemyRange = Range (Entity, Entity->Enemy);
+	EnemyRange = Range (Entity, *Entity->Enemy);
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 
 	// PMM - shoot out the back if appropriate

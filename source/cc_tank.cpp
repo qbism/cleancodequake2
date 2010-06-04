@@ -438,7 +438,7 @@ void CTank::Rocket ()
 		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 		if(trace.Ent == Entity->Enemy || trace.Ent == World)
 		{
-			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
+			if(trace.fraction > 0.5 || (trace.ent && trace.ent->server.Client))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		}
 	}

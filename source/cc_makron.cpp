@@ -805,7 +805,7 @@ bool CMakron::CheckAttack ()
 			if(Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.ent->svFlags & SVF_MONSTER)) && (!IsVisible(Entity, Entity->Enemy)))
+				if ((!(tr.ent->server.ServerFlags & SVF_MONSTER)) && (!IsVisible(Entity, *Entity->Enemy)))
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{

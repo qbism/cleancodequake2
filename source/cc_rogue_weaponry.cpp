@@ -46,8 +46,8 @@ bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f 
 
 void CHeatBeam::DoSolidHit	(CTrace *Trace)
 {
-	if (!(Trace->surface->flags & SURF_TEXINFO_SKY))
-		CHeatSteam(Trace->EndPos, Trace->plane.normal).Send();
+	if (!(Trace->surface->Flags & SURF_TEXINFO_SKY))
+		CHeatSteam(Trace->EndPos, Trace->plane.Normal).Send();
 }
 
 void CHeatBeam::DoEffect	(vec3f &start, vec3f &end, bool water)
@@ -60,7 +60,7 @@ void CHeatBeam::DoEffect	(vec3f &start, vec3f &end, bool water)
 
 void CHeatBeam::DoWaterHit	(CTrace *Trace)
 {
-	CSparks(Trace->EndPos, Trace->plane.normal, ST_HEATBEAM_SPARKS).Send();
+	CSparks(Trace->EndPos, Trace->plane.Normal, ST_HEATBEAM_SPARKS).Send();
 }
 
 void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
@@ -157,7 +157,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			if (Trace.startSolid)
 			{
 				vec3f origin = Target->State.GetOrigin();
-				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.normal))
+				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.Normal))
 				{
 					DoEffect (origin, lastDrawFrom, DrawIsWater);
 					break; // We wanted to stop
@@ -186,7 +186,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				continue;
 			}
 
-			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.normal))
+			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.Normal))
 			{
 				DoEffect (from, Trace.EndPos, DrawIsWater);
 				break; // We wanted to stop
@@ -268,7 +268,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		}
 		// If we hit non-transparent water
 		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && !(Trace.surface->flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+			(Trace.surface && !(Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// Copy up our point for the effect
 			lastWaterEnd = Trace.EndPos;
@@ -330,7 +330,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		}
 		// Transparent water
 		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && (Trace.surface->flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+			(Trace.surface && (Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// This won't count as "water" since we can see through it.
 			// It has the same PVS, meaning we don't need to
@@ -454,7 +454,7 @@ void CFlechette::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -464,9 +464,9 @@ void CFlechette::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, Kick, DAMAGE_NO_REG_ARMOR, MOD_ETF_RIFLE);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, Kick, DAMAGE_NO_REG_ARMOR, MOD_ETF_RIFLE);
 	else
-		CBlasterSplash(State.GetOrigin(), plane ? plane->normal : vec3fOrigin, BL_FLECHETTE).Send();
+		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin, BL_FLECHETTE).Send();
 
 	Free (); // "delete" the entity
 }
@@ -576,7 +576,7 @@ public:
 		}
 		else
 		{
-			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Enemy);
+			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(*Enemy);
 
 			if (Hurtable->Health > 0)
 			{
@@ -658,7 +658,7 @@ void CDisruptorTracker::Think ()
 		return;
 	}
 
-	if ((!Enemy) || (!Enemy->GetInUse()) || (entity_cast<IHurtableEntity>(Enemy)->Health < 1))
+	if ((!Enemy) || (!Enemy->GetInUse()) || (entity_cast<IHurtableEntity>(*Enemy)->Health < 1))
 	{
 		Explode (NULL);
 		return;
@@ -685,7 +685,7 @@ void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free ();
 		return;
@@ -702,7 +702,7 @@ void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface
 		{
 			if (Hurtable->Health > 0)
 			{
-				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin,
+				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin,
 							0, (Damage*3), TRACKER_IMPACT_FLAGS, MOD_TRACKER);
 				
 				if (!(Hurtable->Flags & (FL_FLY|FL_SWIM)))
@@ -711,11 +711,11 @@ void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface
 				CDisruptorPainDaemon::Spawn (GetOwner(), Other, (int)(((((float)Damage)*0.1f) / 0.5f)));
 			}
 			else
-				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin,
+				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin,
 							(Damage * 4), (Damage * 3), TRACKER_IMPACT_FLAGS, MOD_TRACKER);
 		}
 		else
-			Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin,
+			Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin,
 						Damage, (Damage * 3), TRACKER_IMPACT_FLAGS, MOD_TRACKER);
 	}
 
@@ -812,7 +812,7 @@ void CGreenBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPS
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free ();
 		return;
@@ -840,7 +840,7 @@ void CGreenBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPS
 
 		if (Damage >= 5)
 			SplashDamage (GetOwner(), Damage * 3, Other, 128, 0);
-		Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->normal, Damage, 1, DAMAGE_ENERGY, mod);
+		Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->Normal, Damage, 1, DAMAGE_ENERGY, mod);
 
 		if (Owner)
 			Owner->CanTakeDamage = WasDamageable;
@@ -851,7 +851,7 @@ void CGreenBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPS
 		if (Damage >= 5)
 			SplashDamage (GetOwner(), Damage * 3, GetOwner(), 128, 0);
 
-		CBlasterSplash(State.GetOrigin(), (plane) ? plane->normal : vec3fOrigin, BL_GREEN_BLASTER).Send();
+		CBlasterSplash(State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, BL_GREEN_BLASTER).Send();
 	}
 
 	Free ();

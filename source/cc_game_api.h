@@ -42,6 +42,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 		#define GAMENAME	"xatrix"
 	#elif (CC_GAME_MODE == GAME_ORIGINAL_QUAKE2)
 		#define GAMENAME	"baseq2"
+	#else
+		#define GAMENAME	"baseq2"
 	#endif
 #endif
 

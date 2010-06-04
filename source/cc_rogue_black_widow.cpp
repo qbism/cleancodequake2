@@ -168,7 +168,7 @@ void CBlackWidow::SpawnCheck ()
 			
 			ent->Monster->AIFlags |= AI_SPAWNED_WIDOW|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
 
-			IBaseEntity *designated_enemy = Entity->Enemy;
+			IBaseEntity *designated_enemy = *Entity->Enemy;
 			if (Game.GameMode & GAME_COOPERATIVE)
 			{
 				designated_enemy = PickCoopTarget(ent);
@@ -179,11 +179,11 @@ void CBlackWidow::SpawnCheck ()
 					{
 						designated_enemy = PickCoopTarget(ent);
 						if (!designated_enemy)
-							designated_enemy = Entity->Enemy;
+							designated_enemy = *Entity->Enemy;
 					}
 				}
 				else
-					designated_enemy = Entity->Enemy;
+					designated_enemy = *Entity->Enemy;
 			}
 
 			if ((designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
@@ -291,12 +291,12 @@ void CBlackWidow::FireDisrupt ()
 	{
 		dir = (BeamPos[0] - start).GetNormalized();
 		// calc direction to where we targeted
-		MonsterFireTracker(start, dir, 20, 500, Entity->Enemy, MZ2_WIDOW_DISRUPTOR);
+		MonsterFireTracker(start, dir, 20, 500, *Entity->Enemy, MZ2_WIDOW_DISRUPTOR);
 	}
 	else
 	{
 		vec3f dir;
-		PredictAim (Entity->Enemy, start, 1200, true, 0, &dir, NULL);
+		PredictAim (*Entity->Enemy, start, 1200, true, 0, &dir, NULL);
 		MonsterFireTracker(start, dir, 20, 1200, NULL, MZ2_WIDOW_DISRUPTOR);
 	}
 }
@@ -428,7 +428,7 @@ void CBlackWidow::TonguePull ()
 	if (Entity->Enemy->GroundEntity)
 	{
 		Entity->Enemy->State.GetOrigin().Z += 1;
-		Entity->Enemy->GroundEntity = NULL;
+		Entity->Enemy->GroundEntity = nullentity;
 		
 		Entity->Enemy->Link ();
 	}
@@ -727,7 +727,7 @@ void CBlackWidow::ReAttackBeam ()
 {
 	AIFlags &= ~AI_MANUAL_STEERING;
 
-	if (IsInFront(Entity, Entity->Enemy))
+	if (IsInFront(Entity, *Entity->Enemy))
 	{
 		if (frand() <= 0.5)
 		{
@@ -884,7 +884,7 @@ bool CBlackWidow::CheckAttack ()
 		}
 	}
 	
-	EnemyInfront = IsInFront(Entity, Entity->Enemy);
+	EnemyInfront = IsInFront(Entity, *Entity->Enemy);
 
 	ERangeType enemy_range = Range(Entity, *Entity->Enemy);
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();

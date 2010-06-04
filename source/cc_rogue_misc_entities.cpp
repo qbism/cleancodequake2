@@ -952,7 +952,7 @@ void			CPlatForm2::SaveFields (CFile &File)
 {
 	File.Write<bool> (RequiresActivation);
 	File.Write<FrameNumber> (LastMoveTime);
-	File.Write<EPlat2Flags> (PlatFlags);
+	File.Write<uint8> (PlatFlags);
 	SaveBadArea (File, BadArea);
 	CPlatForm::SaveFields (File);
 };
@@ -961,7 +961,7 @@ void			CPlatForm2::LoadFields (CFile &File)
 {
 	RequiresActivation = File.Read<bool> ();
 	LastMoveTime = File.Read<FrameNumber> ();
-	PlatFlags = File.Read<EPlat2Flags> ();
+	PlatFlags = File.Read<uint8> ();
 	BadArea = LoadBadArea (File);
 	CPlatForm::LoadFields (File);
 };
@@ -1121,9 +1121,9 @@ public:
 		if (Enemy)
 		{
 			if (!Enemy->GetInUse())
-				Enemy = NULL;
-			else if ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Enemy)->Health <= 0 && entity_cast<IHurtableEntity>(Enemy)->CanTakeDamage)
-				Enemy = NULL;
+				Enemy = nullentity;
+			else if ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->Health <= 0 && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage)
+				Enemy = nullentity;
 		}
 
 		if (!Enemy || !TargetedBreach->GetInUse() || TargetedBreach->Freed)

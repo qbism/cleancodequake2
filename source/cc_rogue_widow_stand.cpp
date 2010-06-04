@@ -374,7 +374,7 @@ void CWidowStand::FireBlaster ()
 
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
-		PredictAim (Entity->Enemy, start, 1000, true, ((frand()*0.1f)-0.05f), &forward, NULL);
+		PredictAim (*Entity->Enemy, start, 1000, true, ((frand()*0.1f)-0.05f), &forward, NULL);
 
 		// clamp it to within 10 degrees of the aiming angle (where she's facing)
 		vec3f angles = forward.ToAngles();
@@ -434,7 +434,7 @@ void CWidowStand::DoSpawn ()
 			
 			ent->Monster->AIFlags |= AI_SPAWNED_WIDOW|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
 
-			IBaseEntity *designated_enemy = Entity->Enemy;
+			IBaseEntity *designated_enemy = *Entity->Enemy;
 			if (Game.GameMode & GAME_COOPERATIVE)
 			{
 				designated_enemy = PickCoopTarget(ent);
@@ -445,11 +445,11 @@ void CWidowStand::DoSpawn ()
 					{
 						designated_enemy = PickCoopTarget(ent);
 						if (!designated_enemy)
-							designated_enemy = Entity->Enemy;
+							designated_enemy = *Entity->Enemy;
 					}
 				}
 				else
-					designated_enemy = Entity->Enemy;
+					designated_enemy = *Entity->Enemy;
 			}
 
 			if ((designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
@@ -845,7 +845,7 @@ void CWidowStand::Attack ()
 {
 	bool rail_frames = false, blaster_frames = false, blocked = false, anger = false;
 
-	Entity->MoveTarget = NULL;
+	Entity->MoveTarget = nullentity;
 
 	if (AIFlags & AI_BLOCKED)
 	{
@@ -1213,7 +1213,7 @@ bool CWidowStand::CheckAttack ()
 		}
 	}
 	
-	EnemyInfront = IsInFront(Entity, Entity->Enemy);
+	EnemyInfront = IsInFront(Entity, *Entity->Enemy);
 
 	EnemyRange = Range(Entity, *Entity->Enemy);
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();

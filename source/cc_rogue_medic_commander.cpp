@@ -320,9 +320,9 @@ void CMedicCommander::FinishSpawn ()
 
 		IBaseEntity *designated_enemy;
 		if (AIFlags & AI_MEDIC)
-			designated_enemy = Entity->OldEnemy;
+			designated_enemy = *Entity->OldEnemy;
 		else
-			designated_enemy = Entity->Enemy;
+			designated_enemy = *Entity->Enemy;
 
 		if (Game.GameMode & GAME_COOPERATIVE)
 		{
@@ -334,11 +334,11 @@ void CMedicCommander::FinishSpawn ()
 				{
 					designated_enemy = PickCoopTarget(Entity);
 					if (!designated_enemy)
-						designated_enemy = Entity->Enemy;
+						designated_enemy = *Entity->Enemy;
 				}
 			}
 			else
-				designated_enemy = Entity->Enemy;
+				designated_enemy = *Entity->Enemy;
 		}
 
 		if ((designated_enemy) && (designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
@@ -348,7 +348,7 @@ void CMedicCommander::FinishSpawn ()
 		}
 		else
 		{
-			ent->Enemy = NULL;
+			ent->Enemy = nullentity;
 			ent->Monster->Stand ();
 		}
 	}

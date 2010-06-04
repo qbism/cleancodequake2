@@ -564,7 +564,7 @@ void CGunner::Grenade ()
 
 	//	pmm
 	// if we're shooting blind and we still can't see our enemy
-	if ((AIFlags & AI_MANUAL_STEERING) && (!IsVisible(Entity, Entity->Enemy)))
+	if ((AIFlags & AI_MANUAL_STEERING) && (!IsVisible(Entity, *Entity->Enemy)))
 	{
 		// and we have a valid blind_fire_target
 		if (BlindFireTarget == vec3fOrigin)
@@ -730,7 +730,7 @@ void CGunner::Attack()
 	// pmm
 
 	// PGM - gunner needs to use his chaingun if he's being attacked by a tesla.
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = &GunnerMoveAttackChain;
 	else
 		CurrentMove = (frand() <= 0.5 && GrenadeCheck()) ? &GunnerMoveAttackGrenade : &GunnerMoveAttackChain;

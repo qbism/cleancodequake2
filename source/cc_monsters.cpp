@@ -948,7 +948,7 @@ void CMonster::MonsterTriggeredSpawn ()
 		if (!(Entity->Enemy->Flags & FL_DISGUISED))		// PGM
 			FoundTarget ();
 		else // PMM - just in case, make sure to clear the enemy so FindTarget doesn't get confused
-			Entity->Enemy = NULL;
+			Entity->Enemy = nullentity;
 	}
 #else
 		FoundTarget ();

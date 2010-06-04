@@ -71,12 +71,12 @@ bool CStalker::OKToTransition ()
 	{
 		if (OnCeiling())
 		{
-			if (trace.plane.normal.Z < 0.9)
+			if (trace.plane.Normal.Z < 0.9)
 				return false;
 		}
 		else
 		{
-			if (trace.plane.normal.Z > -0.9)
+			if (trace.plane.Normal.Z > -0.9)
 				return false;
 		}
 	}
@@ -663,7 +663,7 @@ bool CStalker::DoPounce (vec3f dest)
 	if (OnCeiling())
 		return false;
 
-	if (!CheckLZ (Entity->Enemy, dest))
+	if (!CheckLZ (*Entity->Enemy, dest))
 		return false;
 
 	vec3f dist = dest - Entity->State.GetOrigin();
@@ -749,7 +749,7 @@ void CStalker::JumpStraightUp ()
 			if (Entity->State.GetAngles().Z > 360.0)
 				Entity->State.GetAngles().Z -= 360.0;
 			
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 		}
 	}
 	else if (Entity->GroundEntity)	// make sure we're standing on SOMETHING...
@@ -762,7 +762,7 @@ void CStalker::JumpStraightUp ()
 		{
 			Entity->GravityVector.Z = 1;
 			Entity->State.GetAngles().Z = 180.0;
-			Entity->GroundEntity = NULL;
+			Entity->GroundEntity = nullentity;
 		}
 	}
 	TimeStamp = Level.Frame;

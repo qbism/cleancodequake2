@@ -305,15 +305,15 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if (surf && (surf->flags & SURF_TEXINFO_SKY))
+		if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 		{
 			Free ();
 			return;
 		}
 
-		if (plane->normal)
+		if (plane->Normal)
 		{
-			if (PointContents (State.GetOrigin().MultiplyAngles (-10.0f, plane->normal)) & (CONTENTS_SLIME|CONTENTS_LAVA))
+			if (PointContents (State.GetOrigin().MultiplyAngles (-10.0f, plane->Normal)) & (CONTENTS_SLIME|CONTENTS_LAVA))
 			{
 				Explode ();
 				return;
@@ -335,21 +335,21 @@ public:
 			//Note that plane can be NULL
 
 			//PMM - code stolen from g_phys (ClipVelocity)
-			if (!plane->normal) // this happens if you hit a point object, maybe other cases
+			if (!plane->Normal) // this happens if you hit a point object, maybe other cases
 			{
 				Explode ();
 				return;
 			}
 
-			if ((Other->EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(Other)->PhysicsType == PHYSICS_PUSH) && (plane->normal.Z > 0.7f))
+			if ((Other->EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(Other)->PhysicsType == PHYSICS_PUSH) && (plane->Normal.Z > 0.7f))
 				StickOK = true;
 
-			float backoff = (Velocity | plane->normal) * 1.5f;
+			float backoff = (Velocity | plane->Normal) * 1.5f;
 			vec3f out;
 
 			for (int i = 0; i < 3; i++)
 			{
-				float change = plane->normal[i]*backoff;
+				float change = plane->Normal[i]*backoff;
 				out[i] = Velocity[i] - change;
 				if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
 					out[i] = 0;
@@ -363,7 +363,7 @@ public:
 			// if we're here, we're going to stop on an entity
 			if (!StickOK) // no-stick.  teflon time
 			{
-				if (plane->normal.Z > 0.7)
+				if (plane->Normal.Z > 0.7)
 				{
 					Explode();
 					return;
@@ -380,7 +380,7 @@ public:
 			return;
 		}
 
-		vec3f dir = plane->normal.ToAngles();
+		vec3f dir = plane->Normal.ToAngles();
 		vec3f forward, right, up;
 		dir.ToVectors (&forward, &right, &up);
 

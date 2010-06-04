@@ -53,7 +53,7 @@ public:
 
 	bool			RequiresActivation;
 	FrameNumber	LastMoveTime;
-	EPlat2Flags		PlatFlags;
+	uint8		PlatFlags;
 	class CBadArea	*BadArea;
 
 	CPlatForm2();

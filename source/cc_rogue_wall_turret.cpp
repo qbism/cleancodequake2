@@ -270,7 +270,7 @@ void CWallTurret::Fire ()
 	// up the fire chance 20% per skill level.
 	chance -= (0.2f * CvarList[CV_SKILL].Float());
 
-	if (IsVisible(Entity, Entity->Enemy))
+	if (IsVisible(Entity, *Entity->Enemy))
 	{
 		vec3f start = Entity->State.GetOrigin();
 		vec3f end = Entity->Enemy->State.GetOrigin();
@@ -645,7 +645,7 @@ void CWallTurret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 	if (Entity->Target)
 	{
 		if (Entity->Enemy && Entity->Enemy->GetInUse())
-			Entity->UseTargets (Entity->Enemy, Entity->Message);
+			Entity->UseTargets (*Entity->Enemy, Entity->Message);
 		else
 			Entity->UseTargets (Entity, Entity->Message);
 	}
@@ -802,7 +802,7 @@ bool CWallTurret::CheckAttack ()
 			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.Ent->GetSvFlags() & SVF_MONSTER)) && (!IsVisible(Entity, Entity->Enemy)))
+				if ((!(tr.Ent->GetSvFlags() & SVF_MONSTER)) && (!IsVisible(Entity, *Entity->Enemy)))
 				{
 					if ((BlindFire) && (BlindFireDelay <= 100))
 					{
@@ -834,7 +834,7 @@ bool CWallTurret::CheckAttack ()
 	if (Level.Frame < AttackFinished)
 		return false;
 
-	EnemyRange = Range (Entity, Entity->Enemy);
+	EnemyRange = Range (Entity, *Entity->Enemy);
 
 	if (EnemyRange == RANGE_MELEE)
 	{
@@ -866,7 +866,7 @@ bool CWallTurret::CheckAttack ()
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
 	// PMM - added visibility check
-	if ( ((frand() < chance) && (IsVisible(Entity, Entity->Enemy))) || (Entity->Enemy->GetSolid() == SOLID_NOT))
+	if ( ((frand() < chance) && (IsVisible(Entity, *Entity->Enemy))) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
 		AttackFinished = Level.Frame + nexttime;
