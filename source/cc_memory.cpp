@@ -28,7 +28,7 @@ CC_DISABLE_DEPRECATION
 
 const uint32 HEADER_MAGIC_CONSTANT = (('E'<<24)+('N'<<16)+('E'<<8)+'G');
 
-struct MemSentinel
+struct SMemSentinel
 {
 	uint32				Magic;
 	void				*Header;
@@ -39,31 +39,31 @@ struct MemSentinel
 	};
 };
 
-struct MemHeader
+struct SMemHeader
 {
-	MemSentinel			SentinelHeader;
+	SMemSentinel		SentinelHeader;
 	void				*Address;
 	sint32				TagNum;
 	size_t				Size, RealSize;
 
 	bool Check ()
 	{
-		return (SentinelHeader.Check(this) && ((MemSentinel*)(((uint8*)this) + RealSize - sizeof(MemSentinel)))->Check(this));
+		return (SentinelHeader.Check(this) && ((SMemSentinel*)(((uint8*)this) + RealSize - sizeof(SMemSentinel)))->Check(this));
 	};
 };
 
 static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 {
-	size_t RealSize = Size + sizeof(MemHeader) + sizeof(MemSentinel);
-	MemHeader *Mem = (MemHeader*)((TagNum == TAG_GENERIC) ? malloc(RealSize) : gi.TagMalloc(RealSize, TagNum));
-	MemSentinel *Footer = (MemSentinel*)(((uint8*)Mem) + RealSize - sizeof(MemSentinel));
+	size_t RealSize = Size + sizeof(SMemHeader) + sizeof(SMemSentinel);
+	SMemHeader *Mem = (SMemHeader*)((TagNum == TAG_GENERIC) ? malloc(RealSize) : gi.TagMalloc(RealSize, TagNum));
+	SMemSentinel *Footer = (SMemSentinel*)(((uint8*)Mem) + RealSize - sizeof(SMemSentinel));
 
 	Mem->SentinelHeader.Header = Footer->Header = Mem;
 	Mem->TagNum = TagNum;
 	Mem->Size = Size;
 	Footer->Magic = Mem->SentinelHeader.Magic = HEADER_MAGIC_CONSTANT;
 	Mem->RealSize = RealSize;
-	Mem->Address = (((uint8*)Mem) + sizeof(MemHeader));
+	Mem->Address = (((uint8*)Mem) + sizeof(SMemHeader));
 	Mem_Zero (Mem->Address, Size);
 
 	return Mem->Address;
@@ -71,7 +71,7 @@ static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 
 static void Mem_TagFree (void *Pointer)
 {
-	MemHeader *Header = (MemHeader*)(((uint8*)Pointer) - sizeof(MemHeader));
+	SMemHeader *Header = (SMemHeader*)(((uint8*)Pointer) - sizeof(SMemHeader));
 
 	if (!Header->Check())
 		assert (0);

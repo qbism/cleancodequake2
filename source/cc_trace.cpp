@@ -35,16 +35,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 void CTrace::Copy (STrace tr)
 {
-	fraction = tr.Fraction;
-	ent = tr.Entity;
-	plane = tr.Plane;
-	allSolid = (tr.AllSolid != 0);
-	startSolid = (tr.StartSolid != 0);
-	EndPos = tr.EndPos;
-	surface = tr.Surface;
-	contents = tr.Contents;
-
-	Ent = ent->Entity;
+	Fraction = tr.Fraction;
+	Plane = tr.Plane;
+	AllSolid = (tr.AllSolid != 0);
+	StartSolid = (tr.StartSolid != 0);
+	EndPosition = tr.EndPosition;
+	Surface = tr.Surface;
+	Contents = tr.Contents;
+	Entity = (tr.Entity) ? tr.Entity->Entity : NULL;
 };
 
 CTrace::CTrace ()
@@ -53,39 +51,36 @@ CTrace::CTrace ()
 
 CC_DISABLE_DEPRECATION
 
-CTrace::CTrace (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask)
+CTrace::CTrace (vec3f Start, vec3f Mins, vec3f Maxs, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask)
 {
-	STrace temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->GetGameEntity() : NULL, contentMask);
-	Copy(temp);
+	operator() (Start, Mins, Maxs, End, Ignore, ContentMask);
 };
 
-CTrace::CTrace (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask)
+CTrace::CTrace (vec3f Start, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask)
 {
-	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->GetGameEntity() : NULL, contentMask);
-	Copy(temp);
+	operator() (Start, End, Ignore, ContentMask);
 };
 
-CTrace::CTrace (vec3f start, vec3f end, sint32 contentMask)
+CTrace::CTrace (vec3f Start, vec3f End, EBrushContents ContentMask)
 {
-	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
-	Copy(temp);
+	operator() (Start, End, ContentMask);
 }
 
-void CTrace::operator () (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask)
+void CTrace::operator () (vec3f Start, vec3f Mins, vec3f Maxs, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask)
 {
-	STrace temp = gi.trace(start, mins, maxs, end, (ignore) ? ignore->GetGameEntity() : NULL, contentMask);
+	STrace temp = gi.trace(Start, Mins, Maxs, End, (Ignore) ? Ignore->GetGameEntity() : NULL, ContentMask);
 	Copy(temp);
 };
 
-void CTrace::operator () (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask)
+void CTrace::operator () (vec3f Start, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask)
 {
-	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, (ignore) ? ignore->GetGameEntity() : NULL, contentMask);
+	STrace temp = gi.trace(Start, vec3fOrigin, vec3fOrigin, End, (Ignore) ? Ignore->GetGameEntity() : NULL, ContentMask);
 	Copy(temp);
 };
 
-void CTrace::operator () (vec3f start, vec3f end, sint32 contentMask)
+void CTrace::operator () (vec3f Start, vec3f End, EBrushContents contentMask)
 {
-	STrace temp = gi.trace(start, vec3fOrigin, vec3fOrigin, end, NULL, contentMask);
+	STrace temp = gi.trace(Start, vec3fOrigin, vec3fOrigin, End, NULL, contentMask);
 	Copy(temp);
 }
 

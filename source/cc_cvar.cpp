@@ -175,7 +175,7 @@ CC_ENABLE_DEPRECATION
 
 CCvar	CvarList[CV_TOTAL_CVARS];
 
-static cvarDefaultValue_s CvarDefaults[] =
+static SCVarDefaultValue CvarDefaults[] =
 {
 	/*
 		CVAR ENUM		|      NAME      |  DEFAULT VALUE         |         FLAGS

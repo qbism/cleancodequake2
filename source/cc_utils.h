@@ -44,7 +44,7 @@ TTargetList CC_GetTargets (char *targetname);
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
 TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 {
-	edict_t *gameEnt;
+	SEntity *gameEnt;
 	if (!From)
 		gameEnt = Game.Entities;
 	else
@@ -88,7 +88,7 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 template <class TEntityType, uint32 EntityFlags>
 TEntityType *CC_FindByClassName (IBaseEntity *From, const char *Match)
 {
-	edict_t *gameEnt;
+	SEntity *gameEnt;
 	if (!From)
 		gameEnt = Game.Entities;
 	else

@@ -473,7 +473,7 @@ bool CGunner::GrenadeCheck()
 		return false;
 
 	CTrace tr (start, target, Entity, CONTENTS_MASK_SHOT);
-	if(tr.Ent == Entity->Enemy || tr.fraction == 1)
+	if(tr.Entity == Entity->Enemy || tr.Fraction == 1)
 		return true;
 
 	return false;

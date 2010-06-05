@@ -102,14 +102,14 @@ void CFlagEntity::Think ()
 
 			vec3f dest = State.GetOrigin() + vec3f(0, 0, -128);
 			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), dest, this, CONTENTS_MASK_SOLID);
-			if (tr.startSolid)
+			if (tr.StartSolid)
 			{
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity is inside a solid brush\n");
 				Free ();
 				return;
 			}
 
-			State.GetOrigin() = tr.EndPos;
+			State.GetOrigin() = tr.EndPosition;
 
 			Link ();
 
@@ -278,7 +278,7 @@ CItemEntity *CFlag::DropItem (IBaseEntity *Entity)
 
 		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
 			result, Player, CONTENTS_SOLID);
-		dropped->State.GetOrigin() = trace.EndPos;
+		dropped->State.GetOrigin() = trace.EndPosition;
 
 		// Check to see which color we are
 		dropped->Red = (Player->Client.Persistent.Flag->team == CTF_TEAM1);

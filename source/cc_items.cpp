@@ -139,7 +139,7 @@ CItemEntity *CBaseItem::DropItem (IBaseEntity *Entity)
 
 		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
 			result, Player, CONTENTS_SOLID);
-		dropped->State.GetOrigin() = trace.EndPos;
+		dropped->State.GetOrigin() = trace.EndPosition;
 	}
 	else
 	{

@@ -47,13 +47,13 @@ void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 	vec3f end = start.MultiplyAngles(8192, dir);
 	CTrace tr (start, end, self, CONTENTS_MASK_SHOT);
 
-	if ((tr.ent) && (tr.ent->Entity) && (tr.ent->Entity->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(tr.ent->Entity)->Health > 0) && IsInFront(tr.Ent, self))
+	if (tr.Entity && (tr.Entity->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0) && IsInFront(tr.Entity, self))
 	{
-		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.ent->Entity));
+		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.Entity));
 		if (Monster->Enemy != self)
 			Monster->Enemy = self;
 
-		float eta = ((tr.EndPos - start).LengthFast() - tr.Ent->GetMaxs().X) / speed;
+		float eta = ((tr.EndPosition - start).LengthFast() - tr.Entity->GetMaxs().X) / speed;
 
 		Monster->Monster->Dodge (self, eta
 #if ROGUE_FEATURES
@@ -310,14 +310,14 @@ void CBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->Link ();
 
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		start = start.MultiplyAngles (-10, dir.GetNormalizedFast());
 		Bolt->State.GetOrigin() = start;
 		Bolt->State.GetOldOrigin() = start;
 
-		if (tr.ent->Entity)
-			Bolt->Touch (tr.ent->Entity, &tr.plane, tr.surface);
+		if (tr.Entity)
+			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
 	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
@@ -510,26 +510,26 @@ void CBFGBolt::Think ()
 			{
 				tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
 
-				if (!tr.ent || !tr.Ent)
+				if (!tr.Entity)
 					break;
 
 				// hurt it if we can
-				if (((tr.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Ent)->CanTakeDamage) && !(tr.Ent->Flags & FL_IMMUNE_LASER) && (tr.Ent != GetOwner()))
-					entity_cast<IHurtableEntity>(tr.Ent)->TakeDamage (this, GetOwner(), dir, tr.EndPos, vec3fOrigin, dmg, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
+				if (((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage) && !(tr.Entity->Flags & FL_IMMUNE_LASER) && (tr.Entity != GetOwner()))
+					entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (this, GetOwner(), dir, tr.EndPosition, vec3fOrigin, dmg, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
 
 				// if we hit something that's not a monster or player we're done
 				//if (!(tr.ent->svFlags & SVF_MONSTER) && (!tr.ent->client))
-				if (!(tr.Ent->EntityFlags & ENT_MONSTER) && !(tr.Ent->EntityFlags & ENT_PLAYER))
+				if (!(tr.Entity->EntityFlags & ENT_MONSTER) && !(tr.Entity->EntityFlags & ENT_PLAYER))
 				{
-					CSparks (tr.EndPos, tr.plane.Normal, ST_LASER_SPARKS, State.GetSkinNum(), 4).Send();
+					CSparks (tr.EndPosition, tr.Plane.Normal, ST_LASER_SPARKS, State.GetSkinNum(), 4).Send();
 					break;
 				}
 
-				ignore = tr.Ent;
-				start = tr.EndPos;
+				ignore = tr.Entity;
+				start = tr.EndPosition;
 			}
 
-			LaserTempEnt.StartAt(State.GetOrigin()).EndAt(tr.EndPos).Send();
+			LaserTempEnt.StartAt(State.GetOrigin()).EndAt(tr.EndPosition).Send();
 		}
 
 		NextThink = Level.Frame + FRAMETIME;
@@ -697,10 +697,10 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
 			CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
 
-			if (tempTrace.contents & CONTENTS_MASK_WATER)// All is good
+			if (tempTrace.Contents & CONTENTS_MASK_WATER)// All is good
 			{
 				// This is our end
-				lastWaterStart = tempTrace.EndPos;
+				lastWaterStart = tempTrace.EndPosition;
 				hitOutOfWater = true;
 			}
 		}
@@ -715,18 +715,18 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		CTrace Trace = DoTrace (from, end, Ignore, Mask);
 
 		// Did we hit an entity?
-		if (Trace.ent && Trace.Ent && ((Trace.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Ent)->CanTakeDamage))
+		if (Trace.Entity && ((Trace.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Entity)->CanTakeDamage))
 		{
 			// Convert to base entity
-			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Ent);
+			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Entity);
 
 			// Hurt it
 			// Revision
 			// Startsolid mistake..
-			if (Trace.startSolid)
+			if (Trace.StartSolid)
 			{
 				vec3f origin = Target->State.GetOrigin();
-				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.Normal))
+				if (!DoDamage (Entity, Target, aimdir, origin, Trace.Plane.Normal))
 				{
 					DoEffect (origin, lastDrawFrom, DrawIsWater);
 					break; // We wanted to stop
@@ -755,12 +755,12 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				continue;
 			}
 
-			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.Normal))
+			if (!DoDamage (Entity, Target, aimdir, Trace.EndPosition, Trace.Plane.Normal))
 				break; // We wanted to stop
 
 			// Set up the start from where we are now
 			vec3f oldFrom = from;
-			from = Trace.EndPos;
+			from = Trace.EndPosition;
 
 			// Revision: Stop on solids
 			if (ThroughAndThrough && Target->GetSolid() == SOLID_BSP)
@@ -786,7 +786,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		{
 			Water = false;
 			// Assume solid
-			//if (Trace.contents & CONTENTS_MASK_SOLID)
+			//if (Trace.Contents & CONTENTS_MASK_SOLID)
 			{
 				// If we didn't grab water last time...
 				if (lastWaterStart == vec3fOrigin)
@@ -797,7 +797,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 					lastWaterStart = lastWaterStart.MultiplyAngles (5, aimdir);
 
 					// Set end point
-					lastWaterEnd = Trace.EndPos;
+					lastWaterEnd = Trace.EndPosition;
 
 					// Draw the effect
 					DoEffect (lastWaterStart, lastWaterEnd, true);
@@ -820,7 +820,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 						hitOutOfWater = false;
 
 					// Set end point
-					lastWaterEnd = Trace.EndPos;
+					lastWaterEnd = Trace.EndPosition;
 
 					// Draw the effect
 					DoEffect (lastWaterStart, lastWaterEnd, false);
@@ -833,11 +833,11 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			continue;
 		}
 		// If we hit non-transparent water
-		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && !(Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+		else if ((Trace.Contents & CONTENTS_MASK_WATER) &&
+			(Trace.Surface && !(Trace.Surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// Copy up our point for the effect
-			lastWaterEnd = Trace.EndPos;
+			lastWaterEnd = Trace.EndPosition;
 
 			// Tell the system we're in water
 			Water = true;
@@ -848,7 +848,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			DoWaterHit (&Trace);
 
 			// Set up the start from where we are now
-			from = lastDrawFrom = Trace.EndPos;
+			from = lastDrawFrom = Trace.EndPosition;
 			Mask = CONTENTS_MASK_SHOT;
 
 			// Find the exit point
@@ -881,10 +881,10 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
 				CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
 
-				if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
+				if (tempTrace.Contents & CONTENTS_MASK_WATER) // All is good
 				{
 					// This is our end
-					lastWaterStart = tempTrace.EndPos;
+					lastWaterStart = tempTrace.EndPosition;
 					continue; // Head to the next area
 				}
 			}
@@ -895,8 +895,8 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			continue;
 		}
 		// Transparent water
-		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && (Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+		else if ((Trace.Contents & CONTENTS_MASK_WATER) &&
+			(Trace.Surface && (Trace.Surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// This won't count as "water" since we can see through it.
 			// It has the same PVS, meaning we don't need to
@@ -905,7 +905,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			if (ThroughAndThrough)
 			{
 				// Keep going
-				from = Trace.EndPos.MultiplyAngles (0.1f, aimdir);
+				from = Trace.EndPosition.MultiplyAngles (0.1f, aimdir);
 
 				// Water hit effect
 				DoWaterHit (&Trace);
@@ -913,10 +913,10 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			else
 			{
 				// Copy up our point for the effect
-				lastWaterEnd = Trace.EndPos;
+				lastWaterEnd = Trace.EndPosition;
 
 				// Draw the effect we have so far
-				DoEffect (from, Trace.EndPos, false);
+				DoEffect (from, Trace.EndPosition, false);
 
 				// Water hit effect
 				DoWaterHit (&Trace);
@@ -955,10 +955,10 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 					vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
 					CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
 
-					if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
+					if (tempTrace.Contents & CONTENTS_MASK_WATER) // All is good
 					{
 						// This is our end
-						lastWaterStart = tempTrace.EndPos;
+						lastWaterStart = tempTrace.EndPosition;
 						continue; // Head to the next area
 					}
 				}
@@ -974,7 +974,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		else
 		{
 			// Draw the effect
-			DoEffect (lastDrawFrom, Trace.EndPos, DrawIsWater);
+			DoEffect (lastDrawFrom, Trace.EndPosition, DrawIsWater);
 			DoSolidHit (&Trace);
 			break; // We're done
 		}
@@ -1006,8 +1006,8 @@ bool CBullet::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &d
 
 void CBullet::DoSolidHit	(CTrace *Trace)
 {
-	if (!(Trace->surface->Flags & SURF_TEXINFO_SKY))
-		CGunshotRicochet(Trace->EndPos, Trace->plane.Normal).Send();
+	if (!(Trace->Surface->Flags & SURF_TEXINFO_SKY))
+		CGunshotRicochet(Trace->EndPosition, Trace->Plane.Normal).Send();
 }
 
 bool CBullet::ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end)
@@ -1028,21 +1028,21 @@ void CBullet::DoEffect	(vec3f &start, vec3f &end, bool water)
 void CBullet::DoWaterHit	(CTrace *Trace)
 {
 	ESplashType Color;
-	if (Trace->contents & CONTENTS_WATER)
+	if (Trace->Contents & CONTENTS_WATER)
 	{
-		if (strcmp(Trace->surface->Name, "*brwater") == 0)
+		if (strcmp(Trace->Surface->Name, "*brwater") == 0)
 			Color = SPT_MUD;
 		else
 			Color = SPT_WATER;
 	}
-	else if (Trace->contents & CONTENTS_SLIME)
+	else if (Trace->Contents & CONTENTS_SLIME)
 		Color = SPT_SLIME;
-	else if (Trace->contents & CONTENTS_LAVA)
+	else if (Trace->Contents & CONTENTS_LAVA)
 		Color = SPT_LAVA;
 	else
 		return;
 
-	CSplash(Trace->EndPos, Trace->plane.Normal, Color).Send();
+	CSplash(Trace->EndPosition, Trace->Plane.Normal, Color).Send();
 }
 
 void CBullet::Fire(IBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hSpread, sint32 vSpread, sint32 mod)
@@ -1058,8 +1058,8 @@ void CBullet::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 
 void CShotgunPellets::DoSolidHit	(CTrace *Trace)
 {
-	if (!(Trace->surface->Flags & SURF_TEXINFO_SKY))
-		CShotgunRicochet(Trace->EndPos, Trace->plane.Normal).Send();
+	if (!(Trace->Surface->Flags & SURF_TEXINFO_SKY))
+		CShotgunRicochet(Trace->EndPosition, Trace->Plane.Normal).Send();
 }
 
 extern bool LastPelletShot;
@@ -1106,15 +1106,15 @@ bool CMeleeWeapon::Fire(IBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 	point = Entity->State.GetOrigin().MultiplyAngles (range, dir);
 
 	CTrace tr (Entity->State.GetOrigin(), point, Entity, CONTENTS_MASK_SHOT);
-	if (tr.fraction == 1.0)
+	if (tr.Fraction == 1.0)
 		return false;
 
-	if (!((tr.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Ent)->CanTakeDamage))
+	if (!((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage))
 		return false;
 
 	// if it will hit any client/monster then hit the one we wanted to hit
-	IBaseEntity *Hit = tr.Ent;
-	if ((tr.Ent->EntityFlags & ENT_MONSTER) || ((tr.Ent->EntityFlags & ENT_PLAYER)))
+	IBaseEntity *Hit = tr.Entity;
+	if ((tr.Entity->EntityFlags & ENT_MONSTER) || ((tr.Entity->EntityFlags & ENT_PLAYER)))
 		Hit = Enemy;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
@@ -1153,12 +1153,12 @@ void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, in
 
 	//see if the hit connects
 	CTrace tr (Start, point, Entity, CONTENTS_MASK_SHOT);
-	if (tr.fraction == 1.0)
+	if (tr.Fraction == 1.0)
 		return;
 
-	if (tr.Ent->EntityFlags & ENT_HURTABLE)
+	if (tr.Entity->EntityFlags & ENT_HURTABLE)
 	{
-		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(tr.Ent);
+		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(tr.Entity);
 
 		Entity->Velocity =	Entity->Velocity
 							.MultiplyAngles (75, forward)
@@ -1173,7 +1173,7 @@ void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, in
 					(DAMAGE_NO_KNOCKBACK), Mod);
 	}
 	else
-		CGunshotRicochet (tr.EndPos, tr.plane.Normal).Send();
+		CGunshotRicochet (tr.EndPosition, tr.Plane.Normal).Send();
 }
 
 #if CLEANCTF_ENABLED
@@ -1322,10 +1322,10 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint
 	Grapple->Link ();
 
 	CTrace tr (Spawner->State.GetOrigin(), Grapple->State.GetOrigin(), Grapple, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		Grapple->State.GetOrigin() = Grapple->State.GetOrigin().MultiplyAngles (-10, dir);
-		Grapple->Touch (tr.ent->Entity, NULL, NULL);
+		Grapple->Touch (tr.Entity, NULL, NULL);
 	}
 };
 

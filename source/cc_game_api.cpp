@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_exception_handler.h"
 #include "cc_server_commands.h"
 
-gameImport_t	gi;
+SGameImport	gi;
 
 EBrushContents PointContents (vec3f start)
 {
@@ -57,7 +57,7 @@ enum
 
 TBoxEdictsEntityList BoxEdicts (vec3f mins, vec3f maxs, bool triggers)
 {
-	static edict_t *list[MAX_CS_EDICTS];
+	static SEntity *list[MAX_CS_EDICTS];
 	Mem_Zero (list, sizeof(list));
 
 CC_DISABLE_DEPRECATION
@@ -180,7 +180,7 @@ called when a client has finished connecting, and is ready
 to be placed into the Game.  This will happen every level load.
 ============
 */
-void ClientBegin (edict_t *ent)
+void ClientBegin (SEntity *ent)
 {
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -203,7 +203,7 @@ The game can override any of the settings in place
 (forcing skins or names, etc) before copying it off.
 ============
 */
-void ClientUserinfoChanged (edict_t *ent, char *userinfo)
+void ClientUserinfoChanged (SEntity *ent, char *userinfo)
 {
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -231,7 +231,7 @@ loadgames will.
 */
 void FixDemoSetup ();
 
-BOOL ClientConnect (edict_t *ent, char *userinfo)
+BOOL ClientConnect (SEntity *ent, char *userinfo)
 {
 	int returnVal = 0;
 
@@ -267,7 +267,7 @@ Called when a player drops from the server.
 Will not be called between levels.
 ============
 */
-void ClientDisconnect (edict_t *ent)
+void ClientDisconnect (SEntity *ent)
 {
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -291,7 +291,7 @@ This will be called once for each client frame, which will
 usually be a couple times for each server frame.
 ==============
 */
-void ClientThink (edict_t *ent, SUserCmd *ucmd)
+void ClientThink (SEntity *ent, SUserCmd *ucmd)
 {
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
@@ -396,12 +396,12 @@ ClientCommand
 game commands issued by clients
 =================
 */
-void ClientCommand (edict_t *ent)
+void ClientCommand (SEntity *ent)
 {
 #if CC_USE_EXCEPTION_HANDLER
 CC_EXCEPTION_HANDLER_BEGIN
 #endif
-	if (!ent->server.Client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
+	if (!ent->Server.Client || !ent->Entity || (entity_cast<CPlayerEntity>(ent->Entity)->Client.Persistent.State != SVCS_SPAWNED))
 		return;		// not fully in game yet
 
 	GameAPI.ClientCommand (entity_cast<CPlayerEntity>(ent->Entity));
@@ -514,7 +514,7 @@ and global variables
 //
 // functions exported by the game subsystem
 //
-struct gameExport_t
+struct SGameExport
 {
 	sint32			apiVersion;
 
@@ -539,12 +539,12 @@ struct gameExport_t
 	void		(*WriteLevel) (char *filename);
 	void		(*ReadLevel) (char *filename);
 
-	BOOL		(*ClientConnect) (edict_t *ent, char *userInfo);
-	void		(*ClientBegin) (edict_t *ent);
-	void		(*ClientUserinfoChanged) (edict_t *ent, char *userInfo);
-	void		(*ClientDisconnect) (edict_t *ent);
-	void		(*ClientCommand) (edict_t *ent);
-	void		(*ClientThink) (edict_t *ent, SUserCmd *cmd);
+	BOOL		(*ClientConnect) (SEntity *ent, char *userInfo);
+	void		(*ClientBegin) (SEntity *ent);
+	void		(*ClientUserinfoChanged) (SEntity *ent, char *userInfo);
+	void		(*ClientDisconnect) (SEntity *ent);
+	void		(*ClientCommand) (SEntity *ent);
+	void		(*ClientThink) (SEntity *ent, SUserCmd *cmd);
 
 	void		(*RunFrame) ();
 
@@ -562,7 +562,7 @@ struct gameExport_t
 	// can vary in size from one game to another.
 	// 
 	// The size will be fixed when ge->Init() is called
-	edict_t		*edicts;
+	SEntity		*edicts;
 	sint32		edictSize;
 	sint32		numEdicts;		// current number, <= MAX_CS_EDICTS
 	sint32		maxEdicts;
@@ -585,12 +585,12 @@ struct gameExport_t
 	RunFrame,
 	ServerCommand,
 	NULL,
-	sizeof(edict_t),
+	sizeof(SEntity),
 	0,
 	0
 };
 
-edict_t *&CGameAPI::GetEntities ()
+SEntity *&CGameAPI::GetEntities ()
 {
 	return globals.edicts;
 };
@@ -612,7 +612,7 @@ sint32 &CGameAPI::GetMaxEdicts()
 
 extern "C"
 {
-	gameExport_t *GetGameAPI (gameImport_t *import)
+	SGameExport *GetGameAPI (SGameImport *import)
 	{
 		gi = *import;
 		return &globals;

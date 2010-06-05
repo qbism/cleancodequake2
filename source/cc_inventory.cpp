@@ -366,7 +366,7 @@ Cmd_Inven_f
 */
 void CInventoryCommand::operator () ()
 {
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;
 
 	if (Player->Client.Respawn.MenuState.InMenu)

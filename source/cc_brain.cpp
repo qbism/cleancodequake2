@@ -561,7 +561,7 @@ void CBrain::TongueAttack ()
 	end = Entity->Enemy->State.GetOrigin();
 
 	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
-	if (tr.Ent != Entity->Enemy)
+	if (tr.Entity != Entity->Enemy)
 		return;
 
 	static const int damage = 5;

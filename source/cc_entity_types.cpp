@@ -112,7 +112,7 @@ bool IHurtableEntity::CanDamage (IBaseEntity *Inflictor)
 	{
 		vec3f dest = (GetAbsMin() + GetAbsMax()) * 0.5f;
 		CTrace trace (Inflictor->State.GetOrigin(), dest, Inflictor, CONTENTS_MASK_SOLID);
-		if (trace.fraction == 1.0 || trace.Ent == this)
+		if (trace.Fraction == 1.0 || trace.Entity == this)
 			return true;
 		return false;
 	}
@@ -130,7 +130,7 @@ bool IHurtableEntity::CanDamage (IBaseEntity *Inflictor)
 	{
 		vec3f end = State.GetOrigin() + additions[i];
 		CTrace trace (Inflictor->State.GetOrigin(), end, Inflictor, CONTENTS_MASK_SOLID);
-		if (trace.fraction == 1.0)
+		if (trace.Fraction == 1.0)
 			return true;
 	};
 
@@ -731,15 +731,15 @@ CTrace IPhysicsEntity::PushEntity (vec3f &push)
 	{
 		Trace (Start, GetMins(), GetMaxs(), End, this, (GetClipmask()) ? GetClipmask() : CONTENTS_MASK_SOLID);
 		
-		State.GetOrigin() = Trace.EndPos;
+		State.GetOrigin() = Trace.EndPosition;
 		Link();
 
-		if (Trace.fraction != 1.0)
+		if (Trace.Fraction != 1.0)
 		{
 			Impact (&Trace);
 
 			// if the pushed entity went away and the pusher is still there
-			if (!Trace.Ent->GetInUse() && GetInUse())
+			if (!Trace.Entity->GetInUse() && GetInUse())
 			{
 				// move the pusher back and try again
 				State.GetOrigin() = Start;
@@ -758,7 +758,7 @@ CTrace IPhysicsEntity::PushEntity (vec3f &push)
 
 void IPhysicsEntity::Impact (CTrace *trace)
 {
-	if (!trace->ent->Entity)
+	if (!trace->Entity)
 		return;
 
 	if (GetSolid() != SOLID_NOT && (EntityFlags & ENT_TOUCHABLE))
@@ -766,12 +766,12 @@ void IPhysicsEntity::Impact (CTrace *trace)
 		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(this);
 
 		if (Touched->Touchable)
-			Touched->Touch (trace->Ent, &trace->plane, trace->surface);
+			Touched->Touch (trace->Entity, &trace->Plane, trace->Surface);
 	}
 
-	if ((trace->Ent->EntityFlags & ENT_TOUCHABLE) && trace->Ent->GetSolid() != SOLID_NOT)
+	if ((trace->Entity->EntityFlags & ENT_TOUCHABLE) && trace->Entity->GetSolid() != SOLID_NOT)
 	{
-		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(trace->Ent);
+		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(trace->Entity);
 
 		if (Touched->Touchable)
 			Touched->Touch (this, NULL, NULL);
@@ -867,19 +867,19 @@ bool IBounceProjectile::Run ()
 	if (!GetInUse())
 		return false;
 
-	if (trace.fraction < 1)
+	if (trace.Fraction < 1)
 	{
-		Velocity = ClipVelocity (Velocity, trace.plane.Normal, backOff);
+		Velocity = ClipVelocity (Velocity, trace.Plane.Normal, backOff);
 
 		if (AimInVelocityDirection)
 			State.GetAngles() = Velocity.ToAngles();
 
 		// stop if on ground
-		if (trace.plane.Normal.Z > 0.7 && StopOnEqualPlane)
+		if (trace.Plane.Normal.Z > 0.7 && StopOnEqualPlane)
 		{		
 			if (Velocity.Z < 60)
 			{
-				GroundEntity = trace.Ent;
+				GroundEntity = trace.Entity;
 				GroundEntityLinkCount = GroundEntity->GetLinkCount();
 				Velocity.Clear ();
 				AngularVelocity.Clear ();
@@ -990,17 +990,17 @@ void IStepPhysics::CheckGround ()
 	CTrace trace (State.GetOrigin(), GetMins(), GetMaxs(), point, this, CONTENTS_MASK_MONSTERSOLID);
 
 	// check steepness
-	if (trace.plane.Normal.Z < 0.7 && !trace.startSolid)
+	if (trace.Plane.Normal.Z < 0.7 && !trace.StartSolid)
 	{
 		GroundEntity = nullentity;
 		return;
 	}
 
-	if (!trace.startSolid && !trace.allSolid)
+	if (!trace.StartSolid && !trace.AllSolid)
 	{
-		State.GetOrigin() = trace.EndPos;
-		GroundEntity = trace.Ent;
-		GroundEntityLinkCount = trace.Ent->GetLinkCount();
+		State.GetOrigin() = trace.EndPosition;
+		GroundEntity = trace.Entity;
+		GroundEntityLinkCount = trace.Entity->GetLinkCount();
 		Velocity.Z = 0;
 	}
 }
@@ -1047,27 +1047,27 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 
 		CTrace trace (State.GetOrigin (), GetMins(), GetMaxs(), end, this, mask);
 
-		if (trace.allSolid)
+		if (trace.AllSolid)
 		{
 			// entity is trapped in another solid
 			Velocity.Clear ();
 			return 3;
 		}
 
-		if (trace.fraction > 0)
+		if (trace.Fraction > 0)
 		{
 			// actually covered some distance
-			State.GetOrigin() = trace.EndPos;
+			State.GetOrigin() = trace.EndPosition;
 			original_velocity = Velocity;
 			numplanes = 0;
 		}
 
-		if (trace.fraction == 1)
+		if (trace.Fraction == 1)
 			 break;		// moved the entire distance
 
-		IBaseEntity *hit = trace.Ent;
+		IBaseEntity *hit = trace.Entity;
 
-		if (trace.plane.Normal.Z > 0.7f)
+		if (trace.Plane.Normal.Z > 0.7f)
 		{
 			blocked |= 1;		// floor
 			if (hit->GetSolid() == SOLID_BSP)
@@ -1076,7 +1076,8 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 				GroundEntityLinkCount = GroundEntity->GetLinkCount();
 			}
 		}
-		if (!trace.plane.Normal.Z)
+
+		if (!trace.Plane.Normal.Z)
 			blocked |= 2;		// step
 
 //
@@ -1086,7 +1087,7 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 		if (!GetInUse())
 			break;		// removed by the impact function
 	
-		time_left -= time_left * trace.fraction;
+		time_left -= time_left * trace.Fraction;
 		
 	// cliped to another plane
 		if (numplanes >= MAX_CLIP_PLANES)
@@ -1096,7 +1097,7 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 			return 3;
 		}
 
-		planes[numplanes++] = trace.plane.Normal;
+		planes[numplanes++] = trace.Plane.Normal;
 
 //
 // modify original_velocity so it parallels all of the clip planes
@@ -1253,7 +1254,7 @@ bool IStepPhysics::Run ()
 	if (State.GetOrigin() != saveOrigin)
 	{
 		CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), saveOrigin, this, CONTENTS_MASK_MONSTERSOLID);
-		if(tr.allSolid || tr.startSolid)
+		if(tr.AllSolid || tr.StartSolid)
 		{
 			State.GetOrigin() = saveOrigin;
 			Link ();
@@ -1312,7 +1313,7 @@ SV_TestEntityPosition
 */
 inline IBaseEntity *SV_TestEntityPosition (IBaseEntity *Entity)
 {
-	return (CTrace(Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), Entity->State.GetOrigin(), Entity, (Entity->GetClipmask()) ? Entity->GetClipmask() : CONTENTS_MASK_SOLID).startSolid) ? World : NULL;
+	return (CTrace(Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), Entity->State.GetOrigin(), Entity, (Entity->GetClipmask()) ? Entity->GetClipmask() : CONTENTS_MASK_SOLID).StartSolid) ? World : NULL;
 }
 
 typedef std::vector<CPushed> TPushedList;

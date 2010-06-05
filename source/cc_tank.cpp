@@ -410,7 +410,7 @@ void CTank::Rocket ()
 	trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 	if (blindfire)
 	{
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+		if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 			MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		else 
 		{
@@ -419,7 +419,7 @@ void CTank::Rocket ()
 			dir.NormalizeFast ();
 
 			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+			if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 			else 
 			{
@@ -428,7 +428,7 @@ void CTank::Rocket ()
 				dir.NormalizeFast ();
 
 				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+				if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 					MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 			}
 		}
@@ -436,9 +436,9 @@ void CTank::Rocket ()
 	else
 	{
 		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-		if(trace.Ent == Entity->Enemy || trace.Ent == World)
+		if (trace.Entity == Entity->Enemy || trace.Entity == World)
 		{
-			if(trace.fraction > 0.5 || (trace.ent && trace.ent->server.Client))
+			if (trace.Fraction > 0.5 || (trace.Entity->EntityFlags & ENT_PLAYER))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		}
 	}

@@ -209,7 +209,7 @@ void CTesla::Active ()
 			continue;
 	
 		CTrace tr (start, Hit->State.GetOrigin(), this, CONTENTS_MASK_SHOT);
-		if (tr.fraction == 1 || tr.Ent == Hit)
+		if (tr.Fraction == 1 || tr.Entity == Hit)
 		{
 			vec3f dir = Hit->State.GetOrigin() - start;
 			
@@ -219,13 +219,13 @@ void CTesla::Active ()
 
 			// PGM - don't do knockback to walking monsters
 			if (Hit->Flags & (FL_FLY|FL_SWIM))
-				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.Normal,
+				Hurtable->TakeDamage (this, Firer, dir, tr.EndPosition, tr.Plane.Normal,
 					Damage, 0, 0, MOD_TESLA);
 			else
-				Hurtable->TakeDamage (this, Firer, dir, tr.EndPos, tr.plane.Normal,
+				Hurtable->TakeDamage (this, Firer, dir, tr.EndPosition, tr.Plane.Normal,
 					Damage, TESLA_KNOCKBACK, 0, MOD_TESLA);
 
-			CLightning(tr.EndPos, start, State.GetNumber(), Hit->State.GetNumber()).Send();
+			CLightning(tr.EndPosition, start, State.GetNumber(), Hit->State.GetNumber()).Send();
 		}
 	}
 

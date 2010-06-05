@@ -44,7 +44,7 @@ CMonster(ID)
 	MonsterName = "Stalker";
 }
 
-//extern qboolean SV_PointCloseEnough (edict_t *ent, vec3_t goal, float dist);
+//extern qboolean SV_PointCloseEnough (SEntity *ent, vec3_t goal, float dist);
 
 //=========================
 //=========================
@@ -65,34 +65,34 @@ bool CStalker::OKToTransition ()
 
 	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), Entity->State.GetOrigin() + vec3f(0, 0, MaxDist), Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1.0 || 
-		!(trace.contents & CONTENTS_SOLID) ||
-		(trace.Ent != World))
+	if (trace.Fraction == 1.0 || 
+		!(trace.Contents & CONTENTS_SOLID) ||
+		(trace.Entity != World))
 	{
 		if (OnCeiling())
 		{
-			if (trace.plane.Normal.Z < 0.9)
+			if (trace.Plane.Normal.Z < 0.9)
 				return false;
 		}
 		else
 		{
-			if (trace.plane.Normal.Z > -0.9)
+			if (trace.Plane.Normal.Z > -0.9)
 				return false;
 		}
 	}
 
-	float end_height = trace.EndPos.Z;
+	float end_height = trace.EndPosition.Z;
 
 	// check the four corners, tracing only to the endpoint of the center trace (vertically).
-	vec3f pt (Entity->GetAbsMin().X, Entity->GetAbsMin().Y, trace.EndPos.Z + Margin);
+	vec3f pt (Entity->GetAbsMin().X, Entity->GetAbsMin().Y, trace.EndPosition.Z + Margin);
 	vec3f start (pt);
 	start.Z = Entity->State.GetOrigin().Z;
 	
 	trace (start, pt, Entity, CONTENTS_MASK_MONSTERSOLID);
-	if (trace.fraction == 1.0 || !(trace.contents & CONTENTS_SOLID) || (trace.Ent != World))
+	if (trace.Fraction == 1.0 || !(trace.Contents & CONTENTS_SOLID) || (trace.Entity != World))
 		return false;
 
-	if (abs(end_height + Margin - trace.EndPos.Z) > 8)
+	if (abs(end_height + Margin - trace.EndPosition.Z) > 8)
 		return false;
 
 	pt.Set (Entity->GetAbsMax().X, Entity->GetAbsMin().Y, pt.Z);
@@ -100,9 +100,9 @@ bool CStalker::OKToTransition ()
 	start.Z = Entity->State.GetOrigin().Z;
 
 	trace (start, pt, Entity, CONTENTS_MASK_MONSTERSOLID);
-	if (trace.fraction == 1.0 || !(trace.contents & CONTENTS_SOLID) || (trace.Ent != World))
+	if (trace.Fraction == 1.0 || !(trace.Contents & CONTENTS_SOLID) || (trace.Entity != World))
 		return false;
-	if (abs(end_height + Margin - trace.EndPos.Z) > 8)
+	if (abs(end_height + Margin - trace.EndPosition.Z) > 8)
 		return false;
 
 	pt.Set (Entity->GetAbsMax().X, Entity->GetAbsMax().Y, pt.Z);
@@ -110,18 +110,18 @@ bool CStalker::OKToTransition ()
 	start.Z = Entity->State.GetOrigin().Z;
 
 	trace (start, pt, Entity, CONTENTS_MASK_MONSTERSOLID);
-	if (trace.fraction == 1.0 || !(trace.contents & CONTENTS_SOLID) || (trace.Ent != World))
+	if (trace.Fraction == 1.0 || !(trace.Contents & CONTENTS_SOLID) || (trace.Entity != World))
 		return false;
-	if (abs(end_height + Margin - trace.EndPos.Z) > 8)
+	if (abs(end_height + Margin - trace.EndPosition.Z) > 8)
 		return false;
 
 	pt.Set (Entity->GetAbsMin().X, Entity->GetAbsMax().Y, pt.Z);
 	start = pt;
 	start.Z = Entity->State.GetOrigin().Z;
 	trace (start, pt, Entity, CONTENTS_MASK_MONSTERSOLID);
-	if (trace.fraction == 1.0 || !(trace.contents & CONTENTS_SOLID) || (trace.Ent != World))
+	if (trace.Fraction == 1.0 || !(trace.Contents & CONTENTS_SOLID) || (trace.Entity != World))
 		return false;
-	if (abs(end_height + Margin - trace.EndPos.Z) > 8)
+	if (abs(end_height + Margin - trace.EndPosition.Z) > 8)
 		return false;
 
 	return true;
@@ -473,7 +473,7 @@ void CStalker::ShootAttack ()
 
 	CTrace trace (start, end, Entity, CONTENTS_MASK_SHOT);
 
-	if (trace.Ent == Entity->Enemy || trace.Ent == World)
+	if (trace.Entity == Entity->Enemy || trace.Entity == World)
 		MonsterFireBlaster2 (start, dir, 15, 800, MZ2_STALKER_BLASTER, EF_BLASTER);
 }
 
@@ -691,7 +691,7 @@ bool CStalker::DoPounce (vec3f dest)
 
 	CTrace trace (Entity->State.GetOrigin(), dest, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if ((trace.fraction < 1) && (trace.Ent != Entity->Enemy))
+	if ((trace.Fraction < 1) && (trace.Entity != Entity->Enemy))
 		preferHighJump = 1; 
 
 	// find a valid angle/velocity combination

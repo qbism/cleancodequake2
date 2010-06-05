@@ -42,7 +42,7 @@ SV_ClientPrintf
 Sends text across to be displayed if the level passes
 =================
 */
-static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
+static void SV_ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list			argptr;
 	static char		string[MAX_COMPRINT];
@@ -62,7 +62,7 @@ static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const cha
 	Cast ((printLevel != PRINT_CENTER) ? CASTFLAG_UNRELIABLE : CASTFLAG_RELIABLE, Player);
 }
 
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
+void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	static char	msg[MAX_COMPRINT];
 	va_list		argptr;
@@ -184,7 +184,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 	}
 }
 #else
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, const char *fmt, ...)
+void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];

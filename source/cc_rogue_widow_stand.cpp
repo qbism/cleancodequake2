@@ -1198,7 +1198,7 @@ bool CWidowStand::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// go ahead and spawn stuff if we're mad a client
 			if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && SlotsLeft() >= 2)
@@ -1208,7 +1208,7 @@ bool CWidowStand::CheckAttack ()
 			}
 				
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 				return false;
 		}
 	}

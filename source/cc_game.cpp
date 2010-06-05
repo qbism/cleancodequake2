@@ -49,7 +49,7 @@ void CLevelLocals::CEntityList::Save (CFile &File)
 
 	File.Write<size_t> (Closed.size());
 	for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
-		File.Write<sint32> ((*it)->server.State.Number);
+		File.Write<sint32> ((*it)->Server.State.Number);
 };
 
 void CLevelLocals::CEntityList::Load (CFile &File)
@@ -76,15 +76,12 @@ void CLevelLocals::Save (CFile &File)
 	File.Write (NextMap);
 	File.Write (ForceMap);
 
-	File.Write<FrameNumber> (IntermissionTime);
-	File.Write<bool> (ExitIntermission);
-	File.Write<vec3f> (IntermissionOrigin);
-	File.Write<vec3f> (IntermissionAngles);
+	File.Write<SIntermissionState> (Intermission);
 
 	File.Write<sint32> ((SightClient) ? SightClient->State.GetNumber() : -1);
-	File.Write<GoalList_t> (Secrets);
-	File.Write<GoalList_t> (Goals);
-	File.Write<MonsterCount_t> (Monsters);
+	File.Write<SGoalList> (Secrets);
+	File.Write<SGoalList> (Goals);
+	File.Write<SMonsterCount> (Monsters);
 	File.Write<uint8> (PowerCubeCount);
 	File.Write<uint32> (Inhibit);
 	File.Write<uint32> (EntityNumber);
@@ -106,18 +103,15 @@ void CLevelLocals::Load (CFile &File)
 	NextMap = File.ReadCCString ();
 	ForceMap = File.ReadCCString ();
 
-	IntermissionTime = File.Read<FrameNumber> ();
-	ExitIntermission = File.Read<bool> ();
-	IntermissionOrigin = File.Read<vec3f> ();
-	IntermissionAngles = File.Read<vec3f> ();
+	Intermission = File.Read<SIntermissionState> ();
 
 	sint32 Index = File.Read<sint32> ();
 	if (Index != -1)
 		SightClient = entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
 
-	Secrets = File.Read<GoalList_t> ();
-	Goals = File.Read<GoalList_t> ();
-	Monsters = File.Read<MonsterCount_t> ();
+	Secrets = File.Read<SGoalList> ();
+	Goals = File.Read<SGoalList> ();
+	Monsters = File.Read<SMonsterCount> ();
 	PowerCubeCount = File.Read<uint8> ();
 	Inhibit = File.Read<uint32> ();
 	EntityNumber = File.Read<uint32> ();
@@ -213,7 +207,7 @@ CheckDMRules
 */
 void CheckDMRules ()
 {
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;
 
 	if (!(Game.GameMode & GAME_DEATHMATCH))
@@ -264,10 +258,10 @@ ExitLevel
 */
 void ExitLevel ()
 {
-	gi.AddCommandString ((char*)(std::string("gamemap \"") + Level.ChangeMap + "\"\n").c_str());
-	Level.ChangeMap = NULL;
-	Level.ExitIntermission = false;
-	Level.IntermissionTime = 0;
+	gi.AddCommandString ((char*)(std::string("gamemap \"") + Level.Intermission.ChangeMap + "\"\n").c_str());
+	Level.Intermission.ChangeMap = NULL;
+	Level.Intermission.ShouldExit = false;
+	Level.Intermission.Time = 0;
 	ClientEndServerFrames ();
 
 	// clear some things before going to next level
@@ -344,11 +338,11 @@ void			RunPrivateEntities ();
 #include <crtdbg.h>
 #endif
 
-void ProcessEntity (edict_t *ent)
+void ProcessEntity (SEntity *ent)
 {
-	if (!ent->server.InUse)
+	if (!ent->Server.InUse)
 	{
-		if (ent->server.State.Number > (Game.MaxClients + BODY_QUEUE_SIZE))
+		if (ent->Server.State.Number > (Game.MaxClients + BODY_QUEUE_SIZE))
 		{
 			if (!ent->AwaitingRemoval)
 			{
@@ -401,7 +395,7 @@ void ProcessEntity (edict_t *ent)
 }
 
 /**
-\fn	bool RemoveEntity (edict_t *ent)
+\fn	bool RemoveEntity (SEntity *ent)
 
 \brief	remove_if callback. Removes the entity 'ent' from the list if it needs to be removed. 
 
@@ -412,9 +406,9 @@ void ProcessEntity (edict_t *ent)
 
 \return	true if removed, false if not. 
 **/
-bool RemoveEntity (edict_t *ent)
+bool RemoveEntity (SEntity *ent)
 {
-	if (!ent || ent->server.State.Number <= (Game.MaxClients + BODY_QUEUE_SIZE))
+	if (!ent || ent->Server.State.Number <= (Game.MaxClients + BODY_QUEUE_SIZE))
 		return false;
 
 	if (!ent->Entity || ent->AwaitingRemoval)
@@ -463,11 +457,11 @@ void CGameAPI::RunFrame ()
 
 	// exit intermissions
 
-	if (Level.ExitIntermission)
+	if (Level.Intermission.ShouldExitOnNextFrame)
 	{
-		if (Level.ExitIntermissionOnNextFrame)
+		if (Level.Intermission.ShouldExitOnNextFrame)
 		{
-			Level.ExitIntermissionOnNextFrame = false;
+			Level.Intermission.ShouldExitOnNextFrame = false;
 			return;
 		}
 		ExitLevel ();
@@ -619,7 +613,7 @@ void CGameAPI::Init ()
 
 	// initialize all entities for this game
 	Game.MaxEntities = CvarList[CV_MAXENTITIES].Integer();
-	Game.Entities = QNew (TAG_GAME) edict_t[Game.MaxEntities];
+	Game.Entities = QNew (TAG_GAME) SEntity[Game.MaxEntities];
 	GameAPI.GetEntities() = Game.Entities;
 	GameAPI.GetMaxEdicts() = Game.MaxEntities;
 

@@ -43,7 +43,7 @@ void G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &fo
 
 IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
 {
-	for (edict_t *from = (!From) ? Game.Entities : (From->GetGameEntity() + 1); from < &Game.Entities[GameAPI.GetNumEdicts()]; from++)
+	for (SEntity *from = (!From) ? Game.Entities : (From->GetGameEntity() + 1); from < &Game.Entities[GameAPI.GetNumEdicts()]; from++)
 	{
 		if (!from->Entity)
 			continue;
@@ -248,13 +248,13 @@ bool IsVisible (IBaseEntity *self, IBaseEntity *Other)
 	vec3f start = self->State.GetOrigin() + vec3f(0, 0, self->ViewHeight),
 		  end = Other->State.GetOrigin() + vec3f(0, 0, Other->ViewHeight);
 	return (CTrace (start, end,
-		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
+		self, CONTENTS_MASK_OPAQUE).Fraction == 1.0);
 }
 
 bool IsVisible (vec3f left, vec3f right, IBaseEntity *self)
 {
 	return (CTrace (left, right,
-		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
+		self, CONTENTS_MASK_OPAQUE).Fraction == 1.0);
 }
 
 /*

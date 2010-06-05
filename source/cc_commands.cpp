@@ -130,7 +130,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	static std::vector <CMonsterEntity *> ChosenMonsters;
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
-		edict_t *ent = (*it);
+		SEntity *ent = (*it);
 
 		if (!ent->Entity || !ent->Entity->GetInUse())
 			continue;

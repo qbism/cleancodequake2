@@ -366,7 +366,7 @@ public:
 
 #if CLEANCTF_ENABLED
 //ZOID
-	struct SCTFData_t
+	struct SCTFData
 	{
 		ETeamIndex		Team;					// CTF team
 		uint8			State;
@@ -593,7 +593,7 @@ public:
 #endif
 
 	// animation vars
-	struct client_Animation_t
+	struct SClientAnimation
 	{
 		uint16			EndFrame;
 		EAnimPriority	Priority;
@@ -601,7 +601,7 @@ public:
 	} Anim;
 
 	// powerup timers
-	struct client_Timers_t
+	struct SClientTimers
 	{
 		FrameNumber			QuadDamage,
 							Invincibility,
@@ -628,21 +628,21 @@ public:
 		FrameNumber			RespawnTime;		// can respawn when time > this
 	} Timers;
 
-	struct client_Grenade_Data_t
+	struct SClientGrenadeData
 	{
 		bool			BlewUp;
 		bool			Thrown;
 		FrameNumber	Time;
 	} Grenade;
 
-	struct client_Flood_t
+	struct SClientFlood
 	{
 		FrameNumber		LockTill; // locked from talking
 		FrameNumber		When[10]; // when messages were said
 		uint8			WhenHead; // head pointer for when said
 	} Flood;
 
-	struct client_Chase_t
+	struct SClientChase
 	{
 		CPlayerEntity	*Target;
 		uint8			Mode;
@@ -650,7 +650,7 @@ public:
 
 #if CLEANCTF_ENABLED
 //ZOID
-	struct client_CTF_Grapple_t
+	struct SCTFGrapple
 	{
 		class CGrappleEntity	*Entity;
 		EGrappleState			State;
@@ -659,7 +659,7 @@ public:
 //ZOID
 #endif
 
-	struct client_Tech_t
+	struct SClientTech
 	{
 		// Tech-specific fields
 		FrameNumber	RegenTime;

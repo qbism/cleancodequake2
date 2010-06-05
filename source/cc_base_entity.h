@@ -376,7 +376,7 @@ template <class TType>
 class entity_ptr : public safe_bool<entity_ptr<TType> >
 {
 	TType		*GameEntity;	// The CleanCode entity
-	edict_t		*ServerEntity;	// The server entity
+	SEntity		*ServerEntity;	// The server entity
 
 public:
 	/**
@@ -429,7 +429,7 @@ public:
 	}
 
 	/**
-	\fn	entity_ptr(edict_t *ServerEntity)
+	\fn	entity_ptr(SEntity *ServerEntity)
 	
 	\brief	Constructor. Constructs an entity_ptr from a server entity.
 	
@@ -438,7 +438,7 @@ public:
 	
 	\param [in,out]	ServerEntity	If non-null, the server entity. 
 	**/
-	entity_ptr(edict_t *ServerEntity) :
+	entity_ptr(SEntity *ServerEntity) :
 	  ServerEntity(ServerEntity)
 	  {
 		  if (ServerEntity)
@@ -467,7 +467,7 @@ public:
 		return *this;
 	}
 
-	entity_ptr &operator= (edict_t *NewServerEntity)
+	entity_ptr &operator= (SEntity *NewServerEntity)
 	{
 		if (GameEntity)
 			UsageList().RemoveEntity (GameEntity, this);
@@ -581,13 +581,13 @@ public:
 	}
 
 	/**
-	\fn	edict_t *GetServerEntity ()
+	\fn	SEntity *GetServerEntity ()
 	
 	\brief	Gets the server entity. 
 	
 	\return	null if it fails, else the server entity. 
 	**/
-	edict_t *GetServerEntity () const
+	SEntity *GetServerEntity () const
 	{
 		return ServerEntity;
 	}
@@ -601,7 +601,7 @@ public:
 	**/
 	bool IsValid () const
 	{
-		return (ServerEntity && ServerEntity->server.InUse && !ServerEntity->freetime && GameEntity && !GameEntity->Freed);
+		return (ServerEntity && ServerEntity->Server.InUse && !ServerEntity->FreeTime && GameEntity && !GameEntity->Freed);
 	}
 
 	/**
@@ -656,7 +656,7 @@ static bool operator!= (const IBaseEntity *Left, const entity_ptr<TType> &Right)
 class IBaseEntity
 {
 protected:
-	edict_t			*gameEntity;	// The "game entity" this is linked with.
+	SEntity			*gameEntity;	// The "game entity" this is linked with.
 									// Kept private to make sure no mistakes are made.
 public:
 	bool			Freed;			// true if freed
@@ -726,13 +726,13 @@ public:
 	virtual ~IBaseEntity ();
 
 	/**
-	\fn	inline edict_t *GetGameEntity ()
+	\fn	inline SEntity *GetGameEntity ()
 	
 	\brief	Gets the game entity.
 	
 	\return	null if it fails, else the game entity. 
 	**/
-	inline edict_t *GetGameEntity ()
+	inline SEntity *GetGameEntity ()
 	{
 		return gameEntity;
 	}
@@ -1242,15 +1242,15 @@ inline uint32 atou (const char *Str)
 #define EntityMemberOffset(y,x) offsetof(y,x)
 
 /**
-\def	GameEntityMemberOffset(x) offsetof(edict_t,x)
+\def	GameEntityMemberOffset(x) offsetof(SEntity,x)
 
-\brief	Gets the byte offset of member 'x' in edict_t
+\brief	Gets the byte offset of member 'x' in SEntity
 
 \remarks	Paril, 29/05/2010. 
 
 \param	x	Member name. 
 **/
-#define GameEntityMemberOffset(x) EntityMemberOffset(edict_t,x)
+#define GameEntityMemberOffset(x) EntityMemberOffset(SEntity,x)
 
 /**
 \def	SpawnTempMemberOffset(x) offsetof(spawn_temp_t,x)
@@ -1971,7 +1971,7 @@ inline TType *ReadEntity (CFile &File)
 void InitEntityLists ();
 
 /**
-\fn	edict_t *G_Spawn ()
+\fn	SEntity *G_Spawn ()
 
 \deprecated	Use CreateEntityFromClassname instead.
 
@@ -1984,10 +1984,10 @@ void InitEntityLists ();
 \return	null if it fails, else. 
 **/
 CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
-edict_t	*G_Spawn ();
+SEntity	*G_Spawn ();
 
 /**
-\fn	void G_InitEdict (edict_t *e)
+\fn	void G_InitEdict (SEntity *e)
 
 \brief	Initialize entity.
 
@@ -2000,10 +2000,10 @@ edict_t	*G_Spawn ();
 \param	e	Entity to initialize. 
 **/
 CC_INSECURE_DEPRECATE (Function not needed)
-void	G_InitEdict (edict_t *e);
+void	G_InitEdict (SEntity *e);
 
 /**
-\fn	void G_FreeEdict (edict_t *ed)
+\fn	void G_FreeEdict (SEntity *ed)
 
 \deprecated	Use IBaseEntity::Free instead.
 
@@ -2015,10 +2015,10 @@ void	G_InitEdict (edict_t *e);
 \param [in,out]	ed	If non-null, the entity. 
 **/
 CC_INSECURE_DEPRECATE (Entity->Free)
-void	G_FreeEdict (edict_t *e);
+void	G_FreeEdict (SEntity *e);
 
 /**
-\fn	void ED_CallSpawn (edict_t *ent)
+\fn	void ED_CallSpawn (SEntity *ent)
 
 \brief	Calls the spawn function for a given entity.
 		Internal.
@@ -2028,7 +2028,7 @@ void	G_FreeEdict (edict_t *e);
 
 \param [in,out]	ent	If non-null, the entity. 
 **/
-void	ED_CallSpawn (edict_t *ent);
+void	ED_CallSpawn (SEntity *ent);
 
 extern IBaseEntity *World;	// The world entity
 
@@ -2047,7 +2047,7 @@ extern IBaseEntity *World;	// The world entity
 inline IBaseEntity *CreateEntityFromClassname (const char *classname)
 {
 CC_DISABLE_DEPRECATION
-	edict_t *ent = G_Spawn ();
+	SEntity *ent = G_Spawn ();
 
 	Level.ClassName = classname;
 	ED_CallSpawn (ent);

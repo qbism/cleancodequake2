@@ -287,7 +287,7 @@ public:
 	vec3f				Velocity;
 	vec3f				GravityVector;
 	float				Mass;
-	struct WaterInfo_t
+	struct SWaterInfo
 	{
 		EBrushContents		Type;
 		EWaterLevel			Level;
@@ -307,7 +307,7 @@ public:
 		File.Write<vec3f> (&Velocity);
 		File.Write<vec3f> (&GravityVector);
 		File.Write<float> (&Mass);
-		File.Write<WaterInfo_t> (WaterInfo);
+		File.Write<SWaterInfo> (WaterInfo);
 		File.Write<bool> (PhysicsDisabled);
 	};
 
@@ -319,7 +319,7 @@ public:
 		Velocity = File.Read<vec3f> ();
 		GravityVector = File.Read<vec3f> ();
 		Mass = File.Read<float> ();
-		WaterInfo = File.Read<WaterInfo_t> ();
+		WaterInfo = File.Read<SWaterInfo> ();
 		PhysicsDisabled = File.Read<bool> ();
 	};
 

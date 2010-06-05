@@ -47,7 +47,7 @@ public:
 	CClassnameToClassIndex (IMapEntity *(*Spawn) (sint32 Index), const char *Classname);
 };
 
-IBaseEntity *ResolveMapEntity (edict_t *ent);
+IBaseEntity *ResolveMapEntity (SEntity *ent);
 
 #define LINK_RESOLVE_CLASSNAME(x,y) x##y
 

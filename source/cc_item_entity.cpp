@@ -178,14 +178,14 @@ void CItemEntity::Think ()
 
 			vec3f end = (State.GetOrigin() + vec3f(0,0,-128));
 			CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), end, this, CONTENTS_MASK_SOLID);
-			if (tr.startSolid)
+			if (tr.StartSolid)
 			{
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity origin is in solid\n");
 				Free ();
 				return;
 			}
 
-			State.GetOrigin() = tr.EndPos;
+			State.GetOrigin() = tr.EndPosition;
 
 			if (Team.HasTeam)
 			{

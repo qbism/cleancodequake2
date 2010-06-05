@@ -136,7 +136,7 @@ enum
 	CV_TOTAL_CVARS
 };
 
-struct cvarDefaultValue_s
+struct SCVarDefaultValue
 {
 	ECvars		cvarIndex;
 	const char	*cvarName;

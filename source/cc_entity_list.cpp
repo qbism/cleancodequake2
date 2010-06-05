@@ -45,7 +45,7 @@ class CEntityList
 
 public:
 	void AddToList (CClassnameToClassIndex *Entity);
-	IBaseEntity *Resolve (edict_t *ent);
+	IBaseEntity *Resolve (SEntity *ent);
 };
 
 // Construct on first use idiom
@@ -71,7 +71,7 @@ void CEntityList::AddToList (CClassnameToClassIndex *Entity)
 };
 
 void SpawnWorld ();
-IBaseEntity *CEntityList::Resolve (edict_t *ent)
+IBaseEntity *CEntityList::Resolve (SEntity *ent)
 {
 	if (Q_stricmp(Level.ClassName.c_str(), "worldspawn") == 0)
 	{
@@ -85,19 +85,19 @@ IBaseEntity *CEntityList::Resolve (edict_t *ent)
 	{
 		CClassnameToClassIndex *Table = EntityList.at((*it).second);
 		if (Q_stricmp (Table->Classname, Level.ClassName.c_str()) == 0)
-			return Table->Spawn(ent->server.State.Number);
+			return Table->Spawn(ent->Server.State.Number);
 	}
 
 	return NULL;
 }
 
-IBaseEntity *ResolveMapEntity (edict_t *ent)
+IBaseEntity *ResolveMapEntity (SEntity *ent)
 {
 	return EntityList().Resolve (ent);
 };
 
 /**
-\fn	void ED_CallSpawn (edict_t *ent)
+\fn	void ED_CallSpawn (SEntity *ent)
 
 \brief	Calls the spawn function for a given entity.
 		Internal.
@@ -107,7 +107,7 @@ IBaseEntity *ResolveMapEntity (edict_t *ent)
 
 \param [in,out]	ent	If non-null, the entity. 
 **/
-void ED_CallSpawn (edict_t *ent)
+void ED_CallSpawn (SEntity *ent)
 {
 	if (Level.ClassName.empty())
 	{
@@ -134,7 +134,7 @@ CC_ENABLE_DEPRECATION
 		// We're done then
 		MapEntity->GetGameEntity()->Entity = NULL;
 		QDelete MapEntity;
-		ent->server.InUse = false;
+		ent->Server.InUse = false;
 		return;
 	}
 
@@ -180,7 +180,7 @@ Parses an edict out of the given string, returning the new position
 ed should be a properly initialized empty edict.
 ====================
 */
-static void ED_ParseEdict (CParser &data, edict_t *ent)
+static void ED_ParseEdict (CParser &data, SEntity *ent)
 {
 	bool	init = false;
 
@@ -377,7 +377,7 @@ void G_FindTeams ()
 void InitEntities ()
 {
 	// Set up the world
-	edict_t *theWorld = &Game.Entities[0];
+	SEntity *theWorld = &Game.Entities[0];
 
 	if (!theWorld->Entity)
 		theWorld->Entity = QNewEntityOf CWorldEntity(0);
@@ -385,7 +385,7 @@ void InitEntities ()
 	// Set up the client entities
 	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
-		edict_t *ent = &Game.Entities[i];
+		SEntity *ent = &Game.Entities[i];
 
 		if (!ent->Entity)
 			ent->Entity = QNewEntityOf CPlayerEntity(i);
@@ -487,7 +487,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 				GameError ("ED_LoadFromFile: found %s when expecting {", token);
 
 	CC_DISABLE_DEPRECATION
-			edict_t *ent = (!SpawnedWorld) ? Game.Entities : G_Spawn();
+			SEntity *ent = (!SpawnedWorld) ? Game.Entities : G_Spawn();
 	CC_ENABLE_DEPRECATION
 			SpawnedWorld = true;
 
@@ -502,7 +502,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 			Level.EntityNumber++;
 
-			if (!ent->server.InUse)
+			if (!ent->Server.InUse)
 			{
 				Level.Inhibit++;
 				CC_ASSERT_EXPR (!(ent->Entity && !ent->Entity->Freed), "Entity not inuse but freed!");

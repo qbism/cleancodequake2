@@ -248,7 +248,7 @@ void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 		//
 		// need to add monsterinfo.abort_duck() and monsterinfo.next_duck_time
 
-		if ((!dodger) && ((tr->EndPos.Z <= height) || (AIFlags & AI_DUCKED)))
+		if ((!dodger) && ((tr->EndPosition.Z <= height) || (AIFlags & AI_DUCKED)))
 			return;
 	}
 
@@ -259,11 +259,11 @@ void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 			return;
 
 		// if we're ducking already, or the shot is at our knees
-		if ((tr->EndPos.Z <= height) || (AIFlags & AI_DUCKED))
+		if ((tr->EndPosition.Z <= height) || (AIFlags & AI_DUCKED))
 		{
 			vec3f right, diff;
 			Entity->State.GetAngles().ToVectors (NULL, &right, NULL);
-			diff = tr->EndPos - Entity->State.GetOrigin();
+			diff = tr->EndPosition - Entity->State.GetOrigin();
 
 			Lefty = !((right | diff) < 0);
 	
@@ -648,7 +648,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			{
 				if (!Entity->WaterInfo.Level)
 				{
-					if (PointContents(trace.EndPos + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER)
+					if (PointContents(trace.EndPosition + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER)
 						return false;
 				}
 			}
@@ -658,15 +658,15 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			{
 				if (Entity->WaterInfo.Level < WATER_WAIST)
 				{
-					if (!(PointContents(trace.EndPos + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER))
+					if (!(PointContents(trace.EndPosition + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER))
 						return false;
 				}
 			}
 
 			// PMM - changed above to this
-			if ((trace.fraction == 1) && (!trace.allSolid) && (!trace.startSolid))
+			if ((trace.Fraction == 1) && (!trace.AllSolid) && (!trace.StartSolid))
 			{
-				Entity->State.GetOrigin() = trace.EndPos;
+				Entity->State.GetOrigin() = trace.EndPosition;
 
 				/*if(!current_bad && CheckForBadArea(ent))
 					VectorCopy (oldorg, ent->s.origin);
@@ -699,14 +699,14 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 	CTrace trace (newOrg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.allSolid)
+	if (trace.AllSolid)
 		return false;
 
-	if (trace.startSolid)
+	if (trace.StartSolid)
 	{
 		newOrg.Z -= stepsize;
 		trace (newOrg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
-		if (trace.allSolid || trace.startSolid)
+		if (trace.AllSolid || trace.StartSolid)
 			return false;
 	}
 
@@ -714,14 +714,14 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	// don't go in to water
 	if (Entity->WaterInfo.Level == 0)
 	{
-		vec3f test = trace.EndPos;
+		vec3f test = trace.EndPosition;
 		test.Z += (Entity->GravityVector.Z > 0) ? Entity->GetMaxs().Z - 1 : Entity->GetMins().Z + 1;
 
 		if (PointContents(test) & CONTENTS_MASK_WATER)
 			return false;
 	}
 
-	if (trace.fraction == 1)
+	if (trace.Fraction == 1)
 	{
 	// if monster had the ground pulled out, go ahead and fall
 		if (Entity->Flags & FL_PARTIALGROUND)
@@ -742,7 +742,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	}
 
 // check point traces down for dangling corners
-	Entity->State.GetOrigin() = trace.EndPos;
+	Entity->State.GetOrigin() = trace.EndPosition;
 
 	// PMM - don't bother with bad areas if we're dead
 	if (Entity->Health > 0)
@@ -806,8 +806,8 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (Entity->Flags & FL_PARTIALGROUND)
 		Entity->Flags &= ~FL_PARTIALGROUND;
 
-	Entity->GroundEntity = trace.Ent;
-	Entity->GroundEntityLinkCount = trace.Ent->GetLinkCount();
+	Entity->GroundEntity = trace.Entity;
+	Entity->GroundEntityLinkCount = trace.Entity->GetLinkCount();
 
 // the move is ok
 	if (ReLink)
@@ -963,13 +963,13 @@ bool CMonster::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.Ent->EntityFlags & ENT_MONSTER) && (!IsVisible(Entity, *Entity->Enemy))))
+				if ((!(tr.Entity->EntityFlags & ENT_MONSTER) && (!IsVisible(Entity, *Entity->Enemy))))
 				{
 					if (BlindFire && (BlindFireDelay <= 20.0))
 					{
@@ -985,7 +985,7 @@ bool CMonster::CheckAttack ()
 							// make sure we're not going to shoot a monster
 							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
 
-							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
+							if (tr.AllSolid || tr.StartSolid || ((tr.Fraction < 1.0) && (tr.Entity != Entity->Enemy)))
 								return false;
 
 							AttackState = AS_BLIND;
@@ -1647,11 +1647,11 @@ void CMonster::AI_Run(float Dist)
 	{
 		CTrace tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 		
-		if (tr.fraction < 1)
+		if (tr.Fraction < 1)
 		{
 			vec3f v = lastGoalOrigin - Entity->State.GetOrigin();
 			float d1 = v.Length();
-			float center = tr.fraction;
+			float center = tr.Fraction;
 			float d2 = d1 * ((center+1)/2);
 			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 
@@ -1662,12 +1662,12 @@ void CMonster::AI_Run(float Dist)
 			v.Set (d2, -16, 0);
 			G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, left_target);
 			tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			float left = tr.fraction;
+			float left = tr.Fraction;
 
 			v.Set (d2, 16, 0);
 			G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, right_target);
 			tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			float right = tr.fraction;
+			float right = tr.Fraction;
 
 			center = (d1*center)/d2;
 			if (left >= center && left > right)

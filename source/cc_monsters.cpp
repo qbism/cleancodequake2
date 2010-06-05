@@ -592,9 +592,9 @@ bool CMonster::CheckBottom ()
 
 	trace (start, stop, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1.0)
+	if (trace.Fraction == 1.0)
 		return false;
-	mid = bottom = trace.EndPos[2];
+	mid = bottom = trace.EndPosition[2];
 	
 // the corners must be within 16 of the midpoint	
 	for	(x=0 ; x<=1 ; x++)
@@ -608,16 +608,16 @@ bool CMonster::CheckBottom ()
 			// FIXME - this will only handle 0,0,1 and 0,0,-1 gravity vectors
 			if (Entity->GravityVector.Z > 0)
 			{
-				if (trace.fraction != 1.0 && trace.EndPos.Z < bottom)
-					bottom = trace.EndPos.Z;
-				if (trace.fraction == 1.0 || trace.EndPos.Z - mid > STEPSIZE)
+				if (trace.Fraction != 1.0 && trace.EndPosition.Z < bottom)
+					bottom = trace.EndPosition.Z;
+				if (trace.Fraction == 1.0 || trace.EndPosition.Z - mid > STEPSIZE)
 					return false;
 			}
 			else
 			{
-				if (trace.fraction != 1.0 && trace.EndPos.Z > bottom)
-					bottom = trace.EndPos.Z;
-				if (trace.fraction == 1.0 || mid - trace.EndPos.Z > STEPSIZE)
+				if (trace.Fraction != 1.0 && trace.EndPosition.Z > bottom)
+					bottom = trace.EndPosition.Z;
+				if (trace.Fraction == 1.0 || mid - trace.EndPosition.Z > STEPSIZE)
 					return false;
 			}
 		}
@@ -1103,15 +1103,13 @@ void CMonsterBeamLaser::Think ()
 	{
 		tr (start, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
 
-		if (!tr.ent)
-			break;
-		if (!tr.ent->Entity)
+		if (!tr.Entity)
 			break;
 
-		IBaseEntity *Entity = tr.ent->Entity;
+		IBaseEntity *Entity = tr.Entity;
 		// hurt it if we can
 		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
-			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPos, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
+			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPosition, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		if (Damage < 0) // healer ray
 		{
@@ -1132,16 +1130,16 @@ void CMonsterBeamLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				CSparks(tr.EndPos, tr.plane.Normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
+				CSparks(tr.EndPosition, tr.Plane.Normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
 			}
 			break;
 		}
 
-		ignore = tr.Ent;
-		start = tr.EndPos;
+		ignore = tr.Entity;
+		start = tr.EndPosition;
 	}
 
-	State.GetOldOrigin() = tr.EndPos;
+	State.GetOldOrigin() = tr.EndPosition;
 	NextThink = Level.Frame + FRAMETIME;
 	DoFree = true;
 }
@@ -1200,10 +1198,10 @@ void CMonster::DropToFloor ()
 
 	CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1 || trace.allSolid)
+	if (trace.Fraction == 1 || trace.AllSolid)
 		return;
 
-	Entity->State.GetOrigin() = trace.EndPos;
+	Entity->State.GetOrigin() = trace.EndPosition;
 
 	Entity->Link ();
 	CheckGround ();
@@ -1593,7 +1591,7 @@ void CMonster::CheckGround()
 	// check steepness
 	if (Entity->GravityVector.Z < 0)		// normal gravity
 	{
-		if (trace.plane.Normal.Z < 0.7f && !trace.startSolid)
+		if (trace.Plane.Normal.Z < 0.7f && !trace.StartSolid)
 		{
 			Entity->GroundEntity = nullentity;
 			return;
@@ -1601,18 +1599,18 @@ void CMonster::CheckGround()
 	}
 	else								// inverted gravity
 	{
-		if (trace.plane.Normal.Z > -0.7f && !trace.startSolid)
+		if (trace.Plane.Normal.Z > -0.7f && !trace.StartSolid)
 		{
 			Entity->GroundEntity = nullentity;
 			return;
 		}
 	}
 
-	if (!trace.startSolid && !trace.allSolid)
+	if (!trace.StartSolid && !trace.AllSolid)
 	{
-		Entity->State.GetOrigin() = trace.EndPos;
-		Entity->GroundEntity = trace.Ent;
-		Entity->GroundEntityLinkCount = trace.Ent->GetLinkCount();
+		Entity->State.GetOrigin() = trace.EndPosition;
+		Entity->GroundEntity = trace.Entity;
+		Entity->GroundEntityLinkCount = trace.Entity->GetLinkCount();
 		Entity->Velocity.Z = 0;
 	}
 }

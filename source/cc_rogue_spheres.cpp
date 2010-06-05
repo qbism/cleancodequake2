@@ -266,7 +266,7 @@ void CRogueDefenderSphere::Think ()
 	}
 
 	// if we've exited the level, just remove ourselves.
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 	{	
 		Explode ();
 		return;
@@ -336,7 +336,7 @@ void CRogueVengeanceSphere::Pain (IBaseEntity *Other, sint32 Damage)
 void CRogueVengeanceSphere::Think ()
 {
 	// if we've exited the level, just remove ourselves.
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 	{	
 		Explode ();
 		return;
@@ -487,7 +487,7 @@ void CRogueHunterSphere::ChangeYaw (float IdealYaw)
 void CRogueHunterSphere::Think ()
 {
 	// if we've exited the level, just remove ourselves.
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 	{	
 		Explode ();
 		return;

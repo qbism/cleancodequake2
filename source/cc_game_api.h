@@ -48,18 +48,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #endif
 
 // Game-defined entity structure
-struct edict_t
+struct SEntity
 {
-	SServerEntity		server;
+	SServerEntity		Server;
 
 	//
 	// only used locally in game, not by server
 	//
 
-	FrameNumber		freetime;			// sv.time when the object was freed
+	FrameNumber			FreeTime;			// sv.time when the object was freed
 	bool				AwaitingRemoval;
-	// Paril: trying something new. Instead of removing the entity the frame AFTER it was removed,
-	// remove it four frames after. This should be enough time for other entities to realize the entity is gone.
 	uint8				RemovalFrames;
 	
 	// Paril
@@ -72,7 +70,7 @@ const int GAME_APIVERSION		= 3;
 // functions provided by the main engine
 //
 typedef float vec3_t[3];
-struct gameImport_t
+struct SGameImport
 {
 	// special messages
 #if !USE_EXTENDED_GAME_IMPORTS
@@ -86,20 +84,20 @@ struct gameImport_t
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (ClientPrintf)
 #endif
-	void	(*cprintf) (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
+	void	(*cprintf) (SEntity *ent, EGamePrintLevel printLevel, char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (CenterPrintf)
 #endif
-	void	(*centerprintf) (edict_t *ent, char *fmt, ...);
+	void	(*centerprintf) (SEntity *ent, char *fmt, ...);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (PlaySoundFrom or IBaseEntity->PlaySound)
 #endif
-	void	(*sound) (edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
+	void	(*sound) (SEntity *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (PlaySoundAt or IBaseEntity->PlayPositionedSound)
 #endif
-	void	(*positioned_sound) (vec3_t origin, edict_t *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
+	void	(*positioned_sound) (vec3_t origin, SEntity *ent, sint32 channel, sint32 soundIndex, float volume, float attenuation, float timeOffset);
 
 	// config strings hold all the index strings, the lightstyles,
 	// and misc data like the sky definition and cdtrack.
@@ -132,13 +130,13 @@ struct gameImport_t
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (SetModel)
 #endif
-	void	(*setmodel) (edict_t *ent, char *name);
+	void	(*setmodel) (SEntity *ent, char *name);
 
 	// collision detection
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CTrace)
 #endif
-	STrace	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passEnt, sint32 contentMask);
+	STrace	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, SEntity *passEnt, sint32 contentMask);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (PointContents)
 #endif
@@ -160,15 +158,15 @@ struct gameImport_t
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE ((IBaseEntity)->Link)
 #endif
-		void	(*linkentity) (edict_t *ent);
+		void	(*linkentity) (SEntity *ent);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE ((IBaseEntity)->Unlink)
 #endif
-	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
+	void	(*unlinkentity) (SEntity *ent);		// call before removing an interactive edict
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (BoxEdicts)
 #endif
-	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	sint32 maxCount, sint32 areaType);
+	sint32		(*BoxEdicts) (vec3_t mins, vec3_t maxs, SEntity **list,	sint32 maxCount, sint32 areaType);
 
 	void	(*Pmove) (
 	SPMove *pMove
@@ -183,7 +181,7 @@ struct gameImport_t
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (Cast)
 #endif
-	void	(*unicast) (edict_t *ent, BOOL reliable);
+	void	(*unicast) (SEntity *ent, BOOL reliable);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (WriteChar)
@@ -283,7 +281,7 @@ struct gameImport_t
 	void	(*DebugGraph) (float value, sint32 color);
 };
 
-extern	gameImport_t	gi;
+extern	SGameImport	gi;
 
 // C++ wrapper
 class CGameAPI
@@ -313,7 +311,7 @@ public:
 
 	virtual void ServerCommand ();
 
-	edict_t *&GetEntities ();
+	SEntity *&GetEntities ();
 	sint32 &GetEdictSize ();
 	sint32 &GetNumEdicts();
 	sint32 &GetMaxEdicts();

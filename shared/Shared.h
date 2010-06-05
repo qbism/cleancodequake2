@@ -68,6 +68,9 @@ const int MINOR_VERSION_R1Q2_32BIT_SOLID	= 1905;
 
 const int  FRAMETIME		= 1;	// 1 frame = .1 seconds
 
+// Forward declaration
+struct SEntity;
+
 /**
 \typedef	uint8 ESVCType
 
@@ -767,11 +770,11 @@ struct STrace
 	BOOL			AllSolid;	// if true, plane is not valid
 	BOOL			StartSolid;	// if true, the initial point was in a solid area
 	float			Fraction;	// time completed, 1.0 = didn't hit anything
-	vec3f			EndPos;		// final position
+	vec3f			EndPosition;// final position
 	SBSPPlane		Plane;		// surface normal at impact
 	SBSPSurface		*Surface;	// surface hit
 	sint32			Contents;	// contents on other side of surface hit
-	struct edict_t	*Entity;	// not set by CM_*() functions
+	SEntity			*Entity;	// not set by CM_*() functions
 };
 
 /*
@@ -927,14 +930,14 @@ struct SPMove
 
 	// results (out)
 	sint32			NumTouch;
-	edict_t			*TouchEnts[MAXTOUCH];
+	SEntity			*TouchEnts[MAXTOUCH];
 
 	vec3f			ViewAngles;			// clamped
 	float			ViewHeight;
 
 	vec3f			Mins, Maxs;			// bounding box size
 
-	edict_t			*GroundEntity;
+	SEntity			*GroundEntity;
 	sint32			WaterType;
 	sint32			WaterLevel;
 
@@ -2228,7 +2231,7 @@ struct SServerEntity
 	vec3f				AbsMin, AbsMax, Size;
 	ESolidType			Solid;
 	EBrushContents		ClipMask;
-	struct edict_t		*Owner;
+	SEntity				*Owner;
 };
 
 // CleanCode Stuff

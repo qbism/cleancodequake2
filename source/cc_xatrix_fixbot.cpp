@@ -412,9 +412,9 @@ bool CFixbot::CheckTelefrag ()
 	Entity->Enemy->State.GetAngles().ToVectors (NULL, NULL, &up);
 	start = start.MultiplyAngles (48, up);
 	CTrace tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), Entity->Enemy->GetMaxs(), start, Entity, CONTENTS_MASK_MONSTERSOLID);
-	if (tr.Ent->EntityFlags & ENT_HURTABLE)
+	if (tr.Entity->EntityFlags & ENT_HURTABLE)
 	{
-		entity_cast<IHurtableEntity>(tr.Ent)->TakeDamage (Entity, Entity, vec3fOrigin, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 999999, 0, DAMAGE_NO_PROTECTION, MOD_UNKNOWN);
+		entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (Entity, Entity, vec3fOrigin, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 999999, 0, DAMAGE_NO_PROTECTION, MOD_UNKNOWN);
 		return false;
 	}
 			
@@ -677,7 +677,7 @@ void CFixbot::LandingGoal ()
 		
 	CTrace tr (Entity->State.GetOrigin(), Goal->GetMins(), Goal->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	Goal->State.GetAngles() = tr.EndPos;
+	Goal->State.GetAngles() = tr.EndPosition;
 	
 	Entity->GoalEntity = Entity->Enemy = Goal;
 	CurrentMove = &FixbotMoveLanding;
@@ -701,7 +701,7 @@ void CFixbot::TakeOffGoal ()
 		
 	CTrace tr (Entity->State.GetOrigin(), Goal->GetMins(), Goal->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	Goal->State.GetAngles() = tr.EndPos;
+	Goal->State.GetAngles() = tr.EndPosition;
 	
 	Entity->GoalEntity = Entity->Enemy = Goal;
 	CurrentMove = &FixbotMoveTakeOff;
@@ -764,13 +764,13 @@ void CFixbot::RoamGoal ()
 		
 		CTrace tr (Entity->State.GetOldOrigin(), end, Entity, CONTENTS_MASK_SHOT);
 
-		vec = Entity->State.GetOrigin() - tr.EndPos;
+		vec = Entity->State.GetOrigin() - tr.EndPosition;
 		len = vec.Normalize ();
 
 		if (len > oldlen)
 		{
 			oldlen = len;
-			whichvec = tr.EndPos;
+			whichvec = tr.EndPosition;
 		}
 	}
 	
@@ -877,7 +877,7 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 	vspread+= (self->s.frame - FRAME_takeoff_01);
 
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
-	if (!(tr.fraction < 1.0))
+	if (!(tr.Fraction < 1.0))
 	{
 		vectoangles (aimdir, dir);
 		AngleVectors (dir, forward, right, up);
@@ -898,7 +898,7 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 		tr = gi.trace (start, NULL, NULL, end, self, content_mask);
 
 		// see if we hit water
-		if (tr.contents & MASK_WATER)
+		if (tr.Contents & MASK_WATER)
 		{
 			int		color;
 
@@ -907,16 +907,16 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 
 			if (!VectorCompare (start, tr.endpos))
 			{
-				if (tr.contents & CONTENTS_WATER)
+				if (tr.Contents & CONTENTS_WATER)
 				{
-					if (strcmp(tr.surface->name, "*brwater") == 0)
+					if (strcmp(tr.Surface->name, "*brwater") == 0)
 						color = SPLASH_BROWN_WATER;
 					else
 						color = SPLASH_BLUE_WATER;
 				}
-				else if (tr.contents & CONTENTS_SLIME)
+				else if (tr.Contents & CONTENTS_SLIME)
 					color = SPLASH_SLIME;
-				else if (tr.contents & CONTENTS_LAVA)
+				else if (tr.Contents & CONTENTS_LAVA)
 					color = SPLASH_LAVA;
 				else
 					color = SPLASH_UNKNOWN;
@@ -927,7 +927,7 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 					gi.WriteByte (TE_SPLASH);
 					gi.WriteByte (8);
 					gi.WritePosition (tr.endpos);
-					gi.WriteDir (tr.plane.normal);
+					gi.WriteDir (tr.Plane.normal);
 					gi.WriteByte (color);
 					gi.multicast (tr.endpos, MULTICAST_PVS);
 				}
@@ -949,22 +949,22 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 	}
 
 	// send gun puff / flash
-	if (!((tr.surface) && (tr.surface->flags & SURF_SKY)))
+	if (!((tr.Surface) && (tr.Surface->flags & SURF_SKY)))
 	{
-		if (tr.fraction < 1.0)
+		if (tr.Fraction < 1.0)
 		{
 			if (tr.ent->takedamage)
 			{
-				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, MOD_BLASTOFF);
+				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.Plane.normal, damage, kick, DAMAGE_BULLET, MOD_BLASTOFF);
 			}
 			else
 			{
-				if (strncmp (tr.surface->name, "sky", 3) != 0)
+				if (strncmp (tr.Surface->name, "sky", 3) != 0)
 				{
 					gi.WriteByte (svc_temp_entity);
 					gi.WriteByte (te_impact);
 					gi.WritePosition (tr.endpos);
-					gi.WriteDir (tr.plane.normal);
+					gi.WriteDir (tr.Plane.normal);
 					gi.multicast (tr.endpos, MULTICAST_PVS);
 
 					if (self->client)

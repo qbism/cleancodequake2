@@ -297,7 +297,7 @@ void CWallTurret::Fire ()
 		//dir.Normalize ();
 		CTrace trace (start, end, Entity, CONTENTS_MASK_SHOT);
 
-		if (trace.Ent == Entity->Enemy || trace.Ent == World)
+		if (trace.Entity == Entity->Enemy || trace.Entity == World)
 		{
 			if (Entity->SpawnFlags & SPAWN_BLASTER)
 				MonsterFireBlaster (start, dir, 20, rocketSpeed, MZ2_TURRET_BLASTER, EF_BLASTER);
@@ -305,7 +305,7 @@ void CWallTurret::Fire ()
 				MonsterFireBullet (start, dir, TURRET_BULLET_DAMAGE, 0, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_TURRET_MACHINEGUN);
 			else if (Entity->SpawnFlags & SPAWN_ROCKET)
 			{
-				if (dir.Length() * trace.fraction > 72)
+				if (dir.Length() * trace.Fraction > 72)
 					MonsterFireRocket (start, dir.GetNormalized(), 50, rocketSpeed, MZ2_TURRET_ROCKET);
 			}
 		}	
@@ -796,13 +796,13 @@ bool CWallTurret::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.Ent->GetSvFlags() & SVF_MONSTER)) && (!IsVisible(Entity, *Entity->Enemy)))
+				if ((!(tr.Entity->GetSvFlags() & SVF_MONSTER)) && (!IsVisible(Entity, *Entity->Enemy)))
 				{
 					if ((BlindFire) && (BlindFireDelay <= 100))
 					{
@@ -816,7 +816,8 @@ bool CWallTurret::CheckAttack ()
 						{
 							// make sure we're not going to shoot something we don't want to shoot
 							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
-							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
+
+							if (tr.AllSolid || tr.StartSolid || ((tr.Fraction < 1.0) && (tr.Entity != Entity->Enemy)))
 								return false;
 
 							AttackState = AS_BLIND;

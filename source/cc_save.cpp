@@ -104,9 +104,9 @@ IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 };
 
 extern bool ShuttingDownEntities;
-bool RemoveAll (const edict_t *it)
+bool RemoveAll (const SEntity *it)
 {
-	if (it && it->Entity && it->Entity->GetGameEntity() && (it->server.State.Number <= Game.MaxClients || it->server.InUse))
+	if (it && it->Entity && it->Entity->GetGameEntity() && (it->Server.State.Number <= Game.MaxClients || it->Server.InUse))
 		QDelete it->Entity;
 	return true;
 }
@@ -203,8 +203,8 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 
 void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 {
-	// Write the edict_t info first
-	File.Write<edict_t> (*Entity->GetGameEntity());
+	// Write the SEntity info first
+	File.Write<SEntity> (*Entity->GetGameEntity());
 
 	// Write special data
 	if (Entity->State.GetNumber() > Game.MaxClients)
@@ -254,7 +254,7 @@ void WriteEntities (CFile &File)
 {
 	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
-		edict_t *ent = (*it);
+		SEntity *ent = (*it);
 		if (!ent->Entity || !ent->Entity->Savable())
 			continue;
 
@@ -293,20 +293,20 @@ void WriteClients (CFile &File)
 
 void ReadRealEntity (CFile &File, sint32 number)
 {
-	// Get the edict_t for this number
-	edict_t *ent = &Game.Entities[number];
+	// Get the SEntity for this number
+	SEntity *ent = &Game.Entities[number];
 
 	// Restore entity
 	IBaseEntity *RestoreEntity = ent->Entity;
 
 	// Read
-	*ent = File.Read<edict_t> ();
+	*ent = File.Read<SEntity> ();
 
 	// Make a copy
-	edict_t temp (*ent);
+	SEntity temp (*ent);
 
 	// Null out pointers
-	ent->server.Owner = NULL;
+	ent->Server.Owner = NULL;
 
 	// Restore entity
 	ent->Entity = RestoreEntity;
@@ -315,14 +315,14 @@ void ReadRealEntity (CFile &File, sint32 number)
 	if (number > Game.MaxClients)
 	{
 		sint32 OwnerNumber = File.Read<sint32> ();
-		ent->server.Owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
+		ent->Server.Owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
 	}
 
-	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex2, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex3, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.State.ModelIndex4, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->server.State.Sound, INDEX_SOUND);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex2, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex3, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex4, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.Sound, INDEX_SOUND);
 
 	// Read entity stuff
 	if (number > Game.MaxClients)
@@ -336,9 +336,9 @@ void ReadRealEntity (CFile &File, sint32 number)
 		// Revision:
 		// This will actually change some base members..
 		// Restore them all here!
-		edict_t *oldOwner = ent->server.Owner;
-		memcpy (ent, &temp, sizeof(edict_t));
-		ent->server.Owner = oldOwner;
+		SEntity *oldOwner = ent->Server.Owner;
+		memcpy (ent, &temp, sizeof(SEntity));
+		ent->Server.Owner = oldOwner;
 
 		ent->Entity = Entity;
 	}
@@ -400,7 +400,7 @@ void ReadClients (CFile &File)
 	SaveClientData = QNew (TAG_GENERIC) CClient*[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].server.Client);
+		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].Server.Client);
 		ReadClient (File, i);
 	}
 }
@@ -486,15 +486,15 @@ void CGameAPI::ReadGame (char *filename)
 
 	seedMT (time(NULL));
 
-	Game.Entities = QNew (TAG_GAME) edict_t[Game.MaxEntities];
+	Game.Entities = QNew (TAG_GAME) SEntity[Game.MaxEntities];
 	GameAPI.GetEntities() = Game.Entities;
 	ReadGameLocals (File);
 
 	Game.Clients = QNew (TAG_GAME) SServerClient[Game.MaxClients];
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		edict_t *ent = &Game.Entities[i+1];
-		ent->server.Client = Game.Clients + i;
+		SEntity *ent = &Game.Entities[i+1];
+		ent->Server.Client = Game.Clients + i;
 	}
 
 	ReadClients (File);
@@ -524,7 +524,7 @@ void CGameAPI::WriteLevel (char *filename)
 	}
 
 	// write out edict size for checking
-	File.Write<size_t> (sizeof(edict_t));
+	File.Write<size_t> (sizeof(SEntity));
 
 	// write out a function pointer for checking
 	File.Write<size_t> (reinterpret_cast<size_t>(ReadClient));
@@ -577,7 +577,7 @@ void SetClientFields ()
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
 			Player->Client = *SaveClientData[i];
-			Player->Client.RepositionClient (Game.Entities[i+1].server.Client);
+			Player->Client.RepositionClient (Game.Entities[i+1].Server.Client);
 			QDelete SaveClientData[i];
 		}
 		QDelete[] SaveClientData;
@@ -629,7 +629,7 @@ void CGameAPI::ReadLevel (char *filename)
 
 	// check edict size
 	size_t size = File.Read<size_t> ();
-	if (size != sizeof(edict_t))
+	if (size != sizeof(SEntity))
 	{
 		GameError ("ReadLevel: mismatched edict size");
 		return;
@@ -664,11 +664,11 @@ void CGameAPI::ReadLevel (char *filename)
 	// mark all clients as unconnected
 	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		edict_t *ent = &Game.Entities[i+1];
-		ent->server.Client = Game.Clients + i;
+		SEntity *ent = &Game.Entities[i+1];
+		ent->Server.Client = Game.Clients + i;
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
-		Player->Client.RepositionClient (ent->server.Client);
+		Player->Client.RepositionClient (ent->Server.Client);
 		Player->Client.Persistent.State = SVCS_FREE;
 	}
 

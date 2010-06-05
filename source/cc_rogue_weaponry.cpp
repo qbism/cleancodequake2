@@ -46,8 +46,8 @@ bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f 
 
 void CHeatBeam::DoSolidHit	(CTrace *Trace)
 {
-	if (!(Trace->surface->Flags & SURF_TEXINFO_SKY))
-		CHeatSteam(Trace->EndPos, Trace->plane.Normal).Send();
+	if (!(Trace->Surface->Flags & SURF_TEXINFO_SKY))
+		CHeatSteam(Trace->EndPosition, Trace->Plane.Normal).Send();
 }
 
 void CHeatBeam::DoEffect	(vec3f &start, vec3f &end, bool water)
@@ -60,7 +60,7 @@ void CHeatBeam::DoEffect	(vec3f &start, vec3f &end, bool water)
 
 void CHeatBeam::DoWaterHit	(CTrace *Trace)
 {
-	CSparks(Trace->EndPos, Trace->plane.Normal, ST_HEATBEAM_SPARKS).Send();
+	CSparks(Trace->EndPosition, Trace->Plane.Normal, ST_HEATBEAM_SPARKS).Send();
 }
 
 void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
@@ -128,10 +128,10 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
 			CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
 
-			if (tempTrace.contents & CONTENTS_MASK_WATER)// All is good
+			if (tempTrace.Contents & CONTENTS_MASK_WATER)// All is good
 			{
 				// This is our end
-				lastWaterStart = tempTrace.EndPos;
+				lastWaterStart = tempTrace.EndPosition;
 				hitOutOfWater = true;
 			}
 		}
@@ -146,18 +146,18 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		CTrace Trace = DoTrace (from, end, Ignore, Mask);
 
 		// Did we hit an entity?
-		if (Trace.ent && Trace.Ent && ((Trace.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Ent)->CanTakeDamage))
+		if (Trace.Entity && ((Trace.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Entity)->CanTakeDamage))
 		{
 			// Convert to base entity
-			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Ent);
+			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Entity);
 
 			// Hurt it
 			// Revision
 			// Startsolid mistake..
-			if (Trace.startSolid)
+			if (Trace.StartSolid)
 			{
 				vec3f origin = Target->State.GetOrigin();
-				if (!DoDamage (Entity, Target, aimdir, origin, Trace.plane.Normal))
+				if (!DoDamage (Entity, Target, aimdir, origin, Trace.Plane.Normal))
 				{
 					DoEffect (origin, lastDrawFrom, DrawIsWater);
 					break; // We wanted to stop
@@ -186,15 +186,15 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				continue;
 			}
 
-			if (!DoDamage (Entity, Target, aimdir, Trace.EndPos, Trace.plane.Normal))
+			if (!DoDamage (Entity, Target, aimdir, Trace.EndPosition, Trace.Plane.Normal))
 			{
-				DoEffect (from, Trace.EndPos, DrawIsWater);
+				DoEffect (from, Trace.EndPosition, DrawIsWater);
 				break; // We wanted to stop
 			}
 
 			// Set up the start from where we are now
 			vec3f oldFrom = from;
-			from = Trace.EndPos;
+			from = Trace.EndPosition;
 
 			// Revision: Stop on solids
 			if (ThroughAndThrough && Target->GetSolid() == SOLID_BSP)
@@ -220,7 +220,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		{
 			Water = false;
 			// Assume solid
-			//if (Trace.contents & CONTENTS_MASK_SOLID)
+			//if (Trace.Contents & CONTENTS_MASK_SOLID)
 			{
 				// If we didn't grab water last time...
 				if (lastWaterStart == vec3fOrigin)
@@ -231,7 +231,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 					lastWaterStart = lastWaterStart.MultiplyAngles (5, aimdir);
 
 					// Set end point
-					lastWaterEnd = Trace.EndPos;
+					lastWaterEnd = Trace.EndPosition;
 
 					// Draw the effect
 					DoEffect (lastWaterStart, lastWaterEnd, true);
@@ -254,7 +254,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 						hitOutOfWater = false;
 
 					// Set end point
-					lastWaterEnd = Trace.EndPos;
+					lastWaterEnd = Trace.EndPosition;
 
 					// Draw the effect
 					DoEffect (lastWaterStart, lastWaterEnd, false);
@@ -267,11 +267,11 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			continue;
 		}
 		// If we hit non-transparent water
-		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && !(Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+		else if ((Trace.Contents & CONTENTS_MASK_WATER) &&
+			(Trace.Surface && !(Trace.Surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// Copy up our point for the effect
-			lastWaterEnd = Trace.EndPos;
+			lastWaterEnd = Trace.EndPosition;
 
 			// Tell the system we're in water
 			Water = true;
@@ -282,7 +282,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			DoWaterHit (&Trace);
 
 			// Set up the start from where we are now
-			from = lastDrawFrom = Trace.EndPos;
+			from = lastDrawFrom = Trace.EndPosition;
 			Mask = CONTENTS_MASK_SHOT;
 
 			// Find the exit point
@@ -315,10 +315,10 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 				vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
 				CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
 
-				if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
+				if (tempTrace.Contents & CONTENTS_MASK_WATER) // All is good
 				{
 					// This is our end
-					lastWaterStart = tempTrace.EndPos;
+					lastWaterStart = tempTrace.EndPosition;
 					continue; // Head to the next area
 				}
 			}
@@ -329,8 +329,8 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			continue;
 		}
 		// Transparent water
-		else if ((Trace.contents & CONTENTS_MASK_WATER) &&
-			(Trace.surface && (Trace.surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
+		else if ((Trace.Contents & CONTENTS_MASK_WATER) &&
+			(Trace.Surface && (Trace.Surface->Flags & (SURF_TEXINFO_TRANS33|SURF_TEXINFO_TRANS66))))
 		{
 			// This won't count as "water" since we can see through it.
 			// It has the same PVS, meaning we don't need to
@@ -339,7 +339,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			if (ThroughAndThrough)
 			{
 				// Keep going
-				from = Trace.EndPos.MultiplyAngles (0.1f, aimdir);
+				from = Trace.EndPosition.MultiplyAngles (0.1f, aimdir);
 
 				// Water hit effect
 				DoWaterHit (&Trace);
@@ -347,10 +347,10 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 			else
 			{
 				// Copy up our point for the effect
-				lastWaterEnd = Trace.EndPos;
+				lastWaterEnd = Trace.EndPosition;
 
 				// Draw the effect we have so far
-				DoEffect (from, Trace.EndPos, false);
+				DoEffect (from, Trace.EndPosition, false);
 
 				// Water hit effect
 				DoWaterHit (&Trace);
@@ -389,10 +389,10 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 					vec3f tempOrigin = stWater.MultiplyAngles (-(HITSCANSTEP + 5), aimdir);
 					CTrace tempTrace = DoTrace (stWater, tempOrigin, NULL, CONTENTS_MASK_WATER);
 
-					if (tempTrace.contents & CONTENTS_MASK_WATER) // All is good
+					if (tempTrace.Contents & CONTENTS_MASK_WATER) // All is good
 					{
 						// This is our end
-						lastWaterStart = tempTrace.EndPos;
+						lastWaterStart = tempTrace.EndPosition;
 						continue; // Head to the next area
 					}
 				}
@@ -408,7 +408,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		else
 		{
 			// Draw the effect
-			DoEffect (lastDrawFrom, Trace.EndPos, DrawIsWater);
+			DoEffect (lastDrawFrom, Trace.EndPosition, DrawIsWater);
 			DoSolidHit (&Trace);
 			break; // We're done
 		}
@@ -496,14 +496,14 @@ void CFlechette::Spawn	(IBaseEntity *Spawner, vec3f Start, vec3f Dir,
 	Bolt->Link ();
 
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : Start, Start, Bolt, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		Start = Start.MultiplyAngles (-10, Dir.GetNormalizedFast());
 		Bolt->State.GetOrigin() = Start;
 		Bolt->State.GetOldOrigin() = Start;
 
-		if (tr.ent->Entity)
-			Bolt->Touch (tr.ent->Entity, &tr.plane, tr.surface);
+		if (tr.Entity)
+			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
 	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
 		CheckDodge (Spawner, Start, Dir, Speed);
@@ -768,10 +768,10 @@ void CDisruptorTracker::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 		CheckDodge (Spawner, Bolt->State.GetOrigin(), dir, speed);
 
 	CTrace tr (Spawner->State.GetOrigin(), Bolt->State.GetOrigin(), Bolt, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		Bolt->State.GetOrigin() = Bolt->State.GetOrigin().MultiplyAngles (-10.0f, dir);
-		Bolt->Touch (tr.Ent, NULL, NULL);
+		Bolt->Touch (tr.Entity, NULL, NULL);
 	}
 }
 
@@ -884,14 +884,14 @@ void CGreenBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f di
 	Bolt->Link ();
 
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		start = start.MultiplyAngles (-10, dir.GetNormalizedFast());
 		Bolt->State.GetOrigin() = start;
 		Bolt->State.GetOldOrigin() = start;
 
-		if (tr.ent->Entity)
-			Bolt->Touch (tr.ent->Entity, &tr.plane, tr.surface);
+		if (tr.Entity)
+			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
 	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);

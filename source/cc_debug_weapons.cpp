@@ -50,17 +50,17 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 		vec3f end = Player->State.GetOrigin().MultiplyAngles(8192, forward);
 		CTrace tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SOLID|CONTENTS_MASK_WATER);
 
-		if (tr.fraction < 1 && tr.surface)
-			ConfigString (CS_POINTING_SURFACE, tr.surface->Name, Player);
+		if (tr.Fraction < 1 && tr.Surface)
+			ConfigString (CS_POINTING_SURFACE, tr.Surface->Name, Player);
 
 		tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
 
-		if (tr.fraction < 1 && tr.Ent && !tr.Ent->ClassName.empty())
+		if (tr.Fraction < 1 && tr.Entity && !tr.Entity->ClassName.empty())
 		{
-			if (!tr.surface)
-				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Ent->ClassName.c_str()), Player);
+			if (!tr.Surface)
+				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Entity->ClassName.c_str()), Player);
 			else
-				ConfigString (CS_POINTING_SURFACE-1, (tr.Ent->ClassName + " (" + tr.surface->Name + ")").c_str(), Player);
+				ConfigString (CS_POINTING_SURFACE-1, (tr.Entity->ClassName + " (" + tr.Surface->Name + ")").c_str(), Player);
 		}
 	}
 

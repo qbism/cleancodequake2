@@ -254,7 +254,7 @@ EEventEffect	&CEntityState::GetEvent			()
 }
 
 /**
-\fn	void G_InitEdict (edict_t *e)
+\fn	void G_InitEdict (SEntity *e)
 
 \brief	Initialize entity.
 
@@ -266,14 +266,14 @@ EEventEffect	&CEntityState::GetEvent			()
 
 \param	e	Entity to initialize. 
 **/
-void G_InitEdict (edict_t *e)
+void G_InitEdict (SEntity *e)
 {
-	e->server.InUse = true;
-	e->freetime = 0;
+	e->Server.InUse = true;
+	e->FreeTime = 0;
 	e->AwaitingRemoval = false;
 	e->RemovalFrames = 0;
-	memset (&e->server.State, 0, sizeof(e->server.State));
-	e->server.State.Number = e - Game.Entities;
+	memset (&e->Server.State, 0, sizeof(e->Server.State));
+	e->Server.State.Number = e - Game.Entities;
 }
 
 template <typename TCont, typename TType>
@@ -292,7 +292,7 @@ void listfill (TCont &List, TType Data, size_t numElements)
 **/
 void InitEntityLists ()
 {
-	listfill <TEntitiesContainer, edict_t*> (Level.Entities.Open, Game.Entities, Game.MaxEntities);
+	listfill <TEntitiesContainer, SEntity*> (Level.Entities.Open, Game.Entities, Game.MaxEntities);
 	Level.Entities.Closed.clear();
 
 	// Keep the first few entities in the closed list
@@ -304,29 +304,29 @@ void InitEntityLists ()
 }
 
 /**
-\fn	edict_t *CLevelLocals::CEntityList::GetEntityFromList ()
+\fn	SEntity *CLevelLocals::CEntityList::GetEntityFromList ()
 
 \brief	Gets a free entity from Open, pushes into Closed.
 		Internal function.
 
 \return	null if it fails, else the entity from list. 
 **/
-edict_t *CLevelLocals::CEntityList::GetEntityFromList ()
+SEntity *CLevelLocals::CEntityList::GetEntityFromList ()
 {
 	if (Open.empty())
 		return NULL;
 
-	// Take entity off of list, obeying freetime
-	edict_t *ent = NULL;
+	// Take entity off of list, obeying FreeTime
+	SEntity *ent = NULL;
 
 	TEntitiesContainer::iterator it;
 	for (it = Open.begin(); it != Open.end(); ++it)
 	{
-		edict_t *check = (*it);
+		SEntity *check = (*it);
 
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (!check->server.InUse && (check->freetime < 20 || Level.Frame - check->freetime > 5))
+		if (!check->Server.InUse && (check->FreeTime < 20 || Level.Frame - check->FreeTime > 5))
 		{
 			ent = check;
 			break;
@@ -344,7 +344,7 @@ edict_t *CLevelLocals::CEntityList::GetEntityFromList ()
 }
 
 /**
-\fn	void CLevelLocals::CEntityList::RemoveEntityFromOpen (edict_t *ent)
+\fn	void CLevelLocals::CEntityList::RemoveEntityFromOpen (SEntity *ent)
 
 \brief	Removes the entity 'ent' from Open and pushes into Closed. 
 
@@ -353,14 +353,14 @@ edict_t *CLevelLocals::CEntityList::GetEntityFromList ()
 
 \param [in,out]	ent	If non-null, the entity. 
 **/
-void CLevelLocals::CEntityList::RemoveEntityFromOpen (edict_t *ent)
+void CLevelLocals::CEntityList::RemoveEntityFromOpen (SEntity *ent)
 {
 	Open.remove (ent);
 	Closed.push_back (ent);
 }
 
 /**
-\fn	void CLevelLocals::CEntityList::RemoveEntityFromList (edict_t *ent)
+\fn	void CLevelLocals::CEntityList::RemoveEntityFromList (SEntity *ent)
 
 \brief	Removes the entity 'ent' from Closed, pushes into front of Open. 
 
@@ -369,7 +369,7 @@ void CLevelLocals::CEntityList::RemoveEntityFromOpen (edict_t *ent)
 
 \param [in,out]	ent	If non-null, the entity. 
 **/
-void CLevelLocals::CEntityList::RemoveEntityFromList (edict_t *ent)
+void CLevelLocals::CEntityList::RemoveEntityFromList (SEntity *ent)
 {
 	// Take entity out of list
 	Closed.remove (ent);
@@ -381,7 +381,7 @@ void CLevelLocals::CEntityList::RemoveEntityFromList (edict_t *ent)
 #include "cc_body_queue.h"
 
 /**
-\fn	edict_t *G_Spawn ()
+\fn	SEntity *G_Spawn ()
 
 \deprecated	Use CreateEntityFromClassname instead.
 
@@ -393,9 +393,9 @@ void CLevelLocals::CEntityList::RemoveEntityFromList (edict_t *ent)
 
 \return	null if it fails, else. 
 **/
-edict_t *G_Spawn ()
+SEntity *G_Spawn ()
 {
-	edict_t *e = Level.Entities.GetEntityFromList ();
+	SEntity *e = Level.Entities.GetEntityFromList ();
 	
 	if (e == NULL)
 	{
@@ -407,14 +407,14 @@ CC_DISABLE_DEPRECATION
 	G_InitEdict (e);
 CC_ENABLE_DEPRECATION
 
-	if (GameAPI.GetNumEdicts() < e->server.State.Number + 1)
-		GameAPI.GetNumEdicts() = e->server.State.Number + 1;
+	if (GameAPI.GetNumEdicts() < e->Server.State.Number + 1)
+		GameAPI.GetNumEdicts() = e->Server.State.Number + 1;
 
 	return e;
 }
 
 /**
-\fn	void G_FreeEdict (edict_t *ed)
+\fn	void G_FreeEdict (SEntity *ed)
 
 \deprecated	Use IBaseEntity::Free instead.
 
@@ -425,7 +425,7 @@ CC_ENABLE_DEPRECATION
 
 \param [in,out]	ed	If non-null, the entity. 
 **/
-void G_FreeEdict (edict_t *ed)
+void G_FreeEdict (SEntity *ed)
 {
 CC_DISABLE_DEPRECATION
 	gi.unlinkentity (ed);		// unlink from world
@@ -437,9 +437,9 @@ CC_ENABLE_DEPRECATION
 	Mem_Zero (ed, sizeof(*ed));
 	if (Entity)
 		ed->Entity = Entity;
-	ed->freetime = Level.Frame;
-	ed->server.InUse = false;
-	ed->server.State.Number = ed - Game.Entities;
+	ed->FreeTime = Level.Frame;
+	ed->Server.InUse = false;
+	ed->Server.State.Number = ed - Game.Entities;
 
 	if (!ed->AwaitingRemoval)
 	{
@@ -518,7 +518,7 @@ CC_ENABLE_DEPRECATION
 	Freed = false;
 	EntityFlags |= ENT_BASE;
 
-	State.Initialize (&gameEntity->server.State);
+	State.Initialize (&gameEntity->Server.State);
 };
 
 /**
@@ -549,11 +549,11 @@ IBaseEntity::IBaseEntity (sint32 Index)
 	{
 		gameEntity = &Game.Entities[Index];
 		gameEntity->Entity = this;
-		gameEntity->server.State.Number = Index;
+		gameEntity->Server.State.Number = Index;
 
 		Freed = false;
 		EntityFlags |= ENT_BASE;
-		State.Initialize (&gameEntity->server.State);
+		State.Initialize (&gameEntity->Server.State);
 	}
 }
 
@@ -680,7 +680,7 @@ See "Entities - Owners" for details.
 **/
 IBaseEntity		*IBaseEntity::GetOwner	()
 {
-	return (gameEntity->server.Owner) ? gameEntity->server.Owner->Entity : NULL;
+	return (gameEntity->Server.Owner) ? gameEntity->Server.Owner->Entity : NULL;
 }
 
 /**
@@ -699,11 +699,11 @@ void			IBaseEntity::SetOwner	(IBaseEntity *Entity)
 {
 	if (!Entity || !Entity->gameEntity)
 	{
-		gameEntity->server.Owner = NULL;
+		gameEntity->Server.Owner = NULL;
 		return;
 	}
 
-	gameEntity->server.Owner = Entity->gameEntity;
+	gameEntity->Server.Owner = Entity->gameEntity;
 }
 
 /**
@@ -715,7 +715,7 @@ void			IBaseEntity::SetOwner	(IBaseEntity *Entity)
 **/
 EBrushContents	&IBaseEntity::GetClipmask	()
 {
-	return gameEntity->server.ClipMask;
+	return gameEntity->Server.ClipMask;
 }
 
 /**
@@ -727,7 +727,7 @@ EBrushContents	&IBaseEntity::GetClipmask	()
 **/
 ESolidType		&IBaseEntity::GetSolid ()
 {
-	return gameEntity->server.Solid;
+	return gameEntity->Server.Solid;
 }
 
 /**
@@ -739,7 +739,7 @@ ESolidType		&IBaseEntity::GetSolid ()
 **/
 vec3f			&IBaseEntity::GetMins ()
 {
-	return gameEntity->server.Mins;
+	return gameEntity->Server.Mins;
 }
 
 /**
@@ -752,7 +752,7 @@ vec3f			&IBaseEntity::GetMins ()
 vec3f			&IBaseEntity::GetMaxs ()
 {
 
-	return gameEntity->server.Maxs;
+	return gameEntity->Server.Maxs;
 }
 
 /**
@@ -764,7 +764,7 @@ vec3f			&IBaseEntity::GetMaxs ()
 **/
 vec3f			&IBaseEntity::GetAbsMin ()
 {
-	return gameEntity->server.AbsMin;
+	return gameEntity->Server.AbsMin;
 }
 
 /**
@@ -776,7 +776,7 @@ vec3f			&IBaseEntity::GetAbsMin ()
 **/
 vec3f			&IBaseEntity::GetAbsMax ()
 {
-	return gameEntity->server.AbsMax;
+	return gameEntity->Server.AbsMax;
 }
 
 /**
@@ -788,7 +788,7 @@ vec3f			&IBaseEntity::GetAbsMax ()
 **/
 vec3f			&IBaseEntity::GetSize ()
 {
-	return gameEntity->server.Size;
+	return gameEntity->Server.Size;
 }
 
 /**
@@ -800,7 +800,7 @@ vec3f			&IBaseEntity::GetSize ()
 **/
 EServerFlags	&IBaseEntity::GetSvFlags ()
 {
-	return gameEntity->server.ServerFlags;
+	return gameEntity->Server.ServerFlags;
 }
 
 /**
@@ -817,7 +817,7 @@ EServerFlags	&IBaseEntity::GetSvFlags ()
 **/
 sint32				IBaseEntity::GetAreaNum (bool second)
 {
-	return ((second) ? gameEntity->server.AreaNum2 : gameEntity->server.AreaNum);
+	return ((second) ? gameEntity->Server.AreaNum2 : gameEntity->Server.AreaNum);
 }
 
 /**
@@ -829,7 +829,7 @@ sint32				IBaseEntity::GetAreaNum (bool second)
 **/
 SAreaLink			*IBaseEntity::GetArea ()
 {
-	return &gameEntity->server.Area;
+	return &gameEntity->Server.Area;
 }
 
 /**
@@ -839,7 +839,7 @@ SAreaLink			*IBaseEntity::GetArea ()
 **/
 void			IBaseEntity::ClearArea ()
 {
-	Mem_Zero (&gameEntity->server.Area, sizeof(gameEntity->server.Area));
+	Mem_Zero (&gameEntity->Server.Area, sizeof(gameEntity->Server.Area));
 }
 
 /**
@@ -851,7 +851,7 @@ void			IBaseEntity::ClearArea ()
 **/
 sint32				IBaseEntity::GetLinkCount ()
 {
-	return gameEntity->server.LinkCount;
+	return gameEntity->Server.LinkCount;
 }
 
 /**
@@ -863,7 +863,7 @@ sint32				IBaseEntity::GetLinkCount ()
 **/
 bool			&IBaseEntity::GetInUse ()
 {
-	return (bool&)gameEntity->server.InUse;
+	return (bool&)gameEntity->Server.InUse;
 }
 
 CC_DISABLE_DEPRECATION
@@ -903,9 +903,9 @@ void			IBaseEntity::Free ()
 
 		Mem_Zero (gameEntity, sizeof(*gameEntity));
 		gameEntity->Entity = this;
-		gameEntity->freetime = Level.Frame;
+		gameEntity->FreeTime = Level.Frame;
 		GetInUse() = false;
-		gameEntity->server.State.Number = gameEntity - Game.Entities;
+		gameEntity->Server.State.Number = gameEntity - Game.Entities;
 
 		if (!(EntityFlags & ENT_JUNK))
 		{
@@ -992,17 +992,17 @@ void	IBaseEntity::KillBox ()
 	while (1)
 	{
 		CTrace tr (State.GetOrigin(), GetMins(), GetMaxs(), State.GetOrigin(), NULL, CONTENTS_MASK_PLAYERSOLID);
-		if (!tr.ent || !tr.Ent)
+		if (!tr.Entity)
 			break;
 
-		if ((tr.Ent->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Ent)->CanTakeDamage)
+		if ((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage)
 		{
 			// nail it
-			entity_cast<IHurtableEntity>(tr.Ent)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(),
+			entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(),
 																vec3fOrigin, 100000, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 		}
 
-		if (tr.Ent->GetSolid())
+		if (tr.Entity->GetSolid())
 			break;
 	}
 };
@@ -1080,7 +1080,7 @@ bool IBaseEntity::CanSee (IBaseEntity *Other)
 	for (uint8 i = 0; i < 8; i++)
 	{
 		CTrace trace (viewpoint, targpoints[i], Other, CONTENTS_MASK_SOLID);
-		if (trace.fraction == 1.0)
+		if (trace.Fraction == 1.0)
 			return true;
 	}
 
@@ -1114,7 +1114,7 @@ public:
 		{
 			CTrace tr (Inflictor->State.GetOrigin(), Player->State.GetOrigin(), Inflictor, CONTENTS_MASK_SOLID);
 
-			if (tr.fraction == 1.0)
+			if (tr.Fraction == 1.0)
 				Player->Client.Timers.Nuke = Level.Frame + 20;
 			else
 				Player->Client.Timers.Nuke = Max<>(Player->Client.Timers.Nuke, Level.Frame + (RangeFrom (Player->State.GetOrigin(), Inflictor->State.GetOrigin()) < 2048) ? 15 : 10);
@@ -1243,9 +1243,9 @@ IBaseEntity(Index)
 ENTITYFIELDS_BEGIN(IMapEntity)
 {
 	CEntityField ("spawnflags",		EntityMemberOffset(IBaseEntity,SpawnFlags),		FT_UINT | FT_SAVABLE),
-	CEntityField ("origin",			GameEntityMemberOffset(server.State.Origin),			FT_VECTOR | FT_GAME_ENTITY),
-	CEntityField ("angles",			GameEntityMemberOffset(server.State.Angles),			FT_VECTOR | FT_GAME_ENTITY),
-	CEntityField ("angle",			GameEntityMemberOffset(server.State.Angles),			FT_YAWANGLE | FT_GAME_ENTITY),
+	CEntityField ("origin",			GameEntityMemberOffset(Server.State.Origin),	FT_VECTOR | FT_GAME_ENTITY),
+	CEntityField ("angles",			GameEntityMemberOffset(Server.State.Angles),	FT_VECTOR | FT_GAME_ENTITY),
+	CEntityField ("angle",			GameEntityMemberOffset(Server.State.Angles),	FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
 	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.String),	FT_LEVEL_STRING),
 };

@@ -95,7 +95,7 @@ public:
 								// and increment only if 1, 2, or 3
 
 	SServerClient			*Clients;		// [maxclients]
-	edict_t					*Entities;
+	SEntity					*Entities;
 
 	// can't store spawnpoint in level, because
 	// it would get overwritten by the savegame restore
@@ -167,7 +167,7 @@ extern	CGameLocals		Game;
 // it is read/written to the Level.sav file for savegames
 //
 
-struct GoalList_t
+struct SGoalList
 {
 	uint8		Total;
 	uint8		Found;
@@ -195,7 +195,7 @@ public:
 };
 
 typedef std::list<CKeyValuePair*> TKeyValuePairContainer;
-typedef std::list<edict_t*> TEntitiesContainer;
+typedef std::list<SEntity*> TEntitiesContainer;
 
 class CLevelLocals
 {
@@ -207,11 +207,7 @@ public:
 		ServerLevelName.clear ();
 		NextMap.clear ();
 		ForceMap.clear ();
-		IntermissionTime = 0;
-		ChangeMap = NULL;
-		ExitIntermission = ExitIntermissionOnNextFrame = false;
-		IntermissionOrigin.Clear ();
-		IntermissionAngles.Clear ();
+		Mem_Zero (&Intermission, sizeof(Intermission));
 		SightClient = NULL;
 		SightEntity = NULL;
 		SightEntityFrame = 0;
@@ -246,47 +242,57 @@ public:
 	void Save (CFile &File);
 	void Load (CFile &File);
 
-	FrameNumber	Frame;
-
-	std::string	FullLevelName;		// the descriptive name (Outer Base, etc)
-	std::string	ServerLevelName;		// the server name (base1, etc)
-	std::string	NextMap;		// go here when fraglimit is hit
-	std::string	ForceMap;		// go here
+	FrameNumber				Frame;
+		
+	std::string				FullLevelName;		// the descriptive name (Outer Base, etc)
+	std::string				ServerLevelName;		// the server name (base1, etc)
+	std::string				NextMap;		// go here when fraglimit is hit
+	std::string				ForceMap;		// go here
 
 	// intermission state
-	FrameNumber		IntermissionTime;		// time the intermission was started
-	char		*ChangeMap;
-	bool		ExitIntermission;
-	bool		ExitIntermissionOnNextFrame;
-	vec3f		IntermissionOrigin;
-	vec3f		IntermissionAngles;
-
-	CPlayerEntity		*SightClient;	// changed once each frame for coop games
-
-	IBaseEntity	*SightEntity;
-	FrameNumber	SightEntityFrame;
-	IBaseEntity	*SoundEntity;
-	FrameNumber	SoundEntityFrame;
-	IBaseEntity	*SoundEntity2;
-	FrameNumber	SoundEntity2Frame;
-
-	GoalList_t	Secrets;
-	GoalList_t	Goals;
-
-	struct MonsterCount_t
+	struct SIntermissionState
 	{
-		uint16		Total;
-		uint16		Killed;
-	} Monsters;
+		FrameNumber		Time;		// time the intermission was started
+		char			*ChangeMap;
+		bool			ShouldExit;
+		bool			ShouldExitOnNextFrame;
+		vec3f			Origin;
+		vec3f			Angles;
+	}						Intermission;
 
-	IBaseEntity	*CurrentEntity;	// entity running from G_RunFrame
+	CPlayerEntity			*SightClient;	// changed once each frame for coop games
 
-	uint8		PowerCubeCount;		// ugly necessity for coop
-	uint32		Inhibit;
-	uint32		EntityNumber;
+	IBaseEntity				*SightEntity;
+	FrameNumber				SightEntityFrame;
+	IBaseEntity				*SoundEntity;
+	FrameNumber				SoundEntityFrame;
+	IBaseEntity				*SoundEntity2;
+	FrameNumber				SoundEntity2Frame;
 
-	std::string			ClassName;
+	SGoalList				Secrets;
+	SGoalList				Goals;
+
+	struct SMonsterCount
+	{
+		uint16			Total;
+		uint16			Killed;
+	}						Monsters;
+		
+	IBaseEntity				*CurrentEntity;	// entity running from G_RunFrame
+
+	uint8					PowerCubeCount;		// ugly necessity for coop
+	uint32					Inhibit;
+	uint32					EntityNumber;
+
+	std::string				ClassName;
 	TKeyValuePairContainer	ParseData;
+
+	bool					Demo;
+
+#if ROGUE_FEATURES
+	IBaseEntity				*DisguiseViolator;
+	FrameNumber				DisguiseViolationFrametime;
+#endif
 
 	// Entity list
 	class CEntityList
@@ -298,17 +304,17 @@ public:
 		void Load (CFile &File);
 
 		/**
-		\fn	edict_t *GetEntityFromList ()
+		\fn	SEntity *GetEntityFromList ()
 		
 		\brief	Gets a free entity from Open, pushes into Closed.
 				Internal function.
 		
 		\return	null if it fails, else the entity from list. 
 		**/
-		edict_t		*GetEntityFromList ();
+		SEntity		*GetEntityFromList ();
 
 		/**
-		\fn	void RemoveEntityFromOpen (edict_t *ent)
+		\fn	void RemoveEntityFromOpen (SEntity *ent)
 		
 		\brief	Removes the entity 'ent' from Open and pushes into Closed. 
 		
@@ -317,10 +323,10 @@ public:
 		
 		\param [in,out]	ent	If non-null, the entity. 
 		**/
-		void		RemoveEntityFromOpen (edict_t *ent);
+		void		RemoveEntityFromOpen (SEntity *ent);
 
 		/**
-		\fn	void RemoveEntityFromList (edict_t *ent)
+		\fn	void RemoveEntityFromList (SEntity *ent)
 		
 		\brief	Removes the entity 'ent' from Closed, pushes into front of Open. 
 		
@@ -329,15 +335,9 @@ public:
 		
 		\param [in,out]	ent	If non-null, the entity. 
 		**/
-		void		RemoveEntityFromList (edict_t *ent);
+		void		RemoveEntityFromList (SEntity *ent);
 	} Entities;
 
-	bool		Demo;
-
-#if ROGUE_FEATURES
-	IBaseEntity			*DisguiseViolator;
-	FrameNumber		DisguiseViolationFrametime;
-#endif
 };
 
 extern	CLevelLocals	Level;

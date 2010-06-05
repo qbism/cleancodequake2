@@ -494,14 +494,14 @@ void CFlyer::Duck (float eta)
 	vec3f end = Entity->State.GetOrigin ().MultiplyAngles (-75, right);
 	trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1.0)
+	if (trace.Fraction == 1.0)
 		CanRollRight = true;
 
 	// Now check the left
 	end = Entity->State.GetOrigin ().MultiplyAngles (-75, right);
 	trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1.0)
+	if (trace.Fraction == 1.0)
 		CanRollLeft = true;
 
 	// Can we roll the way we wanted?

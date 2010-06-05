@@ -182,10 +182,10 @@ void CClient::Write (CFile &File)
 	File.Write<EWaterLevel> (OldWaterLevel);
 	WriteIndex (File, WeaponSound, INDEX_SOUND);
 
-	File.Write<client_Animation_t> (Anim);
-	File.Write<client_Timers_t> (Timers);
-	File.Write<client_Grenade_Data_t> (Grenade);
-	File.Write<client_Flood_t> (Flood);
+	File.Write<SClientAnimation> (Anim);
+	File.Write<SClientTimers> (Timers);
+	File.Write<SClientGrenadeData> (Grenade);
+	File.Write<SClientFlood> (Flood);
 
 	SaveWeapon (File, NewWeapon);
 
@@ -224,10 +224,10 @@ void CClient::Load (CFile &File)
 	OldWaterLevel = File.Read<EWaterLevel> ();
 	ReadIndex (File, WeaponSound, INDEX_SOUND);
 
-	Anim = File.Read<client_Animation_t> ();
-	Timers = File.Read<client_Timers_t> ();
-	Grenade = File.Read<client_Grenade_Data_t> ();
-	Flood = File.Read<client_Flood_t> ();
+	Anim = File.Read<SClientAnimation> ();
+	Timers = File.Read<SClientTimers> ();
+	Grenade = File.Read<SClientGrenadeData> ();
+	Flood = File.Read<SClientFlood> ();
 
 	LoadWeapon (File, &NewWeapon);
 
@@ -346,7 +346,7 @@ This will be called for all players
 */
 void CPlayerEntity::BeginServerFrame ()
 {
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;
 
 	if ((Game.GameMode & GAME_DEATHMATCH) &&  
@@ -1618,7 +1618,7 @@ inline void CPlayerEntity::SetClientEffects ()
 	State.GetRenderEffects() = RF_IR_VISIBLE;
 #endif
 
-	if (Health <= 0 || Level.IntermissionTime)
+	if (Health <= 0 || Level.Intermission.Time)
 		return;
 
 #if ROGUE_FEATURES
@@ -1889,7 +1889,7 @@ void CPlayerEntity::EndServerFrame ()
 	// If the end of unit layout is displayed, don't give
 	// the player any normal movement attributes
 	//
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 	{
 		// FIXME: add view drifting here?
 		Client.PlayerState.GetViewBlend ().A = 0;
@@ -2456,7 +2456,7 @@ void CPlayerEntity::SetStats ()
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
 		if (Client.Persistent.Health <= 0 || Client.Respawn.MenuState.InMenu ||
-			(Level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES)) || 
+			(Level.Intermission.Time || (Client.LayoutFlags & LF_SHOWSCORES)) || 
 			(!(Game.GameMode & GAME_DEATHMATCH)) && (Client.LayoutFlags & LF_SHOWHELP))
 			Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 1;
 		if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.Health > 0)
@@ -2504,7 +2504,7 @@ void CPlayerEntity::SetSpectatorStats ()
 	// layouts are independant in Spectator
 	Client.PlayerState.GetStat (STAT_LAYOUTS) = 0;
 
-	if (Client.Persistent.Health <= 0 || Level.IntermissionTime || (Client.LayoutFlags & LF_SHOWSCORES))
+	if (Client.Persistent.Health <= 0 || Level.Intermission.Time || (Client.LayoutFlags & LF_SHOWSCORES))
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 1;
 	if ((Client.LayoutFlags & LF_SHOWINVENTORY) && Client.Persistent.Health > 0)
 		Client.PlayerState.GetStat (STAT_LAYOUTS) = Client.PlayerState.GetStat(STAT_LAYOUTS) | 2;
@@ -2521,7 +2521,7 @@ void CPlayerEntity::SetCTFStats()
 	Client.PlayerState.GetStat (STAT_CTF_TEAM2_HEADER) = ImageIndex ("ctfsb2");
 
 	// if during intermission, we must blink the team header of the winning team
-	if (Level.IntermissionTime && (Level.Frame & 8))
+	if (Level.Intermission.Time && (Level.Frame & 8))
 	{
 		// blink 1/8th second
 		// note that ctfgame.total[12] is set when we go to intermission
@@ -2638,7 +2638,7 @@ void CPlayerEntity::CTFSetIDView()
 	forward = (forward * 1024) + State.GetOrigin();
 
 	CTrace tr (State.GetOrigin(), forward, this, CONTENTS_MASK_SOLID);
-	if (tr.fraction < 1 && tr.ent && ((tr.ent - Game.Entities) >= 1 && (tr.ent - Game.Entities) <= Game.MaxClients))
+	if (tr.Fraction < 1 && tr.Entity && (tr.Entity->State.GetNumber() >= 1 && tr.Entity->State.GetNumber() <= Game.MaxClients))
 	{
 		Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = CS_PLAYERSKINS + (State.GetNumber() - 1);
 		return;
@@ -2670,10 +2670,10 @@ void CPlayerEntity::MoveToIntermission ()
 	if (!(Game.GameMode & GAME_SINGLEPLAYER))
 		Client.LayoutFlags |= LF_SHOWSCORES;
 
-	State.GetOrigin() = Level.IntermissionOrigin;
+	State.GetOrigin() = Level.Intermission.Origin;
 
-	Client.PlayerState.GetPMove()->Origin = (Level.IntermissionOrigin * 8).Convert<sint16>();
-	Client.PlayerState.GetViewAngles() = Level.IntermissionAngles;
+	Client.PlayerState.GetPMove()->Origin = (Level.Intermission.Origin * 8).Convert<sint16>();
+	Client.PlayerState.GetViewAngles() = Level.Intermission.Angles;
 	Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 	Client.PlayerState.GetGunIndex () = 0;
 
@@ -2863,12 +2863,12 @@ void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 
 	Level.CurrentEntity = this;
 
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 	{
 		Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 		// can exit intermission after five seconds
-		if ((Level.Frame > Level.IntermissionTime + 50) && (ucmd->Buttons & BUTTON_ANY))
-			Level.ExitIntermission = true;
+		if ((Level.Frame > Level.Intermission.Time + 50) && (ucmd->Buttons & BUTTON_ANY))
+			Level.Intermission.ShouldExit = true;
 		return;
 	}
 
@@ -3016,7 +3016,7 @@ CC_ENABLE_DEPRECATION
 	{
 		for (sint32 i = 0; i < pm.NumTouch; i++)
 		{
-			edict_t *Other = pm.TouchEnts[i];
+			SEntity *Other = pm.TouchEnts[i];
 
 			if (Other->Entity)
 			{
@@ -3212,7 +3212,7 @@ void CPlayerEntity::RestoreClientData ()
 		Player->Flags = SavedClients[i].SavedFlags;
 		if (Game.GameMode & GAME_COOPERATIVE)
 			Player->Client.Respawn.Score = SavedClients[i].Score;
-		Game.Entities[i+1].server.Client = Game.Clients + i;
+		Game.Entities[i+1].Server.Client = Game.Clients + i;
 	}
 
 	QDelete[] SavedClients;
@@ -3486,18 +3486,18 @@ void CPlayerEntity::UpdateChaseCam()
 
 			CTrace trace (ownerv, o, targ, CONTENTS_MASK_SOLID);
 
-			vec3f goal = trace.EndPos.MultiplyAngles (2, forward);
+			vec3f goal = trace.EndPosition.MultiplyAngles (2, forward);
 			o = goal + vec3f(0, 0, 6);
 			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
-			if (trace.fraction < 1)
-				goal = trace.EndPos - vec3f(0, 0, 6);
+			if (trace.Fraction < 1)
+				goal = trace.EndPosition - vec3f(0, 0, 6);
 
 			o = goal - vec3f(0, 0, 6);
 			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
-			if(trace.fraction < 1)
-				goal = trace.EndPos + vec3f(0, 0, 6);
+			if(trace.Fraction < 1)
+				goal = trace.EndPosition + vec3f(0, 0, 6);
 
 			if (targ->DeadFlag)
 				Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
@@ -3540,20 +3540,20 @@ void CPlayerEntity::UpdateChaseCam()
 
 			CTrace trace(ownerv, o, targ, CONTENTS_MASK_SOLID);
 
-			vec3f goal = trace.EndPos.MultiplyAngles (2, forward);
+			vec3f goal = trace.EndPosition.MultiplyAngles (2, forward);
 			o = goal + vec3f(0, 0, 6);
 
 			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
-			if(trace.fraction < 1)
-				goal = trace.EndPos - vec3f(0, 0, 6);
+			if(trace.Fraction < 1)
+				goal = trace.EndPosition - vec3f(0, 0, 6);
 
 			o = goal - vec3f(0, 0, 6);
 
 			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
-			if(trace.fraction < 1)
-				goal = trace.EndPos + vec3f(0, 0, 6);
+			if(trace.Fraction < 1)
+				goal = trace.EndPosition + vec3f(0, 0, 6);
 
 			if (targ->DeadFlag)
 				Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
@@ -3797,7 +3797,7 @@ CC_ENABLE_DEPRECATION
 	// locate ent at a spawn point
 	PutInServer();
 
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		MoveToIntermission();
 	else
 		// send effect
@@ -3811,7 +3811,7 @@ CC_ENABLE_DEPRECATION
 
 void CPlayerEntity::Begin ()
 {
-	gameEntity->server.Client = Game.Clients + (State.GetNumber()-1);
+	gameEntity->Server.Client = Game.Clients + (State.GetNumber()-1);
 
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
@@ -3848,7 +3848,7 @@ CC_ENABLE_DEPRECATION
 		PutInServer ();
 	}
 
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		MoveToIntermission ();
 	else
 	{
@@ -3943,7 +3943,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 
 	// they can connect
-	gameEntity->server.Client = Game.Clients + (State.GetNumber()-1);
+	gameEntity->Server.Client = Game.Clients + (State.GetNumber()-1);
 
 	// if there is already a body waiting for us (a loadgame), just
 	// take it, otherwise spawn one from scratch
@@ -3991,7 +3991,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 void CPlayerEntity::Disconnect ()
 {
-	if (!gameEntity->server.Client)
+	if (!gameEntity->Server.Client)
 		return;
 
 	Client.Persistent.State = SVCS_FREE;
@@ -4518,7 +4518,7 @@ void CPlayerEntity::ShowScores ()
 
 void CPlayerEntity::ShowHelp ()
 {
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;
 
 	// this is for backwards compatability

@@ -657,13 +657,14 @@ void CMedic::CableAttack ()
 
 #if !ROGUE_FEATURES
 	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
-	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
+	if (tr.Fraction != 1.0 && tr.Entity != Entity->Enemy)
 		return;
 #else
 	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
-	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
+
+	if (tr.Fraction != 1.0 && tr.Entity != Entity->Enemy)
 	{
-		if (tr.Ent == World)
+		if (tr.Entity == World)
 		{
 			// give up on second try
 			if (MedicTries > 1)
@@ -726,12 +727,12 @@ void CMedic::CableAttack ()
 			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), *Entity->Enemy, CONTENTS_MASK_MONSTERSOLID);
 		}
 
-		if (tr.startSolid || tr.allSolid)
+		if (tr.StartSolid || tr.AllSolid)
 		{
 			AbortHeal (true, false);
 			return;
 		} 
-		else if (tr.Ent != World)
+		else if (tr.Entity != World)
 		{
 			AbortHeal (true, false);
 			return;

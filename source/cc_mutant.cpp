@@ -445,14 +445,14 @@ bool CMutant::CheckJump ()
 		CTrace trace (origin, LastSighting, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 		// Clear shot
-		if (trace.fraction == 1.0)
+		if (trace.Fraction == 1.0)
 		{
 			// Now we need to check if the last sighting is on ground.
 			vec3f below = LastSighting - vec3f(0, 0, 64);
 
 			trace (LastSighting, below, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-			if (trace.fraction < 1.0)
+			if (trace.Fraction < 1.0)
 			{
 				// Hit floor, we're solid and can do this jump
 				AttemptJumpToLastSight = true;
@@ -472,7 +472,7 @@ bool CMutant::CheckJump ()
 			temp.ToVectors (&forward, NULL, NULL);
 
 			temp = LastSighting;
-			while (trace.fraction != 1.0 && escape < 100)
+			while (trace.Fraction != 1.0 && escape < 100)
 			{
 				escape++;
 				

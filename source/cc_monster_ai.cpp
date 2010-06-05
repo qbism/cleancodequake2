@@ -280,7 +280,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			{
 				if (!Entity->WaterInfo.Level)
 				{
-					if (PointContents(trace.EndPos + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER)
+					if (PointContents(trace.EndPosition + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER)
 						return false;
 				}
 			}
@@ -290,14 +290,14 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			{
 				if (Entity->WaterInfo.Level < 2)
 				{
-					if (!(PointContents(trace.EndPos + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER))
+					if (!(PointContents(trace.EndPosition + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER))
 						return false;
 				}
 			}
 
-			if (trace.fraction == 1)
+			if (trace.Fraction == 1)
 			{
-				Entity->State.GetOrigin() = trace.EndPos;
+				Entity->State.GetOrigin() = trace.EndPosition;
 				
 				if (ReLink)
 				{
@@ -323,15 +323,15 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 	CTrace trace (newOrg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.allSolid)
+	if (trace.AllSolid)
 		return false;
 
-	if (trace.startSolid)
+	if (trace.StartSolid)
 	{
 		newOrg.Z -= stepsize;
 		trace (newOrg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-		if (trace.allSolid || trace.startSolid)
+		if (trace.AllSolid || trace.StartSolid)
 			return false;
 	}
 
@@ -339,11 +339,11 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	// don't go in to water
 	if (Entity->WaterInfo.Level == 0)
 	{
-		if (PointContents(trace.EndPos + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER)
+		if (PointContents(trace.EndPosition + vec3f(0, 0, Entity->GetMins().Z + 1)) & CONTENTS_MASK_WATER)
 			return false;
 	}
 
-	if (trace.fraction == 1)
+	if (trace.Fraction == 1)
 	{
 	// if monster had the ground pulled out, go ahead and fall
 		if (Entity->Flags & FL_PARTIALGROUND)
@@ -364,7 +364,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	}
 
 // check point traces down for dangling corners
-	Entity->State.GetOrigin() = trace.EndPos;
+	Entity->State.GetOrigin() = trace.EndPosition;
 	
 	if (!CheckBottom ())
 	{
@@ -974,11 +974,11 @@ void CMonster::AI_Run(float Dist)
 	{
 		CTrace tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), LastSighting, Entity, CONTENTS_MASK_PLAYERSOLID);
 
-		if (tr.fraction < 1)
+		if (tr.Fraction < 1)
 		{
 			v = LastSighting - Entity->State.GetOrigin();
 			d1 = v.Length();
-			float center = tr.fraction;
+			float center = tr.Fraction;
 			float d2 = d1 * ((center+1)/2);
 			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
 			
@@ -989,13 +989,13 @@ void CMonster::AI_Run(float Dist)
 			vec3f left_target;
 			G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, left_target);
 			tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			float left = tr.fraction;
+			float left = tr.Fraction;
 
 			v.Set (d2, 16, 0);
 			vec3f right_target;
 			G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, right_target);
 			tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
-			float right = tr.fraction;
+			float right = tr.Fraction;
 
 			center = (d1*center)/d2;
 			if (left >= center && left > right)

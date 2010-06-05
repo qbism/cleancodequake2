@@ -113,11 +113,11 @@ int CountPlayers ()
 CMonsterEntity *CreateMonster(vec3f origin, vec3f angles, const char *classname)
 {
 CC_DISABLE_DEPRECATION
-	edict_t *ent = G_Spawn ();
+	SEntity *ent = G_Spawn ();
 
 	Level.ClassName = classname;
-	ent->server.State.Origin = origin;
-	ent->server.State.Angles = angles;
+	ent->Server.State.Origin = origin;
+	ent->Server.State.Angles = angles;
 	ED_CallSpawn (ent);
 
 	CMonsterEntity *Mon = entity_cast<CMonsterEntity>(ent->Entity);
@@ -126,7 +126,7 @@ CC_DISABLE_DEPRECATION
 	Mon->State.GetRenderEffects() |= RF_IR_VISIBLE;
 	Mon->GravityVector.Set (0, 0, -1);
 
-	if (ent->server.InUse && ent->Entity && !ent->Entity->Freed)
+	if (ent->Server.InUse && ent->Entity && !ent->Entity->Freed)
 		return Mon;
 	return NULL;
 CC_ENABLE_DEPRECATION
@@ -139,18 +139,18 @@ bool FindSpawnPoint (vec3f startpoint, vec3f mins, vec3f maxs, vec3f &spawnpoint
 {
 	CTrace tr (startpoint, mins, maxs, startpoint, NULL, CONTENTS_MASK_MONSTERSOLID|CONTENTS_PLAYERCLIP);
 
-	if((tr.startSolid || tr.allSolid) || (tr.Ent != World))
+	if ((tr.StartSolid || tr.AllSolid) || (tr.Entity != World))
 	{
 		vec3f top = startpoint;
 		top.Z += maxMoveUp;
 
 		tr (top, mins, maxs, startpoint, NULL, CONTENTS_MASK_MONSTERSOLID);
 		
-		if (tr.startSolid || tr.allSolid)
+		if (tr.StartSolid || tr.AllSolid)
 			return false;
 		else
 		{
-			spawnpoint = tr.EndPos;
+			spawnpoint = tr.EndPosition;
 			return true;
 		}
 	}
@@ -171,12 +171,9 @@ bool CheckSpawnPoint (vec3f origin, vec3f mins, vec3f maxs)
 	if (mins.IsZero() && maxs.IsZero())
 		return false;
 
-	CTrace tr  (origin, mins, maxs, origin, NULL, CONTENTS_MASK_MONSTERSOLID);
-	if(tr.startSolid || tr.allSolid)
-		return false;
-	if (tr.Ent != World)
-		return false;
-	return true;
+	CTrace tr (origin, mins, maxs, origin, NULL, CONTENTS_MASK_MONSTERSOLID);
+
+	return !((tr.StartSolid || tr.AllSolid) || (tr.Entity != World));
 }
 
 //
@@ -200,7 +197,7 @@ bool CheckGroundSpawnPoint (vec3f origin, vec3f entMins, vec3f entMaxs, float he
 	CTrace tr (origin, entMins, entMaxs, stop, NULL, CONTENTS_MASK_MONSTERSOLID | CONTENTS_MASK_WATER);
 	// it's not going to be all solid or start solid, since that's checked above
 
-	if ((tr.fraction < 1) && (tr.contents & CONTENTS_MASK_MONSTERSOLID))
+	if ((tr.Fraction < 1) && (tr.Contents & CONTENTS_MASK_MONSTERSOLID))
 	{
 		// we found a non-water surface down there somewhere.  now we need to check to make sure it's not too sloped
 		//
@@ -209,8 +206,8 @@ bool CheckGroundSpawnPoint (vec3f origin, vec3f entMins, vec3f entMaxs, float he
 
 		// first, do the midpoint trace
 
-		vec3f	mins = tr.EndPos + entMins,
-				maxs = tr.EndPos + entMaxs;
+		vec3f	mins = tr.EndPosition + entMins,
+				maxs = tr.EndPosition + entMaxs;
 
 		// first, do the easy flat check
 		//
@@ -242,22 +239,22 @@ bool CheckGroundSpawnPoint (vec3f origin, vec3f entMins, vec3f entMaxs, float he
 
 		tr (start, stop, NULL, CONTENTS_MASK_MONSTERSOLID);
 
-		if (tr.fraction == 1.0)
+		if (tr.Fraction == 1.0)
 			return false;
 
-		float mid = tr.EndPos.Z, bottom = tr.EndPos.Z;
+		float mid = tr.EndPosition.Z, bottom = tr.EndPosition.Z;
 
 		if (gravity < 0)
 		{
 			start.Z = mins.Z;
 			stop.Z = start.Z - STEPSIZE - STEPSIZE;
-			mid = bottom = tr.EndPos.Z + entMins.Z;
+			mid = bottom = tr.EndPosition.Z + entMins.Z;
 		}
 		else
 		{
 			start.Z = maxs.Z;
 			stop.Z = start.Z + STEPSIZE + STEPSIZE;
-			mid = bottom = tr.EndPos.Z - entMaxs.Z;
+			mid = bottom = tr.EndPosition.Z - entMaxs.Z;
 		}
 
 		for	(int x = 0; x <= 1; x++)
@@ -271,16 +268,16 @@ bool CheckGroundSpawnPoint (vec3f origin, vec3f entMins, vec3f entMaxs, float he
 
 				if (gravity > 0)
 				{
-					if (tr.fraction != 1.0 && tr.EndPos.Z < bottom)
-						bottom = tr.EndPos.Z;
-					if (tr.fraction == 1.0 || tr.EndPos.Z - mid > STEPSIZE)
+					if (tr.Fraction != 1.0 && tr.EndPosition.Z < bottom)
+						bottom = tr.EndPosition.Z;
+					if (tr.Fraction == 1.0 || tr.EndPosition.Z - mid > STEPSIZE)
 						return false;
 				}
 				else
 				{
-					if (tr.fraction != 1.0 && tr.EndPos.Z > bottom)
-						bottom = tr.EndPos.Z;
-					if (tr.fraction == 1.0 || mid - tr.EndPos.Z > STEPSIZE)
+					if (tr.Fraction != 1.0 && tr.EndPosition.Z > bottom)
+						bottom = tr.EndPosition.Z;
+					if (tr.Fraction == 1.0 || mid - tr.EndPosition.Z > STEPSIZE)
 						return false;
 				}
 			}

@@ -102,24 +102,24 @@ public:
 
 		CTrace trace (newOrigin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 
-		if (trace.allSolid)
+		if (trace.AllSolid)
 			return;
 
-		if (trace.startSolid)
+		if (trace.StartSolid)
 		{
 			newOrigin[2] -= BARREL_STEPSIZE;
 			trace (newOrigin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
-			if (trace.allSolid || trace.startSolid)
+			if (trace.AllSolid || trace.StartSolid)
 				return;
 		}
 
 	// check point traces down for dangling corners
-		State.GetOrigin() = trace.EndPos;
+		State.GetOrigin() = trace.EndPosition;
 
-		GroundEntity = trace.Ent;
-		GroundEntityLinkCount = trace.Ent->GetLinkCount();
+		GroundEntity = trace.Entity;
+		GroundEntityLinkCount = trace.Entity->GetLinkCount();
 
-		if (trace.fraction == 1.0)
+		if (trace.Fraction == 1.0)
 			GroundEntity = nullentity;
 
 	// the move is ok
@@ -142,10 +142,10 @@ public:
 			
 			trace (origin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 
-			if (trace.fraction == 1 || trace.allSolid)
+			if (trace.Fraction == 1 || trace.AllSolid)
 				return;
 
-			State.GetOrigin() = trace.EndPos;
+			State.GetOrigin() = trace.EndPosition;
 			Link();
 			return;
 		}

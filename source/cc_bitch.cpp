@@ -585,7 +585,7 @@ void CMaiden::Rocket ()
 	if (blindfire)
 	{
 		// blindfire has different fail criteria for the trace
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+		if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5f)))
 			MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 		else 
 		{
@@ -597,7 +597,7 @@ void CMaiden::Rocket ()
 			dir = vec - start;
 			dir.NormalizeFast();
 			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+			if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			else 
 			{
@@ -607,7 +607,7 @@ void CMaiden::Rocket ()
 				dir = vec - start;
 				dir.NormalizeFast();
 				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+				if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 					MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			}
 		}

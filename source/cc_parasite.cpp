@@ -314,7 +314,7 @@ void CParasite::DrainAttack ()
 	end = Entity->Enemy->State.GetOrigin();
 
 	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
-	if (tr.Ent != Entity->Enemy)
+	if (tr.Entity != Entity->Enemy)
 		return;
 
 	sint32 Damage = (Entity->State.GetFrame() == FRAME_drain03) ? 5 : 2;

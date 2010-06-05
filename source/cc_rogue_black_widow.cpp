@@ -398,7 +398,7 @@ void CBlackWidow::Tongue ()
 	end = Entity->Enemy->State.GetOrigin();
 
 	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
-	if (tr.Ent != Entity->Enemy)
+	if (tr.Entity != Entity->Enemy)
 		return;
 
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
@@ -869,7 +869,7 @@ bool CBlackWidow::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// go ahead and spawn stuff if we're mad a a client
 			if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && SlotsLeft() >= 2)
@@ -879,7 +879,7 @@ bool CBlackWidow::CheckAttack ()
 			}
 				
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if (Entity->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if (Entity->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 				return false;
 		}
 	}

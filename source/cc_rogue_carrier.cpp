@@ -93,7 +93,7 @@ void CCarrier::CoopCheck ()
 		{
 			CTrace tr (Entity->State.GetOrigin(), ent->State.GetOrigin(), Entity, CONTENTS_MASK_SOLID);
 		
-			if (tr.fraction == 1.0)
+			if (tr.Fraction == 1.0)
 				targets.push_back (ent);
 		}
 	}
@@ -912,7 +912,7 @@ bool CCarrier::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// go ahead and spawn stuff if we're mad a a client
 			if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && MonsterSlots > 2)
@@ -922,7 +922,7 @@ bool CCarrier::CheckAttack ()
 			}
 				
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if (Entity->Enemy->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 				return false;
 		}
 	}

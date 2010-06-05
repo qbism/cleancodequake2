@@ -83,24 +83,24 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 	vec3f end = start.MultiplyAngles (8192, forward);
 	CTrace tr (start, end, Player, CONTENTS_MASK_SHOT);
 	
-	if (tr.Ent != World)
+	if (tr.Entity != World)
 	{
-		if (tr.Ent->EntityFlags & ENT_HURTABLE)
+		if (tr.Entity->EntityFlags & ENT_HURTABLE)
 		{
-			if (entity_cast<IHurtableEntity>(tr.Ent)->Health > 0)
-				Enemy = tr.Ent;
+			if (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0)
+				Enemy = tr.Entity;
 		}
 	}
 	else
 	{
 		CTrace tr (start, vec3f(-16), vec3f(16), end, Player, CONTENTS_MASK_SHOT);
 
-		if(tr.Ent != World)
+		if(tr.Entity != World)
 		{
-			if (tr.Ent->EntityFlags & ENT_HURTABLE)
+			if (tr.Entity->EntityFlags & ENT_HURTABLE)
 			{
-				if (entity_cast<IHurtableEntity>(tr.Ent)->Health > 0)
-					Enemy = tr.Ent;
+				if (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0)
+					Enemy = tr.Entity;
 			}
 		}
 	}

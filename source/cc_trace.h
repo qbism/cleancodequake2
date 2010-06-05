@@ -39,27 +39,24 @@ class CTrace
 	void Copy (STrace tr);
 
 public:
-	float				fraction;
-	edict_t				*ent;
-	SBSPPlane				plane;
-	bool				allSolid;
-	bool				startSolid;
-	vec3f				EndPos;
-	SBSPSurface		*surface;
-	sint32					contents;
-
-	// For vec3f
-	IBaseEntity			*Ent;
+	float				Fraction;
+	SBSPPlane			Plane;
+	bool				AllSolid;
+	bool				StartSolid;
+	vec3f				EndPosition;
+	SBSPSurface			*Surface;
+	EBrushContents		Contents;
+	IBaseEntity			*Entity;
 
 	CTrace ();
 
-	CTrace (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask);
-	CTrace (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask);
-	CTrace (vec3f start, vec3f end, sint32 contentMask);
+	CTrace (vec3f Start, vec3f Mins, vec3f Maxs, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask);
+	CTrace (vec3f Start, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask);
+	CTrace (vec3f Start, vec3f End, EBrushContents ContentMask);
 
-	void operator () (vec3f start, vec3f mins, vec3f maxs, vec3f end, IBaseEntity *ignore, sint32 contentMask); 
-	void operator () (vec3f start, vec3f end, IBaseEntity *ignore, sint32 contentMask); 
-	void operator () (vec3f start, vec3f end, sint32 contentMask); 
+	void operator () (vec3f Start, vec3f Mins, vec3f Maxs, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask); 
+	void operator () (vec3f Start, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask); 
+	void operator () (vec3f Start, vec3f End, EBrushContents ContentMask); 
 };
 
 #else

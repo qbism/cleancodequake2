@@ -1135,7 +1135,7 @@ public:
 		vec3f endpos = (Enemy->GetAbsMax() + Enemy->GetAbsMin()) * 0.5f;
 			
 		CTrace trace (TargetedBreach->State.GetOrigin(), endpos, TargetedBreach, CONTENTS_MASK_SHOT);
-		if (trace.fraction == 1 || trace.Ent == Enemy)
+		if (trace.Fraction == 1 || trace.Entity == Enemy)
 		{
 			if (LostSight)
 			{

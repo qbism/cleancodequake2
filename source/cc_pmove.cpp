@@ -127,21 +127,21 @@ static void SV_PM_StepSlideMove_ ()
 		end = pml.origin + time_left * pml.velocity;
 		trace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 
-		if (trace.allSolid)
+		if (trace.AllSolid)
 		{
 			// entity is trapped in another solid
 			pml.velocity.Z = 0;	// don't build up falling damage
 			return;
 		}
 
-		if (trace.fraction > 0)
+		if (trace.Fraction > 0)
 		{
 			// actually covered some distance
-			pml.origin = trace.EndPos;
+			pml.origin = trace.EndPosition;
 			numPlanes = 0;
 		}
 
-		if (trace.fraction == 1)
+		if (trace.Fraction == 1)
 			 break;		// moved the entire distance
 
 		// save entity for contact
@@ -163,7 +163,7 @@ static void SV_PM_StepSlideMove_ ()
 			}
 		}
 		
-		time_left -= time_left * trace.fraction;
+		time_left -= time_left * trace.Fraction;
 
 		// slide along this plane
 		if (numPlanes >= MAX_CLIP_PLANES)
@@ -173,7 +173,7 @@ static void SV_PM_StepSlideMove_ ()
 			break;
 		}
 
-		planes[numPlanes] = trace.plane.normal;
+		planes[numPlanes] = trace.Plane.normal;
 		numPlanes++;
 
 		// modify original_velocity so it parallels all of the clip planes
@@ -234,7 +234,7 @@ static void SV_PM_StepSlideMove ()
 	vec3f up = start_o + vec3f(0, 0, STEPSIZE);
 	CTrace trace (up, pm->mins, pm->maxs, up, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
-	if (trace.allSolid)
+	if (trace.AllSolid)
 		return;		// can't step up
 
 	// try sliding above
@@ -247,8 +247,8 @@ static void SV_PM_StepSlideMove ()
 	vec3f down = pml.origin - vec3f(0, 0, STEPSIZE);
 	trace (pml.origin, pm->mins, pm->maxs, down, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
-	if (!trace.allSolid)
-		pml.origin = trace.EndPos;
+	if (!trace.AllSolid)
+		pml.origin = trace.EndPosition;
 
 	up = pml.origin;
 
@@ -258,7 +258,7 @@ static void SV_PM_StepSlideMove ()
 	float up_dist = (up.X - start_o.X)*(up.X - start_o.X)
 		+ (up.Y - start_o.Y)*(up.Y - start_o.Y);
 
-	if (down_dist > up_dist || trace.plane.normal.Z < MIN_STEP_NORMAL)
+	if (down_dist > up_dist || trace.Plane.normal.Z < MIN_STEP_NORMAL)
 	{
 		pml.origin = down_o;
 		pml.velocity = down_v;
@@ -559,10 +559,10 @@ static void SV_PM_CatagorizePosition ()
 	else
 	{
 		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
-		pml.groundSurface = trace.surface;
-		pml.groundContents = trace.contents;
+		pml.groundSurface = trace.Surface;
+		pml.groundContents = trace.Contents;
 
-		if (!trace.ent || ((trace.plane.normal.Z < 0.7) && !trace.startSolid))
+		if (!trace.ent || ((trace.Plane.normal.Z < 0.7) && !trace.StartSolid))
 		{
 			pm->groundEntity = NULL;
 			pm->state.pmFlags &= ~PMF_ON_GROUND;
@@ -713,7 +713,7 @@ static void SV_PM_CheckSpecialMovement ()
 	vec3f spot = pml.origin.MultiplyAngles (1, flatforward);
 	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
-	if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
+	if ((trace.Fraction < 1) && (trace.Contents & CONTENTS_LADDER))
 		pml.ladder = true;
 
 	// check for water jump
@@ -795,7 +795,7 @@ static void SV_PM_FlyMove (bool doClip)
 	if (doClip)
 	{
 		vec3f end = pml.origin.MultiplyAngles (pml.frameTime, pml.velocity);
-		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
+		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPosition;
 	}
 	else
 		// move
@@ -844,7 +844,7 @@ static void SV_PM_CheckDuck ()
 			// try to stand up
 			pm->maxs.Z = 32;
 			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
-			if (!trace.allSolid)
+			if (!trace.AllSolid)
 				pm->state.pmFlags &= ~PMF_DUCKED;
 		}
 	}
@@ -896,7 +896,7 @@ static bool SV_PM_GoodPosition ()
 					pm->state.origin[1]*(1.0f/8.0f),
 					pm->state.origin[2]*(1.0f/8.0f));
  
-	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
+	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).AllSolid;
 }
 
 /*

@@ -545,7 +545,7 @@ Changes level to "map" when fired
 */
 void BeginIntermission (CTargetChangeLevel *targ)
 {
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;		// already activated
 
 #if CLEANCTF_ENABLED
@@ -567,10 +567,10 @@ void BeginIntermission (CTargetChangeLevel *targ)
 			Player->Respawn();
 	}
 
-	Level.IntermissionTime = Level.Frame;
-	Level.ChangeMap = targ->Map;
+	Level.Intermission.Time = Level.Frame;
+	Level.Intermission.ChangeMap = targ->Map;
 
-	if (strstr(Level.ChangeMap, "*"))
+	if (strstr(Level.Intermission.ChangeMap, "*"))
 	{
 		if (Game.GameMode & GAME_COOPERATIVE)
 		{
@@ -594,14 +594,14 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	{
 		if (!(Game.GameMode & GAME_DEATHMATCH))
 		{
-			Level.ExitIntermission = true;		// go immediately to the next level
+			Level.Intermission.ShouldExitOnNextFrame = true;		// go immediately to the next level
 			if (targ->ExitOnNextFrame)
-				Level.ExitIntermissionOnNextFrame = true;
+				Level.Intermission.ShouldExitOnNextFrame = true;
 			return;
 		}
 	}
 
-	Level.ExitIntermission = false;
+	Level.Intermission.ShouldExitOnNextFrame = false;
 
 	// find an intermission spot
 	IBaseEntity *Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
@@ -622,8 +622,8 @@ void BeginIntermission (CTargetChangeLevel *targ)
 		}
 	}
 
-	Level.IntermissionOrigin = Entity->State.GetOrigin ();
-	Level.IntermissionAngles = Entity->State.GetAngles ();
+	Level.Intermission.Origin = Entity->State.GetOrigin ();
+	Level.Intermission.Angles = Entity->State.GetAngles ();
 
 	// move all clients to the intermission point
 	for (sint32 i = 0; i < Game.MaxClients; i++)
@@ -660,7 +660,7 @@ bool CTargetChangeLevel::Run ()
 
 void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
-	if (Level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;		// already activated
 
 	if (Game.GameMode & GAME_SINGLEPLAYER)
@@ -1249,15 +1249,13 @@ void CTargetLaser::Think ()
 	{
 		tr (start, end, ignore, (SpawnFlags & LASER_STOPWINDOW) ? CONTENTS_MASK_SHOT : CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
 
-		if (!tr.ent)
-			break;
-		if (!tr.ent->Entity)
+		if (!tr.Entity)
 			break;
 
-		IBaseEntity *Entity = tr.ent->Entity;
+		IBaseEntity *Entity = tr.Entity;
 		// hurt it if we can
 		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
-			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, *User, MoveDir, tr.EndPos, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
+			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, *User, MoveDir, tr.EndPosition, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done
 		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
@@ -1265,16 +1263,16 @@ void CTargetLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				CSparks(tr.EndPos, tr.plane.Normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
+				CSparks(tr.EndPosition, tr.Plane.Normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
 			}
 			break;
 		}
 
-		ignore = tr.Ent;
-		start = tr.EndPos;
+		ignore = tr.Entity;
+		start = tr.EndPosition;
 	}
 
-	State.GetOldOrigin() = tr.EndPos;
+	State.GetOldOrigin() = tr.EndPosition;
 	NextThink = Level.Frame + FRAMETIME;
 };
 
