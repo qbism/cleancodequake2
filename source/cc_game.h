@@ -90,6 +90,30 @@ enum
 class CGameLocals
 {
 public:
+	std::string				HelpMessages[2];
+	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
+								// and increment only if 1, 2, or 3
+
+	SServerClient			*Clients;		// [maxclients]
+	edict_t					*Entities;
+
+	// can't store spawnpoint in level, because
+	// it would get overwritten by the savegame restore
+	std::string				SpawnPoint;	// needed for coop respawns
+
+	// store latched cvars here that we want to get at often
+	uint8					MaxClients;
+	uint8					MaxSpectators;
+	sint32					MaxEntities;
+	bool					CheatsEnabled;
+	EGameMode				GameMode; // Game mode
+
+	// cross level triggers
+	ECrossLevelTriggerFlags	ServerFlags;
+	bool					AutoSaved;
+
+	bool					R1Protocol;
+
 	CGameLocals () :
 	  HelpChanged (0),
 	  Clients (NULL),
@@ -100,9 +124,9 @@ public:
 	  GameMode (0),
 	  ServerFlags (0),
 	  AutoSaved (false),
-	  HelpMessages (),
 	  SpawnPoint ()
 	  {
+		  HelpMessages[0] = HelpMessages[1] = "";
 	  };
 
 	void Save (CFile &File)
@@ -134,30 +158,6 @@ public:
 		ServerFlags = File.Read<ECrossLevelTriggerFlags> ();
 		AutoSaved = File.Read<bool> ();
 	}
-
-	std::string			HelpMessages[2];
-	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
-								// and increment only if 1, 2, or 3
-
-	SServerClient				*Clients;		// [maxclients]
-	edict_t					*Entities;
-
-	// can't store spawnpoint in level, because
-	// it would get overwritten by the savegame restore
-	std::string			SpawnPoint;	// needed for coop respawns
-
-	// store latched cvars here that we want to get at often
-	uint8					MaxClients;
-	uint8					MaxSpectators;
-	sint32					MaxEntities;
-	bool					CheatsEnabled;
-	EGameMode				GameMode; // Game mode
-
-	// cross level triggers
-	ECrossLevelTriggerFlags	ServerFlags;
-	bool					AutoSaved;
-
-	bool					R1Protocol;
 };
 
 extern	CGameLocals		Game;

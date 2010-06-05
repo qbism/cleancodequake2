@@ -207,9 +207,9 @@ const int HITSCANSTEP = 100;
 class CHitScan
 {
 public:
-	bool ThroughAndThrough;
-	sint32 Damage;
-	sint32 Kick;
+	sint32			Damage;
+	sint32			Kick;
+	bool			ThroughAndThrough;
 
 	CHitScan (sint32 Damage, sint32 Kick, bool ThroughAndThrough) :
 	Damage(Damage),

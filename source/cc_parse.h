@@ -234,11 +234,11 @@ inline bool PS_VerifyVec <bool> (const char *token, void *target)
 
 class CParser
 {
-	std::string		ScratchToken;	// Used for temporary storage during data-type/post parsing
+	std::string			ScratchToken;	// Used for temporary storage during data-type/post parsing
 
 	uint32				CurrentColumn;
 	uint32				CurrentLine;
-	std::string		CurrentToken;
+	std::string			CurrentToken;
 
 	const char			*DataPointer;
 	const char			*DataPointerLast;
@@ -254,12 +254,12 @@ public:
 	  ScratchToken(),
 	  CurrentColumn(1),
 	  CurrentLine(1),
+	  CurrentToken(),
 	  DataPointer(NULL),
 	  DataPointerLast(NULL),
 	  NumErrors(0),
 	  NumWarnings(0),
-	  Properties(0),
-	  CurrentToken()
+	  Properties(0)
 	  {
 	  };
 
@@ -372,7 +372,7 @@ public:
 			}
 
 			// Skip comments
-			if (SkipComments (&data, flags))
+			if (SkipComments (&data))
 			{
 				if (!data)
 				{
@@ -679,7 +679,7 @@ public:
 	// Private interface
 private:
 
-	bool SkipComments (const char **data, EParseFlags flags)
+	bool SkipComments (const char **data)
 	{
 		// See if any comment types are allowed
 		if (!(Properties & PSP_COMMENT_MASK))

@@ -783,10 +783,14 @@ public:
 
 		CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_WRITE), "Tried to write on a read\n");
 
+		size_t len;
+
 		if (Handle->IsRegular())
-			fwrite (buffer, size, 1, Handle->file.reg);
+			len = fwrite (buffer, size, 1, Handle->file.reg);
 		else
-			gzwrite (Handle->file.gz, buffer, size);
+			len = gzwrite (Handle->file.gz, buffer, size);
+		
+		//CC_ASSERT_EXPR (len == size, "Read size != wanted size");
 	};
 
 	/**
@@ -896,10 +900,15 @@ public:
 
 		CC_ASSERT_EXPR ((Handle->openMode & FILEMODE_READ), "Tried to read on a write\n");
 
+		size_t len;
+
 		if (Handle->IsRegular())
-			fread (buffer, size, 1, Handle->file.reg);
+			len = fread (buffer, size, 1, Handle->file.reg);
 		else
-			gzread (Handle->file.gz, buffer, size);
+			len = gzread (Handle->file.gz, buffer, size);
+
+		// FIXME: why doesn't this assert work?
+		//CC_ASSERT_EXPR (len == size, "Read size != wanted size");
 	};
 
 	/**

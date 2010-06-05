@@ -54,8 +54,8 @@ class CDeathmatchFlags
 	**/
 	class CDeathmatchFlag
 	{
-		bool					Enabled;	// true if this flag is enabled
 		const EDeathmatchFlags	Flag;		// The flag itself
+		bool					Enabled;	// true if this flag is enabled
 
 	public:
 		CDeathmatchFlag (EDeathmatchFlags Flag) :

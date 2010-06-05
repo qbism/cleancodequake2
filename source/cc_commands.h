@@ -264,8 +264,8 @@ public:
 	**/
 	CCommand (const char *Name, CCommandFunctor *Func, ECmdTypeFlags Flags) :
 	  Name(Mem_StrDup(Name)),
-	  Func(Func),
-	  Flags(Flags)
+	  Flags(Flags),
+	  Func(Func)
 	  {
 	  };
 	

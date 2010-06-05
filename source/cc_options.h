@@ -41,12 +41,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GAME_MODE						(GAME_ORIGINAL_QUAKE2)
 #endif
 
-// Global macros
-// Use the Rogue AI instead of regular AI
-#ifndef ROGUE_FEATURES
-#define ROGUE_FEATURES				1
-#endif
-
 // Enable IRC
 #ifndef CLEANCODE_IRC
 #define CLEANCODE_IRC						1

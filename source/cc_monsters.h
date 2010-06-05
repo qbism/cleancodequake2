@@ -40,16 +40,16 @@ class CFrame
 {
 public:
 
-	void (CMonster::*AIFunc) (float Dist);
-	void (CMonster::*Function) ();
+	void	(CMonster::*AIFunc) (float Dist);
+	void	(CMonster::*Function) ();
 	float	Dist;
 
 	CFrame ();
 
 	CFrame(void (CMonster::*AIFunc) (float Dist), float Dist, void (CMonster::*Function) () = NULL) :
-	AIFunc(AIFunc),
-	Dist(Dist),
-	Function(Function)
+	  AIFunc(AIFunc),
+	  Function(Function),
+	  Dist(Dist)
 	{
 	};
 };
@@ -59,15 +59,14 @@ class CAnim
 public:
 
 	sint32			FirstFrame, LastFrame;
-	void		(CMonster::*EndFunc) ();
-
-	CFrame	*Frames;
+	void			(CMonster::*EndFunc) ();
+	CFrame			*Frames;
 
 	CAnim (sint32 FirstFrame, sint32 LastFrame, CFrame *Frames, void (CMonster::*EndFunc) () = NULL) :
-	FirstFrame(FirstFrame),
-	LastFrame(LastFrame),
-	EndFunc(EndFunc),
-	Frames(Frames)
+	  FirstFrame(FirstFrame),
+	  LastFrame(LastFrame),
+	  EndFunc(EndFunc),
+	  Frames(Frames)
 	{
 	};
 };

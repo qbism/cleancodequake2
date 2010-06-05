@@ -391,12 +391,10 @@ public:
 	  GameEntity(NULL),
 	  ServerEntity(NULL)
 	  {
-		  DebugPrintf ("entity_ptr()\n");
 	  }
 
 	~entity_ptr()
 	{
-		DebugPrintf ("~entity_ptr()\n");
 		if (GameEntity)
 			UsageList().RemoveEntity(GameEntity, this);
 	}
@@ -414,8 +412,6 @@ public:
 	entity_ptr(TType *GameEntity) :
 	  GameEntity(GameEntity)
 	  {
-		  DebugPrintf ("entity_ptr(TType *GameEntity)\n");
-
 		  if (GameEntity)
 		  {
 			  ServerEntity = GameEntity->GetGameEntity();
@@ -425,7 +421,6 @@ public:
 
 	entity_ptr(const entity_ptr &Ptr)
 	{
-		DebugPrintf ("entity_ptr(entity_ptr &Ptr)\n");
 		GameEntity = Ptr.GameEntity;
 		ServerEntity = Ptr.ServerEntity;
 
@@ -446,7 +441,6 @@ public:
 	entity_ptr(edict_t *ServerEntity) :
 	  ServerEntity(ServerEntity)
 	  {
-		  DebugPrintf ("entity_ptr(edict_t *ServerEntity)\n");
 		  if (ServerEntity)
 		  {
 			  GameEntity = entity_cast<TType>(ServerEntity->Entity);
@@ -458,7 +452,6 @@ public:
 
 	entity_ptr &operator= (TType *NewGameEntity)
 	{
-		DebugPrintf ("entity_ptr &operator= (TType *NewGameEntity)\n");
 		if (GameEntity)
 			UsageList().RemoveEntity (GameEntity, this);
 
@@ -476,7 +469,6 @@ public:
 
 	entity_ptr &operator= (edict_t *NewServerEntity)
 	{
-		DebugPrintf ("entity_ptr &operator= (edict_t *NewServerEntity)\n");
 		if (GameEntity)
 			UsageList().RemoveEntity (GameEntity, this);
 
@@ -494,7 +486,6 @@ public:
 
 	entity_ptr &operator= (const entity_ptr &Ptr)
 	{
-		DebugPrintf ("entity_ptr &operator= (entity_ptr &Ptr)\n");
 		if (GameEntity)
 			UsageList().RemoveEntity (GameEntity, this);
 
@@ -539,7 +530,6 @@ public:
 	**/
 	void Clear ()
 	{
-		DebugPrintf ("Clear ()\n");
 		UsageList().RemoveEntity (GameEntity, this);
 		GameEntity = NULL;
 		ServerEntity = NULL;
@@ -559,7 +549,6 @@ public:
 	**/
 	entity_ptr operator = (nullentity_t)
 	{
-		DebugPrintf ("operator = (nullentity_t)\n");
 		if (GameEntity)
 			Clear ();
 		return *this;
@@ -577,7 +566,6 @@ public:
 	**/
 	TType *operator * () const
 	{
-		DebugPrintf ("operator * ()\n");
 		return GameEntity;
 	}
 
@@ -590,7 +578,6 @@ public:
 	**/
 	TType *GetGameEntity () const
 	{
-		DebugPrintf ("GetGameEntity ()\n");
 		return GameEntity;
 	}
 
@@ -603,7 +590,6 @@ public:
 	**/
 	edict_t *GetServerEntity () const
 	{
-		DebugPrintf ("GetServerEntity ()\n");
 		return ServerEntity;
 	}
 
@@ -616,7 +602,6 @@ public:
 	**/
 	bool IsValid () const
 	{
-		DebugPrintf ("IsValid ()\n");
 		return (ServerEntity && ServerEntity->server.InUse && !ServerEntity->freetime && GameEntity && !GameEntity->Freed);
 	}
 
@@ -632,7 +617,6 @@ public:
 	**/
 	TType *operator-> ()
 	{
-		DebugPrintf ("operator-> ()\n");
 		return GameEntity;
 	}
 
