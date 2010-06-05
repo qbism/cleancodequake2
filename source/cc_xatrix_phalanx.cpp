@@ -66,7 +66,7 @@ void CPhalanxPlasma::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *s
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free ();
 		return;
@@ -76,7 +76,7 @@ void CPhalanxPlasma::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *s
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->Normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);

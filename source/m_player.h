@@ -219,5 +219,3 @@ enum
 	FRAME_death307,
 	FRAME_death308,
 };
-
-const float MODEL_SCALE = 1.000000f;

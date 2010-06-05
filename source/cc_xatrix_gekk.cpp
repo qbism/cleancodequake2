@@ -64,7 +64,7 @@ void CLoogie::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -74,7 +74,7 @@ void CLoogie::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
 
 	Free (); // "delete" the entity
 }
@@ -144,7 +144,7 @@ bool CGekk::CheckMelee ()
 	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		return true;
 	return false;
 }
@@ -676,7 +676,7 @@ void CGekk::CheckMeleeRefire ()
 
 	if (frand() < (CvarList[CV_SKILL].Integer() * 0.1))
 	{
-		if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+		if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		{
 			switch (Entity->State.GetFrame())
 			{
@@ -853,7 +853,7 @@ void CGekk::JumpTakeoff ()
 		Entity->Velocity.Z = 400;
 	}
 
-	Entity->GroundEntity = NULL;
+	Entity->GroundEntity = nullentity;
 	AIFlags |= AI_DUCKED;
 	AttackFinished = Level.Frame + 30;
 	Jumping = true;
@@ -879,7 +879,7 @@ void CGekk::JumpTakeoff2 ()
 		Entity->Velocity.Z = 300;
 	}
 
-	Entity->GroundEntity = NULL;
+	Entity->GroundEntity = nullentity;
 	AIFlags |= AI_DUCKED;
 	AttackFinished = Level.Frame + 30;
 	Jumping = true;
@@ -917,7 +917,7 @@ void CGekk::Jump ()
 		return;
 	else
 	{
-		if ((frand() > 0.5 && (Range (Entity, Entity->Enemy) >= RANGE_NEAR)) || (frand() > 0.8))
+		if ((frand() > 0.5 && (Range (Entity, *Entity->Enemy) >= RANGE_NEAR)) || (frand() > 0.8))
 			CurrentMove = &GekkMoveSpit;
 		else
 			CurrentMove = &GekkMoveLeapAtk;

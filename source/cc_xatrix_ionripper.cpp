@@ -68,7 +68,7 @@ void CIonRipperBoomerang::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurfa
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -79,7 +79,7 @@ void CIonRipperBoomerang::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurfa
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 	{
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_RIPPER);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_RIPPER);
 		Free (); // "delete" the entity
 	}
 }

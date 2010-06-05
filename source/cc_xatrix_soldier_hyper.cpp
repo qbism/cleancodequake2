@@ -65,7 +65,7 @@ void CBlueBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSu
 	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -75,9 +75,9 @@ void CBlueBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSu
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
 	else
-		CBlasterSplash(State.GetOrigin(), plane ? plane->normal : vec3fOrigin, BL_BLUE_HYPERBLASTER).Send();
+		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin, BL_BLUE_HYPERBLASTER).Send();
 
 	Free (); // "delete" the entity
 }
@@ -269,7 +269,7 @@ void CSoldierHyper::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			IBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);

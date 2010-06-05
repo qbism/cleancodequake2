@@ -1200,6 +1200,71 @@ public:
 
 		return vec3Base (-pitch, yaw, 0);
 	}
+
+	/**
+	\fn	void MakeNormalVectors(vec3Base &right, vec3Base &up) const
+	
+	\brief	Makes normal vectors.
+	
+	\author	Paril
+	\date	05/06/2010
+	
+	\param [in,out]	right	The right. 
+	\param [in,out]	up		The up. 
+	**/
+	void MakeNormalVectors(vec3Base &right, vec3Base &up) const
+	{
+		// This rotate and negate guarantees a vector not colinear with the original
+		right.Set (Z, -X, Y);
+
+		float d = right | *this;
+		right = right.MultiplyAngles(-d, *this).GetNormalized();
+		up = right ^ *this;
+	}
+
+	/**
+	\fn	vec3Base RotateAroundVector(const vec3Base &dir, const float degrees) const
+	
+	\brief	Rotate this vector in direction 'dir' 'degrees' degrees.
+	
+	\author	Paril
+	\date	05/06/2010
+	
+	\param	dir		The dir. 
+	\param	point	The point. 
+	\param	degrees	The degrees. 
+	**/
+	vec3Base RotateAroundVector(const vec3Base &dir, const float degrees) const
+	{
+		vec3Base dest;
+		
+		float c, s;
+		Q_SinCosf(DEG2RAD(degrees), &s, &c);
+
+		vec3Base vr, vu;
+		dir.MakeNormalVectors (vr, vu);
+
+		float t0, t1;
+		t0 = vr.X * c + vu.X * -s;
+		t1 = vr.X * s + vu.X *  c;
+		dest.X = (t0 * vr.X + t1 * vu.X + dir.X * dir.X) * X
+						+ (t0 * vr.Y + t1 * vu.Y + dir.X * dir.Y) * Y
+						+ (t0 * vr.Z + t1 * vu.Z + dir.X * dir.Z) * Z;
+
+		t0 = vr.Y * c + vu.Y * -s;
+		t1 = vr.Y * s + vu.Y *  c;
+		dest.Y = (t0 * vr.X + t1 * vu.X + dir.Y * dir.X) * X
+						+ (t0 * vr.Y + t1 * vu.Y + dir.Y * dir.Y) * Y
+						+ (t0 * vr.Z + t1 * vu.Z + dir.Y * dir.Z) * Z;
+
+		t0 = vr.Z * c + vu.Z * -s;
+		t1 = vr.Z * s + vu.Z *  c;
+		dest.Z = (t0 * vr.X + t1 * vu.X + dir.Z * dir.X) * X
+						+ (t0 * vr.Y + t1 * vu.Y + dir.Z * dir.Y) * Y
+						+ (t0 * vr.Z + t1 * vu.Z + dir.Z * dir.Z) * Z;
+
+		return dest;
+	}
 };
 
 /*

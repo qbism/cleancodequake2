@@ -82,7 +82,6 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("misc_nuke_core", CMiscNukeCore);
 
-#include "cc_brush_models.h"
 #include "cc_temporary_entities.h"
 
 /*QUAKED func_door_secret2 (0 .5 .8) ? open_once 1st_left 1st_down no_shoot always_shoot slide_right slide_forward

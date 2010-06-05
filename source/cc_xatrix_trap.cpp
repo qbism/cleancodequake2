@@ -143,7 +143,7 @@ void CTrapProjectile::Think ()
 					best->GetMins().Clear();
 					best->GetMaxs().Clear();
 
-					if ((Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(Enemy)->Monster->MonsterID == CGekk::ID))
+					if ((Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(*Enemy)->Monster->MonsterID == CGekk::ID))
 					{
 						best->State.GetModelIndex() = ModelIndex ("models/objects/gekkgib/torso/tris.md2");	
 						best->State.GetEffects() |= EF_GREENGIB;
@@ -165,8 +165,8 @@ void CTrapProjectile::Think ()
 				vec3f forward, right, up, vec;
 				State.GetAngles().ToVectors (&forward, &right, &up);
 
-				RotatePointAroundVector (vec, up, right, ((360.0/3)* i)+Delay);
-				vec = vec.MultiplyAngles (Wait/2, vec) + State.GetOrigin();
+				vec = right.RotateAroundVector (up, (120.0f * i) + Delay)
+						.MultiplyAngles (Wait/2, vec) + State.GetOrigin();
 				best->State.GetOrigin() = vec + forward;
 				best->State.GetOrigin().Z = State.GetOrigin().Z + Wait;
   				best->State.GetAngles() = State.GetAngles();
@@ -249,7 +249,7 @@ void CTrapProjectile::Think ()
 		if (best->GroundEntity)
 		{
 			best->State.GetOrigin().Z += 1;
-			best->GroundEntity = NULL;
+			best->GroundEntity = nullentity;
 			best->Link ();
 		}
 
@@ -316,7 +316,7 @@ void CTrapProjectile::Explode ()
 	//FIXME: if we are onground then raise our Z just a bit since we are a point?
 	if (Enemy)
 	{
-		IHurtableEntity *HurtEnemy = entity_cast<IHurtableEntity>(Enemy);
+		IHurtableEntity *HurtEnemy = entity_cast<IHurtableEntity>(*Enemy);
 
 		vec3f v = (HurtEnemy->GetMins() + HurtEnemy->GetMaxs());
 		v = (State.GetOrigin () - HurtEnemy->State.GetOrigin().MultiplyAngles (0.5f, v));
@@ -328,7 +328,7 @@ void CTrapProjectile::Explode ()
 							DAMAGE_RADIUS, MOD_HANDGRENADE);
 	}
 
-	SplashDamage(GetOwner(), Damage, (Enemy) ? Enemy : NULL, TRAP_RADIUS_DAMAGE, MOD_HELD_GRENADE);
+	SplashDamage(GetOwner(), Damage, *Enemy, TRAP_RADIUS_DAMAGE, MOD_HELD_GRENADE);
 
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
 	if (GroundEntity)
@@ -456,7 +456,7 @@ void CTrap::FireGrenade (CPlayerEntity *Player, bool inHand)
 
 	AttackSound (Player);
 
-	if (Player->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->Client.Anim.Priority = ANIM_ATTACK;
 		Player->State.GetFrame() = FRAME_crattak1 - 1;

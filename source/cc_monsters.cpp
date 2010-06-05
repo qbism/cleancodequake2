@@ -1132,7 +1132,7 @@ void CMonsterBeamLaser::Think ()
 			if (MakeEffect)
 			{
 				MakeEffect = false;
-				CSparks(tr.EndPos, tr.plane.normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
+				CSparks(tr.EndPos, tr.plane.Normal, ST_LASER_SPARKS, (State.GetSkinNum() & 255), Count).Send();
 			}
 			break;
 		}

@@ -54,7 +54,7 @@ enum
 {
 	ROTATING_LIGHT_START_OFF	= BIT(0),
 	ROTATING_LIGHT_ALARM		= BIT(1)
-}
+};
 
 class CRotatingLight : public IMapEntity, public IHurtableEntity, public IThinkableEntity, public IUsableEntity
 {
@@ -361,17 +361,17 @@ public:
 	{
 		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 		{
-			edict_t *ent = (*it);
-			if (!ent->inUse || !ent->Entity)
+			IBaseEntity *Entity = (*it)->Entity;
+			if (!Entity || !Entity->GetInUse())
 				continue;
 
-			if (!(ent->Entity->EntityFlags & ENT_HURTABLE))
+			if (!(Entity->EntityFlags & ENT_HURTABLE))
 				continue;
 
-			if (ent->Entity == this)
+			if (Entity == this)
 				continue;
 
-			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(ent->Entity);
+			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Entity);
 
 			if (Hurtable->EntityFlags & ENT_PLAYER)
 				Hurtable->TakeDamage (this, this, vec3fOrigin, Hurtable->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_TRAP);

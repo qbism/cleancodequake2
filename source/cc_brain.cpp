@@ -705,7 +705,7 @@ void CBrain::Attack ()
 {	
 	if (frand() < 0.8)
 	{
-		ERangeType r = Range (Entity, Entity->Enemy);
+		ERangeType r = Range (Entity, *Entity->Enemy);
 
 		switch (r)
 		{

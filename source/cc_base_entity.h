@@ -522,7 +522,6 @@ public:
 		return IsValid();
 	}
 
-
 	/**
 	\fn	void Clear ()
 	

@@ -355,7 +355,7 @@ CAnim FixbotMoveForward (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesForward);
 
 void CFixbot::AI_Facing (float dist)
 {
-	if (IsInFront (Entity, Entity->GoalEntity))
+	if (IsInFront (Entity, *Entity->GoalEntity))
 		CurrentMove = &FixbotMoveForward;
 	else
 	{
@@ -605,16 +605,16 @@ void CFixbot::WeldState ()
 		CurrentMove = &FixbotMoveWeld;
 		break;
 	case FRAME_weldmiddle_07:
-		if (entity_cast<IHurtableEntity>(Entity->GoalEntity)->Health < 0) 
+		if (entity_cast<IHurtableEntity>(*Entity->GoalEntity)->Health < 0) 
 		{
 			Entity->Enemy->SetOwner (NULL);
 			CurrentMove = &FixbotMoveWeldEnd;
 		}
 		else
-			entity_cast<IHurtableEntity>(Entity->GoalEntity)->Health -= 10;
+			entity_cast<IHurtableEntity>(*Entity->GoalEntity)->Health -= 10;
 		break;
 	default:
-		Entity->GoalEntity = Entity->Enemy = NULL;
+		Entity->GoalEntity = Entity->Enemy = nullentity;
 		CurrentMove = &FixbotMoveStand;
 		break;
 	};
@@ -647,7 +647,7 @@ void CFixbot::FireBlaster ()
 
 	vec3f	start, forward, right, up, end, dir;
 
-	if (!IsVisible(Entity, Entity->Enemy))
+	if (!IsVisible(Entity, *Entity->Enemy))
 		CurrentMove = &FixbotMoveRun;
 	
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
@@ -795,7 +795,7 @@ void CFixbot::UseScanner ()
 					// remove the old one
 					if (Entity->GoalEntity->ClassName == "bot_goal")
 					{
-						IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
+						IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
 						Thinkable->NextThink = Level.Frame + 1;
 					}	
 					
@@ -819,9 +819,9 @@ void CFixbot::UseScanner ()
 			CurrentMove = &FixbotMoveWeldStart;
 		else 
 		{
-			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
+			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
 			Thinkable->NextThink = Level.Frame + 1;
-			Entity->GoalEntity = Entity->Enemy = NULL;
+			Entity->GoalEntity = Entity->Enemy = nullentity;
 			CurrentMove = &FixbotMoveStand;
 		}
 		return;
@@ -839,9 +839,9 @@ void CFixbot::UseScanner ()
 			CurrentMove = &FixbotMoveStand;
 		else 
 		{
-			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
+			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
 			Thinkable->NextThink = Level.Frame + 1;
-			Entity->GoalEntity = Entity->Enemy = NULL;
+			Entity->GoalEntity = Entity->Enemy = nullentity;
 			CurrentMove = &FixbotMoveStand;
 		}
 	}
@@ -1008,13 +1008,13 @@ void CFixbot::FlyVertical ()
 	
 	if (Entity->State.GetFrame() == FRAME_landing_58 || Entity->State.GetFrame() == FRAME_takeoff_16)
 	{
-		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
+		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
 
 		Thinkable->NextThink = Level.Frame + 1;
 		// NOTE: DO FREE
 
 		CurrentMove = &FixbotMoveStand;
-		Entity->GoalEntity = Entity->Enemy = NULL;
+		Entity->GoalEntity = Entity->Enemy = nullentity;
 	}
 
 	// kick up some particles
@@ -1038,13 +1038,13 @@ void CFixbot::FlyVertical2 ()
 	
 	if (subtract.Length() < 32)
 	{
-		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(Entity->GoalEntity);
+		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
 
 		Thinkable->NextThink = Level.Frame + 1;
 		// NOTE: DO FREE
 
 		CurrentMove = &FixbotMoveStand;
-		Entity->GoalEntity = Entity->Enemy = NULL;
+		Entity->GoalEntity = Entity->Enemy = nullentity;
 	}
 		
 	// needs sound
@@ -1080,9 +1080,9 @@ void CFixbot::Attack ()
 {	
 	if (AIFlags & AI_MEDIC)
 	{
-		if ((!IsVisible (Entity, Entity->GoalEntity)) || (Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() > 128)
+		if ((!IsVisible (Entity, *Entity->GoalEntity)) || (Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() > 128)
 			return;
-		if (!((!IsVisible (Entity, Entity->GoalEntity) || (Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() > 128)))
+		if (!((!IsVisible (Entity, *Entity->GoalEntity) || (Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin()).Length() > 128)))
 			CurrentMove = &FixbotMoveLaserAttack;
 	}
 	else
