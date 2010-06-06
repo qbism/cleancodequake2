@@ -588,10 +588,10 @@ void CalcJumpAngle(vec3f start, vec3f end, float velocity, vec3f &angles)
 		one = one / (velocity * velocity);
 		one = one - sinf(U);
 		angles[0] = asinf(one);
-		if(_isnan(angles[0]))
+		if(isnan(angles[0]))
 			angles[2] = 1.0;
 		angles[1] = M_PI - angles[0];
-		if(_isnan(angles[1]))
+		if(isnan(angles[1]))
 			angles[2] = 1.0;
 
 		angles[0] = RAD2DEG ( (angles[0] - U) / 2.0 );
@@ -599,6 +599,7 @@ void CalcJumpAngle(vec3f start, vec3f end, float velocity, vec3f &angles)
 	}
 	else
 	{
+
 		float l = sqrtf(distH*distH + distV*distV);
 
 		angles[2] = 0.0;
@@ -606,10 +607,10 @@ void CalcJumpAngle(vec3f start, vec3f end, float velocity, vec3f &angles)
 		float one = l * FAUX_GRAVITY;
 		one = one / (velocity * velocity);
 		angles[0] = asinf(one);
-		if(_isnan(angles[0]))
+		if(isnan(angles[0]))
 			angles[2] = 1.0;
 		angles[1] = M_PI - angles[0];
-		if(_isnan(angles[1]))
+		if(isnan(angles[1]))
 			angles[2] = 1.0;
 
 		angles[0] = RAD2DEG ( (angles[0]) / 2.0 );
