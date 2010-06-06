@@ -6,14 +6,12 @@
 ARCH:=$(shell uname -m | sed 's/i[3-9]86/i386/')
 GAMELIB=game$(ARCH).so
 
-ifdef SHOW_WARNINGS
-  WFLAGS:=-Wall
-else
-  WFLAGS:=-w
+ifndef WARNFLAGS
+  WARNFLAGS:=-w
 endif
 
 CC=g++
-CCFLAGS=-O2 -c -MMD -fPIC -fno-strict-aliasing -pipe $(WFLAGS)
+CCFLAGS=-O2 -c -MMD -fPIC -fno-strict-aliasing -pipe $(WARNFLAGS)
 IDIR=-Iinclude -Isircl/include
 
 LD=g++
