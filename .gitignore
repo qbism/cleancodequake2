@@ -6,4 +6,5 @@ game*.so
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
+libsircl.*
 
