@@ -388,8 +388,8 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (Entity->Flags & FL_PARTIALGROUND)
 		Entity->Flags &= ~FL_PARTIALGROUND;
 
-	Entity->GroundEntity = trace.Ent;
-	Entity->GroundEntityLinkCount = trace.Ent->GetLinkCount();
+	Entity->GroundEntity = trace.Entity;
+	Entity->GroundEntityLinkCount = trace.Entity->GetLinkCount();
 
 // the move is ok
 	if (ReLink)
@@ -526,7 +526,7 @@ bool CMonster::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 			return false;
 	}
 	
