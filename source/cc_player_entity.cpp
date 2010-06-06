@@ -1453,16 +1453,11 @@ P_WorldEffects
 */
 inline void CPlayerEntity::WorldEffects ()
 {
-	bool			breather, envirosuit;
-
 	if (NoClip)
 	{
 		AirFinished = Level.Frame + 120;	// don't need air
 		return;
 	}
-
-	breather = (bool)(Client.Timers.Rebreather > Level.Frame);
-	envirosuit = (bool)(Client.Timers.EnvironmentSuit > Level.Frame);
 
 	//
 	// if just entered a water volume, play a sound
@@ -1519,13 +1514,15 @@ inline void CPlayerEntity::WorldEffects ()
 		WaterInfo.OldLevel = WaterInfo.Level;
 	}
 
+	bool UsingEnvironmentSuit = (Client.Timers.EnvironmentSuit > Level.Frame);
+
 	//
 	// check for drowning
 	//
 	if (WaterInfo.Level == WATER_UNDER)
 	{
 		// breather or envirosuit give air
-		if (breather || envirosuit)
+		if ((Client.Timers.Rebreather > Level.Frame) || UsingEnvironmentSuit)
 		{
 			AirFinished = Level.Frame + 100;
 
@@ -1584,12 +1581,12 @@ inline void CPlayerEntity::WorldEffects ()
 			}
 
 			// take 1/3 damage with envirosuit
-			TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, (envirosuit) ? 1*WaterInfo.Level : 3*WaterInfo.Level, 0, 0, MOD_LAVA);
+			TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, (UsingEnvironmentSuit) ? 1*WaterInfo.Level : 3*WaterInfo.Level, 0, 0, MOD_LAVA);
 		}
 
 		if (WaterInfo.Type & CONTENTS_SLIME)
 		{
-			if (!envirosuit) // no damage from slime with envirosuit
+			if (!UsingEnvironmentSuit) // no damage from slime with envirosuit
 				TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 1*WaterInfo.Level, 0, 0, MOD_SLIME);
 		}
 	}
