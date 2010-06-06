@@ -539,7 +539,7 @@ void CInsane::Stand ()
 void CInsane::Dead ()
 {
 	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
-		Entity->Flags |= FL_FLY;
+		AIFlags |= AI_FLY;
 	else
 	{
 		Entity->GetMins().Set (-16, -16, -24);
@@ -552,7 +552,7 @@ void CInsane::Dead ()
 }
 
 
-void CInsane::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CInsane::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{

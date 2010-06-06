@@ -165,12 +165,12 @@ public:
 	}
 	void Blocked (IBaseEntity *Other)
 	{
-		if (!(Flags & FL_TEAMSLAVE) && (Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if (!(Team.IsSlave) && (Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 0, 0, MOD_CRUSH);
 	}
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		if (Flags & FL_TEAMSLAVE)
+		if (Team.IsSlave)
 			return;
 
 		// trigger all paired doors
@@ -180,13 +180,13 @@ public:
 				entity_cast<IBrushModel>(ent)->MoveCalc (StartOrigin, DOORSECRETENDFUNC_1);
 		}
 	}
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
 		Health = MaxHealth;
 		CanTakeDamage = true;
 
-		if (Flags & FL_TEAMSLAVE && Team.Master && (Team.Master->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Team.Master)->CanTakeDamage))
-			entity_cast<IHurtableEntity>(Team.Master)->Die (Inflictor, Attacker, Damage, point);
+		if (Team.IsSlave && Team.Master && (Team.Master->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Team.Master)->CanTakeDamage))
+			entity_cast<IHurtableEntity>(Team.Master)->Die (Inflictor, Attacker, Damage, Point);
 		else
 			Use (Inflictor, Attacker);
 	}
@@ -579,7 +579,7 @@ void CPlatForm2::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CPlatForm2::HitTop ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -619,7 +619,7 @@ void CPlatForm2::HitTop ()
 
 void CPlatForm2::HitBottom ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -694,7 +694,7 @@ void CPlatForm2::DoEndFunc ()
 
 void CPlatForm2::GoDown ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -709,7 +709,7 @@ void CPlatForm2::GoDown ()
 
 void CPlatForm2::GoUp ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1097,7 +1097,7 @@ public:
 		TeamEntity->Team.Chain = this;
 		Team.Master = TargetedBreach->Team.Master;
 		TargetedBreach->Enemy = Enemy;
-		Flags |= FL_TEAMSLAVE;
+		Team.IsSlave = true;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)

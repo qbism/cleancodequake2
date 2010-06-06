@@ -325,7 +325,7 @@ void CBarracudaShark::Sight ()
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 }
 
-void CBarracudaShark::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBarracudaShark::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

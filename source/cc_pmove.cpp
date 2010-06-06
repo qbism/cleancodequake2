@@ -85,7 +85,7 @@ Slide off of the impacting object
 returns the blocked flags (1 = floor, 2 = step / wall)
 ==================
 */
-static void SV_PM_ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
+static void SV_PM_ClipVelocity (vec3f &in, vec3f &Normal, vec3f &out, float overbounce)
 {	
 	float backoff = (in | normal) * overbounce;
 

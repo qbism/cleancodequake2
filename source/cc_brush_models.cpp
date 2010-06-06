@@ -249,7 +249,7 @@ void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
 
 	if (MoveSpeed == MoveAccel && MoveSpeed == MoveDecel)
 	{
-		if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
+		if (Level.CurrentEntity == ((Team.IsSlave) ? Team.Master : this))
 			MoveBegin ();
 		else
 		{
@@ -380,7 +380,7 @@ void IBrushModel::AngleMoveCalc (uint32 EndFunc)
 		MoveSpeed = 0;
 #endif
 
-	if (Level.CurrentEntity == ((Flags & FL_TEAMSLAVE) ? Team.Master : this))
+	if (Level.CurrentEntity == ((Team.IsSlave) ? Team.Master : this))
 		AngleMoveBegin ();
 	else
 	{
@@ -606,7 +606,7 @@ void CPlatForm::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CPlatForm::HitTop ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -620,7 +620,7 @@ void CPlatForm::HitTop ()
 
 void CPlatForm::HitBottom ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -644,7 +644,7 @@ void CPlatForm::DoEndFunc ()
 
 void CPlatForm::GoDown ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -656,7 +656,7 @@ void CPlatForm::GoDown ()
 
 void CPlatForm::GoUp ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -979,7 +979,7 @@ void CDoor::UseAreaPortals (bool isOpen)
 
 void CDoor::HitTop ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -997,7 +997,7 @@ void CDoor::HitTop ()
 
 void CDoor::HitBottom ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -1009,7 +1009,7 @@ void CDoor::HitBottom ()
 
 void CDoor::GoDown ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1037,7 +1037,7 @@ void CDoor::GoUp (IBaseEntity *Activator)
 		return;
 	}
 	
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1097,7 +1097,7 @@ void CDoor::SmartWaterGoUp ()
 		}
 	}
 
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1173,7 +1173,7 @@ void CDoor::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	default:
 #endif
 
-		if (Flags & FL_TEAMSLAVE)
+		if (Team.IsSlave)
 			return;
 
 		if (SpawnFlags & DOOR_TOGGLE)
@@ -1262,7 +1262,7 @@ void CDoorTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *sur
 
 void CDoor::CalcMoveSpeed ()
 {
-	if (Flags & FL_TEAMSLAVE)
+	if (Team.IsSlave)
 		return;		// only the team master does this
 
 	// find the smallest distance any member of the team will be moving
@@ -1295,7 +1295,7 @@ void CDoor::CalcMoveSpeed ()
 
 void CDoor::SpawnDoorTrigger ()
 {
-	if (Flags & FL_TEAMSLAVE)
+	if (Team.IsSlave)
 		return;		// only the team leader spawns a trigger
 
 	CBounds Bounds (GetAbsMin (), GetAbsMax ());
@@ -1364,7 +1364,7 @@ void CDoor::Blocked (IBaseEntity *Other)
 	}
 }
 
-void CDoor::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CDoor::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	for (IBaseEntity *Entity = Team.Master; Entity; Entity = Entity->Team.Chain)
 	{
@@ -1586,7 +1586,7 @@ CDoor(Index)
 
 void CRotatingDoor::GoDown ()
 {
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1614,7 +1614,7 @@ void CRotatingDoor::GoUp (IBaseEntity *Activator)
 		return;
 	}
 	
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1954,7 +1954,7 @@ void CDoorSecret::Blocked (IBaseEntity *Other)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
-void CDoorSecret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CDoorSecret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	CanTakeDamage = false;
 	Use (Attacker, Attacker);
@@ -2124,7 +2124,7 @@ void CButton::Fire ()
 		return;
 
 	MoveState = STATE_UP;
-	if (SoundStart && !(Flags & FL_TEAMSLAVE))
+	if (SoundStart && !(Team.IsSlave))
 		PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
 	MoveCalc (EndOrigin, BUTTONENDFUNC_WAIT);
 }
@@ -2147,7 +2147,7 @@ void CButton::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	Fire ();
 }
 
-void CButton::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CButton::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	User = Attacker;
 	Health = MaxHealth;
@@ -2321,7 +2321,7 @@ void CTrainBase::TrainWait ()
 			NextThink = 0;
 		}
 
-		if (!(Flags & FL_TEAMSLAVE))
+		if (!(Team.IsSlave))
 		{
 			if (SoundEnd)
 				PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -2392,7 +2392,7 @@ void CTrainBase::Next ()
 	if (TargetEntity)
 		Wait = TargetEntity->Wait;
 
-	if (!(Flags & FL_TEAMSLAVE))
+	if (!(Team.IsSlave))
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -3641,7 +3641,7 @@ void CFuncExplosive::Pain (IBaseEntity *Other, sint32 Damage)
 {
 };
 
-void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	// bmodel origins are (0 0 0), we need to adjust that here
 	State.GetOrigin() = (GetAbsMin() + (GetSize() * 0.5f));
@@ -3680,7 +3680,7 @@ void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 
 
 #if ROGUE_FEATURES
 	// PMM - if we're part of a train, clean ourselves out of it
-	if (Flags & FL_TEAMSLAVE)
+	if (Team.IsSlave)
 	{
 		if (Team.Master)
 		{

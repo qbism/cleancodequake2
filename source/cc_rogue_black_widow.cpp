@@ -803,7 +803,7 @@ void CBlackWidow::KillChildren ()
 	}
 }
 
-void CBlackWidow::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBlackWidow::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

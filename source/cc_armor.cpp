@@ -120,7 +120,7 @@ void CArmor::Drop (CPlayerEntity *Player)
 
 #include "cc_temporary_entities.h"
 
-sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 Damage, EDamageFlags dflags)
+sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags)
 {
 	if (!Damage || dflags & (DAMAGE_NO_ARMOR | DAMAGE_NO_REG_ARMOR))
 		return 0;
@@ -133,7 +133,7 @@ sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, s
 		return 0;
 
 	Player->Client.Persistent.Inventory.Remove(GetIndex(), save);
-	CSparks(point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
+	CSparks(Point, Normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 
 	// Ran out of armor?
 	if (!Player->Client.Persistent.Inventory.Has(this))

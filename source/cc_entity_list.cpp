@@ -232,7 +232,7 @@ G_FindTeams
 
 Chain together all entities with a matching team field.
 
-All but the first will have the FL_TEAMSLAVE flag set.
+All but the first be slaves.
 All but the last will have the teamchain field set to the next one
 ================
 */
@@ -258,12 +258,12 @@ void G_FixTeams ()
 
 		if (e->ClassName == "func_train")
 		{
-			if (e->Flags & FL_TEAMSLAVE)
+			if (e->Team.IsSlave)
 			{
 				IBaseEntity *chain = e;
 				e->Team.Master = e;
 				e->Team.Chain = NULL;
-				e->Flags &= ~FL_TEAMSLAVE;
+				e->Team.IsSlave = false;
 
 				c++;
 				c2++;
@@ -287,7 +287,7 @@ void G_FixTeams ()
 						e2->Team.Master = e;
 						e2->Team.Chain = NULL;
 						chain = e2;
-						e2->Flags |= FL_TEAMSLAVE;
+						e2->Team.IsSlave = true;;
 
 						if (e2->EntityFlags & ENT_BRUSHMODEL)
 						{
@@ -320,7 +320,7 @@ void G_FindTeams ()
 			continue;
 		if (!e->Team.String)
 			continue;
-		if (e->Flags & FL_TEAMSLAVE)
+		if (e->Team.IsSlave)
 			continue;
 
 		IBaseEntity *chain = e;
@@ -338,7 +338,7 @@ void G_FindTeams ()
 				continue;
 			if (!e2->Team.String)
 				continue;
-			if (e2->Flags & FL_TEAMSLAVE)
+			if (e2->Team.IsSlave)
 				continue;
 
 			if (!strcmp(e->Team.String, e2->Team.String))
@@ -349,7 +349,7 @@ void G_FindTeams ()
 				e2->Team.HasTeam = true;
 		
 				chain = e2;
-				e2->Flags |= FL_TEAMSLAVE;
+				e2->Team.IsSlave = true;
 			}
 		}
 	}

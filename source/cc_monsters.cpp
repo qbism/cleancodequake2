@@ -412,9 +412,9 @@ bool CMonsterEntity::Blocked (float Dist)
 	return Monster->Blocked (Dist);
 }
 
-void CMonsterEntity::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMonsterEntity::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
-	Monster->Die (Inflictor, Attacker, Damage, point);
+	Monster->Die (Inflictor, Attacker, Damage, Point);
 }
 
 void CMonsterEntity::Pain (IBaseEntity *Other, sint32 Damage)
@@ -489,19 +489,19 @@ bool CMonsterEntity::Run ()
 	};
 }
 
-void CMonsterEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
+void CMonsterEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
-	Monster->DamageEffect (dir, point, normal, damage, dflags, mod);
+	Monster->DamageEffect (Dir, Point, Normal, Damage, DamageFlags, MeansOfDeath);
 }
 
-void CMonster::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
+void CMonster::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
 #if ROGUE_FEATURES
-	if (mod == MOD_CHAINFIST)
-		CBlood(point, normal, BT_MORE_BLOOD).Send();
+	if (MeansOfDeath == MOD_CHAINFIST)
+		CBlood(Point, Normal, BT_MORE_BLOOD).Send();
 	else
 #endif
-	CBlood(point, normal).Send();
+	CBlood(Point, Normal).Send();
 }
 
 void CMonster::ChangeYaw ()
@@ -627,7 +627,7 @@ bool CMonster::CheckBottom ()
 
 bool CMonster::WalkMove (float Yaw, float Dist)
 {	
-	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
+	if (!Entity->GroundEntity && !(AIFlags & (AI_FLY | AI_SWIM)))
 		return false;
 
 	Yaw = Yaw*M_PI*2 / 360;
@@ -701,7 +701,7 @@ void CMonster::SwimMonsterStartGo ()
 
 void CMonster::SwimMonsterStart ()
 {
-	Entity->Flags |= FL_SWIM;
+	AIFlags |= AI_SWIM;
 	Think = &CMonster::SwimMonsterStartGo;
 	MonsterStart ();
 }
@@ -723,7 +723,7 @@ void CMonster::FlyMonsterStartGo ()
 
 void CMonster::FlyMonsterStart ()
 {
-	Entity->Flags |= FL_FLY;
+	AIFlags |= AI_FLY;
 	Think = &CMonster::FlyMonsterStartGo;
 	MonsterStart ();
 }
@@ -1261,8 +1261,7 @@ void CMonster::Sight ()
 
 void CMonster::MonsterDeathUse ()
 {
-	Entity->Flags &= ~(FL_FLY|FL_SWIM);
-	AIFlags &= AI_GOOD_GUY;
+	AIFlags &= ~(AI_FLY | AI_SWIM |AI_GOOD_GUY);
 
 	if (Entity->Item)
 	{
@@ -1463,7 +1462,7 @@ void CMonster::WorldEffects()
 
 	if (Entity->Health > 0)
 	{
-		if (!(Entity->Flags & FL_SWIM))
+		if (!(AIFlags & AI_SWIM))
 		{
 			if (Entity->WaterInfo.Level < WATER_UNDER)
 				Entity->AirFinished = Level.Frame + 120;
@@ -1499,11 +1498,9 @@ void CMonster::WorldEffects()
 	
 	if (Entity->WaterInfo.Level == WATER_NONE)
 	{
-		if (Entity->Flags & FL_INWATER)
-		{	
+		if (Entity->WaterInfo.OldLevel != WATER_NONE)
 			Entity->PlaySound (CHAN_BODY, SoundIndex("player/watr_out.wav"));
-			Entity->Flags &= ~FL_INWATER;
-		}
+
 		return;
 	}
 
@@ -1515,6 +1512,7 @@ void CMonster::WorldEffects()
 			Entity->TakeDamage (World, World, vec3fOrigin, origin, vec3fOrigin, 10*Entity->WaterInfo.Level, 0, 0, MOD_LAVA);
 		}
 	}
+
 	if ((Entity->WaterInfo.Type & CONTENTS_SLIME) && !(Entity->Flags & FL_IMMUNE_SLIME))
 	{
 		if (Entity->DamageDebounceTime < Level.Frame)
@@ -1524,7 +1522,7 @@ void CMonster::WorldEffects()
 		}
 	}
 	
-	if ( !(Entity->Flags & FL_INWATER) )
+	if (Entity->WaterInfo.OldLevel == WATER_NONE)
 	{	
 		if (!(Entity->GetSvFlags() & SVF_DEADMONSTER))
 		{
@@ -1539,7 +1537,6 @@ void CMonster::WorldEffects()
 				Entity->PlaySound (CHAN_BODY, SoundIndex("player/watr_in.wav"));
 		}
 
-		Entity->Flags |= FL_INWATER;
 		Entity->DamageDebounceTime = 0;
 	}
 }
@@ -1551,6 +1548,7 @@ void CMonster::CatagorizePosition()
 //
 	vec3f point = Entity->State.GetOrigin() + vec3f (0, 0, Entity->GetMins().Z + 1);	
 	EBrushContents cont = PointContents (point);
+	Entity->WaterInfo.OldLevel = Entity->WaterInfo.Level;
 
 	if (!(cont & CONTENTS_MASK_WATER))
 	{
@@ -1575,7 +1573,7 @@ void CMonster::CatagorizePosition()
 
 void CMonster::CheckGround()
 {
-	if (Entity->Flags & (FL_SWIM|FL_FLY))
+	if (AIFlags & (AI_SWIM | AI_FLY))
 		return;
 
 	if ((Entity->Velocity.Z * Entity->GravityVector.Z) < -100)

@@ -61,7 +61,7 @@ Index(-1)
 // Sets a respawn time on the item and makes it invisible. 
 void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber delay)
 {
-	Item->Flags |= FL_RESPAWN;
+	Item->ShouldRespawn = true;
 	Item->GetSvFlags() |= SVF_NOCLIENT;
 	Item->GetSolid() = SOLID_NOT;
 	Item->NextThink = Level.Frame + delay;

@@ -134,9 +134,9 @@ CMonster (ID)
 // CHECKATTACK
 //
 
-void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
+void CGekk::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
-	CBlood(point, normal, BT_GREEN_BLOOD).Send();
+	CBlood(Point, Normal, BT_GREEN_BLOOD).Send();
 }
 
 bool CGekk::CheckMelee ()
@@ -373,7 +373,7 @@ CAnim GekkMoveSwimStart (FRAME_swim_01, FRAME_swim_32, GekkFramesSwimStart, Conv
 
 void CGekk::SwimLoop ()
 {
-	Entity->Flags |= FL_SWIM;	
+	AIFlags |= AI_SWIM;	
 	CurrentMove = &GekkMoveSwimLoop;
 }
 
@@ -913,7 +913,7 @@ void CGekk::CheckLanding ()
 
 void CGekk::Jump ()
 {
-	if (Entity->Flags & FL_SWIM || Entity->WaterInfo.Level)
+	if (AIFlags & AI_SWIM || Entity->WaterInfo.Level)
 		return;
 	else
 	{
@@ -997,8 +997,8 @@ void CGekk::Pain (IBaseEntity *Other, sint32 Damage)
 
 	if (Entity->WaterInfo.Level)
 	{
-		if (!(Entity->Flags & FL_SWIM))
-			Entity->Flags |= FL_SWIM;
+		if (!(AIFlags & AI_SWIM))
+			AIFlags |= AI_SWIM;
 
 		CurrentMove = &GekkMovePain;
 	}
@@ -1172,7 +1172,7 @@ CFrame GekkFramesWDeath[] =
 };
 CAnim GekkMoveWDeath (FRAME_wdeath_01, FRAME_wdeath_45, GekkFramesWDeath, ConvertDerivedFunction(&CGekk::Dead));
 
-void CGekk::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CGekk::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {	
 	if (Entity->Health < Entity->GibHealth)
 	{
@@ -1466,7 +1466,7 @@ void CGekk::Spawn ()
 
 void CGekk::WaterToLand ()
 {
-	Entity->Flags &= ~FL_SWIM;
+	AIFlags &= ~AI_SWIM;
 	YawSpeed = 20;
 	Entity->ViewHeight = 25;
 
@@ -1478,7 +1478,7 @@ void CGekk::WaterToLand ()
 
 void CGekk::LandToWater ()
 {
-	Entity->Flags |= FL_SWIM;
+	AIFlags |= AI_SWIM;
 	YawSpeed = 10;
 	Entity->ViewHeight = 10;
 

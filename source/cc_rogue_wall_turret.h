@@ -80,7 +80,7 @@ public:
 		Offset = File.Read<vec3f> ();
 	}
 
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
+	void DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
 	void Run ();
 	void Walk ();
@@ -102,7 +102,7 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	void Dead ();
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();

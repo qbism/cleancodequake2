@@ -115,12 +115,12 @@ bool CTesla::Run ()
 
 //TE_ELECTRIC_SPARKS
 
-void CTesla::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
+void CTesla::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
-	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
+	CSparks(Point, Normal, ST_ELECTRIC_SPARKS).Send();
 }
 
-void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Remove ();
 
@@ -218,7 +218,7 @@ void CTesla::Active ()
 				PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
 
 			// PGM - don't do knockback to walking monsters
-			if (Hit->Flags & (FL_FLY|FL_SWIM))
+			if ((Hit->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Hit)->Monster->AIFlags & (AI_FLY | AI_SWIM))
 				Hurtable->TakeDamage (this, Firer, dir, tr.EndPosition, tr.Plane.Normal,
 					Damage, 0, 0, MOD_TESLA);
 			else
@@ -377,7 +377,6 @@ void CTesla::Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int Damage
 	Tesla->Damage = TESLA_DAMAGE*DamageMultiplier;
 	Tesla->ClassName = "tesla";
 	Tesla->GetClipmask() = (CONTENTS_MASK_SHOT|CONTENTS_SLIME|CONTENTS_LAVA);
-	Tesla->Flags |= FL_MECHANICAL;
 
 	Tesla->Link ();
 }

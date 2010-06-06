@@ -892,7 +892,7 @@ void CCarrier::Dead ()
 	Entity->Link ();
 }
 
-void CCarrier::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CCarrier::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
@@ -982,7 +982,7 @@ bool CCarrier::CheckAttack ()
 		return true;
 	}
 
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		if (frand() < 0.6)
 			AttackState = AS_SLIDING;

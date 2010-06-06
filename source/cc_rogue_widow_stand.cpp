@@ -1028,7 +1028,7 @@ void CWidowStand::Dead ()
 	Entity->Link ();
 }
 
-void CWidowStand::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CWidowStand::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = false;

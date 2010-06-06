@@ -672,7 +672,7 @@ void CMakron::Dead ()
 	Entity->Link ();
 }
 
-void CMakron::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CMakron::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->State.GetSound() = 0;
 	// check for gib
@@ -778,7 +778,7 @@ bool CMakron::CheckAttack ()
 		return true;
 	}
 
-	if (Entity->Flags & FL_FLY)
+	if (Entity->AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3)
 			AttackState = AS_SLIDING;
@@ -889,7 +889,7 @@ bool CMakron::CheckAttack ()
 
 	// PMM -daedalus should strafe more .. this can be done here or in a customized
 	// check_attack code for the hover.
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		// originally, just 0.3
 		float strafe_chance = 0.8f;

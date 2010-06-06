@@ -217,7 +217,7 @@ public:
 	ThroughAndThrough(ThroughAndThrough) {};
 
 	virtual CTrace		DoTrace		(vec3f &start, vec3f &end, IBaseEntity *ignore, sint32 mask);
-	virtual bool		DoDamage	(IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	virtual bool		DoDamage	(IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal);
 	virtual void		DoEffect	(vec3f &start, vec3f &end, bool water);
 	virtual void		DoSolidHit	(CTrace *Trace);
 	virtual void		DoWaterHit	(CTrace *Trace);
@@ -232,7 +232,7 @@ public:
 	CRailGunShot (sint32 Damage, sint32 Kick) :
 	CHitScan (Damage, Kick, true) {};
 
-	bool		DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	bool		DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal);
 	void		DoEffect (vec3f &start, vec3f &end, bool water);
 
 	static void		Fire		(IBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 Damage, sint32 kick);
@@ -250,7 +250,7 @@ public:
 	hSpread(hSpread),
 	MeansOfDeath(mod) {};
 
-	bool					DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	bool					DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal);
 	virtual void			DoSolidHit	(CTrace *Trace);
 	void					DoWaterHit	(CTrace *Trace);
 	bool					ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end);
@@ -317,7 +317,7 @@ public:
 };
 #endif
 
-void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed);
+void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &Dir, sint32 speed);
 
 #else
 FILE_WARNING

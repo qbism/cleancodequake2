@@ -83,7 +83,7 @@ public:
 	void Fire (sint32 FlashNumber);
 
 	void Dead ();
-	ROGUE_VIRTUAL void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	ROGUE_VIRTUAL void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 	ROGUE_VIRTUAL void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();

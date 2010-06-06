@@ -81,6 +81,7 @@ public:
 	char				*Model;
 	uint32				AmmoCount;
 	EItemThinkState		ThinkState;
+	bool				ShouldRespawn;
 	CBaseItem			*LinkedItem;
 
 	CItemEntity ();

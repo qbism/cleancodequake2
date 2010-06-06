@@ -121,7 +121,7 @@ public:
 	FrameNumber Torso ();
 
 	virtual void Dead ();
-	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 	virtual void Pain (IBaseEntity *Other, sint32 Damage);
 
 	virtual void Spawn ();

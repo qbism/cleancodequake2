@@ -1509,14 +1509,11 @@ public:
 
 			Target = NULL;
 		}
-		else if ((SpawnFlags & CORNER_TELEPORT) && !(Other->Flags & (FL_SWIM|FL_FLY)))
+		else if (Monster && (SpawnFlags & CORNER_TELEPORT) && !(Monster->Monster->AIFlags & (AI_SWIM | AI_FLY)))
 		{
-			if (Monster)
-			{
-				Monster->Monster->PauseTime = Level.Frame + 100000000;
-				Monster->Monster->AIFlags |= AI_STAND_GROUND;
-				Monster->Monster->Stand ();
-			}
+			Monster->Monster->PauseTime = Level.Frame + 100000000;
+			Monster->Monster->AIFlags |= AI_STAND_GROUND;
+			Monster->Monster->Stand ();
 		}
 
 		if (Monster && (Monster->MoveTarget == this))

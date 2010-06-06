@@ -82,7 +82,7 @@ void CRogueBaseSphere::LoadFields (CFile &File)
 	Item = (Index == -1) ? NULL : GetItemByIndex(Index);
 }
 
-void CRogueBaseSphere::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CRogueBaseSphere::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if ((SphereType == SPHERE_DEFENDER) || !SphereEnemy)
 		Explode ();
@@ -628,7 +628,7 @@ void CDoppleGanger::Pain (IBaseEntity *Other, sint32 Damage)
 	Enemy = Other;
 }
 
-void CDoppleGanger::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CDoppleGanger::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Enemy && (Enemy != PlayerOwner))
 	{

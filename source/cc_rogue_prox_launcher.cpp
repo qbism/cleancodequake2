@@ -161,7 +161,7 @@ public:
 		return (PhysicsType == PHYSICS_BOUNCE) ? IBounceProjectile::Run() : false;
 	}
 
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
 		// if set off by another prox, delay a little (chained explosions)
 		if (Inflictor->ClassName == "prox")
@@ -236,7 +236,9 @@ public:
 			{
 				if (search->ClassName.empty())			// tag token and other weird shit
 					continue;
-				if (search->Flags & FL_MECHANICAL)
+				if (search->ClassName == "prox" ||
+					search->ClassName == "prox_field" ||
+					search->ClassName == "tesla")
 					continue;
 
 				// if it's a monster or player with health > 0
@@ -393,7 +395,6 @@ public:
 		ProxField->SetOwner (this);
 		ProxField->ClassName = "prox_field";
 		ProxField->Prox = this;
-		ProxField->Flags = FL_MECHANICAL;
 		ProxField->Link ();
 
 		Velocity.Clear ();
@@ -461,7 +462,6 @@ public:
 		Prox->ThinkType = PROXTHINK_EXPLODE;
 		Prox->Damage = PROX_DAMAGE * DamageMultiplier;
 		Prox->ClassName = "prox";
-		Prox->Flags |= FL_MECHANICAL;
 
 		switch (DamageMultiplier)
 		{
@@ -514,7 +514,7 @@ void CProxField::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	if (Prox->ThinkType != CProx::PROXTHINK_SEEK) // we're set to blow!
 		return;
 
-	if (Other->Flags & FL_MECHANICAL)
+	if (Other->ClassName == "prox")
 		return;
 
 	if (Prox->Field == this)

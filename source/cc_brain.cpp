@@ -385,7 +385,7 @@ void CBrain::Dead ()
 	Entity->Link ();
 }
 
-void CBrain::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBrain::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->State.GetEffects() = 0;
 	PowerArmorType = POWER_ARMOR_NONE;

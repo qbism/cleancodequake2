@@ -383,7 +383,7 @@ TargetedBreach(NULL)
 {
 };
 
-void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
@@ -411,13 +411,13 @@ void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		;
 	TeamEntity->Team.Chain = NULL;
 	Entity->Team.Master = NULL;
-	Entity->Flags &= ~FL_TEAMSLAVE;
+	Entity->Team.IsSlave = false;
 	Entity->Velocity.Clear ();
 
 	TargetedBreach->SetOwner (NULL);
 	TargetedBreach->Team.Master->SetOwner (NULL);
 
-	CInfantry::Die (Inflictor, Attacker, Damage, point);
+	CInfantry::Die (Inflictor, Attacker, Damage, Point);
 	Think = &CMonster::MonsterThink;
 	Entity->NextThink = Level.Frame + FRAMETIME;
 }
@@ -517,7 +517,7 @@ void CTurretDriver::TurretLink ()
 		;
 	TeamEntity->Team.Chain = Entity;
 	Entity->Team.Master = TargetedBreach->Team.Master;
-	Entity->Flags |= FL_TEAMSLAVE;
+	Entity->Team.IsSlave = true;
 }
 
 void CTurretDriver::Spawn ()

@@ -46,7 +46,7 @@ CFlyer(ID)
 	MonsterName = "Kamikaze Flyer";
 };
 
-void CFlyerKamikaze::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CFlyerKamikaze::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->BecomeExplosion (false);

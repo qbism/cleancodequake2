@@ -66,7 +66,7 @@ public:
 	void Wham ();
 	void FireBlaster ();
 
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 	void Pain (IBaseEntity *Other, sint32 Damage);
 
 #if ROGUE_FEATURES

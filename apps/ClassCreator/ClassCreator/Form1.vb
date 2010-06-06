@@ -267,7 +267,7 @@
                     WrittenClass = WrittenClass + "\tvoid Pain (IBaseEntity *other, float kick, int damage);\n\n"
 
                     InsertComment(WrittenClass, "\t// Called when the entity is damaged and it's health\n\t// is below or equal to 0\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3f &point);\n"
+                    WrittenClass = WrittenClass + "\tvoid Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3f &Point);\n"
                 Else
                     WroteSomething = True
 
@@ -275,7 +275,7 @@
                     WrittenClass = WrittenClass + "\tvoid Pain (IBaseEntity *other, float kick, int damage)\n\t{\n\t};\n\n"
 
                     InsertComment(WrittenClass, "\t// Called when the entity is damaged and it's health\n\t// is below or equal to 0\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3f &point)\n\t{\n\t};\n"
+                    WrittenClass = WrittenClass + "\tvoid Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3f &Point)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 2 Then
                 If (ClassCode <> True) Then

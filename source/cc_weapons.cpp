@@ -159,12 +159,12 @@ bool CWeaponItem::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 			if (Game.GameMode & GAME_DEATHMATCH)
 			{
 				if (DeathmatchFlags.dfWeaponsStay.IsEnabled())
-					Item->Flags |= FL_RESPAWN;
+					Item->ShouldRespawn = true;
 				else
 					SetRespawn (Item, 300);
 			}
 			if (Game.GameMode & GAME_COOPERATIVE)
-				Item->Flags |= FL_RESPAWN;
+				Item->ShouldRespawn = true;
 		}
 	}
 	else if (Item->AmmoCount)

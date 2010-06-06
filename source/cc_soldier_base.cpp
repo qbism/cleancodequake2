@@ -1029,7 +1029,7 @@ CFrame SoldierFramesDeath6 [] =
 };
 CAnim SoldierMoveDeath6 (FRAME_death601, FRAME_death610, SoldierFramesDeath6, ConvertDerivedFunction(&CSoldierBase::Dead));
 
-void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
@@ -1053,7 +1053,7 @@ void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Da
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 
-	if (Q_fabs((Entity->State.GetOrigin().Z + Entity->ViewHeight) - point[2]) <= 4)
+	if (Q_fabs((Entity->State.GetOrigin().Z + Entity->ViewHeight) - Point.Z) <= 4)
 	{
 		// head shot
 		CurrentMove = &SoldierMoveDeath3;

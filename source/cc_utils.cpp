@@ -34,11 +34,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 vec3f upOrigin (0, 0, 1);
-void G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up)
+void G_ProjectSource (const vec3f &Point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up)
 {
-	result.Set (point.X + forward.X * distance.X + right.X * distance.Y + up.X * distance.Z,
-				point.Y + forward.Y * distance.X + right.Y * distance.Y + up.Y * distance.Z,
-				point.Z + forward.Z * distance.X + right.Z * distance.Y + up.Z * distance.Z);
+	result.Set (Point.X + forward.X * distance.X + right.X * distance.Y + up.X * distance.Z,
+				Point.Y + forward.Y * distance.X + right.Y * distance.Y + up.Y * distance.Z,
+				Point.Z + forward.Z * distance.X + right.Z * distance.Y + up.Z * distance.Z);
 }
 
 IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)

@@ -1166,11 +1166,7 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEn
 		len = v.Length();
 
 		if (len <= killzone)
-		{
-			if (Entity->EntityFlags & ENT_PLAYER)
-				Entity->Flags |= FL_NOGIB;
 			points = 10000;
-		}
 		else if (len <= killzone2)
 			points = (Damage/killzone)*(killzone2 - len);
 		else

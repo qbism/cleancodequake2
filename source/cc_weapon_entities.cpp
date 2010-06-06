@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_weapon_main.h"
 #include "cc_temporary_entities.h"
 
-void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
+void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &Dir, sint32 speed)
 {
 	// easy mode only ducks one quarter the time
 	if (CvarList[CV_SKILL].Integer() == 0)
@@ -44,7 +44,7 @@ void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &dir, sint32 speed)
 			return;
 	}
 
-	vec3f end = start.MultiplyAngles(8192, dir);
+	vec3f end = start.MultiplyAngles(8192, Dir);
 	CTrace tr (start, end, self, CONTENTS_MASK_SHOT);
 
 	if (tr.Entity && (tr.Entity->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0) && IsInFront(tr.Entity, self))
@@ -610,7 +610,7 @@ CTrace CHitScan::DoTrace(vec3f &start, vec3f &end, IBaseEntity *ignore, sint32 m
 	return CTrace (start, end, (ignore) ? ignore : NULL, mask);
 }
 
-bool CHitScan::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
+bool CHitScan::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal)
 {
 	return true;
 }
@@ -981,10 +981,10 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 	}
 }
 
-bool CRailGunShot::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
+bool CRailGunShot::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal)
 {
 	if (Attacker != Target) // Hurt self protection
-		Target->TakeDamage (Attacker, Attacker, dir, point, normal, Damage, Kick, 0, MOD_RAILGUN);
+		Target->TakeDamage (Attacker, Attacker, Dir, Point, Normal, Damage, Kick, 0, MOD_RAILGUN);
 	return ThroughAndThrough;
 }
 
@@ -998,9 +998,9 @@ void CRailGunShot::Fire(IBaseEntity *Entity, vec3f start, vec3f aimdir, sint32 D
 	CRailGunShot(Damage, kick).DoFire (Entity, start, aimdir);
 }
 
-bool CBullet::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
+bool CBullet::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal)
 {
-	Target->TakeDamage (Attacker, Attacker, dir, point, normal, Damage, Kick, DAMAGE_BULLET, MeansOfDeath);
+	Target->TakeDamage (Attacker, Attacker, Dir, Point, Normal, Damage, Kick, DAMAGE_BULLET, MeansOfDeath);
 	return ThroughAndThrough;
 }
 

@@ -352,7 +352,7 @@ void CJorg::TossMakron ()
 	CMakronJumpTimer::Spawn (this);
 };
 
-void CJorg::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CJorg::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
@@ -575,7 +575,7 @@ bool CJorg::CheckAttack ()
 		return true;
 	}
 
-	if (Entity->Flags & FL_FLY)
+	if (Entity->AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3)
 			AttackState = AS_SLIDING;
@@ -688,7 +688,7 @@ bool CJorg::CheckAttack ()
 
 	// PMM -daedalus should strafe more .. this can be done here or in a customized
 	// check_attack code for the hover.
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		// originally, just 0.3
 		float strafe_chance = 0.6f;

@@ -366,7 +366,7 @@ void ProcessEntity (SEntity *ent)
 		if ((!Entity->GroundEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount))
 		{
 			Entity->GroundEntity = nullentity;
-			if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
+			if ((Entity->EntityFlags & ENT_MONSTER) && !(entity_cast<CMonsterEntity>(Entity)->Monster->AIFlags & (AI_SWIM | AI_FLY)))
 				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 		}
 

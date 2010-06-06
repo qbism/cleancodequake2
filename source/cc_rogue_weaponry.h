@@ -49,7 +49,7 @@ public:
 	  {
 	  };
 
-	bool					DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal);
+	bool					DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal);
 	void					DoSolidHit	(CTrace *Trace);
 	void					DoWaterHit	(CTrace *Trace);
 	void					DoEffect (vec3f &start, vec3f &end, bool water);
@@ -255,8 +255,8 @@ public:
 	IMPLEMENT_SAVE_HEADER(CTesla);
 
 	bool Run ();
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	void Remove ();
 	void Explode ();

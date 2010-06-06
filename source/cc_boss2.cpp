@@ -461,7 +461,7 @@ void CBoss2::Dead ()
 	Entity->Link ();
 }
 
-void CBoss2::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CBoss2::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
 	Entity->DeadFlag = true;

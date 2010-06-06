@@ -852,15 +852,17 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		if ( !(Other->EntityFlags & ENT_MONSTER))
-			return;
-		if (Other->Flags & (FL_FLY | FL_SWIM) )
+		if (!(Other->EntityFlags & ENT_MONSTER))
 			return;
 		if (Other->GetSvFlags() & SVF_DEADMONSTER)
 			return;
 
 	// set XY even if not on ground, so the jump will clear lips
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Other);
+
+		if (Monster->Monster->AIFlags & (AI_FLY | AI_SWIM))
+			return;
+
 		Monster->Velocity = MoveDir * Speed;
 		
 		if (!Monster->GroundEntity)

@@ -38,9 +38,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_rogue_weaponry.h"
 #include "cc_temporary_entities.h"
 
-bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &dir, vec3f &point, vec3f &normal)
+bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal)
 {
-	Target->TakeDamage (Attacker, Attacker, dir, point, normal, (PointContents(point) & CONTENTS_MASK_WATER) ? (Damage / 2) : Damage, Kick, DAMAGE_ENERGY, MeansOfDeath);
+	Target->TakeDamage (Attacker, Attacker, Dir, Point, Normal, (PointContents(Point) & CONTENTS_MASK_WATER) ? (Damage / 2) : Damage, Kick, DAMAGE_ENERGY, MeansOfDeath);
 	return ThroughAndThrough;
 }
 
@@ -705,7 +705,7 @@ void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface
 				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin,
 							0, (Damage*3), TRACKER_IMPACT_FLAGS, MOD_TRACKER);
 				
-				if (!(Hurtable->Flags & (FL_FLY|FL_SWIM)))
+				if ((Hurtable->EntityFlags & ENT_MONSTER) && !(entity_cast<CMonsterEntity>(Hurtable)->Monster->AIFlags & (AI_FLY | AI_SWIM)))
 					entity_cast<IPhysicsEntity>(Hurtable)->Velocity.Z += 140;
 				
 				CDisruptorPainDaemon::Spawn (GetOwner(), Other, (int)(((((float)Damage)*0.1f) / 0.5f)));

@@ -133,16 +133,16 @@ public:
 	IHurtableEntity (sint32 index);
 
 	virtual void Pain (IBaseEntity *Other, sint32 Damage) {};
-	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point) {};
+	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point) {};
 
 	virtual bool CanDamage (IBaseEntity *Inflictor);
 	virtual bool CheckTeamDamage (IBaseEntity *Attacker);
-	virtual sint32 CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, EDamageFlags dflags);
-	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags);
+	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	// An "extension" of sorts to TakeDamage
 	// which handles the effects when we are hurt
-	virtual void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
+	virtual void DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
 	// Takes damage.
 	// For this, "this" is target. Use this if the
@@ -290,7 +290,8 @@ public:
 	struct SWaterInfo
 	{
 		EBrushContents		Type;
-		EWaterLevel			Level;
+		EWaterLevel			Level,
+							OldLevel;
 	} WaterInfo;
 
 	bool				PhysicsDisabled;

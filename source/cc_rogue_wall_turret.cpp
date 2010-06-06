@@ -99,7 +99,7 @@ public:
 		Owner->Entity->Team.Master = Owner->Entity;
 		Owner->Entity->Team.Chain = Base;
 		Base->Team.Chain = NULL;
-		Base->Flags |= FL_TEAMSLAVE;
+		Base->Team.IsSlave = true;
 		Base->SetOwner (Owner->Entity);
 
 		Base->State.GetModelIndex() = ModelIndex("models/monsters/turretbase/tris.md2");
@@ -125,9 +125,9 @@ enum
 	SPAWN_WALL_UNIT			= BIT(7),
 };
 
-void CWallTurret::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
+void CWallTurret::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
-	CSparks(point, normal, ST_ELECTRIC_SPARKS).Send();
+	CSparks(Point, Normal, ST_ELECTRIC_SPARKS).Send();
 }
 
 CWallTurret::CWallTurret (uint32 ID) :
@@ -626,7 +626,7 @@ void CWallTurret::Pain (IBaseEntity *Other, sint32 Damage)
 //  DEATH
 // **********************
 
-void CWallTurret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CWallTurret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, Entity->State.GetOrigin()), Entity->State.GetOrigin(), false, true).Send();
 
@@ -716,7 +716,7 @@ void CWallTurret::MoveCalc (vec3f dest)
 	Dir = dest - Entity->State.GetOrigin();
 	RemainingDistance = Dir.Normalize();
 
-	if (Level.CurrentEntity == ((Entity->Flags & FL_TEAMSLAVE) ? Entity->Team.Master : Entity))
+	if (Level.CurrentEntity == ((Entity->Team.IsSlave) ? Entity->Team.Master : Entity))
 		MoveBegin ();
 	else
 	{
@@ -905,8 +905,6 @@ void CWallTurret::Spawn ()
 	Entity->Health = 240;
 	Entity->GibHealth = -100;
 	Entity->Mass = 250;
-
-	Entity->Flags |= FL_MECHANICAL;
 
 	// map designer didn't specify weapon type. set it now.
 	if (!(Entity->SpawnFlags & SPAWN_WEAPONCHOICE))

@@ -219,7 +219,7 @@ bool CMonster::FindTarget()
 
 void CMonster::MoveToGoal (float Dist)
 {	
-	if (!Entity->GoalEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
+	if (!Entity->GoalEntity && !(AIFlags & (AI_FLY | AI_SWIM)))
 		return;
 
 // if the next step hits the enemy, return immediately
@@ -240,7 +240,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	vec3f oldOrg = Entity->State.GetOrigin(), newOrg = oldOrg + move;
 
 // flying monsters don't step up
-	if (Entity->Flags & (FL_SWIM | FL_FLY))
+	if (AIFlags & (AI_SWIM | AI_FLY))
 	{
 	// try one move with vertical motion, then one without
 		for (int i = 0; i < 2; i++)
@@ -258,7 +258,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				{
 					if (dz > 40)
 						newOrg.Z -= 8;
-					if (!((Entity->Flags & FL_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < 30))
+					if (!((Entity->AIFlags & AI_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < 30))
 						newOrg.Z += 8;
 				}
 				else
@@ -276,7 +276,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), newOrg, Entity, CONTENTS_MASK_MONSTERSOLID);
 	
 			// fly monsters don't enter water voluntarily
-			if (Entity->Flags & FL_FLY)
+			if (Entity->AIFlags & AI_FLY)
 			{
 				if (!Entity->WaterInfo.Level)
 				{
@@ -286,7 +286,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			}
 
 			// swim monsters don't exit water voluntarily
-			if (Entity->Flags & FL_SWIM)
+			if (Entity->AIFlags & AI_SWIM)
 			{
 				if (Entity->WaterInfo.Level < 2)
 				{
@@ -346,7 +346,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (trace.Fraction == 1)
 	{
 	// if monster had the ground pulled out, go ahead and fall
-		if (Entity->Flags & FL_PARTIALGROUND)
+		if (AIFlags & AI_PARTIALGROUND)
 		{
 			Entity->State.GetOrigin() += move;
 
@@ -368,7 +368,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	
 	if (!CheckBottom ())
 	{
-		if (Entity->Flags & FL_PARTIALGROUND)
+		if (AIFlags & AI_PARTIALGROUND)
 		{
 			// entity had floor mostly pulled out from underneath it
 			// and is trying to correct
@@ -385,8 +385,8 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 		return false;
 	}
 
-	if (Entity->Flags & FL_PARTIALGROUND)
-		Entity->Flags &= ~FL_PARTIALGROUND;
+	if (AIFlags & AI_PARTIALGROUND)
+		AIFlags &= ~AI_PARTIALGROUND;
 
 	Entity->GroundEntity = trace.Entity;
 	Entity->GroundEntityLinkCount = trace.Entity->GetLinkCount();
@@ -484,7 +484,7 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 // a valid standing position at all
 
 	if (!CheckBottom ())
-		Entity->Flags |= FL_PARTIALGROUND;
+		AIFlags |= AI_PARTIALGROUND;
 }
 
 bool CMonster::StepDirection (float Yaw, float Dist)
@@ -589,7 +589,7 @@ bool CMonster::CheckAttack ()
 		return true;
 	}
 
-	if (Entity->Flags & FL_FLY)
+	if (Entity->AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3f)
 			AttackState = AS_SLIDING;
@@ -652,7 +652,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
-	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (Attacker->Flags & (FL_FLY|FL_SWIM))) &&
+	if (((AIFlags & (AI_FLY | AI_SWIM)) == (AttackerMonster->Monster->AIFlags & (AI_FLY | AI_SWIM))) &&
 			(MonsterID != AttackerMonster->Monster->MonsterID) &&
 			(AttackerMonster->Monster->MonsterID != CTank::ID) &&
 			(AttackerMonster->Monster->MonsterID != CSuperTank::ID) &&

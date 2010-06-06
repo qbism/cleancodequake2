@@ -117,8 +117,8 @@ void CItemEntity::Touch(IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 
 	if (!((Game.GameMode & GAME_COOPERATIVE) &&  (LinkedItem->Flags & ITEMFLAG_STAY_COOP)) || (SpawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM)))
 	{
-		if (Flags & FL_RESPAWN)
-			Flags &= ~FL_RESPAWN;
+		if (ShouldRespawn)
+			ShouldRespawn = false;
 		else
 			Free ();
 	}
@@ -189,7 +189,7 @@ void CItemEntity::Think ()
 
 			if (Team.HasTeam)
 			{
-				Flags &= ~FL_TEAMSLAVE;
+				Team.IsSlave = false;
 				GetSvFlags() |= SVF_NOCLIENT;
 				GetSolid() = SOLID_NOT;
 				if (Team.Master == this)

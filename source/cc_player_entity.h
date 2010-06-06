@@ -569,9 +569,9 @@ public:
 	vec3f			OldViewAngles;
 	vec3f			OldVelocity;
 	float			ViewDamage[2];
-	FrameNumber	ViewDamageTime;
+	FrameNumber		ViewDamageTime;
 	float			KillerYaw;			// when dead, look at killer
-	SPMoveState	OldPMove;	// for detecting out-of-pmove changes
+	SPMoveState		OldPMove;	// for detecting out-of-pmove changes
 	ELayoutFlags	LayoutFlags;
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
@@ -580,12 +580,12 @@ public:
 	EButtons		LatchedButtons;
 	CWeapon			*NewWeapon;
 	EWeaponState	WeaponState;
-	FrameNumber	FallTime;
+	FrameNumber		FallTime;
 	float			FallValue;		// for view drop on fall
 	float			BonusAlpha;
 	float			BobTime;			// so off-ground doesn't change it
 	uint8			PowerArmorTime;
-	EWaterLevel		OldWaterLevel;
+	bool			PowerArmorEnabled;
 	MediaIndex		WeaponSound;
 
 #if ROGUE_FEATURES
@@ -825,7 +825,7 @@ public:
 	bool			CTFStart ();
 #endif
 
-	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	// Printing routines
 	void			PrintToClient (EGamePrintLevel printLevel, const char *fmt, ...);

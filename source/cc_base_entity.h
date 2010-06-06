@@ -177,25 +177,17 @@ typedef uint32 EEdictFlags;
 **/
 enum
 {
-	FL_FLY				= BIT(0),
-	FL_SWIM				= BIT(1),
-	FL_IMMUNE_LASER		= BIT(2),
-	FL_INWATER			= BIT(3),
-	FL_GODMODE			= BIT(4),
-	FL_NOTARGET			= BIT(5),
-	FL_IMMUNE_SLIME		= BIT(6),
-	FL_IMMUNE_LAVA		= BIT(7),
-	FL_PARTIALGROUND	= BIT(8),
-	FL_TEAMSLAVE		= BIT(9),
-	FL_NO_KNOCKBACK		= BIT(10),
-	FL_POWER_ARMOR		= BIT(11),
-	FL_RESPAWN			= BIT(12),
-	FL_NOGIB			= BIT(13),
-	FL_MECHANICAL		= BIT(14),
+	FL_IMMUNE_LASER		= BIT(0),	// FIXME: move this...
+	FL_GODMODE			= BIT(1),
+	FL_NOTARGET			= BIT(2),
+	FL_IMMUNE_SLIME		= BIT(3),	// ...this...
+	FL_IMMUNE_LAVA		= BIT(4),	// ...this...
+	FL_NO_KNOCKBACK		= BIT(5),	// ...and this into a function called "CanDamage" or something in IHurtableEntity.
+									// Rename the current "CanDamage" into something more suitable.
 
 #if ROGUE_FEATURES
-	FL_SAM_RAIMI		= BIT(15),
-	FL_DISGUISED		= BIT(16),
+	FL_SAM_RAIMI		= BIT(6),
+	FL_DISGUISED		= BIT(7),
 #endif
 };
 
@@ -679,6 +671,7 @@ public:
 		char			*String;	// Team string. Only valid during spawn frame.
 
 		bool			HasTeam;	// true if has team
+		bool			IsSlave;	// true if teamslave
 		IBaseEntity		*Chain;		// Team chain
 		IBaseEntity		*Master;	// Team master
 	} Team;

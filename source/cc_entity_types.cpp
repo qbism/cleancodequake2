@@ -157,7 +157,7 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 
 #include "cc_temporary_entities.h"
 
-sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Damage, EDamageFlags dflags)
+sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags)
 {
 	if (!Damage)
 		return 0;
@@ -204,7 +204,7 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 
 			// only works if damage point is in front
 			State.GetAngles().ToVectors(&forward, NULL, NULL);
-			vec = point - State.GetOrigin();
+			vec = Point - State.GetOrigin();
 			vec.Normalize ();
 			if ((vec | forward) <= 0.3)
 				return 0;
@@ -226,7 +226,7 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 	if (Saved > Damage)
 		Saved = Damage;
 
-	CShieldSparks(point, normal, ScreenSparks).Send();
+	CShieldSparks(Point, Normal, ScreenSparks).Send();
 
 	sint32 PowerUsed = Saved / DamagePerCell;
 	if (!PowerUsed)
@@ -254,7 +254,7 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &point, vec3f &normal, sint32 Dam
 #include "cc_rogue_black_widow.h"
 #endif
 
-void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Health < -999)
 		Health = -999;
@@ -341,22 +341,22 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 	}
 
 	if (((EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(this)->CanTakeDamage))
-		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, point);
+		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, Point);
 }
 
-void IHurtableEntity::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod)
+void IHurtableEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
 	{
 #if ROGUE_FEATURES
-		if (mod == MOD_CHAINFIST)
-			CBlood(point, normal, BT_MORE_BLOOD).Send();
+		if (MeansOfDeath == MOD_CHAINFIST)
+			CBlood(Point, Normal, BT_MORE_BLOOD).Send();
 		else
 #endif
-		CBlood(point, normal).Send();
+		CBlood(Point, Normal).Send();
 	}
 	else
-		CSparks(point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
+		CSparks(Point, Normal, (DamageFlags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 }
 
 bool LastPelletShot = true;
@@ -814,14 +814,14 @@ Slide off of the impacting object
 */
 const float STOP_EPSILON    = 0.1f;
 
-vec3f ClipVelocity (vec3f &in, vec3f &normal, float overbounce)
+vec3f ClipVelocity (vec3f &in, vec3f &Normal, float overbounce)
 {
-	float backoff = (in | normal) * overbounce;
+	float backoff = (in | Normal) * overbounce;
 
 	vec3f out;
 	for (sint32 i = 0; i < 3; i++)
 	{
-		float change = normal[i]*backoff;
+		float change = Normal[i]*backoff;
 		out[i] = in[i] - change;
 		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
 			out[i] = 0;
@@ -837,7 +837,7 @@ bool IBounceProjectile::Run ()
 	bool		isinwater;
 
 	// if not a team captain, so movement will be handled elsewhere
-	if (Flags & FL_TEAMSLAVE)
+	if (Team.IsSlave)
 		return false;
 
 	if (Velocity.Z > 0)
@@ -892,7 +892,13 @@ bool IBounceProjectile::Run ()
 	WaterInfo.Type = PointContents (State.GetOrigin ());
 	isinwater = (WaterInfo.Type & CONTENTS_MASK_WATER) ? true : false;
 
-	WaterInfo.Level = (isinwater) ? WATER_FEET : WATER_NONE;
+	EWaterLevel newLevel = (isinwater) ? WATER_FEET : WATER_NONE;
+	if (WaterInfo.Level != newLevel)
+	{
+		WaterInfo.OldLevel = WaterInfo.Level;
+		WaterInfo.Level = newLevel;
+	}
+
 	if (!wasinwater && isinwater)
 		World->PlayPositionedSound (old_origin, CHAN_AUTO, SoundIndex("misc/h2ohit1.wav"));
 	else if (wasinwater && !isinwater)
@@ -1171,53 +1177,59 @@ bool IStepPhysics::Run ()
 	if (AngularVelocity != vec3fOrigin)
 		AddRotationalFriction ();
 
+	CMonsterEntity	*Monster = (EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(this) : NULL;
+
 	// add gravity except:
 	//   flying monsters
 	//   swimming monsters who are in the water
-	if (!wasonground)
+	if (Monster)
 	{
-		if (!(Flags & FL_FLY))
+		if (!wasonground)
 		{
-			if (!((Flags & FL_SWIM) && (WaterInfo.Level > WATER_WAIST)))
+			if (!(Monster->Monster->AIFlags & AI_FLY))
 			{
-				if (Velocity.Z < CvarList[CV_GRAVITY].Float() * -0.1)
-					hitsound = true;
-				if (WaterInfo.Level == WATER_NONE)
-					AddGravity ();
+				if (!((Monster->Monster->AIFlags & AI_SWIM) && (WaterInfo.Level > WATER_WAIST)))
+				{
+					if (Velocity.Z < CvarList[CV_GRAVITY].Float() * -0.1)
+						hitsound = true;
+					if (WaterInfo.Level == WATER_NONE)
+						AddGravity ();
+				}
 			}
 		}
-	}
 
-	// friction for flying monsters that have been given vertical velocity
-	if ((Flags & FL_FLY) && (Velocity.Z != 0))
-	{
-		speed = Q_fabs(Velocity.Z);
-		control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
-		friction = SV_FRICTION/3;
-		newspeed = speed - (0.1f * control * friction);
-		if (newspeed < 0)
-			newspeed = 0;
-		newspeed /= speed;
-		Velocity.Z *= newspeed;
-	}
+		// friction for flying monsters that have been given vertical velocity
+		if ((Monster->Monster->AIFlags & AI_FLY) && (Velocity.Z != 0))
+		{
+			speed = Q_fabs(Velocity.Z);
+			control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
+			friction = SV_FRICTION/3;
+			newspeed = speed - (0.1f * control * friction);
+			if (newspeed < 0)
+				newspeed = 0;
+			newspeed /= speed;
+			Velocity.Z *= newspeed;
+		}
 
-	// friction for flying monsters that have been given vertical velocity
-	if ((Flags & FL_SWIM) && (Velocity.Z != 0))
-	{
-		speed = Q_fabs(Velocity.Z);
-		control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
-		newspeed = speed - (0.1f * control * SV_WATERFRICTION * WaterInfo.Level);
-		if (newspeed < 0)
-			newspeed = 0;
-		newspeed /= speed;
-		Velocity.Z *= newspeed;
+		// friction for flying monsters that have been given vertical velocity
+		if ((Monster->Monster->AIFlags & AI_SWIM) && (Velocity.Z != 0))
+		{
+			speed = Q_fabs(Velocity.Z);
+			control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
+			newspeed = speed - (0.1f * control * SV_WATERFRICTION * WaterInfo.Level);
+			if (newspeed < 0)
+				newspeed = 0;
+			newspeed /= speed;
+			Velocity.Z *= newspeed;
+		}
 	}
 
 	if (Velocity != vec3fOrigin)
 	{
 		// apply friction
 		// let dead monsters who aren't completely onground slide
-		if ((wasonground) || (Flags & (FL_SWIM|FL_FLY)) && !(((EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(this)->Health <= 0 && !(entity_cast<CMonsterEntity>(this))->Monster->CheckBottom())))
+		if (Monster && ((wasonground) || (Monster->Monster->AIFlags & (AI_SWIM | AI_FLY))) &&
+			!((Monster->Health <= 0 && !Monster->Monster->CheckBottom())))
 		{
 			speed = sqrtf(Velocity.X*Velocity.X + Velocity.Y*Velocity.Y);
 			if (speed)
@@ -1480,7 +1492,7 @@ bool IPushPhysics::Run ()
 	TPushedList				Pushed;
 
 	// if not a team captain, so movement will be handled elsewhere
-	if (Flags & FL_TEAMSLAVE)
+	if (Team.IsSlave)
 		return false;
 
 	// make sure all team slaves can move before commiting
@@ -1731,7 +1743,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 		{
 #if ROGUE_FEATURES
 			// if this entity is part of a train, cleanly remove it
-			if (t->Flags & FL_TEAMSLAVE)
+			if (t->Team.IsSlave)
 			{
 				if (t->Team.Master)
 				{

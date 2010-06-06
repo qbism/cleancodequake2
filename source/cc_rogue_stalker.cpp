@@ -882,7 +882,7 @@ CFrame StalkerFramesDeath [] =
 };
 CAnim StalkerMoveDeath (FRAME_death01, FRAME_death09, StalkerFramesDeath, ConvertDerivedFunction(&CStalker::Dead));
 
-void CStalker::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CStalker::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PhysicsType = PHYSICS_TOSS;
 	Entity->State.GetAngles().Z = 0;

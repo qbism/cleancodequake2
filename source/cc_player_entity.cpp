@@ -179,7 +179,7 @@ void CClient::Write (CFile &File)
 	File.Write<float> (BonusAlpha);
 	File.Write<float> (BobTime);
 	File.Write<uint8> (PowerArmorTime);
-	File.Write<EWaterLevel> (OldWaterLevel);
+	File.Write<bool> (PowerArmorEnabled);
 	WriteIndex (File, WeaponSound, INDEX_SOUND);
 
 	File.Write<SClientAnimation> (Anim);
@@ -221,7 +221,7 @@ void CClient::Load (CFile &File)
 	BonusAlpha = File.Read<float> ();
 	BobTime = File.Read<float> ();
 	PowerArmorTime = File.Read<uint8> ();
-	OldWaterLevel = File.Read<EWaterLevel> ();
+	PowerArmorEnabled = File.Read<bool> ();
 	ReadIndex (File, WeaponSound, INDEX_SOUND);
 
 	Anim = File.Read<SClientAnimation> ();
@@ -296,7 +296,6 @@ void CClient::Clear ()
 		BonusAlpha = 0;
 		BobTime = 0;
 		PowerArmorTime = 0;
-		OldWaterLevel = 0;
 		WeaponSound = 0;
 
 		Mem_Zero (&Anim, sizeof(Anim));
@@ -586,6 +585,7 @@ void CPlayerEntity::PutInServer ()
 	DeadFlag = false;
 	AirFinished = Level.Frame + 120;
 	GetClipmask() = CONTENTS_MASK_PLAYERSOLID;
+	WaterInfo.OldLevel = WATER_NONE;
 	WaterInfo.Level = WATER_NONE;
 	WaterInfo.Type = 0;
 	Flags &= ~FL_NO_KNOCKBACK;
@@ -1454,7 +1454,6 @@ P_WorldEffects
 inline void CPlayerEntity::WorldEffects ()
 {
 	bool			breather, envirosuit;
-	EWaterLevel		waterlevel, OldWaterLevel;
 
 	if (NoClip)
 	{
@@ -1462,17 +1461,13 @@ inline void CPlayerEntity::WorldEffects ()
 		return;
 	}
 
-	waterlevel = WaterInfo.Level;
-	OldWaterLevel = Client.OldWaterLevel;
-	Client.OldWaterLevel = waterlevel;
-
 	breather = (bool)(Client.Timers.Rebreather > Level.Frame);
 	envirosuit = (bool)(Client.Timers.EnvironmentSuit > Level.Frame);
 
 	//
 	// if just entered a water volume, play a sound
 	//
-	if (!OldWaterLevel && waterlevel)
+	if (!WaterInfo.OldLevel && WaterInfo.Level)
 	{
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 		if (WaterInfo.Type & CONTENTS_LAVA)
@@ -1481,32 +1476,37 @@ inline void CPlayerEntity::WorldEffects ()
 			PlaySound (CHAN_BODY, SoundIndex("player/watr_in.wav"));
 		else if (WaterInfo.Type & CONTENTS_WATER)
 			PlaySound (CHAN_BODY, SoundIndex("player/watr_in.wav"));
-		Flags |= FL_INWATER;
 
 		// clear damage_debounce, so the pain sound will play immediately
 		PainDebounceTime = Level.Frame - 1;
+
+		WaterInfo.OldLevel = WaterInfo.Level;
 	}
 
 	//
 	// if just completely exited a water volume, play a sound
 	//
-	if (OldWaterLevel && !waterlevel)
+	if (WaterInfo.OldLevel && !WaterInfo.Level)
 	{
 		PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 		PlaySound (CHAN_BODY, SoundIndex("player/watr_out.wav"));
-		Flags &= ~FL_INWATER;
+
+		WaterInfo.OldLevel = WATER_NONE;
 	}
 
 	//
 	// check for head just going under water
 	//
-	if (OldWaterLevel != WATER_UNDER && waterlevel == WATER_UNDER)
+	if (WaterInfo.OldLevel != WATER_UNDER && WaterInfo.Level == WATER_UNDER)
+	{
 		PlaySound (CHAN_BODY, SoundIndex("player/watr_un.wav"));
+		WaterInfo.OldLevel = WATER_UNDER;
+	}
 
 	//
 	// check for head just coming out of water
 	//
-	if (OldWaterLevel == WATER_UNDER && waterlevel != WATER_UNDER)
+	if (WaterInfo.OldLevel == WATER_UNDER && WaterInfo.Level != WATER_UNDER)
 	{
 		if (AirFinished < Level.Frame)
 		{	// gasp for air
@@ -1515,19 +1515,21 @@ inline void CPlayerEntity::WorldEffects ()
 		}
 		else  if (AirFinished < Level.Frame + 110) // just break surface
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp2.wav"));
+
+		WaterInfo.OldLevel = WaterInfo.Level;
 	}
 
 	//
 	// check for drowning
 	//
-	if (waterlevel == WATER_UNDER)
+	if (WaterInfo.Level == WATER_UNDER)
 	{
 		// breather or envirosuit give air
 		if (breather || envirosuit)
 		{
 			AirFinished = Level.Frame + 100;
 
-			if (((sint32)(Client.Timers.Rebreather - Level.Frame) % 25) == 0)
+			if (((Client.Timers.Rebreather - Level.Frame) % 25) == 0)
 			{
 				PlaySound (CHAN_AUTO, SoundIndex((!Client.Timers.BreatherSound) ? "player/u_breath1.wav" : "player/u_breath2.wav"));
 				Client.Timers.BreatherSound = !Client.Timers.BreatherSound;
@@ -1537,9 +1539,9 @@ inline void CPlayerEntity::WorldEffects ()
 
 		// if out of air, start drowning
 		if (AirFinished < Level.Frame)
-		{	// drown!
-			if (NextDrownTime < Level.Frame 
-				&& Health > 0)
+		{
+			// drown!
+			if (NextDrownTime < Level.Frame && Health > 0)
 			{
 				NextDrownTime = Level.Frame + 10;
 
@@ -1569,7 +1571,7 @@ inline void CPlayerEntity::WorldEffects ()
 	//
 	// check for sizzle damage
 	//
-	if (waterlevel && (WaterInfo.Type & (CONTENTS_LAVA|CONTENTS_SLIME)))
+	if (WaterInfo.Level && (WaterInfo.Type & (CONTENTS_LAVA|CONTENTS_SLIME)))
 	{
 		if (WaterInfo.Type & CONTENTS_LAVA)
 		{
@@ -1582,13 +1584,13 @@ inline void CPlayerEntity::WorldEffects ()
 			}
 
 			// take 1/3 damage with envirosuit
-			TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, (envirosuit) ? 1*waterlevel : 3*waterlevel, 0, 0, MOD_LAVA);
+			TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, (envirosuit) ? 1*WaterInfo.Level : 3*WaterInfo.Level, 0, 0, MOD_LAVA);
 		}
 
 		if (WaterInfo.Type & CONTENTS_SLIME)
 		{
 			if (!envirosuit) // no damage from slime with envirosuit
-				TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 1*waterlevel, 0, 0, MOD_SLIME);
+				TakeDamage (World, World, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 1*WaterInfo.Level, 0, 0, MOD_SLIME);
 		}
 	}
 }
@@ -1600,7 +1602,7 @@ G_SetClientEffects
 */
 EPowerArmorType CPlayerEntity::PowerArmorType ()
 {
-	if (!(Flags & FL_POWER_ARMOR))
+	if (!Client.PowerArmorEnabled)
 		return POWER_ARMOR_NONE;
 	else if (Client.Persistent.Inventory.Has(NItems::PowerShield) > 0)
 		return POWER_ARMOR_SHIELD;
@@ -2349,8 +2351,9 @@ void CPlayerEntity::SetStats ()
 		{
 			cells = Client.Persistent.Inventory.Has(NItems::Cells);
 			if (cells == 0)
-			{	// ran out of cells for power armor
-				Flags &= ~FL_POWER_ARMOR;
+			{
+				// ran out of cells for power armor
+				Client.PowerArmorEnabled = false;
 				PlaySound (CHAN_ITEM, SoundIndex("misc/power2.wav"));
 				power_armor_type = 0;
 			}
@@ -2983,7 +2986,12 @@ CC_ENABLE_DEPRECATION
 			ViewHeight = 8;
 #endif
 
-	WaterInfo.Level = pm.WaterLevel;
+	if (WaterInfo.Level != pm.WaterLevel)
+	{
+		WaterInfo.OldLevel = WaterInfo.Level;
+		WaterInfo.Level	= pm.WaterLevel;
+	}
+
 	WaterInfo.Type = pm.WaterType;
 	GroundEntity = (pm.GroundEntity) ? pm.GroundEntity->Entity : NULL;
 
@@ -3175,7 +3183,7 @@ void CPlayerEntity::BackupClientData ()
 		SavedClients[i] = Player->Client.Persistent;
 		SavedClients[i].Health = Player->Health;
 		SavedClients[i].MaxHealth = Player->MaxHealth;
-		SavedClients[i].SavedFlags = (Player->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
+		SavedClients[i].SavedFlags = (Player->Flags & (FL_GODMODE|FL_NOTARGET));
 		if (Game.GameMode & GAME_COOPERATIVE)
 			SavedClients[i].Score = Player->Client.Respawn.Score;
 	}
@@ -3192,7 +3200,7 @@ void CPlayerEntity::SaveClientData ()
 
 		Player->Client.Persistent.Health = Player->Health;
 		Player->Client.Persistent.MaxHealth = Player->MaxHealth;
-		Player->Client.Persistent.SavedFlags = (Player->Flags & (FL_GODMODE|FL_NOTARGET|FL_POWER_ARMOR));
+		Player->Client.Persistent.SavedFlags = (Player->Flags & (FL_GODMODE|FL_NOTARGET));
 		if (Game.GameMode & GAME_COOPERATIVE)
 			Player->Client.Persistent.Score = Player->Client.Respawn.Score;
 	}
@@ -3203,9 +3211,7 @@ void CPlayerEntity::RestoreClientData ()
 	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
 		// Reset the entity states
-		//Game.Entities[i+1].Entity = SavedClients[i];
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
-		//memcpy (&Player->Client.Persistent, &SavedClients[i], sizeof(CPersistentData));
 		Player->Client.Persistent = SavedClients[i];
 		Player->Health = SavedClients[i].Health;
 		Player->MaxHealth = SavedClients[i].MaxHealth;
@@ -3249,7 +3255,7 @@ void CPlayerEntity::TossHead (sint32 Damage)
 
 EMeansOfDeath meansOfDeath;
 
-void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	CanTakeDamage = true;
 	TossPhysics = true;
@@ -3327,7 +3333,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	Client.Timers.Invincibility = 0;
 	Client.Timers.Rebreather = 0;
 	Client.Timers.EnvironmentSuit = 0;
-	Flags &= ~FL_POWER_ARMOR;
+	Client.PowerArmorEnabled = false;
 
 #if ROGUE_FEATURES
 	Client.Timers.Double = 0;
@@ -3348,16 +3354,12 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	// make sure no trackers are still hurting us.
 	if (Client.Timers.Tracker)
 		RemoveAttackingPainDaemons ();
-	
-	// if we got obliterated by the nuke, don't gib
-	if ((Health < -80) && (meansOfDeath == MOD_NUKE))
-		Flags |= FL_NOGIB;
 #endif
 
 	if (Health < -40)
 	{
 		// don't toss gibs if we got vaped by the nuke
-		if (!(Flags & FL_NOGIB))
+		if (!((Health < -80) && (meansOfDeath == MOD_NUKE)))
 		{
 			// gib
 			PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
@@ -3365,7 +3367,6 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 				CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 			TossHead (Damage);
 		}
-		Flags &= ~FL_NOGIB;
 
 		CanTakeDamage = false;
 //ZOID

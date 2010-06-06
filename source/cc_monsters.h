@@ -82,6 +82,7 @@ typedef uint32 EMonsterAIFlags;
 \enum	
 
 \brief	Values that represent monster AI flags. 
+\todo	Merge some of these elsewhere or turn into variables as required (cleanup) 
 **/
 enum
 {
@@ -121,6 +122,10 @@ enum
 	AI_BLOCKED				= BIT(26),	// used by blocked_checkattack: set to say I'm attacking while blocked 
 										// (prevents run-attacks)
 #endif
+
+	AI_PARTIALGROUND		= BIT(27), // monster had floor moved underneath him
+	AI_SWIM					= BIT(28), // monster swims
+	AI_FLY					= BIT(29), // monster flies
 };
 
 /**
@@ -251,13 +256,13 @@ public:
 	void			Think ();
 
 	void			Pain (IBaseEntity *Other, sint32 Damage);
-	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf); // Empty
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
 	bool			Blocked (float Dist);
 
-	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
+	void			DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
 	bool			Run ();
 	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
@@ -280,7 +285,7 @@ public:
 
 	float				IdealYaw;
 	float				YawSpeed;
-	uint32				AIFlags;
+	EMonsterAIFlags		AIFlags;
 
 #if ROGUE_FEATURES
 //ROGUE
@@ -396,7 +401,7 @@ public:
 	virtual void		ReactToDamage	(IBaseEntity *Attacker, IBaseEntity *Inflictor);
 
 	virtual void		MonsterThink	();
-	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, EDamageFlags &dflags, EMeansOfDeath &mod);
+	virtual void		DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
 	virtual bool		Blocked (float Dist) {return false;}
 
@@ -501,7 +506,7 @@ public:
 	bool				MoveStep (vec3f move, bool ReLink);
 
 	virtual void		Spawn () = 0;
-	virtual void		Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point) = 0;
+	virtual void		Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point) = 0;
 	virtual void		Pain(IBaseEntity *Other, sint32 Damage) = 0;
 
 	inline bool HasValidEnemy ()

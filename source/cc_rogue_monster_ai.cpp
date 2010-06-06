@@ -516,7 +516,7 @@ void CMonster::MoveToGoal (float Dist)
 {	
 	IBaseEntity *goal = *Entity->GoalEntity;
 
-	if (!Entity->GroundEntity && !(Entity->Flags & (FL_FLY|FL_SWIM)))
+	if (!Entity->GroundEntity && !(AIFlags & (AI_FLY | AI_SWIM)))
 		return;
 
 // if the next step hits the enemy, return immediately
@@ -602,7 +602,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	vec3f oldOrg = Entity->State.GetOrigin(), newOrg = oldOrg + move;
 
 // flying monsters don't step up
-	if (Entity->Flags & (FL_SWIM | FL_FLY))
+	if (AIFlags & (AI_SWIM | AI_FLY))
 	{
 	// try one move with vertical motion, then one without
 		for (int i = 0; i < 2; i++)
@@ -624,7 +624,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 					if (dz > minHeight)
 						newOrg.Z -= 8;
-					if (!((Entity->Flags & FL_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)))
+					if (!((AIFlags & AI_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)))
 						if (dz < (minHeight - 10))
 							newOrg.Z += 8;
 				}
@@ -644,7 +644,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), newOrg, Entity, CONTENTS_MASK_MONSTERSOLID);
 	
 			// fly monsters don't enter water voluntarily
-			if (Entity->Flags & FL_FLY)
+			if (AIFlags & AI_FLY)
 			{
 				if (!Entity->WaterInfo.Level)
 				{
@@ -654,7 +654,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			}
 
 			// swim monsters don't exit water voluntarily
-			if (Entity->Flags & FL_SWIM)
+			if (AIFlags & AI_SWIM)
 			{
 				if (Entity->WaterInfo.Level < WATER_WAIST)
 				{
@@ -724,7 +724,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (trace.Fraction == 1)
 	{
 	// if monster had the ground pulled out, go ahead and fall
-		if (Entity->Flags & FL_PARTIALGROUND)
+		if (AIFlags & AI_PARTIALGROUND)
 		{
 			Entity->State.GetOrigin() += move;
 
@@ -786,7 +786,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 	if (!CheckBottom ())
 	{
-		if (Entity->Flags & FL_PARTIALGROUND)
+		if (AIFlags & AI_PARTIALGROUND)
 		{
 			// entity had floor mostly pulled out from underneath it
 			// and is trying to correct
@@ -803,8 +803,8 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 		return false;
 	}
 
-	if (Entity->Flags & FL_PARTIALGROUND)
-		Entity->Flags &= ~FL_PARTIALGROUND;
+	if (AIFlags & AI_PARTIALGROUND)
+		AIFlags &= ~AI_PARTIALGROUND;
 
 	Entity->GroundEntity = trace.Entity;
 	Entity->GroundEntityLinkCount = trace.Entity->GetLinkCount();
@@ -910,7 +910,7 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 // a valid standing position at all
 
 	if (!CheckBottom ())
-		Entity->Flags |= FL_PARTIALGROUND;
+		AIFlags |= AI_PARTIALGROUND;
 }
 
 bool CMonster::StepDirection (float Yaw, float Dist)
@@ -1070,7 +1070,7 @@ bool CMonster::CheckAttack ()
 
 	// PMM -daedalus should strafe more .. this can be done here or in a customized
 	// check_attack code for the hover.
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		// originally, just 0.3
 		float strafe_chance = (MonsterID == CDaedalus::ID) ? 0.8f : 0.6f;
@@ -1187,7 +1187,8 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	//   this also leads to the problem of tanks and medics being able to, at will, kill monsters with
 	//   no chance of retaliation.  My vote is to make those monsters who are designed as "don't shoot me"
 	//   such that they also ignore being shot by monsters as well
-	if (((Entity->Flags & (FL_FLY|FL_SWIM)) == (Attacker->Flags & (FL_FLY|FL_SWIM))) &&
+	if ((Attacker->EntityFlags & ENT_MONSTER) && 
+		((AIFlags & (AI_FLY | AI_SWIM)) == (entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & (AI_FLY | AI_SWIM))) &&
 		(strcmp (Entity->ClassName.c_str(), Attacker->ClassName.c_str()) != 0) &&
 		!(entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & AI_IGNORE_SHOTS) &&
 		!(AIFlags & AI_IGNORE_SHOTS) )
@@ -1746,7 +1747,7 @@ void CMonster::AI_Run_Slide(float Dist)
 		ChangeYaw ();
 
 	// PMM - clamp maximum sideways move for non flyers to make them look less jerky
-	if (!Entity->Flags & FL_FLY)
+	if (!(AIFlags & AI_FLY))
 		Dist = Min<> (Dist, MAX_SIDESTEP);
 
 	if (WalkMove (IdealYaw + ofs, Dist))

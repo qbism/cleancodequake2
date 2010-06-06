@@ -248,7 +248,7 @@ public:
 		LastQuakeTime = 0;
 	}
 
-	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
 		CanTakeDamage = false;
 

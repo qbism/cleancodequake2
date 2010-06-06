@@ -591,7 +591,7 @@ void CIcarus::Dead ()
 	Entity->Link ();
 }
 
-void CIcarus::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point)
+void CIcarus::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)

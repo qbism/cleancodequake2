@@ -76,19 +76,19 @@ struct SGameImport
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (BroadcastPrintf)
 #endif
-	void	(*bprintf) (EGamePrintLevel printlevel, char *fmt, ...);
+	void	(*bprintf) (EGamePrintLevel printlevel, const char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (ServerPrintf or DebugPrintf)
 #endif
-	void	(*dprintf) (char *fmt, ...);
+	void	(*dprintf) (const char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (ClientPrintf)
 #endif
-	void	(*cprintf) (SEntity *ent, EGamePrintLevel printLevel, char *fmt, ...);
+	void	(*cprintf) (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (CenterPrintf)
 #endif
-	void	(*centerprintf) (SEntity *ent, char *fmt, ...);
+	void	(*centerprintf) (SEntity *ent, const char *fmt, ...);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (PlaySoundFrom or IBaseEntity->PlaySound)
@@ -106,31 +106,31 @@ struct SGameImport
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (ConfigString)
 #endif
-	void	(*configstring) (sint32 num, char *string);
+	void	(*configstring) (sint32 num, const char *string);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (GameError)
 #endif
-	void	(*error) (char *fmt, ...);
+	void	(*error) (const char *fmt, ...);
 
 	// the *index functions create configstrings and some internal server state
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (ModelIndex)
 #endif
-	sint32		(*modelindex) (char *name);
+	sint32		(*modelindex) (const char *name);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (SoundIndex)
 #endif
-	sint32		(*soundindex) (char *name);
+	sint32		(*soundindex) (const char *name);
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (ImageIndex)
 #endif
-	sint32		(*imageindex) (char *name);
+	sint32		(*imageindex) (const char *name);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (SetModel)
 #endif
-	void	(*setmodel) (SEntity *ent, char *name);
+	void	(*setmodel) (SEntity *ent, const char *name);
 
 	// collision detection
 #if !USE_EXTENDED_GAME_IMPORTS
@@ -211,7 +211,7 @@ struct SGameImport
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (WriteString)
 #endif
-	void	(*WriteString) (char *s);
+	void	(*WriteString) (const char *s);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (WritePosition)
@@ -246,17 +246,17 @@ struct SGameImport
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	SCVar	*(*cvar) (char *varName, char *value, sint32 flags);
+	SCVar	*(*cvar) (const char *varName, const char *value, sint32 flags);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	SCVar	*(*cvar_set) (char *varName, char *value);
+	SCVar	*(*cvar_set) (const char *varName, const char *value);
 
 #if !USE_EXTENDED_GAME_IMPORTS
 	CC_INSECURE_DEPRECATE (class CCvar)
 #endif
-	SCVar	*(*cvar_forceset) (char *varName, char *value);
+	SCVar	*(*cvar_forceset) (const char *varName, const char *value);
 
 	// ClientCommand and ServerCommand parameter access
 #if !USE_EXTENDED_GAME_IMPORTS
@@ -276,7 +276,7 @@ struct SGameImport
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
-	void	(*AddCommandString) (char *text);
+	void	(*AddCommandString) (const char *text);
 
 	void	(*DebugGraph) (float value, sint32 color);
 };

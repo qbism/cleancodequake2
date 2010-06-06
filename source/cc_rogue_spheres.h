@@ -117,7 +117,7 @@ public:
 	void			Think ();
 
 	void			Pain (IBaseEntity *Other, sint32 Damage);
-	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	static void		Spawn (CPlayerEntity *Owner, vec3f Start, vec3f AimDir);
 };
@@ -196,7 +196,7 @@ public:
 	}
 
 	virtual void 	Pain (IBaseEntity *Other, sint32 Damage) = 0;
-	virtual void 	Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &point);
+	virtual void 	Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf) {};
 

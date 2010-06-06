@@ -240,7 +240,7 @@ void CMegaHealth::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 		MegaHealth->MegaHealthThinking = true;
 		MegaHealth->NextThink = Level.Frame + 50;
 		MegaHealth->Player = Other;
-		MegaHealth->Flags |= FL_RESPAWN;
+		MegaHealth->ShouldRespawn = true;
 		MegaHealth->GetSvFlags() |= SVF_NOCLIENT;
 		MegaHealth->GetSolid() = SOLID_NOT;
 
@@ -443,9 +443,9 @@ void CPowerShield::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 
 void CPowerShield::Use (CPlayerEntity *Player)
 {
-	if (Player->Flags & FL_POWER_ARMOR)
+	if (Player->Client.PowerArmorEnabled)
 	{
-		Player->Flags &= ~FL_POWER_ARMOR;
+		Player->Client.PowerArmorEnabled = false;
 		Player->PlaySound (CHAN_AUTO, SoundIndex("misc/power2.wav"));
 	}
 	else
@@ -455,14 +455,14 @@ void CPowerShield::Use (CPlayerEntity *Player)
 			Player->PrintToClient (PRINT_HIGH, "No cells for %s.\n", Name);
 			return;
 		}
-		Player->Flags |= FL_POWER_ARMOR;
+		Player->Client.PowerArmorEnabled = true;
 		Player->PlaySound (CHAN_AUTO, SoundIndex("misc/power1.wav"));
 	}
 }
 
 void CPowerShield::Drop (CPlayerEntity *Player)
 {
-	if ((Player->Flags & FL_POWER_ARMOR) && (Player->Client.Persistent.Inventory.Has(this) == 1))
+	if ((Player->Client.PowerArmorEnabled) && (Player->Client.Persistent.Inventory.Has(this) == 1))
 		Use (Player);
 	CBasePowerUp::Drop (Player);
 }
