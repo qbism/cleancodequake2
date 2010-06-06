@@ -3,11 +3,17 @@
 ##
 ## TODO: Cross-compiling capabilities (e.g. gamei386.so on x86_64 machine)
 
-CPU:=$(shell uname -m | sed 's/i[3-9]86/i386/')
-GAMELIB=game$(CPU).so
+ARCH:=$(shell uname -m | sed 's/i[3-9]86/i386/')
+GAMELIB=game$(ARCH).so
+
+ifdef SHOW_WARNINGS
+  WFLAGS:=-Wall
+else
+  WFLAGS:=-w
+endif
 
 CC=g++
-CCFLAGS=-O2 -c -MMD -fPIC -fno-strict-aliasing -pipe -w
+CCFLAGS=-O2 -c -MMD -fPIC -fno-strict-aliasing -pipe $(WFLAGS)
 IDIR=-Iinclude -Isircl/include
 
 LD=g++
