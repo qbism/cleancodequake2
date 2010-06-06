@@ -3,4 +3,7 @@
 *.o
 *.d
 game*.so
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
 
