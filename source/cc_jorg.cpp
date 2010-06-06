@@ -575,7 +575,7 @@ bool CJorg::CheckAttack ()
 		return true;
 	}
 
-	if (Entity->AIFlags & AI_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3)
 			AttackState = AS_SLIDING;

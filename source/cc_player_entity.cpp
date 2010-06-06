@@ -3282,7 +3282,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		if (Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 		{
 			CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
-//ZOID
+
 			// if at start and same team, clear
 			if ((Game.GameMode & GAME_CTF) && (meansOfDeath == MOD_TELEFRAG) &&
 				(Client.Respawn.CTF.State < 2) &&
@@ -3294,19 +3294,15 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 
 			CTFFragBonuses(this, PlayerAttacker);
 		}
-
-//ZOID
 #endif
 		TossClientWeapon ();
 
 #if CLEANCTF_ENABLED
-//ZOID
 		if ((Game.GameMode & GAME_CTF) || Client.Grapple.Entity || Client.Persistent.Flag)
 		{
 			CGrapple::PlayerResetGrapple(this);
 			CTFDeadDropFlag();
 		}
-//ZOID
 #endif
 		if (
 #if CLEANCTF_ENABLED
@@ -3358,8 +3354,10 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 
 	if (Health < -40)
 	{
+#if ROGUE_FEATURES
 		// don't toss gibs if we got vaped by the nuke
 		if (!((Health < -80) && (meansOfDeath == MOD_NUKE)))
+#endif
 		{
 			// gib
 			PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
@@ -3369,10 +3367,10 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		}
 
 		CanTakeDamage = false;
-//ZOID
+
 		Client.Anim.Priority = ANIM_DEATH;
 		Client.Anim.EndFrame = 0;
-//ZOID
+
 	}
 	else
 	{	// normal death

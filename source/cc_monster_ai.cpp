@@ -258,7 +258,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				{
 					if (dz > 40)
 						newOrg.Z -= 8;
-					if (!((Entity->AIFlags & AI_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < 30))
+					if (!((AIFlags & AI_SWIM) && (Entity->WaterInfo.Level < WATER_WAIST)) && (dz < 30))
 						newOrg.Z += 8;
 				}
 				else
@@ -276,7 +276,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			CTrace trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), newOrg, Entity, CONTENTS_MASK_MONSTERSOLID);
 	
 			// fly monsters don't enter water voluntarily
-			if (Entity->AIFlags & AI_FLY)
+			if (AIFlags & AI_FLY)
 			{
 				if (!Entity->WaterInfo.Level)
 				{
@@ -286,7 +286,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			}
 
 			// swim monsters don't exit water voluntarily
-			if (Entity->AIFlags & AI_SWIM)
+			if (AIFlags & AI_SWIM)
 			{
 				if (Entity->WaterInfo.Level < 2)
 				{
@@ -327,6 +327,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 		return false;
 
 	if (trace.StartSolid)
+
 	{
 		newOrg.Z -= stepsize;
 		trace (newOrg, Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
@@ -589,7 +590,7 @@ bool CMonster::CheckAttack ()
 		return true;
 	}
 
-	if (Entity->AIFlags & AI_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3f)
 			AttackState = AS_SLIDING;
