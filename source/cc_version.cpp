@@ -112,12 +112,12 @@ WININET
 
 #include <WinInet.h>
 bool				VersionCheckReady;
-std::string		VersionPrefix;
+std::string			VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
 EVersionComparison	VersionReturnance;
-char				receiveBuffer[256];
+std::string			receiveBuffer;
 
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 HANDLE				hThread;
@@ -146,36 +146,38 @@ long WINAPI CheckNewVersionThread (long lParam)
 void CheckNewVersion ()
 #endif
 {
-	receiveBuffer[0] = 0;
-
 	HINTERNET iInternetHandle = InternetOpenA ("wininet-agent/1.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	
-	Mem_Zero (receiveBuffer, sizeof(receiveBuffer));
+	receiveBuffer.clear();
 
 	if (iInternetHandle)
 	{
 		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, VERSION_URL, NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
+
 		if (iInternetFile)
 		{
 			// Start writing the file
-			char *currentReceivePos = receiveBuffer;
 			DWORD numBytesRead = 0;
 
+			char buf[READ_BYTES_SIZE];
 			while (true)
 			{
-				bool Passed = (!!InternetReadFile (iInternetFile, currentReceivePos, READ_BYTES_SIZE, &numBytesRead));
+				buf[0] = 0;
+				bool Passed = (!!InternetReadFile (iInternetFile, &buf, READ_BYTES_SIZE, &numBytesRead));
+
 				if (!Passed || Passed && ((numBytesRead == 0) || numBytesRead < READ_BYTES_SIZE))
 					break;
-				currentReceivePos += READ_BYTES_SIZE;
+
+				receiveBuffer += buf;
 			}
 
 			InternetCloseHandle (iInternetFile);
 		}
+
 		InternetCloseHandle (iInternetHandle);
 	}
 
 	VersionCheckReady = true;
-
 	return 0;
 }
 
@@ -184,9 +186,9 @@ void CheckVersionReturnance ()
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 	if (VersionCheckReady)
 	{
-		if (receiveBuffer[0])
+		if (receiveBuffer.size() && (receiveBuffer[0] != '<'))
 		{
-			CParser Parser (receiveBuffer, PSP_COMMENT_LINE);
+			CParser Parser (receiveBuffer.c_str(), PSP_COMMENT_LINE);
 
 			const char *token;
 

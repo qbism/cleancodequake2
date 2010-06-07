@@ -53,14 +53,14 @@ inline char *Mem_StrDup(const char *in)
 	return Mem_TagStrDup(in, TAG_GENERIC);
 }
 
-void *operator new(size_t Size, const sint32 TagNum, const char *FileName, const char *Line);
-void *operator new[](size_t Size, const sint32 TagNum, const char *FileName, const char *Line);
-void operator delete(void *Pointer, const sint32 TagNum, const char *FileName, const char *Line);
-void operator delete[](void *Pointer, const sint32 TagNum, const char *FileName, const char *Line);
+void *operator new(size_t Size, const sint32 TagNum, const int Line, const char *FileName);
+void *operator new[](size_t Size, const sint32 TagNum, const int Line, const char *FileName);
+void operator delete(void *Pointer, const sint32 TagNum, const int Line, const char *FileName);
+void operator delete[](void *Pointer, const sint32 TagNum, const int Line, const char *FileName);
 
 void Mem_FreeTag (const sint32 TagNum);
 
-#define QNew(TagNum)	new((TagNum), (__FILE__), (__LINE__))
+#define QNew(TagNum)	new((TagNum), (__LINE__), (__FILE__))
 #define QDelete	delete
 
 inline void Mem_Zero (void *ptr, size_t size)
