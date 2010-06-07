@@ -184,7 +184,6 @@ bool IsBelow (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (vec3f left, vec3f right, IBaseEntity *self);
 
-extern vec3f upOrigin;
 void	G_ProjectSource (const vec3f &Point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up = upOrigin);
 
 // Changed to sint32, rarely used as a float..

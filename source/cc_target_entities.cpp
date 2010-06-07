@@ -540,6 +540,8 @@ void		CTargetTempEntity::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("target_temp_entity", CTargetTempEntity);
 
+#include "cc_info_entities.h"
+
 /*QUAKED target_changelevel (1 0 0) (-8 -8 -8) (8 8 8)
 Changes level to "map" when fired
 */
@@ -594,7 +596,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	{
 		if (!(Game.GameMode & GAME_DEATHMATCH))
 		{
-			Level.Intermission.ShouldExitOnNextFrame = true;		// go immediately to the next level
+			Level.Intermission.ShouldExit = true;		// go immediately to the next level
 			if (targ->ExitOnNextFrame)
 				Level.Intermission.ShouldExitOnNextFrame = true;
 			return;
@@ -604,23 +606,17 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	Level.Intermission.ShouldExitOnNextFrame = false;
 
 	// find an intermission spot
-	IBaseEntity *Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_intermission");
-	if (!Entity)
-	{	// the map creator forgot to put in an intermission point...
-		Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_start");
-		if (!Entity)
-			Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, "info_player_deathmatch");
+	IBaseEntity *Entity;
+	if (!CPlayerIntermission::SpawnPoints().size())
+	{
+		// the map creator forgot to put in an intermission point...
+		if (!CPlayerStart::SpawnPoints().size())
+			Entity = CPlayerDeathmatch::SpawnPoints()[0];
+		else
+			Entity = CPlayerStart::SpawnPoints()[0];
 	}
-	else
-	{	// chose one of four spots
-		sint32 i = irandom(4);
-		while (i--)
-		{
-			Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
-			if (!Entity)	// wrap around the list
-				Entity = CC_FindByClassName<IBaseEntity, ENT_BASE> (Entity, "info_player_intermission");
-		}
-	}
+	else // choose spot at random
+		Entity = CPlayerIntermission::SpawnPoints()[irandom(CPlayerIntermission::SpawnPoints().size())];
 
 	Level.Intermission.Origin = Entity->State.GetOrigin ();
 	Level.Intermission.Angles = Entity->State.GetAngles ();

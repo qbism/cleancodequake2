@@ -25,3 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "../source/cc_local.h"
 
 vec3f vec3fOrigin (0, 0, 0);	// vec3 origin
+
+// Utility vectors
+vec3f upOrigin (0, 0, 1); // Up

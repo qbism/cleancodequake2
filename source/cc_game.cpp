@@ -449,15 +449,9 @@ void CGameAPI::RunFrame ()
 
 	if (Level.Frame == 2)
 		EndMapCounter();
-
-	// choose a client for monsters to target this frame
-	// Only do it when we have spawned everything
-	if (!(Game.GameMode & GAME_DEATHMATCH) && Level.Frame > 20) // Paril, lol
-		AI_SetSightClient ();
-
 	// exit intermissions
 
-	if (Level.Intermission.ShouldExitOnNextFrame)
+	if (Level.Intermission.ShouldExit)
 	{
 		if (Level.Intermission.ShouldExitOnNextFrame)
 		{
@@ -500,6 +494,11 @@ void CGameAPI::RunFrame ()
 #if ROGUE_FEATURES
 	RunBadAreas ();
 #endif
+
+	// choose a client for monsters to target this frame
+	// Only do it when we have spawned everything
+	if (!(Game.GameMode & GAME_DEATHMATCH) && Level.Frame > 20) // Paril, lol
+		AI_SetSightClient ();
 }
 
 void SetupGamemode ()

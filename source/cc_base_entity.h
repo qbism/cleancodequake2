@@ -496,7 +496,7 @@ public:
 
 	bool operator!= (const IBaseEntity *Right) const
 	{
-		return !(*this == Right);
+		return !(operator== (Right));
 	}
 
 	bool operator== (const entity_ptr &Right) const

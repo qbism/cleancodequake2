@@ -214,8 +214,8 @@ inline float		LerpAngle (float a1, float a2, float frac)
 
 #include "Vector.h"
 
-extern vec3f vec3fOrigin;
-
+extern vec3f	vec3fOrigin,
+				upOrigin;
 // ===========================================================================
 
 //

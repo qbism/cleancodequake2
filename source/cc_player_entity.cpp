@@ -1436,8 +1436,7 @@ inline void CPlayerEntity::FallingDamage ()
 		if (Damage < 1)
 			Damage = 1;
 
-		static vec3f dir (0, 0, 1);
-		TakeDamage (World, World, dir, State.GetOrigin(), vec3fOrigin, Damage, 0, 0, MOD_FALLING);
+		TakeDamage (World, World, upOrigin, State.GetOrigin(), vec3fOrigin, Damage, 0, 0, MOD_FALLING);
 	}
 	else
 	{
@@ -1508,7 +1507,7 @@ inline void CPlayerEntity::WorldEffects ()
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp1.wav"));
 			PlayerNoiseAt (State.GetOrigin(), PNOISE_SELF);
 		}
-		else  if (AirFinished < Level.Frame + 110) // just break surface
+		else if (AirFinished < Level.Frame + 110) // just break surface
 			PlaySound (CHAN_VOICE, SoundIndex("player/gasp2.wav"));
 
 		WaterInfo.OldLevel = WaterInfo.Level;

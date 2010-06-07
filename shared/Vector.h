@@ -294,10 +294,7 @@ public:
 	**/
 	inline vec3Base &operator *= (const vec3Base &Vec)
 	{
-		X *= Vec.X;
-		Y *= Vec.Y;
-		Z *= Vec.Z;
-
+		Set (X * Vec.X, Y * Vec.Y, Z * Vec.Z);
 		return *this;
 	}
 
@@ -315,10 +312,7 @@ public:
 	**/
 	inline vec3Base &operator *= (const TType Scale)
 	{
-		X *= Scale;
-		Y *= Scale;
-		Z *= Scale;
-
+		Set (X * Scale, Y * Scale, Z * Scale);
 		return *this;
 	}
 
@@ -353,10 +347,7 @@ public:
 	**/
 	inline vec3Base &operator += (const vec3Base &Vec)
 	{
-		X += Vec.X;
-		Y += Vec.Y;
-		Z += Vec.Z;
-
+		Set (X + Vec.X, Y + Vec.Y, Z + Vec.Z);
 		return *this;
 	}
 
@@ -391,10 +382,7 @@ public:
 	**/
 	inline vec3Base &operator -= (const vec3Base &Vec)
 	{
-		X -= Vec.X;
-		Y -= Vec.Y;
-		Z -= Vec.Z;
-
+		Set (X - Vec.X, Y - Vec.Y, Z - Vec.Z);
 		return *this;
 	}
 
@@ -447,10 +435,7 @@ public:
 	**/
 	inline vec3Base &operator /= (const vec3Base &Vec)
 	{
-		X /= Vec.X;
-		Y /= Vec.Y;
-		Z /= Vec.Z;
-
+		Set (X / Vec.X, Y / Vec.Y, Z / Vec.Z);
 		return *this;
 	}
 
@@ -469,11 +454,7 @@ public:
 	inline vec3Base &operator /= (const TType Number)
 	{
 		const float InvNumber = 1.0f / (float)Number;
-
-		X *= InvNumber;
-		Y *= InvNumber;
-		Z *= InvNumber;
-
+		Set (X * InvNumber, Y * InvNumber, Z * InvNumber);
 		return *this;
 	}
 
@@ -525,10 +506,7 @@ public:
 	**/
 	inline vec3Base &operator = (const vec3Base &Vec)
 	{
-		X = Vec.X;
-		Y = Vec.Y;
-		Z = Vec.Z;
-
+		Set (Vec);
 		return *this;
 	}
 
@@ -580,7 +558,7 @@ public:
 	**/
 	inline bool operator <= (const vec3Base &Vec) const
 	{
-		return (*this < Vec || *this == Vec);
+		return (operator< (Vec) || operator== (Vec));
 	}
 
 	/**
@@ -597,7 +575,7 @@ public:
 	**/
 	inline bool operator >= (const vec3Base &Vec) const
 	{
-		return (*this > Vec || *this == Vec);
+		return (operator> (Vec) || operator== (Vec));
 	}
 
 	/**
@@ -704,9 +682,7 @@ public:
 	**/
 	inline void Invert ()
 	{
-		X = -X;
-		Y = -Y;
-		Z = -Z;
+		Set (-X, -Y, -Z);
 	}
 
 	/**
@@ -734,21 +710,6 @@ public:
 	}
 
 	/**
-	\fn	inline void Set (const TType Number)
-	
-	\brief	Sets the vector's values to 'Number'
-	
-	\author	Paril
-	\date	27/05/2010
-	
-	\param	Number	Number to set vector's values to. 
-	**/
-	inline void Set (const TType Number)
-	{
-		X = Y = Z = Number;
-	}
-
-	/**
 	\fn	inline void Set (const TType InX, const TType InY, const TType InZ)
 	
 	\brief	Sets the vector's values to 'InX', 'InY', and 'InZ'
@@ -768,6 +729,21 @@ public:
 	}
 
 	/**
+	\fn	inline void Set (const TType Number)
+	
+	\brief	Sets the vector's values to 'Number'
+	
+	\author	Paril
+	\date	27/05/2010
+	
+	\param	Number	Number to set vector's values to. 
+	**/
+	inline void Set (const TType Number)
+	{
+		Set (Number, Number, Number);
+	}
+
+	/**
 	\fn	inline void Set (const vec3Base &Vec)
 	
 	\brief	Sets this vector to the values of 'Vec'. 
@@ -779,9 +755,7 @@ public:
 	**/
 	inline void Set (const vec3Base &Vec)
 	{
-		X = Vec[0];
-		Y = Vec[1];
-		Z = Vec[2];
+		Set (Vec[0], Vec[1], Vec[2]);
 	}
 
 	/**
@@ -821,7 +795,7 @@ public:
 	**/
 	bool Inside (const vec3Base Min, const vec3Base Max) const
 	{
-		return ((*this > Min) && (*this < Max));
+		return (operator> (Min)) && (operator< (Max));
 	}
 
 	/**
@@ -952,9 +926,7 @@ public:
 	**/
 	inline void Abs()
 	{
-		X = Q_fabs(X);
-		Y = Q_fabs(Y);
-		Z = Q_fabs(Z);
+		Set (Q_fabs(X), Q_fabs(Y), Q_fabs(Z));
 	}
 	
 	/**
@@ -998,7 +970,7 @@ public:
 		float Len = Length();
 
 		if (Len)
-			*this *= (1.0f / Len);
+			operator*= (1.0f / Len);
 		else
 			Clear();
 
@@ -1015,7 +987,7 @@ public:
 	float NormalizeFast()
 	{
 		float Len = Q_RSqrtf(Dot(*this));
-		*this *= Len;
+		operator*= (Len);
 		return (Len) ? (1.0f / Len) : 0;
 	}
 

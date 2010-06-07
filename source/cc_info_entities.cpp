@@ -454,69 +454,43 @@ LINK_CLASSNAME_TO_CLASS ("info_teleport_destination", CInfoTeleportDest);
 /*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32)
 potential spawning position for deathmatch games
 */
-class CPlayerDeathmatch : public CSpotBase
-{
-public:
-	typedef std::vector<CPlayerDeathmatch*> TSpawnPointsType;
-	static inline TSpawnPointsType &SpawnPoints ()
+CPlayerDeathmatch::CPlayerDeathmatch () :
+	IBaseEntity (),
+	CSpotBase ()
 	{
-		static TSpawnPointsType Points;
-		return Points;
-	}
-
-	static void ClearSpawnPoints ()
-	{
-		SpawnPoints().clear();
-	}
-
-	CPlayerDeathmatch () :
-		IBaseEntity (),
-		CSpotBase ()
-		{
-		};
-
-	CPlayerDeathmatch (sint32 Index) :
-		IBaseEntity (Index),
-		CSpotBase (Index)
-		{
-		};
-
-	IMPLEMENT_SAVE_HEADER(CPlayerDeathmatch)
-
-	void LoadFields (CFile &File)
-	{
-		CSpotBase::LoadFields (File);
-		SpawnPoints().push_back (this);
-	}
-
-	virtual void Spawn ()
-	{
-		if (!(Game.GameMode & GAME_DEATHMATCH))
-		{
-#ifndef FREE_UNUSED_SPOTS
-			GetSolid() = SOLID_NOT;
-			GetSvFlags() = SVF_NOCLIENT;
-			Link ();
-#else
-			Free ();
-#endif
-			return;
-		}
-
-		CSpotBase::Spawn ();
-		SpawnPoints().push_back (this);
 	};
+
+CPlayerDeathmatch::CPlayerDeathmatch (sint32 Index) :
+	IBaseEntity (Index),
+	CSpotBase (Index)
+	{
+	};
+
+void CPlayerDeathmatch::LoadFields (CFile &File)
+{
+	CSpotBase::LoadFields (File);
+	SpawnPoints().push_back (this);
+}
+
+void CPlayerDeathmatch::Spawn ()
+{
+	if (!(Game.GameMode & GAME_DEATHMATCH))
+	{
+#ifndef FREE_UNUSED_SPOTS
+		GetSolid() = SOLID_NOT;
+		GetSvFlags() = SVF_NOCLIENT;
+		Link ();
+#else
+		Free ();
+#endif
+		return;
+	}
+
+	CSpotBase::Spawn ();
+	SpawnPoints().push_back (this);
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_deathmatch", CPlayerDeathmatch);
-
-/*
-=======================================================================
-
-  SelectSpawnPoint
-
-=======================================================================
-*/
 
 /*
 ================
@@ -607,7 +581,6 @@ CSpotBase *SelectRandomDeathmatchSpawnPoint ()
 /*
 ================
 SelectFarthestDeathmatchSpawnPoint
-
 ================
 */
 CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
@@ -638,108 +611,107 @@ CSpotBase *SelectFarthestDeathmatchSpawnPoint ()
 /*QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
 potential spawning position for coop games
 */
+CPlayerCoop::CPlayerCoop () :
+	IBaseEntity (),
+	IThinkableEntity(),
+	CSpotBase ()
+	{
+	};
 
-class CPlayerCoop : public CSpotBase, public IThinkableEntity
+CPlayerCoop::CPlayerCoop (sint32 Index) :
+	IBaseEntity (Index),
+	IThinkableEntity(),
+	CSpotBase (Index)
+	{
+	};
+
+void CPlayerCoop::SaveFields (CFile &File)
 {
-public:
-	typedef std::vector<CPlayerCoop*> TSpawnPointsType;
-	static inline TSpawnPointsType &SpawnPoints ()
-	{
-		static TSpawnPointsType Points;
-		return Points;
-	}
-
-	static void ClearSpawnPoints ()
-	{
-		SpawnPoints().clear();
-	}
-
-	CPlayerCoop () :
-		IBaseEntity (),
-		IThinkableEntity(),
-		CSpotBase ()
-		{
-		};
-
-	CPlayerCoop (sint32 Index) :
-		IBaseEntity (Index),
-		IThinkableEntity(),
-		CSpotBase (Index)
-		{
-		};
-
-	IMPLEMENT_SAVE_HEADER(CPlayerCoop)
-
-	void SaveFields (CFile &File)
-	{
-		IThinkableEntity::SaveFields (File);
-		CSpotBase::SaveFields (File);
-	};
-
-	void LoadFields (CFile &File)
-	{
-		IThinkableEntity::LoadFields (File);
-		CSpotBase::LoadFields (File);
-		SpawnPoints().push_back (this);
-	};
-
-	bool ParseField (const char *Key, const char *Value)
-	{
-		return (CSpotBase::ParseField (Key, Value));
-	};
-
-	// this function is an ugly as hell hack to fix some map flaws
-	//
-	// the coop spawn spots on some maps are SNAFU.  There are coop spots
-	// with the wrong targetname as well as spots with no name at all
-	//
-	// we use carnal knowledge of the maps to fix the coop spot targetnames to match
-	// that of the nearest named single player spot
-	virtual void Think ();;
-
-	virtual void Spawn ()
-	{
-		const static char *CheckNames[] = {
-			"jail2",
-			"jail3",
-			"mine1",
-			"mine2",
-			"mine3",
-			"mine4",
-			"lab",
-			"boss1",
-			"fact3",
-			"biggun",
-			"space",
-			"command",
-			"power2",
-			"strike",
-			NULL
-		};
-
-		if (!(Game.GameMode & GAME_COOPERATIVE))
-		{
-			Free ();
-			return;
-		}
-
-		sint32 i = 0;
-		while (CheckNames[i] != NULL)
-		{
-			// invoke one of our gross, ugly, disgusting hacks
-			if (strcmp(Level.ServerLevelName.c_str(), CheckNames[i]) == 0)
-			{
-				NextThink = Level.Frame + FRAMETIME;
-				break;
-			}
-
-			i++;
-		}
-
-		SpawnPoints().push_back (this);
-	};
+	IThinkableEntity::SaveFields (File);
+	CSpotBase::SaveFields (File);
 };
 
+void CPlayerCoop::LoadFields (CFile &File)
+{
+	IThinkableEntity::LoadFields (File);
+	CSpotBase::LoadFields (File);
+	SpawnPoints().push_back (this);
+};
+
+bool CPlayerCoop::ParseField (const char *Key, const char *Value)
+{
+	return (CSpotBase::ParseField (Key, Value));
+};
+
+// this function is an ugly as hell hack to fix some map flaws
+//
+// the coop spawn spots on some maps are SNAFU.  There are coop spots
+// with the wrong targetname as well as spots with no name at all
+//
+// we use carnal knowledge of the maps to fix the coop spot targetnames to match
+// that of the nearest named single player spot
+void CPlayerCoop::Think ()
+{
+	for (CPlayerStart::TSpawnPointsType::iterator it = CPlayerStart::SpawnPoints().begin(); it < CPlayerStart::SpawnPoints().end(); ++it)
+	{
+		CSpotBase *spot = (*it);
+
+		if (!spot)
+			return;
+		if (!spot->TargetName)
+			continue;
+		
+		if ((State.GetOrigin() - spot->State.GetOrigin()).Length() < 384)
+		{
+			if ((!TargetName) || Q_stricmp(TargetName, spot->TargetName) != 0)
+				TargetName = spot->TargetName;
+			return;
+		}
+	}
+};
+
+void CPlayerCoop::Spawn ()
+{
+	const static char *CheckNames[] = {
+		"jail2",
+		"jail3",
+		"mine1",
+		"mine2",
+		"mine3",
+		"mine4",
+		"lab",
+		"boss1",
+		"fact3",
+		"biggun",
+		"space",
+		"command",
+		"power2",
+		"strike",
+		NULL
+	};
+
+	if (!(Game.GameMode & GAME_COOPERATIVE))
+	{
+		Free ();
+		return;
+	}
+
+	sint32 i = 0;
+	while (CheckNames[i] != NULL)
+	{
+		// invoke one of our gross, ugly, disgusting hacks
+		if (strcmp(Level.ServerLevelName.c_str(), CheckNames[i]) == 0)
+		{
+			NextThink = Level.Frame + FRAMETIME;
+			break;
+		}
+
+		i++;
+	}
+
+	SpawnPoints().push_back (this);
+};
+	
 LINK_CLASSNAME_TO_CLASS ("info_player_coop", CPlayerCoop);
 
 #if ROGUE_FEATURES
@@ -747,73 +719,47 @@ LINK_CLASSNAME_TO_CLASS ("info_player_coop", CPlayerCoop);
 potential spawning position for coop games on rmine2 where lava level
 needs to be checked
 */
-class CPlayerCoopLava : public CSpotBase, public IThinkableEntity
+CPlayerCoopLava::CPlayerCoopLava () :
+	IBaseEntity (),
+	CSpotBase ()
+	{
+	};
+
+CPlayerCoopLava::CPlayerCoopLava (sint32 Index) :
+	IBaseEntity (Index),
+	CSpotBase (Index)
+	{
+	};
+
+void CPlayerCoopLava::SaveFields (CFile &File)
 {
-public:
-	typedef std::vector<CPlayerCoopLava*> TSpawnPointsType;
-	static inline TSpawnPointsType &SpawnPoints ()
+	CSpotBase::SaveFields (File);
+};
+
+void CPlayerCoopLava::LoadFields (CFile &File)
+{
+	CSpotBase::LoadFields (File);
+	SpawnPoints().push_back (this);
+};
+
+bool CPlayerCoopLava::ParseField (const char *Key, const char *Value)
+{
+	return (CSpotBase::ParseField (Key, Value));
+};
+
+void CPlayerCoopLava::Spawn ()
+{
+	if (!(Game.GameMode & GAME_COOPERATIVE))
 	{
-		static TSpawnPointsType Points;
-		return Points;
+		Free ();
+		return;
 	}
 
-	static void ClearSpawnPoints ()
-	{
-		SpawnPoints().clear();
-	}
-
-	CPlayerCoopLava () :
-		IBaseEntity (),
-		IThinkableEntity(),
-		CSpotBase ()
-		{
-		};
-
-	CPlayerCoopLava (sint32 Index) :
-		IBaseEntity (Index),
-		IThinkableEntity(),
-		CSpotBase (Index)
-		{
-		};
-
-	IMPLEMENT_SAVE_HEADER(CPlayerCoopLava)
-
-	void SaveFields (CFile &File)
-	{
-		IThinkableEntity::SaveFields (File);
-		CSpotBase::SaveFields (File);
-	};
-
-	void LoadFields (CFile &File)
-	{
-		IThinkableEntity::LoadFields (File);
-		CSpotBase::LoadFields (File);
-		SpawnPoints().push_back (this);
-	};
-
-	bool ParseField (const char *Key, const char *Value)
-	{
-		return (CSpotBase::ParseField (Key, Value));
-	};
-
-	void Think () {};
-
-	void Spawn ()
-	{
-		if (!(Game.GameMode & GAME_COOPERATIVE))
-		{
-			Free ();
-			return;
-		}
-
-		SpawnPoints().push_back (this);
-	};
+	SpawnPoints().push_back (this);
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_coop_lava", CPlayerCoopLava);
 
-//===============
-//ROGUE
 CSpotBase *CPlayerEntity::SelectLavaCoopSpawnPoint ()
 {
 	// first, find the highest lava
@@ -880,8 +826,6 @@ CSpotBase *CPlayerEntity::SelectLavaCoopSpawnPoint ()
 
 	return NULL;
 }
-//ROGUE
-//===============
 
 #endif
 
@@ -926,26 +870,21 @@ CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 The deathmatch intermission point will be at one of these
 Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.  'pitch yaw roll'
 */
-class CPlayerIntermission : public CSpotBase
+CPlayerIntermission::CPlayerIntermission () :
+  IBaseEntity (),
+  CSpotBase ()
+  {
+  };
+
+CPlayerIntermission::CPlayerIntermission (sint32 Index) :
+  IBaseEntity (Index),
+  CSpotBase (Index)
+  {
+  };
+
+void CPlayerIntermission::Spawn ()
 {
-public:
-	CPlayerIntermission () :
-		IBaseEntity (),
-		CSpotBase ()
-		{
-		};
-
-	CPlayerIntermission (sint32 Index) :
-		IBaseEntity (Index),
-		CSpotBase (Index)
-		{
-		};
-
-	IMPLEMENT_SAVE_HEADER(CPlayerIntermission)
-
-	void Spawn ()
-	{
-	};
+	SpawnPoints().push_back (this);
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_intermission", CPlayerIntermission);
@@ -953,112 +892,74 @@ LINK_CLASSNAME_TO_CLASS ("info_player_intermission", CPlayerIntermission);
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
 The normal starting point for a Level.
 */
-class CPlayerStart : public CSpotBase, public IThinkableEntity
+CPlayerStart::CPlayerStart () :
+	IBaseEntity (),
+	IThinkableEntity(),
+	CSpotBase ()
+	{
+	};
+
+CPlayerStart::CPlayerStart (sint32 Index) :
+	IBaseEntity (Index),
+	IThinkableEntity(),
+	CSpotBase (Index)
+	{
+	};
+
+void CPlayerStart::SaveFields (CFile &File)
 {
-public:
-	typedef std::vector<CPlayerStart*> TSpawnPointsType;
-	static inline TSpawnPointsType &SpawnPoints ()
-	{
-		static TSpawnPointsType Points;
-		return Points;
-	}
+	IThinkableEntity::SaveFields (File);
+	CSpotBase::SaveFields (File);
+};
 
-	static void ClearSpawnPoints ()
-	{
-		SpawnPoints().clear();
-	}
+void CPlayerStart::LoadFields (CFile &File)
+{
+	IThinkableEntity::LoadFields (File);
+	CSpotBase::LoadFields (File);
+	SpawnPoints().push_back (this);
+};
 
-	CPlayerStart () :
-		IBaseEntity (),
-		IThinkableEntity(),
-		CSpotBase ()
+bool CPlayerStart::ParseField (const char *Key, const char *Value)
+{
+	return (CSpotBase::ParseField (Key, Value));
+};
+
+// some maps don't have any coop spots at all, so we need to create them
+// where they should have been
+void CPlayerStart::Think ()
+{
+	if (Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
+	{
+		static const float origins[] =
 		{
+			124,
+			252,
+			316
 		};
 
-	CPlayerStart (sint32 Index) :
-		IBaseEntity (Index),
-		IThinkableEntity(),
-		CSpotBase (Index)
+		for (sint32 i = 0; i < 3; i++)
 		{
-		};
+			CPlayerCoop *spot = QNewEntityOf CPlayerCoop;
+			spot->ClassName = "info_player_coop";
+			spot->State.GetOrigin().Set (origins[i], -164, 80);
+			spot->TargetName = "jail3";
+			spot->State.GetAngles().Set (0, 90, 0);
 
-	IMPLEMENT_SAVE_HEADER(CPlayerStart)
-
-	void SaveFields (CFile &File)
-	{
-		IThinkableEntity::SaveFields (File);
-		CSpotBase::SaveFields (File);
-	};
-
-	void LoadFields (CFile &File)
-	{
-		IThinkableEntity::LoadFields (File);
-		CSpotBase::LoadFields (File);
-		SpawnPoints().push_back (this);
-	};
-
-	bool ParseField (const char *Key, const char *Value)
-	{
-		return (CSpotBase::ParseField (Key, Value));
-	};
-
-	// some maps don't have any coop spots at all, so we need to create them
-	// where they should have been
-	virtual void Think ()
-	{
-		if (Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
-		{
-			static const float origins[] =
-			{
-				124,
-				252,
-				316
-			};
-
-			for (sint32 i = 0; i < 3; i++)
-			{
-				CPlayerCoop *spot = QNewEntityOf CPlayerCoop;
-				spot->ClassName = "info_player_coop";
-				spot->State.GetOrigin().Set (origins[i], -164, 80);
-				spot->TargetName = "jail3";
-				spot->State.GetAngles().Set (0, 90, 0);
-
-				CPlayerCoop::SpawnPoints().push_back (spot);
-			}
+			CPlayerCoop::SpawnPoints().push_back (spot);
 		}
-	};
+	}
+};
 
-	virtual void Spawn ()
-	{
-		if ((Game.GameMode & GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
-			// invoke one of our gross, ugly, disgusting hacks
-			NextThink = Level.Frame + FRAMETIME;
+void CPlayerStart::Spawn ()
+{
+	if ((Game.GameMode & GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
+		// invoke one of our gross, ugly, disgusting hacks
+		NextThink = Level.Frame + FRAMETIME;
 
-		SpawnPoints().push_back (this);
-	};
+	SpawnPoints().push_back (this);
 };
 
 LINK_CLASSNAME_TO_CLASS ("info_player_start", CPlayerStart);
-
-void CPlayerCoop::Think ()
-{
-	for (CPlayerStart::TSpawnPointsType::iterator it = CPlayerStart::SpawnPoints().begin(); it < CPlayerStart::SpawnPoints().end(); ++it)
-	{
-		CSpotBase *spot = (*it);
-
-		if (!spot)
-			return;
-		if (!spot->TargetName)
-			continue;
-		
-		if ((State.GetOrigin() - spot->State.GetOrigin()).Length() < 384)
-		{
-			if ((!TargetName) || Q_stricmp(TargetName, spot->TargetName) != 0)
-				TargetName = spot->TargetName;
-			return;
-		}
-	}
-};
 
 #if CLEANCTF_ENABLED
 /*QUAKED info_player_team1 (1 0 0) (-16 -16 -24) (16 16 32)
@@ -1233,6 +1134,7 @@ void ClearSpawnPoints ()
 	CPlayerDeathmatch::ClearSpawnPoints ();
 	CPlayerCoop::ClearSpawnPoints ();
 	CPlayerStart::ClearSpawnPoints ();
+	CPlayerIntermission::ClearSpawnPoints ();
 #if CLEANCTF_ENABLED
 	CPlayerTeam1::ClearSpawnPoints ();
 	CPlayerTeam2::ClearSpawnPoints ();

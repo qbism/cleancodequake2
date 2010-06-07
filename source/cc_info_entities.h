@@ -78,6 +78,153 @@ public:
 	virtual void Spawn ();
 };
 
+class CPlayerIntermission : public CSpotBase
+{
+public:
+	typedef std::vector<CPlayerIntermission*> TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
+	CPlayerIntermission ();
+	CPlayerIntermission (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CPlayerIntermission)
+
+	void Spawn ();
+};
+
+class CPlayerStart : public CSpotBase, public IThinkableEntity
+{
+public:
+	typedef std::vector<CPlayerStart*> TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
+	CPlayerStart ();
+	CPlayerStart (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CPlayerStart)
+
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+
+	bool ParseField (const char *Key, const char *Value);
+
+	// some maps don't have any coop spots at all, so we need to create them
+	// where they should have been
+	virtual void Think ();
+
+	virtual void Spawn ();
+};
+
+class CPlayerCoop : public CSpotBase, public IThinkableEntity
+{
+public:
+	typedef std::vector<CPlayerCoop*> TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
+	CPlayerCoop ();
+	CPlayerCoop (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CPlayerCoop)
+
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+
+	bool ParseField (const char *Key, const char *Value);
+
+	// this function is an ugly as hell hack to fix some map flaws
+	//
+	// the coop spawn spots on some maps are SNAFU.  There are coop spots
+	// with the wrong targetname as well as spots with no name at all
+	//
+	// we use carnal knowledge of the maps to fix the coop spot targetnames to match
+	// that of the nearest named single player spot
+	virtual void Think ();
+
+	virtual void Spawn ();
+};
+
+class CPlayerDeathmatch : public CSpotBase
+{
+public:
+	typedef std::vector<CPlayerDeathmatch*> TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
+	CPlayerDeathmatch ();
+	CPlayerDeathmatch (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CPlayerDeathmatch)
+
+	void LoadFields (CFile &File);
+
+	virtual void Spawn ();
+};
+
+#if ROGUE_FEATURES
+class CPlayerCoopLava : public CSpotBase
+{
+public:
+	typedef std::vector<CPlayerCoopLava*> TSpawnPointsType;
+	static inline TSpawnPointsType &SpawnPoints ()
+	{
+		static TSpawnPointsType Points;
+		return Points;
+	}
+
+	static void ClearSpawnPoints ()
+	{
+		SpawnPoints().clear();
+	}
+
+	CPlayerCoopLava ();
+	CPlayerCoopLava (sint32 Index);
+
+	IMPLEMENT_SAVE_HEADER(CPlayerCoopLava)
+
+	void SaveFields (CFile &File);
+	void LoadFields (CFile &File);
+
+	bool ParseField (const char *Key, const char *Value);
+
+	void Spawn ();
+};
+#endif
+
 #else
 FILE_WARNING
 #endif
