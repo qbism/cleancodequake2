@@ -45,6 +45,7 @@ struct SMemHeader
 	void				*Address;
 	sint32				TagNum;
 	size_t				Size, RealSize;
+	const char			*FileName, *Line;
 
 	bool Check ()
 	{
@@ -52,7 +53,7 @@ struct SMemHeader
 	};
 };
 
-static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
+static void *Mem_TagAlloc (size_t Size, const sint32 TagNum, const char *FileName, const char *Line)
 {
 	size_t RealSize = Size + sizeof(SMemHeader) + sizeof(SMemSentinel);
 	SMemHeader *Mem = (SMemHeader*)((TagNum == TAG_GENERIC) ? malloc(RealSize) : gi.TagMalloc(RealSize, TagNum));
@@ -61,6 +62,8 @@ static void *Mem_TagAlloc (size_t Size, const sint32 TagNum)
 	Mem->SentinelHeader.Header = Footer->Header = Mem;
 	Mem->TagNum = TagNum;
 	Mem->Size = Size;
+	Mem->FileName = FileName;
+	Mem->Line = Line;
 	Footer->Magic = Mem->SentinelHeader.Magic = HEADER_MAGIC_CONSTANT;
 	Mem->RealSize = RealSize;
 	Mem->Address = (((uint8*)Mem) + sizeof(SMemHeader));
@@ -92,14 +95,14 @@ CC_ENABLE_DEPRECATION
 #pragma warning(disable : 4290)
 #endif
 
-void *operator new(size_t Size, const sint32 TagNum)
+void *operator new(size_t Size, const sint32 TagNum, const char *FileName, const char *Line)
 {
-	return Mem_TagAlloc(Size, TagNum);
+	return Mem_TagAlloc(Size, TagNum, FileName, Line);
 }
 
-void *operator new[](size_t Size, const sint32 TagNum)
+void *operator new[](size_t Size, const sint32 TagNum, const char *FileName, const char *Line)
 {
-	return Mem_TagAlloc(Size, TagNum);
+	return Mem_TagAlloc(Size, TagNum, FileName, Line);
 }
 
 void operator delete(void *Pointer, const sint32 TagNum)
@@ -128,7 +131,7 @@ void operator delete[](void *Pointer, const sint32 TagNum)
 
 void *operator new (size_t Size) throw (std::bad_alloc)
 {
-	return Mem_TagAlloc(Size, TAG_GENERIC);
+	return Mem_TagAlloc(Size, TAG_GENERIC, "null", "null");
 }
 
 void operator delete (void *Pointer) throw ()
