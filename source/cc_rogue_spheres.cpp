@@ -195,7 +195,7 @@ void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurf
 			return;
 
 		CanTakeDamage = false;
-		SetOwner (Team.Master);
+		SetOwner(Team.Master);
 		Team.Master = NULL;
 	}
 	else

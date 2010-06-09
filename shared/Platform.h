@@ -42,6 +42,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifdef WIN32
 
+#if !defined(CC_STDC_CONFORMANCE)
+#include <WinSock2.h>
+#include <windows.h>
+#endif
+
+#include "zlib.h"
+
 #if (_MSC_VER >= 1600) // 2010
 	#define MSVS_VERSION			VS_10
 	#define MSVS_VERSION_STRING		VS_10_STR
@@ -82,7 +89,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # pragma warning(3 : 4254)	// 'operator' : conversion from 'type1' to 'type2', possible loss of data
 // Paril, for CleanCode
 # pragma warning (disable : 4100) // unreferenced formal parameter
-# pragma warning (disable : 4389) // signed/unsigned mismatch
 # pragma warning (disable : 4127) // conditional expression is constant
 
 # pragma intrinsic(memcmp)
@@ -172,6 +178,9 @@ typedef long long				int64_t;
 #  endif
 
 # endif
+
+#include <strings.h>
+#include <ctype.h>
 
 #endif	// __unix__
 

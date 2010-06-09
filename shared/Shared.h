@@ -314,7 +314,7 @@ size_t	Q_strncpyz(char *dest, const char *src, size_t size);
 
 #if defined(id386) && ((!defined(MSVS_VERSION) && defined(CC_STDC_CONFORMANCE)) || !defined(CC_STDC_CONFORMANCE))
 /**
-\fn	inline __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
+\fn	inline __declspec(naked) char __cdecl Q_tolower (char c)
 
 \brief	Faster replacement for tolower.
 
@@ -323,7 +323,7 @@ size_t	Q_strncpyz(char *dest, const char *src, size_t size);
 
 \param		The character. 
 **/
-inline __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
+inline __declspec(naked) char __cdecl Q_tolower (char c)
 {
 	__asm {
 			mov eax, [esp+4]		;get character
@@ -339,14 +339,14 @@ inline __declspec(naked) sint32 __cdecl Q_tolower (sint32 c)
 	}
 }
 #else // id386
-inline sint32 Q_tolower(sint32 chr)
+inline char Q_tolower(char chr)
 {
-	return tolower(chr);
+	return (char)tolower(chr);
 }
 #endif // id386
-inline sint32 Q_toupper(sint32 chr)
+inline char Q_toupper(char chr)
 {
-	return toupper(chr);
+	return (char)toupper(chr);
 }
 
 /**

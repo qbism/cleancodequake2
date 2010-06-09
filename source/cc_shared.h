@@ -62,7 +62,6 @@ typedef sint32	FrameNumber;
 #include "cc_print.h"
 #include "cc_file_system.h"
 #include "cc_platform.h"
-#include "cc_arg.h"
 #include "cc_commands.h"
 #include "cc_indexing.h"
 #include "cc_media.h"

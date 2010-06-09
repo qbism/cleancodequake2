@@ -95,7 +95,7 @@ void CSoldierLaser::FireGun (sint32 FlashNumber)
 				.MultiplyAngles (tempvec[1], forward);
 			
 	Laser->State.GetOrigin() = start;
-	Laser->SetOwner (Entity);
+	Laser->SetOwner(Entity);
 	
 	Laser->Damage = 1;
 

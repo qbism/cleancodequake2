@@ -39,7 +39,6 @@ extern CItemList *ItemList;
 CBaseItem::CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache) :
-Index(-1),
 Classname(Classname),
 WorldModel(WorldModel),
 EffectFlags(EffectFlags),
@@ -52,8 +51,7 @@ Precache(Precache)
 	ItemList->AddItemToList (this);
 }
 
-CBaseItem::CBaseItem () :
-Index(-1)
+CBaseItem::CBaseItem ()
 {
 	ItemList->AddItemToList (this);
 };
@@ -124,7 +122,7 @@ CItemEntity *CBaseItem::DropItem (IBaseEntity *Entity)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (Entity);
+	dropped->SetOwner(Entity);
 
 	if (Entity->EntityFlags & ENT_PLAYER)
 	{

@@ -166,7 +166,7 @@ public:
 
 \brief	Defines an alias representing entity flags.
 **/
-typedef uint32 EEdictFlags;
+typedef uint8 EEdictFlags;
 
 /**
 \enum	
@@ -177,17 +177,12 @@ typedef uint32 EEdictFlags;
 **/
 enum
 {
-	FL_IMMUNE_LASER		= BIT(0),	// FIXME: move this...
-	FL_GODMODE			= BIT(1),
-	FL_NOTARGET			= BIT(2),
-	FL_IMMUNE_SLIME		= BIT(3),	// ...this...
-	FL_IMMUNE_LAVA		= BIT(4),	// ...this...
-	FL_NO_KNOCKBACK		= BIT(5),	// ...and this into a function called "CanDamage" or something in IHurtableEntity.
-									// Rename the current "CanDamage" into something more suitable.
+	FL_GODMODE			= BIT(0),
+	FL_NOTARGET			= BIT(1),
 
 #if ROGUE_FEATURES
-	FL_SAM_RAIMI		= BIT(6),
-	FL_DISGUISED		= BIT(7),
+	FL_SAM_RAIMI		= BIT(2),
+	FL_DISGUISED		= BIT(3),
 #endif
 };
 
@@ -648,14 +643,15 @@ static bool operator!= (const IBaseEntity *Left, const entity_ptr<TType> &Right)
 class IBaseEntity
 {
 protected:
-	SEntity			*gameEntity;	// The "game entity" this is linked with.
-									// Kept private to make sure no mistakes are made.
+	SEntity						*gameEntity;		// The "game entity" this is linked with.
+													// Kept private to make sure no mistakes are made.
 public:
-	bool			Freed;			// true if freed
-	uint32			EntityFlags;	// The entity type flags
-	CEntityState	State;			// The entity state
-	EEdictFlags		Flags;			// The entity flags
-	std::string		ClassName;		// classname of this entity
+	bool						Freed;				// true if freed
+	EEdictFlags					Flags;				// The entity flags
+	uint32						EntityFlags;		// The entity type flags
+	CEntityState				State;				// The entity state
+	std::string					ClassName;			// classname of this entity
+	entity_ptr<IBaseEntity>		Owner;				// Owner
 
 	/**
 	\struct	SEntityTeam
@@ -677,10 +673,10 @@ public:
 	} Team;
 
 	entity_ptr<IBaseEntity>		GroundEntity;			// The ground entity
-	sint32			GroundEntityLinkCount;	// Number of ground entity links
-	uint32			SpawnFlags;				// Entity spawnflags
+	sint32						GroundEntityLinkCount;	// Number of ground entity links
+	uint32						SpawnFlags;				// Entity spawnflags
 	entity_ptr<IBaseEntity>		Enemy;					// Entity's enemy
-	sint32			ViewHeight;				// Entity's Viewheight
+	sint32						ViewHeight;				// Entity's Viewheight
 
 	/**
 	\fn	IBaseEntity ()

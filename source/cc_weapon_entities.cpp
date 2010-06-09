@@ -296,7 +296,7 @@ void CBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/laser/tris.md2");
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
-	Bolt->SetOwner (Spawner);
+	Bolt->SetOwner(Spawner);
 	Bolt->NextThink = Level.Frame + 20;
 	Bolt->Damage = Damage;
 	Bolt->ClassName = "bolt";
@@ -385,7 +385,7 @@ CRocket *CRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->Velocity = dir * speed;
 	Rocket->State.GetEffects() = EF_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
-	Rocket->SetOwner (Spawner);
+	Rocket->SetOwner(Spawner);
 	Rocket->NextThink = Level.Frame + 80000/speed;
 	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;
@@ -444,7 +444,7 @@ void CBFGBolt::Think ()
 					continue;
 				if (Entity == GetOwner())
 					continue;
-				if (!Entity->CanDamage (this) || !Entity->CanDamage (GetOwner()))
+				if (!Entity->DamageCanReach (this) || !Entity->DamageCanReach (GetOwner()))
 					continue;
 
 				float dist = (State.GetOrigin() - Entity->State.GetOrigin().MultiplyAngles (0.5f, (Entity->GetMins() + Entity->GetMaxs()))).Length();
@@ -514,7 +514,7 @@ void CBFGBolt::Think ()
 					break;
 
 				// hurt it if we can
-				if (((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage) && !(tr.Entity->Flags & FL_IMMUNE_LASER) && (tr.Entity != GetOwner()))
+				if ((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage && (tr.Entity != GetOwner()))
 					entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (this, GetOwner(), dir, tr.EndPosition, vec3fOrigin, dmg, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
 
 				// if we hit something that's not a monster or player we're done
@@ -584,7 +584,7 @@ void CBFGBolt::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->Velocity = (dir.GetNormalizedFast()) * speed;
 	BFG->State.GetEffects() = EF_BFG | EF_ANIM_ALLFAST;
 	BFG->State.GetModelIndex() = ModelIndex ("sprites/s_bfg1.sp2");
-	BFG->SetOwner (Spawner);
+	BFG->SetOwner(Spawner);
 	BFG->NextThink = Level.Frame + FRAMETIME;
 	BFG->Damage = Damage;
 	BFG->DamageRadius = damage_radius;
@@ -1315,7 +1315,7 @@ void CGrappleEntity::Spawn (CPlayerEntity *Spawner, vec3f start, vec3f dir, sint
 	Grapple->GetMins().Clear ();
 	Grapple->GetMaxs().Clear ();
 	Grapple->State.GetModelIndex() = ModelIndex ("models/weapons/grapple/hook/tris.md2");
-	Grapple->SetOwner (Spawner);
+	Grapple->SetOwner(Spawner);
 	Spawner->Client.Grapple.Entity = Grapple;
 	Spawner->Client.Grapple.State = CTF_GRAPPLE_STATE_FLY; // we're firing, not on hook
 	Grapple->Touchable = true;

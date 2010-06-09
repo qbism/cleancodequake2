@@ -303,7 +303,7 @@ public:
 			ThinkType = NUKETHINK_SPIN;
 			NextThink = Level.Frame + FRAMETIME;
 			Health = 1;
-			SetOwner (NULL);
+			SetOwner(NULL);
 
 			CMuzzleFlash (State.GetOrigin(), State.GetNumber(), MZ_NUKE4);
 
@@ -376,7 +376,7 @@ public:
 		Nuke->GetMins().Set (-8, -8, 0);
 		Nuke->GetMaxs().Set (8, 8, 16);
 		Nuke->State.GetModelIndex() = ModelIndex ("models/weapons/g_nuke/tris.md2");
-		Nuke->SetOwner (Entity);
+		Nuke->SetOwner(Entity);
 		Nuke->Thrower = Entity;
 		Nuke->NextThink = Level.Frame + FRAMETIME;
 		Nuke->Wait = Level.Frame + NUKE_DELAY + NUKE_TIME_TO_LIVE;

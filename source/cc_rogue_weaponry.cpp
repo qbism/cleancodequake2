@@ -484,7 +484,7 @@ void CFlechette::Spawn	(IBaseEntity *Spawner, vec3f Start, vec3f Dir,
 
 	Bolt->State.GetModelIndex() = ModelIndex ("models/proj/flechette/tris.md2");
 
-	Bolt->SetOwner (Spawner);
+	Bolt->SetOwner(Spawner);
 	Bolt->NextThink = Level.Frame + 20;
 	Bolt->Damage = Damage;
 	Bolt->Kick = Kick;
@@ -623,7 +623,7 @@ public:
 		daemon->ClassName = "pain daemon";
 		daemon->NextThink = Level.Frame + FRAMETIME;
 		daemon->LifeTime = Level.Frame;
-		daemon->SetOwner (Owner);
+		daemon->SetOwner(Owner);
 		daemon->Enemy = Enemy;
 		daemon->Damage = Damage;
 
@@ -748,7 +748,7 @@ void CDisruptorTracker::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->State.GetModelIndex() = ModelIndex ("models/proj/disintegrator/tris.md2");
 	Bolt->Touchable = true;
 	Bolt->Enemy = enemy;
-	Bolt->SetOwner (Spawner);
+	Bolt->SetOwner(Spawner);
 	Bolt->Damage = Damage;
 	Bolt->ClassName = "tracker";
 	Bolt->Link();
@@ -872,7 +872,7 @@ void CGreenBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f di
 	Bolt->State.GetModelIndex() = ModelIndex ("models/proj/laser2/tris.md2");
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
-	Bolt->SetOwner (Spawner);
+	Bolt->SetOwner(Spawner);
 	Bolt->NextThink = Level.Frame + 20;
 	Bolt->Damage = Damage;
 	Bolt->ClassName = "bolt";

@@ -109,7 +109,7 @@ inline bool PS_VerifyVecI (const char *token, void *target, const TType MinValue
 	if (i != len)
 		return false;
 
-	TType temp = atol (token);
+	TType temp = (TType)atol (token);
 	if ((MinValue && (temp < MinValue)) || temp > MaxValue)
 		return false;
 
@@ -322,7 +322,7 @@ public:
 	// ParseToken will give you a pointer to a CONST char.
 	// DON'T CHANGE RETURNED TOKENS!
 	// To get a copy, use GetCurrentToken ()
-	bool ParseToken (uint32 flags, const char **target)
+	bool ParseToken (EParseFlags flags, const char **target)
 	{
 		// Check if the incoming data offset is valid (see if we hit EOF last the last run)
 		const char *data = DataPointer;
@@ -335,7 +335,7 @@ public:
 
 		// Clear the current token
 		CurrentToken.clear ();
-		sint32 c = 0;
+		char c = 0;
 
 		while (true)
 		{

@@ -43,36 +43,36 @@ health (80), and dmg (150).
 const int BARREL_STEPSIZE = 8;
 class CMiscExploBox : public IMapEntity, public IStepPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity
 {
-	bool					Dropped;
-	entity_ptr<IBaseEntity>	Shooter;
+	bool						Dropped;
+	entity_ptr<IBaseEntity>		Shooter;
 
 public:
 	sint32			Explosivity;
 	sint32			Damage;
 
 	CMiscExploBox () :
-	Dropped(false),
-	IBaseEntity(),
-	IMapEntity(),
-	IThinkableEntity(),
-	IHurtableEntity (),
-	ITouchableEntity (),
-	IStepPhysics(),
-	Explosivity(0),
-	Damage(0)
+	  Dropped(false),
+	  IBaseEntity(),
+	  IMapEntity(),
+	  IThinkableEntity(),
+	  IHurtableEntity (),
+	  ITouchableEntity (),
+	  IStepPhysics(),
+	  Explosivity(0),
+	  Damage(0)
 	{
 	};
 
 	CMiscExploBox (sint32 Index) : 
-	Dropped(false),
-	IBaseEntity(Index),
-	IMapEntity(Index),
-	IThinkableEntity(),
-	IHurtableEntity(Index),
-	ITouchableEntity (Index),
-	IStepPhysics(Index),
-	Explosivity(0),
-	Damage(0)
+	  Dropped(false),
+	  IBaseEntity(Index),
+	  IMapEntity(Index),
+	  IThinkableEntity(),
+	  IHurtableEntity(Index),
+	  ITouchableEntity (Index),
+	  IStepPhysics(Index),
+	  Explosivity(0),
+	  Damage(0)
 	{
 	};
 
@@ -155,14 +155,23 @@ public:
 		Free ();
 	};
 
+	// immune to slime damage
+	void TakeDamage (	IBaseEntity *Inflictor, IBaseEntity *Attacker,
+							vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+							sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+	{
+		if (MeansOfDeath == MOD_SLIME)
+			return;
+
+		IHurtableEntity::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+	}
+
 	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
 		CanTakeDamage = false;
 		NextThink = Level.Frame + 2;
 		Shooter = Attacker;
 	};
-
-	void Pain (IBaseEntity *Other, sint32 Damage) {};
 
 	bool Run ()
 	{
@@ -197,7 +206,6 @@ public:
 		CanTakeDamage = true;
 		Touchable = true;
 		NextThink = Level.Frame + FRAMETIME;
-		Flags |= FL_IMMUNE_SLIME;
 
 		Link ();
 	};
@@ -876,7 +884,7 @@ public:
 		State.GetEffects() |= EF_GIB;
 		State.GetEffects() &= ~EF_FLIES;
 		State.GetSound() = 0;
-		Flags |= FL_NO_KNOCKBACK;
+		AffectedByKnockback = false;
 		GetSvFlags() &= ~SVF_MONSTER;
 		CanTakeDamage = true;
 

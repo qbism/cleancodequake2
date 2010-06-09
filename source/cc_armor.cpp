@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CArmor::CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
-			   float energyProtection) :
+			   const char *Precache, sint16 baseCount, sint16 maxCount, sint16 normalProtection,
+			   sint16 energyProtection) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		Precache),
 baseCount(baseCount),

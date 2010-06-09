@@ -62,7 +62,7 @@ CC_DISABLE_DEPRECATION
 		EndArg ();
 	}
 
-	numArgv = gi.argc();
+	numArgv = (uint8)gi.argc();
 
 	if (numArgv == 0)
 		return;
@@ -72,7 +72,7 @@ CC_DISABLE_DEPRECATION
 	for (uint8 i = 0; i < numArgv; i++)
 	{
 		argvStringArray.push_back (gi.argv(i));
-		argvFloatArray.push_back (atof (argvStringArray[i].c_str()));
+		argvFloatArray.push_back ((float)atof (argvStringArray[i].c_str()));
 		argvIntegerArray.push_back ((sint32)argvFloatArray[i]);
 	}
 CC_ENABLE_DEPRECATION

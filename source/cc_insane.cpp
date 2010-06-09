@@ -626,7 +626,7 @@ void CInsane::Spawn ()
 	{
 		Entity->GetMins().Set (-16, 0, 0);
 		Entity->GetMaxs().Set (16, 8, 32);
-		Entity->Flags |= FL_NO_KNOCKBACK;
+		Entity->AffectedByKnockback = false;
 		FlyMonsterStart ();
 	}
 	else

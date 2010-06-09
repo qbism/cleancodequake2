@@ -711,7 +711,7 @@ void CMedic::CableAttack ()
 		if (Monster->State.GetSkinNum() & 1)
 			Monster->State.GetSkinNum() -= 1;
 		Monster->PhysicsType = PHYSICS_STEP;
-		Monster->Flags &= ~FL_NO_KNOCKBACK;
+		Monster->AffectedByKnockback = true;
 		Monster->GetSvFlags() |= SVF_MONSTER;
 		Monster->GetSolid() = SOLID_BBOX;
 		Monster->Link ();
@@ -749,7 +749,7 @@ void CMedic::CableAttack ()
 			// Paril, fix skinnum
 			Monster->State.GetSkinNum() &= ~1;
 			Monster->PhysicsType = PHYSICS_STEP;
-			Monster->Flags &= ~FL_NO_KNOCKBACK;
+			Monster->AffectedByKnockback = true;
 			Monster->GetSvFlags() |= SVF_MONSTER;
 			Monster->GetSolid() = SOLID_BBOX;
 			Monster->Link ();

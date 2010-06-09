@@ -287,7 +287,7 @@ CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (Entity);
+	dropped->SetOwner(Entity);
 
 	if (Entity->EntityFlags & ENT_PLAYER)
 	{
@@ -328,32 +328,32 @@ void CTech::Drop (CPlayerEntity *Player)
 	Player->Client.Persistent.Tech = NULL;
 }
 
-void SpawnTech(CBaseItem *item, CSpotBase *spot)
+void SpawnTech(CBaseItem *Item, CSpotBase *Spot)
 {
-	CTechEntity *Player = QNewEntityOf CTechEntity ();
+	CTechEntity *Tech = QNewEntityOf CTechEntity ();
 
-	Player->ClassName = item->Classname;
-	Player->LinkedItem = item;
-	Player->SpawnFlags = DROPPED_ITEM;
-	Player->State.GetEffects() = item->EffectFlags;
-	Player->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
-	Player->GetMins().Set (-15);
-	Player->GetMaxs().Set (15);
-	Player->State.GetModelIndex() = ModelIndex(item->WorldModel);
-	Player->GetSolid() = SOLID_TRIGGER;
-	Player->SetOwner (Player);
+	Tech->ClassName = Item->Classname;
+	Tech->LinkedItem = Item;
+	Tech->SpawnFlags = DROPPED_ITEM;
+	Tech->State.GetEffects() = Item->EffectFlags;
+	Tech->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
+	Tech->GetMins().Set (-15);
+	Tech->GetMaxs().Set (15);
+	Tech->State.GetModelIndex() = ModelIndex(Item->WorldModel);
+	Tech->GetSolid() = SOLID_TRIGGER;
+	Tech->SetOwner(Tech); // FIXME: legal??
 
 	vec3f forward;
 	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);
 
-	Player->State.GetOrigin() = spot->State.GetOrigin() + vec3f(0,0,16);
+	Tech->State.GetOrigin() = Spot->State.GetOrigin() + vec3f(0,0,16);
 	forward *= 100;
-	Player->Velocity = forward;
-	Player->Velocity.Z = 300;
+	Tech->Velocity = forward;
+	Tech->Velocity.Z = 300;
 
-	Player->NextThink = Level.Frame + CTF_TECH_TIMEOUT;
+	Tech->NextThink = Level.Frame + CTF_TECH_TIMEOUT;
 
-	Player->Link ();
+	Tech->Link ();
 }
 
 static void SpawnTechs()

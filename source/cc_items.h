@@ -71,7 +71,7 @@ class CBaseItem
 	friend void InvalidateItemMedia ();
 private:
 	// The index of this item in the item list
-	sint32			Index;
+	uint8			Index;
 
 	// Must be friends with itemlist so it can set the item.
 	friend class CItemList;
@@ -134,7 +134,7 @@ public:
 
 	virtual void	SetRespawn (class CItemEntity *Item, FrameNumber delay);
 
-	inline sint32		GetIndex ()
+	inline uint8		GetIndex ()
 	{
 		return Index;
 	};

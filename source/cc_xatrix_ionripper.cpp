@@ -100,7 +100,7 @@ void CIonRipperBoomerang::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/boomrang/tris.md2");
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
-	Bolt->SetOwner (Spawner);
+	Bolt->SetOwner(Spawner);
 	Bolt->NextThink = Level.Frame + 30;
 	Bolt->Damage = Damage;
 	Bolt->ClassName = "boomrang";

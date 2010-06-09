@@ -1037,7 +1037,7 @@ void IBaseEntity::SplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity
 
 		if (Entity == Attacker)
 			points *= 0.5;
-		if ((points > 0) && Entity->CanDamage (this))
+		if ((points > 0) && Entity->DamageCanReach (this))
 			Entity->TakeDamage (this, Attacker, Entity->State.GetOrigin() - State.GetOrigin(), State.GetOrigin(), vec3fOrigin, (sint32)points, (sint32)points, DAMAGE_RADIUS, MeansOfDeath);
 	}
 }

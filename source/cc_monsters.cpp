@@ -422,6 +422,105 @@ void CMonsterEntity::Pain (IBaseEntity *Other, sint32 Damage)
 	Monster->Pain (Other, Damage);
 }
 
+void CMonsterEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+{
+	Monster->TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+}
+
+#include "cc_medic.h"
+#if ROGUE_FEATURES
+#include "cc_rogue_carrier.h"
+#include "cc_rogue_medic_commander.h"
+#include "cc_rogue_widow_stand.h"
+#include "cc_rogue_black_widow.h"
+#endif
+
+void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
+{
+	if (Health < -999)
+		Health = -999;
+
+	Enemy = Attacker;
+
+#if ROGUE_FEATURES
+	if (Monster->AIFlags & AI_MEDIC)
+	{
+		if (Enemy && (Enemy->EntityFlags & ENT_MONSTER))  // god, I hope so
+			entity_cast<CMonsterEntity>(*Enemy)->Monster->CleanupHealTarget ();
+
+		// clean up self
+		Monster->AIFlags &= ~AI_MEDIC;
+		Enemy = Attacker;
+	}
+#endif
+
+#if ROGUE_FEATURES
+	if (!DeadFlag)
+	{
+		if (Monster->AIFlags & AI_SPAWNED_CARRIER)
+		{
+			if (Monster->Commander && Monster->Commander->GetInUse() && 
+				Monster->MonsterID == CCarrier::ID)
+				Monster->Commander->Monster->MonsterSlots++;
+		}
+
+		if (Monster->AIFlags & AI_SPAWNED_MEDIC_C)
+		{
+			if (Monster->Commander)
+			{
+				if (Monster->Commander->GetInUse() && Monster->MonsterID == CMedicCommander::ID)
+					Monster->Commander->Monster->MonsterSlots++;
+			}
+		}
+
+		if (Monster->AIFlags & AI_SPAWNED_WIDOW)
+		{
+			// need to check this because we can have variable numbers of coop players
+			if (Monster->Commander && Monster->Commander->GetInUse() && 
+				(Monster->MonsterID == CWidowStand::ID || Monster->MonsterID == CBlackWidow::ID))
+			{
+				if (Monster->Commander->Monster->MonsterUsed > 0)
+					Monster->Commander->Monster->MonsterUsed--;
+			}
+		}
+
+		if (!(Monster->AIFlags & AI_GOOD_GUY) && !(Monster->AIFlags & AI_DO_NOT_COUNT))
+		{
+			Level.Monsters.Killed++;
+			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
+		}
+	}
+#else
+	if (!DeadFlag)
+	{
+		if (!(Monster->AIFlags & AI_GOOD_GUY))
+		{
+			Level.Monsters.Killed++;
+			if ((Game.GameMode & GAME_COOPERATIVE) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
+			// medics won't heal monsters that they kill themselves
+
+#if !ROGUE_FEATURES
+			if (Attacker && (Attacker->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
+				SetOwner(Attacker);
+#endif
+		}
+	}
+#endif
+
+	if (!DeadFlag)
+	{
+		Touchable = false;
+		Monster->MonsterDeathUse();
+	}
+
+	if (CanTakeDamage)
+		Die (Inflictor, Attacker, Damage, Point);
+}
+
 void CMonsterEntity::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	Monster->Touch (Other, plane, surf);
@@ -444,7 +543,7 @@ void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type,
 	State.GetEffects() |= effects;
 	State.GetEffects() &= ~EF_FLIES;
 	State.GetSound() = 0;
-	Flags |= FL_NO_KNOCKBACK;
+	AffectedByKnockback = false;
 	GetSvFlags() &= ~SVF_MONSTER;
 	CanTakeDamage = true;
 
@@ -957,6 +1056,13 @@ void CMonster::MonsterTriggeredSpawn ()
 		Entity->Enemy = nullentity;
 }
 
+void CMonster::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+{
+	Entity->IHurtableEntity::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+}
+
 void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
 {
 	CBullet::Fire (Entity, start, dir, Damage, kick, hspread, vspread, MOD_MACHINEGUN);
@@ -1107,8 +1213,9 @@ void CMonsterBeamLaser::Think ()
 			break;
 
 		IBaseEntity *Entity = tr.Entity;
+
 		// hurt it if we can
-		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER) && (Entity != GetOwner()))
+		if ((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage && (Entity != GetOwner()))
 			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPosition, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		if (Damage < 0) // healer ray
@@ -1504,7 +1611,7 @@ void CMonster::WorldEffects()
 		return;
 	}
 
-	if ((Entity->WaterInfo.Type & CONTENTS_LAVA) && !(Entity->Flags & FL_IMMUNE_LAVA))
+	if (Entity->WaterInfo.Type & CONTENTS_LAVA)
 	{
 		if (Entity->DamageDebounceTime < Level.Frame)
 		{
@@ -1513,7 +1620,7 @@ void CMonster::WorldEffects()
 		}
 	}
 
-	if ((Entity->WaterInfo.Type & CONTENTS_SLIME) && !(Entity->Flags & FL_IMMUNE_SLIME))
+	if (Entity->WaterInfo.Type & CONTENTS_SLIME)
 	{
 		if (Entity->DamageDebounceTime < Level.Frame)
 		{

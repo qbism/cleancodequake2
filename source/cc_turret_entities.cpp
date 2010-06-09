@@ -414,8 +414,8 @@ void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	Entity->Team.IsSlave = false;
 	Entity->Velocity.Clear ();
 
-	TargetedBreach->SetOwner (NULL);
-	TargetedBreach->Team.Master->SetOwner (NULL);
+	TargetedBreach->SetOwner(NULL);
+	TargetedBreach->Team.Master->SetOwner(NULL);
 
 	CInfantry::Die (Inflictor, Attacker, Damage, Point);
 	Think = &CMonster::MonsterThink;
@@ -496,8 +496,8 @@ void CTurretDriver::TurretLink ()
 	Entity->NextThink = Level.Frame + FRAMETIME;
 
 	TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Entity->Target));
-	TargetedBreach->SetOwner (Entity);
-	TargetedBreach->Team.Master->SetOwner (Entity);
+	TargetedBreach->SetOwner(Entity);
+	TargetedBreach->Team.Master->SetOwner(Entity);
 	Entity->State.GetAngles() = TargetedBreach->State.GetAngles();
 
 	vec3f vec = (TargetedBreach->State.GetOrigin() - Entity->State.GetOrigin());
@@ -544,7 +544,7 @@ void CTurretDriver::Spawn ()
 	Sounds[SOUND_DIE1] = SoundIndex ("infantry/infdeth1.wav");
 	Sounds[SOUND_DIE2] = SoundIndex ("infantry/infdeth2.wav");
 
-	Entity->Flags |= FL_NO_KNOCKBACK;
+	Entity->AffectedByKnockback = false;
 
 	Level.Monsters.Total++;
 

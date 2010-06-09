@@ -100,7 +100,7 @@ public:
 		Owner->Entity->Team.Chain = Base;
 		Base->Team.Chain = NULL;
 		Base->Team.IsSlave = true;
-		Base->SetOwner (Owner->Entity);
+		Base->SetOwner(Owner->Entity);
 
 		Base->State.GetModelIndex() = ModelIndex("models/monsters/turretbase/tris.md2");
 		Base->Link ();

@@ -901,6 +901,17 @@ void CCarrier::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage
 	CurrentMove = &CarrierMoveDeath;
 }
 
+// Immune to lasers
+void CCarrier::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+						vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+						sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+{
+	if (MeansOfDeath == MOD_TARGET_LASER)
+		return;
+
+	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+}
+
 bool CCarrier::CheckAttack ()
 {
 	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
@@ -1025,9 +1036,7 @@ void CCarrier::Spawn ()
 
 	OriginalYawSpeed = YawSpeed = 15;
 	
-	Entity->Flags |= FL_IMMUNE_LASER;
 	AIFlags |= AI_IGNORE_SHOTS;
-
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT);
 	Entity->Link ();
 

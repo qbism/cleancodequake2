@@ -222,11 +222,11 @@ public:
 		if (Flags & SPHERE_DOPPLEGANGER)
 		{
 			Sphere->Team.Master = entity_cast<CDoppleGanger>(Owner)->PlayerOwner;
-			Sphere->SetOwner (Sphere->Team.Master);
+			Sphere->SetOwner(Sphere->Team.Master);
 		}
 		else
 		{
-			Sphere->SetOwner (Owner);
+			Sphere->SetOwner(Owner);
 			Sphere->OwnedPlayer = entity_cast<CPlayerEntity>(Owner);
 			Sphere->OwnSphere (Sphere->OwnedPlayer);
 		}

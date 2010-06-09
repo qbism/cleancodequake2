@@ -196,7 +196,7 @@ void CBody::TossHead (sint32 Damage)
 	GetSolid() = SOLID_NOT;
 	State.GetEffects() = EF_GIB;
 	State.GetSound() = 0;
-	Flags |= FL_NO_KNOCKBACK;
+	AffectedByKnockback = false;
 
 	backOff = 1.5f;	
 	Velocity += VelocityForDamage (Damage);
@@ -495,9 +495,7 @@ void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
 	Body->GetSolid() = Player->GetSolid();
 	Body->GetClipmask() = Player->GetClipmask();
 	Body->Velocity.Clear ();
-	IBaseEntity *owner;
-	if ((owner = Player->GetOwner()) != 0)
-		Body->SetOwner (owner);
+	Body->SetOwner (Player->GetOwner());
 
 	Body->backOff = 1.0f;
 	Body->CanTakeDamage = true;

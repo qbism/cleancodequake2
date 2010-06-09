@@ -35,14 +35,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 IHurtableEntity::IHurtableEntity () :
 IBaseEntity(),
-CanTakeDamage (false)
+CanTakeDamage (false),
+AffectedByKnockback (true)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
 
 IHurtableEntity::IHurtableEntity (sint32 Index) :
 IBaseEntity(Index),
-CanTakeDamage (false)
+CanTakeDamage (false),
+AffectedByKnockback (true)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
@@ -53,6 +55,7 @@ ENTITYFIELDS_BEGIN(IHurtableEntity)
 
 	CEntityField ("CanTakeDamage", EntityMemberOffset(IHurtableEntity,CanTakeDamage), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("DeadFlag", EntityMemberOffset(IHurtableEntity,DeadFlag), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("AffectedByKnockback", EntityMemberOffset(IHurtableEntity,AffectedByKnockback), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("MaxHealth", EntityMemberOffset(IHurtableEntity,MaxHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("GibHealth", EntityMemberOffset(IHurtableEntity,GibHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 };
@@ -105,7 +108,7 @@ bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 	return ClientTeam (Player1) == ClientTeam (Player2);
 }
 
-bool IHurtableEntity::CanDamage (IBaseEntity *Inflictor)
+bool IHurtableEntity::DamageCanReach (IBaseEntity *Inflictor)
 {
 // bmodels need special checking because their origin is 0,0,0
 	if ((EntityFlags & ENT_PHYSICS) && ((entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
@@ -246,99 +249,12 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Dam
 	return Saved;
 }
 
-#include "cc_medic.h"
-#if ROGUE_FEATURES
-#include "cc_rogue_carrier.h"
-#include "cc_rogue_medic_commander.h"
-#include "cc_rogue_widow_stand.h"
-#include "cc_rogue_black_widow.h"
-#endif
-
 void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Health < -999)
 		Health = -999;
 
 	Enemy = Attacker;
-	CMonsterEntity *Monster = (EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(this) : NULL;
-
-#if ROGUE_FEATURES
-	if (EntityFlags & ENT_MONSTER)
-	{
-		if (Monster->Monster->AIFlags & AI_MEDIC)
-		{
-			if (Monster->Enemy && (Monster->Enemy->EntityFlags & ENT_MONSTER))  // god, I hope so
-				entity_cast<CMonsterEntity>(*Monster->Enemy)->Monster->CleanupHealTarget ();
-
-			// clean up self
-			Monster->Monster->AIFlags &= ~AI_MEDIC;
-			Monster->Enemy = Attacker;
-		}
-	}
-#endif
-
-#if ROGUE_FEATURES
-	if ((!DeadFlag) && (EntityFlags & ENT_MONSTER))
-	{
-		if (Monster->Monster->AIFlags & AI_SPAWNED_CARRIER)
-		{
-			if (Monster->Monster->Commander && Monster->Monster->Commander->GetInUse() && 
-				Monster->Monster->MonsterID == CCarrier::ID)
-				Monster->Monster->Commander->Monster->MonsterSlots++;
-		}
-
-		if (Monster->Monster->AIFlags & AI_SPAWNED_MEDIC_C)
-		{
-			if (Monster->Monster->Commander)
-			{
-				if (Monster->Monster->Commander->GetInUse() && Monster->Monster->MonsterID == CMedicCommander::ID)
-					Monster->Monster->Commander->Monster->MonsterSlots++;
-			}
-		}
-
-		if (Monster->Monster->AIFlags & AI_SPAWNED_WIDOW)
-		{
-			// need to check this because we can have variable numbers of coop players
-			if (Monster->Monster->Commander && Monster->Monster->Commander->GetInUse() && 
-				(Monster->Monster->MonsterID == CWidowStand::ID || Monster->Monster->MonsterID == CBlackWidow::ID))
-			{
-				if (Monster->Monster->Commander->Monster->MonsterUsed > 0)
-					Monster->Monster->Commander->Monster->MonsterUsed--;
-			}
-		}
-
-		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY) && !(Monster->Monster->AIFlags & AI_DO_NOT_COUNT))
-		{
-			Level.Monsters.Killed++;
-			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
-				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
-		}
-	}
-#else
-	if ((!DeadFlag) && (EntityFlags & ENT_MONSTER))
-	{
-		if (!(Monster->Monster->AIFlags & AI_GOOD_GUY))
-		{
-			Level.Monsters.Killed++;
-			if ((Game.GameMode & GAME_COOPERATIVE) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
-				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
-			// medics won't heal monsters that they kill themselves
-
-#if !ROGUE_FEATURES
-			if (Attacker && (Attacker->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
-				SetOwner (Attacker);
-#endif
-		}
-	}
-#endif
-
-	if ((EntityFlags & ENT_MONSTER) && (!DeadFlag))
-	{
-		if (EntityFlags & ENT_TOUCHABLE)
-			(entity_cast<ITouchableEntity>(this))->Touchable = false;
-		if (EntityFlags & ENT_MONSTER)
-			(entity_cast<CMonsterEntity>(this))->Monster->MonsterDeathUse();
-	}
 
 	if (((EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(this)->CanTakeDamage))
 		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, Point);
@@ -453,7 +369,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		}
 	}
 
-	if (Flags & FL_NO_KNOCKBACK)
+	if (!AffectedByKnockback)
 		knockback = 0;
 
 // figure momentum add
@@ -589,7 +505,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (Health <= 0)
 	{
 		if ((EntityFlags & ENT_MONSTER) || (isClient))
-			Flags |= FL_NO_KNOCKBACK;
+			AffectedByKnockback = false;
 		Killed (Inflictor, Attacker, take, point);
 		return;
 	}

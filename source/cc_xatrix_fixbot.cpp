@@ -84,7 +84,7 @@ bool CFixbot::SearchForMonsters ()
 		{
 			Entity->OldEnemy = Entity->Enemy;
 			Entity->Enemy = Ent;
-			Entity->Enemy->SetOwner (Entity);
+			Entity->Enemy->SetOwner(Entity);
 			AIFlags |= AI_MEDIC;
 			FoundTarget ();
 			return true;
@@ -456,7 +456,7 @@ void CFixbot::FireLaser ()
 	Laser->State.GetOrigin() = Laser->State.GetOrigin().MultiplyAngles (16, forward);
 
 	Laser->Enemy = Entity->Enemy;
-	Laser->SetOwner (Entity);
+	Laser->SetOwner(Entity);
 	Laser->Damage = -1;
 	MonsterFireBeam (Laser);
 
@@ -473,12 +473,12 @@ void CFixbot::FireLaser ()
 			Enemy->TargetName = NULL;
 			Enemy->CombatTarget = NULL;
 			Enemy->DeathTarget = NULL;
-			Enemy->SetOwner (Entity);
+			Enemy->SetOwner(Entity);
 			Enemy->Monster->Spawn ();
-			Enemy->SetOwner (NULL);
+			Enemy->SetOwner(NULL);
 			Entity->State.GetOrigin().Z += 1;
 			Enemy->PhysicsType = PHYSICS_STEP;
-			Enemy->Flags &= ~FL_NO_KNOCKBACK;
+			Enemy->AffectedByKnockback = true;
 			Enemy->GetSvFlags() |= SVF_MONSTER;
 			Enemy->GetSolid() = SOLID_BBOX;
 			Enemy->Link ();
@@ -607,7 +607,7 @@ void CFixbot::WeldState ()
 	case FRAME_weldmiddle_07:
 		if (entity_cast<IHurtableEntity>(*Entity->GoalEntity)->Health < 0) 
 		{
-			Entity->Enemy->SetOwner (NULL);
+			Entity->Enemy->SetOwner(NULL);
 			CurrentMove = &FixbotMoveWeldEnd;
 		}
 		else
@@ -665,7 +665,7 @@ void CFixbot::LandingGoal ()
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
 	Goal->ClassName = "bot_goal";
 	Goal->GetSolid() = SOLID_BBOX;
-	Goal->SetOwner (Entity);
+	Goal->SetOwner(Entity);
 	Goal->Link ();
 	
 	Goal->GetMins().Set (-32, -32, -24);
@@ -689,7 +689,7 @@ void CFixbot::TakeOffGoal ()
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
 	Goal->ClassName = "bot_goal";
 	Goal->GetSolid() = SOLID_BBOX;
-	Goal->SetOwner (Entity);
+	Goal->SetOwner(Entity);
 	Goal->Link ();
 	
 	Goal->GetMins().Set (-32, -32, -24);
@@ -746,7 +746,7 @@ void CFixbot::RoamGoal ()
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
 	Goal->ClassName = "bot_goal";
 	Goal->GetSolid() = SOLID_BBOX;
-	Goal->SetOwner (Entity);
+	Goal->SetOwner(Entity);
 	Goal->Link ();
 
 	int oldlen = 0;

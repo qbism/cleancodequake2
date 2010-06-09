@@ -62,16 +62,16 @@ enum
 class CArmor : public CBaseItem
 {
 public:
-	sint32		baseCount;			// (on normalProtection == -1) Amount to add
-	sint32		maxCount;			// (on normalProtection == -1) Amount to stop at (-1 = none)
+	sint16		baseCount;			// (on normalProtection == -1) Amount to add
+	sint16		maxCount;			// (on normalProtection == -1) Amount to stop at (-1 = none)
 
-	signed char	normalProtection;	// -1 = Always add to current armor
-	signed char	energyProtection;	// -1 = Nothing
+	sint16	normalProtection;		// -1 = Always add to current armor
+	sint16	energyProtection;		// -1 = Nothing
 
 	CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
-			   float energyProtection);
+			   const char *Precache, sint16 baseCount, sint16 maxCount, sint16 normalProtection,
+			   sint16 energyProtection);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);

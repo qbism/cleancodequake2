@@ -125,6 +125,7 @@ public:
 	sint32			GibHealth;
 	bool			DeadFlag;
 	bool			CanTakeDamage;
+	bool			AffectedByKnockback;
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(IHurtableEntity)
@@ -135,9 +136,10 @@ public:
 	virtual void Pain (IBaseEntity *Other, sint32 Damage) {};
 	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point) {};
 
-	virtual bool CanDamage (IBaseEntity *Inflictor);
-	virtual bool CheckTeamDamage (IBaseEntity *Attacker);
-	virtual sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags);
+	bool DamageCanReach (IBaseEntity *Inflictor);
+	bool CheckTeamDamage (IBaseEntity *Attacker);
+	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags);
+
 	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
 	// An "extension" of sorts to TakeDamage
@@ -146,7 +148,7 @@ public:
 
 	// Takes damage.
 	// For this, "this" is target. Use this if the
-	// entity can be casted to IHurtableEntity or is IHurtableEntity
+	// entity can be casted to IHurtableEntity
 	// without question.
 	virtual void TakeDamage (	IBaseEntity *Inflictor, IBaseEntity *Attacker,
 							vec3f dir, vec3f point, vec3f normal, sint32 Damage,

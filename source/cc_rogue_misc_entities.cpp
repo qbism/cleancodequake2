@@ -1075,8 +1075,8 @@ public:
 		NextThink = Level.Frame + FRAMETIME;
 
 		TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Target));
-		TargetedBreach->SetOwner (this);
-		TargetedBreach->Team.Master->SetOwner (this);
+		TargetedBreach->SetOwner(this);
+		TargetedBreach->Team.Master->SetOwner(this);
 		State.GetAngles() = TargetedBreach->State.GetAngles();
 
 		vec3f vec = (TargetedBreach->State.GetOrigin() - State.GetOrigin());
@@ -1152,7 +1152,7 @@ public:
 		// let the turret know where we want it to aim
 		vec3f dir = (endpos - TargetedBreach->State.GetOrigin()).ToAngles();
 		TargetedBreach->MoveAngles = dir;
-		TargetedBreach->SetOwner (this);
+		TargetedBreach->SetOwner(this);
 
 		// decide if we should shoot
 		if (Level.Frame < AttackFinished)

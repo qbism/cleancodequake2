@@ -150,7 +150,7 @@ CHeatRocket *CHeatRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->Velocity = dir * speed;
 	Rocket->State.GetEffects() = EF_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
-	Rocket->SetOwner (Spawner);
+	Rocket->SetOwner(Spawner);
 	Rocket->NextThink = Level.Frame + FRAMETIME;
 	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;

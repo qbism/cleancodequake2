@@ -451,6 +451,17 @@ void CBoss2::Pain (IBaseEntity *Other, sint32 Damage)
 	CurrentMove = (Damage < 30) ? &Boss2MovePainLight : &Boss2MovePainHeavy;
 }
 
+// Immune to lasers
+void CBoss2::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+						vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+						sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+{
+	if (MeansOfDeath == MOD_TARGET_LASER)
+		return;
+
+	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+}
+
 void CBoss2::Dead ()
 {
 	Entity->GetMins().Set (-56, -56, 0);
@@ -556,8 +567,6 @@ void CBoss2::Spawn ()
 	Entity->Health = 2000;
 	Entity->GibHealth = -200;
 	Entity->Mass = 1000;
-
-	Entity->Flags |= FL_IMMUNE_LASER;
 	
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SEARCH);
 	Entity->Link ();

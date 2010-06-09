@@ -136,7 +136,7 @@ void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 void CTesla::Remove ()
 {
 	CanTakeDamage = false;
-	SetOwner (Firer);	// Going away, set the owner correctly.
+	SetOwner(Firer);	// Going away, set the owner correctly.
 	Enemy = nullentity;
 
 	// play quad sound if quadded and an underwater explosion
@@ -148,8 +148,8 @@ void CTesla::Remove ()
 
 void CTesla::Explode ()
 {
-	//if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
-	//	entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
+	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	SplashDamage(GetOwner(), Damage, *Enemy, (DoExplosion) ? TESLA_DAMAGE_RADIUS : 0, MOD_G_SPLASH);
 
@@ -268,7 +268,7 @@ void CTesla::DoneActivate ()
 	State.GetAngles().Clear();
 	// clear the owner if in deathmatch
 	if (Game.GameMode & GAME_DEATHMATCH)
-		SetOwner (NULL);
+		SetOwner(NULL);
 
 	ThinkType = TESLATHINK_ACTIVE;
 	NextThink = Level.Frame + FRAMETIME;
@@ -364,7 +364,7 @@ void CTesla::Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int Damage
 	Tesla->GetMaxs().Set (12, 12, 20);
 	Tesla->State.GetModelIndex() = ModelIndex ("models/weapons/g_tesla/tris.md2");
 	
-	Tesla->SetOwner (Player);
+	Tesla->SetOwner(Player);
 	Tesla->Firer = Player;
 
 	Tesla->ThinkType = TESLATHINK_ACTIVATE;

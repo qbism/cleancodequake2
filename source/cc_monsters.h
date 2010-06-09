@@ -231,19 +231,19 @@ const int STEPSIZE	= 18;
 class CMonsterEntity : public IMapEntity, public IStepPhysics, public ITossProjectile, public IPushPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
-	bool			IsHead;
-	uint8			UseState;
-	FrameNumber		AirFinished;
-	FrameNumber		DamageDebounceTime;
-	FrameNumber		BonusDamageTime;
-	FrameNumber		ShowHostile;
+	bool						IsHead;
+	uint8						UseState;
+	FrameNumber					AirFinished;
+	FrameNumber					DamageDebounceTime;
+	FrameNumber					BonusDamageTime;
+	FrameNumber					ShowHostile;
 	entity_ptr<IBaseEntity>		OldEnemy;
 	entity_ptr<IBaseEntity>		GoalEntity;
 	entity_ptr<IBaseEntity>		MoveTarget;
-	class CMonster	*Monster;
-	char			*DeathTarget;
-	char			*CombatTarget;
-	CBaseItem		*Item;
+	class CMonster				*Monster;
+	char						*DeathTarget;
+	char						*CombatTarget;
+	CBaseItem					*Item;
 
 	CMonsterEntity	();
 	CMonsterEntity	(sint32 Index);
@@ -257,6 +257,10 @@ public:
 
 	void			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void			Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void			TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
 
 	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf); // Empty
 	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
@@ -508,6 +512,10 @@ public:
 	virtual void		Spawn () = 0;
 	virtual void		Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point) = 0;
 	virtual void		Pain(IBaseEntity *Other, sint32 Damage) = 0;
+	virtual void		TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
+
 
 	inline bool HasValidEnemy ()
 	{

@@ -1250,7 +1250,7 @@ void CTargetLaser::Think ()
 
 		IBaseEntity *Entity = tr.Entity;
 		// hurt it if we can
-		if (((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage) && !(Entity->Flags & FL_IMMUNE_LASER))
+		if ((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, *User, MoveDir, tr.EndPosition, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done

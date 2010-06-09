@@ -637,7 +637,7 @@ void CBrain::LaserBeamFire ()
 		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
 
 	Laser->Enemy = Entity->Enemy;
-	Laser->SetOwner (Entity);
+	Laser->SetOwner(Entity);
 	Laser->Damage = 1;
 	MonsterFireBeam (Laser);
    
@@ -652,7 +652,7 @@ void CBrain::LaserBeamFire ()
 		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
 
 	Laser->Enemy = Entity->Enemy;
-	Laser->SetOwner (Entity);
+	Laser->SetOwner(Entity);
 	Laser->Damage = 1;
 	MonsterFireBeam (Laser);
 }

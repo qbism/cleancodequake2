@@ -978,7 +978,6 @@ void CBlackWidow::Spawn ()
 
 	YawSpeed = 30;
 	
-	Entity->Flags |= FL_IMMUNE_LASER;
 	AIFlags |= AI_IGNORE_SHOTS;
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_MELEE | MF_HAS_SEARCH);
@@ -1075,7 +1074,6 @@ void CWidowGib::Spawn (IBaseEntity *self, MediaIndex GibIndex, int damage, EGibT
 
 	gib->GetSolid() = SOLID_NOT;
 	gib->State.GetEffects() |= EF_GIB;
-	gib->Flags |= FL_NO_KNOCKBACK;
 	gib->State.GetRenderEffects() |= RF_IR_VISIBLE;
 
 	if (fade)
@@ -1124,7 +1122,7 @@ void CWidowGib::Spawn (IBaseEntity *self, MediaIndex GibIndex, int damage, EGibT
 		gib->Velocity.Z = Max<float> ((350 + (frand()*100.0)), gib->Velocity.Z);
 		gib->GravityMultiplier = 0.25f;
 		gib->Touchable = true;
-		gib->SetOwner (self);
+		gib->SetOwner(self);
 
 		if (gib->State.GetModelIndex() == ModelIndex ("models/monsters/blackwidow2/gib2/tris.md2"))
 		{

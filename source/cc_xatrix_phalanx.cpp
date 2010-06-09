@@ -95,7 +95,7 @@ CPhalanxPlasma *CPhalanxPlasma::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f 
 	Rocket->Velocity = dir * speed;
 	Rocket->State.GetEffects() = EF_PLASMA | EF_ANIM_ALLFAST;
 	Rocket->State.GetModelIndex() = ModelIndex ("sprites/s_photon.sp2");
-	Rocket->SetOwner (Spawner);
+	Rocket->SetOwner(Spawner);
 	Rocket->NextThink = Level.Frame + 80000/speed;
 	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;

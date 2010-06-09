@@ -1,8 +1,3 @@
-#ifndef WIN32
-#include <strings.h>
-#include <ctype.h>
-#endif
-
 /**
 \typedef	sint32 FileHandle
 
@@ -92,31 +87,6 @@ enum
 
 const int MAX_PATHNAME			= 128;	// Maximum path length
 const int FS_MAX_FILE_INDICES	= 256;	// The max number of file indexes that can be loaded at one time
-
-#ifdef WIN32
-#if !defined(CC_STDC_CONFORMANCE)
-#include <WinSock2.h>
-#include <windows.h>
-#endif
-#ifdef COMPILING_LIB
-#include "sys_win32.h"
-#endif
-#else
-#ifdef COMPILING_LIB
-#include "sys_unix.h"
-#define stricmp strcasecmp
-#endif
-#define EXPORT_FUNCTION
-#endif
-
-#include "zlib.h"
-
-#ifdef COMPILING_LIB
-#include "sys_portable.h"
-
-// Not exported
-void FS_Error (const char *errorMsg);
-#endif
 
 /**
 \typedef	uint8 EFileType

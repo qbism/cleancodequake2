@@ -227,7 +227,7 @@ public:
 			// set the owner to NULL so the owner can shoot it, etc.  needs to be done here so the owner
 			// doesn't get stuck on it while it's opening if fired at point blank wall
 			State.GetSound() = 0;
-			SetOwner (NULL);
+			SetOwner(NULL);
 
 			if (Field)
 				Field->Touchable = true;
@@ -392,7 +392,7 @@ public:
 		ProxField->GetMins().Set (-PROX_BOUND_SIZE);
 		ProxField->GetMaxs().Set (PROX_BOUND_SIZE);
 		ProxField->GetSolid() = SOLID_TRIGGER;
-		ProxField->SetOwner (this);
+		ProxField->SetOwner(this);
 		ProxField->ClassName = "prox_field";
 		ProxField->Prox = this;
 		ProxField->Link ();
@@ -456,7 +456,7 @@ public:
 		Prox->GetMaxs().Set (6, 6, 6);
 
 		Prox->State.GetModelIndex() = ModelIndex ("models/weapons/g_prox/tris.md2");
-		Prox->SetOwner (Player);
+		Prox->SetOwner(Player);
 		Prox->Firer = Player;
 		Prox->Touchable = true;
 		Prox->ThinkType = PROXTHINK_EXPLODE;

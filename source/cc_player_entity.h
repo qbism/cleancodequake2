@@ -149,7 +149,7 @@ public:
 		File.Write (Name);
 
 		File.Write<IPAddress> (IP);
-		File.Write<sint32> (Hand);
+		File.Write<EHandedness> (Hand);
 
 		File.Write<sint32> (Health);
 		File.Write<sint32> (MaxHealth);
@@ -177,7 +177,7 @@ public:
 		Name = File.ReadCCString ();
 
 		IP = File.Read<IPAddress> ();
-		Hand = File.Read<sint32> ();
+		Hand = File.Read<EHandedness> ();
 
 		Health = File.Read<sint32> ();
 		MaxHealth = File.Read<sint32> ();

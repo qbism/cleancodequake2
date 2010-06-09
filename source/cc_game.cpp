@@ -391,6 +391,8 @@ void ProcessEntity (SEntity *ent)
 				ent->AwaitingRemoval = true;
 			}
 		}
+
+		Entity->AttachOwner();
 	}
 }
 
@@ -469,7 +471,7 @@ void CGameAPI::RunFrame ()
 	std::for_each (Level.Entities.Closed.begin(), Level.Entities.Closed.end(), ProcessEntity);
 	Level.Entities.Closed.remove_if (RemoveEntity);
 #ifdef _DEBUG
-	CC_ASSERT_EXPR ((Level.Entities.Closed.size() + Level.Entities.Open.size()) == GameAPI.GetMaxEdicts(), "Entities don't equal max!");
+	CC_ASSERT_EXPR ((Level.Entities.Closed.size() + Level.Entities.Open.size()) == (uint32)GameAPI.GetMaxEdicts(), "Entities don't equal max!");
 #endif
 
 	RunPrivateEntities ();

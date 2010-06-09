@@ -884,13 +884,13 @@ protected:
 	void SendData ();
 
 public:
-	CLightning (vec3f TrailStart, vec3f TrailEnd, sint16 SourceEntity, sint32 DestinationEntity) :
+	CLightning (vec3f TrailStart, vec3f TrailEnd, sint16 SourceEntity, sint16 DestinationEntity) :
 	  CTrailBase (TrailStart, TrailEnd, SourceEntity),
 	  DestinationEntity(DestinationEntity)
 	{
 	};
 
-	CLightning (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 SourceEntity, sint32 DestinationEntity) :
+	CLightning (CTempEntFlags Flags, vec3f TrailStart, vec3f TrailEnd, sint16 SourceEntity, sint16 DestinationEntity) :
 	  CTrailBase (Flags, TrailStart, TrailEnd, SourceEntity),
 	  DestinationEntity(DestinationEntity)
 	{

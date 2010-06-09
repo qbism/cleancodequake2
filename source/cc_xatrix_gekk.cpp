@@ -93,7 +93,7 @@ void CLoogie::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->State.GetRenderEffects() = RF_FULLBRIGHT;
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/loogy/tris.md2");
 
-	Bolt->SetOwner (Spawner);
+	Bolt->SetOwner(Spawner);
 	Bolt->NextThink = Level.Frame + 20;
 	Bolt->Damage = Damage;
 	Bolt->ClassName = "bolt";

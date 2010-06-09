@@ -1036,6 +1036,17 @@ void CWidowStand::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 	CurrentMove = &WidowMoveDeath;
 }
 
+// Immune to lasers
+void CWidowStand::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+						vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+						sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+{
+	if (MeansOfDeath == MOD_TARGET_LASER)
+		return;
+
+	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+}
+
 void CWidowStand::Melee ()
 {
 	CurrentMove = &WidowMoveAttackKick;
@@ -1338,10 +1349,8 @@ void CWidowStand::Spawn ()
 
 	YawSpeed = 30;
 	
-	Entity->Flags |= FL_IMMUNE_LASER;
 	AIFlags |= AI_IGNORE_SHOTS;
-
-	AIFlags |= (MF_HAS_ATTACK | MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_SEARCH);
+	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_SEARCH);
 	
 	Entity->Link ();
 

@@ -588,7 +588,7 @@ void CPlayerEntity::PutInServer ()
 	WaterInfo.OldLevel = WATER_NONE;
 	WaterInfo.Level = WATER_NONE;
 	WaterInfo.Type = 0;
-	Flags &= ~FL_NO_KNOCKBACK;
+	AffectedByKnockback = true;
 	GetSvFlags() &= ~SVF_DEADMONSTER;
 	if (!Client.Respawn.MenuState.Player)
 		Client.Respawn.MenuState.Initialize (this);
@@ -3242,7 +3242,6 @@ void CPlayerEntity::TossHead (sint32 Damage)
 	GetSolid() = SOLID_NOT;
 	State.GetEffects() = EF_GIB;
 	State.GetSound() = 0;
-	Flags |= FL_NO_KNOCKBACK;
 
 	Velocity += VelocityForDamage (Damage);
 
