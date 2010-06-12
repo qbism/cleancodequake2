@@ -574,6 +574,9 @@
       <Filter>Map</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_game.cpp" />
+    <ClCompile Include="..\..\source\cc_entity_ptr.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">
@@ -1077,7 +1080,9 @@
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_options.h" />
-    <ClInclude Include="..\..\source\cc_shared.h" />
+    <ClInclude Include="..\..\source\cc_entity_ptr.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">

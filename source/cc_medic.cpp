@@ -50,7 +50,7 @@ CMonster(ID)
 void CMedic::CleanupHeal (bool ChangeFrame)
 {
 	// clean up target, if we have one and it's legit
-	if (Entity->Enemy && Entity->Enemy->GetInUse())
+	if (Entity->Enemy && Entity->Enemy->GetInUse() && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 		Enemy->Monster->Healer = NULL;
@@ -73,7 +73,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 	CleanupHeal (true);
 
 	// gib em!
-	if ((Mark) && (Entity->Enemy) && (Entity->Enemy->GetInUse()))
+	if ((Mark) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 		// if the first badMedic slot is filled by a medic, skip it and use the second one
@@ -83,7 +83,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 		else
 			Enemy->Monster->BadMedic1 = Entity;
 	}
-	if ((Gib) && (Entity->Enemy) && (Entity->Enemy->GetInUse()))
+	if ((Gib) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 

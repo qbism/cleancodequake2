@@ -32,32 +32,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-
-nullentity_t nullentity;
-
-CEntityPtrLinkList &UsageList ()
-{
-	static CEntityPtrLinkList _L;
-	return _L;
-}
-
-void FixAllEntityPtrs (IBaseEntity *Entity)
-{
-	if (UsageList().List.find(Entity) == UsageList().List.end())
-		return;
-
-	std::list<void*> &v = (*UsageList().List.find(Entity)).second;
-	
-	for (std::list<void*>::iterator it = v.begin(); it != v.end(); ++it)
-	{
-		void *tehPtr = (*it);
-		Mem_Zero (tehPtr, sizeof(entity_ptr<IBaseEntity>));
-	}
-
-	UsageList().List.erase(Entity);
-}
-
-#include <cctype>
 #include <algorithm>
 
 /**
@@ -254,7 +228,7 @@ EEventEffect	&CEntityState::GetEvent			()
 }
 
 /**
-\fn	void G_InitEdict (SEntity *e)
+\fn	void G_InitEdict (SEntity *ServerEntity)
 
 \brief	Initialize entity.
 
@@ -264,16 +238,16 @@ EEventEffect	&CEntityState::GetEvent			()
 \author	Paril
 \date	29/05/2010
 
-\param	e	Entity to initialize. 
+\param	ServerEntity	Entity to initialize. 
 **/
-void G_InitEdict (SEntity *e)
+void G_InitEdict (SEntity *ServerEntity)
 {
-	e->Server.InUse = true;
-	e->FreeTime = 0;
-	e->AwaitingRemoval = false;
-	e->RemovalFrames = 0;
-	memset (&e->Server.State, 0, sizeof(e->Server.State));
-	e->Server.State.Number = e - Game.Entities;
+	ServerEntity->Server.InUse = true;
+	ServerEntity->FreeTime = 0;
+	ServerEntity->AwaitingRemoval = false;
+	ServerEntity->RemovalFrames = 0;
+	memset (&ServerEntity->Server.State, 0, sizeof(ServerEntity->Server.State));
+	ServerEntity->Server.State.Number = ServerEntity - Game.Entities;
 }
 
 template <typename TCont, typename TType>
@@ -414,7 +388,7 @@ CC_ENABLE_DEPRECATION
 }
 
 /**
-\fn	void G_FreeEdict (SEntity *ed)
+\fn	void G_FreeEdict (SEntity *ServerEntity)
 
 \deprecated	Use IBaseEntity::Free instead.
 
@@ -423,28 +397,28 @@ CC_ENABLE_DEPRECATION
 \author	Paril
 \date	29/05/2010
 
-\param [in,out]	ed	If non-null, the entity. 
+\param [in,out]	ServerEntity	If non-null, the entity. 
 **/
-void G_FreeEdict (SEntity *ed)
+void G_FreeEdict (SEntity *ServerEntity)
 {
 CC_DISABLE_DEPRECATION
-	gi.unlinkentity (ed);		// unlink from world
+	gi.unlinkentity (ServerEntity);		// unlink from world
 CC_ENABLE_DEPRECATION
 
 	// Paril, hack
-	IBaseEntity *Entity = ed->Entity;
+	IBaseEntity *Entity = ServerEntity->Entity;
 
-	Mem_Zero (ed, sizeof(*ed));
+	Mem_Zero (ServerEntity, sizeof(*ServerEntity));
 	if (Entity)
-		ed->Entity = Entity;
-	ed->FreeTime = Level.Frame;
-	ed->Server.InUse = false;
-	ed->Server.State.Number = ed - Game.Entities;
+		ServerEntity->Entity = Entity;
+	ServerEntity->FreeTime = Level.Frame;
+	ServerEntity->Server.InUse = false;
+	ServerEntity->Server.State.Number = ServerEntity - Game.Entities;
 
-	if (!ed->AwaitingRemoval)
+	if (!ServerEntity->AwaitingRemoval)
 	{
-		ed->AwaitingRemoval = true;
-		ed->RemovalFrames = 2;
+		ServerEntity->AwaitingRemoval = true;
+		ServerEntity->RemovalFrames = 2;
 	}
 }
 
@@ -1377,7 +1351,7 @@ void IMapEntity::ParseFields ()
 	while (it != Level.ParseData.end())
 	{
 		CKeyValuePair *PairPtr = (*it);
-		if (ParseField (PairPtr->Key, PairPtr->Value))
+		if (ParseField (PairPtr->Key.c_str(), PairPtr->Value.c_str()))
 			Level.ParseData.erase (it++);
 		else
 			++it;

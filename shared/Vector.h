@@ -1195,45 +1195,44 @@ public:
 	}
 
 	/**
-	\fn	vec3Base RotateAroundVector(const vec3Base &dir, const float degrees) const
+	\fn	vec3Base RotateAroundVector(const vec3Base &Dir, const float Degrees) const
 	
-	\brief	Rotate this vector in direction 'dir' 'degrees' degrees.
+	\brief	Rotate this vector in direction 'Dir' 'Degrees' degrees.
 	
 	\author	Paril
 	\date	05/06/2010
 	
-	\param	dir		The dir. 
-	\param	point	The point. 
-	\param	degrees	The degrees. 
+	\param	Dir		The dir. 
+	\param	Degrees	The degrees. 
 	**/
-	vec3Base RotateAroundVector(const vec3Base &dir, const float degrees) const
+	vec3Base RotateAroundVector(const vec3Base &Dir, const float Degrees) const
 	{
 		vec3Base dest;
 		
 		float c, s;
-		Q_SinCosf(DEG2RAD(degrees), &s, &c);
+		Q_SinCosf(DEG2RAD(Degrees), &s, &c);
 
 		vec3Base vr, vu;
-		dir.MakeNormalVectors (vr, vu);
+		Dir.MakeNormalVectors (vr, vu);
 
 		float t0, t1;
 		t0 = vr.X * c + vu.X * -s;
 		t1 = vr.X * s + vu.X *  c;
-		dest.X = (t0 * vr.X + t1 * vu.X + dir.X * dir.X) * X
-						+ (t0 * vr.Y + t1 * vu.Y + dir.X * dir.Y) * Y
-						+ (t0 * vr.Z + t1 * vu.Z + dir.X * dir.Z) * Z;
+		dest.X = (t0 * vr.X + t1 * vu.X + Dir.X * Dir.X) * X
+						+ (t0 * vr.Y + t1 * vu.Y + Dir.X * Dir.Y) * Y
+						+ (t0 * vr.Z + t1 * vu.Z + Dir.X * Dir.Z) * Z;
 
 		t0 = vr.Y * c + vu.Y * -s;
 		t1 = vr.Y * s + vu.Y *  c;
-		dest.Y = (t0 * vr.X + t1 * vu.X + dir.Y * dir.X) * X
-						+ (t0 * vr.Y + t1 * vu.Y + dir.Y * dir.Y) * Y
-						+ (t0 * vr.Z + t1 * vu.Z + dir.Y * dir.Z) * Z;
+		dest.Y = (t0 * vr.X + t1 * vu.X + Dir.Y * Dir.X) * X
+						+ (t0 * vr.Y + t1 * vu.Y + Dir.Y * Dir.Y) * Y
+						+ (t0 * vr.Z + t1 * vu.Z + Dir.Y * Dir.Z) * Z;
 
 		t0 = vr.Z * c + vu.Z * -s;
 		t1 = vr.Z * s + vu.Z *  c;
-		dest.Z = (t0 * vr.X + t1 * vu.X + dir.Z * dir.X) * X
-						+ (t0 * vr.Y + t1 * vu.Y + dir.Z * dir.Y) * Y
-						+ (t0 * vr.Z + t1 * vu.Z + dir.Z * dir.Z) * Z;
+		dest.Z = (t0 * vr.X + t1 * vu.X + Dir.Z * Dir.X) * X
+						+ (t0 * vr.Y + t1 * vu.Y + Dir.Z * Dir.Y) * Y
+						+ (t0 * vr.Z + t1 * vu.Z + Dir.Z * Dir.Z) * Z;
 
 		return dest;
 	}

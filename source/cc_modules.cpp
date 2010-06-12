@@ -31,8 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // CleanModule System
 //
 
-#if 0
 #include "cc_local.h"
+
+#if 0
 
 struct Module_t
 {

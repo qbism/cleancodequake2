@@ -4601,3 +4601,8 @@ void CPlayerEntity::StuffText (const char *text)
 	WriteString (text);
     CastTo (CASTFLAG_RELIABLE);	
 }
+
+bool CPlayerEntity::IsSpawned ()
+{
+	return (GetInUse() && Client.Persistent.State == SVCS_SPAWNED);
+}

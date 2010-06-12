@@ -1139,6 +1139,19 @@ bool IStepPhysics::Run ()
 			Velocity.Z *= newspeed;
 		}
 	}
+	else
+	{
+		if (!wasonground)
+		{
+			if (WaterInfo.Level > WATER_WAIST)
+			{
+				if (Velocity.Z < CvarList[CV_GRAVITY].Float() * -0.1)
+					hitsound = true;
+				if (WaterInfo.Level == WATER_NONE)
+					AddGravity ();
+			}
+		}
+	}
 
 	if (Velocity != vec3fOrigin)
 	{

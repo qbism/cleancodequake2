@@ -113,9 +113,6 @@ enum
 	MOD_FRIENDLY_FIRE		=	512
 };
 
-// this is a global meansOfDeath for storage across different functions
-extern	EMeansOfDeath	meansOfDeath;
-
 // "Hurtable" entity
 class IHurtableEntity : public virtual IBaseEntity
 {

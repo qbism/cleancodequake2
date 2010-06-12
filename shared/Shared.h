@@ -28,16 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <cassert>
 #include <cmath>
 #include <cstdio>
-#include <cstdarg>
 #include <cstdlib>
 #include <cstring>
-#include <ctime>
 #include <cctype>
-#include <malloc.h>
-#include <memory.h>
-#include <climits>
-#include <float.h>
-#include <cstddef>
 
 #include "Platform.h"
 
@@ -2237,6 +2230,8 @@ struct SServerEntity
 // CleanCode Stuff
 // Means of Death definition
 typedef uint32	EMeansOfDeath;
+
+extern EMeansOfDeath meansOfDeath;
 
 #endif // __SHARED_H
 

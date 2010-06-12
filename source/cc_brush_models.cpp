@@ -229,7 +229,7 @@ void IBrushModel::MoveBegin ()
 }
 
 /**
-\fn	void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
+\fn	void IBrushModel::MoveCalc (vec3f &Dest, uint32 EndFunc)
 
 \brief	Call to calculate a move to 'dest'. DoEndFunc will be executed at the end, with the
 		EndFunc set to 'EndFunc'. 
@@ -237,13 +237,13 @@ void IBrushModel::MoveBegin ()
 \author	Paril
 \date	30/05/2010
 
-\param [in,out]	dest	Destination for the. 
+\param [in,out]	Dest	Destination for the. 
 \param	EndFunc			The end func. 
 **/
-void IBrushModel::MoveCalc (vec3f &dest, uint32 EndFunc)
+void IBrushModel::MoveCalc (vec3f &Dest, uint32 EndFunc)
 {
 	Velocity.Clear ();
-	Dir = dest - State.GetOrigin();
+	Dir = Dest - State.GetOrigin();
 	RemainingDistance = Dir.Normalize();
 	this->EndFunc = EndFunc;
 

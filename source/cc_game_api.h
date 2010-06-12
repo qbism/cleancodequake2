@@ -293,6 +293,19 @@ public:
 	virtual void Init ();
 	virtual void Shutdown ();
 
+	/**
+	\fn	void SpawnEntities (char *ServerLevelName, char *Entities, char *SpawnPoint)
+
+	\brief	Creates a server's entity / program execution context by parsing textual entity
+			definitions out of an ent file. 
+
+	\author	Paril
+	\date	12/06/2010
+
+	\param [in,out]	ServerLevelName	If non-null, name of the server level. 
+	\param [in,out]	Entities		If non-null, the entities. 
+	\param [in,out]	SpawnPoint		If non-null, the spawn point. 
+	**/
 	virtual void SpawnEntities (char *mapName, char *entString, char *spawnPoint);
 	
 	virtual void WriteGame (char *fileName, bool autosave);

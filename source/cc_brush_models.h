@@ -240,7 +240,7 @@ public:
 	\author	Paril
 	\date	30/05/2010
 	
-	\param [in,out]	dest	Destination for the. 
+	\param [in,out]	Dest	Destination for the. 
 	\param	EndFunc			The end func. 
 	**/
 	void MoveCalc (vec3f &Dest, uint32 EndFunc);

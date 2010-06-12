@@ -32,19 +32,64 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
+#include "cc_body_queue.h"
+#include "cc_version.h"
 
 const int MAX_CLASSNAME_CLASSES = 1024;
 
+/**
+\typedef	std::multimap<size_t, size_t> THashedEntityListType
+
+\brief	Defines an alias representing type of the hashed entity list.
+**/
 typedef std::multimap<size_t, size_t> THashedEntityListType;
+
+/**
+\typedef	std::vector<CClassnameToClassIndex*> TEntityListType
+
+\brief	Defines an alias representing type of the entity list.
+**/
 typedef std::vector<CClassnameToClassIndex*> TEntityListType;
 
+/**
+\class	CEntityList
+
+\brief	List of entities and hashes.
+
+\author	Paril
+\date	12/06/2010
+**/
 class CEntityList
 {
-	TEntityListType			EntityList;
-	THashedEntityListType	HashedEntityList;
+	TEntityListType			EntityList;			// List of entities
+	THashedEntityListType	HashedEntityList;	// List of hashed entities
 
 public:
+	/**
+	\fn	void AddToList (CClassnameToClassIndex *Entity)
+	
+	\brief	Adds 'Entity' index to the list.
+	
+	\author	Paril
+	\date	12/06/2010
+	
+	\param [in,out]	Entity	If non-null, the entity. 
+	**/
 	void AddToList (CClassnameToClassIndex *Entity);
+
+	/**
+	\fn	IBaseEntity *Resolve (SEntity *ServerEntity)
+	
+	\brief	Resolves the entity 'ServerEntity''s classname to
+			an entity and returns the created entity.
+	
+	\author	Paril
+	\date	12/06/2010
+	
+	\param [in,out]	ServerEntity	If non-null, the entity. 
+	
+	\return	null if it fails, else the new entity. 
+	**/
 	IBaseEntity *Resolve (SEntity *ent);
 };
 
@@ -55,13 +100,34 @@ CEntityList &EntityList ()
 	return List;
 }
 
-CClassnameToClassIndex::CClassnameToClassIndex (IMapEntity				*(*Spawn) (sint32 Index), const char *Classname) :
-Spawn(Spawn),
-Classname(Classname)
+/**
+\fn	CClassnameToClassIndex::CClassnameToClassIndex (IMapEntity *(*Spawn) (sint32 Index), const char *Classname)
+	
+\brief	Constructor. 
+	
+\author	Paril
+\date	12/06/2010
+	
+\param [in,out]	Spawn		Spawn function. 
+\param [in,out]	Classname	Classname. 
+**/
+CClassnameToClassIndex::CClassnameToClassIndex (IMapEntity	*(*Spawn) (sint32 Index), const char *Classname) :
+  Spawn(Spawn),
+  Classname(Classname)
 {
 	EntityList().AddToList (this);
 };
 
+/**
+\fn	void CEntityList::AddToList (CClassnameToClassIndex *Entity)
+
+\brief	Adds 'Entity' index to the list. 
+
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	Entity	If non-null, the entity. 
+**/
 void CEntityList::AddToList (CClassnameToClassIndex *Entity)
 {
 	EntityList.push_back (Entity);
@@ -70,10 +136,32 @@ void CEntityList::AddToList (CClassnameToClassIndex *Entity)
 	HashedEntityList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Entity->Classname, MAX_CLASSNAME_CLASSES_HASH), EntityList.size()-1));
 };
 
+/**
+\fn	void SpawnWorld ()
+
+\brief	Spawns the worldspawn.
+
+\author	Paril
+\date	12/06/2010
+**/
 void SpawnWorld ();
-IBaseEntity *CEntityList::Resolve (SEntity *ent)
+
+/**
+\fn	IBaseEntity *CEntityList::Resolve (SEntity *ServerEntity)
+
+\brief	Resolves the entity 'ServerEntity''s classname to an entity and returns the created
+		entity. 
+
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	ServerEntity	If non-null, the entity. 
+
+\return	null if it fails, else the new entity. 
+**/
+IBaseEntity *CEntityList::Resolve (SEntity *ServerEntity)
 {
-	if (Q_stricmp(Level.ClassName.c_str(), "worldspawn") == 0)
+	if (Level.ClassName == "worldspawn")
 	{
 		SpawnWorld ();
 		return Game.Entities[0].Entity;
@@ -81,23 +169,36 @@ IBaseEntity *CEntityList::Resolve (SEntity *ent)
 
 	uint32 hash = Com_HashGeneric(Level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
 
-	for (THashedEntityListType::iterator it = HashedEntityList.equal_range(hash).first; it != HashedEntityList.equal_range(hash).second; ++it)
+	for (THashedEntityListType::iterator it = HashedEntityList.equal_range(hash).first;
+			it != HashedEntityList.equal_range(hash).second; ++it)
 	{
 		CClassnameToClassIndex *Table = EntityList.at((*it).second);
 		if (Q_stricmp (Table->Classname, Level.ClassName.c_str()) == 0)
-			return Table->Spawn(ent->Server.State.Number);
+			return Table->Spawn(ServerEntity->Server.State.Number);
 	}
 
 	return NULL;
 }
 
-IBaseEntity *ResolveMapEntity (SEntity *ent)
+/**
+\fn	IBaseEntity *ResolveMapEntity (SEntity *ServerEntity)
+
+\brief	Resolves entity 'ServerEntity' to a new entity. 
+
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	ServerEntity	If non-null, the server entity. 
+
+\return	null if it fails, else. 
+**/
+IBaseEntity *ResolveMapEntity (SEntity *ServerEntity)
 {
-	return EntityList().Resolve (ent);
+	return EntityList().Resolve (ServerEntity);
 };
 
 /**
-\fn	void ED_CallSpawn (SEntity *ent)
+\fn	void ED_CallSpawn (SEntity *ServerEntity)
 
 \brief	Calls the spawn function for a given entity.
 		Internal.
@@ -105,9 +206,9 @@ IBaseEntity *ResolveMapEntity (SEntity *ent)
 \author	Paril
 \date	29/05/2010
 
-\param [in,out]	ent	If non-null, the entity. 
+\param [in,out]	ServerEntity	If non-null, the entity. 
 **/
-void ED_CallSpawn (SEntity *ent)
+void ED_CallSpawn (SEntity *ServerEntity)
 {
 	if (Level.ClassName.empty())
 	{
@@ -116,14 +217,14 @@ void ED_CallSpawn (SEntity *ent)
 	}
 
 	// Check CleanCode stuff
-	IBaseEntity *MapEntity = ResolveMapEntity(ent);
+	IBaseEntity *MapEntity = ResolveMapEntity(ServerEntity);
 
 	if (!MapEntity)
 	{
 		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", Level.ClassName.c_str());
 
 CC_DISABLE_DEPRECATION
-		G_FreeEdict (ent);
+		G_FreeEdict (ServerEntity);
 CC_ENABLE_DEPRECATION
 		return;
 	}
@@ -134,7 +235,7 @@ CC_ENABLE_DEPRECATION
 		// We're done then
 		MapEntity->GetGameEntity()->Entity = NULL;
 		QDelete MapEntity;
-		ent->Server.InUse = false;
+		ServerEntity->Server.InUse = false;
 		return;
 	}
 
@@ -172,77 +273,71 @@ CC_ENABLE_DEPRECATION
 	}
 }
 
-/*
-====================
-ED_ParseEdict
+/**
+\fn	static void ED_ParseEdict (CParser &Data, SEntity *ServerEntity)
 
-Parses an edict out of the given string, returning the new position
-ed should be a properly initialized empty edict.
-====================
-*/
-static void ED_ParseEdict (CParser &data, SEntity *ent)
+\brief	Parses an edict out of the given string, returning the new position ed should be a
+		properly initialized empty edict. 
+
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	Data			The parser reference. 
+\param [in,out]	ServerEntity	The properly initialized server entity. 
+**/
+static void ED_ParseEdict (CParser &Data, SEntity *ServerEntity)
 {
-	bool	init = false;
+	bool	Initialized = false;
 
 	Level.ParseData.clear();
 
 	// Go through all the dictionary pairs
 	while (true)
 	{
-		const char *token;
+		std::string		Key;
 
 		// Parse key
-		if (!data.ParseToken (PSF_ALLOW_NEWLINES, &token))
+		if (!Data.ParseToken (PSF_ALLOW_NEWLINES|PSF_TO_LOWER, Key))
 			GameError ("ED_ParseEntity: EOF without closing brace");
 
-		if (token[0] == '}')
+		if (Key[0] == '}')
 			break;
 
-		char keyName[256];
-		Q_strncpyz (keyName, token, sizeof(keyName));
+		std::string		Value;
 		
 		// Parse value	
-		if (!data.ParseToken (PSF_ALLOW_NEWLINES, &token) && data.IsEOF())
+		if (!Data.ParseToken (PSF_ALLOW_NEWLINES, Value) && Data.IsEOF())
 			GameError ("ED_ParseEntity: EOF without closing brace");
 
-		if (token[0] == '}')
+		if (Value[0] == '}')
 			GameError ("ED_ParseEntity: closing brace without data");
 
-		init = true;
+		Initialized = true;
 
 		// Keynames with a leading underscore are used for utility comments,
 		// and are immediately discarded by quake
-		if (keyName[0] == '_')
+		if (Key[0] == '_')
 			continue;
-		else if (Q_stricmp (keyName, "classname") == 0)
-			Level.ClassName = token;
+		else if (Key == "classname")
+			Level.ClassName = Value;
 		else
 			// push it in the list for the entity
-			Level.ParseData.push_back (QNew (TAG_LEVEL) CKeyValuePair (keyName, token));
+			Level.ParseData.push_back (QNew (TAG_LEVEL) CKeyValuePair (Key, Value));
 	}
 
-	if (!init)
-		Mem_Zero (ent, sizeof(*ent));
+	if (!Initialized)
+		Mem_Zero (ServerEntity, sizeof(*ServerEntity));
 }
-
-
-/*
-================
-G_FindTeams
-
-Chain together all entities with a matching team field.
-
-All but the first be slaves.
-All but the last will have the teamchain field set to the next one
-================
-*/
 
 #include "cc_brush_models.h"
 
 #if ROGUE_FEATURES
-// From Rogue, seems to fix trains (moves them to master I think)
+/**
+\fn	static void G_FixTeams ()
 
-void G_FixTeams ()
+\brief	Fixes trains by moving them to the master of every team. 
+**/
+static void G_FixTeams ()
 {
 	int c = 0;
 	int c2 = 0;
@@ -294,8 +389,6 @@ void G_FixTeams ()
 							IBrushModel *Phys = entity_cast<IBrushModel>(e2);
 							Phys->PhysicsType = PHYSICS_PUSH;
 							Phys->MoveSpeed = Phys->Speed = entity_cast<IBrushModel>(e)->MoveSpeed;
-							//e2->movetype = MOVETYPE_PUSH;
-							//e2->speed = e->speed;
 						}
 					}
 				}
@@ -307,7 +400,13 @@ void G_FixTeams ()
 }
 #endif
 
-void G_FindTeams ()
+/**
+\fn	static void G_FindTeams ()
+
+\brief	Chain together all entities with a matching team field. All but the first be slaves. All
+		but the last will have the teamchain field set to the next one. 
+**/
+static void G_FindTeams ()
 {
 	sint32		c = 0, c2 = 0;
 
@@ -374,6 +473,11 @@ void G_FindTeams ()
 
 #include "cc_exception_handler.h"
 
+/**
+\fn	void InitEntities ()
+
+\brief	Initializes entities that are constant.
+**/
 void InitEntities ()
 {
 	// Set up the world
@@ -394,17 +498,6 @@ void InitEntities ()
 
 char *gEntString;
 
-/*
-==============
-SpawnEntities
-
-Creates a server's entity / program execution context by
-parsing textual entity definitions out of an ent file.
-==============
-*/
-
-void ShutdownBodyQueue ();
-void InitVersion ();
 void DeallocateEntities ();
 void SetClientFields ();
 
@@ -417,7 +510,20 @@ void FixDemoSetup ()
 	InitEntities ();
 }
 
-void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawnpoint)
+/**
+\fn	void CGameAPI::SpawnEntities (char *ServerLevelName, char *Entities, char *SpawnPoint)
+
+\brief	Creates a server's entity / program execution context by parsing textual entity
+		definitions out of an ent file. 
+
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	ServerLevelName	If non-null, name of the server level. 
+\param [in,out]	Entities		If non-null, the entities. 
+\param [in,out]	SpawnPoint		If non-null, the spawn point. 
+**/
+void CGameAPI::SpawnEntities (char *ServerLevelName, char *Entities, char *SpawnPoint)
 {
 	CTimer Timer;
 
@@ -443,12 +549,12 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	Level.Clear ();
 
 	Mem_FreeTag (TAG_LEVEL);
-	gEntString = Mem_TagStrDup(entities, TAG_LEVEL);
+	gEntString = Mem_TagStrDup(Entities, TAG_LEVEL);
 
-	char *oldEntities = entities;
+	char *oldEntities = Entities;
 	bool FreeIt = false;
-	entities = CC_ParseSpawnEntities (ServerLevelName, entities);
-	if (oldEntities != entities)
+	Entities = CC_ParseSpawnEntities (ServerLevelName, Entities);
+	if (oldEntities != Entities)
 		FreeIt = true;
 
 	Mem_Zero (Game.Entities, Game.MaxEntities * sizeof(Game.Entities[0]));
@@ -457,7 +563,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 
 	Level.ServerLevelName = ServerLevelName;
 
-	Game.SpawnPoint = spawnpoint;
+	Game.SpawnPoint = SpawnPoint;
 
 	InitEntities ();
 
@@ -469,7 +575,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 		Level.Inhibit = 0;
 
 		// Parse ents
-		CParser EntityParser (entities, PSP_COMMENT_MASK);
+		CParser EntityParser (Entities, PSP_COMMENT_MASK);
 
 		bool SpawnedWorld = false;
 		while (true)
@@ -528,7 +634,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *entities, char *spawn
 	ServerPrintf ("Finished server initialization in "TIMER_STRING"\n", Timer.Get());
 
 	if (FreeIt)
-		QDelete[] entities;
+		QDelete[] Entities;
 
 	PlayerTrail_Init ();
 }

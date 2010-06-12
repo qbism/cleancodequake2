@@ -176,21 +176,13 @@ struct SGoalList
 class CKeyValuePair
 {
 public:
-	char	*Key;
-	char	*Value;
+	std::string		Key;
+	std::string		Value;
 
-	CKeyValuePair (const char *Key, const char *Value) :
-	Key((Key) ? Q_strlwr(Mem_TagStrDup(Key, TAG_LEVEL)) : NULL),
-	Value((Key) ? Mem_TagStrDup(Value, TAG_LEVEL) : NULL)
+	CKeyValuePair (std::string Key, std::string Value) :
+	  Key(Key),
+	  Value(Value)
 	{
-	};
-
-	~CKeyValuePair ()
-	{
-		if (Key)
-			QDelete Key;
-		if (Value)
-			QDelete Value;
 	};
 };
 

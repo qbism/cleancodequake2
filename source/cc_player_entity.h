@@ -847,7 +847,7 @@ public:
 #endif
 
 	/**
-	\fn	void CastTo (ECastFlags castFlags)
+	\fn	void CastTo (ECastFlags CastFlags)
 	
 	\brief	Perform a cast to this entity.
 	
@@ -856,7 +856,7 @@ public:
 	
 	\param	CastFlags	The cast flags. 
 	**/
-	void			CastTo (ECastFlags castFlags);
+	void			CastTo (ECastFlags CastFlags);
 
 	/**
 	\fn	void StuffText (const char *text)
@@ -871,6 +871,8 @@ public:
 	\param	text	The text. 
 	**/
 	void			StuffText (const char *text);
+
+	bool			IsSpawned ();
 
 	IMPLEMENT_SAVE_HEADER(CPlayerEntity)
 };

@@ -210,96 +210,6 @@ enum
 	SPAWNFLAG_NOT_COOP			= BIT(12)
 };
 
-class safe_bool_base
-{
-protected:
-	typedef void (safe_bool_base::*bool_type)() const;
-	void this_type_does_not_support_comparisons() const {}
-
-	safe_bool_base() {}
-	safe_bool_base(const safe_bool_base&) {}
-	safe_bool_base& operator=(const safe_bool_base&) {return *this;}
-	~safe_bool_base() {}
-};
-
-template <typename T=void> class safe_bool : public safe_bool_base
-{
-public:
-	operator bool_type() const
-	{
-		return (static_cast<const T*>(this))->boolean_test()
-			? &safe_bool::this_type_does_not_support_comparisons : 0;
-	}
-protected:
-	~safe_bool() {}
-};
-
-template<> class safe_bool<void> : public safe_bool_base
-{
-public:
-	operator bool_type() const
-	{
-		return boolean_test()==true ? 
-			&safe_bool::this_type_does_not_support_comparisons : 0;
-	}
-protected:
-	virtual bool boolean_test() const=0;
-	virtual ~safe_bool() {}
-};
-
-template <typename T, typename U> 
-void operator==(const safe_bool<T>& lhs,const safe_bool<U>& rhs)
-{
-	lhs.this_type_does_not_support_comparisons();	
-	return false;
-}
-
-template <typename T,typename U> 
-void operator!=(const safe_bool<T>& lhs,const safe_bool<U>& rhs)
-{
-	lhs.this_type_does_not_support_comparisons();
-	return false;	
-}
-
-class CEntityPtrLinkList
-{
-public:
-	typedef std::map<IBaseEntity*, std::list<void*> > TEntityPtrUsageList;
-	TEntityPtrUsageList List;
-
-	void AddEntity (IBaseEntity *Entity, void *Ptr)
-	{
-		TEntityPtrUsageList::iterator it = List.find(Entity);
-
-		if (it != List.end())
-			(*it).second.push_back (Ptr);
-		else
-		{
-			std::list<void*> PtrList;
-			PtrList.push_back(Ptr);
-
-			List[Entity] = PtrList;
-		}
-	}
-
-	void RemoveEntity (IBaseEntity *Entity, void *Ptr)
-	{
-		TEntityPtrUsageList::iterator it = List.find(Entity);
-
-		if (it == List.end())
-			CC_ASSERT_EXPR(0, "Wtf?");
-		else
-		{
-			(*it).second.remove (Ptr);
-
-			if (!(*it).second.size())
-				List.erase (Entity);
-		}
-	}
-};
-	
-CEntityPtrLinkList &UsageList ();
-
 /**
 \fn	template <class TType> inline TType *entity_cast (IBaseEntity *Entity)
 
@@ -327,14 +237,13 @@ inline TType *entity_cast (IBaseEntity *Entity)
 /**
 \fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 
-\brief	Template specialization for IBaseEntity casts.
+\brief	Template specialization for IBaseEntity casts. 
 
 \author	Paril
 \date	29/05/2010
-
-\typeparam	IBaseEntity	Base entity specialization. 
+		
+\tparam	IBaseEntity	. 
 \param [in,out]	Entity	If non-null, the entity. 
-
 
 \return	null if it fails, else. 
 **/
@@ -344,299 +253,7 @@ inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 	return Entity; // Implicit cast already done
 }
 
-struct nullentity_t
-{
-};
-
-extern nullentity_t nullentity;
-
-/**
-\class	entity_ptr
-
-\brief	Entity pointer.
-		Testing a theory.
-
-\author	Paril
-\date	01/06/2010
-**/
-template <class TType>
-class entity_ptr : public safe_bool<entity_ptr<TType> >
-{
-	TType		*GameEntity;	// The CleanCode entity
-	SEntity		*ServerEntity;	// The server entity
-
-public:
-	/**
-	\fn	entity_ptr()
-	
-	\brief	Default constructor.
-	
-	\author	Paril
-	\date	01/06/2010
-	**/
-	entity_ptr() :
-	  GameEntity(NULL),
-	  ServerEntity(NULL)
-	  {
-	  }
-
-	~entity_ptr()
-	{
-		if (GameEntity)
-			UsageList().RemoveEntity(GameEntity, this);
-	}
-
-	/**
-	\fn	entity_ptr(TType *GameEntity)
-	
-	\brief	Constructor. Constructs an entity_ptr from a game entity. 
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\param [in,out]	GameEntity	If non-null, the game entity. 
-	**/
-	entity_ptr(TType *GameEntity) :
-	  GameEntity(GameEntity)
-	  {
-		  if (GameEntity)
-		  {
-			  ServerEntity = GameEntity->GetGameEntity();
-			  UsageList().AddEntity (GameEntity, this);
-		  }
-	  };
-
-	entity_ptr(const entity_ptr &Ptr)
-	{
-		GameEntity = Ptr.GameEntity;
-		ServerEntity = Ptr.ServerEntity;
-
-		if (GameEntity)
-			UsageList().AddEntity (GameEntity, this);
-	}
-
-	/**
-	\fn	entity_ptr(SEntity *ServerEntity)
-	
-	\brief	Constructor. Constructs an entity_ptr from a server entity.
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\param [in,out]	ServerEntity	If non-null, the server entity. 
-	**/
-	entity_ptr(SEntity *ServerEntity) :
-	  ServerEntity(ServerEntity)
-	  {
-		  if (ServerEntity)
-		  {
-			  GameEntity = entity_cast<TType>(ServerEntity->Entity);
-
-			  if (GameEntity)
-				  UsageList().AddEntity (GameEntity, this);
-		  }
-	  }
-
-	entity_ptr &operator= (TType *NewGameEntity)
-	{
-		if (GameEntity)
-			UsageList().RemoveEntity (GameEntity, this);
-
-		GameEntity = NewGameEntity;
-		if (GameEntity)
-		{
-			ServerEntity = NewGameEntity->GetGameEntity();
-			UsageList().AddEntity (GameEntity, this);
-		}
-		else
-			ServerEntity = NULL;
-
-		return *this;
-	}
-
-	entity_ptr &operator= (SEntity *NewServerEntity)
-	{
-		if (GameEntity)
-			UsageList().RemoveEntity (GameEntity, this);
-
-		ServerEntity = NewServerEntity;
-		if (ServerEntity)
-		{
-			GameEntity = entity_cast<TType>(ServerEntity->Entity);
-			UsageList().AddEntity (GameEntity, this);
-		}
-		else
-			GameEntity = NULL;
-
-		return *this;
-	}
-
-	entity_ptr &operator= (const entity_ptr &Ptr)
-	{
-		if (GameEntity)
-			UsageList().RemoveEntity (GameEntity, this);
-
-		ServerEntity = Ptr.ServerEntity;
-		GameEntity = Ptr.GameEntity;
-		if (GameEntity)
-			  UsageList().AddEntity (GameEntity, this);
-
-		return *this;
-	}
-	
-	bool operator== (const IBaseEntity *Right) const
-	{
-		return (IsValid() && (GameEntity == Right));
-	}
-
-	bool operator!= (const IBaseEntity *Right) const
-	{
-		return !(operator== (Right));
-	}
-
-	bool operator== (const entity_ptr &Right) const
-	{
-		return ((!Right.IsValid() && !IsValid()) || (Right.GetGameEntity() == GetGameEntity()));
-	}
-
-	bool operator!= (const entity_ptr &Right) const
-	{
-		return !((!Right.IsValid() && !IsValid()) || (Right.GetGameEntity() == GetGameEntity()));
-	}
-
-	bool boolean_test() const
-	{
-		return IsValid();
-	}
-
-	/**
-	\fn	void Clear ()
-	
-	\brief	Clears this object to its blank/initial state.
-	**/
-	void Clear ()
-	{
-		UsageList().RemoveEntity (GameEntity, this);
-		GameEntity = NULL;
-		ServerEntity = NULL;
-	}
-
-	/**
-	\fn	entity_ptr operator= (long)
-	
-	\brief	Empty operator, for conversion to NULL.
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\param		The. 
-	
-	\return	This object. 
-	**/
-	entity_ptr operator = (nullentity_t)
-	{
-		if (GameEntity)
-			Clear ();
-		return *this;
-	}
-
-	/**
-	\fn	TType *operator* ()
-	
-	\brief	Dereference operator. Dereferencing an entity_ptr yields the game entity. 
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\return	The game entity.
-	**/
-	TType *operator * () const
-	{
-		return GameEntity;
-	}
-
-	/**
-	\fn	TType *GetGameEntity ()
-	
-	\brief	Gets the game entity. 
-	
-	\return	null if it fails, else the game entity. 
-	**/
-	TType *GetGameEntity () const
-	{
-		return GameEntity;
-	}
-
-	/**
-	\fn	SEntity *GetServerEntity ()
-	
-	\brief	Gets the server entity. 
-	
-	\return	null if it fails, else the server entity. 
-	**/
-	SEntity *GetServerEntity () const
-	{
-		return ServerEntity;
-	}
-
-	/**
-	\fn	bool IsValid ()
-	
-	\brief	Query if this entity pointer is valid. 
-	
-	\return	true if valid, false if not. 
-	**/
-	bool IsValid () const
-	{
-		return (ServerEntity && ServerEntity->Server.InUse && !ServerEntity->FreeTime && GameEntity && !GameEntity->Freed);
-	}
-
-	/**
-	\fn	TType *operator-> ()
-	
-	\brief	Member access operator.
-	
-	\author	Paril
-	\date	01/06/2010
-	
-	\return	Game entity pointer for member access.
-	**/
-	TType *operator-> ()
-	{
-		return GameEntity;
-	}
-
-	void Write (CFile &File) const
-	{
-		sint32 EntityNumber = -1;
-		if (IsValid())
-			EntityNumber = GameEntity->State.GetNumber();
-		File.Write<sint32>(EntityNumber);
-	}
-
-	static entity_ptr Read (CFile &File)
-	{
-		sint32 EntityNumber = File.Read<sint32> ();
-		entity_ptr Ptr;
-		
-		if (EntityNumber != -1)
-			Ptr = entity_ptr(Game.Entities[EntityNumber].Entity);
-		return Ptr;
-	}
-};
-
-template <class TType>
-static bool operator== (const IBaseEntity *Left, const entity_ptr<TType> &Right)
-{
-	return (Right.IsValid() && (*Right == Left));
-}
-
-template <class TType>
-static bool operator!= (const IBaseEntity *Left, const entity_ptr<TType> &Right)
-{
-	return !(Right.IsValid() && (*Right == Left));
-}
-
+#include "cc_entity_ptr.h"
 
 // IBaseEntity is abstract.
 // A base entity can't do anything
@@ -1976,23 +1593,23 @@ CC_INSECURE_DEPRECATE (CreateEntityFromClassname)
 SEntity	*G_Spawn ();
 
 /**
-\fn	void G_InitEdict (SEntity *e)
+\fn	void G_InitEdict (SEntity *ServerEntity)
 
 \brief	Initialize entity.
-
-\deprecated	Deprecated. Do not use.
-			Function is not required (only internally)
+		
+		\deprecated	Deprecated. Do not use.
+			Function is not required (only internally) 
 
 \author	Paril
 \date	29/05/2010
 
-\param	e	Entity to initialize. 
+\param	ServerEntity	The server entity. 
 **/
 CC_INSECURE_DEPRECATE (Function not needed)
-void	G_InitEdict (SEntity *e);
+void	G_InitEdict (SEntity *ServerEntity);
 
 /**
-\fn	void G_FreeEdict (SEntity *ed)
+\fn	void G_FreeEdict (SEntity *ServerEntity)
 
 \deprecated	Use IBaseEntity::Free instead.
 
@@ -2001,23 +1618,22 @@ void	G_InitEdict (SEntity *e);
 \author	Paril
 \date	29/05/2010
 
-\param [in,out]	ed	If non-null, the entity. 
+\param [in,out]	ServerEntity	If non-null, the entity. 
 **/
 CC_INSECURE_DEPRECATE (Entity->Free)
-void	G_FreeEdict (SEntity *e);
+void	G_FreeEdict (SEntity *ServerEntity);
 
 /**
-\fn	void ED_CallSpawn (SEntity *ent)
+\fn	void ED_CallSpawn (SEntity *ServerEntity)
 
-\brief	Calls the spawn function for a given entity.
-		Internal.
+\brief	Calls the spawn function for a given entity. Internal. 
 
 \author	Paril
 \date	29/05/2010
 
-\param [in,out]	ent	If non-null, the entity. 
+\param [in,out]	ServerEntity	If non-null, the server entity. 
 **/
-void	ED_CallSpawn (SEntity *ent);
+void	ED_CallSpawn (SEntity *ServerEntity);
 
 extern IBaseEntity *World;	// The world entity
 
@@ -2033,12 +1649,12 @@ extern IBaseEntity *World;	// The world entity
 
 \return	null if it fails, else the created entity. 
 **/
-inline IBaseEntity *CreateEntityFromClassname (const char *classname)
+inline IBaseEntity *CreateEntityFromClassname (const char *ClassName)
 {
 CC_DISABLE_DEPRECATION
 	SEntity *ent = G_Spawn ();
 
-	Level.ClassName = classname;
+	Level.ClassName = ClassName;
 	ED_CallSpawn (ent);
 
 	if (ent->Entity && ent->Entity->GetInUse() && !ent->Entity->Freed)

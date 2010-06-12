@@ -1,7 +1,7 @@
 Present
 - Remove usage of GetModelIndex() == 255. This is stupid.
-- Remove usage of Level.current_entity
-- Print buffer for each player & for console (shove all prints into buffer then print them at the end of the frame)
+- Remove usage of Level.CurrentEntity
+- Print buffer for player & for console (shove all prints into buffer then print them at the end of the frame)
 - Make a unified CMeleeWeapon class...
 - Unified CWeaponThrowable class for Grenade, Trap and Tesla
 - Monsters and some other entities will still attempt to access an entity that was recently freed.

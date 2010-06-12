@@ -27,49 +27,52 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_dummy_entities.cpp
+// cc_entity_ptr.cpp
 // 
 //
 
 #include "cc_local.h"
 
-/**
-\class	CDummyEntity
+nullentity_t nullentity;	// Null entity
 
-\brief	Dummy map entity. Can be used to make an entity silently be ignored in map parsing. 
+/**
+\fn	CEntityPtrLinkList &UsageList ()
+
+\brief	Return static list.
 
 \author	Paril
 \date	12/06/2010
+
+\return	Static entity pointer list. 
 **/
-class CDummyEntity : public IMapEntity
+CEntityPtrLinkList &UsageList ()
 {
-public:
-	CDummyEntity () :
-	  IMapEntity ()
-	  {
-	  };
+	static CEntityPtrLinkList _L;
+	return _L;
+}
 
-	CDummyEntity (sint32 Index) :
-	  IBaseEntity (Index),
-	  IMapEntity (Index)
-	  {
-	  };
+/**
+\fn	void FixAllEntityPtrs (IBaseEntity *Entity)
 
-	ENTITYFIELDS_NONSAVABLE
+\brief	Function to clear entity pointers that point to Entity. 
 
-	bool				ParseField (const char *Key, const char *Value)
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	Entity	If non-null, the entity. 
+**/
+void FixAllEntityPtrs (IBaseEntity *Entity)
+{
+	if (UsageList().List.find(Entity) == UsageList().List.end())
+		return;
+
+	std::list<void*> &v = (*UsageList().List.find(Entity)).second;
+	
+	for (std::list<void*>::iterator it = v.begin(); it != v.end(); ++it)
 	{
-		return true;
+		void *tehPtr = (*it);
+		Mem_Zero (tehPtr, sizeof(entity_ptr<IBaseEntity>));
 	}
 
-	void Spawn ()
-	{
-		Free ();
-	};
-};
-
-#if ROGUE_FEATURES
-LINK_CLASSNAME_TO_EXISTING_CLASS (hint_path, "hint_path", CDummyEntity);
-LINK_CLASSNAME_TO_EXISTING_CLASS (dm_tag_token, "dm_tag_token", CDummyEntity);
-
-#endif
+	UsageList().List.erase(Entity);
+}

@@ -318,6 +318,13 @@ public:
 		return !DataPointer;
 	};
 
+	bool ParseToken (EParseFlags Flags, std::string &Target)
+	{
+		bool Valid = ParseToken(Flags, NULL);
+		Target = GetCurrentToken();
+		return Valid;
+	};
+
 	// A quick note:
 	// ParseToken will give you a pointer to a CONST char.
 	// DON'T CHANGE RETURNED TOKENS!
@@ -326,11 +333,13 @@ public:
 	{
 		// Check if the incoming data offset is valid (see if we hit EOF last the last run)
 		const char *data = DataPointer;
+
 		if (!data)
 		{
 			AddError ("PARSE ERROR: called PS_ParseToken and already hit EOF\n");
 			return false;
 		}
+
 		DataPointerLast = DataPointer;
 
 		// Clear the current token
@@ -355,7 +364,8 @@ public:
 						if (CurrentToken.empty())
 							return false;
 
-						*target = CurrentToken.c_str();
+						if (target)
+							*target = CurrentToken.c_str();
 						return true;
 					}
 
@@ -422,7 +432,8 @@ public:
 							return false;
 					}
 
-					*target = CurrentToken.c_str();
+					if (target)
+						*target = CurrentToken.c_str();
 					return true;
 
 				case '\n':
@@ -432,7 +443,8 @@ public:
 						if (!CurrentToken[0])
 							return false;
 
-						*target = CurrentToken.c_str();
+						if (target)
+							*target = CurrentToken.c_str();
 						return true;
 					}
 
@@ -502,7 +514,8 @@ public:
 				return false;
 		}
 
-		*target = CurrentToken.c_str();
+		if (target)
+			*target = CurrentToken.c_str();
 		return true;
 	};
 	

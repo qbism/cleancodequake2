@@ -376,6 +376,7 @@ echo Done!
     <ClCompile Include="..\..\shared\Random.cpp" />
     <ClCompile Include="..\..\shared\String.cpp" />
     <ClCompile Include="..\..\source\cc_dummy_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_entity_ptr.cpp" />
     <ClCompile Include="..\..\source\cc_game.cpp" />
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
     <ClCompile Include="..\..\source\cc_game_api.cpp" />
@@ -532,6 +533,7 @@ echo Done!
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
     <ClInclude Include="..\..\shared\Vector.h" />
+    <ClInclude Include="..\..\source\cc_entity_ptr.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
@@ -561,7 +563,6 @@ echo Done!
     <ClInclude Include="..\..\source\cc_rogue_weaponry.h" />
     <ClInclude Include="..\..\source\cc_rogue_widow_stand.h" />
     <ClInclude Include="..\..\source\cc_save.h" />
-    <ClInclude Include="..\..\source\cc_shared.h" />
     <ClInclude Include="..\..\source\cc_dmflags.h" />
     <ClInclude Include="..\..\source\cc_game_api.h" />
     <ClInclude Include="..\..\source\cc_cvar.h" />

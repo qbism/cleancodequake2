@@ -34,20 +34,51 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ENTITYLIST_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ENTITYLIST_H
 
-const int MAX_CLASSNAME_CLASSES_HASH = 256;
+const int MAX_CLASSNAME_CLASSES_HASH = 256;	// The size parameter for hashing
 
+/**
+\class	CClassnameToClassIndex
+
+\brief	Class that links an entity classname to a spawn function.
+
+\author	Paril
+\date	12/06/2010
+**/
 class CClassnameToClassIndex
 {
 public:
-	IMapEntity				*(*Spawn) (sint32 Index);
-	const char				*Classname;
-	uint32					hashValue;
-	CClassnameToClassIndex	*hashNext;
+	IMapEntity				*(*Spawn) (sint32 Index);	// spawn function
+	const char				*Classname;					// classname
+	uint32					HashValue;					// hash value
+	CClassnameToClassIndex	*HashNext;					// next hash index
 
+	/**
+	\fn	CClassnameToClassIndex (IMapEntity *(*Spawn) (sint32 Index), const char *Classname)
+	
+	\brief	Constructor. 
+	
+	\author	Paril
+	\date	12/06/2010
+	
+	\param [in,out]	Spawn	Spawn function. 
+	\param [in,out]	Classname	Classname. 
+	**/
 	CClassnameToClassIndex (IMapEntity *(*Spawn) (sint32 Index), const char *Classname);
 };
 
-IBaseEntity *ResolveMapEntity (SEntity *ent);
+/**
+\fn	IBaseEntity *ResolveMapEntity (SEntity *ServerEntity)
+
+\brief	Resolves entity 'ServerEntity' to a new entity.
+
+\author	Paril
+\date	12/06/2010
+
+\param [in,out]	ServerEntity	If non-null, the server entity. 
+
+\return	null if it fails, else. 
+**/
+IBaseEntity *ResolveMapEntity (SEntity *ServerEntity);
 
 #define LINK_RESOLVE_CLASSNAME(x,y) x##y
 
@@ -79,6 +110,11 @@ IBaseEntity *ResolveMapEntity (SEntity *ent);
 	(LINK_RESOLVE_CLASSNAME(DLLClassID, _Spawn), mapClassName); \
 	IMPLEMENT_SAVE_STRUCTURE (DLLClassID,DLLClassName)
 
+/**
+\fn	void InitEntities ()
+
+\brief	Initializes entities that are constant.
+**/
 void InitEntities ();
 
 #else

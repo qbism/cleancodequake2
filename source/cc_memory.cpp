@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 
 #include "cc_local.h"
+#include <memory>
 
 CC_DISABLE_DEPRECATION
 
@@ -43,18 +44,19 @@ struct SMemHeader
 {
 	SMemSentinel		SentinelHeader;
 	void				*Address;
-	sint32				TagNum;
 	size_t				Size, RealSize;
 	const char			*FileName;
-	int					FileLine;
+	EMemoryTag			TagNum;
+	uint16				FileLine;
+	bool				Array;
 
-	bool Check ()
+	bool Check (bool IsArray)
 	{
-		return (SentinelHeader.Check(this) && ((SMemSentinel*)(((uint8*)this) + RealSize - sizeof(SMemSentinel)))->Check(this));
+		return (IsArray == Array && SentinelHeader.Check(this) && ((SMemSentinel*)(((uint8*)this) + RealSize - sizeof(SMemSentinel)))->Check(this));
 	};
 };
 
-static void *Mem_TagAlloc (size_t Size, const sint32 TagNum, const char *FileName, const int Line)
+static void *Mem_TagAlloc (size_t Size, const sint32 TagNum, const char *FileName, const int Line, bool IsArray)
 {
 	size_t RealSize = Size + sizeof(SMemHeader) + sizeof(SMemSentinel);
 	SMemHeader *Mem = (SMemHeader*)((TagNum == TAG_GENERIC) ? malloc(RealSize) : gi.TagMalloc(RealSize, TagNum));
@@ -67,17 +69,18 @@ static void *Mem_TagAlloc (size_t Size, const sint32 TagNum, const char *FileNam
 	Mem->FileLine = Line;
 	Footer->Magic = Mem->SentinelHeader.Magic = HEADER_MAGIC_CONSTANT;
 	Mem->RealSize = RealSize;
+	Mem->Array = IsArray;
 	Mem->Address = (((uint8*)Mem) + sizeof(SMemHeader));
 	Mem_Zero (Mem->Address, Size);
 
 	return Mem->Address;
 }
 
-static void Mem_TagFree (void *Pointer)
+static void Mem_TagFree (void *Pointer, bool IsArray)
 {
 	SMemHeader *Header = (SMemHeader*)(((uint8*)Pointer) - sizeof(SMemHeader));
 
-	if (!Header->Check())
+	if (!Header->Check(IsArray))
 		assert (0);
 
 	if (Header->TagNum == TAG_GENERIC)
@@ -98,12 +101,12 @@ CC_ENABLE_DEPRECATION
 
 void *operator new(size_t Size, const sint32 TagNum, const int Line, const char *FileName)
 {
-	return Mem_TagAlloc(Size, TagNum, FileName, Line);
+	return Mem_TagAlloc(Size, TagNum, FileName, Line, false);
 }
 
 void *operator new[](size_t Size, const sint32 TagNum, const int Line, const char *FileName)
 {
-	return Mem_TagAlloc(Size, TagNum, FileName, Line);
+	return Mem_TagAlloc(Size, TagNum, FileName, Line, true);
 }
 
 void operator delete(void *Pointer, const sint32 TagNum, const int Line, const char *FileName)
@@ -114,8 +117,7 @@ void operator delete(void *Pointer, const sint32 TagNum, const int Line, const c
 		return;
 	}
 
-	Mem_TagFree (Pointer);
-	TagNum;
+	Mem_TagFree (Pointer, false);
 }
 
 void operator delete[](void *Pointer, const sint32 TagNum, const int Line, const char *FileName)
@@ -126,18 +128,27 @@ void operator delete[](void *Pointer, const sint32 TagNum, const int Line, const
 		return;
 	}
 
-	Mem_TagFree (Pointer);
-	TagNum;
+	Mem_TagFree (Pointer, true);
 }
 
 void *operator new (size_t Size) throw (std::bad_alloc)
 {
-	return Mem_TagAlloc(Size, TAG_GENERIC, "null", 0);
+	return Mem_TagAlloc(Size, TAG_GENERIC, "null", 0, false);
+}
+
+void *operator new[] (size_t Size) throw (std::bad_alloc)
+{
+	return Mem_TagAlloc(Size, TAG_GENERIC, "null", 0, true);
 }
 
 void operator delete (void *Pointer) throw ()
 {
-	Mem_TagFree (Pointer);
+	Mem_TagFree (Pointer, false);
+}
+
+void operator delete[] (void *Pointer) throw ()
+{
+	Mem_TagFree (Pointer, true);
 }
 
 /*

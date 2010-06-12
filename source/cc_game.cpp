@@ -37,6 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_body_queue.h"
 #include "cc_server_commands.h"
 #include "cc_version.h"
+#include <ctime>
 
 void CLevelLocals::CEntityList::Save (CFile &File)
 {
@@ -391,8 +392,6 @@ void ProcessEntity (SEntity *ent)
 				ent->AwaitingRemoval = true;
 			}
 		}
-
-		Entity->AttachOwner();
 	}
 }
 
