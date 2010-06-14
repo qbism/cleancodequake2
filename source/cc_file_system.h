@@ -1,3 +1,9 @@
+#ifndef WIN32
+#include <limits.h>
+#include <stdarg.h>
+#include <zlib.h>
+#endif
+
 /**
 \typedef	sint32 FileHandle
 

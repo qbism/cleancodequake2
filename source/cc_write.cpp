@@ -31,6 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // "Write" functions to write and check for malformed writes.
 //
 
+#ifndef WIN32
+#include <float.h>
+#endif
+
 #include "cc_local.h"
 
 // Helper functions
