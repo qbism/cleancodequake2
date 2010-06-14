@@ -292,7 +292,7 @@ static BOOL CALLBACK EnumerateLoadedModulesProcDump (PCSTR ModuleName, DWORD64 M
 		if ((len = (fnGetFileVersionInfoSize ((LPTSTR)ModuleName, (LPDWORD)&dummy))) != 0)
 		{
 			verInfo = (uint8*)LocalAlloc (LPTR, len);
-			if (fnGetFileVersionInfo ((LPTSTR)ModuleName, dummy, len, verInfo))
+/*			if (fnGetFileVersionInfo ((LPTSTR)ModuleName, dummy, len, verInfo))
 			{
 				if (fnVerQueryValue ((void*)verInfo, L"\\", (PUINT)&fileVersion, &dummy))
 					Q_snprintfz (verString, sizeof(verString), "%d.%d.%d.%d", HIWORD(fileVersion->dwFileVersionMS), LOWORD(fileVersion->dwFileVersionMS), HIWORD(fileVersion->dwFileVersionLS), LOWORD(fileVersion->dwFileVersionLS));
@@ -301,7 +301,7 @@ static BOOL CALLBACK EnumerateLoadedModulesProcDump (PCSTR ModuleName, DWORD64 M
 			}
 			else
 				Q_strncpyz (verString, "unknown", sizeof(verString));
-
+*/
 			LocalFree (verInfo);
 		}
 		else

@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Win32/64 specific functions.
 //
 
-#include "cc_local.h"
+#include "../../cc_local.h"
 
 #ifdef WIN32
 #define _DECL_DLLMAIN   /* enable prototypes for DllMain and _CRT_INIT */
