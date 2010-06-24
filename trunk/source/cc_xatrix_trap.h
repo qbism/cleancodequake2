@@ -41,8 +41,8 @@ public:
 	CTrap(char *model, sint32 FireStart, sint32 FireNumFrames,
 						 sint32 IdleStart, sint32 IdleNumFrames);
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	void	WeaponGeneric (CPlayerEntity *Player);
 
@@ -56,15 +56,15 @@ public:
 	WEAPON_CLASS_DEFS (CTrap);
 };
 
-class CTrapProjectile : public CBounceProjectile, public CThinkableEntity, public CTouchableEntity
+class CTrapProjectile : public IBounceProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
-	FrameNumber_t		TimeStamp;
+	FrameNumber		TimeStamp;
 	int					Damage;
 	int					Wait;
-	FrameNumber_t		Delay;
+	FrameNumber		Delay;
 	bool				DoFree;
-	CBaseEntity			*TrapEntities[3];
+	IBaseEntity			*TrapEntities[3];
 
 	CTrapProjectile ();
 	CTrapProjectile (sint32 Index);
@@ -73,36 +73,36 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		File.Write<FrameNumber_t> (TimeStamp);
+		File.Write<FrameNumber> (TimeStamp);
 		File.Write<int> (Damage);
 		File.Write<int> (Wait);
-		File.Write<FrameNumber_t> (Delay);
+		File.Write<FrameNumber> (Delay);
 		File.Write<bool> (DoFree);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CBounceProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		TimeStamp = File.Read<FrameNumber_t> ();
+		TimeStamp = File.Read<FrameNumber> ();
 		Damage = File.Read<int> ();
 		Wait = File.Read<int> ();
-		Delay = File.Read<FrameNumber_t> ();
+		Delay = File.Read<FrameNumber> ();
 		DoFree = File.Read<bool> ();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CBounceProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void Explode ();
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed);
+	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed);
 
 	bool Run ();
 };
@@ -112,7 +112,7 @@ class CFoodCube : public CBasePowerUp
 {
 public:
 	CFoodCube ();
-	void DoPickup (class CItemEntity *ent, CPlayerEntity *other);
+	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
 
 #else

@@ -38,23 +38,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						GAME_ORIGINAL_QUAKE2
+#define CC_GAME_MODE						(GAME_ORIGINAL_QUAKE2)
 #endif
 
-// Global macros
-// Monsters won't attack allies and will try not to hurt allies with shots
-#ifndef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID				1
-#endif
-
-// Use the Rogue AI instead of regular AI
-#ifndef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI				1
-#endif
-
-// Makes pathfinding work.
-#ifndef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING			1
+// Enable IRC
+#ifndef CLEANCODE_IRC
+#define CLEANCODE_IRC						1
 #endif
 
 // "Extended game imports" refers to all deprecated imports.
@@ -65,26 +54,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // Define this if you don't want old function calls to warn you about deprecation.
 // THIS IS AT YOUR OWN RISK! CLEANCODE HAS PERFECTLY FUNCTIONAL ALTERNATIVES.
-#ifndef _NO_DEPRECATING_OLD_FUNCTIONS
-#define _NO_DEPRECATING_OLD_FUNCTIONS		0
+#ifndef NO_DEPRECATING_OLD_FUNCTIONS
+#define NO_DEPRECATING_OLD_FUNCTIONS		0
 #endif
 
-#if !defined(WIN32) || _NO_DEPRECATING_OLD_FUNCTIONS
-	#define _CC_INSECURE_DEPRECATE(_Replacement)
+#if !defined(WIN32) || NO_DEPRECATING_OLD_FUNCTIONS
+	#define CC_INSECURE_DEPRECATE(_Replacement)
 #else
-	#define _CC_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT("CleanCode has a better replacement for this function. Consider using " #_Replacement " instead.\nTo disable deprecation, use _NO_DEPRECATING_OLD_FUNCTIONS in cc_options.h.")
+	#define CC_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT("CleanCode has a better replacement for this function. Consider using " #_Replacement " instead.\nTo disable deprecation, use NO_DEPRECATING_OLD_FUNCTIONS in cc_options.h.")
 #endif
 
 // This is a simple macro to disable deprecation for everything inside the macro.
 // This is only used internally; using this in your code could cause big problems.
-#if defined(WIN32) && !_NO_DEPRECATING_OLD_FUNCTIONS
-	#define _CC_DISABLE_DEPRECATION		__pragma(warning(push)) \
+#if defined(WIN32) && !NO_DEPRECATING_OLD_FUNCTIONS
+	#define CC_DISABLE_DEPRECATION		__pragma(warning(push)) \
 										__pragma(warning(disable:4996))
 
-	#define _CC_ENABLE_DEPRECATION		__pragma(warning(pop))
+	#define CC_ENABLE_DEPRECATION		__pragma(warning(pop))
 #else
-	#define _CC_DISABLE_DEPRECATION
-	#define _CC_ENABLE_DEPRECATION
+	#define CC_DISABLE_DEPRECATION
+	#define CC_ENABLE_DEPRECATION
 #endif
 
 // Don't touch this
@@ -102,27 +91,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CLEANCTF_ENABLED					1
 #endif
 
-// Don't touch this.
-#define GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-
 // Define this if you want monsters to not be able to go through monstersolids
 #ifndef MONSTERS_HIT_MONSTERSOLID
 #define MONSTERS_HIT_MONSTERSOLID			0
-#endif
-
-// Define this if you intend to use quaternions
-#ifndef SHARED_ALLOW_QUATERNIONS
-#define SHARED_ALLOW_QUATERNIONS			0
-#endif
-
-// Define this if you intend to use 3x3 matrix'
-#ifndef SHARED_ALLOW_3x3_MATRIX
-#define SHARED_ALLOW_3x3_MATRIX				0
-#endif
-
-// Define this if you intend to use 4x4 matrix'
-#ifndef SHARED_ALLOW_4x4_MATRIX
-#define SHARED_ALLOW_4x4_MATRIX				0
 #endif
 
 // Define this to enable some custom asserts that we place in some places
@@ -141,7 +112,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // therefore not required to be repeated in msg. Arguments
 // will cause this function to fail (obviously)
 // see cc_utils.cpp
-#define _CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
+#define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
 
 // Define this if you want to use include guards.
 #ifndef INCLUDE_GUARDS
@@ -193,18 +164,26 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROGUE_FEATURES						0
 #endif
 
+// just to reduce verbosity
+#if ROGUE_FEATURES
+#define ROGUE_VIRTUAL virtual
+#else
+#define ROGUE_VIRTUAL
+#endif
+
 // Enable Xatrix entities and weapons
 #ifndef XATRIX_FEATURES
 #define XATRIX_FEATURES						0
 #endif
 
-#if CC_GAME_MODE == GAME_ORIGINAL_QUAKE2
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 0
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
+// just to reduce verbosity
+#if XATRIX_FEATURES
+#define XATRIX_VIRTUAL virtual
+#else
+#define XATRIX_VIRTUAL
+#endif
+
+#if (CC_GAME_MODE) == GAME_ORIGINAL_QUAKE2
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -213,14 +192,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_HIT_MONSTERSOLID 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
+#undef XATRIX_FEATURES
+#define XATRIX_FEATURES 0
+#undef ROGUE_FEATURES
+#define ROGUE_FEATURES 0
 #else
-#if (CC_GAME_MODE & GAME_ROGUE) && (CC_GAME_MODE & GAME_XATRIX)
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 1
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
+#if ((CC_GAME_MODE) & GAME_ROGUE) && ((CC_GAME_MODE) & GAME_XATRIX)
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -229,17 +206,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define MONSTERS_HIT_MONSTERSOLID 1
 #undef ROGUE_FEATURES
 #define ROGUE_FEATURES 1
-#undef XATRIX__FEATURES
+#undef XATRIX_FEATURES
 #define XATRIX_FEATURES 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
-#elif (CC_GAME_MODE & GAME_ROGUE)
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 1
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
+#elif ((CC_GAME_MODE) & GAME_ROGUE)
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH
@@ -250,13 +221,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define ROGUE_FEATURES 1
 #undef DROP_DEATH_GRENADES
 #define DROP_DEATH_GRENADES 0
-#else
-#undef MONSTERS_ARENT_STUPID
-#define MONSTERS_ARENT_STUPID 0
-#undef MONSTER_USE_ROGUE_AI
-#define MONSTER_USE_ROGUE_AI 0
-#undef MONSTERS_USE_PATHFINDING
-#define MONSTERS_USE_PATHFINDING 0
+#elif ((CC_GAME_MODE) & GAME_XATRIX)
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0
 #undef AMMO_REGEN_TECH

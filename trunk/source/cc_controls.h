@@ -37,12 +37,36 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <sstream>
 #include "cc_conchars.h"
 
-CC_ENUM (uint8, ELabelFlags)
+/**
+\typedef	uint8 ELabelFlags
+
+\brief	Defines an alias representing the label flags.
+**/
+typedef uint8 ELabelFlags;
+
+/**
+\enum	
+
+\brief	Values that represent label flags. 
+**/
+enum
 {
 	LF_GREEN			=	1,
 };
 
-CC_ENUM (uint8, ELabelAlign)
+/**
+\typedef	uint8 ELabelAlign
+
+\brief	Defines an alias representing label text alignment.
+**/
+typedef uint8 ELabelAlign;
+
+/**
+\enum	
+
+\brief	Values that represent label text alignment. 
+**/
+enum
 {
 	LA_LEFT,
 	LA_CENTER,
@@ -52,22 +76,22 @@ CC_ENUM (uint8, ELabelAlign)
 class CMenu_Label : public CMenuItem
 {
 public:
-	std::cc_string			LabelString;
+	std::string			LabelString;
 	ELabelFlags				Flags;
 	ELabelAlign				Align;
 
 	CMenu_Label				(CMenu *Menu, sint32 x, sint32 y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
 	}
 };
@@ -75,29 +99,29 @@ public:
 class CMenu_Image : public CMenuItem
 {
 public:
-	std::cc_string			ImageString;
+	std::string			ImageString;
 	sint32						Width, Height;
 
 	CMenu_Image				(CMenu *Menu, sint32 x, sint32 y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
 	}
 };
 
 struct SSpinControlIndex
 {
-	char		*Text;
-	char		*Value;
+	const char		*Text;
+	const char		*Value;
 };
 
 class CMenu_Spin : public CMenuItem
@@ -110,20 +134,32 @@ public:
 	SSpinControlIndex		*Indices;
 
 	CMenu_Spin				(CMenu *Menu, sint32 x, sint32 y, SSpinControlIndex *Indices);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent);
+	virtual void	Update (CPlayerEntity *Player);
 };
 
-CC_ENUM (uint8, ESliderTextPosition)
+/**
+\typedef	uint8 ESliderTextPosition
+
+\brief	Defines an alias representing the slider text position.
+**/
+typedef uint8 ESliderTextPosition;
+
+/**
+\enum	
+
+\brief	Values that represent the slider text position. 
+**/
+enum
 {
 	STP_RIGHT,
 	STP_TOP,
@@ -132,6 +168,8 @@ CC_ENUM (uint8, ESliderTextPosition)
 
 	STP_CUSTOM // Allows programmer to shove the text where ever he wants
 };
+
+const int MAX_SLIDER_WIDTH = 64;
 
 template <typename TType>
 class CMenu_Slider : public CMenuItem
@@ -146,17 +184,17 @@ public:
 	TType					Max;
 	TType					Step;
 	TType					Value;
-	std::cc_string			AppendText;
+	std::string			AppendText;
 
 	CMenu_Slider			(CMenu *Menu, sint32 x, sint32 y) :
 	  CMenuItem(Menu, x, y)
 	{
 	};
 
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState)
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState)
 	{
-		if (Width > (MAX_INFO_KEY*2)-3)
-			Width = (MAX_INFO_KEY*2)-3;
+		if (Width > MAX_SLIDER_WIDTH-3)
+			Width = MAX_SLIDER_WIDTH-3;
 
 		sint32 drawX = x;
 
@@ -174,7 +212,7 @@ public:
 		DrawState->AddVirtualPoint_X (drawX);
 		DrawState->AddVirtualPoint_Y (y + 120);
 
-		char Buffer[MAX_INFO_KEY*2];
+		char Buffer[MAX_SLIDER_WIDTH];
 		Buffer[0] = CCHAR_DOWNLOADBAR_LEFT;
 
 		// Which number is closest to the value?
@@ -210,22 +248,22 @@ public:
 
 		DrawState->AddVirtualPoint_X (drawX);
 
-		std::cc_stringstream str;
+		std::stringstream str;
 		str << Value << AppendText;
 		DrawState->AddString (str.str().c_str(), Selected, false);
 	};
 
-	virtual bool	CanSelect (CPlayerEntity *ent)
+	virtual bool	CanSelect (CPlayerEntity *Player)
 	{
 		return Enabled;
 	}
-	virtual bool	Select (CPlayerEntity *ent)
+	virtual bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
-		switch (ent->Client.Respawn.MenuState.Key)
+		switch (Player->Client.Respawn.MenuState.Key)
 		{
 		case CMenuState::KEY_RIGHT:
 			if (Value == Max)
@@ -260,18 +298,18 @@ public:
 	sint32						Type;
 
 	CMenu_Box			(CMenu *Menu, sint32 x, sint32 y);
-	virtual void Draw		(CPlayerEntity *ent, CStatusBar *DrawState);
+	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
 
 	// Can't select
-	bool	CanSelect (CPlayerEntity *ent)
+	bool	CanSelect (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	bool	Select (CPlayerEntity *ent)
+	bool	Select (CPlayerEntity *Player)
 	{
 		return false;
 	}
-	virtual void	Update (CPlayerEntity *ent)
+	virtual void	Update (CPlayerEntity *Player)
 	{
 	};
 };

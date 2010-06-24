@@ -34,14 +34,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ARG_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ARG_H
 
-void				SetupArg ();
-void				InitArg ();
-void				EndArg ();
-uint8				ArgCount ();
-std::cc_string		ArgGets (uint32 Index);
-sint32				ArgGeti (uint32 Index);
-float				ArgGetf (uint32 Index);
-std::cc_string		ArgGetConcatenatedString ();
+void			SetupArg ();
+void			InitArg ();
+void			EndArg ();
+uint8			ArgCount ();
+std::string		ArgGets (uint32 Index);
+sint32			ArgGeti (uint32 Index);
+float			ArgGetf (uint32 Index);
+std::string		ArgGetConcatenatedString ();
 
 #else
 FILE_WARNING

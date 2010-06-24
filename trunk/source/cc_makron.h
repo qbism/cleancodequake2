@@ -39,21 +39,6 @@ class CMakron : public CMonster
 public:
 	vec3f		SavedLoc;
 
-	MediaIndex	SoundPain4;
-	MediaIndex	SoundPain5;
-	MediaIndex	SoundPain6;
-	MediaIndex	SoundDeath;
-	MediaIndex	SoundStepLeft;
-	MediaIndex	SoundStepRight;
-	MediaIndex	SoundAttackBfg;
-	MediaIndex	SoundBrainSplorch;
-	MediaIndex	SoundPreRailgun;
-	MediaIndex	SoundPopUp;
-	MediaIndex	SoundTaunt1;
-	MediaIndex	SoundTaunt2;
-	MediaIndex	SoundTaunt3;
-	MediaIndex	SoundHit;
-
 	MONSTER_SOUND_ENUM
 	(
 		SOUND_PAIN4,
@@ -108,15 +93,17 @@ public:
 	void SavePosition ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
 	static void Precache ();
-	static void Toss (CBaseEntity *Spawner);
+	static void Toss (IBaseEntity *Spawner);
+	
+	MONSTER_ID_HEADER
 };
 
-class CMakronJumpTimer : public virtual CBaseEntity, public CThinkableEntity
+class CMakronJumpTimer : public virtual IBaseEntity, public IThinkableEntity
 {
 public:
 	CMonsterEntity	*LinkedJorg;
@@ -130,7 +117,7 @@ public:
 	{
 		File.Write<sint32> ((LinkedJorg) ? LinkedJorg->State.GetNumber() : -1);
 
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -138,9 +125,9 @@ public:
 		sint32 Index = File.Read<sint32> ();
 
 		if (Index != -1)
-			LinkedJorg = entity_cast<CMonsterEntity>(g_edicts[Index].Entity);
+			LinkedJorg = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ();

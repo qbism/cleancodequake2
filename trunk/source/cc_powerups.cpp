@@ -33,122 +33,122 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CBasePowerUp::CBasePowerUp(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CBasePowerUp::CBasePowerUp(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
 PowerupFlags(PowerupFlags)
 {
 };
 
 // Powerups!
-bool CBasePowerUp::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CBasePowerUp::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (PowerupFlags & POWERFLAG_STORE)
 	{
-		if (other->Client.Persistent.Inventory.Has(this) > 0 &&
+		if (Other->Client.Persistent.Inventory.Has(this) > 0 &&
 			(!(PowerupFlags & POWERFLAG_STACK) ||
-			(PowerupFlags & (POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP) && (game.GameMode == GAME_COOPERATIVE)) ||
-			(game.GameMode == GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP)))
+			(PowerupFlags & (POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP) && (Game.GameMode & GAME_COOPERATIVE)) ||
+			(Game.GameMode & GAME_COOPERATIVE) && (Flags & ITEMFLAG_STAY_COOP)))
 			return false;
 
-		other->Client.Persistent.Inventory += this;
+		Other->Client.Persistent.Inventory += this;
 	}
 
-	DoPickup (ent, other);
+	DoPickup (Item, Other);
 	return true;
 }
 
-void CBasePowerUp::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CBasePowerUp::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 }
 
-void CBasePowerUp::Use (CPlayerEntity *ent)
+void CBasePowerUp::Use (CPlayerEntity *Player)
 {
 }
 
-void CBasePowerUp::Drop (CPlayerEntity *ent)
+void CBasePowerUp::Drop (CPlayerEntity *Player)
 {
 	if (PowerupFlags & POWERFLAG_STORE)
 	{	
-		DropItem (ent);
-		ent->Client.Persistent.Inventory -= this;
+		DropItem (Player);
+		Player->Client.Persistent.Inventory -= this;
 	}
 }
 
-CMegaHealth::CMegaHealth(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CMegaHealth::CMegaHealth(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CBackPack::CBackPack(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CBackPack::CBackPack(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CQuadDamage::CQuadDamage(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CQuadDamage::CQuadDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CInvulnerability::CInvulnerability(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CInvulnerability::CInvulnerability(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CSilencer::CSilencer(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CSilencer::CSilencer(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CRebreather::CRebreather(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CRebreather::CRebreather(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CEnvironmentSuit::CEnvironmentSuit(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CEnvironmentSuit::CEnvironmentSuit(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CBandolier::CBandolier(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CBandolier::CBandolier(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CAdrenaline::CAdrenaline(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CAdrenaline::CAdrenaline(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CAncientHead::CAncientHead(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CAncientHead::CAncientHead(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-CPowerShield::CPowerShield(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CPowerShield::CPowerShield(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
@@ -160,7 +160,7 @@ public:
 	CPlayerEntity	*Player;
 
 	CMegaHealthEntity () :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity(),
 	  Player(NULL)
 	  {
@@ -168,7 +168,7 @@ public:
 	  };
 
 	CMegaHealthEntity (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CItemEntity(Index),
 	  Player(NULL)
 	  {
@@ -183,17 +183,17 @@ public:
 		
 			&& ((
 #if CLEANCTF_ENABLED
-			!(game.GameMode & GAME_CTF) && 
+			!(Game.GameMode & GAME_CTF) && 
 #endif
-			!dmFlags.dfDmTechs.IsEnabled()) || !Player->HasRegeneration())
+			!DeathmatchFlags.dfDmTechs.IsEnabled()) || !Player->HasRegeneration())
 				)
 			{
-				NextThink = level.Frame + 10;
+				NextThink = Level.Frame + 10;
 				Player->Health -= 1;
 				return;
 			}
 
-			if (!(SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
+			if (!(SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
 				LinkedItem->SetRespawn (this, 200);
 			else
 				Free ();
@@ -205,91 +205,91 @@ public:
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.GameMode & GAME_DEATHMATCH) && (dmFlags.dfNoHealth.IsEnabled() || dmFlags.dfNoItems.IsEnabled()))
+		if ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfNoHealth.IsEnabled() || DeathmatchFlags.dfNoItems.IsEnabled()))
 		{
 			Free ();
 			return;
 		}
 
 		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
+		NextThink = Level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 
 		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
+		State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	};
 };
 
 
 // Seperate powerup classes
-void CMegaHealth::DoPickup (CItemEntity *ent, CPlayerEntity *other)
+void CMegaHealth::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
-	CMegaHealthEntity *MegaHealth = entity_cast<CMegaHealthEntity>(ent);
+	CMegaHealthEntity *MegaHealth = entity_cast<CMegaHealthEntity>(Item);
 
-	if ((!dmFlags.dfDmTechs.IsEnabled()
+	if ((!DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-		&& !(game.GameMode & GAME_CTF)
+		&& !(Game.GameMode & GAME_CTF)
 #endif
 		)|| ((
 #if CLEANCTF_ENABLED
-		(game.GameMode & GAME_CTF) || 
+		(Game.GameMode & GAME_CTF) || 
 #endif
-		dmFlags.dfDmTechs.IsEnabled()) && !other->HasRegeneration()))
+		DeathmatchFlags.dfDmTechs.IsEnabled()) && !Other->HasRegeneration()))
 	{
 		MegaHealth->MegaHealthThinking = true;
-		MegaHealth->NextThink = level.Frame + 50;
-		MegaHealth->Player = other;
-		MegaHealth->Flags |= FL_RESPAWN;
+		MegaHealth->NextThink = Level.Frame + 50;
+		MegaHealth->Player = Other;
+		MegaHealth->ShouldRespawn = true;
 		MegaHealth->GetSvFlags() |= SVF_NOCLIENT;
 		MegaHealth->GetSolid() = SOLID_NOT;
 
-		other->Health += 100;
+		Other->Health += 100;
 	}
 #if CLEANCTF_ENABLED
-	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		MegaHealth->LinkedItem->SetRespawn (ent, 300);
+	else if (!(MegaHealth->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		MegaHealth->LinkedItem->SetRespawn (Item, 300);
 #endif
 }
 
-void CBackPack::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CBackPack::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	// Increase their max ammo, if applicable
 	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
 	{
-		if (other->Client.Persistent.MaxAmmoValues[i] < maxBackpackAmmoValues[i])
-			other->Client.Persistent.MaxAmmoValues[i] = maxBackpackAmmoValues[i];
+		if (Other->Client.Persistent.MaxAmmoValues[i] < maxBackpackAmmoValues[i])
+			Other->Client.Persistent.MaxAmmoValues[i] = maxBackpackAmmoValues[i];
 	}
 
 	// Give them some more ammo
-	NItems::Bullets->AddAmmo (other, NItems::Bullets->Quantity);
-	NItems::Shells->AddAmmo (other, NItems::Shells->Quantity);
-	NItems::Grenades->AddAmmo (other, NItems::Grenades->Quantity);
-	NItems::Cells->AddAmmo (other, NItems::Cells->Quantity);
-	NItems::Slugs->AddAmmo (other, NItems::Slugs->Quantity);
-	NItems::Rockets->AddAmmo (other, NItems::Rockets->Quantity);
+	NItems::Bullets->AddAmmo (Other, NItems::Bullets->Quantity);
+	NItems::Shells->AddAmmo (Other, NItems::Shells->Quantity);
+	NItems::Grenades->AddAmmo (Other, NItems::Grenades->Quantity);
+	NItems::Cells->AddAmmo (Other, NItems::Cells->Quantity);
+	NItems::Slugs->AddAmmo (Other, NItems::Slugs->Quantity);
+	NItems::Rockets->AddAmmo (Other, NItems::Rockets->Quantity);
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 1800);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 1800);
 }
 
 static sint32	quad_drop_timeout_hack;
 
-void CQuadDamage::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CQuadDamage::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 600);
-		if (ent->SpawnFlags & DROPPED_PLAYER_ITEM)
-			quad_drop_timeout_hack = (ent->NextThink - level.Frame);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (Item->SpawnFlags & DROPPED_PLAYER_ITEM)
+			quad_drop_timeout_hack = (Item->NextThink - Level.Frame);
 
-		if (dmFlags.dfInstantItems.IsEnabled())
-			Use (other);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled())
+			Use (Other);
 	}
 }
 
-void CQuadDamage::Use (CPlayerEntity *ent)
+void CQuadDamage::Use (CPlayerEntity *Player)
 {
 	sint32 timeOut = 300;
 
@@ -299,201 +299,201 @@ void CQuadDamage::Use (CPlayerEntity *ent)
 		quad_drop_timeout_hack = 0;
 	}
 
-	if (ent->Client.Timers.QuadDamage > level.Frame)
-		ent->Client.Timers.QuadDamage += timeOut;
+	if (Player->Client.Timers.QuadDamage > Level.Frame)
+		Player->Client.Timers.QuadDamage += timeOut;
 	else
-		ent->Client.Timers.QuadDamage = level.Frame + timeOut;
+		Player->Client.Timers.QuadDamage = Level.Frame + timeOut;
 
-	ent->Client.Persistent.Inventory -= this;
+	Player->Client.Persistent.Inventory -= this;
 
-	ent->PlaySound (CHAN_ITEM, SoundIndex("items/damage.wav"));
+	Player->PlaySound (CHAN_ITEM, SoundIndex("items/damage.wav"));
 }
 
-void CInvulnerability::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CInvulnerability::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode == GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 300);
-		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
-			Use (other);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 300);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
+			Use (Other);
 	}
 }
 
-void CInvulnerability::Use (CPlayerEntity *ent)
+void CInvulnerability::Use (CPlayerEntity *Player)
 {
-	ent->Client.Persistent.Inventory -= this;
+	Player->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.Timers.Invincibility > level.Frame)
-		ent->Client.Timers.Invincibility += 300;
+	if (Player->Client.Timers.Invincibility > Level.Frame)
+		Player->Client.Timers.Invincibility += 300;
 	else
-		ent->Client.Timers.Invincibility = level.Frame + 300;
+		Player->Client.Timers.Invincibility = Level.Frame + 300;
 
-	ent->PlaySound (CHAN_ITEM, SoundIndex("items/protect.wav"));
+	Player->PlaySound (CHAN_ITEM, SoundIndex("items/protect.wav"));
 }
 
-void CSilencer::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CSilencer::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 300);
-		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
-			Use (other);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 300);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
+			Use (Other);
 	}
 }
 
-void CSilencer::Use (CPlayerEntity *ent)
+void CSilencer::Use (CPlayerEntity *Player)
 {
-	ent->Client.Persistent.Inventory -= this;
-	ent->Client.Timers.SilencerShots += 30;
+	Player->Client.Persistent.Inventory -= this;
+	Player->Client.Timers.SilencerShots += 30;
 }
 
-void CRebreather::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CRebreather::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 600);
-		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
-			Use (other);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
+			Use (Other);
 	}
 }
 
-void CRebreather::Use (CPlayerEntity *ent)
+void CRebreather::Use (CPlayerEntity *Player)
 {
-	ent->Client.Persistent.Inventory -= this;
+	Player->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.Timers.Rebreather > level.Frame)
-		ent->Client.Timers.Rebreather += 300;
+	if (Player->Client.Timers.Rebreather > Level.Frame)
+		Player->Client.Timers.Rebreather += 300;
 	else
-		ent->Client.Timers.Rebreather = level.Frame + 300;
+		Player->Client.Timers.Rebreather = Level.Frame + 300;
 }
 
-void CEnvironmentSuit::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CEnvironmentSuit::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 600);
-		if (dmFlags.dfInstantItems.IsEnabled() || (ent->SpawnFlags & DROPPED_PLAYER_ITEM))
-			Use (other);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled() || (Item->SpawnFlags & DROPPED_PLAYER_ITEM))
+			Use (Other);
 	}
 }
 
-void CEnvironmentSuit::Use (CPlayerEntity *ent)
+void CEnvironmentSuit::Use (CPlayerEntity *Player)
 {
-	ent->Client.Persistent.Inventory -= this;
+	Player->Client.Persistent.Inventory -= this;
 
-	if (ent->Client.Timers.EnvironmentSuit > level.Frame)
-		ent->Client.Timers.EnvironmentSuit += 300;
+	if (Player->Client.Timers.EnvironmentSuit > Level.Frame)
+		Player->Client.Timers.EnvironmentSuit += 300;
 	else
-		ent->Client.Timers.EnvironmentSuit = level.Frame + 300;
+		Player->Client.Timers.EnvironmentSuit = Level.Frame + 300;
 }
 
-void CBandolier::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CBandolier::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	// Increase their max ammo, if applicable
 	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
 	{
-		if (other->Client.Persistent.MaxAmmoValues[i] < maxBandolierAmmoValues[i])
-			other->Client.Persistent.MaxAmmoValues[i] = maxBandolierAmmoValues[i];
+		if (Other->Client.Persistent.MaxAmmoValues[i] < maxBandolierAmmoValues[i])
+			Other->Client.Persistent.MaxAmmoValues[i] = maxBandolierAmmoValues[i];
 	}
 
 	// Give them some more ammo
-	NItems::Bullets->AddAmmo (other, NItems::Bullets->Quantity);
-	NItems::Shells->AddAmmo (other, NItems::Shells->Quantity);
+	NItems::Bullets->AddAmmo (Other, NItems::Bullets->Quantity);
+	NItems::Shells->AddAmmo (Other, NItems::Shells->Quantity);
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 600);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 600);
 }
 
-void CAdrenaline::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CAdrenaline::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (!(game.GameMode & GAME_DEATHMATCH))
-		other->MaxHealth += 1;
+	if (!(Game.GameMode & GAME_DEATHMATCH))
+		Other->MaxHealth += 1;
 
-	if (other->Health < other->MaxHealth)
-		other->Health = other->MaxHealth;
+	if (Other->Health < Other->MaxHealth)
+		Other->Health = Other->MaxHealth;
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 600);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 600);
 }
 
-void CAncientHead::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CAncientHead::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	other->MaxHealth += 2;
+	Other->MaxHealth += 2;
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 600);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 600);
 }
 
-void CPowerShield::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CPowerShield::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 600);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
 
 		// auto-use for DM only if we didn't already have one
-		if (!other->Client.Persistent.Inventory.Has(this))
-			Use (other);
+		if (!Other->Client.Persistent.Inventory.Has(this))
+			Use (Other);
 	}
 }
 
-void CPowerShield::Use (CPlayerEntity *ent)
+void CPowerShield::Use (CPlayerEntity *Player)
 {
-	if (ent->Flags & FL_POWER_ARMOR)
+	if (Player->Client.PowerArmorEnabled)
 	{
-		ent->Flags &= ~FL_POWER_ARMOR;
-		ent->PlaySound (CHAN_AUTO, SoundIndex("misc/power2.wav"));
+		Player->Client.PowerArmorEnabled = false;
+		Player->PlaySound (CHAN_AUTO, SoundIndex("misc/power2.wav"));
 	}
 	else
 	{
-		if (!ent->Client.Persistent.Inventory.Has(NItems::Cells))
+		if (!Player->Client.Persistent.Inventory.Has(NItems::Cells))
 		{
-			ent->PrintToClient (PRINT_HIGH, "No cells for %s.\n", Name);
+			Player->PrintToClient (PRINT_HIGH, "No cells for %s.\n", Name);
 			return;
 		}
-		ent->Flags |= FL_POWER_ARMOR;
-		ent->PlaySound (CHAN_AUTO, SoundIndex("misc/power1.wav"));
+		Player->Client.PowerArmorEnabled = true;
+		Player->PlaySound (CHAN_AUTO, SoundIndex("misc/power1.wav"));
 	}
 }
 
-void CPowerShield::Drop (CPlayerEntity *ent)
+void CPowerShield::Drop (CPlayerEntity *Player)
 {
-	if ((ent->Flags & FL_POWER_ARMOR) && (ent->Client.Persistent.Inventory.Has(this) == 1))
-		Use (ent);
-	CBasePowerUp::Drop (ent);
+	if ((Player->Client.PowerArmorEnabled) && (Player->Client.Persistent.Inventory.Has(this) == 1))
+		Use (Player);
+	CBasePowerUp::Drop (Player);
 }
 
 CPowerupEntity::CPowerupEntity() :
-  CBaseEntity(),
+  IBaseEntity(),
   CItemEntity ()
   {
   };
 
 CPowerupEntity::CPowerupEntity (sint32 Index) :
-  CBaseEntity(Index),
+  IBaseEntity(Index),
   CItemEntity (Index)
   {
   };
 
 void CPowerupEntity::Spawn (CBaseItem *item)
 {
-	if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoItems.IsEnabled())
+	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoItems.IsEnabled())
 	{
 		Free ();
 		return;
 	}
 
 	LinkedItem = item;
-	NextThink = level.Frame + 2;    // items start after other solids
+	NextThink = Level.Frame + 2;    // items start after other solids
 	ThinkState = ITS_DROPTOFLOOR;
 	PhysicsType = PHYSICS_NONE;
 
 	State.GetEffects() = item->EffectFlags;
-	State.GetRenderEffects() = RF_GLOW;
+	State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 };
 
 LINK_ITEM_TO_CLASS (item_health_mega, CMegaHealthEntity);
@@ -511,16 +511,16 @@ LINK_ITEM_TO_CLASS (item_power_screen, CPowerupEntity);
 
 void AddPowerupsToList ()
 {
-	NItems::MegaHealth = QNew (com_itemPool, 0) CMegaHealth("item_health_mega", "models/items/mega_h/tris.md2", 0, "items/m_health.wav", "i_health", "MegaHealth", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
-	NItems::BackPack = QNew (com_itemPool, 0) CBackPack ("item_pack", "models/items/pack/tris.md2", EF_ROTATE, "items/pkup.wav", "i_pack", "Ammo Pack", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Quad = QNew (com_itemPool, 0) CQuadDamage ("item_quad", "models/items/quaddama/tris.md2", EF_ROTATE, "items/pkup.wav", "p_quad", "Quad Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Invul = QNew (com_itemPool, 0) CInvulnerability ("item_invulnerability", "models/items/invulner/tris.md2", EF_ROTATE, "items/pkup.wav", "p_invulnerability", "Invulnerability", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Silencer = QNew (com_itemPool, 0) CSilencer ("item_silencer", "models/items/silencer/tris.md2", EF_ROTATE, "items/pkup.wav", "p_silencer", "Silencer", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Rebreather = QNew (com_itemPool, 0) CRebreather ("item_breather", "models/items/breather/tris.md2", EF_ROTATE, "items/pkup.wav", "p_rebreather", "Rebreather", ITEMFLAG_POWERUP|ITEMFLAG_STAY_COOP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::EnvironmentSuit = QNew (com_itemPool, 0) CEnvironmentSuit ("item_enviro", "models/items/enviro/tris.md2", EF_ROTATE, "items/pkup.wav", "p_envirosuit", "Environment Suit", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Bandolier = QNew (com_itemPool, 0) CBandolier ("item_bandolier", "models/items/band/tris.md2", EF_ROTATE, "items/pkup.wav", "p_bandolier", "Bandolier", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Adrenaline = QNew (com_itemPool, 0) CAdrenaline ("item_adrenaline", "models/items/adrenal/tris.md2", EF_ROTATE, "items/pkup.wav", "p_adrenaline", "Adrenaline", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
-	NItems::AncientHead = QNew (com_itemPool, 0) CAncientHead ("item_ancient_head", "models/items/c_head/tris.md2", EF_ROTATE, "items/pkup.wav", "i_fixme", "Ancient Head", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
-	NItems::PowerShield = QNew (com_itemPool, 0) CPowerShield ("item_power_shield", "models/items/armor/shield/tris.md2", EF_ROTATE, "misc/ar3_pkup.wav", "i_powershield", "Power Shield", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::PowerScreen = QNew (com_itemPool, 0) CPowerShield ("item_power_screen", "models/items/armor/screen/tris.md2", EF_ROTATE, "misc/ar3_pkup.wav", "i_powerscreen", "Power Screen", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::MegaHealth = QNew (TAG_GENERIC) CMegaHealth("item_health_mega", "models/items/mega_h/tris.md2", 0, "items/m_health.wav", "i_health", "MegaHealth", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
+	NItems::BackPack = QNew (TAG_GENERIC) CBackPack ("item_pack", "models/items/pack/tris.md2", EF_ROTATE, "items/pkup.wav", "i_pack", "Ammo Pack", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Quad = QNew (TAG_GENERIC) CQuadDamage ("item_quad", "models/items/quaddama/tris.md2", EF_ROTATE, "items/pkup.wav", "p_quad", "Quad Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Invul = QNew (TAG_GENERIC) CInvulnerability ("item_invulnerability", "models/items/invulner/tris.md2", EF_ROTATE, "items/pkup.wav", "p_invulnerability", "Invulnerability", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Silencer = QNew (TAG_GENERIC) CSilencer ("item_silencer", "models/items/silencer/tris.md2", EF_ROTATE, "items/pkup.wav", "p_silencer", "Silencer", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Rebreather = QNew (TAG_GENERIC) CRebreather ("item_breather", "models/items/breather/tris.md2", EF_ROTATE, "items/pkup.wav", "p_rebreather", "Rebreather", ITEMFLAG_POWERUP|ITEMFLAG_STAY_COOP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::EnvironmentSuit = QNew (TAG_GENERIC) CEnvironmentSuit ("item_enviro", "models/items/enviro/tris.md2", EF_ROTATE, "items/pkup.wav", "p_envirosuit", "Environment Suit", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Bandolier = QNew (TAG_GENERIC) CBandolier ("item_bandolier", "models/items/band/tris.md2", EF_ROTATE, "items/pkup.wav", "p_bandolier", "Bandolier", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Adrenaline = QNew (TAG_GENERIC) CAdrenaline ("item_adrenaline", "models/items/adrenal/tris.md2", EF_ROTATE, "items/pkup.wav", "p_adrenaline", "Adrenaline", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
+	NItems::AncientHead = QNew (TAG_GENERIC) CAncientHead ("item_ancient_head", "models/items/c_head/tris.md2", EF_ROTATE, "items/pkup.wav", "i_fixme", "Ancient Head", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
+	NItems::PowerShield = QNew (TAG_GENERIC) CPowerShield ("item_power_shield", "models/items/armor/shield/tris.md2", EF_ROTATE, "misc/ar3_pkup.wav", "i_powershield", "Power Shield", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::PowerScreen = QNew (TAG_GENERIC) CPowerShield ("item_power_screen", "models/items/armor/screen/tris.md2", EF_ROTATE, "misc/ar3_pkup.wav", "i_powerscreen", "Power Screen", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 }

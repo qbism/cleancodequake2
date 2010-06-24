@@ -34,35 +34,35 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if XATRIX_FEATURES
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "cc_xatrix_trap.h"
 
 CFoodCube *FoodCubeItem;
 
 static sint32	quad_fire_drop_timeout_hack;
 
-CQuadFire::CQuadFire(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, EPowerupFlags PowerupFlags) :
+CQuadFire::CQuadFire(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, EPowerupFlags PowerupFlags) :
 CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
 {
 };
 
-void CQuadFire::DoPickup (class CItemEntity *ent, CPlayerEntity *other)
+void CQuadFire::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode & GAME_DEATHMATCH)
+	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (!(ent->SpawnFlags & DROPPED_ITEM) )
-			SetRespawn (ent, 600);
-		if (ent->SpawnFlags & DROPPED_PLAYER_ITEM)
-			quad_fire_drop_timeout_hack = (ent->NextThink - level.Frame);
+		if (!(Item->SpawnFlags & DROPPED_ITEM) )
+			SetRespawn (Item, 600);
+		if (Item->SpawnFlags & DROPPED_PLAYER_ITEM)
+			quad_fire_drop_timeout_hack = (Item->NextThink - Level.Frame);
 
-		if (dmFlags.dfInstantItems.IsEnabled())
-			Use (other);
+		if (DeathmatchFlags.dfInstantItems.IsEnabled())
+			Use (Other);
 	}
 }
 
-void CQuadFire::Use (CPlayerEntity *ent)
+void CQuadFire::Use (CPlayerEntity *Player)
 {
 	sint32 timeOut = 300;
 
@@ -72,18 +72,15 @@ void CQuadFire::Use (CPlayerEntity *ent)
 		quad_fire_drop_timeout_hack = 0;
 	}
 
-	if (ent->Client.Timers.QuadFire > level.Frame)
-		ent->Client.Timers.QuadFire += timeOut;
+	if (Player->Client.Timers.QuadFire > Level.Frame)
+		Player->Client.Timers.QuadFire += timeOut;
 	else
-		ent->Client.Timers.QuadFire = level.Frame + timeOut;
+		Player->Client.Timers.QuadFire = Level.Frame + timeOut;
 
-	ent->Client.Persistent.Inventory -= this;
-
-	ent->PlaySound (CHAN_ITEM, SoundIndex("items/quadfire1.wav"));
+	Player->Client.Persistent.Inventory -= this;
+	Player->PlaySound (CHAN_ITEM, SoundIndex("items/quadfire1.wav"));
 }
 
-LINK_ITEM_TO_CLASS (weapon_boomer, CItemEntity);
-LINK_ITEM_TO_CLASS (weapon_phalanx, CItemEntity);
 LINK_ITEM_TO_CLASS (ammo_magslug, CAmmoEntity);
 LINK_ITEM_TO_CLASS (ammo_trap, CAmmoEntity);
 LINK_ITEM_TO_CLASS (item_quadfire, CPowerupEntity);
@@ -91,11 +88,11 @@ LINK_ITEM_TO_CLASS (key_green_key, CItemEntity);
 
 void AddXatrixItemsToList ()
 {
-	NItems::MagSlugs = QNew (com_itemPool, 0) CAmmo("ammo_magslug", "models/objects/ammo/tris.md2", 0, "misc/am_pkup.wav", "a_mslugs", "Mag Slug", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_MAGSLUGS);
-	NItems::Trap = QNew (com_itemPool, 0) CAmmoWeapon("ammo_trap", "models/weapons/g_trap/tris.md2", EF_ROTATE, "misc/am_pkup.wav", "a_trap", "Trap", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTrap::Weapon, 1, "#a_grenades.md2", 1, CAmmo::AMMOTAG_TRAP);
-	FoodCubeItem = QNew (com_itemPool, 0) CFoodCube;
+	NItems::MagSlugs = QNew (TAG_GENERIC) CAmmo("ammo_magslug", "models/objects/ammo/tris.md2", 0, "misc/am_pkup.wav", "a_mslugs", "Mag Slug", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, CAmmo::AMMOTAG_MAGSLUGS);
+	NItems::Trap = QNew (TAG_GENERIC) CAmmoWeapon("ammo_trap", "models/weapons/g_trap/tris.md2", EF_ROTATE, "misc/am_pkup.wav", "a_trap", "Trap", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTrap::Weapon, 1, "#a_grenades.md2", 1, CAmmo::AMMOTAG_TRAP);
+	FoodCubeItem = QNew (TAG_GENERIC) CFoodCube;
 
-	NItems::QuadFire = QNew (com_itemPool, 0) CQuadFire ("item_quadfire", "models/items/quadfire/tris.md2", EF_ROTATE, "items/pkup.wav", "p_quadfire", "DualFire Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	QNew (com_itemPool, 0) CKey("key_green_key", "models/items/keys/green_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_greenkey", "Green Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	NItems::QuadFire = QNew (TAG_GENERIC) CQuadFire ("item_quadfire", "models/items/quadfire/tris.md2", EF_ROTATE, "items/pkup.wav", "p_quadfire", "DualFire Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	QNew (TAG_GENERIC) CKey("key_green_key", "models/items/keys/green_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_greenkey", "Green Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 }
 #endif

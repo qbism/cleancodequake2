@@ -39,7 +39,7 @@ CMenuItem(Menu, x, y)
 {
 };
 
-void CMenu_Label::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
+void CMenu_Label::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 {
 	bool high = (Flags & LF_GREEN);
 	DrawState->AddVirtualPoint_Y (y + 120);
@@ -89,7 +89,7 @@ CMenuItem(Menu, x, y)
 {
 };
 
-void CMenu_Image::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
+void CMenu_Image::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 {
 	DrawState->AddVirtualPoint_X ((x + 160) - Width/2);
 	DrawState->AddVirtualPoint_Y ((y + 120) - Height/2);
@@ -117,7 +117,7 @@ Indices(Indices)
 	Indices = Indices;
 };
 
-void CMenu_Spin::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
+void CMenu_Spin::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 {
 	sint32 drawX = x;
 
@@ -181,9 +181,9 @@ void CMenu_Spin::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
 	}
 };
 
-void CMenu_Spin::Update (CPlayerEntity *ent)
+void CMenu_Spin::Update (CPlayerEntity *Player)
 {
-	switch (ent->Client.Respawn.MenuState.Key)
+	switch (Player->Client.Respawn.MenuState.Key)
 	{
 	case CMenuState::KEY_RIGHT:
 		if (Index == (NumIndices-1))
@@ -205,7 +205,7 @@ CMenuItem(Menu, x, y)
 {
 };
 
-void CMenu_Box::Draw (CPlayerEntity *ent, CStatusBar *DrawState)
+void CMenu_Box::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 {
 	static char	Buf[MAX_COMPRINT/2];
 	sint32			DrawX = (Align == LA_CENTER) ? x : x + 160, DrawY = y + 120, Index = 0;

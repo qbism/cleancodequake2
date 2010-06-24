@@ -28,96 +28,98 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  
 ==============================================================================
 */
+
+/**
+\fn	template<typename TType> inline TType Align(const TType &Number, const TType &Alignment)
+
+\brief	Aligns 'Number' to 'Alignment'. 
+
+\author	Paril
+\date	27/05/2010
+
+\param	Number		Number to be aligned. 
+\param	Alignment	The alignment value. 
+
+\return	. 
+**/
 template<typename TType>
-static inline TType Align(const TType &Number, const TType &Alignment)
+inline TType Align(const TType &Number, const TType &Alignment)
 {
 	return (TType)(((intptr)Number + Alignment-1) & ~(Alignment-1));
 }
 
+/**
+\fn	template<typename TType> inline TType Min(const TType A, const TType B)
+
+\brief	Gets the smaller value of 'A' and 'B'.
+
+\author	Paril
+\date	27/05/2010
+
+\param	A	First value. 
+\param	B	Second value. 
+
+\return	'A' if A <= B, otherwise B. 
+**/
 template<typename TType>
-static inline TType Min(const TType &A, const TType &B)
+inline TType Min(const TType A, const TType B)
 {
 	return (A<=B) ? A : B;
 }
-template<>
-static inline float Min(const float &A, const float &B)
-{
-	return (A<=B) ? A : B;
-}
-template<>
-static inline sint32 Min(const sint32 &A, const sint32 &B)
-{
-	return (A<=B) ? A : B;
-}
 
+/**
+\fn	template<typename TType> inline TType Max(const TType A, const TType B)
+
+\brief	Gets the larger value of 'A' and 'B'
+
+\author	Paril
+\date	27/05/2010
+
+\param	A	First value. 
+\param	B	Second value. 
+
+\return	'A' if A >= B, otherwise B. 
+**/
 template<typename TType>
-static inline TType Max(const TType &A, const TType &B)
-{
-	return (A>=B) ? A : B;
-}
-template<>
-static inline float Max(const float &A, const float &B)
-{
-	return (A>=B) ? A : B;
-}
-template<>
-static inline sint32 Max(const sint32 &A, const sint32 &B)
+inline TType Max(const TType A, const TType B)
 {
 	return (A>=B) ? A : B;
 }
 
+/**
+\fn	template<typename TType> inline TType Clamp(const TType V, const TType L, const TType H)
+
+\brief	Clamps the value 'V' between the low 'L' and high 'H'
+
+\author	Paril
+\date	27/05/2010
+
+\param	V	The value to be clamped.
+\param	L	The low value. 
+\param	H	The high value. 
+
+\return	'V' if 'V' is > 'L' and < 'H', otherwise L or H. 
+**/
 template<typename TType>
-static inline TType Clamp(const TType &V, const TType &L, const TType &H)
+inline TType Clamp(const TType V, const TType L, const TType H)
 {
 	return (V<L) ? L : (V>H) ? H : V;
 }
-template<>
-static inline float Clamp(const float &V, const float &L, const float &H)
-{
-	return (V<L) ? L : (V>H) ? H : V;
-}
-template<>
-static inline sint32 Clamp(const sint32 &V, const sint32 &L, const sint32 &H)
-{
-	return (V<L) ? L : (V>H) ? H : V;
-}
 
+/**
+\fn	template<typename TType> inline bool IsPowOfTwo(const TType Value)
+
+\brief	Query if 'Value' is a power of two.
+
+\author	Paril
+\date	27/05/2010
+
+\param	Value	The value. 
+
+\return	true if 'Value' is power of two, false if not. 
+**/
 template<typename TType>
-static inline TType Bound(const TType &V, const TType &L, const TType &H)
-{
-	return (V>=H) ? V : (L<V) ? V : (L>H) ? H : L;
-}
-template<>
-static inline float Bound(const float &V, const float &L, const float &H)
-{
-	return (V>=H) ? V : (L<V) ? V : (L>H) ? H : L;
-}
-template<>
-static inline sint32 Bound(const sint32 &V, const sint32 &L, const sint32 &H)
-{
-	return (V>=H) ? V : (L<V) ? V : (L>H) ? H : L;
-}
-
-template<typename TType>
-static inline bool IsPowOfTwo(const TType &Value)
+inline bool IsPowOfTwo(const TType Value)
 {
 	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
 }
-template<>
-static inline bool IsPowOfTwo(const sint32 &Value)
-{
-	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
-}
-template<>
-static inline bool IsPowOfTwo(const uint32 &Value)
-{
-	return (bool)(Value > 0 && (Value & (Value-1)) == 0);
-}
-
-#ifndef GAME_IS_BEING_COMPILED_NOT_ENGINE_GO_AWAY
-#include "TArray.h"
-#include "TAutoPtr.h"
-#include "TMap.h"
-#include "TString.h"
-#endif
-

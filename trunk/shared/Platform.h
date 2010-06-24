@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // =========================================================================
 // Windows
 //
-#ifdef WIN32
-
 #define VS_UNKNOWN	0
 #define VS_5		1
 #define VS_6		2
@@ -36,11 +34,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define VS_UNKNOWN_STR	"Unknown Visual Studio"
 #define VS_5_STR		"Visual C++ 5.0"
 #define VS_6_STR		"Visual C++ 6.0"
-#define VS_7_STR		"Visual C++ 7.0"
-#define VS_71_STR		"Visual C++ 7.1"
+#define VS_7_STR		"Visual Studio .NET" // 7.0
+#define VS_71_STR		"Visual Studio .NET 2003" // 7.1
 #define VS_8_STR		"Visual Studio 2005"
 #define VS_9_STR		"Visual Studio 2008"
-#define VS_10_STR		"Visual Studio 2010 BETA"
+#define VS_10_STR		"Visual Studio 2010"
+
+#ifdef WIN32
+
+#if !defined(CC_STDC_CONFORMANCE)
+#include <WinSock2.h>
+#include <windows.h>
+#endif
+
+#include "zlib.h"
 
 #if (_MSC_VER >= 1600) // 2010
 	#define MSVS_VERSION			VS_10
@@ -70,10 +77,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #define COMPILERSTRING MSVS_VERSION_STRING
-
-#define CC_ENUM(type,name) \
-	typedef type name; \
-	enum
+#ifndef _MSC_EXTENSIONS
+#define CC_STDC_CONFORMANCE
+#endif
 
 // unknown pragmas are SUPPOSED to be ignored, but....
 # pragma warning(disable : 4244)	// 'conversion' conversion from 'type1' to 'type2', possible loss of data
@@ -83,7 +89,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # pragma warning(3 : 4254)	// 'operator' : conversion from 'type1' to 'type2', possible loss of data
 // Paril, for CleanCode
 # pragma warning (disable : 4100) // unreferenced formal parameter
-# pragma warning (disable : 4389) // signed/unsigned mismatch
 # pragma warning (disable : 4127) // conditional expression is constant
 
 # pragma intrinsic(memcmp)
@@ -95,6 +100,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # define HAVE__VSNPRINTF 1
 # define HAVE__CDECL 1
 
+# define isnan _isnan
+
 # define BUILDSTRING		"Win32"
 
 # ifdef _M_IX86
@@ -105,14 +112,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  define CPUSTRING		"x64"
 # endif
 
-typedef	signed char			sint8;
-typedef signed __int16		sint16;
-typedef signed __int32		sint32;
-typedef signed __int64		sint64;
-typedef unsigned char		uint8;
-typedef unsigned __int16	uint16;
-typedef unsigned __int32	uint32;
-typedef unsigned __int64	uint64;
+typedef signed char				int8_t;
+typedef unsigned char			uint8_t;
+typedef signed short int		int16_t;
+typedef unsigned short int		uint16_t;
+typedef signed int				int32_t;
+typedef unsigned int			uint32_t;
+typedef unsigned long long		uint64_t;
+typedef long long				int64_t;
 
 # define strdup _strdup
 # define itoa _itoa
@@ -172,16 +179,22 @@ typedef unsigned __int64	uint64;
 
 # endif
 
-typedef int16_t				sint16;
-typedef int32_t				sint32;
-typedef int64_t				int64;
-typedef uint16_t			uint16;
-typedef uint32_t			uint32;
-typedef uint64_t			uint64;
+#include <strings.h>
+#include <ctype.h>
 
 #endif	// __unix__
 
 // =========================================================================
+
+// Types
+typedef int8_t				sint8;
+typedef int16_t				sint16;
+typedef int32_t				sint32;
+typedef int64_t				sint64;
+typedef uint8_t				uint8;
+typedef uint16_t			uint16;
+typedef uint32_t			uint32;
+typedef uint64_t			uint64;
 
 #ifndef HAVE__CDECL
 # define __cdecl
@@ -238,6 +251,10 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 # endif
 #endif
 
+#ifndef isnan
+#define isnan std::isnan
+#endif
+
 // =========================================================================
 
 #if (defined(_M_IX86) || defined(__i386__)) && !defined(C_ONLY) && !defined(__unix__) // FIXME: make this work with unix
@@ -259,3 +276,28 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 #ifndef COMPILERSTRING
 # define COMPILERSTRING	"Unknown"
 #endif
+
+#if defined(__STDC__) && !defined(CC_STDC_CONFORMANCE)
+#define CC_STDC_CONFORMANCE
+#endif
+
+#ifndef MSVS_VERSION
+#define MSVS_VERSION			VS_UNKNOWN
+#define MSVS_VERSION_STRING		VS_UNKNOWN_STR
+#endif
+
+#ifdef _FRONTEND
+	#ifdef _DEBUG
+		#define CONFIGURATIONSTRING "FrontEnd Debug"
+	#else
+		#define CONFIGURATIONSTRING "Win32 FrontEnd Release"
+	#endif
+#else
+	#ifdef _DEBUG
+		#define CONFIGURATIONSTRING "Debug"
+	#else
+		#define CONFIGURATIONSTRING "Release"
+	#endif
+#endif
+
+#define COMBINED_BUILD_STRING BUILDSTRING" "CPUSTRING" "CONFIGURATIONSTRING

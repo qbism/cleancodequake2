@@ -32,8 +32,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 #include "cc_func_entities.h"
+#include <ctime>
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
 "wait"			base time between triggering all targets, default is 1
@@ -50,13 +51,21 @@ so, the basic time between firing is a random time between
 These can used but not touched.
 */
 
-#define TIMER_START_ON		1
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CFuncTimer. 
+**/
+enum
+{
+	TIMER_START_ON		= BIT(0)
+};
 
 CFuncTimer::CFuncTimer () :
-	CBaseEntity (),
-	CMapEntity (),
-	CThinkableEntity (),
-	CUsableEntity (),
+	IBaseEntity (),
+	IMapEntity (),
+	IThinkableEntity (),
+	IUsableEntity (),
 	Wait (0),
 	Random (0),
 	PauseTime (0)
@@ -64,21 +73,32 @@ CFuncTimer::CFuncTimer () :
 	};
 
 CFuncTimer::CFuncTimer (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CThinkableEntity (Index),
-	CUsableEntity (Index),
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IThinkableEntity (Index),
+	IUsableEntity (Index),
 	Wait (0),
 	Random (0),
 	PauseTime (0)
 	{
 	};
 
+bool ValidateWait (IBaseEntity *Entity, uint8 *ClassOffset, const char *Value, void *ExtraData)
+{
+	if (atof(Value) == -1)
+	{
+		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "A wait of -1 is invalid\n");
+		return false;
+	}
+
+	return true;
+}
+
 ENTITYFIELDS_BEGIN(CFuncTimer)
 {
-	CEntityField ("random", EntityMemberOffset(CFuncTimer,Random), FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("pausetime", EntityMemberOffset(CFuncTimer,PauseTime), FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("wait", EntityMemberOffset(CFuncTimer,Wait), FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("random",		EntityMemberOffset(CFuncTimer,Random),		FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("pausetime",	EntityMemberOffset(CFuncTimer,PauseTime),	FT_FRAMENUMBER | FT_SAVABLE),
+	CEntityField ("wait",		EntityMemberOffset(CFuncTimer,Wait),		FT_FRAMENUMBER | FT_SAVABLE,	ValidateWait),
 };
 ENTITYFIELDS_END(CFuncTimer)
 
@@ -88,39 +108,39 @@ bool			CFuncTimer::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void			CFuncTimer::SaveFields (CFile &File)
 {
 	SaveEntityFields <CFuncTimer> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void			CFuncTimer::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncTimer> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 void CFuncTimer::Think ()
 {
-	UseTargets (Activator, Message);
-	NextThink = level.Frame + (Wait + (irandom(Random)));
+	UseTargets (*User, Message);
+	NextThink = Level.Frame + (Wait + (irandom(Random)));
 }
 
 bool CFuncTimer::Run ()
 {
-	return CBaseEntity::Run ();
+	return IBaseEntity::Run ();
 };
 
-void CFuncTimer::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncTimer::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
-	Activator = activator;
+	User = Activator;
 
 	// if on, turn it off
 	if (NextThink)
@@ -131,7 +151,7 @@ void CFuncTimer::Use (CBaseEntity *other, CBaseEntity *activator)
 
 	// turn it on
 	if (Delay)
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 	else
 		Think ();
 }
@@ -147,14 +167,13 @@ void CFuncTimer::Spawn ()
 		// Paril FIXME
 		// This to me seems like a very silly warning.
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Random is greater than or equal to wait\n");
-		//gi.dprintf("func_timer at (%f %f %f) has random >= wait\n", self->state.origin[0], self->state.origin[1], self->state.origin[2]);
 	}
 
 	if (SpawnFlags & TIMER_START_ON)
 	{
 		// lots of backwards compatibility
-		NextThink = level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
-		Activator = this;
+		NextThink = Level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
+		User = this;
 	}
 
 	GetSvFlags() = SVF_NOCLIENT;
@@ -170,22 +189,22 @@ used with target_string (must be on same "team")
 */
 
 CTargetCharacter::CTargetCharacter () :
-	CBaseEntity (),
-	CMapEntity (),
-	CBrushModel ()
+	IBaseEntity (),
+	IMapEntity (),
+	IBrushModel ()
 	{
 	};
 
 CTargetCharacter::CTargetCharacter (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CBrushModel (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IBrushModel (Index)
 	{
 	};
 
 bool CTargetCharacter::Run ()
 {
-	return CBrushModel::Run ();
+	return IBrushModel::Run ();
 };
 
 void CTargetCharacter::Spawn ()
@@ -208,21 +227,21 @@ bool CTargetCharacter::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CTargetCharacter> (this, Key, Value))
 		return true;
 
-	return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IBrushModel::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 void			CTargetCharacter::SaveFields (CFile &File)
 {
 	SaveEntityFields <CTargetCharacter> (this, File);
-	CMapEntity::SaveFields (File);
-	CBrushModel::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IBrushModel::SaveFields (File);
 }
 
 void			CTargetCharacter::LoadFields (CFile &File)
 {
 	LoadEntityFields <CTargetCharacter> (this, File);
-	CMapEntity::LoadFields (File);
-	CBrushModel::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IBrushModel::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("target_character", CTargetCharacter);
@@ -231,30 +250,30 @@ LINK_CLASSNAME_TO_CLASS ("target_character", CTargetCharacter);
 */
 
 CTargetString::CTargetString () :
-	CBaseEntity (),
-	CMapEntity ()
+	IBaseEntity (),
+	IMapEntity ()
 	{
 	};
 
 CTargetString::CTargetString (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index)
+	IBaseEntity (Index),
+	IMapEntity (Index)
 	{
 	};
 
 class CTargetStringForEachCallback : public CForEachTeamChainCallback
 {
 public:
-	std::cc_string Message;
-	CBaseEntity *Me;
+	std::string Message;
+	IBaseEntity *Me;
 
-	CTargetStringForEachCallback (CBaseEntity *Me, std::cc_string &Message) :
+	CTargetStringForEachCallback (IBaseEntity *Me, std::string &Message) :
 	Me(Me),
 	Message(Message)
 	{
 	};
 
-	void Callback (CBaseEntity *e)
+	void Callback (IBaseEntity *e)
 	{
 		if (e == Me)
 			return;
@@ -297,7 +316,7 @@ public:
 	};
 };
 
-void CTargetString::Use (CBaseEntity *other, CBaseEntity *activator)
+void CTargetString::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	CTargetStringForEachCallback (this, Message).Query (this);
 }
@@ -321,18 +340,24 @@ If START_OFF, this entity must be used before it starts
 			2 "xx:xx:xx"
 */
 
-#define CLOCK_TIMER_UP		1
-#define CLOCK_TIMER_DOWN	2
-#define CLOCK_START_OFF		4
-#define CLOCK_MULTI_USE		8
+/**
+\enum	
 
-#define CLOCK_MESSAGE_SIZE	16
+\brief	Values that represent spawnflags pertaining to CFuncClock. 
+**/
+enum
+{
+	CLOCK_TIMER_UP		= BIT(0),
+	CLOCK_TIMER_DOWN	= BIT(1),
+	CLOCK_START_OFF		= BIT(2),
+	CLOCK_MULTI_USE		= BIT(3)
+};
 
 CFuncClock::CFuncClock () :
-	CBaseEntity (),
-	CMapEntity (),
-	CThinkableEntity (),
-	CUsableEntity (),
+	IBaseEntity (),
+	IMapEntity (),
+	IThinkableEntity (),
+	IUsableEntity (),
 	Seconds(0),
 	String(NULL),
 	Wait(0),
@@ -343,10 +368,10 @@ CFuncClock::CFuncClock () :
 	};
 
 CFuncClock::CFuncClock (sint32 Index) :
-	CBaseEntity (Index),
-	CMapEntity (Index),
-	CThinkableEntity (Index),
-	CUsableEntity (Index),
+	IBaseEntity (Index),
+	IMapEntity (Index),
+	IThinkableEntity (Index),
+	IUsableEntity (Index),
 	Seconds(0),
 	String(NULL),
 	Wait(0),
@@ -372,12 +397,12 @@ bool CFuncClock::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CFuncClock> (this, Key, Value))
 		return true;
 
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 }
 
 bool CFuncClock::Run ()
 {
-	return CBaseEntity::Run ();
+	return IBaseEntity::Run ();
 };
 
 void		CFuncClock::SaveFields (CFile &File)
@@ -385,9 +410,9 @@ void		CFuncClock::SaveFields (CFile &File)
 	File.Write<sint32> ((String) ? String->State.GetNumber() : -1);
 
 	SaveEntityFields <CFuncClock> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void		CFuncClock::LoadFields (CFile &File)
@@ -395,12 +420,12 @@ void		CFuncClock::LoadFields (CFile &File)
 	sint32 Index = File.Read<sint32> ();
 
 	if (Index != -1)
-		String = entity_cast<CTargetString>(g_edicts[Index].Entity);
+		String = entity_cast<CTargetString>(Game.Entities[Index].Entity);
 
 	LoadEntityFields <CFuncClock> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 // don't let field width of any clock messages change, or it
@@ -408,7 +433,7 @@ void		CFuncClock::LoadFields (CFile &File)
 
 void CFuncClock::Reset ()
 {
-	Activator = NULL;
+	User = nullentity;
 	if (SpawnFlags & CLOCK_TIMER_UP)
 	{
 		Seconds = 0;
@@ -423,27 +448,23 @@ void CFuncClock::Reset ()
 
 void CFuncClock::FormatCountdown ()
 {
-	char tempBuffer[CLOCK_MESSAGE_SIZE];
 	switch (Style)
 	{
 	case 0:
 	default:
-		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i", Seconds);
-		Message = tempBuffer;
+		Message = FormatString ("%2i", Seconds);
 		break;
 	case 1:
-		Q_snprintfz(tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i", Seconds / 60, Seconds % 60);
-		if (tempBuffer[3] == ' ')
-			tempBuffer[3] = '0';
-		Message = tempBuffer;
+		Message = FormatString("%2i:%2i", Seconds / 60, Seconds % 60);
+		if (Message[3] == ' ')
+			Message[3] = '0';
 		break;
 	case 2:
-		Q_snprintfz(tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
-		if (tempBuffer[3] == ' ')
-			tempBuffer[3] = '0';
-		if (tempBuffer[6] == ' ')
-			tempBuffer[6] = '0';
-		Message = tempBuffer;
+		Message = FormatString ("%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
+		if (Message[3] == ' ')
+			Message[3] = '0';
+		if (Message[6] == ' ')
+			Message[6] = '0';
 		break;
 	};
 }
@@ -452,7 +473,7 @@ void CFuncClock::Think ()
 {
 	if (!String)
 	{
-		String = entity_cast<CTargetString>(CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (NULL, Target));
+		String = entity_cast<CTargetString>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target));
 		if (!String)
 			return;
 	}
@@ -469,18 +490,16 @@ void CFuncClock::Think ()
 	}
 	else
 	{
-		struct tm	ltime;
+		struct tm	*ltime;
 		time_t		gmtime;
-		char tempBuffer[CLOCK_MESSAGE_SIZE];
 
 		time(&gmtime);
-		localtime_s (&ltime, &gmtime);
-		Q_snprintfz (tempBuffer, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i", ltime.tm_hour, ltime.tm_min, ltime.tm_sec);
-		if (tempBuffer[3] == ' ')
-			tempBuffer[3] = '0';
-		if (tempBuffer[6] == ' ')
-			tempBuffer[6] = '0';
-		Message = tempBuffer;
+		ltime = localtime (&gmtime);
+		Message = FormatString ("%2i:%2i:%2i", ltime->tm_hour, ltime->tm_min, ltime->tm_sec);
+		if (Message[3] == ' ')
+			Message[3] = '0';
+		if (Message[6] == ' ')
+			Message[6] = '0';
 	}
 
 	String->Message = Message;
@@ -492,10 +511,10 @@ void CFuncClock::Think ()
 		if (CountTarget)
 		{
 			char *savetarget = Target;
-			std::cc_string savemessage = Message;
+			std::string savemessage = Message;
 			Target = CountTarget;
 			Message.clear();
-			UseTargets (Activator, Message);
+			UseTargets (*User, Message);
 			Target = savetarget;
 			Message = savemessage;
 		}
@@ -509,10 +528,10 @@ void CFuncClock::Think ()
 			return;
 	}
 
-	NextThink = level.Frame + 10;
+	NextThink = Level.Frame + 10;
 }
 
-void CFuncClock::Use (CBaseEntity *other, CBaseEntity *activator)
+void CFuncClock::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (!Usable)
 		return;
@@ -520,10 +539,10 @@ void CFuncClock::Use (CBaseEntity *other, CBaseEntity *activator)
 	if (!(SpawnFlags & CLOCK_MULTI_USE))
 		Usable = false;
 	
-	if (Activator)
+	if (User)
 		return;
 
-	Activator = activator;
+	User = Activator;
 	Think ();
 }
 
@@ -551,7 +570,7 @@ void CFuncClock::Spawn ()
 	if (SpawnFlags & CLOCK_START_OFF)
 		Usable = true;
 	else
-		NextThink = level.Frame + 10;
+		NextThink = Level.Frame + 10;
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_clock", CFuncClock);

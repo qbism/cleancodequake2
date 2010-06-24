@@ -39,26 +39,39 @@ class CTech : public CBaseItem
 	uint32		TechNumber;
 
 public:
-	CC_ENUM (uint8, ETechType)
+
+	/**
+	\typedef	uint8 ETechType
+	
+	\brief	Defines an alias representing the type of a tech.
+	**/
+	typedef uint8 ETechType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent the types of a tech. 
+	**/
+	enum
 	{
 		TECH_PASSIVE,			// Tech's effect requires time; happens in ClientEndServerFrame
 		TECH_AGGRESSIVE,		// Tech's effect will have a direct effect on any damage going in or out of the player.
 		TECH_CUSTOM				// Tech's effect is hardcoded
 	};
 
-	ETechType	TechType;
+	ETechType	TechType;	// Type of tech
 
-	CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, uint32 TechNumber, ETechType TechType);
+	CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, uint32 TechNumber, ETechType TechType);
 
-	CTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber);
+	CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber);
 
-	CItemEntity *DropItem (CBaseEntity *ent);
+	CItemEntity *DropItem (IBaseEntity *Entity);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Drop (CPlayerEntity *ent);
-	void	Use (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	void	Drop (CPlayerEntity *Player);
+	void	Use (CPlayerEntity *Player);
 
 	inline uint32 GetTechNumber ()
 	{
@@ -75,20 +88,36 @@ public:
 	// true means it's modifying "take".
 	// Defending is if the Left is defending the Right's shot.
 	// Rest are self explanatory.
-	virtual void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	virtual void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, EDamageFlags &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	) {};
 };
 
-#define CTFTECH_RESISTANCE_NUMBER	1
-#define CTFTECH_STRENGTH_NUMBER		2
-#define CTFTECH_HASTE_NUMBER		3
-#define CTFTECH_REGEN_NUMBER		4
+/**
+\typedef	uint8 ECTFTechIndexes
+
+\brief	Defines an alias representing the CTF tech indexes.
+**/
+typedef uint8 ECTFTechIndexes;
+
+/**
+\enum	
+
+\brief	List of tech numbers.
+		Add to the end of the list to add a new tech.
+**/
+enum
+{
+	CTFTECH_RESISTANCE_NUMBER = 1,
+	CTFTECH_STRENGTH_NUMBER,
+	CTFTECH_HASTE_NUMBER,
+	CTFTECH_REGEN_NUMBER,
 
 #if AMMO_REGEN_TECH
-#define CTFTECH_AMMOREGEN_NUMBER	5
+	CTFTECH_AMMOREGEN_NUMBER,
 #endif
+};
 
-#define CTF_TECH_TIMEOUT					600  // seconds before techs spawn again
+const FrameNumber CTF_TECH_TIMEOUT			= 600;  // seconds before techs spawn again
 
 void SetupTechSpawn ();
 void AddTechsToList ();

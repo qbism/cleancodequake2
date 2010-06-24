@@ -36,17 +36,25 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 namespace NItems
 {
+	// Armor
 	CArmor *JacketArmor;
 	CArmor *CombatArmor;
 	CArmor *BodyArmor;
 	CArmor *ArmorShard;
 
+	// Health
 	CHealth *StimPack;
 	CHealth *SmallHealth;
 	CHealth *LargeHealth;
 
+	// Keys
 	CPowerCube *PowerCube;
+#if CLEANCTF_ENABLED
+	CFlag *RedFlag;
+	CFlag *BlueFlag;
+#endif
 
+	// Weapons
 	CWeaponItem *Blaster;
 	CWeaponItem *Shotgun;
 	CWeaponItem *SuperShotgun;
@@ -57,31 +65,42 @@ namespace NItems
 	CWeaponItem *HyperBlaster;
 	CWeaponItem *Railgun;
 	CWeaponItem *BFG;
-	#if CLEANCTF_ENABLED
-	CWeaponItem	*Grapple;
+#if CLEANCTF_ENABLED
+	CWeaponItem *Grapple;
+#endif
+#if XATRIX_FEATURES
+	CWeaponItem *IonRipper;	
+	CWeaponItem *Phalanx;	
+#endif
 
-	CFlag *RedFlag;
-	CFlag *BlueFlag;
-	#endif
-	#if XATRIX_FEATURES
-	CWeaponItem	*IonRipper;	
-	CWeaponItem	*Phalanx;	
-	CAmmo		*MagSlugs;
-	CAmmo 		*Trap;
-	#endif
-
+	// Ammo
 	CAmmo *Shells;
 	CAmmo *Bullets;
 	CAmmo *Slugs;
 	CAmmo *Rockets;
 	CAmmo *Cells;
 	CAmmo *Grenades;
+	CAmmo *Trap;
+#if XATRIX_FEATURES
+	CAmmo *MagSlugs;
+#endif
+#if ROGUE_FEATURES
+	CAmmo *Prox;
+	CAmmo *Flechettes;
+	CAmmo *Rounds;
+	CAmmoWeapon *Tesla;
+#endif
 
+	// Powerups
 	CMegaHealth *MegaHealth;
 	CBackPack *BackPack;
 	CQuadDamage *Quad;
 #if XATRIX_FEATURES
 	CBasePowerUp *QuadFire;
+#endif
+#if ROGUE_FEATURES
+	CDoubleDamage *Double;
+	CIRGoggles *IRGoggles;
 #endif
 	CInvulnerability *Invul;
 	CSilencer *Silencer;
@@ -98,25 +117,17 @@ CItemList *ItemList;
 
 CItemList::CItemList() :
 numItems(0),
-TempList (QNew(com_itemPool, 0) TItemListType)
+TempList (QNew(TAG_GENERIC) TItemListType)
 {
 };
 
 void CItemList::AddItemToList (CBaseItem *Item)
 {
-/*	Items.push_back (Item);
-	Item->Index = numItems++;
-
-	// Hash!
-	if (Item->Classname)
-		HashedClassnameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Classname, MAX_ITEMS_HASH), Item->Index));
-	if (Item->Name)
-		HashedNameItemList.insert (std::make_pair<size_t, size_t> (Com_HashGeneric(Item->Name, MAX_ITEMS_HASH), Item->Index));*/
 	TempList->push_back (Item);
 }
-
+	
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
-typedef std::multimap<TWeaponMultiMapPairType, sint8, std::less<TWeaponMultiMapPairType>, std::generic_allocator<std::pair<TWeaponMultiMapPairType, sint8> > > TWeaponMultiMapType;
+typedef std::multimap<TWeaponMultiMapPairType, sint8> TWeaponMultiMapType;
 
 void AddWeaponsToListLocations (CItemList *List);
 
@@ -124,7 +135,7 @@ void CItemList::SortAndFinalize ()
 {
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
-	bool *SortedValues = QNew (com_itemPool, 0) bool[TempList->size()];
+	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList->size()];
 	Mem_Zero (SortedValues, sizeof(*SortedValues));
 
 	for (int z = 0; z < 5; z++)
@@ -218,19 +229,19 @@ CBaseItem *FindItemByClassname (const char *name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::Add (edict_t *ent, sint32 quantity)
+/// \fn	void CBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
 ///
-/// \brief	Adds 'quantity' amount of this to 'ent' (ignores any max)
+/// \brief	Adds 'quantity' amount of this to 'Player' (ignores any max)
 ///
 /// \author	Paril
 /// \date	5/9/2009
 ///
-/// \param	ent		 - If non-null, the entity to add the amount to. 
+/// \param	Player		 - If non-null, the entity to add the amount to. 
 /// \param	quantity - The amount to add. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CBaseItem::Add (CPlayerEntity *ent, sint32 quantity)
+void CBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
 {
-	ent->Client.Persistent.Inventory.Add(this, quantity);
+	Player->Client.Persistent.Inventory.Add(this, quantity);
 }
 
 CBaseItem *GetItemByIndex (uint32 Index)
@@ -240,14 +251,14 @@ CBaseItem *GetItemByIndex (uint32 Index)
 	return ItemList->Items[Index];
 }
 
-inline sint32 GetNumItems ()
+sint32 GetNumItems ()
 {
 	return ItemList->numItems;
 }
 
 void InitItemlist ()
 {
-	ItemList = QNew (com_itemPool, 0) CItemList;
+	ItemList = QNew (TAG_GENERIC) CItemList;
 
 	AddAmmoToList();
 	AddHealthToList();
@@ -255,13 +266,13 @@ void InitItemlist ()
 	AddPowerupsToList();
 	AddKeysToList();
 #if CLEANCTF_ENABLED
-	if (game.GameMode & GAME_CTF)
+	if (Game.GameMode & GAME_CTF)
 		AddFlagsToList();
 #endif
 
-	if (dmFlags.dfDmTechs.IsEnabled()
+	if (DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
-	|| (game.GameMode & GAME_CTF)
+	|| (Game.GameMode & GAME_CTF)
 #endif
 		)
 		AddTechsToList();
@@ -278,7 +289,7 @@ void InitItemMedia ()
 {
 }
 
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 
 // This is a required function that will
 // go through each item and invalidate any variables that we used.

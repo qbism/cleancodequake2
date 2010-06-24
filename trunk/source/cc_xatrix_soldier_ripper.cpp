@@ -88,7 +88,7 @@ extern CAnim SoldierMoveAttack6;
 
 void CSoldierRipper::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM - blindfire!
@@ -119,15 +119,15 @@ void CSoldierRipper::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SoldierHMoveAttack1;
-		AttackFinished = level.Frame + ((1.5 + frand()) * 10);
+		AttackFinished = Level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}
 	// pmm
 
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
-		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
-		(r < (skill->Integer()*0.25)))
+		(Range(Entity, *Entity->Enemy) >= RANGE_NEAR) && 
+		(r < (CvarList[CV_SKILL].Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif
@@ -139,15 +139,18 @@ void CSoldierRipper::Attack ()
 	}
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 static sint32 BlasterFlash [] = {MZ2_SOLDIER_BLASTER_1, MZ2_SOLDIER_BLASTER_2, MZ2_SOLDIER_BLASTER_3, MZ2_SOLDIER_BLASTER_4, MZ2_SOLDIER_BLASTER_5, MZ2_SOLDIER_BLASTER_6, MZ2_SOLDIER_BLASTER_7, MZ2_SOLDIER_BLASTER_8};
 void CSoldierRipper::FireGun (sint32 FlashNumber)
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, aim;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[BlasterFlash[FlashNumber]], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[BlasterFlash[FlashNumber]], forward, right, start);
 
 	switch (FlashNumber)
 	{
@@ -157,7 +160,7 @@ void CSoldierRipper::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			CBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);
@@ -168,13 +171,11 @@ void CSoldierRipper::FireGun (sint32 FlashNumber)
 
 			vec3f up;
 			dir.ToVectors (&forward, &right, &up);
+			end = start.MultiplyAngles (8192, forward)
+			.MultiplyAngles (crand() * 100, right)
+			.MultiplyAngles (crand() * 50, up);
 
-			end = start.MultiplyAngles (8192, forward);
-			end = end.MultiplyAngles (crand() * 100, right);
-			end = end.MultiplyAngles (crand() * 50, up);
-
-			aim = end - start;
-			aim.Normalize ();
+			aim = (end - start).GetNormalized();
 		}
 		break;
 	};
@@ -196,7 +197,7 @@ void CSoldierRipper::SpawnSoldier ()
 	Entity->Health = 50;
 	Entity->GibHealth = -30;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 }

@@ -34,24 +34,31 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_ban.h"
 
-CBanList	Bans;
+CBanList	Bans;	// The ban list
 
+/**
+\fn	sint32 ipcmp (IPAddress &filter, IPAddress &string)
+
+\brief	Compares two IP addresses
+
+\author	Paril
+\date	24/05/2010
+
+\param [in,out]	filter	The filter. 
+\param [in,out]	string	The string. 
+
+\return	. 
+**/
 sint32 ipcmp (IPAddress &filter, IPAddress &string)
 {
 	return !Q_WildcardMatch (filter.str, string.str, true);
 }
 
-// Ban list looks as follows:
-/*
-// Comments are ignored.
-// First token needs to be either ip or name, followed by the IP address
-// or name of the offender, respectively.
-// Then flags! See cc_ban.h for flag numbers.
-// Unknown flags are stored, but ignored by older versions.
-name Paril 1
-ip 252.6.10.6 5
-*/
-
+/**
+\fn	void CBanList::Clear ()
+	
+\brief	Clears the ban list to its blank/initial state. 
+**/
 void CBanList::Clear ()
 {
 	for (size_t i = 0; i < BanList.size(); i++)
@@ -59,6 +66,11 @@ void CBanList::Clear ()
 	BanList.clear ();
 }
 
+/**
+\fn	void CBanList::LoadFromFile ()
+
+\brief	Loads from file. 
+**/
 void CBanList::LoadFromFile ()
 {
 	Bans.Clear ();
@@ -72,7 +84,7 @@ void CBanList::LoadFromFile ()
 		if (File.EndOfFile())
 			break;
 
-		std::cc_string line = File.ReadLine ();
+		std::string line = File.ReadLine ();
 		
 		// Parse the line.
 		CParser Parser (line.c_str(), PSP_COMMENT_MASK);
@@ -89,9 +101,9 @@ void CBanList::LoadFromFile ()
 			if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
 				break;
 
-			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+			BanIndex *NewIndex = QNew (TAG_GAME) BanIndex;
 			NewIndex->IP = false;
-			NewIndex->Name = Mem_PoolStrDup (token, com_genericPool, 0);
+			NewIndex->Name = Mem_StrDup (token);
 
 			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
 				break;
@@ -103,11 +115,11 @@ void CBanList::LoadFromFile ()
 			if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))
 				break;
 
-			BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
+			BanIndex *NewIndex = QNew (TAG_GAME) BanIndex;
 			NewIndex->IP = true;
 
-			NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress;
-			Q_snprintfz (NewIndex->IPAddress->str, sizeof(NewIndex->IPAddress->str), "%s", token);
+			NewIndex->Address = QNew (TAG_GAME) IPAddress;
+			Q_snprintfz (NewIndex->Address->str, sizeof(NewIndex->Address->str), "%s", token);
 
 			if (!Parser.ParseDataType<EBanTypeFlags> (PSF_ALLOW_NEWLINES, &NewIndex->Flags, 1))
 				break;
@@ -116,15 +128,20 @@ void CBanList::LoadFromFile ()
 		}
 	}
 	
-	DebugPrintf ("Loaded %u bans from file\n", Bans.BanList.size());
+	ServerPrintf ("Loaded %u bans from file\n", Bans.BanList.size());
 }
 
+/**
+\fn	void CBanList::SaveList ()
+	
+\brief	Saves the list. 
+**/
 void CBanList::SaveList ()
 {
 	// No changes detected
 	if (!Changed)
 	{
-		DebugPrintf ("No changes in ban file, skipping\n");
+		ServerPrintf ("No changes in ban file, skipping\n");
 		return;
 	}
 
@@ -139,44 +156,25 @@ void CBanList::SaveList ()
 
 		File.Print ("%s %s %i\n",
 			(Index->IP) ? "ip" : "name",
-			(Index->IP) ? Index->IPAddress->str :Index->Name,
+			(Index->IP) ? Index->Address->str :Index->Name,
 			"%i\n", Index->Flags);
 	}
 
-	DebugPrintf ("Saved %u bans\n", Bans.BanList.size());
+	ServerPrintf ("Saved %u bans\n", Bans.BanList.size());
 }
 
-bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
-{
-	if (InList(Adr))
-		return false;
-
-	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
-	NewIndex->IP = true;
-
-	NewIndex->IPAddress = QNew (com_genericPool, 0) IPAddress(Adr);
-	NewIndex->Flags = Flags;
-
-	BanList.push_back (NewIndex);
-	return true;
-}
-
-bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
-{
-	if (InList(Name))
-		return false;
-
-	BanIndex *NewIndex = QNew (com_genericPool, 0) BanIndex;
-	NewIndex->IP = false;
-	NewIndex->Name = QNew (com_genericPool, 0) char[strlen(Name)];
-	Q_strncpyz (NewIndex->Name, Name, strlen(Name)+1);
-	NewIndex->Name[strlen(Name)] = 0;
-	NewIndex->Flags = Flags;
-
-	BanList.push_back (NewIndex);
-	return true;
-}
-
+/**
+\fn	bool CBanList::InList (IPAddress Adr)
+	
+\brief	Test if the IP address 'Adr' is in the list
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Adr	The IP address. 
+	
+\return	true if it is in the list, false if it is not. 
+**/
 bool CBanList::InList (IPAddress Adr)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -186,12 +184,24 @@ bool CBanList::InList (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return true;
 	}
 	return false;
 }
 
+/**
+\fn	bool CBanList::InList (const char *Name)
+	
+\brief	Test if the player 'Name' is in the list
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name The player's name. 
+	
+\return	true if it is in the list, false if it is not. 
+**/
 bool CBanList::InList (const char *Name)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -207,6 +217,75 @@ bool CBanList::InList (const char *Name)
 	return false;
 }
 
+/**
+\fn	bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
+	
+\brief	Adds the IP address 'Adr' to the list with the flags 'Flags'.
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Adr		The IP address. 
+\param	Flags	The flags of the ban. 
+	
+\return	true if it succeeds, false if it fails. 
+**/
+bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
+{
+	if (InList(Adr))
+		return false;
+
+	BanIndex *NewIndex = QNew (TAG_GAME) BanIndex;
+	NewIndex->IP = true;
+
+	NewIndex->Address = QNew (TAG_GAME) IPAddress(Adr);
+	NewIndex->Flags = Flags;
+
+	BanList.push_back (NewIndex);
+	return true;
+}
+
+/**
+\fn	bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
+	
+\brief	Adds to the player 'Name' to the list with the flags 'Flags'. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name	The name of the player. 
+\param	Flags	The flags of the ban. 
+	
+\return	true if it succeeds, false if it fails. 
+**/
+bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
+{
+	if (InList(Name))
+		return false;
+
+	BanIndex *NewIndex = QNew (TAG_GAME) BanIndex;
+	NewIndex->IP = false;
+	NewIndex->Name = QNew (TAG_GAME) char[strlen(Name)];
+	Q_strncpyz (NewIndex->Name, Name, strlen(Name)+1);
+	NewIndex->Name[strlen(Name)] = 0;
+	NewIndex->Flags = Flags;
+
+	BanList.push_back (NewIndex);
+	return true;
+}
+
+/**
+\fn	bool CBanList::RemoveFromList (IPAddress Adr)
+	
+\brief	Removes the IP address 'Adr' from the ban list.
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Adr	The IP address. 
+	
+\return	true if it succeeds, false if it fails. 
+**/
 bool CBanList::RemoveFromList (IPAddress Adr)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -216,7 +295,7 @@ bool CBanList::RemoveFromList (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 		{
 			BanList.erase(it);
 			return true;
@@ -225,6 +304,18 @@ bool CBanList::RemoveFromList (IPAddress Adr)
 	return false;
 }
 
+/**
+\fn	bool CBanList::RemoveFromList (const char *Name)
+	
+\brief	Removes the player 'Name' from the ban list. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name	The name. 
+	
+\return	true if it succeeds, false if it fails. 
+**/
 bool CBanList::RemoveFromList (const char *Name)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -243,6 +334,19 @@ bool CBanList::RemoveFromList (const char *Name)
 	return false;
 }
 
+/**
+\fn	bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
+	
+\brief	Change the existing ban of IP address 'Adr''s flags to 'Flags'
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Adr		The IP address. 
+\param	Flags	The flags. 
+	
+\return	true if it succeeds, false if it fails. 
+**/
 bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -252,7 +356,7 @@ bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 		{
 			if (Index->Flags == Flags)
 				return false;
@@ -264,6 +368,19 @@ bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 	return false;
 }
 
+/**
+\fn	bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
+	
+\brief	Change the existing ban of player 'Name''s flags to 'Flags' 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name	The player's name. 
+\param	Flags	The flags. 
+	
+\return	true if it succeeds, false if it fails. 
+**/
 bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -285,6 +402,20 @@ bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
 	return false;
 }
 
+/**
+\fn	bool CBanList::IsSquelched (IPAddress IP)
+	
+\brief	Query if 'IP' is squelched. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	IP	The ip address. 
+	
+\return	true if squelched, false if not. 
+	
+\note Call these with CPersistentData::IP if after spawning
+**/
 bool CBanList::IsSquelched (IPAddress Adr)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -294,12 +425,26 @@ bool CBanList::IsSquelched (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return !!(Index->Flags & BAN_SQUELCH);
 	}
 	return false;
 }
 
+/**
+\fn	bool CBanList::IsBannedFromSpectator (IPAddress IP)
+	
+\brief	Query if 'IP' is banned from spectator mode. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	IP	The ip. 
+	
+\return	true if banned from spectator mode, false if not. 
+	
+\note Call these with CPersistentData::IP if after spawning
+**/
 bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -309,12 +454,26 @@ bool CBanList::IsBannedFromSpectator (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return !!(Index->Flags & BAN_SPECTATOR);
 	}
 	return false;
 }
 
+/**
+\fn	bool CBanList::IsBanned (IPAddress IP)
+	
+\brief	Query if 'IP' is banned. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	IP	The ip. 
+	
+\return	true if banned, false if not. 
+	
+\note Call these with CPersistentData::IP if after spawning
+**/
 bool CBanList::IsBanned (IPAddress Adr)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -324,12 +483,24 @@ bool CBanList::IsBanned (IPAddress Adr)
 		if (!Index->IP)
 			continue;
 
-		if (!ipcmp(*Index->IPAddress, Adr))
+		if (!ipcmp(*Index->Address, Adr))
 			return !!(Index->Flags & BAN_ENTER);
 	}
 	return false;
 }
 
+/**
+\fn	bool CBanList::IsSquelched (const char *Name)
+	
+\brief	Query if player 'Name' is squelched. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name	The name. 
+	
+\return	true if squelched, false if not. 
+**/
 bool CBanList::IsSquelched (const char *Name)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -345,6 +516,18 @@ bool CBanList::IsSquelched (const char *Name)
 	return false;
 }
 
+/**
+\fn	bool CBanList::IsBannedFromSpectator (const char *Name)
+	
+\brief	Query if player 'Name' is banned from spectator. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name	The name. 
+	
+\return	true if banned from spectator, false if not. 
+**/
 bool CBanList::IsBannedFromSpectator (const char *Name)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -360,6 +543,18 @@ bool CBanList::IsBannedFromSpectator (const char *Name)
 	return false;
 }
 
+/**
+\fn	bool CBanList::IsBanned (const char *Name)
+	
+\brief	Query if player 'Name' is banned. 
+	
+\author	Paril
+\date	24/05/2010
+	
+\param	Name	The name. 
+	
+\return	true if banned, false if not. 
+**/
 bool CBanList::IsBanned (const char *Name)
 {
 	for (TBanIndexContainer::iterator it = BanList.begin(); it < BanList.end(); ++it)
@@ -374,4 +569,18 @@ bool CBanList::IsBanned (const char *Name)
 	}
 	return false;
 }
+
+/**
+\page Ban Files
+Ban list looks as follows:
+<code>
+// Comments are ignored.
+// First token needs to be either ip or name, followed by the IP address
+// or name of the offender, respectively.
+// Then flags! See cc_ban.h for flag numbers.
+// Unknown flags are stored, but ignored by older versions.
+name Paril 1
+ip 252.6.10.6 5
+</code>
+**/
 

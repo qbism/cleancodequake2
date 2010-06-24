@@ -150,7 +150,7 @@ CFrame ChickFramesRun [] =
 	CFrame (&CMonster::AI_Run, 6),
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 13),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Run, 5, &CMonster::DoneDodge), // Make sure to clear the dodge bit
 #else
 	CFrame (&CMonster::AI_Run, 5),
@@ -186,7 +186,7 @@ void CMaiden::Walk ()
 
 void CMaiden::Run ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 
@@ -249,7 +249,7 @@ CFrame ChickFramesPain3 [] =
 };
 CAnim ChickMovePain3 (FRAME_pain301, FRAME_pain321, ChickFramesPain3, ConvertDerivedFunction(&CMaiden::Run));
 
-void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CMaiden::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 #if XATRIX_FEATURES
@@ -263,17 +263,17 @@ void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 #endif
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1+irandom(3)]);
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - clear this from blindfire
 	AIFlags &= ~AI_MANUAL_STEERING;
 
@@ -282,12 +282,7 @@ void CMaiden::Pain (CBaseEntity *other, float kick, sint32 damage)
 		UnDuck();
 #endif
 
-	if (damage <= 10)
-		CurrentMove = &ChickMovePain1;
-	else if (damage <= 25)
-		CurrentMove = &ChickMovePain2;
-	else
-		CurrentMove = &ChickMovePain3;
+	CurrentMove = (Damage <= 10) ? &ChickMovePain1 : ((Damage <= 25) ? &ChickMovePain2 : &ChickMovePain3);
 }
 
 void CMaiden::Dead ()
@@ -345,7 +340,7 @@ CFrame ChickFramesDeath1 [] =
 };
 CAnim ChickMoveDeath1 (FRAME_death101, FRAME_death112, ChickFramesDeath1, ConvertDerivedFunction(&CMaiden::Dead));
 
-void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CMaiden::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	sint32		n;
 
@@ -354,10 +349,10 @@ void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -374,7 +369,7 @@ void CMaiden::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 	Entity->PlaySound (CHAN_VOICE, (!n) ? Sounds[SOUND_DEATH1] : Sounds[SOUND_DEATH2]);
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CMaiden::DuckDown ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -382,13 +377,13 @@ void CMaiden::DuckDown ()
 	AIFlags |= AI_DUCKED;
 	Entity->GetMaxs().Z -= 32;
 	Entity->CanTakeDamage = true;
-	PauseTime = level.Frame + 10;
+	PauseTime = Level.Frame + 10;
 	Entity->Link ();
 }
 
 void CMaiden::DuckHold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -475,25 +470,25 @@ CFrame ChickFramesEndAttack1 [] =
 };
 CAnim ChickMoveEndAttack1 (FRAME_attak128, FRAME_attak132, ChickFramesEndAttack1, ConvertDerivedFunction(&CMaiden::Run));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CMaiden::Duck (float eta)
 {
 	if ((CurrentMove == &ChickMoveStartAttack1) ||
 		(CurrentMove == &ChickMoveAttack1))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (!skill->Integer())
+	if (!CvarList[CV_SKILL].Integer())
 		// PMM - stupid dodge
-		DuckWaitTime = level.Frame + ((eta + 1 * 10));
+		DuckWaitTime = Level.Frame + ((eta + 1 * 10));
 	else
-		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer())) * 10));
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer())) * 10));
 
 	// has to be done immediately otherwise she can get stuck
 	DuckDown();
@@ -509,7 +504,7 @@ void CMaiden::SideStep ()
 		(CurrentMove == &ChickMoveAttack1))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;
@@ -520,13 +515,13 @@ void CMaiden::SideStep ()
 		CurrentMove = &ChickMoveRun;
 }
 #else
-void CMaiden::Dodge (CBaseEntity *attacker, float eta)
+void CMaiden::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
 	CurrentMove = &ChickMoveDuck;
 }
@@ -541,14 +536,17 @@ void CMaiden::Slash ()
 
 void CMaiden::Rocket ()
 {
-#if MONSTER_USE_ROGUE_AI
+	if (!HasValidEnemy())
+		return;
+
+#if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	sint32 rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
+	sint32 rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 	if (blindfire)
@@ -573,9 +571,9 @@ void CMaiden::Rocket ()
 
 	// Lead target  (not when blindfiring)
 	// 20, 35, 50, 65 chance of leading
-	if((!blindfire) && ((frand() < (0.2 + ((3 - skill->Integer()) * 0.15)))))
+	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -587,7 +585,7 @@ void CMaiden::Rocket ()
 	if (blindfire)
 	{
 		// blindfire has different fail criteria for the trace
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+		if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5f)))
 			MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 		else 
 		{
@@ -599,7 +597,7 @@ void CMaiden::Rocket ()
 			dir = vec - start;
 			dir.NormalizeFast();
 			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+			if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			else 
 			{
@@ -609,7 +607,7 @@ void CMaiden::Rocket ()
 				dir = vec - start;
 				dir.NormalizeFast();
 				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+				if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 					MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			}
 		}
@@ -620,7 +618,7 @@ void CMaiden::Rocket ()
 	vec3f	forward, right, start, dir, vec;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;
@@ -643,16 +641,16 @@ void CMaiden::Reload ()
 
 void CMaiden::ReRocket()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	if (AIFlags & AI_MANUAL_STEERING)
 		AIFlags &= ~AI_MANUAL_STEERING;
 	else
 #endif
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
-		if (Range (Entity, Entity->Enemy) > RANGE_MELEE &&
-			IsVisible (Entity, Entity->Enemy) &&
-			(frand() <= (0.6 + (0.05*skill->Float()))))
+		if (Range (Entity, *Entity->Enemy) > RANGE_MELEE &&
+			IsVisible (Entity, *Entity->Enemy) &&
+			(frand() <= (0.6 + (0.05*CvarList[CV_SKILL].Float()))))
 		{
 			CurrentMove = &ChickMoveAttack1;
 			return;
@@ -691,7 +689,7 @@ CAnim ChickMoveEndSlash (FRAME_attak213, FRAME_attak216, ChickFramesEndSlash, Co
 
 void CMaiden::ReSlash()
 {
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && (Range (Entity, Entity->Enemy) == RANGE_MELEE) && (frand() <= 0.9))
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && (Range (Entity, *Entity->Enemy) == RANGE_MELEE) && (frand() <= 0.9))
 		CurrentMove = &ChickMoveSlash;
 	else
 		CurrentMove = &ChickMoveEndSlash;
@@ -717,7 +715,7 @@ void CMaiden::Melee()
 
 void CMaiden::Attack()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM 
@@ -740,7 +738,7 @@ void CMaiden::Attack()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &ChickMoveStartAttack1;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return;
 	}
 	// pmm
@@ -781,12 +779,12 @@ void CMaiden::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_ATTACK | MF_HAS_IDLE | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 

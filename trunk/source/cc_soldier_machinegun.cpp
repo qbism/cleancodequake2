@@ -46,7 +46,7 @@ extern CAnim SoldierMoveAttack4;
 
 void CSoldierMachinegun::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 #endif
 
@@ -56,11 +56,14 @@ void CSoldierMachinegun::Attack ()
 static sint32 MachinegunFlash [] = {MZ2_SOLDIER_MACHINEGUN_1, MZ2_SOLDIER_MACHINEGUN_2, MZ2_SOLDIER_MACHINEGUN_3, MZ2_SOLDIER_MACHINEGUN_4, MZ2_SOLDIER_MACHINEGUN_5, MZ2_SOLDIER_MACHINEGUN_6, MZ2_SOLDIER_MACHINEGUN_7, MZ2_SOLDIER_MACHINEGUN_8};
 void CSoldierMachinegun::FireGun (sint32 FlashNumber)
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, aim;
 	sint32		flashIndex = MachinegunFlash[FlashNumber];
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashIndex], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashIndex], forward, right, start);
 
 	switch (FlashNumber)
 	{
@@ -70,7 +73,7 @@ void CSoldierMachinegun::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			CBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);
@@ -93,11 +96,11 @@ void CSoldierMachinegun::FireGun (sint32 FlashNumber)
 	};
 
 	if (!(AIFlags & AI_HOLD_FRAME))
-		Wait = level.Frame + (3 + irandom(8));
+		Wait = Level.Frame + (3 + irandom(8));
 
 	MonsterFireBullet (start, aim, 2, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flashIndex);
 
-	if (level.Frame >= Wait)
+	if (Level.Frame >= Wait)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;

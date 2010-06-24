@@ -167,18 +167,6 @@ CAnim	JorgMoveRun (FRAME_walk06, FRAME_walk19, JorgFramesRun);
 // walk
 //
 
-#if 0
-CFrame JorgFramesStartWalk [] =
-{
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	6),
-	CFrame (&CMonster::AI_Walk,	7),
-	CFrame (&CMonster::AI_Walk,	9),
-	CFrame (&CMonster::AI_Walk,	15)
-};
-CAnim JorgMoveStartWalk (FRAME_walk01, FRAME_walk05, JorgFramesStartWalk);
-#endif
-
 CFrame JorgFramesWalk [] =
 {
 	CFrame (&CMonster::AI_Walk, 17),
@@ -197,19 +185,6 @@ CFrame JorgFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 9)
 };
 CAnim	JorgMoveWalk (FRAME_walk06, FRAME_walk19, JorgFramesWalk);
-
-#if 0
-CFrame jorg_frames_end_walk [] =
-{
-	CFrame (&CMonster::AI_Walk,	11),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	8),
-	CFrame (&CMonster::AI_Walk,	-8,	NULL
-};
-CAnim jorg_move_end_walk = {FRAME_walk20, FRAME_walk25, jorg_frames_end_walk, NULL};
-#endif
 
 void CJorg::Walk ()
 {
@@ -267,18 +242,18 @@ CFrame JorgFramesPain1 [] =
 };
 CAnim JorgMovePain1 (FRAME_pain101, FRAME_pain103, JorgFramesPain1, &CMonster::Run);
 
-void CJorg::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CJorg::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
 	
 	Entity->State.GetSound() = 0;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames if he takes little damage
-	if ((damage <= 40) && (frand() <= 0.6))
+	if ((Damage <= 40) && (frand() <= 0.6))
 		return;
 
 	/* 
@@ -296,16 +271,16 @@ void CJorg::Pain (CBaseEntity *other, float kick, sint32 damage)
 	if (((frame >= FRAME_attak201) && (frame <= FRAME_attak208)) && (frand() <= 0.005))
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 50)
+	if (Damage <= 50)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &JorgMovePain1;
 	}
-	else if (damage <= 100)
+	else if (Damage <= 100)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN2]);
 		CurrentMove = &JorgMovePain2;
@@ -377,7 +352,7 @@ void CJorg::TossMakron ()
 	CMakronJumpTimer::Spawn (this);
 };
 
-void CJorg::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CJorg::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
@@ -440,7 +415,7 @@ CAnim JorgMoveEndAttack1 (FRAME_attak115, FRAME_attak118, JorgFramesEndAttack1, 
 
 void CJorg::ReAttack1()
 {
-	if (IsVisible(Entity, Entity->Enemy))
+	if (IsVisible(Entity, *Entity->Enemy))
 	{
 		if (frand() < 0.9)
 			CurrentMove = &JorgMoveAttack1;
@@ -464,13 +439,16 @@ void CJorg::DoChainguns()
 
 void CJorg::FireBFG ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right;
 	vec3f	start;
 	vec3f	dir;
 	vec3f	vec;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_BFG_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_BFG_1], forward, right, start);
 
 	dir = ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized();
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK2]);
@@ -479,13 +457,16 @@ void CJorg::FireBFG ()
 
 void CJorg::FireBullet ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, target;
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_MACHINEGUN_R1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_MACHINEGUN_R1], forward, right, start);
 
-	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target[2] += Entity->Enemy->ViewHeight;
 	forward = (target - start);
 	forward.Normalize();
@@ -493,9 +474,9 @@ void CJorg::FireBullet ()
 	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_JORG_MACHINEGUN_R1);
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_JORG_MACHINEGUN_L1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_JORG_MACHINEGUN_L1], forward, right, start);
 
-	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+	target = Entity->Enemy->State.GetOrigin().MultiplyAngles(-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target[2] += Entity->Enemy->ViewHeight;
 	forward = (target - start);
 	forward.Normalize();
@@ -520,10 +501,10 @@ void CJorg::Attack()
 
 bool CJorg::CheckAttack ()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -534,7 +515,7 @@ bool CJorg::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 			return false;
 	}
 	
@@ -542,7 +523,7 @@ bool CJorg::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -555,7 +536,7 @@ bool CJorg::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -582,19 +563,19 @@ bool CJorg::CheckAttack ()
 		return false;
 	}
 
-	if (skill->Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3)
 			AttackState = AS_SLIDING;
@@ -606,7 +587,7 @@ bool CJorg::CheckAttack ()
 #else
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 		// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin ();
@@ -617,26 +598,26 @@ bool CJorg::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if(Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if(Entity->Enemy->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.ent->svFlags & SVF_MONSTER)) && (!IsVisible(Entity, Entity->Enemy)))
+				if ((!(tr.Entity->GetSvFlags() & SVF_MONSTER)) && (!IsVisible(Entity, *Entity->Enemy)))
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.Frame < AttackFinished)
+						if (Level.Frame < AttackFinished)
 							return false;
-						if (level.Frame < (TrailTime + BlindFireDelay))
+						if (Level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
 						{
 							// make sure we're not going to shoot a monster
 							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
-							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
+							if (tr.AllSolid || tr.StartSolid || ((tr.Fraction < 1.0) && (tr.Entity != Entity->Enemy)))
 								return false;
 
 							AttackState = AS_BLIND;
@@ -654,7 +635,7 @@ bool CJorg::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -675,7 +656,7 @@ bool CJorg::CheckAttack ()
 		return false;
 	}
 	
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -692,29 +673,25 @@ bool CJorg::CheckAttack ()
 	else
 		return false;
 
-	if (skill->Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
 	// PMM -daedalus should strafe more .. this can be done here or in a customized
 	// check_attack code for the hover.
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		// originally, just 0.3
-		float strafe_chance;
-		if (!(strcmp(Entity->ClassName.c_str(), "monster_daedalus")))
-			strafe_chance = 0.8f;
-		else
-			strafe_chance = 0.6f;
+		float strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
 		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))

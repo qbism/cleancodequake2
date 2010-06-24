@@ -36,30 +36,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 extern CItemList *ItemList;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags, char *PickupSound,
-/// 	char *Icon, char *Name, EItemFlags Flags, char *Precache) : Index(-1), Classname(Classname),
-/// 	WorldModel(WorldModel), EffectFlags(EffectFlags), PickupSound(PickupSound), Icon(Icon),
-/// 	Name(Name), Flags(Flags), Precache(Precache)
-///
-/// \brief	Constructor. 
-///
-/// \author	Paril
-/// \date	5/9/2009
-///
-/// \param	Classname	 - If non-null, the classname of the item. 
-/// \param	WorldModel	 - If non-null, the world model. 
-/// \param	EffectFlags	 - The effect flags. 
-/// \param	PickupSound	 - If non-null, the pickup sound. 
-/// \param	Icon		 - If non-null, the icon. 
-/// \param	Name		 - If non-null, the name. 
-/// \param	Flags		 - Item flags. 
-/// \param	Precache	 - If non-null, the precache. 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-CBaseItem::CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache) :
-Index(-1),
+CBaseItem::CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache) :
 Classname(Classname),
 WorldModel(WorldModel),
 EffectFlags(EffectFlags),
@@ -72,25 +51,20 @@ Precache(Precache)
 	ItemList->AddItemToList (this);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::SetRespawn (edict_t *ent, float delay)
-///
-/// \brief	Sets a respawn time on the item and makes it invisible. 
-///
-/// \author	Paril
-/// \date	5/9/2009
-///
-/// \param	ent		 - If non-null, the entity to be respawned. 
-/// \param	delay	 - The delay until it's respawned. 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void CBaseItem::SetRespawn (CItemEntity *ent, FrameNumber_t delay)
+CBaseItem::CBaseItem ()
 {
-	ent->Flags |= FL_RESPAWN;
-	ent->GetSvFlags() |= SVF_NOCLIENT;
-	ent->GetSolid() = SOLID_NOT;
-	ent->NextThink = level.Frame + delay;
-	ent->ThinkState = ITS_RESPAWN;
-	ent->Link();
+	ItemList->AddItemToList (this);
+};
+
+// Sets a respawn time on the item and makes it invisible. 
+void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber delay)
+{
+	Item->ShouldRespawn = true;
+	Item->GetSvFlags() |= SVF_NOCLIENT;
+	Item->GetSolid() = SOLID_NOT;
+	Item->NextThink = Level.Frame + delay;
+	Item->ThinkState = ITS_RESPAWN;
+	Item->Link();
 }
 
 class CDroppedItemEntity : public CItemEntity
@@ -99,22 +73,24 @@ public:
 	bool AvoidOwner;
 
 	CDroppedItemEntity() :
-	CItemEntity()
-	{
-		AvoidOwner = true;
-	};
-	CDroppedItemEntity(sint32 Index) :
-	CItemEntity(Index)
+	  CItemEntity()
 	{
 		AvoidOwner = true;
 	};
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	CDroppedItemEntity(sint32 Index) :
+ 	  IBaseEntity (Index),
+	  CItemEntity(Index)
 	{
-		if (AvoidOwner && (other == GetOwner()))
+		AvoidOwner = true;
+	};
+
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
+	{
+		if (AvoidOwner && (Other == GetOwner()))
 			return;
 
-		CItemEntity::Touch (other, plane, surf);
+		CItemEntity::Touch (Other, plane, surf);
 	};
 
 	void Think ()
@@ -122,7 +98,7 @@ public:
 		if (AvoidOwner)
 		{
 			AvoidOwner = false;
-			NextThink = level.Frame + 290;
+			NextThink = Level.Frame + 290;
 		}
 		else
 			Free ();
@@ -131,19 +107,8 @@ public:
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	edict_t *CBaseItem::DropItem (edict_t *ent)
-///
-/// \brief	Creates the item entity.
-///
-/// \author	Paril
-/// \date	5/9/2009
-///
-/// \param	ent	 - If non-null, the item entity. 
-///
-/// \retval	null if it fails, else. 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
+// Creates the item entity.
+CItemEntity *CBaseItem::DropItem (IBaseEntity *Entity)
 {
 	CDroppedItemEntity	*dropped = QNewEntityOf CDroppedItemEntity();
 	vec3f	forward, right;
@@ -152,39 +117,39 @@ CItemEntity *CBaseItem::DropItem (CBaseEntity *ent)
 	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
-	dropped->State.GetRenderEffects() = RF_GLOW;
+	dropped->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	dropped->GetMins().Set (-15);
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (ent);
+	dropped->SetOwner(Entity);
 
-	if (ent->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & ENT_PLAYER)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
 		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
 
-		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent, CONTENTS_SOLID);
-		dropped->State.GetOrigin() = trace.EndPos;
+		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
+			result, Player, CONTENTS_SOLID);
+		dropped->State.GetOrigin() = trace.EndPosition;
 	}
 	else
 	{
-		ent->State.GetAngles().ToVectors(&forward, &right, NULL);
-		dropped->State.GetOrigin() = ent->State.GetOrigin();
+		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
 	forward *= 100;
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.Frame + 10;
+	dropped->NextThink = Level.Frame + 10;
 	dropped->Link ();
 
 	return dropped;

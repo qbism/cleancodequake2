@@ -37,25 +37,27 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CSoldierMachinegun : public CSoldierBase
 {
 public:
-	FrameNumber_t	Wait;
+	FrameNumber	Wait;
 
 	CSoldierMachinegun(uint32 ID);
 
 	void SaveMonsterFields (CFile &File)
 	{
-		File.Write<FrameNumber_t> (Wait);
+		File.Write<FrameNumber> (Wait);
 		CSoldierBase::SaveMonsterFields (File);
 	}
 
 	void LoadMonsterFields (CFile &File)
 	{
-		Wait = File.Read<FrameNumber_t> ();
+		Wait = File.Read<FrameNumber> ();
 		CSoldierBase::LoadMonsterFields (File);
 	}
 
 	void Attack ();
 	void FireGun (sint32 FlashNumber);
 	void SpawnSoldier ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

@@ -60,7 +60,7 @@ public:
 	void OpenGun ();
 	void Fire ();
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void DuckUp ();
 	void DuckHold ();
 #else
@@ -75,10 +75,10 @@ public:
 	void Fidget ();
 
 	void Attack ();
-#if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+#if !ROGUE_FEATURES
+	void Dodge (IBaseEntity *Attacker, float eta);
 #else
-	void Dodge (CBaseEntity *attacker, float eta, CTrace *trace);
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #endif
 	void Idle ();
 	void Search ();
@@ -88,10 +88,12 @@ public:
 	void Walk ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

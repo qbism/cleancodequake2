@@ -35,9 +35,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_medic.h"
 #include "m_medic.h"
 
-#define	MEDIC_MIN_DISTANCE			32
-#define MEDIC_MAX_HEAL_DISTANCE		400
-#define	MEDIC_TRY_TIME				100
+const int MEDIC_MIN_DISTANCE			= 32;
+const int MEDIC_MAX_HEAL_DISTANCE		= 400;
+const int	MEDIC_TRY_TIME				= 100;
 
 CMedic::CMedic (uint32 ID) :
 CMonster(ID)
@@ -46,13 +46,13 @@ CMonster(ID)
 	MonsterName = "Medic";
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CMedic::CleanupHeal (bool ChangeFrame)
 {
 	// clean up target, if we have one and it's legit
-	if (Entity->Enemy && Entity->Enemy->GetInUse())
+	if (Entity->Enemy && Entity->Enemy->GetInUse() && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
-		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
+		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 		Enemy->Monster->Healer = NULL;
 		Enemy->Monster->AIFlags &= ~AI_RESURRECTING;
 		Enemy->CanTakeDamage = true;
@@ -63,6 +63,8 @@ void CMedic::CleanupHeal (bool ChangeFrame)
 		NextFrame = FRAME_attack52;
 }
 
+#include "cc_rogue_medic_commander.h"
+
 void CMedic::AbortHeal (bool Gib, bool Mark)
 {
 	static vec3f	PainNormal (0, 0, 1);
@@ -71,21 +73,19 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 	CleanupHeal (true);
 
 	// gib em!
-	if ((Mark) && (Entity->Enemy) && (Entity->Enemy->GetInUse()))
+	if ((Mark) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
-		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
+		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 		// if the first badMedic slot is filled by a medic, skip it and use the second one
 		if ((Enemy->Monster->BadMedic1) && (Enemy->Monster->BadMedic1->GetInUse())
-			&& (!strncmp(Enemy->Monster->BadMedic1->ClassName.c_str(), "monster_medic", 13)) )
+			&& (Enemy->Monster->MonsterID == CMedic::ID || Enemy->Monster->MonsterID == CMedicCommander::ID))
 			Enemy->Monster->BadMedic2 = Entity;
 		else
 			Enemy->Monster->BadMedic1 = Entity;
 	}
-	if ((Gib) && (Entity->Enemy) && (Entity->Enemy->GetInUse()))
+	if ((Gib) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
-//		if ((g_showlogic) && (g_showlogic->value))
-//			gi.dprintf ("%s - gibbing bad heal target", self->classname);
-		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(Entity->Enemy);
+		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 
 		sint32 hurt = (Enemy->GibHealth) ? -Enemy->GibHealth : 500;
 
@@ -98,7 +98,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 	if ((Entity->OldEnemy) && (Entity->OldEnemy->GetInUse()))
 		Entity->Enemy = Entity->OldEnemy;
 	else
-		Entity->Enemy = NULL;
+		Entity->Enemy = nullentity;
 
 	MedicTries = 0;
 }
@@ -107,62 +107,62 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 
 CMonsterEntity *CMedic::FindDeadMonster ()
 {
-	CMonsterEntity *ent = NULL, *best = NULL;
+	CMonsterEntity *Found = NULL, *Best = NULL;
 
-	while ((ent = FindRadius<CMonsterEntity, ENT_MONSTER>(ent, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((Found = FindRadius<CMonsterEntity, ENT_MONSTER>(Found, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
-		if (ent == Entity)
+		if (Found == Entity)
 			continue;
-		if (ent->Monster->AIFlags & AI_GOOD_GUY)
+		if (Found->Monster->AIFlags & AI_GOOD_GUY)
 			continue;
-		if (ent->Health > 0)
+		if (Found->Health > 0)
 			continue;
-		if (ent->NextThink)
+		if (Found->NextThink)
 			continue;
-		if (!IsVisible(Entity, ent))
+		if (!IsVisible(Entity, Found))
 			continue;
-#if MONSTER_USE_ROGUE_AI
-		if (ent->Monster->Healer)
+#if ROGUE_FEATURES
+		if (Found->Monster->Healer)
 			continue;
 		// check to make sure we haven't bailed on this guy already
-		if ((ent->Monster->BadMedic1 == Entity) || (ent->Monster->BadMedic2 == Entity))
+		if ((Found->Monster->BadMedic1 == Entity) || (Found->Monster->BadMedic2 == Entity))
 			continue;
-		if (ent->Monster->Healer)
+		if (Found->Monster->Healer)
 			// FIXME - this is correcting a bug that is somewhere else
 			// if the healer is a monster, and it's in medic mode .. continue .. otherwise
 			//   we will override the healer, if it passes all the other tests
-			if ((ent->Monster->Healer->GetInUse()) && (ent->Monster->Healer->Health > 0) &&
-				(ent->Monster->Healer->GetSvFlags() & SVF_MONSTER) && (ent->Monster->Healer->Monster->AIFlags & AI_MEDIC))
+			if ((Found->Monster->Healer->GetInUse()) && (Found->Monster->Healer->Health > 0) &&
+				(Found->Monster->Healer->GetSvFlags() & SVF_MONSTER) && (Found->Monster->Healer->Monster->AIFlags & AI_MEDIC))
 				continue;
 #endif
-		if (!best)
+		if (!Best)
 		{
-			best = ent;
+			Best = Found;
 			continue;
 		}
-		if (ent->MaxHealth <= best->MaxHealth)
+		if (Found->MaxHealth <= Best->MaxHealth)
 			continue;
-		best = ent;
+		Best = Found;
 	}
 
-#if MONSTER_USE_ROGUE_AI
-	if (best)
-		MedicTryTime = level.Frame + MEDIC_TRY_TIME;
+#if ROGUE_FEATURES
+	if (Best)
+		MedicTryTime = Level.Frame + MEDIC_TRY_TIME;
 #endif
 
-	return best;
+	return Best;
 }
 
 void CMedic::Idle ()
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_IDLE], 255, ATTN_IDLE);
 
-	CMonsterEntity *ent = FindDeadMonster();
-	if (ent)
+	CMonsterEntity *Found = FindDeadMonster();
+	if (Found)
 	{
-		Entity->Enemy = ent;
-#if MONSTER_USE_ROGUE_AI
-		ent->Monster->Healer = Entity;
+		Entity->Enemy = Found;
+#if ROGUE_FEATURES
+		Found->Monster->Healer = Entity;
 #endif
 		AIFlags |= AI_MEDIC;
 		FoundTarget ();
@@ -175,13 +175,13 @@ void CMedic::Search ()
 
 	if (!Entity->OldEnemy)
 	{
-		CMonsterEntity *ent = FindDeadMonster();
-		if (ent)
+		CMonsterEntity *Found = FindDeadMonster();
+		if (Found)
 		{
 			Entity->OldEnemy = Entity->Enemy;
-			Entity->Enemy = ent;
-#if MONSTER_USE_ROGUE_AI
-			ent->Monster->Healer = Entity;
+			Entity->Enemy = Found;
+#if ROGUE_FEATURES
+			Found->Monster->Healer = Entity;
 #endif
 			AIFlags |= AI_MEDIC;
 			FoundTarget ();
@@ -321,7 +321,7 @@ CFrame MedicFramesRun [] =
 	CFrame (&CMonster::AI_Run, 18),
 	CFrame (&CMonster::AI_Run, 22.5f),
 	CFrame (&CMonster::AI_Run, 25.4f
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	, &CMonster::DoneDodge
 #endif
 	),
@@ -335,13 +335,13 @@ void CMedic::Run ()
 {
 	if (!(AIFlags & AI_MEDIC))
 	{
-		CMonsterEntity *ent = FindDeadMonster();
-		if (ent)
+		CMonsterEntity *Found = FindDeadMonster();
+		if (Found)
 		{
 			Entity->OldEnemy = Entity->Enemy;
-			Entity->Enemy = ent;
-#if MONSTER_USE_ROGUE_AI
-			ent->Monster->Healer = Entity;
+			Entity->Enemy = Found;
+#if ROGUE_FEATURES
+			Found->Monster->Healer = Entity;
 #endif
 			AIFlags |= AI_MEDIC;
 			FoundTarget ();
@@ -385,24 +385,24 @@ CFrame MedicFramesPain2 [] =
 };
 CAnim MedicMovePain2 (FRAME_painb1, FRAME_painb15, MedicFramesPain2, &CMonster::Run);
 
-void CMedic::Pain(CBaseEntity *other, float kick, sint32 damage)
+void CMedic::Pain(IBaseEntity *Other, sint32 Damage)
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 #endif
 
 	if (Entity->Health < (Entity->MaxHealth / 2))
-		Entity->State.GetSkinNum() = 1;
+		Entity->State.GetSkinNum() |= 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// if we're healing someone, we ignore pain
 	if (AIFlags & AI_MEDIC)
 		return;
@@ -419,6 +419,9 @@ void CMedic::Pain(CBaseEntity *other, float kick, sint32 damage)
 
 void CMedic::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start;
 	vec3f	forward, right;
 	vec3f	end;
@@ -442,7 +445,7 @@ void CMedic::FireBlaster ()
 	};
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MEDIC_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_1], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -496,14 +499,14 @@ CFrame MedicFramesDeath [] =
 };
 CAnim MedicMoveDeath (FRAME_death1, FRAME_death30, MedicFramesDeath, ConvertDerivedFunction(&CMedic::Dead));
 
-void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	// if we had a pending patient, free him up for another medic
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	if ((Entity->Enemy) &&
 		(Entity->Enemy->EntityFlags & ENT_MONSTER ) && 
-		((entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->Healer == Entity))
-		(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->Healer = NULL;
+		((entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer == Entity))
+		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer = NULL;
 #endif
 
 // check for gib
@@ -511,10 +514,10 @@ void CMedic::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead(GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead(GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -553,7 +556,7 @@ CAnim MedicMoveAttackHyperBlaster (FRAME_attack15, FRAME_attack30, MedicFramesAt
 
 void CMedic::ContinueFiring ()
 {
-	if (IsVisible (Entity, Entity->Enemy) && (frand() <= 0.95))
+	if (IsVisible (Entity, *Entity->Enemy) && (frand() <= 0.95))
 		CurrentMove = &MedicMoveAttackHyperBlaster;
 }
 
@@ -595,7 +598,7 @@ static vec3f	MedicCableOffsets[] =
 	vec3f(32.7f, -19.7f, 10.4f)
 };
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CMedic::CableAttack ()
 {
@@ -604,11 +607,11 @@ void CMedic::CableAttack ()
 	vec3f	dir, angles;
 	float	distance;
 
-#if !MONSTER_USE_ROGUE_AI
-	if (!Entity->Enemy->gameEntity || !Entity->Enemy->GetInUse())
+#if !ROGUE_FEATURES
+	if (!Entity->Enemy)
 		return;
 #else
-	if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()) || (Entity->Enemy->State.GetEffects() & EF_GIB))
+	if ((!Entity->Enemy) || (Entity->Enemy->State.GetEffects() & EF_GIB))
 	{
 		AbortHeal (false, false);
 		return;
@@ -616,7 +619,7 @@ void CMedic::CableAttack ()
 
 	// see if our enemy has changed to a client, or our target has more than 0 health,
 	// abort it .. we got switched to someone else due to damage
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (dynamic_cast<CHurtableEntity*>(Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
 	{
 		AbortHeal (false, false);
 		return;
@@ -639,7 +642,7 @@ void CMedic::CableAttack ()
 	//	return;
 	if (distance < MEDIC_MIN_DISTANCE)
 	{
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		AbortHeal (true, false);
 #endif
 		return;
@@ -652,15 +655,16 @@ void CMedic::CableAttack ()
 	if (fabs(angles.X) > 45)
 		return;
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
-	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
+	if (tr.Fraction != 1.0 && tr.Entity != Entity->Enemy)
 		return;
 #else
 	tr (start, Entity->Enemy->State.GetOrigin(), Entity, CONTENTS_MASK_SHOT);
-	if (tr.fraction != 1.0 && tr.Ent != Entity->Enemy)
+
+	if (tr.Fraction != 1.0 && tr.Entity != Entity->Enemy)
 	{
-		if (tr.Ent == World)
+		if (tr.Entity == World)
 		{
 			// give up on second try
 			if (MedicTries > 1)
@@ -682,32 +686,32 @@ void CMedic::CableAttack ()
 	{
 	case FRAME_attack43:
 		Entity->PlaySound (CHAN_AUTO, Sounds[SOUND_HOOK_HIT]);
-		(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->AIFlags |= AI_RESURRECTING;
+		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->AIFlags |= AI_RESURRECTING;
 
 		Entity->Enemy->State.GetEffects() = EF_PENT;
 		break;
 	case FRAME_attack50:
 		Entity->Enemy->SpawnFlags = 0;
-		Monster = (entity_cast<CMonsterEntity>(Entity->Enemy));
+		Monster = (entity_cast<CMonsterEntity>(*Entity->Enemy));
 		Monster->DeathTarget = Monster->CombatTarget = NULL;
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		Monster->Monster->Healer = Entity;
 #endif
 		Monster->Monster->AIFlags = 0;
 		Monster->Target = NULL;
 		Monster->TargetName = NULL;
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 		Monster->Monster->Spawn ();
-		Monster->NextThink = level.Frame;
+		Monster->NextThink = Level.Frame;
 		Monster->Think ();
 		Monster->Monster->AIFlags &= ~AI_RESURRECTING;
-		Monster->Enemy = NULL;
+		Monster->Enemy = nullentity;
 		// Paril, fix skinnum
 		if (Monster->State.GetSkinNum() & 1)
 			Monster->State.GetSkinNum() -= 1;
 		Monster->PhysicsType = PHYSICS_STEP;
-		Monster->Flags &= ~FL_NO_KNOCKBACK;
+		Monster->AffectedByKnockback = true;
 		Monster->GetSvFlags() |= SVF_MONSTER;
 		Monster->GetSolid() = SOLID_BBOX;
 		Monster->Link ();
@@ -720,15 +724,15 @@ void CMedic::CableAttack ()
 #else
 		{
 			vec3f maxs = Entity->Enemy->GetMaxs() + vec3f(0, 0, 48);
-			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), Entity->Enemy, CONTENTS_MASK_MONSTERSOLID);
+			tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), maxs, Entity->Enemy->State.GetOrigin(), *Entity->Enemy, CONTENTS_MASK_MONSTERSOLID);
 		}
 
-		if (tr.startSolid || tr.allSolid)
+		if (tr.StartSolid || tr.AllSolid)
 		{
 			AbortHeal (true, false);
 			return;
 		} 
-		else if (tr.Ent != World)
+		else if (tr.Entity != World)
 		{
 			AbortHeal (true, false);
 			return;
@@ -737,15 +741,15 @@ void CMedic::CableAttack ()
 		{
 			Monster->Monster->Spawn ();
 			Monster->Monster->Healer = NULL;
-			Monster->NextThink = level.Frame;
+			Monster->NextThink = Level.Frame;
 			Monster->Think ();
 			Monster->Monster->AIFlags &= ~AI_RESURRECTING;
-			Monster->Enemy = NULL;
+			Monster->Enemy = nullentity;
 
 			// Paril, fix skinnum
 			Monster->State.GetSkinNum() &= ~1;
 			Monster->PhysicsType = PHYSICS_STEP;
-			Monster->Flags &= ~FL_NO_KNOCKBACK;
+			Monster->AffectedByKnockback = true;
 			Monster->GetSvFlags() |= SVF_MONSTER;
 			Monster->GetSolid() = SOLID_BBOX;
 			Monster->Link ();
@@ -757,19 +761,19 @@ void CMedic::CableAttack ()
 			}
 			else
 			{
-				Entity->Enemy->Enemy = NULL;
-				if (!entity_cast<CMonsterEntity>(Entity->Enemy)->Monster->FindTarget ())
+				Entity->Enemy->Enemy = nullentity;
+				if (!entity_cast<CMonsterEntity>(*Entity->Enemy)->Monster->FindTarget ())
 				{
 					// no valid enemy, so stop acting
-					Monster->Monster->PauseTime = level.Frame + 1000000000;
+					Monster->Monster->PauseTime = Level.Frame + 100000000;
 					Monster->Monster->Stand ();
 				}
-				Entity->Enemy = NULL;
-				Entity->OldEnemy = NULL;
+				Entity->Enemy = nullentity;
+				Entity->OldEnemy = nullentity;
 				if (!FindTarget ())
 				{
 					// no valid enemy, so stop acting
-					PauseTime = level.Frame + 1000000000;
+					PauseTime = Level.Frame + 100000000;
 					Stand ();
 					return;
 				}
@@ -789,18 +793,15 @@ void CMedic::CableAttack ()
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z = Entity->Enemy->GetAbsMin().Z + Entity->Enemy->GetSize().Z / 2;
 
-	CTempEnt_Trails::FleshCable (start, end, Entity->State.GetNumber());
+	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 }
 
 void CMedic::HookRetract ()
 {
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_RETRACT]);
-#if !MONSTER_USE_ROGUE_AI
-	if (Entity->Enemy && Entity->Enemy->gameEntity && (Entity->Enemy->EntityFlags & ENT_MONSTER))
-	{
-		(entity_cast<CMonsterEntity>(Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
-		
-	}
+#if !ROGUE_FEATURES
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
 #endif
 }
 
@@ -811,7 +812,7 @@ CFrame MedicFramesAttackCable [] =
 // ROGUE - switched 33-36 to ai_charge
 // ROGUE - changed frame 52 to 0 to compensate for changes in 36-40
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Charge, 2),
 	CFrame (&CMonster::AI_Charge, 3),
 	CFrame (&CMonster::AI_Charge, 5),
@@ -821,7 +822,7 @@ CFrame MedicFramesAttackCable [] =
 	CFrame (&CMonster::AI_Move, 5),
 #endif
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Charge, -4.4f), // 36
 	CFrame (&CMonster::AI_Charge, -4.7f),
 	CFrame (&CMonster::AI_Charge, -5),
@@ -846,7 +847,7 @@ CFrame MedicFramesAttackCable [] =
 	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
 	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
 	CFrame (&CMonster::AI_Move, 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	0
 #else
 	-15
@@ -865,6 +866,10 @@ CAnim MedicMoveAttackCable (FRAME_attack33, FRAME_attack60, MedicFramesAttackCab
 
 void CMedic::Attack()
 {
+#if ROGUE_FEATURES
+	DoneDodge ();
+#endif
+
 	CurrentMove = (AIFlags & AI_MEDIC) ? &MedicMoveAttackCable : &MedicMoveAttackBlaster;
 }
 
@@ -872,8 +877,8 @@ bool CMedic::CheckAttack ()
 {
 	if (AIFlags & AI_MEDIC)
 	{
-#if !MONSTER_USE_ROGUE_AI
-		if ((Entity->Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > entity_cast<CHurtableEntity>(Entity->Enemy)->GibHealth))
+#if !ROGUE_FEATURES
+		if ((Entity->Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > entity_cast<IHurtableEntity>(*Entity->Enemy)->GibHealth))
 		{
 			Attack();
 			return true;
@@ -882,14 +887,14 @@ bool CMedic::CheckAttack ()
 			AIFlags &= ~AI_MEDIC;
 #else
 		// if our target went away
-		if ((!Entity->Enemy) || (!Entity->Enemy->GetInUse()))
+		if (!Entity->Enemy)
 		{
 			AbortHeal (false, false);
 			return false;
 		}
 
 		// if we ran out of time, give up
-		if (MedicTryTime < level.Frame)
+		if (MedicTryTime < Level.Frame)
 		{
 			AbortHeal (false, true);
 			MedicTryTime = 0;
@@ -909,11 +914,11 @@ bool CMedic::CheckAttack ()
 #endif
 	}
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// ROGUE
 	// since his idle animation looks kinda bad in combat, if we're not in easy mode, always attack
 	// when he's on a combat point
-	if ((skill->Integer() > 0) && (AIFlags & AI_STAND_GROUND))
+	if ((CvarList[CV_SKILL].Integer() > 0) && (AIFlags & AI_STAND_GROUND))
 	{
 		AttackState = AS_MISSILE;
 		return true;
@@ -923,20 +928,20 @@ bool CMedic::CheckAttack ()
 	return CMonster::CheckAttack ();
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CMedic::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
-	PauseTime = level.Frame + 10;
-	Entity->GetMins() -= vec3f(0, 0, 32);
+	PauseTime = Level.Frame + 10;
+	Entity->GetMins().Z -= 32;
 	Entity->Link ();
 }
 
 void CMedic::Duck_Hold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -945,7 +950,7 @@ void CMedic::Duck_Hold ()
 void CMedic::Duck_Up ()
 {
 	AIFlags &= ~AI_DUCKED;
-	Entity->GetMins() += vec3f(0, 0, 32);
+	Entity->GetMins().Z += 32;
 	Entity->Link ();
 }
 #endif
@@ -955,7 +960,7 @@ CFrame MedicFramesDuck [] =
 {
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, -1, &CMonster::DuckDown),
 	CFrame (&CMonster::AI_Move, -1,	&CMonster::DuckHold),
 #else
@@ -965,7 +970,7 @@ CFrame MedicFramesDuck [] =
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	,	&CMonster::UnDuck // in Rogue AI, the UP is down
 #else
 	,	ConvertDerivedFunction(&CMedic::Duck_Up)
@@ -978,7 +983,7 @@ CFrame MedicFramesDuck [] =
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	, &CMonster::UnDuck
 #endif
 	),
@@ -987,14 +992,14 @@ CFrame MedicFramesDuck [] =
 };
 CAnim MedicMoveDuck (FRAME_duck1, FRAME_duck16, MedicFramesDuck, &CMonster::Run);
 
-#if !MONSTER_USE_ROGUE_AI
-void CMedic::Dodge (CBaseEntity *attacker, float eta)
+#if !ROGUE_FEATURES
+void CMedic::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
 	CurrentMove = &MedicMoveDuck;
 }
@@ -1014,7 +1019,7 @@ void CMedic::Duck (float eta)
 		return;
 	}
 
-	DuckWaitTime = level.Frame + ((skill->Integer() == 0) ? ((eta + 1) * 10) : ((eta + (0.1 * (3 - skill->Integer()))) * 10));
+	DuckWaitTime = Level.Frame + ((CvarList[CV_SKILL].Integer() == 0) ? ((eta + 1) * 10) : ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10));
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -1030,7 +1035,7 @@ void CMedic::SideStep ()
 		(CurrentMove == &MedicMoveAttackBlaster))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;
@@ -1069,7 +1074,7 @@ void CMedic::Spawn ()
 	Entity->Mass = 400;
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_IDLE | MF_HAS_SEARCH
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);

@@ -32,64 +32,62 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 #include "cc_misc_entities.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 /*QUAKED misc_explobox (0 .5 .8) (-16 -16 0) (16 16 40)
 Large exploding box.  You can override its mass (100),
 health (80), and dmg (150).
 */
-class CMiscExploBox : public CMapEntity, public CStepPhysics, public CHurtableEntity, public CThinkableEntity, public CTouchableEntity
+const int BARREL_STEPSIZE = 8;
+class CMiscExploBox : public IMapEntity, public IStepPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity
 {
-	bool		Dropped;
-	CBaseEntity	*Shooter;
+	bool						Dropped;
+	entity_ptr<IBaseEntity>		Shooter;
 
 public:
 	sint32			Explosivity;
 	sint32			Damage;
 
 	CMiscExploBox () :
-	Dropped(false),
-	CBaseEntity(),
-	CMapEntity(),
-	CThinkableEntity(),
-	CHurtableEntity (),
-	CTouchableEntity (),
-	CStepPhysics(),
-	Explosivity(0),
-	Shooter(NULL),
-	Damage(0)
+	  Dropped(false),
+	  IBaseEntity(),
+	  IMapEntity(),
+	  IThinkableEntity(),
+	  IHurtableEntity (),
+	  ITouchableEntity (),
+	  IStepPhysics(),
+	  Explosivity(0),
+	  Damage(0)
 	{
 	};
 
 	CMiscExploBox (sint32 Index) : 
-	Dropped(false),
-	CBaseEntity(Index),
-	CMapEntity(Index),
-	CThinkableEntity(),
-	CHurtableEntity(Index),
-	CTouchableEntity (Index),
-	CStepPhysics(Index),
-	Explosivity(0),
-	Shooter(NULL),
-	Damage(0)
+	  Dropped(false),
+	  IBaseEntity(Index),
+	  IMapEntity(Index),
+	  IThinkableEntity(),
+	  IHurtableEntity(Index),
+	  ITouchableEntity (Index),
+	  IStepPhysics(Index),
+	  Explosivity(0),
+	  Damage(0)
 	{
 	};
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMiscExploBox)
 
-#define BARREL_STEPSIZE 8
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if ((!other->GroundEntity) || (other->GroundEntity == this))
+		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
 			return;
-		if (!(other->EntityFlags & ENT_PHYSICS))
+		if (!(Other->EntityFlags & ENT_PHYSICS))
 			return;
 
-		float ratio = entity_cast<CPhysicsEntity>(other)->Mass / Mass;
-		float Yaw = ((State.GetOrigin() - other->State.GetOrigin()).ToYaw ()*M_PI*2 / 360);
+		float ratio = entity_cast<IPhysicsEntity>(Other)->Mass / Mass;
+		float Yaw = ((State.GetOrigin() - Other->State.GetOrigin()).ToYaw ()*M_PI*2 / 360);
 		vec3f move ( cosf(Yaw)*(2 * ratio),
 							sinf(Yaw)*(2 * ratio),
 							0);
@@ -104,25 +102,25 @@ public:
 
 		CTrace trace (newOrigin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 
-		if (trace.allSolid)
+		if (trace.AllSolid)
 			return;
 
-		if (trace.startSolid)
+		if (trace.StartSolid)
 		{
 			newOrigin[2] -= BARREL_STEPSIZE;
 			trace (newOrigin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
-			if (trace.allSolid || trace.startSolid)
+			if (trace.AllSolid || trace.StartSolid)
 				return;
 		}
 
 	// check point traces down for dangling corners
-		State.GetOrigin() = trace.EndPos;
+		State.GetOrigin() = trace.EndPosition;
 
-		GroundEntity = trace.Ent;
-		GroundEntityLinkCount = trace.Ent->GetLinkCount();
+		GroundEntity = trace.Entity;
+		GroundEntityLinkCount = trace.Entity->GetLinkCount();
 
-		if (trace.fraction == 1.0)
-			GroundEntity = NULL;
+		if (trace.Fraction == 1.0)
+			GroundEntity = nullentity;
 
 	// the move is ok
 		Link ();
@@ -139,41 +137,50 @@ public:
 			vec3f		origin = State.GetOrigin();
 
 			origin.Z += 1;
-			vec3f end = vec3f(origin);
+			vec3f end = origin;
 			end.Z -= 256;
 			
 			trace (origin, GetMins(), GetMaxs(), end, this, CONTENTS_MASK_MONSTERSOLID);
 
-			if (trace.fraction == 1 || trace.allSolid)
+			if (trace.Fraction == 1 || trace.AllSolid)
 				return;
 
-			State.GetOrigin() = trace.EndPos;
+			State.GetOrigin() = trace.EndPosition;
 			Link();
 			return;
 		}
-		SplashDamage (Shooter, Damage, NULL, Damage+40, MOD_BARREL);
+		SplashDamage (*Shooter, Damage, NULL, Damage+40, MOD_BARREL);
 
-		CTempEnt_Explosions::GrenadeExplosion (State.GetOrigin (), this);
+		CGrenadeExplosion (State.GetOrigin ()).Send();
 		Free ();
 	};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	// immune to slime damage
+	void TakeDamage (	IBaseEntity *Inflictor, IBaseEntity *Attacker,
+							vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+							sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+	{
+		if (MeansOfDeath == MOD_SLIME)
+			return;
+
+		IHurtableEntity::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+	}
+
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
 		CanTakeDamage = false;
-		NextThink = level.Frame + 2;
-		Shooter = attacker;
+		NextThink = Level.Frame + 2;
+		Shooter = Attacker;
 	};
-
-	void Pain (CBaseEntity *other, float kick, sint32 damage) {};
 
 	bool Run ()
 	{
-		return CStepPhysics::Run ();
+		return IStepPhysics::Run ();
 	};
 
 	void Spawn ()
 	{
-		if (deathmatch->Boolean())
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;
@@ -198,7 +205,7 @@ public:
 
 		CanTakeDamage = true;
 		Touchable = true;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 
 		Link ();
 	};
@@ -210,7 +217,6 @@ ENTITYFIELDS_BEGIN(CMiscExploBox)
 	CEntityField ("dmg", EntityMemberOffset(CMiscExploBox,Damage), FT_INT | FT_SAVABLE),
 
 	CEntityField ("Dropped", EntityMemberOffset(CMiscExploBox,Dropped), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("Shooter", EntityMemberOffset(CMiscExploBox,Shooter), FT_ENTITY | FT_NOSPAWN | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CMiscExploBox)
 
@@ -219,25 +225,27 @@ bool			CMiscExploBox::ParseField (const char *Key, const char *Value)
 	if (CheckFields<CMiscExploBox> (this, Key, Value))
 		return true;
 
-	return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CMiscExploBox::SaveFields (CFile &File)
 {
+	Shooter.Write(File);
 	SaveEntityFields <CMiscExploBox> (this, File);
-	CMapEntity::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
-	CStepPhysics::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
+	IStepPhysics::SaveFields (File);
 }
 
 void		CMiscExploBox::LoadFields (CFile &File)
 {
+	Shooter = entity_ptr<IBaseEntity>::Read(File);
 	LoadEntityFields <CMiscExploBox> (this, File);
-	CMapEntity::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
-	CStepPhysics::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
+	IStepPhysics::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_explobox",CMiscExploBox);
@@ -251,17 +259,17 @@ There must be a path for it to follow once it is activated.
 */
 
 CMiscViper::CMiscViper() :
-	CBaseEntity (),
+	IBaseEntity (),
 	CTrainBase(),
-	CTouchableEntity(),
+	ITouchableEntity(),
 	MyUse(true)
 {
 };
 
 CMiscViper::CMiscViper(sint32 Index) :
-	CBaseEntity (Index),
+	IBaseEntity (Index),
 	CTrainBase(Index),
-	CTouchableEntity(Index),
+	ITouchableEntity(Index),
 	MyUse(true)
 {
 };
@@ -270,14 +278,14 @@ void CMiscViper::SaveFields (CFile &File)
 {
 	File.Write<bool> (MyUse);
 	CTrainBase::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
 }
 
 void CMiscViper::LoadFields (CFile &File)
 {
 	MyUse = File.Read<bool> ();
 	CTrainBase::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
 }
 
 bool CMiscViper::Run ()
@@ -285,21 +293,20 @@ bool CMiscViper::Run ()
 	return CTrainBase::Run ();
 };
 
-void CMiscViper::Use (CBaseEntity *other, CBaseEntity *activator)
+void CMiscViper::Use (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	if (MyUse)
 	{
 		GetSvFlags() &= ~SVF_NOCLIENT;
 		MyUse = false;
 	}
-	CTrainBase::Use (other, activator);
+	CTrainBase::Use (Other, Activator);
 };
 
 void CMiscViper::Spawn ()
 {
 	if (!Target)
 	{
-		//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();
 		return;
@@ -315,10 +322,10 @@ void CMiscViper::Spawn ()
 	GetMins().Set (-16, -16, 0);
 	GetMaxs().Set (16, 16, 32);
 
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 	ThinkType = TRAINTHINK_FIND;
 	GetSvFlags() |= SVF_NOCLIENT;
-	Accel = Decel = Speed;
+	MoveSpeed = MoveAccel = MoveDecel = Speed;
 
 	Link ();
 };
@@ -329,13 +336,13 @@ class CMiscStroggShip : public CMiscViper
 {
 public:
 	CMiscStroggShip () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CMiscViper ()
 	  {
 	  };
 
 	CMiscStroggShip (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CMiscViper (Index)
 	  {
 	  };
@@ -360,20 +367,20 @@ LINK_CLASSNAME_TO_CLASS ("misc_strogg_ship", CMiscStroggShip);
 The origin is the bottom of the banner.
 The banner is 128 tall.
 */
-class CMiscBanner : public CMapEntity, public CThinkableEntity
+class CMiscBanner : public IMapEntity, public IThinkableEntity
 {
 public:
 	CMiscBanner () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity ()
 	{
 	};
 
 	CMiscBanner (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index)
 	{
 	};
 
@@ -381,25 +388,25 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
 	{
 		State.GetFrame() = (State.GetFrame() + 1) % 16;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -409,7 +416,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 };
 
@@ -417,22 +424,22 @@ LINK_CLASSNAME_TO_CLASS ("misc_banner", CMiscBanner);
 
 /*QUAKED misc_blackhole (1 .5 0) (-8 -8 -8) (8 8 8)
 */
-class CMiscBlackhole : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CMiscBlackhole : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	CMiscBlackhole () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CMiscBlackhole (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -440,36 +447,36 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
 	{
 		if (++State.GetFrame() >= 19)
 			State.GetFrame() = 0;
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		Free ();
 	};
@@ -481,7 +488,7 @@ public:
 		GetMaxs().Set (64, 64, 8);
 		State.GetModelIndex() = ModelIndex ("models/objects/black/tris.md2");
 		State.GetRenderEffects() = RF_TRANSLUCENT;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -490,20 +497,20 @@ LINK_CLASSNAME_TO_CLASS ("misc_blackhole", CMiscBlackhole);
 
 /*QUAKED misc_eastertank (1 .5 0) (-32 -32 -16) (32 32 32)
 */
-class CMiscEasterTank : public CMapEntity, public CThinkableEntity
+class CMiscEasterTank : public IMapEntity, public IThinkableEntity
 {
 public:
 	CMiscEasterTank () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity ()
 	{
 	};
 
 	CMiscEasterTank (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index)
 	{
 	};
 
@@ -511,19 +518,19 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -531,7 +538,7 @@ public:
 		if (++State.GetFrame() >= 293)
 			State.GetFrame() = 254;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -541,7 +548,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/tank/tris.md2");
 		State.GetFrame() = 254;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -550,20 +557,20 @@ LINK_CLASSNAME_TO_CLASS ("misc_eastertank", CMiscEasterTank);
 
 /*QUAKED misc_easterchick (1 .5 0) (-32 -32 0) (32 32 32)
 */
-class CMiscEasterChick : public CMapEntity, public CThinkableEntity
+class CMiscEasterChick : public IMapEntity, public IThinkableEntity
 {
 public:
 	CMiscEasterChick () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity ()
 	{
 	};
 
 	CMiscEasterChick (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index)
 	{
 	};
 
@@ -571,19 +578,19 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -591,7 +598,7 @@ public:
 		if (++State.GetFrame() >= 247)
 			State.GetFrame() = 208;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -601,7 +608,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/bitch/tris.md2");
 		State.GetFrame() = 208;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -610,20 +617,20 @@ LINK_CLASSNAME_TO_CLASS ("misc_easterchick", CMiscEasterChick);
 
 /*QUAKED misc_easterchick2 (1 .5 0) (-32 -32 0) (32 32 32)
 */
-class CMiscEasterChick2 : public CMapEntity, public CThinkableEntity
+class CMiscEasterChick2 : public IMapEntity, public IThinkableEntity
 {
 public:
 	CMiscEasterChick2 () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity ()
 	{
 	};
 
 	CMiscEasterChick2 (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index)
 	{
 	};
 
@@ -631,19 +638,19 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -651,7 +658,7 @@ public:
 		if (++State.GetFrame() >= 287)
 			State.GetFrame() = 248;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -661,7 +668,7 @@ public:
 		GetMaxs().Set (32, 32, 32);
 		State.GetModelIndex() = ModelIndex ("models/monsters/bitch/tris.md2");
 		State.GetFrame() = 248;
-		NextThink = level.Frame + 2;
+		NextThink = Level.Frame + 2;
 		Link ();
 	};
 };
@@ -672,27 +679,27 @@ LINK_CLASSNAME_TO_CLASS ("misc_easterchick2", CMiscEasterChick2);
 Not really a monster, this is the Tank Commander's decapitated body.
 There should be a item_commander_head that has this as it's target.
 */
-class CCommanderBody : public CMapEntity, public CThinkableEntity, public CUsableEntity, public CTossProjectile, public CHurtableEntity
+class CCommanderBody : public IMapEntity, public IThinkableEntity, public IUsableEntity, public ITossProjectile, public IHurtableEntity
 {
 public:
 	bool Drop;
 
 	CCommanderBody () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
-	  CTossProjectile (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
+	  ITossProjectile (),
 	  Drop(true)
 	{
 	};
 
 	CCommanderBody (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
-	  CTossProjectile (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
+	  ITossProjectile (Index),
 	  Drop(true)
 	{
 	};
@@ -701,35 +708,35 @@ public:
 
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	};
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return (PhysicsType == PHYSICS_TOSS) ? CTossProjectile::Run() : CBaseEntity::Run();
+		return (PhysicsType == PHYSICS_TOSS) ? ITossProjectile::Run() : IBaseEntity::Run();
 	};
 
 	void Think ()
 	{
 		if (!Drop)
 		{
-			NextThink = (++State.GetFrame() < 24) ? level.Frame + FRAMETIME : 0;
+			NextThink = (++State.GetFrame() < 24) ? Level.Frame + FRAMETIME : 0;
 			if (State.GetFrame() == 22)
 				PlaySound (CHAN_BODY, SoundIndex ("tank/thud.wav"));
 		}
@@ -741,9 +748,9 @@ public:
 		}
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		PlaySound (CHAN_BODY, SoundIndex ("tank/pain.wav"));
 	};
 
@@ -762,7 +769,7 @@ public:
 		SoundIndex ("tank/thud.wav");
 		SoundIndex ("tank/pain.wav");
 
-		NextThink = level.Frame + 5;
+		NextThink = Level.Frame + 5;
 	};
 };
 
@@ -772,57 +779,63 @@ LINK_CLASSNAME_TO_CLASS ("monster_commander_body", CCommanderBody);
 This is the dead player model. Comes in 6 exciting different poses!
 */
 
-#define DEADSOLDIER_ON_BACK			1
-#define DEADSOLDIER_ON_STOMACH		2
-#define DEADSOLDIER_BACK_DECAP		4
-#define DEADSOLDIER_FETAL_POS		8
-#define DEADSOLDIER_SIT_DECAP		16
-#define DEADSOLDIER_IMPALED			32
+/**
+\enum	
 
-vec3f VelocityForDamage (sint32 damage);
+\brief	Values that represent spawnflags pertaining to CMiscDeadSoldier. 
+**/
+enum
+{
+	DEADSOLDIER_ON_BACK			= BIT(0),
+	DEADSOLDIER_ON_STOMACH		= BIT(1),
+	DEADSOLDIER_BACK_DECAP		= BIT(2),
+	DEADSOLDIER_FETAL_POS		= BIT(3),
+	DEADSOLDIER_SIT_DECAP		= BIT(4),
+	DEADSOLDIER_IMPALED			= BIT(5)
+};
 
-class CMiscDeadSoldier : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CTossProjectile
+class CMiscDeadSoldier : public IMapEntity, public IHurtableEntity, public IThinkableEntity, public ITossProjectile
 {
 public:
 	CMiscDeadSoldier () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CHurtableEntity (),
-	  CThinkableEntity (),
-	  CTossProjectile ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IHurtableEntity (),
+	  IThinkableEntity (),
+	  ITossProjectile ()
 	{
 	};
 
 	CMiscDeadSoldier (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CHurtableEntity (Index),
-	  CThinkableEntity (Index),
-	  CTossProjectile (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IHurtableEntity (Index),
+	  IThinkableEntity (Index),
+	  ITossProjectile (Index)
 	{
 	};
 
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	};
 
 	IMPLEMENT_SAVE_HEADER(CMiscDeadSoldier)
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CTossProjectile::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CTossProjectile::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
@@ -831,31 +844,31 @@ public:
 		{
 		case PHYSICS_NONE:
 		default:
-			return CBaseEntity::Run();
+			return IBaseEntity::Run();
 		case PHYSICS_TOSS:
-			return CTossProjectile::Run ();
+			return ITossProjectile::Run ();
 		case PHYSICS_BOUNCE:
-			return CBounceProjectile::Run ();
+			return IBounceProjectile::Run ();
 		};
 	};
 
-	void DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+	void DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 	{
-		CTempEnt_Splashes::Blood (point, normal);
+		CBlood(Point, Normal).Send();
 	}
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
 		if (Health > -80)
 			return;
 
 		PlaySound (CHAN_BODY, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		TossHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (this, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		TossHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 	};
 
-	void TossHead (MediaIndex gibIndex, sint32 damage, sint32 type)
+	void TossHead (MediaIndex gibIndex, sint32 Damage, sint32 type)
 	{
 		float	vscale;
 
@@ -871,7 +884,7 @@ public:
 		State.GetEffects() |= EF_GIB;
 		State.GetEffects() &= ~EF_FLIES;
 		State.GetSound() = 0;
-		Flags |= FL_NO_KNOCKBACK;
+		AffectedByKnockback = false;
 		GetSvFlags() &= ~SVF_MONSTER;
 		CanTakeDamage = true;
 
@@ -888,7 +901,7 @@ public:
 			vscale = 1.0;
 		}
 
-		vec3f vd = VelocityForDamage (damage);
+		vec3f vd = VelocityForDamage (Damage);
 		
 		vec3f velocity (Velocity);
 		velocity.MultiplyAngles (vscale, vd);
@@ -900,7 +913,7 @@ public:
 
 		AngularVelocity.Y = crand()*600;
 
-		NextThink = level.Frame + 100 + frand()*100;
+		NextThink = Level.Frame + 100 + frand()*100;
 
 		Link();
 	};
@@ -912,7 +925,7 @@ public:
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{	// auto-remove for deathmatch
 			Free ();
 			return;
@@ -951,18 +964,18 @@ LINK_CLASSNAME_TO_CLASS ("misc_deadsoldier", CMiscDeadSoldier);
 /*QUAKED misc_bigviper (1 .5 0) (-176 -120 -24) (176 120 72) 
 This is a large stationary viper as seen in Paul's intro
 */
-class CMiscBigViper : public CMapEntity
+class CMiscBigViper : public IMapEntity
 {
 public:
 	CMiscBigViper () :
-	  CBaseEntity (),
-	  CMapEntity ()
+	  IBaseEntity (),
+	  IMapEntity ()
 	{
 	};
 
 	CMiscBigViper (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	{
 	};
 
@@ -970,7 +983,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Spawn ()
@@ -988,21 +1001,21 @@ LINK_CLASSNAME_TO_CLASS ("misc_bigviper", CMiscBigViper);
 /*QUAKED misc_viper_bomb (1 0 0) (-8 -8 -8) (8 8 8)
 "dmg"	how much boom should the bomb make?
 */
-class CMiscViperBomb : public CMapEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity, public CTossProjectile
+class CMiscViperBomb : public IMapEntity, public IThinkableEntity, public ITouchableEntity, public IUsableEntity, public ITossProjectile
 {
 public:
 	bool			PreThinkable;
-	FrameNumber_t	TimeStamp;
+	FrameNumber	TimeStamp;
 	vec3f			MoveDir;
 	sint32			Damage;
 
 	CMiscViperBomb () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CTouchableEntity (),
-	  CUsableEntity (),
-	  CTossProjectile (),
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  ITouchableEntity (),
+	  IUsableEntity (),
+	  ITossProjectile (),
 	  PreThinkable (false),
 	  TimeStamp (0),
 	  MoveDir(),
@@ -1011,12 +1024,12 @@ public:
 	};
 
 	CMiscViperBomb (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CTouchableEntity (Index),
-	  CUsableEntity (Index),
-	  CTossProjectile (Index),
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  ITouchableEntity (Index),
+	  IUsableEntity (Index),
+	  ITossProjectile (Index),
 	  PreThinkable (false),
 	  TimeStamp (0),
 	  MoveDir(),
@@ -1029,7 +1042,7 @@ public:
 
 	bool Run ()
 	{
-		return (PhysicsType == PHYSICS_TOSS) ? CTossProjectile::Run() : CBaseEntity::Run();
+		return (PhysicsType == PHYSICS_TOSS) ? ITossProjectile::Run() : IBaseEntity::Run();
 	};
 
 	void Think ()
@@ -1037,9 +1050,9 @@ public:
 	};
 	void PreThink ()
 	{
-		GroundEntity = NULL;
+		GroundEntity = nullentity;
 
-		float diff = TimeStamp - level.Frame;
+		float diff = TimeStamp - Level.Frame;
 		if (diff < -1.0)
 			diff = -1.0;
 
@@ -1053,16 +1066,18 @@ public:
 		State.GetAngles() = angles;
 	};
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		UseTargets (Activator, Message);
+		UseTargets (*User, Message);
 
 		State.GetOrigin().Z = GetAbsMin().Z + 1;
 		SplashDamage (this, Damage, NULL, Damage+40, MOD_BOMB);
 		BecomeExplosion (true);
+
+		User = nullentity;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (!Usable)
 			return;
@@ -1074,14 +1089,14 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		PreThinkable = true;
 		Touchable = true;
-		Activator = activator;
+		User = Activator;
 
 		CMiscViper *viper = CC_FindByClassName<CMiscViper, ENT_BASE> (NULL, "misc_viper");
 
-		Velocity = viper->Dir * viper->Speed;
+		Velocity = viper->Dir * viper->MoveSpeed;
 
-		TimeStamp = level.Frame;
-		MoveDir = viper->Dir;
+		TimeStamp = Level.Frame;
+		MoveDir = viper->MoveDir;
 	};
 
 
@@ -1119,47 +1134,47 @@ bool			CMiscViperBomb::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CMiscViperBomb::SaveFields (CFile &File)
 {
 	SaveEntityFields <CMiscViperBomb> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CTouchableEntity::SaveFields (File);
-	CTossProjectile::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	ITouchableEntity::SaveFields (File);
+	ITossProjectile::SaveFields (File);
 }
 
 void		CMiscViperBomb::LoadFields (CFile &File)
 {
 	LoadEntityFields <CMiscViperBomb> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CTouchableEntity::LoadFields (File);
-	CTossProjectile::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	ITouchableEntity::LoadFields (File);
+	ITossProjectile::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper_bomb", CMiscViperBomb);
 
 /*QUAKED misc_satellite_dish (1 .5 0) (-64 -64 0) (64 64 128)
 */
-class CMiscSattelite : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CMiscSattelite : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	CMiscSattelite () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CMiscSattelite (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
@@ -1167,37 +1182,37 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Think ()
 	{
 		if (++State.GetFrame() < 38)
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
 	void Spawn ()
@@ -1214,18 +1229,18 @@ LINK_CLASSNAME_TO_CLASS ("misc_satellite_dish", CMiscSattelite);
 
 /*QUAKED light_mine1 (0 1 0) (-2 -2 -12) (2 2 12)
 */
-class CLightMine1 : public CMapEntity
+class CLightMine1 : public IMapEntity
 {
 public:
 	CLightMine1 () :
-	  CBaseEntity (),
-	  CMapEntity ()
+	  IBaseEntity (),
+	  IMapEntity ()
 	{
 	};
 
 	CLightMine1 (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	{
 	};
 
@@ -1233,7 +1248,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Spawn ()
@@ -1248,18 +1263,18 @@ LINK_CLASSNAME_TO_CLASS ("light_mine1", CLightMine1);
 
 /*QUAKED light_mine2 (0 1 0) (-2 -2 -12) (2 2 12)
 */
-class CLightMine2 : public CMapEntity
+class CLightMine2 : public IMapEntity
 {
 public:
 	CLightMine2 () :
-	  CBaseEntity (),
-	  CMapEntity ()
+	  IBaseEntity (),
+	  IMapEntity ()
 	{
 	};
 
 	CLightMine2 (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	{
 	};
 
@@ -1267,7 +1282,7 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run();
+		return IBaseEntity::Run();
 	};
 
 	void Spawn ()
@@ -1283,22 +1298,22 @@ LINK_CLASSNAME_TO_CLASS ("light_mine2", CLightMine2);
 /*QUAKED misc_gib_arm (1 0 0) (-8 -8 -8) (8 8 8)
 Intended for use with the target_spawner
 */
-class CMiscGibArm : public CMapEntity, public CThinkableEntity, public CTossProjectile, public CHurtableEntity
+class CMiscGibArm : public IMapEntity, public IThinkableEntity, public ITossProjectile, public IHurtableEntity
 {
 public:
 	CMiscGibArm () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CTossProjectile ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  ITossProjectile ()
 	{
 	};
 
 	CMiscGibArm (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CTossProjectile (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  ITossProjectile (Index)
 	{
 	};
 
@@ -1306,28 +1321,28 @@ public:
 
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	};
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CTossProjectile::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CTossProjectile::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return CTossProjectile::Run();
+		return ITossProjectile::Run();
 	};
 
 	void Think ()
@@ -1344,7 +1359,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.Frame + 300;
+		NextThink = Level.Frame + 300;
 		Link ();
 	};
 };
@@ -1354,22 +1369,22 @@ LINK_CLASSNAME_TO_CLASS ("misc_gib_arm", CMiscGibArm);
 /*QUAKED misc_gib_leg (1 0 0) (-8 -8 -8) (8 8 8)
 Intended for use with the target_spawner
 */
-class CMiscGibLeg : public CMapEntity, public CThinkableEntity, public CTossProjectile, public CHurtableEntity
+class CMiscGibLeg : public IMapEntity, public IThinkableEntity, public ITossProjectile, public IHurtableEntity
 {
 public:
 	CMiscGibLeg () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CTossProjectile ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  ITossProjectile ()
 	{
 	};
 
 	CMiscGibLeg (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CTossProjectile (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  ITossProjectile (Index)
 	{
 	};
 
@@ -1377,28 +1392,28 @@ public:
 
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	};
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CTossProjectile::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CTossProjectile::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return CTossProjectile::Run();
+		return ITossProjectile::Run();
 	};
 
 	void Think ()
@@ -1415,7 +1430,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.Frame + 300;
+		NextThink = Level.Frame + 300;
 		Link ();
 	};
 };
@@ -1425,22 +1440,22 @@ LINK_CLASSNAME_TO_CLASS ("misc_gib_leg", CMiscGibLeg);
 /*QUAKED misc_gib_head (1 0 0) (-8 -8 -8) (8 8 8)
 Intended for use with the target_spawner
 */
-class CMiscGibHead : public CMapEntity, public CThinkableEntity, public CTossProjectile, public CHurtableEntity
+class CMiscGibHead : public IMapEntity, public IThinkableEntity, public ITossProjectile, public IHurtableEntity
 {
 public:
 	CMiscGibHead () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CTossProjectile ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  ITossProjectile ()
 	{
 	};
 
 	CMiscGibHead (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CTossProjectile (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  ITossProjectile (Index)
 	{
 	};
 
@@ -1448,28 +1463,28 @@ public:
 
 	virtual bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CHurtableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IHurtableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	};
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CTossProjectile::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITossProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CTossProjectile::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITossProjectile::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return CTossProjectile::Run();
+		return ITossProjectile::Run();
 	};
 
 	void Think ()
@@ -1486,7 +1501,7 @@ public:
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
 		AngularVelocity.Set (frand()*200, frand()*200, frand()*200);
-		NextThink = level.Frame + 300;
+		NextThink = Level.Frame + 300;
 		Link ();
 	};
 };
@@ -1495,18 +1510,18 @@ LINK_CLASSNAME_TO_CLASS ("misc_gib_head", CMiscGibHead);
 
 //=================================================================================
 
-class CMiscModel : public CMapEntity
+class CMiscModel : public IMapEntity
 {
 public:
 	CMiscModel () :
-	  CBaseEntity (),
-	  CMapEntity ()
+	  IBaseEntity (),
+	  IMapEntity ()
 	  {
 	  };
 
 	CMiscModel (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index)
 	  {
 	  };
 

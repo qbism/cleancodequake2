@@ -208,27 +208,27 @@ CFrame InfantryFramesPain2 [] =
 };
 CAnim InfantryMovePain2 (FRAME_pain201, FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
 
-void CInfantry::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CInfantry::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	CurrentMove = (!irandom(2)) ? &InfantryMovePain1 : &InfantryMovePain2;
 	Entity->PlaySound (CHAN_VOICE, (!irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - clear duck flag
 	if (AIFlags & AI_DUCKED)
 		UnDuck();
@@ -253,11 +253,14 @@ static const vec3f	DeathAimAngles[] =
 
 void CInfantry::MachineGun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right;
 	sint32		flash_number;
 
 	if (Entity->State.GetFrame() == 
-#if XATRIX_FEATURES
+#if XATRIX_FEATURES || ROGUE_FEATURES
 		FRAME_attak103
 #else
 		FRAME_attak111
@@ -266,11 +269,13 @@ void CInfantry::MachineGun ()
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_1;
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-		G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 		if (Entity->Enemy)
 		{
-			vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+			vec3f target = Entity->Enemy->State.GetOrigin();
+			if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+				target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 			target.Z += Entity->Enemy->ViewHeight;
 
 			forward = target - start;
@@ -284,7 +289,7 @@ void CInfantry::MachineGun ()
 		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (Entity->State.GetFrame() - FRAME_death211);
 
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-		G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 		(Entity->State.GetAngles() - DeathAimAngles[flash_number-MZ2_INFANTRY_MACHINEGUN_2]).ToVectors (&forward, NULL, NULL);
 	}
@@ -379,17 +384,17 @@ CFrame InfantryFramesDeath3 [] =
 CAnim InfantryMoveDeath3 (FRAME_death301, FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
 
 
-void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CInfantry::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -423,7 +428,7 @@ void CInfantry::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 	Entity->PlaySound (CHAN_VOICE, pSound);
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CInfantry::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
@@ -431,13 +436,13 @@ void CInfantry::Duck_Down ()
 	AIFlags |= AI_DUCKED;
 	Entity->GetMaxs().Z -= 32;
 	Entity->CanTakeDamage = true;
-	PauseTime = level.Frame + 10;
+	PauseTime = Level.Frame + 10;
 	Entity->Link ();
 }
 
 void CInfantry::Duck_Hold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -454,7 +459,7 @@ void CInfantry::Duck_Up ()
 
 CFrame InfantryFramesDuck [] =
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, -2, ConvertDerivedFunction(&CInfantry::Duck_Down)),
 	CFrame (&CMonster::AI_Move, -5, ConvertDerivedFunction(&CInfantry::Duck_Hold)),
 	CFrame (&CMonster::AI_Move, 3),
@@ -470,14 +475,14 @@ CFrame InfantryFramesDuck [] =
 };
 CAnim InfantryMoveDuck (FRAME_duck01, FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
 
-#if !MONSTER_USE_ROGUE_AI
-void CInfantry::Dodge (CBaseEntity *attacker, float eta)
+#if !ROGUE_FEATURES
+void CInfantry::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
 	CurrentMove = &InfantryMoveDuck;
 }
@@ -492,7 +497,7 @@ void CInfantry::Fire ()
 {
 	MachineGun ();
 
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -516,6 +521,26 @@ CFrame InfantryFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, -1),
 	CFrame (&CMonster::AI_Charge, -1)
+};
+CAnim InfantryMoveAttack1 (FRAME_attak101, FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
+#elif ROGUE_FEATURES
+CFrame InfantryFramesAttack1 [] =
+{
+	CFrame (&CMonster::AI_Charge, -3),
+	CFrame (&CMonster::AI_Charge, -2),
+	CFrame (&CMonster::AI_Charge, -1, ConvertDerivedFunction(&CInfantry::Fire)),
+	CFrame (&CMonster::AI_Charge, 5),
+	CFrame (&CMonster::AI_Charge, 1),
+	CFrame (&CMonster::AI_Charge, -3),
+	CFrame (&CMonster::AI_Charge, -2),
+	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CInfantry::CockGun)),
+	CFrame (&CMonster::AI_Charge, 1),
+	CFrame (&CMonster::AI_Charge, 1),
+	CFrame (&CMonster::AI_Charge, -1),
+	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&CMonster::AI_Charge, -1),
+	CFrame (&CMonster::AI_Charge, -1),
+	CFrame (&CMonster::AI_Charge, 4)
 };
 CAnim InfantryMoveAttack1 (FRAME_attak101, FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #elif !(MONSTER_SPECIFIC_FLAGS & INFANTRY_DOES_REVERSE_GUN_ATTACK)
@@ -588,7 +613,13 @@ CAnim InfantryMoveAttack2 (FRAME_attak201, FRAME_attak208, InfantryFramesAttack2
 
 void CInfantry::Attack ()
 {
-	PauseTime = level.Frame + ((randomMT() & 15) + 11);
+	PauseTime = Level.Frame + ((randomMT() & 15) + 
+#if ROGUE_FEATURES
+		5
+#else
+		11
+#endif
+		);
 	CurrentMove = &InfantryMoveAttack1;
 }
 
@@ -597,25 +628,25 @@ void CInfantry::Melee ()
 	CurrentMove = &InfantryMoveAttack2;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CInfantry::Duck (float eta)
 {
 	if ((CurrentMove == &InfantryMoveAttack1) ||
 		(CurrentMove == &InfantryMoveAttack2))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (skill->Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		// PMM - stupid dodge
-		DuckWaitTime = level.Frame + ((eta + 1) * 10);
+		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -630,7 +661,7 @@ void CInfantry::SideStep ()
 		(CurrentMove == &InfantryMoveAttack2))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;
@@ -668,7 +699,7 @@ void CInfantry::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_ATTACK | MF_HAS_IDLE | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_SIDESTEP | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_DODGE
 #endif
 		);

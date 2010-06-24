@@ -1,6 +1,15 @@
-Possible current version
+Present
 - Remove usage of GetModelIndex() == 255. This is stupid.
-- Remove usage of level.current_entity
+- Remove usage of Level.CurrentEntity
+- Print buffer for player & for console (shove all prints into buffer then print them at the end of the frame)
+- Make a unified CMeleeWeapon class...
+- Unified CWeaponThrowable class for Grenade, Trap and Tesla
+- Monsters and some other entities will still attempt to access an entity that was recently freed.
+  - Possibly use a virtual member function called FixInvalidEntities? doing this for monsters
+- Noticed an odd bug where a grenade had an owner on spawn, but when it reached Explode (on a Flyer), GetOwner() returned NULL..
+- DelayedUse causes problems it seems; have to look into this
+- I think freed entities are being loaded before their time is up to get deleted..
+- Make SIRCL C++
 
 Future versions
 - A scripting system to replace entities like func_timer, etc.

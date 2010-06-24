@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "m_player.h"
 
 CBFG::CBFG() :
@@ -41,9 +41,9 @@ CWeapon(10, 0, "models/weapons/v_bfg/tris.md2", 0, 8, 9, 31,
 {
 }
 
-bool CBFG::CanFire (CPlayerEntity *ent)
+bool CBFG::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 9:
 	case 17:
@@ -52,9 +52,9 @@ bool CBFG::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-bool CBFG::CanStopFidgetting (CPlayerEntity *ent)
+bool CBFG::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 39:
 	case 45:
@@ -65,67 +65,69 @@ bool CBFG::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-void CBFG::Fire (CPlayerEntity *ent)
+void CBFG::Fire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 9:
-		MuzzleEffect (ent);
+		MuzzleEffect (Player);
 		break;
 	case 17:
-		FireBFG (ent);
+		FireBFG (Player);
 		break;
 	}
 }
 
-void CBFG::MuzzleEffect (CPlayerEntity *ent)
+void CBFG::MuzzleEffect (CPlayerEntity *Player)
 {
 	// send muzzle flash
-	Muzzle (ent, MZ_BFG);
+	Muzzle (Player, MZ_BFG);
 
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CBFG::FireBFG (CPlayerEntity *ent)
+void CBFG::FireBFG (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, ent->ViewHeight-8), start, forward, right;
-	const sint32		damage = (game.GameMode & GAME_DEATHMATCH) ?
+	vec3f	offset (8, 8, Player->ViewHeight-8), start, forward, right;
+	const sint32		damage = (Game.GameMode & GAME_DEATHMATCH) ?
 					CalcQuadVal(200)
 					:
 					CalcQuadVal(500);
 
 	// cells can go down during windup (from power armor hits), so
 	// check again and abort firing if we don't have enough now
-	if (ent->Client.Persistent.Inventory.Has(ent->Client.Persistent.Weapon->Item->Ammo) < 50)
+	if (Player->Client.Persistent.Inventory.Has(Player->Client.Persistent.Weapon->Item->Ammo) < 50)
 	{
-		ent->Client.PlayerState.GetGunFrame();
+		Player->Client.PlayerState.GetGunFrame();
 		return;
 	}
 
-	FireAnimation (ent);
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	FireAnimation (Player);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 
-	ent->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = forward * -2;
 
 	// make a big pitch kick with an inverse fall
-	ent->Client.ViewDamage.Set (-40, crand()*8);
-	ent->Client.ViewDamageTime = level.Frame + DAMAGE_TIME;
+	Player->Client.ViewDamage[0] = -40;
+	Player->Client.ViewDamage[1] = crand()*8;
+	Player->Client.ViewDamageTime = Level.Frame + DAMAGE_TIME;
 
-	ent->P_ProjectSource (offset, forward, right, start);
-	CBFGBolt::Spawn (ent, start, forward, damage, 400, 1000);
+	Player->P_ProjectSource (offset, forward, right, start);
+	CBFGBolt::Spawn (Player, start, forward, damage, 400, 1000);
 
-	AttackSound (ent);
-	ent->Client.PlayerState.GetGunFrame()++;
+	AttackSound (Player);
+	Player->Client.PlayerState.GetGunFrame()++;
 
-	ent->PlayerNoiseAt (start, PNOISE_WEAPON);
-	DepleteAmmo (ent, 50);
+	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
+	DepleteAmmo (Player, 50);
 }
 
 WEAPON_DEFS (CBFG);
+LINK_ITEM_TO_CLASS (weapon_bfg, CItemEntity);
 
 void CBFG::CreateItem (CItemList *List)
 {
-	NItems::BFG = QNew (com_itemPool, 0) CWeaponItem
+	NItems::BFG = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_bfg", "models/weapons/g_bfg/tris.md2", EF_ROTATE,
 		"misc/w_pkup.wav", "w_bfg", "BFG10k",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,

@@ -34,14 +34,102 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 #include "cc_ban.h"
 #include "cc_target_entities.h"
-#include "cc_bodyqueue.h"
-#include "cc_gamecommands.h"
-#include "cc_servercommands.h"
+#include "cc_body_queue.h"
+#include "cc_server_commands.h"
 #include "cc_version.h"
+#include <ctime>
 
-CGameLocals	game;
-CLevelLocals	level;
-edict_t		*g_edicts;
+void CLevelLocals::CEntityList::Save (CFile &File)
+{
+	File.Write<size_t> (Open.size());
+	for (TEntitiesContainer::iterator it = Open.begin(); it != Open.end(); ++it)
+		// Poop.
+		// Entities can't be guarenteed a number till
+		// they spawn the first time!
+		File.Write<sint32> ((*it) - Game.Entities);
+
+	File.Write<size_t> (Closed.size());
+	for (TEntitiesContainer::iterator it = Closed.begin(); it != Closed.end(); ++it)
+		File.Write<sint32> ((*it)->Server.State.Number);
+};
+
+void CLevelLocals::CEntityList::Load (CFile &File)
+{
+	size_t size = File.Read<size_t> ();
+
+	Open.clear ();
+	for (size_t i = 0; i < size; i++)
+		Open.push_back (&Game.Entities[File.Read<sint32> ()]);
+
+	size = File.Read<size_t> ();
+
+	Closed.clear ();
+	for (size_t i = 0; i < size; i++)
+		Closed.push_back (&Game.Entities[File.Read<sint32> ()]);
+};
+
+void CLevelLocals::Save (CFile &File)
+{
+	File.Write<FrameNumber> (Frame);
+
+	File.Write (FullLevelName);
+	File.Write (ServerLevelName);
+	File.Write (NextMap);
+	File.Write (ForceMap);
+
+	File.Write<SIntermissionState> (Intermission);
+
+	File.Write<sint32> ((SightClient) ? SightClient->State.GetNumber() : -1);
+	File.Write<SGoalList> (Secrets);
+	File.Write<SGoalList> (Goals);
+	File.Write<SMonsterCount> (Monsters);
+	File.Write<uint8> (PowerCubeCount);
+	File.Write<uint32> (Inhibit);
+	File.Write<uint32> (EntityNumber);
+
+#if ROGUE_FEATURES
+	File.Write<FrameNumber> (DisguiseViolationFrametime);
+	File.Write<sint32> ((DisguiseViolator) ? DisguiseViolator->State.GetNumber() : -1);
+#endif
+
+	Entities.Save (File);
+};
+
+void CLevelLocals::Load (CFile &File)
+{
+	Frame = File.Read<FrameNumber> ();
+
+	FullLevelName = File.ReadCCString ();
+	ServerLevelName = File.ReadCCString ();
+	NextMap = File.ReadCCString ();
+	ForceMap = File.ReadCCString ();
+
+	Intermission = File.Read<SIntermissionState> ();
+
+	sint32 Index = File.Read<sint32> ();
+	if (Index != -1)
+		SightClient = entity_cast<CPlayerEntity>(Game.Entities[Index].Entity);
+
+	Secrets = File.Read<SGoalList> ();
+	Goals = File.Read<SGoalList> ();
+	Monsters = File.Read<SMonsterCount> ();
+	PowerCubeCount = File.Read<uint8> ();
+	Inhibit = File.Read<uint32> ();
+	EntityNumber = File.Read<uint32> ();
+
+#if ROGUE_FEATURES
+	DisguiseViolationFrametime = File.Read<FrameNumber> ();
+
+	Index = File.Read<sint32> ();
+	if (Index != -1)
+		DisguiseViolator = Game.Entities[Index].Entity;
+#endif
+
+	Entities.Load (File);
+};
+
+CGameLocals		Game;
+CLevelLocals	Level;
 
 /*
 =================
@@ -56,34 +144,34 @@ void EndDMLevel ()
 	static const char *seps = " ,\n\r";
 
 	// stay on same level flag
-	if (dmFlags.dfSameLevel.IsEnabled())
+	if (DeathmatchFlags.dfSameLevel.IsEnabled())
 	{
-		BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()));
+		BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()));
 		return;
 	}
 
-	if (!level.ForceMap.empty())
+	if (!Level.ForceMap.empty())
 	{
-		BeginIntermission (CreateTargetChangeLevel (level.ForceMap.c_str()));
+		BeginIntermission (CreateTargetChangeLevel (Level.ForceMap.c_str()));
 		return;
 	}
 
 	// see if it's in the map list
-	if (*sv_maplist->String())
+	if (*CvarList[CV_MAPLIST].String())
 	{
-		s = Mem_StrDup(sv_maplist->String());
+		s = Mem_StrDup(CvarList[CV_MAPLIST].String());
 		f = NULL;
 		t = strtok(s, seps);
 
 		while (t != NULL)
 		{
-			if (Q_stricmp(t, level.ServerLevelName.c_str()) == 0) {
+			if (Q_stricmp(t, Level.ServerLevelName.c_str()) == 0) {
 				// it's in the list, go to the next one
 				t = strtok(NULL, seps);
 
 				if (t == NULL) { // end of list, go to first one
 					if (f == NULL) // there isn't a first one, same level
-						BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()) );
+						BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()) );
 					else
 						BeginIntermission (CreateTargetChangeLevel (f) );
 				} else
@@ -98,18 +186,18 @@ void EndDMLevel ()
 		free(s);
 	}
 
-	if (!level.NextMap.empty()) // go to a specific map
-		BeginIntermission (CreateTargetChangeLevel (level.NextMap.c_str()) );
+	if (!Level.NextMap.empty()) // go to a specific map
+		BeginIntermission (CreateTargetChangeLevel (Level.NextMap.c_str()) );
 	else
 	{	// search for a changelevel
-		CTargetChangeLevel *ent = CC_FindByClassName<CTargetChangeLevel, ENT_BASE> (NULL, "target_changelevel");
-		if (!ent)
+		CTargetChangeLevel *Entity = CC_FindByClassName<CTargetChangeLevel, ENT_BASE> (NULL, "target_changelevel");
+		if (!Entity)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
-			BeginIntermission (CreateTargetChangeLevel (level.ServerLevelName.c_str()) );
+			BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()) );
 			return;
 		}
-		BeginIntermission (ent);
+		BeginIntermission (Entity);
 	}
 }
 
@@ -120,27 +208,25 @@ CheckDMRules
 */
 void CheckDMRules ()
 {
-	if (level.IntermissionTime)
+	if (Level.Intermission.Time)
 		return;
 
-	if (!(game.GameMode & GAME_DEATHMATCH))
+	if (!(Game.GameMode & GAME_DEATHMATCH))
 		return;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((game.GameMode & GAME_CTF) && CTFCheckRules())
+	if ((Game.GameMode & GAME_CTF) && CTFCheckRules())
 	{
 		EndDMLevel ();
 		return;
 	}
-	if (CTFInMatch())
-		return; // no checking in match mode
 //ZOID
 #endif
 
-	if (timelimit->Float())
+	if (CvarList[CV_TIME_LIMIT].Float())
 	{
-		if (level.Frame >= ((timelimit->Float()*60)*10))
+		if (Level.Frame >= ((CvarList[CV_TIME_LIMIT].Float()*60)*10))
 		{
 			BroadcastPrintf (PRINT_HIGH, "Timelimit hit.\n");
 			EndDMLevel ();
@@ -148,15 +234,15 @@ void CheckDMRules ()
 		}
 	}
 
-	if (fraglimit->Integer())
+	if (CvarList[CV_FRAG_LIMIT].Integer())
 	{
-		for (uint8 i = 0; i < game.MaxClients; i++)
+		for (uint8 i = 0; i < Game.MaxClients; i++)
 		{
-			CPlayerEntity *cl = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
+			CPlayerEntity *cl = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
 			if (!cl->GetInUse())
 				continue;
 
-			if (cl->Client.Respawn.Score >= fraglimit->Integer())
+			if (cl->Client.Respawn.Score >= CvarList[CV_FRAG_LIMIT].Integer())
 			{
 				BroadcastPrintf (PRINT_HIGH, "Fraglimit hit.\n");
 				EndDMLevel ();
@@ -173,31 +259,21 @@ ExitLevel
 */
 void ExitLevel ()
 {
-#if CLEANCTF_ENABLED
-	if (CTFNextMap())
-		return;
-#endif
-
-	//level.ChangeMap
-	gi.AddCommandString ((char*)(std::cc_string("gamemap \"") + level.ChangeMap + "\"\n").c_str());
-	level.ChangeMap = NULL;
-	level.ExitIntermission = false;
-	level.IntermissionTime = 0;
+	gi.AddCommandString ((char*)(std::string("gamemap \"") + Level.Intermission.ChangeMap + "\"\n").c_str());
+	Level.Intermission.ChangeMap = NULL;
+	Level.Intermission.ShouldExit = false;
+	Level.Intermission.Time = 0;
 	ClientEndServerFrames ();
 
 	// clear some things before going to next level
-	for (sint32 i = 0; i < game.MaxClients; i++)
+	for (sint32 i = 0; i < Game.MaxClients; i++)
 	{
-		CPlayerEntity *ent = entity_cast<CPlayerEntity>(g_edicts[1 + i].Entity);
-		if (!ent->GetInUse())
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[1 + i].Entity);
+		if (!Player->GetInUse())
 			continue;
-		if (ent->Health > ent->Client.Persistent.MaxHealth)
-			ent->Health = ent->Client.Persistent.MaxHealth;
+		if (Player->Health > Player->Client.Persistent.MaxHealth)
+			Player->Health = Player->Client.Persistent.MaxHealth;
 	}
-
-#if MONSTERS_USE_PATHFINDING
-	SavePathTable ();
-#endif
 }
 
 /*
@@ -209,16 +285,16 @@ inline void CheckNeedPass ()
 {
 	// if password or spectator_password has changed, update needpass
 	// as needed
-	if (password->Modified() || spectator_password->Modified()) 
+	if (CvarList[CV_PASSWORD].Modified() || CvarList[CV_SPECTATOR_PASSWORD].Modified()) 
 	{
 		sint32 need = 0;
 
-		if (*password->String() && Q_stricmp(password->String(), "none"))
+		if (*CvarList[CV_PASSWORD].String() && Q_stricmp(CvarList[CV_PASSWORD].String(), "none"))
 			need |= 1;
-		if (*spectator_password->String() && Q_stricmp(spectator_password->String(), "none"))
+		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && Q_stricmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none"))
 			need |= 2;
 
-		needpass->Set(need);
+		CvarList[CV_NEEDPASS].Set(need);
 	}
 }
 
@@ -226,13 +302,13 @@ void ClientEndServerFrames ()
 {
 	// calc the player views now that all pushing
 	// and damage has been added
-	for (sint32 i = 1; i <= game.MaxClients ; i++)
+	for (sint32 i = 1; i <= Game.MaxClients ; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 		if (!Player->GetInUse())
 			continue;
 
-		if (map_debug->Boolean())
+		if (CvarList[CV_MAP_DEBUG].Boolean())
 		{
 			Mem_Zero (&Player->PlayedSounds, sizeof(Player->PlayedSounds));
 			Player->BeginServerFrame ();
@@ -252,39 +328,50 @@ Advances the world by 0.1 seconds
 ================
 */
 
+/**
+\fn	void RunPrivateEntities ()
+
+\brief	Runs all private entities.
+**/
 void			RunPrivateEntities ();
 
 #if defined(WIN32)
 #include <crtdbg.h>
 #endif
 
-void ProcessEntity (edict_t *ent)
+void ProcessEntity (SEntity *ent)
 {
-	if (!ent->inUse)
+	if (!ent->Server.InUse)
 	{
-		if (ent->state.number > (game.MaxClients + BODY_QUEUE_SIZE))
-			ent->AwaitingRemoval = true;
+		if (ent->Server.State.Number > (Game.MaxClients + BODY_QUEUE_SIZE))
+		{
+			if (!ent->AwaitingRemoval)
+			{
+				ent->RemovalFrames = 2;
+				ent->AwaitingRemoval = true;
+			}
+		}
 		return;
 	}
 
 	if (ent->Entity)
 	{
-		CBaseEntity *Entity = ent->Entity;
+		IBaseEntity *Entity = ent->Entity;
 		
 		Mem_Zero (&Entity->PlayedSounds, sizeof(Entity->PlayedSounds));
 		
-		level.CurrentEntity = Entity;
+		Level.CurrentEntity = Entity;
 		Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
 
 		// if the ground entity moved, make sure we are still on it
-		if ((Entity->GroundEntity) && ((!Entity->GroundEntity->gameEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount)))
+		if ((!Entity->GroundEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount))
 		{
-			Entity->GroundEntity = NULL;
-			if ( !(Entity->Flags & (FL_SWIM|FL_FLY)) && (Entity->EntityFlags & ENT_MONSTER))
+			Entity->GroundEntity = nullentity;
+			if ((Entity->EntityFlags & ENT_MONSTER) && !(entity_cast<CMonsterEntity>(Entity)->Monster->AIFlags & (AI_SWIM | AI_FLY)))
 				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 		}
 
-		CThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<CThinkableEntity>(Entity) : NULL;
+		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
 
 		if (Thinkable) 
 			Thinkable->PreThink ();
@@ -298,60 +385,78 @@ void ProcessEntity (edict_t *ent)
 		// This has to be processed after thinking and running, because
 		// the entity still has to be intact after that
 		if (Entity->Freed)
-			ent->AwaitingRemoval = true;
+		{
+			if (!ent->AwaitingRemoval)
+			{
+				ent->RemovalFrames = 2;
+				ent->AwaitingRemoval = true;
+			}
+		}
 	}
 }
 
-bool RemoveEntity (edict_t *ent);
+/**
+\fn	bool RemoveEntity (SEntity *ent)
 
-extern bool requestedBreak;
+\brief	remove_if callback. Removes the entity 'ent' from the list if it needs to be removed. 
 
-void CGameAPI::RunFrame ()
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	ent	If non-null, the entity. 
+
+\return	true if removed, false if not. 
+**/
+bool RemoveEntity (SEntity *ent)
 {
-	if (requestedBreak)
+	if (!ent || ent->Server.State.Number <= (Game.MaxClients + BODY_QUEUE_SIZE))
+		return false;
+
+	if (!ent->Entity || ent->AwaitingRemoval)
 	{
-		requestedBreak = false;
-#if defined(WIN32)
-		_CrtDbgBreak();
-#else
-		assert(0);
-#endif
+		if (!ent->RemovalFrames)
+		{
+			ent->AwaitingRemoval = false;
+
+			QDelete ent->Entity;
+			ent->Entity = NULL;
+
+			// Push into Open
+			Level.Entities.Open.push_front (ent);
+			return true;
+		}
+
+		ent->RemovalFrames--;
 	}
 
+	return false;
+}
+void CGameAPI::RunFrame ()
+{
 #if !NO_VERSION_CHECKING
 	CheckVersionReturnance ();
 #endif
 
-	if (level.Frame >= 3 && map_debug->Boolean())
+	if (Level.Frame >= 3 && CvarList[CV_MAP_DEBUG].Boolean())
 	{
-		level.Frame ++;
+		Level.Frame ++;
 		// Run the players only
-		// build the playerstate_t structures for all players
+		// build the SPlayerState structures for all players
 		ClientEndServerFrames ();
-
-#if MONSTERS_USE_PATHFINDING
-		RunNodes();
-#endif
 		return;
 	}
 
-	level.Frame++;
+	Level.Frame++;
 
-	if (level.Frame == 2)
+	if (Level.Frame == 2)
 		EndMapCounter();
-
-	// choose a client for monsters to target this frame
-	// Only do it when we have spawned everything
-	if (!(game.GameMode & GAME_DEATHMATCH) && level.Frame > 20) // Paril, lol
-		AI_SetSightClient ();
-
 	// exit intermissions
 
-	if (level.ExitIntermission)
+	if (Level.Intermission.ShouldExit)
 	{
-		if (level.ExitIntermissionOnNextFrame)
+		if (Level.Intermission.ShouldExitOnNextFrame)
 		{
-			level.ExitIntermissionOnNextFrame = false;
+			Level.Intermission.ShouldExitOnNextFrame = false;
 			return;
 		}
 		ExitLevel ();
@@ -362,10 +467,10 @@ void CGameAPI::RunFrame ()
 	// treat each object in turn
 	// even the world gets a chance to think
 	//
-	std::for_each (level.Entities.Closed.begin(), level.Entities.Closed.end(), ProcessEntity);
-	level.Entities.Closed.remove_if (RemoveEntity);
+	std::for_each (Level.Entities.Closed.begin(), Level.Entities.Closed.end(), ProcessEntity);
+	Level.Entities.Closed.remove_if (RemoveEntity);
 #ifdef _DEBUG
-	_CC_ASSERT_EXPR ((level.Entities.Closed.size() + level.Entities.Open.size()) == Game.GetMaxEdicts(), "Entities don't equal max!");
+	CC_ASSERT_EXPR ((Level.Entities.Closed.size() + Level.Entities.Open.size()) == (uint32)GameAPI.GetMaxEdicts(), "Entities don't equal max!");
 #endif
 
 	RunPrivateEntities ();
@@ -377,21 +482,30 @@ void CGameAPI::RunFrame ()
 	// see if needpass needs updated
 	CheckNeedPass ();
 
-	// build the playerstate_t structures for all players
+	// build the SPlayerState structures for all players
 	ClientEndServerFrames ();
 
-	if (dmflags->Modified())
-		dmFlags.UpdateFlags(dmflags->Integer());
+	if (CvarList[CV_DMFLAGS].Modified())
+		DeathmatchFlags.UpdateFlags(CvarList[CV_DMFLAGS].Integer());
 
-#if MONSTERS_USE_PATHFINDING
-	RunNodes();
+#if CLEANCODE_IRC
+	UpdateIRCServers ();
 #endif
+
+#if ROGUE_FEATURES
+	RunBadAreas ();
+#endif
+
+	// choose a client for monsters to target this frame
+	// Only do it when we have spawned everything
+	if (!(Game.GameMode & GAME_DEATHMATCH) && Level.Frame > 20) // Paril, lol
+		AI_SetSightClient ();
 }
 
 void SetupGamemode ()
 {
-	sint32 dmInt = deathmatch->Integer(),
-		coopInt = coop->Integer();
+	sint32 dmInt = CvarList[CV_DEATHMATCH].Integer(),
+		coopInt = CvarList[CV_COOP].Integer();
 
 	// Did we request deathmatch?
 	if (dmInt)
@@ -403,47 +517,47 @@ void SetupGamemode ()
 			if (dmInt > coopInt)
 			{
 				// We want deathmatch
-				coop->Set (0, false);
-				deathmatch->Set (1, false);
+				CvarList[CV_COOP].Set (0, false);
+				CvarList[CV_DEATHMATCH].Set (1, false);
 				// Let it fall through
 			}
 			else if (coopInt > dmInt)
 			{
 				// We want coop
-				deathmatch->Set (0, false);
-				coop->Set (1, false);
-				game.GameMode = GAME_COOPERATIVE;
+				CvarList[CV_DEATHMATCH].Set (0, false);
+				CvarList[CV_COOP].Set (1, false);
+				Game.GameMode = GAME_COOPERATIVE;
 				return;
 			}
 			// We don't know what we want, forcing DM
 			else
 			{
-				coop->Set (0, false);
+				CvarList[CV_COOP].Set (0, false);
 				DebugPrintf		("CleanCode Warning: Both deathmatch and coop are 1; forcing to deathmatch.\n"
 								 "Did you know you can make one take priority if you intend to only set one?\n"
 								 "If deathmatch is 1 and you want to switch to coop, just type \"coop 2\" and change maps!\n");
 				// Let it fall through
 			}
 		}
-		game.GameMode = GAME_DEATHMATCH;
+		Game.GameMode = GAME_DEATHMATCH;
 	}
 	// Did we request cooperative?
 	else if (coopInt)
 	{
 		// All the above code handles the case if deathmatch is true.
-		game.GameMode = GAME_COOPERATIVE;
+		Game.GameMode = GAME_COOPERATIVE;
 		return;
 	}
 	else
 	{
-		game.GameMode = GAME_SINGLEPLAYER;
+		Game.GameMode = GAME_SINGLEPLAYER;
 		return;
 	}
 
 	// If we reached here, we wanted deathmatch
 #if CLEANCTF_ENABLED
-	if (ctf->Integer())
-		game.GameMode |= GAME_CTF;
+	if (CvarList[CV_CTF].Integer())
+		Game.GameMode |= GAME_CTF;
 #endif
 }
 
@@ -457,173 +571,26 @@ is loaded.
 ============
 */
 
-CCvar	*deathmatch;
-CCvar	*coop;
-CCvar	*dmflags;
-CCvar	*skill;
-CCvar	*fraglimit;
-CCvar	*timelimit;
-CCvar	*password;
-CCvar	*spectator_password;
-CCvar	*needpass;
-CCvar	*maxclients;
-CCvar	*maxspectators;
-CCvar	*maxentities;
-CCvar	*g_select_empty;
-CCvar	*dedicated;
-CCvar	*developer;
-
-CCvar	*filterban;
-
-CCvar	*sv_gravity;
-
-CCvar	*sv_rollspeed;
-CCvar	*sv_rollangle;
-CCvar	*gun_x;
-CCvar	*gun_y;
-CCvar	*gun_z;
-
-CCvar	*run_pitch;
-CCvar	*run_roll;
-CCvar	*bob_up;
-CCvar	*bob_pitch;
-CCvar	*bob_roll;
-
-CCvar	*sv_cheats;
-
-CCvar	*flood_msgs;
-CCvar	*flood_persecond;
-CCvar	*flood_waitdelay;
-
-CCvar	*sv_maplist;
-CCvar	*map_debug;
-CCvar	*cc_techflags;
-
-#if CLEANCTF_ENABLED
-//ZOID
-CCvar	*capturelimit;
-CCvar	*instantweap;
-//ZOID
-#endif
-
-CCvar	*sv_airaccelerate;
-
 // Registers all cvars and commands
 void G_Register ()
 {
-	gun_x = QNew (com_cvarPool, 0) CCvar ("gun_x", "0", 0);
-	gun_y = QNew (com_cvarPool, 0) CCvar ("gun_y", "0", 0);
-	gun_z = QNew (com_cvarPool, 0) CCvar ("gun_z", "0", 0);
-
-	//FIXME: sv_ prefix is wrong for these
-	sv_rollspeed = QNew (com_cvarPool, 0) CCvar ("sv_rollspeed", "200", 0);
-	sv_rollangle = QNew (com_cvarPool, 0) CCvar ("sv_rollangle", "2", 0);
-	sv_gravity = QNew (com_cvarPool, 0) CCvar ("sv_gravity", "800", 0);
-
-	// noset vars
-	dedicated = QNew (com_cvarPool, 0) CCvar ("dedicated", "0", CVAR_READONLY);
-
-	developer = QNew (com_cvarPool, 0) CCvar ("developer", "0", 0);
-
-	// latched vars
-	sv_cheats = QNew (com_cvarPool, 0) CCvar ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	CCvar ("gamename", GAMENAME , CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	CCvar ("gamedate", BuildDate(), CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-
-	maxclients = QNew (com_cvarPool, 0) CCvar ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH_SERVER);
-	maxspectators = QNew (com_cvarPool, 0) CCvar ("maxspectators", "4", CVAR_SERVERINFO);
-	skill = QNew (com_cvarPool, 0) CCvar ("skill", "1", CVAR_LATCH_SERVER);
-	maxentities = QNew (com_cvarPool, 0) CCvar ("maxentities", 1024, CVAR_LATCH_SERVER);
-
-	// change anytime vars
-	dmflags = QNew (com_cvarPool, 0) CCvar ("dmflags", "0", CVAR_SERVERINFO);
-	fraglimit = QNew (com_cvarPool, 0) CCvar ("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit = QNew (com_cvarPool, 0) CCvar ("timelimit", "0", CVAR_SERVERINFO);
-	password = QNew (com_cvarPool, 0) CCvar ("password", "", CVAR_USERINFO);
-	spectator_password = QNew (com_cvarPool, 0) CCvar ("spectator_password", "", CVAR_USERINFO);
-	needpass = QNew (com_cvarPool, 0) CCvar ("needpass", "0", CVAR_SERVERINFO);
-	filterban = QNew (com_cvarPool, 0) CCvar ("filterban", "1", 0);
-
-	g_select_empty = QNew (com_cvarPool, 0) CCvar ("g_select_empty", "0", CVAR_ARCHIVE);
-
-	run_pitch = QNew (com_cvarPool, 0) CCvar ("run_pitch", "0.002", 0);
-	run_roll = QNew (com_cvarPool, 0) CCvar ("run_roll", "0.005", 0);
-	bob_up  = QNew (com_cvarPool, 0) CCvar ("bob_up", "0.005", 0);
-	bob_pitch = QNew (com_cvarPool, 0) CCvar ("bob_pitch", "0.002", 0);
-	bob_roll = QNew (com_cvarPool, 0) CCvar ("bob_roll", "0.002", 0);
-
-	// flood control
-	flood_msgs = QNew (com_cvarPool, 0) CCvar ("flood_msgs", "4", 0);
-	flood_persecond = QNew (com_cvarPool, 0) CCvar ("flood_persecond", "4", 0);
-	flood_waitdelay = QNew (com_cvarPool, 0) CCvar ("flood_waitdelay", "10", 0);
-
-	// dm map list
-	sv_maplist = QNew (com_cvarPool, 0) CCvar ("sv_maplist", "", 0);
-	
-	map_debug = QNew (com_cvarPool, 0) CCvar ("map_debug", "0", CVAR_LATCH_SERVER);
-	cc_techflags = QNew (com_cvarPool, 0) CCvar ("cc_techflags", "0", CVAR_LATCH_SERVER);
+	Cvar_Register ();
 
 	SetupArg ();
 	Cmd_Register ();
 	SvCmd_Register ();
-
-	// Gamemodes
-	deathmatch = QNew (com_cvarPool, 0) CCvar ("deathmatch", "0", CVAR_SERVERINFO|CVAR_LATCH_SERVER);
-	coop = QNew (com_cvarPool, 0) CCvar ("coop", "0", CVAR_LATCH_SERVER);
-
-#if CLEANCTF_ENABLED
-//ZOID
-	capturelimit = QNew (com_cvarPool, 0) CCvar ("capturelimit", "0", CVAR_SERVERINFO);
-	instantweap = QNew (com_cvarPool, 0) CCvar ("instantweap", "0", CVAR_SERVERINFO);
-
-	// Setup CTF if we have it
-	CTFInit();
-#endif
-
-	sv_airaccelerate = QNew (com_cvarPool, 0) CCvar("sv_airaccelerate", "0", CVAR_SERVERINFO);
-
-#if MONSTERS_USE_PATHFINDING
-	Nodes_Register ();
-#endif
 }
 
-#ifdef WIN32
-	#ifdef _FRONTEND
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "Win32 FrontEnd Debug"
-		#else
-			#define CONFIGURATIONSTRING "Win32 FrontEnd Release"
-	#endif
-	#else
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "Win32 Debug"
-		#else
-			#define CONFIGURATIONSTRING "Win32 Release"
-		#endif
-	#endif
-#else
-	#ifdef _FRONTEND
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "FrontEnd Debug"
-		#else
-			#define CONFIGURATIONSTRING "FrontEnd Release"
-		#endif
-	#else
-		#ifdef _DEBUG
-			#define CONFIGURATIONSTRING "Debug"
-		#else
-			#define CONFIGURATIONSTRING "Release"
-		#endif
-	#endif
-#endif
+std::string ConfigTimeString ()
+{
+	return std::string(TimeStamp()) + " (running on " + COMBINED_BUILD_STRING + ")";
+}
 
 void CGameAPI::Init ()
 {
 	CTimer LoadTimer;
 
-	//Mem_Init ();
-	DebugPrintf ("==== InitGame ====\n");
-	DebugPrintf ("Running CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s (%s %s)\nInitializing game...\n", CLEANCODE_VERSION_PRINT_ARGS, TimeStamp(), CONFIGURATIONSTRING, CPUSTRING);
+	ServerPrintf ("==== InitGame ====\nRunning CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s\nInitializing Game...\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 
 	seedMT (time(NULL));
 
@@ -636,50 +603,52 @@ void CGameAPI::Init ()
 	// Setup the gamemode
 	SetupGamemode ();
 
-	dmFlags.UpdateFlags(dmflags->Integer());
+	DeathmatchFlags.UpdateFlags(CvarList[CV_DMFLAGS].Integer());
 
 	// items
 	InitItemlist ();
 
-	game.HelpMessages[0].clear();
-	game.HelpMessages[1].clear();
+	Game.HelpMessages[0].clear();
+	Game.HelpMessages[1].clear();
 
 	// initialize all entities for this game
-	game.MaxEntities = maxentities->Integer();
-	g_edicts = QNew (com_gamePool, 0) edict_t[game.MaxEntities];
-	Game.SetEntities(g_edicts);
-	Game.GetMaxEdicts() = game.MaxEntities;
+	Game.MaxEntities = CvarList[CV_MAXENTITIES].Integer();
+	Game.Entities = QNew (TAG_GAME) SEntity[Game.MaxEntities];
+	GameAPI.GetEntities() = Game.Entities;
+	GameAPI.GetMaxEdicts() = Game.MaxEntities;
 
 	// initialize all clients for this game
-	game.MaxClients = maxclients->Integer();
-	game.Clients = QNew (com_gamePool, 0) gclient_t[game.MaxClients];
-	Game.GetNumEdicts() = game.MaxClients + 1;
+	Game.MaxClients = CvarList[CV_MAXCLIENTS].Integer();
+	Game.Clients = QNew (TAG_GAME) SServerClient[Game.MaxClients];
+	GameAPI.GetNumEdicts() = Game.MaxClients + 1;
 
 	// Vars
-	game.MaxSpectators = maxspectators->Integer();
-	game.CheatsEnabled = (sv_cheats->Integer()) ? true : false;
+	Game.MaxSpectators = CvarList[CV_MAXSPECTATORS].Integer();
+	Game.CheatsEnabled = (CvarList[CV_CHEATS].Integer()) ? true : false;
 
 	Bans.LoadFromFile ();
-
-	Mem_Register ();
 
 #if 0
 	LoadModules ();
 	InitializeModules ();
 #endif
 
-	DebugPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
+	// Set R1 protocol flags
+	Game.R1Protocol = (CCvar("protocol", "").Integer() == ENHANCED_PROTOCOL_VERSION);
+
+	ServerPrintf ("\nGame initialized in "TIMER_STRING".\n", LoadTimer.Get());
 }
 
 void CGameAPI::Shutdown ()
 {
-	DebugPrintf ("==== ShutdownGame ====\n");
-
-	//Cmd_RemoveCommands ();
-	//SvCmd_RemoveCommands ();
+	ServerPrintf ("==== ShutdownGame ====\n");
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
 
 	Bans.SaveList ();
+
+	Mem_FreeTag (TAG_GAME);
+	Mem_FreeTag (TAG_LEVEL);
+	Mem_FreeTag (TAG_ENTITY);
 }

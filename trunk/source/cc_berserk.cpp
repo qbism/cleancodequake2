@@ -214,61 +214,10 @@ CFrame BerserkFramesAttackClub [] =
 };
 CAnim BerserkMoveAttackClub (FRAME_att_c9, FRAME_att_c20, BerserkFramesAttackClub, &CMonster::Run);
 
-#if 0
-void berserk_strike (edict_t *self)
-{
-	//FIXME play impact sound
-}
-
-
-mframe_t berserk_frames_attack_strike [] =
-{
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, berserk_swing,
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, berserk_strike,
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 9.7f),
-	CFrame (&CMonster::AI_Move, 13.6f, NULL
-};
-	
-mmove_t berserk_move_attack_strike = {FRAME_att_c21, FRAME_att_c34, berserk_frames_attack_strike, berserk_run};
-#endif
-
-
 void CBerserker::Melee ()
 {
 	CurrentMove = (!irandom(2)) ? &BerserkMoveAttackSpike : &BerserkMoveAttackClub;
 }
-
-
-/*
-void() 	berserk_atke1	=[	$r_attb1,	berserk_atke2	] {ai_run(9);};
-void() 	berserk_atke2	=[	$r_attb2,	berserk_atke3	] {ai_run(6);};
-void() 	berserk_atke3	=[	$r_attb3,	berserk_atke4	] {ai_run(18.4);};
-void() 	berserk_atke4	=[	$r_attb4,	berserk_atke5	] {ai_run(25);};
-void() 	berserk_atke5	=[	$r_attb5,	berserk_atke6	] {ai_run(14);};
-void() 	berserk_atke6	=[	$r_attb6,	berserk_atke7	] {ai_run(20);};
-void() 	berserk_atke7	=[	$r_attb7,	berserk_atke8	] {ai_run(8.5);};
-void() 	berserk_atke8	=[	$r_attb8,	berserk_atke9	] {ai_run(3);};
-void() 	berserk_atke9	=[	$r_attb9,	berserk_atke10	] {ai_run(17.5);};
-void() 	berserk_atke10	=[	$r_attb10,	berserk_atke11	] {ai_run(17);};
-void() 	berserk_atke11	=[	$r_attb11,	berserk_atke12	] {ai_run(9);};
-void() 	berserk_atke12	=[	$r_attb12,	berserk_atke13	] {ai_run(25);};
-void() 	berserk_atke13	=[	$r_attb13,	berserk_atke14	] {ai_run(3.7);};
-void() 	berserk_atke14	=[	$r_attb14,	berserk_atke15	] {ai_run(2.6);};
-void() 	berserk_atke15	=[	$r_attb15,	berserk_atke16	] {ai_run(19);};
-void() 	berserk_atke16	=[	$r_attb16,	berserk_atke17	] {ai_run(25);};
-void() 	berserk_atke17	=[	$r_attb17,	berserk_atke18	] {ai_run(19.6);};
-void() 	berserk_atke18	=[	$r_attb18,	berserk_run1	] {ai_run(7.8);};
-*/
 
 CFrame BerserkFramesPain1 [] =
 {
@@ -304,21 +253,21 @@ CFrame BerserkFramesPain2 [] =
 };
 CAnim BerserkMovePain2 (FRAME_painb1, FRAME_painb20, BerserkFramesPain2, &CMonster::Run);
 
-void CBerserker::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CBerserker::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	CurrentMove = ((damage < 20) || (frand() < 0.5)) ? &BerserkMovePain1 : &BerserkMovePain2;
+	CurrentMove = ((Damage < 20) || (frand() < 0.5)) ? &BerserkMovePain1 : &BerserkMovePain2;
 }
 
 void CBerserker::Dead ()
@@ -364,16 +313,16 @@ CFrame BerserkFramesDeath2 [] =
 };
 CAnim BerserkMoveDeath2 (FRAME_deathc1, FRAME_deathc8, BerserkFramesDeath2, ConvertDerivedFunction(&CBerserker::Dead));
 
-void CBerserker::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CBerserker::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -385,10 +334,10 @@ void CBerserker::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damag
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
 
-	CurrentMove = (damage >= 50) ? &BerserkMoveDeath1 : &BerserkMoveDeath2;
+	CurrentMove = (Damage >= 50) ? &BerserkMoveDeath1 : &BerserkMoveDeath2;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CBerserker::SideStep ()
 {
 	// don't check for attack; the eta should suffice for melee monsters
@@ -419,7 +368,7 @@ void CBerserker::Spawn ()
 	Entity->Mass = 250;
 
 	MonsterFlags = (MF_HAS_MELEE | MF_HAS_SEARCH | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_SIDESTEP
 #endif
 		);

@@ -119,7 +119,7 @@ CFrame SuperTankFramesStand []=
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim SuperTankMoveStand (FRAME_stand_1, FRAME_stand_60, SuperTankFramesStand);
+CAnim SuperTankMoveStand (FRAME_stand1, FRAME_stand60, SuperTankFramesStand);
 	
 void CSuperTank::Stand ()
 {
@@ -147,7 +147,7 @@ CFrame SuperTankFramesRun [] =
 	CFrame (&CMonster::AI_Run, 12),
 	CFrame (&CMonster::AI_Run, 12)
 };
-CAnim SuperTankMoveRun (FRAME_forwrd_1, FRAME_forwrd_18, SuperTankFramesRun);
+CAnim SuperTankMoveRun (FRAME_forwrd1, FRAME_forwrd18, SuperTankFramesRun);
 
 //
 // walk
@@ -174,7 +174,7 @@ CFrame SuperTankFramesForward [] =
 	CFrame (&CMonster::AI_Walk, 4),
 	CFrame (&CMonster::AI_Walk, 4)
 };
-CAnim SuperTankMoveForward (FRAME_forwrd_1, FRAME_forwrd_18, SuperTankFramesForward);
+CAnim SuperTankMoveForward (FRAME_forwrd1, FRAME_forwrd18, SuperTankFramesForward);
 
 void CSuperTank::Walk ()
 {
@@ -193,7 +193,7 @@ CFrame SuperTankFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain3 (FRAME_pain3_9, FRAME_pain3_12, SuperTankFramesPain3, &CMonster::Run);
+CAnim SuperTankMovePain3 (FRAME_painc9, FRAME_painc12, SuperTankFramesPain3, &CMonster::Run);
 
 CFrame SuperTankFramesPain2 [] =
 {
@@ -202,7 +202,7 @@ CFrame SuperTankFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain2 (FRAME_pain2_5, FRAME_pain2_8, SuperTankFramesPain2, &CMonster::Run);
+CAnim SuperTankMovePain2 (FRAME_painb5, FRAME_painb8, SuperTankFramesPain2, &CMonster::Run);
 
 CFrame SuperTankFramesPain1 [] =
 {
@@ -211,7 +211,7 @@ CFrame SuperTankFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain1 (FRAME_pain1_1, FRAME_pain1_4, SuperTankFramesPain1, &CMonster::Run);
+CAnim SuperTankMovePain1 (FRAME_paina1, FRAME_paina4, SuperTankFramesPain1, &CMonster::Run);
 
 CFrame SuperTankFramesDeath1 [] =
 {
@@ -240,30 +240,7 @@ CFrame SuperTankFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0, &CMonster::BossExplode)
 };
-CAnim SuperTankMoveDeath (FRAME_death_1, FRAME_death_24, SuperTankFramesDeath1, ConvertDerivedFunction(&CSuperTank::Dead));
-
-/*mframe_t supertank_frames_backward[] =
-{
-	CFrame (&CMonster::AI_Walk, 0,	Sounds[SOUND_TREAD],
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0,	NULL
-};
-mmove_t	supertank_move_backward = {FRAME_backwd_1, FRAME_backwd_18, supertank_frames_backward, NULL};*/
+CAnim SuperTankMoveDeath (FRAME_death1, FRAME_death24, SuperTankFramesDeath1, ConvertDerivedFunction(&CSuperTank::Dead));
 
 #if (MONSTER_SPECIFIC_FLAGS & SUPERTANK_USES_GRENADES)
 CFrame SuperTankFramesAttack4[] =
@@ -275,14 +252,17 @@ CFrame SuperTankFramesAttack4[] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMoveAttack4 (FRAME_attak4_1, FRAME_attak4_6, SuperTankFramesAttack4, &CMonster::Run);
+CAnim SuperTankMoveAttack4 (FRAME_attakd1, FRAME_attakd6, SuperTankFramesAttack4, &CMonster::Run);
 
 void CSuperTank::Grenade ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right;
 	vec3f offset (32.0f, 37.0f, 50.0f);
 
-	if (Entity->State.GetFrame() == FRAME_attak4_4)
+	if (Entity->State.GetFrame() == FRAME_attakd4)
 		offset.Y = -offset.Y;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
@@ -304,14 +284,14 @@ void CSuperTank::Grenade ()
 
 CFrame SuperTankFramesAttack2[]=
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0),
+	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
 	CFrame (&CMonster::AI_Charge,		0),
 	CFrame (&CMonster::AI_Charge,		0),
 	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
@@ -332,7 +312,7 @@ CFrame SuperTankFramesAttack2[]=
 	CFrame (&CMonster::AI_Charge,		0),
 	CFrame (&CMonster::AI_Charge,		0)
 };
-CAnim SuperTankMoveAttack2 (FRAME_attak2_1, FRAME_attak2_27, SuperTankFramesAttack2, &CMonster::Run);
+CAnim SuperTankMoveAttack2 (FRAME_attakb1, FRAME_attakb27, SuperTankFramesAttack2, &CMonster::Run);
 
 CFrame SuperTankFramesAttack1[]=
 {
@@ -343,7 +323,7 @@ CFrame SuperTankFramesAttack1[]=
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
 };
-CAnim SuperTankMoveAttack1 (FRAME_attak1_1, FRAME_attak1_6, SuperTankFramesAttack1, ConvertDerivedFunction(&CSuperTank::ReAttack1));
+CAnim SuperTankMoveAttack1 (FRAME_attaka1, FRAME_attaka6, SuperTankFramesAttack1, ConvertDerivedFunction(&CSuperTank::ReAttack1));
 
 CFrame SuperTankFramesEndAttack1[]=
 {
@@ -362,43 +342,43 @@ CFrame SuperTankFramesEndAttack1[]=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim SuperTankMoveEndAttack1 (FRAME_attak1_7, FRAME_attak1_20, SuperTankFramesEndAttack1, &CMonster::Run);
+CAnim SuperTankMoveEndAttack1 (FRAME_attaka7, FRAME_attaka20, SuperTankFramesEndAttack1, &CMonster::Run);
 
 void CSuperTank::ReAttack1 ()
 {
-	if (IsVisible(Entity, Entity->Enemy))
+	if (IsVisible(Entity, *Entity->Enemy))
 		CurrentMove = (frand() < 0.9) ? &SuperTankMoveAttack1 : &SuperTankMoveEndAttack1;
 	else
 		CurrentMove = &SuperTankMoveEndAttack1;
 }
 
-void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CSuperTank::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (!(Entity->State.GetSkinNum() & 1) && Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() |= 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames
-	if (damage <= 25 && frand() < 0.2)
+	if (Damage <= 25 && frand() < 0.2)
 		return;
 
 	// Don't go into pain if he's firing his rockets
-	if (skill->Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attak2_1) && (Entity->State.GetFrame() <= FRAME_attak2_14) )
+	if (CvarList[CV_SKILL].Integer() >= 2 && (Entity->State.GetFrame() >= FRAME_attakb1) && (Entity->State.GetFrame() <= FRAME_attakb14) )
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 10)
+	if (Damage <= 10)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &SuperTankMovePain1;
 	}
-	else if (damage <= 25)
+	else if (Damage <= 25)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN3]);
 		CurrentMove = &SuperTankMovePain2;
@@ -409,146 +389,27 @@ void CSuperTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 		CurrentMove = &SuperTankMovePain3;
 	}
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - blindfire cleanup
 	AIFlags &= ~AI_MANUAL_STEERING;
 	// pmm
 #endif
 };
 
-
 void CSuperTank::Rocket ()
 {
-#if MONSTERS_ARENT_STUPID
-	vec3f	forward, right, start, dir, vec, target;
-	sint32		FlashNumber;
-#if MONSTER_USE_ROGUE_AI
-	bool blindfire = false;
-#endif
+	if (!HasValidEnemy())
+		return;
 
-	// pmm - blindfire check
-#if MONSTER_USE_ROGUE_AI
-	if (AIFlags & AI_MANUAL_STEERING)
-		blindfire = true;
-#endif
-
-	switch (Entity->State.GetFrame())
-	{
-	case FRAME_attak2_8:
-		FlashNumber = MZ2_SUPERTANK_ROCKET_1;
-		break;
-	case FRAME_attak2_11:
-		FlashNumber = MZ2_SUPERTANK_ROCKET_2;
-		break;
-	default:
-		FlashNumber = MZ2_SUPERTANK_ROCKET_3;
-
-#if MONSTER_USE_ROGUE_AI
-		// PMM - blindfire cleanup
-		if (AIFlags & AI_MANUAL_STEERING)
-			AIFlags &= ~AI_MANUAL_STEERING;
-		// pmm
-#endif
-		break;
-	}
-
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
-
-		// PMM
-#if MONSTER_USE_ROGUE_AI
-	if (blindfire)
-		target = BlindFireTarget;
-	else
-#endif
-		target = Entity->Enemy->State.GetOrigin();
-	// pmm
-
-//PGM
-	// PMM - blindfire shooting
-#if MONSTER_USE_ROGUE_AI
-	if (blindfire)
-	{
-		vec = target;
-		dir = vec - start;
-	}
-	// pmm
-	// don't shoot at feet if they're above me.
-	else
-#endif
-	if(frand() < 0.66 || (start.Z < Entity->Enemy->GetAbsMin().Z))
-	{
-//		gi.dprintf("normal shot\n");
-		vec = Entity->Enemy->State.GetOrigin();
-		vec.Z += Entity->Enemy->ViewHeight;
-		dir = vec - start;
-	}
-	else
-	{
-//		gi.dprintf("shooting at feet!\n");
-		vec = Entity->Enemy->State.GetOrigin();
-		vec.Z = Entity->Enemy->ViewHeight;
-		dir = vec - start;
-	}
-//PGM
-	
-//======
-	dir.Normalize ();
-
-	// pmm blindfire doesn't check target (done in checkattack)
-	// paranoia, make sure we're not shooting a target right next to us
-	CTrace trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-	#if MONSTER_USE_ROGUE_AI
-	if (blindfire)
-	{
-		// blindfire has different fail criteria for the trace
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
-			MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-		else 
-		{
-			// try shifting the target to the left a little (to help counter large offset)
-			vec = target.MultiplyAngles (-20, right);
-			dir = vec - start;
-			dir.Normalize ();
-
-			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
-				MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-			else 
-			{
-				// ok, that failed.  try to the right
-				vec = target.MultiplyAngles (20, right);
-				dir = vec - start;
-				dir.Normalize ();
-
-				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
-					MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-			}
-		}
-	}
-	else
-#endif
-	{
-		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-		if(trace.Ent == Entity->Enemy || trace.Ent == World)
-		{
-			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
-				MonsterFireRocket (start, dir, 50, 500, FlashNumber);
-	//		else
-	//			gi.dprintf("didn't make it halfway to target...aborting\n");
-		}
-	}
-#else
 	vec3f	forward, right, start;
 	int		FlashNumber;
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak2_8:
+	case FRAME_attakb8:
 		FlashNumber = MZ2_SUPERTANK_ROCKET_1;
 		break;
-	case FRAME_attak2_11:
+	case FRAME_attakb11:
 		FlashNumber = MZ2_SUPERTANK_ROCKET_2;
 		break;
 	default:
@@ -557,20 +418,22 @@ void CSuperTank::Rocket ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 
 	MonsterFireRocket (start, ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized(), 50, 500, FlashNumber);
-#endif
 }	
 
 void CSuperTank::MachineGun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f start, forward, right,
 			dir (0, Entity->State.GetAngles().Y, 0);
-	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak1_1);
+	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attaka1);
 
 	dir.ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 
 	if (Entity->Enemy)
 	{
@@ -586,7 +449,7 @@ void CSuperTank::MachineGun ()
 
 void CSuperTank::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM 
 	if (AttackState == AS_BLIND)
 	{
@@ -614,7 +477,7 @@ void CSuperTank::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SuperTankMoveAttack2;
-		AttackFinished = level.Frame + 30 + 20*frand();
+		AttackFinished = Level.Frame + 30 + 20*frand();
 		return;
 	}
 	// pmm
@@ -652,7 +515,7 @@ void CSuperTank::Dead ()
 	Entity->Link ();
 }
 
-void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CSuperTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 	Entity->DeadFlag = true;
@@ -669,7 +532,15 @@ void CSuperTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 dama
 */
 
 #if XATRIX_FEATURES
-#define SPAWNFLAG_SUPERTANK_POWER_SHIELD		8
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CSuperTank. 
+**/
+enum
+{
+	SPAWNFLAG_SUPERTANK_POWER_SHIELD		= BIT(4)
+};
 #endif
 
 void CSuperTank::Spawn ()
@@ -691,7 +562,7 @@ void CSuperTank::Spawn ()
 	Entity->GibHealth = -500;
 	Entity->Mass = 800;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM
 	AIFlags |= AI_IGNORE_SHOTS;
 	BlindFire = true;

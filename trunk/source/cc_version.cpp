@@ -54,13 +54,12 @@ void CheckVersionReturnance ();
 
 void WriteVersion ()
 {
-	fileHandle_t handle = FS_OpenFile (VERSION_PATH, FILEMODE_WRITE|FILEMODE_CREATE);
+	CFile File (VERSION_PATH, FILEMODE_WRITE|FILEMODE_CREATE);
 
-	if (!handle)
+	if (!File.Valid())
 		return;
 
-	FS_Print (handle, "%s %u %u %u", CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N);
-	FS_Close (handle);
+	File.Print ("%s %u %u %u", CLEANCODE_VERSION_PREFIX, CLEANCODE_VERSION_MAJOR_N, CLEANCODE_VERSION_MINOR_N, CLEANCODE_VERSION_BUILD_N);
 }
 
 void VerifyVersionFile ()
@@ -70,7 +69,7 @@ void VerifyVersionFile ()
 
 	const char *token;
 
-	std::cc_string prefix;
+	std::string prefix;
 	Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 	prefix = token;
 
@@ -83,7 +82,7 @@ void VerifyVersionFile ()
 
 	if (CompareVersion (prefix.c_str(), major, minor, build))
 	{
-		DebugPrintf ("Version file out of date; updating...\n");
+		ServerPrintf ("Version file out of date; updating...\n");
 		WriteVersion ();
 	}
 }
@@ -113,12 +112,12 @@ WININET
 
 #include <WinInet.h>
 bool				VersionCheckReady;
-std::cc_string		VersionPrefix;
+std::string			VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
 EVersionComparison	VersionReturnance;
-char				receiveBuffer[256];
+std::string			receiveBuffer;
 
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 HANDLE				hThread;
@@ -140,42 +139,45 @@ void CheckNewVersion ()
 	}
 }
 
+const int READ_BYTES_SIZE = 16;
+
 long WINAPI CheckNewVersionThread (long lParam)
 #else
 void CheckNewVersion ()
 #endif
 {
-	receiveBuffer[0] = 0;
-
 	HINTERNET iInternetHandle = InternetOpenA ("wininet-agent/1.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	
-	Mem_Zero (receiveBuffer, sizeof(receiveBuffer));
+	receiveBuffer.clear();
 
 	if (iInternetHandle)
 	{
 		HINTERNET iInternetFile = InternetOpenUrlA (iInternetHandle, VERSION_URL, NULL, 0, INTERNET_FLAG_RESYNCHRONIZE, INTERNET_NO_CALLBACK);
+
 		if (iInternetFile)
 		{
 			// Start writing the file
-			char *currentReceivePos = receiveBuffer;
 			DWORD numBytesRead = 0;
-#define READ_BYTES_SIZE 16
 
+			char buf[READ_BYTES_SIZE];
 			while (true)
 			{
-				bool Passed = (!!InternetReadFile (iInternetFile, currentReceivePos, READ_BYTES_SIZE, &numBytesRead));
+				buf[0] = 0;
+				bool Passed = (!!InternetReadFile (iInternetFile, &buf, READ_BYTES_SIZE, &numBytesRead));
+
 				if (!Passed || Passed && ((numBytesRead == 0) || numBytesRead < READ_BYTES_SIZE))
 					break;
-				currentReceivePos += READ_BYTES_SIZE;
+
+				receiveBuffer += buf;
 			}
 
 			InternetCloseHandle (iInternetFile);
 		}
+
 		InternetCloseHandle (iInternetHandle);
 	}
 
 	VersionCheckReady = true;
-
 	return 0;
 }
 
@@ -184,13 +186,13 @@ void CheckVersionReturnance ()
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 	if (VersionCheckReady)
 	{
-		if (receiveBuffer[0])
+		if (receiveBuffer.size() && (receiveBuffer[0] != '<'))
 		{
-			CParser Parser (receiveBuffer, PSP_COMMENT_LINE);
+			CParser Parser (receiveBuffer.c_str(), PSP_COMMENT_LINE);
 
 			const char *token;
 
-			std::cc_string prefix;
+			std::string prefix;
 			Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 			prefix = token;
 
@@ -210,7 +212,7 @@ void CheckVersionReturnance ()
 			VersionCheckReady = true;
 	#else
 			if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
-				DebugPrintf (
+				ServerPrintf (
 				"==================================\n"
 				"*****************************\n"
 				"There is an update available for CleanCode!\n"
@@ -222,12 +224,12 @@ void CheckVersionReturnance ()
 				CLEANCODE_VERSION_PRINT_ARGS,
 				prefix.c_str(), major, minor, build);
 			else
-				DebugPrintf ("Your version of CleanCode is up to date.\n");
+				ServerPrintf ("Your version of CleanCode is up to date.\n");
 	#endif
 		}
 
 		if (VersionReturnance == VERSION_NEWER)
-			DebugPrintf (
+			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
 			"There is an update available for CleanCode!\n"
@@ -239,7 +241,7 @@ void CheckVersionReturnance ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
 		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrintf ("Your version of CleanCode is up to date.\n");
 
 		VersionReturnance = VERSION_SAME;
 		VersionCheckReady = false;
@@ -302,7 +304,7 @@ DWORD				iID;
 long WINAPI			CheckNewVersionThread (long lParam);
 void				CheckVersionReturnance ();
 bool				VersionCheckReady;
-std::cc_string		VersionPrefix;
+std::string		VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
@@ -328,7 +330,7 @@ void CheckVersionReturnance ()
 	if (VersionCheckReady)
 	{
 		if (VersionReturnance == VERSION_NEWER)
-			DebugPrintf (
+			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
 			"There is an update available for Cl	eanCode!\n"
@@ -340,7 +342,7 @@ void CheckVersionReturnance ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
 		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrintf ("Your version of CleanCode is up to date.\n");
 
 		VersionReturnance = VERSION_SAME;
 		VersionCheckReady = false;
@@ -405,7 +407,7 @@ void CheckNewVersion ()
 
 		const char *token;
 
-		std::cc_string prefix;
+		std::string prefix;
 		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 		prefix = token;
 
@@ -425,7 +427,7 @@ void CheckNewVersion ()
 		VersionCheckReady = true;
 #else
 		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
-			DebugPrintf (
+			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
 			"There is an update available for CleanCode!\n"
@@ -437,7 +439,7 @@ void CheckNewVersion ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			prefix.c_str(), major, minor, build);
 		else
-			DebugPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrintf ("Your version of CleanCode is up to date.\n");
 #endif
 
 		Mem_Free (chunk.memory);
@@ -450,16 +452,24 @@ void CheckNewVersion ()
 }
 #endif
 
+/**
+\fn	void InitVersion ()
+
+\brief	Initialises the version system. 
+
+\author	Paril
+\date	25/05/2010
+**/
 void InitVersion ()
 {
 #if (VERSION_CHECKING != VC_NONE)
-	DebugPrintf ("Checking for new version...\n");
+	ServerPrintf ("Checking for new version...\n");
 
-	if (!FS_FileExists(VERSION_PATH))
+	if (!CFile::Exists(VERSION_PATH))
 	{
-		DebugPrintf ("Version file non-existant, writing... ");
+		ServerPrintf ("Version file non-existant, writing... ");
 		WriteVersion ();
-		DebugPrintf ("done\n");
+		ServerPrintf ("done\n");
 	}
 	else
 		VerifyVersionFile ();
@@ -468,17 +478,19 @@ void InitVersion ()
 #endif
 }
 
-void Cmd_CCVersion_t (CPlayerEntity *Player)
+std::string ConfigTimeString ();
+
+void CVersionCommand::operator () ()
 {
-	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT", built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 }
 
-void SvCmd_CCVersion_t ()
+void CServerVersionCommand::operator () ()
 {
 #if (VERSION_CHECKING != VC_NONE)
 	if (ArgGets (2).empty())
 #endif
-		DebugPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT"\n", CLEANCODE_VERSION_PRINT_ARGS);
+		ServerPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT" built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 #if (VERSION_CHECKING != VC_NONE)
 	else
 		CheckNewVersion ();

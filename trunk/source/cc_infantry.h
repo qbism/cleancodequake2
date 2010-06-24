@@ -58,12 +58,13 @@ public:
 
 	MONSTER_SAVE_LOAD_NO_FIELDS
 
-#if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+#if !ROGUE_FEATURES
+	void Dodge (IBaseEntity *Attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
 #else
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 	void SideStep ();
 #endif
@@ -82,10 +83,12 @@ public:
 	void MachineGun ();
 
 	void Dead ();
-	virtual void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	virtual void Pain (CBaseEntity *other, float kick, sint32 damage);
+	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	virtual void Pain (IBaseEntity *Other, sint32 Damage);
 
 	virtual void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

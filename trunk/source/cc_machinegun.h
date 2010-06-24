@@ -39,10 +39,10 @@ class CMachinegun : public CWeapon
 public:
 	CMachinegun();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
-	inline void FireAnimation (CPlayerEntity *Player);
+	void	 FireAnimation (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);

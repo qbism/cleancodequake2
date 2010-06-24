@@ -54,6 +54,9 @@ void CFloater::Idle ()
 
 void CFloater::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, end, dir;
 	sint32		effect = 0;
 
@@ -66,7 +69,7 @@ void CFloater::FireBlaster ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_FLOAT_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FLOAT_BLASTER_1], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -213,7 +216,7 @@ CFrame FloaterFramesAttack1 [] =
 };
 CAnim FloaterMoveAttack1 (FRAME_attak101, FRAME_attak114, FloaterFramesAttack1, ConvertDerivedFunction(&CFloater::Run));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 CFrame FloaterFramesAttack1a [] =
 {
 	CFrame (&CMonster::AI_Charge,	10),			// Blaster attack
@@ -476,7 +479,7 @@ void CFloater::Wham ()
 	CMeleeWeapon::Fire (Entity, aim, 5 + irandom(6), -50);
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CFloater::Zap ()
 {
@@ -488,19 +491,19 @@ void CFloater::Zap ()
 	G_ProjectSource (Entity->State.GetOrigin(), offset, forward, right, origin);
 
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_ATTACK2]);
-	CTempEnt_Splashes::Splash (origin, vec3fOrigin, CTempEnt_Splashes::SPT_SPARKS, 32);
+	CSplash(origin, vec3fOrigin, SPT_SPARKS, 32).Send();
 
 	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE))
-		entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, vec3fOrigin,
+		entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, vec3fOrigin,
 		Entity->Enemy->State.GetOrigin(), vec3fOrigin, 5 + irandom(6), -10, DAMAGE_ENERGY, MOD_UNKNOWN);
 }
 
 void CFloater::Attack()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CurrentMove = &FloaterMoveAttack1;
 #else
-	float chance = (!skill->Integer()) ? 0 : 1.0 - (0.5/skill->Float());
+	float chance = (!CvarList[CV_SKILL].Integer()) ? 0 : 1.0 - (0.5/CvarList[CV_SKILL].Float());
 
 	// 0% chance of circle in easy
 	// 50% chance in normal
@@ -527,16 +530,16 @@ void CFloater::Melee ()
 	CurrentMove = (frand() < 0.5) ? &FloaterMoveAttack3 : &FloaterMoveAttack2;
 }
 
-void CFloater::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CFloater::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	bool n = (frand() < 0.5);
@@ -544,7 +547,7 @@ void CFloater::Pain (CBaseEntity *other, float kick, sint32 damage)
 	CurrentMove = n ? &FloaterMovePain1 : &FloaterMovePain2;
 }
 
-void CFloater::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CFloater::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH1]);
 	Entity->BecomeExplosion (false);

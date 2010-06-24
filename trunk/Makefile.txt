@@ -1,0 +1,22 @@
+﻿#  The makefile should output a gamei386.so in the same directory
+#  as the Makefile. Also, given that Paril and I haven't been both
+#  maintaining the SVN at the same time, there will probably be times
+#  when the Makefile is not up to date with the repo. Let us know and
+#  this will be fixed. Once we get a rhythm, things should get smoother.
+#
+#  I will maintain a list of current compile errors in this file so 
+#  that we may work asynchronously and still stay relatively synchronized.
+#
+########################################################################
+
+################
+# REVISION 436 #
+################
+
+Built successfully on i686 Arch Linux machine.
+
+################
+# REVISION 427 #
+################
+
+Built successfully on i686 Arch Linux machine.

@@ -36,19 +36,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if XATRIX_FEATURES
 #include "cc_soldier_base.h"
 #include "cc_xatrix_soldier_hyper.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 CBlueBlasterProjectile::CBlueBlasterProjectile () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CBlueBlasterProjectile::CBlueBlasterProjectile (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -59,12 +60,12 @@ void CBlueBlasterProjectile::Think ()
 	Free();
 }
 
-void CBlueBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CBlueBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -73,16 +74,16 @@ void CBlueBlasterProjectile::Touch (CBaseEntity *other, plane_t *plane, cmBspSur
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
 	else
-		CTempEnt_Splashes::Blaster(State.GetOrigin (), plane ? plane->normal : vec3fOrigin, CTempEnt_Splashes::BL_BLUE_HYPERBLASTER);
+		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin, BL_BLUE_HYPERBLASTER).Send();
 
 	Free (); // "delete" the entity
 }
 
-void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, sint32 effect)
+void CBlueBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed, sint32 effect)
 {
 	CBlueBlasterProjectile		*Bolt = QNewEntityOf CBlueBlasterProjectile;
 
@@ -96,9 +97,9 @@ void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/blaser/tris.md2");
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
-	Bolt->SetOwner (Spawner);
-	Bolt->NextThink = level.Frame + 20;
-	Bolt->Damage = damage;
+	Bolt->SetOwner(Spawner);
+	Bolt->NextThink = Level.Frame + 20;
+	Bolt->Damage = Damage;
 	Bolt->ClassName = "bolt";
 	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
 	Bolt->GetSolid() = SOLID_BBOX;
@@ -108,14 +109,14 @@ void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir
 	Bolt->Link ();
 
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		start = start.MultiplyAngles (-10, dir.GetNormalizedFast());
 		Bolt->State.GetOrigin() = start;
 		Bolt->State.GetOldOrigin() = start;
 
-		if (tr.ent->Entity)
-			Bolt->Touch (tr.ent->Entity, &tr.plane, tr.surface);
+		if (tr.Entity)
+			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
 	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
@@ -123,7 +124,7 @@ void CBlueBlasterProjectile::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir
 
 bool CBlueBlasterProjectile::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CSoldierHyper::CSoldierHyper (uint32 ID) :
@@ -198,7 +199,7 @@ void CSoldierHyper::HyperRefire2 ()
 
 void CSoldierHyper::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM - blindfire!
@@ -228,16 +229,16 @@ void CSoldierHyper::Attack ()
 
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
-		CurrentMove = &SoldierHMoveAttack1;
-		AttackFinished = level.Frame + ((1.5 + frand()) * 10);
+		CurrentMove = &SoldierHyperMoveAttack1;
+		AttackFinished = Level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}
 	// pmm
 
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
-		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
-		(r < (skill->Integer()*0.25)))
+		(Range(Entity, *Entity->Enemy) >= RANGE_NEAR) && 
+		(r < (CvarList[CV_SKILL].Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif
@@ -252,10 +253,13 @@ void CSoldierHyper::Attack ()
 static sint32 BlasterFlash [] = {MZ2_SOLDIER_BLASTER_1, MZ2_SOLDIER_BLASTER_2, MZ2_SOLDIER_BLASTER_3, MZ2_SOLDIER_BLASTER_4, MZ2_SOLDIER_BLASTER_5, MZ2_SOLDIER_BLASTER_6, MZ2_SOLDIER_BLASTER_7, MZ2_SOLDIER_BLASTER_8};
 void CSoldierHyper::FireGun (sint32 FlashNumber)
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, aim;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[BlasterFlash[FlashNumber]], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[BlasterFlash[FlashNumber]], forward, right, start);
 
 	switch (FlashNumber)
 	{
@@ -265,7 +269,7 @@ void CSoldierHyper::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			CBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);
@@ -304,7 +308,7 @@ void CSoldierHyper::SpawnSoldier ()
 	Entity->Health = 60;
 	Entity->GibHealth = -30;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 }

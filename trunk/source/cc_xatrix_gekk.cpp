@@ -35,19 +35,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if XATRIX_FEATURES
 #include "cc_xatrix_gekk.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 CLoogie::CLoogie () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CLoogie::CLoogie (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -58,12 +59,12 @@ void CLoogie::Think ()
 	Free();
 }
 
-void CLoogie::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CLoogie::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free (); // "delete" the entity
 		return;
@@ -72,14 +73,14 @@ void CLoogie::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
 
 	Free (); // "delete" the entity
 }
 
-void CLoogie::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed)
+void CLoogie::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed)
 {
 	CLoogie		*Bolt = QNewEntityOf CLoogie;
 
@@ -92,9 +93,9 @@ void CLoogie::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->State.GetRenderEffects() = RF_FULLBRIGHT;
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/loogy/tris.md2");
 
-	Bolt->SetOwner (Spawner);
-	Bolt->NextThink = level.Frame + 20;
-	Bolt->Damage = damage;
+	Bolt->SetOwner(Spawner);
+	Bolt->NextThink = Level.Frame + 20;
+	Bolt->Damage = Damage;
 	Bolt->ClassName = "bolt";
 	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
 	Bolt->GetSolid() = SOLID_BBOX;
@@ -104,14 +105,14 @@ void CLoogie::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->Link ();
 
 	CTrace tr ((Spawner) ? Spawner->State.GetOrigin() : start, start, Bolt, CONTENTS_MASK_SHOT);
-	if (tr.fraction < 1.0)
+	if (tr.Fraction < 1.0)
 	{
 		start = start.MultiplyAngles (-10, dir.GetNormalizedFast());
 		Bolt->State.GetOrigin() = start;
 		Bolt->State.GetOldOrigin() = start;
 
-		if (tr.ent->Entity)
-			Bolt->Touch (tr.ent->Entity, &tr.plane, tr.surface);
+		if (tr.Entity)
+			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
 	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
@@ -119,7 +120,7 @@ void CLoogie::Spawn (CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 bool CLoogie::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CGekk::CGekk (uint32 ID) :
@@ -133,17 +134,17 @@ CMonster (ID)
 // CHECKATTACK
 //
 
-void CGekk::DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags)
+void CGekk::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
-	CTempEnt_Splashes::Blood (point, normal, CTempEnt_Splashes::BT_GREEN_BLOOD);
+	CBlood(Point, Normal, BT_GREEN_BLOOD).Send();
 }
 
 bool CGekk::CheckMelee ()
 {
-	if (!Entity->Enemy || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		return true;
 	return false;
 }
@@ -181,7 +182,7 @@ bool CGekk::CheckJumpClose ()
 
 bool CGekk::CheckAttack ()
 {
-	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())
@@ -247,15 +248,15 @@ void CGekk::Gekk_AI_Stand (float Dist)
 	{
 		AI_Move (Dist);
 
-		if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (level.Frame > IdleTime))
+		if (!(Entity->SpawnFlags & 1) && (MonsterFlags & MF_HAS_IDLE) && (Level.Frame > IdleTime))
 		{
 			if (IdleTime)
 			{
 				Idle ();
-				IdleTime = level.Frame + ((15 + frand() * 15) * 10);
+				IdleTime = Level.Frame + ((15 + frand() * 15) * 10);
 			}
 			else
-				IdleTime = level.Frame + ((frand() * 15) * 10);
+				IdleTime = Level.Frame + ((frand() * 15) * 10);
 		}
 	}
 	else
@@ -372,13 +373,13 @@ CAnim GekkMoveSwimStart (FRAME_swim_01, FRAME_swim_32, GekkFramesSwimStart, Conv
 
 void CGekk::SwimLoop ()
 {
-	Entity->Flags |= FL_SWIM;	
+	AIFlags |= AI_SWIM;	
 	CurrentMove = &GekkMoveSwimLoop;
 }
 
 void CGekk::Swim ()
 {
-	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<CPhysicsEntity>(Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
+	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<IPhysicsEntity>(*Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
 		WaterToLand ();
 	else
 		CurrentMove = &GekkMoveSwimStart;
@@ -596,7 +597,7 @@ void CGekk::Loogie ()
 	vec3f dir;
 	static const vec3f fireOffset (-18, -0.8f, 24);
 
-	if (!Entity->Enemy || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
@@ -631,7 +632,7 @@ void CGekk::ReFireLoogie ()
 		return;
 	}
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health >= 0 && frand() > 0.7 && (Range(Entity, Entity->Enemy) == RANGE_NEAR))
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health >= 0 && frand() > 0.7 && (Range(Entity, *Entity->Enemy) == RANGE_NEAR))
 		CurrentMove = &GekkMoveSpit;
 }
 
@@ -670,12 +671,12 @@ CAnim GekkMoveAttack2 (FRAME_clawatk5_01, FRAME_clawatk5_09, GekkFramesAttack2, 
 
 void CGekk::CheckMeleeRefire ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
-	if (frand() < (skill->Integer() * 0.1))
+	if (frand() < (CvarList[CV_SKILL].Integer() * 0.1))
 	{
-		if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+		if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		{
 			switch (Entity->State.GetFrame())
 			{
@@ -796,7 +797,7 @@ void CGekk::Melee ()
 // ATTACK
 //
 
-void CGekk::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CGekk::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Jumping)
 		return;
@@ -807,10 +808,10 @@ void CGekk::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 		return;
 	}
 
-	if (!(other->EntityFlags & ENT_HURTABLE))
+	if (!(Other->EntityFlags & ENT_HURTABLE))
 		return;
 
-	CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(other);
+	IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
 	if (Hurtable->CanTakeDamage)
 	{
@@ -852,9 +853,9 @@ void CGekk::JumpTakeoff ()
 		Entity->Velocity.Z = 400;
 	}
 
-	Entity->GroundEntity = NULL;
+	Entity->GroundEntity = nullentity;
 	AIFlags |= AI_DUCKED;
-	AttackFinished = level.Frame + 30;
+	AttackFinished = Level.Frame + 30;
 	Jumping = true;
 }
 
@@ -878,9 +879,9 @@ void CGekk::JumpTakeoff2 ()
 		Entity->Velocity.Z = 300;
 	}
 
-	Entity->GroundEntity = NULL;
+	Entity->GroundEntity = nullentity;
 	AIFlags |= AI_DUCKED;
-	AttackFinished = level.Frame + 30;
+	AttackFinished = Level.Frame + 30;
 	Jumping = true;
 }
 
@@ -904,7 +905,7 @@ void CGekk::CheckLanding ()
 
 	// note to self
 	// causing skid
-	if (level.Frame > AttackFinished)
+	if (Level.Frame > AttackFinished)
 		NextFrame = FRAME_leapatk_11;
 	else
 		NextFrame = FRAME_leapatk_12;
@@ -912,11 +913,11 @@ void CGekk::CheckLanding ()
 
 void CGekk::Jump ()
 {
-	if (Entity->Flags & FL_SWIM || Entity->WaterInfo.Level)
+	if (AIFlags & AI_SWIM || Entity->WaterInfo.Level)
 		return;
 	else
 	{
-		if ((frand() > 0.5 && (Range (Entity, Entity->Enemy) >= RANGE_NEAR)) || (frand() > 0.8))
+		if ((frand() > 0.5 && (Range (Entity, *Entity->Enemy) >= RANGE_NEAR)) || (frand() > 0.8))
 			CurrentMove = &GekkMoveSpit;
 		else
 			CurrentMove = &GekkMoveLeapAtk;
@@ -974,7 +975,7 @@ CFrame GekkFramesPain2[] =
 };
 CAnim GekkMovePain2 (FRAME_pain4_01, FRAME_pain4_13, GekkFramesPain2, &CMonster::Run);
 
-void CGekk::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CGekk::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->SpawnFlags & 8)
 	{
@@ -987,17 +988,17 @@ void CGekk::Pain (CBaseEntity *other, float kick, sint32 damage)
 	else if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 
 	if (Entity->WaterInfo.Level)
 	{
-		if (!(Entity->Flags & FL_SWIM))
-			Entity->Flags |= FL_SWIM;
+		if (!(AIFlags & AI_SWIM))
+			AIFlags |= AI_SWIM;
 
 		CurrentMove = &GekkMovePain;
 	}
@@ -1171,7 +1172,7 @@ CFrame GekkFramesWDeath[] =
 };
 CAnim GekkMoveWDeath (FRAME_wdeath_01, FRAME_wdeath_45, GekkFramesWDeath, ConvertDerivedFunction(&CGekk::Dead));
 
-void CGekk::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CGekk::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {	
 	if (Entity->Health < Entity->GibHealth)
 	{
@@ -1220,14 +1221,14 @@ void CGekk::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, v
 /*
 duck
 */
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CGekk::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
 	Entity->GetMaxs().Z -= 32;
-	PauseTime = level.Frame + 10;
+	PauseTime = Level.Frame + 10;
 	Entity->Link ();
 }
 
@@ -1240,10 +1241,18 @@ void CGekk::Duck_Up ()
 
 void CGekk::Duck_Hold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
+}
+#else
+void CGekk::SideStep ()
+{
+	if (AIFlags & AI_STAND_GROUND)
+		CurrentMove = &GekkMoveStand;
+	else
+		CurrentMove = &GekkMoveRun;
 }
 #endif
 
@@ -1308,23 +1317,23 @@ void CGekk::Attack ()
 }
 
 void CGekk::
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	Dodge 
 #else
 	Duck
 #endif
 	(
-#if !MONSTER_USE_ROGUE_AI
-	CBaseEntity *attacker, 
+#if !ROGUE_FEATURES
+	IBaseEntity *Attacker, 
 #endif
 	float eta)
 {
 	if (frand() > 0.25)
 		return;
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 #endif
 
 	if (Entity->WaterInfo.Level)
@@ -1333,7 +1342,7 @@ void CGekk::
 		return;
 	}
 
-	switch (skill->Integer())
+	switch (CvarList[CV_SKILL].Integer())
 	{
 	case 0:
 		if (frand() > 0.5)
@@ -1341,13 +1350,13 @@ void CGekk::
 		else 
 			CurrentMove = &GekkMoveRDuck;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 			// has to be done immediately otherwise he can get stuck
 			DuckDown();
 #endif
 		return;
 	case 1:
-		PauseTime = level.Frame + ((eta + 0.3) * 10);
+		PauseTime = Level.Frame + ((eta + 0.3) * 10);
 		if (frand() > 0.33)
 		{
 			if (frand() > 0.5)
@@ -1355,7 +1364,7 @@ void CGekk::
 			else 
 				CurrentMove = &GekkMoveRDuck;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 			// has to be done immediately otherwise he can get stuck
 			DuckDown();
 #endif
@@ -1369,7 +1378,7 @@ void CGekk::
 		}
 		return;
 	case 2:
-		PauseTime = level.Frame + ((eta + 0.3) * 10);
+		PauseTime = Level.Frame + ((eta + 0.3) * 10);
 		if (frand() > 0.66)
 		{
 			if (frand() > 0.5)
@@ -1377,7 +1386,7 @@ void CGekk::
 			else 
 				CurrentMove = &GekkMoveRDuck;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 			// has to be done immediately otherwise he can get stuck
 			DuckDown();
 #endif
@@ -1390,7 +1399,7 @@ void CGekk::
 				CurrentMove = &GekkMoveAttack2;
 		}
 	default:
-		PauseTime = level.Frame + ((eta + 0.3) * 10);
+		PauseTime = Level.Frame + ((eta + 0.3) * 10);
 		if (frand() > 0.66)
 			CurrentMove = &GekkMoveAttack1;
 		else 
@@ -1439,7 +1448,7 @@ void CGekk::Spawn ()
 	Entity->Mass = 300;
 
 	MonsterFlags = (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_SEARCH | MF_HAS_IDLE | MF_HAS_MELEE
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK
 #endif
 		);
@@ -1457,7 +1466,7 @@ void CGekk::Spawn ()
 
 void CGekk::WaterToLand ()
 {
-	Entity->Flags &= ~FL_SWIM;
+	AIFlags &= ~AI_SWIM;
 	YawSpeed = 20;
 	Entity->ViewHeight = 25;
 
@@ -1469,7 +1478,7 @@ void CGekk::WaterToLand ()
 
 void CGekk::LandToWater ()
 {
-	Entity->Flags |= FL_SWIM;
+	AIFlags |= AI_SWIM;
 	YawSpeed = 10;
 	Entity->ViewHeight = 10;
 

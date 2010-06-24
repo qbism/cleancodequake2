@@ -33,13 +33,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+#if 0
 void CGameTimer::Run ()
 {
-	if (EndTime <= level.Frame)
+	if (EndTime <= Level.Frame)
 		OnTimeUp ();
 }
 
-typedef std::multimap <sint32, CGameTimer *, std::less <sint32>, std::generic_allocator <std::pair <const sint32, CGameTimer*> > > TTimerListType;
+typedef std::multimap <sint32, CGameTimer *> TTimerListType;
 
 TTimerListType TimerList;
 
@@ -57,7 +58,7 @@ void RunTimers ()
 		Timer->Run ();
 
 		// Done
-		if (Timer->EndTime <= level.Frame)
+		if (Timer->EndTime <= Level.Frame)
 		{
 			it = TimerList.erase (it);
 
@@ -92,3 +93,4 @@ void KillTimer (sint32 Key)
 		QDelete Timer;
 	}
 }
+#endif

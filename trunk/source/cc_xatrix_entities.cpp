@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_local.h"
 
 #if XATRIX_FEATURES
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 /*QUAKED rotating_light (0 .5 .8) (-8 -8 -8) (8 8 8) START_OFF ALARM
 "health"	if set, the light may be killed.
@@ -44,32 +44,40 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // note to self
 // the lights will take damage from explosions
 // this could leave a player in total darkness very bad
- 
-#define ROTATING_LIGHT_START_OFF	1
-#define ROTATING_LIGHT_ALARM		2
 
-class CRotatingLight : public CMapEntity, public CHurtableEntity, public CThinkableEntity, public CUsableEntity
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CRotatingLight. 
+**/
+enum
+{
+	ROTATING_LIGHT_START_OFF	= BIT(0),
+	ROTATING_LIGHT_ALARM		= BIT(1)
+};
+
+class CRotatingLight : public IMapEntity, public IHurtableEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
 	bool		DoFree;
 	MediaIndex	AlarmSound;
 
 	CRotatingLight () :
-	  CMapEntity (),
-	  CHurtableEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
+	  IMapEntity (),
+	  IHurtableEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
 	  DoFree (false),
 	  AlarmSound (0)
 	{
 	};
 
-	CRotatingLight (int Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CHurtableEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
+	CRotatingLight (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IHurtableEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
 	  DoFree (false),
 	  AlarmSound (0)
 	{
@@ -79,7 +87,7 @@ public:
 
 	bool			ParseField (const char *Key, const char *Value)
 	{
-		return (CMapEntity::ParseField (Key, Value) || CHurtableEntity::ParseField (Key, Value) || CUsableEntity::ParseField (Key, Value));
+		return (IMapEntity::ParseField (Key, Value) || IHurtableEntity::ParseField (Key, Value) || IUsableEntity::ParseField (Key, Value));
 	};
 
 	void			SaveFields (CFile &File)
@@ -87,31 +95,31 @@ public:
 		File.Write<bool> (DoFree);
 		WriteIndex (File, AlarmSound, INDEX_SOUND);
 
-		CMapEntity::SaveFields (File);
-		CHurtableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IHurtableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 	void			LoadFields (CFile &File)
 	{
 		DoFree = File.Read<bool> ();
 		ReadIndex (File, AlarmSound, INDEX_SOUND);
 
-		CMapEntity::LoadFields (File);
-		CHurtableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 	{
-		CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + randomMT()&7, 30);
+		CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 30).Send();
 
 		State.GetEffects() &= ~EF_SPINNINGLIGHTS;
 		Usable = false;
 
 		DoFree = true;
-		NextThink = level.Frame + 1;
+		NextThink = Level.Frame + 1;
 	};
 
 	void Think ()
@@ -127,11 +135,11 @@ public:
 		else
 		{
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, AlarmSound, 255, ATTN_STATIC, 0);
-			NextThink = level.Frame + 10;
+			NextThink = Level.Frame + 10;
 		}
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
 		{
@@ -139,7 +147,7 @@ public:
 			State.GetEffects() |= EF_SPINNINGLIGHTS;
 
 			if (SpawnFlags & ROTATING_LIGHT_ALARM)
-				NextThink = level.Frame + 1;
+				NextThink = Level.Frame + 1;
 		}
 		else
 		{
@@ -176,27 +184,27 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("rotating_light", CRotatingLight);
 
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 
 /*QUAKED misc_crashviper (1 .5 0) (-176 -120 -24) (176 120 72) 
 This is a large viper about to crash
 */
-class CMiscCrashViper : public CTrainBase, public CTouchableEntity
+class CMiscCrashViper : public CTrainBase, public ITouchableEntity
 {
 	bool MyUse;
 public:
 	CMiscCrashViper() :
-		CBaseEntity (),
+		IBaseEntity (),
 		CTrainBase(),
-		CTouchableEntity(),
+		ITouchableEntity(),
 		MyUse(true)
 	{
 	};
 
 	CMiscCrashViper(sint32 Index) :
-		CBaseEntity (Index),
+		IBaseEntity (Index),
 		CTrainBase(Index),
-		CTouchableEntity(Index),
+		ITouchableEntity(Index),
 		MyUse(true)
 	{
 	};
@@ -207,14 +215,14 @@ public:
 	{
 		File.Write<bool> (MyUse);
 		CTrainBase::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		MyUse = File.Read<bool> ();
 		CTrainBase::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
 	}
 
 	bool Run ()
@@ -222,21 +230,20 @@ public:
 		return CTrainBase::Run ();
 	};
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator)
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		if (MyUse)
 		{
 			GetSvFlags() &= ~SVF_NOCLIENT;
 			MyUse = false;
 		}
-		CTrainBase::Use (other, activator);
+		CTrainBase::Use (Other, Activator);
 	};
 
 	virtual void Spawn ()
 	{
 		if (!Target)
 		{
-			//gi.dprintf ("misc_viper without a target at (%f %f %f)\n", ent->absMin[0], ent->absMin[1], ent->absMin[2]);
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 			Free ();
 			return;
@@ -252,7 +259,7 @@ public:
 		GetMins().Set (-16, -16, 0);
 		GetMaxs().Set (16, 16, 32);
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = TRAINTHINK_FIND;
 		GetSvFlags() |= SVF_NOCLIENT;
 		Accel = Decel = Speed;
@@ -266,22 +273,22 @@ LINK_CLASSNAME_TO_CLASS ("misc_viper", CMiscCrashViper);
 /*QUAKED misc_amb4 (1 0 0) (-16 -16 -16) (16 16 16)
 Mal's amb4 loop entity
 */
-class CMiscAmb4 : public CMapEntity, public CThinkableEntity
+class CMiscAmb4 : public IMapEntity, public IThinkableEntity
 {
 public:
 	MediaIndex	Amb4Sound;
 
 	CMiscAmb4 () :
-		CBaseEntity (),
-		CMapEntity (),
-		CThinkableEntity ()
+		IBaseEntity (),
+		IMapEntity (),
+		IThinkableEntity ()
 	{
 	};
 
-	CMiscAmb4 (int Index) :
-		CBaseEntity (Index),
-		CMapEntity (Index),
-		CThinkableEntity (Index)
+	CMiscAmb4 (sint32 Index) :
+		IBaseEntity (Index),
+		IMapEntity (Index),
+		IThinkableEntity (Index)
 	{
 	};
 
@@ -290,26 +297,26 @@ public:
 	void SaveFields (CFile &File)
 	{
 		WriteIndex (File, Amb4Sound, INDEX_SOUND);
-		CMapEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		ReadIndex (File, Amb4Sound, INDEX_SOUND);
-		CMapEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ()
 	{
-		NextThink = level.Frame + 27;
+		NextThink = Level.Frame + 27;
 		PlaySound (CHAN_VOICE, Amb4Sound, 255, ATTN_NONE);
 	}
 
 	void Spawn ()
 	{
-		NextThink = level.Frame + 10;
+		NextThink = Level.Frame + 10;
 		Amb4Sound = SoundIndex ("world/amb4.wav");
 		Link ();
 	}
@@ -319,20 +326,20 @@ LINK_CLASSNAME_TO_CLASS ("misc_amb4", CMiscAmb4);
 
 /*QUAKED misc_nuke (1 0 0) (-16 -16 -16) (16 16 16)
 */
-class CMiscNuke : public CMapEntity, public CUsableEntity
+class CMiscNuke : public IMapEntity, public IUsableEntity
 {
 public:
 	CMiscNuke () :
-		CBaseEntity (),
-		CMapEntity (),
-		CUsableEntity ()
+		IBaseEntity (),
+		IMapEntity (),
+		IUsableEntity ()
 	{
 	};
 
-	CMiscNuke (int Index) :
-		CBaseEntity (Index),
-		CMapEntity (Index),
-		CUsableEntity (Index)
+	CMiscNuke (sint32 Index) :
+		IBaseEntity (Index),
+		IMapEntity (Index),
+		IUsableEntity (Index)
 	{
 	};
 
@@ -340,31 +347,31 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	}
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+		for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 		{
-			edict_t *ent = (*it);
-			if (!ent->inUse || !ent->Entity)
+			IBaseEntity *Entity = (*it)->Entity;
+			if (!Entity || !Entity->GetInUse())
 				continue;
 
-			if (!(ent->Entity->EntityFlags & ENT_HURTABLE))
+			if (!(Entity->EntityFlags & ENT_HURTABLE))
 				continue;
 
-			if (ent->Entity == this)
+			if (Entity == this)
 				continue;
 
-			CHurtableEntity *Hurtable = entity_cast<CHurtableEntity>(ent->Entity);
+			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Entity);
 
 			if (Hurtable->EntityFlags & ENT_PLAYER)
 				Hurtable->TakeDamage (this, this, vec3fOrigin, Hurtable->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_TRAP);
@@ -391,34 +398,34 @@ LINK_CLASSNAME_TO_CLASS ("misc_nuke", CMiscNuke);
 /*QUAKED misc_viper_bomb (1 0 0) (-8 -8 -8) (8 8 8)
 "dmg"	how much boom should the bomb make?
 */
-class CMiscViperMissile : public CMapEntity,public CUsableEntity
+class CMiscViperMissile : public IMapEntity,public IUsableEntity
 {
 public:
 	sint32			Damage;
 
 	CMiscViperMissile () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CUsableEntity ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IUsableEntity ()
 	{
 	};
 
 	CMiscViperMissile (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CUsableEntity (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IUsableEntity (Index)
 	{
 	};
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CMiscViperMissile)
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		vec3f	start, dir;
 		vec3f	vec;
 				
-		CBaseEntity *target = CC_FindByClassName<CBaseEntity, ENT_BASE> (NULL, Target);
+		IBaseEntity *target = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, Target);
 		
 		vec = target->State.GetOrigin();
 		vec.Z += 16;
@@ -427,7 +434,7 @@ public:
 		dir = (vec - start).GetNormalized();
 		
 		CRocket::Spawn (World, start, dir, Damage, 500, Damage, Damage+40);
-		CTempEnt::MonsterFlash (State.GetOrigin(), State.GetNumber(), MZ2_CHICK_ROCKET_1);
+		CMuzzleFlash(State.GetOrigin(), State.GetNumber(), MZ2_CHICK_ROCKET_1, true).Send();
 		
 		Free ();
 	};
@@ -460,21 +467,21 @@ bool			CMiscViperMissile::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 };
 
 void		CMiscViperMissile::SaveFields (CFile &File)
 {
 	SaveEntityFields <CMiscViperMissile> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
 }
 
 void		CMiscViperMissile::LoadFields (CFile &File)
 {
 	LoadEntityFields <CMiscViperMissile> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper_missile", CMiscViperMissile);
@@ -490,13 +497,13 @@ class CMiscTransport : public CMiscViper
 {
 public:
 	CMiscTransport () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CMiscViper ()
 	  {
 	  };
 
 	CMiscTransport (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CMiscViper (Index)
 	  {
 	  };
@@ -529,16 +536,16 @@ Mal's laser
 class CTargetMalLaser : public CTargetLaser
 {
 public:
-	FrameNumber_t		Wait;
-	FrameNumber_t		Delay;
+	FrameNumber		Wait;
+	FrameNumber		Delay;
 
 	CTargetMalLaser () :
 	  CTargetLaser ()
 	  {
 	  };
 
-	CTargetMalLaser (int Index) :
-	  CBaseEntity (Index),
+	CTargetMalLaser (sint32 Index) :
+	  IBaseEntity (Index),
 	  CTargetLaser (Index)
 	  {
 	  };
@@ -548,18 +555,18 @@ public:
 
 	void On ()
 	{
-		if (!Activator)
-			Activator = this;
+		if (!User)
+			User = this;
 		SpawnFlags |= 0x80000001;
 		GetSvFlags() &= ~SVF_NOCLIENT;
 
-		NextThink = level.Frame + Wait + Delay;
+		NextThink = Level.Frame + Wait + Delay;
 	};
 
 	void Think ()
 	{
 		CTargetLaser::Think ();
-		NextThink = level.Frame + Wait + 1;
+		NextThink = Level.Frame + Wait + 1;
 		SpawnFlags |= 0x80000000;
 	};
 };
@@ -600,10 +607,22 @@ The default delay is 1 second
 "delay" the delay in seconds for spark to occur
 */
 
-class CFuncObjectRepair : public CMapEntity, public CThinkableEntity, public CHurtableEntity, public CUsableEntity
+class CFuncObjectRepair : public IMapEntity, public IThinkableEntity, public IHurtableEntity, public IUsableEntity
 {
 public:
-	CC_ENUM (uint8, ERepairThinkType)
+	/**
+	\typedef	uint8 ERepairThinkType
+	
+	\brief	Defines an alias representing think type of a CFuncObjectRepair.
+	**/
+	typedef uint8 ERepairThinkType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent think types for CFuncObjectRepair. 
+	**/
+	enum
 	{
 		THINK_NONE,
 		THINK_SPARKS,
@@ -611,23 +630,23 @@ public:
 		THINK_FX
 	};
 
-	FrameNumber_t		Delay;
+	FrameNumber		Delay;
 	ERepairThinkType	ThinkType;
 
 	CFuncObjectRepair () :
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CHurtableEntity (),
-	  CUsableEntity ()
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IHurtableEntity (),
+	  IUsableEntity ()
 	  {
 	  };
 
-	CFuncObjectRepair (int Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CHurtableEntity (Index),
-	  CUsableEntity (Index)
+	CFuncObjectRepair (sint32 Index) :
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IHurtableEntity (Index),
+	  IUsableEntity (Index)
 	  {
 	  };
 
@@ -636,23 +655,23 @@ public:
 
 	bool Run ()
 	{
-		return CBaseEntity::Run ();
+		return IBaseEntity::Run ();
 	};
 
 	void RepairFX ()
 	{
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 
 		if (Health <= 100)
 			Health++;
 		else
-			CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
+			CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 10).Send();
 	};
 
 	void Dead ()
 	{
 		UseTargets (this, Message);
-		NextThink = level.Frame + 1;
+		NextThink = Level.Frame + 1;
 		ThinkType = THINK_FX;
 	};
 
@@ -660,14 +679,14 @@ public:
 	{
 		if (Health < 0)
 		{
-			NextThink = level.Frame + 1;
+			NextThink = Level.Frame + 1;
 			ThinkType = THINK_DEAD;
 			return;
 		}
 
-		NextThink = level.Frame + Delay;
+		NextThink = Level.Frame + Delay;
 	
-		CTempEnt_Splashes::Sparks (State.GetOrigin(), vec3fOrigin, CTempEnt_Splashes::ST_WELDING_SPARKS, 0xe0 + (irandom(7)), 10);
+		CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 10).Send();
 	};
 	
 	void Think ()
@@ -693,7 +712,7 @@ public:
 		GetSolid() = SOLID_BBOX;
 		GetMins().Set (-8, -8, 8);
 		GetMaxs().Set (8, 8, 8);
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		ThinkType = THINK_SPARKS;
 		Health = 100;
 
@@ -714,25 +733,25 @@ bool			CFuncObjectRepair::ParseField (const char *Key, const char *Value)
 		return true;
 
 	// Couldn't find it here
-	return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField(Key, Value) || CHurtableEntity::ParseField (Key, Value));
+	return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField(Key, Value) || IHurtableEntity::ParseField (Key, Value));
 };
 
 void			CFuncObjectRepair::SaveFields (CFile &File)
 {
 	SaveEntityFields <CFuncObjectRepair> (this, File);
-	CMapEntity::SaveFields (File);
-	CUsableEntity::SaveFields (File);
-	CHurtableEntity::SaveFields (File);
-	CThinkableEntity::SaveFields (File);
+	IMapEntity::SaveFields (File);
+	IUsableEntity::SaveFields (File);
+	IHurtableEntity::SaveFields (File);
+	IThinkableEntity::SaveFields (File);
 }
 
 void			CFuncObjectRepair::LoadFields (CFile &File)
 {
 	LoadEntityFields <CFuncObjectRepair> (this, File);
-	CMapEntity::LoadFields (File);
-	CUsableEntity::LoadFields (File);
-	CHurtableEntity::LoadFields (File);
-	CThinkableEntity::LoadFields (File);
+	IMapEntity::LoadFields (File);
+	IUsableEntity::LoadFields (File);
+	IHurtableEntity::LoadFields (File);
+	IThinkableEntity::LoadFields (File);
 }
 
 LINK_CLASSNAME_TO_CLASS ("func_object_repair", CFuncObjectRepair);

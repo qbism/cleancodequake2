@@ -40,16 +40,16 @@ class CFrame
 {
 public:
 
-	void (CMonster::*AIFunc) (float Dist);
-	void (CMonster::*Function) ();
+	void	(CMonster::*AIFunc) (float Dist);
+	void	(CMonster::*Function) ();
 	float	Dist;
 
 	CFrame ();
 
 	CFrame(void (CMonster::*AIFunc) (float Dist), float Dist, void (CMonster::*Function) () = NULL) :
-	AIFunc(AIFunc),
-	Dist(Dist),
-	Function(Function)
+	  AIFunc(AIFunc),
+	  Function(Function),
+	  Dist(Dist)
 	{
 	};
 };
@@ -59,57 +59,50 @@ class CAnim
 public:
 
 	sint32			FirstFrame, LastFrame;
-	void		(CMonster::*EndFunc) ();
-
-	CFrame	*Frames;
+	void			(CMonster::*EndFunc) ();
+	CFrame			*Frames;
 
 	CAnim (sint32 FirstFrame, sint32 LastFrame, CFrame *Frames, void (CMonster::*EndFunc) () = NULL) :
-	FirstFrame(FirstFrame),
-	LastFrame(LastFrame),
-	EndFunc(EndFunc),
-	Frames(Frames)
+	  FirstFrame(FirstFrame),
+	  LastFrame(LastFrame),
+	  EndFunc(EndFunc),
+	  Frames(Frames)
 	{
 	};
 };
 
-CC_ENUM (uint32, EMonsterAIFlags)
-{
-#if !MONSTER_USE_ROGUE_AI
-	//monster ai flags
-	AI_STAND_GROUND			= BIT(0),
-	AI_TEMP_STAND_GROUND	= BIT(1),
-	AI_SOUND_TARGET			= BIT(2),
-	AI_LOST_SIGHT			= BIT(3),
-	AI_PURSUIT_LAST_SEEN	= BIT(4),
-	AI_PURSUE_NEXT			= BIT(5),
-	AI_PURSUE_TEMP			= BIT(6),
-	AI_HOLD_FRAME			= BIT(7),
-	AI_GOOD_GUY				= BIT(8),
-	AI_BRUTAL				= BIT(9),
-	AI_NOSTEP				= BIT(10),
-	AI_DUCKED				= BIT(11),
-	AI_COMBAT_POINT			= BIT(12),
-	AI_MEDIC				= BIT(13),
-	AI_RESURRECTING			= BIT(14),
-	AI_SLIDE				= BIT(15),
-#else
-	//monster ai flags
-	AI_STAND_GROUND			= BIT(0),
-	AI_TEMP_STAND_GROUND	= BIT(1),
-	AI_SOUND_TARGET			= BIT(2),
-	AI_LOST_SIGHT			= BIT(3),
-	AI_PURSUIT_LAST_SEEN	= BIT(4),
-	AI_PURSUE_NEXT			= BIT(5),
-	AI_PURSUE_TEMP			= BIT(6),
-	AI_HOLD_FRAME			= BIT(7),
-	AI_GOOD_GUY				= BIT(8),
-	AI_BRUTAL				= BIT(9),
-	AI_NOSTEP				= BIT(10),
-	AI_DUCKED				= BIT(11),
-	AI_COMBAT_POINT			= BIT(12),
-	AI_MEDIC				= BIT(13),
-	AI_RESURRECTING			= BIT(14),
+/**
+\typedef	uint32 EMonsterAIFlags
 
+\brief	Defines an alias representing the monster AI flags .
+**/
+typedef uint32 EMonsterAIFlags;
+
+/**
+\enum	
+
+\brief	Values that represent monster AI flags. 
+\todo	Merge some of these elsewhere or turn into variables as required (cleanup) 
+**/
+enum
+{
+	//monster ai flags
+	AI_STAND_GROUND			= BIT(0),
+	AI_TEMP_STAND_GROUND	= BIT(1),
+	AI_SOUND_TARGET			= BIT(2),
+	AI_LOST_SIGHT			= BIT(3),
+	AI_PURSUIT_LAST_SEEN	= BIT(4),
+	AI_PURSUE_NEXT			= BIT(5),
+	AI_PURSUE_TEMP			= BIT(6),
+	AI_HOLD_FRAME			= BIT(7),
+	AI_GOOD_GUY				= BIT(8),
+	AI_BRUTAL				= BIT(9),
+	AI_NOSTEP				= BIT(10),
+	AI_DUCKED				= BIT(11),
+	AI_COMBAT_POINT			= BIT(12),
+	AI_MEDIC				= BIT(13),
+	AI_RESURRECTING			= BIT(14),
+#if ROGUE_FEATURES
 	//ROGUE
 	AI_WALK_WALLS			= BIT(15),
 	AI_MANUAL_STEERING		= BIT(16),
@@ -129,16 +122,32 @@ CC_ENUM (uint32, EMonsterAIFlags)
 	AI_BLOCKED				= BIT(26),	// used by blocked_checkattack: set to say I'm attacking while blocked 
 										// (prevents run-attacks)
 #endif
+
+	AI_PARTIALGROUND		= BIT(27), // monster had floor moved underneath him
+	AI_SWIM					= BIT(28), // monster swims
+	AI_FLY					= BIT(29), // monster flies
 };
 
-CC_ENUM (uint32, EMonsterFlags)
+/**
+\typedef	uint32 EMonsterFlags
+
+\brief	Defines an alias representing monster flags.
+**/
+typedef uint32 EMonsterFlags;
+
+/**
+\enum	
+
+\brief	Values that represent monster flags. 
+**/
+enum
 {
 	MF_HAS_MELEE			= BIT(0),
 	MF_HAS_IDLE				= BIT(1),
 	MF_HAS_SEARCH			= BIT(2),
 	MF_HAS_SIGHT			= BIT(3),
 	MF_HAS_ATTACK			= BIT(4),
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	MF_HAS_DODGE			= BIT(5),
 	MF_HAS_DUCK				= BIT(6),
 	MF_HAS_UNDUCK			= BIT(7),
@@ -146,22 +155,44 @@ CC_ENUM (uint32, EMonsterFlags)
 #endif
 };
 
-//monster attack state
-CC_ENUM (uint8, EAttackState)
+/**
+\typedef	uint8 EAttackState
+
+\brief	Defines an alias representing a monster's attack state.
+**/
+typedef uint8 EAttackState;
+
+/**
+\enum	
+
+\brief	Values that represent a monster's attack state. 
+**/
+enum
 {
 	AS_STRAIGHT,
 	AS_SLIDING,
 	AS_MELEE,
 	AS_MISSILE,
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	AS_BLIND
 #endif
 };
 
-#define MELEE_DISTANCE	80
+const int MELEE_DISTANCE	= 80;	// Default melee distance
 
-//range
-CC_ENUM (uint8, ERangeType)
+/**
+\typedef	uint8 ERangeType
+
+\brief	Defines an alias representing range.
+**/
+typedef uint8 ERangeType;
+
+/**
+\enum	
+
+\brief	Values that represent range. 
+**/
+enum
 {
 	RANGE_MELEE,
 	RANGE_NEAR,
@@ -169,29 +200,50 @@ CC_ENUM (uint8, ERangeType)
 	RANGE_FAR
 };
 
+/**
+\enum	
+
+\brief	Values that represent monster think states.
+**/
 enum
 {
 	MONSTERENTITY_THINK_NONE,
 	MONSTERENTITY_THINK_USE,
-	MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE
+	MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE,
+	MONSTERENTITY_THINK_CUSTOM
 };
 
-class CMonsterEntity : public CMapEntity, public CStepPhysics, public CTossProjectile, public CPushPhysics, public CHurtableEntity, public CThinkableEntity, public CTouchableEntity, public CUsableEntity
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CMonsterEntity. 
+**/
+enum
+{
+	MONSTER_AMBUSH			= 	BIT(0),
+	MONSTER_TRIGGER_SPAWN	=	BIT(1),
+	MONSTER_SIGHT			=	BIT(2),
+	MONSTER_DONT_COUNT		=	BIT(3),
+};
+
+const int STEPSIZE	= 18;
+
+class CMonsterEntity : public IMapEntity, public IStepPhysics, public ITossProjectile, public IPushPhysics, public IHurtableEntity, public IThinkableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
-	bool			IsHead;
-	uint8			UseState;
-	FrameNumber_t	AirFinished;
-	FrameNumber_t	DamageDebounceTime;
-	FrameNumber_t	BonusDamageTime;
-	FrameNumber_t	ShowHostile;
-	CBaseEntity		*OldEnemy;
-	CBaseEntity		*GoalEntity;
-	CBaseEntity		*MoveTarget;
-	class CMonster	*Monster;
-	char			*DeathTarget;
-	char			*CombatTarget;
-	CBaseItem		*Item;
+	bool						IsHead;
+	uint8						UseState;
+	FrameNumber					AirFinished;
+	FrameNumber					DamageDebounceTime;
+	FrameNumber					BonusDamageTime;
+	FrameNumber					ShowHostile;
+	entity_ptr<IBaseEntity>		OldEnemy;
+	entity_ptr<IBaseEntity>		GoalEntity;
+	entity_ptr<IBaseEntity>		MoveTarget;
+	class CMonster				*Monster;
+	char						*DeathTarget;
+	char						*CombatTarget;
+	CBaseItem					*Item;
 
 	CMonsterEntity	();
 	CMonsterEntity	(sint32 Index);
@@ -203,16 +255,21 @@ public:
 
 	void			Think ();
 
-	void			Pain (CBaseEntity *other, float kick, sint32 damage);
-	void			Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
+	void			Pain (IBaseEntity *Other, sint32 Damage);
+	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void			Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void			TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
 
-	virtual void	Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf); // Empty
-	void			Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf); // Empty
+	void			Use (IBaseEntity *Other, IBaseEntity *Activator);
+	bool			Blocked (float Dist);
 
-	void			DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+	void			DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
 	bool			Run ();
-	void			ThrowHead (MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects = EF_GIB);
+	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
 
 	void			Spawn ();
 };
@@ -232,29 +289,44 @@ public:
 
 	float				IdealYaw;
 	float				YawSpeed;
-	uint32				AIFlags;
+	EMonsterAIFlags		AIFlags;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 //ROGUE
 	bool				BlindFire;		// will the monster blindfire?
 
 	float				BaseHeight;
-	FrameNumber_t		NextDuckTime;
-	FrameNumber_t		DuckWaitTime;
-	FrameNumber_t		BlindFireDelay;
+	FrameNumber		NextDuckTime;
+	FrameNumber		DuckWaitTime;
+	FrameNumber		BlindFireDelay;
 	CPlayerEntity		*LastPlayerEnemy;
 	vec3f				BlindFireTarget;
 	CMonsterEntity		*BadMedic1, *BadMedic2;	// these medics have declared this monster "unhealable"
 	CMonsterEntity		*Healer;	// this is who is healing this monster
 #endif
 
+#if ROGUE_FEATURES
+	// used by the spawners to not spawn too much and keep track of #s of monsters spawned
+	uint8			MonsterSlots;
+	uint8			MonsterUsed;
+	CMonsterEntity	*Commander;
+	// powerup timers, used by widow, our friend
+	FrameNumber	QuadFramenum;
+	FrameNumber	InvincibleFramenum;
+	FrameNumber	DoubleFramenum;
+	class CBadArea	*BadArea;
+
+	// this is for the count of monsters
+	inline uint8 SlotsLeft () { return MonsterSlots - MonsterUsed; }
+#endif
+
 	sint32				NextFrame;
 	float				Scale;
-	FrameNumber_t		PauseTime;
-	FrameNumber_t		AttackFinished;
+	FrameNumber		PauseTime;
+	FrameNumber		AttackFinished;
 	
-	FrameNumber_t		SearchTime;
-	FrameNumber_t		TrailTime;
+	FrameNumber		SearchTime;
+	FrameNumber		TrailTime;
 	vec3f				LastSighting;
 	vec3f				SavedGoal;
 	sint32				AttackState;
@@ -274,36 +346,17 @@ public:
 	CAnim				*CurrentMove;
 
 	uint32				MonsterFlags;
-	char				*MonsterName;
+	std::string			MonsterName;
 
-	FrameNumber_t		PainDebounceTime;
-
-#if MONSTERS_USE_PATHFINDING
-	// Pathfinding
-	class CPath			*P_CurrentPath;
-	class CPathNode		*P_CurrentGoalNode;
-	class CPathNode		*P_CurrentNode; // Always the current path node
-	sint32				P_CurrentNodeIndex;
-	FrameNumber_t		P_NodePathTimeout;
-	FrameNumber_t		P_NodeFollowTimeout;
-	bool				FollowingPath;
-
-	// Pathfinding functions
-	void	FoundPath		(); // Give it current and goal node and you can do this.
-	void	MoveToPath		(float Dist);
-#endif
+	FrameNumber		PainDebounceTime;
 
 	CMonster(uint32 ID);
 
 	void SaveFields (CFile &File);
 	void LoadFields (CFile &File);
-#if MONSTERS_USE_PATHFINDING
-	void WriteNodeInfo (CFile &File);
-	void ReadNodeInfo (CFile &File);
-#endif
 
 #define MONSTER_SOUND_ENUM(first,...) \
-	CC_ENUM(uint8, EMyMonsterSoundEnum) \
+	enum \
 	{ \
 		first, \
 		__VA_ARGS__ \
@@ -331,15 +384,7 @@ public:
 	virtual void SaveMonsterFields (CFile &File) {};
 	virtual void LoadMonsterFields (CFile &File) {};
 
-	virtual void		Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf) {}; // Empty
-
-#if MONSTER_USE_ROGUE_AI
-	void				DuckDown ();
-	virtual void		Duck (float eta);
-	virtual void		UnDuck ();
-	virtual void		DuckHold ();
-	virtual void		SideStep ();
-#endif
+	virtual void		Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf) {}; // Empty
 
 	// Virtual functions
 	virtual void		Stand			();
@@ -347,21 +392,22 @@ public:
 	virtual void		Search			();
 	virtual void		Walk			();
 	virtual void		Run				();
-#if !MONSTER_USE_ROGUE_AI
-	virtual void		Dodge			(CBaseEntity *other, float eta);
-#else
-	virtual void		Dodge			(CBaseEntity *attacker, float eta, CTrace *tr);
-	void				DoneDodge	();
+	virtual void		Dodge			(IBaseEntity *Other, float eta
+#if ROGUE_FEATURES
+		, CTrace *tr
 #endif
+		);
 	virtual void		Attack			();
 	virtual void		Melee			();
 	virtual void		Sight			();
 	virtual bool		CheckAttack		();
 
-	virtual void		ReactToDamage	(CBaseEntity *attacker);
+	virtual void		ReactToDamage	(IBaseEntity *Attacker, IBaseEntity *Inflictor);
 
 	virtual void		MonsterThink	();
-	virtual void		DamageEffect (vec3f &dir, vec3f &point, vec3f &normal, sint32 &damage, sint32 &dflags);
+	virtual void		DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
+
+	virtual bool		Blocked (float Dist) {return false;}
 
 	void				AI_Charge (float Dist);
 	void				AI_Move (float Dist);
@@ -376,6 +422,8 @@ public:
 	void				FoundTarget ();
 	void				HuntTarget ();
 	void				AlertNearbyStroggs ();
+
+	void				FixInvalidEntities ();
 
 	void				BossExplode ();
 	void				MoveFrame ();
@@ -396,24 +444,44 @@ public:
 	void				WorldEffects ();
 
 	void				MonsterDeathUse ();
+	virtual void		Use (IBaseEntity *Other, IBaseEntity *Activator) {};
 
-	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
-	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype, sint32 effect);
-	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 damage, sint32 speed, sint32 flashtype);
-	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 flashtype);
-	void				MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
-	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
-	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype);
+	void				MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
+#if ROGUE_FEATURES
+	void				MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect);
+	void				MonsterFireTracker (vec3f start, vec3f dir, int damage, int speed, IBaseEntity *enemy, int flashtype);
+	void				MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, int flashtype);
+#endif
+	void				MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype);
+	void				MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype);
+	void				MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype);
+	void				MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 
 #if XATRIX_FEATURES
-	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 	void				MonsterFireBeam (class CMonsterBeamLaser *Laser);
-	void				MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
-	void				MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
+	void				MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype);
 #endif
 
-#if MONSTERS_ARENT_STUPID
-	bool				FriendlyInLine (vec3f &Origin, vec3f &Direction);
+#if ROGUE_FEATURES
+	void				CleanupHealTarget ();
+	void				DoneDodge ();
+	void				MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr);
+	virtual void		DuckUp ();
+	virtual void		DuckHold ();
+	virtual void		DuckDown ();
+
+	virtual void		SideStep () {};
+	virtual void		UnDuck () {};
+	virtual void		Duck (float eta) {};
+
+	class CBadArea		*CheckForBadArea ();
+	bool				MarkTeslaArea (class CTesla *Tesla);
+	void				TargetTesla (class CTesla *Tesla);
+	bool				IsBadAhead (CBadArea *bad, vec3f move);
 #endif
 
 	void				MonsterTriggeredSpawn ();
@@ -429,22 +497,34 @@ public:
 	void				WalkMonsterStart ();
 	void				WalkMonsterStartGo ();
 
+	void				StationaryMonsterStart ();
+	void				StationaryMonsterStartGo ();
+
 	void				ChangeYaw ();
 	bool				CheckBottom ();
 	void				MoveToGoal (float Dist);
 	bool				WalkMove (float Yaw, float Dist);
-	bool				CloseEnough (CBaseEntity *Goal, float Dist);
-	void				NewChaseDir (CBaseEntity *Enemy, float Dist);
+	bool				CloseEnough (IBaseEntity *Goal, float Dist);
+	void				NewChaseDir (IBaseEntity *Enemy, float Dist);
 	bool				StepDirection (float Yaw, float Dist);
 	bool				MoveStep (vec3f move, bool ReLink);
 
 	virtual void		Spawn () = 0;
-	virtual void		Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point) = 0;
-	virtual void		Pain(CBaseEntity *other, float kick, sint32 damage) = 0;
+	virtual void		Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point) = 0;
+	virtual void		Pain(IBaseEntity *Other, sint32 Damage) = 0;
+	virtual void		TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
+
+
+	inline bool HasValidEnemy ()
+	{
+		return Entity->Enemy;
+	}
 };
 
 #if XATRIX_FEATURES
-class CMonsterBeamLaser : public CThinkableEntity
+class CMonsterBeamLaser : public IThinkableEntity
 {
 public:
 	vec3f		MoveDir;
@@ -463,7 +543,7 @@ public:
 		File.Write<bool> (DoFree);
 		File.Write<vec3f> (MoveDir);
 
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -473,14 +553,14 @@ public:
 		DoFree = File.Read <bool>();
 		MoveDir = File.Read <vec3f>();
 
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	}
 
 	void Think ();
 };
 #endif
 
-#define DI_NODIR	-1
+const int DI_NODIR	= -1;
 
 class CMonsterTableIndex
 {
@@ -496,13 +576,14 @@ public:
 	};
 };
 
-#define ConvertDerivedFunction(x) static_cast<void (cc_thiscall CMonster::* )()>(x)
-#define ConvertDerivedAIMove(x) static_cast<void (cc_thiscall CMonster::* )(float)>(x)
+#define ConvertDerivedFunction(x) static_cast<void (CMonster::* )()>(x)
+#define ConvertDerivedAIMove(x) static_cast<void (CMonster::* )(float)>(x)
 
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
 	uint32 LINK_RESOLVE_CLASSNAME(DLLClassName, _ID) = LastID++; \
-	CMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
+	const uint32 DLLClassName::ID = LINK_RESOLVE_CLASSNAME(DLLClassName, _ID); \
+	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn) (sint32 Index) \
 	{ \
 		CMonsterEntity *newClass = QNewEntityOf CMonsterEntity(Index); \
 		DLLClassName *Monster = QNewEntityOf DLLClassName (LINK_RESOLVE_CLASSNAME(DLLClassName, _ID)); \
@@ -514,7 +595,7 @@ extern uint32 LastID;
 		if (newClass->CheckValidity()) \
 		{	\
 			Monster->Spawn (); \
-			newClass->NextThink = level.Frame + 1; \
+			newClass->NextThink = Level.Frame + 1; \
 		}	\
 		return newClass; \
 	} \
@@ -525,6 +606,20 @@ extern uint32 LastID;
 		return QNewEntityOf DLLClassName(ID); \
 	} \
 	CMonsterTableIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _ResolveIndex) (mapClassName, LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver));
+
+#define MONSTER_ID_HEADER \
+	static const uint32 ID;
+
+#include "cc_player_trail.h"
+
+#if ROGUE_FEATURES
+void InitBadAreas ();
+void SaveBadAreas (CFile &File);
+void LoadBadAreas (CFile &File);
+void RunBadAreas ();
+void SaveBadArea (CFile &File, CBadArea *Area);
+CBadArea *LoadBadArea (CFile &File);
+#endif
 
 #else
 FILE_WARNING

@@ -43,25 +43,37 @@ class CWeaponItem : public virtual CBaseItem
 {
 public:
 	CWeaponItem ();
-	CWeaponItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, char *VWepModel);
+	CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;
 	sint32				Amount;
-	char				*VWepModel;
+	const char			*VWepModel;
 
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	virtual void	Use (CPlayerEntity *ent);
-	virtual void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	virtual void	Use (CPlayerEntity *Player);
+	virtual void	Drop (CPlayerEntity *Player);
 };
 
 // Class for ammo.
 class CAmmo : public virtual CBaseItem
 {
 public:
-	CC_ENUM (uint8, EAmmoTag)
+	/**
+	\typedef	uint8 EAmmoTag
+	
+	\brief	Defines an alias representing ammo tags.
+	**/
+	typedef uint8 EAmmoTag;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent ammo tags. 
+	**/
+	enum
 	{
 		AMMOTAG_SHELLS,
 		AMMOTAG_BULLETS,
@@ -74,52 +86,72 @@ public:
 		AMMOTAG_MAGSLUGS,
 		AMMOTAG_TRAP,
 #endif
+#if ROGUE_FEATURES
+		AMMOTAG_PROX,
+		AMMOTAG_FLECHETTES,
+		AMMOTAG_TESLA,
+		AMMOTAG_ROUNDS,
+#endif
 
 		AMMOTAG_MAX
 	};
 
 	CAmmo ();
-	CAmmo (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
 	sint32			Quantity; // Number gotten when we pick this mother upper
 	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo
 
 	// Only thing different about ammo is how it's picked up.
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	virtual void	Use (CPlayerEntity *ent);
-	virtual void	Drop (CPlayerEntity *ent);
+	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	virtual void	Use (CPlayerEntity *Player);
+	virtual void	Drop (CPlayerEntity *Player);
 
 	// Member functions
-	bool	AddAmmo (CPlayerEntity *ent, sint32 count);
-	sint32	GetMax(CPlayerEntity *ent);
+	bool	AddAmmo (CPlayerEntity *Player, sint32 count);
+	sint32	GetMax(CPlayerEntity *Player);
 };
 
 class CAmmoWeapon : public CWeaponItem, public CAmmo
 {
 public:
-	CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, class CAmmo *Ammo, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount,
+			   const char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
 
-	CAmmoWeapon (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, class CWeapon *Weapon, sint32 Amount, char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   sint32 Quantity, CAmmo::EAmmoTag Tag);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player);
+	void	Drop (CPlayerEntity *Player);
 };
 
 extern sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX];
 extern sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX];
-void InitItemMaxValues (edict_t *ent);
 
 void AddAmmoToList();
 void DoWeaponVweps();
 
-CC_ENUM (uint8, EWeaponVwepIndices)
+/**
+\typedef	uint8 EWeaponVwepIndices
+
+\brief	Defines an alias representing the weapon vwep indices.
+**/
+typedef uint8 EWeaponVwepIndices;
+
+/**
+\enum	
+
+\brief	Values that represent visible weapon indexes. 
+**/
+enum
 {
 	WEAP_NONE,
 	WEAP_BLASTER,
@@ -139,6 +171,15 @@ CC_ENUM (uint8, EWeaponVwepIndices)
 
 	WEAP_MAX
 };
+
+// some weapon value constants
+const int DEFAULT_BULLET_HSPREAD			= 300;
+const int DEFAULT_BULLET_VSPREAD			= 500;
+const int DEFAULT_SHOTGUN_HSPREAD			= 1000;
+const int DEFAULT_SHOTGUN_VSPREAD			= 500;
+const int DEFAULT_DEATHMATCH_SHOTGUN_COUNT	= 12;
+const int DEFAULT_SHOTGUN_COUNT				= 12;
+const int DEFAULT_SSHOTGUN_COUNT			= 20;
 
 #else
 FILE_WARNING

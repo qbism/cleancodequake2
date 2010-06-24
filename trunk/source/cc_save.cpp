@@ -32,7 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_exceptionhandler.h"
+#include "cc_exception_handler.h"
+#include <ctime>
 
 bool ReadingGame = false;
 CClient **SaveClientData;
@@ -40,12 +41,12 @@ CClient **SaveClientData;
 #define SAVE_USE_GZ
 
 #ifdef SAVE_USE_GZ
-#define SAVE_GZ_FLAGS FILEMODE_GZ | FILEMODE_COMPRESS_HIGH
+const int SAVE_GZ_FLAGS = (FILEMODE_GZ | FILEMODE_COMPRESS_HIGH);
 #else
-#define SAVE_GZ_FLAGS 0
+const int SAVE_GZ_FLAGS = 0;
 #endif
 
-#define MAGIC_NUMBER 0xf2843dfa
+const uint32 MAGIC_NUMBER = 0xf2843dfa;
 
 void WriteMagic (CFile &File)
 {
@@ -54,8 +55,7 @@ void WriteMagic (CFile &File)
 
 void ReadMagic (CFile &File)
 {
-	if (File.Read<uint32> () != MAGIC_NUMBER)
-		_CC_ASSERT_EXPR (0, "Magic number mismatch");
+	CC_ASSERT_EXPR ((File.Read<uint32> () == MAGIC_NUMBER), "Magic number mismatch");
 }
 
 // Writes the magic number
@@ -64,9 +64,9 @@ void ReadMagic (CFile &File)
 // Reads the magic number.
 #define READ_MAGIC ReadMagic(File);
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::generic_allocator<size_t> > THashedEntityTableList;
-typedef std::vector<CEntityTableIndex*, std::generic_allocator <CEntityTableIndex*> > TEntityTableList;
-#define MAX_ENTITY_TABLE_HASH 256
+typedef std::multimap<size_t, size_t> THashedEntityTableList;
+typedef std::vector<CEntityTableIndex*> TEntityTableList;
+const int MAX_ENTITY_TABLE_HASH = 256;
 
 TEntityTableList &EntityTable ()
 {
@@ -79,7 +79,7 @@ THashedEntityTableList &EntityTableHash ()
 	return EntityTableHashV;
 };
 
-CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) (sint32 index)) :
+CEntityTableIndex::CEntityTableIndex (const char *Name, IBaseEntity *(*FuncPtr) (sint32 index)) :
   Name(Name),
   FuncPtr(FuncPtr)
 {
@@ -89,7 +89,7 @@ CEntityTableIndex::CEntityTableIndex (const char *Name, CBaseEntity *(*FuncPtr) 
 	EntityTableHash().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_ENTITY_TABLE_HASH), EntityTable().size()-1));
 };
 
-CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
+IBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 {
 	uint32 hash = Com_HashGeneric(Name, MAX_ENTITY_TABLE_HASH);
 
@@ -100,14 +100,14 @@ CBaseEntity *CreateEntityFromTable (sint32 index, const char *Name)
 			return TableIndex->FuncPtr(index);
 	}
 
-	_CC_ASSERT_EXPR (0, "Couldn't find entity");
+	CC_ASSERT_EXPR (0, "Couldn't find entity");
 	return NULL;
 };
 
 extern bool ShuttingDownEntities;
-bool RemoveAll (const edict_t *it)
+bool RemoveAll (const SEntity *it)
 {
-	if (it && it->Entity && it->Entity->gameEntity && (it->state.number <= game.MaxClients || it->inUse))
+	if (it && it->Entity && it->Entity->GetGameEntity() && (it->Server.State.Number <= Game.MaxClients || it->Server.InUse))
 		QDelete it->Entity;
 	return true;
 }
@@ -117,9 +117,9 @@ void ClearSpawnPoints();
 void DeallocateEntities ()
 {
 	ShuttingDownEntities = true;
-	level.Entities.Closed.remove_if (RemoveAll);
+	Level.Entities.Closed.remove_if (RemoveAll);
 	ShuttingDownEntities = false;
-	Mem_FreePool (com_entityPool);
+	Mem_FreeTag (TAG_ENTITY);
 	ClearSpawnPoints ();
 };
 
@@ -163,7 +163,7 @@ void WriteIndex (CFile &File, MediaIndex Index, EIndexType IndexType)
 	if (len > 1)
 	{
 		if (!str)
-			_CC_ASSERT_EXPR (0, "How'd this happen?");
+			CC_ASSERT_EXPR (0, "How'd this happen?");
 		else
 			File.WriteArray (str, len);
 	}
@@ -178,7 +178,7 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 		In = File.Read<MediaIndex> ();
 	else if (len > 1)
 	{
-		char *tempBuffer = QNew (com_genericPool, 0) char[len];
+		char *tempBuffer = QNew (TAG_GENERIC) char[len];
 		File.ReadArray (tempBuffer, len);
 
 		switch (IndexType)
@@ -202,13 +202,13 @@ void ReadIndex (CFile &File, MediaIndex &Index, EIndexType IndexType)
 
 #include <typeinfo>
 
-void WriteEntity (CFile &File, CBaseEntity *Entity)
+void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 {
-	// Write the edict_t info first
-	File.Write<edict_t> (*Entity->gameEntity);
+	// Write the SEntity info first
+	File.Write<SEntity> (*Entity->GetGameEntity());
 
 	// Write special data
-	if (Entity->State.GetNumber() > game.MaxClients)
+	if (Entity->State.GetNumber() > Game.MaxClients)
 	{
 		sint32 OwnerNumber = -1;
 
@@ -225,15 +225,14 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	WriteIndex (File, Entity->State.GetSound(), INDEX_SOUND);
 
 	// Write entity stuff
-	if (Entity->State.GetNumber() > game.MaxClients)
+	if (Entity->State.GetNumber() > Game.MaxClients)
 	{
-		//DebugPrintf ("Writing %s\n", Entity->SAVE_GetName ());
 		File.WriteString (Entity->SAVE_GetName ());
 
 #if WIN32 && _DEBUG
 		if (!(Entity->EntityFlags & ENT_ITEM))
 		{
-			if (!strstr(Q_strlwr(std::cc_string(typeid(*Entity).name())).c_str(), Q_strlwr(std::cc_string(Entity->SAVE_GetName())).c_str()))
+			if (!strstr(Q_strlwr(std::string(typeid(*Entity).name())).c_str(), Q_strlwr(std::string(Entity->SAVE_GetName())).c_str()))
 				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->SAVE_GetName());
 		}
 #endif
@@ -242,7 +241,7 @@ void WriteEntity (CFile &File, CBaseEntity *Entity)
 	WRITE_MAGIC
 }
 
-void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
+void WriteFinalizedEntity (CFile &File, IBaseEntity *Entity)
 {
 	Entity->WriteBaseEntity (File);
 
@@ -254,22 +253,22 @@ void WriteFinalizedEntity (CFile &File, CBaseEntity *Entity)
 
 void WriteEntities (CFile &File)
 {
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
-		edict_t *ent = (*it);
+		SEntity *ent = (*it);
 		if (!ent->Entity || !ent->Entity->Savable())
 			continue;
 
-		File.Write<sint32> (ent->state.number);
+		IBaseEntity *Entity = ent->Entity;
 
-		CBaseEntity *Entity = ent->Entity;
-		WriteEntity (File, Entity);
+		File.Write<sint32> (Entity->State.GetNumber());
+		WriteEntireEntity (File, Entity);
 	}
 	File.Write<sint32> (-1);
 
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin(); it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Entity = (*it)->Entity;
+		IBaseEntity *Entity = (*it)->Entity;
 		if (!Entity || !Entity->Savable())
 			continue;
 		WriteFinalizedEntity (File, Entity);
@@ -278,7 +277,7 @@ void WriteEntities (CFile &File)
 	WRITE_MAGIC
 }
 
-// Writes out gclient_t
+// Writes out SServerClient
 void WriteClient (CFile &File, CPlayerEntity *Player)
 {
 	Player->Client.WriteClientStructure (File);
@@ -289,49 +288,48 @@ void WriteClient (CFile &File, CPlayerEntity *Player)
 
 void WriteClients (CFile &File)
 {
-	for (sint8 i = 1; i <= game.MaxClients; i++)
-		WriteClient (File, entity_cast<CPlayerEntity>(g_edicts[i].Entity));
+	for (sint8 i = 1; i <= Game.MaxClients; i++)
+		WriteClient (File, entity_cast<CPlayerEntity>(Game.Entities[i].Entity));
 }
 
-void ReadEntity (CFile &File, sint32 number)
+void ReadRealEntity (CFile &File, sint32 number)
 {
-	// Get the edict_t for this number
-	edict_t *ent = &g_edicts[number];
+	// Get the SEntity for this number
+	SEntity *ent = &Game.Entities[number];
 
 	// Restore entity
-	CBaseEntity *RestoreEntity = ent->Entity;
+	IBaseEntity *RestoreEntity = ent->Entity;
 
 	// Read
-	*ent = File.Read<edict_t> ();
+	*ent = File.Read<SEntity> ();
 
 	// Make a copy
-	edict_t temp (*ent);
+	SEntity temp (*ent);
 
 	// Null out pointers
-	ent->owner = NULL;
+	ent->Server.Owner = NULL;
 
 	// Restore entity
 	ent->Entity = RestoreEntity;
 
 	// Read special data
-	if (number > game.MaxClients)
+	if (number > Game.MaxClients)
 	{
 		sint32 OwnerNumber = File.Read<sint32> ();
-		ent->owner = (OwnerNumber == -1) ? NULL : &g_edicts[OwnerNumber];
+		ent->Server.Owner = (OwnerNumber == -1) ? NULL : &Game.Entities[OwnerNumber];
 	}
 
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex2, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex3, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.modelIndex4, INDEX_MODEL);
-	ReadIndex (File, (MediaIndex &)ent->state.sound, INDEX_SOUND);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex2, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex3, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.ModelIndex4, INDEX_MODEL);
+	ReadIndex (File, (MediaIndex &)ent->Server.State.Sound, INDEX_SOUND);
 
 	// Read entity stuff
-	if (number > game.MaxClients)
+	if (number > Game.MaxClients)
 	{
-		CBaseEntity *Entity;
+		IBaseEntity *Entity;
 		char *tempBuffer = File.ReadString ();
-		//DebugPrintf ("Loading %s (%i)\n", tempBuffer, number);
 
 		Entity = CreateEntityFromTable (number, tempBuffer);
 		QDelete[] tempBuffer;
@@ -339,9 +337,9 @@ void ReadEntity (CFile &File, sint32 number)
 		// Revision:
 		// This will actually change some base members..
 		// Restore them all here!
-		edict_t *oldOwner = ent->owner;
-		memcpy (ent, &temp, sizeof(edict_t));
-		ent->owner = oldOwner;
+		SEntity *oldOwner = ent->Server.Owner;
+		memcpy (ent, &temp, sizeof(SEntity));
+		ent->Server.Owner = oldOwner;
 
 		ent->Entity = Entity;
 	}
@@ -349,7 +347,7 @@ void ReadEntity (CFile &File, sint32 number)
 	READ_MAGIC
 }
 
-void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
+void ReadFinalizeEntity (CFile &File, IBaseEntity *Entity)
 {
 	Entity->ReadBaseEntity (File);
 
@@ -365,37 +363,27 @@ void ReadFinalizeEntity (CFile &File, CBaseEntity *Entity)
 
 void ReadEntities (CFile &File)
 {
-	std::vector <sint32, std::generic_allocator <sint32> > LoadedNumbers;
+	std::vector <sint32> LoadedNumbers;
 	while (true)
 	{
 		sint32 number = File.Read<sint32> ();
-
-		//DebugPrintf ("Reading entity number %i\n", number);
 
 		if (number == -1)
 			break;
 
 		LoadedNumbers.push_back (number);
-		ReadEntity (File, number);
+		ReadRealEntity (File, number);
 	
-		if (Game.GetNumEdicts() < number + 1)
-			Game.GetNumEdicts() = number + 1;	
+		if (GameAPI.GetNumEdicts() < number + 1)
+			GameAPI.GetNumEdicts() = number + 1;	
 	}
 
 	// Here, load any systems that need entity lists
-#if MONSTERS_USE_PATHFINDING
-	LoadNodes ();
-	//LoadPathTable ();
-#endif
 
 	for (size_t i = 0; i < LoadedNumbers.size(); i++)
-		ReadFinalizeEntity (File, g_edicts[LoadedNumbers[i]].Entity);
+		ReadFinalizeEntity (File, Game.Entities[LoadedNumbers[i]].Entity);
 
-#if MONSTERS_USE_PATHFINDING
-	FinalizeNodes ();
-#endif
-
-	World = g_edicts[0].Entity;
+	World = Game.Entities[0].Entity;
 
 	READ_MAGIC
 }
@@ -410,40 +398,40 @@ void ReadClient (CFile &File, sint32 i)
 
 void ReadClients (CFile &File)
 {
-	SaveClientData = QNew (com_genericPool, 0) CClient*[game.MaxClients];
-	for (uint8 i = 0; i < game.MaxClients; i++)
+	SaveClientData = QNew (TAG_GENERIC) CClient*[Game.MaxClients];
+	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		SaveClientData[i] = QNew (com_genericPool, 0) CClient(g_edicts[1+i].client);
+		SaveClientData[i] = QNew (TAG_GENERIC) CClient(Game.Entities[1+i].Server.Client);
 		ReadClient (File, i);
 	}
 }
 
 void WriteLevelLocals (CFile &File)
 {
-	level.Save (File);
+	Level.Save (File);
 
 	WRITE_MAGIC
 }
 
 void ReadLevelLocals (CFile &File)
 {
-	level.Load (File);
+	Level.Load (File);
 
 	READ_MAGIC
 }
 
 void WriteGameLocals (CFile &File, bool autosaved)
 {
-	game.AutoSaved = autosaved;
-	game.Save (File);
-	game.AutoSaved = false;
+	Game.AutoSaved = autosaved;
+	Game.Save (File);
+	Game.AutoSaved = false;
 
 	WRITE_MAGIC
 }
 
 void ReadGameLocals (CFile &File)
 {
-	game.Load (File);
+	Game.Load (File);
 
 	READ_MAGIC
 }
@@ -480,7 +468,7 @@ void CGameAPI::ReadGame (char *filename)
 	DebugPrintf ("Reading game from %s...\n", filename);
 
 	// Free any game-allocated memory before us
-	Mem_FreePool (com_gamePool);
+	Mem_FreeTag (TAG_GAME);
 	CFile File (filename, FILEMODE_READ | SAVE_GZ_FLAGS);
 
 	if (!File.Valid())
@@ -499,15 +487,15 @@ void CGameAPI::ReadGame (char *filename)
 
 	seedMT (time(NULL));
 
-	g_edicts = QNew (com_gamePool, 0) edict_t[game.MaxEntities];
-	Game.SetEntities (g_edicts);
+	Game.Entities = QNew (TAG_GAME) SEntity[Game.MaxEntities];
+	GameAPI.GetEntities() = Game.Entities;
 	ReadGameLocals (File);
 
-	game.Clients = QNew (com_gamePool, 0) gclient_t[game.MaxClients];
-	for (uint8 i = 0; i < game.MaxClients; i++)
+	Game.Clients = QNew (TAG_GAME) SServerClient[Game.MaxClients];
+	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		edict_t *ent = &g_edicts[i+1];
-		ent->client = game.Clients + i;
+		SEntity *ent = &Game.Entities[i+1];
+		ent->Server.Client = Game.Clients + i;
 	}
 
 	ReadClients (File);
@@ -537,14 +525,17 @@ void CGameAPI::WriteLevel (char *filename)
 	}
 
 	// write out edict size for checking
-	File.Write<size_t> (sizeof(edict_t));
+	File.Write<size_t> (sizeof(SEntity));
 
 	// write out a function pointer for checking
-	//byte *base = (byte *)ReadClient;
 	File.Write<size_t> (reinterpret_cast<size_t>(ReadClient));
 
 	// write out level_locals_t
 	WriteLevelLocals (File);
+
+#if ROGUE_FEATURES
+	SaveBadAreas (File);
+#endif
 
 	// write out all the entities
 	WriteEntities (File);
@@ -556,21 +547,14 @@ void CGameAPI::WriteLevel (char *filename)
 	WRITE_MAGIC
 }
 
-void InitEntityLists ();
-void InitEntities ();
-#if MONSTERS_USE_PATHFINDING
-void InitNodes ();
-void ShutdownNodes ();
-#endif
-
-#include "cc_bodyqueue.h"
+#include "cc_body_queue.h"
 
 char	ReadConfigSt[MAX_CFGSTRINGS][MAX_CFGSTRLEN];
 void ReadConfigStrings (char *filename)
 {
 	size_t len = strlen(filename);
 
-	std::cc_string temp = filename;
+	std::string temp = filename;
 	temp[len-3] = 's';
 	temp[len-2] = 'v';
 	temp[len-1] = '2';
@@ -590,11 +574,11 @@ void SetClientFields ()
 	{
 		ReadingGame = false;
 
-		for (uint8 i = 0; i < game.MaxClients; i++)
+		for (uint8 i = 0; i < Game.MaxClients; i++)
 		{
-			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i+1].Entity);
+			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
 			Player->Client = *SaveClientData[i];
-			Player->Client.RepositionClient (g_edicts[i+1].client);
+			Player->Client.RepositionClient (Game.Entities[i+1].Server.Client);
 			QDelete SaveClientData[i];
 		}
 		QDelete[] SaveClientData;
@@ -621,9 +605,6 @@ void CGameAPI::ReadLevel (char *filename)
 	// Shut down any systems that may need shutting down first
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
-#if MONSTERS_USE_PATHFINDING
-	ShutdownNodes ();
-#endif
 
 	InitGameMedia ();
 
@@ -634,17 +615,14 @@ void CGameAPI::ReadLevel (char *filename)
 	DeallocateEntities ();
 	// free any dynamic memory allocated by loading the level
 	// base state
-	Mem_FreePool (com_levelPool);
+	Mem_FreeTag (TAG_LEVEL);
 
 	// Re-initialize the systems
 	BodyQueue_Init (0);
 	Init_Junk ();
-#if MONSTERS_USE_PATHFINDING
-	InitNodes ();
-#endif
 
 	// wipe all the entities
-	Mem_Zero (g_edicts, game.MaxEntities*sizeof(g_edicts[0]));
+	Mem_Zero (Game.Entities, Game.MaxEntities*sizeof(Game.Entities[0]));
 
 	InitEntityLists ();
 
@@ -652,15 +630,13 @@ void CGameAPI::ReadLevel (char *filename)
 
 	// check edict size
 	size_t size = File.Read<size_t> ();
-	if (size != sizeof(edict_t))
+	if (size != sizeof(SEntity))
 	{
 		GameError ("ReadLevel: mismatched edict size");
 		return;
 	}
 
 	// check function pointer base address
-	//byte *base;
-	//File.Read (&base, sizeof(base));
 
 #ifdef WIN32
 	if (File.Read<size_t> () != reinterpret_cast<size_t>(ReadClient))
@@ -669,11 +645,15 @@ void CGameAPI::ReadLevel (char *filename)
 		return;
 	}
 #else
-	gi.dprintf("Function offsets %d\n", ((uint8 *)base) - ((uint8 *)InitGame));
+	DebugPrintf("Function offsets %d\n", File.Read<size_t> () - reinterpret_cast<size_t>(ReadClient));
 #endif
 
 	// load the level locals
 	ReadLevelLocals (File);
+
+#if ROGUE_FEATURES
+	LoadBadAreas (File);
+#endif
 
 	// load all the entities
 	ReadEntities (File);
@@ -683,13 +663,13 @@ void CGameAPI::ReadLevel (char *filename)
 	LoadJunk (File);
 
 	// mark all clients as unconnected
-	for (uint8 i = 0; i < game.MaxClients; i++)
+	for (uint8 i = 0; i < Game.MaxClients; i++)
 	{
-		edict_t *ent = &g_edicts[i+1];
-		ent->client = game.Clients + i;
+		SEntity *ent = &Game.Entities[i+1];
+		ent->Server.Client = Game.Clients + i;
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
-		Player->Client.RepositionClient (ent->client);
+		Player->Client.RepositionClient (ent->Server.Client);
 		Player->Client.Persistent.State = SVCS_FREE;
 	}
 

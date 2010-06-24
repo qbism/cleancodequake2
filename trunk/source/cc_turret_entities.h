@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Turret entities
 //
 
-class CTurretEntityBase : public CMapEntity, public CBrushModel, public CBlockableEntity
+class CTurretEntityBase : public IMapEntity, public IBrushModel, public IBlockableEntity
 {
 public:
 	CTurretEntityBase ();
@@ -39,23 +39,23 @@ public:
 
 	IMPLEMENT_SAVE_HEADER(CTurretEntityBase)
 
-	void Blocked (CBaseEntity *other);
+	void Blocked (IBaseEntity *Other);
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CBrushModel::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IBrushModel::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	};
 
 	virtual void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CBrushModel::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IBrushModel::SaveFields (File);
 	};
 
 	virtual void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CBrushModel::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IBrushModel::LoadFields (File);
 	};
 
 	bool Run ();
@@ -107,10 +107,14 @@ public:
 	void Walk () {};
 	void Melee () {};
 
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void TurretThink ();
 	void TurretLink ();
 	void Spawn ();
+
+	MONSTER_ID_HEADER
 };
+
+void AnglesNormalize(vec3f &vec);

@@ -407,7 +407,7 @@ CFrame HoverFramesEndAttack [] =
 };
 CAnim HoverMoveEndAttack (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack, &CMonster::Run);
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 
 /* PMM - circle strafing code */
 CFrame HoverFramesStartAttack2 [] =
@@ -437,9 +437,9 @@ CAnim HoverMoveEndAttack2 (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack2
 
 void CIcarus::ReAttack ()
 {
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.6)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.6)
 	{
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		CurrentMove = (AttackState == AS_SLIDING) ? &HoverMoveAttack2 : &HoverMoveAttack1;
 #else
 		CurrentMove = &HoverMoveAttack1;
@@ -453,10 +453,13 @@ void CIcarus::ReAttack ()
 
 void CIcarus::FireBlaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, end, dir;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_HOVER_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_HOVER_BLASTER_1], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -483,17 +486,21 @@ void CIcarus::Walk ()
 
 void CIcarus::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	float chance;
 
 	// 0% chance of circle in easy
 	// 50% chance in normal
 	// 75% chance in hard
 	// 86.67% chance in nightmare
-	if (!skill->Integer())
+	if (!CvarList[CV_SKILL].Integer())
 		chance = 0;
 	else
-		chance = 1.0f - (0.5f/skill->Float());
+		chance = 1.0f - (0.5f/CvarList[CV_SKILL].Float());
+
+	// daedalus strafes more
+	if (Entity->State.GetSkinNum() >= 2)
+		chance += 0.1f;
 
 	if (frand() > chance)
 	{
@@ -517,20 +524,20 @@ void CIcarus::StartAttack()
 	CurrentMove = &HoverMoveAttack1;
 }
 
-void CIcarus::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CIcarus::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
-		Entity->State.GetSkinNum() = 1;
+		Entity->State.GetSkinNum() |= 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 25)
+	if (Damage <= 25)
 	{
 		if (frand() < 0.5)
 		{
@@ -545,12 +552,12 @@ void CIcarus::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 	else
 	{
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 		CurrentMove = &HoverMovePain1;
 #else
 		//PGM pain sequence is WAY too long
-		if (frand() < (0.45 - (0.1 * skill->Float())))
+		if (frand() < (0.45 - (0.1 * CvarList[CV_SKILL].Float())))
 		{
 			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN1]);
 			CurrentMove = &HoverMovePain1;
@@ -566,9 +573,9 @@ void CIcarus::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 void CIcarus::DeadThink ()
 {
-	if (!Entity->GroundEntity && level.Frame < TimeStamp)
+	if (!Entity->GroundEntity && Level.Frame < TimeStamp)
 	{
-		Entity->NextThink = level.Frame + FRAMETIME;
+		Entity->NextThink = Level.Frame + FRAMETIME;
 		return;
 	}
 	Entity->BecomeExplosion(false);
@@ -579,22 +586,22 @@ void CIcarus::Dead ()
 	Entity->GetMins().Set (-16, -16, -24);
 	Entity->GetMaxs().Set (16, 16, -8);
 	Think = ConvertDerivedFunction(&CIcarus::DeadThink);
-	Entity->NextThink = level.Frame + FRAMETIME;
-	TimeStamp = level.Frame + 150;
+	Entity->NextThink = Level.Frame + FRAMETIME;
+	TimeStamp = Level.Frame + 150;
 	Entity->Link ();
 }
 
-void CIcarus::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CIcarus::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}

@@ -34,8 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_HEALTH_H) || !INCLUDE_GUARDS
 #define CC_GUARD_HEALTH_H
 
-// Class for health.
-CC_ENUM (uint8, EHealthFlags)
+/**
+\typedef	uint8 EHealthFlags
+
+\brief	Defines an alias representing flags for health boxes.
+**/
+typedef uint8 EHealthFlags;
+
+/**
+\enum	
+
+\brief	Values that represent flags for health boxes. 
+**/
+enum
 {
 	HEALTHFLAG_NONE,
 
@@ -48,13 +59,13 @@ public:
 	sint32				Amount; // You spin me right round baby right round
 	EHealthFlags	HealthFlags;
 
-	CHealth (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Amount, EHealthFlags HealthFlags);
+	CHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 Amount, EHealthFlags HealthFlags);
 
-	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent) {};
-	void	Drop (CPlayerEntity *ent) {};
+	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player) {};
+	void	Drop (CPlayerEntity *Player) {};
 };
 
 void AddHealthToList ();

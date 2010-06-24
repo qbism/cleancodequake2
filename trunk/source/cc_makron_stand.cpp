@@ -33,30 +33,30 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "m_boss32.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 /*QUAKED monster_boss3_stand (1 .5 0) (-32 -32 0) (32 32 90)
 
 Just stands and cycles in one place until targeted, then teleports away.
 */
-class CMonsterBoss3Stand : public CMapEntity, public CThinkableEntity, public CUsableEntity, public CStepPhysics
+class CMonsterBoss3Stand : public IMapEntity, public IThinkableEntity, public IUsableEntity, public IStepPhysics
 {
 public:
 	CMonsterBoss3Stand () :
-	  CBaseEntity (),
-	  CMapEntity (),
-	  CThinkableEntity (),
-	  CUsableEntity (),
-	  CStepPhysics ()
+	  IBaseEntity (),
+	  IMapEntity (),
+	  IThinkableEntity (),
+	  IUsableEntity (),
+	  IStepPhysics ()
 	{
 	};
 
 	CMonsterBoss3Stand (sint32 Index) :
-	  CBaseEntity (Index),
-	  CMapEntity (Index),
-	  CThinkableEntity (Index),
-	  CUsableEntity (Index),
-	  CStepPhysics (Index)
+	  IBaseEntity (Index),
+	  IMapEntity (Index),
+	  IThinkableEntity (Index),
+	  IUsableEntity (Index),
+	  IStepPhysics (Index)
 	{
 	};
 
@@ -64,28 +64,28 @@ public:
 
 	virtual bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
-		CThinkableEntity::SaveFields (File);
-		CStepPhysics::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IStepPhysics::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
-		CThinkableEntity::LoadFields (File);
-		CStepPhysics::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IStepPhysics::LoadFields (File);
 	}
 
 	bool Run ()
 	{
-		return CStepPhysics::Run();
+		return IStepPhysics::Run();
 	};
 
 	void Think ()
@@ -95,18 +95,18 @@ public:
 		else
 			State.GetFrame()++;
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		CTempEnt::BossTeleport (State.GetOrigin());
+		CBossTeleport(State.GetOrigin()).Send();
 		Free ();
 	};
 
 	void Spawn ()
 	{
-		if (game.GameMode & GAME_DEATHMATCH)
+		if (Game.GameMode & GAME_DEATHMATCH)
 		{
 			Free ();
 			return;
@@ -122,7 +122,7 @@ public:
 		GetMins().Set (32, -32, 0);
 		GetMaxs().Set (32, 32, 90);
 
-		NextThink = level.Frame + FRAMETIME;
+		NextThink = Level.Frame + FRAMETIME;
 		Link ();
 	};
 };

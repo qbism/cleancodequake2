@@ -33,10 +33,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CArmor::CArmor (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
-			   float energyProtection) :
+CArmor::CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint16 baseCount, sint16 maxCount, sint16 normalProtection,
+			   sint16 energyProtection) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		Precache),
 baseCount(baseCount),
@@ -46,88 +46,86 @@ energyProtection(energyProtection)
 {
 };
 
-bool CArmor::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CArmor::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (normalProtection == -1)
 	{
-		if (other->Client.Persistent.Armor == NULL)
+		if (Other->Client.Persistent.Armor == NULL)
 		{
-			other->Client.Persistent.Inventory.Set (NItems::JacketArmor, 2);
-			other->Client.Persistent.Armor = dynamic_cast<CArmor*>(NItems::JacketArmor);
+			Other->Client.Persistent.Inventory.Set (NItems::JacketArmor, 2);
+			Other->Client.Persistent.Armor = dynamic_cast<CArmor*>(NItems::JacketArmor);
 		}
 		else
 		{
-			if (maxCount != -1 && (other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor) >= maxCount))
+			if (maxCount != -1 && (Other->Client.Persistent.Inventory.Has(Other->Client.Persistent.Armor) >= maxCount))
 				return false;
 
-			other->Client.Persistent.Inventory.Add (other->Client.Persistent.Armor, 2);
-			if (maxCount != -1 && (other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor) > maxCount))
-				other->Client.Persistent.Inventory.Set(other->Client.Persistent.Armor, maxCount);
+			Other->Client.Persistent.Inventory.Add (Other->Client.Persistent.Armor, 2);
+			if (maxCount != -1 && (Other->Client.Persistent.Inventory.Has(Other->Client.Persistent.Armor) > maxCount))
+				Other->Client.Persistent.Inventory.Set(Other->Client.Persistent.Armor, maxCount);
 		}
 	}
-	else if (other->Client.Persistent.Armor != NULL)
+	else if (Other->Client.Persistent.Armor != NULL)
 	{
-		if (normalProtection > other->Client.Persistent.Armor->normalProtection)
+		if (normalProtection > Other->Client.Persistent.Armor->normalProtection)
 		{
 			// calc new armor values
-			sint32 newCount = baseCount + (((float)other->Client.Persistent.Armor->normalProtection / (float)normalProtection) * other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor));
+			sint32 newCount = baseCount + (((float)Other->Client.Persistent.Armor->normalProtection / (float)normalProtection) * Other->Client.Persistent.Inventory.Has(Other->Client.Persistent.Armor));
 			if (newCount > maxCount)
 				newCount = maxCount;
 
 			// zero count of old armor so it goes away
-			other->Client.Persistent.Inventory.Set(other->Client.Persistent.Armor, 0);
+			Other->Client.Persistent.Inventory.Set(Other->Client.Persistent.Armor, 0);
 
 			// change armor to new item with computed value
-			other->Client.Persistent.Inventory.Set(this, newCount);
-			other->Client.Persistent.Armor = this;
+			Other->Client.Persistent.Inventory.Set(this, newCount);
+			Other->Client.Persistent.Armor = this;
 		}
 		else
 		{
 			// calc new armor values
-			sint32 newCount = other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor) + (((float)normalProtection / (float)other->Client.Persistent.Armor->normalProtection) * baseCount);
-			if (newCount > other->Client.Persistent.Armor->maxCount)
-				newCount = other->Client.Persistent.Armor->maxCount;
+			sint32 newCount = Other->Client.Persistent.Inventory.Has(Other->Client.Persistent.Armor) + (((float)normalProtection / (float)Other->Client.Persistent.Armor->normalProtection) * baseCount);
+			if (newCount > Other->Client.Persistent.Armor->maxCount)
+				newCount = Other->Client.Persistent.Armor->maxCount;
 
 			// if we're already maxed out then we don't need the new armor
-			if (other->Client.Persistent.Inventory.Has(other->Client.Persistent.Armor) >= newCount)
+			if (Other->Client.Persistent.Inventory.Has(Other->Client.Persistent.Armor) >= newCount)
 				return false;
 
 			// update current armor value
-			other->Client.Persistent.Inventory.Set(other->Client.Persistent.Armor, newCount);
+			Other->Client.Persistent.Inventory.Set(Other->Client.Persistent.Armor, newCount);
 		}
 	}
 	// Player has no other armor, just use it
 	else
 	{
-		other->Client.Persistent.Armor = this;
-		other->Client.Persistent.Inventory.Set(this, baseCount);
+		Other->Client.Persistent.Armor = this;
+		Other->Client.Persistent.Inventory.Set(this, baseCount);
 	}
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 200);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 200);
 
 	return true;
 }
 
 // No dropping or using armor.
-void CArmor::Use(CPlayerEntity *ent)
+void CArmor::Use(CPlayerEntity *Player)
 {
 }
 
-void CArmor::Drop (CPlayerEntity *ent)
+void CArmor::Drop (CPlayerEntity *Player)
 {
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
-sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 damage, sint32 dflags)
+sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags)
 {
-	if (!damage)
-		return 0;
-	if (dflags & DAMAGE_NO_ARMOR)
+	if (!Damage || dflags & (DAMAGE_NO_ARMOR | DAMAGE_NO_REG_ARMOR))
 		return 0;
 
-	sint32 save = ceil (((dflags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * damage);
+	sint32 save = ceil (((dflags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * Damage);
 	if (save >= Player->Client.Persistent.Inventory.Has(this))
 		save = Player->Client.Persistent.Inventory.Has(this);
 
@@ -135,7 +133,7 @@ sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, s
 		return 0;
 
 	Player->Client.Persistent.Inventory.Remove(GetIndex(), save);
-	CTempEnt_Splashes::Sparks (point, normal, (dflags & DAMAGE_BULLET) ? CTempEnt_Splashes::ST_BULLET_SPARKS : CTempEnt_Splashes::ST_SPARKS, CTempEnt_Splashes::SPT_SPARKS);
+	CSparks(Point, Normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 
 	// Ran out of armor?
 	if (!Player->Client.Persistent.Inventory.Has(this))
@@ -148,32 +146,32 @@ class CArmorEntity : public CItemEntity
 {
 public:
 	CArmorEntity() :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity ()
 	  {
 	  };
 
 	CArmorEntity (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CItemEntity (Index)
 	  {
 	  };
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoArmor.IsEnabled())
+		if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoArmor.IsEnabled())
 		{
 			Free ();
 			return;
 		}
 
 		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
+		NextThink = Level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 
 		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
+		State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	};
 };
 
@@ -184,9 +182,9 @@ LINK_ITEM_TO_CLASS (item_armor_shard, CArmorEntity);
 
 void AddArmorToList ()
 {
-	NItems::JacketArmor = QNew (com_itemPool, 0) CArmor ("item_armor_jacket", "models/items/armor/jacket/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_jacketarmor", "Jacket Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 25, 50, 30, 0);
-	NItems::CombatArmor = QNew (com_itemPool, 0) CArmor ("item_armor_combat", "models/items/armor/combat/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_combatarmor", "Combat Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 50, 100, 60, 30);
-	NItems::BodyArmor = QNew (com_itemPool, 0) CArmor ("item_armor_body", "models/items/armor/body/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_bodyarmor", "Body Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 100, 200, 80, 60);
-	NItems::ArmorShard = QNew (com_itemPool, 0) CArmor ("item_armor_shard", "models/items/armor/shard/tris.md2", EF_ROTATE, "misc/ar2_pkup.wav", "i_jacketarmor", "Armor Shard", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 2, -1, -1, -1);
+	NItems::JacketArmor = QNew (TAG_GENERIC) CArmor ("item_armor_jacket", "models/items/armor/jacket/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_jacketarmor", "Jacket Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 25, 50, 30, 0);
+	NItems::CombatArmor = QNew (TAG_GENERIC) CArmor ("item_armor_combat", "models/items/armor/combat/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_combatarmor", "Combat Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 50, 100, 60, 30);
+	NItems::BodyArmor = QNew (TAG_GENERIC) CArmor ("item_armor_body", "models/items/armor/body/tris.md2", EF_ROTATE, "misc/ar1_pkup.wav", "i_bodyarmor", "Body Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 100, 200, 80, 60);
+	NItems::ArmorShard = QNew (TAG_GENERIC) CArmor ("item_armor_shard", "models/items/armor/shard/tris.md2", EF_ROTATE, "misc/ar2_pkup.wav", "i_jacketarmor", "Armor Shard", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 2, -1, -1, -1);
 }
 

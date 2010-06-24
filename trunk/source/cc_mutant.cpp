@@ -272,15 +272,15 @@ void CMutant::HitRight ()
 
 void CMutant::CheckRefire ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse() || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	// Paril, this was kinda dumb because he would keep refiring on nightmare
 	// making him really easy to kill
-	if ((skill->Integer() == 3) && (frand() < 0.5))
+	if ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5))
 		return;
 
-	if (Range(Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range(Entity, *Entity->Enemy) == RANGE_MELEE)
 		NextFrame = FRAME_attack09;
 }
 
@@ -305,7 +305,7 @@ void CMutant::Melee ()
 // ATTACK
 //
 
-void CMutant::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CMutant::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Jumping)
 		return;
@@ -316,14 +316,14 @@ void CMutant::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 		return;
 	}
 
-	if (other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & ENT_HURTABLE)
 	{
 		if (Entity->Velocity.Length() > 400)
 		{
 			vec3f	normal (Entity->Velocity.GetNormalized());
 
-			sint32 damage = 40 + 10 * frand();
-			entity_cast<CHurtableEntity>(other)->TakeDamage (Entity, Entity, Entity->Velocity, Entity->State.GetOrigin().MultiplyAngles (Entity->GetMaxs().X, normal), normal, damage, damage, 0, MOD_UNKNOWN);
+			sint32 Damage = 40 + 10 * frand();
+			entity_cast<IHurtableEntity>(Other)->TakeDamage (Entity, Entity, Entity->Velocity, Entity->State.GetOrigin().MultiplyAngles (Entity->GetMaxs().X, normal), normal, Damage, Damage, 0, MOD_UNKNOWN);
 		}
 	}
 
@@ -369,9 +369,9 @@ void CMutant::JumpTakeOff ()
 #endif
 
 	Entity->State.GetOrigin().Z += 1;
-	Entity->GroundEntity = NULL;
+	Entity->GroundEntity = nullentity;
 	AIFlags |= AI_DUCKED;
-	AttackFinished = level.Frame + 30;
+	AttackFinished = Level.Frame + 30;
 	Jumping = true;
 	Entity->Touchable = true;
 }
@@ -387,7 +387,7 @@ void CMutant::CheckLanding ()
 		return;
 	}
 
-	if (level.Frame > AttackFinished)
+	if (Level.Frame > AttackFinished)
 		NextFrame = FRAME_attack02;
 	else
 		NextFrame = FRAME_attack05;
@@ -418,12 +418,12 @@ void CMutant::Attack ()
 
 bool CMutant::CheckMelee ()
 {
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		return true;
 	return false;
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 bool CMutant::CheckJump ()
 {
@@ -438,26 +438,21 @@ bool CMutant::CheckJump ()
 
 		vec3f temp = origin - LastSighting;
 		if (temp.Length() > 400)
-		{
-			//DebugPrintf ("Not attempting.\n");
 			return false; // Too far
-		}
 
 		// So we lost sight of the player.
 		// Can we jump to the last spot we saw him?
 		CTrace trace (origin, LastSighting, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-		//CTempEnt_Trails::DebugTrail (origin, LastSighting);
-
 		// Clear shot
-		if (trace.fraction == 1.0)
+		if (trace.Fraction == 1.0)
 		{
 			// Now we need to check if the last sighting is on ground.
 			vec3f below = LastSighting - vec3f(0, 0, 64);
 
 			trace (LastSighting, below, Entity, CONTENTS_MASK_MONSTERSOLID);
-			//CTempEnt_Trails::DebugTrail (LastSighting, below);
-			if (trace.fraction < 1.0)
+
+			if (trace.Fraction < 1.0)
 			{
 				// Hit floor, we're solid and can do this jump
 				AttemptJumpToLastSight = true;
@@ -477,13 +472,12 @@ bool CMutant::CheckJump ()
 			temp.ToVectors (&forward, NULL, NULL);
 
 			temp = LastSighting;
-			while (trace.fraction != 1.0 && escape < 100)
+			while (trace.Fraction != 1.0 && escape < 100)
 			{
 				escape++;
 				
 				temp = temp.MultiplyAngles (-15, forward);
 				trace (origin, temp, Entity, CONTENTS_MASK_MONSTERSOLID);
-				//CTempEnt_Trails::DebugTrail (origin, temp);
 			}
 
 			// Push it up a bit
@@ -492,7 +486,6 @@ bool CMutant::CheckJump ()
 			if (escape != 100)
 			{
 				// Assume our last trace passed
-				//CTempEnt::TeleportEffect (temp);
 				AttemptJumpToLastSight = true;
 				LastSighting = temp;
 				return true;
@@ -526,7 +519,7 @@ bool CMutant::CheckJump ()
 
 bool CMutant::CheckAttack ()
 {
-	if (!Entity->Enemy || entity_cast<CHurtableEntity>(Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())
@@ -586,17 +579,17 @@ CFrame MutantFramesPain3 [] =
 };
 CAnim MutantMovePain3 (FRAME_pain301, FRAME_pain311, MutantFramesPain3, &CMonster::Run);
 
-void CMutant::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CMutant::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))
@@ -661,16 +654,16 @@ CFrame MutantFramesDeath2 [] =
 };
 CAnim MutantMoveDeath2 (FRAME_death201, FRAME_death210, MutantFramesDeath2, ConvertDerivedFunction(&CMutant::Dead));
 
-void CMutant::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CMutant::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}

@@ -40,22 +40,20 @@ class CIndex
 {
 public:
 	MediaIndex		Index;
-	std::cc_string	Name;
+	std::string	Name;
 };
 
-#define MAX_INDEXES 256
+const int MAX_INDEXES = 256;
 
-typedef std::multimap<size_t, size_t, std::less<size_t>, std::index_allocator<std::pair <size_t, size_t> > > THashedMediaIndexListType;
-typedef std::map<uint8, CIndex*, std::less<uint8>, std::index_allocator<std::pair <uint8, CIndex*> > > TMediaIndexToPtrList;
-typedef std::vector<CIndex*, std::index_allocator<CIndex*> > TMediaIndexListType;
+typedef std::multimap<size_t, size_t> THashedMediaIndexListType;
+typedef std::map<uint8, CIndex*, std::less<uint8> > TMediaIndexToPtrList;
+typedef std::vector<CIndex*> TMediaIndexListType;
 
 class CIndexList
 {
 public:
 	CIndexList();
 
-	//CIndex	*List[MAX_INDEXES];
-	//CIndex	*HashList[MAX_INDEXES];
 	TMediaIndexListType			List;
 	TMediaIndexToPtrList		ListMap;
 	THashedMediaIndexListType	HashList;
@@ -68,9 +66,9 @@ public:
 	void	Clear ();
 };
 
-MediaIndex ModelIndex (const char *string);
-MediaIndex SoundIndex (const char *string);
-MediaIndex ImageIndex (const char *string);
+MediaIndex ModelIndex (const char *string, ...);
+MediaIndex SoundIndex (const char *string, ...);
+MediaIndex ImageIndex (const char *string, ...);
 
 const char *StringFromSoundIndex (MediaIndex Index);
 const char *StringFromModelIndex (MediaIndex Index);
@@ -78,6 +76,12 @@ const char *StringFromImageIndex (MediaIndex Index);
 
 void ClearList ();
 void ListConfigstrings ();
+
+class CServerCmdIndexList : public CCommandFunctor
+{
+public:
+	void operator () ();
+};
 
 #else
 FILE_WARNING

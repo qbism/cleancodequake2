@@ -48,13 +48,13 @@ extern CAnim SoldierMoveAttack6;
 
 void CSoldierShotgun::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
-		(Range(Entity, Entity->Enemy) == RANGE_MID) && 
-		(r < (skill->Integer()*0.05))) // Very low chance for shotty soldier
+		(Range(Entity, *Entity->Enemy) == RANGE_MID) && 
+		(r < (CvarList[CV_SKILL].Integer()*0.05))) // Very low chance for shotty soldier
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif
@@ -69,11 +69,14 @@ void CSoldierShotgun::Attack ()
 static sint32 ShotgunFlash [] = {MZ2_SOLDIER_SHOTGUN_1, MZ2_SOLDIER_SHOTGUN_2, MZ2_SOLDIER_SHOTGUN_3, MZ2_SOLDIER_SHOTGUN_4, MZ2_SOLDIER_SHOTGUN_5, MZ2_SOLDIER_SHOTGUN_6, MZ2_SOLDIER_SHOTGUN_7, MZ2_SOLDIER_SHOTGUN_8};
 void CSoldierShotgun::FireGun (sint32 FlashNumber)
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, aim;
 	sint32		flashIndex = ShotgunFlash[FlashNumber];
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashIndex], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashIndex], forward, right, start);
 
 	switch (FlashNumber)
 	{
@@ -83,7 +86,7 @@ void CSoldierShotgun::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			CBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);

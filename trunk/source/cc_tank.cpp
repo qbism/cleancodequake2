@@ -264,22 +264,22 @@ CFrame TankFramesPain3 [] =
 };
 CAnim TankMovePain3 (FRAME_pain301, FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
 
-void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CTank::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() |= 1;
 
-	if (damage <= 10)
+	if (Damage <= 10)
 		return;
 
-	if (level.Frame < PainDebounceTime)
-			return;
+	if (Level.Frame < PainDebounceTime)
+		return;
 
-	if (damage <= 30 && frand() > 0.2)
+	if (Damage <= 30 && frand() > 0.2)
 		return;
 	
 	// If hard or nightmare, don't go into pain while attacking
-	if ( skill->Integer() >= 2)
+	if ( CvarList[CV_SKILL].Integer() >= 2)
 	{
 		if ( (Entity->State.GetFrame() >= FRAME_attak301) && (Entity->State.GetFrame() <= FRAME_attak330) )
 			return;
@@ -287,19 +287,19 @@ void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 			return;
 	}
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN]);
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - blindfire cleanup
 	AIFlags &= ~AI_MANUAL_STEERING;
 	// pmm
 #endif
 
-	CurrentMove = ((damage <= 60) ? ((damage <= 30) ? &TankMovePain1 : &TankMovePain2) : &TankMovePain3);
+	CurrentMove = ((Damage <= 60) ? ((Damage <= 30) ? &TankMovePain1 : &TankMovePain2) : &TankMovePain3);
 };
 
 
@@ -309,6 +309,9 @@ void CTank::Pain (CBaseEntity *other, float kick, sint32 damage)
 
 void CTank::Blaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, start, end, dir;
 	sint32		flash_number;
 
@@ -326,7 +329,7 @@ void CTank::Blaster ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -342,7 +345,10 @@ void CTank::Strike ()
 
 void CTank::Rocket ()
 {
-#if MONSTER_USE_ROGUE_AI
+	if (!HasValidEnemy())
+		return;
+
+#if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	sint32		flash_number, rocketSpeed;
 	CTrace	trace;
@@ -368,9 +374,9 @@ void CTank::Rocket ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
-	rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
+	rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 
@@ -392,9 +398,10 @@ void CTank::Rocket ()
 		dir = vec - start;
 	}
 
-	if (!blindfire && ((frand() < (0.2 + ((3 - skill->Integer()) * 0.15)))))
+	if (!blindfire && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+			vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -403,7 +410,7 @@ void CTank::Rocket ()
 	trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 	if (blindfire)
 	{
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+		if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 			MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		else 
 		{
@@ -412,7 +419,7 @@ void CTank::Rocket ()
 			dir.NormalizeFast ();
 
 			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+			if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 			else 
 			{
@@ -421,7 +428,7 @@ void CTank::Rocket ()
 				dir.NormalizeFast ();
 
 				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+				if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 					MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 			}
 		}
@@ -429,9 +436,9 @@ void CTank::Rocket ()
 	else
 	{
 		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-		if(trace.Ent == Entity->Enemy || trace.Ent == World)
+		if (trace.Entity == Entity->Enemy || trace.Entity == World)
 		{
-			if(trace.fraction > 0.5 || (trace.ent && trace.ent->client))
+			if (trace.Fraction > 0.5 || (trace.Entity->EntityFlags & ENT_PLAYER))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		}
 	}
@@ -453,7 +460,7 @@ void CTank::Rocket ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;
@@ -466,11 +473,14 @@ void CTank::Rocket ()
 
 void CTank::MachineGun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	dir, start, forward, right;
 	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak406);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	if (Entity->Enemy)
 	{
@@ -539,7 +549,7 @@ CAnim TankMoveAttackPostBlast (FRAME_attak117, FRAME_attak122, TankFramesAttackP
 
 void CTank::ReAttackBlaster ()
 {
-	if (skill->Integer() >= 2 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && frand() <= 0.6)
+	if (CvarList[CV_SKILL].Integer() >= 2 && IsVisible (Entity, *Entity->Enemy) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && frand() <= 0.6)
 	{
 		CurrentMove = &TankMoveReAttackBlast;
 		return;
@@ -549,7 +559,7 @@ void CTank::ReAttackBlaster ()
 
 void CTank::PostStrike ()
 {
-	Entity->Enemy = NULL;
+	Entity->Enemy = nullentity;
 	Run ();
 }
 
@@ -704,7 +714,7 @@ CAnim TankMoveAttackChain (FRAME_attak401, FRAME_attak429, TankFramesAttackChain
 
 void CTank::ReFireRocket ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM - blindfire cleanup
 	if (AIFlags & AI_MANUAL_STEERING)
 	{
@@ -716,7 +726,7 @@ void CTank::ReFireRocket ()
 #endif
 
 	// Only on hard or nightmare
-	if ( skill->Integer() >= 2 && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible(Entity, Entity->Enemy) && frand() <= 0.4)
+	if (CvarList[CV_SKILL].Integer() >= 2 && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible(Entity, *Entity->Enemy) && frand() <= 0.4)
 	{
 		CurrentMove = &TankMoveAttackFireRocket;
 		return;
@@ -731,17 +741,17 @@ void CTank::DoAttackRocket ()
 
 void CTank::Attack ()
 {
-	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
+	if (!Entity->Enemy)
 		return;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health < 0)
+	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health < 0)
 	{
 		CurrentMove = &TankMoveAttackStrike;
 		AIFlags &= ~AI_BRUTAL;
 		return;
 	}
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM 
 	if (AttackState == AS_BLIND)
 	{
@@ -763,8 +773,8 @@ void CTank::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &TankMoveAttackFireRocket;
-		AttackFinished = level.Frame + 30 + ((2*frand())*10);
-		PainDebounceTime = level.Frame + 50;	// no pain for a while
+		AttackFinished = Level.Frame + 30 + ((2*frand())*10);
+		PainDebounceTime = Level.Frame + 50;	// no pain for a while
 		return;
 	}
 	// pmm
@@ -794,7 +804,7 @@ void CTank::Attack ()
 		else if (r < 0.66)
 		{
 			CurrentMove = &TankMoveAttackPreRocket;
-			PainDebounceTime = level.Frame + 50;	// no pain for a while
+			PainDebounceTime = Level.Frame + 50;	// no pain for a while
 		}
 		else
 			CurrentMove = &TankMoveAttackBlast;
@@ -853,18 +863,18 @@ CFrame TankFramesDeath1 [] =
 };
 CAnim TankMoveDeath (FRAME_death101, FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
 
-void CTank::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 1 /*4*/; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), damage, GIB_METALLIC);
-		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), damage, GIB_METALLIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), Damage, GIB_METALLIC);
+		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Gear(), Damage, GIB_METALLIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -915,7 +925,7 @@ void CTank::Spawn ()
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT | MF_HAS_IDLE);
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	// PMM
 	AIFlags |= AI_IGNORE_SHOTS;
 	BlindFire = true;

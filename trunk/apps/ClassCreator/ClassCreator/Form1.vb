@@ -8,21 +8,21 @@
     End Structure
 
     Public EntityTypeArray() As Entity = { _
-    New Entity With {.Name = "Map Entity", .ClassName = "CMapEntity", .HasFields = True, .HasSaveFields = True}, _
-    New Entity With {.Name = "Hurtable", .ClassName = "CHurtableEntity", .HasFields = True, .HasSaveFields = True}, _
-    New Entity With {.Name = "Blockable", .ClassName = "CBlockableEntity", .HasFields = False, .HasSaveFields = False}, _
-    New Entity With {.Name = "Thinkable", .ClassName = "CThinkableEntity", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Touchable", .ClassName = "CTouchableEntity", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Usable", .ClassName = "CUsableEntity", .HasFields = True, .HasSaveFields = True}, _
-    New Entity With {.Name = "Base Physics", .ClassName = "CPhysicsEntity", .HasFields = False, .HasSaveFields = False}, _
-    New Entity With {.Name = "Bounce Physics", .ClassName = "CBounceProjectile", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Toss Physics", .ClassName = "CTossProjectile", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "FlyMissile Physics", .ClassName = "CFlyMissileProjectile", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Step Physics", .ClassName = "CStepPhysics", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Push Physics", .ClassName = "CPushPhysics", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Stop Physics", .ClassName = "CStopPhysics", .HasFields = False, .HasSaveFields = True}, _
-    New Entity With {.Name = "Junk Entity", .ClassName = "CJunkEntity", .HasFields = False, .HasSaveFields = False}, _
-    New Entity With {.Name = "Brush Model", .ClassName = "CBrushModel", .HasFields = True, .HasSaveFields = True} _
+    New Entity With {.Name = "Map Entity", .ClassName = "IMapEntity", .HasFields = True, .HasSaveFields = True}, _
+    New Entity With {.Name = "Hurtable", .ClassName = "IHurtableEntity", .HasFields = True, .HasSaveFields = True}, _
+    New Entity With {.Name = "Blockable", .ClassName = "IBlockableEntity", .HasFields = False, .HasSaveFields = False}, _
+    New Entity With {.Name = "Thinkable", .ClassName = "IThinkableEntity", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Touchable", .ClassName = "ITouchableEntity", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Usable", .ClassName = "IUsableEntity", .HasFields = True, .HasSaveFields = True}, _
+    New Entity With {.Name = "Base Physics", .ClassName = "IPhysicsEntity", .HasFields = False, .HasSaveFields = False}, _
+    New Entity With {.Name = "Bounce Physics", .ClassName = "IBounceProjectile", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Toss Physics", .ClassName = "ITossProjectile", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "FlyMissile Physics", .ClassName = "IFlyMissileProjectile", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Step Physics", .ClassName = "IStepPhysics", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Push Physics", .ClassName = "IPushPhysics", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Stop Physics", .ClassName = "IStopPhysics", .HasFields = False, .HasSaveFields = True}, _
+    New Entity With {.Name = "Junk Entity", .ClassName = "IJunkEntity", .HasFields = False, .HasSaveFields = False}, _
+    New Entity With {.Name = "Brush Model", .ClassName = "IBrushModel", .HasFields = True, .HasSaveFields = True} _
     }
 
     Structure DataType
@@ -53,10 +53,10 @@
     New DataType("Sound index", "MediaIndex", "0", "FT_SOUND_INDEX"), _
     New DataType("Image index", "MediaIndex", "0", "FT_IMAGE_INDEX"), _
     New DataType("Model index", "MediaIndex", "0", "FT_MODEL_INDEX"), _
-    New DataType("Frame/Time", "FrameNumber_t", "0", "FT_FRAMENUMBER"), _
+    New DataType("Frame/Time", "FrameNumber", "0", "FT_FRAMENUMBER"), _
     New DataType("Item", "CBaseItem", "NULL", "FT_ITEM", True), _
-    New DataType("Entity", "CBaseEntity", "NULL", "FT_ENTITY", True), _
-    New DataType("Float to Byte", "byte", "0", "FT_FLOAT_TO_BYTE"), _
+    New DataType("Entity", "IBaseEntity", "NULL", "FT_ENTITY", True), _
+    New DataType("Float to Byte", "uint8", "0", "FT_FLOAT_TO_BYTE"), _
     New DataType("CCString", "std::cc_string", "", "FT_CC_STRING") _
     }
 
@@ -118,8 +118,8 @@
                         If EntityTypeArray(Index).HasFields Then FieldIndexes.Add(Index)
                     Next
 
-                    If (FieldIndexes.Count() = 1) Then ' Only CMapEntity
-                        WrittenClass = WrittenClass + "\t\treturn CMapEntity::ParseField(Key, Value);"
+                    If (FieldIndexes.Count() = 1) Then ' Only IMapEntity
+                        WrittenClass = WrittenClass + "\t\treturn IMapEntity::ParseField(Key, Value);"
                     Else
                         WrittenClass = WrittenClass + "\t\treturn ("
                         Dim i As Integer = 0
@@ -180,9 +180,9 @@
 
         WrittenClass = WrittenClass + " : "
 
-        ' None selected, just throw in CBaseEntity
+        ' None selected, just throw in IBaseEntity
         If Selected.Count = 0 Then
-            WrittenClass = WrittenClass + "public virtual CBaseEntity"
+            WrittenClass = WrittenClass + "public virtual IBaseEntity"
         Else
             Dim CountOfClasses As Integer = 0
             ' Put each sequential class after each other
@@ -210,7 +210,7 @@
         If (ClassCode <> True) Then
             WrittenClass = WrittenClass + ";\n\t"
         Else
-            WrittenClass = WrittenClass + " :\n\t  CBaseEntity ()"
+            WrittenClass = WrittenClass + " :\n\t  IBaseEntity ()"
 
             If (Selected.Count <> 0) Then
                 For Each Blah In Selected
@@ -226,7 +226,7 @@
         If (ClassCode <> True) Then
             WrittenClass = WrittenClass + ";\n\n"
         Else
-            WrittenClass = WrittenClass + " :\n\t  CBaseEntity (Index)"
+            WrittenClass = WrittenClass + " :\n\t  IBaseEntity (Index)"
 
             If (Selected.Count <> 0) Then
                 For Each Blah In Selected
@@ -246,7 +246,7 @@
             If (ClassCode <> True) Then
                 WrittenClass = WrittenClass + ";"
             Else
-                WrittenClass = WrittenClass + "\n\t{\n\t\treturn CBaseEntity::Run();\n\t};"
+                WrittenClass = WrittenClass + "\n\t{\n\t\treturn IBaseEntity::Run();\n\t};"
             End If
         End If
 
@@ -264,30 +264,30 @@
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity is damaged\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Pain (CBaseEntity *other, float kick, int damage);\n\n"
+                    WrittenClass = WrittenClass + "\tvoid Pain (IBaseEntity *other, float kick, int damage);\n\n"
 
                     InsertComment(WrittenClass, "\t// Called when the entity is damaged and it's health\n\t// is below or equal to 0\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point);\n"
+                    WrittenClass = WrittenClass + "\tvoid Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3f &Point);\n"
                 Else
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity is damaged\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Pain (CBaseEntity *other, float kick, int damage)\n\t{\n\t};\n\n"
+                    WrittenClass = WrittenClass + "\tvoid Pain (IBaseEntity *other, float kick, int damage)\n\t{\n\t};\n\n"
 
                     InsertComment(WrittenClass, "\t// Called when the entity is damaged and it's health\n\t// is below or equal to 0\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3f &point)\n\t{\n\t};\n"
+                    WrittenClass = WrittenClass + "\tvoid Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3f &Point)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 2 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity is blocked by a push physics object\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Blocked (CBaseEntity *other);\n"
+                    WrittenClass = WrittenClass + "\tvoid Blocked (IBaseEntity *other);\n"
                 Else
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity is blocked by a push physics object\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Blocked (CBaseEntity *other)\n\t{\n\t};\n"
+                    WrittenClass = WrittenClass + "\tvoid Blocked (IBaseEntity *other)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 3 Then
                 If Selected.Contains(14) <> True Then
@@ -308,24 +308,24 @@
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity collides\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);\n"
+                    WrittenClass = WrittenClass + "\tvoid Touch (IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf);\n"
                 Else
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity collides\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)\n\t{\n\t};\n"
+                    WrittenClass = WrittenClass + "\tvoid Touch (IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf)\n\t{\n\t};\n"
                 End If
             ElseIf Num = 5 Then
                 If (ClassCode <> True) Then
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity is used by another entity\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Use (CBaseEntity *other, CBaseEntity *activator);\n"
+                    WrittenClass = WrittenClass + "\tvoid Use (IBaseEntity *other, IBaseEntity *activator);\n"
                 Else
                     WroteSomething = True
 
                     InsertComment(WrittenClass, "\t// Called when the entity is used by another entity\n", Nothing)
-                    WrittenClass = WrittenClass + "\tvoid Use (CBaseEntity *other, CBaseEntity *activator)\n\t{\n\t};\n"
+                    WrittenClass = WrittenClass + "\tvoid Use (IBaseEntity *other, IBaseEntity *activator)\n\t{\n\t};\n"
                 End If
                 ' Physics don't have any
 
@@ -369,7 +369,7 @@
         ' If we didn't specify code-in-class we'll write the class code here
         If ClassCode <> True Then
             ' Constructors
-            WrittenClass = WrittenClass + "\n\n" + TextBox1.Text + "::" + TextBox1.Text + " ()" + " :\n\tCBaseEntity ()"
+            WrittenClass = WrittenClass + "\n\n" + TextBox1.Text + "::" + TextBox1.Text + " ()" + " :\n\tIBaseEntity ()"
 
             If (Selected.Count <> 0) Then
                 For Each Blah In Selected
@@ -377,7 +377,7 @@
                 Next
             End If
 
-            WrittenClass = WrittenClass + "\n{\n};\n\n" + TextBox1.Text + "::" + TextBox1.Text + " (int Index)" + " :\n\tCBaseEntity (Index)"
+            WrittenClass = WrittenClass + "\n{\n};\n\n" + TextBox1.Text + "::" + TextBox1.Text + " (int Index)" + " :\n\tIBaseEntity (Index)"
 
             If (Selected.Count <> 0) Then
                 For Each Blah In Selected
@@ -393,10 +393,10 @@
                 If Num = 0 Then Continue For ' Do mapentity last
 
                 If Num = 1 Then
-                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Pain (CBaseEntity *other, float kick, int damage)\n{\n};\n\nvoid " + TextBox1.Text + "::" + "Die (CBaseEntity *inflictor, CBaseEntity *attacker, int damage, vec3_t point)\n{\n};\n"
+                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Pain (IBaseEntity *other, float kick, int damage)\n{\n};\n\nvoid " + TextBox1.Text + "::" + "Die (IBaseEntity *inflictor, IBaseEntity *attacker, int damage, vec3_t point)\n{\n};\n"
                     WroteSomething = True
                 ElseIf Num = 2 Then
-                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Blocked (CBaseEntity *other)\n{\n};\n"
+                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Blocked (IBaseEntity *other)\n{\n};\n"
                     WroteSomething = True
                 ElseIf Num = 3 Then
                     If Selected.Contains(14) <> True Then
@@ -405,9 +405,9 @@
                     End If
                 ElseIf Num = 4 Then
                     WroteSomething = True
-                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)\n{\n};\n"
+                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Touch (IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf)\n{\n};\n"
                 ElseIf Num = 5 Then
-                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Use (CBaseEntity *other, CBaseEntity *activator)\n{\n};\n"
+                    WrittenClass = WrittenClass + "void " + TextBox1.Text + "::" + "Use (IBaseEntity *other, IBaseEntity *activator)\n{\n};\n"
                     WroteSomething = True
                     ' Physics don't have any
                 ElseIf Num = 14 Then

@@ -33,16 +33,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#define MAX_ARG_CONCAT	256
-#define MAX_ARG		64
+const int MAX_ARG_CONCAT	= 256;
+const int MAX_ARG			= 64;
 
-char	*nullArg = "";
-
-uint8				numArgv;
-std::cc_string		argvConcatString;
-std::vector<std::cc_string, std::generic_allocator<std::cc_string> >		argvStringArray;
-std::vector<sint32, std::generic_allocator<sint32> >						argvIntegerArray;
-std::vector<float, std::generic_allocator<float> >							argvFloatArray;
+uint8							numArgv;
+std::string						argvConcatString;
+std::vector<std::string>		argvStringArray;
+std::vector<sint32>				argvIntegerArray;
+std::vector<float>				argvFloatArray;
 
 void SetupArg ()
 {
@@ -57,14 +55,14 @@ void SetupArg ()
 // Called at the beginning of an arg session
 void InitArg ()
 {
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	if (numArgv)
 	{
 		DebugPrintf ("CleanCode Warning: InitArg() called before previous arg session completed!\n");
 		EndArg ();
 	}
 
-	numArgv = gi.argc();
+	numArgv = (uint8)gi.argc();
 
 	if (numArgv == 0)
 		return;
@@ -74,10 +72,10 @@ _CC_DISABLE_DEPRECATION
 	for (uint8 i = 0; i < numArgv; i++)
 	{
 		argvStringArray.push_back (gi.argv(i));
-		argvFloatArray.push_back (atof (argvStringArray[i].c_str()));
+		argvFloatArray.push_back ((float)atof (argvStringArray[i].c_str()));
 		argvIntegerArray.push_back ((sint32)argvFloatArray[i]);
 	}
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 }
 
 // Called at the end of an arg session
@@ -92,12 +90,12 @@ uint8 ArgCount ()
 	return numArgv;
 }
 
-std::cc_string ArgGetConcatenatedString ()
+std::string ArgGetConcatenatedString ()
 {
 	return argvConcatString;
 }
 
-std::cc_string ArgGets (uint32 Index)
+std::string ArgGets (uint32 Index)
 {
 	if (Index >= argvStringArray.size())
 		return "";
@@ -107,22 +105,16 @@ std::cc_string ArgGets (uint32 Index)
 
 sint32 ArgGeti (uint32 Index)
 {
-	if (Index >= argvStringArray.size())
-	{
-		_CC_ASSERT_EXPR (0, "ArgGeti(n) index out of bounds");
+	if (CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGeti(n) index out of bounds"))
 		return 0;
-	}
 
 	return argvIntegerArray[Index];
 }
 
 float ArgGetf (uint32 Index)
 {
-	if (Index >= argvStringArray.size())
-	{
-		_CC_ASSERT_EXPR (0, "ArgGetf(n) index out of bounds");
+	if (CC_ASSERT_EXPR (!(Index >= argvStringArray.size()), "ArgGetf(n) index out of bounds"))
 		return 0;
-	}
 
 	return argvFloatArray[Index];
 }

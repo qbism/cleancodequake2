@@ -36,19 +36,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if XATRIX_FEATURES
 #include "cc_bitch.h"
 #include "cc_xatrix_chick_heat.h"
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 CHeatRocket::CHeatRocket () :
-CFlyMissileProjectile(),
-CTouchableEntity(),
-CThinkableEntity()
+  IFlyMissileProjectile(),
+  ITouchableEntity(),
+  IThinkableEntity()
 {
 };
 
 CHeatRocket::CHeatRocket (sint32 Index) :
-CFlyMissileProjectile(Index),
-CTouchableEntity(Index),
-CThinkableEntity(Index)
+  IBaseEntity (Index),
+  IFlyMissileProjectile(Index),
+  ITouchableEntity(Index),
+  IThinkableEntity(Index)
 {
 };
 
@@ -56,12 +57,11 @@ IMPLEMENT_SAVE_SOURCE(CHeatRocket)
 
 void CHeatRocket::Think ()
 {
-	CHurtableEntity	*target = NULL, *aquire = NULL;
-	vec3f		vec (0, 0, 0);
+	IHurtableEntity	*target = NULL, *aquire = NULL;
 	int			oldlen = 0;
 
 	// aquire new target
-	while ((target = FindRadius<CHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin(), 1024)) != NULL)
+	while ((target = FindRadius<IHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin(), 1024)) != NULL)
 	{
 		if (target == GetOwner())
 			continue;
@@ -105,22 +105,22 @@ void CHeatRocket::Think ()
 	if (aquire != NULL)
 	{
 		vec3f oldang = State.GetAngles();
-		vec = aquire->State.GetOrigin() - State.GetOrigin();
+		vec3f vec = aquire->State.GetOrigin() - State.GetOrigin();
 
 		State.GetAngles() = vec.ToAngles();
 		vec.Normalize();
 		Velocity = vec * 500;
 	}
 
-	NextThink = level.Frame + FRAMETIME;
+	NextThink = Level.Frame + FRAMETIME;
 }
 
-void CHeatRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+void CHeatRocket::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (other == GetOwner())
+	if (Other == GetOwner())
 		return;
 
-	if (surf && (surf->flags & SURF_TEXINFO_SKY))
+	if (surf && (surf->Flags & SURF_TEXINFO_SKY))
 	{
 		Free ();
 		return;
@@ -129,19 +129,19 @@ void CHeatRocket::Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *sur
 	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((other->EntityFlags & ENT_HURTABLE) && entity_cast<CHurtableEntity>(other)->CanTakeDamage)
-		entity_cast<CHurtableEntity>(other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
+	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->Normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
 	vec3f origin = State.GetOrigin ().MultiplyAngles (-0.02f, Velocity);
-	SplashDamage(GetOwner(), RadiusDamage, other, DamageRadius, MOD_R_SPLASH);
-	CTempEnt_Explosions::RocketExplosion(origin, this, !!WaterInfo.Level);
+	SplashDamage(GetOwner(), RadiusDamage, Other, DamageRadius, MOD_R_SPLASH);
+	CRocketExplosion(origin, !!WaterInfo.Level).Send();
 
 	Free ();
 }
 
-CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage)
+CHeatRocket *CHeatRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage)
 {
 	CHeatRocket	*Rocket = QNewEntityOf CHeatRocket;
 
@@ -150,9 +150,9 @@ CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->Velocity = dir * speed;
 	Rocket->State.GetEffects() = EF_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
-	Rocket->SetOwner (Spawner);
-	Rocket->NextThink = level.Frame + FRAMETIME;
-	Rocket->Damage = damage;
+	Rocket->SetOwner(Spawner);
+	Rocket->NextThink = Level.Frame + FRAMETIME;
+	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;
 	Rocket->DamageRadius = damage_radius;
 	Rocket->State.GetSound() = SoundIndex ("weapons/rockfly.wav");
@@ -172,7 +172,7 @@ CHeatRocket *CHeatRocket::Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
 
 bool CHeatRocket::Run ()
 {
-	return CFlyMissileProjectile::Run();
+	return IFlyMissileProjectile::Run();
 }
 
 CHeatMaiden::CHeatMaiden (uint32 ID) :
@@ -183,14 +183,17 @@ CMaiden (ID)
 
 void CHeatMaiden::Rocket ()
 {
-#if MONSTER_USE_ROGUE_AI
+	if (!HasValidEnemy())
+		return;
+
+#if ROGUE_FEATURES
 	vec3f	forward, right, start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
 
-	sint32 rocketSpeed = 500 + (100 * skill->Integer());	// PGM rock & roll.... :)
+	sint32 rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
 	target = (blindfire) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
 	if (blindfire)
@@ -215,9 +218,9 @@ void CHeatMaiden::Rocket ()
 
 	// Lead target  (not when blindfiring)
 	// 20, 35, 50, 65 chance of leading
-	if((!blindfire) && ((frand() < (0.2 + ((3 - skill->Integer()) * 0.15)))))
+	if((!blindfire) && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
 
@@ -229,7 +232,7 @@ void CHeatMaiden::Rocket ()
 	if (blindfire)
 	{
 		// blindfire has different fail criteria for the trace
-		if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+		if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 			MonsterFireHeatRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 		else 
 		{
@@ -241,7 +244,7 @@ void CHeatMaiden::Rocket ()
 			dir = vec - start;
 			dir.NormalizeFast();
 			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-			if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+			if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 				MonsterFireHeatRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			else 
 			{
@@ -251,7 +254,7 @@ void CHeatMaiden::Rocket ()
 				dir = vec - start;
 				dir.NormalizeFast();
 				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
-				if (!(trace.startSolid || trace.allSolid || (trace.fraction < 0.5)))
+				if (!(trace.StartSolid || trace.AllSolid || (trace.Fraction < 0.5)))
 					MonsterFireHeatRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 			}
 		}
@@ -262,7 +265,7 @@ void CHeatMaiden::Rocket ()
 	vec3f	forward, right, start, dir, vec;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_CHICK_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;

@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CInventory
 {
 private:
-	typedef std::map <uint8, sint16, std::less<uint8>, std::generic_allocator<std::pair<uint8, uint16 > > > TInventoryMapType;
+	typedef std::map <uint8, sint16> TInventoryMapType;
 	TInventoryMapType Array;
 
 public:
@@ -61,7 +61,7 @@ public:
 	void	Remove (uint8 Index, sint32 Num);
 
 	// Draw the inventory
-	void	Draw (CPlayerEntity *ent);
+	void	Draw (CPlayerEntity *Player);
 
 	// Validate items selected with functions below
 	void	ValidateSelectedItem ();
@@ -102,23 +102,107 @@ public:
 	};
 };
 
-void Cmd_Use_f (CPlayerEntity *ent);
-void Cmd_UseList_f (CPlayerEntity *ent);
-void Cmd_Drop_f (CPlayerEntity *ent);
-void Cmd_Inven_f (CPlayerEntity *ent);
-void Cmd_InvUse_f (CPlayerEntity *ent);
-void Cmd_WeapPrev_f (CPlayerEntity *ent);
-void Cmd_WeapNext_f (CPlayerEntity *ent);
-void Cmd_WeapLast_f (CPlayerEntity *ent);
-void Cmd_InvDrop_f (CPlayerEntity *ent);
-void Cmd_SelectNextItem_f (CPlayerEntity *ent);
-void Cmd_SelectPrevItem_f (CPlayerEntity *ent);
-void Cmd_SelectNextWeapon_f (CPlayerEntity *ent);
-void Cmd_SelectPrevWeapon_f (CPlayerEntity *ent);
-void Cmd_SelectNextPowerup_f (CPlayerEntity *ent);
-void Cmd_SelectPrevPowerup_f (CPlayerEntity *ent);
-void Cmd_Give (CPlayerEntity *ent);
-void Cmd_Give_f (CPlayerEntity *ent);
+class CUseCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CUseListCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CDropCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInventoryCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvUseCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvDropCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CWeapPrevCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CWeapNextCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CWeapLastCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvNextCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvPrevCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvNextWCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvPrevWCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvNextPCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CInvPrevPCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CGiveCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
+
+class CSpawnCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ();
+};
 
 #else
 FILE_WARNING

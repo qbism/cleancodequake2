@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if XATRIX_FEATURES
 #include "cc_gladiator.h"
 #include "cc_xatrix_gladiator_phalanx.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "cc_xatrix_phalanx.h"
 #include "m_gladiator.h"
 
@@ -48,13 +48,13 @@ CGladiator (ID)
 
 void CPhalanxGladiator::FirePhalanx ()
 {
-	if (Entity->State.GetFrame() == FRAME_attack9 && skill->Integer() != 3)
+	if (Entity->State.GetFrame() == FRAME_attack9 && CvarList[CV_SKILL].Integer() != 3)
 		return;
 
 	vec3f	start, forward, right;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
 
 	// calc direction to where we targted
 	CPhalanxPlasma::Spawn (Entity, start, (SavedFirePosition - start).GetNormalized(), 100, 725, 60, 60);

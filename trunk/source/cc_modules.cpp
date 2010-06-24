@@ -31,8 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // CleanModule System
 //
 
-#if 0
 #include "cc_local.h"
+
+#if 0
 
 struct Module_t
 {
@@ -40,11 +41,11 @@ struct Module_t
 	CDynamicLibrary	*Lib;
 };
 
-std::vector <Module_t*, std::generic_allocator<Module_t*> > Modules;
+std::vector <Module_t*> Modules;
 
-void CC_LoadModule (std::cc_string Name)
+void CC_LoadModule (std::string Name)
 {
-	CDynamicLibrary *Lib = QNew (com_genericPool, 0) CDynamicLibrary (Name.c_str());
+	CDynamicLibrary *Lib = QNew (TAG_GAME) CDynamicLibrary (Name.c_str());
 	if (Lib->Valid())
 	{
 		// Make sure the module is valid
@@ -62,27 +63,27 @@ void CC_LoadModule (std::cc_string Name)
 			if (Module && Module->GetAPIVersion() == MODULE_API_VERSION)
 			{
 				// We're good
-				Module_t *Mod = QNew (com_genericPool, 0) Module_t;
+				Module_t *Mod = QNew (TAG_GAME) Module_t;
 				Mod->Lib = Lib;
 				Mod->Module = Module;
 
 				Modules.push_back (Mod);
-				DebugPrintf ("Loaded module %s\n", Name.c_str());
+				ServerPrintf ("Loaded module %s\n", Name.c_str());
 				return;
 			}
 			else
 			{
 				if (!Module)
-					DebugPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
+					ServerPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
 				else
-					DebugPrintf ("WARNING: Module %s (%s) does not have the correct API version (%f, should be %f)\n", Name.c_str(), Module->Name.c_str(), Module->GetAPIVersion(), MODULE_API_VERSION);
+					ServerPrintf ("WARNING: Module %s (%s) does not have the correct API version (%f, should be %f)\n", Name.c_str(), Module->Name.c_str(), Module->GetAPIVersion(), MODULE_API_VERSION);
 			}
 		}
 		else
-			DebugPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
+			ServerPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
 	}
 	else
-		DebugPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
+		ServerPrintf ("WARNING: Module %s is not a valid CleanCode module\n", Name.c_str());
 
 	// Failed
 	QDelete Lib;
@@ -90,7 +91,7 @@ void CC_LoadModule (std::cc_string Name)
 
 void LoadModules ()
 {
-	DebugPrintf ("\n==== Module Initialization ====\n");
+	ServerPrintf ("\n==== Module Initialization ====\n");
 	// Search for DLLs beginning with cc_
 	CFindFiles Find (NULL, "cc_*", "dll");
 
@@ -98,11 +99,11 @@ void LoadModules ()
 		CC_LoadModule (Find.Files[i]);
 
 	if (!Find.Files.size())
-		DebugPrintf ("No modules found\n");
+		ServerPrintf ("No modules found\n");
 	else
-		DebugPrintf ("Found %u modules, loaded %u modules\n", Find.Files.size(), Modules.size());
+		ServerPrintf ("Found %u modules, loaded %u modules\n", Find.Files.size(), Modules.size());
 
-	DebugPrintf ("=================================\n\n");
+	ServerPrintf ("=================================\n\n");
 }
 
 void InitializeModules ()

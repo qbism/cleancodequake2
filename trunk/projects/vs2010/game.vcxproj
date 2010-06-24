@@ -9,22 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="FrontEnd Debug|Win32">
-      <Configuration>FrontEnd Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="FrontEnd Debug|x64">
-      <Configuration>FrontEnd Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="FrontEnd Release|Win32">
-      <Configuration>FrontEnd Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="FrontEnd Release|x64">
-      <Configuration>FrontEnd Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -39,14 +23,6 @@
     <RootNamespace>GAME</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -56,14 +32,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -76,27 +45,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
@@ -123,36 +76,12 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -173,7 +102,7 @@
       </HeaderFileName>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/analyze:stacksize1500 /J %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/J /MP3 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
@@ -200,28 +129,32 @@
       <CompileAs>Default</CompileAs>
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\;..\..\sircl\include\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibd.lib;sircl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
-      <ForceSymbolReferences>__DllMainCRTStartup@12;%(ForceSymbolReferences)</ForceSymbolReferences>
+      <ForceSymbolReferences>%(ForceSymbolReferences)</ForceSymbolReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
-      <EntryPointSymbol>DllInit</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
       <NoEntryPoint>false</NoEntryPoint>
       <BaseAddress>0x20000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -232,12 +165,14 @@
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>false</Profile>
       <AdditionalLibraryDirectories>..\..\lib\</AdditionalLibraryDirectories>
+      <ForceFileOutput>
+      </ForceFileOutput>
     </Link>
     <PostBuildEvent>
       <Message>Copies the output to your Quake 2 baseq2 dir</Message>
       <Command>echo Copying to Quake 2 Path...
-copy $(TargetPath) "e:\quake2\arquade\gamex86.dll"
-copy $(TargetPath) "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "c:\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
 
 echo Done!
 </Command>
@@ -342,22 +277,23 @@ echo Done!
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\;..\..\zlib\;..\..\sircl\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Winmm.lib;wininet.lib;zlibr.lib;sircl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>e:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>e:\quake2\baseq2\gamex86.map</MapFileName>
+      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x20000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -367,13 +303,14 @@ echo Done!
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\..\lib\</AdditionalLibraryDirectories>
-      <ForceSymbolReferences>__DllMainCRTStartup@12;%(ForceSymbolReferences)</ForceSymbolReferences>
-      <EntryPointSymbol>DllInit</EntryPointSymbol>
+      <ForceSymbolReferences>%(ForceSymbolReferences)</ForceSymbolReferences>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>echo Copying to Quake 2 Path...
-copy $(TargetPath) "e:\quake2\arquade\gamex86.dll"
-copy $(TargetPath) "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "c:\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
 
 echo Done!
 </Command>
@@ -434,296 +371,83 @@ echo Done!
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\debug/game.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>.\debug/game.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
-      <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>C:\lib\NewtonSDK\sdk\dll\newton.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\release\gamex86.dll</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <BaseAddress>0x20000000</BaseAddress>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <ImportLibrary>
-      </ImportLibrary>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <PostBuildEvent>
-      <Message>Copies the output to your Quake 2 baseq2 dir</Message>
-      <Command>echo Copying to Quake 2 Path...
-copy $(TargetPath) "e:\C Drive backup\quake2\debug\$(TargetFileName)"
-
-echo Done!
-</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>X64</TargetEnvironment>
-      <TypeLibraryName>.\..\debug/game.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/EHsc /J %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>.\debug/game.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
-      <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>C:\lib\NewtonSDK\sdk\dll\newton.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\release\gamex86.dll</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <BaseAddress>0x20000000</BaseAddress>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <ImportLibrary>
-      </ImportLibrary>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-    <PostBuildEvent>
-      <Message>Copies the output to your Quake 2 baseq2 dir</Message>
-      <Command>echo Copying to Quake 2 Path...
-copy $(TargetPath) "e:\C Drive backup\quake2\debug\$(TargetFileName)"
-
-echo Done!
-</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\..\release/game.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalOptions> /J</AdditionalOptions>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>.\release/game.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <OutputFile>c:\quake2\baseq2\gamex86.dll</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <BaseAddress>0x20000000</BaseAddress>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <ImportLibrary>
-      </ImportLibrary>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FrontEnd Release|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>X64</TargetEnvironment>
-      <TypeLibraryName>.\..\release/game.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_FRONTEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalOptions> /J</AdditionalOptions>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>.\release/game.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)vc90.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <OutputFile>c:\quake2\baseq2\gamex86.dll</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>game.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>c:\quake2\baseq2\gamex86.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>c:\quake2\baseq2\gamex86.map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <BaseAddress>0x20000000</BaseAddress>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <ImportLibrary>
-      </ImportLibrary>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\byteswap.cpp" />
-    <ClCompile Include="..\..\shared\ColorVec.cpp" />
-    <ClCompile Include="..\..\shared\infostrings.cpp" />
-    <ClCompile Include="..\..\shared\m_angles.cpp" />
-    <ClCompile Include="..\..\shared\m_bounds.cpp" />
-    <ClCompile Include="..\..\shared\m_mat3.cpp" />
-    <ClCompile Include="..\..\shared\m_mat4.cpp" />
-    <ClCompile Include="..\..\shared\m_plane.cpp" />
-    <ClCompile Include="..\..\shared\m_quat.cpp" />
-    <ClCompile Include="..\..\shared\mathlib.cpp" />
-    <ClCompile Include="..\..\shared\mersennetwister.cpp" />
-    <ClCompile Include="..\..\shared\shared.cpp" />
-    <ClCompile Include="..\..\shared\string.cpp" />
+    <ClCompile Include="..\..\shared\MathLib.cpp" />
+    <ClCompile Include="..\..\shared\Random.cpp" />
+    <ClCompile Include="..\..\shared\String.cpp" />
+    <ClCompile Include="..\..\source\cc_dummy_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_entity_ptr.cpp" />
     <ClCompile Include="..\..\source\cc_arcadeq2.cpp" />
     <ClCompile Include="..\..\source\cc_game.cpp" />
     <ClCompile Include="..\..\source\cc_dmflags.cpp" />
-    <ClCompile Include="..\..\source\cc_gameapi.cpp" />
+    <ClCompile Include="..\..\source\cc_game_api.cpp" />
     <ClCompile Include="..\..\source\cc_cvar.cpp" />
+    <ClCompile Include="..\..\source\cc_irc.cpp" />
     <ClCompile Include="..\..\source\cc_modules.cpp" />
+    <ClCompile Include="..\..\source\cc_monster_ai.cpp" />
     <ClCompile Include="..\..\source\cc_platform_base.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_platform_linux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
+    <ClCompile Include="..\..\source\cc_player_trail.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_black_widow.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_carrier.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_chainfist.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_daedalus.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_disruptor.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_etf_rifle.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_flyer_kamikaze.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_heatbeam.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_items.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_medic_commander.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_misc_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_monster_ai.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_monster_spawning.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_prox_launcher.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_spheres.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_stalker.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_target_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_tesla.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_wall_turret.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_weaponry.cpp" />
+    <ClCompile Include="..\..\source\cc_rogue_widow_stand.cpp" />
     <ClCompile Include="..\..\source\cc_save.cpp" />
     <ClCompile Include="..\..\source\cc_timer.cpp" />
     <ClCompile Include="..\..\source\cc_trace.cpp" />
-    <ClCompile Include="..\..\source\cc_tent.cpp" />
+    <ClCompile Include="..\..\source\cc_temporary_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_userinfo.cpp" />
     <ClCompile Include="..\..\source\cc_version.cpp" />
     <ClCompile Include="..\..\source\cc_write.cpp" />
-    <ClCompile Include="..\..\source\cc_sbar.cpp" />
+    <ClCompile Include="..\..\source\cc_status_bar.cpp" />
     <ClCompile Include="..\..\source\cc_frontend.cpp" />
     <ClCompile Include="..\..\source\cc_indexing.cpp" />
     <ClCompile Include="..\..\source\cc_arg.cpp" />
     <ClCompile Include="..\..\source\cc_print.cpp" />
     <ClCompile Include="..\..\source\cc_sound.cpp" />
     <ClCompile Include="..\..\source\cc_pmove.cpp" />
-    <ClCompile Include="..\..\source\cc_cmds.cpp" />
-    <ClCompile Include="..\..\source\cc_gamecommands.cpp" />
-    <ClCompile Include="..\..\source\cc_servercommands.cpp" />
-    <ClCompile Include="..\..\source\cc_baseentity.cpp" />
-    <ClCompile Include="..\..\source\cc_brushmodels.cpp" />
-    <ClCompile Include="..\..\source\cc_entitylist.cpp" />
-    <ClCompile Include="..\..\source\cc_entitytypes.cpp" />
+    <ClCompile Include="..\..\source\cc_commands.cpp" />
+    <ClCompile Include="..\..\source\cc_game_commands.cpp" />
+    <ClCompile Include="..\..\source\cc_server_commands.cpp" />
+    <ClCompile Include="..\..\source\cc_base_entity.cpp" />
+    <ClCompile Include="..\..\source\cc_brush_models.cpp" />
+    <ClCompile Include="..\..\source\cc_entity_list.cpp" />
+    <ClCompile Include="..\..\source\cc_entity_types.cpp" />
     <ClCompile Include="..\..\source\cc_func_entities.cpp" />
-    <ClCompile Include="..\..\source\cc_infoentities.cpp" />
-    <ClCompile Include="..\..\source\cc_itementity.cpp" />
+    <ClCompile Include="..\..\source\cc_info_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_item_entity.cpp" />
     <ClCompile Include="..\..\source\cc_junk_entities.cpp" />
     <ClCompile Include="..\..\source\cc_misc_entities.cpp" />
-    <ClCompile Include="..\..\source\cc_playerentity.cpp" />
+    <ClCompile Include="..\..\source\cc_player_entity.cpp" />
     <ClCompile Include="..\..\source\cc_target_entities.cpp" />
     <ClCompile Include="..\..\source\cc_techs.cpp" />
     <ClCompile Include="..\..\source\cc_trigger_entities.cpp" />
     <ClCompile Include="..\..\source\cc_turret_entities.cpp" />
-    <ClCompile Include="..\..\source\cc_weaponentities.cpp" />
+    <ClCompile Include="..\..\source\cc_weapon_entities.cpp" />
     <ClCompile Include="..\..\source\cc_armor.cpp" />
     <ClCompile Include="..\..\source\cc_health.cpp" />
     <ClCompile Include="..\..\source\cc_itemlist.cpp" />
@@ -734,16 +458,16 @@ echo Done!
     <ClCompile Include="..\..\source\cc_bfg.cpp" />
     <ClCompile Include="..\..\source\cc_blaster.cpp" />
     <ClCompile Include="..\..\source\cc_chaingun.cpp" />
-    <ClCompile Include="..\..\source\cc_debugweapons.cpp" />
-    <ClCompile Include="..\..\source\cc_grenadelauncher.cpp" />
+    <ClCompile Include="..\..\source\cc_debug_weapons.cpp" />
+    <ClCompile Include="..\..\source\cc_grenade_launcher.cpp" />
     <ClCompile Include="..\..\source\cc_handgrenade.cpp" />
     <ClCompile Include="..\..\source\cc_hyperblaster.cpp" />
     <ClCompile Include="..\..\source\cc_machinegun.cpp" />
     <ClCompile Include="..\..\source\cc_railgun.cpp" />
-    <ClCompile Include="..\..\source\cc_rocketlauncher.cpp" />
+    <ClCompile Include="..\..\source\cc_rocket_launcher.cpp" />
     <ClCompile Include="..\..\source\cc_shotgun.cpp" />
-    <ClCompile Include="..\..\source\cc_supershotgun.cpp" />
-    <ClCompile Include="..\..\source\cc_weaponmain.cpp" />
+    <ClCompile Include="..\..\source\cc_super_shotgun.cpp" />
+    <ClCompile Include="..\..\source\cc_weapon_main.cpp" />
     <ClCompile Include="..\..\source\cc_inventory.cpp" />
     <ClCompile Include="..\..\source\cc_hash.cpp" />
     <ClCompile Include="..\..\source\cc_ban.cpp" />
@@ -773,72 +497,106 @@ echo Done!
     <ClCompile Include="..\..\source\cc_soldier_machinegun.cpp" />
     <ClCompile Include="..\..\source\cc_soldier_shotgun.cpp" />
     <ClCompile Include="..\..\source\cc_colors.cpp" />
-    <ClCompile Include="..\..\source\cc_pathfinding.cpp" />
     <ClCompile Include="..\..\source\cc_media.cpp" />
     <ClCompile Include="..\..\source\cc_controls.cpp" />
     <ClCompile Include="..\..\source\cc_menu.cpp" />
-    <ClCompile Include="..\..\source\cc_exceptionhandler.cpp" />
-    <ClCompile Include="..\..\source\cc_mapprint.cpp" />
+    <ClCompile Include="..\..\source\cc_exception_handler.cpp" />
+    <ClCompile Include="..\..\source\cc_map_print.cpp" />
     <ClCompile Include="..\..\source\cc_memory.cpp" />
-    <ClCompile Include="..\..\source\cc_filesystem.cpp" />
-    <ClCompile Include="..\..\source\cc_bodyqueue.cpp" />
+    <ClCompile Include="..\..\source\cc_file_system.cpp" />
+    <ClCompile Include="..\..\source\cc_body_queue.cpp" />
     <ClCompile Include="..\..\source\cc_ctf.cpp" />
-    <ClCompile Include="..\..\source\cc_ctfadmin.cpp" />
-    <ClCompile Include="..\..\source\cc_ctfitementities.cpp" />
-    <ClCompile Include="..\..\source\cc_ctfitems.cpp" />
-    <ClCompile Include="..\..\source\cc_ctfmenu.cpp" />
-    <ClCompile Include="..\..\source\cc_grapple.cpp" />
+    <ClCompile Include="..\..\source\cc_ctf_admin.cpp" />
+    <ClCompile Include="..\..\source\cc_ctf_item_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_ctf_items.cpp" />
+    <ClCompile Include="..\..\source\cc_ctf_menu.cpp" />
+    <ClCompile Include="..\..\source\cc_ctf_weapon_grapple.cpp" />
     <ClCompile Include="..\..\source\cc_utils.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_chick_heat.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_entities.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_fixbot.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_gekk.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_gladiator_phalanx.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_ionripper.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_items.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_phalanx.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_hyper.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_laser.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_soldier_ripper.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_supertank_boss5.cpp" />
+    <ClCompile Include="..\..\source\cc_xatrix_trap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h" />
+    <ClInclude Include="..\..\shared\MathLib.h" />
     <ClInclude Include="..\..\shared\Platform.h" />
-    <ClInclude Include="..\..\shared\shared.h" />
-    <ClInclude Include="..\..\shared\MathLib\MathLib.h" />
-    <ClInclude Include="..\..\shared\MathLib\Vector.h" />
+    <ClInclude Include="..\..\shared\Shared.h" />
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
-    <ClInclude Include="..\..\source\cc_arcadeq2.h" />
+    <ClInclude Include="..\..\shared\Vector.h" />
+    <ClInclude Include="..\..\source\cc_entity_ptr.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
+    <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />
     <ClInclude Include="..\..\source\cc_modules.h" />
     <ClInclude Include="..\..\source\cc_options.h" />
     <ClInclude Include="..\..\source\cc_parse.h" />
     <ClInclude Include="..\..\source\cc_platform.h" />
+    <ClInclude Include="..\..\source\cc_player_trail.h" />
+    <ClInclude Include="..\..\source\cc_rogue_black_widow.h" />
+    <ClInclude Include="..\..\source\cc_rogue_carrier.h" />
+    <ClInclude Include="..\..\source\cc_rogue_chainfist.h" />
+    <ClInclude Include="..\..\source\cc_rogue_daedalus.h" />
+    <ClInclude Include="..\..\source\cc_rogue_disruptor.h" />
+    <ClInclude Include="..\..\source\cc_rogue_etf_rifle.h" />
+    <ClInclude Include="..\..\source\cc_rogue_flyer_kamikaze.h" />
+    <ClInclude Include="..\..\source\cc_rogue_heatbeam.h" />
+    <ClInclude Include="..\..\source\cc_rogue_items.h" />
+    <ClInclude Include="..\..\source\cc_rogue_medic_commander.h" />
+    <ClInclude Include="..\..\source\cc_rogue_misc_entities.h" />
+    <ClInclude Include="..\..\source\cc_rogue_monster_spawning.h" />
+    <ClInclude Include="..\..\source\cc_rogue_prox_launcher.h" />
+    <ClInclude Include="..\..\source\cc_rogue_spheres.h" />
+    <ClInclude Include="..\..\source\cc_rogue_stalker.h" />
+    <ClInclude Include="..\..\source\cc_rogue_target_entities.h" />
+    <ClInclude Include="..\..\source\cc_rogue_tesla.h" />
+    <ClInclude Include="..\..\source\cc_rogue_wall_turret.h" />
+    <ClInclude Include="..\..\source\cc_rogue_weaponry.h" />
+    <ClInclude Include="..\..\source\cc_rogue_widow_stand.h" />
     <ClInclude Include="..\..\source\cc_save.h" />
-    <ClInclude Include="..\..\source\cc_shared.h" />
     <ClInclude Include="..\..\source\cc_dmflags.h" />
-    <ClInclude Include="..\..\source\cc_gameapi.h" />
+    <ClInclude Include="..\..\source\cc_game_api.h" />
     <ClInclude Include="..\..\source\cc_cvar.h" />
     <ClInclude Include="..\..\source\cc_timer.h" />
     <ClInclude Include="..\..\source\cc_trace.h" />
-    <ClInclude Include="..\..\source\cc_tent.h" />
+    <ClInclude Include="..\..\source\cc_temporary_entities.h" />
+    <ClInclude Include="..\..\source\cc_userinfo.h" />
     <ClInclude Include="..\..\source\cc_version.h" />
     <ClInclude Include="..\..\source\cc_write.h" />
-    <ClInclude Include="..\..\source\cc_sbar.h" />
+    <ClInclude Include="..\..\source\cc_status_bar.h" />
     <ClInclude Include="..\..\source\cc_indexing.h" />
     <ClInclude Include="..\..\source\cc_arg.h" />
     <ClInclude Include="..\..\source\cc_print.h" />
     <ClInclude Include="..\..\source\cc_sound.h" />
     <ClInclude Include="..\..\source\cc_pmove.h" />
-    <ClInclude Include="..\..\source\cc_cmds.h" />
-    <ClInclude Include="..\..\source\cc_gamecommands.h" />
-    <ClInclude Include="..\..\source\cc_servercommands.h" />
-    <ClInclude Include="..\..\source\cc_baseentity.h" />
-    <ClInclude Include="..\..\source\cc_brushmodels.h" />
-    <ClInclude Include="..\..\source\cc_entitylist.h" />
-    <ClInclude Include="..\..\source\cc_entitytypes.h" />
+    <ClInclude Include="..\..\source\cc_commands.h" />
+    <ClInclude Include="..\..\source\cc_game_commands.h" />
+    <ClInclude Include="..\..\source\cc_server_commands.h" />
+    <ClInclude Include="..\..\source\cc_base_entity.h" />
+    <ClInclude Include="..\..\source\cc_brush_models.h" />
+    <ClInclude Include="..\..\source\cc_entity_list.h" />
+    <ClInclude Include="..\..\source\cc_entity_types.h" />
     <ClInclude Include="..\..\source\cc_func_entities.h" />
-    <ClInclude Include="..\..\source\cc_infoentities.h" />
-    <ClInclude Include="..\..\source\cc_itementity.h" />
+    <ClInclude Include="..\..\source\cc_info_entities.h" />
+    <ClInclude Include="..\..\source\cc_item_entity.h" />
     <ClInclude Include="..\..\source\cc_junk_entities.h" />
     <ClInclude Include="..\..\source\cc_misc_entities.h" />
-    <ClInclude Include="..\..\source\cc_playerentity.h" />
+    <ClInclude Include="..\..\source\cc_player_entity.h" />
     <ClInclude Include="..\..\source\cc_target_entities.h" />
     <ClInclude Include="..\..\source\cc_techs.h" />
     <ClInclude Include="..\..\source\cc_trigger_entities.h" />
     <ClInclude Include="..\..\source\cc_turret_entities.h" />
-    <ClInclude Include="..\..\source\cc_weaponentities.h" />
+    <ClInclude Include="..\..\source\cc_weapon_entities.h" />
     <ClInclude Include="..\..\source\cc_armor.h" />
     <ClInclude Include="..\..\source\cc_health.h" />
     <ClInclude Include="..\..\source\cc_itemlist.h" />
@@ -849,16 +607,16 @@ echo Done!
     <ClInclude Include="..\..\source\cc_bfg.h" />
     <ClInclude Include="..\..\source\cc_blaster.h" />
     <ClInclude Include="..\..\source\cc_chaingun.h" />
-    <ClInclude Include="..\..\source\cc_debugweapons.h" />
-    <ClInclude Include="..\..\source\cc_grenadelauncher.h" />
+    <ClInclude Include="..\..\source\cc_debug_weapons.h" />
+    <ClInclude Include="..\..\source\cc_grenade_launcher.h" />
     <ClInclude Include="..\..\source\cc_handgrenade.h" />
     <ClInclude Include="..\..\source\cc_hyperblaster.h" />
     <ClInclude Include="..\..\source\cc_machinegun.h" />
     <ClInclude Include="..\..\source\cc_railgun.h" />
-    <ClInclude Include="..\..\source\cc_rocketlauncher.h" />
+    <ClInclude Include="..\..\source\cc_rocket_launcher.h" />
     <ClInclude Include="..\..\source\cc_shotgun.h" />
-    <ClInclude Include="..\..\source\cc_supershotgun.h" />
-    <ClInclude Include="..\..\source\cc_weaponmain.h" />
+    <ClInclude Include="..\..\source\cc_super_shotgun.h" />
+    <ClInclude Include="..\..\source\cc_weapon_main.h" />
     <ClInclude Include="..\..\source\cc_inventory.h" />
     <ClInclude Include="..\..\source\cc_hash.h" />
     <ClInclude Include="..\..\source\cc_ban.h" />
@@ -878,6 +636,9 @@ echo Done!
     <ClInclude Include="..\..\source\cc_mutant.h" />
     <ClInclude Include="..\..\source\cc_parasite.h" />
     <ClInclude Include="..\..\source\cc_tank.h" />
+    <ClInclude Include="..\..\source\m_turret.h" />
+    <ClInclude Include="..\..\source\m_widow.h" />
+    <ClInclude Include="..\..\source\m_widow2.h" />
     <CustomBuild Include="..\..\source\cc_boss2.h" />
     <ClInclude Include="..\..\source\cc_jorg.h" />
     <ClInclude Include="..\..\source\cc_makron.h" />
@@ -887,30 +648,39 @@ echo Done!
     <ClInclude Include="..\..\source\cc_soldier_machinegun.h" />
     <ClInclude Include="..\..\source\cc_soldier_shotgun.h" />
     <ClInclude Include="..\..\source\cc_colors.h" />
-    <ClInclude Include="..\..\source\cc_pathfinding.h" />
     <ClInclude Include="..\..\source\cc_media.h" />
     <ClInclude Include="..\..\source\cc_conchars.h" />
     <ClInclude Include="..\..\source\cc_controls.h" />
     <ClInclude Include="..\..\source\cc_menu.h" />
-    <ClInclude Include="..\..\source\cc_exceptionhandler.h" />
-    <ClInclude Include="..\..\source\cc_mapprint.h" />
+    <ClInclude Include="..\..\source\cc_exception_handler.h" />
+    <ClInclude Include="..\..\source\cc_map_print.h" />
     <ClInclude Include="..\..\source\cc_memory.h" />
-    <ClInclude Include="..\..\source\cc_filesystem.h" />
-    <ClInclude Include="..\..\source\cc_bodyqueue.h" />
+    <ClInclude Include="..\..\source\cc_file_system.h" />
+    <ClInclude Include="..\..\source\cc_body_queue.h" />
     <ClInclude Include="..\..\source\cc_ctf.h" />
-    <ClInclude Include="..\..\source\cc_ctfadmin.h" />
-    <ClInclude Include="..\..\source\cc_ctfitementities.h" />
-    <ClInclude Include="..\..\source\cc_ctfitems.h" />
-    <ClInclude Include="..\..\source\cc_ctfmenu.h" />
-    <ClInclude Include="..\..\source\cc_grapple.h" />
+    <ClInclude Include="..\..\source\cc_ctf_item_entities.h" />
+    <ClInclude Include="..\..\source\cc_ctf_items.h" />
+    <ClInclude Include="..\..\source\cc_ctf_weapon_grapple.h" />
     <ClInclude Include="..\..\source\cc_stl.h" />
     <ClInclude Include="..\..\source\cc_utils.h" />
-    <ClInclude Include="..\..\source\m_actor.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_chick_heat.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_fixbot.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_gekk.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_gladiator_phalanx.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_ionripper.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_items.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_phalanx.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_hyper.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_laser.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_soldier_ripper.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_supertank_boss5.h" />
+    <ClInclude Include="..\..\source\cc_xatrix_trap.h" />
     <ClInclude Include="..\..\source\m_berserk.h" />
     <ClInclude Include="..\..\source\m_boss2.h" />
     <ClInclude Include="..\..\source\m_boss31.h" />
     <ClInclude Include="..\..\source\m_boss32.h" />
     <ClInclude Include="..\..\source\m_brain.h" />
+    <ClInclude Include="..\..\source\m_carrier.h" />
     <ClInclude Include="..\..\source\m_chick.h" />
     <ClInclude Include="..\..\source\m_flipper.h" />
     <ClInclude Include="..\..\source\m_float.h" />
@@ -924,8 +694,8 @@ echo Done!
     <ClInclude Include="..\..\source\m_mutant.h" />
     <ClInclude Include="..\..\source\m_parasite.h" />
     <ClInclude Include="..\..\source\m_player.h" />
-    <ClInclude Include="..\..\source\m_rider.h" />
     <ClInclude Include="..\..\source\m_soldier.h" />
+    <ClInclude Include="..\..\source\m_stalker.h" />
     <ClInclude Include="..\..\source\m_supertank.h" />
     <ClInclude Include="..\..\source\m_tank.h" />
   </ItemGroup>

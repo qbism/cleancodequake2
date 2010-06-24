@@ -34,7 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ITEMS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ITEMS_H
 
-CC_ENUM (sint32, EItemFlags)
+/**
+\typedef	uint32 EItemFlags
+
+\brief	Defines an alias representing item flags.
+**/
+typedef sint32 EItemFlags;
+
+/**
+\enum	
+
+\brief	Values that represent item flags. 
+**/
+enum
 {
 	ITEMFLAG_NONE				= 0,
 	ITEMFLAG_WEAPON				= BIT(0),
@@ -48,43 +60,37 @@ CC_ENUM (sint32, EItemFlags)
 	ITEMFLAG_USABLE				= BIT(8),
 	ITEMFLAG_DROPPABLE			= BIT(9),
 	ITEMFLAG_TECH				= BIT(10),
+	ITEMFLAG_NOT_GIVEABLE		= BIT(11), // item cannot be give'd
+	ITEMFLAG_MELEE				= BIT(12),
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class	CBaseItem
-///
-/// \brief	The base item class. Contains the basic information that an item needs to spawn and be active. 
-///
-/// \author	Paril
-/// \date	5/9/2009
-////////////////////////////////////////////////////////////////////////////////////////////////////
 void InvalidateItemMedia ();
 
 class CBaseItem
 {
 	friend void InvalidateItemMedia ();
 private:
-	/// The index of this item in the item list
-	sint32			Index;
+	// The index of this item in the item list
+	uint8			Index;
 
-	/// Must be friends with itemlist so it can set the item.
+	// Must be friends with itemlist so it can set the item.
 	friend class CItemList;
 public:
-	CBaseItem (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache);
+	CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache);
 
-	CBaseItem () {}
+	CBaseItem ();
 
-	/// Classname (for maps)
-	char		*Classname;
-	/// World model
-	char		*WorldModel;
-	/// Effect flags (EF_ROTATE, etc)
+	// Classname (for maps)
+	const char		*Classname;
+	// World model
+	const char		*WorldModel;
+	// Effect flags (EF_ROTATE, etc)
 	sint32			EffectFlags;
 
-	/// The sound on pickup
-	char		*PickupSound;
+	// The sound on pickup
+	const char		*PickupSound;
 private:
 	MediaIndex	PickupSoundIndex;
 
@@ -95,7 +101,7 @@ public:
 	}
 
 	/// HUD Icon
-	char		*Icon;
+	const char		*Icon;
 private:
 	MediaIndex	IconIndex;
 
@@ -105,60 +111,30 @@ public:
 		return (Icon && !IconIndex) ? (IconIndex = ImageIndex(Icon)) : IconIndex;
 	}
 
-	/// Name on pickup
-	char		*Name;
+	// Name on pickup
+	const char		*Name;
 
-	/// Item flags
+	// Item flags
 	EItemFlags	Flags;
 
-	/// Precached sounds/models/images.
-	/// I don't necessarily like the fact that the precache
-	/// list here is parsed. Anyone have a better idea? :S
-	char		*Precache;
+	// Precached sounds/models/images.
+	// FIXME: I don't necessarily like the fact that the precache
+	// list here is parsed. Anyone have a better idea? :S
+	const char		*Precache;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual bool Pickup (edict_t *ent, edict_t *other) = 0
-	///
-	/// \brief	Attempts to pickup the item. 
-	///
-	/// \author	Paril
-	/// \date	5/9/2009
-	///
-	/// \param	ent		 - If non-null, the item entity. 
-	/// \param	other	 - If non-null, the player who picked the item up. 
-	///
-	/// \retval	true if it succeeds, false if it fails. 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other) = 0;
+	// \brief	Attempts to pickup the item. 
+	virtual	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other) = 0;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual void Use (edict_t *ent) = 0
-	///
-	/// \brief	Attempts to uses the item. 
-	///
-	/// \author	Paril
-	/// \date	5/9/2009
-	///
-	/// \param	ent	 - If non-null, the entity that used the item. 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	void	Use (CPlayerEntity *ent) = 0;
+	// Attempts to uses the item. 
+	virtual	void	Use (CPlayerEntity *Player) = 0;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \fn	virtual void Drop (edict_t *ent) = 0
-	///
-	/// \brief	Attempts to drops the item. 
-	///
-	/// \author	Paril
-	/// \date	5/9/2009
-	///
-	/// \param	ent	 - If non-null, the ent. 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	void	Drop (CPlayerEntity *ent) = 0;
-	virtual class CItemEntity	*DropItem (CBaseEntity *ent);
+	// Attempts to drops the item. 
+	virtual	void	Drop (CPlayerEntity *Player) = 0;
+	virtual class CItemEntity	*DropItem (IBaseEntity *Entity);
 
-	virtual void	SetRespawn (class CItemEntity *ent, FrameNumber_t delay);
+	virtual void	SetRespawn (class CItemEntity *Item, FrameNumber delay);
 
-	inline sint32		GetIndex ()
+	inline uint8		GetIndex ()
 	{
 		return Index;
 	};
@@ -167,7 +143,7 @@ public:
 		return CS_ITEMS+Index;
 	};
 
-	virtual void	Add (CPlayerEntity *ent, sint32 quantity);
+	virtual void	Add (CPlayerEntity *Player, sint32 quantity);
 };
 
 #include "cc_weapons.h"
@@ -177,11 +153,14 @@ public:
 #include "cc_powerups.h"
 
 #if CLEANCTF_ENABLED
-#include "cc_ctfitems.h"
+#include "cc_ctf_items.h"
 #endif
 #include "cc_techs.h"
 #if XATRIX_FEATURES
 #include "cc_xatrix_items.h"
+#endif
+#if ROGUE_FEATURES
+#include "cc_rogue_items.h"
 #endif
 
 #include "cc_itemlist.h"

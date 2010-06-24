@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
+#include "cc_weapon_main.h"
 #include "m_player.h"
 
 CHandGrenade::CHandGrenade() :
@@ -41,9 +41,9 @@ CWeapon(6, 0, "models/weapons/v_handgr/tris.md2", 0, 0, 0, 16,
 {
 }
 
-bool CHandGrenade::CanStopFidgetting (CPlayerEntity *ent)
+bool CHandGrenade::CanStopFidgetting (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 29:
 	case 34:
@@ -54,117 +54,117 @@ bool CHandGrenade::CanStopFidgetting (CPlayerEntity *ent)
 	return false;
 }
 
-#define GRENADE_TIMER		35
-#define GRENADE_MINSPEED	400
-#define GRENADE_MAXSPEED	800
+const int GRENADE_TIMER		= 35;
+const int GRENADE_MINSPEED	= 400;
+const int GRENADE_MAXSPEED	= 800;
 
-void CHandGrenade::Hold (CPlayerEntity *ent)
+void CHandGrenade::Hold (CPlayerEntity *Player)
 {
-	if (!ent->Client.Grenade.Time)
+	if (!Player->Client.Grenade.Time)
 	{
-		ent->Client.Grenade.Time = level.Frame + GRENADE_TIMER + 2;
-		ent->Client.WeaponSound = SoundIndex("weapons/hgrenc1b.wav");
+		Player->Client.Grenade.Time = Level.Frame + GRENADE_TIMER + 2;
+		Player->Client.WeaponSound = SoundIndex("weapons/hgrenc1b.wav");
 	}
 
 	// they waited too long, detonate it in their hand
-	if (!ent->Client.Grenade.BlewUp && (level.Frame >= ent->Client.Grenade.Time))
+	if (!Player->Client.Grenade.BlewUp && (Level.Frame >= Player->Client.Grenade.Time))
 	{
-		ent->Client.WeaponSound = 0;
-		FireGrenade (ent, true);
-		ent->Client.Grenade.BlewUp = true;
+		Player->Client.WeaponSound = 0;
+		FireGrenade (Player, true);
+		Player->Client.Grenade.BlewUp = true;
 
-		ent->Client.PlayerState.GetGunFrame() = 15;
+		Player->Client.PlayerState.GetGunFrame() = 15;
 		return;
 	}
 
-	if (ent->Client.Buttons & BUTTON_ATTACK)
+	if (Player->Client.Buttons & BUTTON_ATTACK)
 		return;
 
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CHandGrenade::FireGrenade (CPlayerEntity *ent, bool inHand)
+void CHandGrenade::FireGrenade (CPlayerEntity *Player, bool inHand)
 {
-	vec3f	offset (8, 8, ent->ViewHeight-8), forward, right, start;
+	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
 	const sint32		damage = CalcQuadVal(85);
 	const float		radius = 165;
 
-	ent->Client.Grenade.Thrown = true;
+	Player->Client.Grenade.Thrown = true;
 
-	ent->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	ent->P_ProjectSource (offset, forward, right, start);
+	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	Player->P_ProjectSource (offset, forward, right, start);
 
-	FrameNumber_t timer = (float)(ent->Client.Grenade.Time - level.Frame) / 10;
-	const sint32 speed = (ent->Client.Persistent.Weapon) ? 
+	FrameNumber timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
+	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
-	CGrenade::Spawn (ent, start, forward, damage, speed, (ent->Client.Grenade.Time - level.Frame), radius, true, inHand);
+	CGrenade::Spawn (Player, start, forward, damage, speed, (Player->Client.Grenade.Time - Level.Frame), radius, true, inHand);
 
-	ent->Client.Grenade.Time = level.Frame + ((((
+	Player->Client.Grenade.Time = Level.Frame + ((((
 #if CLEANCTF_ENABLED
-	(game.GameMode & GAME_CTF) || 
+	(Game.GameMode & GAME_CTF) || 
 #endif
-	dmFlags.dfDmTechs.IsEnabled()) && ent->ApplyHaste())
+	DeathmatchFlags.dfDmTechs.IsEnabled()) && Player->ApplyHaste())
 #if XATRIX_FEATURES
 	|| isQuadFire
 #endif
 	) ? 5 : 10);
-	DepleteAmmo(ent, 1);
+	DepleteAmmo(Player, 1);
 
-	if (ent->Health <= 0 || ent->DeadFlag || ent->State.GetModelIndex() != 255) // VWep animations screw up corpses
+	if (Player->Health <= 0 || Player->DeadFlag || Player->State.GetModelIndex() != 255) // VWep animations screw up corpses
 		return;
 
-	AttackSound (ent);
+	AttackSound (Player);
 
-	if (ent->Client.PlayerState.GetPMove()->pmFlags & PMF_DUCKED)
+	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
-		ent->Client.Anim.Priority = ANIM_ATTACK;
-		ent->State.GetFrame() = FRAME_crattak1 - 1;
-		ent->Client.Anim.EndFrame = FRAME_crattak3;
+		Player->Client.Anim.Priority = ANIM_ATTACK;
+		Player->State.GetFrame() = FRAME_crattak1 - 1;
+		Player->Client.Anim.EndFrame = FRAME_crattak3;
 	}
 	else
 	{
-		ent->Client.Anim.Priority = ANIM_REVERSE;
-		ent->State.GetFrame() = FRAME_wave08;
-		ent->Client.Anim.EndFrame = FRAME_wave01;
+		Player->Client.Anim.Priority = ANIM_REVERSE;
+		Player->State.GetFrame() = FRAME_wave08;
+		Player->Client.Anim.EndFrame = FRAME_wave01;
 	}
-	ent->Client.PlayerState.GetGunFrame()++;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CHandGrenade::Wait (CPlayerEntity *ent)
+void CHandGrenade::Wait (CPlayerEntity *Player)
 {
-	ent->Client.Grenade.BlewUp = false;
-	if (level.Frame < ent->Client.Grenade.Time)
+	Player->Client.Grenade.BlewUp = false;
+	if (Level.Frame < Player->Client.Grenade.Time)
 		return;
 
-	if (!ent->DeadFlag)
-		ent->Client.Grenade.Thrown = false;
-	ent->Client.PlayerState.GetGunFrame()++;
+	if (!Player->DeadFlag)
+		Player->Client.Grenade.Thrown = false;
+	Player->Client.PlayerState.GetGunFrame()++;
 }
 
-void CHandGrenade::Fire (CPlayerEntity *ent)
+void CHandGrenade::Fire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 11:
-		Hold (ent);
+		Hold (Player);
 		break;
 	case 12:
-		ent->Client.WeaponSound = 0;
-		FireGrenade(ent, false);
+		Player->Client.WeaponSound = 0;
+		FireGrenade(Player, false);
 		break;
 	case 15:
-		Wait(ent);
+		Wait(Player);
 		break;
 	}
 }
 
-bool CHandGrenade::CanFire (CPlayerEntity *ent)
+bool CHandGrenade::CanFire (CPlayerEntity *Player)
 {
-	switch (ent->Client.PlayerState.GetGunFrame())
+	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 5:
-		ent->PlaySound (CHAN_WEAPON, SoundIndex("weapons/hgrena1b.wav"));
+		Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/hgrena1b.wav"));
 		return false;
 	case 11:
 	case 12:
@@ -174,86 +174,86 @@ bool CHandGrenade::CanFire (CPlayerEntity *ent)
 	return false;
 }
 
-void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
+void CHandGrenade::WeaponGeneric (CPlayerEntity *Player)
 {
 	// Idea from Brazen source
 	sint32 newFrame = -1, newState = -1;
 
-	switch (ent->Client.WeaponState)
+	switch (Player->Client.WeaponState)
 	{
 	case WS_ACTIVATING:
 		newFrame = IdleStart;
 		newState = WS_IDLE;
 		break;
 	case WS_IDLE:
-		if (ent->Client.NewWeapon && ent->Client.NewWeapon != this)
+		if (Player->Client.NewWeapon && Player->Client.NewWeapon != this)
 		{
 			// We want to go away!
 			newState = WS_DEACTIVATING;
 			newFrame = DeactStart;
 		}
-		else if ((ent->Client.Buttons|ent->Client.LatchedButtons) & BUTTON_ATTACK)
+		else if ((Player->Client.Buttons|Player->Client.LatchedButtons) & BUTTON_ATTACK)
 		{
-			ent->Client.LatchedButtons &= ~BUTTON_ATTACK;
+			Player->Client.LatchedButtons &= ~BUTTON_ATTACK;
 
 			// We want to attack!
 			// First call, check AttemptToFire
-			if (AttemptToFire(ent))
+			if (AttemptToFire(Player))
 			{
 				// Got here, we can fire!
-				ent->Client.PlayerState.GetGunFrame() = FireStart;
-				ent->Client.WeaponState = WS_FIRING;
-				ent->Client.Grenade.Time = 0;
+				Player->Client.PlayerState.GetGunFrame() = FireStart;
+				Player->Client.WeaponState = WS_FIRING;
+				Player->Client.Grenade.Time = 0;
 
 				// We need to check against us right away for first-frame firing
-				WeaponGeneric(ent);
+				WeaponGeneric(Player);
 				return;
 			}
 			else
 			{
-				OutOfAmmo(ent);
-				NoAmmoWeaponChange (ent);
+				OutOfAmmo(Player);
+				NoAmmoWeaponChange (Player);
 			}
 		}
 
 		// Either we are still idle or a failed fire.
 		if (newState == -1)
 		{
-			if (ent->Client.PlayerState.GetGunFrame() == IdleEnd)
+			if (Player->Client.PlayerState.GetGunFrame() == IdleEnd)
 				newFrame = IdleStart;
 			else
 			{
-				if (CanStopFidgetting(ent) && (randomMT()&15))
-					newFrame = ent->Client.PlayerState.GetGunFrame();
+				if (CanStopFidgetting(Player) && (randomMT()&15))
+					newFrame = Player->Client.PlayerState.GetGunFrame();
 			}
 		}
 		break;
 	case WS_FIRING:
 		// Check if this is a firing frame.
-		if (CanFire(ent))
+		if (CanFire(Player))
 		{
-			Fire(ent);
+			Fire(Player);
 
 			// Now, this call above CAN change the underlying frame and state.
 			// We need this block to make sure we are still doing what we are supposed to.
-			newState = ent->Client.WeaponState;
-			newFrame = ent->Client.PlayerState.GetGunFrame();
+			newState = Player->Client.WeaponState;
+			newFrame = Player->Client.PlayerState.GetGunFrame();
 		}
 
 		// Only do this if we haven't been explicitely set a newFrame
 		// because we might want to keep firing beyond this point
-		if (newFrame == -1 && ent->Client.PlayerState.GetGunFrame() == FireEnd)
+		if (newFrame == -1 && Player->Client.PlayerState.GetGunFrame() == FireEnd)
 		{
-			if (!ent->Client.Persistent.Inventory.Has(Item))
+			if (!Player->Client.Persistent.Inventory.Has(Item))
 			{
-				NoAmmoWeaponChange (ent);
-				ent->Client.Grenade.Time = 0;
-				ent->Client.Grenade.Thrown = false;
+				NoAmmoWeaponChange (Player);
+				Player->Client.Grenade.Time = 0;
+				Player->Client.Grenade.Thrown = false;
 			}
 			else
 			{
-				ent->Client.Grenade.Time = 0;
-				ent->Client.Grenade.Thrown = false;
+				Player->Client.Grenade.Time = 0;
+				Player->Client.Grenade.Thrown = false;
 				newFrame = IdleStart;
 				newState = WS_IDLE;
 			}
@@ -261,18 +261,18 @@ void CHandGrenade::WeaponGeneric (CPlayerEntity *ent)
 		break;
 	case WS_DEACTIVATING:
 		// Change weapon
-		ChangeWeapon (ent);
+		ChangeWeapon (Player);
 		return;
 		break;
 	}
 
 	if (newFrame != -1)
-		ent->Client.PlayerState.GetGunFrame() = newFrame;
+		Player->Client.PlayerState.GetGunFrame() = newFrame;
 	if (newState != -1)
-		ent->Client.WeaponState = newState;
+		Player->Client.WeaponState = newState;
 
 	if (newFrame == -1 && newState == -1)
-		ent->Client.PlayerState.GetGunFrame()++;
+		Player->Client.PlayerState.GetGunFrame()++;
 }
 
 WEAPON_DEFS (CHandGrenade);

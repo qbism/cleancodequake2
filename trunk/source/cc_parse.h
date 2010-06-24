@@ -29,17 +29,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ==============================================================================
 */
 
-// PS_Parse* flags
-CC_ENUM (uint8, EParseFlags)
+/**
+\typedef	uint8 EParseFlags
+
+\brief	Defines an alias representing parse flags.
+**/
+typedef uint8 EParseFlags;
+
+/**
+\enum	
+
+\brief	Values that represent parse flags. 
+**/
+enum
 {
-	PSF_ALLOW_NEWLINES		= 1,	// Allow token parsing to go onto the next line
-	PSF_CONVERT_NEWLINE		= 2,	// Convert newline characters in quoted tokens to their escape character
-	PSF_TO_LOWER			= 4,	// Lower-case the token before returning
-	PSF_WARNINGS_AS_ERRORS	= 8,	// Treat all warnings as errors
+	PSF_ALLOW_NEWLINES		= BIT(0),	// Allow token parsing to go onto the next line
+	PSF_CONVERT_NEWLINE		= BIT(1),	// Convert newline characters in quoted tokens to their escape character
+	PSF_TO_LOWER			= BIT(2),	// Lower-case the token before returning
+	PSF_WARNINGS_AS_ERRORS	= BIT(3),	// Treat all warnings as errors
 };
 
-// Session Properties
-CC_ENUM (uint8, ESessionProperties)
+/**
+\typedef	uint8 ESessionProperties
+
+\brief	Defines an alias representing parse session properties.
+**/
+typedef uint8 ESessionProperties;
+
+/**
+\enum	
+
+\brief	Values that represent parse session properties. 
+**/
+enum
 {
 	PSP_COMMENT_BLOCK	= 1,		// Treat "/*" "*/" as block-comment marker
 	PSP_COMMENT_LINE	= 2,		// Treat "//" as a line-comment marker
@@ -49,14 +71,174 @@ CC_ENUM (uint8, ESessionProperties)
 };
 
 #include <climits>
+// Data type stuff
+template <typename TType> inline const char *PS_DataName () { return "<unknown>"; }
+template <> inline const char *PS_DataName <sint8> () { return "<sint8>"; }
+template <> inline const char *PS_DataName <uint8> () { return "<uint8>"; }
+template <> inline const char *PS_DataName <sint16> () { return "<sint16>"; }
+template <> inline const char *PS_DataName <uint16> () { return "<uint16>"; }
+template <> inline const char *PS_DataName <sint32> () { return "<sint32>"; }
+template <> inline const char *PS_DataName <uint32> () { return "<uint32>"; }
+template <> inline const char *PS_DataName <long> () { return "<long>"; }
+template <> inline const char *PS_DataName <unsigned long> () { return "<unsigned long>"; }
+template <> inline const char *PS_DataName <float> () { return "<float>"; }
+template <> inline const char *PS_DataName <double> () { return "<double>"; }
+template <> inline const char *PS_DataName <bool> () { return "<bool>"; }
+template <typename TType>
+inline bool PS_VerifyVec (const char *token, void *target)
+{
+	CC_ASSERT_EXPR (0, "PS_VerifyVec called without type specialization");
+	return false;
+}
+
+// Parse integral value
+template <typename TType>
+inline bool PS_VerifyVecI (const char *token, void *target, const TType MinValue, const TType MaxValue)
+{
+	uint32 i, len = strlen (token);
+
+	for (i = 0; i < len; i++)
+	{
+		if (token[i] >= '0' || token[i] <= '9')
+			continue;
+		if (token[i] == '-' && i == 0)
+			continue;
+		break;
+	}
+
+	if (i != len)
+		return false;
+
+	TType temp = (TType)atol (token);
+	if ((MinValue && (temp < MinValue)) || temp > MaxValue)
+		return false;
+
+	*(TType*)target = (TType)temp;
+	return true;
+}
+
+template <>
+inline bool PS_VerifyVec <sint8> (const char *token, void *target)
+{
+	return PS_VerifyVecI <sint8> (token, target, SCHAR_MIN, SCHAR_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <uint8> (const char *token, void *target)
+{
+	return PS_VerifyVecI <uint8> (token, target, 0, CHAR_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <sint16> (const char *token, void *target)
+{
+	return PS_VerifyVecI <sint16> (token, target, SHRT_MIN, SHRT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <uint16> (const char *token, void *target)
+{
+	return PS_VerifyVecI <uint16> (token, target, 0, USHRT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <sint32> (const char *token, void *target)
+{
+	return PS_VerifyVecI <sint32> (token, target, INT_MIN, INT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <uint32> (const char *token, void *target)
+{
+	return PS_VerifyVecI <uint32> (token, target, 0, UINT_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <long> (const char *token, void *target)
+{
+	return PS_VerifyVecI <long> (token, target, LONG_MIN, LONG_MAX);
+}
+
+template <>
+inline bool PS_VerifyVec <unsigned long> (const char *token, void *target)
+{
+	return PS_VerifyVecI <unsigned long> (token, target, 0, ULONG_MAX);
+}
+
+// Parse float
+template <typename TType>
+inline bool PS_VerifyVecF (const char *token, void *target)
+{
+	bool		dot = false;
+	uint32		i, len = strlen (token);
+
+	for (i = 0; i < len; i++)
+	{
+		if (token[i] >= '0' || token[i] <= '9')
+			continue;
+		
+		if (token[i] == '.' && !dot)
+		{
+			dot = true;
+			continue;
+		}
+		
+		if (i == 0)
+		{
+			if (token[i] == '-')
+				continue;
+		}
+
+		else if (i == (len-1) && (Q_tolower(token[i]) == 'f' || Q_tolower(token[i]) == 'd'))
+			continue;
+
+		break;
+	}
+
+	if (i != len)
+		return false;
+
+	*(TType*)target = (TType)atof (token);
+	return true;
+}
+
+template <>
+inline bool PS_VerifyVec <float> (const char *token, void *target)
+{
+	return PS_VerifyVecF <float> (token, target);
+}
+
+template <>
+inline bool PS_VerifyVec <double> (const char *token, void *target)
+{
+	return PS_VerifyVecF <double> (token, target);
+}
+
+template <>
+inline bool PS_VerifyVec <bool> (const char *token, void *target)
+{
+	if (!strcmp (token, "1") || !Q_stricmp (token, "true"))
+	{
+		*(bool*)target = true;
+		return true;
+	}
+
+	if (!strcmp (token, "0") || !Q_stricmp (token, "false"))
+	{
+		*(bool*)target = false;
+		return true;
+	}
+
+	return false;
+}
 
 class CParser
 {
-	std::cc_string		ScratchToken;	// Used for temporary storage during data-type/post parsing
+	std::string			ScratchToken;	// Used for temporary storage during data-type/post parsing
 
 	uint32				CurrentColumn;
 	uint32				CurrentLine;
-	std::cc_string		CurrentToken;
+	std::string			CurrentToken;
 
 	const char			*DataPointer;
 	const char			*DataPointerLast;
@@ -72,12 +254,12 @@ public:
 	  ScratchToken(),
 	  CurrentColumn(1),
 	  CurrentLine(1),
+	  CurrentToken(),
 	  DataPointer(NULL),
 	  DataPointerLast(NULL),
 	  NumErrors(0),
 	  NumWarnings(0),
-	  Properties(0),
-	  CurrentToken()
+	  Properties(0)
 	  {
 	  };
 
@@ -126,7 +308,7 @@ public:
 		CParser (DataPointer, Properties);
 	};
 
-	std::cc_string GetCurrentToken ()
+	std::string GetCurrentToken ()
 	{
 		return CurrentToken;
 	};
@@ -136,24 +318,33 @@ public:
 		return !DataPointer;
 	};
 
+	bool ParseToken (EParseFlags Flags, std::string &Target)
+	{
+		bool Valid = ParseToken(Flags, NULL);
+		Target = GetCurrentToken();
+		return Valid;
+	};
+
 	// A quick note:
 	// ParseToken will give you a pointer to a CONST char.
 	// DON'T CHANGE RETURNED TOKENS!
 	// To get a copy, use GetCurrentToken ()
-	bool ParseToken (uint32 flags, const char **target)
+	bool ParseToken (EParseFlags flags, const char **target)
 	{
 		// Check if the incoming data offset is valid (see if we hit EOF last the last run)
 		const char *data = DataPointer;
+
 		if (!data)
 		{
 			AddError ("PARSE ERROR: called PS_ParseToken and already hit EOF\n");
 			return false;
 		}
+
 		DataPointerLast = DataPointer;
 
 		// Clear the current token
 		CurrentToken.clear ();
-		sint32 c = 0;
+		char c = 0;
 
 		while (true)
 		{
@@ -173,7 +364,8 @@ public:
 						if (CurrentToken.empty())
 							return false;
 
-						*target = CurrentToken.c_str();
+						if (target)
+							*target = CurrentToken.c_str();
 						return true;
 					}
 
@@ -190,7 +382,7 @@ public:
 			}
 
 			// Skip comments
-			if (SkipComments (&data, flags))
+			if (SkipComments (&data))
 			{
 				if (!data)
 				{
@@ -226,7 +418,7 @@ public:
 					DataPointer = data;
 
 					// Empty token
-					if (!CurrentToken[0])
+					if (CurrentToken.empty())
 						return false;
 
 					// Lower-case if desired
@@ -240,7 +432,8 @@ public:
 							return false;
 					}
 
-					*target = CurrentToken.c_str();
+					if (target)
+						*target = CurrentToken.c_str();
 					return true;
 
 				case '\n':
@@ -250,7 +443,8 @@ public:
 						if (!CurrentToken[0])
 							return false;
 
-						*target = CurrentToken.c_str();
+						if (target)
+							*target = CurrentToken.c_str();
 						return true;
 					}
 
@@ -320,7 +514,8 @@ public:
 				return false;
 		}
 
-		*target = CurrentToken.c_str();
+		if (target)
+			*target = CurrentToken.c_str();
 		return true;
 	};
 	
@@ -497,192 +692,7 @@ public:
 	// Private interface
 private:
 
-	template <typename TType>
-	static bool PS_VerifyVec (const char *token, void *target)
-	{
-		_CC_ASSERT_EXPR (0, "PS_VerifyVec called without type specialization");
-		return false;
-	}
-
-	// Parse integral value
-	template <typename TType>
-	static bool PS_VerifyVecI (const char *token, void *target, const TType MinValue, const TType MaxValue)
-	{
-		uint32 i, 
-			len = strlen (token);
-
-		for (i = 0; i < len; i++)
-		{
-			if (token[i] >= '0' || token[i] <= '9')
-				continue;
-			if (token[i] == '-' && i == 0)
-				continue;
-			break;
-		}
-
-		if (i != len)
-			return false;
-
-		TType temp = atol (token);
-		if ((MinValue && (temp < MinValue)) || temp > MaxValue)
-			return false;
-
-		*(TType*)target = (TType)temp;
-		return true;
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint8> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint8> (token, target, SCHAR_MIN, SCHAR_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint8> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint8> (token, target, 0, CHAR_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint16> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint16> (token, target, SHRT_MIN, SHRT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint16> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint16> (token, target, 0, USHRT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint32> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint32> (token, target, INT_MIN, INT_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint32> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint32> (token, target, 0, UINT_MAX);
-	}
-
-	#ifndef _I64_MIN
-	/* minimum signed 64 bit value */
-	#define _I64_MIN    (-9223372036854775807i64 - 1)
-	/* maximum signed 64 bit value */
-	#define _I64_MAX      9223372036854775807i64
-	/* maximum unsigned 64 bit value */
-	#define _UI64_MAX     0xffffffffffffffffui64
-	#endif
-
-	template <>
-	static bool PS_VerifyVec <long> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <long> (token, target, LONG_MIN, LONG_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <unsigned long> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <unsigned long> (token, target, 0, ULONG_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <sint64> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <sint64> (token, target, _I64_MIN, _I64_MAX);
-	}
-
-	template <>
-	static bool PS_VerifyVec <uint64> (const char *token, void *target)
-	{
-		return PS_VerifyVecI <uint64> (token, target, 0, _UI64_MAX);
-	}
-
-	// Parse float
-	template <typename TType>
-	static bool PS_VerifyVecF (const char *token, void *target)
-	{
-		bool		dot = false;
-		uint32		i, len = strlen (token);
-
-		for (i = 0; i < len; i++)
-		{
-			if (token[i] >= '0' || token[i] <= '9')
-				continue;
-			
-			if (token[i] == '.' && !dot)
-			{
-				dot = true;
-				continue;
-			}
-			
-			if (i == 0)
-			{
-				if (token[i] == '-')
-					continue;
-			}
-
-			else if (i == (len-1) && (Q_tolower(token[i]) == 'f' || Q_tolower(token[i]) == 'd'))
-				continue;
-
-			break;
-		}
-
-		if (i != len)
-			return false;
-
-		*(TType*)target = (TType)atof (token);
-		return true;
-	}
-
-	template <>
-	static bool PS_VerifyVec <float> (const char *token, void *target)
-	{
-		return PS_VerifyVecF <float> (token, target);
-	}
-
-	template <>
-	static bool PS_VerifyVec <double> (const char *token, void *target)
-	{
-		return PS_VerifyVecF <double> (token, target);
-	}
-
-	template <>
-	static bool PS_VerifyVec <bool> (const char *token, void *target)
-	{
-		if (!strcmp (token, "1") || !Q_stricmp (token, "true"))
-		{
-			*(bool*)target = true;
-			return true;
-		}
-
-		if (!strcmp (token, "0") || !Q_stricmp (token, "false"))
-		{
-			*(bool*)target = false;
-			return true;
-		}
-
-		return false;
-	}
-
-	template <typename TType> static const char *PS_DataName () { return "<unknown>"; }
-	template <> static const char *PS_DataName <sint8> () { return "<sint8>"; }
-	template <> static const char *PS_DataName <uint8> () { return "<uint8>"; }
-	template <> static const char *PS_DataName <sint16> () { return "<sint16>"; }
-	template <> static const char *PS_DataName <uint16> () { return "<uint16>"; }
-	template <> static const char *PS_DataName <sint32> () { return "<sint32>"; }
-	template <> static const char *PS_DataName <uint32> () { return "<uint32>"; }
-	template <> static const char *PS_DataName <long> () { return "<long>"; }
-	template <> static const char *PS_DataName <unsigned long> () { return "<unsigned long>"; }
-	template <> static const char *PS_DataName <sint64> () { return "<sint64>"; }
-	template <> static const char *PS_DataName <uint64> () { return "<uint64>"; }
-	template <> static const char *PS_DataName <float> () { return "<float>"; }
-	template <> static const char *PS_DataName <double> () { return "<double>"; }
-	template <> static const char *PS_DataName <bool> () { return "<bool>"; }
-
-	bool SkipComments (const char **data, EParseFlags flags)
+	bool SkipComments (const char **data)
 	{
 		// See if any comment types are allowed
 		if (!(Properties & PSP_COMMENT_MASK))

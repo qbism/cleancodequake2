@@ -34,11 +34,117 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_JUNK_ENTITIES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_JUNK_ENTITIES_H
 
-class CJunkEntity : public virtual CBaseEntity
+const int MAX_JUNK = 30;
+
+typedef std::list<sint32> TJunkList;
+class CJunkList
 {
 public:
-	CJunkEntity ();
-	CJunkEntity (sint32 Index);
+	sint32				NumAllocatedJunk;
+
+	// OpenList = Junk that is ready to use
+	// ClosedList = Junk that is already in use
+	TJunkList			OpenList, ClosedList;
+
+	CJunkList () :
+	NumAllocatedJunk (0),
+	OpenList(),
+	ClosedList()
+	{
+	};
+
+	template <class JunkClassType>
+	// Re-sets the entity structure if the
+	// entity is not already freed
+	JunkClassType *ReallocateEntity (sint32 number)
+	{
+		JunkClassType *Junk;
+		if (Game.Entities[number].Entity)
+		{
+			Game.Entities[number].Entity->Free();
+			QDelete Game.Entities[number].Entity;
+			Junk = QNewEntityOf JunkClassType(number);
+
+CC_DISABLE_DEPRECATION
+			G_InitEdict (&Game.Entities[number]);
+CC_ENABLE_DEPRECATION
+
+			Game.Entities[number].Entity = Junk;
+		}
+		else
+		{
+			Junk = QNewEntityOf JunkClassType(number);
+
+CC_DISABLE_DEPRECATION
+			G_InitEdict (&Game.Entities[number]);
+CC_ENABLE_DEPRECATION
+
+			Game.Entities[number].Entity = Junk;
+		}
+		return Junk;
+	};
+
+	template <class JunkClassType>
+	JunkClassType *AllocateEntity ()
+	{
+		return QNewEntityOf JunkClassType;
+	};
+
+	template <class JunkClassType>
+	JunkClassType *GetFreeJunk ()
+	{
+		// Check the open list
+		if (OpenList.size())
+		{
+			// Pop it off the front
+			sint32 number = OpenList.front();
+			OpenList.pop_front();
+
+			// Throw it in the closed list
+			ClosedList.push_back (number);
+			return ReallocateEntity<JunkClassType>(number);
+		}
+		else if (NumAllocatedJunk < MAX_JUNK)
+		{
+			// Create it
+			JunkClassType *Junk = AllocateEntity<JunkClassType>();
+
+			// Throw into closed list
+			ClosedList.push_back (Junk->State.GetNumber());
+
+			NumAllocatedJunk++;
+			return Junk;
+		}
+		else
+		{
+			if (ClosedList.size())
+			{
+				// Has to be something in closed list
+				// Pop the first one off and return that.
+				// This should, effectively, remove the last body.
+				sint32 number = ClosedList.front();
+				ClosedList.pop_front();
+
+				// Revision
+				// Push this body to the end of the closed list so we get recycled last
+				ClosedList.push_back (number);
+
+				JunkClassType *Junk = ReallocateEntity<JunkClassType>(number);
+				Junk->State.GetEvent() = EV_OTHER_TELEPORT;
+
+				return Junk;
+			}
+		}
+		return NULL;
+	};
+};
+extern CJunkList *JunkList;
+
+class IJunkEntity : public virtual IBaseEntity
+{
+public:
+	IJunkEntity ();
+	IJunkEntity (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
@@ -51,7 +157,25 @@ public:
 	void Die (); // CALL THIS WHEN A JUNK IS FREED INSTEAD OF FREE()!
 };
 
-class CGibEntity : public CJunkEntity, public CTossProjectile, public CThinkableEntity
+/**
+\typedef	uint8 EGibType
+
+\brief	Defines an alias representing the type of a gib.
+**/
+typedef uint8 EGibType;
+
+/**
+\enum	
+
+\brief	Values that represent the type of a gib. 
+**/
+enum
+{
+	GIB_ORGANIC,
+	GIB_METALLIC
+};
+
+class CGibEntity : public IJunkEntity, public ITossProjectile, public IThinkableEntity
 {
 public:
 	CGibEntity ();
@@ -61,14 +185,14 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
-		CBounceProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		IBounceProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
-		CBounceProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		IBounceProjectile::LoadFields (File);
 	}
 
 	void ClipGibVelocity ();
@@ -76,7 +200,7 @@ public:
 	void Think ();
 
 	bool Run ();
-	static void Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects = EF_GIB);
+	static void Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, EGibType type, EEntityStateEffects effects = EF_GIB);
 };
 
 void Init_Junk();

@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CIcarus : public CMonster
 {
 public:
-	FrameNumber_t		TimeStamp;
+	FrameNumber		TimeStamp;
 
 	MONSTER_SOUND_ENUM
 	(
@@ -57,16 +57,16 @@ public:
 	void SaveMonsterFields (CFile &File)
 	{
 		SAVE_MONSTER_SOUNDS
-		File.Write<FrameNumber_t> (TimeStamp);
+		File.Write<FrameNumber> (TimeStamp);
 	}
 	void LoadMonsterFields (CFile &File)
 	{
 		LOAD_MONSTER_SOUNDS
-		TimeStamp = File.Read<FrameNumber_t> ();
+		TimeStamp = File.Read<FrameNumber> ();
 	}
 
 	void ReAttack ();
-	void FireBlaster ();
+	ROGUE_VIRTUAL void FireBlaster ();
 	void DeadThink ();
 	void StartAttack ();
 
@@ -78,10 +78,12 @@ public:
 	void Search ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
-	void Spawn ();
+	ROGUE_VIRTUAL void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

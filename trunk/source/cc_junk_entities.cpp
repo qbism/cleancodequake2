@@ -33,111 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#define MAX_JUNK 35
-
-typedef std::list<sint32, std::level_allocator<sint32> > TJunkList;
-class CJunkList
-{
-public:
-	sint32				NumAllocatedJunk;
-
-	// OpenList = Junk that is ready to use
-	// ClosedList = Junk that is already in use
-	TJunkList			OpenList, ClosedList;
-
-	CJunkList () :
-	NumAllocatedJunk (0),
-	OpenList(),
-	ClosedList()
-	{
-	};
-
-	template <class JunkClassType>
-	// Re-sets the entity structure if the
-	// entity is not already freed
-	JunkClassType *ReallocateEntity (sint32 number)
-	{
-		JunkClassType *Junk;
-		if (g_edicts[number].Entity)
-		{
-			g_edicts[number].Entity->Free();
-			QDelete g_edicts[number].Entity;
-			Junk = QNewEntityOf JunkClassType(number);
-
-_CC_DISABLE_DEPRECATION
-			G_InitEdict (&g_edicts[number]);
-_CC_ENABLE_DEPRECATION
-
-			g_edicts[number].Entity = Junk;
-		}
-		else
-		{
-			Junk = QNewEntityOf JunkClassType(number);
-
-_CC_DISABLE_DEPRECATION
-			G_InitEdict (&g_edicts[number]);
-_CC_ENABLE_DEPRECATION
-
-			g_edicts[number].Entity = Junk;
-		}
-		return Junk;
-	};
-
-	template <class JunkClassType>
-	JunkClassType *AllocateEntity ()
-	{
-		return QNewEntityOf JunkClassType;
-	};
-
-	template <class JunkClassType>
-	JunkClassType *GetFreeJunk ()
-	{
-		// Check the open list
-		if (OpenList.size())
-		{
-			// Pop it off the front
-			sint32 number = OpenList.front();
-			OpenList.pop_front();
-
-			// Throw it in the closed list
-			ClosedList.push_back (number);
-			return ReallocateEntity<JunkClassType>(number);
-		}
-		else if (NumAllocatedJunk < MAX_JUNK)
-		{
-			// Create it
-			JunkClassType *Junk = AllocateEntity<JunkClassType>();
-
-			// Throw into closed list
-			ClosedList.push_back (Junk->State.GetNumber());
-
-			NumAllocatedJunk++;
-			return Junk;
-		}
-		else
-		{
-			if (ClosedList.size())
-			{
-				// Has to be something in closed list
-				// Pop the first one off and return that.
-				// This should, effectively, remove the last body.
-				sint32 number = ClosedList.front();
-				ClosedList.pop_front();
-
-				// Revision
-				// Push this body to the end of the closed list so we get recycled last
-				ClosedList.push_back (number);
-
-				JunkClassType *Junk = ReallocateEntity<JunkClassType>(number);
-				Junk->State.GetEvent() = EV_OTHER_TELEPORT;
-
-				return Junk;
-			}
-		}
-		return NULL;
-	};
-};
-
 CJunkList *JunkList;
 
 // Saves currently allocated body numbers
@@ -174,7 +69,7 @@ void LoadJunk (CFile &File)
 
 void Init_Junk()
 {
-	JunkList = QNew (com_levelPool, 0) CJunkList;
+	JunkList = QNew (TAG_LEVEL) CJunkList;
 }
 
 void Shutdown_Junk ()
@@ -184,18 +79,18 @@ void Shutdown_Junk ()
 	JunkList = NULL;
 }
 
-CJunkEntity::CJunkEntity () :
-CBaseEntity()
+IJunkEntity::IJunkEntity () :
+IBaseEntity()
 {
 	EntityFlags |= ENT_JUNK;
 };
-CJunkEntity::CJunkEntity (sint32 Index) :
-CBaseEntity(Index)
+IJunkEntity::IJunkEntity (sint32 Index) :
+IBaseEntity(Index)
 {
 	EntityFlags |= ENT_JUNK;
 };
 
-void CJunkEntity::Die ()
+void IJunkEntity::Die ()
 {
 	// Take us out of the closed list
 	JunkList->ClosedList.remove (State.GetNumber());
@@ -210,16 +105,16 @@ void CJunkEntity::Die ()
 }
 
 CGibEntity::CGibEntity () :
-CBaseEntity(),
-CTossProjectile(),
-CJunkEntity()
+IBaseEntity(),
+ITossProjectile(),
+IJunkEntity()
 {
 };
 
 CGibEntity::CGibEntity (sint32 Index) :
-CBaseEntity(Index),
-CTossProjectile(Index),
-CJunkEntity(Index)
+IBaseEntity(Index),
+ITossProjectile(Index),
+IJunkEntity(Index)
 {
 };
 
@@ -230,10 +125,6 @@ IMPLEMENT_SAVE_SOURCE(CGibEntity)
 Misc functions
 =================
 */
-vec3f VelocityForDamage (sint32 damage)
-{
-	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * (damage < 50) ? 0.7f : 1.2f;
-}
 
 void CGibEntity::ClipGibVelocity ()
 {
@@ -244,7 +135,7 @@ void CGibEntity::ClipGibVelocity ()
 
 bool CGibEntity::Run ()
 {
-	return CBounceProjectile::Run();
+	return IBounceProjectile::Run();
 }
 
 void CGibEntity::Think ()
@@ -252,7 +143,7 @@ void CGibEntity::Think ()
 	Die ();
 }
 
-void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, sint32 type, uint32 effects)
+void CGibEntity::Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, EGibType type, EEntityStateEffects effects)
 {
 	CGibEntity *Junk = JunkList->GetFreeJunk<CGibEntity>();
 
@@ -270,19 +161,20 @@ void CGibEntity::Spawn (CBaseEntity *Owner, MediaIndex gibIndex, sint32 damage, 
 	Junk->GetMaxs().Clear ();
 	Junk->GetSolid() = SOLID_NOT;
 	Junk->State.GetEffects() = effects;
+	Junk->State.GetRenderEffects() = RF_IR_VISIBLE;
 
 	Junk->backOff = (type == GIB_ORGANIC) ? 1.0f : 1.5f;
 	float vscale = (type == GIB_ORGANIC) ? 0.5f : 1.0f;
 
-	vec3f vd = VelocityForDamage (damage);
+	vec3f vd = VelocityForDamage (Damage);
 
-	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<CPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
+	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<IPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
 	velocity.MultiplyAngles (vscale, vd);
 	Junk->Velocity = velocity;
 	Junk->ClipGibVelocity ();
 
 	Junk->AngularVelocity.Set (crand()*600, crand()*600, crand()*600);
-	Junk->NextThink = level.Frame + 100 + frand()*100;
+	Junk->NextThink = Level.Frame + 100 + frand()*100;
 
 	Junk->Link ();
 }

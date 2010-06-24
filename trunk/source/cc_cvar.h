@@ -38,11 +38,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // this is just to make sure, because engines that don't might cause problems
 class CCvar
 {
-	cVar_t			*cVar;
+	SCVar			*cVar;
 
 	char			*mainValue;
 	float			floatVal;
-	sint32				intVal;
+	sint32			intVal;
 
 	// Updates the cvar values above. Private because it won't be called from anywhere else but here.
 	void Update ();
@@ -50,18 +50,18 @@ class CCvar
 public:
 	// Constructors, to make it a bit easier (using 'new')
 	CCvar ();
-	CCvar (const char *cvarName, const char *defaultValue, sint32 flags = 0);
-	CCvar (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
-	CCvar (const char *cvarName, float defaultValue, sint32 flags = 0);
-	// I didn't list any deconstructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
+	CCvar (const char *cvarName, const char *defaultValue, ECvarFlags flags = 0);
+	CCvar (const char *cvarName, sint32 defaultValue, ECvarFlags flags = 0);
+	CCvar (const char *cvarName, float defaultValue, ECvarFlags flags = 0);
+	// I didn't list any destructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
 
-	void Register (const char *cvarName, const char *defaultValue, sint32 flags = 0);
-	void Register (const char *cvarName, sint32 defaultValue, sint32 flags = 0);
-	void Register (const char *cvarName, float defaultValue, sint32 flags = 0);
+	void Register (const char *cvarName, const char *defaultValue, ECvarFlags flags = 0);
+	void Register (const char *cvarName, sint32 defaultValue, ECvarFlags flags = 0);
+	void Register (const char *cvarName, float defaultValue, ECvarFlags flags = 0);
 
 	// Let me know if these defs cause any problems with types.
 	float		Float ();
-	sint32			Integer();
+	sint32		Integer();
 	char		*String();
 	bool		Boolean (bool MustBeOne = false);
 
@@ -71,6 +71,82 @@ public:
 
 	bool Modified ();
 };
+
+/**
+\typedef	uint32 ECvars
+
+\brief	Defines an alias representing the list of cvars.
+**/
+typedef uint32 ECvars;
+
+/**
+\enum	
+
+\brief	Values that represent the list of cvars. 
+**/
+enum
+{
+	CV_DEATHMATCH,
+	CV_COOP,
+	CV_DMFLAGS,
+	CV_SKILL,
+	CV_FRAG_LIMIT,
+	CV_TIME_LIMIT,
+	CV_PASSWORD,
+	CV_SPECTATOR_PASSWORD,
+	CV_NEEDPASS,
+	CV_MAXCLIENTS,
+	CV_MAXSPECTATORS,
+	CV_MAXENTITIES,
+	CV_SELECT_EMPTY,
+	CV_DEDICATED,
+	CV_DEVELOPER,
+	CV_FILTERBAN,
+	CV_GRAVITY,
+	CV_ROLLSPEED,
+	CV_ROLLANGLE,
+	CV_GUN_X,
+	CV_GUN_Y,
+	CV_GUN_Z,
+	CV_RUN_PITCH,
+	CV_RUN_ROLL,
+	CV_BOB_UP,
+	CV_BOB_PITCH,
+	CV_BOB_ROLL,
+	CV_CHEATS,
+	CV_FLOOD_MSGS,
+	CV_FLOOD_PER_SECOND,
+	CV_FLOOD_DELAY,
+	CV_MAPLIST,
+	CV_MAP_DEBUG,
+	CV_AIRACCELERATE,
+	CV_CC_TECHFLAGS,
+
+#if CLEANCTF_ENABLED
+	CV_CTF,
+	CV_CTF_FORCEJOIN,
+	CV_MATCH_LOCK,
+	CV_ELECT_PERCENTAGE,
+	CV_ADMIN_PASSWORD,
+	CV_WARP_LIST,
+	CV_CAPTURE_LIMIT,
+	CV_INSTANT_WEAPONS,
+#endif
+
+	CV_TOTAL_CVARS
+};
+
+struct SCVarDefaultValue
+{
+	ECvars		cvarIndex;
+	const char	*cvarName;
+	const char	*cvarDefaultValue;
+	ECvarFlags	cvarFlags;
+};
+
+extern CCvar	CvarList[CV_TOTAL_CVARS];
+
+void Cvar_Register ();
 
 #else
 FILE_WARNING

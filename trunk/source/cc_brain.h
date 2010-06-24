@@ -96,21 +96,24 @@ public:
 	void LaserBeamRefire ();
 #endif
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
 
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (IBaseEntity *Attacker, float eta);
 #else
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

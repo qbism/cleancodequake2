@@ -49,6 +49,9 @@ void CBoss2::Search ()
 
 void CBoss2::FireRocket ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right;
 	vec3f	start;
 
@@ -57,7 +60,7 @@ void CBoss2::FireRocket ()
 //1
 	vec3f origin = Entity->State.GetOrigin();
 
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_1], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_1], forward, right, start);
 	vec3f vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	vec3f dir = vec - start;
@@ -65,7 +68,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_1);
 
 //2
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_2], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_2], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -73,7 +76,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_2);
 
 //3
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_3], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_3], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -81,7 +84,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_3);
 
 //4
-	G_ProjectSource (origin, dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_ROCKET_4], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_4], forward, right, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -91,15 +94,18 @@ void CBoss2::FireRocket ()
 
 void CBoss2::FireBulletRight ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, target;
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
-		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
 	forward = target - start;
@@ -110,15 +116,18 @@ void CBoss2::FireBulletRight ()
 
 void CBoss2::FireBulletLeft ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right, target;
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
-		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
 	forward = target - start;
@@ -423,23 +432,34 @@ void CBoss2::AttackMg ()
 
 void CBoss2::ReAttackMg ()
 {
-	CurrentMove = (IsInFront(Entity, Entity->Enemy)) ?
+	CurrentMove = (IsInFront(Entity, *Entity->Enemy)) ?
 		((frand() <= 0.7) ? &Boss2MoveAttackMg : &Boss2MoveAttackPostMg) : &Boss2MoveAttackPostMg;
 }
 
-void CBoss2::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CBoss2::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
 // American wanted these at no attenuation
-	Entity->PlaySound (CHAN_VOICE, (damage < 10) ? Sounds[SOUND_PAIN3] : ((damage < 30) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]), 255, ATTN_NONE);
-	CurrentMove = (damage < 30) ? &Boss2MovePainLight : &Boss2MovePainHeavy;
+	Entity->PlaySound (CHAN_VOICE, (Damage < 10) ? Sounds[SOUND_PAIN3] : ((Damage < 30) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]), 255, ATTN_NONE);
+	CurrentMove = (Damage < 30) ? &Boss2MovePainLight : &Boss2MovePainHeavy;
+}
+
+// Immune to lasers
+void CBoss2::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+						vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+						sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+{
+	if (MeansOfDeath == MOD_TARGET_LASER)
+		return;
+
+	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
 }
 
 void CBoss2::Dead ()
@@ -452,7 +472,7 @@ void CBoss2::Dead ()
 	Entity->Link ();
 }
 
-void CBoss2::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CBoss2::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
 	Entity->DeadFlag = true;
@@ -469,7 +489,7 @@ bool CBoss2::CheckAttack ()
 	ERangeType		enemy_range;
 	float	enemy_yaw;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -480,12 +500,12 @@ bool CBoss2::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 			return false;
 	}
 	
-	enemy_infront = IsInFront(Entity, Entity->Enemy);
-	enemy_range = Range(Entity, Entity->Enemy);
+	enemy_infront = IsInFront(Entity, *Entity->Enemy);
+	enemy_range = Range(Entity, *Entity->Enemy);
 	temp = Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin();
 	enemy_yaw = temp.ToYaw();
 
@@ -499,7 +519,7 @@ bool CBoss2::CheckAttack ()
 	}
 	
 // missile attack
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (enemy_range == RANGE_FAR)
@@ -519,7 +539,7 @@ bool CBoss2::CheckAttack ()
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + (2*frand())*10;
+		AttackFinished = Level.Frame + (2*frand())*10;
 		return true;
 	}
 
@@ -547,8 +567,6 @@ void CBoss2::Spawn ()
 	Entity->Health = 2000;
 	Entity->GibHealth = -200;
 	Entity->Mass = 1000;
-
-	Entity->Flags |= FL_IMMUNE_LASER;
 	
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SEARCH);
 	Entity->Link ();

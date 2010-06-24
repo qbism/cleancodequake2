@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_XATRIX_CHICK_HEAT_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_XATRIX_CHICK_HEAT_H
 
-class CHeatRocket : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CHeatRocket : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage, RadiusDamage;
@@ -51,9 +51,9 @@ public:
 		File.Write<sint32> (RadiusDamage);
 		File.Write<float> (DamageRadius);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
@@ -62,16 +62,16 @@ public:
 		RadiusDamage = File.Read<sint32> ();
 		DamageRadius = File.Read<float> ();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
-	static CHeatRocket *Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed, float damage_radius, sint32 radius_damage);
+	static CHeatRocket *Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed, float damage_radius, sint32 radius_damage);
 
 	bool Run ();
 };
@@ -83,6 +83,8 @@ public:
 
 	void Rocket ();
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

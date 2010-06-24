@@ -35,10 +35,18 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "m_insane.h"
 #include "cc_insane.h"
 
-#define INSANE_CRAWL		4
-#define INSANE_CRUCIFIED	8
-#define INSANE_STAND_GROUND	16
-#define INSANE_ALWAYS_STAND	32
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CInsane. 
+**/
+enum
+{
+	INSANE_CRAWL		= BIT(2),
+	INSANE_CRUCIFIED	= BIT(3),
+	INSANE_STAND_GROUND = BIT(4),
+	INSANE_ALWAYS_STAND = BIT(5)
+};
 
 CInsane::CInsane (uint32 ID) :
 CMonster (ID)
@@ -466,34 +474,18 @@ void CInsane::Run ()
 }
 
 
-void CInsane::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CInsane::Pain (IBaseEntity *Other, sint32 Damage)
 {
-	sint32	l,r;
-
 //	if (self->health < (self->max_health / 2))
 //		self->state.skinnum = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	// Paril
-	// As much as I hate this, this needs to stay
-	// until further notice.
-
-	// START SHIT
-	r = 1 + (randomMT()&1);
-	if (Entity->Health < 25)
-		l = 25;
-	else if (Entity->Health < 50)
-		l = 50;
-	else if (Entity->Health < 75)
-		l = 75;
-	else
-		l = 100;
-	Entity->PlaySound (CHAN_VOICE, SoundIndex (Q_VarArgs("player/male/pain%i_%i.wav", l, r).c_str()), 255, ATTN_IDLE);
-	// END SHIT
+	sint32 l = Clamp<sint32>(((floorf((Max<>(0, Entity->Health-1)) / 25))), 0, 3);
+	Entity->PlaySound (CHAN_VOICE, GameMedia.Player.Pain[l][(irandom(2))]);
 
 	// Don't go into pain frames if crucified.
 	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
@@ -547,7 +539,7 @@ void CInsane::Stand ()
 void CInsane::Dead ()
 {
 	if (Entity->SpawnFlags & INSANE_CRUCIFIED)
-		Entity->Flags |= FL_FLY;
+		AIFlags |= AI_FLY;
 	else
 	{
 		Entity->GetMins().Set (-16, -16, -24);
@@ -560,16 +552,16 @@ void CInsane::Dead ()
 }
 
 
-void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CInsane::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"), 255, ATTN_IDLE);
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -577,7 +569,7 @@ void CInsane::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 	if (Entity->DeadFlag == true)
 		return;
 
-	Entity->PlaySound (CHAN_VOICE, SoundIndex(Q_VarArgs("player/male/death%i.wav", (irandom(4))+1).c_str()), 255, ATTN_IDLE);
+	Entity->PlaySound (CHAN_VOICE, GameMedia.Player.Death[irandom(4)], 255, ATTN_IDLE);
 
 	Entity->DeadFlag = true;
 	Entity->CanTakeDamage = true;
@@ -634,7 +626,7 @@ void CInsane::Spawn ()
 	{
 		Entity->GetMins().Set (-16, 0, 0);
 		Entity->GetMaxs().Set (16, 8, 32);
-		Entity->Flags |= FL_NO_KNOCKBACK;
+		Entity->AffectedByKnockback = false;
 		FlyMonsterStart ();
 	}
 	else

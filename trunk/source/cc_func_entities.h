@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Func_ entities that aren't brush models
 //
 
-class CFuncTimer : public CMapEntity, public CThinkableEntity, public CUsableEntity
+class CFuncTimer : public IMapEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
-	FrameNumber_t	Wait, Random, PauseTime;
+	FrameNumber		Wait, Random, PauseTime;
 
 	CFuncTimer ();
 	CFuncTimer (sint32 Index);
@@ -43,13 +43,13 @@ public:
 	ENTITYFIELDS_SAVABLE(CFuncTimer)
 
 	void Think ();
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	bool Run ();
 	void Spawn ();
 };
 
-class CTargetCharacter : public CMapEntity, public CBrushModel
+class CTargetCharacter : public IMapEntity, public IBrushModel
 {
 public:
 	uint8		Character;
@@ -64,7 +64,7 @@ public:
 	void Spawn ();
 };
 
-class CTargetString : public CMapEntity, public CUsableEntity
+class CTargetString : public IMapEntity, public IUsableEntity
 {
 public:
 	CTargetString ();
@@ -74,30 +74,30 @@ public:
 
 	bool ParseField (const char *Key, const char *Value)
 	{
-		return (CUsableEntity::ParseField (Key, Value) || CMapEntity::ParseField (Key, Value));
+		return (IUsableEntity::ParseField (Key, Value) || IMapEntity::ParseField (Key, Value));
 	}
 
 	void SaveFields (CFile &File)
 	{
-		CMapEntity::SaveFields (File);
-		CUsableEntity::SaveFields (File);
+		IMapEntity::SaveFields (File);
+		IUsableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CMapEntity::LoadFields (File);
-		CUsableEntity::LoadFields (File);
+		IMapEntity::LoadFields (File);
+		IUsableEntity::LoadFields (File);
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	void Spawn ();
 };
 
-class CFuncClock : public CMapEntity, public CUsableEntity, public CThinkableEntity
+class CFuncClock : public IMapEntity, public IUsableEntity, public IThinkableEntity
 {
 public:
 	char			*CountTarget;
-	FrameNumber_t	Wait;
+	FrameNumber		Wait;
 	uint8			Style;
 	sint32			Seconds;
 	sint32			Count;
@@ -110,7 +110,7 @@ public:
 	ENTITYFIELDS_SAVABLE(CFuncClock)
 
 	void Think ();
-	void Use (CBaseEntity *other, CBaseEntity *activator);
+	void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
 	void FormatCountdown ();
 	void Reset ();

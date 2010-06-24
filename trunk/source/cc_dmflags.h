@@ -28,78 +28,131 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 //
 // cc_dmflags.h
-// This is so that I don't have to keep doing dmflags->Integer(). Should be faster than bitwise ops every frame!
+// This is so that I don't have to keep doing DeathmatchFlags.Integer(). Should be faster than bitwise ops every frame!
 //
 
 #if !defined(CC_GUARD_DMFLAGS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_DMFLAGS_H
 
-class dmFlagsConfig
+/**
+\class	CDeathmatchFlags
+
+\brief	Deathmatch flags handling class.
+
+\author	Paril
+\date	29/05/2010
+**/
+class CDeathmatchFlags
 {
-public:
-	class dmFlagValue
+	/**
+	\class	CDeathmatchFlag
+	
+	\brief	A single deathmatch flag.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
+	class CDeathmatchFlag
 	{
-		bool					Enabled;
-		const EDeathmatchFlags	Flag;
+		const EDeathmatchFlags	Flag;		// The flag itself
+		bool					Enabled;	// true if this flag is enabled
 
 	public:
-		dmFlagValue (EDeathmatchFlags Flag) :
+		CDeathmatchFlag (EDeathmatchFlags Flag) :
 		  Flag (Flag),
 		  Enabled (false)
 		  {
 		  };
 
-		dmFlagValue &operator= (dmFlagValue&) { return *this; }
+		CDeathmatchFlag &operator= (CDeathmatchFlag&) { return *this; }
 
+		/**
+		\fn	inline bool IsEnabled ()
+		
+		\brief	Query if this dmflag is enabled. 
+		
+		\return	true if enabled, false if not. 
+		**/
 		inline bool IsEnabled ()
 		{
 			return Enabled;
 		};
 
+		/**
+		\fn	void Check (EDeathmatchFlags WantedFlags)
+		
+		\brief	Updates the dmflag enabled value.
+		
+		\author	Paril
+		\date	29/05/2010
+		
+		\param	WantedFlags	The wanted flags. 
+		**/
 		void Check (EDeathmatchFlags WantedFlags)
 		{
 			Enabled = !!(WantedFlags & Flag);
 		};
 
-		friend class dmFlagsConfig;
+		friend class CDeathmatchFlags;
 	};
 
-	dmFlagValue				dfNoHealth;
-	dmFlagValue				dfNoItems;
-	dmFlagValue				dfWeaponsStay;
-	dmFlagValue				dfNoFallingDamage;
-	dmFlagValue				dfInstantItems;
-	dmFlagValue				dfSameLevel;
-	dmFlagValue				dfSkinTeams;
-	dmFlagValue				dfModelTeams;
-	dmFlagValue				dfNoFriendlyFire;
-	dmFlagValue				dfSpawnFarthest;
-	dmFlagValue				dfForceRespawn;
-	dmFlagValue				dfNoArmor;
-	dmFlagValue				dfAllowExit;
-	dmFlagValue				dfInfiniteAmmo;
-	dmFlagValue				dfQuadDrop;
-	dmFlagValue				dfFixedFov;
+public:
+	CDeathmatchFlag		dfNoHealth,
+						dfNoItems,
+						dfWeaponsStay,
+						dfNoFallingDamage,
+						dfInstantItems,
+						dfSameLevel,
+						dfSkinTeams,
+						dfModelTeams,
+						dfNoFriendlyFire,
+						dfSpawnFarthest,
+						dfForceRespawn,
+						dfNoArmor,
+						dfAllowExit,
+						dfInfiniteAmmo,
+						dfQuadDrop,
+						dfFixedFov,
 
-	dmFlagValue				dfQuadFireDrop;
-	dmFlagValue				dfNoMines;
-	dmFlagValue				dfNoStackDouble;
-	dmFlagValue				dfNoNukes;
-	dmFlagValue				dfNoSpheres;
+						dfQuadFireDrop,
+						dfNoMines,
+						dfNoStackDouble,
+						dfNoNukes,
+						dfNoSpheres,
 
 #if CLEANCTF_ENABLED
-	dmFlagValue				dfCtfNoTech;
-	dmFlagValue				dfCtfForceJoin;
-	dmFlagValue				dfCtfArmorProtect;
+						dfCtfNoTech,
+						dfCtfForceJoin,
+						dfCtfArmorProtect,
 #endif
 
-	dmFlagValue				dfDmTechs;
+						dfDmTechs;
 
-	dmFlagsConfig();
+	/**
+	\fn	CDeathmatchFlags()
+	
+	\brief	Default constructor.
+			Initializes all dmflags to their default values.
+	
+	\author	Paril
+	\date	29/05/2010
+	**/
+	CDeathmatchFlags();
+
+	/**
+	\fn	void UpdateFlags (EDeathmatchFlags wantedFlags)
+	
+	\brief	Updates the flags described by wantedFlags.
+	
+	\author	Paril
+	\date	29/05/2010
+	
+	\param	wantedFlags	The wanted flags. 
+	**/
 	void UpdateFlags (EDeathmatchFlags wantedFlags);
 };
 
-extern dmFlagsConfig dmFlags;
+extern CDeathmatchFlags DeathmatchFlags;
 
 #else
 FILE_WARNING

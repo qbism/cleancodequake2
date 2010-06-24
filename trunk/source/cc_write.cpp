@@ -31,12 +31,124 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // "Write" functions to write and check for malformed writes.
 //
 
+#ifndef WIN32
+#include <float.h>
+#endif
+
 #include "cc_local.h"
 
-#include <limits.h>
-#include <float.h>
+// Helper functions
+/*
+=============================================================================
 
-_CC_DISABLE_DEPRECATION
+	MATHLIB
+
+=============================================================================
+*/
+
+const int NUMVERTEXNORMALS	= 162;
+
+vec3f m_byteDirs[NUMVERTEXNORMALS] = {
+	vec3f(-0.525731f,	0.000000f,	0.850651f),		vec3f(-0.442863f,	0.238856f,	0.864188f),		vec3f(-0.295242f,	0.000000f,	0.955423f),
+	vec3f(-0.309017f,	0.500000f,	0.809017f),		vec3f(-0.162460f,	0.262866f,	0.951056f),		vec3f(0.000000f,		0.000000f,	1.000000f),
+	vec3f(0.000000f,		0.850651f,	0.525731f),		vec3f(-0.147621f,	0.716567f,	0.681718f),		vec3f(0.147621f,		0.716567f,	0.681718f),
+	vec3f(0.000000f,		0.525731f,	0.850651f),		vec3f(0.309017f,		0.500000f,	0.809017f),		vec3f(0.525731f,		0.000000f,	0.850651f),
+	vec3f(0.295242f,		0.000000f,	0.955423f),		vec3f(0.442863f,		0.238856f,	0.864188f),		vec3f(0.162460f,		0.262866f,	0.951056f),
+	vec3f(-0.681718f,	0.147621f,	0.716567f),		vec3f(-0.809017f,	0.309017f,	0.500000f),		vec3f(-0.587785f,	0.425325f,	0.688191f),
+	vec3f(-0.850651f,	0.525731f,	0.000000f),		vec3f(-0.864188f,	0.442863f,	0.238856f),		vec3f(-0.716567f,	0.681718f,	0.147621f),
+	vec3f(-0.688191f,	0.587785f,	0.425325f),		vec3f(-0.500000f,	0.809017f,	0.309017f),		vec3f(-0.238856f,	0.864188f,	0.442863f),
+	vec3f(-0.425325f,	0.688191f,	0.587785f),		vec3f(-0.716567f,	0.681718f,	-0.147621f),	vec3f(-0.500000f,	0.809017f,	-0.309017f),
+	vec3f(-0.525731f,	0.850651f,	0.000000f),		vec3f(0.000000f,		0.850651f,	-0.525731f),	vec3f(-0.238856f,	0.864188f,	-0.442863f),
+	vec3f(0.000000f,		0.955423f,	-0.295242f),	vec3f(-0.262866f,	0.951056f,	-0.162460f),	vec3f(0.000000f,		1.000000f,	0.000000f),
+	vec3f(0.000000f,		0.955423f,	0.295242f),		vec3f(-0.262866f,	0.951056f,	0.162460f),		vec3f(0.238856f,		0.864188f,	0.442863f),
+	vec3f(0.262866f,		0.951056f,	0.162460f),		vec3f(0.500000f,		0.809017f,	0.309017f),		vec3f(0.238856f,		0.864188f,	-0.442863f),
+	vec3f(0.262866f,		0.951056f,	-0.162460f),	vec3f(0.500000f,		0.809017f,	-0.309017f),	vec3f(0.850651f,		0.525731f,	0.000000f),
+	vec3f(0.716567f,		0.681718f,	0.147621f),		vec3f(0.716567f,		0.681718f,	-0.147621f),	vec3f(0.525731f,		0.850651f,	0.000000f),
+	vec3f(0.425325f,		0.688191f,	0.587785f),		vec3f(0.864188f,		0.442863f,	0.238856f),		vec3f(0.688191f,		0.587785f,	0.425325f),
+	vec3f(0.809017f,		0.309017f,	0.500000f),		vec3f(0.681718f,		0.147621f,	0.716567f),		vec3f(0.587785f,		0.425325f,	0.688191f),
+	vec3f(0.955423f,		0.295242f,	0.000000f),		vec3f(1.000000f,		0.000000f,	0.000000f),		vec3f(0.951056f,		0.162460f,	0.262866f),
+	vec3f(0.850651f,		-0.525731f,	0.000000f),		vec3f(0.955423f,		-0.295242f,	0.000000f),		vec3f(0.864188f,		-0.442863f,	0.238856f),
+	vec3f(0.951056f,		-0.162460f,	0.262866f),		vec3f(0.809017f,		-0.309017f,	0.500000f),		vec3f(0.681718f,		-0.147621f,	0.716567f),
+	vec3f(0.850651f,		0.000000f,	0.525731f),		vec3f(0.864188f,		0.442863f,	-0.238856f),	vec3f(0.809017f,		0.309017f,	-0.500000f),
+	vec3f(0.951056f,		0.162460f,	-0.262866f),	vec3f(0.525731f,		0.000000f,	-0.850651f),	vec3f(0.681718f,		0.147621f,	-0.716567f),
+	vec3f(0.681718f,		-0.147621f,	-0.716567f),	vec3f(0.850651f,		0.000000f,	-0.525731f),	vec3f(0.809017f,		-0.309017f,	-0.500000f),
+	vec3f(0.864188f,		-0.442863f,	-0.238856f),	vec3f(0.951056f,		-0.162460f,	-0.262866f),	vec3f(0.147621f,		0.716567f,	-0.681718f),
+	vec3f(0.309017f,		0.500000f,	-0.809017f),	vec3f(0.425325f,		0.688191f,	-0.587785f),	vec3f(0.442863f,		0.238856f,	-0.864188f),
+	vec3f(0.587785f,		0.425325f,	-0.688191f),	vec3f(0.688191f,		0.587785f,	-0.425325f),	vec3f(-0.147621f,	0.716567f,	-0.681718f),
+	vec3f(-0.309017f,	0.500000f,	-0.809017f),	vec3f(0.000000f,		0.525731f,	-0.850651f),	vec3f(-0.525731f,	0.000000f,	-0.850651f),
+	vec3f(-0.442863f,	0.238856f,	-0.864188f),	vec3f(-0.295242f,	0.000000f,	-0.955423f),	vec3f(-0.162460f,	0.262866f,	-0.951056f),
+	vec3f(0.000000f,		0.000000f,	-1.000000f),	vec3f(0.295242f,		0.000000f,	-0.955423f),	vec3f(0.162460f,		0.262866f,	-0.951056f),
+	vec3f(-0.442863f,	-0.238856f,	-0.864188f),	vec3f(-0.309017f,	-0.500000f,	-0.809017f),	vec3f(-0.162460f,	-0.262866f,	-0.951056f),
+	vec3f(0.000000f,		-0.850651f,	-0.525731f),	vec3f(-0.147621f,	-0.716567f,	-0.681718f),	vec3f(0.147621f,		-0.716567f,	-0.681718f),
+	vec3f(0.000000f,		-0.525731f,	-0.850651f),	vec3f(0.309017f,		-0.500000f,	-0.809017f),	vec3f(0.442863f,		-0.238856f,	-0.864188f),
+	vec3f(0.162460f,		-0.262866f,	-0.951056f),	vec3f(0.238856f,		-0.864188f,	-0.442863f),	vec3f(0.500000f,		-0.809017f,	-0.309017f),
+	vec3f(0.425325f,		-0.688191f,	-0.587785f),	vec3f(0.716567f,		-0.681718f,	-0.147621f),	vec3f(0.688191f,		-0.587785f,	-0.425325f),
+	vec3f(0.587785f,		-0.425325f,	-0.688191f),	vec3f(0.000000f,		-0.955423f,	-0.295242f),	vec3f(0.000000f,		-1.000000f,	0.000000f),
+	vec3f(0.262866f,		-0.951056f,	-0.162460f),	vec3f(0.000000f,		-0.850651f,	0.525731f),		vec3f(0.000000f,		-0.955423f,	0.295242f),
+	vec3f(0.238856f,		-0.864188f,	0.442863f),		vec3f(0.262866f,		-0.951056f,	0.162460f),		vec3f(0.500000f,		-0.809017f,	0.309017f),
+	vec3f(0.716567f,		-0.681718f,	0.147621f),		vec3f(0.525731f,		-0.850651f,	0.000000f),		vec3f(-0.238856f,	-0.864188f,	-0.442863f),
+	vec3f(-0.500000f,	-0.809017f,	-0.309017f),	vec3f(-0.262866f,	-0.951056f,	-0.162460f),	vec3f(-0.850651f,	-0.525731f,	0.000000f),
+	vec3f(-0.716567f,	-0.681718f,	-0.147621f),	vec3f(-0.716567f,	-0.681718f,	0.147621f),		vec3f(-0.525731f,	-0.850651f,	0.000000f),
+	vec3f(-0.500000f,	-0.809017f,	0.309017f),		vec3f(-0.238856f,	-0.864188f,	0.442863f),		vec3f(-0.262866f,	-0.951056f,	0.162460f),
+	vec3f(-0.864188f,	-0.442863f,	0.238856f),		vec3f(-0.809017f,	-0.309017f,	0.500000f),		vec3f(-0.688191f,	-0.587785f,	0.425325f),
+	vec3f(-0.681718f,	-0.147621f,	0.716567f),		vec3f(-0.442863f,	-0.238856f,	0.864188f),		vec3f(-0.587785f,	-0.425325f,	0.688191f),
+	vec3f(-0.309017f,	-0.500000f,	0.809017f),		vec3f(-0.147621f,	-0.716567f,	0.681718f),		vec3f(-0.425325f,	-0.688191f,	0.587785f),
+	vec3f(-0.162460f,	-0.262866f,	0.951056f),		vec3f(0.442863f,		-0.238856f,	0.864188f),		vec3f(0.162460f,		-0.262866f,	0.951056f),
+	vec3f(0.309017f,		-0.500000f,	0.809017f),		vec3f(0.147621f,		-0.716567f,	0.681718f),		vec3f(0.000000f,		-0.525731f,	0.850651f),
+	vec3f(0.425325f,		-0.688191f,	0.587785f),		vec3f(0.587785f,		-0.425325f,	0.688191f),		vec3f(0.688191f,		-0.587785f,	0.425325f),
+	vec3f(-0.955423f,	0.295242f,	0.000000f),		vec3f(-0.951056f,	0.162460f,	0.262866f),		vec3f(-1.000000f,	0.000000f,	0.000000f),
+	vec3f(-0.850651f,	0.000000f,	0.525731f),		vec3f(-0.955423f,	-0.295242f,	0.000000f),		vec3f(-0.951056f,	-0.162460f,	0.262866f),
+	vec3f(-0.864188f,	0.442863f,	-0.238856f),	vec3f(-0.951056f,	0.162460f,	-0.262866f),	vec3f(-0.809017f,	0.309017f,	-0.500000f),
+	vec3f(-0.864188f,	-0.442863f,	-0.238856f),	vec3f(-0.951056f,	-0.162460f,	-0.262866f),	vec3f(-0.809017f,	-0.309017f,	-0.500000f),
+	vec3f(-0.681718f,	0.147621f,	-0.716567f),	vec3f(-0.681718f,	-0.147621f,	-0.716567f),	vec3f(-0.850651f,	0.000000f,	-0.525731f),
+	vec3f(-0.688191f,	0.587785f,	-0.425325f),	vec3f(-0.587785f,	0.425325f,	-0.688191f),	vec3f(-0.425325f,	0.688191f,	-0.587785f),
+	vec3f(-0.425325f,	-0.688191f,	-0.587785f),	vec3f(-0.587785f,	-0.425325f,	-0.688191f),	vec3f(-0.688191f,	-0.587785f,	-0.425325f)
+};
+
+/*
+=================
+DirToByte
+
+This isn't a real cheap function to call!
+=================
+*/
+uint8 DirToByte(const vec3f &dirVec)
+{
+	if (!dirVec)
+		return 0;
+
+	uint8 best = 0;
+	float bestDot = 0;
+	for (uint8 i = 0; i < NUMVERTEXNORMALS; i++)
+	{
+		float dot = vec3f(m_byteDirs[i]) | dirVec;
+		if (dot > bestDot)
+		{
+			bestDot = dot;
+			best = i;
+		}
+	}
+
+	return best;
+}
+
+/*
+=================
+ByteToDir
+=================
+*/
+void ByteToDir(const uint8 dirByte, vec3f &dirVec)
+{
+	if (dirByte >= NUMVERTEXNORMALS)
+	{
+		dirVec.Clear();
+		return;
+	}
+
+	dirVec = m_byteDirs[dirByte];
+}
+
+CC_DISABLE_DEPRECATION
 void _WriteChar (sint8 val)
 {
 	gi.WriteChar (val);
@@ -67,7 +179,19 @@ void _WriteString (const char *val)
 	gi.WriteString ((char*)val);
 }
 
-CC_ENUM (uint8, EWriteType)
+/**
+\typedef	uint8 EWriteType
+
+\brief	Defines an alias representing type of data to write.
+**/
+typedef uint8 EWriteType;
+
+/**
+\enum	
+
+\brief	Values that represent the types of data that can be written. 
+**/
+enum
 {
 	WT_CHAR,
 	WT_BYTE,
@@ -93,7 +217,7 @@ public:
 
 	virtual void Write ()
 	{
-		_CC_ASSERT_EXPR (0, "WriteIndex has invalid write ID");
+		CC_ASSERT_EXPR (0, "WriteIndex has invalid write ID");
 	};
 };
 
@@ -123,7 +247,7 @@ public:
 			_WriteShort (Val);
 			break;
 		case WT_LONG:
-			_WriteByte (Val);
+			_WriteLong (Val);
 			break;
 		case WT_FLOAT:
 			_WriteFloat (Val);
@@ -135,9 +259,9 @@ public:
 class CWriteString : public CWriteIndex
 {
 public:
-	std::cc_string	Val;
+	std::string	Val;
 
-	CWriteString (std::cc_string Val) :
+	CWriteString (std::string Val) :
 	Val(Val),
 	CWriteIndex(WT_STRING)
 	{
@@ -149,14 +273,14 @@ public:
 	};
 };
 
-std::vector <CWriteIndex*, std::write_allocator<CWriteIndex*> > WriteQueue;
+std::vector <CWriteIndex*> WriteQueue;
 
-void SendQueue (edict_t *To, bool Reliable)
+void SendQueue (CPlayerEntity *To, bool Reliable)
 {
 	for (size_t i = 0; i < WriteQueue.size(); i++)
 		WriteQueue[i]->Write ();
 
-	gi.unicast (To, (Reliable) ? 1 : 0);
+	gi.unicast (To->GetGameEntity(), (Reliable) ? 1 : 0);
 }
 
 void Clear ()
@@ -167,37 +291,31 @@ void Clear ()
 }
 
 // vec3f overloads
-void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity *Ent, bool SuppliedOrigin)
+void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CPlayerEntity *Ent, bool SuppliedOrigin)
 {
 	// Sanity checks
 	if (castType == CAST_MULTI && Ent)
-		DebugPrintf ( "Multicast with an associated Ent\n");
+		DebugPrintf ("Multicast with an associated Ent\n");
 	else if (castType == CAST_MULTI && !SuppliedOrigin)
 	{
-		DebugPrintf ( "Multicast with no associated Origin! Can't do!\n");
+		DebugPrintf ("Multicast with no associated Origin! Can't do!\n");
 		Clear ();
 		return;
 	}
 	else if (castType == CAST_UNI && !Ent)
 	{
-		DebugPrintf ( "Unicast with no associated Ent! Can't do!\n");
+		DebugPrintf ("Unicast with no associated Ent! Can't do!\n");
 		Clear ();
 		return;
 	}
-	else if (castType == CAST_UNI && SuppliedOrigin)
-		DebugPrintf ( "Multicast with an associated Origin\n");
-
-	CPlayerEntity *Entity = NULL;
-	if (Ent)
-		Entity = entity_cast<CPlayerEntity>(Ent);
 
 	// Sends to all entities
 	switch (castType)
 	{
 	case CAST_MULTI:
-		for (sint32 i = 1; i <= game.MaxClients; i++)
+		for (sint32 i = 1; i <= Game.MaxClients; i++)
 		{
-			CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 
 			if (!Player || !Player->GetInUse() || (Player->Client.Persistent.State != SVCS_SPAWNED))
 				continue;
@@ -207,33 +325,27 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CBaseEntity 
 			if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Player->State.GetOrigin()))
 				continue;
 
-			//gi.unicast (e, (castFlags & CASTFLAG_RELIABLE) ? true : false);
-			SendQueue (Player->gameEntity, (castFlags & CASTFLAG_RELIABLE) ? true : false);
+			SendQueue (Player, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		}
 		break;
 	// Send to one entity
 	case CAST_UNI:
-		if ((castFlags & CASTFLAG_PVS) && !InVisibleArea(Origin, Entity->State.GetOrigin()))
+		if ((castFlags & CASTFLAG_PVS) && !InVisibleArea(Origin, Ent->State.GetOrigin()))
 			break;
-		if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Entity->State.GetOrigin()))
+		if ((castFlags & CASTFLAG_PHS) && !InHearableArea(Origin, Ent->State.GetOrigin()))
 			break;
 
-		//gi.unicast (Ent, (castFlags & CASTFLAG_RELIABLE) ? true : false);
-		SendQueue (Ent->gameEntity, (castFlags & CASTFLAG_RELIABLE) ? true : false);
+		SendQueue (Ent, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 		break;
 	}
 
-	//if (castType == CAST_MULTI)
-	//	gi.multicast (Origin, (castFlags & CASTFLAG_PVS) ? MULTICAST_PVS : MULTICAST_PHS);
-	//else if (castType == CAST_UNI)
-	//	gi.unicast (Ent, (castFlags & CASTFLAG_RELIABLE) ? true : false);
 	Clear ();
 }
 void Cast (ECastFlags castFlags, vec3f &Origin)
 {
 	Cast (CAST_MULTI, castFlags, Origin, NULL, true);
 }
-void Cast (ECastFlags castFlags, CBaseEntity *Ent)
+void Cast (ECastFlags castFlags, CPlayerEntity *Ent)
 {
 	Cast (CAST_UNI, castFlags, vec3fOrigin, Ent, false);
 }
@@ -242,66 +354,61 @@ void WriteChar (sint8 val)
 {
 	if (val < CHAR_MIN || val > CHAR_MAX)
 	{
-		DebugPrintf ( "Malformed char written!\n");
+		DebugPrintf ("Malformed char written!\n");
 		val = Clamp<char> (val, CHAR_MIN, CHAR_MAX);
 	}
 
-	//gi.WriteChar (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint8> (val, WT_CHAR));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint8> (val, WT_CHAR));
 }
 
 void WriteByte (uint8 val)
 {
 	if (val < 0 || val > UCHAR_MAX)
 	{
-		DebugPrintf ( "Malformed uint8 written!\n");
+		DebugPrintf ("Malformed uint8 written!\n");
 		val = Clamp<uint8> (val, 0, UCHAR_MAX);
 	}
 
-	//gi.WriteByte (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<uint8> (val, WT_BYTE));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<uint8> (val, WT_BYTE));
 }
 
 void WriteShort (sint16 val)
 {
 	if (val < SHRT_MIN || val > SHRT_MAX)
 	{
-		DebugPrintf ( "Malformed sint16 written!\n");
+		DebugPrintf ("Malformed sint16 written!\n");
 		val = Clamp<sint16> (val, SHRT_MIN, SHRT_MAX);
 	}
 
-	//gi.WriteShort (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint16> (val, WT_SHORT));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> (val, WT_SHORT));
 }
 
 void WriteLong (long val)
 {
 	if (val < LONG_MIN || val > LONG_MAX)
 	{
-		DebugPrintf ( "Malformed long written!\n");
+		DebugPrintf ("Malformed long written!\n");
 		val = Clamp<long> (val, LONG_MIN, LONG_MAX);
 	}
 
-	//gi.WriteLong (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<long> (val, WT_LONG));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<long> (val, WT_LONG));
 }
 
 void WriteFloat (float val)
 {
 	if (val < FLT_MIN || val > FLT_MAX)
 	{
-		DebugPrintf ( "Malformed float written!\n");
+		DebugPrintf ("Malformed float written!\n");
 		val = Clamp<float> (val, FLT_MIN, FLT_MAX);
 	}
 
-	//gi.WriteFloat (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<float> (val, WT_FLOAT));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<float> (val, WT_FLOAT));
 }
 
 void WriteAngle (float val)
 {
 	if (val < 0 || val > 360)
-		DebugPrintf ( "Malformed angle may have been written!\n");
+		DebugPrintf ("Malformed angle may have been written!\n");
 
 	WriteByte (ANGLE2BYTE (val));
 }
@@ -309,7 +416,7 @@ void WriteAngle (float val)
 void WriteAngle16 (float val)
 {
 	if (val < 0 || val > 360)
-		DebugPrintf ( "Malformed angle may have been written!\n");
+		DebugPrintf ("Malformed angle may have been written!\n");
 
 	WriteShort (ANGLE2SHORT (val));
 }
@@ -318,21 +425,19 @@ void WriteString (const char *val)
 {
 	if (!val || val == NULL || !val[0] || strlen(val) > 1400)
 	{
-		DebugPrintf ( "Malformed string written!\n");
+		DebugPrintf ("Malformed string written!\n");
 		// FIXME: Clamp the string??
 	}
 
-	//gi.WriteString (val);
-	WriteQueue.push_back (QNew (com_writePool, 0) CWriteString (val));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (val));
 }
 
 void WriteCoord (float f)
 {
-	//WriteShort ((sint32)(f * 8));
-	WriteQueue.push_back (QNew (com_writePool, 0) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> ((f * 8), WT_SHORT));
 }
 
-void WritePosition (vec3_t val)
+void WritePosition (vec3f val)
 {
 	if (!val)
 	{
@@ -346,7 +451,7 @@ void WritePosition (vec3_t val)
 		{
 			if (!Printed && (val[i] > 4096 || val[i] < -4096))
 			{			
-				DebugPrintf ( "Malformed position may have been written!\n");
+				DebugPrintf ("Malformed position may have been written!\n");
 				Printed = true;
 			}
 
@@ -355,37 +460,9 @@ void WritePosition (vec3_t val)
 	}
 }
 
-void WritePosition (vec3f &val)
-{
-	if (!val)
-	{
-		for (sint32 i = 0; i < 3; i++)
-			WriteCoord(vec3fOrigin[i]);
-	}
-	else
-	{
-		bool Printed = false;
-		for (sint32 i = 0; i < 3; i++)
-		{
-			if (!Printed && (val[i] > 4096 || val[i] < -4096))
-			{			
-				DebugPrintf ( "Malformed position may have been written!\n");
-				Printed = true;
-			}
-
-			WriteCoord(val[i]);
-		}
-	}
-}
-
-void WriteDirection (vec3_t val)
+void WriteDirection (vec3f val)
 {
 	WriteByte (DirToByte (val));
 }
 
-void WriteDirection (vec3f &val)
-{
-	WriteByte (DirToByte (val));
-}
-
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION

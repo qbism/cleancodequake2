@@ -46,7 +46,7 @@ public:\
 		return PUTTOGETHER(name); \
 	}
 
-struct SPlayerMedia_t
+struct SPlayerMedia
 {
 	MediaIndex		Death[4];
 	MediaIndex		Fall[2];
@@ -55,7 +55,7 @@ struct SPlayerMedia_t
 	MediaIndex		Pain[4][2];
 };
 
-struct SHudMedia_t
+struct SHudMedia
 {
 	MediaIndex	HealthPic;
 	MediaIndex	HelpPic;
@@ -65,9 +65,9 @@ class CGameMedia
 {
 public:
 	// Player media
-	SPlayerMedia_t	Player;
+	SPlayerMedia	Player;
 	// HUD Media
-	SHudMedia_t		Hud;
+	SHudMedia		Hud;
 
 	// Gibs
 	MediaIndex		Gib_SmallMeat;

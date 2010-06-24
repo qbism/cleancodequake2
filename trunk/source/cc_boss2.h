@@ -68,10 +68,15 @@ public:
 	void Explode ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
+	void TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+					vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+					sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

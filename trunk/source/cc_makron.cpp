@@ -254,35 +254,35 @@ CFrame MakronFramesPain4 [] =
 };
 CAnim MakronMovePain4 (FRAME_pain401, FRAME_pain404, MakronFramesPain4, &CMonster::Run);
 
-void CMakron::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CMakron::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 			Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 			return;
 
 	// Lessen the chance of him going into his pain frames
-	if ((damage <= 25) && (frand() < 0.2f))
+	if ((Damage <= 25) && (frand() < 0.2f))
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	if (damage <= 40)
+	if (Damage <= 40)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN4], 255, ATTN_NONE);
 		CurrentMove = &MakronMovePain4;
 	}
-	else if (damage <= 110)
+	else if (Damage <= 110)
 	{
 		Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN5], 255, ATTN_NONE);
 		CurrentMove = &MakronMovePain5;
 	}
 	else
 	{
-		if ((damage <= 150) && (frand() <= 0.45f))
+		if ((Damage <= 150) && (frand() <= 0.45f))
 		{
 			Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_PAIN6], 255, ATTN_NONE);
 			CurrentMove = &MakronMovePain6;
@@ -440,11 +440,14 @@ CAnim MakronMoveSight (FRAME_active01, FRAME_active13, MakronFramesSight, &CMons
 
 void CMakron::FireBFG ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	forward, right;
 	vec3f	start;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MAKRON_BFG], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_BFG], forward, right, start);
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK_BFG]);
 	MonsterFireBfg (start,
@@ -496,16 +499,18 @@ CFrame MakronFramesAttack4[]=
 };
 CAnim MakronMoveAttack4 (FRAME_attak401, FRAME_attak426, MakronFramesAttack4, &CMonster::Run);
 
-// FIXME: This is all wrong. He's not firing at the proper angles.
 void CMakron::FireHyperblaster ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	dir;
 	vec3f	start;
 	vec3f	forward, right;
 	sint32		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - FRAME_attak405);
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	if (Entity->Enemy)
 		dir.X = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight) - start).ToAngles().X;
@@ -548,15 +553,17 @@ void CMakron::SavePosition ()
 	SavedLoc = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 };
 
-// FIXME: He's not firing from the proper Z
 void CMakron::FireRailgun ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start;
 	vec3f	dir;
 	vec3f	forward, right;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_MAKRON_RAILGUN_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_RAILGUN_1], forward, right, start);
 	
 	// calc direction to where we targted
 	dir = SavedLoc - start;
@@ -593,18 +600,18 @@ Makron Torso. This needs to be spawned in
 ---
 */
 
-class CMakronTorso : public virtual CBaseEntity, public CThinkableEntity
+class CMakronTorso : public virtual IBaseEntity, public IThinkableEntity
 {
 public:
 	CMakronTorso () :
-	  CBaseEntity(),
-	  CThinkableEntity()
+	  IBaseEntity(),
+	  IThinkableEntity()
 	  {
 	  };
 
 	CMakronTorso (sint32 Index) :
-	  CBaseEntity(Index),
-	  CThinkableEntity (Index)
+	  IBaseEntity(Index),
+	  IThinkableEntity (Index)
 	  {
 	  };
 
@@ -612,22 +619,22 @@ public:
 
 	void SaveFields (CFile &File)
 	{
-		CThinkableEntity::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
 	};
 
 	void LoadFields (CFile &File)
 	{
-		CThinkableEntity::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
 	};
 
 	void Think ()
 	{
 		if (++State.GetFrame() < 365)
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 		else
 		{		
 			State.GetFrame() = 346;
-			NextThink = level.Frame + FRAMETIME;
+			NextThink = Level.Frame + FRAMETIME;
 		}
 	};
 
@@ -643,7 +650,7 @@ public:
 		NewClass->GetMins().Set (-8, -8, 0);
 		NewClass->GetMaxs().Set (8);
 		NewClass->State.GetModelIndex() = Owner->State.GetModelIndex();
-		NewClass->NextThink = level.Frame + 2;
+		NewClass->NextThink = Level.Frame + 2;
 		NewClass->State.GetSound() = SoundIndex("makron/spine.wav");
 		NewClass->State.GetFrame() = 346;
 		NewClass->GetSolid() = SOLID_NOT;
@@ -665,7 +672,7 @@ void CMakron::Dead ()
 	Entity->Link ();
 }
 
-void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CMakron::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->State.GetSound() = 0;
 	// check for gib
@@ -673,10 +680,10 @@ void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 1 /*4*/; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), damage, GIB_METALLIC);
-		Entity->ThrowHead (GameMedia.Gib_Gear(), damage, GIB_METALLIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), Damage, GIB_METALLIC);
+		Entity->ThrowHead (GameMedia.Gib_Gear(), Damage, GIB_METALLIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -697,10 +704,10 @@ void CMakron::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 
 bool CMakron::CheckAttack ()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -711,7 +718,7 @@ bool CMakron::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 			return false;
 	}
 	
@@ -719,7 +726,7 @@ bool CMakron::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 			return false;
 		if (MonsterFlags & MF_HAS_MELEE)
 			AttackState = AS_MELEE;
@@ -732,7 +739,7 @@ bool CMakron::CheckAttack ()
 	if (!(MonsterFlags & MF_HAS_ATTACK))
 		return false;
 		
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -759,19 +766,19 @@ bool CMakron::CheckAttack ()
 		return false;
 	}
 
-	if (skill->Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	if (frand () < chance)
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		if (frand() < 0.3)
 			AttackState = AS_SLIDING;
@@ -783,7 +790,7 @@ bool CMakron::CheckAttack ()
 #else
 	float	chance;
 
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight);
@@ -792,26 +799,26 @@ bool CMakron::CheckAttack ()
 		CTrace tr (spot1, spot2, Entity, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
-		if (tr.Ent != Entity->Enemy)
+		if (tr.Entity != Entity->Enemy)
 		{	
 			// PGM - we want them to go ahead and shoot at info_notnulls if they can.
-			if(Entity->Enemy->GetSolid() != SOLID_NOT || tr.fraction < 1.0)		//PGM
+			if(Entity->Enemy->GetSolid() != SOLID_NOT || tr.Fraction < 1.0)		//PGM
 			{
 				// PMM - if we can't see our target, and we're not blocked by a monster, go into blind fire if available
-				if ((!(tr.ent->svFlags & SVF_MONSTER)) && (!IsVisible(Entity, Entity->Enemy)))
+				if ((!(tr.Entity->GetSvFlags() & SVF_MONSTER)) && (!IsVisible(Entity, *Entity->Enemy)))
 				{
 					if ((BlindFire) && (BlindFireDelay <= 20.0))
 					{
-						if (level.Frame < AttackFinished)
+						if (Level.Frame < AttackFinished)
 							return false;
-						if (level.Frame < (TrailTime + BlindFireDelay))
+						if (Level.Frame < (TrailTime + BlindFireDelay))
 							// wait for our time
 							return false;
 						else
 						{
 							// make sure we're not going to shoot a monster
 							tr (spot1, BlindFireTarget, Entity, CONTENTS_MONSTER);
-							if (tr.allSolid || tr.startSolid || ((tr.fraction < 1.0) && (tr.Ent != Entity->Enemy)))
+							if (tr.AllSolid || tr.StartSolid || ((tr.Fraction < 1.0) && (tr.Entity != Entity->Enemy)))
 								return false;
 
 							AttackState = AS_BLIND;
@@ -829,7 +836,7 @@ bool CMakron::CheckAttack ()
 	if (EnemyRange == RANGE_MELEE)
 	{
 		// don't always melee in easy mode
-		if (skill->Integer() == 0 && (randomMT()&3) )
+		if (CvarList[CV_SKILL].Integer() == 0 && (randomMT()&3) )
 		{
 			// PMM - fix for melee only monsters & strafing
 			AttackState = AS_STRAIGHT;
@@ -850,7 +857,7 @@ bool CMakron::CheckAttack ()
 		return false;
 	}
 	
-	if (level.Frame < AttackFinished)
+	if (Level.Frame < AttackFinished)
 		return false;
 		
 	if (EnemyRange == RANGE_FAR)
@@ -867,32 +874,28 @@ bool CMakron::CheckAttack ()
 	else
 		return false;
 
-	if (skill->Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		chance *= 0.5;
-	else if (skill->Integer() >= 2)
+	else if (CvarList[CV_SKILL].Integer() >= 2)
 		chance *= 2;
 
 	// PGM - go ahead and shoot every time if it's a info_notnull
 	if ((frand () < chance) || (Entity->Enemy->GetSolid() == SOLID_NOT))
 	{
 		AttackState = AS_MISSILE;
-		AttackFinished = level.Frame + ((2*frand())*10);
+		AttackFinished = Level.Frame + ((2*frand())*10);
 		return true;
 	}
 
 	// PMM -daedalus should strafe more .. this can be done here or in a customized
 	// check_attack code for the hover.
-	if (Entity->Flags & FL_FLY)
+	if (AIFlags & AI_FLY)
 	{
 		// originally, just 0.3
-		float strafe_chance;
-		if (!(strcmp(Entity->ClassName, "monster_daedalus")))
-			strafe_chance = 0.8f;
-		else
-			strafe_chance = 0.6f;
+		float strafe_chance = 0.8f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (Entity->Enemy->ClassName) && (!strcmp(Entity->Enemy->ClassName, "tesla")))
+		if (Entity->Enemy && (Entity->Enemy->ClassName != "tesla"))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)
@@ -984,13 +987,13 @@ Jorg is just about dead, so set up to launch Makron out
 =================
 */
 CMakronJumpTimer::CMakronJumpTimer () :
-CBaseEntity(),
-CThinkableEntity ()
+IBaseEntity(),
+IThinkableEntity ()
 {
 };
 CMakronJumpTimer::CMakronJumpTimer (sint32 Index) :
-CBaseEntity(Index),
-CThinkableEntity (Index)
+IBaseEntity(Index),
+IThinkableEntity (Index)
 {
 };
 
@@ -1002,11 +1005,11 @@ void CMakronJumpTimer::Think ()
 	Monster->Entity = newClass;
 	newClass->State.GetOrigin() = State.GetOrigin();
 	Monster->Spawn ();
-	newClass->NextThink = level.Frame + 1;
+	newClass->NextThink = Level.Frame + 1;
 	newClass->Target = LinkedJorg->Target;
 
 	// jump at player
-	CPlayerEntity *Player = level.SightClient;
+	CPlayerEntity *Player = Level.SightClient;
 	if (!Player)
 		return;
 
@@ -1016,7 +1019,7 @@ void CMakronJumpTimer::Think ()
 	vec3f vel = vec3fOrigin.MultiplyAngles (400, vec);
 	newClass->Velocity = vel;
 	newClass->Velocity.Z = 200;
-	newClass->GroundEntity = NULL;
+	newClass->GroundEntity = nullentity;
 	newClass->Link ();
 
 	Free ();
@@ -1026,7 +1029,7 @@ void CMakronJumpTimer::Spawn (CJorg *Jorg)
 {
 	CMakronJumpTimer *Timer = QNewEntityOf CMakronJumpTimer;
 	
-	Timer->NextThink = level.Frame + 8;
+	Timer->NextThink = Level.Frame + 8;
 	Timer->LinkedJorg = Jorg->Entity;
 	Timer->State.GetOrigin() = Jorg->Entity->State.GetOrigin();
 	Timer->Link();

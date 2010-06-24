@@ -33,9 +33,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CHealth::CHealth (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 Amount, EHealthFlags HealthFlags) :
+CHealth::CHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint32 Amount, EHealthFlags HealthFlags) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 Amount(Amount),
@@ -43,35 +43,35 @@ HealthFlags(HealthFlags)
 {
 };
 
-bool CHealth::Pickup (CItemEntity *ent, CPlayerEntity *other)
+bool CHealth::Pickup (CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (!(HealthFlags & HEALTHFLAG_IGNOREMAX) && (other->Health >= other->MaxHealth))
+	if (!(HealthFlags & HEALTHFLAG_IGNOREMAX) && (Other->Health >= Other->MaxHealth))
 		return false;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if (other->Health >= 250 && Amount > 25)
+	if (Other->Health >= 250 && Amount > 25)
 		return false;
 //ZOID
 #endif
 
-	other->Health += Amount;
+	Other->Health += Amount;
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if (other->Health > 250 && Amount > 25)
-		other->Health = 250;
+	if (Other->Health > 250 && Amount > 25)
+		Other->Health = 250;
 //ZOID
 #endif
 
 	if (!(HealthFlags & HEALTHFLAG_IGNOREMAX))
 	{
-		if (other->Health > other->MaxHealth)
-			other->Health = other->MaxHealth;
+		if (Other->Health > Other->MaxHealth)
+			Other->Health = Other->MaxHealth;
 	}
 
-	if (!(ent->SpawnFlags & DROPPED_ITEM) && (game.GameMode & GAME_DEATHMATCH))
-		SetRespawn (ent, 300);
+	if (!(Item->SpawnFlags & DROPPED_ITEM) && (Game.GameMode & GAME_DEATHMATCH))
+		SetRespawn (Item, 300);
 
 	return true;
 }
@@ -80,32 +80,32 @@ class CHealthEntity : public CItemEntity
 {
 public:
 	CHealthEntity() :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity ()
 	  {
 	  };
 
 	CHealthEntity (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CItemEntity (Index)
 	  {
 	  };
 
 	void Spawn (CBaseItem *item)
 	{
-		if ((game.GameMode & GAME_DEATHMATCH) && dmFlags.dfNoHealth.IsEnabled())
+		if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoHealth.IsEnabled())
 		{
 			Free ();
 			return;
 		}
 
 		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
+		NextThink = Level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 
 		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
+		State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	};
 };
 
@@ -115,7 +115,7 @@ LINK_ITEM_TO_CLASS (item_health_large, CHealthEntity);
 
 void AddHealthToList ()
 {
-	NItems::StimPack = QNew (com_itemPool, 0) CHealth("item_health_small", "models/items/healing/stimpack/tris.md2", 0, "items/s_health.wav", "i_health", "Stimpack", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 2, HEALTHFLAG_IGNOREMAX);
-	NItems::SmallHealth = QNew (com_itemPool, 0) CHealth("item_health", "models/items/healing/medium/tris.md2", 0, "items/n_health.wav", "i_health", "Medium Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 10, HEALTHFLAG_NONE);
-	NItems::LargeHealth = QNew (com_itemPool, 0) CHealth("item_health_large", "models/items/healing/large/tris.md2", 0, "items/l_health.wav", "i_health", "Large Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 25, HEALTHFLAG_NONE);
+	NItems::StimPack = QNew (TAG_GENERIC) CHealth("item_health_small", "models/items/healing/stimpack/tris.md2", 0, "items/s_health.wav", "i_health", "Stimpack", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 2, HEALTHFLAG_IGNOREMAX);
+	NItems::SmallHealth = QNew (TAG_GENERIC) CHealth("item_health", "models/items/healing/medium/tris.md2", 0, "items/n_health.wav", "i_health", "Medium Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 10, HEALTHFLAG_NONE);
+	NItems::LargeHealth = QNew (TAG_GENERIC) CHealth("item_health_large", "models/items/healing/large/tris.md2", 0, "items/l_health.wav", "i_health", "Large Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 25, HEALTHFLAG_NONE);
 }

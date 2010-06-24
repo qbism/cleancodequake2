@@ -165,63 +165,6 @@ CFrame BrainFramesWalk1 [] =
 };
 CAnim BrainMoveWalk1 (FRAME_walk101, FRAME_walk111, BrainFramesWalk1);
 
-// walk2 is FUBAR, do not use
-#if 0
-void brain_walk2_cycle (edict_t *self)
-{
-	if (frand() > 0.1)
-		self->monsterinfo.nextframe = FRAME_walk220;
-}
-
-CFrame brain_frames_walk2 [] =
-{
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	-2),
-	CFrame (&CMonster::AI_Walk,	-4),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	12),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	0),
-
-	CFrame (&CMonster::AI_Walk,	-2),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	10),		// Cycle Start
-
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	7),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	-3),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	0),
-
-	CFrame (&CMonster::AI_Walk,	4,	brain_walk2_cycle,
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	-8),		
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	-5,	NULL
-};
-CAnim brain_move_walk2 = {FRAME_walk201, FRAME_walk240, brain_frames_walk2, NULL};
-#endif
-
 void CBrain::Walk ()
 {
 	//CurrentMove = (frand() <= 0.5) ? &BrainMoveWalk1 : &BrainMoveWalk2;
@@ -292,16 +235,16 @@ CFrame BrainFramesPain1 [] =
 };
 CAnim BrainMovePain1 (FRAME_pain101, FRAME_pain121, BrainFramesPain1, &CMonster::Run);
 
-void CBrain::Pain(CBaseEntity *other, float kick, sint32 damage)
+void CBrain::Pain(IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))
@@ -328,7 +271,7 @@ void CBrain::Pain(CBaseEntity *other, float kick, sint32 damage)
 CFrame BrainFramesDuck [] =
 {
 	CFrame (&CMonster::AI_Move,	0),
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move,	-2,	ConvertDerivedFunction(&CBrain::Duck_Down)),
 	CFrame (&CMonster::AI_Move,	17,	ConvertDerivedFunction(&CBrain::Duck_Hold)),
 	CFrame (&CMonster::AI_Move,	-3),
@@ -345,19 +288,19 @@ CFrame BrainFramesDuck [] =
 };
 CAnim BrainMoveDuck (FRAME_duck01, FRAME_duck08, BrainFramesDuck, &CMonster::Run);
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CBrain::Duck_Down ()
 {
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
-	Entity->GetMins() -= vec3f(0, 0, 32);
+	Entity->GetMins().Z -= 32;
 	Entity->Link ();
 }
 
 void CBrain::Duck_Hold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -366,19 +309,19 @@ void CBrain::Duck_Hold ()
 void CBrain::Duck_Up ()
 {
 	AIFlags &= ~AI_DUCKED;
-	Entity->GetMins() += vec3f(0, 0, 32);
+	Entity->GetMins().Z += 32;
 	Entity->Link ();
 }
 
-void CBrain::Dodge (CBaseEntity *attacker, float eta)
+void CBrain::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25f)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
-	PauseTime = level.Frame + ((eta + 0.5) * 10);
+	PauseTime = Level.Frame + ((eta + 0.5) * 10);
 	CurrentMove = &BrainMoveDuck;
 }
 #else
@@ -387,11 +330,11 @@ void CBrain::Duck (float eta)
 	// has to be done immediately otherwise he can get stuck
 	DuckDown ();
 
-	if (!skill->Boolean())
+	if (!CvarList[CV_SKILL].Boolean())
 		// PMM - stupid dodge
-		DuckWaitTime = level.Frame + ((eta + 1) * 10);
+		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	CurrentMove = &BrainMoveDuck;
 	NextFrame = FRAME_duck01;
@@ -442,7 +385,7 @@ void CBrain::Dead ()
 	Entity->Link ();
 }
 
-void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CBrain::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->State.GetEffects() = 0;
 	PowerArmorType = POWER_ARMOR_NONE;
@@ -452,10 +395,10 @@ void CBrain::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, 
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n = 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n = 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		return;
 	}
 
@@ -532,7 +475,7 @@ void CBrain::TentacleAttack ()
 {
 	static const vec3f aim (MELEE_DISTANCE, 0, 8);
 
-	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), -600) && (skill->Boolean()))
+	if (CMeleeWeapon::Fire (Entity, aim, (10 + (irandom(5))), -600) && (CvarList[CV_SKILL].Boolean()))
 		Refire = true;
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
 }
@@ -593,7 +536,7 @@ static bool BrainTongueAttackCheck (vec3f &start, vec3f &end)
 	return true;
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CBrain::TongueAttack ()
 {
@@ -618,20 +561,20 @@ void CBrain::TongueAttack ()
 	end = Entity->Enemy->State.GetOrigin();
 
 	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
-	if (tr.Ent != Entity->Enemy)
+	if (tr.Entity != Entity->Enemy)
 		return;
 
 	static const int damage = 5;
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_TENTACLES_RETRACT]);
 
-	CTempEnt_Trails::FleshCable (start, end, Entity->State.GetNumber());
+	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 
 	vec3f dir = start - end;
-	entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+	entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 
 	// pull the enemy in
 	Entity->Enemy->State.GetOrigin().Z += 1;
-	entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity = f * -1200;;
+	entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity = f * -1200;;
 }
 
 // Brian right eye center
@@ -671,6 +614,9 @@ const vec3f brain_leye [11] =
 // each frame of the run cycle
 void CBrain::LaserBeamFire ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f forward, right, up;
 
 	// RAFAEL
@@ -691,7 +637,7 @@ void CBrain::LaserBeamFire ()
 		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
 
 	Laser->Enemy = Entity->Enemy;
-	Laser->SetOwner (Entity);
+	Laser->SetOwner(Entity);
 	Laser->Damage = 1;
 	MonsterFireBeam (Laser);
    
@@ -706,14 +652,14 @@ void CBrain::LaserBeamFire ()
 		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
 
 	Laser->Enemy = Entity->Enemy;
-	Laser->SetOwner (Entity);
+	Laser->SetOwner(Entity);
 	Laser->Damage = 1;
 	MonsterFireBeam (Laser);
 }
 
 void CBrain::LaserBeamRefire ()
 {
-	if (frand() < 0.5 && IsVisible (Entity, Entity->Enemy) && entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0)
+	if (frand() < 0.5 && IsVisible (Entity, *Entity->Enemy) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 		Entity->State.GetFrame() = FRAME_walk101;
 }
 
@@ -759,7 +705,7 @@ void CBrain::Attack ()
 {	
 	if (frand() < 0.8)
 	{
-		ERangeType r = Range (Entity, Entity->Enemy);
+		ERangeType r = Range (Entity, *Entity->Enemy);
 
 		switch (r)
 		{
@@ -831,7 +777,7 @@ void CBrain::Spawn ()
 	Entity->Mass = 400;
 
 	MonsterFlags |= (MF_HAS_MELEE | MF_HAS_SIGHT | MF_HAS_SEARCH | MF_HAS_IDLE
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK
 #endif
 #if XATRIX_FEATURES

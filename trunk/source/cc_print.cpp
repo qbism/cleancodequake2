@@ -42,17 +42,17 @@ SV_ClientPrintf
 Sends text across to be displayed if the level passes
 =================
 */
-static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+static void SV_ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
-	va_list		argptr;
-	static char	string[MAX_COMPRINT];
-	CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent->Entity);
+	va_list			argptr;
+	static char		string[MAX_COMPRINT];
+	CPlayerEntity	*Player = entity_cast<CPlayerEntity>(ent->Entity);
 
 	if (printLevel < Player->Client.Respawn.MessageLevel)
 		return;
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 
 	WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
@@ -62,80 +62,98 @@ static void SV_ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt
 	Cast ((printLevel != PRINT_CENTER) ? CASTFLAG_UNRELIABLE : CASTFLAG_RELIABLE, Player);
 }
 
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	static char	msg[MAX_COMPRINT];
 	va_list		argptr;
 
 	if (ent)
 	{
-		sint32 n = ent - g_edicts;
-		if (n < 1 || n > game.MaxClients)
+		sint32 n = ent - Game.Entities;
+		if (n < 1 || n > Game.MaxClients)
 		{
-			DebugPrintf ( "CleanCode Warning: ClientPrintf to a non-client\n");
+			DebugPrintf ("CleanCode Warning: ClientPrintf to a non-client\n");
 			return;
 		}
 	}
 
 	// Evaluate args
 	va_start (argptr, fmt);
-	vsnprintf_s (msg, sizeof(msg), sizeof(msg), fmt, argptr);
+	vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
 
 	// Print
 	if (ent)
 		SV_ClientPrintf (ent, printLevel, "%s", msg);
 	else
-		DebugPrintf ( "%s", msg);
+		ServerPrintf ("%s", msg);
 }
 
-void DeveloperPrintf (char *fmt, ...)
+void DeveloperPrintf (const char *fmt, ...)
 {
-	if (!developer->Integer())
+	if (!CvarList[CV_DEVELOPER].Integer())
 		return;
 
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	CC_OutputDebugString (text);
 }
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
-void DebugPrintf (char *fmt, ...)
+void DebugPrintf (const char *fmt, ...)
+{
+#if _DEBUG
+	va_list		argptr;
+	static char	text[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+
+CC_DISABLE_DEPRECATION
+	gi.dprintf ("%s", text);
+CC_ENABLE_DEPRECATION
+
+	CC_OutputDebugString (text);
+#endif
+}
+
+void ServerPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (text, sizeof(text), MAX_COMPRINT, fmt, argptr);
+	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 	gi.dprintf ("%s", text);
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 
 	CC_OutputDebugString (text);
 }
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
+void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	// Echo to console
-	if (dedicated->Integer())
+	if (CvarList[CV_DEDICATED].Integer())
 	{
 		static char	copy[1024];
 		sint32		i;
@@ -144,33 +162,35 @@ void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
 		for (i = 0; i < ((MAX_COMPRINT/2) - 1) && string[i]; i++)
 			copy[i] = string[i]&127;
 		copy[i] = 0;
-		DebugPrintf ( "%s", copy);
+		ServerPrintf ("%s", copy);
 	}
 
-	for (sint32 i = 1; i <= game.MaxClients; i++)
+	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 		if (printLevel < Player->Client.Respawn.MessageLevel)
 			continue;
 		if (Player->Client.Persistent.State != SVCS_SPAWNED)
 			continue;
 
-
 		WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
+
 		if (printLevel != PRINT_CENTER)
 			WriteByte (printLevel);
+
 		WriteString (string);
+
 		Cast (CASTFLAG_UNRELIABLE, Player);
 	}
 }
 #else
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
+void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	if (printLevel == PRINT_CENTER)
@@ -179,40 +199,52 @@ void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...)
 		gi.cprintf (ent, printLevel, "%s", string);
 }
 
-void DeveloperPrintf (char *fmt, ...)
+void DeveloperPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	gi.dprintf ("%s", string);
 }
 
-void DebugPrintf (char *fmt, ...)
+void DebugPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	gi.dprintf ("%s", string);
 }
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...)
+void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char	string[MAX_COMPRINT];
 
 	va_start (argptr, fmt);
-	vsnprintf_s (string, sizeof(string), sizeof(string), fmt, argptr);
+	vsnprintf (string, sizeof(string), fmt, argptr);
 	va_end (argptr);
 	
 	gi.bprintf (printLevel, "%s", string);
+}
+
+void ServerPrintf (const char *fmt, ...)
+{
+	va_list		argptr;
+	static char	string[MAX_COMPRINT];
+
+	va_start (argptr, fmt);
+	vsnprintf (string, sizeof(string), fmt, argptr);
+	va_end (argptr);
+	
+	gi.dprintf ("%s", string);
 }
 
 #endif

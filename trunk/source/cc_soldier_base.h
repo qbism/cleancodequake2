@@ -51,7 +51,19 @@ public:
 		SOUND_MAX
 	);
 
-	CC_ENUM (uint8, ESoldierAIType)
+	/**
+	\typedef	uint8 ESoldierAIType
+	
+	\brief	Defines an alias representing soldier AI weapon types.
+	**/
+	typedef uint8 ESoldierAIType;
+
+	/**
+	\enum	
+	
+	\brief	Values that represent soldier AI weapon types. 
+	**/
+	enum
 	{
 		AI_BLASTER,			// Regular firing, run-fire
 		AI_MACHINEGUN,		// Special fire frame, no running
@@ -74,8 +86,10 @@ public:
 	}
 
 	virtual void Attack () = 0;
-#if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+#if !ROGUE_FEATURES
+	void Dodge (IBaseEntity *Attacker, float eta);
+#else
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #endif
 	void Idle ();
 	void Run ();
@@ -84,7 +98,7 @@ public:
 	void Walk ();
 
 	void CockGun ();
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
@@ -112,13 +126,13 @@ public:
 	void Attack2_Refire2 ();
 	void Attack3_Refire ();
 	void Attack6_Refire ();
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void Attack6_RefireBlaster();
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn (); // Initialize "commonalities"
 	virtual void SpawnSoldier () = 0; // Initialize health, etc.

@@ -39,8 +39,8 @@ class CIonRipper : public CWeapon
 public:
 	CIonRipper();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
@@ -48,7 +48,7 @@ public:
 	WEAPON_CLASS_DEFS (CIonRipper);
 };
 
-class CIonRipperBoomerang : public CFlyMissileProjectile, public CThinkableEntity, public CTouchableEntity
+class CIonRipperBoomerang : public IFlyMissileProjectile, public IThinkableEntity, public ITouchableEntity
 {
 public:
 	sint32		Damage;
@@ -62,25 +62,25 @@ public:
 	{
 		File.Write<sint32> (Damage);
 
-		CThinkableEntity::SaveFields (File);
-		CTouchableEntity::SaveFields (File);
-		CFlyMissileProjectile::SaveFields (File);
+		IThinkableEntity::SaveFields (File);
+		ITouchableEntity::SaveFields (File);
+		IFlyMissileProjectile::SaveFields (File);
 	}
 
 	void LoadFields (CFile &File)
 	{
 		Damage = File.Read <sint32>();
 
-		CThinkableEntity::LoadFields (File);
-		CTouchableEntity::LoadFields (File);
-		CFlyMissileProjectile::LoadFields (File);
+		IThinkableEntity::LoadFields (File);
+		ITouchableEntity::LoadFields (File);
+		IFlyMissileProjectile::LoadFields (File);
 	}
 
 	void Think ();
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
-	static void Spawn	(CBaseEntity *Spawner, vec3f start, vec3f dir,
-						sint32 damage, sint32 speed);
+	static void Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
+						sint32 Damage, sint32 speed);
 
 	bool Run ();
 };

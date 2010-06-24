@@ -33,21 +33,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-void G_ProjectSource (const vec3f &point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result)
+void G_ProjectSource (const vec3f &Point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up)
 {
-	result.Set (point.X + forward.X * distance.X + right.X * distance.Y,
-				point.Y + forward.Y * distance.X + right.Y * distance.Y,
-				point.Z + forward.Z * distance.X + right.Z * distance.Y + distance.Z);
+	result.Set (Point.X + forward.X * distance.X + right.X * distance.Y + up.X * distance.Z,
+				Point.Y + forward.Y * distance.X + right.Y * distance.Y + up.Y * distance.Z,
+				Point.Z + forward.Z * distance.X + right.Z * distance.Y + up.Z * distance.Z);
 }
 
-
-CBaseEntity *FindRadius (CBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
+IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
 {
-	for (edict_t *from = (!From) ? g_edicts : (From->gameEntity + 1); from < &g_edicts[Game.GetNumEdicts()]; from++)
+	for (SEntity *from = (!From) ? Game.Entities : (From->GetGameEntity() + 1); from < &Game.Entities[GameAPI.GetNumEdicts()]; from++)
 	{
 		if (!from->Entity)
 			continue;
-		CBaseEntity *Entity = from->Entity;
+		IBaseEntity *Entity = from->Entity;
 		if (!Entity->GetInUse())
 			continue;
 		if (CheckNonSolid && (Entity->GetSolid() == SOLID_NOT))
@@ -76,7 +75,7 @@ NULL will be returned if the end of the list is reached.
 =============
 */
 
-CBaseEntity *CC_PickTarget (char *targetname)
+IBaseEntity *CC_PickTarget (char *targetname)
 {
 	static TTargetList choices;
 	choices.clear();
@@ -84,19 +83,19 @@ CBaseEntity *CC_PickTarget (char *targetname)
 	if (!targetname)
 		return NULL;
 
-	CMapEntity *ent = NULL;
+	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (ent, targetname);
-		if (!ent)
+		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname);
+		if (!Entity)
 			break;
 
-		choices.push_back (ent);
+		choices.push_back (Entity);
 	}
 
 	if (!choices.size())
 	{
-		DebugPrintf("G_PickTarget: target %s not found\n", targetname);
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Target \"%s\" not found\n", targetname);
 		return NULL;
 	}
 
@@ -111,19 +110,19 @@ TTargetList CC_GetTargets (char *targetname)
 	if (!targetname)
 		return choices;
 
-	CMapEntity *ent = NULL;
+	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		ent = CC_Find<CMapEntity, ENT_MAP, EntityMemberOffset(CMapEntity,TargetName)> (ent, targetname);
-		if (!ent)
+		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname);
+		if (!Entity)
 			break;
 
-		choices.push_back (ent);
+		choices.push_back (Entity);
 	}
 
 	if (!choices.size())
 	{
-		DebugPrintf("G_PickTarget: target %s not found\n", targetname);
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Target \"%s\" not found\n", targetname);
 		return choices;
 	}
 
@@ -148,72 +147,50 @@ G_TouchTriggers
 
 ============
 */
-void	G_TouchTriggers (CBaseEntity *ent)
+void	G_TouchTriggers (IBaseEntity *Entity)
 {
-	static edict_t		*touch[MAX_CS_EDICTS];
-	Mem_Zero(touch, sizeof(touch));
-
 	// dead things don't activate triggers!
-	if (ent->EntityFlags & ENT_HURTABLE)
+	if (Entity->EntityFlags & ENT_HURTABLE)
 	{
-		CHurtableEntity *Hurt = entity_cast<CHurtableEntity>(ent);
+		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(Entity);
 		if ((Hurt->CanTakeDamage) && (Hurt->Health <= 0))
 			return;
 	}
 
-	sint32 num = BoxEdicts (ent->GetAbsMin(), ent->GetAbsMax(), touch, MAX_CS_EDICTS, true);
+	TBoxEdictsEntityList Entities = BoxEdicts (Entity->GetAbsMin(), Entity->GetAbsMax(), true);
 
 	// be careful, it is possible to have an entity in this
 	// list removed before we get to it (killtriggered)
-	for (sint32 i = 0; i < num; i++)
+	for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
 	{
-		edict_t *hit = touch[i];
-		CBaseEntity *Entity = hit->Entity;
+		IBaseEntity *TouchedEntity = (*it);
 
-		if (!Entity || !Entity->GetInUse())
+		if (!TouchedEntity || !TouchedEntity->GetInUse())
 			continue;
 
-		if (Entity->EntityFlags & ENT_TOUCHABLE)
+		if (TouchedEntity->EntityFlags & ENT_TOUCHABLE)
 		{
-			(entity_cast<CTouchableEntity>(Entity))->Touch (ent, NULL, NULL);
+			(entity_cast<ITouchableEntity>(TouchedEntity))->Touch (Entity, NULL, NULL);
 			continue;
 		}
 
-		if (!ent->GetInUse())
+		if (!Entity->GetInUse())
 			break;
 	}
 }
 
-/*
-==============================================================================
-
-Kill box
-
-==============================================================================
-*/
-
-/*
-=================
-KillBox
-
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
-=================
-*/
-
-
 // Calls the callback for each member of the team in "ent"
-void CForEachTeamChainCallback::Query (CBaseEntity *Master)
+void CForEachTeamChainCallback::Query (IBaseEntity *Master)
 {
-	for (CBaseEntity *e = Master->Team.Master; e; e = e->Team.Chain)
+	for (IBaseEntity *e = Master->Team.Master; e; e = e->Team.Chain)
 		Callback (e);
 }
 
 void CForEachPlayerCallback::Query (bool MustBeInUse)
 {
-	for (uint8 i = 1; i <= game.MaxClients; i++)
+	for (uint8 i = 1; i <= Game.MaxClients; i++)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(g_edicts[i].Entity);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 
 		if (MustBeInUse && (!Player->GetInUse() || Player->Client.Persistent.State != SVCS_SPAWNED))
 			continue;
@@ -223,6 +200,22 @@ void CForEachPlayerCallback::Query (bool MustBeInUse)
 	}
 }
 
+void CForEachEntityCallback::Query (uint32 FlagsCanHave, uint32 FlagsCantHave, bool MustBeInUse)
+{
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
+	{
+		IBaseEntity *Entity = (*it)->Entity;
+
+		if (MustBeInUse && (!Entity->GetInUse()))
+			continue;
+		if (FlagsCanHave && !(Entity->EntityFlags & FlagsCanHave))
+			continue;
+		if (FlagsCantHave && (Entity->EntityFlags & FlagsCantHave))
+			continue;
+
+		Callback (Entity);
+	}
+}
 /*
 =============
 range
@@ -234,9 +227,9 @@ returns the range catagorization of an entity reletive to self
 3	only triggered by damage
 =============
 */
-ERangeType Range (CBaseEntity *self, CBaseEntity *other)
+ERangeType Range (IBaseEntity *self, IBaseEntity *Other)
 {
-	return Range(self->State.GetOrigin(), other->State.GetOrigin());
+	return Range(self->State.GetOrigin(), Other->State.GetOrigin());
 }
 
 /*
@@ -246,12 +239,21 @@ visible
 returns 1 if the entity is visible to self, even if not infront ()
 =============
 */
-bool IsVisible (CBaseEntity *self, CBaseEntity *other)
+bool IsVisible (IBaseEntity *self, IBaseEntity *Other)
 {
+	if (!self || !Other)
+		return false;
+
 	vec3f start = self->State.GetOrigin() + vec3f(0, 0, self->ViewHeight),
-		  end = other->State.GetOrigin() + vec3f(0, 0, other->ViewHeight);
+		  end = Other->State.GetOrigin() + vec3f(0, 0, Other->ViewHeight);
 	return (CTrace (start, end,
-		self, CONTENTS_MASK_OPAQUE).fraction == 1.0);
+		self, CONTENTS_MASK_OPAQUE).Fraction == 1.0);
+}
+
+bool IsVisible (vec3f left, vec3f right, IBaseEntity *self)
+{
+	return (CTrace (left, right,
+		self, CONTENTS_MASK_OPAQUE).Fraction == 1.0);
 }
 
 /*
@@ -261,20 +263,45 @@ infront
 returns 1 if the entity is in front (in sight) of self
 =============
 */
-bool IsInFront (CBaseEntity *self, CBaseEntity *other)
+
+bool IsInFront (IBaseEntity *self, IBaseEntity *Other)
 {	
 	vec3f forward;
 	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	return (((other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3);
+	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3f);
 }
 
-#include <crtdbg.h>
+bool IsInBack (IBaseEntity *self, IBaseEntity *Other)
+{	
+	vec3f forward;
+	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
+	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) < -0.3f);
+}
 
-void AssertExpression (const bool expr, const char *msg)
+bool IsBelow (IBaseEntity *self, IBaseEntity *Other)
+{
+	if (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | vec3f(0, 0, -1)) > 0.95)  // 18 degree arc below
+		return true;
+	return false;
+}
+
+IBaseEntity *LoadEntity (uint32 Index)
+{
+	return (Index == -1) ? NULL : Game.Entities[Index].Entity;
+}
+
+#if defined(WIN32)
+#include <crtdbg.h>
+#endif
+
+bool AssertExpression (const bool expr, const char *msg)
 {
 #if ALLOW_ASSERTS
 	if (!expr)
 	{
+		// Print it to the console
+		DebugPrintf ("Assertion failed: %s\n", msg);
+
 		// On Win32, open up the Crt debug report thingy
 #if defined(WIN32)
 #if defined(_DEBUG)
@@ -288,8 +315,9 @@ void AssertExpression (const bool expr, const char *msg)
 		// Check msg for more information.
 		assert (0);
 #endif
-		// Print it to the console
-		DebugPrintf ("Assertion failed: %s\n", msg);
+		return true;
 	}
 #endif
+
+	return false;
 }

@@ -34,13 +34,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_TIMER_H) || !INCLUDE_GUARDS
 #define CC_GUARD_TIMER_H
 
+#if 0
 class CGameTimer
 {
 public:
-	FrameNumber_t		EndTime;
+	FrameNumber		EndTime;
 	sint32				Key;
 
-	CGameTimer (FrameNumber_t EndTime, sint32 Key) :
+	CGameTimer (FrameNumber EndTime, sint32 Key) :
 	EndTime (EndTime),
 	Key (Key)
 	{
@@ -78,7 +79,19 @@ public:
 
 void AddTimer (CGameTimer *Timer, sint32 Key);
 
-CC_ENUM (sint32, ETimerKeys)
+/**
+\typedef	sint32 ETimerKeys
+
+\brief	Defines an alias representing the timer keys.
+**/
+typedef sint32 ETimerKeys;
+
+/**
+\enum	
+
+\brief	Values that represent timer keys. 
+**/
+enum
 {
 	TIMER_NONE = -1,
 	
@@ -86,9 +99,9 @@ CC_ENUM (sint32, ETimerKeys)
 };
 
 template <typename TType>
-void CreateTimer (FrameNumber_t	EndTime, sint32 Key = TIMER_NONE)
+void CreateTimer (FrameNumber	EndTime, sint32 Key = TIMER_NONE)
 {
-	AddTimer (QNew (com_levelPool, 0) TType (EndTime, Key), Key);
+	AddTimer (QNew (TAG_LEVEL) TType (EndTime, Key), Key);
 }
 
 void KillTimer (sint32 Key);
@@ -96,6 +109,14 @@ void KillTimer (sint32 Key);
 void RunTimers ();
 void ClearTimers ();
 void SaveTimers ();
+#else
+inline void ClearTimers ()
+{
+}
+inline void RunTimers ()
+{
+}
+#endif
 
 #else
 FILE_WARNING

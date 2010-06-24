@@ -86,7 +86,7 @@ public:
 	bool CheckMelee ();
 	bool CheckJump ();
 	
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void Attack ();
 	void Melee ();
@@ -100,10 +100,12 @@ public:
 	bool CheckAttack ();
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

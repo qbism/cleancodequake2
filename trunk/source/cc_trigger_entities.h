@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-class CTriggerBase : public CMapEntity, public CBrushModel, public CTouchableEntity, public CUsableEntity
+class CTriggerBase : public IMapEntity, public IBrushModel, public ITouchableEntity, public IUsableEntity
 {
 public:
 	enum
@@ -44,7 +44,7 @@ public:
 	};
 	uint32			ThinkType;
 	vec3f			MoveDir;
-	FrameNumber_t	Wait;
+	FrameNumber		Wait;
 	uint8			Sounds;
 
 	CTriggerBase ();
@@ -56,21 +56,21 @@ public:
 	bool Run ();
 
 	virtual void Think ();
-	virtual void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf);
+	virtual void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 
-	void Init ();
+	void		Init ();
 
 	virtual bool CheckValidity ()
 	{
-		return CMapEntity::CheckValidity();
+		return IMapEntity::CheckValidity();
 	};
 
 	// the trigger was just activated
-	// ent->activator should be set to the activator so it can be held through a delay
+	// ent->Activator should be set to the Activator so it can be held through a delay
 	// so wait for the delay time before firing
-	void Trigger ();
+	void		Trigger ();
 
 	virtual void Spawn () = 0;
 };
@@ -78,18 +78,32 @@ public:
 class CTriggerMultiple : public CTriggerBase
 {
 public:
-	bool ActivateUse;
+	bool		ActivateUse;
 
 	CTriggerMultiple ();
 	CTriggerMultiple (sint32 Index);
 
 	ENTITYFIELDS_SAVABLE(CTriggerMultiple)
 
-	virtual void Use (CBaseEntity *other, CBaseEntity *activator);
+	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator);
 	virtual void Spawn ();
 
 	virtual bool CheckValidity ()
 	{
-		return CMapEntity::CheckValidity();
+		return IMapEntity::CheckValidity();
 	};
+};
+
+/**
+\enum	
+
+\brief	Values that represent spawnflags pertaining to CTriggerPush. 
+**/
+enum
+{
+	PUSH_ONCE		= BIT(0),
+#if ROGUE_FEATURES
+	PUSH_START_OFF	= BIT(1),
+	PUSH_SILENT		= BIT(2)
+#endif
 };

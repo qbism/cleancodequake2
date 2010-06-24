@@ -216,8 +216,6 @@ ZEXTERN const char * ZEXPORT zlibVersion OF((void));
    me check is automatically made by deflateInit and inflateInit.
  */
 
-ZEXTERN void ZEXPORT zsetfunctions (voidpf	(*_MallocFunction) (unsigned int size), void	(*_FreeFunction) (voidpf ptr));
-
 
 /*
 ZEXTERN int ZEXPORT deflateInit OF((z_streamp strm, int level));

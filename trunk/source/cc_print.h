@@ -36,11 +36,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // If we're using the old, extended library functions
 // we need to make sure that these just re-route to those
-void ClientPrintf (edict_t *ent, EGamePrintLevel printLevel, char *fmt, ...);
-void DeveloperPrintf (char *fmt, ...);
-void DebugPrintf (char *fmt, ...);
+void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...);
+void DeveloperPrintf (const char *fmt, ...);
+void DebugPrintf (const char *fmt, ...);
+void ServerPrintf (const char *fmt, ...);
 
-void BroadcastPrintf (EGamePrintLevel printLevel, char *fmt, ...);
+void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...);
 
 #else
 FILE_WARNING

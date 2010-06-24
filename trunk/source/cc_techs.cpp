@@ -32,12 +32,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_weaponmain.h"
-#include "cc_infoentities.h"
+#include "cc_weapon_main.h"
+#include "cc_info_entities.h"
 
-CTech::CTech (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, uint32 TechNumber, ETechType TechType) :
+CTech::CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, uint32 TechNumber, ETechType TechType) :
 CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 		   Precache),
 TechNumber(TechNumber),
@@ -45,7 +45,7 @@ TechType(TechType)
 {
 };
 
-CTech::CTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+CTech::CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 CBaseItem (Classname, Model, EF_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH,
 			NULL),
 TechNumber(TechNumber),
@@ -57,22 +57,22 @@ TechType(TechType)
 /*------------------------------------------------------------------------*/
 
 
-bool CTech::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CTech::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (other->Client.Persistent.Tech)
+	if (Other->Client.Persistent.Tech)
 	{
-		if (level.Frame - other->Client.Tech.LastTechMessage > 20)
+		if (Level.Frame - Other->Client.Tech.LastTechMessage > 20)
 		{
-			other->PrintToClient(PRINT_CENTER, "You already have a TECH powerup.");
-			other->Client.Tech.LastTechMessage = level.Frame;
+			Other->PrintToClient(PRINT_CENTER, "You already have a TECH powerup.");
+			Other->Client.Tech.LastTechMessage = Level.Frame;
 		}
 		return false; // has this one
 	}
 	
 	// client only gets one tech
-	other->Client.Persistent.Inventory.Set(this, 1);
-	other->Client.Persistent.Tech = this;
-	other->Client.Tech.RegenTime = level.Frame;
+	Other->Client.Persistent.Inventory.Set(this, 1);
+	Other->Client.Persistent.Tech = this;
+	Other->Client.Tech.RegenTime = Level.Frame;
 	return true;
 }
 
@@ -84,12 +84,12 @@ static CSpotBase *FindTechSpawn()
 class CResistanceTech : public CTech
 {
 public:
-	CResistanceTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CResistanceTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, EDamageFlags &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (!Calculated)
@@ -107,12 +107,12 @@ public:
 class CStrengthTech : public CTech
 {
 public:
-	CStrengthTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CStrengthTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
 
-	void DoAggressiveTech	(	CPlayerEntity *Left, CBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, sint32 &DamageFlags,
+	void DoAggressiveTech	(	CPlayerEntity *Left, IBaseEntity *Right, bool Calculated, sint32 &Damage, sint32 &Knockback, EDamageFlags &DamageFlags,
 										EMeansOfDeath &Mod, bool Defending	)
 	{
 		if (Calculated || (Left == Right))
@@ -126,18 +126,18 @@ public:
 class CRegenTech : public CTech
 {
 public:
-	CRegenTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CRegenTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
 
-	void DoPassiveTech	(	CPlayerEntity *Player	)
+	void DoPassiveTech	(CPlayerEntity *Player)
 	{
 		CBaseItem *index;
 		bool noise = false;
-		if (Player->Client.Tech.RegenTime < level.Frame)
+		if (Player->Client.Tech.RegenTime < Level.Frame)
 		{
-			Player->Client.Tech.RegenTime = level.Frame;
+			Player->Client.Tech.RegenTime = Level.Frame;
 			if (Player->Health < 150)
 			{
 				Player->Health += 5;
@@ -156,9 +156,9 @@ public:
 				noise = true;
 			}
 		}
-		if (noise && Player->Client.Tech.SoundTime < level.Frame)
+		if (noise && Player->Client.Tech.SoundTime < Level.Frame)
 		{
-			Player->Client.Tech.SoundTime = level.Frame + 10;
+			Player->Client.Tech.SoundTime = Level.Frame + 10;
 			Player->PlaySound (CHAN_AUTO, SoundIndex("ctf/tech4.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 		}
 	};
@@ -166,28 +166,28 @@ public:
 
 #if AMMO_REGEN_TECH
 
-#define SHELL_REGEN_COUNT	3
-#define BULLET_REGEN_COUNT	6
-#define GRENADE_REGEN_COUNT	2
-#define CELL_REGEN_COUNT	3
-#define ROCKET_REGEN_COUNT	2
-#define SLUG_REGEN_COUNT	1
-#define AMMO_REGEN_TIME		17
+const int SHELL_REGEN_COUNT		= 3;
+const int BULLET_REGEN_COUNT	= 6;
+const int GRENADE_REGEN_COUNT	= 2;
+const int CELL_REGEN_COUNT		= 3;
+const int ROCKET_REGEN_COUNT	= 2;
+const int SLUG_REGEN_COUNT		= 1;
+const int AMMO_REGEN_TIME		= 17;
 
 class CAmmoRegenTech : public CTech
 {
 public:
-	CAmmoRegenTech (char *Classname, char *Model, char *Image, char *Name, CTech::ETechType TechType, uint32 TechNumber) :
+	CAmmoRegenTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
 	CTech (Classname, Model, Image, Name, TechType, TechNumber)
 	{
 	};
 
-	void DoPassiveTech	(	CPlayerEntity *Player	)
+	void DoPassiveTech	(CPlayerEntity *Player)
 	{
 		const sint32 RegenAmts[] = {SHELL_REGEN_COUNT, BULLET_REGEN_COUNT, GRENADE_REGEN_COUNT, ROCKET_REGEN_COUNT, CELL_REGEN_COUNT, SLUG_REGEN_COUNT};
 
 		bool noise = false;
-		if (Player->Client.Tech.RegenTime < level.Frame)
+		if (Player->Client.Tech.RegenTime < Level.Frame)
 		{
 			if (Player->Client.Persistent.Weapon)
 			{
@@ -203,18 +203,18 @@ public:
 				}
 			}
 
-			Player->Client.Tech.RegenTime = level.Frame + AMMO_REGEN_TIME;
+			Player->Client.Tech.RegenTime = Level.Frame + AMMO_REGEN_TIME;
 		}
-		if (noise && Player->Client.Tech.SoundTime < level.Frame)
+		if (noise && Player->Client.Tech.SoundTime < Level.Frame)
 		{
-			Player->Client.Tech.SoundTime = level.Frame + AMMO_REGEN_TIME;
+			Player->Client.Tech.SoundTime = Level.Frame + AMMO_REGEN_TIME;
 			Player->PlaySound (CHAN_AUTO, SoundIndex("ctf/tech5.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
 		}
 	};
 };
 #endif
 
-std::vector<CTech*, std::item_allocator<CTech*> >		TechList;
+std::vector<CTech*>		TechList;
 
 void SpawnTech(CBaseItem *item, CSpotBase *spot);
 class CTechEntity : public CItemEntity
@@ -223,23 +223,24 @@ public:
 	bool AvoidOwner;
 
 	CTechEntity() :
-	  CItemEntity (),
-	  AvoidOwner(true)
+	    CItemEntity (),
+	    AvoidOwner(true)
 	  {
 	  };
 
-	  CTechEntity (sint32 Index) :
+	CTechEntity (sint32 Index) :
+	  IBaseEntity (Index),
 	  CItemEntity(Index),
 	  AvoidOwner(true)
-	  {
-	  };
-
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
 	{
-		if (AvoidOwner && (other == GetOwner()))
+	};
+
+	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
+	{
+		if (AvoidOwner && (Other == GetOwner()))
 			return;
 
-		CItemEntity::Touch (other, plane, surf);
+		CItemEntity::Touch (Other, plane, surf);
 	};
 
 	void Think ()
@@ -252,7 +253,7 @@ public:
 			Free ();
 		}
 		else
-			NextThink = level.Frame + CTF_TECH_TIMEOUT;
+			NextThink = Level.Frame + CTF_TECH_TIMEOUT;
 	};
 
 	void Respawn ()
@@ -272,7 +273,7 @@ public:
 	};
 };
 
-CItemEntity *CTech::DropItem (CBaseEntity *ent)
+CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 {
 	CTechEntity	*dropped = QNewEntityOf CTechEntity();
 	vec3f	forward, right;
@@ -281,95 +282,95 @@ CItemEntity *CTech::DropItem (CBaseEntity *ent)
 	dropped->LinkedItem = this;
 	dropped->SpawnFlags = DROPPED_ITEM;
 	dropped->State.GetEffects() = EffectFlags;
-	dropped->State.GetRenderEffects() = RF_GLOW;
+	dropped->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	dropped->GetMins().Set (-15);
 	dropped->GetMaxs().Set (15);
 	dropped->State.GetModelIndex() = ModelIndex(WorldModel);
 	dropped->GetSolid() = SOLID_TRIGGER;
-	dropped->SetOwner (ent);
+	dropped->SetOwner(Entity);
 
-	if (ent->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & ENT_PLAYER)
 	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(ent);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
 		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (ent->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
 
-		trace (ent->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
-			result, ent, CONTENTS_SOLID);
-		dropped->State.GetOrigin() = trace.EndPos;
+		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
+			result, Player, CONTENTS_SOLID);
+		dropped->State.GetOrigin() = trace.EndPosition;
 	}
 	else
 	{
-		ent->State.GetAngles().ToVectors(&forward, &right, NULL);
-		dropped->State.GetOrigin() = ent->State.GetOrigin();
+		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
 	forward *= 100;
 	dropped->Velocity = forward;
 	dropped->Velocity.Z = 300;
 
-	dropped->NextThink = level.Frame + 10;
+	dropped->NextThink = Level.Frame + 10;
 	dropped->Link ();
 
 	return dropped;
 }
 
-void CTech::Drop (CPlayerEntity *ent)
+void CTech::Drop (CPlayerEntity *Player)
 {
-	CItemEntity *tech = DropItem(ent);
-	tech->NextThink = level.Frame + CTF_TECH_TIMEOUT;
-	ent->Client.Persistent.Inventory.Set(this, 0);
-	ent->Client.Persistent.Tech = NULL;
+	CItemEntity *tech = DropItem(Player);
+	tech->NextThink = Level.Frame + CTF_TECH_TIMEOUT;
+	Player->Client.Persistent.Inventory.Set(this, 0);
+	Player->Client.Persistent.Tech = NULL;
 }
 
-void SpawnTech(CBaseItem *item, CSpotBase *spot)
+void SpawnTech(CBaseItem *Item, CSpotBase *Spot)
 {
-	CTechEntity *ent = QNewEntityOf CTechEntity ();
+	CTechEntity *Tech = QNewEntityOf CTechEntity ();
 
-	ent->ClassName = item->Classname;
-	ent->LinkedItem = item;
-	ent->SpawnFlags = DROPPED_ITEM;
-	ent->State.GetEffects() = item->EffectFlags;
-	ent->State.GetRenderEffects() = RF_GLOW;
-	ent->GetMins().Set (-15);
-	ent->GetMaxs().Set (15);
-	ent->State.GetModelIndex() = ModelIndex(item->WorldModel);
-	ent->GetSolid() = SOLID_TRIGGER;
-	ent->SetOwner (ent);
+	Tech->ClassName = Item->Classname;
+	Tech->LinkedItem = Item;
+	Tech->SpawnFlags = DROPPED_ITEM;
+	Tech->State.GetEffects() = Item->EffectFlags;
+	Tech->State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
+	Tech->GetMins().Set (-15);
+	Tech->GetMaxs().Set (15);
+	Tech->State.GetModelIndex() = ModelIndex(Item->WorldModel);
+	Tech->GetSolid() = SOLID_TRIGGER;
+	Tech->SetOwner(Tech); // FIXME: legal??
 
 	vec3f forward;
 	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);
 
-	ent->State.GetOrigin() = spot->State.GetOrigin() + vec3f(0,0,16);
+	Tech->State.GetOrigin() = Spot->State.GetOrigin() + vec3f(0,0,16);
 	forward *= 100;
-	ent->Velocity = forward;
-	ent->Velocity.Z = 300;
+	Tech->Velocity = forward;
+	Tech->Velocity.Z = 300;
 
-	ent->NextThink = level.Frame + CTF_TECH_TIMEOUT;
+	Tech->NextThink = Level.Frame + CTF_TECH_TIMEOUT;
 
-	ent->Link ();
+	Tech->Link ();
 }
 
 static void SpawnTechs()
 {
 	for (size_t i = 0; i < TechList.size(); i++)
 	{
-		if (!cc_techflags->Integer() || (cc_techflags->Integer() & (sint32)powf(2, TechList[i]->GetTechNumber())))
+		if (!CvarList[CV_CC_TECHFLAGS].Integer() || (CvarList[CV_CC_TECHFLAGS].Integer() & BIT(TechList[i]->GetTechNumber())))
 			SpawnTech (TechList[i], FindTechSpawn ());
 	}
 }
 
-class CTechSpawner : public CThinkableEntity
+class CTechSpawner : public IThinkableEntity
 {
 public:
 	CTechSpawner () :
-	  CBaseEntity (-1),
-	  CThinkableEntity ()
+	  IBaseEntity (-1),
+	  IThinkableEntity ()
 	{
 		Spawn ();
 	};
@@ -387,7 +388,7 @@ public:
 
 	void Spawn ()
 	{
-		NextThink = level.Frame + 20;
+		NextThink = Level.Frame + 20;
 	};
 };
 
@@ -395,10 +396,10 @@ void SetupTechSpawn()
 {
 	if (
 #if CLEANCTF_ENABLED
-		dmFlags.dfCtfNoTech.IsEnabled() || (!(game.GameMode & GAME_CTF) && 
+		DeathmatchFlags.dfCtfNoTech.IsEnabled() || (!(Game.GameMode & GAME_CTF) && 
 #endif
-		(!dmFlags.dfDmTechs.IsEnabled())
-		|| !(game.GameMode & GAME_DEATHMATCH))
+		(!DeathmatchFlags.dfDmTechs.IsEnabled())
+		|| !(Game.GameMode & GAME_DEATHMATCH))
 #if CLEANCTF_ENABLED
 		)
 #endif
@@ -409,9 +410,9 @@ void SetupTechSpawn()
 
 void ResetTechs()
 {
-	for (TEntitiesContainer::iterator it = level.Entities.Closed.begin()++; it != level.Entities.Closed.end(); ++it)
+	for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin()++; it != Level.Entities.Closed.end(); ++it)
 	{
-		CBaseEntity *Entity = (*it)->Entity;
+		IBaseEntity *Entity = (*it)->Entity;
 
 		if (Entity && Entity->GetInUse() && (Entity->EntityFlags & ENT_ITEM))
 		{
@@ -424,26 +425,26 @@ void ResetTechs()
 	SpawnTechs();
 }
 
-void	CTech::Use (CPlayerEntity *ent)
+void	CTech::Use (CPlayerEntity *Player)
 {
 }
 
 void AddTechsToList ()
 {
-	TechList.push_back (QNew (com_itemPool, 0) CResistanceTech ("item_tech1", "models/ctf/resistance/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CResistanceTech ("item_tech1", "models/ctf/resistance/tris.md2",
 														"tech1", "Disruptor Shield", CTech::TECH_AGGRESSIVE, CTFTECH_RESISTANCE_NUMBER));
 
-	TechList.push_back (QNew (com_itemPool, 0) CStrengthTech ("item_tech2", "models/ctf/strength/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CStrengthTech ("item_tech2", "models/ctf/strength/tris.md2",
 														"tech2", "Power Amplifier", CTech::TECH_AGGRESSIVE, CTFTECH_STRENGTH_NUMBER));
 
-	TechList.push_back (QNew (com_itemPool, 0) CTech ("item_tech3", "models/ctf/haste/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CTech ("item_tech3", "models/ctf/haste/tris.md2",
 														"tech3", "Time Accel", CTech::TECH_CUSTOM, CTFTECH_HASTE_NUMBER));
 
-	TechList.push_back (QNew (com_itemPool, 0) CRegenTech ("item_tech4", "models/ctf/regeneration/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CRegenTech ("item_tech4", "models/ctf/regeneration/tris.md2",
 														"tech4", "AutoDoc", CTech::TECH_PASSIVE, CTFTECH_REGEN_NUMBER));
 
 #if AMMO_REGEN_TECH
-	TechList.push_back (QNew (com_itemPool, 0) CAmmoRegenTech ("item_tech5", "models/ctf/ammo/tris.md2",
+	TechList.push_back (QNew (TAG_GENERIC) CAmmoRegenTech ("item_tech5", "models/ctf/ammo/tris.md2",
 														"tech5", "Ammo Regen", CTech::TECH_PASSIVE, CTFTECH_AMMOREGEN_NUMBER));
 #endif
 }

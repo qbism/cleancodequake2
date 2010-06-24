@@ -62,7 +62,7 @@ sint32 CIndexList::AddToList (const char *String, MediaIndex Index)
 	if (!firstIndex)
 		firstIndex = Index;
 
-	CIndex *NewIndex = QNew (com_indexPool, 0) CIndex;
+	CIndex *NewIndex = QNew (TAG_GENERIC) CIndex;
 	NewIndex->Index = Index;
 	NewIndex->Name = String;
 
@@ -105,62 +105,77 @@ const char *StringFromImageIndex (MediaIndex Index)
 	return (*ImageList.ListMap.find(Index)).second->Name.c_str();
 }
 
-_CC_DISABLE_DEPRECATION
+CC_DISABLE_DEPRECATION
 
-MediaIndex ModelIndex (const char *String)
+MediaIndex ModelIndex (const char *String, ...)
 {
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, String);
+	vsnprintf (string, 1024, String, argptr);
+	va_end (argptr);
+
 	// Do we exist?
-	sint32 Index = ModelList.GetIndex(String);
+	sint32 Index = ModelList.GetIndex(string);
 	if (Index == -1)
 	{
-		//DebugPrintf ("ModelIndex: Adding new index for %s\n", String);
 		if (OverFlow())
 		{
-			DebugPrintf ("Index overflow registering \"%s\"\n", String);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string);
 			return 0;
 		}
 
-		return ModelList.AddToList (String, gi.modelindex(const_cast<char*>(String)));
+		return ModelList.AddToList (string, gi.modelindex(string));
 	}
-	//DebugPrintf ("ModelIndex: Using existing index %s\n", String);
 	return Index;
 }
 
-MediaIndex SoundIndex (const char *String)
+MediaIndex SoundIndex (const char *String, ...)
 {
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, String);
+	vsnprintf (string, 1024, String, argptr);
+	va_end (argptr);
+
 	// Do we exist?
-	sint32 Index = SoundList.GetIndex(String);
+	sint32 Index = SoundList.GetIndex(string);
 	if (Index == -1)
 	{
-		//DebugPrintf ("SoundIndex: Adding new index for %s\n", String);
 		if (OverFlow())
 		{
-			DebugPrintf ("Index overflow registering \"%s\"\n", String);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string);
 			return 0;
 		}
 
-		return SoundList.AddToList (String, gi.soundindex(const_cast<char*>(String)));
+		return SoundList.AddToList (string, gi.soundindex(string));
 	}
-	//DebugPrintf ("SoundIndex: Using existing index %s\n", String);
 	return Index;
 }
 
-MediaIndex ImageIndex (const char *String)
+MediaIndex ImageIndex (const char *String, ...)
 {
+	va_list		argptr;
+	static char	string[1024];
+
+	va_start (argptr, String);
+	vsnprintf (string, 1024, String, argptr);
+	va_end (argptr);
+
 	// Do we exist?
-	sint32 Index = ImageList.GetIndex(String);
+	sint32 Index = ImageList.GetIndex(string);
 	if (Index == -1)
 	{
-		//DebugPrintf ("ImageIndex: Adding new index for %s\n", String);
 		if (OverFlow())
 		{
-			DebugPrintf ("Index overflow registering \"%s\"\n", String);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string);
 			return 0;
 		}
 
-		return ImageList.AddToList (String, gi.imageindex(const_cast<char*>(String)));
+		return ImageList.AddToList (string, gi.imageindex(string));
 	}
-	//DebugPrintf ("ImageIndex: Using existing index %s\n", String);
 	return Index;
 }
 
@@ -217,22 +232,22 @@ void ListConfigstrings ()
 	}
 }
 
-void SvCmd_IndexList_f ()
+void CServerCmdIndexList::operator () ()
 {
-	DebugPrintf ("Models: (%u) + %u inline\n", ModelList.numIndexes, ModelList.firstIndex);
+	ServerPrintf ("Models: (%u) + %u inline\n", ModelList.numIndexes, ModelList.firstIndex);
 	for (uint8 i = 0; i < ModelList.numIndexes; i++)
-		DebugPrintf ("%s\n", ModelList.List[i]->Name.c_str());
+		ServerPrintf ("%s\n", ModelList.List[i]->Name.c_str());
 
-	DebugPrintf ("\nSounds: (%u)\n", SoundList.numIndexes);
+	ServerPrintf ("\nSounds: (%u)\n", SoundList.numIndexes);
 	for (uint8 i = 0; i < SoundList.numIndexes; i++)
-		DebugPrintf ("%s\n", SoundList.List[i]->Name.c_str());
+		ServerPrintf ("%s\n", SoundList.List[i]->Name.c_str());
 
-	DebugPrintf ("\nImages: (%u)\n", ImageList.numIndexes);
+	ServerPrintf ("\nImages: (%u)\n", ImageList.numIndexes);
 	for (uint8 i = 0; i < ImageList.numIndexes; i++)
-		DebugPrintf ("%s\n", ImageList.List[i]->Name.c_str());
+		ServerPrintf ("%s\n", ImageList.List[i]->Name.c_str());
 
-	DebugPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);
+	ServerPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);
 }
 
-_CC_ENABLE_DEPRECATION
+CC_ENABLE_DEPRECATION
 

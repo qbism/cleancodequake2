@@ -65,15 +65,18 @@ public:
 	void AttackClub ();
 	void Swing ();
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void SideStep ();
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

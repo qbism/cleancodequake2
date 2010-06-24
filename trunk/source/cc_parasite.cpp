@@ -239,17 +239,17 @@ CFrame ParasiteFramesPain1 [] =
 };
 CAnim ParasiteMovePain1 (FRAME_pain101, FRAME_pain111, ParasiteFramesPain1, &CMonster::Run);
 
-void CParasite::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CParasite::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
@@ -276,7 +276,7 @@ bool CParasite::DrainAttackOK (vec3f &start, vec3f &end)
 	return true;
 }
 
-#include "cc_tent.h"
+#include "cc_temporary_entities.h"
 
 void CParasite::DrainAttack ()
 {
@@ -314,20 +314,19 @@ void CParasite::DrainAttack ()
 	end = Entity->Enemy->State.GetOrigin();
 
 	CTrace tr (start, end, Entity, CONTENTS_MASK_SHOT);
-	if (tr.Ent != Entity->Enemy)
+	if (tr.Entity != Entity->Enemy)
 		return;
 
-	sint32 damage = (Entity->State.GetFrame() == FRAME_drain03) ? 5 : 2;
+	sint32 Damage = (Entity->State.GetFrame() == FRAME_drain03) ? 5 : 2;
 	if (Entity->State.GetFrame() == FRAME_drain03)
 		Entity->Enemy->PlaySound (CHAN_AUTO, Sounds[SOUND_IMPACT]);
 	else if (Entity->State.GetFrame() == FRAME_drain04)
 		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_SUCK]);
 
-	CTempEnt_Trails::FleshCable (start, end, Entity->State.GetNumber());
+	CFleshCable(start, end, Entity->State.GetNumber()).Send();
 
-	vec3f dir = start - end;
 	if (Entity->Enemy)
-		entity_cast<CHurtableEntity>(Entity->Enemy)->TakeDamage (Entity, Entity, dir, Entity->Enemy->State.GetOrigin(), vec3fOrigin, damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
+		entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (Entity, Entity, start - end, Entity->Enemy->State.GetOrigin(), vec3fOrigin, Damage, 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 }
 
 CFrame ParasiteFramesDrain [] =
@@ -352,45 +351,6 @@ CFrame ParasiteFramesDrain [] =
 	CFrame (&CMonster::AI_Charge, 0)
 };
 CAnim ParasiteMoveDrain (FRAME_drain01, FRAME_drain18, ParasiteFramesDrain, &CMonster::Run);
-
-#if 0
-CFrame ParasiteFramesBreak [] =
-{
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -18),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 9),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -18),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 8),
-	CFrame (&CMonster::AI_Charge, 9),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -18),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),		// airborne
-	CFrame (&CMonster::AI_Charge, 0),		// airborne
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 0),		// slides
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 11),		
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -5),
-	CFrame (&CMonster::AI_Charge, 1,	NULL
-};
-mmove_t parasite_move_break = {FRAME_break01, FRAME_break32, parasite_frames_break, parasite_start_run};
-#endif
 
 /*
 === 
@@ -444,17 +404,17 @@ CFrame ParasiteFramesDeath [] =
 };
 CAnim ParasiteMoveDeath (FRAME_death101, FRAME_death107, ParasiteFramesDeath, ConvertDerivedFunction(&CParasite::Dead));
 
-void CParasite::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CParasite::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -507,6 +467,8 @@ void CParasite::Spawn ()
 
 	CurrentMove = &ParasiteMoveStand;	
 	WalkMonsterStart ();
+
+	Entity->ViewHeight = 12;
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_parasite", CParasite);

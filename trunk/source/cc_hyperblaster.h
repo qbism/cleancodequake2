@@ -39,16 +39,12 @@ class CHyperBlaster : public CWeapon
 public:
 	CHyperBlaster();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
 	void	FireAnimation (CPlayerEntity *Player);
-
-#if XATRIX_FEATURES
-	void	Use (CWeaponItem *Wanted, CPlayerEntity *ent);
-#endif
 
 	WEAPON_CLASS_DEFS (CHyperBlaster);
 };

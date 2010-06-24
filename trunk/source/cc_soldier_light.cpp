@@ -48,7 +48,7 @@ extern CAnim SoldierMoveAttack6;
 
 void CSoldierLight::Attack ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge ();
 
 	// PMM - blindfire!
@@ -79,15 +79,15 @@ void CSoldierLight::Attack ()
 		// turn on manual steering to signal both manual steering and blindfire
 		AIFlags |= AI_MANUAL_STEERING;
 		CurrentMove = &SoldierMoveAttack1;
-		AttackFinished = level.Frame + ((1.5 + frand()) * 10);
+		AttackFinished = Level.Frame + ((1.5 + frand()) * 10);
 		return;
 	}
 	// pmm
 
 	float r = frand();
 	if ((!(AIFlags & (AI_BLOCKED|AI_STAND_GROUND))) &&
-		(Range(Entity, Entity->Enemy) >= RANGE_NEAR) && 
-		(r < (skill->Integer()*0.25)))
+		(Range(Entity, *Entity->Enemy) >= RANGE_NEAR) && 
+		(r < (CvarList[CV_SKILL].Integer()*0.25)))
 		CurrentMove = &SoldierMoveAttack6;
 	else
 #endif
@@ -102,11 +102,14 @@ void CSoldierLight::Attack ()
 static sint32 BlasterFlash [] = {MZ2_SOLDIER_BLASTER_1, MZ2_SOLDIER_BLASTER_2, MZ2_SOLDIER_BLASTER_3, MZ2_SOLDIER_BLASTER_4, MZ2_SOLDIER_BLASTER_5, MZ2_SOLDIER_BLASTER_6, MZ2_SOLDIER_BLASTER_7, MZ2_SOLDIER_BLASTER_8};
 void CSoldierLight::FireGun (sint32 FlashNumber)
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, aim;
 	sint32		flashIndex = BlasterFlash[FlashNumber];
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flashIndex], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashIndex], forward, right, start);
 
 	switch (FlashNumber)
 	{
@@ -116,7 +119,7 @@ void CSoldierLight::FireGun (sint32 FlashNumber)
 		break;
 	default:
 		{
-			CBaseEntity *Enemy = Entity->Enemy;
+			IBaseEntity *Enemy = *Entity->Enemy;
 			vec3f end;
 
 			end = Enemy->State.GetOrigin() + vec3f(0, 0, Enemy->ViewHeight);
@@ -154,7 +157,7 @@ void CSoldierLight::SpawnSoldier ()
 	Entity->Health = 20;
 	Entity->GibHealth = -30;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 }

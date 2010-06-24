@@ -203,7 +203,7 @@ CAnim GunnerMoveRun(FRAME_run01, FRAME_run08, GunnerFramesRun);
 
 void CGunner::Run ()
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 	CurrentMove = (AIFlags & AI_STAND_GROUND) ? &GunnerMoveStand : &GunnerMoveRun;
@@ -271,27 +271,27 @@ CFrame GunnerFramesPain1 [] =
 };
 CAnim GunnerMovePain1 (FRAME_pain101, FRAME_pain118, GunnerFramesPain1, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CGunner::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	DoneDodge();
 #endif
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
+	PainDebounceTime = Level.Frame + 30;
 	Entity->PlaySound (CHAN_VOICE, (irandom(2)) ? Sounds[SOUND_PAIN1] : Sounds[SOUND_PAIN2]);
 
-	if (skill->Integer() == 3)
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
-	CurrentMove = ((damage <= 10) ? &GunnerMovePain3 : ((damage <= 25) ? &GunnerMovePain2 : &GunnerMovePain1));
+	CurrentMove = ((Damage <= 10) ? &GunnerMovePain3 : ((Damage <= 25) ? &GunnerMovePain2 : &GunnerMovePain1));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	AIFlags &= ~AI_MANUAL_STEERING;
 
 	// PMM - clear duck flag
@@ -326,17 +326,17 @@ CFrame GunnerFramesDeath [] =
 };
 CAnim GunnerMoveDeath (FRAME_death01, FRAME_death11, GunnerFramesDeath, ConvertDerivedFunction(&CGunner::Dead));
 
-void CGunner::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CGunner::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 // check for gib
 	if (Entity->Health <= Entity->GibHealth)
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 		for (sint32 n= 0; n < 2; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_Bone[0], Damage, GIB_ORGANIC);
 		for (sint32 n= 0; n < 4; n++)
-			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, damage, GIB_ORGANIC);
-		Entity->ThrowHead (GameMedia.Gib_Head[1], damage, GIB_ORGANIC);
+			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
+		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
 		Entity->DeadFlag = true;
 		return;
 	}
@@ -353,11 +353,11 @@ void CGunner::Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage,
 
 void CGunner::DuckDown ()
 {
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	if (AIFlags & AI_DUCKED)
 		return;
 	AIFlags |= AI_DUCKED;
-	if (skill->Integer() >= 2)
+	if (CvarList[CV_SKILL].Integer() >= 2)
 	{
 		if (frand() > 0.5)
 			Grenade ();
@@ -365,11 +365,11 @@ void CGunner::DuckDown ()
 
 	Entity->GetMaxs().Z -= 32;
 	Entity->CanTakeDamage = true;
-	PauseTime = level.Frame + 10;
+	PauseTime = Level.Frame + 10;
 	Entity->Link ();
 #else
 	AIFlags |= AI_DUCKED;
-	if (skill->Integer() >= 2)
+	if (CvarList[CV_SKILL].Integer() >= 2)
 	{
 		if (frand() > 0.5)
 			Grenade ();
@@ -377,16 +377,16 @@ void CGunner::DuckDown ()
 
 	Entity->GetMaxs().Z = BaseHeight - 32;
 	Entity->CanTakeDamage = true;
-	if (DuckWaitTime < level.Frame)
-		DuckWaitTime = level.Frame + 10;
+	if (DuckWaitTime < Level.Frame)
+		DuckWaitTime = Level.Frame + 10;
 	Entity->Link ();
 #endif
 }
 
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 void CGunner::DuckHold ()
 {
-	if (level.Frame >= PauseTime)
+	if (Level.Frame >= PauseTime)
 		AIFlags &= ~AI_HOLD_FRAME;
 	else
 		AIFlags |= AI_HOLD_FRAME;
@@ -405,7 +405,7 @@ CFrame GunnerFramesDuck [] =
 {
 	CFrame (&CMonster::AI_Move, 1, ConvertDerivedFunction(&CGunner::DuckDown)),
 	CFrame (&CMonster::AI_Move, 1),
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, 1, ConvertDerivedFunction(&CGunner::DuckHold)),
 #else
 	CFrame (&CMonster::AI_Move, 1, &CMonster::DuckHold),
@@ -413,7 +413,7 @@ CFrame GunnerFramesDuck [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1),
-#if !MONSTER_USE_ROGUE_AI
+#if !ROGUE_FEATURES
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CGunner::DuckUp)),
 #else
 	CFrame (&CMonster::AI_Move, 0, &CGunner::UnDuck),
@@ -422,27 +422,25 @@ CFrame GunnerFramesDuck [] =
 };
 CAnim GunnerMoveDuck (FRAME_duck01, FRAME_duck08, GunnerFramesDuck, ConvertDerivedFunction(&CGunner::Run));
 
-void CGunner::Dodge (CBaseEntity *attacker, float eta
-#if MONSTER_USE_ROGUE_AI
-					 , CTrace *tr
-#endif
-					 )
+#if !ROGUE_FEATURES
+void CGunner::Dodge (IBaseEntity *Attacker, float eta)
 {
 	if (frand() > 0.25)
 		return;
 
 	if (!Entity->Enemy)
-		Entity->Enemy = attacker;
+		Entity->Enemy = Attacker;
 
 	CurrentMove = &GunnerMoveDuck;
 }
+#endif
 
 void CGunner::OpenGun ()
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_OPEN], 255, ATTN_IDLE);
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 bool CGunner::GrenadeCheck()
 {
 	if(!Entity->Enemy)
@@ -464,7 +462,7 @@ bool CGunner::GrenadeCheck()
 	// check to see that we can trace to the player before we start
 	// tossing grenades around.
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[MZ2_GUNNER_GRENADE_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GUNNER_GRENADE_1], forward, right, start);
 
 	// pmm - check for blindfire flag
 	target = (AIFlags & AI_MANUAL_STEERING) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
@@ -475,7 +473,7 @@ bool CGunner::GrenadeCheck()
 		return false;
 
 	CTrace tr (start, target, Entity, CONTENTS_MASK_SHOT);
-	if(tr.Ent == Entity->Enemy || tr.fraction == 1)
+	if(tr.Entity == Entity->Enemy || tr.Fraction == 1)
 		return true;
 
 	return false;
@@ -484,26 +482,31 @@ bool CGunner::GrenadeCheck()
 
 void CGunner::Fire ()
 {
+	if (!HasValidEnemy())
+		return;
+
 	vec3f	start, forward, right, target, aim;
 	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak216);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
-	target = target.MultiplyAngles (-0.2f, entity_cast<CPhysicsEntity>(Entity->Enemy)->Velocity);
+	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+		target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target.Z += Entity->Enemy->ViewHeight;
 
-	aim = target - start;
-	aim.NormalizeFast ();
-
+	aim = (target - start).GetNormalizedFast();
 	MonsterFireBullet (start, aim, 3, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
 }
 
 void CGunner::Grenade ()
 {
-#if !MONSTER_USE_ROGUE_AI
+	if (!HasValidEnemy())
+		return;
+
+#if !ROGUE_FEATURES
 	vec3f	start, forward, right;
 	sint32		flash_number;
 
@@ -524,7 +527,7 @@ void CGunner::Grenade ()
 	}
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 	MonsterFireGrenade (start, forward, 50, 600, flash_number);
 #else
@@ -561,7 +564,7 @@ void CGunner::Grenade ()
 
 	//	pmm
 	// if we're shooting blind and we still can't see our enemy
-	if ((AIFlags & AI_MANUAL_STEERING) && (!IsVisible(Entity, Entity->Enemy)))
+	if ((AIFlags & AI_MANUAL_STEERING) && (!IsVisible(Entity, *Entity->Enemy)))
 	{
 		// and we have a valid blind_fire_target
 		if (BlindFireTarget == vec3fOrigin)
@@ -574,7 +577,7 @@ void CGunner::Grenade ()
 	// pmm
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);	//PGM
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
 
 //PGM
 	if(Entity->Enemy)
@@ -646,7 +649,7 @@ CFrame GunnerFramesEndFireChain [] =
 };
 CAnim GunnerMoveEndFireChain (FRAME_attak224, FRAME_attak230, GunnerFramesEndFireChain, ConvertDerivedFunction(&CGunner::Run));
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CGunner::BlindCheck ()
 {
 	if (AIFlags & AI_MANUAL_STEERING)
@@ -656,7 +659,7 @@ void CGunner::BlindCheck ()
 
 CFrame GunnerFramesAttackGrenade [] =
 {
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGunner::BlindCheck)),
 #else
 	CFrame (&CMonster::AI_Charge, 0),
@@ -686,8 +689,8 @@ CAnim GunnerMoveAttackGrenade (FRAME_attak101, FRAME_attak121, GunnerFramesAttac
 
 void CGunner::Attack()
 {
-#if !MONSTER_USE_ROGUE_AI
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+#if !ROGUE_FEATURES
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = &GunnerMoveAttackChain;
 	else
 		CurrentMove = (frand() <= 0.5) ? &GunnerMoveAttackGrenade : &GunnerMoveAttackChain;
@@ -718,7 +721,7 @@ void CGunner::Attack()
 		{
 			// if the check passes, go for the attack
 			CurrentMove = &GunnerMoveAttackGrenade;
-			AttackFinished = level.Frame + ((2*frand())*10);
+			AttackFinished = Level.Frame + ((2*frand())*10);
 		}
 		// turn off blindfire flag
 		AIFlags &= ~AI_MANUAL_STEERING;
@@ -727,7 +730,7 @@ void CGunner::Attack()
 	// pmm
 
 	// PGM - gunner needs to use his chaingun if he's being attacked by a tesla.
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = &GunnerMoveAttackChain;
 	else
 		CurrentMove = (frand() <= 0.5 && GrenadeCheck()) ? &GunnerMoveAttackGrenade : &GunnerMoveAttackChain;
@@ -741,7 +744,7 @@ void CGunner::FireChain ()
 
 void CGunner::ReFireChain ()
 {
-	if (entity_cast<CHurtableEntity>(Entity->Enemy)->Health > 0 && IsVisible (Entity, Entity->Enemy) && frand() <= 0.5)
+	if (Entity->Enemy && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.5)
 	{
 		CurrentMove = &GunnerMoveFireChain;
 		return;
@@ -749,7 +752,7 @@ void CGunner::ReFireChain ()
 	CurrentMove = &GunnerMoveEndFireChain;
 }
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 void CGunner::Duck (float eta)
 {
 	if ((CurrentMove == &GunnerMoveAttackChain) ||
@@ -757,18 +760,18 @@ void CGunner::Duck (float eta)
 		(CurrentMove == &GunnerMoveAttackGrenade))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DUCKED;
 			return;
 		}
 	}
 
-	if (skill->Integer() == 0)
+	if (CvarList[CV_SKILL].Integer() == 0)
 		// PMM - stupid dodge
-		DuckWaitTime = level.Frame + ((eta + 1) * 10);
+		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	else
-		DuckWaitTime = level.Frame + ((eta + (0.1 * (3 - skill->Integer()))) * 10);
+		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
@@ -785,7 +788,7 @@ void CGunner::SideStep ()
 		(CurrentMove == &GunnerMoveAttackGrenade))
 	{
 		// if we're shooting, and not on easy, don't dodge
-		if (skill->Integer())
+		if (CvarList[CV_SKILL].Integer())
 		{
 			AIFlags &= ~AI_DODGING;
 			return;
@@ -820,13 +823,13 @@ void CGunner::Spawn ()
 	Entity->Mass = 200;
 
 	MonsterFlags |= (MF_HAS_ATTACK | MF_HAS_SIGHT
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 		| MF_HAS_DODGE | MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_SIDESTEP
 #endif
 		);
 	Entity->Link ();
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	BlindFire = true;
 #endif
 

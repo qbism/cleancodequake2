@@ -225,39 +225,6 @@ void CFlyer::Stand ()
 	CurrentMove = &FlyerMoveStand;
 }
 
-/*mframe_t flyer_frames_start [] =
-{
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	flyer_nextmove
-};
-mmove_t flyer_move_start = {FRAME_start01, FRAME_start06, flyer_frames_start, NULL};
-
-mframe_t flyer_frames_stop [] =
-{
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	flyer_nextmove
-};
-mmove_t flyer_move_stop = {FRAME_stop01, FRAME_stop07, flyer_frames_stop, NULL};
-
-void flyer_stop (edict_t *self)
-{
-		self->monsterinfo.currentmove = &flyer_move_stop;
-}
-
-void flyer_start (edict_t *self)
-{
-		self->monsterinfo.currentmove = &flyer_move_start;
-}*/
-
 CFrame FlyerFramesPain3 [] =
 {	
 	CFrame (&CMonster::AI_Move, 0),
@@ -290,47 +257,12 @@ CFrame FlyerFramesPain1 [] =
 };
 CAnim FlyerMovePain1 (FRAME_pain101, FRAME_pain109, FlyerFramesPain1, ConvertDerivedFunction(&CFlyer::Run));
 
-/*mframe_t flyer_frames_defense [] = 
-{
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,		// Hold this frame
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
-};
-mmove_t flyer_move_defense = {FRAME_defens01, FRAME_defens06, flyer_frames_defense, NULL};
-
-mframe_t flyer_frames_bankright [] =
-{
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
-};
-mmove_t flyer_move_bankright = {FRAME_bankr01, FRAME_bankr07, flyer_frames_bankright, NULL};
-
-mframe_t flyer_frames_bankleft [] =
-{
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
-};
-mmove_t flyer_move_bankleft = {FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, NULL};*/	
-
 void CFlyer::Fire (sint32 FlashNumber)
 {
 	vec3f	start, forward, right, end, dir;
 	sint32 effect;
 
-	if (!Entity->Enemy)
+	if (!HasValidEnemy())
 		return;
 
 	if ((Entity->State.GetFrame() == FRAME_attak204) || (Entity->State.GetFrame() == FRAME_attak207) || (Entity->State.GetFrame() == FRAME_attak210))
@@ -339,7 +271,7 @@ void CFlyer::Fire (sint32 FlashNumber)
 		effect = 0;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), dumb_and_hacky_monster_MuzzFlashOffset[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
 	
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -413,7 +345,6 @@ CFrame FlyerFramesEndMelee [] =
 };
 CAnim FlyerMoveEndMelee (FRAME_attak119, FRAME_attak121, FlyerFramesEndMelee, ConvertDerivedFunction(&CFlyer::Run));
 
-
 CFrame FlyerFramesLoopMelee [] =
 {
 	CFrame (&CMonster::AI_Charge, 0),		// Loop Start
@@ -433,17 +364,11 @@ CAnim FlyerMoveLoopMelee (FRAME_attak107, FRAME_attak118, FlyerFramesLoopMelee, 
 
 void CFlyer::LoopMelee ()
 {
-/*	if (frand() <= 0.5)	
-		self->monsterinfo.currentmove = &flyer_move_attack1;
-	else */
 	CurrentMove = &FlyerMoveLoopMelee;
 }
 
 void CFlyer::Attack ()
 {
-/*	if (frand() <= 0.5)	
-		self->monsterinfo.currentmove = &flyer_move_attack1;
-	else */
 	CurrentMove = &FlyerMoveAttack2;
 }
 
@@ -454,22 +379,22 @@ void CFlyer::Melee ()
 
 void CFlyer::CheckMelee ()
 {
-	if (Range (Entity, Entity->Enemy) == RANGE_MELEE)
+	if (Range (Entity, *Entity->Enemy) == RANGE_MELEE)
 		CurrentMove = (frand() <= 0.8) ? &FlyerMoveLoopMelee : &FlyerMoveEndMelee;
 	else
 		CurrentMove = &FlyerMoveEndMelee;
 }
 
-void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
+void CFlyer::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	if (Entity->Health < (Entity->MaxHealth / 2))
 		Entity->State.GetSkinNum() = 1;
 
-	if (level.Frame < PainDebounceTime)
+	if (Level.Frame < PainDebounceTime)
 		return;
 
-	PainDebounceTime = level.Frame + 30;
-	if (skill->Integer() == 3)
+	PainDebounceTime = Level.Frame + 30;
+	if (CvarList[CV_SKILL].Integer() == 3)
 		return;		// no pain anims in nightmare
 
 	switch (irandom(3))
@@ -489,7 +414,7 @@ void CFlyer::Pain (CBaseEntity *other, float kick, sint32 damage)
 	}
 }
 
-void CFlyer::Die(CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point)
+void CFlyer::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
 	Entity->BecomeExplosion(false);
@@ -542,13 +467,13 @@ void CFlyer::ChooseAfterDodge ()
 	CurrentMove = (frand() < 0.5) ? &FlyerMoveRun : &FlyerMoveAttack2;
 }
 
-#if !MONSTER_USE_ROGUE_AI
-void CFlyer::Dodge (CBaseEntity *attacker, float eta)
+#if !ROGUE_FEATURES
+void CFlyer::Dodge (IBaseEntity *Attacker, float eta)
 #else
 void CFlyer::Duck (float eta)
 #endif
 {
-	if (frand() > (0.35f + ((skill->Float()+1) / 10)) )
+	if (frand() > (0.35f + ((CvarList[CV_SKILL].Float()+1) / 10)) )
 		return;
 	
 	// Don't dodge if we're attacking or dodging already
@@ -569,14 +494,14 @@ void CFlyer::Duck (float eta)
 	vec3f end = Entity->State.GetOrigin ().MultiplyAngles (-75, right);
 	trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1.0)
+	if (trace.Fraction == 1.0)
 		CanRollRight = true;
 
 	// Now check the left
 	end = Entity->State.GetOrigin ().MultiplyAngles (-75, right);
 	trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
-	if (trace.fraction == 1.0)
+	if (trace.Fraction == 1.0)
 		CanRollLeft = true;
 
 	// Can we roll the way we wanted?
@@ -589,7 +514,7 @@ void CFlyer::Duck (float eta)
 }
 #endif
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES && (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
 void CFlyer::SideStep ()
 {
 	if (AIFlags & AI_STAND_GROUND)
@@ -602,7 +527,7 @@ void CFlyer::SideStep ()
 void CFlyer::Spawn ()
 {
 	// fix a map bug in jail5.bsp
-	if (!Q_stricmp(level.ServerLevelName.c_str(), "jail5") && (Entity->State.GetOrigin().Z == -104))
+	if (!Q_stricmp(Level.ServerLevelName.c_str(), "jail5") && (Entity->State.GetOrigin().Z == -104))
 	{
 		Entity->TargetName = Entity->Target;
 		Entity->Target = NULL;
@@ -629,7 +554,7 @@ void CFlyer::Spawn ()
 	Entity->Mass = 50;
 
 	MonsterFlags |= (MF_HAS_IDLE | MF_HAS_SIGHT | MF_HAS_MELEE | MF_HAS_ATTACK
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES && (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
 	| MF_HAS_DUCK | MF_HAS_UNDUCK | MF_HAS_DODGE | MF_HAS_SIDESTEP
 #endif
 		);
@@ -637,6 +562,8 @@ void CFlyer::Spawn ()
 
 	CurrentMove = &FlyerMoveStand;
 	FlyMonsterStart ();
+
+	Entity->ViewHeight = 8;
 }
 
 LINK_MONSTER_CLASSNAME_TO_CLASS ("monster_flyer", CFlyer);

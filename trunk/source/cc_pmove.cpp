@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-#if !USE_EXTENDED_GAME_IMPORTS
+#if 0
 
 // all of the locals will be zeroed before each pmove, just to make damn sure
 // we don't have any differences when running on client or server
@@ -50,13 +50,13 @@ struct pMoveLocal_t
 	vec3f			forward, right, up;
 	float			frameTime;
 
-	cmBspSurface_t	*groundSurface;
-	sint32				groundContents;
+	SBSPSurface	*groundSurface;
+	sint32			groundContents;
 
-	svec3_t			previousOrigin;
+	vec3Base<sint16>previousOrigin;
 	bool			ladder;
 
-	CPlayerEntity	*ent;
+	CPlayerEntity	*Player;
 };
 
 static pMoveNew_t	*pm;
@@ -64,19 +64,18 @@ static pMoveLocal_t	pml;
 
 static float	pmAirAcceleration = 0;
 
-#define STEPSIZE			18
-#define MIN_STEP_NORMAL		0.7f		// can't step up onto very steep slopes
-#define MAX_CLIP_PLANES		5
+const float MIN_STEP_NORMAL		= 0.7f;		// can't step up onto very steep slopes
+const int MAX_CLIP_PLANES		= 5;
 
 // movement parameters
-#define SV_PM_STOPSPEED			100.0f
-#define SV_PM_MAXSPEED			300.0f
-#define SV_PM_DUCKSPEED			100.0f
-#define SV_PM_ACCELERATE		10.0f
-#define SV_PM_WATERACCELERATE	10.0f
-#define SV_PM_FRICTION			6.0f
-#define SV_PM_WATERFRICTION		1.0f
-#define SV_PM_WATERSPEED		400.0f
+const float SV_PM_STOPSPEED			= 100.0f;
+const float SV_PM_MAXSPEED			= 300.0f;
+const float SV_PM_DUCKSPEED			= 100.0f;
+const float SV_PM_ACCELERATE		= 10.0f;
+const float SV_PM_WATERACCELERATE	= 10.0f;
+const float SV_PM_FRICTION			= 6.0f;
+const float SV_PM_WATERFRICTION		= 1.0f;
+const float SV_PM_WATERSPEED		= 400.0f;
 
 /*
 ==================
@@ -86,7 +85,7 @@ Slide off of the impacting object
 returns the blocked flags (1 = floor, 2 = step / wall)
 ==================
 */
-static void SV_PM_ClipVelocity (vec3f &in, vec3f &normal, vec3f &out, float overbounce)
+static void SV_PM_ClipVelocity (vec3f &in, vec3f &Normal, vec3f &out, float overbounce)
 {	
 	float backoff = (in | normal) * overbounce;
 
@@ -127,23 +126,23 @@ static void SV_PM_StepSlideMove_ ()
 	for (sint32 bumpcount = 0; bumpcount < numbumps; bumpcount++)
 	{
 		end = pml.origin + time_left * pml.velocity;
-		trace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		trace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 
-		if (trace.allSolid)
+		if (trace.AllSolid)
 		{
 			// entity is trapped in another solid
 			pml.velocity.Z = 0;	// don't build up falling damage
 			return;
 		}
 
-		if (trace.fraction > 0)
+		if (trace.Fraction > 0)
 		{
 			// actually covered some distance
-			pml.origin = trace.EndPos;
+			pml.origin = trace.EndPosition;
 			numPlanes = 0;
 		}
 
-		if (trace.fraction == 1)
+		if (trace.Fraction == 1)
 			 break;		// moved the entire distance
 
 		// save entity for contact
@@ -165,7 +164,7 @@ static void SV_PM_StepSlideMove_ ()
 			}
 		}
 		
-		time_left -= time_left * trace.fraction;
+		time_left -= time_left * trace.Fraction;
 
 		// slide along this plane
 		if (numPlanes >= MAX_CLIP_PLANES)
@@ -175,7 +174,7 @@ static void SV_PM_StepSlideMove_ ()
 			break;
 		}
 
-		planes[numPlanes] = trace.plane.normal;
+		planes[numPlanes] = trace.Plane.normal;
 		numPlanes++;
 
 		// modify original_velocity so it parallels all of the clip planes
@@ -234,9 +233,9 @@ static void SV_PM_StepSlideMove ()
 	vec3f down_v = pml.velocity;
 
 	vec3f up = start_o + vec3f(0, 0, STEPSIZE);
-	CTrace trace (up, pm->mins, pm->maxs, up, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	CTrace trace (up, pm->mins, pm->maxs, up, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
-	if (trace.allSolid)
+	if (trace.AllSolid)
 		return;		// can't step up
 
 	// try sliding above
@@ -247,10 +246,10 @@ static void SV_PM_StepSlideMove ()
 
 	// push down the final amount
 	vec3f down = pml.origin - vec3f(0, 0, STEPSIZE);
-	trace (pml.origin, pm->mins, pm->maxs, down, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	trace (pml.origin, pm->mins, pm->maxs, down, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
-	if (!trace.allSolid)
-		pml.origin = trace.EndPos;
+	if (!trace.AllSolid)
+		pml.origin = trace.EndPosition;
 
 	up = pml.origin;
 
@@ -260,7 +259,7 @@ static void SV_PM_StepSlideMove ()
 	float up_dist = (up.X - start_o.X)*(up.X - start_o.X)
 		+ (up.Y - start_o.Y)*(up.Y - start_o.Y);
 
-	if (down_dist > up_dist || trace.plane.normal.Z < MIN_STEP_NORMAL)
+	if (down_dist > up_dist || trace.Plane.normal.Z < MIN_STEP_NORMAL)
 	{
 		pml.origin = down_o;
 		pml.velocity = down_v;
@@ -418,13 +417,39 @@ SV_PM_WaterMove
 */
 static void SV_PM_WaterMove ()
 {
+	short		forwardMove, sideMove, upMove;
+
+	//r1: keep a local version of these values, this prevents a physics exploit where a ridiculously high
+	//forwardmove/sidemove can allow player to negate effects of water currents. value of 400 is still higher
+	//than maxvel (300), but 400 is the default q2 run speed, so we keep it for compatibility.
+	if (pm->cmd.forwardMove > 400)
+		forwardMove = 400;
+	else if (pm->cmd.forwardMove < -400)
+		forwardMove = -400;
+	else
+		forwardMove = pm->cmd.forwardMove;
+
+	if (pm->cmd.sideMove > 400)
+		sideMove = 400;
+	else if (pm->cmd.sideMove < -400)
+		sideMove = -400;
+	else
+		sideMove = pm->cmd.sideMove;
+
+	if (pm->cmd.upMove > 400)
+		upMove = 400;
+	else if (pm->cmd.upMove < -400)
+		upMove = -400;
+	else
+		upMove = pm->cmd.upMove;
+
 	// user intentions
-	vec3f wishvel ( pml.forward.X*pm->cmd.forwardMove + pml.right.X*pm->cmd.sideMove,
-					pml.forward.Y*pm->cmd.forwardMove + pml.right.Y*pm->cmd.sideMove,
-					pml.forward.Z*pm->cmd.forwardMove + pml.right.Z*pm->cmd.sideMove);
+	vec3f wishvel ( pml.forward.X*forwardMove + pml.right.X*sideMove,
+					pml.forward.Y*forwardMove + pml.right.Y*sideMove,
+					pml.forward.Z*forwardMove + pml.right.Z*sideMove);
 
 	// drift towards bottom
-	wishvel.Z += ((!pm->cmd.forwardMove && !pm->cmd.sideMove && !pm->cmd.upMove) ? -60 : pm->cmd.upMove);
+	wishvel.Z += ((!forwardMove && !sideMove && !upMove) ? -60 : upMove);
 
 	SV_PM_AddCurrents (wishvel);
 
@@ -590,11 +615,11 @@ static void SV_PM_CatagorizePosition ()
 	}
 	else
 	{
-		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
-		pml.groundSurface = trace.surface;
-		pml.groundContents = trace.contents;
+		CTrace trace (pml.origin, pm->mins, pm->maxs, point, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+		pml.groundSurface = trace.Surface;
+		pml.groundContents = trace.Contents;
 
-		if (!trace.ent || ((trace.plane.normal.Z < 0.7) && !trace.startSolid))
+		if (!trace.ent || ((trace.Plane.normal.Z < 0.7) && !trace.StartSolid))
 		{
 			pm->groundEntity = NULL;
 			pm->state.pmFlags &= ~PMF_ON_GROUND;
@@ -751,9 +776,9 @@ static void SV_PM_CheckSpecialMovement ()
 
 
 	vec3f spot = pml.origin.MultiplyAngles (1, flatforward);
-	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+	CTrace trace (pml.origin, pm->mins, pm->maxs, spot, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
 	
-	if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
+	if ((trace.Fraction < 1) && (trace.Contents & CONTENTS_LADDER))
 	// Arcade Quake II
 	{
 		pml.ladder = true;
@@ -840,7 +865,7 @@ static void SV_PM_FlyMove (bool doClip)
 	if (doClip)
 	{
 		vec3f end = pml.origin.MultiplyAngles (pml.frameTime, pml.velocity);
-		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPos;
+		pml.origin = CTrace (pml.origin, pm->mins, pm->maxs, end, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).EndPosition;
 	}
 	else
 		// move
@@ -888,8 +913,8 @@ static void SV_PM_CheckDuck ()
 		{
 			// try to stand up
 			pm->maxs.Z = 32;
-			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
-			if (!trace.allSolid)
+			CTrace trace (pml.origin, pm->mins, pm->maxs, pml.origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID);
+			if (!trace.AllSolid)
 				pm->state.pmFlags &= ~PMF_DUCKED;
 		}
 	}
@@ -941,7 +966,7 @@ static bool SV_PM_GoodPosition ()
 					pm->state.origin[1]*(1.0f/8.0f),
 					pm->state.origin[2]*(1.0f/8.0f));
  
-	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.ent, (pml.ent->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).allSolid;
+	return !CTrace (origin, pm->mins, pm->maxs, origin, pml.Player, (pml.Player->Health > 0) ? CONTENTS_MASK_PLAYERSOLID : CONTENTS_MASK_DEADSOLID).AllSolid;
 }
 
 /*
@@ -954,8 +979,8 @@ precision of the network channel and in a valid position.
 */
 static void SV_PM_SnapPosition ()
 {
-	sint32		sign[3];
-	sint16	base[3];
+	vec3Base<sint32>	sign;
+	vec3Base<sint16>	base;
 	// try all single bits first
 	static const uint8 jitterBits[8] = {0,4,1,2,3,5,6,7};
 
@@ -975,13 +1000,13 @@ static void SV_PM_SnapPosition ()
 		if (pm->state.origin[i]*(1.0f/8.0f) == pml.origin[i])
 			sign[i] = 0;
 	}
-	VecxCopy<svec3_t, 3> (pm->state.origin, base);
+	base = pm->state.origin;
 
 	// try all combinations
 	for (sint32 i = 0; i < 8; i++)
 	{
 		sint32 bits = jitterBits[i];
-		VecxCopy<svec3_t, 3> (base, pm->state.origin);
+		pm->state.origin = base;
 
 		if (bits & BIT(0))
 			pm->state.origin[0] += sign[0];
@@ -995,7 +1020,7 @@ static void SV_PM_SnapPosition ()
 	}
 
 	// go back to the last position
-	VecxCopy<svec3_t, 3> (pml.previousOrigin, pm->state.origin);
+	pm->state.origin = pml.previousOrigin;
 }
 
 /*
@@ -1005,10 +1030,10 @@ SV_PM_InitialSnapPosition
 */
 static void SV_PM_InitialSnapPosition ()
 {
-	sint16		base[3];
-	static sint8	offset[3] = { 0, -1, 1 };
+	vec3Base<sint16>	base;
+	static sint8		offset[3] = { 0, -1, 1 };
 
-	VecxCopy<svec3_t, 3> (pm->state.origin, base);
+	base = pm->state.origin;
 
 	for (uint8 z = 0; z < 3; z++)
 	{
@@ -1021,10 +1046,8 @@ static void SV_PM_InitialSnapPosition ()
 				pm->state.origin[0] = base[0] + offset[x];
 				if (SV_PM_GoodPosition ())
 				{
-					pml.origin.X = pm->state.origin[0]*(1.0f/8.0f);
-					pml.origin.Y = pm->state.origin[1]*(1.0f/8.0f);
-					pml.origin.Z = pm->state.origin[2]*(1.0f/8.0f);
-					VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);
+					pml.origin = pm->state.origin.ConvertDerived<vec3f>()*(1.0f/8.0f);
+					pml.previousOrigin = pm->state.origin;
 					return;
 				}
 			}
@@ -1042,22 +1065,14 @@ SV_PM_ClampAngles
 static void SV_PM_ClampAngles ()
 {
 	if (pm->state.pmFlags & PMF_TIME_TELEPORT)
-	{
-		pm->viewAngles.Y = SHORT2ANGLE (pm->cmd.angles[YAW] + pm->state.deltaAngles[YAW]);
-		pm->viewAngles.X = 0;
-		pm->viewAngles.Z = 0;
-	}
+		pm->viewAngles.Set (0, SHORT2ANGLE (pm->cmd.angles[YAW] + pm->state.deltaAngles[YAW]), 0);
 	else
 	{
 		// circularly clamp the angles with deltas
-		sint16 temp = pm->cmd.angles[0] + pm->state.deltaAngles[0];
-		pm->viewAngles.X = SHORT2ANGLE(temp);
-
-		temp = pm->cmd.angles[1] + pm->state.deltaAngles[1];
-		pm->viewAngles.Y = SHORT2ANGLE(temp);
-
-		temp = pm->cmd.angles[2] + pm->state.deltaAngles[2];
-		pm->viewAngles.Z = SHORT2ANGLE(temp);
+		pm->viewAngles.Set (
+			SHORT2ANGLE(pm->cmd.angles[0] + pm->state.deltaAngles[0]),
+			SHORT2ANGLE(pm->cmd.angles[1] + pm->state.deltaAngles[1]),
+			SHORT2ANGLE(pm->cmd.angles[2] + pm->state.deltaAngles[2]));
 
 		// don't let the player look up or down more than 90 degrees
 		if ((pm->viewAngles.X > 89) && (pm->viewAngles.X < 180))
@@ -1076,7 +1091,7 @@ SV_Pmove
 Can be called by either the server or the client
 ================
 */
-void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
+void SV_Pmove (CPlayerEntity *Player, pMoveNew_t *pMove, float airAcceleration)
 {
 	pm = pMove;
 	pmAirAcceleration = airAcceleration;
@@ -1093,18 +1108,14 @@ void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
 	Mem_Zero (&pml, sizeof(pml));
 
 	// convert origin and velocity to float values
-	pml.origin.X = pm->state.origin[0]*(1.0f/8.0f);
-	pml.origin.Y = pm->state.origin[1]*(1.0f/8.0f);
-	pml.origin.Z = pm->state.origin[2]*(1.0f/8.0f);
+	pml.origin = pm->state.origin.ConvertDerived<vec3f>()*(1.0f/8.0f);
 
-	pml.velocity.X = pm->state.velocity[0]*(1.0f/8.0f);
-	pml.velocity.Y = pm->state.velocity[1]*(1.0f/8.0f);
-	pml.velocity.Z = pm->state.velocity[2]*(1.0f/8.0f);
+	pml.velocity = pm->state.velocity.ConvertDerived<vec3f>()*(1.0f/8.0f);
 
-	pml.ent			= ent;
+	pml.Player			= Player;
 
 	// save old org in case we get stuck
-	VecxCopy<svec3_t, 3> (pm->state.origin, pml.previousOrigin);
+	pml.previousOrigin = pm->state.origin;
 
 	pml.frameTime = pm->cmd.msec * 0.001;
 
@@ -1119,6 +1130,9 @@ void SV_Pmove (CPlayerEntity *ent, pMoveNew_t *pMove, float airAcceleration)
 
 	if (pm->state.pmType >= PMT_DEAD)
 	{
+		if (Game.R1Protocol)
+			pml.frameTime *= 2;
+
 		pm->cmd.forwardMove = 0;
 		pm->cmd.sideMove = 0;
 		pm->cmd.upMove = 0;

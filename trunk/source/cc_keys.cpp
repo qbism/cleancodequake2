@@ -33,55 +33,55 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
-CKey::CKey(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache) :
+CKey::CKey(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache) :
 CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 				Precache)
 {
 };
 
-void CKey::Use (CPlayerEntity *ent)
+void CKey::Use (CPlayerEntity *Player)
 {
 }
 
-void CKey::Drop (CPlayerEntity *ent)
+void CKey::Drop (CPlayerEntity *Player)
 {
 }
 
-CPowerCube::CPowerCube(char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache) :
+CPowerCube::CPowerCube(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache) :
 CKey(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 				Precache)
 {
 };
 
 
-bool CKey::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CKey::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
-		if (other->Client.Persistent.Inventory.Has(this))
+		if (Other->Client.Persistent.Inventory.Has(this))
 			return false;
-		other->Client.Persistent.Inventory.Set (this, 1);
+		Other->Client.Persistent.Inventory.Set (this, 1);
 		return true;
 	}
-	other->Client.Persistent.Inventory += this;
+	Other->Client.Persistent.Inventory += this;
 	return true;
 }
 
-bool CPowerCube::Pickup (class CItemEntity *ent, CPlayerEntity *other)
+bool CPowerCube::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
-	if (game.GameMode == GAME_COOPERATIVE)
+	if (Game.GameMode & GAME_COOPERATIVE)
 	{
-		if (other->Client.Persistent.PowerCubeCount & ((ent->SpawnFlags & 0x0000ff00)>> 8))
+		if (Other->Client.Persistent.PowerCubeCount & ((Item->SpawnFlags & 0x0000ff00)>> 8))
 			return false;
-		other->Client.Persistent.Inventory += this;
-		other->Client.Persistent.PowerCubeCount |= ((ent->SpawnFlags & 0x0000ff00) >> 8);
+		Other->Client.Persistent.Inventory += this;
+		Other->Client.Persistent.PowerCubeCount |= ((Item->SpawnFlags & 0x0000ff00) >> 8);
 		return true;
 	}
-	other->Client.Persistent.Inventory += this;
+	Other->Client.Persistent.Inventory += this;
 	return true;
 }
 
@@ -89,32 +89,32 @@ class CPowerCubeEntity : public CItemEntity
 {
 public:
 	CPowerCubeEntity() :
-	  CBaseEntity(),
+	  IBaseEntity(),
 	  CItemEntity ()
 	  {
 	  };
 
 	CPowerCubeEntity (sint32 Index) :
-	  CBaseEntity(Index),
+	  IBaseEntity(Index),
 	  CItemEntity (Index)
 	  {
 	  };
 
 	void Spawn (CBaseItem *item)
 	{
-		if (game.GameMode == GAME_COOPERATIVE)
+		if (Game.GameMode & GAME_COOPERATIVE)
 		{
-			SpawnFlags |= (1 << (8 + level.PowerCubeCount));
-			level.PowerCubeCount++;
+			SpawnFlags |= (1 << (8 + Level.PowerCubeCount));
+			Level.PowerCubeCount++;
 		}
 
 		LinkedItem = item;
-		NextThink = level.Frame + 2;    // items start after other solids
+		NextThink = Level.Frame + 2;    // items start after other solids
 		ThinkState = ITS_DROPTOFLOOR;
 		PhysicsType = PHYSICS_NONE;
 
 		State.GetEffects() = item->EffectFlags;
-		State.GetRenderEffects() = RF_GLOW;
+		State.GetRenderEffects() = RF_GLOW | RF_IR_VISIBLE;
 	};
 };
 
@@ -130,14 +130,14 @@ LINK_ITEM_TO_CLASS (key_power_cube, CPowerCubeEntity);
 
 void AddKeysToList ()
 {
-	QNew (com_itemPool, 0) CKey("key_data_cd", "models/items/keys/data_cd/tris.md2", EF_ROTATE, "items/pkup.wav", "k_datacd", "Data CD", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	NItems::PowerCube = QNew (com_itemPool, 0) CPowerCube("key_power_cube", "models/items/keys/power/tris.md2", EF_ROTATE, "items/pkup.wav", "k_powercube", "Power Cube", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_pyramid", "models/items/keys/pyramid/tris.md2", EF_ROTATE, "items/pkup.wav", "k_pyramid", "Pyramid Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_data_spinner", "models/items/keys/spinner/tris.md2", EF_ROTATE, "items/pkup.wav", "k_dataspin", "Data Spinner", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_pass", "models/items/keys/pass/tris.md2", EF_ROTATE, "items/pkup.wav", "k_security", "Security Pass", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_blue_key", "models/items/keys/key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_bluekey", "Blue Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_red_key", "models/items/keys/red_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_redkey", "Red Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_commander_head", "models/monsters/commandr/head/tris.md2", EF_ROTATE, "items/pkup.wav", "k_comhead", "Commander's Head", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (com_itemPool, 0) CKey("key_airstrike_target", "models/items/keys/target/tris.md2", EF_ROTATE, "items/pkup.wav", "i_airstrike", "Airstrike Marker", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_data_cd", "models/items/keys/data_cd/tris.md2", EF_ROTATE, "items/pkup.wav", "k_datacd", "Data CD", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	NItems::PowerCube = QNew (TAG_GENERIC) CPowerCube("key_power_cube", "models/items/keys/power/tris.md2", EF_ROTATE, "items/pkup.wav", "k_powercube", "Power Cube", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_pyramid", "models/items/keys/pyramid/tris.md2", EF_ROTATE, "items/pkup.wav", "k_pyramid", "Pyramid Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_data_spinner", "models/items/keys/spinner/tris.md2", EF_ROTATE, "items/pkup.wav", "k_dataspin", "Data Spinner", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_pass", "models/items/keys/pass/tris.md2", EF_ROTATE, "items/pkup.wav", "k_security", "Security Pass", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_blue_key", "models/items/keys/key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_bluekey", "Blue Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_red_key", "models/items/keys/red_key/tris.md2", EF_ROTATE, "items/pkup.wav", "k_redkey", "Red Key", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_commander_head", "models/monsters/commandr/head/tris.md2", EF_ROTATE, "items/pkup.wav", "k_comhead", "Commander's Head", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_airstrike_target", "models/items/keys/target/tris.md2", EF_ROTATE, "items/pkup.wav", "i_airstrike", "Airstrike Marker", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 }
 

@@ -34,25 +34,50 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ARMOR_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ARMOR_H
 
+/**
+\typedef	uint16 EDamageFlags
+
+\brief	Defines an alias representing the damage flags.
+**/
+typedef uint16 EDamageFlags;
+
+/**
+\enum	
+
+\brief	Values that represent damage flags. 
+**/
+enum
+{
+	DAMAGE_RADIUS				= BIT(0), // Indirect damage
+	DAMAGE_NO_ARMOR				= BIT(1), // Goes through armor
+	DAMAGE_ENERGY				= BIT(2), // Energy-based (blaster)
+	DAMAGE_NO_KNOCKBACK			= BIT(3), // Don't add knockback
+	DAMAGE_BULLET				= BIT(4), // Bullet damage (used for ricochets)
+	DAMAGE_NO_PROTECTION		= BIT(5), // Always damages
+	DAMAGE_DESTROY_ARMOR		= BIT(6), // Damage is done to armor and health.
+	DAMAGE_NO_REG_ARMOR			= BIT(7), // Damage skips regular armor
+	DAMAGE_NO_POWER_ARMOR		= BIT(8), // Damage skips power armor
+};
+
 class CArmor : public CBaseItem
 {
 public:
-	sint32		baseCount;			// (on normalProtection == -1) Amount to add
-	sint32		maxCount;			// (on normalProtection == -1) Amount to stop at (-1 = none)
+	sint16		baseCount;			// (on normalProtection == -1) Amount to add
+	sint16		maxCount;			// (on normalProtection == -1) Amount to stop at (-1 = none)
 
-	signed char	normalProtection;	// -1 = Always add to current armor
-	signed char	energyProtection;	// -1 = Nothing
+	sint16	normalProtection;		// -1 = Always add to current armor
+	sint16	energyProtection;		// -1 = Nothing
 
-	CArmor (char *Classname, char *WorldModel, sint32 EffectFlags,
-			   char *PickupSound, char *Icon, char *Name, EItemFlags Flags,
-			   char *Precache, sint32 baseCount, sint32 maxCount, float normalProtection,
-			   float energyProtection);
+	CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
+			   const char *Precache, sint16 baseCount, sint16 maxCount, sint16 normalProtection,
+			   sint16 energyProtection);
 
-	bool	Pickup (class CItemEntity *ent, CPlayerEntity *other);
-	void	Use (CPlayerEntity *ent);
-	void	Drop (CPlayerEntity *ent);
+	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
+	void	Use (CPlayerEntity *Player);
+	void	Drop (CPlayerEntity *Player);
 
-	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &point, vec3f &normal, sint32 damage, sint32 dflags);
+	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags);
 };
 
 void AddArmorToList ();

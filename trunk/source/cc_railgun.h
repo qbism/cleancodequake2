@@ -39,15 +39,11 @@ class CRailgun : public CWeapon
 public:
 	CRailgun();
 
-	inline bool	CanFire	(CPlayerEntity *Player);
-	inline bool	CanStopFidgetting (CPlayerEntity *Player);
+	bool		CanFire	(CPlayerEntity *Player);
+	bool		CanStopFidgetting (CPlayerEntity *Player);
 
 	// The function called to "fire"
 	void	Fire (CPlayerEntity *Player);
-
-#if XATRIX_FEATURES
-	void Use (CWeaponItem *Wanted, CPlayerEntity *ent);
-#endif
 
 	WEAPON_CLASS_DEFS (CRailgun);
 };

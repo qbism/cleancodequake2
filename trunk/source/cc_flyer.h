@@ -54,24 +54,24 @@ public:
 
 	MONSTER_SAVE_LOAD_NO_FIELDS
 
-	void Attack ();
+	ROGUE_VIRTUAL void Attack ();
 #if (MONSTER_SPECIFIC_FLAGS & FLYER_KNOWS_HOW_TO_DODGE)
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void Duck (float eta);
 	void SideStep ();
 #else
-	void Dodge (CBaseEntity *attacker, float eta);
+	void Dodge (IBaseEntity *Attacker, float eta);
 #endif
 
 	void ChooseAfterDodge ();
 	void AI_Roll (float Dist);
 #endif
 	void Idle ();
-	void Run ();
+	ROGUE_VIRTUAL void Run ();
 	void Sight ();
-	void Stand ();
-	void Walk ();
-	void Melee ();
+	ROGUE_VIRTUAL void Stand ();
+	ROGUE_VIRTUAL void Walk ();
+	ROGUE_VIRTUAL void Melee ();
 
 	void CheckMelee ();
 	void LoopMelee ();
@@ -83,10 +83,12 @@ public:
 	void Fire (sint32 FlashNumber);
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	ROGUE_VIRTUAL void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	ROGUE_VIRTUAL void Pain (IBaseEntity *Other, sint32 Damage);
 
 	void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

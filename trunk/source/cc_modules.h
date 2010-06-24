@@ -32,17 +32,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #if 0
-#define MODULE_API_VERSION		1
+const int MODULE_API_VERSION	= 1;
 #define MODULE_ENTRY_POINT		"LoadModuleAPI"
 
 // All modules inherit this class
 class CModule
 {
 public:
-	std::cc_string	Name; // Name of the module
+	std::string	Name; // Name of the module
 
 	// Constructor; set Name here.
-	CModule (std::cc_string Name) :
+	CModule (std::string Name) :
 	  Name (Name)
 	  {
 	  };

@@ -1,0 +1,9 @@
+# Specifies which files Git (git-scm.com) should ignore
+# Similar to svn:ignore property of Subversion
+*.a
+*.so
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
+

@@ -43,10 +43,8 @@ void WriteAngle (float val);
 void WriteAngle16 (float val);
 void WriteString (const char *val);
 void WriteCoord (float f);
-void WritePosition (vec3_t val);
-void WritePosition (vec3f &val);
-void WriteDirection (vec3_t val);
-void WriteDirection (vec3f &val);
+void WritePosition (vec3f val);
+void WriteDirection (vec3f val);
 
 #else
 FILE_WARNING

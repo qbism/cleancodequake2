@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CMedic : public CMonster
 {
 public:
-	FrameNumber_t	MedicTryTime;
+	FrameNumber	MedicTryTime;
 	uint8			MedicTries;
 
 	MONSTER_SOUND_ENUM
@@ -58,54 +58,57 @@ public:
 
 	CMedic (uint32 ID);
 
-	void SaveMonsterFields (CFile &File)
+	ROGUE_VIRTUAL void SaveMonsterFields (CFile &File)
 	{
 		SAVE_MONSTER_SOUNDS
-		File.Write<FrameNumber_t> (MedicTryTime);
+		File.Write<FrameNumber> (MedicTryTime);
 		File.Write<uint8> (MedicTries);
 	}
-	void LoadMonsterFields (CFile &File)
+	ROGUE_VIRTUAL void LoadMonsterFields (CFile &File)
 	{
 		LOAD_MONSTER_SOUNDS
-		MedicTryTime = File.Read<FrameNumber_t> ();
+		MedicTryTime = File.Read<FrameNumber> ();
 		MedicTries = File.Read<uint8> ();
 	}
 
-	void Attack ();
+	ROGUE_VIRTUAL void Attack ();
 	void Run ();
 	void Search ();
 	void Idle ();
 	void Sight ();
 	void Stand ();
 	void Walk ();
-	bool CheckAttack ();
-#if !MONSTER_USE_ROGUE_AI
-	void Dodge (CBaseEntity *attacker, float eta);
+	ROGUE_VIRTUAL bool CheckAttack ();
+#if !ROGUE_FEATURES
+	void Dodge (IBaseEntity *Attacker, float eta);
 	void Duck_Down ();
 	void Duck_Hold ();
 	void Duck_Up ();
 #else
+	void Dodge (IBaseEntity *Attacker, float eta, CTrace *tr) { MonsterDodge (Attacker, eta, tr); };
 	void Duck (float eta);
 	void SideStep ();
 #endif
 
 	CMonsterEntity	*FindDeadMonster ();
-	void FireBlaster ();
+	ROGUE_VIRTUAL void FireBlaster ();
 	void ContinueFiring ();
 	void HookLaunch ();
 	void HookRetract();
 	void CableAttack ();
 
-#if MONSTER_USE_ROGUE_AI
+#if ROGUE_FEATURES
 	void CleanupHeal (bool ChangeFrame = false);
 	void AbortHeal (bool Gib, bool Mark);
 #endif
 
 	void Dead ();
-	void Die (CBaseEntity *inflictor, CBaseEntity *attacker, sint32 damage, vec3f &point);
-	void Pain (CBaseEntity *other, float kick, sint32 damage);
+	void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+	void Pain (IBaseEntity *Other, sint32 Damage);
 
-	void Spawn ();
+	ROGUE_VIRTUAL void Spawn ();
+	
+	MONSTER_ID_HEADER
 };
 
 #else

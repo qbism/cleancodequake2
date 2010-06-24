@@ -34,30 +34,28 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_UTILS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_UTILS_H
 
-void	G_TouchTriggers (CBaseEntity *ent);
-void G_SetMovedir (vec3f &angles, vec3f &movedir);
+void	G_TouchTriggers (IBaseEntity *Entity);
+void	G_SetMovedir (vec3f &angles, vec3f &movedir);
 
-typedef std::vector<CBaseEntity*, std::generic_allocator<CBaseEntity*> > TTargetList;
-CBaseEntity *CC_PickTarget (char *targetname);
+typedef std::vector<IBaseEntity*> TTargetList;
+IBaseEntity *CC_PickTarget (char *targetname);
 TTargetList CC_GetTargets (char *targetname);
 
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
-TEntityType *CC_Find (CBaseEntity *From, const char *Match)
+TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 {
-	edict_t *gameEnt;
+	SEntity *gameEnt;
 	if (!From)
-		gameEnt = g_edicts;
+		gameEnt = Game.Entities;
 	else
 	{
-		gameEnt = From->gameEntity;
+		gameEnt = From->GetGameEntity();
 		gameEnt++;
 	}
 
-	for ( ; gameEnt < &g_edicts[Game.GetNumEdicts()]; gameEnt++)
+	for ( ; gameEnt < &Game.Entities[GameAPI.GetNumEdicts()]; gameEnt++)
 	{
-		if (!gameEnt->inUse)
-			continue;
-		if (!gameEnt->Entity)
+		if (!gameEnt->Entity || !gameEnt->Entity->GetInUse())
 			continue;
 		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
 			continue;
@@ -88,22 +86,20 @@ TEntityType *CC_Find (CBaseEntity *From, const char *Match)
 }
 
 template <class TEntityType, uint32 EntityFlags>
-TEntityType *CC_FindByClassName (CBaseEntity *From, const char *Match)
+TEntityType *CC_FindByClassName (IBaseEntity *From, const char *Match)
 {
-	edict_t *gameEnt;
+	SEntity *gameEnt;
 	if (!From)
-		gameEnt = g_edicts;
+		gameEnt = Game.Entities;
 	else
 	{
-		gameEnt = From->gameEntity;
+		gameEnt = From->GetGameEntity();
 		gameEnt++;
 	}
 
-	for ( ; gameEnt < &g_edicts[Game.GetNumEdicts()]; gameEnt++)
+	for ( ; gameEnt < &Game.Entities[GameAPI.GetNumEdicts()]; gameEnt++)
 	{
-		if (!gameEnt->inUse)
-			continue;
-		if (!gameEnt->Entity)
+		if (!gameEnt->Entity || !gameEnt->Entity->GetInUse())
 			continue;
 		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
 			continue;
@@ -120,18 +116,18 @@ TEntityType *CC_FindByClassName (CBaseEntity *From, const char *Match)
 // stored in cc_infoentities
 CSpotBase *SelectFarthestDeathmatchSpawnPoint ();
 CSpotBase *SelectRandomDeathmatchSpawnPoint ();
-float	PlayersRangeFromSpot (CBaseEntity *spot);
+float	PlayersRangeFromSpot (IBaseEntity *spot);
 
 inline CSpotBase *SelectDeathmatchSpawnPoint ()
 {
-	return (dmFlags.dfSpawnFarthest.IsEnabled()) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
+	return (DeathmatchFlags.dfSpawnFarthest.IsEnabled()) ? SelectFarthestDeathmatchSpawnPoint () : SelectRandomDeathmatchSpawnPoint ();
 }
 
 class CForEachTeamChainCallback
 {
 public:
-	virtual void Callback (CBaseEntity *Entity) = 0;
-	virtual void Query (CBaseEntity *Master);
+	virtual void Callback (IBaseEntity *Entity) = 0;
+	virtual void Query (IBaseEntity *Master);
 };
 
 class CForEachPlayerCallback
@@ -141,6 +137,13 @@ public:
 
 	virtual void Callback (CPlayerEntity *Player) = 0;
 	virtual void Query (bool MustBeInUse = true);
+};
+
+class CForEachEntityCallback
+{
+public:
+	virtual void Callback (IBaseEntity *Entity) = 0;
+	virtual void Query (uint32 FlagsCanHave, uint32 FlagsCantHave = 0, bool MustBeInUse = true);
 };
 
 /*
@@ -174,9 +177,34 @@ inline ERangeType Range (vec3f left, vec3f right)
 	return RANGE_FAR;
 }
 
-ERangeType Range (CBaseEntity *self, CBaseEntity *other);
-bool IsInFront (CBaseEntity *self, CBaseEntity *other);
-bool IsVisible (CBaseEntity *self, CBaseEntity *other);
+ERangeType Range (IBaseEntity *self, IBaseEntity *Other);
+bool IsInFront (IBaseEntity *self, IBaseEntity *Other);
+bool IsInBack (IBaseEntity *self, IBaseEntity *Other);
+bool IsBelow (IBaseEntity *self, IBaseEntity *Other);
+bool IsVisible (IBaseEntity *self, IBaseEntity *Other);
+bool IsVisible (vec3f left, vec3f right, IBaseEntity *self);
+
+void	G_ProjectSource (const vec3f &Point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up = upOrigin);
+
+// Changed to sint32, rarely used as a float..
+IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid);
+
+template <class ReturnType, uint32 EntityFlags>
+ReturnType *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
+{
+	return entity_cast<ReturnType>(FindRadius (From, org, Radius, EntityFlags, CheckNonSolid));
+}
+
+template <uint32 EntityFlags>
+inline IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, bool CheckNonSolid = true)
+{
+	return FindRadius (From, org, Radius, EntityFlags, CheckNonSolid);
+}
+
+inline vec3f VelocityForDamage (sint32 Damage)
+{
+	return vec3f(100.0f * crand(), 100.0f * crand(), 200 + 100 * frand()) * ((Damage < 50) ? 0.7f : 1.2f);
+}
 
 #else
 FILE_WARNING

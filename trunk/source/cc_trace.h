@@ -36,30 +36,27 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CTrace
 {
-	void Copy (cmTrace_t tr);
+	void Copy (STrace tr);
 
 public:
-	float				fraction;
-	edict_t				*ent;
-	plane_t				plane;
-	bool				allSolid;
-	bool				startSolid;
-	vec3f				EndPos;
-	cmBspSurface_t		*surface;
-	sint32					contents;
-
-	// For vec3f
-	CBaseEntity			*Ent;
+	float				Fraction;
+	SBSPPlane			Plane;
+	bool				AllSolid;
+	bool				StartSolid;
+	vec3f				EndPosition;
+	SBSPSurface			*Surface;
+	EBrushContents		Contents;
+	IBaseEntity			*Entity;
 
 	CTrace ();
 
-	CTrace (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, sint32 contentMask);
-	CTrace (vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 contentMask);
-	CTrace (vec3f &start, vec3f &end, sint32 contentMask);
+	CTrace (vec3f Start, vec3f Mins, vec3f Maxs, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask);
+	CTrace (vec3f Start, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask);
+	CTrace (vec3f Start, vec3f End, EBrushContents ContentMask);
 
-	void operator () (vec3f &start, vec3f &mins, vec3f &maxs, vec3f &end, CBaseEntity *ignore, sint32 contentMask); 
-	void operator () (vec3f &start, vec3f &end, CBaseEntity *ignore, sint32 contentMask); 
-	void operator () (vec3f &start, vec3f &end, sint32 contentMask); 
+	void operator () (vec3f Start, vec3f Mins, vec3f Maxs, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask); 
+	void operator () (vec3f Start, vec3f End, IBaseEntity *Ignore, EBrushContents ContentMask); 
+	void operator () (vec3f Start, vec3f End, EBrushContents ContentMask); 
 };
 
 #else
