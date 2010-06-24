@@ -75,18 +75,18 @@ NULL will be returned if the end of the list is reached.
 =============
 */
 
-IBaseEntity *CC_PickTarget (char *targetname)
+IBaseEntity *CC_PickTarget (std::string targetname)
 {
 	static TTargetList choices;
 	choices.clear();
 
-	if (!targetname)
+	if (targetname.empty())
 		return NULL;
 
 	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname);
+		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname.c_str());
 		if (!Entity)
 			break;
 
@@ -95,25 +95,26 @@ IBaseEntity *CC_PickTarget (char *targetname)
 
 	if (!choices.size())
 	{
-		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Target \"%s\" not found\n", targetname);
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Target \"%s\" not found\n", targetname.c_str());
 		return NULL;
 	}
 
 	return choices[irandom(choices.size())];
 }
 
-TTargetList CC_GetTargets (char *targetname)
+TTargetList CC_GetTargets (std::string targetname)
 {
 	static TTargetList choices;
 	choices.clear();
 
-	if (!targetname)
+	if (targetname.empty())
 		return choices;
 
 	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname);
+		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname.c_str());
+		
 		if (!Entity)
 			break;
 
@@ -122,7 +123,7 @@ TTargetList CC_GetTargets (char *targetname)
 
 	if (!choices.size())
 	{
-		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Target \"%s\" not found\n", targetname);
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Target \"%s\" not found\n", targetname.c_str());
 		return choices;
 	}
 

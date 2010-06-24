@@ -395,15 +395,15 @@ void CInfantry::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damag
 		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 // regular death
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 
 	CAnim *Animation;

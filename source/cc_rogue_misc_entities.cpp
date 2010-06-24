@@ -196,7 +196,7 @@ public:
 		switch (EndFunc)
 		{
 			case DOORSECRETENDFUNC_DONE:
-				if (!(TargetName) || (SpawnFlags & SEC_YES_SHOOT))
+				if (TargetName.empty() || (SpawnFlags & SEC_YES_SHOOT))
 				{
 					Health = 1;
 					CanTakeDamage = true;
@@ -247,7 +247,7 @@ public:
 		GetSolid() = SOLID_BSP;
 		SetBrushModel ();
 
-		if (!(TargetName) || (SpawnFlags & SEC_YES_SHOOT))
+		if (TargetName.empty() || (SpawnFlags & SEC_YES_SHOOT))
 		{
 			Health = 1;
 			MaxHealth = Health;
@@ -909,7 +909,7 @@ void CPlatForm2::Spawn ()
 
 	MoveState = STATE_TOP;
 
-	if (TargetName)
+	if (!TargetName.empty())
 		RequiresActivation = true;
 	else
 	{
@@ -1068,7 +1068,7 @@ public:
 
 	void LinkTurret ()
 	{
-		if (KillTarget)
+		if (!KillTarget.empty())
 			Enemy = CC_PickTarget (KillTarget);
 
 		ThinkType = BRAINTHINK_TURRET;
@@ -1185,20 +1185,20 @@ public:
 
 	void Spawn ()
 	{
-		if (!KillTarget)
+		if (KillTarget.empty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No killtarget\n");
 			Free ();
 			return;
 		}
-		if (!Target)
+		if (Target.empty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
 		}
 
-		if (TargetName)
+		if (!TargetName.empty())
 			UseType = BRAINUSE_ACTIVATE;
 		else
 		{

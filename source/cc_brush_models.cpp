@@ -795,7 +795,7 @@ void CPlatForm::Spawn ()
 	Positions[0] = Positions[1] = State.GetOrigin ();
 	Positions[1].Z -= (Height) ? Height : ((GetMaxs().Z - GetMins().Z) - Lip);
 
-	if (TargetName)
+	if (!TargetName.empty())
 		MoveState = STATE_UP;
 	else
 	{
@@ -964,10 +964,10 @@ void CDoor::UseAreaPortals (bool isOpen)
 {
 	IMapEntity	*t = NULL;
 
-	if (!Target)
+	if (Target.empty())
 		return;
 
-	while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target)) != NULL)
+	while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
 	{
 		if (Q_stricmp(t->ClassName.c_str(), "func_areaportal") == 0)
 		{
@@ -1484,7 +1484,7 @@ void CDoor::Spawn ()
 		CanTakeDamage = true;
 		MaxHealth = Health;
 	}
-	else if (TargetName && !Message.empty())
+	else if (!TargetName.empty() && !Message.empty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -1520,7 +1520,7 @@ void CDoor::Spawn ()
 		GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
 		Link ();
 	}
-	else if (Health || TargetName)
+	else if (Health || !TargetName.empty())
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
 		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
@@ -1691,7 +1691,7 @@ void CRotatingDoor::Spawn ()
 		MaxHealth = Health;
 	}
 	
-	if (TargetName && !Message.empty())
+	if (!TargetName.empty() && !Message.empty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -1721,7 +1721,7 @@ void CRotatingDoor::Spawn ()
 	Link ();
 
 	NextThink = Level.Frame + FRAMETIME;
-	if (Health || TargetName)
+	if (Health || !TargetName.empty())
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
 		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
@@ -1878,7 +1878,7 @@ void CDoorSecret::DoEndFunc ()
 	switch (EndFunc)
 	{
 		case DOORSECRETENDFUNC_DONE:
-			if (!(TargetName) || (SpawnFlags & SECRET_ALWAYS_SHOOT))
+			if (TargetName.empty() || (SpawnFlags & SECRET_ALWAYS_SHOOT))
 			{
 				Health = 0;
 				CanTakeDamage = true;
@@ -1970,7 +1970,7 @@ void CDoorSecret::Spawn ()
 	GetSolid() = SOLID_BSP;
 	SetBrushModel ();
 
-	if (!(TargetName) || (SpawnFlags & SECRET_ALWAYS_SHOOT))
+	if (TargetName.empty() || (SpawnFlags & SECRET_ALWAYS_SHOOT))
 	{
 		Health = 0;
 		CanTakeDamage = true;
@@ -2006,7 +2006,7 @@ void CDoorSecret::Spawn ()
 		CanTakeDamage = true;
 		MaxHealth = Health;
 	}
-	else if (TargetName && !Message.empty())
+	else if (!TargetName.empty() && !Message.empty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -2190,7 +2190,7 @@ void CButton::Spawn ()
 		MaxHealth = Health;
 		CanTakeDamage = true;
 	}
-	else if (!TargetName)
+	else if (TargetName.empty())
 		Touchable = true;
 
 	MoveState = STATE_BOTTOM;
@@ -2289,9 +2289,9 @@ void CTrainBase::Blocked (IBaseEntity *Other)
 
 void CTrainBase::TrainWait ()
 {
-	if (TargetEntity->PathTarget)
+	if (!TargetEntity->PathTarget.empty())
 	{
-		char	*savetarget = TargetEntity->Target;
+		std::string savetarget = TargetEntity->Target;
 		TargetEntity->Target = TargetEntity->PathTarget;
 		TargetEntity->UseTargets (*User, Message);
 		TargetEntity->Target = savetarget;
@@ -2338,7 +2338,7 @@ void CTrainBase::Next ()
 
 	while (true)
 	{
-		if (!Target)
+		if (Target.empty())
 			return;
 
 		if (!TargetEntity)
@@ -2445,7 +2445,7 @@ void CTrainBase::Resume ()
 
 void CTrainBase::Find ()
 {
-	if (!Target)
+	if (Target.empty())
 	{
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 		return;
@@ -2465,7 +2465,7 @@ void CTrainBase::Find ()
 	Link ();
 
 	// if not triggered, start immediately
-	if (!TargetName)
+	if (TargetName.empty())
 		SpawnFlags |= TRAIN_START_ON;
 
 	if (SpawnFlags & TRAIN_START_ON)
@@ -2589,7 +2589,7 @@ void CTrain::Spawn ()
 
 	Link ();
 
-	if (Target)
+	if (!Target.empty())
 	{
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
@@ -2636,7 +2636,7 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	}
 	
 	IUsableEntity *Usable = entity_cast<IUsableEntity>(Other);
-	if (!Usable->PathTarget)
+	if (Usable->PathTarget.empty())
 	{
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with no pathtarget.\n");
 		return;
@@ -2655,17 +2655,19 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CTriggerElevator::Think ()
 {
-	if (!Target)
+	if (Target.empty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		return;
 	}
+
 	IBaseEntity *newTarg = CC_PickTarget (Target);
 	if (!newTarg)
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target);
 		return;
 	}
+
 	if (strcmp(newTarg->ClassName.c_str(), "func_train") != 0)
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target);
@@ -2705,12 +2707,12 @@ IBrushModel(Index)
 
 ENTITYFIELDS_BEGIN(CWorldEntity)
 {
-	CEntityField ("message",		EntityMemberOffset(CWorldEntity,Message),		FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("gravity",		EntityMemberOffset(CWorldEntity,Gravity),		FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("sky",			EntityMemberOffset(CWorldEntity,Sky),			FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("message",		EntityMemberOffset(CWorldEntity,Message),		FT_STRING | FT_SAVABLE),
+	CEntityField ("gravity",		EntityMemberOffset(CWorldEntity,Gravity),		FT_STRING | FT_SAVABLE),
+	CEntityField ("sky",			EntityMemberOffset(CWorldEntity,Sky),			FT_STRING | FT_SAVABLE),
 	CEntityField ("skyrotate",		EntityMemberOffset(CWorldEntity,SkyRotate),		FT_FLOAT | FT_SAVABLE),
 	CEntityField ("skyaxis",		EntityMemberOffset(CWorldEntity,SkyAxis),		FT_VECTOR | FT_SAVABLE),
-	CEntityField ("nextmap",		EntityMemberOffset(CWorldEntity,NextMap),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("nextmap",		EntityMemberOffset(CWorldEntity,NextMap),		FT_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CWorldEntity)
 
@@ -2805,19 +2807,19 @@ void CWorldEntity::Spawn ()
 		Init_Junk();
 	}
 
-	if (NextMap)
+	if (!NextMap.empty())
 		Level.NextMap = NextMap;
 
 	// make some data visible to the server
-	if (Message && Message[0])
+	if (!Message.empty())
 	{
-		ConfigString (CS_NAME, Message);
+		ConfigString (CS_NAME, Message.c_str());
 		Level.FullLevelName = Message;
 	}
 	else
 		Level.FullLevelName = Level.ServerLevelName;
 
-	ConfigString (CS_SKY, (Sky && Sky[0]) ? Sky : "unit1_");
+	ConfigString (CS_SKY, (!Sky.empty()) ? Sky.c_str() : "unit1_");
 	ConfigString (CS_SKYROTATE, "%f", SkyRotate);
 
 	ConfigString (CS_SKYAXIS, VECTOR_STRING, PRINT_VECTOR_ARGS(SkyAxis));
@@ -2857,7 +2859,7 @@ void CWorldEntity::Spawn ()
 	//---------------
 	SetItemNames();
 
-	CvarList[CV_GRAVITY].Set ((Gravity) ? Gravity : "800");
+	CvarList[CV_GRAVITY].Set ((!Gravity.empty()) ? Gravity.c_str() : "800");
 
 	SoundIndex ("player/lava1.wav");
 	SoundIndex ("player/lava2.wav");
@@ -3717,14 +3719,14 @@ void CFuncExplosive::Activate (IBaseEntity *Other, IBaseEntity *Activator)
 	IUsableEntity *OtherUsable = (Other->EntityFlags & ENT_USABLE) ? entity_cast<IUsableEntity>(Other) : NULL,
 				  *ActivatorUsable = (Activator->EntityFlags & ENT_USABLE) ? entity_cast<IUsableEntity>(Activator) : NULL;
 
-	if (OtherUsable != NULL && OtherUsable->Target)
+	if (OtherUsable != NULL && !OtherUsable->Target.empty())
 	{
-		if (!strcmp(OtherUsable->Target, TargetName))
+		if (OtherUsable->Target == TargetName)
 			approved = true;
 	}
-	if (!approved && ActivatorUsable != NULL && ActivatorUsable->Target)
+	if (!approved && ActivatorUsable != NULL && !ActivatorUsable->Target.empty())
 	{
-		if (!strcmp(ActivatorUsable->Target, TargetName))
+		if (ActivatorUsable->Target == TargetName)
 			approved = true;
 	}
 
@@ -3795,14 +3797,14 @@ void CFuncExplosive::Spawn ()
 	else if (SpawnFlags & 8)
 	{
 		GetSolid() = SOLID_BSP;
-		if (TargetName)
+		if (!TargetName.empty())
 			UseType = FUNCEXPLOSIVE_USE_ACTIVATE;
 	}
 #endif
 	else
 	{
 		GetSolid() = SOLID_BSP;
-		if (TargetName)
+		if (!TargetName.empty())
 			UseType = FUNCEXPLOSIVE_USE_EXPLODE;
 	}
 

@@ -1030,7 +1030,7 @@ void CWidowStand::Dead ()
 
 void CWidowStand::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = false;
 	QuadFramenum = DoubleFramenum = InvincibleFramenum = 0;
 	CurrentMove = &WidowMoveDeath;

@@ -642,7 +642,7 @@ void CWallTurret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 		TurretBase->Link ();
 	}
 
-	if (Entity->Target)
+	if (!Entity->Target.empty())
 	{
 		if (Entity->Enemy && Entity->Enemy->GetInUse())
 			Entity->UseTargets (*Entity->Enemy, Entity->Message);
@@ -960,7 +960,7 @@ void CWallTurret::Spawn ()
 
 	if (Entity->SpawnFlags & SPAWN_WALL_UNIT)
 	{
-		if (!Entity->TargetName)
+		if (Entity->TargetName.empty())
 		{
 			Entity->Free ();
 			return;

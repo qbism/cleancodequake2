@@ -875,16 +875,16 @@ void CTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, v
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), Damage, GIB_METALLIC);
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, Damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Gear(), Damage, GIB_METALLIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 // regular death
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 
 	CurrentMove = &TankMoveDeath;

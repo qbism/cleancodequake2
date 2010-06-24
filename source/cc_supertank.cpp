@@ -518,7 +518,7 @@ void CSuperTank::Dead ()
 void CSuperTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = false;
 	ExplodeCount = 0;
 	CurrentMove = &SuperTankMoveDeath;

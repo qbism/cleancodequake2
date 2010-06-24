@@ -198,7 +198,7 @@ void CBody::TossHead (sint32 Damage)
 	State.GetSound() = 0;
 	AffectedByKnockback = false;
 
-	backOff = 1.5f;	
+	BackOff = 1.5f;	
 	Velocity += VelocityForDamage (Damage);
 
 	NextThink = Level.Frame + 100 + frand()*100;
@@ -497,7 +497,7 @@ void CBodyQueue::CopyBodyToQueue (CPlayerEntity *Player)
 	Body->Velocity.Clear ();
 	Body->SetOwner (Player->GetOwner());
 
-	Body->backOff = 1.0f;
+	Body->BackOff = 1.0f;
 	Body->CanTakeDamage = true;
 
 	// Implied that Player is a dead-head (lol)

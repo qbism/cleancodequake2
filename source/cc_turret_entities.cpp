@@ -107,7 +107,7 @@ IBaseEntity (),
 CTurretEntityBase (),
 FinishInit(true),
 ShouldFire(false),
-Target(NULL)
+Target()
 {
 	PitchOptions[0] = PitchOptions[1] = PitchOptions[2] = PitchOptions[3] = 0;
 };
@@ -117,7 +117,7 @@ IBaseEntity (Index),
 CTurretEntityBase (Index),
 FinishInit(true),
 ShouldFire(false),
-Target(NULL)
+Target()
 {
 	PitchOptions[0] = PitchOptions[1] = PitchOptions[2] = PitchOptions[3] = 0;
 };
@@ -159,7 +159,7 @@ void CTurretBreach::Think ()
 		FinishInit = false;
 
 		// get and save info for muzzle location
-		if (!Target)
+		if (Target.empty())
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Needs a target\n");
 		else
 		{
@@ -167,8 +167,7 @@ void CTurretBreach::Think ()
 			MoveOrigin = (targ->State.GetOrigin() - State.GetOrigin());
 			targ->Free();
 
-			QDelete Target;
-			Target = NULL;
+			Target.clear();
 		}
 
 		entity_cast<IBrushModel>(Team.Master)->Damage = Damage;
@@ -281,7 +280,7 @@ ENTITYFIELDS_BEGIN(CTurretBreach)
 	CEntityField ("maxpitch", EntityMemberOffset(CTurretBreach,PitchOptions[1]), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("minyaw", EntityMemberOffset(CTurretBreach,PitchOptions[2]), FT_FLOAT | FT_SAVABLE),
 	CEntityField ("maxyaw", EntityMemberOffset(CTurretBreach,PitchOptions[3]), FT_FLOAT | FT_SAVABLE),
-	CEntityField ("target", EntityMemberOffset(CTurretBreach,Target), FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("target", EntityMemberOffset(CTurretBreach,Target), FT_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTurretBreach)
 
@@ -394,11 +393,11 @@ void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 	IBaseEntity	*TeamEntity;

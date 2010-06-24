@@ -78,6 +78,9 @@ static void *Mem_TagAlloc (size_t Size, const sint32 TagNum, const char *FileNam
 
 static void Mem_TagFree (void *Pointer, bool IsArray)
 {
+	if (!Pointer)
+		return;
+
 	SMemHeader *Header = (SMemHeader*)(((uint8*)Pointer) - sizeof(SMemHeader));
 
 	if (!Header->Check(IsArray))

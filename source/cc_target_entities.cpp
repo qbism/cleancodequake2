@@ -572,7 +572,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	Level.Intermission.Time = Level.Frame;
 	Level.Intermission.ChangeMap = targ->Map;
 
-	if (strstr(Level.Intermission.ChangeMap, "*"))
+	if (Level.Intermission.ChangeMap.find_first_of('*') != std::string::npos)
 	{
 		if (Game.GameMode & GAME_COOPERATIVE)
 		{
@@ -635,7 +635,7 @@ CTargetChangeLevel::CTargetChangeLevel () :
 	IBaseEntity (),
 	IMapEntity (),
 	IUsableEntity (),
-	Map(NULL),
+	Map(),
 	ExitOnNextFrame(false)
 {
 };
@@ -644,7 +644,7 @@ CTargetChangeLevel::CTargetChangeLevel (sint32 Index) :
 	IBaseEntity (Index),
 	IMapEntity (Index),
 	IUsableEntity (Index),
-	Map(NULL),
+	Map(),
 	ExitOnNextFrame(false)
 {
 };
@@ -689,7 +689,7 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	}
 
 	// if going to a new unit, clear cross triggers
-	if (strstr(Map, "*"))	
+	if (Map.find_first_of('*') != std::string::npos)	
 		Game.ServerFlags &= ~(SFL_CROSS_TRIGGER_MASK);
 
 	BeginIntermission (this);
@@ -697,7 +697,7 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CTargetChangeLevel::Spawn ()
 {
-	if (!Map)
+	if (Map.empty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No map\n");
 		Free ();
@@ -705,7 +705,7 @@ void CTargetChangeLevel::Spawn ()
 	}
 
 	// ugly hack because *SOMEBODY* screwed up their map
-	if ((Q_stricmp(Level.ServerLevelName.c_str(), "fact1") == 0) && (Q_stricmp(Map, "fact3") == 0))
+	if (Level.ServerLevelName == "fact1" && Map == "fact3")
 	{
 		Map = "fact3$secret1";
 		// Paril
@@ -718,7 +718,7 @@ void CTargetChangeLevel::Spawn ()
 
 ENTITYFIELDS_BEGIN(CTargetChangeLevel)
 {
-	CEntityField ("map", EntityMemberOffset(CTargetChangeLevel,Map), FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("map", EntityMemberOffset(CTargetChangeLevel,Map), FT_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTargetChangeLevel)
 
@@ -1321,11 +1321,11 @@ void CTargetLaser::Start ()
 
 	if (!Enemy)
 	{
-		if (Target)
+		if (!Target.empty())
 		{
-			IBaseEntity *Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target);
+			IBaseEntity *Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 			if (!Entity)
-				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.c_str());
 			Enemy = Entity;
 		}
 		else
@@ -1570,7 +1570,7 @@ public:
 
 	void Spawn ()
 	{
-		if (!TargetName)
+		if (TargetName.empty())
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 
 		if (!Duration)

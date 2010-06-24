@@ -473,7 +473,7 @@ void CFuncClock::Think ()
 {
 	if (!String)
 	{
-		String = entity_cast<CTargetString>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target));
+		String = entity_cast<CTargetString>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str()));
 		if (!String)
 			return;
 	}
@@ -510,7 +510,7 @@ void CFuncClock::Think ()
 	{
 		if (CountTarget)
 		{
-			char *savetarget = Target;
+			std::string savetarget = Target;
 			std::string savemessage = Message;
 			Target = CountTarget;
 			Message.clear();
@@ -548,7 +548,7 @@ void CFuncClock::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CFuncClock::Spawn ()
 {
-	if (!Target)
+	if (Target.empty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		Free ();

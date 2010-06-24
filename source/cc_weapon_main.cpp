@@ -567,7 +567,7 @@ inline TWeaponSwitcherListType &WeaponSwitchList ()
 void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 {
 	// Dead?
-	if (!Player->Client.Persistent.Weapon || Player->Health <= 0 || Player->DeadFlag)
+	if (!Player->Client.Persistent.Weapon || Player->Health <= 0 || Player->IsDead)
 		return;
 
 	// Collect info on our current state

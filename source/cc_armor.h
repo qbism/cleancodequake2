@@ -77,7 +77,7 @@ public:
 	void	Use (CPlayerEntity *Player);
 	void	Drop (CPlayerEntity *Player);
 
-	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags);
+	virtual sint32		CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags);
 };
 
 void AddArmorToList ();

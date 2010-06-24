@@ -368,7 +368,7 @@ void CPlayerEntity::BeginServerFrame ()
 		Client.Persistent.Weapon->Think (this);
 	}
 
-	if (DeadFlag)
+	if (IsDead)
 	{
 		// wait for any button just going down
 		if ( Level.Frame > Client.Timers.RespawnTime)
@@ -582,7 +582,7 @@ void CPlayerEntity::PutInServer ()
 	ClassName = "player";
 	Mass = 200;
 	GetSolid() = SOLID_BBOX;
-	DeadFlag = false;
+	IsDead = false;
 	AirFinished = Level.Frame + 120;
 	GetClipmask() = CONTENTS_MASK_PLAYERSOLID;
 	WaterInfo.OldLevel = WATER_NONE;
@@ -1043,7 +1043,7 @@ inline void CPlayerEntity::CalcViewOffset (vec3f &forward, vec3f &right, vec3f &
 	vec3f		v (0, 0, 0);
 
 	// if dead, fix the angle and don't add any kick
-	if (DeadFlag)
+	if (IsDead)
 	{
 		Client.PlayerState.GetViewAngles().Set (-15, Client.KillerYaw, 40);
 		Client.PlayerState.GetKickAngles().Clear ();
@@ -2927,7 +2927,7 @@ void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 		Client.PlayerState.GetPMove()->PMoveType = PMT_SPECTATOR;
 	else if (State.GetModelIndex() != 255)
 		Client.PlayerState.GetPMove()->PMoveType = PMT_GIB;
-	else if (DeadFlag)
+	else if (IsDead)
 		Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 	else
 		Client.PlayerState.GetPMove()->PMoveType = PMT_NORMAL;
@@ -2994,7 +2994,7 @@ CC_ENABLE_DEPRECATION
 	if (GroundEntity)
 		GroundEntityLinkCount = GroundEntity->GetLinkCount();
 
-	if (DeadFlag)
+	if (IsDead)
 		Client.PlayerState.GetViewAngles().Set (-15, Client.KillerYaw, 40);
 	else
 	{
@@ -3266,7 +3266,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 
 	GetSvFlags() |= SVF_DEADMONSTER;
 
-	if (!DeadFlag)
+	if (!IsDead)
 	{
 		Client.Timers.RespawnTime = Level.Frame + 10;
 		LookAtKiller (Inflictor, Attacker);
@@ -3369,7 +3369,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	}
 	else
 	{	// normal death
-		if (!DeadFlag)
+		if (!IsDead)
 		{
 			static sint32 i;
 
@@ -3403,7 +3403,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		}
 	}
 
-	DeadFlag = true;
+	IsDead = true;
 
 	Link ();
 };
@@ -3493,7 +3493,7 @@ void CPlayerEntity::UpdateChaseCam()
 			if(trace.Fraction < 1)
 				goal = trace.EndPosition + vec3f(0, 0, 6);
 
-			if (targ->DeadFlag)
+			if (targ->IsDead)
 				Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 			else
 				Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
@@ -3503,7 +3503,7 @@ void CPlayerEntity::UpdateChaseCam()
 			for (sint32 i = 0; i < 3; i++)
 				Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
-			if (targ->DeadFlag)
+			if (targ->IsDead)
 				Client.PlayerState.GetViewAngles().Set (-15, targ->Client.KillerYaw, 40);
 			else
 			{
@@ -3549,7 +3549,7 @@ void CPlayerEntity::UpdateChaseCam()
 			if(trace.Fraction < 1)
 				goal = trace.EndPosition + vec3f(0, 0, 6);
 
-			if (targ->DeadFlag)
+			if (targ->IsDead)
 				Client.PlayerState.GetPMove()->PMoveType = PMT_DEAD;
 			else
 				Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
@@ -3583,7 +3583,7 @@ void CPlayerEntity::UpdateChaseCam()
 			for (sint32 i = 0; i < 3; i++)
 				Client.PlayerState.GetPMove()->DeltaAngles[i] = ANGLE2SHORT(targ->Client.ViewAngle[i] - Client.Respawn.CmdAngles[i]);
 
-			if (targ->DeadFlag)
+			if (targ->IsDead)
 				Client.PlayerState.GetViewAngles().Set (-15, targ->Client.KillerYaw, 40);
 			else
 			{

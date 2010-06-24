@@ -602,17 +602,17 @@ void CIcarus::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage,
 		for (sint32 n= 0; n < 2; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 	Entity->PhysicsType = PHYSICS_TOSS;
 // regular death
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_DEATH1] : Sounds[SOUND_DEATH2]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 	CurrentMove = &HoverMoveDeath1;
 }

@@ -281,7 +281,7 @@ public:
 	**/
 	struct SEntityTeam
 	{
-		char			*String;	// Team string. Only valid during spawn frame.
+		std::string		String;		// Team string. Only valid during spawn frame.
 
 		bool			HasTeam;	// true if has team
 		bool			IsSlave;	// true if teamslave
@@ -1638,18 +1638,18 @@ void	ED_CallSpawn (SEntity *ServerEntity);
 extern IBaseEntity *World;	// The world entity
 
 /**
-\fn	inline IBaseEntity *CreateEntityFromClassname (const char *classname)
+\fn	inline IBaseEntity *CreateEntityFromClassname (std::string ClassName)
 
-\brief	Creates an entity from a classname.
+\brief	Creates an entity from a classname. 
 
 \author	Paril
 \date	29/05/2010
 
-\param	classname	The classname. 
+\param	ClassName	ClassName. 
 
 \return	null if it fails, else the created entity. 
 **/
-inline IBaseEntity *CreateEntityFromClassname (const char *ClassName)
+inline IBaseEntity *CreateEntityFromClassname (std::string ClassName)
 {
 CC_DISABLE_DEPRECATION
 	SEntity *ent = G_Spawn ();
@@ -1682,8 +1682,7 @@ CC_ENABLE_DEPRECATION
 class IMapEntity : public virtual IBaseEntity
 {
 public:
-	char		*Classname;	// The classname
-	char		*TargetName;	// Target's name
+	std::string		TargetName;		// Target's name
 
 	/**
 	\fn	IMapEntity ()

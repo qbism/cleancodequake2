@@ -245,7 +245,7 @@ public:
 	struct SIntermissionState
 	{
 		FrameNumber		Time;		// time the intermission was started
-		char			*ChangeMap;
+		std::string		ChangeMap;
 		bool			ShouldExit;
 		bool			ShouldExitOnNextFrame;
 		vec3f			Origin;

@@ -90,14 +90,14 @@ class CTeleporterTrigger : public IMapEntity, public ITouchableEntity, public IB
 {
 public:
 	IBaseEntity		*Dest;
-	char			*Target;
+	std::string		Target;
 
 	CTeleporterTrigger() :
 	  IBaseEntity (),
 	  IMapEntity(),
 	  IBrushModel (),
 	  Dest (NULL),
-	  Target (NULL)
+	  Target ()
 	  {
 	  };
 
@@ -106,7 +106,7 @@ public:
 	  IMapEntity(),
 	  IBrushModel (Index),
 	  Dest (NULL),
-	  Target (NULL)
+	  Target ()
 	  {
 	  };
 
@@ -168,7 +168,7 @@ public:
 
 	void Think ()
 	{
-		Dest = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target);
+		Dest = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 	
 		if (!Dest)
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target);
@@ -206,7 +206,7 @@ IMPLEMENT_SAVE_STRUCTURE (CTeleporterTrigger,CTeleporterTrigger)
 class CTeleporter : public CSpotBase
 {
 public:
-	char			*Target;
+	std::string			Target;
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTeleporter)
@@ -214,20 +214,20 @@ public:
 	CTeleporter () :
 		IBaseEntity (),
 		CSpotBase (),
-		Target (NULL)
+		Target ()
 		{
 		};
 
 	CTeleporter (sint32 Index) :
 		IBaseEntity (Index),
 		CSpotBase (Index),
-		Target (NULL)
+		Target ()
 		{
 		};
 
 	virtual void Spawn ()
 	{
-		if (!Target)
+		if (Target.empty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
@@ -259,7 +259,7 @@ public:
 
 ENTITYFIELDS_BEGIN(CTeleporter)
 {
-	CEntityField ("target", EntityMemberOffset(CTeleporter,Target), FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("target", EntityMemberOffset(CTeleporter,Target), FT_STRING | FT_SAVABLE),
 };
 ENTITYFIELDS_END(CTeleporter)
 
@@ -392,14 +392,14 @@ public:
 
 		Enabled = false;
 		
-		if (TargetName)
+		if (!TargetName.empty())
 		{
 			Usable = true;
 			if(!(SpawnFlags & TELEPORT_START_ON))
 				Enabled = true;
 		}
 	
-		if (!CTeleporterTrigger::Target)
+		if (CTeleporterTrigger::Target.empty())
 		{
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 			Free ();
@@ -658,12 +658,12 @@ void CPlayerCoop::Think ()
 
 		if (!spot)
 			return;
-		if (!spot->TargetName)
+		if (spot->TargetName.empty())
 			continue;
 		
 		if ((State.GetOrigin() - spot->State.GetOrigin()).Length() < 384)
 		{
-			if ((!TargetName) || Q_stricmp(TargetName, spot->TargetName) != 0)
+			if ((TargetName.empty()) || Q_stricmp(TargetName.c_str(), spot->TargetName.c_str()) != 0)
 				TargetName = spot->TargetName;
 			return;
 		}
@@ -852,10 +852,7 @@ CSpotBase *CPlayerEntity::SelectCoopSpawnPoint ()
 		if (!spot)
 			return NULL; // wut
 
-		const char *target = spot->TargetName;
-		if (!target)
-			target = "";
-		if (Q_stricmp(Game.SpawnPoint.c_str(), target) == 0)
+		if (Game.SpawnPoint == spot->TargetName)
 		{
 			// this is a coop spawn point for one of the clients here
 			if (!--index)
@@ -1169,13 +1166,13 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 		{
 			spot = (*it);
 
-			if (Game.SpawnPoint.empty() && !spot->TargetName)
+			if (Game.SpawnPoint.empty() && spot->TargetName.empty())
 				break;
 
-			if (Game.SpawnPoint.empty()|| !spot->TargetName)
+			if (Game.SpawnPoint.empty()|| spot->TargetName.empty())
 				continue;
 
-			if (Q_stricmp(Game.SpawnPoint.c_str(), spot->TargetName) == 0)
+			if (Game.SpawnPoint == spot->TargetName)
 				break;
 		}
 
@@ -1242,7 +1239,7 @@ CPathCorner::CPathCorner (sint32 Index) :
 void CPathCorner::Think ()
 {
 	//NextTarget = (Target) ? CC_PickTarget (Target) : NULL;
-	if (Target)
+	if (!Target.empty())
 		NextTargets = CC_GetTargets (Target);
 }
 
@@ -1259,9 +1256,9 @@ void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 	if (Monster->Enemy)
 		return;
 
-	if (PathTarget)
+	if (!PathTarget.empty())
 	{
-		char *savetarget = Target;
+		std::string savetarget = Target;
 		Target = PathTarget;
 		UseTargets (Other, Message);
 		Target = savetarget;
@@ -1297,7 +1294,7 @@ void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 
 void CPathCorner::Spawn ()
 {
-	if (!TargetName)
+	if (TargetName.empty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();
@@ -1386,13 +1383,21 @@ public:
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		CMonsterEntity *Monster = NULL;
+		CTrainBase *Train = NULL;
+
 		if (Other->EntityFlags & ENT_MONSTER)
 			Monster = entity_cast<CMonsterEntity>(Other);
-
-		if (Monster && (!Monster->MoveTarget || Monster->MoveTarget != this))
+		else if ((Other->EntityFlags & ENT_BRUSHMODEL) && (entity_cast<IBrushModel>(Other)->BrushType & BRUSH_TRAIN))
+			Train = entity_cast<CTrainBase>(Other);
+		else
 			return;
 
-		if (Target)
+		if (Monster && (Monster->MoveTarget != this))
+			return;
+		else if (Train && (Train->TargetEntity != this))
+			return;
+
+		if (!Target.empty())
 		{
 			if (Other->EntityFlags & ENT_USABLE)
 			{
@@ -1409,7 +1414,7 @@ public:
 				Monster->MoveTarget = this;
 			}
 
-			Target = NULL;
+			Target.clear();
 		}
 		else if (Monster && (SpawnFlags & CORNER_TELEPORT) && !(Monster->Monster->AIFlags & (AI_SWIM | AI_FLY)))
 		{
@@ -1420,18 +1425,18 @@ public:
 
 		if (Monster && (Monster->MoveTarget == this))
 		{
-			Monster->Target = NULL;
+			Monster->Target.clear();
 			Monster->MoveTarget = nullentity;
 			Monster->GoalEntity = Monster->Enemy;
 
 			Monster->Monster->AIFlags &= ~AI_COMBAT_POINT;
 		}
 
-		if (PathTarget)
+		if (!PathTarget.empty())
 		{
 			IBaseEntity *Activator;
 
-			char *savetarget = Target;
+			std::string savetarget = Target;
 			Target = PathTarget;
 			if (Other->Enemy && (Other->Enemy->EntityFlags & ENT_PLAYER))
 				Activator = *Other->Enemy;
@@ -1581,7 +1586,7 @@ public:
 	void Spawn ()
 	{
 		// no targeted lights in deathmatch, because they cause global messages
-		if (!TargetName || (Game.GameMode & GAME_DEATHMATCH))
+		if (TargetName.empty() || (Game.GameMode & GAME_DEATHMATCH))
 		{
 			Free ();
 			return;
@@ -1703,7 +1708,7 @@ public:
 			IMapEntity *e = NULL;
 			while (1)
 			{
-				e = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target);
+				e = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target.c_str());
 				if (!e)
 					break;
 				if (strcmp(e->ClassName.c_str(), "light") != 0)
@@ -1739,7 +1744,7 @@ public:
 			return;
 		}
 
-		if (!Target)
+		if (Target.empty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();

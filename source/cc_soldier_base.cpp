@@ -1039,15 +1039,15 @@ void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Da
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, Damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 // regular death
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 	Entity->State.GetSkinNum() |= 1;
 

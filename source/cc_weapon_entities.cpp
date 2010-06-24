@@ -1249,7 +1249,7 @@ void CGrappleEntity::GrapplePull()
 				PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhurt.wav"), volume);
 			}
 		}
-		if (Enemy && (Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->DeadFlag)
+		if (Enemy && (Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->IsDead)
 		{ // he died
 			ResetGrapple();
 			return;
@@ -1348,7 +1348,7 @@ void CGrappleEntity::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *s
 
 	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 	{
-		entity_cast<IHurtableEntity>(Other)->TakeDamage (Other, this, Player, Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, Damage, 1, 0, MOD_GRAPPLE);
+		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, Player, Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, Damage, 1, 0, MOD_GRAPPLE);
 		ResetGrapple();
 		return;
 	}

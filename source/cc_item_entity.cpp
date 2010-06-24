@@ -41,7 +41,7 @@ ITossProjectile(),
 ITouchableEntity(),
 IThinkableEntity(),
 IUsableEntity(),
-Model(NULL)
+Model()
 {
 	EntityFlags |= ENT_ITEM;
 };
@@ -53,7 +53,7 @@ ITossProjectile(Index),
 ITouchableEntity(Index),
 IThinkableEntity(Index),
 IUsableEntity(Index),
-Model(NULL)
+Model()
 {
 	EntityFlags |= ENT_ITEM;
 };
@@ -171,7 +171,7 @@ void CItemEntity::Think ()
 			GetMins().Set (-15);
 			GetMaxs().Set (15);
 
-			State.GetModelIndex() = ModelIndex((Model) ? Model : LinkedItem->WorldModel);
+			State.GetModelIndex() = ModelIndex((!Model.empty()) ? Model.c_str() : LinkedItem->WorldModel);
 			GetSolid() = SOLID_TRIGGER; 
 			Touchable = true;
 			PhysicsType = PHYSICS_TOSS;
@@ -283,7 +283,7 @@ void CItemEntity::Spawn (CBaseItem *item)
 
 ENTITYFIELDS_BEGIN(CItemEntity)
 {
-	CEntityField ("model", EntityMemberOffset(CItemEntity,Model), FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("model", EntityMemberOffset(CItemEntity,Model), FT_STRING | FT_SAVABLE),
 	CEntityField ("item", EntityMemberOffset(CItemEntity,LinkedItem), FT_ITEM | FT_SAVABLE),
 	CEntityField ("count", EntityMemberOffset(CItemEntity,AmmoCount), FT_UINT | FT_SAVABLE),
 
