@@ -817,16 +817,16 @@ void CBlackWidow::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 			ThrowWidowGibLoc (Entity, GameMedia.Gib_SmallMeat, clipped, GIB_ORGANIC, vec3fOrigin, false);
 		for (int n = 0; n < 3; n++)
 		{
-			ThrowWidowGibSized (Entity, MediaIndex("models/monsters/blackwidow2/gib1/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin,
+			ThrowWidowGibSized (Entity, ModelIndex("models/monsters/blackwidow2/gib1/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin,
 				0, false);
-			ThrowWidowGibSized (Entity, MediaIndex("models/monsters/blackwidow2/gib2/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin, 
+			ThrowWidowGibSized (Entity, ModelIndex("models/monsters/blackwidow2/gib2/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin, 
 				SoundIndex ("misc/fhit3.wav"), false);
 		}
 		for (int n = 0; n < 2; n++)
 		{
-			ThrowWidowGibSized (Entity, MediaIndex("models/monsters/blackwidow2/gib3/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin, 
+			ThrowWidowGibSized (Entity, ModelIndex("models/monsters/blackwidow2/gib3/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin, 
 				0, false);
-			ThrowWidowGibSized (Entity, MediaIndex("models/monsters/blackwidow/gib3/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin, 
+			ThrowWidowGibSized (Entity, ModelIndex("models/monsters/blackwidow/gib3/tris.md2"), clipped, GIB_METALLIC, vec3fOrigin, 
 				0, false);
 		}
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, clipped, GIB_ORGANIC);
