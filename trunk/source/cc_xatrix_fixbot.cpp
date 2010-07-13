@@ -469,10 +469,10 @@ void CFixbot::FireLaser ()
 		{
 			Enemy->SpawnFlags = 0;
 			Enemy->Monster->AIFlags = 0;
-			Enemy->Target = NULL;
-			Enemy->TargetName = NULL;
-			Enemy->CombatTarget = NULL;
-			Enemy->DeathTarget = NULL;
+			Enemy->Target.clear();
+			Enemy->TargetName.clear();
+			Enemy->CombatTarget.clear();
+			Enemy->DeathTarget.clear();
 			Enemy->SetOwner(Entity);
 			Enemy->Monster->Spawn ();
 			Enemy->SetOwner(NULL);

@@ -1046,7 +1046,7 @@ void CGekk::GibFest ()
 
 	Entity->ThrowHead (ModelIndex ("models/objects/gekkgib/head/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
 
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 }
 
 void CGekk::IsGibFest ()
@@ -1190,11 +1190,11 @@ void CGekk::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, v
 		return;
 	}
 
-	if (Entity->DeadFlag)
+	if (Entity->IsDead)
 		return;
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 	Entity->State.GetSkinNum() = 2;
 

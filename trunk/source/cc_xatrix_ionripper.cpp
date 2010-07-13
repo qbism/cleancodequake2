@@ -109,7 +109,7 @@ void CIonRipperBoomerang::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->GetMins().Clear ();
 	Bolt->GetMaxs().Clear ();
 	Bolt->Touchable = true;
-	Bolt->backOff = 2.0f;
+	Bolt->BackOff = 2.0f;
 	Bolt->StopOnEqualPlane = false;
 	Bolt->AimInVelocityDirection = true;
 	Bolt->Link ();

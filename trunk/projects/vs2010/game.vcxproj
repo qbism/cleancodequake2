@@ -171,7 +171,7 @@
     <PostBuildEvent>
       <Message>Copies the output to your Quake 2 baseq2 dir</Message>
       <Command>echo Copying to Quake 2 Path...
-copy "$(TargetPath)" "c:\quake2\baseq2\gamex86.dll"
+copy "$(TargetPath)" "c:\quake2\arquade\gamex86.dll"
 copy "$(TargetPath)" "$(OutputPath)..\..\..\quake2\baseq2\gamex86.dll"
 
 echo Done!
@@ -385,15 +385,6 @@ echo Done!
     <ClCompile Include="..\..\source\cc_irc.cpp" />
     <ClCompile Include="..\..\source\cc_modules.cpp" />
     <ClCompile Include="..\..\source\cc_monster_ai.cpp" />
-    <ClCompile Include="..\..\source\cc_platform_base.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\source\cc_platform_linux.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\source\cc_platform_win32.cpp" />
     <ClCompile Include="..\..\source\cc_player_trail.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_black_widow.cpp" />
     <ClCompile Include="..\..\source\cc_rogue_carrier.cpp" />
@@ -525,6 +516,7 @@ echo Done!
     <ClCompile Include="..\..\source\cc_xatrix_soldier_ripper.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_supertank_boss5.cpp" />
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp" />
+    <ClCompile Include="..\..\source\platform\windows\cc_platform_win32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h" />

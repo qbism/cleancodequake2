@@ -628,9 +628,9 @@ public:
 		Speed *= 10;
 
 		IBaseEntity *target;
-		if (!Target)
+		if (Target.empty())
 			Q3Touch = false;
-		else if ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target)) != NULL)
+		else if ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str())) != NULL)
 		{
 			// Quake3
 			//self->touch = trigger_push_q3touch;
@@ -643,7 +643,7 @@ public:
 		Usable = false;
 
 #if ROGUE_FEATURES
-		if (TargetName)		// toggleable
+		if (!TargetName.empty())		// toggleable
 		{
 			Usable = true;
 			if (SpawnFlags & PUSH_START_OFF)
@@ -1141,7 +1141,7 @@ public:
 
 	void Spawn ()
 	{
-		if (!Target)
+		if (Target.empty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			return;

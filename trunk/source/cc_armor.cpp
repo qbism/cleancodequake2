@@ -120,12 +120,12 @@ void CArmor::Drop (CPlayerEntity *Player)
 
 #include "cc_temporary_entities.h"
 
-sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags)
+sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
 {
-	if (!Damage || dflags & (DAMAGE_NO_ARMOR | DAMAGE_NO_REG_ARMOR))
+	if (!Damage || DamageFlags & (DAMAGE_NO_ARMOR | DAMAGE_NO_REG_ARMOR))
 		return 0;
 
-	sint32 save = ceil (((dflags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * Damage);
+	sint32 save = ceil (((DamageFlags & DAMAGE_ENERGY) ? ((float)energyProtection / 100) : ((float)normalProtection / 100)) * Damage);
 	if (save >= Player->Client.Persistent.Inventory.Has(this))
 		save = Player->Client.Persistent.Inventory.Has(this);
 
@@ -133,7 +133,7 @@ sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, s
 		return 0;
 
 	Player->Client.Persistent.Inventory.Remove(GetIndex(), save);
-	CSparks(Point, Normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
+	CSparks(Point, Normal, (DamageFlags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 
 	// Ran out of armor?
 	if (!Player->Client.Persistent.Inventory.Has(this))

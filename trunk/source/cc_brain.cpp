@@ -402,12 +402,12 @@ void CBrain::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 		return;
 	}
 
-	if (Entity->DeadFlag)
+	if (Entity->IsDead)
 		return;
 
 // regular death
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	CurrentMove = (frand() <= 0.5) ? &BrainMoveDeath1 : &BrainMoveDeath2;
 }
 

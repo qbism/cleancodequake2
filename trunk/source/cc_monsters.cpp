@@ -322,8 +322,8 @@ void CMonsterEntity::Spawn ()
 
 ENTITYFIELDS_BEGIN(CMonsterEntity)
 {
-	CEntityField ("deathtarget",		EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("combattarget",		EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("deathtarget",		EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_STRING | FT_SAVABLE),
+	CEntityField ("combattarget",		EntityMemberOffset(CMonsterEntity,CombatTarget),		FT_STRING | FT_SAVABLE),
 	CEntityField ("item",				EntityMemberOffset(CMonsterEntity,Item),				FT_ITEM | FT_SAVABLE),
 
 	CEntityField ("IsHead",				EntityMemberOffset(CMonsterEntity,IsHead),				FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
@@ -457,7 +457,7 @@ void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint
 #endif
 
 #if ROGUE_FEATURES
-	if (!DeadFlag)
+	if (!IsDead)
 	{
 		if (Monster->AIFlags & AI_SPAWNED_CARRIER)
 		{
@@ -494,7 +494,7 @@ void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint
 		}
 	}
 #else
-	if (!DeadFlag)
+	if (!IsDead)
 	{
 		if (!(Monster->AIFlags & AI_GOOD_GUY))
 		{
@@ -511,7 +511,7 @@ void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint
 	}
 #endif
 
-	if (!DeadFlag)
+	if (!IsDead)
 	{
 		Touchable = false;
 		Monster->MonsterDeathUse();
@@ -577,7 +577,7 @@ bool CMonsterEntity::Run ()
 	case PHYSICS_TOSS:
 		return ITossProjectile::Run();
 	case PHYSICS_BOUNCE:
-		backOff = 1.5f;
+		BackOff = 1.5f;
 		return IBounceProjectile::Run ();
 	case PHYSICS_PUSH:
 		return IPushPhysics::Run ();
@@ -833,14 +833,14 @@ void CMonster::MonsterStartGo ()
 		return;
 
 	// check for target to combat_point and change to combattarget
-	if (Entity->Target)
+	if (!Entity->Target.empty())
 	{
 		bool		notcombat = false, fixup = false;
 		IMapEntity		*target = NULL;
 
-		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target)) != NULL)
+		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target.c_str())) != NULL)
 		{
-			if (strcmp(target->ClassName.c_str(), "point_combat") == 0)
+			if (target->ClassName == "point_combat")
 			{
 				Entity->CombatTarget = Entity->Target;
 				fixup = true;
@@ -848,24 +848,24 @@ void CMonster::MonsterStartGo ()
 			else
 				notcombat = true;
 		}
-		if (notcombat && Entity->CombatTarget)
+		if (notcombat && !Entity->CombatTarget.empty())
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Target with mixed types\n");
 		if (fixup)
-			Entity->Target = NULL;
+			Entity->Target.clear();
 	}
 
 	// validate combattarget
-	if (Entity->CombatTarget)
+	if (!Entity->CombatTarget.empty())
 	{
 		IMapEntity		*target = NULL;
-		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget)) != NULL)
+		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget.c_str())) != NULL)
 		{
-			if (strcmp(target->ClassName.c_str(), "point_combat") != 0)
-				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget);
+			if (target->ClassName != "point_combat")
+				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget.c_str());
 		}
 	}
 
-	if (Entity->Target)
+	if (!Entity->Target.empty())
 	{
 		IBaseEntity *Target = CC_PickTarget(Entity->Target);
 
@@ -874,15 +874,15 @@ void CMonster::MonsterStartGo ()
 		if (!Entity->MoveTarget)
 		{
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Can't find target\n");
-			Entity->Target = NULL;
+			Entity->Target.clear();
 			PauseTime = 100000000;
 			Stand ();
 		}
-		else if (strcmp (Entity->MoveTarget->ClassName.c_str(), "path_corner") == 0)
+		else if (Entity->MoveTarget->ClassName == "path_corner")
 		{
 			IdealYaw = Entity->State.GetAngles().Y = (Entity->GoalEntity->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 			Walk ();
-			Entity->Target = NULL;
+			Entity->Target.clear();
 		}
 		else
 		{
@@ -941,7 +941,7 @@ void CMonster::MonsterStart ()
 	Entity->MaxHealth = Entity->Health;
 	Entity->GetClipmask() = CONTENTS_MASK_MONSTERSOLID;
 
-	Entity->DeadFlag = false;
+	Entity->IsDead = false;
 	Entity->GetSvFlags() &= ~SVF_DEADMONSTER;
 
 	Entity->State.GetOldOrigin() = Entity->State.GetOrigin();
@@ -1376,10 +1376,10 @@ void CMonster::MonsterDeathUse ()
 		Entity->Item = NULL;
 	}
 
-	if (Entity->DeathTarget)
+	if (!Entity->DeathTarget.empty())
 		Entity->Target = Entity->DeathTarget;
 
-	if (!Entity->Target)
+	if (Entity->Target.empty())
 		return;
 
 	Entity->UseTargets (*Entity->Enemy, Entity->Message);
@@ -1810,7 +1810,7 @@ void CMonster::BossExplode ()
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), 500, GIB_METALLIC);
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, 500, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Gear(), 500, GIB_METALLIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 

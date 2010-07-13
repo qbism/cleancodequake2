@@ -95,7 +95,7 @@ void CFlagEntity::Think ()
 			GetMins().Set (-15);
 			GetMaxs().Set (15);
 
-			State.GetModelIndex() = ModelIndex((Model) ? Model : LinkedItem->WorldModel);
+			State.GetModelIndex() = ModelIndex((!Model.empty()) ? Model.c_str() : LinkedItem->WorldModel);
 			GetSolid() = SOLID_TRIGGER;
 			Touchable = false;
 			PhysicsType = PHYSICS_NONE;

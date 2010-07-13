@@ -1862,7 +1862,7 @@ void CMonster::FoundTarget ()
 	BlindFireTarget = Entity->Enemy->State.GetOrigin();
 	BlindFireDelay = 0;
 
-	if (!Entity->CombatTarget)
+	if (Entity->CombatTarget.empty())
 	{
 		HuntTarget ();
 		return;
@@ -1879,7 +1879,7 @@ void CMonster::FoundTarget ()
 	}
 
 	// clear out our combattarget, these are a one shot deal
-	Entity->CombatTarget = NULL;
+	Entity->CombatTarget.clear();
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!

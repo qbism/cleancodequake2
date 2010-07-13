@@ -259,8 +259,8 @@ ExitLevel
 */
 void ExitLevel ()
 {
-	gi.AddCommandString ((char*)(std::string("gamemap \"") + Level.Intermission.ChangeMap + "\"\n").c_str());
-	Level.Intermission.ChangeMap = NULL;
+	gi.AddCommandString ((std::string("gamemap \"") + Level.Intermission.ChangeMap + "\"\n").c_str());
+	Level.Intermission.ChangeMap.clear();
 	Level.Intermission.ShouldExit = false;
 	Level.Intermission.Time = 0;
 	ClientEndServerFrames ();

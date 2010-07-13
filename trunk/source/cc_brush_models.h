@@ -933,10 +933,9 @@ public:
 class CWorldEntity : public IMapEntity, public IBrushModel
 {
 public:
-	char	*Message;
-	char	*Gravity, *Sky, *NextMap;
-	vec3f	SkyAxis;
-	float	SkyRotate;
+	std::string		Message, Gravity, Sky, NextMap;
+	vec3f			SkyAxis;
+	float			SkyRotate;
 
 	CWorldEntity ();
 	CWorldEntity (sint32 Index);

@@ -527,10 +527,10 @@ void CFlyer::SideStep ()
 void CFlyer::Spawn ()
 {
 	// fix a map bug in jail5.bsp
-	if (!Q_stricmp(Level.ServerLevelName.c_str(), "jail5") && (Entity->State.GetOrigin().Z == -104))
+	if ((Level.ServerLevelName == "jail5") && (Entity->State.GetOrigin().Z == -104))
 	{
 		Entity->TargetName = Entity->Target;
-		Entity->Target = NULL;
+		Entity->Target.clear();
 	}
 
 	Sounds[SOUND_SIGHT] = SoundIndex ("flyer/flysght1.wav");

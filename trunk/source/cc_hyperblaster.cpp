@@ -68,7 +68,7 @@ void CHyperBlaster::FireAnimation (CPlayerEntity *Player)
 	Player->Client.Anim.Priority = ANIM_ATTACK;
 	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
-		if (Playert->State.GetFrame() != FRAME_crattak1)
+		if (Player->State.GetFrame() != FRAME_crattak1)
 			Player->State.GetFrame() = FRAME_crattak1 - 1;
 		else
 			Player->State.GetFrame() = FRAME_crattak1;

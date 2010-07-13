@@ -241,8 +241,7 @@ public:
 	entity_ptr<IBaseEntity>		GoalEntity;
 	entity_ptr<IBaseEntity>		MoveTarget;
 	class CMonster				*Monster;
-	char						*DeathTarget;
-	char						*CombatTarget;
+	std::string					DeathTarget, CombatTarget;
 	CBaseItem					*Item;
 
 	CMonsterEntity	();

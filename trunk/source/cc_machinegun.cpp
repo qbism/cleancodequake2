@@ -80,7 +80,7 @@ void CMachinegun::FireAnimation (CPlayerEntity *Player)
 			Player->State.GetFrame() = FRAME_attack1 - 1;
 		else
 			Player->State.GetFrame() = FRAME_attack1;
-		enPlayer->Client.Anim.EndFrame = FRAME_attack8;
+		Player->Client.Anim.EndFrame = FRAME_attack8;
 	}
 }
 

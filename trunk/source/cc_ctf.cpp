@@ -420,7 +420,7 @@ void CCTFTeamCommand::operator () ()
 	Player->Health = 0;
 	Player->Die (Player, Player, 100000, vec3fOrigin);
 	// don't even bother waiting for death frames
-	Player->DeadFlag = true;
+	Player->IsDead = true;
 	Player->Respawn ();
 
 	Player->Client.Respawn.Score = 0;

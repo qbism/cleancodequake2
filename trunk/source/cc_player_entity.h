@@ -320,21 +320,20 @@ public:
 };
 
 // Arcade Quake II
-class CCameraFollowEntity : public CBaseEntity
+class CCameraFollowEntity : public IBaseEntity
 {
 public:
 	CCameraFollowEntity () :
-	  CBaseEntity ()
+	  IBaseEntity ()
 	{
 	}
 
 	CCameraFollowEntity (int Index) :
-	  CBaseEntity (Index)
+	  IBaseEntity (Index)
 	{
 	}
 
 	ENTITYFIELDS_NONSAVABLE
-	const char *SAVE_GetName () { return "NO!"; }
 };
 // Arcade Quake II
 
@@ -695,13 +694,12 @@ public:
 		FrameNumber	LastTechMessage;
 	} Tech;
 
-	CClient (SServerClient *client);
 	// Arcade Quake II
 	bool			BackPedaling;
 
 	struct doubleTap_t
 	{
-		FrameNumber_t	jumpVals[2];
+		FrameNumber		jumpVals[2];
 		bool			WaitForEmpty;
 	} DoubleTap;
 
@@ -714,6 +712,12 @@ public:
 	} Cinematic;
 	bool			WasOnLadder;
 	// Arcade Quake II
+
+	CClient (SServerClient *client);
+
+	sint32			&GetPing ();
+	void			Clear ();
+};
 
 /**
 \typedef	uint8 ENoiseType

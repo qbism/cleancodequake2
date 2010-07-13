@@ -1217,13 +1217,13 @@ ENTITYFIELDS_BEGIN(IMapEntity)
 	CEntityField ("angles",			GameEntityMemberOffset(Server.State.Angles),	FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(Server.State.Angles),	FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
-	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.String),	FT_LEVEL_STRING),
+	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.String),	FT_STRING),
 };
 ENTITYFIELDS_END(IMapEntity)
 
 const CEntityField IMapEntity::FieldsForParsing_Map[] =
 {
-	CEntityField ("targetname",		EntityMemberOffset(IMapEntity,TargetName),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("targetname",		EntityMemberOffset(IMapEntity,TargetName),		FT_STRING | FT_SAVABLE),
 };
 const size_t IMapEntity::FieldsForParsingSize_Map = ArrayCount(IMapEntity::FieldsForParsing_Map);
 
@@ -1364,7 +1364,7 @@ void IMapEntity::ParseFields ()
 		for (it = Level.ParseData.begin(); it != Level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
-			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key, PairPtr->Value);
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key.c_str(), PairPtr->Value.c_str());
 		}
 	}
 };

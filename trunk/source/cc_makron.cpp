@@ -684,16 +684,16 @@ void CMakron::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMetal(), Damage, GIB_METALLIC);
 		Entity->ThrowHead (GameMedia.Gib_Gear(), Damage, GIB_METALLIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 // regular death
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 
 	// Spawn torso

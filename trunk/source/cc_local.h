@@ -78,6 +78,7 @@ typedef sint32	FrameNumber;
 #include "cc_timer.h"
 #include "cc_save.h"
 #include "cc_irc.h"
+#include "cc_trace.h"
 
 // Main class files
 #include "cc_game_api.h"
@@ -90,7 +91,6 @@ typedef sint32	FrameNumber;
 #include "cc_ctf.h"
 #endif
 #include "cc_base_entity.h"
-#include "cc_trace.h"
 #include "cc_monsters.h"
 #include "cc_modules.h"
 #include "cc_utils.h"

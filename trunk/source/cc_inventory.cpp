@@ -400,7 +400,7 @@ void CInvUseCommand::operator () ()
 		Player->Client.Respawn.MenuState.Select();
 		return;
 	}
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.ValidateSelectedItem ();
@@ -430,7 +430,7 @@ void CWeapPrevCommand::operator () ()
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
-	if (Player->Health <= 0 || Player->DeadFlag)	
+	if (Player->Health <= 0 || Player->IsDead)	
 		return;
 
 	sint32 numItems = GetNumItems();
@@ -462,7 +462,7 @@ void CWeapNextCommand::operator () ()
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	sint32 numItems = GetNumItems();
@@ -511,7 +511,7 @@ Cmd_InvDrop_f
 */
 void CInvDropCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.ValidateSelectedItem ();
@@ -534,7 +534,7 @@ void CInvDropCommand::operator () ()
 
 void CInvNextCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	if (Player->Client.Respawn.MenuState.InMenu)
@@ -553,7 +553,7 @@ void CInvNextCommand::operator () ()
 }
 void CInvPrevCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	if (Player->Client.Respawn.MenuState.InMenu)
@@ -572,28 +572,28 @@ void CInvPrevCommand::operator () ()
 }
 void CInvNextWCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_WEAPON);
 }
 void CInvPrevWCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (ITEMFLAG_WEAPON);
 }
 void CInvNextPCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_POWERUP);
 }
 void CInvPrevPCommand::operator () ()
 {
-	if (Player->Health <= 0 || Player->DeadFlag)
+	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (ITEMFLAG_POWERUP);

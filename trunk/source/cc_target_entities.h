@@ -34,8 +34,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CTargetChangeLevel : public IMapEntity, public IUsableEntity
 {
 public:
-	char		*Map;
-	bool		ExitOnNextFrame;
+	std::string		Map;
+	bool			ExitOnNextFrame;
 
 	CTargetChangeLevel ();
 	CTargetChangeLevel (sint32 Index);

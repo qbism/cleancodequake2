@@ -372,10 +372,10 @@ static void G_FixTeams ()
 						continue;
 					if (!e2->GetInUse())
 						continue;
-					if (!e2->Team.HasTeam || !e2->Team.String)
+					if (!e2->Team.HasTeam || e2->Team.String.empty())
 						continue;
 
-					if (!strcmp(e->Team.String, e2->Team.String))
+					if (e->Team.String == e2->Team.String)
 					{
 						c2++;
 						chain->Team.Chain = e2;
@@ -417,7 +417,7 @@ static void G_FindTeams ()
 			continue;
 		if (!e->GetInUse())
 			continue;
-		if (!e->Team.String)
+		if (e->Team.String.empty())
 			continue;
 		if (e->Team.IsSlave)
 			continue;
@@ -435,12 +435,12 @@ static void G_FindTeams ()
 				continue;
 			if (!e2->GetInUse())
 				continue;
-			if (!e2->Team.String)
+			if (e2->Team.String.empty())
 				continue;
 			if (e2->Team.IsSlave)
 				continue;
 
-			if (!strcmp(e->Team.String, e2->Team.String))
+			if (e->Team.String == e2->Team.String)
 			{
 				c2++;
 				chain->Team.Chain = e2;
@@ -463,11 +463,8 @@ static void G_FindTeams ()
 	{
 		IBaseEntity *e = Game.Entities[i].Entity;
 
-		if (e && e->Team.HasTeam && e->Team.String)
-		{
-			QDelete e->Team.String;
-			e->Team.String = NULL;
-		}
+		if (e && e->Team.HasTeam && !e->Team.String.empty())
+			e->Team.String.clear();
 	}
 }
 

@@ -141,9 +141,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\cc_arcadeq2.cpp">
-      <Filter>CleanCode Files\Arquade</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\cc_arg.cpp">
       <Filter>Game API\Arg</Filter>
     </ClCompile>
@@ -288,12 +285,6 @@
     <ClCompile Include="..\..\source\cc_parasite.cpp">
       <Filter>Monsters\Monster Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\cc_platform_base.cpp">
-      <Filter>Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\cc_platform_win32.cpp">
-      <Filter>Platform</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\cc_pmove.cpp">
       <Filter>Game API\Pmove</Filter>
     </ClCompile>
@@ -401,9 +392,6 @@
     </ClCompile>
     <ClCompile Include="..\..\source\cc_xatrix_trap.cpp">
       <Filter>Mission Packs\Xatrix %28The Reckoning%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\cc_platform_linux.cpp">
-      <Filter>Platform</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\cc_irc.cpp">
       <Filter>IRC</Filter>
@@ -580,6 +568,10 @@
     <ClCompile Include="..\..\source\cc_entity_ptr.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\cc_arcadeq2.cpp" />
+    <ClCompile Include="..\..\source\platform\windows\cc_platform_win32.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ColorVec.h">
@@ -593,9 +585,6 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\Templates\TTypes.h">
       <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\cc_arcadeq2.h">
-      <Filter>CleanCode Files\Arquade</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\cc_arg.h">
       <Filter>Game API\Arg</Filter>

@@ -163,7 +163,7 @@ void CGibEntity::Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, 
 	Junk->State.GetEffects() = effects;
 	Junk->State.GetRenderEffects() = RF_IR_VISIBLE;
 
-	Junk->backOff = (type == GIB_ORGANIC) ? 1.0f : 1.5f;
+	Junk->BackOff = (type == GIB_ORGANIC) ? 1.0f : 1.5f;
 	float vscale = (type == GIB_ORGANIC) ? 0.5f : 1.0f;
 
 	vec3f vd = VelocityForDamage (Damage);

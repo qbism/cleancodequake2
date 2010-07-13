@@ -65,9 +65,9 @@ public:
 class CTurretBreach : public CTurretEntityBase
 {
 public:
-	bool	FinishInit, ShouldFire;
-	float	PitchOptions[4];
-	char	*Target;
+	bool			FinishInit, ShouldFire;
+	float			PitchOptions[4];
+	std::string		Target;
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTurretBreach)

@@ -33,18 +33,36 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 
+/**
+\fn	IHurtableEntity::IHurtableEntity ()
+
+\brief	New entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+**/
 IHurtableEntity::IHurtableEntity () :
-IBaseEntity(),
-CanTakeDamage (false),
-AffectedByKnockback (true)
+  IBaseEntity(),
+  CanTakeDamage (false),
+  AffectedByKnockback (true)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
 
+/**
+\fn	IHurtableEntity::IHurtableEntity (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+
+\param	Index	Zero-based index of entity to use. 
+**/
 IHurtableEntity::IHurtableEntity (sint32 Index) :
-IBaseEntity(Index),
-CanTakeDamage (false),
-AffectedByKnockback (true)
+  IBaseEntity(Index),
+  CanTakeDamage (false),
+  AffectedByKnockback (true)
 {
 	EntityFlags |= ENT_HURTABLE;
 };
@@ -54,7 +72,7 @@ ENTITYFIELDS_BEGIN(IHurtableEntity)
 	CEntityField ("health", EntityMemberOffset(IHurtableEntity,Health), FT_INT | FT_SAVABLE),
 
 	CEntityField ("CanTakeDamage", EntityMemberOffset(IHurtableEntity,CanTakeDamage), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
-	CEntityField ("DeadFlag", EntityMemberOffset(IHurtableEntity,DeadFlag), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
+	CEntityField ("IsDead", EntityMemberOffset(IHurtableEntity,IsDead), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("AffectedByKnockback", EntityMemberOffset(IHurtableEntity,AffectedByKnockback), FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("MaxHealth", EntityMemberOffset(IHurtableEntity,MaxHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
 	CEntityField ("GibHealth", EntityMemberOffset(IHurtableEntity,GibHealth), FT_INT | FT_NOSPAWN | FT_SAVABLE),
@@ -108,6 +126,19 @@ bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 	return ClientTeam (Player1) == ClientTeam (Player2);
 }
 
+/**
+\fn	bool IHurtableEntity::DamageCanReach (IBaseEntity *Inflictor)
+
+\brief	Tests if Inflictor can damage this entity in a bounding box path. Used for radius
+		damages. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Inflictor	If non-null, the inflictor. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 bool IHurtableEntity::DamageCanReach (IBaseEntity *Inflictor)
 {
 // bmodels need special checking because their origin is 0,0,0
@@ -140,6 +171,18 @@ bool IHurtableEntity::DamageCanReach (IBaseEntity *Inflictor)
 	return false;
 }
 
+/**
+\fn	bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
+
+\brief	Tests if this entity and Attacker are on a team. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Attacker	If non-null, the attacker. 
+
+\return	true if they are on a team, false if not. 
+**/
 bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 {
 #if CLEANCTF_ENABLED
@@ -160,12 +203,28 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 
 #include "cc_temporary_entities.h"
 
-sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags)
+/**
+\fn	sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage,
+	EDamageFlags DamageFlags)
+
+\brief	Checks power armor and makes adjustments based on that. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Point	The point. 
+\param [in,out]	Normal	The normal. 
+\param	Damage			The damage. 
+\param	DamageFlags		The damage flags. 
+
+\return	The amount of damage saved from the power armor. 
+**/
+sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
 {
 	if (!Damage)
 		return 0;
 
-	if (dflags & DAMAGE_NO_ARMOR)
+	if (DamageFlags & DAMAGE_NO_ARMOR)
 		return 0;
 
 	static const sint32	index = NItems::Cells->GetIndex();
@@ -249,6 +308,21 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Dam
 	return Saved;
 }
 
+/**
+\fn	void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage,
+	vec3f &Point)
+
+\brief	The function called when entity is killed. This calls Die, sets Enemy and clamps health
+		to -999. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Inflictor	If non-null, the inflictor. 
+\param [in,out]	Attacker	If non-null, the attacker. 
+\param	Damage				The damage. 
+\param [in,out]	Point		The point. 
+**/
 void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	if (Health < -999)
@@ -260,6 +334,22 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, Point);
 }
 
+/**
+\fn	void IHurtableEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage,
+	EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
+
+\brief	An "extension" of sorts to TakeDamage which handles the effects when we are hurt. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Dir				The dir. 
+\param [in,out]	Point			The point. 
+\param [in,out]	Normal			The normal. 
+\param [in,out]	Damage			The damage. 
+\param [in,out]	DamageFlags		The damage flags. 
+\param [in,out]	MeansOfDeath	The means of death. 
+**/
 void IHurtableEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
 	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
@@ -276,9 +366,30 @@ void IHurtableEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sin
 }
 
 bool LastPelletShot = true;
+
+/**
+\fn	void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker, vec3f Dir,
+	vec3f Point, vec3f Normal, sint32 Damage, sint32 KnockBack, EDamageFlags DamageFlags,
+	EMeansOfDeath MeansOfDeath)
+
+\brief	Makes this entity take damage. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Inflictor	If non-null, the inflictor. 
+\param [in,out]	Attacker	If non-null, the attacker. 
+\param	Dir					The dir. 
+\param	Point				The point. 
+\param	Normal				The normal. 
+\param	Damage				The damage. 
+\param	KnockBack			The knock back. 
+\param	DamageFlags			The damage flags. 
+\param	MeansOfDeath		The means of death. 
+**/
 void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
-								vec3f dir, vec3f point, vec3f normal, sint32 Damage,
-								sint32 knockback, EDamageFlags dflags, EMeansOfDeath mod)
+							vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+							sint32 KnockBack, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
 {
 	if (CvarList[CV_MAP_DEBUG].Boolean())
 		return;
@@ -307,16 +418,16 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 			{
 				if (DeathmatchFlags.dfNoFriendlyFire.IsEnabled()
 #if ROGUE_FEATURES
-					&& (mod != MOD_NUKE)
+					&& (MeansOfDeath != MOD_NUKE)
 #endif
 					)
 					Damage = 0;
 				else
-					mod |= MOD_FRIENDLY_FIRE;
+					MeansOfDeath |= MOD_FRIENDLY_FIRE;
 			}
 		}
 	}
-	meansOfDeath = mod;
+	meansOfDeath = MeansOfDeath;
 
 	// easy mode takes half damage
 #if ROGUE_FEATURES
@@ -332,11 +443,11 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	}
 
 
-	dir.Normalize ();
+	Dir.Normalize ();
 
 // bonus damage for surprising a monster
 // Paril revision: Allow multiple pellet weapons to take advantage of this too!
-	if (!(dflags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+	if (!(DamageFlags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
 	{
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
@@ -358,22 +469,22 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		if (isClient)
 		{
 			if (Client->Persistent.Tech && (Client->Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				Client->Persistent.Tech->DoAggressiveTech (Player, Attacker, false, Damage, knockback, dflags, mod, true);
+				Client->Persistent.Tech->DoAggressiveTech (Player, Attacker, false, Damage, KnockBack, DamageFlags, MeansOfDeath, true);
 		}
 
 		if (Attacker->EntityFlags & ENT_PLAYER)
 		{
 			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, Player, false, Damage, knockback, dflags, mod, false);
+				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, Player, false, Damage, KnockBack, DamageFlags, MeansOfDeath, false);
 		}
 	}
 
 	if (!AffectedByKnockback)
-		knockback = 0;
+		KnockBack = 0;
 
 // figure momentum add
-	if (knockback && !(dflags & DAMAGE_NO_KNOCKBACK) && (EntityFlags & ENT_PHYSICS))
+	if (KnockBack && !(DamageFlags & DAMAGE_NO_KNOCKBACK) && (EntityFlags & ENT_PHYSICS))
 	{
 		IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(this);
 		if (!(Phys->PhysicsType == PHYSICS_NONE ||
@@ -382,7 +493,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 			Phys->PhysicsType == PHYSICS_STOP))
 		// Arcade Quake II
 		{
-			vec3f temp = dir * (((isClient && (attacker == this)) ? 1600.0f : 500.0f) * (float)knockback / Clamp<float> (Phys->Mass, 50, Phys->Mass));
+			vec3f temp = Dir * (((isClient && (Attacker == this)) ? 1600.0f : 500.0f) * (float)KnockBack / Clamp<float> (Phys->Mass, 50, Phys->Mass));
 			temp.Y = 0;
 			Phys->Velocity += temp;
 		}
@@ -393,22 +504,23 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	save = 0;
 
 	// check for godmode
-	if ( (Flags & FL_GODMODE) && !(dflags & DAMAGE_NO_PROTECTION) )
+	if ( (Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION) )
 	{
 		take = 0;
 		save = Damage;
-		CSparks (point, normal, (dflags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
+		CSparks (Point, Normal, (DamageFlags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 	}
 
 	// check for invincibility
-	if (((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(dflags & DAMAGE_NO_PROTECTION))
+	if (((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(DamageFlags & DAMAGE_NO_PROTECTION))
 #if ROGUE_FEATURES
-		|| ((((EntityFlags & ENT_MONSTER) && ((entity_cast<CMonsterEntity>(this))->Monster->InvincibleFramenum) > Level.Frame ) && !(dflags & DAMAGE_NO_PROTECTION)))
+		|| ((((EntityFlags & ENT_MONSTER) && ((entity_cast<CMonsterEntity>(this))->Monster->InvincibleFramenum) > Level.Frame ) && !(DamageFlags & DAMAGE_NO_PROTECTION)))
 #endif
 		)
 	{
 #if ROGUE_FEATURES
-		if ((isClient && Player->PainDebounceTime < Level.Frame) || ((EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime < Level.Frame))
+		if ((isClient && Player->PainDebounceTime < Level.Frame) ||
+			((EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime < Level.Frame))
 #else
 		if (Player->PainDebounceTime < Level.Frame)
 #endif
@@ -438,14 +550,14 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	{
 //ZOID
 #endif
-		psave = CheckPowerArmor (point, normal, take, dflags);
+		psave = CheckPowerArmor (Point, Normal, take, DamageFlags);
 		take -= psave;
 
 		if (isClient)
 		{
 			if (Client->Persistent.Armor)
 			{
-				asave = Client->Persistent.Armor->CheckArmor (entity_cast<CPlayerEntity>(this), point, normal, take, dflags);
+				asave = Client->Persistent.Armor->CheckArmor (entity_cast<CPlayerEntity>(this), Point, Normal, take, DamageFlags);
 				take -= asave;
 			}
 		}
@@ -465,25 +577,25 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		if (isClient)
 		{
 			if (Client->Persistent.Tech && (Client->Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), Attacker, true, take, knockback, dflags, mod, true);
+				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), Attacker, true, take, KnockBack, DamageFlags, MeansOfDeath, true);
 		}
 
 		if ((EntityFlags & ENT_PLAYER) && (Attacker->EntityFlags & ENT_PLAYER))
 		{
 			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, entity_cast<CPlayerEntity>(this), true, Damage, knockback, dflags, mod, false);
+				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, entity_cast<CPlayerEntity>(this), true, Damage, KnockBack, DamageFlags, MeansOfDeath, false);
 		}
 	}
 
 	// team damage avoidance
-	if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (Attacker))
+	if (!(DamageFlags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (Attacker))
 		return;
 
 // ROGUE - this option will do damage both to the armor and person. originally for DPU rounds
-	if (dflags & DAMAGE_DESTROY_ARMOR)
+	if (DamageFlags & DAMAGE_DESTROY_ARMOR)
 	{
-		if(!(Flags & FL_GODMODE) && !(dflags & DAMAGE_NO_PROTECTION) &&
+		if(!(Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION) &&
 		   !(isClient && Player->Client.Timers.Invincibility > Level.Frame))
 			take = Damage;
 	}
@@ -499,7 +611,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 // do the damage
 	if (take)
 	{
-		DamageEffect (dir, point, normal, take, dflags, mod);
+		DamageEffect (Dir, Point, Normal, take, DamageFlags, MeansOfDeath);
 		Health -= take;
 	}
 
@@ -512,7 +624,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	{
 		if ((EntityFlags & ENT_MONSTER) || (isClient))
 			AffectedByKnockback = false;
-		Killed (Inflictor, Attacker, take, point);
+		Killed (Inflictor, Attacker, take, Point);
 		return;
 	}
 
@@ -538,28 +650,37 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		Client->DamageValues[DT_POWERARMOR] += psave;
 		Client->DamageValues[DT_ARMOR] += asave;
 		Client->DamageValues[DT_BLOOD] += take;
-		Client->DamageValues[DT_KNOCKBACK] += knockback;
-		Client->DamageFrom = point;
+		Client->DamageValues[DT_KNOCKBACK] += KnockBack;
+		Client->DamageFrom = Point;
 	}
 }
-	
-void IHurtableEntity::TakeDamage (IBaseEntity *targ, IBaseEntity *Inflictor,
-								IBaseEntity *Attacker, vec3f dir, vec3f point,
-								vec3f normal, sint32 Damage, sint32 knockback,
-								EDamageFlags dflags, EMeansOfDeath mod)
-{
-	if ((targ->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(targ)->CanTakeDamage)
-		(entity_cast<IHurtableEntity>(targ))->TakeDamage (Inflictor, Attacker, dir, point, normal, Damage, knockback, dflags, mod);
-}
 
+/**
+\fn	IThinkableEntity::IThinkableEntity ()
+
+\brief	New entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+**/
 IThinkableEntity::IThinkableEntity () :
-IBaseEntity()
+  IBaseEntity()
 {
 	EntityFlags |= ENT_THINKABLE;
 };
 
+/**
+\fn	IThinkableEntity::IThinkableEntity (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+
+\param	Index	Zero-based index of the entity to use. 
+**/
 IThinkableEntity::IThinkableEntity (sint32 Index) :
-IBaseEntity(Index)
+  IBaseEntity(Index)
 {
 	EntityFlags |= ENT_THINKABLE;
 };
@@ -576,6 +697,13 @@ void IThinkableEntity::LoadFields (CFile &File)
 	NextThink = File.Read<FrameNumber> ();
 };
 
+/**
+\fn	void IThinkableEntity::RunThink ()
+
+\brief	Function that runs the think process. 
+\author	Paril. 
+\date	13/06/2010. 
+**/
 void IThinkableEntity::RunThink ()
 {
 	if (NextThink <= 0 || NextThink > Level.Frame)
@@ -607,34 +735,53 @@ void ITouchableEntity::LoadFields (CFile &File)
 	Touchable = File.Read<bool> ();
 };
 
-void ITouchableEntity::Touch(IBaseEntity *other, SBSPPlane *plane, SBSPSurface *surf)
-{
-}
+/**
+\fn	IPhysicsEntity::IPhysicsEntity ()
 
+\brief	New entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+**/
 IPhysicsEntity::IPhysicsEntity () :
-IBaseEntity(),
-GravityMultiplier(1.0f),
-PhysicsFlags(0),
-DampeningEffect(1, 1, 1),
-ADampeningEffect(1, 1, 1),
-GravityVector(0, 0, -1)
+  IBaseEntity(),
+  GravityMultiplier(1.0f),
+  PhysicsFlags(0),
+  DampeningEffect(1, 1, 1),
+  ADampeningEffect(1, 1, 1),
+  GravityVector(0, 0, -1)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
 };
 
+/**
+\fn	IPhysicsEntity::IPhysicsEntity (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+
+\param	Index	Zero-based index of the entity to use. 
+**/
 IPhysicsEntity::IPhysicsEntity (sint32 Index) :
-IBaseEntity(Index),
-GravityMultiplier(1.0f),
-PhysicsFlags(0),
-DampeningEffect(1, 1, 1),
-ADampeningEffect(1, 1, 1),
-GravityVector(0, 0, -1)
+  IBaseEntity(Index),
+  GravityMultiplier(1.0f),
+  PhysicsFlags(0),
+  DampeningEffect(1, 1, 1),
+  ADampeningEffect(1, 1, 1),
+  GravityVector(0, 0, -1)
 {
 	EntityFlags |= ENT_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
 };
 
+/**
+\fn	void IPhysicsEntity::AddGravity()
+
+\brief	Adds gravity to this entity's velocity. 
+**/
 void IPhysicsEntity::AddGravity()
 {
 	if (GravityVector[2] > 0)
@@ -643,10 +790,22 @@ void IPhysicsEntity::AddGravity()
 		Velocity.Z -= GravityMultiplier * CvarList[CV_GRAVITY].Float() * 0.1f;
 }
 
-CTrace IPhysicsEntity::PushEntity (vec3f &push)
+/**
+\fn	CTrace IPhysicsEntity::PushEntity (vec3f &Push)
+
+\brief	Causes this entity to move and push/impact any obstacles. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Push	The push vector. 
+
+\return	The last trace to be processed by the pushing function. 
+**/
+CTrace IPhysicsEntity::PushEntity (vec3f &Push)
 {
 	vec3f		Start = State.GetOrigin();
-	vec3f		End = Start + push;
+	vec3f		End = Start + Push;
 
 	CTrace Trace;
 	while (true)
@@ -678,9 +837,20 @@ CTrace IPhysicsEntity::PushEntity (vec3f &push)
 	return Trace;
 }
 
-void IPhysicsEntity::Impact (CTrace *trace)
+/**
+\fn	void IPhysicsEntity::Impact (CTrace *Trace)
+
+\brief	Causes this entity to impact with the entity hit by Trace. Calls the Touch functions, if
+		applicable. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Trace	If non-null, the trace. 
+**/
+void IPhysicsEntity::Impact (CTrace *Trace)
 {
-	if (!trace->Entity)
+	if (!Trace->Entity)
 		return;
 
 	if (GetSolid() != SOLID_NOT && (EntityFlags & ENT_TOUCHABLE))
@@ -688,27 +858,47 @@ void IPhysicsEntity::Impact (CTrace *trace)
 		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(this);
 
 		if (Touched->Touchable)
-			Touched->Touch (trace->Entity, &trace->Plane, trace->Surface);
+			Touched->Touch (Trace->Entity, &Trace->Plane, Trace->Surface);
 	}
 
-	if ((trace->Entity->EntityFlags & ENT_TOUCHABLE) && trace->Entity->GetSolid() != SOLID_NOT)
+	if ((Trace->Entity->EntityFlags & ENT_TOUCHABLE) && Trace->Entity->GetSolid() != SOLID_NOT)
 	{
-		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(trace->Entity);
+		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(Trace->Entity);
 
 		if (Touched->Touchable)
 			Touched->Touch (this, NULL, NULL);
 	}
 }
 
-void IPhysicsEntity::PushInDirection (vec3f vel, uint32 flags)
+/**
+\fn	void IPhysicsEntity::PushInDirection (vec3f Vel, ESpawnflags Flags)
+
+\brief	Pushes this entity in speed vector 'Vel'. The spawnflags of the pusher entity can be
+		passed via Flags to modify velocity or otherwise. 
+
+\author	Paril
+\date	13/06/2010
+
+\param	Vel		The vel. 
+\param	Flags	The flags. 
+**/
+void IPhysicsEntity::PushInDirection (vec3f Vel, ESpawnflags Flags)
 {
 	if ((EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(this)->Health > 0))
-		Velocity = vel;
+		Velocity = Vel;
 }
 
+/**
+\fn	IBounceProjectile::IBounceProjectile ()
+
+\brief	New entity constructor. 
+
+\author	Paril
+\date	14/06/2010
+**/
 IBounceProjectile::IBounceProjectile () :
   IPhysicsEntity (),
-  backOff(1.5f),
+  BackOff(1.5f),
   AffectedByGravity(true),
   StopOnEqualPlane(true),
   AimInVelocityDirection(false)
@@ -716,10 +906,20 @@ IBounceProjectile::IBounceProjectile () :
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
+/**
+\fn	IBounceProjectile::IBounceProjectile (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	14/06/2010
+
+\param	Index	Zero-based index of the entity to use. 
+**/
 IBounceProjectile::IBounceProjectile (sint32 Index) :
   IBaseEntity(Index),
   IPhysicsEntity (Index),
-  backOff(1.5f),
+  BackOff(1.5f),
   AffectedByGravity(true),
   StopOnEqualPlane(true),
   AimInVelocityDirection(false)
@@ -727,30 +927,44 @@ IBounceProjectile::IBounceProjectile (sint32 Index) :
 	PhysicsType = PHYSICS_BOUNCE;
 }
 
-  /*
-==================
-ClipVelocity
-
-Slide off of the impacting object
-==================
-*/
 const float STOP_EPSILON    = 0.1f;
 
-vec3f ClipVelocity (vec3f &in, vec3f &Normal, float overbounce)
-{
-	float backoff = (in | Normal) * overbounce;
+/**
+\fn	vec3f ClipVelocity (vec3f &InVelocity, vec3f &Normal, float OverBounce)
 
-	vec3f out;
+\brief	Slide off impacting objec. 
+
+\author	Paril
+\date	14/06/2010
+
+\param [in,out]	InVelocity		The in velocity. 
+\param [in,out]	Normal			The colliding normal. 
+\param	OverBounce				The overbounce value. 
+
+\return	New velocity. 
+**/
+vec3f ClipVelocity (vec3f &InVelocity, vec3f &Normal, float OverBounce)
+{
+	float backoff = (InVelocity | Normal) * OverBounce;
+
+	vec3f outVelocity;
 	for (sint32 i = 0; i < 3; i++)
 	{
 		float change = Normal[i]*backoff;
-		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-			out[i] = 0;
+		outVelocity[i] = InVelocity[i] - change;
+		if (outVelocity[i] > -STOP_EPSILON && outVelocity[i] < STOP_EPSILON)
+			outVelocity[i] = 0;
 	}
-	return out;
+	return outVelocity;
 }
 
+/**
+\fn	bool IBounceProjectile::Run ()
+
+\brief	Runs this object's physics. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 bool IBounceProjectile::Run ()
 {
 	CTrace	trace;
@@ -791,7 +1005,7 @@ bool IBounceProjectile::Run ()
 
 	if (trace.Fraction < 1)
 	{
-		Velocity = ClipVelocity (Velocity, trace.Plane.Normal, backOff);
+		Velocity = ClipVelocity (Velocity, trace.Plane.Normal, BackOff);
 
 		if (AimInVelocityDirection)
 			State.GetAngles() = Velocity.ToAngles();
@@ -859,7 +1073,7 @@ bool IBounceProjectile::Run ()
 ITossProjectile::ITossProjectile () :
   IBounceProjectile ()
 {
-	backOff = 1.0f;
+	BackOff = 1.0f;
 
 	PhysicsType = PHYSICS_TOSS;
 }
@@ -868,7 +1082,7 @@ ITossProjectile::ITossProjectile (sint32 Index) :
   IBaseEntity (Index),
   IBounceProjectile (Index)
 {
-	backOff = 1.0f;
+	BackOff = 1.0f;
 
 	PhysicsType = PHYSICS_TOSS;
 }
@@ -877,7 +1091,7 @@ IFlyMissileProjectile::IFlyMissileProjectile () :
   IBounceProjectile ()
 {
 	AffectedByGravity = false;
-	backOff = 1.0f;
+	BackOff = 1.0f;
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
@@ -886,16 +1100,34 @@ IFlyMissileProjectile::IFlyMissileProjectile (sint32 Index) :
   IBounceProjectile (Index)
 {
 	AffectedByGravity = false;
-	backOff = 1.0f;
+	BackOff = 1.0f;
 	PhysicsType = PHYSICS_FLYMISSILE;
 }
 
+/**
+\fn	IStepPhysics::IStepPhysics ()
+
+\brief	New entity constructor. 
+
+\author	Paril
+\date	14/06/2010
+**/
 IStepPhysics::IStepPhysics () :
   IPhysicsEntity ()
 {
 	PhysicsType = PHYSICS_STEP;
 }
 
+/**
+\fn	IStepPhysics::IStepPhysics (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	14/06/2010
+
+\param	Index	Zero-based index of the entity to use. 
+**/
 IStepPhysics::IStepPhysics (sint32 Index) :
   IBaseEntity (Index),
   IPhysicsEntity (Index)
@@ -903,6 +1135,11 @@ IStepPhysics::IStepPhysics (sint32 Index) :
 	PhysicsType = PHYSICS_STEP;
 }
 
+/**
+\fn	void IStepPhysics::CheckGround ()
+
+\brief	Check ground virtual function. Provides the code that checks if an entity is on-ground. 
+**/
 void IStepPhysics::CheckGround ()
 {
 	if (Velocity.Z > 100)
@@ -937,6 +1174,11 @@ const float SV_STOPSPEED		= 100.0f;
 const float SV_FRICTION			= 6.0f;
 const float SV_WATERFRICTION	= 1.0f;
 
+/**
+\fn	void IStepPhysics::AddRotationalFriction ()
+
+\brief	Adds rotational friction. 
+**/
 void IStepPhysics::AddRotationalFriction ()
 {
 	State.GetAngles() = State.GetAngles().MultiplyAngles (0.1f, AngularVelocity);
@@ -960,12 +1202,26 @@ void IStepPhysics::AddRotationalFriction ()
 }
 
 const int MAX_CLIP_PLANES	= 5;
-sint32 IStepPhysics::FlyMove (float time, sint32 mask)
+
+/**
+\fn	sint32 IStepPhysics::FlyMove (float Time, EBrushContents Mask)
+
+\brief	Performs the move. 
+
+\author	Paril
+\date	14/06/2010
+
+\param	Time	The time to complete the move. 
+\param	Mask	The content mask. 
+
+\return	The blocked flags. 
+**/
+sint32 IStepPhysics::FlyMove (float Time, EBrushContents Mask)
 {
 	sint32		i, j, blocked = 0, numplanes = 0, numbumps = 4;
 	vec3f		planes[MAX_CLIP_PLANES];
-	float		time_left = time;
-	vec3f original_velocity = Velocity, primal_velocity = Velocity;
+	float		time_left = Time;
+	vec3f		original_velocity = Velocity, primal_velocity = Velocity;
 
 	GroundEntity = nullentity;
 
@@ -973,7 +1229,7 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 	{
 		vec3f end = State.GetOrigin () + time_left * Velocity;
 
-		CTrace trace (State.GetOrigin (), GetMins(), GetMaxs(), end, this, mask);
+		CTrace trace (State.GetOrigin (), GetMins(), GetMaxs(), end, this, Mask);
 
 		if (trace.AllSolid)
 		{
@@ -1078,6 +1334,13 @@ sint32 IStepPhysics::FlyMove (float time, sint32 mask)
 	return blocked;
 }
 
+/**
+\fn	bool IStepPhysics::Run ()
+
+\brief	Runs this object's physics. 
+
+\return	true if it succeeds, false if it fails. 
+**/
 bool IStepPhysics::Run ()
 {
 	bool		hitsound = false;
@@ -1530,32 +1793,68 @@ bool IStopPhysics::Run ()
 	return IPushPhysics::Run ();
 }
 
+/**
+\fn	IBlockableEntity::IBlockableEntity ()
+
+\brief	New entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+**/
 IBlockableEntity::IBlockableEntity () :
-IBaseEntity ()
+  IBaseEntity ()
 {
 	EntityFlags |= ENT_BLOCKABLE;
 }
 
+/**
+\fn	IBlockableEntity::IBlockableEntity (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+
+\param	Index	Zero-based index of entity to use. 
+**/
 IBlockableEntity::IBlockableEntity (sint32 Index) :
-IBaseEntity (Index)
+  IBaseEntity (Index)
 {
 	EntityFlags |= ENT_BLOCKABLE;
 }
 
+/**
+\fn	IUsableEntity::IUsableEntity ()
+
+\brief	New entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+**/
 IUsableEntity::IUsableEntity () :
-IBaseEntity (),
-NoiseIndex (0),
-Delay (0),
-Usable (true)
+  IBaseEntity (),
+  NoiseIndex (0),
+  Delay (0),
+  Usable (true)
 {
 	EntityFlags |= ENT_USABLE;
 }
 
+/**
+\fn	IUsableEntity::IUsableEntity (sint32 Index)
+
+\brief	Existing entity constructor. 
+
+\author	Paril
+\date	13/06/2010
+
+\param	Index	Zero-based index of entity to use. 
+**/
 IUsableEntity::IUsableEntity (sint32 Index) :
-IBaseEntity (Index),
-NoiseIndex (0),
-Delay (0),
-Usable (true)
+  IBaseEntity (Index),
+  NoiseIndex (0),
+  Delay (0),
+  Usable (true)
 {
 	EntityFlags |= ENT_USABLE;
 }
@@ -1565,9 +1864,9 @@ ENTITYFIELDS_BEGIN(IUsableEntity)
 	CEntityField ("message",	EntityMemberOffset(IUsableEntity,Message),			FT_STRING | FT_SAVABLE),
 	CEntityField ("noise",		EntityMemberOffset(IUsableEntity,NoiseIndex),		FT_SOUND_INDEX | FT_SAVABLE),
 	CEntityField ("delay",		EntityMemberOffset(IUsableEntity,Delay),			FT_FRAMENUMBER | FT_SAVABLE),
-	CEntityField ("target",		EntityMemberOffset(IUsableEntity,Target),			FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("killtarget",	EntityMemberOffset(IUsableEntity,KillTarget),		FT_LEVEL_STRING | FT_SAVABLE),
-	CEntityField ("pathtarget", EntityMemberOffset(IUsableEntity,PathTarget),		FT_LEVEL_STRING | FT_SAVABLE),
+	CEntityField ("target",		EntityMemberOffset(IUsableEntity,Target),			FT_STRING | FT_SAVABLE),
+	CEntityField ("killtarget",	EntityMemberOffset(IUsableEntity,KillTarget),		FT_STRING | FT_SAVABLE),
+	CEntityField ("pathtarget", EntityMemberOffset(IUsableEntity,PathTarget),		FT_STRING | FT_SAVABLE),
 
 	CEntityField ("Usable", 	EntityMemberOffset(IUsableEntity,Usable),			FT_BOOL | FT_NOSPAWN | FT_SAVABLE),
 };
@@ -1636,6 +1935,17 @@ public:
 
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
+/**
+\fn	void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
+
+\brief	Use targets. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Activator	If non-null, the activator. 
+\param [in,out]	Message		The message. 
+**/
 void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 {
 //
@@ -1671,10 +1981,10 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 //
 // kill killtargets
 //
-	if (KillTarget)
+	if (!KillTarget.empty())
 	{
 		IMapEntity *t = NULL;
-		while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget)) != NULL)
+		while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget.c_str())) != NULL)
 		{
 #if ROGUE_FEATURES
 			// if this entity is part of a train, cleanly remove it
@@ -1710,17 +2020,17 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 //
 // fire targets
 //
-	if (Target)
+	if (!Target.empty())
 	{
 		IMapEntity *Ent = NULL;
-		while ((Ent = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target)) != NULL)
+		while ((Ent = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target.c_str())) != NULL)
 		{
 			if (!Ent)
 				continue;
 
 			// doors fire area portals in a specific way
-			if (!Q_stricmp(Ent->ClassName.c_str(), "func_areaportal") &&
-				(!Q_stricmp(Ent->ClassName.c_str(), "func_door") || !Q_stricmp(Ent->ClassName.c_str(), "func_door_rotating")))
+			if (Ent->ClassName == "func_areaportal" &&
+				(ClassName == "func_door" || ClassName == "func_door_rotating"))
 				continue;
 
 			if (Ent->EntityFlags & ENT_USABLE)
@@ -1731,9 +2041,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
 
 				if (Used->Usable)
-				{
 					Used->Use (this, Activator);
-				}
 			}
 
 			if (!GetInUse())

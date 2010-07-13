@@ -276,7 +276,6 @@ static BOOL CALLBACK EnumerateLoadedModulesProcSymInfo (PSTR ModuleName, DWORD64
 
 static BOOL CALLBACK EnumerateLoadedModulesProcDump (PCSTR ModuleName, DWORD64 ModuleBase, ULONG ModuleSize, PVOID UserContext)
 {
-	VS_FIXEDFILEINFO *fileVersion;
 	BYTE	*verInfo;
 	UINT	dummy;
 	FILE	*fhReport = (FILE *)UserContext;

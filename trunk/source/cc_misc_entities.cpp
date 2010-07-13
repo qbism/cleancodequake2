@@ -305,7 +305,7 @@ void CMiscViper::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CMiscViper::Spawn ()
 {
-	if (!Target)
+	if (Target.empty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();
@@ -892,12 +892,12 @@ public:
 		{
 			PhysicsType = PHYSICS_TOSS;
 			vscale = 0.5;
-			backOff = 1.0f;
+			BackOff = 1.0f;
 		}
 		else
 		{
 			PhysicsType = PHYSICS_BOUNCE;
-			backOff = 1.5f;
+			BackOff = 1.5f;
 			vscale = 1.0;
 		}
 
@@ -951,7 +951,7 @@ public:
 
 		GetMins().Set (-16, -16, 0);
 		GetMaxs().Set (16, 16, 16);
-		DeadFlag = true;
+		IsDead = true;
 		CanTakeDamage = true;
 		GetSvFlags() |= (SVF_MONSTER|SVF_DEADMONSTER);
 

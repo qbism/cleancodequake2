@@ -831,11 +831,11 @@ void CBlackWidow::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 		}
 		CGibEntity::Spawn (Entity, GameMedia.Gib_Chest, clipped, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], clipped, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag)
+	if (Entity->IsDead)
 		return;
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
@@ -1273,7 +1273,7 @@ void CBlackWidow::WidowExplode ()
 		for (uint8 n = 0; n < 2; n++)
 			ThrowWidowGib (Entity, GameMedia.Gib_SmallMetal(), 400, GIB_METALLIC);
 
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		Think = &CMonster::MonsterThink;
 		Entity->NextThink = Level.Frame + FRAMETIME;
 		CurrentMove = &Widow2MoveDead;

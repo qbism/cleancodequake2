@@ -38,8 +38,8 @@ void	G_TouchTriggers (IBaseEntity *Entity);
 void	G_SetMovedir (vec3f &angles, vec3f &movedir);
 
 typedef std::vector<IBaseEntity*> TTargetList;
-IBaseEntity *CC_PickTarget (char *targetname);
-TTargetList CC_GetTargets (char *targetname);
+IBaseEntity *CC_PickTarget (std::string targetname);
+TTargetList CC_GetTargets (std::string targetname);
 
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
 TEntityType *CC_Find (IBaseEntity *From, const char *Match)
@@ -65,19 +65,19 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 		// we don't need to cast just yet
 		if (EntityFlags & ENT_BASE)
 		{
-			char *s = *(char **) ((uint8 *)gameEnt->Entity + FieldOfs);
-			if (!s)
+			std::string s = *(std::string *) ((uint8 *)gameEnt->Entity + FieldOfs);
+			if (s.empty())
 				continue;
-			if (!Q_stricmp (s, Match))
+			if (s == Match)
 				return entity_cast<TEntityType>(gameEnt->Entity);
 		}
 		else
 		{
 			TEntityType *Check = entity_cast<TEntityType>(gameEnt->Entity);
-			char *s = *(char **) ((uint8 *)Check + FieldOfs);
-			if (!s)
+			std::string s = *(std::string*) ((uint8 *)Check + FieldOfs);
+			if (s.empty())
 				continue;
-			if (!Q_stricmp (s, Match))
+			if (s == Match)
 				return Check;
 		}
 	}

@@ -1133,7 +1133,7 @@ void CMonster::FoundTarget ()
 	LastSighting = Entity->Enemy->State.GetOrigin();
 	TrailTime = Level.Frame;
 
-	if (!Entity->CombatTarget)
+	if (Entity->CombatTarget.empty())
 	{
 		HuntTarget ();
 		return;
@@ -1150,11 +1150,11 @@ void CMonster::FoundTarget ()
 	}
 
 	// clear out our combattarget, these are a one shot deal
-	Entity->CombatTarget = NULL;
+	Entity->CombatTarget.clear();
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<IMapEntity>(*Entity->MoveTarget)->TargetName = NULL;
+	entity_cast<IMapEntity>(*Entity->MoveTarget)->TargetName.clear();
 	PauseTime = 0;
 
 	// run for it

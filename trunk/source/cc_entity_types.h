@@ -113,114 +113,399 @@ enum
 	MOD_FRIENDLY_FIRE		=	512
 };
 
-// "Hurtable" entity
+/**
+\class	IHurtableEntity
+
+\brief	Hurtable entity subclass. Inherit this to allow an entity to take damage. 
+
+\author	Paril
+\date	13/06/2010
+**/
 class IHurtableEntity : public virtual IBaseEntity
 {
 public:
-	sint32			Health;
-	sint32			MaxHealth;
-	sint32			GibHealth;
-	bool			DeadFlag;
-	bool			CanTakeDamage;
-	bool			AffectedByKnockback;
+	sint32			Health;					// Health level
+	sint32			MaxHealth;				// Highest health level. Usually used for storing max health.
+	sint32			GibHealth;				// Health that he will gib at.
+	bool			IsDead;					// True if dead
+	bool			CanTakeDamage;			// true if can take damage
+	bool			AffectedByKnockback;	// true if affected by knockback
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(IHurtableEntity)
 
+	/**
+	\fn	IHurtableEntity ()
+	
+	\brief	New entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	IHurtableEntity ();
-	IHurtableEntity (sint32 index);
 
+	/**
+	\fn	IHurtableEntity (sint32 Index)
+	
+	\brief	Existing entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param	Index	Zero-based index of entity to use.
+	**/
+	IHurtableEntity (sint32 Index);
+
+	/**
+	\fn	virtual void Pain (IBaseEntity *Other, sint32 Damage)
+	
+	\brief	Virtual pain function. Called by TakeDamage when any damage is taken.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Other	If non-null, the entity causing the damage. 
+	\param	Damage			The damage. 
+	**/
 	virtual void Pain (IBaseEntity *Other, sint32 Damage) {};
+
+	/**
+	\fn	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
+	
+	\brief	Virtual death function. Called when this entity's health is below or equal to 0 when he
+			is hit. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Inflictor	If non-null, the inflictor. 
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Damage				The damage. 
+	\param [in,out]	Point		The point. 
+	**/
 	virtual void Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point) {};
 
+	/**
+	\fn	bool DamageCanReach (IBaseEntity *Inflictor)
+	
+	\brief	Tests if Inflictor can damage this entity in a bounding box path. Used for radius
+			damages. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Inflictor	If non-null, the inflictor. 
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
 	bool DamageCanReach (IBaseEntity *Inflictor);
-	bool CheckTeamDamage (IBaseEntity *Attacker);
-	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags dflags);
 
+	/**
+	\fn	bool CheckTeamDamage (IBaseEntity *Attacker)
+	
+	\brief	Tests if this entity and Attacker are on a team. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	
+	\return	true if they are on a team, false if not. 
+	**/
+	bool CheckTeamDamage (IBaseEntity *Attacker);
+
+	/**
+	\fn	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
+	
+	\brief	Checks power armor and makes adjustments based on that. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Point	The point. 
+	\param [in,out]	Normal	The normal. 
+	\param	Damage			The damage. 
+	\param	DamageFlags		The damage flags. 
+	
+	\return	The amount of damage saved from the power armor. 
+	**/
+	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags);
+
+	/**
+	\fn	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage,
+		vec3f &Point)
+	
+	\brief	The function called when entity is killed. This calls Die, sets Enemy and clamps health
+			to -999. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Inflictor	If non-null, the inflictor. 
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Damage				The damage. 
+	\param [in,out]	Point		The point. 
+	**/
 	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 
-	// An "extension" of sorts to TakeDamage
-	// which handles the effects when we are hurt
+	/**
+	\fn	virtual void DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage,
+		EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
+	
+	\brief	An "extension" of sorts to TakeDamage which handles the effects when we are hurt. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Dir				The dir. 
+	\param [in,out]	Point			The point. 
+	\param [in,out]	Normal			The normal. 
+	\param [in,out]	Damage			The damage. 
+	\param [in,out]	DamageFlags		The damage flags. 
+	\param [in,out]	MeansOfDeath	The means of death. 
+	**/
 	virtual void DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
-	// Takes damage.
-	// For this, "this" is target. Use this if the
-	// entity can be casted to IHurtableEntity
-	// without question.
-	virtual void TakeDamage (	IBaseEntity *Inflictor, IBaseEntity *Attacker,
-							vec3f dir, vec3f point, vec3f normal, sint32 Damage,
-							sint32 knockback, EDamageFlags dflags, EMeansOfDeath mod);
+	/**
+	\fn	virtual void TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker, vec3f Dir,
+		vec3f Point, vec3f Normal, sint32 Damage, sint32 KnockBack, EDamageFlags DamageFlags,
+		EMeansOfDeath MeansOfDeath)
 	
-	// This is a convenient static version.
-	// This will cast targ to IHurtableEntity
-	// and make the necessary damage adjustments if possible.
-	// If "targ" can't take damage, nothing will happen.
-	static void TakeDamage (	IBaseEntity *targ, IBaseEntity *Inflictor,
-							IBaseEntity *Attacker, vec3f dir, vec3f point,
-							vec3f normal, sint32 Damage, sint32 knockback,
-							EDamageFlags dflags, EMeansOfDeath mod);
+	\brief	Makes this entity take damage. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Inflictor	If non-null, the inflictor. 
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Dir					The dir. 
+	\param	Point				The point. 
+	\param	Normal				The normal. 
+	\param	Damage				The damage. 
+	\param	KnockBack			The knock back. 
+	\param	DamageFlags			The damage flags. 
+	\param	MeansOfDeath		The means of death. 
+	**/
+	virtual void TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+							vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+							sint32 KnockBack, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
 };
 
+/**
+\class	IBlockableEntity
+
+\brief	Blockable entity subclass. Allows this entity to call a Blocked function when stuck
+		between a pusher. 
+
+\author	Paril
+\date	13/06/2010
+**/
 class IBlockableEntity : public virtual IBaseEntity
 {
 public:
+	/**
+	\fn	IBlockableEntity ()
+	
+	\brief	New entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	IBlockableEntity ();
+
+	/**
+	\fn	IBlockableEntity (sint32 Index)
+	
+	\brief	Existing entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param	Index	Zero-based index of entity to use. 
+	**/
 	IBlockableEntity (sint32 Index);
 
+	/**
+	\fn	virtual void Blocked (IBaseEntity *Other) = 0
+	
+	\brief	Blocked callback.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Other	If non-null, the pusher. 
+	**/
 	virtual void Blocked (IBaseEntity *Other) = 0;
 };
 
+/**
+\class	IUsableEntity
+
+\brief	Usable entity subclass. Inherit this to allow an entity to be used as a target by other
+		entities. This entity is strictly used for map entities. 
+
+\author	Paril
+\date	13/06/2010
+**/
 class IUsableEntity : public virtual IBaseEntity
 {
 public:
-	std::string					Message;
-	char						*Target;
-	char						*KillTarget;
-	char						*PathTarget;
-	entity_ptr<IBaseEntity>		User;
-	FrameNumber					Delay;
-	MediaIndex					NoiseIndex;
-	bool						Usable;
+	std::string					Message,	// Message printed on usage
+								Target,		// Target to use
+								KillTarget,	// Target to use when killed
+								PathTarget;	// Target to use when reached a path
+	entity_ptr<IBaseEntity>		User;		// The entity who used this
+	FrameNumber					Delay;		// The delay after use to actually use
+	MediaIndex					NoiseIndex;	// Zero-based index of sound to make
+	bool						Usable;		// true if entity is usable
 
 	ENTITYFIELD_VIRTUAL_DEFS
 	ENTITYFIELDS_SAVABLE_VIRTUAL(IUsableEntity)
 
+	/**
+	\fn	IUsableEntity ()
+	
+	\brief	New entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	IUsableEntity ();
+
+	/**
+	\fn	IUsableEntity (sint32 Index)
+	
+	\brief	Existing entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param	Index	Zero-based index of entity to use. 
+	**/
 	IUsableEntity (sint32 Index);
 
+	/**
+	\fn	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator)
+	
+	\brief	Callback function when this entity is used by another.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Other		If non-null, the entity that called UseTargets to this entity. 
+	\param [in,out]	Activator	If non-null, the main activator; lowest level.
+	**/
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator) {};
+
+	/**
+	\fn	virtual void UseTargets (IBaseEntity *Activator, std::string &Message)
+	
+	\brief	Use targets. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Activator	If non-null, the activator. 
+	\param [in,out]	Message		The message. 
+	**/
 	virtual void UseTargets (IBaseEntity *Activator, std::string &Message);
 };
 
-// Thinkable entity
-// Simple think function
+/**
+\class	IThinkableEntity
+
+\brief	Thinkable entity subclass. This allows an entity to call a function on a specific frame. It also
+		allows an entity to "PreThink", which is called each frame before running. 
+
+\author	Paril
+\date	13/06/2010
+**/
 class IThinkableEntity : public virtual IBaseEntity
 {
 public:
-	FrameNumber			NextThink;
+	FrameNumber			NextThink;	// The frame to call Think on.
 
+	/**
+	\fn	IThinkableEntity ()
+	
+	\brief	New entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	IThinkableEntity ();
-	IThinkableEntity (sint32 index);
+
+	/**
+	\fn	IThinkableEntity (sint32 Index)
+	
+	\brief	Existing entity constructor. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param	Index	Zero-based index of the entity to use. 
+	**/
+	IThinkableEntity (sint32 Index);
 
 	ENTITYFIELDS_SAVABLE(IThinkableEntity)
 
+	/**
+	\fn	void RunThink ()
+	
+	\brief	Function that runs the think process. 
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	void			RunThink ();
+
+	/**
+	\fn	virtual void Think () = 0
+	
+	\brief	The think function. 
+	**/
 	virtual void	Think () = 0;
+
+	/**
+	\fn	virtual void PreThink ()
+	
+	\brief	The pre-think function.
+	**/
 	virtual void	PreThink () {};
 };
 
-// Touchable entity
+/**
+\class	ITouchableEntity
+
+\brief	Touchable entity subclass. This allows an entity to generate touch callbacks when another
+		entity collides with it. 
+
+\author	Paril
+\date	13/06/2010
+**/
 class ITouchableEntity : public virtual IBaseEntity
 {
 public:
-	bool				Touchable; // Setting to false is equivilent to putting touch = NULL in original Q2
+	bool				Touchable;	// true if Touch will be called
 
 	ENTITYFIELDS_SAVABLE(ITouchableEntity)
 
 	ITouchableEntity ();
 	ITouchableEntity (sint32 index);
 
-	virtual void	Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
+	/**
+	\fn	virtual void Touch (IBaseEntity *Other, SBSPPlane *Plane, SBSPSurface *Surface)
+	
+	\brief	Touch callback. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Other	If non-null, the other entity that touched this one. 
+	\param [in,out]	Plane	If non-null, the plane. 
+	\param [in,out]	Surface	If non-null, the surface. 
+	**/
+	virtual void	Touch (IBaseEntity *Other, SBSPPlane *Plane, SBSPSurface *Surface) {};
 };
 
 /**
@@ -274,30 +559,67 @@ enum
 	PHYSICFLAG_FLOATING			=	BIT(16), // Is "floating"
 };
 
-// Contains common code that projectiles will use
+/**
+\class	IPhysicsEntity
+
+\brief	Physics entity subclass. Contains commonalities for entities to be physics entities. 
+
+\author	Paril
+\date	13/06/2010
+**/
 class IPhysicsEntity : public virtual IBaseEntity
 {
 public:
-	float				GravityMultiplier;	// per entity gravity multiplier (1.0 is normal)
-											// use for lowgrav artifact, flares
-	EPhysicsType		PhysicsType;
-	EPhysicsFlags		PhysicsFlags;
-	vec3f				AngularVelocity;
-	vec3f				Velocity;
-	vec3f				GravityVector;
-	float				Mass;
+	float				GravityMultiplier;	// Per entity gravity multiplier (1.0 is normal)
+	EPhysicsType		PhysicsType;		// Physics type
+	EPhysicsFlags		PhysicsFlags;		// The physics flags
+	vec3f				AngularVelocity,	// The angular velocity
+						Velocity,			// The velocity
+						GravityVector;		// The gravity vector
+	float				Mass;				// The mass of this entity
+
+	/**
+	\struct	SWaterInfo
+	
+	\brief	Information about water on this entity. 
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	struct SWaterInfo
 	{
-		EBrushContents		Type;
-		EWaterLevel			Level,
-							OldLevel;
-	} WaterInfo;
+		EBrushContents		Type;		// The water type
+		EWaterLevel			Level,		// The water level
+							OldLevel;	// Old water level
+	}					WaterInfo;
 
-	bool				PhysicsDisabled;
-	vec3f				VelocityEffect, DampeningEffect, AVelocityEffect, ADampeningEffect;
+	bool				PhysicsDisabled;	// true if physics are disabled
+	vec3f				VelocityEffect,		// Velocity added to regular velocity
+						DampeningEffect,	// Dampening effect for velocity
+						AVelocityEffect,	// Angular velocity effect
+						ADampeningEffect;	// Angular dampening
 
+	/**
+	\fn	IPhysicsEntity ()
+	
+	\brief	New entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	**/
 	IPhysicsEntity ();
-	IPhysicsEntity (sint32 index);
+
+	/**
+	\fn	IPhysicsEntity (sint32 Index)
+	
+	\brief	Existing entity constructor.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param	Index	Zero-based index of the entity to use. 
+	**/
+	IPhysicsEntity (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
@@ -323,45 +645,130 @@ public:
 		PhysicsDisabled = File.Read<bool> ();
 	};
 
-	class CTrace	PushEntity (vec3f &push);
+	/**
+	\fn	CTrace PushEntity (vec3f &Push)
+	
+	\brief	Causes this entity to move and push/impact any obstacles.
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Push	The push vector. 
+	
+	\return	The last trace to be processed by the pushing function. 
+	**/
+	CTrace			PushEntity (vec3f &Push);
+
+	/**
+	\fn	void AddGravity ()
+	
+	\brief	Adds gravity to this entity's velocity.
+	**/
 	void			AddGravity ();
-	void			Impact (CTrace *trace);
-	virtual void	PushInDirection (vec3f vel, uint32 flags);
+
+	/**
+	\fn	void Impact (CTrace *Trace)
+	
+	\brief	Causes this entity to impact with the entity hit by Trace. Calls the Touch functions, if
+			applicable. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Trace	If non-null, the trace. 
+	**/
+	void			Impact (CTrace *Trace);
+
+	/**
+	\fn	virtual void PushInDirection (vec3f Vel, ESpawnflags Flags)
+	
+	\brief	Pushes this entity in speed vector 'Vel'. The spawnflags of the pusher entity can be
+			passed via Flags to modify velocity or otherwise. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param	Vel		The vel. 
+	\param	Flags	The flags. 
+	**/
+	virtual void	PushInDirection (vec3f Vel, ESpawnflags Flags);
 };
 
-// "Bouncy" projectile
+/**
+\class	IBounceProjectile
+
+\brief	Bounce projectile subclass. This provides the base for bounce physics. 
+
+\author	Paril
+\date	14/06/2010
+**/
 class IBounceProjectile : public virtual IPhysicsEntity
 {
 public:
-	float			backOff;
-	bool			AffectedByGravity;
-	bool			StopOnEqualPlane;
-	bool			AimInVelocityDirection;
+	float			BackOff;				// The overbounce value; this is the velocity reflection amount. 2 is maintain speed.
+	bool			AffectedByGravity;		// true if affected by gravity
+	bool			StopOnEqualPlane;		// true if the projectile doesn't stop if on ground
+	bool			AimInVelocityDirection;	// true to aim in velocity direction
 
+	/**
+	\fn	IBounceProjectile ()
+	
+	\brief	New entity constructor. 
+	
+	\author	Paril
+	\date	14/06/2010
+	**/
 	IBounceProjectile ();
-	IBounceProjectile (sint32 index);
+
+	/**
+	\fn	IBounceProjectile (sint32 Index)
+	
+	\brief	Existing entity constructor. 
+	
+	\author	Paril
+	\date	14/06/2010
+	
+	\param	Index	Zero-based index of the entity to use. 
+	**/
+	IBounceProjectile (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
-		File.Write<float> (backOff);
+		File.Write<float> (BackOff);
 		IPhysicsEntity::SaveFields (File);
 	}
 
 	virtual void LoadFields (CFile &File)
 	{
-		backOff = File.Read<float> ();
+		BackOff = File.Read<float> ();
 		IPhysicsEntity::LoadFields (File);
 	}
 
+	/**
+	\fn	bool Run ()
+	
+	\brief	Runs this object's physics.
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
 	bool			Run ();
 };
 
-// Same as bouncy, except doesn't bounce
+/**
+\class	ITossProjectile
+
+\brief	Toss projectile subclass. Same as bouncy, except an overbounce of 1.0 (stops).
+
+\todo	Remove this class. It is not required.
+
+\author	Paril
+\date	14/06/2010
+**/
 class ITossProjectile : public virtual IBounceProjectile
 {
 public:
 	ITossProjectile();
-	ITossProjectile (sint32 index);
+	ITossProjectile (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
@@ -374,7 +781,16 @@ public:
 	}
 };
 
-// Doesn't add gravity
+/**
+\class	IFlyMissileProjectile
+
+\brief	Fly missile projectile subclass. Same as bouncy, except an overbounce of 1.0 (stop) and
+		doesn't add gravity. 
+\todo	Remove this class. It is not required. 
+
+\author	Paril
+\date	14/06/2010
+**/
 class IFlyMissileProjectile : public virtual IBounceProjectile
 {
 public:
@@ -392,14 +808,38 @@ public:
 	}
 };
 
-// Gravity, special edge handling
+/**
+\class	IStepPhysics
+
+\brief	Step physics subclass. Used for stepping entities such as monsters. 
+
+\author	Paril
+\date	14/06/2010
+**/
 class IStepPhysics : public virtual IPhysicsEntity
 {
 public:
+	/**
+	\fn	IStepPhysics ()
+	
+	\brief	New entity constructor. 
+	
+	\author	Paril
+	\date	14/06/2010
+	**/
 	IStepPhysics ();
-	IStepPhysics (sint32 index);
 
-	virtual void	CheckGround ();
+	/**
+	\fn	IStepPhysics (sint32 Index)
+	
+	\brief	Existing entity constructor. 
+	
+	\author	Paril
+	\date	14/06/2010
+	
+	\param	Index	Zero-based index of the entity to use. 
+	**/
+	IStepPhysics (sint32 Index);
 
 	virtual void SaveFields (CFile &File)
 	{
@@ -411,8 +851,42 @@ public:
 		IPhysicsEntity::LoadFields (File);
 	}
 
-	sint32			FlyMove (float time, sint32 mask);
+	/**
+	\fn	virtual void CheckGround ()
+	
+	\brief	Check ground virtual function. Provides the code that checks if an entity is on-ground. 
+	**/
+	virtual void	CheckGround ();
+
+	/**
+	\fn	sint32 FlyMove (float Time, EBrushContents Mask)
+	
+	\brief	Performs the move. 
+	
+	\author	Paril
+	\date	14/06/2010
+	
+	\param	Time	The time to complete the move. 
+	\param	Mask	The content mask. 
+	
+	\return	The blocked flags. 
+	**/
+	sint32			FlyMove (float Time, EBrushContents Mask);
+
+	/**
+	\fn	void AddRotationalFriction ()
+	
+	\brief	Adds rotational friction
+	**/
 	void			AddRotationalFriction ();
+
+	/**
+	\fn	bool Run ()
+	
+	\brief	Runs this object's physics.
+	
+	\return	true if it succeeds, false if it fails. 
+	**/
 	bool			Run ();
 };
 

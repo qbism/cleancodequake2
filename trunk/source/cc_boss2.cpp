@@ -475,7 +475,7 @@ void CBoss2::Dead ()
 void CBoss2::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH], 255, ATTN_NONE);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = false;
 	ExplodeCount = 0;
 	CurrentMove = &Boss2MoveDeath;

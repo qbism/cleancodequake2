@@ -385,7 +385,7 @@ CAnim StalkerMovePain (FRAME_pain01, FRAME_pain04, StalkerFramesPain, &CMonster:
 
 void CStalker::Pain (IBaseEntity *Other, sint32 Damage)
 {
-	if (Entity->DeadFlag)
+	if (Entity->IsDead)
 		return;
 
 	if (Entity->Health < (Entity->MaxHealth / 2)) 
@@ -737,7 +737,7 @@ bool CStalker::DoPounce (vec3f dest)
 //===================
 void CStalker::JumpStraightUp ()
 {
-	if (Entity->DeadFlag)
+	if (Entity->IsDead)
 		return;
 
 	if (OnCeiling())
@@ -897,16 +897,16 @@ void CStalker::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage
 		for (int n = 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		Entity->ThrowHead (GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag)
+	if (Entity->IsDead)
 		return;
 
 // regular death
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	CurrentMove = &StalkerMoveDeath;
 }
 

@@ -32,20 +32,20 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_brushmodels.h"
+#include "cc_brush_models.h"
 #include "cc_trigger_entities.h"
 
 class CTriggerUse : public CTriggerMultiple
 {
 public:
 	CTriggerUse () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple ()
 	  {
 	  };
 
 	CTriggerUse (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
 	  };
@@ -57,20 +57,20 @@ public:
 
 	const char *SAVE_GetName () { return "CTriggerUse"; }
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *Plane, SBSPSurface *Surface)
 	{
-		Use (other, other);
+		Use (Other, Other);
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		if (!(activator->EntityFlags & ENT_PLAYER))
+		if (!(Activator->EntityFlags & ENT_PLAYER))
 			return;
 
-		if (!(entity_cast<CPlayerEntity>(activator)->Client.LatchedButtons & BUTTON_USE))
+		if (!(entity_cast<CPlayerEntity>(Activator)->Client.LatchedButtons & BUTTON_USE))
 			return;
 
-		Activator = activator;
+		User = Activator;
 		Trigger ();
 	};
 
@@ -88,7 +88,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("trigger_use", CTriggerUse);
 
-#include "cc_infoentities.h"
+#include "cc_info_entities.h"
 
 class CTriggerCinematic : public CTriggerMultiple
 {
@@ -96,13 +96,13 @@ public:
 	CPathCorner	*TargetPathCorner;
 
 	CTriggerCinematic () :
-	  CBaseEntity (),
+	  IBaseEntity (),
 	  CTriggerMultiple ()
 	  {
 	  };
 
 	CTriggerCinematic (sint32 Index) :
-	  CBaseEntity (Index),
+	  IBaseEntity (Index),
 	  CTriggerMultiple (Index)
 	  {
 	  };
@@ -114,9 +114,9 @@ public:
 
 	const char *SAVE_GetName () { return "CTriggerUse"; }
 
-	void Touch (CBaseEntity *other, plane_t *plane, cmBspSurface_t *surf)
+	void Touch (IBaseEntity *Other, SBSPPlane *Plane, SBSPSurface *Surface)
 	{
-		Use (other, other);
+		Use (Other, Other);
 	};
 
 	enum ETriggerCinematicThinks
@@ -125,12 +125,12 @@ public:
 		CINEMATIC_USABLE,
 	};
 
-	void Use (CBaseEntity *other, CBaseEntity *activator)
+	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		if (!(activator->EntityFlags & ENT_PLAYER))
+		if (!(Activator->EntityFlags & ENT_PLAYER))
 			return;
 
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(activator);
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
 
 		if (!(Player->Client.LatchedButtons & BUTTON_USE))
 			return;
@@ -143,14 +143,14 @@ public:
 
 		Player->Client.Cinematic.InCinematic = true;
 		Player->Client.Cinematic.CurrentCorner = TargetPathCorner;
-		Player->Client.Cinematic.CinematicCameraDist = Player->Client.PlayerState.GetPMove()->origin[1];
+		Player->Client.Cinematic.CinematicCameraDist = Player->Client.PlayerState.GetPMove()->Origin[1];
 		Player->Client.Cinematic.LastYValue = Player->State.GetOrigin().Y;
 
 		if (Wait)
 		{
 			Usable = false;
 			ThinkType = CINEMATIC_USABLE;
-			NextThink = level.Frame + Wait;
+			NextThink = Level.Frame + Wait;
 		}
 	};
 	
@@ -173,7 +173,7 @@ public:
 	void Spawn ()
 	{
 		ThinkType = CINEMATIC_FINDTARGET;
-		NextThink = level.Frame + 1;
+		NextThink = Level.Frame + 1;
 
 		Touchable = true;
 		Init ();

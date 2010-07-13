@@ -518,16 +518,16 @@ void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 		for (sint32 n= 0; n < 4; n++)
 			CGibEntity::Spawn (Entity, GameMedia.Gib_SmallMeat, Damage, GIB_ORGANIC);
 		Entity->ThrowHead(GameMedia.Gib_Head[1], Damage, GIB_ORGANIC);
-		Entity->DeadFlag = true;
+		Entity->IsDead = true;
 		return;
 	}
 
-	if (Entity->DeadFlag == true)
+	if (Entity->IsDead == true)
 		return;
 
 // regular death
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DIE]);
-	Entity->DeadFlag = true;
+	Entity->IsDead = true;
 	Entity->CanTakeDamage = true;
 
 	CurrentMove = &MedicMoveDeath;
@@ -693,13 +693,14 @@ void CMedic::CableAttack ()
 	case FRAME_attack50:
 		Entity->Enemy->SpawnFlags = 0;
 		Monster = (entity_cast<CMonsterEntity>(*Entity->Enemy));
-		Monster->DeathTarget = Monster->CombatTarget = NULL;
+		Monster->DeathTarget.clear();
+		Monster->CombatTarget.clear();
 #if ROGUE_FEATURES
 		Monster->Monster->Healer = Entity;
 #endif
 		Monster->Monster->AIFlags = 0;
-		Monster->Target = NULL;
-		Monster->TargetName = NULL;
+		Monster->Target.clear();
+		Monster->TargetName.clear();
 
 #if !ROGUE_FEATURES
 		Monster->Monster->Spawn ();
