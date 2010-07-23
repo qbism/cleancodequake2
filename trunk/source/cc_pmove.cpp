@@ -735,6 +735,7 @@ static void SV_PM_CheckJump ()
 		return;
 	}
 
+
 	if (pm->GroundEntity == NULL)
 		return;		// in air, so no effect
 
@@ -742,9 +743,9 @@ static void SV_PM_CheckJump ()
 
 	pm->GroundEntity = NULL;
 
-	pml.velocity.Z += 270;
-	if (pml.velocity.Z < 270)
-		pml.velocity.Z = 270;
+	pml.velocity.Z += 390;
+	if (pml.velocity.Z < 390)
+		pml.velocity.Z = 390;
 }
 
 /*
