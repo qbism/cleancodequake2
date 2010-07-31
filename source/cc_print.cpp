@@ -111,7 +111,7 @@ CC_ENABLE_DEPRECATION
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
 void DebugPrintf (const char *fmt, ...)
 {
-#if _DEBUG
+#ifdef _DEBUG
 	va_list		argptr;
 	static char	text[MAX_COMPRINT];
 

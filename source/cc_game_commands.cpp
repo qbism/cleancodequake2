@@ -625,7 +625,7 @@ void Cmd_Register ()
 	Cmd_AddCommand<CInvPrevWCommand> ("invprevw");
 	Cmd_AddCommand<CInvNextPCommand> ("invnextp");
 	Cmd_AddCommand<CInvPrevPCommand> ("invprevp");
-#if _DEBUG
+#if defined(_DEBUG)
 	AddTestDebugCommands ();
 #endif
 

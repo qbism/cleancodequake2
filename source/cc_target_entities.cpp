@@ -570,9 +570,13 @@ void BeginIntermission (CTargetChangeLevel *targ)
 	}
 
 	Level.Intermission.Time = Level.Frame;
+#ifndef STDCPP_LINUX_HACK
 	Level.Intermission.ChangeMap = targ->Map;
-
 	if (Level.Intermission.ChangeMap.find_first_of('*') != std::string::npos)
+#else
+	Level.Intermission.ChangeMap = Mem_TagStrDup(targ->Map.c_str(), TAG_LEVEL);
+        if (strstr(Level.Intermission.ChangeMap, "*"))
+#endif
 	{
 		if (Game.GameMode & GAME_COOPERATIVE)
 		{

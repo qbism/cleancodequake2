@@ -183,6 +183,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define XATRIX_VIRTUAL
 #endif
 
+// Enable fix for crashes in linux when closing the server
+// Disabled by default. If the server's crashing at exit or map change
+// enable it and recompile.
+#ifndef STDCPP_LINUX_HACK
+#define STDCPP_LINUX_HACK 0
+#endif
+
 #if (CC_GAME_MODE) == GAME_ORIGINAL_QUAKE2
 #undef MONSTER_SPECIFIC_FLAGS
 #define MONSTER_SPECIFIC_FLAGS 0

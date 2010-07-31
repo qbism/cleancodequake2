@@ -78,10 +78,12 @@ IBaseEntity (),
 IThinkableEntity (),
 IPushPhysics (),
 IStopPhysics (),
+IHurtableEntity(),
 BrushType(0)
 {
 	EntityFlags |= ENT_BRUSHMODEL;
 	BrushType |= BRUSH_BASE;
+	CanTakeDamage = false;
 };
 
 IBrushModel::IBrushModel (sint32 Index) :
@@ -89,10 +91,12 @@ IBaseEntity (Index),
 IThinkableEntity (Index),
 IPushPhysics (Index),
 IStopPhysics (Index),
+IHurtableEntity(Index),
 BrushType(0)
 {
 	EntityFlags |= ENT_BRUSHMODEL;
 	BrushType |= BRUSH_BASE;
+	CanTakeDamage = false;
 };
 
 ENTITYFIELDS_BEGIN(IBrushModel)
@@ -150,6 +154,7 @@ void			IBrushModel::SaveFields (CFile &File)
 	SaveEntityFields<IBrushModel> (this, File);
 	IThinkableEntity::SaveFields (File);
 	IPushPhysics::SaveFields (File);
+	IHurtableEntity::SaveFields(File);
 };
 
 void			IBrushModel::LoadFields (CFile &File)
@@ -157,6 +162,7 @@ void			IBrushModel::LoadFields (CFile &File)
 	LoadEntityFields<IBrushModel> (this, File);
 	IThinkableEntity::LoadFields (File);
 	IPushPhysics::LoadFields (File);
+	IHurtableEntity::LoadFields(File);
 };
 
 /**
@@ -929,7 +935,6 @@ IMapEntity(),
 IBrushModel(),
 IBlockableEntity(),
 IUsableEntity(),
-IHurtableEntity(),
 ITouchableEntity()
 #if ROGUE_FEATURES
 ,
@@ -945,7 +950,6 @@ IMapEntity(Index),
 IBrushModel(Index),
 IBlockableEntity(Index),
 IUsableEntity(Index),
-IHurtableEntity(Index),
 ITouchableEntity(Index)
 #if ROGUE_FEATURES
 ,
@@ -2050,7 +2054,6 @@ IBaseEntity(),
 IMapEntity(),
 IBrushModel(),
 IUsableEntity(),
-IHurtableEntity(),
 ITouchableEntity()
 {
 	BrushType |= BRUSH_BUTTON;
@@ -2061,7 +2064,6 @@ IBaseEntity(Index),
 IMapEntity(Index),
 IBrushModel(Index),
 IUsableEntity(Index),
-IHurtableEntity(Index),
 ITouchableEntity(Index)
 {
 	BrushType |= BRUSH_BUTTON;
@@ -3586,7 +3588,6 @@ CFuncExplosive::CFuncExplosive () :
 	IMapEntity (),
 	IBrushModel (),
 	IUsableEntity (),
-	IHurtableEntity (),
 	UseType(FUNCEXPLOSIVE_USE_NONE),
 	Explosivity (75)
 	{
@@ -3598,7 +3599,6 @@ CFuncExplosive::CFuncExplosive (sint32 Index) :
 	IMapEntity (Index),
 	IBrushModel (Index),
 	IUsableEntity (Index),
-	IHurtableEntity (Index),
 	UseType(FUNCEXPLOSIVE_USE_NONE),
 	Explosivity (75)
 	{
@@ -3626,7 +3626,6 @@ void			CFuncExplosive::SaveFields (CFile &File)
 	SaveEntityFields <CFuncExplosive> (this, File);
 	IMapEntity::SaveFields (File);
 	IBrushModel::SaveFields (File);
-	IHurtableEntity::SaveFields (File);
 	IUsableEntity::SaveFields (File);
 }
 
@@ -3635,7 +3634,6 @@ void			CFuncExplosive::LoadFields (CFile &File)
 	LoadEntityFields <CFuncExplosive> (this, File);
 	IMapEntity::LoadFields (File);
 	IBrushModel::LoadFields (File);
-	IHurtableEntity::LoadFields (File);
 	IUsableEntity::LoadFields (File);
 }
 

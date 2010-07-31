@@ -1874,7 +1874,7 @@ void CMonster::FoundTarget ()
 	{
 		Entity->GoalEntity = Entity->MoveTarget = Entity->Enemy;
 		HuntTarget ();
-		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "CombatTarget %s not found\n", Entity->CombatTarget);
+		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "CombatTarget %s not found\n", Entity->CombatTarget.c_str());
 		return;
 	}
 

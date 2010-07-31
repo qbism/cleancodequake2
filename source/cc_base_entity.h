@@ -31,6 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Base entity class
 //
 
+#include <typeinfo>
+
 #if !defined(CC_GUARD_BASEENTITY_H) || !INCLUDE_GUARDS
 #define CC_GUARD_BASEENTITY_H
 
@@ -229,7 +231,7 @@ inline TType *entity_cast (IBaseEntity *Entity)
 		return NULL;
 
 	TType *Casted = dynamic_cast<TType*> (Entity);
-	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
+	CC_ASSERT_EXPR (!(Casted == NULL), FormatString("Attempted cast of an entity uncastable to this type (%s to %s)", typeid(*Entity).name(), typeid(TType).name()).c_str() );
 
 	return Casted;
 }
