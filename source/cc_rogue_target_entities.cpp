@@ -349,7 +349,7 @@ public:
 
 	void Callback (IBaseEntity *Entity)
 	{
-		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Entity);
+		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Entity);		
 
 		if (Hurtable->Health < 1)
 			return;

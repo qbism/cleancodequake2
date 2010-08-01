@@ -239,7 +239,8 @@ void CRogueDefenderSphere::Pain (IBaseEntity *Other, sint32 Damage)
 	if (Other == GetOwner() || !(Other->EntityFlags & ENT_HURTABLE))
 		return;
 
-	SphereEnemy = entity_cast<IHurtableEntity>(Other);
+	if (Other->EntityFlags & ENT_HURTABLE)
+		SphereEnemy = entity_cast<IHurtableEntity>(Other);
 }
 
 void CRogueDefenderSphere::Shoot (IHurtableEntity *At)
@@ -330,7 +331,8 @@ void CRogueVengeanceSphere::Pain (IBaseEntity *Other, sint32 Damage)
 
 	State.GetEffects() |= EF_ROCKET;
 	Touchable = true;
-	SphereEnemy = entity_cast<IHurtableEntity>(Other);
+	if (Other->EntityFlags & ENT_HURTABLE)
+		SphereEnemy = entity_cast<IHurtableEntity>(Other);
 }
 
 void CRogueVengeanceSphere::Think ()
@@ -407,7 +409,8 @@ void CRogueHunterSphere::Pain (IBaseEntity *Other, sint32 Damage)
 
 	State.GetEffects() |= (EF_BLASTER | EF_TRACKER);
 	Touchable = true;
-	SphereEnemy = entity_cast<IHurtableEntity>(Other);
+	if (Other->EntityFlags & ENT_HURTABLE)
+		SphereEnemy = entity_cast<IHurtableEntity>(Other);
 
 	if ((SphereFlags & SPHERE_DOPPLEGANGER)  || !OwnedPlayer)
 		return;

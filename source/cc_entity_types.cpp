@@ -2030,12 +2030,17 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 			if (Ent->EntityFlags & ENT_USABLE)
 			{
 				IUsableEntity *Used = entity_cast<IUsableEntity>(Ent);
-				
+				bool is_self = false;
 				if (Used == this)
+				{
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
+					is_self = true; //Avoid a infinite loop
+				}
 
-				if (Used->Usable)
+				if (Used->Usable && !is_self)
+				{
 					Used->Use (this, Activator);
+				}
 			}
 
 			if (!GetInUse())
