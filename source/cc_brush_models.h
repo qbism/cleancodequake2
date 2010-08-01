@@ -122,7 +122,7 @@ enum
 \author	Paril
 \date	30/05/2010
 **/
-class IBrushModel : public virtual IBaseEntity, public IThinkableEntity, public IStopPhysics, public IHurtableEntity
+class IBrushModel : public virtual IBaseEntity, public IThinkableEntity, public IStopPhysics
 {
 public:
 	EBrushType			BrushType;			// Type of brush model
@@ -480,7 +480,7 @@ public:
 \author	Paril
 \date	30/05/2010
 **/
-class CDoor : public IMapEntity, public IBrushModel, public IBlockableEntity, public ITouchableEntity, public IUsableEntity
+class CDoor : public IMapEntity, public IBrushModel, public IHurtableEntity, public IBlockableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
 #if ROGUE_FEATURES
@@ -556,7 +556,7 @@ public:
 		IMapEntity::LoadFields (File);
 		IBrushModel::LoadFields (File);
 		IUsableEntity::LoadFields (File);
-		IBrushModel::IHurtableEntity::LoadFields (File);
+		IHurtableEntity::LoadFields (File);
 		ITouchableEntity::LoadFields (File);
 	}
 
@@ -720,7 +720,7 @@ public:
 \author	Paril
 \date	30/05/2010
 **/
-class CButton : public IMapEntity, public IBrushModel, public ITouchableEntity, public IUsableEntity
+class CButton : public IMapEntity, public IBrushModel, public IHurtableEntity, public ITouchableEntity, public IUsableEntity
 {
 public:
 	enum
@@ -1174,7 +1174,7 @@ public:
 \author	Paril
 \date	30/05/2010
 **/
-class CFuncExplosive : public IMapEntity, public IBrushModel, public IUsableEntity
+class CFuncExplosive : public IMapEntity, public IBrushModel, public IUsableEntity, public IHurtableEntity
 {
 public:
 	/**
