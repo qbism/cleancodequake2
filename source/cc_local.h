@@ -83,8 +83,6 @@ typedef sint32	FrameNumber;
 // Main class files
 #include "cc_game_api.h"
 #include "cc_game.h"
-#include "cc_items.h"
-#include "cc_inventory.h"
 #include "cc_status_bar.h"
 #include "cc_map_print.h"
 #if CLEANCTF_ENABLED

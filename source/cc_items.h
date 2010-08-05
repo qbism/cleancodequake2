@@ -164,6 +164,8 @@ public:
 #endif
 
 #include "cc_itemlist.h"
+#include "cc_inventory.h"
+#include "cc_item_entity.h"
 
 #else
 FILE_WARNING

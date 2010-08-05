@@ -36,6 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_menu.h"
 #include "cc_ban.h"
 #include "cc_body_queue.h"
+#include "cc_items.h"
 #include "cc_weapon_main.h"
 
 #if 0

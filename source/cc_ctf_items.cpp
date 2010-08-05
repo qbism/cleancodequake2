@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 
 #include "cc_local.h"
+#include "cc_items.h"
 
 #if CLEANCTF_ENABLED
 

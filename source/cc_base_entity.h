@@ -1033,6 +1033,10 @@ public:
 	**/
 	CEntityField (const char *Name, size_t Offset, EFieldType FieldType, TValidateFieldFunction ValidateField = NULL);
 
+	void CR_FT_ITEM_CASE(const char* Value);
+	void SV_FT_ITEM_CASE(CFile& File);
+	void LD_FT_ITEM_CASE(CFile& File);
+
 	/**
 	\fn	template <class TClass> void Create (TClass *Entity, const char *Value) const
 	
@@ -1140,21 +1144,7 @@ public:
 			}
 			break;
 		case FT_ITEM:
-			{
-				CBaseItem *Item = FindItemByClassname (Value);
-
-				if (!Item)
-					Item = FindItem (Value);
-
-				if (!Item)
-				{
-					MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Bad item: \"%s\"\n", Value);
-					break;
-				}
-
-				if (FIELD_IS_VALID(NULL))
-					OFS_TO_TYPE(CBaseItem *) = Item;
-			}
+			CR_FT_ITEM_CASE(Value);
 			break;
 		case FT_STRING:
 			if (FIELD_IS_VALID(NULL))
@@ -1239,13 +1229,7 @@ public:
 			File.Write<FrameNumber> (OFS_TO_TYPE(FrameNumber));
 			break;
 		case FT_ITEM:
-			{
-				sint32 Index = -1;
-				if (OFS_TO_TYPE(CBaseItem*))
-					Index = OFS_TO_TYPE(CBaseItem *)->GetIndex();
-				
-				File.Write<sint32> (Index);
-			}
+			SV_FT_ITEM_CASE(File);			
 			break;
 		case FT_ENTITY:
 			{
@@ -1348,8 +1332,7 @@ public:
 			break;
 		case FT_ITEM:
 			{
-				sint32 Index = File.Read<sint32> ();
-				OFS_TO_TYPE(CBaseItem *) = (Index != -1) ? GetItemByIndex(Index) : NULL;
+				LD_FT_ITEM_CASE(File);
 			}
 			break;
 		case FT_ENTITY:
