@@ -570,11 +570,11 @@ void AddRogueItemsToList ()
 	NItems::Double = QNew (TAG_GENERIC) CDoubleDamage ("item_double", "models/items/ddamage/tris.md2", EF_ROTATE, "items/pkup.wav", "p_double", "Double Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 	NItems::IRGoggles = QNew (TAG_GENERIC) CIRGoggles ("item_ir_goggles", "models/items/goggles/tris.md2", EF_ROTATE, "items/pkup.wav", "p_ir", "IR Goggles", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 
-	NItems::Prox = QNew (TAG_GENERIC) CAmmo("ammo_prox", "models/ammo/am_prox/tris.md2", "a_prox", "Prox", 5, CAmmo::AMMOTAG_PROX);
-	NItems::Flechettes = QNew (TAG_GENERIC) CAmmo("ammo_flechettes", "models/ammo/am_flechette/tris.md2", "a_flechettes", "Flechettes", 50, CAmmo::AMMOTAG_FLECHETTES);
-	NItems::Rounds = QNew (TAG_GENERIC) CAmmo("ammo_disruptor", "models/ammo/am_disr/tris.md2", "a_disruptor", "Rounds", 50, CAmmo::AMMOTAG_ROUNDS); 
+	NItems::Prox = QNew (TAG_GENERIC) CAmmo("ammo_prox", "models/ammo/am_prox/tris.md2", "a_prox", "Prox", 5, AMMOTAG_PROX);
+	NItems::Flechettes = QNew (TAG_GENERIC) CAmmo("ammo_flechettes", "models/ammo/am_flechette/tris.md2", "a_flechettes", "Flechettes", 50, AMMOTAG_FLECHETTES);
+	NItems::Rounds = QNew (TAG_GENERIC) CAmmo("ammo_disruptor", "models/ammo/am_disr/tris.md2", "a_disruptor", "Rounds", 50, AMMOTAG_ROUNDS); 
 	NItems::Tesla = QNew (TAG_GENERIC) CAmmoWeapon("ammo_tesla", "models/ammo/am_tesl/tris.md2", 0, "misc/am_pkup.wav", "a_tesla", "Tesla",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTeslaWeapon::Weapon, 1, "#a_grenades.md2", 5, CAmmo::AMMOTAG_TESLA);
+		ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CTeslaWeapon::Weapon, 1, "#a_grenades.md2", 5, AMMOTAG_TESLA);
 
 	QNew (TAG_GENERIC) CAMBomb("ammo_nuke", "models/weapons/g_nuke/tris.md2", "p_nuke", "A-M Bomb");
 

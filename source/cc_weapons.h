@@ -61,41 +61,6 @@ public:
 class CAmmo : public virtual CBaseItem
 {
 public:
-	/**
-	\typedef	uint8 EAmmoTag
-	
-	\brief	Defines an alias representing ammo tags.
-	**/
-	typedef uint8 EAmmoTag;
-
-	/**
-	\enum	
-	
-	\brief	Values that represent ammo tags. 
-	**/
-	enum
-	{
-		AMMOTAG_SHELLS,
-		AMMOTAG_BULLETS,
-		AMMOTAG_GRENADES,
-		AMMOTAG_ROCKETS,
-		AMMOTAG_CELLS,
-		AMMOTAG_SLUGS,
-
-#if XATRIX_FEATURES
-		AMMOTAG_MAGSLUGS,
-		AMMOTAG_TRAP,
-#endif
-#if ROGUE_FEATURES
-		AMMOTAG_PROX,
-		AMMOTAG_FLECHETTES,
-		AMMOTAG_TESLA,
-		AMMOTAG_ROUNDS,
-#endif
-
-		AMMOTAG_MAX
-	};
-
 	CAmmo ();
 	CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
@@ -121,20 +86,20 @@ public:
 	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount,
-			   const char *VWepModel, sint32 Quantity, CAmmo::EAmmoTag Tag);
+			   const char *VWepModel, sint32 Quantity, EAmmoTag Tag);
 
 	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   const char *Precache, CWeapon *Weapon, sint32 Amount, const char *VWepModel,
-			   sint32 Quantity, CAmmo::EAmmoTag Tag);
+			   sint32 Quantity, EAmmoTag Tag);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);
 	void	Drop (CPlayerEntity *Player);
 };
 
-extern sint32 maxBackpackAmmoValues[CAmmo::AMMOTAG_MAX];
-extern sint32 maxBandolierAmmoValues[CAmmo::AMMOTAG_MAX];
+extern sint32 maxBackpackAmmoValues[AMMOTAG_MAX];
+extern sint32 maxBandolierAmmoValues[AMMOTAG_MAX];
 
 void AddAmmoToList();
 void DoWeaponVweps();
@@ -171,15 +136,6 @@ enum
 
 	WEAP_MAX
 };
-
-// some weapon value constants
-const int DEFAULT_BULLET_HSPREAD			= 300;
-const int DEFAULT_BULLET_VSPREAD			= 500;
-const int DEFAULT_SHOTGUN_HSPREAD			= 1000;
-const int DEFAULT_SHOTGUN_VSPREAD			= 500;
-const int DEFAULT_DEATHMATCH_SHOTGUN_COUNT	= 12;
-const int DEFAULT_SHOTGUN_COUNT				= 12;
-const int DEFAULT_SSHOTGUN_COUNT			= 20;
 
 #else
 FILE_WARNING

@@ -167,7 +167,7 @@ public:
 	CPlayerEntity		*OwnedPlayer;
 	IHurtableEntity		*SphereEnemy;
 	vec3f				SavedGoal;
-	CBaseItem			*Item;
+	class CBaseItem		*Item;
 
 	CRogueBaseSphere () :
 	  IHurtableEntity(),

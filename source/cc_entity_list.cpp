@@ -497,6 +497,7 @@ char *gEntString;
 
 void DeallocateEntities ();
 void SetClientFields ();
+void SetupTechSpawn ();
 
 void FixDemoSetup ()
 {

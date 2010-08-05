@@ -34,6 +34,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_PLAYERENTITY_H) || !INCLUDE_GUARDS
 #define CC_GUARD_PLAYERENTITY_H
 
+class CWeapon;
+class CInventory;
+class CAmmo;
+class CTech;
+class CFlag;
+class CArmor;
+class CBaseItem;
+
+#include "cc_inventory.h"
+
 class CPlayerState
 {
 	friend class CClient;
@@ -143,65 +153,6 @@ public:
 	CPersistentData ();
 	~CPersistentData();
 
-	void Save (CFile &File)
-	{
-		UserInfo.Save (File);
-		File.Write (Name);
-
-		File.Write<IPAddress> (IP);
-		File.Write<EHandedness> (Hand);
-
-		File.Write<sint32> (Health);
-		File.Write<sint32> (MaxHealth);
-		File.Write<sint32> (SavedFlags);
-
-		Inventory.Save (File);
-		File.WriteArray<sint32> (MaxAmmoValues, CAmmo::AMMOTAG_MAX);
-
-		SaveWeapon (File, Weapon);
-		SaveWeapon (File, LastWeapon);
-
-		File.Write<sint32> ((Armor) ? Armor->GetIndex() : -1);
-
-		File.Write<sint32> (PowerCubeCount);
-		File.Write<sint32> (Score);
-		File.Write<uint8> (GameHelpChanged);
-		File.Write<uint8> (HelpChanged);
-		File.Write<bool> (Spectator);
-		File.Write<colorf> (ViewBlend);
-	}
-
-	void Load (CFile &File)
-	{
-		UserInfo.Load (File);
-		Name = File.ReadCCString ();
-
-		IP = File.Read<IPAddress> ();
-		Hand = File.Read<EHandedness> ();
-
-		Health = File.Read<sint32> ();
-		MaxHealth = File.Read<sint32> ();
-		SavedFlags = File.Read<sint32> ();
-
-		Inventory.Load (File);
-		File.ReadArray (MaxAmmoValues, CAmmo::AMMOTAG_MAX);
-
-		LoadWeapon (File, &Weapon);
-		LoadWeapon (File, &LastWeapon);
-
-		sint32 Index = File.Read<sint32> ();
-
-		if (Index != -1)
-			Armor = dynamic_cast<CArmor*>(GetItemByIndex(Index));
-
-		PowerCubeCount = File.Read<sint32> ();
-		Score = File.Read<sint32> ();
-		GameHelpChanged = File.Read<uint8> ();
-		HelpChanged = File.Read<uint8> ();
-		Spectator = File.Read<bool> ();
-		ViewBlend = File.Read<colorf> ();
-	}
-
 	CUserInfo		UserInfo;
 	std::string		Name;
 	IPAddress		IP;
@@ -218,7 +169,7 @@ public:
 	CInventory		Inventory;
 
 	// ammo capacities
-	sint32			MaxAmmoValues[CAmmo::AMMOTAG_MAX];
+	sint32			MaxAmmoValues[AMMOTAG_MAX];
 
 	CWeapon			*Weapon, *LastWeapon;
 	CArmor			*Armor; // Current armor.
@@ -237,33 +188,9 @@ public:
 
 	colorf			ViewBlend; // View blending
 
-	void Clear ()
-	{
-		UserInfo.Clear();
-		Name.clear();
-		Mem_Zero (&IP, sizeof(IP));
-		Hand = 0;
-		State = 0;
-		Health = 0;
-		MaxHealth = 0;
-		SavedFlags = 0;
-		Inventory.Clear();
-		Weapon = NULL;
-		LastWeapon  = NULL;
-		Armor = NULL;
-#if CLEANCTF_ENABLED
-		Flag = NULL;
-#endif
-		Tech = NULL;
-		PowerCubeCount = 0;
-		Score = 0;
-		GameHelpChanged = 0;
-		HelpChanged = 0;
-		Spectator = false;
-		ViewBlend.Set (0, 0, 0, 0);
-
-		Mem_Zero (&MaxAmmoValues, sizeof(MaxAmmoValues));
-	}
+	void Save (CFile &File);
+	void Load (CFile &File);
+	void Clear ();
 };
 
 // All players have a copy of this class.

@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "cc_local.h"
-#include "cc_items.h"
+#include "cc_weapon_main.h"
 
 namespace NItems
 {
@@ -44,12 +44,12 @@ namespace NItems
 	CArmor *ArmorShard;
 
 	// Health
-	CHealth *StimPack;
-	CHealth *SmallHealth;
-	CHealth *LargeHealth;
+	CBaseItem *StimPack;
+	CBaseItem *SmallHealth;
+	CBaseItem *LargeHealth;
 
 	// Keys
-	CPowerCube *PowerCube;
+	CBaseItem *PowerCube;
 #if CLEANCTF_ENABLED
 	CFlag *RedFlag;
 	CFlag *BlueFlag;
@@ -89,29 +89,29 @@ namespace NItems
 	CAmmo *Prox;
 	CAmmo *Flechettes;
 	CAmmo *Rounds;
-	CAmmoWeapon *Tesla;
+	CBaseItem *Tesla;
 #endif
 
 	// Powerups
-	CMegaHealth *MegaHealth;
-	CBackPack *BackPack;
-	CQuadDamage *Quad;
+	CBaseItem *MegaHealth;
+	CBaseItem *BackPack;
+	CBaseItem *Quad;
 #if XATRIX_FEATURES
-	CBasePowerUp *QuadFire;
+	CBaseItem *QuadFire;
 #endif
 #if ROGUE_FEATURES
-	CDoubleDamage *Double;
-	CIRGoggles *IRGoggles;
+	CBaseItem *Double;
+	CBaseItem *IRGoggles;
 #endif
-	CInvulnerability *Invul;
-	CSilencer *Silencer;
-	CRebreather *Rebreather;
-	CEnvironmentSuit *EnvironmentSuit;
-	CBandolier *Bandolier;
-	CAdrenaline *Adrenaline;
-	CAncientHead *AncientHead;
-	CPowerShield *PowerShield;
-	CPowerShield *PowerScreen;
+	CBaseItem *Invul;
+	CBaseItem *Silencer;
+	CBaseItem *Rebreather;
+	CBaseItem *EnvironmentSuit;
+	CBaseItem *Bandolier;
+	CBaseItem *Adrenaline;
+	CBaseItem *AncientHead;
+	CBaseItem *PowerShield;
+	CBaseItem *PowerScreen;
 };
 
 CItemList *ItemList;
@@ -289,8 +289,6 @@ void SetItemNames ()
 void InitItemMedia ()
 {
 }
-
-#include "cc_weapon_main.h"
 
 // This is a required function that will
 // go through each item and invalidate any variables that we used.

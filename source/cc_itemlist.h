@@ -89,34 +89,34 @@ namespace NItems
 	extern CArmor *ArmorShard;
 
 	// Health
-	extern CHealth *StimPack;
-	extern CHealth *SmallHealth;
-	extern CHealth *LargeHealth;
+	extern CBaseItem *StimPack;
+	extern CBaseItem *SmallHealth;
+	extern CBaseItem *LargeHealth;
 
 	// Keys
-	extern CPowerCube *PowerCube;
+	extern CBaseItem *PowerCube;
 #if CLEANCTF_ENABLED
 	extern CFlag *RedFlag;
 	extern CFlag *BlueFlag;
 #endif
 
 	// Weapons
-	extern CWeaponItem *Blaster;
-	extern CWeaponItem *Shotgun;
-	extern CWeaponItem *SuperShotgun;
-	extern CWeaponItem *Machinegun;
-	extern CWeaponItem *Chaingun;
-	extern CWeaponItem *GrenadeLauncher;
-	extern CWeaponItem *RocketLauncher;
-	extern CWeaponItem *HyperBlaster;
-	extern CWeaponItem *Railgun;
-	extern CWeaponItem *BFG;
+	extern class CWeaponItem *Blaster;
+	extern class CWeaponItem *Shotgun;
+	extern class CWeaponItem *SuperShotgun;
+	extern class CWeaponItem *Machinegun;
+	extern class CWeaponItem *Chaingun;
+	extern class CWeaponItem *GrenadeLauncher;
+	extern class CWeaponItem *RocketLauncher;
+	extern class CWeaponItem *HyperBlaster;
+	extern class CWeaponItem *Railgun;
+	extern class CWeaponItem *BFG;
 #if CLEANCTF_ENABLED
-	extern CWeaponItem *Grapple;
+	extern class CWeaponItem *Grapple;
 #endif
 #if XATRIX_FEATURES
-	extern CWeaponItem *IonRipper;	
-	extern CWeaponItem *Phalanx;	
+	extern class CWeaponItem *IonRipper;	
+	extern class CWeaponItem *Phalanx;	
 #endif
 
 	// Ammo
@@ -134,29 +134,29 @@ namespace NItems
 	extern CAmmo *Prox;
 	extern CAmmo *Flechettes;
 	extern CAmmo *Rounds;
-	extern CAmmoWeapon *Tesla;
+	extern CBaseItem *Tesla;
 #endif
 
 	// Powerups
-	extern CMegaHealth *MegaHealth;
-	extern CBackPack *BackPack;
-	extern CQuadDamage *Quad;
+	extern CBaseItem *MegaHealth;
+	extern CBaseItem *BackPack;
+	extern CBaseItem *Quad;
 #if XATRIX_FEATURES
-	extern CBasePowerUp *QuadFire;
+	extern CBaseItem *QuadFire;
 #endif
 #if ROGUE_FEATURES
-	extern CDoubleDamage *Double;
-	extern CIRGoggles *IRGoggles;
+	extern CBaseItem *Double;
+	extern CBaseItem *IRGoggles;
 #endif
-	extern CInvulnerability *Invul;
-	extern CSilencer *Silencer;
-	extern CRebreather *Rebreather;
-	extern CEnvironmentSuit *EnvironmentSuit;
-	extern CBandolier *Bandolier;
-	extern CAdrenaline *Adrenaline;
-	extern CAncientHead *AncientHead;
-	extern CPowerShield *PowerShield;
-	extern CPowerShield *PowerScreen;
+	extern CBaseItem *Invul;
+	extern CBaseItem *Silencer;
+	extern CBaseItem *Rebreather;
+	extern CBaseItem *EnvironmentSuit;
+	extern CBaseItem *Bandolier;
+	extern CBaseItem *Adrenaline;
+	extern CBaseItem *AncientHead;
+	extern CBaseItem *PowerShield;
+	extern CBaseItem *PowerScreen;
 };
 
 #else

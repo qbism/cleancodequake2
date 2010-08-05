@@ -36,7 +36,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_menu.h"
 #include "cc_ban.h"
 #include "cc_body_queue.h"
-#include "cc_items.h"
 #include "cc_weapon_main.h"
 
 #if 0
@@ -52,6 +51,93 @@ CPersistentData::CPersistentData ()
 
 CPersistentData::~CPersistentData()
 {
+}
+
+void CPersistentData::Save (CFile &File)
+{
+	UserInfo.Save (File);
+	File.Write (Name);
+
+	File.Write<IPAddress> (IP);
+	File.Write<EHandedness> (Hand);
+
+	File.Write<sint32> (Health);
+	File.Write<sint32> (MaxHealth);
+	File.Write<sint32> (SavedFlags);
+
+	Inventory.Save (File);
+	File.WriteArray<sint32> (MaxAmmoValues, AMMOTAG_MAX);
+
+	SaveWeapon (File, Weapon);
+	SaveWeapon (File, LastWeapon);
+
+	File.Write<sint32> ((Armor) ? Armor->GetIndex() : -1);
+
+	File.Write<sint32> (PowerCubeCount);
+	File.Write<sint32> (Score);
+	File.Write<uint8> (GameHelpChanged);
+	File.Write<uint8> (HelpChanged);
+	File.Write<bool> (Spectator);
+	File.Write<colorf> (ViewBlend);
+}
+
+void CPersistentData::Load (CFile &File)
+{
+	UserInfo.Load (File);
+	Name = File.ReadCCString ();
+
+	IP = File.Read<IPAddress> ();
+	Hand = File.Read<EHandedness> ();
+
+	Health = File.Read<sint32> ();
+	MaxHealth = File.Read<sint32> ();
+	SavedFlags = File.Read<sint32> ();
+
+	Inventory.Load (File);
+	File.ReadArray (MaxAmmoValues, AMMOTAG_MAX);
+
+	LoadWeapon (File, &Weapon);
+	LoadWeapon (File, &LastWeapon);
+
+	sint32 Index = File.Read<sint32> ();
+
+	if (Index != -1)
+		Armor = dynamic_cast<CArmor*>(GetItemByIndex(Index));
+
+	PowerCubeCount = File.Read<sint32> ();
+	Score = File.Read<sint32> ();
+	GameHelpChanged = File.Read<uint8> ();
+	HelpChanged = File.Read<uint8> ();
+	Spectator = File.Read<bool> ();
+	ViewBlend = File.Read<colorf> ();
+}
+
+void CPersistentData::Clear ()
+{
+	UserInfo.Clear();
+	Name.clear();
+	Mem_Zero (&IP, sizeof(IP));
+	Hand = 0;
+	State = 0;
+	Health = 0;
+	MaxHealth = 0;
+	SavedFlags = 0;
+	Inventory.Clear();
+	Weapon = NULL;
+	LastWeapon  = NULL;
+	Armor = NULL;
+#if CLEANCTF_ENABLED
+	Flag = NULL;
+#endif
+	Tech = NULL;
+	PowerCubeCount = 0;
+	Score = 0;
+	GameHelpChanged = 0;
+	HelpChanged = 0;
+	Spectator = false;
+	ViewBlend.Set (0, 0, 0, 0);
+
+	Mem_Zero (&MaxAmmoValues, sizeof(MaxAmmoValues));
 }
 
 CPlayerState::CPlayerState (SPlayerState *playerState) :
@@ -726,21 +812,21 @@ void CPlayerEntity::InitPersistent ()
 
 void CPlayerEntity::InitItemMaxValues ()
 {
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_SHELLS] = 100;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_BULLETS] = 200;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_GRENADES] = 50;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_ROCKETS] = 50;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_CELLS] = 200;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_SLUGS] = 50;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_SHELLS] = 100;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_BULLETS] = 200;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_GRENADES] = 50;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_ROCKETS] = 50;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_CELLS] = 200;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_SLUGS] = 50;
 #if XATRIX_FEATURES
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_MAGSLUGS] = 50;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_TRAP] = 5;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_MAGSLUGS] = 50;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_TRAP] = 5;
 #endif
 #if ROGUE_FEATURES
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_PROX] = 50;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_FLECHETTES] = 200;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_TESLA] = 50;
-	Client.Persistent.MaxAmmoValues[CAmmo::AMMOTAG_ROUNDS] = 100;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_PROX] = 50;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_FLECHETTES] = 200;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_TESLA] = 50;
+	Client.Persistent.MaxAmmoValues[AMMOTAG_ROUNDS] = 100;
 #endif
 }
 

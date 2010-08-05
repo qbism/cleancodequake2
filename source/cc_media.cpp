@@ -35,6 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CGameMedia GameMedia;
 
+void InitItemMedia ();
+
 void InitGameMedia ()
 {
 	Mem_Zero (&GameMedia, sizeof(GameMedia));

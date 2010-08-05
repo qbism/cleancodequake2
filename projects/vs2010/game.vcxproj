@@ -526,6 +526,7 @@ echo Done!
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
     <ClInclude Include="..\..\shared\Vector.h" />
     <ClInclude Include="..\..\source\cc_entity_ptr.h" />
+    <ClInclude Include="..\..\source\cc_enum.h" />
     <ClInclude Include="..\..\source\cc_game.h" />
     <ClInclude Include="..\..\source\cc_irc.h" />
     <ClInclude Include="..\..\source\cc_local.h" />

@@ -139,6 +139,9 @@
     <Filter Include="Version">
       <UniqueIdentifier>{2a487172-5d6c-416d-b536-84bd3470081b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Enum">
+      <UniqueIdentifier>{f460d557-daa6-4a1a-b175-7c4cfd057e3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\cc_arg.cpp">
@@ -1076,6 +1079,9 @@
     <ClInclude Include="..\..\source\cc_options.h" />
     <ClInclude Include="..\..\source\cc_entity_ptr.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\cc_enum.h">
+      <Filter>Enum</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -37,39 +37,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "cc_body_queue.h"
 #include "cc_server_commands.h"
 #include "cc_version.h"
+#include "cc_itemlist.h"
 #include <ctime>
-
-void CEntityField::CR_FT_ITEM_CASE(const char* Value)
-{
-
-	CBaseItem *Item = FindItemByClassname (Value);
-
-	if (!Item)
-		Item = FindItem (Value);
-	if (!Item)
-	{
-		MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Bad item: \"%s\"\n", Value);
-		return;
-	}
-
-	if (FIELD_IS_VALID(NULL))
-		OFS_TO_TYPE(CBaseItem *) = Item;
-}
-
-void CEntityField::SV_FT_ITEM_CASE(CFile& File)
-{
-	sint32 Index = -1;
-	if (OFS_TO_TYPE(CBaseItem*))
-		Index = OFS_TO_TYPE(CBaseItem *)->GetIndex();
-				
-	File.Write<sint32> (Index);
-}
-
-void CEntityField::LD_FT_ITEM_CASE(CFile& File)
-{
-	sint32 Index = File.Read<sint32> ();
-	OFS_TO_TYPE(CBaseItem *) = (Index != -1) ? GetItemByIndex(Index) : NULL;
-}
 
 void CLevelLocals::CEntityList::Save (CFile &File)
 {

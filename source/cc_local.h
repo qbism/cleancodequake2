@@ -61,6 +61,7 @@ typedef sint32	FrameNumber;
 #define TO_STRING(x) TO_STRING2(x)
 
 // Stand-alone classes
+#include "cc_enum.h"
 #include "cc_hash.h"
 #include "cc_print.h"
 #include "cc_file_system.h"

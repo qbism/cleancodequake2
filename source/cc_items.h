@@ -34,36 +34,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ITEMS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ITEMS_H
 
-/**
-\typedef	uint32 EItemFlags
-
-\brief	Defines an alias representing item flags.
-**/
-typedef sint32 EItemFlags;
-
-/**
-\enum	
-
-\brief	Values that represent item flags. 
-**/
-enum
-{
-	ITEMFLAG_NONE				= 0,
-	ITEMFLAG_WEAPON				= BIT(0),
-	ITEMFLAG_AMMO				= BIT(1),
-	ITEMFLAG_HEALTH				= BIT(2),
-	ITEMFLAG_ARMOR				= BIT(3),
-	ITEMFLAG_STAY_COOP			= BIT(4),
-	ITEMFLAG_KEY				= BIT(5),
-	ITEMFLAG_POWERUP			= BIT(6),
-	ITEMFLAG_GRABBABLE			= BIT(7),
-	ITEMFLAG_USABLE				= BIT(8),
-	ITEMFLAG_DROPPABLE			= BIT(9),
-	ITEMFLAG_TECH				= BIT(10),
-	ITEMFLAG_NOT_GIVEABLE		= BIT(11), // item cannot be give'd
-	ITEMFLAG_MELEE				= BIT(12),
-};
-
 void InvalidateItemMedia ();
 
 class CBaseItem
@@ -164,7 +134,6 @@ public:
 #endif
 
 #include "cc_itemlist.h"
-#include "cc_inventory.h"
 #include "cc_item_entity.h"
 
 #else

@@ -1000,6 +1000,10 @@ typedef bool (*TValidateFieldFunction) (IBaseEntity *Entity, uint8 *ClassOffset,
 
 #define FIELD_IS_VALID(d) ((!ValidateField) || ValidateField(Entity, ClassOffset, Value, d))
 
+class CBaseItem *FindItemByClassname (const char *name);
+class CBaseItem *FindItem (const char *name);
+CBaseItem *GetItemByIndex (uint32 Index);
+
 /**
 \class	CEntityField
 
@@ -1032,10 +1036,6 @@ public:
 	\param	ValidateField	The field validation function. 
 	**/
 	CEntityField (const char *Name, size_t Offset, EFieldType FieldType, TValidateFieldFunction ValidateField = NULL);
-
-	void CR_FT_ITEM_CASE(const char* Value);
-	void SV_FT_ITEM_CASE(CFile& File);
-	void LD_FT_ITEM_CASE(CFile& File);
 
 	/**
 	\fn	template <class TClass> void Create (TClass *Entity, const char *Value) const
@@ -1144,7 +1144,20 @@ public:
 			}
 			break;
 		case FT_ITEM:
-			CR_FT_ITEM_CASE(Value);
+			{
+				CBaseItem *Item = FindItemByClassname (Value);
+
+				if (!Item)
+					Item = FindItem (Value);
+				if (!Item)
+				{
+					MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Bad item: \"%s\"\n", Value);
+					return;
+				}
+
+				if (FIELD_IS_VALID(NULL))
+					OFS_TO_TYPE(CBaseItem *) = Item;
+			}
 			break;
 		case FT_STRING:
 			if (FIELD_IS_VALID(NULL))
@@ -1152,6 +1165,8 @@ public:
 			break;
 		};
 	};
+
+	int GetItemIndex (CBaseItem *Item) const;
 
 	/**
 	\fn	template <class TClass> void Save (TClass *Entity, CFile &File) const
@@ -1229,7 +1244,13 @@ public:
 			File.Write<FrameNumber> (OFS_TO_TYPE(FrameNumber));
 			break;
 		case FT_ITEM:
-			SV_FT_ITEM_CASE(File);			
+			{
+				sint32 Index = -1;
+				if (OFS_TO_TYPE(CBaseItem*))
+					Index = GetItemIndex(OFS_TO_TYPE(CBaseItem *));
+				
+				File.Write<sint32> (Index);			
+			}
 			break;
 		case FT_ENTITY:
 			{
@@ -1332,7 +1353,8 @@ public:
 			break;
 		case FT_ITEM:
 			{
-				LD_FT_ITEM_CASE(File);
+				sint32 Index = File.Read<sint32> ();
+				OFS_TO_TYPE(CBaseItem *) = (Index != -1) ? GetItemByIndex(Index) : NULL;
 			}
 			break;
 		case FT_ENTITY:
@@ -1755,7 +1777,6 @@ public:
 	virtual void LoadFields (CFile &File);
 };
 
-#include "cc_item_entity.h"
 #include "cc_junk_entities.h"
 
 #if ROGUE_FEATURES

@@ -256,7 +256,7 @@ void CMegaHealth::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 void CBackPack::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	// Increase their max ammo, if applicable
-	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
+	for (sint32 i = 0; i < AMMOTAG_MAX; i++)
 	{
 		if (Other->Client.Persistent.MaxAmmoValues[i] < maxBackpackAmmoValues[i])
 			Other->Client.Persistent.MaxAmmoValues[i] = maxBackpackAmmoValues[i];
@@ -395,7 +395,7 @@ void CEnvironmentSuit::Use (CPlayerEntity *Player)
 void CBandolier::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	// Increase their max ammo, if applicable
-	for (sint32 i = 0; i < CAmmo::AMMOTAG_MAX; i++)
+	for (sint32 i = 0; i < AMMOTAG_MAX; i++)
 	{
 		if (Other->Client.Persistent.MaxAmmoValues[i] < maxBandolierAmmoValues[i])
 			Other->Client.Persistent.MaxAmmoValues[i] = maxBandolierAmmoValues[i];

@@ -33,6 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "cc_local.h"
 #include "cc_brush_models.h"
+#include "cc_items.h"
 
 #pragma region Brush_Model
 void IBrushModel::Think ()
@@ -2788,6 +2789,9 @@ IBaseEntity *World;
 \brief	Initialises the private entities list. 
 **/
 void InitPrivateEntities ();
+
+void InvalidateItemMedia ();
+void DoWeaponVweps ();
 
 void CWorldEntity::Spawn ()
 {
