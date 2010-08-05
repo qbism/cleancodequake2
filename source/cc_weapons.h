@@ -64,11 +64,11 @@ public:
 	CAmmo ();
 	CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 Quantity, CAmmo::EAmmoTag Tag);
-	CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name, sint32 Quantity, CAmmo::EAmmoTag Tag);
+			   const char *Precache, sint32 Quantity, EAmmoTag Tag);
+	CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name, sint32 Quantity, EAmmoTag Tag);
 
 	sint32			Quantity; // Number gotten when we pick this mother upper
-	CAmmo::EAmmoTag	Tag; // YUCKY tag for ammo
+	EAmmoTag	Tag; // YUCKY tag for ammo
 
 	// Only thing different about ammo is how it's picked up.
 	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
