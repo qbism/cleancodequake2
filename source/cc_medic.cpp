@@ -53,7 +53,7 @@ void CMedic::CleanupHeal (bool ChangeFrame)
 	if (Entity->Enemy && Entity->Enemy->GetInUse() && (Entity->Enemy->EntityFlags & ENT_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
-		Enemy->Monster->Healer = NULL;
+		Enemy->Monster->Healer = nullentity;
 		Enemy->Monster->AIFlags &= ~AI_RESURRECTING;
 		Enemy->CanTakeDamage = true;
 		Enemy->Monster->SetEffects ();
@@ -506,7 +506,7 @@ void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 	if ((Entity->Enemy) &&
 		(Entity->Enemy->EntityFlags & ENT_MONSTER ) && 
 		((entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer == Entity))
-		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer = NULL;
+		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer = nullentity;
 #endif
 
 // check for gib
@@ -741,7 +741,7 @@ void CMedic::CableAttack ()
 		else
 		{
 			Monster->Monster->Spawn ();
-			Monster->Monster->Healer = NULL;
+			Monster->Monster->Healer = nullentity;
 			Monster->NextThink = Level.Frame;
 			Monster->Think ();
 			Monster->Monster->AIFlags &= ~AI_RESURRECTING;

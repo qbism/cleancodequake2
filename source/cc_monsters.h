@@ -300,8 +300,8 @@ public:
 	FrameNumber		BlindFireDelay;
 	CPlayerEntity		*LastPlayerEnemy;
 	vec3f				BlindFireTarget;
-	CMonsterEntity		*BadMedic1, *BadMedic2;	// these medics have declared this monster "unhealable"
-	CMonsterEntity		*Healer;	// this is who is healing this monster
+	entity_ptr<CMonsterEntity> BadMedic1, BadMedic2;	// these medics have declared this monster "unhealable"
+	entity_ptr<CMonsterEntity> Healer;	// this is who is healing this monster
 #endif
 
 #if ROGUE_FEATURES
