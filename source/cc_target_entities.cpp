@@ -1200,6 +1200,7 @@ CTargetLaser::CTargetLaser () :
   MakeEffect(false),
   Damage (0)
 {
+    	User = World;
 };
 
 CTargetLaser::CTargetLaser (sint32 Index) :
@@ -1211,6 +1212,7 @@ CTargetLaser::CTargetLaser (sint32 Index) :
   MakeEffect(false),
   Damage (0)
 {
+    	User = World;
 };
 
 bool CTargetLaser::Run ()
