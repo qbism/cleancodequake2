@@ -400,7 +400,7 @@ void CSoldierBase::Attack1_Refire1 ()
 	if (SoldierAI != AI_BLASTER)
 		return;
 
-	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (Entity->Enemy && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -417,7 +417,7 @@ void CSoldierBase::Attack1_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -456,7 +456,7 @@ void CSoldierBase::Attack2_Refire1 ()
 	if (SoldierAI != AI_BLASTER)
 		return;
 
-	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (Entity->Enemy && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -473,7 +473,7 @@ void CSoldierBase::Attack2_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (Entity->Enemy && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
