@@ -36,8 +36,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 bool AssertExpression (const bool expr, const char *msg);
 
-#include "../source/cc_memory.h"
-#include "../source/cc_stl.h"
+#include "cc_memory.h"
+#include "cc_stl.h"
 #include "Templates/Templates.h"
 #include "MathLib.h"
 #include "ColorVec.h"

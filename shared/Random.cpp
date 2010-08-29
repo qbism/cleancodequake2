@@ -43,7 +43,7 @@
 // It would be nice to CC: <Cokus@math.washington.edu> when you write.
 //
 
-#include "../source/cc_local.h"
+#include "cc_local.h"
 
 //
 // uint32 must be an unsigned integer type capable of holding at least 32
