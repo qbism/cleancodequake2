@@ -417,7 +417,7 @@ void CSoldierBase::Attack1_Refire2 ()
 	if (SoldierAI == AI_BLASTER)
 		return;
 
-	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
 	if (!EnemyVis)
@@ -684,7 +684,7 @@ void CSoldierBase::Sight ()
 {
 	Entity->PlaySound (CHAN_VOICE, (frand() < 0.5) ? Sounds[SOUND_SIGHT1] : Sounds[SOUND_SIGHT2]);
 
-	if ((CvarList[CV_SKILL].Integer() > 0) && (Entity->Enemy->EntityFlags & ENT_HURTABLE) && (Range(Entity, *Entity->Enemy) >= RANGE_NEAR))
+	if ((CvarList[CV_SKILL].Integer() > 0) && (Entity->Enemy->EntityFlags & EF_HURTABLE) && (Range(Entity, *Entity->Enemy) >= RANGE_NEAR))
 	{
 		// Only do run-shoot off the bat if we're not a shotgun soldier (too cheap)
 		if ((frand() > 0.75) && (SoldierAI == AI_BLASTER))

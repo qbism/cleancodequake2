@@ -198,7 +198,7 @@ CAnim TankMoveStopRun (FRAME_walk21, FRAME_walk25, TankFramesStopRun, ConvertDer
 
 void CTank::Run ()
 {
-	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_PLAYER))
 		AIFlags |= AI_BRUTAL;
 	else
 		AIFlags &= ~AI_BRUTAL;
@@ -335,7 +335,7 @@ void CTank::Blaster ()
 	end.Z += Entity->Enemy->ViewHeight;
 	dir = end - start;
 
-	MonsterFireBlaster (start, dir, 30, 800, flash_number, EF_BLASTER);
+	MonsterFireBlaster (start, dir, 30, 800, flash_number, FX_BLASTER);
 }	
 
 void CTank::Strike ()
@@ -400,7 +400,7 @@ void CTank::Rocket ()
 
 	if (!blindfire && ((frand() < (0.2 + ((3 - CvarList[CV_SKILL].Integer()) * 0.15)))))
 	{
-		if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+		if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 			vec = vec.MultiplyAngles (dir.Length() / rocketSpeed, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = vec - start;
 	}
@@ -438,7 +438,7 @@ void CTank::Rocket ()
 		trace (start, vec, Entity, CONTENTS_MASK_SHOT);
 		if (trace.Entity == Entity->Enemy || trace.Entity == World)
 		{
-			if (trace.Fraction > 0.5 || (trace.Entity->EntityFlags & ENT_PLAYER))
+			if (trace.Fraction > 0.5 || (trace.Entity->EntityFlags & EF_PLAYER))
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		}
 	}
@@ -744,7 +744,7 @@ void CTank::Attack ()
 	if (!Entity->Enemy)
 		return;
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health < 0)
+	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health < 0)
 	{
 		CurrentMove = &TankMoveAttackStrike;
 		AIFlags &= ~AI_BRUTAL;

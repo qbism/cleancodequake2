@@ -74,10 +74,10 @@ void CIonRipperBoomerang::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurfa
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 	{
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_RIPPER);
 		Free (); // "delete" the entity
@@ -95,7 +95,7 @@ void CIonRipperBoomerang::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->State.GetAngles() = dir.ToAngles();
 	Bolt->Velocity = dir.GetNormalizedFast() * speed;
 
-	Bolt->State.GetEffects() = EF_IONRIPPER;
+	Bolt->State.GetEffects() = FX_IONRIPPER;
 	Bolt->State.GetRenderEffects() = RF_FULLBRIGHT;
 	Bolt->State.GetModelIndex() = ModelIndex ("models/objects/boomrang/tris.md2");
 
@@ -124,7 +124,7 @@ void CIonRipperBoomerang::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 		if (tr.Entity)
 			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
-	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+	else if (Spawner && (Spawner->EntityFlags & EF_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
 }
 
@@ -191,7 +191,7 @@ LINK_ITEM_TO_CLASS (weapon_boomer, CItemEntity);
 void CIonRipper::CreateItem (CItemList *List)
 {
 	NItems::IonRipper = QNew (TAG_GENERIC) CWeaponItem
-		("weapon_boomer", "models/weapons/g_boom/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
+		("weapon_boomer", "models/weapons/g_boom/tris.md2", FX_ROTATE, "misc/w_pkup.wav",
 		"w_ripper", "Ionripper", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 2, "#w_ripper.md2");
 };

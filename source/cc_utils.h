@@ -61,9 +61,9 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 			continue;
 
 		// Special case
-		// If we're only looking for ENT_BASE
+		// If we're only looking for EF_BASE
 		// we don't need to cast just yet
-		if (EntityFlags & ENT_BASE)
+		if (EntityFlags & EF_BASE)
 		{
 			std::string s = *(std::string *) ((uint8 *)gameEnt->Entity + FieldOfs);
 			if (s.empty())

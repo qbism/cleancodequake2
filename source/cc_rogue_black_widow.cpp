@@ -186,7 +186,7 @@ void CBlackWidow::SpawnCheck ()
 					designated_enemy = *Entity->Enemy;
 			}
 
-			if ((designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
+			if ((designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
 			{
 				ent->Enemy = designated_enemy;
 				ent->Monster->FoundTarget ();
@@ -434,7 +434,7 @@ void CBlackWidow::TonguePull ()
 	}
 	
 	vec3f vec = Entity->State.GetOrigin() - Entity->Enemy->State.GetOrigin();
-	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
+	if (Entity->Enemy->EntityFlags & EF_PLAYER)
 	{
 		vec.Normalize();
 		entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity.MultiplyAngles (1000, vec);
@@ -793,7 +793,7 @@ void CBlackWidow::KillChildren ()
 	CMonsterEntity *ent = NULL;
 	while (1)
 	{
-		ent = entity_cast<CMonsterEntity>(CC_FindByClassName<IBaseEntity, ENT_MONSTER> (ent, "monster_stalker"));
+		ent = entity_cast<CMonsterEntity>(CC_FindByClassName<IBaseEntity, EF_MONSTER> (ent, "monster_stalker"));
 		if(!ent)
 			return;
 		
@@ -860,7 +860,7 @@ bool CBlackWidow::CheckAttack ()
 		return true;
 	}
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight),
@@ -872,7 +872,7 @@ bool CBlackWidow::CheckAttack ()
 		if (tr.Entity != Entity->Enemy)
 		{	
 			// go ahead and spawn stuff if we're mad a a client
-			if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && SlotsLeft() >= 2)
+			if ((Entity->Enemy->EntityFlags & EF_PLAYER) && SlotsLeft() >= 2)
 			{
 				AttackState = AS_BLIND;
 				return true;
@@ -1073,7 +1073,7 @@ void CWidowGib::Spawn (IBaseEntity *self, MediaIndex GibIndex, int damage, EGibT
 	}
 
 	gib->GetSolid() = SOLID_NOT;
-	gib->State.GetEffects() |= EF_GIB;
+	gib->State.GetEffects() |= FX_GIB;
 	gib->State.GetRenderEffects() |= RF_IR_VISIBLE;
 
 	if (fade)
@@ -1104,7 +1104,7 @@ void CWidowGib::Spawn (IBaseEntity *self, MediaIndex GibIndex, int damage, EGibT
 	}
 
 	vec3f vd = WidowVelocityForDamage (damage);
-	gib->Velocity = ((self->EntityFlags & ENT_PHYSICS) ? entity_cast<IPhysicsEntity>(self)->Velocity : vec3fOrigin) .MultiplyAngles (velocityScale, vd);
+	gib->Velocity = ((self->EntityFlags & EF_PHYSICS) ? entity_cast<IPhysicsEntity>(self)->Velocity : vec3fOrigin) .MultiplyAngles (velocityScale, vd);
 	gib->ClipGibVelocity ();
 
 	gib->State.GetModelIndex() = GibIndex;

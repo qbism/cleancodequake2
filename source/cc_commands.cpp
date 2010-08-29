@@ -134,7 +134,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 
 		if (!ent->Entity || !ent->Entity->GetInUse())
 			continue;
-		if (!(ent->Entity->EntityFlags & ENT_MONSTER))
+		if (!(ent->Entity->EntityFlags & EF_MONSTER))
 			continue;
 		if (ent->Entity == Entity)
 			continue;
@@ -163,32 +163,11 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 	ChosenMonsters.clear ();
 }
 
-class CTestEntityLol : public IBaseEntity
-{
-public:
-	CTestEntityLol () :
-	  IBaseEntity ()
-	  {
-	  };
-
-	CTestEntityLol (sint32 Index) :
-	  IBaseEntity (Index)
-	  {
-	  };
-
-	IMPLEMENT_SAVE_HEADER("CTestEntityLol");
-};
-
-enum
-{
-	bbbbb = BIT(14)
-};
-
 class CTestCommand : public CGameCommandFunctor
 {
 public:
 	void operator () ()
-	{	
+	{
 		if (ArgCount() < 3)
 			return;
 	
@@ -204,7 +183,7 @@ public:
 		{
 			for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 			{
-				if (!(*it)->Entity || !((*it)->Entity->EntityFlags & ENT_MONSTER))
+				if (!(*it)->Entity || !((*it)->Entity->EntityFlags & EF_MONSTER))
 					continue;
 
 				CMonsterEntity *Monster = entity_cast<CMonsterEntity>((*it)->Entity);

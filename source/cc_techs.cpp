@@ -46,7 +46,7 @@ TechType(TechType)
 };
 
 CTech::CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
-CBaseItem (Classname, Model, EF_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH,
+CBaseItem (Classname, Model, FX_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH,
 			NULL),
 TechNumber(TechNumber),
 TechType(TechType)
@@ -289,7 +289,7 @@ CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 	dropped->GetSolid() = SOLID_TRIGGER;
 	dropped->SetOwner(Entity);
 
-	if (Entity->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & EF_PLAYER)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
@@ -414,7 +414,7 @@ void ResetTechs()
 	{
 		IBaseEntity *Entity = (*it)->Entity;
 
-		if (Entity && Entity->GetInUse() && (Entity->EntityFlags & ENT_ITEM))
+		if (Entity && Entity->GetInUse() && (Entity->EntityFlags & EF_ITEM))
 		{
 			CItemEntity *Item = entity_cast<CItemEntity>(Entity);
 

@@ -456,7 +456,7 @@ void			RunPrivateEntities ()
 		
 		Level.CurrentEntity = Entity;
 
-		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
+		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & EF_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
 
 		if (Thinkable) 
 			Thinkable->PreThink ();
@@ -496,7 +496,7 @@ CC_ENABLE_DEPRECATION
 	ClassName = "noclass";
 
 	Freed = false;
-	EntityFlags |= ENT_BASE;
+	EntityFlags |= EF_BASE;
 
 	State.Initialize (&gameEntity->Server.State);
 };
@@ -520,7 +520,7 @@ IBaseEntity::IBaseEntity (sint32 Index)
 	if (Index < 0)
 	{
 		Freed = false;
-		EntityFlags |= (ENT_PRIVATE|ENT_BASE);
+		EntityFlags |= (EF_PRIVATE | EF_BASE);
 
 		gameEntity = NULL;
 		PrivateEntities.push_back (this);
@@ -532,7 +532,7 @@ IBaseEntity::IBaseEntity (sint32 Index)
 		gameEntity->Server.State.Number = Index;
 
 		Freed = false;
-		EntityFlags |= ENT_BASE;
+		EntityFlags |= EF_BASE;
 		State.Initialize (&gameEntity->Server.State);
 	}
 }
@@ -555,7 +555,7 @@ IBaseEntity::~IBaseEntity ()
 			gameEntity->Entity = NULL;
 
 	CC_DISABLE_DEPRECATION
-			if (!Freed && !(EntityFlags & ENT_JUNK))
+			if (!Freed && !(EntityFlags & EF_JUNK))
 				G_FreeEdict (gameEntity); // "delete" the entity
 	CC_ENABLE_DEPRECATION
 		}
@@ -887,7 +887,7 @@ void			IBaseEntity::Free ()
 		GetInUse() = false;
 		gameEntity->Server.State.Number = gameEntity - Game.Entities;
 
-		if (!(EntityFlags & ENT_JUNK))
+		if (!(EntityFlags & EF_JUNK))
 		{
 			if (Level.Frame == 0)
 				Level.Entities.RemoveEntityFromList (gameEntity);
@@ -975,7 +975,7 @@ void	IBaseEntity::KillBox ()
 		if (!tr.Entity)
 			break;
 
-		if ((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage)
+		if ((tr.Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage)
 		{
 			// nail it
 			entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(),
@@ -1006,7 +1006,7 @@ void IBaseEntity::SplashDamage (IBaseEntity *Attacker, float Damage, IBaseEntity
 {
 	IHurtableEntity	*Entity = NULL;
 
-	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), Radius)) != NULL)
+	while ((Entity = FindRadius<IHurtableEntity, EF_HURTABLE> (Entity, State.GetOrigin(), Radius)) != NULL)
 	{
 		if (Entity == Ignore)
 			continue;
@@ -1050,7 +1050,7 @@ static inline void BuildBoxPoints(vec3f p[8], vec3f &org, vec3f &mins, vec3f &ma
 bool IBaseEntity::CanSee (IBaseEntity *Other)
 {
 	// bmodels need special checking because their origin is 0,0,0
-	if ((EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH)
+	if ((EntityFlags & EF_PHYSICS) && (entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH)
 		return false; // bmodels not supported
 
 	vec3f	targpoints[8];
@@ -1129,7 +1129,7 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEn
 	float killzone = Radius;
 	float killzone2 = Radius*2.0;
 
-	while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin(), Radius)) != NULL)
+	while ((Entity = FindRadius<IHurtableEntity, EF_HURTABLE> (Entity, State.GetOrigin(), Radius)) != NULL)
 	{
 // ignore nobody
 		if (Entity == Ignore)
@@ -1154,7 +1154,7 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEn
 
 		if (points > 0)
 		{
-			if (Entity->EntityFlags & ENT_PLAYER)
+			if (Entity->EntityFlags & EF_PLAYER)
 				(entity_cast<CPlayerEntity>(Entity))->Client.Timers.Nuke = Level.Frame + 20;
 			dir = Entity->State.GetOrigin() - State.GetOrigin();
 			Entity->TakeDamage (this, Attacker, dir, State.GetOrigin(), vec3fOrigin, (int)points, (int)points, DAMAGE_RADIUS, MeansOfDeath);
@@ -1197,7 +1197,7 @@ void IBaseEntity::BecomeExplosion (bool Grenade)
 IMapEntity::IMapEntity () : 
 IBaseEntity()
 {
-	EntityFlags |= ENT_MAP;
+	EntityFlags |= EF_MAP;
 };
 
 /**
@@ -1213,7 +1213,7 @@ IBaseEntity()
 IMapEntity::IMapEntity (sint32 Index) : 
 IBaseEntity(Index)
 {
-	EntityFlags |= ENT_MAP;
+	EntityFlags |= EF_MAP;
 };
 
 ENTITYFIELDS_BEGIN(IMapEntity)

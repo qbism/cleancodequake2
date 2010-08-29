@@ -153,7 +153,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if (!(Other->EntityFlags & ENT_PLAYER))
+		if (!(Other->EntityFlags & EF_PLAYER))
 			return;
 
 		if (Level.Frame < TouchDebounce)
@@ -165,7 +165,7 @@ public:
 	}
 	void Blocked (IBaseEntity *Other)
 	{
-		if (!(Team.IsSlave) && (Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if (!(Team.IsSlave) && (Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 0, 0, MOD_CRUSH);
 	}
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
@@ -176,7 +176,7 @@ public:
 		// trigger all paired doors
 		for (IBaseEntity *ent = this; ent; ent = ent->Team.Chain)
 		{
-			if (ent->EntityFlags & ENT_BRUSHMODEL)
+			if (ent->EntityFlags & EF_BRUSHMODEL)
 				entity_cast<IBrushModel>(ent)->MoveCalc (StartOrigin, DOORSECRETENDFUNC_1);
 		}
 	}
@@ -185,7 +185,7 @@ public:
 		Health = MaxHealth;
 		CanTakeDamage = true;
 
-		if (Team.IsSlave && Team.Master && (Team.Master->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(Team.Master)->CanTakeDamage))
+		if (Team.IsSlave && Team.Master && (Team.Master->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(Team.Master)->CanTakeDamage))
 			entity_cast<IHurtableEntity>(Team.Master)->Die (Inflictor, Attacker, Damage, Point);
 		else
 			Use (Inflictor, Attacker);
@@ -523,9 +523,9 @@ CPlatForm(Index)
 
 void CPlatForm2::Blocked (IBaseEntity *Other)
 {
-	IHurtableEntity *HurtableOther = (Other->EntityFlags & ENT_HURTABLE) ? entity_cast<IHurtableEntity>(Other) : NULL;
+	IHurtableEntity *HurtableOther = (Other->EntityFlags & EF_HURTABLE) ? entity_cast<IHurtableEntity>(Other) : NULL;
 
-	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & ENT_PLAYER) )
+	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & EF_PLAYER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
 		if (HurtableOther && HurtableOther->CanTakeDamage)
@@ -810,9 +810,9 @@ IMPLEMENT_SAVE_SOURCE (CPlatForm2InsideTrigger)
 
 void CPlatForm2InsideTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
+	if (!(Other->EntityFlags & EF_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
-	if (!(Other->EntityFlags & ENT_PLAYER) && !(Other->EntityFlags & ENT_MONSTER))
+	if (!(Other->EntityFlags & EF_PLAYER) && !(Other->EntityFlags & EF_MONSTER))
 		return;
 
 	entity_cast<CPlatForm2>(Owner)->Operate (Other);
@@ -1121,7 +1121,7 @@ public:
 		{
 			if (!Enemy->GetInUse())
 				Enemy = nullentity;
-			else if ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->Health <= 0 && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage)
+			else if ((Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->Health <= 0 && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage)
 				Enemy = nullentity;
 		}
 
@@ -1308,7 +1308,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if (Other->EntityFlags & ENT_PLAYER)
+		if (Other->EntityFlags & EF_PLAYER)
 		{
 			if (SpawnFlags & DISGUISE_REMOVE)
 				Other->Flags &= ~FL_DISGUISED;

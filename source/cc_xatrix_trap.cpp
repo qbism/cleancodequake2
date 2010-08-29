@@ -143,20 +143,20 @@ void CTrapProjectile::Think ()
 					best->GetMins().Clear();
 					best->GetMaxs().Clear();
 
-					if ((Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(*Enemy)->Monster->MonsterID == CGekk::ID))
+					if ((Enemy->EntityFlags & EF_MONSTER) && (entity_cast<CMonsterEntity>(*Enemy)->Monster->MonsterID == CGekk::ID))
 					{
 						best->State.GetModelIndex() = ModelIndex ("models/objects/gekkgib/torso/tris.md2");	
-						best->State.GetEffects() |= EF_GREENGIB;
+						best->State.GetEffects() |= FX_GREENGIB;
 					}
 					else if (Mass >= 200)
 					{
 						best->State.GetModelIndex() = GameMedia.Gib_Chest;	
-						best->State.GetEffects() |= EF_GIB;
+						best->State.GetEffects() |= FX_GIB;
 					}
 					else
 					{
 						best->State.GetModelIndex() = GameMedia.Gib_SmallMeat;	
-						best->State.GetEffects() |= EF_GIB;
+						best->State.GetEffects() |= FX_GIB;
 					}
 				}
 				else
@@ -203,10 +203,10 @@ void CTrapProjectile::Think ()
 		return;
 	}
 	
-	State.GetEffects() &= ~EF_TRAP;
+	State.GetEffects() &= ~FX_TRAP;
 	if (State.GetFrame() >= 4)
 	{
-		State.GetEffects() |= EF_TRAP;
+		State.GetEffects() |= FX_TRAP;
 		GetMins().Clear();
 		GetMaxs().Clear();
 
@@ -218,11 +218,11 @@ void CTrapProjectile::Think ()
 	IHurtableEntity *target = NULL;
 	IHurtableEntity *best = NULL;
 	float oldlen = 99999;
-	while ((target = FindRadius<IHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin (), 256)) != NULL)
+	while ((target = FindRadius<IHurtableEntity, EF_HURTABLE> (target, State.GetOrigin (), 256)) != NULL)
 	{
 		if (target->Health <= 0)
 			continue;
-		if (!(target->EntityFlags & ENT_PLAYER) && !(target->EntityFlags & ENT_MONSTER))
+		if (!(target->EntityFlags & EF_PLAYER) && !(target->EntityFlags & EF_MONSTER))
 			continue;
 		if (!IsVisible (this, target))
 		 	continue;
@@ -255,7 +255,7 @@ void CTrapProjectile::Think ()
 
 		vec3f vec = State.GetOrigin() - best->State.GetOrigin();
 
-		if (best->EntityFlags & ENT_PLAYER)
+		if (best->EntityFlags & EF_PLAYER)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(best);
 			Player->Velocity = Player->Velocity.MultiplyAngles (250, vec.GetNormalized());
@@ -273,7 +273,7 @@ void CTrapProjectile::Think ()
 		
 		if (vec.Length() < 32)
 		{
-			if (best->EntityFlags & ENT_PHYSICS)
+			if (best->EntityFlags & EF_PHYSICS)
 			{
 				IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(best);
 				
@@ -310,7 +310,7 @@ const int TRAP_MAXSPEED			= 700;
 
 void CTrapProjectile::Explode ()
 {
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	//FIXME: if we are onground then raise our Z just a bit since we are a point?
@@ -449,6 +449,7 @@ void CTrap::FireGrenade (CPlayerEntity *Player, bool inHand)
 	|| isQuadFire
 #endif
 	) ? 5 : 10);
+
 	DepleteAmmo(Player, 1);
 
 	if (Player->Health <= 0 || Player->IsDead || Player->State.GetModelIndex() != 255) // VWep animations screw up corpses

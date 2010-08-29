@@ -232,7 +232,7 @@ public:
 			if (Field)
 				Field->Touchable = true;
 
-			while ((search = FindRadius<ENT_BASE> (search, State.GetOrigin(), PROX_DAMAGE_RADIUS+10)) != NULL)
+			while ((search = FindRadius<EF_BASE> (search, State.GetOrigin(), PROX_DAMAGE_RADIUS+10)) != NULL)
 			{
 				if (search->ClassName.empty())			// tag token and other weird shit
 					continue;
@@ -247,7 +247,7 @@ public:
 				// blow up
 				if (
 					(
-						(((search->EntityFlags & ENT_MONSTER) || (search->EntityFlags & ENT_PLAYER)) && (entity_cast<IHurtableEntity>(search)->Health > 0))	|| 
+						(((search->EntityFlags & EF_MONSTER) || (search->EntityFlags & EF_PLAYER)) && (entity_cast<IHurtableEntity>(search)->Health > 0))	|| 
 						(
 							(Game.GameMode & GAME_DEATHMATCH) && 
 							(
@@ -324,7 +324,7 @@ public:
 
 		bool DoneStick = true;
 
-		if (Other->EntityFlags & ENT_HURTABLE)
+		if (Other->EntityFlags & EF_HURTABLE)
 		{
 			if (Other != Firer)
 				Explode ();
@@ -343,7 +343,7 @@ public:
 				return;
 			}
 
-			if ((Other->EntityFlags & ENT_PHYSICS) && (entity_cast<IPhysicsEntity>(Other)->PhysicsType == PHYSICS_PUSH) && (plane->Normal.Z > 0.7f))
+			if ((Other->EntityFlags & EF_PHYSICS) && (entity_cast<IPhysicsEntity>(Other)->PhysicsType == PHYSICS_PUSH) && (plane->Normal.Z > 0.7f))
 				StickOK = true;
 
 			float backoff = (Velocity | plane->Normal) * 1.5f;
@@ -446,7 +446,7 @@ public:
 		Prox->State.GetAngles() = dir - vec3f(90, 0, 0);
 		Prox->PhysicsType = PHYSICS_BOUNCE;
 		Prox->GetSolid() = SOLID_BBOX; 
-		Prox->State.GetEffects() |= EF_GRENADE;
+		Prox->State.GetEffects() |= FX_GRENADE;
 		Prox->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_LAVA|CONTENTS_SLIME;
 		Prox->State.GetRenderEffects() |= RF_IR_VISIBLE;
 		
@@ -504,7 +504,7 @@ void CProxField::LoadFields (CFile &File)
 
 void CProxField::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_HURTABLE))
+	if (!(Other->EntityFlags & EF_HURTABLE))
 		return;
 
 	// trigger the prox mine if it's still there, and still mine.
@@ -591,7 +591,7 @@ LINK_ITEM_TO_CLASS (weapon_proxlauncher, CItemEntity);
 void CProxLauncher::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
-		("weapon_proxlauncher", "models/weapons/g_plaunch/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_proxlaunch", "Prox Launcher",
+		("weapon_proxlauncher", "models/weapons/g_plaunch/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_proxlaunch", "Prox Launcher",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Prox, 1, "#w_plauncher.md2");
 };

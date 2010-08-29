@@ -284,7 +284,7 @@ ITouchableEntity(),
 IUsableEntity(),
 UseState(MONSTERENTITY_THINK_NONE)
 {
-	EntityFlags |= ENT_MONSTER;
+	EntityFlags |= EF_MONSTER;
 	PhysicsType = PHYSICS_STEP;
 };
 
@@ -300,7 +300,7 @@ ITouchableEntity(Index),
 IUsableEntity(Index),
 UseState(MONSTERENTITY_THINK_NONE)
 {
-	EntityFlags |= ENT_MONSTER;
+	EntityFlags |= EF_MONSTER;
 	PhysicsType = PHYSICS_STEP;
 };
 
@@ -447,7 +447,7 @@ void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint
 #if ROGUE_FEATURES
 	if (Monster->AIFlags & AI_MEDIC)
 	{
-		if (Enemy && (Enemy->EntityFlags & ENT_MONSTER))  // god, I hope so
+		if (Enemy && (Enemy->EntityFlags & EF_MONSTER))  // god, I hope so
 			entity_cast<CMonsterEntity>(*Enemy)->Monster->CleanupHealTarget ();
 
 		// clean up self
@@ -489,7 +489,7 @@ void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint
 		if (!(Monster->AIFlags & AI_GOOD_GUY) && !(Monster->AIFlags & AI_DO_NOT_COUNT))
 		{
 			Level.Monsters.Killed++;
-			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & ENT_PLAYER))
+			if ((Game.GameMode & GAME_COOPERATIVE) && (Attacker->EntityFlags & EF_PLAYER))
 				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 		}
 	}
@@ -499,12 +499,12 @@ void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint
 		if (!(Monster->AIFlags & AI_GOOD_GUY))
 		{
 			Level.Monsters.Killed++;
-			if ((Game.GameMode & GAME_COOPERATIVE) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+			if ((Game.GameMode & GAME_COOPERATIVE) && Attacker && (Attacker->EntityFlags & EF_PLAYER))
 				(entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.Score++;
 			// medics won't heal monsters that they kill themselves
 
 #if !ROGUE_FEATURES
-			if (Attacker && (Attacker->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
+			if (Attacker && (Attacker->EntityFlags & EF_MONSTER) && entity_cast<CMonsterEntity>(Attacker)->Monster->MonsterID == CMedic::ID)
 				SetOwner(Attacker);
 #endif
 		}
@@ -541,7 +541,7 @@ void CMonsterEntity::ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type,
 	State.GetModelIndex() = gibIndex;
 	GetSolid() = SOLID_NOT;
 	State.GetEffects() |= effects;
-	State.GetEffects() &= ~EF_FLIES;
+	State.GetEffects() &= ~FX_FLIES;
 	State.GetSound() = 0;
 	AffectedByKnockback = false;
 	GetSvFlags() &= ~SVF_MONSTER;
@@ -838,7 +838,7 @@ void CMonster::MonsterStartGo ()
 		bool		notcombat = false, fixup = false;
 		IMapEntity		*target = NULL;
 
-		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target.c_str())) != NULL)
+		while ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target.c_str())) != NULL)
 		{
 			if (target->ClassName == "point_combat")
 			{
@@ -858,7 +858,7 @@ void CMonster::MonsterStartGo ()
 	if (!Entity->CombatTarget.empty())
 	{
 		IMapEntity		*target = NULL;
-		while ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget.c_str())) != NULL)
+		while ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget.c_str())) != NULL)
 		{
 			if (target->ClassName != "point_combat")
 				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget.c_str());
@@ -965,7 +965,7 @@ void CMonster::MonsterTriggeredStart ()
 	if (!CvarList[CV_MAP_DEBUG].Integer())
 		Entity->GetSvFlags() |= SVF_NOCLIENT;
 	else
-		Entity->State.GetEffects() = EF_SPHERETRANS;
+		Entity->State.GetEffects() = FX_SPHERETRANS;
 	Entity->NextThink = 0;
 	Think = NULL;
 	Entity->UseState = MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE;
@@ -1006,7 +1006,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 			return;
 		if (Activator->Flags & FL_NOTARGET)
 			return;
-		if (!(Activator->EntityFlags & ENT_PLAYER) && !(Monster->AIFlags & AI_GOOD_GUY))
+		if (!(Activator->EntityFlags & EF_PLAYER) && !(Monster->AIFlags & AI_GOOD_GUY))
 			return;
 #if ROGUE_FEATURES
 		if (Activator->Flags & FL_DISGUISED)		// PGM
@@ -1021,7 +1021,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		// we have a one frame delay here so we don't telefrag the guy who activated us
 		Monster->Think = &CMonster::MonsterTriggeredSpawn;
 		NextThink = Level.Frame + FRAMETIME;
-		if (Activator && (Activator->EntityFlags & ENT_PLAYER))
+		if (Activator && (Activator->EntityFlags & EF_PLAYER))
 			Enemy = Activator;
 		UseState = MONSTERENTITY_THINK_USE;
 		break;
@@ -1168,7 +1168,7 @@ void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 
 
 void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
-	CBlueBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, EF_BLUEHYPERBLASTER);
+	CBlueBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, FX_BLUEHYPERBLASTER);
 
 	if (flashtype != -1)
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
@@ -1215,7 +1215,7 @@ void CMonsterBeamLaser::Think ()
 		IBaseEntity *Entity = tr.Entity;
 
 		// hurt it if we can
-		if ((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage && (Entity != GetOwner()))
+		if ((Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage && (Entity != GetOwner()))
 			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, GetOwner(), MoveDir, tr.EndPosition, vec3fOrigin, Damage, CvarList[CV_SKILL].Integer(), DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		if (Damage < 0) // healer ray
@@ -1223,7 +1223,7 @@ void CMonsterBeamLaser::Think ()
 			// when player is at 100 health
 			// just undo health fix
 			// keeping fx
-			if (Entity->EntityFlags & ENT_PLAYER)
+			if (Entity->EntityFlags & EF_PLAYER)
 			{
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 				if (Player->Health > 100)
@@ -1232,7 +1232,7 @@ void CMonsterBeamLaser::Think ()
 		}
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done
-		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
+		if (!(Entity->EntityFlags & EF_MONSTER) && (!(Entity->EntityFlags & EF_PLAYER)))
 		{
 			if (MakeEffect)
 			{
@@ -1520,7 +1520,7 @@ void CMonster::SetEffects()
 
 	if (AIFlags & AI_RESURRECTING)
 	{
-		Entity->State.GetEffects() |= EF_COLOR_SHELL;
+		Entity->State.GetEffects() |= FX_COLOR_SHELL;
 		Entity->State.GetRenderEffects() |= RF_SHELL_RED;
 	}
 
@@ -1530,10 +1530,10 @@ void CMonster::SetEffects()
 	if (PowerArmorTime)
 	{
 		if (PowerArmorType == POWER_ARMOR_SCREEN)
-			Entity->State.GetEffects() |= EF_POWERSCREEN;
+			Entity->State.GetEffects() |= FX_POWERSCREEN;
 		else if (PowerArmorType == POWER_ARMOR_SHIELD)
 		{
-			Entity->State.GetEffects() |= EF_COLOR_SHELL;
+			Entity->State.GetEffects() |= FX_COLOR_SHELL;
 			Entity->State.GetRenderEffects() |= RF_SHELL_GREEN;
 		}
 		PowerArmorTime--;
@@ -1544,21 +1544,21 @@ void CMonster::SetEffects()
 	{
 		FrameNumber remaining = QuadFramenum - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			Entity->State.GetEffects() |= EF_QUAD;
+			Entity->State.GetEffects() |= FX_QUAD;
 	}
 
 	if (DoubleFramenum > Level.Frame)
 	{
 		FrameNumber remaining = DoubleFramenum - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			Entity->State.GetEffects() |= EF_DOUBLE;
+			Entity->State.GetEffects() |= FX_DOUBLE;
 	}
 
 	if (InvincibleFramenum > Level.Frame)
 	{
 		FrameNumber remaining = InvincibleFramenum - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			Entity->State.GetEffects() |= EF_PENT;
+			Entity->State.GetEffects() |= FX_PENT;
 	}
 #endif
 }
@@ -1730,7 +1730,7 @@ bool CMonster::FacingIdeal()
 
 void CMonster::FliesOff()
 {
-	Entity->State.GetEffects() &= ~EF_FLIES;
+	Entity->State.GetEffects() &= ~FX_FLIES;
 	Entity->State.GetSound() = 0;
 }
 
@@ -1738,7 +1738,7 @@ void CMonster::FliesOn ()
 {
 	if (Entity->WaterInfo.Level)
 		return;
-	Entity->State.GetEffects() |= EF_FLIES;
+	Entity->State.GetEffects() |= FX_FLIES;
 	Entity->State.GetSound() = SoundIndex ("infantry/inflies1.wav");
 	Think = &CMonster::FliesOff;
 	Entity->NextThink = Level.Frame + 600;

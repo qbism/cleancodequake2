@@ -130,7 +130,7 @@ void CRogueBaseSphere::Chase (bool stupidChase)
 	}
 
 	vec3f dest = SphereEnemy->State.GetOrigin();
-	if (SphereEnemy->EntityFlags & ENT_PLAYER)
+	if (SphereEnemy->EntityFlags & EF_PLAYER)
 		dest.Z += SphereEnemy->ViewHeight;
 
 	if (IsVisible (this, SphereEnemy) || stupidChase)
@@ -215,7 +215,7 @@ void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurf
 		return;
 	}
 
-	if (Other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & EF_HURTABLE)
 	{
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), plane->Normal,
 			10000, 1, DAMAGE_DESTROY_ARMOR, Mod);
@@ -237,10 +237,10 @@ void CRogueBaseSphere::OwnSphere (CPlayerEntity *Player)
 // DEFENDER
 void CRogueDefenderSphere::Pain (IBaseEntity *Other, sint32 Damage)
 {
-	if (Other == GetOwner() || !(Other->EntityFlags & ENT_HURTABLE))
+	if (Other == GetOwner() || !(Other->EntityFlags & EF_HURTABLE))
 		return;
 
-	if (Other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & EF_HURTABLE)
 		SphereEnemy = entity_cast<IHurtableEntity>(Other);
 }
 
@@ -255,7 +255,7 @@ void CRogueDefenderSphere::Shoot (IHurtableEntity *At)
 	if (!IsVisible(this, At))
 		return;
 
-	CGreenBlasterProjectile::Spawn (GetOwner(), State.GetOrigin() + vec3f(0, 0, 2), (At->State.GetOrigin() - State.GetOrigin()).GetNormalized(), 10, 1000, EF_BLASTER | EF_TRACKER);
+	CGreenBlasterProjectile::Spawn (GetOwner(), State.GetOrigin() + vec3f(0, 0, 2), (At->State.GetOrigin() - State.GetOrigin()).GetNormalized(), 10, 1000, FX_BLASTER | FX_TRACKER);
 	AttackFinished = Level.Frame + 4;
 }
 
@@ -330,9 +330,9 @@ void CRogueVengeanceSphere::Pain (IBaseEntity *Other, sint32 Damage)
 	if ((Wait - Level.Frame) < MINIMUM_FLY_TIME)
 		Wait = Level.Frame + MINIMUM_FLY_TIME;
 
-	State.GetEffects() |= EF_ROCKET;
+	State.GetEffects() |= FX_ROCKET;
 	Touchable = true;
-	if (Other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & EF_HURTABLE)
 		SphereEnemy = entity_cast<IHurtableEntity>(Other);
 }
 
@@ -408,9 +408,9 @@ void CRogueHunterSphere::Pain (IBaseEntity *Other, sint32 Damage)
 	if ((Wait - Level.Frame) < MINIMUM_FLY_TIME)
 		Wait = Level.Frame + MINIMUM_FLY_TIME;
 
-	State.GetEffects() |= (EF_BLASTER | EF_TRACKER);
+	State.GetEffects() |= (FX_BLASTER | FX_TRACKER);
 	Touchable = true;
-	if (Other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & EF_HURTABLE)
 		SphereEnemy = entity_cast<IHurtableEntity>(Other);
 
 	if ((SphereFlags & SPHERE_DOPPLEGANGER)  || !OwnedPlayer)

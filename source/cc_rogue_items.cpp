@@ -352,7 +352,7 @@ public:
 
 		CNukeEntity *Nuke = QNewEntityOf CNukeEntity;
 
-		if (Entity->EntityFlags & ENT_PLAYER)
+		if (Entity->EntityFlags & EF_PLAYER)
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 			
@@ -371,7 +371,7 @@ public:
 		Nuke->State.GetAngles().Clear();
 		Nuke->GetClipmask() = CONTENTS_MASK_SHOT;
 		Nuke->GetSolid() = SOLID_BBOX;
-		Nuke->State.GetEffects() |= EF_GRENADE;
+		Nuke->State.GetEffects() |= FX_GRENADE;
 		Nuke->State.GetRenderEffects() |= RF_IR_VISIBLE;
 		Nuke->GetMins().Set (-8, -8, 0);
 		Nuke->GetMaxs().Set (8, 8, 16);
@@ -456,7 +456,7 @@ class CDoppleGangerItem : public CBasePowerUp
 {
 public:
 	CDoppleGangerItem (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
-	  CBasePowerUp(Classname, WorldModel, EF_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE)
+	  CBasePowerUp(Classname, WorldModel, FX_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE)
 	  {
 	  };
 
@@ -503,7 +503,7 @@ class CSphereItem : public CBasePowerUp
 {
 public:
 	CSphereItem (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
-	  CBasePowerUp (Classname, WorldModel, EF_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_POWERUP|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE)
+	  CBasePowerUp (Classname, WorldModel, FX_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_POWERUP|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE)
 	{
 	};
 
@@ -567,8 +567,8 @@ LINK_ITEM_TO_CLASS (item_doppleganger, CItemEntity);
 
 void AddRogueItemsToList ()
 {
-	NItems::Double = QNew (TAG_GENERIC) CDoubleDamage ("item_double", "models/items/ddamage/tris.md2", EF_ROTATE, "items/pkup.wav", "p_double", "Double Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::IRGoggles = QNew (TAG_GENERIC) CIRGoggles ("item_ir_goggles", "models/items/goggles/tris.md2", EF_ROTATE, "items/pkup.wav", "p_ir", "IR Goggles", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Double = QNew (TAG_GENERIC) CDoubleDamage ("item_double", "models/items/ddamage/tris.md2", FX_ROTATE, "items/pkup.wav", "p_double", "Double Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::IRGoggles = QNew (TAG_GENERIC) CIRGoggles ("item_ir_goggles", "models/items/goggles/tris.md2", FX_ROTATE, "items/pkup.wav", "p_ir", "IR Goggles", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 
 	NItems::Prox = QNew (TAG_GENERIC) CAmmo("ammo_prox", "models/ammo/am_prox/tris.md2", "a_prox", "Prox", 5, AMMOTAG_PROX);
 	NItems::Flechettes = QNew (TAG_GENERIC) CAmmo("ammo_flechettes", "models/ammo/am_flechette/tris.md2", "a_flechettes", "Flechettes", 50, AMMOTAG_FLECHETTES);
@@ -578,8 +578,8 @@ void AddRogueItemsToList ()
 
 	QNew (TAG_GENERIC) CAMBomb("ammo_nuke", "models/weapons/g_nuke/tris.md2", "p_nuke", "A-M Bomb");
 
-	QNew (TAG_GENERIC) CKey("key_nuke_container", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_contain", "Antimatter Pod", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
-	QNew (TAG_GENERIC) CKey("key_nuke", "models/weapons/g_nuke/tris.md2", EF_ROTATE, "items/pkup.wav", "i_nuke", "Antimatter Bomb", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_nuke_container", "models/weapons/g_nuke/tris.md2", FX_ROTATE, "items/pkup.wav", "i_contain", "Antimatter Pod", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
+	QNew (TAG_GENERIC) CKey("key_nuke", "models/weapons/g_nuke/tris.md2", FX_ROTATE, "items/pkup.wav", "i_nuke", "Antimatter Bomb", ITEMFLAG_GRABBABLE|ITEMFLAG_KEY|ITEMFLAG_STAY_COOP, "");
 
 	QNew (TAG_GENERIC) CSphereItem<CRogueVengeanceSphere, 600> ("item_sphere_vengeance", "models/items/vengnce/tris.md2", "p_vengeance", "Vengeance Sphere");
 	QNew (TAG_GENERIC) CSphereItem<CRogueHunterSphere, 1200> ("item_sphere_hunter", "models/items/hunter/tris.md2", "p_hunter", "Hunter Sphere");

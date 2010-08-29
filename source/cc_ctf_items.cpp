@@ -171,8 +171,8 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 **/
 void AddFlagsToList ()
 {
-	NItems::RedFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team1", "players/male/flag1.md2", EF_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
-	NItems::BlueFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team2", "players/male/flag2.md2", EF_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM2);
+	NItems::RedFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team1", "players/male/flag1.md2", FX_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
+	NItems::BlueFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team2", "players/male/flag2.md2", FX_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM2);
 }
 
 #endif

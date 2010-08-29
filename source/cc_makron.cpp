@@ -524,7 +524,7 @@ void CMakron::FireHyperblaster ()
 	dir.Z = 0;
 
 	dir.ToVectors (&forward, NULL, NULL);
-	MonsterFireBlaster (start, forward, 15, 1000, MZ2_MAKRON_BLASTER_1, EF_BLASTER);
+	MonsterFireBlaster (start, forward, 15, 1000, MZ2_MAKRON_BLASTER_1, FX_BLASTER);
 }	
 
 CFrame MakronFramesAttack5[]=

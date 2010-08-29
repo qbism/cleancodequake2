@@ -141,7 +141,7 @@ void CSoldierLight::FireGun (sint32 FlashNumber)
 		break;
 	};
 
-	MonsterFireBlaster (start, aim, 5, 600, flashIndex, EF_BLASTER);
+	MonsterFireBlaster (start, aim, 5, 600, flashIndex, FX_BLASTER);
 }
 
 void CSoldierLight::SpawnSoldier ()

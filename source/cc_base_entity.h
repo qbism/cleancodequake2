@@ -237,6 +237,37 @@ inline TType *entity_cast (IBaseEntity *Entity)
 }
 
 /**
+\typedef	uint32 EEntityFlags
+
+\brief	Defines an alias representing entity flags.
+**/
+typedef uint32 EEntityFlags;
+
+/**
+\enum	
+
+\brief	Values that represent what base classes this entity has inherited. 
+**/
+enum
+{
+	EF_BASE			=	BIT(0), // Can be casted to IBaseEntity
+	EF_HURTABLE		=	BIT(1), // Can be casted to IHurtableEntity
+	EF_THINKABLE	=	BIT(2), // Can be casted to IThinkableEntity
+	EF_TOUCHABLE	=	BIT(3), // Can be casted to ITouchableEntity
+	EF_PLAYER		=	BIT(4), // Can be casted to CPlayerEntity
+	EF_MONSTER		=	BIT(5), // Can be casted to CMonsterEntity
+	EF_PHYSICS		=	BIT(6), // Can be casted to IPhysicsEntity
+	EF_BLOCKABLE	=	BIT(7), // Can be casted to IBlockableEntity
+	EF_USABLE		=	BIT(8), // Can be casted to IUsableEntity
+	EF_ITEM			=	BIT(9), // Can be casted to CItemEntity
+	EF_MAP			=	BIT(10), // Can be casted to IMapEntity
+	EF_BRUSHMODEL	=	BIT(11), // Can be casted to IBrushModel
+	EF_PRIVATE		=	BIT(12), // Does not have a gameEntity structure
+	EF_JUNK			=	BIT(13), // Can be casted to IJunkEntity
+	EF_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
+};
+
+/**
 \fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 
 \brief	Template specialization for IBaseEntity casts. 
@@ -267,7 +298,7 @@ protected:
 public:
 	bool						Freed;				// true if freed
 	EEdictFlags					Flags;				// The entity flags
-	uint32						EntityFlags;		// The entity type flags
+	EEntityFlags				EntityFlags;		// The entity type flags
 	CEntityState				State;				// The entity state
 	std::string					ClassName;			// classname of this entity
 	entity_ptr<IBaseEntity>		Owner;				// Owner
@@ -639,7 +670,7 @@ public:
 	
 	\param [in,out]	Attacker	If non-null, the attacker. 
 	\param	Damage				The damage. 
-	\param [in,out]	Ignore		If non-null, the ignore. 
+	\param [in,out]	Ignore		If non-null, the entity to ignore. 
 	\param	Radius				The radius. 
 	\param	MeansOfDeath		The means of death. 
 	**/
@@ -656,7 +687,7 @@ public:
 	\author	Paril
 	\date	29/05/2010
 	
-	\param [in,out]	Other	If non-null, the other. 
+	\param [in,out]	Other	If non-null, entity to check against. 
 	
 	\return	true if it succeeds, false if it fails. 
 	**/
@@ -716,38 +747,6 @@ public:
 	**/
 	virtual const char *SAVE_GetName () = 0;
 };
-
-/**
-\typedef	uint32 EEntityFlags
-
-\brief	Defines an alias representing entity flags.
-**/
-typedef uint32 EEntityFlags;
-
-/**
-\enum	
-
-\brief	Values that represent what base classes this entity has inherited. 
-**/
-enum
-{
-	ENT_BASE		=	BIT(0), // Can be casted to IBaseEntity
-	ENT_HURTABLE	=	BIT(1), // Can be casted to IHurtableEntity
-	ENT_THINKABLE	=	BIT(2), // Can be casted to IThinkableEntity
-	ENT_TOUCHABLE	=	BIT(3), // Can be casted to ITouchableEntity
-	ENT_PLAYER		=	BIT(4), // Can be casted to CPlayerEntity
-	ENT_MONSTER		=	BIT(5), // Can be casted to CMonsterEntity
-	ENT_PHYSICS		=	BIT(6), // Can be casted to IPhysicsEntity
-	ENT_BLOCKABLE	=	BIT(7), // Can be casted to IBlockableEntity
-	ENT_USABLE		=	BIT(8), // Can be casted to IUsableEntity
-	ENT_ITEM		=	BIT(9), // Can be casted to CItemEntity
-	ENT_MAP			=	BIT(10), // Can be casted to IMapEntity
-	ENT_BRUSHMODEL	=	BIT(11), // Can be casted to IBrushModel
-	ENT_PRIVATE		=	BIT(12), // Does not have a gameEntity structure
-	ENT_JUNK		=	BIT(13), // Can be casted to IJunkEntity
-	ENT_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
-};
-
 
 /**
 \fn	inline char *CopyStr (const char *In, const sint16 Tag)

@@ -381,7 +381,7 @@ void CSpawnGrow::Think ()
 
 	if (Level.Frame >= Wait)
 	{
-		if (State.GetEffects() & EF_SPHERETRANS)
+		if (State.GetEffects() & FX_SPHERETRANS)
 		{
 			Free ();
 			return;
@@ -426,7 +426,7 @@ void CSpawnGrow::Spawn (vec3f Origin, sint8 Size)
 	Grow->Wait = Level.Frame + lifespan;
 	Grow->NextThink = Level.Frame + FRAMETIME;
 	if (Size != 2)
-		Grow->State.GetEffects() |= EF_SPHERETRANS;
+		Grow->State.GetEffects() |= FX_SPHERETRANS;
 		
 	Grow->Link ();
 };

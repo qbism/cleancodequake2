@@ -146,7 +146,7 @@ void CHeatBeam::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		CTrace Trace = DoTrace (from, end, Ignore, Mask);
 
 		// Did we hit an entity?
-		if (Trace.Entity && ((Trace.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Entity)->CanTakeDamage))
+		if (Trace.Entity && ((Trace.Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Entity)->CanTakeDamage))
 		{
 			// Convert to base entity
 			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Entity);
@@ -460,10 +460,10 @@ void CFlechette::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, Kick, DAMAGE_NO_REG_ARMOR, MOD_ETF_RIFLE);
 	else
 		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin, BL_FLECHETTE).Send();
@@ -505,7 +505,7 @@ void CFlechette::Spawn	(IBaseEntity *Spawner, vec3f Start, vec3f Dir,
 		if (tr.Entity)
 			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
-	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+	else if (Spawner && (Spawner->EntityFlags & EF_PLAYER))
 		CheckDodge (Spawner, Start, Dir, Speed);
 }
 
@@ -570,8 +570,8 @@ public:
 
 		if ((Level.Frame - LifeTime) > TRACKER_DAMAGE_TIME)
 		{
-			if (!(Enemy->EntityFlags & ENT_PLAYER))
-				Enemy->State.GetEffects() &= ~EF_TRACKERTRAIL;
+			if (!(Enemy->EntityFlags & EF_PLAYER))
+				Enemy->State.GetEffects() &= ~FX_TRACKERTRAIL;
 			Free ();
 		}
 		else
@@ -595,18 +595,18 @@ public:
 									PainNormal, Take, 0, TRACKER_DAMAGE_FLAGS, MOD_TRACKER);
 					}
 
-					if (Hurtable->EntityFlags & ENT_PLAYER)
+					if (Hurtable->EntityFlags & EF_PLAYER)
 						entity_cast<CPlayerEntity>(Hurtable)->Client.Timers.Tracker = Level.Frame + 1;
 					else
-						Hurtable->State.GetEffects() |= EF_TRACKERTRAIL;
+						Hurtable->State.GetEffects() |= FX_TRACKERTRAIL;
 					
 					NextThink = Level.Frame + FRAMETIME;
 				}
 			}
 			else
 			{
-				if (!(Hurtable->EntityFlags & ENT_PLAYER))
-					Hurtable->State.GetEffects() &= ~EF_TRACKERTRAIL;
+				if (!(Hurtable->EntityFlags & EF_PLAYER))
+					Hurtable->State.GetEffects() &= ~FX_TRACKERTRAIL;
 
 				Free ();
 			}
@@ -667,7 +667,7 @@ void CDisruptorTracker::Think ()
 	vec3f dest = Enemy->State.GetOrigin();
 
 	// PMM - try to hunt for center of enemy, if possible and not client
-	if (Enemy->EntityFlags & ENT_PLAYER)
+	if (Enemy->EntityFlags & EF_PLAYER)
 		dest.Z += Enemy->ViewHeight;
 	// paranoia
 	else if (!(Enemy->GetAbsMin().IsZero() || Enemy->GetAbsMax().IsZero()))
@@ -691,24 +691,24 @@ void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface
 		return;
 	}
 
-	if (GetOwner()->EntityFlags & ENT_PLAYER)
+	if (GetOwner()->EntityFlags & EF_PLAYER)
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin(), PNOISE_IMPACT);
 
-	if (Other && (Other->EntityFlags & ENT_HURTABLE))
+	if (Other && (Other->EntityFlags & EF_HURTABLE))
 	{
 		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
-		if (Hurtable->EntityFlags & (ENT_MONSTER|ENT_PLAYER))
+		if (Hurtable->EntityFlags & (EF_MONSTER | EF_PLAYER))
 		{
 			if (Hurtable->Health > 0)
 			{
 				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin,
 							0, (Damage*3), TRACKER_IMPACT_FLAGS, MOD_TRACKER);
 				
-				if ((Hurtable->EntityFlags & ENT_MONSTER) && !(entity_cast<CMonsterEntity>(Hurtable)->Monster->AIFlags & (AI_FLY | AI_SWIM)))
+				if ((Hurtable->EntityFlags & EF_MONSTER) && !(entity_cast<CMonsterEntity>(Hurtable)->Monster->AIFlags & (AI_FLY | AI_SWIM)))
 					entity_cast<IPhysicsEntity>(Hurtable)->Velocity.Z += 140;
 				
-				CDisruptorPainDaemon::Spawn (GetOwner(), Other, (int)(((((float)Damage)*0.1f) / 0.5f)));
+				CDisruptorPainDaemon::Spawn (GetOwner(), Other, (Damage * 0.1f) * 2);
 			}
 			else
 				Hurtable->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin,
@@ -741,7 +741,7 @@ void CDisruptorTracker::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Bolt->GetClipmask() = CONTENTS_MASK_SHOT;
 	Bolt->GetSolid() = SOLID_BBOX;
 	Bolt->Speed = speed;
-	Bolt->State.GetEffects() = EF_TRACKER;
+	Bolt->State.GetEffects() = FX_TRACKER;
 	Bolt->State.GetSound() = SoundIndex ("weapons/disrupt.wav");
 	Bolt->GetMins() = Bolt->GetMaxs() = vec3fOrigin;
 	
@@ -764,7 +764,7 @@ void CDisruptorTracker::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 		Bolt->DoFree = true;
 	}
 
-	if (Spawner->EntityFlags & ENT_PLAYER)
+	if (Spawner->EntityFlags & EF_PLAYER)
 		CheckDodge (Spawner, Bolt->State.GetOrigin(), dir, speed);
 
 	CTrace tr (Spawner->State.GetOrigin(), Bolt->State.GetOrigin(), Bolt, CONTENTS_MASK_SHOT);
@@ -818,18 +818,18 @@ void CGreenBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPS
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin(), PNOISE_IMPACT);
 
-	if (Other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & EF_HURTABLE)
 	{
 		IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
 		// the only time players will be firing blaster2 bolts will be from the 
 		// defender sphere.
-		EMeansOfDeath mod = (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER)) ? MOD_DEFENDER_SPHERE : MOD_BLASTER2;
+		EMeansOfDeath mod = (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER)) ? MOD_DEFENDER_SPHERE : MOD_BLASTER2;
 
-		IHurtableEntity *Owner = (GetOwner() && (GetOwner()->EntityFlags & ENT_HURTABLE)) ? entity_cast<IHurtableEntity>(GetOwner()) : NULL;
+		IHurtableEntity *Owner = (GetOwner() && (GetOwner()->EntityFlags & EF_HURTABLE)) ? entity_cast<IHurtableEntity>(GetOwner()) : NULL;
 		bool WasDamageable = false;
 
 		if (Owner)
@@ -868,7 +868,7 @@ void CGreenBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f di
 	Bolt->State.GetAngles() = dir.ToAngles();
 	Bolt->Velocity = dir.GetNormalizedFast() * speed;
 
-	Bolt->State.GetEffects() = effect | ((effect) ? EF_TRACKER : 0);
+	Bolt->State.GetEffects() = effect | ((effect) ? FX_TRACKER : 0);
 	Bolt->State.GetModelIndex() = ModelIndex ("models/proj/laser2/tris.md2");
 
 	Bolt->State.GetSound() = SoundIndex ("misc/lasfly.wav");
@@ -893,7 +893,7 @@ void CGreenBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f di
 		if (tr.Entity)
 			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
-	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+	else if (Spawner && (Spawner->EntityFlags & EF_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
 }
 

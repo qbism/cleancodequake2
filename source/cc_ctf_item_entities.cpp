@@ -266,7 +266,7 @@ CItemEntity *CFlag::DropItem (IBaseEntity *Entity)
 	dropped->GetSolid() = SOLID_TRIGGER;
 	dropped->SetOwner (Entity);
 
-	if (Entity->EntityFlags & ENT_PLAYER)
+	if (Entity->EntityFlags & EF_PLAYER)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;

@@ -419,13 +419,13 @@ public:
 	CPlayerNoise () :
 	  IBaseEntity ()
 	{
-		EntityFlags |= ENT_NOISE;
+		EntityFlags |= EF_NOISE;
 	};
 
 	CPlayerNoise (sint32 Index) :
 	  IBaseEntity (Index)
 	{
-		EntityFlags |= ENT_NOISE;
+		EntityFlags |= EF_NOISE;
 	};
 
 	void SaveFields (CFile &File)

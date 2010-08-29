@@ -493,7 +493,7 @@ void CGunner::Fire ()
 
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
-	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+	if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 		target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target.Z += Entity->Enemy->ViewHeight;
 

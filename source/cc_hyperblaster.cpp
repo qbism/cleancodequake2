@@ -78,7 +78,7 @@ void CHyperBlaster::Fire (CPlayerEntity *Player)
 		}
 		else
 		{
-			const sint32	effect = ((Player->Client.PlayerState.GetGunFrame() == 6) || (Player->Client.PlayerState.GetGunFrame() == 9)) ? EF_HYPERBLASTER : 0,
+			const sint32	effect = ((Player->Client.PlayerState.GetGunFrame() == 6) || (Player->Client.PlayerState.GetGunFrame() == 9)) ? FX_HYPERBLASTER : 0,
 							damage = (Game.GameMode & GAME_DEATHMATCH) ?
 					CalcQuadVal(15)
 					:
@@ -124,7 +124,7 @@ LINK_ITEM_TO_CLASS (weapon_hyperblaster, CItemEntity);
 void CHyperBlaster::CreateItem (CItemList *List)
 {
 	NItems::HyperBlaster = QNew (TAG_GENERIC) CWeaponItem
-		("weapon_hyperblaster", "models/weapons/g_hyperb/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
+		("weapon_hyperblaster", "models/weapons/g_hyperb/tris.md2", FX_ROTATE, "misc/w_pkup.wav",
 		"w_hyperblaster", "HyperBlaster", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Cells, 1, "#w_hyperblaster.md2");
 };

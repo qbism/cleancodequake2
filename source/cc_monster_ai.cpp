@@ -114,12 +114,12 @@ bool CMonster::FindTarget()
 	if (client == Entity->Enemy)
 		return true;	// JDC false;
 
-	if (client->EntityFlags & ENT_PLAYER)
+	if (client->EntityFlags & EF_PLAYER)
 	{
 		if (client->Flags & FL_NOTARGET)
 			return false;
 	}
-	else if (client->EntityFlags & ENT_MONSTER)
+	else if (client->EntityFlags & EF_MONSTER)
 	{
 		if (!client->Enemy)
 			return false;
@@ -148,7 +148,7 @@ bool CMonster::FindTarget()
 
 		if (r == RANGE_NEAR)
 		{
-			if ((client->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile) < Level.Frame && !IsInFront (Entity, client)
+			if ((client->EntityFlags & EF_MONSTER) && (entity_cast<CMonsterEntity>(client)->ShowHostile) < Level.Frame && !IsInFront (Entity, client)
 				|| !IsInFront (Entity, client))
 				return false;
 		}
@@ -160,15 +160,15 @@ bool CMonster::FindTarget()
 
 		Entity->Enemy = client;
 
-		if (!(Entity->Enemy->EntityFlags & ENT_NOISE))
+		if (!(Entity->Enemy->EntityFlags & EF_NOISE))
 		{
 			AIFlags &= ~AI_SOUND_TARGET;
 
-			if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
+			if (!(Entity->Enemy->EntityFlags & EF_PLAYER))
 			{
 				Entity->Enemy = Entity->Enemy->Enemy;
 
-				if (!(Entity->Enemy->EntityFlags & ENT_PLAYER))
+				if (!(Entity->Enemy->EntityFlags & EF_PLAYER))
 				{
 					Entity->Enemy = nullentity;
 					return false;
@@ -254,7 +254,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 
 				float dz = Entity->State.GetOrigin().Z - Entity->GoalEntity->State.GetOldOrigin().Z;
 
-				if (Entity->GoalEntity->EntityFlags & ENT_PLAYER)
+				if (Entity->GoalEntity->EntityFlags & EF_PLAYER)
 				{
 					if (dz > 40)
 						newOrg.Z -= 8;
@@ -516,7 +516,7 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 
 bool CMonster::CheckAttack ()
 {
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin();
@@ -608,7 +608,7 @@ bool CMonster::CheckAttack ()
 
 void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {
-	if (!(Attacker->EntityFlags & ENT_PLAYER) && !(Attacker->EntityFlags & ENT_MONSTER))
+	if (!(Attacker->EntityFlags & EF_PLAYER) && !(Attacker->EntityFlags & EF_MONSTER))
 		return;
 
 	if (Attacker == Entity || Attacker == Entity->Enemy)
@@ -618,20 +618,20 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// or another good guy, do not get mad at them
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if ((Attacker->EntityFlags & ENT_PLAYER) || ((Attacker->EntityFlags & ENT_MONSTER) && (entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & AI_GOOD_GUY)))
+		if ((Attacker->EntityFlags & EF_PLAYER) || ((Attacker->EntityFlags & EF_MONSTER) && (entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & AI_GOOD_GUY)))
 			return;
 	}
 
 	// we now know that we are not both good guys
 
 	// if attacker is a client, get mad at them because he's good and we're not
-	if (Attacker->EntityFlags & ENT_PLAYER)
+	if (Attacker->EntityFlags & EF_PLAYER)
 	{
 		AIFlags &= ~AI_SOUND_TARGET;
 
 		// this can only happen in coop (both new and old enemies are clients)
 		// only switch if can't see the current enemy
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_PLAYER))
 		{
 			if (IsVisible (Entity, *Entity->Enemy))
 			{
@@ -649,7 +649,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 		return;
 	}
 
-	CMonsterEntity *AttackerMonster = (Attacker->EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(Attacker) : NULL;
+	CMonsterEntity *AttackerMonster = (Attacker->EntityFlags & EF_MONSTER) ? entity_cast<CMonsterEntity>(Attacker) : NULL;
 
 	// it's the same base (walk/swim/fly) type and a different classname and it's not a tank
 	// (they spray too much), get mad at them
@@ -660,7 +660,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 			(AttackerMonster->Monster->MonsterID != CMakron::ID) &&
 			(AttackerMonster->Monster->MonsterID != CJorg::ID))
 	{
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
 
 		Entity->Enemy = Attacker;
@@ -671,7 +671,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// if they *meant* to shoot us, then shoot back
 	else if (Attacker->Enemy == Entity)
 	{
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
 		
 		Entity->Enemy = Attacker;
@@ -682,7 +682,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// otherwise get mad at whoever they are mad at (help our buddy) unless it is us!
 	else if (Attacker->Enemy && Attacker->Enemy != Entity)
 	{
-		if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_PLAYER))
 			Entity->OldEnemy = Entity->Enemy;
 
 		Entity->Enemy = Attacker->Enemy;
@@ -731,7 +731,7 @@ bool CMonster::AI_CheckAttack()
 
 		if (AIFlags & AI_SOUND_TARGET)
 		{
-			if ((Entity->Enemy->EntityFlags & ENT_NOISE) && (Level.Frame - (entity_cast<CPlayerNoise>(*Entity->Enemy)->Time)) > 50)
+			if ((Entity->Enemy->EntityFlags & EF_NOISE) && (Level.Frame - (entity_cast<CPlayerNoise>(*Entity->Enemy)->Time)) > 50)
 			{
 				if (Entity->GoalEntity == Entity->Enemy)
 				{
@@ -757,7 +757,7 @@ bool CMonster::AI_CheckAttack()
 
 // see if the enemy is dead
 	bool hesDeadJim = false;
-	IHurtableEntity *HurtableEnemy = (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE)) ? entity_cast<IHurtableEntity>(*Entity->Enemy) : NULL;
+	IHurtableEntity *HurtableEnemy = (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_HURTABLE)) ? entity_cast<IHurtableEntity>(*Entity->Enemy) : NULL;
 
 	if (!Entity->Enemy)
 		hesDeadJim = true;
@@ -788,7 +788,7 @@ bool CMonster::AI_CheckAttack()
 		Entity->Enemy = nullentity;
 
 	// FIXME: look all around for other targets
-		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->OldEnemy)->Health > 0))
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->OldEnemy)->Health > 0))
 		{
 			Entity->Enemy = Entity->OldEnemy;
 			Entity->OldEnemy = nullentity;
@@ -1122,7 +1122,7 @@ void CMonster::AI_Stand (float Dist)
 void CMonster::FoundTarget ()
 {
 	// let other monsters see this monster for a while
-	if (Entity->Enemy->EntityFlags & ENT_PLAYER)
+	if (Entity->Enemy->EntityFlags & EF_PLAYER)
 	{
 		Level.SightEntity = Entity;
 		Level.SightEntityFrame = Level.Frame;

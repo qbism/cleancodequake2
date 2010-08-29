@@ -70,10 +70,10 @@ void CLoogie::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_UNKNOWN);
 
 	Free (); // "delete" the entity
@@ -114,7 +114,7 @@ void CLoogie::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 		if (tr.Entity)
 			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
-	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+	else if (Spawner && (Spawner->EntityFlags & EF_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
 }
 
@@ -182,7 +182,7 @@ bool CGekk::CheckJumpClose ()
 
 bool CGekk::CheckAttack ()
 {
-	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
+	if (!Entity->Enemy || !(Entity->Enemy->EntityFlags & EF_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return false;
 
 	if (CheckMelee())
@@ -379,7 +379,7 @@ void CGekk::SwimLoop ()
 
 void CGekk::Swim ()
 {
-	if (CheckAttack() && (Entity->Enemy->EntityFlags & ENT_PHYSICS) && !entity_cast<IPhysicsEntity>(*Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
+	if (CheckAttack() && (Entity->Enemy->EntityFlags & EF_PHYSICS) && !entity_cast<IPhysicsEntity>(*Entity->Enemy)->WaterInfo.Level && frand() > 0.7)
 		WaterToLand ();
 	else
 		CurrentMove = &GekkMoveSwimStart;
@@ -808,7 +808,7 @@ void CGekk::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (!(Other->EntityFlags & ENT_HURTABLE))
+	if (!(Other->EntityFlags & EF_HURTABLE))
 		return;
 
 	IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
@@ -1036,15 +1036,15 @@ void CGekk::GibFest ()
 {
 	Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/torso/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/claw/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/pelvis/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/torso/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/claw/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+	CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/pelvis/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
 
-	Entity->ThrowHead (ModelIndex ("models/objects/gekkgib/head/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
+	Entity->ThrowHead (ModelIndex ("models/objects/gekkgib/head/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
 
 	Entity->IsDead = true;
 }
@@ -1178,15 +1178,15 @@ void CGekk::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, v
 	{
 		Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/udeath.wav"));
 
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/torso/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/claw/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
-		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/pelvis/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/arm/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/torso/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/claw/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/leg/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
+		CGibEntity::Spawn (Entity, ModelIndex ("models/objects/gekkgib/pelvis/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
 
-		Entity->ThrowHead (ModelIndex ("models/objects/gekkgib/head/tris.md2"), 20, GIB_ORGANIC, EF_GREENGIB);
+		Entity->ThrowHead (ModelIndex ("models/objects/gekkgib/head/tris.md2"), 20, GIB_ORGANIC, FX_GREENGIB);
 		return;
 	}
 

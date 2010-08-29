@@ -50,7 +50,7 @@ CMonsterEntity *CFixbot::FindDeadMonster ()
 {
 	CMonsterEntity *FoundMonster = NULL, *BestMonster = NULL;
 
-	while ((FoundMonster = FindRadius<CMonsterEntity, ENT_MONSTER>(FoundMonster, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((FoundMonster = FindRadius<CMonsterEntity, EF_MONSTER>(FoundMonster, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
 		if (FoundMonster == Entity)
 			continue;
@@ -412,7 +412,7 @@ bool CFixbot::CheckTelefrag ()
 	Entity->Enemy->State.GetAngles().ToVectors (NULL, NULL, &up);
 	start = start.MultiplyAngles (48, up);
 	CTrace tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), Entity->Enemy->GetMaxs(), start, Entity, CONTENTS_MASK_MONSTERSOLID);
-	if (tr.Entity->EntityFlags & ENT_HURTABLE)
+	if (tr.Entity->EntityFlags & EF_HURTABLE)
 	{
 		entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (Entity, Entity, vec3fOrigin, Entity->Enemy->State.GetOrigin(), vec3fOrigin, 999999, 0, DAMAGE_NO_PROTECTION, MOD_UNKNOWN);
 		return false;
@@ -655,7 +655,7 @@ void CFixbot::FireBlaster ()
 
 	dir = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start;
 
-	MonsterFireBlaster (start, dir, 15, 1000, MZ2_FIXBOT_BLASTER_1, EF_BLASTER);
+	MonsterFireBlaster (start, dir, 15, 1000, MZ2_FIXBOT_BLASTER_1, FX_BLASTER);
 }
 
 void CFixbot::LandingGoal ()
@@ -784,7 +784,7 @@ void CFixbot::UseScanner ()
 {
 	IHurtableEntity *Hurtable = NULL;
 
-	while ((Hurtable = FindRadius<IHurtableEntity, ENT_HURTABLE> (Hurtable, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((Hurtable = FindRadius<IHurtableEntity, EF_HURTABLE> (Hurtable, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
 		if (Hurtable->Health >= 100)
 		{

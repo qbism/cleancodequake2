@@ -339,7 +339,7 @@ void CWidowStand::FireBlaster ()
 		return;
 
 	ShotsFired++;
-	EEntityStateEffects effect = (!(ShotsFired % 4)) ? EF_BLASTER : 0;
+	EEntityStateEffects effect = (!(ShotsFired % 4)) ? FX_BLASTER : 0;
 
 	vec3f forward, right, start;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
@@ -452,7 +452,7 @@ void CWidowStand::DoSpawn ()
 					designated_enemy = *Entity->Enemy;
 			}
 
-			if ((designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
+			if ((designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
 			{
 				ent->Enemy = designated_enemy;
 				ent->Monster->FoundTarget ();
@@ -1080,7 +1080,7 @@ void CWidowStand::PowerArmor ()
 
 void CWidowStand::RespondPowerup (CPlayerEntity *other)
 {
-	if (other->State.GetEffects() & EF_QUAD)
+	if (other->State.GetEffects() & FX_QUAD)
 	{
 		switch (CvarList[CV_SKILL].Integer())
 		{
@@ -1096,7 +1096,7 @@ void CWidowStand::RespondPowerup (CPlayerEntity *other)
 			break;
 		};
 	}
-	else if (other->State.GetEffects() & EF_DOUBLE)
+	else if (other->State.GetEffects() & FX_DOUBLE)
 	{
 		switch (CvarList[CV_SKILL].Integer())
 		{
@@ -1112,7 +1112,7 @@ void CWidowStand::RespondPowerup (CPlayerEntity *other)
 	else
 		WidowDamageMultiplier = 1;
 
-	if (other->State.GetEffects() & EF_PENT)
+	if (other->State.GetEffects() & FX_PENT)
 	{
 		switch (CvarList[CV_SKILL].Integer())
 		{
@@ -1145,19 +1145,19 @@ void CWidowStand::Powerups ()
 			if (!ent->GetInUse())
 				continue;
 
-			if (!FoundPent && (ent->State.GetEffects() & EF_PENT))
+			if (!FoundPent && (ent->State.GetEffects() & FX_PENT))
 			{
 				RespondPowerup (ent);
 				FoundPent = true;
 			}
 
-			if (!FoundQuad && (ent->State.GetEffects() & EF_QUAD))
+			if (!FoundQuad && (ent->State.GetEffects() & FX_QUAD))
 			{
 				RespondPowerup (ent);
 				FoundQuad = true;
 			}
 
-			if (!FoundDouble && (ent->State.GetEffects() & EF_DOUBLE))
+			if (!FoundDouble && (ent->State.GetEffects() & FX_DOUBLE))
 			{
 				RespondPowerup (ent);
 				FoundDouble = true;
@@ -1200,7 +1200,7 @@ bool CWidowStand::CheckAttack ()
 		return true;
 	}
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight),
@@ -1212,7 +1212,7 @@ bool CWidowStand::CheckAttack ()
 		if (tr.Entity != Entity->Enemy)
 		{	
 			// go ahead and spawn stuff if we're mad a client
-			if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && SlotsLeft() >= 2)
+			if ((Entity->Enemy->EntityFlags & EF_PLAYER) && SlotsLeft() >= 2)
 			{
 				AttackState = AS_BLIND;
 				return true;

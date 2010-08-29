@@ -82,12 +82,12 @@ void Shutdown_Junk ()
 IJunkEntity::IJunkEntity () :
 IBaseEntity()
 {
-	EntityFlags |= ENT_JUNK;
+	EntityFlags |= EF_JUNK;
 };
 IJunkEntity::IJunkEntity (sint32 Index) :
 IBaseEntity(Index)
 {
-	EntityFlags |= ENT_JUNK;
+	EntityFlags |= EF_JUNK;
 };
 
 void IJunkEntity::Die ()
@@ -168,7 +168,7 @@ void CGibEntity::Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, 
 
 	vec3f vd = VelocityForDamage (Damage);
 
-	vec3f velocity = ((Owner->EntityFlags & ENT_PHYSICS) ? (entity_cast<IPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
+	vec3f velocity = ((Owner->EntityFlags & EF_PHYSICS) ? (entity_cast<IPhysicsEntity>(Owner)->Velocity) : vec3fOrigin);
 	velocity.MultiplyAngles (vscale, vd);
 	Junk->Velocity = velocity;
 	Junk->ClipGibVelocity ();

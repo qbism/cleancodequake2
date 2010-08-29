@@ -463,7 +463,7 @@ void CStalker::ShootAttack ()
 
 	vec3f dir = (Entity->Enemy->State.GetOrigin() - start);
 
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && frand() < (0.20f + 0.1f * CvarList[CV_SKILL].Float()))
+	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && frand() < (0.20f + 0.1f * CvarList[CV_SKILL].Float()))
 	{
 		end = Entity->Enemy->State.GetOldOrigin().MultiplyAngles (dir.Length() / 1000, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 		dir = end - start;
@@ -474,7 +474,7 @@ void CStalker::ShootAttack ()
 	CTrace trace (start, end, Entity, CONTENTS_MASK_SHOT);
 
 	if (trace.Entity == Entity->Enemy || trace.Entity == World)
-		MonsterFireBlaster2 (start, dir, 15, 800, MZ2_STALKER_BLASTER, EF_BLASTER);
+		MonsterFireBlaster2 (start, dir, 15, 800, MZ2_STALKER_BLASTER, FX_BLASTER);
 }
 
 void CStalker::ShootAttack2 ()
@@ -622,7 +622,7 @@ void CalcJumpAngle(vec3f start, vec3f end, float velocity, vec3f &angles)
 // ====================
 bool CStalker::CheckLZ (IBaseEntity *target, vec3f dest)
 {
-	if (!(target->EntityFlags & ENT_HURTABLE) || !(target->EntityFlags & ENT_PHYSICS))
+	if (!(target->EntityFlags & EF_HURTABLE) || !(target->EntityFlags & EF_PHYSICS))
 		return false;
 
 	if ((PointContents (dest) & CONTENTS_MASK_WATER) || entity_cast<IPhysicsEntity>(target)->WaterInfo.Level)

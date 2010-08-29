@@ -104,7 +104,7 @@ void CBoss2::FireBulletRight ()
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
-	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+	if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
@@ -126,7 +126,7 @@ void CBoss2::FireBulletLeft ()
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
-	if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+	if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;

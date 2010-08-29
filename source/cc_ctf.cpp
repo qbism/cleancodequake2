@@ -514,7 +514,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 	bool cansee;
 	IBaseEntity *what = NULL;
 
-	while ((what = FindRadius<ENT_BASE>(what, Player->State.GetOrigin(), 1024, false)) != NULL)
+	while ((what = FindRadius<EF_BASE>(what, Player->State.GetOrigin(), 1024, false)) != NULL)
 	{
 		// find what in loc_classnames
 		uint32 hash = Com_HashGeneric (what->ClassName, HASHSIZE_CLASSNAMES);
@@ -567,7 +567,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 	// see if there's more than one in the map, if so
 	// we need to determine what team is closest
 	what = NULL;
-	while ((what = CC_FindByClassName<IBaseEntity, ENT_BASE> (what, hot->ClassName.c_str())) != NULL)
+	while ((what = CC_FindByClassName<IBaseEntity, EF_BASE> (what, hot->ClassName.c_str())) != NULL)
 	{
 		if (what == hot)
 			continue;

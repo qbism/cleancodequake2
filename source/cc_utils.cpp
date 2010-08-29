@@ -86,7 +86,7 @@ IBaseEntity *CC_PickTarget (std::string targetname)
 	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname.c_str());
+		Entity = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname.c_str());
 		if (!Entity)
 			break;
 
@@ -113,7 +113,7 @@ TTargetList CC_GetTargets (std::string targetname)
 	IMapEntity *Entity = NULL;
 	while(1)
 	{
-		Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname.c_str());
+		Entity = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Entity, targetname.c_str());
 		
 		if (!Entity)
 			break;
@@ -151,7 +151,7 @@ G_TouchTriggers
 void	G_TouchTriggers (IBaseEntity *Entity)
 {
 	// dead things don't activate triggers!
-	if (Entity->EntityFlags & ENT_HURTABLE)
+	if (Entity->EntityFlags & EF_HURTABLE)
 	{
 		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(Entity);
 		if ((Hurt->CanTakeDamage) && (Hurt->Health <= 0))
@@ -169,7 +169,7 @@ void	G_TouchTriggers (IBaseEntity *Entity)
 		if (!TouchedEntity || !TouchedEntity->GetInUse())
 			continue;
 
-		if (TouchedEntity->EntityFlags & ENT_TOUCHABLE)
+		if (TouchedEntity->EntityFlags & EF_TOUCHABLE)
 		{
 			(entity_cast<ITouchableEntity>(TouchedEntity))->Touch (Entity, NULL, NULL);
 			continue;

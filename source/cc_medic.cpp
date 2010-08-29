@@ -50,7 +50,7 @@ CMonster(ID)
 void CMedic::CleanupHeal (bool ChangeFrame)
 {
 	// clean up target, if we have one and it's legit
-	if (Entity->Enemy && Entity->Enemy->GetInUse() && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if (Entity->Enemy && Entity->Enemy->GetInUse() && (Entity->Enemy->EntityFlags & EF_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 		Enemy->Monster->Healer = nullentity;
@@ -73,7 +73,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 	CleanupHeal (true);
 
 	// gib em!
-	if ((Mark) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if ((Mark) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & EF_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 		// if the first badMedic slot is filled by a medic, skip it and use the second one
@@ -83,7 +83,7 @@ void CMedic::AbortHeal (bool Gib, bool Mark)
 		else
 			Enemy->Monster->BadMedic1 = Entity;
 	}
-	if ((Gib) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if ((Gib) && (Entity->Enemy) && (Entity->Enemy->GetInUse()) && (Entity->Enemy->EntityFlags & EF_MONSTER))
 	{
 		CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 
@@ -109,7 +109,7 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 {
 	CMonsterEntity *Found = NULL, *Best = NULL;
 
-	while ((Found = FindRadius<CMonsterEntity, ENT_MONSTER>(Found, Entity->State.GetOrigin(), 1024)) != NULL)
+	while ((Found = FindRadius<CMonsterEntity, EF_MONSTER>(Found, Entity->State.GetOrigin(), 1024)) != NULL)
 	{
 		if (Found == Entity)
 			continue;
@@ -432,13 +432,13 @@ void CMedic::FireBlaster ()
 	{
 	case FRAME_attack9:
 	case FRAME_attack12:
-		effect = EF_BLASTER;
+		effect = FX_BLASTER;
 		break;
 	case FRAME_attack19:
 	case FRAME_attack22:
 	case FRAME_attack25:
 	case FRAME_attack28:
-		effect = EF_HYPERBLASTER;
+		effect = FX_HYPERBLASTER;
 		break;
 	default:
 		break;
@@ -504,7 +504,7 @@ void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 	// if we had a pending patient, free him up for another medic
 #if ROGUE_FEATURES
 	if ((Entity->Enemy) &&
-		(Entity->Enemy->EntityFlags & ENT_MONSTER ) && 
+		(Entity->Enemy->EntityFlags & EF_MONSTER ) && 
 		((entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer == Entity))
 		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->Healer = nullentity;
 #endif
@@ -611,7 +611,7 @@ void CMedic::CableAttack ()
 	if (!Entity->Enemy)
 		return;
 #else
-	if ((!Entity->Enemy) || (Entity->Enemy->State.GetEffects() & EF_GIB))
+	if ((!Entity->Enemy) || (Entity->Enemy->State.GetEffects() & FX_GIB))
 	{
 		AbortHeal (false, false);
 		return;
@@ -619,14 +619,14 @@ void CMedic::CableAttack ()
 
 	// see if our enemy has changed to a client, or our target has more than 0 health,
 	// abort it .. we got switched to someone else due to damage
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) || (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
+	if ((Entity->Enemy->EntityFlags & EF_PLAYER) || (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
 	{
 		AbortHeal (false, false);
 		return;
 	}
 #endif
 
-	if (!(Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if (!(Entity->Enemy->EntityFlags & EF_MONSTER))
 		return;
 
 	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
@@ -688,7 +688,7 @@ void CMedic::CableAttack ()
 		Entity->PlaySound (CHAN_AUTO, Sounds[SOUND_HOOK_HIT]);
 		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->AIFlags |= AI_RESURRECTING;
 
-		Entity->Enemy->State.GetEffects() = EF_PENT;
+		Entity->Enemy->State.GetEffects() = FX_PENT;
 		break;
 	case FRAME_attack50:
 		Entity->Enemy->SpawnFlags = 0;
@@ -717,7 +717,7 @@ void CMedic::CableAttack ()
 		Monster->GetSolid() = SOLID_BBOX;
 		Monster->Link ();
 
-		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_PLAYER))
+		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & EF_PLAYER))
 		{
 			Monster->Enemy = Entity->OldEnemy;
 			Monster->Monster->FoundTarget ();
@@ -755,7 +755,7 @@ void CMedic::CableAttack ()
 			Monster->GetSolid() = SOLID_BBOX;
 			Monster->Link ();
 
-			if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & ENT_PLAYER))
+			if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & EF_PLAYER))
 			{
 				Monster->Enemy = Entity->OldEnemy;
 				Monster->Monster->FoundTarget ();
@@ -801,7 +801,7 @@ void CMedic::HookRetract ()
 {
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_RETRACT]);
 #if !ROGUE_FEATURES
-	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_MONSTER))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_MONSTER))
 		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->AIFlags &= ~AI_RESURRECTING;
 #endif
 }
@@ -879,7 +879,7 @@ bool CMedic::CheckAttack ()
 	if (AIFlags & AI_MEDIC)
 	{
 #if !ROGUE_FEATURES
-		if ((Entity->Enemy->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > entity_cast<IHurtableEntity>(*Entity->Enemy)->GibHealth))
+		if ((Entity->Enemy->EntityFlags & EF_MONSTER) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > entity_cast<IHurtableEntity>(*Entity->Enemy)->GibHealth))
 		{
 			Attack();
 			return true;

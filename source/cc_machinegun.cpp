@@ -144,7 +144,7 @@ LINK_ITEM_TO_CLASS (weapon_machinegun, CItemEntity);
 void CMachinegun::CreateItem (CItemList *List)
 {
 	NItems::Machinegun = QNew (TAG_GENERIC) CWeaponItem
-		("weapon_machinegun", "models/weapons/g_machn/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_machinegun",
+		("weapon_machinegun", "models/weapons/g_machn/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_machinegun",
 		"Machinegun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::Bullets, 1, "#w_machinegun.md2");
 };

@@ -200,7 +200,7 @@ public:
 	void Think ();
 
 	bool Run ();
-	static void Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, EGibType type, EEntityStateEffects effects = EF_GIB);
+	static void Spawn (IBaseEntity *Owner, MediaIndex gibIndex, sint32 Damage, EGibType type, EEntityStateEffects effects = FX_GIB);
 };
 
 void Init_Junk();

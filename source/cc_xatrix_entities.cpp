@@ -115,7 +115,7 @@ public:
 	{
 		CSparks(State.GetOrigin(), vec3fOrigin, ST_WELDING_SPARKS, 0xe0 + irandom(7), 30).Send();
 
-		State.GetEffects() &= ~EF_SPINNINGLIGHTS;
+		State.GetEffects() &= ~FX_SPINNINGLIGHTS;
 		Usable = false;
 
 		DoFree = true;
@@ -144,7 +144,7 @@ public:
 		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
 		{
 			SpawnFlags &= ~ROTATING_LIGHT_START_OFF;
-			State.GetEffects() |= EF_SPINNINGLIGHTS;
+			State.GetEffects() |= FX_SPINNINGLIGHTS;
 
 			if (SpawnFlags & ROTATING_LIGHT_ALARM)
 				NextThink = Level.Frame + 1;
@@ -152,7 +152,7 @@ public:
 		else
 		{
 			SpawnFlags |= ROTATING_LIGHT_START_OFF;
-			State.GetEffects() &= ~EF_SPINNINGLIGHTS;
+			State.GetEffects() &= ~FX_SPINNINGLIGHTS;
 		}
 	};
 
@@ -165,9 +165,9 @@ public:
 		Usable = true;
 		
 		if (SpawnFlags & ROTATING_LIGHT_START_OFF)
-			State.GetEffects() &= ~EF_SPINNINGLIGHTS;
+			State.GetEffects() &= ~FX_SPINNINGLIGHTS;
 		else
-			State.GetEffects() |= EF_SPINNINGLIGHTS;
+			State.GetEffects() |= FX_SPINNINGLIGHTS;
 
 		if (!Health)
 			Health = 10;
@@ -365,7 +365,7 @@ public:
 			if (!Entity || !Entity->GetInUse())
 				continue;
 
-			if (!(Entity->EntityFlags & ENT_HURTABLE))
+			if (!(Entity->EntityFlags & EF_HURTABLE))
 				continue;
 
 			if (Entity == this)
@@ -373,9 +373,9 @@ public:
 
 			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Entity);
 
-			if (Hurtable->EntityFlags & ENT_PLAYER)
+			if (Hurtable->EntityFlags & EF_PLAYER)
 				Hurtable->TakeDamage (this, this, vec3fOrigin, Hurtable->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_TRAP);
-			else if (Hurtable->EntityFlags & ENT_MONSTER)
+			else if (Hurtable->EntityFlags & EF_MONSTER)
 				Hurtable->Free ();
 		}
 
@@ -425,7 +425,7 @@ public:
 		vec3f	start, dir;
 		vec3f	vec;
 				
-		IBaseEntity *target = CC_FindByClassName<IBaseEntity, ENT_BASE> (NULL, Target.c_str());
+		IBaseEntity *target = CC_FindByClassName<IBaseEntity, EF_BASE> (NULL, Target.c_str());
 		
 		vec = target->State.GetOrigin();
 		vec.Z += 16;

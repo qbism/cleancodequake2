@@ -72,13 +72,13 @@ void CMedicCommander::FireBlaster ()
 	{
 	case FRAME_attack9:
 	case FRAME_attack12:
-		effect = EF_BLASTER;
+		effect = FX_BLASTER;
 		break;
 	case FRAME_attack19:
 	case FRAME_attack22:
 	case FRAME_attack25:
 	case FRAME_attack28:
-		effect = EF_HYPERBLASTER;
+		effect = FX_HYPERBLASTER;
 		break;
 	default:
 		break;
@@ -341,7 +341,7 @@ void CMedicCommander::FinishSpawn ()
 				designated_enemy = *Entity->Enemy;
 		}
 
-		if ((designated_enemy) && (designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
+		if ((designated_enemy) && (designated_enemy->GetInUse()) && ((designated_enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(designated_enemy)->Health > 0))
 		{
 			ent->Enemy = designated_enemy;
 			ent->Monster->FoundTarget ();
@@ -458,7 +458,7 @@ bool CMedicCommander::CheckAttack ()
 		}
 	}
 
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && !IsVisible (Entity, *Entity->Enemy) && (MonsterSlots > 2))
+	if ((Entity->Enemy->EntityFlags & EF_PLAYER) && !IsVisible (Entity, *Entity->Enemy) && (MonsterSlots > 2))
 	{
 		AttackState = AS_BLIND;
 		return true;

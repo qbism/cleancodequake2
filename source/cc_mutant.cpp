@@ -316,7 +316,7 @@ void CMutant::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (Other->EntityFlags & ENT_HURTABLE)
+	if (Other->EntityFlags & EF_HURTABLE)
 	{
 		if (Entity->Velocity.Length() > 400)
 		{

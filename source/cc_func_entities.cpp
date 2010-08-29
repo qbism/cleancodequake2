@@ -473,7 +473,7 @@ void CFuncClock::Think ()
 {
 	if (!String)
 	{
-		String = entity_cast<CTargetString>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str()));
+		String = entity_cast<CTargetString>(CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str()));
 		if (!String)
 			return;
 	}

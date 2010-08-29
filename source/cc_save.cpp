@@ -230,7 +230,7 @@ void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 		File.WriteString (Entity->SAVE_GetName ());
 
 #if WIN32 && defined(_DEBUG)
-		if (!(Entity->EntityFlags & ENT_ITEM))
+		if (!(Entity->EntityFlags & EF_ITEM))
 		{
 			if (!strstr(Q_strlwr(std::string(typeid(*Entity).name())).c_str(), Q_strlwr(std::string(Entity->SAVE_GetName())).c_str()))
 				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->SAVE_GetName());

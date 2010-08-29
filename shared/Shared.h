@@ -963,52 +963,52 @@ typedef uint32 EEntityStateEffects;
 **/
 enum
 {
-	EF_ROTATE			= BIT(0),		// rotate (bonus items)
-	EF_GIB				= BIT(1),		// leave a trail
+	FX_ROTATE			= BIT(0),		// rotate (bonus items)
+	FX_GIB				= BIT(1),		// leave a trail
 	// EMPTY			= BIT(2),
-	EF_BLASTER			= BIT(3),		// redlight + trail
-	EF_ROCKET			= BIT(4),		// redlight + trail
-	EF_GRENADE			= BIT(5),
-	EF_HYPERBLASTER		= BIT(6),
-	EF_BFG				= BIT(7),
-	EF_COLOR_SHELL		= BIT(8),
-	EF_POWERSCREEN		= BIT(9),
-	EF_ANIM01			= BIT(10),		// automatically cycle between frames 0 and 1 at 2 hz
-	EF_ANIM23			= BIT(11),		// automatically cycle between frames 2 and 3 at 2 hz
-	EF_ANIM_ALL			= BIT(12),		// automatically cycle through all frames at 2hz
-	EF_ANIM_ALLFAST		= BIT(13),		// automatically cycle through all frames at 10hz
-	EF_FLIES			= BIT(14),
-	EF_QUAD				= BIT(15),
-	EF_PENT				= BIT(16),
-	EF_TELEPORTER		= BIT(17),		// particle fountain
-	EF_FLAG1			= BIT(18),
-	EF_FLAG2			= BIT(19),
+	FX_BLASTER			= BIT(3),		// redlight + trail
+	FX_ROCKET			= BIT(4),		// redlight + trail
+	FX_GRENADE			= BIT(5),
+	FX_HYPERBLASTER		= BIT(6),
+	FX_BFG				= BIT(7),
+	FX_COLOR_SHELL		= BIT(8),
+	FX_POWERSCREEN		= BIT(9),
+	FX_ANIM01			= BIT(10),		// automatically cycle between frames 0 and 1 at 2 hz
+	FX_ANIM23			= BIT(11),		// automatically cycle between frames 2 and 3 at 2 hz
+	FX_ANIM_ALL			= BIT(12),		// automatically cycle through all frames at 2hz
+	FX_ANIM_ALLFAST		= BIT(13),		// automatically cycle through all frames at 10hz
+	FX_FLIES			= BIT(14),
+	FX_QUAD				= BIT(15),
+	FX_PENT				= BIT(16),
+	FX_TELEPORTER		= BIT(17),		// particle fountain
+	FX_FLAG1			= BIT(18),
+	FX_FLAG2			= BIT(19),
 
 	// RAFAEL
-	EF_IONRIPPER		= BIT(20),
-	EF_GREENGIB			= BIT(21),
-	EF_BLUEHYPERBLASTER = BIT(22),
-	EF_SPINNINGLIGHTS	= BIT(23),
-	EF_PLASMA			= BIT(24),
-	EF_TRAP				= BIT(25), // IT'S A TRAP!!!
+	FX_IONRIPPER		= BIT(20),
+	FX_GREENGIB			= BIT(21),
+	FX_BLUEHYPERBLASTER = BIT(22),
+	FX_SPINNINGLIGHTS	= BIT(23),
+	FX_PLASMA			= BIT(24),
+	FX_TRAP				= BIT(25), // IT'S A TRAP!!!
 
 	// ROGUE
-	EF_TRACKER			= BIT(26),
-	EF_DOUBLE			= BIT(27),
-	EF_SPHERETRANS		= BIT(28),
-	EF_TAGTRAIL			= BIT(29),
-	EF_HALF_DAMAGE		= BIT(30),
-	EF_TRACKERTRAIL		= BIT(31),
+	FX_TRACKER			= BIT(26),
+	FX_DOUBLE			= BIT(27),
+	FX_SPHERETRANS		= BIT(28),
+	FX_TAGTRAIL			= BIT(29),
+	FX_HALF_DAMAGE		= BIT(30),
+	FX_TRACKERTRAIL		= BIT(31),
 
 	// Overloads
 	
 	// FIXME: these two cause errors because BIT(31) is the highest you can go...
-//	EF_SEMITRANS_BLACKORB	= (EF_TRACKERTRAIL | EF_SPHERETRANS),
-//	EF_BLACKVOID			= (EF_TRACKERTRAIL | EF_TRACKER),
+//	FX_SEMITRANS_BLACKORB	= (FX_TRACKERTRAIL | FX_SPHERETRANS),
+//	FX_BLACKVOID			= (FX_TRACKERTRAIL | FX_TRACKER),
 
-	EF_GREENBLASTER			= (EF_BLASTER | EF_TRACKER),
-	EF_GREENHYPERBLASTER	= (EF_HYPERBLASTER | EF_TRACKER),
-	EF_PLASMATRAIL			= (EF_PLASMA | EF_ANIM_ALLFAST),
+	FX_GREENBLASTER			= (FX_BLASTER | FX_TRACKER),
+	FX_GREENHYPERBLASTER	= (FX_HYPERBLASTER | FX_TRACKER),
+	FX_PLASMATRAIL			= (FX_PLASMA | FX_ANIM_ALLFAST),
 };
 
 /*

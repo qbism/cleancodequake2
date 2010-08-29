@@ -124,7 +124,7 @@ void CTesla::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 {
 	Remove ();
 
-	if (Attacker->EntityFlags & ENT_MONSTER)
+	if (Attacker->EntityFlags & EF_MONSTER)
 	{
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Attacker);
 
@@ -148,7 +148,7 @@ void CTesla::Remove ()
 
 void CTesla::Explode ()
 {
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	SplashDamage(GetOwner(), Damage, *Enemy, (DoExplosion) ? TESLA_DAMAGE_RADIUS : 0, MOD_G_SPLASH);
@@ -194,7 +194,7 @@ void CTesla::Active ()
 
 		if (!Hit->GetInUse())
 			continue;
-		if (!(Hit->EntityFlags & ENT_HURTABLE))
+		if (!(Hit->EntityFlags & EF_HURTABLE))
 			continue;
 		if (Hit == this)
 			continue;
@@ -205,7 +205,7 @@ void CTesla::Active ()
 			continue;
 
 		// don't hit clients in single-player or coop
-		if ((Hit->EntityFlags & ENT_PLAYER) && !(Game.GameMode & GAME_DEATHMATCH))
+		if ((Hit->EntityFlags & EF_PLAYER) && !(Game.GameMode & GAME_DEATHMATCH))
 			continue;
 	
 		CTrace tr (start, Hit->State.GetOrigin(), this, CONTENTS_MASK_SHOT);
@@ -218,7 +218,7 @@ void CTesla::Active ()
 				PlaySound (CHAN_ITEM, SoundIndex("items/damage3.wav"));
 
 			// PGM - don't do knockback to walking monsters
-			if ((Hit->EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(Hit)->Monster->AIFlags & (AI_FLY | AI_SWIM))
+			if ((Hit->EntityFlags & EF_MONSTER) && entity_cast<CMonsterEntity>(Hit)->Monster->AIFlags & (AI_FLY | AI_SWIM))
 				Hurtable->TakeDamage (this, Firer, dir, tr.EndPosition, tr.Plane.Normal,
 					Damage, 0, 0, MOD_TESLA);
 			else
@@ -245,7 +245,7 @@ void CTesla::DoneActivate ()
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		IBaseEntity *Search = NULL;
-		while ((Search = FindRadius<ENT_BASE> (Search, State.GetOrigin(), 1.5 * TESLA_DAMAGE_RADIUS)) != NULL)
+		while ((Search = FindRadius<EF_BASE> (Search, State.GetOrigin(), 1.5 * TESLA_DAMAGE_RADIUS)) != NULL)
 		{
 			// if it's a deathmatch start point
 			// and we can see it
@@ -358,7 +358,7 @@ void CTesla::Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int Damage
 
 	Tesla->State.GetAngles().Clear();
 	Tesla->GetSolid() = SOLID_BBOX;
-	Tesla->State.GetEffects() |= EF_GRENADE;
+	Tesla->State.GetEffects() |= FX_GRENADE;
 	Tesla->State.GetRenderEffects() |= RF_IR_VISIBLE;
 	Tesla->GetMins().Set (-12, -12, 0);
 	Tesla->GetMaxs().Set (12, 12, 20);
@@ -439,6 +439,7 @@ void CTeslaWeapon::FireGrenade (CPlayerEntity *Player, bool inHand)
 	|| isQuadFire
 #endif
 	) ? 5 : 10);
+
 	DepleteAmmo(Player, 1);
 
 	if (Player->Health <= 0 || Player->IsDead || Player->State.GetModelIndex() != 255) // VWep animations screw up corpses

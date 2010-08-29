@@ -276,7 +276,7 @@ void CWallTurret::Fire ()
 		vec3f end = Entity->Enemy->State.GetOrigin();
 		
 		// aim for the head.
-		if ((Entity->Enemy) && (Entity->Enemy->EntityFlags & ENT_PLAYER))
+		if ((Entity->Enemy) && (Entity->Enemy->EntityFlags & EF_PLAYER))
 			end.Z += Entity->Enemy->ViewHeight;
 		else
 			end.Z += 22;
@@ -300,7 +300,7 @@ void CWallTurret::Fire ()
 		if (trace.Entity == Entity->Enemy || trace.Entity == World)
 		{
 			if (Entity->SpawnFlags & SPAWN_BLASTER)
-				MonsterFireBlaster (start, dir, 20, rocketSpeed, MZ2_TURRET_BLASTER, EF_BLASTER);
+				MonsterFireBlaster (start, dir, 20, rocketSpeed, MZ2_TURRET_BLASTER, FX_BLASTER);
 			else if (Entity->SpawnFlags & SPAWN_MACHINEGUN)
 				MonsterFireBullet (start, dir, TURRET_BULLET_DAMAGE, 0, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_TURRET_MACHINEGUN);
 			else if (Entity->SpawnFlags & SPAWN_ROCKET)
@@ -352,7 +352,7 @@ void CWallTurret::FireBlind ()
 	dir = (end - start).GetNormalized();
 
 	if (Entity->SpawnFlags & SPAWN_BLASTER)
-		MonsterFireBlaster (start, dir, 20, 1000, MZ2_TURRET_BLASTER, EF_BLASTER);
+		MonsterFireBlaster (start, dir, 20, 1000, MZ2_TURRET_BLASTER, FX_BLASTER);
 	else if (Entity->SpawnFlags & SPAWN_ROCKET)
 		MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_TURRET_ROCKET);
 }
@@ -452,7 +452,7 @@ void CWallTurret::Aim ()
 	{
 		end = Entity->Enemy->State.GetOrigin();
 
-		if (Entity->Enemy->EntityFlags & ENT_PLAYER)
+		if (Entity->Enemy->EntityFlags & EF_PLAYER)
 			end.Z += Entity->Enemy->ViewHeight;
 	}
 
@@ -787,7 +787,7 @@ bool CWallTurret::CheckAttack ()
 	if (!Entity->Enemy || !Entity->Enemy->GetInUse())
 		return false;
 
-	if (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
+	if (!(Entity->Enemy->EntityFlags & EF_HURTABLE) || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight);

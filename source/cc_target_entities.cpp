@@ -316,7 +316,7 @@ public:
 		Entity->KillBox ();
 		Entity->Link ();
 
-		if (Speed && (Entity->EntityFlags & ENT_PHYSICS))
+		if (Speed && (Entity->EntityFlags & EF_PHYSICS))
 			entity_cast<IPhysicsEntity>(Entity)->Velocity = MoveDir;
 	};
 
@@ -673,7 +673,7 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	// if noexit, do a ton of damage to other
 	if ((Game.GameMode & GAME_DEATHMATCH) && !DeathmatchFlags.dfAllowExit.IsEnabled() && (Other != World))
 	{
-		if ((Other->EntityFlags & ENT_HURTABLE))
+		if ((Other->EntityFlags & EF_HURTABLE))
 		{
 			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(Other);
 
@@ -686,7 +686,7 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	// if multiplayer, let everyone know who hit the exit
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
-		if (Activator && (Activator->EntityFlags & ENT_PLAYER))
+		if (Activator && (Activator->EntityFlags & EF_PLAYER))
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
 			BroadcastPrintf (PRINT_HIGH, "%s exited the Level.\n", Player->Client.Persistent.Name.c_str());
@@ -1134,7 +1134,7 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		CBlasterProjectile::Spawn (this, State.GetOrigin(), MoveDir, Damage, Speed, (SpawnFlags & BLASTER_NO_EFFECTS) ? 0 : ((SpawnFlags & BLASTER_NO_TRAIL) ? EF_HYPERBLASTER : EF_BLASTER), true);
+		CBlasterProjectile::Spawn (this, State.GetOrigin(), MoveDir, Damage, Speed, (SpawnFlags & BLASTER_NO_EFFECTS) ? 0 : ((SpawnFlags & BLASTER_NO_TRAIL) ? FX_HYPERBLASTER : FX_BLASTER), true);
 		PlaySound (CHAN_VOICE, NoiseIndex);
 	};
 
@@ -1257,11 +1257,11 @@ void CTargetLaser::Think ()
 
 		IBaseEntity *Entity = tr.Entity;
 		// hurt it if we can
-		if ((Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage)
+		if ((Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Entity)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Entity)->TakeDamage (this, *User, MoveDir, tr.EndPosition, vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_TARGET_LASER);
 
 		// if we hit something that's not a monster or player or is immune to lasers, we're done
-		if (!(Entity->EntityFlags & ENT_MONSTER) && (!(Entity->EntityFlags & ENT_PLAYER)))
+		if (!(Entity->EntityFlags & EF_MONSTER) && (!(Entity->EntityFlags & EF_PLAYER)))
 		{
 			if (MakeEffect)
 			{
@@ -1330,7 +1330,7 @@ void CTargetLaser::Start ()
 	{
 		if (!Target.empty())
 		{
-			IBaseEntity *Entity = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
+			IBaseEntity *Entity = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 			if (!Entity)
 				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.c_str());
 			Enemy = Entity;

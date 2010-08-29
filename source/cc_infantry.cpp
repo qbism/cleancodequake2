@@ -274,7 +274,7 @@ void CInfantry::MachineGun ()
 		if (Entity->Enemy)
 		{
 			vec3f target = Entity->Enemy->State.GetOrigin();
-			if (Entity->Enemy->EntityFlags & ENT_PHYSICS)
+			if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 				target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 			target.Z += Entity->Enemy->ViewHeight;
 

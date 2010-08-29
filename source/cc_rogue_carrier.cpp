@@ -199,7 +199,7 @@ void CCarrier::Rocket ()
 
 	vec3f	forward, right, start, dir, vec;
 
-	if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && frand() < 0.5f)
+	if ((Entity->Enemy->EntityFlags & EF_PLAYER) && frand() < 0.5f)
 	{
 		PredictiveRocket ();
 		return;
@@ -914,7 +914,7 @@ void CCarrier::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 
 bool CCarrier::CheckAttack ()
 {
-	if ((Entity->Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
+	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
 	{
 	// see if any entities are in the way of the shot
 		vec3f	spot1 = Entity->State.GetOrigin() + vec3f(0, 0, Entity->ViewHeight),
@@ -926,7 +926,7 @@ bool CCarrier::CheckAttack ()
 		if (tr.Entity != Entity->Enemy)
 		{	
 			// go ahead and spawn stuff if we're mad a a client
-			if ((Entity->Enemy->EntityFlags & ENT_PLAYER) && MonsterSlots > 2)
+			if ((Entity->Enemy->EntityFlags & EF_PLAYER) && MonsterSlots > 2)
 			{
 				AttackState = AS_BLIND;
 				return true;

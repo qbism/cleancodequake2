@@ -83,7 +83,7 @@ void CFlyerKamikaze::KamikazeExplode ()
 		Commander->Monster->MonsterID == CCarrier::ID)
 		Commander->Monster->MonsterSlots++;
 
-	if (Entity->Enemy && (Entity->Enemy->EntityFlags & ENT_HURTABLE))
+	if (Entity->Enemy && (Entity->Enemy->EntityFlags & EF_HURTABLE))
 		entity_cast<IHurtableEntity>(*Entity->Enemy)->TakeDamage (	Entity, Entity, Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin(),
 																	Entity->State.GetOrigin(), vec3fOrigin, 50, 50, DAMAGE_RADIUS, MOD_UNKNOWN);
 

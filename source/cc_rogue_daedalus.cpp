@@ -59,7 +59,7 @@ void CDaedalus::FireBlaster ()
 	end.Z += Entity->Enemy->ViewHeight;
 	dir = end - start;
 
-	MonsterFireBlaster2 (start, dir, 1, 1000, MZ2_DAEDALUS_BLASTER, EF_BLASTER);
+	MonsterFireBlaster2 (start, dir, 1, 1000, MZ2_DAEDALUS_BLASTER, FX_BLASTER);
 }
 
 /*QUAKED monster_daedalus (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight

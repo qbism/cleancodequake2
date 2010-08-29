@@ -81,7 +81,7 @@ IPushPhysics (),
 IStopPhysics (),
 BrushType(0)
 {
-	EntityFlags |= ENT_BRUSHMODEL;
+	EntityFlags |= EF_BRUSHMODEL;
 	BrushType |= BRUSH_BASE;
 };
 
@@ -92,7 +92,7 @@ IPushPhysics (Index),
 IStopPhysics (Index),
 BrushType(0)
 {
-	EntityFlags |= ENT_BRUSHMODEL;
+	EntityFlags |= EF_BRUSHMODEL;
 	BrushType |= BRUSH_BASE;
 };
 
@@ -577,10 +577,10 @@ bool CPlatForm::Run ()
 
 void CPlatForm::Blocked (IBaseEntity *Other)
 {
-	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & ENT_PLAYER) )
+	if (!(Other->GetSvFlags() & SVF_MONSTER) && !(Other->EntityFlags & EF_PLAYER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
@@ -589,7 +589,7 @@ void CPlatForm::Blocked (IBaseEntity *Other)
 		return;
 	}
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 
 	if (MoveState == STATE_UP)
@@ -709,9 +709,9 @@ IMPLEMENT_SAVE_SOURCE (CPlatFormInsideTrigger)
 
 void CPlatFormInsideTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
+	if (!(Other->EntityFlags & EF_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
-	if (!(Other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & EF_PLAYER))
 		return;
 
 	if (Owner->MoveState == STATE_BOTTOM)
@@ -968,7 +968,7 @@ void CDoor::UseAreaPortals (bool isOpen)
 	if (Target.empty())
 		return;
 
-	while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
+	while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
 	{
 		if (Q_stricmp(t->ClassName.c_str(), "func_areaportal") == 0)
 		{
@@ -1245,13 +1245,13 @@ void CDoorTrigger::LoadFields (CFile &File)
 
 void CDoorTrigger::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
+	if (!(Other->EntityFlags & EF_HURTABLE) || entity_cast<IHurtableEntity>(Other)->Health <= 0)
 		return;
 
-	if (!(Other->GetSvFlags() & SVF_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)))
+	if (!(Other->GetSvFlags() & SVF_MONSTER) && (!(Other->EntityFlags & EF_PLAYER)))
 		return;
 
-	if ((GetOwner()->SpawnFlags & DOOR_NOMONSTER) && (Other->EntityFlags & ENT_MONSTER))
+	if ((GetOwner()->SpawnFlags & DOOR_NOMONSTER) && (Other->EntityFlags & EF_MONSTER))
 		return;
 
 	if (Level.Frame < TouchDebounce)
@@ -1329,10 +1329,10 @@ void CDoor::SpawnDoorTrigger ()
 
 void CDoor::Blocked (IBaseEntity *Other)
 {
-	if (!(Other->EntityFlags & ENT_PLAYER) && !(Other->EntityFlags & ENT_MONSTER) )
+	if (!(Other->EntityFlags & EF_PLAYER) && !(Other->EntityFlags & EF_MONSTER) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
@@ -1341,7 +1341,7 @@ void CDoor::Blocked (IBaseEntity *Other)
 		return;
 	}
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 
 	if (SpawnFlags & DOOR_CRUSHER)
@@ -1383,7 +1383,7 @@ void CDoor::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CDoor::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & EF_PLAYER))
 		return;
 
 	if (Level.Frame < TouchDebounce)
@@ -1500,9 +1500,9 @@ void CDoor::Spawn ()
 	EndAngles = State.GetAngles ();
 
 	if (SpawnFlags & DOOR_ANIMATED)
-		State.GetEffects() |= EF_ANIM_ALL;
+		State.GetEffects() |= FX_ANIM_ALL;
 	if (SpawnFlags & DOOR_ANIMATED_FAST)
-		State.GetEffects() |= EF_ANIM_ALLFAST;
+		State.GetEffects() |= FX_ANIM_ALLFAST;
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
 	if (!Team.HasTeam)
@@ -1710,7 +1710,7 @@ void CRotatingDoor::Spawn ()
 	EndAngles = Positions[1];
 
 	if (SpawnFlags & DOOR_ANIMATED)
-		State.GetEffects() |= EF_ANIM_ALL;
+		State.GetEffects() |= FX_ANIM_ALL;
 
 	// to simplify logic elsewhere, make non-teamed doors into a team of one
 	if (!Team.HasTeam)
@@ -1935,10 +1935,10 @@ void CDoorSecret::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CDoorSecret::Blocked (IBaseEntity *Other)
 {
-	if (!(Other->EntityFlags & ENT_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)) )
+	if (!(Other->EntityFlags & EF_MONSTER) && (!(Other->EntityFlags & EF_PLAYER)) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
@@ -1951,7 +1951,7 @@ void CDoorSecret::Blocked (IBaseEntity *Other)
 		return;
 	TouchDebounce = Level.Frame + 5;
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
@@ -2083,13 +2083,13 @@ void CButton::DoEndFunc ()
 	{
 	case BUTTONENDFUNC_DONE:
 		MoveState = STATE_BOTTOM;
-		State.GetEffects() &= ~EF_ANIM23;
-		State.GetEffects() |= EF_ANIM01;
+		State.GetEffects() &= ~FX_ANIM23;
+		State.GetEffects() |= FX_ANIM01;
 		break;
 	case BUTTONENDFUNC_WAIT:
 		MoveState = STATE_TOP;
-		State.GetEffects() &= ~EF_ANIM01;
-		State.GetEffects() |= EF_ANIM23;
+		State.GetEffects() &= ~FX_ANIM01;
+		State.GetEffects() |= FX_ANIM23;
 
 		UseTargets (*User, Message);
 		State.GetFrame() = 1;
@@ -2138,7 +2138,7 @@ void CButton::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CButton::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & EF_PLAYER))
 		return;
 
 	if (entity_cast<CPlayerEntity>(Other)->Health <= 0)
@@ -2183,7 +2183,7 @@ void CButton::Spawn ()
 	Positions[1] = Positions[0].MultiplyAngles (
 		Q_fabs(MoveDir.X) * GetSize().X + Q_fabs(MoveDir.Y) * GetSize().Y + Q_fabs(MoveDir.Z) * GetSize().Z - Lip, MoveDir);
 
-	State.GetEffects() |= EF_ANIM01;
+	State.GetEffects() |= FX_ANIM01;
 
 	Touchable = false;
 	if (Health)
@@ -2264,10 +2264,10 @@ bool CTrainBase::Run ()
 
 void CTrainBase::Blocked (IBaseEntity *Other)
 {
-	if (!(Other->EntityFlags & ENT_MONSTER) && (!(Other->EntityFlags & ENT_PLAYER)) )
+	if (!(Other->EntityFlags & EF_MONSTER) && (!(Other->EntityFlags & EF_PLAYER)) )
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, 100000, 1, 0, MOD_CRUSH);
 
 		// if it's still there, nuke it
@@ -2284,7 +2284,7 @@ void CTrainBase::Blocked (IBaseEntity *Other)
 
 	TouchDebounce = Level.Frame + 5;
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
@@ -2414,7 +2414,7 @@ void CTrainBase::Next ()
 
 		for (IBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
 		{
-			if (e->EntityFlags & ENT_BRUSHMODEL)
+			if (e->EntityFlags & EF_BRUSHMODEL)
 			{
 				IBrushModel *Brush = entity_cast<IBrushModel>(e);
 			
@@ -2630,7 +2630,7 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	if (MoveTarget->NextThink)
 		return;
 
-	if (!(Other->EntityFlags & ENT_USABLE))
+	if (!(Other->EntityFlags & EF_USABLE))
 	{
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with a non-usable entity\n");
 		return;
@@ -2978,13 +2978,13 @@ void CRotatingBrush::Blocked (IBaseEntity *Other)
 	if (!Blockable)
 		return;
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
 void CRotatingBrush::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if ((AngularVelocity != vec3fOrigin) && ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
+	if ((AngularVelocity != vec3fOrigin) && ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 1, 0, MOD_CRUSH);
 }
 
@@ -3117,9 +3117,9 @@ void CRotatingBrush::Spawn ()
 		Use (NULL, NULL);
 
 	if (SpawnFlags & ROTATING_ANIMATED)
-		State.GetEffects() |= EF_ANIM_ALL;
+		State.GetEffects() |= FX_ANIM_ALL;
 	if (SpawnFlags & ROTATING_ANIMATED_FAST)
-		State.GetEffects() |= EF_ANIM_ALLFAST;
+		State.GetEffects() |= FX_ANIM_ALLFAST;
 
 #if ROGUE_FEATURES
 	if (SpawnFlags & ROTATING_ACCELERATION)	// Accelerate / Decelerate
@@ -3402,9 +3402,9 @@ void CFuncWall::Spawn ()
 	SetBrushModel ();
 
 	if (SpawnFlags & WALL_ANIMATED)
-		State.GetEffects() |= EF_ANIM_ALL;
+		State.GetEffects() |= FX_ANIM_ALL;
 	if (SpawnFlags & WALL_ANIMATED_FAST)
-		State.GetEffects() |= EF_ANIM_ALLFAST;
+		State.GetEffects() |= FX_ANIM_ALLFAST;
 
 	// just a wall
 	if (!(SpawnFlags & WALL_JUST_A_WALL))
@@ -3496,7 +3496,7 @@ void CFuncObject::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 		return;
 	if (plane->Normal.Z < 1.0)
 		return;
-	if (!(Other->EntityFlags & ENT_HURTABLE))
+	if (!(Other->EntityFlags & EF_HURTABLE))
 		return;
 	if (!entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		return;
@@ -3545,9 +3545,9 @@ void CFuncObject::Spawn ()
 	}
 
 	if (SpawnFlags & OBJECT_ANIMATED)
-		State.GetEffects() |= EF_ANIM_ALL;
+		State.GetEffects() |= FX_ANIM_ALL;
 	if (SpawnFlags & OBJECT_ANIMATED_FAST)
-		State.GetEffects() |= EF_ANIM_ALLFAST;
+		State.GetEffects() |= FX_ANIM_ALLFAST;
 
 	GetClipmask() = CONTENTS_MASK_MONSTERSOLID;
 	Link ();
@@ -3720,8 +3720,8 @@ void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 
 void CFuncExplosive::Activate (IBaseEntity *Other, IBaseEntity *Activator)
 {
 	bool approved = false;
-	IUsableEntity *OtherUsable = (Other->EntityFlags & ENT_USABLE) ? entity_cast<IUsableEntity>(Other) : NULL,
-				  *ActivatorUsable = (Activator->EntityFlags & ENT_USABLE) ? entity_cast<IUsableEntity>(Activator) : NULL;
+	IUsableEntity *OtherUsable = (Other->EntityFlags & EF_USABLE) ? entity_cast<IUsableEntity>(Other) : NULL,
+				  *ActivatorUsable = (Activator->EntityFlags & EF_USABLE) ? entity_cast<IUsableEntity>(Activator) : NULL;
 
 	if (OtherUsable != NULL && !OtherUsable->Target.empty())
 	{
@@ -3815,9 +3815,9 @@ void CFuncExplosive::Spawn ()
 	SetBrushModel ();
 
 	if (SpawnFlags & EXPLOSIVE_ANIMATED)
-		State.GetEffects() |= EF_ANIM_ALL;
+		State.GetEffects() |= FX_ANIM_ALL;
 	if (SpawnFlags & EXPLOSIVE_ANIMATED_FAST)
-		State.GetEffects() |= EF_ANIM_ALLFAST;
+		State.GetEffects() |= FX_ANIM_ALLFAST;
 
 	if (UseType != FUNCEXPLOSIVE_USE_EXPLODE
 #if ROGUE_FEATURES

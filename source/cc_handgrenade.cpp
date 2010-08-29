@@ -109,6 +109,7 @@ void CHandGrenade::FireGrenade (CPlayerEntity *Player, bool inHand)
 	|| isQuadFire
 #endif
 	) ? 5 : 10);
+
 	DepleteAmmo(Player, 1);
 
 	if (Player->Health <= 0 || Player->IsDead || Player->State.GetModelIndex() != 255) // VWep animations screw up corpses

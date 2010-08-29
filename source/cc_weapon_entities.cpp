@@ -47,7 +47,7 @@ void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &Dir, sint32 speed)
 	vec3f end = start.MultiplyAngles(8192, Dir);
 	CTrace tr (start, end, self, CONTENTS_MASK_SHOT);
 
-	if (tr.Entity && (tr.Entity->EntityFlags & ENT_MONSTER) && (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0) && IsInFront(tr.Entity, self))
+	if (tr.Entity && (tr.Entity->EntityFlags & EF_MONSTER) && (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0) && IsInFront(tr.Entity, self))
 	{
 		CMonsterEntity *Monster = (entity_cast<CMonsterEntity>(tr.Entity));
 		if (Monster->Enemy != self)
@@ -96,7 +96,7 @@ void CGrenade::Explode ()
 {
 	EMeansOfDeath			mod;
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
 	//FIXME: if we are onground then raise our Z just a bit since we are a point?
@@ -144,7 +144,7 @@ void CGrenade::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (!((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
+	if (!((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
 	{
 		if (SpawnFlags & GRENADE_HAND)
 		{
@@ -187,7 +187,7 @@ void CGrenade::Spawn (IBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 Da
 	Grenade->Velocity = aimdir.MultiplyAngles (200 + crand() * 10.0f, up).MultiplyAngles (crand() * 10.0, right);
 	Grenade->AngularVelocity = 300;
 
-	Grenade->State.GetEffects() = EF_GRENADE;
+	Grenade->State.GetEffects() = FX_GRENADE;
 	Grenade->State.GetModelIndex() = (!handNade) ? ModelIndex ("models/objects/grenade/tris.md2") : ModelIndex ("models/objects/grenade2/tris.md2");
 	Grenade->SetOwner(Spawner);
 	Grenade->NextThink = Level.Frame + timer;
@@ -270,10 +270,10 @@ void CBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurfac
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, (SpawnFlags & HYPER_FLAG) ? MOD_HYPERBLASTER : MOD_BLASTER);
 	else
 		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin).Send();
@@ -319,7 +319,7 @@ void CBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 		if (tr.Entity)
 			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
-	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+	else if (Spawner && (Spawner->EntityFlags & EF_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
 }
 
@@ -361,10 +361,10 @@ void CRocket::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->Normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
@@ -383,7 +383,7 @@ CRocket *CRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->State.GetOrigin() = start;
 	Rocket->State.GetAngles() = dir.ToAngles();
 	Rocket->Velocity = dir * speed;
-	Rocket->State.GetEffects() = EF_ROCKET;
+	Rocket->State.GetEffects() = FX_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
 	Rocket->SetOwner(Spawner);
 	Rocket->NextThink = Level.Frame + 80000/speed;
@@ -398,7 +398,7 @@ CRocket *CRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->GetMaxs().Clear ();
 	Rocket->Touchable = true;
 
-	if (Spawner->EntityFlags & ENT_PLAYER)
+	if (Spawner->EntityFlags & EF_PLAYER)
 		CheckDodge (Spawner, start, dir, speed);
 
 	Rocket->Link ();
@@ -438,7 +438,7 @@ void CBFGBolt::Think ()
 		{
 			// the BFG effect
 			IHurtableEntity *Entity = NULL;
-			while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin (), DamageRadius)) != NULL)
+			while ((Entity = FindRadius<IHurtableEntity, EF_HURTABLE> (Entity, State.GetOrigin (), DamageRadius)) != NULL)
 			{
 				if (!Entity->CanTakeDamage)
 					continue;
@@ -474,7 +474,7 @@ void CBFGBolt::Think ()
 
 		const sint32 dmg = (Game.GameMode & GAME_DEATHMATCH) ? 5 : 10;
 
-		while ((Entity = FindRadius<IHurtableEntity, ENT_HURTABLE> (Entity, State.GetOrigin (), 256)) != NULL)
+		while ((Entity = FindRadius<IHurtableEntity, EF_HURTABLE> (Entity, State.GetOrigin (), 256)) != NULL)
 		{
 			if (Entity == GetOwner())
 				continue;
@@ -485,8 +485,8 @@ void CBFGBolt::Think ()
 	#if CLEANCTF_ENABLED
 	//ZOID
 			//don't target players in CTF
-			if ((Game.GameMode & GAME_CTF) && (Entity->EntityFlags & ENT_PLAYER) &&
-				(GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER)))
+			if ((Game.GameMode & GAME_CTF) && (Entity->EntityFlags & EF_PLAYER) &&
+				(GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER)))
 			{
 				if ((entity_cast<CPlayerEntity>(Entity))->Client.Respawn.CTF.Team == (entity_cast<CPlayerEntity>(GetOwner()))->Client.Respawn.CTF.Team)
 					continue;
@@ -514,12 +514,12 @@ void CBFGBolt::Think ()
 					break;
 
 				// hurt it if we can
-				if ((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage && (tr.Entity != GetOwner()))
+				if ((tr.Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage && (tr.Entity != GetOwner()))
 					entity_cast<IHurtableEntity>(tr.Entity)->TakeDamage (this, GetOwner(), dir, tr.EndPosition, vec3fOrigin, dmg, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
 
 				// if we hit something that's not a monster or player we're done
 				//if (!(tr.ent->svFlags & SVF_MONSTER) && (!tr.ent->client))
-				if (!(tr.Entity->EntityFlags & ENT_MONSTER) && !(tr.Entity->EntityFlags & ENT_PLAYER))
+				if (!(tr.Entity->EntityFlags & EF_MONSTER) && !(tr.Entity->EntityFlags & EF_PLAYER))
 				{
 					CSparks (tr.EndPosition, tr.Plane.Normal, ST_LASER_SPARKS, State.GetSkinNum(), 4).Send();
 					break;
@@ -550,11 +550,11 @@ void CBFGBolt::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin(), PNOISE_IMPACT);
 
 	// core explosion - prevents firing it into the wall/floor
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, 200, 0, 0, MOD_BFG_BLAST);
 	SplashDamage(GetOwner(), 200, Other, 100, MOD_BFG_BLAST);
 
@@ -567,7 +567,7 @@ void CBFGBolt::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	State.GetModelIndex() = ModelIndex ("sprites/s_bfg3.sp2");
 	State.GetFrame() = 0;
 	State.GetSound() = 0;
-	State.GetEffects() = EF_BFG;
+	State.GetEffects() = FX_BFG;
 	NextThink = Level.Frame + FRAMETIME;
 	Enemy = Other;
 
@@ -582,7 +582,7 @@ void CBFGBolt::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->State.GetOrigin() = start;
 	BFG->State.GetAngles() = dir.ToAngles();
 	BFG->Velocity = (dir.GetNormalizedFast()) * speed;
-	BFG->State.GetEffects() = EF_BFG | EF_ANIM_ALLFAST;
+	BFG->State.GetEffects() = FX_BFG | FX_ANIM_ALLFAST;
 	BFG->State.GetModelIndex() = ModelIndex ("sprites/s_bfg1.sp2");
 	BFG->SetOwner(Spawner);
 	BFG->NextThink = Level.Frame + FRAMETIME;
@@ -715,7 +715,7 @@ void CHitScan::DoFire(IBaseEntity *Entity, vec3f start, vec3f aimdir)
 		CTrace Trace = DoTrace (from, end, Ignore, Mask);
 
 		// Did we hit an entity?
-		if (Trace.Entity && ((Trace.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Entity)->CanTakeDamage))
+		if (Trace.Entity && ((Trace.Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Trace.Entity)->CanTakeDamage))
 		{
 			// Convert to base entity
 			IHurtableEntity *Target = entity_cast<IHurtableEntity>(Trace.Entity);
@@ -1109,12 +1109,12 @@ bool CMeleeWeapon::Fire(IBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 	if (tr.Fraction == 1.0)
 		return false;
 
-	if (!((tr.Entity->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage))
+	if (!((tr.Entity->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(tr.Entity)->CanTakeDamage))
 		return false;
 
 	// if it will hit any client/monster then hit the one we wanted to hit
 	IBaseEntity *Hit = tr.Entity;
-	if ((tr.Entity->EntityFlags & ENT_MONSTER) || ((tr.Entity->EntityFlags & ENT_PLAYER)))
+	if ((tr.Entity->EntityFlags & EF_MONSTER) || ((tr.Entity->EntityFlags & EF_PLAYER)))
 		Hit = Enemy;
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
@@ -1124,14 +1124,14 @@ bool CMeleeWeapon::Fire(IBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 	dir = point - Enemy->State.GetOrigin();
 
 	// do the damage
-	if ((Hit->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Hit)->CanTakeDamage)
+	if ((Hit->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Hit)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Hit)->TakeDamage (Entity, Entity, dir, point, vec3fOrigin, Damage, kick/2, DAMAGE_NO_KNOCKBACK, MOD_HIT);
 
-	if (!(Hit->EntityFlags & ENT_MONSTER) && (!(Hit->EntityFlags & ENT_PLAYER)))
+	if (!(Hit->EntityFlags & EF_MONSTER) && (!(Hit->EntityFlags & EF_PLAYER)))
 		return false;
 
 	// do our special form of knockback here
-	if (Enemy->EntityFlags & ENT_PHYSICS)
+	if (Enemy->EntityFlags & EF_PHYSICS)
 	{
 		IPhysicsEntity *PhysEnemy = entity_cast<IPhysicsEntity>(Enemy);
 		vec3f v = PhysEnemy->GetAbsMin().MultiplyAngles (0.5f, PhysEnemy->GetSize()) - point;
@@ -1156,7 +1156,7 @@ void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, in
 	if (tr.Fraction == 1.0)
 		return;
 
-	if (tr.Entity->EntityFlags & ENT_HURTABLE)
+	if (tr.Entity->EntityFlags & EF_HURTABLE)
 	{
 		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(tr.Entity);
 
@@ -1237,10 +1237,10 @@ void CGrappleEntity::GrapplePull()
 			State.GetOrigin() = (Enemy->GetSize() * 0.5f) + Enemy->State.GetOrigin() + Enemy->GetMins();
 			Link ();
 		}
-		else if (Enemy->EntityFlags & ENT_PHYSICS)
+		else if (Enemy->EntityFlags & EF_PHYSICS)
 			Velocity = entity_cast<IPhysicsEntity>(*Enemy)->Velocity;
 
-		if (Enemy && ((Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage))
+		if (Enemy && ((Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->CanTakeDamage))
 		{
 			IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(*Enemy);
 			if (!Hurt->CheckTeamDamage (Player))
@@ -1249,7 +1249,7 @@ void CGrappleEntity::GrapplePull()
 				PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grhurt.wav"), volume);
 			}
 		}
-		if (Enemy && (Enemy->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->IsDead)
+		if (Enemy && (Enemy->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(*Enemy)->IsDead)
 		{ // he died
 			ResetGrapple();
 			return;
@@ -1346,7 +1346,7 @@ void CGrappleEntity::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *s
 	Velocity.Clear ();
 	Player->PlayerNoiseAt (State.GetOrigin(), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 	{
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, Player, Velocity, State.GetOrigin(), (plane) ? plane->Normal : vec3fOrigin, Damage, 1, 0, MOD_GRAPPLE);
 		ResetGrapple();

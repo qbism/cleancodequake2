@@ -97,7 +97,7 @@ public:
 
 		if (!Target.empty())
 		{
-			IBaseEntity *ent = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
+			IBaseEntity *ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 			if (!ent)
 				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
 			Enemy = ent;
@@ -245,19 +245,19 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		IMapEntity *AngryMonster = entity_cast<IMapEntity>(CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity, TargetName)>  (NULL, KillTarget.c_str()));
+		IMapEntity *AngryMonster = entity_cast<IMapEntity>(CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity, TargetName)>  (NULL, KillTarget.c_str()));
 
 		if (AngryMonster && !Target.empty())
 		{
 			// Make whatever a "good guy" so the monster will try to kill it!
-			if (AngryMonster->EntityFlags & ENT_MONSTER)
+			if (AngryMonster->EntityFlags & EF_MONSTER)
 				entity_cast<CMonsterEntity>(AngryMonster)->Monster->AIFlags |= AI_GOOD_GUY;
 			AngryMonster->GetSvFlags() |= SVF_MONSTER;
-			if (AngryMonster->EntityFlags & ENT_HURTABLE)
+			if (AngryMonster->EntityFlags & EF_HURTABLE)
 				entity_cast<IHurtableEntity>(AngryMonster)->Health = 300;
 
 			IBaseEntity *t = NULL;
-			while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
+			while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
 			{
 				if (t == this)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
@@ -318,7 +318,7 @@ When triggered, this will kill all the players on the map.
 
 void NailHurtableEntity (IBaseEntity *Killer, IHurtableEntity *Hurtable)
 {
-	Hurtable->TakeDamage (Killer, Killer, vec3fOrigin, Killer->State.GetOrigin(), vec3fOrigin, (Hurtable->EntityFlags & ENT_PLAYER) ? 100000 : Hurtable->Health, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+	Hurtable->TakeDamage (Killer, Killer, vec3fOrigin, Killer->State.GetOrigin(), vec3fOrigin, (Hurtable->EntityFlags & EF_PLAYER) ? 100000 : Hurtable->Health, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 }
 
 class CForEachPlayerKillCallback : public CForEachPlayerCallback
@@ -398,7 +398,7 @@ public:
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		CForEachPlayerKillCallback(this).Query();
-		CForEachNailMonsterCallback(this).Query(ENT_HURTABLE|ENT_MONSTER);
+		CForEachNailMonsterCallback(this).Query(EF_HURTABLE | EF_MONSTER);
 	};
 
 	void Spawn ()
@@ -470,7 +470,7 @@ public:
 		NextThink = Level.Frame + 1;
 		State.GetModelIndex() = ModelIndex ("models/items/spawngro2/tris.md2");
 		State.GetFrame() = 1;
-		State.GetEffects() |= (EF_TRACKERTRAIL|EF_TRACKER);
+		State.GetEffects() |= (FX_TRACKERTRAIL|FX_TRACKER);
 		Link ();
 	};
 };
@@ -537,7 +537,7 @@ public:
 		NextThink = Level.Frame + 1;
 		State.GetModelIndex() = ModelIndex ("models/items/spawngro2/tris.md2");
 		State.GetFrame() = 2;
-		State.GetEffects() |= EF_SPHERETRANS;
+		State.GetEffects() |= FX_SPHERETRANS;
 		Link ();
 	};
 };

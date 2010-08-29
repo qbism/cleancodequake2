@@ -72,10 +72,10 @@ void CPhalanxPlasma::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *s
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->Normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
@@ -93,7 +93,7 @@ CPhalanxPlasma *CPhalanxPlasma::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f 
 	Rocket->State.GetOrigin() = start;
 	Rocket->State.GetAngles() = dir.ToAngles();
 	Rocket->Velocity = dir * speed;
-	Rocket->State.GetEffects() = EF_PLASMA | EF_ANIM_ALLFAST;
+	Rocket->State.GetEffects() = FX_PLASMA | FX_ANIM_ALLFAST;
 	Rocket->State.GetModelIndex() = ModelIndex ("sprites/s_photon.sp2");
 	Rocket->SetOwner(Spawner);
 	Rocket->NextThink = Level.Frame + 80000/speed;
@@ -108,7 +108,7 @@ CPhalanxPlasma *CPhalanxPlasma::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f 
 	Rocket->GetMaxs().Clear ();
 	Rocket->Touchable = true;
 
-	if (Spawner->EntityFlags & ENT_PLAYER)
+	if (Spawner->EntityFlags & EF_PLAYER)
 		CheckDodge (Spawner, start, dir, speed);
 
 	Rocket->Link ();
@@ -189,7 +189,7 @@ LINK_ITEM_TO_CLASS (weapon_phalanx, CItemEntity);
 void CPhalanx::CreateItem (CItemList *List)
 {
 	NItems::Phalanx = QNew (TAG_GENERIC) CWeaponItem
-		("weapon_phalanx", "models/weapons/g_shotx/tris.md2", EF_ROTATE, "misc/w_pkup.wav",
+		("weapon_phalanx", "models/weapons/g_shotx/tris.md2", FX_ROTATE, "misc/w_pkup.wav",
 		"w_phallanx", "Phalanx", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		"", &Weapon, NItems::MagSlugs, 1, "#w_phalanx.md2");
 };

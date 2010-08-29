@@ -268,7 +268,7 @@ public:
 	void			DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath);
 
 	bool			Run ();
-	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, uint32 effects = EF_GIB);
+	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, EEntityStateEffects effects = FX_GIB);
 
 	void			Spawn ();
 };

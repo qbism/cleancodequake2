@@ -266,7 +266,7 @@ void CFlyer::Fire (sint32 FlashNumber)
 		return;
 
 	if ((Entity->State.GetFrame() == FRAME_attak204) || (Entity->State.GetFrame() == FRAME_attak207) || (Entity->State.GetFrame() == FRAME_attak210))
-		effect = EF_HYPERBLASTER;
+		effect = FX_HYPERBLASTER;
 	else
 		effect = 0;
 

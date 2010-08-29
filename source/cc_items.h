@@ -56,7 +56,7 @@ public:
 	const char		*Classname;
 	// World model
 	const char		*WorldModel;
-	// Effect flags (EF_ROTATE, etc)
+	// Effect flags (FX_ROTATE, etc)
 	sint32			EffectFlags;
 
 	// The sound on pickup

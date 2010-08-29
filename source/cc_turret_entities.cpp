@@ -81,7 +81,7 @@ bool CTurretEntityBase::Run ()
 
 void CTurretEntityBase::Blocked (IBaseEntity *Other)
 {
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, (Team.Master->GetOwner()) ? Team.Master->GetOwner() : Team.Master,
 					vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, entity_cast<IBrushModel>(Team.Master)->Damage, 10, 0, MOD_CRUSH);
 }
@@ -147,7 +147,7 @@ public:
 
 	void Callback (IBaseEntity *Entity)
 	{
-		if (Entity->EntityFlags & ENT_PHYSICS)
+		if (Entity->EntityFlags & EF_PHYSICS)
 			entity_cast<IPhysicsEntity>(Entity)->AngularVelocity.Y = avelYaw;
 	};
 };
@@ -232,7 +232,7 @@ void CTurretBreach::Think ()
 		CAvelocityForEachTeamChainCallback (AngularVelocity.Y).Query (this);
 
 		// if we have adriver, adjust his velocities
-		if (GetOwner() && (GetOwner()->EntityFlags & ENT_MONSTER))
+		if (GetOwner() && (GetOwner()->EntityFlags & EF_MONSTER))
 		{
 			float	angle;
 			float	target_z;
@@ -438,7 +438,7 @@ void CTurretDriver::TurretThink ()
 {
 	Entity->NextThink = Level.Frame + FRAMETIME;
 
-	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & ENT_HURTABLE) || (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)))
+	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & EF_HURTABLE) || (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)))
 		Entity->Enemy = nullentity;
 
 	if (!Entity->Enemy)

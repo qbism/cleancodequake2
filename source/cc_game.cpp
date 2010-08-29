@@ -191,7 +191,7 @@ void EndDMLevel ()
 		BeginIntermission (CreateTargetChangeLevel (Level.NextMap.c_str()) );
 	else
 	{	// search for a changelevel
-		CTargetChangeLevel *Entity = CC_FindByClassName<CTargetChangeLevel, ENT_BASE> (NULL, "target_changelevel");
+		CTargetChangeLevel *Entity = CC_FindByClassName<CTargetChangeLevel, EF_BASE> (NULL, "target_changelevel");
 		if (!Entity)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
@@ -376,11 +376,11 @@ void ProcessEntity (SEntity *ent)
 		if ((!Entity->GroundEntity) || (Entity->GroundEntity->GetLinkCount() != Entity->GroundEntityLinkCount))
 		{
 			Entity->GroundEntity = nullentity;
-			if ((Entity->EntityFlags & ENT_MONSTER) && !(entity_cast<CMonsterEntity>(Entity)->Monster->AIFlags & (AI_SWIM | AI_FLY)))
+			if ((Entity->EntityFlags & EF_MONSTER) && !(entity_cast<CMonsterEntity>(Entity)->Monster->AIFlags & (AI_SWIM | AI_FLY)))
 				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 		}
 
-		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & ENT_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
+		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & EF_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
 
 		if (Thinkable) 
 			Thinkable->PreThink ();

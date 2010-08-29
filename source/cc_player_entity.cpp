@@ -409,7 +409,7 @@ Client(&Game.Clients[State.GetNumber()-1]),
 NoClip(false),
 TossPhysics(false)
 {
-	EntityFlags |= ENT_PLAYER;
+	EntityFlags |= EF_PLAYER;
 	PhysicsType = PHYSICS_WALK;
 };
 
@@ -1715,10 +1715,10 @@ inline void CPlayerEntity::SetClientEffects ()
 	{
 		sint32 pa_type = PowerArmorType ();
 		if (pa_type == POWER_ARMOR_SCREEN)
-			State.GetEffects() |= EF_POWERSCREEN;
+			State.GetEffects() |= FX_POWERSCREEN;
 		else if (pa_type == POWER_ARMOR_SHIELD)
 		{
-			State.GetEffects() |= EF_COLOR_SHELL;
+			State.GetEffects() |= FX_COLOR_SHELL;
 			State.GetRenderEffects() |= RF_SHELL_GREEN;
 		}
 
@@ -1728,7 +1728,7 @@ inline void CPlayerEntity::SetClientEffects ()
 #if CLEANCTF_ENABLED
 	if (Game.GameMode & GAME_CTF)
 	{
-		State.GetEffects() &= ~(EF_FLAG1 | EF_FLAG2);
+		State.GetEffects() &= ~(FX_FLAG1 | FX_FLAG2);
 		if (Client.Persistent.Flag)
 		{
 			if (Health > 0)
@@ -1744,7 +1744,7 @@ inline void CPlayerEntity::SetClientEffects ()
 	{
 		sint32 remaining = Client.Timers.QuadDamage - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			State.GetEffects() |= EF_QUAD;
+			State.GetEffects() |= FX_QUAD;
 	}
 
 #if XATRIX_FEATURES
@@ -1752,7 +1752,7 @@ inline void CPlayerEntity::SetClientEffects ()
 	{
 		sint32 remaining = Client.Timers.QuadFire - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			State.GetEffects() |= EF_DOUBLE; // Paril disting.
+			State.GetEffects() |= FX_DOUBLE; // Paril disting.
 	}
 #endif
 
@@ -1761,26 +1761,26 @@ inline void CPlayerEntity::SetClientEffects ()
 	{
 		sint32 remaining = Client.Timers.Double - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			State.GetEffects() |= EF_DOUBLE;
+			State.GetEffects() |= FX_DOUBLE;
 	}
 	if ((Client.OwnedSphere) && (Client.OwnedSphere->SpawnFlags == 1))
-		State.GetEffects() |= EF_HALF_DAMAGE;
+		State.GetEffects() |= FX_HALF_DAMAGE;
 
 	if (Client.Timers.Tracker > Level.Frame)
-		State.GetEffects() |= EF_TRACKERTRAIL;
+		State.GetEffects() |= FX_TRACKERTRAIL;
 #endif
 
 	if (Client.Timers.Invincibility > Level.Frame)
 	{
 		sint32 remaining = Client.Timers.Invincibility - Level.Frame;
 		if (remaining > 30 || (remaining & 4) )
-			State.GetEffects() |= EF_PENT;
+			State.GetEffects() |= FX_PENT;
 	}
 
 	// show cheaters!!!
 	if (Flags & FL_GODMODE)
 	{
-		State.GetEffects() |= EF_COLOR_SHELL;
+		State.GetEffects() |= FX_COLOR_SHELL;
 		State.GetRenderEffects() |= (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_BLUE);
 	}
 }
@@ -2325,7 +2325,7 @@ void CPlayerEntity::DeathmatchScoreboardMessage (bool reliable)
 	static sint32			sorted[MAX_CS_CLIENTS];
 	static sint32			sortedscores[MAX_CS_CLIENTS];
 	sint32					Score, total;
-	CPlayerEntity			*Killer = (Enemy && (Enemy->EntityFlags & ENT_PLAYER)) ? entity_cast<CPlayerEntity>(*Enemy) : NULL;
+	CPlayerEntity			*Killer = (Enemy && (Enemy->EntityFlags & EF_PLAYER)) ? entity_cast<CPlayerEntity>(*Enemy) : NULL;
 
 	// sort the clients by Score
 	total = 0;
@@ -3111,7 +3111,7 @@ CC_ENABLE_DEPRECATION
 
 			if (Other->Entity)
 			{
-				if ((Other->Entity->EntityFlags & ENT_TOUCHABLE) && Other->Entity->GetInUse())
+				if ((Other->Entity->EntityFlags & EF_TOUCHABLE) && Other->Entity->GetInUse())
 				{
 					ITouchableEntity *Touchered = entity_cast<ITouchableEntity>(Other->Entity);
 
@@ -3327,7 +3327,7 @@ void CPlayerEntity::TossHead (sint32 Damage)
 
 	CanTakeDamage = false;
 	GetSolid() = SOLID_NOT;
-	State.GetEffects() = EF_GIB;
+	State.GetEffects() = FX_GIB;
 	State.GetSound() = 0;
 
 	Velocity += VelocityForDamage (Damage);
@@ -3361,7 +3361,7 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		Obituary (Attacker);
 
 #if CLEANCTF_ENABLED
-		if (Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+		if (Attacker && (Attacker->EntityFlags & EF_PLAYER))
 		{
 			CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
 
@@ -4238,7 +4238,7 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 			Client.Respawn.Score--;
 		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message.c_str());
 	}
-	else if (Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+	else if (Attacker && (Attacker->EntityFlags & EF_PLAYER))
 	{
 		CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
 		bool endsInS = (PlayerAttacker->Client.Persistent.Name[PlayerAttacker->Client.Persistent.Name.size()-1] == 's');
@@ -4400,7 +4400,7 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 		if (Game.GameMode & GAME_DEATHMATCH)
 			PlayerAttacker->Client.Respawn.Score++;
 	}
-	else if (Attacker && (Attacker->EntityFlags & ENT_MONSTER))
+	else if (Attacker && (Attacker->EntityFlags & EF_MONSTER))
 	{
 		// Paril, Issue 3 fix
 		switch (meansOfDeath & ~MOD_FRIENDLY_FIRE)
@@ -4563,7 +4563,7 @@ void CPlayerEntity::RemoveAttackingPainDaemons ()
 
 	do
 	{
-		tracker = CC_FindByClassName<IBaseEntity, ENT_BASE> (tracker, "pain daemon");
+		tracker = CC_FindByClassName<IBaseEntity, EF_BASE> (tracker, "pain daemon");
 
 		if (tracker && tracker->Enemy == this)
 			tracker->Free ();

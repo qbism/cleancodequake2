@@ -85,7 +85,7 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 	
 	if (tr.Entity != World)
 	{
-		if (tr.Entity->EntityFlags & ENT_HURTABLE)
+		if (tr.Entity->EntityFlags & EF_HURTABLE)
 		{
 			if (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0)
 				Enemy = tr.Entity;
@@ -97,7 +97,7 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 
 		if(tr.Entity != World)
 		{
-			if (tr.Entity->EntityFlags & ENT_HURTABLE)
+			if (tr.Entity->EntityFlags & EF_HURTABLE)
 			{
 				if (entity_cast<IHurtableEntity>(tr.Entity)->Health > 0)
 					Enemy = tr.Entity;
@@ -126,7 +126,7 @@ LINK_ITEM_TO_CLASS (weapon_disintegrator, CItemEntity);
 void CDisruptor::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
-		("weapon_disintegrator", "models/weapons/g_dist/tris.md2", EF_ROTATE, "misc/w_pkup.wav", "w_disintegrator", "Disruptor",
+		("weapon_disintegrator", "models/weapons/g_dist/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_disintegrator", "Disruptor",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
 		NItems::Rounds, 1, "#w_disrupt.md2");
 };

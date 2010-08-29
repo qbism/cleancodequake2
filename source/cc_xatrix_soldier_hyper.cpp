@@ -71,10 +71,10 @@ void CBlueBlasterProjectile::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSu
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), plane ? plane->Normal : vec3fOrigin, Damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
 	else
 		CBlasterSplash(State.GetOrigin(), plane ? plane->Normal : vec3fOrigin, BL_BLUE_HYPERBLASTER).Send();
@@ -118,7 +118,7 @@ void CBlueBlasterProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir
 		if (tr.Entity)
 			Bolt->Touch (tr.Entity, &tr.Plane, tr.Surface);
 	}
-	else if (Spawner && (Spawner->EntityFlags & ENT_PLAYER))
+	else if (Spawner && (Spawner->EntityFlags & EF_PLAYER))
 		CheckDodge (Spawner, start, dir, speed);
 }
 

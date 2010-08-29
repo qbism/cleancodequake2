@@ -194,7 +194,7 @@ void CBody::TossHead (sint32 Damage)
 
 	CanTakeDamage = false;
 	GetSolid() = SOLID_NOT;
-	State.GetEffects() = EF_GIB;
+	State.GetEffects() = FX_GIB;
 	State.GetSound() = 0;
 	AffectedByKnockback = false;
 

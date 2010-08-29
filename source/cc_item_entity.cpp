@@ -44,7 +44,7 @@ IThinkableEntity(),
 IUsableEntity(),
 Model()
 {
-	EntityFlags |= ENT_ITEM;
+	EntityFlags |= EF_ITEM;
 };
 
 CItemEntity::CItemEntity (sint32 Index) :
@@ -56,7 +56,7 @@ IThinkableEntity(Index),
 IUsableEntity(Index),
 Model()
 {
-	EntityFlags |= ENT_ITEM;
+	EntityFlags |= EF_ITEM;
 };
 
 void CItemEntity::Spawn ()
@@ -67,7 +67,7 @@ void CItemEntity::Touch(IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
 	if (!Other)
 		return;
-	if (!(Other->EntityFlags & ENT_PLAYER))
+	if (!(Other->EntityFlags & EF_PLAYER))
 		return;
 
 	if (!(LinkedItem->Flags & ITEMFLAG_GRABBABLE))
@@ -204,7 +204,7 @@ void CItemEntity::Think ()
 			{
 				GetSolid() = SOLID_BBOX;
 				Touchable = false;
-				State.GetEffects() &= ~EF_ROTATE;
+				State.GetEffects() &= ~FX_ROTATE;
 				State.GetRenderEffects() &= ~RF_GLOW;
 			}
 

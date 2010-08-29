@@ -83,7 +83,7 @@ public:
 	{
 		if ((!Other->GroundEntity) || (Other->GroundEntity == this))
 			return;
-		if (!(Other->EntityFlags & ENT_PHYSICS))
+		if (!(Other->EntityFlags & EF_PHYSICS))
 			return;
 
 		float ratio = entity_cast<IPhysicsEntity>(Other)->Mass / Mass;
@@ -881,8 +881,8 @@ public:
 		State.GetModelIndex(2) = 0;
 		State.GetModelIndex() = gibIndex;
 		GetSolid() = SOLID_NOT;
-		State.GetEffects() |= EF_GIB;
-		State.GetEffects() &= ~EF_FLIES;
+		State.GetEffects() |= FX_GIB;
+		State.GetEffects() &= ~FX_FLIES;
 		State.GetSound() = 0;
 		AffectedByKnockback = false;
 		GetSvFlags() &= ~SVF_MONSTER;
@@ -1084,14 +1084,14 @@ public:
 
 		GetSolid() = SOLID_BBOX;
 		GetSvFlags() &= ~SVF_NOCLIENT;
-		State.GetEffects() |= EF_ROCKET;
+		State.GetEffects() |= FX_ROCKET;
 		Usable = false;
 		PhysicsType = PHYSICS_TOSS;
 		PreThinkable = true;
 		Touchable = true;
 		User = Activator;
 
-		CMiscViper *viper = CC_FindByClassName<CMiscViper, ENT_BASE> (NULL, "misc_viper");
+		CMiscViper *viper = CC_FindByClassName<CMiscViper, EF_BASE> (NULL, "misc_viper");
 
 		Velocity = viper->Dir * viper->MoveSpeed;
 
@@ -1354,7 +1354,7 @@ public:
 	{
 		State.GetModelIndex() = GameMedia.Gib_Arm();
 		GetSolid() = SOLID_NOT;
-		State.GetEffects() |= EF_GIB;
+		State.GetEffects() |= FX_GIB;
 		CanTakeDamage = true;
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
@@ -1425,7 +1425,7 @@ public:
 	{
 		State.GetModelIndex() = GameMedia.Gib_Leg();
 		GetSolid() = SOLID_NOT;
-		State.GetEffects() |= EF_GIB;
+		State.GetEffects() |= FX_GIB;
 		CanTakeDamage = true;
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;
@@ -1496,7 +1496,7 @@ public:
 	{
 		State.GetModelIndex() = GameMedia.Gib_Head[0];
 		GetSolid() = SOLID_NOT;
-		State.GetEffects() |= EF_GIB;
+		State.GetEffects() |= FX_GIB;
 		CanTakeDamage = true;
 		PhysicsType = PHYSICS_TOSS;
 		GetSvFlags() |= SVF_MONSTER;

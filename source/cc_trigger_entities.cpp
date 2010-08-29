@@ -154,12 +154,12 @@ void CTriggerBase::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *sur
 	if (!Touchable)
 		return;
 
-	if(Other->EntityFlags & ENT_PLAYER)
+	if(Other->EntityFlags & EF_PLAYER)
 	{
 		if (SpawnFlags & TRIGGER_NOT_PLAYER)
 			return;
 	}
-	else if (Other->EntityFlags & ENT_MONSTER)
+	else if (Other->EntityFlags & EF_MONSTER)
 	{
 		if (!(SpawnFlags & TRIGGER_MONSTER))
 			return;
@@ -490,7 +490,7 @@ public:
 		bool IsClient = true;
 		if (Count == 0)
 			return;
-		if (Activator && !(Activator->EntityFlags & ENT_PLAYER))
+		if (Activator && !(Activator->EntityFlags & EF_PLAYER))
 			IsClient = false;
 		
 		CPlayerEntity *Player = (IsClient) ? entity_cast<CPlayerEntity>(Activator) : NULL;
@@ -591,10 +591,10 @@ public:
 
 		if (Q3Touch)
 		{
-			if (Other->EntityFlags & ENT_PHYSICS)
+			if (Other->EntityFlags & EF_PHYSICS)
 				entity_cast<IPhysicsEntity>(Other)->Velocity = vel;
 
-			if (Other->EntityFlags & ENT_PLAYER)
+			if (Other->EntityFlags & EF_PLAYER)
 			{
 				// don't take falling damage immediately from this
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Other);
@@ -603,7 +603,7 @@ public:
 		}
 		else
 		{
-			if (Other->EntityFlags & ENT_PHYSICS)
+			if (Other->EntityFlags & EF_PHYSICS)
 				entity_cast<IPhysicsEntity>(Other)->PushInDirection (vel, SpawnFlags);
 
 			if (SpawnFlags & PUSH_ONCE)
@@ -631,7 +631,7 @@ public:
 		IBaseEntity *target;
 		if (Target.empty())
 			Q3Touch = false;
-		else if ((target = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str())) != NULL)
+		else if ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str())) != NULL)
 		{
 			// Quake3
 			//self->touch = trigger_push_q3touch;
@@ -746,7 +746,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if (!((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
+		if (!((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage))
 			return;
 
 		if (NextHurt > Level.Frame)
@@ -853,7 +853,7 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		if (!(Other->EntityFlags & ENT_MONSTER))
+		if (!(Other->EntityFlags & EF_MONSTER))
 			return;
 		if (Other->GetSvFlags() & SVF_DEADMONSTER)
 			return;
@@ -962,7 +962,7 @@ public:
 
 	void Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
-		if (Other->EntityFlags & ENT_PHYSICS)
+		if (Other->EntityFlags & EF_PHYSICS)
 			entity_cast<IPhysicsEntity>(Other)->GravityMultiplier = Gravity;
 	};
 
@@ -1077,7 +1077,7 @@ public:
 			return;
 		if (!Item)
 			return;
-		if (!(Activator->EntityFlags & ENT_PLAYER))
+		if (!(Activator->EntityFlags & EF_PLAYER))
 			return;
 
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);

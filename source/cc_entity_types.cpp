@@ -47,7 +47,7 @@ IHurtableEntity::IHurtableEntity () :
   CanTakeDamage (false),
   AffectedByKnockback (true)
 {
-	EntityFlags |= ENT_HURTABLE;
+	EntityFlags |= EF_HURTABLE;
 };
 
 /**
@@ -65,7 +65,7 @@ IHurtableEntity::IHurtableEntity (sint32 Index) :
   CanTakeDamage (false),
   AffectedByKnockback (true)
 {
-	EntityFlags |= ENT_HURTABLE;
+	EntityFlags |= EF_HURTABLE;
 };
 
 ENTITYFIELDS_BEGIN(IHurtableEntity)
@@ -143,7 +143,7 @@ bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
 bool IHurtableEntity::DamageCanReach (IBaseEntity *Inflictor)
 {
 // bmodels need special checking because their origin is 0,0,0
-	if ((EntityFlags & ENT_PHYSICS) && ((entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
+	if ((EntityFlags & EF_PHYSICS) && ((entity_cast<IPhysicsEntity>(this))->PhysicsType == PHYSICS_PUSH))
 	{
 		vec3f dest = (GetAbsMin() + GetAbsMax()) * 0.5f;
 		CTrace trace (Inflictor->State.GetOrigin(), dest, Inflictor, CONTENTS_MASK_SOLID);
@@ -188,7 +188,7 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 {
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((Game.GameMode & GAME_CTF) && (EntityFlags & ENT_PLAYER) && (Attacker->EntityFlags & ENT_PLAYER))
+	if ((Game.GameMode & GAME_CTF) && (EntityFlags & EF_PLAYER) && (Attacker->EntityFlags & EF_PLAYER))
 	{
 		CPlayerEntity *Targ = entity_cast<CPlayerEntity>(this);
 		CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
@@ -233,8 +233,8 @@ sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Dam
 	sint32			Type, DamagePerCell, Power = 0;
 	bool			ScreenSparks = false;
 
-	bool		IsClient = !!(EntityFlags & ENT_PLAYER),
-				IsMonster = !!(EntityFlags & ENT_MONSTER);
+	bool		IsClient = !!(EntityFlags & EF_PLAYER),
+				IsMonster = !!(EntityFlags & EF_MONSTER);
 
 	CPlayerEntity	*Player = (IsClient) ? entity_cast<CPlayerEntity>(this) : NULL;
 	CMonsterEntity	*Monster = (IsMonster) ? entity_cast<CMonsterEntity>(this) : NULL;
@@ -331,7 +331,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 
 	Enemy = Attacker;
 
-	if (((EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(this)->CanTakeDamage))
+	if (((EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(this)->CanTakeDamage))
 		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, Point);
 }
 
@@ -353,7 +353,7 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 **/
 void IHurtableEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
-	if ((EntityFlags & ENT_MONSTER) || (EntityFlags & ENT_PLAYER))
+	if ((EntityFlags & EF_MONSTER) || (EntityFlags & EF_PLAYER))
 	{
 #if ROGUE_FEATURES
 		if (MeansOfDeath == MOD_CHAINFIST)
@@ -404,7 +404,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (!CanTakeDamage)
 		return;
 
-	bool isClient = !!(EntityFlags & ENT_PLAYER);
+	bool isClient = !!(EntityFlags & EF_PLAYER);
 	CPlayerEntity *Player = (isClient) ? entity_cast<CPlayerEntity>(this) : NULL;
 	CClient *Client = (isClient) ? &(Player->Client) : NULL;
 
@@ -413,7 +413,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	// knockback still occurs
 	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()) || Game.GameMode & GAME_COOPERATIVE))
 	{
-		if ((EntityFlags & ENT_PLAYER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+		if ((EntityFlags & EF_PLAYER) && Attacker && (Attacker->EntityFlags & EF_PLAYER))
 		{
 			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(Attacker)))
 			{
@@ -432,10 +432,10 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 
 	// easy mode takes half damage
 #if ROGUE_FEATURES
-	if ((CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER)) ||
+	if ((CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & EF_PLAYER)) ||
 		(isClient) && (Player->Client.OwnedSphere) && (Player->Client.OwnedSphere->SpawnFlags == 1))
 #else
-	if (CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & ENT_PLAYER))
+	if (CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & EF_PLAYER))
 #endif
 	{
 		Damage *= 0.5;
@@ -448,7 +448,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 
 // bonus damage for surprising a monster
 // Paril revision: Allow multiple pellet weapons to take advantage of this too!
-	if (!(DamageFlags & DAMAGE_RADIUS) && (EntityFlags & ENT_MONSTER) && Attacker && (Attacker->EntityFlags & ENT_PLAYER))
+	if (!(DamageFlags & DAMAGE_RADIUS) && (EntityFlags & EF_MONSTER) && Attacker && (Attacker->EntityFlags & EF_PLAYER))
 	{
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
 
@@ -473,7 +473,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 				Client->Persistent.Tech->DoAggressiveTech (Player, Attacker, false, Damage, KnockBack, DamageFlags, MeansOfDeath, true);
 		}
 
-		if (Attacker->EntityFlags & ENT_PLAYER)
+		if (Attacker->EntityFlags & EF_PLAYER)
 		{
 			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
@@ -485,7 +485,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		KnockBack = 0;
 
 // figure momentum add
-	if (KnockBack && !(DamageFlags & DAMAGE_NO_KNOCKBACK) && (EntityFlags & ENT_PHYSICS))
+	if (KnockBack && !(DamageFlags & DAMAGE_NO_KNOCKBACK) && (EntityFlags & EF_PHYSICS))
 	{
 		IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(this);
 		if (!(Phys->PhysicsType == PHYSICS_NONE ||
@@ -509,13 +509,13 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	// check for invincibility
 	if (((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(DamageFlags & DAMAGE_NO_PROTECTION))
 #if ROGUE_FEATURES
-		|| ((((EntityFlags & ENT_MONSTER) && ((entity_cast<CMonsterEntity>(this))->Monster->InvincibleFramenum) > Level.Frame ) && !(DamageFlags & DAMAGE_NO_PROTECTION)))
+		|| ((((EntityFlags & EF_MONSTER) && ((entity_cast<CMonsterEntity>(this))->Monster->InvincibleFramenum) > Level.Frame ) && !(DamageFlags & DAMAGE_NO_PROTECTION)))
 #endif
 		)
 	{
 #if ROGUE_FEATURES
 		if ((isClient && Player->PainDebounceTime < Level.Frame) ||
-			((EntityFlags & ENT_MONSTER) && entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime < Level.Frame))
+			((EntityFlags & EF_MONSTER) && entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime < Level.Frame))
 #else
 		if (Player->PainDebounceTime < Level.Frame)
 #endif
@@ -537,7 +537,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 #if CLEANCTF_ENABLED
 //ZOID
 //team armor protect
-	if ((Game.GameMode & GAME_CTF) && isClient && (Attacker->EntityFlags & ENT_PLAYER) &&
+	if ((Game.GameMode & GAME_CTF) && isClient && (Attacker->EntityFlags & EF_PLAYER) &&
 		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.CTF.Team) &&
 		(this != Attacker) && DeathmatchFlags.dfCtfArmorProtect.IsEnabled())
 		psave = asave = 0;
@@ -575,7 +575,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), Attacker, true, take, KnockBack, DamageFlags, MeansOfDeath, true);
 		}
 
-		if ((EntityFlags & ENT_PLAYER) && (Attacker->EntityFlags & ENT_PLAYER))
+		if ((EntityFlags & EF_PLAYER) && (Attacker->EntityFlags & EF_PLAYER))
 		{
 			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
@@ -598,7 +598,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 
 #if CLEANCTF_ENABLED
 //ZOID
-	if ((Game.GameMode & GAME_CTF) && (isClient && (Attacker->EntityFlags & ENT_PLAYER)))
+	if ((Game.GameMode & GAME_CTF) && (isClient && (Attacker->EntityFlags & EF_PLAYER)))
 		CTFCheckHurtCarrier((entity_cast<CPlayerEntity>(this)), (entity_cast<CPlayerEntity>(Attacker)));
 //ZOID
 #endif
@@ -617,13 +617,13 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 
 	if (Health <= 0)
 	{
-		if ((EntityFlags & ENT_MONSTER) || (isClient))
+		if ((EntityFlags & EF_MONSTER) || (isClient))
 			AffectedByKnockback = false;
 		Killed (Inflictor, Attacker, take, Point);
 		return;
 	}
 
-	if (EntityFlags & ENT_MONSTER)
+	if (EntityFlags & EF_MONSTER)
 	{
 		CMonster *Monster = (entity_cast<CMonsterEntity>(this))->Monster;
 		Monster->ReactToDamage (Attacker, Inflictor);
@@ -634,7 +634,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 				Monster->PainDebounceTime = Level.Frame + 50;
 		}
 	}
-	else if (((EntityFlags & ENT_PLAYER) && take) || take)
+	else if (((EntityFlags & EF_PLAYER) && take) || take)
 		Pain (Attacker, take);
 
 	// add to the damage inflicted on a player this frame
@@ -661,7 +661,7 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 IThinkableEntity::IThinkableEntity () :
   IBaseEntity()
 {
-	EntityFlags |= ENT_THINKABLE;
+	EntityFlags |= EF_THINKABLE;
 };
 
 /**
@@ -677,7 +677,7 @@ IThinkableEntity::IThinkableEntity () :
 IThinkableEntity::IThinkableEntity (sint32 Index) :
   IBaseEntity(Index)
 {
-	EntityFlags |= ENT_THINKABLE;
+	EntityFlags |= EF_THINKABLE;
 };
 
 void IThinkableEntity::SaveFields (CFile &File)
@@ -711,13 +711,13 @@ void IThinkableEntity::RunThink ()
 ITouchableEntity::ITouchableEntity () :
 IBaseEntity()
 {
-	EntityFlags |= ENT_TOUCHABLE;
+	EntityFlags |= EF_TOUCHABLE;
 };
 
 ITouchableEntity::ITouchableEntity (sint32 Index) :
 IBaseEntity(Index)
 {
-	EntityFlags |= ENT_TOUCHABLE;
+	EntityFlags |= EF_TOUCHABLE;
 };
 
 void ITouchableEntity::SaveFields (CFile &File)
@@ -746,7 +746,7 @@ IPhysicsEntity::IPhysicsEntity () :
   ADampeningEffect(1, 1, 1),
   GravityVector(0, 0, -1)
 {
-	EntityFlags |= ENT_PHYSICS;
+	EntityFlags |= EF_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
 };
 
@@ -768,7 +768,7 @@ IPhysicsEntity::IPhysicsEntity (sint32 Index) :
   ADampeningEffect(1, 1, 1),
   GravityVector(0, 0, -1)
 {
-	EntityFlags |= ENT_PHYSICS;
+	EntityFlags |= EF_PHYSICS;
 	PhysicsType = PHYSICS_NONE;
 };
 
@@ -848,7 +848,7 @@ void IPhysicsEntity::Impact (CTrace *Trace)
 	if (!Trace->Entity)
 		return;
 
-	if (GetSolid() != SOLID_NOT && (EntityFlags & ENT_TOUCHABLE))
+	if (GetSolid() != SOLID_NOT && (EntityFlags & EF_TOUCHABLE))
 	{
 		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(this);
 
@@ -856,7 +856,7 @@ void IPhysicsEntity::Impact (CTrace *Trace)
 			Touched->Touch (Trace->Entity, &Trace->Plane, Trace->Surface);
 	}
 
-	if ((Trace->Entity->EntityFlags & ENT_TOUCHABLE) && Trace->Entity->GetSolid() != SOLID_NOT)
+	if ((Trace->Entity->EntityFlags & EF_TOUCHABLE) && Trace->Entity->GetSolid() != SOLID_NOT)
 	{
 		ITouchableEntity *Touched = entity_cast<ITouchableEntity>(Trace->Entity);
 
@@ -879,7 +879,7 @@ void IPhysicsEntity::Impact (CTrace *Trace)
 **/
 void IPhysicsEntity::PushInDirection (vec3f Vel, ESpawnflags Flags)
 {
-	if ((EntityFlags & ENT_HURTABLE) && (entity_cast<IHurtableEntity>(this)->Health > 0))
+	if ((EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(this)->Health > 0))
 		Velocity = Vel;
 }
 
@@ -1347,9 +1347,9 @@ bool IStepPhysics::Run ()
 		return false;
 
 	// airborn monsters should always check for ground
-	if (!GroundEntity && (EntityFlags & ENT_MONSTER))
+	if (!GroundEntity && (EntityFlags & EF_MONSTER))
 		(entity_cast<CMonsterEntity>(this))->Monster->CheckGround ();
-	else if (!(EntityFlags & ENT_MONSTER))
+	else if (!(EntityFlags & EF_MONSTER))
 		CheckGround (); // Specific non-monster checkground
 
 	bool wasonground = GroundEntity;
@@ -1357,7 +1357,7 @@ bool IStepPhysics::Run ()
 	if (AngularVelocity != vec3fOrigin)
 		AddRotationalFriction ();
 
-	CMonsterEntity	*Monster = (EntityFlags & ENT_MONSTER) ? entity_cast<CMonsterEntity>(this) : NULL;
+	CMonsterEntity	*Monster = (EntityFlags & EF_MONSTER) ? entity_cast<CMonsterEntity>(this) : NULL;
 
 	// add gravity except:
 	//   flying monsters
@@ -1441,7 +1441,7 @@ bool IStepPhysics::Run ()
 			}
 		}
 
-		FlyMove (0.1f,  (EntityFlags & ENT_MONSTER) ? CONTENTS_MASK_MONSTERSOLID : CONTENTS_MASK_SOLID);
+		FlyMove (0.1f,  (EntityFlags & EF_MONSTER) ? CONTENTS_MASK_MONSTERSOLID : CONTENTS_MASK_SOLID);
 
 		Link();
 
@@ -1543,7 +1543,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 
 	// save the pusher's original position
 	Pushed.push_back (CPushed	(Entity,
-								(Entity->EntityFlags & ENT_PLAYER) ? (entity_cast<CPlayerEntity>(Entity))->Client.PlayerState.GetPMove()->DeltaAngles[YAW] : 0,
+								(Entity->EntityFlags & EF_PLAYER) ? (entity_cast<CPlayerEntity>(Entity))->Client.PlayerState.GetPMove()->DeltaAngles[YAW] : 0,
 								Entity->State.GetOrigin(), Entity->State.GetAngles()
 								));
 
@@ -1560,7 +1560,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 		if (!Check || !Check->GetInUse())
 			continue;
 
-		if (Check->EntityFlags & ENT_PHYSICS)
+		if (Check->EntityFlags & EF_PHYSICS)
 		{
 			IPhysicsEntity *CheckPhys = entity_cast<IPhysicsEntity>(Check);
 			if (CheckPhys->PhysicsType == PHYSICS_PUSH
@@ -1572,7 +1572,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 		else if (Check->GetSolid() != SOLID_BBOX)
 			continue;
 
-		if ((Check->EntityFlags & ENT_PLAYER) && (entity_cast<CPlayerEntity>(Check)->NoClip))
+		if ((Check->EntityFlags & EF_PLAYER) && (entity_cast<CPlayerEntity>(Check)->NoClip))
 			continue;
 
 		if (!Check->GetArea()->Prev)
@@ -1603,7 +1603,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 			// try moving the contacted entity
 			Check->State.GetOrigin() += move;
 
-			if (Check->EntityFlags & ENT_PLAYER)
+			if (Check->EntityFlags & EF_PLAYER)
 			{
 				CPlayerEntity *Player = entity_cast<CPlayerEntity>(Check);
 				Player->Client.PlayerState.GetPMove()->DeltaAngles[YAW] += amove[YAW];
@@ -1658,7 +1658,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 
 			PushedEntity.Entity->State.GetOrigin() = PushedEntity.Origin;
 			PushedEntity.Entity->State.GetAngles() = PushedEntity.Angles;
-			if (PushedEntity.Entity->EntityFlags & ENT_PLAYER)
+			if (PushedEntity.Entity->EntityFlags & EF_PLAYER)
 				(entity_cast<CPlayerEntity>(PushedEntity.Entity))->Client.PlayerState.GetPMove()->DeltaAngles[YAW] = PushedEntity.DeltaYaw;
 			PushedEntity.Entity->Link ();
 		}
@@ -1693,7 +1693,7 @@ bool IPushPhysics::Run ()
 	// if the move is blocked, all moved objects will be backed out
 	for (part = this; part; part = part->Team.Chain)
 	{
-		if (!(part->EntityFlags & ENT_PHYSICS))
+		if (!(part->EntityFlags & EF_PHYSICS))
 			continue;
 
 		IPhysicsEntity *Phys = entity_cast<IPhysicsEntity>(part);
@@ -1702,7 +1702,7 @@ bool IPushPhysics::Run ()
 			(Phys->AngularVelocity.X || Phys->AngularVelocity.Y || Phys->AngularVelocity.Z))
 		{
 			// object is moving
-			if (part->EntityFlags & ENT_PHYSICS)
+			if (part->EntityFlags & EF_PHYSICS)
 			{
 				move = Phys->Velocity * 0.1f;
 				amove = Phys->AngularVelocity * 0.1f;
@@ -1722,7 +1722,7 @@ bool IPushPhysics::Run ()
 		// the move failed, bump all nextthink times and back out moves
 		for (IBaseEntity *mv = this; mv; mv = mv->Team.Chain)
 		{
-			if (mv->EntityFlags & ENT_THINKABLE)
+			if (mv->EntityFlags & EF_THINKABLE)
 			{
 				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(mv);
 
@@ -1733,7 +1733,7 @@ bool IPushPhysics::Run ()
 
 		// if the pusher has a "blocked" function, call it
 		// otherwise, just stay in place until the obstacle is gone
-		if ((part->EntityFlags & ENT_BLOCKABLE) && obstacle)
+		if ((part->EntityFlags & EF_BLOCKABLE) && obstacle)
 			(entity_cast<IBlockableEntity>(part))->Blocked (obstacle);
 	}
 	else
@@ -1741,7 +1741,7 @@ bool IPushPhysics::Run ()
 		// the move succeeded, so call all think functions
 		for (part = this; part; part = part->Team.Chain)
 		{
-			if (part->EntityFlags & ENT_THINKABLE)
+			if (part->EntityFlags & EF_THINKABLE)
 			{
 				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(part);
 				Thinkable->RunThink ();
@@ -1749,14 +1749,14 @@ bool IPushPhysics::Run ()
 		}
 		
 		// Paril: Train movewith
-		if ((EntityFlags & ENT_BRUSHMODEL) && (entity_cast<IBrushModel>(this)->BrushType & BRUSH_TRAIN))
+		if ((EntityFlags & EF_BRUSHMODEL) && (entity_cast<IBrushModel>(this)->BrushType & BRUSH_TRAIN))
 		{
 			if (Team.HasTeam)
 			{
 				for (IBaseEntity *e = Team.Chain; e ; e = e->Team.Chain)
 					// Move the object by our velocity
 				{
-					if (!(e->EntityFlags & ENT_BRUSHMODEL))
+					if (!(e->EntityFlags & EF_BRUSHMODEL))
 					{
 						e->State.GetOrigin() += Velocity * 0.1f;
 						e->Link ();
@@ -1799,7 +1799,7 @@ bool IStopPhysics::Run ()
 IBlockableEntity::IBlockableEntity () :
   IBaseEntity ()
 {
-	EntityFlags |= ENT_BLOCKABLE;
+	EntityFlags |= EF_BLOCKABLE;
 }
 
 /**
@@ -1815,7 +1815,7 @@ IBlockableEntity::IBlockableEntity () :
 IBlockableEntity::IBlockableEntity (sint32 Index) :
   IBaseEntity (Index)
 {
-	EntityFlags |= ENT_BLOCKABLE;
+	EntityFlags |= EF_BLOCKABLE;
 }
 
 /**
@@ -1832,7 +1832,7 @@ IUsableEntity::IUsableEntity () :
   Delay (0),
   Usable (true)
 {
-	EntityFlags |= ENT_USABLE;
+	EntityFlags |= EF_USABLE;
 }
 
 /**
@@ -1851,7 +1851,7 @@ IUsableEntity::IUsableEntity (sint32 Index) :
   Delay (0),
   Usable (true)
 {
-	EntityFlags |= ENT_USABLE;
+	EntityFlags |= EF_USABLE;
 }
 
 ENTITYFIELDS_BEGIN(IUsableEntity)
@@ -1966,7 +1966,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 //
 // print the message
 //
-	if ((!Message.empty()) && (Activator->EntityFlags & ENT_PLAYER))
+	if ((!Message.empty()) && (Activator->EntityFlags & EF_PLAYER))
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
 		Player->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
@@ -1979,7 +1979,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 	if (!KillTarget.empty())
 	{
 		IMapEntity *t = NULL;
-		while ((t = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget.c_str())) != NULL)
+		while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget.c_str())) != NULL)
 		{
 #if ROGUE_FEATURES
 			// if this entity is part of a train, cleanly remove it
@@ -2018,7 +2018,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 	if (!Target.empty())
 	{
 		IMapEntity *Ent = NULL;
-		while ((Ent = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target.c_str())) != NULL)
+		while ((Ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target.c_str())) != NULL)
 		{
 			if (!Ent)
 				continue;
@@ -2028,7 +2028,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 				(ClassName == "func_door" || ClassName == "func_door_rotating"))
 				continue;
 
-			if (Ent->EntityFlags & ENT_USABLE)
+			if (Ent->EntityFlags & EF_USABLE)
 			{
 				IUsableEntity *Used = entity_cast<IUsableEntity>(Ent);
 				bool is_self = false;

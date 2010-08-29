@@ -81,7 +81,7 @@ void CBlaster::Fire (CPlayerEntity *Player)
 	Player->Client.KickOrigin = Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CBlasterProjectile::Spawn (Player, Start, Forward, Damage, 1000, EF_BLASTER, false);
+	CBlasterProjectile::Spawn (Player, Start, Forward, Damage, 1000, FX_BLASTER, false);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_BLASTER);

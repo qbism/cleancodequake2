@@ -465,7 +465,7 @@ void CIcarus::FireBlaster ()
 	end.Z += Entity->Enemy->ViewHeight;
 	dir = end - start;
 
-	MonsterFireBlaster (start, dir, 1, 1000, MZ2_HOVER_BLASTER_1, (Entity->State.GetFrame() == FRAME_attak104) ? EF_HYPERBLASTER : 0);
+	MonsterFireBlaster (start, dir, 1, 1000, MZ2_HOVER_BLASTER_1, (Entity->State.GetFrame() == FRAME_attak104) ? FX_HYPERBLASTER : 0);
 }
 
 

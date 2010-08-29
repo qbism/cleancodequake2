@@ -118,7 +118,7 @@ public:
 			return;
 
 		CPlayerEntity	*Player = NULL;
-		if (Other->EntityFlags & ENT_PLAYER)
+		if (Other->EntityFlags & EF_PLAYER)
 			Player = entity_cast<CPlayerEntity>(Other);
 
 	#if CLEANCTF_ENABLED
@@ -135,7 +135,7 @@ public:
 		Other->State.GetOldOrigin() = Dest->State.GetOrigin();
 
 		// clear the velocity and hold them in place briefly
-		if (Other->EntityFlags & ENT_PHYSICS)
+		if (Other->EntityFlags & EF_PHYSICS)
 			entity_cast<IPhysicsEntity>(Other)->Velocity.Clear ();
 		if (Player)
 		{
@@ -168,7 +168,7 @@ public:
 
 	void Think ()
 	{
-		Dest = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
+		Dest = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 	
 		if (!Dest)
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target);
@@ -236,7 +236,7 @@ public:
 
 		State.GetModelIndex() = ModelIndex("models/objects/dmspot/tris.md2");
 		State.GetSkinNum() = 1;
-		State.GetEffects() = EF_TELEPORTER;
+		State.GetEffects() = FX_TELEPORTER;
 		State.GetSound() = SoundIndex ("world/amb10.wav");
 		GetSolid() = SOLID_BBOX;
 
@@ -769,7 +769,7 @@ CSpotBase *CPlayerEntity::SelectLavaCoopSpawnPoint ()
 	float lavatop = -999999;
 	while (1)
 	{
-		lava = CC_FindByClassName<IBaseEntity, ENT_BRUSHMODEL> (lava, "func_door");
+		lava = CC_FindByClassName<IBaseEntity, EF_BRUSHMODEL> (lava, "func_door");
 
 		if (!lava)
 			break;
@@ -1245,7 +1245,7 @@ void CPathCorner::Think ()
 
 void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 {
-	if (!(Other->EntityFlags & ENT_MONSTER))
+	if (!(Other->EntityFlags & EF_MONSTER))
 		return;
 
 	CMonsterEntity	*Monster = entity_cast<CMonsterEntity>(Other);
@@ -1385,9 +1385,9 @@ public:
 		CMonsterEntity *Monster = NULL;
 		CTrainBase *Train = NULL;
 
-		if (Other->EntityFlags & ENT_MONSTER)
+		if (Other->EntityFlags & EF_MONSTER)
 			Monster = entity_cast<CMonsterEntity>(Other);
-		else if ((Other->EntityFlags & ENT_BRUSHMODEL) && (entity_cast<IBrushModel>(Other)->BrushType & BRUSH_TRAIN))
+		else if ((Other->EntityFlags & EF_BRUSHMODEL) && (entity_cast<IBrushModel>(Other)->BrushType & BRUSH_TRAIN))
 			Train = entity_cast<CTrainBase>(Other);
 		else
 			return;
@@ -1399,7 +1399,7 @@ public:
 
 		if (!Target.empty())
 		{
-			if (Other->EntityFlags & ENT_USABLE)
+			if (Other->EntityFlags & EF_USABLE)
 			{
 				IUsableEntity *Usable = entity_cast<IUsableEntity>(Other);
 				Usable->Target = Target;
@@ -1438,12 +1438,12 @@ public:
 
 			std::string savetarget = Target;
 			Target = PathTarget;
-			if (Other->Enemy && (Other->Enemy->EntityFlags & ENT_PLAYER))
+			if (Other->Enemy && (Other->Enemy->EntityFlags & EF_PLAYER))
 				Activator = *Other->Enemy;
 			else if ((Monster) &&
-				(Monster->OldEnemy) && (Monster->OldEnemy->EntityFlags & ENT_PLAYER))
+				(Monster->OldEnemy) && (Monster->OldEnemy->EntityFlags & EF_PLAYER))
 				Activator = *Monster->OldEnemy;
-			else if ((Other->EntityFlags & ENT_USABLE) && (entity_cast<IUsableEntity>(Other)->User) && ((*entity_cast<IUsableEntity>(Other)->User)->EntityFlags & ENT_PLAYER))
+			else if ((Other->EntityFlags & EF_USABLE) && (entity_cast<IUsableEntity>(Other)->User) && ((*entity_cast<IUsableEntity>(Other)->User)->EntityFlags & EF_PLAYER))
 				Activator = (*entity_cast<IUsableEntity>(Other)->User);
 			else
 				Activator = Other;
@@ -1708,7 +1708,7 @@ public:
 			IMapEntity *e = NULL;
 			while (1)
 			{
-				e = CC_Find<IMapEntity, ENT_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target.c_str());
+				e = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target.c_str());
 				if (!e)
 					break;
 				if (strcmp(e->ClassName.c_str(), "light") != 0)

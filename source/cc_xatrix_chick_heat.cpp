@@ -61,11 +61,11 @@ void CHeatRocket::Think ()
 	int			oldlen = 0;
 
 	// aquire new target
-	while ((target = FindRadius<IHurtableEntity, ENT_HURTABLE> (target, State.GetOrigin(), 1024)) != NULL)
+	while ((target = FindRadius<IHurtableEntity, EF_HURTABLE> (target, State.GetOrigin(), 1024)) != NULL)
 	{
 		if (target == GetOwner())
 			continue;
-		if (!(target->EntityFlags & ENT_PLAYER))
+		if (!(target->EntityFlags & EF_PLAYER))
 			continue;
 		if (target->Health <= 0)
 			continue;
@@ -126,10 +126,10 @@ void CHeatRocket::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 		return;
 	}
 
-	if (GetOwner() && (GetOwner()->EntityFlags & ENT_PLAYER))
+	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	if ((Other->EntityFlags & ENT_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+	if ((Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 		entity_cast<IHurtableEntity>(Other)->TakeDamage (this, GetOwner(), Velocity, State.GetOrigin (), (plane) ? plane->Normal : vec3fOrigin, Damage, 0, 0, MOD_ROCKET);
 
 	// calculate position for the explosion entity
@@ -148,7 +148,7 @@ CHeatRocket *CHeatRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->State.GetOrigin() = start;
 	Rocket->State.GetAngles() = dir.ToAngles();
 	Rocket->Velocity = dir * speed;
-	Rocket->State.GetEffects() = EF_ROCKET;
+	Rocket->State.GetEffects() = FX_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
 	Rocket->SetOwner(Spawner);
 	Rocket->NextThink = Level.Frame + FRAMETIME;
@@ -163,7 +163,7 @@ CHeatRocket *CHeatRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->GetMaxs().Clear ();
 	Rocket->Touchable = true;
 
-	if (Spawner->EntityFlags & ENT_PLAYER)
+	if (Spawner->EntityFlags & EF_PLAYER)
 		CheckDodge (Spawner, start, dir, speed);
 
 	Rocket->Link ();
