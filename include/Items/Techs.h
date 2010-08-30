@@ -63,7 +63,7 @@ public:
 
 	CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, uint32 TechNumber, ETechType TechType);
+			   uint32 TechNumber, ETechType TechType);
 
 	CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber);
 

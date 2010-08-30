@@ -127,13 +127,9 @@ CMonsterEntity *CMedic::FindDeadMonster ()
 		// check to make sure we haven't bailed on this guy already
 		if ((Found->Monster->BadMedic1 == Entity) || (Found->Monster->BadMedic2 == Entity))
 			continue;
-		if (Found->Monster->Healer)
-			// FIXME - this is correcting a bug that is somewhere else
-			// if the healer is a monster, and it's in medic mode .. continue .. otherwise
-			//   we will override the healer, if it passes all the other tests
-			if ((Found->Monster->Healer->GetInUse()) && (Found->Monster->Healer->Health > 0) &&
-				(Found->Monster->Healer->GetSvFlags() & SVF_MONSTER) && (Found->Monster->Healer->Monster->AIFlags & AI_MEDIC))
-				continue;
+		if (Found->Monster->Healer && (Found->Monster->Healer->GetInUse()) && (Found->Monster->Healer->Health > 0) &&
+			(Found->Monster->Healer->GetSvFlags() & SVF_MONSTER) && (Found->Monster->Healer->Monster->AIFlags & AI_MEDIC))
+			continue;
 #endif
 		if (!Best)
 		{

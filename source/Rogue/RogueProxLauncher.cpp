@@ -450,8 +450,6 @@ public:
 		Prox->GetClipmask() = CONTENTS_MASK_SHOT|CONTENTS_LAVA|CONTENTS_SLIME;
 		Prox->State.GetRenderEffects() |= RF_IR_VISIBLE;
 		
-		//FIXME - this needs to be bigger.  Has other effects, though.  Maybe have to change origin to compensate
-		// so it sinks in correctly.  Also in lavacheck, might have to up the distance
 		Prox->GetMins().Set (-6, -6, -6);
 		Prox->GetMaxs().Set (6, 6, 6);
 
@@ -592,7 +590,7 @@ void CProxLauncher::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
 		("weapon_proxlauncher", "models/weapons/g_plaunch/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_proxlaunch", "Prox Launcher",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, &Weapon,
 		NItems::Prox, 1, "#w_plauncher.md2");
 };
 

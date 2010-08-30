@@ -34,10 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Platform.h"
 
-bool AssertExpression (const bool expr, const char *msg);
+bool AssertExpression (const bool expr, const char *msg, const bool major);
 
-#include "Utility/Memory.h"
 #include "Utility/STL.h"
+#include "Utility/Memory.h"
 #include "Templates/Templates.h"
 #include "MathLib.h"
 #include "ColorVec.h"
@@ -261,6 +261,12 @@ inline sint32 icrandom (const sint32 h)
 ==============================================================================
 */
 
+const int MAX_QEXT				= 16;		// max length of a quake game pathname extension
+const int MAX_QPATH				= 64;		// max length of a quake game pathname
+const int MAX_OSPATH			= 128;		// max length of a filesystem pathname
+
+const int MAX_COMPRINT			= 1024;		// max length of a string to be printed to console
+
 /**
 \fn	void Q_snprintfz(char *dest, size_t size, const char *fmt, ...)
 
@@ -459,6 +465,30 @@ inline bool Q_WildcardMatch (const char *filter, const char *string, bool ignore
 	}
 }
 
+/**
+\fn	inline std::string FormatString (const char *fmt, ...)
+
+\brief	Format an std::string, similar to sprintf.
+
+\author	Paril
+\date	30/08/2010
+
+\param	fmt	Describes the format to use. 
+
+\return	The formatted string. 
+**/
+inline std::string FormatString (const char *fmt, ...)
+{
+	va_list		argptr;
+	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT * 2);
+
+	va_start (argptr, fmt);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
+	va_end (argptr);
+
+	return std::string(text.GetBuffer<char>());
+};
+
 /*
 ==============================================================================
 
@@ -466,12 +496,6 @@ inline bool Q_WildcardMatch (const char *filter, const char *string, bool ignore
 
 ==============================================================================
 */
-
-const int MAX_QEXT				= 16;		// max length of a quake game pathname extension
-const int MAX_QPATH				= 64;		// max length of a quake game pathname
-const int MAX_OSPATH			= 128;		// max length of a filesystem pathname
-
-const int MAX_COMPRINT = 4096;	// The maximum value of a single console line print
 
 /**
 \typedef	uint8 EComPrint
@@ -2209,7 +2233,6 @@ struct SServerEntity
 	BOOL				InUse;
 	sint32				LinkCount;
 
-	// FIXME: move these fields to a server private sv_entity_t
 	SAreaLink			Area;		// linked to a division node or leaf
 	
 	sint32				NumClusters;	// if -1, use headnode instead

@@ -61,7 +61,7 @@ public:
 
 	CHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 Amount, EHealthFlags HealthFlags);
+			   sint32 Amount, EHealthFlags HealthFlags);
 
 	virtual bool	Pickup (class CItemEntity *ent, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player) {};

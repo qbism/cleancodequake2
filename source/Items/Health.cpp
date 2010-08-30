@@ -36,9 +36,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CHealth::CHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 Amount, EHealthFlags HealthFlags) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		   Precache),
+			   sint32 Amount, EHealthFlags HealthFlags) :
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 Amount(Amount),
 HealthFlags(HealthFlags)
 {
@@ -116,7 +115,7 @@ LINK_ITEM_TO_CLASS (item_health_large, CHealthEntity);
 
 void AddHealthToList ()
 {
-	NItems::StimPack = QNew (TAG_GENERIC) CHealth("item_health_small", "models/items/healing/stimpack/tris.md2", 0, "items/s_health.wav", "i_health", "Stimpack", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 2, HEALTHFLAG_IGNOREMAX);
-	NItems::SmallHealth = QNew (TAG_GENERIC) CHealth("item_health", "models/items/healing/medium/tris.md2", 0, "items/n_health.wav", "i_health", "Medium Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 10, HEALTHFLAG_NONE);
-	NItems::LargeHealth = QNew (TAG_GENERIC) CHealth("item_health_large", "models/items/healing/large/tris.md2", 0, "items/l_health.wav", "i_health", "Large Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, "", 25, HEALTHFLAG_NONE);
+	NItems::StimPack = QNew (TAG_GENERIC) CHealth("item_health_small", "models/items/healing/stimpack/tris.md2", 0, "items/s_health.wav", "i_health", "Stimpack", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, 2, HEALTHFLAG_IGNOREMAX);
+	NItems::SmallHealth = QNew (TAG_GENERIC) CHealth("item_health", "models/items/healing/medium/tris.md2", 0, "items/n_health.wav", "i_health", "Medium Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, 10, HEALTHFLAG_NONE);
+	NItems::LargeHealth = QNew (TAG_GENERIC) CHealth("item_health_large", "models/items/healing/large/tris.md2", 0, "items/l_health.wav", "i_health", "Large Health", ITEMFLAG_HEALTH|ITEMFLAG_GRABBABLE, 25, HEALTHFLAG_NONE);
 }

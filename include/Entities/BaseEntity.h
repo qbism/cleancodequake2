@@ -1319,7 +1319,7 @@ public:
 			break;
 		case FT_SOUND_INDEX:
 			{
-				char *str = File.ReadString ();
+				char *str = File.ReadString (TAG_GENERIC);
 				if (str)
 				{
 					OFS_TO_TYPE(MediaIndex) = SoundIndex (str);
@@ -1329,7 +1329,7 @@ public:
 			break;
 		case FT_IMAGE_INDEX:
 			{
-				char *str = File.ReadString ();
+				char *str = File.ReadString (TAG_GENERIC);
 				if (str)
 				{
 					OFS_TO_TYPE(MediaIndex) = ImageIndex (str);
@@ -1339,7 +1339,7 @@ public:
 			break;
 		case FT_MODEL_INDEX:
 			{
-				char *str = File.ReadString ();
+				char *str = File.ReadString (TAG_GENERIC);
 				if (str)
 				{
 					OFS_TO_TYPE(MediaIndex) = ModelIndex (str);
@@ -1363,7 +1363,7 @@ public:
 			}
 			break;
 		case FT_STRING:
-			OFS_TO_TYPE(std::string) = File.ReadCCString ();
+			OFS_TO_TYPE(std::string) = File.ReadString ();
 			break;
 		};
 	};

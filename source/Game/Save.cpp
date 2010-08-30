@@ -329,7 +329,7 @@ void ReadRealEntity (CFile &File, sint32 number)
 	if (number > Game.MaxClients)
 	{
 		IBaseEntity *Entity;
-		char *tempBuffer = File.ReadString ();
+		char *tempBuffer = File.ReadString (TAG_GENERIC);
 
 		Entity = CreateEntityFromTable (number, tempBuffer);
 		QDelete[] tempBuffer;
@@ -477,7 +477,7 @@ void CGameAPI::ReadGame (char *filename)
 		return;
 	}
 
-	char *date = File.ReadString ();
+	char *date = File.ReadString (TAG_GENERIC);
 	if (strcmp (date, BuildDate()))
 	{
 		GameError ("Savegame from an older version.\n");

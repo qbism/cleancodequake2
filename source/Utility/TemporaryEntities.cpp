@@ -191,7 +191,6 @@ void CSteam::SendData ()
 	WriteByte (Color);
 	WriteShort (Magnitude);
 
-	// FIXME: Test
 	if (ID != -1)
 		WriteLong (EndTime);
 };

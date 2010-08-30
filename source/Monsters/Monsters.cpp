@@ -205,7 +205,7 @@ void CMonster::LoadFields (CFile &File)
 	EnemyYaw = File.Read<float> ();
 	CurrentMove = File.Read<CAnim*> ();
 	MonsterFlags = File.Read<uint32> ();
-	MonsterName = File.ReadCCString ();
+	MonsterName = File.ReadString ();
 	PainDebounceTime = File.Read<FrameNumber> ();
 
 	Think = File.Read <void (CMonster::*) ()> ();
@@ -373,7 +373,7 @@ void			CMonsterEntity::SaveFields (CFile &File)
 void			CMonsterEntity::LoadFields (CFile &File)
 {
 	// Load in the monster name
-	char *tempBuffer = File.ReadString ();
+	char *tempBuffer = File.ReadString (TAG_GENERIC);
 	uint32 tempId = File.Read<uint32> ();
 
 	OldEnemy = entity_ptr<IBaseEntity>::Read(File);
@@ -651,7 +651,6 @@ bool CMonster::CheckBottom ()
 // the corners must be within 16 of the midpoint
 	bool gotOutEasy = false;
 
-	// FIXME - this will only handle 0,0,1 and 0,0,-1 gravity vectors
 	start.Z = mins.Z - ((Entity->GravityVector.Z > 0) ? -1 : 1);
 
 	for	(x=0 ; x<=1 && !gotOutEasy; x++)
@@ -705,7 +704,6 @@ bool CMonster::CheckBottom ()
 			
 			trace (start, stop, Entity, CONTENTS_MASK_MONSTERSOLID);
 			
-			// FIXME - this will only handle 0,0,1 and 0,0,-1 gravity vectors
 			if (Entity->GravityVector.Z > 0)
 			{
 				if (trace.Fraction != 1.0 && trace.EndPosition.Z < bottom)

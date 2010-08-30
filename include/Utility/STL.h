@@ -45,18 +45,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <map>
 #include <algorithm>
 
-inline std::string FormatString (const char *fmt, ...)
-{
-	va_list		argptr;
-	static char	text[2048];
-
-	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
-	va_end (argptr);
-
-	return std::string(text);
-};
-
 #else
 FILE_WARNING
 #endif

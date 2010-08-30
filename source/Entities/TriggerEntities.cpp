@@ -633,10 +633,6 @@ public:
 			Q3Touch = false;
 		else if ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str())) != NULL)
 		{
-			// Quake3
-			//self->touch = trigger_push_q3touch;
-			//Q3Touch = true;
-			// TODO FIXME
 			Free ();
 			return;
 		}

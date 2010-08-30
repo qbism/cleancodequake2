@@ -463,15 +463,7 @@ class CFile
 	// Error management
 	static void OutputError (const char *errorMsg)
 	{
-#ifdef _DEBUG
-#ifdef WIN32
-#if !defined(CC_STDC_CONFORMANCE)
-		OutputDebugStringA (errorMsg);
-#endif
-		assert (0);
-#endif
-#endif
-		ServerPrintf ("%s\n", errorMsg);
+		CC_ASSERT_EXPR(0, errorMsg);
 	}
 
 	/**
@@ -926,7 +918,7 @@ public:
 	/**
 	\fn	char *ReadString (sint32 Tag = TAG_GENERIC)
 	
-	\brief	Reads a C string from a file (optionally allocated using a different memory tag)
+	\brief	Reads a C string from a file allocated using a memory tag
 	
 	\author	Paril
 	\date	25/05/2010
@@ -934,10 +926,8 @@ public:
 	\param	Tag	The memory tag to allocate the string memory under. 
 	
 	\return	null if it fails, else the string. 
-
-	\todo get rid of this function
 	**/
-	char *ReadString (sint32 Tag = TAG_GENERIC)
+	char *ReadString (sint32 Tag)
 	{
 		if (!Handle)
 			return NULL;
@@ -955,18 +945,18 @@ public:
 	};
 
 	/**
-	\fn	std::string ReadCCString ()
+	\fn	std::string ReadString ()
 	
 	\brief	Reads a dynamic std::string from a file.
 	
 	\return	The std::string. 
 	**/
-	std::string ReadCCString ()
+	std::string ReadString ()
 	{
 		if (!Handle)
 			return "";
 
-		char *stringBuffer = ReadString();
+		char *stringBuffer = ReadString(TAG_GENERIC);
 
 		if (!stringBuffer)
 			return "";
@@ -1088,14 +1078,14 @@ public:
 			return;
 
 		va_list		argptr;
-		static char		text[SHRT_MAX];
+		CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(SHRT_MAX/2);
 
 		va_start (argptr, fmt);
-		vsnprintf (text, SHRT_MAX-1, fmt, argptr);
+		vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 		va_end (argptr);
 
-		text[SHRT_MAX/2-1] = 0;
-		Write (text, strlen(text));
+		text.GetBuffer<char>()[text.GetSize() - 1] = 0;
+		Write (text.GetBuffer<char>(), strlen(text.GetBuffer<char>()));
 	};
 
 	/**
@@ -1292,7 +1282,7 @@ inline CFile &operator<< (CFile &Stream, std::string &val)
 
 inline CFile &operator>> (CFile &Stream, std::string &val)
 {
-	val = Stream.ReadCCString ();
+	val = Stream.ReadString ();
 	return Stream;
 };
 

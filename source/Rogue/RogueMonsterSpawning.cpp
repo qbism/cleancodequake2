@@ -105,8 +105,6 @@ int CountPlayers ()
 //  CreateGroundMonster - this checks the volume and makes sure the floor under the volume is suitable
 //
 
-// FIXME - for the black widow, if we want the stalkers coming in on the roof, we'll have to tweak some things
-
 //
 // CreateMonster
 //

@@ -98,7 +98,7 @@ void CRocketLauncher::CreateItem (CItemList *List)
 {
 	NItems::RocketLauncher = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_rocketlauncher", "models/weapons/g_rocket/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_rlauncher", "Rocket Launcher",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		&Weapon, NItems::Rockets, 1, "#w_rlauncher.md2");
 };
 

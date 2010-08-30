@@ -112,7 +112,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // therefore not required to be repeated in msg. Arguments
 // will cause this function to fail (obviously)
 // see cc_utils.cpp
-#define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
+#define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg), true)
+
+// "minor" asserts don't cause the window to pop up unless a debugger is attached.
+// A windows convenience really.
+#define CC_ASSERT_EXPR_MINOR(expr, msg) AssertExpression(!!(expr), (msg), false)
 
 // Define this if you want to use include guards.
 #ifndef INCLUDE_GUARDS

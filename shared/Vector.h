@@ -986,7 +986,7 @@ public:
 	**/
 	float NormalizeFast()
 	{
-		float Len = Q_RSqrtf(Dot(*this));
+		float Len = Q_RSqrt<float>(Dot(*this));
 		operator*= (Len);
 		return (Len) ? (1.0f / Len) : 0;
 	}

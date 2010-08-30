@@ -146,9 +146,9 @@ public:
 
 	void Load (CFile &File)
 	{
-		HelpMessages[0] = File.ReadCCString ();
-		HelpMessages[1] = File.ReadCCString ();
-		SpawnPoint = File.ReadCCString ();
+		HelpMessages[0] = File.ReadString ();
+		HelpMessages[1] = File.ReadString ();
+		SpawnPoint = File.ReadString ();
 		HelpChanged = File.Read<uint8> ();
 		MaxClients = File.Read<uint8> ();
 		MaxSpectators = File.Read<uint8> ();

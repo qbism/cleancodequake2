@@ -37,10 +37,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CArmor::CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint16 baseCount, sint16 maxCount, sint16 normalProtection,
+			   sint16 baseCount, sint16 maxCount, sint16 normalProtection,
 			   sint16 energyProtection) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		Precache),
+CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 baseCount(baseCount),
 maxCount(maxCount),
 normalProtection(normalProtection),
@@ -184,9 +183,9 @@ LINK_ITEM_TO_CLASS (item_armor_shard, CArmorEntity);
 
 void AddArmorToList ()
 {
-	NItems::JacketArmor = QNew (TAG_GENERIC) CArmor ("item_armor_jacket", "models/items/armor/jacket/tris.md2", FX_ROTATE, "misc/ar1_pkup.wav", "i_jacketarmor", "Jacket Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 25, 50, 30, 0);
-	NItems::CombatArmor = QNew (TAG_GENERIC) CArmor ("item_armor_combat", "models/items/armor/combat/tris.md2", FX_ROTATE, "misc/ar1_pkup.wav", "i_combatarmor", "Combat Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 50, 100, 60, 30);
-	NItems::BodyArmor = QNew (TAG_GENERIC) CArmor ("item_armor_body", "models/items/armor/body/tris.md2", FX_ROTATE, "misc/ar1_pkup.wav", "i_bodyarmor", "Body Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 100, 200, 80, 60);
-	NItems::ArmorShard = QNew (TAG_GENERIC) CArmor ("item_armor_shard", "models/items/armor/shard/tris.md2", FX_ROTATE, "misc/ar2_pkup.wav", "i_jacketarmor", "Armor Shard", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, "", 2, -1, -1, -1);
+	NItems::JacketArmor = QNew (TAG_GENERIC) CArmor ("item_armor_jacket", "models/items/armor/jacket/tris.md2", FX_ROTATE, "misc/ar1_pkup.wav", "i_jacketarmor", "Jacket Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, 25, 50, 30, 0);
+	NItems::CombatArmor = QNew (TAG_GENERIC) CArmor ("item_armor_combat", "models/items/armor/combat/tris.md2", FX_ROTATE, "misc/ar1_pkup.wav", "i_combatarmor", "Combat Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, 50, 100, 60, 30);
+	NItems::BodyArmor = QNew (TAG_GENERIC) CArmor ("item_armor_body", "models/items/armor/body/tris.md2", FX_ROTATE, "misc/ar1_pkup.wav", "i_bodyarmor", "Body Armor", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, 100, 200, 80, 60);
+	NItems::ArmorShard = QNew (TAG_GENERIC) CArmor ("item_armor_shard", "models/items/armor/shard/tris.md2", FX_ROTATE, "misc/ar2_pkup.wav", "i_jacketarmor", "Armor Shard", ITEMFLAG_GRABBABLE|ITEMFLAG_ARMOR, 2, -1, -1, -1);
 }
 

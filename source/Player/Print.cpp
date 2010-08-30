@@ -45,26 +45,26 @@ Sends text across to be displayed if the level passes
 static void SV_ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list			argptr;
-	static char		string[MAX_COMPRINT];
+	CTempMemoryBlock	string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 	CPlayerEntity	*Player = entity_cast<CPlayerEntity>(ent->Entity);
 
 	if (printLevel < Player->Client.Respawn.MessageLevel)
 		return;
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
 	WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
 	if (printLevel != PRINT_CENTER)
 		WriteByte (printLevel);
-	WriteString (string);
+	WriteString (string.GetBuffer<char>());
 	Cast ((printLevel != PRINT_CENTER) ? CASTFLAG_UNRELIABLE : CASTFLAG_RELIABLE, Player);
 }
 
 void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
-	static char	msg[MAX_COMPRINT];
+	CTempMemoryBlock		msg = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 	va_list		argptr;
 
 	if (ent)
@@ -79,14 +79,14 @@ void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ..
 
 	// Evaluate args
 	va_start (argptr, fmt);
-	vsnprintf (msg, sizeof(msg), fmt, argptr);
+	vsnprintf (msg.GetBuffer<char>(), msg.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
 	// Print
 	if (ent)
-		SV_ClientPrintf (ent, printLevel, "%s", msg);
+		SV_ClientPrintf (ent, printLevel, "%s", msg.GetBuffer<char>());
 	else
-		ServerPrintf ("%s", msg);
+		ServerPrintf ("%s", msg.GetBuffer<char>());
 }
 
 void DeveloperPrintf (const char *fmt, ...)
@@ -95,17 +95,17 @@ void DeveloperPrintf (const char *fmt, ...)
 		return;
 
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock		text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
 CC_DISABLE_DEPRECATION
-	gi.dprintf ("%s", text);
+	gi.dprintf ("%s", text.GetBuffer<char>());
 CC_ENABLE_DEPRECATION
 
-	CC_OutputDebugString (text);
+	CC_OutputDebugString (text.GetBuffer<char>());
 }
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
@@ -113,58 +113,45 @@ void DebugPrintf (const char *fmt, ...)
 {
 #ifdef _DEBUG
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock	text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
 CC_DISABLE_DEPRECATION
-	gi.dprintf ("%s", text);
+	gi.dprintf ("%s", text.GetBuffer<char>());
 CC_ENABLE_DEPRECATION
 
-	CC_OutputDebugString (text);
+	CC_OutputDebugString (text.GetBuffer<char>());
 #endif
 }
 
 void ServerPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock	text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
 CC_DISABLE_DEPRECATION
-	gi.dprintf ("%s", text);
+	gi.dprintf ("%s", text.GetBuffer<char>());
 CC_ENABLE_DEPRECATION
 
-	CC_OutputDebugString (text);
+	CC_OutputDebugString (text.GetBuffer<char>());
 }
 
 void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	string[MAX_COMPRINT];
+	CTempMemoryBlock	string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
-	// Echo to console
-	if (CvarList[CV_DEDICATED].Integer())
-	{
-		static char	copy[1024];
-		sint32		i;
-		
-		// Mask off high bits
-		for (i = 0; i < ((MAX_COMPRINT/2) - 1) && string[i]; i++)
-			copy[i] = string[i]&127;
-		copy[i] = 0;
-		ServerPrintf ("%s", copy);
-	}
-
 	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
@@ -178,73 +165,83 @@ void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 		if (printLevel != PRINT_CENTER)
 			WriteByte (printLevel);
 
-		WriteString (string);
+		WriteString (string.GetBuffer<char>());
 
 		Cast (CASTFLAG_UNRELIABLE, Player);
+	}
+
+	// Echo to console
+	if (CvarList[CV_DEDICATED].Integer())
+	{
+		// Mask off high bits
+		for (size_t i = 0; i < string.GetSize() && string.GetBuffer<char>()[i]; i++)
+			string.GetBuffer<char>()[i] &= 127;
+
+		ServerPrintf ("%s", string.GetBuffer<char>());
 	}
 }
 #else
 void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	string[MAX_COMPRINT];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
 	if (printLevel == PRINT_CENTER)
-		gi.centerprintf (ent, "%s", string);
+		gi.centerprintf (ent, "%s", string.GetBuffer<char>());
 	else
-		gi.cprintf (ent, printLevel, "%s", string);
+		gi.cprintf (ent, printLevel, "%s", string.GetBuffer<char>());
 }
 
 void DeveloperPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	string[MAX_COMPRINT];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
-	gi.dprintf ("%s", string);
+	gi.dprintf ("%s", string.GetBuffer<char>());
 }
 
 void DebugPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	string[MAX_COMPRINT];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
-	gi.dprintf ("%s", string);
+	gi.dprintf ("%s", string.GetBuffer<char>());
 }
 
 void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	string[MAX_COMPRINT];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
-	gi.bprintf (printLevel, "%s", string);
+	gi.bprintf (printLevel, "%s", string.GetBuffer<char>());
 }
 
 void ServerPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	string[MAX_COMPRINT];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (string, sizeof(string), fmt, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
-	gi.dprintf ("%s", string);
+	gi.dprintf ("%s", string.GetBuffer<char>());
 }
 
 #endif

@@ -86,7 +86,7 @@ IMPLEMENT_SAVE_SOURCE(CJustAModel);
 
 // Foodcube
 CFoodCube::CFoodCube () :
-  CBasePowerUp ("item_foodcube", "models/objects/trapfx/tris.md2", 0, "items/m_health.wav", "i_health", "Health", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0)
+  CBasePowerUp ("item_foodcube", "models/objects/trapfx/tris.md2", 0, "items/m_health.wav", "i_health", "Health", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, 0)
 {
 };
 
@@ -313,7 +313,6 @@ void CTrapProjectile::Explode ()
 	if (GetOwner() && (GetOwner()->EntityFlags & EF_PLAYER))
 		entity_cast<CPlayerEntity>(GetOwner())->PlayerNoiseAt (State.GetOrigin (), PNOISE_IMPACT);
 
-	//FIXME: if we are onground then raise our Z just a bit since we are a point?
 	if (Enemy)
 	{
 		IHurtableEntity *HurtEnemy = entity_cast<IHurtableEntity>(*Enemy);

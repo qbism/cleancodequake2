@@ -84,7 +84,7 @@ void CPersistentData::Save (CFile &File)
 void CPersistentData::Load (CFile &File)
 {
 	UserInfo.Load (File);
-	Name = File.ReadCCString ();
+	Name = File.ReadString ();
 
 	IP = File.Read<IPAddress> ();
 	Hand = File.Read<EHandedness> ();
@@ -1224,8 +1224,6 @@ SV_CalcGunOffset
 */
 inline void CPlayerEntity::CalcGunOffset (vec3f &forward, vec3f &right, vec3f &up, float xyspeed)
 {
-	// FIXME: heatbeam no bob
-
 	// gun angles from bobbing
 	vec3f angles	(	(bobcycle & 1) ? (-Client.PlayerState.GetGunAngles ().Z) : (xyspeed * bobfracsin * 0.005), 
 						(bobcycle & 1) ? (-Client.PlayerState.GetGunAngles ().Y) : (xyspeed * bobfracsin * 0.01),
@@ -1976,7 +1974,6 @@ void CPlayerEntity::EndServerFrame ()
 	//
 	if (Level.Intermission.Time)
 	{
-		// FIXME: add view drifting here?
 		Client.PlayerState.GetViewBlend ().A = 0;
 		Client.PlayerState.GetFov () = 90;
 		SetStats ();
@@ -2123,15 +2120,14 @@ CTFScoreboardMessage
 */
 void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 {
-	CStatusBar			Bar;
-	static char			entry[1024];
-	size_t				len;
+	CStatusBar				Bar;
+	size_t					len;
 	static sint32			sorted[2][MAX_CS_CLIENTS];
 	static sint32			sortedscores[2][MAX_CS_CLIENTS];
 	static sint32			Score, total[2], totalscore[2];
 	sint32					last[2];
 	sint32					n, j, k;
-	static char			str[MAX_COMPRINT/4];
+	CTempMemoryBlock		str = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 	sint32					team;
 
 	// sort the clients by team and Score
@@ -2156,7 +2152,7 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 			if (Score > sortedscores[team][j])
 				break;
 		}
-		for (k =total[team]; k > j; k--)
+		for (k = total[team]; k > j; k--)
 		{
 			sorted[team][k] = sorted[team][k-1];
 			sortedscores[team][k] = sortedscores[team][k-1];
@@ -2180,8 +2176,8 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	Bar.AddEndIf ();
 	Bar.AddVirtualPoint_X (40);
 	Bar.AddVirtualPoint_Y (28);
-	Q_snprintfz (str, sizeof(str), "%4d/%-3d", totalscore[0], total[0]);
-	Bar.AddString (str, false, false);
+	Q_snprintfz (str.GetBuffer<char>(), str.GetSize(), "%4d/%-3d", totalscore[0], total[0]);
+	Bar.AddString (str.GetBuffer<char>(), false, false);
 	Bar.AddVirtualPoint_X (98);
 	Bar.AddVirtualPoint_Y (12);
 	Bar.AddNumStat (STAT_CTF_TEAM1_CAPS, 2);
@@ -2194,8 +2190,8 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	Bar.AddEndIf ();
 	Bar.AddVirtualPoint_X (200);
 	Bar.AddVirtualPoint_Y (28);
-	Q_snprintfz (str, sizeof(str), "%4d/%-3d", totalscore[1], total[1]);
-	Bar.AddString (str, false, false);
+	Q_snprintfz (str.GetBuffer<char>(), str.GetSize(), "%4d/%-3d", totalscore[1], total[1]);
+	Bar.AddString (str.GetBuffer<char>(), false, false);
 	Bar.AddVirtualPoint_X (256);
 	Bar.AddVirtualPoint_Y (12);
 	Bar.AddNumStat (STAT_CTF_TEAM2_CAPS, 2);
@@ -2206,8 +2202,6 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 	{
 		if (i >= total[0] && i >= total[1])
 			break; // we're done
-
-		*entry = 0;
 
 		// left side
 		if (i < total[0])
@@ -2285,19 +2279,17 @@ void CPlayerEntity::CTFScoreboardMessage (bool reliable)
 
 	if (total[0] - last[0] > 1) // couldn't fit everyone
 	{
-		//Q_snprintfz(string + strlen(string), "xv 8 yv %d string \"..and %d more\" ",
-		//	42 + (last[0]+1)*8, total[0] - last[0] - 1);
 		Bar.AddVirtualPoint_X (8);
 		Bar.AddVirtualPoint_Y (42 + (last[0]+1)*8);
-		Q_snprintfz (str, sizeof(str), "..and %d more", total[0] - last[0] - 1);
-		Bar.AddString (str, false, false);
+		Q_snprintfz (str.GetBuffer<char>(), str.GetSize(), "..and %d more", total[0] - last[0] - 1);
+		Bar.AddString (str.GetBuffer<char>(), false, false);
 	}
 	if (total[1] - last[1] > 1) // couldn't fit everyone
 	{
 		Bar.AddVirtualPoint_X (168);
 		Bar.AddVirtualPoint_Y (42 + (last[1]+1)*8);
-		Q_snprintfz (str, sizeof(str), "..and %d more", total[1] - last[1] - 1);
-		Bar.AddString (str, false, false);
+		Q_snprintfz (str.GetBuffer<char>(), str.GetSize(), "..and %d more", total[1] - last[1] - 1);
+		Bar.AddString (str.GetBuffer<char>(), false, false);
 	}
 
 	Bar.SendMsg (this, reliable);
@@ -3498,13 +3490,13 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 void CPlayerEntity::PrintToClient (EGamePrintLevel printLevel, const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock		text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize(), fmt, argptr);
 	va_end (argptr);
 
-	ClientPrintf (gameEntity, printLevel, "%s", text);
+	ClientPrintf (gameEntity, printLevel, "%s", text.GetBuffer<char>());
 };
 
 inline const char *GetChaseMode (uint8 mode)

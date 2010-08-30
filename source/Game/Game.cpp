@@ -100,10 +100,10 @@ void CLevelLocals::Load (CFile &File)
 {
 	Frame = File.Read<FrameNumber> ();
 
-	FullLevelName = File.ReadCCString ();
-	ServerLevelName = File.ReadCCString ();
-	NextMap = File.ReadCCString ();
-	ForceMap = File.ReadCCString ();
+	FullLevelName = File.ReadString ();
+	ServerLevelName = File.ReadString ();
+	NextMap = File.ReadString ();
+	ForceMap = File.ReadString ();
 
 	Intermission = File.Read<SIntermissionState> ();
 

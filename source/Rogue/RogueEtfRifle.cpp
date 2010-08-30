@@ -129,7 +129,7 @@ void CETFRifle::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
 		("weapon_etf_rifle", "models/weapons/g_etf_rifle/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_etf_rifle", "ETF Rifle",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE|ITEMFLAG_MELEE, "", &Weapon,
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE|ITEMFLAG_MELEE, &Weapon,
 		NItems::Flechettes, 1, "#w_etfrifle.md2");
 };
 

@@ -357,7 +357,6 @@ bool CMonster::FindTarget()
 				return false;
 		}
 
-		//FIXME look for monsters?
 		return false;
 	}
 
@@ -1182,11 +1181,6 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// (they spray too much), get mad at them
 	// PMM
 	// added medics to this 
-	// FIXME -
-	// this really should be turned into an AI flag marking appropriate monsters as "don't shoot me"
-	//   this also leads to the problem of tanks and medics being able to, at will, kill monsters with
-	//   no chance of retaliation.  My vote is to make those monsters who are designed as "don't shoot me"
-	//   such that they also ignore being shot by monsters as well
 	if ((Attacker->EntityFlags & EF_MONSTER) && 
 		((AIFlags & (AI_FLY | AI_SWIM)) == (entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & (AI_FLY | AI_SWIM))) &&
 		(strcmp (Entity->ClassName.c_str(), Attacker->ClassName.c_str()) != 0) &&
@@ -1577,7 +1571,6 @@ void CMonster::AI_Run(float Dist)
 	// coop will change to another enemy if visible
 	if (Game.GameMode & GAME_COOPERATIVE)
 	{
-		// FIXME: insane guys get mad with this, which causes crashes!
 		if (FindTarget ())
 			return;
 	}

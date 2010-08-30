@@ -63,9 +63,9 @@ typedef uint8 ESessionProperties;
 **/
 enum
 {
-	PSP_COMMENT_BLOCK	= 1,		// Treat "/*" "*/" as block-comment marker
-	PSP_COMMENT_LINE	= 2,		// Treat "//" as a line-comment marker
-	PSP_COMMENT_POUND	= 4,		// Treat "#" as a line-comment marker
+	PSP_COMMENT_BLOCK	= BIT(0),		// Treat "/*" "*/" as block-comment marker
+	PSP_COMMENT_LINE	= BIT(1),		// Treat "//" as a line-comment marker
+	PSP_COMMENT_POUND	= BIT(2),		// Treat "#" as a line-comment marker
 
 	PSP_COMMENT_MASK	= (PSP_COMMENT_BLOCK|PSP_COMMENT_LINE|PSP_COMMENT_POUND),
 };
@@ -420,11 +420,6 @@ public:
 					// Empty token
 					if (CurrentToken.empty())
 						return false;
-
-					// Lower-case if desired
-					//if (flags & PSF_TO_LOWER)
-					//{
-					//}
 
 					if (flags & PSF_CONVERT_NEWLINE)
 					{

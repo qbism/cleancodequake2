@@ -43,7 +43,7 @@ weapon, feet, etc.
 If channel & 8, the sound will be sent to everyone, not just
 things in the PHS.
 
-FIXME: if entity isn't in PHS, they must be forced to be sent or
+If entity isn't in the PHS, they must be forced to be sent or
 have the origin explicitly sent.
 
 Channel 0 is an auto-allocate channel, the others override anything

@@ -511,6 +511,7 @@ void IBrushModel::ThinkAccelMove ()
 
 	// FIXME: this if was commented in Rogue to fix the sinking pod and
 	// some other issues, but this breaks acceleration.
+	// I noticed this problem occurring in Rogue too!
 	if (CurrentSpeed == 0)		// starting or blocked
 		CalcAcceleratedMove();
 

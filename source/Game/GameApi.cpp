@@ -77,10 +77,10 @@ CC_ENABLE_DEPRECATION
 void ConfigString (sint32 configStringIndex, const char *configStringValue, ...)
 {
 	va_list		argptr;
-	static char	string[1024];
+	CTempMemoryBlock	string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, configStringValue);
-	vsnprintf (string, 1024, configStringValue, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, configStringValue, argptr);
 	va_end (argptr);
 
 	/*	if (Audience)
@@ -93,7 +93,7 @@ void ConfigString (sint32 configStringIndex, const char *configStringValue, ...)
 	else
 	{*/
 CC_DISABLE_DEPRECATION
-		gi.configstring (configStringIndex, string);
+		gi.configstring (configStringIndex, string.GetBuffer<char>());
 CC_ENABLE_DEPRECATION
 	//}
 }
@@ -101,16 +101,16 @@ CC_ENABLE_DEPRECATION
 void GameError (const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock		text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-	CC_ReportGameError (text);
+	CC_ReportGameError (text.GetBuffer<char>());
 
 CC_DISABLE_DEPRECATION
-	gi.error (text);
+	gi.error (text.GetBuffer<char>());
 CC_ENABLE_DEPRECATION
 }
 

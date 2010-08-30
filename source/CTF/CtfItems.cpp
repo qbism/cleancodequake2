@@ -39,10 +39,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CFlag::CFlag (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 team) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		   Precache),
-team(team)
+			   sint32 Team) :
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+team(Team)
 {
 };
 
@@ -171,8 +170,8 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 **/
 void AddFlagsToList ()
 {
-	NItems::RedFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team1", "players/male/flag1.md2", FX_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM1);
-	NItems::BlueFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team2", "players/male/flag2.md2", FX_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, NULL, CTF_TEAM2);
+	NItems::RedFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team1", "players/male/flag1.md2", FX_FLAG1, "ctf/flagtk.wav", "i_ctf1", "Red Flag", ITEMFLAG_GRABBABLE, CTF_TEAM1);
+	NItems::BlueFlag = QNew (TAG_GENERIC) CFlag ("item_flag_team2", "players/male/flag2.md2", FX_FLAG2, "ctf/flagtk.wav", "i_ctf2", "Blue Flag", ITEMFLAG_GRABBABLE, CTF_TEAM2);
 }
 
 #endif

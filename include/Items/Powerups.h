@@ -60,7 +60,7 @@ public:
 
 	CBasePowerUp (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	virtual bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	virtual void	Use (CPlayerEntity *Player);
@@ -75,7 +75,7 @@ class CMegaHealth : public CBasePowerUp
 public:
 	CMegaHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
@@ -86,7 +86,7 @@ class CBackPack : public CBasePowerUp
 public:
 	CBackPack (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
@@ -97,7 +97,7 @@ class CQuadDamage : public CBasePowerUp
 public:
 	CQuadDamage (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);
@@ -109,7 +109,7 @@ class CInvulnerability : public CBasePowerUp
 public:
 	CInvulnerability (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);
@@ -121,7 +121,7 @@ class CSilencer : public CBasePowerUp
 public:
 	CSilencer (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);
@@ -133,7 +133,7 @@ class CRebreather : public CBasePowerUp
 public:
 	CRebreather (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);
@@ -145,7 +145,7 @@ class CEnvironmentSuit : public CBasePowerUp
 public:
 	CEnvironmentSuit (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);
@@ -157,7 +157,7 @@ class CBandolier : public CBasePowerUp
 public:
 	CBandolier (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
@@ -168,7 +168,7 @@ class CAdrenaline : public CBasePowerUp
 public:
 	CAdrenaline (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
@@ -179,7 +179,7 @@ class CAncientHead : public CBasePowerUp
 public:
 	CAncientHead (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
@@ -190,7 +190,7 @@ class CPowerShield : public CBasePowerUp
 public:
 	CPowerShield (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags);
+			   EPowerupFlags PowerupFlags);
 
 	void DoPickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void Use (CPlayerEntity *Player);

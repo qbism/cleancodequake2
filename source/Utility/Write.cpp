@@ -352,82 +352,61 @@ void Cast (ECastFlags castFlags, CPlayerEntity *Ent)
 
 void WriteChar (sint8 val)
 {
-	if (val < CHAR_MIN || val > CHAR_MAX)
-	{
-		DebugPrintf ("Malformed char written!\n");
+	if (CC_ASSERT_EXPR_MINOR(!(val < CHAR_MIN || val > CHAR_MAX), "Malformed char written!"))
 		val = Clamp<char> (val, CHAR_MIN, CHAR_MAX);
-	}
 
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint8> (val, WT_CHAR));
 }
 
 void WriteByte (uint8 val)
 {
-	if (val < 0 || val > UCHAR_MAX)
-	{
-		DebugPrintf ("Malformed uint8 written!\n");
+	if (CC_ASSERT_EXPR_MINOR(!(val < 0 || val > UCHAR_MAX), "Malformed uint8 written!"))
 		val = Clamp<uint8> (val, 0, UCHAR_MAX);
-	}
 
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<uint8> (val, WT_BYTE));
 }
 
 void WriteShort (sint16 val)
 {
-	if (val < SHRT_MIN || val > SHRT_MAX)
-	{
-		DebugPrintf ("Malformed sint16 written!\n");
+	if (CC_ASSERT_EXPR_MINOR(!(val < SHRT_MIN || val > SHRT_MAX), "Malformed sint16 written!"))
 		val = Clamp<sint16> (val, SHRT_MIN, SHRT_MAX);
-	}
 
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<sint16> (val, WT_SHORT));
 }
 
 void WriteLong (long val)
 {
-	if (val < LONG_MIN || val > LONG_MAX)
-	{
-		DebugPrintf ("Malformed long written!\n");
+	if (CC_ASSERT_EXPR_MINOR(!(val < LONG_MIN || val > LONG_MAX), "Malformed long written!"))
 		val = Clamp<long> (val, LONG_MIN, LONG_MAX);
-	}
 
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<long> (val, WT_LONG));
 }
 
 void WriteFloat (float val)
 {
-	if (val < FLT_MIN || val > FLT_MAX)
-	{
-		DebugPrintf ("Malformed float written!\n");
+	if (CC_ASSERT_EXPR_MINOR(!(val < FLT_MIN || val > FLT_MAX), "Malformed float written!"))
 		val = Clamp<float> (val, FLT_MIN, FLT_MAX);
-	}
 
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWritePrimIndex<float> (val, WT_FLOAT));
 }
 
 void WriteAngle (float val)
 {
-	if (val < 0 || val > 360)
-		DebugPrintf ("Malformed angle may have been written!\n");
+	CC_ASSERT_EXPR_MINOR (!(val < 0 || val > 360), "Malformed angle may have been written!");
 
 	WriteByte (ANGLE2BYTE (val));
 }
 
 void WriteAngle16 (float val)
 {
-	if (val < 0 || val > 360)
-		DebugPrintf ("Malformed angle may have been written!\n");
+	CC_ASSERT_EXPR_MINOR (!(val < 0 || val > 360), "Malformed angle may have been written!");
 
 	WriteShort (ANGLE2SHORT (val));
 }
 
 void WriteString (const char *val)
 {
-	if (!val || val == NULL || !val[0] || strlen(val) > 1400)
-	{
-		DebugPrintf ("Malformed string written!\n");
-		// FIXME: Clamp the string??
-	}
+	CC_ASSERT_EXPR_MINOR (!(!val || val == NULL || !val[0] || strlen(val) > 1400), "Malformed string written");
 
 	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (val));
 }
@@ -449,11 +428,8 @@ void WritePosition (vec3f val)
 		bool Printed = false;
 		for (sint32 i = 0; i < 3; i++)
 		{
-			if (!Printed && (val[i] > 4096 || val[i] < -4096))
-			{			
-				DebugPrintf ("Malformed position may have been written!\n");
+			if (CC_ASSERT_EXPR_MINOR (!(!Printed && (val[i] > 4096 || val[i] < -4096)), "Malformed position may have been written!"))
 				Printed = true;
-			}
 
 			WriteCoord(val[i]);
 		}

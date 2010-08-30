@@ -77,10 +77,6 @@ void CHeatBeamWeapon::Fire (CPlayerEntity *Player)
 
 	Player->Client.PlayerState.GetGunIndex() = ModelIndex ("models/weapons/v_beamer2/tris.md2");
 
-	// FIXME: required?
-	Player->Client.KickOrigin.Clear();
-	Player->Client.KickAngles.Clear();
-
 	// get start / end positions
 	vec3f start, forward, right;
 
@@ -138,7 +134,7 @@ void CHeatBeamWeapon::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
 		("weapon_plasmabeam", "models/weapons/g_beamer/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_heatbeam", "Plasma Beam",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, &Weapon,
 		NItems::Cells, 2, "#w_plasma.md2");
 };
 

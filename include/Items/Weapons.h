@@ -45,7 +45,7 @@ public:
 	CWeaponItem ();
 	CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel);
+			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel);
 
 	class CWeapon		*Weapon;
 	class CAmmo			*Ammo;
@@ -64,7 +64,7 @@ public:
 	CAmmo ();
 	CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 Quantity, EAmmoTag Tag);
+			   sint32 Quantity, EAmmoTag Tag);
 	CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name, sint32 Quantity, EAmmoTag Tag);
 
 	sint32			Quantity; // Number gotten when we pick this mother upper
@@ -85,12 +85,12 @@ class CAmmoWeapon : public CWeaponItem, public CAmmo
 public:
 	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount,
+			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount,
 			   const char *VWepModel, sint32 Quantity, EAmmoTag Tag);
 
 	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   CWeapon *Weapon, sint32 Amount, const char *VWepModel,
 			   sint32 Quantity, EAmmoTag Tag);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);

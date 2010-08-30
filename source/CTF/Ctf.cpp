@@ -1127,20 +1127,18 @@ void CCTFPlayerListCommand::operator () ()
 		return;
 	}
 
-	static char tempStr[80];
-	static char text[1400];
-
-	*text = 0;
+	CTempMemoryBlock	tempStr = CTempHunkSystem::Allocator.GetBlock(80),
+						text = CTempHunkSystem::Allocator.GetBlock(1400);
 
 	// number, name, connect time, ping, Score, CTF.Admin
-	*text = 0;
+	*text.GetBuffer<char>() = 0;
 	for (uint8 i = 1; i <= Game.MaxClients; i++)
 	{
 		CPlayerEntity *e2 = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
 		if (!e2->GetInUse())
 			continue;
 
-		Q_snprintfz(tempStr, sizeof(tempStr), "%3d %-16.16s %02d:%02d %4d %3d%s\n",
+		Q_snprintfz(tempStr.GetBuffer<char>(), tempStr.GetSize(), "%3d %-16.16s %02d:%02d %4d %3d%s\n",
 			i + 1,
 			e2->Client.Persistent.Name.c_str(),
 			(Level.Frame - e2->Client.Respawn.EnterFrame) / 600,
@@ -1148,21 +1146,54 @@ void CCTFPlayerListCommand::operator () ()
 			e2->Client.GetPing(),
 			e2->Client.Respawn.Score,
 			e2->Client.Respawn.CTF.Admin ? " (admin)" : "");
-		if (strlen(text) + strlen(tempStr) > sizeof(text) - 50)
+		if (strlen(text.GetBuffer<char>()) + strlen(tempStr.GetBuffer<char>()) > text.GetSize() - 50)
 		{
-			Q_snprintfz(text+strlen(text), sizeof(text), "And more...\n");
+			Q_snprintfz(text.GetBuffer<char>()+strlen(text.GetBuffer<char>()), text.GetSize(), "And more...\n");
 			Player->PrintToClient (PRINT_HIGH, "%s", text);
 			return;
 		}
-		Q_strcatz(text, tempStr, sizeof(text));
+		Q_strcatz(text.GetBuffer<char>(), tempStr.GetBuffer<char>(), text.GetSize());
 	}
-	Player->PrintToClient (PRINT_HIGH, "%s", text);
+	Player->PrintToClient (PRINT_HIGH, "%s", text.GetBuffer<char>());
+}
+
+bool CharIsAnyOf (char Character, const char *Values)
+{
+	for (const char *c = Values; *c; ++c)
+	{
+		if (Character == *c)
+			return true;
+	}
+
+	return false;
+}
+
+std::vector<std::string> Tokenize (std::string String, const char *Separators, const bool lower = false)
+{
+	std::vector<std::string> strings;
+	size_t start = 0;
+
+	for (size_t i = 0; i < String.length(); ++i)
+	{
+		if (String[i] == 0 || CharIsAnyOf(String[i], Separators))
+		{
+			std::string str = String.substr(start, (i - start));
+
+			if (lower)
+				str = Q_strlwr(str);
+
+			strings.push_back(str);
+			start = i + 1;
+		}
+	}
+
+	return strings;
 }
 
 void CCTFWarpCommand::operator () ()
 {
-	static char *mlist;
-	char *token;
+	static std::vector<std::string> maps;
+	static bool initialized = false;
 	static const char *seps = " \t\n\r";
 
 	if (ArgCount() < 2)
@@ -1171,24 +1202,21 @@ void CCTFWarpCommand::operator () ()
 		return;
 	}
 
-	mlist = Mem_StrDup(CvarList[CV_WARP_LIST].String());
+	if (!initialized || CvarList[CV_WARP_LIST].Modified())
+		maps = Tokenize(CvarList[CV_WARP_LIST].String(), seps, true);
 
-	token = strtok(mlist, seps);
-	while (token != NULL)
+	std::vector<std::string>::iterator it = maps.begin();
+	for (; it != maps.end(); ++it)
 	{
-		if (Q_stricmp (ArgGets(1).c_str(), token) == 0)
+		if (Q_strlwr(ArgGets(1)) == (*it))
 			break;
-		token = strtok(NULL, seps);
 	}
 
-	if (token == NULL)
+	if (it == maps.end())
 	{
 		Player->PrintToClient (PRINT_HIGH, "Unknown CTF Level.\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].String());
-		QDelete mlist;
 		return;
 	}
-
-	QDelete[] mlist;
 
 	if (Player->Client.Respawn.CTF.Admin)
 	{
@@ -1206,7 +1234,7 @@ void CCTFWarpCommand::operator () ()
 void CCTFBootCommand::operator () ()
 {
 	sint32 i;
-	static char text[80];
+	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(80);
 
 	if (!Player->Client.Respawn.CTF.Admin)
 	{
@@ -1240,8 +1268,8 @@ void CCTFBootCommand::operator () ()
 		return;
 	}
 
-	Q_snprintfz(text, sizeof(text), "kick %d\n", i - 1);
-	gi.AddCommandString(text);
+	Q_snprintfz(text.GetBuffer<char>(), text.GetSize(), "kick %d\n", i - 1);
+	gi.AddCommandString(text.GetBuffer<char>());
 }
 #endif
 

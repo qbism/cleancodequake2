@@ -45,8 +45,7 @@ public:
 
 	CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint16 baseCount, sint16 maxCount, sint16 normalProtection,
-			   sint16 energyProtection);
+			   sint16 baseCount, sint16 maxCount, sint16 normalProtection, sint16 energyProtection);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);

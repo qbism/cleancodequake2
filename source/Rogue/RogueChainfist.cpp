@@ -181,7 +181,7 @@ void CChainfist::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
 		("weapon_chainfist", "models/weapons/g_chainf/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_chainfist", "Chainfist",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, &Weapon,
 		NULL, 0, "#w_chainfist.md2");
 };
 

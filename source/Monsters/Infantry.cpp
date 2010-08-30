@@ -171,7 +171,6 @@ CAnim InfantryMoveRun (FRAME_run01, FRAME_run08, InfantryFramesRun);
 
 void CInfantry::Run ()
 {
-	// FIXME: handle this elsewhere
 	if (AIFlags & AI_STAND_GROUND)
 		CurrentMove = &InfantryMoveStand;
 	else

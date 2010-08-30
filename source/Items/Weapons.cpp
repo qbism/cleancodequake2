@@ -36,8 +36,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CWeaponItem::CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
+			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel) :
+CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 Weapon(Weapon),
 Ammo(Ammo),
 Amount(Amount),
@@ -58,9 +58,8 @@ CWeaponItem::CWeaponItem ()
 
 CAmmo::CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		   Precache),
+			   sint32 Quantity, EAmmoTag Tag) :
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 Quantity(Quantity),
 Tag(Tag)
 {
@@ -68,7 +67,7 @@ Tag(Tag)
 
 CAmmo::CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name,
 				sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, ""),
+CBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE),
 Quantity(Quantity),
 Tag(Tag)
 {
@@ -80,10 +79,9 @@ CAmmo::CAmmo ()
 
 CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel,
+			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel,
 			   sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		   Precache)
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 {
 	this->Weapon = Weapon;
 	this->Ammo = Ammo;
@@ -103,10 +101,9 @@ CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
 
 CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   CWeapon *Weapon, sint32 Amount, const char *VWepModel,
 			   sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		   Precache)
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 {
 	this->Weapon = Weapon;
 	this->Ammo = this;
@@ -452,12 +449,12 @@ LINK_ITEM_TO_CLASS (ammo_cells, CAmmoEntity);
 void AddWeapons (CItemList *List);
 void AddAmmoToList ()
 {
-	NItems::Shells = QNew (TAG_GENERIC) CAmmo("ammo_shells", "models/items/ammo/shells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_shells", "Shells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, AMMOTAG_SHELLS);
-	NItems::Bullets = QNew (TAG_GENERIC) CAmmo("ammo_bullets", "models/items/ammo/bullets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_bullets", "Bullets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, AMMOTAG_BULLETS);
-	NItems::Slugs = QNew (TAG_GENERIC) CAmmo("ammo_slugs", "models/items/ammo/slugs/medium/tris.md2", 0, "misc/am_pkup.wav", "a_slugs", "Slugs", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 10, AMMOTAG_SLUGS);
-	NItems::Grenades = QNew (TAG_GENERIC) CAmmoWeapon("ammo_grenades", "models/items/ammo/grenades/medium/tris.md2", 0, "misc/am_pkup.wav", "a_grenades", "Grenades", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, "", &CHandGrenade::Weapon, 1, "#a_grenades.md2", 5, AMMOTAG_GRENADES);
-	NItems::Rockets = QNew (TAG_GENERIC) CAmmo("ammo_rockets", "models/items/ammo/rockets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_rockets", "Rockets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 5, AMMOTAG_ROCKETS);
-	NItems::Cells = QNew (TAG_GENERIC) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, "", 50, AMMOTAG_CELLS);
+	NItems::Shells = QNew (TAG_GENERIC) CAmmo("ammo_shells", "models/items/ammo/shells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_shells", "Shells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, 10, AMMOTAG_SHELLS);
+	NItems::Bullets = QNew (TAG_GENERIC) CAmmo("ammo_bullets", "models/items/ammo/bullets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_bullets", "Bullets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, 50, AMMOTAG_BULLETS);
+	NItems::Slugs = QNew (TAG_GENERIC) CAmmo("ammo_slugs", "models/items/ammo/slugs/medium/tris.md2", 0, "misc/am_pkup.wav", "a_slugs", "Slugs", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, 10, AMMOTAG_SLUGS);
+	NItems::Grenades = QNew (TAG_GENERIC) CAmmoWeapon("ammo_grenades", "models/items/ammo/grenades/medium/tris.md2", 0, "misc/am_pkup.wav", "a_grenades", "Grenades", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_USABLE|ITEMFLAG_GRABBABLE|ITEMFLAG_WEAPON, &CHandGrenade::Weapon, 1, "#a_grenades.md2", 5, AMMOTAG_GRENADES);
+	NItems::Rockets = QNew (TAG_GENERIC) CAmmo("ammo_rockets", "models/items/ammo/rockets/medium/tris.md2", 0, "misc/am_pkup.wav", "a_rockets", "Rockets", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, 5, AMMOTAG_ROCKETS);
+	NItems::Cells = QNew (TAG_GENERIC) CAmmo("ammo_cells", "models/items/ammo/cells/medium/tris.md2", 0, "misc/am_pkup.wav", "a_cells", "Cells", ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE, 50, AMMOTAG_CELLS);
 
 #if XATRIX_FEATURES
 	AddXatrixItemsToList ();

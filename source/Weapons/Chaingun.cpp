@@ -168,6 +168,6 @@ void CChaingun::CreateItem (CItemList *List)
 	NItems::Chaingun = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_chaingun", "models/weapons/g_chain/tris.md2", FX_ROTATE, "misc/w_pkup.wav",
 		"w_chaingun", "Chaingun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
-		"", &Weapon, NItems::Bullets, 1, "#w_chaingun.md2");
+		&Weapon, NItems::Bullets, 1, "#w_chaingun.md2");
 };
 

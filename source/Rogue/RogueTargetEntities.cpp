@@ -125,11 +125,10 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		// FIXME - this needs to be a global
-		static int	nextid;
+		static int nextid = 0;
 
 		if (nextid > 20000)
-			nextid = nextid %20000;
+			nextid = 0;
 
 		nextid++;
 	

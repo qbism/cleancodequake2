@@ -207,7 +207,7 @@ CMenuItem(Menu, x, y)
 
 void CMenu_Box::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 {
-	static char	Buf[MAX_COMPRINT/2];
+	CTempMemoryBlock		Buf = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 	sint32			DrawX = (Align == LA_CENTER) ? x : x + 160, DrawY = y + 120, Index = 0;
 	sint32			W = Width+2, H = Height+2;
 
@@ -225,32 +225,32 @@ void CMenu_Box::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 				if (tY == 0)
 				{
 					if (tX == 0)
-						Buf[Index++] = CCHAR_CONTAINER1_UPPERLEFT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_UPPERLEFT;
 					else if (tX == (W - 1))
-						Buf[Index++] = CCHAR_CONTAINER1_UPPERRIGHT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_UPPERRIGHT;
 					else
-						Buf[Index++] = CCHAR_CONTAINER1_UPPERCENTER;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_UPPERCENTER;
 				}
 				else if (tY == (H - 1))
 				{
 					if (tX == 0)
-						Buf[Index++] = CCHAR_CONTAINER1_LOWERLEFT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_LOWERLEFT;
 					else if (tX == (W - 1))
-						Buf[Index++] = CCHAR_CONTAINER1_LOWERRIGHT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_LOWERRIGHT;
 					else
-						Buf[Index++] = CCHAR_CONTAINER1_LOWERCENTER;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_LOWERCENTER;
 				}
 				else
 				{
 					if (tX == 0)
-						Buf[Index++] = CCHAR_CONTAINER1_MIDDLELEFT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_MIDDLELEFT;
 					else if (tX == (W - 1))
-						Buf[Index++] = CCHAR_CONTAINER1_MIDDLERIGHT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_MIDDLERIGHT;
 					else
-						Buf[Index++] = CCHAR_CONTAINER1_MIDDLECENTER;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER1_MIDDLECENTER;
 				}
 			}
-			Buf[Index++] = '\n';
+			Buf.GetBuffer<char>()[Index++] = '\n';
 		}
 		break;
 	case 1:
@@ -261,48 +261,48 @@ void CMenu_Box::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 				if (tY == 0)
 				{
 					if (tX == 0)
-						Buf[Index++] = CCHAR_CONTAINER2_UPPERLEFT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_UPPERLEFT;
 					else if (tX == (W - 1))
-						Buf[Index++] = CCHAR_CONTAINER2_UPPERRIGHT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_UPPERRIGHT;
 					else
-						Buf[Index++] = CCHAR_CONTAINER2_UPPERCENTER;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_UPPERCENTER;
 				}
 				else if (tY == (H - 1))
 				{
 					if (tX == 0)
-						Buf[Index++] = CCHAR_CONTAINER2_LOWERLEFT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_LOWERLEFT;
 					else if (tX == (W - 1))
-						Buf[Index++] = CCHAR_CONTAINER2_LOWERRIGHT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_LOWERRIGHT;
 					else
-						Buf[Index++] = CCHAR_CONTAINER2_LOWERCENTER;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_LOWERCENTER;
 				}
 				else
 				{
 					if (tX == 0)
-						Buf[Index++] = CCHAR_CONTAINER2_MIDDLELEFT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_MIDDLELEFT;
 					else if (tX == (W - 1))
-						Buf[Index++] = CCHAR_CONTAINER2_MIDDLERIGHT;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_MIDDLERIGHT;
 					else
-						Buf[Index++] = CCHAR_CONTAINER2_MIDDLECENTER;
+						Buf.GetBuffer<char>()[Index++] = CCHAR_CONTAINER2_MIDDLECENTER;
 				}
 			}
-			Buf[Index++] = '\n';
+			Buf.GetBuffer<char>()[Index++] = '\n';
 		}
 		break;
 	case 2:
 		for (sint32 tX = 0; tX < W; tX++)
 		{
 			if (tX == 0)
-				Buf[Index++] = CCHAR_BAR1_LEFT;
+				Buf.GetBuffer<char>()[Index++] = CCHAR_BAR1_LEFT;
 			else if (tX == (W - 1))
-				Buf[Index++] = CCHAR_BAR1_RIGHT;
+				Buf.GetBuffer<char>()[Index++] = CCHAR_BAR1_RIGHT;
 			else
-				Buf[Index++] = CCHAR_BAR1_CENTER;
+				Buf.GetBuffer<char>()[Index++] = CCHAR_BAR1_CENTER;
 		}
-		Buf[Index++] = '\n';
+		Buf.GetBuffer<char>()[Index++] = '\n';
 		break;
 	}
-	Buf[Index] = '\0';
+	Buf.GetBuffer<char>()[Index] = '\0';
 
-	DrawState->AddString (Buf, false, (Align == LA_CENTER));
+	DrawState->AddString (Buf.GetBuffer<char>(), false, (Align == LA_CENTER));
 };

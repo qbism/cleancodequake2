@@ -79,13 +79,13 @@ void MapPrint (EMapPrintType printType, IBaseEntity *Entity, vec3f &origin, cons
 	Map_Print (printType, origin);
 
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-	PrintBuffer << "   " << text;
+	PrintBuffer << "   " << text.GetBuffer<char>();
 	ServerPrintf ("%s", PrintBuffer.str().c_str());
 
 	PrintBuffer.str("");

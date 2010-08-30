@@ -171,7 +171,6 @@ void CFuncTimer::Spawn ()
 
 	if (SpawnFlags & TIMER_START_ON)
 	{
-		// lots of backwards compatibility
 		NextThink = Level.Frame + 10 + (PauseTime + Delay + Wait + irandom(Random));
 		User = this;
 	}

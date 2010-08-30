@@ -38,7 +38,7 @@ CBoss2::CBoss2 (uint32 ID) :
 CMonster (ID)
 {
 	Scale = MODEL_SCALE;
-	MonsterName = "boss"; // FIXME: Name for this guy?
+	MonsterName = "Biggun Protector"; // FIXME: Name for this guy?
 };
 
 void CBoss2::Search ()

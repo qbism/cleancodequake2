@@ -37,17 +37,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CTech::CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, uint32 TechNumber, ETechType TechType) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags,
-		   Precache),
+			   uint32 TechNumber, ETechType TechType) :
+CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 TechNumber(TechNumber),
 TechType(TechType)
 {
 };
 
 CTech::CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
-CBaseItem (Classname, Model, FX_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH,
-			NULL),
+CBaseItem (Classname, Model, FX_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH),
 TechNumber(TechNumber),
 TechType(TechType)
 {
@@ -341,7 +339,6 @@ void SpawnTech(CBaseItem *Item, CSpotBase *Spot)
 	Tech->GetMaxs().Set (15);
 	Tech->State.GetModelIndex() = ModelIndex(Item->WorldModel);
 	Tech->GetSolid() = SOLID_TRIGGER;
-	Tech->SetOwner(Tech); // FIXME: legal??
 
 	vec3f forward;
 	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);

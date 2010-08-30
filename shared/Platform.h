@@ -257,7 +257,7 @@ inline sint32 Q_strnicmp (const char *s1, const char *s2, size_t n)
 
 // =========================================================================
 
-#if (defined(_M_IX86) || defined(__i386__)) && !defined(C_ONLY) && !defined(__unix__) // FIXME: make this work with unix
+#if (defined(_M_IX86) || defined(__i386__)) && !defined(C_ONLY) && !defined(__unix__)
 # define id386
 #else
 # ifdef id386

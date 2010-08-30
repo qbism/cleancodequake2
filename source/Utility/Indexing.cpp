@@ -110,23 +110,23 @@ CC_DISABLE_DEPRECATION
 MediaIndex ModelIndex (const char *String, ...)
 {
 	va_list		argptr;
-	static char	string[1024];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
 
 	va_start (argptr, String);
-	vsnprintf (string, 1024, String, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
 	va_end (argptr);
 
 	// Do we exist?
-	sint32 Index = ModelList.GetIndex(string);
+	sint32 Index = ModelList.GetIndex(string.GetBuffer<char>());
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", string);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string.GetBuffer<char>());
 			return 0;
 		}
 
-		return ModelList.AddToList (string, gi.modelindex(string));
+		return ModelList.AddToList (string.GetBuffer<char>(), gi.modelindex(string.GetBuffer<char>()));
 	}
 	return Index;
 }
@@ -134,23 +134,23 @@ MediaIndex ModelIndex (const char *String, ...)
 MediaIndex SoundIndex (const char *String, ...)
 {
 	va_list		argptr;
-	static char	string[1024];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
 
 	va_start (argptr, String);
-	vsnprintf (string, 1024, String, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
 	va_end (argptr);
 
 	// Do we exist?
-	sint32 Index = SoundList.GetIndex(string);
+	sint32 Index = SoundList.GetIndex(string.GetBuffer<char>());
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", string);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string.GetBuffer<char>());
 			return 0;
 		}
 
-		return SoundList.AddToList (string, gi.soundindex(string));
+		return SoundList.AddToList (string.GetBuffer<char>(), gi.soundindex(string.GetBuffer<char>()));
 	}
 	return Index;
 }
@@ -158,23 +158,23 @@ MediaIndex SoundIndex (const char *String, ...)
 MediaIndex ImageIndex (const char *String, ...)
 {
 	va_list		argptr;
-	static char	string[1024];
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
 
 	va_start (argptr, String);
-	vsnprintf (string, 1024, String, argptr);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
 	va_end (argptr);
 
 	// Do we exist?
-	sint32 Index = ImageList.GetIndex(string);
+	sint32 Index = ImageList.GetIndex(string.GetBuffer<char>());
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", string);
+			ServerPrintf ("Index overflow registering \"%s\"\n", string.GetBuffer<char>());
 			return 0;
 		}
 
-		return ImageList.AddToList (string, gi.imageindex(string));
+		return ImageList.AddToList (string.GetBuffer<char>(), gi.imageindex(string.GetBuffer<char>()));
 	}
 	return Index;
 }

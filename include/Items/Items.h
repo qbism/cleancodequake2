@@ -47,20 +47,22 @@ private:
 	friend class CItemList;
 public:
 	CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
-			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache);
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags);
 
 	CBaseItem ();
 
 	// Classname (for maps)
 	const char		*Classname;
+
 	// World model
 	const char		*WorldModel;
+
 	// Effect flags (FX_ROTATE, etc)
 	sint32			EffectFlags;
 
 	// The sound on pickup
 	const char		*PickupSound;
+
 private:
 	MediaIndex	PickupSoundIndex;
 
@@ -72,6 +74,7 @@ public:
 
 	/// HUD Icon
 	const char		*Icon;
+
 private:
 	MediaIndex	IconIndex;
 
@@ -86,11 +89,6 @@ public:
 
 	// Item flags
 	EItemFlags	Flags;
-
-	// Precached sounds/models/images.
-	// FIXME: I don't necessarily like the fact that the precache
-	// list here is parsed. Anyone have a better idea? :S
-	const char		*Precache;
 
 	// \brief	Attempts to pickup the item. 
 	virtual	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other) = 0;

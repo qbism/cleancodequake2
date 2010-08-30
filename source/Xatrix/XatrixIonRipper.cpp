@@ -193,6 +193,6 @@ void CIonRipper::CreateItem (CItemList *List)
 	NItems::IonRipper = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_boomer", "models/weapons/g_boom/tris.md2", FX_ROTATE, "misc/w_pkup.wav",
 		"w_ripper", "Ionripper", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
-		"", &Weapon, NItems::Cells, 2, "#w_ripper.md2");
+		&Weapon, NItems::Cells, 2, "#w_ripper.md2");
 };
 #endif

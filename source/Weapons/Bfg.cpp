@@ -131,5 +131,5 @@ void CBFG::CreateItem (CItemList *List)
 		("weapon_bfg", "models/weapons/g_bfg/tris.md2", FX_ROTATE,
 		"misc/w_pkup.wav", "w_bfg", "BFG10k",
 		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
-		"", &Weapon, NItems::Cells, 50, "#w_bfg.md2");
+		&Weapon, NItems::Cells, 50, "#w_bfg.md2");
 };

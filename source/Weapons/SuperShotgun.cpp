@@ -105,7 +105,7 @@ void CSuperShotgun::CreateItem (CItemList *List)
 {
 	NItems::SuperShotgun = QNew (TAG_GENERIC) CWeaponItem
 		("weapon_supershotgun", "models/weapons/g_shotg2/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_sshotgun",
-		"Super Shotgun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "",
+		"Super Shotgun", ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE,
 		&Weapon, NItems::Shells, 2, "#w_sshotgun.md2");
 };
 

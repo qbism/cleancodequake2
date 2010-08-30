@@ -127,7 +127,7 @@ void CDisruptor::CreateItem (CItemList *List)
 {
 	QNew (TAG_GENERIC) CWeaponItem
 		("weapon_disintegrator", "models/weapons/g_dist/tris.md2", FX_ROTATE, "misc/w_pkup.wav", "w_disintegrator", "Disruptor",
-		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, "", &Weapon,
+		ITEMFLAG_DROPPABLE|ITEMFLAG_WEAPON|ITEMFLAG_GRABBABLE|ITEMFLAG_STAY_COOP|ITEMFLAG_USABLE, &Weapon,
 		NItems::Rounds, 1, "#w_disrupt.md2");
 };
 

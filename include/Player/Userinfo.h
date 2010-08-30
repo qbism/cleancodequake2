@@ -115,7 +115,7 @@ public:
 
 	void Load (CFile &File)
 	{
-		std::string Str = File.ReadCCString ();
+		std::string Str = File.ReadString ();
 		Update (Str);
 	};
 };

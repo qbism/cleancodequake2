@@ -36,8 +36,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CBasePowerUp::CBasePowerUp(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache),
+			   EPowerupFlags PowerupFlags) :
+CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 PowerupFlags(PowerupFlags)
 {
 };
@@ -79,78 +79,78 @@ void CBasePowerUp::Drop (CPlayerEntity *Player)
 
 CMegaHealth::CMegaHealth(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CBackPack::CBackPack(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CQuadDamage::CQuadDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CInvulnerability::CInvulnerability(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CSilencer::CSilencer(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CRebreather::CRebreather(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CEnvironmentSuit::CEnvironmentSuit(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CBandolier::CBandolier(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CAdrenaline::CAdrenaline(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CAncientHead::CAncientHead(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CPowerShield::CPowerShield(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, Precache, PowerupFlags)
+			   EPowerupFlags PowerupFlags) :
+CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
@@ -512,16 +512,16 @@ LINK_ITEM_TO_CLASS (item_power_screen, CPowerupEntity);
 
 void AddPowerupsToList ()
 {
-	NItems::MegaHealth = QNew (TAG_GENERIC) CMegaHealth("item_health_mega", "models/items/mega_h/tris.md2", 0, "items/m_health.wav", "i_health", "MegaHealth", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
-	NItems::BackPack = QNew (TAG_GENERIC) CBackPack ("item_pack", "models/items/pack/tris.md2", FX_ROTATE, "items/pkup.wav", "i_pack", "Ammo Pack", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Quad = QNew (TAG_GENERIC) CQuadDamage ("item_quad", "models/items/quaddama/tris.md2", FX_ROTATE, "items/pkup.wav", "p_quad", "Quad Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Invul = QNew (TAG_GENERIC) CInvulnerability ("item_invulnerability", "models/items/invulner/tris.md2", FX_ROTATE, "items/pkup.wav", "p_invulnerability", "Invulnerability", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Silencer = QNew (TAG_GENERIC) CSilencer ("item_silencer", "models/items/silencer/tris.md2", FX_ROTATE, "items/pkup.wav", "p_silencer", "Silencer", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Rebreather = QNew (TAG_GENERIC) CRebreather ("item_breather", "models/items/breather/tris.md2", FX_ROTATE, "items/pkup.wav", "p_rebreather", "Rebreather", ITEMFLAG_POWERUP|ITEMFLAG_STAY_COOP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::EnvironmentSuit = QNew (TAG_GENERIC) CEnvironmentSuit ("item_enviro", "models/items/enviro/tris.md2", FX_ROTATE, "items/pkup.wav", "p_envirosuit", "Environment Suit", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Bandolier = QNew (TAG_GENERIC) CBandolier ("item_bandolier", "models/items/band/tris.md2", FX_ROTATE, "items/pkup.wav", "p_bandolier", "Bandolier", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::Adrenaline = QNew (TAG_GENERIC) CAdrenaline ("item_adrenaline", "models/items/adrenal/tris.md2", FX_ROTATE, "items/pkup.wav", "p_adrenaline", "Adrenaline", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
-	NItems::AncientHead = QNew (TAG_GENERIC) CAncientHead ("item_ancient_head", "models/items/c_head/tris.md2", FX_ROTATE, "items/pkup.wav", "i_fixme", "Ancient Head", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, "", 0);
-	NItems::PowerShield = QNew (TAG_GENERIC) CPowerShield ("item_power_shield", "models/items/armor/shield/tris.md2", FX_ROTATE, "misc/ar3_pkup.wav", "i_powershield", "Power Shield", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
-	NItems::PowerScreen = QNew (TAG_GENERIC) CPowerShield ("item_power_screen", "models/items/armor/screen/tris.md2", FX_ROTATE, "misc/ar3_pkup.wav", "i_powerscreen", "Power Screen", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, "", POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::MegaHealth = QNew (TAG_GENERIC) CMegaHealth("item_health_mega", "models/items/mega_h/tris.md2", 0, "items/m_health.wav", "i_health", "MegaHealth", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, 0);
+	NItems::BackPack = QNew (TAG_GENERIC) CBackPack ("item_pack", "models/items/pack/tris.md2", FX_ROTATE, "items/pkup.wav", "i_pack", "Ammo Pack", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Quad = QNew (TAG_GENERIC) CQuadDamage ("item_quad", "models/items/quaddama/tris.md2", FX_ROTATE, "items/pkup.wav", "p_quad", "Quad Damage", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Invul = QNew (TAG_GENERIC) CInvulnerability ("item_invulnerability", "models/items/invulner/tris.md2", FX_ROTATE, "items/pkup.wav", "p_invulnerability", "Invulnerability", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Silencer = QNew (TAG_GENERIC) CSilencer ("item_silencer", "models/items/silencer/tris.md2", FX_ROTATE, "items/pkup.wav", "p_silencer", "Silencer", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Rebreather = QNew (TAG_GENERIC) CRebreather ("item_breather", "models/items/breather/tris.md2", FX_ROTATE, "items/pkup.wav", "p_rebreather", "Rebreather", ITEMFLAG_POWERUP|ITEMFLAG_STAY_COOP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::EnvironmentSuit = QNew (TAG_GENERIC) CEnvironmentSuit ("item_enviro", "models/items/enviro/tris.md2", FX_ROTATE, "items/pkup.wav", "p_envirosuit", "Environment Suit", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Bandolier = QNew (TAG_GENERIC) CBandolier ("item_bandolier", "models/items/band/tris.md2", FX_ROTATE, "items/pkup.wav", "p_bandolier", "Bandolier", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::Adrenaline = QNew (TAG_GENERIC) CAdrenaline ("item_adrenaline", "models/items/adrenal/tris.md2", FX_ROTATE, "items/pkup.wav", "p_adrenaline", "Adrenaline", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, 0);
+	NItems::AncientHead = QNew (TAG_GENERIC) CAncientHead ("item_ancient_head", "models/items/c_head/tris.md2", FX_ROTATE, "items/pkup.wav", "i_fixme", "Ancient Head", ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, 0);
+	NItems::PowerShield = QNew (TAG_GENERIC) CPowerShield ("item_power_shield", "models/items/armor/shield/tris.md2", FX_ROTATE, "misc/ar3_pkup.wav", "i_powershield", "Power Shield", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
+	NItems::PowerScreen = QNew (TAG_GENERIC) CPowerShield ("item_power_screen", "models/items/armor/screen/tris.md2", FX_ROTATE, "misc/ar3_pkup.wav", "i_powerscreen", "Power Screen", ITEMFLAG_ARMOR|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE|ITEMFLAG_DROPPABLE, POWERFLAG_STORE|POWERFLAG_STACK|POWERFLAG_BUTNOTINCOOP);
 }

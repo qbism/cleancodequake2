@@ -242,6 +242,8 @@ public:
 	\date	27/05/2010
 	
 	\param [in,out]	norm	The normalize value to be stored. 
+
+	\note	The alpha value is not modified.
 	
 	\return	The normalized. 
 	**/
@@ -256,7 +258,7 @@ public:
 			out.R = ((float)R) * f;
 			out.G = ((float)G) * f;
 			out.B = ((float)B) * f;
-			out.A = A; // fixme?
+			out.A = A;
 		}
 		else
 			out = *this;

@@ -525,12 +525,11 @@ const EDamageFlags TRACKER_IMPACT_FLAGS	= (DAMAGE_NO_POWER_ARMOR | DAMAGE_ENERGY
 
 const int TRACKER_DAMAGE_TIME		= 5;
 
-// FIXME: make private!!!
 class CDisruptorPainDaemon : public IThinkableEntity
 {
 public:
 	sint32			Damage;
-	FrameNumber	LifeTime;
+	FrameNumber		LifeTime;
 
 	CDisruptorPainDaemon() :
 	  IThinkableEntity ()

@@ -63,15 +63,15 @@ void CStatusBar::SendMsg (CPlayerEntity *Player, bool reliable)
 void CStatusBar::AddToBarBuffer (const char *fmt, ...)
 {
 	va_list		argptr;
-	static char	text[MAX_COMPRINT];
+	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT/2);
 
 	va_start (argptr, fmt);
-	vsnprintf (text, sizeof(text), fmt, argptr);
+	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-	CC_ASSERT_EXPR (!(Bar.length() + strlen(text) > (MAX_COMPRINT/2)-1), "Statusbar overflowed");
+	CC_ASSERT_EXPR (!(Bar.length() + strlen(text.GetBuffer<char>()) > text.GetSize()), "Statusbar overflowed");
 
-	Bar += text;
+	Bar += text.GetBuffer<char>();
 }
 
 void CStatusBar::AddVirtualPoint_Y (sint32 y)

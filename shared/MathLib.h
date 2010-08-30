@@ -151,25 +151,15 @@ inline void Q_SinCosf(const float X, float *Sin, float *Cos)
 #endif
 }
 
-// FIXME: template?
-inline float	Q_RSqrtf (float number)
-{
-	if (number == 0.0f)
-		return 0.0f;
-
-	float	y;
-	*((sint32 *)&y) = 0x5f3759df - ((* (sint32 *) &number) >> 1);
-	return y * (1.5f - (number * 0.5f * y * y));
-}
-
-inline double	Q_RSqrtd (double number)
+template <typename T>
+inline T Q_RSqrt (T number)
 {
 	if (number == 0.0)
 		return 0.0;
 
-	double	y;
+	T	y;
 	*((sint32 *)&y) = 0x5f3759df - ((* (sint32 *) &number) >> 1);
-	return y * (1.5f - (number * 0.5 * y * y));
+	return y * (1.5 - (number * 0.5 * y * y));
 }
 
 inline sint32		Q_log2 (sint32 val)

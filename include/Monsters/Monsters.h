@@ -113,6 +113,7 @@ enum
 	AI_IGNORE_SHOTS			= BIT(21),
 	// PMM - FIXME - last second added for E3 .. there's probably a better way to do this, but
 	// this works
+	// Paril: replace this with an std::vector in the respective monsters (possibly an IMonsterCommander class?)
 	AI_DO_NOT_COUNT			= BIT(22),	// set for healed monsters
 	AI_SPAWNED_CARRIER		= BIT(23),	// both do_not_count and spawned are set for spawned monsters
 	AI_SPAWNED_MEDIC_C		= BIT(24),	// both do_not_count and spawned are set for spawned monsters

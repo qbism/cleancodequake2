@@ -295,19 +295,23 @@ IBaseEntity *LoadEntity (uint32 Index)
 #include <crtdbg.h>
 #endif
 
-bool AssertExpression (const bool expr, const char *msg)
+// Returns true if failed
+bool AssertExpression (const bool expr, const char *msg, const bool major)
 {
-#if ALLOW_ASSERTS
 	if (!expr)
 	{
 		// Print it to the console
 		DebugPrintf ("Assertion failed: %s\n", msg);
 
+#if ALLOW_ASSERTS
 		// On Win32, open up the Crt debug report thingy
 #if defined(WIN32)
 #if defined(_DEBUG)
-		if (_CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg) == 1)
-			_CrtDbgBreak(); // Call break if we told it to break
+		if (major || (!major && IsDebuggerPresent()))
+		{
+			if (_CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg) == 1)
+				_CrtDbgBreak(); // Call break if we told it to break
+		}
 #else
 		assert (0);
 #endif
@@ -316,9 +320,9 @@ bool AssertExpression (const bool expr, const char *msg)
 		// Check msg for more information.
 		assert (0);
 #endif
+#endif
 		return true;
 	}
-#endif
 
 	return false;
 }

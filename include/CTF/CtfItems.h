@@ -51,7 +51,7 @@ public:
 
 	CFlag (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache, sint32 team);
+			   sint32 Team);
 
 	CItemEntity *DropItem (IBaseEntity *Entity);
 

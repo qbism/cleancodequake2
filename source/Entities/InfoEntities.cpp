@@ -819,8 +819,6 @@ CSpotBase *CPlayerEntity::SelectLavaCoopSpawnPoint ()
 		}
 	}
 
-	// FIXME - better solution????
-	// well, we may telefrag someone, but oh well...
 	if (pointWithLeastLava)
 		return pointWithLeastLava;
 

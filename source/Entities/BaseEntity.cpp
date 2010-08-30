@@ -625,7 +625,7 @@ void IBaseEntity::ReadBaseEntity (CFile &File)
 	EntityFlags = File.Read<uint32> ();
 	Flags = File.Read<EEdictFlags> ();
 
-	ClassName = File.ReadCCString ();
+	ClassName = File.ReadString ();
 
 	Team.HasTeam = File.Read<bool> ();
 

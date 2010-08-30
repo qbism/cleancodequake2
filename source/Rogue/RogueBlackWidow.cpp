@@ -797,7 +797,6 @@ void CBlackWidow::KillChildren ()
 		if(!ent)
 			return;
 		
-		// FIXME - may need to stagger
 		if ((ent->GetInUse()) && (ent->Health > 0))
 			ent->TakeDamage (Entity, Entity, vec3fOrigin, Entity->Enemy->State.GetOrigin(), vec3fOrigin, (ent->Health + 1), 0, DAMAGE_NO_KNOCKBACK, MOD_UNKNOWN);
 	}

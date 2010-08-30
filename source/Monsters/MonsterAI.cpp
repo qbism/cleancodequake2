@@ -64,7 +64,6 @@ bool CMonster::FindTarget()
 				return false;
 		}
 
-		//FIXME look for monsters?
 		return false;
 	}
 
@@ -787,7 +786,6 @@ bool CMonster::AI_CheckAttack()
 	{
 		Entity->Enemy = nullentity;
 
-	// FIXME: look all around for other targets
 		if (Entity->OldEnemy && (Entity->OldEnemy->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->OldEnemy)->Health > 0))
 		{
 			Entity->Enemy = Entity->OldEnemy;

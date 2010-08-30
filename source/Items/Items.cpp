@@ -38,16 +38,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 extern CItemList *ItemList;
 
 CBaseItem::CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
-			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache) :
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags) :
 Classname(Classname),
 WorldModel(WorldModel),
 EffectFlags(EffectFlags),
 PickupSound(PickupSound),
 Icon(Icon),
 Name(Name),
-Flags(Flags),
-Precache(Precache)
+Flags(Flags)
 {
 	ItemList->AddItemToList (this);
 }

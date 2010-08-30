@@ -39,8 +39,7 @@ class CKey : public CBaseItem
 {
 public:
 	CKey(const char *Classname, const char *WorldModel, sint32 EffectFlags,
-			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache);
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 	void	Use (CPlayerEntity *Player);
@@ -51,8 +50,7 @@ class CPowerCube : public CKey
 {
 public:
 	CPowerCube(const char *Classname, const char *WorldModel, sint32 EffectFlags,
-			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   const char *Precache);
+			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);
 };
