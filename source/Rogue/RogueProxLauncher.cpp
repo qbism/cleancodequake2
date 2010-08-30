@@ -532,7 +532,7 @@ IMPLEMENT_SAVE_SOURCE (CProxField);
 
 // The launcher
 CProxLauncher::CProxLauncher() :
-CWeapon(5, 1, "models/weapons/v_plaunch/tris.md2", 0, 5, 6, 16,
+IWeaponBase(5, 1, "models/weapons/v_plaunch/tris.md2", 0, 5, 6, 16,
 		17, 59, 60, 64)
 {
 }

@@ -40,7 +40,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Rogue/RogueWeaponry.h"
 
 CETFRifle::CETFRifle() :
-CWeapon(4, 1, "models/weapons/v_etf_rifle/tris.md2", 0, 4, 5, 7,
+IWeaponBase(4, 1, "models/weapons/v_etf_rifle/tris.md2", 0, 4, 5, 7,
 		8, 37, 38, 41)
 {
 }
@@ -94,7 +94,7 @@ void CETFRifle::Fire (CPlayerEntity *Player)
 
 bool CETFRifle::AttemptToFire (CPlayerEntity *Player)
 {
-	if (!CWeapon::AttemptToFire(Player))
+	if (!IWeaponBase::AttemptToFire(Player))
 	{
 		Player->Client.KickOrigin.Clear();
 		Player->Client.KickAngles.Clear();
@@ -114,7 +114,7 @@ void CETFRifle::WeaponGeneric (CPlayerEntity *Player)
 			Player->Client.PlayerState.GetGunFrame() = 8;
 	}
 
-	CWeapon::WeaponGeneric (Player);
+	IWeaponBase::WeaponGeneric (Player);
 
 	if (Player->Client.PlayerState.GetGunFrame() == 8 && (Player->Client.Buttons & BUTTON_ATTACK))
 		Player->Client.PlayerState.GetGunFrame() = 6;

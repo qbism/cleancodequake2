@@ -53,12 +53,12 @@ enum
 	POWERFLAG_BUTNOTINCOOP	=	BIT(2), // must be ORed with stack
 };
 
-class CBasePowerUp : public CBaseItem
+class IBasePowerUp : public IBaseItem
 {
 public:
 	EPowerupFlags PowerupFlags;
 
-	CBasePowerUp (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+	IBasePowerUp (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags);
 
@@ -70,7 +70,7 @@ public:
 };
 
 // Mega Health powerup
-class CMegaHealth : public CBasePowerUp
+class CMegaHealth : public IBasePowerUp
 {
 public:
 	CMegaHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -81,7 +81,7 @@ public:
 };
 
 // Backpack powerup
-class CBackPack : public CBasePowerUp
+class CBackPack : public IBasePowerUp
 {
 public:
 	CBackPack (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -92,7 +92,7 @@ public:
 };
 
 // Quad Damage
-class CQuadDamage : public CBasePowerUp
+class CQuadDamage : public IBasePowerUp
 {
 public:
 	CQuadDamage (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -104,7 +104,7 @@ public:
 };
 
 // Invul
-class CInvulnerability : public CBasePowerUp
+class CInvulnerability : public IBasePowerUp
 {
 public:
 	CInvulnerability (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -116,7 +116,7 @@ public:
 };
 
 // Silèncier
-class CSilencer : public CBasePowerUp
+class CSilencer : public IBasePowerUp
 {
 public:
 	CSilencer (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -128,7 +128,7 @@ public:
 };
 
 // Rebreather (verb, "to breathe again")
-class CRebreather : public CBasePowerUp
+class CRebreather : public IBasePowerUp
 {
 public:
 	CRebreather (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -140,7 +140,7 @@ public:
 };
 
 // Rebreather (verb, "to breathe again")
-class CEnvironmentSuit : public CBasePowerUp
+class CEnvironmentSuit : public IBasePowerUp
 {
 public:
 	CEnvironmentSuit (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -152,7 +152,7 @@ public:
 };
 
 // Bandolier
-class CBandolier : public CBasePowerUp
+class CBandolier : public IBasePowerUp
 {
 public:
 	CBandolier (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -163,7 +163,7 @@ public:
 };
 
 // Adrenaline
-class CAdrenaline : public CBasePowerUp
+class CAdrenaline : public IBasePowerUp
 {
 public:
 	CAdrenaline (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -174,7 +174,7 @@ public:
 };
 
 // Ancient Head
-class CAncientHead : public CBasePowerUp
+class CAncientHead : public IBasePowerUp
 {
 public:
 	CAncientHead (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -185,7 +185,7 @@ public:
 };
 
 // Power Shield
-class CPowerShield : public CBasePowerUp
+class CPowerShield : public IBasePowerUp
 {
 public:
 	CPowerShield (const char *Classname, const char *WorldModel, sint32 EffectFlags,

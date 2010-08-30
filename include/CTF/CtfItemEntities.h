@@ -93,8 +93,8 @@ public:
 	bool Run ();
 	virtual void BecomeExplosion (bool grenade) {};
 
-	virtual void Spawn (CBaseItem *item, ETeamIndex Team);
-	virtual void Spawn (CBaseItem *Item) {};
+	virtual void Spawn (IBaseItem *item, ETeamIndex Team);
+	virtual void Spawn (IBaseItem *Item) {};
 };
 
 class CRedFlagEntity : public CFlagEntity
@@ -106,7 +106,7 @@ public:
 	bool Run ();
 	void BecomeExplosion (bool grenade);
 
-	void Spawn (CBaseItem *Item)
+	void Spawn (IBaseItem *Item)
 	{
 		CFlagEntity::Spawn (Item, CTF_TEAM1);
 	};
@@ -121,7 +121,7 @@ public:
 	bool Run ();
 	void BecomeExplosion (bool grenade);
 
-	void Spawn (CBaseItem *Item)
+	void Spawn (IBaseItem *Item)
 	{
 		CFlagEntity::Spawn (Item, CTF_TEAM2);
 	};

@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CKey::CKey(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
+IBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 {
 };
 
@@ -97,7 +97,7 @@ public:
 	  {
 	  };
 
-	void Spawn (CBaseItem *item)
+	void Spawn (IBaseItem *item)
 	{
 		if (Game.GameMode & GAME_COOPERATIVE)
 		{

@@ -40,7 +40,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CFlag::CFlag (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   sint32 Team) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 team(Team)
 {
 };

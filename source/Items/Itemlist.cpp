@@ -44,12 +44,12 @@ namespace NItems
 	CArmor *ArmorShard;
 
 	// Health
-	CBaseItem *StimPack;
-	CBaseItem *SmallHealth;
-	CBaseItem *LargeHealth;
+	IBaseItem *StimPack;
+	IBaseItem *SmallHealth;
+	IBaseItem *LargeHealth;
 
 	// Keys
-	CBaseItem *PowerCube;
+	IBaseItem *PowerCube;
 #if CLEANCTF_ENABLED
 	CFlag *RedFlag;
 	CFlag *BlueFlag;
@@ -89,29 +89,29 @@ namespace NItems
 	CAmmo *Prox;
 	CAmmo *Flechettes;
 	CAmmo *Rounds;
-	CBaseItem *Tesla;
+	IBaseItem *Tesla;
 #endif
 
 	// Powerups
-	CBaseItem *MegaHealth;
-	CBaseItem *BackPack;
-	CBaseItem *Quad;
+	IBaseItem *MegaHealth;
+	IBaseItem *BackPack;
+	IBaseItem *Quad;
 #if XATRIX_FEATURES
-	CBaseItem *QuadFire;
+	IBaseItem *QuadFire;
 #endif
 #if ROGUE_FEATURES
-	CBaseItem *Double;
-	CBaseItem *IRGoggles;
+	IBaseItem *Double;
+	IBaseItem *IRGoggles;
 #endif
-	CBaseItem *Invul;
-	CBaseItem *Silencer;
-	CBaseItem *Rebreather;
-	CBaseItem *EnvironmentSuit;
-	CBaseItem *Bandolier;
-	CBaseItem *Adrenaline;
-	CBaseItem *AncientHead;
-	CBaseItem *PowerShield;
-	CBaseItem *PowerScreen;
+	IBaseItem *Invul;
+	IBaseItem *Silencer;
+	IBaseItem *Rebreather;
+	IBaseItem *EnvironmentSuit;
+	IBaseItem *Bandolier;
+	IBaseItem *Adrenaline;
+	IBaseItem *AncientHead;
+	IBaseItem *PowerShield;
+	IBaseItem *PowerScreen;
 };
 
 CItemList *ItemList;
@@ -122,7 +122,7 @@ TempList (QNew(TAG_GENERIC) TItemListType)
 {
 };
 
-void CItemList::AddItemToList (CBaseItem *Item)
+void CItemList::AddItemToList (IBaseItem *Item)
 {
 	TempList->push_back (Item);
 }
@@ -174,7 +174,7 @@ void CItemList::SortAndFinalize ()
 	// Finalize
 	for (TItemListType::iterator it = Items.begin(); it < Items.end(); ++it)
 	{
-		CBaseItem *Item = (*it);
+		IBaseItem *Item = (*it);
 
 		Item->Index = numItems++;
 
@@ -195,7 +195,7 @@ void CItemList::SendItemNames ()
 		ConfigString (Items[i]->GetConfigStringNumber(), Items[i]->Name);
 }
 
-CBaseItem *FindItem (const char *name)
+IBaseItem *FindItem (const char *name)
 {
 	// Check through the itemlist
 	static uint32 hash;
@@ -203,7 +203,7 @@ CBaseItem *FindItem (const char *name)
 
 	for (THashedItemListType::iterator it = ItemList->HashedNameItemList.equal_range(hash).first; it != ItemList->HashedNameItemList.equal_range(hash).second; ++it)
 	{
-		static CBaseItem *Item;
+		static IBaseItem *Item;
 		Item = ItemList->Items.at((*it).second);
 
 		if (Q_stricmp(Item->Name, name) == 0)
@@ -212,7 +212,7 @@ CBaseItem *FindItem (const char *name)
 	return NULL;
 }
 
-CBaseItem *FindItemByClassname (const char *name)
+IBaseItem *FindItemByClassname (const char *name)
 {
 	// Check through the itemlist
 	static uint32 hash;
@@ -220,7 +220,7 @@ CBaseItem *FindItemByClassname (const char *name)
 
 	for (THashedItemListType::iterator it = ItemList->HashedClassnameItemList.equal_range(hash).first; it != ItemList->HashedClassnameItemList.equal_range(hash).second; ++it)
 	{
-		static CBaseItem *Item;
+		static IBaseItem *Item;
 		Item = ItemList->Items.at((*it).second);
 
 		if (Q_stricmp(Item->Classname, name) == 0)
@@ -230,7 +230,7 @@ CBaseItem *FindItemByClassname (const char *name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \fn	void CBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
+/// \fn	void IBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
 ///
 /// \brief	Adds 'quantity' amount of this to 'Player' (ignores any max)
 ///
@@ -240,12 +240,12 @@ CBaseItem *FindItemByClassname (const char *name)
 /// \param	Player		 - If non-null, the entity to add the amount to. 
 /// \param	quantity - The amount to add. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
+void IBaseItem::Add (CPlayerEntity *Player, sint32 quantity)
 {
 	Player->Client.Persistent.Inventory.Add(this, quantity);
 }
 
-CBaseItem *GetItemByIndex (uint32 Index)
+IBaseItem *GetItemByIndex (uint32 Index)
 {
 	if (Index >= MAX_ITEMS || Index >= ItemList->Items.size() || Index < 0)
 		return NULL;
@@ -296,7 +296,7 @@ void InvalidateItemMedia ()
 {
 	for (sint32 i = 0; i < ItemList->numItems; i++)
 	{
-		CBaseItem *Item = ItemList->Items[i];
+		IBaseItem *Item = ItemList->Items[i];
 
 		Item->IconIndex = Item->PickupSoundIndex = 0;
 		if (Item->Flags & ITEMFLAG_WEAPON)

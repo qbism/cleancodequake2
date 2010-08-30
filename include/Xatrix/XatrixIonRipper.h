@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_XATRIX_IONRIPPER_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_XATRIX_IONRIPPER_H
 
-class CIonRipper : public CWeapon
+class CIonRipper : public IWeaponBase
 {
 public:
 	CIonRipper();

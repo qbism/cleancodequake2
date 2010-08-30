@@ -44,12 +44,12 @@ CInventory::~CInventory ()
 {
 };
 
-void CInventory::Add (CBaseItem *Item, sint32 Num)
+void CInventory::Add (IBaseItem *Item, sint32 Num)
 {
 	Array[Item->GetIndex()] += Num;
 }
 
-void CInventory::Remove (CBaseItem *Item, sint32 Num)
+void CInventory::Remove (IBaseItem *Item, sint32 Num)
 {
 	TInventoryMapType::iterator it = Array.find (Item->GetIndex());
 
@@ -111,7 +111,7 @@ void CInventory::SelectNextItem(EItemFlags Flags)
 		index = (SelectedItem + i) % MAX_CS_ITEMS;
 		if (Array.find(index) == Array.end())
 			continue;
-		CBaseItem *it = GetItemByIndex(index);
+		IBaseItem *it = GetItemByIndex(index);
 		if (!(it->Flags & ITEMFLAG_USABLE))
 			continue;
 		if (!(it->Flags & Flags))
@@ -135,7 +135,7 @@ void CInventory::SelectPrevItem(EItemFlags Flags)
 		index = (SelectedItem + MAX_CS_ITEMS - i) % MAX_CS_ITEMS;
 		if (Array.find(index) == Array.end())
 			continue;
-		CBaseItem *it = GetItemByIndex(index);
+		IBaseItem *it = GetItemByIndex(index);
 		if (!(it->Flags & ITEMFLAG_USABLE))
 			continue;
 		if (!(it->Flags & Flags))
@@ -159,7 +159,7 @@ sint32 CInventory::Has (uint8 Index)
 	return (*it).second;
 }
 
-sint32 CInventory::Has (CBaseItem *Item)
+sint32 CInventory::Has (IBaseItem *Item)
 {
 	TInventoryMapType::iterator it = Array.find(Item->GetIndex());
 
@@ -169,7 +169,7 @@ sint32 CInventory::Has (CBaseItem *Item)
 	return (*it).second;
 }
 
-void CInventory::Set (CBaseItem *Item, sint32 Num)
+void CInventory::Set (IBaseItem *Item, sint32 Num)
 {
 	if (Num == 0)
 	{
@@ -203,7 +203,7 @@ void CInventory::ValidateSelectedItem()
 	SelectNextItem (-1);
 }
 
-void CInventory::operator += (CBaseItem *Item)
+void CInventory::operator += (IBaseItem *Item)
 {
 	Add(Item, 1);
 }
@@ -213,7 +213,7 @@ void CInventory::operator += (uint8 Index)
 	Add(GetItemByIndex(Index), 1);
 }
 
-void CInventory::operator -= (CBaseItem *Item)
+void CInventory::operator -= (IBaseItem *Item)
 {
 	Remove(Item, 1);
 }
@@ -233,7 +233,7 @@ Use an inventory item
 void CUseCommand::operator () ()
 {
 	std::string s = ArgGetConcatenatedString();
-	CBaseItem *Item = FindItem(s.c_str());
+	IBaseItem *Item = FindItem(s.c_str());
 
 	if (!Item)
 	{
@@ -274,7 +274,7 @@ void CUseListCommand::operator () ()
 	for (sint32 i = 1; i < ArgCount(); i++)
 	{
 		std::string s = ArgGets(i);
-		CBaseItem *Item = FindItem(s.c_str());
+		IBaseItem *Item = FindItem(s.c_str());
 
 		if (!Item)
 		{
@@ -332,7 +332,7 @@ void CDropCommand::operator () ()
 		return;
 	}
 
-	CBaseItem *Item = FindItem(s.c_str());
+	IBaseItem *Item = FindItem(s.c_str());
 	if (!Item)
 	{
 		Item = FindItemByClassname(s.c_str());
@@ -411,7 +411,7 @@ void CInvUseCommand::operator () ()
 		return;
 	}
 
-	CBaseItem *it = GetItemByIndex(Player->Client.Persistent.Inventory.SelectedItem);
+	IBaseItem *it = GetItemByIndex(Player->Client.Persistent.Inventory.SelectedItem);
 	if (!(it->Flags & ITEMFLAG_USABLE))
 	{
 		Player->PrintToClient (PRINT_HIGH, "Item is not usable.\n");
@@ -442,7 +442,7 @@ void CWeapPrevCommand::operator () ()
 		sint32 index = (selectedWeaponIndex + numItems - i) % numItems;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
-		CBaseItem *Item = GetItemByIndex(index);
+		IBaseItem *Item = GetItemByIndex(index);
 		if (!(Item->Flags & ITEMFLAG_USABLE))
 			continue;
 		if (!(Item->Flags & ITEMFLAG_WEAPON))
@@ -474,7 +474,7 @@ void CWeapNextCommand::operator () ()
 		sint32 index = (selectedWeaponIndex + i) % numItems;
 		if (!Player->Client.Persistent.Inventory.Has(index))
 			continue;
-		CBaseItem *Item = GetItemByIndex(index);
+		IBaseItem *Item = GetItemByIndex(index);
 		if (!(Item->Flags & ITEMFLAG_USABLE))
 			continue;
 		if (!(Item->Flags & ITEMFLAG_WEAPON))
@@ -522,7 +522,7 @@ void CInvDropCommand::operator () ()
 		return;
 	}
 
-	CBaseItem *Item = GetItemByIndex(Player->Client.Persistent.Inventory.SelectedItem);
+	IBaseItem *Item = GetItemByIndex(Player->Client.Persistent.Inventory.SelectedItem);
 	if (!(Item->Flags & ITEMFLAG_DROPPABLE))
 	{
 		Player->PrintToClient (PRINT_HIGH, "Item cannot be dropped.\n");
@@ -626,7 +626,7 @@ inline IBaseEntity *SpawnEntityAtPlace (std::string ClassName, vec3f Origin, vec
 
 void Cmd_Give (CPlayerEntity *Player)
 {
-	CBaseItem *it;
+	IBaseItem *it;
 
 	std::string name = ArgGetConcatenatedString();
 	bool give_all = (Q_stricmp (name.c_str(), "all") == 0);

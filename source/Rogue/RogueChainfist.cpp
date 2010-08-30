@@ -40,7 +40,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Utility/TemporaryEntities.h"
 
 CChainfist::CChainfist() :
-CWeapon(0, 1, "models/weapons/v_chainf/tris.md2", 0, 4, 5, 32,
+IWeaponBase(0, 1, "models/weapons/v_chainf/tris.md2", 0, 4, 5, 32,
 		33, 57, 58, 60)
 {
 }
@@ -135,7 +135,7 @@ void CChainfist::WeaponGeneric (CPlayerEntity *Player)
 		break;
 	};
 
-	CWeapon::WeaponGeneric (Player);
+	IWeaponBase::WeaponGeneric (Player);
 
 	int LastSequence = 0;
 	if ((Player->Client.Buttons) & BUTTON_ATTACK)

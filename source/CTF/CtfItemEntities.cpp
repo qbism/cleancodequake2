@@ -133,7 +133,7 @@ bool CFlagEntity::Run ()
 	return CItemEntity::Run ();
 };
 
-void CFlagEntity::Spawn (CBaseItem *Item, ETeamIndex Team)
+void CFlagEntity::Spawn (IBaseItem *Item, ETeamIndex Team)
 {
 //ZOID
 //Don't spawn the flags unless enabled

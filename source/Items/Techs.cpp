@@ -38,14 +38,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CTech::CTech (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   uint32 TechNumber, ETechType TechType) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 TechNumber(TechNumber),
 TechType(TechType)
 {
 };
 
 CTech::CTech (const char *Classname, const char *Model, const char *Image, const char *Name, CTech::ETechType TechType, uint32 TechNumber) :
-CBaseItem (Classname, Model, FX_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH),
+IBaseItem (Classname, Model, FX_ROTATE, "items/pkup.wav", Image, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_TECH),
 TechNumber(TechNumber),
 TechType(TechType)
 {
@@ -131,7 +131,7 @@ public:
 
 	void DoPassiveTech	(CPlayerEntity *Player)
 	{
-		CBaseItem *index;
+		IBaseItem *index;
 		bool noise = false;
 		if (Player->Client.Tech.RegenTime < Level.Frame)
 		{
@@ -214,7 +214,7 @@ public:
 
 std::vector<CTech*>		TechList;
 
-void SpawnTech(CBaseItem *item, CSpotBase *spot);
+void SpawnTech(IBaseItem *item, CSpotBase *spot);
 class CTechEntity : public CItemEntity
 {
 public:
@@ -326,7 +326,7 @@ void CTech::Drop (CPlayerEntity *Player)
 	Player->Client.Persistent.Tech = NULL;
 }
 
-void SpawnTech(CBaseItem *Item, CSpotBase *Spot)
+void SpawnTech(IBaseItem *Item, CSpotBase *Spot)
 {
 	CTechEntity *Tech = QNewEntityOf CTechEntity ();
 

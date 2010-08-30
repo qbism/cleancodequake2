@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_ARMOR_H) || !INCLUDE_GUARDS
 #define CC_GUARD_ARMOR_H
 
-class CArmor : public CBaseItem
+class CArmor : public IBaseItem
 {
 public:
 	sint16		baseCount;			// (on normalProtection == -1) Amount to add

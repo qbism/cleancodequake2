@@ -43,7 +43,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CDoubleDamage::CDoubleDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
@@ -74,7 +74,7 @@ void CDoubleDamage::Use (CPlayerEntity *Player)
 CIRGoggles::CIRGoggles(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
@@ -400,7 +400,7 @@ public:
 IMPLEMENT_SAVE_SOURCE (CNukeEntity);
 
 CAMBomb::CAMBomb (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
-CBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE),
+IBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_USABLE),
 CAmmo (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, 1, 0)
 {
 }
@@ -452,11 +452,11 @@ void	CAMBomb::Drop (CPlayerEntity *Player)
 
 #include "Rogue/RogueMonsterSpawning.h"
 
-class CDoppleGangerItem : public CBasePowerUp
+class CDoppleGangerItem : public IBasePowerUp
 {
 public:
 	CDoppleGangerItem (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
-	  CBasePowerUp(Classname, WorldModel, FX_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE)
+	  IBasePowerUp(Classname, WorldModel, FX_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE)
 	  {
 	  };
 
@@ -499,11 +499,11 @@ public:
 };
 
 template <class TSphereType, FrameNumber RespawnTime>
-class CSphereItem : public CBasePowerUp
+class CSphereItem : public IBasePowerUp
 {
 public:
 	CSphereItem (const char *Classname, const char *WorldModel, const char *Icon, const char *Name) :
-	  CBasePowerUp (Classname, WorldModel, FX_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_POWERUP|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE)
+	  IBasePowerUp (Classname, WorldModel, FX_ROTATE, "items/pkup.wav", Icon, Name, ITEMFLAG_GRABBABLE|ITEMFLAG_POWERUP|ITEMFLAG_DROPPABLE|ITEMFLAG_USABLE, POWERFLAG_STORE)
 	{
 	};
 

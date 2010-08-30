@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <algorithm>
 #include "Items/Items.h"
 
-int CEntityField::GetItemIndex (CBaseItem *Item) const
+int CEntityField::GetItemIndex (IBaseItem *Item) const
 {
 	return Item->GetIndex();
 }

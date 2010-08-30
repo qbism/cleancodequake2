@@ -36,8 +36,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CWeaponItem::CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+			   IWeaponBase *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel) :
+IBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 Weapon(Weapon),
 Ammo(Ammo),
 Amount(Amount),
@@ -59,7 +59,7 @@ CWeaponItem::CWeaponItem ()
 CAmmo::CAmmo (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 Quantity(Quantity),
 Tag(Tag)
 {
@@ -67,7 +67,7 @@ Tag(Tag)
 
 CAmmo::CAmmo (const char *Classname, const char *WorldModel, const char *Icon, const char *Name,
 				sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE),
+IBaseItem (Classname, WorldModel, 0, "misc/am_pkup.wav", Icon, Name, ITEMFLAG_DROPPABLE|ITEMFLAG_AMMO|ITEMFLAG_GRABBABLE),
 Quantity(Quantity),
 Tag(Tag)
 {
@@ -79,9 +79,9 @@ CAmmo::CAmmo ()
 
 CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel,
+			   IWeaponBase *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel,
 			   sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
+IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 {
 	this->Weapon = Weapon;
 	this->Ammo = Ammo;
@@ -101,9 +101,9 @@ CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 
 CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   IWeaponBase *Weapon, sint32 Amount, const char *VWepModel,
 			   sint32 Quantity, EAmmoTag Tag) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
+IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 {
 	this->Weapon = Weapon;
 	this->Ammo = this;
@@ -422,7 +422,7 @@ CAmmoEntity::CAmmoEntity (sint32 Index) :
   {
   };
 
-void CAmmoEntity::Spawn (CBaseItem *item)
+void CAmmoEntity::Spawn (IBaseItem *item)
 {
 	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfInfiniteAmmo.IsEnabled())
 	{

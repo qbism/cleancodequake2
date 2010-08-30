@@ -264,7 +264,7 @@ void CItemEntity::Think ()
 }
 
 // Generic item spawn function
-void CItemEntity::Spawn (CBaseItem *item)
+void CItemEntity::Spawn (IBaseItem *item)
 {
 	LinkedItem = item;
 

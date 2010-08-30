@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Player/m_player.h"
 
 CGrenadeLauncher::CGrenadeLauncher() :
-CWeapon(5, 0, "models/weapons/v_launch/tris.md2", 0, 5, 6, 16,
+IWeaponBase(5, 0, "models/weapons/v_launch/tris.md2", 0, 5, 6, 16,
 		17, 59, 60, 64)
 {
 }

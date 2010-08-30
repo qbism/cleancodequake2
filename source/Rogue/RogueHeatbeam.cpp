@@ -41,7 +41,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // The launcher
 CHeatBeamWeapon::CHeatBeamWeapon() :
-CWeapon(8, 2, "models/weapons/v_beamer/tris.md2", 0, 8, 9, 12,
+IWeaponBase(8, 2, "models/weapons/v_beamer/tris.md2", 0, 8, 9, 12,
 		13, 39, 40, 44)
 {
 }
@@ -122,7 +122,7 @@ void CHeatBeamWeapon::WeaponGeneric (CPlayerEntity *Player)
 		Player->Client.WeaponSound = 0;
 	}
 
-	CWeapon::WeaponGeneric (Player);
+	IWeaponBase::WeaponGeneric (Player);
 }
 
 WEAPON_DEFS (CHeatBeamWeapon);

@@ -134,7 +134,7 @@ bool CIonRipperBoomerang::Run ()
 }
 
 CIonRipper::CIonRipper() :
-CWeapon(8, 1, "models/weapons/v_boomer/tris.md2", 0, 4, 5, 6,
+IWeaponBase(8, 1, "models/weapons/v_boomer/tris.md2", 0, 4, 5, 6,
 		7, 36, 37, 39)
 {
 }

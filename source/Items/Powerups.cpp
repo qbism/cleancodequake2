@@ -34,16 +34,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Local.h"
 #include "Items/Items.h"
 
-CBasePowerUp::CBasePowerUp(const char *Classname, const char *WorldModel, sint32 EffectFlags,
+IBasePowerUp::IBasePowerUp(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+IBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 PowerupFlags(PowerupFlags)
 {
 };
 
 // Powerups!
-bool CBasePowerUp::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
+bool IBasePowerUp::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 	if (PowerupFlags & POWERFLAG_STORE)
 	{
@@ -60,15 +60,15 @@ bool CBasePowerUp::Pickup (class CItemEntity *Item, CPlayerEntity *Other)
 	return true;
 }
 
-void CBasePowerUp::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
+void IBasePowerUp::DoPickup (class CItemEntity *Item, CPlayerEntity *Other)
 {
 }
 
-void CBasePowerUp::Use (CPlayerEntity *Player)
+void IBasePowerUp::Use (CPlayerEntity *Player)
 {
 }
 
-void CBasePowerUp::Drop (CPlayerEntity *Player)
+void IBasePowerUp::Drop (CPlayerEntity *Player)
 {
 	if (PowerupFlags & POWERFLAG_STORE)
 	{	
@@ -80,77 +80,77 @@ void CBasePowerUp::Drop (CPlayerEntity *Player)
 CMegaHealth::CMegaHealth(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CBackPack::CBackPack(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CQuadDamage::CQuadDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CInvulnerability::CInvulnerability(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CSilencer::CSilencer(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CRebreather::CRebreather(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CEnvironmentSuit::CEnvironmentSuit(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CBandolier::CBandolier(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CAdrenaline::CAdrenaline(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CAncientHead::CAncientHead(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
 CPowerShield::CPowerShield(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   EPowerupFlags PowerupFlags) :
-CBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
+IBasePowerUp(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags, PowerupFlags)
 {
 };
 
@@ -204,7 +204,7 @@ public:
 			CItemEntity::Think ();
 	};
 
-	void Spawn (CBaseItem *item)
+	void Spawn (IBaseItem *item)
 	{
 		if ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfNoHealth.IsEnabled() || DeathmatchFlags.dfNoItems.IsEnabled()))
 		{
@@ -465,7 +465,7 @@ void CPowerShield::Drop (CPlayerEntity *Player)
 {
 	if ((Player->Client.PowerArmorEnabled) && (Player->Client.Persistent.Inventory.Has(this) == 1))
 		Use (Player);
-	CBasePowerUp::Drop (Player);
+	IBasePowerUp::Drop (Player);
 }
 
 CPowerupEntity::CPowerupEntity() :
@@ -480,7 +480,7 @@ CPowerupEntity::CPowerupEntity (sint32 Index) :
   {
   };
 
-void CPowerupEntity::Spawn (CBaseItem *item)
+void CPowerupEntity::Spawn (IBaseItem *item)
 {
 	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoItems.IsEnabled())
 	{

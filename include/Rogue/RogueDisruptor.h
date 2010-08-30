@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_ROGUE_DISRUPTOR_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_ROGUE_DISRUPTOR_H
 
-class CDisruptor : public CWeapon
+class CDisruptor : public IWeaponBase
 {
 public:
 	CDisruptor();

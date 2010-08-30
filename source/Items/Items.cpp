@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 extern CItemList *ItemList;
 
-CBaseItem::CBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
+IBaseItem::IBaseItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags) :
 Classname(Classname),
 WorldModel(WorldModel),
@@ -50,13 +50,13 @@ Flags(Flags)
 	ItemList->AddItemToList (this);
 }
 
-CBaseItem::CBaseItem ()
+IBaseItem::IBaseItem ()
 {
 	ItemList->AddItemToList (this);
 };
 
 // Sets a respawn time on the item and makes it invisible. 
-void CBaseItem::SetRespawn (CItemEntity *Item, FrameNumber delay)
+void IBaseItem::SetRespawn (CItemEntity *Item, FrameNumber delay)
 {
 	Item->ShouldRespawn = true;
 	Item->GetSvFlags() |= SVF_NOCLIENT;
@@ -107,7 +107,7 @@ public:
 
 
 // Creates the item entity.
-CItemEntity *CBaseItem::DropItem (IBaseEntity *Entity)
+CItemEntity *IBaseItem::DropItem (IBaseEntity *Entity)
 {
 	CDroppedItemEntity	*dropped = QNewEntityOf CDroppedItemEntity();
 	vec3f	forward, right;

@@ -167,7 +167,7 @@ public:
 	CPlayerEntity		*OwnedPlayer;
 	IHurtableEntity		*SphereEnemy;
 	vec3f				SavedGoal;
-	class CBaseItem		*Item;
+	class IBaseItem		*Item;
 
 	CRogueBaseSphere () :
 	  IHurtableEntity(),
@@ -208,7 +208,7 @@ public:
 	void			Chase (bool stupidChase);
 
 	template <class TType>
-	static TType	*CreateBaseSphere (CBaseItem *Item, IBaseEntity *Owner, ESphereType Type, ESphereFlags Flags)
+	static TType	*CreateBaseSphere (IBaseItem *Item, IBaseEntity *Owner, ESphereType Type, ESphereFlags Flags)
 	{
 		TType *Sphere = QNewEntityOf TType;
 
@@ -283,7 +283,7 @@ public:
 
 	void			Shoot (IHurtableEntity *At);
 
-	static CRogueDefenderSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
+	static CRogueDefenderSphere *Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 class CRogueHunterSphere : public CRogueBaseSphere
@@ -317,7 +317,7 @@ public:
 	void			Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
 	void			ChangeYaw (float IdealYaw);
-	static CRogueHunterSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
+	static CRogueHunterSphere *Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 class CRogueVengeanceSphere : public CRogueBaseSphere
@@ -350,7 +350,7 @@ public:
 	void			Think ();
 	void			Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf);
 
-	static CRogueVengeanceSphere *Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
+	static CRogueVengeanceSphere *Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags);
 };
 
 #else

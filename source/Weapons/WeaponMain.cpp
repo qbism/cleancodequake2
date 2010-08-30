@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Weapons/WeaponMain.h"
 #include "Player/m_player.h"
 
-typedef std::vector<CWeapon*> TWeaponListType;
+typedef std::vector<IWeaponBase*> TWeaponListType;
 
 TWeaponListType &WeaponList ()
 {
@@ -46,7 +46,7 @@ TWeaponListType &WeaponList ()
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
 typedef std::multimap<TWeaponMultiMapPairType, sint8> TWeaponMultiMapType;
 
-inline void ChainWeapons (std::vector<CWeapon*> &Weapons)
+inline void ChainWeapons (std::vector<IWeaponBase*> &Weapons)
 {
 	if (Weapons.size() == 1)
 		Weapons[0]->PrevWeapon = Weapons[0]->NextWeapon = Weapons[0];
@@ -79,12 +79,12 @@ void AddWeapons (CItemList *List)
 	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
 		WeaponList()[(*it).second]->AddWeaponToItemList (List);
 
-	std::vector<CWeapon*> WeaponOrder;
+	std::vector<IWeaponBase*> WeaponOrder;
 
 	sint32 lastIndex = -1;
 	for (TWeaponMultiMapType::iterator it = Order.begin(); it != Order.end(); ++it)
 	{
-		CWeapon *Weap = WeaponList()[(*it).second];
+		IWeaponBase *Weap = WeaponList()[(*it).second];
 
 		if (lastIndex == -1 || ((*it).first.first == lastIndex))
 		{
@@ -130,18 +130,18 @@ void DoWeaponVweps ()
 		WeaponList()[i]->InitWeaponVwepModel (TakeAway);
 }
 
-void SaveWeapon (CFile &File, CWeapon *Weapon)
+void SaveWeapon (CFile &File, IWeaponBase *Weapon)
 {
 	File.Write<sint32> ((Weapon) ? Weapon->Item->GetIndex() : -1);
 }
 
-void LoadWeapon (CFile &File, CWeapon **Weapon)
+void LoadWeapon (CFile &File, IWeaponBase **Weapon)
 {
 	sint32 Index = File.Read<sint32> ();
 
 	if (Index != -1)
 	{
-		CBaseItem *Item = GetItemByIndex(Index);
+		IBaseItem *Item = GetItemByIndex(Index);
 
 		if (!CC_ASSERT_EXPR (Item, "Loaded weapon with no weapon!"))
 		{
@@ -151,7 +151,7 @@ void LoadWeapon (CFile &File, CWeapon **Weapon)
 	}
 }
 
-CWeapon::CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+IWeaponBase::IWeaponBase(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, const char *WeaponSound) :
 ListOrder(std::make_pair (ListOrderHigh, ListOrderLow)),
 ActivationStart(ActivationStart),
@@ -173,14 +173,14 @@ WeaponModelString(model)
 	WeaponList().push_back (this);
 };
 
-void CWeapon::InitWeapon (CPlayerEntity *Player)
+void IWeaponBase::InitWeapon (CPlayerEntity *Player)
 {
 	Player->Client.PlayerState.GetGunFrame() = ActivationStart;
 	Player->Client.PlayerState.GetGunIndex() = GetWeaponModel();
 	Player->Client.WeaponState = WS_ACTIVATING;
 }
 
-void CWeapon::WeaponGeneric (CPlayerEntity *Player)
+void IWeaponBase::WeaponGeneric (CPlayerEntity *Player)
 {
 	// Idea from Brazen source
 	sint32 newFrame = -1, newState = -1;
@@ -231,7 +231,7 @@ void CWeapon::WeaponGeneric (CPlayerEntity *Player)
 
 				// We need to check against us right away for first-frame firing
 				// Paril: Fix for weapons who have extra checking in their WeaponGeneric.
-				CWeapon::WeaponGeneric(Player);
+				IWeaponBase::WeaponGeneric(Player);
 				return;
 			}
 			else
@@ -297,7 +297,7 @@ inline sint32 GetWeaponVWepIndex (CPlayerEntity *Player)
 	return (Player->State.GetNumber() - 1) | ((Player->Client.Persistent.Weapon->vwepIndex & 0xff) << 8);
 }
 
-void CWeapon::ChangeWeapon (CPlayerEntity *Player)
+void IWeaponBase::ChangeWeapon (CPlayerEntity *Player)
 {
 	Player->Client.Persistent.LastWeapon = Player->Client.Persistent.Weapon;
 	Player->Client.Persistent.Weapon = Player->Client.NewWeapon;
@@ -337,7 +337,7 @@ void CWeapon::ChangeWeapon (CPlayerEntity *Player)
 	}
 }
 
-void CWeapon::DepleteAmmo (CPlayerEntity *Player, sint32 Amount = 1)
+void IWeaponBase::DepleteAmmo (CPlayerEntity *Player, sint32 Amount = 1)
 {
 	if (DeathmatchFlags.dfInfiniteAmmo.IsEnabled())
 		return;
@@ -351,7 +351,7 @@ void CWeapon::DepleteAmmo (CPlayerEntity *Player, sint32 Amount = 1)
 	}
 }
 
-bool CWeapon::AttemptToFire (CPlayerEntity *Player)
+bool IWeaponBase::AttemptToFire (CPlayerEntity *Player)
 {
 	sint32 numAmmo = 0;
 	sint32 quantity = 0;
@@ -367,7 +367,7 @@ bool CWeapon::AttemptToFire (CPlayerEntity *Player)
 	return !(numAmmo < quantity);
 }
 
-void CWeapon::OutOfAmmo (CPlayerEntity *Player)
+void IWeaponBase::OutOfAmmo (CPlayerEntity *Player)
 {
 	// Doesn't affect pain anymore!
 	if (Level.Frame >= Player->DamageDebounceTime)
@@ -379,7 +379,7 @@ void CWeapon::OutOfAmmo (CPlayerEntity *Player)
 
 #include "Utility/TemporaryEntities.h"
 
-void CWeapon::Muzzle (CPlayerEntity *Player, sint32 muzzleNum)
+void IWeaponBase::Muzzle (CPlayerEntity *Player, sint32 muzzleNum)
 {
 	if (isSilenced)
 		muzzleNum |= MZ_SILENCED;
@@ -394,7 +394,7 @@ Think_Weapon
 Called by ClientBeginServerFrame
 =================
 */
-void CWeapon::Think (CPlayerEntity *Player)
+void IWeaponBase::Think (CPlayerEntity *Player)
 {
 #if CLEANCTF_ENABLED
 	if ((Game.GameMode & GAME_CTF) && !Player->Client.Respawn.CTF.Team)
@@ -459,7 +459,7 @@ void CWeapon::Think (CPlayerEntity *Player)
 #endif
 }
 
-void CWeapon::AttackSound(CPlayerEntity *Player)
+void IWeaponBase::AttackSound(CPlayerEntity *Player)
 {
 	if (
 #if CLEANCTF_ENABLED
@@ -490,13 +490,13 @@ void CWeapon::AttackSound(CPlayerEntity *Player)
 class CWeaponSwitcher
 {
 public:
-	CWeapon					*Weapon;
+	IWeaponBase					*Weapon;
 	std::vector<CAmmo*>		NeededAmmo;
 	std::vector<sint32>		NeededAmmoNumbers;
-	std::vector<CBaseItem*>	NeededItems;
+	std::vector<IBaseItem*>	NeededItems;
 	bool					Explosive;
 
-	CWeaponSwitcher (CWeapon *Weapon) :
+	CWeaponSwitcher (IWeaponBase *Weapon) :
 	  Weapon (Weapon),
 	  Explosive(false)
 	{
@@ -509,7 +509,7 @@ public:
 		return *this;
 	};
 
-	CWeaponSwitcher &AddItem (CBaseItem *Item)
+	CWeaponSwitcher &AddItem (IBaseItem *Item)
 	{
 		NeededItems.push_back (Item);
 		return *this;
@@ -564,7 +564,7 @@ inline TWeaponSwitcherListType &WeaponSwitchList ()
 	return List_;
 }
 
-void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
+void IWeaponBase::NoAmmoWeaponChange (CPlayerEntity *Player)
 {
 	// Dead?
 	if (!Player->Client.Persistent.Weapon || Player->Health <= 0 || Player->IsDead)
@@ -640,7 +640,7 @@ void CWeapon::NoAmmoWeaponChange (CPlayerEntity *Player)
 		Player->Client.Persistent.Weapon->ChangeWeapon(Player);
 }
 
-void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
+void IWeaponBase::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 {
 	bool UsingItOrChain = !Player->Client.Persistent.Inventory.Has(Wanted);
 
@@ -715,7 +715,7 @@ void CWeapon::Use (CWeaponItem *Wanted, CPlayerEntity *Player)
 	Player->Client.NewWeapon = Wanted->Weapon;
 }
 
-void CWeapon::FireAnimation (CPlayerEntity *Player)
+void IWeaponBase::FireAnimation (CPlayerEntity *Player)
 {
 	// start the animation
 	Player->Client.Anim.Priority = ANIM_ATTACK;

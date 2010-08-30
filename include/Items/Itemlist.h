@@ -41,7 +41,7 @@ const int MAX_ITEMS_HASH	= (MAX_ITEMS/2);
 
 typedef std::pair<size_t, size_t> THashedItemListPairType;
 typedef std::multimap<size_t, size_t> THashedItemListType;
-typedef std::vector<CBaseItem*> TItemListType;
+typedef std::vector<IBaseItem*> TItemListType;
 
 // Generic itemlist.
 class CItemList
@@ -55,7 +55,7 @@ public:
 	// Revision 2.0
 	// Instead of having the 9 functions I used to have to add
 	// each TYPE of weapon, you create the item, and send it to here.
-	void AddItemToList (CBaseItem *Item);
+	void AddItemToList (IBaseItem *Item);
 
 	// Sorts the list and adds the items
 	void SortAndFinalize ();
@@ -72,9 +72,9 @@ public:
 extern CItemList *ItemList;
 
 void InitItemlist ();
-CBaseItem *FindItemByClassname (const char *name);
-CBaseItem *FindItem (const char *name);
-CBaseItem *GetItemByIndex (uint32 Index);
+IBaseItem *FindItemByClassname (const char *name);
+IBaseItem *FindItem (const char *name);
+IBaseItem *GetItemByIndex (uint32 Index);
 sint32 GetNumItems ();
 
 void InitItemMedia ();
@@ -89,12 +89,12 @@ namespace NItems
 	extern CArmor *ArmorShard;
 
 	// Health
-	extern CBaseItem *StimPack;
-	extern CBaseItem *SmallHealth;
-	extern CBaseItem *LargeHealth;
+	extern IBaseItem *StimPack;
+	extern IBaseItem *SmallHealth;
+	extern IBaseItem *LargeHealth;
 
 	// Keys
-	extern CBaseItem *PowerCube;
+	extern IBaseItem *PowerCube;
 #if CLEANCTF_ENABLED
 	extern CFlag *RedFlag;
 	extern CFlag *BlueFlag;
@@ -134,29 +134,29 @@ namespace NItems
 	extern CAmmo *Prox;
 	extern CAmmo *Flechettes;
 	extern CAmmo *Rounds;
-	extern CBaseItem *Tesla;
+	extern IBaseItem *Tesla;
 #endif
 
 	// Powerups
-	extern CBaseItem *MegaHealth;
-	extern CBaseItem *BackPack;
-	extern CBaseItem *Quad;
+	extern IBaseItem *MegaHealth;
+	extern IBaseItem *BackPack;
+	extern IBaseItem *Quad;
 #if XATRIX_FEATURES
-	extern CBaseItem *QuadFire;
+	extern IBaseItem *QuadFire;
 #endif
 #if ROGUE_FEATURES
-	extern CBaseItem *Double;
-	extern CBaseItem *IRGoggles;
+	extern IBaseItem *Double;
+	extern IBaseItem *IRGoggles;
 #endif
-	extern CBaseItem *Invul;
-	extern CBaseItem *Silencer;
-	extern CBaseItem *Rebreather;
-	extern CBaseItem *EnvironmentSuit;
-	extern CBaseItem *Bandolier;
-	extern CBaseItem *Adrenaline;
-	extern CBaseItem *AncientHead;
-	extern CBaseItem *PowerShield;
-	extern CBaseItem *PowerScreen;
+	extern IBaseItem *Invul;
+	extern IBaseItem *Silencer;
+	extern IBaseItem *Rebreather;
+	extern IBaseItem *EnvironmentSuit;
+	extern IBaseItem *Bandolier;
+	extern IBaseItem *Adrenaline;
+	extern IBaseItem *AncientHead;
+	extern IBaseItem *PowerShield;
+	extern IBaseItem *PowerScreen;
 };
 
 #else

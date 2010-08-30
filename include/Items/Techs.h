@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_TECHS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_TECHS_H
 
-class CTech : public CBaseItem
+class CTech : public IBaseItem
 {
 	uint32		TechNumber;
 

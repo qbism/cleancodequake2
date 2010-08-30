@@ -262,7 +262,7 @@ void CTFFragBonuses(CPlayerEntity *Target, CPlayerEntity *Attacker)
 **/
 void CTFCheckHurtCarrier(CPlayerEntity *Target, CPlayerEntity *Attacker)
 {
-	CBaseItem *flag_item;
+	IBaseItem *flag_item;
 
 	switch (Target->Client.Respawn.CTF.Team)
 	{
@@ -508,7 +508,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 	IBaseEntity *hot = NULL;
 	float hotdist = 999999, newdist;
 	sint32 hotindex = 999;
-	CBaseItem *item;
+	IBaseItem *item;
 	sint32 nearteam = -1;
 	bool hotsee = false;
 	bool cansee;
@@ -631,7 +631,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 **/
 void CCTFSayTeamCommand::FormatArmor ()
 {
-	CBaseItem			*Armor = Player->Client.Persistent.Armor;
+	IBaseItem			*Armor = Player->Client.Persistent.Armor;
 	EPowerArmorType		PowerArmorType = Player->PowerArmorType ();
 
 	if (PowerArmorType)

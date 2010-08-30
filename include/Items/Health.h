@@ -53,7 +53,7 @@ enum
 	HEALTHFLAG_IGNOREMAX,
 };
 
-class CHealth : public CBaseItem
+class CHealth : public IBaseItem
 {
 public:
 	sint32				Amount; // You spin me right round baby right round

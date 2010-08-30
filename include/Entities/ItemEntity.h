@@ -82,12 +82,12 @@ public:
 	uint32				AmmoCount;
 	EItemThinkState		ThinkState;
 	bool				ShouldRespawn;
-	CBaseItem			*LinkedItem;
+	IBaseItem			*LinkedItem;
 
 	CItemEntity ();
 	CItemEntity (sint32 Index);
 
-	virtual void Spawn (CBaseItem *item);
+	virtual void Spawn (IBaseItem *item);
 
 	ENTITYFIELD_DEFS
 	void SaveFields (CFile &File);
@@ -113,7 +113,7 @@ public:
 	CAmmoEntity();
 	CAmmoEntity (sint32 Index);
 
-	void Spawn (CBaseItem *item);
+	void Spawn (IBaseItem *item);
 };
 
 class CPowerupEntity : public CItemEntity
@@ -122,14 +122,14 @@ public:
 	CPowerupEntity();
 	CPowerupEntity (sint32 Index);
 
-	void Spawn (CBaseItem *item);
+	void Spawn (IBaseItem *item);
 };
 
 #define LINK_ITEM_TO_CLASS(mapClassName,DLLClassName) \
 	IMapEntity *LINK_RESOLVE_CLASSNAME(mapClassName, _Spawn) (sint32 Index) \
 	{ \
 		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
-		CBaseItem *Item = FindItemByClassname(#mapClassName); \
+		IBaseItem *Item = FindItemByClassname(#mapClassName); \
 		if (Item) \
 		{	\
 			newClass->ParseFields (); \
@@ -147,7 +147,7 @@ public:
 	IMapEntity *LINK_RESOLVE_CLASSNAME(DLLItemName, _Spawn) (sint32 Index) \
 	{ \
 		DLLClassName *newClass = QNewEntityOf DLLClassName(Index); \
-		CBaseItem *Item = FindItemByClassname(mapClassName); \
+		IBaseItem *Item = FindItemByClassname(mapClassName); \
 		if (Item) \
 		{	\
 			newClass->ParseFields (); \

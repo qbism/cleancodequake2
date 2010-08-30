@@ -41,7 +41,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 // The launcher
 CDisruptor::CDisruptor() :
-CWeapon(10, 1, "models/weapons/v_dist/tris.md2", 0, 4, 5, 9,
+IWeaponBase(10, 1, "models/weapons/v_dist/tris.md2", 0, 4, 5, 9,
 		10, 29, 30, 34)
 {
 }

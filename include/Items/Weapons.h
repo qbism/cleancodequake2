@@ -35,19 +35,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_WEAPONS_H
 
 // Forward declarations
-class CWeapon;
+class IWeaponBase;
 class CAmmo;
 
 // Class for weapon items.
-class CWeaponItem : public virtual CBaseItem
+class CWeaponItem : public virtual IBaseItem
 {
 public:
 	CWeaponItem ();
 	CWeaponItem (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel);
+			   IWeaponBase *Weapon, CAmmo *Ammo, sint32 Amount, const char *VWepModel);
 
-	class CWeapon		*Weapon;
+	class IWeaponBase		*Weapon;
 	class CAmmo			*Ammo;
 	sint32				Amount;
 	const char			*VWepModel;
@@ -58,7 +58,7 @@ public:
 };
 
 // Class for ammo.
-class CAmmo : public virtual CBaseItem
+class CAmmo : public virtual IBaseItem
 {
 public:
 	CAmmo ();
@@ -85,12 +85,12 @@ class CAmmoWeapon : public CWeaponItem, public CAmmo
 public:
 	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   CWeapon *Weapon, CAmmo *Ammo, sint32 Amount,
+			   IWeaponBase *Weapon, CAmmo *Ammo, sint32 Amount,
 			   const char *VWepModel, sint32 Quantity, EAmmoTag Tag);
 
 	CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
-			   CWeapon *Weapon, sint32 Amount, const char *VWepModel,
+			   IWeaponBase *Weapon, sint32 Amount, const char *VWepModel,
 			   sint32 Quantity, EAmmoTag Tag);
 
 	bool	Pickup (class CItemEntity *Item, CPlayerEntity *Other);

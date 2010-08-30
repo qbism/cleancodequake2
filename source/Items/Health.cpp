@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CHealth::CHealth (const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   sint32 Amount, EHealthFlags HealthFlags) :
-CBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 Amount(Amount),
 HealthFlags(HealthFlags)
 {
@@ -91,7 +91,7 @@ public:
 	  {
 	  };
 
-	void Spawn (CBaseItem *item)
+	void Spawn (IBaseItem *item)
 	{
 		if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoHealth.IsEnabled())
 		{

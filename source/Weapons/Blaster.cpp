@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Player/m_player.h"
 
 CBlaster::CBlaster() :
-CWeapon(0, 0, "models/weapons/v_blast/tris.md2", 0, 4, 5, 8,
+IWeaponBase(0, 0, "models/weapons/v_blast/tris.md2", 0, 4, 5, 8,
 		9, 52, 53, 55)
 {
 }

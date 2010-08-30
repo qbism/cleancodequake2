@@ -43,9 +43,9 @@ private:
 public:
 	sint32		SelectedItem;
 
-	void	operator += (CBaseItem *Item);
+	void	operator += (IBaseItem *Item);
 	void	operator += (uint8 Index);
-	void	operator -= (CBaseItem *Item);
+	void	operator -= (IBaseItem *Item);
 	void	operator -= (uint8 Index);
 
 	CInventory ();
@@ -55,8 +55,8 @@ public:
 	// adding items. This will NOT call the pickup
 	// function! You need to add your own checks in for
 	// ammo and such if you use these functions.
-	void	Add (CBaseItem *Item, sint32 Num);
-	void	Remove (CBaseItem *Item, sint32 Num);
+	void	Add (IBaseItem *Item, sint32 Num);
+	void	Remove (IBaseItem *Item, sint32 Num);
 	void	Add (uint8 Index, sint32 Num);
 	void	Remove (uint8 Index, sint32 Num);
 
@@ -70,9 +70,9 @@ public:
 	void	SelectPrevItem (EItemFlags Flags);
 
 	sint32		Has	(uint8 Index);
-	sint32		Has	(CBaseItem *Item);
+	sint32		Has	(IBaseItem *Item);
 
-	void	Set	(CBaseItem *Item, sint32 Num);
+	void	Set	(IBaseItem *Item, sint32 Num);
 	void	Set	(uint8 Index, sint32 Num);
 
 	void Save (CFile &File)

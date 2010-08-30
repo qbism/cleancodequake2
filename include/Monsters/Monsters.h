@@ -243,7 +243,7 @@ public:
 	entity_ptr<IBaseEntity>		MoveTarget;
 	class CMonster				*Monster;
 	std::string					DeathTarget, CombatTarget;
-	CBaseItem					*Item;
+	IBaseItem					*Item;
 
 	CMonsterEntity	();
 	CMonsterEntity	(sint32 Index);

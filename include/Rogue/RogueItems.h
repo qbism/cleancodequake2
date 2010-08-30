@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 void AddRogueItemsToList ();
 
 // Double Damage
-class CDoubleDamage : public CBasePowerUp
+class CDoubleDamage : public IBasePowerUp
 {
 public:
 	CDoubleDamage (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -50,7 +50,7 @@ public:
 };
 
 // Infrared Gogglinos
-class CIRGoggles : public CBasePowerUp
+class CIRGoggles : public IBasePowerUp
 {
 public:
 	CIRGoggles (const char *Classname, const char *WorldModel, sint32 EffectFlags,

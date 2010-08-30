@@ -297,7 +297,7 @@ void CRogueDefenderSphere::Think ()
 		NextThink = Level.Frame + FRAMETIME;
 }
 
-CRogueDefenderSphere *CRogueDefenderSphere::Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
+CRogueDefenderSphere *CRogueDefenderSphere::Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
 {
 	CRogueDefenderSphere *Sphere = CreateBaseSphere<CRogueDefenderSphere> (Item, Owner, SPHERE_DEFENDER, Flags);
 
@@ -365,7 +365,7 @@ void CRogueVengeanceSphere::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSur
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
 
-CRogueVengeanceSphere *CRogueVengeanceSphere::Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
+CRogueVengeanceSphere *CRogueVengeanceSphere::Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
 {
 	CRogueVengeanceSphere *Sphere = CreateBaseSphere<CRogueVengeanceSphere> (Item, Owner, SPHERE_VENGEANCE, Flags);
 
@@ -552,7 +552,7 @@ void CRogueHunterSphere::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurfac
 	BaseTouch (Other, plane, surf, (SphereFlags & SPHERE_DOPPLEGANGER) ? MOD_DOPPLE_VENGEANCE : MOD_VENGEANCE_SPHERE);
 }
 
-CRogueHunterSphere *CRogueHunterSphere::Create (CBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
+CRogueHunterSphere *CRogueHunterSphere::Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
 {
 	CRogueHunterSphere *Sphere = CreateBaseSphere<CRogueHunterSphere> (Item, Owner, SPHERE_VENGEANCE, Flags);
 

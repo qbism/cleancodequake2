@@ -34,13 +34,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_PLAYERENTITY_H) || !INCLUDE_GUARDS
 #define CC_GUARD_PLAYERENTITY_H
 
-class CWeapon;
+class IWeaponBase;
 class CInventory;
 class CAmmo;
 class CTech;
 class CFlag;
 class CArmor;
-class CBaseItem;
+class IBaseItem;
 
 #include "Items/Inventory.h"
 
@@ -122,8 +122,8 @@ enum
 	SVCS_SPAWNED	// client is fully in game
 };
 
-void LoadWeapon (CFile &File, CWeapon **Weapon);
-void SaveWeapon (CFile &File, CWeapon *Weapon);
+void LoadWeapon (CFile &File, IWeaponBase **Weapon);
+void SaveWeapon (CFile &File, IWeaponBase *Weapon);
 
 #include "Player/Userinfo.h"
 
@@ -171,7 +171,7 @@ public:
 	// ammo capacities
 	sint32			MaxAmmoValues[AMMOTAG_MAX];
 
-	CWeapon			*Weapon, *LastWeapon;
+	IWeaponBase			*Weapon, *LastWeapon;
 	CArmor			*Armor; // Current armor.
 #if CLEANCTF_ENABLED
 	CFlag			*Flag; // Set if holding a flag
@@ -505,7 +505,7 @@ public:
 	sint32			DamageValues[DT_MAX];
 	EButtons		Buttons;
 	EButtons		LatchedButtons;
-	CWeapon			*NewWeapon;
+	IWeaponBase			*NewWeapon;
 	EWeaponState	WeaponState;
 	FrameNumber		FallTime;
 	float			FallValue;		// for view drop on fall

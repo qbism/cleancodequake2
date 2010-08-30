@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_DEBUGWEAPONS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_DEBUGWEAPONS_H
 
-class CDebugWeapon : public CWeapon
+class CDebugWeapon : public IWeaponBase
 {
 public:
 	CDebugWeapon();

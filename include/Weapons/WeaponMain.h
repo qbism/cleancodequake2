@@ -36,13 +36,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Items/Items.h"
 
-class CWeapon
+class IWeaponBase
 {
 	friend void		InvalidateItemMedia ();
-	friend void		ChainWeapons (std::vector<CWeapon*> &Weapons);
+	friend void		ChainWeapons (std::vector<IWeaponBase*> &Weapons);
 	MediaIndex		WeaponSoundIndex;
 	MediaIndex		WeaponModelIndex;
-	CWeapon			*NextWeapon, *PrevWeapon; // Chained weapons
+	IWeaponBase			*NextWeapon, *PrevWeapon; // Chained weapons
 
 protected:
 	// Frames
@@ -53,7 +53,7 @@ protected:
 
 	sint32				ActivationEnd, FireEnd, IdleEnd, DeactEnd; // To save calls.
 
-	CWeapon ();
+	IWeaponBase ();
 
 public:
 	bool			isQuad, isSilenced
@@ -72,12 +72,12 @@ public:
 	MediaIndex					vwepIndex;
 	std::pair <sint8, sint8>	ListOrder;
 
-	inline CWeapon *GetNextWeapon ()
+	inline IWeaponBase *GetNextWeapon ()
 	{
 		return NextWeapon;
 	};
 
-	inline CWeapon *GetPrevWeapon ()
+	inline IWeaponBase *GetPrevWeapon ()
 	{
 		return PrevWeapon;
 	};
@@ -101,7 +101,7 @@ public:
 			: 0;
 	};
 
-	CWeapon(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
+	IWeaponBase(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
 				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, const char *WeaponSound = NULL);
 
 	// InitWeapon "clears" the previous weapon by introducing the current weapon.

@@ -385,7 +385,7 @@ IMPLEMENT_SAVE_SOURCE (CTesla);
 
 // Tesla weapon
 CTeslaWeapon::CTeslaWeapon() :
-CWeapon(6, 2, "models/weapons/v_tesla/tris.md2", 0, 0, 0, 8,
+IWeaponBase(6, 2, "models/weapons/v_tesla/tris.md2", 0, 0, 0, 8,
 		9, 32, 0, 0)
 {
 }

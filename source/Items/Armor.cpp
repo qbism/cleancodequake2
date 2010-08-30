@@ -39,7 +39,7 @@ CArmor::CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlag
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
 			   sint16 baseCount, sint16 maxCount, sint16 normalProtection,
 			   sint16 energyProtection) :
-CBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
+IBaseItem(Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags),
 baseCount(baseCount),
 maxCount(maxCount),
 normalProtection(normalProtection),
@@ -158,7 +158,7 @@ public:
 	  {
 	  };
 
-	void Spawn (CBaseItem *item)
+	void Spawn (IBaseItem *item)
 	{
 		if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfNoArmor.IsEnabled())
 		{

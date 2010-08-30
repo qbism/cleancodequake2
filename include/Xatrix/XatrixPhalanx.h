@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_XATRIX_PHALANX_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_XATRIX_PHALANX_H
 
-class CPhalanx : public CWeapon
+class CPhalanx : public IWeaponBase
 {
 public:
 	CPhalanx();

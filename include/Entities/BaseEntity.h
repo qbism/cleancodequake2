@@ -964,7 +964,7 @@ enum
 	FT_IMAGE_INDEX,		// String stored as image index
 	FT_MODEL_INDEX,		// String stored as model index
 	FT_FRAMENUMBER,		// Stores value as FrameNumber (val * 10)
-	FT_ITEM,			// Stores value as CBaseItem (finds the item and stores it in the ptr)
+	FT_ITEM,			// Stores value as IBaseItem (finds the item and stores it in the ptr)
 	FT_ENTITY,			// Saved as an index to an entity
 	FT_FLOAT_TO_BYTE,	// Accepted float input, stores as uint8 (0-255)
 	FT_STRING,			// String, dynamic.
@@ -999,9 +999,9 @@ typedef bool (*TValidateFieldFunction) (IBaseEntity *Entity, uint8 *ClassOffset,
 
 #define FIELD_IS_VALID(d) ((!ValidateField) || ValidateField(Entity, ClassOffset, Value, d))
 
-class CBaseItem *FindItemByClassname (const char *name);
-class CBaseItem *FindItem (const char *name);
-CBaseItem *GetItemByIndex (uint32 Index);
+class IBaseItem *FindItemByClassname (const char *name);
+class IBaseItem *FindItem (const char *name);
+IBaseItem *GetItemByIndex (uint32 Index);
 
 /**
 \class	CEntityField
@@ -1144,7 +1144,7 @@ public:
 			break;
 		case FT_ITEM:
 			{
-				CBaseItem *Item = FindItemByClassname (Value);
+				IBaseItem *Item = FindItemByClassname (Value);
 
 				if (!Item)
 					Item = FindItem (Value);
@@ -1155,7 +1155,7 @@ public:
 				}
 
 				if (FIELD_IS_VALID(NULL))
-					OFS_TO_TYPE(CBaseItem *) = Item;
+					OFS_TO_TYPE(IBaseItem *) = Item;
 			}
 			break;
 		case FT_STRING:
@@ -1165,7 +1165,7 @@ public:
 		};
 	};
 
-	int GetItemIndex (CBaseItem *Item) const;
+	int GetItemIndex (IBaseItem *Item) const;
 
 	/**
 	\fn	template <class TClass> void Save (TClass *Entity, CFile &File) const
@@ -1245,8 +1245,8 @@ public:
 		case FT_ITEM:
 			{
 				sint32 Index = -1;
-				if (OFS_TO_TYPE(CBaseItem*))
-					Index = GetItemIndex(OFS_TO_TYPE(CBaseItem *));
+				if (OFS_TO_TYPE(IBaseItem*))
+					Index = GetItemIndex(OFS_TO_TYPE(IBaseItem *));
 				
 				File.Write<sint32> (Index);			
 			}
@@ -1353,7 +1353,7 @@ public:
 		case FT_ITEM:
 			{
 				sint32 Index = File.Read<sint32> ();
-				OFS_TO_TYPE(CBaseItem *) = (Index != -1) ? GetItemByIndex(Index) : NULL;
+				OFS_TO_TYPE(IBaseItem *) = (Index != -1) ? GetItemByIndex(Index) : NULL;
 			}
 			break;
 		case FT_ENTITY:

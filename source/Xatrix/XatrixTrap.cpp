@@ -86,7 +86,7 @@ IMPLEMENT_SAVE_SOURCE(CJustAModel);
 
 // Foodcube
 CFoodCube::CFoodCube () :
-  CBasePowerUp ("item_foodcube", "models/objects/trapfx/tris.md2", 0, "items/m_health.wav", "i_health", "Health", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, 0)
+  IBasePowerUp ("item_foodcube", "models/objects/trapfx/tris.md2", 0, "items/m_health.wav", "i_health", "Health", ITEMFLAG_HEALTH|ITEMFLAG_POWERUP|ITEMFLAG_GRABBABLE, 0)
 {
 };
 
@@ -380,7 +380,7 @@ bool CTrapProjectile::Run ()
 }
 
 CTrap::CTrap() :
-CWeapon(6, 1, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
+IWeaponBase(6, 1, "models/weapons/v_trap/tris.md2", 0, 0, 0, 16,
 		17, 48, 0, 0)
 {
 }

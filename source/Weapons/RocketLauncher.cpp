@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Player/m_player.h"
 
 CRocketLauncher::CRocketLauncher() :
-CWeapon(7, 0, "models/weapons/v_rocket/tris.md2", 0, 4, 5, 12,
+IWeaponBase(7, 0, "models/weapons/v_rocket/tris.md2", 0, 4, 5, 12,
 		13, 50, 51, 54)
 {
 }

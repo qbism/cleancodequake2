@@ -42,7 +42,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 \author	Paril
 \date	29/05/2010
 **/
-class CGrapple : public CWeapon
+class CGrapple : public IWeaponBase
 {
 public:
 	CGrapple();

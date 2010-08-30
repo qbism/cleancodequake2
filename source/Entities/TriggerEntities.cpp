@@ -1038,7 +1038,7 @@ Use "item" to specify the required key, for example "key_data_cd"
 class CTriggerKey : public IMapEntity, public IUsableEntity
 {
 public:
-	CBaseItem			*Item;
+	IBaseItem			*Item;
 	FrameNumber		TouchDebounce;
 
 	CTriggerKey () :

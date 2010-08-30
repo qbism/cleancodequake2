@@ -39,7 +39,7 @@ void AddXatrixItemsToList ();
 extern class CFoodCube *FoodCubeItem;
 
 // Quad Fire
-class CQuadFire : public CBasePowerUp
+class CQuadFire : public IBasePowerUp
 {
 public:
 	CQuadFire (const char *Classname, const char *WorldModel, sint32 EffectFlags,
