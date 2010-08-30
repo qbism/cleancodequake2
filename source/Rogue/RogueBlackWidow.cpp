@@ -31,15 +31,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_rogue_widow_stand.h"
-#include "cc_rogue_black_widow.h"
-#include "cc_rogue_monster_spawning.h"
-#include "cc_temporary_entities.h"
-#include "m_widow2.h"
+#include "Rogue/RogueWidowStand.h"
+#include "Rogue/RogueBlackWidow.h"
+#include "Rogue/RogueMonsterSpawning.h"
+#include "Utility/TemporaryEntities.h"
+#include "Rogue/m_widow2.h"
 
 CBlackWidow::CBlackWidow (uint32 ID) :
 CWidowStand (ID)

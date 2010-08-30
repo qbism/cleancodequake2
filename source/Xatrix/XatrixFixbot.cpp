@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
-#include "cc_xatrix_fixbot.h"
-#include "cc_temporary_entities.h"
+#include "Local.h"
+#include "Xatrix/XatrixFixbot.h"
+#include "Utility/TemporaryEntities.h"
 
 #if XATRIX_FEATURES
 

@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Monsters
 //
 
-#include "cc_local.h"
-#include "cc_brush_models.h"
-#include "cc_temporary_entities.h"
+#include "Local.h"
+#include "Entities/BrushModels.h"
+#include "Utility/TemporaryEntities.h"
 
 /*
 ===============================
@@ -429,12 +429,13 @@ void CMonsterEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	Monster->TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
 }
 
-#include "cc_medic.h"
+#include "Monsters/Medic.h"
+
 #if ROGUE_FEATURES
-#include "cc_rogue_carrier.h"
-#include "cc_rogue_medic_commander.h"
-#include "cc_rogue_widow_stand.h"
-#include "cc_rogue_black_widow.h"
+#include "Rogue/RogueCarrier.h"
+#include "Rogue/RogueMedicCommander.h"
+#include "Rogue/RogueWidowStand.h"
+#include "Rogue/RogueBlackWidow.h"
 #endif
 
 void CMonsterEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
@@ -747,7 +748,7 @@ bool CMonster::CloseEnough (IBaseEntity *Goal, float Dist)
 }
 
 #if ROGUE_FEATURES
-#include "cc_rogue_stalker.h"
+#include "Rogue/RogueStalker.h"
 #endif
 
 void CMonster::WalkMonsterStartGo ()
@@ -1123,7 +1124,7 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 
 }
 
 #if ROGUE_FEATURES
-#include "cc_rogue_weaponry.h"
+#include "Rogue/RogueWeaponry.h"
 
 void CMonster::MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
@@ -1151,12 +1152,12 @@ void CMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, in
 #endif
 
 #if XATRIX_FEATURES
-#include "cc_weapon_main.h"
-#include "cc_xatrix_ionripper.h"
-#include "cc_soldier_base.h"
-#include "cc_xatrix_soldier_hyper.h"
-#include "cc_bitch.h"
-#include "cc_xatrix_chick_heat.h"
+#include "Weapons/WeaponMain.h"
+#include "Xatrix/XatrixIonRipper.h"
+#include "Monsters/SoldierBase.h"
+#include "Xatrix/XatrixSoldierHyper.h"
+#include "Monsters/Bitch.h"
+#include "Xatrix/XatrixChickHeat.h"
 
 void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {

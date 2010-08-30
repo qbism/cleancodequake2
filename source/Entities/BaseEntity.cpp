@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Base entity class code
 //
 
-#include "cc_local.h"
+#include "Local.h"
 #include <algorithm>
-#include "cc_items.h"
+#include "Items/Items.h"
 
 int CEntityField::GetItemIndex (CBaseItem *Item) const
 {
@@ -358,7 +358,7 @@ void CLevelLocals::CEntityList::RemoveEntityFromList (SEntity *ent)
 	Open.push_front (ent);
 }
 
-#include "cc_body_queue.h"
+#include "Player/BodyQueue.h"
 
 /**
 \fn	SEntity *G_Spawn ()
@@ -1165,7 +1165,7 @@ void IBaseEntity::NukeSplashDamage (IBaseEntity *Attacker, float Damage, IBaseEn
 }
 #endif
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 /**
 \fn	void IBaseEntity::BecomeExplosion (bool Grenade)

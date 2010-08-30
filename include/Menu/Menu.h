@@ -84,7 +84,7 @@ public:
 };
 
 // Controls
-#include "cc_controls.h"
+#include "Menu/Controls.h"
 
 #else
 FILE_WARNING

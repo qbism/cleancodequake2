@@ -18,12 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if CLEANCTF_ENABLED
 
-#include "cc_weapon_main.h"
-#include "m_player.h"
+#include "Weapons/WeaponMain.h"
+#include "Player/m_player.h"
 
 void EndDMLevel ();
 

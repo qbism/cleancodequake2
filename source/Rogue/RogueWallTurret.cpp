@@ -31,14 +31,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "m_turret.h"
-#include "cc_rogue_wall_turret.h"
-#include "cc_brush_models.h"
-#include "cc_temporary_entities.h"
+#include "Rogue/m_turret.h"
+#include "Rogue/RogueWallTurret.h"
+#include "Entities/BrushModels.h"
+#include "Utility/TemporaryEntities.h"
 
 class CWallTurretBase : public IBrushModel
 {

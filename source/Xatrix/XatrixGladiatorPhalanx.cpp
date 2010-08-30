@@ -31,14 +31,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_gladiator.h"
-#include "cc_xatrix_gladiator_phalanx.h"
-#include "cc_weapon_main.h"
-#include "cc_xatrix_phalanx.h"
-#include "m_gladiator.h"
+#include "Monsters/Gladiator.h"
+#include "Xatrix/XatrixGladiatorPhalanx.h"
+#include "Weapons/WeaponMain.h"
+#include "Xatrix/XatrixPhalanx.h"
+#include "Monsters/m_gladiator.h"
 
 CPhalanxGladiator::CPhalanxGladiator (uint32 ID) :
 CGladiator (ID)

@@ -31,11 +31,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // ClientCommand & related functions
 //
 
-#include "cc_local.h"
-#include "m_player.h"
-#include "cc_ban.h"
-#include "cc_menu.h"
-#include "cc_version.h"
+#include "Local.h"
+#include "Player/m_player.h"
+#include "Player/Ban.h"
+#include "Menu/Menu.h"
+#include "Utility/Version.h"
 
 /**
 \class	CGodCommand

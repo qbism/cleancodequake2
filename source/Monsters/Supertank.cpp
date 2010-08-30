@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Supertank (Boss1)
 //
 
-#include "cc_local.h"
-#include "m_supertank.h"
-#include "cc_supertank.h"
+#include "Local.h"
+#include "Monsters/m_supertank.h"
+#include "Monsters/Supertank.h"
 
 CSuperTank::CSuperTank (uint32 ID) :
 CMonster (ID)

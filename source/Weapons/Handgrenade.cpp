@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Handgrenades
 //
 
-#include "cc_local.h"
-#include "cc_weapon_main.h"
-#include "m_player.h"
+#include "Local.h"
+#include "Weapons/WeaponMain.h"
+#include "Player/m_player.h"
 
 CHandGrenade::CHandGrenade() :
 CWeapon(6, 0, "models/weapons/v_handgr/tris.md2", 0, 0, 0, 16,

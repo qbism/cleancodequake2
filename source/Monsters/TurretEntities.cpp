@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Turret entities
 //
 
-#include "cc_local.h"
-#include "cc_brush_models.h"
-#include "cc_infantry.h"
-#include "cc_turret_entities.h"
+#include "Local.h"
+#include "Entities/BrushModels.h"
+#include "Monsters/Infantry.h"
+#include "Monsters/TurretEntities.h"
 
 void AnglesNormalize(vec3f &vec)
 {

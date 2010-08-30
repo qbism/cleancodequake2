@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Resolves an entity from a classname
 //
 
-#include "cc_local.h"
-#include "cc_body_queue.h"
-#include "cc_version.h"
+#include "Local.h"
+#include "Player/BodyQueue.h"
+#include "Utility/Version.h"
 
 const int MAX_CLASSNAME_CLASSES = 1024;
 
@@ -329,7 +329,7 @@ static void ED_ParseEdict (CParser &Data, SEntity *ServerEntity)
 		Mem_Zero (ServerEntity, sizeof(*ServerEntity));
 }
 
-#include "cc_brush_models.h"
+#include "Entities/BrushModels.h"
 
 #if ROGUE_FEATURES
 /**
@@ -468,7 +468,7 @@ static void G_FindTeams ()
 	}
 }
 
-#include "cc_exception_handler.h"
+#include "Utility/ExceptionHandler.h"
 
 /**
 \fn	void InitEntities ()

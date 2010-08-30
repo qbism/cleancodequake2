@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Common controls
 //
 
-#include "cc_local.h"
-#include "cc_menu.h"
+#include "Local.h"
+#include "Menu/Menu.h"
 
 CMenu_Label::CMenu_Label (CMenu *Menu, sint32 x, sint32 y) :
 CMenuItem(Menu, x, y)

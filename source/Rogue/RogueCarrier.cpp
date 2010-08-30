@@ -31,14 +31,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
-#include "cc_rogue_carrier.h"
-#include "cc_flyer.h"
-#include "cc_rogue_flyer_kamikaze.h"
-#include "m_carrier.h"
-#include "cc_rogue_monster_spawning.h"
+#include "Rogue/RogueCarrier.h"
+#include "Monsters/Flyer.h"
+#include "Rogue/RogueFlyerKamikaze.h"
+#include "Rogue/m_carrier.h"
+#include "Rogue/RogueMonsterSpawning.h"
 
 const int CARRIER_ROCKET_TIME		= 20;		// number of seconds between rocket shots
 const int CARRIER_ROCKET_SPEED		= 750;

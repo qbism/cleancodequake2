@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 /*QUAKED rotating_light (0 .5 .8) (-8 -8 -8) (8 8 8) START_OFF ALARM
 "health"	if set, the light may be killed.
@@ -184,7 +184,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("rotating_light", CRotatingLight);
 
-#include "cc_brush_models.h"
+#include "Entities/BrushModels.h"
 
 /*QUAKED misc_crashviper (1 .5 0) (-176 -120 -24) (176 120 72) 
 This is a large viper about to crash
@@ -486,7 +486,7 @@ void		CMiscViperMissile::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("misc_viper_missile", CMiscViperMissile);
 
-#include "cc_misc_entities.h"
+#include "Entities/MiscEntities.h"
 
 // RAFAEL 17-APR-98
 /*QUAKED misc_transport (1 0 0) (-8 -8 -8) (8 8 8) TRIGGER_SPAWN
@@ -531,7 +531,7 @@ LINK_CLASSNAME_TO_CLASS ("misc_transport", CMiscTransport);
 /*QUAKED target_mal_laser (1 0 0) (-4 -4 -4) (4 4 4) START_ON RED GREEN BLUE YELLOW ORANGE FAT
 Mal's laser
 */
-#include "cc_target_entities.h"
+#include "Entities/TargetEntities.h"
 
 class CTargetMalLaser : public CTargetLaser
 {

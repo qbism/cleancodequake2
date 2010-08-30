@@ -609,7 +609,7 @@ extern uint32 LastID;
 #define MONSTER_ID_HEADER \
 	static const uint32 ID;
 
-#include "cc_player_trail.h"
+#include "Player/PlayerTrail.h"
 
 #if ROGUE_FEATURES
 void InitBadAreas ();

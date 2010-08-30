@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // string.c
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 /*
 ============================================================================

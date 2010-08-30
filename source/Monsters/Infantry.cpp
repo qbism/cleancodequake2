@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Infantry Monster
 //
 
-#include "cc_local.h"
-#include "m_infantry.h"
-#include "cc_infantry.h"
+#include "Local.h"
+#include "Monsters/m_infantry.h"
+#include "Monsters/Infantry.h"
 
 CInfantry::CInfantry (uint32 ID) :
 CMonster (ID)

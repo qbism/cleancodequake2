@@ -31,15 +31,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_rogue_widow_stand.h"
-#include "cc_rogue_monster_spawning.h"
-#include "cc_temporary_entities.h"
-#include "m_widow.h"
-#include "cc_rogue_black_widow.h"
+#include "Rogue/RogueWidowStand.h"
+#include "Rogue/RogueMonsterSpawning.h"
+#include "Utility/TemporaryEntities.h"
+#include "Rogue/m_widow.h"
+#include "Rogue/RogueBlackWidow.h"
 
 const int MAX_LEGSFRAME	= 23;
 const int LEG_WAIT_TIME	= 10;

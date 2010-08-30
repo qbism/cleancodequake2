@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Menu system
 //
 
-#include "cc_local.h"
-#include "cc_menu.h"
+#include "Local.h"
+#include "Menu/Menu.h"
 
 CMenuItem::CMenuItem (CMenu *Menu, sint32 x, sint32 y) :
 Menu(Menu),

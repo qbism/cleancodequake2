@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Contains overloads and other neat things
 //
 
-#include "cc_local.h"
-#include "cc_exception_handler.h"
-#include "cc_server_commands.h"
+#include "Local.h"
+#include "Utility/ExceptionHandler.h"
+#include "Player/ServerCommands.h"
 
 SGameImport	gi;
 

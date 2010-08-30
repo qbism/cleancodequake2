@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Parasite
 //
 
-#include "cc_local.h"
-#include "cc_parasite.h"
-#include "m_parasite.h"
+#include "Local.h"
+#include "Monsters/Parasite.h"
+#include "Monsters/m_parasite.h"
 
 CParasite::CParasite (uint32 ID) :
 CMonster(ID)
@@ -276,7 +276,7 @@ bool CParasite::DrainAttackOK (vec3f &start, vec3f &end)
 	return true;
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CParasite::DrainAttack ()
 {

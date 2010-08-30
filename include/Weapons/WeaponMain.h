@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_WEAPONMAIN_H) || !INCLUDE_GUARDS
 #define CC_GUARD_WEAPONMAIN_H
 
-#include "cc_items.h"
+#include "Items/Items.h"
 
 class CWeapon
 {
@@ -166,21 +166,21 @@ public:
 		vwepIndex = ModelIndex(Item->VWepModel) - TakeAway; \
 	};
 
-#include "cc_blaster.h"
-#include "cc_shotgun.h"
-#include "cc_super_shotgun.h"
-#include "cc_machinegun.h"
-#include "cc_chaingun.h"
-#include "cc_handgrenade.h"
-#include "cc_grenade_launcher.h"
-#include "cc_rocket_launcher.h"
-#include "cc_hyperblaster.h"
-#include "cc_railgun.h"
-#include "cc_bfg.h"
+#include "Weapons/Blaster.h"
+#include "Weapons/Shotgun.h"
+#include "Weapons/SuperShotgun.h"
+#include "Weapons/Machinegun.h"
+#include "Weapons/Chaingun.h"
+#include "Weapons/Handgrenade.h"
+#include "Weapons/GrenadeLauncher.h"
+#include "Weapons/RocketLauncher.h"
+#include "Weapons/Hyperblaster.h"
+#include "Weapons/Railgun.h"
+#include "Weapons/Bfg.h"
 #if CLEANCTF_ENABLED
-#include "cc_ctf_weapon_grapple.h"
+#include "CTF/CtfWeaponGrapple.h"
 #endif
-#include "cc_debug_weapons.h"
+#include "Weapons/DebugWeapons.h"
 
 #else
 FILE_WARNING

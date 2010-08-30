@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_weapon_main.h"
-#include "cc_temporary_entities.h"
-#include "cc_rogue_prox_launcher.h"
+#include "Weapons/WeaponMain.h"
+#include "Utility/TemporaryEntities.h"
+#include "Rogue/RogueProxLauncher.h"
 
 // Prox
 class CProxField : public ITouchableEntity

@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
-#include "cc_brain.h"
-#include "m_brain.h"
+#include "Local.h"
+#include "Monsters/Brain.h"
+#include "Monsters/m_brain.h"
 
 CBrain::CBrain (uint32 ID) :
 CMonster (ID)
@@ -536,7 +536,7 @@ static bool BrainTongueAttackCheck (vec3f &start, vec3f &end)
 	return true;
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CBrain::TongueAttack ()
 {

@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Contains actual game code; the code needed to make Q2 go anywhere.
 //
 
-#include "cc_local.h"
-#include "cc_ban.h"
-#include "cc_target_entities.h"
-#include "cc_body_queue.h"
-#include "cc_server_commands.h"
-#include "cc_version.h"
-#include "cc_itemlist.h"
+#include "Local.h"
+#include "Player/Ban.h"
+#include "Entities/TargetEntities.h"
+#include "Player/BodyQueue.h"
+#include "Player/ServerCommands.h"
+#include "Utility/Version.h"
+#include "Items/Itemlist.h"
 #include <ctime>
 
 void CLevelLocals::CEntityList::Save (CFile &File)

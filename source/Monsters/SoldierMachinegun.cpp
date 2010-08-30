@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // T-t-t-t-t-t-t.
 //
 
-#include "cc_local.h"
-#include "cc_soldier_base.h"
-#include "cc_soldier_machinegun.h"
+#include "Local.h"
+#include "Monsters/SoldierBase.h"
+#include "Monsters/SoldierMachinegun.h"
 
 CSoldierMachinegun::CSoldierMachinegun (uint32 ID) :
 CSoldierBase (ID)

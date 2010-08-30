@@ -31,14 +31,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_target_entities.h"
-#include "cc_temporary_entities.h"
-#include "cc_weapon_main.h"
-#include "cc_rogue_tesla.h"
+#include "Entities/TargetEntities.h"
+#include "Utility/TemporaryEntities.h"
+#include "Weapons/WeaponMain.h"
+#include "Rogue/RogueTesla.h"
 
 CDoubleDamage::CDoubleDamage(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,
@@ -450,7 +450,7 @@ void	CAMBomb::Drop (CPlayerEntity *Player)
 	Player->Client.Persistent.Inventory.Remove (this, count);
 }
 
-#include "cc_rogue_monster_spawning.h"
+#include "Rogue/RogueMonsterSpawning.h"
 
 class CDoppleGangerItem : public CBasePowerUp
 {

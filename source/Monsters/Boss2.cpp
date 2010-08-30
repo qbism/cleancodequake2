@@ -30,9 +30,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Biggun Protector
 //
 
-#include "cc_local.h"
-#include "cc_boss2.h"
-#include "m_boss2.h"
+#include "Local.h"
+#include "Monsters/Boss2.h"
+#include "Monsters/m_boss2.h"
 
 CBoss2::CBoss2 (uint32 ID) :
 CMonster (ID)

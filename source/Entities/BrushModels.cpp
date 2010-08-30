@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
-#include "cc_brush_models.h"
-#include "cc_items.h"
+#include "Local.h"
+#include "Entities/BrushModels.h"
+#include "Items/Items.h"
 
 #pragma region Brush_Model
 void IBrushModel::Think ()
@@ -2212,7 +2212,7 @@ LINK_CLASSNAME_TO_CLASS ("func_button", CButton);
 
 #pragma region Train
 
-#include "cc_info_entities.h"
+#include "Entities/InfoEntities.h"
 
 /*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS
 Trains are moving platforms that players can ride.
@@ -2690,7 +2690,7 @@ LINK_CLASSNAME_TO_CLASS ("trigger_elevator", CTriggerElevator);
 #pragma endregion Train
 
 #pragma region World
-#include "cc_body_queue.h"
+#include "Player/BodyQueue.h"
 
 CWorldEntity::CWorldEntity () : 
 IBaseEntity(),

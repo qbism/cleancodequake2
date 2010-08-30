@@ -31,12 +31,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
-#include "cc_icarus.h"
-#include "m_hover.h"
-#include "cc_rogue_daedalus.h"
+#include "Monsters/Icarus.h"
+#include "Monsters/m_hover.h"
+#include "Rogue/RogueDaedalus.h"
 
 CDaedalus::CDaedalus (uint32 ID) :
 CIcarus (ID)

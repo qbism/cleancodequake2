@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Grenade Launcher
 //
 
-#include "cc_local.h"
-#include "cc_weapon_main.h"
-#include "m_player.h"
+#include "Local.h"
+#include "Weapons/WeaponMain.h"
+#include "Player/m_player.h"
 
 CGrenadeLauncher::CGrenadeLauncher() :
 CWeapon(5, 0, "models/weapons/v_launch/tris.md2", 0, 5, 6, 16,

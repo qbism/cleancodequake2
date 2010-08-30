@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
-#include "cc_items.h"
-#include "cc_brush_models.h"
-#include "cc_trigger_entities.h"
+#include "Local.h"
+#include "Items/Items.h"
+#include "Entities/BrushModels.h"
+#include "Entities/TriggerEntities.h"
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
 This trigger will always fire.  It is activated by the world.

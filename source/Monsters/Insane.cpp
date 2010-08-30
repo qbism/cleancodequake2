@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Insane marine
 //
 
-#include "cc_local.h"
-#include "m_insane.h"
-#include "cc_insane.h"
+#include "Local.h"
+#include "Monsters/m_insane.h"
+#include "Monsters/Insane.h"
 
 /**
 \enum	

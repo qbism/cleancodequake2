@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Sharky!
 //
 
-#include "cc_local.h"
-#include "m_flipper.h"
-#include "cc_barracuda.h"
+#include "Local.h"
+#include "Monsters/m_flipper.h"
+#include "Monsters/Barracuda.h"
 
 CBarracudaShark::CBarracudaShark (uint32 ID) :
 CMonster (ID)

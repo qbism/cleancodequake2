@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // misc_* entities
 //
 
-#include "cc_local.h"
-#include "cc_brush_models.h"
-#include "cc_misc_entities.h"
-#include "cc_temporary_entities.h"
+#include "Local.h"
+#include "Entities/BrushModels.h"
+#include "Entities/MiscEntities.h"
+#include "Utility/TemporaryEntities.h"
 
 /*QUAKED misc_explobox (0 .5 .8) (-16 -16 0) (16 16 40)
 Large exploding box.  You can override its mass (100),

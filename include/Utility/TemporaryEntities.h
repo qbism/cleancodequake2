@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_TENT_H) || !INCLUDE_GUARDS
 #define CC_GUARD_TENT_H
 
-#include "cc_colors.h"
+#include "Utility/Colors.h"
 
 // The NEW AND IMPROVED AND NEW AND IMPROVED AND CLASS-BASED AND IMPROVED TempEnt system
 class CTempEntFlags

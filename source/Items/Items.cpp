@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Crammed for now, split off into filter later.
 //
 
-#include "cc_local.h"
-#include "cc_items.h"
+#include "Local.h"
+#include "Items/Items.h"
 
 extern CItemList *ItemList;
 

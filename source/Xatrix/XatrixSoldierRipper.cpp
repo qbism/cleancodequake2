@@ -31,11 +31,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_soldier_base.h"
-#include "cc_xatrix_soldier_ripper.h"
+#include "Monsters/SoldierBase.h"
+#include "Xatrix/XatrixSoldierRipper.h"
 
 CSoldierRipper::CSoldierRipper (uint32 ID) :
 CSoldierBase (ID)
@@ -139,7 +139,7 @@ void CSoldierRipper::Attack ()
 	}
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 static sint32 BlasterFlash [] = {MZ2_SOLDIER_BLASTER_1, MZ2_SOLDIER_BLASTER_2, MZ2_SOLDIER_BLASTER_3, MZ2_SOLDIER_BLASTER_4, MZ2_SOLDIER_BLASTER_5, MZ2_SOLDIER_BLASTER_6, MZ2_SOLDIER_BLASTER_7, MZ2_SOLDIER_BLASTER_8};
 void CSoldierRipper::FireGun (sint32 FlashNumber)

@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // WACHOOEYCHOY
 //
 
-#include "cc_local.h"
-#include "m_gladiator.h"
-#include "cc_gladiator.h"
+#include "Local.h"
+#include "Monsters/m_gladiator.h"
+#include "Monsters/Gladiator.h"
 
 CGladiator::CGladiator (uint32 ID) :
 CMonster (ID)

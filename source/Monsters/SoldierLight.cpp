@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Bew pew gew.
 //
 
-#include "cc_local.h"
-#include "cc_soldier_base.h"
-#include "cc_soldier_light.h"
+#include "Local.h"
+#include "Monsters/SoldierBase.h"
+#include "Monsters/SoldierLight.h"
 
 CSoldierLight::CSoldierLight (uint32 ID) :
 CSoldierBase (ID)

@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Different base entity classes
 //
 
-#include "cc_local.h"
-#include "cc_items.h"
+#include "Local.h"
+#include "Items/Items.h"
 
 /**
 \fn	IHurtableEntity::IHurtableEntity ()
@@ -202,7 +202,7 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 	return false;
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 /**
 \fn	sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage,
@@ -1676,7 +1676,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 	return true;
 }
 
-#include "cc_brush_models.h"
+#include "Entities/BrushModels.h"
 
 bool IPushPhysics::Run ()
 {

@@ -42,7 +42,7 @@ class CFlag;
 class CArmor;
 class CBaseItem;
 
-#include "cc_inventory.h"
+#include "Items/Inventory.h"
 
 class CPlayerState
 {
@@ -125,7 +125,7 @@ enum
 void LoadWeapon (CFile &File, CWeapon **Weapon);
 void SaveWeapon (CFile &File, CWeapon *Weapon);
 
-#include "cc_userinfo.h"
+#include "Player/Userinfo.h"
 
 /**
 \typedef	uint8 EHandedness

@@ -162,7 +162,7 @@ public:
 	IMPLEMENT_SAVE_STRUCTURE (DLLItemName,DLLClassName)
 
 #if CLEANCTF_ENABLED
-#include "cc_ctf_item_entities.h"
+#include "CTF/CtfItemEntities.h"
 #endif
 
 #else

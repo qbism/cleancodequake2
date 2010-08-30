@@ -116,25 +116,25 @@ public:
 	virtual void	Add (CPlayerEntity *Player, sint32 quantity);
 };
 
-#include "cc_weapons.h"
-#include "cc_health.h"
-#include "cc_armor.h"
-#include "cc_keys.h"
-#include "cc_powerups.h"
+#include "Items/Weapons.h"
+#include "Items/Health.h"
+#include "Items/Armor.h"
+#include "Items/Keys.h"
+#include "Items/Powerups.h"
 
 #if CLEANCTF_ENABLED
-#include "cc_ctf_items.h"
+#include "CTF/CtfItems.h"
 #endif
-#include "cc_techs.h"
+#include "Items/Techs.h"
 #if XATRIX_FEATURES
-#include "cc_xatrix_items.h"
+#include "Xatrix/XatrixItems.h"
 #endif
 #if ROGUE_FEATURES
-#include "cc_rogue_items.h"
+#include "Rogue/RogueItems.h"
 #endif
 
-#include "cc_itemlist.h"
-#include "cc_item_entity.h"
+#include "Items/Itemlist.h"
+#include "Entities/ItemEntity.h"
 
 #else
 FILE_WARNING

@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_weapon_main.h"
-#include "cc_rogue_chainfist.h"
-#include "cc_temporary_entities.h"
+#include "Weapons/WeaponMain.h"
+#include "Rogue/RogueChainfist.h"
+#include "Utility/TemporaryEntities.h"
 
 CChainfist::CChainfist() :
 CWeapon(0, 1, "models/weapons/v_chainf/tris.md2", 0, 4, 5, 32,

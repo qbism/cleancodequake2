@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Icarus
 //
 
-#include "cc_local.h"
-#include "m_hover.h"
-#include "cc_icarus.h"
+#include "Local.h"
+#include "Monsters/m_hover.h"
+#include "Monsters/Icarus.h"
 
 CIcarus::CIcarus (uint32 ID) :
 CMonster (ID)

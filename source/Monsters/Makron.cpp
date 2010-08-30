@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
-#include "cc_jorg.h" // Req.
-#include "cc_makron.h"
-#include "m_boss32.h"
+#include "Local.h"
+#include "Monsters/JORG.h" // Req.
+#include "Monsters/Makron.h"
+#include "Monsters/m_boss32.h"
 
 CMakron::CMakron (uint32 ID) :
 CMonster (ID)

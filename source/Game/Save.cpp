@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
-#include "cc_exception_handler.h"
+#include "Local.h"
+#include "Utility/ExceptionHandler.h"
 #include <ctime>
 
 bool ReadingGame = false;
@@ -459,7 +459,7 @@ void CGameAPI::WriteGame (char *filename, bool autosave)
 	WRITE_MAGIC
 }
 
-#include "cc_ban.h"
+#include "Player/Ban.h"
 void InitVersion ();
 
 void CGameAPI::ReadGame (char *filename)
@@ -547,7 +547,7 @@ void CGameAPI::WriteLevel (char *filename)
 	WRITE_MAGIC
 }
 
-#include "cc_body_queue.h"
+#include "Player/BodyQueue.h"
 
 char	ReadConfigSt[MAX_CFGSTRINGS][MAX_CFGSTRLEN];
 void ReadConfigStrings (char *filename)

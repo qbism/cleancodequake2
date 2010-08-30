@@ -31,11 +31,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
-#include "cc_rogue_stalker.h"
-#include "m_stalker.h"
+#include "Rogue/RogueStalker.h"
+#include "Rogue/m_stalker.h"
 
 CStalker::CStalker (uint32 ID) :
 CMonster(ID)

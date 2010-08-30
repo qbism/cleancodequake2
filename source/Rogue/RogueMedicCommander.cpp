@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
-#include "cc_medic.h"
-#include "m_medic.h"
-#include "cc_rogue_monster_spawning.h"
-#include "cc_rogue_medic_commander.h"
+#include "Monsters/Medic.h"
+#include "Monsters/m_medic.h"
+#include "Rogue/RogueMonsterSpawning.h"
+#include "Rogue/RogueMedicCommander.h"
 
 CReinforcement Reinforcements[] =
 {

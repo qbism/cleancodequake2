@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Main system/class for the weapons
 //
 
-#include "cc_local.h"
-#include "cc_weapon_main.h"
-#include "m_player.h"
+#include "Local.h"
+#include "Weapons/WeaponMain.h"
+#include "Player/m_player.h"
 
 typedef std::vector<CWeapon*> TWeaponListType;
 
@@ -377,7 +377,7 @@ void CWeapon::OutOfAmmo (CPlayerEntity *Player)
 	}
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CWeapon::Muzzle (CPlayerEntity *Player, sint32 muzzleNum)
 {
@@ -525,11 +525,11 @@ public:
 typedef std::vector <CWeaponSwitcher> TWeaponSwitcherListType;
 
 #if XATRIX_FEATURES
-#include "cc_xatrix_ionripper.h"
-#include "cc_xatrix_phalanx.h"
+#include "Xatrix/XatrixIonRipper.h"
+#include "Xatrix/XatrixPhalanx.h"
 #endif
 #if ROGUE_FEATURES
-#include "cc_rogue_prox_launcher.h"
+#include "Rogue/RogueProxLauncher.h"
 #endif
 
 inline TWeaponSwitcherListType &WeaponSwitchList ()

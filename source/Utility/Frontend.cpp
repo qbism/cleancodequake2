@@ -32,7 +32,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // gamex86.dll (ie, in release directory)
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #ifdef _FRONTEND
 

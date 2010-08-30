@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Iron Maiden
 //
 
-#include "cc_local.h"
-#include "m_chick.h"
-#include "cc_bitch.h"
+#include "Local.h"
+#include "Monsters/m_chick.h"
+#include "Monsters/Bitch.h"
 
 CMaiden::CMaiden (uint32 ID) :
 CMonster(ID)

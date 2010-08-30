@@ -31,10 +31,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // ServerCommand & related functions
 //
 
-#include "cc_local.h"
-#include "cc_exception_handler.h"
-#include "cc_version.h"
-#include "cc_server_commands.h"
+#include "Local.h"
+#include "Utility/ExceptionHandler.h"
+#include "Utility/Version.h"
+#include "Player/ServerCommands.h"
 
 typedef CCommand::TCommandListType TServerCommandListType;
 typedef CCommand::THashedCommandListType THashedServerCommandListType;
@@ -239,7 +239,7 @@ public:
 	}
 };
 
-#include "cc_ban.h"
+#include "Player/Ban.h"
 IPAddress CopyIP (const char *val);
 
 class CServerCmdBan : public CCommandFunctor

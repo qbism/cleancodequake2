@@ -31,11 +31,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
-#include "cc_brush_models.h"
-#include "cc_rogue_misc_entities.h"
+#include "Entities/BrushModels.h"
+#include "Rogue/RogueMiscEntities.h"
 
 class CMiscNukeCore : public IMapEntity, public IUsableEntity
 {
@@ -82,7 +82,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("misc_nuke_core", CMiscNukeCore);
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 /*QUAKED func_door_secret2 (0 .5 .8) ? open_once 1st_left 1st_down no_shoot always_shoot slide_right slide_forward
 Basic secret door. Slides back, then to the left. Angle determines direction.
@@ -493,7 +493,7 @@ public:
 
 LINK_CLASSNAME_TO_CLASS ("info_teleport_destination", CInfoTeleportDestination);
 
-#include "cc_rogue_weaponry.h"
+#include "Rogue/RogueWeaponry.h"
 
 /**
 \enum	
@@ -967,8 +967,8 @@ void			CPlatForm2::LoadFields (CFile &File)
 
 LINK_CLASSNAME_TO_CLASS ("func_plat2", CPlatForm2);
 
-#include "cc_infantry.h"
-#include "cc_turret_entities.h"
+#include "Monsters/Infantry.h"
+#include "Monsters/TurretEntities.h"
 
 // invisible turret drivers so we can have unmanned turrets.
 // originally designed to shoot at func_trains and such, so they
@@ -1272,7 +1272,7 @@ enum
 	DISGUISE_REMOVE
 };
 
-#include "cc_trigger_entities.h"
+#include "Entities/TriggerEntities.h"
 
 class CTriggerDisguise : public CTriggerBase
 {

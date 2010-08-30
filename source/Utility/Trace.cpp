@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // A wrapper for the ugly gi.trace system.
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 void CTrace::Copy (STrace tr)
 {

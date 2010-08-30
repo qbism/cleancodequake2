@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Medic
 //
 
-#include "cc_local.h"
-#include "cc_medic.h"
-#include "m_medic.h"
+#include "Local.h"
+#include "Monsters/Medic.h"
+#include "Monsters/m_medic.h"
 
 const int MEDIC_MIN_DISTANCE			= 32;
 const int MEDIC_MAX_HEAL_DISTANCE		= 400;
@@ -63,7 +63,7 @@ void CMedic::CleanupHeal (bool ChangeFrame)
 		NextFrame = FRAME_attack52;
 }
 
-#include "cc_rogue_medic_commander.h"
+#include "Rogue/RogueMedicCommander.h"
 
 void CMedic::AbortHeal (bool Gib, bool Mark)
 {
@@ -598,7 +598,7 @@ static vec3f	MedicCableOffsets[] =
 	vec3f(32.7f, -19.7f, 10.4f)
 };
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CMedic::CableAttack ()
 {

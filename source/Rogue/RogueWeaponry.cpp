@@ -31,12 +31,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_rogue_weaponry.h"
-#include "cc_temporary_entities.h"
+#include "Rogue/RogueWeaponry.h"
+#include "Utility/TemporaryEntities.h"
 
 bool CHeatBeam::DoDamage (IBaseEntity *Attacker, IHurtableEntity *Target, vec3f &Dir, vec3f &Point, vec3f &Normal)
 {

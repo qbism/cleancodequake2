@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
-#include "cc_flyer.h"
-#include "cc_rogue_flyer_kamikaze.h"
-#include "cc_temporary_entities.h"
-#include "m_flyer.h"
+#include "Monsters/Flyer.h"
+#include "Rogue/RogueFlyerKamikaze.h"
+#include "Utility/TemporaryEntities.h"
+#include "Monsters/m_flyer.h"
 
 CFlyerKamikaze::CFlyerKamikaze (uint32 ID) :
 CFlyer(ID)
@@ -57,7 +57,7 @@ void CFlyerKamikaze::Pain (IBaseEntity *Other, sint32 Damage)
 	// We don't feel pain
 };
 
-#include "cc_rogue_carrier.h"
+#include "Rogue/RogueCarrier.h"
 
 bool CFlyerKamikaze::Blocked (float Dist)
 {

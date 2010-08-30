@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // A huge class containing containers to spawn temp entities with a single function call.
 //
 
-#include "cc_local.h"
-#include "cc_temporary_entities.h"
+#include "Local.h"
+#include "Utility/TemporaryEntities.h"
 
 const CTempEntFlags CTempEntFlags::DefaultTempEntFlags (CAST_MULTI, CASTFLAG_PVS, vec3fOrigin);
 

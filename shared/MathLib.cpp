@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // Required initialization of MathLib.h and included files
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 vec3f vec3fOrigin (0, 0, 0);	// vec3 origin
 

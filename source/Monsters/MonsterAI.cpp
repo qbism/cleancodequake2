@@ -31,12 +31,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if !ROGUE_FEATURES
 
-#include "cc_brush_models.h"
-#include "cc_temporary_entities.h"
+#include "Entities/BrushModels.h"
+#include "Utility/TemporaryEntities.h"
 
 void CMonster::HuntTarget()
 {
@@ -601,10 +601,10 @@ bool CMonster::CheckAttack ()
 	return false;
 }
 
-#include "cc_tank.h"
-#include "cc_supertank.h"
-#include "cc_makron.h"
-#include "cc_jorg.h"
+#include "Monsters/Tank.h"
+#include "Monsters/Supertank"
+#include "Monsters/Makron.h"
+#include "Monsters/JORG.h"
 
 void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {

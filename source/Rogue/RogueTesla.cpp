@@ -31,15 +31,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_weapon_main.h"
-#include "cc_rogue_tesla.h"
-#include "cc_rogue_weaponry.h"
-#include "cc_temporary_entities.h"
-#include "m_player.h"
+#include "Weapons/WeaponMain.h"
+#include "Rogue/RogueTesla.h"
+#include "Rogue/RogueWeaponry.h"
+#include "Utility/TemporaryEntities.h"
+#include "Player/m_player.h"
 
 // Tesla itself
 

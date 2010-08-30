@@ -31,12 +31,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_weapon_main.h"
-#include "cc_xatrix_ionripper.h"
-#include "m_player.h"
+#include "Weapons/WeaponMain.h"
+#include "Xatrix/XatrixIonRipper.h"
+#include "Player/m_player.h"
 
 CIonRipperBoomerang::CIonRipperBoomerang () :
   IFlyMissileProjectile(),
@@ -55,7 +55,7 @@ CIonRipperBoomerang::CIonRipperBoomerang (sint32 Index) :
 
 IMPLEMENT_SAVE_SOURCE(CIonRipperBoomerang)
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CIonRipperBoomerang::Think ()
 {

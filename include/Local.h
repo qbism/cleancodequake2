@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_LOCAL_H) || !INCLUDE_GUARDS
 #define CC_GUARD_LOCAL_H
 
-#include "cc_options.h"
+#include "Options.h"
 #include "../shared/Shared.h"
 
 inline const char *BuildDate()
@@ -61,42 +61,41 @@ typedef sint32	FrameNumber;
 #define TO_STRING(x) TO_STRING2(x)
 
 // Stand-alone classes
-#include "cc_enum.h"
-#include "cc_hash.h"
-#include "cc_print.h"
-#include "cc_file_system.h"
-#include "cc_platform.h"
-#include "cc_commands.h"
-#include "cc_indexing.h"
-#include "cc_media.h"
-#include "cc_dmflags.h"
-#include "cc_write.h"
-#include "cc_cvar.h"
-#include "cc_parse.h"
+#include "Utility/Enum.h"
+#include "Utility/Hash.h"
+#include "Player/Print.h"
+#include "Utility/FileSystem.h"
+#include "Platform/Platform.h"
+#include "Player/Commands.h"
+#include "Utility/Indexing.h"
+#include "Utility/Media.h"
+#include "Utility/DmFlags.h"
+#include "Utility/Write.h"
+#include "Utility/Cvar.h"
+#include "Utility/Parse.h"
 #define BAN_BASIC_INFO
-#include "cc_ban.h"
+#include "Player/Ban.h"
 #undef BAN_BASIC_INFO
-#include "cc_timer.h"
-#include "cc_save.h"
-#include "cc_irc.h"
-#include "cc_trace.h"
+#include "Utility/Timer.h"
+#include "Game/Save.h"
+#include "Utility/IRC.h"
+#include "Utility/Trace.h"
 
 // Main class files
-#include "cc_game_api.h"
-#include "cc_game.h"
-#include "cc_status_bar.h"
-#include "cc_map_print.h"
+#include "Game/GameApi.h"
+#include "Game/Game.h"
+#include "Player/StatusBar.h"
+#include "Utility/MapPrint.h"
 #if CLEANCTF_ENABLED
-#include "cc_ctf.h"
+#include "CTF/Ctf.h"
 #endif
-#include "cc_base_entity.h"
-#include "cc_monsters.h"
-#include "cc_modules.h"
-#include "cc_utils.h"
+#include "Entities/BaseEntity.h"
+#include "Monsters/Monsters.h"
+#include "Utility/Utilities.h"
 
 // Classes that require classes from the above includes
-#include "cc_sound.h"
-#include "cc_entity_list.h"
+#include "Utility/Sound.h"
+#include "Entities/EntityList.h"
 #else
 FILE_WARNING
 #endif

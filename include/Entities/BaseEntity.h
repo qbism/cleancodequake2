@@ -286,7 +286,7 @@ inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
 	return Entity; // Implicit cast already done
 }
 
-#include "cc_entity_ptr.h"
+#include "Entities/EntityPointer.h"
 
 // IBaseEntity is abstract.
 // A base entity can't do anything
@@ -1670,11 +1670,11 @@ CC_ENABLE_DEPRECATION
 }
 
 // Base classes
-#include "cc_entity_types.h"
+#include "Entities/EntityTypes.h"
 
 // Derivitives
-#include "cc_player_entity.h"
-#include "cc_weapon_entities.h"
+#include "Player/Player.h"
+#include "Entities/WeaponEntities.h"
 
 /**
 \class	IMapEntity
@@ -1776,10 +1776,10 @@ public:
 	virtual void LoadFields (CFile &File);
 };
 
-#include "cc_junk_entities.h"
+#include "Entities/JunkEntity.h"
 
 #if ROGUE_FEATURES
-#include "cc_rogue_spheres.h"
+#include "Rogue/RogueSpheres.h"
 #endif
 
 #else

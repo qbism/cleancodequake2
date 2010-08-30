@@ -31,12 +31,12 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_bitch.h"
-#include "cc_xatrix_chick_heat.h"
-#include "cc_temporary_entities.h"
+#include "Monsters/Bitch.h"
+#include "Xatrix/XatrixChickHeat.h"
+#include "Utility/TemporaryEntities.h"
 
 CHeatRocket::CHeatRocket () :
   IFlyMissileProjectile(),

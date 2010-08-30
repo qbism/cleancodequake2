@@ -31,7 +31,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Contains a system to more easily-er warn about map errors
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 static sint32 mapWarnings, mapErrors;
 

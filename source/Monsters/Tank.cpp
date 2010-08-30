@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Tank
 //
 
-#include "cc_local.h"
-#include "m_tank.h"
-#include "cc_tank.h"
+#include "Local.h"
+#include "Monsters/m_tank.h"
+#include "Monsters/Tank.h"
 
 CTank::CTank (uint32 ID) :
 CMonster(ID)

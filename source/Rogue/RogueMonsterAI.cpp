@@ -31,17 +31,17 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_rogue_weaponry.h"
+#include "Rogue/RogueWeaponry.h"
 
 //
 // Monster "Bad" Areas
 // 
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CBadArea::Run ()
 {
@@ -558,11 +558,11 @@ bool CMonster::IsBadAhead (CBadArea *bad, vec3f move)
 	return false;
 }
 
-#include "cc_rogue_carrier.h"
-#include "cc_icarus.h"
-#include "cc_rogue_daedalus.h"
-#include "cc_rogue_widow_stand.h"
-#include "cc_rogue_black_widow.h"
+#include "Rogue/RogueCarrier.h"
+#include "Monsters/Icarus.h"
+#include "Rogue/RogueDaedalus.h"
+#include "Rogue/RogueWidowStand.h"
+#include "Rogue/RogueBlackWidow.h"
 
 bool CMonster::MoveStep (vec3f move, bool ReLink)
 {

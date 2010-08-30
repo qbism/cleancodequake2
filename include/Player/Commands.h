@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CMDS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CMDS_H
 
-#include "cc_arg.h"
+#include "Player/Arg.h"
 
 const int MAX_COMMANDS = 128;
 const int MAX_CMD_HASH = (MAX_COMMANDS/4);
@@ -504,7 +504,7 @@ CPlayerCommand &Cmd_AddCommand (const char *commandName, ECmdTypeFlags Flags = 0
 **/
 void AddTestDebugCommands ();
 
-#include "cc_game_commands.h"
+#include "Player/GameCommands.h"
 
 #else
 FILE_WARNING

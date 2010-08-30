@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Entities related to weaponry
 //
 
-#include "cc_local.h"
-#include "cc_weapon_main.h"
-#include "cc_temporary_entities.h"
+#include "Local.h"
+#include "Weapons/WeaponMain.h"
+#include "Utility/TemporaryEntities.h"
 
 void CheckDodge (IBaseEntity *self, vec3f &start, vec3f &Dir, sint32 speed)
 {

@@ -31,11 +31,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_supertank.h"
-#include "cc_xatrix_supertank_boss5.h"
+#include "Monsters/Supertank.h"
+#include "Xatrix/XatrixSupertankBoss5.h"
 
 CBoss5::CBoss5 (uint32 ID) :
 CSuperTank (ID)

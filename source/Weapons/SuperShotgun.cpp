@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Shotgun
 //
 
-#include "cc_local.h"
-#include "cc_weapon_main.h"
-#include "m_player.h"
+#include "Local.h"
+#include "Weapons/WeaponMain.h"
+#include "Player/m_player.h"
 
 CSuperShotgun::CSuperShotgun() :
 CWeapon(2, 0, "models/weapons/v_shotg2/tris.md2", 0, 6, 7, 17,

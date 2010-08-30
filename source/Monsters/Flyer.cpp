@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Flyer Monster
 //
 
-#include "cc_local.h"
-#include "m_flyer.h"
-#include "cc_flyer.h"
+#include "Local.h"
+#include "Monsters/m_flyer.h"
+#include "Monsters/Flyer.h"
 
 CFlyer::CFlyer (uint32 ID) :
 CMonster (ID)

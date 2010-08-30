@@ -31,11 +31,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_xatrix_gekk.h"
-#include "cc_temporary_entities.h"
+#include "Xatrix/XatrixGekk.h"
+#include "Utility/TemporaryEntities.h"
 
 CLoogie::CLoogie () :
   IFlyMissileProjectile(),

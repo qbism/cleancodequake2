@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if ROGUE_FEATURES
 
-#include "cc_brush_models.h"
-#include "cc_func_entities.h"
-#include "cc_temporary_entities.h"
+#include "Entities/BrushModels.h"
+#include "Entities/FuncEntities.h"
+#include "Utility/TemporaryEntities.h"
 
 /*QUAKED target_steam (1 0 0) (-8 -8 -8) (8 8 8)
 Creates a steam effect (particles w/ velocity in a line).

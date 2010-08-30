@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // New, improved, better, stable item system!
 //
 
-#include "cc_local.h"
-#include "cc_items.h"
+#include "Local.h"
+#include "Items/Items.h"
 
 
 CArmor::CArmor (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -120,7 +120,7 @@ void CArmor::Drop (CPlayerEntity *Player)
 {
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 sint32 CArmor::CheckArmor (CPlayerEntity *Player, vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
 {

@@ -31,15 +31,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Player entity
 //
 
-#include "cc_local.h"
-#include "m_player.h"
-#include "cc_menu.h"
-#include "cc_ban.h"
-#include "cc_body_queue.h"
-#include "cc_weapon_main.h"
+#include "Local.h"
+#include "Player/m_player.h"
+#include "Menu/Menu.h"
+#include "Player/Ban.h"
+#include "Player/BodyQueue.h"
+#include "Weapons/WeaponMain.h"
 
 #if 0
-#include "cc_pmove.h"
+#include "Player/PlayerMove.h"
 #endif
 
 IMPLEMENT_SAVE_SOURCE(CPlayerNoise);
@@ -509,7 +509,7 @@ void CPlayerEntity::Respawn ()
 	gi.AddCommandString ("menu_loadgame\n");
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 /* 
  * only called when Persistent.Spectator changes
@@ -4532,8 +4532,8 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 }
 
 #if ROGUE_FEATURES
-#include "cc_brush_models.h"
-#include "cc_trigger_entities.h"
+#include "Entities/BrushModels.h"
+#include "Entities/TriggerEntities.h"
 #endif
 
 void CPlayerEntity::PushInDirection (vec3f vel, ESpawnflags flags)

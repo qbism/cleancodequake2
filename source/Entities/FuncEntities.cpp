@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Func_ entities that aren't brush models
 //
 
-#include "cc_local.h"
-#include "cc_brush_models.h"
-#include "cc_func_entities.h"
+#include "Local.h"
+#include "Entities/BrushModels.h"
+#include "Entities/FuncEntities.h"
 #include <ctime>
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON

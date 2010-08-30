@@ -31,13 +31,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // 
 //
 
-#include "cc_local.h"
+#include "Local.h"
 
 #if XATRIX_FEATURES
-#include "cc_weapon_main.h"
-#include "m_player.h"
-#include "cc_xatrix_trap.h"
-#include "cc_temporary_entities.h"
+#include "Weapons/WeaponMain.h"
+#include "Player/m_player.h"
+#include "Xatrix/XatrixTrap.h"
+#include "Utility/TemporaryEntities.h"
 
 /*
 =================
@@ -96,7 +96,7 @@ void CFoodCube::DoPickup (CItemEntity *Item, CPlayerEntity *Other)
 	Item->PlaySound (CHAN_ITEM, GetPickupSound());
 };
 
-#include "cc_xatrix_gekk.h"
+#include "Xatrix/XatrixGekk.h"
 
 void CTrapProjectile::Think ()
 {

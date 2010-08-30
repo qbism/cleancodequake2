@@ -31,8 +31,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // ALL THE WONDER THAT I WANT I FOUND IN HER
 //
 
-#include "cc_local.h"
-#include "cc_items.h"
+#include "Local.h"
+#include "Items/Items.h"
 
 CKey::CKey(const char *Classname, const char *WorldModel, sint32 EffectFlags,
 			   const char *PickupSound, const char *Icon, const char *Name, EItemFlags Flags,

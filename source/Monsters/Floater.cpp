@@ -31,9 +31,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Floater Monster
 //
 
-#include "cc_local.h"
-#include "m_float.h"
-#include "cc_floater.h"
+#include "Local.h"
+#include "Monsters/m_float.h"
+#include "Monsters/Floater.h"
 
 CFloater::CFloater (uint32 ID) :
 CMonster (ID)
@@ -479,7 +479,7 @@ void CFloater::Wham ()
 	CMeleeWeapon::Fire (Entity, aim, 5 + irandom(6), -50);
 }
 
-#include "cc_temporary_entities.h"
+#include "Utility/TemporaryEntities.h"
 
 void CFloater::Zap ()
 {
