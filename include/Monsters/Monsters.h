@@ -258,6 +258,24 @@ public:
 	void			Pain (IBaseEntity *Other, sint32 Damage);
 	void			Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
 	void			Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point);
+
+	/**
+	\fn	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
+	
+	\brief	Checks power armor and makes adjustments based on that. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Point	The point. 
+	\param [in,out]	Normal	The normal. 
+	\param	Damage			The damage. 
+	\param	DamageFlags		The damage flags. 
+	
+	\return	The amount of damage saved from the power armor. 
+	**/
+	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags);
+
 	void			TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
 								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);

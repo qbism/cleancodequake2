@@ -34,6 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Local.h"
 #include "Entities/BrushModels.h"
 #include "Utility/TemporaryEntities.h"
+#include "Weapons/WeaponMain.h"
 
 /*
 ===============================
@@ -420,6 +421,86 @@ void CMonsterEntity::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 void CMonsterEntity::Pain (IBaseEntity *Other, sint32 Damage)
 {
 	Monster->Pain (Other, Damage);
+}
+
+/**
+\fn	sint32 CMonsterEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage,
+	EDamageFlags DamageFlags)
+
+\brief	Checks power armor and makes adjustments based on that. 
+
+\author	Paril
+\date	13/06/2010
+
+\param [in,out]	Point	The point. 
+\param [in,out]	Normal	The normal. 
+\param	Damage			The damage. 
+\param	DamageFlags		The damage flags. 
+
+\return	The amount of damage saved from the power armor. 
+**/
+sint32 CMonsterEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
+{
+	if (!Damage)
+		return 0;
+
+	if (DamageFlags & DAMAGE_NO_ARMOR)
+		return 0;
+
+	static const sint32	index = NItems::Cells->GetIndex();
+
+	sint32			DamagePerCell;
+	bool			ScreenSparks = false;
+
+	EPowerArmorType Type = Monster->PowerArmorType;
+	sint32 Power = Monster->PowerArmorPower;
+
+	if (!Power)
+		return 0;
+
+	switch (Type)
+	{
+	case POWER_ARMOR_NONE:
+	default:
+		return 0;
+	case POWER_ARMOR_SCREEN:
+		{
+			vec3f		vec, forward;
+
+			// only works if damage point is in front
+			State.GetAngles().ToVectors(&forward, NULL, NULL);
+			vec = Point - State.GetOrigin();
+			vec.Normalize ();
+			if ((vec | forward) <= 0.3)
+				return 0;
+
+			DamagePerCell = 1;
+			ScreenSparks = true;
+			Damage /= 3;
+		}
+		break;
+	case POWER_ARMOR_SHIELD:
+		DamagePerCell = 2;
+		Damage = (2 * Damage) / 3;
+		break;
+	};
+
+	sint32 Saved = Power * DamagePerCell;
+	if (!Saved)
+		return 0;
+	if (Saved > Damage)
+		Saved = Damage;
+
+	CShieldSparks(Point, Normal, ScreenSparks).Send();
+
+	sint32 PowerUsed = Saved / DamagePerCell;
+	if (!PowerUsed)
+		PowerUsed = 1;
+
+	Monster->PowerArmorPower -= PowerUsed;
+	Monster->PowerArmorTime = 2;
+
+	return Saved;
 }
 
 void CMonsterEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
@@ -1057,9 +1138,128 @@ void CMonster::MonsterTriggeredSpawn ()
 
 void CMonster::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
-								sint32 Knockback, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
+								sint32 KnockBack, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
 {
-	Entity->IHurtableEntity::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+	if (CvarList[CV_MAP_DEBUG].Boolean())
+		return;
+
+	sint32			take;
+	sint32			save;
+	sint32			asave = 0;
+	sint32			psave = 0;
+
+	// Needed?
+	if (!Entity->CanTakeDamage)
+		return;
+
+	meansOfDeath = MeansOfDeath;
+	Dir.Normalize ();
+
+// bonus damage for surprising a monster
+// Paril revision: Allow multiple pellet weapons to take advantage of this too!
+	if (!(DamageFlags & DAMAGE_RADIUS) && (Entity->EntityFlags & EF_MONSTER) && Attacker && (Attacker->EntityFlags & EF_PLAYER))
+	{
+		if ((Entity->Health > 0) &&
+			(!Entity->Enemy && (Entity->BonusDamageTime <= Level.Frame)) ||
+			(Entity->Enemy && (Entity->BonusDamageTime == Level.Frame)))
+		{
+			Entity->BonusDamageTime = Level.Frame;
+			Damage *= 2;
+		}
+	}
+
+	if (DeathmatchFlags.dfDmTechs.IsEnabled()
+#if CLEANCTF_ENABLED
+	|| (Game.GameMode & GAME_CTF)
+#endif
+	)
+	{
+		if (Attacker->EntityFlags & EF_PLAYER)
+		{
+			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
+			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
+				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, Entity, false, Damage, KnockBack, DamageFlags, MeansOfDeath, false);
+		}
+	}
+
+	if (!Entity->AffectedByKnockback)
+		KnockBack = 0;
+
+// figure momentum add
+	if (KnockBack && !(DamageFlags & DAMAGE_NO_KNOCKBACK))
+	{
+		if (!(Entity->PhysicsType == PHYSICS_NONE ||
+			Entity->PhysicsType == PHYSICS_BOUNCE ||
+			Entity->PhysicsType == PHYSICS_PUSH ||
+			Entity->PhysicsType == PHYSICS_STOP))
+			Entity->Velocity += Dir * (500.0f * (float)KnockBack / Clamp<float> (Entity->Mass, 50, Entity->Mass));
+	}
+
+	take = Damage;
+	save = 0;
+
+	// check for godmode
+	if ((Entity->Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION))
+	{
+		take = 0;
+		save = Damage;
+		CSparks (Point, Normal, (DamageFlags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
+	}
+
+	// check for invincibility
+#if ROGUE_FEATURES
+	if ((InvincibleFramenum > Level.Frame) && !(DamageFlags & DAMAGE_NO_PROTECTION))
+	{
+		if (PainDebounceTime < Level.Frame)
+		{
+			Entity->PlaySound (CHAN_ITEM, SoundIndex("items/protect4.wav"));
+			PainDebounceTime = Level.Frame + 20;
+		}
+		take = 0;
+		save = Damage;
+	}
+#endif
+
+	psave = Entity->CheckPowerArmor (Point, Normal, take, DamageFlags);
+	take -= psave;
+
+	//treat cheat/powerup savings the same as armor
+	asave += save;
+
+	// team damage avoidance
+	if (!(DamageFlags & DAMAGE_NO_PROTECTION) && Entity->CheckTeamDamage (Attacker))
+		return;
+
+// ROGUE - this option will do damage both to the armor and person. originally for DPU rounds
+	if (DamageFlags & DAMAGE_DESTROY_ARMOR)
+	{
+		if (!(Entity->Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION))
+			take = Damage;
+	}
+// ROGUE
+
+// do the damage
+	if (take)
+	{
+		DamageEffect (Dir, Point, Normal, take, DamageFlags, MeansOfDeath);
+		Entity->Health -= take;
+	}
+
+	if (Entity->Health <= 0)
+	{
+		Entity->AffectedByKnockback = false;
+		Entity->Killed (Inflictor, Attacker, take, Point);
+		return;
+	}
+
+	ReactToDamage (Attacker, Inflictor);
+
+	if (!(AIFlags & AI_DUCKED) && take)
+	{
+		Entity->Pain (Attacker, take);
+		if (CvarList[CV_SKILL].Integer() == 3)
+			PainDebounceTime = Level.Frame + 50;
+	}
 }
 
 void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
@@ -1150,7 +1350,6 @@ void CMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, in
 #endif
 
 #if XATRIX_FEATURES
-#include "Weapons/WeaponMain.h"
 #include "Xatrix/XatrixIonRipper.h"
 #include "Monsters/SoldierBase.h"
 #include "Xatrix/XatrixSoldierHyper.h"

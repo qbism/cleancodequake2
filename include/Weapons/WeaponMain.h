@@ -42,16 +42,16 @@ class IWeaponBase
 	friend void		ChainWeapons (std::vector<IWeaponBase*> &Weapons);
 	MediaIndex		WeaponSoundIndex;
 	MediaIndex		WeaponModelIndex;
-	IWeaponBase			*NextWeapon, *PrevWeapon; // Chained weapons
+	IWeaponBase		*NextWeapon, *PrevWeapon; // Chained weapons
 
 protected:
 	// Frames
-	sint32				ActivationStart, ActivationNumFrames,
+	uint16			ActivationStart, ActivationNumFrames,
 					FireStart,		FireNumFrames,
 					IdleStart,		IdleNumFrames,
 					DeactStart,		DeactNumFrames;
 
-	sint32				ActivationEnd, FireEnd, IdleEnd, DeactEnd; // To save calls.
+	uint16			ActivationEnd, FireEnd, IdleEnd, DeactEnd; // To save calls.
 
 	IWeaponBase ();
 
@@ -101,8 +101,8 @@ public:
 			: 0;
 	};
 
-	IWeaponBase(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, sint32 ActivationStart, sint32 ActivationEnd, sint32 FireStart, sint32 FireEnd,
-				 sint32 IdleStart, sint32 IdleEnd, sint32 DeactStart, sint32 DeactEnd, const char *WeaponSound = NULL);
+	IWeaponBase(sint8 ListOrderHigh, sint8 ListOrderLow, const char *model, uint16 ActivationStart, uint16 ActivationEnd, uint16 FireStart, uint16 FireEnd,
+				 uint16 IdleStart, uint16 IdleEnd, uint16 DeactStart, uint16 DeactEnd, const char *WeaponSound = NULL);
 
 	// InitWeapon "clears" the previous weapon by introducing the current weapon.
 	virtual void	InitWeapon (CPlayerEntity *Player);
@@ -132,21 +132,19 @@ public:
 	// The function called to "fire"
 	virtual void	Fire (CPlayerEntity *Player) = 0;
 
-	void ChangeWeapon (CPlayerEntity *Player);
+	void			ChangeWeapon (CPlayerEntity *Player);
 	virtual void	Think (CPlayerEntity *Player);
 
-	void	NoAmmoWeaponChange (CPlayerEntity *Player);
+	void			NoAmmoWeaponChange (CPlayerEntity *Player);
 
-	virtual void AddWeaponToItemList (CItemList *List) = 0;
-	virtual void InitWeaponVwepModel (sint32 TakeAway) = 0;
+	virtual void	AddWeaponToItemList (CItemList *List) = 0;
+	virtual void	InitWeaponVwepModel (sint32 TakeAway) = 0;
 
-	virtual void CreateItem (CItemList *List)
+	virtual void	CreateItem (CItemList *List)
 	{
 	};
 
 	virtual void Use (CWeaponItem *Wanted, CPlayerEntity *Player);
-
-
 };
 
 #define WEAPON_CLASS_DEFS(x) \

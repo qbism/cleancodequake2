@@ -68,7 +68,7 @@ public:
 
 	MediaIndex		&GetGunIndex ();
 
-	sint32				&GetGunFrame ();
+	sint32			&GetGunFrame ();
 
 	colorf			&GetViewBlend ();
 	colorb			GetViewBlendB (); // Name had to be different
@@ -676,6 +676,50 @@ public:
 		// Read client data
 		//Client.Load (File);
 	}
+
+	std::string ClientTeam ();
+	bool OnSameTeamAs (CPlayerEntity *Player);
+
+	/**
+	\fn	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
+	
+	\brief	Checks power armor and makes adjustments based on that. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Point	The point. 
+	\param [in,out]	Normal	The normal. 
+	\param	Damage			The damage. 
+	\param	DamageFlags		The damage flags. 
+	
+	\return	The amount of damage saved from the power armor. 
+	**/
+	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags);
+
+	/**
+	\fn	virtual void TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker, vec3f Dir,
+		vec3f Point, vec3f Normal, sint32 Damage, sint32 KnockBack, EDamageFlags DamageFlags,
+		EMeansOfDeath MeansOfDeath)
+	
+	\brief	Makes this entity take damage. 
+	
+	\author	Paril
+	\date	13/06/2010
+	
+	\param [in,out]	Inflictor	If non-null, the inflictor. 
+	\param [in,out]	Attacker	If non-null, the attacker. 
+	\param	Dir					The dir. 
+	\param	Point				The point. 
+	\param	Normal				The normal. 
+	\param	Damage				The damage. 
+	\param	KnockBack			The knock back. 
+	\param	DamageFlags			The damage flags. 
+	\param	MeansOfDeath		The means of death. 
+	**/
+	void TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+					vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
+					sint32 KnockBack, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath);
 
 	bool			Run ();
 	void			BeginServerFrame ();

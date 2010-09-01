@@ -99,34 +99,6 @@ void			IHurtableEntity::LoadFields (CFile &File)
 	LoadEntityFields<IHurtableEntity> (this, File);
 };
 
-std::string ClientTeam (CPlayerEntity *Player)
-{
-	std::string val = Q_strlwr(Player->Client.Persistent.UserInfo.GetValueFromKey("skin"));
-
-	size_t slash = val.find_first_of('/');
-	if (slash == std::string::npos)
-		return val;
-
-	if (DeathmatchFlags.dfModelTeams.IsEnabled())
-	{
-		val.erase (slash);
-		return val;
-	}
-
-	val.erase (0, 1);
-	return val;
-}
-
-bool OnSameTeam (CPlayerEntity *Player1, CPlayerEntity *Player2)
-{
-	if (Game.GameMode & GAME_COOPERATIVE)
-		return true;
-	if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
-		return false;
-
-	return ClientTeam (Player1) == ClientTeam (Player2);
-}
-
 /**
 \fn	bool IHurtableEntity::DamageCanReach (IBaseEntity *Inflictor)
 
@@ -222,91 +194,7 @@ bool IHurtableEntity::CheckTeamDamage (IBaseEntity *Attacker)
 **/
 sint32 IHurtableEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags)
 {
-	if (!Damage)
-		return 0;
-
-	if (DamageFlags & DAMAGE_NO_ARMOR)
-		return 0;
-
-	static const sint32	index = NItems::Cells->GetIndex();
-
-	sint32			Type, DamagePerCell, Power = 0;
-	bool			ScreenSparks = false;
-
-	bool		IsClient = !!(EntityFlags & EF_PLAYER),
-				IsMonster = !!(EntityFlags & EF_MONSTER);
-
-	CPlayerEntity	*Player = (IsClient) ? entity_cast<CPlayerEntity>(this) : NULL;
-	CMonsterEntity	*Monster = (IsMonster) ? entity_cast<CMonsterEntity>(this) : NULL;
-
-	if (IsClient)
-	{
-		Type = Player->PowerArmorType ();
-		if (Type != POWER_ARMOR_NONE)
-			Power = Player->Client.Persistent.Inventory.Has(index);
-	}
-	else if (IsMonster)
-	{
-		Type = Monster->Monster->PowerArmorType;
-		Power = Monster->Monster->PowerArmorPower;
-	}
-	else
-		return 0;
-
-	if (!Power)
-		return 0;
-
-	switch (Type)
-	{
-	case POWER_ARMOR_NONE:
-	default:
-		return 0;
-	case POWER_ARMOR_SCREEN:
-		{
-			vec3f		vec, forward;
-
-			// only works if damage point is in front
-			State.GetAngles().ToVectors(&forward, NULL, NULL);
-			vec = Point - State.GetOrigin();
-			vec.Normalize ();
-			if ((vec | forward) <= 0.3)
-				return 0;
-
-			DamagePerCell = 1;
-			ScreenSparks = true;
-			Damage /= 3;
-		}
-		break;
-	case POWER_ARMOR_SHIELD:
-		DamagePerCell = 2;
-		Damage = (2 * Damage) / 3;
-		break;
-	};
-
-	sint32 Saved = Power * DamagePerCell;
-	if (!Saved)
-		return 0;
-	if (Saved > Damage)
-		Saved = Damage;
-
-	CShieldSparks(Point, Normal, ScreenSparks).Send();
-
-	sint32 PowerUsed = Saved / DamagePerCell;
-	if (!PowerUsed)
-		PowerUsed = 1;
-
-	if (IsClient)
-	{
-		Player->Client.Persistent.Inventory.Remove(index, PowerUsed);
-		Player->Client.PowerArmorTime = 2;
-	}
-	else if (IsMonster)
-	{
-		Monster->Monster->PowerArmorPower -= PowerUsed;
-		Monster->Monster->PowerArmorTime = 2;
-	}
-
-	return Saved;
+	return 0;
 }
 
 /**
@@ -331,8 +219,8 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 
 	Enemy = Attacker;
 
-	if (((EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(this)->CanTakeDamage))
-		(entity_cast<IHurtableEntity>(this))->Die (Inflictor, Attacker, Damage, Point);
+	if (CanTakeDamage)
+		Die (Inflictor, Attacker, Damage, Point);
 }
 
 /**
@@ -404,62 +292,8 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (!CanTakeDamage)
 		return;
 
-	bool isClient = !!(EntityFlags & EF_PLAYER);
-	CPlayerEntity *Player = (isClient) ? entity_cast<CPlayerEntity>(this) : NULL;
-	CClient *Client = (isClient) ? &(Player->Client) : NULL;
-
-	// friendly fire avoidance
-	// if enabled you can't hurt teammates (but you can hurt yourself)
-	// knockback still occurs
-	if ((this != Attacker) && ((Game.GameMode & GAME_DEATHMATCH) && (DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()) || Game.GameMode & GAME_COOPERATIVE))
-	{
-		if ((EntityFlags & EF_PLAYER) && Attacker && (Attacker->EntityFlags & EF_PLAYER))
-		{
-			if (OnSameTeam (Player, entity_cast<CPlayerEntity>(Attacker)))
-			{
-				if (DeathmatchFlags.dfNoFriendlyFire.IsEnabled()
-#if ROGUE_FEATURES
-					&& (MeansOfDeath != MOD_NUKE)
-#endif
-					)
-					Damage = 0;
-				else
-					MeansOfDeath |= MOD_FRIENDLY_FIRE;
-			}
-		}
-	}
 	meansOfDeath = MeansOfDeath;
-
-	// easy mode takes half damage
-#if ROGUE_FEATURES
-	if ((CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & EF_PLAYER)) ||
-		(isClient) && (Player->Client.OwnedSphere) && (Player->Client.OwnedSphere->SpawnFlags == 1))
-#else
-	if (CvarList[CV_SKILL].Integer() == 0 && !(Game.GameMode & GAME_DEATHMATCH) && (EntityFlags & EF_PLAYER))
-#endif
-	{
-		Damage *= 0.5;
-		if (!Damage)
-			Damage = 1;
-	}
-
-
 	Dir.Normalize ();
-
-// bonus damage for surprising a monster
-// Paril revision: Allow multiple pellet weapons to take advantage of this too!
-	if (!(DamageFlags & DAMAGE_RADIUS) && (EntityFlags & EF_MONSTER) && Attacker && (Attacker->EntityFlags & EF_PLAYER))
-	{
-		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(this);
-
-		if ((Health > 0) &&
-			(!Enemy && (Monster->BonusDamageTime <= Level.Frame)) ||
-			(Enemy && (Monster->BonusDamageTime == Level.Frame)))
-		{
-			Monster->BonusDamageTime = Level.Frame;
-			Damage *= 2;
-		}
-	}
 
 	if (DeathmatchFlags.dfDmTechs.IsEnabled()
 #if CLEANCTF_ENABLED
@@ -467,17 +301,11 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 #endif
 	)
 	{
-		if (isClient)
-		{
-			if (Client->Persistent.Tech && (Client->Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				Client->Persistent.Tech->DoAggressiveTech (Player, Attacker, false, Damage, KnockBack, DamageFlags, MeansOfDeath, true);
-		}
-
 		if (Attacker->EntityFlags & EF_PLAYER)
 		{
 			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
 			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, Player, false, Damage, KnockBack, DamageFlags, MeansOfDeath, false);
+				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, this, false, Damage, KnockBack, DamageFlags, MeansOfDeath, false);
 		}
 	}
 
@@ -492,96 +320,25 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 			Phys->PhysicsType == PHYSICS_BOUNCE ||
 			Phys->PhysicsType == PHYSICS_PUSH ||
 			Phys->PhysicsType == PHYSICS_STOP))
-			Phys->Velocity += Dir * (((isClient && (Attacker == this)) ? 1600.0f : 500.0f) * (float)KnockBack / Clamp<float> (Phys->Mass, 50, Phys->Mass));
+			Phys->Velocity += Dir * (500.0f * (float)KnockBack / Clamp<float> (Phys->Mass, 50, Phys->Mass));
 	}
 
 	take = Damage;
 	save = 0;
 
 	// check for godmode
-	if ( (Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION) )
+	if ((Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION))
 	{
 		take = 0;
 		save = Damage;
 		CSparks (Point, Normal, (DamageFlags & DAMAGE_BULLET) ? ST_BULLET_SPARKS : ST_SPARKS, SPT_SPARKS).Send();
 	}
 
-	// check for invincibility
-	if (((isClient && (Client->Timers.Invincibility > Level.Frame) ) && !(DamageFlags & DAMAGE_NO_PROTECTION))
-#if ROGUE_FEATURES
-		|| ((((EntityFlags & EF_MONSTER) && ((entity_cast<CMonsterEntity>(this))->Monster->InvincibleFramenum) > Level.Frame ) && !(DamageFlags & DAMAGE_NO_PROTECTION)))
-#endif
-		)
-	{
-#if ROGUE_FEATURES
-		if ((isClient && Player->PainDebounceTime < Level.Frame) ||
-			((EntityFlags & EF_MONSTER) && entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime < Level.Frame))
-#else
-		if (Player->PainDebounceTime < Level.Frame)
-#endif
-		{
-			PlaySound (CHAN_ITEM, SoundIndex("items/protect4.wav"));
-#if ROGUE_FEATURES
-			if (isClient)
-				Player->PainDebounceTime = Level.Frame + 20;
-			else
-				entity_cast<CMonsterEntity>(this)->Monster->PainDebounceTime = Level.Frame + 20;
-#else
-			Player->PainDebounceTime = Level.Frame + 20;
-#endif
-		}
-		take = 0;
-		save = Damage;
-	}
-
-#if CLEANCTF_ENABLED
-//ZOID
-//team armor protect
-	if ((Game.GameMode & GAME_CTF) && isClient && (Attacker->EntityFlags & EF_PLAYER) &&
-		(Client->Respawn.CTF.Team == (entity_cast<CPlayerEntity>(Attacker))->Client.Respawn.CTF.Team) &&
-		(this != Attacker) && DeathmatchFlags.dfCtfArmorProtect.IsEnabled())
-		psave = asave = 0;
-	else
-	{
-//ZOID
-#endif
-		psave = CheckPowerArmor (Point, Normal, take, DamageFlags);
-		take -= psave;
-
-		if (isClient)
-		{
-			if (Client->Persistent.Armor)
-			{
-				asave = Client->Persistent.Armor->CheckArmor (entity_cast<CPlayerEntity>(this), Point, Normal, take, DamageFlags);
-				take -= asave;
-			}
-		}
-#if CLEANCTF_ENABLED
-	}
-#endif
+	psave = CheckPowerArmor (Point, Normal, take, DamageFlags);
+	take -= psave;
 
 	//treat cheat/powerup savings the same as armor
 	asave += save;
-
-	if (DeathmatchFlags.dfDmTechs.IsEnabled()
-#if CLEANCTF_ENABLED
-	|| (Game.GameMode & GAME_CTF)
-#endif
-	)
-	{
-		if (isClient)
-		{
-			if (Client->Persistent.Tech && (Client->Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				Client->Persistent.Tech->DoAggressiveTech (entity_cast<CPlayerEntity>(this), Attacker, true, take, KnockBack, DamageFlags, MeansOfDeath, true);
-		}
-
-		if ((EntityFlags & EF_PLAYER) && (Attacker->EntityFlags & EF_PLAYER))
-		{
-			CPlayerEntity *Atk = entity_cast<CPlayerEntity>(Attacker);
-			if (Atk->Client.Persistent.Tech && (Atk->Client.Persistent.Tech->TechType == CTech::TECH_AGGRESSIVE))
-				entity_cast<CPlayerEntity>(Attacker)->Client.Persistent.Tech->DoAggressiveTech (Atk, entity_cast<CPlayerEntity>(this), true, Damage, KnockBack, DamageFlags, MeansOfDeath, false);
-		}
-	}
 
 	// team damage avoidance
 	if (!(DamageFlags & DAMAGE_NO_PROTECTION) && CheckTeamDamage (Attacker))
@@ -590,18 +347,10 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 // ROGUE - this option will do damage both to the armor and person. originally for DPU rounds
 	if (DamageFlags & DAMAGE_DESTROY_ARMOR)
 	{
-		if(!(Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION) &&
-		   !(isClient && Player->Client.Timers.Invincibility > Level.Frame))
+		if (!(Flags & FL_GODMODE) && !(DamageFlags & DAMAGE_NO_PROTECTION))
 			take = Damage;
 	}
 // ROGUE
-
-#if CLEANCTF_ENABLED
-//ZOID
-	if ((Game.GameMode & GAME_CTF) && (isClient && (Attacker->EntityFlags & EF_PLAYER)))
-		CTFCheckHurtCarrier((entity_cast<CPlayerEntity>(this)), (entity_cast<CPlayerEntity>(Attacker)));
-//ZOID
-#endif
 
 // do the damage
 	if (take)
@@ -610,44 +359,14 @@ void IHurtableEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 		Health -= take;
 	}
 
-#if ROGUE_FEATURES
-	if(isClient && Player->Client.OwnedSphere)
-		Player->Client.OwnedSphere->Pain (Attacker, 0);
-#endif
-
 	if (Health <= 0)
 	{
-		if ((EntityFlags & EF_MONSTER) || (isClient))
-			AffectedByKnockback = false;
 		Killed (Inflictor, Attacker, take, Point);
 		return;
 	}
 
-	if (EntityFlags & EF_MONSTER)
-	{
-		CMonster *Monster = (entity_cast<CMonsterEntity>(this))->Monster;
-		Monster->ReactToDamage (Attacker, Inflictor);
-		if (!(Monster->AIFlags & AI_DUCKED) && take)
-		{
-			Pain (Attacker, take);
-			if (CvarList[CV_SKILL].Integer() == 3)
-				Monster->PainDebounceTime = Level.Frame + 50;
-		}
-	}
-	else if (((EntityFlags & EF_PLAYER) && take) || take)
+	if (take)
 		Pain (Attacker, take);
-
-	// add to the damage inflicted on a player this frame
-	// the total will be turned into screen blends and view angle kicks
-	// at the end of the frame
-	if (isClient)
-	{
-		Client->DamageValues[DT_POWERARMOR] += psave;
-		Client->DamageValues[DT_ARMOR] += asave;
-		Client->DamageValues[DT_BLOOD] += take;
-		Client->DamageValues[DT_KNOCKBACK] += KnockBack;
-		Client->DamageFrom = Point;
-	}
 }
 
 /**

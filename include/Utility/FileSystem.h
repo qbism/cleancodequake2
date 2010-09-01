@@ -871,12 +871,11 @@ public:
 		size_t len;
 
 		if (Handle->IsRegular())
-			len = fread (buffer, size, 1, Handle->file.reg);
+			len = fread (buffer, 1, size, Handle->file.reg);
 		else
 			len = gzread (Handle->file.gz, buffer, size);
 
-		// FIXME: why doesn't this assert work?
-		//CC_ASSERT_EXPR (len == size, "Read size != wanted size");
+		CC_ASSERT_EXPR (len == size, "Read size != wanted size");
 	};
 
 	/**
@@ -916,7 +915,7 @@ public:
 	};
 
 	/**
-	\fn	char *ReadString (sint32 Tag = TAG_GENERIC)
+	\fn	char *ReadString (sint32 Tag)
 	
 	\brief	Reads a C string from a file allocated using a memory tag
 	

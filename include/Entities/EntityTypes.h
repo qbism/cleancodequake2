@@ -233,7 +233,7 @@ public:
 	
 	\return	The amount of damage saved from the power armor. 
 	**/
-	sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags);
+	virtual sint32 CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damage, EDamageFlags DamageFlags);
 
 	/**
 	\fn	virtual void Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage,
