@@ -380,7 +380,7 @@ void ProcessEntity (SEntity *ent)
 				(entity_cast<CMonsterEntity>(Entity))->Monster->CheckGround ();
 		}
 
-		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & EF_THINKABLE)) ? entity_cast<IThinkableEntity>(Entity) : NULL;
+		IThinkableEntity *Thinkable = (!Entity->Freed && (Entity->EntityFlags & EF_THINKABLE)) ? Entity->ThinkEntity : NULL;
 
 		if (Thinkable) 
 			Thinkable->PreThink ();

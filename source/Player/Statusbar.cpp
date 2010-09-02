@@ -63,7 +63,7 @@ void CStatusBar::SendMsg (CPlayerEntity *Player, bool reliable)
 void CStatusBar::AddToBarBuffer (const char *fmt, ...)
 {
 	va_list		argptr;
-	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT/2);
+	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
 	va_start (argptr, fmt);
 	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);

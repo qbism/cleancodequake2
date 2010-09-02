@@ -381,6 +381,8 @@ IThinkableEntity::IThinkableEntity () :
   IBaseEntity()
 {
 	EntityFlags |= EF_THINKABLE;
+
+	ThinkEntity = this;
 };
 
 /**
@@ -397,6 +399,8 @@ IThinkableEntity::IThinkableEntity (sint32 Index) :
   IBaseEntity(Index)
 {
 	EntityFlags |= EF_THINKABLE;
+
+	ThinkEntity = this;
 };
 
 void IThinkableEntity::SaveFields (CFile &File)
@@ -1461,10 +1465,7 @@ bool IPushPhysics::Run ()
 		for (part = this; part; part = part->Team.Chain)
 		{
 			if (part->EntityFlags & EF_THINKABLE)
-			{
-				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(part);
-				Thinkable->RunThink ();
-			}
+				part->ThinkEntity->RunThink ();
 		}
 		
 		// Paril: Train movewith

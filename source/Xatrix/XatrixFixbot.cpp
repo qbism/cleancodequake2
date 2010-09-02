@@ -93,37 +93,20 @@ bool CFixbot::SearchForMonsters ()
 	return false;
 }
 
-class CBotGoal : public IThinkableEntity
+class CBotGoal : public IBaseEntity
 {
 public:
 	CBotGoal () :
-	  IBaseEntity (),
-	  IThinkableEntity ()
+	  IBaseEntity ()
 	  {
 	  };
 
 	CBotGoal (sint32 Index) : 
-	  IBaseEntity (Index),
-	  IThinkableEntity (Index)
+	  IBaseEntity (Index)
 	  {
 	  };
 
 	IMPLEMENT_SAVE_HEADER (CBotGoal);
-
-	void SaveFields (CFile &File)
-	{
-		IThinkableEntity::SaveFields (File);
-	}
-
-	void LoadFields (CFile &File)
-	{
-		IThinkableEntity::LoadFields (File);
-	}
-
-	void Think ()
-	{
-		Free ();
-	}
 };
 
 CFrame FixbotFramesLanding [] =
@@ -687,13 +670,6 @@ void CFixbot::TakeOffGoal ()
 {
 	vec3f forward, right, up, end;
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
-	Goal->ClassName = "bot_goal";
-	Goal->GetSolid() = SOLID_BBOX;
-	Goal->SetOwner(Entity);
-	Goal->Link ();
-	
-	Goal->GetMins().Set (-32, -32, -24);
-	Goal->GetMaxs().Set (32, 32, 24);
 	
 	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
 	end = Entity->State.GetOrigin().MultiplyAngles (32, forward).
@@ -794,10 +770,7 @@ void CFixbot::UseScanner ()
 				{	
 					// remove the old one
 					if (Entity->GoalEntity->ClassName == "bot_goal")
-					{
-						IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
-						Thinkable->NextThink = Level.Frame + 1;
-					}	
+						Entity->GoalEntity->Free();
 					
 					Entity->GoalEntity = Entity->Enemy = Hurtable;
 
@@ -819,8 +792,7 @@ void CFixbot::UseScanner ()
 			CurrentMove = &FixbotMoveWeldStart;
 		else 
 		{
-			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
-			Thinkable->NextThink = Level.Frame + 1;
+			Entity->GoalEntity->Free();
 			Entity->GoalEntity = Entity->Enemy = nullentity;
 			CurrentMove = &FixbotMoveStand;
 		}
@@ -839,8 +811,7 @@ void CFixbot::UseScanner ()
 			CurrentMove = &FixbotMoveStand;
 		else 
 		{
-			IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
-			Thinkable->NextThink = Level.Frame + 1;
+			Entity->GoalEntity->Free();
 			Entity->GoalEntity = Entity->Enemy = nullentity;
 			CurrentMove = &FixbotMoveStand;
 		}
@@ -1008,9 +979,7 @@ void CFixbot::FlyVertical ()
 	
 	if (Entity->State.GetFrame() == FRAME_landing_58 || Entity->State.GetFrame() == FRAME_takeoff_16)
 	{
-		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
-
-		Thinkable->NextThink = Level.Frame + 1;
+		Entity->GoalEntity->Free();
 		// NOTE: DO FREE
 
 		CurrentMove = &FixbotMoveStand;
@@ -1038,9 +1007,7 @@ void CFixbot::FlyVertical2 ()
 	
 	if (subtract.Length() < 32)
 	{
-		IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(*Entity->GoalEntity);
-
-		Thinkable->NextThink = Level.Frame + 1;
+		Entity->GoalEntity->Free();
 		// NOTE: DO FREE
 
 		CurrentMove = &FixbotMoveStand;

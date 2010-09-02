@@ -231,7 +231,7 @@ inline TType *entity_cast (IBaseEntity *Entity)
 		return NULL;
 
 	TType *Casted = dynamic_cast<TType*> (Entity);
-	CC_ASSERT_EXPR (!(Casted == NULL), FormatString("Attempted cast of an entity uncastable to this type (%s to %s)", typeid(*Entity).name(), typeid(TType).name()).c_str() );
+	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
 
 	return Casted;
 }
@@ -295,7 +295,10 @@ class IBaseEntity
 protected:
 	SEntity						*gameEntity;		// The "game entity" this is linked with.
 													// Kept private to make sure no mistakes are made.
+
 public:
+	class IThinkableEntity		*ThinkEntity;		// For speed
+
 	bool						Freed;				// true if freed
 	EEdictFlags					Flags;				// The entity flags
 	EEntityFlags				EntityFlags;		// The entity type flags

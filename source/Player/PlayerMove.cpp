@@ -1146,4 +1146,4 @@ void SV_Pmove (CPlayerEntity *Player, pMoveNew_t *pMove, float airAcceleration)
 	SV_PM_SnapPosition ();
 }
 
-#endif //USE_EXTENDED_GAME_IMPORTS
+#endif //USE_DEPRECATED_GAME_IMPORTS

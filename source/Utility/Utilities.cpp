@@ -296,12 +296,12 @@ IBaseEntity *LoadEntity (uint32 Index)
 #endif
 
 // Returns true if failed
-bool AssertExpression (const bool expr, const char *msg, const bool major)
+bool AssertExpression (const bool expr, const char *msg, const char *file, const int line, const bool major)
 {
 	if (!expr)
 	{
 		// Print it to the console
-		DebugPrintf ("Assertion failed: %s\n", msg);
+		DebugPrintf ("Assertion failed: %s (%s:%s)\n", msg, file, line);
 
 #if ALLOW_ASSERTS
 		// On Win32, open up the Crt debug report thingy
@@ -309,7 +309,7 @@ bool AssertExpression (const bool expr, const char *msg, const bool major)
 #if defined(_DEBUG)
 		if (major || (!major && IsDebuggerPresent()))
 		{
-			if (_CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg) == 1)
+			if (_CrtDbgReport(_CRT_ASSERT, file, line, NULL, msg) == 1)
 				_CrtDbgBreak(); // Call break if we told it to break
 		}
 #else

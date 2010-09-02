@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						(GAME_ROGUE|GAME_XATRIX)
+#define CC_GAME_MODE						(GAME_XATRIX|GAME_ROGUE)
 #endif
 
 // Enable IRC
@@ -46,10 +46,9 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CLEANCODE_IRC						1
 #endif
 
-// "Extended game imports" refers to all deprecated imports.
-// This is actually a bad thing, even though it sounds good!
-#ifndef USE_EXTENDED_GAME_IMPORTS
-#define USE_EXTENDED_GAME_IMPORTS			0
+// Deprecated imports (Windows)
+#ifndef USE_DEPRECATED_GAME_IMPORTS
+#define USE_DEPRECATED_GAME_IMPORTS			0
 #endif
 
 // Define this if you don't want old function calls to warn you about deprecation.
@@ -112,11 +111,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // therefore not required to be repeated in msg. Arguments
 // will cause this function to fail (obviously)
 // see cc_utils.cpp
-#define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg), true)
+#define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg), __FILE__, __LINE__, true)
 
 // "minor" asserts don't cause the window to pop up unless a debugger is attached.
 // A windows convenience really.
-#define CC_ASSERT_EXPR_MINOR(expr, msg) AssertExpression(!!(expr), (msg), false)
+#define CC_ASSERT_EXPR_MINOR(expr, msg) AssertExpression(!!(expr), (msg), __FILE__, __LINE__, false)
 
 // Define this if you want to use include guards.
 #ifndef INCLUDE_GUARDS

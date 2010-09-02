@@ -601,7 +601,7 @@ bool CMonster::CheckAttack ()
 }
 
 #include "Monsters/Tank.h"
-#include "Monsters/Supertank"
+#include "Monsters/Supertank.h"
 #include "Monsters/Makron.h"
 #include "Monsters/JORG.h"
 
