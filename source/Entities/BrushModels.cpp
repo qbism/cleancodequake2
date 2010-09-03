@@ -2419,6 +2419,9 @@ void CTrainBase::Next ()
 			{
 				IBrushModel *Brush = entity_cast<IBrushModel>(e);
 			
+				if (Brush->BrushType & BRUSH_TRAIN)
+					continue;
+
 				vec3f dst = dir + Brush->State.GetOrigin();
 				Brush->StartOrigin = e->State.GetOrigin();
 				Brush->EndOrigin = dst;
