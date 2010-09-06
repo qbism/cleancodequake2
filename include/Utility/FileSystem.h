@@ -805,12 +805,7 @@ public:
 	**/
 	void Write (const std::string &Ref)
 	{
-		sint32 Length = (Ref.empty()) ? -1 : Ref.length() + 1;
-
-		Write (&Length, sizeof(Length));
-
-		if (Length > 1)
-			Write (Ref.c_str(), Length);
+		WriteString(Ref.c_str());
 	};
 
 	/**
@@ -827,7 +822,7 @@ public:
 	{
 		sint32 Length = (Str) ? strlen(Str) + 1 : -1;
 
-		Write (&Length, sizeof(Length));
+		Write<> (Length);
 
 		if (Length > 1)
 			Write (Str, Length);

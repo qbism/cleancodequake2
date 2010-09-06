@@ -691,7 +691,7 @@ bool IBounceProjectile::Run ()
 	bool		isinwater;
 
 	// if not a team captain, so movement will be handled elsewhere
-	if (Team.IsSlave)
+	if (IsSlave())
 		return false;
 
 	if (Velocity.Z > 0)
@@ -1408,7 +1408,7 @@ bool IPushPhysics::Run ()
 	TPushedList				Pushed;
 
 	// if not a team captain, so movement will be handled elsewhere
-	if (Team.IsSlave)
+	if (IsSlave())
 		return false;
 
 	// make sure all team slaves can move before commiting
@@ -1703,7 +1703,7 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 		{
 #if ROGUE_FEATURES
 			// if this entity is part of a train, cleanly remove it
-			if (t->Team.IsSlave)
+			if (t->IsSlave())
 			{
 				if (t->Team.Master)
 				{

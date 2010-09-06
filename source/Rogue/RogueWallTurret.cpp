@@ -99,7 +99,6 @@ public:
 		Owner->Entity->Team.Master = Owner->Entity;
 		Owner->Entity->Team.Chain = Base;
 		Base->Team.Chain = NULL;
-		Base->Team.IsSlave = true;
 		Base->SetOwner(Owner->Entity);
 
 		Base->State.GetModelIndex() = ModelIndex("models/monsters/turretbase/tris.md2");
@@ -716,7 +715,7 @@ void CWallTurret::MoveCalc (vec3f dest)
 	Dir = dest - Entity->State.GetOrigin();
 	RemainingDistance = Dir.Normalize();
 
-	if (Level.CurrentEntity == ((Entity->Team.IsSlave) ? Entity->Team.Master : Entity))
+	if (Level.CurrentEntity == (Entity->IsSlave() ? Entity->Team.Master : Entity))
 		MoveBegin ();
 	else
 	{

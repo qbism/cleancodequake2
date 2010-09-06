@@ -524,6 +524,9 @@ void CGameAPI::WriteLevel (char *filename)
 		return;
 	}
 
+	// Do this fore and firstmost
+	SaveLists (File);
+
 	// write out edict size for checking
 	File.Write<size_t> (sizeof(SEntity));
 
@@ -591,8 +594,7 @@ void FireCrossLevelTargets ();
 void CGameAPI::ReadLevel (char *filename)
 {
 	// Load configstrings
-	ReadConfigStrings (filename);
-
+	//ReadConfigStrings (filename);
 	DebugPrintf ("Reading level from %s...\n", filename);
 	CFile File (filename, FILEMODE_READ | SAVE_GZ_FLAGS);
 
@@ -605,6 +607,9 @@ void CGameAPI::ReadLevel (char *filename)
 	// Shut down any systems that may need shutting down first
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
+
+	// Do this fore and firstmost
+	ReadLists (File);
 
 	InitGameMedia ();
 

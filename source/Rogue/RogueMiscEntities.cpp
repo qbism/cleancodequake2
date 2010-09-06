@@ -165,12 +165,12 @@ public:
 	}
 	void Blocked (IBaseEntity *Other)
 	{
-		if (!(Team.IsSlave) && (Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
+		if (!IsSlave() && (Other->EntityFlags & EF_HURTABLE) && entity_cast<IHurtableEntity>(Other)->CanTakeDamage)
 			entity_cast<IHurtableEntity>(Other)->TakeDamage (this, this, vec3fOrigin, Other->State.GetOrigin(), vec3fOrigin, Damage, 0, 0, MOD_CRUSH);
 	}
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		if (Team.IsSlave)
+		if (IsSlave())
 			return;
 
 		// trigger all paired doors
@@ -185,7 +185,7 @@ public:
 		Health = MaxHealth;
 		CanTakeDamage = true;
 
-		if (Team.IsSlave && Team.Master && (Team.Master->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(Team.Master)->CanTakeDamage))
+		if (IsSlave() && Team.Master && (Team.Master->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(Team.Master)->CanTakeDamage))
 			entity_cast<IHurtableEntity>(Team.Master)->Die (Inflictor, Attacker, Damage, Point);
 		else
 			Use (Inflictor, Attacker);
@@ -579,7 +579,7 @@ void CPlatForm2::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CPlatForm2::HitTop ()
 {
-	if (!(Team.IsSlave))
+	if (!IsSlave())
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -619,7 +619,7 @@ void CPlatForm2::HitTop ()
 
 void CPlatForm2::HitBottom ()
 {
-	if (!(Team.IsSlave))
+	if (!IsSlave())
 	{
 		if (SoundEnd)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundEnd, 255, ATTN_STATIC);
@@ -694,7 +694,7 @@ void CPlatForm2::DoEndFunc ()
 
 void CPlatForm2::GoDown ()
 {
-	if (!(Team.IsSlave))
+	if (!IsSlave())
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -709,7 +709,7 @@ void CPlatForm2::GoDown ()
 
 void CPlatForm2::GoUp ()
 {
-	if (!(Team.IsSlave))
+	if (!IsSlave())
 	{
 		if (SoundStart)
 			PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundStart, 255, ATTN_STATIC);
@@ -1097,7 +1097,6 @@ public:
 		TeamEntity->Team.Chain = this;
 		Team.Master = TargetedBreach->Team.Master;
 		TargetedBreach->Enemy = Enemy;
-		Team.IsSlave = true;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)

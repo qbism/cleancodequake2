@@ -4594,7 +4594,6 @@ void CPlayerEntity::ShowHelp ()
 	if (Level.Intermission.Time)
 		return;
 
-	// this is for backwards compatability
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
 		ShowScores ();
@@ -4602,6 +4601,7 @@ void CPlayerEntity::ShowHelp ()
 	}
 
 	Client.LayoutFlags &= ~(LF_SHOWSCORES | LF_SHOWINVENTORY);
+
 	if (Client.Respawn.MenuState.InMenu)
 	{
 		Client.Respawn.MenuState.CloseMenu();

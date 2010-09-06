@@ -301,7 +301,7 @@ bool AssertExpression (const bool expr, const char *msg, const char *file, const
 	if (!expr)
 	{
 		// Print it to the console
-		DebugPrintf ("Assertion failed: %s (%s:%s)\n", msg, file, line);
+		DebugPrintf ("Assertion failed: %s (%s:%i)\n", msg, file, line);
 
 #if ALLOW_ASSERTS
 		// On Win32, open up the Crt debug report thingy

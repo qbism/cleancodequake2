@@ -469,7 +469,7 @@ public:
 		NextThink = Level.Frame + 1;
 		State.GetModelIndex() = ModelIndex ("models/items/spawngro2/tris.md2");
 		State.GetFrame() = 1;
-		State.GetEffects() |= (FX_TRACKERTRAIL|FX_TRACKER);
+		State.GetEffects() |= FX_BLACKVOID;
 		Link ();
 	};
 };

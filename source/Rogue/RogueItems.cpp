@@ -465,7 +465,7 @@ public:
 		if (!(Game.GameMode & GAME_DEATHMATCH))		// item is DM only
 			return;
 
-		if (Other->Client.Persistent.Inventory.Has(this) >= 1)		// FIXME - apply max to dopplegangers
+		if (Other->Client.Persistent.Inventory.Has(this) >= 1)
 			return;
 
 		Other->Client.Persistent.Inventory += this;

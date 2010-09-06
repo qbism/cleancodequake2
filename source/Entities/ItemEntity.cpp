@@ -190,7 +190,6 @@ void CItemEntity::Think ()
 
 			if (Team.HasTeam)
 			{
-				Team.IsSlave = false;
 				GetSvFlags() |= SVF_NOCLIENT;
 				GetSolid() = SOLID_NOT;
 				if (Team.Master == this)

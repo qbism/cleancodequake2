@@ -220,7 +220,6 @@ void CTriggerBase::Trigger ()
 	{
 		ThinkType = TRIGGER_THINK_WAIT;
 
-		// Paril: backwards compatibility
 		NextThink = Level.Frame + Wait;
 	}
 	else

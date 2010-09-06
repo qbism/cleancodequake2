@@ -410,7 +410,6 @@ void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 		;
 	TeamEntity->Team.Chain = NULL;
 	Entity->Team.Master = NULL;
-	Entity->Team.IsSlave = false;
 	Entity->Velocity.Clear ();
 
 	TargetedBreach->SetOwner(NULL);
@@ -516,7 +515,6 @@ void CTurretDriver::TurretLink ()
 		;
 	TeamEntity->Team.Chain = Entity;
 	Entity->Team.Master = TargetedBreach->Team.Master;
-	Entity->Team.IsSlave = true;
 }
 
 void CTurretDriver::Spawn ()

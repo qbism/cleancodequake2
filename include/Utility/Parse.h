@@ -551,7 +551,7 @@ public:
 			return false;
 
 		// Individual tokens
-		// FIXME: support commas and () [] {} brackets
+		// FIXME: support () [] {} brackets
 		if (!strchr (token, ' ') && !strchr (token, ','))
 		{
 			for (uint32 i = 0; i < numVecs; i++)

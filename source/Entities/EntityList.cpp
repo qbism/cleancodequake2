@@ -353,7 +353,7 @@ static void G_FixTeams ()
 
 		if (e->ClassName == "func_train")
 		{
-			if (e->Team.IsSlave)
+			if (e->IsSlave())
 			{
 				// Paril
 				// If all we contain is trains all the way down, don't bother
@@ -374,7 +374,6 @@ static void G_FixTeams ()
 				IBaseEntity *chain = e;
 				e->Team.Master = e;
 				e->Team.Chain = NULL;
-				e->Team.IsSlave = false;
 
 				c++;
 				c2++;
@@ -398,7 +397,6 @@ static void G_FixTeams ()
 						e2->Team.Master = e;
 						e2->Team.Chain = NULL;
 						chain = e2;
-						e2->Team.IsSlave = true;;
 
 						if (e2->EntityFlags & EF_BRUSHMODEL)
 						{
@@ -435,7 +433,7 @@ static void G_FindTeams ()
 			continue;
 		if (e->Team.String.empty())
 			continue;
-		if (e->Team.IsSlave)
+		if (e->IsSlave())
 			continue;
 
 		IBaseEntity *chain = e;
@@ -453,7 +451,7 @@ static void G_FindTeams ()
 				continue;
 			if (e2->Team.String.empty())
 				continue;
-			if (e2->Team.IsSlave)
+			if (e2->IsSlave())
 				continue;
 
 			if (e->Team.String == e2->Team.String)
@@ -464,7 +462,6 @@ static void G_FindTeams ()
 				e2->Team.HasTeam = true;
 		
 				chain = e2;
-				e2->Team.IsSlave = true;
 			}
 		}
 	}

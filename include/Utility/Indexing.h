@@ -40,7 +40,7 @@ class CIndex
 {
 public:
 	MediaIndex		Index;
-	std::string	Name;
+	std::string		Name;
 };
 
 const int MAX_INDEXES = 256;
@@ -64,11 +64,16 @@ public:
 	sint32		GetIndex (const char *String);
 
 	void	Clear ();
+	void	Save (CFile &File);
+	void	Read (CFile &File);
 };
 
-MediaIndex ModelIndex (const char *string, ...);
-MediaIndex SoundIndex (const char *string, ...);
-MediaIndex ImageIndex (const char *string, ...);
+MediaIndex ModelIndex (const char *string);
+MediaIndex SoundIndex (const char *string);
+MediaIndex ImageIndex (const char *string);
+MediaIndex ModelIndexf (const char *string, ...);
+MediaIndex SoundIndexf (const char *string, ...);
+MediaIndex ImageIndexf (const char *string, ...);
 
 const char *StringFromSoundIndex (MediaIndex Index);
 const char *StringFromModelIndex (MediaIndex Index);
@@ -76,6 +81,8 @@ const char *StringFromImageIndex (MediaIndex Index);
 
 void ClearList ();
 void ListConfigstrings ();
+void ReadLists (CFile &File);
+void SaveLists (CFile &File);
 
 class CServerCmdIndexList : public CCommandFunctor
 {

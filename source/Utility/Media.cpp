@@ -42,7 +42,7 @@ void InitGameMedia ()
 	Mem_Zero (&GameMedia, sizeof(GameMedia));
 
 	for (sint32 i = 0; i < 4; i++)
-		GameMedia.Player.Death[i] 	= SoundIndex("*death%i.wav", i+1);
+		GameMedia.Player.Death[i] 	= SoundIndexf("*death%i.wav", i+1);
 
 	GameMedia.Player.Fall[0] 		= SoundIndex("*fall1.wav");
 	GameMedia.Player.Fall[1] 		= SoundIndex("*fall2.wav");
@@ -54,8 +54,8 @@ void InitGameMedia ()
 
 	for (sint32 i = 25, l = 0; i <= 100; i += 25, l++)
 	{
-		GameMedia.Player.Pain[l][0] = SoundIndex("*pain%i_1.wav", i);
-		GameMedia.Player.Pain[l][1] = SoundIndex("*pain%i_2.wav", i);
+		GameMedia.Player.Pain[l][0] = SoundIndexf("*pain%i_1.wav", i);
+		GameMedia.Player.Pain[l][1] = SoundIndexf("*pain%i_2.wav", i);
 	}
 
 	GameMedia.Gib_SmallMeat			=	ModelIndex ("models/objects/gibs/sm_meat/tris.md2");

@@ -884,7 +884,6 @@ public:
 			Delay = 1;
 		GetSvFlags() = SVF_NOCLIENT;
 		
-		// Paril: backwards compatibility
 		NextThink = Level.Frame + Delay;
 	};
 
@@ -1569,7 +1568,6 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		// Paril, Backwards compatibility
 		TimeStamp = Level.Frame + Duration;
 		NextThink = Level.Frame + FRAMETIME;
 		LastShakeTime = 0;

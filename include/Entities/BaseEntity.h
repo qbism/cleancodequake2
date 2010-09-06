@@ -320,7 +320,6 @@ public:
 		std::string		String;		// Team string. Only valid during spawn frame.
 
 		bool			HasTeam;	// true if has team
-		bool			IsSlave;	// true if teamslave
 		IBaseEntity		*Chain;		// Team chain
 		IBaseEntity		*Master;	// Team master
 	} Team;
@@ -330,6 +329,12 @@ public:
 	uint32						SpawnFlags;				// Entity spawnflags
 	entity_ptr<IBaseEntity>		Enemy;					// Entity's enemy
 	sint32						ViewHeight;				// Entity's Viewheight
+
+	// Test if this entity is a team slave or not
+	inline bool			IsSlave ()
+	{
+		return Team.HasTeam && (this != Team.Master);
+	}
 
 	/**
 	\fn	IBaseEntity ()
@@ -1226,19 +1231,19 @@ public:
 			break;
 		case FT_SOUND_INDEX:
 			if (OFS_TO_TYPE(MediaIndex))
-				File.WriteString (StringFromSoundIndex (OFS_TO_TYPE(MediaIndex)));
+				WriteIndex(File, OFS_TO_TYPE(MediaIndex), INDEX_SOUND);
 			else
 				File.Write<sint32> (-1);
 			break;
 		case FT_IMAGE_INDEX:
 			if (*((MediaIndex *)(ClassOffset)))
-				File.WriteString (StringFromImageIndex (OFS_TO_TYPE(MediaIndex)));
+				WriteIndex(File, OFS_TO_TYPE(MediaIndex), INDEX_IMAGE);
 			else
 				File.Write<sint32> (-1);
 			break;
 		case FT_MODEL_INDEX:
 			if (*((MediaIndex *)(ClassOffset)))
-				File.WriteString (StringFromModelIndex (OFS_TO_TYPE(MediaIndex)));
+				WriteIndex(File, OFS_TO_TYPE(MediaIndex), INDEX_MODEL);
 			else
 				File.Write<sint32> (-1);
 			break;

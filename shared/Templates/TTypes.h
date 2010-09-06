@@ -23,8 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # define NULL ((void *)0)
 #endif
 
+#ifndef CONCAT
+# define CONCAT(x,y) x##y
+#endif
+
 #ifndef BIT
-# define BIT(x) (uint32)(1<<(x))
+# define BIT(x) (1U<<(x))
 #endif
 
 #ifndef BOOL

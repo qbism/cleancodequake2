@@ -107,55 +107,39 @@ const char *StringFromImageIndex (MediaIndex Index)
 
 CC_DISABLE_DEPRECATION
 
-MediaIndex ModelIndex (const char *String, ...)
+MediaIndex IndexerBase (const char *String, CIndexList &List, sint32 (*indexer) (const char *str))
 {
-	va_list		argptr;
-	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
-
-	va_start (argptr, String);
-	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
-	va_end (argptr);
-
 	// Do we exist?
-	sint32 Index = ModelList.GetIndex(string.GetBuffer<char>());
+	sint32 Index = List.GetIndex(String);
 	if (Index == -1)
 	{
 		if (OverFlow())
 		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", string.GetBuffer<char>());
+			ServerPrintf ("Index overflow registering \"%s\"\n", String);
 			return 0;
 		}
 
-		return ModelList.AddToList (string.GetBuffer<char>(), gi.modelindex(string.GetBuffer<char>()));
+		return List.AddToList (String, indexer(String));
 	}
 	return Index;
 }
 
-MediaIndex SoundIndex (const char *String, ...)
+MediaIndex ModelIndex (const char *String)
 {
-	va_list		argptr;
-	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
-
-	va_start (argptr, String);
-	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
-	va_end (argptr);
-
-	// Do we exist?
-	sint32 Index = SoundList.GetIndex(string.GetBuffer<char>());
-	if (Index == -1)
-	{
-		if (OverFlow())
-		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", string.GetBuffer<char>());
-			return 0;
-		}
-
-		return SoundList.AddToList (string.GetBuffer<char>(), gi.soundindex(string.GetBuffer<char>()));
-	}
-	return Index;
+	return IndexerBase (String, ModelList, gi.modelindex);
 }
 
-MediaIndex ImageIndex (const char *String, ...)
+MediaIndex SoundIndex (const char *String)
+{
+	return IndexerBase (String, SoundList, gi.soundindex);
+}
+
+MediaIndex ImageIndex (const char *String)
+{
+	return IndexerBase (String, ImageList, gi.imageindex);
+}
+
+MediaIndex ModelIndexf (const char *String, ...)
 {
 	va_list		argptr;
 	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
@@ -165,28 +149,72 @@ MediaIndex ImageIndex (const char *String, ...)
 	va_end (argptr);
 
 	// Do we exist?
-	sint32 Index = ImageList.GetIndex(string.GetBuffer<char>());
-	if (Index == -1)
-	{
-		if (OverFlow())
-		{
-			ServerPrintf ("Index overflow registering \"%s\"\n", string.GetBuffer<char>());
-			return 0;
-		}
+	return ModelIndex(string.GetBuffer<char>());
+}
 
-		return ImageList.AddToList (string.GetBuffer<char>(), gi.imageindex(string.GetBuffer<char>()));
-	}
-	return Index;
+MediaIndex SoundIndexf (const char *String, ...)
+{
+	va_list		argptr;
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
+
+	va_start (argptr, String);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
+	va_end (argptr);
+
+	// Do we exist?
+	return SoundIndex(string.GetBuffer<char>());
+}
+
+MediaIndex ImageIndexf (const char *String, ...)
+{
+	va_list		argptr;
+	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_QPATH);
+
+	va_start (argptr, String);
+	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, String, argptr);
+	va_end (argptr);
+
+	// Do we exist?
+	return ImageIndex(string.GetBuffer<char>());
 }
 
 void CIndexList::Clear ()
 {
 	for (uint8 i = 0; i < numIndexes; i++)
-		delete List[i];
+		QDelete List[i];
 
 	numIndexes = firstIndex = 0;
 	List.clear();
 	HashList.clear();
+}
+
+void CIndexList::Save (CFile &File)
+{
+	File.Write<> (firstIndex);
+	File.Write<> (List.size());
+
+	for (size_t i = 0; i < List.size(); ++i)
+	{
+		File.Write (List[i]->Name);
+		File.Write<> (List[i]->Index);
+	}
+}
+
+void CIndexList::Read (CFile &File)
+{
+	Clear ();
+
+	firstIndex = File.Read<uint8> ();
+
+	size_t len = File.Read<size_t> ();
+
+	for (size_t i = 0; i < len; ++i)
+	{
+		std::string str = File.ReadString();
+		MediaIndex index = File.Read<MediaIndex> ();
+
+		AddToList (str.c_str(), index);
+	}
 }
 
 void ClearList ()
@@ -194,6 +222,20 @@ void ClearList ()
 	ModelList.Clear();
 	ImageList.Clear();
 	SoundList.Clear();
+}
+
+void ReadLists (CFile &File)
+{
+	ModelList.Read(File);
+	ImageList.Read(File);
+	SoundList.Read(File);
+}
+
+void SaveLists (CFile &File)
+{
+	ModelList.Save(File);
+	ImageList.Save(File);
+	SoundList.Save(File);
 }
 
 extern char	ReadConfigSt[MAX_CFGSTRINGS][MAX_CFGSTRLEN];
