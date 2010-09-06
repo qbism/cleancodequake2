@@ -131,7 +131,7 @@ inline float Q_fabs (float val) { return ((val < 0.f) ? -val : val); }
 
 inline sint32 Q_rint (float x)
 {
-	return ((x) < 0 ? ((sint32)((x)-0.5f)) : ((sint32)((x)+0.5f)));
+	return (x < 0 ? ((sint32)(x-0.5f)) : ((sint32)(x+0.5f)));
 }
 
 inline void Q_SinCosf(const float X, float *Sin, float *Cos)

@@ -355,6 +355,22 @@ static void G_FixTeams ()
 		{
 			if (e->Team.IsSlave)
 			{
+				// Paril
+				// If all we contain is trains all the way down, don't bother
+				bool isAllTrains = true;
+
+				for (IBaseEntity *b = e->Team.Master; b; b = b->Team.Chain)
+				{
+					if (b->ClassName != "func_train")
+					{
+						isAllTrains = false;
+						break;
+					}	
+				}
+
+				if (isAllTrains)
+					continue;
+
 				IBaseEntity *chain = e;
 				e->Team.Master = e;
 				e->Team.Chain = NULL;
