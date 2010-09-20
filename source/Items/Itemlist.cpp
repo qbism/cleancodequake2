@@ -136,7 +136,7 @@ void CItemList::SortAndFinalize ()
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
 	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList.size()];
-	Mem_Zero (SortedValues, sizeof(*SortedValues));
+	Mem_Zero (SortedValues, TempList.size());
 
 	for (int z = 0; z < 5; z++)
 	{
