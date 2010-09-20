@@ -146,12 +146,32 @@ void *operator new[] (size_t Size) throw (std::bad_alloc)
 	return Mem_TagAlloc(Size, TAG_GENERIC, "null", 0, true);
 }
 
+void *operator new (size_t Size, const std::nothrow_t &nothrow_constant) throw()
+{
+	return Mem_TagAlloc(Size, TAG_GENERIC, "null", 0, false);
+}
+
+void *operator new[] (size_t Size, const std::nothrow_t &nothrow_constant) throw()
+{
+	return Mem_TagAlloc(Size, TAG_GENERIC, "null", 0, true);
+}
+
 void operator delete (void *Pointer) throw ()
 {
 	Mem_TagFree (Pointer, false);
 }
 
-void operator delete[] (void *Pointer)
+void operator delete (void *Pointer, const std::nothrow_t &nothrow_constant) throw()
+{
+	Mem_TagFree (Pointer, false);
+}
+
+void operator delete[] (void *Pointer) throw ()
+{
+	Mem_TagFree (Pointer, true);
+}
+
+void operator delete[] (void *Pointer, const std::nothrow_t &nothrow_constant) throw()
 {
 	Mem_TagFree (Pointer, true);
 }
