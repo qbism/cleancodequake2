@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_CONTROLS_H
 
 #include <sstream>
-#include "Utility/ConChars.h"
+#include "Utility/Conshars.h"
 
 /**
 \typedef	uint8 ELabelFlags
