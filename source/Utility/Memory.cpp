@@ -151,7 +151,7 @@ void operator delete (void *Pointer) throw ()
 	Mem_TagFree (Pointer, false);
 }
 
-void operator delete[] (void *Pointer) throw ()
+void operator delete[] (void *Pointer)
 {
 	Mem_TagFree (Pointer, true);
 }

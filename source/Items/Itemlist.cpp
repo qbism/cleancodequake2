@@ -137,9 +137,6 @@ void CItemList::SortAndFinalize ()
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
 	std::vector<bool> SortedValues (TempList.size(), false);
 
-	void *ptr = new uint8[5];
-	QDelete ptr;
-
 	for (int z = 0; z < 5; z++)
 	{
 		if (z == 1)
