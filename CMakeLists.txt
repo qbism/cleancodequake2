@@ -10,7 +10,7 @@ cmake_minimum_required (VERSION 2.8)
 project (CleanCodeQuake2)
 
 # Look for header files in these directories
-include_directories (shared sircl/include)
+include_directories (include shared sircl/include)
 
 # Build the sircl library
 add_subdirectory (sircl)
@@ -21,21 +21,29 @@ if (WIN32)
   add_subdirectory (zlib)
 endif ()
 
-# Use all source files in /shared directory
+# Source files
 file (GLOB CC_SHARED_FILES shared/*.cpp)
-
-# Use all source files in /source directory
-file (GLOB CC_SOURCE_FILES source/*.cpp)
+file (GLOB CC_SOURCE_FILES source/CTF/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Entities/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Game/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Items/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Menu/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Monsters/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Player/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Rogue/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Utility/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Weapons/*.cpp)
+file (GLOB CC_SOURCE_FILES source/Xatrix/*.cpp)
 
 # Set the platform-specific library name and use platform-specific files.
 if (WIN32)
   set (CC_LIB_NAME gamex86)
-  file (GLOB CC_PLATFORM_FILES source/platform/windows/*)
+  file (GLOB CC_PLATFORM_FILES source/Platform/windows/*)
 elseif (UNIX)
   # Get machine hardware name (arch), force 386 (if applicable), strip newlines, and store in ARCH
   execute_process (COMMAND uname -m COMMAND sed s/i.86/i386/ COMMAND tr -d \n OUTPUT_VARIABLE ARCH)
   set (CC_LIB_NAME game${ARCH})
-  file (GLOB CC_PLATFORM_FILES source/platform/unix/*)
+  file (GLOB CC_PLATFORM_FILES source/Platform/unix/*)
 else ()
   message (FATAL "Unknown platform")
 endif ()
