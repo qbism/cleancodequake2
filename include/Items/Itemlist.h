@@ -60,8 +60,7 @@ public:
 	// Sorts the list and adds the items
 	void SortAndFinalize ();
 
-	TItemListType			*TempList;
-
+	TItemListType			TempList;
 	TItemListType			Items;
 
 	// There are two hash tables for items; hashed by classname, and hashed by item name.

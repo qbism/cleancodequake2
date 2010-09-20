@@ -117,14 +117,13 @@ namespace NItems
 CItemList *ItemList;
 
 CItemList::CItemList() :
-numItems(0),
-TempList (QNew(TAG_GENERIC) TItemListType)
+numItems(0)
 {
 };
 
 void CItemList::AddItemToList (IBaseItem *Item)
 {
-	TempList->push_back (Item);
+	TempList.push_back (Item);
 }
 	
 typedef std::pair<sint8, sint8> TWeaponMultiMapPairType;
@@ -136,7 +135,7 @@ void CItemList::SortAndFinalize ()
 {
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
-	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList->size()];
+	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList.size()];
 	Mem_Zero (SortedValues, sizeof(*SortedValues));
 
 	for (int z = 0; z < 5; z++)
@@ -145,28 +144,28 @@ void CItemList::SortAndFinalize ()
 			AddWeaponsToListLocations (this);
 		else
 		{
-			for (size_t i = 0; i < TempList->size(); ++i)
+			for (size_t i = 0; i < TempList.size(); ++i)
 			{
-				if (TempList->at(i)->Flags & ITEMFLAG_WEAPON)
+				if (TempList[i]->Flags & ITEMFLAG_WEAPON)
 					continue;
 
-				if (!SortedValues[i] && (TempList->at(i)->Flags & sortOrder[z]))
+				if (!SortedValues[i] && (TempList[i]->Flags & sortOrder[z]))
 				{
 					SortedValues[i] = true;
-					Items.push_back (TempList->at(i));
+					Items.push_back (TempList[i]);
 				}
 			}
 		}
 	}
 	
 	// Put everything else in the list now
-	for (size_t i = 0; i < TempList->size(); ++i)
+	for (size_t i = 0; i < TempList.size(); ++i)
 	{
-		if (TempList->at(i)->Flags & ITEMFLAG_WEAPON)
+		if (TempList[i]->Flags & ITEMFLAG_WEAPON)
 			continue;
 
 		if (!SortedValues[i])
-			Items.push_back (TempList->at(i));
+			Items.push_back (TempList[i]);
 	}
 
 	QDelete[] SortedValues;
@@ -186,7 +185,8 @@ void CItemList::SortAndFinalize ()
 	}
 
 	// Delete
-	QDelete TempList;
+	TempList.clear();
+	TempList.resize(0);
 }
 
 void CItemList::SendItemNames ()
