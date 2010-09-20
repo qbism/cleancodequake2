@@ -97,7 +97,7 @@ public:
 
 		CMemoryBlock (CTempHunkSystem *_system, const void *_Start, const size_t _Size) :
 		  Start(_Start),
-		  End((void*)(((byte*)_Start) + _Size - 1)),
+		  End((void*)(((uint8*)_Start) + _Size - 1)),
 		  Size(_Size),
 		  system(_system)
 		{
@@ -106,7 +106,7 @@ public:
 		CMemoryBlock (CTempHunkSystem *_system, const void *_Start, const void *_End) :
 		  Start(_Start),
 		  End(_End),
-		  Size(reinterpret_cast<size_t>((byte*)_End) - reinterpret_cast<size_t>((byte*)_Start) + 1),
+		  Size(reinterpret_cast<size_t>((uint8*)_End) - reinterpret_cast<size_t>((uint8*)_Start) + 1),
 		  system(_system)
 		{
 		}
@@ -135,10 +135,10 @@ public:
 			if (Size <= Length)
 				assert(0); // wat
 
-			void *LeftStart = (void*)((byte*)Start);
-			void *LeftEnd = (void*)((byte*)Start + Length - 1);
-			void *RightStart = (void*)((byte*)LeftEnd + 1);
-			void *RightEnd = (void*)(byte*)End;
+			void *LeftStart = (void*)((uint8*)Start);
+			void *LeftEnd = (void*)((uint8*)Start + Length - 1);
+			void *RightStart = (void*)((uint8*)LeftEnd + 1);
+			void *RightEnd = (void*)(uint8*)End;
 
 			return std::make_pair<> (CMemoryBlock(system, LeftStart, LeftEnd), CMemoryBlock(system, RightStart, RightEnd));
 		}
@@ -146,16 +146,16 @@ public:
 		bool Attachable (CMemoryBlock &Other) const
 		{
 			// Is this block the left or the right?
-			if (reinterpret_cast<size_t>((byte*)Other.Start) < reinterpret_cast<size_t>((byte*)Start))
+			if (reinterpret_cast<size_t>((uint8*)Other.Start) < reinterpret_cast<size_t>((uint8*)Start))
 			{
 				// the other block could be the start of this block
-				if ((byte*)Other.End == ((byte*)Start - 1))
+				if ((uint8*)Other.End == ((uint8*)Start - 1))
 					return true;
 			}
 			else
 			{
 				// the other block could be the end of this block
-				if ((byte*)End == ((byte*)Other.Start - 1))
+				if ((uint8*)End == ((uint8*)Other.Start - 1))
 					return true;
 			}
 
@@ -166,7 +166,7 @@ public:
 		static CMemoryBlock Attach (CMemoryBlock Left, CMemoryBlock Right)
 		{
 			// make sure Left is really the left block.
-			if (reinterpret_cast<size_t>((byte*)Right.Start) < reinterpret_cast<size_t>((byte*)Left.Start))
+			if (reinterpret_cast<size_t>((uint8*)Right.Start) < reinterpret_cast<size_t>((uint8*)Left.Start))
 				return Attach(Right, Left); // swap it over.
 
 #if !defined(NDEBUG)			
@@ -239,7 +239,7 @@ public:
 	// For adding a brand new block
 	CMemoryBlock AddBlock (const size_t Length, const bool ToClosed = false)
 	{
-		CMemoryBlock blk = CMemoryBlock(this, new byte[Length], Length);
+		CMemoryBlock blk = CMemoryBlock(this, new uint8[Length], Length);
 
 		if (!ToClosed)
 			Open.push_back(blk);
