@@ -168,12 +168,7 @@ public:
 			Player->Client.Respawn.CTF.State = 0;
 			Player->CTFAssignSkin(Player->Client.Persistent.UserInfo);
 
-			Player->PutInServer ();
-			// add a teleportation effect
-			Player->State.GetEvent() = EV_PLAYER_TELEPORT;
-			// hold in place briefly
-			Player->Client.PlayerState.GetPMove()->PMoveFlags = PMF_TIME_TELEPORT;
-			Player->Client.PlayerState.GetPMove()->PMoveType = 14;
+			Player->Respawn();
 			BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
 				Player->Client.Persistent.Name.c_str(), CTFTeamName(team));
 
