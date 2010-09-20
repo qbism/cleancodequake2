@@ -2344,7 +2344,7 @@ void CTrainBase::Next ()
 
 		if (!TargetEntity)
 		{
-			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Bad Target \"%s\"\n", Target);
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Bad Target \"%s\"\n", Target.c_str());
 			return;
 		}
 
@@ -2458,7 +2458,7 @@ void CTrainBase::Find ()
 	CPathCorner *Corner = entity_cast<CPathCorner>(CC_PickTarget (Target));
 	if (!Corner)
 	{
-		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" not found\n", Target);
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" not found\n", Target.c_str());
 		return;
 	}
 
@@ -2649,7 +2649,7 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	CPathCorner *target = entity_cast<CPathCorner>(CC_PickTarget (Usable->PathTarget));
 	if (!target)
 	{
-		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with bad pathtarget \"%s\"\n", Usable->PathTarget);
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with bad pathtarget \"%s\"\n", Usable->PathTarget.c_str());
 		return;
 	}
 
@@ -2668,13 +2668,13 @@ void CTriggerElevator::Think ()
 	IBaseEntity *newTarg = CC_PickTarget (Target);
 	if (!newTarg)
 	{
-		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target);
+		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target.c_str());
 		return;
 	}
 
 	if (strcmp(newTarg->ClassName.c_str(), "func_train") != 0)
 	{
-		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target);
+		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target.c_str());
 		return;
 	}
 

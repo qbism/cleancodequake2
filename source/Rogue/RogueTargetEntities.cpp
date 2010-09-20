@@ -99,7 +99,7 @@ public:
 		{
 			IBaseEntity *ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 			if (!ent)
-				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target);
+				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.c_str());
 			Enemy = ent;
 		}
 		else
