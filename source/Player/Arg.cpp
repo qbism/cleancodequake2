@@ -58,7 +58,7 @@ void InitArg ()
 CC_DISABLE_DEPRECATION
 	if (numArgv)
 	{
-		DebugPrintf ("CleanCode Warning: InitArg() called before previous arg session completed!\n");
+		DebugPrint ("CleanCode Warning: InitArg() called before previous arg session completed!\n");
 		EndArg ();
 	}
 

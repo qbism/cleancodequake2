@@ -32,7 +32,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Player/m_player.h"
 #include "Player/Ban.h"
 #include "Menu/Menu.h"
 #include "Utility/Version.h"
@@ -274,10 +273,10 @@ public:
 			uint16		StartFrame, EndFrame;
 		} WaveAnims [] =
 		{
-			{ "flipoff", FRAME_flip01 - 1, FRAME_flip12 },
-			{ "salute", FRAME_salute01 - 1, FRAME_salute11 },
-			{ "taunt", FRAME_taunt01 - 1, FRAME_taunt17 },
-			{ "wave", FRAME_wave01 - 1, FRAME_wave11 },
+			{ "flipoff", CPlayerEntity::FRAME_flip01 - 1, CPlayerEntity::FRAME_flip12 },
+			{ "salute", CPlayerEntity::FRAME_salute01 - 1, CPlayerEntity::FRAME_salute11 },
+			{ "taunt", CPlayerEntity::FRAME_taunt01 - 1, CPlayerEntity::FRAME_taunt17 },
+			{ "wave", CPlayerEntity::FRAME_wave01 - 1, CPlayerEntity::FRAME_wave11 },
 			NULL
 		};
 

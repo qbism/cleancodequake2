@@ -92,7 +92,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	// Check.
 	// LoadFields will actually re-load the monster's ID, so here we need to make sure
 	// they still are the same.
-	CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || Q_stricmp(Entity->Monster->MonsterName.c_str(), LoadedName)), "Loaded monster differs in ID or Name\n");
+	CC_ASSERT_EXPR (!((Entity->Monster->MonsterID != MonsterID) || Q_stricmp(Entity->Monster->GetMonsterName(), LoadedName)), "Loaded monster differs in ID or Name\n");
 
 	Entity->Monster->Entity = Entity;
 }
@@ -117,7 +117,6 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<sint32> ((Healer) ? Healer->State.GetNumber() : -1);
 #endif
 	File.Write<sint32> (NextFrame);
-	File.Write<float> (Scale);
 	File.Write<FrameNumber> (PauseTime);
 	File.Write<FrameNumber> (AttackFinished);
 	File.Write<FrameNumber> (SearchTime);
@@ -137,7 +136,6 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<float> (EnemyYaw);
 	File.Write<CAnim*> (CurrentMove);
 	File.Write<uint32> (MonsterFlags);
-	File.Write (MonsterName);
 	File.Write<FrameNumber> (PainDebounceTime);
 
 	File.Write <void (CMonster::*) ()> (Think);
@@ -186,7 +184,6 @@ void CMonster::LoadFields (CFile &File)
 		Healer = entity_cast<CMonsterEntity>(Game.Entities[Index].Entity);
 #endif
 	NextFrame = File.Read<sint32> ();
-	Scale = File.Read<float> ();
 	PauseTime = File.Read<FrameNumber> ();
 	AttackFinished = File.Read<FrameNumber> ();
 	SearchTime = File.Read<FrameNumber> ();
@@ -206,7 +203,6 @@ void CMonster::LoadFields (CFile &File)
 	EnemyYaw = File.Read<float> ();
 	CurrentMove = File.Read<CAnim*> ();
 	MonsterFlags = File.Read<uint32> ();
-	MonsterName = File.ReadString ();
 	PainDebounceTime = File.Read<FrameNumber> ();
 
 	Think = File.Read <void (CMonster::*) ()> ();
@@ -347,10 +343,10 @@ bool			CMonsterEntity::ParseField (const char *Key, const char *Value)
 void			CMonsterEntity::SaveFields (CFile &File)
 {
 	// Write the monster's name first - this is used for checking later
-	if (CC_ASSERT_EXPR (!(!Monster || Monster->MonsterName.empty()), "Monster with no monster or name!\n"))
+	if (CC_ASSERT_EXPR (!(!Monster || strlen(Monster->GetMonsterName()) == 0), "Monster with no monster or name!\n"))
 		return;
 
-	File.Write (Monster->MonsterName);
+	File.WriteString (Monster->GetMonsterName());
 
 	// Write ID
 	File.Write<uint32> (Monster->MonsterID);
@@ -1521,13 +1517,13 @@ void CMonster::Stand ()
 void CMonster::Idle ()
 {
 	if (MonsterFlags & MF_HAS_IDLE)
-		DebugPrintf ("Warning: Monster with no idle has MF_HAS_IDLE!\n");
+		DebugPrint ("Warning: Monster with no idle has MF_HAS_IDLE!\n");
 }
 
 void CMonster::Search ()
 {
 	if (MonsterFlags & MF_HAS_SEARCH)
-		DebugPrintf ("Warning: Monster with no search has MF_HAS_SEARCH!\n");
+		DebugPrint ("Warning: Monster with no search has MF_HAS_SEARCH!\n");
 }
 
 void CMonster::Walk ()
@@ -1549,19 +1545,19 @@ void CMonster::Dodge (IBaseEntity *Other, float eta
 void CMonster::Attack()
 {
 	if (MonsterFlags & MF_HAS_ATTACK)
-		DebugPrintf ("Warning: Monster with no attack has MF_HAS_ATTACK!\n");
+		DebugPrint ("Warning: Monster with no attack has MF_HAS_ATTACK!\n");
 }
 
 void CMonster::Melee ()
 {
 	if (MonsterFlags & MF_HAS_MELEE)
-		DebugPrintf ("Warning: Monster with no melee has MF_HAS_MELEE!\n");
+		DebugPrint ("Warning: Monster with no melee has MF_HAS_MELEE!\n");
 }
 
 void CMonster::Sight ()
 {
 	if (MonsterFlags & MF_HAS_SIGHT)
-		DebugPrintf ("Warning: Monster with no sight has MF_HAS_SIGHT!\n");
+		DebugPrint ("Warning: Monster with no sight has MF_HAS_SIGHT!\n");
 }
 
 void CMonster::MonsterDeathUse ()
@@ -1653,7 +1649,7 @@ void CMonster::MoveFrame ()
 
 		void (CMonster::*AIFunc) (float Dist) = Move->Frames[index].AIFunc;
 		if (AIFunc)
-			(this->*AIFunc) ((AIFlags & AI_HOLD_FRAME) ? 0 : (Move->Frames[index].Dist * Scale));
+			(this->*AIFunc) ((AIFlags & AI_HOLD_FRAME) ? 0 : (Move->Frames[index].Dist * GetScale()));
 
 		void (CMonster::*Function) () = Move->Frames[index].Function;
 		if (Function)
@@ -1703,7 +1699,7 @@ void CMonster::MoveFrame ()
 
 		void (CMonster::*AIFunc) (float Dist) = Move->Frames[index].AIFunc;
 		if (AIFunc)
-			(this->*AIFunc) ((AIFlags & AI_HOLD_FRAME) ? 0 : (Move->Frames[index].Dist * Scale));
+			(this->*AIFunc) ((AIFlags & AI_HOLD_FRAME) ? 0 : (Move->Frames[index].Dist * GetScale()));
 
 		void (CMonster::*Function) () = Move->Frames[index].Function;
 		if (Function)
@@ -1956,7 +1952,6 @@ void CMonster::CheckFlies ()
 
 uint32 LastID = 0;
 CMonster::CMonster (uint32 ID) :
-MonsterName(),
 MonsterID(ID)
 {
 }

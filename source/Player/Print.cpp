@@ -42,24 +42,104 @@ SV_ClientPrintf
 Sends text across to be displayed if the level passes
 =================
 */
-static void SV_ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
+static void SV_ClientPrint (SEntity *ent, EGamePrintLevel printLevel, const char *string)
 {
-	va_list			argptr;
-	CTempMemoryBlock	string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 	CPlayerEntity	*Player = entity_cast<CPlayerEntity>(ent->Entity);
 
 	if (printLevel < Player->Client.Respawn.MessageLevel)
 		return;
 
-	va_start (argptr, fmt);
-	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
-	va_end (argptr);
-
 	WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
+
 	if (printLevel != PRINT_CENTER)
 		WriteByte (printLevel);
-	WriteString (string.GetBuffer<char>());
+
+	WriteString (string);
 	Cast ((printLevel != PRINT_CENTER) ? CASTFLAG_UNRELIABLE : CASTFLAG_RELIABLE, Player);
+}
+
+void ClientPrint (SEntity *ent, EGamePrintLevel printLevel, const char *string)
+{
+	if (ent)
+	{
+		sint32 n = ent - Game.Entities;
+		if (n < 1 || n > Game.MaxClients)
+		{
+			DebugPrint ("CleanCode Warning: ClientPrintf to a non-client\n");
+			return;
+		}
+	}
+
+	// Print
+	if (ent)
+		SV_ClientPrint (ent, printLevel, string);
+	else
+		ServerPrintf ("%s", string);
+}
+
+void DeveloperPrint (const char *string)
+{
+	if (!CvarList[CV_DEVELOPER].Integer())
+		return;
+
+CC_DISABLE_DEPRECATION
+	gi.dprintf ("%s", string);
+CC_ENABLE_DEPRECATION
+
+	CC_OutputDebugString (string);
+}
+
+// Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
+void DebugPrint (const char *string)
+{
+#ifdef _DEBUG
+CC_DISABLE_DEPRECATION
+	gi.dprintf ("%s", string);
+CC_ENABLE_DEPRECATION
+
+	CC_OutputDebugString (string);
+#endif
+}
+
+void ServerPrint (const char *string)
+{
+CC_DISABLE_DEPRECATION
+	gi.dprintf ("%s", string);
+CC_ENABLE_DEPRECATION
+
+	CC_OutputDebugString (string);
+}
+
+void BroadcastPrint (EGamePrintLevel printLevel, const char *string)
+{	
+	for (sint32 i = 1; i <= Game.MaxClients; i++)
+	{
+		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
+		if (printLevel < Player->Client.Respawn.MessageLevel)
+			continue;
+		if (Player->Client.Persistent.State != SVCS_SPAWNED)
+			continue;
+
+		WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
+
+		if (printLevel != PRINT_CENTER)
+			WriteByte (printLevel);
+
+		WriteString (string);
+
+		Cast (CASTFLAG_UNRELIABLE, Player);
+	}
+
+	// Echo to console
+	if (CvarList[CV_DEDICATED].Integer())
+	{
+		std::string str(string);
+		// Mask off high bits
+		for (size_t i = 0; i < str.size(); i++)
+			str[i] &= 127;
+
+		ServerPrint (str.c_str());
+	}
 }
 
 void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
@@ -67,26 +147,12 @@ void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ..
 	CTempMemoryBlock		msg = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 	va_list		argptr;
 
-	if (ent)
-	{
-		sint32 n = ent - Game.Entities;
-		if (n < 1 || n > Game.MaxClients)
-		{
-			DebugPrintf ("CleanCode Warning: ClientPrintf to a non-client\n");
-			return;
-		}
-	}
-
 	// Evaluate args
 	va_start (argptr, fmt);
 	vsnprintf (msg.GetBuffer<char>(), msg.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-	// Print
-	if (ent)
-		SV_ClientPrintf (ent, printLevel, "%s", msg.GetBuffer<char>());
-	else
-		ServerPrintf ("%s", msg.GetBuffer<char>());
+	ClientPrint(ent, printLevel, msg.GetBuffer<char>());
 }
 
 void DeveloperPrintf (const char *fmt, ...)
@@ -101,11 +167,7 @@ void DeveloperPrintf (const char *fmt, ...)
 	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-CC_DISABLE_DEPRECATION
-	gi.dprintf ("%s", text.GetBuffer<char>());
-CC_ENABLE_DEPRECATION
-
-	CC_OutputDebugString (text.GetBuffer<char>());
+	DeveloperPrint(text.GetBuffer<char>());
 }
 
 // Dprintf is the only command that has to be the same, because of Com_ConPrintf (we don't have it)
@@ -119,11 +181,7 @@ void DebugPrintf (const char *fmt, ...)
 	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-CC_DISABLE_DEPRECATION
-	gi.dprintf ("%s", text.GetBuffer<char>());
-CC_ENABLE_DEPRECATION
-
-	CC_OutputDebugString (text.GetBuffer<char>());
+	DebugPrint(text.GetBuffer<char>());
 #endif
 }
 
@@ -136,11 +194,7 @@ void ServerPrintf (const char *fmt, ...)
 	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-CC_DISABLE_DEPRECATION
-	gi.dprintf ("%s", text.GetBuffer<char>());
-CC_ENABLE_DEPRECATION
-
-	CC_OutputDebugString (text.GetBuffer<char>());
+	ServerPrint(text.GetBuffer<char>());
 }
 
 void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
@@ -152,33 +206,7 @@ void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 	vsnprintf (string.GetBuffer<char>(), string.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 	
-	for (sint32 i = 1; i <= Game.MaxClients; i++)
-	{
-		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Game.Entities[i].Entity);
-		if (printLevel < Player->Client.Respawn.MessageLevel)
-			continue;
-		if (Player->Client.Persistent.State != SVCS_SPAWNED)
-			continue;
-
-		WriteByte ((printLevel != PRINT_CENTER) ? SVC_PRINT : SVC_CENTERPRINT);
-
-		if (printLevel != PRINT_CENTER)
-			WriteByte (printLevel);
-
-		WriteString (string.GetBuffer<char>());
-
-		Cast (CASTFLAG_UNRELIABLE, Player);
-	}
-
-	// Echo to console
-	if (CvarList[CV_DEDICATED].Integer())
-	{
-		// Mask off high bits
-		for (size_t i = 0; i < string.GetSize() && string.GetBuffer<char>()[i]; i++)
-			string.GetBuffer<char>()[i] &= 127;
-
-		ServerPrintf ("%s", string.GetBuffer<char>());
-	}
+	BroadcastPrint(printLevel, string.GetBuffer<char>());
 }
 #else
 void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ...)
@@ -196,6 +224,14 @@ void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ..
 		gi.cprintf (ent, printLevel, "%s", string.GetBuffer<char>());
 }
 
+void ClientPrint (SEntity *ent, EGamePrintLevel printLevel, const char *string)
+{
+	if (printLevel == PRINT_CENTER)
+		gi.centerprintf (ent, "%s", string);
+	else
+		gi.cprintf (ent, printLevel, "%s", string);
+}
+
 void DeveloperPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
@@ -208,8 +244,14 @@ void DeveloperPrintf (const char *fmt, ...)
 	gi.dprintf ("%s", string.GetBuffer<char>());
 }
 
+void DeveloperPrint (const char *string)
+{
+	gi.dprintf ("%s", string);
+}
+
 void DebugPrintf (const char *fmt, ...)
 {
+#ifdef _DEBUG
 	va_list		argptr;
 	CTempMemoryBlock string = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT);
 
@@ -218,6 +260,14 @@ void DebugPrintf (const char *fmt, ...)
 	va_end (argptr);
 	
 	gi.dprintf ("%s", string.GetBuffer<char>());
+#endif
+}
+
+void DebugPrint (const char *string)
+{
+#ifdef _DEBUG
+	gi.dprintf ("%s", string);
+#endif
 }
 
 void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
@@ -232,6 +282,11 @@ void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...)
 	gi.bprintf (printLevel, "%s", string.GetBuffer<char>());
 }
 
+void BroadcastPrint (EGamePrintLevel printLevel, const char *fmt, ...)
+{
+	gi.bprintf (printLevel, "%s", string);
+}
+
 void ServerPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
@@ -242,6 +297,11 @@ void ServerPrintf (const char *fmt, ...)
 	va_end (argptr);
 	
 	gi.dprintf ("%s", string.GetBuffer<char>());
+}
+
+void ServerPrint (const char *string)
+{
+	gi.dprintf ("%s", string);
 }
 
 #endif

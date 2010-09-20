@@ -40,7 +40,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CBoss5::CBoss5 (uint32 ID) :
 CSuperTank (ID)
 {
-	MonsterName = "SuperDuperTank";
 };
 
 void CBoss5::Spawn ()

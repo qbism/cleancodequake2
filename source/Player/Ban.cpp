@@ -141,7 +141,7 @@ void CBanList::SaveList ()
 	// No changes detected
 	if (!Changed)
 	{
-		ServerPrintf ("No changes in ban file, skipping\n");
+		ServerPrint ("No changes in ban file, skipping\n");
 		return;
 	}
 

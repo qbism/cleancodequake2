@@ -34,13 +34,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Local.h"
 #include "Monsters/JORG.h" // Req.
 #include "Monsters/Makron.h"
-#include "Monsters/m_boss32.h"
 
 CMakron::CMakron (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Makron";
 }
 
 void CMakron::Taunt ()
@@ -127,7 +124,7 @@ CFrame MakronFramesStand []=
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0),		// 60
 };
-CAnim	MakronMoveStand (FRAME_stand201, FRAME_stand260, MakronFramesStand);
+CAnim	MakronMoveStand (CMakron::FRAME_stand201, CMakron::FRAME_stand260, MakronFramesStand);
 	
 void CMakron::Stand ()
 {
@@ -177,7 +174,7 @@ CFrame MakronFramesRun [] =
 	CFrame (&CMonster::AI_Run, 6),
 	CFrame (&CMonster::AI_Run, 12)
 };
-CAnim	MakronMoveRun (FRAME_walk204, FRAME_walk213, MakronFramesRun);
+CAnim	MakronMoveRun (CMakron::FRAME_walk204, CMakron::FRAME_walk213, MakronFramesRun);
 
 CFrame MakronFramesWalk [] =
 {
@@ -192,7 +189,7 @@ CFrame MakronFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 6),
 	CFrame (&CMonster::AI_Walk, 12)
 };
-CAnim	MakronMoveWalk (FRAME_walk204, FRAME_walk213, MakronFramesRun);
+CAnim	MakronMoveWalk (CMakron::FRAME_walk204, CMakron::FRAME_walk213, MakronFramesRun);
 
 void CMakron::Walk ()
 {
@@ -234,7 +231,7 @@ CFrame MakronFramesPain6 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMovePain6 (FRAME_pain601, FRAME_pain627, MakronFramesPain6, &CMonster::Run);
+CAnim MakronMovePain6 (CMakron::FRAME_pain601, CMakron::FRAME_pain627, MakronFramesPain6, &CMonster::Run);
 
 CFrame MakronFramesPain5 [] =
 {
@@ -243,7 +240,7 @@ CFrame MakronFramesPain5 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMovePain5 (FRAME_pain501, FRAME_pain504, MakronFramesPain5, &CMonster::Run);
+CAnim MakronMovePain5 (CMakron::FRAME_pain501, CMakron::FRAME_pain504, MakronFramesPain5, &CMonster::Run);
 
 CFrame MakronFramesPain4 [] =
 {
@@ -252,7 +249,7 @@ CFrame MakronFramesPain4 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMovePain4 (FRAME_pain401, FRAME_pain404, MakronFramesPain4, &CMonster::Run);
+CAnim MakronMovePain4 (CMakron::FRAME_pain401, CMakron::FRAME_pain404, MakronFramesPain4, &CMonster::Run);
 
 void CMakron::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -393,7 +390,7 @@ CFrame MakronFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)			// 95
 };
-CAnim MakronMoveDeath2 (FRAME_death201, FRAME_death295, MakronFramesDeath2, ConvertDerivedFunction(&CMakron::Dead));
+CAnim MakronMoveDeath2 (CMakron::FRAME_death201, CMakron::FRAME_death295, MakronFramesDeath2, ConvertDerivedFunction(&CMakron::Dead));
 
 CFrame MakronFramesDeath3 [] =
 {
@@ -418,7 +415,7 @@ CFrame MakronFramesDeath3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMoveDeath3 (FRAME_death301, FRAME_death320, MakronFramesDeath3);
+CAnim MakronMoveDeath3 (CMakron::FRAME_death301, CMakron::FRAME_death320, MakronFramesDeath3);
 
 CFrame MakronFramesSight [] =
 {
@@ -436,7 +433,7 @@ CFrame MakronFramesSight [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMoveSight (FRAME_active01, FRAME_active13, MakronFramesSight, &CMonster::Run);
+CAnim MakronMoveSight (CMakron::FRAME_active01, CMakron::FRAME_active13, MakronFramesSight, &CMonster::Run);
 
 void CMakron::FireBFG ()
 {
@@ -466,7 +463,7 @@ CFrame MakronFramesAttack3 []=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMoveAttack3 (FRAME_attak301, FRAME_attak308, MakronFramesAttack3, &CMonster::Run);
+CAnim MakronMoveAttack3 (CMakron::FRAME_attak301, CMakron::FRAME_attak308, MakronFramesAttack3, &CMonster::Run);
 
 CFrame MakronFramesAttack4[]=
 {
@@ -497,7 +494,7 @@ CFrame MakronFramesAttack4[]=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMoveAttack4 (FRAME_attak401, FRAME_attak426, MakronFramesAttack4, &CMonster::Run);
+CAnim MakronMoveAttack4 (CMakron::FRAME_attak401, CMakron::FRAME_attak426, MakronFramesAttack4, &CMonster::Run);
 
 void CMakron::FireHyperblaster ()
 {
@@ -507,7 +504,7 @@ void CMakron::FireHyperblaster ()
 	vec3f	dir;
 	vec3f	start;
 	vec3f	forward, right;
-	sint32		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - FRAME_attak405);
+	sint32		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - CMakron::FRAME_attak405);
 
 	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
@@ -517,10 +514,10 @@ void CMakron::FireHyperblaster ()
 	else
 		dir.X = 0;
 
-	if (Entity->State.GetFrame() <= FRAME_attak413)
-		dir.Y = Entity->State.GetAngles().Y - 10 * (Entity->State.GetFrame() - FRAME_attak413);
+	if (Entity->State.GetFrame() <= CMakron::FRAME_attak413)
+		dir.Y = Entity->State.GetAngles().Y - 10 * (Entity->State.GetFrame() - CMakron::FRAME_attak413);
 	else
-		dir.Y = Entity->State.GetAngles().Y + 10 * (Entity->State.GetFrame() - FRAME_attak421);
+		dir.Y = Entity->State.GetAngles().Y + 10 * (Entity->State.GetFrame() - CMakron::FRAME_attak421);
 	dir.Z = 0;
 
 	dir.ToVectors (&forward, NULL, NULL);
@@ -546,7 +543,7 @@ CFrame MakronFramesAttack5[]=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MakronMoveAttack5 (FRAME_attak501, FRAME_attak516, MakronFramesAttack5, &CMonster::Run);
+CAnim MakronMoveAttack5 (CMakron::FRAME_attak501, CMakron::FRAME_attak516, MakronFramesAttack5, &CMonster::Run);
 
 void CMakron::SavePosition ()
 {

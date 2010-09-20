@@ -35,7 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 #include "Monsters/Medic.h"
-#include "Monsters/m_medic.h"
 #include "Rogue/RogueMonsterSpawning.h"
 #include "Rogue/RogueMedicCommander.h"
 
@@ -53,8 +52,6 @@ CReinforcement Reinforcements[] =
 CMedicCommander::CMedicCommander (uint32 ID) :
 CMedic(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Medic Commander";
 }
 
 void CMedicCommander::FireBlaster ()
@@ -386,7 +383,7 @@ CFrame MedicFramesCallReinforcements [] =
 	CFrame (&CMonster::AI_Move, 1.2f),
 	CFrame (&CMonster::AI_Move, 1.3f)					//60
 };
-CAnim MedicMoveCallReinforcements (FRAME_attack33, FRAME_attack60, MedicFramesCallReinforcements, &CMonster::Run);
+CAnim MedicMoveCallReinforcements (CMedic::FRAME_attack33, CMedic::FRAME_attack60, MedicFramesCallReinforcements, &CMonster::Run);
 
 void CMedicCommander::Attack ()
 {

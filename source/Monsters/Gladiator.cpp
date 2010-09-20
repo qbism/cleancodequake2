@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_gladiator.h"
 #include "Monsters/Gladiator.h"
 
 CGladiator::CGladiator (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Gladiator";
 }
 
 void CGladiator::Idle ()
@@ -72,7 +69,7 @@ CFrame GladiatorFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim GladiatorMoveStand (FRAME_stand1, FRAME_stand7, GladiatorFramesStand);
+CAnim GladiatorMoveStand (CGladiator::FRAME_stand1, CGladiator::FRAME_stand7, GladiatorFramesStand);
 
 void CGladiator::Stand ()
 {
@@ -98,7 +95,7 @@ CFrame GladiatorFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 1),
 	CFrame (&CMonster::AI_Walk, 8)
 };
-CAnim GladiatorMoveWalk (FRAME_walk1, FRAME_walk16, GladiatorFramesWalk);
+CAnim GladiatorMoveWalk (CGladiator::FRAME_walk1, CGladiator::FRAME_walk16, GladiatorFramesWalk);
 
 void CGladiator::Walk ()
 {
@@ -114,7 +111,7 @@ CFrame GladiatorFramesRun [] =
 	CFrame (&CMonster::AI_Run, 12),
 	CFrame (&CMonster::AI_Run, 13)
 };
-CAnim GladiatorMoveRun (FRAME_run1, FRAME_run6, GladiatorFramesRun);
+CAnim GladiatorMoveRun (CGladiator::FRAME_run1, CGladiator::FRAME_run6, GladiatorFramesRun);
 
 void CGladiator::Run ()
 {
@@ -147,7 +144,7 @@ CFrame GladiatorFramesAttackMelee [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim GladiatorMoveAttackMelee (FRAME_melee1, FRAME_melee17, GladiatorFramesAttackMelee, &CMonster::Run);
+CAnim GladiatorMoveAttackMelee (CGladiator::FRAME_melee1, CGladiator::FRAME_melee17, GladiatorFramesAttackMelee, &CMonster::Run);
 
 void CGladiator::Melee ()
 {
@@ -185,7 +182,7 @@ CFrame GladiatorFramesAttackGun [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim GladiatorMoveAttackGun (FRAME_attack1, FRAME_attack9, GladiatorFramesAttackGun, &CMonster::Run);
+CAnim GladiatorMoveAttackGun (CGladiator::FRAME_attack1, CGladiator::FRAME_attack9, GladiatorFramesAttackGun, &CMonster::Run);
 
 void CGladiator::Attack ()
 {
@@ -209,7 +206,7 @@ CFrame GladiatorFramesPain [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim GladiatorMovePain (FRAME_pain1, FRAME_pain6, GladiatorFramesPain, &CMonster::Run);
+CAnim GladiatorMovePain (CGladiator::FRAME_pain1, CGladiator::FRAME_pain6, GladiatorFramesPain, &CMonster::Run);
 
 CFrame GladiatorFramesPainAir [] =
 {
@@ -221,7 +218,7 @@ CFrame GladiatorFramesPainAir [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim GladiatorMovePainAir (FRAME_painup1, FRAME_painup7, GladiatorFramesPainAir, &CMonster::Run);
+CAnim GladiatorMovePainAir (CGladiator::FRAME_painup1, CGladiator::FRAME_painup7, GladiatorFramesPainAir, &CMonster::Run);
 
 void CGladiator::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -279,7 +276,7 @@ CFrame GladiatorFramesDeath [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim GladiatorMoveDeath (FRAME_death1, FRAME_death22, GladiatorFramesDeath, ConvertDerivedFunction(&CGladiator::Dead));
+CAnim GladiatorMoveDeath (CGladiator::FRAME_death1, CGladiator::FRAME_death22, GladiatorFramesDeath, ConvertDerivedFunction(&CGladiator::Dead));
 
 void CGladiator::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {

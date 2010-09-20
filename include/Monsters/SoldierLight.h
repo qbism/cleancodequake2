@@ -39,6 +39,8 @@ class CSoldierLight : public CSoldierBase
 public:
 	CSoldierLight(uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Light Soldier"; }
+
 	void Attack ();
 	void FireGun (sint32 FlashNumber);
 	void SpawnSoldier ();

@@ -39,6 +39,8 @@ class CSoldierHyper : public CSoldierBase
 public:
 	CSoldierHyper(uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Hypergun Soldier"; }
+
 	void Attack ();
 	void HyperSound ();
 	void HyperRefire1 ();

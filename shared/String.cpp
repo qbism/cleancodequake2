@@ -73,7 +73,7 @@ void Q_strcatz (char *dst, const char *src, size_t dstSize)
 	size_t len = strlen (dst);
 	if (len >= dstSize)
 	{
-		DebugPrintf ("Q_strcatz: already overflowed");
+		DebugPrint ("Q_strcatz: already overflowed");
 		return;
 	}
 

@@ -87,7 +87,7 @@ CFrame SoldierFramesStand1 [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim SoldierMoveStand1 (FRAME_stand101, FRAME_stand130, SoldierFramesStand1, ConvertDerivedFunction(&CSoldierBase::Stand));
+CAnim SoldierMoveStand1 (CSoldierBase::FRAME_stand101, CSoldierBase::FRAME_stand130, SoldierFramesStand1, ConvertDerivedFunction(&CSoldierBase::Stand));
 
 CFrame SoldierFramesStand3 [] =
 {
@@ -134,7 +134,7 @@ CFrame SoldierFramesStand3 [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim SoldierMoveStand3 (FRAME_stand301, FRAME_stand339, SoldierFramesStand3, ConvertDerivedFunction(&CSoldierBase::Stand));
+CAnim SoldierMoveStand3 (CSoldierBase::FRAME_stand301, CSoldierBase::FRAME_stand339, SoldierFramesStand3, ConvertDerivedFunction(&CSoldierBase::Stand));
 
 void CSoldierBase::Stand ()
 {
@@ -152,7 +152,7 @@ void CSoldierBase::Stand ()
 void CSoldierBase::Walk1_Random ()
 {
 	if (frand() > 0.1)
-		NextFrame = FRAME_walk101;
+		NextFrame = CSoldierBase::FRAME_walk101;
 }
 
 CFrame SoldierFramesWalk1 [] =
@@ -191,7 +191,7 @@ CFrame SoldierFramesWalk1 [] =
 	CFrame (&CMonster::AI_Walk, 0),
 	CFrame (&CMonster::AI_Walk, 0)
 };
-CAnim SoldierMoveWalk1 (FRAME_walk101, FRAME_walk133, SoldierFramesWalk1);
+CAnim SoldierMoveWalk1 (CSoldierBase::FRAME_walk101, CSoldierBase::FRAME_walk133, SoldierFramesWalk1);
 
 CFrame SoldierFramesWalk2 [] =
 {
@@ -206,7 +206,7 @@ CFrame SoldierFramesWalk2 [] =
 	CFrame (&CMonster::AI_Walk, 6),
 	CFrame (&CMonster::AI_Walk, 7)
 };
-CAnim SoldierMoveWalk2 (FRAME_walk209, FRAME_walk218, SoldierFramesWalk2);
+CAnim SoldierMoveWalk2 (CSoldierBase::FRAME_walk209, CSoldierBase::FRAME_walk218, SoldierFramesWalk2);
 
 void CSoldierBase::Walk ()
 {
@@ -226,7 +226,7 @@ CFrame SoldierFramesStartRun [] =
 	CFrame (&CMonster::AI_Run, 7),
 	CFrame (&CMonster::AI_Run, 5)
 };
-CAnim SoldierMoveStartRun (FRAME_run01, FRAME_run02, SoldierFramesStartRun, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveStartRun (CSoldierBase::FRAME_run01, CSoldierBase::FRAME_run02, SoldierFramesStartRun, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierFramesRun [] =
 {
@@ -237,7 +237,7 @@ CFrame SoldierFramesRun [] =
 	CFrame (&CMonster::AI_Run, 10),
 	CFrame (&CMonster::AI_Run, 15)
 };
-CAnim SoldierMoveRun (FRAME_run03, FRAME_run08, SoldierFramesRun);
+CAnim SoldierMoveRun (CSoldierBase::FRAME_run03, CSoldierBase::FRAME_run08, SoldierFramesRun);
 
 void CSoldierBase::Run ()
 {
@@ -268,7 +268,7 @@ CFrame SoldierFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 1),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMovePain1 (FRAME_pain101, FRAME_pain105, SoldierFramesPain1, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMovePain1 (CSoldierBase::FRAME_pain101, CSoldierBase::FRAME_pain105, SoldierFramesPain1, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierFramesPain2 [] =
 {
@@ -280,7 +280,7 @@ CFrame SoldierFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 3),
 	CFrame (&CMonster::AI_Move, 2)
 };
-CAnim SoldierMovePain2 (FRAME_pain201, FRAME_pain207, SoldierFramesPain2, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMovePain2 (CSoldierBase::FRAME_pain201, CSoldierBase::FRAME_pain207, SoldierFramesPain2, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierFramesPain3 [] =
 {
@@ -303,7 +303,7 @@ CFrame SoldierFramesPain3 [] =
 	CFrame (&CMonster::AI_Move, 3),
 	CFrame (&CMonster::AI_Move, 2)
 };
-CAnim SoldierMovePain3 (FRAME_pain301, FRAME_pain318, SoldierFramesPain3, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMovePain3 (CSoldierBase::FRAME_pain301, CSoldierBase::FRAME_pain318, SoldierFramesPain3, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierFramesPain4 [] =
 {
@@ -325,7 +325,7 @@ CFrame SoldierFramesPain4 [] =
 	CFrame (&CMonster::AI_Move, 2),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMovePain4 (FRAME_pain401, FRAME_pain417, SoldierFramesPain4, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMovePain4 (CSoldierBase::FRAME_pain401, CSoldierBase::FRAME_pain417, SoldierFramesPain4, ConvertDerivedFunction(&CSoldierBase::Run));
 
 
 void CSoldierBase::Pain (IBaseEntity *Other, sint32 Damage)
@@ -391,7 +391,7 @@ void CSoldierBase::Attack1_Refire1 ()
 	if (AIFlags & AI_MANUAL_STEERING)
 	{
 		AIFlags &= ~AI_MANUAL_STEERING;
-		NextFrame = FRAME_attak110; // Skips the chicklee
+		NextFrame = CSoldierBase::FRAME_attak110; // Skips the chicklee
 		return;
 	}
 	// pmm
@@ -407,9 +407,9 @@ void CSoldierBase::Attack1_Refire1 ()
 		return;
 
 	if (((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
-		NextFrame = FRAME_attak102;
+		NextFrame = CSoldierBase::FRAME_attak102;
 	else
-		NextFrame = FRAME_attak110;
+		NextFrame = CSoldierBase::FRAME_attak110;
 }
 
 void CSoldierBase::Attack1_Refire2 ()
@@ -424,7 +424,7 @@ void CSoldierBase::Attack1_Refire2 ()
 		return;
 
 	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
-		NextFrame = FRAME_attak102;
+		NextFrame = CSoldierBase::FRAME_attak102;
 }
 
 CFrame SoldierFramesAttack1 [] =
@@ -442,7 +442,7 @@ CFrame SoldierFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierMoveAttack1 (FRAME_attak101, FRAME_attak112, SoldierFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveAttack1 (CSoldierBase::FRAME_attak101, CSoldierBase::FRAME_attak112, SoldierFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
 
 // ATTACK2 (blaster/shotgun)
 
@@ -463,9 +463,9 @@ void CSoldierBase::Attack2_Refire1 ()
 		return;
 
 	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
-		NextFrame = FRAME_attak204;
+		NextFrame = CSoldierBase::FRAME_attak204;
 	else
-		NextFrame = FRAME_attak216;
+		NextFrame = CSoldierBase::FRAME_attak216;
 }
 
 void CSoldierBase::Attack2_Refire2 ()
@@ -480,7 +480,7 @@ void CSoldierBase::Attack2_Refire2 ()
 		return;
 
 	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (Range(Entity, *Entity->Enemy) == RANGE_MELEE) )
-		NextFrame = FRAME_attak204;
+		NextFrame = CSoldierBase::FRAME_attak204;
 }
 
 CFrame SoldierFramesAttack2 [] =
@@ -504,7 +504,7 @@ CFrame SoldierFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierMoveAttack2 (FRAME_attak201, FRAME_attak218, SoldierFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveAttack2 (CSoldierBase::FRAME_attak201, CSoldierBase::FRAME_attak218, SoldierFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
 
 // ATTACK3 (duck and shoot)
 
@@ -529,7 +529,7 @@ void CSoldierBase::Attack3_Refire ()
 #else
 	if ((Level.Frame + 4) < PauseTime)
 #endif
-		NextFrame = FRAME_attak303;
+		NextFrame = CSoldierBase::FRAME_attak303;
 }
 
 CFrame SoldierFramesAttack3 [] =
@@ -548,7 +548,7 @@ CFrame SoldierFramesAttack3 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierMoveAttack3 (FRAME_attak301, FRAME_attak309, SoldierFramesAttack3, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveAttack3 (CSoldierBase::FRAME_attak301, CSoldierBase::FRAME_attak309, SoldierFramesAttack3, ConvertDerivedFunction(&CSoldierBase::Run));
 
 // ATTACK4 (machinegun)
 
@@ -560,7 +560,7 @@ void CSoldierBase::Fire4 ()
 //		return;
 //
 //	if ( ((CvarList[CV_SKILL].Integer() == 3) && (frand() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-//		self->monsterinfo.nextframe = FRAME_attak402;
+//		self->monsterinfo.nextframe = CSoldierBase::FRAME_attak402;
 }
 
 CFrame SoldierFramesAttack4 [] =
@@ -572,7 +572,7 @@ CFrame SoldierFramesAttack4 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierMoveAttack4 (FRAME_attak401, FRAME_attak406, SoldierFramesAttack4, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveAttack4 (CSoldierBase::FRAME_attak401, CSoldierBase::FRAME_attak406, SoldierFramesAttack4, ConvertDerivedFunction(&CSoldierBase::Run));
 
 // ATTACK6 (run & shoot)
 
@@ -599,7 +599,7 @@ void CSoldierBase::Attack6_Refire ()
 		return;
 
 	if (((CvarList[CV_SKILL].Integer() == 3 && (SoldierAI == AI_BLASTER)) || ((frand() < (0.09*((float)CvarList[CV_SKILL].Integer()))))))
-		NextFrame = FRAME_runs03;
+		NextFrame = CSoldierBase::FRAME_runs03;
 }
 
 #if ROGUE_FEATURES
@@ -622,9 +622,9 @@ void CSoldierBase::Attack6_RefireBlaster ()
 		return;
 
 	if ((CvarList[CV_SKILL].Integer() == 3) || ((frand() < (0.25*((float)CvarList[CV_SKILL].Integer())))))
-		NextFrame = FRAME_runs03;
+		NextFrame = CSoldierBase::FRAME_runs03;
 	else
-		NextFrame = FRAME_runs14;
+		NextFrame = CSoldierBase::FRAME_runs14;
 }
 #endif
 
@@ -674,7 +674,7 @@ CFrame SoldierFramesAttack6 [] =
 	CFrame (&CMonster::AI_Charge, 17, ConvertDerivedFunction(&CSoldierBase::Attack6_Refire))
 #endif
 };
-CAnim SoldierMoveAttack6 (FRAME_runs01, FRAME_runs14, SoldierFramesAttack6, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveAttack6 (CSoldierBase::FRAME_runs01, CSoldierBase::FRAME_runs14, SoldierFramesAttack6, ConvertDerivedFunction(&CSoldierBase::Run));
 
 //
 // SIGHT
@@ -712,7 +712,7 @@ CFrame SoldierFramesDuck [] =
 	CFrame (&CMonster::AI_Move, 5)
 #endif
 };
-CAnim SoldierMoveDuck (FRAME_duck01, FRAME_duck05, SoldierFramesDuck, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierMoveDuck (CSoldierBase::FRAME_duck01, CSoldierBase::FRAME_duck05, SoldierFramesDuck, ConvertDerivedFunction(&CSoldierBase::Run));
 
 #if !ROGUE_FEATURES
 void CSoldierBase::Dodge (IBaseEntity *Attacker, float eta)
@@ -821,7 +821,7 @@ CFrame SoldierFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMoveDeath1 (FRAME_death101, FRAME_death136, SoldierFramesDeath1, ConvertDerivedFunction(&CSoldierBase::Dead));
+CAnim SoldierMoveDeath1 (CSoldierBase::FRAME_death101, CSoldierBase::FRAME_death136, SoldierFramesDeath1, ConvertDerivedFunction(&CSoldierBase::Dead));
 
 CFrame SoldierFramesDeath2 [] =
 {
@@ -864,7 +864,7 @@ CFrame SoldierFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMoveDeath2 (FRAME_death201, FRAME_death235, SoldierFramesDeath2, ConvertDerivedFunction(&CSoldierBase::Dead));
+CAnim SoldierMoveDeath2 (CSoldierBase::FRAME_death201, CSoldierBase::FRAME_death235, SoldierFramesDeath2, ConvertDerivedFunction(&CSoldierBase::Dead));
 
 CFrame SoldierFramesDeath3 [] =
 {
@@ -918,7 +918,7 @@ CFrame SoldierFramesDeath3 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0),
 };
-CAnim SoldierMoveDeath3 (FRAME_death301, FRAME_death345, SoldierFramesDeath3, ConvertDerivedFunction(&CSoldierBase::Dead));
+CAnim SoldierMoveDeath3 (CSoldierBase::FRAME_death301, CSoldierBase::FRAME_death345, SoldierFramesDeath3, ConvertDerivedFunction(&CSoldierBase::Dead));
 
 CFrame SoldierFramesDeath4 [] =
 {
@@ -981,7 +981,7 @@ CFrame SoldierFramesDeath4 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMoveDeath4 (FRAME_death401, FRAME_death453, SoldierFramesDeath4, ConvertDerivedFunction(&CSoldierBase::Dead));
+CAnim SoldierMoveDeath4 (CSoldierBase::FRAME_death401, CSoldierBase::FRAME_death453, SoldierFramesDeath4, ConvertDerivedFunction(&CSoldierBase::Dead));
 
 CFrame SoldierFramesDeath5 [] =
 {
@@ -1012,7 +1012,7 @@ CFrame SoldierFramesDeath5 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMoveDeath5 (FRAME_death501, FRAME_death524, SoldierFramesDeath5, ConvertDerivedFunction(&CSoldierBase::Dead));
+CAnim SoldierMoveDeath5 (CSoldierBase::FRAME_death501, CSoldierBase::FRAME_death524, SoldierFramesDeath5, ConvertDerivedFunction(&CSoldierBase::Dead));
 
 CFrame SoldierFramesDeath6 [] =
 {
@@ -1027,7 +1027,7 @@ CFrame SoldierFramesDeath6 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim SoldierMoveDeath6 (FRAME_death601, FRAME_death610, SoldierFramesDeath6, ConvertDerivedFunction(&CSoldierBase::Dead));
+CAnim SoldierMoveDeath6 (CSoldierBase::FRAME_death601, CSoldierBase::FRAME_death610, SoldierFramesDeath6, ConvertDerivedFunction(&CSoldierBase::Dead));
 
 void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
@@ -1095,7 +1095,7 @@ void CSoldierBase::Duck (float eta)
 	if (CvarList[CV_SKILL].Integer() == 0)
 	{
 		// PMM - stupid dodge
-		NextFrame = FRAME_duck01;
+		NextFrame = CSoldierBase::FRAME_duck01;
 		CurrentMove = &SoldierMoveDuck;
 		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 		return;
@@ -1105,13 +1105,13 @@ void CSoldierBase::Duck (float eta)
 
 	if (r > (CvarList[CV_SKILL].Integer() * 0.3))
 	{
-		NextFrame = FRAME_duck01;
+		NextFrame = CSoldierBase::FRAME_duck01;
 		CurrentMove = &SoldierMoveDuck;
 		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 	}
 	else
 	{
-		NextFrame = FRAME_attak301;
+		NextFrame = CSoldierBase::FRAME_attak301;
 		CurrentMove = &SoldierMoveAttack3;
 		DuckWaitTime = Level.Frame + ((eta + 1) * 10);
 	}
@@ -1155,8 +1155,6 @@ void CSoldierBase::Duck_Up ()
 
 void CSoldierBase::Spawn ()
 {
-	Scale = MODEL_SCALE;
-
 	Entity->GetMins().Set (-16, -16, -24);
 	Entity->GetMaxs().Set (16, 16, 32);
 	Entity->GetSolid() = SOLID_BBOX;

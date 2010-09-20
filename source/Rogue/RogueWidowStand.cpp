@@ -38,7 +38,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Rogue/RogueWidowStand.h"
 #include "Rogue/RogueMonsterSpawning.h"
 #include "Utility/TemporaryEntities.h"
-#include "Rogue/m_widow.h"
 #include "Rogue/RogueBlackWidow.h"
 
 const int MAX_LEGSFRAME	= 23;
@@ -167,8 +166,6 @@ IMPLEMENT_SAVE_SOURCE (CWidowLegs);
 CWidowStand::CWidowStand (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Black Widow";
 };
 
 const int NUM_STALKERS_SPAWNED		= 6;		// max # of stalkers she can spawn
@@ -220,7 +217,7 @@ CFrame WidowFramesAttackPreBlaster [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::AttackBlaster))
 };
-CAnim WidowMoveAttackPreBlaster (FRAME_fired01, FRAME_fired02a, WidowFramesAttackPreBlaster);
+CAnim WidowMoveAttackPreBlaster (CWidowStand::FRAME_fired01, CWidowStand::FRAME_fired02a, WidowFramesAttackPreBlaster);
 
 // Loop this
 CFrame WidowFramesAttackBlaster [] =
@@ -245,14 +242,14 @@ CFrame WidowFramesAttackBlaster [] =
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster))		// 70 degrees left
 };
-CAnim WidowMoveAttackBlaster (FRAME_fired02a, FRAME_fired20, WidowFramesAttackBlaster);
+CAnim WidowMoveAttackBlaster (CWidowStand::FRAME_fired02a, CWidowStand::FRAME_fired20, WidowFramesAttackBlaster);
 
 CFrame WidowFramesAttackPostBlaster [] =
 {
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0)
 };
-CAnim WidowMoveAttackPostBlaster (FRAME_fired21, FRAME_fired22, WidowFramesAttackPostBlaster, &CMonster::Run);
+CAnim WidowMoveAttackPostBlaster (CWidowStand::FRAME_fired21, CWidowStand::FRAME_fired22, WidowFramesAttackPostBlaster, &CMonster::Run);
 
 CFrame WidowFramesAttackPostBlasterR [] =
 {
@@ -262,7 +259,7 @@ CFrame WidowFramesAttackPostBlasterR [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartRun12))
 };
-CAnim WidowMoveAttackPostBlasterR (FRAME_transa01, FRAME_transa05, WidowFramesAttackPostBlasterR);
+CAnim WidowMoveAttackPostBlasterR (CWidowStand::FRAME_transa01, CWidowStand::FRAME_transa05, WidowFramesAttackPostBlasterR);
 
 CFrame WidowFramesAttackPostBlasterL [] =
 {
@@ -272,7 +269,7 @@ CFrame WidowFramesAttackPostBlasterL [] =
 	CFrame (&CMonster::AI_Charge,	10),
 	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CWidowStand::StartRun12))
 };
-CAnim WidowMoveAttackPostBlasterL (FRAME_transb01, FRAME_transb05, WidowFramesAttackPostBlasterL);
+CAnim WidowMoveAttackPostBlasterL (CWidowStand::FRAME_transb01, CWidowStand::FRAME_transb05, WidowFramesAttackPostBlasterL);
 
 int CWidowStand::Torso ()
 {
@@ -293,41 +290,41 @@ int CWidowStand::Torso ()
 	}
 
 	if (enemy_yaw >= 95)
-		return FRAME_fired03;
+		return CWidowStand::FRAME_fired03;
 	else if (enemy_yaw >= 85)
-		return FRAME_fired04;
+		return CWidowStand::FRAME_fired04;
 	else if (enemy_yaw >= 75)
-		return FRAME_fired05;
+		return CWidowStand::FRAME_fired05;
 	else if (enemy_yaw >= 65)
-		return FRAME_fired06;
+		return CWidowStand::FRAME_fired06;
 	else if (enemy_yaw >= 55)
-		return FRAME_fired07;
+		return CWidowStand::FRAME_fired07;
 	else if (enemy_yaw >= 45)
-		return FRAME_fired08;
+		return CWidowStand::FRAME_fired08;
 	else if (enemy_yaw >= 35)
-		return FRAME_fired09;
+		return CWidowStand::FRAME_fired09;
 	else if (enemy_yaw >= 25)
-		return FRAME_fired10;
+		return CWidowStand::FRAME_fired10;
 	else if (enemy_yaw >= 15)
-		return FRAME_fired11;
+		return CWidowStand::FRAME_fired11;
 	else if (enemy_yaw >= 5)
-		return FRAME_fired12;
+		return CWidowStand::FRAME_fired12;
 	else if (enemy_yaw >= -5)
-		return FRAME_fired13;
+		return CWidowStand::FRAME_fired13;
 	else if (enemy_yaw >= -15)
-		return FRAME_fired14;
+		return CWidowStand::FRAME_fired14;
 	else if (enemy_yaw >= -25)
-		return FRAME_fired15;
+		return CWidowStand::FRAME_fired15;
 	else if (enemy_yaw >= -35)
-		return FRAME_fired16;
+		return CWidowStand::FRAME_fired16;
 	else if (enemy_yaw >= -45)
-		return FRAME_fired17;
+		return CWidowStand::FRAME_fired17;
 	else if (enemy_yaw >= -55)
-		return FRAME_fired18;
+		return CWidowStand::FRAME_fired18;
 	else if (enemy_yaw >= -65)
-		return FRAME_fired19;
+		return CWidowStand::FRAME_fired19;
 	else if (enemy_yaw >= -75)
-		return FRAME_fired20;
+		return CWidowStand::FRAME_fired20;
 	return 0;
 }
 
@@ -343,10 +340,10 @@ void CWidowStand::FireBlaster ()
 
 	vec3f forward, right, start;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	if ((Entity->State.GetFrame() >= FRAME_spawn05) && (Entity->State.GetFrame() <= FRAME_spawn13))
+	if ((Entity->State.GetFrame() >= CWidowStand::FRAME_spawn05) && (Entity->State.GetFrame() <= CWidowStand::FRAME_spawn13))
 	{
 		// sweep
-		EMuzzleFlash flashnum = MZ2_WIDOW_BLASTER_SWEEP1 + Entity->State.GetFrame() - FRAME_spawn05;
+		EMuzzleFlash flashnum = MZ2_WIDOW_BLASTER_SWEEP1 + Entity->State.GetFrame() - CWidowStand::FRAME_spawn05;
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 		
 		vec3f targ_angles = (Entity->Enemy->State.GetOrigin() - start).ToAngles();
@@ -357,7 +354,7 @@ void CWidowStand::FireBlaster ()
 		vec.ToVectors (&forward, NULL, NULL);
 		MonsterFireBlaster2 (start, forward, BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
 	}
-	else if ((Entity->State.GetFrame() >= FRAME_fired02a) && (Entity->State.GetFrame() <= FRAME_fired20))
+	else if ((Entity->State.GetFrame() >= CWidowStand::FRAME_fired02a) && (Entity->State.GetFrame() <= CWidowStand::FRAME_fired20))
 	{
 		AIFlags |= AI_MANUAL_STEERING;
 
@@ -367,10 +364,10 @@ void CWidowStand::FireBlaster ()
 			NextFrame = Entity->State.GetFrame();
 
 		EMuzzleFlash flashnum;
-		if (Entity->State.GetFrame() == FRAME_fired02a)
+		if (Entity->State.GetFrame() == CWidowStand::FRAME_fired02a)
 			flashnum = MZ2_WIDOW_BLASTER_0;
 		else
-			flashnum = MZ2_WIDOW_BLASTER_100 + Entity->State.GetFrame() - FRAME_fired03;
+			flashnum = MZ2_WIDOW_BLASTER_100 + Entity->State.GetFrame() - CWidowStand::FRAME_fired03;
 
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
@@ -398,9 +395,9 @@ void CWidowStand::FireBlaster ()
 
 		MonsterFireBlaster2 (start, forward, BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
 	}
-	else if ((Entity->State.GetFrame() >= FRAME_run01) && (Entity->State.GetFrame() <= FRAME_run08))
+	else if ((Entity->State.GetFrame() >= CWidowStand::FRAME_run01) && (Entity->State.GetFrame() <= CWidowStand::FRAME_run08))
 	{
-		EMuzzleFlash flashnum = MZ2_WIDOW_RUN_1 + Entity->State.GetFrame() - FRAME_run01;
+		EMuzzleFlash flashnum = MZ2_WIDOW_RUN_1 + Entity->State.GetFrame() - CWidowStand::FRAME_run01;
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
 		MonsterFireBlaster2 (start, Entity->Enemy->State.GetOrigin() - start + vec3f(0, 0, Entity->Enemy->ViewHeight), BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
@@ -504,7 +501,7 @@ CFrame WidowFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim	WidowMoveStand (FRAME_idle01, FRAME_idle11, WidowFramesStand);
+CAnim	WidowMoveStand (CWidowStand::FRAME_idle01, CWidowStand::FRAME_idle11, WidowFramesStand);
 
 CFrame WidowFramesWalk [] =
 {
@@ -523,7 +520,7 @@ CFrame WidowFramesWalk [] =
 	CFrame (&CMonster::AI_Walk,	5.73f),
 	CFrame (&CMonster::AI_Walk,	2.85f)
 };
-CAnim WidowMoveWalk (FRAME_walk01, FRAME_walk13, WidowFramesWalk);
+CAnim WidowMoveWalk (CWidowStand::FRAME_walk01, CWidowStand::FRAME_walk13, WidowFramesWalk);
 
 CFrame WidowFramesRun [] =
 {
@@ -541,7 +538,7 @@ CFrame WidowFramesRun [] =
 	CFrame (&CMonster::AI_Run,	5.73f),
 	CFrame (&CMonster::AI_Run,	2.85f)
 };
-CAnim WidowMoveRun (FRAME_walk01, FRAME_walk13, WidowFramesRun);
+CAnim WidowMoveRun (CWidowStand::FRAME_walk01, CWidowStand::FRAME_walk13, WidowFramesRun);
 
 void CWidowStand::StepShoot ()
 {
@@ -560,7 +557,7 @@ CFrame WidowFramesRunAttack [] =
 	CFrame (&CMonster::AI_Charge,	19.63f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
 	CFrame (&CMonster::AI_Charge,	11.37f,	ConvertDerivedFunction(&CWidowStand::FireBlaster))
 };
-CAnim WidowMoveRunAttack (FRAME_run01, FRAME_run08, WidowFramesRunAttack, &CMonster::Run);
+CAnim WidowMoveRunAttack (CWidowStand::FRAME_run01, CWidowStand::FRAME_run08, WidowFramesRunAttack, &CMonster::Run);
 
 //
 // These three allow specific entry into the run sequence
@@ -569,7 +566,7 @@ CAnim WidowMoveRunAttack (FRAME_run01, FRAME_run08, WidowFramesRunAttack, &CMons
 void CWidowStand::StartRun12 ()
 {
 	CurrentMove = &WidowMoveRun;
-	NextFrame = FRAME_walk12;
+	NextFrame = CWidowStand::FRAME_walk12;
 }
 
 CFrame WidowFramesAttackPreRail [] =
@@ -579,7 +576,7 @@ CFrame WidowFramesAttackPreRail [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::AttackRail))
 };
-CAnim WidowMoveAttackPreRail (FRAME_transc01, FRAME_transc04, WidowFramesAttackPreRail);
+CAnim WidowMoveAttackPreRail (CWidowStand::FRAME_transc01, CWidowStand::FRAME_transc04, WidowFramesAttackPreRail);
 
 CFrame WidowFramesAttackRail [] =
 {
@@ -593,7 +590,7 @@ CFrame WidowFramesAttackRail [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
 };
-CAnim WidowMoveAttackRail (FRAME_firea01, FRAME_firea09, WidowFramesAttackRail, &CMonster::Run);
+CAnim WidowMoveAttackRail (CWidowStand::FRAME_firea01, CWidowStand::FRAME_firea09, WidowFramesAttackRail, &CMonster::Run);
 
 CFrame WidowFramesAttackRailR [] =
 {
@@ -607,7 +604,7 @@ CFrame WidowFramesAttackRailR [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
 };
-CAnim WidowMoveAttackRailR (FRAME_fireb01, FRAME_fireb09, WidowFramesAttackRailR, &CMonster::Run);
+CAnim WidowMoveAttackRailR (CWidowStand::FRAME_fireb01, CWidowStand::FRAME_fireb09, WidowFramesAttackRailR, &CMonster::Run);
 
 CFrame WidowFramesAttackRailL [] =
 {
@@ -621,7 +618,7 @@ CFrame WidowFramesAttackRailL [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
 };
-CAnim WidowMoveAttackRailL (FRAME_firec01, FRAME_firec09, WidowFramesAttackRailL, &CMonster::Run);
+CAnim WidowMoveAttackRailL (CWidowStand::FRAME_firec01, CWidowStand::FRAME_firec09, WidowFramesAttackRailL, &CMonster::Run);
 
 void CWidowStand::FireRail ()
 {
@@ -699,7 +696,7 @@ CFrame WidowFramesSpawn [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::DoneSpawn))
 };
-CAnim WidowMoveSpawn (FRAME_spawn01, FRAME_spawn18, WidowFramesSpawn, &CMonster::Run);
+CAnim WidowMoveSpawn (CWidowStand::FRAME_spawn01, CWidowStand::FRAME_spawn18, WidowFramesSpawn, &CMonster::Run);
 
 CFrame WidowFramesPainHeavy [] =
 {
@@ -717,7 +714,7 @@ CFrame WidowFramesPainHeavy [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim WidowMovePainHeavy (FRAME_pain01, FRAME_pain13, WidowFramesPainHeavy, &CMonster::Run);
+CAnim WidowMovePainHeavy (CWidowStand::FRAME_pain01, CWidowStand::FRAME_pain13, WidowFramesPainHeavy, &CMonster::Run);
 
 CFrame WidowFramesPainLight [] =
 {
@@ -725,7 +722,7 @@ CFrame WidowFramesPainLight [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim WidowMovePainLight (FRAME_pain201, FRAME_pain203, WidowFramesPainLight, &CMonster::Run);
+CAnim WidowMovePainLight (CWidowStand::FRAME_pain201, CWidowStand::FRAME_pain203, WidowFramesPainLight, &CMonster::Run);
 
 void CWidowStand::SpawnOutStart ()
 {
@@ -795,7 +792,7 @@ CFrame WidowFramesDeath [] =
 	CFrame (&CMonster::AI_Move,	0),				//30	
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CWidowStand::SpawnOutDo))
 };
-CAnim WidowMoveDeath (FRAME_death01, FRAME_death31, WidowFramesDeath);
+CAnim WidowMoveDeath (CWidowStand::FRAME_death01, CWidowStand::FRAME_death31, WidowFramesDeath);
 
 void CWidowStand::AttackKick ()
 {
@@ -818,7 +815,7 @@ CFrame WidowFramesAttackKick [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim WidowMoveAttackKick (FRAME_kick01, FRAME_kick08, WidowFramesAttackKick, &CMonster::Run);
+CAnim WidowMoveAttackKick (CWidowStand::FRAME_kick01, CWidowStand::FRAME_kick08, WidowFramesAttackKick, &CMonster::Run);
 
 void CWidowStand::Stand ()
 {
@@ -874,13 +871,13 @@ void CWidowStand::Attack ()
 		return;
 	}
 
-	// frames FRAME_walk13, FRAME_walk01, FRAME_walk02, FRAME_walk03 are rail gun start frames
-	// frames FRAME_walk09, FRAME_walk10, FRAME_walk11, FRAME_walk12 are spawn & blaster start frames
+	// frames CWidowStand::FRAME_walk13, CWidowStand::FRAME_walk01, CWidowStand::FRAME_walk02, CWidowStand::FRAME_walk03 are rail gun start frames
+	// frames CWidowStand::FRAME_walk09, CWidowStand::FRAME_walk10, CWidowStand::FRAME_walk11, CWidowStand::FRAME_walk12 are spawn & blaster start frames
 
-	if ((Entity->State.GetFrame() == FRAME_walk13) || ((Entity->State.GetFrame() >= FRAME_walk01) && (Entity->State.GetFrame() <= FRAME_walk03)))
+	if ((Entity->State.GetFrame() == CWidowStand::FRAME_walk13) || ((Entity->State.GetFrame() >= CWidowStand::FRAME_walk01) && (Entity->State.GetFrame() <= CWidowStand::FRAME_walk03)))
 		rail_frames = true;
 
-	if ((Entity->State.GetFrame() >= FRAME_walk09) && (Entity->State.GetFrame() <= FRAME_walk12))
+	if ((Entity->State.GetFrame() >= CWidowStand::FRAME_walk09) && (Entity->State.GetFrame() <= CWidowStand::FRAME_walk12))
 		blaster_frames = true;
 
 	CalcSlots();
@@ -1179,12 +1176,12 @@ bool CWidowStand::CheckAttack ()
 		// frames 1,2,3,9,10,11,13 good to fire
 		switch (Entity->State.GetFrame())
 		{
-			case FRAME_walk04:
-			case FRAME_walk05:
-			case FRAME_walk06:
-			case FRAME_walk07:
-			case FRAME_walk08:
-			case FRAME_walk12:
+			case CWidowStand::FRAME_walk04:
+			case CWidowStand::FRAME_walk05:
+			case CWidowStand::FRAME_walk06:
+			case CWidowStand::FRAME_walk07:
+			case CWidowStand::FRAME_walk08:
+			case CWidowStand::FRAME_walk12:
 					return false;
 			default:
 				break;

@@ -566,8 +566,6 @@ CRogueHunterSphere *CRogueHunterSphere::Create (IBaseItem *Item, IBaseEntity *Ow
 
 IMPLEMENT_SAVE_SOURCE(CRogueHunterSphere);
 
-#include "Player/m_player.h"
-
 void CDoppleGangerBody::Think ()
 {
 	if (Q_fabs(IdealYaw - AngleModf(State.GetAngles().Y)) < 2)
@@ -613,8 +611,8 @@ void CDoppleGangerBody::Think ()
 		}
 	}
 
-	if ((++State.GetFrame()) > FRAME_stand40)
-		State.GetFrame() = FRAME_stand01;
+	if ((++State.GetFrame()) > CPlayerEntity::FRAME_stand40)
+		State.GetFrame() = CPlayerEntity::FRAME_stand01;
 
 	NextThink = Level.Frame + FRAMETIME;
 }

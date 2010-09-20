@@ -33,17 +33,14 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Monsters/Medic.h"
-#include "Monsters/m_medic.h"
 
-const int MEDIC_MIN_DISTANCE			= 32;
-const int MEDIC_MAX_HEAL_DISTANCE		= 400;
+const int	MEDIC_MIN_DISTANCE			= 32;
+const int	MEDIC_MAX_HEAL_DISTANCE		= 400;
 const int	MEDIC_TRY_TIME				= 100;
 
 CMedic::CMedic (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Medic";
 }
 
 #if ROGUE_FEATURES
@@ -60,7 +57,7 @@ void CMedic::CleanupHeal (bool ChangeFrame)
 	}
 
 	if (ChangeFrame)
-		NextFrame = FRAME_attack52;
+		NextFrame = CMedic::FRAME_attack52;
 }
 
 #include "Rogue/RogueMedicCommander.h"
@@ -283,7 +280,7 @@ CFrame MedicFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0),
 };
-CAnim MedicMoveStand (FRAME_wait1, FRAME_wait90, MedicFramesStand);
+CAnim MedicMoveStand (CMedic::FRAME_wait1, CMedic::FRAME_wait90, MedicFramesStand);
 
 void CMedic::Stand ()
 {
@@ -305,7 +302,7 @@ CFrame MedicFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 14),
 	CFrame (&CMonster::AI_Walk, 9.3f)
 };
-CAnim MedicMoveWalk (FRAME_walk1, FRAME_walk12, MedicFramesWalk);
+CAnim MedicMoveWalk (CMedic::FRAME_walk1, CMedic::FRAME_walk12, MedicFramesWalk);
 
 void CMedic::Walk ()
 {
@@ -325,7 +322,7 @@ CFrame MedicFramesRun [] =
 	CFrame (&CMonster::AI_Run, 24),
 	CFrame (&CMonster::AI_Run, 35.6f)
 };
-CAnim MedicMoveRun (FRAME_run1, FRAME_run6, MedicFramesRun);
+CAnim MedicMoveRun (CMedic::FRAME_run1, CMedic::FRAME_run6, MedicFramesRun);
 
 void CMedic::Run ()
 {
@@ -359,7 +356,7 @@ CFrame MedicFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim MedicMovePain1 (FRAME_paina1, FRAME_paina8, MedicFramesPain1, &CMonster::Run);
+CAnim MedicMovePain1 (CMedic::FRAME_paina1, CMedic::FRAME_paina8, MedicFramesPain1, &CMonster::Run);
 
 CFrame MedicFramesPain2 [] =
 {
@@ -379,7 +376,7 @@ CFrame MedicFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim MedicMovePain2 (FRAME_painb1, FRAME_painb15, MedicFramesPain2, &CMonster::Run);
+CAnim MedicMovePain2 (CMedic::FRAME_painb1, CMedic::FRAME_painb15, MedicFramesPain2, &CMonster::Run);
 
 void CMedic::Pain(IBaseEntity *Other, sint32 Damage)
 {
@@ -426,14 +423,14 @@ void CMedic::FireBlaster ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attack9:
-	case FRAME_attack12:
+	case CMedic::FRAME_attack9:
+	case CMedic::FRAME_attack12:
 		effect = FX_BLASTER;
 		break;
-	case FRAME_attack19:
-	case FRAME_attack22:
-	case FRAME_attack25:
-	case FRAME_attack28:
+	case CMedic::FRAME_attack19:
+	case CMedic::FRAME_attack22:
+	case CMedic::FRAME_attack25:
+	case CMedic::FRAME_attack28:
 		effect = FX_HYPERBLASTER;
 		break;
 	default:
@@ -493,7 +490,7 @@ CFrame MedicFramesDeath [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim MedicMoveDeath (FRAME_death1, FRAME_death30, MedicFramesDeath, ConvertDerivedFunction(&CMedic::Dead));
+CAnim MedicMoveDeath (CMedic::FRAME_death1, CMedic::FRAME_death30, MedicFramesDeath, ConvertDerivedFunction(&CMedic::Dead));
 
 void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
@@ -548,7 +545,7 @@ CFrame MedicFramesAttackHyperBlaster [] =
 	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
 	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster))
 };
-CAnim MedicMoveAttackHyperBlaster (FRAME_attack15, FRAME_attack30, MedicFramesAttackHyperBlaster, &CMonster::Run);
+CAnim MedicMoveAttackHyperBlaster (CMedic::FRAME_attack15, CMedic::FRAME_attack30, MedicFramesAttackHyperBlaster, &CMonster::Run);
 
 void CMedic::ContinueFiring ()
 {
@@ -573,7 +570,7 @@ CFrame MedicFramesAttackBlaster [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::ContinueFiring))	// Change to medic_continue... Else, go to frame 32
 };
-CAnim MedicMoveAttackBlaster (FRAME_attack1, FRAME_attack14, MedicFramesAttackBlaster, &CMonster::Run);
+CAnim MedicMoveAttackBlaster (CMedic::FRAME_attack1, CMedic::FRAME_attack14, MedicFramesAttackBlaster, &CMonster::Run);
 
 void CMedic::HookLaunch ()
 {
@@ -626,7 +623,7 @@ void CMedic::CableAttack ()
 		return;
 
 	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
-	offset = MedicCableOffsets[Entity->State.GetFrame() - FRAME_attack42];
+	offset = MedicCableOffsets[Entity->State.GetFrame() - CMedic::FRAME_attack42];
 	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, start);
 
 	// check for max distance
@@ -680,13 +677,13 @@ void CMedic::CableAttack ()
 	CMonsterEntity *Monster;
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attack43:
+	case CMedic::FRAME_attack43:
 		Entity->PlaySound (CHAN_AUTO, Sounds[SOUND_HOOK_HIT]);
 		(entity_cast<CMonsterEntity>(*Entity->Enemy))->Monster->AIFlags |= AI_RESURRECTING;
 
 		Entity->Enemy->State.GetEffects() = FX_PENT;
 		break;
-	case FRAME_attack50:
+	case CMedic::FRAME_attack50:
 		Entity->Enemy->SpawnFlags = 0;
 		Monster = (entity_cast<CMonsterEntity>(*Entity->Enemy));
 		Monster->DeathTarget.clear();
@@ -778,7 +775,7 @@ void CMedic::CableAttack ()
 		}
 #endif
 		break;
-	case FRAME_attack44:
+	case CMedic::FRAME_attack44:
 		Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_HOOK_HEAL]);
 	default:
 		break;
@@ -859,7 +856,7 @@ CFrame MedicFramesAttackCable [] =
 	CFrame (&CMonster::AI_Move, 1.2f),
 	CFrame (&CMonster::AI_Move, 1.3f)
 };
-CAnim MedicMoveAttackCable (FRAME_attack33, FRAME_attack60, MedicFramesAttackCable, &CMonster::Run);
+CAnim MedicMoveAttackCable (CMedic::FRAME_attack33, CMedic::FRAME_attack60, MedicFramesAttackCable, &CMonster::Run);
 
 void CMedic::Attack()
 {
@@ -987,7 +984,7 @@ CFrame MedicFramesDuck [] =
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1)
 };
-CAnim MedicMoveDuck (FRAME_duck1, FRAME_duck16, MedicFramesDuck, &CMonster::Run);
+CAnim MedicMoveDuck (CMedic::FRAME_duck1, CMedic::FRAME_duck16, MedicFramesDuck, &CMonster::Run);
 
 #if !ROGUE_FEATURES
 void CMedic::Dodge (IBaseEntity *Attacker, float eta)
@@ -1021,7 +1018,7 @@ void CMedic::Duck (float eta)
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
 
-	NextFrame = FRAME_duck1;
+	NextFrame = CMedic::FRAME_duck1;
 	CurrentMove = &MedicMoveDuck;
 }
 

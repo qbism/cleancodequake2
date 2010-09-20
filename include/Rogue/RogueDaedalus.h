@@ -39,6 +39,8 @@ class CDaedalus : public CIcarus
 public:
 	CDaedalus (uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Daedalus"; }
+
 	void FireBlaster ();
 	void Spawn ();
 	

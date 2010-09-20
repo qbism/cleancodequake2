@@ -32,13 +32,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Monsters/Boss2.h"
-#include "Monsters/m_boss2.h"
 
 CBoss2::CBoss2 (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Biggun Protector"; // FIXME: Name for this guy?
 };
 
 void CBoss2::Search ()
@@ -167,7 +164,7 @@ CFrame Boss2FramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim Boss2MoveStand (FRAME_stand30, FRAME_stand50, Boss2FramesStand);
+CAnim Boss2MoveStand (CBoss2::FRAME_stand30, CBoss2::FRAME_stand50, Boss2FramesStand);
 
 CFrame Boss2FramesFidget [] =
 {
@@ -202,7 +199,7 @@ CFrame Boss2FramesFidget [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim Boss2MoveFidget (FRAME_stand1, FRAME_stand30, Boss2FramesFidget);
+CAnim Boss2MoveFidget (CBoss2::FRAME_stand1, CBoss2::FRAME_stand30, Boss2FramesFidget);
 
 CFrame Boss2FramesWalk [] =
 {
@@ -227,7 +224,7 @@ CFrame Boss2FramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 8),
 	CFrame (&CMonster::AI_Walk, 8)
 };
-CAnim Boss2MoveWalk (FRAME_walk1, FRAME_walk20, Boss2FramesWalk);
+CAnim Boss2MoveWalk (CBoss2::FRAME_walk1, CBoss2::FRAME_walk20, Boss2FramesWalk);
 
 CFrame Boss2FramesRun [] =
 {
@@ -252,7 +249,7 @@ CFrame Boss2FramesRun [] =
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 8)
 };
-CAnim Boss2MoveRun (FRAME_walk1, FRAME_walk20, Boss2FramesRun);
+CAnim Boss2MoveRun (CBoss2::FRAME_walk1, CBoss2::FRAME_walk20, Boss2FramesRun);
 
 CFrame Boss2FramesAttackPreMg [] =
 {
@@ -266,7 +263,7 @@ CFrame Boss2FramesAttackPreMg [] =
 	CFrame (&CMonster::AI_Charge, 1),
 	CFrame (&CMonster::AI_Charge, 1, ConvertDerivedFunction(&CBoss2::AttackMg))
 };
-CAnim Boss2MoveAttackPreMg (FRAME_attack1, FRAME_attack9, Boss2FramesAttackPreMg);
+CAnim Boss2MoveAttackPreMg (CBoss2::FRAME_attack1, CBoss2::FRAME_attack9, Boss2FramesAttackPreMg);
 
 // Loop this
 CFrame Boss2FramesAttackMg [] =
@@ -278,7 +275,7 @@ CFrame Boss2FramesAttackMg [] =
 	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
 	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::ReAttackMg))
 };
-CAnim Boss2MoveAttackMg (FRAME_attack10, FRAME_attack15, Boss2FramesAttackMg);
+CAnim Boss2MoveAttackMg (CBoss2::FRAME_attack10, CBoss2::FRAME_attack15, Boss2FramesAttackMg);
 
 CFrame Boss2FramesAttackPostMg [] =
 {
@@ -287,7 +284,7 @@ CFrame Boss2FramesAttackPostMg [] =
 	CFrame (&CMonster::AI_Charge, 1),
 	CFrame (&CMonster::AI_Charge, 1)
 };
-CAnim Boss2MoveAttackPostMg (FRAME_attack16, FRAME_attack19, Boss2FramesAttackPostMg, &CMonster::Run);
+CAnim Boss2MoveAttackPostMg (CBoss2::FRAME_attack16, CBoss2::FRAME_attack19, Boss2FramesAttackPostMg, &CMonster::Run);
 
 CFrame Boss2FramesAttackRocket [] =
 {
@@ -313,7 +310,7 @@ CFrame Boss2FramesAttackRocket [] =
 	CFrame (&CMonster::AI_Charge, 1),
 	CFrame (&CMonster::AI_Charge, 1)
 };
-CAnim Boss2MoveAttackRocket (FRAME_attack20, FRAME_attack40, Boss2FramesAttackRocket, &CMonster::Run);
+CAnim Boss2MoveAttackRocket (CBoss2::FRAME_attack20, CBoss2::FRAME_attack40, Boss2FramesAttackRocket, &CMonster::Run);
 
 CFrame Boss2FramesPainHeavy [] =
 {
@@ -336,7 +333,7 @@ CFrame Boss2FramesPainHeavy [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim Boss2MovePainHeavy (FRAME_pain2, FRAME_pain19, Boss2FramesPainHeavy, &CMonster::Run);
+CAnim Boss2MovePainHeavy (CBoss2::FRAME_pain2, CBoss2::FRAME_pain19, Boss2FramesPainHeavy, &CMonster::Run);
 
 CFrame Boss2FramesPainLight [] =
 {
@@ -345,7 +342,7 @@ CFrame Boss2FramesPainLight [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim Boss2MovePainLight (FRAME_pain20, FRAME_pain23, Boss2FramesPainLight, &CMonster::Run);
+CAnim Boss2MovePainLight (CBoss2::FRAME_pain20, CBoss2::FRAME_pain23, Boss2FramesPainLight, &CMonster::Run);
 
 CFrame Boss2FramesDeath [] =
 {
@@ -399,7 +396,7 @@ CFrame Boss2FramesDeath [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0,	&CMonster::BossExplode)
 };
-CAnim Boss2MoveDeath (FRAME_death2, FRAME_death50, Boss2FramesDeath, ConvertDerivedFunction(&CBoss2::Dead));
+CAnim Boss2MoveDeath (CBoss2::FRAME_death2, CBoss2::FRAME_death50, Boss2FramesDeath, ConvertDerivedFunction(&CBoss2::Dead));
 
 void CBoss2::Stand ()
 {

@@ -637,7 +637,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *Entities, char *Spawn
 #endif
 	}
 	else
-		ServerPrintf ("Demo detected, skipping map init.\n");
+		ServerPrint ("Demo detected, skipping map init.\n");
 
 #if !NO_VERSION_CHECKING
 	InitVersion ();

@@ -40,8 +40,13 @@ void ClientPrintf (SEntity *ent, EGamePrintLevel printLevel, const char *fmt, ..
 void DeveloperPrintf (const char *fmt, ...);
 void DebugPrintf (const char *fmt, ...);
 void ServerPrintf (const char *fmt, ...);
-
 void BroadcastPrintf (EGamePrintLevel printLevel, const char *fmt, ...);
+
+void ClientPrint (SEntity *ent, EGamePrintLevel printLevel, const char *string);
+void DeveloperPrint (const char *string);
+void DebugPrint (const char *string);
+void ServerPrint (const char *string);
+void BroadcastPrint (EGamePrintLevel printLevel, const char *string);
 
 #else
 FILE_WARNING

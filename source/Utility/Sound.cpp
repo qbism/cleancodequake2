@@ -79,7 +79,7 @@ static void SV_StartSound (vec3f origin, IBaseEntity *Entity, ESoundChannel chan
 {
 	if (!Positioned && !Entity)
 	{
-		DebugPrintf ("CleanCode SV_StartSound: Not positioned and no entity!\n");
+		DebugPrint ("CleanCode SV_StartSound: Not positioned and no entity!\n");
 		return;
 	}
 

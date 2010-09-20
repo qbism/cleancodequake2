@@ -32,8 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_boss32.h"
 #include "Utility/TemporaryEntities.h"
+#include "Monsters/Makron.h"
 
 /*QUAKED monster_boss3_stand (1 .5 0) (-32 -32 0) (32 32 90)
 
@@ -90,8 +90,8 @@ public:
 
 	void Think ()
 	{
-		if (State.GetFrame() == FRAME_stand260)
-			State.GetFrame() = (FRAME_stand201);
+		if (State.GetFrame() == CMakron::FRAME_stand260)
+			State.GetFrame() = (CMakron::FRAME_stand201);
 		else
 			State.GetFrame()++;
 
@@ -115,7 +115,7 @@ public:
 		PhysicsType = PHYSICS_STEP;
 		GetSolid() = SOLID_BBOX;
 		State.GetModelIndex() = ModelIndex ("models/monsters/boss3/rider/tris.md2");
-		State.GetFrame() = FRAME_stand201;
+		State.GetFrame() = CMakron::FRAME_stand201;
 
 		SoundIndex ("misc/bigtele.wav");
 

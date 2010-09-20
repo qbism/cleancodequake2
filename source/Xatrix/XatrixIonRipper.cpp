@@ -36,7 +36,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if XATRIX_FEATURES
 #include "Weapons/WeaponMain.h"
 #include "Xatrix/XatrixIonRipper.h"
-#include "Player/m_player.h"
 
 CIonRipperBoomerang::CIonRipperBoomerang () :
   IFlyMissileProjectile(),

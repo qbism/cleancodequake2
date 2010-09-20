@@ -311,62 +311,60 @@ public:
 
 #if ROGUE_FEATURES
 //ROGUE
-	bool				BlindFire;		// will the monster blindfire?
+	bool						BlindFire;		// will the monster blindfire?
 
-	float				BaseHeight;
-	FrameNumber		NextDuckTime;
-	FrameNumber		DuckWaitTime;
-	FrameNumber		BlindFireDelay;
-	CPlayerEntity		*LastPlayerEnemy;
-	vec3f				BlindFireTarget;
-	entity_ptr<CMonsterEntity> BadMedic1, BadMedic2;	// these medics have declared this monster "unhealable"
-	entity_ptr<CMonsterEntity> Healer;	// this is who is healing this monster
+	float						BaseHeight;
+	FrameNumber					NextDuckTime;
+	FrameNumber					DuckWaitTime;
+	FrameNumber					BlindFireDelay;
+	CPlayerEntity				*LastPlayerEnemy;
+	vec3f						BlindFireTarget;
+	entity_ptr<CMonsterEntity>	BadMedic1, BadMedic2;	// these medics have declared this monster "unhealable"
+	entity_ptr<CMonsterEntity>	Healer;	// this is who is healing this monster
 #endif
 
 #if ROGUE_FEATURES
 	// used by the spawners to not spawn too much and keep track of #s of monsters spawned
-	uint8			MonsterSlots;
-	uint8			MonsterUsed;
-	CMonsterEntity	*Commander;
+	uint8						MonsterSlots;
+	uint8						MonsterUsed;
+	CMonsterEntity				*Commander;
 	// powerup timers, used by widow, our friend
-	FrameNumber	QuadFramenum;
-	FrameNumber	InvincibleFramenum;
-	FrameNumber	DoubleFramenum;
-	class CBadArea	*BadArea;
+	FrameNumber					QuadFramenum;
+	FrameNumber					InvincibleFramenum;
+	FrameNumber					DoubleFramenum;
+	class CBadArea				*BadArea;
 
 	// this is for the count of monsters
 	inline uint8 SlotsLeft () { return MonsterSlots - MonsterUsed; }
 #endif
 
-	sint32				NextFrame;
-	float				Scale;
-	FrameNumber		PauseTime;
-	FrameNumber		AttackFinished;
+	sint32						NextFrame;
+	FrameNumber					PauseTime;
+	FrameNumber					AttackFinished;
 	
-	FrameNumber		SearchTime;
-	FrameNumber		TrailTime;
-	vec3f				LastSighting;
-	vec3f				SavedGoal;
-	sint32				AttackState;
-	bool				Lefty;
-	float				IdleTime;
-	sint32				LinkCount;
+	FrameNumber					SearchTime;
+	FrameNumber					TrailTime;
+	vec3f						LastSighting;
+	vec3f						SavedGoal;
+	sint32						AttackState;
+	bool						Lefty;
+	float						IdleTime;
+	sint32						LinkCount;
 
-	EPowerArmorType		PowerArmorType;
-	sint32				PowerArmorPower;
-	uint8				PowerArmorTime;
-	uint8				ExplodeCount;
-	bool				EnemyInfront, EnemyVis;
+	EPowerArmorType				PowerArmorType;
+	sint32						PowerArmorPower;
+	uint8						PowerArmorTime;
+	uint8						ExplodeCount;
+	bool						EnemyInfront, EnemyVis;
 
-	ERangeType			EnemyRange;
-	float				EnemyYaw;
+	ERangeType					EnemyRange;
+	float						EnemyYaw;
 
-	CAnim				*CurrentMove;
+	CAnim						*CurrentMove;
 
-	uint32				MonsterFlags;
-	std::string			MonsterName;
+	uint32						MonsterFlags;
 
-	FrameNumber		PainDebounceTime;
+	FrameNumber					PainDebounceTime;
 
 	CMonster(uint32 ID);
 
@@ -403,6 +401,9 @@ public:
 	virtual void LoadMonsterFields (CFile &File) {};
 
 	virtual void		Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf) {}; // Empty
+
+	virtual inline float		GetScale() { return 1.0f; }
+	virtual inline const char	*GetMonsterName() = 0;
 
 	// Virtual functions
 	virtual void		Stand			();

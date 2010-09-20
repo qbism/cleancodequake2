@@ -40,8 +40,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CSoldierRipper::CSoldierRipper (uint32 ID) :
 CSoldierBase (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Ripper Soldier";
 }
 
 CFrame SoldierHFramesAttack1 [] =
@@ -59,7 +57,7 @@ CFrame SoldierHFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierHMoveAttack1 (FRAME_attak101, FRAME_attak112, SoldierHFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierHMoveAttack1 (CSoldierBase::FRAME_attak101, CSoldierBase::FRAME_attak112, SoldierHFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierHFramesAttack2 [] =
 {
@@ -82,7 +80,7 @@ CFrame SoldierHFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierHMoveAttack2 (FRAME_attak201, FRAME_attak218, SoldierHFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierHMoveAttack2 (CSoldierBase::FRAME_attak201, CSoldierBase::FRAME_attak218, SoldierHFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
 
 extern CAnim SoldierMoveAttack6;
 

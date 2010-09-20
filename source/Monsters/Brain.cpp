@@ -33,13 +33,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Monsters/Brain.h"
-#include "Monsters/m_brain.h"
 
 CBrain::CBrain (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Brain";
 }
 
 void CBrain::Sight ()
@@ -91,7 +88,7 @@ CFrame BrainFramesStand [] =
 	CFrame (&CMonster::AI_Stand,	0),
 	CFrame (&CMonster::AI_Stand,	0)
 };
-CAnim BrainMoveStand (FRAME_stand01, FRAME_stand30, BrainFramesStand);
+CAnim BrainMoveStand (CBrain::FRAME_stand01, CBrain::FRAME_stand30, BrainFramesStand);
 
 void CBrain::Stand ()
 {
@@ -138,7 +135,7 @@ CFrame BrainFramesIdle [] =
 	CFrame (&CMonster::AI_Stand,	0),
 	CFrame (&CMonster::AI_Stand,	0)
 };
-CAnim BrainMoveIdle (FRAME_stand31, FRAME_stand60, BrainFramesIdle, &CMonster::Stand);
+CAnim BrainMoveIdle (CBrain::FRAME_stand31, CBrain::FRAME_stand60, BrainFramesIdle, &CMonster::Stand);
 
 void CBrain::Idle ()
 {
@@ -163,7 +160,7 @@ CFrame BrainFramesWalk1 [] =
 	CFrame (&CMonster::AI_Walk,	-1),
 	CFrame (&CMonster::AI_Walk,	2)
 };
-CAnim BrainMoveWalk1 (FRAME_walk101, FRAME_walk111, BrainFramesWalk1);
+CAnim BrainMoveWalk1 (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesWalk1);
 
 void CBrain::Walk ()
 {
@@ -183,7 +180,7 @@ CFrame BrainFramesDefense [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim BrainMoveDefense (FRAME_defens01, FRAME_defens08, BrainFramesDefense);
+CAnim BrainMoveDefense (CBrain::FRAME_defens01, CBrain::FRAME_defens08, BrainFramesDefense);
 
 CFrame BrainFramesPain3 [] =
 {
@@ -194,7 +191,7 @@ CFrame BrainFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	-4)
 };
-CAnim BrainMovePain3 (FRAME_pain301, FRAME_pain306, BrainFramesPain3, &CMonster::Run);
+CAnim BrainMovePain3 (CBrain::FRAME_pain301, CBrain::FRAME_pain306, BrainFramesPain3, &CMonster::Run);
 
 CFrame BrainFramesPain2 [] =
 {
@@ -207,7 +204,7 @@ CFrame BrainFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	1),
 	CFrame (&CMonster::AI_Move,	-2)
 };
-CAnim BrainMovePain2 (FRAME_pain201, FRAME_pain208, BrainFramesPain2, &CMonster::Run);
+CAnim BrainMovePain2 (CBrain::FRAME_pain201, CBrain::FRAME_pain208, BrainFramesPain2, &CMonster::Run);
 
 CFrame BrainFramesPain1 [] =
 {
@@ -233,7 +230,7 @@ CFrame BrainFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	3),
 	CFrame (&CMonster::AI_Move,	-1)
 };
-CAnim BrainMovePain1 (FRAME_pain101, FRAME_pain121, BrainFramesPain1, &CMonster::Run);
+CAnim BrainMovePain1 (CBrain::FRAME_pain101, CBrain::FRAME_pain121, BrainFramesPain1, &CMonster::Run);
 
 void CBrain::Pain(IBaseEntity *Other, sint32 Damage)
 {
@@ -286,7 +283,7 @@ CFrame BrainFramesDuck [] =
 	CFrame (&CMonster::AI_Move,	-6),
 	CFrame (&CMonster::AI_Move,	-6)
 };
-CAnim BrainMoveDuck (FRAME_duck01, FRAME_duck08, BrainFramesDuck, &CMonster::Run);
+CAnim BrainMoveDuck (CBrain::FRAME_duck01, CBrain::FRAME_duck08, BrainFramesDuck, &CMonster::Run);
 
 #if !ROGUE_FEATURES
 void CBrain::Duck_Down ()
@@ -337,7 +334,7 @@ void CBrain::Duck (float eta)
 		DuckWaitTime = Level.Frame + ((eta + (0.1 * (3 - CvarList[CV_SKILL].Integer()))) * 10);
 
 	CurrentMove = &BrainMoveDuck;
-	NextFrame = FRAME_duck01;
+	NextFrame = CBrain::FRAME_duck01;
 	return;
 }
 #endif
@@ -350,7 +347,7 @@ CFrame BrainFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move,	9),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim BrainMoveDeath2 (FRAME_death201, FRAME_death205, BrainFramesDeath2, ConvertDerivedFunction(&CBrain::Dead));
+CAnim BrainMoveDeath2 (CBrain::FRAME_death201, CBrain::FRAME_death205, BrainFramesDeath2, ConvertDerivedFunction(&CBrain::Dead));
 
 CFrame BrainFramesDeath1 [] =
 {
@@ -373,7 +370,7 @@ CFrame BrainFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim BrainMoveDeath1 (FRAME_death101, FRAME_death118, BrainFramesDeath1, ConvertDerivedFunction(&CBrain::Dead));
+CAnim BrainMoveDeath1 (CBrain::FRAME_death101, CBrain::FRAME_death118, BrainFramesDeath1, ConvertDerivedFunction(&CBrain::Dead));
 
 void CBrain::Dead ()
 {
@@ -462,7 +459,7 @@ CFrame BrainFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge,	2),
 	CFrame (&CMonster::AI_Charge,	-11)
 };
-CAnim BrainMoveAttack1 (FRAME_attak101, FRAME_attak118, BrainFramesAttack1, &CMonster::Run);
+CAnim BrainMoveAttack1 (CBrain::FRAME_attak101, CBrain::FRAME_attak118, BrainFramesAttack1, &CMonster::Run);
 
 void CBrain::ChestOpen ()
 {
@@ -510,7 +507,7 @@ CFrame BrainFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge,	-3),
 	CFrame (&CMonster::AI_Charge,	-6)
 };
-CAnim BrainMoveAttack2 (FRAME_attak201, FRAME_attak217, BrainFramesAttack2, &CMonster::Run);
+CAnim BrainMoveAttack2 (CBrain::FRAME_attak201, CBrain::FRAME_attak217, BrainFramesAttack2, &CMonster::Run);
 
 void CBrain::Melee ()
 {
@@ -632,9 +629,9 @@ void CBrain::LaserBeamFire ()
 	angles.ToVectors (&forward, &right, &up);
 	Laser->State.GetAngles() = angles;
 	Laser->State.GetOrigin() = Laser->State.GetOrigin().
-		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].X, right).
-		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].Y, forward).
-		MultiplyAngles (brain_reye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, right).
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, forward).
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, up);
 
 	Laser->Enemy = Entity->Enemy;
 	Laser->SetOwner(Entity);
@@ -647,9 +644,9 @@ void CBrain::LaserBeamFire ()
 	angles.ToVectors (&forward, &right, &up);
 	Laser->State.GetAngles() = angles;
 	Laser->State.GetOrigin() = Laser->State.GetOrigin().
-		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].X, right).
-		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].Y, forward).
-		MultiplyAngles (brain_leye[Entity->State.GetFrame() - FRAME_walk101].Z, up);
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, right).
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, forward).
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, up);
 
 	Laser->Enemy = Entity->Enemy;
 	Laser->SetOwner(Entity);
@@ -660,7 +657,7 @@ void CBrain::LaserBeamFire ()
 void CBrain::LaserBeamRefire ()
 {
 	if (frand() < 0.5 && IsVisible (Entity, *Entity->Enemy) && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0)
-		Entity->State.GetFrame() = FRAME_walk101;
+		Entity->State.GetFrame() = CBrain::FRAME_walk101;
 }
 
 CFrame BrainFramesAttack3 [] =
@@ -683,7 +680,7 @@ CFrame BrainFramesAttack3 [] =
 	CFrame (&CMonster::AI_Charge, -3),
 	CFrame (&CMonster::AI_Charge, -6)
 };
-CAnim BrainMoveAttack3 (FRAME_attak201, FRAME_attak217, BrainFramesAttack3, &CMonster::Run);
+CAnim BrainMoveAttack3 (CBrain::FRAME_attak201, CBrain::FRAME_attak217, BrainFramesAttack3, &CMonster::Run);
 
 CFrame BrainFramesAttack4 [] =
 {
@@ -699,7 +696,7 @@ CFrame BrainFramesAttack4 [] =
 	CFrame (&CMonster::AI_Charge, -1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
 	CFrame (&CMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamRefire))
 };
-CAnim BrainMoveAttack4 (FRAME_walk101, FRAME_walk111, BrainFramesAttack4, &CMonster::Run);
+CAnim BrainMoveAttack4 (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesAttack4, &CMonster::Run);
 
 void CBrain::Attack ()
 {	
@@ -739,7 +736,7 @@ CFrame BrainFramesRun [] =
 	CFrame (&CMonster::AI_Run,	-1),
 	CFrame (&CMonster::AI_Run,	2)
 };
-CAnim BrainMoveRun (FRAME_walk101, FRAME_walk111, BrainFramesRun);
+CAnim BrainMoveRun (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesRun);
 
 void CBrain::Run ()
 {

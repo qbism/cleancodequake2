@@ -38,8 +38,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CSoldierLight::CSoldierLight (uint32 ID) :
 CSoldierBase (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Light Soldier";
 }
 
 extern CAnim SoldierMoveAttack1;

@@ -84,7 +84,7 @@ typedef sint32	FrameNumber;
 // Main class files
 #include "Game/GameApi.h"
 #include "Game/Game.h"
-#include "Player/StatusBar.h"
+#include "Player/Statusbar.h"
 #include "Utility/MapPrint.h"
 #if CLEANCTF_ENABLED
 #include "CTF/Ctf.h"

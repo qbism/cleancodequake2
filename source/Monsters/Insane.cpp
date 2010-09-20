@@ -32,7 +32,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_insane.h"
 #include "Monsters/Insane.h"
 
 /**
@@ -51,8 +50,6 @@ enum
 CInsane::CInsane (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Insane Dude";
 }
 
 void CInsane::Fist ()
@@ -84,7 +81,7 @@ CFrame InsaneFramesStandNormal [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CInsane::CheckDown))
 };
-CAnim InsaneMoveStandNormal (FRAME_stand60, FRAME_stand65, InsaneFramesStandNormal, &CMonster::Stand);
+CAnim InsaneMoveStandNormal (CInsane::FRAME_stand60, CInsane::FRAME_stand65, InsaneFramesStandNormal, &CMonster::Stand);
 
 CFrame InsaneFramesStandInsane [] =
 {
@@ -119,7 +116,7 @@ CFrame InsaneFramesStandInsane [] =
 	CFrame (&CMonster::AI_Stand,	0),
 	CFrame (&CMonster::AI_Stand,	0,	ConvertDerivedFunction(&CInsane::CheckDown))
 };
-CAnim InsaneMoveStandInsane (FRAME_stand65, FRAME_stand94, InsaneFramesStandInsane, &CMonster::Stand);
+CAnim InsaneMoveStandInsane (CInsane::FRAME_stand65, CInsane::FRAME_stand94, InsaneFramesStandInsane, &CMonster::Stand);
 
 CFrame InsaneFramesUpToDown [] =
 {
@@ -167,7 +164,7 @@ CFrame InsaneFramesUpToDown [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveUpToDown (FRAME_stand1, FRAME_stand40, InsaneFramesUpToDown, ConvertDerivedFunction(&CInsane::OnGround));
+CAnim InsaneMoveUpToDown (CInsane::FRAME_stand1, CInsane::FRAME_stand40, InsaneFramesUpToDown, ConvertDerivedFunction(&CInsane::OnGround));
 
 CFrame InsaneFramesDownToUp [] =
 {
@@ -191,7 +188,7 @@ CFrame InsaneFramesDownToUp [] =
 	CFrame (&CMonster::AI_Move,	0),				// 58
 	CFrame (&CMonster::AI_Move,	0)				// 59
 };
-CAnim InsaneMoveDownToUp (FRAME_stand41, FRAME_stand59, InsaneFramesDownToUp, &CMonster::Stand);
+CAnim InsaneMoveDownToUp (CInsane::FRAME_stand41, CInsane::FRAME_stand59, InsaneFramesDownToUp, &CMonster::Stand);
 
 CFrame InsaneFramesJumpDown [] =
 {
@@ -201,7 +198,7 @@ CFrame InsaneFramesJumpDown [] =
 	CFrame (&CMonster::AI_Move,	7.1f),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveJumpDown (FRAME_stand96, FRAME_stand100, InsaneFramesJumpDown, ConvertDerivedFunction(&CInsane::OnGround));
+CAnim InsaneMoveJumpDown (CInsane::FRAME_stand96, CInsane::FRAME_stand100, InsaneFramesJumpDown, ConvertDerivedFunction(&CInsane::OnGround));
 
 
 CFrame InsaneFramesDown [] =
@@ -268,7 +265,7 @@ CFrame InsaneFramesDown [] =
 	CFrame (&CMonster::AI_Move,	0.7f),
 	CFrame (&CMonster::AI_Move,	0, ConvertDerivedFunction(&CInsane::CheckUp))		// 160
 };
-CAnim InsaneMoveDown (FRAME_stand100, FRAME_stand160, InsaneFramesDown, ConvertDerivedFunction(&CInsane::OnGround));
+CAnim InsaneMoveDown (CInsane::FRAME_stand100, CInsane::FRAME_stand160, InsaneFramesDown, ConvertDerivedFunction(&CInsane::OnGround));
 
 CFrame InsaneFramesWalkNormal [] =
 {
@@ -286,8 +283,8 @@ CFrame InsaneFramesWalkNormal [] =
 	CFrame (&CMonster::AI_Walk,	0.9f),
 	CFrame (&CMonster::AI_Walk,	0)
 };
-CAnim InsaneMoveWalkNormal (FRAME_walk27, FRAME_walk39, InsaneFramesWalkNormal, &CMonster::Walk);
-CAnim InsaneMoveRunNormal (FRAME_walk27, FRAME_walk39, InsaneFramesWalkNormal, &CMonster::Run);
+CAnim InsaneMoveWalkNormal (CInsane::FRAME_walk27, CInsane::FRAME_walk39, InsaneFramesWalkNormal, &CMonster::Walk);
+CAnim InsaneMoveRunNormal (CInsane::FRAME_walk27, CInsane::FRAME_walk39, InsaneFramesWalkNormal, &CMonster::Run);
 
 CFrame InsaneFramesWalkInsane [] =
 {
@@ -318,8 +315,8 @@ CFrame InsaneFramesWalkInsane [] =
 	CFrame (&CMonster::AI_Walk,	1.8f),		// 25
 	CFrame (&CMonster::AI_Walk,	0)		// 26
 };
-CAnim InsaneMoveWalkInsane (FRAME_walk1, FRAME_walk26, InsaneFramesWalkInsane, &CMonster::Walk);
-CAnim InsaneMoveRunInsane (FRAME_walk1, FRAME_walk26, InsaneFramesWalkInsane, &CMonster::Run);
+CAnim InsaneMoveWalkInsane (CInsane::FRAME_walk1, CInsane::FRAME_walk26, InsaneFramesWalkInsane, &CMonster::Walk);
+CAnim InsaneMoveRunInsane (CInsane::FRAME_walk1, CInsane::FRAME_walk26, InsaneFramesWalkInsane, &CMonster::Run);
 
 CFrame InsaneFramesStandPain [] =
 {
@@ -335,7 +332,7 @@ CFrame InsaneFramesStandPain [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveStandPain (FRAME_st_pain2, FRAME_st_pain12, InsaneFramesStandPain, &CMonster::Run);
+CAnim InsaneMoveStandPain (CInsane::FRAME_st_pain2, CInsane::FRAME_st_pain12, InsaneFramesStandPain, &CMonster::Run);
 
 CFrame InsaneFramesStandDeath [] =
 {
@@ -357,7 +354,7 @@ CFrame InsaneFramesStandDeath [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveStandDeath (FRAME_st_death2, FRAME_st_death18, InsaneFramesStandDeath, ConvertDerivedFunction(&CInsane::Dead));
+CAnim InsaneMoveStandDeath (CInsane::FRAME_st_death2, CInsane::FRAME_st_death18, InsaneFramesStandDeath, ConvertDerivedFunction(&CInsane::Dead));
 
 CFrame InsaneFramesCrawl [] =
 {
@@ -371,8 +368,8 @@ CFrame InsaneFramesCrawl [] =
 	CFrame (&CMonster::AI_Walk,	3.4f),
 	CFrame (&CMonster::AI_Walk,	2.4f)
 };
-CAnim InsaneMoveCrawl (FRAME_crawl1, FRAME_crawl9, InsaneFramesCrawl);
-CAnim InsaneMoveRunCrawl (FRAME_crawl1, FRAME_crawl9, InsaneFramesCrawl);
+CAnim InsaneMoveCrawl (CInsane::FRAME_crawl1, CInsane::FRAME_crawl9, InsaneFramesCrawl);
+CAnim InsaneMoveRunCrawl (CInsane::FRAME_crawl1, CInsane::FRAME_crawl9, InsaneFramesCrawl);
 
 CFrame InsaneFramesCrawlPain [] =
 {
@@ -386,7 +383,7 @@ CFrame InsaneFramesCrawlPain [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveCrawlPain (FRAME_cr_pain2, FRAME_cr_pain10, InsaneFramesCrawlPain, &CMonster::Run);
+CAnim InsaneMoveCrawlPain (CInsane::FRAME_cr_pain2, CInsane::FRAME_cr_pain10, InsaneFramesCrawlPain, &CMonster::Run);
 
 CFrame InsaneFramesCrawlDeath [] =
 {
@@ -398,7 +395,7 @@ CFrame InsaneFramesCrawlDeath [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveCrawlDeath (FRAME_cr_death10, FRAME_cr_death16, InsaneFramesCrawlDeath, ConvertDerivedFunction(&CInsane::Dead));
+CAnim InsaneMoveCrawlDeath (CInsane::FRAME_cr_death10, CInsane::FRAME_cr_death16, InsaneFramesCrawlDeath, ConvertDerivedFunction(&CInsane::Dead));
 
 CFrame InsaneFramesCross [] =
 {
@@ -418,7 +415,7 @@ CFrame InsaneFramesCross [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveCross (FRAME_cross1, FRAME_cross15, InsaneFramesCross, ConvertDerivedFunction(&CInsane::Cross));
+CAnim InsaneMoveCross (CInsane::FRAME_cross1, CInsane::FRAME_cross15, InsaneFramesCross, ConvertDerivedFunction(&CInsane::Cross));
 
 CFrame InsaneFramesStruggleCross [] =
 {
@@ -438,7 +435,7 @@ CFrame InsaneFramesStruggleCross [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim InsaneMoveStruggleCross (FRAME_cross16, FRAME_cross30, InsaneFramesStruggleCross, ConvertDerivedFunction(&CInsane::Cross));
+CAnim InsaneMoveStruggleCross (CInsane::FRAME_cross16, CInsane::FRAME_cross30, InsaneFramesStruggleCross, ConvertDerivedFunction(&CInsane::Cross));
 
 void CInsane::Cross ()
 {
@@ -447,7 +444,7 @@ void CInsane::Cross ()
 
 void CInsane::Walk ()
 {
-	if ( (Entity->SpawnFlags & INSANE_STAND_GROUND) && (Entity->State.GetFrame() == FRAME_cr_pain10) )			// Hold Ground?
+	if ( (Entity->SpawnFlags & INSANE_STAND_GROUND) && (Entity->State.GetFrame() == CInsane::FRAME_cr_pain10) )			// Hold Ground?
 	{
 		CurrentMove = &InsaneMoveDown;
 		return;
@@ -461,7 +458,7 @@ void CInsane::Walk ()
 
 void CInsane::Run ()
 {
-	if ( (Entity->SpawnFlags & INSANE_STAND_GROUND) && (Entity->State.GetFrame() == FRAME_cr_pain10))			// Hold Ground?
+	if ( (Entity->SpawnFlags & INSANE_STAND_GROUND) && (Entity->State.GetFrame() == CInsane::FRAME_cr_pain10))			// Hold Ground?
 	{
 		CurrentMove = &InsaneMoveDown;
 		return;
@@ -494,7 +491,7 @@ void CInsane::Pain (IBaseEntity *Other, sint32 Damage)
 		return;
 	}
 	
-	if  ( ((Entity->State.GetFrame() >= FRAME_crawl1) && (Entity->State.GetFrame() <= FRAME_crawl9)) || ((Entity->State.GetFrame() >= FRAME_stand99) && (Entity->State.GetFrame() <= FRAME_stand160)) )
+	if  ( ((Entity->State.GetFrame() >= CInsane::FRAME_crawl1) && (Entity->State.GetFrame() <= CInsane::FRAME_crawl9)) || ((Entity->State.GetFrame() >= CInsane::FRAME_stand99) && (Entity->State.GetFrame() <= CInsane::FRAME_stand160)) )
 		CurrentMove = &InsaneMoveCrawlPain;
 	else
 		CurrentMove = &InsaneMoveStandPain;
@@ -578,7 +575,7 @@ void CInsane::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage,
 		Dead ();
 	else
 	{
-		if ( ((Entity->State.GetFrame() >= FRAME_crawl1) && (Entity->State.GetFrame() <= FRAME_crawl9)) || ((Entity->State.GetFrame() >= FRAME_stand99) && (Entity->State.GetFrame() <= FRAME_stand160)) )		
+		if ( ((Entity->State.GetFrame() >= CInsane::FRAME_crawl1) && (Entity->State.GetFrame() <= CInsane::FRAME_crawl9)) || ((Entity->State.GetFrame() >= CInsane::FRAME_stand99) && (Entity->State.GetFrame() <= CInsane::FRAME_stand160)) )		
 			CurrentMove = &InsaneMoveCrawlDeath;
 		else
 			CurrentMove = &InsaneMoveStandDeath;

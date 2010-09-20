@@ -33,13 +33,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Monsters/Berserk.h"
-#include "Monsters/m_berserk.h"
 
 CBerserker::CBerserker (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Berserker";
 }
 
 void CBerserker::Sight ()
@@ -61,7 +58,7 @@ CFrame BerserkFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim BerserkMoveStand (FRAME_stand1, FRAME_stand5, BerserkFramesStand);
+CAnim BerserkMoveStand (CBerserker::FRAME_stand1, CBerserker::FRAME_stand5, BerserkFramesStand);
 
 void CBerserker::Stand ()
 {
@@ -91,7 +88,7 @@ CFrame BerserkFramesStandFidget [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim BerserkMoveStandFidget (FRAME_standb1, FRAME_standb20, BerserkFramesStandFidget, &CMonster::Stand);
+CAnim BerserkMoveStandFidget (CBerserker::FRAME_standb1, CBerserker::FRAME_standb20, BerserkFramesStandFidget, &CMonster::Stand);
 
 void CBerserker::Fidget ()
 {
@@ -120,7 +117,7 @@ CFrame BerserkFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 4.7f),
 	CFrame (&CMonster::AI_Walk, 4.8f)
 };
-CAnim BerserkMoveWalk (FRAME_walkc1, FRAME_walkc11, BerserkFramesWalk);
+CAnim BerserkMoveWalk (CBerserker::FRAME_walkc1, CBerserker::FRAME_walkc11, BerserkFramesWalk);
 
 void CBerserker::Walk ()
 {
@@ -160,7 +157,7 @@ CFrame BerserkFramesRun1 [] =
 	CFrame (&CMonster::AI_Run, 18),
 	CFrame (&CMonster::AI_Run, 19)
 };
-CAnim BerserkMoveRun1 (FRAME_run1, FRAME_run6, BerserkFramesRun1);
+CAnim BerserkMoveRun1 (CBerserker::FRAME_run1, CBerserker::FRAME_run6, BerserkFramesRun1);
 
 void CBerserker::Run ()
 {
@@ -189,7 +186,7 @@ CFrame BerserkFramesAttackSpike [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim BerserkMoveAttackSpike (FRAME_att_c1, FRAME_att_c8, BerserkFramesAttackSpike, &CMonster::Run);
+CAnim BerserkMoveAttackSpike (CBerserker::FRAME_att_c1, CBerserker::FRAME_att_c8, BerserkFramesAttackSpike, &CMonster::Run);
 
 void CBerserker::AttackClub ()
 {
@@ -212,7 +209,7 @@ CFrame BerserkFramesAttackClub [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim BerserkMoveAttackClub (FRAME_att_c9, FRAME_att_c20, BerserkFramesAttackClub, &CMonster::Run);
+CAnim BerserkMoveAttackClub (CBerserker::FRAME_att_c9, CBerserker::FRAME_att_c20, BerserkFramesAttackClub, &CMonster::Run);
 
 void CBerserker::Melee ()
 {
@@ -226,7 +223,7 @@ CFrame BerserkFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim BerserkMovePain1 (FRAME_painc1, FRAME_painc4, BerserkFramesPain1, &CMonster::Run);
+CAnim BerserkMovePain1 (CBerserker::FRAME_painc1, CBerserker::FRAME_painc4, BerserkFramesPain1, &CMonster::Run);
 
 CFrame BerserkFramesPain2 [] =
 {
@@ -251,7 +248,7 @@ CFrame BerserkFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim BerserkMovePain2 (FRAME_painb1, FRAME_painb20, BerserkFramesPain2, &CMonster::Run);
+CAnim BerserkMovePain2 (CBerserker::FRAME_painb1, CBerserker::FRAME_painb20, BerserkFramesPain2, &CMonster::Run);
 
 void CBerserker::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -298,7 +295,7 @@ CFrame BerserkFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim BerserkMoveDeath1 (FRAME_death1, FRAME_death13, BerserkFramesDeath1, ConvertDerivedFunction(&CBerserker::Dead));
+CAnim BerserkMoveDeath1 (CBerserker::FRAME_death1, CBerserker::FRAME_death13, BerserkFramesDeath1, ConvertDerivedFunction(&CBerserker::Dead));
 
 CFrame BerserkFramesDeath2 [] =
 {
@@ -311,7 +308,7 @@ CFrame BerserkFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim BerserkMoveDeath2 (FRAME_deathc1, FRAME_deathc8, BerserkFramesDeath2, ConvertDerivedFunction(&CBerserker::Dead));
+CAnim BerserkMoveDeath2 (CBerserker::FRAME_deathc1, CBerserker::FRAME_deathc8, BerserkFramesDeath2, ConvertDerivedFunction(&CBerserker::Dead));
 
 void CBerserker::Die(IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {

@@ -178,7 +178,6 @@ bool CHeatRocket::Run ()
 CHeatMaiden::CHeatMaiden (uint32 ID) :
 CMaiden (ID)
 {
-	MonsterName = "Heat-seeking Iron Maiden";
 };
 
 void CHeatMaiden::Rocket ()

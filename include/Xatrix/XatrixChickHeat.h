@@ -81,6 +81,8 @@ class CHeatMaiden : public CMaiden
 public:
 	CHeatMaiden (uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Heat-seaking Iron Maiden"; }
+
 	void Rocket ();
 	void Spawn ();
 	

@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_chick.h"
 #include "Monsters/Bitch.h"
 
 CMaiden::CMaiden (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Iron Maiden";
 }
 
 void CMaiden::Moan ()
@@ -80,7 +77,7 @@ CFrame ChickFramesFidget [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim ChickMoveFidget (FRAME_stand201, FRAME_stand230, ChickFramesFidget, ConvertDerivedFunction(&CMaiden::Stand));
+CAnim ChickMoveFidget (CMaiden::FRAME_stand201, CMaiden::FRAME_stand230, ChickFramesFidget, ConvertDerivedFunction(&CMaiden::Stand));
 
 void CMaiden::Idle ()
 {
@@ -123,7 +120,7 @@ CFrame ChickFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0),
 };
-CAnim ChickMoveStand (FRAME_stand101, FRAME_stand130, ChickFramesStand);
+CAnim ChickMoveStand (CMaiden::FRAME_stand101, CMaiden::FRAME_stand130, ChickFramesStand);
 
 void CMaiden::Stand ()
 {
@@ -143,7 +140,7 @@ CFrame ChickFramesStartRun [] =
 	CFrame (&CMonster::AI_Run, 6),
 	CFrame (&CMonster::AI_Run, 3)
 };
-CAnim ChickMoveStartRun (FRAME_walk01, FRAME_walk10, ChickFramesStartRun, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMoveStartRun (CMaiden::FRAME_walk01, CMaiden::FRAME_walk10, ChickFramesStartRun, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesRun [] =
 {
@@ -162,7 +159,7 @@ CFrame ChickFramesRun [] =
 	CFrame (&CMonster::AI_Run, 9),
 	CFrame (&CMonster::AI_Run, 7)
 };
-CAnim ChickMoveRun (FRAME_walk11, FRAME_walk20, ChickFramesRun);
+CAnim ChickMoveRun (CMaiden::FRAME_walk11, CMaiden::FRAME_walk20, ChickFramesRun);
 
 CFrame ChickFramesWalk [] =
 {
@@ -177,7 +174,7 @@ CFrame ChickFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 9),
 	CFrame (&CMonster::AI_Walk, 7)
 };
-CAnim ChickMoveWalk (FRAME_walk11, FRAME_walk20, ChickFramesWalk);
+CAnim ChickMoveWalk (CMaiden::FRAME_walk11, CMaiden::FRAME_walk20, ChickFramesWalk);
 
 void CMaiden::Walk ()
 {
@@ -211,7 +208,7 @@ CFrame ChickFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim ChickMovePain1 (FRAME_pain101, FRAME_pain105, ChickFramesPain1, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMovePain1 (CMaiden::FRAME_pain101, CMaiden::FRAME_pain105, ChickFramesPain1, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesPain2 [] =
 {
@@ -221,7 +218,7 @@ CFrame ChickFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim ChickMovePain2 (FRAME_pain201, FRAME_pain205, ChickFramesPain2, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMovePain2 (CMaiden::FRAME_pain201, CMaiden::FRAME_pain205, ChickFramesPain2, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesPain3 [] =
 {
@@ -247,7 +244,7 @@ CFrame ChickFramesPain3 [] =
 	CFrame (&CMonster::AI_Move, -8),
 	CFrame (&CMonster::AI_Move, 2)
 };
-CAnim ChickMovePain3 (FRAME_pain301, FRAME_pain321, ChickFramesPain3, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMovePain3 (CMaiden::FRAME_pain301, CMaiden::FRAME_pain321, ChickFramesPain3, ConvertDerivedFunction(&CMaiden::Run));
 
 void CMaiden::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -321,7 +318,7 @@ CFrame ChickFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move, 14),
 	CFrame (&CMonster::AI_Move, 1)
 };
-CAnim ChickMoveDeath2 (FRAME_death201, FRAME_death223, ChickFramesDeath2, ConvertDerivedFunction(&CMaiden::Dead));
+CAnim ChickMoveDeath2 (CMaiden::FRAME_death201, CMaiden::FRAME_death223, ChickFramesDeath2, ConvertDerivedFunction(&CMaiden::Dead));
 
 CFrame ChickFramesDeath1 [] =
 {
@@ -338,7 +335,7 @@ CFrame ChickFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim ChickMoveDeath1 (FRAME_death101, FRAME_death112, ChickFramesDeath1, ConvertDerivedFunction(&CMaiden::Dead));
+CAnim ChickMoveDeath1 (CMaiden::FRAME_death101, CMaiden::FRAME_death112, ChickFramesDeath1, ConvertDerivedFunction(&CMaiden::Dead));
 
 void CMaiden::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
@@ -420,7 +417,7 @@ CFrame ChickFramesDuck [] =
 };
 #endif
 
-CAnim ChickMoveDuck (FRAME_duck01, FRAME_duck07, ChickFramesDuck, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMoveDuck (CMaiden::FRAME_duck01, CMaiden::FRAME_duck07, ChickFramesDuck, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesStartAttack1 [] =
 {
@@ -438,7 +435,7 @@ CFrame ChickFramesStartAttack1 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CMaiden::Attack1))
 };
-CAnim ChickMoveStartAttack1 (FRAME_attak101, FRAME_attak113, ChickFramesStartAttack1);
+CAnim ChickMoveStartAttack1 (CMaiden::FRAME_attak101, CMaiden::FRAME_attak113, ChickFramesStartAttack1);
 
 
 CFrame ChickFramesAttack1 [] =
@@ -458,7 +455,7 @@ CFrame ChickFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, 4),
 	CFrame (&CMonster::AI_Charge, 3, ConvertDerivedFunction(&CMaiden::ReRocket))
 };
-CAnim ChickMoveAttack1 (FRAME_attak114, FRAME_attak127, ChickFramesAttack1);
+CAnim ChickMoveAttack1 (CMaiden::FRAME_attak114, CMaiden::FRAME_attak127, ChickFramesAttack1);
 
 CFrame ChickFramesEndAttack1 [] =
 {
@@ -468,7 +465,7 @@ CFrame ChickFramesEndAttack1 [] =
 	CFrame (&CMonster::AI_Charge, -4),
 	CFrame (&CMonster::AI_Charge, -2)
 };
-CAnim ChickMoveEndAttack1 (FRAME_attak128, FRAME_attak132, ChickFramesEndAttack1, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMoveEndAttack1 (CMaiden::FRAME_attak128, CMaiden::FRAME_attak132, ChickFramesEndAttack1, ConvertDerivedFunction(&CMaiden::Run));
 
 #if ROGUE_FEATURES
 void CMaiden::Duck (float eta)
@@ -493,7 +490,7 @@ void CMaiden::Duck (float eta)
 	// has to be done immediately otherwise she can get stuck
 	DuckDown();
 
-	NextFrame = FRAME_duck01;
+	NextFrame = CMaiden::FRAME_duck01;
 	CurrentMove = &ChickMoveDuck;
 	return;
 }
@@ -676,7 +673,7 @@ CFrame ChickFramesSlash [] =
 	CFrame (&CMonster::AI_Charge, 1),
 	CFrame (&CMonster::AI_Charge, -2, ConvertDerivedFunction(&CMaiden::ReSlash))
 };
-CAnim ChickMoveSlash (FRAME_attak204, FRAME_attak212, ChickFramesSlash);
+CAnim ChickMoveSlash (CMaiden::FRAME_attak204, CMaiden::FRAME_attak212, ChickFramesSlash);
 
 CFrame ChickFramesEndSlash [] =
 {
@@ -685,7 +682,7 @@ CFrame ChickFramesEndSlash [] =
 	CFrame (&CMonster::AI_Charge, -6),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim ChickMoveEndSlash (FRAME_attak213, FRAME_attak216, ChickFramesEndSlash, ConvertDerivedFunction(&CMaiden::Run));
+CAnim ChickMoveEndSlash (CMaiden::FRAME_attak213, CMaiden::FRAME_attak216, ChickFramesEndSlash, ConvertDerivedFunction(&CMaiden::Run));
 
 void CMaiden::ReSlash()
 {
@@ -706,7 +703,7 @@ CFrame ChickFramesStartSlash [] =
 	CFrame (&CMonster::AI_Charge, 8),
 	CFrame (&CMonster::AI_Charge, 3)
 };
-CAnim ChickMoveStartSlash (FRAME_attak201, FRAME_attak203, ChickFramesStartSlash, ConvertDerivedFunction(&CMaiden::DoSlash));
+CAnim ChickMoveStartSlash (CMaiden::FRAME_attak201, CMaiden::FRAME_attak203, ChickFramesStartSlash, ConvertDerivedFunction(&CMaiden::DoSlash));
 
 void CMaiden::Melee()
 {

@@ -33,7 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Weapons/WeaponMain.h"
-#include "Player/m_player.h"
 
 typedef std::vector<IWeaponBase*> TWeaponListType;
 
@@ -327,13 +326,13 @@ void IWeaponBase::ChangeWeapon (CPlayerEntity *Player)
 	Player->Client.Anim.Priority = ANIM_PAIN;
 	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
-		Player->State.GetFrame() = FRAME_crpain1;
-		Player->Client.Anim.EndFrame = FRAME_crpain4;
+		Player->State.GetFrame() = CPlayerEntity::FRAME_crpain1;
+		Player->Client.Anim.EndFrame = CPlayerEntity::FRAME_crpain4;
 	}
 	else
 	{
-		Player->State.GetFrame() = FRAME_pain301;
-		Player->Client.Anim.EndFrame = FRAME_pain304;
+		Player->State.GetFrame() = CPlayerEntity::FRAME_pain301;
+		Player->Client.Anim.EndFrame = CPlayerEntity::FRAME_pain304;
 	}
 }
 
@@ -721,12 +720,12 @@ void IWeaponBase::FireAnimation (CPlayerEntity *Player)
 	Player->Client.Anim.Priority = ANIM_ATTACK;
 	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
-		Player->State.GetFrame() = FRAME_crattak1 - 1;
-		Player->Client.Anim.EndFrame = FRAME_crattak9;
+		Player->State.GetFrame() = CPlayerEntity::FRAME_crattak1 - 1;
+		Player->Client.Anim.EndFrame = CPlayerEntity::FRAME_crattak9;
 	}
 	else
 	{
-		Player->State.GetFrame() = FRAME_attack1 - 1;
-		Player->Client.Anim.EndFrame = FRAME_attack8;
+		Player->State.GetFrame() = CPlayerEntity::FRAME_attack1 - 1;
+		Player->Client.Anim.EndFrame = CPlayerEntity::FRAME_attack8;
 	}
 }

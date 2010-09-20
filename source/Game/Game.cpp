@@ -229,7 +229,7 @@ void CheckDMRules ()
 	{
 		if (Level.Frame >= ((CvarList[CV_TIME_LIMIT].Float()*60)*10))
 		{
-			BroadcastPrintf (PRINT_HIGH, "Timelimit hit.\n");
+			BroadcastPrint (PRINT_HIGH, "Timelimit hit.\n");
 			EndDMLevel ();
 			return;
 		}
@@ -245,7 +245,7 @@ void CheckDMRules ()
 
 			if (cl->Client.Respawn.Score >= CvarList[CV_FRAG_LIMIT].Integer())
 			{
-				BroadcastPrintf (PRINT_HIGH, "Fraglimit hit.\n");
+				BroadcastPrint (PRINT_HIGH, "Fraglimit hit.\n");
 				EndDMLevel ();
 				return;
 			}
@@ -650,7 +650,7 @@ void CGameAPI::Init ()
 
 void CGameAPI::Shutdown ()
 {
-	ServerPrintf ("==== ShutdownGame ====\n");
+	ServerPrint ("==== ShutdownGame ====\n");
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();

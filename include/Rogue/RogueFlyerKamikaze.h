@@ -39,6 +39,8 @@ class CFlyerKamikaze : public CFlyer
 public:
 	CFlyerKamikaze (uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Kamikaze Flyer"; }
+
 	void Run ();
 	void Stand () { Run(); };
 	void Walk () { Run(); };

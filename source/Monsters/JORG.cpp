@@ -34,13 +34,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Local.h"
 #include "Monsters/Makron.h"
 #include "Monsters/JORG.h"
-#include "Monsters/m_boss31.h"
 
 CJorg::CJorg (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "JORG";
 }
 
 void CJorg::Search ()
@@ -117,7 +114,7 @@ CFrame JorgFramesStand []=
 	CFrame (&CMonster::AI_Stand, -12),		// 50
 	CFrame (&CMonster::AI_Stand, -14, ConvertDerivedFunction(&CJorg::StepRight))	// 51
 };
-CAnim	JorgMoveStand (FRAME_stand01, FRAME_stand51, JorgFramesStand);
+CAnim	JorgMoveStand (CJorg::FRAME_stand01, CJorg::FRAME_stand51, JorgFramesStand);
 
 void CJorg::Idle ()
 {
@@ -161,7 +158,7 @@ CFrame JorgFramesRun [] =
 	CFrame (&CMonster::AI_Run, 9),
 	CFrame (&CMonster::AI_Run, 9)
 };
-CAnim	JorgMoveRun (FRAME_walk06, FRAME_walk19, JorgFramesRun);
+CAnim	JorgMoveRun (CJorg::FRAME_walk06, CJorg::FRAME_walk19, JorgFramesRun);
 
 //
 // walk
@@ -184,7 +181,7 @@ CFrame JorgFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 9),
 	CFrame (&CMonster::AI_Walk, 9)
 };
-CAnim	JorgMoveWalk (FRAME_walk06, FRAME_walk19, JorgFramesWalk);
+CAnim	JorgMoveWalk (CJorg::FRAME_walk06, CJorg::FRAME_walk19, JorgFramesWalk);
 
 void CJorg::Walk ()
 {
@@ -224,7 +221,7 @@ CFrame JorgFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::StepRight))
 };
-CAnim JorgMovePain3 (FRAME_pain301, FRAME_pain325, JorgFramesPain3, &CMonster::Run);
+CAnim JorgMovePain3 (CJorg::FRAME_pain301, CJorg::FRAME_pain325, JorgFramesPain3, &CMonster::Run);
 
 CFrame JorgFramesPain2 [] =
 {
@@ -232,7 +229,7 @@ CFrame JorgFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim JorgMovePain2 (FRAME_pain201, FRAME_pain203, JorgFramesPain2, &CMonster::Run);
+CAnim JorgMovePain2 (CJorg::FRAME_pain201, CJorg::FRAME_pain203, JorgFramesPain2, &CMonster::Run);
 
 CFrame JorgFramesPain1 [] =
 {
@@ -240,7 +237,7 @@ CFrame JorgFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim JorgMovePain1 (FRAME_pain101, FRAME_pain103, JorgFramesPain1, &CMonster::Run);
+CAnim JorgMovePain1 (CJorg::FRAME_pain101, CJorg::FRAME_pain103, JorgFramesPain1, &CMonster::Run);
 
 void CJorg::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -262,13 +259,13 @@ void CJorg::Pain (IBaseEntity *Other, sint32 Damage)
 	*/
 	
 	sint32 frame = Entity->State.GetFrame();
-	if (((frame >= FRAME_attak101) && (frame <= FRAME_attak108)) && (frand() <= 0.005))
+	if (((frame >= CJorg::FRAME_attak101) && (frame <= CJorg::FRAME_attak108)) && (frand() <= 0.005))
 		return;
 
-	if (((frame >= FRAME_attak109) && (frame <= FRAME_attak114)) && (frand() <= 0.00005))
+	if (((frame >= CJorg::FRAME_attak109) && (frame <= CJorg::FRAME_attak114)) && (frand() <= 0.00005))
 		return;
 
-	if (((frame >= FRAME_attak201) && (frame <= FRAME_attak208)) && (frand() <= 0.005))
+	if (((frame >= CJorg::FRAME_attak201) && (frame <= CJorg::FRAME_attak208)) && (frand() <= 0.005))
 		return;
 
 	PainDebounceTime = Level.Frame + 30;
@@ -345,7 +342,7 @@ CFrame JorgFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::TossMakron)),
 	CFrame (&CMonster::AI_Move,	0,	&CMonster::BossExplode)		// 50
 };
-CAnim JorgMoveDeath (FRAME_death01, FRAME_death50, JorgFramesDeath1, NULL);
+CAnim JorgMoveDeath (CJorg::FRAME_death01, CJorg::FRAME_death50, JorgFramesDeath1, NULL);
 
 void CJorg::TossMakron ()
 {
@@ -378,7 +375,7 @@ CFrame JorgFramesAttack2 []=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim JorgMoveAttack2 (FRAME_attak201, FRAME_attak213, JorgFramesAttack2, &CMonster::Run);
+CAnim JorgMoveAttack2 (CJorg::FRAME_attak201, CJorg::FRAME_attak213, JorgFramesAttack2, &CMonster::Run);
 
 CFrame JorgFramesStartAttack1 [] =
 {
@@ -391,7 +388,7 @@ CFrame JorgFramesStartAttack1 [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0)
 };
-CAnim JorgMoveStartAttack1 (FRAME_attak101, FRAME_attak108, JorgFramesStartAttack1, ConvertDerivedFunction(&CJorg::DoChainguns));
+CAnim JorgMoveStartAttack1 (CJorg::FRAME_attak101, CJorg::FRAME_attak108, JorgFramesStartAttack1, ConvertDerivedFunction(&CJorg::DoChainguns));
 
 CFrame JorgFramesAttack1[]=
 {
@@ -402,7 +399,7 @@ CFrame JorgFramesAttack1[]=
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet))
 };
-CAnim JorgMoveAttack1 (FRAME_attak109, FRAME_attak114, JorgFramesAttack1, ConvertDerivedFunction(&CJorg::ReAttack1));
+CAnim JorgMoveAttack1 (CJorg::FRAME_attak109, CJorg::FRAME_attak114, JorgFramesAttack1, ConvertDerivedFunction(&CJorg::ReAttack1));
 
 CFrame JorgFramesEndAttack1[]=
 {
@@ -411,7 +408,7 @@ CFrame JorgFramesEndAttack1[]=
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim JorgMoveEndAttack1 (FRAME_attak115, FRAME_attak118, JorgFramesEndAttack1, &CMonster::Run);
+CAnim JorgMoveEndAttack1 (CJorg::FRAME_attak115, CJorg::FRAME_attak118, JorgFramesEndAttack1, &CMonster::Run);
 
 void CJorg::ReAttack1()
 {

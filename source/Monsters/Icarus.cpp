@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_hover.h"
 #include "Monsters/Icarus.h"
 
 CIcarus::CIcarus (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Icarus";
 }
 
 void CIcarus::Sight ()
@@ -85,7 +82,7 @@ CFrame HoverFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim HoverMoveStand (FRAME_stand01, FRAME_stand30, HoverFramesStand);
+CAnim HoverMoveStand (CIcarus::FRAME_stand01, CIcarus::FRAME_stand30, HoverFramesStand);
 
 /*mframe_t hover_frames_stop1 [] =
 {
@@ -99,7 +96,7 @@ CAnim HoverMoveStand (FRAME_stand01, FRAME_stand30, HoverFramesStand);
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	NULL
 };
-mmove_t hover_move_stop1 = {FRAME_stop101, FRAME_stop109, hover_frames_stop1, NULL};
+mmove_t hover_move_stop1 = {CIcarus::FRAME_stop101, CIcarus::FRAME_stop109, hover_frames_stop1, NULL};
 
 mframe_t hover_frames_stop2 [] =
 {
@@ -112,7 +109,7 @@ mframe_t hover_frames_stop2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	NULL
 };
-mmove_t hover_move_stop2 = {FRAME_stop201, FRAME_stop208, hover_frames_stop2, NULL};
+mmove_t hover_move_stop2 = {CIcarus::FRAME_stop201, CIcarus::FRAME_stop208, hover_frames_stop2, NULL};
 
 mframe_t hover_frames_takeoff [] =
 {
@@ -147,7 +144,7 @@ mframe_t hover_frames_takeoff [] =
 	CFrame (&CMonster::AI_Move,	2),
 	CFrame (&CMonster::AI_Move,	0,	NULL
 };
-mmove_t hover_move_takeoff = {FRAME_takeof01, FRAME_takeof30, hover_frames_takeoff, NULL};*/
+mmove_t hover_move_takeoff = {CIcarus::FRAME_takeof01, CIcarus::FRAME_takeof30, hover_frames_takeoff, NULL};*/
 
 CFrame HoverFramesPain3 [] =
 {
@@ -161,7 +158,7 @@ CFrame HoverFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim HoverMovePain3 (FRAME_pain301, FRAME_pain309, HoverFramesPain3, &CMonster::Run);
+CAnim HoverMovePain3 (CIcarus::FRAME_pain301, CIcarus::FRAME_pain309, HoverFramesPain3, &CMonster::Run);
 
 CFrame HoverFramesPain2 [] =
 {
@@ -178,7 +175,7 @@ CFrame HoverFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim HoverMovePain2 (FRAME_pain201, FRAME_pain212, HoverFramesPain2, &CMonster::Run);
+CAnim HoverMovePain2 (CIcarus::FRAME_pain201, CIcarus::FRAME_pain212, HoverFramesPain2, &CMonster::Run);
 
 CFrame HoverFramesPain1 [] =
 {
@@ -211,13 +208,13 @@ CFrame HoverFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	3),
 	CFrame (&CMonster::AI_Move,	4)
 };
-CAnim HoverMovePain1 (FRAME_pain101, FRAME_pain128, HoverFramesPain1, &CMonster::Run);
+CAnim HoverMovePain1 (CIcarus::FRAME_pain101, CIcarus::FRAME_pain128, HoverFramesPain1, &CMonster::Run);
 
 /*mframe_t hover_frames_land [] =
 {
 	CFrame (&CMonster::AI_Move,	0,	NULL
 };
-mmove_t hover_move_land = {FRAME_land01, FRAME_land01, hover_frames_land, NULL};
+mmove_t hover_move_land = {CIcarus::FRAME_land01, CIcarus::FRAME_land01, hover_frames_land, NULL};
 
 mframe_t hover_frames_forward [] =
 {
@@ -257,7 +254,7 @@ mframe_t hover_frames_forward [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	NULL
 };
-mmove_t hover_move_forward = {FRAME_forwrd01, FRAME_forwrd35, hover_frames_forward, NULL};*/
+mmove_t hover_move_forward = {CIcarus::FRAME_forwrd01, CIcarus::FRAME_forwrd35, hover_frames_forward, NULL};*/
 
 CFrame HoverFramesWalk [] =
 {
@@ -297,7 +294,7 @@ CFrame HoverFramesWalk [] =
 	CFrame (&CMonster::AI_Walk,	4),
 	CFrame (&CMonster::AI_Walk,	4)
 };
-CAnim HoverMoveWalk (FRAME_forwrd01, FRAME_forwrd35, HoverFramesWalk);
+CAnim HoverMoveWalk (CIcarus::FRAME_forwrd01, CIcarus::FRAME_forwrd35, HoverFramesWalk);
 
 CFrame HoverFramesRun [] =
 {
@@ -337,7 +334,7 @@ CFrame HoverFramesRun [] =
 	CFrame (&CMonster::AI_Run,	10),
 	CFrame (&CMonster::AI_Run,	10)
 };
-CAnim HoverMoveRun (FRAME_forwrd01, FRAME_forwrd35, HoverFramesRun);
+CAnim HoverMoveRun (CIcarus::FRAME_forwrd01, CIcarus::FRAME_forwrd35, HoverFramesRun);
 
 CFrame HoverFramesDeath1 [] =
 {
@@ -353,7 +350,7 @@ CFrame HoverFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	4),
 	CFrame (&CMonster::AI_Move,	7)
 };
-CAnim HoverMoveDeath1 (FRAME_death101, FRAME_death111, HoverFramesDeath1, ConvertDerivedFunction(&CIcarus::Dead));
+CAnim HoverMoveDeath1 (CIcarus::FRAME_death101, CIcarus::FRAME_death111, HoverFramesDeath1, ConvertDerivedFunction(&CIcarus::Dead));
 
 /*mframe_t hover_frames_backward [] =
 {
@@ -382,7 +379,7 @@ CAnim HoverMoveDeath1 (FRAME_death101, FRAME_death111, HoverFramesDeath1, Conver
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	NULL
 };
-mmove_t hover_move_backward = {FRAME_backwd01, FRAME_backwd24, hover_frames_backward, NULL};*/
+mmove_t hover_move_backward = {CIcarus::FRAME_backwd01, CIcarus::FRAME_backwd24, hover_frames_backward, NULL};*/
 
 CFrame HoverFramesStartAttack [] =
 {
@@ -390,7 +387,7 @@ CFrame HoverFramesStartAttack [] =
 	CFrame (&CMonster::AI_Charge,	1),
 	CFrame (&CMonster::AI_Charge,	1)
 };
-CAnim HoverMoveStartAttack (FRAME_attak101, FRAME_attak103, HoverFramesStartAttack, ConvertDerivedFunction(&CIcarus::StartAttack));
+CAnim HoverMoveStartAttack (CIcarus::FRAME_attak101, CIcarus::FRAME_attak103, HoverFramesStartAttack, ConvertDerivedFunction(&CIcarus::StartAttack));
 
 CFrame HoverFramesAttack1 [] =
 {
@@ -398,14 +395,14 @@ CFrame HoverFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge,	-10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
 	CFrame (&CMonster::AI_Charge,	0,		ConvertDerivedFunction(&CIcarus::ReAttack))
 };
-CAnim HoverMoveAttack1 (FRAME_attak104, FRAME_attak106, HoverFramesAttack1);
+CAnim HoverMoveAttack1 (CIcarus::FRAME_attak104, CIcarus::FRAME_attak106, HoverFramesAttack1);
 
 CFrame HoverFramesEndAttack [] =
 {
 	CFrame (&CMonster::AI_Charge,	1),
 	CFrame (&CMonster::AI_Charge,	1)
 };
-CAnim HoverMoveEndAttack (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack, &CMonster::Run);
+CAnim HoverMoveEndAttack (CIcarus::FRAME_attak107, CIcarus::FRAME_attak108, HoverFramesEndAttack, &CMonster::Run);
 
 #if ROGUE_FEATURES
 
@@ -416,7 +413,7 @@ CFrame HoverFramesStartAttack2 [] =
 	CFrame (&CMonster::AI_Charge,	15),
 	CFrame (&CMonster::AI_Charge,	15)
 };
-CAnim HoverMoveStartAttack2 (FRAME_attak101, FRAME_attak103, HoverFramesStartAttack2, ConvertDerivedFunction(&CIcarus::StartAttack));
+CAnim HoverMoveStartAttack2 (CIcarus::FRAME_attak101, CIcarus::FRAME_attak103, HoverFramesStartAttack2, ConvertDerivedFunction(&CIcarus::StartAttack));
 
 CFrame HoverFramesAttack2 [] =
 {
@@ -424,14 +421,14 @@ CFrame HoverFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
 	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::ReAttack))
 };
-CAnim HoverMoveAttack2 (FRAME_attak104, FRAME_attak106, HoverFramesAttack2);
+CAnim HoverMoveAttack2 (CIcarus::FRAME_attak104, CIcarus::FRAME_attak106, HoverFramesAttack2);
 
 CFrame HoverFramesEndAttack2 [] =
 {
 	CFrame (&CMonster::AI_Charge,	15),
 	CFrame (&CMonster::AI_Charge,	15)
 };
-CAnim HoverMoveEndAttack2 (FRAME_attak107, FRAME_attak108, HoverFramesEndAttack2, &CMonster::Run);
+CAnim HoverMoveEndAttack2 (CIcarus::FRAME_attak107, CIcarus::FRAME_attak108, HoverFramesEndAttack2, &CMonster::Run);
 // end of circle strafe
 #endif
 
@@ -465,7 +462,7 @@ void CIcarus::FireBlaster ()
 	end.Z += Entity->Enemy->ViewHeight;
 	dir = end - start;
 
-	MonsterFireBlaster (start, dir, 1, 1000, MZ2_HOVER_BLASTER_1, (Entity->State.GetFrame() == FRAME_attak104) ? FX_HYPERBLASTER : 0);
+	MonsterFireBlaster (start, dir, 1, 1000, MZ2_HOVER_BLASTER_1, (Entity->State.GetFrame() == CIcarus::FRAME_attak104) ? FX_HYPERBLASTER : 0);
 }
 
 

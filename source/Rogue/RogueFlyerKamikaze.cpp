@@ -37,13 +37,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Flyer.h"
 #include "Rogue/RogueFlyerKamikaze.h"
 #include "Utility/TemporaryEntities.h"
-#include "Monsters/m_flyer.h"
 
 CFlyerKamikaze::CFlyerKamikaze (uint32 ID) :
 CFlyer(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Kamikaze Flyer";
 };
 
 void CFlyerKamikaze::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
@@ -115,7 +112,7 @@ CFrame FlyerFramesKamikaze [] =
 	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
 	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck))
 };
-CAnim FlyerMoveKamikaze (FRAME_rollr02, FRAME_rollr06, FlyerFramesKamikaze, &CMonster::Run);
+CAnim FlyerMoveKamikaze (CFlyer::FRAME_rollr02, CFlyer::FRAME_rollr06, FlyerFramesKamikaze, &CMonster::Run);
 
 void CFlyerKamikaze::Run ()
 {

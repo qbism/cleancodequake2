@@ -35,14 +35,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 #include "Monsters/Icarus.h"
-#include "Monsters/m_hover.h"
 #include "Rogue/RogueDaedalus.h"
 
 CDaedalus::CDaedalus (uint32 ID) :
 CIcarus (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Daedalus";
 }
 
 void CDaedalus::FireBlaster ()

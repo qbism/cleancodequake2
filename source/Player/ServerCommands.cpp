@@ -388,7 +388,7 @@ class CServerCmdTest : public CCommandFunctor
 public:
 	void operator () ()
 	{
-		ServerPrintf ("Test\n");
+		ServerPrint ("Test\n");
 	};
 };
 

@@ -220,7 +220,7 @@ void CIRCClientServer::Update ()
 	}
 	else if (retVal < 0)
 	{
-		DebugPrintf ("IRC Shit broke\n");
+		DebugPrint ("IRC Shit broke\n");
 		Disconnect ();
 	}
 

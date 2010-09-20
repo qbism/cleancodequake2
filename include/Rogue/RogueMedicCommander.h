@@ -39,6 +39,8 @@ public:
 
 	CMedicCommander (uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Medic Commander"; }
+
 	void FireBlaster ();
 	void Attack ();
 	bool CheckAttack ();

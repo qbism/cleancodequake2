@@ -37,7 +37,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Rogue/RogueCarrier.h"
 #include "Monsters/Flyer.h"
 #include "Rogue/RogueFlyerKamikaze.h"
-#include "Rogue/m_carrier.h"
 #include "Rogue/RogueMonsterSpawning.h"
 
 const int CARRIER_ROCKET_TIME		= 20;		// number of seconds between rocket shots
@@ -54,8 +53,6 @@ extern CAnim FlyerMoveAttack2, FlyerMoveKamikaze;
 CCarrier::CCarrier (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Carrier";
 };
 
 void CCarrier::Sight ()
@@ -365,7 +362,7 @@ void CCarrier::SpawnCheck ()
 		return;
 	}
 	else
-		NextFrame = FRAME_spawn08;
+		NextFrame = CCarrier::FRAME_spawn08;
 }
 
 void CCarrier::ReadySpawn ()
@@ -439,7 +436,7 @@ CFrame CarrierFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim CarrierMoveStand (FRAME_search01, FRAME_search13, CarrierFramesStand);
+CAnim CarrierMoveStand (CCarrier::FRAME_search01, CCarrier::FRAME_search13, CarrierFramesStand);
 
 CFrame CarrierFramesWalk [] =
 {
@@ -457,7 +454,7 @@ CFrame CarrierFramesWalk [] =
 	CFrame (&CMonster::AI_Walk,	4),
 	CFrame (&CMonster::AI_Walk,	4)
 };
-CAnim CarrierMoveWalk (FRAME_search01, FRAME_search13, CarrierFramesWalk);
+CAnim CarrierMoveWalk (CCarrier::FRAME_search01, CCarrier::FRAME_search13, CarrierFramesWalk);
 
 CFrame CarrierFramesRun [] =
 {
@@ -475,7 +472,7 @@ CFrame CarrierFramesRun [] =
 	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveRun (FRAME_search01, FRAME_search13, CarrierFramesRun);
+CAnim CarrierMoveRun (CCarrier::FRAME_search01, CCarrier::FRAME_search13, CarrierFramesRun);
 
 CFrame CarrierFramesPreAttackMG [] =
 {
@@ -488,7 +485,7 @@ CFrame CarrierFramesPreAttackMG [] =
 	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::AttackMachinegun))
 };
-CAnim CarrierMovePreAttackMG (FRAME_firea01, FRAME_firea08, CarrierFramesPreAttackMG);
+CAnim CarrierMovePreAttackMG (CCarrier::FRAME_firea01, CCarrier::FRAME_firea08, CarrierFramesPreAttackMG);
 
 // Loop this
 CFrame CarrierFramesAttackMG [] =
@@ -497,7 +494,7 @@ CFrame CarrierFramesAttackMG [] =
 	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
 	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReAttackMachinegun))
 };
-CAnim CarrierMoveAttackMG (FRAME_firea09, FRAME_firea11, CarrierFramesAttackMG);
+CAnim CarrierMoveAttackMG (CCarrier::FRAME_firea09, CCarrier::FRAME_firea11, CarrierFramesAttackMG);
 
 CFrame CarrierFramesAttackPostMG [] =
 {
@@ -506,7 +503,7 @@ CFrame CarrierFramesAttackPostMG [] =
 	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveAttackPostMG (FRAME_firea12, FRAME_firea15, CarrierFramesAttackPostMG, &CMonster::Run);
+CAnim CarrierMoveAttackPostMG (CCarrier::FRAME_firea12, CCarrier::FRAME_firea15, CarrierFramesAttackPostMG, &CMonster::Run);
 
 CFrame CarrierFramesAttackPreGrenade [] =
 {
@@ -517,7 +514,7 @@ CFrame CarrierFramesAttackPreGrenade [] =
 	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::AttackGrenade))
 };
-CAnim CarrierMoveAttackPreGrenade (FRAME_fireb01, FRAME_fireb06, CarrierFramesAttackPreGrenade);
+CAnim CarrierMoveAttackPreGrenade (CCarrier::FRAME_fireb01, CCarrier::FRAME_fireb06, CarrierFramesAttackPreGrenade);
 
 CFrame CarrierFramesAttackGrenade [] =
 {
@@ -526,7 +523,7 @@ CFrame CarrierFramesAttackGrenade [] =
 	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::ReAttackGrenade))
 };
-CAnim CarrierMoveAttackGrenade (FRAME_fireb07, FRAME_fireb10, CarrierFramesAttackGrenade);
+CAnim CarrierMoveAttackGrenade (CCarrier::FRAME_fireb07, CCarrier::FRAME_fireb10, CarrierFramesAttackGrenade);
 
 CFrame CarrierFramesAttackPostGrenade [] =
 {
@@ -537,13 +534,13 @@ CFrame CarrierFramesAttackPostGrenade [] =
 	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveAttackPostGrenade (FRAME_fireb11, FRAME_fireb16, CarrierFramesAttackPostGrenade, &CMonster::Run);
+CAnim CarrierMoveAttackPostGrenade (CCarrier::FRAME_fireb11, CCarrier::FRAME_fireb16, CarrierFramesAttackPostGrenade, &CMonster::Run);
 
 CFrame CarrierFramesAttackRocket [] =
 {
 	CFrame (&CMonster::AI_Charge,	15,	ConvertDerivedFunction(&CCarrier::Rocket))
 };
-CAnim CarrierMoveAttackRocket (FRAME_fireb01, FRAME_fireb01, CarrierFramesAttackRocket, &CMonster::Run);
+CAnim CarrierMoveAttackRocket (CCarrier::FRAME_fireb01, CCarrier::FRAME_fireb01, CarrierFramesAttackRocket, &CMonster::Run);
 
 void CCarrier::Rail ()
 {
@@ -581,7 +578,7 @@ CFrame CarrierFramesAttackRail [] =
 	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
 	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveAttackRail (FRAME_search01, FRAME_search09, CarrierFramesAttackRail, &CMonster::Run);
+CAnim CarrierMoveAttackRail (CCarrier::FRAME_search01, CCarrier::FRAME_search09, CarrierFramesAttackRail, &CMonster::Run);
 
 CFrame CarrierFramesSpawn [] =
 {
@@ -604,7 +601,7 @@ CFrame CarrierFramesSpawn [] =
 	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
 	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReAttackMachinegun))		//18 - end of wind down
 };
-CAnim CarrierMoveSpawn (FRAME_spawn01, FRAME_spawn18, CarrierFramesSpawn);
+CAnim CarrierMoveSpawn (CCarrier::FRAME_spawn01, CCarrier::FRAME_spawn18, CarrierFramesSpawn);
 
 CFrame CarrierFramesPainHeavy [] =
 {
@@ -619,7 +616,7 @@ CFrame CarrierFramesPainHeavy [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim CarrierMovePainHeavy (FRAME_death01, FRAME_death10, CarrierFramesPainHeavy, &CMonster::Run);
+CAnim CarrierMovePainHeavy (CCarrier::FRAME_death01, CCarrier::FRAME_death10, CarrierFramesPainHeavy, &CMonster::Run);
 
 CFrame CarrierFramesPainLight [] =
 {
@@ -628,7 +625,7 @@ CFrame CarrierFramesPainLight [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim CarrierMovePainLight (FRAME_spawn01, FRAME_spawn04, CarrierFramesPainLight, &CMonster::Run);
+CAnim CarrierMovePainLight (CCarrier::FRAME_spawn01, CCarrier::FRAME_spawn04, CarrierFramesPainLight, &CMonster::Run);
 
 CFrame CarrierFramesDeath [] =
 {
@@ -649,7 +646,7 @@ CFrame CarrierFramesDeath [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	&CMonster::BossExplode)
 };
-CAnim CarrierMoveDeath (FRAME_death01, FRAME_death16, CarrierFramesDeath, ConvertDerivedFunction(&CCarrier::Dead));
+CAnim CarrierMoveDeath (CCarrier::FRAME_death01, CCarrier::FRAME_death16, CarrierFramesDeath, ConvertDerivedFunction(&CCarrier::Dead));
 
 void CCarrier::Stand ()
 {

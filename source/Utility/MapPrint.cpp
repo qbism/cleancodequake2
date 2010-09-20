@@ -38,7 +38,7 @@ static sint32 mapWarnings, mapErrors;
 void InitMapCounter ()
 {
 	mapWarnings = mapErrors = 0;
-	ServerPrintf ("======================\nSpawning entities...\n");
+	ServerPrint ("======================\nSpawning entities...\n");
 }
 
 void EndMapCounter ()

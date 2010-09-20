@@ -32,9 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Weapons/WeaponMain.h"
 #if CLEANCTF_ENABLED
-#include "Player/m_player.h"
+#include "Weapons/WeaponMain.h"
 
 CGrapple::CGrapple() :
 IWeaponBase(0, -1, "models/weapons/grapple/tris.md2", 0, 5, 6, 9,

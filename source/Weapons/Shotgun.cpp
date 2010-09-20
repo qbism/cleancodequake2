@@ -33,7 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Weapons/WeaponMain.h"
-#include "Player/m_player.h"
 
 CShotgun::CShotgun() :
 IWeaponBase(1, 0, "models/weapons/v_shotg/tris.md2", 0, 7, 8, 18,

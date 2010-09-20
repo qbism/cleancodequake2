@@ -40,8 +40,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CFixbot::CFixbot (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Fixbot";
 };
 
 #define MZ2_FIXBOT_BLASTER_1				MZ2_HOVER_BLASTER_1
@@ -175,7 +173,7 @@ CFrame FixbotFramesLanding [] =
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2))
 };
-CAnim FixbotMoveLanding (FRAME_landing_01, FRAME_landing_58, FixbotFramesLanding);
+CAnim FixbotMoveLanding (CFixbot::FRAME_landing_01, CFixbot::FRAME_landing_58, FixbotFramesLanding);
 
 /*
 	generic ambient stand
@@ -203,7 +201,7 @@ CFrame FixbotFramesStand [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::ChangeToRoam))
 };
-CAnim FixbotMoveStand (FRAME_ambient_01, FRAME_ambient_19, FixbotFramesStand);
+CAnim FixbotMoveStand (CFixbot::FRAME_ambient_01, CFixbot::FRAME_ambient_19, FixbotFramesStand);
 
 CFrame FixbotFramesStand2 [] =
 {
@@ -228,7 +226,7 @@ CFrame FixbotFramesStand2 [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim FixbotMoveStand2 (FRAME_ambient_01, FRAME_ambient_19, FixbotFramesStand2);
+CAnim FixbotMoveStand2 (CFixbot::FRAME_ambient_01, CFixbot::FRAME_ambient_19, FixbotFramesStand2);
 
 /*
 	generic frame to move bot
@@ -237,13 +235,13 @@ CFrame FixbotFramesRoamGoal [] =
 {
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::RoamGoal))
 };
-CAnim FixbotMoveRoamGoal (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesRoamGoal);
+CAnim FixbotMoveRoamGoal (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesRoamGoal);
 
 CFrame FixbotFramesTurn [] =
 {
 	CFrame (ConvertDerivedAIMove (&CFixbot::AI_Facing),	0)
 };
-CAnim FixbotMoveTurn (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesTurn);
+CAnim FixbotMoveTurn (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesTurn);
 
 void CFixbot::GoRoam ()
 {
@@ -273,7 +271,7 @@ CFrame FixbotFramesTakeOff [] =
 	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
 	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical))
 };
-CAnim FixbotMoveTakeOff (FRAME_takeoff_01, FRAME_takeoff_16, FixbotFramesTakeOff);
+CAnim FixbotMoveTakeOff (CFixbot::FRAME_takeoff_01, CFixbot::FRAME_takeoff_16, FixbotFramesTakeOff);
 
 /* findout what this is */
 CFrame FixbotFramesPain1 [] =
@@ -285,7 +283,7 @@ CFrame FixbotFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FixbotMovePain1 (FRAME_paina_01, FRAME_paina_06, FixbotFramesPain1, &CMonster::Run);
+CAnim FixbotMovePain1 (CFixbot::FRAME_paina_01, CFixbot::FRAME_paina_06, FixbotFramesPain1, &CMonster::Run);
 
 /* findout what this is */
 CFrame FixbotFramesPain2 [] =
@@ -299,7 +297,7 @@ CFrame FixbotFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FixbotMovePain2 (FRAME_painb_01, FRAME_painb_08, FixbotFramesPain2, &CMonster::Run);
+CAnim FixbotMovePain2 (CFixbot::FRAME_painb_01, CFixbot::FRAME_painb_08, FixbotFramesPain2, &CMonster::Run);
 
 /*
 	backup from pain
@@ -310,7 +308,7 @@ CFrame FixbotFramesPain3 [] =
 {
 	CFrame (&CMonster::AI_Move, -1)
 };
-CAnim FixbotMovePain3 (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesPain3, &CMonster::Run);
+CAnim FixbotMovePain3 (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesPain3, &CMonster::Run);
 
 /*
 	bot has completed landing
@@ -321,7 +319,7 @@ CFrame FixbotFramesLand [] =
 {
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FixbotMoveLand (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesLand);
+CAnim FixbotMoveLand (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesLand);
 
 void CFixbot::AI_MoveToGoal (float dist)
 {
@@ -334,7 +332,7 @@ CFrame FixbotFramesForward [] =
 {
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_MoveToGoal),	5,	ConvertDerivedFunction(&CFixbot::UseScanner))
 };
-CAnim FixbotMoveForward (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesForward);
+CAnim FixbotMoveForward (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesForward);
 
 void CFixbot::AI_Facing (float dist)
 {
@@ -354,7 +352,7 @@ CFrame FixbotFramesWalk [] =
 {
 	CFrame (&CMonster::AI_Walk,	5)
 };
-CAnim FixbotMoveWalk (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesWalk);
+CAnim FixbotMoveWalk (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesWalk);
 
 /*
 	
@@ -363,14 +361,14 @@ CFrame FixbotFramesRun [] =
 {
 	CFrame (&CMonster::AI_Run,	10)
 };
-CAnim FixbotMoveRun (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesRun);
+CAnim FixbotMoveRun (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesRun);
 
 //
 CFrame FixbotFramesBackward [] =
 {
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FixbotMoveBackward (FRAME_freeze_01, FRAME_freeze_01, FixbotFramesBackward);
+CAnim FixbotMoveBackward (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesBackward);
 
 /*
 	TBD: 
@@ -386,7 +384,7 @@ CFrame FixbotFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	-10,  ConvertDerivedFunction(&CFixbot::FireBlaster)),
 };
-CAnim FixbotMoveAttack1 (FRAME_shoot_01, FRAME_shoot_06, FixbotFramesAttack1);
+CAnim FixbotMoveAttack1 (CFixbot::FRAME_shoot_01, CFixbot::FRAME_shoot_06, FixbotFramesAttack1);
 
 bool CFixbot::CheckTelefrag ()
 {
@@ -485,7 +483,7 @@ CFrame FixbotFramesLaserAttack [] =
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
 	CFrame (&CMonster::AI_Charge,	0,  ConvertDerivedFunction(&CFixbot::FireLaser))
 };
-CAnim FixbotMoveLaserAttack (FRAME_shoot_01, FRAME_shoot_06, FixbotFramesLaserAttack);
+CAnim FixbotMoveLaserAttack (CFixbot::FRAME_shoot_01, CFixbot::FRAME_shoot_06, FixbotFramesLaserAttack);
 
 /*
 	need to get forward translation data
@@ -528,7 +526,7 @@ CFrame FixbotFramesAttack2 [] =
 
 	CFrame (&CMonster::AI_Charge,	 0)
 };
-CAnim FixbotMoveAttack2 (FRAME_charging_01, FRAME_charging_31, FixbotFramesAttack2, &CMonster::Run);
+CAnim FixbotMoveAttack2 (CFixbot::FRAME_charging_01, CFixbot::FRAME_charging_31, FixbotFramesAttack2, &CMonster::Run);
 
 void CFixbot::AI_Move2 (float dist)
 {
@@ -554,7 +552,7 @@ CFrame FixbotFramesWeldStart [] =
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_Move2),	0),
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_Move2),	0, ConvertDerivedFunction(&CFixbot::WeldState))
 };
-CAnim FixbotMoveWeldStart (FRAME_weldstart_01, FRAME_weldstart_10, FixbotFramesWeldStart);
+CAnim FixbotMoveWeldStart (CFixbot::FRAME_weldstart_01, CFixbot::FRAME_weldstart_10, FixbotFramesWeldStart);
 
 CFrame FixbotFramesWeld [] =
 {
@@ -566,7 +564,7 @@ CFrame FixbotFramesWeld [] =
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_Move2),	0, ConvertDerivedFunction(&CFixbot::FireWelder)),
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_Move2),	0, ConvertDerivedFunction(&CFixbot::WeldState))
 };
-CAnim FixbotMoveWeld (FRAME_weldmiddle_01, FRAME_weldmiddle_07, FixbotFramesWeld);
+CAnim FixbotMoveWeld (CFixbot::FRAME_weldmiddle_01, CFixbot::FRAME_weldmiddle_07, FixbotFramesWeld);
 
 CFrame FixbotFramesWeldEnd [] =
 {
@@ -578,16 +576,16 @@ CFrame FixbotFramesWeldEnd [] =
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_Move2),	-2),
 	CFrame (ConvertDerivedAIMove(&CFixbot::AI_Move2),	-2, ConvertDerivedFunction(&CFixbot::WeldState))
 };
-CAnim FixbotMoveWeldEnd (FRAME_weldend_01, FRAME_weldend_07, FixbotFramesWeldEnd);
+CAnim FixbotMoveWeldEnd (CFixbot::FRAME_weldend_01, CFixbot::FRAME_weldend_07, FixbotFramesWeldEnd);
 
 void CFixbot::WeldState ()
 {
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_weldstart_10:
+	case CFixbot::FRAME_weldstart_10:
 		CurrentMove = &FixbotMoveWeld;
 		break;
-	case FRAME_weldmiddle_07:
+	case CFixbot::FRAME_weldmiddle_07:
 		if (entity_cast<IHurtableEntity>(*Entity->GoalEntity)->Health < 0) 
 		{
 			Entity->Enemy->SetOwner(NULL);
@@ -844,8 +842,8 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 	qboolean	water = false;
 	int			content_mask = MASK_SHOT | MASK_WATER;
 
-	hspread+= (self->s.frame - FRAME_takeoff_01);
-	vspread+= (self->s.frame - FRAME_takeoff_01);
+	hspread+= (self->s.frame - CFixbot::FRAME_takeoff_01);
+	vspread+= (self->s.frame - CFixbot::FRAME_takeoff_01);
 
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
 	if (!(tr.Fraction < 1.0))
@@ -977,7 +975,7 @@ void CFixbot::FlyVertical ()
 	IdealYaw = (Entity->GoalEntity->State.GetOldOrigin() - Entity->State.GetOrigin()).ToYaw ();	
 	ChangeYaw ();
 	
-	if (Entity->State.GetFrame() == FRAME_landing_58 || Entity->State.GetFrame() == FRAME_takeoff_16)
+	if (Entity->State.GetFrame() == CFixbot::FRAME_landing_58 || Entity->State.GetFrame() == CFixbot::FRAME_takeoff_16)
 	{
 		Entity->GoalEntity->Free();
 		// NOTE: DO FREE

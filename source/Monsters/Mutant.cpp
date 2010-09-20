@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_mutant.h"
 #include "Monsters/Mutant.h"
 
 CMutant::CMutant (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Mutant";
 }
 
 //
@@ -142,7 +139,7 @@ CFrame MutantFramesStand [] =
 
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim MutantMoveStand (FRAME_stand101, FRAME_stand151, MutantFramesStand);
+CAnim MutantMoveStand (CMutant::FRAME_stand101, CMutant::FRAME_stand151, MutantFramesStand);
 
 void CMutant::Stand ()
 {
@@ -157,7 +154,7 @@ void CMutant::Stand ()
 void CMutant::IdleLoop ()
 {
 	if (frand() < 0.75)
-		NextFrame = FRAME_stand155;
+		NextFrame = CMutant::FRAME_stand155;
 }
 
 CFrame MutantFramesIdle [] =
@@ -176,7 +173,7 @@ CFrame MutantFramesIdle [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim MutantMoveIdle (FRAME_stand152, FRAME_stand164, MutantFramesIdle, &CMonster::Stand);
+CAnim MutantMoveIdle (CMutant::FRAME_stand152, CMutant::FRAME_stand164, MutantFramesIdle, &CMonster::Stand);
 
 void CMutant::Idle ()
 {
@@ -203,7 +200,7 @@ CFrame MutantFramesWalk [] =
 	CFrame (&CMonster::AI_Walk,	15),
 	CFrame (&CMonster::AI_Walk,	6)
 };
-CAnim MutantMoveWalk (FRAME_walk05, FRAME_walk16, MutantFramesWalk);
+CAnim MutantMoveWalk (CMutant::FRAME_walk05, CMutant::FRAME_walk16, MutantFramesWalk);
 
 CFrame MutantFramesStartWalk [] =
 {
@@ -212,7 +209,7 @@ CFrame MutantFramesStartWalk [] =
 	CFrame (&CMonster::AI_Walk,	-2),
 	CFrame (&CMonster::AI_Walk,	1)
 };
-CAnim MutantMoveStartWalk (FRAME_walk01, FRAME_walk04, MutantFramesStartWalk, ConvertDerivedFunction(&CMutant::WalkLoop));
+CAnim MutantMoveStartWalk (CMutant::FRAME_walk01, CMutant::FRAME_walk04, MutantFramesStartWalk, ConvertDerivedFunction(&CMutant::WalkLoop));
 
 void CMutant::WalkLoop ()
 {
@@ -238,7 +235,7 @@ CFrame MutantFramesRun [] =
 	CFrame (&CMonster::AI_Run,	17),
 	CFrame (&CMonster::AI_Run,	10)
 };
-CAnim MutantMoveRun (FRAME_run03, FRAME_run08, MutantFramesRun);
+CAnim MutantMoveRun (CMutant::FRAME_run03, CMutant::FRAME_run08, MutantFramesRun);
 
 void CMutant::Run ()
 {
@@ -281,7 +278,7 @@ void CMutant::CheckRefire ()
 		return;
 
 	if (Range(Entity, *Entity->Enemy) == RANGE_MELEE)
-		NextFrame = FRAME_attack09;
+		NextFrame = CMutant::FRAME_attack09;
 }
 
 CFrame MutantFramesAttack [] =
@@ -294,7 +291,7 @@ CFrame MutantFramesAttack [] =
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::HitRight)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::CheckRefire))
 };
-CAnim MutantMoveAttack (FRAME_attack09, FRAME_attack15, MutantFramesAttack, &CMonster::Run);
+CAnim MutantMoveAttack (CMutant::FRAME_attack09, CMutant::FRAME_attack15, MutantFramesAttack, &CMonster::Run);
 
 void CMutant::Melee ()
 {
@@ -331,7 +328,7 @@ void CMutant::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	{
 		if (Entity->GroundEntity)
 		{
-			NextFrame = FRAME_attack02;
+			NextFrame = CMutant::FRAME_attack02;
 			Jumping = false;
 		}
 		return;
@@ -388,9 +385,9 @@ void CMutant::CheckLanding ()
 	}
 
 	if (Level.Frame > AttackFinished)
-		NextFrame = FRAME_attack02;
+		NextFrame = CMutant::FRAME_attack02;
 	else
-		NextFrame = FRAME_attack05;
+		NextFrame = CMutant::FRAME_attack05;
 }
 
 CFrame MutantFramesJump [] =
@@ -404,7 +401,7 @@ CFrame MutantFramesJump [] =
 	CFrame (&CMonster::AI_Charge,	 3),
 	CFrame (&CMonster::AI_Charge,	 0)
 };
-CAnim MutantMoveJump (FRAME_attack01, FRAME_attack08, MutantFramesJump, &CMonster::Run);
+CAnim MutantMoveJump (CMutant::FRAME_attack01, CMutant::FRAME_attack08, MutantFramesJump, &CMonster::Run);
 
 void CMutant::Attack ()
 {
@@ -550,7 +547,7 @@ CFrame MutantFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	2),
 	CFrame (&CMonster::AI_Move,	5)
 };
-CAnim MutantMovePain1 (FRAME_pain101, FRAME_pain105, MutantFramesPain1, &CMonster::Run);
+CAnim MutantMovePain1 (CMutant::FRAME_pain101, CMutant::FRAME_pain105, MutantFramesPain1, &CMonster::Run);
 
 CFrame MutantFramesPain2 [] =
 {
@@ -561,7 +558,7 @@ CFrame MutantFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	6),
 	CFrame (&CMonster::AI_Move,	4)
 };
-CAnim MutantMovePain2 (FRAME_pain201, FRAME_pain206, MutantFramesPain2, &CMonster::Run);
+CAnim MutantMovePain2 (CMutant::FRAME_pain201, CMutant::FRAME_pain206, MutantFramesPain2, &CMonster::Run);
 
 CFrame MutantFramesPain3 [] =
 {
@@ -577,7 +574,7 @@ CFrame MutantFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	1)
 };
-CAnim MutantMovePain3 (FRAME_pain301, FRAME_pain311, MutantFramesPain3, &CMonster::Run);
+CAnim MutantMovePain3 (CMutant::FRAME_pain301, CMutant::FRAME_pain311, MutantFramesPain3, &CMonster::Run);
 
 void CMutant::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -637,7 +634,7 @@ CFrame MutantFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MutantMoveDeath1 (FRAME_death101, FRAME_death109, MutantFramesDeath1, ConvertDerivedFunction(&CMutant::Dead));
+CAnim MutantMoveDeath1 (CMutant::FRAME_death101, CMutant::FRAME_death109, MutantFramesDeath1, ConvertDerivedFunction(&CMutant::Dead));
 
 CFrame MutantFramesDeath2 [] =
 {
@@ -652,7 +649,7 @@ CFrame MutantFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim MutantMoveDeath2 (FRAME_death201, FRAME_death210, MutantFramesDeath2, ConvertDerivedFunction(&CMutant::Dead));
+CAnim MutantMoveDeath2 (CMutant::FRAME_death201, CMutant::FRAME_death210, MutantFramesDeath2, ConvertDerivedFunction(&CMutant::Dead));
 
 void CMutant::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {

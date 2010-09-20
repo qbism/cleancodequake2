@@ -32,7 +32,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Player/m_player.h"
 #include "Menu/Menu.h"
 #include "Player/Ban.h"
 #include "Player/BodyQueue.h"
@@ -4465,11 +4464,10 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 		};
 
 		CMonsterEntity *Monster = entity_cast<CMonsterEntity>(Attacker);
-		const char *Name = Monster->Monster->MonsterName.c_str();
 
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.c_str(), message.c_str(), MonsterAOrAn(Name), Name, message2.c_str());
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.c_str(), message.c_str(), MonsterAOrAn(Monster->Monster->GetMonsterName()), Monster->Monster->GetMonsterName(), message2.c_str());
 	}
 	else
 	{

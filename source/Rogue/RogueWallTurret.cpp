@@ -35,7 +35,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 
-#include "Rogue/m_turret.h"
 #include "Rogue/RogueWallTurret.h"
 #include "Entities/BrushModels.h"
 #include "Utility/TemporaryEntities.h"
@@ -132,8 +131,6 @@ void CWallTurret::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 
 CWallTurret::CWallTurret (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Turret";
 }
 
 CFrame TurretFrameStand [] =
@@ -141,7 +138,7 @@ CFrame TurretFrameStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0),
 };
-CAnim TurretMoveStand (FRAME_stand01, FRAME_stand02, TurretFrameStand);
+CAnim TurretMoveStand (CWallTurret::FRAME_stand01, CWallTurret::FRAME_stand02, TurretFrameStand);
 
 void CWallTurret::Stand ()
 {
@@ -163,7 +160,7 @@ CFrame TurretFramesReadyGun [] =
 	
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim TurretMoveReadyGun (FRAME_active01, FRAME_run01, TurretFramesReadyGun, &CMonster::Run);
+CAnim TurretMoveReadyGun (CWallTurret::FRAME_active01, CWallTurret::FRAME_run01, TurretFramesReadyGun, &CMonster::Run);
 
 void CWallTurret::ReadyGun ()
 {
@@ -175,7 +172,7 @@ CFrame TurretFramesSeek [] =
 	CFrame (&CMonster::AI_Walk, 0, ConvertDerivedFunction(&CWallTurret::Aim)),
 	CFrame (&CMonster::AI_Walk, 0, ConvertDerivedFunction(&CWallTurret::Aim))
 };
-CAnim TurretMoveSeek (FRAME_run01, FRAME_run02, TurretFramesSeek);
+CAnim TurretMoveSeek (CWallTurret::FRAME_run01, CWallTurret::FRAME_run02, TurretFramesSeek);
 
 void CWallTurret::Walk ()
 {
@@ -193,7 +190,7 @@ CFrame TurretFramesRun [] =
 	CFrame (&CMonster::AI_Run, 0, ConvertDerivedFunction(&CWallTurret::Aim)),
 	CFrame (&CMonster::AI_Run, 0, ConvertDerivedFunction(&CWallTurret::Aim))
 };
-CAnim TurretMoveRun (FRAME_run01, FRAME_run02, TurretFramesRun, &CMonster::Run);
+CAnim TurretMoveRun (CWallTurret::FRAME_run01, CWallTurret::FRAME_run02, TurretFramesRun, &CMonster::Run);
 
 void CWallTurret::Run ()
 {
@@ -364,7 +361,7 @@ CFrame TurretFramesFire [] =
 	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
 	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim))
 };
-CAnim TurretMoveFire (FRAME_pow01, FRAME_pow04, TurretFramesFire, &CMonster::Run);
+CAnim TurretMoveFire (CWallTurret::FRAME_pow01, CWallTurret::FRAME_pow04, TurretFramesFire, &CMonster::Run);
 
 //PMM
 
@@ -376,7 +373,7 @@ CFrame TurretFramesFireBlind [] =
 	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
 	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::FireBlind))
 };
-CAnim TurretMoveFireBlind (FRAME_pow01, FRAME_pow04, TurretFramesFireBlind, &CMonster::Run);
+CAnim TurretMoveFireBlind (CWallTurret::FRAME_pow01, CWallTurret::FRAME_pow04, TurretFramesFireBlind, &CMonster::Run);
 //pmm
 
 void CWallTurret::Attack ()

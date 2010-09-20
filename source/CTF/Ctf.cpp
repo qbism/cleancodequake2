@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if CLEANCTF_ENABLED
 
 #include "Weapons/WeaponMain.h"
-#include "Player/m_player.h"
 
 void EndDMLevel ();
 
@@ -1106,14 +1105,14 @@ bool CTFCheckRules()
 {
 	if (ctfgame.Election != ELECT_NONE && ctfgame.ElectionTimeEnd <= Level.Frame)
 	{
-		BroadcastPrintf(PRINT_CHAT, "Election timed out and has been cancelled.\n");
+		BroadcastPrint (PRINT_CHAT, "Election timed out and has been cancelled.\n");
 		ctfgame.Election = ELECT_NONE;
 	}
 
 	if (CvarList[CV_CAPTURE_LIMIT].Integer() && 
 		(ctfgame.Captures[CTF_TEAM1] >= CvarList[CV_CAPTURE_LIMIT].Integer() ||
 		ctfgame.Captures[CTF_TEAM2] >= CvarList[CV_CAPTURE_LIMIT].Integer())) {
-		BroadcastPrintf (PRINT_HIGH, "Capturelimit hit.\n");
+		BroadcastPrint (PRINT_HIGH, "Capturelimit hit.\n");
 		return true;
 	}
 	return false;

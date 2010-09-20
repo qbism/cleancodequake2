@@ -295,16 +295,16 @@ void Cast (ECastType castType, ECastFlags castFlags, vec3f &Origin, CPlayerEntit
 {
 	// Sanity checks
 	if (castType == CAST_MULTI && Ent)
-		DebugPrintf ("Multicast with an associated Ent\n");
+		DebugPrint ("Multicast with an associated Ent\n");
 	else if (castType == CAST_MULTI && !SuppliedOrigin)
 	{
-		DebugPrintf ("Multicast with no associated Origin! Can't do!\n");
+		DebugPrint ("Multicast with no associated Origin! Can't do!\n");
 		Clear ();
 		return;
 	}
 	else if (castType == CAST_UNI && !Ent)
 	{
-		DebugPrintf ("Unicast with no associated Ent! Can't do!\n");
+		DebugPrint ("Unicast with no associated Ent! Can't do!\n");
 		Clear ();
 		return;
 	}

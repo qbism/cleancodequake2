@@ -82,7 +82,7 @@ void VerifyVersionFile ()
 
 	if (CompareVersion (prefix.c_str(), major, minor, build))
 	{
-		ServerPrintf ("Version file out of date; updating...\n");
+		ServerPrint ("Version file out of date; updating...\n");
 		WriteVersion ();
 	}
 }
@@ -224,7 +224,7 @@ void CheckVersionReturnance ()
 				CLEANCODE_VERSION_PRINT_ARGS,
 				prefix.c_str(), major, minor, build);
 			else
-				ServerPrintf ("Your version of CleanCode is up to date.\n");
+				ServerPrint ("Your version of CleanCode is up to date.\n");
 	#endif
 		}
 
@@ -241,7 +241,7 @@ void CheckVersionReturnance ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
 		else
-			ServerPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrint ("Your version of CleanCode is up to date.\n");
 
 		VersionReturnance = VERSION_SAME;
 		VersionCheckReady = false;
@@ -342,7 +342,7 @@ void CheckVersionReturnance ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
 		else
-			ServerPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrint ("Your version of CleanCode is up to date.\n");
 
 		VersionReturnance = VERSION_SAME;
 		VersionCheckReady = false;
@@ -439,7 +439,7 @@ void CheckNewVersion ()
 			CLEANCODE_VERSION_PRINT_ARGS,
 			prefix.c_str(), major, minor, build);
 		else
-			ServerPrintf ("Your version of CleanCode is up to date.\n");
+			ServerPrint ("Your version of CleanCode is up to date.\n");
 #endif
 
 		Mem_Free (chunk.memory);
@@ -463,13 +463,13 @@ void CheckNewVersion ()
 void InitVersion ()
 {
 #if (VERSION_CHECKING != VC_NONE)
-	ServerPrintf ("Checking for new version...\n");
+	ServerPrint ("Checking for new version...\n");
 
 	if (!CFile::Exists(VERSION_PATH))
 	{
-		ServerPrintf ("Version file non-existant, writing... ");
+		ServerPrint ("Version file non-existant, writing... ");
 		WriteVersion ();
-		ServerPrintf ("done\n");
+		ServerPrint ("done\n");
 	}
 	else
 		VerifyVersionFile ();

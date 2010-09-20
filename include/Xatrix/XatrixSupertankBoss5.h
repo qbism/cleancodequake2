@@ -39,6 +39,8 @@ class CBoss5 : public CSuperTank
 public:
 	CBoss5 (uint32 ID);
 
+	inline const char	*GetMonsterName() { return "SuperduperTank"; }
+
 	void Spawn ();
 	
 	MONSTER_ID_HEADER

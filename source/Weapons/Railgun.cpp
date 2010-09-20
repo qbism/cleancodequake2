@@ -33,7 +33,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 #include "Weapons/WeaponMain.h"
-#include "Player/m_player.h"
 
 CRailgun::CRailgun() :
 IWeaponBase(9, 0, "models/weapons/v_rail/tris.md2", 0, 3, 4, 18,

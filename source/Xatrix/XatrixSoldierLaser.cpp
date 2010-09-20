@@ -40,8 +40,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 CSoldierLaser::CSoldierLaser (uint32 ID) :
 CSoldierBase (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Laser Soldier";
 }
 
 extern CAnim SoldierMoveAttack4;

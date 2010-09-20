@@ -46,9 +46,6 @@
     <ClInclude Include="..\..\include\Player\GameCommands.h">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Player\m_player.h">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Player\Player.h">
       <Filter>Player</Filter>
     </ClInclude>
@@ -361,63 +358,6 @@
     <ClInclude Include="..\..\include\Monsters\JORG.h">
       <Filter>Monsters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_berserk.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_boss2.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_boss31.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_boss32.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_brain.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_chick.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_flipper.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_float.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_flyer.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_gladiator.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_gunner.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_hover.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_infantry.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_insane.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_medic.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_mutant.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_parasite.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_soldier.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_supertank.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Monsters\m_tank.h">
       <Filter>Monsters</Filter>
     </ClInclude>
@@ -462,21 +402,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Game\Save.h">
       <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Rogue\m_carrier.h">
-      <Filter>Addons\Rogue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Rogue\m_stalker.h">
-      <Filter>Addons\Rogue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Rogue\m_turret.h">
-      <Filter>Addons\Rogue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Rogue\m_widow.h">
-      <Filter>Addons\Rogue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Rogue\m_widow2.h">
-      <Filter>Addons\Rogue</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Weapons\Bfg.h">
       <Filter>Weapons</Filter>

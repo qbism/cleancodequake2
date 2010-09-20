@@ -244,7 +244,7 @@ CC_EXCEPTION_HANDLER_BEGIN
 	// Smart, but it breaks shit.
 	if (!ent->Entity)
 	{
-		ServerPrintf ("Fixing R1Q2 non-attract-loop code...\n");
+		ServerPrint ("Fixing R1Q2 non-attract-loop code...\n");
 		FixDemoSetup ();
 	}
 

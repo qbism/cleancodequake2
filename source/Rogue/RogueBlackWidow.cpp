@@ -39,13 +39,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Rogue/RogueBlackWidow.h"
 #include "Rogue/RogueMonsterSpawning.h"
 #include "Utility/TemporaryEntities.h"
-#include "Rogue/m_widow2.h"
 
 CBlackWidow::CBlackWidow (uint32 ID) :
 CWidowStand (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Black Widow";
 };
 
 // timestamp used to prevent rapid fire of melee attack
@@ -92,13 +89,13 @@ void CBlackWidow::FireBeam ()
 	vec3f forward, right;
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	
-	if ((Entity->State.GetFrame() >= FRAME_fireb05) && (Entity->State.GetFrame() <= FRAME_fireb09))
+	if ((Entity->State.GetFrame() >= CBlackWidow::FRAME_fireb05) && (Entity->State.GetFrame() <= CBlackWidow::FRAME_fireb09))
 	{
 		vec3f start;
 
 		// regular beam attack
 		SaveBeamTarget();
-		EMuzzleFlash flashnum = MZ2_WIDOW2_BEAMER_1 + Entity->State.GetFrame() - FRAME_fireb05;
+		EMuzzleFlash flashnum = MZ2_WIDOW2_BEAMER_1 + Entity->State.GetFrame() - CBlackWidow::FRAME_fireb05;
 
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
@@ -107,12 +104,12 @@ void CBlackWidow::FireBeam ()
 
 		MonsterFireHeat (start, forward, 10, 50, flashnum);
 	}
-	else if ((Entity->State.GetFrame() >= FRAME_spawn04) && (Entity->State.GetFrame() <= FRAME_spawn14))
+	else if ((Entity->State.GetFrame() >= CBlackWidow::FRAME_spawn04) && (Entity->State.GetFrame() <= CBlackWidow::FRAME_spawn14))
 	{
 		vec3f start;
 
 		// sweep
-		EMuzzleFlash flashnum = MZ2_WIDOW2_BEAM_SWEEP_1 + Entity->State.GetFrame() - FRAME_spawn04;
+		EMuzzleFlash flashnum = MZ2_WIDOW2_BEAM_SWEEP_1 + Entity->State.GetFrame() - CBlackWidow::FRAME_spawn04;
 
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 		
@@ -216,7 +213,7 @@ CFrame widow2_frames_stand [] =
 {
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim	Widow2MoveStand (FRAME_blackwidow3, FRAME_blackwidow3, widow2_frames_stand);
+CAnim	Widow2MoveStand (CBlackWidow::FRAME_blackwidow3, CBlackWidow::FRAME_blackwidow3, widow2_frames_stand);
 
 CFrame widow2_frames_walk [] =
 {
@@ -230,7 +227,7 @@ CFrame widow2_frames_walk [] =
 	CFrame (&CMonster::AI_Walk,	8.37f),
 	CFrame (&CMonster::AI_Walk,	10.41f)
 };
-CAnim Widow2MoveWalk (FRAME_walk01, FRAME_walk09, widow2_frames_walk);
+CAnim Widow2MoveWalk (CBlackWidow::FRAME_walk01, CBlackWidow::FRAME_walk09, widow2_frames_walk);
 
 CFrame widow2_frames_run [] =
 {
@@ -244,7 +241,7 @@ CFrame widow2_frames_run [] =
 	CFrame (&CMonster::AI_Run,	8.37f),
 	CFrame (&CMonster::AI_Run,	10.41f)
 };
-CAnim Widow2MoveRun (FRAME_walk01, FRAME_walk09, widow2_frames_run);
+CAnim Widow2MoveRun (CBlackWidow::FRAME_walk01, CBlackWidow::FRAME_walk09, widow2_frames_run);
 
 CFrame widow2_frames_attack_pre_beam [] =
 {
@@ -253,7 +250,7 @@ CFrame widow2_frames_attack_pre_beam [] =
 	CFrame (&CMonster::AI_Charge,	4),
 	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CBlackWidow::AttackBeam))
 };
-CAnim Widow2MoveAttackPreBeam (FRAME_fireb01, FRAME_fireb04, widow2_frames_attack_pre_beam);
+CAnim Widow2MoveAttackPreBeam (CBlackWidow::FRAME_fireb01, CBlackWidow::FRAME_fireb04, widow2_frames_attack_pre_beam);
 
 // Loop this
 CFrame widow2_frames_attack_beam [] =
@@ -264,7 +261,7 @@ CFrame widow2_frames_attack_beam [] =
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReAttackBeam))
 };
-CAnim Widow2MoveAttackBeam (FRAME_fireb05, FRAME_fireb09, widow2_frames_attack_beam);
+CAnim Widow2MoveAttackBeam (CBlackWidow::FRAME_fireb05, CBlackWidow::FRAME_fireb09, widow2_frames_attack_beam);
 
 CFrame widow2_frames_attack_post_beam [] =
 {
@@ -272,7 +269,7 @@ CFrame widow2_frames_attack_post_beam [] =
 	CFrame (&CMonster::AI_Charge,	4),
 	CFrame (&CMonster::AI_Charge,	4)
 };
-CAnim Widow2MoveAttackPostBeam (FRAME_fireb06, FRAME_fireb07, widow2_frames_attack_post_beam, &CMonster::Run);
+CAnim Widow2MoveAttackPostBeam (CBlackWidow::FRAME_fireb06, CBlackWidow::FRAME_fireb07, widow2_frames_attack_post_beam, &CMonster::Run);
 
 void CBlackWidow::FireDisrupt ()
 {
@@ -312,7 +309,7 @@ void CBlackWidow::SaveDisruptLocation ()
 void CBlackWidow::DisruptReAttack ()
 {
 	if (frand() < (0.25f + (CvarList[CV_SKILL].Float() * 0.15f)))
-		NextFrame = FRAME_firea01;
+		NextFrame = CBlackWidow::FRAME_firea01;
 }
 
 CFrame widow2_frames_attack_disrupt [] =
@@ -325,7 +322,7 @@ CFrame widow2_frames_attack_disrupt [] =
 	CFrame (&CMonster::AI_Charge, 2),
 	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CBlackWidow::DisruptReAttack))
 };
-CAnim Widow2MoveAttackDisrupt (FRAME_firea01, FRAME_firea07, widow2_frames_attack_disrupt, &CMonster::Run);
+CAnim Widow2MoveAttackDisrupt (CBlackWidow::FRAME_firea01, CBlackWidow::FRAME_firea07, widow2_frames_attack_disrupt, &CMonster::Run);
 
 void CBlackWidow::SaveBeamTarget ()
 {
@@ -359,7 +356,7 @@ CFrame widow2_frames_spawn [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReAttackBeam))
 };
-CAnim Widow2MoveSpawn (FRAME_spawn01, FRAME_spawn18, widow2_frames_spawn);
+CAnim Widow2MoveSpawn (CBlackWidow::FRAME_spawn01, CBlackWidow::FRAME_spawn18, widow2_frames_spawn);
 
 bool CBlackWidow::TongueAttackOK (vec3f &start, vec3f &end, float range)
 {
@@ -383,7 +380,7 @@ void CBlackWidow::Tongue ()
 	vec3f f, r, u, start, end, dir;
 
 	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - FRAME_tongs01], f, r, start, u);
+	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - CBlackWidow::FRAME_tongs01], f, r, start, u);
 	end = Entity->Enemy->State.GetOrigin();
 	if (!TongueAttackOK(start, end, 256))
 	{
@@ -419,7 +416,7 @@ void CBlackWidow::TonguePull ()
 
 	vec3f f, r, u, start;
 	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - FRAME_tongs01], f, r, start, u);
+	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - CBlackWidow::FRAME_tongs01], f, r, start, u);
 	vec3f end = Entity->Enemy->State.GetOrigin();
 
 	if (!TongueAttackOK(start, end, 256))
@@ -461,7 +458,7 @@ void CBlackWidow::Crunch ()
 
 	// 70 + 32
 	static const vec3f aim (150, 0, 4);
-	if (Entity->State.GetFrame() != FRAME_tongs07)
+	if (Entity->State.GetFrame() != CBlackWidow::FRAME_tongs07)
 		CMeleeWeapon::Fire (Entity, aim, 20 + (rand() % 6), 0);
 	else
 	{
@@ -489,7 +486,7 @@ CFrame widow2_frames_tongs [] =
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Crunch)),
 	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Toss))
 };
-CAnim Widow2MoveTongs (FRAME_tongs01, FRAME_tongs08, widow2_frames_tongs, &CMonster::Run);
+CAnim Widow2MoveTongs (CBlackWidow::FRAME_tongs01, CBlackWidow::FRAME_tongs08, widow2_frames_tongs, &CMonster::Run);
 
 CFrame widow2_frames_pain [] =
 {
@@ -499,7 +496,7 @@ CFrame widow2_frames_pain [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim Widow2MovePain (FRAME_pain01, FRAME_pain05, widow2_frames_pain, &CMonster::Run);
+CAnim Widow2MovePain (CBlackWidow::FRAME_pain01, CBlackWidow::FRAME_pain05, widow2_frames_pain, &CMonster::Run);
 
 CFrame widow2_frames_death [] =
 {
@@ -556,7 +553,7 @@ CFrame widow2_frames_death [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplode))		// 44
 };
-CAnim Widow2MoveDeath (FRAME_death01, FRAME_death44, widow2_frames_death);
+CAnim Widow2MoveDeath (CBlackWidow::FRAME_death01, CBlackWidow::FRAME_death44, widow2_frames_death);
 
 CFrame widow2_frames_dead [] =
 {
@@ -578,7 +575,7 @@ CFrame widow2_frames_dead [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::KeepSearching))
 };
-CAnim Widow2MoveDead (FRAME_dthsrh01, FRAME_dthsrh15, widow2_frames_dead);
+CAnim Widow2MoveDead (CBlackWidow::FRAME_dthsrh01, CBlackWidow::FRAME_dthsrh15, widow2_frames_dead);
 
 CFrame widow2_frames_really_dead [] =
 {
@@ -591,7 +588,7 @@ CFrame widow2_frames_really_dead [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::Dead))
 };
-CAnim Widow2MoveReallyDead (FRAME_dthsrh16, FRAME_dthsrh22, widow2_frames_really_dead);
+CAnim Widow2MoveReallyDead (CBlackWidow::FRAME_dthsrh16, CBlackWidow::FRAME_dthsrh22, widow2_frames_really_dead);
 
 void CBlackWidow::StartSearching ()
 {
@@ -603,7 +600,7 @@ void CBlackWidow::KeepSearching ()
 	if (ExplodeCount <= 2)
 	{
 		CurrentMove = &Widow2MoveDead;
-		Entity->State.GetFrame() = FRAME_dthsrh01;
+		Entity->State.GetFrame() = CBlackWidow::FRAME_dthsrh01;
 		ExplodeCount++;
 		return;
 	}

@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_gunner.h"
 #include "Monsters/Gunner.h"
 
 CGunner::CGunner (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Gunner";
 }
 
 void CGunner::Idle ()
@@ -113,7 +110,7 @@ CFrame GunnerFramesFidget [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim GunnerMoveFidget (FRAME_stand31, FRAME_stand70, GunnerFramesFidget, ConvertDerivedFunction(&CGunner::Stand));
+CAnim GunnerMoveFidget (CGunner::FRAME_stand31, CGunner::FRAME_stand70, GunnerFramesFidget, ConvertDerivedFunction(&CGunner::Stand));
 
 void CGunner::Fidget ()
 {
@@ -158,7 +155,7 @@ CFrame GunnerFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CGunner::Fidget))
 };
-CAnim GunnerMoveStand (FRAME_stand01, FRAME_stand30, GunnerFramesStand);
+CAnim GunnerMoveStand (CGunner::FRAME_stand01, CGunner::FRAME_stand30, GunnerFramesStand);
 
 void CGunner::Stand ()
 {
@@ -181,7 +178,7 @@ CFrame GunnerFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 7),
 	CFrame (&CMonster::AI_Walk, 4)
 };
-CAnim GunnerMoveWalk (FRAME_walk07, FRAME_walk19, GunnerFramesWalk);
+CAnim GunnerMoveWalk (CGunner::FRAME_walk07, CGunner::FRAME_walk19, GunnerFramesWalk);
 
 void CGunner::Walk ()
 {
@@ -199,7 +196,7 @@ CFrame GunnerFramesRun [] =
 	CFrame (&CMonster::AI_Run, 13),
 	CFrame (&CMonster::AI_Run, 6)
 };
-CAnim GunnerMoveRun(FRAME_run01, FRAME_run08, GunnerFramesRun);
+CAnim GunnerMoveRun(CGunner::FRAME_run01, CGunner::FRAME_run08, GunnerFramesRun);
 
 void CGunner::Run ()
 {
@@ -218,7 +215,7 @@ CFrame GunnerFramesRunAndShoot [] =
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 20)
 };
-CAnim GunnerMoveRunAndShoot (FRAME_runs01, FRAME_runs06, GunnerFramesRunAndShoot);
+CAnim GunnerMoveRunAndShoot (CGunner::FRAME_runs01, CGunner::FRAME_runs06, GunnerFramesRunAndShoot);
 
 void CGunner::RunAndShoot ()
 {
@@ -233,7 +230,7 @@ CFrame GunnerFramesPain3 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 1)
 };
-CAnim GunnerMovePain3 (FRAME_pain301, FRAME_pain305, GunnerFramesPain3, ConvertDerivedFunction(&CGunner::Run));
+CAnim GunnerMovePain3 (CGunner::FRAME_pain301, CGunner::FRAME_pain305, GunnerFramesPain3, ConvertDerivedFunction(&CGunner::Run));
 
 CFrame GunnerFramesPain2 [] =
 {
@@ -246,7 +243,7 @@ CFrame GunnerFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, -2),
 	CFrame (&CMonster::AI_Move, -7)
 };
-CAnim GunnerMovePain2 (FRAME_pain201, FRAME_pain208, GunnerFramesPain2, ConvertDerivedFunction(&CGunner::Run));
+CAnim GunnerMovePain2 (CGunner::FRAME_pain201, CGunner::FRAME_pain208, GunnerFramesPain2, ConvertDerivedFunction(&CGunner::Run));
 
 CFrame GunnerFramesPain1 [] =
 {
@@ -269,7 +266,7 @@ CFrame GunnerFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim GunnerMovePain1 (FRAME_pain101, FRAME_pain118, GunnerFramesPain1, ConvertDerivedFunction(&CGunner::Run));
+CAnim GunnerMovePain1 (CGunner::FRAME_pain101, CGunner::FRAME_pain118, GunnerFramesPain1, ConvertDerivedFunction(&CGunner::Run));
 
 void CGunner::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -324,7 +321,7 @@ CFrame GunnerFramesDeath [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim GunnerMoveDeath (FRAME_death01, FRAME_death11, GunnerFramesDeath, ConvertDerivedFunction(&CGunner::Dead));
+CAnim GunnerMoveDeath (CGunner::FRAME_death01, CGunner::FRAME_death11, GunnerFramesDeath, ConvertDerivedFunction(&CGunner::Dead));
 
 void CGunner::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {
@@ -420,7 +417,7 @@ CFrame GunnerFramesDuck [] =
 #endif
 	CFrame (&CMonster::AI_Move, -1)
 };
-CAnim GunnerMoveDuck (FRAME_duck01, FRAME_duck08, GunnerFramesDuck, ConvertDerivedFunction(&CGunner::Run));
+CAnim GunnerMoveDuck (CGunner::FRAME_duck01, CGunner::FRAME_duck08, GunnerFramesDuck, ConvertDerivedFunction(&CGunner::Run));
 
 #if !ROGUE_FEATURES
 void CGunner::Dodge (IBaseEntity *Attacker, float eta)
@@ -486,7 +483,7 @@ void CGunner::Fire ()
 		return;
 
 	vec3f	start, forward, right, target, aim;
-	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak216);
+	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - CGunner::FRAME_attak216);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
@@ -512,13 +509,13 @@ void CGunner::Grenade ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak105:
+	case CGunner::FRAME_attak105:
 		flash_number = MZ2_GUNNER_GRENADE_1;
 		break;
-	case FRAME_attak108:
+	case CGunner::FRAME_attak108:
 		flash_number = MZ2_GUNNER_GRENADE_2;
 		break;
-	case FRAME_attak111:
+	case CGunner::FRAME_attak111:
 		flash_number = MZ2_GUNNER_GRENADE_3;
 		break;
 	default:
@@ -543,15 +540,15 @@ void CGunner::Grenade ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak105:
+	case CGunner::FRAME_attak105:
 		flash_number = MZ2_GUNNER_GRENADE_1;
 		spread = .02f;
 		break;
-	case FRAME_attak108:
+	case CGunner::FRAME_attak108:
 		flash_number = MZ2_GUNNER_GRENADE_2;
 		spread = .05f;
 		break;
-	case FRAME_attak111:
+	case CGunner::FRAME_attak111:
 		flash_number = MZ2_GUNNER_GRENADE_3;
 		spread = .08f;
 		break;
@@ -622,7 +619,7 @@ CFrame GunnerFramesAttackChain [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim GunnerMoveAttackChain (FRAME_attak209, FRAME_attak215, GunnerFramesAttackChain, ConvertDerivedFunction(&CGunner::FireChain));
+CAnim GunnerMoveAttackChain (CGunner::FRAME_attak209, CGunner::FRAME_attak215, GunnerFramesAttackChain, ConvertDerivedFunction(&CGunner::FireChain));
 
 CFrame GunnerFramesFireChain [] =
 {
@@ -635,7 +632,7 @@ CFrame GunnerFramesFireChain [] =
 	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGunner::Fire)),
 	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGunner::Fire))
 };
-CAnim GunnerMoveFireChain (FRAME_attak216, FRAME_attak223, GunnerFramesFireChain, ConvertDerivedFunction(&CGunner::ReFireChain));
+CAnim GunnerMoveFireChain (CGunner::FRAME_attak216, CGunner::FRAME_attak223, GunnerFramesFireChain, ConvertDerivedFunction(&CGunner::ReFireChain));
 
 CFrame GunnerFramesEndFireChain [] =
 {
@@ -647,7 +644,7 @@ CFrame GunnerFramesEndFireChain [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim GunnerMoveEndFireChain (FRAME_attak224, FRAME_attak230, GunnerFramesEndFireChain, ConvertDerivedFunction(&CGunner::Run));
+CAnim GunnerMoveEndFireChain (CGunner::FRAME_attak224, CGunner::FRAME_attak230, GunnerFramesEndFireChain, ConvertDerivedFunction(&CGunner::Run));
 
 #if ROGUE_FEATURES
 void CGunner::BlindCheck ()
@@ -685,7 +682,7 @@ CFrame GunnerFramesAttackGrenade [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim GunnerMoveAttackGrenade (FRAME_attak101, FRAME_attak121, GunnerFramesAttackGrenade, ConvertDerivedFunction(&CGunner::Run));
+CAnim GunnerMoveAttackGrenade (CGunner::FRAME_attak101, CGunner::FRAME_attak121, GunnerFramesAttackGrenade, ConvertDerivedFunction(&CGunner::Run));
 
 void CGunner::Attack()
 {
@@ -776,7 +773,7 @@ void CGunner::Duck (float eta)
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
 
-	NextFrame = FRAME_duck01;
+	NextFrame = CGunner::FRAME_duck01;
 	CurrentMove = &GunnerMoveDuck;
 	return;
 }

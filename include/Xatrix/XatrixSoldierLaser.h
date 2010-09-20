@@ -39,6 +39,8 @@ class CSoldierLaser : public CSoldierBase
 public:
 	FrameNumber	Wait;
 
+	inline const char	*GetMonsterName() { return "Lasergun Soldier"; }
+
 	CSoldierLaser(uint32 ID);
 
 	void SaveMonsterFields (CFile &File)

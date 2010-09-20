@@ -130,8 +130,6 @@ bool CBlueBlasterProjectile::Run ()
 CSoldierHyper::CSoldierHyper (uint32 ID) :
 CSoldierBase (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Hyper Soldier";
 }
 
 CFrame SoldierHyperFramesAttack1 [] =
@@ -149,7 +147,7 @@ CFrame SoldierHyperFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierHyperMoveAttack1 (FRAME_attak101, FRAME_attak112, SoldierHyperFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierHyperMoveAttack1 (CSoldierBase::FRAME_attak101, CSoldierBase::FRAME_attak112, SoldierHyperFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierHyperFramesAttack2 [] =
 {
@@ -172,7 +170,7 @@ CFrame SoldierHyperFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim SoldierHyperMoveAttack2 (FRAME_attak201, FRAME_attak218, SoldierHyperFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
+CAnim SoldierHyperMoveAttack2 (CSoldierBase::FRAME_attak201, CSoldierBase::FRAME_attak218, SoldierHyperFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
 
 extern CAnim SoldierMoveAttack6;
 

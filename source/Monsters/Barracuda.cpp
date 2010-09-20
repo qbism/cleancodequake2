@@ -32,21 +32,18 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_flipper.h"
 #include "Monsters/Barracuda.h"
 
 CBarracudaShark::CBarracudaShark (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Shark";
 }
 
 CFrame FlipperFramesStand [] =
 {
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim FlipperMoveStand (FRAME_flphor01, FRAME_flphor01, FlipperFramesStand);
+CAnim FlipperMoveStand (CBarracudaShark::FRAME_flphor01, CBarracudaShark::FRAME_flphor01, FlipperFramesStand);
 
 void CBarracudaShark::Stand ()
 {
@@ -84,7 +81,7 @@ CFrame FlipperFramesRun [] =
 	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
 	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED)		// 29
 };
-CAnim FlipperMoveRunLoop (FRAME_flpver06, FRAME_flpver29, FlipperFramesRun);
+CAnim FlipperMoveRunLoop (CBarracudaShark::FRAME_flpver06, CBarracudaShark::FRAME_flpver29, FlipperFramesRun);
 
 void CBarracudaShark::RunLoop ()
 {
@@ -100,7 +97,7 @@ CFrame FlipperFramesRunStart [] =
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 8)
 };
-CAnim FlipperMoveRunStart (FRAME_flpver01, FRAME_flpver06, FlipperFramesRunStart, ConvertDerivedFunction(&CBarracudaShark::RunLoop));
+CAnim FlipperMoveRunStart (CBarracudaShark::FRAME_flpver01, CBarracudaShark::FRAME_flpver06, FlipperFramesRunStart, ConvertDerivedFunction(&CBarracudaShark::RunLoop));
 
 void CBarracudaShark::DoRun ()
 {
@@ -135,7 +132,7 @@ CFrame FlipperFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 4),
 	CFrame (&CMonster::AI_Walk, 4)
 };
-CAnim FlipperMoveWalk (FRAME_flphor01, FRAME_flphor24, FlipperFramesWalk);
+CAnim FlipperMoveWalk (CBarracudaShark::FRAME_flphor01, CBarracudaShark::FRAME_flphor24, FlipperFramesWalk);
 
 void CBarracudaShark::Walk ()
 {
@@ -150,7 +147,7 @@ CFrame FlipperFramesStartRun [] =
 	CFrame (&CMonster::AI_Run, 8),
 	CFrame (&CMonster::AI_Run, 8)
 };
-CAnim FlipperMoveStartRun (FRAME_flphor01, FRAME_flphor05, FlipperFramesStartRun, ConvertDerivedFunction(&CBarracudaShark::DoRun));
+CAnim FlipperMoveStartRun (CBarracudaShark::FRAME_flphor01, CBarracudaShark::FRAME_flphor05, FlipperFramesStartRun, ConvertDerivedFunction(&CBarracudaShark::DoRun));
 
 void CBarracudaShark::Run ()
 {
@@ -165,7 +162,7 @@ CFrame FlipperFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FlipperMovePain2 (FRAME_flppn101, FRAME_flppn105, FlipperFramesPain2, &CMonster::Run);
+CAnim FlipperMovePain2 (CBarracudaShark::FRAME_flppn101, CBarracudaShark::FRAME_flppn105, FlipperFramesPain2, &CMonster::Run);
 
 CFrame FlipperFramesPain1 [] =
 {
@@ -175,7 +172,7 @@ CFrame FlipperFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FlipperMovePain1 (FRAME_flppn201, FRAME_flppn205, FlipperFramesPain1, &CMonster::Run);
+CAnim FlipperMovePain1 (CBarracudaShark::FRAME_flppn201, CBarracudaShark::FRAME_flppn205, FlipperFramesPain1, &CMonster::Run);
 
 void CBarracudaShark::Bite ()
 {
@@ -211,7 +208,7 @@ CFrame FlipperFramesAttack [] =
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::Bite)),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim FlipperMoveAttack (FRAME_flpbit01, FRAME_flpbit20, FlipperFramesAttack, &CMonster::Run);
+CAnim FlipperMoveAttack (CBarracudaShark::FRAME_flpbit01, CBarracudaShark::FRAME_flpbit20, FlipperFramesAttack, &CMonster::Run);
 
 void CBarracudaShark::Melee()
 {
@@ -318,7 +315,7 @@ CFrame FlipperFramesDeath [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FlipperMoveDeath (FRAME_flpdth01, FRAME_flpdth56, FlipperFramesDeath, ConvertDerivedFunction(&CBarracudaShark::Dead));
+CAnim FlipperMoveDeath (CBarracudaShark::FRAME_flpdth01, CBarracudaShark::FRAME_flpdth56, FlipperFramesDeath, ConvertDerivedFunction(&CBarracudaShark::Dead));
 
 void CBarracudaShark::Sight ()
 {

@@ -169,7 +169,7 @@ void IBrushModel::SetBrushModel ()
 {
 	if (!Model || Model[0] != '*')
 	{
-		DebugPrintf ("CleanCode warning: SetBrushModel on a non-brush model!\n");
+		DebugPrint ("CleanCode warning: SetBrushModel on a non-brush model!\n");
 		State.GetModelIndex() = ModelIndex(Model);
 		return;
 	}
@@ -2774,7 +2774,7 @@ void SetupLights ()
 			break;
 
 		if (i >= 32)
-			DebugPrintf ("CleanCode Warning: Mod is assigning a light table value to a switchable light configstring!\n");
+			DebugPrint ("CleanCode Warning: Mod is assigning a light table value to a switchable light configstring!\n");
 
 		ConfigString(CS_LIGHTS+i, LightTable[i]);
 	}

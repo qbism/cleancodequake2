@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_float.h"
 #include "Monsters/Floater.h"
 
 CFloater::CFloater (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Technician";
 }
 
 void CFloater::Sight ()
@@ -62,8 +59,8 @@ void CFloater::FireBlaster ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak104:
-	case FRAME_attak107:
+	case CFloater::FRAME_attak104:
+	case CFloater::FRAME_attak107:
 		effect = FX_HYPERBLASTER;
 		break;
 	}
@@ -133,7 +130,7 @@ CFrame FloaterFramesStand1 [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim FloaterMoveStand1 (FRAME_stand101, FRAME_stand152, FloaterFramesStand1);
+CAnim FloaterMoveStand1 (CFloater::FRAME_stand101, CFloater::FRAME_stand152, FloaterFramesStand1);
 
 CFrame FloaterFramesStand2 [] =
 {
@@ -190,7 +187,7 @@ CFrame FloaterFramesStand2 [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim FloaterMoveStand2 (FRAME_stand201, FRAME_stand252, FloaterFramesStand2);
+CAnim FloaterMoveStand2 (CFloater::FRAME_stand201, CFloater::FRAME_stand252, FloaterFramesStand2);
 
 void CFloater::Stand ()
 {
@@ -214,7 +211,7 @@ CFrame FloaterFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0)			//							-- LOOP Ends
 };
-CAnim FloaterMoveAttack1 (FRAME_attak101, FRAME_attak114, FloaterFramesAttack1, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMoveAttack1 (CFloater::FRAME_attak101, CFloater::FRAME_attak114, FloaterFramesAttack1, ConvertDerivedFunction(&CFloater::Run));
 
 #if ROGUE_FEATURES
 CFrame FloaterFramesAttack1a [] =
@@ -234,7 +231,7 @@ CFrame FloaterFramesAttack1a [] =
 	CFrame (&CMonster::AI_Charge,	10),
 	CFrame (&CMonster::AI_Charge,	10)			//							-- LOOP Ends
 };
-CAnim FloaterMoveAttack1a (FRAME_attak101, FRAME_attak114, FloaterFramesAttack1a, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMoveAttack1a (CFloater::FRAME_attak101, CFloater::FRAME_attak114, FloaterFramesAttack1a, ConvertDerivedFunction(&CFloater::Run));
 #endif
 
 CFrame FloaterFramesAttack2 [] =
@@ -265,7 +262,7 @@ CFrame FloaterFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0)
 };
-CAnim FloaterMoveAttack2 (FRAME_attak201, FRAME_attak225, FloaterFramesAttack2, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMoveAttack2 (CFloater::FRAME_attak201, CFloater::FRAME_attak225, FloaterFramesAttack2, ConvertDerivedFunction(&CFloater::Run));
 
 CFrame FloaterFramesAttack3 [] =
 {
@@ -304,7 +301,7 @@ CFrame FloaterFramesAttack3 [] =
 	CFrame (&CMonster::AI_Charge,	0),
 	CFrame (&CMonster::AI_Charge,	0)
 };
-CAnim FloaterMoveAttack3 (FRAME_attak301, FRAME_attak334, FloaterFramesAttack3, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMoveAttack3 (CFloater::FRAME_attak301, CFloater::FRAME_attak334, FloaterFramesAttack3, ConvertDerivedFunction(&CFloater::Run));
 
 CFrame FloaterFramesPain1 [] =
 {
@@ -316,7 +313,7 @@ CFrame FloaterFramesPain1 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim FloaterMovePain1 (FRAME_pain101, FRAME_pain107, FloaterFramesPain1, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMovePain1 (CFloater::FRAME_pain101, CFloater::FRAME_pain107, FloaterFramesPain1, ConvertDerivedFunction(&CFloater::Run));
 
 CFrame FloaterFramesPain2 [] =
 {
@@ -329,7 +326,7 @@ CFrame FloaterFramesPain2 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim FloaterMovePain2 (FRAME_pain201, FRAME_pain208, FloaterFramesPain2, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMovePain2 (CFloater::FRAME_pain201, CFloater::FRAME_pain208, FloaterFramesPain2, ConvertDerivedFunction(&CFloater::Run));
 
 CFrame FloaterFramesPain3 [] =
 {
@@ -346,7 +343,7 @@ CFrame FloaterFramesPain3 [] =
 	CFrame (&CMonster::AI_Move,	0),
 	CFrame (&CMonster::AI_Move,	0)
 };
-CAnim FloaterMovePain3 (FRAME_pain301, FRAME_pain312, FloaterFramesPain3, ConvertDerivedFunction(&CFloater::Run));
+CAnim FloaterMovePain3 (CFloater::FRAME_pain301, CFloater::FRAME_pain312, FloaterFramesPain3, ConvertDerivedFunction(&CFloater::Run));
 
 CFrame FloaterFramesWalk [] =
 {
@@ -403,7 +400,7 @@ CFrame FloaterFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 5),
 	CFrame (&CMonster::AI_Walk, 5)
 };
-CAnim FloaterMoveWalk (FRAME_stand101, FRAME_stand152, FloaterFramesWalk);
+CAnim FloaterMoveWalk (CFloater::FRAME_stand101, CFloater::FRAME_stand152, FloaterFramesWalk);
 
 CFrame FloaterFramesRun [] =
 {
@@ -460,7 +457,7 @@ CFrame FloaterFramesRun [] =
 	CFrame (&CMonster::AI_Run, 13),
 	CFrame (&CMonster::AI_Run, 13)
 };
-CAnim FloaterMoveRun (FRAME_stand101, FRAME_stand152, FloaterFramesRun);
+CAnim FloaterMoveRun (CFloater::FRAME_stand101, CFloater::FRAME_stand152, FloaterFramesRun);
 
 void CFloater::Run ()
 {

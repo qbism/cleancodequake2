@@ -35,16 +35,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if ROGUE_FEATURES
 #include "Rogue/RogueStalker.h"
-#include "Rogue/m_stalker.h"
 
 CStalker::CStalker (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Stalker";
 }
-
-//extern qboolean SV_PointCloseEnough (SEntity *ent, vec3_t goal, float dist);
 
 //=========================
 //=========================
@@ -171,7 +166,7 @@ CFrame StalkerFramesIdle [] =
 
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim StalkerMoveIdle (FRAME_idle01, FRAME_idle21, StalkerFramesIdle, &CMonster::Stand);
+CAnim StalkerMoveIdle (CStalker::FRAME_idle01, CStalker::FRAME_idle21, StalkerFramesIdle, &CMonster::Stand);
 
 CFrame StalkerFramesIdle2 [] =
 {
@@ -191,7 +186,7 @@ CFrame StalkerFramesIdle2 [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim StalkerMoveIdle2 (FRAME_idle201, FRAME_idle213, StalkerFramesIdle2, &CMonster::Stand);
+CAnim StalkerMoveIdle2 (CStalker::FRAME_idle201, CStalker::FRAME_idle213, StalkerFramesIdle2, &CMonster::Stand);
 
 void CStalker::Idle ()
 { 
@@ -230,7 +225,7 @@ CFrame StalkerFramesStand [] =
 
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim	StalkerMoveStand (FRAME_idle01, FRAME_idle21, StalkerFramesStand, &CMonster::Stand);
+CAnim	StalkerMoveStand (CStalker::FRAME_idle01, CStalker::FRAME_idle21, StalkerFramesStand, &CMonster::Stand);
 
 void CStalker::Stand ()
 {
@@ -248,7 +243,7 @@ CFrame StalkerFramesRun [] =
 	CFrame (&CMonster::AI_Run, 21),
 	CFrame (&CMonster::AI_Run, 18)
 };
-CAnim StalkerMoveRun (FRAME_run01, FRAME_run04, StalkerFramesRun);
+CAnim StalkerMoveRun (CStalker::FRAME_run01, CStalker::FRAME_run04, StalkerFramesRun);
 
 void CStalker::Run ()
 {
@@ -274,7 +269,7 @@ CFrame StalkerFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 8),
 	CFrame (&CMonster::AI_Walk, 4)
 };
-CAnim StalkerMoveWalk (FRAME_walk01, FRAME_walk08, StalkerFramesWalk, &CMonster::Walk);
+CAnim StalkerMoveWalk (CStalker::FRAME_walk01, CStalker::FRAME_walk08, StalkerFramesWalk, &CMonster::Walk);
 
 void CStalker::Walk ()
 {
@@ -291,7 +286,7 @@ CFrame StalkerFramesReactivate [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim StalkerMoveFalseDeathEnd (FRAME_reactive01, FRAME_reactive04, StalkerFramesReactivate, &CMonster::Run);
+CAnim StalkerMoveFalseDeathEnd (CStalker::FRAME_reactive01, CStalker::FRAME_reactive04, StalkerFramesReactivate, &CMonster::Run);
 
 void CStalker::Reactivate ()
 {
@@ -338,7 +333,7 @@ CFrame StalkerFramesFalseDeath [] =
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CStalker::Heal)),
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CStalker::Heal))
 };
-CAnim StalkerMoveFalseDeath (FRAME_twitch01, FRAME_twitch10, StalkerFramesFalseDeath, ConvertDerivedFunction(&CStalker::FalseDeath));
+CAnim StalkerMoveFalseDeath (CStalker::FRAME_twitch01, CStalker::FRAME_twitch10, StalkerFramesFalseDeath, ConvertDerivedFunction(&CStalker::FalseDeath));
 
 void CStalker::FalseDeath ()
 {
@@ -358,7 +353,7 @@ CFrame StalkerFramesFalseDeathStart [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0),
 };
-CAnim StalkerMoveFalseDeathStart (FRAME_death01, FRAME_death09, StalkerFramesFalseDeathStart, ConvertDerivedFunction(&CStalker::FalseDeath));
+CAnim StalkerMoveFalseDeathStart (CStalker::FRAME_death01, CStalker::FRAME_death09, StalkerFramesFalseDeathStart, ConvertDerivedFunction(&CStalker::FalseDeath));
 
 void CStalker::FalseDeathStart ()
 {
@@ -381,7 +376,7 @@ CFrame StalkerFramesPain [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim StalkerMovePain (FRAME_pain01, FRAME_pain04, StalkerFramesPain, &CMonster::Run);
+CAnim StalkerMovePain (CStalker::FRAME_pain01, CStalker::FRAME_pain04, StalkerFramesPain, &CMonster::Run);
 
 void CStalker::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -490,7 +485,7 @@ CFrame StalkerFramesShoot [] =
 	CFrame (&CMonster::AI_Charge, 21),
 	CFrame (&CMonster::AI_Charge, 18, ConvertDerivedFunction(&CStalker::ShootAttack2))
 };
-CAnim StalkerMoveShoot (FRAME_run01, FRAME_run04, StalkerFramesShoot, &CMonster::Run);
+CAnim StalkerMoveShoot (CStalker::FRAME_run01, CStalker::FRAME_run04, StalkerFramesShoot, &CMonster::Run);
 
 void CStalker::Attack ()
 {
@@ -520,7 +515,7 @@ void CStalker::SwingAttack ()
 	static vec3f aim (MELEE_DISTANCE, 0, 0);
 
 	if (CMeleeWeapon::Fire (Entity, aim, (5 + (rand() % 5)), 50))
-		Entity->PlaySound (CHAN_WEAPON, (Entity->State.GetFrame() < FRAME_attack08) ? Sounds[SOUND_PUNCH_HIT1] : Sounds[SOUND_PUNCH_HIT2]);
+		Entity->PlaySound (CHAN_WEAPON, (Entity->State.GetFrame() < CStalker::FRAME_attack08) ? Sounds[SOUND_PUNCH_HIT1] : Sounds[SOUND_PUNCH_HIT2]);
 }
 
 CFrame StalkerFramesSwingL [] =
@@ -535,7 +530,7 @@ CFrame StalkerFramesSwingL [] =
 	CFrame (&CMonster::AI_Charge, 5),
 	CFrame (&CMonster::AI_Charge, 5)
 };
-CAnim StalkerMoveSwingL (FRAME_attack01, FRAME_attack08, StalkerFramesSwingL, &CMonster::Run);
+CAnim StalkerMoveSwingL (CStalker::FRAME_attack01, CStalker::FRAME_attack08, StalkerFramesSwingL, &CMonster::Run);
 
 CFrame StalkerFramesSwingR [] =
 {
@@ -545,7 +540,7 @@ CFrame StalkerFramesSwingR [] =
 	CFrame (&CMonster::AI_Charge, 10),
 	CFrame (&CMonster::AI_Charge, 5)
 };
-CAnim StalkerMoveSwingR (FRAME_attack11, FRAME_attack15, StalkerFramesSwingR, &CMonster::Run);
+CAnim StalkerMoveSwingR (CStalker::FRAME_attack11, CStalker::FRAME_attack15, StalkerFramesSwingR, &CMonster::Run);
 
 void CStalker::Melee ()
 {
@@ -776,7 +771,7 @@ CFrame StalkerFramesJumpStraightUp [] =
 	CFrame (&CMonster::AI_Move, -1),
 	CFrame (&CMonster::AI_Move, -1)
 };
-CAnim StalkerMoveJumpStraightUp (FRAME_jump04, FRAME_jump07, StalkerFramesJumpStraightUp, &CMonster::Run);
+CAnim StalkerMoveJumpStraightUp (CStalker::FRAME_jump04, CStalker::FRAME_jump07, StalkerFramesJumpStraightUp, &CMonster::Run);
 
 //===================
 // stalker_dodge_jump - abstraction so pain function can trigger a dodge jump too without
@@ -825,7 +820,7 @@ CFrame StalkerFramesDodgeRun [] =
 #endif
 	)
 };
-CAnim StalkerMoveDodgeRun (FRAME_run01, FRAME_run04, StalkerFramesDodgeRun);
+CAnim StalkerMoveDodgeRun (CStalker::FRAME_run01, CStalker::FRAME_run04, StalkerFramesDodgeRun);
 
 void CStalker::Dodge (IBaseEntity *Attacker, float eta
 #if ROGUE_FEATURES
@@ -880,7 +875,7 @@ CFrame StalkerFramesDeath [] =
 
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim StalkerMoveDeath (FRAME_death01, FRAME_death09, StalkerFramesDeath, ConvertDerivedFunction(&CStalker::Dead));
+CAnim StalkerMoveDeath (CStalker::FRAME_death01, CStalker::FRAME_death09, StalkerFramesDeath, ConvertDerivedFunction(&CStalker::Dead));
 
 void CStalker::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {

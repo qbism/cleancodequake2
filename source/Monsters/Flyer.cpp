@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_flyer.h"
 #include "Monsters/Flyer.h"
 
 CFlyer::CFlyer (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Flyer";
 }
 
 void CFlyer::Sight ()
@@ -105,7 +102,7 @@ CFrame FlyerFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim FlyerMoveStand (FRAME_stand01, FRAME_stand45, FlyerFramesStand);
+CAnim FlyerMoveStand (CFlyer::FRAME_stand01, CFlyer::FRAME_stand45, FlyerFramesStand);
 
 CFrame FlyerFramesWalk [] =
 {
@@ -155,7 +152,7 @@ CFrame FlyerFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 5),
 	CFrame (&CMonster::AI_Walk, 5)
 };
-CAnim FlyerMoveWalk (FRAME_stand01, FRAME_stand45, FlyerFramesWalk);
+CAnim FlyerMoveWalk (CFlyer::FRAME_stand01, CFlyer::FRAME_stand45, FlyerFramesWalk);
 
 CFrame FlyerFramesRun [] =
 {
@@ -205,7 +202,7 @@ CFrame FlyerFramesRun [] =
 	CFrame (&CMonster::AI_Run, 10),
 	CFrame (&CMonster::AI_Run, 10)
 };
-CAnim FlyerMoveRun (FRAME_stand01, FRAME_stand45, FlyerFramesRun);
+CAnim FlyerMoveRun (CFlyer::FRAME_stand01, CFlyer::FRAME_stand45, FlyerFramesRun);
 
 void CFlyer::Run ()
 {
@@ -232,7 +229,7 @@ CFrame FlyerFramesPain3 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FlyerMovePain3 (FRAME_pain301, FRAME_pain304, FlyerFramesPain3, ConvertDerivedFunction(&CFlyer::Run));
+CAnim FlyerMovePain3 (CFlyer::FRAME_pain301, CFlyer::FRAME_pain304, FlyerFramesPain3, ConvertDerivedFunction(&CFlyer::Run));
 
 CFrame FlyerFramesPain2 [] =
 {
@@ -241,7 +238,7 @@ CFrame FlyerFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FlyerMovePain2 (FRAME_pain201, FRAME_pain204, FlyerFramesPain2, ConvertDerivedFunction(&CFlyer::Run));
+CAnim FlyerMovePain2 (CFlyer::FRAME_pain201, CFlyer::FRAME_pain204, FlyerFramesPain2, ConvertDerivedFunction(&CFlyer::Run));
 
 CFrame FlyerFramesPain1 [] =
 {
@@ -255,7 +252,7 @@ CFrame FlyerFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim FlyerMovePain1 (FRAME_pain101, FRAME_pain109, FlyerFramesPain1, ConvertDerivedFunction(&CFlyer::Run));
+CAnim FlyerMovePain1 (CFlyer::FRAME_pain101, CFlyer::FRAME_pain109, FlyerFramesPain1, ConvertDerivedFunction(&CFlyer::Run));
 
 void CFlyer::Fire (sint32 FlashNumber)
 {
@@ -265,7 +262,7 @@ void CFlyer::Fire (sint32 FlashNumber)
 	if (!HasValidEnemy())
 		return;
 
-	if ((Entity->State.GetFrame() == FRAME_attak204) || (Entity->State.GetFrame() == FRAME_attak207) || (Entity->State.GetFrame() == FRAME_attak210))
+	if ((Entity->State.GetFrame() == CFlyer::FRAME_attak204) || (Entity->State.GetFrame() == CFlyer::FRAME_attak207) || (Entity->State.GetFrame() == CFlyer::FRAME_attak210))
 		effect = FX_HYPERBLASTER;
 	else
 		effect = 0;
@@ -310,7 +307,7 @@ CFrame FlyerFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim FlyerMoveAttack2 (FRAME_attak201, FRAME_attak217, FlyerFramesAttack2, ConvertDerivedFunction(&CFlyer::Run));
+CAnim FlyerMoveAttack2 (CFlyer::FRAME_attak201, CFlyer::FRAME_attak217, FlyerFramesAttack2, ConvertDerivedFunction(&CFlyer::Run));
 
 void CFlyer::SlashLeft ()
 {
@@ -335,7 +332,7 @@ CFrame FlyerFramesStartMelee [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim FlyerMoveStartMelee (FRAME_attak101, FRAME_attak106, FlyerFramesStartMelee, ConvertDerivedFunction(&CFlyer::LoopMelee));
+CAnim FlyerMoveStartMelee (CFlyer::FRAME_attak101, CFlyer::FRAME_attak106, FlyerFramesStartMelee, ConvertDerivedFunction(&CFlyer::LoopMelee));
 
 CFrame FlyerFramesEndMelee [] =
 {
@@ -343,7 +340,7 @@ CFrame FlyerFramesEndMelee [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim FlyerMoveEndMelee (FRAME_attak119, FRAME_attak121, FlyerFramesEndMelee, ConvertDerivedFunction(&CFlyer::Run));
+CAnim FlyerMoveEndMelee (CFlyer::FRAME_attak119, CFlyer::FRAME_attak121, FlyerFramesEndMelee, ConvertDerivedFunction(&CFlyer::Run));
 
 CFrame FlyerFramesLoopMelee [] =
 {
@@ -360,7 +357,7 @@ CFrame FlyerFramesLoopMelee [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)		// Loop Ends
 };
-CAnim FlyerMoveLoopMelee (FRAME_attak107, FRAME_attak118, FlyerFramesLoopMelee, ConvertDerivedFunction(&CFlyer::CheckMelee));
+CAnim FlyerMoveLoopMelee (CFlyer::FRAME_attak107, CFlyer::FRAME_attak118, FlyerFramesLoopMelee, ConvertDerivedFunction(&CFlyer::CheckMelee));
 
 void CFlyer::LoopMelee ()
 {
@@ -433,7 +430,7 @@ CFrame FlyerFramesRollLeft [] =
 	CFrame (ConvertDerivedAIMove(&CFlyer::AI_Roll), 15),
 	CFrame (ConvertDerivedAIMove(&CFlyer::AI_Roll), 15)
 };
-CAnim FlyerMoveRollLeft (FRAME_rollf01, FRAME_rollf09, FlyerFramesRollLeft, ConvertDerivedFunction(&CFlyer::ChooseAfterDodge));
+CAnim FlyerMoveRollLeft (CFlyer::FRAME_rollf01, CFlyer::FRAME_rollf09, FlyerFramesRollLeft, ConvertDerivedFunction(&CFlyer::ChooseAfterDodge));
 
 CFrame FlyerFramesRollRight [] =
 {
@@ -447,7 +444,7 @@ CFrame FlyerFramesRollRight [] =
 	CFrame (ConvertDerivedAIMove(&CFlyer::AI_Roll), 15),
 	CFrame (ConvertDerivedAIMove(&CFlyer::AI_Roll), 15)
 };
-CAnim FlyerMoveRollRight (FRAME_rollr01, FRAME_rollr09, FlyerFramesRollRight, ConvertDerivedFunction(&CFlyer::ChooseAfterDodge));
+CAnim FlyerMoveRollRight (CFlyer::FRAME_rollr01, CFlyer::FRAME_rollr09, FlyerFramesRollRight, ConvertDerivedFunction(&CFlyer::ChooseAfterDodge));
 
 void CFlyer::AI_Roll(float Dist)
 {

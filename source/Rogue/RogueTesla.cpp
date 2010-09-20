@@ -39,7 +39,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Rogue/RogueTesla.h"
 #include "Rogue/RogueWeaponry.h"
 #include "Utility/TemporaryEntities.h"
-#include "Player/m_player.h"
 
 // Tesla itself
 
@@ -450,14 +449,14 @@ void CTeslaWeapon::FireGrenade (CPlayerEntity *Player, bool inHand)
 	if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
 	{
 		Player->Client.Anim.Priority = ANIM_ATTACK;
-		Player->State.GetFrame() = FRAME_crattak1 - 1;
-		Player->Client.Anim.EndFrame = FRAME_crattak3;
+		Player->State.GetFrame() = CPlayerEntity::FRAME_crattak1 - 1;
+		Player->Client.Anim.EndFrame = CPlayerEntity::FRAME_crattak3;
 	}
 	else
 	{
 		Player->Client.Anim.Priority = ANIM_REVERSE;
-		Player->State.GetFrame() = FRAME_wave08;
-		Player->Client.Anim.EndFrame = FRAME_wave01;
+		Player->State.GetFrame() = CPlayerEntity::FRAME_wave08;
+		Player->Client.Anim.EndFrame = CPlayerEntity::FRAME_wave01;
 	}
 	Player->Client.PlayerState.GetGunFrame()++;
 }

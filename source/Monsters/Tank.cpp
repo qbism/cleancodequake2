@@ -32,21 +32,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_tank.h"
 #include "Monsters/Tank.h"
 
 CTank::CTank (uint32 ID) :
 CMonster(ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Tank";
 }
 
 CTankCommander::CTankCommander (uint32 ID) :
 CTank (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Tank Commander";
 }
 
 //
@@ -115,7 +110,7 @@ CFrame TankFramesStand []=
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim	TankMoveStand (FRAME_stand01, FRAME_stand30, TankFramesStand);
+CAnim	TankMoveStand (CTank::FRAME_stand01, CTank::FRAME_stand30, TankFramesStand);
 	
 void CTank::Stand ()
 {
@@ -145,7 +140,7 @@ CFrame TankFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 6),
 	CFrame (&CMonster::AI_Walk, 6, ConvertDerivedFunction(&CTank::Footstep))
 };
-CAnim TankMoveWalk (FRAME_walk05, FRAME_walk20, TankFramesWalk);
+CAnim TankMoveWalk (CTank::FRAME_walk05, CTank::FRAME_walk20, TankFramesWalk);
 
 void CTank::Walk ()
 {
@@ -163,7 +158,7 @@ CFrame TankFramesStartRun [] =
 	CFrame (&CMonster::AI_Run,  6),
 	CFrame (&CMonster::AI_Run, 11, ConvertDerivedFunction(&CTank::Footstep))
 };
-CAnim TankMoveStartRun (FRAME_walk01, FRAME_walk04, TankFramesStartRun, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMoveStartRun (CTank::FRAME_walk01, CTank::FRAME_walk04, TankFramesStartRun, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesRun [] =
 {
@@ -184,7 +179,7 @@ CFrame TankFramesRun [] =
 	CFrame (&CMonster::AI_Run, 6),
 	CFrame (&CMonster::AI_Run, 6, ConvertDerivedFunction(&CTank::Footstep))
 };
-CAnim TankMoveRun (FRAME_walk05, FRAME_walk20, TankFramesRun);
+CAnim TankMoveRun (CTank::FRAME_walk05, CTank::FRAME_walk20, TankFramesRun);
 
 CFrame TankFramesStopRun [] =
 {
@@ -194,7 +189,7 @@ CFrame TankFramesStopRun [] =
 	CFrame (&CMonster::AI_Run,  2),
 	CFrame (&CMonster::AI_Run,  4, ConvertDerivedFunction(&CTank::Footstep))
 };
-CAnim TankMoveStopRun (FRAME_walk21, FRAME_walk25, TankFramesStopRun, ConvertDerivedFunction(&CTank::Walk));
+CAnim TankMoveStopRun (CTank::FRAME_walk21, CTank::FRAME_walk25, TankFramesStopRun, ConvertDerivedFunction(&CTank::Walk));
 
 void CTank::Run ()
 {
@@ -231,7 +226,7 @@ CFrame TankFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim TankMovePain1 (FRAME_pain101, FRAME_pain104, TankFramesPain1, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMovePain1 (CTank::FRAME_pain101, CTank::FRAME_pain104, TankFramesPain1, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesPain2 [] =
 {
@@ -241,7 +236,7 @@ CFrame TankFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim TankMovePain2 (FRAME_pain201, FRAME_pain205, TankFramesPain2, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMovePain2 (CTank::FRAME_pain201, CTank::FRAME_pain205, TankFramesPain2, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesPain3 [] =
 {
@@ -262,7 +257,7 @@ CFrame TankFramesPain3 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Footstep))
 };
-CAnim TankMovePain3 (FRAME_pain301, FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMovePain3 (CTank::FRAME_pain301, CTank::FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
 
 void CTank::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -281,9 +276,9 @@ void CTank::Pain (IBaseEntity *Other, sint32 Damage)
 	// If hard or nightmare, don't go into pain while attacking
 	if ( CvarList[CV_SKILL].Integer() >= 2)
 	{
-		if ( (Entity->State.GetFrame() >= FRAME_attak301) && (Entity->State.GetFrame() <= FRAME_attak330) )
+		if ( (Entity->State.GetFrame() >= CTank::FRAME_attak301) && (Entity->State.GetFrame() <= CTank::FRAME_attak330) )
 			return;
-		if ( (Entity->State.GetFrame() >= FRAME_attak101) && (Entity->State.GetFrame() <= FRAME_attak116) )
+		if ( (Entity->State.GetFrame() >= CTank::FRAME_attak101) && (Entity->State.GetFrame() <= CTank::FRAME_attak116) )
 			return;
 	}
 
@@ -317,10 +312,10 @@ void CTank::Blaster ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak110:
+	case CTank::FRAME_attak110:
 		flash_number = MZ2_TANK_BLASTER_1;
 		break;
-	case FRAME_attak113:
+	case CTank::FRAME_attak113:
 		flash_number = MZ2_TANK_BLASTER_2;
 		break;
 	default:
@@ -362,10 +357,10 @@ void CTank::Rocket ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak324:
+	case CTank::FRAME_attak324:
 		flash_number = MZ2_TANK_ROCKET_1;
 		break;
-	case FRAME_attak327:
+	case CTank::FRAME_attak327:
 		flash_number = MZ2_TANK_ROCKET_2;
 		break;
 	default:
@@ -448,10 +443,10 @@ void CTank::Rocket ()
 
 	switch (Entity->State.GetFrame())
 	{
-	case FRAME_attak324:
+	case CTank::FRAME_attak324:
 		flash_number = MZ2_TANK_ROCKET_1;
 		break;
-	case FRAME_attak327:
+	case CTank::FRAME_attak327:
 		flash_number = MZ2_TANK_ROCKET_2;
 		break;
 	default:
@@ -477,7 +472,7 @@ void CTank::MachineGun ()
 		return;
 
 	vec3f	dir, start, forward, right;
-	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - FRAME_attak406);
+	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - CTank::FRAME_attak406);
 
 	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
@@ -493,10 +488,10 @@ void CTank::MachineGun ()
 	else
 		dir.X = 0;
 
-	if (Entity->State.GetFrame() <= FRAME_attak415)
-		dir.Y = Entity->State.GetAngles().Y - 8 * (Entity->State.GetFrame() - FRAME_attak411);
+	if (Entity->State.GetFrame() <= CTank::FRAME_attak415)
+		dir.Y = Entity->State.GetAngles().Y - 8 * (Entity->State.GetFrame() - CTank::FRAME_attak411);
 	else
-		dir.Y = Entity->State.GetAngles().Y + 8 * (Entity->State.GetFrame() - FRAME_attak419);
+		dir.Y = Entity->State.GetAngles().Y + 8 * (Entity->State.GetFrame() - CTank::FRAME_attak419);
 	dir.Z = 0;
 
 	dir.ToVectors (&forward, NULL, NULL);
@@ -523,7 +518,7 @@ CFrame TankFramesAttackBlast [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)) // 16
 };
-CAnim TankMoveAttackBlast (FRAME_attak101, FRAME_attak116, TankFramesAttackBlast, ConvertDerivedFunction(&CTank::ReAttackBlaster));
+CAnim TankMoveAttackBlast (CTank::FRAME_attak101, CTank::FRAME_attak116, TankFramesAttackBlast, ConvertDerivedFunction(&CTank::ReAttackBlaster));
 
 CFrame TankFramesReAttackBlast [] =
 {
@@ -534,7 +529,7 @@ CFrame TankFramesReAttackBlast [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster))			// 16
 };
-CAnim TankMoveReAttackBlast (FRAME_attak111, FRAME_attak116, TankFramesReAttackBlast, ConvertDerivedFunction(&CTank::ReAttackBlaster));
+CAnim TankMoveReAttackBlast (CTank::FRAME_attak111, CTank::FRAME_attak116, TankFramesReAttackBlast, ConvertDerivedFunction(&CTank::ReAttackBlaster));
 
 CFrame TankFramesAttackPostBlast [] =	
 {
@@ -545,7 +540,7 @@ CFrame TankFramesAttackPostBlast [] =
 	CFrame (&CMonster::AI_Move, 2),
 	CFrame (&CMonster::AI_Move, -2,	ConvertDerivedFunction(&CTank::Footstep))		// 22
 };
-CAnim TankMoveAttackPostBlast (FRAME_attak117, FRAME_attak122, TankFramesAttackPostBlast, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMoveAttackPostBlast (CTank::FRAME_attak117, CTank::FRAME_attak122, TankFramesAttackPostBlast, ConvertDerivedFunction(&CTank::Run));
 
 void CTank::ReAttackBlaster ()
 {
@@ -604,7 +599,7 @@ CFrame TankFramesAttackStrike [] =
 	CFrame (&CMonster::AI_Move, -3),
 	CFrame (&CMonster::AI_Move, -2, ConvertDerivedFunction(&CTank::Footstep))
 };
-CAnim TankMoveAttackStrike (FRAME_attak201, FRAME_attak238, TankFramesAttackStrike, ConvertDerivedFunction(&CTank::PostStrike));
+CAnim TankMoveAttackStrike (CTank::FRAME_attak201, CTank::FRAME_attak238, TankFramesAttackStrike, ConvertDerivedFunction(&CTank::PostStrike));
 
 CFrame TankFramesAttackPreRocket [] =
 {
@@ -632,7 +627,7 @@ CFrame TankFramesAttackPreRocket [] =
 
 	CFrame (&CMonster::AI_Charge, -3)
 };
-CAnim TankMoveAttackPreRocket (FRAME_attak301, FRAME_attak321, TankFramesAttackPreRocket, ConvertDerivedFunction(&CTank::DoAttackRocket));
+CAnim TankMoveAttackPreRocket (CTank::FRAME_attak301, CTank::FRAME_attak321, TankFramesAttackPreRocket, ConvertDerivedFunction(&CTank::DoAttackRocket));
 
 CFrame TankFramesAttackFireRocket [] =
 {
@@ -646,7 +641,7 @@ CFrame TankFramesAttackFireRocket [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, -1, ConvertDerivedFunction(&CTank::Rocket))		// 30	Loop End
 };
-CAnim TankMoveAttackFireRocket (FRAME_attak322, FRAME_attak330, TankFramesAttackFireRocket, ConvertDerivedFunction(&CTank::ReFireRocket));
+CAnim TankMoveAttackFireRocket (CTank::FRAME_attak322, CTank::FRAME_attak330, TankFramesAttackFireRocket, ConvertDerivedFunction(&CTank::ReFireRocket));
 
 CFrame TankFramesAttackPostRocket [] =
 {	
@@ -676,7 +671,7 @@ CFrame TankFramesAttackPostRocket [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim TankMoveAttackPostRocket (FRAME_attak331, FRAME_attak353, TankFramesAttackPostRocket, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMoveAttackPostRocket (CTank::FRAME_attak331, CTank::FRAME_attak353, TankFramesAttackPostRocket, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesAttackChain [] =
 {
@@ -710,7 +705,7 @@ CFrame TankFramesAttackChain [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0)
 };
-CAnim TankMoveAttackChain (FRAME_attak401, FRAME_attak429, TankFramesAttackChain, ConvertDerivedFunction(&CTank::Run));
+CAnim TankMoveAttackChain (CTank::FRAME_attak401, CTank::FRAME_attak429, TankFramesAttackChain, ConvertDerivedFunction(&CTank::Run));
 
 void CTank::ReFireRocket ()
 {
@@ -861,7 +856,7 @@ CFrame TankFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim TankMoveDeath (FRAME_death101, FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
+CAnim TankMoveDeath (CTank::FRAME_death101, CTank::FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
 
 void CTank::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
 {

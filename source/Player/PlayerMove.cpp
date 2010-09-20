@@ -984,7 +984,7 @@ static void SV_PM_InitialSnapPosition ()
 		}
 	}
 
-	DebugPrintf ("Bad InitialSnapPosition\n");
+	DebugPrint ("Bad InitialSnapPosition\n");
 }
 
 /*

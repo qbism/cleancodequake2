@@ -116,7 +116,7 @@ void CMenuState::OpenMenu ()
 {
 	if (!CurrentMenu)
 	{
-		DebugPrintf ("CMenuState::OpenMenu called with no menu!\n");
+		DebugPrint ("CMenuState::OpenMenu called with no menu!\n");
 		return;
 	}
 
@@ -153,7 +153,7 @@ void CMenuState::CloseMenu ()
 {
 	if (!CurrentMenu)
 	{
-		DebugPrintf ("CMenuState::CloseMenu called with no menu!\n");
+		DebugPrint ("CMenuState::CloseMenu called with no menu!\n");
 		return;
 	}
 
@@ -170,7 +170,7 @@ void CMenuState::SelectNext ()
 
 	if (!CurrentMenu)
 	{
-		DebugPrintf ("CMenuState::SelectNext called with no menu!\n");
+		DebugPrint ("CMenuState::SelectNext called with no menu!\n");
 		return;
 	}
 
@@ -223,7 +223,7 @@ void CMenuState::SelectPrev ()
 
 	if (!CurrentMenu)
 	{
-		DebugPrintf ("CMenuState::SelectPrev called with no menu!\n");
+		DebugPrint ("CMenuState::SelectPrev called with no menu!\n");
 		return;
 	}
 
@@ -274,7 +274,7 @@ void CMenuState::Select ()
 {
 	if (!CurrentMenu)
 	{
-		DebugPrintf ("CMenuState::Select called with no menu!\n");
+		DebugPrint ("CMenuState::Select called with no menu!\n");
 		return;
 	}
 
@@ -283,7 +283,7 @@ void CMenuState::Select ()
 
 	if (Cursor > (sint8)(CurrentMenu->Items.size()-1))
 	{
-		DebugPrintf ("CMenuState::Select: Funny cursor size\n");
+		DebugPrint ("CMenuState::Select: Funny cursor size\n");
 		return;
 	}
 

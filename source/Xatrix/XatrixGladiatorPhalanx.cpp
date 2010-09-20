@@ -38,12 +38,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Xatrix/XatrixGladiatorPhalanx.h"
 #include "Weapons/WeaponMain.h"
 #include "Xatrix/XatrixPhalanx.h"
-#include "Monsters/m_gladiator.h"
 
 CPhalanxGladiator::CPhalanxGladiator (uint32 ID) :
 CGladiator (ID)
 {
-	MonsterName = "Phalanx Gladiator";
 };
 
 void CPhalanxGladiator::FirePhalanx ()
@@ -72,7 +70,7 @@ CFrame GladiatorPhalanxFramesAttackGun [] =
 	CFrame (&CMonster::AI_Charge, 0),
 	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx))
 };
-CAnim GladiatorPhalanxMoveAttackGun (FRAME_attack1, FRAME_attack9, GladiatorPhalanxFramesAttackGun, &CMonster::Run);
+CAnim GladiatorPhalanxMoveAttackGun (CGladiator::FRAME_attack1, CGladiator::FRAME_attack9, GladiatorPhalanxFramesAttackGun, &CMonster::Run);
 
 void CPhalanxGladiator::Attack ()
 {

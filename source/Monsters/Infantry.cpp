@@ -32,14 +32,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
-#include "Monsters/m_infantry.h"
 #include "Monsters/Infantry.h"
 
 CInfantry::CInfantry (uint32 ID) :
 CMonster (ID)
 {
-	Scale = MODEL_SCALE;
-	MonsterName = "Enforcer";
 }
 
 CFrame InfantryFramesStand [] =
@@ -67,7 +64,7 @@ CFrame InfantryFramesStand [] =
 	CFrame (&CMonster::AI_Stand, 0),
 	CFrame (&CMonster::AI_Stand, 0)
 };
-CAnim InfantryMoveStand (FRAME_stand50, FRAME_stand71, InfantryFramesStand);
+CAnim InfantryMoveStand (CInfantry::FRAME_stand50, CInfantry::FRAME_stand71, InfantryFramesStand);
 
 void CInfantry::Stand ()
 {
@@ -126,7 +123,7 @@ CFrame InfantryFramesFidget [] =
 	CFrame (&CMonster::AI_Stand, -3),
 	CFrame (&CMonster::AI_Stand, -2)
 };
-CAnim InfantryMoveFidget (FRAME_stand01, FRAME_stand49, InfantryFramesFidget, &CMonster::Stand);
+CAnim InfantryMoveFidget (CInfantry::FRAME_stand01, CInfantry::FRAME_stand49, InfantryFramesFidget, &CMonster::Stand);
 
 void CInfantry::Idle ()
 {
@@ -149,7 +146,7 @@ CFrame InfantryFramesWalk [] =
 	CFrame (&CMonster::AI_Walk, 4),
 	CFrame (&CMonster::AI_Walk, 5)
 };
-CAnim InfantryMoveWalk (FRAME_walk03, FRAME_walk14, InfantryFramesWalk);
+CAnim InfantryMoveWalk (CInfantry::FRAME_walk03, CInfantry::FRAME_walk14, InfantryFramesWalk);
 
 void CInfantry::Walk ()
 {
@@ -167,7 +164,7 @@ CFrame InfantryFramesRun [] =
 	CFrame (&CMonster::AI_Run, 2),
 	CFrame (&CMonster::AI_Run, 6)
 };
-CAnim InfantryMoveRun (FRAME_run01, FRAME_run08, InfantryFramesRun);
+CAnim InfantryMoveRun (CInfantry::FRAME_run01, CInfantry::FRAME_run08, InfantryFramesRun);
 
 void CInfantry::Run ()
 {
@@ -190,7 +187,7 @@ CFrame InfantryFramesPain1 [] =
 	CFrame (&CMonster::AI_Move, 6),
 	CFrame (&CMonster::AI_Move, 2)
 };
-CAnim InfantryMovePain1 (FRAME_pain101, FRAME_pain110, InfantryFramesPain1, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMovePain1 (CInfantry::FRAME_pain101, CInfantry::FRAME_pain110, InfantryFramesPain1, ConvertDerivedFunction(&CInfantry::Run));
 
 CFrame InfantryFramesPain2 [] =
 {
@@ -205,7 +202,7 @@ CFrame InfantryFramesPain2 [] =
 	CFrame (&CMonster::AI_Move, 5),
 	CFrame (&CMonster::AI_Move, 2)
 };
-CAnim InfantryMovePain2 (FRAME_pain201, FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMovePain2 (CInfantry::FRAME_pain201, CInfantry::FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
 
 void CInfantry::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -260,9 +257,9 @@ void CInfantry::MachineGun ()
 
 	if (Entity->State.GetFrame() == 
 #if XATRIX_FEATURES || ROGUE_FEATURES
-		FRAME_attak103
+		CInfantry::FRAME_attak103
 #else
-		FRAME_attak111
+		CInfantry::FRAME_attak111
 #endif
 		)
 	{
@@ -285,7 +282,7 @@ void CInfantry::MachineGun ()
 	}
 	else
 	{
-		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (Entity->State.GetFrame() - FRAME_death211);
+		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (Entity->State.GetFrame() - CInfantry::FRAME_death211);
 
 		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
@@ -335,7 +332,7 @@ CFrame InfantryFramesDeath1 [] =
 	CFrame (&CMonster::AI_Move, -3),
 	CFrame (&CMonster::AI_Move, -3)
 };
-CAnim InfantryMoveDeath1 (FRAME_death101, FRAME_death120, InfantryFramesDeath1, ConvertDerivedFunction(&CInfantry::Dead));
+CAnim InfantryMoveDeath1 (CInfantry::FRAME_death101, CInfantry::FRAME_death120, InfantryFramesDeath1, ConvertDerivedFunction(&CInfantry::Dead));
 
 // Off with his head
 CFrame InfantryFramesDeath2 [] =
@@ -366,7 +363,7 @@ CFrame InfantryFramesDeath2 [] =
 	CFrame (&CMonster::AI_Move, 4),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim InfantryMoveDeath2 (FRAME_death201, FRAME_death225, InfantryFramesDeath2, ConvertDerivedFunction(&CInfantry::Dead));
+CAnim InfantryMoveDeath2 (CInfantry::FRAME_death201, CInfantry::FRAME_death225, InfantryFramesDeath2, ConvertDerivedFunction(&CInfantry::Dead));
 
 CFrame InfantryFramesDeath3 [] =
 {
@@ -380,7 +377,7 @@ CFrame InfantryFramesDeath3 [] =
 	CFrame (&CMonster::AI_Move, 0),
 	CFrame (&CMonster::AI_Move, 0)
 };
-CAnim InfantryMoveDeath3 (FRAME_death301, FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
+CAnim InfantryMoveDeath3 (CInfantry::FRAME_death301, CInfantry::FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
 
 
 void CInfantry::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, vec3f &Point)
@@ -472,7 +469,7 @@ CFrame InfantryFramesDuck [] =
 	CFrame (&CMonster::AI_Move, 0)
 #endif
 };
-CAnim InfantryMoveDuck (FRAME_duck01, FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMoveDuck (CInfantry::FRAME_duck01, CInfantry::FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
 
 #if !ROGUE_FEATURES
 void CInfantry::Dodge (IBaseEntity *Attacker, float eta)
@@ -521,7 +518,7 @@ CFrame InfantryFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, -1),
 	CFrame (&CMonster::AI_Charge, -1)
 };
-CAnim InfantryMoveAttack1 (FRAME_attak101, FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak101, CInfantry::FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #elif ROGUE_FEATURES
 CFrame InfantryFramesAttack1 [] =
 {
@@ -541,7 +538,7 @@ CFrame InfantryFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, -1),
 	CFrame (&CMonster::AI_Charge, 4)
 };
-CAnim InfantryMoveAttack1 (FRAME_attak101, FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak101, CInfantry::FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #elif !(MONSTER_SPECIFIC_FLAGS & INFANTRY_DOES_REVERSE_GUN_ATTACK)
 CFrame InfantryFramesAttack1 [] =
 {
@@ -561,7 +558,7 @@ CFrame InfantryFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, -2),
 	CFrame (&CMonster::AI_Charge, -3)
 };
-CAnim InfantryMoveAttack1 (FRAME_attak101, FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak101, CInfantry::FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #else
 CFrame InfantryFramesAttack1 [] =
 {
@@ -581,7 +578,7 @@ CFrame InfantryFramesAttack1 [] =
 	CFrame (&CMonster::AI_Charge, -1),
 	CFrame (&CMonster::AI_Charge, 4)
 };
-CAnim InfantryMoveAttack1 (FRAME_attak112, FRAME_attak101, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak112, CInfantry::FRAME_attak101, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #endif
 
 
@@ -608,7 +605,7 @@ CFrame InfantryFramesAttack2 [] =
 	CFrame (&CMonster::AI_Charge, 6),
 	CFrame (&CMonster::AI_Charge, 3),
 };
-CAnim InfantryMoveAttack2 (FRAME_attak201, FRAME_attak208, InfantryFramesAttack2, ConvertDerivedFunction(&CInfantry::Run));
+CAnim InfantryMoveAttack2 (CInfantry::FRAME_attak201, CInfantry::FRAME_attak208, InfantryFramesAttack2, ConvertDerivedFunction(&CInfantry::Run));
 
 void CInfantry::Attack ()
 {
@@ -650,7 +647,7 @@ void CInfantry::Duck (float eta)
 	// has to be done immediately otherwise he can get stuck
 	DuckDown();
 
-	NextFrame = FRAME_duck01;
+	NextFrame = CInfantry::FRAME_duck01;
 	CurrentMove = &InfantryMoveDuck;
 }
 

@@ -44,12 +44,12 @@ Amount(Amount),
 VWepModel(VWepModel)
 {
 	if (!Weapon)
-		DebugPrintf ("Warning: Weapon with no weapon!\n");
+		DebugPrint ("Warning: Weapon with no weapon!\n");
 	else
 		Weapon->Item = this;
 
 	if (!Ammo && Amount)
-		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
+		DebugPrint ("Warning: Weapon with no ammo has quantity!\n");
 }
 
 CWeaponItem::CWeaponItem ()
@@ -96,7 +96,7 @@ IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 		Weapon->Item = this;
 
 	if (!Ammo && Amount)
-		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
+		DebugPrint ("Warning: Weapon with no ammo has quantity!\n");
 }
 
 CAmmoWeapon::CAmmoWeapon (const char *Classname, const char *WorldModel, sint32 EffectFlags,
@@ -113,12 +113,12 @@ IBaseItem (Classname, WorldModel, EffectFlags, PickupSound, Icon, Name, Flags)
 	this->Tag = Tag;
 
 	if (!Weapon)
-		DebugPrintf ("Warning: Weapon with no weapon!\n");
+		DebugPrint ("Warning: Weapon with no weapon!\n");
 	else
 		Weapon->Item = this;
 
 	if (!Ammo && Amount)
-		DebugPrintf ("Warning: Weapon with no ammo has quantity!\n");
+		DebugPrint ("Warning: Weapon with no ammo has quantity!\n");
 }
 
 #ifndef NO_AUTOSWITCH

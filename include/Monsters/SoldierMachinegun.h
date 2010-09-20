@@ -41,6 +41,8 @@ public:
 
 	CSoldierMachinegun(uint32 ID);
 
+	inline const char	*GetMonsterName() { return "Machinegun Soldier"; }
+
 	void SaveMonsterFields (CFile &File)
 	{
 		File.Write<FrameNumber> (Wait);

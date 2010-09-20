@@ -39,6 +39,8 @@ class CPhalanxGladiator : public CGladiator
 public:
 	CPhalanxGladiator (uint32 ID);
 
+	inline const char	*GetMonsterName() { return "BETA Gladiator"; }
+
 	void Spawn ();
 	void FirePhalanx ();
 	void Attack ();
