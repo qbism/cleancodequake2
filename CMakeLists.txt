@@ -23,17 +23,7 @@ endif ()
 
 # Source files
 file (GLOB CC_SHARED_FILES shared/*.cpp)
-file (GLOB CC_SOURCE_FILES source/CTF/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Entities/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Game/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Items/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Menu/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Monsters/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Player/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Rogue/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Utility/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Weapons/*.cpp)
-file (GLOB CC_SOURCE_FILES source/Xatrix/*.cpp)
+file (GLOB CC_SOURCE_FILES source/*/*.cpp)
 
 # Set the platform-specific library name and use platform-specific files.
 if (WIN32)
@@ -64,3 +54,6 @@ if (UNIX)
   add_custom_command (TARGET ${CC_LIB_NAME} POST_BUILD COMMAND mv lib${CC_LIB_NAME}.so ${CC_LIB_NAME}.so)
 endif ()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pipe -fomit-frame-pointer -fno-strict-aliasing")
+endif()
