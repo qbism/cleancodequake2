@@ -1148,7 +1148,7 @@ void CCTFPlayerListCommand::operator () ()
 		if (strlen(text.GetBuffer<char>()) + strlen(tempStr.GetBuffer<char>()) > text.GetSize() - 50)
 		{
 			Q_snprintfz(text.GetBuffer<char>()+strlen(text.GetBuffer<char>()), text.GetSize(), "And more...\n");
-			Player->PrintToClient (PRINT_HIGH, "%s", text);
+			Player->PrintToClient (PRINT_HIGH, "%s", text.GetBuffer<char>());
 			return;
 		}
 		Q_strcatz(text.GetBuffer<char>(), tempStr.GetBuffer<char>(), text.GetSize());
