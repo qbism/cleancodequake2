@@ -171,7 +171,7 @@ public:
 		Dest = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
 	
 		if (!Dest)
-			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target);
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target.c_str());
 	};
 
 	bool ParseField (const char *Key, const char *Value)
@@ -1408,7 +1408,7 @@ public:
 
 			if (Monster && !Monster->GoalEntity)
 			{
-				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target %s does not exist\n", Target);
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target %s does not exist\n", Target.c_str());
 				Monster->MoveTarget = this;
 			}
 
@@ -1710,14 +1710,14 @@ public:
 				if (!e)
 					break;
 				if (strcmp(e->ClassName.c_str(), "light") != 0)
-					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" is not a light\n", Target);
+					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" is not a light\n", Target.c_str());
 				else
 					Light = entity_cast<CLight>(e);
 			}
 
 			if (!Light)
 			{
-				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Target \"%s\" not found\n", Target);
+				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Target \"%s\" not found\n", Target.c_str());
 				Free ();
 				return;
 			}
