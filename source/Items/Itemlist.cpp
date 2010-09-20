@@ -135,8 +135,7 @@ void CItemList::SortAndFinalize ()
 {
 	// Sort
 	uint32 sortOrder[] = {ITEMFLAG_ARMOR, ITEMFLAG_WEAPON, ITEMFLAG_AMMO, ITEMFLAG_POWERUP, ITEMFLAG_KEY};
-	bool *SortedValues = QNew (TAG_GENERIC) bool[TempList.size()];
-	Mem_Zero (SortedValues, TempList.size());
+	std::vector<bool> SortedValues (TempList.size(), false);
 
 	for (int z = 0; z < 5; z++)
 	{
@@ -167,8 +166,6 @@ void CItemList::SortAndFinalize ()
 		if (!SortedValues[i])
 			Items.push_back (TempList[i]);
 	}
-
-	QDelete[] SortedValues;
 
 	// Finalize
 	for (TItemListType::iterator it = Items.begin(); it < Items.end(); ++it)
