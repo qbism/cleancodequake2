@@ -477,7 +477,7 @@ void CInfantry::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy && Entity->Enemy->EntityFlags & EF_HURTABLE)
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &InfantryMoveDuck;

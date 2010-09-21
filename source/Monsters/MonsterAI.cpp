@@ -202,7 +202,10 @@ bool CMonster::FindTarget()
 
 		// hunt the sound for a bit; hopefully find the real player
 		AIFlags |= AI_SOUND_TARGET;
-		Entity->Enemy = client;
+		if (client->EntityFlags & EF_HURTABLE)
+			Entity->Enemy = client;
+		else
+			return false; // can't be damaged (sounds etc..)
 	}
 
 //

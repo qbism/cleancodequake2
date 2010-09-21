@@ -217,7 +217,19 @@ void IHurtableEntity::Killed (IBaseEntity *Inflictor, IBaseEntity *Attacker, sin
 	if (Health < -999)
 		Health = -999;
 
-	Enemy = Attacker;
+	
+	if (!Inflictor)
+	{
+		DebugPrintf("IHurtableEntity::Killed(): Null inflictor\n");
+		Inflictor = World;
+	}
+	if (!Attacker)
+	{
+		DebugPrintf("IHurtableEntity::Killed(): Null Attacker\n");
+		Attacker = World;
+	}
+	if (Attacker->EntityFlags & EF_HURTABLE)
+		Enemy = Attacker;
 
 	if (CanTakeDamage)
 		Die (Inflictor, Attacker, Damage, Point);

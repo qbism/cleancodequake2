@@ -425,7 +425,7 @@ void CGunner::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy && Entity->Enemy->EntityFlags & EF_HURTABLE)
 		Entity->Enemy = Attacker;
 
 	CurrentMove = &GunnerMoveDuck;
@@ -741,7 +741,7 @@ void CGunner::FireChain ()
 
 void CGunner::ReFireChain ()
 {
-	if (Entity->Enemy && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.5)
+	if (Entity->Enemy && Entity->Enemy->EntityFlags & EF_HURTABLE && entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0 && IsVisible (Entity, *Entity->Enemy) && frand() <= 0.5)
 	{
 		CurrentMove = &GunnerMoveFireChain;
 		return;

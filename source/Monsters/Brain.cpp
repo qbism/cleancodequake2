@@ -315,7 +315,7 @@ void CBrain::Dodge (IBaseEntity *Attacker, float eta)
 	if (frand() > 0.25f)
 		return;
 
-	if (!Entity->Enemy)
+	if (!Entity->Enemy && Entity->Enemy->EntityFlags & EF_HURTABLE)
 		Entity->Enemy = Attacker;
 
 	PauseTime = Level.Frame + ((eta + 0.5) * 10);
@@ -632,7 +632,7 @@ void CBrain::LaserBeamFire ()
 		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, right).
 		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, forward).
 		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, up);
-
+	
 	Laser->Enemy = Entity->Enemy;
 	Laser->SetOwner(Entity);
 	Laser->Damage = 1;
