@@ -576,7 +576,11 @@ public:
 		else
 		{
 			IHurtableEntity *Hurtable = entity_cast<IHurtableEntity>(*Enemy);
-
+			if (!Hurtable) // our enemy is dead
+			{
+			    Free();
+			    return;
+			}
 			if (Hurtable->Health > 0)
 			{
 				Hurtable->TakeDamage (this, GetOwner(), vec3fOrigin, Hurtable->State.GetOrigin(), PainNormal,
