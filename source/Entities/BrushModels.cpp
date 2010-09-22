@@ -3711,6 +3711,7 @@ void CFuncExplosive::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 
 	}
 #endif
 
+	User = Attacker;
 	UseTargets (Attacker, Message);
 
 	if (this->Damage)

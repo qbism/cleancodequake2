@@ -512,6 +512,17 @@ public:
 			Activator->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 		}
 
+		if (Activator && (Activator->EntityFlags & EF_USABLE))
+		{
+			IUsableEntity *Usable = entity_cast<IUsableEntity>(Activator);
+			
+			if (Usable->User)
+			{
+				DebugPrintf ("Swapped activator %s for %s\n", Activator->ClassName.c_str(), Usable->User->ClassName.c_str());
+				Activator = *Usable->User;
+			}
+		}
+
 		User = Activator;
 		Trigger ();
 	};
