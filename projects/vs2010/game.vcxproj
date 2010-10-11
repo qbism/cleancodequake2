@@ -409,6 +409,7 @@ echo Done!
     <ClInclude Include="..\..\include\Local.h" />
     <ClInclude Include="..\..\include\Menu\Controls.h" />
     <ClInclude Include="..\..\include\Menu\Menu.h" />
+    <ClInclude Include="..\..\include\Modules\Modules.h" />
     <ClInclude Include="..\..\include\Monsters\Barracuda.h" />
     <ClInclude Include="..\..\include\Monsters\Berserk.h" />
     <ClInclude Include="..\..\include\Monsters\Bitch.h" />
@@ -562,6 +563,7 @@ echo Done!
     <ClCompile Include="..\..\source\Items\Weapons.cpp" />
     <ClCompile Include="..\..\source\Menu\Controls.cpp" />
     <ClCompile Include="..\..\source\Menu\Menu.cpp" />
+    <ClCompile Include="..\..\source\Modules\Modules.cpp" />
     <ClCompile Include="..\..\source\Monsters\Barracuda.cpp" />
     <ClCompile Include="..\..\source\Monsters\Berserk.cpp" />
     <ClCompile Include="..\..\source\Monsters\Bitch.cpp" />

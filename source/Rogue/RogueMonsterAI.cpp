@@ -1643,7 +1643,7 @@ void CMonster::AI_Run(float Dist)
 		
 		if (tr.Fraction < 1)
 		{
-			vec3f v = lastGoalOrigin - Entity->State.GetOrigin();
+			v = lastGoalOrigin - Entity->State.GetOrigin();
 			float d1 = v.Length();
 			float center = tr.Fraction;
 			float d2 = d1 * ((center+1)/2);

@@ -34,8 +34,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CVAR_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CVAR_H
 
-// I know this grabs string and converts and that EGL has floatval/intval, but
-// this is just to make sure, because engines that don't might cause problems
 class CCvar
 {
 	SCVar			*cVar;
@@ -48,18 +46,16 @@ class CCvar
 	void Update ();
 
 public:
-	// Constructors, to make it a bit easier (using 'new')
+	// Constructors
 	CCvar ();
 	CCvar (const char *cvarName, const char *defaultValue, ECvarFlags flags = 0);
 	CCvar (const char *cvarName, sint32 defaultValue, ECvarFlags flags = 0);
 	CCvar (const char *cvarName, float defaultValue, ECvarFlags flags = 0);
-	// I didn't list any destructors, but if any are needed throw them here (you can't really delete cvars from the list from game anyway)
 
 	void Register (const char *cvarName, const char *defaultValue, ECvarFlags flags = 0);
 	void Register (const char *cvarName, sint32 defaultValue, ECvarFlags flags = 0);
 	void Register (const char *cvarName, float defaultValue, ECvarFlags flags = 0);
 
-	// Let me know if these defs cause any problems with types.
 	float		Float ();
 	sint32		Integer();
 	char		*String();

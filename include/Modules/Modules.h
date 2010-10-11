@@ -27,53 +27,53 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_entity_ptr.cpp
+// Modules.h
 // 
 //
 
-#include "Local.h"
+#if !defined(CC_GUARD_MODULES_H) || !INCLUDE_GUARDS
+#define CC_GUARD_MODULES_H
 
-const nullentity_t nullentity_t::value;
-const nullentity_t *nullentity = &nullentity_t::value;	// Null entity
-
-/**
-\fn	CEntityPtrLinkList &UsageList ()
-
-\brief	Return static list.
-
-\author	Paril
-\date	12/06/2010
-
-\return	Static entity pointer list. 
-**/
-CEntityPtrLinkList &UsageList ()
+class CModule
 {
-	static CEntityPtrLinkList _L;
-	return _L;
-}
+public:
+	CModule ();
 
-/**
-\fn	void FixAllEntityPtrs (IBaseEntity *Entity)
+	virtual const char *GetName() = 0;
 
-\brief	Function to clear entity pointers that point to Entity. 
+	virtual void Init () = 0;
+	virtual void Shutdown() = 0;
+	virtual void RunFrame() = 0;
+};
 
-\author	Paril
-\date	12/06/2010
-
-\param [in,out]	Entity	If non-null, the entity. 
-**/
-void FixAllEntityPtrs (IBaseEntity *Entity)
+class CModuleContainer
 {
-	if (UsageList().List.find(Entity) == UsageList().List.end())
-		return;
+public:
+	static CModuleContainer container;
 
-	std::list<void*> &v = (*UsageList().List.find(Entity)).second;
-	
-	for (std::list<void*>::iterator it = v.begin(); it != v.end(); ++it)
+	std::vector<CModule*>	Modules;
+
+	static void InitModules ()
 	{
-		void *tehPtr = (*it);
-		Mem_Zero (tehPtr, sizeof(entity_ptr<IBaseEntity>));
+		for (size_t i = 0; i < container.Modules.size(); ++i)
+			container.Modules[i]->Init();
 	}
 
-	UsageList().List.erase(Entity);
-}
+	static void ShutdownModules ()
+	{
+		for (size_t i = 0; i < container.Modules.size(); ++i)
+			container.Modules[i]->Shutdown();
+	}
+
+	static void RunModules ()
+	{
+		for (size_t i = 0; i < container.Modules.size(); ++i)
+			container.Modules[i]->RunFrame();
+	}
+};
+
+#define REGISTER_MODULE(type) static type LocalModule;
+
+#else
+FILE_WARNING
+#endif

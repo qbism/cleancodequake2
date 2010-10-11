@@ -93,7 +93,7 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 	}
 	else
 	{
-		CTrace tr (start, vec3f(-16), vec3f(16), end, Player, CONTENTS_MASK_SHOT);
+		tr (start, vec3f(-16), vec3f(16), end, Player, CONTENTS_MASK_SHOT);
 
 		if(tr.Entity != World)
 		{

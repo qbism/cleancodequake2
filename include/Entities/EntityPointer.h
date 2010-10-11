@@ -233,9 +233,10 @@ CEntityPtrLinkList &UsageList ();
 **/
 struct nullentity_t
 {
+	static const nullentity_t value;
 };
 
-extern nullentity_t nullentity;	// Null entity
+extern const nullentity_t *nullentity;	// Null entity
 
 /**
 \class	entity_ptr
@@ -518,7 +519,7 @@ public:
 	}
 
 	/**
-	\fn	entity_ptr operator= (nullentity_t blank)
+	\fn	entity_ptr operator= (const nullentity_t *)
 	
 	\brief	Empty operator. Acts as = NULL. 
 	
@@ -529,7 +530,7 @@ public:
 	
 	\return	This object. 
 	**/
-	entity_ptr operator = (nullentity_t blank)
+	entity_ptr operator = (const nullentity_t *)
 	{
 		if (GameEntity)
 			Clear ();
@@ -537,7 +538,7 @@ public:
 	}
 
 	/**
-	\fn	TType *operator* ()
+	\fn	TType *operator * () const
 	
 	\brief	Dereference operator. Dereferencing an entity_ptr yields the game entity. 
 	
@@ -552,7 +553,7 @@ public:
 	}
 
 	/**
-	\fn	TType *GetGameEntity ()
+	\fn	TType *GetGameEntity () const
 	
 	\brief	Gets the game entity. 
 	
@@ -564,7 +565,7 @@ public:
 	}
 
 	/**
-	\fn	SEntity *GetServerEntity ()
+	\fn	SEntity *GetServerEntity () const
 	
 	\brief	Gets the server entity. 
 	
@@ -576,7 +577,7 @@ public:
 	}
 
 	/**
-	\fn	bool IsValid ()
+	\fn	bool IsValid () const
 	
 	\brief	Query if this entity pointer is valid. 
 	
@@ -588,7 +589,7 @@ public:
 	}
 
 	/**
-	\fn	TType *operator-> ()
+	\fn	TType *operator-> () const
 	
 	\brief	Member access operator.
 	
@@ -597,7 +598,7 @@ public:
 	
 	\return	Game entity pointer for member access.
 	**/
-	TType *operator-> ()
+	TType *operator-> () const
 	{
 		return GameEntity;
 	}

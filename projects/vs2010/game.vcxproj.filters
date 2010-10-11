@@ -442,6 +442,9 @@
     <ClInclude Include="..\..\include\Weapons\WeaponMain.h">
       <Filter>Weapons</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Modules\Modules.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shared">
@@ -488,6 +491,9 @@
     </Filter>
     <Filter Include="Weapons">
       <UniqueIdentifier>{57b3f82c-d5da-4c4c-9b10-db14c1bd9c80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules">
+      <UniqueIdentifier>{7315a069-8590-4676-bf9c-6d98efd07fec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -919,6 +925,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\Weapons\WeaponMain.cpp">
       <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Modules\Modules.cpp">
+      <Filter>Modules</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

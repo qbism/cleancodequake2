@@ -80,6 +80,7 @@ typedef sint32	FrameNumber;
 #include "Game/Save.h"
 #include "Utility/IRC.h"
 #include "Utility/Trace.h"
+#include "Modules/Modules.h"
 
 // Main class files
 #include "Game/GameApi.h"

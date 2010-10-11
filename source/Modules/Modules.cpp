@@ -27,53 +27,16 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// cc_entity_ptr.cpp
+// Modules.cpp
 // 
 //
 
 #include "Local.h"
 
-const nullentity_t nullentity_t::value;
-const nullentity_t *nullentity = &nullentity_t::value;	// Null entity
+CModuleContainer CModuleContainer::container;
 
-/**
-\fn	CEntityPtrLinkList &UsageList ()
-
-\brief	Return static list.
-
-\author	Paril
-\date	12/06/2010
-
-\return	Static entity pointer list. 
-**/
-CEntityPtrLinkList &UsageList ()
+CModule::CModule ()
 {
-	static CEntityPtrLinkList _L;
-	return _L;
+	CModuleContainer::container.Modules.push_back(this);
 }
 
-/**
-\fn	void FixAllEntityPtrs (IBaseEntity *Entity)
-
-\brief	Function to clear entity pointers that point to Entity. 
-
-\author	Paril
-\date	12/06/2010
-
-\param [in,out]	Entity	If non-null, the entity. 
-**/
-void FixAllEntityPtrs (IBaseEntity *Entity)
-{
-	if (UsageList().List.find(Entity) == UsageList().List.end())
-		return;
-
-	std::list<void*> &v = (*UsageList().List.find(Entity)).second;
-	
-	for (std::list<void*>::iterator it = v.begin(); it != v.end(); ++it)
-	{
-		void *tehPtr = (*it);
-		Mem_Zero (tehPtr, sizeof(entity_ptr<IBaseEntity>));
-	}
-
-	UsageList().List.erase(Entity);
-}

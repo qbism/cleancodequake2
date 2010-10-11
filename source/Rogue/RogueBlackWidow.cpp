@@ -100,7 +100,7 @@ void CBlackWidow::FireBeam ()
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
 
 		vec3f target = BeamPos[1] + vec3f(0, 0, Entity->Enemy->ViewHeight - 10);
-		vec3f forward = (target - start).GetNormalized();
+		forward = (target - start).GetNormalized();
 
 		MonsterFireHeat (start, forward, 10, 50, flashnum);
 	}
@@ -130,7 +130,7 @@ void CBlackWidow::FireBeam ()
 		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_WIDOW2_BEAMER_1], forward, right, start);
 
 		vec3f target = BeamPos[1] + vec3f(0, 0, Entity->Enemy->ViewHeight - 10);
-		vec3f forward = (target - start).GetNormalized();
+		forward = (target - start).GetNormalized();
 
 		MonsterFireHeat (start, forward, 10, 50, 0);
 	}	
@@ -286,13 +286,11 @@ void CBlackWidow::FireDisrupt ()
 
 	if (len < 30)
 	{
-		dir = (BeamPos[0] - start).GetNormalized();
 		// calc direction to where we targeted
-		MonsterFireTracker(start, dir, 20, 500, *Entity->Enemy, MZ2_WIDOW_DISRUPTOR);
+		MonsterFireTracker(start, (BeamPos[0] - start).GetNormalized(), 20, 500, *Entity->Enemy, MZ2_WIDOW_DISRUPTOR);
 	}
 	else
 	{
-		vec3f dir;
 		PredictAim (*Entity->Enemy, start, 1200, true, 0, &dir, NULL);
 		MonsterFireTracker(start, dir, 20, 1200, NULL, MZ2_WIDOW_DISRUPTOR);
 	}

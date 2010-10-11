@@ -44,14 +44,14 @@ typedef sint8 ETeamIndex;
 **/
 enum
 {
-	CTF_NOTEAM,
-
 	CTF_TEAM1,
 	CTF_TEAM2,
 
-	CTF_TEAMNUM, // DO NOT USE, use CTF_NUM_TEAMS
-	CTF_NUM_TEAMS = CTF_TEAMNUM - 1,
+	CTF_NUM_TEAMS,
 
+	CTF_NOTEAM = 2,
+
+	// aliases
 	CTF_RED = CTF_TEAM1,
 	CTF_BLUE = CTF_TEAM2,
 };
