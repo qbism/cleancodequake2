@@ -929,5 +929,8 @@
     <ClCompile Include="..\..\source\Modules\Modules.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\Modules\Voting.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -2356,7 +2356,7 @@ void CTrainBase::Next ()
 		{
 			if (!first)
 			{
-				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Connected teleport paths. See path_corner at ("VECTOR_STRING")\n", PRINT_VECTOR_ARGS(TargetEntity->State.GetOrigin()));
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Connected teleport paths. See path_corner at (%s)\n", ToString(TargetEntity->State.GetOrigin()).c_str());
 				return;
 			}
 
@@ -2829,7 +2829,7 @@ void CWorldEntity::Spawn ()
 	ConfigString (CS_SKY, (!Sky.empty()) ? Sky.c_str() : "unit1_");
 	ConfigString (CS_SKYROTATE, "%f", SkyRotate);
 
-	ConfigString (CS_SKYAXIS, VECTOR_STRING, PRINT_VECTOR_ARGS(SkyAxis));
+	ConfigString (CS_SKYAXIS, "%s", ToString(SkyAxis).c_str());
 
 	ConfigString (CS_CDTRACK, "%i", Sounds);
 

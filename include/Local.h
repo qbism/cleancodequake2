@@ -47,9 +47,6 @@ inline const char *TimeStamp()
 	return __TIMESTAMP__;
 };
 
-// Convenience vector printing
-#define VECTOR_STRING "%f %f %f"
-#define PRINT_VECTOR_ARGS(x) (x).X, (x).Y, (x).Z
 
 // Forward declarations
 class IBaseEntity;

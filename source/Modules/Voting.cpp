@@ -27,39 +27,34 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 */
 
 //
-// Modules.h
-// 
+// Voting.cpp
+// Voting plugin for CleanCode
 //
 
-#if !defined(CC_GUARD_MODULES_H) || !INCLUDE_GUARDS
-#define CC_GUARD_MODULES_H
+#include "Local.h"
 
-class CModule
+class VotingModule : public CModule
 {
 public:
-	CModule ();
+	VotingModule () :
+	  CModule ()
+	  {
+	  }
 
-	virtual const char *GetName() = 0;
+	const char *GetName()
+	{
+		return "Voting Module\n  Version 1.0\n  By Paril";
+	};
 
-	virtual void Init () = 0;
-	virtual void Shutdown() = 0;
-	virtual void RunFrame() = 0;
-};
+	void Init ()
+	{
+	};
 
-class CModuleContainer
-{
-public:
-	static CModuleContainer container;
+	void Shutdown()
+	{
+	};
 
-	std::vector<CModule*>	Modules;
-
-	static void InitModules ();
-	static void ShutdownModules ();
-	static void RunModules ();
-};
-
-#define REGISTER_MODULE(type) static type LocalModule;
-
-#else
-FILE_WARNING
-#endif
+	void RunFrame()
+	{
+	};
+} module;

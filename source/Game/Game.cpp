@@ -509,6 +509,8 @@ void CGameAPI::RunFrame ()
 	// Only do it when we have spawned everything
 	if (!(Game.GameMode & GAME_DEATHMATCH) && Level.Frame > 20) // Paril, lol
 		AI_SetSightClient ();
+
+	CModuleContainer::RunModules();
 }
 
 void SetupGamemode ()
@@ -588,6 +590,8 @@ void G_Register ()
 	SetupArg ();
 	Cmd_Register ();
 	SvCmd_Register ();
+
+	CModuleContainer::InitModules();
 }
 
 std::string ConfigTimeString ()
@@ -654,6 +658,8 @@ void CGameAPI::Shutdown ()
 
 	ShutdownBodyQueue ();
 	Shutdown_Junk ();
+
+	CModuleContainer::ShutdownModules();
 
 	Bans.SaveList ();
 

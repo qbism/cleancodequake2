@@ -40,3 +40,39 @@ CModule::CModule ()
 	CModuleContainer::container.Modules.push_back(this);
 }
 
+class CListModulesCommand : public CGameCommandFunctor
+{
+public:
+	void operator () ()
+	{
+		std::string printString = "Modules loaded on this server:\n";
+		
+		for (size_t i = 0; i < CModuleContainer::container.Modules.size(); ++i)
+		{
+			printString += ToString(i) + ":\n" + CModuleContainer::container.Modules[i]->GetName();
+			printString += "\n\n";
+		}
+
+		Player->PrintToClient (PRINT_HIGH, "%s", printString.c_str());
+	};
+};
+
+/*static*/ void CModuleContainer::InitModules ()
+{
+	for (size_t i = 0; i < container.Modules.size(); ++i)
+		container.Modules[i]->Init();
+
+	Cmd_AddCommand<CListModulesCommand> ("modules");
+}
+
+/*static*/ void CModuleContainer::ShutdownModules ()
+{
+	for (size_t i = 0; i < container.Modules.size(); ++i)
+		container.Modules[i]->Shutdown();
+}
+
+/*static*/ void CModuleContainer::RunModules ()
+{
+	for (size_t i = 0; i < container.Modules.size(); ++i)
+		container.Modules[i]->RunFrame();
+}

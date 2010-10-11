@@ -90,6 +90,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // Paril, for CleanCode
 # pragma warning (disable : 4100) // unreferenced formal parameter
 # pragma warning (disable : 4127) // conditional expression is constant
+# pragma warning (disable : 4290) // C++ exception specification ignored (throw (xxx))
 
 # pragma intrinsic(memcmp)
 
