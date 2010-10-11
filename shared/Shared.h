@@ -499,34 +499,34 @@ public:
 };
 
 template<typename TType>
-inline std::string ToString(TType value)
+inline std::string ToString(TType &value)
 {
 	throw nostringconversionexception();
 }
 
 // Supports integral/float types
 template<typename TType, const int bufferSize>
-inline std::string ToStringGeneric (TType value, const char *format)
+inline std::string ToStringGeneric (TType &value, const char *format)
 {
 	CTempMemoryBlock block = CTempHunkSystem::Allocator.GetBlock(bufferSize);
 	sprintf(block.GetBuffer<char>(), format, value);
 	return std::string(block.GetBuffer<char>());
 }
 
-template<> inline std::string ToString(sint64 value) { return ToStringGeneric<uint32, 64>(value, "%ld"); }
-template<> inline std::string ToString(uint64 value) { return ToStringGeneric<uint32, 64>(value, "%lu"); }
-template<> inline std::string ToString(sint32 value) { return ToStringGeneric<uint32, 32>(value, "%d"); }
-template<> inline std::string ToString(uint32 value) { return ToStringGeneric<uint32, 32>(value, "%u"); }
-template<> inline std::string ToString(sint16 value) { return ToStringGeneric<uint32, 16>(value, "%hd"); }
-template<> inline std::string ToString(uint16 value) { return ToStringGeneric<uint32, 16>(value, "%hu"); }
-template<> inline std::string ToString(sint8 value) { return ToStringGeneric<uint32, 8>(value, "%d"); }
-template<> inline std::string ToString(uint8 value) { return ToStringGeneric<uint32, 8>(value, "%u"); }
+template<> inline std::string ToString(sint64 &value) { return ToStringGeneric<sint64, 64>(value, "%ld"); }
+template<> inline std::string ToString(uint64 &value) { return ToStringGeneric<uint64, 64>(value, "%lu"); }
+template<> inline std::string ToString(sint32 &value) { return ToStringGeneric<sint32, 32>(value, "%d"); }
+template<> inline std::string ToString(uint32 &value) { return ToStringGeneric<uint32, 32>(value, "%u"); }
+template<> inline std::string ToString(sint16 &value) { return ToStringGeneric<sint16, 16>(value, "%hd"); }
+template<> inline std::string ToString(uint16 &value) { return ToStringGeneric<uint16, 16>(value, "%hu"); }
+template<> inline std::string ToString(sint8 &value) { return ToStringGeneric<sint8, 8>(value, "%d"); }
+template<> inline std::string ToString(uint8 &value) { return ToStringGeneric<uint8, 8>(value, "%u"); }
 
-template<> inline std::string ToString(float value) { return ToStringGeneric<float, 32>(value, "%f"); }
-template<> inline std::string ToString(double value) { return ToStringGeneric<double, 64>(value, "%d"); }
-template<> inline std::string ToString(long double value) { return ToStringGeneric<double, 128>(value, "%Ld"); }
+template<> inline std::string ToString(float &value) { return ToStringGeneric<float, 32>(value, "%f"); }
+template<> inline std::string ToString(double &value) { return ToStringGeneric<double, 64>(value, "%d"); }
+template<> inline std::string ToString(long double &value) { return ToStringGeneric<long double, 128>(value, "%Ld"); }
 
-template<> inline std::string ToString(vec3f value)
+template<> inline std::string ToString(vec3f &value)
 {
 	CTempMemoryBlock block = CTempHunkSystem::Allocator.GetBlock(128);
 	sprintf(block.GetBuffer<char>(), "%f %f %f", value.X, value.Y, value.Z);
