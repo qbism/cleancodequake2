@@ -730,7 +730,7 @@ bool IBounceProjectile::Run ()
 	move = Velocity * 0.1f;
 
 	trace = PushEntity (move);
-	if (!GetInUse())
+	if (!GetInUse() || (PhysicsType != PHYSICS_BOUNCE && PhysicsType != PHYSICS_TOSS))
 		return false;
 
 	if (trace.Fraction < 1)
@@ -998,7 +998,7 @@ sint32 IStepPhysics::FlyMove (float Time, EBrushContents Mask)
 // run the impact function
 //
 		Impact (&trace);
-		if (!GetInUse())
+		if (!GetInUse() || PhysicsType != PHYSICS_STEP)
 			break;		// removed by the impact function
 	
 		time_left -= time_left * trace.Fraction;
@@ -1116,7 +1116,7 @@ bool IStepPhysics::Run ()
 		// friction for flying monsters that have been given vertical velocity
 		if ((Monster->Monster->AIFlags & AI_FLY) && (Velocity.Z != 0))
 		{
-			speed = Q_fabs(Velocity.Z);
+			speed = Abs(Velocity.Z);
 			control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
 			friction = SV_FRICTION/3;
 			newspeed = speed - (0.1f * control * friction);
@@ -1129,7 +1129,7 @@ bool IStepPhysics::Run ()
 		// friction for flying monsters that have been given vertical velocity
 		if ((Monster->Monster->AIFlags & AI_SWIM) && (Velocity.Z != 0))
 		{
-			speed = Q_fabs(Velocity.Z);
+			speed = Abs(Velocity.Z);
 			control = (speed < SV_STOPSPEED) ? SV_STOPSPEED : speed;
 			newspeed = speed - (0.1f * control * SV_WATERFRICTION * WaterInfo.Level);
 			if (newspeed < 0)
@@ -1500,7 +1500,6 @@ bool IPushPhysics::Run ()
 
 	return true;
 }
-
 
 
 IStopPhysics::IStopPhysics () :

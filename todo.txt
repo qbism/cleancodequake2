@@ -10,11 +10,8 @@ Present
 - DelayedUse causes problems it seems; have to look into this
 - I think freed entities are being loaded before their time is up to get deleted..
 - Make SIRCL C++
-
-- First spawn in CTF broken
+- If you clear velocity from a Touch function, it might get reset afterwards - find a more perminent fix.
 - Team armor
-- Trains in ware2 seem to be broken
-  - Tracked it down to 2411 in BrushModels.cpp, the Rogue-only block.
 
 Future versions
 - A scripting system to replace entities like func_timer, etc.

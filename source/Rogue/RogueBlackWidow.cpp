@@ -367,7 +367,7 @@ bool CBlackWidow::TongueAttackOK (vec3f &start, vec3f &end, float range)
 	vec3f angles = dir.ToAngles();
 	if (angles.X < -180)
 		angles.X += 360;
-	if (Q_fabs(angles.X) > 30)
+	if (Abs(angles.X) > 30)
 		return false;
 
 	return true;

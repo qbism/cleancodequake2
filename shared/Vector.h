@@ -74,6 +74,24 @@ public:
 	  };
 
 	/**
+	\fn	template <typename TNewType> inline vec3Base (const vec3Base<TNewType> &Vec)
+	
+	\brief	Copy constructor for copying from a different base type.
+	
+	\author	Paril
+	\date	13/10/2010
+	
+	\param	Vec	The vector. 
+	**/
+	template <typename TNewType>
+	inline vec3Base (const vec3Base<TNewType> &Vec) :
+	  X((TType)Vec[0]),
+	  Y((TType)Vec[1]),
+	  Z((TType)Vec[2])
+	  {
+	  };
+
+	/**
 	\fn	inline vec3Base(const TType Value)
 	
 	\brief	Constructor.
@@ -129,38 +147,6 @@ public:
 	  Z(InZ)
 	  {
 	  };
-
-	/**
-	\fn	template <typename TNewType> vec3Base<TNewType> Convert () const
-	
-	\brief	Converts this vector to another base type. 
-	
-	\author	Paril
-	\date	27/05/2010
-	
-	\return	The new vector.
-	**/
-	template <typename TNewType>
-	vec3Base<TNewType> Convert () const
-	{
-		return vec3Base<TNewType> (X, Y, Z);
-	}
-
-	/**
-	\fn	template <typename TNewType> TNewType ConvertDerived () const
-	
-	\brief	Convert this vector to a derived type. 
-	
-	\author	Paril
-	\date	27/05/2010
-	
-	\return	The new vector. 
-	**/
-	template <typename TNewType>
-	TNewType ConvertDerived () const
-	{
-		return TNewType (X, Y, Z);
-	}
 
 	/**
 	 * Operators
@@ -264,7 +250,7 @@ public:
 	}
 
 	/**
-	\fn	inline vec3Base operator* (const TType Scale) const
+	\fn	inline vec3Base operator* (const float Scale) const
 	
 	\brief	Muliplication operator. 
 	
@@ -275,7 +261,7 @@ public:
 	
 	\return	This vector, scaled by 'Scale'
 	**/
-	inline vec3Base operator * (const TType Scale) const
+	inline vec3Base operator * (const float Scale) const
 	{
 		return vec3Base(X * Scale, Y * Scale, Z * Scale);
 	}
@@ -299,7 +285,7 @@ public:
 	}
 
 	/**
-	\fn	inline vec3Base &operator*= (const TType Scale)
+	\fn	inline vec3Base &operator*= (const float Scale)
 	
 	\brief	Assignment by muliplication operator. 
 	
@@ -310,7 +296,7 @@ public:
 	
 	\return	A reference of this object. 
 	**/
-	inline vec3Base &operator *= (const TType Scale)
+	inline vec3Base &operator *= (const float Scale)
 	{
 		Set (X * Scale, Y * Scale, Z * Scale);
 		return *this;
@@ -440,7 +426,7 @@ public:
 	}
 
 	/**
-	\fn	inline vec3Base &operator/= (const TType Number)
+	\fn	inline vec3Base &operator/= (const float Number)
 	
 	\brief	Assignment by division operator. 
 	
@@ -451,7 +437,7 @@ public:
 	
 	\return	A reference of this object. 
 	**/
-	inline vec3Base &operator /= (const TType Number)
+	inline vec3Base &operator /= (const float Number)
 	{
 		const float InvNumber = 1.0f / (float)Number;
 		Set (X * InvNumber, Y * InvNumber, Z * InvNumber);
@@ -505,6 +491,25 @@ public:
 	\return	A reference of this object. 
 	**/
 	inline vec3Base &operator = (const vec3Base &Vec)
+	{
+		Set (Vec);
+		return *this;
+	}
+
+	/**
+	\fn	template <typename TNewType> inline vec3Base &operator= (const vec3Base<TNewType> &Vec)
+	
+	\brief	Copy operator for a new type.
+	
+	\author	Paril
+	\date	13/10/2010
+	
+	\param	Vec	The vector. 
+	
+	\return	A shallow copy of this object. 
+	**/
+	template <typename TNewType>
+	inline vec3Base &operator= (const vec3Base<TNewType> &Vec)
 	{
 		Set (Vec);
 		return *this;
@@ -736,7 +741,7 @@ public:
 	\author	Paril
 	\date	27/05/2010
 	
-	\param	Number	Number to set vector's values to. 
+	\param	Number	Number to set vectors values to. 
 	**/
 	inline void Set (const TType Number)
 	{
@@ -759,6 +764,22 @@ public:
 	}
 
 	/**
+	\fn	template <typename TNewType> inline void Set (const vec3Base<TNewType> &Vec)
+	
+	\brief	Sets this vector to the converted values of 'Vec'.
+	
+	\author	Paril
+	\date	13/10/2010
+	
+	\param	Vec	The source vector. 
+	**/
+	template <typename TNewType>
+	inline void Set (const vec3Base<TNewType> &Vec)
+	{
+		Set ((TType)Vec[0], (TType)Vec[1], (TType)Vec[2]);
+	}
+
+	/**
 	\fn	bool Compare(const vec3Base &Vec, const TType Epsilon) const
 	
 	\brief	Compares two vectors using an Epsilon, for floating point values.
@@ -773,9 +794,9 @@ public:
 	**/
 	bool Compare(const vec3Base &Vec, const TType Epsilon) const
 	{
-		if (Q_fabs(X - Vec[0]) > Epsilon ||
-			Q_fabs(Y - Vec[1]) > Epsilon ||
-			Q_fabs(Z - Vec[2]) > Epsilon)
+		if (Abs(X - Vec[0]) > Epsilon ||
+			Abs(Y - Vec[1]) > Epsilon ||
+			Abs(Z - Vec[2]) > Epsilon)
 			return false;
 		return true;
 	}
@@ -920,25 +941,25 @@ public:
 	}
 
 	/**
-	\fn	inline void Abs()
+	\fn	inline void Absolute()
 	
 	\brief	Sets this vector to it's absolute value. 
 	**/
-	inline void Abs()
+	inline void Absolute()
 	{
-		Set (Q_fabs(X), Q_fabs(Y), Q_fabs(Z));
+		Set (Abs(X), Abs(Y), Abs(Z));
 	}
 	
 	/**
-	\fn	inline vec3Base GetAbs() const
+	\fn	inline vec3Base GetAbsolute() const
 	
 	\brief	Returns the absolute value of this vector.
 	
 	\return	The abs. 
 	**/
-	inline vec3Base GetAbs() const
+	inline vec3Base GetAbsolute() const
 	{
-		return vec3Base(Q_fabs(X), Q_fabs(Y), Q_fabs(Z));
+		return vec3Base(Abs(X), Abs(Y), Abs(Z));
 	}
 
 	/**
@@ -955,7 +976,7 @@ public:
 	**/
 	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) const
 	{
-		return (Q_fabs(X) <= Epsilon && Q_fabs(Y) <= Epsilon && Q_fabs(Z) <= Epsilon);
+		return (Abs(X) <= Epsilon && Abs(Y) <= Epsilon && Abs(Z) <= Epsilon);
 	}
 
 	/**
@@ -1270,6 +1291,444 @@ inline vec3f operator * (const float &l, const vec3f &r)
 {
 	return (r * l);
 };
+
+template <typename TElementType, const int ElementNum>
+class vecBase
+{
+protected:
+	TElementType Elements[ElementNum];
+
+public:
+	inline vecBase () { }
+	inline vecBase (TElementType Value) { Set(Value); }
+	inline vecBase (TElementType Values[ElementNum]) { Set(Values); }
+	inline vecBase (const vecBase<TElementType, ElementNum> &Copy) { Set(Copy); }
+	
+	inline void Clear ()
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] = 0;
+	}
+
+	inline void Set (TElementType Value)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] = Value;
+	}
+
+	inline void Set (const vecBase<TElementType, ElementNum> &Copy)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] = Copy.Elements[i];
+	}
+	
+	/**
+	 * Operators
+	 */
+	inline bool operator == (const vecBase &Vec) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (Elements[i] != Vec.Elements[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool operator != (const vecBase &Vec) const
+	{
+		return !(operator==(Vec));
+	}
+
+	inline TElementType &operator [] (const sint32 Index)
+	{
+		return Elements[Index];
+	}
+
+	inline operator TElementType *()
+	{
+		return &Elements[0];
+	}
+
+	inline operator const TElementType *() const
+	{
+		return &Elements[0];
+	}
+
+	inline bool operator < (const vecBase &Vec) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Elements[i] < Vec.Elements[i]))
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool operator < (const TElementType Number) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Elements[i] < Number))
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool operator > (const vecBase &Vec) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Elements[i] > Vec.Elements[i]))
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool operator > (const TElementType Number) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Elements[i] > Number))
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool operator <= (const vecBase &Vec) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Elements[i] <= Vec.Elements[i]))
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool operator >= (const vecBase &Vec) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Elements[i] >= Vec.Elements[i]))
+				return false;
+		}
+
+		return true;
+	}
+
+	inline float operator | (const vecBase &Vec) const
+	{
+		return Dot (Vec);
+	}
+
+	inline bool operator ! () const
+	{
+		return IsZero();
+	}
+
+	inline vecBase operator * (const vecBase &Vec) const
+	{
+		vecBase newVec (*this);
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec.Elements[i] *= Vec.Elements[i];
+
+		return newVec;
+	}
+
+	inline vecBase operator * (const float Scale) const
+	{
+		vecBase newVec (*this);
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec.Elements[i] *= Scale;
+
+		return newVec;
+	}
+
+	inline vecBase &operator *= (const vecBase &Vec)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] *= Vec.Elements[i];
+
+		return *this;
+	}
+
+	inline vecBase &operator *= (const float Scale)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] *= Scale;
+
+		return *this;
+	}
+
+	inline vecBase operator + (const vecBase &Vec) const
+	{
+		vecBase newVec (*this);
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec.Elements[i] += Vec.Elements[i];
+
+		return newVec;
+	}
+
+	inline vecBase &operator += (const vecBase &Vec)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] += Vec.Elements[i];
+
+		return *this;
+	}
+
+	inline vecBase operator - (const vecBase &Vec) const
+	{
+		vecBase newVec (*this);
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec.Elements[i] -= Vec.Elements[i];
+
+		return newVec;
+	}
+
+	inline vecBase &operator -= (const vecBase &Vec)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] -= Vec.Elements[i];
+
+		return *this;
+	}
+
+	inline vecBase operator / (const vecBase &Vec) const
+	{
+		vecBase newVec (*this);
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec.Elements[i] /= Vec.Elements[i];
+
+		return newVec;
+	}
+
+	inline vecBase operator / (const float Number) const
+	{
+		const TElementType InvNumber = 1.0f / Number;
+		vecBase newVec (*this);
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec.Elements[i] *= InvNumber;
+
+		return newVec;
+	}
+
+	inline vecBase &operator /= (const vecBase &Vec)
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] /= Vec.Elements[i];
+
+		return *this;
+	}
+
+	inline vecBase &operator /= (const TElementType Number)
+	{
+		const float InvNumber = 1.0f / (float)Number;
+
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] *= InvNumber;
+
+		return *this;
+	}
+
+	inline vecBase &operator = (const vecBase &Vec)
+	{
+		Set (Vec);
+		return *this;
+	}
+
+	inline vecBase operator - () const
+	{
+		vecBase newVec;
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec[i] = -Elements[i];
+
+		return newVec;
+	}
+
+	inline vecBase const GetNormalized () const
+	{
+		vecBase val (*this);
+		val.Normalize ();
+		return val;
+	}
+
+	inline vecBase const GetNormalized (float &length) const
+	{
+		vec3Base val (*this);
+		length = val.Normalize ();
+		return val;
+	}
+
+	inline vecBase const GetNormalizedFast () const
+	{
+		vec3Base val (*this);
+		val.NormalizeFast ();
+		return val;
+	}
+
+	inline vecBase const GetNormalizedFast (float &length) const
+	{
+		vec3Base val (*this);
+		length = val.NormalizeFast ();
+		return val;
+	}
+
+	inline float LengthSq() const
+	{
+		float len = 0;
+
+		for (int i = 0; i < ElementNum; ++i)
+			len += (Elements[i] * Elements[i]);
+
+		return len;
+	}
+
+	inline float Length() const
+	{
+		return sqrtf (LengthSq());
+	}
+	
+	inline float LengthFast() const
+	{
+		return Q_FastSqrt (LengthSq());
+	}
+	
+	inline float Dist (const vecBase &Vec) const
+	{
+		return sqrtf (DistSq());
+	}
+	
+	inline float DistSq (const vecBase &Vec) const
+	{
+		float len = 0;
+
+		for (int i = 0; i < ElementNum; ++i)
+			len += ((Elements[i] - Vec.Elements[i]) * (Elements[i] - Vec.Elements[i]));
+
+		return len;
+	}
+
+	inline float DistFast (const vecBase &Vec) const
+	{
+		return Q_FastSqrt (DistSq());
+	}
+
+	inline void Absolute()
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] = Abs(Elements[i]);
+	}
+	
+	inline vecBase GetAbsolute() const
+	{
+		vecBase newVec;
+
+		for (int i = 0; i < ElementNum; ++i)
+			newVec = Abs(Elements[i]);
+
+		return newVec;
+	}
+
+	bool IsNearlyZero(const float Epsilon = SMALL_NUMBER) const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (!(Abs(Elements[i]) <= Epsilon))
+				return false;
+		}
+
+		return true;
+	}
+
+	float Normalize()
+	{
+		float Len = Length();
+
+		if (Len)
+			operator*= (1.0f / Len);
+		else
+			Clear();
+
+		return Len;
+	}
+
+	float Dot(const vecBase &Vec) const
+	{
+		float product = 0.0f;
+
+		for (int i = 0; i < ElementNum; i++)
+			product += Elements[i] * Vec.Elements[i];
+
+		return product;
+	}
+
+	float NormalizeFast()
+	{
+		float Len = Q_RSqrt<float>(Dot(*this));
+		operator*= (Len);
+		return (Len) ? (1.0f / Len) : 0;
+	}
+
+	inline bool Inside (const vecBase Min, const vecBase Max) const
+	{
+		return (operator> (Min)) && (operator< (Max));
+	}
+
+	inline void Invert ()
+	{
+		for (int i = 0; i < ElementNum; ++i)
+			Elements[i] = -Elements[i];
+	}
+
+	inline bool IsZero () const
+	{
+		for (int i = 0; i < ElementNum; ++i)
+		{
+			if (Elements[i] != 0)
+				return false;
+		}
+
+		return true;
+	}
+};
+
+template <typename TElementType, const int ElementNum>
+inline vecBase<TElementType, ElementNum> operator * (const float &l, const vecBase<TElementType, ElementNum> &r)
+{
+	return (r * l);
+};
+
+typedef vecBase<float, 2> vec2f;
+typedef vecBase<sint32, 2> vec2i;
+typedef vecBase<sint16, 2> vec2s;
+typedef vecBase<sint8, 2> vec2b;
+typedef vecBase<double, 2> vec2d;
+
+typedef vec3Base<float> vec3f;
+typedef vec3Base<sint32> vec3i;
+typedef vec3Base<sint16> vec3s;
+typedef vec3Base<sint8> vec3b;
+typedef vec3Base<double> vec3d;
+
+typedef vecBase<float, 4> vec4f;
+typedef vecBase<sint32, 4> vec4i;
+typedef vecBase<sint16, 4> vec4s;
+typedef vecBase<sint8, 4> vec4b;
+typedef vecBase<double, 4> vec4d;
 
 /**
 \page Utilities

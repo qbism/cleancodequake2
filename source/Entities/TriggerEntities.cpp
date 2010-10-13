@@ -899,7 +899,7 @@ public:
 ENTITYFIELDS_BEGIN(CTriggerMonsterJump)
 {
 	CEntityField ("speed", EntityMemberOffset(CTriggerMonsterJump,Speed), FT_FLOAT | FT_SAVABLE),
-	CEntityField ("height", EntityMemberOffset(CTriggerMonsterJump,MoveDir.Z), FT_FLOAT),
+	CEntityField ("height", EntityMemberOffset(CTriggerMonsterJump,MoveDir[2]), FT_FLOAT),
 };
 ENTITYFIELDS_END(CTriggerMonsterJump)
 

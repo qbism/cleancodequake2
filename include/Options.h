@@ -32,13 +32,15 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // NOTE: NO INCLUDE GUARD
 //
 
-// Define this to change options based on game mode
+// Define this to quickly reset macros to certain game modes.
+// Can be mixed in certain cases.
+#define GAME_CUSTOM							0
 #define GAME_ORIGINAL_QUAKE2				1
 #define GAME_ROGUE							2
 #define GAME_XATRIX							4
 
 #ifndef CC_GAME_MODE
-#define CC_GAME_MODE						(GAME_ROGUE|GAME_XATRIX)
+#define CC_GAME_MODE						(GAME_CUSTOM)
 #endif
 
 // Enable IRC

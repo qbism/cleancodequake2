@@ -694,7 +694,7 @@ void CPlayerEntity::PutInServer ()
 	// clear playerstate values
 	Client.PlayerState.Clear ();
 
-	Client.PlayerState.GetPMove()->Origin = (spawn_origin * 8).Convert<sint16>();
+	Client.PlayerState.GetPMove()->Origin = (spawn_origin * 8);
 
 //ZOID
 	Client.PlayerState.GetPMove()->PMoveFlags &= ~PMF_NO_PREDICTION;
@@ -989,7 +989,7 @@ CalcRoll
 */
 inline float CPlayerEntity::CalcRoll (vec3f &velocity, vec3f &right)
 {
-	float	side = Q_fabs(velocity | right);
+	float	side = Abs(velocity | right);
 	float	sign = side < 0 ? -1 : 1;
 
 	if (side < CvarList[CV_ROLLSPEED].Float())
@@ -1094,7 +1094,7 @@ inline void CPlayerEntity::DamageFeedback (vec3f &forward, vec3f &right)
 	//
 	// calculate view angle kicks
 	//
-	float Kick = Q_fabs(Client.DamageValues[DT_KNOCKBACK]);
+	float Kick = Abs(Client.DamageValues[DT_KNOCKBACK]);
 	if (Kick && (Health > 0))	// kick of 0 means no view adjust at all
 	{
 		Kick *= 100 / Health;
@@ -1964,8 +1964,8 @@ void CPlayerEntity::EndServerFrame ()
 	{
 	}
 
-	Client.PlayerState.GetPMove()->Origin = (State.GetOrigin() * 8).Convert<sint16>();
-	Client.PlayerState.GetPMove()->Velocity = (Velocity * 8).Convert<sint16>();
+	Client.PlayerState.GetPMove()->Origin = (State.GetOrigin() * 8);
+	Client.PlayerState.GetPMove()->Velocity = (Velocity * 8);
 
 	//
 	// If the end of unit layout is displayed, don't give
@@ -2023,7 +2023,7 @@ void CPlayerEntity::EndServerFrame ()
 		BobTime *= 4;
 
 	bobcycle = (sint32)BobTime;
-	bobfracsin = Q_fabs(sinf(BobTime*M_PI));
+	bobfracsin = Abs(sinf(BobTime*M_PI));
 
 	// detect hitting the floor
 	FallingDamage ();
@@ -2749,7 +2749,7 @@ void CPlayerEntity::MoveToIntermission ()
 
 	State.GetOrigin() = Level.Intermission.Origin;
 
-	Client.PlayerState.GetPMove()->Origin = (Level.Intermission.Origin * 8).Convert<sint16>();
+	Client.PlayerState.GetPMove()->Origin = (Level.Intermission.Origin * 8);
 	Client.PlayerState.GetViewAngles() = Level.Intermission.Angles;
 	Client.PlayerState.GetPMove()->PMoveType = PMT_FREEZE;
 	Client.PlayerState.GetGunIndex () = 0;
@@ -3013,8 +3013,8 @@ void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 	Client.PlayerState.GetPMove()->Gravity = CvarList[CV_GRAVITY].Float() * GravityMultiplier;
 	pm.State = *Client.PlayerState.GetPMove();
 
-	pm.State.Origin = (State.GetOrigin() * 8).Convert<sint16>();
-	pm.State.Velocity = (Velocity * 8).Convert<sint16>();
+	pm.State.Origin = (State.GetOrigin() * 8);
+	pm.State.Velocity = (Velocity * 8);
 
 	if (memcmp (&Client.OldPMove, &pm.State, sizeof(pm.State)))
 	pm.SnapInitial = true;
@@ -3039,8 +3039,8 @@ CC_ENABLE_DEPRECATION
 	Client.PlayerState.SetPMove (&pm.State);
 	Client.OldPMove = pm.State;
 
-	State.GetOrigin() = pm.State.Origin.ConvertDerived<vec3f>() * 0.125f;
-	Velocity = pm.State.Velocity.ConvertDerived<vec3f>() * 0.125f;
+	State.GetOrigin() = vec3f(pm.State.Origin) * 0.125f;
+	Velocity = vec3f(pm.State.Velocity) * 0.125f;
 
 	GetMins() = pm.Mins;
 	GetMaxs() = pm.Maxs;

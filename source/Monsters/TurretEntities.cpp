@@ -191,19 +191,19 @@ void CTurretBreach::Think ()
 
 		if ((MoveAngles.Y < Positions[0].Y) || (MoveAngles.Y > Positions[1].Y))
 		{
-			float dmin = Q_fabs(Positions[0].Y - MoveAngles.Y);
+			float dmin = Abs(Positions[0].Y - MoveAngles.Y);
 			if (dmin < -180)
 				dmin += 360;
 			else if (dmin > 180)
 				dmin -= 360;
 
-			float dmax = Q_fabs(Positions[1].Y - MoveAngles.Y);
+			float dmax = Abs(Positions[1].Y - MoveAngles.Y);
 			if (dmax < -180)
 				dmax += 360;
 			else if (dmax > 180)
 				dmax -= 360;
 
-			MoveAngles.Y = Positions[(Q_fabs(dmin) < Q_fabs(dmax)) ? 0 : 1].Y;
+			MoveAngles.Y = Positions[(Abs(dmin) < Abs(dmax)) ? 0 : 1].Y;
 		}
 
 		vec3f delta = (MoveAngles - current_angles);

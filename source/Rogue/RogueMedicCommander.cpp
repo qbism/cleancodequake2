@@ -215,7 +215,7 @@ void CMedicCommander::SpawnGrows ()
 	if (AIFlags & AI_MANUAL_STEERING)
 	{
 		float current_yaw = AngleModf(Entity->State.GetAngles().Y);
-		if (Q_fabs(current_yaw - IdealYaw) > 0.1)
+		if (Abs(current_yaw - IdealYaw) > 0.1)
 		{
 			AIFlags |= AI_HOLD_FRAME;
 			return;

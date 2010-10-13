@@ -445,7 +445,7 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 	}
 
 // try other directions
-	if (((randomMT() & 3) & 1) || Q_fabs (deltay) > Q_fabs (deltax))
+	if (((randomMT() & 3) & 1) || Abs (deltay) > Abs (deltax))
 	{
 		float tdir = d.Y;
 		d.Y = d.Z;

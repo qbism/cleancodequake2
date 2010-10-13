@@ -359,7 +359,7 @@ SV_PM_AddCurrents
 static void SV_PM_AddCurrents (vec3f &wishvel)
 {
 	// account for ladders
-	if (pml.ladder && Q_fabs (pml.velocity.Z) <= 200)
+	if (pml.ladder && Abs (pml.velocity.Z) <= 200)
 	{
 		if (((pm->viewAngles.X <= -15) && (pm->cmd.forwardMove > 0)) || (pm->cmd.upMove > 0))
 			wishvel.Z = 200;

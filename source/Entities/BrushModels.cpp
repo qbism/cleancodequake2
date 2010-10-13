@@ -1268,10 +1268,10 @@ void CDoor::CalcMoveSpeed ()
 		return;		// only the team master does this
 
 	// find the smallest distance any member of the team will be moving
-	float min = Q_fabs(Distance);
+	float min = Abs(Distance);
 	for (CDoor *Door = entity_cast<CDoor>(Team.Chain); Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
-		float dist = Q_fabs(Door->Distance);
+		float dist = Abs(Door->Distance);
 		if (dist < min)
 			min = dist;
 	}
@@ -1281,7 +1281,7 @@ void CDoor::CalcMoveSpeed ()
 	// adjust speeds so they will all complete at the same time
 	for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 	{
-		float newspeed = Q_fabs(Door->Distance) / time;
+		float newspeed = Abs(Door->Distance) / time;
 		float ratio = newspeed / Door->MoveSpeed;
 		if (Door->MoveAccel == Door->MoveSpeed)
 			Door->MoveAccel = newspeed;
@@ -1466,7 +1466,7 @@ void CDoor::Spawn ()
 
 	// calculate second position
 	Positions[0] = State.GetOrigin();
-	vec3f absMoveDir = MoveDir.GetAbs();
+	vec3f absMoveDir = MoveDir.GetAbsolute();
 	Distance = absMoveDir.X * GetSize().X + absMoveDir.Y * GetSize().Y + absMoveDir.Z * GetSize().Z - Lip;
 	Positions[1] = Positions[0].MultiplyAngles (Distance, MoveDir);
 
@@ -1793,7 +1793,7 @@ void CMovableWater::Spawn ()
 	// calculate second position
 	Positions[0] = State.GetOrigin ();
 
-	Distance = Q_fabs(MoveDir.X) * GetSize().X + Q_fabs(MoveDir.Y) * GetSize().Y + Q_fabs(MoveDir.Z) * GetSize().Z - Lip;
+	Distance = Abs(MoveDir.X) * GetSize().X + Abs(MoveDir.Y) * GetSize().Y + Abs(MoveDir.Z) * GetSize().Z - Lip;
 	Positions[1] = Positions[0].MultiplyAngles (Distance, MoveDir);
 
 	// if it starts open, switch the positions
@@ -1994,8 +1994,8 @@ void CDoorSecret::Spawn ()
 	State.GetAngles().ToVectors (&forward, &right, &up);
 	State.GetAngles().Clear ();
 
-	float width = (SpawnFlags & SECRET_1ST_DOWN) ? Q_fabs(up | GetSize()) : Q_fabs(right | GetSize());
-	float length = Q_fabs(forward | GetSize());
+	float width = (SpawnFlags & SECRET_1ST_DOWN) ? Abs(up | GetSize()) : Abs(right | GetSize());
+	float length = Abs(forward | GetSize());
 	if (SpawnFlags & SECRET_1ST_DOWN)
 		Positions[0] = State.GetOrigin ().MultiplyAngles (-1 * width, up);
 	else
@@ -2181,7 +2181,7 @@ void CButton::Spawn ()
 
 	Positions[0] = State.GetOrigin ();
 	Positions[1] = Positions[0].MultiplyAngles (
-		Q_fabs(MoveDir.X) * GetSize().X + Q_fabs(MoveDir.Y) * GetSize().Y + Q_fabs(MoveDir.Z) * GetSize().Z - Lip, MoveDir);
+		Abs(MoveDir.X) * GetSize().X + Abs(MoveDir.Y) * GetSize().Y + Abs(MoveDir.Z) * GetSize().Z - Lip, MoveDir);
 
 	State.GetEffects() |= FX_ANIM01;
 

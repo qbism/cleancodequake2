@@ -1053,7 +1053,7 @@ void CSoldierBase::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Da
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_DEATH]);
 
-	if (Q_fabs((Entity->State.GetOrigin().Z + Entity->ViewHeight) - Point.Z) <= 4)
+	if (Abs((Entity->State.GetOrigin().Z + Entity->ViewHeight) - Point.Z) <= 4)
 	{
 		// head shot
 		CurrentMove = &SoldierMoveDeath3;

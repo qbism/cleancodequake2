@@ -568,7 +568,7 @@ IMPLEMENT_SAVE_SOURCE(CRogueHunterSphere);
 
 void CDoppleGangerBody::Think ()
 {
-	if (Q_fabs(IdealYaw - AngleModf(State.GetAngles().Y)) < 2)
+	if (Abs(IdealYaw - AngleModf(State.GetAngles().Y)) < 2)
 	{
 		if (TurnTime < Level.Frame)
 		{

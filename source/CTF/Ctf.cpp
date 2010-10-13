@@ -601,7 +601,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 
 	// near or above
 	vec3f v = Player->State.GetOrigin() - hot->State.GetOrigin();
-	if (Q_fabs(v.Z) > Q_fabs(v.X) && Q_fabs(v.Z) > Q_fabs(v.Y))
+	if (Abs(v.Z) > Abs(v.X) && Abs(v.Z) > Abs(v.Y))
 		OutMessage << (v.Z > 0) ? "above " : "below ";
 	else
 		OutMessage << "near ";

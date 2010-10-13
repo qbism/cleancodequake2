@@ -125,7 +125,12 @@ inline float	Q_FastSqrt (float value)
 inline long Q_ftol (float f) { return ((long)f); }
 inline float Q_FastSqrt (float value) { return sqrt(value); }
 #endif // id386
-inline float Q_fabs (float val) { return ((val < 0.f) ? -val : val); }
+
+template <typename TType>
+inline float Abs (TType val)
+{
+	return ((val < 0) ? -val : val);
+}
 
 // ===========================================================================
 
@@ -268,7 +273,7 @@ public:
 
 	float		RadiusFromBounds ()
 	{
-		return (mins.GetAbs() > maxs.GetAbs() ? mins.GetAbs() : maxs.GetAbs()).Length();
+		return (mins.GetAbsolute() > maxs.GetAbsolute() ? mins.GetAbsolute() : maxs.GetAbsolute()).Length();
 	};
 
 	vec3f &GetMins() { return mins; };
