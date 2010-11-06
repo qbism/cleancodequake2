@@ -124,7 +124,7 @@ bool CLoogie::Run ()
 }
 
 CGekk::CGekk (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 };
 
@@ -321,51 +321,51 @@ CAnim GekkMoveStandUnderwater (CGekk::FRAME_amb_01, CGekk::FRAME_amb_04, GekkFra
 
 CFrame GekkFramesSwim [] =
 {
-	CFrame (&CMonster::AI_Run, 16),	
-	CFrame (&CMonster::AI_Run, 16),
-	CFrame (&CMonster::AI_Run, 16),
+	CFrame (&IMonster::AI_Run, 16),	
+	CFrame (&IMonster::AI_Run, 16),
+	CFrame (&IMonster::AI_Run, 16),
 
-	CFrame (&CMonster::AI_Run, 16, ConvertDerivedFunction(&CGekk::Swim))
+	CFrame (&IMonster::AI_Run, 16, ConvertDerivedFunction(&CGekk::Swim))
 };
 CAnim GekkMoveSwimLoop (CGekk::FRAME_amb_01, CGekk::FRAME_amb_04, GekkFramesSwim, ConvertDerivedFunction(&CGekk::SwimLoop));
 
 CFrame GekkFramesSwimStart [] =
 {
-	CFrame (&CMonster::AI_Run, 14),
-	CFrame (&CMonster::AI_Run, 14),
-	CFrame (&CMonster::AI_Run, 14),
-	CFrame (&CMonster::AI_Run, 14),
-	CFrame (&CMonster::AI_Run, 16),
-	CFrame (&CMonster::AI_Run, 16),
-	CFrame (&CMonster::AI_Run, 16),
-	CFrame (&CMonster::AI_Run, 18),
-	CFrame (&CMonster::AI_Run, 18, ConvertDerivedFunction(&CGekk::HitLeft)),
-	CFrame (&CMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 14),
+	CFrame (&IMonster::AI_Run, 14),
+	CFrame (&IMonster::AI_Run, 14),
+	CFrame (&IMonster::AI_Run, 14),
+	CFrame (&IMonster::AI_Run, 16),
+	CFrame (&IMonster::AI_Run, 16),
+	CFrame (&IMonster::AI_Run, 16),
+	CFrame (&IMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 18, ConvertDerivedFunction(&CGekk::HitLeft)),
+	CFrame (&IMonster::AI_Run, 18),
 
-	CFrame (&CMonster::AI_Run, 20),
-	CFrame (&CMonster::AI_Run, 20),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 24, ConvertDerivedFunction(&CGekk::HitRight)),
-	CFrame (&CMonster::AI_Run, 24),
-	CFrame (&CMonster::AI_Run, 26),
-	CFrame (&CMonster::AI_Run, 26),
-	CFrame (&CMonster::AI_Run, 24),
-	CFrame (&CMonster::AI_Run, 24),
+	CFrame (&IMonster::AI_Run, 20),
+	CFrame (&IMonster::AI_Run, 20),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 24, ConvertDerivedFunction(&CGekk::HitRight)),
+	CFrame (&IMonster::AI_Run, 24),
+	CFrame (&IMonster::AI_Run, 26),
+	CFrame (&IMonster::AI_Run, 26),
+	CFrame (&IMonster::AI_Run, 24),
+	CFrame (&IMonster::AI_Run, 24),
 
-	CFrame (&CMonster::AI_Run, 22, ConvertDerivedFunction(&CGekk::Bite)),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 18),
-	CFrame (&CMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 22, ConvertDerivedFunction(&CGekk::Bite)),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 18),
 
-	CFrame (&CMonster::AI_Run, 18),
-	CFrame (&CMonster::AI_Run, 18)
+	CFrame (&IMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 18)
 };
 CAnim GekkMoveSwimStart (CGekk::FRAME_swim_01, CGekk::FRAME_swim_32, GekkFramesSwimStart, ConvertDerivedFunction(&CGekk::SwimLoop));
 
@@ -403,7 +403,7 @@ void CGekk::IdleLoop ()
 
 CFrame GekkFramesIdle [] =
 {
-	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0, &CMonster::Search),
+	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0, &IMonster::Search),
 	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0),
 	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0),
 	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0),		
@@ -439,46 +439,46 @@ CFrame GekkFramesIdle [] =
 	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0),
 	CFrame (ConvertDerivedAIMove(&CGekk::Gekk_AI_Stand), 0, ConvertDerivedFunction(&CGekk::IdleLoop))
 };
-CAnim GekkMoveIdle (CGekk::FRAME_idle_01, CGekk::FRAME_idle_32, GekkFramesIdle, &CMonster::Stand);
+CAnim GekkMoveIdle (CGekk::FRAME_idle_01, CGekk::FRAME_idle_32, GekkFramesIdle, &IMonster::Stand);
 CAnim GekkMoveIdle2 (CGekk::FRAME_idle_01, CGekk::FRAME_idle_32, GekkFramesIdle, ConvertDerivedFunction(&CGekk::Face));
 
 CFrame GekkFramesChant [] =
 {
-	CFrame (&CMonster::AI_Move, 0, &CMonster::Search),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),		
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),		
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, &IMonster::Search),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),		
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),		
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),		
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),		
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),		
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),		
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),		
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),		
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),		
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),		
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CGekk::IdleLoop))
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CGekk::IdleLoop))
 };
 CAnim GekkMoveChant (CGekk::FRAME_idle_01, CGekk::FRAME_idle_32, GekkFramesChant, ConvertDerivedFunction(&CGekk::Chant));
 
@@ -501,12 +501,12 @@ void CGekk::Idle ()
 
 CFrame GekkFramesWalk[] = 
 {
-	CFrame (&CMonster::AI_Walk,   3.849f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 0
-	CFrame (&CMonster::AI_Walk,  19.606f), // frame 1
-	CFrame (&CMonster::AI_Walk,  25.583f), // frame 2
-	CFrame (&CMonster::AI_Walk,  34.625f, ConvertDerivedFunction(&CGekk::Step)), // frame 3
-	CFrame (&CMonster::AI_Walk,  27.365f), // frame 4
-	CFrame (&CMonster::AI_Walk,  28.480f), // frame 5
+	CFrame (&IMonster::AI_Walk,   3.849f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 0
+	CFrame (&IMonster::AI_Walk,  19.606f), // frame 1
+	CFrame (&IMonster::AI_Walk,  25.583f), // frame 2
+	CFrame (&IMonster::AI_Walk,  34.625f, ConvertDerivedFunction(&CGekk::Step)), // frame 3
+	CFrame (&IMonster::AI_Walk,  27.365f), // frame 4
+	CFrame (&IMonster::AI_Walk,  28.480f), // frame 5
 };
 CAnim GekkMoveWalk (CGekk::FRAME_run_01, CGekk::FRAME_run_06, GekkFramesWalk);
 
@@ -521,19 +521,19 @@ void CGekk::Walk ()
 
 CFrame GekkFramesRun[] = 
 {
-	CFrame (&CMonster::AI_Run,   3.849f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 0
-	CFrame (&CMonster::AI_Run,  19.606f), // frame 1
-	CFrame (&CMonster::AI_Run,  25.583f), // frame 2
-	CFrame (&CMonster::AI_Run,  34.625f, ConvertDerivedFunction(&CGekk::Step)), // frame 3
-	CFrame (&CMonster::AI_Run,  27.365f), // frame 4
-	CFrame (&CMonster::AI_Run,  28.480f), // frame 5
+	CFrame (&IMonster::AI_Run,   3.849f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 0
+	CFrame (&IMonster::AI_Run,  19.606f), // frame 1
+	CFrame (&IMonster::AI_Run,  25.583f), // frame 2
+	CFrame (&IMonster::AI_Run,  34.625f, ConvertDerivedFunction(&CGekk::Step)), // frame 3
+	CFrame (&IMonster::AI_Run,  27.365f), // frame 4
+	CFrame (&IMonster::AI_Run,  28.480f), // frame 5
 };
 CAnim GekkMoveRun (CGekk::FRAME_run_01, CGekk::FRAME_run_06, GekkFramesRun);
 
 CFrame GekkFramesRunStart[] = 
 {
-	CFrame (&CMonster::AI_Run,   0.212f), // frame 0
-	CFrame (&CMonster::AI_Run,  19.753f), // frame 1
+	CFrame (&IMonster::AI_Run,   0.212f), // frame 0
+	CFrame (&IMonster::AI_Run,  19.753f), // frame 1
 };
 CAnim GekkMoveRunStart (CGekk::FRAME_stand_01, CGekk::FRAME_stand_02, GekkFramesRunStart, ConvertDerivedFunction(&CGekk::DoRun));
 
@@ -611,16 +611,16 @@ void CGekk::Loogie ()
 
 CFrame GekkFramesSpit [] =
 {
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::Loogie)), 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::ReFireLoogie)) 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::Loogie)), 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::ReFireLoogie)) 
 };
-CAnim GekkMoveSpit (CGekk::FRAME_spit_01, CGekk::FRAME_spit_07, GekkFramesSpit, &CMonster::Run);
+CAnim GekkMoveSpit (CGekk::FRAME_spit_01, CGekk::FRAME_spit_07, GekkFramesSpit, &IMonster::Run);
 
 void CGekk::ReFireLoogie ()
 {
@@ -636,36 +636,36 @@ void CGekk::ReFireLoogie ()
 
 CFrame GekkFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::HitLeft)), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::HitLeft)), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::CheckMeleeRefire)) 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::CheckMeleeRefire)) 
 
 };
-CAnim GekkMoveAttack1 (CGekk::FRAME_clawatk3_01, CGekk::FRAME_clawatk3_09, GekkFramesAttack1, &CMonster::Run);
+CAnim GekkMoveAttack1 (CGekk::FRAME_clawatk3_01, CGekk::FRAME_clawatk3_09, GekkFramesAttack1, &IMonster::Run);
 
 CFrame GekkFramesAttack2[] = 
 {
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::HitLeft)), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::HitLeft)), 
 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::HitRight)), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::HitRight)), 
 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0), 
-	CFrame (&CMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::CheckMeleeRefire)) 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0), 
+	CFrame (&IMonster::AI_Charge,   0, ConvertDerivedFunction(&CGekk::CheckMeleeRefire)) 
 };
-CAnim GekkMoveAttack2 (CGekk::FRAME_clawatk5_01, CGekk::FRAME_clawatk5_09, GekkFramesAttack2, &CMonster::Run);
+CAnim GekkMoveAttack2 (CGekk::FRAME_clawatk5_01, CGekk::FRAME_clawatk5_09, GekkFramesAttack2, &IMonster::Run);
 
 void CGekk::CheckMeleeRefire ()
 {
@@ -697,54 +697,54 @@ void CGekk::CheckUnderwater ()
 
 CFrame GekkFramesLeapAttack[] = 
 {
-	CFrame (&CMonster::AI_Charge,   0), // frame 0
-	CFrame (&CMonster::AI_Charge,  -0.387f), // frame 1
-	CFrame (&CMonster::AI_Charge,  -1.113f), // frame 2
-	CFrame (&CMonster::AI_Charge,  -0.237f), // frame 3
-	CFrame (&CMonster::AI_Charge,   6.720f, ConvertDerivedFunction(&CGekk::JumpTakeoff)), // frame 4  last frame on ground
-	CFrame (&CMonster::AI_Charge,   6.414f), // frame 5  leaves ground
-	CFrame (&CMonster::AI_Charge,   0.163f), // frame 6
-	CFrame (&CMonster::AI_Charge,  28.316f), // frame 7
-	CFrame (&CMonster::AI_Charge,  24.198f), // frame 8
-	CFrame (&CMonster::AI_Charge,  31.742f), // frame 9
-	CFrame (&CMonster::AI_Charge,  35.977f, ConvertDerivedFunction(&CGekk::CheckLanding)), // frame 10  last frame in air
-	CFrame (&CMonster::AI_Charge,  12.303f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 11  feet back on ground
-	CFrame (&CMonster::AI_Charge,  20.122f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 12
-	CFrame (&CMonster::AI_Charge,  -1.042f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 13
-	CFrame (&CMonster::AI_Charge,   2.556f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 14
-	CFrame (&CMonster::AI_Charge,   0.544f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 15
-	CFrame (&CMonster::AI_Charge,   1.862f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 16
-	CFrame (&CMonster::AI_Charge,   1.224f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 17
+	CFrame (&IMonster::AI_Charge,   0), // frame 0
+	CFrame (&IMonster::AI_Charge,  -0.387f), // frame 1
+	CFrame (&IMonster::AI_Charge,  -1.113f), // frame 2
+	CFrame (&IMonster::AI_Charge,  -0.237f), // frame 3
+	CFrame (&IMonster::AI_Charge,   6.720f, ConvertDerivedFunction(&CGekk::JumpTakeoff)), // frame 4  last frame on ground
+	CFrame (&IMonster::AI_Charge,   6.414f), // frame 5  leaves ground
+	CFrame (&IMonster::AI_Charge,   0.163f), // frame 6
+	CFrame (&IMonster::AI_Charge,  28.316f), // frame 7
+	CFrame (&IMonster::AI_Charge,  24.198f), // frame 8
+	CFrame (&IMonster::AI_Charge,  31.742f), // frame 9
+	CFrame (&IMonster::AI_Charge,  35.977f, ConvertDerivedFunction(&CGekk::CheckLanding)), // frame 10  last frame in air
+	CFrame (&IMonster::AI_Charge,  12.303f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 11  feet back on ground
+	CFrame (&IMonster::AI_Charge,  20.122f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 12
+	CFrame (&IMonster::AI_Charge,  -1.042f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 13
+	CFrame (&IMonster::AI_Charge,   2.556f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 14
+	CFrame (&IMonster::AI_Charge,   0.544f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 15
+	CFrame (&IMonster::AI_Charge,   1.862f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 16
+	CFrame (&IMonster::AI_Charge,   1.224f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 17
 
-	CFrame (&CMonster::AI_Charge,  -0.457f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 18
+	CFrame (&IMonster::AI_Charge,  -0.457f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 18
 };
-CAnim GekkMoveLeapAtk (CGekk::FRAME_leapatk_01, CGekk::FRAME_leapatk_19, GekkFramesLeapAttack, &CMonster::Run);
+CAnim GekkMoveLeapAtk (CGekk::FRAME_leapatk_01, CGekk::FRAME_leapatk_19, GekkFramesLeapAttack, &IMonster::Run);
 
 
 CFrame GekkFramesLeapAttack2[] = 
 {
-	CFrame (&CMonster::AI_Charge,   0), // frame 0
-	CFrame (&CMonster::AI_Charge,  -0.387f), // frame 1
-	CFrame (&CMonster::AI_Charge,  -1.113f), // frame 2
-	CFrame (&CMonster::AI_Charge,  -0.237f), // frame 3
-	CFrame (&CMonster::AI_Charge,   6.720f, ConvertDerivedFunction(&CGekk::JumpTakeoff2)), // frame 4  last frame on ground
-	CFrame (&CMonster::AI_Charge,   6.414f), // frame 5  leaves ground
-	CFrame (&CMonster::AI_Charge,   0.163f), // frame 6
-	CFrame (&CMonster::AI_Charge,  28.316f), // frame 7
-	CFrame (&CMonster::AI_Charge,  24.198f), // frame 8
-	CFrame (&CMonster::AI_Charge,  31.742f), // frame 9
-	CFrame (&CMonster::AI_Charge,  35.977f, ConvertDerivedFunction(&CGekk::CheckLanding)), // frame 10  last frame in air
-	CFrame (&CMonster::AI_Charge,  12.303f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 11  feet back on ground
-	CFrame (&CMonster::AI_Charge,  20.122f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 12
-	CFrame (&CMonster::AI_Charge,  -1.042f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 13
-	CFrame (&CMonster::AI_Charge,   2.556f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 14
-	CFrame (&CMonster::AI_Charge,   0.544f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 15
-	CFrame (&CMonster::AI_Charge,   1.862f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 16
-	CFrame (&CMonster::AI_Charge,   1.224f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 17
+	CFrame (&IMonster::AI_Charge,   0), // frame 0
+	CFrame (&IMonster::AI_Charge,  -0.387f), // frame 1
+	CFrame (&IMonster::AI_Charge,  -1.113f), // frame 2
+	CFrame (&IMonster::AI_Charge,  -0.237f), // frame 3
+	CFrame (&IMonster::AI_Charge,   6.720f, ConvertDerivedFunction(&CGekk::JumpTakeoff2)), // frame 4  last frame on ground
+	CFrame (&IMonster::AI_Charge,   6.414f), // frame 5  leaves ground
+	CFrame (&IMonster::AI_Charge,   0.163f), // frame 6
+	CFrame (&IMonster::AI_Charge,  28.316f), // frame 7
+	CFrame (&IMonster::AI_Charge,  24.198f), // frame 8
+	CFrame (&IMonster::AI_Charge,  31.742f), // frame 9
+	CFrame (&IMonster::AI_Charge,  35.977f, ConvertDerivedFunction(&CGekk::CheckLanding)), // frame 10  last frame in air
+	CFrame (&IMonster::AI_Charge,  12.303f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 11  feet back on ground
+	CFrame (&IMonster::AI_Charge,  20.122f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 12
+	CFrame (&IMonster::AI_Charge,  -1.042f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 13
+	CFrame (&IMonster::AI_Charge,   2.556f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 14
+	CFrame (&IMonster::AI_Charge,   0.544f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 15
+	CFrame (&IMonster::AI_Charge,   1.862f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 16
+	CFrame (&IMonster::AI_Charge,   1.224f, ConvertDerivedFunction(&CGekk::StopSkid)), // frame 17
 
-	CFrame (&CMonster::AI_Charge,  -0.457f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 18
+	CFrame (&IMonster::AI_Charge,  -0.457f, ConvertDerivedFunction(&CGekk::CheckUnderwater)), // frame 18
 };
-CAnim GekkMoveLeapAtk2 (CGekk::FRAME_leapatk_01, CGekk::FRAME_leapatk_19, GekkFramesLeapAttack2, &CMonster::Run);
+CAnim GekkMoveLeapAtk2 (CGekk::FRAME_leapatk_01, CGekk::FRAME_leapatk_19, GekkFramesLeapAttack2, &IMonster::Run);
 
 
 void CGekk::Bite ()
@@ -755,31 +755,31 @@ void CGekk::Bite ()
 
 CFrame GekkFramesAttack [] =
 {
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::Bite)),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::Bite)),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::Bite)),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::Bite)),
 
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::HitLeft)),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16),
-	CFrame (&CMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::HitRight)),
-	CFrame (&CMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::HitLeft)),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16),
+	CFrame (&IMonster::AI_Charge, 16,	ConvertDerivedFunction(&CGekk::HitRight)),
+	CFrame (&IMonster::AI_Charge, 16),
 
-	CFrame (&CMonster::AI_Charge, 16)
+	CFrame (&IMonster::AI_Charge, 16)
 };
-CAnim GekkMoveAttack (CGekk::FRAME_attack_01, CGekk::FRAME_attack_21, GekkFramesAttack, &CMonster::Run);
+CAnim GekkMoveAttack (CGekk::FRAME_attack_01, CGekk::FRAME_attack_21, GekkFramesAttack, &IMonster::Run);
 
 void CGekk::Melee ()
 {	
@@ -928,50 +928,50 @@ void CGekk::Jump ()
 
 CFrame GekkFramesPain[] = 
 {
-	CFrame (&CMonster::AI_Move,   0), // frame 0
-	CFrame (&CMonster::AI_Move,   0), // frame 1
-	CFrame (&CMonster::AI_Move,   0), // frame 2
-	CFrame (&CMonster::AI_Move,   0), // frame 3
-	CFrame (&CMonster::AI_Move,   0), // frame 4
-	CFrame (&CMonster::AI_Move,   0), // frame 5
+	CFrame (&IMonster::AI_Move,   0), // frame 0
+	CFrame (&IMonster::AI_Move,   0), // frame 1
+	CFrame (&IMonster::AI_Move,   0), // frame 2
+	CFrame (&IMonster::AI_Move,   0), // frame 3
+	CFrame (&IMonster::AI_Move,   0), // frame 4
+	CFrame (&IMonster::AI_Move,   0), // frame 5
 };
-CAnim GekkMovePain (CGekk::FRAME_pain_01, CGekk::FRAME_pain_06, GekkFramesPain, &CMonster::Run);
+CAnim GekkMovePain (CGekk::FRAME_pain_01, CGekk::FRAME_pain_06, GekkFramesPain, &IMonster::Run);
 
 CFrame GekkFramesPain1[] = 
 {
-	CFrame (&CMonster::AI_Move,   0), // frame 0
-	CFrame (&CMonster::AI_Move,   0), // frame 1
-	CFrame (&CMonster::AI_Move,   0), // frame 2
-	CFrame (&CMonster::AI_Move,   0), // frame 3
-	CFrame (&CMonster::AI_Move,   0), // frame 4
-	CFrame (&CMonster::AI_Move,   0), // frame 5
-	CFrame (&CMonster::AI_Move,   0), // frame 6
-	CFrame (&CMonster::AI_Move,   0), // frame 7
-	CFrame (&CMonster::AI_Move,   0), // frame 8
-	CFrame (&CMonster::AI_Move,   0), // frame 9
+	CFrame (&IMonster::AI_Move,   0), // frame 0
+	CFrame (&IMonster::AI_Move,   0), // frame 1
+	CFrame (&IMonster::AI_Move,   0), // frame 2
+	CFrame (&IMonster::AI_Move,   0), // frame 3
+	CFrame (&IMonster::AI_Move,   0), // frame 4
+	CFrame (&IMonster::AI_Move,   0), // frame 5
+	CFrame (&IMonster::AI_Move,   0), // frame 6
+	CFrame (&IMonster::AI_Move,   0), // frame 7
+	CFrame (&IMonster::AI_Move,   0), // frame 8
+	CFrame (&IMonster::AI_Move,   0), // frame 9
 
-	CFrame (&CMonster::AI_Move,   0, ConvertDerivedFunction(&CGekk::CheckUnderwater)) 
+	CFrame (&IMonster::AI_Move,   0, ConvertDerivedFunction(&CGekk::CheckUnderwater)) 
 };
-CAnim GekkMovePain1 (CGekk::FRAME_pain3_01, CGekk::FRAME_pain3_11, GekkFramesPain1, &CMonster::Run);
+CAnim GekkMovePain1 (CGekk::FRAME_pain3_01, CGekk::FRAME_pain3_11, GekkFramesPain1, &IMonster::Run);
 
 CFrame GekkFramesPain2[] = 
 {
-	CFrame (&CMonster::AI_Move,   0), // frame 0
-	CFrame (&CMonster::AI_Move,   0), // frame 1
-	CFrame (&CMonster::AI_Move,   0), // frame 2
-	CFrame (&CMonster::AI_Move,   0), // frame 3
-	CFrame (&CMonster::AI_Move,   0), // frame 4
-	CFrame (&CMonster::AI_Move,   0), // frame 5
-	CFrame (&CMonster::AI_Move,   0), // frame 6
-	CFrame (&CMonster::AI_Move,   0), // frame 7
-	CFrame (&CMonster::AI_Move,   0), // frame 8
-	CFrame (&CMonster::AI_Move,   0), // frame 9
+	CFrame (&IMonster::AI_Move,   0), // frame 0
+	CFrame (&IMonster::AI_Move,   0), // frame 1
+	CFrame (&IMonster::AI_Move,   0), // frame 2
+	CFrame (&IMonster::AI_Move,   0), // frame 3
+	CFrame (&IMonster::AI_Move,   0), // frame 4
+	CFrame (&IMonster::AI_Move,   0), // frame 5
+	CFrame (&IMonster::AI_Move,   0), // frame 6
+	CFrame (&IMonster::AI_Move,   0), // frame 7
+	CFrame (&IMonster::AI_Move,   0), // frame 8
+	CFrame (&IMonster::AI_Move,   0), // frame 9
 
-	CFrame (&CMonster::AI_Move,   0), // frame 10
-	CFrame (&CMonster::AI_Move,   0), // frame 11
-	CFrame (&CMonster::AI_Move,   0, ConvertDerivedFunction(&CGekk::CheckUnderwater)), 
+	CFrame (&IMonster::AI_Move,   0), // frame 10
+	CFrame (&IMonster::AI_Move,   0), // frame 11
+	CFrame (&IMonster::AI_Move,   0, ConvertDerivedFunction(&CGekk::CheckUnderwater)), 
 };
-CAnim GekkMovePain2 (CGekk::FRAME_pain4_01, CGekk::FRAME_pain4_13, GekkFramesPain2, &CMonster::Run);
+CAnim GekkMovePain2 (CGekk::FRAME_pain4_01, CGekk::FRAME_pain4_13, GekkFramesPain2, &IMonster::Run);
 
 void CGekk::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -1055,118 +1055,118 @@ void CGekk::IsGibFest ()
 
 CFrame GekkFramesDeath1[] =
 {
-	CFrame (&CMonster::AI_Move,  -5.151f), // frame 0
-	CFrame (&CMonster::AI_Move, -12.223f), // frame 1
-	CFrame (&CMonster::AI_Move, -11.484f), // frame 2
-	CFrame (&CMonster::AI_Move, -17.952f), // frame 3
-	CFrame (&CMonster::AI_Move,  -6.953f), // frame 4
-	CFrame (&CMonster::AI_Move,  -7.393f), // frame 5
-	CFrame (&CMonster::AI_Move, -10.713f), // frame 6
-	CFrame (&CMonster::AI_Move, -17.464f), // frame 7
-	CFrame (&CMonster::AI_Move, -11.678f), // frame 8
-	CFrame (&CMonster::AI_Move, -11.678f)  // frame 9
+	CFrame (&IMonster::AI_Move,  -5.151f), // frame 0
+	CFrame (&IMonster::AI_Move, -12.223f), // frame 1
+	CFrame (&IMonster::AI_Move, -11.484f), // frame 2
+	CFrame (&IMonster::AI_Move, -17.952f), // frame 3
+	CFrame (&IMonster::AI_Move,  -6.953f), // frame 4
+	CFrame (&IMonster::AI_Move,  -7.393f), // frame 5
+	CFrame (&IMonster::AI_Move, -10.713f), // frame 6
+	CFrame (&IMonster::AI_Move, -17.464f), // frame 7
+	CFrame (&IMonster::AI_Move, -11.678f), // frame 8
+	CFrame (&IMonster::AI_Move, -11.678f)  // frame 9
 };
 CAnim GekkMoveDeath1 (CGekk::FRAME_death1_01, CGekk::FRAME_death1_10, GekkFramesDeath1, ConvertDerivedFunction(&CGekk::Dead));
 
 CFrame GekkFramesDeath3[] =
 {
-	CFrame (&CMonster::AI_Move,   0), // frame 0
-	CFrame (&CMonster::AI_Move,   0.022f), // frame 1
-	CFrame (&CMonster::AI_Move,   0.169f), // frame 2
-	CFrame (&CMonster::AI_Move,  -0.710f), // frame 3
-	CFrame (&CMonster::AI_Move, -13.446f), // frame 4
-	CFrame (&CMonster::AI_Move,  -7.654f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 5
-	CFrame (&CMonster::AI_Move, -31.951f), // frame 6
+	CFrame (&IMonster::AI_Move,   0), // frame 0
+	CFrame (&IMonster::AI_Move,   0.022f), // frame 1
+	CFrame (&IMonster::AI_Move,   0.169f), // frame 2
+	CFrame (&IMonster::AI_Move,  -0.710f), // frame 3
+	CFrame (&IMonster::AI_Move, -13.446f), // frame 4
+	CFrame (&IMonster::AI_Move,  -7.654f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 5
+	CFrame (&IMonster::AI_Move, -31.951f), // frame 6
 };
 CAnim GekkMoveDeath3 (CGekk::FRAME_death3_01, CGekk::FRAME_death3_07, GekkFramesDeath3, ConvertDerivedFunction(&CGekk::Dead));
 
 CFrame GekkFramesDeath4[] = 
 {
-	CFrame (&CMonster::AI_Move,   5.103f), // frame 0
-	CFrame (&CMonster::AI_Move,  -4.808f), // frame 1
-	CFrame (&CMonster::AI_Move, -10.509f), // frame 2
-	CFrame (&CMonster::AI_Move,  -9.899f), // frame 3
-	CFrame (&CMonster::AI_Move,   4.033f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 4
-	CFrame (&CMonster::AI_Move,  -5.197f), // frame 5
-	CFrame (&CMonster::AI_Move,  -0.919f), // frame 6
-	CFrame (&CMonster::AI_Move,  -8.821f), // frame 7
-	CFrame (&CMonster::AI_Move,  -5.626f), // frame 8
-	CFrame (&CMonster::AI_Move,  -8.865f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 9
-	CFrame (&CMonster::AI_Move,  -0.845f), // frame 10
-	CFrame (&CMonster::AI_Move,   1.986f), // frame 11
-	CFrame (&CMonster::AI_Move,   0.170f), // frame 12
-	CFrame (&CMonster::AI_Move,   1.339f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 13
-	CFrame (&CMonster::AI_Move,  -0.922f), // frame 14
-	CFrame (&CMonster::AI_Move,   0.818f), // frame 15
-	CFrame (&CMonster::AI_Move,  -1.288f), // frame 16
-	CFrame (&CMonster::AI_Move,  -1.408f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 17
-	CFrame (&CMonster::AI_Move,  -7.787f), // frame 18
-	CFrame (&CMonster::AI_Move,  -3.995f), // frame 19
-	CFrame (&CMonster::AI_Move,  -4.604f), // frame 20
-	CFrame (&CMonster::AI_Move,  -1.715f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 21
-	CFrame (&CMonster::AI_Move,  -0.564f), // frame 22
-	CFrame (&CMonster::AI_Move,  -0.597f), // frame 23
-	CFrame (&CMonster::AI_Move,   0.074f), // frame 24
-	CFrame (&CMonster::AI_Move,  -0.309f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 25
-	CFrame (&CMonster::AI_Move,  -0.395f), // frame 26
-	CFrame (&CMonster::AI_Move,  -0.501f), // frame 27
-	CFrame (&CMonster::AI_Move,  -0.325f), // frame 28
-	CFrame (&CMonster::AI_Move,  -0.931f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 29
-	CFrame (&CMonster::AI_Move,  -1.433f), // frame 30
-	CFrame (&CMonster::AI_Move,  -1.626f), // frame 31
-	CFrame (&CMonster::AI_Move,   4.680f), // frame 32
-	CFrame (&CMonster::AI_Move,   0.560f), // frame 33
-	CFrame (&CMonster::AI_Move,  -0.549f, ConvertDerivedFunction(&CGekk::GibFest)) // frame 34
+	CFrame (&IMonster::AI_Move,   5.103f), // frame 0
+	CFrame (&IMonster::AI_Move,  -4.808f), // frame 1
+	CFrame (&IMonster::AI_Move, -10.509f), // frame 2
+	CFrame (&IMonster::AI_Move,  -9.899f), // frame 3
+	CFrame (&IMonster::AI_Move,   4.033f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 4
+	CFrame (&IMonster::AI_Move,  -5.197f), // frame 5
+	CFrame (&IMonster::AI_Move,  -0.919f), // frame 6
+	CFrame (&IMonster::AI_Move,  -8.821f), // frame 7
+	CFrame (&IMonster::AI_Move,  -5.626f), // frame 8
+	CFrame (&IMonster::AI_Move,  -8.865f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 9
+	CFrame (&IMonster::AI_Move,  -0.845f), // frame 10
+	CFrame (&IMonster::AI_Move,   1.986f), // frame 11
+	CFrame (&IMonster::AI_Move,   0.170f), // frame 12
+	CFrame (&IMonster::AI_Move,   1.339f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 13
+	CFrame (&IMonster::AI_Move,  -0.922f), // frame 14
+	CFrame (&IMonster::AI_Move,   0.818f), // frame 15
+	CFrame (&IMonster::AI_Move,  -1.288f), // frame 16
+	CFrame (&IMonster::AI_Move,  -1.408f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 17
+	CFrame (&IMonster::AI_Move,  -7.787f), // frame 18
+	CFrame (&IMonster::AI_Move,  -3.995f), // frame 19
+	CFrame (&IMonster::AI_Move,  -4.604f), // frame 20
+	CFrame (&IMonster::AI_Move,  -1.715f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 21
+	CFrame (&IMonster::AI_Move,  -0.564f), // frame 22
+	CFrame (&IMonster::AI_Move,  -0.597f), // frame 23
+	CFrame (&IMonster::AI_Move,   0.074f), // frame 24
+	CFrame (&IMonster::AI_Move,  -0.309f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 25
+	CFrame (&IMonster::AI_Move,  -0.395f), // frame 26
+	CFrame (&IMonster::AI_Move,  -0.501f), // frame 27
+	CFrame (&IMonster::AI_Move,  -0.325f), // frame 28
+	CFrame (&IMonster::AI_Move,  -0.931f, ConvertDerivedFunction(&CGekk::IsGibFest)), // frame 29
+	CFrame (&IMonster::AI_Move,  -1.433f), // frame 30
+	CFrame (&IMonster::AI_Move,  -1.626f), // frame 31
+	CFrame (&IMonster::AI_Move,   4.680f), // frame 32
+	CFrame (&IMonster::AI_Move,   0.560f), // frame 33
+	CFrame (&IMonster::AI_Move,  -0.549f, ConvertDerivedFunction(&CGekk::GibFest)) // frame 34
 };
 CAnim GekkMoveDeath4 (CGekk::FRAME_death4_01, CGekk::FRAME_death4_35, GekkFramesDeath4, ConvertDerivedFunction(&CGekk::Dead));
 
 CFrame GekkFramesWDeath[] = 
 {
-	CFrame (&CMonster::AI_Move,   0), // frame 0
-	CFrame (&CMonster::AI_Move,   0), // frame 1
-	CFrame (&CMonster::AI_Move,   0), // frame 2
-	CFrame (&CMonster::AI_Move,   0), // frame 3
-	CFrame (&CMonster::AI_Move,   0), // frame 4
-	CFrame (&CMonster::AI_Move,   0), // frame 5
-	CFrame (&CMonster::AI_Move,   0), // frame 6
-	CFrame (&CMonster::AI_Move,   0), // frame 7
-	CFrame (&CMonster::AI_Move,   0), // frame 8
-	CFrame (&CMonster::AI_Move,   0), // frame 9
-	CFrame (&CMonster::AI_Move,   0), // frame 10
-	CFrame (&CMonster::AI_Move,   0), // frame 11
-	CFrame (&CMonster::AI_Move,   0), // frame 12
-	CFrame (&CMonster::AI_Move,   0), // frame 13
-	CFrame (&CMonster::AI_Move,   0), // frame 14
-	CFrame (&CMonster::AI_Move,   0), // frame 15
-	CFrame (&CMonster::AI_Move,   0), // frame 16
-	CFrame (&CMonster::AI_Move,   0), // frame 17
-	CFrame (&CMonster::AI_Move,   0), // frame 18
-	CFrame (&CMonster::AI_Move,   0), // frame 19
-	CFrame (&CMonster::AI_Move,   0), // frame 20
-	CFrame (&CMonster::AI_Move,   0), // frame 21
-	CFrame (&CMonster::AI_Move,   0), // frame 22
-	CFrame (&CMonster::AI_Move,   0), // frame 23
-	CFrame (&CMonster::AI_Move,   0), // frame 24
-	CFrame (&CMonster::AI_Move,   0), // frame 25
-	CFrame (&CMonster::AI_Move,   0), // frame 26
-	CFrame (&CMonster::AI_Move,   0), // frame 27
-	CFrame (&CMonster::AI_Move,   0), // frame 28
-	CFrame (&CMonster::AI_Move,   0), // frame 29
-	CFrame (&CMonster::AI_Move,   0), // frame 30
-	CFrame (&CMonster::AI_Move,   0), // frame 31
-	CFrame (&CMonster::AI_Move,   0), // frame 32
-	CFrame (&CMonster::AI_Move,   0), // frame 33
-	CFrame (&CMonster::AI_Move,   0), // frame 34
-	CFrame (&CMonster::AI_Move,   0), // frame 35
-	CFrame (&CMonster::AI_Move,   0), // frame 36
-	CFrame (&CMonster::AI_Move,   0), // frame 37
-	CFrame (&CMonster::AI_Move,   0), // frame 38
-	CFrame (&CMonster::AI_Move,   0), // frame 39
-	CFrame (&CMonster::AI_Move,   0), // frame 40
-	CFrame (&CMonster::AI_Move,   0), // frame 41
-	CFrame (&CMonster::AI_Move,   0), // frame 42
-	CFrame (&CMonster::AI_Move,   0), // frame 43
-	CFrame (&CMonster::AI_Move,   0)  // frame 44
+	CFrame (&IMonster::AI_Move,   0), // frame 0
+	CFrame (&IMonster::AI_Move,   0), // frame 1
+	CFrame (&IMonster::AI_Move,   0), // frame 2
+	CFrame (&IMonster::AI_Move,   0), // frame 3
+	CFrame (&IMonster::AI_Move,   0), // frame 4
+	CFrame (&IMonster::AI_Move,   0), // frame 5
+	CFrame (&IMonster::AI_Move,   0), // frame 6
+	CFrame (&IMonster::AI_Move,   0), // frame 7
+	CFrame (&IMonster::AI_Move,   0), // frame 8
+	CFrame (&IMonster::AI_Move,   0), // frame 9
+	CFrame (&IMonster::AI_Move,   0), // frame 10
+	CFrame (&IMonster::AI_Move,   0), // frame 11
+	CFrame (&IMonster::AI_Move,   0), // frame 12
+	CFrame (&IMonster::AI_Move,   0), // frame 13
+	CFrame (&IMonster::AI_Move,   0), // frame 14
+	CFrame (&IMonster::AI_Move,   0), // frame 15
+	CFrame (&IMonster::AI_Move,   0), // frame 16
+	CFrame (&IMonster::AI_Move,   0), // frame 17
+	CFrame (&IMonster::AI_Move,   0), // frame 18
+	CFrame (&IMonster::AI_Move,   0), // frame 19
+	CFrame (&IMonster::AI_Move,   0), // frame 20
+	CFrame (&IMonster::AI_Move,   0), // frame 21
+	CFrame (&IMonster::AI_Move,   0), // frame 22
+	CFrame (&IMonster::AI_Move,   0), // frame 23
+	CFrame (&IMonster::AI_Move,   0), // frame 24
+	CFrame (&IMonster::AI_Move,   0), // frame 25
+	CFrame (&IMonster::AI_Move,   0), // frame 26
+	CFrame (&IMonster::AI_Move,   0), // frame 27
+	CFrame (&IMonster::AI_Move,   0), // frame 28
+	CFrame (&IMonster::AI_Move,   0), // frame 29
+	CFrame (&IMonster::AI_Move,   0), // frame 30
+	CFrame (&IMonster::AI_Move,   0), // frame 31
+	CFrame (&IMonster::AI_Move,   0), // frame 32
+	CFrame (&IMonster::AI_Move,   0), // frame 33
+	CFrame (&IMonster::AI_Move,   0), // frame 34
+	CFrame (&IMonster::AI_Move,   0), // frame 35
+	CFrame (&IMonster::AI_Move,   0), // frame 36
+	CFrame (&IMonster::AI_Move,   0), // frame 37
+	CFrame (&IMonster::AI_Move,   0), // frame 38
+	CFrame (&IMonster::AI_Move,   0), // frame 39
+	CFrame (&IMonster::AI_Move,   0), // frame 40
+	CFrame (&IMonster::AI_Move,   0), // frame 41
+	CFrame (&IMonster::AI_Move,   0), // frame 42
+	CFrame (&IMonster::AI_Move,   0), // frame 43
+	CFrame (&IMonster::AI_Move,   0)  // frame 44
 };
 CAnim GekkMoveWDeath (CGekk::FRAME_wdeath_01, CGekk::FRAME_wdeath_45, GekkFramesWDeath, ConvertDerivedFunction(&CGekk::Dead));
 
@@ -1256,58 +1256,58 @@ void CGekk::SideStep ()
 
 CFrame GekkFramesLDuck[] = 
 {
-	CFrame (&CMonster::AI_Move,   0
+	CFrame (&IMonster::AI_Move,   0
 #if MONSTERS_USE_ROGUE_AI
-	, &CMonster::DuckDown
+	, &IMonster::DuckDown
 #endif
 	), // frame 0
-	CFrame (&CMonster::AI_Move,   0), // frame 1
-	CFrame (&CMonster::AI_Move,   0), // frame 2
-	CFrame (&CMonster::AI_Move,   0), // frame 3
-	CFrame (&CMonster::AI_Move,   0), // frame 4
-	CFrame (&CMonster::AI_Move,   0), // frame 5
-	CFrame (&CMonster::AI_Move,   0), // frame 6
-	CFrame (&CMonster::AI_Move,   0
+	CFrame (&IMonster::AI_Move,   0), // frame 1
+	CFrame (&IMonster::AI_Move,   0), // frame 2
+	CFrame (&IMonster::AI_Move,   0), // frame 3
+	CFrame (&IMonster::AI_Move,   0), // frame 4
+	CFrame (&IMonster::AI_Move,   0), // frame 5
+	CFrame (&IMonster::AI_Move,   0), // frame 6
+	CFrame (&IMonster::AI_Move,   0
 #if MONSTERS_USE_ROGUE_AI
-	, &CMonster::DuckUp
+	, &IMonster::DuckUp
 #endif
 	), // frame 7
-	CFrame (&CMonster::AI_Move,   0), // frame 8
-	CFrame (&CMonster::AI_Move,   0), // frame 9
+	CFrame (&IMonster::AI_Move,   0), // frame 8
+	CFrame (&IMonster::AI_Move,   0), // frame 9
 
-	CFrame (&CMonster::AI_Move,   0), // frame 10
-	CFrame (&CMonster::AI_Move,   0), // frame 11
-	CFrame (&CMonster::AI_Move,   0)  // frame 12
+	CFrame (&IMonster::AI_Move,   0), // frame 10
+	CFrame (&IMonster::AI_Move,   0), // frame 11
+	CFrame (&IMonster::AI_Move,   0)  // frame 12
 
 };
-CAnim GekkMoveLDuck (CGekk::FRAME_lduck_01, CGekk::FRAME_lduck_13, GekkFramesLDuck, &CMonster::Run);
+CAnim GekkMoveLDuck (CGekk::FRAME_lduck_01, CGekk::FRAME_lduck_13, GekkFramesLDuck, &IMonster::Run);
 
 CFrame GekkFramesRDuck[] = 
 {
-	CFrame (&CMonster::AI_Move,   0
+	CFrame (&IMonster::AI_Move,   0
 #if MONSTERS_USE_ROGUE_AI
-	, &CMonster::DuckDown
+	, &IMonster::DuckDown
 #endif
 	), // frame 0
-	CFrame (&CMonster::AI_Move,   0), // frame 1
-	CFrame (&CMonster::AI_Move,   0), // frame 2
-	CFrame (&CMonster::AI_Move,   0), // frame 3
-	CFrame (&CMonster::AI_Move,   0), // frame 4
-	CFrame (&CMonster::AI_Move,   0), // frame 5
-	CFrame (&CMonster::AI_Move,   0), // frame 6
-	CFrame (&CMonster::AI_Move,   0
+	CFrame (&IMonster::AI_Move,   0), // frame 1
+	CFrame (&IMonster::AI_Move,   0), // frame 2
+	CFrame (&IMonster::AI_Move,   0), // frame 3
+	CFrame (&IMonster::AI_Move,   0), // frame 4
+	CFrame (&IMonster::AI_Move,   0), // frame 5
+	CFrame (&IMonster::AI_Move,   0), // frame 6
+	CFrame (&IMonster::AI_Move,   0
 #if MONSTERS_USE_ROGUE_AI
-	, &CMonster::DuckUp
+	, &IMonster::DuckUp
 #endif
 	), // frame 7
-	CFrame (&CMonster::AI_Move,   0), // frame 8
-	CFrame (&CMonster::AI_Move,   0), // frame 9
-	CFrame (&CMonster::AI_Move,   0), // frame 10
-	CFrame (&CMonster::AI_Move,   0), // frame 11
-	CFrame (&CMonster::AI_Move,   0) // frame 12
+	CFrame (&IMonster::AI_Move,   0), // frame 8
+	CFrame (&IMonster::AI_Move,   0), // frame 9
+	CFrame (&IMonster::AI_Move,   0), // frame 10
+	CFrame (&IMonster::AI_Move,   0), // frame 11
+	CFrame (&IMonster::AI_Move,   0) // frame 12
 
 };
-CAnim GekkMoveRDuck (CGekk::FRAME_rduck_01, CGekk::FRAME_rduck_13, GekkFramesRDuck, &CMonster::Run);
+CAnim GekkMoveRDuck (CGekk::FRAME_rduck_01, CGekk::FRAME_rduck_13, GekkFramesRDuck, &IMonster::Run);
 
 void CGekk::Attack ()
 {

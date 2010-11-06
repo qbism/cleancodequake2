@@ -35,13 +35,13 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Barracuda.h"
 
 CBarracudaShark::CBarracudaShark (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
 CFrame FlipperFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim FlipperMoveStand (CBarracudaShark::FRAME_flphor01, CBarracudaShark::FRAME_flphor01, FlipperFramesStand);
 
@@ -54,32 +54,32 @@ const int FLIPPER_RUN_SPEED	= 24;
 
 CFrame FlipperFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),	// 6
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),	// 10
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),	// 6
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),	// 10
 
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),	// 20
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),	// 20
 
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED),
-	CFrame (&CMonster::AI_Run, FLIPPER_RUN_SPEED)		// 29
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED),
+	CFrame (&IMonster::AI_Run, FLIPPER_RUN_SPEED)		// 29
 };
 CAnim FlipperMoveRunLoop (CBarracudaShark::FRAME_flpver06, CBarracudaShark::FRAME_flpver29, FlipperFramesRun);
 
@@ -90,12 +90,12 @@ void CBarracudaShark::RunLoop ()
 
 CFrame FlipperFramesRunStart [] =
 {
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8)
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8)
 };
 CAnim FlipperMoveRunStart (CBarracudaShark::FRAME_flpver01, CBarracudaShark::FRAME_flpver06, FlipperFramesRunStart, ConvertDerivedFunction(&CBarracudaShark::RunLoop));
 
@@ -107,30 +107,30 @@ void CBarracudaShark::DoRun ()
 /* Standard Swimming */ 
 CFrame FlipperFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4)
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4)
 };
 CAnim FlipperMoveWalk (CBarracudaShark::FRAME_flphor01, CBarracudaShark::FRAME_flphor24, FlipperFramesWalk);
 
@@ -141,11 +141,11 @@ void CBarracudaShark::Walk ()
 
 CFrame FlipperFramesStartRun [] =
 {
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8)
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8)
 };
 CAnim FlipperMoveStartRun (CBarracudaShark::FRAME_flphor01, CBarracudaShark::FRAME_flphor05, FlipperFramesStartRun, ConvertDerivedFunction(&CBarracudaShark::DoRun));
 
@@ -156,23 +156,23 @@ void CBarracudaShark::Run ()
 
 CFrame FlipperFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim FlipperMovePain2 (CBarracudaShark::FRAME_flppn101, CBarracudaShark::FRAME_flppn105, FlipperFramesPain2, &CMonster::Run);
+CAnim FlipperMovePain2 (CBarracudaShark::FRAME_flppn101, CBarracudaShark::FRAME_flppn105, FlipperFramesPain2, &IMonster::Run);
 
 CFrame FlipperFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim FlipperMovePain1 (CBarracudaShark::FRAME_flppn201, CBarracudaShark::FRAME_flppn205, FlipperFramesPain1, &CMonster::Run);
+CAnim FlipperMovePain1 (CBarracudaShark::FRAME_flppn201, CBarracudaShark::FRAME_flppn205, FlipperFramesPain1, &IMonster::Run);
 
 void CBarracudaShark::Bite ()
 {
@@ -187,28 +187,28 @@ void CBarracudaShark::PreAttack ()
 
 CFrame FlipperFramesAttack [] =
 {
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::PreAttack)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::Bite)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::Bite)),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::PreAttack)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::Bite)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBarracudaShark::Bite)),
+	CFrame (&IMonster::AI_Charge, 0)
 };
-CAnim FlipperMoveAttack (CBarracudaShark::FRAME_flpbit01, CBarracudaShark::FRAME_flpbit20, FlipperFramesAttack, &CMonster::Run);
+CAnim FlipperMoveAttack (CBarracudaShark::FRAME_flpbit01, CBarracudaShark::FRAME_flpbit20, FlipperFramesAttack, &IMonster::Run);
 
 void CBarracudaShark::Melee()
 {
@@ -253,67 +253,67 @@ void CBarracudaShark::Dead ()
 
 CFrame FlipperFramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim FlipperMoveDeath (CBarracudaShark::FRAME_flpdth01, CBarracudaShark::FRAME_flpdth56, FlipperFramesDeath, ConvertDerivedFunction(&CBarracudaShark::Dead));
 

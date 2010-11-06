@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Berserk.h"
 
 CBerserker::CBerserker (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
@@ -52,11 +52,11 @@ void CBerserker::Search ()
 
 CFrame BerserkFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CBerserker::Fidget)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CBerserker::Fidget)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim BerserkMoveStand (CBerserker::FRAME_stand1, CBerserker::FRAME_stand5, BerserkFramesStand);
 
@@ -67,28 +67,28 @@ void CBerserker::Stand ()
 
 CFrame BerserkFramesStandFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
-CAnim BerserkMoveStandFidget (CBerserker::FRAME_standb1, CBerserker::FRAME_standb20, BerserkFramesStandFidget, &CMonster::Stand);
+CAnim BerserkMoveStandFidget (CBerserker::FRAME_standb1, CBerserker::FRAME_standb20, BerserkFramesStandFidget, &IMonster::Stand);
 
 void CBerserker::Fidget ()
 {
@@ -104,18 +104,18 @@ void CBerserker::Fidget ()
 
 CFrame BerserkFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 9.1f),
-	CFrame (&CMonster::AI_Walk, 6.3f),
-	CFrame (&CMonster::AI_Walk, 4.9f),
-	CFrame (&CMonster::AI_Walk, 6.7f),
-	CFrame (&CMonster::AI_Walk, 6.0f),
-	CFrame (&CMonster::AI_Walk, 8.2f),
-	CFrame (&CMonster::AI_Walk, 7.2f),
-	CFrame (&CMonster::AI_Walk, 6.1f),
-	CFrame (&CMonster::AI_Walk, 4.9f),
-	CFrame (&CMonster::AI_Walk, 4.7f),
-	CFrame (&CMonster::AI_Walk, 4.7f),
-	CFrame (&CMonster::AI_Walk, 4.8f)
+	CFrame (&IMonster::AI_Walk, 9.1f),
+	CFrame (&IMonster::AI_Walk, 6.3f),
+	CFrame (&IMonster::AI_Walk, 4.9f),
+	CFrame (&IMonster::AI_Walk, 6.7f),
+	CFrame (&IMonster::AI_Walk, 6.0f),
+	CFrame (&IMonster::AI_Walk, 8.2f),
+	CFrame (&IMonster::AI_Walk, 7.2f),
+	CFrame (&IMonster::AI_Walk, 6.1f),
+	CFrame (&IMonster::AI_Walk, 4.9f),
+	CFrame (&IMonster::AI_Walk, 4.7f),
+	CFrame (&IMonster::AI_Walk, 4.7f),
+	CFrame (&IMonster::AI_Walk, 4.8f)
 };
 CAnim BerserkMoveWalk (CBerserker::FRAME_walkc1, CBerserker::FRAME_walkc11, BerserkFramesWalk);
 
@@ -150,12 +150,12 @@ void()	berserk_runb12	=[	$r_att12 ,	berserk_runb7	] {ai_run(19);};
 
 CFrame BerserkFramesRun1 [] =
 {
-	CFrame (&CMonster::AI_Run, 21),
-	CFrame (&CMonster::AI_Run, 11),
-	CFrame (&CMonster::AI_Run, 21),
-	CFrame (&CMonster::AI_Run, 25),
-	CFrame (&CMonster::AI_Run, 18),
-	CFrame (&CMonster::AI_Run, 19)
+	CFrame (&IMonster::AI_Run, 21),
+	CFrame (&IMonster::AI_Run, 11),
+	CFrame (&IMonster::AI_Run, 21),
+	CFrame (&IMonster::AI_Run, 25),
+	CFrame (&IMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 19)
 };
 CAnim BerserkMoveRun1 (CBerserker::FRAME_run1, CBerserker::FRAME_run6, BerserkFramesRun1);
 
@@ -177,16 +177,16 @@ void CBerserker::Swing ()
 
 CFrame BerserkFramesAttackSpike [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::Swing)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::AttackSpike)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::Swing)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::AttackSpike)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
-CAnim BerserkMoveAttackSpike (CBerserker::FRAME_att_c1, CBerserker::FRAME_att_c8, BerserkFramesAttackSpike, &CMonster::Run);
+CAnim BerserkMoveAttackSpike (CBerserker::FRAME_att_c1, CBerserker::FRAME_att_c8, BerserkFramesAttackSpike, &IMonster::Run);
 
 void CBerserker::AttackClub ()
 {
@@ -196,20 +196,20 @@ void CBerserker::AttackClub ()
 
 CFrame BerserkFramesAttackClub [] =
 {	
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::Swing)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::AttackClub)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::Swing)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CBerserker::AttackClub)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
-CAnim BerserkMoveAttackClub (CBerserker::FRAME_att_c9, CBerserker::FRAME_att_c20, BerserkFramesAttackClub, &CMonster::Run);
+CAnim BerserkMoveAttackClub (CBerserker::FRAME_att_c9, CBerserker::FRAME_att_c20, BerserkFramesAttackClub, &IMonster::Run);
 
 void CBerserker::Melee ()
 {
@@ -218,37 +218,37 @@ void CBerserker::Melee ()
 
 CFrame BerserkFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim BerserkMovePain1 (CBerserker::FRAME_painc1, CBerserker::FRAME_painc4, BerserkFramesPain1, &CMonster::Run);
+CAnim BerserkMovePain1 (CBerserker::FRAME_painc1, CBerserker::FRAME_painc4, BerserkFramesPain1, &IMonster::Run);
 
 CFrame BerserkFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim BerserkMovePain2 (CBerserker::FRAME_painb1, CBerserker::FRAME_painb20, BerserkFramesPain2, &CMonster::Run);
+CAnim BerserkMovePain2 (CBerserker::FRAME_painb1, CBerserker::FRAME_painb20, BerserkFramesPain2, &IMonster::Run);
 
 void CBerserker::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -281,32 +281,32 @@ void CBerserker::Dead ()
 
 CFrame BerserkFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim BerserkMoveDeath1 (CBerserker::FRAME_death1, CBerserker::FRAME_death13, BerserkFramesDeath1, ConvertDerivedFunction(&CBerserker::Dead));
 
 CFrame BerserkFramesDeath2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim BerserkMoveDeath2 (CBerserker::FRAME_deathc1, CBerserker::FRAME_deathc8, BerserkFramesDeath2, ConvertDerivedFunction(&CBerserker::Dead));
 

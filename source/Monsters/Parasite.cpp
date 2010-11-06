@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Parasite.h"
 
 CParasite::CParasite (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
@@ -66,36 +66,36 @@ void CParasite::Scratch ()
 
 CFrame ParasiteFramesStartFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim ParasiteMoveStartFidget (CParasite::FRAME_stand18, CParasite::FRAME_stand21, ParasiteFramesStartFidget, ConvertDerivedFunction(&CParasite::DoFidget));
 
 CFrame ParasiteFramesFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Scratch)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Scratch)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Scratch)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Scratch)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim ParasiteMoveFidget (CParasite::FRAME_stand22, CParasite::FRAME_stand27, ParasiteFramesFidget, ConvertDerivedFunction(&CParasite::ReFidget));
 
 CFrame ParasiteFramesEndFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Scratch)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Scratch)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
-CAnim ParasiteMoveEndFidget (CParasite::FRAME_stand28, CParasite::FRAME_stand35, ParasiteFramesEndFidget, &CMonster::Stand);
+CAnim ParasiteMoveEndFidget (CParasite::FRAME_stand28, CParasite::FRAME_stand35, ParasiteFramesEndFidget, &IMonster::Stand);
 
 void CParasite::DoFidget ()
 {
@@ -115,25 +115,25 @@ void CParasite::Idle ()
 
 CFrame ParasiteFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap))
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CParasite::Tap))
 };
-CAnim ParasiteMoveStand (CParasite::FRAME_stand01, CParasite::FRAME_stand17, ParasiteFramesStand, &CMonster::Stand);
+CAnim ParasiteMoveStand (CParasite::FRAME_stand01, CParasite::FRAME_stand17, ParasiteFramesStand, &IMonster::Stand);
 
 void CParasite::Stand ()
 {
@@ -142,31 +142,31 @@ void CParasite::Stand ()
 
 CFrame ParasiteFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 30),
-	CFrame (&CMonster::AI_Run, 30),
-	CFrame (&CMonster::AI_Run, 22),
-	CFrame (&CMonster::AI_Run, 19),
-	CFrame (&CMonster::AI_Run, 24),
-	CFrame (&CMonster::AI_Run, 28),
-	CFrame (&CMonster::AI_Run, 25)
+	CFrame (&IMonster::AI_Run, 30),
+	CFrame (&IMonster::AI_Run, 30),
+	CFrame (&IMonster::AI_Run, 22),
+	CFrame (&IMonster::AI_Run, 19),
+	CFrame (&IMonster::AI_Run, 24),
+	CFrame (&IMonster::AI_Run, 28),
+	CFrame (&IMonster::AI_Run, 25)
 };
 CAnim ParasiteMoveRun (CParasite::FRAME_run03, CParasite::FRAME_run09, ParasiteFramesRun);
 
 CFrame ParasiteFramesStartRun [] =
 {
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 30),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 30),
 };
 CAnim ParasiteMoveStartRun (CParasite::FRAME_run01, CParasite::FRAME_run02, ParasiteFramesStartRun, ConvertDerivedFunction(&CParasite::StartRun));
 
 CFrame ParasiteFramesStopRun [] =
 {	
-	CFrame (&CMonster::AI_Run, 20),
-	CFrame (&CMonster::AI_Run, 20),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 0)
+	CFrame (&IMonster::AI_Run, 20),
+	CFrame (&IMonster::AI_Run, 20),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 0)
 };
 CAnim ParasiteMoveStopRun (CParasite::FRAME_run10, CParasite::FRAME_run15, ParasiteFramesStopRun);
 
@@ -182,31 +182,31 @@ void CParasite::StartRun ()
 
 CFrame ParasiteFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 30),
-	CFrame (&CMonster::AI_Walk, 30),
-	CFrame (&CMonster::AI_Walk, 22),
-	CFrame (&CMonster::AI_Walk, 19),
-	CFrame (&CMonster::AI_Walk, 24),
-	CFrame (&CMonster::AI_Walk, 28),
-	CFrame (&CMonster::AI_Walk, 25)
+	CFrame (&IMonster::AI_Walk, 30),
+	CFrame (&IMonster::AI_Walk, 30),
+	CFrame (&IMonster::AI_Walk, 22),
+	CFrame (&IMonster::AI_Walk, 19),
+	CFrame (&IMonster::AI_Walk, 24),
+	CFrame (&IMonster::AI_Walk, 28),
+	CFrame (&IMonster::AI_Walk, 25)
 };
-CAnim ParasiteMoveWalk (CParasite::FRAME_run03, CParasite::FRAME_run09, ParasiteFramesWalk, &CMonster::Walk);
+CAnim ParasiteMoveWalk (CParasite::FRAME_run03, CParasite::FRAME_run09, ParasiteFramesWalk, &IMonster::Walk);
 
 CFrame ParasiteFramesStartWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 30, ConvertDerivedFunction(&CParasite::DoWalk))
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 30, ConvertDerivedFunction(&CParasite::DoWalk))
 };
 CAnim ParasiteMoveStartWalk (CParasite::FRAME_run01, CParasite::FRAME_run02, ParasiteFramesStartWalk);
 
 CFrame ParasiteFramesStopWalk [] =
 {	
-	CFrame (&CMonster::AI_Walk, 20),
-	CFrame (&CMonster::AI_Walk, 20),
-	CFrame (&CMonster::AI_Walk, 12),
-	CFrame (&CMonster::AI_Walk, 10),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0)
+	CFrame (&IMonster::AI_Walk, 20),
+	CFrame (&IMonster::AI_Walk, 20),
+	CFrame (&IMonster::AI_Walk, 12),
+	CFrame (&IMonster::AI_Walk, 10),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 0)
 };
 CAnim ParasiteMoveStopWalk (CParasite::FRAME_run10, CParasite::FRAME_run15, ParasiteFramesStopWalk);
 
@@ -222,19 +222,19 @@ void CParasite::DoWalk ()
 
 CFrame ParasiteFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 6),
-	CFrame (&CMonster::AI_Move, 16),
-	CFrame (&CMonster::AI_Move, -6),
-	CFrame (&CMonster::AI_Move, -7),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 6),
+	CFrame (&IMonster::AI_Move, 16),
+	CFrame (&IMonster::AI_Move, -6),
+	CFrame (&IMonster::AI_Move, -7),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim ParasiteMovePain1 (CParasite::FRAME_pain101, CParasite::FRAME_pain111, ParasiteFramesPain1, &CMonster::Run);
+CAnim ParasiteMovePain1 (CParasite::FRAME_pain101, CParasite::FRAME_pain111, ParasiteFramesPain1, &IMonster::Run);
 
 void CParasite::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -328,26 +328,26 @@ void CParasite::DrainAttack ()
 
 CFrame ParasiteFramesDrain [] =
 {
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::Launch)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 15,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// Target hits
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, -2,  ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, -2,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, -3,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, -2,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, -1,  ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::ReelIn)),				// let go
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::Launch)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 15,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// Target hits
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, -2,  ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, -2,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, -3,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, -2,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, -1,  ConvertDerivedFunction(&CParasite::DrainAttack)),			// drain
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CParasite::ReelIn)),				// let go
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, 0)
 };
-CAnim ParasiteMoveDrain (CParasite::FRAME_drain01, CParasite::FRAME_drain18, ParasiteFramesDrain, &CMonster::Run);
+CAnim ParasiteMoveDrain (CParasite::FRAME_drain01, CParasite::FRAME_drain18, ParasiteFramesDrain, &IMonster::Run);
 
 /*
 === 
@@ -365,7 +365,7 @@ void CParasite::Attack ()
 
 bool CParasite::CheckAttack ()
 {
-	if (!CMonster::CheckAttack ())
+	if (!IMonster::CheckAttack ())
 		return false;
 
 	vec3f start = Entity->State.GetOrigin();
@@ -391,13 +391,13 @@ void CParasite::Dead ()
 
 CFrame ParasiteFramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim ParasiteMoveDeath (CParasite::FRAME_death101, CParasite::FRAME_death107, ParasiteFramesDeath, ConvertDerivedFunction(&CParasite::Dead));
 

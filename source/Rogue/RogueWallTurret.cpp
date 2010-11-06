@@ -129,14 +129,14 @@ void CWallTurret::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 
 }
 
 CWallTurret::CWallTurret (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
 CFrame TurretFrameStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
 };
 CAnim TurretMoveStand (CWallTurret::FRAME_stand01, CWallTurret::FRAME_stand02, TurretFrameStand);
 
@@ -150,17 +150,17 @@ void CWallTurret::Stand ()
 
 CFrame TurretFramesReadyGun [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
 
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
 	
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0)
 };
-CAnim TurretMoveReadyGun (CWallTurret::FRAME_active01, CWallTurret::FRAME_run01, TurretFramesReadyGun, &CMonster::Run);
+CAnim TurretMoveReadyGun (CWallTurret::FRAME_active01, CWallTurret::FRAME_run01, TurretFramesReadyGun, &IMonster::Run);
 
 void CWallTurret::ReadyGun ()
 {
@@ -169,8 +169,8 @@ void CWallTurret::ReadyGun ()
 
 CFrame TurretFramesSeek [] =
 {
-	CFrame (&CMonster::AI_Walk, 0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Walk, 0, ConvertDerivedFunction(&CWallTurret::Aim))
+	CFrame (&IMonster::AI_Walk, 0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Walk, 0, ConvertDerivedFunction(&CWallTurret::Aim))
 };
 CAnim TurretMoveSeek (CWallTurret::FRAME_run01, CWallTurret::FRAME_run02, TurretFramesSeek);
 
@@ -187,10 +187,10 @@ void CWallTurret::Walk ()
 
 CFrame TurretFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Run, 0, ConvertDerivedFunction(&CWallTurret::Aim))
+	CFrame (&IMonster::AI_Run, 0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Run, 0, ConvertDerivedFunction(&CWallTurret::Aim))
 };
-CAnim TurretMoveRun (CWallTurret::FRAME_run01, CWallTurret::FRAME_run02, TurretFramesRun, &CMonster::Run);
+CAnim TurretMoveRun (CWallTurret::FRAME_run01, CWallTurret::FRAME_run02, TurretFramesRun, &IMonster::Run);
 
 void CWallTurret::Run ()
 {
@@ -356,24 +356,24 @@ void CWallTurret::FireBlind ()
 
 CFrame TurretFramesFire [] =
 {
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Fire)),
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim))
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Fire)),
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim))
 };
-CAnim TurretMoveFire (CWallTurret::FRAME_pow01, CWallTurret::FRAME_pow04, TurretFramesFire, &CMonster::Run);
+CAnim TurretMoveFire (CWallTurret::FRAME_pow01, CWallTurret::FRAME_pow04, TurretFramesFire, &IMonster::Run);
 
 //PMM
 
 // the blind frames need to aim first
 CFrame TurretFramesFireBlind [] =
 {
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
-	CFrame (&CMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::FireBlind))
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::Aim)),
+	CFrame (&IMonster::AI_Run,   0, ConvertDerivedFunction(&CWallTurret::FireBlind))
 };
-CAnim TurretMoveFireBlind (CWallTurret::FRAME_pow01, CWallTurret::FRAME_pow04, TurretFramesFireBlind, &CMonster::Run);
+CAnim TurretMoveFireBlind (CWallTurret::FRAME_pow01, CWallTurret::FRAME_pow04, TurretFramesFireBlind, &IMonster::Run);
 //pmm
 
 void CWallTurret::Attack ()

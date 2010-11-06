@@ -106,13 +106,13 @@ void CFlyerKamikaze::KamikazeCheck ()
 
 CFrame FlyerFramesKamikaze [] =
 {
-	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
-	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
-	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
-	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
-	CFrame (&CMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck))
+	CFrame (&IMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
+	CFrame (&IMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
+	CFrame (&IMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
+	CFrame (&IMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck)),
+	CFrame (&IMonster::AI_Charge, 40,	ConvertDerivedFunction(&CFlyerKamikaze::KamikazeCheck))
 };
-CAnim FlyerMoveKamikaze (CFlyer::FRAME_rollr02, CFlyer::FRAME_rollr06, FlyerFramesKamikaze, &CMonster::Run);
+CAnim FlyerMoveKamikaze (CFlyer::FRAME_rollr02, CFlyer::FRAME_rollr06, FlyerFramesKamikaze, &IMonster::Run);
 
 void CFlyerKamikaze::Run ()
 {

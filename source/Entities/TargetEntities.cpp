@@ -325,7 +325,7 @@ public:
 		GetSvFlags() = SVF_NOCLIENT;
 		if (Speed)
 		{
-			G_SetMovedir (State.GetAngles(), MoveDir);
+			SetMoveDir (MoveDir);
 			MoveDir *= Speed;
 		}
 	};
@@ -423,7 +423,7 @@ public:
 
 	void Spawn ()
 	{
-		G_SetMovedir (State.GetAngles(), MoveDir);
+		SetMoveDir (MoveDir);
 
 		if (!Count)
 			Count = 32;
@@ -1139,7 +1139,7 @@ public:
 
 	void Spawn ()
 	{
-		G_SetMovedir (State.GetAngles(), MoveDir);
+		SetMoveDir (MoveDir);
 		NoiseIndex = SoundIndex ("weapons/laser2.wav");
 
 		if (!Damage)
@@ -1335,9 +1335,7 @@ void CTargetLaser::Start ()
 			Enemy = Entity;
 		}
 		else
-		{
-			G_SetMovedir (State.GetAngles(), MoveDir);
-		}
+			SetMoveDir (MoveDir);
 	}
 
 	Usable = true;

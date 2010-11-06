@@ -34,9 +34,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_UTILS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_UTILS_H
 
-void	G_TouchTriggers (IBaseEntity *Entity);
-void	G_SetMovedir (vec3f &angles, vec3f &movedir);
-
 typedef std::vector<IBaseEntity*> TTargetList;
 IBaseEntity *CC_PickTarget (std::string targetname);
 TTargetList CC_GetTargets (std::string targetname);

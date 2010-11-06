@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Bitch.h"
 
 CMaiden::CMaiden (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
@@ -46,36 +46,36 @@ void CMaiden::Moan ()
 
 CFrame ChickFramesFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0,  ConvertDerivedFunction(&CMaiden::Moan)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0,  ConvertDerivedFunction(&CMaiden::Moan)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim ChickMoveFidget (CMaiden::FRAME_stand201, CMaiden::FRAME_stand230, ChickFramesFidget, ConvertDerivedFunction(&CMaiden::Stand));
 
@@ -89,36 +89,36 @@ void CMaiden::Idle ()
 
 CFrame ChickFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
 };
 CAnim ChickMoveStand (CMaiden::FRAME_stand101, CMaiden::FRAME_stand130, ChickFramesStand);
 
@@ -129,50 +129,50 @@ void CMaiden::Stand ()
 
 CFrame ChickFramesStartRun [] =
 {
-	CFrame (&CMonster::AI_Run, 1),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, -1), 
-	CFrame (&CMonster::AI_Run, -1), 
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 1),
-	CFrame (&CMonster::AI_Run, 3),
-	CFrame (&CMonster::AI_Run, 6),
-	CFrame (&CMonster::AI_Run, 3)
+	CFrame (&IMonster::AI_Run, 1),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, -1), 
+	CFrame (&IMonster::AI_Run, -1), 
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 1),
+	CFrame (&IMonster::AI_Run, 3),
+	CFrame (&IMonster::AI_Run, 6),
+	CFrame (&IMonster::AI_Run, 3)
 };
 CAnim ChickMoveStartRun (CMaiden::FRAME_walk01, CMaiden::FRAME_walk10, ChickFramesStartRun, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 6),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 13),
+	CFrame (&IMonster::AI_Run, 6),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 13),
 #if ROGUE_FEATURES
-	CFrame (&CMonster::AI_Run, 5, &CMonster::DoneDodge), // Make sure to clear the dodge bit
+	CFrame (&IMonster::AI_Run, 5, &IMonster::DoneDodge), // Make sure to clear the dodge bit
 #else
-	CFrame (&CMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 5),
 #endif
-	CFrame (&CMonster::AI_Run, 7),
-	CFrame (&CMonster::AI_Run, 4),
-	CFrame (&CMonster::AI_Run, 11),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 9),
-	CFrame (&CMonster::AI_Run, 7)
+	CFrame (&IMonster::AI_Run, 7),
+	CFrame (&IMonster::AI_Run, 4),
+	CFrame (&IMonster::AI_Run, 11),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 9),
+	CFrame (&IMonster::AI_Run, 7)
 };
 CAnim ChickMoveRun (CMaiden::FRAME_walk11, CMaiden::FRAME_walk20, ChickFramesRun);
 
 CFrame ChickFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 6),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 13),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 7),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 11),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 9),
-	CFrame (&CMonster::AI_Walk, 7)
+	CFrame (&IMonster::AI_Walk, 6),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 13),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 7),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 11),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 9),
+	CFrame (&IMonster::AI_Walk, 7)
 };
 CAnim ChickMoveWalk (CMaiden::FRAME_walk11, CMaiden::FRAME_walk20, ChickFramesWalk);
 
@@ -202,47 +202,47 @@ void CMaiden::Run ()
 
 CFrame ChickFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim ChickMovePain1 (CMaiden::FRAME_pain101, CMaiden::FRAME_pain105, ChickFramesPain1, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim ChickMovePain2 (CMaiden::FRAME_pain201, CMaiden::FRAME_pain205, ChickFramesPain2, ConvertDerivedFunction(&CMaiden::Run));
 
 CFrame ChickFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -6),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 11),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 4),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, 5),
-	CFrame (&CMonster::AI_Move, 7),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, -5),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, -8),
-	CFrame (&CMonster::AI_Move, 2)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -6),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 11),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 4),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, 5),
+	CFrame (&IMonster::AI_Move, 7),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, -5),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, -8),
+	CFrame (&IMonster::AI_Move, 2)
 };
 CAnim ChickMovePain3 (CMaiden::FRAME_pain301, CMaiden::FRAME_pain321, ChickFramesPain3, ConvertDerivedFunction(&CMaiden::Run));
 
@@ -294,46 +294,46 @@ void CMaiden::Dead ()
 
 CFrame ChickFramesDeath2 [] =
 {
-	CFrame (&CMonster::AI_Move, -6),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -5),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 10),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -5),
-	CFrame (&CMonster::AI_Move, 4),
-	CFrame (&CMonster::AI_Move, 15),
-	CFrame (&CMonster::AI_Move, 14),
-	CFrame (&CMonster::AI_Move, 1)
+	CFrame (&IMonster::AI_Move, -6),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -5),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 10),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -5),
+	CFrame (&IMonster::AI_Move, 4),
+	CFrame (&IMonster::AI_Move, 15),
+	CFrame (&IMonster::AI_Move, 14),
+	CFrame (&IMonster::AI_Move, 1)
 };
 CAnim ChickMoveDeath2 (CMaiden::FRAME_death201, CMaiden::FRAME_death223, ChickFramesDeath2, ConvertDerivedFunction(&CMaiden::Dead));
 
 CFrame ChickFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -7),
-	CFrame (&CMonster::AI_Move, 4),
-	CFrame (&CMonster::AI_Move, 11),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -7),
+	CFrame (&IMonster::AI_Move, 4),
+	CFrame (&IMonster::AI_Move, 11),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim ChickMoveDeath1 (CMaiden::FRAME_death101, CMaiden::FRAME_death112, ChickFramesDeath1, ConvertDerivedFunction(&CMaiden::Dead));
 
@@ -396,24 +396,24 @@ void CMaiden::DuckUp ()
 
 CFrame ChickFramesDuck [] =
 {
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CMaiden::DuckDown)),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 4, ConvertDerivedFunction(&CMaiden::DuckHold)),
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, -5, ConvertDerivedFunction(&CMaiden::DuckUp)),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 1)
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CMaiden::DuckDown)),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 4, ConvertDerivedFunction(&CMaiden::DuckHold)),
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, -5, ConvertDerivedFunction(&CMaiden::DuckUp)),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 1)
 };
 #else
 CFrame ChickFramesDuck [] =
 {
-	CFrame (&CMonster::AI_Move, 0, &CMonster::DuckDown),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 4, &CMonster::DuckHold),
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, -5, &CMonster::UnDuck),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 1)
+	CFrame (&IMonster::AI_Move, 0, &IMonster::DuckDown),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 4, &IMonster::DuckHold),
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, -5, &IMonster::UnDuck),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 1)
 };
 #endif
 
@@ -421,49 +421,49 @@ CAnim ChickMoveDuck (CMaiden::FRAME_duck01, CMaiden::FRAME_duck07, ChickFramesDu
 
 CFrame ChickFramesStartAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMaiden::PreAttack)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 7),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CMaiden::Attack1))
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMaiden::PreAttack)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 4),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 7),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CMaiden::Attack1))
 };
 CAnim ChickMoveStartAttack1 (CMaiden::FRAME_attak101, CMaiden::FRAME_attak113, ChickFramesStartAttack1);
 
 
 CFrame ChickFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, 19, ConvertDerivedFunction(&CMaiden::Rocket)),
-	CFrame (&CMonster::AI_Charge, -6),
-	CFrame (&CMonster::AI_Charge, -5),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -7),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 10, ConvertDerivedFunction(&CMaiden::Reload)),
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 3, ConvertDerivedFunction(&CMaiden::ReRocket))
+	CFrame (&IMonster::AI_Charge, 19, ConvertDerivedFunction(&CMaiden::Rocket)),
+	CFrame (&IMonster::AI_Charge, -6),
+	CFrame (&IMonster::AI_Charge, -5),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -7),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 10, ConvertDerivedFunction(&CMaiden::Reload)),
+	CFrame (&IMonster::AI_Charge, 4),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 4),
+	CFrame (&IMonster::AI_Charge, 3, ConvertDerivedFunction(&CMaiden::ReRocket))
 };
 CAnim ChickMoveAttack1 (CMaiden::FRAME_attak114, CMaiden::FRAME_attak127, ChickFramesAttack1);
 
 CFrame ChickFramesEndAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -6),
-	CFrame (&CMonster::AI_Charge, -4),
-	CFrame (&CMonster::AI_Charge, -2)
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -6),
+	CFrame (&IMonster::AI_Charge, -4),
+	CFrame (&IMonster::AI_Charge, -2)
 };
 CAnim ChickMoveEndAttack1 (CMaiden::FRAME_attak128, CMaiden::FRAME_attak132, ChickFramesEndAttack1, ConvertDerivedFunction(&CMaiden::Run));
 
@@ -663,24 +663,24 @@ void CMaiden::Attack1()
 
 CFrame ChickFramesSlash [] =
 {
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 7, ConvertDerivedFunction(&CMaiden::Slash)),
-	CFrame (&CMonster::AI_Charge, -7),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, -2, ConvertDerivedFunction(&CMaiden::ReSlash))
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 7, ConvertDerivedFunction(&CMaiden::Slash)),
+	CFrame (&IMonster::AI_Charge, -7),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, -2, ConvertDerivedFunction(&CMaiden::ReSlash))
 };
 CAnim ChickMoveSlash (CMaiden::FRAME_attak204, CMaiden::FRAME_attak212, ChickFramesSlash);
 
 CFrame ChickFramesEndSlash [] =
 {
-	CFrame (&CMonster::AI_Charge, -6),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -6),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, -6),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -6),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim ChickMoveEndSlash (CMaiden::FRAME_attak213, CMaiden::FRAME_attak216, ChickFramesEndSlash, ConvertDerivedFunction(&CMaiden::Run));
 
@@ -699,9 +699,9 @@ void CMaiden::DoSlash()
 
 CFrame ChickFramesStartSlash [] =
 {	
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 8),
-	CFrame (&CMonster::AI_Charge, 3)
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 8),
+	CFrame (&IMonster::AI_Charge, 3)
 };
 CAnim ChickMoveStartSlash (CMaiden::FRAME_attak201, CMaiden::FRAME_attak203, ChickFramesStartSlash, ConvertDerivedFunction(&CMaiden::DoSlash));
 

@@ -124,7 +124,7 @@ public:
 
 	// the move is ok
 		Link ();
-		G_TouchTriggers (this);
+		TouchTriggers ();
 	}
 
 	void Think ()

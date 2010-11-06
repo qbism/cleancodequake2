@@ -139,7 +139,7 @@ CBadArea *LoadBadArea (CFile &File)
 	return BadAreas[i];
 }
 
-CBadArea *CMonster::CheckForBadArea ()
+CBadArea *IMonster::CheckForBadArea ()
 {
 	for (size_t i = 0; i < BadAreas.size(); ++i)
 	{
@@ -152,7 +152,7 @@ CBadArea *CMonster::CheckForBadArea ()
 
 const int TESLA_DAMAGE_RADIUS		= 128;
 
-bool CMonster::MarkTeslaArea (CTesla *Tesla)
+bool IMonster::MarkTeslaArea (CTesla *Tesla)
 {
 	if (!Tesla)
 		return false;
@@ -170,7 +170,7 @@ bool CMonster::MarkTeslaArea (CTesla *Tesla)
 	return true;
 }
 
-void CMonster::TargetTesla (CTesla *tesla)
+void IMonster::TargetTesla (CTesla *tesla)
 {
 	if (!tesla)
 		return;
@@ -205,12 +205,12 @@ void CMonster::TargetTesla (CTesla *tesla)
 }
 
 
-void CMonster::DoneDodge ()
+void IMonster::DoneDodge ()
 {
 	AIFlags &= ~AI_DODGING;
 }
 
-void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
+void IMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 {
 	// this needs to be here since this can be called after the monster has "died"
 	if (Entity->Health < 1)
@@ -298,14 +298,14 @@ void CMonster::MonsterDodge (IBaseEntity *Attacker, float eta, CTrace *tr)
 ROGUE
 clean up heal targets for medic
 */
-void CMonster::CleanupHealTarget ()
+void IMonster::CleanupHealTarget ()
 {
 	Healer = nullentity;
 	AIFlags &= ~AI_RESURRECTING;
 	SetEffects ();
 }
 
-void CMonster::DuckDown ()
+void IMonster::DuckDown ()
 {
 	AIFlags |= AI_DUCKED;
 
@@ -316,7 +316,7 @@ void CMonster::DuckDown ()
 	Entity->Link ();
 }
 
-void CMonster::DuckHold ()
+void IMonster::DuckHold ()
 {
 	if (Level.Frame >= DuckWaitTime)
 		AIFlags &= ~AI_HOLD_FRAME;
@@ -324,7 +324,7 @@ void CMonster::DuckHold ()
 		AIFlags |= AI_HOLD_FRAME;
 }
 
-void CMonster::DuckUp ()
+void IMonster::DuckUp ()
 {
 	AIFlags &= ~AI_DUCKED;
 	Entity->GetMaxs().Z = BaseHeight;
@@ -332,7 +332,7 @@ void CMonster::DuckUp ()
 	Entity->Link ();
 }
 
-void CMonster::HuntTarget()
+void IMonster::HuntTarget()
 {
 	Entity->GoalEntity = Entity->Enemy;
 
@@ -347,7 +347,7 @@ void CMonster::HuntTarget()
 		AttackFinished = Level.Frame + 10;
 }
 
-bool CMonster::FindTarget()
+bool IMonster::FindTarget()
 {
 	if (AIFlags & AI_GOOD_GUY)
 	{
@@ -511,7 +511,7 @@ bool CMonster::FindTarget()
 	return true;
 }
 
-void CMonster::MoveToGoal (float Dist)
+void IMonster::MoveToGoal (float Dist)
 {	
 	IBaseEntity *goal = *Entity->GoalEntity;
 
@@ -536,7 +536,7 @@ void CMonster::MoveToGoal (float Dist)
 	}
 }
 
-bool CMonster::IsBadAhead (CBadArea *bad, vec3f move)
+bool IMonster::IsBadAhead (CBadArea *bad, vec3f move)
 {
 	vec3f move_copy = move;
 	vec3f dir = (bad->Origin - Entity->State.GetOrigin()).GetNormalized();
@@ -563,7 +563,7 @@ bool CMonster::IsBadAhead (CBadArea *bad, vec3f move)
 #include "Rogue/RogueWidowStand.h"
 #include "Rogue/RogueBlackWidow.h"
 
-bool CMonster::MoveStep (vec3f move, bool ReLink)
+bool IMonster::MoveStep (vec3f move, bool ReLink)
 {
 	CBadArea *current_bad = NULL;
 
@@ -667,14 +667,14 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			{
 				Entity->State.GetOrigin() = trace.EndPosition;
 
-				/*if(!current_bad && CheckForBadArea(ent))
+				if(!current_bad && CheckForBadArea())
 					VectorCopy (oldorg, ent->s.origin);
-				else*/
+				else
 				{
 					if (ReLink)
 					{
 						Entity->Link ();
-						G_TouchTriggers (Entity);
+						Entity->TouchTriggers ();
 					}
 
 					return true;
@@ -730,7 +730,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			if (ReLink)
 			{
 				Entity->Link ();
-				G_TouchTriggers (Entity);
+				Entity->TouchTriggers ();
 			}
 
 			Entity->GroundEntity = nullentity;
@@ -792,7 +792,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			if (ReLink)
 			{
 				Entity->Link ();
-				G_TouchTriggers (Entity);
+				Entity->TouchTriggers ();
 			}
 
 			return true;
@@ -812,13 +812,13 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (ReLink)
 	{
 		Entity->Link ();
-		G_TouchTriggers (Entity);
+		Entity->TouchTriggers ();
 	}
 
 	return true;
 }
 
-void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
+void IMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 {
 	if (!Enemy)
 		return;
@@ -912,7 +912,7 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 		AIFlags |= AI_PARTIALGROUND;
 }
 
-bool CMonster::StepDirection (float Yaw, float Dist)
+bool IMonster::StepDirection (float Yaw, float Dist)
 {	
 	if (!Entity->GetInUse())
 		return true;		// PGM g_touchtrigger free problem
@@ -940,16 +940,16 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 		}
 
 		Entity->Link ();
-		G_TouchTriggers (Entity);
+		Entity->TouchTriggers ();
 		return true;
 	}
 
 	Entity->Link ();
-	G_TouchTriggers (Entity);
+	Entity->TouchTriggers ();
 	return false;
 }
 
-bool CMonster::CheckAttack ()
+bool IMonster::CheckAttack ()
 {
 	if (Entity->Enemy)
 	{
@@ -1094,7 +1094,7 @@ bool CMonster::CheckAttack ()
 	return false;
 }
 
-void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
+void IMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {
 	// pmm
 	if (!(Attacker->EntityFlags & EF_PLAYER) && !(Attacker->EntityFlags & EF_MONSTER))
@@ -1219,7 +1219,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	}
 }
 
-void CMonster::AI_Walk(float Dist)
+void IMonster::AI_Walk(float Dist)
 {
 	MoveToGoal (Dist);
 
@@ -1239,7 +1239,7 @@ void CMonster::AI_Walk(float Dist)
 	}
 }
 
-void CMonster::AI_Charge(float Dist)
+void IMonster::AI_Charge(float Dist)
 {
 	float	ofs;
 
@@ -1289,7 +1289,7 @@ void CMonster::AI_Charge(float Dist)
 	}
 }
 
-bool CMonster::AI_CheckAttack()
+bool IMonster::AI_CheckAttack()
 {
 	bool	retval;
 
@@ -1453,12 +1453,12 @@ bool CMonster::AI_CheckAttack()
 	return retval;
 }
 
-void CMonster::AI_Move (float Dist)
+void IMonster::AI_Move (float Dist)
 {
 	WalkMove (Entity->State.GetAngles().Y, Dist);
 }
 
-void CMonster::AI_Run(float Dist)
+void IMonster::AI_Run(float Dist)
 {
 	bool	alreadyMoved = false;
  
@@ -1701,7 +1701,7 @@ void CMonster::AI_Run(float Dist)
 		return;			// PGM - g_touchtrigger free problem
 }
 
-void CMonster::AI_Run_Melee ()
+void IMonster::AI_Run_Melee ()
 {
 	IdealYaw = EnemyYaw;
 	if (!(AIFlags & AI_MANUAL_STEERING))
@@ -1714,7 +1714,7 @@ void CMonster::AI_Run_Melee ()
 	}
 }
 
-void CMonster::AI_Run_Missile()
+void IMonster::AI_Run_Missile()
 {
 	IdealYaw = EnemyYaw;
 	if (!(AIFlags & AI_MANUAL_STEERING))
@@ -1730,7 +1730,7 @@ void CMonster::AI_Run_Missile()
 
 const float	MAX_SIDESTEP	= 8.0f;
 
-void CMonster::AI_Run_Slide(float Dist)
+void IMonster::AI_Run_Slide(float Dist)
 {	
 	IdealYaw = EnemyYaw;
 	
@@ -1767,7 +1767,7 @@ void CMonster::AI_Run_Slide(float Dist)
 	AttackState = AS_STRAIGHT;
 }
 
-void CMonster::AI_Stand (float Dist)
+void IMonster::AI_Stand (float Dist)
 {
 	bool retval;
 
@@ -1835,7 +1835,7 @@ void CMonster::AI_Stand (float Dist)
 	}
 }
 
-void CMonster::FoundTarget ()
+void IMonster::FoundTarget ()
 {
 	// let other monsters see this monster for a while
 	if (Entity->Enemy->EntityFlags & EF_PLAYER)

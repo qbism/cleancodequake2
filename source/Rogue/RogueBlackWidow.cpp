@@ -151,7 +151,7 @@ void CBlackWidow::SpawnCheck ()
 
 		if (FindSpawnPoint (startpoint, stalker_mins, stalker_maxs, spawnpoint, 64))
 		{
-			CMonsterEntity *ent = CreateGroundMonster (spawnpoint, Entity->State.GetAngles(), stalker_mins, stalker_maxs, "monster_stalker", 256);
+			IMonsterEntity *ent = CreateGroundMonster (spawnpoint, Entity->State.GetAngles(), stalker_mins, stalker_maxs, "monster_stalker", 256);
 
 			if (!ent)
 				continue;
@@ -160,7 +160,7 @@ void CBlackWidow::SpawnCheck ()
 			ent->Monster->Commander = Entity;
 
 			ent->NextThink = Level.Frame;
-			void	(CMonster::*TheThink) () = ent->Monster->Think;
+			void	(IMonster::*TheThink) () = ent->Monster->Think;
 			(ent->Monster->*TheThink) ();
 			
 			ent->Monster->AIFlags |= AI_SPAWNED_WIDOW|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
@@ -211,65 +211,65 @@ void CBlackWidow::ReadySpawn ()
 
 CFrame widow2_frames_stand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim	Widow2MoveStand (CBlackWidow::FRAME_blackwidow3, CBlackWidow::FRAME_blackwidow3, widow2_frames_stand);
 
 CFrame widow2_frames_walk [] =
 {
-	CFrame (&CMonster::AI_Walk,	9.01f),
-	CFrame (&CMonster::AI_Walk,	7.55f),
-	CFrame (&CMonster::AI_Walk,	7.01f),
-	CFrame (&CMonster::AI_Walk,	6.66f),
-	CFrame (&CMonster::AI_Walk,	6.20f),
-	CFrame (&CMonster::AI_Walk,	5.78f),
-	CFrame (&CMonster::AI_Walk,	7.25f),
-	CFrame (&CMonster::AI_Walk,	8.37f),
-	CFrame (&CMonster::AI_Walk,	10.41f)
+	CFrame (&IMonster::AI_Walk,	9.01f),
+	CFrame (&IMonster::AI_Walk,	7.55f),
+	CFrame (&IMonster::AI_Walk,	7.01f),
+	CFrame (&IMonster::AI_Walk,	6.66f),
+	CFrame (&IMonster::AI_Walk,	6.20f),
+	CFrame (&IMonster::AI_Walk,	5.78f),
+	CFrame (&IMonster::AI_Walk,	7.25f),
+	CFrame (&IMonster::AI_Walk,	8.37f),
+	CFrame (&IMonster::AI_Walk,	10.41f)
 };
 CAnim Widow2MoveWalk (CBlackWidow::FRAME_walk01, CBlackWidow::FRAME_walk09, widow2_frames_walk);
 
 CFrame widow2_frames_run [] =
 {
-	CFrame (&CMonster::AI_Run,	9.01f),
-	CFrame (&CMonster::AI_Run,	7.55f),
-	CFrame (&CMonster::AI_Run,	7.01f),
-	CFrame (&CMonster::AI_Run,	6.66f),
-	CFrame (&CMonster::AI_Run,	6.20f),
-	CFrame (&CMonster::AI_Run,	5.78f),
-	CFrame (&CMonster::AI_Run,	7.25f),
-	CFrame (&CMonster::AI_Run,	8.37f),
-	CFrame (&CMonster::AI_Run,	10.41f)
+	CFrame (&IMonster::AI_Run,	9.01f),
+	CFrame (&IMonster::AI_Run,	7.55f),
+	CFrame (&IMonster::AI_Run,	7.01f),
+	CFrame (&IMonster::AI_Run,	6.66f),
+	CFrame (&IMonster::AI_Run,	6.20f),
+	CFrame (&IMonster::AI_Run,	5.78f),
+	CFrame (&IMonster::AI_Run,	7.25f),
+	CFrame (&IMonster::AI_Run,	8.37f),
+	CFrame (&IMonster::AI_Run,	10.41f)
 };
 CAnim Widow2MoveRun (CBlackWidow::FRAME_walk01, CBlackWidow::FRAME_walk09, widow2_frames_run);
 
 CFrame widow2_frames_attack_pre_beam [] =
 {
-	CFrame (&CMonster::AI_Charge,	4),
-	CFrame (&CMonster::AI_Charge,	4),
-	CFrame (&CMonster::AI_Charge,	4),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CBlackWidow::AttackBeam))
+	CFrame (&IMonster::AI_Charge,	4),
+	CFrame (&IMonster::AI_Charge,	4),
+	CFrame (&IMonster::AI_Charge,	4),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CBlackWidow::AttackBeam))
 };
 CAnim Widow2MoveAttackPreBeam (CBlackWidow::FRAME_fireb01, CBlackWidow::FRAME_fireb04, widow2_frames_attack_pre_beam);
 
 // Loop this
 CFrame widow2_frames_attack_beam [] =
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReAttackBeam))
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReAttackBeam))
 };
 CAnim Widow2MoveAttackBeam (CBlackWidow::FRAME_fireb05, CBlackWidow::FRAME_fireb09, widow2_frames_attack_beam);
 
 CFrame widow2_frames_attack_post_beam [] =
 {
-	CFrame (&CMonster::AI_Charge,	4),
-	CFrame (&CMonster::AI_Charge,	4),
-	CFrame (&CMonster::AI_Charge,	4)
+	CFrame (&IMonster::AI_Charge,	4),
+	CFrame (&IMonster::AI_Charge,	4),
+	CFrame (&IMonster::AI_Charge,	4)
 };
-CAnim Widow2MoveAttackPostBeam (CBlackWidow::FRAME_fireb06, CBlackWidow::FRAME_fireb07, widow2_frames_attack_post_beam, &CMonster::Run);
+CAnim Widow2MoveAttackPostBeam (CBlackWidow::FRAME_fireb06, CBlackWidow::FRAME_fireb07, widow2_frames_attack_post_beam, &IMonster::Run);
 
 void CBlackWidow::FireDisrupt ()
 {
@@ -312,15 +312,15 @@ void CBlackWidow::DisruptReAttack ()
 
 CFrame widow2_frames_attack_disrupt [] =
 {
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CBlackWidow::SaveDisruptLocation)),
-	CFrame (&CMonster::AI_Charge, -20, ConvertDerivedFunction(&CBlackWidow::FireDisrupt)),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CBlackWidow::DisruptReAttack))
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CBlackWidow::SaveDisruptLocation)),
+	CFrame (&IMonster::AI_Charge, -20, ConvertDerivedFunction(&CBlackWidow::FireDisrupt)),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CBlackWidow::DisruptReAttack))
 };
-CAnim Widow2MoveAttackDisrupt (CBlackWidow::FRAME_firea01, CBlackWidow::FRAME_firea07, widow2_frames_attack_disrupt, &CMonster::Run);
+CAnim Widow2MoveAttackDisrupt (CBlackWidow::FRAME_firea01, CBlackWidow::FRAME_firea07, widow2_frames_attack_disrupt, &IMonster::Run);
 
 void CBlackWidow::SaveBeamTarget ()
 {
@@ -335,24 +335,24 @@ void CBlackWidow::SaveBeamTarget ()
 
 CFrame widow2_frames_spawn [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::StartSpawn)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),				//5
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReadySpawn)),				//10
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::SpawnCheck)),
-	CFrame (&CMonster::AI_Charge,	0),				//15
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReAttackBeam))
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::StartSpawn)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),				//5
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReadySpawn)),				//10
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::FireBeam)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::SpawnCheck)),
+	CFrame (&IMonster::AI_Charge,	0),				//15
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::ReAttackBeam))
 };
 CAnim Widow2MoveSpawn (CBlackWidow::FRAME_spawn01, CBlackWidow::FRAME_spawn18, widow2_frames_spawn);
 
@@ -436,7 +436,7 @@ void CBlackWidow::TonguePull ()
 	}
 	else
 	{
-		CMonsterEntity *Mon = entity_cast<CMonsterEntity>(*Entity->Enemy);
+		IMonsterEntity *Mon = entity_cast<IMonsterEntity>(*Entity->Enemy);
 
 		Mon->Monster->IdealYaw = vec.ToYaw();	
 		Mon->Monster->ChangeYaw ();
@@ -475,116 +475,116 @@ void CBlackWidow::Toss ()
 
 CFrame widow2_frames_tongs [] =
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Tongue)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Tongue)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Tongue)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::TonguePull)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::TonguePull)),				//5
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::TonguePull)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Crunch)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Toss))
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Tongue)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Tongue)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Tongue)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::TonguePull)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::TonguePull)),				//5
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::TonguePull)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Crunch)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBlackWidow::Toss))
 };
-CAnim Widow2MoveTongs (CBlackWidow::FRAME_tongs01, CBlackWidow::FRAME_tongs08, widow2_frames_tongs, &CMonster::Run);
+CAnim Widow2MoveTongs (CBlackWidow::FRAME_tongs01, CBlackWidow::FRAME_tongs08, widow2_frames_tongs, &IMonster::Run);
 
 CFrame widow2_frames_pain [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim Widow2MovePain (CBlackWidow::FRAME_pain01, CBlackWidow::FRAME_pain05, widow2_frames_pain, &CMonster::Run);
+CAnim Widow2MovePain (CBlackWidow::FRAME_pain01, CBlackWidow::FRAME_pain05, widow2_frames_pain, &IMonster::Run);
 
 CFrame widow2_frames_death [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion1)),	// 3 boom
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),				// 5
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion1)),	// 3 boom
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),				// 5
 
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion2)),	// 6 boom
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),				// 10
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion2)),	// 6 boom
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),				// 10
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),				// 12
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),				// 15
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),				// 12
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),				// 15
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion2)),	// 18
-	CFrame (&CMonster::AI_Move,	0),				// 19
-	CFrame (&CMonster::AI_Move,	0),				// 20
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion2)),	// 18
+	CFrame (&IMonster::AI_Move,	0),				// 19
+	CFrame (&IMonster::AI_Move,	0),				// 20
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion4)),	// 25
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion4)),	// 25
 
-	CFrame (&CMonster::AI_Move,	0),				// 26
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion5)),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosionLeg)),	// 30
+	CFrame (&IMonster::AI_Move,	0),				// 26
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion5)),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosionLeg)),	// 30
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion6)),
-	CFrame (&CMonster::AI_Move,	0),				// 35
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion6)),
+	CFrame (&IMonster::AI_Move,	0),				// 35
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion7)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),				// 40
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplosion7)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),				// 40
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplode))		// 44
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::WidowExplode))		// 44
 };
 CAnim Widow2MoveDeath (CBlackWidow::FRAME_death01, CBlackWidow::FRAME_death44, widow2_frames_death);
 
 CFrame widow2_frames_dead [] =
 {
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::StartSearching)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::StartSearching)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::KeepSearching))
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::KeepSearching))
 };
 CAnim Widow2MoveDead (CBlackWidow::FRAME_dthsrh01, CBlackWidow::FRAME_dthsrh15, widow2_frames_dead);
 
 CFrame widow2_frames_really_dead [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
 
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::Dead))
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CBlackWidow::Dead))
 };
 CAnim Widow2MoveReallyDead (CBlackWidow::FRAME_dthsrh16, CBlackWidow::FRAME_dthsrh22, widow2_frames_really_dead);
 
@@ -785,10 +785,10 @@ void CBlackWidow::Dead ()
 
 void CBlackWidow::KillChildren ()
 {
-	CMonsterEntity *ent = NULL;
+	IMonsterEntity *ent = NULL;
 	while (1)
 	{
-		ent = entity_cast<CMonsterEntity>(CC_FindByClassName<IBaseEntity, EF_MONSTER> (ent, "monster_stalker"));
+		ent = entity_cast<IMonsterEntity>(CC_FindByClassName<IBaseEntity, EF_MONSTER> (ent, "monster_stalker"));
 		if(!ent)
 			return;
 		
@@ -1268,7 +1268,7 @@ void CBlackWidow::WidowExplode ()
 			ThrowWidowGib (Entity, GameMedia.Gib_SmallMetal(), 400, GIB_METALLIC);
 
 		Entity->IsDead = true;
-		Think = &CMonster::MonsterThink;
+		Think = &IMonster::MonsterThink;
 		Entity->NextThink = Level.Frame + FRAMETIME;
 		CurrentMove = &Widow2MoveDead;
 		return;

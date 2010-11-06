@@ -307,7 +307,7 @@ void CMedicCommander::FinishSpawn ()
 		{
 			ent->NextThink = Level.Frame;
 
-			void	(CMonster::*TheThink) () = ent->Monster->Think;
+			void	(IMonster::*TheThink) () = ent->Monster->Think;
 			(ent->Monster->*TheThink) ();
 		}
 
@@ -353,37 +353,37 @@ void CMedicCommander::FinishSpawn ()
 
 CFrame MedicFramesCallReinforcements [] =
 {
-	// ROGUE - 33-36 now CFrame (&CMonster::AI_Charge
-	CFrame (&CMonster::AI_Charge, 2),					//33
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 4.4f),					//36
-	CFrame (&CMonster::AI_Charge, 4.7f),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 4),					//40
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedicCommander::StartSpawn)),		//42
-	CFrame (&CMonster::AI_Move, 0),		//43 -- 43 through 47 are skipped
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedicCommander::DetermineSpawn)),		//48
-	CFrame (&CMonster::AI_Charge, 0,		ConvertDerivedFunction(&CMedicCommander::SpawnGrows)),			//49
-	CFrame (&CMonster::AI_Move, 0),		//50
-	CFrame (&CMonster::AI_Move, 0),		//51
-	CFrame (&CMonster::AI_Move, -15,	ConvertDerivedFunction(&CMedicCommander::FinishSpawn)),		//52
-	CFrame (&CMonster::AI_Move, -1.5f),
-	CFrame (&CMonster::AI_Move, -1.2f),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 0.3f),
-	CFrame (&CMonster::AI_Move, 0.7f),
-	CFrame (&CMonster::AI_Move, 1.2f),
-	CFrame (&CMonster::AI_Move, 1.3f)					//60
+	// ROGUE - 33-36 now CFrame (&IMonster::AI_Charge
+	CFrame (&IMonster::AI_Charge, 2),					//33
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 4.4f),					//36
+	CFrame (&IMonster::AI_Charge, 4.7f),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 4),					//40
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedicCommander::StartSpawn)),		//42
+	CFrame (&IMonster::AI_Move, 0),		//43 -- 43 through 47 are skipped
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedicCommander::DetermineSpawn)),		//48
+	CFrame (&IMonster::AI_Charge, 0,		ConvertDerivedFunction(&CMedicCommander::SpawnGrows)),			//49
+	CFrame (&IMonster::AI_Move, 0),		//50
+	CFrame (&IMonster::AI_Move, 0),		//51
+	CFrame (&IMonster::AI_Move, -15,	ConvertDerivedFunction(&CMedicCommander::FinishSpawn)),		//52
+	CFrame (&IMonster::AI_Move, -1.5f),
+	CFrame (&IMonster::AI_Move, -1.2f),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 0.3f),
+	CFrame (&IMonster::AI_Move, 0.7f),
+	CFrame (&IMonster::AI_Move, 1.2f),
+	CFrame (&IMonster::AI_Move, 1.3f)					//60
 };
-CAnim MedicMoveCallReinforcements (CMedic::FRAME_attack33, CMedic::FRAME_attack60, MedicFramesCallReinforcements, &CMonster::Run);
+CAnim MedicMoveCallReinforcements (CMedic::FRAME_attack33, CMedic::FRAME_attack60, MedicFramesCallReinforcements, &IMonster::Run);
 
 void CMedicCommander::Attack ()
 {
@@ -479,7 +479,7 @@ bool CMedicCommander::CheckAttack ()
 		return true;
 	}
 
-	return CMonster::CheckAttack ();
+	return IMonster::CheckAttack ();
 }
 
 void CMedicCommander::Spawn ()

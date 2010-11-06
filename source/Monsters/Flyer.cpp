@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Flyer.h"
 
 CFlyer::CFlyer (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
@@ -56,151 +56,151 @@ void CFlyer::PopBlades ()
 
 CFrame FlyerFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim FlyerMoveStand (CFlyer::FRAME_stand01, CFlyer::FRAME_stand45, FlyerFramesStand);
 
 CFrame FlyerFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5)
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5)
 };
 CAnim FlyerMoveWalk (CFlyer::FRAME_stand01, CFlyer::FRAME_stand45, FlyerFramesWalk);
 
 CFrame FlyerFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 10)
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 10)
 };
 CAnim FlyerMoveRun (CFlyer::FRAME_stand01, CFlyer::FRAME_stand45, FlyerFramesRun);
 
@@ -224,33 +224,33 @@ void CFlyer::Stand ()
 
 CFrame FlyerFramesPain3 [] =
 {	
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim FlyerMovePain3 (CFlyer::FRAME_pain301, CFlyer::FRAME_pain304, FlyerFramesPain3, ConvertDerivedFunction(&CFlyer::Run));
 
 CFrame FlyerFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0) ,
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0) ,
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim FlyerMovePain2 (CFlyer::FRAME_pain201, CFlyer::FRAME_pain204, FlyerFramesPain2, ConvertDerivedFunction(&CFlyer::Run));
 
 CFrame FlyerFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim FlyerMovePain1 (CFlyer::FRAME_pain101, CFlyer::FRAME_pain109, FlyerFramesPain1, ConvertDerivedFunction(&CFlyer::Run));
 
@@ -289,23 +289,23 @@ void CFlyer::FireRight ()
 
 CFrame FlyerFramesAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireLeft)),			// left gun
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CFlyer::FireRight)),		// right gun
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim FlyerMoveAttack2 (CFlyer::FRAME_attak201, CFlyer::FRAME_attak217, FlyerFramesAttack2, ConvertDerivedFunction(&CFlyer::Run));
 
@@ -325,37 +325,37 @@ void CFlyer::SlashRight ()
 
 CFrame FlyerFramesStartMelee [] =
 {
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CFlyer::PopBlades)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CFlyer::PopBlades)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim FlyerMoveStartMelee (CFlyer::FRAME_attak101, CFlyer::FRAME_attak106, FlyerFramesStartMelee, ConvertDerivedFunction(&CFlyer::LoopMelee));
 
 CFrame FlyerFramesEndMelee [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim FlyerMoveEndMelee (CFlyer::FRAME_attak119, CFlyer::FRAME_attak121, FlyerFramesEndMelee, ConvertDerivedFunction(&CFlyer::Run));
 
 CFrame FlyerFramesLoopMelee [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),		// Loop Start
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CFlyer::SlashLeft)),		// Left Wing Strike
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CFlyer::SlashRight)),	// Right Wing Strike
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)		// Loop Ends
+	CFrame (&IMonster::AI_Charge, 0),		// Loop Start
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CFlyer::SlashLeft)),		// Left Wing Strike
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CFlyer::SlashRight)),	// Right Wing Strike
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)		// Loop Ends
 };
 CAnim FlyerMoveLoopMelee (CFlyer::FRAME_attak107, CFlyer::FRAME_attak118, FlyerFramesLoopMelee, ConvertDerivedFunction(&CFlyer::CheckMelee));
 

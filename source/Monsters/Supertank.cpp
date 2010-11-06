@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Supertank.h"
 
 CSuperTank::CSuperTank (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 };
 
@@ -55,66 +55,66 @@ void CSuperTank::Search ()
 
 CFrame SuperTankFramesStand []=
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim SuperTankMoveStand (CSuperTank::FRAME_stand1, CSuperTank::FRAME_stand60, SuperTankFramesStand);
 	
@@ -125,24 +125,24 @@ void CSuperTank::Stand ()
 
 CFrame SuperTankFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 12, ConvertDerivedFunction(&CSuperTank::PlayTreadSound)),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 12)
+	CFrame (&IMonster::AI_Run, 12, ConvertDerivedFunction(&CSuperTank::PlayTreadSound)),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 12)
 };
 CAnim SuperTankMoveRun (CSuperTank::FRAME_forwrd1, CSuperTank::FRAME_forwrd18, SuperTankFramesRun);
 
@@ -152,24 +152,24 @@ CAnim SuperTankMoveRun (CSuperTank::FRAME_forwrd1, CSuperTank::FRAME_forwrd18, S
 
 CFrame SuperTankFramesForward [] =
 {
-	CFrame (&CMonster::AI_Walk, 4, ConvertDerivedFunction(&CSuperTank::PlayTreadSound)),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4)
+	CFrame (&IMonster::AI_Walk, 4, ConvertDerivedFunction(&CSuperTank::PlayTreadSound)),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4)
 };
 CAnim SuperTankMoveForward (CSuperTank::FRAME_forwrd1, CSuperTank::FRAME_forwrd18, SuperTankFramesForward);
 
@@ -185,71 +185,71 @@ void CSuperTank::Run ()
 
 CFrame SuperTankFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain3 (CSuperTank::FRAME_painc9, CSuperTank::FRAME_painc12, SuperTankFramesPain3, &CMonster::Run);
+CAnim SuperTankMovePain3 (CSuperTank::FRAME_painc9, CSuperTank::FRAME_painc12, SuperTankFramesPain3, &IMonster::Run);
 
 CFrame SuperTankFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain2 (CSuperTank::FRAME_painb5, CSuperTank::FRAME_painb8, SuperTankFramesPain2, &CMonster::Run);
+CAnim SuperTankMovePain2 (CSuperTank::FRAME_painb5, CSuperTank::FRAME_painb8, SuperTankFramesPain2, &IMonster::Run);
 
 CFrame SuperTankFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim SuperTankMovePain1 (CSuperTank::FRAME_paina1, CSuperTank::FRAME_paina4, SuperTankFramesPain1, &CMonster::Run);
+CAnim SuperTankMovePain1 (CSuperTank::FRAME_paina1, CSuperTank::FRAME_paina4, SuperTankFramesPain1, &IMonster::Run);
 
 CFrame SuperTankFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0, &CMonster::BossExplode)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0, &IMonster::BossExplode)
 };
 CAnim SuperTankMoveDeath (CSuperTank::FRAME_death1, CSuperTank::FRAME_death24, SuperTankFramesDeath1, ConvertDerivedFunction(&CSuperTank::Dead));
 
 #if (MONSTER_SPECIFIC_FLAGS & SUPERTANK_USES_GRENADES)
 CFrame SuperTankFramesAttack4[] =
 {
-	CFrame (&CMonster::AI_Move,	0, ConvertDerivedFunction(&CSuperTank::Grenade)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0, ConvertDerivedFunction(&CSuperTank::Grenade)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0, ConvertDerivedFunction(&CSuperTank::Grenade)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0, ConvertDerivedFunction(&CSuperTank::Grenade)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim SuperTankMoveAttack4 (CSuperTank::FRAME_attakd1, CSuperTank::FRAME_attakd6, SuperTankFramesAttack4, &CMonster::Run);
+CAnim SuperTankMoveAttack4 (CSuperTank::FRAME_attakd1, CSuperTank::FRAME_attakd6, SuperTankFramesAttack4, &IMonster::Run);
 
 void CSuperTank::Grenade ()
 {
@@ -281,65 +281,65 @@ void CSuperTank::Grenade ()
 
 CFrame SuperTankFramesAttack2[]=
 {
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0),
-	CFrame (&CMonster::AI_Charge,		0)
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0,	ConvertDerivedFunction(&CSuperTank::Rocket)),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0),
+	CFrame (&IMonster::AI_Charge,		0)
 };
-CAnim SuperTankMoveAttack2 (CSuperTank::FRAME_attakb1, CSuperTank::FRAME_attakb27, SuperTankFramesAttack2, &CMonster::Run);
+CAnim SuperTankMoveAttack2 (CSuperTank::FRAME_attakb1, CSuperTank::FRAME_attakb27, SuperTankFramesAttack2, &IMonster::Run);
 
 CFrame SuperTankFramesAttack1[]=
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CSuperTank::MachineGun)),
 };
 CAnim SuperTankMoveAttack1 (CSuperTank::FRAME_attaka1, CSuperTank::FRAME_attaka6, SuperTankFramesAttack1, ConvertDerivedFunction(&CSuperTank::ReAttack1));
 
 CFrame SuperTankFramesEndAttack1[]=
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim SuperTankMoveEndAttack1 (CSuperTank::FRAME_attaka7, CSuperTank::FRAME_attaka20, SuperTankFramesEndAttack1, &CMonster::Run);
+CAnim SuperTankMoveEndAttack1 (CSuperTank::FRAME_attaka7, CSuperTank::FRAME_attaka20, SuperTankFramesEndAttack1, &IMonster::Run);
 
 void CSuperTank::ReAttack1 ()
 {

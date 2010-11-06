@@ -35,34 +35,34 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Infantry.h"
 
 CInfantry::CInfantry (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
 CFrame InfantryFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim InfantryMoveStand (CInfantry::FRAME_stand50, CInfantry::FRAME_stand71, InfantryFramesStand);
 
@@ -73,57 +73,57 @@ void CInfantry::Stand ()
 
 CFrame InfantryFramesFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 3),
-	CFrame (&CMonster::AI_Stand, 6),
-	CFrame (&CMonster::AI_Stand, 3),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -2),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, -1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -1),
-	CFrame (&CMonster::AI_Stand, -1),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -3),
-	CFrame (&CMonster::AI_Stand, -2),
-	CFrame (&CMonster::AI_Stand, -3),
-	CFrame (&CMonster::AI_Stand, -3),
-	CFrame (&CMonster::AI_Stand, -2)
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 3),
+	CFrame (&IMonster::AI_Stand, 6),
+	CFrame (&IMonster::AI_Stand, 3),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -2),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, -1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -1),
+	CFrame (&IMonster::AI_Stand, -1),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -3),
+	CFrame (&IMonster::AI_Stand, -2),
+	CFrame (&IMonster::AI_Stand, -3),
+	CFrame (&IMonster::AI_Stand, -3),
+	CFrame (&IMonster::AI_Stand, -2)
 };
-CAnim InfantryMoveFidget (CInfantry::FRAME_stand01, CInfantry::FRAME_stand49, InfantryFramesFidget, &CMonster::Stand);
+CAnim InfantryMoveFidget (CInfantry::FRAME_stand01, CInfantry::FRAME_stand49, InfantryFramesFidget, &IMonster::Stand);
 
 void CInfantry::Idle ()
 {
@@ -133,18 +133,18 @@ void CInfantry::Idle ()
 
 CFrame InfantryFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 6),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 5)
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 6),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 5)
 };
 CAnim InfantryMoveWalk (CInfantry::FRAME_walk03, CInfantry::FRAME_walk14, InfantryFramesWalk);
 
@@ -155,14 +155,14 @@ void CInfantry::Walk ()
 
 CFrame InfantryFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 20),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 7),
-	CFrame (&CMonster::AI_Run, 30),
-	CFrame (&CMonster::AI_Run, 35),
-	CFrame (&CMonster::AI_Run, 2),
-	CFrame (&CMonster::AI_Run, 6)
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 20),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 7),
+	CFrame (&IMonster::AI_Run, 30),
+	CFrame (&IMonster::AI_Run, 35),
+	CFrame (&IMonster::AI_Run, 2),
+	CFrame (&IMonster::AI_Run, 6)
 };
 CAnim InfantryMoveRun (CInfantry::FRAME_run01, CInfantry::FRAME_run08, InfantryFramesRun);
 
@@ -176,31 +176,31 @@ void CInfantry::Run ()
 
 CFrame InfantryFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 6),
-	CFrame (&CMonster::AI_Move, 2)
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 6),
+	CFrame (&IMonster::AI_Move, 2)
 };
 CAnim InfantryMovePain1 (CInfantry::FRAME_pain101, CInfantry::FRAME_pain110, InfantryFramesPain1, ConvertDerivedFunction(&CInfantry::Run));
 
 CFrame InfantryFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 5),
-	CFrame (&CMonster::AI_Move, 2)
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 5),
+	CFrame (&IMonster::AI_Move, 2)
 };
 CAnim InfantryMovePain2 (CInfantry::FRAME_pain201, CInfantry::FRAME_pain210, InfantryFramesPain2, ConvertDerivedFunction(&CInfantry::Run));
 
@@ -311,71 +311,71 @@ void CInfantry::Dead ()
 
 CFrame InfantryFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 9),
-	CFrame (&CMonster::AI_Move, 9),
-	CFrame (&CMonster::AI_Move, 5),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -3)
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 9),
+	CFrame (&IMonster::AI_Move, 9),
+	CFrame (&IMonster::AI_Move, 5),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -3)
 };
 CAnim InfantryMoveDeath1 (CInfantry::FRAME_death101, CInfantry::FRAME_death120, InfantryFramesDeath1, ConvertDerivedFunction(&CInfantry::Dead));
 
 // Off with his head
 CFrame InfantryFramesDeath2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 5),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 4),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -2,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -2,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -3,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -1,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -2,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, 0,   ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, 2,   ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, 2,   ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, 3,   ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -10, ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -7,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -8,  ConvertDerivedFunction(&CInfantry::MachineGun)),
-	CFrame (&CMonster::AI_Move, -6),
-	CFrame (&CMonster::AI_Move, 4),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 5),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 4),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -2,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -2,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -3,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -1,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -2,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, 0,   ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, 2,   ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, 2,   ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, 3,   ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -10, ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -7,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -8,  ConvertDerivedFunction(&CInfantry::MachineGun)),
+	CFrame (&IMonster::AI_Move, -6),
+	CFrame (&IMonster::AI_Move, 4),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim InfantryMoveDeath2 (CInfantry::FRAME_death201, CInfantry::FRAME_death225, InfantryFramesDeath2, ConvertDerivedFunction(&CInfantry::Dead));
 
 CFrame InfantryFramesDeath3 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -6),
-	CFrame (&CMonster::AI_Move, -11),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -11),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -6),
+	CFrame (&IMonster::AI_Move, -11),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -11),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim InfantryMoveDeath3 (CInfantry::FRAME_death301, CInfantry::FRAME_death309, InfantryFramesDeath3, ConvertDerivedFunction(&CInfantry::Dead));
 
@@ -456,17 +456,17 @@ void CInfantry::Duck_Up ()
 CFrame InfantryFramesDuck [] =
 {
 #if !ROGUE_FEATURES
-	CFrame (&CMonster::AI_Move, -2, ConvertDerivedFunction(&CInfantry::Duck_Down)),
-	CFrame (&CMonster::AI_Move, -5, ConvertDerivedFunction(&CInfantry::Duck_Hold)),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 4, ConvertDerivedFunction(&CInfantry::Duck_Up)),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, -2, ConvertDerivedFunction(&CInfantry::Duck_Down)),
+	CFrame (&IMonster::AI_Move, -5, ConvertDerivedFunction(&CInfantry::Duck_Hold)),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 4, ConvertDerivedFunction(&CInfantry::Duck_Up)),
+	CFrame (&IMonster::AI_Move, 0)
 #else
-	CFrame (&CMonster::AI_Move, -2, &CMonster::DuckDown),
-	CFrame (&CMonster::AI_Move, -5, &CMonster::DuckHold),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 4, &CMonster::UnDuck),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, -2, &IMonster::DuckDown),
+	CFrame (&IMonster::AI_Move, -5, &IMonster::DuckHold),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 4, &IMonster::UnDuck),
+	CFrame (&IMonster::AI_Move, 0)
 #endif
 };
 CAnim InfantryMoveDuck (CInfantry::FRAME_duck01, CInfantry::FRAME_duck05, InfantryFramesDuck, ConvertDerivedFunction(&CInfantry::Run));
@@ -502,81 +502,81 @@ void CInfantry::Fire ()
 #if XATRIX_FEATURES
 CFrame InfantryFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, 10),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::Fire)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, -7),
-	CFrame (&CMonster::AI_Charge, -6),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::CockGun)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1)
+	CFrame (&IMonster::AI_Charge, 10),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::Fire)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, -7),
+	CFrame (&IMonster::AI_Charge, -6),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::CockGun)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1)
 };
 CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak101, CInfantry::FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #elif ROGUE_FEATURES
 CFrame InfantryFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -1, ConvertDerivedFunction(&CInfantry::Fire)),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CInfantry::CockGun)),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 4)
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -1, ConvertDerivedFunction(&CInfantry::Fire)),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CInfantry::CockGun)),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 4)
 };
 CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak101, CInfantry::FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #elif !(MONSTER_SPECIFIC_FLAGS & INFANTRY_DOES_REVERSE_GUN_ATTACK)
 CFrame InfantryFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::CockGun)),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 1, ConvertDerivedFunction(&CInfantry::Fire)),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -3)
+	CFrame (&IMonster::AI_Charge, 4),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::CockGun)),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, 1, ConvertDerivedFunction(&CInfantry::Fire)),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -3)
 };
 CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak101, CInfantry::FRAME_attak115, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #else
 CFrame InfantryFramesAttack1 [] =
 {
-	//CFrame (&CMonster::AI_Charge, -3),
-	//CFrame (&CMonster::AI_Charge, -2),
-	//CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 1, ConvertDerivedFunction(&CInfantry::Fire)),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, -1, ConvertDerivedFunction(&CInfantry::CockGun)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 4)
+	//CFrame (&IMonster::AI_Charge, -3),
+	//CFrame (&IMonster::AI_Charge, -2),
+	//CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 1, ConvertDerivedFunction(&CInfantry::Fire)),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, -1, ConvertDerivedFunction(&CInfantry::CockGun)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 4)
 };
 CAnim InfantryMoveAttack1 (CInfantry::FRAME_attak112, CInfantry::FRAME_attak101, InfantryFramesAttack1, ConvertDerivedFunction(&CInfantry::Run));
 #endif
@@ -596,14 +596,14 @@ void CInfantry::Smack ()
 
 CFrame InfantryFramesAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::Swing)),
-	CFrame (&CMonster::AI_Charge, 8),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 8, ConvertDerivedFunction(&CInfantry::Smack)),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CInfantry::Swing)),
+	CFrame (&IMonster::AI_Charge, 8),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 8, ConvertDerivedFunction(&CInfantry::Smack)),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 3),
 };
 CAnim InfantryMoveAttack2 (CInfantry::FRAME_attak201, CInfantry::FRAME_attak208, InfantryFramesAttack2, ConvertDerivedFunction(&CInfantry::Run));
 

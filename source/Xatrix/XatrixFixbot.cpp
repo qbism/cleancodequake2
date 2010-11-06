@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if XATRIX_FEATURES
 
 CFixbot::CFixbot (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 };
 
@@ -109,69 +109,69 @@ public:
 
 CFrame FixbotFramesLanding [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
 
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
 
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
 
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
 
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
 
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2))
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2)),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::FlyVertical2))
 };
 CAnim FixbotMoveLanding (CFixbot::FRAME_landing_01, CFixbot::FRAME_landing_58, FixbotFramesLanding);
 
@@ -180,51 +180,51 @@ CAnim FixbotMoveLanding (CFixbot::FRAME_landing_01, CFixbot::FRAME_landing_58, F
 */
 CFrame FixbotFramesStand [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
 
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::ChangeToRoam))
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::ChangeToRoam))
 };
 CAnim FixbotMoveStand (CFixbot::FRAME_ambient_01, CFixbot::FRAME_ambient_19, FixbotFramesStand);
 
 CFrame FixbotFramesStand2 [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
 
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim FixbotMoveStand2 (CFixbot::FRAME_ambient_01, CFixbot::FRAME_ambient_19, FixbotFramesStand2);
 
@@ -233,7 +233,7 @@ CAnim FixbotMoveStand2 (CFixbot::FRAME_ambient_01, CFixbot::FRAME_ambient_19, Fi
 */
 CFrame FixbotFramesRoamGoal [] =
 {
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::RoamGoal))
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CFixbot::RoamGoal))
 };
 CAnim FixbotMoveRoamGoal (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesRoamGoal);
 
@@ -253,51 +253,51 @@ void CFixbot::GoRoam ()
 */
 CFrame FixbotFramesTakeOff [] =
 {
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
 
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
-	CFrame (&CMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical))
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical)),
+	CFrame (&IMonster::AI_Move, 0.01f,	ConvertDerivedFunction (&CFixbot::FlyVertical))
 };
 CAnim FixbotMoveTakeOff (CFixbot::FRAME_takeoff_01, CFixbot::FRAME_takeoff_16, FixbotFramesTakeOff);
 
 /* findout what this is */
 CFrame FixbotFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim FixbotMovePain1 (CFixbot::FRAME_paina_01, CFixbot::FRAME_paina_06, FixbotFramesPain1, &CMonster::Run);
+CAnim FixbotMovePain1 (CFixbot::FRAME_paina_01, CFixbot::FRAME_paina_06, FixbotFramesPain1, &IMonster::Run);
 
 /* findout what this is */
 CFrame FixbotFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim FixbotMovePain2 (CFixbot::FRAME_painb_01, CFixbot::FRAME_painb_08, FixbotFramesPain2, &CMonster::Run);
+CAnim FixbotMovePain2 (CFixbot::FRAME_painb_01, CFixbot::FRAME_painb_08, FixbotFramesPain2, &IMonster::Run);
 
 /*
 	backup from pain
@@ -306,9 +306,9 @@ CAnim FixbotMovePain2 (CFixbot::FRAME_painb_01, CFixbot::FRAME_painb_08, FixbotF
 */
 CFrame FixbotFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move, -1)
+	CFrame (&IMonster::AI_Move, -1)
 };
-CAnim FixbotMovePain3 (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesPain3, &CMonster::Run);
+CAnim FixbotMovePain3 (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesPain3, &IMonster::Run);
 
 /*
 	bot has completed landing
@@ -317,7 +317,7 @@ CAnim FixbotMovePain3 (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, Fixbo
 */
 CFrame FixbotFramesLand [] =
 {
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim FixbotMoveLand (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesLand);
 
@@ -350,7 +350,7 @@ void CFixbot::AI_Facing (float dist)
 */
 CFrame FixbotFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk,	5)
+	CFrame (&IMonster::AI_Walk,	5)
 };
 CAnim FixbotMoveWalk (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesWalk);
 
@@ -359,14 +359,14 @@ CAnim FixbotMoveWalk (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, Fixbot
 */
 CFrame FixbotFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run,	10)
+	CFrame (&IMonster::AI_Run,	10)
 };
 CAnim FixbotMoveRun (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesRun);
 
 //
 CFrame FixbotFramesBackward [] =
 {
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim FixbotMoveBackward (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, FixbotFramesBackward);
 
@@ -377,12 +377,12 @@ CAnim FixbotMoveBackward (CFixbot::FRAME_freeze_01, CFixbot::FRAME_freeze_01, Fi
 */
 CFrame FixbotFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	-10,  ConvertDerivedFunction(&CFixbot::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	-10,  ConvertDerivedFunction(&CFixbot::FireBlaster)),
 };
 CAnim FixbotMoveAttack1 (CFixbot::FRAME_shoot_01, CFixbot::FRAME_shoot_06, FixbotFramesAttack1);
 
@@ -476,12 +476,12 @@ void CFixbot::FireLaser ()
 
 CFrame FixbotFramesLaserAttack [] =
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
-	CFrame (&CMonster::AI_Charge,	0,  ConvertDerivedFunction(&CFixbot::FireLaser))
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireLaser)),
+	CFrame (&IMonster::AI_Charge,	0,  ConvertDerivedFunction(&CFixbot::FireLaser))
 };
 CAnim FixbotMoveLaserAttack (CFixbot::FRAME_shoot_01, CFixbot::FRAME_shoot_06, FixbotFramesLaserAttack);
 
@@ -491,42 +491,42 @@ CAnim FixbotMoveLaserAttack (CFixbot::FRAME_shoot_01, CFixbot::FRAME_shoot_06, F
 */
 CFrame FixbotFramesAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
 
-	CFrame (&CMonster::AI_Charge,	-10),
-	CFrame (&CMonster::AI_Charge,	 -10),
-	CFrame (&CMonster::AI_Charge,	-10),
-	CFrame (&CMonster::AI_Charge,	 -10),
-	CFrame (&CMonster::AI_Charge,	-10),
-	CFrame (&CMonster::AI_Charge,	 -10),
-	CFrame (&CMonster::AI_Charge,	-10),
-	CFrame (&CMonster::AI_Charge,	 -10),
-	CFrame (&CMonster::AI_Charge,	-10),
-	CFrame (&CMonster::AI_Charge,	 -10),
+	CFrame (&IMonster::AI_Charge,	-10),
+	CFrame (&IMonster::AI_Charge,	 -10),
+	CFrame (&IMonster::AI_Charge,	-10),
+	CFrame (&IMonster::AI_Charge,	 -10),
+	CFrame (&IMonster::AI_Charge,	-10),
+	CFrame (&IMonster::AI_Charge,	 -10),
+	CFrame (&IMonster::AI_Charge,	-10),
+	CFrame (&IMonster::AI_Charge,	 -10),
+	CFrame (&IMonster::AI_Charge,	-10),
+	CFrame (&IMonster::AI_Charge,	 -10),
 
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CFixbot::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	 0),
 
-	CFrame (&CMonster::AI_Charge,	 0)
+	CFrame (&IMonster::AI_Charge,	 0)
 };
-CAnim FixbotMoveAttack2 (CFixbot::FRAME_charging_01, CFixbot::FRAME_charging_31, FixbotFramesAttack2, &CMonster::Run);
+CAnim FixbotMoveAttack2 (CFixbot::FRAME_charging_01, CFixbot::FRAME_charging_31, FixbotFramesAttack2, &IMonster::Run);
 
 void CFixbot::AI_Move2 (float dist)
 {

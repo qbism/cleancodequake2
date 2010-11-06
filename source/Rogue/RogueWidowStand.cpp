@@ -164,7 +164,7 @@ public:
 IMPLEMENT_SAVE_SOURCE (CWidowLegs);
 
 CWidowStand::CWidowStand (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 };
 
@@ -213,61 +213,61 @@ float CWidowStand::TargetAngle ()
 
 CFrame WidowFramesAttackPreBlaster [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::AttackBlaster))
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::AttackBlaster))
 };
 CAnim WidowMoveAttackPreBlaster (CWidowStand::FRAME_fired01, CWidowStand::FRAME_fired02a, WidowFramesAttackPreBlaster);
 
 // Loop this
 CFrame WidowFramesAttackBlaster [] =
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// straight ahead
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// 100 degrees right
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// 50 degrees right
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// straight
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// 50 degrees left
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster))		// 70 degrees left
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// straight ahead
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// 100 degrees right
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// 50 degrees right
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// straight
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),		// 50 degrees left
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReAttackBlaster))		// 70 degrees left
 };
 CAnim WidowMoveAttackBlaster (CWidowStand::FRAME_fired02a, CWidowStand::FRAME_fired20, WidowFramesAttackBlaster);
 
 CFrame WidowFramesAttackPostBlaster [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0)
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0)
 };
-CAnim WidowMoveAttackPostBlaster (CWidowStand::FRAME_fired21, CWidowStand::FRAME_fired22, WidowFramesAttackPostBlaster, &CMonster::Run);
+CAnim WidowMoveAttackPostBlaster (CWidowStand::FRAME_fired21, CWidowStand::FRAME_fired22, WidowFramesAttackPostBlaster, &IMonster::Run);
 
 CFrame WidowFramesAttackPostBlasterR [] =
 {
-	CFrame (&CMonster::AI_Charge,	-2),
-	CFrame (&CMonster::AI_Charge,	-10),
-	CFrame (&CMonster::AI_Charge,	-2),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartRun12))
+	CFrame (&IMonster::AI_Charge,	-2),
+	CFrame (&IMonster::AI_Charge,	-10),
+	CFrame (&IMonster::AI_Charge,	-2),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartRun12))
 };
 CAnim WidowMoveAttackPostBlasterR (CWidowStand::FRAME_transa01, CWidowStand::FRAME_transa05, WidowFramesAttackPostBlasterR);
 
 CFrame WidowFramesAttackPostBlasterL [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	14),
-	CFrame (&CMonster::AI_Charge,	-2),
-	CFrame (&CMonster::AI_Charge,	10),
-	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CWidowStand::StartRun12))
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	14),
+	CFrame (&IMonster::AI_Charge,	-2),
+	CFrame (&IMonster::AI_Charge,	10),
+	CFrame (&IMonster::AI_Charge,	10,	ConvertDerivedFunction(&CWidowStand::StartRun12))
 };
 CAnim WidowMoveAttackPostBlasterL (CWidowStand::FRAME_transb01, CWidowStand::FRAME_transb05, WidowFramesAttackPostBlasterL);
 
@@ -426,7 +426,7 @@ void CWidowStand::DoSpawn ()
 			ent->Monster->Commander = Entity;
 
 			ent->NextThink = Level.Frame;
-			void	(CMonster::*TheThink) () = ent->Monster->Think;
+			void	(IMonster::*TheThink) () = ent->Monster->Think;
 			(ent->Monster->*TheThink) ();
 			
 			ent->Monster->AIFlags |= AI_SPAWNED_WIDOW|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
@@ -489,54 +489,54 @@ void CWidowStand::Step ()
 
 CFrame WidowFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim	WidowMoveStand (CWidowStand::FRAME_idle01, CWidowStand::FRAME_idle11, WidowFramesStand);
 
 CFrame WidowFramesWalk [] =
 {
 	// auto generated numbers
-	CFrame (&CMonster::AI_Walk,	2.79f,	ConvertDerivedFunction(&CWidowStand::Step)),
-	CFrame (&CMonster::AI_Walk,	2.77f),
-	CFrame (&CMonster::AI_Walk,	3.53f),
-	CFrame (&CMonster::AI_Walk,	3.97f),
-	CFrame (&CMonster::AI_Walk,	4.13f),			//5
-	CFrame (&CMonster::AI_Walk,	4.09f),
-	CFrame (&CMonster::AI_Walk,	3.84f),
-	CFrame (&CMonster::AI_Walk,	3.62f,	ConvertDerivedFunction(&CWidowStand::Step)),
-	CFrame (&CMonster::AI_Walk,	3.29f),
-	CFrame (&CMonster::AI_Walk,	6.08f),			//10
-	CFrame (&CMonster::AI_Walk,	6.94f),
-	CFrame (&CMonster::AI_Walk,	5.73f),
-	CFrame (&CMonster::AI_Walk,	2.85f)
+	CFrame (&IMonster::AI_Walk,	2.79f,	ConvertDerivedFunction(&CWidowStand::Step)),
+	CFrame (&IMonster::AI_Walk,	2.77f),
+	CFrame (&IMonster::AI_Walk,	3.53f),
+	CFrame (&IMonster::AI_Walk,	3.97f),
+	CFrame (&IMonster::AI_Walk,	4.13f),			//5
+	CFrame (&IMonster::AI_Walk,	4.09f),
+	CFrame (&IMonster::AI_Walk,	3.84f),
+	CFrame (&IMonster::AI_Walk,	3.62f,	ConvertDerivedFunction(&CWidowStand::Step)),
+	CFrame (&IMonster::AI_Walk,	3.29f),
+	CFrame (&IMonster::AI_Walk,	6.08f),			//10
+	CFrame (&IMonster::AI_Walk,	6.94f),
+	CFrame (&IMonster::AI_Walk,	5.73f),
+	CFrame (&IMonster::AI_Walk,	2.85f)
 };
 CAnim WidowMoveWalk (CWidowStand::FRAME_walk01, CWidowStand::FRAME_walk13, WidowFramesWalk);
 
 CFrame WidowFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run,	2.79f,	ConvertDerivedFunction(&CWidowStand::Step)),
-	CFrame (&CMonster::AI_Run,	2.77f),
-	CFrame (&CMonster::AI_Run,	3.53f),
-	CFrame (&CMonster::AI_Run,	3.97f),
-	CFrame (&CMonster::AI_Run,	4.13f),			//5
-	CFrame (&CMonster::AI_Run,	4.09f),
-	CFrame (&CMonster::AI_Run,	3.84f),
-	CFrame (&CMonster::AI_Run,	3.62f,	ConvertDerivedFunction(&CWidowStand::Step)),
-	CFrame (&CMonster::AI_Run,	3.29f),
-	CFrame (&CMonster::AI_Run,	6.08f),			//10
-	CFrame (&CMonster::AI_Run,	6.94f),
-	CFrame (&CMonster::AI_Run,	5.73f),
-	CFrame (&CMonster::AI_Run,	2.85f)
+	CFrame (&IMonster::AI_Run,	2.79f,	ConvertDerivedFunction(&CWidowStand::Step)),
+	CFrame (&IMonster::AI_Run,	2.77f),
+	CFrame (&IMonster::AI_Run,	3.53f),
+	CFrame (&IMonster::AI_Run,	3.97f),
+	CFrame (&IMonster::AI_Run,	4.13f),			//5
+	CFrame (&IMonster::AI_Run,	4.09f),
+	CFrame (&IMonster::AI_Run,	3.84f),
+	CFrame (&IMonster::AI_Run,	3.62f,	ConvertDerivedFunction(&CWidowStand::Step)),
+	CFrame (&IMonster::AI_Run,	3.29f),
+	CFrame (&IMonster::AI_Run,	6.08f),			//10
+	CFrame (&IMonster::AI_Run,	6.94f),
+	CFrame (&IMonster::AI_Run,	5.73f),
+	CFrame (&IMonster::AI_Run,	2.85f)
 };
 CAnim WidowMoveRun (CWidowStand::FRAME_walk01, CWidowStand::FRAME_walk13, WidowFramesRun);
 
@@ -548,16 +548,16 @@ void CWidowStand::StepShoot ()
 
 CFrame WidowFramesRunAttack [] =
 {
-	CFrame (&CMonster::AI_Charge,	13,	ConvertDerivedFunction(&CWidowStand::StepShoot)),
-	CFrame (&CMonster::AI_Charge,	11.72f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	18.04f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	14.58f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	13,	ConvertDerivedFunction(&CWidowStand::StepShoot)),			//5
-	CFrame (&CMonster::AI_Charge,	12.12f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	19.63f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	11.37f,	ConvertDerivedFunction(&CWidowStand::FireBlaster))
+	CFrame (&IMonster::AI_Charge,	13,	ConvertDerivedFunction(&CWidowStand::StepShoot)),
+	CFrame (&IMonster::AI_Charge,	11.72f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	18.04f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	14.58f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	13,	ConvertDerivedFunction(&CWidowStand::StepShoot)),			//5
+	CFrame (&IMonster::AI_Charge,	12.12f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	19.63f,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	11.37f,	ConvertDerivedFunction(&CWidowStand::FireBlaster))
 };
-CAnim WidowMoveRunAttack (CWidowStand::FRAME_run01, CWidowStand::FRAME_run08, WidowFramesRunAttack, &CMonster::Run);
+CAnim WidowMoveRunAttack (CWidowStand::FRAME_run01, CWidowStand::FRAME_run08, WidowFramesRunAttack, &IMonster::Run);
 
 //
 // These three allow specific entry into the run sequence
@@ -571,54 +571,54 @@ void CWidowStand::StartRun12 ()
 
 CFrame WidowFramesAttackPreRail [] =
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartRail)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::AttackRail))
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartRail)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::AttackRail))
 };
 CAnim WidowMoveAttackPreRail (CWidowStand::FRAME_transc01, CWidowStand::FRAME_transc04, WidowFramesAttackPreRail);
 
 CFrame WidowFramesAttackRail [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::SaveLoc)),
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CWidowStand::FireRail)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::SaveLoc)),
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CWidowStand::FireRail)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
 };
-CAnim WidowMoveAttackRail (CWidowStand::FRAME_firea01, CWidowStand::FRAME_firea09, WidowFramesAttackRail, &CMonster::Run);
+CAnim WidowMoveAttackRail (CWidowStand::FRAME_firea01, CWidowStand::FRAME_firea09, WidowFramesAttackRail, &IMonster::Run);
 
 CFrame WidowFramesAttackRailR [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::SaveLoc)),
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CWidowStand::FireRail)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::SaveLoc)),
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CWidowStand::FireRail)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
 };
-CAnim WidowMoveAttackRailR (CWidowStand::FRAME_fireb01, CWidowStand::FRAME_fireb09, WidowFramesAttackRailR, &CMonster::Run);
+CAnim WidowMoveAttackRailR (CWidowStand::FRAME_fireb01, CWidowStand::FRAME_fireb09, WidowFramesAttackRailR, &IMonster::Run);
 
 CFrame WidowFramesAttackRailL [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::SaveLoc)),
-	CFrame (&CMonster::AI_Charge, -10, ConvertDerivedFunction(&CWidowStand::FireRail)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::SaveLoc)),
+	CFrame (&IMonster::AI_Charge, -10, ConvertDerivedFunction(&CWidowStand::FireRail)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CWidowStand::RailDone))
 };
-CAnim WidowMoveAttackRailL (CWidowStand::FRAME_firec01, CWidowStand::FRAME_firec09, WidowFramesAttackRailL, &CMonster::Run);
+CAnim WidowMoveAttackRailL (CWidowStand::FRAME_firec01, CWidowStand::FRAME_firec09, WidowFramesAttackRailL, &IMonster::Run);
 
 void CWidowStand::FireRail ()
 {
@@ -677,52 +677,52 @@ void CWidowStand::DoneSpawn ()
 
 CFrame WidowFramesSpawn [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),						//1
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartSpawn)),
-	CFrame (&CMonster::AI_Charge,	0),						//5
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//6
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReadySpawn)),			//7
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//9
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::SpawnCheck)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//11
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//13
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::DoneSpawn))
+	CFrame (&IMonster::AI_Charge,	0),						//1
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::StartSpawn)),
+	CFrame (&IMonster::AI_Charge,	0),						//5
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//6
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::ReadySpawn)),			//7
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//9
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::SpawnCheck)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//11
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::FireBlaster)),				//13
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CWidowStand::DoneSpawn))
 };
-CAnim WidowMoveSpawn (CWidowStand::FRAME_spawn01, CWidowStand::FRAME_spawn18, WidowFramesSpawn, &CMonster::Run);
+CAnim WidowMoveSpawn (CWidowStand::FRAME_spawn01, CWidowStand::FRAME_spawn18, WidowFramesSpawn, &IMonster::Run);
 
 CFrame WidowFramesPainHeavy [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim WidowMovePainHeavy (CWidowStand::FRAME_pain01, CWidowStand::FRAME_pain13, WidowFramesPainHeavy, &CMonster::Run);
+CAnim WidowMovePainHeavy (CWidowStand::FRAME_pain01, CWidowStand::FRAME_pain13, WidowFramesPainHeavy, &IMonster::Run);
 
 CFrame WidowFramesPainLight [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim WidowMovePainLight (CWidowStand::FRAME_pain201, CWidowStand::FRAME_pain203, WidowFramesPainLight, &CMonster::Run);
+CAnim WidowMovePainLight (CWidowStand::FRAME_pain201, CWidowStand::FRAME_pain203, WidowFramesPainLight, &IMonster::Run);
 
 void CWidowStand::SpawnOutStart ()
 {
@@ -760,37 +760,37 @@ void CWidowStand::SpawnOutDo ()
 
 CFrame WidowFramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		//5
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CWidowStand::SpawnOutStart)),	//10
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),				//15	
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),				//20	
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),				//25
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),		
-	CFrame (&CMonster::AI_Move,	0),				//30	
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CWidowStand::SpawnOutDo))
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		//5
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CWidowStand::SpawnOutStart)),	//10
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),				//15	
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),				//20	
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),				//25
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),		
+	CFrame (&IMonster::AI_Move,	0),				//30	
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CWidowStand::SpawnOutDo))
 };
 CAnim WidowMoveDeath (CWidowStand::FRAME_death01, CWidowStand::FRAME_death31, WidowFramesDeath);
 
@@ -806,16 +806,16 @@ void CWidowStand::AttackKick ()
 
 CFrame WidowFramesAttackKick [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CWidowStand::AttackKick)),
-	CFrame (&CMonster::AI_Move, 0),				// 5
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CWidowStand::AttackKick)),
+	CFrame (&IMonster::AI_Move, 0),				// 5
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim WidowMoveAttackKick (CWidowStand::FRAME_kick01, CWidowStand::FRAME_kick08, WidowFramesAttackKick, &CMonster::Run);
+CAnim WidowMoveAttackKick (CWidowStand::FRAME_kick01, CWidowStand::FRAME_kick08, WidowFramesAttackKick, &IMonster::Run);
 
 void CWidowStand::Stand ()
 {
@@ -1041,7 +1041,7 @@ void CWidowStand::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (MeansOfDeath == MOD_TARGET_LASER)
 		return;
 
-	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+	IMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
 }
 
 void CWidowStand::Melee ()

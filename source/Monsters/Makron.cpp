@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Makron.h"
 
 CMakron::CMakron (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
@@ -63,66 +63,66 @@ void CMakron::Taunt ()
 
 CFrame MakronFramesStand []=
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 10
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 20
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 30
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 40
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 50
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 60
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 10
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 20
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 30
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 40
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 50
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 60
 };
 CAnim	MakronMoveStand (CMakron::FRAME_stand201, CMakron::FRAME_stand260, MakronFramesStand);
 	
@@ -163,31 +163,31 @@ void CMakron::PreRailgun ()
 
 CFrame MakronFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 3,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8,	ConvertDerivedFunction(&CMakron::StepRight)),
-	CFrame (&CMonster::AI_Run, 6),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 9),
-	CFrame (&CMonster::AI_Run, 6),
-	CFrame (&CMonster::AI_Run, 12)
+	CFrame (&IMonster::AI_Run, 3,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8,	ConvertDerivedFunction(&CMakron::StepRight)),
+	CFrame (&IMonster::AI_Run, 6),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 9),
+	CFrame (&IMonster::AI_Run, 6),
+	CFrame (&IMonster::AI_Run, 12)
 };
 CAnim	MakronMoveRun (CMakron::FRAME_walk204, CMakron::FRAME_walk213, MakronFramesRun);
 
 CFrame MakronFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 3,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Walk, 12),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8,	ConvertDerivedFunction(&CMakron::StepRight)),
-	CFrame (&CMonster::AI_Walk, 6),
-	CFrame (&CMonster::AI_Walk, 12),
-	CFrame (&CMonster::AI_Walk, 9),
-	CFrame (&CMonster::AI_Walk, 6),
-	CFrame (&CMonster::AI_Walk, 12)
+	CFrame (&IMonster::AI_Walk, 3,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Walk, 12),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8,	ConvertDerivedFunction(&CMakron::StepRight)),
+	CFrame (&IMonster::AI_Walk, 6),
+	CFrame (&IMonster::AI_Walk, 12),
+	CFrame (&IMonster::AI_Walk, 9),
+	CFrame (&IMonster::AI_Walk, 6),
+	CFrame (&IMonster::AI_Walk, 12)
 };
 CAnim	MakronMoveWalk (CMakron::FRAME_walk204, CMakron::FRAME_walk213, MakronFramesRun);
 
@@ -203,53 +203,53 @@ void CMakron::Run ()
 
 CFrame MakronFramesPain6 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		// 10
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::PopUp)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		// 20
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::Taunt)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		// 10
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::PopUp)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		// 20
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::Taunt)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMovePain6 (CMakron::FRAME_pain601, CMakron::FRAME_pain627, MakronFramesPain6, &CMonster::Run);
+CAnim MakronMovePain6 (CMakron::FRAME_pain601, CMakron::FRAME_pain627, MakronFramesPain6, &IMonster::Run);
 
 CFrame MakronFramesPain5 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMovePain5 (CMakron::FRAME_pain501, CMakron::FRAME_pain504, MakronFramesPain5, &CMonster::Run);
+CAnim MakronMovePain5 (CMakron::FRAME_pain501, CMakron::FRAME_pain504, MakronFramesPain5, &IMonster::Run);
 
 CFrame MakronFramesPain4 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMovePain4 (CMakron::FRAME_pain401, CMakron::FRAME_pain404, MakronFramesPain4, &CMonster::Run);
+CAnim MakronMovePain4 (CMakron::FRAME_pain401, CMakron::FRAME_pain404, MakronFramesPain4, &IMonster::Run);
 
 void CMakron::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -294,146 +294,146 @@ void CMakron::Pain (IBaseEntity *Other, sint32 Damage)
 
 CFrame MakronFramesDeath2 [] =
 {
-	CFrame (&CMonster::AI_Move,	-15),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	-12),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			// 10
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	11),
-	CFrame (&CMonster::AI_Move,	12),
-	CFrame (&CMonster::AI_Move,	11,	ConvertDerivedFunction(&CMakron::StepRight)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			// 20
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			// 30
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	5),
-	CFrame (&CMonster::AI_Move,	7),
-	CFrame (&CMonster::AI_Move,	6,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-1),
-	CFrame (&CMonster::AI_Move,	2),			// 40
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),			// 50
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	-4),
-	CFrame (&CMonster::AI_Move,	-6,	ConvertDerivedFunction(&CMakron::StepRight)),
-	CFrame (&CMonster::AI_Move,	-4),
-	CFrame (&CMonster::AI_Move,	-4,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			// 60
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	-5),
-	CFrame (&CMonster::AI_Move,	-3,	ConvertDerivedFunction(&CMakron::StepRight)),
-	CFrame (&CMonster::AI_Move,	-8),
-	CFrame (&CMonster::AI_Move,	-3,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Move,	-7),
-	CFrame (&CMonster::AI_Move,	-4),
-	CFrame (&CMonster::AI_Move,	-4,	ConvertDerivedFunction(&CMakron::StepRight)),			// 70
-	CFrame (&CMonster::AI_Move,	-6),			
-	CFrame (&CMonster::AI_Move,	-7),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::StepLeft)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			// 80
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	0),			// 90
-	CFrame (&CMonster::AI_Move,	27,	ConvertDerivedFunction(&CMakron::Hit)),			
-	CFrame (&CMonster::AI_Move,	26),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::BrainSplorch)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)			// 95
+	CFrame (&IMonster::AI_Move,	-15),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	-12),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			// 10
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	11),
+	CFrame (&IMonster::AI_Move,	12),
+	CFrame (&IMonster::AI_Move,	11,	ConvertDerivedFunction(&CMakron::StepRight)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			// 20
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			// 30
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	5),
+	CFrame (&IMonster::AI_Move,	7),
+	CFrame (&IMonster::AI_Move,	6,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-1),
+	CFrame (&IMonster::AI_Move,	2),			// 40
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),			// 50
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	-4),
+	CFrame (&IMonster::AI_Move,	-6,	ConvertDerivedFunction(&CMakron::StepRight)),
+	CFrame (&IMonster::AI_Move,	-4),
+	CFrame (&IMonster::AI_Move,	-4,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			// 60
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	-5),
+	CFrame (&IMonster::AI_Move,	-3,	ConvertDerivedFunction(&CMakron::StepRight)),
+	CFrame (&IMonster::AI_Move,	-8),
+	CFrame (&IMonster::AI_Move,	-3,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Move,	-7),
+	CFrame (&IMonster::AI_Move,	-4),
+	CFrame (&IMonster::AI_Move,	-4,	ConvertDerivedFunction(&CMakron::StepRight)),			// 70
+	CFrame (&IMonster::AI_Move,	-6),			
+	CFrame (&IMonster::AI_Move,	-7),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::StepLeft)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			// 80
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	0),			// 90
+	CFrame (&IMonster::AI_Move,	27,	ConvertDerivedFunction(&CMakron::Hit)),			
+	CFrame (&IMonster::AI_Move,	26),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::BrainSplorch)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)			// 95
 };
 CAnim MakronMoveDeath2 (CMakron::FRAME_death201, CMakron::FRAME_death295, MakronFramesDeath2, ConvertDerivedFunction(&CMakron::Dead));
 
 CFrame MakronFramesDeath3 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
 CAnim MakronMoveDeath3 (CMakron::FRAME_death301, CMakron::FRAME_death320, MakronFramesDeath3);
 
 CFrame MakronFramesSight [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMoveSight (CMakron::FRAME_active01, CMakron::FRAME_active13, MakronFramesSight, &CMonster::Run);
+CAnim MakronMoveSight (CMakron::FRAME_active01, CMakron::FRAME_active13, MakronFramesSight, &IMonster::Run);
 
 void CMakron::FireBFG ()
 {
@@ -454,47 +454,47 @@ void CMakron::FireBFG ()
 
 CFrame MakronFramesAttack3 []=
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMakron::FireBFG)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMakron::FireBFG)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMoveAttack3 (CMakron::FRAME_attak301, CMakron::FRAME_attak308, MakronFramesAttack3, &CMonster::Run);
+CAnim MakronMoveAttack3 (CMakron::FRAME_attak301, CMakron::FRAME_attak308, MakronFramesAttack3, &IMonster::Run);
 
 CFrame MakronFramesAttack4[]=
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireHyperblaster)),		// fire
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMoveAttack4 (CMakron::FRAME_attak401, CMakron::FRAME_attak426, MakronFramesAttack4, &CMonster::Run);
+CAnim MakronMoveAttack4 (CMakron::FRAME_attak401, CMakron::FRAME_attak426, MakronFramesAttack4, &IMonster::Run);
 
 void CMakron::FireHyperblaster ()
 {
@@ -526,24 +526,24 @@ void CMakron::FireHyperblaster ()
 
 CFrame MakronFramesAttack5[]=
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMakron::PreRailgun)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMakron::SavePosition)),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireRailgun)),		// Fire railgun
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMakron::PreRailgun)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMakron::SavePosition)),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CMakron::FireRailgun)),		// Fire railgun
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim MakronMoveAttack5 (CMakron::FRAME_attak501, CMakron::FRAME_attak516, MakronFramesAttack5, &CMonster::Run);
+CAnim MakronMoveAttack5 (CMakron::FRAME_attak501, CMakron::FRAME_attak516, MakronFramesAttack5, &IMonster::Run);
 
 void CMakron::SavePosition ()
 {

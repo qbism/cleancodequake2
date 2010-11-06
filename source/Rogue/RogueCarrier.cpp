@@ -51,7 +51,7 @@ vec3f flyer_maxs (16, 16, 16);
 extern CAnim FlyerMoveAttack2, FlyerMoveKamikaze;
 
 CCarrier::CCarrier (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 };
 
@@ -307,7 +307,7 @@ void CCarrier::SpawnMonsters ()
 		MonsterSlots--;
 
 		ent->NextThink = Level.Frame;
-		void	(CMonster::*TheThink) () = ent->Monster->Think;
+		void	(IMonster::*TheThink) () = ent->Monster->Think;
 		(ent->Monster->*TheThink) ();
 		
 		ent->Monster->AIFlags |= AI_SPAWNED_CARRIER|AI_DO_NOT_COUNT|AI_IGNORE_SHOTS;
@@ -422,125 +422,125 @@ void CCarrier::StartSpawn ()
 
 CFrame CarrierFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim CarrierMoveStand (CCarrier::FRAME_search01, CCarrier::FRAME_search13, CarrierFramesStand);
 
 CFrame CarrierFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4)
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4)
 };
 CAnim CarrierMoveWalk (CCarrier::FRAME_search01, CCarrier::FRAME_search13, CarrierFramesWalk);
 
 CFrame CarrierFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck))
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Run,	6,	ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
 CAnim CarrierMoveRun (CCarrier::FRAME_search01, CCarrier::FRAME_search13, CarrierFramesRun);
 
 CFrame CarrierFramesPreAttackMG [] =
 {
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::AttackMachinegun))
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::AttackMachinegun))
 };
 CAnim CarrierMovePreAttackMG (CCarrier::FRAME_firea01, CCarrier::FRAME_firea08, CarrierFramesPreAttackMG);
 
 // Loop this
 CFrame CarrierFramesAttackMG [] =
 {
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReAttackMachinegun))
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReAttackMachinegun))
 };
 CAnim CarrierMoveAttackMG (CCarrier::FRAME_firea09, CCarrier::FRAME_firea11, CarrierFramesAttackMG);
 
 CFrame CarrierFramesAttackPostMG [] =
 {
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck))
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge,	4,	ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveAttackPostMG (CCarrier::FRAME_firea12, CCarrier::FRAME_firea15, CarrierFramesAttackPostMG, &CMonster::Run);
+CAnim CarrierMoveAttackPostMG (CCarrier::FRAME_firea12, CCarrier::FRAME_firea15, CarrierFramesAttackPostMG, &IMonster::Run);
 
 CFrame CarrierFramesAttackPreGrenade [] =
 {
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::AttackGrenade))
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::AttackGrenade))
 };
 CAnim CarrierMoveAttackPreGrenade (CCarrier::FRAME_fireb01, CCarrier::FRAME_fireb06, CarrierFramesAttackPreGrenade);
 
 CFrame CarrierFramesAttackGrenade [] =
 {
-	CFrame (&CMonster::AI_Charge, -15, ConvertDerivedFunction(&CCarrier::Grenade)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::ReAttackGrenade))
+	CFrame (&IMonster::AI_Charge, -15, ConvertDerivedFunction(&CCarrier::Grenade)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::ReAttackGrenade))
 };
 CAnim CarrierMoveAttackGrenade (CCarrier::FRAME_fireb07, CCarrier::FRAME_fireb10, CarrierFramesAttackGrenade);
 
 CFrame CarrierFramesAttackPostGrenade [] =
 {
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck))
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 4, ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveAttackPostGrenade (CCarrier::FRAME_fireb11, CCarrier::FRAME_fireb16, CarrierFramesAttackPostGrenade, &CMonster::Run);
+CAnim CarrierMoveAttackPostGrenade (CCarrier::FRAME_fireb11, CCarrier::FRAME_fireb16, CarrierFramesAttackPostGrenade, &IMonster::Run);
 
 CFrame CarrierFramesAttackRocket [] =
 {
-	CFrame (&CMonster::AI_Charge,	15,	ConvertDerivedFunction(&CCarrier::Rocket))
+	CFrame (&IMonster::AI_Charge,	15,	ConvertDerivedFunction(&CCarrier::Rocket))
 };
-CAnim CarrierMoveAttackRocket (CCarrier::FRAME_fireb01, CCarrier::FRAME_fireb01, CarrierFramesAttackRocket, &CMonster::Run);
+CAnim CarrierMoveAttackRocket (CCarrier::FRAME_fireb01, CCarrier::FRAME_fireb01, CarrierFramesAttackRocket, &IMonster::Run);
 
 void CCarrier::Rail ()
 {
@@ -568,83 +568,83 @@ void CCarrier::SaveLoc ()
 
 CFrame CarrierFramesAttackRail [] =
 {
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::SaveLoc)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, -20, ConvertDerivedFunction(&CCarrier::Rail)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
-	CFrame (&CMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck))
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::SaveLoc)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, -20, ConvertDerivedFunction(&CCarrier::Rail)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck)),
+	CFrame (&IMonster::AI_Charge, 2, ConvertDerivedFunction(&CCarrier::CoopCheck))
 };
-CAnim CarrierMoveAttackRail (CCarrier::FRAME_search01, CCarrier::FRAME_search09, CarrierFramesAttackRail, &CMonster::Run);
+CAnim CarrierMoveAttackRail (CCarrier::FRAME_search01, CCarrier::FRAME_search09, CarrierFramesAttackRail, &IMonster::Run);
 
 CFrame CarrierFramesSpawn [] =
 {
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::PrepSpawn)),		// 7 - end of wind down
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::StartSpawn)),		// 8 - start of spawn
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReadySpawn)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-10, ConvertDerivedFunction(&CCarrier::SpawnCheck)),		//12 - actual spawn
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),		//13 - begin of wind down
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
-	CFrame (&CMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReAttackMachinegun))		//18 - end of wind down
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::PrepSpawn)),		// 7 - end of wind down
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::StartSpawn)),		// 8 - start of spawn
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReadySpawn)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-10, ConvertDerivedFunction(&CCarrier::SpawnCheck)),		//12 - actual spawn
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),		//13 - begin of wind down
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::MachineGun)),
+	CFrame (&IMonster::AI_Charge,	-2,	ConvertDerivedFunction(&CCarrier::ReAttackMachinegun))		//18 - end of wind down
 };
 CAnim CarrierMoveSpawn (CCarrier::FRAME_spawn01, CCarrier::FRAME_spawn18, CarrierFramesSpawn);
 
 CFrame CarrierFramesPainHeavy [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim CarrierMovePainHeavy (CCarrier::FRAME_death01, CCarrier::FRAME_death10, CarrierFramesPainHeavy, &CMonster::Run);
+CAnim CarrierMovePainHeavy (CCarrier::FRAME_death01, CCarrier::FRAME_death10, CarrierFramesPainHeavy, &IMonster::Run);
 
 CFrame CarrierFramesPainLight [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim CarrierMovePainLight (CCarrier::FRAME_spawn01, CCarrier::FRAME_spawn04, CarrierFramesPainLight, &CMonster::Run);
+CAnim CarrierMovePainLight (CCarrier::FRAME_spawn01, CCarrier::FRAME_spawn04, CarrierFramesPainLight, &IMonster::Run);
 
 CFrame CarrierFramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	&CMonster::BossExplode)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	&IMonster::BossExplode)
 };
 CAnim CarrierMoveDeath (CCarrier::FRAME_death01, CCarrier::FRAME_death16, CarrierFramesDeath, ConvertDerivedFunction(&CCarrier::Dead));
 
@@ -906,7 +906,7 @@ void CCarrier::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (MeansOfDeath == MOD_TARGET_LASER)
 		return;
 
-	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+	IMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
 }
 
 bool CCarrier::CheckAttack ()

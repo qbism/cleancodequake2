@@ -190,14 +190,7 @@ public:
 	**/
 	inline void SetMoveDir ()
 	{
-		if (State.GetAngles().Y == -1)
-			MoveDir.Set (0, 0, 1);
-		else if (State.GetAngles().Y == -2)
-			MoveDir.Set (0, 0, -1);
-		else
-			State.GetAngles().ToVectors (&MoveDir, NULL, NULL);
-
-		State.GetAngles().Clear ();
+		IBaseEntity::SetMoveDir(MoveDir);
 	}
 
 	/**

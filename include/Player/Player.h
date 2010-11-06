@@ -1047,6 +1047,13 @@ public:
 
 	bool			IsSpawned ();
 
+	/**
+	\fn	void TouchTriggers ()
+	
+	\brief	Cause all triggers that this entity is touching to activate.
+	**/
+	void		TouchTriggers ();
+
 	IMPLEMENT_SAVE_HEADER(CPlayerEntity)
 };
 

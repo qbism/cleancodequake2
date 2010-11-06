@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Boss2.h"
 
 CBoss2::CBoss2 (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 };
 
@@ -142,259 +142,259 @@ void CBoss2::MachineGun ()
 
 CFrame Boss2FramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim Boss2MoveStand (CBoss2::FRAME_stand30, CBoss2::FRAME_stand50, Boss2FramesStand);
 
 CFrame Boss2FramesFidget [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim Boss2MoveFidget (CBoss2::FRAME_stand1, CBoss2::FRAME_stand30, Boss2FramesFidget);
 
 CFrame Boss2FramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 8)
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 8)
 };
 CAnim Boss2MoveWalk (CBoss2::FRAME_walk1, CBoss2::FRAME_walk20, Boss2FramesWalk);
 
 CFrame Boss2FramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 8)
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 8)
 };
 CAnim Boss2MoveRun (CBoss2::FRAME_walk1, CBoss2::FRAME_walk20, Boss2FramesRun);
 
 CFrame Boss2FramesAttackPreMg [] =
 {
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1, ConvertDerivedFunction(&CBoss2::AttackMg))
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1, ConvertDerivedFunction(&CBoss2::AttackMg))
 };
 CAnim Boss2MoveAttackPreMg (CBoss2::FRAME_attack1, CBoss2::FRAME_attack9, Boss2FramesAttackPreMg);
 
 // Loop this
 CFrame Boss2FramesAttackMg [] =
 {
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::ReAttackMg))
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::MachineGun)),
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBoss2::ReAttackMg))
 };
 CAnim Boss2MoveAttackMg (CBoss2::FRAME_attack10, CBoss2::FRAME_attack15, Boss2FramesAttackMg);
 
 CFrame Boss2FramesAttackPostMg [] =
 {
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1)
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1)
 };
-CAnim Boss2MoveAttackPostMg (CBoss2::FRAME_attack16, CBoss2::FRAME_attack19, Boss2FramesAttackPostMg, &CMonster::Run);
+CAnim Boss2MoveAttackPostMg (CBoss2::FRAME_attack16, CBoss2::FRAME_attack19, Boss2FramesAttackPostMg, &IMonster::Run);
 
 CFrame Boss2FramesAttackRocket [] =
 {
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Move, -20,	ConvertDerivedFunction(&CBoss2::FireRocket)),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 1)
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Move, -20,	ConvertDerivedFunction(&CBoss2::FireRocket)),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 1)
 };
-CAnim Boss2MoveAttackRocket (CBoss2::FRAME_attack20, CBoss2::FRAME_attack40, Boss2FramesAttackRocket, &CMonster::Run);
+CAnim Boss2MoveAttackRocket (CBoss2::FRAME_attack20, CBoss2::FRAME_attack40, Boss2FramesAttackRocket, &IMonster::Run);
 
 CFrame Boss2FramesPainHeavy [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim Boss2MovePainHeavy (CBoss2::FRAME_pain2, CBoss2::FRAME_pain19, Boss2FramesPainHeavy, &CMonster::Run);
+CAnim Boss2MovePainHeavy (CBoss2::FRAME_pain2, CBoss2::FRAME_pain19, Boss2FramesPainHeavy, &IMonster::Run);
 
 CFrame Boss2FramesPainLight [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim Boss2MovePainLight (CBoss2::FRAME_pain20, CBoss2::FRAME_pain23, Boss2FramesPainLight, &CMonster::Run);
+CAnim Boss2MovePainLight (CBoss2::FRAME_pain20, CBoss2::FRAME_pain23, Boss2FramesPainLight, &IMonster::Run);
 
 CFrame Boss2FramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0,	&CMonster::BossExplode)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0,	&IMonster::BossExplode)
 };
 CAnim Boss2MoveDeath (CBoss2::FRAME_death2, CBoss2::FRAME_death50, Boss2FramesDeath, ConvertDerivedFunction(&CBoss2::Dead));
 
@@ -456,7 +456,7 @@ void CBoss2::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	if (MeansOfDeath == MOD_TARGET_LASER)
 		return;
 
-	CMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
+	IMonster::TakeDamage (Inflictor, Attacker, Dir, Point, Normal, Damage, Knockback, DamageFlags, MeansOfDeath);
 }
 
 void CBoss2::Dead ()

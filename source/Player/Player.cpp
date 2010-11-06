@@ -2930,6 +2930,20 @@ CC_ENABLE_DEPRECATION
 }
 #endif
 
+/**
+\fn	void CPlayerEntity::TouchTriggers ()
+
+\brief	Cause all triggers that this entity is touching to activate.
+**/
+void CPlayerEntity::TouchTriggers ()
+{
+	// dead things don't activate triggers!
+	if (CanTakeDamage && (Health <= 0))
+		return;
+
+	IBaseEntity::TouchTriggers();
+}
+
 void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 {
 #if 1
@@ -3091,7 +3105,7 @@ CC_ENABLE_DEPRECATION
 	GravityMultiplier = 1.0f;
 
 	if (!NoClip && !(CvarList[CV_MAP_DEBUG].Boolean()))
-		G_TouchTriggers (this);
+		TouchTriggers ();
 
 	// touch other objects
 	if (!CvarList[CV_MAP_DEBUG].Boolean())

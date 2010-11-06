@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/JORG.h"
 
 CJorg::CJorg (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
@@ -62,57 +62,57 @@ void CJorg::Search ()
 
 CFrame JorgFramesStand []=
 {
-	CFrame (&CMonster::AI_Stand, 0, &CMonster::Idle),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 10
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 20
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 30
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 19),
-	CFrame (&CMonster::AI_Stand, 11, ConvertDerivedFunction(&CJorg::StepLeft)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 6),
-	CFrame (&CMonster::AI_Stand, 9, ConvertDerivedFunction(&CJorg::StepRight)),
-	CFrame (&CMonster::AI_Stand, 0),		// 40
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -2),
-	CFrame (&CMonster::AI_Stand, -17, ConvertDerivedFunction(&CJorg::StepLeft)),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, -12),		// 50
-	CFrame (&CMonster::AI_Stand, -14, ConvertDerivedFunction(&CJorg::StepRight))	// 51
+	CFrame (&IMonster::AI_Stand, 0, &IMonster::Idle),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 10
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 20
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 30
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 19),
+	CFrame (&IMonster::AI_Stand, 11, ConvertDerivedFunction(&CJorg::StepLeft)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 6),
+	CFrame (&IMonster::AI_Stand, 9, ConvertDerivedFunction(&CJorg::StepRight)),
+	CFrame (&IMonster::AI_Stand, 0),		// 40
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -2),
+	CFrame (&IMonster::AI_Stand, -17, ConvertDerivedFunction(&CJorg::StepLeft)),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, -12),		// 50
+	CFrame (&IMonster::AI_Stand, -14, ConvertDerivedFunction(&CJorg::StepRight))	// 51
 };
 CAnim	JorgMoveStand (CJorg::FRAME_stand01, CJorg::FRAME_stand51, JorgFramesStand);
 
@@ -143,20 +143,20 @@ void CJorg::Stand ()
 
 CFrame JorgFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 17,	ConvertDerivedFunction(&CJorg::StepLeft)),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 8),
-	CFrame (&CMonster::AI_Run, 10),
-	CFrame (&CMonster::AI_Run, 33,	ConvertDerivedFunction(&CJorg::StepRight)),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 0),
-	CFrame (&CMonster::AI_Run, 9),
-	CFrame (&CMonster::AI_Run, 9),
-	CFrame (&CMonster::AI_Run, 9)
+	CFrame (&IMonster::AI_Run, 17,	ConvertDerivedFunction(&CJorg::StepLeft)),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 8),
+	CFrame (&IMonster::AI_Run, 10),
+	CFrame (&IMonster::AI_Run, 33,	ConvertDerivedFunction(&CJorg::StepRight)),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 0),
+	CFrame (&IMonster::AI_Run, 9),
+	CFrame (&IMonster::AI_Run, 9),
+	CFrame (&IMonster::AI_Run, 9)
 };
 CAnim	JorgMoveRun (CJorg::FRAME_walk06, CJorg::FRAME_walk19, JorgFramesRun);
 
@@ -166,20 +166,20 @@ CAnim	JorgMoveRun (CJorg::FRAME_walk06, CJorg::FRAME_walk19, JorgFramesRun);
 
 CFrame JorgFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 17),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 12),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 10),
-	CFrame (&CMonster::AI_Walk, 33),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 9),
-	CFrame (&CMonster::AI_Walk, 9),
-	CFrame (&CMonster::AI_Walk, 9)
+	CFrame (&IMonster::AI_Walk, 17),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 12),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 10),
+	CFrame (&IMonster::AI_Walk, 33),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 9),
+	CFrame (&IMonster::AI_Walk, 9),
+	CFrame (&IMonster::AI_Walk, 9)
 };
 CAnim	JorgMoveWalk (CJorg::FRAME_walk06, CJorg::FRAME_walk19, JorgFramesWalk);
 
@@ -195,49 +195,49 @@ void CJorg::Run ()
 
 CFrame JorgFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move,	-28),
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	-3,	ConvertDerivedFunction(&CJorg::StepLeft)),
-	CFrame (&CMonster::AI_Move,	-9),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::StepRight)),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-7),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	-11),
-	CFrame (&CMonster::AI_Move,	-4),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	10),
-	CFrame (&CMonster::AI_Move,	11),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	10),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	10),
-	CFrame (&CMonster::AI_Move,	7,	ConvertDerivedFunction(&CJorg::StepLeft)),
-	CFrame (&CMonster::AI_Move,	17),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::StepRight))
+	CFrame (&IMonster::AI_Move,	-28),
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	-3,	ConvertDerivedFunction(&CJorg::StepLeft)),
+	CFrame (&IMonster::AI_Move,	-9),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::StepRight)),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-7),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	-11),
+	CFrame (&IMonster::AI_Move,	-4),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	10),
+	CFrame (&IMonster::AI_Move,	11),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	10),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	10),
+	CFrame (&IMonster::AI_Move,	7,	ConvertDerivedFunction(&CJorg::StepLeft)),
+	CFrame (&IMonster::AI_Move,	17),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::StepRight))
 };
-CAnim JorgMovePain3 (CJorg::FRAME_pain301, CJorg::FRAME_pain325, JorgFramesPain3, &CMonster::Run);
+CAnim JorgMovePain3 (CJorg::FRAME_pain301, CJorg::FRAME_pain325, JorgFramesPain3, &IMonster::Run);
 
 CFrame JorgFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim JorgMovePain2 (CJorg::FRAME_pain201, CJorg::FRAME_pain203, JorgFramesPain2, &CMonster::Run);
+CAnim JorgMovePain2 (CJorg::FRAME_pain201, CJorg::FRAME_pain203, JorgFramesPain2, &IMonster::Run);
 
 CFrame JorgFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim JorgMovePain1 (CJorg::FRAME_pain101, CJorg::FRAME_pain103, JorgFramesPain1, &CMonster::Run);
+CAnim JorgMovePain1 (CJorg::FRAME_pain101, CJorg::FRAME_pain103, JorgFramesPain1, &IMonster::Run);
 
 void CJorg::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -291,56 +291,56 @@ void CJorg::Pain (IBaseEntity *Other, sint32 Damage)
 
 CFrame JorgFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		// 10
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		// 20
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		// 30
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),		// 40
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,  ConvertDerivedFunction(&CJorg::DeathHit)),			
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::TossMakron)),
-	CFrame (&CMonster::AI_Move,	0,	&CMonster::BossExplode)		// 50
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		// 10
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		// 20
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		// 30
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),		// 40
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,  ConvertDerivedFunction(&CJorg::DeathHit)),			
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	ConvertDerivedFunction(&CJorg::TossMakron)),
+	CFrame (&IMonster::AI_Move,	0,	&IMonster::BossExplode)		// 50
 };
 CAnim JorgMoveDeath (CJorg::FRAME_death01, CJorg::FRAME_death50, JorgFramesDeath1, NULL);
 
@@ -361,54 +361,54 @@ void CJorg::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, v
 
 CFrame JorgFramesAttack2 []=
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBFG)),		
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBFG)),		
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim JorgMoveAttack2 (CJorg::FRAME_attak201, CJorg::FRAME_attak213, JorgFramesAttack2, &CMonster::Run);
+CAnim JorgMoveAttack2 (CJorg::FRAME_attak201, CJorg::FRAME_attak213, JorgFramesAttack2, &IMonster::Run);
 
 CFrame JorgFramesStartAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0)
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0)
 };
 CAnim JorgMoveStartAttack1 (CJorg::FRAME_attak101, CJorg::FRAME_attak108, JorgFramesStartAttack1, ConvertDerivedFunction(&CJorg::DoChainguns));
 
 CFrame JorgFramesAttack1[]=
 {
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet))
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CJorg::FireBullet))
 };
 CAnim JorgMoveAttack1 (CJorg::FRAME_attak109, CJorg::FRAME_attak114, JorgFramesAttack1, ConvertDerivedFunction(&CJorg::ReAttack1));
 
 CFrame JorgFramesEndAttack1[]=
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim JorgMoveEndAttack1 (CJorg::FRAME_attak115, CJorg::FRAME_attak118, JorgFramesEndAttack1, &CMonster::Run);
+CAnim JorgMoveEndAttack1 (CJorg::FRAME_attak115, CJorg::FRAME_attak118, JorgFramesEndAttack1, &IMonster::Run);
 
 void CJorg::ReAttack1()
 {

@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_SUPERTANK_H) || !INCLUDE_GUARDS
 #define CC_GUARD_SUPERTANK_H
 
-class CSuperTank : public CMonster
+class CSuperTank : public IMonster
 {
 public:
 	enum

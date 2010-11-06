@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Tank.h"
 
 CTank::CTank (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
@@ -79,36 +79,36 @@ void CTank::Idle ()
 
 CFrame TankFramesStand []=
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim	TankMoveStand (CTank::FRAME_stand01, CTank::FRAME_stand30, TankFramesStand);
 	
@@ -123,22 +123,22 @@ void CTank::Stand ()
 
 CFrame TankFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 3),
-	CFrame (&CMonster::AI_Walk, 2),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 4, ConvertDerivedFunction(&CTank::Footstep)),
-	CFrame (&CMonster::AI_Walk, 3),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 4),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 7),
-	CFrame (&CMonster::AI_Walk, 7),
-	CFrame (&CMonster::AI_Walk, 6),
-	CFrame (&CMonster::AI_Walk, 6, ConvertDerivedFunction(&CTank::Footstep))
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 3),
+	CFrame (&IMonster::AI_Walk, 2),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 4, ConvertDerivedFunction(&CTank::Footstep)),
+	CFrame (&IMonster::AI_Walk, 3),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 4),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 7),
+	CFrame (&IMonster::AI_Walk, 7),
+	CFrame (&IMonster::AI_Walk, 6),
+	CFrame (&IMonster::AI_Walk, 6, ConvertDerivedFunction(&CTank::Footstep))
 };
 CAnim TankMoveWalk (CTank::FRAME_walk05, CTank::FRAME_walk20, TankFramesWalk);
 
@@ -153,41 +153,41 @@ void CTank::Walk ()
 
 CFrame TankFramesStartRun [] =
 {
-	CFrame (&CMonster::AI_Run,  0),
-	CFrame (&CMonster::AI_Run,  6),
-	CFrame (&CMonster::AI_Run,  6),
-	CFrame (&CMonster::AI_Run, 11, ConvertDerivedFunction(&CTank::Footstep))
+	CFrame (&IMonster::AI_Run,  0),
+	CFrame (&IMonster::AI_Run,  6),
+	CFrame (&IMonster::AI_Run,  6),
+	CFrame (&IMonster::AI_Run, 11, ConvertDerivedFunction(&CTank::Footstep))
 };
 CAnim TankMoveStartRun (CTank::FRAME_walk01, CTank::FRAME_walk04, TankFramesStartRun, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 4),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 3),
-	CFrame (&CMonster::AI_Run, 2),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 4),
-	CFrame (&CMonster::AI_Run, 4, ConvertDerivedFunction(&CTank::Footstep)),
-	CFrame (&CMonster::AI_Run, 3),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 4),
-	CFrame (&CMonster::AI_Run, 5),
-	CFrame (&CMonster::AI_Run, 7),
-	CFrame (&CMonster::AI_Run, 7),
-	CFrame (&CMonster::AI_Run, 6),
-	CFrame (&CMonster::AI_Run, 6, ConvertDerivedFunction(&CTank::Footstep))
+	CFrame (&IMonster::AI_Run, 4),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 3),
+	CFrame (&IMonster::AI_Run, 2),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 4),
+	CFrame (&IMonster::AI_Run, 4, ConvertDerivedFunction(&CTank::Footstep)),
+	CFrame (&IMonster::AI_Run, 3),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 4),
+	CFrame (&IMonster::AI_Run, 5),
+	CFrame (&IMonster::AI_Run, 7),
+	CFrame (&IMonster::AI_Run, 7),
+	CFrame (&IMonster::AI_Run, 6),
+	CFrame (&IMonster::AI_Run, 6, ConvertDerivedFunction(&CTank::Footstep))
 };
 CAnim TankMoveRun (CTank::FRAME_walk05, CTank::FRAME_walk20, TankFramesRun);
 
 CFrame TankFramesStopRun [] =
 {
-	CFrame (&CMonster::AI_Run,  3),
-	CFrame (&CMonster::AI_Run,  3),
-	CFrame (&CMonster::AI_Run,  2),
-	CFrame (&CMonster::AI_Run,  2),
-	CFrame (&CMonster::AI_Run,  4, ConvertDerivedFunction(&CTank::Footstep))
+	CFrame (&IMonster::AI_Run,  3),
+	CFrame (&IMonster::AI_Run,  3),
+	CFrame (&IMonster::AI_Run,  2),
+	CFrame (&IMonster::AI_Run,  2),
+	CFrame (&IMonster::AI_Run,  4, ConvertDerivedFunction(&CTank::Footstep))
 };
 CAnim TankMoveStopRun (CTank::FRAME_walk21, CTank::FRAME_walk25, TankFramesStopRun, ConvertDerivedFunction(&CTank::Walk));
 
@@ -221,41 +221,41 @@ void CTank::Run ()
 
 CFrame TankFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim TankMovePain1 (CTank::FRAME_pain101, CTank::FRAME_pain104, TankFramesPain1, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim TankMovePain2 (CTank::FRAME_pain201, CTank::FRAME_pain205, TankFramesPain2, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move, -7),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Footstep))
+	CFrame (&IMonster::AI_Move, -7),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Footstep))
 };
 CAnim TankMovePain3 (CTank::FRAME_pain301, CTank::FRAME_pain316, TankFramesPain3, ConvertDerivedFunction(&CTank::Run));
 
@@ -501,44 +501,44 @@ void CTank::MachineGun ()
 
 CFrame TankFramesAttackBlast [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -2),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)),		// 10
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)) // 16
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -2),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)),		// 10
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)) // 16
 };
 CAnim TankMoveAttackBlast (CTank::FRAME_attak101, CTank::FRAME_attak116, TankFramesAttackBlast, ConvertDerivedFunction(&CTank::ReAttackBlaster));
 
 CFrame TankFramesReAttackBlast [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster))			// 16
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CTank::Blaster))			// 16
 };
 CAnim TankMoveReAttackBlast (CTank::FRAME_attak111, CTank::FRAME_attak116, TankFramesReAttackBlast, ConvertDerivedFunction(&CTank::ReAttackBlaster));
 
 CFrame TankFramesAttackPostBlast [] =	
 {
-	CFrame (&CMonster::AI_Move, 0),				// 17
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, -2,	ConvertDerivedFunction(&CTank::Footstep))		// 22
+	CFrame (&IMonster::AI_Move, 0),				// 17
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, -2,	ConvertDerivedFunction(&CTank::Footstep))		// 22
 };
 CAnim TankMoveAttackPostBlast (CTank::FRAME_attak117, CTank::FRAME_attak122, TankFramesAttackPostBlast, ConvertDerivedFunction(&CTank::Run));
 
@@ -560,126 +560,126 @@ void CTank::PostStrike ()
 
 CFrame TankFramesAttackStrike [] =
 {
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 6),
-	CFrame (&CMonster::AI_Move, 7),
-	CFrame (&CMonster::AI_Move, 9, ConvertDerivedFunction(&CTank::Footstep)),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 2, ConvertDerivedFunction(&CTank::Footstep)),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Windup)),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Strike)),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -10),
-	CFrame (&CMonster::AI_Move, -10),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -2, ConvertDerivedFunction(&CTank::Footstep))
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 6),
+	CFrame (&IMonster::AI_Move, 7),
+	CFrame (&IMonster::AI_Move, 9, ConvertDerivedFunction(&CTank::Footstep)),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 2, ConvertDerivedFunction(&CTank::Footstep)),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Windup)),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0, ConvertDerivedFunction(&CTank::Strike)),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -10),
+	CFrame (&IMonster::AI_Move, -10),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -2, ConvertDerivedFunction(&CTank::Footstep))
 };
 CAnim TankMoveAttackStrike (CTank::FRAME_attak201, CTank::FRAME_attak238, TankFramesAttackStrike, ConvertDerivedFunction(&CTank::PostStrike));
 
 CFrame TankFramesAttackPreRocket [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),			// 10
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),			// 10
 
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 1),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 7),
-	CFrame (&CMonster::AI_Charge, 7),
-	CFrame (&CMonster::AI_Charge, 7,  ConvertDerivedFunction(&CTank::Footstep)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),			// 20
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 1),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 7),
+	CFrame (&IMonster::AI_Charge, 7),
+	CFrame (&IMonster::AI_Charge, 7,  ConvertDerivedFunction(&CTank::Footstep)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),			// 20
 
-	CFrame (&CMonster::AI_Charge, -3)
+	CFrame (&IMonster::AI_Charge, -3)
 };
 CAnim TankMoveAttackPreRocket (CTank::FRAME_attak301, CTank::FRAME_attak321, TankFramesAttackPreRocket, ConvertDerivedFunction(&CTank::DoAttackRocket));
 
 CFrame TankFramesAttackFireRocket [] =
 {
-	CFrame (&CMonster::AI_Charge, -3),			// Loop Start	22 
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,  ConvertDerivedFunction(&CTank::Rocket)),		// 24
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,  ConvertDerivedFunction(&CTank::Rocket)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -1, ConvertDerivedFunction(&CTank::Rocket))		// 30	Loop End
+	CFrame (&IMonster::AI_Charge, -3),			// Loop Start	22 
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,  ConvertDerivedFunction(&CTank::Rocket)),		// 24
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,  ConvertDerivedFunction(&CTank::Rocket)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -1, ConvertDerivedFunction(&CTank::Rocket))		// 30	Loop End
 };
 CAnim TankMoveAttackFireRocket (CTank::FRAME_attak322, CTank::FRAME_attak330, TankFramesAttackFireRocket, ConvertDerivedFunction(&CTank::ReFireRocket));
 
 CFrame TankFramesAttackPostRocket [] =
 {	
-	CFrame (&CMonster::AI_Charge, 0),			// 31
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),			// 40
+	CFrame (&IMonster::AI_Charge, 0),			// 31
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 4),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),			// 40
 
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, -9),
-	CFrame (&CMonster::AI_Charge, -8),
-	CFrame (&CMonster::AI_Charge, -7),
-	CFrame (&CMonster::AI_Charge, -1),
-	CFrame (&CMonster::AI_Charge, -1, ConvertDerivedFunction(&CTank::Footstep)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),			// 50
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, -9),
+	CFrame (&IMonster::AI_Charge, -8),
+	CFrame (&IMonster::AI_Charge, -7),
+	CFrame (&IMonster::AI_Charge, -1),
+	CFrame (&IMonster::AI_Charge, -1, ConvertDerivedFunction(&CTank::Footstep)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),			// 50
 
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim TankMoveAttackPostRocket (CTank::FRAME_attak331, CTank::FRAME_attak353, TankFramesAttackPostRocket, ConvertDerivedFunction(&CTank::Run));
 
 CFrame TankFramesAttackChain [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
 	CFrame (NULL,      0, ConvertDerivedFunction(&CTank::MachineGun)),
 	CFrame (NULL,      0, ConvertDerivedFunction(&CTank::MachineGun)),
 	CFrame (NULL,      0, ConvertDerivedFunction(&CTank::MachineGun)),
@@ -699,11 +699,11 @@ CFrame TankFramesAttackChain [] =
 	CFrame (NULL,      0, ConvertDerivedFunction(&CTank::MachineGun)),
 	CFrame (NULL,      0, ConvertDerivedFunction(&CTank::MachineGun)),
 	CFrame (NULL,      0, ConvertDerivedFunction(&CTank::MachineGun)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim TankMoveAttackChain (CTank::FRAME_attak401, CTank::FRAME_attak429, TankFramesAttackChain, ConvertDerivedFunction(&CTank::Run));
 
@@ -823,38 +823,38 @@ void CTank::Dead ()
 
 CFrame TankFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move, -7),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 6),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 1),
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, -6),
-	CFrame (&CMonster::AI_Move, -4),
-	CFrame (&CMonster::AI_Move, -5),
-	CFrame (&CMonster::AI_Move, -7),
-	CFrame (&CMonster::AI_Move, -15, ConvertDerivedFunction(&CTank::Thud)),
-	CFrame (&CMonster::AI_Move, -5),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, -7),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 6),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 1),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, -6),
+	CFrame (&IMonster::AI_Move, -4),
+	CFrame (&IMonster::AI_Move, -5),
+	CFrame (&IMonster::AI_Move, -7),
+	CFrame (&IMonster::AI_Move, -15, ConvertDerivedFunction(&CTank::Thud)),
+	CFrame (&IMonster::AI_Move, -5),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim TankMoveDeath (CTank::FRAME_death101, CTank::FRAME_death132, TankFramesDeath1, ConvertDerivedFunction(&CTank::Dead));
 

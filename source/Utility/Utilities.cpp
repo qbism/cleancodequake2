@@ -130,56 +130,6 @@ TTargetList CC_GetTargets (std::string targetname)
 	return choices;
 }
 
-void G_SetMovedir (vec3f &angles, vec3f &movedir)
-{
-	if (angles.Y == -1)
-		movedir.Set (0, 0, 1);
-	else if (angles.Y == -2)
-		movedir.Set (0, 0, -1);
-	else
-		angles.ToVectors (&movedir, NULL, NULL);
-
-	angles.Clear();
-}
-
-/*
-============
-G_TouchTriggers
-
-============
-*/
-void	G_TouchTriggers (IBaseEntity *Entity)
-{
-	// dead things don't activate triggers!
-	if (Entity->EntityFlags & EF_HURTABLE)
-	{
-		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(Entity);
-		if ((Hurt->CanTakeDamage) && (Hurt->Health <= 0))
-			return;
-	}
-
-	TBoxEdictsEntityList Entities = BoxEdicts (Entity->GetAbsMin(), Entity->GetAbsMax(), true);
-
-	// be careful, it is possible to have an entity in this
-	// list removed before we get to it (killtriggered)
-	for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
-	{
-		IBaseEntity *TouchedEntity = (*it);
-
-		if (!TouchedEntity || !TouchedEntity->GetInUse())
-			continue;
-
-		if (TouchedEntity->EntityFlags & EF_TOUCHABLE)
-		{
-			(entity_cast<ITouchableEntity>(TouchedEntity))->Touch (Entity, NULL, NULL);
-			continue;
-		}
-
-		if (!Entity->GetInUse())
-			break;
-	}
-}
-
 // Calls the callback for each member of the team in "ent"
 void CForEachTeamChainCallback::Query (IBaseEntity *Master)
 {

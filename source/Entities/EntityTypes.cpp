@@ -562,7 +562,7 @@ CTrace IPhysicsEntity::PushEntity (vec3f &Push)
 	}
 
 	if (GetInUse())
-		G_TouchTriggers (this);
+		TouchTriggers ();
 
 	return Trace;
 }
@@ -1182,7 +1182,7 @@ bool IStepPhysics::Run ()
 
 		GravityMultiplier = 1.0f;
 
-		G_TouchTriggers (this);
+		TouchTriggers ();
 		if (!GetInUse())
 			return false;
 
@@ -1405,7 +1405,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 	for (TPushedList::reverse_iterator it = Pushed.rbegin(); it < Pushed.rend(); ++it)
 	{
 		CPushed &PushedEntity = *it;
-		G_TouchTriggers (PushedEntity.Entity);
+		PushedEntity.Entity->TouchTriggers ();
 	}
 
 	return true;

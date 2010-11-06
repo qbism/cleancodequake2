@@ -358,9 +358,6 @@
     <ClInclude Include="..\..\include\Monsters\JORG.h">
       <Filter>Monsters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Monsters\m_tank.h">
-      <Filter>Monsters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Monsters\Makron.h">
       <Filter>Monsters</Filter>
     </ClInclude>

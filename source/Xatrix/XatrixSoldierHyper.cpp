@@ -134,41 +134,41 @@ CSoldierBase (ID)
 
 CFrame SoldierHyperFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperSound)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire1)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire1)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire1)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack1_Refire1)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperRefire1)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::CockGun)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack1_Refire2)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperSound)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire1)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire1)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire1)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack1_Refire1)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperRefire1)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::CockGun)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack1_Refire2)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim SoldierHyperMoveAttack1 (CSoldierBase::FRAME_attak101, CSoldierBase::FRAME_attak112, SoldierHyperFramesAttack1, ConvertDerivedFunction(&CSoldierBase::Run));
 
 CFrame SoldierHyperFramesAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperSound)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire2)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire2)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire2)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack2_Refire1)),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperRefire2)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::CockGun)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack2_Refire2)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperSound)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire2)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire2)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Fire2)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack2_Refire1)),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierHyper::HyperRefire2)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::CockGun)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CSoldierBase::Attack2_Refire2)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
 CAnim SoldierHyperMoveAttack2 (CSoldierBase::FRAME_attak201, CSoldierBase::FRAME_attak218, SoldierHyperFramesAttack2, ConvertDerivedFunction(&CSoldierBase::Run));
 

@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Gladiator.h"
 
 CGladiator::CGladiator (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
@@ -61,13 +61,13 @@ void CGladiator::SwingCleaver ()
 
 CFrame GladiatorFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim GladiatorMoveStand (CGladiator::FRAME_stand1, CGladiator::FRAME_stand7, GladiatorFramesStand);
 
@@ -78,22 +78,22 @@ void CGladiator::Stand ()
 
 CFrame GladiatorFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 15),
-	CFrame (&CMonster::AI_Walk, 7),
-	CFrame (&CMonster::AI_Walk, 6),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 2),
-	CFrame (&CMonster::AI_Walk, 0),
-	CFrame (&CMonster::AI_Walk, 2),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 12),
-	CFrame (&CMonster::AI_Walk, 8),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 5),
-	CFrame (&CMonster::AI_Walk, 2),
-	CFrame (&CMonster::AI_Walk, 2),
-	CFrame (&CMonster::AI_Walk, 1),
-	CFrame (&CMonster::AI_Walk, 8)
+	CFrame (&IMonster::AI_Walk, 15),
+	CFrame (&IMonster::AI_Walk, 7),
+	CFrame (&IMonster::AI_Walk, 6),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 2),
+	CFrame (&IMonster::AI_Walk, 0),
+	CFrame (&IMonster::AI_Walk, 2),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 12),
+	CFrame (&IMonster::AI_Walk, 8),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 5),
+	CFrame (&IMonster::AI_Walk, 2),
+	CFrame (&IMonster::AI_Walk, 2),
+	CFrame (&IMonster::AI_Walk, 1),
+	CFrame (&IMonster::AI_Walk, 8)
 };
 CAnim GladiatorMoveWalk (CGladiator::FRAME_walk1, CGladiator::FRAME_walk16, GladiatorFramesWalk);
 
@@ -104,12 +104,12 @@ void CGladiator::Walk ()
 
 CFrame GladiatorFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 23),
-	CFrame (&CMonster::AI_Run, 14),
-	CFrame (&CMonster::AI_Run, 14),
-	CFrame (&CMonster::AI_Run, 21),
-	CFrame (&CMonster::AI_Run, 12),
-	CFrame (&CMonster::AI_Run, 13)
+	CFrame (&IMonster::AI_Run, 23),
+	CFrame (&IMonster::AI_Run, 14),
+	CFrame (&IMonster::AI_Run, 14),
+	CFrame (&IMonster::AI_Run, 21),
+	CFrame (&IMonster::AI_Run, 12),
+	CFrame (&IMonster::AI_Run, 13)
 };
 CAnim GladiatorMoveRun (CGladiator::FRAME_run1, CGladiator::FRAME_run6, GladiatorFramesRun);
 
@@ -126,25 +126,25 @@ void CGladiator::MeleeAttack ()
 
 CFrame GladiatorFramesAttackMelee [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::SwingCleaver)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::MeleeAttack)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::SwingCleaver)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::MeleeAttack)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::SwingCleaver)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::MeleeAttack)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::SwingCleaver)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::MeleeAttack)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
-CAnim GladiatorMoveAttackMelee (CGladiator::FRAME_melee1, CGladiator::FRAME_melee17, GladiatorFramesAttackMelee, &CMonster::Run);
+CAnim GladiatorMoveAttackMelee (CGladiator::FRAME_melee1, CGladiator::FRAME_melee17, GladiatorFramesAttackMelee, &IMonster::Run);
 
 void CGladiator::Melee ()
 {
@@ -172,17 +172,17 @@ void CGladiator::StorePosition ()
 
 CFrame GladiatorFramesAttackGun [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::FireRail)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0)
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CGladiator::FireRail)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0)
 };
-CAnim GladiatorMoveAttackGun (CGladiator::FRAME_attack1, CGladiator::FRAME_attack9, GladiatorFramesAttackGun, &CMonster::Run);
+CAnim GladiatorMoveAttackGun (CGladiator::FRAME_attack1, CGladiator::FRAME_attack9, GladiatorFramesAttackGun, &IMonster::Run);
 
 void CGladiator::Attack ()
 {
@@ -199,26 +199,26 @@ void CGladiator::Attack ()
 
 CFrame GladiatorFramesPain [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim GladiatorMovePain (CGladiator::FRAME_pain1, CGladiator::FRAME_pain6, GladiatorFramesPain, &CMonster::Run);
+CAnim GladiatorMovePain (CGladiator::FRAME_pain1, CGladiator::FRAME_pain6, GladiatorFramesPain, &IMonster::Run);
 
 CFrame GladiatorFramesPainAir [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim GladiatorMovePainAir (CGladiator::FRAME_painup1, CGladiator::FRAME_painup7, GladiatorFramesPainAir, &CMonster::Run);
+CAnim GladiatorMovePainAir (CGladiator::FRAME_painup1, CGladiator::FRAME_painup7, GladiatorFramesPainAir, &IMonster::Run);
 
 void CGladiator::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -253,28 +253,28 @@ void CGladiator::Dead ()
 
 CFrame GladiatorFramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim GladiatorMoveDeath (CGladiator::FRAME_death1, CGladiator::FRAME_death22, GladiatorFramesDeath, ConvertDerivedFunction(&CGladiator::Dead));
 

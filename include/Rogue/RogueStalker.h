@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_CC_ROGUE_STALKER_H
 
 #if ROGUE_FEATURES
-class CStalker : public CMonster
+class CStalker : public IMonster
 {
 public:
 	enum

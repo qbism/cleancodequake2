@@ -60,17 +60,17 @@ void CPhalanxGladiator::FirePhalanx ()
 
 CFrame GladiatorPhalanxFramesAttackGun [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx))
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0, ConvertDerivedFunction(&CPhalanxGladiator::FirePhalanx))
 };
-CAnim GladiatorPhalanxMoveAttackGun (CGladiator::FRAME_attack1, CGladiator::FRAME_attack9, GladiatorPhalanxFramesAttackGun, &CMonster::Run);
+CAnim GladiatorPhalanxMoveAttackGun (CGladiator::FRAME_attack1, CGladiator::FRAME_attack9, GladiatorPhalanxFramesAttackGun, &IMonster::Run);
 
 void CPhalanxGladiator::Attack ()
 {

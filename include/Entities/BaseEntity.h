@@ -699,7 +699,7 @@ public:
 	
 	\return	true if it succeeds, false if it fails. 
 	**/
-	bool CanSee		(IBaseEntity *Other);
+	bool			CanSee		(IBaseEntity *Other);
 
 	/**
 	\fn	virtual inline bool Savable ()
@@ -754,6 +754,31 @@ public:
 	\return	null if it fails, else. 
 	**/
 	virtual const char *SAVE_GetName () = 0;
+
+
+	/**
+	\fn	virtual void TouchTriggers ()
+	
+	\brief	Cause all triggers that this entity is touching to activate.
+	**/
+	void			TouchTriggers ();
+
+	/**
+	\fn	inline void SetMoveDir (vec3f &MoveDir)
+	
+	\brief	Sets the move dir from angles, then clears angles.
+	**/
+	inline virtual void SetMoveDir (vec3f &MoveDir)
+	{
+		if (State.GetAngles().Y == -1)
+			MoveDir.Set (0, 0, 1);
+		else if (State.GetAngles().Y == -2)
+			MoveDir.Set (0, 0, -1);
+		else
+			State.GetAngles().ToVectors (&MoveDir, NULL, NULL);
+
+		State.GetAngles().Clear ();
+	}
 };
 
 /**

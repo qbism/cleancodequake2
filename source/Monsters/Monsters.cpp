@@ -57,7 +57,7 @@ THashedMonsterListType &MonsterHashTable ()
 	return Table;
 }
 
-CMonsterTableIndex::CMonsterTableIndex (const char *Name, CMonster *(*FuncPtr) (uint32 MonsterID)) :
+CMonsterTableIndex::CMonsterTableIndex (const char *Name, IMonster *(*FuncPtr) (uint32 MonsterID)) :
   Name(Name),
   FuncPtr(FuncPtr)
 {
@@ -67,7 +67,7 @@ CMonsterTableIndex::CMonsterTableIndex (const char *Name, CMonster *(*FuncPtr) (
 	MonsterHashTable().insert (std::make_pair<size_t, size_t> (Com_HashGeneric (Name, MAX_CLASSNAME_CLASSES_HASH), MonsterTable().size()-1));
 };
 
-CMonster *CreateMonsterFromTable (uint32 MonsterID, const char *Name)
+IMonster *CreateMonsterFromTable (uint32 MonsterID, const char *Name)
 {
 	uint32 hash = Com_HashGeneric(Name, MAX_CLASSNAME_CLASSES_HASH);
 
@@ -97,7 +97,7 @@ void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 Mon
 	Entity->Monster->Entity = Entity;
 }
 
-void CMonster::SaveFields (CFile &File)
+void IMonster::SaveFields (CFile &File)
 {
 	File.Write<uint32> (MonsterID);
 	File.Write<float> (IdealYaw);
@@ -138,7 +138,7 @@ void CMonster::SaveFields (CFile &File)
 	File.Write<uint32> (MonsterFlags);
 	File.Write<FrameNumber> (PainDebounceTime);
 
-	File.Write <void (CMonster::*) ()> (Think);
+	File.Write <void (IMonster::*) ()> (Think);
 
 #if ROGUE_FEATURES
 	File.Write<uint8> (MonsterSlots);
@@ -153,7 +153,7 @@ void CMonster::SaveFields (CFile &File)
 	SaveMonsterFields (File);
 };
 
-void CMonster::LoadFields (CFile &File)
+void IMonster::LoadFields (CFile &File)
 {
 	File.Read ((void*)(&MonsterID), sizeof(uint32));
 	IdealYaw = File.Read<float> ();
@@ -205,7 +205,7 @@ void CMonster::LoadFields (CFile &File)
 	MonsterFlags = File.Read<uint32> ();
 	PainDebounceTime = File.Read<FrameNumber> ();
 
-	Think = File.Read <void (CMonster::*) ()> ();
+	Think = File.Read <void (IMonster::*) ()> ();
 
 #if ROGUE_FEATURES
 	MonsterSlots = File.Read<uint8> ();
@@ -317,6 +317,20 @@ void CMonsterEntity::Spawn ()
 	PhysicsType = PHYSICS_STEP;
 };
 
+/**
+\fn	void CMonsterEntity::TouchTriggers ()
+
+\brief	Cause all triggers that this entity is touching to activate.
+**/
+void CMonsterEntity::TouchTriggers ()
+{
+	// dead things don't activate triggers!
+	if (CanTakeDamage && (Health <= 0))
+		return;
+
+	IBaseEntity::TouchTriggers();
+}
+
 ENTITYFIELDS_BEGIN(CMonsterEntity)
 {
 	CEntityField ("deathtarget",		EntityMemberOffset(CMonsterEntity,DeathTarget),			FT_STRING | FT_SAVABLE),
@@ -399,7 +413,7 @@ void CMonsterEntity::Think ()
 		Free ();
 	else if (Monster->Think)
 	{
-		void	(CMonster::*TheThink) () = Monster->Think;
+		void	(IMonster::*TheThink) () = Monster->Think;
 		(Monster->*TheThink) ();
 	}
 }
@@ -671,7 +685,7 @@ void CMonsterEntity::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint
 	Monster->DamageEffect (Dir, Point, Normal, Damage, DamageFlags, MeansOfDeath);
 }
 
-void CMonster::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
+void IMonster::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Damage, EDamageFlags &DamageFlags, EMeansOfDeath &MeansOfDeath)
 {
 #if ROGUE_FEATURES
 	if (MeansOfDeath == MOD_CHAINFIST)
@@ -681,7 +695,7 @@ void CMonster::DamageEffect (vec3f &Dir, vec3f &Point, vec3f &Normal, sint32 &Da
 	CBlood(Point, Normal).Send();
 }
 
-void CMonster::ChangeYaw ()
+void IMonster::ChangeYaw ()
 {
 	float current = AngleModf (Entity->State.GetAngles().Y);
 
@@ -713,7 +727,7 @@ void CMonster::ChangeYaw ()
 	Entity->State.GetAngles().Y = AngleModf(current+move);
 }
 
-bool CMonster::CheckBottom ()
+bool IMonster::CheckBottom ()
 {
 	vec3f	mins, maxs, start, stop;
 	CTrace	trace;
@@ -800,7 +814,7 @@ bool CMonster::CheckBottom ()
 	return true;
 }
 
-bool CMonster::WalkMove (float Yaw, float Dist)
+bool IMonster::WalkMove (float Yaw, float Dist)
 {	
 	if (!Entity->GroundEntity && !(AIFlags & (AI_FLY | AI_SWIM)))
 		return false;
@@ -809,7 +823,7 @@ bool CMonster::WalkMove (float Yaw, float Dist)
 	return MoveStep(vec3f (cosf(Yaw)*Dist, sinf(Yaw)*Dist, 0), true);
 }
 
-bool CMonster::CloseEnough (IBaseEntity *Goal, float Dist)
+bool IMonster::CloseEnough (IBaseEntity *Goal, float Dist)
 {
 	if (Goal->GetAbsMin()[0] > (Entity->GetAbsMax()[0] + Dist) ||
 		Goal->GetAbsMin()[1] > (Entity->GetAbsMax()[1] + Dist) ||
@@ -826,7 +840,7 @@ bool CMonster::CloseEnough (IBaseEntity *Goal, float Dist)
 #include "Rogue/RogueStalker.h"
 #endif
 
-void CMonster::WalkMonsterStartGo ()
+void IMonster::WalkMonsterStartGo ()
 {
 	if (!(Entity->SpawnFlags & MONSTER_TRIGGER_SPAWN) && Level.Frame < 10)
 	{
@@ -855,14 +869,14 @@ void CMonster::WalkMonsterStartGo ()
 		MonsterTriggeredStart ();
 }
 
-void CMonster::WalkMonsterStart ()
+void IMonster::WalkMonsterStart ()
 {
-	Think = &CMonster::WalkMonsterStartGo;
+	Think = &IMonster::WalkMonsterStartGo;
 	Entity->NextThink = Level.Frame + FRAMETIME;
 	MonsterStart ();
 }
 
-void CMonster::SwimMonsterStartGo ()
+void IMonster::SwimMonsterStartGo ()
 {
 	if (!YawSpeed)
 		YawSpeed = 10;
@@ -874,14 +888,14 @@ void CMonster::SwimMonsterStartGo ()
 		MonsterTriggeredStart ();
 }
 
-void CMonster::SwimMonsterStart ()
+void IMonster::SwimMonsterStart ()
 {
 	AIFlags |= AI_SWIM;
-	Think = &CMonster::SwimMonsterStartGo;
+	Think = &IMonster::SwimMonsterStartGo;
 	MonsterStart ();
 }
 
-void CMonster::FlyMonsterStartGo ()
+void IMonster::FlyMonsterStartGo ()
 {
 	if (!WalkMove (0, 0))
 		MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Entity in solid\n");
@@ -896,14 +910,14 @@ void CMonster::FlyMonsterStartGo ()
 		MonsterTriggeredStart ();
 }
 
-void CMonster::FlyMonsterStart ()
+void IMonster::FlyMonsterStart ()
 {
 	AIFlags |= AI_FLY;
-	Think = &CMonster::FlyMonsterStartGo;
+	Think = &IMonster::FlyMonsterStartGo;
 	MonsterStart ();
 }
 
-void CMonster::MonsterStartGo ()
+void IMonster::MonsterStartGo ()
 {
 	if (Entity->Health <= 0)
 		return;
@@ -986,12 +1000,12 @@ void CMonster::MonsterStartGo ()
 	}
 	else
 	{
-		Think = &CMonster::MonsterThink;
+		Think = &IMonster::MonsterThink;
 		Entity->NextThink = Level.Frame + FRAMETIME;
 	}
 }
 
-void CMonster::MonsterStart ()
+void IMonster::MonsterStart ()
 {
 	if (Game.GameMode & GAME_DEATHMATCH)
 	{
@@ -1033,7 +1047,7 @@ void CMonster::MonsterStart ()
 	Entity->NextThink = Level.Frame + FRAMETIME;
 }
 
-void CMonster::MonsterTriggeredStart ()
+void IMonster::MonsterTriggeredStart ()
 {
 	Entity->GetSolid() = SOLID_NOT;
 	Entity->PhysicsDisabled = true;
@@ -1047,7 +1061,7 @@ void CMonster::MonsterTriggeredStart ()
 	Entity->UseState = MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE;
 }
 
-void CMonster::StationaryMonsterStartGo ()
+void IMonster::StationaryMonsterStartGo ()
 {	
 	if (!YawSpeed)
 		YawSpeed = 20;
@@ -1058,10 +1072,10 @@ void CMonster::StationaryMonsterStartGo ()
 		MonsterTriggeredStart ();
 }
 
-void CMonster::StationaryMonsterStart ()
+void IMonster::StationaryMonsterStart ()
 {
 	MonsterStart ();
-	Think = &CMonster::StationaryMonsterStartGo;
+	Think = &IMonster::StationaryMonsterStartGo;
 }
 
 void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
@@ -1095,7 +1109,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		break;
 	case MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE:
 		// we have a one frame delay here so we don't telefrag the guy who activated us
-		Monster->Think = &CMonster::MonsterTriggeredSpawn;
+		Monster->Think = &IMonster::MonsterTriggeredSpawn;
 		NextThink = Level.Frame + FRAMETIME;
 		if (Activator && (Activator->EntityFlags & EF_PLAYER))
 			Enemy = Activator;
@@ -1104,7 +1118,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	};
 }
 
-void CMonster::MonsterTriggeredSpawn ()
+void IMonster::MonsterTriggeredSpawn ()
 {
 	Entity->State.GetOrigin().Z += 1;
 	Entity->KillBox ();
@@ -1132,7 +1146,7 @@ void CMonster::MonsterTriggeredSpawn ()
 		Entity->Enemy = nullentity;
 }
 
-void CMonster::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
+void IMonster::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 								vec3f Dir, vec3f Point, vec3f Normal, sint32 Damage,
 								sint32 KnockBack, EDamageFlags DamageFlags, EMeansOfDeath MeansOfDeath)
 {
@@ -1258,7 +1272,7 @@ void CMonster::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	}
 }
 
-void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
+void IMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 flashtype)
 {
 	CBullet::Fire (Entity, start, dir, Damage, kick, hspread, vspread, MOD_MACHINEGUN);
 
@@ -1266,7 +1280,7 @@ void CMonster::MonsterFireBullet (vec3f start, vec3f dir, sint32 Damage, sint32 
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
+void IMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 hspread, sint32 vspread, sint32 count, sint32 flashtype)
 {
 
 	CShotgunPellets::Fire (Entity, start, aimdir, Damage, kick, hspread, vspread, count, MOD_SHOTGUN);
@@ -1275,7 +1289,7 @@ void CMonster::MonsterFireShotgun (vec3f start, vec3f aimdir, sint32 Damage, sin
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
+void IMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
 
 	CBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, effect, false);
@@ -1284,7 +1298,7 @@ void CMonster::MonsterFireBlaster (vec3f start, vec3f dir, sint32 Damage, sint32
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }	
 
-void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype)
+void IMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 	CGrenade::Spawn (Entity, start, aimdir, Damage, speed, 25, Damage+40);
 
@@ -1292,7 +1306,7 @@ void CMonster::MonsterFireGrenade (vec3f start, vec3f aimdir, sint32 Damage, sin
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
+void IMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 	CRocket::Spawn (Entity, start, dir, Damage, speed, Damage+20, Damage);
 
@@ -1300,7 +1314,7 @@ void CMonster::MonsterFireRocket (vec3f start, vec3f dir, sint32 Damage, sint32 
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }	
 
-void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype)
+void IMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sint32 kick, sint32 flashtype)
 {
 	if (!(PointContents (start) & CONTENTS_MASK_SOLID))
 		CRailGunShot::Fire (Entity, start, aimdir, Damage, kick);
@@ -1309,7 +1323,7 @@ void CMonster::MonsterFireRailgun (vec3f start, vec3f aimdir, sint32 Damage, sin
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
+void IMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, sint32 kick, float damage_radius, sint32 flashtype)
 {
 	CBFGBolt::Spawn (Entity, start, aimdir, Damage, speed, damage_radius);
 
@@ -1320,7 +1334,7 @@ void CMonster::MonsterFireBfg (vec3f start, vec3f aimdir, sint32 Damage, sint32 
 #if ROGUE_FEATURES
 #include "Rogue/RogueWeaponry.h"
 
-void CMonster::MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
+void IMonster::MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype, sint32 effect)
 {
 	CGreenBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, effect);
 
@@ -1328,7 +1342,7 @@ void CMonster::MonsterFireBlaster2 (vec3f start, vec3f dir, sint32 Damage, sint3
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireTracker (vec3f start, vec3f dir, int damage, int speed, IBaseEntity *enemy, int flashtype)
+void IMonster::MonsterFireTracker (vec3f start, vec3f dir, int damage, int speed, IBaseEntity *enemy, int flashtype)
 {
 	CDisruptorTracker::Spawn (Entity, start, dir, damage, speed, enemy);
 
@@ -1336,7 +1350,7 @@ void CMonster::MonsterFireTracker (vec3f start, vec3f dir, int damage, int speed
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, int flashtype)
+void IMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, int flashtype)
 {
 	CHeatBeam::Fire (Entity, start, dir, damage, kick, MOD_HEATBEAM, true);
 
@@ -1352,7 +1366,7 @@ void CMonster::MonsterFireHeat (vec3f start, vec3f dir, int damage, int kick, in
 #include "Monsters/Bitch.h"
 #include "Xatrix/XatrixChickHeat.h"
 
-void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
+void IMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 	CIonRipperBoomerang::Spawn (Entity, start, dir, Damage, speed);
 
@@ -1360,7 +1374,7 @@ void CMonster::MonsterFireRipper (vec3f start, vec3f dir, sint32 Damage, sint32 
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
+void IMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 	CBlueBlasterProjectile::Spawn (Entity, start, dir, Damage, speed, FX_BLUEHYPERBLASTER);
 
@@ -1368,7 +1382,7 @@ void CMonster::MonsterFireBlueBlaster (vec3f start, vec3f dir, sint32 Damage, si
 		CMuzzleFlash(start, Entity->State.GetNumber(), flashtype, true).Send();
 }
 
-void CMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
+void IMonster::MonsterFireHeatRocket (vec3f start, vec3f dir, sint32 Damage, sint32 speed, sint32 flashtype)
 {
 	CHeatRocket::Spawn (Entity, start, dir, Damage, speed, Damage+20, Damage);
 
@@ -1446,7 +1460,7 @@ void CMonsterBeamLaser::Think ()
 }
 
 // RAFAEL
-void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
+void IMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
 {	
 	Ent->GetSolid() = SOLID_NOT;
 	Ent->State.GetRenderEffects() |= RF_BEAM|RF_TRANSLUCENT;
@@ -1482,7 +1496,7 @@ void CMonster::MonsterFireBeam (CMonsterBeamLaser *Ent)
 }
 #endif
 
-void CMonster::DropToFloor ()
+void IMonster::DropToFloor ()
 {
 	vec3f end = Entity->State.GetOrigin();
 
@@ -1510,31 +1524,31 @@ void CMonster::DropToFloor ()
 }
 
 // These are intended to be virtually replaced.
-void CMonster::Stand ()
+void IMonster::Stand ()
 {
 }
 
-void CMonster::Idle ()
+void IMonster::Idle ()
 {
 	if (MonsterFlags & MF_HAS_IDLE)
 		DebugPrint ("Warning: Monster with no idle has MF_HAS_IDLE!\n");
 }
 
-void CMonster::Search ()
+void IMonster::Search ()
 {
 	if (MonsterFlags & MF_HAS_SEARCH)
 		DebugPrint ("Warning: Monster with no search has MF_HAS_SEARCH!\n");
 }
 
-void CMonster::Walk ()
+void IMonster::Walk ()
 {
 }
 
-void CMonster::Run ()
+void IMonster::Run ()
 {
 }
 
-void CMonster::Dodge (IBaseEntity *Other, float eta
+void IMonster::Dodge (IBaseEntity *Other, float eta
 #if ROGUE_FEATURES
 		, CTrace *tr
 #endif
@@ -1542,25 +1556,25 @@ void CMonster::Dodge (IBaseEntity *Other, float eta
 {
 }
 
-void CMonster::Attack()
+void IMonster::Attack()
 {
 	if (MonsterFlags & MF_HAS_ATTACK)
 		DebugPrint ("Warning: Monster with no attack has MF_HAS_ATTACK!\n");
 }
 
-void CMonster::Melee ()
+void IMonster::Melee ()
 {
 	if (MonsterFlags & MF_HAS_MELEE)
 		DebugPrint ("Warning: Monster with no melee has MF_HAS_MELEE!\n");
 }
 
-void CMonster::Sight ()
+void IMonster::Sight ()
 {
 	if (MonsterFlags & MF_HAS_SIGHT)
 		DebugPrint ("Warning: Monster with no sight has MF_HAS_SIGHT!\n");
 }
 
-void CMonster::MonsterDeathUse ()
+void IMonster::MonsterDeathUse ()
 {
 	AIFlags &= ~(AI_FLY | AI_SWIM |AI_GOOD_GUY);
 
@@ -1579,11 +1593,11 @@ void CMonster::MonsterDeathUse ()
 	Entity->UseTargets (*Entity->Enemy, Entity->Message);
 }
 
-void CMonster::FixInvalidEntities ()
+void IMonster::FixInvalidEntities ()
 {
 }
 
-void CMonster::MonsterThink ()
+void IMonster::MonsterThink ()
 {
 	FixInvalidEntities ();
 
@@ -1599,7 +1613,7 @@ void CMonster::MonsterThink ()
 	SetEffects ();
 }
 
-void CMonster::MoveFrame ()
+void IMonster::MoveFrame ()
 {
 	sint32		index;
 	CAnim	*Move = CurrentMove;
@@ -1618,7 +1632,7 @@ void CMonster::MoveFrame ()
 			{
 				if (Move->EndFunc)
 				{
-					void (CMonster::*EndFunc) () = Move->EndFunc;
+					void (IMonster::*EndFunc) () = Move->EndFunc;
 					(this->*EndFunc) ();
 
 					// regrab move, endfunc is very likely to change it
@@ -1647,11 +1661,11 @@ void CMonster::MoveFrame ()
 
 		index = Move->FirstFrame - Entity->State.GetFrame();
 
-		void (CMonster::*AIFunc) (float Dist) = Move->Frames[index].AIFunc;
+		void (IMonster::*AIFunc) (float Dist) = Move->Frames[index].AIFunc;
 		if (AIFunc)
 			(this->*AIFunc) ((AIFlags & AI_HOLD_FRAME) ? 0 : (Move->Frames[index].Dist * GetScale()));
 
-		void (CMonster::*Function) () = Move->Frames[index].Function;
+		void (IMonster::*Function) () = Move->Frames[index].Function;
 		if (Function)
 			(this->*Function) ();
 	}
@@ -1668,7 +1682,7 @@ void CMonster::MoveFrame ()
 			{
 				if (Move->EndFunc)
 				{
-					void (CMonster::*EndFunc) () = Move->EndFunc;
+					void (IMonster::*EndFunc) () = Move->EndFunc;
 					(this->*EndFunc) ();
 
 					// regrab move, endfunc is very likely to change it
@@ -1697,17 +1711,17 @@ void CMonster::MoveFrame ()
 
 		index = Entity->State.GetFrame() - Move->FirstFrame;
 
-		void (CMonster::*AIFunc) (float Dist) = Move->Frames[index].AIFunc;
+		void (IMonster::*AIFunc) (float Dist) = Move->Frames[index].AIFunc;
 		if (AIFunc)
 			(this->*AIFunc) ((AIFlags & AI_HOLD_FRAME) ? 0 : (Move->Frames[index].Dist * GetScale()));
 
-		void (CMonster::*Function) () = Move->Frames[index].Function;
+		void (IMonster::*Function) () = Move->Frames[index].Function;
 		if (Function)
 			(this->*Function) ();
 	}
 }
 
-void CMonster::SetEffects()
+void IMonster::SetEffects()
 {
 	Entity->State.GetEffects() = 0;
 	Entity->State.GetRenderEffects() = RF_FRAMELERP;
@@ -1757,7 +1771,7 @@ void CMonster::SetEffects()
 #endif
 }
 
-void CMonster::WorldEffects()
+void IMonster::WorldEffects()
 {
 	vec3f origin = Entity->State.GetOrigin();
 
@@ -1842,7 +1856,7 @@ void CMonster::WorldEffects()
 	}
 }
 
-void CMonster::CatagorizePosition()
+void IMonster::CatagorizePosition()
 {
 //
 // get waterlevel
@@ -1872,7 +1886,7 @@ void CMonster::CatagorizePosition()
 		Entity->WaterInfo.Level = WATER_UNDER;
 }
 
-void CMonster::CheckGround()
+void IMonster::CheckGround()
 {
 	if (AIFlags & (AI_SWIM | AI_FLY))
 		return;
@@ -1914,7 +1928,7 @@ void CMonster::CheckGround()
 	}
 }
 
-bool CMonster::FacingIdeal()
+bool IMonster::FacingIdeal()
 {
 	float delta = AngleModf (Entity->State.GetAngles().Y - IdealYaw);
 	if (delta > 45 && delta < 315)
@@ -1922,23 +1936,23 @@ bool CMonster::FacingIdeal()
 	return true;
 }
 
-void CMonster::FliesOff()
+void IMonster::FliesOff()
 {
 	Entity->State.GetEffects() &= ~FX_FLIES;
 	Entity->State.GetSound() = 0;
 }
 
-void CMonster::FliesOn ()
+void IMonster::FliesOn ()
 {
 	if (Entity->WaterInfo.Level)
 		return;
 	Entity->State.GetEffects() |= FX_FLIES;
 	Entity->State.GetSound() = SoundIndex ("infantry/inflies1.wav");
-	Think = &CMonster::FliesOff;
+	Think = &IMonster::FliesOff;
 	Entity->NextThink = Level.Frame + 600;
 }
 
-void CMonster::CheckFlies ()
+void IMonster::CheckFlies ()
 {
 	if (Entity->WaterInfo.Level)
 		return;
@@ -1946,20 +1960,20 @@ void CMonster::CheckFlies ()
 	if (frand() > 0.5)
 		return;
 
-	Think = &CMonster::FliesOn;
+	Think = &IMonster::FliesOn;
 	Entity->NextThink = Level.Frame + ((5 + 10 * frand()) * 10);
 }
 
 uint32 LastID = 0;
-CMonster::CMonster (uint32 ID) :
+IMonster::IMonster (uint32 ID) :
 MonsterID(ID)
 {
 }
 
-void CMonster::BossExplode ()
+void IMonster::BossExplode ()
 {
 	vec3f	org = Entity->State.GetOrigin() + vec3f(0, 0, 24 + (randomMT()&15));
-	Think = &CMonster::BossExplode;
+	Think = &IMonster::BossExplode;
 
 	switch (ExplodeCount++)
 	{

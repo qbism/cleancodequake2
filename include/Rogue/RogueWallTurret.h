@@ -55,7 +55,7 @@ enum
 	TURRETTHINK_MOVEBEGIN
 };
 
-class CWallTurret : public CMonster
+class CWallTurret : public IMonster
 {
 public:
 	enum

@@ -416,7 +416,7 @@ void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	TargetedBreach->Team.Master->SetOwner(NULL);
 
 	CInfantry::Die (Inflictor, Attacker, Damage, Point);
-	Think = &CMonster::MonsterThink;
+	Think = &IMonster::MonsterThink;
 	Entity->NextThink = Level.Frame + FRAMETIME;
 }
 

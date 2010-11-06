@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Brain.h"
 
 CBrain::CBrain (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
@@ -55,38 +55,38 @@ void CBrain::Search ()
 
 CFrame BrainFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
 
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
 
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0)
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0)
 };
 CAnim BrainMoveStand (CBrain::FRAME_stand01, CBrain::FRAME_stand30, BrainFramesStand);
 
@@ -102,40 +102,40 @@ void CBrain::Stand ()
 
 CFrame BrainFramesIdle [] =
 {
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
 
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
 
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0),
-	CFrame (&CMonster::AI_Stand,	0)
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0),
+	CFrame (&IMonster::AI_Stand,	0)
 };
-CAnim BrainMoveIdle (CBrain::FRAME_stand31, CBrain::FRAME_stand60, BrainFramesIdle, &CMonster::Stand);
+CAnim BrainMoveIdle (CBrain::FRAME_stand31, CBrain::FRAME_stand60, BrainFramesIdle, &IMonster::Stand);
 
 void CBrain::Idle ()
 {
@@ -148,17 +148,17 @@ void CBrain::Idle ()
 //
 CFrame BrainFramesWalk1 [] =
 {
-	CFrame (&CMonster::AI_Walk,	7),
-	CFrame (&CMonster::AI_Walk,	2),
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	9),
-	CFrame (&CMonster::AI_Walk,	-4),
-	CFrame (&CMonster::AI_Walk,	-1),
-	CFrame (&CMonster::AI_Walk,	2)
+	CFrame (&IMonster::AI_Walk,	7),
+	CFrame (&IMonster::AI_Walk,	2),
+	CFrame (&IMonster::AI_Walk,	3),
+	CFrame (&IMonster::AI_Walk,	3),
+	CFrame (&IMonster::AI_Walk,	1),
+	CFrame (&IMonster::AI_Walk,	0),
+	CFrame (&IMonster::AI_Walk,	0),
+	CFrame (&IMonster::AI_Walk,	9),
+	CFrame (&IMonster::AI_Walk,	-4),
+	CFrame (&IMonster::AI_Walk,	-1),
+	CFrame (&IMonster::AI_Walk,	2)
 };
 CAnim BrainMoveWalk1 (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesWalk1);
 
@@ -170,67 +170,67 @@ void CBrain::Walk ()
 
 CFrame BrainFramesDefense [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
 CAnim BrainMoveDefense (CBrain::FRAME_defens01, CBrain::FRAME_defens08, BrainFramesDefense);
 
 CFrame BrainFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-4)
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-4)
 };
-CAnim BrainMovePain3 (CBrain::FRAME_pain301, CBrain::FRAME_pain306, BrainFramesPain3, &CMonster::Run);
+CAnim BrainMovePain3 (CBrain::FRAME_pain301, CBrain::FRAME_pain306, BrainFramesPain3, &IMonster::Run);
 
 CFrame BrainFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	-2)
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	-2)
 };
-CAnim BrainMovePain2 (CBrain::FRAME_pain201, CBrain::FRAME_pain208, BrainFramesPain2, &CMonster::Run);
+CAnim BrainMovePain2 (CBrain::FRAME_pain201, CBrain::FRAME_pain208, BrainFramesPain2, &IMonster::Run);
 
 CFrame BrainFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	7),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	-1)
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	7),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	-1)
 };
-CAnim BrainMovePain1 (CBrain::FRAME_pain101, CBrain::FRAME_pain121, BrainFramesPain1, &CMonster::Run);
+CAnim BrainMovePain1 (CBrain::FRAME_pain101, CBrain::FRAME_pain121, BrainFramesPain1, &IMonster::Run);
 
 void CBrain::Pain(IBaseEntity *Other, sint32 Damage)
 {
@@ -267,23 +267,23 @@ void CBrain::Pain(IBaseEntity *Other, sint32 Damage)
 
 CFrame BrainFramesDuck [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
 #if !ROGUE_FEATURES
-	CFrame (&CMonster::AI_Move,	-2,	ConvertDerivedFunction(&CBrain::Duck_Down)),
-	CFrame (&CMonster::AI_Move,	17,	ConvertDerivedFunction(&CBrain::Duck_Hold)),
-	CFrame (&CMonster::AI_Move,	-3),
-	CFrame (&CMonster::AI_Move,	-1,	ConvertDerivedFunction(&CBrain::Duck_Up)),
+	CFrame (&IMonster::AI_Move,	-2,	ConvertDerivedFunction(&CBrain::Duck_Down)),
+	CFrame (&IMonster::AI_Move,	17,	ConvertDerivedFunction(&CBrain::Duck_Hold)),
+	CFrame (&IMonster::AI_Move,	-3),
+	CFrame (&IMonster::AI_Move,	-1,	ConvertDerivedFunction(&CBrain::Duck_Up)),
 #else
-	CFrame (&CMonster::AI_Move,	-2,	&CMonster::DuckDown),
-	CFrame (&CMonster::AI_Move,	17,	&CMonster::DuckHold),
-	CFrame (&CMonster::AI_Move,	-3),
-	CFrame (&CMonster::AI_Move,	-1,	&CMonster::UnDuck),
+	CFrame (&IMonster::AI_Move,	-2,	&IMonster::DuckDown),
+	CFrame (&IMonster::AI_Move,	17,	&IMonster::DuckHold),
+	CFrame (&IMonster::AI_Move,	-3),
+	CFrame (&IMonster::AI_Move,	-1,	&IMonster::UnDuck),
 #endif
-	CFrame (&CMonster::AI_Move,	-5),
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	-6)
+	CFrame (&IMonster::AI_Move,	-5),
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	-6)
 };
-CAnim BrainMoveDuck (CBrain::FRAME_duck01, CBrain::FRAME_duck08, BrainFramesDuck, &CMonster::Run);
+CAnim BrainMoveDuck (CBrain::FRAME_duck01, CBrain::FRAME_duck08, BrainFramesDuck, &IMonster::Run);
 
 #if !ROGUE_FEATURES
 void CBrain::Duck_Down ()
@@ -341,34 +341,34 @@ void CBrain::Duck (float eta)
 
 CFrame BrainFramesDeath2 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	9),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	9),
+	CFrame (&IMonster::AI_Move,	0)
 };
 CAnim BrainMoveDeath2 (CBrain::FRAME_death201, CBrain::FRAME_death205, BrainFramesDeath2, ConvertDerivedFunction(&CBrain::Dead));
 
 CFrame BrainFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	9),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	9),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
 CAnim BrainMoveDeath1 (CBrain::FRAME_death101, CBrain::FRAME_death118, BrainFramesDeath1, ConvertDerivedFunction(&CBrain::Dead));
 
@@ -440,26 +440,26 @@ void CBrain::HitLeft ()
 
 CFrame BrainFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge,	8),
-	CFrame (&CMonster::AI_Charge,	3),
-	CFrame (&CMonster::AI_Charge,	5),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	-3,	ConvertDerivedFunction(&CBrain::SwingRight)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	-5),
-	CFrame (&CMonster::AI_Charge,	-7,	ConvertDerivedFunction(&CBrain::HitRight)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	6,	ConvertDerivedFunction(&CBrain::SwingLeft)),
-	CFrame (&CMonster::AI_Charge,	1),
-	CFrame (&CMonster::AI_Charge,	2,	ConvertDerivedFunction(&CBrain::HitLeft)),
-	CFrame (&CMonster::AI_Charge,	-3),
-	CFrame (&CMonster::AI_Charge,	6),
-	CFrame (&CMonster::AI_Charge,	-1),
-	CFrame (&CMonster::AI_Charge,	-3),
-	CFrame (&CMonster::AI_Charge,	2),
-	CFrame (&CMonster::AI_Charge,	-11)
+	CFrame (&IMonster::AI_Charge,	8),
+	CFrame (&IMonster::AI_Charge,	3),
+	CFrame (&IMonster::AI_Charge,	5),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	-3,	ConvertDerivedFunction(&CBrain::SwingRight)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	-5),
+	CFrame (&IMonster::AI_Charge,	-7,	ConvertDerivedFunction(&CBrain::HitRight)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	6,	ConvertDerivedFunction(&CBrain::SwingLeft)),
+	CFrame (&IMonster::AI_Charge,	1),
+	CFrame (&IMonster::AI_Charge,	2,	ConvertDerivedFunction(&CBrain::HitLeft)),
+	CFrame (&IMonster::AI_Charge,	-3),
+	CFrame (&IMonster::AI_Charge,	6),
+	CFrame (&IMonster::AI_Charge,	-1),
+	CFrame (&IMonster::AI_Charge,	-3),
+	CFrame (&IMonster::AI_Charge,	2),
+	CFrame (&IMonster::AI_Charge,	-11)
 };
-CAnim BrainMoveAttack1 (CBrain::FRAME_attak101, CBrain::FRAME_attak118, BrainFramesAttack1, &CMonster::Run);
+CAnim BrainMoveAttack1 (CBrain::FRAME_attak101, CBrain::FRAME_attak118, BrainFramesAttack1, &IMonster::Run);
 
 void CBrain::ChestOpen ()
 {
@@ -489,25 +489,25 @@ void CBrain::ChestClosed ()
 
 CFrame BrainFramesAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge,	5),
-	CFrame (&CMonster::AI_Charge,	-4),
-	CFrame (&CMonster::AI_Charge,	-4),
-	CFrame (&CMonster::AI_Charge,	-3),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBrain::ChestOpen)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	13,	ConvertDerivedFunction(&CBrain::TentacleAttack)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	2),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	-9,	ConvertDerivedFunction(&CBrain::ChestClosed)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	4),
-	CFrame (&CMonster::AI_Charge,	3),
-	CFrame (&CMonster::AI_Charge,	2),
-	CFrame (&CMonster::AI_Charge,	-3),
-	CFrame (&CMonster::AI_Charge,	-6)
+	CFrame (&IMonster::AI_Charge,	5),
+	CFrame (&IMonster::AI_Charge,	-4),
+	CFrame (&IMonster::AI_Charge,	-4),
+	CFrame (&IMonster::AI_Charge,	-3),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CBrain::ChestOpen)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	13,	ConvertDerivedFunction(&CBrain::TentacleAttack)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	2),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	-9,	ConvertDerivedFunction(&CBrain::ChestClosed)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	4),
+	CFrame (&IMonster::AI_Charge,	3),
+	CFrame (&IMonster::AI_Charge,	2),
+	CFrame (&IMonster::AI_Charge,	-3),
+	CFrame (&IMonster::AI_Charge,	-6)
 };
-CAnim BrainMoveAttack2 (CBrain::FRAME_attak201, CBrain::FRAME_attak217, BrainFramesAttack2, &CMonster::Run);
+CAnim BrainMoveAttack2 (CBrain::FRAME_attak201, CBrain::FRAME_attak217, BrainFramesAttack2, &IMonster::Run);
 
 void CBrain::Melee ()
 {
@@ -662,41 +662,41 @@ void CBrain::LaserBeamRefire ()
 
 CFrame BrainFramesAttack3 [] =
 {
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, -4),
-	CFrame (&CMonster::AI_Charge, -4),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::ChestOpen)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TongueAttack)),
-	CFrame (&CMonster::AI_Charge, 13),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TentacleAttack)),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TongueAttack)),
-	CFrame (&CMonster::AI_Charge, -9,	ConvertDerivedFunction(&CBrain::ChestClosed)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 4),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, -3),
-	CFrame (&CMonster::AI_Charge, -6)
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, -4),
+	CFrame (&IMonster::AI_Charge, -4),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::ChestOpen)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TongueAttack)),
+	CFrame (&IMonster::AI_Charge, 13),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TentacleAttack)),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::TongueAttack)),
+	CFrame (&IMonster::AI_Charge, -9,	ConvertDerivedFunction(&CBrain::ChestClosed)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 4),
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, -3),
+	CFrame (&IMonster::AI_Charge, -6)
 };
-CAnim BrainMoveAttack3 (CBrain::FRAME_attak201, CBrain::FRAME_attak217, BrainFramesAttack3, &CMonster::Run);
+CAnim BrainMoveAttack3 (CBrain::FRAME_attak201, CBrain::FRAME_attak217, BrainFramesAttack3, &IMonster::Run);
 
 CFrame BrainFramesAttack4 [] =
 {
-	CFrame (&CMonster::AI_Charge, 9,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 3,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 3,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 10,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, -4,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, -1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
-	CFrame (&CMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamRefire))
+	CFrame (&IMonster::AI_Charge, 9,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 3,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 3,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 10,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, -4,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, -1,	ConvertDerivedFunction(&CBrain::LaserBeamFire)),
+	CFrame (&IMonster::AI_Charge, 2,	ConvertDerivedFunction(&CBrain::LaserBeamRefire))
 };
-CAnim BrainMoveAttack4 (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesAttack4, &CMonster::Run);
+CAnim BrainMoveAttack4 (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesAttack4, &IMonster::Run);
 
 void CBrain::Attack ()
 {	
@@ -724,17 +724,17 @@ void CBrain::Attack ()
 
 CFrame BrainFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run,	9),
-	CFrame (&CMonster::AI_Run,	2),
-	CFrame (&CMonster::AI_Run,	3),
-	CFrame (&CMonster::AI_Run,	3),
-	CFrame (&CMonster::AI_Run,	1),
-	CFrame (&CMonster::AI_Run,	0),
-	CFrame (&CMonster::AI_Run,	0),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	-4),
-	CFrame (&CMonster::AI_Run,	-1),
-	CFrame (&CMonster::AI_Run,	2)
+	CFrame (&IMonster::AI_Run,	9),
+	CFrame (&IMonster::AI_Run,	2),
+	CFrame (&IMonster::AI_Run,	3),
+	CFrame (&IMonster::AI_Run,	3),
+	CFrame (&IMonster::AI_Run,	1),
+	CFrame (&IMonster::AI_Run,	0),
+	CFrame (&IMonster::AI_Run,	0),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	-4),
+	CFrame (&IMonster::AI_Run,	-1),
+	CFrame (&IMonster::AI_Run,	2)
 };
 CAnim BrainMoveRun (CBrain::FRAME_walk101, CBrain::FRAME_walk111, BrainFramesRun);
 

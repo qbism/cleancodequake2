@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_ROGUE_CARRIER_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_ROGUE_CARRIER_H
 
-class CCarrier : public CMonster
+class CCarrier : public IMonster
 {
 public:
 	enum

@@ -272,7 +272,7 @@ public:
 		MoveOrigin = State.GetOrigin();
 		MoveAngles = State.GetAngles();
 
-		G_SetMovedir (State.GetAngles(), MoveDir);
+		SetMoveDir (MoveDir);
 		PhysicsType = PHYSICS_PUSH;
 		GetSolid() = SOLID_BSP;
 		SetBrushModel ();

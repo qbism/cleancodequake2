@@ -39,7 +39,7 @@ const int	MEDIC_MAX_HEAL_DISTANCE		= 400;
 const int	MEDIC_TRY_TIME				= 100;
 
 CMedic::CMedic (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
@@ -189,96 +189,96 @@ void CMedic::Sight ()
 
 CFrame MedicFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0, &CMonster::Idle),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, &IMonster::Idle),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
 };
 CAnim MedicMoveStand (CMedic::FRAME_wait1, CMedic::FRAME_wait90, MedicFramesStand);
 
@@ -289,18 +289,18 @@ void CMedic::Stand ()
 
 CFrame MedicFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk, 6.2f),
-	CFrame (&CMonster::AI_Walk, 18.1f),
-	CFrame (&CMonster::AI_Walk, 1),
-	CFrame (&CMonster::AI_Walk, 9),
-	CFrame (&CMonster::AI_Walk, 10),
-	CFrame (&CMonster::AI_Walk, 9),
-	CFrame (&CMonster::AI_Walk, 11),
-	CFrame (&CMonster::AI_Walk, 11.6f),
-	CFrame (&CMonster::AI_Walk, 2),
-	CFrame (&CMonster::AI_Walk, 9.9f),
-	CFrame (&CMonster::AI_Walk, 14),
-	CFrame (&CMonster::AI_Walk, 9.3f)
+	CFrame (&IMonster::AI_Walk, 6.2f),
+	CFrame (&IMonster::AI_Walk, 18.1f),
+	CFrame (&IMonster::AI_Walk, 1),
+	CFrame (&IMonster::AI_Walk, 9),
+	CFrame (&IMonster::AI_Walk, 10),
+	CFrame (&IMonster::AI_Walk, 9),
+	CFrame (&IMonster::AI_Walk, 11),
+	CFrame (&IMonster::AI_Walk, 11.6f),
+	CFrame (&IMonster::AI_Walk, 2),
+	CFrame (&IMonster::AI_Walk, 9.9f),
+	CFrame (&IMonster::AI_Walk, 14),
+	CFrame (&IMonster::AI_Walk, 9.3f)
 };
 CAnim MedicMoveWalk (CMedic::FRAME_walk1, CMedic::FRAME_walk12, MedicFramesWalk);
 
@@ -311,16 +311,16 @@ void CMedic::Walk ()
 
 CFrame MedicFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run, 18),
-	CFrame (&CMonster::AI_Run, 22.5f),
-	CFrame (&CMonster::AI_Run, 25.4f
+	CFrame (&IMonster::AI_Run, 18),
+	CFrame (&IMonster::AI_Run, 22.5f),
+	CFrame (&IMonster::AI_Run, 25.4f
 #if ROGUE_FEATURES
-	, &CMonster::DoneDodge
+	, &IMonster::DoneDodge
 #endif
 	),
-	CFrame (&CMonster::AI_Run, 23.4f),
-	CFrame (&CMonster::AI_Run, 24),
-	CFrame (&CMonster::AI_Run, 35.6f)
+	CFrame (&IMonster::AI_Run, 23.4f),
+	CFrame (&IMonster::AI_Run, 24),
+	CFrame (&IMonster::AI_Run, 35.6f)
 };
 CAnim MedicMoveRun (CMedic::FRAME_run1, CMedic::FRAME_run6, MedicFramesRun);
 
@@ -347,36 +347,36 @@ void CMedic::Run ()
 
 CFrame MedicFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim MedicMovePain1 (CMedic::FRAME_paina1, CMedic::FRAME_paina8, MedicFramesPain1, &CMonster::Run);
+CAnim MedicMovePain1 (CMedic::FRAME_paina1, CMedic::FRAME_paina8, MedicFramesPain1, &IMonster::Run);
 
 CFrame MedicFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
-CAnim MedicMovePain2 (CMedic::FRAME_painb1, CMedic::FRAME_painb15, MedicFramesPain2, &CMonster::Run);
+CAnim MedicMovePain2 (CMedic::FRAME_painb1, CMedic::FRAME_painb15, MedicFramesPain2, &IMonster::Run);
 
 void CMedic::Pain(IBaseEntity *Other, sint32 Damage)
 {
@@ -459,36 +459,36 @@ void CMedic::Dead ()
 
 CFrame MedicFramesDeath [] =
 {
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0),
-	CFrame (&CMonster::AI_Move, 0)
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0),
+	CFrame (&IMonster::AI_Move, 0)
 };
 CAnim MedicMoveDeath (CMedic::FRAME_death1, CMedic::FRAME_death30, MedicFramesDeath, ConvertDerivedFunction(&CMedic::Dead));
 
@@ -528,24 +528,24 @@ void CMedic::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Damage, 
 
 CFrame MedicFramesAttackHyperBlaster [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster))
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster))
 };
-CAnim MedicMoveAttackHyperBlaster (CMedic::FRAME_attack15, CMedic::FRAME_attack30, MedicFramesAttackHyperBlaster, &CMonster::Run);
+CAnim MedicMoveAttackHyperBlaster (CMedic::FRAME_attack15, CMedic::FRAME_attack30, MedicFramesAttackHyperBlaster, &IMonster::Run);
 
 void CMedic::ContinueFiring ()
 {
@@ -555,22 +555,22 @@ void CMedic::ContinueFiring ()
 
 CFrame MedicFramesAttackBlaster [] =
 {
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),	
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::ContinueFiring))	// Change to medic_continue... Else, go to frame 32
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::FireBlaster)),	
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Charge, 0,	ConvertDerivedFunction(&CMedic::ContinueFiring))	// Change to medic_continue... Else, go to frame 32
 };
-CAnim MedicMoveAttackBlaster (CMedic::FRAME_attack1, CMedic::FRAME_attack14, MedicFramesAttackBlaster, &CMonster::Run);
+CAnim MedicMoveAttackBlaster (CMedic::FRAME_attack1, CMedic::FRAME_attack14, MedicFramesAttackBlaster, &IMonster::Run);
 
 void CMedic::HookLaunch ()
 {
@@ -807,56 +807,56 @@ CFrame MedicFramesAttackCable [] =
 // ROGUE - changed frame 52 to 0 to compensate for changes in 36-40
 
 #if ROGUE_FEATURES
-	CFrame (&CMonster::AI_Charge, 2),
-	CFrame (&CMonster::AI_Charge, 3),
-	CFrame (&CMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 2),
+	CFrame (&IMonster::AI_Charge, 3),
+	CFrame (&IMonster::AI_Charge, 5),
 #else
-	CFrame (&CMonster::AI_Move, 2),
-	CFrame (&CMonster::AI_Move, 3),
-	CFrame (&CMonster::AI_Move, 5),
+	CFrame (&IMonster::AI_Move, 2),
+	CFrame (&IMonster::AI_Move, 3),
+	CFrame (&IMonster::AI_Move, 5),
 #endif
 
 #if ROGUE_FEATURES
-	CFrame (&CMonster::AI_Charge, -4.4f), // 36
-	CFrame (&CMonster::AI_Charge, -4.7f),
-	CFrame (&CMonster::AI_Charge, -5),
-	CFrame (&CMonster::AI_Charge, -6),
-	CFrame (&CMonster::AI_Charge, -4), // 40
+	CFrame (&IMonster::AI_Charge, -4.4f), // 36
+	CFrame (&IMonster::AI_Charge, -4.7f),
+	CFrame (&IMonster::AI_Charge, -5),
+	CFrame (&IMonster::AI_Charge, -6),
+	CFrame (&IMonster::AI_Charge, -4), // 40
 #else
-	CFrame (&CMonster::AI_Move, 4.4f), // 36
-	CFrame (&CMonster::AI_Charge, 4.7f),
-	CFrame (&CMonster::AI_Charge, 5),
-	CFrame (&CMonster::AI_Charge, 6),
-	CFrame (&CMonster::AI_Charge, 4), // 40
+	CFrame (&IMonster::AI_Move, 4.4f), // 36
+	CFrame (&IMonster::AI_Charge, 4.7f),
+	CFrame (&IMonster::AI_Charge, 5),
+	CFrame (&IMonster::AI_Charge, 6),
+	CFrame (&IMonster::AI_Charge, 4), // 40
 #endif
-	CFrame (&CMonster::AI_Charge, 0),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::HookLaunch)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
-	CFrame (&CMonster::AI_Move, 
+	CFrame (&IMonster::AI_Charge, 0),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::HookLaunch)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 0,		ConvertDerivedFunction(&CMedic::CableAttack)),
+	CFrame (&IMonster::AI_Move, 
 #if ROGUE_FEATURES
 	0
 #else
 	-15
 #endif
 	,	ConvertDerivedFunction(&CMedic::HookRetract)),
-	CFrame (&CMonster::AI_Move, -1.5f),
-	CFrame (&CMonster::AI_Move, -1.2f),
-	CFrame (&CMonster::AI_Move, -3),
-	CFrame (&CMonster::AI_Move, -2),
-	CFrame (&CMonster::AI_Move, 0.3f),
-	CFrame (&CMonster::AI_Move, 0.7f),
-	CFrame (&CMonster::AI_Move, 1.2f),
-	CFrame (&CMonster::AI_Move, 1.3f)
+	CFrame (&IMonster::AI_Move, -1.5f),
+	CFrame (&IMonster::AI_Move, -1.2f),
+	CFrame (&IMonster::AI_Move, -3),
+	CFrame (&IMonster::AI_Move, -2),
+	CFrame (&IMonster::AI_Move, 0.3f),
+	CFrame (&IMonster::AI_Move, 0.7f),
+	CFrame (&IMonster::AI_Move, 1.2f),
+	CFrame (&IMonster::AI_Move, 1.3f)
 };
-CAnim MedicMoveAttackCable (CMedic::FRAME_attack33, CMedic::FRAME_attack60, MedicFramesAttackCable, &CMonster::Run);
+CAnim MedicMoveAttackCable (CMedic::FRAME_attack33, CMedic::FRAME_attack60, MedicFramesAttackCable, &IMonster::Run);
 
 void CMedic::Attack()
 {
@@ -919,7 +919,7 @@ bool CMedic::CheckAttack ()
 	}
 #endif
 
-	return CMonster::CheckAttack ();
+	return IMonster::CheckAttack ();
 }
 
 #if !ROGUE_FEATURES
@@ -952,39 +952,39 @@ void CMedic::Duck_Up ()
 
 CFrame MedicFramesDuck [] =
 {
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
 #if ROGUE_FEATURES
-	CFrame (&CMonster::AI_Move, -1, &CMonster::DuckDown),
-	CFrame (&CMonster::AI_Move, -1,	&CMonster::DuckHold),
+	CFrame (&IMonster::AI_Move, -1, &IMonster::DuckDown),
+	CFrame (&IMonster::AI_Move, -1,	&IMonster::DuckHold),
 #else
-	CFrame (&CMonster::AI_Move, -1, ConvertDerivedFunction(&CMedic::Duck_Down)),
-	CFrame (&CMonster::AI_Move, -1,	ConvertDerivedFunction(&CMedic::Duck_Hold)),
+	CFrame (&IMonster::AI_Move, -1, ConvertDerivedFunction(&CMedic::Duck_Down)),
+	CFrame (&IMonster::AI_Move, -1,	ConvertDerivedFunction(&CMedic::Duck_Hold)),
 #endif
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1
 #if ROGUE_FEATURES
-	,	&CMonster::UnDuck // in Rogue AI, the UP is down
+	,	&IMonster::UnDuck // in Rogue AI, the UP is down
 #else
 	,	ConvertDerivedFunction(&CMedic::Duck_Up)
 #endif
 	),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1
 #if ROGUE_FEATURES
-	, &CMonster::UnDuck
+	, &IMonster::UnDuck
 #endif
 	),
-	CFrame (&CMonster::AI_Move, -1),
-	CFrame (&CMonster::AI_Move, -1)
+	CFrame (&IMonster::AI_Move, -1),
+	CFrame (&IMonster::AI_Move, -1)
 };
-CAnim MedicMoveDuck (CMedic::FRAME_duck1, CMedic::FRAME_duck16, MedicFramesDuck, &CMonster::Run);
+CAnim MedicMoveDuck (CMedic::FRAME_duck1, CMedic::FRAME_duck16, MedicFramesDuck, &IMonster::Run);
 
 #if !ROGUE_FEATURES
 void CMedic::Dodge (IBaseEntity *Attacker, float eta)

@@ -38,7 +38,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Entities/BrushModels.h"
 #include "Utility/TemporaryEntities.h"
 
-void CMonster::HuntTarget()
+void IMonster::HuntTarget()
 {
 	Entity->GoalEntity = Entity->Enemy;
 
@@ -54,7 +54,7 @@ void CMonster::HuntTarget()
 		AttackFinished = Level.Frame + 10;
 }
 
-bool CMonster::FindTarget()
+bool IMonster::FindTarget()
 {
 	if (AIFlags & AI_GOOD_GUY)
 	{
@@ -219,7 +219,7 @@ bool CMonster::FindTarget()
 	return true;
 }
 
-void CMonster::MoveToGoal (float Dist)
+void IMonster::MoveToGoal (float Dist)
 {	
 	if (!Entity->GoalEntity && !(AIFlags & (AI_FLY | AI_SWIM)))
 		return;
@@ -236,7 +236,7 @@ void CMonster::MoveToGoal (float Dist)
 	}
 }
 
-bool CMonster::MoveStep (vec3f move, bool ReLink)
+bool IMonster::MoveStep (vec3f move, bool ReLink)
 {
 // try the move	
 	vec3f oldOrg = Entity->State.GetOrigin(), newOrg = oldOrg + move;
@@ -304,7 +304,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 				if (ReLink)
 				{
 					Entity->Link ();
-					G_TouchTriggers (Entity);
+					Entity->TouchTriggers ();
 				}
 				
 				return true;
@@ -356,7 +356,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			if (ReLink)
 			{
 				Entity->Link ();
-				G_TouchTriggers (Entity);
+				Entity->TouchTriggers ();
 			}
 
 			Entity->GroundEntity = nullentity;
@@ -379,7 +379,7 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 			if (ReLink)
 			{
 				Entity->Link ();
-				G_TouchTriggers (Entity);
+				Entity->TouchTriggers ();
 			}
 			return true;
 		}
@@ -398,13 +398,13 @@ bool CMonster::MoveStep (vec3f move, bool ReLink)
 	if (ReLink)
 	{
 		Entity->Link ();
-		G_TouchTriggers (Entity);
+		Entity->TouchTriggers ();
 	}
 
 	return true;
 }
 
-void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
+void IMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 {
 	if (!Enemy)
 		return;
@@ -490,7 +490,7 @@ void CMonster::NewChaseDir (IBaseEntity *Enemy, float Dist)
 		AIFlags |= AI_PARTIALGROUND;
 }
 
-bool CMonster::StepDirection (float Yaw, float Dist)
+bool IMonster::StepDirection (float Yaw, float Dist)
 {	
 	IdealYaw = Yaw;
 	ChangeYaw ();
@@ -507,16 +507,16 @@ bool CMonster::StepDirection (float Yaw, float Dist)
 			Entity->State.GetOrigin() = oldorigin;
 
 		Entity->Link ();
-		G_TouchTriggers (Entity);
+		Entity->TouchTriggers ();
 		return true;
 	}
 
 	Entity->Link ();
-	G_TouchTriggers (Entity);
+	Entity->TouchTriggers ();
 	return false;
 }
 
-bool CMonster::CheckAttack ()
+bool IMonster::CheckAttack ()
 {
 	if ((Entity->Enemy->EntityFlags & EF_HURTABLE) && (entity_cast<IHurtableEntity>(*Entity->Enemy)->Health > 0))
 	{
@@ -608,7 +608,7 @@ bool CMonster::CheckAttack ()
 #include "Monsters/Makron.h"
 #include "Monsters/JORG.h"
 
-void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
+void IMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 {
 	if (!(Attacker->EntityFlags & EF_PLAYER) && !(Attacker->EntityFlags & EF_MONSTER))
 		return;
@@ -694,7 +694,7 @@ void CMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	}
 }
 
-void CMonster::AI_Walk(float Dist)
+void IMonster::AI_Walk(float Dist)
 {
 	MoveToGoal (Dist);
 
@@ -714,7 +714,7 @@ void CMonster::AI_Walk(float Dist)
 	}
 }
 
-void CMonster::AI_Charge(float Dist)
+void IMonster::AI_Charge(float Dist)
 {
 	IdealYaw = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 	ChangeYaw ();
@@ -723,7 +723,7 @@ void CMonster::AI_Charge(float Dist)
 		WalkMove (Entity->State.GetAngles().Y, Dist);
 }
 
-bool CMonster::AI_CheckAttack()
+bool IMonster::AI_CheckAttack()
 {
 // this causes monsters to run blindly to the combat point w/o firing
 	if (Entity->GoalEntity)
@@ -850,12 +850,12 @@ bool CMonster::AI_CheckAttack()
 	return CheckAttack ();
 }
 
-void CMonster::AI_Move (float Dist)
+void IMonster::AI_Move (float Dist)
 {
 	WalkMove (Entity->State.GetAngles().Y, Dist);
 }
 
-void CMonster::AI_Run(float Dist)
+void IMonster::AI_Run(float Dist)
 {
 	// if we're going to a combat point, just proceed
 	if (AIFlags & AI_COMBAT_POINT)
@@ -1038,7 +1038,7 @@ void CMonster::AI_Run(float Dist)
 	MoveToGoal (Dist);
 }
 
-void CMonster::AI_Run_Melee ()
+void IMonster::AI_Run_Melee ()
 {
 	IdealYaw = EnemyYaw;
 	ChangeYaw ();
@@ -1050,7 +1050,7 @@ void CMonster::AI_Run_Melee ()
 	}
 }
 
-void CMonster::AI_Run_Missile()
+void IMonster::AI_Run_Missile()
 {
 	IdealYaw = EnemyYaw;
 	ChangeYaw ();
@@ -1062,7 +1062,7 @@ void CMonster::AI_Run_Missile()
 	}
 }
 
-void CMonster::AI_Run_Slide(float Dist)
+void IMonster::AI_Run_Slide(float Dist)
 {	
 	IdealYaw = EnemyYaw;
 	ChangeYaw ();
@@ -1076,7 +1076,7 @@ void CMonster::AI_Run_Slide(float Dist)
 	WalkMove (IdealYaw - ofs, Dist);
 }
 
-void CMonster::AI_Stand (float Dist)
+void IMonster::AI_Stand (float Dist)
 {
 	if (Dist)
 		WalkMove (Entity->State.GetAngles().Y, Dist);
@@ -1120,7 +1120,7 @@ void CMonster::AI_Stand (float Dist)
 	}
 }
 
-void CMonster::FoundTarget ()
+void IMonster::FoundTarget ()
 {
 	// let other monsters see this monster for a while
 	if (Entity->Enemy->EntityFlags & EF_PLAYER)

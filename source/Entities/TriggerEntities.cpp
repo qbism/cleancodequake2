@@ -198,7 +198,7 @@ void CTriggerBase::Use (IBaseEntity *Other, IBaseEntity *Activator)
 void CTriggerBase::Init ()
 {
 	if (State.GetAngles() != vec3fOrigin)
-		G_SetMovedir (State.GetAngles(), MoveDir);
+		SetMoveDir ();
 
 	GetSolid() = SOLID_TRIGGER;
 	SetBrushModel ();
@@ -341,7 +341,7 @@ void CTriggerMultiple::Spawn ()
 	}
 
 	if (State.GetAngles() != vec3fOrigin)
-		G_SetMovedir (State.GetAngles(), MoveDir);
+		SetMoveDir ();
 
 	SetBrushModel ();
 

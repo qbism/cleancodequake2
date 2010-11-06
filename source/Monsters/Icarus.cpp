@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Icarus.h"
 
 CIcarus::CIcarus (uint32 ID) :
-CMonster (ID)
+IMonster (ID)
 {
 }
 
@@ -51,384 +51,384 @@ void CIcarus::Search ()
 
 CFrame HoverFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim HoverMoveStand (CIcarus::FRAME_stand01, CIcarus::FRAME_stand30, HoverFramesStand);
 
 /*mframe_t hover_frames_stop1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	NULL
 };
 mmove_t hover_move_stop1 = {CIcarus::FRAME_stop101, CIcarus::FRAME_stop109, hover_frames_stop1, NULL};
 
 mframe_t hover_frames_stop2 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	NULL
 };
 mmove_t hover_move_stop2 = {CIcarus::FRAME_stop201, CIcarus::FRAME_stop208, hover_frames_stop2, NULL};
 
 mframe_t hover_frames_takeoff [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	5),
-	CFrame (&CMonster::AI_Move,	-1),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-1),
-	CFrame (&CMonster::AI_Move,	-1),
-	CFrame (&CMonster::AI_Move,	-1),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	-9),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	0,	NULL
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	5),
+	CFrame (&IMonster::AI_Move,	-1),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-1),
+	CFrame (&IMonster::AI_Move,	-1),
+	CFrame (&IMonster::AI_Move,	-1),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	-9),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	0,	NULL
 };
 mmove_t hover_move_takeoff = {CIcarus::FRAME_takeof01, CIcarus::FRAME_takeof30, hover_frames_takeoff, NULL};*/
 
 CFrame HoverFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim HoverMovePain3 (CIcarus::FRAME_pain301, CIcarus::FRAME_pain309, HoverFramesPain3, &CMonster::Run);
+CAnim HoverMovePain3 (CIcarus::FRAME_pain301, CIcarus::FRAME_pain309, HoverFramesPain3, &IMonster::Run);
 
 CFrame HoverFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
-CAnim HoverMovePain2 (CIcarus::FRAME_pain201, CIcarus::FRAME_pain212, HoverFramesPain2, &CMonster::Run);
+CAnim HoverMovePain2 (CIcarus::FRAME_pain201, CIcarus::FRAME_pain212, HoverFramesPain2, &IMonster::Run);
 
 CFrame HoverFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	-8),
-	CFrame (&CMonster::AI_Move,	-4),
-	CFrame (&CMonster::AI_Move,	-6),
-	CFrame (&CMonster::AI_Move,	-4),
-	CFrame (&CMonster::AI_Move,	-3),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	7),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	5),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	4)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	-8),
+	CFrame (&IMonster::AI_Move,	-4),
+	CFrame (&IMonster::AI_Move,	-6),
+	CFrame (&IMonster::AI_Move,	-4),
+	CFrame (&IMonster::AI_Move,	-3),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	7),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	5),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	4)
 };
-CAnim HoverMovePain1 (CIcarus::FRAME_pain101, CIcarus::FRAME_pain128, HoverFramesPain1, &CMonster::Run);
+CAnim HoverMovePain1 (CIcarus::FRAME_pain101, CIcarus::FRAME_pain128, HoverFramesPain1, &IMonster::Run);
 
 /*mframe_t hover_frames_land [] =
 {
-	CFrame (&CMonster::AI_Move,	0,	NULL
+	CFrame (&IMonster::AI_Move,	0,	NULL
 };
 mmove_t hover_move_land = {CIcarus::FRAME_land01, CIcarus::FRAME_land01, hover_frames_land, NULL};
 
 mframe_t hover_frames_forward [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	NULL
 };
 mmove_t hover_move_forward = {CIcarus::FRAME_forwrd01, CIcarus::FRAME_forwrd35, hover_frames_forward, NULL};*/
 
 CFrame HoverFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4),
-	CFrame (&CMonster::AI_Walk,	4)
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4),
+	CFrame (&IMonster::AI_Walk,	4)
 };
 CAnim HoverMoveWalk (CIcarus::FRAME_forwrd01, CIcarus::FRAME_forwrd35, HoverFramesWalk);
 
 CFrame HoverFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10),
-	CFrame (&CMonster::AI_Run,	10)
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10),
+	CFrame (&IMonster::AI_Run,	10)
 };
 CAnim HoverMoveRun (CIcarus::FRAME_forwrd01, CIcarus::FRAME_forwrd35, HoverFramesRun);
 
 CFrame HoverFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	-10),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	5),
-	CFrame (&CMonster::AI_Move,	4),
-	CFrame (&CMonster::AI_Move,	7)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	-10),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	5),
+	CFrame (&IMonster::AI_Move,	4),
+	CFrame (&IMonster::AI_Move,	7)
 };
 CAnim HoverMoveDeath1 (CIcarus::FRAME_death101, CIcarus::FRAME_death111, HoverFramesDeath1, ConvertDerivedFunction(&CIcarus::Dead));
 
 /*mframe_t hover_frames_backward [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0,	NULL
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0,	NULL
 };
 mmove_t hover_move_backward = {CIcarus::FRAME_backwd01, CIcarus::FRAME_backwd24, hover_frames_backward, NULL};*/
 
 CFrame HoverFramesStartAttack [] =
 {
-	CFrame (&CMonster::AI_Charge,	1),
-	CFrame (&CMonster::AI_Charge,	1),
-	CFrame (&CMonster::AI_Charge,	1)
+	CFrame (&IMonster::AI_Charge,	1),
+	CFrame (&IMonster::AI_Charge,	1),
+	CFrame (&IMonster::AI_Charge,	1)
 };
 CAnim HoverMoveStartAttack (CIcarus::FRAME_attak101, CIcarus::FRAME_attak103, HoverFramesStartAttack, ConvertDerivedFunction(&CIcarus::StartAttack));
 
 CFrame HoverFramesAttack1 [] =
 {
-	CFrame (&CMonster::AI_Charge,	-10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	-10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	0,		ConvertDerivedFunction(&CIcarus::ReAttack))
+	CFrame (&IMonster::AI_Charge,	-10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	-10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	0,		ConvertDerivedFunction(&CIcarus::ReAttack))
 };
 CAnim HoverMoveAttack1 (CIcarus::FRAME_attak104, CIcarus::FRAME_attak106, HoverFramesAttack1);
 
 CFrame HoverFramesEndAttack [] =
 {
-	CFrame (&CMonster::AI_Charge,	1),
-	CFrame (&CMonster::AI_Charge,	1)
+	CFrame (&IMonster::AI_Charge,	1),
+	CFrame (&IMonster::AI_Charge,	1)
 };
-CAnim HoverMoveEndAttack (CIcarus::FRAME_attak107, CIcarus::FRAME_attak108, HoverFramesEndAttack, &CMonster::Run);
+CAnim HoverMoveEndAttack (CIcarus::FRAME_attak107, CIcarus::FRAME_attak108, HoverFramesEndAttack, &IMonster::Run);
 
 #if ROGUE_FEATURES
 
 /* PMM - circle strafing code */
 CFrame HoverFramesStartAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge,	15),
-	CFrame (&CMonster::AI_Charge,	15),
-	CFrame (&CMonster::AI_Charge,	15)
+	CFrame (&IMonster::AI_Charge,	15),
+	CFrame (&IMonster::AI_Charge,	15),
+	CFrame (&IMonster::AI_Charge,	15)
 };
 CAnim HoverMoveStartAttack2 (CIcarus::FRAME_attak101, CIcarus::FRAME_attak103, HoverFramesStartAttack2, ConvertDerivedFunction(&CIcarus::StartAttack));
 
 CFrame HoverFramesAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
-	CFrame (&CMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::ReAttack))
+	CFrame (&IMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::FireBlaster)),
+	CFrame (&IMonster::AI_Charge,	10,	ConvertDerivedFunction(&CIcarus::ReAttack))
 };
 CAnim HoverMoveAttack2 (CIcarus::FRAME_attak104, CIcarus::FRAME_attak106, HoverFramesAttack2);
 
 CFrame HoverFramesEndAttack2 [] =
 {
-	CFrame (&CMonster::AI_Charge,	15),
-	CFrame (&CMonster::AI_Charge,	15)
+	CFrame (&IMonster::AI_Charge,	15),
+	CFrame (&IMonster::AI_Charge,	15)
 };
-CAnim HoverMoveEndAttack2 (CIcarus::FRAME_attak107, CIcarus::FRAME_attak108, HoverFramesEndAttack2, &CMonster::Run);
+CAnim HoverMoveEndAttack2 (CIcarus::FRAME_attak107, CIcarus::FRAME_attak108, HoverFramesEndAttack2, &IMonster::Run);
 // end of circle strafe
 #endif
 

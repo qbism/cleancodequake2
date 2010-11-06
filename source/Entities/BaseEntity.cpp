@@ -1067,6 +1067,35 @@ bool IBaseEntity::CanSee (IBaseEntity *Other)
 	return false;
 }
 
+/**
+\fn	void IBaseEntity::TouchTriggers ()
+
+\brief	Cause all triggers that this entity is touching to activate.
+**/
+void IBaseEntity::TouchTriggers ()
+{
+	TBoxEdictsEntityList Entities = BoxEdicts (GetAbsMin(), GetAbsMax(), true);
+
+	// be careful, it is possible to have an entity in this
+	// list removed before we get to it (killtriggered)
+	for (TBoxEdictsEntityList::iterator it = Entities.begin(); it < Entities.end(); ++it)
+	{
+		IBaseEntity *TouchedEntity = (*it);
+
+		if (!TouchedEntity || !TouchedEntity->GetInUse())
+			continue;
+
+		if (TouchedEntity->EntityFlags & EF_TOUCHABLE)
+		{
+			(entity_cast<ITouchableEntity>(TouchedEntity))->Touch (this, NULL, NULL);
+			continue;
+		}
+
+		if (!GetInUse())
+			break;
+	}
+}
+
 #if ROGUE_FEATURES
 
 /**

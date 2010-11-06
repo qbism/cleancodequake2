@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Monsters/Mutant.h"
 
 CMutant::CMutant (uint32 ID) :
-CMonster(ID)
+IMonster(ID)
 {
 }
 
@@ -82,62 +82,62 @@ void CMutant::Swing ()
 
 CFrame MutantFramesStand [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 10
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 10
 
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 20
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 20
 
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 30
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 30
 
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 40
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 40
 
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),		// 50
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),		// 50
 
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0)
 };
 CAnim MutantMoveStand (CMutant::FRAME_stand101, CMutant::FRAME_stand151, MutantFramesStand);
 
@@ -159,21 +159,21 @@ void CMutant::IdleLoop ()
 
 CFrame MutantFramesIdle [] =
 {
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),					// scratch loop start
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0, ConvertDerivedFunction(&CMutant::IdleLoop)),		// scratch loop end
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0),
-	CFrame (&CMonster::AI_Stand, 0)
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),					// scratch loop start
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0, ConvertDerivedFunction(&CMutant::IdleLoop)),		// scratch loop end
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0),
+	CFrame (&IMonster::AI_Stand, 0)
 };
-CAnim MutantMoveIdle (CMutant::FRAME_stand152, CMutant::FRAME_stand164, MutantFramesIdle, &CMonster::Stand);
+CAnim MutantMoveIdle (CMutant::FRAME_stand152, CMutant::FRAME_stand164, MutantFramesIdle, &IMonster::Stand);
 
 void CMutant::Idle ()
 {
@@ -187,27 +187,27 @@ void CMutant::Idle ()
 
 CFrame MutantFramesWalk [] =
 {
-	CFrame (&CMonster::AI_Walk,	3),
-	CFrame (&CMonster::AI_Walk,	1),
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	10),
-	CFrame (&CMonster::AI_Walk,	13),
-	CFrame (&CMonster::AI_Walk,	10),
-	CFrame (&CMonster::AI_Walk,	0),
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	6),
-	CFrame (&CMonster::AI_Walk,	16),
-	CFrame (&CMonster::AI_Walk,	15),
-	CFrame (&CMonster::AI_Walk,	6)
+	CFrame (&IMonster::AI_Walk,	3),
+	CFrame (&IMonster::AI_Walk,	1),
+	CFrame (&IMonster::AI_Walk,	5),
+	CFrame (&IMonster::AI_Walk,	10),
+	CFrame (&IMonster::AI_Walk,	13),
+	CFrame (&IMonster::AI_Walk,	10),
+	CFrame (&IMonster::AI_Walk,	0),
+	CFrame (&IMonster::AI_Walk,	5),
+	CFrame (&IMonster::AI_Walk,	6),
+	CFrame (&IMonster::AI_Walk,	16),
+	CFrame (&IMonster::AI_Walk,	15),
+	CFrame (&IMonster::AI_Walk,	6)
 };
 CAnim MutantMoveWalk (CMutant::FRAME_walk05, CMutant::FRAME_walk16, MutantFramesWalk);
 
 CFrame MutantFramesStartWalk [] =
 {
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	5),
-	CFrame (&CMonster::AI_Walk,	-2),
-	CFrame (&CMonster::AI_Walk,	1)
+	CFrame (&IMonster::AI_Walk,	5),
+	CFrame (&IMonster::AI_Walk,	5),
+	CFrame (&IMonster::AI_Walk,	-2),
+	CFrame (&IMonster::AI_Walk,	1)
 };
 CAnim MutantMoveStartWalk (CMutant::FRAME_walk01, CMutant::FRAME_walk04, MutantFramesStartWalk, ConvertDerivedFunction(&CMutant::WalkLoop));
 
@@ -228,12 +228,12 @@ void CMutant::Walk ()
 
 CFrame MutantFramesRun [] =
 {
-	CFrame (&CMonster::AI_Run,	40),
-	CFrame (&CMonster::AI_Run,	40,		ConvertDerivedFunction(&CMutant::Step)),
-	CFrame (&CMonster::AI_Run,	24),
-	CFrame (&CMonster::AI_Run,	5,		ConvertDerivedFunction(&CMutant::Step)),
-	CFrame (&CMonster::AI_Run,	17),
-	CFrame (&CMonster::AI_Run,	10)
+	CFrame (&IMonster::AI_Run,	40),
+	CFrame (&IMonster::AI_Run,	40,		ConvertDerivedFunction(&CMutant::Step)),
+	CFrame (&IMonster::AI_Run,	24),
+	CFrame (&IMonster::AI_Run,	5,		ConvertDerivedFunction(&CMutant::Step)),
+	CFrame (&IMonster::AI_Run,	17),
+	CFrame (&IMonster::AI_Run,	10)
 };
 CAnim MutantMoveRun (CMutant::FRAME_run03, CMutant::FRAME_run08, MutantFramesRun);
 
@@ -283,15 +283,15 @@ void CMutant::CheckRefire ()
 
 CFrame MutantFramesAttack [] =
 {
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::HitLeft)),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::HitRight)),
-	CFrame (&CMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::CheckRefire))
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::HitLeft)),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::HitRight)),
+	CFrame (&IMonster::AI_Charge,	0,	ConvertDerivedFunction(&CMutant::CheckRefire))
 };
-CAnim MutantMoveAttack (CMutant::FRAME_attack09, CMutant::FRAME_attack15, MutantFramesAttack, &CMonster::Run);
+CAnim MutantMoveAttack (CMutant::FRAME_attack09, CMutant::FRAME_attack15, MutantFramesAttack, &IMonster::Run);
 
 void CMutant::Melee ()
 {
@@ -392,16 +392,16 @@ void CMutant::CheckLanding ()
 
 CFrame MutantFramesJump [] =
 {
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	17),
-	CFrame (&CMonster::AI_Charge,	15,	ConvertDerivedFunction(&CMutant::JumpTakeOff)),
-	CFrame (&CMonster::AI_Charge,	15),
-	CFrame (&CMonster::AI_Charge,	15,	ConvertDerivedFunction(&CMutant::CheckLanding)),
-	CFrame (&CMonster::AI_Charge,	 0),
-	CFrame (&CMonster::AI_Charge,	 3),
-	CFrame (&CMonster::AI_Charge,	 0)
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	17),
+	CFrame (&IMonster::AI_Charge,	15,	ConvertDerivedFunction(&CMutant::JumpTakeOff)),
+	CFrame (&IMonster::AI_Charge,	15),
+	CFrame (&IMonster::AI_Charge,	15,	ConvertDerivedFunction(&CMutant::CheckLanding)),
+	CFrame (&IMonster::AI_Charge,	 0),
+	CFrame (&IMonster::AI_Charge,	 3),
+	CFrame (&IMonster::AI_Charge,	 0)
 };
-CAnim MutantMoveJump (CMutant::FRAME_attack01, CMutant::FRAME_attack08, MutantFramesJump, &CMonster::Run);
+CAnim MutantMoveJump (CMutant::FRAME_attack01, CMutant::FRAME_attack08, MutantFramesJump, &IMonster::Run);
 
 void CMutant::Attack ()
 {
@@ -541,40 +541,40 @@ bool CMutant::CheckAttack ()
 
 CFrame MutantFramesPain1 [] =
 {
-	CFrame (&CMonster::AI_Move,	4),
-	CFrame (&CMonster::AI_Move,	-3),
-	CFrame (&CMonster::AI_Move,	-8),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	5)
+	CFrame (&IMonster::AI_Move,	4),
+	CFrame (&IMonster::AI_Move,	-3),
+	CFrame (&IMonster::AI_Move,	-8),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	5)
 };
-CAnim MutantMovePain1 (CMutant::FRAME_pain101, CMutant::FRAME_pain105, MutantFramesPain1, &CMonster::Run);
+CAnim MutantMovePain1 (CMutant::FRAME_pain101, CMutant::FRAME_pain105, MutantFramesPain1, &IMonster::Run);
 
 CFrame MutantFramesPain2 [] =
 {
-	CFrame (&CMonster::AI_Move,	-24),
-	CFrame (&CMonster::AI_Move,	11),
-	CFrame (&CMonster::AI_Move,	5),
-	CFrame (&CMonster::AI_Move,	-2),
-	CFrame (&CMonster::AI_Move,	6),
-	CFrame (&CMonster::AI_Move,	4)
+	CFrame (&IMonster::AI_Move,	-24),
+	CFrame (&IMonster::AI_Move,	11),
+	CFrame (&IMonster::AI_Move,	5),
+	CFrame (&IMonster::AI_Move,	-2),
+	CFrame (&IMonster::AI_Move,	6),
+	CFrame (&IMonster::AI_Move,	4)
 };
-CAnim MutantMovePain2 (CMutant::FRAME_pain201, CMutant::FRAME_pain206, MutantFramesPain2, &CMonster::Run);
+CAnim MutantMovePain2 (CMutant::FRAME_pain201, CMutant::FRAME_pain206, MutantFramesPain2, &IMonster::Run);
 
 CFrame MutantFramesPain3 [] =
 {
-	CFrame (&CMonster::AI_Move,	-22),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	1),
-	CFrame (&CMonster::AI_Move,	6),
-	CFrame (&CMonster::AI_Move,	3),
-	CFrame (&CMonster::AI_Move,	2),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	1)
+	CFrame (&IMonster::AI_Move,	-22),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	1),
+	CFrame (&IMonster::AI_Move,	6),
+	CFrame (&IMonster::AI_Move,	3),
+	CFrame (&IMonster::AI_Move,	2),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	1)
 };
-CAnim MutantMovePain3 (CMutant::FRAME_pain301, CMutant::FRAME_pain311, MutantFramesPain3, &CMonster::Run);
+CAnim MutantMovePain3 (CMutant::FRAME_pain301, CMutant::FRAME_pain311, MutantFramesPain3, &IMonster::Run);
 
 void CMutant::Pain (IBaseEntity *Other, sint32 Damage)
 {
@@ -624,30 +624,30 @@ void CMutant::Dead ()
 
 CFrame MutantFramesDeath1 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
 CAnim MutantMoveDeath1 (CMutant::FRAME_death101, CMutant::FRAME_death109, MutantFramesDeath1, ConvertDerivedFunction(&CMutant::Dead));
 
 CFrame MutantFramesDeath2 [] =
 {
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0),
-	CFrame (&CMonster::AI_Move,	0)
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0),
+	CFrame (&IMonster::AI_Move,	0)
 };
 CAnim MutantMoveDeath2 (CMutant::FRAME_death201, CMutant::FRAME_death210, MutantFramesDeath2, ConvertDerivedFunction(&CMutant::Dead));
 

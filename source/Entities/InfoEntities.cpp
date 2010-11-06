@@ -410,7 +410,7 @@ public:
 		Touchable = true;
 
 		if (State.GetAngles() != vec3fOrigin)
-			G_SetMovedir (State.GetAngles(), MoveDir);
+			SetMoveDir (MoveDir);
 
 		SetBrushModel ();
 		Link ();

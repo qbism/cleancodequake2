@@ -103,7 +103,7 @@ public:
 			Enemy = ent;
 		}
 		else
-			G_SetMovedir (State.GetAngles(), MoveDir);
+			SetMoveDir (MoveDir);
 
 		if (!Count)
 			Count = 32;

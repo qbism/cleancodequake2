@@ -492,7 +492,7 @@ inline std::string FormatString (const char *fmt, ...)
 struct nostringconversionexception : std::exception
 {
 public:
-	const char *what() const
+	const char *what() const throw()
 	{
 		return "No string conversion exists";
 	}

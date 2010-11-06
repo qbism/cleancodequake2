@@ -427,7 +427,6 @@ echo Done!
     <ClInclude Include="..\..\include\Monsters\Medic.h" />
     <ClInclude Include="..\..\include\Monsters\Monsters.h" />
     <ClInclude Include="..\..\include\Monsters\Mutant.h" />
-    <ClInclude Include="..\..\include\Monsters\m_tank.h" />
     <ClInclude Include="..\..\include\Monsters\Parasite.h" />
     <ClInclude Include="..\..\include\Monsters\SoldierBase.h" />
     <ClInclude Include="..\..\include\Monsters\SoldierLight.h" />

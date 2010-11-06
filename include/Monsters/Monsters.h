@@ -34,19 +34,19 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_MONSTERS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_MONSTERS_H
 
-class CMonster;
+class IMonster;
 
 class CFrame
 {
 public:
 
-	void	(CMonster::*AIFunc) (float Dist);
-	void	(CMonster::*Function) ();
+	void	(IMonster::*AIFunc) (float Dist);
+	void	(IMonster::*Function) ();
 	float	Dist;
 
 	CFrame ();
 
-	CFrame(void (CMonster::*AIFunc) (float Dist), float Dist, void (CMonster::*Function) () = NULL) :
+	CFrame(void (IMonster::*AIFunc) (float Dist), float Dist, void (IMonster::*Function) () = NULL) :
 	  AIFunc(AIFunc),
 	  Function(Function),
 	  Dist(Dist)
@@ -59,10 +59,10 @@ class CAnim
 public:
 
 	sint32			FirstFrame, LastFrame;
-	void			(CMonster::*EndFunc) ();
+	void			(IMonster::*EndFunc) ();
 	CFrame			*Frames;
 
-	CAnim (sint32 FirstFrame, sint32 LastFrame, CFrame *Frames, void (CMonster::*EndFunc) () = NULL) :
+	CAnim (sint32 FirstFrame, sint32 LastFrame, CFrame *Frames, void (IMonster::*EndFunc) () = NULL) :
 	  FirstFrame(FirstFrame),
 	  LastFrame(LastFrame),
 	  EndFunc(EndFunc),
@@ -241,7 +241,7 @@ public:
 	entity_ptr<IBaseEntity>		OldEnemy;
 	entity_ptr<IBaseEntity>		GoalEntity;
 	entity_ptr<IBaseEntity>		MoveTarget;
-	class CMonster				*Monster;
+	class IMonster				*Monster;
 	std::string					DeathTarget, CombatTarget;
 	IBaseItem					*Item;
 
@@ -290,17 +290,24 @@ public:
 	void			ThrowHead (MediaIndex gibIndex, sint32 Damage, sint32 type, EEntityStateEffects effects = FX_GIB);
 
 	void			Spawn ();
+
+	/**
+	\fn	void TouchTriggers ()
+	
+	\brief	Cause all triggers that this entity is touching to activate.
+	**/
+	void		TouchTriggers ();
 };
 
 void AI_SetSightClient ();
 
-class CMonster
+class IMonster
 {
 private:
-	CMonster			&operator = (const CMonster &r) { return *this; };
+	IMonster			&operator = (const IMonster &r) { return *this; };
 
 public:
-	void				(CMonster::*Think) ();
+	void				(IMonster::*Think) ();
 
 	const uint32		MonsterID;
 	CMonsterEntity		*Entity; // Entity linked to the monster
@@ -366,7 +373,7 @@ public:
 
 	FrameNumber					PainDebounceTime;
 
-	CMonster(uint32 ID);
+	IMonster(uint32 ID);
 
 	void SaveFields (CFile &File);
 	void LoadFields (CFile &File);
@@ -585,18 +592,18 @@ class CMonsterTableIndex
 {
 public:
 	const char *Name;
-	CMonster *(*FuncPtr) (uint32 index);
+	IMonster *(*FuncPtr) (uint32 index);
 
-	CMonsterTableIndex (const char *Name, CMonster *(*FuncPtr) (uint32 index));
+	CMonsterTableIndex (const char *Name, IMonster *(*FuncPtr) (uint32 index));
 
-	CMonster *Create (uint32 number)
+	IMonster *Create (uint32 number)
 	{
 		return FuncPtr (number);
 	};
 };
 
-#define ConvertDerivedFunction(x) static_cast<void (CMonster::* )()>(x)
-#define ConvertDerivedAIMove(x) static_cast<void (CMonster::* )(float)>(x)
+#define ConvertDerivedFunction(x) static_cast<void (IMonster::* )()>(x)
+#define ConvertDerivedAIMove(x) static_cast<void (IMonster::* )(float)>(x)
 
 extern uint32 LastID;
 #define LINK_MONSTER_CLASSNAME_TO_CLASS(mapClassName,DLLClassName) \
@@ -620,7 +627,7 @@ extern uint32 LastID;
 	} \
 	CClassnameToClassIndex LINK_RESOLVE_CLASSNAME(DLLClassName, _Linker) \
 	(LINK_RESOLVE_CLASSNAME(DLLClassName, _Spawn), mapClassName); \
-	CMonster *LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver) (uint32 ID) \
+	IMonster *LINK_RESOLVE_CLASSNAME(DLLClassName, _Resolver) (uint32 ID) \
 	{ \
 		return QNewEntityOf DLLClassName(ID); \
 	} \
