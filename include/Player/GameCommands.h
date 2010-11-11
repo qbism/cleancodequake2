@@ -55,7 +55,7 @@ void Cmd_Register ();
 class CPlayerListCommand : public CGameCommandFunctor
 {
 public:
-	virtual void operator () ();
+	virtual void Execute ();
 };
 
 

@@ -53,7 +53,7 @@ void CPlayerCommand::Run (CPlayerEntity *Player)
 	if (!(Flags & CMD_SPECTATOR) && (Player->Client.Respawn.Spectator || Player->Client.Chase.Target))	
 		return;
 
-	(*Func) ();
+	Func->Execute();
 };
 
 typedef CCommand::TCommandListType TPlayerCommandListType;
@@ -166,7 +166,7 @@ void SearchForRandomMonster (CMonsterEntity *Entity)
 class CTestCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		if (ArgCount() < 3)
 			return;
@@ -179,7 +179,7 @@ public:
 	class CTestCommandTwo : public CGameCommandFunctor
 	{
 	public:
-		void operator () ()
+		void Execute ()
 		{
 			for (TEntitiesContainer::iterator it = Level.Entities.Closed.begin(); it != Level.Entities.Closed.end(); ++it)
 			{

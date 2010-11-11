@@ -105,103 +105,103 @@ public:
 class CUseCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CUseListCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CDropCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInventoryCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvUseCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvDropCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CWeapPrevCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CWeapNextCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CWeapLastCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvNextCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvPrevCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvNextWCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvPrevWCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvNextPCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CInvPrevPCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CGiveCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CSpawnCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 #else

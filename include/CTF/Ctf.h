@@ -389,7 +389,7 @@ public:
 	**/
 	void FormatSight();
 
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -404,7 +404,7 @@ public:
 class CCTFTeamCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -419,7 +419,7 @@ public:
 class CCTFIDCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -434,7 +434,7 @@ public:
 class CCTFVoteYesCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -449,7 +449,7 @@ public:
 class CCTFVoteNoCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -464,7 +464,7 @@ public:
 class CCTFAdminCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -479,7 +479,7 @@ public:
 class CCTFWarpCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -494,7 +494,7 @@ public:
 class CCTFBootCommand : public CPlayerListCommand
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -509,7 +509,7 @@ public:
 class CCTFObserverCommand : public CPlayerListCommand
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**
@@ -524,7 +524,7 @@ public:
 class CCTFPlayerListCommand : public CPlayerListCommand
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 /**

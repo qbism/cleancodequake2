@@ -557,5 +557,4 @@ void CTurretDriver::Spawn ()
 
 	Entity->Link ();
 }
-
 LINK_MONSTER_CLASSNAME_TO_CLASS ("turret_driver", CTurretDriver);

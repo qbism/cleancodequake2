@@ -87,7 +87,7 @@ void SaveLists (CFile &File);
 class CServerCmdIndexList : public CCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 #else

@@ -359,7 +359,7 @@ void CTFCalcScores()
 	}
 }
 
-void CCTFIDCommand::operator () ()
+void CCTFIDCommand::Execute ()
 {
 	Player->Client.Respawn.CTF.IDState = !Player->Client.Respawn.CTF.IDState;
 	Player->PrintToClient (PRINT_HIGH, "%s player identification display\n", (Player->Client.Respawn.CTF.IDState) ? "Activating" : "Deactivating");
@@ -367,7 +367,7 @@ void CCTFIDCommand::operator () ()
 
 /*------------------------------------------------------------------------*/
 
-void CCTFTeamCommand::operator () ()
+void CCTFTeamCommand::Execute ()
 {
 	sint32 desired_team;
 
@@ -770,7 +770,7 @@ public:
 	}
 };
 
-void CCTFSayTeamCommand::operator () ()
+void CCTFSayTeamCommand::Execute ()
 {
 	std::string msg = ArgGetConcatenatedString();
 	
@@ -1012,7 +1012,7 @@ void CTFWinElection()
 	ctfgame.Election = ELECT_NONE;
 }
 
-void CCTFVoteYesCommand::operator () ()
+void CCTFVoteYesCommand::Execute ()
 {
 	if (ctfgame.Election == ELECT_NONE)
 	{
@@ -1044,7 +1044,7 @@ void CCTFVoteYesCommand::operator () ()
 		(sint32)((ctfgame.ElectionTimeEnd - Level.Frame)/10));
 }
 
-void CCTFVoteNoCommand::operator () ()
+void CCTFVoteNoCommand::Execute ()
 {
 	if (ctfgame.Election == ELECT_NONE)
 	{
@@ -1071,7 +1071,7 @@ void CCTFVoteNoCommand::operator () ()
 
 /*-----------------------------------------------------------------------*/
 
-void CCTFObserverCommand::operator () ()
+void CCTFObserverCommand::Execute ()
 {
 	// start as 'observer'
 	if (Player->NoClip)
@@ -1118,11 +1118,11 @@ bool CTFCheckRules()
 	return false;
 }
 
-void CCTFPlayerListCommand::operator () ()
+void CCTFPlayerListCommand::Execute ()
 {
 	if (!(Game.GameMode & GAME_CTF))
 	{
-		CPlayerListCommand::operator () ();
+		CPlayerListCommand::Execute ();
 		return;
 	}
 
@@ -1189,7 +1189,7 @@ std::vector<std::string> Tokenize (std::string String, const char *Separators, c
 	return strings;
 }
 
-void CCTFWarpCommand::operator () ()
+void CCTFWarpCommand::Execute ()
 {
 	static std::vector<std::string> maps;
 	static bool initialized = false;
@@ -1230,7 +1230,7 @@ void CCTFWarpCommand::operator () ()
 		ctfgame.ElectionLevel = ArgGets(1);
 }
 
-void CCTFBootCommand::operator () ()
+void CCTFBootCommand::Execute ()
 {
 	sint32 i;
 	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(80);

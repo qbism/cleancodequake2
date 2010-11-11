@@ -439,7 +439,7 @@ void CIRCClient::SendMessage (std::string Msg)
 	IRCServerList[Player->Client.Respawn.IRC.ConnectedTo-1]->SendMessage (Player, Msg);
 };
 
-void CIRCCommand::CIRCConnectCommand::operator () ()
+void CIRCCommand::CIRCConnectCommand::Execute ()
 {
 	// irc connect n nick
 	if (ArgCount() < 3)
@@ -471,7 +471,7 @@ void CIRCCommand::CIRCConnectCommand::operator () ()
 	Player->Client.Respawn.IRC.Connect (ServerIndex);
 };
 
-void CIRCCommand::CIRCJoinCommand::operator () ()
+void CIRCCommand::CIRCJoinCommand::Execute ()
 {
 	// irc join channel
 	if (ArgCount() < 3)
@@ -480,12 +480,12 @@ void CIRCCommand::CIRCJoinCommand::operator () ()
 	Player->Client.Respawn.IRC.JoinChannel (ArgGets(2));
 };
 
-void CIRCCommand::CIRCListCommand::operator () ()
+void CIRCCommand::CIRCListCommand::Execute ()
 {
 	Player->Client.Respawn.IRC.List ();
 };
 
-void CIRCCommand::CIRCSayCommand::operator () ()
+void CIRCCommand::CIRCSayCommand::Execute ()
 {
 	// irc say "xxx"
 	if (ArgCount() < 3)
@@ -494,7 +494,7 @@ void CIRCCommand::CIRCSayCommand::operator () ()
 	Player->Client.Respawn.IRC.SendMessage (ArgGets(2));
 };
 
-void CIRCCommand::CIRCDisconnectCommand::operator () ()
+void CIRCCommand::CIRCDisconnectCommand::Execute ()
 {
 	// irc disconnect
 	if (ArgCount() < 2)
@@ -503,12 +503,12 @@ void CIRCCommand::CIRCDisconnectCommand::operator () ()
 	Player->Client.Respawn.IRC.Disconnect ();
 };
 
-void CIRCCommand::CIRCLeaveCommand::operator () ()
+void CIRCCommand::CIRCLeaveCommand::Execute ()
 {
 	Player->Client.Respawn.IRC.LeaveChannel ();
 };
 
-void CSvIRCConnectToCommand::operator () ()
+void CSvIRCConnectToCommand::Execute ()
 {
 	// sv irc connect server port
 	if (ArgCount() < 4)

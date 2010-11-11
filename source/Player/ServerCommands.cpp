@@ -85,7 +85,7 @@ void SvCmd_RunCommand (const char *commandName)
 	static CServerCommand *Command;
 
 	if ((Command = SvCmd_FindCommand(commandName)) != NULL)
-		(*Command->Func) ();
+		Command->Func->Execute();
 	else
 		ServerPrintf ("Unknown server command \"%s\"\n", commandName);
 }
@@ -189,7 +189,7 @@ class CServerCmdEntList : public CCommandFunctor
 	};
 
 public:
-	void operator () ()
+	void Execute ()
 	{
 		std::string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
 		CServerEntityList tmp;
@@ -228,7 +228,7 @@ extern char *gEntString;
 class CServerCmdDumpEntities : public CCommandFunctor
 {
 public:
-	void operator () () 
+	void Execute () 
 	{
 		CFile File ((std::string("/maps/ents/") + Level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
 
@@ -245,7 +245,7 @@ IPAddress CopyIP (const char *val);
 class CServerCmdBan : public CCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		ServerPrintf (
 		"Unknown ban command \"%s\"\n"
@@ -266,7 +266,7 @@ public:
 	class CServerCmdBanLoad : public CCommandFunctor
 	{
 	public:
-		void operator () ()
+		void Execute ()
 		{
 			Bans.LoadFromFile ();
 		}
@@ -275,7 +275,7 @@ public:
 	class CServerCmdBanSave : public CCommandFunctor
 	{
 	public:
-		void operator () ()
+		void Execute ()
 		{
 			Bans.SaveList ();
 		}
@@ -284,7 +284,7 @@ public:
 	class CServerCmdBanList : public CCommandFunctor
 	{
 	public:
-		void operator () ()
+		void Execute ()
 		{
 			ServerPrintf (
 				"Name/IP                   IP       Flags\n"
@@ -315,7 +315,7 @@ public:
 	class CServerCmdBanName : public CCommandFunctor
 	{
 	public:
-		void operator () ()
+		void Execute ()
 		{
 			std::string cmd = GetNextArgs();
 
@@ -350,7 +350,7 @@ public:
 	class CServerCmdBanIP : public CCommandFunctor
 	{
 	public:
-		void operator () ()
+		void Execute ()
 		{
 			std::string cmd = GetNextArgs();
 
@@ -386,7 +386,7 @@ public:
 class CServerCmdTest : public CCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		ServerPrint ("Test\n");
 	};

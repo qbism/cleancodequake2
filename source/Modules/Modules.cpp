@@ -35,7 +35,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 CModuleContainer CModuleContainer::container;
 
-CModule::CModule ()
+IModule::IModule ()
 {
 	CModuleContainer::container.Modules.push_back(this);
 }
@@ -43,7 +43,7 @@ CModule::CModule ()
 class CListModulesCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		std::string printString = "Modules loaded on this server:\n";
 		

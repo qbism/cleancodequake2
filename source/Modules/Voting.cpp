@@ -33,11 +33,102 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 
-class VotingModule : public CModule
+typedef uint8 EVoteType;
+
+enum
+{
+	VOTE_NONE,
+	VOTE_MAP,
+	VOTE_NEXTMAP,
+	VOTE_KICK,
+	VOTE_BAN
+};
+
+class CVoteData
+{
+};
+
+class CVoteStringData : CVoteData
+{
+public:
+	std::string		String;
+};
+
+class CVotePlayerData : CVoteData
+{
+public:
+	CPlayerEntity	*Player;
+};
+
+const FrameNumber VoteFrameCount = 300;
+
+class CVote
+{
+public:
+	bool			Voting;
+	FrameNumber		EndTime;
+	EVoteType		Type;
+	CVoteData		*Data;
+	uint8			VotesYes;
+	uint8			VotesNo;
+
+	CVote(EVoteType VoteType, CVoteData *Data = NULL) :
+	  Voting(false),
+	  EndTime(0),
+	  Type(VoteType),
+	  Data(Data),
+	  VotesYes(0),
+	  VotesNo(0)
+	{
+		if (VoteType != VOTE_NONE)
+			StartVote();
+	};
+
+	void StartVote ()
+	{
+		EndTime = Level.Frame + VoteFrameCount;
+		Voting = true;
+		VotesYes = VotesNo = 0;
+	};
+};
+
+static CVote CurrentVote (VOTE_NONE);
+
+class CCmdVoteCommand : public CGameCommandFunctor
+{
+public:
+	void Execute ()
+	{
+		Player->PrintToClient (PRINT_HIGH,
+			"Supported commands:\n" \
+			"  vote yes        - Vote yes to a current vote\n" \
+			"  vote no         - Vote no to a current vote\n" \
+			"  vote view       - See the details of the vote\n" \
+			"  vote map n      - Vote to change the current map\n" \
+			"  vote nextmap n  - Vote to change the next map\n" \
+			"  vote kick n     - Vote to kick a player\n" \
+			"  vote ban n      - Vote to ban a player\n");
+	}
+};
+
+class CCmdVoteMapCommand : public CGameCommandFunctor
+{
+public:
+	void Execute()
+	{
+		if (ArgCount() != 3)
+		{
+			Player->PrintToClient (PRINT_HIGH, "Syntax: vote map mapname\n");
+			return;
+		}
+	}
+};
+
+class VotingModule : public IModule
 {
 public:
 	VotingModule () :
-	  CModule ()
+	  IModule ()
 	  {
 	  }
 
@@ -48,6 +139,9 @@ public:
 
 	void Init ()
 	{
+		Cmd_AddCommand<CCmdVoteCommand> ("vote", CMD_SPECTATOR)
+			.AddSubCommand<CCmdVoteMapCommand> ("map", CMD_SPECTATOR).GoUp()
+			;
 	};
 
 	void Shutdown()

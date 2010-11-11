@@ -74,13 +74,13 @@ public:
 class CMenuLeftCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CMenuRightCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 // Controls

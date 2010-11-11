@@ -34,10 +34,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_MODULES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_MODULES_H
 
-class CModule
+class IModule
 {
 public:
-	CModule ();
+	IModule ();
 
 	virtual const char *GetName() = 0;
 
@@ -51,7 +51,7 @@ class CModuleContainer
 public:
 	static CModuleContainer container;
 
-	std::vector<CModule*>	Modules;
+	std::vector<IModule*>	Modules;
 
 	static void InitModules ();
 	static void ShutdownModules ();

@@ -48,7 +48,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 class CGodCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		Player->Flags ^= FL_GODMODE;
 		Player->PrintToClient (PRINT_HIGH, "God mode %s\n", (!(Player->Flags & FL_GODMODE)) ? "off" : "on");
@@ -67,7 +67,7 @@ public:
 class CNoTargetCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		Player->Flags ^= FL_NOTARGET;
 		Player->PrintToClient (PRINT_HIGH, "Notarget %s\n", (!(Player->Flags & FL_NOTARGET)) ? "off" : "on");
@@ -86,7 +86,7 @@ public:
 class CNoClipCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		Player->NoClip = !Player->NoClip;
 		Player->PrintToClient (PRINT_HIGH, "Noclip %s\n", Player->NoClip ? "on" : "off");
@@ -105,7 +105,7 @@ public:
 class CKillCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		if (Player->GetSolid() == SOLID_NOT)
 			return;
@@ -144,7 +144,7 @@ public:
 class CPutAwayCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		Player->Client.LayoutFlags &= ~LF_SCREEN_MASK;
 
@@ -212,7 +212,7 @@ public:
 class CPlayersCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		sint32		count = 0;
 		std::vector<int> index;
@@ -258,7 +258,7 @@ public:
 class CWaveCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		// can't wave when ducked
 		if (Player->Client.PlayerState.GetPMove()->PMoveFlags & PMF_DUCKED)
@@ -339,7 +339,7 @@ public:
 class CCmdSayCommandBase : public CGameCommandFunctor
 {
 public:
-	void operator () (bool team, bool arg0)
+	void Execute (bool team, bool arg0)
 	{
 		static std::string text;
 
@@ -395,7 +395,7 @@ public:
 		CSayPlayerCallback (text).Query ();
 	}
 
-	virtual void operator () () = 0;
+	virtual void Execute () = 0;
 };
 
 /**
@@ -410,9 +410,9 @@ public:
 class CCmdSayCommand : public CCmdSayCommandBase
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
-		CCmdSayCommandBase::operator() (false, false);
+		CCmdSayCommandBase::Execute (false, false);
 	};
 };
 
@@ -428,9 +428,9 @@ public:
 class CCmdSayTeamCommand : public CCmdSayCommandBase
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
-		CCmdSayCommandBase::operator() (true, false);
+		CCmdSayCommandBase::Execute (true, false);
 	};
 };
 
@@ -453,10 +453,10 @@ public:
 	bool			Spectator;
 
 	CPlayerListCallback (std::string &Text, size_t SizeOf, CPlayerEntity *Ent) :
-	Text(Text),
-	SizeOf(SizeOf),
-	Ent(Ent),
-	Spectator(false)
+	  Text(Text),
+	  SizeOf(SizeOf),
+	  Ent(Ent),
+	  Spectator(false)
 	{
 	};
 
@@ -519,7 +519,7 @@ public:
 };
 
 /**
-\fn	void CPlayerListCommand::operator() ()
+\fn	void CPlayerListCommand::Execute ()
 
 \brief	Player list command functor.
 		Does the actual printing.
@@ -527,7 +527,7 @@ public:
 \author	Paril
 \date	29/05/2010
 **/
-void CPlayerListCommand::operator () ()
+void CPlayerListCommand::Execute ()
 {
 	static std::string text;
 	text.clear();
@@ -553,7 +553,7 @@ void CPlayerListCommand::operator () ()
 class CScoreCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		Player->ShowScores();
 	}
@@ -571,7 +571,7 @@ public:
 class CHelpCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ()
+	void Execute ()
 	{
 		Player->ShowHelp();
 	};

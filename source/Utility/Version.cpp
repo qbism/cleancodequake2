@@ -480,12 +480,12 @@ void InitVersion ()
 
 std::string ConfigTimeString ();
 
-void CVersionCommand::operator () ()
+void CVersionCommand::Execute ()
 {
 	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT", built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
 }
 
-void CServerVersionCommand::operator () ()
+void CServerVersionCommand::Execute ()
 {
 #if (VERSION_CHECKING != VC_NONE)
 	if (ArgGets (2).empty())

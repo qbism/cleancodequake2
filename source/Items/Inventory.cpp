@@ -230,7 +230,7 @@ Cmd_Use_f
 Use an inventory item
 ==================
 */
-void CUseCommand::operator () ()
+void CUseCommand::Execute ()
 {
 	std::string s = ArgGetConcatenatedString();
 	IBaseItem *Item = FindItem(s.c_str());
@@ -269,7 +269,7 @@ Tries to use the items in the list from left to right, stopping
 when one gets used
 ==================
 */
-void CUseListCommand::operator () ()
+void CUseListCommand::Execute ()
 {
 	for (sint32 i = 1; i < ArgCount(); i++)
 	{
@@ -318,7 +318,7 @@ Cmd_Drop_f
 Drop an inventory item
 ==================
 */
-void CDropCommand::operator () ()
+void CDropCommand::Execute ()
 {
 	std::string s = ArgGetConcatenatedString();
 
@@ -364,7 +364,7 @@ void CDropCommand::operator () ()
 Cmd_Inven_f
 =================
 */
-void CInventoryCommand::operator () ()
+void CInventoryCommand::Execute ()
 {
 	if (Level.Intermission.Time)
 		return;
@@ -393,7 +393,7 @@ void CInventoryCommand::operator () ()
 Cmd_InvUse_f
 =================
 */
-void CInvUseCommand::operator () ()
+void CInvUseCommand::Execute ()
 {
 	if (Player->Client.Respawn.MenuState.InMenu)
 	{
@@ -426,7 +426,7 @@ void CInvUseCommand::operator () ()
 Cmd_WeapPrev_f
 =================
 */
-void CWeapPrevCommand::operator () ()
+void CWeapPrevCommand::Execute ()
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
@@ -458,7 +458,7 @@ void CWeapPrevCommand::operator () ()
 Cmd_WeapNext_f
 =================
 */
-void CWeapNextCommand::operator () ()
+void CWeapNextCommand::Execute ()
 {
 	if (!Player->Client.Persistent.Weapon)
 		return;
@@ -490,7 +490,7 @@ void CWeapNextCommand::operator () ()
 Cmd_WeapLast_f
 =================
 */
-void CWeapLastCommand::operator () ()
+void CWeapLastCommand::Execute ()
 {
 	if (!Player->Client.Persistent.Weapon || !Player->Client.Persistent.LastWeapon)
 		return;
@@ -509,7 +509,7 @@ void CWeapLastCommand::operator () ()
 Cmd_InvDrop_f
 =================
 */
-void CInvDropCommand::operator () ()
+void CInvDropCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
@@ -532,7 +532,7 @@ void CInvDropCommand::operator () ()
 	Player->Client.Persistent.Inventory.ValidateSelectedItem();
 }
 
-void CInvNextCommand::operator () ()
+void CInvNextCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
@@ -551,7 +551,7 @@ void CInvNextCommand::operator () ()
 
 	Player->Client.Persistent.Inventory.SelectNextItem (-1);
 }
-void CInvPrevCommand::operator () ()
+void CInvPrevCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
@@ -570,28 +570,28 @@ void CInvPrevCommand::operator () ()
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (-1);
 }
-void CInvNextWCommand::operator () ()
+void CInvNextWCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_WEAPON);
 }
-void CInvPrevWCommand::operator () ()
+void CInvPrevWCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectPrevItem (ITEMFLAG_WEAPON);
 }
-void CInvNextPCommand::operator () ()
+void CInvNextPCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
 
 	Player->Client.Persistent.Inventory.SelectNextItem (ITEMFLAG_POWERUP);
 }
-void CInvPrevPCommand::operator () ()
+void CInvPrevPCommand::Execute ()
 {
 	if (Player->Health <= 0 || Player->IsDead)
 		return;
@@ -762,7 +762,7 @@ void Cmd_Give (CPlayerEntity *Player)
 	}
 }
 
-void CGiveCommand::operator () ()
+void CGiveCommand::Execute ()
 {
 	Cmd_Give (Player);
 }
@@ -795,7 +795,7 @@ void Cmd_Spawn (CPlayerEntity *Player)
 	SpawnEntityAtPlace (ArgGetConcatenatedString(), Origin, Angles);
 }
 
-void CSpawnCommand::operator () ()
+void CSpawnCommand::Execute ()
 {
 	Cmd_Spawn (Player);
 }

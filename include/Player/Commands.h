@@ -55,8 +55,8 @@ enum
 {
 	CMD_NORMAL		= 0, // Doesn't do anything at all, just here for show.
 
-	CMD_SPECTATOR	= 1,
-	CMD_CHEAT		= 2
+	CMD_SPECTATOR	= 1, // Spectators can use this command
+	CMD_CHEAT		= 2 // Cheats 1 only
 };
 
 /**
@@ -73,7 +73,7 @@ class CCommandFunctor
 {
 	uint32		FirstArg, // first argument matched (in subcommands, will always be the main command arg index)
 				ThisArg, // argument matched to this functor
-				CurArg; // rgument, starting at CurArg, that can be changed with the functions below
+				CurArg; // argument, starting at CurArg, that can be changed with the functions below
 
 public:
 	/**
@@ -158,14 +158,14 @@ public:
 	inline float GetNextArgf () { return ArgGetf(++CurArg); }
 
 	/**
-	\fn	virtual void operator() () = 0
+	\fn	virtual void Execute() = 0
 	
 	\brief	The function operator. Must be overridden to do the task.
 	
 	\author	Paril
 	\date	28/05/2010
 	**/
-	virtual void operator() () = 0;
+	virtual void Execute() = 0;
 
 	/**
 	\fn	void SetPos (uint32 First, uint32 This, uint32 Cur)
@@ -197,14 +197,14 @@ public:
 	CPlayerEntity	*Player;	// The player calling this function
 
 	/**
-	\fn	virtual void operator() () = 0
+	\fn	virtual void Execute() = 0
 	
 	\brief	The function operator. Must be overridden to do the task.
 	
 	\author	Paril
 	\date	29/05/2010
 	**/
-	virtual void operator() () = 0;
+	virtual void Execute() = 0;
 };
 
 /**

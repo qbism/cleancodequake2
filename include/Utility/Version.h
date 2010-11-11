@@ -116,13 +116,13 @@ void InitVersion ();
 class CVersionCommand : public CGameCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 class CServerVersionCommand : public CCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 #else

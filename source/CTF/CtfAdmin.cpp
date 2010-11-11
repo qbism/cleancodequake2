@@ -342,7 +342,7 @@ public:
 	};
 };
 
-void CCTFAdminCommand::operator () ()
+void CCTFAdminCommand::Execute ()
 {
 	if (ArgCount() > 1 && CvarList[CV_ADMIN_PASSWORD].String() && *CvarList[CV_ADMIN_PASSWORD].String() &&
 		!Player->Client.Respawn.CTF.Admin && strcmp(CvarList[CV_ADMIN_PASSWORD].String(), ArgGets(1).c_str()) == 0)

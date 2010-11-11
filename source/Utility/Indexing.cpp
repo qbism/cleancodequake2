@@ -274,7 +274,7 @@ void ListConfigstrings ()
 	}
 }
 
-void CServerCmdIndexList::operator () ()
+void CServerCmdIndexList::Execute ()
 {
 	ServerPrintf ("Models: (%u) + %u inline\n", ModelList.numIndexes, ModelList.firstIndex);
 	for (uint8 i = 0; i < ModelList.numIndexes; i++)

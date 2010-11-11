@@ -107,49 +107,49 @@ public:
 class CIRCCommand : public CGameCommandFunctor
 {
 public:
-	void operator () () {};
+	void Execute () {};
 
 	class CIRCConnectCommand : public CGameCommandFunctor
 	{
 	public:
-		void operator () ();
+		void Execute ();
 	};
 
 	class CIRCJoinCommand : public CGameCommandFunctor
 	{
 	public:
-		void operator () ();
+		void Execute ();
 	};
 
 	class CIRCSayCommand : public CGameCommandFunctor
 	{
 	public:
-		void operator () ();
+		void Execute ();
 	};
 
 	class CIRCDisconnectCommand : public CGameCommandFunctor
 	{
 	public:
-		void operator () ();
+		void Execute ();
 	};
 
 	class CIRCLeaveCommand : public CGameCommandFunctor
 	{
 	public:
-		void operator () ();
+		void Execute ();
 	};
 
 	class CIRCListCommand : public CGameCommandFunctor
 	{
 	public:
-		void operator () ();
+		void Execute ();
 	};
 };
 
 class CSvIRCConnectToCommand : public CCommandFunctor
 {
 public:
-	void operator () ();
+	void Execute ();
 };
 
 void UpdateIRCServers ();
