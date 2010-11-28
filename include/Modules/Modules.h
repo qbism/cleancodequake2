@@ -34,9 +34,21 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_MODULES_H) || !INCLUDE_GUARDS
 #define CC_GUARD_MODULES_H
 
+/*abstract*/ class IModuleData
+{
+};
+
+class CModuleDataContainer
+{
+public:
+	std::map<int, IModuleData*> DataList;
+};
+
 class IModule
 {
 public:
+	int ModuleID;
+
 	IModule ();
 
 	virtual const char *GetName() = 0;
@@ -44,6 +56,8 @@ public:
 	virtual void Init () = 0;
 	virtual void Shutdown() = 0;
 	virtual void RunFrame() = 0;
+
+	virtual IModuleData *ModuleDataRequested () { return NULL; };
 };
 
 class CModuleContainer
@@ -54,8 +68,18 @@ public:
 	std::vector<IModule*>	Modules;
 
 	static void InitModules ();
+	static void InitModuleData ();
 	static void ShutdownModules ();
 	static void RunModules ();
+
+	template <typename T>
+	static T *RequestModuleData (CPlayerEntity *Player, IModule *Module)
+	{
+		return static_cast<T*>(RequestModuleDataInternal(Player, Module));
+	}
+
+private:
+	static IModuleData *RequestModuleDataInternal (CPlayerEntity *Player, IModule *Module);
 };
 
 #define REGISTER_MODULE(type) static type LocalModule;

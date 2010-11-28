@@ -520,6 +520,7 @@ echo Done!
     <ClInclude Include="..\..\shared\MathLib.h" />
     <ClInclude Include="..\..\shared\Platform.h" />
     <ClInclude Include="..\..\shared\Shared.h" />
+    <ClInclude Include="..\..\shared\Templates\Events.h" />
     <ClInclude Include="..\..\shared\Templates\Templates.h" />
     <ClInclude Include="..\..\shared\Templates\TTypes.h" />
     <ClInclude Include="..\..\shared\Vector.h" />

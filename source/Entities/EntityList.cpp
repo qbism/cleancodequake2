@@ -581,6 +581,9 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *Entities, char *Spawn
 	// set client fields on player ents
 	CPlayerEntity::RestoreClientData ();
 
+	// Init module data
+	CModuleContainer::InitModuleData();
+
 	if (!Level.Demo)
 	{
 		Level.Inhibit = 0;

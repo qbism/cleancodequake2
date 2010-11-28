@@ -44,17 +44,28 @@ enum
 	VOTE_BAN
 };
 
-class CVoteData
+typedef uint8 EVoteState;
+
+enum
 {
+	VOTE_UNDECIDED,
+	VOTE_NO,
+	VOTE_YES
 };
 
-class CVoteStringData : CVoteData
+class CVoteData : public IModuleData
+{
+public:
+	EVoteState VoteState;
+};
+
+class CVoteStringData : public CVoteData
 {
 public:
 	std::string		String;
 };
 
-class CVotePlayerData : CVoteData
+class CVotePlayerData : public CVoteData
 {
 public:
 	CPlayerEntity	*Player;
@@ -94,6 +105,36 @@ public:
 
 static CVote CurrentVote (VOTE_NONE);
 
+class VotingModule : public IModule
+{
+public:
+	VotingModule () :
+	  IModule ()
+	  {
+	  }
+
+	const char *GetName()
+	{
+		return "Voting Module\n  Version 1.0\n  By Paril";
+	};
+
+	void Init ();
+
+	void Shutdown()
+	{
+	};
+
+	void RunFrame()
+	{
+	};
+
+	IModuleData *ModuleDataRequested ()
+	{
+		return QNew(TAG_GENERIC) CVoteData;
+	};
+} module;
+
+// Commands
 class CCmdVoteCommand : public CGameCommandFunctor
 {
 public:
@@ -111,6 +152,16 @@ public:
 	}
 };
 
+void PlayerConnectTest (CPlayerEntity *Player)
+{
+	ServerPrintf("Sup brah");
+}
+
+void PlayerDisconnectTest (CPlayerEntity *Player)
+{
+	ServerPrintf("Brah, sup!");
+}
+
 class CCmdVoteMapCommand : public CGameCommandFunctor
 {
 public:
@@ -121,34 +172,23 @@ public:
 			Player->PrintToClient (PRINT_HIGH, "Syntax: vote map mapname\n");
 			return;
 		}
+
+		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &module);
+		Player->PrintToClient (PRINT_HIGH, "Your vote state is %s\n", (data->VoteState == VOTE_UNDECIDED) ? "Undecided" : (data->VoteState == VOTE_YES) ? "Yes" : "No");
+
+		data->VoteState++;
+
+		if (data->VoteState > VOTE_YES)
+			data->VoteState = VOTE_UNDECIDED;
 	}
 };
 
-class VotingModule : public IModule
+void VotingModule::Init ()
 {
-public:
-	VotingModule () :
-	  IModule ()
-	  {
-	  }
+	Cmd_AddCommand<CCmdVoteCommand> ("vote", CMD_SPECTATOR)
+		.AddSubCommand<CCmdVoteMapCommand> ("map", CMD_SPECTATOR).GoUp()
+		;
 
-	const char *GetName()
-	{
-		return "Voting Module\n  Version 1.0\n  By Paril";
-	};
-
-	void Init ()
-	{
-		Cmd_AddCommand<CCmdVoteCommand> ("vote", CMD_SPECTATOR)
-			.AddSubCommand<CCmdVoteMapCommand> ("map", CMD_SPECTATOR).GoUp()
-			;
-	};
-
-	void Shutdown()
-	{
-	};
-
-	void RunFrame()
-	{
-	};
-} module;
+	PlayerEvents::PlayerConnected += PlayerConnectTest;
+	PlayerEvents::PlayerDisconnected += PlayerDisconnectTest;
+};

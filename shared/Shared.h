@@ -39,6 +39,7 @@ bool AssertExpression (const bool expr, const char *msg, const char *file, const
 #include "Utility/STL.h"
 #include "Utility/Memory.h"
 #include "Templates/Templates.h"
+#include "Templates/Events.h"
 #include "MathLib.h"
 #include "ColorVec.h"
 

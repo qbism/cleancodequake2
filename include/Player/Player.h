@@ -278,7 +278,7 @@ public:
 	}
 
 	CPersistentData		CoopRespawn;	// what to set client->Persistent to on a respawn
-	FrameNumber		EnterFrame;		// Level.Frame the client entered the game
+	FrameNumber			EnterFrame;		// Level.Frame the client entered the game
 	sint32				Score;			// frags, etc
 	vec3f				CmdAngles;		// angles sent over in the last command
 
@@ -306,9 +306,11 @@ public:
 		bool			Voted;					// for elections
 		bool			Admin;
 	} CTF;
-
 //ZOID
 #endif
+
+	// Module data
+	CModuleDataContainer	ModuleData;
 
 	void Clear ()
 	{
@@ -1058,6 +1060,17 @@ public:
 };
 
 void ClientEndServerFrames ();
+
+// Global player events
+class PlayerEvents
+{
+public:
+	typedef void (*PlayerEventHandler) (CPlayerEntity *Sender);
+	typedef Event<PlayerEventHandler, CPlayerEntity *> PlayerEvent;
+
+	static PlayerEvent PlayerConnected;
+	static PlayerEvent PlayerDisconnected;
+};
 
 #else
 FILE_WARNING

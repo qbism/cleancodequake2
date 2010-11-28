@@ -41,6 +41,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include "Player/PlayerMove.h"
 #endif
 
+// Events declaration
+PlayerEvents::PlayerEvent PlayerEvents::PlayerConnected;
+PlayerEvents::PlayerEvent PlayerEvents::PlayerDisconnected;
+
 IMPLEMENT_SAVE_SOURCE(CPlayerNoise);
 
 CPersistentData::CPersistentData ()
@@ -4027,7 +4031,6 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 		}
 	}
 
-
 	// they can connect
 	gameEntity->Server.Client = Game.Clients + (State.GetNumber()-1);
 
@@ -4072,6 +4075,9 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 	GetSvFlags() = 0; // make sure we start with known default
 	Client.Persistent.State = SVCS_CONNECTED;
+
+	PlayerEvents::PlayerConnected(this);
+
 	return true;
 }
 
@@ -4124,6 +4130,8 @@ void CPlayerEntity::Disconnect ()
 	if (Client.Respawn.IRC.Connected())
 		Client.Respawn.IRC.Disconnect();
 #endif
+
+	PlayerEvents::PlayerDisconnected(this);
 }
 
 inline const char *MonsterAOrAn (const char *Name)

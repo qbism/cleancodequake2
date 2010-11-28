@@ -60,9 +60,40 @@ public:
 /*static*/ void CModuleContainer::InitModules ()
 {
 	for (size_t i = 0; i < container.Modules.size(); ++i)
+	{
 		container.Modules[i]->Init();
+		container.Modules[i]->ModuleID = i;
+
+		for (int x = 1; x <= Game.MaxClients; ++x)
+		{
+			IModuleData *data = container.Modules[i]->ModuleDataRequested();
+
+			if (data != NULL)
+			{
+				CPlayerEntity *player = entity_cast<CPlayerEntity>(Game.Entities[x].Entity);
+				player->Client.Respawn.ModuleData.DataList.insert (std::pair<int, IModuleData*> (i, data));
+			}
+		}
+	}
 
 	Cmd_AddCommand<CListModulesCommand> ("modules");
+}
+
+/*static*/ void CModuleContainer::InitModuleData ()
+{
+	for (size_t i = 0; i < container.Modules.size(); ++i)
+	{
+		for (int x = 1; x <= Game.MaxClients; ++x)
+		{
+			IModuleData *data = container.Modules[i]->ModuleDataRequested();
+
+			if (data != NULL)
+			{
+				CPlayerEntity *player = entity_cast<CPlayerEntity>(Game.Entities[x].Entity);
+				player->Client.Respawn.ModuleData.DataList.insert (std::pair<int, IModuleData*> (i, data));
+			}
+		}
+	}
 }
 
 /*static*/ void CModuleContainer::ShutdownModules ()
@@ -75,4 +106,9 @@ public:
 {
 	for (size_t i = 0; i < container.Modules.size(); ++i)
 		container.Modules[i]->RunFrame();
+}
+
+/*private static*/ IModuleData *CModuleContainer::RequestModuleDataInternal (CPlayerEntity *Player, IModule *Module)
+{
+	return Player->Client.Respawn.ModuleData.DataList[Module->ModuleID];
 }
