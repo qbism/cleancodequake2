@@ -932,5 +932,8 @@
     <ClCompile Include="..\..\source\Modules\Voting.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\Templates\Events.cpp">
+      <Filter>Shared\Templates</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

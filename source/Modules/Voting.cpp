@@ -32,6 +32,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 //
 
 #include "Local.h"
+#include "Entities/TargetEntities.h"
+#include "Player/Ban.h"
 
 typedef uint8 EVoteType;
 
@@ -57,53 +59,143 @@ class CVoteData : public IModuleData
 {
 public:
 	EVoteState VoteState;
+
+	CVoteData () :
+	  VoteState(VOTE_UNDECIDED)
+	  {
+	  };
 };
 
-class CVoteStringData : public CVoteData
+/*abstract*/ class CVoteStateData
 {
 public:
-	std::string		String;
+	virtual std::string Details() = 0;
+	virtual void VotePassed() = 0;
 };
 
-class CVotePlayerData : public CVoteData
+class CVoteMapData : public CVoteStateData
 {
 public:
-	CPlayerEntity	*Player;
+	bool			NextMap;
+	std::string		Map;
+
+	CVoteMapData (bool isNextMap, std::string mapName) :
+	  NextMap(isNextMap),
+	  Map(mapName)
+	{
+	}
+
+	std::string Details()
+	{
+		return ((!NextMap) ? "Change the map to " : "Change the next map to ") + Map;
+	}
+
+	void VotePassed ()
+	{
+		if (!NextMap)
+			BeginIntermission (CreateTargetChangeLevel(Map.c_str()));
+		else
+			Level.NextMap = Map;
+	}
 };
 
-const FrameNumber VoteFrameCount = 300;
+void OnPlayerDisconnectVoteCheck (CPlayerEntity *Player);
+
+class CVoteKickBanData : public CVoteStateData
+{
+public:
+	int				PlayerNumber;
+	bool			Ban;
+
+	CVoteKickBanData (bool ban, int number) :
+	  Ban(ban),
+	  PlayerNumber(number)
+	{
+		PlayerEvents::PlayerDisconnected += OnPlayerDisconnectVoteCheck;
+	}
+
+	~CVoteKickBanData ()
+	{
+		PlayerEvents::PlayerDisconnected -= OnPlayerDisconnectVoteCheck;
+	}
+
+	std::string Details()
+	{
+		return ((!Ban) ? "Kick " : "Ban ") + entity_cast<CPlayerEntity>(Game.Entities[PlayerNumber].Entity)->Client.Persistent.Name;
+	}
+
+	void VotePassed ()
+	{
+		if (Ban)
+			Bans.AddToList(entity_cast<CPlayerEntity>(Game.Entities[PlayerNumber].Entity)->Client.Persistent.IP, BAN_ENTER);
+
+		gi.AddCommandString(FormatString("kick %d\n", PlayerNumber - 1).c_str());
+	}
+};
+
+const FrameNumber VoteFrameCount = 450;
+const FrameNumber VoteNotificationTimes = 3;
+const FrameNumber VoteNotificationTime = (VoteFrameCount / VoteNotificationTimes);
+const int PercentRequired = 65;
 
 class CVote
 {
 public:
-	bool			Voting;
-	FrameNumber		EndTime;
-	EVoteType		Type;
-	CVoteData		*Data;
-	uint8			VotesYes;
-	uint8			VotesNo;
+	bool				Voting;
+	FrameNumber			EndTime;
+	FrameNumber			NextNotifyTime;
+	EVoteType			Type;
+	CVoteStateData		*Data;
+	std::string			Starter;
 
-	CVote(EVoteType VoteType, CVoteData *Data = NULL) :
+	CVote(EVoteType VoteType) :
 	  Voting(false),
 	  EndTime(0),
 	  Type(VoteType),
-	  Data(Data),
-	  VotesYes(0),
-	  VotesNo(0)
+	  Data(NULL)
 	{
-		if (VoteType != VOTE_NONE)
-			StartVote();
 	};
 
-	void StartVote ()
+	void StartVote (EVoteType VoteType, CVoteStateData *StateData, std::string starter)
 	{
 		EndTime = Level.Frame + VoteFrameCount;
 		Voting = true;
-		VotesYes = VotesNo = 0;
+		Type = VoteType;
+		Data = StateData;
+		NextNotifyTime = Level.Frame + VoteNotificationTime;
+		Starter = starter;
+
+		BroadcastPrintf (PRINT_CHAT, "%s proposed a vote: %s. Type vote yes or vote no to vote.\n", Starter.c_str(), StateData->Details().c_str());
 	};
+
+	void Finished()
+	{
+		Voting = false;
+		QDelete Data;
+		Data = NULL;
+	};
+
+	void Cancel()
+	{
+		Finished();
+	}
 };
 
 static CVote CurrentVote (VOTE_NONE);
+
+void OnPlayerDisconnectVoteCheck (CPlayerEntity *Player)
+{
+	if (!CurrentVote.Voting)
+		return;
+
+	CVoteKickBanData *data = static_cast<CVoteKickBanData*>(CurrentVote.Data);
+
+	if (data->PlayerNumber == Player->State.GetNumber())
+	{
+		BroadcastPrintf (PRINT_CHAT, "Vote cancelled: Player to be kicked left the server.\n");
+		CurrentVote.Cancel();
+	}
+}
 
 class VotingModule : public IModule
 {
@@ -126,6 +218,56 @@ public:
 
 	void RunFrame()
 	{
+		if (CurrentVote.Voting)
+		{
+			if (Level.Frame == CurrentVote.EndTime)
+			{
+				int votedYes = 0, votedNo = 0, votedUndecided = 0;
+
+				// Tally votes
+				for (int x = 1; x <= Game.MaxClients; ++x)
+				{
+					CPlayerEntity *player = entity_cast<CPlayerEntity>(Game.Entities[x].Entity);
+
+					if (player->Client.Persistent.State != SVCS_SPAWNED)
+						continue;
+
+					CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(player, &module);
+
+					switch (data->VoteState)
+					{
+					case VOTE_UNDECIDED:
+						votedUndecided++;
+						break;
+					case VOTE_YES:
+						votedYes++;
+						break;
+					case VOTE_NO:
+						votedNo++;
+						break;
+					}
+
+					data->VoteState = VOTE_UNDECIDED; // reset state
+				}
+
+				int neededVotes = ((votedYes + votedNo + votedUndecided) * PercentRequired) / 100;
+
+				CurrentVote.Voting = false;
+
+				if (votedYes >= neededVotes)
+					CurrentVote.Data->VotePassed();
+
+				BroadcastPrintf (PRINT_HIGH, "Vote %s! %i voted yes, %i voted no, %i undecided.\n", (votedYes >= neededVotes) ? "passed" : "failed", votedYes, votedNo, votedUndecided);
+
+				CurrentVote.Finished();
+				return;
+			}
+			else if (Level.Frame == CurrentVote.NextNotifyTime)
+			{
+				BroadcastPrintf (PRINT_HIGH, "%i seconds left on vote!\n", (CurrentVote.EndTime - Level.Frame) / 10);
+				CurrentVote.NextNotifyTime = Level.Frame + VoteNotificationTime;
+			}
+		}
 	};
 
 	IModuleData *ModuleDataRequested ()
@@ -152,34 +294,197 @@ public:
 	}
 };
 
-void PlayerConnectTest (CPlayerEntity *Player)
-{
-	ServerPrintf("Sup brah");
-}
-
-void PlayerDisconnectTest (CPlayerEntity *Player)
-{
-	ServerPrintf("Brah, sup!");
-}
-
 class CCmdVoteMapCommand : public CGameCommandFunctor
 {
 public:
 	void Execute()
 	{
+		if (CurrentVote.Voting)
+		{
+			Player->PrintToClient(PRINT_HIGH, "Vote already in progress.");
+			return;
+		}
+
 		if (ArgCount() != 3)
 		{
 			Player->PrintToClient (PRINT_HIGH, "Syntax: vote map mapname\n");
 			return;
 		}
 
+		CVoteMapData *voteData = QNew(TAG_GENERIC) CVoteMapData(false, ArgGets(2));
+		CurrentVote.StartVote(VOTE_MAP, voteData, Player->Client.Persistent.Name);
+	}
+};
+
+class CCmdVoteNextMapCommand : public CGameCommandFunctor
+{
+public:
+	void Execute()
+	{
+		if (CurrentVote.Voting)
+		{
+			Player->PrintToClient(PRINT_HIGH, "Vote already in progress.");
+			return;
+		}
+
+		if (ArgCount() != 3)
+		{
+			Player->PrintToClient (PRINT_HIGH, "Syntax: vote nextmap mapname\n");
+			return;
+		}
+
+		CVoteMapData *voteData = QNew(TAG_GENERIC) CVoteMapData(true, ArgGets(2));
+		CurrentVote.StartVote(VOTE_NEXTMAP, voteData, Player->Client.Persistent.Name);
+	}
+};
+
+class CCmdVoteYesCommand : public CGameCommandFunctor
+{
+public:
+	void Execute()
+	{
+		if (!CurrentVote.Voting)
+		{
+			Player->PrintToClient(PRINT_HIGH, "No vote in progress.");
+			return;
+		}
+
 		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &module);
-		Player->PrintToClient (PRINT_HIGH, "Your vote state is %s\n", (data->VoteState == VOTE_UNDECIDED) ? "Undecided" : (data->VoteState == VOTE_YES) ? "Yes" : "No");
 
-		data->VoteState++;
+		if (data->VoteState != VOTE_UNDECIDED)
+		{
+			Player->PrintToClient(PRINT_HIGH, "You've already voted!\n");
+			return;
+		}
 
-		if (data->VoteState > VOTE_YES)
-			data->VoteState = VOTE_UNDECIDED;
+		data->VoteState = VOTE_YES;
+		Player->PrintToClient(PRINT_HIGH, "You voted yes.\n");
+	}
+};
+
+class CCmdVoteNoCommand : public CGameCommandFunctor
+{
+public:
+	void Execute()
+	{
+		if (!CurrentVote.Voting)
+		{
+			Player->PrintToClient(PRINT_HIGH, "No vote in progress.");
+			return;
+		}
+
+		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &module);
+
+		if (data->VoteState != VOTE_UNDECIDED)
+		{
+			Player->PrintToClient(PRINT_HIGH, "You've already voted!\n");
+			return;
+		}
+
+		data->VoteState = VOTE_NO;
+		Player->PrintToClient(PRINT_HIGH, "You voted no.\n");
+	}
+};
+
+class CCmdVoteViewCommand : public CGameCommandFunctor
+{
+public:
+	void Execute()
+	{
+		if (!CurrentVote.Voting)
+		{
+			Player->PrintToClient(PRINT_HIGH, "No vote in progress.");
+			return;
+		}
+
+		Player->PrintToClient(PRINT_HIGH, "Current vote: %s\n", CurrentVote.Data->Details().c_str());
+	}
+};
+
+template <bool ban, EVoteType voteType>
+class CCmdVoteBanCommand : public CGameCommandFunctor
+{
+public:
+	void Execute()
+	{
+		if (CurrentVote.Voting)
+		{
+			Player->PrintToClient(PRINT_HIGH, "Vote already in progress.");
+			return;
+		}
+
+		if (ArgCount() != 3)
+		{
+			Player->PrintToClient (PRINT_HIGH, "Use \"players\" to check the player IDs for kick-by-ID. Syntax:\n  vote ban/kick n:id\n  vote ban/kick p:playerName\n\n  Example: vote ban/kick n:8\n  Example: vote ban/kick p:Paril\n");
+			return;
+		}
+
+		std::string str = ArgGets(2);
+
+		if (str.size() < 3 ||
+			str[1] != ':' ||
+			(str[0] != 'p' && str[0] != 'n'))
+		{
+			Player->PrintToClient (PRINT_HIGH, "Syntax error. Type \"vote ban\" or \"vote kick\" to see syntax.\n");
+			return;
+		}
+
+		int playerToKick = -1;
+
+		if (str[0] == 'p')
+		{
+			std::string playerName = Q_strlwr(str.substr(2));
+
+			if (playerName.empty())	
+			{
+			Player->PrintToClient (PRINT_HIGH, "Syntax error. Type \"vote ban\" or \"vote kick\" to see syntax.\n");
+				return;
+			}
+
+			for (int i = 1; i <= Game.MaxClients; ++i)
+			{
+				if (Q_strlwr(entity_cast<CPlayerEntity>(Game.Entities[i].Entity)->Client.Persistent.Name) == playerName)
+				{
+					if (playerToKick != -1)
+					{
+						Player->PrintToClient (PRINT_HIGH, "Multiple players exist by that name. Type \"vote ban\" or \"vote kick\" to see how to ban by player number instead.\n");
+						return;
+					}
+
+					playerToKick = i;
+				}
+			}
+
+			if (playerToKick == -1)
+			{
+				Player->PrintToClient (PRINT_HIGH, "Player does not exist.\n");
+				return;
+			}
+		}
+		else
+		{
+			std::string playerNum = str.substr(2);
+
+			for (size_t i = 0; i < playerNum.size(); ++i)
+			{
+				if (playerNum[i] < '0' || playerNum[i] > '9')
+				{
+					Player->PrintToClient (PRINT_HIGH, "Invalid player number.\n");
+					return;
+				}
+			}
+
+			playerToKick = atoi(str.substr(2).c_str());
+
+			if (playerToKick <= 0 || playerToKick > Game.MaxClients)
+			{
+				Player->PrintToClient (PRINT_HIGH, "Invalid player number.\n");
+				return;
+			}
+		}
+
+		CVoteKickBanData *voteData = QNew(TAG_GENERIC) CVoteKickBanData(ban, playerToKick);
+		CurrentVote.StartVote(voteType, voteData, Player->Client.Persistent.Name);
 	}
 };
 
@@ -187,8 +492,11 @@ void VotingModule::Init ()
 {
 	Cmd_AddCommand<CCmdVoteCommand> ("vote", CMD_SPECTATOR)
 		.AddSubCommand<CCmdVoteMapCommand> ("map", CMD_SPECTATOR).GoUp()
+		.AddSubCommand<CCmdVoteNextMapCommand> ("nextmap", CMD_SPECTATOR).GoUp()
+		.AddSubCommand<CCmdVoteBanCommand<false, VOTE_KICK> > ("kick", CMD_SPECTATOR).GoUp()
+		.AddSubCommand<CCmdVoteBanCommand<true, VOTE_BAN> > ("ban", CMD_SPECTATOR).GoUp()
+		.AddSubCommand<CCmdVoteYesCommand> ("yes", CMD_SPECTATOR).GoUp()
+		.AddSubCommand<CCmdVoteNoCommand> ("no", CMD_SPECTATOR).GoUp()
+		.AddSubCommand<CCmdVoteViewCommand> ("view", CMD_SPECTATOR).GoUp()
 		;
-
-	PlayerEvents::PlayerConnected += PlayerConnectTest;
-	PlayerEvents::PlayerDisconnected += PlayerDisconnectTest;
 };

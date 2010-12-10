@@ -529,6 +529,7 @@ echo Done!
     <ClCompile Include="..\..\shared\MathLib.cpp" />
     <ClCompile Include="..\..\shared\Random.cpp" />
     <ClCompile Include="..\..\shared\String.cpp" />
+    <ClCompile Include="..\..\shared\Templates\Events.cpp" />
     <ClCompile Include="..\..\source\CTF\Ctf.cpp" />
     <ClCompile Include="..\..\source\CTF\CtfAdmin.cpp" />
     <ClCompile Include="..\..\source\CTF\CtfGrapple.cpp" />

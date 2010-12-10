@@ -245,11 +245,11 @@ public:
 	struct SIntermissionState
 	{
 		FrameNumber		Time;		// time the intermission was started
-		#ifndef STDCPP_LINUX_HACK
+#if !STDCPP_LINUX_HACK
 		std::string		ChangeMap;
-		#else
+#else
 		char*			ChangeMap;
-		#endif
+#endif
 		bool			ShouldExit;
 		bool			ShouldExitOnNextFrame;
 		vec3f			Origin;

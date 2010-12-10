@@ -119,7 +119,8 @@ void CPersistentData::Clear ()
 {
 	UserInfo.Clear();
 	Name.clear();
-	Mem_Zero (&IP, sizeof(IP));
+	// Paril: DO NOT CLEAR IP
+	//Mem_Zero (&IP, sizeof(IP));
 	Hand = 0;
 	State = 0;
 	Health = 0;
@@ -3383,7 +3384,8 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 				Client.Respawn.CTF.State = 0;
 			}
 
-			CTFFragBonuses(this, PlayerAttacker);
+			if (Game.GameMode & GAME_CTF)
+				CTFFragBonuses(this, PlayerAttacker);
 		}
 #endif
 		TossClientWeapon ();
@@ -3982,7 +3984,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 	if (Bans.IsBanned(Adr) || Bans.IsBanned(UserInfo.GetValueFromKey ("name").c_str()))
 	{
-		UserInfo.SetValueForKey("rejmsg", "Connection refused.");
+		UserInfo.SetValueForKey("rejmsg", "Connection refused: You are banned from this server.");
 		return false;
 	}
 

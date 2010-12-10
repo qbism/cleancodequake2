@@ -34,79 +34,52 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_EVENTS_H) || !INCLUDE_GUARDS
 #define CC_GUARD_EVENTS_H
 
+// A C#-style event class.
+// Notes:
+//   The max supported arguments is two. This is because this follows the C# standard
+//   of 'sender, eventargs'. Optionally, you may omit the event arguments, or even the sender.
+//   I found this to be a really nice method though, so this is CleanCode's event standard.
+
+/*abstract*/ class EventArgs
+{
+	static EventArgs Empty;
+};
+
 template <typename T,
-	typename Arg1 = bool,
-	typename Arg2 = bool,
-	typename Arg3 = bool,
-	typename Arg4 = bool,
-	typename Arg5 = bool,
-	typename Arg6 = bool,
-	typename Arg7 = bool,
-	typename Arg8 = bool
-	>
+	typename Arg1 = void*,
+	typename Arg2 = EventArgs>
 class Event
 {
 protected:
-	std::vector<T> functions;
+	typedef std::list<T> listType;
+	typedef typename listType::iterator iteratorType;
+	std::list<T> functions;
 
 public:
-	void operator += (T functor) { functions.push_back(functor); }
-	void operator -= (T functor) { functions.remove(functor); }
+	void operator += (T functor) { functions.push_front(functor); }
+	void operator -= (T functor) { functions.remove (functor); }
 
 	void operator() ()
 	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i]();
+		for (iteratorType it = functions.begin(); it != functions.end(); ++it)
+			(*it)();
 	}
 
 	void operator() (Arg1 arg1)
 	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1);
+		for (iteratorType it = functions.begin(); it != functions.end(); ++it)
+			(*it)(arg1);
 	}
 	
 	void operator() (Arg1 arg1, Arg2 arg2)
 	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2);
-	}
-
-	void operator() (Arg1 arg1, Arg2 arg2, Arg3 arg3)
-	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2, arg3);
-	}
-	
-	void operator() (Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
-	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2, arg3, arg4);
-	}
-
-	void operator() (Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
-	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2, arg3, arg4, arg5);
-	}
-
-	void operator() (Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
-	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2, arg3, arg4, arg5, arg6);
-	}
-
-	void operator() (Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
-	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-	}
-
-	void operator() (Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
-	{
-		for (size_t i = 0; i < functions.size(); ++i)
-			functions[i](arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+		for (iteratorType it = functions.begin(); it != functions.end(); ++it)
+			(*it)(arg1, arg2);
 	}
 };
+
+typedef void (*EventHandlerType) (void *sender, EventArgs args);
+typedef Event<EventHandlerType, void*, EventArgs> EventHandler;
 
 #else
 FILE_WARNING

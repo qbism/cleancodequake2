@@ -74,7 +74,7 @@ void CBanList::Clear ()
 void CBanList::LoadFromFile ()
 {
 	Bans.Clear ();
-	CFile File ("bans.lst", FILEMODE_READ);
+	CFile File (GAMENAME"\\bans.lst", FILEMODE_READ | FILEMODE_ASCII);
 
 	if (!File.Valid())
 		return;
@@ -145,7 +145,7 @@ void CBanList::SaveList ()
 		return;
 	}
 
-	CFile File ("bans.lst", FILEMODE_WRITE | FILEMODE_CREATE | FILEMODE_ASCII);
+	CFile File (GAMENAME"\\bans.lst", FILEMODE_WRITE | FILEMODE_CREATE | FILEMODE_ASCII);
 
 	if (!File.Valid())
 		return;
@@ -154,13 +154,14 @@ void CBanList::SaveList ()
 	{
 		BanIndex *Index = BanList[i];
 
-		File.Print ("%s %s %i\n",
+		File.Print ("%s %s %u\n",
 			(Index->IP) ? "ip" : "name",
-			(Index->IP) ? Index->Address->str :Index->Name,
-			"%i\n", Index->Flags);
+			(Index->IP) ? Index->Address->str : Index->Name,
+			Index->Flags);
 	}
 
 	ServerPrintf ("Saved %u bans\n", Bans.BanList.size());
+	Changed = false;
 }
 
 /**
@@ -235,6 +236,8 @@ bool CBanList::AddToList (IPAddress Adr, EBanTypeFlags Flags)
 	if (InList(Adr))
 		return false;
 
+	Changed = true;
+
 	BanIndex *NewIndex = QNew (TAG_GAME) BanIndex;
 	NewIndex->IP = true;
 
@@ -262,6 +265,8 @@ bool CBanList::AddToList (const char *Name, EBanTypeFlags Flags)
 {
 	if (InList(Name))
 		return false;
+
+	Changed = true;
 
 	BanIndex *NewIndex = QNew (TAG_GAME) BanIndex;
 	NewIndex->IP = false;
@@ -298,6 +303,7 @@ bool CBanList::RemoveFromList (IPAddress Adr)
 		if (!ipcmp(*Index->Address, Adr))
 		{
 			BanList.erase(it);
+			Changed = true;
 			return true;
 		}
 	}
@@ -328,6 +334,7 @@ bool CBanList::RemoveFromList (const char *Name)
 		if (!strcmp(Name, Index->Name))
 		{
 			BanList.erase(it);
+			Changed = true;
 			return true;
 		}
 	}
@@ -362,6 +369,7 @@ bool CBanList::ChangeBan (IPAddress Adr, EBanTypeFlags Flags)
 				return false;
 
 			Index->Flags = Flags;
+			Changed = true;
 			return true;
 		}
 	}
@@ -396,6 +404,7 @@ bool CBanList::ChangeBan (const char *Name, EBanTypeFlags Flags)
 				return false;
 
 			Index->Flags = Flags;
+			Changed = true;
 			return true;
 		}
 	}

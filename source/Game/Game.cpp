@@ -261,15 +261,15 @@ ExitLevel
 void ExitLevel ()
 {
 	gi.AddCommandString ((std::string("gamemap \"") + Level.Intermission.ChangeMap + "\"\n").c_str());
-	#ifdef STDCPP_LINUX_HACK
+#if STDCPP_LINUX_HACK
 	if (Level.Intermission.ChangeMap)
 	{
    	    QDelete[] Level.Intermission.ChangeMap;
 	    Level.Intermission.ChangeMap = NULL;
 	}
-	#else
+#else
 	Level.Intermission.ChangeMap.clear();
-	#endif
+#endif
 	Level.Intermission.ShouldExit = false;
 	Level.Intermission.Time = 0;
 	ClientEndServerFrames ();

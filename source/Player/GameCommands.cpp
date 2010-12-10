@@ -214,7 +214,6 @@ class CPlayersCommand : public CGameCommandFunctor
 public:
 	void Execute ()
 	{
-		sint32		count = 0;
 		std::vector<int> index;
 
 		CPlayerListCountCallback (index).Query ();
@@ -225,14 +224,15 @@ public:
 		// print information
 		std::string Large;
 
-		for (sint32 i = 0; i < count; i++)
+		for (uint8 i = 0; i < index.size(); i++)
 		{
 			CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
-			std::string Small = FormatString ("%3i %s\n",
+			std::string Small = FormatString ("%i: %3i %s\n",
+				LoopPlayer->State.GetNumber(),
 				LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
 				LoopPlayer->Client.Persistent.Name.c_str());
 
-			if (Small.size() > 128)
+			if (Small.size() > 512)
 			{
 				// can't print all of them in one packet
 				Large += "...\n";
@@ -242,7 +242,7 @@ public:
 			Large += Small;
 		}
 
-		Player->PrintToClient (PRINT_HIGH, "%s\n%i players\n", Large.c_str(), count);
+		Player->PrintToClient (PRINT_HIGH, "%s\n%u players\n", Large.c_str(), index.size());
 	}
 };
 
@@ -503,10 +503,9 @@ public:
 				continue;
 
 			Index = i;
-			if (DoCallback (Player))
-				return true;
+			DoCallback (Player);
 		}
-		return false;
+		return true;
 	}
 
 	void Query (bool)
@@ -536,9 +535,10 @@ void CPlayerListCommand::Execute ()
 	text = "Spawned:\n";
 	CPlayerListCallback(text, sizeof(text), Player).DoQuery (false);
 
-	text = "Connecting:\n";
-	if (!CPlayerListCallback(text, sizeof(text), Player).DoQuery (true))
-		Player->PrintToClient (PRINT_HIGH, "%s", text.c_str());
+	text += "\n\nConnecting:\n";
+	CPlayerListCallback(text, sizeof(text), Player).DoQuery (true);
+
+	Player->PrintToClient (PRINT_HIGH, "%s", text.c_str());
 };
 
 /**

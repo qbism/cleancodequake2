@@ -870,7 +870,7 @@ public:
 		else
 			len = gzread (Handle->file.gz, buffer, size);
 
-		CC_ASSERT_EXPR (len == size, "Read size != wanted size");
+		//CC_ASSERT_EXPR (len == size, "Read size != wanted size");
 	};
 
 	/**
