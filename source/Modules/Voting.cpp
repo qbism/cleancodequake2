@@ -232,7 +232,7 @@ public:
 					if (player->Client.Persistent.State != SVCS_SPAWNED)
 						continue;
 
-					CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(player, &module);
+					CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(player, this);
 
 					switch (data->VoteState)
 					{
@@ -274,7 +274,7 @@ public:
 	{
 		return QNew(TAG_GENERIC) CVoteData;
 	};
-} module;
+} votemodule;
 
 // Commands
 class CCmdVoteCommand : public CGameCommandFunctor
@@ -349,7 +349,7 @@ public:
 			return;
 		}
 
-		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &module);
+		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &votemodule);
 
 		if (data->VoteState != VOTE_UNDECIDED)
 		{
@@ -373,7 +373,7 @@ public:
 			return;
 		}
 
-		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &module);
+		CVoteData *data = CModuleContainer::RequestModuleData<CVoteData>(Player, &votemodule);
 
 		if (data->VoteState != VOTE_UNDECIDED)
 		{

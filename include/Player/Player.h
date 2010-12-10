@@ -187,6 +187,7 @@ public:
 	bool			Spectator;			// client is a Spectator
 
 	colorf			ViewBlend; // View blending
+	SUserCmd			UserCmd;		// User command, stored each ClientThink for using in modules.
 
 	void Save (CFile &File);
 	void Load (CFile &File);
@@ -311,7 +312,7 @@ public:
 
 	// Module data
 	CModuleDataContainer	ModuleData;
-
+	
 	void Clear ()
 	{
 		CoopRespawn.Clear ();
@@ -322,7 +323,6 @@ public:
 		Gender = GENDER_NEUTRAL;
 		MessageLevel = 0;
 		MenuState.Clear ();
-
 #if CLEANCTF_ENABLED
 		Mem_Zero (&CTF, sizeof(CTF));
 #endif
@@ -958,6 +958,7 @@ public:
 	inline void		SetClientFrame (float xyspeed);
 	void			SetStats ();
 	void			SetSpectatorStats ();
+
 #if CLEANCTF_ENABLED
 	void			SetCTFStats ();
 	void			CTFSetIDView ();
@@ -1065,11 +1066,32 @@ void ClientEndServerFrames ();
 class PlayerEvents
 {
 public:
+
+	class PlayerDeathEventArgs : public EventArgs
+	{
+	public:
+		IBaseEntity *Attacker;
+		IBaseEntity *Inflictor;
+
+		PlayerDeathEventArgs(IBaseEntity *attacker, IBaseEntity *inflictor) :
+		  Attacker(attacker),
+		  Inflictor(inflictor)
+		{
+		}
+	};
+
+
 	typedef void (*PlayerEventHandler) (CPlayerEntity *Sender);
+	typedef void (*PlayerDeathEventHandlerType) (CPlayerEntity *sender, PlayerDeathEventArgs args);
 	typedef Event<PlayerEventHandler, CPlayerEntity *> PlayerEvent;
+	typedef Event<PlayerDeathEventHandlerType, CPlayerEntity*, PlayerDeathEventArgs> PlayerDeathEvent;
 
 	static PlayerEvent PlayerConnected;
 	static PlayerEvent PlayerDisconnected;
+	static PlayerEvent PlayerBeginServerFrame;
+	static PlayerEvent PlayerEndServerFrame;
+	static PlayerEvent PlayerThink;
+	static PlayerDeathEvent PlayerDeath;
 };
 
 #else

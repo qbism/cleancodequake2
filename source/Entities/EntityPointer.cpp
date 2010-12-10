@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 
-const nullentity_t nullentity_t::value = nullentity_t();
+const nullentity_t nullentity_t::value  = nullentity_t();
 const nullentity_t *nullentity = &nullentity_t::value;	// Null entity
 
 /**

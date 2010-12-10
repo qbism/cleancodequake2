@@ -44,6 +44,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // Events declaration
 PlayerEvents::PlayerEvent PlayerEvents::PlayerConnected;
 PlayerEvents::PlayerEvent PlayerEvents::PlayerDisconnected;
+PlayerEvents::PlayerEvent PlayerEvents::PlayerBeginServerFrame;
+PlayerEvents::PlayerEvent PlayerEvents::PlayerEndServerFrame;
+PlayerEvents::PlayerEvent PlayerEvents::PlayerThink;
+PlayerEvents::PlayerDeathEvent PlayerEvents::PlayerDeath;
 
 IMPLEMENT_SAVE_SOURCE(CPlayerNoise);
 
@@ -486,6 +490,7 @@ void CPlayerEntity::BeginServerFrame ()
 		PlayerTrail_Add (State.GetOldOrigin());
 
 	Client.LatchedButtons = 0;
+	PlayerEvents::PlayerBeginServerFrame(this);
 };
 
 void CPlayerEntity::Respawn ()
@@ -1965,9 +1970,6 @@ void CPlayerEntity::EndServerFrame ()
 	// If it wasn't updated here, the view position would lag a frame
 	// behind the body position when pushed -- "sinking into plats"
 	//
-	for (i = 0; i < 3; i++)
-	{
-	}
 
 	Client.PlayerState.GetPMove()->Origin = (State.GetOrigin() * 8);
 	Client.PlayerState.GetPMove()->Velocity = (Velocity * 8);
@@ -2103,6 +2105,8 @@ void CPlayerEntity::EndServerFrame ()
 		DeathmatchScoreboardMessage (false);
 	else if (Client.Respawn.MenuState.InMenu && !(Level.Frame & 4))
 		Client.Respawn.MenuState.CurrentMenu->Draw (false);
+	
+	PlayerEvents::PlayerEndServerFrame(this);
 }
 
 #if CLEANCTF_ENABLED
@@ -2971,7 +2975,8 @@ void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 #if 1
 	pm_passent = this;
 #endif
-
+	
+	Client.Persistent.UserCmd = *ucmd; // Copy for module use.
 //ZOID
 	static sint32 oldbuttons;
 	oldbuttons = Client.Buttons;
@@ -3019,6 +3024,7 @@ void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 
 	// set up for pmove
 	Mem_Zero (&pm, sizeof(pm));
+ 	
 
 	if (NoClip)
 		Client.PlayerState.GetPMove()->PMoveType = PMT_SPECTATOR;
@@ -3030,6 +3036,11 @@ void CPlayerEntity::ClientThink (SUserCmd *ucmd)
 		Client.PlayerState.GetPMove()->PMoveType = PMT_NORMAL;
 
 	Client.PlayerState.GetPMove()->Gravity = CvarList[CV_GRAVITY].Float() * GravityMultiplier;
+
+	// Likely, before pmove is called it will be the most useful
+	// Otherwise, just use EndServerFrame instead.
+	PlayerEvents::PlayerThink(this);
+
 	pm.State = *Client.PlayerState.GetPMove();
 
 	pm.State.Origin = (State.GetOrigin() * 8);
@@ -3444,6 +3455,8 @@ void CPlayerEntity::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 	if (Client.Timers.Tracker)
 		RemoveAttackingPainDaemons ();
 #endif
+	
+	PlayerEvents::PlayerDeath (this, PlayerEvents::PlayerDeathEventArgs(Attacker, Inflictor));
 
 	if (Health < -40)
 	{
@@ -5033,3 +5046,5 @@ void CPlayerEntity::TakeDamage (IBaseEntity *Inflictor, IBaseEntity *Attacker,
 	Client.DamageValues[DT_KNOCKBACK] += KnockBack;
 	Client.DamageFrom = Point;
 }
+
+

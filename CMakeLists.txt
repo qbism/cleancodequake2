@@ -55,5 +55,5 @@ if (UNIX)
 endif ()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pipe -fomit-frame-pointer -fno-strict-aliasing")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
