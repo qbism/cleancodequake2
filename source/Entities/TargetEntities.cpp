@@ -572,7 +572,7 @@ void BeginIntermission (CTargetChangeLevel *targ)
 
 	Level.Intermission.Time = Level.Frame;
 #if !STDCPP_LINUX_HACK
-	Level.Intermission.ChangeMap = targ->Map;
+	new (&Level.Intermission.ChangeMap) std::string(targ->Map); // Solving a linux quirk
 	if (Level.Intermission.ChangeMap.find_first_of('*') != std::string::npos)
 #else
 	Level.Intermission.ChangeMap = Mem_TagStrDup(targ->Map.c_str(), TAG_LEVEL);
