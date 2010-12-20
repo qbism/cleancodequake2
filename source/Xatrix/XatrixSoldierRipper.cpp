@@ -145,16 +145,16 @@ void CSoldierRipper::FireGun (sint32 FlashNumber)
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right, aim;
+	vec3f	start, aim;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[BlasterFlash[FlashNumber]], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[BlasterFlash[FlashNumber]], angles, start);
 
 	switch (FlashNumber)
 	{
 	case 5:
 	case 6:
-		aim = forward;
+		aim = angles.Forward;
 		break;
 	default:
 		{
@@ -167,11 +167,10 @@ void CSoldierRipper::FireGun (sint32 FlashNumber)
 			vec3f dir;
 			dir = aim.ToAngles ();
 
-			vec3f up;
-			dir.ToVectors (&forward, &right, &up);
-			end = start.MultiplyAngles (8192, forward)
-			.MultiplyAngles (crand() * 100, right)
-			.MultiplyAngles (crand() * 50, up);
+			angles = dir.ToVectors ();
+			end = start.MultiplyAngles (8192, angles.Forward)
+			.MultiplyAngles (crand() * 100, angles.Right)
+			.MultiplyAngles (crand() * 50, angles.Up);
 
 			aim = (end - start).GetNormalized();
 		}

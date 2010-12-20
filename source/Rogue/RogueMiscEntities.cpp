@@ -267,12 +267,11 @@ public:
 		Speed = 50;
 
 		// calculate positions
-		vec3f forward, right, up;
-		State.GetAngles().ToVectors (&forward, &right, &up);
+		anglef angles = State.GetAngles().ToVectors ();
 		MoveOrigin = State.GetOrigin();
 		MoveAngles = State.GetAngles();
 
-		SetMoveDir (MoveDir);
+		SetMoveDir ();
 		PhysicsType = PHYSICS_PUSH;
 		GetSolid() = SOLID_BSP;
 		SetBrushModel ();
@@ -292,24 +291,24 @@ public:
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Secret door not at 0, 90, 180, 270!\n");
 
 		if (SpawnFlags & SEC_MOVE_FORWARD)
-			forward *= fbSize;
+			angles.Forward *= fbSize;
 		else
-			forward *= (fbSize * -1);
+			angles.Forward *= (fbSize * -1);
 
 		if (SpawnFlags & SEC_MOVE_RIGHT)
-			right *= lrSize;
+			angles.Right *= lrSize;
 		else
-			right *= (lrSize * -1);
+			angles.Right *= (lrSize * -1);
 
 		if (SpawnFlags & SEC_1ST_DOWN)
 		{
-			StartOrigin = State.GetOrigin() + forward;
-			EndOrigin = StartOrigin + right;
+			StartOrigin = State.GetOrigin() + angles.Forward;
+			EndOrigin = StartOrigin + angles.Right;
 		}
 		else
 		{
-			StartOrigin = State.GetOrigin() + right;
-			EndOrigin = StartOrigin + forward;
+			StartOrigin = State.GetOrigin() + angles.Right;
+			EndOrigin = StartOrigin + angles.Forward;
 		}
 
 		Link ();

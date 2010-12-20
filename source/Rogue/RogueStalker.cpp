@@ -452,9 +452,9 @@ void CStalker::ShootAttack ()
 			JumpStraightUp ();
 	}
 
-	vec3f f, r, start, end;
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), vec3f(24, 0, 6), f, r, start);
+	vec3f start, end;
+
+	G_ProjectSource (Entity->State.GetOrigin(), vec3f(24, 0, 6), Entity->State.GetAngles().ToVectors(), start);
 
 	vec3f dir = (Entity->Enemy->State.GetOrigin() - start);
 
@@ -701,13 +701,12 @@ bool CStalker::DoPounce (vec3f dest)
 		velocity += 200;
 	};
 
-	vec3f forward;
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	forward.Normalize();
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	angles.Forward.Normalize();
 
 	if (!preferHighJump && (!isnan(jumpAngles.X)) )
 	{
-		Entity->Velocity = (forward * (velocity * cosf(DEG2RAD(jumpAngles.X))));
+		Entity->Velocity = (angles.Forward * (velocity * cosf(DEG2RAD(jumpAngles.X))));
 		Entity->Velocity.Z = velocity * sinf(DEG2RAD(jumpAngles.Y)) + (0.5f * CvarList[CV_GRAVITY].Float() * FRAMETIME);
 		
 		return true;
@@ -715,7 +714,7 @@ bool CStalker::DoPounce (vec3f dest)
 
 	if (!isnan(jumpAngles.Y))
 	{
-		Entity->Velocity = (forward * (velocity * cosf(DEG2RAD(jumpAngles.Y))));
+		Entity->Velocity = (angles.Forward * (velocity * cosf(DEG2RAD(jumpAngles.Y))));
 		Entity->Velocity.Z = velocity * sinf(DEG2RAD(jumpAngles.Y)) + (0.5f * CvarList[CV_GRAVITY].Float() * FRAMETIME);
 		return true;
 	}

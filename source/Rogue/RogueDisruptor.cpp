@@ -70,17 +70,17 @@ bool CDisruptor::CanStopFidgetting (CPlayerEntity *Player)
 
 void CDisruptor::Fire (CPlayerEntity *Player)
 {
-	vec3f		offset (24, 8, Player->ViewHeight-8), forward, right, start;
+	vec3f		offset (24, 8, Player->ViewHeight-8), start;
 	const int	Damage = CalcQuadVal((Game.GameMode & GAME_DEATHMATCH) ? 30 : 45);
 
 	FireAnimation (Player);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
 	IBaseEntity *Enemy = NULL;
 
-	vec3f end = start.MultiplyAngles (8192, forward);
+	vec3f end = start.MultiplyAngles (8192, angles.Forward);
 	CTrace tr (start, end, Player, CONTENTS_MASK_SHOT);
 	
 	if (tr.Entity != World)
@@ -105,10 +105,10 @@ void CDisruptor::Fire (CPlayerEntity *Player)
 		}
 	}
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CDisruptorTracker::Spawn (Player, start, forward, Damage, 1000, Enemy);
+	CDisruptorTracker::Spawn (Player, start, angles.Forward, Damage, 1000, Enemy);
 
 	Muzzle (Player, MZ_TRACKER);
 	AttackSound (Player);

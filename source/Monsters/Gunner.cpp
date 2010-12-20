@@ -443,7 +443,7 @@ bool CGunner::GrenadeCheck()
 	if(!Entity->Enemy)
 		return false;
 
-	vec3f		start, forward, right, target, dir;
+	vec3f		start, target, dir;
 
 	// if the player is above my head, use machinegun.
 
@@ -458,8 +458,8 @@ bool CGunner::GrenadeCheck()
 
 	// check to see that we can trace to the player before we start
 	// tossing grenades around.
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GUNNER_GRENADE_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GUNNER_GRENADE_1], angles, start);
 
 	// pmm - check for blindfire flag
 	target = (AIFlags & AI_MANUAL_STEERING) ? BlindFireTarget : Entity->Enemy->State.GetOrigin();
@@ -482,11 +482,11 @@ void CGunner::Fire ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right, target, aim;
+	vec3f	start, target, aim;
 	sint32		flash_number = MZ2_GUNNER_MACHINEGUN_1 + (Entity->State.GetFrame() - CGunner::FRAME_attak216);
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 	// project enemy back a bit and target there
 	target = Entity->Enemy->State.GetOrigin();
@@ -504,7 +504,7 @@ void CGunner::Grenade ()
 		return;
 
 #if !ROGUE_FEATURES
-	vec3f	start, forward, right;
+	vec3f	start;
 	sint32		flash_number;
 
 	switch (Entity->State.GetFrame())
@@ -523,12 +523,12 @@ void CGunner::Grenade ()
 		break;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
-	MonsterFireGrenade (start, forward, 50, 600, flash_number);
+	MonsterFireGrenade (start, angle.Forward, 50, 600, flash_number);
 #else
-	vec3f	start, forward, right, up, aim;
+	vec3f	start, aim;
 	sint32		flash_number;
 	float	spread;
 	float	pitch = 0;
@@ -573,8 +573,8 @@ void CGunner::Grenade ()
 		target = Entity->State.GetOrigin();
 	// pmm
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);	//PGM
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 //PGM
 	if(Entity->Enemy)
@@ -594,7 +594,7 @@ void CGunner::Grenade ()
 	}
 //PGM
 
-	aim = (forward.MultiplyAngles (spread, right)).MultiplyAngles (pitch, up);
+	aim = (angles.Forward.MultiplyAngles (spread, angles.Right)).MultiplyAngles (pitch, angles.Up);
 	MonsterFireGrenade (start, aim, 50, 600, flash_number);
 #endif
 }

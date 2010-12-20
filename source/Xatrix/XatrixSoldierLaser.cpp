@@ -74,23 +74,21 @@ void CSoldierLaser::FireGun (sint32 FlashNumber)
 	vec3f start = Entity->State.GetOrigin();
 	vec3f end = Entity->Enemy->State.GetOrigin();
 	vec3f dir = end - start;
-	vec3f angles = dir.ToAngles();
 	vec3f tempvec = MonsterFlashOffsets[FlashNumber];
 	
 	Laser = QNewEntityOf CMonsterBeamLaser;
-	vec3f tempang = angles;
-	vec3f forward, right, up;
-	tempang.ToVectors (&forward, &right, &up);
-	Laser->State.GetAngles() = tempang;
+	
+	anglef angles = dir.ToAngles().ToVectors ();
+	Laser->State.GetAngles() = dir.ToAngles();
 
 	if (flashIndex == MZ2_SOLDIER_MACHINEGUN_3)
-		start = start.MultiplyAngles (tempvec[0]-14, right)
-				.MultiplyAngles (tempvec[2]-32, up)
-				.MultiplyAngles (tempvec[1], forward);
+		start = start.MultiplyAngles (tempvec[0]-14, angles.Right)
+				.MultiplyAngles (tempvec[2]-32, angles.Up)
+				.MultiplyAngles (tempvec[1], angles.Forward);
 	else 
-		start = start.MultiplyAngles (tempvec[0]+2, right)
-				.MultiplyAngles (tempvec[2]-24, up)
-				.MultiplyAngles (tempvec[1], forward);
+		start = start.MultiplyAngles (tempvec[0]+2, angles.Right)
+				.MultiplyAngles (tempvec[2]-24, angles.Up)
+				.MultiplyAngles (tempvec[1], angles.Forward);
 			
 	Laser->State.GetOrigin() = start;
 	Laser->SetOwner(Entity);

@@ -33,11 +33,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 
-void G_ProjectSource (const vec3f &Point, const vec3f &distance, const vec3f &forward, const vec3f &right, vec3f &result, const vec3f &up)
+void G_ProjectSource (const vec3f &Point, const vec3f &distance, const anglef angles, vec3f &result)
 {
-	result.Set (Point.X + forward.X * distance.X + right.X * distance.Y + up.X * distance.Z,
-				Point.Y + forward.Y * distance.X + right.Y * distance.Y + up.Y * distance.Z,
-				Point.Z + forward.Z * distance.X + right.Z * distance.Y + up.Z * distance.Z);
+	result.Set (Point.X + angles.Forward.X * distance.X + angles.Right.X * distance.Y + angles.Up.X * distance.Z,
+				Point.Y + angles.Forward.Y * distance.X + angles.Right.Y * distance.Y + angles.Up.Y * distance.Z,
+				Point.Z + angles.Forward.Z * distance.X + angles.Right.Z * distance.Y + angles.Up.Z * distance.Z);
 }
 
 IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid)
@@ -217,16 +217,12 @@ returns 1 if the entity is in front (in sight) of self
 
 bool IsInFront (IBaseEntity *self, IBaseEntity *Other)
 {	
-	vec3f forward;
-	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) > 0.3f);
+	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | self->State.GetAngles().ToVectors().Forward) > 0.3f);
 }
 
 bool IsInBack (IBaseEntity *self, IBaseEntity *Other)
 {	
-	vec3f forward;
-	self->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | forward) < -0.3f);
+	return (((Other->State.GetOrigin() - self->State.GetOrigin()).GetNormalized() | self->State.GetAngles().ToVectors().Forward) < -0.3f);
 }
 
 bool IsBelow (IBaseEntity *self, IBaseEntity *Other)

@@ -346,14 +346,13 @@ void CTesla::Think ()
 
 void CTesla::Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int DamageMultiplier, int Speed)
 {
-	vec3f	forward, right, up;
-	(AimDir.ToAngles()).ToVectors (&forward, &right, &up);
+	anglef angles = AimDir.ToAngles().ToVectors ();
 
 	CTesla *Tesla = QNewEntityOf CTesla;
 	Tesla->State.GetOrigin() = Start;
 	Tesla->Velocity =	(AimDir * Speed)
-						.MultiplyAngles (200 + crand() * 10.0f, up)
-						.MultiplyAngles (crand() * 10.0f, right);
+						.MultiplyAngles (200 + crand() * 10.0f, angles.Up)
+						.MultiplyAngles (crand() * 10.0f, angles.Right);
 
 	Tesla->State.GetAngles().Clear();
 	Tesla->GetSolid() = SOLID_BBOX;
@@ -416,18 +415,18 @@ void CTeslaWeapon::Hold (CPlayerEntity *Player)
 
 void CTeslaWeapon::FireGrenade (CPlayerEntity *Player, bool inHand)
 {
-	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
+	vec3f	offset (8, 8, Player->ViewHeight-8), start;
 
 	Player->Client.Grenade.Thrown = true;
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
 	FrameNumber timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
 	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(GRENADE_MINSPEED + ((GRENADE_TIMER/10) - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / (GRENADE_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
-	CTesla::Spawn (Player, start, forward, DamageMultiplier, speed);
+	CTesla::Spawn (Player, start, angles.Forward, DamageMultiplier, speed);
 
 	Player->Client.Grenade.Time = Level.Frame + ((((
 #if CLEANCTF_ENABLED

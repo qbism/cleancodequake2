@@ -163,14 +163,14 @@ void CIonRipper::Fire (CPlayerEntity *Player)
 	vec3f		start, forward, right, offset (16, 7,  Player->ViewHeight-8);
 	const sint32	damage = (Game.GameMode & GAME_DEATHMATCH) ? CalcQuadVal(30) : CalcQuadVal(50);
 
-	(Player->Client.ViewAngle + vec3f(0, crand(), 0)).ToVectors (&forward, &right, NULL);
+	anglef angles = (Player->Client.ViewAngle + vec3f(0, crand(), 0)).ToVectors ();
 
-	Player->Client.KickOrigin = forward * -3;
+	Player->Client.KickOrigin = angles.Forward * -3;
 	Player->Client.KickAngles.X = -3;
 
-	Player->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, angles, start);
 
-	CIonRipperBoomerang::Spawn (Player, start, forward, damage, 500);
+	CIonRipperBoomerang::Spawn (Player, start, angles.Forward, damage, 500);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_IONRIPPER);

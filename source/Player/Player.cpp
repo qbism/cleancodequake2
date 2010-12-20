@@ -1986,8 +1986,7 @@ void CPlayerEntity::EndServerFrame ()
 		return;
 	}
 
-	vec3f forward, right, up;
-	Client.ViewAngle.ToVectors (&forward, &right, &up);
+	anglef angles = Client.ViewAngle.ToVectors ();
 
 	// burn from lava, etc
 	WorldEffects ();
@@ -1999,7 +1998,7 @@ void CPlayerEntity::EndServerFrame ()
 	State.GetAngles().Set (
 		(Client.ViewAngle.X > 180) ? (-360 + Client.ViewAngle.X)/3 : Client.ViewAngle.X/3,
 		Client.ViewAngle.Y,
-		CalcRoll (Velocity, right)*4
+		CalcRoll (Velocity, angles.Right)*4
 		);
 
 	//
@@ -2036,13 +2035,13 @@ void CPlayerEntity::EndServerFrame ()
 	FallingDamage ();
 
 	// apply all the damage taken this frame
-	DamageFeedback (forward, right);
+	DamageFeedback (angles.Forward, angles.Right);
 
 	// determine the view offsets
-	CalcViewOffset (forward, right, up, xyspeed);
+	CalcViewOffset (angles.Forward, angles.Right, angles.Up, xyspeed);
 
 	// determine the gun offsets
-	CalcGunOffset (forward, right, up, xyspeed);
+	CalcGunOffset (angles.Forward, angles.Right, angles.Up, xyspeed);
 
 	// determine the full screen color blend
 	// must be after viewoffset, so eye contents can be
@@ -2718,19 +2717,19 @@ void CPlayerEntity::CTFSetIDView()
 {
 	Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = 0;
 
-	vec3f forward, oldForward;
-	Client.ViewAngle.ToVectors(&forward, NULL, NULL);
-	oldForward = forward;
-	forward = (forward * 1024) + State.GetOrigin();
+	vec3f oldForward;
+	anglef angles = Client.ViewAngle.ToVectors();
+	oldForward = angles.Forward;
+	angles.Forward = (angles.Forward * 1024) + State.GetOrigin();
 
-	CTrace tr (State.GetOrigin(), forward, this, CONTENTS_MASK_SOLID);
+	CTrace tr (State.GetOrigin(), angles.Forward, this, CONTENTS_MASK_SOLID);
 	if (tr.Fraction < 1 && tr.Entity && (tr.Entity->State.GetNumber() >= 1 && tr.Entity->State.GetNumber() <= Game.MaxClients))
 	{
 		Client.PlayerState.GetStat (STAT_CTF_ID_VIEW) = CS_PLAYERSKINS + (State.GetNumber() - 1);
 		return;
 	}
 
-	forward = oldForward;
+	angles.Forward = oldForward;
 	CPlayerEntity *best = NULL;
 	float bd = 0;
 	for (sint32 i = 1; i <= Game.MaxClients; i++)
@@ -2739,7 +2738,7 @@ void CPlayerEntity::CTFSetIDView()
 		if (!who->GetInUse() || who->GetSolid() == SOLID_NOT)
 			continue;
 
-		float d = forward | (who->State.GetOrigin() - State.GetOrigin()).GetNormalizedFast ();
+		float d = angles.Forward | (who->State.GetOrigin() - State.GetOrigin()).GetNormalizedFast ();
 		if (d > bd && CanSee(who))
 		{
 			bd = d;
@@ -3546,7 +3545,6 @@ inline const char *GetChaseMode (uint8 mode)
 
 void CPlayerEntity::UpdateChaseCam()
 {
-	vec3f forward, right;
 	CPlayerEntity *targ;
 
 	// is our chase target gone?
@@ -3579,9 +3577,9 @@ void CPlayerEntity::UpdateChaseCam()
 			if(angles.X > 56)
 				angles.X = 56;
 
-			angles.ToVectors (&forward, &right, NULL);
-			forward.NormalizeFast ();
-			vec3f o = ownerv.MultiplyAngles (-30, forward);
+			anglef angleVecs = angles.ToVectors ();
+			angleVecs.Forward.NormalizeFast ();
+			vec3f o = ownerv.MultiplyAngles (-30, angleVecs.Forward);
 
 			if(o.Z < targ->State.GetOrigin().Z + 20)
 				o.Z = targ->State.GetOrigin().Z + 20;
@@ -3591,7 +3589,7 @@ void CPlayerEntity::UpdateChaseCam()
 
 			CTrace trace (ownerv, o, targ, CONTENTS_MASK_SOLID);
 
-			vec3f goal = trace.EndPosition.MultiplyAngles (2, forward);
+			vec3f goal = trace.EndPosition.MultiplyAngles (2, angleVecs.Forward);
 			o = goal + vec3f(0, 0, 6);
 			trace (goal, o, targ, CONTENTS_MASK_SOLID);
 
@@ -3636,16 +3634,16 @@ void CPlayerEntity::UpdateChaseCam()
 
 			vec3f ownerv = targ->State.GetOrigin() + vec3f(0, 0, targ->ViewHeight);
 
-			Client.PlayerState.GetViewAngles().ToVectors (&forward, &right, NULL);
-			forward.NormalizeFast ();
-			vec3f o = ownerv.MultiplyAngles (-150, forward);
+			anglef angleVecs = Client.PlayerState.GetViewAngles().ToVectors ();
+			angleVecs.Forward.NormalizeFast ();
+			vec3f o = ownerv.MultiplyAngles (-150, angleVecs.Forward);
 
 			if (!targ->GroundEntity)
 				o.Z += 16;
 
 			CTrace trace(ownerv, o, targ, CONTENTS_MASK_SOLID);
 
-			vec3f goal = trace.EndPosition.MultiplyAngles (2, forward);
+			vec3f goal = trace.EndPosition.MultiplyAngles (2, angleVecs.Forward);
 			o = goal + vec3f(0, 0, 6);
 
 			trace (goal, o, targ, CONTENTS_MASK_SOLID);
@@ -3678,9 +3676,9 @@ void CPlayerEntity::UpdateChaseCam()
 			vec3f ownerv = targ->State.GetOrigin();
 			vec3f angles = targ->Client.ViewAngle;
 
-			angles.ToVectors (&forward, &right, NULL);
-			forward.NormalizeFast ();
-			vec3f o = ownerv.MultiplyAngles (16, forward);
+			anglef angleVecs = angles.ToVectors ();
+			angleVecs.Forward.NormalizeFast ();
+			vec3f o = ownerv.MultiplyAngles (16, angleVecs.Forward);
 			o.Z += targ->ViewHeight;
 
 			State.GetOrigin() = o;
@@ -3804,7 +3802,7 @@ void CPlayerEntity::GetChaseTarget()
 	PrintToClient(PRINT_CENTER, "No other players to chase.");
 }
 
-void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result)
+void CPlayerEntity::P_ProjectSource (vec3f distance, anglef angles, vec3f &result)
 {
 	switch (Client.Persistent.Hand)
 	{
@@ -3818,7 +3816,7 @@ void CPlayerEntity::P_ProjectSource (vec3f distance, vec3f &forward, vec3f &righ
 		break;
 	}
 
-	G_ProjectSource (State.GetOrigin(), distance, forward, right, result);
+	G_ProjectSource (State.GetOrigin(), distance, angles, result);
 }
 
 void CPlayerEntity::PlayerNoiseAt (vec3f Where, ENoiseType type)
@@ -4794,13 +4792,12 @@ sint32 CPlayerEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Damag
 		return 0;
 	case POWER_ARMOR_SCREEN:
 		{
-			vec3f		vec, forward;
+			vec3f		vec;
 
 			// only works if damage point is in front
-			State.GetAngles().ToVectors(&forward, NULL, NULL);
 			vec = Point - State.GetOrigin();
 			vec.Normalize ();
-			if ((vec | forward) <= 0.3)
+			if ((vec | State.GetAngles().ToVectors().Forward) <= 0.3)
 				return 0;
 
 			DamagePerCell = 1;

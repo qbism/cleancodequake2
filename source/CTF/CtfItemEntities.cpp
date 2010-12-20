@@ -253,7 +253,6 @@ public:
 CItemEntity *CFlag::DropItem (IBaseEntity *Entity)
 {
 	CDroppedFlagEntity	*dropped = QNewEntityOf CDroppedFlagEntity();
-	vec3f	forward, right;
 
 	dropped->ClassName = Classname;
 	dropped->LinkedItem = this;
@@ -266,16 +265,18 @@ CItemEntity *CFlag::DropItem (IBaseEntity *Entity)
 	dropped->GetSolid() = SOLID_TRIGGER;
 	dropped->SetOwner (Entity);
 
+	anglef angles;
+
 	if (Entity->EntityFlags & EF_PLAYER)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
-		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+		angles = Player->Client.ViewAngle.ToVectors ();
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, angles, result);
 
 		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
 			result, Player, CONTENTS_SOLID);
@@ -297,12 +298,12 @@ CItemEntity *CFlag::DropItem (IBaseEntity *Entity)
 	}
 	else
 	{
-		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		angles = Entity->State.GetAngles().ToVectors();
 		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
-	forward *= 100;
-	dropped->Velocity = forward;
+	angles.Forward *= 100;
+	dropped->Velocity = angles.Forward;
 	dropped->Velocity.Z = 300;
 
 	dropped->NextThink = Level.Frame + CTF_AUTO_FLAG_RETURN_TIMEOUT;

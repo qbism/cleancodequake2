@@ -65,18 +65,18 @@ bool CRocketLauncher::CanStopFidgetting (CPlayerEntity *Player)
 
 void CRocketLauncher::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, Player->ViewHeight-8), start, forward, right;
+	vec3f	offset (8, 8, Player->ViewHeight-8), start;
 	const sint32	damage = CalcQuadVal(100 + (sint32)(frand() * 20.0)),
 					radius_damage = CalcQuadVal(120);
 	const float		damage_radius = 120;
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	Player->P_ProjectSource (offset, forward, right, start);
-	CRocket::Spawn (Player, start, forward, damage, 650, damage_radius, radius_damage);
+	Player->P_ProjectSource (offset, angles, start);
+	CRocket::Spawn (Player, start, angles.Forward, damage, 650, damage_radius, radius_damage);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_ROCKET);

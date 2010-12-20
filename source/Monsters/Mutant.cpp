@@ -340,15 +340,12 @@ void CMutant::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 void CMutant::JumpTakeOff ()
 {
 #if !(MONSTER_SPECIFIC_FLAGS & MUTANT_JUMPS_UNSTUPIDLY)
-	vec3f	forward;
-
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
 
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	Entity->Velocity = forward * 600;
+	Entity->Velocity = Entity->State.GetAngles().ToVectors().Forward * 600;
 	Entity->Velocity.Z = 250;
 #else
-	vec3f	forward, up, angles;
+	vec3f	angles;
 
 	if (AttemptJumpToLastSight)
 	{
@@ -358,11 +355,11 @@ void CMutant::JumpTakeOff ()
 	else
 		angles = Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin();
 
-	angles.ToAngles ().ToVectors (&forward, NULL, &up);
+	anglef angleVecs = angles.ToAngles ().ToVectors ();
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
-	Entity->Velocity = Entity->Velocity.MultiplyAngles (550, forward);
-	Entity->Velocity = Entity->Velocity.MultiplyAngles (60 + angles.Length(), up);
+	Entity->Velocity = Entity->Velocity.MultiplyAngles (550, angleVecs.Forward);
+	Entity->Velocity = Entity->Velocity.MultiplyAngles (60 + angles.Length(), angleVecs.Up);
 #endif
 
 	Entity->State.GetOrigin().Z += 1;
@@ -461,19 +458,19 @@ bool CMutant::CheckJump ()
 			// We weren't able to get to this spot right away.
 			// We need to calculate a good spot for this.
 			sint32 escape = 0;
-			vec3f angles, forward;
+			vec3f angles;
 
 			// Keep going back about 15 units until we're clear
 			angles = (LastSighting - origin).ToAngles();
 			angles.X = angles.Z = 0; // Only move the yaw
-			temp.ToVectors (&forward, NULL, NULL);
+			anglef angleVecs = temp.ToVectors ();
 
 			temp = LastSighting;
 			while (trace.Fraction != 1.0 && escape < 100)
 			{
 				escape++;
 				
-				temp = temp.MultiplyAngles (-15, forward);
+				temp = temp.MultiplyAngles (-15, angleVecs.Forward);
 				trace (origin, temp, Entity, CONTENTS_MASK_MONSTERSOLID);
 			}
 

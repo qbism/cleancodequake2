@@ -78,15 +78,14 @@ public:
 
 	void Think ()
 	{
-		vec3f f, r, u;
-		State.GetAngles().ToVectors (&f, &r, &u);
+		anglef angles = State.GetAngles().ToVectors ();
 
 		if (State.GetFrame() == 17)
 		{
 			static const vec3f offset (11.77f, -7.24f, 23.31f);
 			vec3f point;
 
-			G_ProjectSource (State.GetOrigin(), offset, f, r, point, u);
+			G_ProjectSource (State.GetOrigin(), offset, angles, point);
 			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, point), point).Send();
 			//ThrowSmallStuff (self, point);
 		}
@@ -105,7 +104,7 @@ public:
 			static const vec3f offset (-65.6f, -8.44f, 28.59f);
 			vec3f point;
 
-			G_ProjectSource (State.GetOrigin(), offset, f, r, point, u);
+			G_ProjectSource (State.GetOrigin(), offset, angles, point);
 			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, point), point).Send();
 			ThrowSmallStuff (this, point);
 
@@ -113,7 +112,7 @@ public:
 			ThrowWidowGibSized (this, ModelIndex("models/monsters/blackwidow/gib2/tris.md2"), 80 + (int)(frand()*20.0), GIB_METALLIC, point, 0, true);
 
 			static const vec3f offset2 (-1.04f, -51.18f, 7.04f);
-			G_ProjectSource (State.GetOrigin(), offset2, f, r, point, u);
+			G_ProjectSource (State.GetOrigin(), offset2, angles, point);
 			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, point), point).Send();
 			ThrowSmallStuff (this, point);
 
@@ -131,11 +130,11 @@ public:
 
 			static const vec3f offset (31, -88.7f, 10.96f);
 			vec3f point;
-			G_ProjectSource (State.GetOrigin(), offset, f, r, point, u);
+			G_ProjectSource (State.GetOrigin(), offset, angles, point);
 			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, point), point).Send();
 
 			static const vec3f offset2 (-12.67f, -4.39f, 15.68f);
-			G_ProjectSource (State.GetOrigin(), offset2, f, r, point, u);
+			G_ProjectSource (State.GetOrigin(), offset2, angles, point);
 			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, point), point).Send();
 
 			NextThink = Level.Frame + FRAMETIME;
@@ -338,21 +337,23 @@ void CWidowStand::FireBlaster ()
 	ShotsFired++;
 	EEntityStateEffects effect = (!(ShotsFired % 4)) ? FX_BLASTER : 0;
 
-	vec3f forward, right, start;
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
+	vec3f start;
+
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+
 	if ((Entity->State.GetFrame() >= CWidowStand::FRAME_spawn05) && (Entity->State.GetFrame() <= CWidowStand::FRAME_spawn13))
 	{
 		// sweep
 		EMuzzleFlash flashnum = MZ2_WIDOW_BLASTER_SWEEP1 + Entity->State.GetFrame() - CWidowStand::FRAME_spawn05;
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 		
 		vec3f targ_angles = (Entity->Enemy->State.GetOrigin() - start).ToAngles();
 		vec3f vec = Entity->State.GetAngles();
 		vec.X += targ_angles.X;
 		vec.Y -= sweep_angles[flashnum-MZ2_WIDOW_BLASTER_SWEEP1];
 
-		vec.ToVectors (&forward, NULL, NULL);
-		MonsterFireBlaster2 (start, forward, BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
+		angles = vec.ToVectors ();
+		MonsterFireBlaster2 (start, angles.Forward, BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
 	}
 	else if ((Entity->State.GetFrame() >= CWidowStand::FRAME_fired02a) && (Entity->State.GetFrame() <= CWidowStand::FRAME_fired20))
 	{
@@ -369,17 +370,17 @@ void CWidowStand::FireBlaster ()
 		else
 			flashnum = MZ2_WIDOW_BLASTER_100 + Entity->State.GetFrame() - CWidowStand::FRAME_fired03;
 
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 
-		PredictAim (*Entity->Enemy, start, 1000, true, ((frand()*0.1f)-0.05f), &forward, NULL);
+		PredictAim (*Entity->Enemy, start, 1000, true, ((frand()*0.1f)-0.05f), &angles.Forward, NULL);
 
 		// clamp it to within 10 degrees of the aiming angle (where she's facing)
-		vec3f angles = forward.ToAngles();
+		vec3f vecAngles = angles.Forward.ToAngles();
 		// give me 100 -> -70
 		float aim_angle = 100 - (10*(flashnum-MZ2_WIDOW_BLASTER_100));
 		if (aim_angle <= 0)
 			aim_angle += 360;
-		float  target_angle = Entity->State.GetAngles().Y - angles.Y;
+		float  target_angle = Entity->State.GetAngles().Y - vecAngles.Y;
 		if (target_angle <= 0)
 			target_angle += 360;
 
@@ -388,17 +389,17 @@ void CWidowStand::FireBlaster ()
 		// positive error is to entity's left, aka positive direction in engine
 		// unfortunately, I decided that for the aim_angle, positive was right.  *sigh*
 		if (error > VARIANCE)
-			angles.Y = (Entity->State.GetAngles().Y - aim_angle) + VARIANCE;
+			vecAngles.Y = (Entity->State.GetAngles().Y - aim_angle) + VARIANCE;
 		else if (error < -VARIANCE)
-			angles.Y = (Entity->State.GetAngles().Y - aim_angle) - VARIANCE;
-		angles.ToVectors (&forward, NULL, NULL);
+			vecAngles.Y = (Entity->State.GetAngles().Y - aim_angle) - VARIANCE;
+		angles = vecAngles.ToVectors ();
 
-		MonsterFireBlaster2 (start, forward, BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
+		MonsterFireBlaster2 (start, angles.Forward, BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
 	}
 	else if ((Entity->State.GetFrame() >= CWidowStand::FRAME_run01) && (Entity->State.GetFrame() <= CWidowStand::FRAME_run08))
 	{
 		EMuzzleFlash flashnum = MZ2_WIDOW_RUN_1 + Entity->State.GetFrame() - CWidowStand::FRAME_run01;
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 
 		MonsterFireBlaster2 (start, Entity->Enemy->State.GetOrigin() - start + vec3f(0, 0, Entity->Enemy->ViewHeight), BLASTER2_DAMAGE*WidowDamageMultiplier, 1000, flashnum, effect);
 	}
@@ -406,14 +407,12 @@ void CWidowStand::FireBlaster ()
 
 void CWidowStand::DoSpawn ()
 {
-	vec3f	f, r, u;
-
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	for (uint8 i = 0; i < 2; i++)
 	{
 		vec3f offset = spawnpoints[i], startpoint, spawnpoint;
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint, u);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 
 		if (FindSpawnPoint (startpoint, stalker_mins, stalker_maxs, spawnpoint, 64))
 		{
@@ -467,16 +466,14 @@ void CWidowStand::SpawnCheck ()
 
 void CWidowStand::ReadySpawn ()
 {
-	vec3f	f, r, u;
-
 	FireBlaster();
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	for (uint8 i = 0; i < 2; i++)
 	{
 		vec3f offset = spawnpoints[i], startpoint, spawnpoint;
 
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint, u);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 		if (FindSpawnPoint (startpoint, stalker_mins, stalker_maxs, spawnpoint, 64))
 			CSpawnGrow::Spawn (spawnpoint, 1);
 	}
@@ -625,11 +622,10 @@ void CWidowStand::FireRail ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right;
+	vec3f	start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	EMuzzleFlash flash = (CurrentMove == &WidowMoveAttackRailL) ? MZ2_WIDOW_RAIL_LEFT : (CurrentMove == &WidowMoveAttackRailR) ? MZ2_WIDOW_RAIL_RIGHT : MZ2_WIDOW_RAIL;
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash], Entity->State.GetAngles().ToVectors(), start);
 
 	// calc direction to where we targeted
 	vec3f dir = (RailPos - start).GetNormalized();
@@ -726,14 +722,14 @@ CAnim WidowMovePainLight (CWidowStand::FRAME_pain201, CWidowStand::FRAME_pain203
 
 void CWidowStand::SpawnOutStart ()
 {
-	vec3f startpoint, f, r, u;
+	vec3f startpoint;
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
-	G_ProjectSource (Entity->State.GetOrigin(), beameffects[0], f, r, startpoint, u);
+	G_ProjectSource (Entity->State.GetOrigin(), beameffects[0], angles, startpoint);
 	CWidowBeamOut(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, startpoint), startpoint, 20001).Send();
 
-	G_ProjectSource (Entity->State.GetOrigin(), beameffects[1], f, r, startpoint, u);
+	G_ProjectSource (Entity->State.GetOrigin(), beameffects[1], angles, startpoint);
 	CWidowBeamOut(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, startpoint), startpoint, 20002).Send();
 
 	Entity->PlaySound (CHAN_VOICE, SoundIndex ("misc/bwidowbeamout.wav"));
@@ -741,13 +737,13 @@ void CWidowStand::SpawnOutStart ()
 
 void CWidowStand::SpawnOutDo ()
 {
-	vec3f startpoint, f, r, u;
+	vec3f startpoint;
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), beameffects[0], f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), beameffects[0], angles, startpoint);
 	CWidowSplash (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, startpoint), startpoint).Send();
 
-	G_ProjectSource (Entity->State.GetOrigin(), beameffects[1], f, r, startpoint, u);
+	G_ProjectSource (Entity->State.GetOrigin(), beameffects[1], angles, startpoint);
 	CWidowSplash (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, startpoint), startpoint).Send();
 
 	startpoint = Entity->State.GetOrigin() + vec3f(0, 0, 36);

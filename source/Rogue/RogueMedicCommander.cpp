@@ -59,10 +59,7 @@ void CMedicCommander::FireBlaster ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start;
-	vec3f	forward, right;
-	vec3f	end;
-	vec3f	dir;
+	vec3f	start, end, dir;
 	sint32		effect = 0;
 
 	switch (Entity->State.GetFrame())
@@ -81,8 +78,8 @@ void CMedicCommander::FireBlaster ()
 		break;
 	};
 
-	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_2], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_2], angles, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -135,8 +132,7 @@ void CMedicCommander::DetermineSpawn ()
 
 	SummonCount = summonStr;
 
-	vec3f f, r;
-	Entity->State.GetAngles().ToVectors(&f, &r, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors();
 
 // this yields either 1, 3, or 5
 	int num_summoned = (summonStr) ? ((summonStr - 1) + (summonStr % 2)) : 1;
@@ -147,7 +143,7 @@ void CMedicCommander::DetermineSpawn ()
 		vec3f offset = Reinforcements[count].Position;
 
 		vec3f startpoint;
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 		// a little off the ground
 		startpoint.Z += 10;
 
@@ -176,7 +172,7 @@ void CMedicCommander::DetermineSpawn ()
 			offset[0] *= -1.0;
 			offset[1] *= -1.0;
 			vec3f startpoint;
-			G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
+			G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 			// a little off the ground
 			startpoint[2] += 10;
 
@@ -227,9 +223,7 @@ void CMedicCommander::SpawnGrows ()
 	}
 
 	sint16 summonStr = SummonCount;
-
-	vec3f f, r;
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	int num_summoned = (summonStr) ? ((summonStr - 1) + (summonStr % 2)) : 1;
 
@@ -239,7 +233,7 @@ void CMedicCommander::SpawnGrows ()
 		vec3f offset = Reinforcements[count].Position;
 
 		vec3f startpoint;
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 		// a little off the ground
 		startpoint.Z += 10;
 
@@ -273,9 +267,7 @@ void CMedicCommander::FinishSpawn ()
 		SummonCount *= -1;
 	}
 	sint16 summonStr = SummonCount;
-
-	vec3f f, r;
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	int num_summoned = (summonStr) ? (summonStr - 1) + (summonStr % 2) : 1;
 
@@ -285,7 +277,7 @@ void CMedicCommander::FinishSpawn ()
 		vec3f offset = Reinforcements[count].Position;
 
 		vec3f startpoint;
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 
 		// a little off the ground
 		startpoint.Z += 10;

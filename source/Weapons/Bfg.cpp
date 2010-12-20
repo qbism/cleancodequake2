@@ -102,17 +102,17 @@ void CBFG::FireBFG (CPlayerEntity *Player)
 	}
 
 	FireAnimation (Player);
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
 
-	Player->Client.KickOrigin = forward * -2;
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
+	Player->Client.KickOrigin = angles.Forward * -2;
 
 	// make a big pitch kick with an inverse fall
 	Player->Client.ViewDamage[0] = -40;
 	Player->Client.ViewDamage[1] = crand()*8;
 	Player->Client.ViewDamageTime = Level.Frame + DAMAGE_TIME;
 
-	Player->P_ProjectSource (offset, forward, right, start);
-	CBFGBolt::Spawn (Player, start, forward, damage, 400, 1000);
+	Player->P_ProjectSource (offset, angles, start);
+	CBFGBolt::Spawn (Player, start, angles.Forward, damage, 400, 1000);
 
 	AttackSound (Player);
 	Player->Client.PlayerState.GetGunFrame()++;

@@ -146,14 +146,14 @@ void CCarrier::Grenade ()
 		break;
 	};
 
-	vec3f forward, right, up, start;
+	vec3f start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_GRENADE], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_GRENADE], angles, start);
 
 	vec3f aim = (Entity->Enemy->State.GetOrigin() - start).GetNormalized()
-				.MultiplyAngles (spreadR, right)
-				.MultiplyAngles (spreadU, up);
+				.MultiplyAngles (spreadR, angles.Right)
+				.MultiplyAngles (spreadU, angles.Up);
 
 	if (aim.Z > 0.15f)
 		aim.Z = 0.15f;
@@ -165,26 +165,26 @@ void CCarrier::Grenade ()
 
 void CCarrier::PredictiveRocket  ()
 {
-	vec3f forward, right, start, dir;
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
+	vec3f start, dir;
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 //1
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], angles, start);
 	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.3f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_1);
 
 //2
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], angles, start);
 	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, -0.15f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_2);
 
 //3
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], angles, start);
 	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_3);
 
 //4
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], angles, start);
 	PredictAim (*Entity->Enemy, start, CARRIER_ROCKET_SPEED, false, 0.15f, &dir, NULL);
 	MonsterFireRocket (start, dir, 50, CARRIER_ROCKET_SPEED, MZ2_CARRIER_ROCKET_4);
 }	
@@ -194,7 +194,7 @@ void CCarrier::Rocket ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right, start, dir, vec;
+	vec3f	start, dir, vec;
 
 	if ((Entity->Enemy->EntityFlags & EF_PLAYER) && frand() < 0.5f)
 	{
@@ -202,30 +202,30 @@ void CCarrier::Rocket ()
 		return;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 //1
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_1], angles, start);
 	vec = (Entity->Enemy->State.GetOrigin() - vec3f(0, 0, 15));
-	dir = (vec - start).GetNormalized().MultiplyAngles (0.4f, right).GetNormalized();
+	dir = (vec - start).GetNormalized().MultiplyAngles (0.4f, angles.Right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_1);
 
 //2
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_2], angles, start);
 	vec = Entity->Enemy->State.GetOrigin();
-	dir = (vec - start).GetNormalized().MultiplyAngles (0.025f, right).GetNormalized();
+	dir = (vec - start).GetNormalized().MultiplyAngles (0.025f, angles.Right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_2);
 
 //3
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_3], angles, start);
 	vec = Entity->Enemy->State.GetOrigin();
-	dir = (vec - start).GetNormalized().MultiplyAngles (-0.025f, right).GetNormalized();
+	dir = (vec - start).GetNormalized().MultiplyAngles (-0.025f, angles.Right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_3);
 
 //4
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_ROCKET_4], angles, start);
 	vec = (Entity->Enemy->State.GetOrigin() - vec3f(0, 0, 15));
-	dir = (vec - start).GetNormalized().MultiplyAngles (-0.4f, right).GetNormalized();
+	dir = (vec - start).GetNormalized().MultiplyAngles (-0.4f, angles.Right).GetNormalized();
 	MonsterFireRocket (start, dir, 50, 500, MZ2_CARRIER_ROCKET_4);
 }	
 
@@ -237,14 +237,14 @@ void CCarrier::FireBulletRight ()
 	// if we're in manual steering mode, it means we're leaning down .. use the lower shot
 	EMuzzleFlash flashnum = (AIFlags & AI_MANUAL_STEERING) ? MZ2_CARRIER_MACHINEGUN_R2 : MZ2_CARRIER_MACHINEGUN_R1;
 
-	vec3f forward, right, start;
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+	vec3f start;
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 
 	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
-	forward = (target - start).GetNormalized();
+	angles.Forward = (target - start).GetNormalized();
 
-	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD*3, DEFAULT_BULLET_VSPREAD, flashnum);
+	MonsterFireBullet (start, angles.Forward, 6, 4, DEFAULT_BULLET_HSPREAD*3, DEFAULT_BULLET_VSPREAD, flashnum);
 }	
 
 void CCarrier::FireBulletLeft ()
@@ -255,15 +255,15 @@ void CCarrier::FireBulletLeft ()
 	// if we're in manual steering mode, it means we're leaning down .. use the lower shot
 	EMuzzleFlash flashnum = (AIFlags & AI_MANUAL_STEERING) ? MZ2_CARRIER_MACHINEGUN_L2 : MZ2_CARRIER_MACHINEGUN_L1;
 
-	vec3f forward, right, start;
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+	vec3f start;
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 
 	vec3f target = Entity->Enemy->State.GetOrigin().MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity) + vec3f(0, 0, Entity->Enemy->ViewHeight);
-	forward = (target - start).GetNormalized();
+	angles.Forward = (target - start).GetNormalized();
 
-	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD*3, DEFAULT_BULLET_VSPREAD, flashnum);
-}	
+	MonsterFireBullet (start, angles.Forward, 6, 4, DEFAULT_BULLET_HSPREAD*3, DEFAULT_BULLET_VSPREAD, flashnum);
+}
 
 void CCarrier::MachineGun ()
 {
@@ -279,11 +279,10 @@ void CCarrier::MachineGun ()
 void CCarrier::SpawnMonsters ()
 {
 	vec3f offset (105, 0, -58); // real distance needed is (sqrt (56*56*2) + sqrt(16*16*2)) or 101.8
-	vec3f f, r;
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	vec3f startpoint;
-	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
+	G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 
 	// the +0.1 is because level.time is sometimes a little low
 	FrameNumber mytime = ((Level.Frame + 1 - FrameCalc) / 5);
@@ -382,10 +381,10 @@ void CCarrier::ReadySpawn ()
 	AIFlags &= ~AI_HOLD_FRAME;
 
 	static const vec3f offset (105, 0, -58);
-	vec3f f, r, startpoint, spawnpoint;
+	vec3f startpoint, spawnpoint;
 
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 
 	if (FindSpawnPoint (startpoint, flyer_mins, flyer_maxs, spawnpoint, 32))
 		CSpawnGrow::Spawn (spawnpoint, 0);
@@ -549,9 +548,9 @@ void CCarrier::Rail ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f forward, right, start;
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_RAILGUN], forward, right, start);
+	vec3f start;
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CARRIER_RAILGUN], angles, start);
 
 	// calc direction to where we targeted
 	vec3f dir = (RailFireSpot - start).GetNormalized();

@@ -416,7 +416,6 @@ void CMedic::FireBlaster ()
 		return;
 
 	vec3f	start;
-	vec3f	forward, right;
 	vec3f	end;
 	vec3f	dir;
 	sint32		effect = 0;
@@ -437,8 +436,7 @@ void CMedic::FireBlaster ()
 		break;
 	};
 
-	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MEDIC_BLASTER_1], Entity->State.GetAngles().ToVectors(), start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -595,7 +593,7 @@ static vec3f	MedicCableOffsets[] =
 
 void CMedic::CableAttack ()
 {
-	vec3f	offset, start, end, f, r;
+	vec3f	offset, start, end;
 	CTrace	tr;
 	vec3f	dir, angles;
 	float	distance;
@@ -622,9 +620,8 @@ void CMedic::CableAttack ()
 	if (!(Entity->Enemy->EntityFlags & EF_MONSTER))
 		return;
 
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
 	offset = MedicCableOffsets[Entity->State.GetFrame() - CMedic::FRAME_attack42];
-	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, start);
+	G_ProjectSource (Entity->State.GetOrigin(), offset, Entity->State.GetAngles().ToVectors (), start);
 
 	// check for max distance
 	dir = start - Entity->Enemy->State.GetOrigin();
@@ -781,7 +778,7 @@ void CMedic::CableAttack ()
 		break;
 	}
 	// adjust start for beam origin being in middle of a segment
-	start = start.MultiplyAngles (8, f);
+	start = start.MultiplyAngles (8, Entity->State.GetAngles().ToVectors().Forward);
 
 	// adjust end z for end spot since the monster is currently dead
 	end = Entity->Enemy->State.GetOrigin();

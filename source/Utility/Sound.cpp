@@ -161,9 +161,8 @@ static void SV_StartSound (vec3f origin, IBaseEntity *Entity, ESoundChannel chan
 			dist = 0;			// close enough to be at full volume
 		dist *= distanceMult;	// different attenuation levels
 
-		vec3f listenerRight;
-		Player->State.GetAngles().ToVectors (NULL, &listenerRight, NULL);
-		float dot = listenerRight | sourceVec;
+		anglef angles = Player->State.GetAngles().ToVectors ();
+		float dot = angles.Right | sourceVec;
 
 		// no attenuation = no spatialization
 		float rightScale = 1.0f, leftScale = 1.0f;

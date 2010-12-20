@@ -274,7 +274,6 @@ public:
 CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 {
 	CTechEntity	*dropped = QNewEntityOf CTechEntity();
-	vec3f	forward, right;
 
 	dropped->ClassName = Classname;
 	dropped->LinkedItem = this;
@@ -287,16 +286,18 @@ CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 	dropped->GetSolid() = SOLID_TRIGGER;
 	dropped->SetOwner(Entity);
 
+	anglef angles;
+
 	if (Entity->EntityFlags & EF_PLAYER)
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Entity);
 		CTrace	trace;
 
-		Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+		angles = Player->Client.ViewAngle.ToVectors ();
 		vec3f offset (24, 0, -16);
 
 		vec3f result;
-		G_ProjectSource (Player->State.GetOrigin(), offset, forward, right, result);
+		G_ProjectSource (Player->State.GetOrigin(), offset, angles, result);
 
 		trace (Player->State.GetOrigin(), dropped->GetMins(), dropped->GetMaxs(),
 			result, Player, CONTENTS_SOLID);
@@ -304,12 +305,12 @@ CItemEntity *CTech::DropItem (IBaseEntity *Entity)
 	}
 	else
 	{
-		Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
+		anglef angles = Entity->State.GetAngles().ToVectors();
 		dropped->State.GetOrigin() = Entity->State.GetOrigin();
 	}
 
-	forward *= 100;
-	dropped->Velocity = forward;
+	angles.Forward *= 100;
+	dropped->Velocity = angles.Forward;
 	dropped->Velocity.Z = 300;
 
 	dropped->NextThink = Level.Frame + 10;
@@ -340,12 +341,11 @@ void SpawnTech(IBaseItem *Item, CSpotBase *Spot)
 	Tech->State.GetModelIndex() = ModelIndex(Item->WorldModel);
 	Tech->GetSolid() = SOLID_TRIGGER;
 
-	vec3f forward;
-	vec3f(0, frand()*360, 0).ToVectors(&forward, NULL, NULL);
+	anglef angles = vec3f(0, frand()*360, 0).ToVectors();
 
 	Tech->State.GetOrigin() = Spot->State.GetOrigin() + vec3f(0,0,16);
-	forward *= 100;
-	Tech->Velocity = forward;
+	angles.Forward *= 100;
+	Tech->Velocity = angles.Forward;
 	Tech->Velocity.Z = 300;
 
 	Tech->NextThink = Level.Frame + CTF_TECH_TIMEOUT;

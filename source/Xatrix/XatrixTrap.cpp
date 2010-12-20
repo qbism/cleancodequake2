@@ -161,12 +161,12 @@ void CTrapProjectile::Think ()
 				else
 					best = TrapEntities[i];
 
-				vec3f forward, right, up, vec;
-				State.GetAngles().ToVectors (&forward, &right, &up);
+				vec3f vec;
+				anglef angles = State.GetAngles().ToVectors ();
 
-				vec = right.RotateAroundVector (up, (120.0f * i) + Delay)
+				vec = angles.Right.RotateAroundVector (angles.Up, (120.0f * i) + Delay)
 						.MultiplyAngles (Wait/2, vec) + State.GetOrigin();
-				best->State.GetOrigin() = vec + forward;
+				best->State.GetOrigin() = vec + angles.Forward;
 				best->State.GetOrigin().Z = State.GetOrigin().Z + Wait;
   				best->State.GetAngles() = State.GetAngles();
 
@@ -243,8 +243,6 @@ void CTrapProjectile::Think ()
 	// pull the enemy in
 	if (best)
 	{
-		vec3f	forward;
-
 		if (best->GroundEntity)
 		{
 			best->State.GetOrigin().Z += 1;
@@ -264,8 +262,7 @@ void CTrapProjectile::Think ()
 			CMonsterEntity *Monster = entity_cast<CMonsterEntity>(best);
 			Monster->Monster->IdealYaw = vec.ToYaw();	
 			Monster->Monster->ChangeYaw ();
-			best->State.GetAngles().ToVectors (&forward, NULL, NULL);
-			Monster->Velocity = forward * 256;
+			Monster->Velocity = best->State.GetAngles().ToVectors().Forward * 256;
 		}
 
 		PlaySound(CHAN_VOICE, SoundIndex ("weapons/trapsuck.wav"), 255, ATTN_IDLE);
@@ -340,18 +337,17 @@ void CTrapProjectile::Explode ()
 void CTrapProjectile::Spawn (IBaseEntity *Spawner, vec3f start, vec3f aimdir, int damage, float timer, sint32 speed)
 {
 	CTrapProjectile	*Grenade = QNewEntityOf CTrapProjectile;
-	vec3f		forward, right, up;
 
 	vec3f dir = aimdir.ToAngles();
 
-	dir.ToVectors (&forward, &right, &up);
+	anglef angles = dir.ToVectors ();
 
 	Grenade->State.GetOrigin() = start;
 	aimdir *= speed;
 
 	Grenade->Velocity = aimdir;
-	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (200 + crand() * 10.0f, up);
-	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (crand() * 10.0, right);
+	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (200 + crand() * 10.0f, angles.Up);
+	Grenade->Velocity = Grenade->Velocity.MultiplyAngles (crand() * 10.0, angles.Right);
 
 	Grenade->AngularVelocity.Set (0, 300, 0);
 	Grenade->State.GetModelIndex() = ModelIndex ("models/weapons/z_trap/tris.md2");
@@ -429,14 +425,14 @@ void CTrap::FireGrenade (CPlayerEntity *Player, bool inHand)
 
 	Player->Client.Grenade.Thrown = true;
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
+	Player->P_ProjectSource (offset, angles, start);
 
 	float timer = (float)(Player->Client.Grenade.Time - Level.Frame) / 10;
 	const sint32 speed = (Player->Client.Persistent.Weapon) ? 
 		(TRAP_MINSPEED + ((TRAP_TIMER/10) - timer) * ((TRAP_MAXSPEED - TRAP_MINSPEED) / (TRAP_TIMER/10)))
 		: 25; // If we're dead, don't toss it 5 yards.
-	CTrapProjectile::Spawn (Player, start, forward, damage, timer, speed);
+	CTrapProjectile::Spawn (Player, start, angles.Forward, damage, timer, speed);
 
 	Player->Client.Grenade.Time = Level.Frame + ((((
 #if CLEANCTF_ENABLED

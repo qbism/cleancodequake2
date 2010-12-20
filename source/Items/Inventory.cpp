@@ -781,18 +781,18 @@ void Cmd_Spawn (CPlayerEntity *Player)
 	}
 
 	// Calculate spawning direction
-	vec3f Origin, Angles, forward;
+	vec3f origin, angles;
 
-	Angles = Player->State.GetAngles();
-	Angles.X = Angles.Z = 0; // only yaw
+	angles = Player->State.GetAngles();
+	angles.X = angles.Z = 0; // only yaw
 
-	Angles.ToVectors (&forward, NULL, NULL);
-	Origin = Player->State.GetOrigin().MultiplyAngles (150, forward);
+	anglef angleVecs = angles.ToVectors ();
+	origin = Player->State.GetOrigin().MultiplyAngles (150, angleVecs.Forward);
 
-	if (PointContents(Origin) & CONTENTS_SOLID)
+	if (PointContents(origin) & CONTENTS_SOLID)
 		return;
 
-	SpawnEntityAtPlace (ArgGetConcatenatedString(), Origin, Angles);
+	SpawnEntityAtPlace (ArgGetConcatenatedString(), origin, angles);
 }
 
 void CSpawnCommand::Execute ()

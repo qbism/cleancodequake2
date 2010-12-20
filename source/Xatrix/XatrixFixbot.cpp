@@ -388,10 +388,10 @@ CAnim FixbotMoveAttack1 (CFixbot::FRAME_shoot_01, CFixbot::FRAME_shoot_06, Fixbo
 
 bool CFixbot::CheckTelefrag ()
 {
-	vec3f	start, up;
+	vec3f	start;
 
-	Entity->Enemy->State.GetAngles().ToVectors (NULL, NULL, &up);
-	start = start.MultiplyAngles (48, up);
+	anglef angles = Entity->Enemy->State.GetAngles().ToVectors ();
+	start = start.MultiplyAngles (48, angles.Up);
 	CTrace tr (Entity->Enemy->State.GetOrigin(), Entity->Enemy->GetMins(), Entity->Enemy->GetMaxs(), start, Entity, CONTENTS_MASK_MONSTERSOLID);
 	if (tr.Entity->EntityFlags & EF_HURTABLE)
 	{
@@ -411,7 +411,7 @@ void CFixbot::FireLaser ()
 		return;
 	}
 
-	vec3f forward, tempang, start, dir, angles, end;
+	vec3f tempang, start, dir, angles, end;
 
 	CMonsterEntity *Enemy = entity_cast<CMonsterEntity>(*Entity->Enemy);
 
@@ -432,9 +432,8 @@ void CFixbot::FireLaser ()
 
 	CMonsterBeamLaser *Laser = QNewEntityOf CMonsterBeamLaser;
 	Laser->State.GetOrigin() = Entity->State.GetOrigin();
-	angles.ToVectors (&forward, NULL, NULL);
 	Laser->State.GetAngles() = angles;
-	Laser->State.GetOrigin() = Laser->State.GetOrigin().MultiplyAngles (16, forward);
+	Laser->State.GetOrigin() = Laser->State.GetOrigin().MultiplyAngles (16, angles.ToVectors().Forward);
 
 	Laser->Enemy = Entity->Enemy;
 	Laser->SetOwner(Entity);
@@ -603,15 +602,14 @@ void CFixbot::WeldState ()
 
 void CFixbot::FireWelder ()
 {
-	vec3f	start, forward, right, up;
+	vec3f	start;
 	
 	if (!Entity->Enemy)
 		return;
 
 	static const vec3f vec (24, -0.8f, -10);
 
-	Entity->State.GetAngles().ToVectors(&forward, &right, &up);
-	G_ProjectSource (Entity->State.GetOrigin(), vec, forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), vec, Entity->State.GetAngles().ToVectors(), start);
 
 	vec3f dir = Entity->Enemy->State.GetOrigin() - start;
 
@@ -626,13 +624,13 @@ void CFixbot::FireBlaster ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right, up, end, dir;
+	vec3f	start, end, dir;
 
 	if (!IsVisible(Entity, *Entity->Enemy))
 		CurrentMove = &FixbotMoveRun;
 	
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FIXBOT_BLASTER_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FIXBOT_BLASTER_1], angles, start);
 
 	dir = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start;
 
@@ -641,7 +639,7 @@ void CFixbot::FireBlaster ()
 
 void CFixbot::LandingGoal ()
 {
-	vec3f forward, right, up, end;
+	vec3f end;
 
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
 	Goal->ClassName = "bot_goal";
@@ -652,9 +650,9 @@ void CFixbot::LandingGoal ()
 	Goal->GetMins().Set (-32, -32, -24);
 	Goal->GetMaxs().Set (32, 32, 24);
 	
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	end = Entity->State.GetOrigin().MultiplyAngles (32, forward).
-									MultiplyAngles (-8096, up);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	end = Entity->State.GetOrigin().MultiplyAngles (32, angles.Forward).
+									MultiplyAngles (-8096, angles.Up);
 		
 	CTrace tr (Entity->State.GetOrigin(), Goal->GetMins(), Goal->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
@@ -666,12 +664,12 @@ void CFixbot::LandingGoal ()
 
 void CFixbot::TakeOffGoal ()
 {
-	vec3f forward, right, up, end;
+	vec3f end;
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
 	
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	end = Entity->State.GetOrigin().MultiplyAngles (32, forward).
-									MultiplyAngles (128, up);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	end = Entity->State.GetOrigin().MultiplyAngles (32, angles.Forward).
+									MultiplyAngles (128, angles.Up);
 		
 	CTrace tr (Entity->State.GetOrigin(), Goal->GetMins(), Goal->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
@@ -714,7 +712,7 @@ void CFixbot::ChangeToRoam ()
 
 void CFixbot::RoamGoal ()
 {
-	vec3f		forward, right, up, end, vec, whichvec, dang;
+	vec3f		end, vec, whichvec, dang;
 	int			len;
 		
 	CBotGoal *Goal = QNewEntityOf CBotGoal;	
@@ -733,8 +731,8 @@ void CFixbot::RoamGoal ()
 		else 
 			dang[YAW] -= 30 * (i-6);
 
-		dang.ToVectors (&forward, &right, &up);
-		end = Entity->State.GetOrigin().MultiplyAngles (8192, forward);
+		anglef angles = dang.ToVectors ();
+		end = Entity->State.GetOrigin().MultiplyAngles (8192, angles.Forward);
 		
 		CTrace tr (Entity->State.GetOldOrigin(), end, Entity, CONTENTS_MASK_SHOT);
 
@@ -970,7 +968,7 @@ void CFixbot::BlastOff (vec3f &start, vec3f &aimdir, sint32 Damage, int kick, in
 
 void CFixbot::FlyVertical ()
 {
-	vec3f v, forward, right, up, start, tempvec;
+	vec3f v, up, start, tempvec;
 	
 	IdealYaw = (Entity->GoalEntity->State.GetOldOrigin() - Entity->State.GetOrigin()).ToYaw ();	
 	ChangeYaw ();
@@ -988,10 +986,10 @@ void CFixbot::FlyVertical ()
 	tempvec = Entity->State.GetAngles();
 	tempvec.X += 90;
 
-	tempvec.ToVectors (&forward, &right, &up);
+	anglef angles = tempvec.ToVectors ();
 	
 	for (uint8 i = 0; i < 10; i++)
-		BlastOff (Entity->State.GetOrigin(), forward, 2, 1, TE_SHOTGUN, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD);
+		BlastOff (Entity->State.GetOrigin(), angles.Forward, 2, 1, TE_SHOTGUN, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD);
 
 	// needs sound
 }

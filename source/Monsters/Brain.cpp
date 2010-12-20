@@ -538,11 +538,10 @@ static bool BrainTongueAttackCheck (vec3f &start, vec3f &end)
 void CBrain::TongueAttack ()
 {
 	static const vec3f offset (24, 0, 16);
-	vec3f	start = Entity->State.GetOrigin(), f, r;
+	vec3f	start = Entity->State.GetOrigin();
 
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
-
-	G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset, angles, start);
 
 	vec3f end = Entity->Enemy->State.GetOrigin();
 	if (!BrainTongueAttackCheck(start, end))
@@ -571,7 +570,7 @@ void CBrain::TongueAttack ()
 
 	// pull the enemy in
 	Entity->Enemy->State.GetOrigin().Z += 1;
-	entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity = f * -1200;;
+	entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity = angles.Forward * -1200;;
 }
 
 // Brian right eye center
@@ -614,8 +613,6 @@ void CBrain::LaserBeamFire ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f forward, right, up;
-
 	// RAFAEL
 	// cant call sound this frequent
 	if (frand() > 0.8)
@@ -626,12 +623,12 @@ void CBrain::LaserBeamFire ()
 	// dis is my right eye
 	CMonsterBeamLaser *Laser = QNewEntityOf CMonsterBeamLaser;
 	Laser->State.GetOrigin() = Entity->State.GetOrigin();
-	angles.ToVectors (&forward, &right, &up);
+	anglef angleVecs = angles.ToVectors ();
 	Laser->State.GetAngles() = angles;
 	Laser->State.GetOrigin() = Laser->State.GetOrigin().
-		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, right).
-		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, forward).
-		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, up);
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, angleVecs.Right).
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, angleVecs.Forward).
+		MultiplyAngles (brain_reye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, angleVecs.Up);
 	
 	Laser->Enemy = Entity->Enemy;
 	Laser->SetOwner(Entity);
@@ -641,12 +638,11 @@ void CBrain::LaserBeamFire ()
 	// dis is me left eye
 	Laser = QNewEntityOf CMonsterBeamLaser;
 	Laser->State.GetOrigin() = Entity->State.GetOrigin();
-	angles.ToVectors (&forward, &right, &up);
 	Laser->State.GetAngles() = angles;
 	Laser->State.GetOrigin() = Laser->State.GetOrigin().
-		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, right).
-		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, forward).
-		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, up);
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].X, angleVecs.Right).
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Y, angleVecs.Forward).
+		MultiplyAngles (brain_leye[Entity->State.GetFrame() - CBrain::FRAME_walk101].Z, angleVecs.Up);
 
 	Laser->Enemy = Entity->Enemy;
 	Laser->SetOwner(Entity);

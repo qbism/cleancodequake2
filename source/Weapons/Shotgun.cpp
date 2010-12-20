@@ -64,18 +64,18 @@ bool CShotgun::CanStopFidgetting (CPlayerEntity *Player)
 
 void CShotgun::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset (0, 8,  Player->ViewHeight-8);
+	vec3f		start, offset (0, 8,  Player->ViewHeight-8);
 	const sint32	damage = CalcQuadVal(4),
 					kick = CalcQuadVal(8);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -2;
 
-	Player->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, angles, start);
 
-	CShotgunPellets::Fire (Player, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
+	CShotgunPellets::Fire (Player, start, angles.Forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_SHOTGUN);

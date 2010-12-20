@@ -78,7 +78,7 @@ void CChaingun::FireAnimation (CPlayerEntity *Player)
 void CChaingun::Fire (CPlayerEntity *Player)
 {
 	sint32			shots;
-	vec3f		start, forward, right, up, offset;
+	vec3f		start, offset;
 	const sint32	damage = (Game.GameMode & GAME_DEATHMATCH) ?
 				CalcQuadVal(6)
 				:
@@ -143,11 +143,11 @@ void CChaingun::Fire (CPlayerEntity *Player)
 	for (uint8 i = 0; i < shots; i++)
 	{
 		// get start / end positions
-		Player->Client.ViewAngle.ToVectors (&forward, &right, &up);
+		anglef angles = Player->Client.ViewAngle.ToVectors ();
 		offset.Set (0, 7 + crand()*4, crand()*4 + Player->ViewHeight-8);
-		Player->P_ProjectSource (offset, forward, right, start);
+		Player->P_ProjectSource (offset, angles, start);
 
-		CBullet::Fire (Player, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_CHAINGUN);
+		CBullet::Fire (Player, start, angles.Forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_CHAINGUN);
 	}
 
 	// send muzzle flash

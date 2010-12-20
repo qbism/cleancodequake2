@@ -77,19 +77,19 @@ void CGrapple::PlayerResetGrapple(CPlayerEntity *Player)
 
 void CGrapple::Fire (CPlayerEntity *Player)
 {
-	vec3f	forward, right, start, offset (24, 8, Player->ViewHeight-6);
+	vec3f	start, offset (24, 8, Player->ViewHeight-6);
 
 	if (Player->Client.Grapple.State > CTF_GRAPPLE_STATE_FLY)
 		return; // it's already out
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
 	Player->PlaySound (CHAN_WEAPON, SoundIndex("weapons/grapple/grfire.wav"), (Player->Client.Timers.SilencerShots) ? 51 : 255);
-	CGrappleEntity::Spawn (Player, start, forward, 10, CTF_GRAPPLE_SPEED);
+	CGrappleEntity::Spawn (Player, start, angles.Forward, 10, CTF_GRAPPLE_SPEED);
 		
 	Player->PlayerNoiseAt (start, PNOISE_WEAPON);
 	FireAnimation(Player);

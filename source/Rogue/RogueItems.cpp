@@ -345,10 +345,7 @@ public:
 	static void Spawn (IBaseEntity *Entity, vec3f Start, vec3f AimDir, int Speed)
 	{
 		int DamModifier = 1;
-
-		vec3f dir = AimDir.ToAngles();
-		vec3f forward, right, up;
-		dir.ToVectors (&forward, &right, &up);
+		anglef angles = AimDir.ToAngles().ToVectors ();
 
 		CNukeEntity *Nuke = QNewEntityOf CNukeEntity;
 
@@ -364,8 +361,8 @@ public:
 
 		Nuke->State.GetOrigin() = Start;
 		Nuke->Velocity =	(AimDir * Speed)
-							.MultiplyAngles (200 + crand() * 10.0f, up)
-							.MultiplyAngles (crand() * 10.0f, right);
+							.MultiplyAngles (200 + crand() * 10.0f, angles.Up)
+							.MultiplyAngles (crand() * 10.0f, angles.Right);
 
 		Nuke->AngularVelocity.Clear();
 		Nuke->State.GetAngles().Clear();
@@ -431,10 +428,7 @@ void	CAMBomb::Use (CPlayerEntity *Player)
 	Player->Client.Persistent.Inventory -= this;
 	Player->Client.Persistent.Inventory.ValidateSelectedItem ();
 
-	vec3f	forward;
-	Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
-
-	CNukeEntity::Spawn (Player, Player->State.GetOrigin(), forward, 100);
+	CNukeEntity::Spawn (Player, Player->State.GetOrigin(), Player->Client.ViewAngle.ToVectors().Forward, 100);
 }
 
 void	CAMBomb::Drop (CPlayerEntity *Player)
@@ -478,10 +472,9 @@ public:
 
 	void Use (CPlayerEntity *Player)
 	{
-		vec3f forward;
-		vec3f(0, Player->Client.ViewAngle.Y, 0).ToVectors (&forward, NULL, NULL);
+		anglef angles = vec3f(0, Player->Client.ViewAngle.Y, 0).ToVectors ();
 
-		vec3f createPt = Player->State.GetOrigin().MultiplyAngles (48, forward);
+		vec3f createPt = Player->State.GetOrigin().MultiplyAngles (48, angles.Forward);
 
 		vec3f spawnPt;
 		if (!FindSpawnPoint(createPt, Player->GetMins(), Player->GetMaxs(), spawnPt, 32))
@@ -494,7 +487,7 @@ public:
 		Player->Client.Persistent.Inventory.ValidateSelectedItem ();
 
 		CSpawnGrow::Spawn (spawnPt, 0);
-		CDoppleGanger::Spawn (Player, spawnPt, forward);
+		CDoppleGanger::Spawn (Player, spawnPt, angles.Forward);
 	};
 };
 

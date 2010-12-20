@@ -218,10 +218,9 @@ void CWallTurret::Fire ()
 		return;
 
 	vec3f dir = (Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin()).GetNormalized();
-	vec3f forward;
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
-	if ((dir | forward) < 0.98)
+	if ((dir | angles.Forward) < 0.98)
 		return;
 
 	float chance = frand();
@@ -317,11 +316,10 @@ void CWallTurret::FireBlind ()
 		return;
 
 	vec3f dir = (BlindFireTarget - Entity->State.GetOrigin()).GetNormalized();
-	vec3f forward;
 
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 	
-	if ((dir | forward) < 0.98)
+	if ((dir | angles.Forward) < 0.98)
 		return;
 
 	float rocketSpeed = 550;
@@ -626,9 +624,8 @@ void CWallTurret::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 Dam
 {
 	CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_PHS, Entity->State.GetOrigin()), Entity->State.GetOrigin(), false, true).Send();
 
-	vec3f forward;
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
-	vec3f start = Entity->State.GetOrigin().MultiplyAngles (1, forward);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	vec3f start = Entity->State.GetOrigin().MultiplyAngles (1, angles.Forward);
 
 	if (Entity->Team.Chain)
 	{

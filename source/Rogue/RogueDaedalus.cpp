@@ -47,10 +47,10 @@ void CDaedalus::FireBlaster ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right, end, dir;
+	vec3f	start, end, dir;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_HOVER_BLASTER_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_HOVER_BLASTER_1], angles, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;

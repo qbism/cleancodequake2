@@ -73,8 +73,7 @@ void CChainfist::Smoke (CPlayerEntity *Player)
 	vec3f			tempVec, forward, right;
 	const vec3f		offset (8, 8, Player->ViewHeight - 4);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, tempVec);
+	Player->P_ProjectSource (offset, Player->Client.ViewAngle.ToVectors(), tempVec);
 
 	CChainfistSmoke(tempVec).SendTo (Player);
 }
@@ -86,13 +85,13 @@ void CChainfist::Fire (CPlayerEntity *Player)
 
 	FireAnimation (Player);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CPlayerMeleeWeapon::Fire (Player, start, forward, 64, damage, 100, MOD_CHAINFIST);
+	CPlayerMeleeWeapon::Fire (Player, start, angles.Forward, 64, damage, 100, MOD_CHAINFIST);
 
 	AttackSound (Player);
 

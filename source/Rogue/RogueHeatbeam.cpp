@@ -78,12 +78,12 @@ void CHeatBeamWeapon::Fire (CPlayerEntity *Player)
 	Player->Client.PlayerState.GetGunIndex() = ModelIndex ("models/weapons/v_beamer2/tris.md2");
 
 	// get start / end positions
-	vec3f start, forward, right;
+	vec3f start;
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);	
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
-	CHeatBeam::Fire(Player, start, forward, damage, kick, MOD_HEATBEAM, false);
+	CHeatBeam::Fire(Player, start, angles.Forward, damage, kick, MOD_HEATBEAM, false);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_HEATBEAM);

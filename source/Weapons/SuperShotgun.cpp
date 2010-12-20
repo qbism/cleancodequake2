@@ -64,25 +64,25 @@ bool CSuperShotgun::CanStopFidgetting (CPlayerEntity *Player)
 
 void CSuperShotgun::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset (0, 8, Player->ViewHeight-8);
+	vec3f		start, offset (0, 8, Player->ViewHeight-8);
 	const sint32	damage = CalcQuadVal(6),
 					kick = CalcQuadVal(12);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -2;
 
-	Player->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, angles, start);
 
 	vec3f v = Player->Client.ViewAngle;
 	v.Y -= 5;
-	v.ToVectors (&forward, NULL, NULL);
-	CShotgunPellets::Fire (Player, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
+	angles = v.ToVectors ();
+	CShotgunPellets::Fire (Player, start, angles.Forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
 
 	v.Y += 10;
-	v.ToVectors (&forward, NULL, NULL);
-	CShotgunPellets::Fire (Player, start, forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
+	angles = v.ToVectors ();
+	CShotgunPellets::Fire (Player, start, angles.Forward, damage, kick, DEFAULT_SHOTGUN_HSPREAD, DEFAULT_SHOTGUN_VSPREAD, DEFAULT_SSHOTGUN_COUNT/2, MOD_SSHOTGUN);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_SSHOTGUN);

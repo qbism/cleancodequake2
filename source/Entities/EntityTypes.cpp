@@ -1273,8 +1273,7 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 	vec3f maxs = Entity->GetAbsMax() + move;
 
 	// we need this for pushing things later
-	vec3f forward, right, up;
-	(-amove).ToVectors (&forward, &right, &up);
+	anglef angles = (-amove).ToVectors ();
 
 	// save the pusher's original position
 	Pushed.push_back (CPushed	(Entity,
@@ -1354,9 +1353,9 @@ bool Push (TPushedList &Pushed, IBaseEntity *Entity, vec3f &move, vec3f &amove)
 			// figure movement due to the pusher's amove
 			vec3f org = Check->State.GetOrigin() - Entity->State.GetOrigin ();
 			Check->State.GetOrigin() += (vec3f (
-				org | forward,
-				-(org | right),
-				org | up
+				org | angles.Forward,
+				-(org | angles.Right),
+				org | angles.Up
 				) - org);
 
 			// may have pushed them off an edge

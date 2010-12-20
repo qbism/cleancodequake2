@@ -49,15 +49,14 @@ void CBoss2::FireRocket ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right;
 	vec3f	start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 //1
 	vec3f origin = Entity->State.GetOrigin();
 
-	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_1], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_1], angles, start);
 	vec3f vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	vec3f dir = vec - start;
@@ -65,7 +64,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_1);
 
 //2
-	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_2], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_2], angles, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -73,7 +72,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_2);
 
 //3
-	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_3], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_3], angles, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -81,7 +80,7 @@ void CBoss2::FireRocket ()
 	MonsterFireRocket (start, dir, 50, 500, MZ2_BOSS2_ROCKET_3);
 
 //4
-	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_4], forward, right, start);
+	G_ProjectSource (origin, MonsterFlashOffsets[MZ2_BOSS2_ROCKET_4], angles, start);
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->ViewHeight;
 	dir = vec - start;
@@ -94,21 +93,21 @@ void CBoss2::FireBulletRight ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right, target;
+	vec3f	target;
 	vec3f	start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], angles, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
-	forward = target - start;
-	forward.Normalize();
+	angles.Forward = target - start;
+	angles.Forward.Normalize();
 
-	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_BOSS2_MACHINEGUN_R1);
+	MonsterFireBullet (start, angles.Forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_BOSS2_MACHINEGUN_R1);
 }	
 
 void CBoss2::FireBulletLeft ()
@@ -116,21 +115,20 @@ void CBoss2::FireBulletLeft ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right, target;
-	vec3f	start;
+	vec3f	target, start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_BOSS2_MACHINEGUN_R1], angles, start);
 
 	vec3f tempTarget = Entity->Enemy->State.GetOrigin();
 	if (Entity->Enemy->EntityFlags & EF_PHYSICS)
 		tempTarget = tempTarget.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 	target = tempTarget;
 	target.Z += Entity->Enemy->ViewHeight;
-	forward = target - start;
-	forward.Normalize();
+	angles.Forward = target - start;
+	angles.Forward.Normalize();
 
-	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_BOSS2_MACHINEGUN_L1);
+	MonsterFireBullet (start, angles.Forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_BOSS2_MACHINEGUN_L1);
 }	
 
 void CBoss2::MachineGun ()

@@ -256,26 +256,26 @@ void CSuperTank::Grenade ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right;
+	vec3f	start;
 	vec3f offset (32.0f, 37.0f, 50.0f);
 
 	if (Entity->State.GetFrame() == CSuperTank::FRAME_attakd4)
 		offset.Y = -offset.Y;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), offset, forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset, angles, start);
 
 	if (Entity->Enemy)
 	{
 		vec3f vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;
-		forward = vec - start;
-		forward.Normalize ();
+		angles.Forward = vec - start;
+		angles.Forward.Normalize ();
 	}
 
 	Entity->PlaySound (CHAN_WEAPON, SoundIndex("gunner/Gunatck3.wav"));
 
-	MonsterFireGrenade (start, forward, 25, 600, -1);
+	MonsterFireGrenade (start, angles.Forward, 25, 600, -1);
 }
 #endif
 
@@ -398,7 +398,7 @@ void CSuperTank::Rocket ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right, start;
+	vec3f	start;
 	int		FlashNumber;
 
 	switch (Entity->State.GetFrame())
@@ -414,8 +414,7 @@ void CSuperTank::Rocket ()
 		break;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], Entity->State.GetAngles().ToVectors (), start);
 
 	MonsterFireRocket (start, ((Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight)) - start).GetNormalized(), 50, 500, FlashNumber);
 }	
@@ -425,22 +424,21 @@ void CSuperTank::MachineGun ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f start, forward, right,
-			dir (0, Entity->State.GetAngles().Y, 0);
+	vec3f start, dir (0, Entity->State.GetAngles().Y, 0);
 	sint32		FlashNumber = MZ2_SUPERTANK_MACHINEGUN_1 + (Entity->State.GetFrame() - CSuperTank::FRAME_attaka1);
 
-	dir.ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
+	anglef angles = dir.ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], angles, start);
 
 	if (Entity->Enemy)
 	{
 		vec3f vec = Entity->Enemy->State.GetOrigin();
 		vec.Z += Entity->Enemy->ViewHeight;
-		forward = vec - start;
-		forward.Normalize ();
+		angles.Forward = vec - start;
+		angles.Forward.Normalize ();
 	}
 
-	MonsterFireBullet (start, forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, FlashNumber);
+	MonsterFireBullet (start, angles.Forward, 6, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, FlashNumber);
 }	
 
 

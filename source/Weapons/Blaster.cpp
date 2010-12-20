@@ -72,15 +72,15 @@ void CBlaster::Fire (CPlayerEntity *Player)
 			CalcQuadVal(15)
 			:
 			CalcQuadVal(10);
-	vec3f	Forward, Start, Right, Offset (24, 8, Player->ViewHeight - 8);
+	vec3f	Forward, Offset (24, 8, Player->ViewHeight - 8), Start;
 
-	Player->Client.ViewAngle.ToVectors (&Forward, &Right, NULL);
-	Player->P_ProjectSource (Offset, Forward, Right, Start);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
+	Player->P_ProjectSource (Offset, angles, Start);
 
-	Player->Client.KickOrigin = Forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CBlasterProjectile::Spawn (Player, Start, Forward, Damage, 1000, FX_BLASTER, false);
+	CBlasterProjectile::Spawn (Player, Start, angles.Forward, Damage, 1000, FX_BLASTER, false);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_BLASTER);

@@ -383,8 +383,6 @@ public:
 		}
 
 		vec3f dir = plane->Normal.ToAngles();
-		vec3f forward, right, up;
-		dir.ToVectors (&forward, &right, &up);
 
 		CProxField *ProxField = QNewEntityOf CProxField;
 
@@ -434,15 +432,14 @@ public:
 	static void Spawn (CPlayerEntity *Player, vec3f Start, vec3f AimDir, int DamageMultiplier, int Speed)
 	{
 		vec3f	dir = AimDir.ToAngles();
-		vec3f	forward, right, up;
 
-		dir.ToVectors (&forward, &right, &up);
+		anglef angles = dir.ToVectors ();
 		
 		CProx	*Prox = QNewEntityOf CProx;
 		Prox->State.GetOrigin() = Start;
 		Prox->Velocity =	(AimDir * Speed)
-							.MultiplyAngles (200 + crand() * 10.0f, up)
-							.MultiplyAngles (crand() * 10.0f, right);
+							.MultiplyAngles (200 + crand() * 10.0f, angles.Up)
+							.MultiplyAngles (crand() * 10.0f, angles.Right);
 		Prox->State.GetAngles() = dir - vec3f(90, 0, 0);
 		Prox->PhysicsType = PHYSICS_BOUNCE;
 		Prox->GetSolid() = SOLID_BBOX; 
@@ -561,17 +558,17 @@ bool CProxLauncher::CanStopFidgetting (CPlayerEntity *Player)
 
 void CProxLauncher::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
+	vec3f	offset (8, 8, Player->ViewHeight-8), start;
 
 	FireAnimation (Player);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CProx::Spawn (Player, start, forward, DamageMultiplier, 600);
+	CProx::Spawn (Player, start, angles.Forward, DamageMultiplier, 600);
 
 	Muzzle (Player, MZ_GRENADE);
 	AttackSound (Player);

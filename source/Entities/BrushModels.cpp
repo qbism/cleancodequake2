@@ -1990,17 +1990,16 @@ void CDoorSecret::Spawn ()
 	MoveSpeed = 50;
 
 	// calculate positions
-	vec3f	forward, right, up;
-	State.GetAngles().ToVectors (&forward, &right, &up);
+	anglef angles = State.GetAngles().ToVectors ();
 	State.GetAngles().Clear ();
 
-	float width = (SpawnFlags & SECRET_1ST_DOWN) ? Abs(up | GetSize()) : Abs(right | GetSize());
-	float length = Abs(forward | GetSize());
+	float width = (SpawnFlags & SECRET_1ST_DOWN) ? Abs(angles.Up | GetSize()) : Abs(angles.Right | GetSize());
+	float length = Abs(angles.Forward | GetSize());
 	if (SpawnFlags & SECRET_1ST_DOWN)
-		Positions[0] = State.GetOrigin ().MultiplyAngles (-1 * width, up);
+		Positions[0] = State.GetOrigin ().MultiplyAngles (-1 * width, angles.Up);
 	else
-		Positions[0] = State.GetOrigin().MultiplyAngles ((1.0 - (SpawnFlags & SECRET_1ST_LEFT)) * width, right);
-	Positions[1] = Positions[0].MultiplyAngles (length, forward);
+		Positions[0] = State.GetOrigin().MultiplyAngles ((1.0 - (SpawnFlags & SECRET_1ST_LEFT)) * width, angles.Right);
+	Positions[1] = Positions[0].MultiplyAngles (length, angles.Forward);
 
 	if (Health)
 	{

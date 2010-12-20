@@ -252,8 +252,10 @@ void CInfantry::MachineGun ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right;
+	vec3f	start;
 	sint32		flash_number;
+
+	anglef	angles;
 
 	if (Entity->State.GetFrame() == 
 #if XATRIX_FEATURES || ROGUE_FEATURES
@@ -264,8 +266,8 @@ void CInfantry::MachineGun ()
 		)
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_1;
-		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+		angles = Entity->State.GetAngles().ToVectors();
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 		if (Entity->Enemy)
 		{
@@ -274,23 +276,20 @@ void CInfantry::MachineGun ()
 				target = target.MultiplyAngles (-0.2f, entity_cast<IPhysicsEntity>(*Entity->Enemy)->Velocity);
 			target.Z += Entity->Enemy->ViewHeight;
 
-			forward = target - start;
-			forward.NormalizeFast ();
+			angles.Forward = target - start;
+			angles.Forward.NormalizeFast ();
 		}
-		else
-			Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
 	}
 	else
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (Entity->State.GetFrame() - CInfantry::FRAME_death211);
 
-		Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
-		(Entity->State.GetAngles() - DeathAimAngles[flash_number-MZ2_INFANTRY_MACHINEGUN_2]).ToVectors (&forward, NULL, NULL);
+		angles = (Entity->State.GetAngles() - DeathAimAngles[flash_number-MZ2_INFANTRY_MACHINEGUN_2]).ToVectors ();
 	}
 
-	MonsterFireBullet (start, forward, 3, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
+	MonsterFireBullet (start, angles.Forward, 3, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
 }
 
 void CInfantry::Sight ()

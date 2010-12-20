@@ -277,8 +277,8 @@ bool CParasite::DrainAttackOK (vec3f &start, vec3f &end)
 
 void CParasite::DrainAttack ()
 {
-	vec3f f, r;
-	Entity->State.GetAngles().ToVectors (&f, &r, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	
 	static const vec3f frameOffsets[] =
 	{
 		vec3f(7 + 16.4f, 0, 5),
@@ -295,7 +295,7 @@ void CParasite::DrainAttack ()
 	};
 
 	vec3f start;
- 	G_ProjectSource (Entity->State.GetOrigin(), frameOffsets[Entity->State.GetFrame() - 41], f, r, start);
+ 	G_ProjectSource (Entity->State.GetOrigin(), frameOffsets[Entity->State.GetFrame() - 41], angles, start);
 
 	vec3f end = Entity->Enemy->State.GetOrigin();
 	if (!DrainAttackOK(start, end))

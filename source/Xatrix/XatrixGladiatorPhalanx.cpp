@@ -49,12 +49,12 @@ void CPhalanxGladiator::FirePhalanx ()
 	if (Entity->State.GetFrame() == FRAME_attack9 && CvarList[CV_SKILL].Integer() != 3)
 		return;
 
-	vec3f	start, forward, right;
+	vec3f	start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GLADIATOR_RAILGUN_1], angles, start);
 
-	// calc direction to where we targted
+	// calc direction to where we targeted
 	CPhalanxPlasma::Spawn (Entity, start, (SavedFirePosition - start).GetNormalized(), 100, 725, 60, 60);
 };
 

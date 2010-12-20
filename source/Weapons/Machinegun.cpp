@@ -120,12 +120,12 @@ void CMachinegun::Fire (CPlayerEntity *Player)
 	}
 
 	// get start / end positions
-	vec3f start, forward, right, offset (0, 8, Player->ViewHeight-8), 
-		angles = Player->Client.ViewAngle + Player->Client.KickAngles;
-	angles.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	vec3f start, offset (0, 8, Player->ViewHeight-8); 
 
-	CBullet::Fire (Player, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
+	anglef angles = (Player->Client.ViewAngle + Player->Client.KickAngles).ToVectors ();
+	Player->P_ProjectSource (offset, angles, start);
+
+	CBullet::Fire (Player, start, angles.Forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
 
 	Muzzle (Player, MZ_MACHINEGUN);
 	AttackSound (Player);

@@ -54,7 +54,7 @@ void CFloater::FireBlaster ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right, end, dir;
+	vec3f	start, end, dir;
 	sint32		effect = 0;
 
 	switch (Entity->State.GetFrame())
@@ -65,8 +65,8 @@ void CFloater::FireBlaster ()
 		break;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FLOAT_BLASTER_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_FLOAT_BLASTER_1], angles, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -480,12 +480,12 @@ void CFloater::Wham ()
 
 void CFloater::Zap ()
 {
-	vec3f	forward, right, origin, dir;
+	vec3f	origin, dir;
 	static const vec3f offset (18.5f, -0.9f, 10);
 	dir = Entity->Enemy->State.GetOrigin() - Entity->State.GetOrigin();
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), offset, forward, right, origin);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset, angles, origin);
 
 	Entity->PlaySound (CHAN_WEAPON, Sounds[SOUND_ATTACK2]);
 	CSplash(origin, vec3fOrigin, SPT_SPARKS, 32).Send();

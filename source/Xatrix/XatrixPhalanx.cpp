@@ -150,25 +150,26 @@ bool CPhalanx::CanStopFidgetting (CPlayerEntity *Player)
 
 void CPhalanx::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset (0, 8, Player->ViewHeight-8);
+	vec3f		start, offset (0, 8, Player->ViewHeight-8);
 	const sint32	damage = CalcQuadVal(70 + irandom(10.0));
 
-	Player->Client.KickOrigin = forward * -2;
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
+
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -2;
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	Player->P_ProjectSource (offset, angles, start);
 
-	(Player->Client.ViewAngle + vec3f(0, ((Player->Client.PlayerState.GetGunFrame() == 8)) ? -1.5f : 1.5f, 0)).ToVectors (&forward, &right, NULL);
+	angles = (Player->Client.ViewAngle + vec3f(0, ((Player->Client.PlayerState.GetGunFrame() == 8)) ? -1.5f : 1.5f, 0)).ToVectors ();
 
 	switch (Player->Client.PlayerState.GetGunFrame())
 	{
 	case 8:
-		CPhalanxPlasma::Spawn (Player, start, forward, damage, 725, 30, 120);
+		CPhalanxPlasma::Spawn (Player, start, angles.Forward, damage, 725, 30, 120);
 		DepleteAmmo (Player, 1);
 		break;
 	default:
-		CPhalanxPlasma::Spawn (Player, start, forward, damage, 725, 120, CalcQuadVal(120));
+		CPhalanxPlasma::Spawn (Player, start, angles.Forward, damage, 725, 120, CalcQuadVal(120));
 
 		// send muzzle flash
 		Muzzle (Player, MZ_PHALANX);

@@ -27,6 +27,54 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ==============================================================================
 */
 
+template<class vecType>
+class angleBase
+{
+public:
+	vecType			Forward,
+					Right,
+					Up;
+
+	angleBase () :
+	  Forward(),
+	  Right(),
+	  Up()
+	{
+	}
+
+	angleBase (vecType angle)
+	{
+		*this = FromVector(angle);
+	}
+
+	angleBase (vecType forward, vecType right, vecType up) :
+	  Forward(forward),
+	  Right(right),
+	  Up(up)
+	{
+	}
+
+	static angleBase<vecType> FromVector (vecType vec)
+	{
+		angleBase<vecType> angles;
+
+		float sr, sp, sy, cr, cp, cy;
+		Q_SinCosf(DEG2RAD (vec.X), &sp, &cp);
+		Q_SinCosf(DEG2RAD (vec.Y), &sy, &cy);
+		Q_SinCosf(DEG2RAD (vec.Z), &sr, &cr);
+
+		angles.Forward = vec3f(cp* cy, cp*sy, -sp);
+		angles.Right = vec3f(-1 * sr * sp * cy + -1 * cr * -sy,
+					-1 * sr * sp * sy + -1 * cr * cy,
+					-1 * sr * cp);
+		angles.Up = vec3f(cr * sp * cy + -sr * -sy,
+					cr * sp * sy + -sr * cy,
+					cr * cp);
+
+		return angles;
+	}
+};
+
 /**
 \class	vec3Base
 
@@ -1115,28 +1163,12 @@ public:
 	\author	Paril
 	\date	27/05/2010
 	
-	\param [in,out]	forward	If non-null, the forward vector address. 
-	\param [in,out]	right	If non-null, the right vector addres. 
-	\param [in,out]	up		If non-null, the up vector address. 
+	\return The angle in three vectors.
 	**/
-	void ToVectors (vec3Base *forward, vec3Base *right, vec3Base *up) const
+	angleBase<vec3Base<TType>> ToVectors () const
 	{
-		float sr, sp, sy, cr, cp, cy;
-		Q_SinCosf(DEG2RAD (X), &sp, &cp);
-		Q_SinCosf(DEG2RAD (Y), &sy, &cy);
-		Q_SinCosf(DEG2RAD (Z), &sr, &cr);
-
-		if (forward)
-			forward->Set (cp* cy, cp*sy, -sp);
-		if (right)
-			right->Set (-1 * sr * sp * cy + -1 * cr * -sy,
-						-1 * sr * sp * sy + -1 * cr * cy,
-						-1 * sr * cp);
-		if (up)
-			up->Set (cr * sp * cy + -sr * -sy,
-						cr * sp * sy + -sr * cy,
-						cr * cp);
-	};
+		return angleBase<vec3Base<TType>>(*this);
+	}
 
 	/**
 	\fn	inline vec3Base MultiplyAngles (const float scale, const vec3Base &b) const
@@ -1265,6 +1297,8 @@ public:
 \brief	Defines an alias representing a 3d float vector.
 **/
 typedef vec3Base<float> vec3f;
+
+typedef angleBase<vec3f> anglef;
 
 /**
 \fn	inline vec3f operator* (const float &l, const vec3f &r)

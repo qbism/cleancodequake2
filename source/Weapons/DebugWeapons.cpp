@@ -44,10 +44,7 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 	// Update pointing surface
 	//if (!(Level.Frame & 2))
 	{
-		vec3f forward;
-		Player->Client.ViewAngle.ToVectors (&forward, NULL, NULL);
-
-		vec3f end = Player->State.GetOrigin().MultiplyAngles(8192, forward);
+		vec3f end = Player->State.GetOrigin().MultiplyAngles(8192, Player->Client.ViewAngle.ToVectors ().Forward);
 		CTrace tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SOLID|CONTENTS_MASK_WATER);
 
 		if (tr.Fraction < 1 && tr.Surface)

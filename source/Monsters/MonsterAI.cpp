@@ -983,19 +983,18 @@ void IMonster::AI_Run(float Dist)
 			float center = tr.Fraction;
 			float d2 = d1 * ((center+1)/2);
 			Entity->State.GetAngles().Y = IdealYaw = v.ToYaw();
-			
-			vec3f v_forward, v_right;
-			Entity->State.GetAngles().ToVectors (&v_forward, &v_right, NULL);
+		
+			anglef angles = Entity->State.GetAngles().ToVectors ();
 
 			v.Set (d2, -16, 0);
 			vec3f left_target;
-			G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, left_target);
+			G_ProjectSource (Entity->State.GetOrigin(), v, angles, left_target);
 			tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), left_target, Entity, CONTENTS_MASK_PLAYERSOLID);
 			float left = tr.Fraction;
 
 			v.Set (d2, 16, 0);
 			vec3f right_target;
-			G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, right_target);
+			G_ProjectSource (Entity->State.GetOrigin(), v, angles, right_target);
 			tr (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), right_target, Entity, CONTENTS_MASK_PLAYERSOLID);
 			float right = tr.Fraction;
 
@@ -1005,7 +1004,7 @@ void IMonster::AI_Run(float Dist)
 				if (left < 1)
 				{
 					v.Set (d2 * left * 0.5, -16, 0);
-					G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, left_target);
+					G_ProjectSource (Entity->State.GetOrigin(), v, angles, left_target);
 				}
 
 				SavedGoal = LastSighting;
@@ -1021,7 +1020,7 @@ void IMonster::AI_Run(float Dist)
 				if (right < 1)
 				{
 					v.Set (d2 * right * 0.5, 16, 0);
-					G_ProjectSource (Entity->State.GetOrigin(), v, v_forward, v_right, right_target);
+					G_ProjectSource (Entity->State.GetOrigin(), v, angles, right_target);
 				}
 
 				SavedGoal = LastSighting;

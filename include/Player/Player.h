@@ -1013,7 +1013,7 @@ public:
 
 	void			TossHead (sint32 Damage);
 
-	void			P_ProjectSource (vec3f distance, vec3f &forward, vec3f &right, vec3f &result);
+	void			P_ProjectSource (vec3f distance, anglef angles, vec3f &result);
 	void			PlayerNoiseAt (vec3f Where, ENoiseType type);
 
 	void			PushInDirection (vec3f vel, ESpawnflags flags);

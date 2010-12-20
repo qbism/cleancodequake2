@@ -589,21 +589,17 @@ void CGekk::HitRight ()
 
 void CGekk::Loogie ()
 {
-	vec3f start;
-	vec3f forward, right, up;
-	vec3f end;
-	vec3f dir;
+	vec3f start, end, dir;
 	static const vec3f fireOffset (-18, -0.8f, 24);
 
 	if (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)
 		return;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	G_ProjectSource (Entity->State.GetOrigin(), fireOffset, forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), fireOffset, angles, start);
 
-	start = start.MultiplyAngles (2, up);
-
-	end = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);;
+	start = start.MultiplyAngles (2, angles.Up);
+	end = Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight);
 
 	CLoogie::Spawn (Entity, start, (end - start), 5, 550);
 }
@@ -833,21 +829,19 @@ void CGekk::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 
 void CGekk::JumpTakeoff ()
 {
-	vec3f	forward;
-
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 	Entity->State.GetOrigin().Z += 1;
 
 	// high jump
 	if (CheckJump ())
 	{
-		Entity->Velocity = forward * 700;
+		Entity->Velocity = angles.Forward * 700;
 		Entity->Velocity.Z = 250;
 	}
 	else
 	{
-		Entity->Velocity = forward * 250;
+		Entity->Velocity = angles.Forward * 250;
 		Entity->Velocity.Z = 400;
 	}
 
@@ -859,21 +853,19 @@ void CGekk::JumpTakeoff ()
 
 void CGekk::JumpTakeoff2 ()
 {
-	vec3f	forward;
-
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_SIGHT]);
-	Entity->State.GetAngles().ToVectors (&forward, NULL, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 	Entity->State.GetOrigin().Z += 1;
 
 	// high jump
 	if (CheckJump ())
 	{
-		Entity->Velocity = forward * 300;
+		Entity->Velocity = angles.Forward * 300;
 		Entity->Velocity.Z = 250;
 	}
 	else
 	{
-		Entity->Velocity = forward * 150;
+		Entity->Velocity = angles.Forward * 150;
 		Entity->Velocity.Z = 300;
 	}
 

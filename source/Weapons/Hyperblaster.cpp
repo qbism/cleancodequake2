@@ -83,16 +83,18 @@ void CHyperBlaster::Fire (CPlayerEntity *Player)
 					:
 					CalcQuadVal(20);
 
-			vec3f	forward, right, start;
+			vec3f	start;
 
-			Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+			anglef angles = Player->Client.ViewAngle.ToVectors ();
 			// I replaced this part with a table because they are constant.
-			Player->P_ProjectSource (vec3f(24, 8, Player->ViewHeight-8) + hyperblasterOffsetTable[Player->Client.PlayerState.GetGunFrame() - 6], forward, right, start);
+			Player->P_ProjectSource (vec3f(24, 8, Player->ViewHeight-8)
+				+
+				hyperblasterOffsetTable[Player->Client.PlayerState.GetGunFrame() - 6], angles, start);
 
-			Player->Client.KickOrigin = forward * -2;
+			Player->Client.KickOrigin = angles.Forward * -2;
 			Player->Client.KickAngles.X = -1;
 
-			CBlasterProjectile::Spawn (Player, start, forward, damage, 1000, effect, true);
+			CBlasterProjectile::Spawn (Player, start, angles.Forward, damage, 1000, effect, true);
 
 			// send muzzle flash
 			Muzzle (Player, MZ_HYPERBLASTER);

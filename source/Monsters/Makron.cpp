@@ -440,11 +440,8 @@ void CMakron::FireBFG ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right;
 	vec3f	start;
-
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_BFG], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_BFG], Entity->State.GetAngles().ToVectors(), start);
 
 	Entity->PlaySound (CHAN_VOICE, Sounds[SOUND_ATTACK_BFG]);
 	MonsterFireBfg (start,
@@ -503,11 +500,9 @@ void CMakron::FireHyperblaster ()
 
 	vec3f	dir;
 	vec3f	start;
-	vec3f	forward, right;
 	sint32		flash_number = MZ2_MAKRON_BLASTER_1 + (Entity->State.GetFrame() - CMakron::FRAME_attak405);
 
-	Entity->State.GetAngles().ToVectors(&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], Entity->State.GetAngles().ToVectors(), start);
 
 	if (Entity->Enemy)
 		dir.X = (Entity->Enemy->State.GetOrigin() + vec3f(0, 0, Entity->Enemy->ViewHeight) - start).ToAngles().X;
@@ -520,8 +515,7 @@ void CMakron::FireHyperblaster ()
 		dir.Y = Entity->State.GetAngles().Y + 10 * (Entity->State.GetFrame() - CMakron::FRAME_attak421);
 	dir.Z = 0;
 
-	dir.ToVectors (&forward, NULL, NULL);
-	MonsterFireBlaster (start, forward, 15, 1000, MZ2_MAKRON_BLASTER_1, FX_BLASTER);
+	MonsterFireBlaster (start, dir.ToVectors().Forward, 15, 1000, MZ2_MAKRON_BLASTER_1, FX_BLASTER);
 }	
 
 CFrame MakronFramesAttack5[]=
@@ -557,10 +551,8 @@ void CMakron::FireRailgun ()
 
 	vec3f	start;
 	vec3f	dir;
-	vec3f	forward, right;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_RAILGUN_1], forward, right, start);
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_MAKRON_RAILGUN_1], Entity->State.GetAngles().ToVectors(), start);
 	
 	// calc direction to where we targted
 	dir = SavedLoc - start;

@@ -475,13 +475,13 @@ sint32 CMonsterEntity::CheckPowerArmor (vec3f &Point, vec3f &Normal, sint32 Dama
 		return 0;
 	case POWER_ARMOR_SCREEN:
 		{
-			vec3f		vec, forward;
+			vec3f		vec;
 
 			// only works if damage point is in front
-			State.GetAngles().ToVectors(&forward, NULL, NULL);
+			anglef angles = State.GetAngles().ToVectors();
 			vec = Point - State.GetOrigin();
 			vec.Normalize ();
-			if ((vec | forward) <= 0.3)
+			if ((vec | angles.Forward) <= 0.3)
 				return 0;
 
 			DamagePerCell = 1;

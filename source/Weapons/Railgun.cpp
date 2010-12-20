@@ -62,7 +62,7 @@ bool CRailgun::CanStopFidgetting (CPlayerEntity *Player)
 
 void CRailgun::Fire (CPlayerEntity *Player)
 {
-	vec3f		start, forward, right, offset(0, 7,  Player->ViewHeight-8);
+	vec3f		start, offset(0, 7,  Player->ViewHeight-8);
 	const sint32	damage = (Game.GameMode & GAME_DEATHMATCH) ? // normal damage is too extreme in dm
 				CalcQuadVal(100)
 				:
@@ -72,13 +72,13 @@ void CRailgun::Fire (CPlayerEntity *Player)
 				:
 				CalcQuadVal(250);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
 
-	Player->Client.KickOrigin = forward * -3;
+	Player->Client.KickOrigin = angles.Forward * -3;
 	Player->Client.KickAngles.X = -3;
 
-	Player->P_ProjectSource (offset, forward, right, start);
-	CRailGunShot::Fire (Player, start, forward, damage, kick);
+	Player->P_ProjectSource (offset, angles, start);
+	CRailGunShot::Fire (Player, start, angles.Forward, damage, kick);
 
 	// send muzzle flash
 	Muzzle (Player, MZ_RAILGUN);

@@ -124,14 +124,13 @@ Target()
 
 void CTurretBreach::Fire ()
 {
-	vec3f f, r, u;
-	State.GetAngles().ToVectors (&f, &r, &u);
-	vec3f start = State.GetOrigin().MultiplyAngles (MoveOrigin.X, f);
-	start = start.MultiplyAngles (MoveOrigin.Y, r);
-	start = start.MultiplyAngles (MoveOrigin.Z, u);
+	anglef angles = State.GetAngles().ToVectors ();
+	vec3f start = State.GetOrigin().MultiplyAngles (MoveOrigin.X, angles.Forward);
+	start = start.MultiplyAngles (MoveOrigin.Y, angles.Right);
+	start = start.MultiplyAngles (MoveOrigin.Z, angles.Up);
 
 	sint32 Damage = 100 + frand() * 50;
-	CRocket::Spawn (Team.Master->GetOwner(), start, f, Damage, 550 + 50 * CvarList[CV_SKILL].Integer(), 150, Damage);
+	CRocket::Spawn (Team.Master->GetOwner(), start, angles.Forward, Damage, 550 + 50 * CvarList[CV_SKILL].Integer(), 150, Damage);
 	PlayPositionedSound (start, CHAN_WEAPON, SoundIndex("weapons/rocklf1a.wav"));
 }
 

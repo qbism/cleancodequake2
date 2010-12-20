@@ -64,19 +64,19 @@ bool CGrenadeLauncher::CanStopFidgetting (CPlayerEntity *Player)
 
 void CGrenadeLauncher::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (8, 8, Player->ViewHeight-8), forward, right, start;
+	vec3f	offset (8, 8, Player->ViewHeight-8), start;
 	const sint32	damage = CalcQuadVal(120);
 	const float	radius = 160;
 
 	FireAnimation (Player);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors ();
+	Player->P_ProjectSource (offset, angles, start);
 
-	Player->Client.KickOrigin = forward * -2;
+	Player->Client.KickOrigin = angles.Forward * -2;
 	Player->Client.KickAngles.X = -1;
 
-	CGrenade::Spawn (Player, start, forward, damage, 600, 25, radius);
+	CGrenade::Spawn (Player, start, angles.Forward, damage, 600, 25, radius);
 
 	Muzzle (Player, MZ_GRENADE);
 	AttackSound (Player);

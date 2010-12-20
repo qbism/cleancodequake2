@@ -307,7 +307,7 @@ void CTank::Blaster ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	forward, right, start, end, dir;
+	vec3f	start, end, dir;
 	sint32		flash_number;
 
 	switch (Entity->State.GetFrame())
@@ -323,8 +323,8 @@ void CTank::Blaster ()
 		break;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -344,7 +344,7 @@ void CTank::Rocket ()
 		return;
 
 #if ROGUE_FEATURES
-	vec3f	forward, right, start, dir, vec, target;
+	vec3f	start, dir, vec, target;
 	sint32		flash_number, rocketSpeed;
 	CTrace	trace;
 	bool blindfire = false;
@@ -368,8 +368,8 @@ void CTank::Rocket ()
 		break;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 	rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
@@ -409,7 +409,7 @@ void CTank::Rocket ()
 			MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 		else 
 		{
-			vec = target.MultiplyAngles (-20, right);
+			vec = target.MultiplyAngles (-20, angles.Right);
 			dir = vec - start;
 			dir.NormalizeFast ();
 
@@ -418,7 +418,7 @@ void CTank::Rocket ()
 				MonsterFireRocket (start, dir, 50, rocketSpeed, flash_number);
 			else 
 			{
-				vec = target.MultiplyAngles (20, right);
+				vec = target.MultiplyAngles (20, angles.Right);
 				dir = vec - start;
 				dir.NormalizeFast ();
 
@@ -438,7 +438,7 @@ void CTank::Rocket ()
 		}
 	}
 #else
-	vec3f	forward, right, start, dir, vec;
+	vec3f	start, dir, vec;
 	sint32		flash_number;
 
 	switch (Entity->State.GetFrame())
@@ -454,8 +454,8 @@ void CTank::Rocket ()
 		break;
 	}
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;
@@ -471,11 +471,11 @@ void CTank::MachineGun ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	dir, start, forward, right;
+	vec3f		dir, start;
 	sint32		flash_number = MZ2_TANK_MACHINEGUN_1 + (Entity->State.GetFrame() - CTank::FRAME_attak406);
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flash_number], angles, start);
 
 	if (Entity->Enemy)
 	{
@@ -494,8 +494,8 @@ void CTank::MachineGun ()
 		dir.Y = Entity->State.GetAngles().Y + 8 * (Entity->State.GetFrame() - CTank::FRAME_attak419);
 	dir.Z = 0;
 
-	dir.ToVectors (&forward, NULL, NULL);
-	MonsterFireBullet (start, forward, 20, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
+	angles = dir.ToVectors ();
+	MonsterFireBullet (start, angles.Forward, 20, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
 }	
 
 

@@ -537,11 +537,11 @@ void CMaiden::Rocket ()
 		return;
 
 #if ROGUE_FEATURES
-	vec3f	forward, right, start, dir, vec, target;
+	vec3f	start, dir, vec, target;
 	bool blindfire = (AIFlags & AI_MANUAL_STEERING) ? true : false;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], angles, start);
 
 	sint32 rocketSpeed = 500 + (100 * CvarList[CV_SKILL].Integer());	// PGM rock & roll.... :)
 
@@ -590,7 +590,7 @@ void CMaiden::Rocket ()
 			// hunt around for a good shot
 			// try shifting the target to the left a little (to help counter her large offset)
 			vec = target;
-			vec = vec.MultiplyAngles (-10, right);
+			vec = vec.MultiplyAngles (-10, angles.Right);
 			dir = vec - start;
 			dir.NormalizeFast();
 			trace (start, vec, Entity, CONTENTS_MASK_SHOT);
@@ -600,7 +600,7 @@ void CMaiden::Rocket ()
 			{
 				// ok, that failed.  try to the right
 				vec = target;
-				vec = vec.MultiplyAngles (10, right);
+				vec = vec.MultiplyAngles (10, angles.Right);
 				dir = vec - start;
 				dir.NormalizeFast();
 				trace (start, vec, Entity, CONTENTS_MASK_SHOT);
@@ -612,10 +612,10 @@ void CMaiden::Rocket ()
 	else
 		MonsterFireRocket (start, dir, 50, rocketSpeed, MZ2_CHICK_ROCKET_1);
 #else
-	vec3f	forward, right, start, dir, vec;
+	vec3f	start, dir, vec;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_CHICK_ROCKET_1], angles, start);
 
 	vec = Entity->Enemy->State.GetOrigin();
 	vec.Z += Entity->Enemy->ViewHeight;

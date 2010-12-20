@@ -169,9 +169,7 @@ void CTriggerBase::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *sur
 
 	if (MoveDir != vec3fOrigin)
 	{
-		vec3f	forward;
-		Other->State.GetAngles().ToVectors (&forward, NULL, NULL);
-		if ((forward | MoveDir) < 0)
+		if ((Other->State.GetAngles().ToVectors().Forward | MoveDir) < 0)
 			return;
 	}
 

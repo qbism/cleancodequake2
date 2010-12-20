@@ -775,7 +775,7 @@ public:
 		else if (State.GetAngles().Y == -2)
 			MoveDir.Set (0, 0, -1);
 		else
-			State.GetAngles().ToVectors (&MoveDir, NULL, NULL);
+			MoveDir = State.GetAngles().ToVectors().Forward;
 
 		State.GetAngles().Clear ();
 	}

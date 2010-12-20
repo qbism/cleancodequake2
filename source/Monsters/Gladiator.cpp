@@ -156,10 +156,10 @@ void CGladiator::FireRail ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f	start, forward, right;
+	vec3f	start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_GLADIATOR_RAILGUN_1], angles, start);
 
 	// calc direction to where we targted
 	MonsterFireRailgun (start, (SavedFirePosition - start).GetNormalized(), 50, 100, MZ2_GLADIATOR_RAILGUN_1);

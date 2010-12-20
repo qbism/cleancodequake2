@@ -256,7 +256,7 @@ CAnim FlyerMovePain1 (CFlyer::FRAME_pain101, CFlyer::FRAME_pain109, FlyerFramesP
 
 void CFlyer::Fire (sint32 FlashNumber)
 {
-	vec3f	start, forward, right, end, dir;
+	vec3f	start, end, dir;
 	sint32 effect;
 
 	if (!HasValidEnemy())
@@ -267,8 +267,8 @@ void CFlyer::Fire (sint32 FlashNumber)
 	else
 		effect = 0;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[FlashNumber], angles, start);
 	
 	end = Entity->Enemy->State.GetOrigin();
 	end.Z += Entity->Enemy->ViewHeight;
@@ -479,8 +479,7 @@ void CFlyer::Duck (float eta)
 
 	CTrace trace;
 
-	vec3f right;
-	Entity->State.GetAngles().ToVectors (NULL, &right, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 	bool WantsLeft = (frand() < 0.5);
 
 	// Approximate travel distance.
@@ -488,14 +487,14 @@ void CFlyer::Duck (float eta)
 	bool CanRollRight = false;
 	bool CanRollLeft = false;
 
-	vec3f end = Entity->State.GetOrigin ().MultiplyAngles (-75, right);
+	vec3f end = Entity->State.GetOrigin ().MultiplyAngles (-75, angles.Right);
 	trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.Fraction == 1.0)
 		CanRollRight = true;
 
 	// Now check the left
-	end = Entity->State.GetOrigin ().MultiplyAngles (-75, right);
+	end = Entity->State.GetOrigin ().MultiplyAngles (-75, angles.Right);
 	trace (Entity->State.GetOrigin(), Entity->GetMins(), Entity->GetMaxs(), end, Entity, CONTENTS_MASK_MONSTERSOLID);
 
 	if (trace.Fraction == 1.0)

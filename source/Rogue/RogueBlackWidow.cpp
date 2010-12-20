@@ -86,8 +86,7 @@ void CBlackWidow::FireBeam ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f forward, right;
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 	
 	if ((Entity->State.GetFrame() >= CBlackWidow::FRAME_fireb05) && (Entity->State.GetFrame() <= CBlackWidow::FRAME_fireb09))
 	{
@@ -97,12 +96,11 @@ void CBlackWidow::FireBeam ()
 		SaveBeamTarget();
 		EMuzzleFlash flashnum = MZ2_WIDOW2_BEAMER_1 + Entity->State.GetFrame() - CBlackWidow::FRAME_fireb05;
 
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 
 		vec3f target = BeamPos[1] + vec3f(0, 0, Entity->Enemy->ViewHeight - 10);
-		forward = (target - start).GetNormalized();
 
-		MonsterFireHeat (start, forward, 10, 50, flashnum);
+		MonsterFireHeat (start, (target - start).GetNormalized(), 10, 50, flashnum);
 	}
 	else if ((Entity->State.GetFrame() >= CBlackWidow::FRAME_spawn04) && (Entity->State.GetFrame() <= CBlackWidow::FRAME_spawn14))
 	{
@@ -111,7 +109,7 @@ void CBlackWidow::FireBeam ()
 		// sweep
 		EMuzzleFlash flashnum = MZ2_WIDOW2_BEAM_SWEEP_1 + Entity->State.GetFrame() - CBlackWidow::FRAME_spawn04;
 
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[flashnum], angles, start);
 		
 		vec3f targ_angles = (Entity->Enemy->State.GetOrigin() - start).ToAngles();
 		vec3f vec = Entity->State.GetAngles();		
@@ -119,20 +117,18 @@ void CBlackWidow::FireBeam ()
 		vec.X += targ_angles.X;
 		vec.Y -= sweep_angles[flashnum-MZ2_WIDOW2_BEAM_SWEEP_1];
 
-		vec.ToVectors (&forward, NULL, NULL);
-		MonsterFireHeat (start, forward, 10, 50, flashnum);
+		MonsterFireHeat (start, vec.ToVectors().Forward, 10, 50, flashnum);
 	}
 	else
 	{
 		vec3f start;
 
 		SaveBeamTarget();
-		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_WIDOW2_BEAMER_1], forward, right, start);
+		G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_WIDOW2_BEAMER_1], angles, start);
 
 		vec3f target = BeamPos[1] + vec3f(0, 0, Entity->Enemy->ViewHeight - 10);
-		forward = (target - start).GetNormalized();
 
-		MonsterFireHeat (start, forward, 10, 50, 0);
+		MonsterFireHeat (start, (target - start).GetNormalized(), 10, 50, 0);
 	}	
 }
 
@@ -140,18 +136,16 @@ void CBlackWidow::SpawnCheck ()
 {
 	FireBeam ();
 
-	vec3f	f, r, u;
-
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	for (uint8 i = 0; i < 2; i++)
 	{
 		vec3f offset = spawnpoints[i], startpoint, spawnpoint;
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint, u);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 
 		if (FindSpawnPoint (startpoint, stalker_mins, stalker_maxs, spawnpoint, 64))
 		{
-			IMonsterEntity *ent = CreateGroundMonster (spawnpoint, Entity->State.GetAngles(), stalker_mins, stalker_maxs, "monster_stalker", 256);
+			CMonsterEntity *ent = CreateGroundMonster (spawnpoint, Entity->State.GetAngles(), stalker_mins, stalker_maxs, "monster_stalker", 256);
 
 			if (!ent)
 				continue;
@@ -198,12 +192,12 @@ void CBlackWidow::ReadySpawn ()
 	vec3f	f, r, u, offset, startpoint, spawnpoint;
 
 	FireBeam ();
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
 
 	for (uint8 i = 0; i < 2; i++)
 	{
 		offset = spawnpoints[i];
-		G_ProjectSource (Entity->State.GetOrigin(), offset, f, r, startpoint, u);
+		G_ProjectSource (Entity->State.GetOrigin(), offset, angles, startpoint);
 		if (FindSpawnPoint (startpoint, stalker_mins, stalker_maxs, spawnpoint, 64))
 			CSpawnGrow::Spawn (spawnpoint, 1);
 	}
@@ -276,10 +270,10 @@ void CBlackWidow::FireDisrupt ()
 	if (!HasValidEnemy())
 		return;
 
-	vec3f forward, right, start;
+	vec3f start;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, NULL);
-	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_WIDOW_DISRUPTOR], forward, right, start);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), MonsterFlashOffsets[MZ2_WIDOW_DISRUPTOR], angles, start);
 
 	vec3f dir = BeamPos[0] - Entity->Enemy->State.GetOrigin();
 	float len = dir.Length();
@@ -375,10 +369,10 @@ bool CBlackWidow::TongueAttackOK (vec3f &start, vec3f &end, float range)
 
 void CBlackWidow::Tongue ()
 {
-	vec3f f, r, u, start, end, dir;
+	vec3f start, end, dir;
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - CBlackWidow::FRAME_tongs01], f, r, start, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - CBlackWidow::FRAME_tongs01], angles, start);
 	end = Entity->Enemy->State.GetOrigin();
 	if (!TongueAttackOK(start, end, 256))
 	{
@@ -412,9 +406,9 @@ void CBlackWidow::TonguePull ()
 		return;
 	}
 
-	vec3f f, r, u, start;
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - CBlackWidow::FRAME_tongs01], f, r, start, u);
+	vec3f start;
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offsets[Entity->State.GetFrame() - CBlackWidow::FRAME_tongs01], angles, start);
 	vec3f end = Entity->Enemy->State.GetOrigin();
 
 	if (!TongueAttackOK(start, end, 256))
@@ -436,11 +430,11 @@ void CBlackWidow::TonguePull ()
 	}
 	else
 	{
-		IMonsterEntity *Mon = entity_cast<IMonsterEntity>(*Entity->Enemy);
+		CMonsterEntity *Mon = entity_cast<CMonsterEntity>(*Entity->Enemy);
 
 		Mon->Monster->IdealYaw = vec.ToYaw();	
 		Mon->Monster->ChangeYaw ();
-		Mon->Velocity = f * 1000;
+		Mon->Velocity = angles.Forward * 1000;
 	}
 }
 
@@ -785,10 +779,10 @@ void CBlackWidow::Dead ()
 
 void CBlackWidow::KillChildren ()
 {
-	IMonsterEntity *ent = NULL;
+	CMonsterEntity *ent = NULL;
 	while (1)
 	{
-		ent = entity_cast<IMonsterEntity>(CC_FindByClassName<IBaseEntity, EF_MONSTER> (ent, "monster_stalker"));
+		ent = entity_cast<CMonsterEntity>(CC_FindByClassName<IBaseEntity, EF_MONSTER> (ent, "monster_stalker"));
 		if(!ent)
 			return;
 		
@@ -889,9 +883,9 @@ bool CBlackWidow::CheckAttack ()
 		float real_enemy_range = RangeFrom (Entity->State.GetOrigin(), Entity->Enemy->State.GetOrigin());
 		if (real_enemy_range < 300)
 		{
-			vec3f f, r, u, spot1;
-			Entity->State.GetAngles().ToVectors (&f, &r, &u);
-			G_ProjectSource (Entity->State.GetOrigin(), offsets[0], f, r, spot1, u);
+			vec3f spot1;
+			anglef angles = Entity->State.GetAngles().ToVectors ();
+			G_ProjectSource (Entity->State.GetOrigin(), offsets[0], angles, spot1);
 
 			vec3f spot2 = Entity->Enemy->State.GetOrigin();
 			if (TongueAttackOK(spot1, spot2, 256))
@@ -1165,11 +1159,11 @@ void ThrowMoreStuff (IBaseEntity *Entity, vec3f point)
 
 void ThrowArm1 (IBaseEntity *Entity)
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f offset1 (65.76f, 17.52f, 7.56f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 
@@ -1179,11 +1173,11 @@ void ThrowArm1 (IBaseEntity *Entity)
 
 void ThrowArm2 (IBaseEntity *Entity)
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f offset1 (65.76f, 17.52f, 7.56f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	ThrowWidowGibSized (Entity, ModelIndex("models/monsters/blackwidow2/gib4/tris.md2"), 200, GIB_METALLIC, startpoint, SoundIndex ("misc/fhit3.wav"), false);
 	ThrowWidowGibLoc (Entity, GameMedia.Gib_SmallMeat, 300, GIB_ORGANIC, startpoint, false);
@@ -1282,11 +1276,11 @@ void CBlackWidow::WidowExplode ()
 
 void CBlackWidow::WidowExplosion1 ()
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f offset1 (23.74f, -37.67f, 76.96f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 	
@@ -1300,11 +1294,11 @@ void CBlackWidow::WidowExplosion1 ()
 
 void CBlackWidow::WidowExplosion2 ()
 {
-	vec3f f, r, u, startpoint;
+	vec3f startpoint;
 	static const vec3f	offset1 (-20.49f, 36.92f, 73.52f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 	
@@ -1318,11 +1312,11 @@ void CBlackWidow::WidowExplosion2 ()
 
 void CBlackWidow::WidowExplosion3 ()
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f offset1 (2.11f, 0.05f, 92.20f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 	
@@ -1336,11 +1330,11 @@ void CBlackWidow::WidowExplosion3 ()
 
 void CBlackWidow::WidowExplosion4 ()
 {
-	vec3f f, r, u, startpoint;
+	vec3f startpoint;
 	static const vec3f	offset1 (-28.04f, -35.57f, -77.56f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 	
@@ -1354,11 +1348,11 @@ void CBlackWidow::WidowExplosion4 ()
 
 void CBlackWidow::WidowExplosion5 ()
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f offset1 (-20.11f, -1.11f, 40.76f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 
@@ -1372,11 +1366,11 @@ void CBlackWidow::WidowExplosion5 ()
 
 void CBlackWidow::WidowExplosion6 ()
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f	offset1 (-20.11f, -1.11f, 40.76f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 	
@@ -1390,11 +1384,11 @@ void CBlackWidow::WidowExplosion6 ()
 
 void CBlackWidow::WidowExplosion7 ()
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f	offset1 (-20.11f, -1.11f, 40.76f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 	
@@ -1408,12 +1402,12 @@ void CBlackWidow::WidowExplosion7 ()
 
 void CBlackWidow::WidowExplosionLeg ()
 {
-	vec3f	f, r, u, startpoint;
+	vec3f	startpoint;
 	static const vec3f offset1 (-31.89f, -47.86f, 67.02f);
 	static const vec3f offset2 (-44.9f, -82.14f, 54.72f);
 
-	Entity->State.GetAngles().ToVectors (&f, &r, &u);
-	G_ProjectSource (Entity->State.GetOrigin(), offset1, f, r, startpoint, u);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	G_ProjectSource (Entity->State.GetOrigin(), offset1, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 
@@ -1421,7 +1415,7 @@ void CBlackWidow::WidowExplosionLeg ()
 	ThrowWidowGibLoc (Entity, GameMedia.Gib_SmallMeat, 300, GIB_ORGANIC, startpoint, false);
 	ThrowWidowGibLoc (Entity, GameMedia.Gib_SmallMetal(), 100, GIB_METALLIC, startpoint, false);
 
-	G_ProjectSource (Entity->State.GetOrigin(), offset2, f, r, startpoint, u);
+	G_ProjectSource (Entity->State.GetOrigin(), offset2, angles, startpoint);
 
 	CRocketExplosion (CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), startpoint).Send();
 

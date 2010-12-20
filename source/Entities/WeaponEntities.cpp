@@ -175,16 +175,14 @@ void CGrenade::Think ()
 void CGrenade::Spawn (IBaseEntity *Spawner, vec3f start, vec3f aimdir, sint32 Damage, sint32 speed, FrameNumber timer, float damage_radius, bool handNade, bool held)
 {
 	CGrenade	*Grenade = QNewEntityOf CGrenade();
-	vec3f		forward, right, up;
 
 	vec3f dir = aimdir.ToAngles();
-
-	dir.ToVectors (&forward, &right, &up);
+	anglef angles = dir.ToVectors();
 
 	Grenade->State.GetOrigin() = start;
 	aimdir *= speed;
 
-	Grenade->Velocity = aimdir.MultiplyAngles (200 + crand() * 10.0f, up).MultiplyAngles (crand() * 10.0, right);
+	Grenade->Velocity = aimdir.MultiplyAngles (200 + crand() * 10.0f, angles.Up).MultiplyAngles (crand() * 10.0, angles.Right);
 	Grenade->AngularVelocity = 300;
 
 	Grenade->State.GetEffects() = FX_GRENADE;
@@ -1012,10 +1010,11 @@ void CBullet::DoSolidHit	(CTrace *Trace)
 
 bool CBullet::ModifyEnd (vec3f &aimDir, vec3f &start, vec3f &end)
 {
-	vec3f forward, right, up;
-	aimDir.ToAngles().ToVectors (&forward, &right, &up);
+	anglef angles = aimDir.ToAngles().ToVectors ();
 
-	end = start.MultiplyAngles (8192, forward).MultiplyAngles (crand()*hSpread, right).MultiplyAngles (crand()*vSpread, up);
+	end = start.MultiplyAngles (8192, angles.Forward)
+		.MultiplyAngles (crand()*hSpread, angles.Right)
+		.MultiplyAngles (crand()*vSpread, angles.Up);
 	return true;
 }
 
@@ -1117,10 +1116,10 @@ bool CMeleeWeapon::Fire(IBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 	if ((tr.Entity->EntityFlags & EF_MONSTER) || ((tr.Entity->EntityFlags & EF_PLAYER)))
 		Hit = Enemy;
 
-	Entity->State.GetAngles().ToVectors (&forward, &right, &up);
-	point = Entity->State.GetOrigin().MultiplyAngles (range, forward);
-	point = point.MultiplyAngles (aim.Y, right);
-	point = point.MultiplyAngles (aim.Z, up);
+	anglef angles = Entity->State.GetAngles().ToVectors ();
+	point = Entity->State.GetOrigin().MultiplyAngles (range, angles.Forward);
+	point = point.MultiplyAngles (aim.Y, angles.Right);
+	point = point.MultiplyAngles (aim.Z, angles.Up);
 	dir = point - Enemy->State.GetOrigin();
 
 	// do the damage
@@ -1145,11 +1144,10 @@ bool CMeleeWeapon::Fire(IBaseEntity *Entity, vec3f aim, sint32 Damage, sint32 ki
 
 void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, int Reach, int Damage, int Kick, EMeansOfDeath Mod)
 {
-	vec3f forward, right, up;
-	(Aim.ToAngles()).ToVectors (&forward, &right, &up);
-	forward.Normalize();
+	anglef angles = (Aim.ToAngles()).ToVectors ();
+	angles.Forward.Normalize();
 
-	vec3f point = Start.MultiplyAngles (Reach, forward);
+	vec3f point = Start.MultiplyAngles (Reach, angles.Forward);
 
 	//see if the hit connects
 	CTrace tr (Start, point, Entity, CONTENTS_MASK_SHOT);
@@ -1161,8 +1159,8 @@ void CPlayerMeleeWeapon::Fire (CPlayerEntity *Entity, vec3f Start, vec3f Aim, in
 		IHurtableEntity *Hurt = entity_cast<IHurtableEntity>(tr.Entity);
 
 		Entity->Velocity =	Entity->Velocity
-							.MultiplyAngles (75, forward)
-							.MultiplyAngles (75, up);
+							.MultiplyAngles (75, angles.Forward)
+							.MultiplyAngles (75, angles.Up);
 
 		// do the damage
 		// FIXME - make the damage appear at right spot and direction
@@ -1194,10 +1192,9 @@ ITouchableEntity(Index)
 
 void CGrappleEntity::GrappleDrawCable()
 {
-	vec3f	start, end, f, r, origin = Player->State.GetOrigin ();
+	vec3f	start, end, origin = Player->State.GetOrigin ();
 	
-	Player->Client.ViewAngle.ToVectors (&f, &r, NULL);
-	Player->P_ProjectSource (vec3f(16, 16, Player->ViewHeight-8), f, r, start);
+	Player->P_ProjectSource (vec3f(16, 16, Player->ViewHeight-8), Player->Client.ViewAngle.ToVectors(), start);
 
 	vec3f offset = start - origin;
 	vec3f dir = start - State.GetOrigin();
@@ -1265,9 +1262,6 @@ void CGrappleEntity::GrapplePull()
 		// the prediction layer to include two new fields in the player
 		// move stuff: a point and a velocity.  The client should add
 		// that velociy in the direction of the point
-		vec3f forward, up;
-
-		Player->Client.ViewAngle.ToVectors (&forward, &up, NULL);
 		vec3f v = Player->State.GetOrigin ();
 		v.Z += Player->ViewHeight;
 		vec3f hookdir = State.GetOrigin() - v;

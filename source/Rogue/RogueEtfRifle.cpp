@@ -69,19 +69,19 @@ bool CETFRifle::CanStopFidgetting (CPlayerEntity *Player)
 
 void CETFRifle::Fire (CPlayerEntity *Player)
 {
-	vec3f	offset (15, (Player->Client.PlayerState.GetGunFrame() == 6) ? 8 : 6, Player->ViewHeight - 8), forward, right, start;
+	vec3f	offset (15, (Player->Client.PlayerState.GetGunFrame() == 6) ? 8 : 6, Player->ViewHeight - 8), start;
 	const sint32	damage = CalcQuadVal(10),
 					kick = CalcQuadVal(3);
 
 	FireAnimation (Player);
 
-	Player->Client.ViewAngle.ToVectors (&forward, &right, NULL);
-	Player->P_ProjectSource (offset, forward, right, start);
+	anglef angles = Player->Client.ViewAngle.ToVectors();
+	Player->P_ProjectSource (offset, angles, start);
 
 	Player->Client.KickOrigin.Set (crand() * 0.85f, crand() * 0.85f, crand() * 0.85f);
 	Player->Client.KickAngles.Set (crand() * 0.85f, crand() * 0.85f, crand() * 0.85f);
 
-	CFlechette::Spawn (Player, start, forward, damage, kick, 750);
+	CFlechette::Spawn (Player, start, angles.Forward, damage, kick, 750);
 
 	Muzzle (Player, MZ_ETF_RIFLE);
 	AttackSound (Player);
