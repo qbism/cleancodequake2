@@ -147,32 +147,32 @@ void EndDMLevel ()
 	// stay on same level flag
 	if (DeathmatchFlags.dfSameLevel.IsEnabled())
 	{
-		BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()));
+		BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.CString()));
 		return;
 	}
 
-	if (!Level.ForceMap.empty())
+	if (!Level.ForceMap.IsNullOrEmpty())
 	{
-		BeginIntermission (CreateTargetChangeLevel (Level.ForceMap.c_str()));
+		BeginIntermission (CreateTargetChangeLevel (Level.ForceMap.CString()));
 		return;
 	}
 
 	// see if it's in the map list
-	if (*CvarList[CV_MAPLIST].String())
+	if (*CvarList[CV_MAPLIST].StringValue())
 	{
-		s = Mem_StrDup(CvarList[CV_MAPLIST].String());
+		s = Mem_StrDup(CvarList[CV_MAPLIST].StringValue());
 		f = NULL;
 		t = strtok(s, seps);
 
 		while (t != NULL)
 		{
-			if (Q_stricmp(t, Level.ServerLevelName.c_str()) == 0) {
+			if (Q_stricmp(t, Level.ServerLevelName.CString()) == 0) {
 				// it's in the list, go to the next one
 				t = strtok(NULL, seps);
 
 				if (t == NULL) { // end of list, go to first one
 					if (f == NULL) // there isn't a first one, same level
-						BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()) );
+						BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.CString()) );
 					else
 						BeginIntermission (CreateTargetChangeLevel (f) );
 				} else
@@ -187,15 +187,15 @@ void EndDMLevel ()
 		free(s);
 	}
 
-	if (!Level.NextMap.empty()) // go to a specific map
-		BeginIntermission (CreateTargetChangeLevel (Level.NextMap.c_str()) );
+	if (!Level.NextMap.IsNullOrEmpty()) // go to a specific map
+		BeginIntermission (CreateTargetChangeLevel (Level.NextMap.CString()) );
 	else
 	{	// search for a changelevel
 		CTargetChangeLevel *Entity = CC_FindByClassName<CTargetChangeLevel, EF_BASE> (NULL, "target_changelevel");
 		if (!Entity)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
-			BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.c_str()) );
+			BeginIntermission (CreateTargetChangeLevel (Level.ServerLevelName.CString()) );
 			return;
 		}
 		BeginIntermission (Entity);
@@ -260,7 +260,7 @@ ExitLevel
 */
 void ExitLevel ()
 {
-	gi.AddCommandString ((std::string("gamemap \"") + Level.Intermission.ChangeMap + "\"\n").c_str());
+	gi.AddCommandString (String::Format("gamemap \"%s\"\n", Level.Intermission.ChangeMap.CString()).CString());
 #if STDCPP_LINUX_HACK
 	if (Level.Intermission.ChangeMap)
 	{
@@ -268,7 +268,7 @@ void ExitLevel ()
 	    Level.Intermission.ChangeMap = NULL;
 	}
 #else
-	Level.Intermission.ChangeMap.clear();
+	Level.Intermission.ChangeMap.Clear();
 #endif
 	Level.Intermission.ShouldExit = false;
 	Level.Intermission.Time = 0;
@@ -298,9 +298,9 @@ inline void CheckNeedPass ()
 	{
 		sint32 need = 0;
 
-		if (*CvarList[CV_PASSWORD].String() && Q_stricmp(CvarList[CV_PASSWORD].String(), "none"))
+		if (*CvarList[CV_PASSWORD].StringValue() && Q_stricmp(CvarList[CV_PASSWORD].StringValue(), "none"))
 			need |= 1;
-		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && Q_stricmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none"))
+		if (*CvarList[CV_SPECTATOR_PASSWORD].StringValue() && Q_stricmp(CvarList[CV_SPECTATOR_PASSWORD].StringValue(), "none"))
 			need |= 2;
 
 		CvarList[CV_NEEDPASS].Set(need);
@@ -594,16 +594,16 @@ void G_Register ()
 	CModuleContainer::InitModules();
 }
 
-std::string ConfigTimeString ()
+String ConfigTimeString ()
 {
-	return std::string(TimeStamp()) + " (running on " + COMBINED_BUILD_STRING + ")";
+	return String::Format("%s (running on "COMBINED_BUILD_STRING")", TimeStamp());
 }
 
 void CGameAPI::Init ()
 {
 	CTimer LoadTimer;
 
-	ServerPrintf ("==== InitGame ====\nRunning CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s\nInitializing Game...\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
+	ServerPrintf ("==== InitGame ====\nRunning CleanCode Quake2 version "CLEANCODE_VERSION_PRINT", built on %s\nInitializing Game...\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().CString());
 
 	seedMT (time(NULL));
 
@@ -621,8 +621,8 @@ void CGameAPI::Init ()
 	// items
 	InitItemlist ();
 
-	Game.HelpMessages[0].clear();
-	Game.HelpMessages[1].clear();
+	Game.HelpMessages[0].Clear();
+	Game.HelpMessages[1].Clear();
 
 	// initialize all entities for this game
 	Game.MaxEntities = CvarList[CV_MAXENTITIES].Integer();

@@ -133,12 +133,12 @@ void BroadcastPrint (EGamePrintLevel printLevel, const char *string)
 	// Echo to console
 	if (CvarList[CV_DEDICATED].Integer())
 	{
-		std::string str(string);
+		String str(string);
 		// Mask off high bits
-		for (size_t i = 0; i < str.size(); i++)
+		for (size_t i = 0; i < str.Count(); i++)
 			str[i] &= 127;
 
-		ServerPrint (str.c_str());
+		ServerPrint (str.CString());
 	}
 }
 

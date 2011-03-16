@@ -205,7 +205,7 @@ void CRogueBaseSphere::BaseTouch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurf
 			return;
 
 		// PMM - don't blow up on bodies
-		if (!strcmp(Other->ClassName.c_str(), "bodyque"))
+		if (!strcmp(Other->ClassName.CString(), "bodyque"))
 			return;
 	}
 

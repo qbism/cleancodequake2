@@ -58,9 +58,9 @@ bool IMonster::FindTarget()
 {
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if (Entity->GoalEntity && !Entity->GoalEntity->ClassName.empty())
+		if (Entity->GoalEntity && !Entity->GoalEntity->ClassName.IsNullOrEmpty())
 		{
-			if (strcmp(Entity->GoalEntity->ClassName.c_str(), "target_actor") == 0)
+			if (strcmp(Entity->GoalEntity->ClassName.CString(), "target_actor") == 0)
 				return false;
 		}
 
@@ -194,7 +194,7 @@ bool IMonster::FindTarget()
 			return false;
 
 		// check area portals - if they are different and not connected then we can't hear it
-		if (client->GetAreaNum() != Entity->GetAreaNum() && (!gi.AreasConnected(Entity->GetAreaNum(), client->GetAreaNum())))
+		if (client->GetAreaNum() != Entity->GetAreaNum() && (!client->AreasConnectedTo(Entity)))
 			return false;
 
 		IdealYaw = temp.ToYaw();
@@ -1133,7 +1133,7 @@ void IMonster::FoundTarget ()
 	LastSighting = Entity->Enemy->State.GetOrigin();
 	TrailTime = Level.Frame;
 
-	if (Entity->CombatTarget.empty())
+	if (Entity->CombatTarget.IsNullOrEmpty())
 	{
 		HuntTarget ();
 		return;
@@ -1145,16 +1145,16 @@ void IMonster::FoundTarget ()
 	{
 		Entity->GoalEntity = Entity->MoveTarget = Entity->Enemy;
 		HuntTarget ();
-		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "CombatTarget %s not found\n", Entity->CombatTarget.c_str());
+		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "CombatTarget %s not found\n", Entity->CombatTarget.CString());
 		return;
 	}
 
 	// clear out our combattarget, these are a one shot deal
-	Entity->CombatTarget.clear();
+	Entity->CombatTarget.Clear();
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<IMapEntity>(*Entity->MoveTarget)->TargetName.clear();
+	entity_cast<IMapEntity>(*Entity->MoveTarget)->TargetName.Clear();
 	PauseTime = 0;
 
 	// run for it

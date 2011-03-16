@@ -46,8 +46,7 @@ void EndMapCounter ()
 	ServerPrintf ("...entities spawned with %i error(s), %i warning(s).\n======================\n", mapErrors, mapWarnings);
 }
 
-#include <sstream>
-static std::stringstream PrintBuffer;
+static String PrintBuffer;
 
 void Map_Print (EMapPrintType printType, vec3f &origin)
 {
@@ -55,25 +54,25 @@ void Map_Print (EMapPrintType printType, vec3f &origin)
 	{
 	case MAPPRINT_WARNING:
 		mapWarnings++;
-		PrintBuffer << "Warning " << mapWarnings << " (" << Level.ClassName << " #" << Level.EntityNumber << ")";
+		PrintBuffer += String::Format("Warning %i (%s #%i)", mapWarnings, Level.ClassName.CString(), Level.EntityNumber);
 		break;
 	case MAPPRINT_ERROR:
 		mapErrors++;
-		PrintBuffer << "Error " << mapErrors << " (" << Level.ClassName << " #" << Level.EntityNumber << ")";
+		PrintBuffer += String::Format("Error %i (%s #%i)", mapErrors, Level.ClassName.CString(), Level.EntityNumber);
 		break;
 	default:
-		PrintBuffer << "Message (" << Level.ClassName << " #" << Level.EntityNumber << ")";
+		PrintBuffer += String::Format("Message (%s #%i)", Level.ClassName.CString(), Level.EntityNumber);
 		break;
 	}
 
 	if (origin)
-		PrintBuffer << " @ (" << origin.X << " " << origin.Y << " " << origin.Z << ")";
-	PrintBuffer << ":\n";
+		PrintBuffer += String::Format(" @ (%f %f %f)", origin.X, origin.Y, origin.Z);
+	PrintBuffer += ":\n";
 }
 
 void MapPrint (EMapPrintType printType, IBaseEntity *Entity, vec3f &origin, const char *fmt, ...)
 {
-	if (Entity && !Entity->ClassName.empty() && Level.ClassName != Entity->ClassName)
+	if (Entity && !Entity->ClassName.IsNullOrEmpty() && Level.ClassName != Entity->ClassName)
 		Level.ClassName = Entity->ClassName;
 
 	Map_Print (printType, origin);
@@ -85,18 +84,18 @@ void MapPrint (EMapPrintType printType, IBaseEntity *Entity, vec3f &origin, cons
 	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-	PrintBuffer << "   " << text.GetBuffer<char>();
-	ServerPrintf ("%s", PrintBuffer.str().c_str());
+	PrintBuffer += String::Format("   %s", text.GetBuffer<char>());
+	ServerPrintf ("%s", PrintBuffer.CString());
 
-	PrintBuffer.str("");
+	PrintBuffer.Clear();
 }
 
 // To speed the process up a bit, and to reduce problematic newlines,
 // this goes by entire lines.
 char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 {
-	CFileBuffer FileBuffer((std::string("maps/ents/") + ServerLevelName + ".ccent").c_str(), true);
-	std::string finalString;
+	CFileBuffer FileBuffer(String::Format("maps/ents/%s.ccent", ServerLevelName).CString(), true);
+	String finalString;
 	char *realEntities;
 
 	if (!FileBuffer.Valid())
@@ -122,5 +121,5 @@ char *CC_ParseSpawnEntities (char *ServerLevelName, char *entities)
 			break;
 	}*/
 
-	return Mem_TagStrDup (finalString.c_str(), TAG_LEVEL);
+	return Mem_TagStrDup (finalString.CString(), TAG_LEVEL);
 }

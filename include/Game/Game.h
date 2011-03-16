@@ -90,16 +90,17 @@ enum
 class CGameLocals
 {
 public:
-	std::string				HelpMessages[2];
+	String					HelpMessages[2];
 	uint8					HelpChanged;	// flash F1 icon if non 0, play sound
 								// and increment only if 1, 2, or 3
 
-	SServerClient			*Clients;		// [maxclients]
-	SEntity					*Entities;
+	SServerClient				*Clients;		// [maxclients]
+	SEntity						*Entities;
+	std::vector<CPlayerEntity*>	Players;
 
 	// can't store spawnpoint in level, because
 	// it would get overwritten by the savegame restore
-	std::string				SpawnPoint;	// needed for coop respawns
+	String					SpawnPoint;	// needed for coop respawns
 
 	// store latched cvars here that we want to get at often
 	uint8					MaxClients;
@@ -176,10 +177,10 @@ struct SGoalList
 class CKeyValuePair
 {
 public:
-	std::string		Key;
-	std::string		Value;
+	String			Key;
+	String			Value;
 
-	CKeyValuePair (std::string Key, std::string Value) :
+	CKeyValuePair (String Key, String Value) :
 	  Key(Key),
 	  Value(Value)
 	{
@@ -195,10 +196,10 @@ public:
 	void Clear ()
 	{
 		Frame = 0;
-		FullLevelName.clear ();
-		ServerLevelName.clear ();
-		NextMap.clear ();
-		ForceMap.clear ();
+		FullLevelName.Clear ();
+		ServerLevelName.Clear ();
+		NextMap.Clear ();
+		ForceMap.Clear ();
 		Mem_Zero (&Intermission, sizeof(Intermission));
 		SightClient = NULL;
 		SightEntity = NULL;
@@ -211,7 +212,7 @@ public:
 		PowerCubeCount = 0;
 		Inhibit = 0;
 		EntityNumber = 0;
-		ClassName.clear ();
+		ClassName.Clear ();
 		ParseData.clear ();
 		Demo = false;
 
@@ -236,17 +237,17 @@ public:
 
 	FrameNumber				Frame;
 		
-	std::string				FullLevelName;		// the descriptive name (Outer Base, etc)
-	std::string				ServerLevelName;		// the server name (base1, etc)
-	std::string				NextMap;		// go here when fraglimit is hit
-	std::string				ForceMap;		// go here
+	String					FullLevelName;		// the descriptive name (Outer Base, etc)
+	String					ServerLevelName;		// the server name (base1, etc)
+	String					NextMap;		// go here when fraglimit is hit
+	String					ForceMap;		// go here
 
 	// intermission state
 	struct SIntermissionState
 	{
 		FrameNumber		Time;		// time the intermission was started
 #if !STDCPP_LINUX_HACK
-		std::string		ChangeMap;
+		String			ChangeMap;
 #else
 		char*			ChangeMap;
 #endif
@@ -280,7 +281,7 @@ public:
 	uint32					Inhibit;
 	uint32					EntityNumber;
 
-	std::string				ClassName;
+	String					ClassName;
 	TKeyValuePairContainer	ParseData;
 
 	bool					Demo;

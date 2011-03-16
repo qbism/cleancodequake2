@@ -45,18 +45,18 @@ CStatusBar::~CStatusBar()
 
 size_t CStatusBar::Length ()
 {
-	return Bar.length();
+	return Bar.Count();
 }
 
 void CStatusBar::Send ()
 {
-	ConfigString (CS_STATUSBAR, Bar.c_str());
+	ConfigString (CS_STATUSBAR, Bar.CString());
 }
 
 void CStatusBar::SendMsg (CPlayerEntity *Player, bool reliable)
 {
 	WriteByte (SVC_LAYOUT);
-	WriteString (Bar.c_str());
+	WriteString (Bar.CString());
 	Player->CastTo ((reliable) ? CASTFLAG_RELIABLE : CASTFLAG_UNRELIABLE);
 }
 
@@ -69,7 +69,7 @@ void CStatusBar::AddToBarBuffer (const char *fmt, ...)
 	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
 	va_end (argptr);
 
-	CC_ASSERT_EXPR (!(Bar.length() + strlen(text.GetBuffer<char>()) > text.GetSize()), "Statusbar overflowed");
+	CC_ASSERT_EXPR (!(Bar.Count() + strlen(text.GetBuffer<char>()) > text.GetSize()), "Statusbar overflowed");
 
 	Bar += text.GetBuffer<char>();
 }
@@ -348,13 +348,13 @@ void CPlayerEntity::HelpComputer ()
 	Scoreboard.AddVirtualPoint_X (0);
 
 	Scoreboard.AddVirtualPoint_Y (24);
-	Scoreboard.AddString (Level.FullLevelName.c_str(), true, true);
+	Scoreboard.AddString (Level.FullLevelName.CString(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (54);
-	Scoreboard.AddString (Game.HelpMessages[0].c_str(), true, true);
+	Scoreboard.AddString (Game.HelpMessages[0].CString(), true, true);
 
 	Scoreboard.AddVirtualPoint_Y (110);
-	Scoreboard.AddString (Game.HelpMessages[1].c_str(), true, true);
+	Scoreboard.AddString (Game.HelpMessages[1].CString(), true, true);
 
 	Scoreboard.AddVirtualPoint_X (50);
 	Scoreboard.AddVirtualPoint_Y (164);
@@ -362,7 +362,7 @@ void CPlayerEntity::HelpComputer ()
 
 	Scoreboard.AddVirtualPoint_Y (172);
 
-	Scoreboard.AddString (FormatString("%3i/%3i     %i/%i       %i/%i", Level.Monsters.Killed, Level.Monsters.Total, 
+	Scoreboard.AddString (String::Format("%3i/%3i     %i/%i       %i/%i", Level.Monsters.Killed, Level.Monsters.Total, 
 		Level.Goals.Found, Level.Goals.Total,
 		Level.Secrets.Found, Level.Secrets.Total), true, false);
 

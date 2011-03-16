@@ -797,7 +797,7 @@ void CPlatForm::Spawn ()
 	Positions[0] = Positions[1] = State.GetOrigin ();
 	Positions[1].Z -= (Height) ? Height : ((GetMaxs().Z - GetMins().Z) - Lip);
 
-	if (!TargetName.empty())
+	if (!TargetName.IsNullOrEmpty())
 		MoveState = STATE_UP;
 	else
 	{
@@ -966,12 +966,12 @@ void CDoor::UseAreaPortals (bool isOpen)
 {
 	IMapEntity	*t = NULL;
 
-	if (Target.empty())
+	if (Target.IsNullOrEmpty())
 		return;
 
-	while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
+	while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.CString())) != NULL)
 	{
-		if (Q_stricmp(t->ClassName.c_str(), "func_areaportal") == 0)
+		if (Q_stricmp(t->ClassName.CString(), "func_areaportal") == 0)
 		{
 			CAreaPortal *Portal = entity_cast<CAreaPortal>(t);
 			gi.SetAreaPortalState (Portal->Style, isOpen);
@@ -1185,7 +1185,7 @@ void CDoor::Use (IBaseEntity *Other, IBaseEntity *Activator)
 				// trigger all paired doors
 				for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))	
 				{
-					Door->Message.clear();
+					Door->Message.Clear();
 					Door->Touchable = false;
 					Door->GoDown();
 				}
@@ -1208,7 +1208,7 @@ void CDoor::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		// trigger all paired doors
 		for (CDoor *Door = this; Door; Door = entity_cast<CDoor>(Door->Team.Chain))
 		{
-			Door->Message.clear();
+			Door->Message.Clear();
 			Door->Touchable = false;
 			Door->GoUp (Activator);
 		}
@@ -1392,7 +1392,7 @@ void CDoor::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 
 	TouchDebounce = Level.Frame + 50;
 
-	(entity_cast<CPlayerEntity>(Other))->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
+	(entity_cast<CPlayerEntity>(Other))->PrintToClient (PRINT_CENTER, "%s", Message.CString());
 	Other->PlaySound (CHAN_AUTO, SoundIndex ("misc/talk1.wav"));
 }
 
@@ -1486,7 +1486,7 @@ void CDoor::Spawn ()
 		CanTakeDamage = true;
 		MaxHealth = Health;
 	}
-	else if (!TargetName.empty() && !Message.empty())
+	else if (!TargetName.IsNullOrEmpty() && !Message.IsNullOrEmpty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -1522,7 +1522,7 @@ void CDoor::Spawn ()
 		GetSvFlags() = (SVF_MONSTER|SVF_DEADMONSTER);
 		Link ();
 	}
-	else if (Health || !TargetName.empty())
+	else if (Health || !TargetName.IsNullOrEmpty())
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
 		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
@@ -1693,7 +1693,7 @@ void CRotatingDoor::Spawn ()
 		MaxHealth = Health;
 	}
 	
-	if (!TargetName.empty() && !Message.empty())
+	if (!TargetName.IsNullOrEmpty() && !Message.IsNullOrEmpty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -1723,7 +1723,7 @@ void CRotatingDoor::Spawn ()
 	Link ();
 
 	NextThink = Level.Frame + FRAMETIME;
-	if (Health || !TargetName.empty())
+	if (Health || !TargetName.IsNullOrEmpty())
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
 		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
@@ -1880,7 +1880,7 @@ void CDoorSecret::DoEndFunc ()
 	switch (EndFunc)
 	{
 		case DOORSECRETENDFUNC_DONE:
-			if (TargetName.empty() || (SpawnFlags & SECRET_ALWAYS_SHOOT))
+			if (TargetName.IsNullOrEmpty() || (SpawnFlags & SECRET_ALWAYS_SHOOT))
 			{
 				Health = 0;
 				CanTakeDamage = true;
@@ -1971,7 +1971,7 @@ void CDoorSecret::Spawn ()
 	GetSolid() = SOLID_BSP;
 	SetBrushModel ();
 
-	if (TargetName.empty() || (SpawnFlags & SECRET_ALWAYS_SHOOT))
+	if (TargetName.IsNullOrEmpty() || (SpawnFlags & SECRET_ALWAYS_SHOOT))
 	{
 		Health = 0;
 		CanTakeDamage = true;
@@ -2006,7 +2006,7 @@ void CDoorSecret::Spawn ()
 		CanTakeDamage = true;
 		MaxHealth = Health;
 	}
-	else if (!TargetName.empty() && !Message.empty())
+	else if (!TargetName.IsNullOrEmpty() && !Message.IsNullOrEmpty())
 	{
 		SoundIndex ("misc/talk.wav");
 		Touchable = true;
@@ -2190,7 +2190,7 @@ void CButton::Spawn ()
 		MaxHealth = Health;
 		CanTakeDamage = true;
 	}
-	else if (TargetName.empty())
+	else if (TargetName.IsNullOrEmpty())
 		Touchable = true;
 
 	MoveState = STATE_BOTTOM;
@@ -2289,9 +2289,9 @@ void CTrainBase::Blocked (IBaseEntity *Other)
 
 void CTrainBase::TrainWait ()
 {
-	if (!TargetEntity->PathTarget.empty())
+	if (!TargetEntity->PathTarget.IsNullOrEmpty())
 	{
-		std::string savetarget = TargetEntity->Target;
+		String savetarget = TargetEntity->Target;
 		TargetEntity->Target = TargetEntity->PathTarget;
 		TargetEntity->UseTargets (*User, Message);
 		TargetEntity->Target = savetarget;
@@ -2338,12 +2338,12 @@ void CTrainBase::Next ()
 
 	while (true)
 	{
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 			return;
 
 		if (!TargetEntity)
 		{
-			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Bad Target \"%s\"\n", Target.c_str());
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Bad Target \"%s\"\n", Target.CString());
 			return;
 		}
 
@@ -2355,7 +2355,7 @@ void CTrainBase::Next ()
 		{
 			if (!first)
 			{
-				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Connected teleport paths. See path_corner at (%s)\n", ToString(TargetEntity->State.GetOrigin()).c_str());
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Connected teleport paths. See path_corner at (%s)\n", ToString(TargetEntity->State.GetOrigin()).CString());
 				return;
 			}
 
@@ -2448,7 +2448,7 @@ void CTrainBase::Resume ()
 
 void CTrainBase::Find ()
 {
-	if (Target.empty())
+	if (Target.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 		return;
@@ -2457,7 +2457,7 @@ void CTrainBase::Find ()
 	CPathCorner *Corner = entity_cast<CPathCorner>(CC_PickTarget (Target));
 	if (!Corner)
 	{
-		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" not found\n", Target.c_str());
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" not found\n", Target.CString());
 		return;
 	}
 
@@ -2468,7 +2468,7 @@ void CTrainBase::Find ()
 	Link ();
 
 	// if not triggered, start immediately
-	if (TargetName.empty())
+	if (TargetName.IsNullOrEmpty())
 		SpawnFlags |= TRAIN_START_ON;
 
 	if (SpawnFlags & TRAIN_START_ON)
@@ -2592,7 +2592,7 @@ void CTrain::Spawn ()
 
 	Link ();
 
-	if (!Target.empty())
+	if (!Target.IsNullOrEmpty())
 	{
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
@@ -2639,7 +2639,7 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	}
 	
 	IUsableEntity *Usable = entity_cast<IUsableEntity>(Other);
-	if (Usable->PathTarget.empty())
+	if (Usable->PathTarget.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with no pathtarget.\n");
 		return;
@@ -2648,7 +2648,7 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	CPathCorner *target = entity_cast<CPathCorner>(CC_PickTarget (Usable->PathTarget));
 	if (!target)
 	{
-		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with bad pathtarget \"%s\"\n", Usable->PathTarget.c_str());
+		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Used with bad pathtarget \"%s\"\n", Usable->PathTarget.CString());
 		return;
 	}
 
@@ -2658,7 +2658,7 @@ void CTriggerElevator::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CTriggerElevator::Think ()
 {
-	if (Target.empty())
+	if (Target.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		return;
@@ -2667,13 +2667,13 @@ void CTriggerElevator::Think ()
 	IBaseEntity *newTarg = CC_PickTarget (Target);
 	if (!newTarg)
 	{
-		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target.c_str());
+		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Unable to find target \"%s\"\n", Target.CString());
 		return;
 	}
 
-	if (strcmp(newTarg->ClassName.c_str(), "func_train") != 0)
+	if (strcmp(newTarg->ClassName.CString(), "func_train") != 0)
 	{
-		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target.c_str());
+		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "Target \"%s\" is not a train\n", Target.CString());
 		return;
 	}
 
@@ -2813,26 +2813,26 @@ void CWorldEntity::Spawn ()
 		Init_Junk();
 	}
 
-	if (!NextMap.empty())
+	if (!NextMap.IsNullOrEmpty())
 		Level.NextMap = NextMap;
 
 	// make some data visible to the server
-	if (!Message.empty())
+	if (!Message.IsNullOrEmpty())
 	{
-		ConfigString (CS_NAME, Message.c_str());
+		ConfigString (CS_NAME, Message.CString());
 		Level.FullLevelName = Message;
 	}
 	else
 		Level.FullLevelName = Level.ServerLevelName;
 
-	ConfigString (CS_SKY, (!Sky.empty()) ? Sky.c_str() : "unit1_");
+	ConfigString (CS_SKY, (!Sky.IsNullOrEmpty()) ? Sky.CString() : "unit1_");
 	ConfigString (CS_SKYROTATE, "%f", SkyRotate);
 
-	ConfigString (CS_SKYAXIS, "%s", ToString(SkyAxis).c_str());
+	ConfigString (CS_SKYAXIS, "%s", ToString(SkyAxis).CString());
 
 	ConfigString (CS_CDTRACK, "%i", Sounds);
 
-	ConfigString (CS_MAXCLIENTS, CvarList[CV_MAXCLIENTS].String());
+	ConfigString (CS_MAXCLIENTS, CvarList[CV_MAXCLIENTS].StringValue());
 
 	// status bar program
 	if (CvarList[CV_MAP_DEBUG].Boolean())
@@ -2865,7 +2865,7 @@ void CWorldEntity::Spawn ()
 	//---------------
 	SetItemNames();
 
-	CvarList[CV_GRAVITY].Set ((!Gravity.empty()) ? Gravity.c_str() : "800");
+	CvarList[CV_GRAVITY].Set ((!Gravity.IsNullOrEmpty()) ? Gravity.CString() : "800");
 
 	SoundIndex ("player/lava1.wav");
 	SoundIndex ("player/lava2.wav");
@@ -3726,12 +3726,12 @@ void CFuncExplosive::Activate (IBaseEntity *Other, IBaseEntity *Activator)
 	IUsableEntity *OtherUsable = (Other->EntityFlags & EF_USABLE) ? entity_cast<IUsableEntity>(Other) : NULL,
 				  *ActivatorUsable = (Activator->EntityFlags & EF_USABLE) ? entity_cast<IUsableEntity>(Activator) : NULL;
 
-	if (OtherUsable != NULL && !OtherUsable->Target.empty())
+	if (OtherUsable != NULL && !OtherUsable->Target.IsNullOrEmpty())
 	{
 		if (OtherUsable->Target == TargetName)
 			approved = true;
 	}
-	if (!approved && ActivatorUsable != NULL && !ActivatorUsable->Target.empty())
+	if (!approved && ActivatorUsable != NULL && !ActivatorUsable->Target.IsNullOrEmpty())
 	{
 		if (ActivatorUsable->Target == TargetName)
 			approved = true;
@@ -3804,14 +3804,14 @@ void CFuncExplosive::Spawn ()
 	else if (SpawnFlags & 8)
 	{
 		GetSolid() = SOLID_BSP;
-		if (!TargetName.empty())
+		if (!TargetName.IsNullOrEmpty())
 			UseType = FUNCEXPLOSIVE_USE_ACTIVATE;
 	}
 #endif
 	else
 	{
 		GetSolid() = SOLID_BSP;
-		if (!TargetName.empty())
+		if (!TargetName.IsNullOrEmpty())
 			UseType = FUNCEXPLOSIVE_USE_EXPLODE;
 	}
 

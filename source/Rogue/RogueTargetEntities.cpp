@@ -95,11 +95,11 @@ public:
 	{
 		Usable = true;
 
-		if (!Target.empty())
+		if (!Target.IsNullOrEmpty())
 		{
-			IBaseEntity *ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
+			IBaseEntity *ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.CString());
 			if (!ent)
-				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.c_str());
+				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.CString());
 			Enemy = ent;
 		}
 		else
@@ -159,7 +159,7 @@ CC_ENABLE_DEPRECATION
 	{
 		Usable = false;
 
-		if (!Target.empty())
+		if (!Target.IsNullOrEmpty())
 			NextThink = Level.Frame + 10;
 		else
 			Think ();
@@ -244,9 +244,9 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		IMapEntity *AngryMonster = entity_cast<IMapEntity>(CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity, TargetName)>  (NULL, KillTarget.c_str()));
+		IMapEntity *AngryMonster = entity_cast<IMapEntity>(CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity, TargetName)>  (NULL, KillTarget.CString()));
 
-		if (AngryMonster && !Target.empty())
+		if (AngryMonster && !Target.IsNullOrEmpty())
 		{
 			// Make whatever a "good guy" so the monster will try to kill it!
 			if (AngryMonster->EntityFlags & EF_MONSTER)
@@ -256,7 +256,7 @@ public:
 				entity_cast<IHurtableEntity>(AngryMonster)->Health = 300;
 
 			IBaseEntity *t = NULL;
-			while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.c_str())) != NULL)
+			while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, Target.CString())) != NULL)
 			{
 				if (t == this)
 					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Entity used itself.\n");
@@ -279,13 +279,13 @@ public:
 
 	void Spawn ()
 	{
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
 		}
-		if (KillTarget.empty())
+		if (KillTarget.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No killtarget\n");
 			Free ();

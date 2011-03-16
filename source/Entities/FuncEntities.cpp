@@ -263,12 +263,12 @@ CTargetString::CTargetString (sint32 Index) :
 class CTargetStringForEachCallback : public CForEachTeamChainCallback
 {
 public:
-	std::string Message;
+	String		Message;
 	IBaseEntity *Me;
 
-	CTargetStringForEachCallback (IBaseEntity *Me, std::string &Message) :
-	Me(Me),
-	Message(Message)
+	CTargetStringForEachCallback (IBaseEntity *Me, String &Message) :
+	  Me(Me),
+	  Message(Message)
 	{
 	};
 
@@ -282,7 +282,7 @@ public:
 		if (!Entity->Character)
 			return;
 		size_t n = Entity->Character - 1;
-		if (n > Message.length())
+		if (n > Message.Count())
 		{
 			e->State.GetFrame() = 12;
 			return;
@@ -358,7 +358,7 @@ CFuncClock::CFuncClock () :
 	IThinkableEntity (),
 	IUsableEntity (),
 	Seconds(0),
-	String(NULL),
+	TargetString(NULL),
 	Wait(0),
 	Style(0),
 	Count(0),
@@ -372,7 +372,7 @@ CFuncClock::CFuncClock (sint32 Index) :
 	IThinkableEntity (Index),
 	IUsableEntity (Index),
 	Seconds(0),
-	String(NULL),
+	TargetString(NULL),
 	Wait(0),
 	Style(0),
 	Count(0),
@@ -406,7 +406,7 @@ bool CFuncClock::Run ()
 
 void		CFuncClock::SaveFields (CFile &File)
 {
-	File.Write<sint32> ((String) ? String->State.GetNumber() : -1);
+	File.Write<sint32> ((TargetString) ? TargetString->State.GetNumber() : -1);
 
 	SaveEntityFields <CFuncClock> (this, File);
 	IMapEntity::SaveFields (File);
@@ -419,7 +419,7 @@ void		CFuncClock::LoadFields (CFile &File)
 	sint32 Index = File.Read<sint32> ();
 
 	if (Index != -1)
-		String = entity_cast<CTargetString>(Game.Entities[Index].Entity);
+		TargetString = entity_cast<CTargetString>(Game.Entities[Index].Entity);
 
 	LoadEntityFields <CFuncClock> (this, File);
 	IMapEntity::LoadFields (File);
@@ -451,15 +451,15 @@ void CFuncClock::FormatCountdown ()
 	{
 	case 0:
 	default:
-		Message = FormatString ("%2i", Seconds);
+		Message = String::Format ("%2i", Seconds);
 		break;
 	case 1:
-		Message = FormatString("%2i:%2i", Seconds / 60, Seconds % 60);
+		Message = String::Format("%2i:%2i", Seconds / 60, Seconds % 60);
 		if (Message[3] == ' ')
 			Message[3] = '0';
 		break;
 	case 2:
-		Message = FormatString ("%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
+		Message = String::Format ("%2i:%2i:%2i", Seconds / 3600, (Seconds - (Seconds / 3600) * 3600) / 60, Seconds % 60);
 		if (Message[3] == ' ')
 			Message[3] = '0';
 		if (Message[6] == ' ')
@@ -470,10 +470,10 @@ void CFuncClock::FormatCountdown ()
 
 void CFuncClock::Think ()
 {
-	if (!String)
+	if (!TargetString)
 	{
-		String = entity_cast<CTargetString>(CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str()));
-		if (!String)
+		TargetString = entity_cast<CTargetString>(CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.CString()));
+		if (!TargetString)
 			return;
 	}
 
@@ -494,25 +494,25 @@ void CFuncClock::Think ()
 
 		time(&gmtime);
 		ltime = localtime (&gmtime);
-		Message = FormatString ("%2i:%2i:%2i", ltime->tm_hour, ltime->tm_min, ltime->tm_sec);
+		Message = String::Format ("%2i:%2i:%2i", ltime->tm_hour, ltime->tm_min, ltime->tm_sec);
 		if (Message[3] == ' ')
 			Message[3] = '0';
 		if (Message[6] == ' ')
 			Message[6] = '0';
 	}
 
-	String->Message = Message;
-	String->Use (this, this);
+	TargetString->Message = Message;
+	TargetString->Use (this, this);
 
 	if (((SpawnFlags & CLOCK_TIMER_UP) && (Seconds > Wait)) ||
 		((SpawnFlags & CLOCK_TIMER_DOWN) && (Seconds < Wait)))
 	{
 		if (CountTarget)
 		{
-			std::string savetarget = Target;
-			std::string savemessage = Message;
+			String savetarget = Target;
+			String savemessage = Message;
 			Target = CountTarget;
-			Message.clear();
+			Message.Clear();
 			UseTargets (*User, Message);
 			Target = savetarget;
 			Message = savemessage;
@@ -547,7 +547,7 @@ void CFuncClock::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CFuncClock::Spawn ()
 {
-	if (Target.empty())
+	if (Target.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, GetAbsMin(), "No target\n");
 		Free ();

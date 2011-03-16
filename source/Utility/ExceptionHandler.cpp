@@ -367,10 +367,9 @@ const int BUFSIZE = 256;
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
-// this is the ONLY time std::string is used.
-std::string GetOSDisplayString ()
+String GetOSDisplayString ()
 {
-	std::string Str;
+	String Str;
 	OSVERSIONINFOEX osvi;
 	SYSTEM_INFO si;
 	PGNSI pGNSI;
@@ -589,9 +588,8 @@ std::string GetOSDisplayString ()
 
 		return Str; 
 	}
-
-	else
-		return "Unsupported?";
+		
+	return String("Unknown");
 }
 
 DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionInfo)
@@ -759,7 +757,7 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	// Windows information
 	fprintf (fhReport, "Windows information:\r\n");
 	fprintf (fhReport, "--------------------------------------------------\r\n");
-	fprintf (fhReport, "String:       %s\r\n", GetOSDisplayString().c_str());
+	fprintf (fhReport, "String:       %s\r\n", GetOSDisplayString().CString());
 	fprintf (fhReport, "Version:      %d.%d\r\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion);
 	fprintf (fhReport, "Build:        %d\r\n", osInfo.dwBuildNumber);
 	fprintf (fhReport, "Service Pack: %s\r\n", osInfo.szCSDVersion[0] ? osInfo.szCSDVersion : "none");
@@ -889,8 +887,8 @@ DWORD EGLExceptionHandler (DWORD exceptionCode, LPEXCEPTION_POINTERS exceptionIn
 	fnSymCleanup (hProcess);
 
 	// Let the client know
-	std::string temp = "Report written to: " + std::string(reportPath) + "\r\nMini-dump written to " + dumpPath + "\r\nPlease include both files if you submit manually!\r\n";
-	MessageBoxA (NULL, temp.c_str(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
+	String temp = String::Format("Report written to: %s\r\nMini-dump written to %s\r\nPlease include both files if you submit manually!\r\n", reportPath, dumpPath);
+	MessageBoxA (NULL, temp.CString(), "Unhandled Exception", MB_ICONEXCLAMATION | MB_OK);
 
 #ifdef USE_CURL
 	if (upload)

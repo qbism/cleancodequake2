@@ -167,13 +167,13 @@ IBaseEntity *CEntityList::Resolve (SEntity *ServerEntity)
 		return Game.Entities[0].Entity;
 	}
 
-	uint32 hash = Com_HashGeneric(Level.ClassName.c_str(), MAX_CLASSNAME_CLASSES_HASH);
+	uint32 hash = Com_HashGeneric(Level.ClassName.CString(), MAX_CLASSNAME_CLASSES_HASH);
 
 	for (THashedEntityListType::iterator it = HashedEntityList.equal_range(hash).first;
 			it != HashedEntityList.equal_range(hash).second; ++it)
 	{
 		CClassnameToClassIndex *Table = EntityList.at((*it).second);
-		if (Q_stricmp (Table->Classname, Level.ClassName.c_str()) == 0)
+		if (Q_stricmp (Table->Classname, Level.ClassName.CString()) == 0)
 			return Table->Spawn(ServerEntity->Server.State.Number);
 	}
 
@@ -210,7 +210,7 @@ IBaseEntity *ResolveMapEntity (SEntity *ServerEntity)
 **/
 void ED_CallSpawn (SEntity *ServerEntity)
 {
-	if (Level.ClassName.empty())
+	if (Level.ClassName.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "NULL classname!\n");
 		return;
@@ -221,7 +221,7 @@ void ED_CallSpawn (SEntity *ServerEntity)
 
 	if (!MapEntity)
 	{
-		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", Level.ClassName.c_str());
+		MapPrint (MAPPRINT_ERROR, NULL, vec3fOrigin, "Invalid entity: %s (no spawn function)\n", Level.ClassName.CString());
 
 CC_DISABLE_DEPRECATION
 		G_FreeEdict (ServerEntity);
@@ -240,7 +240,7 @@ CC_ENABLE_DEPRECATION
 	}
 
 	// Link in the classname
-	if (MapEntity->ClassName.empty())
+	if (MapEntity->ClassName.IsNullOrEmpty())
 		MapEntity->ClassName = Level.ClassName;
 
 	if (CvarList[CV_MAP_DEBUG].Boolean())
@@ -294,7 +294,7 @@ static void ED_ParseEdict (CParser &Data, SEntity *ServerEntity)
 	// Go through all the dictionary pairs
 	while (true)
 	{
-		std::string		Key;
+		String			Key;
 
 		// Parse key
 		if (!Data.ParseToken (PSF_ALLOW_NEWLINES|PSF_TO_LOWER, Key))
@@ -303,7 +303,7 @@ static void ED_ParseEdict (CParser &Data, SEntity *ServerEntity)
 		if (Key[0] == '}')
 			break;
 
-		std::string		Value;
+		String			Value;
 		
 		// Parse value	
 		if (!Data.ParseToken (PSF_ALLOW_NEWLINES, Value) && Data.IsEOF())
@@ -387,10 +387,10 @@ static void G_FixTeams ()
 						continue;
 					if (!e2->GetInUse())
 						continue;
-					if (!e2->Team.HasTeam || e2->Team.String.empty())
+					if (!e2->Team.HasTeam || e2->Team.TeamString.IsNullOrEmpty())
 						continue;
 
-					if (e->Team.String == e2->Team.String)
+					if (e->Team.TeamString == e2->Team.TeamString)
 					{
 						c2++;
 						chain->Team.Chain = e2;
@@ -431,7 +431,7 @@ static void G_FindTeams ()
 			continue;
 		if (!e->GetInUse())
 			continue;
-		if (e->Team.String.empty())
+		if (e->Team.TeamString.IsNullOrEmpty())
 			continue;
 		if (e->IsSlave())
 			continue;
@@ -449,12 +449,12 @@ static void G_FindTeams ()
 				continue;
 			if (!e2->GetInUse())
 				continue;
-			if (e2->Team.String.empty())
+			if (e2->Team.TeamString.IsNullOrEmpty())
 				continue;
 			if (e2->IsSlave())
 				continue;
 
-			if (e->Team.String == e2->Team.String)
+			if (e->Team.TeamString == e2->Team.TeamString)
 			{
 				c2++;
 				chain->Team.Chain = e2;
@@ -476,8 +476,8 @@ static void G_FindTeams ()
 	{
 		IBaseEntity *e = Game.Entities[i].Entity;
 
-		if (e && e->Team.HasTeam && !e->Team.String.empty())
-			e->Team.String.clear();
+		if (e && e->Team.HasTeam && !e->Team.TeamString.IsNullOrEmpty())
+			e->Team.TeamString.Clear();
 	}
 }
 
@@ -502,7 +502,11 @@ void InitEntities ()
 		SEntity *ent = &Game.Entities[i];
 
 		if (!ent->Entity)
-			ent->Entity = QNewEntityOf CPlayerEntity(i);
+		{
+			CPlayerEntity *player = QNewEntityOf CPlayerEntity(i);
+			ent->Entity = player;
+			Game.Players.push_back(player);
+		}
 	}
 }
 
@@ -595,7 +599,7 @@ void CGameAPI::SpawnEntities (char *ServerLevelName, char *Entities, char *Spawn
 		while (true)
 		{
 			// Clear classname
-			Level.ClassName.clear ();
+			Level.ClassName.Clear ();
 
 			// Parse the opening brace
 			const char *token;

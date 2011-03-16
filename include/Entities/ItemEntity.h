@@ -78,7 +78,7 @@ enum
 class CItemEntity : public IMapEntity, public ITossProjectile, public ITouchableEntity, public IThinkableEntity, public IUsableEntity
 {
 public:
-	std::string			Model;
+	String				Model;
 	uint32				AmmoCount;
 	EItemThinkState		ThinkState;
 	bool				ShouldRespawn;

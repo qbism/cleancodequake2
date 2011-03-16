@@ -287,9 +287,9 @@ CFileHandleIndex *CFileHandleList::FS_GetHandle (FileHandle &fileNum)
 **/
 void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 {
-	if (Filter.empty())
+	if (Filter.IsNullOrEmpty())
 		Filter = "*";
-	if (Extension.empty())
+	if (Extension.IsNullOrEmpty())
 		Extension = "*";
 
 	// Search through the path, one element at a time
@@ -298,42 +298,40 @@ void CFindFiles::FindFiles (CFindFilesCallback *Callback)
 		CPathIndex *search = (*it);
 
 		// Directory tree
-		char dir[MAX_PATHNAME];
-		snprintf(dir, sizeof(dir), "%s/%s", search->pathName.c_str(), Path.c_str());
+		String dir = String::Format("%s/%s", search->pathName.CString(), Path.CString());
 
 		TFindFilesType dirFiles;
 
-		if (!Extension.empty())
+		if (!Extension.IsNullOrEmpty())
 		{
-			char ext[MAX_PATHNAME/4];
-			snprintf(ext, sizeof(ext), "*.%s", Extension.c_str());
+			String ext = String::Format("*.%s", Extension.CString());
 			Sys_FindFiles(dirFiles, dir, ext, Recurse, true, false);
 		}
 		else
-			Sys_FindFiles(dirFiles, dir, "*", Recurse, true, true);
+			Sys_FindFiles(dirFiles, dir, String("*"), Recurse, true, true);
 
 		for (size_t i = 0; i < dirFiles.size(); i++)
 		{
 			// Match filter
-			if (Filter.c_str())
+			if (Filter.CString())
 			{
-				if (!Q_WildcardMatch(Filter.c_str(), dirFiles[i].c_str()+search->pathName.length()+1, 1))
+				if (!Q_WildcardMatch(Filter.CString(), dirFiles[i].CString()+search->pathName.Count()+1, 1))
 					continue;
 			}
 
 			// Found something
-			const char *name = dirFiles[i].c_str() + search->pathName.length() + 1;
+			const char *name = dirFiles[i].CString() + search->pathName.Count() + 1;
 
 			// Ignore duplicates
 			bool bFound = false;
 			for (size_t z = 0; z < Files.size(); z++)
 			{
-				if (!Q_stricmp(Files[z].c_str(), name))
+				if (!Q_stricmp(Files[z].CString(), name))
 					break;
 			}
 
 			if (!bFound)
-				Files.push_back ((AddDir) ? dirFiles[i].c_str() : std::string(name));
+				Files.push_back ((AddDir) ? dirFiles[i] : String(name));
 		}
 	}
 

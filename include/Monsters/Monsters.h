@@ -242,7 +242,7 @@ public:
 	entity_ptr<IBaseEntity>		GoalEntity;
 	entity_ptr<IBaseEntity>		MoveTarget;
 	class IMonster				*Monster;
-	std::string					DeathTarget, CombatTarget;
+	String						DeathTarget, CombatTarget;
 	IBaseItem					*Item;
 
 	CMonsterEntity	();

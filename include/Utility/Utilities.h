@@ -35,8 +35,8 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #define CC_GUARD_UTILS_H
 
 typedef std::vector<IBaseEntity*> TTargetList;
-IBaseEntity *CC_PickTarget (std::string targetname);
-TTargetList CC_GetTargets (std::string targetname);
+IBaseEntity *CC_PickTarget (String targetname);
+TTargetList CC_GetTargets (String targetname);
 
 template <class TEntityType, uint32 EntityFlags, size_t FieldOfs>
 TEntityType *CC_Find (IBaseEntity *From, const char *Match)
@@ -62,8 +62,8 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 		// we don't need to cast just yet
 		if (EntityFlags & EF_BASE)
 		{
-			std::string s = *(std::string *) ((uint8 *)gameEnt->Entity + FieldOfs);
-			if (s.empty())
+			String s = *(String *) ((uint8 *)gameEnt->Entity + FieldOfs);
+			if (s.IsNullOrEmpty())
 				continue;
 			if (s == Match)
 				return entity_cast<TEntityType>(gameEnt->Entity);
@@ -71,8 +71,8 @@ TEntityType *CC_Find (IBaseEntity *From, const char *Match)
 		else
 		{
 			TEntityType *Check = entity_cast<TEntityType>(gameEnt->Entity);
-			std::string s = *(std::string*) ((uint8 *)Check + FieldOfs);
-			if (s.empty())
+			String s = *(String*) ((uint8 *)Check + FieldOfs);
+			if (s.IsNullOrEmpty())
 				continue;
 			if (s == Match)
 				return Check;
@@ -101,9 +101,9 @@ TEntityType *CC_FindByClassName (IBaseEntity *From, const char *Match)
 		if (!(gameEnt->Entity->EntityFlags & EntityFlags))
 			continue;
 
-		if (gameEnt->Entity->ClassName.empty())
+		if (gameEnt->Entity->ClassName.IsNullOrEmpty())
 			continue;
-		if (!Q_stricmp (gameEnt->Entity->ClassName.c_str(), Match))
+		if (!Q_stricmp (gameEnt->Entity->ClassName.CString(), Match))
 			return entity_cast<TEntityType>(gameEnt->Entity);
 	}
 

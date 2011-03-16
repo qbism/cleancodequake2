@@ -52,12 +52,12 @@ void CDebugWeapon::Think (CPlayerEntity *Player)
 
 		tr (Player->State.GetOrigin(), end, Player, CONTENTS_MASK_SHOT|CONTENTS_MASK_WATER);
 
-		if (tr.Fraction < 1 && tr.Entity && !tr.Entity->ClassName.empty())
+		if (tr.Fraction < 1 && tr.Entity && !tr.Entity->ClassName.IsNullOrEmpty())
 		{
 			if (!tr.Surface)
-				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Entity->ClassName.c_str()), Player);
+				ConfigString (CS_POINTING_SURFACE-1, const_cast<char*>(tr.Entity->ClassName.CString()), Player);
 			else
-				ConfigString (CS_POINTING_SURFACE-1, (tr.Entity->ClassName + " (" + tr.Surface->Name + ")").c_str(), Player);
+				ConfigString (CS_POINTING_SURFACE-1, (tr.Entity->ClassName + " (" + tr.Surface->Name + ")").CString(), Player);
 		}
 	}
 

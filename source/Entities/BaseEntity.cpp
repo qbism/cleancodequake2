@@ -59,21 +59,21 @@ IBaseEntity *GetGameEntity (sint32 Index)
 }
 
 CEntityField::CEntityField (const char *Name, size_t Offset, EFieldType FieldType, TValidateFieldFunction ValidateField) :
-Name(Q_strlwr(Name)),
-Offset(Offset),
-FieldType(FieldType),
-StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN)),
-ValidateField(ValidateField)
+  Name(String(Name).ToLower()),
+  Offset(Offset),
+  FieldType(FieldType),
+  StrippedFields(FieldType & ~(FT_GAME_ENTITY | FT_SAVABLE | FT_NOSPAWN)),
+  ValidateField(ValidateField)
 {
 };
 
 CEntityState::CEntityState () :
-state(NULL)
+  state(NULL)
 {
 };
 
 CEntityState::CEntityState (SEntityState *state) :
-state(state)
+  state(state)
 {
 };
 
@@ -1252,7 +1252,7 @@ ENTITYFIELDS_BEGIN(IMapEntity)
 	CEntityField ("angles",			GameEntityMemberOffset(Server.State.Angles),	FT_VECTOR | FT_GAME_ENTITY),
 	CEntityField ("angle",			GameEntityMemberOffset(Server.State.Angles),	FT_YAWANGLE | FT_GAME_ENTITY),
 	CEntityField ("light",			0,												FT_IGNORE),
-	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.String),	FT_STRING),
+	CEntityField ("team",			EntityMemberOffset(IBaseEntity,Team.TeamString),	FT_STRING),
 };
 ENTITYFIELDS_END(IMapEntity)
 
@@ -1282,7 +1282,7 @@ bool			IMapEntity::ParseField (const char *Key, const char *Value)
 	{
 		for (size_t i = 0; i < IMapEntity::FieldsForParsingSize_Map; i++)
 		{
-			if (!(IMapEntity::FieldsForParsing_Map[i].FieldType & FT_NOSPAWN) && (strcmp (Key, IMapEntity::FieldsForParsing_Map[i].Name.c_str()) == 0))
+			if (!(IMapEntity::FieldsForParsing_Map[i].FieldType & FT_NOSPAWN) && (strcmp (Key, IMapEntity::FieldsForParsing_Map[i].Name.CString()) == 0))
 			{
 				IMapEntity::FieldsForParsing_Map[i].Create<IMapEntity> (this, Value);
 				return true;
@@ -1386,7 +1386,7 @@ void IMapEntity::ParseFields ()
 	while (it != Level.ParseData.end())
 	{
 		CKeyValuePair *PairPtr = (*it);
-		if (ParseField (PairPtr->Key.c_str(), PairPtr->Value.c_str()))
+		if (ParseField (PairPtr->Key.CString(), PairPtr->Value.CString()))
 			Level.ParseData.erase (it++);
 		else
 			++it;
@@ -1399,7 +1399,7 @@ void IMapEntity::ParseFields ()
 		for (it = Level.ParseData.begin(); it != Level.ParseData.end(); ++it)
 		{
 			CKeyValuePair *PairPtr = (*it);
-			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key.c_str(), PairPtr->Value.c_str());
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is not a field (value = \"%s\")\n", PairPtr->Key.CString(), PairPtr->Value.CString());
 		}
 	}
 };

@@ -117,11 +117,11 @@ public:
 
 	EElectState		Election;			// election type
 	CPlayerEntity	*ElectionTarget;	// for CTF.Admin election, who's being elected
-	std::string		ElectionLevel;		// for map election, target level
+	String			ElectionLevel;		// for map election, target level
 	uint8			ElectionVotes;		// votes so far
 	uint8			ElectionNeedVotes;	// votes needed
 	FrameNumber		ElectionTimeEnd;	// remaining time until election times out
-	std::string		ElectionMessage;	// election name
+	String			ElectionMessage;	// election name
 
 	void Clear ()
 	{
@@ -131,11 +131,11 @@ public:
 		LastCaptureTeam = 0;
 		Election = 0;
 		ElectionTarget = NULL;
-		ElectionLevel.clear();
+		ElectionLevel.Clear();
 		ElectionVotes = 0;
 		ElectionNeedVotes = 0;
 		ElectionTimeEnd = 0;
-		ElectionMessage.clear();
+		ElectionMessage.Clear();
 	}
 };
 
@@ -338,7 +338,7 @@ void CTFOpenJoinMenu(CPlayerEntity *Player);
 **/
 class CCTFSayTeamCommand : public CGameCommandFunctor
 {
-	std::stringstream OutMessage;
+	String OutMessage;
 
 public:
 	/**

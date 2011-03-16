@@ -67,11 +67,8 @@ void VerifyVersionFile ()
 	CFileBuffer Buffer (VERSION_PATH, true);
 	CParser Parser (Buffer.GetBuffer<char> (), PSP_COMMENT_LINE);
 
-	const char *token;
-
-	std::string prefix;
-	Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
-	prefix = token;
+	String prefix;
+	Parser.ParseToken (PSF_ALLOW_NEWLINES, prefix);
 
 	uint8 minor;
 	uint16 major;
@@ -80,7 +77,7 @@ void VerifyVersionFile ()
 	Parser.ParseDataType<uint8> (PSF_ALLOW_NEWLINES, &minor, 1);
 	Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
-	if (CompareVersion (prefix.c_str(), major, minor, build))
+	if (CompareVersion (prefix.CString(), major, minor, build))
 	{
 		ServerPrint ("Version file out of date; updating...\n");
 		WriteVersion ();
@@ -112,12 +109,12 @@ WININET
 
 #include <WinInet.h>
 bool				VersionCheckReady;
-std::string			VersionPrefix;
+String				VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
 EVersionComparison	VersionReturnance;
-std::string			receiveBuffer;
+String				receiveBuffer;
 
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 HANDLE				hThread;
@@ -148,7 +145,7 @@ void CheckNewVersion ()
 {
 	HINTERNET iInternetHandle = InternetOpenA ("wininet-agent/1.0", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	
-	receiveBuffer.clear();
+	receiveBuffer.Clear();
 
 	if (iInternetHandle)
 	{
@@ -186,15 +183,12 @@ void CheckVersionReturnance ()
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
 	if (VersionCheckReady)
 	{
-		if (receiveBuffer.size() && (receiveBuffer[0] != '<'))
+		if (!receiveBuffer.IsNullOrEmpty() && (receiveBuffer[0] != '<'))
 		{
-			CParser Parser (receiveBuffer.c_str(), PSP_COMMENT_LINE);
+			CParser Parser (receiveBuffer.CString(), PSP_COMMENT_LINE);
 
-			const char *token;
-
-			std::string prefix;
-			Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
-			prefix = token;
+			String prefix;
+			Parser.ParseToken (PSF_ALLOW_NEWLINES, prefix);
 
 			uint8 minor;
 			uint16 major;
@@ -204,14 +198,14 @@ void CheckVersionReturnance ()
 			Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
 	#if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
-			VersionReturnance = CompareVersion (prefix.c_str(), major, minor, build);
+			VersionReturnance = CompareVersion (prefix.CString(), major, minor, build);
 			VersionPrefix = prefix;
 			VersionMinor = minor;
 			VersionMajor = major;
 			VersionBuild = build;
 			VersionCheckReady = true;
 	#else
-			if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
+			if (CompareVersion (prefix.CString(), minor, major, build) == VERSION_NEWER)
 				ServerPrintf (
 				"==================================\n"
 				"*****************************\n"
@@ -222,7 +216,7 @@ void CheckVersionReturnance ()
 				"*****************************\n"
 				"==================================\n",
 				CLEANCODE_VERSION_PRINT_ARGS,
-				prefix.c_str(), major, minor, build);
+				prefix.CString(), major, minor, build);
 			else
 				ServerPrint ("Your version of CleanCode is up to date.\n");
 	#endif
@@ -239,7 +233,7 @@ void CheckVersionReturnance ()
 			"*****************************\n"
 			"==================================\n",
 			CLEANCODE_VERSION_PRINT_ARGS,
-			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
+			VersionPrefix.CString(), VersionMajor, VersionMinor, VersionBuild);
 		else
 			ServerPrint ("Your version of CleanCode is up to date.\n");
 
@@ -304,7 +298,7 @@ DWORD				iID;
 long WINAPI			CheckNewVersionThread (long lParam);
 void				CheckVersionReturnance ();
 bool				VersionCheckReady;
-std::string		VersionPrefix;
+String				VersionPrefix;
 uint8				VersionMajor;
 uint16				VersionMinor;
 uint32				VersionBuild;
@@ -340,7 +334,7 @@ void CheckVersionReturnance ()
 			"*****************************\n"
 			"==================================\n",
 			CLEANCODE_VERSION_PRINT_ARGS,
-			VersionPrefix.c_str(), VersionMajor, VersionMinor, VersionBuild);
+			VersionPrefix.CString(), VersionMajor, VersionMinor, VersionBuild);
 		else
 			ServerPrint ("Your version of CleanCode is up to date.\n");
 
@@ -407,7 +401,7 @@ void CheckNewVersion ()
 
 		const char *token;
 
-		std::string prefix;
+		String prefix;
 		Parser.ParseToken (PSF_ALLOW_NEWLINES, &token);
 		prefix = token;
 
@@ -419,14 +413,14 @@ void CheckNewVersion ()
 		Parser.ParseDataType<uint32> (PSF_ALLOW_NEWLINES, &build, 1);
 
 #if defined(WIN32) && !defined(NO_MULTITHREAD_VERSION_CHECK)
-		VersionReturnance = CompareVersion (prefix.c_str(), major, minor, build);
+		VersionReturnance = CompareVersion (prefix.CString(), major, minor, build);
 		VersionPrefix = prefix;
 		VersionMinor = minor;
 		VersionMajor = major;
 		VersionBuild = build;
 		VersionCheckReady = true;
 #else
-		if (CompareVersion (prefix.c_str(), minor, major, build) == VERSION_NEWER)
+		if (CompareVersion (prefix.CString(), minor, major, build) == VERSION_NEWER)
 			ServerPrintf (
 			"==================================\n"
 			"*****************************\n"
@@ -437,7 +431,7 @@ void CheckNewVersion ()
 			"*****************************\n"
 			"==================================\n",
 			CLEANCODE_VERSION_PRINT_ARGS,
-			prefix.c_str(), major, minor, build);
+			prefix.CString(), major, minor, build);
 		else
 			ServerPrint ("Your version of CleanCode is up to date.\n");
 #endif
@@ -478,19 +472,19 @@ void InitVersion ()
 #endif
 }
 
-std::string ConfigTimeString ();
+String ConfigTimeString ();
 
 void CVersionCommand::Execute ()
 {
-	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT", built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
+	Player->PrintToClient (PRINT_HIGH, "This server is running CleanCode version "CLEANCODE_VERSION_PRINT", built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().CString());
 }
 
 void CServerVersionCommand::Execute ()
 {
 #if (VERSION_CHECKING != VC_NONE)
-	if (ArgGets (2).empty())
+	if (ArgGets (2).IsNullOrEmpty())
 #endif
-		ServerPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT" built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().c_str());
+		ServerPrintf ("This server is running CleanCode version "CLEANCODE_VERSION_PRINT" built on %s\n", CLEANCODE_VERSION_PRINT_ARGS, ConfigTimeString().CString());
 #if (VERSION_CHECKING != VC_NONE)
 	else
 		CheckNewVersion ();

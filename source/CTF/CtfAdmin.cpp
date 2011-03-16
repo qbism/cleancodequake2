@@ -36,7 +36,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #if CLEANCTF_ENABLED
 /**
-\fn	bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, std::string Message)
+\fn	bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, String Message)
 
 \brief	Begin an election. 
 
@@ -49,7 +49,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 \return	true if it succeeds, false if it fails. 
 **/
-bool CTFBeginElection(CPlayerEntity *Player, EElectState type, std::string msg);
+bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, String Message);
 
 class CCTFSettingsMenu : public CMenu
 {
@@ -90,7 +90,7 @@ public:
 			if (!!MyMenu->WeaponsStaySpin->Index != DeathmatchFlags.dfWeaponsStay.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s weapons stay.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->WeaponsStaySpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.CString(), MyMenu->WeaponsStaySpin->Index ? "on" : "off");
 
 				if (MyMenu->WeaponsStaySpin->Index)
 					i |= DF_WEAPONS_STAY;
@@ -101,7 +101,7 @@ public:
 			if (!!MyMenu->InstantItemsSpin->Index != DeathmatchFlags.dfInstantItems.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant items.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->InstantItemsSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.CString(), MyMenu->InstantItemsSpin->Index ? "on" : "off");
 
 				if (MyMenu->InstantItemsSpin->Index)
 					i |= DF_INSTANT_ITEMS;
@@ -112,7 +112,7 @@ public:
 			if (!!MyMenu->QuadDropSpin->Index != DeathmatchFlags.dfQuadDrop.IsEnabled())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s quad drop.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->QuadDropSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.CString(), MyMenu->QuadDropSpin->Index ? "on" : "off");
 
 				if (MyMenu->QuadDropSpin->Index)
 					i |= DF_QUAD_DROP;
@@ -125,7 +125,7 @@ public:
 			if (!!MyMenu->InstantWeaponsSpin->Index != CvarList[CV_INSTANT_WEAPONS].Boolean())
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s turned %s instant weapons.\n",
-					Player->Client.Persistent.Name.c_str(), MyMenu->InstantWeaponsSpin->Index ? "on" : "off");
+					Player->Client.Persistent.Name.CString(), MyMenu->InstantWeaponsSpin->Index ? "on" : "off");
 
 				CvarList[CV_INSTANT_WEAPONS].Set (MyMenu->InstantWeaponsSpin->Index);
 			}
@@ -344,11 +344,11 @@ public:
 
 void CCTFAdminCommand::Execute ()
 {
-	if (ArgCount() > 1 && CvarList[CV_ADMIN_PASSWORD].String() && *CvarList[CV_ADMIN_PASSWORD].String() &&
-		!Player->Client.Respawn.CTF.Admin && strcmp(CvarList[CV_ADMIN_PASSWORD].String(), ArgGets(1).c_str()) == 0)
+	if (ArgCount() > 1 && CvarList[CV_ADMIN_PASSWORD].StringValue() && *CvarList[CV_ADMIN_PASSWORD].StringValue() &&
+		!Player->Client.Respawn.CTF.Admin && strcmp(CvarList[CV_ADMIN_PASSWORD].StringValue(), ArgGets(1).CString()) == 0)
 	{
 		Player->Client.Respawn.CTF.Admin = true;
-		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", Player->Client.Persistent.Name.c_str());
+		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", Player->Client.Persistent.Name.CString());
 		Player->PrintToClient (PRINT_HIGH, "Type 'admin' to access the adminstration menu.\n");
 
 		return;

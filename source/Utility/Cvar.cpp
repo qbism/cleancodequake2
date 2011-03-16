@@ -83,14 +83,9 @@ void CCvar::Register(const char *cvarName, const char *defaultValue, ECvarFlags 
 	intVal = floatVal;
 }
 
-#include <sstream>
-static std::stringstream str;
 void CCvar::Register(const char *cvarName, float defaultValue, ECvarFlags flags)
 {
-	str.str("");
-	str << defaultValue;
-
-	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
+	cVar = gi.cvar ((char*)cvarName, ToString(defaultValue).CString(), flags);
 
 	mainValue = cVar->String;
 	floatVal = cVar->FloatVal;
@@ -99,10 +94,7 @@ void CCvar::Register(const char *cvarName, float defaultValue, ECvarFlags flags)
 
 void CCvar::Register(const char *cvarName, sint32 defaultValue, ECvarFlags flags)
 {
-	str.str("");
-	str << defaultValue;
-
-	cVar = gi.cvar ((char*)cvarName, (char*)str.str().c_str(), flags);
+	cVar = gi.cvar ((char*)cvarName, ToString(defaultValue).CString(), flags);
 
 	mainValue = cVar->String;
 	floatVal = cVar->FloatVal;
@@ -119,24 +111,22 @@ void CCvar::Set (const char *value, bool Force)
 
 void CCvar::Set (float value, bool Force)
 {
-	str.str("");
-	str << value;
+	String val = ToString(value);
 
 	if (!Force)
-		cVar = gi.cvar_set (cVar->Name, (char*)str.str().c_str());
+		cVar = gi.cvar_set (cVar->Name, (char*)val.CString());
 	else
-		cVar = gi.cvar_forceset (cVar->Name, (char*)str.str().c_str());
+		cVar = gi.cvar_forceset (cVar->Name, (char*)val.CString());
 }
 
 void CCvar::Set (sint32 value, bool Force)
 {
-	str.str("");
-	str << value;
+	String val = ToString(value);
 
 	if (!Force)
-		cVar = gi.cvar_set (cVar->Name, (char*)str.str().c_str());
+		cVar = gi.cvar_set (cVar->Name, (char*)val.CString());
 	else
-		cVar = gi.cvar_forceset (cVar->Name, (char*)str.str().c_str());
+		cVar = gi.cvar_forceset (cVar->Name, (char*)val.CString());
 }
 
 float CCvar::Float ()
@@ -151,7 +141,7 @@ sint32 CCvar::Integer ()
 	return intVal;
 }
 
-char *CCvar::String ()
+char *CCvar::StringValue ()
 {
 	Update ();
 	return mainValue;

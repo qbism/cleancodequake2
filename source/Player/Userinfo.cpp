@@ -33,7 +33,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 
-void CUserInfo::ParseUserInfo (const std::string &Str)
+void CUserInfo::ParseUserInfo (const String &Str)
 {
 	if (!Validate(Str))
 		return;
@@ -44,15 +44,15 @@ void CUserInfo::ParseUserInfo (const std::string &Str)
 
 	while (true)
 	{
-		std::string tempKey, tempValue;
+		String tempKey, tempValue;
 
-		if (curIndex >= Str.length() || Str[curIndex] == '\0')
+		if (curIndex >= Str.Count() || Str[curIndex] == '\0')
 			break;
 
 		bool fillingTempKey = true;
 		while (true)
 		{
-			if (curIndex >= Str.length() || Str[curIndex] == '\0')
+			if (curIndex >= Str.Count() || Str[curIndex] == '\0')
 				break;
 			if (Str[curIndex] == '\\')
 			{

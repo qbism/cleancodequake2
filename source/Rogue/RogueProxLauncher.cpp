@@ -234,7 +234,7 @@ public:
 
 			while ((search = FindRadius<EF_BASE> (search, State.GetOrigin(), PROX_DAMAGE_RADIUS+10)) != NULL)
 			{
-				if (search->ClassName.empty())			// tag token and other weird shit
+				if (search->ClassName.IsNullOrEmpty())			// tag token and other weird shit
 					continue;
 				if (search->ClassName == "prox" ||
 					search->ClassName == "prox_field" ||
@@ -251,10 +251,10 @@ public:
 						(
 							(Game.GameMode & GAME_DEATHMATCH) && 
 							(
-							(!strcmp(search->ClassName.c_str(), "info_player_deathmatch")) ||
-							(!strcmp(search->ClassName.c_str(), "info_player_start")) ||
-							(!strcmp(search->ClassName.c_str(), "info_player_coop")) ||
-							(!strcmp(search->ClassName.c_str(), "misc_teleporter_dest"))
+							(!strcmp(search->ClassName.CString(), "info_player_deathmatch")) ||
+							(!strcmp(search->ClassName.CString(), "info_player_start")) ||
+							(!strcmp(search->ClassName.CString(), "info_player_coop")) ||
+							(!strcmp(search->ClassName.CString(), "misc_teleporter_dest"))
 							)
 						)
 					) 

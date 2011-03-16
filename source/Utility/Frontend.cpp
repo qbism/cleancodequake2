@@ -46,10 +46,10 @@ bool Sys_GetGameAPI ()
 	string fileName;
 
 	CCvar Game ("game", "");
-	fileName += Game.String();
+	fileName += Game.StringValue();
 	fileName += "/gamex86.dll";
 
-	Library = LoadLibrary(fileName.c_str());
+	Library = LoadLibrary(fileName.CString());
 
 	if (!Library)
 		return false;

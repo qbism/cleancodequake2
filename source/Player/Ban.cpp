@@ -84,10 +84,10 @@ void CBanList::LoadFromFile ()
 		if (File.EndOfFile())
 			break;
 
-		std::string line = File.ReadLine ();
+		String line = File.ReadLine ();
 		
 		// Parse the line.
-		CParser Parser (line.c_str(), PSP_COMMENT_MASK);
+		CParser Parser (line.CString(), PSP_COMMENT_MASK);
 
 		const char *token;
 		if (!Parser.ParseToken (PSF_ALLOW_NEWLINES, &token))

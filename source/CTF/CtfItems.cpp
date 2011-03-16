@@ -63,7 +63,7 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 			if (Other->Client.Persistent.Flag && (Other->Client.Persistent.Flag != this))
 			{
 				BroadcastPrintf(PRINT_HIGH, "%s captured the %s flag!\n",
-						Other->Client.Persistent.Name.c_str(), CTFOtherTeamName(team));
+						Other->Client.Persistent.Name.CString(), CTFOtherTeamName(team));
 
 				// Ping the transponder; tell it we moved back to base.
 				CFlagTransponder *Transponder = FindTransponder(Other->Client.Persistent.Flag->team);
@@ -100,12 +100,12 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 						// award extra points for capture assists
 						if (player->Client.Respawn.CTF.LastReturnedFlag + CTF_RETURN_FLAG_ASSIST_TIMEOUT > Level.Frame)
 						{
-							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for returning the flag!\n", player->Client.Persistent.Name.c_str());
+							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for returning the flag!\n", player->Client.Persistent.Name.CString());
 							player->Client.Respawn.Score += CTF_RETURN_FLAG_ASSIST_BONUS;
 						}
 						if (player->Client.Respawn.CTF.LastFraggedCarrier + CTF_FRAG_CARRIER_ASSIST_TIMEOUT > Level.Frame)
 						{
-							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for fragging the flag carrier!\n", player->Client.Persistent.Name.c_str());
+							BroadcastPrintf(PRINT_HIGH, "%s gets an assist for fragging the flag carrier!\n", player->Client.Persistent.Name.CString());
 							player->Client.Respawn.Score += CTF_FRAG_CARRIER_ASSIST_BONUS;
 						}
 					}
@@ -119,7 +119,7 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 
 		// hey, its not home.  return it by teleporting it back
 		BroadcastPrintf(PRINT_HIGH, "%s returned the %s flag!\n", 
-			Other->Client.Persistent.Name.c_str(), CTFTeamName(team));
+			Other->Client.Persistent.Name.CString(), CTFTeamName(team));
 		Other->Client.Respawn.Score += CTF_RECOVERY_BONUS;
 		Other->Client.Respawn.CTF.LastReturnedFlag = Level.Frame;
 		Item->PlaySound (CHAN_RELIABLE+CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex("ctf/flagret.wav"), 255, ATTN_NONE);
@@ -136,7 +136,7 @@ bool CFlag::Pickup(CItemEntity *Item, CPlayerEntity *Other)
 
 	// hey, its not our flag, pick it up
 	BroadcastPrintf(PRINT_HIGH, "%s got the %s flag!\n",
-		Other->Client.Persistent.Name.c_str(), CTFTeamName(team));
+		Other->Client.Persistent.Name.CString(), CTFTeamName(team));
 	Other->Client.Respawn.Score += CTF_FLAG_BONUS;
 
 	CFlagEntity *Flag = entity_cast<CFlagEntity>(Item);

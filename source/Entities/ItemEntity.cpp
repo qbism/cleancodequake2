@@ -172,7 +172,7 @@ void CItemEntity::Think ()
 			GetMins().Set (-15);
 			GetMaxs().Set (15);
 
-			State.GetModelIndex() = ModelIndex((!Model.empty()) ? Model.c_str() : LinkedItem->WorldModel);
+			State.GetModelIndex() = ModelIndex((!Model.IsNullOrEmpty()) ? Model.CString() : LinkedItem->WorldModel);
 			GetSolid() = SOLID_TRIGGER; 
 			Touchable = true;
 			PhysicsType = PHYSICS_TOSS;

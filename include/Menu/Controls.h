@@ -76,7 +76,7 @@ enum
 class CMenu_Label : public CMenuItem
 {
 public:
-	std::string			LabelString;
+	String					LabelString;
 	ELabelFlags				Flags;
 	ELabelAlign				Align;
 
@@ -99,8 +99,8 @@ public:
 class CMenu_Image : public CMenuItem
 {
 public:
-	std::string			ImageString;
-	sint32						Width, Height;
+	String					ImageString;
+	sint32					Width, Height;
 
 	CMenu_Image				(CMenu *Menu, sint32 x, sint32 y);
 	virtual void Draw		(CPlayerEntity *Player, CStatusBar *DrawState);
@@ -177,14 +177,14 @@ class CMenu_Slider : public CMenuItem
 public:
 	ELabelAlign				Align;
 	ESliderTextPosition		TextAlign;
-	sint32						TextX, TextY;
+	sint32					TextX, TextY;
 	uint8					Width;
 
 	TType					Min;
 	TType					Max;
 	TType					Step;
 	TType					Value;
-	std::string			AppendText;
+	String					AppendText;
 
 	CMenu_Slider			(CMenu *Menu, sint32 x, sint32 y) :
 	  CMenuItem(Menu, x, y)
@@ -248,9 +248,7 @@ public:
 
 		DrawState->AddVirtualPoint_X (drawX);
 
-		std::stringstream str;
-		str << Value << AppendText;
-		DrawState->AddString (str.str().c_str(), Selected, false);
+		DrawState->AddString (String::Format("%d%s", (int)Value, AppendText.CString()), Selected, false);
 	};
 
 	virtual bool	CanSelect (CPlayerEntity *Player)

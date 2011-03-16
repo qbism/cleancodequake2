@@ -55,10 +55,10 @@ void CMenu_Label::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 			arrowX += (160 - 12);
 			break;
 		case LA_CENTER:
-			arrowX -= 8 + (((sint32)(LabelString.size())*8)/2);
+			arrowX -= 8 + (((sint32)(LabelString.Count())*8)/2);
 			break;
 		case LA_RIGHT:
-			arrowX += (160 - ((sint32)(LabelString.size())*8)) - 12;
+			arrowX += (160 - ((sint32)(LabelString.Count())*8)) - 12;
 			break;
 		}
 		DrawState->AddVirtualPoint_X (arrowX);
@@ -76,12 +76,12 @@ void CMenu_Label::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 	case LA_CENTER:
 		break;
 	case LA_RIGHT:
-		drawX += 160 - ((sint32)(LabelString.size())*8);
+		drawX += 160 - ((sint32)(LabelString.Count())*8);
 		break;
 	}
 
 	DrawState->AddVirtualPoint_X (drawX);
-	DrawState->AddString (LabelString.c_str(), high, (Align == LA_CENTER));
+	DrawState->AddString (LabelString.CString(), high, (Align == LA_CENTER));
 };
 
 CMenu_Image::CMenu_Image (CMenu *Menu, sint32 x, sint32 y) :
@@ -93,7 +93,7 @@ void CMenu_Image::Draw (CPlayerEntity *Player, CStatusBar *DrawState)
 {
 	DrawState->AddVirtualPoint_X ((x + 160) - Width/2);
 	DrawState->AddVirtualPoint_Y ((y + 120) - Height/2);
-	DrawState->AddPic (ImageString.c_str());
+	DrawState->AddPic (ImageString.CString());
 
 	if (Selected)
 	{

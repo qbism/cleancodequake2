@@ -40,7 +40,7 @@ class CIndex
 {
 public:
 	MediaIndex		Index;
-	std::string		Name;
+	String			Name;
 };
 
 const int MAX_INDEXES = 256;

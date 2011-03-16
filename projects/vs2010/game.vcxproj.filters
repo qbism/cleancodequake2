@@ -445,6 +445,18 @@
     <ClInclude Include="..\..\shared\Templates\Events.h">
       <Filter>Shared\Templates</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\Exceptions.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Path.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\String.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\TList.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shared">

@@ -38,10 +38,10 @@ void			SetupArg ();
 void			InitArg ();
 void			EndArg ();
 uint8			ArgCount ();
-std::string		ArgGets (uint32 Index);
+String			ArgGets (uint32 Index);
 sint32			ArgGeti (uint32 Index);
 float			ArgGetf (uint32 Index);
-std::string		ArgGetConcatenatedString ();
+String			ArgGetConcatenatedString ();
 
 #else
 FILE_WARNING

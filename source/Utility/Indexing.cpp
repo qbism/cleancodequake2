@@ -51,7 +51,7 @@ sint32 CIndexList::GetIndex (const char *String)
 	for (THashedMediaIndexListType::iterator it = HashList.equal_range(hash).first; it != HashList.equal_range(hash).second; ++it)
 	{
 		CIndex *Index = List.at((*it).second);
-		if (Q_stricmp (Index->Name.c_str(), String) == 0)
+		if (Q_stricmp (Index->Name.CString(), String) == 0)
 			return Index->Index;
 	}
 	return -1;
@@ -86,7 +86,7 @@ const char *StringFromSoundIndex (MediaIndex Index)
 {
 	if (SoundList.ListMap.find(Index) == SoundList.ListMap.end())
 		return NULL;
-	return (*SoundList.ListMap.find(Index)).second->Name.c_str();
+	return (*SoundList.ListMap.find(Index)).second->Name.CString();
 }
 
 const char *StringFromModelIndex (MediaIndex Index)
@@ -95,14 +95,14 @@ const char *StringFromModelIndex (MediaIndex Index)
 		return NULL;
 	if (ModelList.ListMap.find(Index) == ModelList.ListMap.end())
 		return NULL;
-	return (*ModelList.ListMap.find(Index)).second->Name.c_str();
+	return (*ModelList.ListMap.find(Index)).second->Name.CString();
 }
 
 const char *StringFromImageIndex (MediaIndex Index)
 {
 	if (ImageList.ListMap.find(Index) == ImageList.ListMap.end())
 		return NULL;
-	return (*ImageList.ListMap.find(Index)).second->Name.c_str();
+	return (*ImageList.ListMap.find(Index)).second->Name.CString();
 }
 
 CC_DISABLE_DEPRECATION
@@ -210,10 +210,10 @@ void CIndexList::Read (CFile &File)
 
 	for (size_t i = 0; i < len; ++i)
 	{
-		std::string str = File.ReadString();
+		String str = File.ReadString();
 		MediaIndex index = File.Read<MediaIndex> ();
 
-		AddToList (str.c_str(), index);
+		AddToList (str.CString(), index);
 	}
 }
 
@@ -278,15 +278,15 @@ void CServerCmdIndexList::Execute ()
 {
 	ServerPrintf ("Models: (%u) + %u inline\n", ModelList.numIndexes, ModelList.firstIndex);
 	for (uint8 i = 0; i < ModelList.numIndexes; i++)
-		ServerPrintf ("%s\n", ModelList.List[i]->Name.c_str());
+		ServerPrintf ("%s\n", ModelList.List[i]->Name.CString());
 
 	ServerPrintf ("\nSounds: (%u)\n", SoundList.numIndexes);
 	for (uint8 i = 0; i < SoundList.numIndexes; i++)
-		ServerPrintf ("%s\n", SoundList.List[i]->Name.c_str());
+		ServerPrintf ("%s\n", SoundList.List[i]->Name.CString());
 
 	ServerPrintf ("\nImages: (%u)\n", ImageList.numIndexes);
 	for (uint8 i = 0; i < ImageList.numIndexes; i++)
-		ServerPrintf ("%s\n", ImageList.List[i]->Name.c_str());
+		ServerPrintf ("%s\n", ImageList.List[i]->Name.CString());
 
 	ServerPrintf ("\nTotal: %u\n", ModelList.numIndexes + SoundList.numIndexes + ImageList.numIndexes);
 }

@@ -126,7 +126,7 @@ enum
 class CPathIndex
 {
 public:
-	std::string		pathName;	// Full path name
+	String			pathName;	// Full path name
 
 	/**
 	\fn	CPathIndex ()
@@ -139,7 +139,7 @@ public:
 	CPathIndex () {}
 
 	/**
-	\fn	CPathIndex (std::string pathName)
+	\fn	CPathIndex (String pathName)
 	
 	\brief	Constructor. 
 	
@@ -148,7 +148,7 @@ public:
 	
 	\param	pathName	Full path name
 	**/
-	CPathIndex (std::string pathName) :
+	CPathIndex (String pathName) :
 	  pathName(pathName)
 	  {
 	  };
@@ -222,7 +222,7 @@ class CFileHandleIndex
 {
 public:
 	FileHandle				handleIndex;	// Zero-based index of the handle
-	std::string				name;	// The name (usually full file name)
+	String					name;	// The name (usually full file name)
 
 	bool					inUse;	// True if this handle is currently loaded
 	EFileType				fileType;	// Type of the file
@@ -285,7 +285,7 @@ public:
 	**/
 	void Clear ()
 	{
-		name.clear();
+		name.Clear();
 		inUse = false;
 		openMode = FILEMODE_NONE;
 		file.reg = NULL;
@@ -620,10 +620,10 @@ public:
 		// Search each of the search paths
 		for (TPathListType::iterator it = PathList.begin(); it < PathList.end(); ++it)
 		{
-			std::string newFileName;
+			String newFileName;
 			CPathIndex *Index = (*it);
 
-			char slashCheck = Index->pathName[Index->pathName.length()-1];
+			char slashCheck = Index->pathName[Index->pathName.Count()-1];
 			if (slashCheck != '\\' && slashCheck != '/')
 				newFileName = Index->pathName + "/" + fileName;
 			else
@@ -631,9 +631,9 @@ public:
 
 			// Try opening it
 			if (Mode & FILEMODE_GZ)
-				fp = gzopen(newFileName.c_str(), openMode);
+				fp = gzopen(newFileName.CString(), openMode);
 			else
-				fp = fopen(newFileName.c_str(), openMode);
+				fp = fopen(newFileName.CString(), openMode);
 
 			if (fp != NULL)
 				break; // We got it
@@ -794,18 +794,18 @@ public:
 	};
 
 	/**
-	\fn	void Write (const std::string &Ref)
+	\fn	void Write (const String &Ref)
 	
-	\brief	Writes an std::string to the file
+	\brief	Writes an String to the file
 	
 	\author	Paril
 	\date	25/05/2010
 	
 	\param	Ref	The string. 
 	**/
-	void Write (const std::string &Ref)
+	void Write (const String &Ref)
 	{
-		WriteString(Ref.c_str());
+		WriteString(Ref.CString());
 	};
 
 	/**
@@ -939,40 +939,40 @@ public:
 	};
 
 	/**
-	\fn	std::string ReadString ()
+	\fn	String ReadString ()
 	
-	\brief	Reads a dynamic std::string from a file.
+	\brief	Reads a dynamic String from a file.
 	
-	\return	The std::string. 
+	\return	The String. 
 	**/
-	std::string ReadString ()
+	String ReadString ()
 	{
 		if (!Handle)
-			return "";
+			return String::Empty();
 
 		char *stringBuffer = ReadString(TAG_GENERIC);
 
 		if (!stringBuffer)
-			return "";
+			return String::Empty();
 
-		std::string str (stringBuffer);
+		String str (stringBuffer);
 		QDelete[] stringBuffer;
 		return str;
 	};
 
 	/**
-	\fn	std::string ReadLine ()
+	\fn	String ReadLine ()
 	
 	\brief	Reads an entire line from the file
 	
 	\return	The line. 
 	**/
-	std::string ReadLine ()
+	String ReadLine ()
 	{
 		if (!Handle)
-			return "";
+			return String::Empty();
 
-		std::string tempStr;
+		String tempStr;
 
 		while (true)
 		{
@@ -1003,9 +1003,9 @@ public:
 		if (!Handle)
 			return;
 
-		std::string line = ReadLine ();
+		String line = ReadLine ();
 
-		Q_snprintfz (buf, maxSize-1, "%s", line.c_str());
+		Q_snprintfz (buf, maxSize-1, "%s", line.CString());
 		buf[maxSize-1] = 0;
 	};
 
@@ -1268,13 +1268,13 @@ public:
 	};
 };
 
-inline CFile &operator<< (CFile &Stream, std::string &val)
+inline CFile &operator<< (CFile &Stream, String &val)
 {
 	Stream.Write (val);
 	return Stream;
 };
 
-inline CFile &operator>> (CFile &Stream, std::string &val)
+inline CFile &operator>> (CFile &Stream, String &val)
 {
 	val = Stream.ReadString ();
 	return Stream;
@@ -1408,11 +1408,11 @@ public:
 };
 
 /**
-\typedef	std::vector<std::string> TFindFilesType
+\typedef	std::vector<String> TFindFilesType
 
 \brief	Defines an alias representing the list used by CFindFiles.
 **/
-typedef std::vector<std::string> TFindFilesType;
+typedef std::vector<String> TFindFilesType;
 
 /**
 \class	CFindFilesCallback
@@ -1428,7 +1428,7 @@ class CFindFilesCallback
 {
 public:
 	/**
-	\fn	virtual void Query (std::string &fileName)
+	\fn	virtual void Query (String &fileName)
 	
 	\brief	Query function; must be overriden to do anything.
 			This is called for every file that is found.
@@ -1438,7 +1438,7 @@ public:
 	
 	\param [in,out]	fileName	Filename of the file. 
 	**/
-	virtual void Query (std::string &fileName) {};
+	virtual void Query (String &fileName) {};
 };
 
 /**
@@ -1454,9 +1454,9 @@ public:
 class CFindFiles
 {
 public:
-	std::string		Path;	// Path to find in
-	std::string		Filter;	// The filter
-	std::string		Extension;	// The extension
+	String			Path;	// Path to find in
+	String			Filter;	// The filter
+	String			Extension;	// The extension
 	bool			AddDir;	// true to add the full path to the found files
 	bool			Recurse;	// true to process recursively, false to process locally to Path only
 	TFindFilesType	Files;	// The files that were found

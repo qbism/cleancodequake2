@@ -252,7 +252,7 @@ public:
 	{
 		CanTakeDamage = false;
 
-		if (Attacker && !(strcmp(Attacker->ClassName.c_str(), "nuke")))
+		if (Attacker && !(strcmp(Attacker->ClassName.CString(), "nuke")))
 		{
 			Free ();	
 			return;

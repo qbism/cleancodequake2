@@ -37,7 +37,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 class CStatusBar
 {
-	std::string		Bar;
+	String			Bar;
 
 public:
 	CStatusBar();
@@ -53,9 +53,9 @@ public:
 	void AddPoint_Y (sint32 y, bool inverted);
 	void AddString (const char *string, bool highBit = false, bool center = false);
 
-	inline void AddString (const std::string str, bool highBit = false, bool center = false)
+	inline void AddString (const String &str, bool highBit = false, bool center = false)
 	{
-		AddString (str.c_str(), highBit, center);
+		AddString (str.CString(), highBit, center);
 	}
 
 	void AddStatString (sint32 statIndex);

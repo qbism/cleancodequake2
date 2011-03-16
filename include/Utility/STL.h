@@ -38,8 +38,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #include <stdarg.h>
 #endif
 
-#include <string>
-#include <sstream>
 #include <vector>
 #include <list>
 #include <map>

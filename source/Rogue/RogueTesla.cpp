@@ -249,12 +249,12 @@ void CTesla::DoneActivate ()
 			// if it's a deathmatch start point
 			// and we can see it
 			// blow up
-			if (!Search->ClassName.empty())
+			if (!Search->ClassName.IsNullOrEmpty())
 			{
-				if ( ( (!strcmp(Search->ClassName.c_str(), "info_player_deathmatch"))
-					|| (!strcmp(Search->ClassName.c_str(), "info_player_start"))
-					|| (!strcmp(Search->ClassName.c_str(), "info_player_coop"))
-					|| (!strcmp(Search->ClassName.c_str(), "misc_teleporter_dest"))) 
+				if ( ( (!strcmp(Search->ClassName.CString(), "info_player_deathmatch"))
+					|| (!strcmp(Search->ClassName.CString(), "info_player_start"))
+					|| (!strcmp(Search->ClassName.CString(), "info_player_coop"))
+					|| (!strcmp(Search->ClassName.CString(), "misc_teleporter_dest"))) 
 					&& (IsVisible (Search, this)))
 				{
 					Remove ();

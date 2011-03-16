@@ -222,17 +222,17 @@ public:
 		std::sort (index.begin(), index.end(), PlayerSort);
 
 		// print information
-		std::string Large;
+		String Large;
 
 		for (uint8 i = 0; i < index.size(); i++)
 		{
 			CPlayerEntity *LoopPlayer = entity_cast<CPlayerEntity>(Game.Entities[i+1].Entity);
-			std::string Small = FormatString ("%i: %3i %s\n",
+			String Small = String::Format ("%i: %3i %s\n",
 				LoopPlayer->State.GetNumber(),
 				LoopPlayer->Client.PlayerState.GetStat(STAT_FRAGS),
-				LoopPlayer->Client.Persistent.Name.c_str());
+				LoopPlayer->Client.Persistent.Name.CString());
 
-			if (Small.size() > 512)
+			if (Small.Count() > 512)
 			{
 				// can't print all of them in one packet
 				Large += "...\n";
@@ -242,7 +242,7 @@ public:
 			Large += Small;
 		}
 
-		Player->PrintToClient (PRINT_HIGH, "%s\n%u players\n", Large.c_str(), index.size());
+		Player->PrintToClient (PRINT_HIGH, "%s\n%u players\n", Large.CString(), index.size());
 	}
 };
 
@@ -311,9 +311,9 @@ const int MAX_TALK_STRING = 100;
 class CSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
-	std::string &Text;
+	String &Text;
 
-	CSayPlayerCallback (std::string &Text) :
+	CSayPlayerCallback (String &Text) :
 	Text(Text)
 	{
 	};
@@ -322,7 +322,7 @@ public:
 
 	void Callback (CPlayerEntity *Player)
 	{
-		Player->PrintToClient (PRINT_CHAT, "%s", Text.c_str());
+		Player->PrintToClient (PRINT_CHAT, "%s", Text.CString());
 	}
 };
 
@@ -341,12 +341,12 @@ class CCmdSayCommandBase : public CGameCommandFunctor
 public:
 	void Execute (bool team, bool arg0)
 	{
-		static std::string text;
+		static String text;
 
 		if (ArgCount () < 2 && !arg0)
 			return;
 
-		if (Bans.IsSquelched(Player->Client.Persistent.IP) || Bans.IsSquelched(Player->Client.Persistent.Name.c_str()))
+		if (Bans.IsSquelched(Player->Client.Persistent.IP) || Bans.IsSquelched(Player->Client.Persistent.Name.CString()))
 		{
 			Player->PrintToClient (PRINT_HIGH, "You are squelched and may not talk.\n");
 			return;
@@ -355,24 +355,24 @@ public:
 		if (!(DeathmatchFlags.dfSkinTeams.IsEnabled() || DeathmatchFlags.dfModelTeams.IsEnabled()))
 			team = false;
 
-		text = (team) ? ("(" + Player->Client.Persistent.Name + "): ") : (Player->Client.Persistent.Name + ": ");
+		text = String::Format((team) ? "(%s): " : "%s: ", Player->Client.Persistent.Name.CString());
 
 		if (arg0)
 			text += ArgGets(0) + " " + ArgGetConcatenatedString();
 		else
 		{
-			std::string p = ArgGetConcatenatedString();
+			String p = ArgGetConcatenatedString();
 
 			if (p[0] == '"')
 			{
-				p.erase (0, 1);
-				p.erase (p.end()-1);
+				p.Remove (0, 1);
+				p.Remove (p.Count()-1);
 			}
 
 	#if CLEANCODE_IRC
-			if (!p.empty() && p[0] == '!' && Player->Client.Respawn.IRC.Connected())
+			if (!p.IsNullOrEmpty() && p[0] == '!' && Player->Client.Respawn.IRC.Connected())
 			{
-				Player->Client.Respawn.IRC.SendMessage (p.substr (1));
+				Player->Client.Respawn.IRC.SendMessage (p.Substring (1));
 				return;
 			}
 	#endif
@@ -381,8 +381,8 @@ public:
 		}
 
 		// don't let text be too long for malicious reasons
-		if (text.length() >= MAX_TALK_STRING-1)
-			text.erase (MAX_TALK_STRING-1);
+		if (text.Count() >= MAX_TALK_STRING-1)
+			text.Remove (MAX_TALK_STRING-1);
 
 		text += "\n";
 
@@ -390,7 +390,7 @@ public:
 			return;
 
 		if (CvarList[CV_DEDICATED].Integer())
-			ServerPrintf ("%s", text.c_str());
+			ServerPrintf ("%s", text.CString());
 
 		CSayPlayerCallback (text).Query ();
 	}
@@ -447,14 +447,13 @@ public:
 class CPlayerListCallback : public CForEachPlayerCallback
 {
 public:
-	std::string		&Text;
+	String			&Text;
 	size_t			SizeOf;
 	CPlayerEntity	*Ent;
 	bool			Spectator;
 
-	CPlayerListCallback (std::string &Text, size_t SizeOf, CPlayerEntity *Ent) :
+	CPlayerListCallback (String &Text, CPlayerEntity *Ent) :
 	  Text(Text),
-	  SizeOf(SizeOf),
 	  Ent(Ent),
 	  Spectator(false)
 	{
@@ -464,25 +463,24 @@ public:
 
 	bool DoCallback (CPlayerEntity *Player)
 	{
-		static std::string tempString;
-		tempString.clear();
+		String tempString;
 
 		if (!Spectator)
-			tempString = FormatString(" - %02d:%02d %4d %3d %s\n",
+			tempString = String::Format(" - %02d:%02d %4d %3d %s\n",
 				(Level.Frame - Player->Client.Respawn.EnterFrame) / 600,
 				((Level.Frame - Player->Client.Respawn.EnterFrame) % 600)/10,
 				Player->Client.GetPing(),
 				Player->Client.Respawn.Score,
-				Player->Client.Persistent.Name.c_str());
+				Player->Client.Persistent.Name.CString());
 		else
-			tempString = FormatString(" - %s%s\n",
-				Player->Client.Persistent.Name.c_str(),
+			tempString = String::Format(" - %s%s\n",
+				Player->Client.Persistent.Name.CString(),
 				Player->Client.Respawn.Spectator ? " (Spectator)" : "");
 
-		if (Text.size() + tempString.size() > SizeOf - 50)
+		if (Text.Count() + tempString.Count() > 250)
 		{
 			Text += "And more...\n";
-			Ent->PrintToClient (PRINT_HIGH, "%s", Text.c_str());
+			Ent->PrintToClient (PRINT_HIGH, "%s", Text.CString());
 			return true;
 		}
 
@@ -528,17 +526,17 @@ public:
 **/
 void CPlayerListCommand::Execute ()
 {
-	static std::string text;
-	text.clear();
+	static String text;
+	text.Clear();
 		
 	// connect time, ping, Score, name
 	text = "Spawned:\n";
-	CPlayerListCallback(text, sizeof(text), Player).DoQuery (false);
+	CPlayerListCallback(text, Player).DoQuery (false);
 
 	text += "\n\nConnecting:\n";
-	CPlayerListCallback(text, sizeof(text), Player).DoQuery (true);
+	CPlayerListCallback(text, Player).DoQuery (true);
 
-	Player->PrintToClient (PRINT_HIGH, "%s", text.c_str());
+	Player->PrintToClient (PRINT_HIGH, "%s", text.CString());
 };
 
 /**
@@ -673,6 +671,6 @@ ClientCommand
 void CGameAPI::ClientCommand (CPlayerEntity *Player)
 {
 	InitArg ();
-	Cmd_RunCommand (ArgGets(0).c_str(), Player);
+	Cmd_RunCommand (ArgGets(0).CString(), Player);
 	EndArg ();
 }

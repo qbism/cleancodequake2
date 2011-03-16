@@ -926,7 +926,7 @@ public:
 class CWorldEntity : public IMapEntity, public IBrushModel
 {
 public:
-	std::string		Message, Gravity, Sky, NextMap;
+	String			Message, Gravity, Sky, NextMap;
 	vec3f			SkyAxis;
 	float			SkyRotate;
 

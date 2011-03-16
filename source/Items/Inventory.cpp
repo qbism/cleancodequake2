@@ -232,16 +232,16 @@ Use an inventory item
 */
 void CUseCommand::Execute ()
 {
-	std::string s = ArgGetConcatenatedString();
-	IBaseItem *Item = FindItem(s.c_str());
+	String s = ArgGetConcatenatedString();
+	IBaseItem *Item = FindItem(s.CString());
 
 	if (!Item)
 	{
-		Item = FindItemByClassname(s.c_str());
+		Item = FindItemByClassname(s.CString());
 
 		if (!Item)
 		{
-			Player->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.c_str());
+			Player->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.CString());
 			return;
 		}
 	}
@@ -252,7 +252,7 @@ void CUseCommand::Execute ()
 	}
 	if ((!(Item->Flags & ITEMFLAG_WEAPON)) && !Player->Client.Persistent.Inventory.Has(Item))
 	{
-		Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.c_str());
+		Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.CString());
 		return;
 	}
 
@@ -273,16 +273,16 @@ void CUseListCommand::Execute ()
 {
 	for (sint32 i = 1; i < ArgCount(); i++)
 	{
-		std::string s = ArgGets(i);
-		IBaseItem *Item = FindItem(s.c_str());
+		String s = ArgGets(i);
+		IBaseItem *Item = FindItem(s.CString());
 
 		if (!Item)
 		{
-			Item = FindItemByClassname(s.c_str());
+			Item = FindItemByClassname(s.CString());
 
 			if (!Item)
 			{
-				Player->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.c_str());
+				Player->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.CString());
 				continue;
 			}
 		}
@@ -320,9 +320,9 @@ Drop an inventory item
 */
 void CDropCommand::Execute ()
 {
-	std::string s = ArgGetConcatenatedString();
+	String s = ArgGetConcatenatedString();
 
-	if (Q_stricmp (s.c_str(), "tech") == 0)
+	if (s.CompareCaseInsensitive("tech") == 0)
 	{
 		if (Player->Client.Persistent.Tech)
 		{
@@ -332,25 +332,25 @@ void CDropCommand::Execute ()
 		return;
 	}
 
-	IBaseItem *Item = FindItem(s.c_str());
+	IBaseItem *Item = FindItem(s.CString());
 	if (!Item)
 	{
-		Item = FindItemByClassname(s.c_str());
+		Item = FindItemByClassname(s.CString());
 
 		if (!Item)
 		{
-			Player->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.c_str());
+			Player->PrintToClient (PRINT_HIGH, "Unknown item: %s\n", s.CString());
 			return;
 		}
 	}
 	if (!(Item->Flags & ITEMFLAG_DROPPABLE))
 	{
-		Player->PrintToClient (PRINT_HIGH, "Item is not dropable.\n");
+		Player->PrintToClient (PRINT_HIGH, "Item is not droppable.\n");
 		return;
 	}
 	if (!Player->Client.Persistent.Inventory.Has(Item))
 	{
-		Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.c_str());
+		Player->PrintToClient (PRINT_HIGH, "Out of item: %s\n", s.CString());
 		return;
 	}
 
@@ -608,9 +608,9 @@ Old-style "give"
 ==================
 */
 
-inline IBaseEntity *SpawnEntityAtPlace (std::string ClassName, vec3f Origin, vec3f Angles)
+inline IBaseEntity *SpawnEntityAtPlace (String ClassName, vec3f Origin, vec3f Angles)
 {
-	IBaseEntity *Spawned = CreateEntityFromClassname(ClassName.c_str());
+	IBaseEntity *Spawned = CreateEntityFromClassname(ClassName);
 	if (Spawned && Spawned->GetInUse())
 	{
 		Spawned->State.GetOrigin() = Origin;
@@ -628,10 +628,11 @@ void Cmd_Give (CPlayerEntity *Player)
 {
 	IBaseItem *it;
 
-	std::string name = ArgGetConcatenatedString();
-	bool give_all = (Q_stricmp (name.c_str(), "all") == 0);
+	String name = ArgGetConcatenatedString();
 
-	if (give_all || Q_stricmp (name.c_str(), "health") == 0)
+	bool give_all = (Q_stricmp (name.CString(), "all") == 0);
+
+	if (give_all || Q_stricmp (name.CString(), "health") == 0)
 	{
 		if (ArgCount() == 3)
 			Player->Health = ArgGeti(2);
@@ -641,7 +642,7 @@ void Cmd_Give (CPlayerEntity *Player)
 			return;
 	}
 
-	if (give_all || Q_stricmp (name.c_str(), "weapons") == 0)
+	if (give_all || Q_stricmp (name.CString(), "weapons") == 0)
 	{
 		for (sint32 i = 0; i < GetNumItems(); i++)
 		{
@@ -654,7 +655,7 @@ void Cmd_Give (CPlayerEntity *Player)
 			return;
 	}
 
-	if (give_all || Q_stricmp (name.c_str(), "ammo") == 0)
+	if (give_all || Q_stricmp (name.CString(), "ammo") == 0)
 	{
 		for (sint32 i = 0; i < GetNumItems(); i++)
 		{
@@ -671,7 +672,7 @@ void Cmd_Give (CPlayerEntity *Player)
 			return;
 	}
 
-	if (give_all || Q_stricmp (name.c_str(), "armor") == 0)
+	if (give_all || Q_stricmp (name.CString(), "armor") == 0)
 	{
 		Player->Client.Persistent.Inventory.Set(NItems::JacketArmor->GetIndex(), 0);
 		Player->Client.Persistent.Inventory.Set(NItems::CombatArmor->GetIndex(), 0);
@@ -687,7 +688,7 @@ void Cmd_Give (CPlayerEntity *Player)
 			return;
 	}
 
-	if (give_all || Q_stricmp (name.c_str(), "power shield") == 0)
+	if (give_all || Q_stricmp (name.CString(), "power shield") == 0)
 	{
 		NItems::PowerShield->Add (Player, 1);
 
@@ -709,15 +710,15 @@ void Cmd_Give (CPlayerEntity *Player)
 		return;
 	}
 
-	it = FindItem (name.c_str());
+	it = FindItem (name.CString());
 	if (!it)
 	{
 		name = ArgGetConcatenatedString();
-		it = FindItem(name.c_str());
+		it = FindItem(name.CString());
 
 		if (!it)
 		{
-			it = FindItemByClassname (name.c_str());
+			it = FindItemByClassname (name.CString());
 			if (!it)
 			{
 				Player->PrintToClient (PRINT_HIGH, "Unknown Item\n");
@@ -748,7 +749,7 @@ void Cmd_Give (CPlayerEntity *Player)
 	}
 	else
 	{
-		ITouchableEntity *ItemEntity = entity_cast<ITouchableEntity>(SpawnEntityAtPlace (it->Classname, Player->State.GetOrigin(), Player->State.GetAngles()));
+		ITouchableEntity *ItemEntity = entity_cast<ITouchableEntity>(SpawnEntityAtPlace (String(it->Classname), Player->State.GetOrigin(), Player->State.GetAngles()));
 		
 		// Paril, Fix for Issue 4
 		if (ItemEntity)
@@ -774,7 +775,7 @@ void CGiveCommand::Execute ()
 void Cmd_Spawn (CPlayerEntity *Player)
 {
 	// Handle give all from old give.
-	if (Q_stricmp (ArgGets(1).c_str(), "all") == 0)
+	if (Q_stricmp (ArgGets(1).CString(), "all") == 0)
 	{
 		Cmd_Give (Player);
 		return;

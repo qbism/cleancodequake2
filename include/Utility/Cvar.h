@@ -58,7 +58,7 @@ public:
 
 	float		Float ();
 	sint32		Integer();
-	char		*String();
+	char		*StringValue();
 	bool		Boolean (bool MustBeOne = false);
 
 	void Set (const char *value, bool Force = false);

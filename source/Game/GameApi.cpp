@@ -124,9 +124,9 @@ const int MAX_INFO_STRING = 512;
 
 bool CGameAPI::ClientConnect (CPlayerEntity *Player, char *userinfo)
 {
-	CUserInfo UserInfo (userinfo);
+	CUserInfo UserInfo = CUserInfo(userinfo);
 	bool CanConnect = Player->Connect(userinfo, UserInfo);
-	Q_snprintfz (userinfo, MAX_INFO_STRING, "%s", ((std::string)UserInfo).c_str());
+	Q_snprintfz (userinfo, MAX_INFO_STRING, "%s", UserInfo.ToString().CString());
 	return CanConnect;
 }
 
@@ -137,7 +137,7 @@ void CGameAPI::ClientBegin (CPlayerEntity *Player)
 
 void CGameAPI::ClientUserinfoChanged (CPlayerEntity *Player, char *userInfo)
 {
-	Player->UserinfoChanged (userInfo);
+	Player->UserinfoChanged (String(userInfo));
 }
 
 void CGameAPI::ClientDisconnect (CPlayerEntity *Player)

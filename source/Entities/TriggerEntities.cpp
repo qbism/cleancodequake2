@@ -420,7 +420,7 @@ public:
 	bool CheckValidity ()
 	{
 		// Yet another map hack
-		if (!Q_stricmp(Level.ServerLevelName.c_str(), "command") && !Q_stricmp(Model, "*27"))
+		if (!Q_stricmp(Level.ServerLevelName.CString(), "command") && !Q_stricmp(Model, "*27"))
 			SpawnFlags &= ~SPAWNFLAG_NOT_HARD;
 		return IMapEntity::CheckValidity ();
 	};
@@ -516,7 +516,7 @@ public:
 			
 			if (Usable->User)
 			{
-				DebugPrintf ("Swapped activator %s for %s\n", Activator->ClassName.c_str(), Usable->User->ClassName.c_str());
+				DebugPrintf ("Swapped activator %s for %s\n", Activator->ClassName.CString(), Usable->User->ClassName.CString());
 				Activator = *Usable->User;
 			}
 		}
@@ -637,9 +637,9 @@ public:
 		Speed *= 10;
 
 		IBaseEntity *target;
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 			Q3Touch = false;
-		else if ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str())) != NULL)
+		else if ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.CString())) != NULL)
 		{
 			Free ();
 			return;
@@ -648,7 +648,7 @@ public:
 		Usable = false;
 
 #if ROGUE_FEATURES
-		if (!TargetName.empty())		// toggleable
+		if (!TargetName.IsNullOrEmpty())		// toggleable
 		{
 			Usable = true;
 			if (SpawnFlags & PUSH_START_OFF)
@@ -1093,10 +1093,10 @@ public:
 				return;
 			TouchDebounce = Level.Frame + 50;
 
-			if (Message.empty())
+			if (Message.IsNullOrEmpty())
 				Player->PrintToClient (PRINT_CENTER, "You need the %s", Item->Name);
 			else
-				Player->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
+				Player->PrintToClient (PRINT_CENTER, "%s", Message.CString());
 			Player->PlaySound (CHAN_AUTO, SoundIndex ("misc/keytry.wav"));
 			return;
 		}
@@ -1146,7 +1146,7 @@ public:
 
 	void Spawn ()
 	{
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			return;

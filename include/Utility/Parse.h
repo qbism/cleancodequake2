@@ -234,11 +234,11 @@ inline bool PS_VerifyVec <bool> (const char *token, void *target)
 
 class CParser
 {
-	std::string			ScratchToken;	// Used for temporary storage during data-type/post parsing
+	String				ScratchToken;	// Used for temporary storage during data-type/post parsing
 
 	uint32				CurrentColumn;
 	uint32				CurrentLine;
-	std::string			CurrentToken;
+	String				CurrentToken;
 
 	const char			*DataPointer;
 	const char			*DataPointerLast;
@@ -283,22 +283,22 @@ public:
 	{
 	};
 
-	inline uint32 GetErrorCount ()
+	inline uint32 GetErrorCount () const
 	{
 		return NumErrors;
 	}
 
-	inline uint32 GetWarningCount ()
+	inline uint32 GetWarningCount () const
 	{
 		return NumWarnings;
 	}
 
-	inline uint32 GetLine ()
+	inline uint32 GetLine () const
 	{
 		return CurrentLine;
 	}
 	
-	inline uint32 GetColumn ()
+	inline uint32 GetColumn () const
 	{
 		return CurrentColumn;
 	}
@@ -308,17 +308,17 @@ public:
 		CParser (DataPointer, Properties);
 	};
 
-	std::string GetCurrentToken ()
+	const String &GetCurrentToken () const
 	{
 		return CurrentToken;
 	};
 
-	inline bool IsEOF ()
+	inline bool IsEOF () const
 	{
 		return !DataPointer;
 	};
 
-	bool ParseToken (EParseFlags Flags, std::string &Target)
+	bool ParseToken (EParseFlags Flags, String &Target)
 	{
 		bool Valid = ParseToken(Flags, NULL);
 		Target = GetCurrentToken();
@@ -343,7 +343,7 @@ public:
 		DataPointerLast = DataPointer;
 
 		// Clear the current token
-		CurrentToken.clear ();
+		CurrentToken.Clear ();
 		char c = 0;
 
 		while (true)
@@ -361,11 +361,11 @@ public:
 					if (!(flags & PSF_ALLOW_NEWLINES))
 					{
 						DataPointer = data;
-						if (CurrentToken.empty())
+						if (CurrentToken.IsNullOrEmpty())
 							return false;
 
 						if (target)
-							*target = CurrentToken.c_str();
+							*target = CurrentToken.CString();
 						return true;
 					}
 
@@ -418,7 +418,7 @@ public:
 					DataPointer = data;
 
 					// Empty token
-					if (CurrentToken.empty())
+					if (CurrentToken.IsNullOrEmpty())
 						return false;
 
 					if (flags & PSF_CONVERT_NEWLINE)
@@ -428,7 +428,7 @@ public:
 					}
 
 					if (target)
-						*target = CurrentToken.c_str();
+						*target = CurrentToken.CString();
 					return true;
 
 				case '\n':
@@ -439,7 +439,7 @@ public:
 							return false;
 
 						if (target)
-							*target = CurrentToken.c_str();
+							*target = CurrentToken.CString();
 						return true;
 					}
 
@@ -455,7 +455,7 @@ public:
 				if (flags & PSF_TO_LOWER)
 					c = Q_tolower (c);
 
-				CurrentToken.push_back (c);
+				CurrentToken += c;
 			}
 		}
 
@@ -490,7 +490,7 @@ public:
 				c = Q_tolower(c);
 
 			// Store character
-			CurrentToken.push_back (c);
+			CurrentToken += c;
 
 			CurrentColumn++;
 			c = *++data;
@@ -510,7 +510,7 @@ public:
 		}
 
 		if (target)
-			*target = CurrentToken.c_str();
+			*target = CurrentToken.CString();
 		return true;
 	};
 	
@@ -588,7 +588,7 @@ public:
 		{
 			char c;
 
-			ScratchToken.clear ();
+			ScratchToken.Clear ();
 			size_t len = 0;
 
 			// Skip white-space
@@ -614,7 +614,7 @@ public:
 					break;	// Stop at white space and commas
 				}
 
-				ScratchToken.push_back (c);
+				ScratchToken += c;
 				len++;
 				c = *data++;
 			}
@@ -622,16 +622,16 @@ public:
 			len++;
 
 			// Too few vecs
-			if (ScratchToken.empty())
+			if (ScratchToken.IsNullOrEmpty())
 			{
 				AddError ("PARSE ERROR: missing vector parameters!\n");
 				return false;
 			}
 
 			// Check the data type and set the target
-			if (!PS_VerifyVec<TType> (ScratchToken.c_str(), target))
+			if (!PS_VerifyVec<TType> (ScratchToken.CString(), target))
 			{
-				AddError ("PARSE ERROR: '%s' does not evaluate to desired data type %s!\n", ScratchToken.c_str(), PS_DataName<TType> ());
+				AddError ("PARSE ERROR: '%s' does not evaluate to desired data type %s!\n", ScratchToken.CString(), PS_DataName<TType> ());
 				return false;
 			}
 
@@ -794,15 +794,15 @@ private:
 	bool ConvertEscape (EParseFlags flags)
 	{
 		// If it's blank then why even try?
-		if (CurrentToken.empty())
+		if (CurrentToken.IsNullOrEmpty())
 			return true;
 
 		// Convert escape characters
-		for (size_t i = 0; i < CurrentToken.length(); i++)
+		for (size_t i = 0; i < CurrentToken.Count(); i++)
 		{
 			if (CurrentToken[i] != '\\')
 			{
-				ScratchToken.push_back (CurrentToken[i]);
+				ScratchToken += CurrentToken[i];
 				continue;
 			}
 
@@ -812,7 +812,7 @@ private:
 			case 'n':
 				if (flags & PSF_CONVERT_NEWLINE)
 				{
-					ScratchToken.push_back ('\n');
+					ScratchToken += '\n';
 					i++;
 					continue;
 				}
@@ -820,8 +820,8 @@ private:
 
 			default:
 				AddWarning ("PARSE WARNING: unknown escape character '%c%c', ignoring\n", CurrentToken[i], CurrentToken[i+1]);
-				ScratchToken.push_back (CurrentToken[i++]);
-				ScratchToken.push_back (CurrentToken[i]);
+				ScratchToken += CurrentToken[i++];
+				ScratchToken += CurrentToken[i];
 				break;
 			}
 		}

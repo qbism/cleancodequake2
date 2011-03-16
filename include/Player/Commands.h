@@ -77,13 +77,13 @@ class CCommandFunctor
 
 public:
 	/**
-	\fn	inline std::string GetFirstArgs ()
+	\fn	inline String GetFirstArgs ()
 	
 	\brief	Gets the first argument that this command was called with.
 	
 	\return	The first argument (string). 
 	**/
-	inline std::string GetFirstArgs () { return ArgGets(FirstArg); }
+	inline String GetFirstArgs () { return ArgGets(FirstArg); }
 
 	/**
 	\fn	inline int GetFirstArgi ()
@@ -104,13 +104,13 @@ public:
 	inline float GetFirstArgf () { return ArgGetf(FirstArg); }
 
 	/**
-	\fn	inline std::string GetThisArgs ()
+	\fn	inline String GetThisArgs ()
 	
 	\brief	Gets the argument that matched to this function.
 	
 	\return	The matched argument (string). 
 	**/
-	inline std::string GetThisArgs () { return ArgGets(ThisArg); }
+	inline String GetThisArgs () { return ArgGets(ThisArg); }
 
 	/**
 	\fn	inline int GetThisArgi ()
@@ -131,13 +131,13 @@ public:
 	inline float GetThisArgf () { return ArgGetf(ThisArg); }
 
 	/**
-	\fn	inline std::string GetNextArgs ()
+	\fn	inline String GetNextArgs ()
 	
 	\brief	Gets the next argument. 
 	
 	\return	The next argument (string). 
 	**/
-	inline std::string GetNextArgs () { return ArgGets(++CurArg); }
+	inline String GetNextArgs () { return ArgGets(++CurArg); }
 
 	/**
 	\fn	inline int GetNextArgi ()
@@ -336,7 +336,7 @@ public:
 template <class TReturnValue>
 inline TReturnValue *RecurseSubCommands (uint32 &depth, TReturnValue *Cmd)
 {
-	if (Q_stricmp (Cmd->Name, ArgGets(depth).c_str()) == 0)
+	if (Q_stricmp (Cmd->Name, ArgGets(depth).CString()) == 0)
 	{
 		depth++;
 		if (ArgCount() > depth)

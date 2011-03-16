@@ -170,7 +170,7 @@ public:
 
 			Player->Respawn();
 			BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
-				Player->Client.Persistent.Name.c_str(), CTFTeamName(team));
+				Player->Client.Persistent.Name.CString(), CTFTeamName(team));
 
 			return true;
 		};
@@ -265,35 +265,35 @@ public:
 		y += 8 * 4;
 		x = -98;
 
-		if (CvarList[CV_CTF_FORCEJOIN].String() && *CvarList[CV_CTF_FORCEJOIN].String())
+		if (CvarList[CV_CTF_FORCEJOIN].StringValue() && *CvarList[CV_CTF_FORCEJOIN].StringValue())
 		{
-			if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "red") == 0)
+			if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].StringValue(), "red") == 0)
 			{
 				// Only add red
 				CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", "Red", num1);
+				JoinRed->LabelString = String::Format ("Join %s Team    (%d players)", "Red", num1);
 			}
-			else if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].String(), "blue") == 0)
+			else if (Q_stricmp(CvarList[CV_CTF_FORCEJOIN].StringValue(), "blue") == 0)
 			{
 				// Only add blue
 				CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				JoinBlue->LabelString = FormatString ("Join %s Team    (%d players)", "Blue", num2);
+				JoinBlue->LabelString = String::Format ("Join %s Team    (%d players)", "Blue", num2);
 			}
 			else
 			{
 				CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 				JoinRed->Enabled = true;
 				JoinRed->Align = LA_LEFT;
-				JoinRed->LabelString = FormatString ("Join %s Team     (%d players)", "Red", num1);
+				JoinRed->LabelString = String::Format ("Join %s Team     (%d players)", "Red", num1);
 
 				CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 				JoinBlue->Enabled = true;
 				JoinBlue->Align = LA_LEFT;
-				JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", "Blue", num2);
+				JoinBlue->LabelString = String::Format ("Join %s Team   (%d players)", "Blue", num2);
 			}
 		}
 		else
@@ -301,12 +301,12 @@ public:
 			CJoinGameLabel *JoinRed = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y, CTF_TEAM1);
 			JoinRed->Enabled = true;
 			JoinRed->Align = LA_LEFT;
-			JoinRed->LabelString = FormatString ("Join %s Team    (%d players)", "Red", num1);
+			JoinRed->LabelString = String::Format ("Join %s Team    (%d players)", "Red", num1);
 
 			CJoinGameLabel *JoinBlue = QNew (TAG_LEVEL) CJoinGameLabel(this, x, y + 8, CTF_TEAM2);
 			JoinBlue->Enabled = true;
 			JoinBlue->Align = LA_LEFT;
-			JoinBlue->LabelString = FormatString ("Join %s Team   (%d players)", "Blue", num2);
+			JoinBlue->LabelString = String::Format ("Join %s Team   (%d players)", "Blue", num2);
 		}
 
 		y += 24;

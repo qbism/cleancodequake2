@@ -351,9 +351,9 @@ bool IMonster::FindTarget()
 {
 	if (AIFlags & AI_GOOD_GUY)
 	{
-		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && !Entity->GoalEntity->ClassName.empty())
+		if (Entity->GoalEntity && Entity->GoalEntity->GetInUse() && !Entity->GoalEntity->ClassName.IsNullOrEmpty())
 		{
-			if (strcmp(Entity->GoalEntity->ClassName.c_str(), "target_actor") == 0)
+			if (strcmp(Entity->GoalEntity->ClassName.CString(), "target_actor") == 0)
 				return false;
 		}
 
@@ -486,7 +486,7 @@ bool IMonster::FindTarget()
 
 		// check area portals - if they are different and not connected then we can't hear it
 		if (client->GetAreaNum() != Entity->GetAreaNum())
-			if (!gi.AreasConnected(client->GetAreaNum(), Entity->GetAreaNum()))
+			if (!client->AreasConnectedTo(Entity))
 				return false;
 	
 		IdealYaw = temp.ToYaw();
@@ -572,7 +572,7 @@ bool IMonster::MoveStep (vec3f move, bool ReLink)
 		{
 			BadArea = current_bad;
 			 
-			if (Entity->Enemy && !strcmp(Entity->Enemy->ClassName.c_str(), "tesla"))
+			if (Entity->Enemy && !strcmp(Entity->Enemy->ClassName.CString(), "tesla"))
 			{
 				// if the tesla is in front of us, back up...
 				if (IsBadAhead (current_bad, move))
@@ -749,14 +749,14 @@ bool IMonster::MoveStep (vec3f move, bool ReLink)
 		{
 			if (new_bad->Owner)
 			{
-				if (!strcmp(new_bad->Owner->ClassName.c_str(), "tesla"))
+				if (!strcmp(new_bad->Owner->ClassName.CString(), "tesla"))
 				{
 					if ((!(Entity->Enemy)) || (!(Entity->Enemy->GetInUse())))
 					{
 						TargetTesla (entity_cast<CTesla>(new_bad->Owner));
 						AIFlags |= AI_BLOCKED;
 					}
-					else if (!strcmp(Entity->Enemy->ClassName.c_str(), "telsa"))
+					else if (!strcmp(Entity->Enemy->ClassName.CString(), "telsa"))
 					{
 					}
 					else if ((Entity->Enemy) && (Entity->Enemy->EntityFlags & EF_PLAYER))
@@ -1072,7 +1072,7 @@ bool IMonster::CheckAttack ()
 		float strafe_chance = (MonsterID == CDaedalus::ID) ? 0.8f : 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))
+		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.IsNullOrEmpty()) && (!strcmp(Entity->Enemy->ClassName.CString(), "tesla")))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)
@@ -1100,7 +1100,7 @@ void IMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// logic for tesla - if you are hit by a tesla, and can't see who you should be mad at (attacker)
 	// attack the tesla
 	// also, target the tesla if it's a "new" tesla
-	if ((Inflictor) && (!strcmp(Inflictor->ClassName.c_str(), "tesla")))
+	if ((Inflictor) && (!strcmp(Inflictor->ClassName.CString(), "tesla")))
 	{
 		CTesla *tesla = entity_cast<CTesla>(Inflictor);
 		bool new_tesla = MarkTeslaArea(tesla);
@@ -1180,7 +1180,7 @@ void IMonster::ReactToDamage (IBaseEntity *Attacker, IBaseEntity *Inflictor)
 	// added medics to this 
 	if ((Attacker->EntityFlags & EF_MONSTER) && 
 		((AIFlags & (AI_FLY | AI_SWIM)) == (entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & (AI_FLY | AI_SWIM))) &&
-		(strcmp (Entity->ClassName.c_str(), Attacker->ClassName.c_str()) != 0) &&
+		(strcmp (Entity->ClassName.CString(), Attacker->ClassName.CString()) != 0) &&
 		!(entity_cast<CMonsterEntity>(Attacker)->Monster->AIFlags & AI_IGNORE_SHOTS) &&
 		!(AIFlags & AI_IGNORE_SHOTS) )
 	{
@@ -1268,7 +1268,7 @@ void IMonster::AI_Charge(float Dist)
 		if (AttackState == AS_SLIDING)
 		{
 			// if we're fighting a tesla, NEVER circle strafe
-			if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))
+			if ((Entity->Enemy) && (!Entity->Enemy->ClassName.IsNullOrEmpty()) && (!strcmp(Entity->Enemy->ClassName.CString(), "tesla")))
 				ofs = 0;
 			else if (Lefty)
 				ofs = 90;
@@ -1851,7 +1851,7 @@ void IMonster::FoundTarget ()
 	BlindFireTarget = Entity->Enemy->State.GetOrigin();
 	BlindFireDelay = 0;
 
-	if (Entity->CombatTarget.empty())
+	if (Entity->CombatTarget.IsNullOrEmpty())
 	{
 		HuntTarget ();
 		return;
@@ -1863,16 +1863,16 @@ void IMonster::FoundTarget ()
 	{
 		Entity->GoalEntity = Entity->MoveTarget = Entity->Enemy;
 		HuntTarget ();
-		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "CombatTarget %s not found\n", Entity->CombatTarget.c_str());
+		MapPrint (MAPPRINT_ERROR, Entity, Entity->State.GetOrigin(), "CombatTarget %s not found\n", Entity->CombatTarget.CString());
 		return;
 	}
 
 	// clear out our combattarget, these are a one shot deal
-	Entity->CombatTarget.clear();
+	Entity->CombatTarget.Clear();
 	AIFlags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	entity_cast<IMapEntity>(*Entity->MoveTarget)->ClassName.clear();
+	entity_cast<IMapEntity>(*Entity->MoveTarget)->ClassName.Clear();
 	PauseTime = 0;
 
 	// run for it

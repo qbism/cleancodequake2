@@ -572,10 +572,10 @@ void BeginIntermission (CTargetChangeLevel *targ)
 
 	Level.Intermission.Time = Level.Frame;
 #if !STDCPP_LINUX_HACK
-	new (&Level.Intermission.ChangeMap) std::string(targ->Map); // Solving a linux quirk
-	if (Level.Intermission.ChangeMap.find_first_of('*') != std::string::npos)
+	new (&Level.Intermission.ChangeMap) String(targ->Map); // Solving a linux quirk
+	if (Level.Intermission.ChangeMap.IndexOf('*') != -1)
 #else
-	Level.Intermission.ChangeMap = Mem_TagStrDup(targ->Map.c_str(), TAG_LEVEL);
+	Level.Intermission.ChangeMap = Mem_TagStrDup(targ->Map.CString(), TAG_LEVEL);
         if (strstr(Level.Intermission.ChangeMap, "*"))
 #endif
 	{
@@ -689,12 +689,12 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 		if (Activator && (Activator->EntityFlags & EF_PLAYER))
 		{
 			CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
-			BroadcastPrintf (PRINT_HIGH, "%s exited the Level.\n", Player->Client.Persistent.Name.c_str());
+			BroadcastPrintf (PRINT_HIGH, "%s exited the Level.\n", Player->Client.Persistent.Name.CString());
 		}
 	}
 
 	// if going to a new unit, clear cross triggers
-	if (Map.find_first_of('*') != std::string::npos)	
+	if (Map.IndexOf('*') != -1)	
 		Game.ServerFlags &= ~(SFL_CROSS_TRIGGER_MASK);
 
 	BeginIntermission (this);
@@ -702,7 +702,7 @@ void CTargetChangeLevel::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CTargetChangeLevel::Spawn ()
 {
-	if (Map.empty())
+	if (Map.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No map\n");
 		Free ();
@@ -758,7 +758,7 @@ CTargetChangeLevel *CreateTargetChangeLevel(const char *map)
 	Temp->ClassName = "target_changelevel";
 
 	Level.NextMap = map;
-	Temp->Map = (char*)Level.NextMap.c_str();
+	Temp->Map = (char*)Level.NextMap.CString();
 
 	return Temp;
 }
@@ -989,7 +989,7 @@ public:
 		Level.Secrets.Total++;
 		// map bug hack
 
-		if (!Q_stricmp(Level.ServerLevelName.c_str(), "mine3") && (State.GetOrigin() == vec3f(280, -2048, -624)))
+		if (!Q_stricmp(Level.ServerLevelName.CString(), "mine3") && (State.GetOrigin() == vec3f(280, -2048, -624)))
 			//(State.GetOrigin().X == 280 && State.GetOrigin().Y == -2048 && State.GetOrigin().Z == -624))
 			Message = "You have found a secret area.";
 	};
@@ -1327,11 +1327,11 @@ void CTargetLaser::Start ()
 
 	if (!Enemy)
 	{
-		if (!Target.empty())
+		if (!Target.IsNullOrEmpty())
 		{
-			IBaseEntity *Entity = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
+			IBaseEntity *Entity = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.CString());
 			if (!Entity)
-				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.c_str());
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "\"%s\" is a bad target\n", Target.CString());
 			Enemy = Entity;
 		}
 		else
@@ -1467,7 +1467,7 @@ public:
 			return;
 		}
 
-		if (Message.empty())
+		if (Message.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No message\n");
 			Free ();
@@ -1573,7 +1573,7 @@ public:
 
 	void Spawn ()
 	{
-		if (TargetName.empty())
+		if (TargetName.IsNullOrEmpty())
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 
 		if (!Duration)

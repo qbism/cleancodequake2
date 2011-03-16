@@ -526,7 +526,7 @@ void CFlyer::Spawn ()
 	if ((Level.ServerLevelName == "jail5") && (Entity->State.GetOrigin().Z == -104))
 	{
 		Entity->TargetName = Entity->Target;
-		Entity->Target.clear();
+		Entity->Target.Clear();
 	}
 
 	Sounds[SOUND_SIGHT] = SoundIndex ("flyer/flysght1.wav");

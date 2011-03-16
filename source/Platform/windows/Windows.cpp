@@ -176,16 +176,15 @@ Sys_FindFiles
 ================
 */
 
-void Sys_FindFiles (TFindFilesType &files, const char *path, const char *pattern, bool recurse, bool addFiles, bool addDirs)
+void Sys_FindFiles (TFindFilesType &files, const String &path, const String &pattern, bool recurse, bool addFiles, bool addDirs)
 {
 	WIN32_FIND_DATAA	findInfo;
 	HANDLE			findHandle;
 	BOOL			findRes = TRUE;
-	char			findPath[MAX_OSPATH], searchPath[MAX_OSPATH];
 
-	Q_snprintfz (searchPath, sizeof(searchPath), "%s*", path);
+	String searchPath = String::Format("%s*", path.CString());
 
-	findHandle = FindFirstFileA (searchPath, &findInfo);
+	findHandle = FindFirstFileA (searchPath.CString(), &findInfo);
 	if (findHandle == INVALID_HANDLE_VALUE)
 		return;
 
@@ -198,7 +197,7 @@ void Sys_FindFiles (TFindFilesType &files, const char *path, const char *pattern
 			continue;
 		}
 
-		Q_snprintfz (findPath, sizeof(findPath), "%s%s", path, findInfo.cFileName);
+		String findPath = String::Format("%s%s", path.CString(), findInfo.cFileName);
 
 		if (findInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
@@ -213,7 +212,7 @@ void Sys_FindFiles (TFindFilesType &files, const char *path, const char *pattern
 		else
 		{
 			// Match pattern
-			if (!Q_WildcardMatch (pattern, findPath, 1))
+			if (!Q_WildcardMatch (pattern.CString(), findPath.CString(), 1))
 			{
 				findRes = FindNextFileA (findHandle, &findInfo);
 				continue;

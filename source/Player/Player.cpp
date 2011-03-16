@@ -122,7 +122,7 @@ void CPersistentData::Load (CFile &File)
 void CPersistentData::Clear ()
 {
 	UserInfo.Clear();
-	Name.clear();
+	Name.Clear();
 	// Paril: DO NOT CLEAR IP
 	//Mem_Zero (&IP, sizeof(IP));
 	Hand = 0;
@@ -531,10 +531,10 @@ void CPlayerEntity::SpectatorRespawn ()
 
 	if (Client.Persistent.Spectator)
 	{
-		std::string value = Client.Persistent.UserInfo.GetValueFromKey ("spectator");
-		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && 
-			strcmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none") && 
-			value != CvarList[CV_SPECTATOR_PASSWORD].String())
+		String value = Client.Persistent.UserInfo.GetValueFromKey ("spectator");
+		if (*CvarList[CV_SPECTATOR_PASSWORD].StringValue() && 
+			Q_stricmp(CvarList[CV_PASSWORD].StringValue(), "none") && 
+			value != CvarList[CV_SPECTATOR_PASSWORD].StringValue())
 		{
 			PrintToClient (PRINT_HIGH, "Spectator password incorrect.\n");
 			Client.Persistent.Spectator = false;
@@ -564,9 +564,9 @@ void CPlayerEntity::SpectatorRespawn ()
 	{
 		// he was a Spectator and wants to join the game
 		// he must have the right password
-		std::string value = Client.Persistent.UserInfo.GetValueFromKey ("password");
-		if (*CvarList[CV_PASSWORD].String() && strcmp(CvarList[CV_PASSWORD].String(), "none") && 
-			value != CvarList[CV_PASSWORD].String())
+		String value = Client.Persistent.UserInfo.GetValueFromKey ("password");
+		if (*CvarList[CV_PASSWORD].StringValue() && Q_stricmp(CvarList[CV_PASSWORD].StringValue(), "none") && 
+			value != CvarList[CV_PASSWORD].StringValue())
 		{
 			PrintToClient (PRINT_HIGH, "Password incorrect.\n");
 			Client.Persistent.Spectator = true;
@@ -595,9 +595,9 @@ void CPlayerEntity::SpectatorRespawn ()
 	Client.Timers.RespawnTime = Level.Frame;
 
 	if (Client.Persistent.Spectator) 
-		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.Name.c_str());
+		BroadcastPrintf (PRINT_HIGH, "%s has moved to the sidelines\n", Client.Persistent.Name.CString());
 	else
-		BroadcastPrintf (PRINT_HIGH, "%s joined the game\n", Client.Persistent.Name.c_str());
+		BroadcastPrintf (PRINT_HIGH, "%s joined the game\n", Client.Persistent.Name.CString());
 }
 
 /*
@@ -632,7 +632,7 @@ void CPlayerEntity::PutInServer ()
 	default:
 			Respawn = Client.Respawn;
 			InitPersistent ();
-			UserinfoChanged (UserInfo);
+			UserinfoChanged (UserInfo.ToString());
 		break;
 	case GAME_COOPERATIVE:
 			Respawn = Client.Respawn;
@@ -640,7 +640,7 @@ void CPlayerEntity::PutInServer ()
 			Respawn.CoopRespawn.GameHelpChanged = Client.Persistent.GameHelpChanged;
 			Respawn.CoopRespawn.HelpChanged = Client.Persistent.HelpChanged;
 			Client.Persistent = Respawn.CoopRespawn;
-			UserinfoChanged (UserInfo);
+			UserinfoChanged (UserInfo.ToString());
 			if (Respawn.Score > Client.Persistent.Score)
 				Client.Persistent.Score = Respawn.Score;
 		break;
@@ -660,7 +660,7 @@ void CPlayerEntity::PutInServer ()
 	
 		// Paril, this fixes occasions where a demo/cin is played first.
 		if (Game.GameMode & GAME_COOPERATIVE)
-			UserinfoChanged (saved.UserInfo);
+			UserinfoChanged (saved.UserInfo.ToString());
 	}
 	Client.Respawn = Respawn;
 	Client.Persistent.State = SVCS_SPAWNED;
@@ -714,7 +714,7 @@ void CPlayerEntity::PutInServer ()
 		Client.PlayerState.GetFov () = 90;
 	else
 	{
-		float fov = atof(Client.Persistent.UserInfo.GetValueFromKey("fov").c_str());
+		float fov = atof(Client.Persistent.UserInfo.GetValueFromKey("fov").CString());
 		if (fov < 1)
 			fov = 90;
 		else if (fov > 160)
@@ -849,13 +849,13 @@ The game can override any of the settings in place
 (forcing skins or names, etc) before copying it off.
 ============
 */
-void CPlayerEntity::UserinfoChanged (std::string userinfo)
+void CPlayerEntity::UserinfoChanged (String userinfo)
 {
 	CUserInfo UserInfo;
 
 	// check for malformed or illegal info strings
 	if (!CUserInfo::Validate (userinfo))
-		UserInfo.Update ("\\name\\badinfo\\skin\\male/grunt");
+		UserInfo.Update (String("\\name\\badinfo\\skin\\male/grunt"));
 	else
 		UserInfo.Update (userinfo);
 
@@ -863,9 +863,9 @@ void CPlayerEntity::UserinfoChanged (std::string userinfo)
 	Client.Persistent.Name = UserInfo.GetValueFromKey ("name");
 
 	// set Spectator
-	std::string s = UserInfo.GetValueFromKey ("spectator");
+	String s = UserInfo.GetValueFromKey ("spectator");
 	// spectators are only supported in deathmatch
-	Client.Persistent.Spectator = ((Game.GameMode & GAME_DEATHMATCH) && s.length() && s != "0");
+	Client.Persistent.Spectator = ((Game.GameMode & GAME_DEATHMATCH) && s.Count() && s != "0");
 
 	// set skin
 	s = UserInfo.GetValueFromKey ("skin");
@@ -879,28 +879,25 @@ void CPlayerEntity::UserinfoChanged (std::string userinfo)
 	else
 //ZOID
 #endif
-	{
-		std::string temp = Client.Persistent.Name + "\\" + s;
-		ConfigString (CS_PLAYERSKINS+playernum, temp.c_str());
-	}
+		ConfigString (CS_PLAYERSKINS+playernum, String::Format("%s\\%s", Client.Persistent.Name.CString(), s.CString()).CString());
 
 	// fov
 	if ((Game.GameMode & GAME_DEATHMATCH) && DeathmatchFlags.dfFixedFov.IsEnabled())
 		Client.PlayerState.GetFov () = 90;
 	else
-		Client.PlayerState.GetFov () = Clamp<float> (atof(UserInfo.GetValueFromKey ("fov").c_str()), 1, 160);
+		Client.PlayerState.GetFov () = Clamp<float> (atof(UserInfo.GetValueFromKey ("fov").CString()), 1, 160);
 
 	// handedness
 	s = UserInfo.GetValueFromKey ("hand");
-	if (s.length())
-		Client.Persistent.Hand = atoi(s.c_str());
+	if (s.Count())
+		Client.Persistent.Hand = atoi(s.CString());
 
 	// IP
 	// Paril: removed. could be changed any time in-game!
 
 	// Gender
 	s = UserInfo.GetValueFromKey ("gender");
-	if (s.length())
+	if (s.Count())
 	{
 		switch (s[0])
 		{
@@ -922,8 +919,8 @@ void CPlayerEntity::UserinfoChanged (std::string userinfo)
 
 	// MSG command
 	s = UserInfo.GetValueFromKey ("msg");
-	if (s.length())
-		Client.Respawn.MessageLevel = atoi (s.c_str());
+	if (s.Count())
+		Client.Respawn.MessageLevel = atoi (s.CString());
 
 	// save off the userinfo in case we want to check something later
 	Client.Persistent.UserInfo = UserInfo;
@@ -933,10 +930,10 @@ void CPlayerEntity::UserinfoChanged (std::string userinfo)
 void CPlayerEntity::CTFAssignSkin (CUserInfo &s)
 {
 	sint32 playernum = State.GetNumber()-1;
-	std::string t = s.GetValueFromKey ("skin");
+	String t = s.GetValueFromKey ("skin");
 
-	if (t.find('/'))
-		t.erase (t.find('/') + 1);
+	if (t.IndexOf('/') != 1)
+		t.Remove (t.IndexOf('/') + 1);
 	else
 		t = "male/";
 
@@ -945,11 +942,11 @@ void CPlayerEntity::CTFAssignSkin (CUserInfo &s)
 	case CTF_TEAM1:
 	case CTF_TEAM2:
 		// Paril, Issue 5 part 1 fix
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + '\\' + t + CTFTeamSkin(Client.Respawn.CTF.Team)).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, String::Format("%s\\%s%s", Client.Persistent.Name.CString(), t.CString(), CTFTeamSkin(Client.Respawn.CTF.Team)).CString());
 		break;
 	default:
 		// Paril, Issue 5 part 1 fix
-		ConfigString (CS_PLAYERSKINS+playernum, (Client.Persistent.Name + '\\' + s.GetValueFromKey ("skin")).c_str());
+		ConfigString (CS_PLAYERSKINS+playernum, String::Format("%s\\%s", Client.Persistent.Name.CString(), s.GetValueFromKey (String("skin")).CString()).CString());
 		break;
 	}
 }
@@ -2115,7 +2112,7 @@ void CPlayerEntity::CTFDeadDropFlag ()
 	{
 		Client.Persistent.Flag->DropItem (this);
 		Client.Persistent.Inventory.Set (Client.Persistent.Flag, 0);
-		BroadcastPrintf (PRINT_HIGH, "%s lost the %s flag!\n", Client.Persistent.Name.c_str(), CTFTeamName(Client.Persistent.Flag->team));
+		BroadcastPrintf (PRINT_HIGH, "%s lost the %s flag!\n", Client.Persistent.Name.CString(), CTFTeamName(Client.Persistent.Flag->team));
 		Client.Persistent.Flag = NULL;
 	}
 }
@@ -3713,7 +3710,7 @@ void CPlayerEntity::UpdateChaseCam()
 		!(Level.Frame & 31)) || (Client.LayoutFlags & LF_UPDATECHASE))
 	{
 		CStatusBar Chasing;
-		std::string temp = "Chasing " + targ->Client.Persistent.Name + "\n" + GetChaseMode(Client.Chase.Mode);
+		String temp = String::Format("Chasing %s\n%s", targ->Client.Persistent.Name.CString(), GetChaseMode(Client.Chase.Mode));
 
 		Chasing.AddVirtualPoint_X (0);
 		Chasing.AddVirtualPoint_Y (-68);
@@ -3906,7 +3903,7 @@ CC_ENABLE_DEPRECATION
 		// send effect
 		CMuzzleFlash(State.GetOrigin (), State.GetNumber(), MZ_LOGIN).Send();
 
-	BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.c_str());
+	BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.CString());
 
 	// make sure all view stuff is valid
 	EndServerFrame();
@@ -3959,7 +3956,7 @@ CC_ENABLE_DEPRECATION
 		if (Game.MaxClients > 1)
 		{
 			CMuzzleFlash(State.GetOrigin(), State.GetNumber(), MZ_LOGIN).Send();
-			BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.c_str());
+			BroadcastPrintf (PRINT_HIGH, "%s entered the game\n", Client.Persistent.Name.CString());
 		}
 	}
 
@@ -3972,17 +3969,17 @@ CC_ENABLE_DEPRECATION
 IPAddress CopyIP (const char *val)
 {
 	// Do we have a :?
-	std::string str (val);
+	String str (val);
 
-	size_t loc = str.find_first_of (':');
+	size_t loc = str.IndexOf (':');
 
-	if (loc != std::string::npos)
-		str = str.substr(0, loc);
+	if (loc != -1)
+		str = str.Substring(0, loc);
 
 	IPAddress Adr;
 
-	CC_ASSERT_EXPR (!(str.length() > sizeof(Adr.str)), "IP copied is longer than sizeof(Adr.str)");
-	Q_snprintfz (Adr.str, sizeof(Adr.str), "%s", str.c_str());
+	CC_ASSERT_EXPR (!(str.Count() > sizeof(Adr.str)), "IP copied is longer than sizeof(Adr.str)");
+	Q_snprintfz (Adr.str, sizeof(Adr.str), "%s", str.CString());
 
 	return Adr;
 }
@@ -3990,31 +3987,31 @@ IPAddress CopyIP (const char *val)
 bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 {
 	// check to see if they are on the banned IP list
-	std::string value = UserInfo.GetValueFromKey ("ip");
-	IPAddress Adr = CopyIP (value.c_str());
+	String value = UserInfo.GetValueFromKey (String("ip"));
+	IPAddress Adr = CopyIP (value.CString());
 
-	if (Bans.IsBanned(Adr) || Bans.IsBanned(UserInfo.GetValueFromKey ("name").c_str()))
+	if (Bans.IsBanned(Adr) || Bans.IsBanned(UserInfo.GetValueFromKey (String("name")).CString()))
 	{
-		UserInfo.SetValueForKey("rejmsg", "Connection refused: You are banned from this server.");
+		UserInfo.SetValueForKey(String("rejmsg"), String("Connection refused: You are banned from this server."));
 		return false;
 	}
 
 	// check for a Spectator
-	value = UserInfo.GetValueFromKey ("spectator");
-	if ((Game.GameMode & GAME_DEATHMATCH) && value.length() && value != "0")
+	value = UserInfo.GetValueFromKey (String("spectator"));
+	if ((Game.GameMode & GAME_DEATHMATCH) && value.Count() && value != "0")
 	{
 		sint32 i, numspec;
 
-		if (Bans.IsBannedFromSpectator(Adr) || Bans.IsBannedFromSpectator(UserInfo.GetValueFromKey ("name").c_str()))
+		if (Bans.IsBannedFromSpectator(Adr) || Bans.IsBannedFromSpectator(UserInfo.GetValueFromKey (String("name")).CString()))
 		{
-			UserInfo.SetValueForKey ("rejmsg", "Not permitted to enter spectator mode");
+			UserInfo.SetValueForKey (String("rejmsg"), String("Not permitted to enter spectator mode"));
 			return false;
 		}
-		if (*CvarList[CV_SPECTATOR_PASSWORD].String() && 
-			strcmp(CvarList[CV_SPECTATOR_PASSWORD].String(), "none") && 
-			CvarList[CV_SPECTATOR_PASSWORD].String() != value)
+		if (*CvarList[CV_SPECTATOR_PASSWORD].StringValue() && 
+			strcmp(CvarList[CV_SPECTATOR_PASSWORD].StringValue(), "none") && 
+			value != CvarList[CV_SPECTATOR_PASSWORD].StringValue())
 		{
-			UserInfo.SetValueForKey ("rejmsg", "Spectator password required or incorrect.");
+			UserInfo.SetValueForKey (String("rejmsg"), String("Spectator password required or incorrect."));
 			return false;
 		}
 
@@ -4028,18 +4025,18 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 
 		if (numspec >= Game.MaxSpectators)
 		{
-			UserInfo.SetValueForKey ("rejmsg", "Server Spectator limit is full.");
+			UserInfo.SetValueForKey (String("rejmsg"), String("Server Spectator limit is full."));
 			return false;
 		}
 	}
 	else
 	{
 		// check for a password
-		value = UserInfo.GetValueFromKey ("password");
-		if (*CvarList[CV_PASSWORD].String() && strcmp(CvarList[CV_PASSWORD].String(), "none") && 
-			CvarList[CV_PASSWORD].String() != value)
+		value = UserInfo.GetValueFromKey (String("password"));
+		if (*CvarList[CV_PASSWORD].StringValue() && strcmp(CvarList[CV_PASSWORD].StringValue(), "none") && 
+			value != CvarList[CV_PASSWORD].StringValue())
 		{
-			UserInfo.SetValueForKey ("rejmsg", "Password required or incorrect.");
+			UserInfo.SetValueForKey (String("rejmsg"), String("Password required or incorrect."));
 			return false;
 		}
 	}
@@ -4052,7 +4049,7 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 	// Paril: Fix for an engine bug that causes
 	// players to be kicked for the same IP but
 	// takes over an existing spot.
-	bool SameConnection = (GetInUse() && ((Game.GameMode & GAME_DEATHMATCH) && Q_strlwr(Client.Persistent.UserInfo).compare(Q_strlwr(userinfo))));
+	bool SameConnection = (GetInUse() && ((Game.GameMode & GAME_DEATHMATCH) && Client.Persistent.UserInfo.ToString().CompareCaseInsensitive(userinfo) == 0));
 
 	if (!GetInUse() || SameConnection)
 	{
@@ -4080,10 +4077,10 @@ bool CPlayerEntity::Connect (const char *userinfo, CUserInfo &UserInfo)
 	if (Game.MaxClients > 1)
 	{
 		// Tell the entire game that someone connected
-		BroadcastPrintf (PRINT_MEDIUM, "%s connected\n", Client.Persistent.Name.c_str());
+		BroadcastPrintf (PRINT_MEDIUM, "%s connected\n", Client.Persistent.Name.CString());
 		
 		// But only tell the server the IP
-		ServerPrintf ("%s @ %s connected\n", Client.Persistent.Name.c_str(), UserInfo.GetValueFromKey ("ip").c_str());
+		ServerPrintf ("%s @ %s connected\n", Client.Persistent.Name.CString(), UserInfo.GetValueFromKey (String("ip")).CString());
 	}
 
 	GetSvFlags() = 0; // make sure we start with known default
@@ -4100,7 +4097,7 @@ void CPlayerEntity::Disconnect ()
 		return;
 
 	Client.Persistent.State = SVCS_FREE;
-	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.Name.c_str());
+	BroadcastPrintf (PRINT_HIGH, "%s disconnected\n", Client.Persistent.Name.CString());
 
 #if CLEANCTF_ENABLED
 //ZOID
@@ -4167,9 +4164,9 @@ inline const char *MonsterAOrAn (const char *Name)
 
 void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 {
-	static std::string message, message2;
-	message.clear();
-	message2.clear();
+	static String message, message2;
+	message.Clear();
+	message2.Clear();
 
 	if (Attacker == this)
 	{
@@ -4262,12 +4259,12 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 		}
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message.c_str());
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.CString(), message.CString());
 	}
 	else if (Attacker && (Attacker->EntityFlags & EF_PLAYER))
 	{
 		CPlayerEntity *PlayerAttacker = entity_cast<CPlayerEntity>(Attacker);
-		bool endsInS = (PlayerAttacker->Client.Persistent.Name[PlayerAttacker->Client.Persistent.Name.size()-1] == 's');
+		bool endsInS = (PlayerAttacker->Client.Persistent.Name[PlayerAttacker->Client.Persistent.Name.Count()-1] == 's');
 
 		// Paril, Issue 3 fix
 		switch (meansOfDeath & ~MOD_FRIENDLY_FIRE)
@@ -4422,7 +4419,7 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 			break;
 #endif
 		}
-		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.Name.c_str(), message.c_str(), PlayerAttacker->Client.Persistent.Name.c_str(), message2.c_str());
+		BroadcastPrintf (PRINT_MEDIUM,"%s %s %s%s.\n", Client.Persistent.Name.CString(), message.CString(), PlayerAttacker->Client.Persistent.Name.CString(), message2.CString());
 		if (Game.GameMode & GAME_DEATHMATCH)
 			PlayerAttacker->Client.Respawn.Score++;
 	}
@@ -4502,7 +4499,7 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.c_str(), message.c_str(), MonsterAOrAn(Monster->Monster->GetMonsterName()), Monster->Monster->GetMonsterName(), message2.c_str());
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s %s %s%s.\n", Client.Persistent.Name.CString(), message.CString(), MonsterAOrAn(Monster->Monster->GetMonsterName()), Monster->Monster->GetMonsterName(), message2.CString());
 	}
 	else
 	{
@@ -4552,7 +4549,7 @@ void CPlayerEntity::Obituary (IBaseEntity *Attacker)
 
 		if (Game.GameMode & GAME_DEATHMATCH)
 			Client.Respawn.Score--;
-		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.c_str(), message.c_str());
+		BroadcastPrintf (PRINT_MEDIUM, "%s %s.\n", Client.Persistent.Name.CString(), message.CString());
 	}
 }
 
@@ -4719,21 +4716,21 @@ bool CPlayerEntity::IsSpawned ()
 	return (GetInUse() && Client.Persistent.State == SVCS_SPAWNED);
 }
 
-std::string CPlayerEntity::ClientTeam ()
+String CPlayerEntity::ClientTeam ()
 {
-	std::string val = Q_strlwr(Client.Persistent.UserInfo.GetValueFromKey("skin"));
+	String val = Client.Persistent.UserInfo.GetValueFromKey(String("skin")).ToLower();
 
-	size_t slash = val.find_first_of('/');
-	if (slash == std::string::npos)
+	size_t slash = val.IndexOf('/');
+	if (slash == -1)
 		return val;
 
 	if (DeathmatchFlags.dfModelTeams.IsEnabled())
 	{
-		val.erase (slash);
+		val.Remove (slash);
 		return val;
 	}
 
-	val.erase (0, 1);
+	val.Remove (0, 1);
 	return val;
 }
 

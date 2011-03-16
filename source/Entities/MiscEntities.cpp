@@ -305,7 +305,7 @@ void CMiscViper::Use (IBaseEntity *Other, IBaseEntity *Activator)
 
 void CMiscViper::Spawn ()
 {
-	if (Target.empty())
+	if (Target.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();

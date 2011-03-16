@@ -161,7 +161,7 @@ public:
 
 		TouchDebounce = Level.Frame + 20;
 
-		(entity_cast<CPlayerEntity>(Other))->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
+		(entity_cast<CPlayerEntity>(Other))->PrintToClient (PRINT_CENTER, "%s", Message.CString());
 	}
 	void Blocked (IBaseEntity *Other)
 	{
@@ -196,7 +196,7 @@ public:
 		switch (EndFunc)
 		{
 			case DOORSECRETENDFUNC_DONE:
-				if (TargetName.empty() || (SpawnFlags & SEC_YES_SHOOT))
+				if (TargetName.IsNullOrEmpty() || (SpawnFlags & SEC_YES_SHOOT))
 				{
 					Health = 1;
 					CanTakeDamage = true;
@@ -247,7 +247,7 @@ public:
 		GetSolid() = SOLID_BSP;
 		SetBrushModel ();
 
-		if (TargetName.empty() || (SpawnFlags & SEC_YES_SHOOT))
+		if (TargetName.IsNullOrEmpty() || (SpawnFlags & SEC_YES_SHOOT))
 		{
 			Health = 1;
 			MaxHealth = Health;
@@ -908,7 +908,7 @@ void CPlatForm2::Spawn ()
 
 	MoveState = STATE_TOP;
 
-	if (!TargetName.empty())
+	if (!TargetName.IsNullOrEmpty())
 		RequiresActivation = true;
 	else
 	{
@@ -1067,7 +1067,7 @@ public:
 
 	void LinkTurret ()
 	{
-		if (!KillTarget.empty())
+		if (!KillTarget.IsNullOrEmpty())
 			Enemy = CC_PickTarget (KillTarget);
 
 		ThinkType = BRAINTHINK_TURRET;
@@ -1183,20 +1183,20 @@ public:
 
 	void Spawn ()
 	{
-		if (KillTarget.empty())
+		if (KillTarget.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No killtarget\n");
 			Free ();
 			return;
 		}
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
 			return;
 		}
 
-		if (!TargetName.empty())
+		if (!TargetName.IsNullOrEmpty())
 			UseType = BRAINUSE_ACTIVATE;
 		else
 		{

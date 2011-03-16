@@ -230,9 +230,14 @@ void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 		File.WriteString (Entity->SAVE_GetName ());
 
 #if WIN32 && defined(_DEBUG)
+		// FIXME HACK
 		if (!(Entity->EntityFlags & EF_ITEM))
 		{
-			if (!strstr(Q_strlwr(std::string(typeid(*Entity).name())).c_str(), Q_strlwr(std::string(Entity->SAVE_GetName())).c_str()))
+			//if (!strstr(Q_strlwr(std::string(typeid(*Entity).name())).CString(), Q_strlwr(std::string(Entity->SAVE_GetName())).CString()))
+			String realType = String(typeid(*Entity).name()).ToLower();
+			String savedType = String(Entity->SAVE_GetName()).ToLower();
+
+			if (realType != savedType)
 				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->SAVE_GetName());
 		}
 #endif
@@ -557,12 +562,12 @@ void ReadConfigStrings (char *filename)
 {
 	size_t len = strlen(filename);
 
-	std::string temp = filename;
+	String temp (filename);
 	temp[len-3] = 's';
 	temp[len-2] = 'v';
 	temp[len-1] = '2';
 
-	CFile File (temp.c_str(), FILEMODE_READ);
+	CFile File (temp.CString(), FILEMODE_READ);
 
 	File.Read (ReadConfigSt, sizeof(ReadConfigSt));
 

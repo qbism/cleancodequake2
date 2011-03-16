@@ -170,13 +170,13 @@ class CServerCmdEntList : public CCommandFunctor
 
 				if (!e || !e->GetInUse())
 					continue;
-				if (!Q_WildcardMatch (WildCard, e->ClassName.c_str(), true))
+				if (!Q_WildcardMatch (WildCard, e->ClassName.CString(), true))
 					continue;
 
-				SServerEntityListIndex *Index = Exists(e->ClassName.c_str());
+				SServerEntityListIndex *Index = Exists(e->ClassName.CString());
 
 				if (!Index)
-					Index = AddToList (e->ClassName.c_str());
+					Index = AddToList (e->ClassName.CString());
 
 				vec3f Origin = (e->State.GetOrigin() == vec3fOrigin && (e->GetSolid() == SOLID_BSP)) ? e->GetAbsMin() : e->State.GetOrigin();
 
@@ -191,9 +191,9 @@ class CServerCmdEntList : public CCommandFunctor
 public:
 	void Execute ()
 	{
-		std::string WildCard = (!ArgGets(2).empty()) ? ArgGets(2) : "*";
+		String WildCard = (!ArgGets(2).IsNullOrEmpty()) ? ArgGets(2) : String("*");
 		CServerEntityList tmp;
-		tmp.Search (WildCard.c_str());
+		tmp.Search (WildCard.CString());
 
 		ServerPrintf ("Entity Stats\n"
 				"             amount       origin             classname\n"
@@ -230,7 +230,7 @@ class CServerCmdDumpEntities : public CCommandFunctor
 public:
 	void Execute () 
 	{
-		CFile File ((std::string("/maps/ents/") + Level.ServerLevelName + ".ccent").c_str(), FILEMODE_CREATE | FILEMODE_WRITE);
+		CFile File (String::Format("/maps/ents/%s.ccent", Level.ServerLevelName.CString()).CString(), FILEMODE_CREATE | FILEMODE_WRITE);
 
 		if (!File.Valid())
 			return;
@@ -260,7 +260,7 @@ public:
 		"%u       Squelch\n"
 		"%u       Spectator Mode\n"
 		"%u       Entering Game\n"
-		, GetNextArgs().c_str(), BAN_SQUELCH, BAN_SPECTATOR, BAN_ENTER);
+		, GetNextArgs().CString(), BAN_SQUELCH, BAN_SPECTATOR, BAN_ENTER);
 	}
 
 	class CServerCmdBanLoad : public CCommandFunctor
@@ -317,32 +317,32 @@ public:
 	public:
 		void Execute ()
 		{
-			std::string cmd = GetNextArgs();
+			String cmd = GetNextArgs();
 
-			if (Q_strlwr(cmd) == "remove")
+			if (cmd.CompareCaseInsensitive("remove"))
 			{
-				std::string name = GetNextArgs();
-				if (Bans.RemoveFromList (name.c_str()))
-					ServerPrintf ("Removed %s from ban list\n", name.c_str());
+				String name = GetNextArgs();
+				if (Bans.RemoveFromList (name.CString()))
+					ServerPrintf ("Removed %s from ban list\n", name.CString());
 				else
-					ServerPrintf ("%s not found in ban list\n", name.c_str());
+					ServerPrintf ("%s not found in ban list\n", name.CString());
 			}
 			else
 			{
-				std::string name = cmd;
+				String name = cmd;
 				const uint8 flags = GetNextArgi();
 
-				if (Bans.InList (name.c_str()))
+				if (Bans.InList (name.CString()))
 				{
-					if (Bans.ChangeBan (name.c_str(), flags))
-						ServerPrintf ("%s flags changed to %u\n", name.c_str(), flags);
+					if (Bans.ChangeBan (name.CString(), flags))
+						ServerPrintf ("%s flags changed to %u\n", name.CString(), flags);
 					else
-						ServerPrintf ("%s already has flags %u\n", name.c_str(), flags);
+						ServerPrintf ("%s already has flags %u\n", name.CString(), flags);
 				}
-				else if (Bans.AddToList (name.c_str(), flags))
-					ServerPrintf ("Added %s with flags %u to ban list\n", name.c_str(), flags);
+				else if (Bans.AddToList (name.CString(), flags))
+					ServerPrintf ("Added %s with flags %u to ban list\n", name.CString(), flags);
 				else
-					ServerPrintf ("%s not found in ban list\n", name.c_str());
+					ServerPrintf ("%s not found in ban list\n", name.CString());
 			}
 		}
 	};
@@ -352,11 +352,11 @@ public:
 	public:
 		void Execute ()
 		{
-			std::string cmd = GetNextArgs();
+			String cmd = GetNextArgs();
 
-			if (Q_strlwr(cmd) == "remove")
+			if (cmd.CompareCaseInsensitive("remove") == 0)
 			{
-				IPAddress Ip = CopyIP(GetNextArgs().c_str());
+				IPAddress Ip = CopyIP(GetNextArgs().CString());
 				if (Bans.RemoveFromList (Ip))
 					ServerPrintf ("Removed %s from ban list\n", Ip.str);
 				else
@@ -364,7 +364,7 @@ public:
 			}
 			else
 			{
-				IPAddress Ip = CopyIP(cmd.c_str());
+				IPAddress Ip = CopyIP(cmd.CString());
 				const uint8 flags = GetNextArgi();
 
 				if (Bans.InList (Ip))
@@ -425,7 +425,7 @@ of the parameters
 void CGameAPI::ServerCommand ()
 {
 	InitArg ();
-	SvCmd_RunCommand (ArgGets(1).c_str());
+	SvCmd_RunCommand (ArgGets(1).CString());
 	EndArg ();
 }
 

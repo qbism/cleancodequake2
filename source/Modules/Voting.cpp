@@ -69,7 +69,7 @@ public:
 /*abstract*/ class CVoteStateData
 {
 public:
-	virtual std::string Details() = 0;
+	virtual String Details() = 0;
 	virtual void VotePassed() = 0;
 };
 
@@ -77,23 +77,23 @@ class CVoteMapData : public CVoteStateData
 {
 public:
 	bool			NextMap;
-	std::string		Map;
+	String			Map;
 
-	CVoteMapData (bool isNextMap, std::string mapName) :
+	CVoteMapData (bool isNextMap, String mapName) :
 	  NextMap(isNextMap),
 	  Map(mapName)
 	{
 	}
 
-	std::string Details()
+	String Details()
 	{
-		return ((!NextMap) ? "Change the map to " : "Change the next map to ") + Map;
+		return String::Format("%s%s", ((!NextMap) ? "Change the map to " : "Change the next map to "), Map.CString());
 	}
 
 	void VotePassed ()
 	{
 		if (!NextMap)
-			BeginIntermission (CreateTargetChangeLevel(Map.c_str()));
+			BeginIntermission (CreateTargetChangeLevel(Map.CString()));
 		else
 			Level.NextMap = Map;
 	}
@@ -119,9 +119,9 @@ public:
 		PlayerEvents::PlayerDisconnected -= OnPlayerDisconnectVoteCheck;
 	}
 
-	std::string Details()
+	String Details()
 	{
-		return ((!Ban) ? "Kick " : "Ban ") + entity_cast<CPlayerEntity>(Game.Entities[PlayerNumber].Entity)->Client.Persistent.Name;
+		return String::Format("%s%s", ((!Ban) ? "Kick " : "Ban "), entity_cast<CPlayerEntity>(Game.Entities[PlayerNumber].Entity)->Client.Persistent.Name.CString());
 	}
 
 	void VotePassed ()
@@ -129,7 +129,7 @@ public:
 		if (Ban)
 			Bans.AddToList(entity_cast<CPlayerEntity>(Game.Entities[PlayerNumber].Entity)->Client.Persistent.IP, BAN_ENTER);
 
-		gi.AddCommandString(FormatString("kick %d\n", PlayerNumber - 1).c_str());
+		gi.AddCommandString(String::Format("kick %d\n", PlayerNumber - 1).CString());
 	}
 };
 
@@ -146,7 +146,7 @@ public:
 	FrameNumber			NextNotifyTime;
 	EVoteType			Type;
 	CVoteStateData		*Data;
-	std::string			Starter;
+	String				Starter;
 
 	CVote(EVoteType VoteType) :
 	  Voting(false),
@@ -156,7 +156,7 @@ public:
 	{
 	};
 
-	void StartVote (EVoteType VoteType, CVoteStateData *StateData, std::string starter)
+	void StartVote (EVoteType VoteType, CVoteStateData *StateData, String starter)
 	{
 		EndTime = Level.Frame + VoteFrameCount;
 		Voting = true;
@@ -165,7 +165,7 @@ public:
 		NextNotifyTime = Level.Frame + VoteNotificationTime;
 		Starter = starter;
 
-		BroadcastPrintf (PRINT_CHAT, "%s proposed a vote: %s. Type vote yes or vote no to vote.\n", Starter.c_str(), StateData->Details().c_str());
+		BroadcastPrintf (PRINT_CHAT, "%s proposed a vote: %s. Type vote yes or vote no to vote.\n", Starter.CString(), StateData->Details().CString());
 	};
 
 	void Finished()
@@ -397,7 +397,7 @@ public:
 			return;
 		}
 
-		Player->PrintToClient(PRINT_HIGH, "Current vote: %s\n", CurrentVote.Data->Details().c_str());
+		Player->PrintToClient(PRINT_HIGH, "Current vote: %s\n", CurrentVote.Data->Details().CString());
 	}
 };
 
@@ -419,9 +419,9 @@ public:
 			return;
 		}
 
-		std::string str = ArgGets(2);
+		String str = ArgGets(2);
 
-		if (str.size() < 3 ||
+		if (str.Count() < 3 ||
 			str[1] != ':' ||
 			(str[0] != 'p' && str[0] != 'n'))
 		{
@@ -433,17 +433,17 @@ public:
 
 		if (str[0] == 'p')
 		{
-			std::string playerName = Q_strlwr(str.substr(2));
+			String playerName = str.Substring(2).ToLower();
 
-			if (playerName.empty())	
+			if (playerName.IsNullOrEmpty())	
 			{
-			Player->PrintToClient (PRINT_HIGH, "Syntax error. Type \"vote ban\" or \"vote kick\" to see syntax.\n");
+				Player->PrintToClient (PRINT_HIGH, "Syntax error. Type \"vote ban\" or \"vote kick\" to see syntax.\n");
 				return;
 			}
 
 			for (int i = 1; i <= Game.MaxClients; ++i)
 			{
-				if (Q_strlwr(entity_cast<CPlayerEntity>(Game.Entities[i].Entity)->Client.Persistent.Name) == playerName)
+				if (entity_cast<CPlayerEntity>(Game.Entities[i].Entity)->Client.Persistent.Name.Clone().ToLower() == playerName)
 				{
 					if (playerToKick != -1)
 					{
@@ -463,9 +463,9 @@ public:
 		}
 		else
 		{
-			std::string playerNum = str.substr(2);
+			String playerNum = str.Substring(2);
 
-			for (size_t i = 0; i < playerNum.size(); ++i)
+			for (size_t i = 0; i < playerNum.Count(); ++i)
 			{
 				if (playerNum[i] < '0' || playerNum[i] > '9')
 				{
@@ -474,7 +474,7 @@ public:
 				}
 			}
 
-			playerToKick = atoi(str.substr(2).c_str());
+			playerToKick = atoi(str.Substring(2).CString());
 
 			if (playerToKick <= 0 || playerToKick > Game.MaxClients)
 			{

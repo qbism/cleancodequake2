@@ -42,7 +42,7 @@ typedef std::vector<class CPlayerEntity*> TConnectedIRCPlayers;
 class CIRCClientServerChannel
 {
 public:
-	std::string				ChannelName;
+	String					ChannelName;
 	TConnectedIRCPlayers	Players; // players on this channel
 	class CIRCClientServer	*Server;
 
@@ -52,7 +52,7 @@ public:
 
 typedef std::vector<CIRCClientServerChannel> TIRCChannels;
 
-typedef std::pair<int, std::string> TIRCMessage;
+typedef std::pair<int, String> TIRCMessage;
 typedef std::vector<TIRCMessage> TIRCMessageQueue;
 
 class CIRCClientServer
@@ -63,24 +63,24 @@ public:
 	TIRCChannels			Channels;
 	TIRCMessageQueue		IRCMsgQueue;
 	bool					CanSendMessages;
-	std::string				HostName;
+	String					HostName;
 
 	CIRCClientServer () :
 	  CanSendMessages(true)
 	{
 	};
 
-	CIRCClientServerChannel *FindChannel (std::string ChannelName);
+	CIRCClientServerChannel *FindChannel (String ChannelName);
 
 	bool Connected ();
-	void Connect (std::string HostName, std::string Nick, std::string User, std::string Pass, std::string RealName, int port = 6667);
+	void Connect (String HostName, String Nick, String User, String Pass, String RealName, int port = 6667);
 	void Disconnect ();
-	void SendMessage (class CPlayerEntity *Player, std::string Message);
+	void SendMessage (class CPlayerEntity *Player, String Message);
 	void Update ();
 	void ListChannels (class CPlayerEntity *Player);
-	void JoinChannel (class CPlayerEntity *Player, std::string ChannelName);
-	void LeaveChannel (class CPlayerEntity *Player, std::string ChannelName);
-	void PushMessage (int Cmd, std::string Str);
+	void JoinChannel (class CPlayerEntity *Player, String ChannelName);
+	void LeaveChannel (class CPlayerEntity *Player, String ChannelName);
+	void PushMessage (int Cmd, String Str);
 	void SendMsgQueue ();
 };
 
@@ -91,17 +91,17 @@ class CIRCClient
 {
 public:
 	class CPlayerEntity	*Player;
-	std::string			Nick;
-	std::string			Channel;
+	String				Nick;
+	String				Channel;
 	uint8				ConnectedTo;
 
 	bool Connected ();
 	void Connect (uint8 ServerIndex);
-	void JoinChannel (std::string ChannelName);
+	void JoinChannel (String ChannelName);
 	void LeaveChannel ();
 	void List ();
 	void Disconnect ();
-	void SendMessage (std::string Msg);
+	void SendMessage (String Msg);
 };
 
 class CIRCCommand : public CGameCommandFunctor

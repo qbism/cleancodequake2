@@ -37,8 +37,8 @@ const int MAX_ARG_CONCAT	= 256;
 const int MAX_ARG			= 64;
 
 uint8							numArgv;
-std::string						argvConcatString;
-std::vector<std::string>		argvStringArray;
+String						argvConcatString;
+std::vector<String>		argvStringArray;
 std::vector<sint32>				argvIntegerArray;
 std::vector<float>				argvFloatArray;
 
@@ -49,7 +49,7 @@ void SetupArg ()
 	argvStringArray.clear();
 	argvIntegerArray.clear();
 	argvFloatArray.clear();
-	argvConcatString.clear();
+	argvConcatString.Clear();
 }
 
 // Called at the beginning of an arg session
@@ -67,12 +67,12 @@ CC_DISABLE_DEPRECATION
 	if (numArgv == 0)
 		return;
 
-	argvConcatString = gi.args();
+	argvConcatString = String(gi.args());
 
 	for (uint8 i = 0; i < numArgv; i++)
 	{
-		argvStringArray.push_back (gi.argv(i));
-		argvFloatArray.push_back ((float)atof (argvStringArray[i].c_str()));
+		argvStringArray.push_back (String(gi.argv(i)));
+		argvFloatArray.push_back ((float)atof (argvStringArray[i].CString()));
 		argvIntegerArray.push_back ((sint32)argvFloatArray[i]);
 	}
 CC_ENABLE_DEPRECATION
@@ -90,15 +90,15 @@ uint8 ArgCount ()
 	return numArgv;
 }
 
-std::string ArgGetConcatenatedString ()
+String ArgGetConcatenatedString ()
 {
 	return argvConcatString;
 }
 
-std::string ArgGets (uint32 Index)
+String ArgGets (uint32 Index)
 {
 	if (Index >= argvStringArray.size())
-		return "";
+		return String::Empty();
 
 	return argvStringArray[Index];
 }

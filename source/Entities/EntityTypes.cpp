@@ -1661,7 +1661,7 @@ public:
 IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 
 /**
-\fn	void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
+\fn	void IUsableEntity::UseTargets (IBaseEntity *Activator, String &Message)
 
 \brief	Use targets. 
 
@@ -1671,7 +1671,7 @@ IMPLEMENT_SAVE_SOURCE (CDelayedUse)
 \param [in,out]	Activator	If non-null, the activator. 
 \param [in,out]	Message		The message. 
 **/
-void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
+void IUsableEntity::UseTargets (IBaseEntity *Activator, String &Message)
 {
 //
 // check for a delay
@@ -1696,20 +1696,20 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 //
 // print the message
 //
-	if ((!Message.empty()) && (Activator->EntityFlags & EF_PLAYER))
+	if ((!Message.IsNullOrEmpty()) && (Activator->EntityFlags & EF_PLAYER))
 	{
 		CPlayerEntity *Player = entity_cast<CPlayerEntity>(Activator);
-		Player->PrintToClient (PRINT_CENTER, "%s", Message.c_str());
+		Player->PrintToClient (PRINT_CENTER, "%s", Message.CString());
 		Player->PlaySound (CHAN_AUTO, (NoiseIndex) ? NoiseIndex : SoundIndex ("misc/talk1.wav"));
 	}
 
 //
 // kill killtargets
 //
-	if (!KillTarget.empty())
+	if (!KillTarget.IsNullOrEmpty())
 	{
 		IMapEntity *t = NULL;
-		while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget.c_str())) != NULL)
+		while ((t = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (t, KillTarget.CString())) != NULL)
 		{
 #if ROGUE_FEATURES
 			// if this entity is part of a train, cleanly remove it
@@ -1745,10 +1745,10 @@ void IUsableEntity::UseTargets (IBaseEntity *Activator, std::string &Message)
 //
 // fire targets
 //
-	if (!Target.empty())
+	if (!Target.IsNullOrEmpty())
 	{
 		IMapEntity *Ent = NULL;
-		while ((Ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target.c_str())) != NULL)
+		while ((Ent = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (Ent, Target.CString())) != NULL)
 		{
 			if (!Ent)
 				continue;

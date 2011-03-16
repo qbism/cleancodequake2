@@ -42,6 +42,9 @@ bool AssertExpression (const bool expr, const char *msg, const char *file, const
 #include "Templates/Events.h"
 #include "MathLib.h"
 #include "ColorVec.h"
+#include "TList.h"
+#include "String.h"
+#include "Exceptions.h"
 
 /*
 =============================================================================
@@ -376,24 +379,6 @@ inline char *Q_strlwr(char *s)
 }
 
 /**
-\fn	inline std::string Q_strlwr (std::string s)
-
-\brief	String lower. Tolower's the entire string. Does not modify 's'.
-
-\author	Paril
-\date	26/05/2010
-
-\param	s	The string to make lowercase. 
-
-\return	's', tolower'ed. 
-**/
-inline std::string Q_strlwr (std::string s)
-{
-	std::transform (s.begin(), s.end(), s.begin(), tolower);
-	return s;
-}
-
-/**
 \fn	inline char *Q_strupr(char *s)
 
 \brief	Makes a string uppercase. 
@@ -417,24 +402,6 @@ inline char *Q_strupr(char *s)
 	}
 
 	return NULL;
-}
-
-/**
-\fn	inline std::string Q_strupr (std::string s)
-
-\brief	Makes a string uppercase and returns the new string. Does not modify 's'.
-
-\author	Paril
-\date	26/05/2010
-
-\param	s	The string to be uppercase'd. 
-
-\return	The new string. 
-**/
-inline std::string Q_strupr (std::string s)
-{
-	std::transform (s.begin(), s.end(), s.begin(), toupper);
-	return s;
 }
 
 /**
@@ -466,73 +433,49 @@ inline bool Q_WildcardMatch (const char *filter, const char *string, bool ignore
 	}
 }
 
-/**
-\fn	inline std::string FormatString (const char *fmt, ...)
-
-\brief	Format an std::string, similar to sprintf.
-
-\author	Paril
-\date	30/08/2010
-
-\param	fmt	Describes the format to use. 
-
-\return	The formatted string. 
-**/
-inline std::string FormatString (const char *fmt, ...)
-{
-	va_list		argptr;
-	CTempMemoryBlock text = CTempHunkSystem::Allocator.GetBlock(MAX_COMPRINT * 2);
-
-	va_start (argptr, fmt);
-	vsnprintf (text.GetBuffer<char>(), text.GetSize() - 1, fmt, argptr);
-	va_end (argptr);
-
-	return std::string(text.GetBuffer<char>());
-};
-
-struct nostringconversionexception : std::exception
+class ExceptionNoStringConversion : Exception
 {
 public:
-	const char *what() const throw()
-	{
-		return "No string conversion exists";
-	}
+	ExceptionNoStringConversion() :
+	  Exception(String("No conversion exists for this type"))
+	  {
+	  };
 };
 
 template<typename TType>
-inline std::string ToString(TType &value)
+inline String ToString(const TType &value)
 {
-	throw nostringconversionexception();
+	throw ExceptionNoStringConversion();
 }
 
 // Supports integral/float types
 template<typename TType, const int bufferSize>
-inline std::string ToStringGeneric (TType &value, const char *format)
+inline String ToStringGeneric (const TType &value, const char *format)
 {
 	CTempMemoryBlock block = CTempHunkSystem::Allocator.GetBlock(bufferSize);
 	sprintf(block.GetBuffer<char>(), format, value);
-	return std::string(block.GetBuffer<char>());
+	return String(block.GetBuffer<char>());
 }
 
-template<> inline std::string ToString(sint64 &value) { return ToStringGeneric<sint64, 64>(value, "%ld"); }
-template<> inline std::string ToString(uint64 &value) { return ToStringGeneric<uint64, 64>(value, "%lu"); }
-template<> inline std::string ToString(sint32 &value) { return ToStringGeneric<sint32, 32>(value, "%d"); }
-template<> inline std::string ToString(uint32 &value) { return ToStringGeneric<uint32, 32>(value, "%u"); }
-template<> inline std::string ToString(sint16 &value) { return ToStringGeneric<sint16, 16>(value, "%hd"); }
-template<> inline std::string ToString(uint16 &value) { return ToStringGeneric<uint16, 16>(value, "%hu"); }
-template<> inline std::string ToString(sint8 &value) { return ToStringGeneric<sint8, 8>(value, "%d"); }
-template<> inline std::string ToString(uint8 &value) { return ToStringGeneric<uint8, 8>(value, "%u"); }
+template<> inline String ToString(const sint64 &value) { return ToStringGeneric<sint64, 64>(value, "%ld"); }
+template<> inline String ToString(const uint64 &value) { return ToStringGeneric<uint64, 64>(value, "%lu"); }
+template<> inline String ToString(const sint32 &value) { return ToStringGeneric<sint32, 32>(value, "%d"); }
+template<> inline String ToString(const uint32 &value) { return ToStringGeneric<uint32, 32>(value, "%u"); }
+template<> inline String ToString(const sint16 &value) { return ToStringGeneric<sint16, 16>(value, "%hd"); }
+template<> inline String ToString(const uint16 &value) { return ToStringGeneric<uint16, 16>(value, "%hu"); }
+template<> inline String ToString(const sint8 &value) { return ToStringGeneric<sint8, 8>(value, "%d"); }
+template<> inline String ToString(const uint8 &value) { return ToStringGeneric<uint8, 8>(value, "%u"); }
 
-template<> inline std::string ToString(float &value) { return ToStringGeneric<float, 32>(value, "%f"); }
-template<> inline std::string ToString(double &value) { return ToStringGeneric<double, 64>(value, "%d"); }
-template<> inline std::string ToString(long double &value) { return ToStringGeneric<long double, 128>(value, "%Ld"); }
+template<> inline String ToString(const float &value) { return ToStringGeneric<float, 32>(value, "%f"); }
+template<> inline String ToString(const double &value) { return ToStringGeneric<double, 64>(value, "%d"); }
+template<> inline String ToString(const long double &value) { return ToStringGeneric<long double, 128>(value, "%Ld"); }
 
-template<> inline std::string ToString(vec3f &value)
+template<> inline String ToString(const vec3f &value)
 {
-	CTempMemoryBlock block = CTempHunkSystem::Allocator.GetBlock(128);
-	sprintf(block.GetBuffer<char>(), "%f %f %f", value.X, value.Y, value.Z);
-	return std::string(block.GetBuffer<char>());
+	return String::Format("%f %f %f", value.X, value.Y, value.Z);
 }
+
+template<> inline String ToString(const String &string) { return string; }
 
 /*
 ==============================================================================

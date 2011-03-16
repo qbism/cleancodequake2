@@ -688,7 +688,7 @@ bool CJorg::CheckAttack ()
 		float strafe_chance = 0.6f;
 
 		// if enemy is tesla, never strafe
-		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.empty()) && (!strcmp(Entity->Enemy->ClassName.c_str(), "tesla")))
+		if ((Entity->Enemy) && (!Entity->Enemy->ClassName.IsNullOrEmpty()) && (!strcmp(Entity->Enemy->ClassName.CString(), "tesla")))
 			strafe_chance = 0;
 
 		if (frand() < strafe_chance)

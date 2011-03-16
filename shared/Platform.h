@@ -215,6 +215,10 @@ typedef uint64_t			uint64;
 # endif
 #endif
 
+#ifndef null
+#define null NULL
+#endif
+
 #ifdef HAVE__SNPRINTF
 # ifndef snprintf 
 #  define snprintf _snprintf

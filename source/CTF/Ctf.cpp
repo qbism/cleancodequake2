@@ -197,7 +197,7 @@ void CTFFragBonuses(CPlayerEntity *Target, CPlayerEntity *Attacker)
 		// fragged a guy who hurt our flag carrier
 		Attacker->Client.Respawn.Score += CTF_CARRIER_DANGER_PROTECT_BONUS;
 		BroadcastPrintf(PRINT_MEDIUM, "%s defends %s's flag carrier against an agressive enemy\n",
-			Attacker->Client.Persistent.Name.c_str(), 
+			Attacker->Client.Persistent.Name.CString(), 
 			CTFTeamName(Attacker->Client.Respawn.CTF.Team));
 		return;
 	}
@@ -224,11 +224,11 @@ void CTFFragBonuses(CPlayerEntity *Target, CPlayerEntity *Attacker)
 		Attacker->Client.Respawn.Score += CTF_FLAG_DEFENSE_BONUS;
 		if (AttackerTransponder->Base->GetSolid() == SOLID_NOT)
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s base.\n",
-				Attacker->Client.Persistent.Name.c_str(), 
+				Attacker->Client.Persistent.Name.CString(), 
 				CTFTeamName(Attacker->Client.Respawn.CTF.Team));
 		else
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s flag.\n",
-				Attacker->Client.Persistent.Name.c_str(), 
+				Attacker->Client.Persistent.Name.CString(), 
 				CTFTeamName(Attacker->Client.Respawn.CTF.Team));
 		return;
 	}
@@ -241,7 +241,7 @@ void CTFFragBonuses(CPlayerEntity *Target, CPlayerEntity *Attacker)
 		{
 			Attacker->Client.Respawn.Score += CTF_CARRIER_PROTECT_BONUS;
 			BroadcastPrintf(PRINT_MEDIUM, "%s defends the %s's flag carrier.\n",
-				Attacker->Client.Persistent.Name.c_str(), 
+				Attacker->Client.Persistent.Name.CString(), 
 				CTFTeamName(Attacker->Client.Respawn.CTF.Team));
 			return;
 		}
@@ -371,7 +371,7 @@ void CCTFTeamCommand::Execute ()
 {
 	sint32 desired_team;
 
-	std::string t = ArgGetConcatenatedString();
+	String t = ArgGetConcatenatedString();
 	if (!t[0])
 	{
 		Player->PrintToClient (PRINT_HIGH, "You are on the %s team.\n",
@@ -379,13 +379,13 @@ void CCTFTeamCommand::Execute ()
 		return;
 	}
 
-	if (Q_stricmp (t.c_str(), "red") == 0)
+	if (Q_stricmp (t.CString(), "red") == 0)
 		desired_team = CTF_TEAM1;
-	else if (Q_stricmp (t.c_str(), "blue") == 0)
+	else if (Q_stricmp (t.CString(), "blue") == 0)
 		desired_team = CTF_TEAM2;
 	else
 	{
-		Player->PrintToClient (PRINT_HIGH, "Unknown team %s.\n", t.c_str());
+		Player->PrintToClient (PRINT_HIGH, "Unknown team %s.\n", t.CString());
 		return;
 	}
 
@@ -412,7 +412,7 @@ void CCTFTeamCommand::Execute ()
 		Player->Client.PlayerState.GetPMove()->PMoveFlags = PMF_TIME_TELEPORT;
 		Player->Client.PlayerState.GetPMove()->PMoveTime = 14;
 		BroadcastPrintf(PRINT_HIGH, "%s joined the %s team.\n",
-			Player->Client.Persistent.Name.c_str(), CTFTeamName(desired_team));
+			Player->Client.Persistent.Name.CString(), CTFTeamName(desired_team));
 		return;
 	}
 
@@ -425,7 +425,7 @@ void CCTFTeamCommand::Execute ()
 	Player->Client.Respawn.Score = 0;
 
 	BroadcastPrintf(PRINT_HIGH, "%s changed to the %s team.\n",
-		Player->Client.Persistent.Name.c_str(), CTFTeamName(desired_team));
+		Player->Client.Persistent.Name.CString(), CTFTeamName(desired_team));
 }
 
 /*
@@ -449,13 +449,13 @@ const int HASHSIZE_CLASSNAMES = 256;
 class CLocName
 {
 public:
-	std::string		classname;
+	String			classname;
 	uint32			hash;
 
 	uint8			priority;
 
 	CLocName (const char *name, uint8 priority) :
-		classname(name),
+		classname(String(name)),
 		priority(priority),
 		hash(Com_HashGeneric (name, HASHSIZE_CLASSNAMES))
 	{
@@ -521,7 +521,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 		uint8 i;
 		for (i = 0; i < ArrayCount(LocNames); i++)
 		{
-			if (hash == LocNames[i].hash && (what->ClassName == LocNames[i].classname.c_str()))
+			if (hash == LocNames[i].hash && (what->ClassName == LocNames[i].classname))
 				break;
 		}
 
@@ -558,7 +558,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 
 	if (!hot)
 	{
-		OutMessage << "nowhere";
+		OutMessage += "nowhere";
 		return;
 	}
 
@@ -566,7 +566,7 @@ void CCTFSayTeamCommand::FormatLocation ()
 	// see if there's more than one in the map, if so
 	// we need to determine what team is closest
 	what = NULL;
-	while ((what = CC_FindByClassName<IBaseEntity, EF_BASE> (what, hot->ClassName.c_str())) != NULL)
+	while ((what = CC_FindByClassName<IBaseEntity, EF_BASE> (what, hot->ClassName.CString())) != NULL)
 	{
 		if (what == hot)
 			continue;
@@ -589,37 +589,37 @@ void CCTFSayTeamCommand::FormatLocation ()
 		break;
 	}
 
-	if ((item = FindItemByClassname(hot->ClassName.c_str())) == NULL)
+	if ((item = FindItemByClassname(hot->ClassName.CString())) == NULL)
 	{
-		OutMessage << "nowhere";
+		OutMessage += "nowhere";
 		return;
 	}
 
 	// in water?
 	if (Player->WaterInfo.Level)
-		OutMessage << "in the water ";
+		OutMessage += "in the water ";
 
 	// near or above
 	vec3f v = Player->State.GetOrigin() - hot->State.GetOrigin();
 	if (Abs(v.Z) > Abs(v.X) && Abs(v.Z) > Abs(v.Y))
-		OutMessage << (v.Z > 0) ? "above " : "below ";
+		OutMessage += (v.Z > 0) ? "above " : "below ";
 	else
-		OutMessage << "near ";
+		OutMessage += "near ";
 
 	switch (nearteam)
 	{
 	case CTF_TEAM1:
-		OutMessage << "the red ";
+		OutMessage += "the red ";
 		break;
 	case CTF_TEAM2:
-		OutMessage << "the blue ";
+		OutMessage += "the blue ";
 		break;
 	default:
-		OutMessage << "the ";
+		OutMessage += "the ";
 		break;
 	}
 
-	OutMessage << item->Name;
+	OutMessage += item->Name;
 }
 
 /**
@@ -638,16 +638,16 @@ void CCTFSayTeamCommand::FormatArmor ()
 		sint32 cells = Player->Client.Persistent.Inventory.Has(NItems::Cells);
 		if (cells)
 		{
-			OutMessage << ((PowerArmorType == POWER_ARMOR_SCREEN) ? "Power Screen" : "Power Shield") << " with " << cells << " cells ";
+			OutMessage += String::Format("%s with %i cells", ((PowerArmorType == POWER_ARMOR_SCREEN) ? "Power Screen" : "Power Shield"), cells);
 			if (Armor)
-				OutMessage << "and ";
+				OutMessage += "and ";
 		}
 	}
 
 	if (Armor)
-		OutMessage << Player->Client.Persistent.Inventory.Has(Armor) << " units of " << Armor->Name;
+		OutMessage += String::Format("%i units of %s", Player->Client.Persistent.Inventory.Has(Armor), Armor->Name);
 	else if (!PowerArmorType)
-		OutMessage << "no armor";
+		OutMessage += "no armor";
 }
 
 /**
@@ -659,9 +659,9 @@ void CCTFSayTeamCommand::FormatArmor ()
 void CCTFSayTeamCommand::FormatHealth ()
 {
 	if (Player->Health <= 0)
-		OutMessage << "dead";
+		OutMessage += "dead";
 	else
-		OutMessage << Player->Health << " health";
+		OutMessage += String::Format("%i health", Player->Health);
 }
 
 /**
@@ -674,9 +674,9 @@ void CCTFSayTeamCommand::FormatTech ()
 {
 	// see if the player has a tech powerup
 	if (Player->Client.Persistent.Tech)
-		OutMessage << "the " << Player->Client.Persistent.Tech->Name;
+		OutMessage += String::Format("the %s", Player->Client.Persistent.Tech->Name);
 	else
-		OutMessage << "no powerup";
+		OutMessage += "no powerup";
 }
 
 /**
@@ -688,9 +688,9 @@ void CCTFSayTeamCommand::FormatTech ()
 void CCTFSayTeamCommand::FormatWeapon ()
 {
 	if (Player->Client.Persistent.Weapon)
-		OutMessage << Player->Client.Persistent.Weapon->Item->Name;
+		OutMessage += Player->Client.Persistent.Weapon->Item->Name;
 	else
-		OutMessage << "none";
+		OutMessage += "none";
 }
 
 /**
@@ -702,7 +702,7 @@ void CCTFSayTeamCommand::FormatWeapon ()
 void CCTFSayTeamCommand::FormatSight ()
 {
 	sint32 n = 0;
-	static std::string nameStore;
+	static String nameStore;
 
 	for (uint8 i = 1; i <= Game.MaxClients; i++)
 	{
@@ -712,14 +712,14 @@ void CCTFSayTeamCommand::FormatSight ()
 			!targ->CanSee(Player))
 			continue;
 
-		if (nameStore.empty())
+		if (nameStore.IsNullOrEmpty())
 			nameStore = targ->Client.Persistent.Name;
 		else
 		{
 			if (n)
-				OutMessage << ", ";
+				OutMessage += ", ";
 
-			OutMessage << nameStore;
+			OutMessage += nameStore;
 			nameStore = targ->Client.Persistent.Name;
 
 			n++;
@@ -728,14 +728,14 @@ void CCTFSayTeamCommand::FormatSight ()
 
 	if (n)
 	{
-		if (!nameStore.empty())
+		if (!nameStore.IsNullOrEmpty())
 		{
-			OutMessage << " and ";
-			OutMessage << nameStore;
+			OutMessage += " and ";
+			OutMessage += nameStore;
 		}
 	}
 	else
-		OutMessage << "no one";
+		OutMessage += "no one";
 }
 
 bool CheckFlood(CPlayerEntity *Player);
@@ -752,10 +752,10 @@ bool CheckFlood(CPlayerEntity *Player);
 class CCTFSayPlayerCallback : public CForEachPlayerCallback
 {
 public:
-	std::string		&Text;
+	String			&Text;
 	ETeamIndex		Team;
 
-	CCTFSayPlayerCallback (std::string &Text, ETeamIndex Team) :
+	CCTFSayPlayerCallback (String &Text, ETeamIndex Team) :
 	  Text(Text),
 	  Team(Team)
 	{
@@ -766,26 +766,26 @@ public:
 	void Callback (CPlayerEntity *Player)
 	{
 		if (Player->Client.Respawn.CTF.Team == Team)
-			Player->PrintToClient (PRINT_CHAT, "%s", Text.c_str());
+			Player->PrintToClient (PRINT_CHAT, "%s", Text.CString());
 	}
 };
 
 void CCTFSayTeamCommand::Execute ()
 {
-	std::string msg = ArgGetConcatenatedString();
+	String msg = ArgGetConcatenatedString();
 	
 	if (Player->CheckFlood())
 		return;
 
-	OutMessage.str("");
+	OutMessage.Clear();
 
 	if (msg[0] == '\"')
 	{
-		msg.erase (0, 1);
-		msg.erase (msg.end() - 1);
+		msg.Remove (0, 1);
+		msg.Remove (msg.Count() - 1);
 	}
 
-	for (size_t pm = 0; pm < msg.size(); pm++)
+	for (size_t pm = 0; pm < msg.Count(); pm++)
 	{
 		if (msg[pm] == '%')
 		{
@@ -810,14 +810,14 @@ void CCTFSayTeamCommand::Execute ()
 				FormatSight();
 				break;
 			default :
-				OutMessage << msg[pm];
+				OutMessage += msg[pm];
 			}
 		}
 		else
-			OutMessage << msg[pm];
+			OutMessage += msg[pm];
 	}
 
-	msg = ("(" + Player->Client.Persistent.Name + "): ") + OutMessage.str();
+	msg = String::Format("(%s): %s", Player->Client.Persistent.Name.CString(), OutMessage.CString());
 	CCTFSayPlayerCallback (msg, Player->Client.Respawn.CTF.Team);
 }
 
@@ -926,7 +926,7 @@ public:
 LINK_CLASSNAME_TO_CLASS ("misc_ctf_banner_small", CMiscCTFBannerSmall);
 
 /**
-\fn	bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, std::string Message)
+\fn	bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, String Message)
 
 \brief	Begin an election. 
 
@@ -939,7 +939,7 @@ LINK_CLASSNAME_TO_CLASS ("misc_ctf_banner_small", CMiscCTFBannerSmall);
 
 \return	true if it succeeds, false if it fails. 
 **/
-bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, std::string Message)
+bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, String Message)
 {
 	if (CvarList[CV_ELECT_PERCENTAGE].Integer() == 0)
 	{
@@ -978,7 +978,7 @@ bool CTFBeginElection(CPlayerEntity *Player, EElectState Type, std::string Messa
 	ctfgame.ElectionMessage = Message;
 
 	// tell everyone
-	BroadcastPrintf(PRINT_CHAT, "%s\n", Message.c_str());
+	BroadcastPrintf(PRINT_CHAT, "%s\n", Message.CString());
 	BroadcastPrintf(PRINT_HIGH, "Type YES or NO to vote on this request\n"
 								"Votes: %d  Needed: %d  Time left: %ds\n",
 								ctfgame.ElectionVotes, ctfgame.ElectionNeedVotes,
@@ -998,14 +998,14 @@ void CTFWinElection()
 	{
 	case ELECT_ADMIN :
 		ctfgame.ElectionTarget->Client.Respawn.CTF.Admin = true;
-		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", ctfgame.ElectionTarget->Client.Persistent.Name.c_str());
+		BroadcastPrintf(PRINT_HIGH, "%s has become an admin.\n", ctfgame.ElectionTarget->Client.Persistent.Name.CString());
 		ctfgame.ElectionTarget->PrintToClient (PRINT_HIGH, "Type 'admin' to access the adminstration menu.\n");
 		break;
 
 	case ELECT_MAP :
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
-			ctfgame.ElectionTarget->Client.Persistent.Name.c_str(), ctfgame.ElectionLevel.c_str());
-		Level.ForceMap = ctfgame.ElectionLevel.c_str();
+			ctfgame.ElectionTarget->Client.Persistent.Name.CString(), ctfgame.ElectionLevel.CString());
+		Level.ForceMap = ctfgame.ElectionLevel.CString();
 		EndDMLevel();
 		break;
 	}
@@ -1039,7 +1039,7 @@ void CCTFVoteYesCommand::Execute ()
 		CTFWinElection();
 		return;
 	}
-	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.ElectionMessage.c_str());
+	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.ElectionMessage.CString());
 	BroadcastPrintf(PRINT_CHAT, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.ElectionVotes, ctfgame.ElectionNeedVotes,
 		(sint32)((ctfgame.ElectionTimeEnd - Level.Frame)/10));
 }
@@ -1064,7 +1064,7 @@ void CCTFVoteNoCommand::Execute ()
 
 	Player->Client.Respawn.CTF.Voted = true;
 
-	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.ElectionMessage.c_str());
+	BroadcastPrintf(PRINT_HIGH, "%s\n", ctfgame.ElectionMessage.CString());
 	BroadcastPrintf(PRINT_CHAT, "Votes: %d  Needed: %d  Time left: %ds\n", ctfgame.ElectionVotes, ctfgame.ElectionNeedVotes,
 		(sint32)((ctfgame.ElectionTimeEnd - Level.Frame)/10));
 }
@@ -1139,7 +1139,7 @@ void CCTFPlayerListCommand::Execute ()
 
 		Q_snprintfz(tempStr.GetBuffer<char>(), tempStr.GetSize(), "%3d %-16.16s %02d:%02d %4d %3d%s\n",
 			i + 1,
-			e2->Client.Persistent.Name.c_str(),
+			e2->Client.Persistent.Name.CString(),
 			(Level.Frame - e2->Client.Respawn.EnterFrame) / 600,
 			((Level.Frame - e2->Client.Respawn.EnterFrame) % 600)/10,
 			e2->Client.GetPing(),
@@ -1167,19 +1167,19 @@ bool CharIsAnyOf (char Character, const char *Values)
 	return false;
 }
 
-std::vector<std::string> Tokenize (std::string String, const char *Separators, const bool lower = false)
+std::vector<String> Tokenize (String string, const char *Separators, const bool lower = false)
 {
-	std::vector<std::string> strings;
+	std::vector<String> strings;
 	size_t start = 0;
 
-	for (size_t i = 0; i < String.length(); ++i)
+	for (size_t i = 0; i < string.Count(); ++i)
 	{
-		if (String[i] == 0 || CharIsAnyOf(String[i], Separators))
+		if (string[i] == 0 || CharIsAnyOf(string[i], Separators))
 		{
-			std::string str = String.substr(start, (i - start));
+			String str = string.Substring(start, (i - start));
 
 			if (lower)
-				str = Q_strlwr(str);
+				str.ToLower();
 
 			strings.push_back(str);
 			start = i + 1;
@@ -1191,36 +1191,36 @@ std::vector<std::string> Tokenize (std::string String, const char *Separators, c
 
 void CCTFWarpCommand::Execute ()
 {
-	static std::vector<std::string> maps;
+	static std::vector<String> maps;
 	static bool initialized = false;
 	static const char *seps = " \t\n\r";
 
 	if (ArgCount() < 2)
 	{
-		Player->PrintToClient (PRINT_HIGH, "Where do you want to warp to?\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].String());
+		Player->PrintToClient (PRINT_HIGH, "Where do you want to warp to?\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].StringValue());
 		return;
 	}
 
 	if (!initialized || CvarList[CV_WARP_LIST].Modified())
-		maps = Tokenize(CvarList[CV_WARP_LIST].String(), seps, true);
+		maps = Tokenize(String(CvarList[CV_WARP_LIST].StringValue()), seps, true);
 
-	std::vector<std::string>::iterator it = maps.begin();
+	std::vector<String>::iterator it = maps.begin();
 	for (; it != maps.end(); ++it)
 	{
-		if (Q_strlwr(ArgGets(1)) == (*it))
+		if (ArgGets(1).ToLower() == (*it))
 			break;
 	}
 
 	if (it == maps.end())
 	{
-		Player->PrintToClient (PRINT_HIGH, "Unknown CTF Level.\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].String());
+		Player->PrintToClient (PRINT_HIGH, "Unknown CTF Level.\nAvailable levels are: %s\n", CvarList[CV_WARP_LIST].StringValue());
 		return;
 	}
 
 	if (Player->Client.Respawn.CTF.Admin)
 	{
 		BroadcastPrintf(PRINT_HIGH, "%s is warping to level %s.\n", 
-			Player->Client.Persistent.Name.c_str(), ArgGets(1).c_str());
+			Player->Client.Persistent.Name.CString(), ArgGets(1).CString());
 		Level.ForceMap = ArgGets(1);
 		EndDMLevel();
 		return;

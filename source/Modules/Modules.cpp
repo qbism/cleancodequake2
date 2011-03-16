@@ -45,15 +45,12 @@ class CListModulesCommand : public CGameCommandFunctor
 public:
 	void Execute ()
 	{
-		std::string printString = "Modules loaded on this server:\n";
+		String printString ("Modules loaded on this server:\n");
 		
 		for (size_t i = 0; i < CModuleContainer::container.Modules.size(); ++i)
-		{
-			printString += ToString(i) + ":\n" + CModuleContainer::container.Modules[i]->GetName();
-			printString += "\n\n";
-		}
+			printString += String::Format("%i:\n%s\n\n", i, CModuleContainer::container.Modules[i]->GetName());
 
-		Player->PrintToClient (PRINT_HIGH, "%s", printString.c_str());
+		Player->PrintToClient (PRINT_HIGH, "%s", printString.CString());
 	};
 };
 

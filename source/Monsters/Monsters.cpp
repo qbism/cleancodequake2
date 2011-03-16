@@ -84,7 +84,7 @@ IMonster *CreateMonsterFromTable (uint32 MonsterID, const char *Name)
 void LoadMonsterData (CMonsterEntity *Entity, const char *LoadedName, uint32 MonsterID, CFile &File)
 {
 	// Create base monster
-	Entity->Monster = CreateMonsterFromTable (MonsterID, Entity->ClassName.c_str());
+	Entity->Monster = CreateMonsterFromTable (MonsterID, Entity->ClassName.CString());
 
 	// Fill it
 	Entity->Monster->LoadFields (File);
@@ -923,12 +923,12 @@ void IMonster::MonsterStartGo ()
 		return;
 
 	// check for target to combat_point and change to combattarget
-	if (!Entity->Target.empty())
+	if (!Entity->Target.IsNullOrEmpty())
 	{
 		bool		notcombat = false, fixup = false;
 		IMapEntity		*target = NULL;
 
-		while ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target.c_str())) != NULL)
+		while ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->Target.CString())) != NULL)
 		{
 			if (target->ClassName == "point_combat")
 			{
@@ -938,24 +938,24 @@ void IMonster::MonsterStartGo ()
 			else
 				notcombat = true;
 		}
-		if (notcombat && !Entity->CombatTarget.empty())
+		if (notcombat && !Entity->CombatTarget.IsNullOrEmpty())
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Target with mixed types\n");
 		if (fixup)
-			Entity->Target.clear();
+			Entity->Target.Clear();
 	}
 
 	// validate combattarget
-	if (!Entity->CombatTarget.empty())
+	if (!Entity->CombatTarget.IsNullOrEmpty())
 	{
 		IMapEntity		*target = NULL;
-		while ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget.c_str())) != NULL)
+		while ((target = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (target, Entity->CombatTarget.CString())) != NULL)
 		{
 			if (target->ClassName != "point_combat")
-				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget.c_str());
+				MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Has a bad combattarget (\"%s\")\n", Entity->CombatTarget.CString());
 		}
 	}
 
-	if (!Entity->Target.empty())
+	if (!Entity->Target.IsNullOrEmpty())
 	{
 		IBaseEntity *Target = CC_PickTarget(Entity->Target);
 
@@ -964,7 +964,7 @@ void IMonster::MonsterStartGo ()
 		if (!Entity->MoveTarget)
 		{
 			MapPrint (MAPPRINT_WARNING, Entity, Entity->State.GetOrigin(), "Can't find target\n");
-			Entity->Target.clear();
+			Entity->Target.Clear();
 			PauseTime = 100000000;
 			Stand ();
 		}
@@ -972,7 +972,7 @@ void IMonster::MonsterStartGo ()
 		{
 			IdealYaw = Entity->State.GetAngles().Y = (Entity->GoalEntity->State.GetOrigin() - Entity->State.GetOrigin()).ToYaw();
 			Walk ();
-			Entity->Target.clear();
+			Entity->Target.Clear();
 		}
 		else
 		{
@@ -1584,10 +1584,10 @@ void IMonster::MonsterDeathUse ()
 		Entity->Item = NULL;
 	}
 
-	if (!Entity->DeathTarget.empty())
+	if (!Entity->DeathTarget.IsNullOrEmpty())
 		Entity->Target = Entity->DeathTarget;
 
-	if (Entity->Target.empty())
+	if (Entity->Target.IsNullOrEmpty())
 		return;
 
 	Entity->UseTargets (*Entity->Enemy, Entity->Message);

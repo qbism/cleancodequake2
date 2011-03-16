@@ -90,7 +90,7 @@ class CTeleporterTrigger : public IMapEntity, public ITouchableEntity, public IB
 {
 public:
 	IBaseEntity		*Dest;
-	std::string		Target;
+	String			Target;
 
 	CTeleporterTrigger() :
 	  IBaseEntity (),
@@ -168,10 +168,10 @@ public:
 
 	void Think ()
 	{
-		Dest = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.c_str());
+		Dest = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (NULL, Target.CString());
 	
 		if (!Dest)
-			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target.c_str());
+			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Couldn't find destination target \"%s\"\n", Target.CString());
 	};
 
 	bool ParseField (const char *Key, const char *Value)
@@ -206,7 +206,7 @@ IMPLEMENT_SAVE_STRUCTURE (CTeleporterTrigger,CTeleporterTrigger)
 class CTeleporter : public CSpotBase
 {
 public:
-	std::string			Target;
+	String				Target;
 
 	ENTITYFIELD_DEFS
 	ENTITYFIELDS_SAVABLE(CTeleporter)
@@ -227,7 +227,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();
@@ -392,14 +392,14 @@ public:
 
 		Enabled = false;
 		
-		if (!TargetName.empty())
+		if (!TargetName.IsNullOrEmpty())
 		{
 			Usable = true;
 			if(!(SpawnFlags & TELEPORT_START_ON))
 				Enabled = true;
 		}
 	
-		if (CTeleporterTrigger::Target.empty())
+		if (CTeleporterTrigger::Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "No target\n");
 			Free ();
@@ -658,12 +658,12 @@ void CPlayerCoop::Think ()
 
 		if (!spot)
 			return;
-		if (spot->TargetName.empty())
+		if (spot->TargetName.IsNullOrEmpty())
 			continue;
 		
 		if ((State.GetOrigin() - spot->State.GetOrigin()).Length() < 384)
 		{
-			if ((TargetName.empty()) || Q_stricmp(TargetName.c_str(), spot->TargetName.c_str()) != 0)
+			if ((TargetName.IsNullOrEmpty()) || Q_stricmp(TargetName.CString(), spot->TargetName.CString()) != 0)
 				TargetName = spot->TargetName;
 			return;
 		}
@@ -700,7 +700,7 @@ void CPlayerCoop::Spawn ()
 	while (CheckNames[i] != NULL)
 	{
 		// invoke one of our gross, ugly, disgusting hacks
-		if (strcmp(Level.ServerLevelName.c_str(), CheckNames[i]) == 0)
+		if (strcmp(Level.ServerLevelName.CString(), CheckNames[i]) == 0)
 		{
 			NextThink = Level.Frame + FRAMETIME;
 			break;
@@ -923,7 +923,7 @@ bool CPlayerStart::ParseField (const char *Key, const char *Value)
 // where they should have been
 void CPlayerStart::Think ()
 {
-	if (Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
+	if (Q_stricmp(Level.ServerLevelName.CString(), "security") == 0)
 	{
 		static const float origins[] =
 		{
@@ -947,7 +947,7 @@ void CPlayerStart::Think ()
 
 void CPlayerStart::Spawn ()
 {
-	if ((Game.GameMode & GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.c_str(), "security") == 0)
+	if ((Game.GameMode & GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.CString(), "security") == 0)
 		// invoke one of our gross, ugly, disgusting hacks
 		NextThink = Level.Frame + FRAMETIME;
 
@@ -1164,10 +1164,10 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 		{
 			spot = (*it);
 
-			if (Game.SpawnPoint.empty() && spot->TargetName.empty())
+			if (Game.SpawnPoint.IsNullOrEmpty() && spot->TargetName.IsNullOrEmpty())
 				break;
 
-			if (Game.SpawnPoint.empty()|| spot->TargetName.empty())
+			if (Game.SpawnPoint.IsNullOrEmpty()|| spot->TargetName.IsNullOrEmpty())
 				continue;
 
 			if (Game.SpawnPoint == spot->TargetName)
@@ -1177,7 +1177,7 @@ void	CPlayerEntity::SelectSpawnPoint (vec3f &origin, vec3f &angles)
 		if (!spot)
 		{
 			// There wasn't a spawnpoint without a target, so use any
-			if (Game.SpawnPoint.empty())
+			if (Game.SpawnPoint.IsNullOrEmpty())
 			{
 				if (CPlayerStart::SpawnPoints().size() && CPlayerStart::SpawnPoints().at(0))
 					spot = CPlayerStart::SpawnPoints().at(0);
@@ -1237,7 +1237,7 @@ CPathCorner::CPathCorner (sint32 Index) :
 void CPathCorner::Think ()
 {
 	//NextTarget = (Target) ? CC_PickTarget (Target) : NULL;
-	if (!Target.empty())
+	if (!Target.IsNullOrEmpty())
 		NextTargets = CC_GetTargets (Target);
 }
 
@@ -1254,9 +1254,9 @@ void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 	if (Monster->Enemy)
 		return;
 
-	if (!PathTarget.empty())
+	if (!PathTarget.IsNullOrEmpty())
 	{
-		std::string savetarget = Target;
+		String savetarget = Target;
 		Target = PathTarget;
 		UseTargets (Other, Message);
 		Target = savetarget;
@@ -1292,7 +1292,7 @@ void CPathCorner::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf
 
 void CPathCorner::Spawn ()
 {
-	if (TargetName.empty())
+	if (TargetName.IsNullOrEmpty())
 	{
 		MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 		Free ();
@@ -1395,7 +1395,7 @@ public:
 		else if (Train && (Train->TargetEntity != this))
 			return;
 
-		if (!Target.empty())
+		if (!Target.IsNullOrEmpty())
 		{
 			if (Other->EntityFlags & EF_USABLE)
 			{
@@ -1408,11 +1408,11 @@ public:
 
 			if (Monster && !Monster->GoalEntity)
 			{
-				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target %s does not exist\n", Target.c_str());
+				MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target %s does not exist\n", Target.CString());
 				Monster->MoveTarget = this;
 			}
 
-			Target.clear();
+			Target.Clear();
 		}
 		else if (Monster && (SpawnFlags & CORNER_TELEPORT) && !(Monster->Monster->AIFlags & (AI_SWIM | AI_FLY)))
 		{
@@ -1423,18 +1423,18 @@ public:
 
 		if (Monster && (Monster->MoveTarget == this))
 		{
-			Monster->Target.clear();
+			Monster->Target.Clear();
 			Monster->MoveTarget = nullentity;
 			Monster->GoalEntity = Monster->Enemy;
 
 			Monster->Monster->AIFlags &= ~AI_COMBAT_POINT;
 		}
 
-		if (!PathTarget.empty())
+		if (!PathTarget.IsNullOrEmpty())
 		{
 			IBaseEntity *Activator;
 
-			std::string savetarget = Target;
+			String savetarget = Target;
 			Target = PathTarget;
 			if (Other->Enemy && (Other->Enemy->EntityFlags & EF_PLAYER))
 				Activator = *Other->Enemy;
@@ -1584,7 +1584,7 @@ public:
 	void Spawn ()
 	{
 		// no targeted lights in deathmatch, because they cause global messages
-		if (TargetName.empty() || (Game.GameMode & GAME_DEATHMATCH))
+		if (TargetName.IsNullOrEmpty() || (Game.GameMode & GAME_DEATHMATCH))
 		{
 			Free ();
 			return;
@@ -1706,18 +1706,18 @@ public:
 			IMapEntity *e = NULL;
 			while (1)
 			{
-				e = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target.c_str());
+				e = CC_Find<IMapEntity, EF_MAP, EntityMemberOffset(IMapEntity,TargetName)> (e, Target.CString());
 				if (!e)
 					break;
-				if (strcmp(e->ClassName.c_str(), "light") != 0)
-					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" is not a light\n", Target.c_str());
+				if (strcmp(e->ClassName.CString(), "light") != 0)
+					MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Target \"%s\" is not a light\n", Target.CString());
 				else
 					Light = entity_cast<CLight>(e);
 			}
 
 			if (!Light)
 			{
-				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Target \"%s\" not found\n", Target.c_str());
+				MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Target \"%s\" not found\n", Target.CString());
 				Free ();
 				return;
 			}
@@ -1729,9 +1729,9 @@ public:
 
 	void Spawn ()
 	{
-		if (Message.empty() || Message.length() != 2 || Message[0] < 'a' || Message[0] > 'z' || Message[1] < 'a' || Message[1] > 'z' || Message[0] == Message[1])
+		if (Message.IsNullOrEmpty() || Message.Count() != 2 || Message[0] < 'a' || Message[0] > 'z' || Message[1] < 'a' || Message[1] > 'z' || Message[0] == Message[1])
 		{
-			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Bad ramp (%s)\n", Message.c_str());
+			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Bad ramp (%s)\n", Message.CString());
 			Free ();
 			return;
 		}
@@ -1742,7 +1742,7 @@ public:
 			return;
 		}
 
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No target\n");
 			Free ();

@@ -213,30 +213,6 @@ enum
 };
 
 /**
-\fn	template <class TType> inline TType *entity_cast (IBaseEntity *Entity)
-
-\brief	Casts entity types from one type to another.
-
-\author	Paril
-\date	29/05/2010
-
-\param [in,out]	Entity	If non-null, the entity. 
-
-\return	null if it fails, else the entity casted to another type. 
-**/
-template <class TType>
-inline TType *entity_cast (IBaseEntity *Entity)
-{
-	if (Entity == NULL)
-		return NULL;
-
-	TType *Casted = dynamic_cast<TType*> (Entity);
-	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
-
-	return Casted;
-}
-
-/**
 \typedef	uint32 EEntityFlags
 
 \brief	Defines an alias representing entity flags.
@@ -267,25 +243,6 @@ enum
 	EF_NOISE		=	BIT(14), // Can be casted to CPlayerNoise
 };
 
-/**
-\fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
-
-\brief	Template specialization for IBaseEntity casts. 
-
-\author	Paril
-\date	29/05/2010
-		
-\tparam	IBaseEntity	. 
-\param [in,out]	Entity	If non-null, the entity. 
-
-\return	null if it fails, else. 
-**/
-template <>
-inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
-{
-	return Entity; // Implicit cast already done
-}
-
 #include "Entities/EntityPointer.h"
 
 // IBaseEntity is abstract.
@@ -303,7 +260,7 @@ public:
 	EEdictFlags					Flags;				// The entity flags
 	EEntityFlags				EntityFlags;		// The entity type flags
 	CEntityState				State;				// The entity state
-	std::string					ClassName;			// classname of this entity
+	String						ClassName;			// classname of this entity
 	entity_ptr<IBaseEntity>		Owner;				// Owner
 
 	/**
@@ -317,7 +274,7 @@ public:
 	**/
 	struct SEntityTeam
 	{
-		std::string		String;		// Team string. Only valid during spawn frame.
+		String			TeamString;		// Team string. Only valid during spawn frame.
 
 		bool			HasTeam;	// true if has team
 		IBaseEntity		*Chain;		// Team chain
@@ -779,7 +736,77 @@ public:
 
 		State.GetAngles().Clear ();
 	}
+
+	inline bool AreasConnectedTo (IBaseEntity *Entity)
+	{
+		return gi.AreasConnected(GetAreaNum(), Entity->GetAreaNum()) == 1;
+	}
 };
+
+/**
+\fn	template <class TType> inline TType *entity_cast (IBaseEntity *Entity)
+
+\brief	Casts entity types from one type to another.
+
+\author	Paril
+\date	29/05/2010
+
+\param [in,out]	Entity	If non-null, the entity. 
+
+\return	null if it fails, else the entity casted to another type. 
+**/
+template <class TType>
+inline TType *entity_cast (IBaseEntity *Entity)
+{
+	if (Entity == NULL)
+		return NULL;
+
+	TType *Casted = dynamic_cast<TType*> (Entity);
+	CC_ASSERT_EXPR (!(Casted == NULL), "Attempted cast of an entity uncastable to this type");
+
+	return Casted;
+}
+
+/**
+\fn	template <> inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
+
+\brief	Template specialization for IBaseEntity casts. 
+
+\author	Paril
+\date	29/05/2010
+		
+\tparam	IBaseEntity	. 
+\param [in,out]	Entity	If non-null, the entity. 
+
+\return	null if it fails, else. 
+**/
+template <>
+inline IBaseEntity *entity_cast<IBaseEntity> (IBaseEntity *Entity)
+{
+	return Entity; // Implicit cast already done
+}
+
+/**
+\fn	template <> inline CPlayerEntity *entity_cast<CPlayerEntity> (IBaseEntity *Entity)
+
+\brief	Template specialization for CPlayerEntity casts. 
+
+\author	Paril
+\date	29/05/2010
+		
+\tparam	CPlayerEntity	. 
+\param [in,out]	Entity	If non-null, the entity. 
+
+\return	null if it fails, else. 
+**/
+template <>
+inline CPlayerEntity *entity_cast<CPlayerEntity> (IBaseEntity *Entity)
+{
+	CC_ASSERT_EXPR(!(Entity->State.GetNumber() < 1 || Entity->State.GetNumber() > Game.MaxClients || (Entity->EntityFlags & EF_PLAYER) == 0),
+		"Not a player entity");
+
+	return Game.Players[Entity->State.GetNumber() - 1];
+}
 
 /**
 \fn	inline char *CopyStr (const char *In, const sint16 Tag)
@@ -797,30 +824,30 @@ public:
 **/
 inline char *CopyStr (const char *In, const EMemoryTag Tag)
 {
-	std::string newString (In);
+	String newString (In);
 	
 	size_t i = 0;
 	while (true)
 	{
-		if (i >= newString.size())
+		if (i >= newString.Count())
 			break;
 
 		if (newString[i] == '\\' && newString[i+1] == 'n')
 		{
 			newString[i] = '\n';
-			newString.erase (i+1, 1);
+			newString.Remove (i+1, 1);
 		}
 
 		i++;
 	}
 
-	return Mem_TagStrDup (newString.c_str(), Tag);
+	return Mem_TagStrDup (newString.CString(), Tag);
 }
 
 /**
-\fn	inline std::string CopyStr (const char *In)
+\fn	inline String CopyStr (const char *In)
 
-\brief	Copies string 'In' and returns an std::string copy.
+\brief	Copies string 'In' and returns an String copy.
 		Processes newlines as well.
 
 \author	Paril
@@ -830,20 +857,20 @@ inline char *CopyStr (const char *In, const EMemoryTag Tag)
 
 \return	The new string. 
 **/
-inline std::string CopyStr (const char *In)
+inline String CopyStr (const char *In)
 {
-	std::string newString (In);
+	String newString (In);
 	
 	size_t i = 0;
 	while (true)
 	{
-		if (i >= newString.size())
+		if (i >= newString.Count())
 			break;
 
 		if (newString[i] == '\\' && newString[i+1] == 'n')
 		{
 			newString[i] = '\n';
-			newString.erase (i+1, 1);
+			newString.Remove (i+1, 1);
 		}
 
 		i++;
@@ -1048,7 +1075,7 @@ IBaseItem *GetItemByIndex (uint32 Index);
 class CEntityField
 {
 public:
-	std::string				Name;						// The field name
+	String					Name;						// The field name
 	size_t					Offset;						// The offset offset
 	EFieldType				FieldType, StrippedFields;	// The field type & stripped fields
 	TValidateFieldFunction	ValidateField;				// The field validation function
@@ -1127,8 +1154,10 @@ public:
 			{
 				vec3f v;
 
-				std::istringstream strm (Value);
-				strm >> v.X >> v.Y >> v.Z;
+				TList<String> split = String(Value).Split();
+				v.X = atof(split[0].CString());
+				v.Y = atof(split[1].CString());
+				v.Z = atof(split[2].CString());
 
 				if (FIELD_IS_VALID(&v))
 					OFS_TO_TYPE(vec3f) = v;
@@ -1151,12 +1180,12 @@ public:
 			break;
 		case FT_SOUND_INDEX:
 			{
-				std::string temp = Value;
-				if (temp.find (".wav") == std::string::npos)
-					temp.append (".wav");
+				String temp (Value);
+				if (temp.IndexOf (".wav") == -1)
+					temp += ".wav";
 
 				if (FIELD_IS_VALID(NULL))
-					OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.c_str());
+					OFS_TO_TYPE(MediaIndex) = SoundIndex (temp.CString());
 			}
 			break;
 		case FT_IMAGE_INDEX:
@@ -1193,7 +1222,7 @@ public:
 			break;
 		case FT_STRING:
 			if (FIELD_IS_VALID(NULL))
-				OFS_TO_TYPE(std::string) = CopyStr(Value);
+				OFS_TO_TYPE(String) = CopyStr(Value);
 			break;
 		};
 	};
@@ -1291,7 +1320,7 @@ public:
 			}
 			break;
 		case FT_STRING:
-			File.Write (OFS_TO_TYPE(std::string));
+			File.Write (OFS_TO_TYPE(String));
 			break;
 		};
 	};
@@ -1396,7 +1425,7 @@ public:
 			}
 			break;
 		case FT_STRING:
-			OFS_TO_TYPE(std::string) = File.ReadString ();
+			OFS_TO_TYPE(String) = File.ReadString ();
 			break;
 		};
 	};
@@ -1429,7 +1458,7 @@ bool CheckFields (TClass *Me, const char *Key, const char *Value)
 		if (TClass::FieldsForParsing[i].FieldType & FT_NOSPAWN)
 			break; // if we reach a NOSPAWN we can stop
 
-		if (strcmp (Key, TClass::FieldsForParsing[i].Name.c_str()) == 0)
+		if (TClass::FieldsForParsing[i].Name == Key)
 		{
 #if (MSVS_VERSION >= VS_9)
 #pragma warning (suppress : 6385 6386)
@@ -1677,7 +1706,7 @@ void	ED_CallSpawn (SEntity *ServerEntity);
 extern IBaseEntity *World;	// The world entity
 
 /**
-\fn	inline IBaseEntity *CreateEntityFromClassname (std::string ClassName)
+\fn	inline IBaseEntity *CreateEntityFromClassname (String ClassName)
 
 \brief	Creates an entity from a classname. 
 
@@ -1688,7 +1717,7 @@ extern IBaseEntity *World;	// The world entity
 
 \return	null if it fails, else the created entity. 
 **/
-inline IBaseEntity *CreateEntityFromClassname (std::string ClassName)
+inline IBaseEntity *CreateEntityFromClassname (String ClassName)
 {
 CC_DISABLE_DEPRECATION
 	SEntity *ent = G_Spawn ();
@@ -1721,7 +1750,7 @@ CC_ENABLE_DEPRECATION
 class IMapEntity : public virtual IBaseEntity
 {
 public:
-	std::string		TargetName;		// Target's name
+	String			TargetName;		// Target's name
 
 	/**
 	\fn	IMapEntity ()

@@ -259,17 +259,17 @@ public:
 class CWriteString : public CWriteIndex
 {
 public:
-	std::string	Val;
+	String	Val;
 
-	CWriteString (std::string Val) :
-	Val(Val),
-	CWriteIndex(WT_STRING)
+	CWriteString (String Val) :
+	  Val(Val),
+	  CWriteIndex(WT_STRING)
 	{
 	};
 
 	void Write ()
 	{
-		_WriteString (Val.c_str());
+		_WriteString (Val.CString());
 	};
 };
 
@@ -408,7 +408,7 @@ void WriteString (const char *val)
 {
 	CC_ASSERT_EXPR_MINOR (!(!val || val == NULL || !val[0] || strlen(val) > 1400), "Malformed string written");
 
-	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (val));
+	WriteQueue.push_back (QNew (TAG_GENERIC) CWriteString (String(val)));
 }
 
 void WriteCoord (float f)

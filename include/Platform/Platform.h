@@ -34,7 +34,7 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_PLATFORM_H) || !INCLUDE_GUARDS
 #define CC_GUARD_PLATFORM_H
 
-void Sys_FindFiles (TFindFilesType &files, const char *path, const char *pattern, bool recurse, bool addFiles, bool addDirs);
+void Sys_FindFiles (TFindFilesType &files, const String &path, const String &pattern, bool recurse, bool addFiles, bool addDirs);
 void CC_OutputDebugString (const char *text);
 void CC_ReportGameError (const char *text);
 
@@ -61,7 +61,7 @@ public:
 class CDynamicLibrary
 {
 private:
-	std::string		LoadedLibFileName;
+	String			LoadedLibFileName;
 	void			*Lib;
 
 	void	*OS_LoadLibrary (const char *FileName);
@@ -86,10 +86,10 @@ public:
 	// Returns true if the lib is valid and loaded.
 	inline bool Valid ()
 	{
-		return (!LoadedLibFileName.empty() && Lib);
+		return (!LoadedLibFileName.IsNullOrEmpty() && Lib);
 	};
 
-	inline std::string GetLoadedFileName ()
+	inline String GetLoadedFileName ()
 	{
 		return LoadedLibFileName;
 	};
@@ -112,7 +112,7 @@ public:
 
 		OS_CloseLibrary ();
 		Lib = NULL;
-		LoadedLibFileName.clear();
+		LoadedLibFileName.Clear();
 	};
 
 	template <typename TFuncType>

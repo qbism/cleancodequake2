@@ -242,7 +242,7 @@ public:
 
 	virtual void Spawn ()
 	{
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 		{
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "No targetname\n");
 			Free ();
@@ -425,7 +425,7 @@ public:
 		vec3f	start, dir;
 		vec3f	vec;
 				
-		IBaseEntity *target = CC_FindByClassName<IBaseEntity, EF_BASE> (NULL, Target.c_str());
+		IBaseEntity *target = CC_FindByClassName<IBaseEntity, EF_BASE> (NULL, Target.CString());
 		
 		vec = target->State.GetOrigin();
 		vec.Z += 16;

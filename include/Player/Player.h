@@ -154,7 +154,7 @@ public:
 	~CPersistentData();
 
 	CUserInfo		UserInfo;
-	std::string		Name;
+	String			Name;
 	IPAddress		IP;
 	EHandedness		Hand;
 
@@ -881,7 +881,7 @@ public:
 		//Client.Load (File);
 	}
 
-	std::string ClientTeam ();
+	String ClientTeam ();
 	bool OnSameTeamAs (CPlayerEntity *Player);
 
 	/**
@@ -940,7 +940,7 @@ public:
 	void			PutInServer ();
 	void			InitPersistent ();
 	void			InitItemMaxValues ();
-	void			UserinfoChanged (std::string userinfo);
+	void			UserinfoChanged (String userinfo);
 	void			FetchEntData ();
 
 	// EndServerFrame-related functions

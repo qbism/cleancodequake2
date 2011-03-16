@@ -34,24 +34,24 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 #if !defined(CC_GUARD_CC_USERINFO_H) || !INCLUDE_GUARDS
 #define CC_GUARD_CC_USERINFO_H
 
-struct str_less : std::binary_function <std::string, std::string, bool>
+struct str_less : std::binary_function <String, String, bool>
 {
 	result_type operator() (const first_argument_type &x, const second_argument_type &y) const
 	{
-		return std::lexicographical_compare(x.c_str(), x.c_str()+x.length()-1, y.c_str(), y.c_str()+y.length()-1);
+		return std::lexicographical_compare(x.CString(), x.CString()+x.Count()-1, y.CString(), y.CString()+y.Count()-1);
 	}
 };
 
-typedef std::map<std::string, std::string, str_less> TUserInfoMap;
+typedef std::map<String, String, str_less> TUserInfoMap;
 
 class CUserInfo
 {
 	TUserInfoMap	Info;
 
-	void ParseUserInfo (const std::string &Str);
+	void ParseUserInfo (const String &Str);
 public:
 	CUserInfo () {};
-	CUserInfo (const std::string Str)
+	CUserInfo (const String &Str)
 	{
 		ParseUserInfo (Str);
 	};
@@ -61,61 +61,60 @@ public:
 		Info.clear();
 	};
 
-	inline bool Valid ()
+	inline bool Valid () const
 	{
 		return (Info.size() <= 0);
 	};
 
-	inline void Update (const std::string UserInfo)
+	inline void Update (const String &UserInfo)
 	{
 		Clear ();
 		ParseUserInfo (UserInfo);
 	};
 
-	inline bool HasKey (const std::string Str)
+	inline bool HasKey (const String &Str) const
 	{
 		return (Info.find(Str) != Info.end());
 	};
 
-	inline static bool Validate (const std::string &Str)
+	inline static bool Validate (const String &Str)
 	{
-		return (Str.find ('\"') || Str.find (';'));
+		return (Str.IndexOf ('\"') == -1 && Str.IndexOf (';') == -1);
 	};
 
-	inline std::string GetValueFromKey (const std::string Str)
+	inline String GetValueFromKey (const String &Str) const
 	{
-		TUserInfoMap::iterator it = Info.find(Str);
+		TUserInfoMap::const_iterator it = Info.find(Str);
 		if (it == Info.end())
-			return "";
+			return String::Empty();
 
 		return (*it).second;
 	};
 
-	inline void SetValueForKey (const std::string key, const std::string value)
+	inline void SetValueForKey (const String &key, const String &value)
 	{
 		Info[key] = value;
 	};
 
-	operator std::string ()
+	String ToString() const
 	{
-		std::string String;
+		String str;
 
 		// Throw the string together
-		for (TUserInfoMap::iterator it = Info.begin(); it != Info.end(); ++it)
-			String += '\\' + (*it).first + '\\' + (*it).second;
+		for (TUserInfoMap::const_iterator it = Info.begin(); it != Info.end(); ++it)
+			str += String::Format("\\%s\\%s", (*it).first.CString(), (*it).second.CString());
 
-		return String;
+		return str;
 	};
 
-	void Save (CFile &File)
+	void Save (CFile &File) const
 	{
-		std::string Str = *this;
-		File.Write (Str);
+		File.Write (ToString());
 	};
 
 	void Load (CFile &File)
 	{
-		std::string Str = File.ReadString ();
+		String Str = File.ReadString ();
 		Update (Str);
 	};
 };

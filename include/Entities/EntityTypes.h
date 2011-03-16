@@ -354,7 +354,7 @@ public:
 class IUsableEntity : public virtual IBaseEntity
 {
 public:
-	std::string					Message,	// Message printed on usage
+	String						Message,	// Message printed on usage
 								Target,		// Target to use
 								KillTarget,	// Target to use when killed
 								PathTarget;	// Target to use when reached a path
@@ -402,7 +402,7 @@ public:
 	virtual void Use (IBaseEntity *Other, IBaseEntity *Activator) {};
 
 	/**
-	\fn	virtual void UseTargets (IBaseEntity *Activator, std::string &Message)
+	\fn	virtual void UseTargets (IBaseEntity *Activator, String &Message)
 	
 	\brief	Use targets. 
 	
@@ -412,7 +412,7 @@ public:
 	\param [in,out]	Activator	If non-null, the activator. 
 	\param [in,out]	Message		The message. 
 	**/
-	virtual void UseTargets (IBaseEntity *Activator, std::string &Message);
+	virtual void UseTargets (IBaseEntity *Activator, String &Message);
 };
 
 /**

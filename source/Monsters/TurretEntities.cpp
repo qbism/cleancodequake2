@@ -158,7 +158,7 @@ void CTurretBreach::Think ()
 		FinishInit = false;
 
 		// get and save info for muzzle location
-		if (Target.empty())
+		if (Target.IsNullOrEmpty())
 			MapPrint (MAPPRINT_ERROR, this, State.GetOrigin(), "Needs a target\n");
 		else
 		{
@@ -166,7 +166,7 @@ void CTurretBreach::Think ()
 			MoveOrigin = (targ->State.GetOrigin() - State.GetOrigin());
 			targ->Free();
 
-			Target.clear();
+			Target.Clear();
 		}
 
 		entity_cast<IBrushModel>(Team.Master)->Damage = Damage;

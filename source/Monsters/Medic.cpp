@@ -683,14 +683,14 @@ void CMedic::CableAttack ()
 	case CMedic::FRAME_attack50:
 		Entity->Enemy->SpawnFlags = 0;
 		Monster = (entity_cast<CMonsterEntity>(*Entity->Enemy));
-		Monster->DeathTarget.clear();
-		Monster->CombatTarget.clear();
+		Monster->DeathTarget.Clear();
+		Monster->CombatTarget.Clear();
 #if ROGUE_FEATURES
 		Monster->Monster->Healer = Entity;
 #endif
 		Monster->Monster->AIFlags = 0;
-		Monster->Target.clear();
-		Monster->TargetName.clear();
+		Monster->Target.Clear();
+		Monster->TargetName.Clear();
 
 #if !ROGUE_FEATURES
 		Monster->Monster->Spawn ();

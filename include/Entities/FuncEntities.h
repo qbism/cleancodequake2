@@ -101,7 +101,7 @@ public:
 	uint8			Style;
 	sint32			Seconds;
 	sint32			Count;
-	CTargetString	*String;
+	CTargetString	*TargetString;
 	
 	CFuncClock ();
 	CFuncClock (sint32 Index);
