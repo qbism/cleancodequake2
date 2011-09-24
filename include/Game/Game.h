@@ -200,7 +200,7 @@ public:
 		ServerLevelName.Clear ();
 		NextMap.Clear ();
 		ForceMap.Clear ();
-		Mem_Zero (&Intermission, sizeof(Intermission));
+		Intermission.Clear();
 		SightClient = NULL;
 		SightEntity = NULL;
 		SightEntityFrame = 0;
@@ -255,6 +255,14 @@ public:
 		bool			ShouldExitOnNextFrame;
 		vec3f			Origin;
 		vec3f			Angles;
+		void Clear() 
+		{
+			Time = 0;
+			ChangeMap.Clear();
+			ShouldExit = ShouldExitOnNextFrame = false;
+			Origin.X = Origin.Y = Origin.Z = 0.0f;
+		    Angles.X = Angles.Y = Angles.Z = 0.0f;
+	    }
 	}						Intermission;
 
 	CPlayerEntity			*SightClient;	// changed once each frame for coop games
