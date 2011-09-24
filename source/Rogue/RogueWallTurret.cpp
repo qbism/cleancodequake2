@@ -685,7 +685,7 @@ void CWallTurret::MoveFinal ()
 	Entity->Velocity = Dir * RemainingDistance;
 
 	ThinkType = TURRETTHINK_MOVEDONE;
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CWallTurret::MoveBegin ()
@@ -713,7 +713,7 @@ void CWallTurret::MoveCalc (vec3f dest)
 		MoveBegin ();
 	else
 	{
-		Entity->NextThink = Level.Frame + FRAMETIME;
+		Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = TURRETTHINK_MOVEBEGIN;
 	}
 }

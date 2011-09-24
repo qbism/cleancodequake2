@@ -392,7 +392,7 @@ void CSpawnGrow::Think ()
 			return;
 		}
 	}
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 };
 
 void CSpawnGrow::Spawn (vec3f Origin, sint8 Size)
@@ -422,7 +422,7 @@ void CSpawnGrow::Spawn (vec3f Origin, sint8 Size)
 	}
 
 	Grow->Wait = Level.Frame + lifespan;
-	Grow->NextThink = Level.Frame + FRAMETIME;
+	Grow->NextThink = Level.Frame + ServerFramesPerSecond;
 	if (Size != 2)
 		Grow->State.GetEffects() |= FX_SPHERETRANS;
 		

@@ -219,7 +219,7 @@ public:
 		CEarthQuakeShakePlayers(NUKE_QUAKE_STRENGTH).Query();
 
 		if (Level.Frame < QuakeTime)
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		else
 			Free ();
 	}
@@ -244,7 +244,7 @@ public:
 		NoiseIndex = SoundIndex ("world/rumble.wav");
 		ThinkType = NUKETHINK_QUAKE;
 		QuakeTime = Level.Frame + NUKE_QUAKE_TIME;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		LastQuakeTime = 0;
 	}
 
@@ -301,7 +301,7 @@ public:
 			}
 
 			ThinkType = NUKETHINK_SPIN;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			Health = 1;
 			SetOwner(NULL);
 
@@ -320,7 +320,7 @@ public:
 				PlaySound (CHAN_NO_PHS_ADD+CHAN_VOICE, SoundIndex ("weapons/nukewarn2.wav"), 255, attenuation);
 				QuakeTime = Level.Frame + 10;
 			}
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		}
 	}
 
@@ -375,7 +375,7 @@ public:
 		Nuke->State.GetModelIndex() = ModelIndex ("models/weapons/g_nuke/tris.md2");
 		Nuke->SetOwner(Entity);
 		Nuke->Thrower = Entity;
-		Nuke->NextThink = Level.Frame + FRAMETIME;
+		Nuke->NextThink = Level.Frame + ServerFramesPerSecond;
 		Nuke->Wait = Level.Frame + NUKE_DELAY + NUKE_TIME_TO_LIVE;
 		Nuke->ThinkType = NUKETHINK_SPIN;
 		Nuke->Touchable = true;

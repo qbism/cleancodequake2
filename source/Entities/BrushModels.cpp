@@ -206,7 +206,7 @@ void IBrushModel::MoveFinal ()
 	Velocity = Dir * (RemainingDistance / 0.1f);
 
 	ThinkType = BRUSHTHINK_MOVEDONE;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 /**
@@ -254,7 +254,7 @@ void IBrushModel::MoveCalc (vec3f &Dest, uint32 EndFunc)
 			MoveBegin ();
 		else
 		{
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			ThinkType = BRUSHTHINK_MOVEBEGIN;
 		}
 	}
@@ -263,7 +263,7 @@ void IBrushModel::MoveCalc (vec3f &Dest, uint32 EndFunc)
 		// accelerative
 		CurrentSpeed = 0;
 		ThinkType = BRUSHTHINK_MOVEACCEL;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 }
 
@@ -301,7 +301,7 @@ void IBrushModel::AngleMoveFinal ()
 	AngularVelocity = (move * (1.0f / 0.1f));
 
 	ThinkType = BRUSHTHINK_AMOVEDONE;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 /**
@@ -350,7 +350,7 @@ void IBrushModel::AngleMoveBegin ()
 	}
 	else
 	{
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = BRUSHTHINK_AMOVEBEGIN;
 	}
 #else
@@ -385,7 +385,7 @@ void IBrushModel::AngleMoveCalc (uint32 EndFunc)
 		AngleMoveBegin ();
 	else
 	{
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = BRUSHTHINK_AMOVEBEGIN;
 	}
 }
@@ -525,7 +525,7 @@ void IBrushModel::ThinkAccelMove ()
 	}
 
 	Velocity = Dir * (CurrentSpeed * 10);
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	ThinkType = BRUSHTHINK_MOVEACCEL;
 }
 #pragma endregion Brush_Model
@@ -1140,7 +1140,7 @@ void CDoor::SmartWaterGoUp ()
 	}
 
 	ThinkType = DOORTHINK_SMARTWATER_GOUP;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CDoor::Activate ()
@@ -1157,7 +1157,7 @@ void CDoor::Activate ()
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
 		ThinkType = DOORTHINK_SPAWNDOORTRIGGER;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 #endif
 
@@ -1514,7 +1514,7 @@ void CDoor::Spawn ()
 
 	Link ();
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 
 	if (CvarList[CV_MAP_DEBUG].Boolean())
 	{
@@ -1722,7 +1722,7 @@ void CRotatingDoor::Spawn ()
 
 	Link ();
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	if (Health || !TargetName.IsNullOrEmpty())
 		ThinkType = DOORTHINK_CALCMOVESPEED;
 	else
@@ -2473,7 +2473,7 @@ void CTrainBase::Find ()
 
 	if (SpawnFlags & TRAIN_START_ON)
 	{
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = TRAINTHINK_NEXT;
 		User = this;
 	}
@@ -2596,7 +2596,7 @@ void CTrain::Spawn ()
 	{
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = TRAINTHINK_FIND;
 	}
 	else
@@ -2684,7 +2684,7 @@ void CTriggerElevator::Think ()
 
 void CTriggerElevator::Spawn ()
 {
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 LINK_CLASSNAME_TO_CLASS ("trigger_elevator", CTriggerElevator);
@@ -3005,7 +3005,7 @@ void CRotatingBrush::Accelerate ()
 		current_speed += Accel;
 		AngularVelocity = MoveDir * current_speed;
 		ThinkType = ROTATINGTHINK_ACCEL;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 }
 
@@ -3024,7 +3024,7 @@ void CRotatingBrush::Decelerate ()
 		current_speed -= Decel;
 		AngularVelocity = MoveDir * current_speed;
 		ThinkType = ROTATINGTHINK_DECEL;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 }
 

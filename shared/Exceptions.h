@@ -20,7 +20,6 @@ public:
 	}
 };
 
-
 class ExceptionIndexOutOfRange : public Exception
 {
 public:
@@ -31,6 +30,15 @@ public:
 
 	ExceptionIndexOutOfRange(String variable) :
 	  Exception(String("The variable \"").Concatenate(variable).Concatenate("\" is out of range"))
+	  {
+	  };
+};
+
+class ExceptionNotImplemented : public Exception
+{
+public:
+	ExceptionNotImplemented() :
+	  Exception(String("The specified function/method has not been implemented yet."))
 	  {
 	  };
 };

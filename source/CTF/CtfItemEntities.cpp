@@ -114,14 +114,14 @@ void CFlagEntity::Think ()
 
 			Link ();
 
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			ThinkState = FTS_FLAGTHINK;
 		}
 		break;
 	case FTS_FLAGTHINK:
 		if (GetSolid() != SOLID_NOT)
 			State.GetFrame() = (173 + (((State.GetFrame() - 173) + 1) % 16));
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		break;
 	default:
 		CItemEntity::Think ();

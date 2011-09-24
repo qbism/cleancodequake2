@@ -112,7 +112,7 @@ void CHeatRocket::Think ()
 		Velocity = vec * 500;
 	}
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CHeatRocket::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
@@ -151,7 +151,7 @@ CHeatRocket *CHeatRocket::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	Rocket->State.GetEffects() = FX_ROCKET;
 	Rocket->State.GetModelIndex() = ModelIndex ("models/objects/rocket/tris.md2");
 	Rocket->SetOwner(Spawner);
-	Rocket->NextThink = Level.Frame + FRAMETIME;
+	Rocket->NextThink = Level.Frame + ServerFramesPerSecond;
 	Rocket->Damage = Damage;
 	Rocket->RadiusDamage = radius_damage;
 	Rocket->DamageRadius = damage_radius;

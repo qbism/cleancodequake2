@@ -163,6 +163,7 @@ String::~String()
 void String::Clear ()
 {
 	Destroy();
+	Initialize(null);
 }
 
 String String::Clone () const
@@ -339,7 +340,7 @@ int String::LastIndexOf (const char ch, const int offset) const
 	if (offset > (int)Count() || offset < 0)
 		throw ExceptionIndexOutOfRange(String("offset"));
 
-	for (uint32 i = Count() - 1 - offset; i >= 0; --i)
+	for (int i = Count() - 1 - offset; i >= 0; --i)
 	{
 		if (_array[i] == ch)
 			return i;
@@ -371,7 +372,7 @@ int String::LastIndexOf(const char *str, const int offset) const
 		throw ExceptionIndexOutOfRange(String("offset"));
 
 	uint32 len = strlen(str);
-	for (uint32 i = Count() - 1 - offset; i >= 0; --i)
+	for (int i = Count() - 1 - offset; i >= 0; --i)
 	{
 		if ((i + len) > Count())
 			continue;
@@ -700,8 +701,11 @@ TList<String> String::Split (const char *characters, int count, bool removeEmpty
 	{
 		if ((i >= Count()) || IsAny(_array[i], characters, count))
 		{
-			split.Add(Substring(lastGot, i - lastGot));
-			lastGot = i + 1;
+			if (lastGot != (int)i)
+			{
+				split.Add(Substring(lastGot, (int)i - lastGot));
+				lastGot = i + 1;
+			}
 		}
 
 		if (i >= Count())

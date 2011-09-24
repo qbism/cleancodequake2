@@ -71,7 +71,7 @@ public:
 	*/
 	static String GetFilePath(const String &str)
 	{
-		int lastSlash = str.IndexOf('/');
+		int lastSlash = str.LastIndexOf('/');
 
 		if (lastSlash == -1)
 			return str;
@@ -148,6 +148,6 @@ public:
 		if (dot == -1)
 			return str;
 
-		return str.Substring(0, dot - 1);
+		return str.Substring(0, dot);
 	}
 };

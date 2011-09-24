@@ -163,7 +163,7 @@ void CFuncTimer::Spawn ()
 
 	if (Random >= Wait)
 	{
-		Random = Wait - FRAMETIME;
+		Random = Wait - ServerFramesPerSecond;
 		// Paril FIXME
 		// This to me seems like a very silly warning.
 		MapPrint (MAPPRINT_WARNING, this, State.GetOrigin(), "Random is greater than or equal to wait\n");

@@ -707,7 +707,7 @@ bool CStalker::DoPounce (vec3f dest)
 	if (!preferHighJump && (!isnan(jumpAngles.X)) )
 	{
 		Entity->Velocity = (angles.Forward * (velocity * cosf(DEG2RAD(jumpAngles.X))));
-		Entity->Velocity.Z = velocity * sinf(DEG2RAD(jumpAngles.Y)) + (0.5f * CvarList[CV_GRAVITY].Float() * FRAMETIME);
+		Entity->Velocity.Z = velocity * sinf(DEG2RAD(jumpAngles.Y)) + (0.5f * CvarList[CV_GRAVITY].Float() * ServerFramesPerSecond);
 		
 		return true;
 	}
@@ -715,7 +715,7 @@ bool CStalker::DoPounce (vec3f dest)
 	if (!isnan(jumpAngles.Y))
 	{
 		Entity->Velocity = (angles.Forward * (velocity * cosf(DEG2RAD(jumpAngles.Y))));
-		Entity->Velocity.Z = velocity * sinf(DEG2RAD(jumpAngles.Y)) + (0.5f * CvarList[CV_GRAVITY].Float() * FRAMETIME);
+		Entity->Velocity.Z = velocity * sinf(DEG2RAD(jumpAngles.Y)) + (0.5f * CvarList[CV_GRAVITY].Float() * ServerFramesPerSecond);
 		return true;
 	}
 

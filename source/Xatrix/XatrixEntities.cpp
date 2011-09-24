@@ -259,7 +259,7 @@ public:
 		GetMins().Set (-16, -16, 0);
 		GetMaxs().Set (16, 16, 32);
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = TRAINTHINK_FIND;
 		GetSvFlags() |= SVF_NOCLIENT;
 		Accel = Decel = Speed;
@@ -712,7 +712,7 @@ public:
 		GetSolid() = SOLID_BBOX;
 		GetMins().Set (-8, -8, 8);
 		GetMaxs().Set (8, 8, 8);
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = THINK_SPARKS;
 		Health = 100;
 

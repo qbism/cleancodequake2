@@ -181,7 +181,7 @@ bool IsBelow (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (IBaseEntity *self, IBaseEntity *Other);
 bool IsVisible (vec3f left, vec3f right, IBaseEntity *self);
 
-void G_ProjectSource (const vec3f &Point, const vec3f &distance, const anglef angles, vec3f &result);
+void G_ProjectSource (const vec3f &Point, const vec3f &distance, const anglef angles, vec3f &result, bool up = false);
 
 // Changed to sint32, rarely used as a float..
 IBaseEntity *FindRadius (IBaseEntity *From, vec3f &org, sint32 Radius, uint32 EntityFlags, bool CheckNonSolid);

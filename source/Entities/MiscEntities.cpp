@@ -205,7 +205,7 @@ public:
 
 		CanTakeDamage = true;
 		Touchable = true;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 
 		Link ();
 	};
@@ -322,7 +322,7 @@ void CMiscViper::Spawn ()
 	GetMins().Set (-16, -16, 0);
 	GetMaxs().Set (16, 16, 32);
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	ThinkType = TRAINTHINK_FIND;
 	GetSvFlags() |= SVF_NOCLIENT;
 	MoveSpeed = MoveAccel = MoveDecel = Speed;
@@ -406,7 +406,7 @@ public:
 	void Think ()
 	{
 		State.GetFrame() = (State.GetFrame() + 1) % 16;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Spawn ()
@@ -416,7 +416,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 };
 
@@ -473,7 +473,7 @@ public:
 	{
 		if (++State.GetFrame() >= 19)
 			State.GetFrame() = 0;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
@@ -538,7 +538,7 @@ public:
 		if (++State.GetFrame() >= 293)
 			State.GetFrame() = 254;
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Spawn ()
@@ -598,7 +598,7 @@ public:
 		if (++State.GetFrame() >= 247)
 			State.GetFrame() = 208;
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Spawn ()
@@ -658,7 +658,7 @@ public:
 		if (++State.GetFrame() >= 287)
 			State.GetFrame() = 248;
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Spawn ()
@@ -736,7 +736,7 @@ public:
 	{
 		if (!Drop)
 		{
-			NextThink = (++State.GetFrame() < 24) ? Level.Frame + FRAMETIME : 0;
+			NextThink = (++State.GetFrame() < 24) ? Level.Frame + ServerFramesPerSecond : 0;
 			if (State.GetFrame() == 22)
 				PlaySound (CHAN_BODY, SoundIndex ("tank/thud.wav"));
 		}
@@ -750,7 +750,7 @@ public:
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		PlaySound (CHAN_BODY, SoundIndex ("tank/pain.wav"));
 	};
 
@@ -1207,12 +1207,12 @@ public:
 	void Think ()
 	{
 		if (++State.GetFrame() < 38)
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Spawn ()

@@ -33,10 +33,10 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #include "Local.h"
 
-void G_ProjectSource (const vec3f &Point, const vec3f &distance, const anglef angles, vec3f &result)
+void G_ProjectSource (const vec3f &Point, const vec3f &distance, const anglef angles, vec3f &result, bool up)
 {
-	result.Set (Point.X + angles.Forward.X * distance.X + angles.Right.X * distance.Y + angles.Up.X * distance.Z,
-				Point.Y + angles.Forward.Y * distance.X + angles.Right.Y * distance.Y + angles.Up.Y * distance.Z,
+	result.Set (Point.X + angles.Forward.X * distance.X + angles.Right.X * distance.Y + ((up) ? (angles.Up.Z * distance.Z) : 0),
+				Point.Y + angles.Forward.Y * distance.X + angles.Right.Y * distance.Y + ((up) ? (angles.Up.Z * distance.Z) : 0),
 				Point.Z + angles.Forward.Z * distance.X + angles.Right.Z * distance.Y + angles.Up.Z * distance.Z);
 }
 

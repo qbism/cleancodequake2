@@ -1,4 +1,5 @@
 Present
+- Machinegun kill (null)?
 - Remove usage of GetModelIndex() == 255. This is stupid.
 - Remove usage of Level.CurrentEntity
 - Print buffer for player & for console (shove all prints into buffer then print them at the end of the frame)

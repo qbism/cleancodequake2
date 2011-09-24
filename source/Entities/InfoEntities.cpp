@@ -702,7 +702,7 @@ void CPlayerCoop::Spawn ()
 		// invoke one of our gross, ugly, disgusting hacks
 		if (strcmp(Level.ServerLevelName.CString(), CheckNames[i]) == 0)
 		{
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			break;
 		}
 
@@ -949,7 +949,7 @@ void CPlayerStart::Spawn ()
 {
 	if ((Game.GameMode & GAME_COOPERATIVE) && Q_stricmp(Level.ServerLevelName.CString(), "security") == 0)
 		// invoke one of our gross, ugly, disgusting hacks
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 
 	SpawnPoints().push_back (this);
 };
@@ -1688,7 +1688,7 @@ public:
 		ConfigString (CS_LIGHTS+Light->Style, style);
 
 		if ((Level.Frame - TimeStamp) < Speed)
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		else if (SpawnFlags & LIGHTRAMP_TOGGLE)
 		{
 			sint32 temp = RampMessage[0];

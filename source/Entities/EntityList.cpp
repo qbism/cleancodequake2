@@ -496,6 +496,8 @@ void InitEntities ()
 	if (!theWorld->Entity)
 		theWorld->Entity = QNewEntityOf CWorldEntity(0);
 
+	Game.Players.clear();
+
 	// Set up the client entities
 	for (sint32 i = 1; i <= Game.MaxClients; i++)
 	{

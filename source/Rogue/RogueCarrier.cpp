@@ -374,7 +374,7 @@ void CCarrier::ReadySpawn ()
 	if (Abs(current_yaw - IdealYaw) > 0.1f)
 	{
 		AIFlags |= AI_HOLD_FRAME;
-		FrameCalc += FRAMETIME;
+		FrameCalc += ServerFramesPerSecond;
 		return;
 	}
 

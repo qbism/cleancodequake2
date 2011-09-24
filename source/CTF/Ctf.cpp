@@ -869,7 +869,7 @@ public:
 	void Think ()
 	{
 		State.GetFrame() = (State.GetFrame() + 1) % 16;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	virtual void Spawn ()
@@ -882,7 +882,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 };
 
@@ -919,7 +919,7 @@ public:
 		State.GetFrame() = irandom(16);
 		Link ();
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 };
 

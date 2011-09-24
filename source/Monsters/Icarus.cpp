@@ -571,7 +571,7 @@ void CIcarus::DeadThink ()
 {
 	if (!Entity->GroundEntity && Level.Frame < TimeStamp)
 	{
-		Entity->NextThink = Level.Frame + FRAMETIME;
+		Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 		return;
 	}
 	Entity->BecomeExplosion(false);
@@ -582,7 +582,7 @@ void CIcarus::Dead ()
 	Entity->GetMins().Set (-16, -16, -24);
 	Entity->GetMaxs().Set (16, 16, -8);
 	Think = ConvertDerivedFunction(&CIcarus::DeadThink);
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 	TimeStamp = Level.Frame + 150;
 	Entity->Link ();
 }

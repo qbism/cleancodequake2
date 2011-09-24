@@ -236,7 +236,7 @@ public:
 		Sphere->SphereFlags = Flags;
 		Sphere->CanTakeDamage = true;
 
-		Sphere->NextThink = Level.Frame + FRAMETIME;
+		Sphere->NextThink = Level.Frame + ServerFramesPerSecond;
 
 		Sphere->Link ();
 

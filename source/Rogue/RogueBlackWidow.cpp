@@ -1263,7 +1263,7 @@ void CBlackWidow::WidowExplode ()
 
 		Entity->IsDead = true;
 		Think = &IMonster::MonsterThink;
-		Entity->NextThink = Level.Frame + FRAMETIME;
+		Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 		CurrentMove = &Widow2MoveDead;
 		return;
 	}
@@ -1271,7 +1271,7 @@ void CBlackWidow::WidowExplode ()
 	ExplodeCount++;
 	CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, Entity->State.GetOrigin()), org).Send();
 
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CBlackWidow::WidowExplosion1 ()

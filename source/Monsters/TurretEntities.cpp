@@ -226,7 +226,7 @@ void CTurretBreach::Think ()
 			delta.Y = -1 * Speed * 0.1f;
 
 		AngularVelocity = delta * 1.0/0.1f;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 
 		CAvelocityForEachTeamChainCallback (AngularVelocity.Y).Query (this);
 
@@ -330,7 +330,7 @@ void CTurretBreach::Spawn ()
 	MoveAngles.Y = State.GetAngles().Y;
 	State.GetAngles().Clear ();
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	Link ();
 }
 
@@ -416,7 +416,7 @@ void CTurretDriver::Die (IBaseEntity *Inflictor, IBaseEntity *Attacker, sint32 D
 
 	CInfantry::Die (Inflictor, Attacker, Damage, Point);
 	Think = &IMonster::MonsterThink;
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CTurretDriver::Pain (IBaseEntity *Other, sint32 Damage)
@@ -434,7 +434,7 @@ void CTurretDriver::Pain (IBaseEntity *Other, sint32 Damage)
 
 void CTurretDriver::TurretThink ()
 {
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 
 	if (Entity->Enemy && (!(Entity->Enemy->EntityFlags & EF_HURTABLE) || (!Entity->Enemy || entity_cast<IHurtableEntity>(*Entity->Enemy)->Health <= 0)))
 		Entity->Enemy = nullentity;
@@ -490,7 +490,7 @@ void CTurretDriver::TurretThink ()
 void CTurretDriver::TurretLink ()
 {
 	Think = ConvertDerivedFunction(&CTurretDriver::TurretThink);
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 
 	TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Entity->Target));
 	TargetedBreach->SetOwner(Entity);
@@ -552,7 +552,7 @@ void CTurretDriver::Spawn ()
 	AIFlags |= (AI_STAND_GROUND);
 
 	Think = ConvertDerivedFunction(&CTurretDriver::TurretLink);
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 
 	Entity->Link ();
 }

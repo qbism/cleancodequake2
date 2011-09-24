@@ -78,7 +78,7 @@ public:
 
 		return false;
 	}
-	
+
 	TList<String> Split (const char *characters, int count, bool removeEmpty) const;
 	TList<String> Split (const TList<char> &characters, bool removeEmpty) const;
 	TList<String> Split (bool removeEmpty = false) const;

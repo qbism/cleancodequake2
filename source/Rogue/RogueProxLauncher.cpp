@@ -169,7 +169,7 @@ public:
 		else
 		{
 			ThinkType = PROXTHINK_EXPLODE;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		}
 
 		CanTakeDamage = false;
@@ -214,7 +214,7 @@ public:
 				State.GetFrame() = 9;
 			
 			ThinkType = PROXTHINK_SEEK;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		}
 	}
 

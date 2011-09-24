@@ -95,7 +95,7 @@ public:
 		else
 			State.GetFrame()++;
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
@@ -122,7 +122,7 @@ public:
 		GetMins().Set (32, -32, 0);
 		GetMaxs().Set (32, 32, 90);
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		Link ();
 	};
 };

@@ -730,7 +730,7 @@ bool IBounceProjectile::Run ()
 	move = Velocity * 0.1f;
 
 	trace = PushEntity (move);
-	if (!GetInUse() || (PhysicsType != PHYSICS_BOUNCE && PhysicsType != PHYSICS_TOSS))
+	if (!GetInUse() || (PhysicsType != PHYSICS_BOUNCE && PhysicsType != PHYSICS_TOSS && PhysicsType != PHYSICS_FLYMISSILE))
 		return false;
 
 	if (trace.Fraction < 1)
@@ -1461,7 +1461,7 @@ bool IPushPhysics::Run ()
 				IThinkableEntity *Thinkable = entity_cast<IThinkableEntity>(mv);
 
 				if (Thinkable->NextThink > 0)
-					Thinkable->NextThink += FRAMETIME;
+					Thinkable->NextThink += ServerFramesPerSecond;
 			}
 		}
 
@@ -1834,7 +1834,7 @@ void IBuoyancyPhysics::RunBouyancy ()
 				MidPower = EndPower;
 
 			EndPower = (EndPower + TopPower + MidPower) / 3;
-			DampeningEffect.Z *= powf (0.2f, FRAMETIME / 10);
+			DampeningEffect.Z *= powf (0.2f, ServerFramesPerSecond / 10);
 			PhysicsFlags |= PHYSICFLAG_FLOATING;
 		}
 	}
@@ -1880,7 +1880,7 @@ void IResistancePhysics::RunResistance ()
 	if (Contents & CONTENTS_MASK_WATER)
 		ResistPower = ResistPowerWater;
 
-	ResistPower = powf (ResistPower, (float)FRAMETIME / 10);
+	ResistPower = powf (ResistPower, (float)ServerFramesPerSecond / 10);
 	DampeningEffect *= ResistPower;
 	ADampeningEffect *= ResistPower;
 };
@@ -1948,8 +1948,8 @@ void IAerodynamicPhysics::RunAerodynamics ()
 	while (TurnAngle.Z < -180)
 		TurnAngle.Z += 360;
 
-	AVelocityEffect += (TurnAngle * AVelMult * ((float)FRAMETIME / 10));
-	ADampeningEffect *= powf (ADampMult, (float)FRAMETIME / 10);
+	AVelocityEffect += (TurnAngle * AVelMult * ((float)ServerFramesPerSecond / 10));
+	ADampeningEffect *= powf (ADampMult, (float)ServerFramesPerSecond / 10);
 };
 
 void IAerodynamicPhysics::SetAerodynamics (float Power)

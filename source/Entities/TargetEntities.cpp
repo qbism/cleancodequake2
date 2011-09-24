@@ -1275,7 +1275,7 @@ void CTargetLaser::Think ()
 	}
 
 	State.GetOldOrigin() = tr.EndPosition;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 };
 
 void CTargetLaser::Use (IBaseEntity *Other, IBaseEntity *Activator)
@@ -1561,13 +1561,13 @@ public:
 		CEarthQuakeShakePlayers(Speed).Query();
 
 		if (Level.Frame < TimeStamp)
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Use (IBaseEntity *Other, IBaseEntity *Activator)
 	{
 		TimeStamp = Level.Frame + Duration;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		LastShakeTime = 0;
 	};
 

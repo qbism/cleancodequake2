@@ -619,11 +619,11 @@ public:
 	void Think ()
 	{
 		if (++State.GetFrame() < 365)
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		else
 		{		
 			State.GetFrame() = 346;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		}
 	};
 

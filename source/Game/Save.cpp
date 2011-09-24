@@ -120,6 +120,7 @@ void DeallocateEntities ()
 	Level.Entities.Closed.remove_if (RemoveAll);
 	ShuttingDownEntities = false;
 	Mem_FreeTag (TAG_ENTITY);
+	memset(Game.Entities, 0, sizeof(SEntity*) * Game.MaxEntities);
 	ClearSpawnPoints ();
 };
 
@@ -234,8 +235,8 @@ void WriteEntireEntity (CFile &File, IBaseEntity *Entity)
 		if (!(Entity->EntityFlags & EF_ITEM))
 		{
 			//if (!strstr(Q_strlwr(std::string(typeid(*Entity).name())).CString(), Q_strlwr(std::string(Entity->SAVE_GetName())).CString()))
-			String realType = String(typeid(*Entity).name()).ToLower();
-			String savedType = String(Entity->SAVE_GetName()).ToLower();
+			String realType = (String(typeid(*Entity).name()).ToLower());
+			String savedType = String("class ") + String(Entity->SAVE_GetName()).ToLower();
 
 			if (realType != savedType)
 				DebugPrintf ("%s did not write correctly (wrote as %s)\n", typeid(*Entity).name(), Entity->SAVE_GetName());

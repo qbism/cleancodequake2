@@ -872,7 +872,7 @@ void IMonster::WalkMonsterStartGo ()
 void IMonster::WalkMonsterStart ()
 {
 	Think = &IMonster::WalkMonsterStartGo;
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 	MonsterStart ();
 }
 
@@ -1001,7 +1001,7 @@ void IMonster::MonsterStartGo ()
 	else
 	{
 		Think = &IMonster::MonsterThink;
-		Entity->NextThink = Level.Frame + FRAMETIME;
+		Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 }
 
@@ -1022,7 +1022,7 @@ void IMonster::MonsterStart ()
 	if (!(AIFlags & AI_GOOD_GUY) && !(Entity->SpawnFlags & MONSTER_DONT_COUNT))
 		Level.Monsters.Total++;
 
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 	Entity->GetSvFlags() |= SVF_MONSTER;
 	Entity->State.GetRenderEffects() |= RF_FRAMELERP;
 	Entity->CanTakeDamage = true;
@@ -1044,7 +1044,7 @@ void IMonster::MonsterStart ()
 	BaseHeight = Entity->GetMaxs().Z;
 #endif
 
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void IMonster::MonsterTriggeredStart ()
@@ -1110,7 +1110,7 @@ void CMonsterEntity::Use (IBaseEntity *Other, IBaseEntity *Activator)
 	case MONSTERENTITY_THINK_TRIGGEREDSPAWNUSE:
 		// we have a one frame delay here so we don't telefrag the guy who activated us
 		Monster->Think = &IMonster::MonsterTriggeredSpawn;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		if (Activator && (Activator->EntityFlags & EF_PLAYER))
 			Enemy = Activator;
 		UseState = MONSTERENTITY_THINK_USE;
@@ -1455,7 +1455,7 @@ void CMonsterBeamLaser::Think ()
 	}
 
 	State.GetOldOrigin() = tr.EndPosition;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	DoFree = true;
 }
 
@@ -1601,7 +1601,7 @@ void IMonster::MonsterThink ()
 {
 	FixInvalidEntities ();
 
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 	MoveFrame ();
 	if (Entity->GetLinkCount() != LinkCount)
 	{
@@ -2022,6 +2022,6 @@ void IMonster::BossExplode ()
 	}
 
 	CRocketExplosion (org).Send();
-	Entity->NextThink = Level.Frame + FRAMETIME;
+	Entity->NextThink = Level.Frame + ServerFramesPerSecond;
 }
 

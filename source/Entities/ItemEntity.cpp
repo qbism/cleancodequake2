@@ -194,7 +194,7 @@ void CItemEntity::Think ()
 				GetSolid() = SOLID_NOT;
 				if (Team.Master == this)
 				{
-					NextThink = Level.Frame + FRAMETIME;
+					NextThink = Level.Frame + ServerFramesPerSecond;
 					ThinkState = ITS_RESPAWN;
 				}
 			}

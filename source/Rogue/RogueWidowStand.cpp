@@ -93,7 +93,7 @@ public:
 		if (State.GetFrame() < MAX_LEGSFRAME)
 		{
 			State.GetFrame()++;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			return;
 		}
 		else if (BoomTime == 0)
@@ -137,10 +137,10 @@ public:
 			G_ProjectSource (State.GetOrigin(), offset2, angles, point);
 			CRocketExplosion(CTempEntFlags(CAST_MULTI, CASTFLAG_NONE, point), point).Send();
 
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			return;
 		}
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	static void Spawn (vec3f &origin, vec3f &angles)
@@ -155,7 +155,7 @@ public:
 		Legs->State.GetModelIndex() = ModelIndex("models/monsters/legs/tris.md2");
 
 		Legs->BoomTime = 0;
-		Legs->NextThink = Level.Frame + FRAMETIME;
+		Legs->NextThink = Level.Frame + ServerFramesPerSecond;
 		Legs->Link ();
 	};
 };

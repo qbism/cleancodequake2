@@ -603,7 +603,7 @@ public:
 					else
 						Hurtable->State.GetEffects() |= FX_TRACKERTRAIL;
 					
-					NextThink = Level.Frame + FRAMETIME;
+					NextThink = Level.Frame + ServerFramesPerSecond;
 				}
 			}
 			else
@@ -624,7 +624,7 @@ public:
 		CDisruptorPainDaemon	 *daemon = QNewEntityOf CDisruptorPainDaemon;
 
 		daemon->ClassName = "pain daemon";
-		daemon->NextThink = Level.Frame + FRAMETIME;
+		daemon->NextThink = Level.Frame + ServerFramesPerSecond;
 		daemon->LifeTime = Level.Frame;
 		daemon->SetOwner(Owner);
 		daemon->Enemy = Enemy;
@@ -680,7 +680,7 @@ void CDisruptorTracker::Think ()
 	State.GetAngles() = dir.ToAngles();
 	Velocity = dir * Speed;
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CDisruptorTracker::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
@@ -758,7 +758,7 @@ void CDisruptorTracker::Spawn (IBaseEntity *Spawner, vec3f start, vec3f dir,
 
 	if (enemy)
 	{
-		Bolt->NextThink = Level.Frame + FRAMETIME;
+		Bolt->NextThink = Level.Frame + ServerFramesPerSecond;
 		Bolt->DoFree = false;
 	}
 	else

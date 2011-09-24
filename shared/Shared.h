@@ -63,8 +63,6 @@ const int MINOR_VERSION_R1Q2_BASE			= 1903;
 const int MINOR_VERSION_R1Q2_UCMD_UPDATES	= 1904;
 const int MINOR_VERSION_R1Q2_32BIT_SOLID	= 1905;
 
-const int  FRAMETIME		= 1;	// 1 frame = .1 seconds
-
 // Forward declaration
 struct SEntity;
 
@@ -2241,6 +2239,13 @@ struct SServerEntity
 typedef uint32	EMeansOfDeath;
 
 extern EMeansOfDeath meansOfDeath;
+
+// Fixed higher FPS
+const int ServerFrameFPS = 10;
+const float ServerFrameTime = 1000.0f / ((float)ServerFrameFPS);
+const float ServerFrameTimeInSeconds = ((float)ServerFrameTime) / 1000.0f;
+const int ServerFramesPerSecond = (0.1f / ServerFrameTimeInSeconds);
+const float ServerFrameTimeInv = ServerFrameFPS / 1000.0f;
 
 #endif // __SHARED_H
 

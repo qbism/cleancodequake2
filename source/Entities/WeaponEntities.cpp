@@ -453,7 +453,7 @@ void CBFGBolt::Think ()
 			}
 		}
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		State.GetFrame()++;
 		if (State.GetFrame() == 5)
 			Free ();
@@ -530,7 +530,7 @@ void CBFGBolt::Think ()
 			LaserTempEnt.StartAt(State.GetOrigin()).EndAt(tr.EndPosition).Send();
 		}
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 }
 
@@ -566,7 +566,7 @@ void CBFGBolt::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
 	State.GetFrame() = 0;
 	State.GetSound() = 0;
 	State.GetEffects() = FX_BFG;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	Enemy = Other;
 
 	CBFGExplosion(State.GetOrigin(), true).Send();
@@ -583,7 +583,7 @@ void CBFGBolt::Spawn	(IBaseEntity *Spawner, vec3f start, vec3f dir,
 	BFG->State.GetEffects() = FX_BFG | FX_ANIM_ALLFAST;
 	BFG->State.GetModelIndex() = ModelIndex ("sprites/s_bfg1.sp2");
 	BFG->SetOwner(Spawner);
-	BFG->NextThink = Level.Frame + FRAMETIME;
+	BFG->NextThink = Level.Frame + ServerFramesPerSecond;
 	BFG->Damage = Damage;
 	BFG->DamageRadius = damage_radius;
 	BFG->State.GetSound() = SoundIndex ("weapons/bfg__l1a.wav");

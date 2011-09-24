@@ -377,7 +377,7 @@ public:
 		else
 		{
 			Telefrag = false;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 			GetSolid() = SOLID_BSP;
 			KillBox();		// Is this appropriate?
 			Link ();
@@ -389,7 +389,7 @@ public:
 		if (!Telefrag)
 			CForceWall(Start, End, Style).Send();
 
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Spawn ()
@@ -421,7 +421,7 @@ public:
 		if (SpawnFlags & FWALL_START_ON)
 		{
 			GetSolid() = SOLID_BSP;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		}
 		else
 			GetSolid() = SOLID_NOT;
@@ -1056,7 +1056,7 @@ public:
 		UseType = BRAINUSE_DEACTIVATE;
 
 		ThinkType = BRAINTHINK_LINK;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	};
 
 	void Deactivate ()
@@ -1071,7 +1071,7 @@ public:
 			Enemy = CC_PickTarget (KillTarget);
 
 		ThinkType = BRAINTHINK_TURRET;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 
 		TargetedBreach = entity_cast<CTurretBreach>(CC_PickTarget (Target));
 		TargetedBreach->SetOwner(this);
@@ -1113,7 +1113,7 @@ public:
 
 	void ThinkTurret ()
 	{
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 
 		if (Enemy)
 		{
@@ -1201,7 +1201,7 @@ public:
 		else
 		{
 			ThinkType = BRAINTHINK_LINK;
-			NextThink = Level.Frame + FRAMETIME;
+			NextThink = Level.Frame + ServerFramesPerSecond;
 		}
 
 		Link ();

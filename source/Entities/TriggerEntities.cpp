@@ -224,7 +224,7 @@ void CTriggerBase::Trigger ()
 	{	// we can't just remove (self) here, because this is a touch function
 		// called while looping through area links...
 		Touchable = false;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 		ThinkType = TRIGGER_THINK_FREE;
 	}
 };
@@ -756,7 +756,7 @@ public:
 		if (NextHurt > Level.Frame)
 			return;
 
-		NextHurt = Level.Frame + ((SpawnFlags & HURT_SLOW) ? 10 : FRAMETIME);
+		NextHurt = Level.Frame + ((SpawnFlags & HURT_SLOW) ? 10 : ServerFramesPerSecond);
 		if (!(SpawnFlags & HURT_SILENT))
 		{
 			if ((Level.Frame % 10) == 0)

@@ -21,27 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // my interpretation of .NET's lists
 
 template <typename T>
-class IList
-{
-public:
-	virtual ~IList()
-	{
-	}
-
-	virtual void Add (const T &value) = 0;
-	virtual void AddRange (const T *values, const uint32 numValues) = 0;
-	virtual uint32 Count() const = 0;
-	virtual uint32 Capacity() const = 0;
-	virtual void RemoveAt (const uint32 index) = 0;
-	virtual void Remove (const T &value) = 0;
-	virtual void Clear() = 0;
-	virtual void InsertAt(const T &value, const uint32 index) = 0;
-	virtual T &ValueAt (const uint32 index) const = 0;
-	virtual int IndexOf (const T &value) const = 0;
-};
-
-template <typename T>
-class TLinkedList : IList<T>
+class TLinkedList
 {
 public:
 	class Node
@@ -161,14 +141,17 @@ public:
 
 	void InsertAt(const T &value, const uint32 index)
 	{
+		throw ExceptionNotImplemented();
 	}
 
 	void InsertAt(const T &value, Node *node)
 	{
+		throw ExceptionNotImplemented();
 	}
 
 	void AddRange (const T *values, const uint32 numValues)
 	{
+		throw ExceptionNotImplemented();
 	}
 
 	uint32 Count() const
@@ -183,10 +166,12 @@ public:
 
 	void RemoveAt (const uint32 index)
 	{
+		throw ExceptionNotImplemented();
 	}
 
 	void Remove (const T &value)
 	{
+		throw ExceptionNotImplemented();
 	}
 
 	void Clear()
@@ -242,7 +227,7 @@ public:
 };
 
 template <typename T>
-class TList : IList<T>
+class TList
 {
 protected:
 	uint32 _reserved, _count;
@@ -418,6 +403,7 @@ public:
 	void RemoveAt (const uint32 index, const bool autoResize)
 	{
 		uint32 oldCount = _count;
+		uint32 oldReserved = _reserved;
 
 		_count--;
 		_reserved--;
@@ -474,6 +460,7 @@ public:
 
 	void InsertAt (const T &value, const uint32 index)
 	{
+		throw ExceptionNotImplemented();
 	}
 
 	void Clear ()
@@ -490,7 +477,7 @@ public:
 	inline T &ValueAt (const uint32 index) const
 	{
 		if (index < 0 || index >= _count)
-			throw new ExceptionIndexOutOfRange(String("index"));
+			throw ExceptionIndexOutOfRange(String("index"));
 
 		return _array[index];
 	}

@@ -229,7 +229,7 @@ void CTesla::Active ()
 	}
 
 	if (GetInUse())
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CTesla::DoneActivate ()
@@ -270,7 +270,7 @@ void CTesla::DoneActivate ()
 		SetOwner(NULL);
 
 	ThinkType = TESLATHINK_ACTIVE;
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 	RemoveTime = Level.Frame + TESLA_TIME_TO_LIVE;
 }
 
@@ -291,7 +291,7 @@ void CTesla::Activate ()
 	{
 		State.GetFrame() = 14;
 		ThinkType = TESLATHINK_DONEACTIVATE;
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 	else
 	{
@@ -310,7 +310,7 @@ void CTesla::Activate ()
 				State.GetSkinNum() = 3;
 		}
 		
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 	}
 }
 

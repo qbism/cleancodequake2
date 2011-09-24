@@ -294,7 +294,7 @@ void CRogueDefenderSphere::Think ()
 	Fly ();
 
 	if (GetInUse())
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 CRogueDefenderSphere *CRogueDefenderSphere::Create (IBaseItem *Item, IBaseEntity *Owner, ESphereFlags Flags)
@@ -357,7 +357,7 @@ void CRogueVengeanceSphere::Think ()
 		Fly ();
 
 	if (GetInUse())
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CRogueVengeanceSphere::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
@@ -544,7 +544,7 @@ void CRogueHunterSphere::Think ()
 		Fly ();
 
 	if (GetInUse())
-		NextThink = Level.Frame + FRAMETIME;
+		NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 void CRogueHunterSphere::Touch (IBaseEntity *Other, SBSPPlane *plane, SBSPSurface *surf)
@@ -614,7 +614,7 @@ void CDoppleGangerBody::Think ()
 	if ((++State.GetFrame()) > CPlayerEntity::FRAME_stand40)
 		State.GetFrame() = CPlayerEntity::FRAME_stand01;
 
-	NextThink = Level.Frame + FRAMETIME;
+	NextThink = Level.Frame + ServerFramesPerSecond;
 }
 
 IMPLEMENT_SAVE_SOURCE (CDoppleGangerBody);
@@ -677,7 +677,7 @@ void CDoppleGanger::Spawn (CPlayerEntity *Owner, vec3f Start, vec3f AimDir)
 	base->Body->State.GetSound() = 0;
 	base->Body->State.GetEvent() = 0;
 	base->Body->State.GetOrigin() = Owner->State.GetOldOrigin() = Start + vec3f(0, 0, 8);
-	base->Body->NextThink = Level.Frame + FRAMETIME;
+	base->Body->NextThink = Level.Frame + ServerFramesPerSecond;
 	base->Body->Link ();
 }
 
