@@ -114,11 +114,6 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 // see cc_utils.cpp
 #define CC_ASSERT_EXPR(expr, msg) AssertExpression(!!(expr), (msg))
 
-// Define this if you want to use include guards.
-#ifndef INCLUDE_GUARDS
-#define INCLUDE_GUARDS						1
-#endif
-
 // Generally keep this VC_NONE if it's not CleanCode base
 #define VC_NONE		0
 #define VC_WININET	1
@@ -126,6 +121,11 @@ list the mod on my page for CleanCode Quake2 to help get the word around. Thanks
 
 #ifndef VERSION_CHECKING
 #define VERSION_CHECKING	VC_WININET
+#endif
+
+// Define this if you want to use include guards.
+#ifndef INCLUDE_GUARDS
+#define INCLUDE_GUARDS						1
 #endif
 
 #ifdef INCLUDE_GUARDS
