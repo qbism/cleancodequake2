@@ -16,20 +16,11 @@
     <ClInclude Include="..\..\shared\MathLib.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\Platform.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Shared.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\Vector.h">
       <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\Templates.h">
-      <Filter>Shared\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\Templates\TTypes.h">
-      <Filter>Shared\Templates</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Player\Arg.h">
       <Filter>Player</Filter>
@@ -445,17 +436,26 @@
     <ClInclude Include="..\..\shared\Templates\Events.h">
       <Filter>Shared\Templates</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\Exceptions.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\Path.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\String.h">
+    <ClInclude Include="..\..\shared\PString.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\TList.h">
+    <ClInclude Include="..\..\shared\PTList.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\PPlatform.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Templates\PTemplates.h">
+      <Filter>Shared\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\Templates\PTypes.h">
+      <Filter>Shared\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\PExceptions.h">
+      <Filter>Shared\Templates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

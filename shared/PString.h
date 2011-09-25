@@ -10,9 +10,9 @@ protected:
 
 public:
 	String();
-	String (nullptr_t);
-	String(const char *str);
-	String (const String &str);
+	String(nullptr_t);
+	String(const char *str, int len = -1);
+	String(const String &str);
 	~String();
 
 	void Clear ();
@@ -56,32 +56,36 @@ public:
 	String &operator= (const char *r);
 	String &operator+= (const String &r);
 	String &operator+= (const char *r);
-	String operator+ (const String &r);
-	String operator+ (const char *r);
+	String operator+ (const String &r) const;
+	String operator+ (const char *r) const;
 	String &operator+= (const char &ch);
-	String operator+ (const char &ch);
+	String operator+ (const char &ch) const;
 	char &operator[] (const int &index) const;
-	static String Join (int count, ...);
-	static String Join (const String *list, int count = -1);
-	static String Join (const TList<String> &list);
+	static String Join(const String *list, int stringCount, int index = 0, int count = -1);
+	static String Join(const TList<String> &list, int index = 0, int count = -1);
+	static String Join(const char *separator, const TList<String> &list, int index = 0, int count = -1);
+	static String Join(const char *separator, const String* list, int stringCount, int index = 0, int count = -1);
 	String &Replace (const char from, const char to);
 	String &Replace (const String &from, const String &to);
 	String &Replace (const char *from, const char *to);
 	bool IsNullOrWhiteSpace () const;
 
 	template <typename T>
-	static bool IsAny (const T &v, const char *list, int num)
+	static int IsAny (const T &v, const char *list, int num)
 	{
 		for (int i = 0; i < num; ++i)
 			if (v == list[i])
-				return true;
+				return i + 1;
 
-		return false;
+		return 0;
 	}
 
 	TList<String> Split (const char *characters, int count, bool removeEmpty) const;
 	TList<String> Split (const TList<char> &characters, bool removeEmpty) const;
 	TList<String> Split (bool removeEmpty = false) const;
+
+	TList<String> SplitWithCombiners (const char *characters, int charactersCount, bool removeEmpty, const char *combiners, int combinersCount);
+
 	TList<char> ToCharArray () const;
 	String &ToLower ();
 	String &ToUpper ();
@@ -93,4 +97,47 @@ public:
 	const char *CString() const;
 
 	static const String &Empty();
+
+#ifndef NO_STD_STRING_SUPPORT
+	inline operator std::string() const
+	{
+		return std::string(CString());
+	}
+
+	inline String (const std::string &string)
+	{
+		Initialize(string.c_str(), string.length());
+	}
+#endif
+
+	bool MatchesWildcard(const String &pattern);
+};
+
+inline String operator+ (const char *left, const String &right)
+{
+	return String(left) + right;
+}
+
+inline bool operator<(
+		const String& _Left,
+		const String& _Right)
+	{	// test if string < string
+		return (_Left.Compare(_Right) < 0);
+	}
+
+inline bool operator>(
+		const String& _Left,
+		const String& _Right)
+	{	// test if string < string
+		return (_Left.Compare(_Right) > 0);
+	}
+
+
+template<>
+struct HashProvider<String>
+{
+	int CalculateHash(const String &value)
+	{
+		return -1;
+	}
 };

@@ -30,3 +30,96 @@ anything that doesn't do anything; items, weapons, certain doors and platforms) 
 and a temporary trigger is spawned in an area deemed "the beginning" of an area. Once the trigger is touched, the
 entities that were stored away will be spawned. This won't lower overflows since it's out of your PVS, however this
 could speed up gameplay since you're only acting on entities that you can physically be near.
+
+//
+//  MutableArray.c
+//  Avisaria Collision Demo
+//
+//  Created by Matthew French on 9/24/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+
+#import <stdio.h>
+#import <stdlib.h>
+
+class MutableArray
+{
+    int count;
+    void** objects;
+
+	MutableArray() :
+		count(0),
+		objects(NULL)
+	{
+	}
+
+	~MutableArray()
+	{
+		RemoveAllObjects();
+	}
+
+	void Add(void *object)
+	{
+		count += 1;
+		void** newArray = new void*[count];
+		if (objects!=NULL) {
+			for (int i = 0; i < count-1; i++) {
+				newArray[i] = objects[i];
+			}
+			delete objects;
+			objects = NULL;
+		}
+		newArray[count-1] = object;
+    
+		objects = newArray;
+	}
+
+	void Remove(void* object)
+	{
+		int n = 0;
+		for (int i = 0; i < count; i++) {
+			if (objects[i] == object) {
+				n++;
+			}
+		}
+
+		int r = 0;
+		void** newArray = new void*[count - n];
+		for (int i = 0; i < count; i++) {
+			if (objects[i] != object) {
+				newArray[i-r] = objects[i];
+			} else {
+				r ++;
+			}
+		}
+
+		delete objects;
+		objects = newArray;
+		count -= n;
+	}
+
+	void RemoveAllObjects()
+	{
+		count = 0;
+		if (objects != NULL)
+		{
+			delete objects;
+			objects = NULL;
+		}
+	}
+
+	int IndexOfObject(void* object)
+	{
+		for (int i = 0; i < count; i++) {
+			if (objects[i] == object) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	inline void* ObjectAtIndex(int index)
+	{
+    return objects[index];
+	}
+};

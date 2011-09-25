@@ -517,16 +517,16 @@ echo Done!
     <ClInclude Include="..\..\include\Xatrix\XatrixSupertankBoss5.h" />
     <ClInclude Include="..\..\include\Xatrix\XatrixTrap.h" />
     <ClInclude Include="..\..\shared\ColorVec.h" />
-    <ClInclude Include="..\..\shared\Exceptions.h" />
     <ClInclude Include="..\..\shared\MathLib.h" />
     <ClInclude Include="..\..\shared\Path.h" />
-    <ClInclude Include="..\..\shared\Platform.h" />
+    <ClInclude Include="..\..\shared\PExceptions.h" />
+    <ClInclude Include="..\..\shared\PPlatform.h" />
+    <ClInclude Include="..\..\shared\PString.h" />
+    <ClInclude Include="..\..\shared\PTList.h" />
     <ClInclude Include="..\..\shared\Shared.h" />
-    <ClInclude Include="..\..\shared\String.h" />
     <ClInclude Include="..\..\shared\Templates\Events.h" />
-    <ClInclude Include="..\..\shared\Templates\Templates.h" />
-    <ClInclude Include="..\..\shared\Templates\TTypes.h" />
-    <ClInclude Include="..\..\shared\TList.h" />
+    <ClInclude Include="..\..\shared\Templates\PTemplates.h" />
+    <ClInclude Include="..\..\shared\Templates\PTypes.h" />
     <ClInclude Include="..\..\shared\Vector.h" />
   </ItemGroup>
   <ItemGroup>

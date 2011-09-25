@@ -128,6 +128,8 @@ typedef long long				int64_t;
 # define __declspec_naked __declspec(naked)
 # define cc_thiscall __thiscall
 
+#define var auto
+
 // =========================================================================
 // Generic Unix
 //

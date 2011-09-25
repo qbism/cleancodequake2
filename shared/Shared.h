@@ -38,13 +38,12 @@ bool AssertExpression (const bool expr, const char *msg, const char *file, const
 
 #include "Utility/STL.h"
 #include "Utility/Memory.h"
-#include "Templates/Templates.h"
+#include "Templates/PTemplates.h"
 #include "Templates/Events.h"
 #include "MathLib.h"
 #include "ColorVec.h"
-#include "TList.h"
-#include "String.h"
-#include "Exceptions.h"
+#include "PString.h"
+#include "PExceptions.h"
 
 /*
 =============================================================================
@@ -269,6 +268,15 @@ const int MAX_OSPATH			= 128;		// max length of a filesystem pathname
 
 const int MAX_COMPRINT			= 1024;		// max length of a string to be printed to console
 
+
+/*
+============================================================================
+
+	LIBRARY REPLACEMENT FUNCTIONS
+
+============================================================================
+*/
+
 /**
 \fn	void Q_snprintfz(char *dest, size_t size, const char *fmt, ...)
 
@@ -281,21 +289,19 @@ const int MAX_COMPRINT			= 1024;		// max length of a string to be printed to con
 \param	size			The size. 
 \param	fmt				Describes the format to use. 
 **/
-void	Q_snprintfz(char *dest, size_t size, const char *fmt, ...);
+inline void Q_snprintfz (char *dest, size_t size, const char *fmt, ...)
+{
+	if (size)
+	{
+		va_list		argptr;
 
-/**
-\fn	void Q_strcatz(char *dst, const char *src, size_t dstSize)
+		va_start (argptr, fmt);
+		vsnprintf (dest, size, fmt, argptr);
+		va_end (argptr);
 
-\brief	Replacement for strcat. Concatenates 'src' into 'dst' up to 'dstSize' bytes.
-
-\author	Paril
-\date	26/05/2010
-
-\param [in,out]	dst	If non-null, destination for the string. 
-\param	src			Source for the string. 
-\param	dstSize		Size of the destination. 
-**/
-void	Q_strcatz(char *dst, const char *src, size_t dstSize);
+		dest[size-1] = '\0';
+	}
+}
 
 /**
 \fn	size_t Q_strncpyz(char *dest, const char *src, size_t size)
@@ -311,7 +317,38 @@ void	Q_strcatz(char *dst, const char *src, size_t dstSize);
 
 \return	. 
 **/
-size_t	Q_strncpyz(char *dest, const char *src, size_t size);
+inline size_t Q_strncpyz(char *dest, const char *src, size_t size)
+{
+	if (size)
+	{
+		while (--size && ((*dest++ = *src++) != 0)) ;
+		*dest = '\0';
+	}
+
+	return size;
+}
+
+/**
+\fn	void Q_strcatz(char *dst, const char *src, size_t dstSize)
+
+\brief	Replacement for strcat. Concatenates 'src' into 'dst' up to 'dstSize' bytes.
+
+\author	Paril
+\date	26/05/2010
+
+\param [in,out]	dst	If non-null, destination for the string. 
+\param	src			Source for the string. 
+\param	dstSize		Size of the destination. 
+**/
+inline void Q_strcatz (char *dst, const char *src, size_t dstSize)
+{
+	size_t len = strlen (dst);
+
+	if (len >= dstSize)
+		return;
+
+	Q_strncpyz (dst + len, src, dstSize - len);
+}
 
 #if defined(id386) && ((!defined(MSVS_VERSION) && defined(CC_STDC_CONFORMANCE)) || !defined(CC_STDC_CONFORMANCE))
 /**
@@ -435,7 +472,7 @@ class ExceptionNoStringConversion : Exception
 {
 public:
 	ExceptionNoStringConversion() :
-	  Exception(String("No conversion exists for this type"))
+	  Exception("No conversion exists for this type")
 	  {
 	  };
 };

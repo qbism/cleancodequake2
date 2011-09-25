@@ -1,113 +1,17 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
-
-//
-// string.c
-//
-
-#include "Local.h"
+#include "Shared.h"
 
 /*
-============================================================================
+ * String class
+ * 
+ * A replacement for the std::string class.
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 
-	LIBRARY REPLACEMENT FUNCTIONS
-
-============================================================================
-*/
-
-/**
-\fn	void Q_snprintfz(char *dest, size_t size, const char *fmt, ...)
-
-\brief	Replacement for snprintf. Fills 'dest' up to 'size' with the format 'fmt'. 
-
-\author	Paril
-\date	26/05/2010
-
-\param [in,out]	dest	If non-null, destination for the string. 
-\param	size			The size. 
-\param	fmt				Describes the format to use. 
-**/
-void Q_snprintfz (char *dest, size_t size, const char *fmt, ...)
-{
-	if (size) {
-		va_list		argptr;
-
-		va_start (argptr, fmt);
-		vsnprintf (dest, size, fmt, argptr);
-		va_end (argptr);
-
-		dest[size-1] = '\0';
-	}
-}
-
-/**
-\fn	void Q_strcatz(char *dst, const char *src, size_t dstSize)
-
-\brief	Replacement for strcat. Concatenates 'src' into 'dst' up to 'dstSize' bytes.
-
-\author	Paril
-\date	26/05/2010
-
-\param [in,out]	dst	If non-null, destination for the string. 
-\param	src			Source for the string. 
-\param	dstSize		Size of the destination. 
-**/
-void Q_strcatz (char *dst, const char *src, size_t dstSize)
-{
-	size_t len = strlen (dst);
-	if (len >= dstSize)
-	{
-		DebugPrint ("Q_strcatz: already overflowed");
-		return;
-	}
-
-	Q_strncpyz (dst + len, src, dstSize - len);
-}
-
-/**
-\fn	size_t Q_strncpyz(char *dest, const char *src, size_t size)
-
-\brief	Replacement for strncpy. Copies 'src' into 'dest' up to 'size' bytes
-
-\author	Paril
-\date	26/05/2010
-
-\param [in,out]	dest	If non-null, destination for the string to be copied into. 
-\param	src				Source for the string. 
-\param	size			The size. 
-
-\return	. 
-**/
-size_t Q_strncpyz(char *dest, const char *src, size_t size)
-{
-	if (size)
-	{
-		while (--size && ((*dest++ = *src++) != 0)) ;
-		*dest = '\0';
-	}
-
-	return size;
-}
-
-
-
-// string class
 void String::Initialize (const char *str, int realLen)
 {
 	if (str == null)
@@ -140,14 +44,14 @@ String::String()
 	Initialize(null);
 }
 
-String::String (nullptr_t)
+String::String(nullptr_t)
 {
 	Initialize(null);
 }
 
-String::String(const char *str)
+String::String(const char *str, int len)
 {
-	Initialize(str);
+	Initialize(str, len);
 }
 
 String::String (const String &str)
@@ -207,9 +111,9 @@ String &String::Remove (const int startIndex, const int length)
 		realLength = Count() - startIndex;
 
 	if (startIndex >= (int)Count() || startIndex < 0)
-		throw ExceptionIndexOutOfRange(String("startIndex"));
+		throw Exceptions::IndexOutOfRange("startIndex");
 	if ((startIndex + realLength) > (int)Count() || realLength < 0)
-		throw ExceptionIndexOutOfRange(String("length"));
+		throw Exceptions::IndexOutOfRange("length");
 
 	int newCount = Count() - realLength;
 
@@ -240,9 +144,9 @@ String String::Substring (const int startIndex, const int length) const
 		newStringLength = Count() - startIndex;
 
 	if (startIndex >= (int)Count() || startIndex < 0)
-		throw ExceptionIndexOutOfRange(String("startIndex"));
+		throw Exceptions::IndexOutOfRange("startIndex");
 	if ((startIndex + newStringLength) > (int)Count() || newStringLength < 0)
-		throw ExceptionIndexOutOfRange(String("length"));
+		throw Exceptions::IndexOutOfRange("length");
 
 	String newStr;
 	newStr._array = new char[newStringLength + 1];
@@ -266,7 +170,7 @@ int String::CompareCaseInsensitive (const char *str, int maxLength) const
 	if (maxLength == -1)
 		maxLength = (((int)strlen(str) > Count()) ? Count() : (int)strlen(str)) + 1;
 
-	return _strnicmp(_array, str, maxLength);
+	return strnicmp(_array, str, maxLength);
 }
 
 int String::Compare (const String &str, int maxLength) const
@@ -282,14 +186,14 @@ int String::CompareCaseInsensitive (const String &str, int maxLength) const
 	if (maxLength == -1)
 		maxLength = ((str.Count() > Count()) ? Count() : str.Count()) + 1;
 
-	return _strnicmp(_array, str._array, maxLength);
+	return strnicmp(_array, str._array, maxLength);
 }
 
 // FIXME: insensitive versions
 int String::IndexOf (char ch, const int offset) const
 {
 	if (offset > (int)Count() || offset < 0)
-		throw ExceptionIndexOutOfRange(String("offset"));
+		throw Exceptions::IndexOutOfRange("offset");
 
 	for (uint32 i = offset; i < Count(); ++i)
 	{
@@ -303,7 +207,7 @@ int String::IndexOf (char ch, const int offset) const
 int String::IndexOf(const String &str, const int offset) const
 {
 	if (offset > (int)Count() || offset < 0)
-		throw ExceptionIndexOutOfRange(String("offset"));
+		throw Exceptions::IndexOutOfRange("offset");
 
 	for (uint32 i = offset; i < Count(); ++i)
 	{
@@ -320,7 +224,7 @@ int String::IndexOf(const String &str, const int offset) const
 int String::IndexOf(const char *str, const int offset) const
 {
 	if (offset > (int)Count() || offset < 0)
-		throw ExceptionIndexOutOfRange(String("offset"));
+		throw Exceptions::IndexOutOfRange("offset");
 
 	uint32 len = strlen(str);
 	for (uint32 i = offset; i < Count(); ++i)
@@ -338,7 +242,7 @@ int String::IndexOf(const char *str, const int offset) const
 int String::LastIndexOf (const char ch, const int offset) const
 {
 	if (offset > (int)Count() || offset < 0)
-		throw ExceptionIndexOutOfRange(String("offset"));
+		throw Exceptions::IndexOutOfRange("offset");
 
 	for (int i = Count() - 1 - offset; i >= 0; --i)
 	{
@@ -352,7 +256,7 @@ int String::LastIndexOf (const char ch, const int offset) const
 int String::LastIndexOf(const String &str, const int offset) const
 {
 	if (offset > (int)Count() || offset < 0)
-		throw ExceptionIndexOutOfRange(String("offset"));
+		throw Exceptions::IndexOutOfRange("offset");
 
 	for (int i = Count() - 1 - offset; i >= 0; --i)
 	{
@@ -369,7 +273,7 @@ int String::LastIndexOf(const String &str, const int offset) const
 int String::LastIndexOf(const char *str, const int offset) const
 {
 	if (offset > (int)Count() || offset < 0)
-		throw ExceptionIndexOutOfRange(String("offset"));
+		throw Exceptions::IndexOutOfRange("offset");
 
 	uint32 len = strlen(str);
 	for (int i = Count() - 1 - offset; i >= 0; --i)
@@ -420,7 +324,7 @@ bool String::StartsWith(const char *str) const
 String &String::Insert (const char *str, const int position)
 {
 	if (position >= (int)Count() || position < 0)
-		throw ExceptionIndexOutOfRange(String("position"));
+		throw Exceptions::IndexOutOfRange("position");
 
 	int len = strlen(str);
 	int newLength = _count + len;
@@ -447,7 +351,7 @@ String &String::Insert (const char *str, const int position)
 String &String::Insert (const String &str, const int position)
 {
 	if (position >= (int)Count() || position < 0)
-		throw ExceptionIndexOutOfRange(String("position"));
+		throw Exceptions::IndexOutOfRange("position");
 
 	int newLength = _count + str.Count();
 
@@ -515,6 +419,9 @@ bool String::operator== (const String &right) const
 
 bool String::operator== (const char *right) const
 {
+	if (right == null)
+		return false;
+
 	return Compare(right) == 0;
 }
 
@@ -525,12 +432,21 @@ bool String::operator!= (const String &right) const
 
 bool String::operator!= (const char *right) const
 {
+	if (right == null)
+		return false;
+
 	return !(*this == right);
 }
 
 String &String::operator= (const String &r)
 {
+	if (&r == this)
+		return *this;
+
 	Destroy();
+
+	if (r._count == 0)
+		return *this;
 
 	_count = r._count;
 
@@ -542,7 +458,13 @@ String &String::operator= (const String &r)
 
 String &String::operator= (const char *r)
 {
+	if (r == _array)
+		return *this;
+
 	Destroy();
+	
+	if (strlen(r) == 0)
+		return *this;
 
 	_count = strlen(r) + 1;
 
@@ -563,12 +485,12 @@ String &String::operator+= (const char *r)
 	return Concatenate(r);
 }
 
-String String::operator+ (const String &r)
+String String::operator+ (const String &r) const
 {
 	return String(*this).Concatenate(r);
 }
 
-String String::operator+ (const char *r)
+String String::operator+ (const char *r) const
 {
 	return String(*this).Concatenate(r);
 }
@@ -578,7 +500,7 @@ String &String::operator+= (const char &ch)
 	return Concatenate(&ch, 1);
 }
 
-String String::operator+ (const char &ch)
+String String::operator+ (const char &ch) const
 {
 	return String(*this).Concatenate(&ch, 1);
 }
@@ -588,26 +510,11 @@ char &String::operator[] (const int &index) const
 	return _array[index];
 }
 
-/*static*/ String String::Join (int count, ...)
-{
-	va_list ap;
-	String newStr;
-
-	va_start(ap, count); //Requires the last fixed parameter (to get the address)
-
-	for (int j = 0; j < count; j++)
-		newStr.Concatenate(va_arg(ap, String)); //Requires the type to cast to. Increments ap to the next argument.
-
-	va_end(ap);
-
-	return newStr;
-}
-
-/*static*/ String String::Join (const String *list, int count)
+/*static*/ String String::Join(const char *separator, const String* list, int stringCount, int index, int count)
 {
 	String newStr;
 
-	for (int j = 0; ; j++)
+	for (int j = index; ; j++)
 	{
 		if (count == -1)
 		{
@@ -616,19 +523,32 @@ char &String::operator[] (const int &index) const
 		}
 		else
 		{
-			if (j >= count)
+			if (j > count)
 				break;
 		}
 
-		newStr.Concatenate(list[j]); //Requires the type to cast to. Increments ap to the next argument.
+		if (j != index && strlen(separator) != 0)
+			newStr.Concatenate(separator);
+
+		newStr.Concatenate(list[j]);
 	}
 
 	return newStr;
 }
 
-/*static*/ String String::Join (const TList<String> &list)
+/*static*/ String String::Join(const char *separator, const TList<String> &list, int index, int count)
 {
-	return Join(list.Array(), (int)list.Count());
+	return Join(separator, list.Array(), list.Count(), index, count);
+}
+
+/*static*/ String String::Join (const String *list, int stringCount, int index, int count)
+{
+	return Join("", list, stringCount, index, count);
+}
+
+/*static*/ String String::Join (const TList<String> &list, int index, int count)
+{
+	return Join("", list.Array(), list.Count(), index, count);
 }
 
 String &String::Replace (const char from, const char to)
@@ -691,6 +611,66 @@ bool String::IsNullOrWhiteSpace () const
 	return true;
 }
 
+TList<String> String::SplitWithCombiners (const char *characters, int charactersCount, bool removeEmpty, const char *combiners, int combinersCount)
+{
+	int index = 0;
+	String buffer;
+	TList<String> strings;
+
+	while (true)
+	{
+		var ch = (uint32)index >= Count() ? 0 : operator[](index);
+		int combiner = IsAny(ch, combiners, combinersCount);
+
+		if (combiner != 0)
+		{
+			index++;
+			if (!removeEmpty || buffer.Count() != 0)
+			{
+				strings.Add(buffer);
+				buffer.Clear();
+			}
+
+			while (true)
+			{
+				if ((uint32)index >= Count())
+					break;
+
+				ch = operator[](index);
+
+				if (ch == combiners[combiner - 1])
+					break;
+
+				buffer += ch;
+				index++;
+			}
+
+			strings.Add(buffer);
+			buffer.Clear();
+		}
+		else
+		{
+			if ((uint32)index == Count() || IsAny(ch, characters, charactersCount))
+			{
+				if (!removeEmpty || buffer.Count() != 0)
+				{
+					strings.Add(buffer);
+					buffer.Clear();
+				}
+			}
+			else
+				buffer += ch;
+		}
+
+		if ((uint32)index >= Count())
+			break;
+
+		index++;
+	}
+
+	return strings;
+}
+
 TList<String> String::Split (const char *characters, int count, bool removeEmpty) const
 {
 	TList<String> split;
@@ -701,9 +681,10 @@ TList<String> String::Split (const char *characters, int count, bool removeEmpty
 	{
 		if ((i >= Count()) || IsAny(_array[i], characters, count))
 		{
-			if (lastGot != (int)i)
+			if (((i < Count()) ? lastGot != (int)(i - lastGot) : true) &&
+				(i - lastGot) != 0)
 			{
-				split.Add(Substring(lastGot, (int)i - lastGot));
+				split.Add(Substring(lastGot, i - lastGot));
 				lastGot = i + 1;
 			}
 		}
@@ -725,7 +706,7 @@ TList<String> String::Split (const TList<char> &characters, bool removeEmpty) co
 const char defaultSplitChars[] = {' ', '\t', '\r', '\n'};
 TList<String> String::Split (bool removeEmpty) const
 {
-	return Split(defaultSplitChars, 3, removeEmpty);
+	return Split(defaultSplitChars, 4, removeEmpty);
 }
 
 TList<char> String::ToCharArray () const
@@ -818,7 +799,7 @@ uint32 String::Count() const
 char String::At (int index) const
 {
 	if (index >= (int)Count() || index < 0)
-		throw ExceptionIndexOutOfRange(String("index"));
+		throw Exceptions::IndexOutOfRange("index");
 
 	return _array[index];
 }
@@ -833,3 +814,53 @@ static const String EmptyString ("");
 {
 	return EmptyString;
 }
+ 
+bool String::MatchesWildcard(const String &pattern)
+{
+	enum State {
+		Exact,      	// exact match
+		Any,        	// ?
+		AnyRepeat    	// *
+	};
+
+	const char *s = CString();
+	const char *p = pattern.CString();
+	const char *q = 0;
+	int state = 0;
+
+	bool match = true;
+	while (match && *p) {
+		if (*p == '*') {
+			state = AnyRepeat;
+			q = p+1;
+		} else if (*p == '?') state = Any;
+		else state = Exact;
+
+		if (*s == 0) break;
+
+		switch (state) {
+		case Exact:
+			match = *s == *p;
+			s++;
+			p++;
+			break;
+
+		case Any:
+			match = true;
+			s++;
+			p++;
+			break;
+
+		case AnyRepeat:
+			match = true;
+			s++;
+
+			if (*s == *q) p++;
+			break;
+		}
+	}
+
+	if (state == AnyRepeat) return (*s == *q);
+	else if (state == Any) return (*s == *p);
+	else return match && (*s == *p);
+} 
